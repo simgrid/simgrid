@@ -163,6 +163,17 @@ the \b maxmin/precision item (default value: 1e-9). Changing it
 may speedup the simulation by discarding very small actions, at the
 price of a reduced numerical precision.
 
+\subsection options_model_nthreads Parallel threads for model updates
+
+By default, Surf computes the analytical models sequentially to share their
+resources and update their actions. It is possible to run them in parallel,
+using the \b surf/nthreads item (default value: 1). If you use a
+negative value, the amount of available cores is automatically
+detected  and used instead.
+
+Depending on the workload of the models and their complexity, you may get a
+speedup or a slowdown because of the synchronization costs of threads.
+
 \subsection options_model_network Configuring the Network model
 
 \subsubsection options_model_network_gamma Maximal TCP window size
@@ -314,7 +325,8 @@ If you are using the \c ucontext or \c raw context factories, you can
 request to execute the user code in parallel. Several threads are
 launched, each of them handling as much user contexts at each run. To
 actiave this, set the \b contexts/nthreads item to the amount of
-core that you have in your computer.
+cores that you have in your computer (or -1 to have the amount of cores
+auto-detected).
 
 Even if you asked several worker threads using the previous option,
 you can request to start the parallel execution (and pay the
@@ -466,6 +478,8 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 - \c network/weight_S: \ref options_model_network_coefs
 
 - \c ns3/TcpModel: \ref options_pls
+
+- \c surf/nthreads: \ref options_model_nthreads
 
 - \c smpi/running_power: \ref options_smpi_bench
 - \c smpi/display_timing: \ref options_smpi_timing

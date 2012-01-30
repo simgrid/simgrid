@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "smx_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
@@ -111,7 +111,7 @@ smx_host_t SIMIX_host_self(void)
   return (process == NULL) ? NULL : SIMIX_process_get_host(process);
 }
 
-/* needs to be public and without request because it is called
+/* needs to be public and without simcall because it is called
    by exceptions and logging events */
 const char* SIMIX_host_self_get_name(void)
 {
@@ -295,18 +295,18 @@ void SIMIX_host_execution_set_priority(smx_action_t action, double priority)
     surf_workstation_model->set_priority(action->execution.surf_exec, priority);
 }
 
-void SIMIX_pre_host_execution_wait(smx_req_t req)
+void SIMIX_pre_host_execution_wait(smx_simcall_t simcall)
 {
-  smx_action_t action = req->host_execution_wait.execution;
+  smx_action_t action = simcall->host_execution_wait.execution;
 
   XBT_DEBUG("Wait for execution of action %p, state %d", action, action->state);
 
-  /* Associate this request to the action */
-  xbt_fifo_push(action->request_list, req);
-  req->issuer->waiting_action = action;
+  /* Associate this simcall to the action */
+  xbt_fifo_push(action->simcalls, simcall);
+  simcall->issuer->waiting_action = action;
 
   /* set surf's action */
-  if (MC_IS_ENABLED){
+  if (MC_IS_ENABLED) {
     action->state = SIMIX_DONE;
     SIMIX_execution_finish(action);
     return;
@@ -332,9 +332,9 @@ void SIMIX_host_execution_resume(smx_action_t action)
 void SIMIX_execution_finish(smx_action_t action)
 {
   volatile xbt_fifo_item_t item;
-  smx_req_t req;
+  smx_simcall_t simcall;
 
-  xbt_fifo_foreach(action->request_list, item, req, smx_req_t) {
+  xbt_fifo_foreach(action->simcalls, item, simcall, smx_simcall_t) {
 
     switch (action->state) {
 
@@ -344,12 +344,12 @@ void SIMIX_execution_finish(smx_action_t action)
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", req->issuer->smx_host->name);
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->smx_host->name);
         TRY {
           THROWF(host_error, 0, "Host failed");
         }
-	CATCH(req->issuer->running_ctx->exception) {
-	  req->issuer->doexception = 1;
+	CATCH(simcall->issuer->running_ctx->exception) {
+	  simcall->issuer->doexception = 1;
 	}
       break;
 
@@ -358,8 +358,8 @@ void SIMIX_execution_finish(smx_action_t action)
         TRY {
           THROWF(cancel_error, 0, "Canceled");
         }
-	CATCH(req->issuer->running_ctx->exception) {
-	  req->issuer->doexception = 1;
+	CATCH(simcall->issuer->running_ctx->exception) {
+	  simcall->issuer->doexception = 1;
         }
 	break;
 
@@ -367,9 +367,9 @@ void SIMIX_execution_finish(smx_action_t action)
         xbt_die("Internal error in SIMIX_execution_finish: unexpected action state %d",
             action->state);
     }
-    req->issuer->waiting_action = NULL;
-    req->host_execution_wait.result = action->state;
-    SIMIX_request_answer(req);
+    simcall->issuer->waiting_action = NULL;
+    simcall->host_execution_wait.result = action->state;
+    SIMIX_simcall_answer(simcall);
   }
 
   /* We no longer need it */
@@ -392,9 +392,10 @@ void SIMIX_post_host_execute(smx_action_t action)
     action->execution.surf_exec = NULL;
   }
 
-  /* If there are requests associated with the action, then answer them */
-  if (xbt_fifo_size(action->request_list))
+  /* If there are simcalls associated with the action, then answer them */
+  if (xbt_fifo_size(action->simcalls)) {
     SIMIX_execution_finish(action);
+  }
 }
 
 

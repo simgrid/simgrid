@@ -1,13 +1,12 @@
 ! output sort
 $ $SG_TEST_EXENV ./simple_token_simulator$EXEEXT ${srcdir:=.}/../../../msg/small_platform.xml ${srcdir:=.}/simple_token.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  1.000312] (1:node@Tremblay) Create the token (with value 0) and send it to Fafard:4000
-> [  1.118273] (1:node@Tremblay) Begin a new loop. Still to do: 2
-> [  1.236234] (1:node@Tremblay) Begin a new loop. Still to do: 1
-> [  1.354194] (1:node@Tremblay) Begin a new loop. Still to do: 0
-> [  1.354194] (1:node@Tremblay) Shut down the token-ring. There was 14 hops.
-> [  2.292537] (2:node@Fafard) Exiting GRAS
-> [  2.320969] (3:node@Jupiter) Exiting GRAS
-> [  2.333858] (4:node@Ginette) Exiting GRAS
-> [  2.354194] (1:node@Tremblay) Exiting GRAS
-> [  2.354194] (5:node@Bourassa) Exiting GRAS
-
+> [  1.000390] (1:node@Tremblay) Create the token (with value 0) and send it to Fafard:4000
+> [  1.147954] (1:node@Tremblay) Begin a new loop. Still to do: 2
+> [  1.295517] (1:node@Tremblay) Begin a new loop. Still to do: 1
+> [  1.443080] (1:node@Tremblay) Begin a new loop. Still to do: 0
+> [  1.443080] (1:node@Tremblay) Shut down the token-ring. There was 14 hops.
+> [  2.365949] (2:node@Fafard) Exiting GRAS
+> [  2.401517] (3:node@Jupiter) Exiting GRAS
+> [  2.417640] (4:node@Ginette) Exiting GRAS
+> [  2.443080] (1:node@Tremblay) Exiting GRAS
+> [  2.443080] (5:node@Bourassa) Exiting GRAS

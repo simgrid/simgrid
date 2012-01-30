@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "smx_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
@@ -136,7 +136,7 @@ void SIMIX_create_maestro_process()
   maestro->running_ctx = xbt_new(xbt_running_ctx_t, 1);
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
   maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
-  maestro->request.issuer = maestro;
+  maestro->simcall.issuer = maestro;
 
   simix_global->maestro_process = maestro;
   return;
@@ -166,7 +166,7 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
  * \brief Internal function to create a process.
  *
  * This function actually creates the process.
- * It may be called when a REQ_PROCESS_CREATE request occurs,
+ * It may be called when a SIMCALL_PROCESS_CREATE simcall occurs,
  * or directly for SIMIX internal purposes.
  *
  * \return the process created
@@ -199,7 +199,7 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->smx_host = host;
     (*process)->data = data;
     (*process)->comms = xbt_fifo_new();
-    (*process)->request.issuer = *process;
+    (*process)->simcall.issuer = *process;
 
     XBT_VERB("Create context %s", (*process)->name);
     (*process)->context = SIMIX_context_new(code, argc, argv,
@@ -245,7 +245,7 @@ void SIMIX_process_runall(void)
 /**
  * \brief Internal function to kill a SIMIX process.
  *
- * This function may be called when a REQ_PROCESS_KILL request occurs,
+ * This function may be called when a SIMCALL_PROCESS_KILL simcall occurs,
  * or directly for SIMIX internal purposes.
  *
  * \param process poor victim
@@ -279,13 +279,13 @@ void SIMIX_process_kill(smx_process_t process) {
 	break;
 
       case SIMIX_ACTION_SYNCHRO:
-	SIMIX_synchro_stop_waiting(process, &process->request);
+	SIMIX_synchro_stop_waiting(process, &process->simcall);
 	SIMIX_synchro_destroy(process->waiting_action);
 	break;
 
       case SIMIX_ACTION_IO:
-	THROW_UNIMPLEMENTED;
-	break;
+        SIMIX_io_destroy(process->waiting_action);
+        break;
     }
   }
 
@@ -325,15 +325,15 @@ void SIMIX_pre_process_change_host(smx_process_t process, smx_host_t dest)
   process->new_host = dest;
 }
 
-void SIMIX_pre_process_suspend(smx_req_t req)
+void SIMIX_pre_process_suspend(smx_simcall_t simcall)
 {
-  smx_process_t process = req->process_suspend.process;
-  SIMIX_process_suspend(process, req->issuer);
+  smx_process_t process = simcall->process_suspend.process;
+  SIMIX_process_suspend(process, simcall->issuer);
 
-  if (process != req->issuer) {
-    SIMIX_request_answer(req);
+  if (process != simcall->issuer) {
+    SIMIX_simcall_answer(simcall);
   }
-  /* If we are suspending ourselves, then just do not replay the request. */
+  /* If we are suspending ourselves, then just do not finish the simcall now */
 }
 
 void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
@@ -460,7 +460,7 @@ smx_host_t SIMIX_process_get_host(smx_process_t process)
   return process->smx_host;
 }
 
-/* needs to be public and without request because it is called
+/* needs to be public and without simcall because it is called
    by exceptions and logging events */
 const char* SIMIX_process_self_get_name(void) {
 
@@ -498,17 +498,17 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
   return process->properties;
 }
 
-void SIMIX_pre_process_sleep(smx_req_t req)
+void SIMIX_pre_process_sleep(smx_simcall_t simcall)
 {
   if (MC_IS_ENABLED) {
-    MC_process_clock_add(req->issuer, req->process_sleep.duration);
-    req->process_sleep.result = SIMIX_DONE;
-    SIMIX_request_answer(req);
+    MC_process_clock_add(simcall->issuer, simcall->process_sleep.duration);
+    simcall->process_sleep.result = SIMIX_DONE;
+    SIMIX_simcall_answer(simcall);
     return;
   }
-  smx_action_t action = SIMIX_process_sleep(req->issuer, req->process_sleep.duration);
-  xbt_fifo_push(action->request_list, req);
-  req->issuer->waiting_action = action;
+  smx_action_t action = SIMIX_process_sleep(simcall->issuer, simcall->process_sleep.duration);
+  xbt_fifo_push(action->simcalls, simcall);
+  simcall->issuer->waiting_action = action;
 }
 
 smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
@@ -542,10 +542,10 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
 
 void SIMIX_post_process_sleep(smx_action_t action)
 {
-  smx_req_t req;
+  smx_simcall_t simcall;
   e_smx_state_t state;
 
-  while ((req = xbt_fifo_shift(action->request_list))) {
+  while ((simcall = xbt_fifo_shift(action->simcalls))) {
 
     switch(surf_workstation_model->action_state_get(action->sleep.surf_sleep)){
       case SURF_ACTION_FAILED:
@@ -560,9 +560,9 @@ void SIMIX_post_process_sleep(smx_action_t action)
         THROW_IMPOSSIBLE;
         break;
     }
-    req->process_sleep.result = state;
-    req->issuer->waiting_action = NULL;
-    SIMIX_request_answer(req);
+    simcall->process_sleep.result = state;
+    simcall->issuer->waiting_action = NULL;
+    SIMIX_simcall_answer(simcall);
   }
   SIMIX_process_sleep_destroy(action);
 }

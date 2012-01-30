@@ -13,41 +13,41 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg,
 
 msg_mailbox_t MSG_mailbox_new(const char *alias)
 {
-  return SIMIX_req_rdv_create(alias);
+  return simcall_rdv_create(alias);
 }
 
 void MSG_mailbox_free(void *mailbox)
 {
-  SIMIX_req_rdv_destroy((msg_mailbox_t)mailbox);
+  simcall_rdv_destroy((msg_mailbox_t)mailbox);
 }
 
 int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 {
-  return (NULL == SIMIX_req_rdv_get_head(mailbox));
+  return (NULL == simcall_rdv_get_head(mailbox));
 }
 
 m_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 {
-  smx_action_t comm = SIMIX_req_rdv_get_head(mailbox);
+  smx_action_t comm = simcall_rdv_get_head(mailbox);
 
   if (!comm)
     return NULL;
 
-  return (m_task_t) SIMIX_req_comm_get_src_data(comm);
+  return (m_task_t) simcall_comm_get_src_data(comm);
 }
 
 int
 MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
                                          m_host_t host)
 {
-  return SIMIX_req_rdv_comm_count_by_host(mailbox,
+  return simcall_rdv_comm_count_by_host(mailbox,
                                       host->simdata->smx_host);
 }
 
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 {
 
-  msg_mailbox_t mailbox = SIMIX_req_rdv_get_by_name(alias);
+  msg_mailbox_t mailbox = simcall_rdv_get_by_name(alias);
 
   if (!mailbox)
     mailbox = MSG_mailbox_new(alias);
@@ -92,7 +92,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
-    SIMIX_req_comm_recv(mailbox, task, NULL, NULL, NULL, timeout);
+    simcall_comm_recv(mailbox, task, NULL, NULL, NULL, timeout);
     XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
     (*task)->simdata->isused=0;
   }
@@ -154,16 +154,16 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 
   /* Try to send it by calling SIMIX network layer */
   TRY {
-      smx_action_t comm = SIMIX_req_comm_isend(mailbox, t_simdata->message_size,
+      smx_action_t comm = simcall_comm_isend(mailbox, t_simdata->message_size,
                                   t_simdata->rate, task, sizeof(void *),
                                   NULL, NULL, task, 0);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      SIMIX_req_set_category(comm, task->category);
+      simcall_set_category(comm, task->category);
     }
 #endif
      t_simdata->comm = comm;
-     SIMIX_req_comm_wait(comm, timeout);
+     simcall_comm_wait(comm, timeout);
   }
 
   CATCH(e) {

@@ -33,8 +33,8 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
 
   // check if key exists: if it doesn't, set the variable to zero and mark this in the dict
   if (!xbt_dict_get_or_null(platform_variables, key)) {
-    container_t container = getContainerByName (resource);
-    type_t type = getVariableType (variable, NULL, container->type);
+    container_t container = PJ_container_get (resource);
+    type_t type = PJ_type_get (variable, container->type);
     new_pajeSetVariable (now, container, type, 0);
     xbt_dict_set(platform_variables, key, (char*)"", NULL);
   }
@@ -50,7 +50,7 @@ static void __TRACE_A_event(smx_action_t action, double now, double delta,
   snprintf(valuestr, 100, "%f", value);
 
   __TRACE_surf_check_variable_set_to_zero(now, variable, resource);
-  container_t container = getContainerByName (resource);
+  container_t container = PJ_container_get (resource);
   type_t type = getVariableType (variable, NULL, container->type);
   new_pajeAddVariable(now, container, type, value);
   new_pajeSubVariable(now + delta, container, type, value);
@@ -73,7 +73,7 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
                                      double delta)
 {
   //only trace link utilization if link is known by tracing mechanism
-  if (!knownContainerWithName(resource))
+  if (!PJ_container_get_or_null(resource))
     return;
   if (!value)
     return;
@@ -81,8 +81,8 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
   //trace uncategorized link utilization
   if (TRACE_uncategorized()){
     XBT_DEBUG("UNCAT LINK [%f - %f] %s bandwidth_used %f", now, now+delta, resource, value);
-    container_t container = getContainerByName (resource);
-    type_t type = getVariableType("bandwidth_used", NULL, container->type);
+    container_t container = PJ_container_get (resource);
+    type_t type = PJ_type_get ("bandwidth_used", container->type);
     instr_event (now, delta, type, container, value);
   }
 
@@ -94,8 +94,8 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
     char category_type[INSTR_DEFAULT_STR_SIZE];
     snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "b%s", surf_action->category);
     XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
-    container_t container = getContainerByName (resource);
-    type_t type = getVariableType(category_type, NULL, container->type);
+    container_t container = PJ_container_get (resource);
+    type_t type = PJ_type_get (category_type, container->type);
     instr_event (now, delta, type, container, value);
   }
   return;
@@ -111,7 +111,7 @@ void TRACE_surf_host_set_utilization(const char *resource,
                                      double delta)
 {
   //only trace host utilization if host is known by tracing mechanism
-  if (!knownContainerWithName(resource))
+  if (!PJ_container_get_or_null(resource))
     return;
   if (!value)
     return;
@@ -119,8 +119,8 @@ void TRACE_surf_host_set_utilization(const char *resource,
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
     XBT_DEBUG("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
-    container_t container = getContainerByName (resource);
-    type_t type = getVariableType("power_used", NULL, container->type);
+    container_t container = PJ_container_get (resource);
+    type_t type = PJ_type_get ("power_used", container->type);
     instr_event (now, delta, type, container, value);
   }
 
@@ -132,8 +132,8 @@ void TRACE_surf_host_set_utilization(const char *resource,
     char category_type[INSTR_DEFAULT_STR_SIZE];
     snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "p%s", surf_action->category);
     XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
-    container_t container = getContainerByName (resource);
-    type_t type = getVariableType(category_type, NULL, container->type);
+    container_t container = PJ_container_get (resource);
+    type_t type = PJ_type_get (category_type, container->type);
     instr_event (now, delta, type, container, value);
   }
   return;

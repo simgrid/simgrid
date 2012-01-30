@@ -20,7 +20,7 @@ void TRACE_msg_set_process_category(m_process_t process, const char *category, c
 
 char *instr_process_id (m_process_t proc, char *str, int len)
 {
-  return instr_process_id_2 (MSG_process_get_name(proc), MSG_process_get_PID(proc), str, len);
+  return instr_process_id_2 (proc->name, proc->pid, str, len);//MSG_process_get_name(proc), MSG_process_get_PID(proc), str, len);
 }
 
 char *instr_process_id_2 (const char *process_name, int process_pid, char *str, int len)
@@ -43,25 +43,27 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
     char str[INSTR_DEFAULT_STR_SIZE];
 
     //start link
-    container_t msg = getContainer(instr_process_id(process, str, len));
-    type_t type = getType ("MSG_PROCESS_LINK", getRootType());
-    new_pajeStartLink (MSG_get_clock(), getRootContainer(), type, msg, "M", key);
+    container_t msg = PJ_container_get (instr_process_id(process, str, len));
+    type_t type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
+    new_pajeStartLink (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     //destroy existing container of this process
-    destroyContainer(getContainer(instr_process_id(process, str, len)));
+    container_t existing_container = PJ_container_get(instr_process_id(process, str, len));
+    PJ_container_remove_from_parent (existing_container);
+    PJ_container_free(existing_container);
 
     //create new container on the new_host location
-    msg = newContainer(instr_process_id(process, str, len), INSTR_MSG_PROCESS, getContainer(new_host->name));
+    msg = PJ_container_new(instr_process_id(process, str, len), INSTR_MSG_PROCESS, PJ_container_get(new_host->name));
 
     //set the state of this new container
-    type = getType ("MSG_PROCESS_STATE", msg->type);
-    val_t value = getValueByName ("executing", type);
+    type = PJ_type_get ("MSG_PROCESS_STATE", msg->type);
+    val_t value = PJ_value_get ("executing", type);
     new_pajeSetState (MSG_get_clock(), msg, type, value);
 
     //end link
-    msg = getContainer(instr_process_id(process, str, len));
-    type = getType ("MSG_PROCESS_LINK", getRootType());
-    new_pajeEndLink (MSG_get_clock(), getRootContainer(), type, msg, "M", key);
+    msg = PJ_container_get(instr_process_id(process, str, len));
+    type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
+    new_pajeEndLink (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
   }
 }
 
@@ -71,11 +73,11 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, m_host
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t host_container = getContainer(host->name);
-    container_t msg = newContainer(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
+    container_t host_container = PJ_container_get (host->name);
+    container_t msg = PJ_container_new(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
 
-    type_t type = getType ("MSG_PROCESS_STATE", msg->type);
-    val_t value = getValueByName ("executing", type);
+    type_t type = PJ_type_get ("MSG_PROCESS_STATE", msg->type);
+    val_t value = PJ_value_get ("executing", type);
     new_pajeSetState (MSG_get_clock(), msg, type, value);
   }
 }
@@ -87,7 +89,7 @@ void TRACE_msg_process_kill(m_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     //kill means that this process no longer exists, let's destroy it
-    destroyContainer (getContainer(instr_process_id(process, str, len)));
+    PJ_container_free (PJ_container_get (instr_process_id(process, str, len)));
   }
 }
 
@@ -97,9 +99,9 @@ void TRACE_msg_process_suspend(m_process_t process)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = getContainer (instr_process_id(process, str, len));
-    type_t type = getType ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = getValueByName ("suspend", type);
+    container_t process_container = PJ_container_get (instr_process_id(process, str, len));
+    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
+    val_t value = PJ_value_get ("suspend", type);
     new_pajePushState (MSG_get_clock(), process_container, type, value);
   }
 }
@@ -110,8 +112,8 @@ void TRACE_msg_process_resume(m_process_t process)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = getContainer (instr_process_id(process, str, len));
-    type_t type = getType ("MSG_PROCESS_STATE", process_container->type);
+    container_t process_container = PJ_container_get (instr_process_id(process, str, len));
+    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     new_pajePopState (MSG_get_clock(), process_container, type);
   }
 }
@@ -122,9 +124,9 @@ void TRACE_msg_process_sleep_in(m_process_t process)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = getContainer (instr_process_id(process, str, len));
-    type_t type = getType ("MSG_PROCESS_STATE", process_container->type);
-    val_t value = getValueByName ("sleep", type);
+    container_t process_container = PJ_container_get (instr_process_id(process, str, len));
+    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
+    val_t value = PJ_value_get ("sleep", type);
     new_pajePushState (MSG_get_clock(), process_container, type, value);
   }
 }
@@ -135,8 +137,8 @@ void TRACE_msg_process_sleep_out(m_process_t process)
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t process_container = getContainer (instr_process_id(process, str, len));
-    type_t type = getType ("MSG_PROCESS_STATE", process_container->type);
+    container_t process_container = PJ_container_get (instr_process_id(process, str, len));
+    type_t type = PJ_type_get ("MSG_PROCESS_STATE", process_container->type);
     new_pajePopState (MSG_get_clock(), process_container, type);
   }
 }
@@ -148,7 +150,9 @@ void TRACE_msg_process_end(m_process_t process)
     char str[INSTR_DEFAULT_STR_SIZE];
 
     //that's the end, let's destroy it
-    destroyContainer (getContainer(instr_process_id(process, str, len)));
+    container_t container = PJ_container_get (instr_process_id(process, str, len));
+    PJ_container_remove_from_parent (container);
+    PJ_container_free (container);
   }
 }
 

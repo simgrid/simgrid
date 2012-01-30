@@ -1,6 +1,6 @@
 SimGrid (3.7) NOT RELEASED; urgency=low
 
-  The "Simplicity does not preceed complexity, but follows it" release.
+  The "sprint cleanups (before spring)" release.
 
   Models:
   * We can specify the smpi latency/bandwidth factor with command line
@@ -31,6 +31,8 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Use now crosstraffic keyword instead of the terribly missleading 
     fullduplex keyword. It is activated by default now in the current
     default model, use --cfg=network/crosstraffic:0 to turn it off.
+  * Experimental: new configuration option --cfg=surf/nthreads:N to run
+    analytical models in parallel with N threads (default is 1).
   * Ongoing refactoring the model parsing to make XML files optional
     (more work is needed here to fully achieve this goal)
 
@@ -46,6 +48,9 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Performance boost by using a swag internally to compute the set of
     tasks that are finished and should constitute the return value of
     SD_simulate.
+
+  SMPI:
+  * Enable it by default now that it is considered rather stable.
 
   XBT:
   * Mallocators: allow value NULL for the reset function.

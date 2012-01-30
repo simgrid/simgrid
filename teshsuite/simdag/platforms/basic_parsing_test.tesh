@@ -1,6 +1,6 @@
 $ ${bindir:=.}/basic_parsing_test one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
-> Workstation number: 5, link number: 7
+> Workstation number: 5, link number: 12
 
 $ ${bindir:=.}/basic_parsing_test one_host_availability.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
@@ -56,7 +56,7 @@ $ ${bindir:=.}/basic_parsing_test three_hosts_non_symmetric_route.xml "--log=roo
 
 $ ${bindir:=.}/basic_parsing_test two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
-> Workstation number: 10, link number: 14
+> Workstation number: 10, link number: 24
 
 $ ${bindir:=.}/basic_parsing_test two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
@@ -93,7 +93,7 @@ $ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/optim:TI
 
 $ ${bindir:=.}/basic_parsing_test ./one_cluster_file.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
-> Workstation number: 2, link number: 4
+> Workstation number: 2, link number: 6
 
 $ ${bindir:=.}/is_router_test ./test_of_is_router.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
@@ -122,12 +122,12 @@ $ ${bindir:=.}/is_router_test ./test_of_is_router.xml
 
 $ ${bindir:=.}/basic_parsing_test ./Two_clusters_rulebased.xml ONE_LINK
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
-> Workstation number: 4, link number: 8
+> Workstation number: 4, link number: 12
 > Route between c-0.me and c-3.me
 > Route size 5
->   Link my_cluster_1_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link my_cluster_1_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link my_cluster_1_backbone: latency = 0.000500, bandwidth = 2250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link my_cluster_2_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link my_cluster_2_link_3: latency = 0.000050, bandwidth = 125000000.000000
+>   Link my_cluster_2_link_3_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 > Route latency = 0.001600, route bandwidth = 125000000.000000

@@ -18,7 +18,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
-#define OPT_TRACING_MSG_TASK      "tracing/msg/task"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
 #define OPT_TRACING_FILENAME      "tracing/filename"
 #define OPT_TRACING_BUFFER        "tracing/buffer"
@@ -33,7 +32,6 @@ static int trace_smpi_enabled;
 static int trace_smpi_grouped;
 static int trace_categorized;
 static int trace_uncategorized;
-static int trace_msg_task_enabled;
 static int trace_msg_process_enabled;
 static int trace_buffer;
 static int trace_onelink_only;
@@ -52,7 +50,6 @@ static void TRACE_getopts(void)
   trace_smpi_grouped = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
   trace_categorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
   trace_uncategorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
-  trace_msg_task_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_TASK);
   trace_msg_process_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
   trace_buffer = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER);
   trace_onelink_only = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY);
@@ -76,7 +73,9 @@ int TRACE_start()
   TRACE_paje_start();
 
   /* activate trace */
-  xbt_assert (trace_active==0, "Tracing is already active.");
+  if (trace_active == 1){
+    THROWF (tracing_error, 0, "Tracing is already active");
+  }
   trace_active = 1;
   XBT_DEBUG ("Tracing is on");
 
@@ -107,8 +106,10 @@ int TRACE_end()
   TRACE_paje_dump_buffer(1);
 
   /* destroy all data structures of tracing (and free) */
-  destroyAllContainers();
-  instr_paje_free();
+  PJ_container_free_all();
+  PJ_type_free_all();
+  PJ_container_release();
+  PJ_type_release();
   TRACE_surf_release();
   TRACE_smpi_release();
   xbt_dict_free(&created_categories);
@@ -126,7 +127,6 @@ int TRACE_end()
 int TRACE_needs_platform (void)
 {
   return TRACE_msg_process_is_enabled() ||
-         TRACE_msg_task_is_enabled() ||
          TRACE_categorized() ||
          TRACE_uncategorized() ||
          TRACE_platform () ||
@@ -168,11 +168,6 @@ int TRACE_categorized (void)
 int TRACE_uncategorized (void)
 {
   return trace_uncategorized;
-}
-
-int TRACE_msg_task_is_enabled(void)
-{
-  return trace_msg_task_enabled && TRACE_is_enabled();
 }
 
 int TRACE_msg_process_is_enabled(void)
@@ -260,13 +255,6 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_UNCATEGORIZED,
                    "Tracing uncategorized resource utilization of hosts and links.",
                    xbt_cfgelm_int, &default_tracing_uncategorized, 0, 1,
-                   NULL, NULL);
-
-  /* msg task */
-  int default_tracing_msg_task = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_MSG_TASK,
-                   "Tracing of MSG task behavior.",
-                   xbt_cfgelm_int, &default_tracing_msg_task, 0, 1,
                    NULL, NULL);
 
   /* msg process */
@@ -361,10 +349,6 @@ void TRACE_help (int detailed)
       "  This option only has effect if this simulator is SMPI-based. The processes\n"
       "  are grouped by the hosts where they were executed.",
       detailed);
-  print_line (OPT_TRACING_MSG_TASK, "Trace task behavior (MSG)",
-      "  This option only has effect if this simulator is MSG-based. It traces the\n"
-      "  behavior of all categorized MSG tasks, grouping them by hosts.",
-      detailed);
   print_line (OPT_TRACING_MSG_PROCESS, "Trace processes behavior (MSG)",
       "  This option only has effect if this simulator is MSG-based. It traces the\n"
       "  behavior of all categorized MSG processes, grouping them by hosts. This option\n"
@@ -413,9 +397,10 @@ void TRACE_generate_triva_uncat_conf (void)
     char *name, *value;
 
     FILE *file = fopen (output, "w");
-    xbt_assert (file != NULL,
-       "Unable to open file (%s) for writing triva graph "
-       "configuration (uncategorized).", output);
+    if (file == NULL){
+      THROWF (system_error, 1, "Unable to open file (%s) for writing triva graph "
+          "configuration (uncategorized).", output);
+    }
 
     //open
     fprintf (file, "{\n");
@@ -469,9 +454,10 @@ void TRACE_generate_triva_cat_conf (void)
     }
 
     FILE *file = fopen (output, "w");
-    xbt_assert (file != NULL,
-       "Unable to open file (%s) for writing triva graph "
-       "configuration (categorized).", output);
+    if (file == NULL){
+      THROWF (system_error, 1, "Unable to open file (%s) for writing triva graph "
+          "configuration (categorized).", output);
+    }
 
     //open
     fprintf (file, "{\n");
@@ -537,7 +523,6 @@ void TRACE_set_network_update_mechanism (void)
 #undef OPT_TRACING_SMPI_GROUP
 #undef OPT_TRACING_CATEGORIZED
 #undef OPT_TRACING_UNCATEGORIZED
-#undef OPT_TRACING_MSG_TASK
 #undef OPT_TRACING_MSG_PROCESS
 #undef OPT_TRACING_FILENAME
 #undef OPT_TRACING_BUFFER

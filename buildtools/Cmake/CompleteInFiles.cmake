@@ -113,6 +113,8 @@ CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 CHECK_INCLUDE_FILE("execinfo.h" HAVE_EXECINFO_H)
 CHECK_INCLUDE_FILE("signal.h" HAVE_SIGNAL_H)
 CHECK_INCLUDE_FILE("sys/time.h" HAVE_SYS_TIME_H)
+CHECK_INCLUDE_FILE("sys/param.h" HAVE_SYS_PARAM_H)
+CHECK_INCLUDE_FILE("sys/sysctl.h" HAVE_SYS_SYSCTL_H)
 CHECK_INCLUDE_FILE("time.h" HAVE_TIME_H)
 CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
 CHECK_INCLUDE_FILE("inttypes.h" HAVE_INTTYPES_H)
@@ -869,7 +871,7 @@ ${CMAKE_BINARY_DIR}/bin/smpiff
 ${CMAKE_BINARY_DIR}/bin/smpirun
 ${CMAKE_BINARY_DIR}/bin/colorize
 ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
-${CMAKE_BINARY_DIR}/examples/smpi/smpi_traced.trace
+${CMAKE_BINARY_DIR}/examples/smpi/tracing/smpi_traced.trace
 ${CMAKE_BINARY_DIR}/src/supernovae_sg.c
 ${CMAKE_BINARY_DIR}/src/supernovae_gras.c
 ${CMAKE_BINARY_DIR}/src/supernovae_smpi.c

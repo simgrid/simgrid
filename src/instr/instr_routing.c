@@ -70,7 +70,10 @@ static void linkContainers (container_t father, container_t src, container_t dst
   //declare type
   char link_typename[INSTR_DEFAULT_STR_SIZE];
   snprintf (link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s", src->type->name, dst->type->name);
-  type_t link_type = getLinkType (link_typename, father->type, src->type, dst->type);
+  type_t link_type = PJ_type_get_or_null (link_typename, father->type);
+  if (link_type == NULL){
+    link_type = PJ_type_link_new (link_typename, father->type, src->type, dst->type);
+  }
 
   //register EDGE types for triva configuration
   xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), NULL);
@@ -127,7 +130,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
         for (i = 0; i < xbt_dynar_length(route); i++){
           link_CM02_t *link = ((link_CM02_t*)xbt_dynar_get_ptr (route, i));
           char *link_name = (*link)->lmm_resource.generic_resource.name;
-          container_t current = getContainerByName(link_name);
+          container_t current = PJ_container_get(link_name);
           linkContainers(container, previous, current, filter);
           previous = current;
         }
@@ -142,14 +145,14 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
         rc->get_route_and_latency (rc, child1_name, child2_name, route,NULL);
         unsigned int cpt;
         void *link;
-        container_t previous = getContainerByName(route->src_gateway);
+        container_t previous = PJ_container_get(route->src_gateway);
         xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-          container_t current = getContainerByName(link_name);
+          container_t current = PJ_container_get(link_name);
           linkContainers (container, previous, current, filter);
           previous = current;
         }
-        container_t last = getContainerByName(route->dst_gateway);
+        container_t last = PJ_container_get(route->dst_gateway);
         linkContainers (container, previous, last, filter);
         generic_free_route(route);
       }
@@ -162,15 +165,20 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
  */
 static void instr_routing_parse_start_AS (const char*id,const char*routing)
 {
-  if (getRootContainer() == NULL){
-    container_t root = newContainer (id, INSTR_AS, NULL);
-    instr_paje_init (root);
+  if (PJ_container_get_root() == NULL){
+    PJ_container_alloc ();
+    PJ_type_alloc();
+    container_t root = PJ_container_new (id, INSTR_AS, NULL);
+    PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
       if (!TRACE_smpi_is_grouped()){
-        type_t mpi = getContainerType("MPI", root->type);
-        getStateType ("MPI_STATE", mpi);
-        getLinkType ("MPI_LINK", getRootType(), mpi, mpi);
+        type_t mpi = PJ_type_get_or_null ("MPI", root->type);
+        if (mpi == NULL){
+          mpi = PJ_type_container_new("MPI", root->type);
+          PJ_type_state_new ("MPI_STATE", mpi);
+          PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
+        }
       }
     }
 
@@ -183,7 +191,7 @@ static void instr_routing_parse_start_AS (const char*id,const char*routing)
 
   if (TRACE_needs_platform()){
     container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-    container_t new = newContainer (id, INSTR_AS, father);
+    container_t new = PJ_container_new (id, INSTR_AS, father);
     xbt_dynar_push (currentContainer, &new);
   }
 }
@@ -218,16 +226,25 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
   unsigned int i;
   xbt_dynar_foreach (links_to_create, i, link_name){
 
-    container_t new = newContainer (link_name, INSTR_LINK, father);
+    container_t new = PJ_container_new (link_name, INSTR_LINK, father);
 
     if (TRACE_categorized() || TRACE_uncategorized()){
-      type_t bandwidth = getVariableType ("bandwidth", NULL, new->type);
-      type_t latency = getVariableType ("latency", NULL, new->type);
+      type_t bandwidth = PJ_type_get_or_null ("bandwidth", new->type);
+      if (bandwidth == NULL){
+        bandwidth = PJ_type_variable_new ("bandwidth", NULL, new->type);
+      }
+      type_t latency = PJ_type_get_or_null ("latency", new->type);
+      if (latency == NULL){
+        latency = PJ_type_variable_new ("latency", NULL, new->type);
+      }
       new_pajeSetVariable (0, new, bandwidth, bandwidth_value);
       new_pajeSetVariable (0, new, latency, latency_value);
     }
     if (TRACE_uncategorized()){
-      getVariableType ("bandwidth_used", "0.5 0.5 0.5", new->type);
+      type_t bandwidth_used = PJ_type_get_or_null ("bandwidth_used", new->type);
+      if (bandwidth_used == NULL){
+        bandwidth_used = PJ_type_variable_new ("bandwidth_used", "0.5 0.5 0.5", new->type);
+      }
     }
   }
 
@@ -237,48 +254,52 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  container_t new = newContainer (host->id, INSTR_HOST, father);
+  container_t new = PJ_container_new (host->id, INSTR_HOST, father);
 
   if (TRACE_categorized() || TRACE_uncategorized()) {
-    type_t power = getVariableType ("power", NULL, new->type);
+    type_t power = PJ_type_get_or_null ("power", new->type);
+    if (power == NULL){
+      power = PJ_type_variable_new ("power", NULL, new->type);
+    }
     new_pajeSetVariable (0, new, power, host->power_peak);
   }
   if (TRACE_uncategorized()){
-    getVariableType ("power_used", "0.5 0.5 0.5", new->type);
+    type_t power_used = PJ_type_get_or_null ("power_used", new->type);
+    if (power_used == NULL){
+      power_used = PJ_type_variable_new ("power_used", "0.5 0.5 0.5", new->type);
+    }
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
-    type_t mpi = getContainerType("MPI", new->type);
-    getStateType ("MPI_STATE", mpi);
-    getLinkType ("MPI_LINK", getRootType(), mpi, mpi);
+    type_t mpi = PJ_type_get_or_null ("MPI", new->type);
+    if (mpi == NULL){
+      mpi = PJ_type_container_new("MPI", new->type);
+      PJ_type_state_new ("MPI_STATE", mpi);
+      PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
+    }
   }
 
   if (TRACE_msg_process_is_enabled()) {
-    type_t msg_process = getContainerType("MSG_PROCESS", new->type);
-    type_t state = getStateType ("MSG_PROCESS_STATE", msg_process);
-    getValue ("executing", "0 1 0", state);
-    getValue ("suspend", "1 0 1", state);
-    getValue ("sleep", "1 1 0", state);
-    getValue ("receive", "1 0 0", state);
-    getValue ("send", "0 0 1", state);
-    getValue ("task_execute", "0 1 1", state);
-    getLinkType ("MSG_PROCESS_LINK", getRootType(), msg_process, msg_process);
-    getLinkType ("MSG_PROCESS_TASK_LINK", getRootType(), msg_process, msg_process);
-  }
-
-  if (TRACE_msg_task_is_enabled()) {
-    type_t msg_task = getContainerType ("MSG_TASK", new->type);
-    type_t state = getStateType ("MSG_TASK_STATE", msg_task);
-    getValue ("MSG_task_execute", "0 1 0", state);
-    getValue ("created", "1 1 0", state);
-    getLinkType ("MSG_TASK_LINK", getRootType(), msg_task, msg_task);
+    type_t msg_process = PJ_type_get_or_null ("MSG_PROCESS", new->type);
+    if (msg_process == NULL){
+      msg_process = PJ_type_container_new("MSG_PROCESS", new->type);
+      type_t state = PJ_type_state_new ("MSG_PROCESS_STATE", msg_process);
+      PJ_value_new ("executing", "0 1 0", state);
+      PJ_value_new ("suspend", "1 0 1", state);
+      PJ_value_new ("sleep", "1 1 0", state);
+      PJ_value_new ("receive", "1 0 0", state);
+      PJ_value_new ("send", "0 0 1", state);
+      PJ_value_new ("task_execute", "0 1 1", state);
+      PJ_type_link_new ("MSG_PROCESS_LINK", PJ_type_get_root(), msg_process, msg_process);
+      PJ_type_link_new ("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
+    }
   }
 }
 
 static void instr_routing_parse_start_router (sg_platf_router_cbarg_t router)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
-  newContainer (router->id, INSTR_ROUTER, father);
+  PJ_container_new (router->id, INSTR_ROUTER, father);
 }
 
 static void instr_routing_parse_end_platform ()
@@ -286,7 +307,7 @@ static void instr_routing_parse_end_platform ()
   xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free);
-  recursiveGraphExtraction (global_routing->root, getRootContainer(), filter);
+  recursiveGraphExtraction (global_routing->root, PJ_container_get_root(), filter);
   xbt_dict_free(&filter);
   platform_created = 1;
   TRACE_paje_dump_buffer(1);
@@ -315,12 +336,12 @@ static void recursiveNewVariableType (const char *new_typename, const char *colo
   if (!strcmp (root->name, "HOST")){
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
-    getVariableType(tnstr, color, root);
+    PJ_type_variable_new (tnstr, color, root);
   }
   if (!strcmp (root->name, "LINK")){
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
-    getVariableType(tnstr, color, root);
+    PJ_type_variable_new (tnstr, color, root);
   }
   xbt_dict_cursor_t cursor = NULL;
   type_t child_type;
@@ -332,13 +353,13 @@ static void recursiveNewVariableType (const char *new_typename, const char *colo
 
 void instr_new_variable_type (const char *new_typename, const char *color)
 {
-  recursiveNewVariableType (new_typename, color, getRootType());
+  recursiveNewVariableType (new_typename, color, PJ_type_get_root());
 }
 
 static void recursiveNewUserVariableType (const char *father_type, const char *new_typename, const char *color, type_t root)
 {
   if (!strcmp (root->name, father_type)){
-    getVariableType(new_typename, color, root);
+    PJ_type_variable_new (new_typename, color, root);
   }
   xbt_dict_cursor_t cursor = NULL;
   type_t child_type;
@@ -350,7 +371,7 @@ static void recursiveNewUserVariableType (const char *father_type, const char *n
 
 void instr_new_user_variable_type  (const char *father_type, const char *new_typename, const char *color)
 {
-  recursiveNewUserVariableType (father_type, new_typename, color, getRootType());
+  recursiveNewUserVariableType (father_type, new_typename, color, PJ_type_get_root());
 }
 
 
@@ -470,7 +491,7 @@ xbt_graph_t instr_routing_platform_graph (void)
   xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
   xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
   xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
-  recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, getRootContainer());
+  recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, PJ_container_get_root());
   return ret;
 }
 

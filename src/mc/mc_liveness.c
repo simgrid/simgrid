@@ -908,7 +908,7 @@ void MC_ddfs(int search_cycle){
 
   int value;
   mc_state_t next_graph_state = NULL;
-  smx_req_t req = NULL;
+  smx_simcall_t req = NULL;
   char *req_str;
 
   xbt_transition_t transition_succ;
@@ -940,7 +940,7 @@ void MC_ddfs(int search_cycle){
 	MC_state_set_executed_request(current_pair->graph_state, req, value);   
     
 	/* Answer the request */
-	SIMIX_request_pre(req, value);
+	SIMIX_simcall_pre(req, value);
 
 	/* Wait for requests (schedules processes) */
 	MC_wait_for_requests();

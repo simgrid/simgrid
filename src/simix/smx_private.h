@@ -17,11 +17,12 @@
 #include "xbt/function_types.h"
 #include "xbt/ex_interface.h"
 #include "instr/instr_private.h"
-#include "process_private.h"
-#include "host_private.h"
-#include "network_private.h"
-#include "smurf_private.h"
-#include "synchro_private.h"
+#include "smx_process_private.h"
+#include "smx_host_private.h"
+#include "smx_io_private.h"
+#include "smx_network_private.h"
+#include "smx_smurf_private.h"
+#include "smx_synchro_private.h"
 #include "simix/context.h"
 
 /* Define only for SimGrid benchmarking purposes */
@@ -78,7 +79,7 @@ typedef struct s_smx_action {
   e_smx_action_type_t type;          /* Type of SIMIX action*/
   e_smx_state_t state;               /* State of the action */
   char *name;                        /* Action name if any */
-  xbt_fifo_t request_list;           /* List of requests on this action */
+  xbt_fifo_t simcalls;               /* List of simcalls waiting for this action */
 
   /* Data specific to each action type */
   union {
@@ -125,6 +126,10 @@ typedef struct s_smx_action {
       surf_action_t sleep;
     } synchro;
 
+    struct {
+      smx_host_t host;
+      surf_action_t surf_io;
+    } io;
   };
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING

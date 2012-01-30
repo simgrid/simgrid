@@ -155,118 +155,118 @@ $ ${bindir:=.}/basic_parsing_test one_cluster_fullduplex.xml FULL_LINK "--log=ro
 
 $ ${bindir:=.}/basic_parsing_test two_clusters_symmetric.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
-> Workstation number: 4, link number: 8
+> Workstation number: 4, link number: 12
 > Route between bob1.hamburger.edu and bob1.hamburger.edu
 >   Route size 3
->   Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_1_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 > Route between bob1.hamburger.edu and bob0.hamburger.edu
 >   Route size 3
->   Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_1_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_0_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 > Route between bob1.hamburger.edu and alice0.crepe.fr
 >   Route size 5
->   Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_1_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_0_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.001600, route bandwidth = 125000000.000000
 > Route between bob1.hamburger.edu and alice1.crepe.fr
 >   Route size 5
->   Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_1_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.001600, route bandwidth = 125000000.000000
 > Route between bob0.hamburger.edu and bob1.hamburger.edu
 >   Route size 3
->   Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 > Route between bob0.hamburger.edu and bob0.hamburger.edu
 >   Route size 3
->   Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_0_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 > Route between bob0.hamburger.edu and alice0.crepe.fr
 >   Route size 5
->   Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_0_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.001600, route bandwidth = 125000000.000000
 > Route between bob0.hamburger.edu and alice1.crepe.fr
 >   Route size 5
->   Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.001600, route bandwidth = 125000000.000000
 > Route between alice0.crepe.fr and bob1.hamburger.edu
 >   Route size 5
->   Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.001600, route bandwidth = 125000000.000000
 > Route between alice0.crepe.fr and bob0.hamburger.edu
 >   Route size 5
->   Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_0_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.001600, route bandwidth = 125000000.000000
 > Route between alice0.crepe.fr and alice0.crepe.fr
 >   Route size 3
->   Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_0_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 > Route between alice0.crepe.fr and alice1.crepe.fr
 >   Route size 3
->   Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_0_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 > Route between alice1.crepe.fr and bob1.hamburger.edu
 >   Route size 5
->   Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_1_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link bob_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.001600, route bandwidth = 125000000.000000
 > Route between alice1.crepe.fr and bob0.hamburger.edu
 >   Route size 5
->   Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_1_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link bob_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link bob_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link bob_cluster_link_0_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.001600, route bandwidth = 125000000.000000
 > Route between alice1.crepe.fr and alice0.crepe.fr
 >   Route size 3
->   Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_1_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link alice_cluster_link_0: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_0_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 > Route between alice1.crepe.fr and alice1.crepe.fr
 >   Route size 3
->   Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_1_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link alice_cluster_backbone: latency = 0.000500, bandwidth = 2250000000.000000
->   Link alice_cluster_link_1: latency = 0.000050, bandwidth = 125000000.000000
+>   Link alice_cluster_link_1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 
 $ ${bindir:=.}/basic_parsing_test two_hosts_one_link_symmetrical.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"

@@ -1164,9 +1164,9 @@ void surf_network_model_init_LegrandVelho(void)
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 10.4); // 13.01 when callibration is done without phase effects
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",0.92);// 0.97 when callibration is done without phase effects
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);       // 20537 when callibration is done without phase effects
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 13.01);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",0.97);
+  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 20537);
 }
 
 /***************************************************************************/

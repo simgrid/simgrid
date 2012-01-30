@@ -20,7 +20,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_msg);
 
 typedef void *gras_trp_bufdata_;
 #include "simix/datatypes.h"
-#include "simix/private.h"
+#include "simix/smx_private.h"
 
 /* Yeah, the following is awfull, breaking the encapsulation of at least 3 modules
  * at the same time, but I'm tracking this bug since too long now, I want it dead. now.
@@ -161,7 +161,7 @@ gras_msg_t gras_msg_recv_any(void)
   }
   XBT_VERB("Wait on %ld 'sockets'", xbt_dynar_length(comms));
   /* Wait for the end of any of these communications */
-  got = SIMIX_req_comm_waitany(comms);
+  got = simcall_comm_waitany(comms);
 
   /* retrieve the message sent in that communication */
   sock = xbt_dynar_get_as(trp_proc->sockets, got, gras_socket_t);
@@ -178,7 +178,7 @@ gras_msg_t gras_msg_recv_any(void)
   }
   */
   sock_data->comm_recv =
-      SIMIX_req_comm_irecv(gras_socket_im_the_server(sock) ?
+      simcall_comm_irecv(gras_socket_im_the_server(sock) ?
                           sock_data->rdv_server : sock_data->rdv_client,
                           &sock_data->msg, NULL, NULL, NULL);
 
@@ -238,8 +238,8 @@ void gras_msg_send_ext(gras_socket_t sock,
                                                 payload, msg->payl);
   }
 
-  comm = SIMIX_req_comm_isend(target_rdv, whole_payload_size, -1, msg, sizeof(void *), NULL,NULL, msg, 0);
-  SIMIX_req_comm_wait(comm, -1);
+  comm = simcall_comm_isend(target_rdv, whole_payload_size, -1, msg, sizeof(void *), NULL,NULL, msg, 0);
+  simcall_comm_wait(comm, -1);
 
   XBT_VERB("Message sent (and received)");
 

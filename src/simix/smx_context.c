@@ -10,7 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
-#include "src/simix/private.h"
+#include "smx_private.h"
 #include "simix/context.h"
 #include "gras_config.h"
 
@@ -29,6 +29,7 @@ static xbt_os_thread_key_t smx_current_context_key = 0;
 static smx_context_t smx_current_context_serial;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
+static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_FUTEX;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
@@ -131,21 +132,24 @@ XBT_INLINE int SIMIX_context_get_nthreads(void) {
  * for the user contexts.
  *
  * This function should be called before initializing SIMIX.
- * A value of 1 means no parallelism.
+ * A value of 1 means no parallelism (1 thread only).
  * If the value is greater than 1, the thread support must be enabled.
  *
  * \param nb_threads the number of threads to use
  */
 XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
-  xbt_assert(nb_threads > 0, "Invalid number of parallel threads: %d", nb_threads);
-
+  if (nb_threads<=0) {	
+     nb_threads = xbt_os_get_numcores();
+     XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
+  }   
+	
   if (nb_threads > 1) {
 #ifndef CONTEXT_THREADS
     THROWF(arg_error, 0, "The thread factory cannot be run in parallel");
 #endif
   }
-
+ 
   smx_parallel_contexts = nb_threads;
 }
 
@@ -181,22 +185,7 @@ XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold) {
  * \return how threads are synchronized if processes are run in parallel
  */
 XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void) {
-  e_xbt_parmap_mode_t mode = XBT_PARMAP_FUTEX;
-  const char* mode_name = xbt_cfg_get_string(_surf_cfg_set, "contexts/synchro");
-  if (!strcmp(mode_name, "posix")) {
-	  mode = XBT_PARMAP_POSIX;
-  }
-  else if (!strcmp(mode_name, "futex")) {
-	  mode = XBT_PARMAP_FUTEX;
-  }
-  else if (!strcmp(mode_name, "busy_wait")) {
-	  mode = XBT_PARMAP_BUSY_WAIT;
-  }
-  else {
-    XBT_WARN("Command line setting of the parallel synchronization mode should "
-        "be one of \"posix\", \"futex\" or \"busy_wait\"");
-  }
-  return mode;
+  return smx_parallel_synchronization_mode;
 }
 
 /**
@@ -205,19 +194,7 @@ XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void) {
  * \param mode how to synchronize threads if processes are run in parallel
  */
 XBT_INLINE void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
-  if (mode == XBT_PARMAP_POSIX) {
-	  xbt_cfg_set_string(_surf_cfg_set, "contexts/synchro", "posix");
-  }
-  else if (mode == XBT_PARMAP_FUTEX) {
-	  xbt_cfg_set_string(_surf_cfg_set, "contexts/synchro", "futex");
-  }
-  else if (XBT_PARMAP_BUSY_WAIT) {
-	  xbt_cfg_set_string(_surf_cfg_set, "contexts/synchro", "busy_wait");
-  }
-  else {
-    XBT_WARN("Command line setting of the parallel synchronization mode should "
-        "be one of \"posix\", \"futex\" or \"busy_wait\"");
-  }
+  smx_parallel_synchronization_mode = mode;
 }
 
 /**

@@ -1,324 +1,45 @@
 #! ./tesh
 
 p Tracing processes
-
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT --cfg=tracing:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/procmig.trace --cfg=tracing/msg/process:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/procmig.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to '1'
-> [Fafard:emigrant:(1) 2.020551] [msg_test/INFO] Migrating to Tremblay
-> [Tremblay:emigrant:(1) 4.020707] [msg_test/INFO] Migrating to Jupiter
-> [Jupiter:emigrant:(1) 6.035906] [msg_test/INFO] Migrating to Fafard
-> [Fafard:emigrant:(1) 8.056457] [msg_test/INFO] Migrating to Ginette
-> [Ginette:emigrant:(1) 10.069689] [msg_test/INFO] Migrating to Bourassa
-> [Bourassa:emigrant:(1) 12.090025] [msg_test/INFO] Migrating to Fafard
-> [Fafard:emigrant:(1) 14.110575] [msg_test/INFO] Migrating to Tremblay
-> [Tremblay:emigrant:(1) 16.110731] [msg_test/INFO] Migrating to Ginette
-> [18.123963] [msg_test/INFO] Simulation time 18.124
 
-$ cat tracing/procmig.trace
-> %EventDef PajeDefineContainerType 0 
-> %       Alias string 
-> %       ContainerType string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeDefineVariableType 1 
-> %       Alias string 
-> %       ContainerType string 
-> %       Name string 
-> %       Color color 
-> %EndEventDef 
-> %EventDef PajeDefineStateType 2 
-> %       Alias string 
-> %       ContainerType string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeDefineEventType 3 
-> %       Alias string 
-> %       ContainerType string 
-> %       Name string 
-> %       Color color 
-> %EndEventDef 
-> %EventDef PajeDefineLinkType 4 
-> %       Alias string 
-> %       ContainerType string 
-> %       SourceContainerType string 
-> %       DestContainerType string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeDefineEntityValue 5 
-> %       Alias string 
-> %       EntityType string 
-> %       Name string 
-> %       Color color 
-> %EndEventDef 
-> %EventDef PajeCreateContainer 6 
-> %       Time date 
-> %       Alias string 
-> %       Type string 
-> %       Container string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeDestroyContainer 7 
-> %       Time date 
-> %       Type string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeSetVariable 8 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value double 
-> %EndEventDef
-> %EventDef PajeAddVariable 9 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value double 
-> %EndEventDef
-> %EventDef PajeSubVariable 10 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value double 
-> %EndEventDef
-> %EventDef PajeSetState 11 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
-> %EndEventDef
-> %EventDef PajePushState 12 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
-> %EndEventDef
-> %EventDef PajePopState 13 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %EndEventDef
-> %EventDef PajeStartLink 14 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
-> %       SourceContainer string 
-> %       Key string 
-> %EndEventDef
-> %EventDef PajeEndLink 15 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
-> %       DestContainer string 
-> %       Key string 
-> %EndEventDef
-> %EventDef PajeNewEvent 16 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
-> %EndEventDef
-> 0 1 0 HOST
-> 6 0 1 1 0 "Tremblay"
-> 0 2 1 MSG_PROCESS
-> 2 3 2 MSG_PROCESS_STATE
-> 5 4 3 executing "0 1 0"
-> 5 5 3 suspend "1 0 1"
-> 5 6 3 sleep "1 1 0"
-> 5 7 3 receive "1 0 0"
-> 5 8 3 send "0 0 1"
-> 5 9 3 task_execute "0 1 1"
-> 4 10 0 2 2 MSG_PROCESS_LINK
-> 4 11 0 2 2 MSG_PROCESS_TASK_LINK
-> 6 0 2 1 0 "Jupiter"
-> 6 0 3 1 0 "Fafard"
-> 6 0 4 1 0 "Ginette"
-> 6 0 5 1 0 "Bourassa"
-> 0 12 0 LINK
-> 6 0 6 12 0 "6"
-> 6 0 7 12 0 "3"
-> 6 0 8 12 0 "7"
-> 6 0 9 12 0 "9"
-> 6 0 10 12 0 "2"
-> 6 0 11 12 0 "8"
-> 6 0 12 12 0 "1"
-> 6 0 13 12 0 "4"
-> 6 0 14 12 0 "0"
-> 6 0 15 12 0 "5"
-> 4 13 0 1 12 HOST-LINK
-> 4 14 0 12 12 LINK-LINK
-> 4 15 0 12 1 LINK-HOST
-> 14 0 13 0 G 3 0
-> 15 0 13 0 G 11 0
-> 14 0 14 0 G 11 1
-> 15 0 14 0 G 12 1
-> 14 0 14 0 G 12 2
-> 15 0 14 0 G 14 2
-> 14 0 14 0 G 14 3
-> 15 0 14 0 G 10 3
-> 14 0 14 0 G 10 4
-> 15 0 14 0 G 7 4
-> 14 0 14 0 G 7 5
-> 15 0 14 0 G 13 5
-> 14 0 15 0 G 13 6
-> 15 0 15 0 G 1 6
-> 14 0 14 0 G 11 7
-> 15 0 14 0 G 6 7
-> 14 0 14 0 G 6 8
-> 15 0 14 0 G 8 8
-> 14 0 15 0 G 8 9
-> 15 0 15 0 G 5 9
-> 14 0 14 0 G 13 10
-> 15 0 14 0 G 9 10
-> 14 0 15 0 G 9 11
-> 15 0 15 0 G 2 11
-> 14 0 14 0 G 10 12
-> 15 0 14 0 G 15 12
-> 14 0 15 0 G 15 13
-> 15 0 15 0 G 4 13
-> 14 0 14 0 G 12 14
-> 15 0 14 0 G 6 14
-> 14 0 13 0 G 1 15
-> 15 0 13 0 G 9 15
-> 14 0 14 0 G 7 16
-> 15 0 14 0 G 15 16
-> 6 0 16 2 3 "emigrant-1"
-> 6 0 17 2 1 "master-2"
-> 11 0 3 16 4
-> 11 0 3 17 4
-> 12 0 3 16 6
-> 12 0 3 17 8
-> 14 0 11 0 SR 17 p0
-> 13 2.000000 3 16
-> 12 2.000000 3 16 7
-> 13 2.020551 3 17
-> 12 2.020551 3 17 8
-> 14 2.020551 11 0 SR 17 p1
-> 13 2.020551 3 16
-> 15 2.020551 11 0 SR 16 p0
-> 14 2.020551 10 0 M 16 0
-> 7 2.020551 2 16
-> 6 2.020551 18 2 1 "emigrant-1"
-> 11 2.020551 3 18 4
-> 15 2.020551 10 0 M 18 0
-> 12 2.020551 3 18 6
-> 13 4.020551 3 18
-> 12 4.020551 3 18 7
-> 13 4.020707 3 17
-> 12 4.020707 3 17 8
-> 14 4.020707 11 0 SR 17 p2
-> 13 4.020707 3 18
-> 15 4.020707 11 0 SR 18 p1
-> 14 4.020707 10 0 M 18 1
-> 7 4.020707 2 18
-> 6 4.020707 19 2 2 "emigrant-1"
-> 11 4.020707 3 19 4
-> 15 4.020707 10 0 M 19 1
-> 12 4.020707 3 19 6
-> 13 6.020707 3 19
-> 12 6.020707 3 19 7
-> 13 6.035906 3 17
-> 12 6.035906 3 17 8
-> 14 6.035906 11 0 SR 17 p3
-> 13 6.035906 3 19
-> 15 6.035906 11 0 SR 19 p2
-> 14 6.035906 10 0 M 19 2
-> 7 6.035906 2 19
-> 6 6.035906 20 2 3 "emigrant-1"
-> 11 6.035906 3 20 4
-> 15 6.035906 10 0 M 20 2
-> 12 6.035906 3 20 6
-> 13 8.035906 3 20
-> 12 8.035906 3 20 7
-> 13 8.056457 3 17
-> 12 8.056457 3 17 8
-> 14 8.056457 11 0 SR 17 p4
-> 13 8.056457 3 20
-> 15 8.056457 11 0 SR 20 p3
-> 14 8.056457 10 0 M 20 3
-> 7 8.056457 2 20
-> 6 8.056457 21 2 4 "emigrant-1"
-> 11 8.056457 3 21 4
-> 15 8.056457 10 0 M 21 3
-> 12 8.056457 3 21 6
-> 13 10.056457 3 21
-> 12 10.056457 3 21 7
-> 13 10.069689 3 17
-> 12 10.069689 3 17 8
-> 14 10.069689 11 0 SR 17 p5
-> 13 10.069689 3 21
-> 15 10.069689 11 0 SR 21 p4
-> 14 10.069689 10 0 M 21 4
-> 7 10.069689 2 21
-> 6 10.069689 22 2 5 "emigrant-1"
-> 11 10.069689 3 22 4
-> 15 10.069689 10 0 M 22 4
-> 12 10.069689 3 22 6
-> 13 12.069689 3 22
-> 12 12.069689 3 22 7
-> 13 12.090025 3 17
-> 12 12.090025 3 17 8
-> 14 12.090025 11 0 SR 17 p6
-> 13 12.090025 3 22
-> 15 12.090025 11 0 SR 22 p5
-> 14 12.090025 10 0 M 22 5
-> 7 12.090025 2 22
-> 6 12.090025 23 2 3 "emigrant-1"
-> 11 12.090025 3 23 4
-> 15 12.090025 10 0 M 23 5
-> 12 12.090025 3 23 6
-> 13 14.090025 3 23
-> 12 14.090025 3 23 7
-> 13 14.110575 3 17
-> 12 14.110575 3 17 8
-> 14 14.110575 11 0 SR 17 p7
-> 13 14.110575 3 23
-> 15 14.110575 11 0 SR 23 p6
-> 14 14.110575 10 0 M 23 6
-> 7 14.110575 2 23
-> 6 14.110575 24 2 1 "emigrant-1"
-> 11 14.110575 3 24 4
-> 15 14.110575 10 0 M 24 6
-> 12 14.110575 3 24 6
-> 13 16.110575 3 24
-> 12 16.110575 3 24 7
-> 13 16.110731 3 17
-> 12 16.110731 3 17 8
-> 14 16.110731 11 0 SR 17 p8
-> 13 16.110731 3 24
-> 15 16.110731 11 0 SR 24 p7
-> 14 16.110731 10 0 M 24 7
-> 7 16.110731 2 24
-> 6 16.110731 25 2 4 "emigrant-1"
-> 11 16.110731 3 25 4
-> 15 16.110731 10 0 M 25 7
-> 12 16.110731 3 25 6
-> 13 18.110731 3 25
-> 12 18.110731 3 25 7
-> 13 18.123963 3 17
-> 7 18.123963 2 17
-> 13 18.123963 3 25
-> 15 18.123963 11 0 SR 25 p8
-> 7 18.123963 2 25
-> 7 18.123963 1 3
-> 7 18.123963 1 1
-> 7 18.123963 12 14
-> 7 18.123963 12 12
-> 7 18.123963 12 10
-> 7 18.123963 12 7
-> 7 18.123963 12 13
-> 7 18.123963 12 15
-> 7 18.123963 12 6
-> 7 18.123963 12 8
-> 7 18.123963 12 11
-> 7 18.123963 12 9
-> 7 18.123963 1 5
-> 7 18.123963 1 2
-> 7 18.123963 1 4
-> 7 18.123963 0 0
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT --cfg=tracing:1 --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/procmig.trace --cfg=tracing/msg/process:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/procmig.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to '1'
+> [0.000000] [instr_config/INFO] Tracing resource utilization active, network/optim configuration now set to Full.
 
-$ rm -rf tracing/procmig.trace
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=tracing/buffer:0 --cfg=tracing/filename:tracing/procmig.trace --cfg=tracing/msg/process:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to '0'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/procmig.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to '1'
+
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
+
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT --cfg=tracing:0 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '0'
+
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT --cfg=tracing:1 --cfg=tracing/categorized:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
+> [0.000000] [instr_config/INFO] Tracing resource utilization active, network/optim configuration now set to Full.
+
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT --cfg=tracing:1 --cfg=tracing/uncategorized:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
+> [0.000000] [instr_config/INFO] Tracing resource utilization active, network/optim configuration now set to Full.
+
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/procmig$EXEEXT --cfg=tracing:1 --cfg=tracing/msg/process:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/procmig-deploy.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to '1'
+
+$ rm -rf tracing/procmig.trace simgrid.trace

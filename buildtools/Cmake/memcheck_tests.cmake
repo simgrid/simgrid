@@ -457,7 +457,7 @@ endif(HAVE_NS3)
 
 IF(HAVE_TRACING)
   ADD_TEST(tracing-help             ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help-tracing)
-ADD_TEST(memcheck-tracing-ms-0 ${CMAKE_BINARY_DIR}/examples/msg/tracing/ms --cfg=tracing:1 --cfg=tracing/buffer:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/ms.cat.plist --cfg=triva/uncategorized:tracing/ms.uncat.plist --log=instr_paje.thres:debug --log=instr_paje_trace.thres:debug "--log=root.fmt:[%10.6r]%e\(%i:%P@%h\)%e%m%n" ./tracing/platform.xml ./tracing/deployment.xml --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
+ADD_TEST(memcheck-tracing-ms-0 ${CMAKE_BINARY_DIR}/examples/msg/tracing/ms --cfg=tracing:1 --cfg=tracing/buffer:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/ms.cat.plist --cfg=triva/uncategorized:tracing/ms.uncat.plist --log=instr_paje_containers.thres:debug --log=instr_paje_trace.thres:debug "--log=root.fmt:[%10.6r]%e\(%i:%P@%h\)%e%m%n" ./tracing/platform.xml ./tracing/deployment.xml --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-ms-1 cat tracing/ms.trace --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-ms-2 cat tracing/ms.uncat.plist --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-ms-3 cat tracing/ms.cat.plist --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)

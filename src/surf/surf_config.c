@@ -247,9 +247,14 @@ static void _surf_cfg_cb_contexts_parallel_mode(const char *name, int pos)
     SIMIX_context_set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
   }
   else {
-    XBT_WARN("Command line setting of the parallel synchronization mode should "
+    xbt_die("Command line setting of the parallel synchronization mode should "
         "be one of \"posix\", \"futex\" or \"busy_wait\"");
   }
+}
+
+static void _surf_cfg_cb_surf_nthreads(const char *name, int pos)
+{
+  surf_set_nthreads(xbt_cfg_get_int(_surf_cfg_set, name));
 }
 
 static void _surf_cfg_cb__surf_network_coordinates(const char *name,
@@ -459,7 +464,7 @@ void surf_config_init(int *argc, char **argv)
     default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "contexts/nthreads",
                      "Number of parallel threads used to execute user contexts",
-                     xbt_cfgelm_int, &default_value_int, 1, 1,
+                     xbt_cfgelm_int, &default_value, 1, 1,
                      _surf_cfg_cb_contexts_nthreads, NULL);
 
     /* minimal number of user contexts to be run in parallel */
@@ -469,7 +474,7 @@ void surf_config_init(int *argc, char **argv)
         xbt_cfgelm_int, &default_value_int, 1, 1,
         _surf_cfg_cb_contexts_parallel_threshold, NULL);
 
-    /* minimal number of user contexts to be run in parallel */
+    /* synchronization mode for parallel user contexts */
 #ifdef HAVE_FUTEX_H
     default_value = xbt_strdup("futex");
 #else //No futex on mac and posix is unimplememted yet
@@ -479,6 +484,13 @@ void surf_config_init(int *argc, char **argv)
         "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)",
         xbt_cfgelm_string, &default_value, 1, 1,
         _surf_cfg_cb_contexts_parallel_mode, NULL);
+
+    /* number of parallel threads for Surf */
+    default_value_int = surf_get_nthreads();
+    xbt_cfg_register(&_surf_cfg_set, "surf/nthreads",
+                     "Number of parallel threads used to update Surf models",
+                     xbt_cfgelm_int, &default_value_int, 1, 1,
+                     _surf_cfg_cb_surf_nthreads, NULL);
 
     default_value = xbt_strdup("no");
     xbt_cfg_register(&_surf_cfg_set, "network/coordinates",

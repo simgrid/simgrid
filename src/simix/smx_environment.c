@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "smx_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/xbt_os_time.h"

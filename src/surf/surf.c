@@ -10,11 +10,12 @@
 #include "xbt/module.h"
 #include "mc/mc.h"
 #include "surf/surf_resource.h"
+#include "xbt/xbt_os_thread.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
 
-/* Additional declarations for Windows potability. */
+/* Additional declarations for Windows portability. */
 
 #ifndef MAX_DRIVE
 #define MAX_DRIVE 26
@@ -178,6 +179,18 @@ s_surf_model_description_t surf_optimization_mode_description[] = {
    NULL},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
+
+#ifdef CONTEXT_THREADS
+static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
+#endif
+
+static int surf_nthreads = 1;    /* number of threads of the parmap (1 means no parallelism) */
+static double *surf_mins = NULL; /* return value of share_resources for each model */
+static int surf_min_index;       /* current index in surf_mins */
+static double min;               /* duration determined by surf_solve */
+
+static void surf_share_resources(surf_model_t model);
+static void surf_update_actions_state(surf_model_t model);
 
 /** Displays the long description of all registered models, and quit */
 void model_help(const char *category, s_surf_model_description_t * table)
@@ -383,6 +396,11 @@ void surf_exit(void)
   }
   surf_action_exit();
 
+#ifdef CONTEXT_THREADS
+  xbt_parmap_destroy(surf_parmap);
+  xbt_free(surf_mins);
+#endif
+
   xbt_dynar_free(&surf_path);
 
   xbt_lib_free(&host_lib);
@@ -426,7 +444,7 @@ void surf_presolve(void)
 
 double surf_solve(double max_date)
 {
-  double min = -1.0; /* duration */
+  min = -1.0; /* duration */
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
@@ -440,15 +458,28 @@ double surf_solve(double max_date)
   }
 
   XBT_DEBUG("Looking for next action end for all models except NS3");
-  xbt_dynar_foreach(model_list, iter, model) {
-    if(strcmp(model->name,"network NS3") ){
-      XBT_DEBUG("Running for Resource [%s]", model->name);
-      model_next_action_end = model->model_private->share_resources(NOW);
-      XBT_DEBUG("Resource [%s] : next action end = %f",
-          model->name, model_next_action_end);
-      if (((min < 0.0) || (model_next_action_end < min))
-          && (model_next_action_end >= 0.0))
-        min = model_next_action_end;
+
+  if (surf_mins == NULL) {
+    surf_mins = xbt_new(double, xbt_dynar_length(model_list));
+  }
+  surf_min_index = 0;
+
+  if (surf_get_nthreads() > 1) {
+    /* parallel version */
+    xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_share_resources, model_list);
+  }
+  else {
+    /* sequential version */
+    xbt_dynar_foreach(model_list, iter, model) {
+      surf_share_resources(model);
+    }
+  }
+
+  unsigned i;
+  for (i = 0; i < xbt_dynar_length(model_list); i++) {
+    if ((min < 0.0 || surf_mins[i] < min)
+        && surf_mins[i] >= 0.0) {
+      min = surf_mins[i];
     }
   }
 
@@ -517,8 +548,16 @@ double surf_solve(double max_date)
 
   NOW = NOW + min;
 
-  xbt_dynar_foreach(model_list, iter, model)
-      model->model_private->update_actions_state(NOW, min);
+  if (surf_get_nthreads() > 1) {
+    /* parallel version */
+    xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_update_actions_state, model_list);
+  }
+  else {
+    /* sequential version */
+    xbt_dynar_foreach(model_list, iter, model) {
+      surf_update_actions_state(model);
+    }
+  }
 
 #ifdef HAVE_TRACING
   TRACE_paje_dump_buffer (0);
@@ -530,4 +569,59 @@ double surf_solve(double max_date)
 XBT_INLINE double surf_get_clock(void)
 {
   return NOW;
+}
+
+static void surf_share_resources(surf_model_t model)
+{
+  if (strcmp(model->name,"network NS3")) {
+    XBT_DEBUG("Running for Resource [%s]", model->name);
+    double next_action_end = model->model_private->share_resources(NOW);
+    XBT_DEBUG("Resource [%s] : next action end = %f",
+        model->name, next_action_end);
+    int i = __sync_fetch_and_add(&surf_min_index, 1);
+    surf_mins[i] = next_action_end;
+  }
+}
+
+static void surf_update_actions_state(surf_model_t model)
+{
+  model->model_private->update_actions_state(NOW, min);
+}
+
+/**
+ * \brief Returns the number of parallel threads used to update the models.
+ * \return the number of threads (1 means no parallelism)
+ */
+int surf_get_nthreads(void) {
+  return surf_nthreads;
+}
+
+/**
+ * \brief Sets the number of parallel threads used to update the models.
+ *
+ * A value of 1 means no parallelism.
+ *
+ * \param nb_threads the number of threads to use
+ */
+void surf_set_nthreads(int nthreads) {
+
+  if (nthreads<=0) {
+     nthreads = xbt_os_get_numcores();
+     XBT_INFO("Auto-setting surf/nthreads to %d",nthreads);
+  }
+
+#ifdef CONTEXT_THREADS
+  xbt_parmap_destroy(surf_parmap);
+  surf_parmap = NULL;
+#endif
+
+  if (nthreads > 1) {
+#ifdef CONTEXT_THREADS
+    surf_parmap = xbt_parmap_new(nthreads, XBT_PARMAP_DEFAULT);
+#else
+    THROWF(arg_error, 0, "Cannot activate parallel threads in Surf: your architecture does not support threads");
+#endif
+  }
+
+  surf_nthreads = nthreads;
 }

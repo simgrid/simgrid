@@ -15,17 +15,16 @@
 #endif
 #include <math.h>         /* isfinite() */
 
-#include "private.h"
+#include "smx_private.h"
 #include "mc/mc.h"
-
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
-static const char* request_names[] = {
-#undef SIMIX_REQ_ENUM_ELEMENT
-#define SIMIX_REQ_ENUM_ELEMENT(x) #x /* generate strings from the enumeration values */
-SIMIX_REQ_LIST
-#undef SIMIX_REQ_ENUM_ELEMENT
+static const char* simcall_names[] = {
+#undef SIMCALL_ENUM_ELEMENT
+#define SIMCALL_ENUM_ELEMENT(x) #x /* generate strings from the enumeration values */
+SIMCALL_LIST
+#undef SIMCALL_ENUM_ELEMENT
 };
 
 /**
@@ -34,14 +33,14 @@ SIMIX_REQ_LIST
  * \param name The name of the host to get
  * \return The corresponding host
  */
-smx_host_t SIMIX_req_host_get_by_name(const char *name)
+smx_host_t simcall_host_get_by_name(const char *name)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_GET_BY_NAME;
-  req->host_get_by_name.name = name;
-  SIMIX_request_push(req->issuer);
-  return req->host_get_by_name.result;
+  simcall->call = SIMCALL_HOST_GET_BY_NAME;
+  simcall->host_get_by_name.name = name;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_get_by_name.result;
 }
 
 /**
@@ -50,14 +49,14 @@ smx_host_t SIMIX_req_host_get_by_name(const char *name)
  * \param host A SIMIX host
  * \return The name of this host
  */
-const char* SIMIX_req_host_get_name(smx_host_t host)
+const char* simcall_host_get_name(smx_host_t host)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_GET_NAME;
-  req->host_get_name.host = host;
-  SIMIX_request_push(req->issuer);
-  return req->host_get_name.result;
+  simcall->call = SIMCALL_HOST_GET_NAME;
+  simcall->host_get_name.host = host;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_get_name.result;
 }
 
 /**
@@ -66,14 +65,14 @@ const char* SIMIX_req_host_get_name(smx_host_t host)
  * \param host A host
  * \return The properties of this host
  */
-xbt_dict_t SIMIX_req_host_get_properties(smx_host_t host)
+xbt_dict_t simcall_host_get_properties(smx_host_t host)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_GET_PROPERTIES;
-  req->host_get_properties.host = host;
-  SIMIX_request_push(req->issuer);
-  return req->host_get_properties.result;
+  simcall->call = SIMCALL_HOST_GET_PROPERTIES;
+  simcall->host_get_properties.host = host;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_get_properties.result;
 }
 
 /**
@@ -83,14 +82,14 @@ xbt_dict_t SIMIX_req_host_get_properties(smx_host_t host)
  * \param host A SIMIX host
  * \return The speed of this host (in Mflop/s)
  */
-double SIMIX_req_host_get_speed(smx_host_t host)
+double simcall_host_get_speed(smx_host_t host)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_GET_SPEED;
-  req->host_get_speed.host = host;
-  SIMIX_request_push(req->issuer);
-  return req->host_get_speed.result;
+  simcall->call = SIMCALL_HOST_GET_SPEED;
+  simcall->host_get_speed.host = host;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_get_speed.result;
 }
 
 /**
@@ -98,14 +97,14 @@ double SIMIX_req_host_get_speed(smx_host_t host)
  *
  * \return Speed currently available (in Mflop/s)
  */
-double SIMIX_req_host_get_available_speed(smx_host_t host)
+double simcall_host_get_available_speed(smx_host_t host)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_GET_AVAILABLE_SPEED;
-  req->host_get_available_speed.host = host;
-  SIMIX_request_push(req->issuer);
-  return req->host_get_available_speed.result;
+  simcall->call = SIMCALL_HOST_GET_AVAILABLE_SPEED;
+  simcall->host_get_available_speed.host = host;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_get_available_speed.result;
 }
 
 /**
@@ -115,14 +114,14 @@ double SIMIX_req_host_get_available_speed(smx_host_t host)
  * \param host A SIMIX host
  * \return 1 if the host is available, 0 otherwise
  */
-int SIMIX_req_host_get_state(smx_host_t host)
+int simcall_host_get_state(smx_host_t host)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_GET_STATE;
-  req->host_get_state.host = host;
-  SIMIX_request_push(req->issuer);
-  return req->host_get_state.result;
+  simcall->call = SIMCALL_HOST_GET_STATE;
+  simcall->host_get_state.host = host;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_get_state.result;
 }
 
 /**
@@ -131,14 +130,14 @@ int SIMIX_req_host_get_state(smx_host_t host)
  * \param host SIMIX host
  * \return the user data of this host
  */
-void* SIMIX_req_host_get_data(smx_host_t host)
+void* simcall_host_get_data(smx_host_t host)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_GET_DATA;
-  req->host_get_data.host = host;
-  SIMIX_request_push(req->issuer);
-  return req->host_get_data.result;
+  simcall->call = SIMCALL_HOST_GET_DATA;
+  simcall->host_get_data.host = host;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_get_data.result;
 }
 
 /**
@@ -148,14 +147,14 @@ void* SIMIX_req_host_get_data(smx_host_t host)
  * \param A host SIMIX host
  * \param data The user data to set
  */
-void SIMIX_req_host_set_data(smx_host_t host, void *data)
+void simcall_host_set_data(smx_host_t host, void *data)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_SET_DATA;
-  req->host_set_data.host = host;
-  req->host_set_data.data = data;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_HOST_SET_DATA;
+  simcall->host_set_data.host = host;
+  simcall->host_set_data.data = data;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /** \brief Creates an action that executes some computation of an host.
@@ -168,7 +167,7 @@ void SIMIX_req_host_set_data(smx_host_t host, void *data)
  * \param amount Computation amount (in bytes)
  * \return A new SIMIX execution action
  */
-smx_action_t SIMIX_req_host_execute(const char *name, smx_host_t host,
+smx_action_t simcall_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
                                     double priority)
 {
@@ -176,15 +175,15 @@ smx_action_t SIMIX_req_host_execute(const char *name, smx_host_t host,
   xbt_assert(isfinite(computation_amount), "computation_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
   
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_EXECUTE;
-  req->host_execute.name = name;
-  req->host_execute.host = host;
-  req->host_execute.computation_amount = computation_amount;
-  req->host_execute.priority = priority;
-  SIMIX_request_push(req->issuer);
-  return req->host_execute.result;
+  simcall->call = SIMCALL_HOST_EXECUTE;
+  simcall->host_execute.name = name;
+  simcall->host_execute.host = host;
+  simcall->host_execute.computation_amount = computation_amount;
+  simcall->host_execute.priority = priority;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_execute.result;
 }
 
 /** \brief Creates an action that may involve parallel computation on
@@ -200,7 +199,7 @@ smx_action_t SIMIX_req_host_execute(const char *name, smx_host_t host,
  * \param rate the SURF action rate
  * \return A new SIMIX execution action
  */
-smx_action_t SIMIX_req_host_parallel_execute(const char *name,
+smx_action_t simcall_host_parallel_execute(const char *name,
                                          int host_nb,
                                          smx_host_t *host_list,
                                          double *computation_amount,
@@ -221,18 +220,18 @@ smx_action_t SIMIX_req_host_parallel_execute(const char *name,
   xbt_assert(isfinite(amount), "amount is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
   
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_PARALLEL_EXECUTE;
-  req->host_parallel_execute.name = name;
-  req->host_parallel_execute.host_nb = host_nb;
-  req->host_parallel_execute.host_list = host_list;
-  req->host_parallel_execute.computation_amount = computation_amount;
-  req->host_parallel_execute.communication_amount = communication_amount;
-  req->host_parallel_execute.amount = amount;
-  req->host_parallel_execute.rate = rate;
-  SIMIX_request_push(req->issuer);
-  return req->host_parallel_execute.result;
+  simcall->call = SIMCALL_HOST_PARALLEL_EXECUTE;
+  simcall->host_parallel_execute.name = name;
+  simcall->host_parallel_execute.host_nb = host_nb;
+  simcall->host_parallel_execute.host_list = host_list;
+  simcall->host_parallel_execute.computation_amount = computation_amount;
+  simcall->host_parallel_execute.communication_amount = communication_amount;
+  simcall->host_parallel_execute.amount = amount;
+  simcall->host_parallel_execute.rate = rate;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_parallel_execute.result;
 }
 
 /**
@@ -241,13 +240,13 @@ smx_action_t SIMIX_req_host_parallel_execute(const char *name,
  * Destroys an action, freing its memory. This function cannot be called if there are a conditional waiting for it.
  * \param action The execution action to destroy
  */
-void SIMIX_req_host_execution_destroy(smx_action_t execution)
+void simcall_host_execution_destroy(smx_action_t execution)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_EXECUTION_DESTROY;
-  req->host_execution_destroy.execution = execution;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_HOST_EXECUTION_DESTROY;
+  simcall->host_execution_destroy.execution = execution;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /**
@@ -256,13 +255,13 @@ void SIMIX_req_host_execution_destroy(smx_action_t execution)
  * This functions stops the execution. It calls a surf function.
  * \param action The execution action to cancel
  */
-void SIMIX_req_host_execution_cancel(smx_action_t execution)
+void simcall_host_execution_cancel(smx_action_t execution)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_EXECUTION_CANCEL;
-  req->host_execution_cancel.execution = execution;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_HOST_EXECUTION_CANCEL;
+  simcall->host_execution_cancel.execution = execution;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /**
@@ -271,14 +270,14 @@ void SIMIX_req_host_execution_cancel(smx_action_t execution)
  * \param Action The execution action
  * \return The remaining amount
  */
-double SIMIX_req_host_execution_get_remains(smx_action_t execution)
+double simcall_host_execution_get_remains(smx_action_t execution)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_EXECUTION_GET_REMAINS;
-  req->host_execution_get_remains.execution = execution;
-  SIMIX_request_push(req->issuer);
-  return req->host_execution_get_remains.result;
+  simcall->call = SIMCALL_HOST_EXECUTION_GET_REMAINS;
+  simcall->host_execution_get_remains.execution = execution;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_execution_get_remains.result;
 }
 
 /**
@@ -287,14 +286,14 @@ double SIMIX_req_host_execution_get_remains(smx_action_t execution)
  * \param execution The execution action
  * \return The state
  */
-e_smx_state_t SIMIX_req_host_execution_get_state(smx_action_t execution)
+e_smx_state_t simcall_host_execution_get_state(smx_action_t execution)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_EXECUTION_GET_STATE;
-  req->host_execution_get_state.execution = execution;
-  SIMIX_request_push(req->issuer);
-  return req->host_execution_get_state.result;
+  simcall->call = SIMCALL_HOST_EXECUTION_GET_STATE;
+  simcall->host_execution_get_state.execution = execution;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_execution_get_state.result;
 }
 
 /**
@@ -304,17 +303,17 @@ e_smx_state_t SIMIX_req_host_execution_get_state(smx_action_t execution)
  * \param execution The execution action
  * \param priority The new priority
  */
-void SIMIX_req_host_execution_set_priority(smx_action_t execution, double priority)
+void simcall_host_execution_set_priority(smx_action_t execution, double priority)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(priority), "priority is not finite!");
   
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_EXECUTION_SET_PRIORITY;
-  req->host_execution_set_priority.execution = execution;
-  req->host_execution_set_priority.priority = priority;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_HOST_EXECUTION_SET_PRIORITY;
+  simcall->host_execution_set_priority.execution = execution;
+  simcall->host_execution_set_priority.priority = priority;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /**
@@ -322,14 +321,14 @@ void SIMIX_req_host_execution_set_priority(smx_action_t execution, double priori
  *
  * \param execution The execution action
  */
-e_smx_state_t SIMIX_req_host_execution_wait(smx_action_t execution)
+e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_HOST_EXECUTION_WAIT;
-  req->host_execution_wait.execution = execution;
-  SIMIX_request_push(req->issuer);
-  return req->host_execution_wait.result;
+  simcall->call = SIMCALL_HOST_EXECUTION_WAIT;
+  simcall->host_execution_wait.execution = execution;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->host_execution_wait.result;
 }
 
 /**
@@ -341,31 +340,31 @@ e_smx_state_t SIMIX_req_host_execution_wait(smx_action_t execution)
  * \param name a name for the process. It is for user-level information and can be NULL.
  * \param code the main function of the process
  * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be NULL.
- * It can be retrieved with the function \ref SIMIX_req_process_get_data.
+ * It can be retrieved with the function \ref simcall_process_get_data.
  * \param hostname name of the host where the new agent is executed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
  * \param properties the properties of the process
  */
-void SIMIX_req_process_create(smx_process_t *process, const char *name,
+void simcall_process_create(smx_process_t *process, const char *name,
                               xbt_main_func_t code,
                               void *data,
                               const char *hostname,
                               int argc, char **argv,
                               xbt_dict_t properties)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_CREATE;
-  req->process_create.process = process;
-  req->process_create.name = name;
-  req->process_create.code = code;
-  req->process_create.data = data;
-  req->process_create.hostname = hostname;
-  req->process_create.argc = argc;
-  req->process_create.argv = argv;
-  req->process_create.properties = properties;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_PROCESS_CREATE;
+  simcall->process_create.process = process;
+  simcall->process_create.name = name;
+  simcall->process_create.code = code;
+  simcall->process_create.data = data;
+  simcall->process_create.hostname = hostname;
+  simcall->process_create.argc = argc;
+  simcall->process_create.argv = argv;
+  simcall->process_create.properties = properties;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /** \brief Kills a SIMIX process.
@@ -374,35 +373,35 @@ void SIMIX_req_process_create(smx_process_t *process, const char *name,
  *
  * \param process poor victim
  */
-void SIMIX_req_process_kill(smx_process_t process)
+void simcall_process_kill(smx_process_t process)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_KILL;
-  req->process_kill.process = process;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_PROCESS_KILL;
+  simcall->process_kill.process = process;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /** \brief Kills all SIMIX processes.
  */
-void SIMIX_req_process_killall(void)
+void simcall_process_killall(void)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_KILLALL;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_PROCESS_KILLALL;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /** \brief Cleans up a SIMIX process.
  * \param process poor victim (must have already been killed)
  */
-void SIMIX_req_process_cleanup(smx_process_t process)
+void simcall_process_cleanup(smx_process_t process)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_CLEANUP;
-  req->process_cleanup.process = process;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_PROCESS_CLEANUP;
+  simcall->process_cleanup.process = process;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /**
@@ -414,14 +413,14 @@ void SIMIX_req_process_cleanup(smx_process_t process)
  * \param source name of the previous host
  * \param dest name of the new host
  */
-void SIMIX_req_process_change_host(smx_process_t process, smx_host_t dest)
+void simcall_process_change_host(smx_process_t process, smx_host_t dest)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_CHANGE_HOST;
-  req->process_change_host.process = process;
-  req->process_change_host.dest = dest;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_PROCESS_CHANGE_HOST;
+  simcall->process_change_host.process = process;
+  simcall->process_change_host.dest = dest;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /**
@@ -432,15 +431,15 @@ void SIMIX_req_process_change_host(smx_process_t process, smx_host_t dest)
  *
  * \param process a SIMIX process
  */
-void SIMIX_req_process_suspend(smx_process_t process)
+void simcall_process_suspend(smx_process_t process)
 {
   xbt_assert(process, "Invalid parameters");
 
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_SUSPEND;
-  req->process_suspend.process = process;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_PROCESS_SUSPEND;
+  simcall->process_suspend.process = process;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /**
@@ -451,13 +450,13 @@ void SIMIX_req_process_suspend(smx_process_t process)
  *
  * \param process a SIMIX process
  */
-void SIMIX_req_process_resume(smx_process_t process)
+void simcall_process_resume(smx_process_t process)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_RESUME;
-  req->process_resume.process = process;
-  SIMIX_request_push(req->issuer);
+  simcall->call = SIMCALL_PROCESS_RESUME;
+  simcall->process_resume.process = process;
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 /**
@@ -465,13 +464,13 @@ void SIMIX_req_process_resume(smx_process_t process)
  *
  * Maestro internal process is not counted, only user code processes are
  */
-int SIMIX_req_process_count(void)
+int simcall_process_count(void)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_COUNT;
-  SIMIX_request_push(req->issuer);
-  return req->process_count.result;
+  simcall->call = SIMCALL_PROCESS_COUNT;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->process_count.result;
 }
 
 /**
@@ -479,19 +478,19 @@ int SIMIX_req_process_count(void)
  * \param process a SIMIX process
  * \return the user data of this process
  */
-void* SIMIX_req_process_get_data(smx_process_t process)
+void* simcall_process_get_data(smx_process_t process)
 {
   if (process == SIMIX_process_self()) {
-    /* avoid a request if this function is called by the process itself */
+    /* avoid a simcall if this function is called by the process itself */
     return SIMIX_process_get_data(process);
   }
 
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_GET_DATA;
-  req->process_get_data.process = process;
-  SIMIX_request_push(req->issuer);
-  return req->process_get_data.result;
+  simcall->call = SIMCALL_PROCESS_GET_DATA;
+  simcall->process_get_data.process = process;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->process_get_data.result;
 }
 
 /**
@@ -501,20 +500,20 @@ void* SIMIX_req_process_get_data(smx_process_t process)
  * \param process SIMIX process
  * \param data User data
  */
-void SIMIX_req_process_set_data(smx_process_t process, void *data)
+void simcall_process_set_data(smx_process_t process, void *data)
 {
   if (process == SIMIX_process_self()) {
-    /* avoid a request if this function is called by the process itself */
+    /* avoid a simcall if this function is called by the process itself */
     SIMIX_process_self_set_data(process, data);
   }
   else {
 
-    smx_req_t req = SIMIX_req_mine();
+    smx_simcall_t simcall = SIMIX_simcall_mine();
 
-    req->call = REQ_PROCESS_SET_DATA;
-    req->process_set_data.process = process;
-    req->process_set_data.data = data;
-    SIMIX_request_push(req->issuer);
+    simcall->call = SIMCALL_PROCESS_SET_DATA;
+    simcall->process_set_data.process = process;
+    simcall->process_set_data.data = data;
+    SIMIX_simcall_push(simcall->issuer);
   }
 }
 
@@ -525,14 +524,14 @@ void SIMIX_req_process_set_data(smx_process_t process, void *data)
  * \param process SIMIX process
  * \return SIMIX host
  */
-smx_host_t SIMIX_req_process_get_host(smx_process_t process)
+smx_host_t simcall_process_get_host(smx_process_t process)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_GET_HOST;
-  req->process_get_host.process = process;
-  SIMIX_request_push(req->issuer);
-  return req->process_get_host.result;
+  simcall->call = SIMCALL_PROCESS_GET_HOST;
+  simcall->process_get_host.process = process;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->process_get_host.result;
 }
 
 /**
@@ -542,19 +541,19 @@ smx_host_t SIMIX_req_process_get_host(smx_process_t process)
  * \param process SIMIX process
  * \return The process name
  */
-const char* SIMIX_req_process_get_name(smx_process_t process)
+const char* simcall_process_get_name(smx_process_t process)
 {
   if (process == SIMIX_process_self()) {
-    /* avoid a request if this function is called by the process itself */
+    /* avoid a simcall if this function is called by the process itself */
     return process->name;
   }
 
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_GET_NAME;
-  req->process_get_name.process = process;
-  SIMIX_request_push(req->issuer);
-  return req->process_get_name.result;
+  simcall->call = SIMCALL_PROCESS_GET_NAME;
+  simcall->process_get_name.process = process;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->process_get_name.result;
 }
 
 /**
@@ -564,14 +563,14 @@ const char* SIMIX_req_process_get_name(smx_process_t process)
  * \param process SIMIX process
  * \return 1, if the process is suspended, else 0.
  */
-int SIMIX_req_process_is_suspended(smx_process_t process)
+int simcall_process_is_suspended(smx_process_t process)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_IS_SUSPENDED;
-  req->process_is_suspended.process = process;
-  SIMIX_request_push(req->issuer);
-  return req->process_is_suspended.result;
+  simcall->call = SIMCALL_PROCESS_IS_SUSPENDED;
+  simcall->process_is_suspended.process = process;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->process_is_suspended.result;
 }
 
 /** \ingroup m_process_management
@@ -579,14 +578,14 @@ int SIMIX_req_process_is_suspended(smx_process_t process)
  *
  * This functions returns the properties associated with this process
  */
-xbt_dict_t SIMIX_req_process_get_properties(smx_process_t process)
+xbt_dict_t simcall_process_get_properties(smx_process_t process)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_GET_PROPERTIES;
-  req->process_get_properties.process = process;
-  SIMIX_request_push(req->issuer);
-  return req->process_get_properties.result;
+  simcall->call = SIMCALL_PROCESS_GET_PROPERTIES;
+  simcall->process_get_properties.process = process;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->process_get_properties.result;
 }
 
 /** \brief Creates a new sleep SIMIX action.
@@ -598,17 +597,17 @@ xbt_dict_t SIMIX_req_process_get_properties(smx_process_t process)
  * 	\param duration Time duration of the sleep.
  * 	\return A result telling whether the sleep was successful
  */
-e_smx_state_t SIMIX_req_process_sleep(double duration)
+e_smx_state_t simcall_process_sleep(double duration)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(duration), "duration is not finite!");
   
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_PROCESS_SLEEP;
-  req->process_sleep.duration = duration;
-  SIMIX_request_push(req->issuer);
-  return req->process_sleep.result;
+  simcall->call = SIMCALL_PROCESS_SLEEP;
+  simcall->process_sleep.duration = duration;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->process_sleep.result;
 }
 
 /**
@@ -616,15 +615,15 @@ e_smx_state_t SIMIX_req_process_sleep(double duration)
  *  \param name The name of the rendez-vous point
  *  \return The created rendez-vous point
  */
-smx_rdv_t SIMIX_req_rdv_create(const char *name)
+smx_rdv_t simcall_rdv_create(const char *name)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_RDV_CREATE;
-  req->rdv_create.name = name;
+  simcall->call = SIMCALL_RDV_CREATE;
+  simcall->rdv_create.name = name;
 
-  SIMIX_request_push(req->issuer);
-  return req->rdv_create.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->rdv_create.result;
 }
 
 
@@ -632,50 +631,51 @@ smx_rdv_t SIMIX_req_rdv_create(const char *name)
  *  \brief Destroy a rendez-vous point
  *  \param name The rendez-vous point to destroy
  */
-void SIMIX_req_rdv_destroy(smx_rdv_t rdv)
+void simcall_rdv_destroy(smx_rdv_t rdv)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_RDV_DESTROY;
-  req->rdv_destroy.rdv = rdv;
+  simcall->call = SIMCALL_RDV_DESTROY;
+  simcall->rdv_destroy.rdv = rdv;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-smx_rdv_t SIMIX_req_rdv_get_by_name(const char *name)
+smx_rdv_t simcall_rdv_get_by_name(const char *name)
 {
-  xbt_assert(name != NULL, "Invalid parameter for SIMIX_req_rdv_get_by_name (name is NULL)");
+  xbt_assert(name != NULL, "Invalid parameter for simcall_rdv_get_by_name (name is NULL)");
 
   /* FIXME: this is a horrible lost of performance, so we hack it out by
-   * skipping the request (for now). It won't work on distributed but
-   * probably we will change MSG for that. */
-/*
-  smx_req_t req = SIMIX_req_mine();
-  req->call = REQ_RDV_GEY_BY_NAME;
-  req->rdv_get_by_name.name = name;
-  SIMIX_request_push(req->issuer);
-  return req->rdv_get_by_name.result;*/
+   * skipping the simcall (for now). It works in parallel, it won't work on
+   * distributed but probably we will change MSG for that. */
+
+  /*
+  smx_simcall_t simcall = simcall_mine();
+  simcall->call = SIMCALL_RDV_GEY_BY_NAME;
+  simcall->rdv_get_by_name.name = name;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->rdv_get_by_name.result;*/
 
   return SIMIX_rdv_get_by_name(name);
 }
 
 /**
- *  \brief counts the number of communication requests of a given host pending
- *         on a rendez-vous point
+ *  \brief Counts the number of communication actions of a given host pending
+ *         on a rendez-vous point.
  *  \param rdv The rendez-vous point
  *  \param host The host to be counted
- *  \return The number of comm request pending in the rdv
+ *  \return The number of comm actions pending in the rdv
  */
-int SIMIX_req_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
+int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_RDV_COMM_COUNT_BY_HOST;
-  req->rdv_comm_count_by_host.rdv = rdv;
-  req->rdv_comm_count_by_host.host = host;
+  simcall->call = SIMCALL_RDV_COMM_COUNT_BY_HOST;
+  simcall->rdv_comm_count_by_host.rdv = rdv;
+  simcall->rdv_comm_count_by_host.host = host;
 
-  SIMIX_request_push(req->issuer);
-  return req->rdv_comm_count_by_host.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->rdv_comm_count_by_host.result;
 }
 
 /**
@@ -683,18 +683,18 @@ int SIMIX_req_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
  *  \param rdv The rendez-vous point
  *  \return The communication or NULL if empty
  */
-smx_action_t SIMIX_req_rdv_get_head(smx_rdv_t rdv)
+smx_action_t simcall_rdv_get_head(smx_rdv_t rdv)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_RDV_GET_HEAD;
-  req->rdv_get_head.rdv = rdv;
+  simcall->call = SIMCALL_RDV_GET_HEAD;
+  simcall->rdv_get_head.rdv = rdv;
 
-  SIMIX_request_push(req->issuer);
-  return req->rdv_get_head.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->rdv_get_head.result;
 }
 
-void SIMIX_req_comm_send(smx_rdv_t rdv, double task_size, double rate,
+void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
                          int (*match_fun)(void *, void *), void *data,
                          double timeout)
@@ -707,29 +707,29 @@ void SIMIX_req_comm_send(smx_rdv_t rdv, double task_size, double rate,
   xbt_assert(rdv, "No rendez-vous point defined for send");
 
   if (MC_IS_ENABLED) {
-    /* the model-checker wants two separate requests */
-    smx_action_t comm = SIMIX_req_comm_isend(rdv, task_size, rate,
+    /* the model-checker wants two separate simcalls */
+    smx_action_t comm = simcall_comm_isend(rdv, task_size, rate,
         src_buff, src_buff_size, match_fun, NULL, data, 0);
-    SIMIX_req_comm_wait(comm, timeout);
+    simcall_comm_wait(comm, timeout);
   }
   else {
-    smx_req_t req = SIMIX_req_mine();
+    smx_simcall_t simcall = SIMIX_simcall_mine();
 
-    req->call = REQ_COMM_SEND;
-    req->comm_send.rdv = rdv;
-    req->comm_send.task_size = task_size;
-    req->comm_send.rate = rate;
-    req->comm_send.src_buff = src_buff;
-    req->comm_send.src_buff_size = src_buff_size;
-    req->comm_send.match_fun = match_fun;
-    req->comm_send.data = data;
-    req->comm_send.timeout = timeout;
+    simcall->call = SIMCALL_COMM_SEND;
+    simcall->comm_send.rdv = rdv;
+    simcall->comm_send.task_size = task_size;
+    simcall->comm_send.rate = rate;
+    simcall->comm_send.src_buff = src_buff;
+    simcall->comm_send.src_buff_size = src_buff_size;
+    simcall->comm_send.match_fun = match_fun;
+    simcall->comm_send.data = data;
+    simcall->comm_send.timeout = timeout;
 
-    SIMIX_request_push(req->issuer);
+    SIMIX_simcall_push(simcall->issuer);
   }
 }
 
-smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
+smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
                               int (*match_fun)(void *, void *),
                               void (*clean_fun)(void *),
@@ -742,129 +742,129 @@ smx_action_t SIMIX_req_comm_isend(smx_rdv_t rdv, double task_size, double rate,
   
   xbt_assert(rdv, "No rendez-vous point defined for isend");
 
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_ISEND;
-  req->comm_isend.rdv = rdv;
-  req->comm_isend.task_size = task_size;
-  req->comm_isend.rate = rate;
-  req->comm_isend.src_buff = src_buff;
-  req->comm_isend.src_buff_size = src_buff_size;
-  req->comm_isend.match_fun = match_fun;
-  req->comm_isend.clean_fun = clean_fun;
-  req->comm_isend.data = data;
-  req->comm_isend.detached = detached;
+  simcall->call = SIMCALL_COMM_ISEND;
+  simcall->comm_isend.rdv = rdv;
+  simcall->comm_isend.task_size = task_size;
+  simcall->comm_isend.rate = rate;
+  simcall->comm_isend.src_buff = src_buff;
+  simcall->comm_isend.src_buff_size = src_buff_size;
+  simcall->comm_isend.match_fun = match_fun;
+  simcall->comm_isend.clean_fun = clean_fun;
+  simcall->comm_isend.data = data;
+  simcall->comm_isend.detached = detached;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_isend.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_isend.result;
 }
 
-void SIMIX_req_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
+void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
                          int (*match_fun)(void *, void *), void *data, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   xbt_assert(rdv, "No rendez-vous point defined for recv");
 
   if (MC_IS_ENABLED) {
-    /* the model-checker wants two separate requests */
-    smx_action_t comm = SIMIX_req_comm_irecv(rdv, dst_buff, dst_buff_size,
+    /* the model-checker wants two separate simcalls */
+    smx_action_t comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
         match_fun, data);
-    SIMIX_req_comm_wait(comm, timeout);
+    simcall_comm_wait(comm, timeout);
   }
   else {
-    smx_req_t req = SIMIX_req_mine();
+    smx_simcall_t simcall = SIMIX_simcall_mine();
 
-    req->call = REQ_COMM_RECV;
-    req->comm_recv.rdv = rdv;
-    req->comm_recv.dst_buff = dst_buff;
-    req->comm_recv.dst_buff_size = dst_buff_size;
-    req->comm_recv.match_fun = match_fun;
-    req->comm_recv.data = data;
-    req->comm_recv.timeout = timeout;
+    simcall->call = SIMCALL_COMM_RECV;
+    simcall->comm_recv.rdv = rdv;
+    simcall->comm_recv.dst_buff = dst_buff;
+    simcall->comm_recv.dst_buff_size = dst_buff_size;
+    simcall->comm_recv.match_fun = match_fun;
+    simcall->comm_recv.data = data;
+    simcall->comm_recv.timeout = timeout;
 
-    SIMIX_request_push(req->issuer);
+    SIMIX_simcall_push(simcall->issuer);
   }
 }
 
-smx_action_t SIMIX_req_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
+smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
                                   int (*match_fun)(void *, void *), void *data)
 {
   xbt_assert(rdv, "No rendez-vous point defined for irecv");
 
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_IRECV;
-  req->comm_irecv.rdv = rdv;
-  req->comm_irecv.dst_buff = dst_buff;
-  req->comm_irecv.dst_buff_size = dst_buff_size;
-  req->comm_irecv.match_fun = match_fun;
-  req->comm_irecv.data = data;
+  simcall->call = SIMCALL_COMM_IRECV;
+  simcall->comm_irecv.rdv = rdv;
+  simcall->comm_irecv.dst_buff = dst_buff;
+  simcall->comm_irecv.dst_buff_size = dst_buff_size;
+  simcall->comm_irecv.match_fun = match_fun;
+  simcall->comm_irecv.data = data;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_irecv.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_irecv.result;
 }
 
-void SIMIX_req_comm_destroy(smx_action_t comm)
+void simcall_comm_destroy(smx_action_t comm)
 {
   xbt_assert(comm, "Invalid parameter");
 
-  /* FIXME remove this request type: comms are auto-destroyed now */
+  /* FIXME remove this simcall type: comms are auto-destroyed now */
 
   /*
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = simcall_mine();
 
-  req->call = REQ_COMM_DESTROY;
-  req->comm_destroy.comm = comm;
+  simcall->call = SIMCALL_COMM_DESTROY;
+  simcall->comm_destroy.comm = comm;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
   */
 }
 
-void SIMIX_req_comm_cancel(smx_action_t comm)
+void simcall_comm_cancel(smx_action_t comm)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_CANCEL;
-  req->comm_cancel.comm = comm;
+  simcall->call = SIMCALL_COMM_CANCEL;
+  simcall->comm_cancel.comm = comm;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-unsigned int SIMIX_req_comm_waitany(xbt_dynar_t comms)
+unsigned int simcall_comm_waitany(xbt_dynar_t comms)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_WAITANY;
-  req->comm_waitany.comms = comms;
+  simcall->call = SIMCALL_COMM_WAITANY;
+  simcall->comm_waitany.comms = comms;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_waitany.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_waitany.result;
 }
 
-int SIMIX_req_comm_testany(xbt_dynar_t comms)
+int simcall_comm_testany(xbt_dynar_t comms)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
   if (xbt_dynar_is_empty(comms))
     return -1;
 
-  req->call = REQ_COMM_TESTANY;
-  req->comm_testany.comms = comms;
+  simcall->call = SIMCALL_COMM_TESTANY;
+  simcall->comm_testany.comms = comms;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_testany.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_testany.result;
 }
 
-void SIMIX_req_comm_wait(smx_action_t comm, double timeout)
+void simcall_comm_wait(smx_action_t comm, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_WAIT;
-  req->comm_wait.comm = comm;
-  req->comm_wait.timeout = timeout;
+  simcall->call = SIMCALL_COMM_WAIT;
+  simcall->comm_wait.comm = comm;
+  simcall->comm_wait.timeout = timeout;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 #ifdef HAVE_TRACING
@@ -875,310 +875,320 @@ void SIMIX_req_comm_wait(smx_action_t comm, double timeout)
  * \param execution The execution action
  * \param category The tracing category
  */
-void SIMIX_req_set_category(smx_action_t action, const char *category)
+void simcall_set_category(smx_action_t action, const char *category)
 {
   if (category == NULL) {
     return;
   }
 
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_SET_CATEGORY;
-  req->set_category.action = action;
-  req->set_category.category = category;
+  simcall->call = SIMCALL_SET_CATEGORY;
+  simcall->set_category.action = action;
+  simcall->set_category.category = category;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 #endif
 
-int SIMIX_req_comm_test(smx_action_t comm)
+int simcall_comm_test(smx_action_t comm)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_TEST;
-  req->comm_test.comm = comm;
+  simcall->call = SIMCALL_COMM_TEST;
+  simcall->comm_test.comm = comm;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_test.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_test.result;
 }
 
-double SIMIX_req_comm_get_remains(smx_action_t comm)
+double simcall_comm_get_remains(smx_action_t comm)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_GET_REMAINS;
-  req->comm_get_remains.comm = comm;
+  simcall->call = SIMCALL_COMM_GET_REMAINS;
+  simcall->comm_get_remains.comm = comm;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_get_remains.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_get_remains.result;
 }
 
-e_smx_state_t SIMIX_req_comm_get_state(smx_action_t comm)
+e_smx_state_t simcall_comm_get_state(smx_action_t comm)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_GET_STATE;
-  req->comm_get_state.comm = comm;
+  simcall->call = SIMCALL_COMM_GET_STATE;
+  simcall->comm_get_state.comm = comm;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_get_state.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_get_state.result;
 }
 
-void *SIMIX_req_comm_get_src_data(smx_action_t comm)
+void *simcall_comm_get_src_data(smx_action_t comm)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_GET_SRC_DATA;
-  req->comm_get_src_data.comm = comm;
+  simcall->call = SIMCALL_COMM_GET_SRC_DATA;
+  simcall->comm_get_src_data.comm = comm;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_get_src_data.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_get_src_data.result;
 }
 
-void *SIMIX_req_comm_get_dst_data(smx_action_t comm)
+void *simcall_comm_get_dst_data(smx_action_t comm)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_GET_DST_DATA;
-  req->comm_get_dst_data.comm = comm;
+  simcall->call = SIMCALL_COMM_GET_DST_DATA;
+  simcall->comm_get_dst_data.comm = comm;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_get_dst_data.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_get_dst_data.result;
 }
 
-smx_process_t SIMIX_req_comm_get_src_proc(smx_action_t comm)
+smx_process_t simcall_comm_get_src_proc(smx_action_t comm)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_GET_SRC_PROC;
-  req->comm_get_src_proc.comm = comm;
+  simcall->call = SIMCALL_COMM_GET_SRC_PROC;
+  simcall->comm_get_src_proc.comm = comm;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_get_src_proc.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_get_src_proc.result;
 }
 
-smx_process_t SIMIX_req_comm_get_dst_proc(smx_action_t comm)
+smx_process_t simcall_comm_get_dst_proc(smx_action_t comm)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_GET_DST_PROC;
-  req->comm_get_dst_proc.comm = comm;
+  simcall->call = SIMCALL_COMM_GET_DST_PROC;
+  simcall->comm_get_dst_proc.comm = comm;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_get_dst_proc.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_get_dst_proc.result;
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-int SIMIX_req_comm_is_latency_bounded(smx_action_t comm)
+int simcall_comm_is_latency_bounded(smx_action_t comm)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COMM_IS_LATENCY_BOUNDED;
-  req->comm_is_latency_bounded.comm = comm;
+  simcall->call = SIMCALL_COMM_IS_LATENCY_BOUNDED;
+  simcall->comm_is_latency_bounded.comm = comm;
 
-  SIMIX_request_push(req->issuer);
-  return req->comm_is_latency_bounded.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_is_latency_bounded.result;
 }
 #endif
 
-smx_mutex_t SIMIX_req_mutex_init(void)
+smx_mutex_t simcall_mutex_init(void)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_MUTEX_INIT;
+  simcall->call = SIMCALL_MUTEX_INIT;
 
-  SIMIX_request_push(req->issuer);
-  return req->mutex_init.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->mutex_init.result;
 }
 
-void SIMIX_req_mutex_destroy(smx_mutex_t mutex)
+void simcall_mutex_destroy(smx_mutex_t mutex)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_MUTEX_DESTROY;
-  req->mutex_destroy.mutex = mutex;
+  simcall->call = SIMCALL_MUTEX_DESTROY;
+  simcall->mutex_destroy.mutex = mutex;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-void SIMIX_req_mutex_lock(smx_mutex_t mutex)
+void simcall_mutex_lock(smx_mutex_t mutex)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_MUTEX_LOCK;
-  req->mutex_lock.mutex = mutex;
+  simcall->call = SIMCALL_MUTEX_LOCK;
+  simcall->mutex_lock.mutex = mutex;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-int SIMIX_req_mutex_trylock(smx_mutex_t mutex)
+int simcall_mutex_trylock(smx_mutex_t mutex)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_MUTEX_TRYLOCK;
-  req->mutex_trylock.mutex = mutex;
+  simcall->call = SIMCALL_MUTEX_TRYLOCK;
+  simcall->mutex_trylock.mutex = mutex;
 
-  SIMIX_request_push(req->issuer);
-  return req->mutex_trylock.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->mutex_trylock.result;
 }
 
-void SIMIX_req_mutex_unlock(smx_mutex_t mutex)
+void simcall_mutex_unlock(smx_mutex_t mutex)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_MUTEX_UNLOCK;
-  req->mutex_unlock.mutex = mutex;
+  simcall->call = SIMCALL_MUTEX_UNLOCK;
+  simcall->mutex_unlock.mutex = mutex;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 
-smx_cond_t SIMIX_req_cond_init(void)
+smx_cond_t simcall_cond_init(void)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COND_INIT;
+  simcall->call = SIMCALL_COND_INIT;
 
-  SIMIX_request_push(req->issuer);
-  return req->cond_init.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->cond_init.result;
 }
 
-void SIMIX_req_cond_destroy(smx_cond_t cond)
+void simcall_cond_destroy(smx_cond_t cond)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COND_DESTROY;
-  req->cond_destroy.cond = cond;
+  simcall->call = SIMCALL_COND_DESTROY;
+  simcall->cond_destroy.cond = cond;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-void SIMIX_req_cond_signal(smx_cond_t cond)
+void simcall_cond_signal(smx_cond_t cond)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COND_SIGNAL;
-  req->cond_signal.cond = cond;
+  simcall->call = SIMCALL_COND_SIGNAL;
+  simcall->cond_signal.cond = cond;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-void SIMIX_req_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
+void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COND_WAIT;
-  req->cond_wait.cond = cond;
-  req->cond_wait.mutex = mutex;
+  simcall->call = SIMCALL_COND_WAIT;
+  simcall->cond_wait.cond = cond;
+  simcall->cond_wait.mutex = mutex;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-void SIMIX_req_cond_wait_timeout(smx_cond_t cond,
+void simcall_cond_wait_timeout(smx_cond_t cond,
                                  smx_mutex_t mutex,
                                  double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COND_WAIT_TIMEOUT;
-  req->cond_wait_timeout.cond = cond;
-  req->cond_wait_timeout.mutex = mutex;
-  req->cond_wait_timeout.timeout = timeout;
+  simcall->call = SIMCALL_COND_WAIT_TIMEOUT;
+  simcall->cond_wait_timeout.cond = cond;
+  simcall->cond_wait_timeout.mutex = mutex;
+  simcall->cond_wait_timeout.timeout = timeout;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-void SIMIX_req_cond_broadcast(smx_cond_t cond)
+void simcall_cond_broadcast(smx_cond_t cond)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_COND_BROADCAST;
-  req->cond_broadcast.cond = cond;
+  simcall->call = SIMCALL_COND_BROADCAST;
+  simcall->cond_broadcast.cond = cond;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
 
-smx_sem_t SIMIX_req_sem_init(int capacity)
+smx_sem_t simcall_sem_init(int capacity)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_SEM_INIT;
-  req->sem_init.capacity = capacity;
+  simcall->call = SIMCALL_SEM_INIT;
+  simcall->sem_init.capacity = capacity;
 
-  SIMIX_request_push(req->issuer);
-  return req->sem_init.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->sem_init.result;
 }
 
-void SIMIX_req_sem_destroy(smx_sem_t sem)
+void simcall_sem_destroy(smx_sem_t sem)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_SEM_DESTROY;
-  req->sem_destroy.sem = sem;
+  simcall->call = SIMCALL_SEM_DESTROY;
+  simcall->sem_destroy.sem = sem;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-void SIMIX_req_sem_release(smx_sem_t sem)
+void simcall_sem_release(smx_sem_t sem)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_SEM_RELEASE;
-  req->sem_release.sem = sem;
+  simcall->call = SIMCALL_SEM_RELEASE;
+  simcall->sem_release.sem = sem;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-int SIMIX_req_sem_would_block(smx_sem_t sem)
+int simcall_sem_would_block(smx_sem_t sem)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_SEM_WOULD_BLOCK;
-  req->sem_would_block.sem = sem;
+  simcall->call = SIMCALL_SEM_WOULD_BLOCK;
+  simcall->sem_would_block.sem = sem;
 
-  SIMIX_request_push(req->issuer);
-  return req->sem_would_block.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->sem_would_block.result;
 }
 
-void SIMIX_req_sem_acquire(smx_sem_t sem)
+void simcall_sem_acquire(smx_sem_t sem)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_SEM_ACQUIRE;
-  req->sem_acquire.sem = sem;
+  simcall->call = SIMCALL_SEM_ACQUIRE;
+  simcall->sem_acquire.sem = sem;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-void SIMIX_req_sem_acquire_timeout(smx_sem_t sem, double timeout)
+void simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_SEM_ACQUIRE_TIMEOUT;
-  req->sem_acquire_timeout.sem = sem;
-  req->sem_acquire_timeout.timeout = timeout;
+  simcall->call = SIMCALL_SEM_ACQUIRE_TIMEOUT;
+  simcall->sem_acquire_timeout.sem = sem;
+  simcall->sem_acquire_timeout.timeout = timeout;
 
-  SIMIX_request_push(req->issuer);
+  SIMIX_simcall_push(simcall->issuer);
 }
 
-int SIMIX_req_sem_get_capacity(smx_sem_t sem)
+int simcall_sem_get_capacity(smx_sem_t sem)
 {
-  smx_req_t req = SIMIX_req_mine();
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  req->call = REQ_SEM_GET_CAPACITY;
-  req->sem_get_capacity.sem = sem;
+  simcall->call = SIMCALL_SEM_GET_CAPACITY;
+  simcall->sem_get_capacity.sem = sem;
 
-  SIMIX_request_push(req->issuer);
-  return req->sem_get_capacity.result;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->sem_get_capacity.result;
 }
+
+void simcall_file_read(char* name)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_FILE_READ;
+  simcall->file_read.name = name;
+  SIMIX_simcall_push(simcall->issuer);
+}
+
 /* ************************************************************************** */
 
-/** @brief returns a printable string representing the request kind */
-const char *SIMIX_request_name(int kind) {
-  return request_names[kind];
+/** @brief returns a printable string representing a simcall */
+const char *SIMIX_simcall_name(e_smx_simcall_t kind) {
+  return simcall_names[kind];
 }

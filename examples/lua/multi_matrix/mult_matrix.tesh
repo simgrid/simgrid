@@ -9,6 +9,6 @@ $ lua mult_matrix.lua "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:Sender@Inmos) Sending matrix_task to Bellevue
 > [  0.000000] (2:Receiver@Bellevue) Hello From Receiver
 > [  0.000000] (2:Receiver@Bellevue) Receiving Task from Inmos
-> [  0.031030] (0:@) Simulation's over.See you.
-> [  0.031030] (1:Sender@Inmos) Got the Multiplication result ...Bye
-> [  0.031030] (2:Receiver@Bellevue) Calcul is done ... Bye
+> [  0.034028] (0:@) Simulation's over.See you.
+> [  0.034028] (1:Sender@Inmos) Got the Multiplication result ...Bye
+> [  0.034028] (2:Receiver@Bellevue) Calcul is done ... Bye

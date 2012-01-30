@@ -102,7 +102,6 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  MSG_set_channel_number(0);
   MSG_function_register("master", master);
   MSG_function_register("slave", slave);
 

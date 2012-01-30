@@ -155,7 +155,9 @@ void TRACE_paje_start(void)
 {
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
-  xbt_assert (tracing_file != NULL, "Tracefile %s could not be opened for writing.", filename);
+  if (tracing_file == NULL){
+    THROWF (system_error, 1, "Tracefile %s could not be opened for writing.", filename);
+  }
 
   XBT_DEBUG("Filename %s is open for writing", filename);
 

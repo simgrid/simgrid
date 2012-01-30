@@ -97,11 +97,21 @@ int slave(int argc, char *argv[])
   return 0;
 }                               /* end_of_slave */
 
-/** Test function */
-MSG_error_t test_all(const char *platform_file,
-                     const char *application_file)
+/** Main function */
+int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  MSG_error_t res;
+  const char *platform_file;
+  const char *application_file;
+
+  MSG_global_init(&argc, argv);
+  if (argc < 3) {
+    printf("Usage: %s platform_file deployment_file\n", argv[0]);
+    printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
+    exit(1);
+  }
+  platform_file = argv[1];
+  application_file = argv[2];
 
   /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */
@@ -115,22 +125,6 @@ MSG_error_t test_all(const char *platform_file,
   res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
-  return res;
-}                               /* end_of_test_all */
-
-
-/** Main function */
-int main(int argc, char *argv[])
-{
-  MSG_error_t res = MSG_OK;
-
-  MSG_global_init(&argc, argv);
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file\n", argv[0]);
-    printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
-    exit(1);
-  }
-  res = test_all(argv[1], argv[2]);
   MSG_clean();
 
   if (res == MSG_OK)

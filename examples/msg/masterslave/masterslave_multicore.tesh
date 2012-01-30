@@ -8,30 +8,30 @@ $ $SG_TEST_EXENV ./masterslave/masterslave_mailbox ${srcdir:=.}/../platforms/mul
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 6 slaves and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"
-> [Tremblay:master:(1) 0.002164] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "slave-1"
-> [Tremblay:master:(1) 0.004328] [msg_test/INFO] Sending "Task_2" (of 20) to mailbox "slave-2"
-> [Tremblay:master:(1) 0.006492] [msg_test/INFO] Sending "Task_3" (of 20) to mailbox "slave-3"
-> [Tremblay:master:(1) 0.008656] [msg_test/INFO] Sending "Task_4" (of 20) to mailbox "slave-4"
-> [Tremblay:master:(1) 0.010820] [msg_test/INFO] Sending "Task_5" (of 20) to mailbox "slave-5"
-> [Tremblay:master:(1) 0.012984] [msg_test/INFO] Sending "Task_6" (of 20) to mailbox "slave-0"
-> [Tremblay:master:(1) 0.514038] [msg_test/INFO] Sending "Task_7" (of 20) to mailbox "slave-1"
-> [Tremblay:master:(1) 0.516202] [msg_test/INFO] Sending "Task_8" (of 20) to mailbox "slave-2"
-> [Tremblay:master:(1) 0.518366] [msg_test/INFO] Sending "Task_9" (of 20) to mailbox "slave-3"
-> [Tremblay:master:(1) 0.520530] [msg_test/INFO] Sending "Task_10" (of 20) to mailbox "slave-4"
-> [Tremblay:master:(1) 0.522694] [msg_test/INFO] Sending "Task_11" (of 20) to mailbox "slave-5"
-> [Tremblay:master:(1) 0.524858] [msg_test/INFO] Sending "Task_12" (of 20) to mailbox "slave-0"
-> [Tremblay:master:(1) 1.025912] [msg_test/INFO] Sending "Task_13" (of 20) to mailbox "slave-1"
-> [Tremblay:master:(1) 1.028076] [msg_test/INFO] Sending "Task_14" (of 20) to mailbox "slave-2"
-> [Tremblay:master:(1) 1.030240] [msg_test/INFO] Sending "Task_15" (of 20) to mailbox "slave-3"
-> [Tremblay:master:(1) 1.032404] [msg_test/INFO] Sending "Task_16" (of 20) to mailbox "slave-4"
-> [Tremblay:master:(1) 1.034568] [msg_test/INFO] Sending "Task_17" (of 20) to mailbox "slave-5"
-> [Tremblay:master:(1) 1.036732] [msg_test/INFO] Sending "Task_18" (of 20) to mailbox "slave-0"
-> [Tremblay:master:(1) 1.537786] [msg_test/INFO] Sending "Task_19" (of 20) to mailbox "slave-1"
-> [Tremblay:master:(1) 1.539950] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
-> [Tremblay:slave:(2) 2.047652] [msg_test/INFO] I'm done. See you!
-> [Tremblay:slave:(3) 2.049816] [msg_test/INFO] I'm done. See you!
-> [Tremblay:slave:(4) 2.049972] [msg_test/INFO] I'm done. See you!
-> [Tremblay:slave:(5) 2.050128] [msg_test/INFO] I'm done. See you!
-> [Tremblay:slave:(6) 2.050284] [msg_test/INFO] I'm done. See you!
-> [Tremblay:slave:(7) 2.050440] [msg_test/INFO] I'm done. See you!
-> [2.050440] [msg_test/INFO] Simulation time 2.05044
+> [Tremblay:master:(1) 0.002203] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "slave-1"
+> [Tremblay:master:(1) 0.004406] [msg_test/INFO] Sending "Task_2" (of 20) to mailbox "slave-2"
+> [Tremblay:master:(1) 0.006610] [msg_test/INFO] Sending "Task_3" (of 20) to mailbox "slave-3"
+> [Tremblay:master:(1) 0.008813] [msg_test/INFO] Sending "Task_4" (of 20) to mailbox "slave-4"
+> [Tremblay:master:(1) 0.011016] [msg_test/INFO] Sending "Task_5" (of 20) to mailbox "slave-5"
+> [Tremblay:master:(1) 0.013219] [msg_test/INFO] Sending "Task_6" (of 20) to mailbox "slave-0"
+> [Tremblay:master:(1) 0.514116] [msg_test/INFO] Sending "Task_7" (of 20) to mailbox "slave-1"
+> [Tremblay:master:(1) 0.516320] [msg_test/INFO] Sending "Task_8" (of 20) to mailbox "slave-2"
+> [Tremblay:master:(1) 0.518523] [msg_test/INFO] Sending "Task_9" (of 20) to mailbox "slave-3"
+> [Tremblay:master:(1) 0.520726] [msg_test/INFO] Sending "Task_10" (of 20) to mailbox "slave-4"
+> [Tremblay:master:(1) 0.522929] [msg_test/INFO] Sending "Task_11" (of 20) to mailbox "slave-5"
+> [Tremblay:master:(1) 0.525132] [msg_test/INFO] Sending "Task_12" (of 20) to mailbox "slave-0"
+> [Tremblay:master:(1) 1.026029] [msg_test/INFO] Sending "Task_13" (of 20) to mailbox "slave-1"
+> [Tremblay:master:(1) 1.028233] [msg_test/INFO] Sending "Task_14" (of 20) to mailbox "slave-2"
+> [Tremblay:master:(1) 1.030436] [msg_test/INFO] Sending "Task_15" (of 20) to mailbox "slave-3"
+> [Tremblay:master:(1) 1.032639] [msg_test/INFO] Sending "Task_16" (of 20) to mailbox "slave-4"
+> [Tremblay:master:(1) 1.034842] [msg_test/INFO] Sending "Task_17" (of 20) to mailbox "slave-5"
+> [Tremblay:master:(1) 1.037045] [msg_test/INFO] Sending "Task_18" (of 20) to mailbox "slave-0"
+> [Tremblay:master:(1) 1.537943] [msg_test/INFO] Sending "Task_19" (of 20) to mailbox "slave-1"
+> [Tremblay:master:(1) 1.540146] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [Tremblay:slave:(2) 2.047848] [msg_test/INFO] I'm done. See you!
+> [Tremblay:slave:(3) 2.050051] [msg_test/INFO] I'm done. See you!
+> [Tremblay:slave:(4) 2.050246] [msg_test/INFO] I'm done. See you!
+> [Tremblay:slave:(5) 2.050441] [msg_test/INFO] I'm done. See you!
+> [Tremblay:slave:(6) 2.050636] [msg_test/INFO] I'm done. See you!
+> [Tremblay:slave:(7) 2.050832] [msg_test/INFO] I'm done. See you!
+> [2.050832] [msg_test/INFO] Simulation time 2.05083

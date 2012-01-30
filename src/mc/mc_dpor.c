@@ -53,7 +53,7 @@ void MC_dpor(void)
 {
   char *req_str;
   int value;
-  smx_req_t req = NULL, prev_req = NULL;
+  smx_simcall_t req = NULL, prev_req = NULL;
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
@@ -88,7 +88,7 @@ void MC_dpor(void)
       mc_stats->executed_transitions++;
 
       /* Answer the request */
-      SIMIX_request_pre(req, value); /* After this call req is no longer usefull */
+      SIMIX_simcall_pre(req, value); /* After this call req is no longer usefull */
 
       /* Wait for requests (schedules processes) */
       MC_wait_for_requests();
@@ -232,7 +232,7 @@ void MC_dpor_stateful(){
 
   int value;
   mc_state_t next_graph_state = NULL;
-  smx_req_t req = NULL, prev_req = NULL;
+  smx_simcall_t req = NULL, prev_req = NULL;
   char *req_str;
   xbt_fifo_item_t item = NULL;
 
@@ -268,7 +268,7 @@ void MC_dpor_stateful(){
       mc_stats->executed_transitions++;
       
       /* Answer the request */
-      SIMIX_request_pre(req, value);
+      SIMIX_simcall_pre(req, value);
       
       /* Wait for requests (schedules processes) */
       MC_wait_for_requests();

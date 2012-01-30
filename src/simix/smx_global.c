@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "smx_private.h"
 #include "xbt/heap.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -203,8 +203,8 @@ void SIMIX_run(void)
               xbt_dynar_length(simix_global->process_to_run));
       SIMIX_process_runall();
       xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
-        if (process->request.call != REQ_NO_REQ) {
-          SIMIX_request_pre(&process->request, 0);
+        if (process->simcall.call != SIMCALL_NONE) {
+          SIMIX_simcall_pre(&process->simcall, 0);
         }
       }
     }
@@ -225,16 +225,14 @@ void SIMIX_run(void)
        if (timer->func)
          ((void (*)(void*))timer->func)(timer->args);
     }
-    /* Wake up all process waiting for the action finish */
+    /* Wake up all processes waiting for a Surf action to finish */
     xbt_dynar_foreach(model_list, iter, model) {
-      for (set = model->states.failed_action_set;
-           set;
-           set = (set == model->states.failed_action_set)
-                 ? model->states.done_action_set
-                 : NULL) {
-        while ((action = xbt_swag_extract(set)))
-          SIMIX_request_post((smx_action_t) action->data);
-      }
+      set = model->states.failed_action_set;
+      while ((action = xbt_swag_extract(set)))
+        SIMIX_simcall_post((smx_action_t) action->data);
+      set = model->states.done_action_set;
+      while ((action = xbt_swag_extract(set)))
+        SIMIX_simcall_post((smx_action_t) action->data);
     }
 
     /* Clean processes to destroy */
@@ -373,20 +371,20 @@ void SIMIX_display_process_status(void)
 
 static void* SIMIX_action_mallocator_new_f(void) {
   smx_action_t action = xbt_new(s_smx_action_t, 1);
-  action->request_list = xbt_fifo_new();
+  action->simcalls = xbt_fifo_new();
   return action;
 }
 
 static void SIMIX_action_mallocator_free_f(void* action) {
-  xbt_fifo_free(((smx_action_t) action)->request_list);
+  xbt_fifo_free(((smx_action_t) action)->simcalls);
   xbt_free(action);
 }
 
 static void SIMIX_action_mallocator_reset_f(void* action) {
 
-  // we also recycle the request list
-  xbt_fifo_t fifo = ((smx_action_t) action)->request_list;
+  // we also recycle the simcall list
+  xbt_fifo_t fifo = ((smx_action_t) action)->simcalls;
   xbt_fifo_reset(fifo);
   memset(action, 0, sizeof(s_smx_action_t));
-  ((smx_action_t) action)->request_list = fifo;
+  ((smx_action_t) action)->simcalls = fifo;
 }

@@ -23,7 +23,7 @@ double xbt_time()
  */
 void xbt_sleep(double sec)
 {
-  SIMIX_req_process_sleep(sec);
+  simcall_process_sleep(sec);
 }
 
 const char *xbt_procname(void)

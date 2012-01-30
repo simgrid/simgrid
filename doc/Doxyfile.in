@@ -615,7 +615,7 @@ WARN_LOGFILE           =
 
 INPUT                  = index.doc \
                          FAQ.doc \
-						 installSimgrid.doc \
+			 install.doc \
                          bindings.doc \
                          options.doc \
                          tracing.doc \

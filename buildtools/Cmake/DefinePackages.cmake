@@ -78,12 +78,13 @@ set(EXTRA_DIST
 	src/gras/Transport/transport_interface.h
 	src/amok/Bandwidth/bandwidth_private.h
 	src/amok/amok_modinter.h
-	src/simix/private.h
-	src/simix/process_private.h
-	src/simix/host_private.h
-	src/simix/network_private.h
-	src/simix/smurf_private.h
-	src/simix/synchro_private.h
+	src/simix/smx_private.h
+	src/simix/smx_process_private.h
+	src/simix/smx_host_private.h
+	src/simix/smx_network_private.h
+	src/simix/smx_smurf_private.h
+	src/simix/smx_synchro_private.h
+	src/simix/smx_io_private.h
 	
 	src/smpi/private.h
 	src/smpi/smpi_mpi_dt_private.h
@@ -249,6 +250,7 @@ set(SIMIX_SRC
 	src/simix/smx_user.c
 	src/simix/smx_smurf.c
 	src/simix/smx_context_raw.c
+	src/simix/smx_io.c
 )
 
 set(MSG_SRC
@@ -339,8 +341,10 @@ set(TRACING_SRC
 	src/instr/instr_routing.c
 	src/instr/instr_config.c
 	src/instr/instr_interface.c
-	src/instr/instr_paje.c
 	src/instr/instr_paje_trace.c
+	src/instr/instr_paje_types.c
+	src/instr/instr_paje_values.c
+	src/instr/instr_paje_containers.c
 	src/instr/instr_msg_task.c
 	src/instr/instr_msg_process.c
 	src/instr/instr_surf.c
@@ -567,7 +571,7 @@ file(GLOB_RECURSE examples_to_install_in_doc
 
     
 set(DOC_SOURCES
-	doc/installSimgrid.doc
+	doc/install.doc
 	doc/bindings.doc
 	doc/options.doc
 	doc/use.doc

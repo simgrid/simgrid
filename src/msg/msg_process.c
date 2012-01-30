@@ -42,8 +42,8 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
     SIMIX_process_self_set_data(smx_proc, NULL);
   }
   else {
-    msg_proc = SIMIX_req_process_get_data(smx_proc);
-    SIMIX_req_process_set_data(smx_proc, NULL);
+    msg_proc = simcall_process_get_data(smx_proc);
+    simcall_process_set_data(smx_proc, NULL);
   }
 
 #ifdef HAVE_TRACING
@@ -178,7 +178,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  SIMIX_req_process_create(&process, name, code, simdata, host->name,
+  simcall_process_create(&process, name, code, simdata, host->name,
                            argc, argv, properties);
 
   if (!process) {
@@ -211,12 +211,12 @@ void MSG_process_kill(m_process_t process)
 #endif
 
   /* FIXME: why do we only cancel communication actions? is this useful? */
-  simdata_process_t p_simdata = SIMIX_req_process_get_data(process);
+  simdata_process_t p_simdata = simcall_process_get_data(process);
   if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
-    SIMIX_req_comm_cancel(p_simdata->waiting_task->simdata->comm);
+    simcall_comm_cancel(p_simdata->waiting_task->simdata->comm);
   }
  
-  SIMIX_req_process_kill(process);
+  simcall_process_kill(process);
 
   return;
 }
@@ -229,13 +229,13 @@ void MSG_process_kill(m_process_t process)
  */
 MSG_error_t MSG_process_migrate(m_process_t process, m_host_t host)
 {
-  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+  simdata_process_t simdata = simcall_process_get_data(process);
   simdata->m_host = host;
 #ifdef HAVE_TRACING
   m_host_t now = simdata->m_host;
   TRACE_msg_process_change_host(process, now, host);
 #endif
-  SIMIX_req_process_change_host(process, host->simdata->smx_host);
+  simcall_process_change_host(process, host->simdata->smx_host);
   return MSG_OK;
 }
 
@@ -250,7 +250,7 @@ void* MSG_process_get_data(m_process_t process)
   xbt_assert(process != NULL, "Invalid parameter");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+  simdata_process_t simdata = simcall_process_get_data(process);
   return simdata->data;
 }
 
@@ -264,7 +264,7 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data)
 {
   xbt_assert(process != NULL, "Invalid parameter");
 
-  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+  simdata_process_t simdata = simcall_process_get_data(process);
   simdata->data = data;
 
   return MSG_OK;
@@ -294,7 +294,7 @@ m_host_t MSG_process_get_host(m_process_t process)
     simdata = SIMIX_process_self_get_data(SIMIX_process_self());
   }
   else {
-    simdata = SIMIX_req_process_get_data(process);
+    simdata = simcall_process_get_data(process);
   }
   return simdata->m_host;
 }
@@ -326,7 +326,7 @@ int MSG_process_get_PID(m_process_t process)
     return 0;
   }
 
-  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+  simdata_process_t simdata = simcall_process_get_data(process);
 
   return simdata != NULL ? simdata->PID : 0;
 }
@@ -342,7 +342,7 @@ int MSG_process_get_PPID(m_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
 
-  simdata_process_t simdata = SIMIX_req_process_get_data(process);
+  simdata_process_t simdata = simcall_process_get_data(process);
 
   return simdata->PPID;
 }
@@ -357,7 +357,7 @@ const char *MSG_process_get_name(m_process_t process)
 {
   xbt_assert(process, "Invalid parameter");
 
-  return SIMIX_req_process_get_name(process);
+  return simcall_process_get_name(process);
 }
 
 /** \ingroup m_process_management
@@ -382,7 +382,7 @@ xbt_dict_t MSG_process_get_properties(m_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
 
-  return SIMIX_req_process_get_properties(process);
+  return simcall_process_get_properties(process);
 
 }
 
@@ -432,7 +432,7 @@ MSG_error_t MSG_process_suspend(m_process_t process)
   TRACE_msg_process_suspend(process);
 #endif
 
-  SIMIX_req_process_suspend(process);
+  simcall_process_suspend(process);
   MSG_RETURN(MSG_OK);
 }
 
@@ -451,7 +451,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
   TRACE_msg_process_resume(process);
 #endif
 
-  SIMIX_req_process_resume(process);
+  simcall_process_resume(process);
   MSG_RETURN(MSG_OK);
 }
 
@@ -464,7 +464,7 @@ MSG_error_t MSG_process_resume(m_process_t process)
 int MSG_process_is_suspended(m_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
-  return SIMIX_req_process_is_suspended(process);
+  return simcall_process_is_suspended(process);
 }
 
 smx_context_t MSG_process_get_smx_ctx(m_process_t process) {

@@ -50,7 +50,7 @@ void smpi_process_init(int *argc, char ***argv)
     proc = SIMIX_process_self();
     index = atoi((*argv)[1]);
     data = smpi_process_remote_data(index);
-    SIMIX_req_process_set_data(proc, data);
+    simcall_process_set_data(proc, data);
     if (*argc > 2) {
       free((*argv)[1]);
       memmove(&(*argv)[1], &(*argv)[2], sizeof(char *) * (*argc - 2));
@@ -77,7 +77,7 @@ void smpi_process_finalize(void)
 {
   // wait for all pending asynchronous comms to finish
   while (SIMIX_process_has_pending_comms(SIMIX_process_self())) {
-    SIMIX_req_process_sleep(1);
+    simcall_process_sleep(1);
   }
 }
 
@@ -199,7 +199,7 @@ void smpi_global_init(void)
     process_data[i]->index = i;
     process_data[i]->argc = NULL;
     process_data[i]->argv = NULL;
-    process_data[i]->mailbox = SIMIX_req_rdv_create(get_mailbox_name(name, i));
+    process_data[i]->mailbox = simcall_rdv_create(get_mailbox_name(name, i));
     process_data[i]->timer = xbt_os_timer_new();
     group = smpi_group_new(1);
     process_data[i]->comm_self = smpi_comm_new(group);
@@ -223,7 +223,7 @@ void smpi_global_destroy(void)
   for (i = 0; i < count; i++) {
     smpi_comm_destroy(process_data[i]->comm_self);
     xbt_os_timer_free(process_data[i]->timer);
-    SIMIX_req_rdv_destroy(process_data[i]->mailbox);
+    simcall_rdv_destroy(process_data[i]->mailbox);
     xbt_free(process_data[i]);
   }
   xbt_free(process_data);
@@ -258,7 +258,7 @@ int MAIN__(void)
   SIMIX_global_init(&xargc, xargv);
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_start();
+  TRACE_start();
 #endif
 
   // parse the platform file: get the host list
@@ -284,7 +284,7 @@ int MAIN__(void)
   smpi_global_destroy();
 
 #ifdef HAVE_TRACING
-  TRACE_smpi_release();
+  TRACE_end();
 #endif
 
   SIMIX_clean();

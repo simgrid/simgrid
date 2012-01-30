@@ -1,20 +1,20 @@
-/*! \page installSimgrid Install Simgrid
+/*! \page install Install Simgrid
 
-\htmlinclude .installSimgrid.doc.toc
+\htmlinclude .install.doc.toc
 
-\section installSimgrid_cmake Installing the SimGrid library
+\section install_cmake Installing the SimGrid library
 
-\subsection installSimgrid_intro Some generalitty
+\subsection install_intro Some generalitty
 
-\subsubsection installSimgrid_intro1 What is Cmake?
+\subsubsection install_intro1 What is Cmake?
 
 CMake is a family of tools designed to build, test and package software. CMake is used to control the software compilation process using simple platform and compiler independent configuration files. CMake generates native makefiles and workspaces that can be used in the compiler environment of your choice. For more information see official web site <a href="http://www.cmake.org/">here</a>.
 
-\subsubsection installSimgrid_intro2 Why cmake?
+\subsubsection install_intro2 Why cmake?
 
 CMake permits to developers to compil projects on different plateforms. Then many tools are embedded like ctest for making test, a link to cdash for vizualise results but also test coverage and bug reports. 
 
-\subsubsection installSimgrid_intro3 What cmake need?
+\subsubsection install_intro3 What cmake need?
 
 CMake needs some prerequists like :
 
@@ -31,7 +31,7 @@ For Windows :
   \li perl <a href="http://www.activestate.com/activeperl/downloads">(download page)</a>
   \li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
   
-\subsubsection installSimgrid_cmakeoption1 Liste of options
+\subsubsection install_cmakeoption1 Liste of options
 
 \verbatim
 "cmake -D[name]=[value] ... ./"
@@ -58,7 +58,7 @@ For Windows :
 	pipol_user			<pipol_username>
 \endverbatim
                                                                                                                                                           
-\subsubsection installSimgrid_cmakeoption2 Options explaination
+\subsubsection install_cmakeoption2 Options explaination
 
   \li enable_gtnets : set to true implie that user wants to use gtnets.
 
@@ -100,7 +100,7 @@ For Windows :
   
   \li pipol_user : specify your pipol username if you want to use the pipol-remote command.
 
-\subsubsection installSimgrid_cmakeoption3 Initialisation
+\subsubsection install_cmakeoption3 Initialisation
 
 Those options are initialized the first time you launch "cmake ." whithout specified option.
 
@@ -125,14 +125,14 @@ gtnets_path			null
 pipol_user			null
 \endverbatim
 
-\subsubsection installSimgrid_cmakeoption4 Option's cache and how to reset?
+\subsubsection install_cmakeoption4 Option's cache and how to reset?
 
 When options have been set they are keep into a cache file named "CMakeCache.txt". So if you want 
 reset values you just delete this file located to the project directory.
 
-\subsection installSimgrid_cmakecompilation Cmake compilation
+\subsection install_cmakecompilation Cmake compilation
 
-\subsubsection installSimgrid_cmakecompilation1 With command line.
+\subsubsection install_cmakecompilation1 With command line.
 
 On Unix or Mac platform:
 
@@ -148,14 +148,14 @@ cmake -G"MinGW Makefiles" -D[name]=[value] ... ./
 mingw32-make
 \endverbatim
 
-\subsubsection installSimgrid_cmakecompilation2 With ccmake tool.
+\subsubsection install_cmakecompilation2 With ccmake tool.
 
 \verbatim
 "ccmake ./"
 \endverbatim
 Then follow instructions.
 
-\subsubsection installSimgrid_cmakecompilation2bis Build out of source.
+\subsubsection install_cmakecompilation2bis Build out of source.
 
 As cmake generate many files used for compilation, we recommand to make a build directory.
 For examples you can make :
@@ -179,7 +179,7 @@ Or complety out of sources :
 
 Those two kind of compilation permit to delete files created by compilation easier.
 
-\subsubsection installSimgrid_cmakecompilation3 Resume of command line
+\subsubsection install_cmakecompilation3 Resume of command line
 
  \li CMake
 \verbatim
@@ -216,9 +216,9 @@ ctest -D NightlyMemoryCheck
 
 If you want to test before make a commit you can simply make "ctest -D Experimental" and then you can visualize results submitted into Cdash. <a href="http://cdash.inria.fr/CDash/index.php?project=Simgrid">(Go to Cdash site)</a>.
 
-\subsection installSimgrid_cmakeinstall How to install with cmake?
+\subsection install_cmakeinstall How to install with cmake?
 
-\subsubsection installSimgrid_cmakeinstall1 From Git. 
+\subsubsection install_cmakeinstall1 From Git. 
 
 \verbatim
 git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid
@@ -228,7 +228,7 @@ make
 make install
 \endverbatim
 
-\subsubsection installSimgrid_cmakeinstall2 From a distrib
+\subsubsection install_cmakeinstall2 From a distrib
 
 \verbatim
 wget https://gforge.inria.fr/frs/download.php/28674/simgrid-3.6.1.tar.gz
@@ -240,9 +240,9 @@ make install
 \endverbatim
 
 
-\subsection installSimgrid_cmakehowto How to modified sources files for developers
+\subsection install_cmakehowto How to modified sources files for developers
 
-\subsubsection installSimgrid_cmakehowto1 Add an executable or examples.
+\subsubsection install_cmakehowto1 Add an executable or examples.
 
 If you want make an executable you have to create a CMakeList.txt to the src directory. 
 You must specified where to create the executable, source list, dependencies and the name of the binary.
@@ -265,7 +265,7 @@ this line :
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
 \endverbatim
 
-\subsubsection installSimgrid_cmakehowto2 Delete/add sources to lib.
+\subsubsection install_cmakehowto2 Delete/add sources to lib.
 
 If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake
 
@@ -286,9 +286,9 @@ set(JMSG_JAVA_SRC
 )
 \endverbatim
 
-\section installSimgrid_Win Installing the SimGrid library with Windows pakage
+\section install_Win Installing the SimGrid framework on Windows
 
-\subsection installSimgrid_Win_install Installing SimGrid
+\subsection install_Win_install Installing SimGrid with the automatic installer
 
 Before start the installation, you need to be sure to have the following dependencies:
   \li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
@@ -323,7 +323,7 @@ Step 3: Choice where to install packets previously selected. Please don't use sp
 
 Step 4: Restart your computer to take in consideration environment variables.
 
-\subsection installSimgrid_Win_compile1 Compile a project "HelloWorld"
+\subsection install_Win_compile1 Compile a project "HelloWorld"
 
 In the SimGrid install directroy you should have an HelloWorld project to explain you how to start 
 compiling a source file. There are:
@@ -345,7 +345,7 @@ Now let's compil this example:
 For compiling your own code you can simply copy the HelloWorld project and rename source name. It will
 create a target with the same name of the source. 
 
-\subsection installSimgrid_Win_compile2 How to add and compile a new example
+\subsection install_Win_compile2 How to add and compile a new example
 
 \li Put your source file into the helloWord directory.
 \li Edit CMakeLists.txt by removing the Find Targets section and add those two lines into this section
@@ -363,7 +363,14 @@ cmake -G"MinGW Makefiles" \<path_to_HelloWorld_project\>
 \li Run "mingw32-make"
 \li You should obtain "TARGET_NAME.exe".
 
-\section installSimgrid_setting_MSG Setting up your own MSG code
+\subsection install_Win_ruby Setup a virtualbox to use SimGrid-Ruby on windows 
+
+Allan Espinosa made these set of Vagrant rules available so that you
+can use the SimGrid Ruby bindings in a virtual machine using
+VirtualBox. Thanks to him for that. You can find his project here:
+https://github.com/aespinosa/simgrid-vagrant
+
+\section install_setting_MSG Setting up your own MSG code
 
 Do not build your simulator by modifying the SimGrid examples.  Go
 outside the SimGrid source tree and create your own working directory
@@ -442,7 +449,7 @@ in a terminal : <tt>info make</tt> and read the introduction. The
 previous example should be enough for a first try but you may want to
 perform some more complex compilations...
 
-\section installSimgrid_setting_GRAS Setting up your own GRAS code
+\section install_setting_GRAS Setting up your own GRAS code
 
 If you use the GRAS interface instead of the MSG one, then previous section
 is not the better source of information. Instead, you should check the GRAS

@@ -178,15 +178,15 @@ int MC_random(int min, int max)
 void MC_wait_for_requests(void)
 {
   smx_process_t process;
-  smx_req_t req;
+  smx_simcall_t req;
   unsigned int iter;
 
   while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
     SIMIX_process_runall();
     xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
-      req = &process->request;
+      req = &process->simcall;
       if (req->call != REQ_NO_REQ && !MC_request_is_visible(req))
-          SIMIX_request_pre(req, 0);
+          SIMIX_simcall_pre(req, 0);
     }
   }
 }
@@ -198,8 +198,8 @@ int MC_deadlock_check()
   if(xbt_swag_size(simix_global->process_list)){
     deadlock = TRUE;
     xbt_swag_foreach(process, simix_global->process_list){
-      if(process->request.call != REQ_NO_REQ
-         && MC_request_is_enabled(&process->request)){
+      if(process->simcall.call != REQ_NO_REQ
+         && MC_request_is_enabled(&process->simcall)){
         deadlock = FALSE;
         break;
       }
@@ -217,7 +217,7 @@ void MC_replay(xbt_fifo_t stack)
 {
   int value;
   char *req_str;
-  smx_req_t req = NULL, saved_req = NULL;
+  smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item;
   mc_state_t state;
 
@@ -240,7 +240,7 @@ void MC_replay(xbt_fifo_t stack)
     if(saved_req){
       /* because we got a copy of the executed request, we have to fetch the  
          real one, pointed by the request field of the issuer process */
-      req = &saved_req->issuer->request;
+      req = &saved_req->issuer->simcall;
 
       /* Debug information */
       if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
@@ -250,7 +250,7 @@ void MC_replay(xbt_fifo_t stack)
       }
     }
          
-    SIMIX_request_pre(req, value);
+    SIMIX_simcall_pre(req, value);
     MC_wait_for_requests();
          
     /* Update statistics */
@@ -264,7 +264,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 {
   int value;
   char *req_str;
-  smx_req_t req = NULL, saved_req = NULL;
+  smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item;
   mc_state_t state;
   mc_pair_stateless_t pair;
@@ -295,7 +295,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 	if(saved_req != NULL){
 	  /* because we got a copy of the executed request, we have to fetch the  
 	     real one, pointed by the request field of the issuer process */
-	  req = &saved_req->issuer->request;
+	  req = &saved_req->issuer->simcall;
 	  //XBT_DEBUG("Req->call %u", req->call);
 	
 	  /* Debug information */
@@ -307,7 +307,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 	
 	}
  
-	SIMIX_request_pre(req, value);
+	SIMIX_simcall_pre(req, value);
 	MC_wait_for_requests();
       }
 
@@ -337,7 +337,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 	if(saved_req != NULL){
 	  /* because we got a copy of the executed request, we have to fetch the  
 	     real one, pointed by the request field of the issuer process */
-	  req = &saved_req->issuer->request;
+	  req = &saved_req->issuer->simcall;
 	  //XBT_DEBUG("Req->call %u", req->call);
 	
 	  /* Debug information */
@@ -349,7 +349,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 	
 	}
  
-	SIMIX_request_pre(req, value);
+	SIMIX_simcall_pre(req, value);
 	MC_wait_for_requests();
       }
 
@@ -387,7 +387,7 @@ void MC_show_stack_safety_stateless(xbt_fifo_t stack)
   int value;
   mc_state_t state;
   xbt_fifo_item_t item;
-  smx_req_t req;
+  smx_simcall_t req;
   char *req_str = NULL;
   
   for (item = xbt_fifo_get_last_item(stack);
@@ -402,7 +402,7 @@ void MC_show_stack_safety_stateless(xbt_fifo_t stack)
   }
 }
 
-void MC_show_deadlock(smx_req_t req)
+void MC_show_deadlock(smx_simcall_t req)
 {
   /*char *req_str = NULL;*/
   XBT_INFO("**************************");
@@ -416,7 +416,7 @@ void MC_show_deadlock(smx_req_t req)
   MC_dump_stack_safety_stateless(mc_stack_safety_stateless);
 }
 
-void MC_show_deadlock_stateful(smx_req_t req)
+void MC_show_deadlock_stateful(smx_simcall_t req)
 {
   /*char *req_str = NULL;*/
   XBT_INFO("**************************");
@@ -448,7 +448,7 @@ void MC_show_stack_safety_stateful(xbt_fifo_t stack)
   int value;
   mc_state_ws_t state;
   xbt_fifo_item_t item;
-  smx_req_t req;
+  smx_simcall_t req;
   char *req_str = NULL;
   
   for (item = xbt_fifo_get_last_item(stack);
@@ -468,7 +468,7 @@ void MC_show_stack_liveness(xbt_fifo_t stack){
   int value;
   mc_pair_stateless_t pair;
   xbt_fifo_item_t item;
-  smx_req_t req;
+  smx_simcall_t req;
   char *req_str = NULL;
   
   for (item = xbt_fifo_get_last_item(stack);

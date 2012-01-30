@@ -61,20 +61,20 @@ The incredible performance of this approach comes at a price: using
 SimGrid this way is a *real* pain in the ass. You cannot use MSG nor
 GRAS nor SMPI nor nothing (because none of these interfaces were coded
 with the *extrem* requirement of the state_machine in mind), and you
-can only rely on SIMIX. From SIMIX, you can only use requests (ie, the
-SIMIX_req_* functions). Moreover, you must know that each blocking
-request will result in an interruption of your execution flow. 
+can only rely on SIMIX. From SIMIX, you can only use simcalls (ie, the
+simcall_* functions). Moreover, you must know that each blocking
+simcall will result in an interruption of your execution flow. 
 
 Let's take an example: If your code contains:
-   smx_action_t act = SIMIX_req_comm_isend(......);
-   SIMIX_req_comm_wait(act);
-   SIMIX_req_comm_destroy(act);
+   smx_action_t act = simcall_comm_isend(......);
+   simcall_comm_wait(act);
+   simcall_comm_destroy(act);
    
 The execution flow is interrupted brutally somewhere within
-SIMIX_req_comm_isend(), the variable act will never be set (and any
+simcall_comm_isend(), the variable act will never be set (and any
 code written after the first line is discarded).
 
-Indeed each SIMIX syscall results in an interruption of the calling
+Indeed each SIMIX simcall results in an interruption of the calling
 process, but in state_machine there is only one system stack and the
 whole state describing the process is in the structure describing it.
 So, when we need to remove one process from the system, to pause it,
@@ -83,10 +83,10 @@ in which maestro put it, whatever what the user process put on it.
 
 In short, each time simix wants to interrupt a process, state_machine
 does a longjmp(2) to the point just before calling the user code. As a
-result, each time you do a syscall, your stack is destroyed to restore
+result, each time you do a simcall, your stack is destroyed to restore
 it in the state where maestro put it before calling your code.
 
-This means that you cannot do anything after a syscall, and that the
+This means that you cannot do anything after a simcall, and that the
 stack is not a safe storing area for your data.
 
 So, you have to write your code as a state machine, with a big ugly
@@ -97,14 +97,14 @@ run_fun(globals, res) {
   switch (globals->state) {
   case l1: /* default value st. we take that branch the first time */
     globals->state = l2;
-    SIMIX_req_comm_isend(....); /* syscall=>hard interrupt on our code*/
+    simcall_comm_isend(....); /* syscall=>hard interrupt on our code */
   case l2: /* we'll take that branch the second time we're scheduled */
     globals->comm = res;
     globals->state = l3;
-    SIMIX_req_comm_wait(globals->comm); /* syscall=>interrupt */
+    simcall_comm_wait(globals->comm); /* syscall=>interrupt */
   case l3: 
     globals->state = where_you_want_to_go_today;
-    SIMIX_req_comm_destroy(globals->comm);
+    simcall_comm_destroy(globals->comm);
   }  
 }
 
