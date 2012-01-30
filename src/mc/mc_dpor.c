@@ -1,10 +1,9 @@
-/* Copyright (c) 2008 Martin Quinson, Cristian Rosa.
-   All rights reserved.                                          */
+/* Copyright (c) 2008-2012. Da SimGrid Team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "private.h"
+#include "mc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
                                 "Logging specific to MC DPOR exploration");

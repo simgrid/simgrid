@@ -1,5 +1,10 @@
+/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #define _GNU_SOURCE
-#include "private.h"
+#include "mc_private.h"
 #include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory_map, mc,
@@ -14,7 +19,7 @@ memory_map_t get_memory_map(void)
   memory_map_t ret = NULL;      /* The memory map to return */
 
 /* The following variables are used during the parsing of the file "maps" */
-  s_map_region memreg;          /* temporal map region used for creating the map */
+  s_map_region_t memreg;          /* temporal map region used for creating the map */
   char *lfields[6], *tok, *endptr;
   int i;
 

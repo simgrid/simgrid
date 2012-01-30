@@ -374,7 +374,7 @@ set(MC_SRC
 	src/mc/mc_global.c
 	src/mc/mc_dpor.c
 	src/mc/mc_request.c
-	src/mc/private.h
+	src/mc/mc_private.h
 	src/mc/mc_liveness.c
 )
 

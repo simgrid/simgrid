@@ -1,3 +1,8 @@
+/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -6,7 +11,7 @@
 #include "../surf/surf_private.h"
 #include "../simix/smx_private.h"
 #include "xbt/fifo.h"
-#include "private.h"
+#include "mc_private.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,

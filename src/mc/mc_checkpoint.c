@@ -1,5 +1,10 @@
+/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include <libgen.h>
-#include "private.h"
+#include "mc_private.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
@@ -32,7 +37,7 @@ static void MC_region_restore(mc_mem_region_t reg)
     memory_map_t maps = get_memory_map();
     MC_UNSET_RAW_MEM;
     unsigned int i=0;
-    s_map_region r;
+    s_map_region_t r;
     while(i < maps->mapsize){
       r = maps->regions[i];
       if (maps->regions[i].pathname != NULL){
@@ -85,7 +90,7 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
 void MC_take_snapshot(mc_snapshot_t snapshot)
 {
   unsigned int i = 0;
-  s_map_region reg;
+  s_map_region_t reg;
   memory_map_t maps = get_memory_map();
 
   /* Save the std heap and the writable mapped pages of libsimgrid */
@@ -108,11 +113,10 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
   /* FIXME: free the memory map */
 }
 
-
 void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
 {
   unsigned int i = 0;
-  s_map_region reg;
+  s_map_region_t reg;
   memory_map_t maps = get_memory_map();
 
   for(i=0; i< snapshot->num_reg; i++){

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007 Arnaud Legrand, Bruno Donnassolo.
-   All rights reserved.                                          */
+/* Copyright (c) 2007-2012 Da SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -139,7 +138,6 @@ void MC_print_statistics_pairs(mc_stats_pair_t);
 
 extern void *std_heap;
 extern void *raw_heap;
-/* extern int raw_heap_fd; */ /* unused */
 #define STD_HEAP_SIZE   20480000        /* Maximum size of the system's heap */
 
 /* FIXME: Horrible hack! because the mmalloc library doesn't provide yet of */
@@ -174,11 +172,11 @@ typedef struct s_map_region {
   unsigned long inode;          /* Inode in the device */
   char *pathname;               /* Path name of the mapped file */
 
-} s_map_region;
+} s_map_region_t;
 
 typedef struct s_memory_map {
 
-  s_map_region *regions;        /* Pointer to an array of regions */
+  s_map_region_t *regions;      /* Pointer to an array of regions */
   int mapsize;                  /* Number of regions in the memory */
 
 } s_memory_map_t, *memory_map_t;
