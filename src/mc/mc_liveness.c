@@ -836,7 +836,7 @@ void MC_ddfs_init(void){
 
   /* Save the initial state */
   initial_snapshot_liveness = xbt_new0(s_mc_snapshot_t, 1);
-  MC_take_snapshot_to_restore_liveness(initial_snapshot_liveness);
+  MC_take_snapshot_liveness(initial_snapshot_liveness);
 
   MC_UNSET_RAW_MEM; 
 
