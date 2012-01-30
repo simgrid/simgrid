@@ -44,6 +44,20 @@ else(DOXYGEN_PATH AND JAVADOC_PATH)
 			)	
 endif(DOXYGEN_PATH AND JAVADOC_PATH)
 
+ADD_CUSTOM_TARGET(pdf
+    COMMAND ${CMAKE_COMMAND} -E echo "XX First pass simgridJava_documentation.pdf"
+    COMMAND make clean
+    COMMAND make pdf || true
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Second pass simgridJava_documentation.pdf"
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/latex/refman.pdf
+    COMMAND make pdf || true
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Write SimgridJava_documentation.pdf"
+    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_HOME_DIRECTORY}/doc/latex/refman.pdf ${CMAKE_HOME_DIRECTORY}/doc/latex/SG_Java_doc.pdf
+  
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/latex/
+)
+add_dependencies(pdf simgrid_documentation)
+
 add_custom_target(sync-gforge-doc
 COMMAND chmod g+rw -R doc/
 COMMAND chmod a+rX -R doc/
