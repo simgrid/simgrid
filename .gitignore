@@ -245,6 +245,14 @@ examples/smpi/smpi_sendrecv
 examples/smpi/dsend
 examples/smpi/mc_bugged1
 examples/smpi/mc_bugged2
+examples/smpi/smpi_traced_simple
+
+examples/msg/mc/bugged1_liveness
+examples/msg/mc/bugged1_stateful
+examples/msg/mc/bugged2_liveness
+examples/msg/mc/bugged2_stateful
+examples/msg/mc/centralized_liveness
+
 src/replay/replay
 src/testall
 teshsuite/gras/datadesc/datadesc_usage
