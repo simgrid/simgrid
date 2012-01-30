@@ -1,5 +1,5 @@
 #include <libgen.h>
-#include "private.h"
+#include "mc_private.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,

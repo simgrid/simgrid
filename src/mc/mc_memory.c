@@ -1,7 +1,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "mc/mc.h"
-#include "private.h"
+#include "mc_private.h"
 #include "xbt/log.h"
 #define _GNU_SOURCE
 

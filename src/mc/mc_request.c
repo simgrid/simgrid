@@ -1,4 +1,4 @@
-#include "private.h"
+#include "mc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
                                 "Logging specific to MC (request)");

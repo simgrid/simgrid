@@ -2,7 +2,7 @@
 
 #include "../simix/smx_private.h"
 #include "xbt/fifo.h"
-#include "private.h"
+#include "mc_private.h"
 
 /**
  * \brief Creates a state data structure used by the exploration algorithm

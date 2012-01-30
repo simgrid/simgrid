@@ -6,7 +6,7 @@
 #include "../surf/surf_private.h"
 #include "../simix/smx_private.h"
 #include "xbt/fifo.h"
-#include "private.h"
+#include "mc_private.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
