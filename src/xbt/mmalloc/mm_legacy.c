@@ -440,7 +440,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap
 	
 	switch(mdp1->heapinfo[i].busy.type){
 	case 0 :
-	  if(mdp1->heapinfo[i].busy.info.size != mdp2->heapinfo[i].busy.info.size){
+	  if(mdp1->heapinfo[i].busy.info.block.size != mdp2->heapinfo[i].busy.info.block.size){
 	    if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){
 	      XBT_DEBUG("Different size of a large cluster");
 	      errors++;
@@ -448,16 +448,16 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap
 	      return 1;
 	    }
 	  }else{
-	    if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.size * BLOCKSIZE)) != 0){
+	    if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.block.size * BLOCKSIZE)) != 0){
 	      if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){	      
-		XBT_DEBUG("Different data in block %zu (size = %zu) (addr_block1 = %p (current = %p) - addr_block2 = %p)", i, mdp1->heapinfo[i].busy.info.size, addr_block1, (char *)std_heap_addr + sizeof(struct mdesc) + ((i-1) * BLOCKSIZE), addr_block2);
+		XBT_DEBUG("Different data in block %zu (size = %zu) (addr_block1 = %p (current = %p) - addr_block2 = %p)", i, mdp1->heapinfo[i].busy.info.block.size, addr_block1, (char *)std_heap_addr + sizeof(struct mdesc) + ((i-1) * BLOCKSIZE), addr_block2);
 		errors++;
 	      }else{
 		return 1;
 	      }
 	    } 
 	  }
-	  i = i+mdp1->heapinfo[i].busy.info.size;
+	  i = i+mdp1->heapinfo[i].busy.info.block.size;
 
 	  break;
 	default :	  
@@ -533,7 +533,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap
 	
 	    switch(mdp1->heapinfo[i].busy.type){
 	    case 0 :
-	      if(mdp1->heapinfo[i].busy.info.size != mdp2->heapinfo[i].busy.info.size){
+	      if(mdp1->heapinfo[i].busy.info.block.size != mdp2->heapinfo[i].busy.info.block.size){
 		if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){
 		  XBT_DEBUG("Different size of a large cluster");
 		  errors++;
@@ -541,7 +541,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap
 		  return 1;
 		}
 	      }else{
-		if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.size * BLOCKSIZE)) != 0){
+		if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy.info.block.size * BLOCKSIZE)) != 0){
 		  if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){	      
 		    XBT_DEBUG("Different data in block %zu (addr_block1 = %p (current = %p) - addr_block2 = %p)", i, addr_block1, (char *)std_heap_addr + sizeof(struct mdesc) + ((i-1) * BLOCKSIZE), addr_block2);
 		    errors++;
@@ -551,7 +551,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap
 		} 
 	      }
 	    
-	      i = i+mdp1->heapinfo[i].busy.info.size;
+	      i = i+mdp1->heapinfo[i].busy.info.block.size;
 
 	      break;
 	    default :	  
