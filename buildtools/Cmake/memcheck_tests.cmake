@@ -504,8 +504,7 @@ ADD_TEST(memcheck-tracing-trace_platform-3 cat simgrid.trace --cd ${CMAKE_HOME_D
 ADD_TEST(memcheck-tracing-trace_platform-4 ${CMAKE_BINARY_DIR}/examples/msg/tracing/trace_platform --cfg=tracing:1 --cfg=tracing/categorized:1 ./../platforms/g5k_cabinets.xml --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-trace_platform-5 cat simgrid.trace --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-trace_platform-6 rm -rf simgrid.trace --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
-# tesh_file: /localhome/giersch/src/simgrid/simgrid-git/examples/msg/tracing/user_variables.tesh not exists!
-#   ADD_TEST(tracing-user_variables 				${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/examples/msg	--cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/user_variables.tesh)
+ADD_TEST(memcheck-tracing-user_variables-0 ${CMAKE_BINARY_DIR}/examples/msg/tracing/user_variables --cfg=tracing:1 --cfg=tracing/platform:1 ./tracing/platform.xml ./tracing/deployment.xml --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-categories-0 ${CMAKE_BINARY_DIR}/examples/msg/tracing/categories --cfg=tracing:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/categories.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/categories.cat.plist --cfg=triva/uncategorized:tracing/categories.uncat.plist ./tracing/platform.xml ./tracing/deployment.xml --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-categories-1 cat tracing/categories.cat.plist --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-tracing-categories-2 cat tracing/categories.uncat.plist --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
