@@ -1177,13 +1177,32 @@ int simcall_sem_get_capacity(smx_sem_t sem)
   return simcall->sem_get_capacity.result;
 }
 
-void simcall_file_read(char* name)
+size_t simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t* stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_FILE_READ;
-  simcall->file_read.name = name;
+  simcall->file_read.ptr = ptr;
+  simcall->file_read.size = size;
+  simcall->file_read.nmemb = nmemb;
+  simcall->file_read.stream = stream;
   SIMIX_simcall_push(simcall->issuer);
+
+  return simcall->file_read.result;
+}
+
+size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t* stream)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_FILE_READ;
+  simcall->file_write.ptr = ptr;
+  simcall->file_write.size = size;
+  simcall->file_write.nmemb = nmemb;
+  simcall->file_write.stream = stream;
+  SIMIX_simcall_push(simcall->issuer);
+
+  return simcall->file_write.result;
 }
 
 /* ************************************************************************** */

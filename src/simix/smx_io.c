@@ -13,14 +13,20 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
                                 "Logging specific to SIMIX (io)");
 
+
+//SIMIX FILE READ
 void SIMIX_pre_file_read(smx_simcall_t simcall)
 {
-  smx_action_t action = SIMIX_file_read(simcall->issuer, simcall->file_read.name);
+  smx_action_t action = SIMIX_file_read(simcall->issuer,
+      simcall->file_read.ptr,
+      simcall->file_read.size,
+      simcall->file_read.nmemb,
+      simcall->file_read.stream);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_read(smx_process_t process, char* name)
+smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size, size_t nmemb, smx_file_t* stream)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -43,6 +49,48 @@ smx_action_t SIMIX_file_read(smx_process_t process, char* name)
   //  TODO in surf model disk???
   //  action->io.surf_io = surf_workstation_model->extension.disk.read(host->host, name),
   action->io.surf_io = surf_workstation_model->extension.workstation.sleep(host->host, 1.0);
+
+  surf_workstation_model->action_data_set(action->io.surf_io, action);
+  XBT_DEBUG("Create io action %p", action);
+
+  return action;
+}
+
+//SIMIX FILE WRITE
+void SIMIX_pre_file_write(smx_simcall_t simcall)
+{
+  smx_action_t action = SIMIX_file_write(simcall->issuer,
+      simcall->file_write.ptr,
+      simcall->file_write.size,
+      simcall->file_write.nmemb,
+      simcall->file_write.stream);
+  xbt_fifo_push(action->simcalls, simcall);
+  simcall->issuer->waiting_action = action;
+}
+
+smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr, size_t size, size_t nmemb, smx_file_t* stream)
+{
+  smx_action_t action;
+  smx_host_t host = process->smx_host;
+
+  /* check if the host is active */
+  if (surf_workstation_model->extension.
+      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
+           host->name);
+  }
+
+  action = xbt_mallocator_get(simix_global->action_mallocator);
+  action->type = SIMIX_ACTION_IO;
+  action->name = NULL;
+#ifdef HAVE_TRACING
+  action->category = NULL;
+#endif
+
+  action->io.host = host;
+  //  TODO in surf model disk???
+  //  action->io.surf_io = surf_workstation_model->extension.disk.write(host->host, name),
+  action->io.surf_io = surf_workstation_model->extension.workstation.sleep(host->host, 2.0);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);

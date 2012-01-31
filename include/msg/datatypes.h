@@ -135,6 +135,16 @@ typedef enum {
 } MSG_error_t;
 /** @} */
 
+/* ******************************** File ************************************ */
+
+/** @brief File datatype
+    @ingroup m_datatypes_management_details */
+typedef struct m_file {
+  char *name;                   /**< @brief host name if any */
+  void *data;                   /**< @brief user data */
+} s_m_file_t;
+/** @} */
+
 
 SG_END_DECL()
 #endif
