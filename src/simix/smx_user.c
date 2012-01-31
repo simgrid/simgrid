@@ -1195,7 +1195,7 @@ size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
-  simcall->call = SIMCALL_FILE_READ;
+  simcall->call = SIMCALL_FILE_WRITE;
   simcall->file_write.ptr = ptr;
   simcall->file_write.size = size;
   simcall->file_write.nmemb = nmemb;
