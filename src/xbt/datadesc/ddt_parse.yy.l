@@ -1,4 +1,4 @@
-/* DataDesc/ddt_parse -- automatic parsing of data structures */
+/* datadesc/ddt_parse -- automatic parsing of data structures */
 
 /* Copyright (c) 2004 Arnaud Legrand, Martin Quinson. All rights reserved.  */
 
@@ -7,8 +7,8 @@
 
 %option noyywrap
 %{
-#include "xbt/DataDesc/datadesc_private.h"
-#include "xbt/DataDesc/ddt_parse.yy.h"
+#include "xbt/datadesc/datadesc_private.h"
+#include "xbt/datadesc/ddt_parse.yy.h"
 #include <string.h>
   YY_BUFFER_STATE xbt_ddt_input_buffer;
   FILE *xbt_ddt_file_to_parse;
