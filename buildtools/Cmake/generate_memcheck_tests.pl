@@ -46,7 +46,7 @@ while ( defined( $line = <MAKETEST> ) ) {
         last;
     }
     if ($dump) {
-        if ( $line =~ /ADD_TEST\(\S+\s+\S*\/tesh\s/ ) {
+        if ( $line =~ /^\s*ADD_TEST\(\S+\s+\S*\/tesh\s/ ) {
             $srcdir     = "";
             $bindir     = "";
             $config_var = "";
@@ -130,7 +130,7 @@ while ( defined( $line = <MAKETEST> ) ) {
             }
             close(TESH_FILE);
         }
-        elsif ( $line =~ /set_tests_properties/ ) {
+        elsif ( $line =~ /^\s*set_tests_properties/ ) {
             if ( $line =~ /set_tests_properties\(([\S]+)/ ) {
                 my ($name_temp) = ($1);
                 $line =~ s/$name_temp/memcheck-$name_temp-0/g;
