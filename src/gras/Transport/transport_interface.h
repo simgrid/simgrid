@@ -15,11 +15,6 @@
 #include "simix/simix.h"
 #include "xbt/queue.h"
 
-/***
- *** Options
- ***/
-extern int gras_opt_trp_nomoredata_on_close;
-
 /* Data of this module specific to each process
  * (used by sg_process.c to cleanup the SG channel cruft)
  */
