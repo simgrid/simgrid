@@ -178,32 +178,32 @@ xbt_dynar_t xbt_workload_parse_file(char *filename)
 
 void xbt_workload_declare_datadesc(void)
 {
-  gras_datadesc_type_t ddt;
+  xbt_datadesc_type_t ddt;
 
-  ddt = gras_datadesc_struct("s_xbt_workload_elm_t");
-  gras_datadesc_struct_append(ddt, "who", gras_datadesc_by_name("string"));
-  gras_datadesc_struct_append(ddt, "comment",
-                              gras_datadesc_by_name("string"));
-  gras_datadesc_struct_append(ddt, "action", gras_datadesc_by_name("int"));
-  gras_datadesc_struct_append(ddt, "date",
-                              gras_datadesc_by_name("double"));
-  gras_datadesc_struct_append(ddt, "d_arg",
-                              gras_datadesc_by_name("double"));
-  gras_datadesc_struct_append(ddt, "str_arg",
-                              gras_datadesc_by_name("string"));
-  gras_datadesc_struct_close(ddt);
+  ddt = xbt_datadesc_struct("s_xbt_workload_elm_t");
+  xbt_datadesc_struct_append(ddt, "who", xbt_datadesc_by_name("string"));
+  xbt_datadesc_struct_append(ddt, "comment",
+                              xbt_datadesc_by_name("string"));
+  xbt_datadesc_struct_append(ddt, "action", xbt_datadesc_by_name("int"));
+  xbt_datadesc_struct_append(ddt, "date",
+                              xbt_datadesc_by_name("double"));
+  xbt_datadesc_struct_append(ddt, "d_arg",
+                              xbt_datadesc_by_name("double"));
+  xbt_datadesc_struct_append(ddt, "str_arg",
+                              xbt_datadesc_by_name("string"));
+  xbt_datadesc_struct_close(ddt);
 
-  gras_datadesc_ref("xbt_workload_elm_t", ddt);
+  xbt_datadesc_ref("xbt_workload_elm_t", ddt);
 
-  ddt = gras_datadesc_struct("s_xbt_workload_data_chunk_t");
-  gras_datadesc_struct_append(ddt, "size", gras_datadesc_by_name("int"));
-  gras_datadesc_cb_field_push(ddt, "size");
-  gras_datadesc_struct_append(ddt, "chunk",
-                              gras_datadesc_ref_pop_arr
-                              (gras_datadesc_by_name("char")));
-  gras_datadesc_struct_close(ddt);
+  ddt = xbt_datadesc_struct("s_xbt_workload_data_chunk_t");
+  xbt_datadesc_struct_append(ddt, "size", xbt_datadesc_by_name("int"));
+  xbt_datadesc_cb_field_push(ddt, "size");
+  xbt_datadesc_struct_append(ddt, "chunk",
+                              xbt_datadesc_ref_pop_arr
+                              (xbt_datadesc_by_name("char")));
+  xbt_datadesc_struct_close(ddt);
 
-  gras_datadesc_ref("xbt_workload_data_chunk_t", ddt);
+  xbt_datadesc_ref("xbt_workload_data_chunk_t", ddt);
 }
 
 

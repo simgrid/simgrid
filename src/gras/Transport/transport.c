@@ -9,172 +9,18 @@
 /***
  *** Options
  ***/
-int gras_opt_trp_nomoredata_on_close = 0;
+static int gras_opt_trp_nomoredata_on_close = 0;
 
 #include "xbt/ex.h"
 #include "xbt/peer.h"
+#include "xbt/socket.h"
+#include "xbt/xbt_socket_private.h" /* FIXME */
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
 #include "gras/Msg/msg_interface.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp, gras,
                                 "Conveying bytes over the network");
-XBT_LOG_NEW_SUBCATEGORY(gras_trp_meas, gras_trp,
-                        "Conveying bytes over the network without formating for perf measurements");
-static short int _gras_trp_started = 0;
-
-static xbt_dict_t _gras_trp_plugins;    /* All registered plugins */
-static void gras_trp_plugin_free(void *p);      /* free one of the plugins */
-
-static void gras_trp_plugin_new(const char *name, gras_trp_setup_t setup)
-{
-  xbt_ex_t e;
-
-  gras_trp_plugin_t plug = xbt_new0(s_gras_trp_plugin_t, 1);
-
-  XBT_DEBUG("Create plugin %s", name);
-
-  plug->name = xbt_strdup(name);
-
-  TRY {
-    setup(plug);
-  }
-  CATCH(e) {
-    if (e.category == mismatch_error) {
-      /* SG plugin raise mismatch when in RL mode (and vice versa) */
-      free(plug->name);
-      free(plug);
-      plug = NULL;
-      xbt_ex_free(e);
-    } else {
-      RETHROW;
-    }
-  }
-
-  if (plug)
-    xbt_dict_set(_gras_trp_plugins, name, plug, NULL);
-}
-
-void gras_trp_init(void)
-{
-  if (!_gras_trp_started) {
-    /* make room for all plugins */
-    _gras_trp_plugins = xbt_dict_new_homogeneous(gras_trp_plugin_free);
-
-#ifdef HAVE_WINSOCK2_H
-    /* initialize the windows mechanism */
-    {
-      WORD wVersionRequested;
-      WSADATA wsaData;
-
-      wVersionRequested = MAKEWORD(2, 0);
-      int res;
-      res = WSAStartup(wVersionRequested, &wsaData);
-      xbt_assert(res == 0, "Cannot find a usable WinSock DLL");
-
-      /* Confirm that the WinSock DLL supports 2.0. */
-      /* Note that if the DLL supports versions greater    */
-      /* than 2.0 in addition to 2.0, it will still return */
-      /* 2.0 in wVersion since that is the version we      */
-      /* requested.                                        */
-
-      xbt_assert(LOBYTE(wsaData.wVersion) == 2 &&
-                  HIBYTE(wsaData.wVersion) == 0,
-                  "Cannot find a usable WinSock DLL");
-      XBT_INFO("Found and initialized winsock2");
-    }                           /* The WinSock DLL is acceptable. Proceed. */
-#elif HAVE_WINSOCK_H
-    {
-      WSADATA wsaData;
-      int res;
-      res = WSAStartup(0x0101, &wsaData);
-      xbt_assert(res == 0, "Cannot find a usable WinSock DLL");
-      XBT_INFO("Found and initialized winsock");
-    }
-#endif
-
-    /* Add plugins */
-    gras_trp_plugin_new("file", gras_trp_file_setup);
-    gras_trp_plugin_new("sg", gras_trp_sg_setup);
-    gras_trp_plugin_new("tcp", gras_trp_tcp_setup);
-  }
-
-  _gras_trp_started++;
-}
-
-void gras_trp_exit(void)
-{
-  XBT_DEBUG("gras_trp value %d", _gras_trp_started);
-  if (_gras_trp_started == 0) {
-    return;
-  }
-
-  if (--_gras_trp_started == 0) {
-#ifdef HAVE_WINSOCK_H
-    if (WSACleanup() == SOCKET_ERROR) {
-      if (WSAGetLastError() == WSAEINPROGRESS) {
-        WSACancelBlockingCall();
-        WSACleanup();
-      }
-    }
-#endif
-
-    /* Delete the plugins */
-    xbt_dict_free(&_gras_trp_plugins);
-  }
-}
-
-
-void gras_trp_plugin_free(void *p)
-{
-  gras_trp_plugin_t plug = p;
-
-  if (plug) {
-    if (plug->exit) {
-      plug->exit(plug);
-    } else if (plug->data) {
-      XBT_DEBUG("Plugin %s lacks exit(). Free data anyway.", plug->name);
-      free(plug->data);
-    }
-
-    free(plug->name);
-    free(plug);
-  }
-}
-
-
-/**
- * gras_trp_socket_new:
- *
- * Malloc a new socket, and initialize it with defaults
- */
-void gras_trp_socket_new(int incoming, gras_socket_t * dst)
-{
-
-  gras_socket_t sock = xbt_new0(s_gras_socket_t, 1);
-
-  XBT_VERB("Create a new socket (%p)", (void *) sock);
-
-  sock->plugin = NULL;
-
-  sock->incoming = incoming ? 1 : 0;
-  sock->outgoing = incoming ? 0 : 1;
-  sock->accepting = incoming ? 1 : 0;
-  sock->meas = 0;
-  sock->recvd = 0;
-  sock->valid = 1;
-  sock->moredata = 0;
-
-  sock->refcount = 1;
-  sock->sd = -1;
-
-  sock->data = NULL;
-  sock->bufdata = NULL;
-
-  *dst = sock;
-
-  XBT_OUT();
-}
 
 /**
  * @brief Opens a server socket and makes it ready to be listened to.
@@ -184,30 +30,28 @@ void gras_trp_socket_new(int incoming, gras_socket_t * dst)
  *
  * In real life, you'll get a TCP socket.
  */
-gras_socket_t
+xbt_socket_t
 gras_socket_server_ext(unsigned short port,
                        unsigned long int buf_size, int measurement)
 {
-  gras_trp_plugin_t trp;
-  gras_socket_t sock;
+  xbt_trp_plugin_t trp;
+  xbt_socket_t sock;
 
   XBT_DEBUG("Create a server socket from plugin %s on port %d",
-         gras_if_RL()? "tcp" : "sg", port);
-  trp = gras_trp_plugin_get_by_name(gras_if_SG()? "sg" : "tcp");
+         gras_if_RL() ? "tcp" : "sg", port);
+  trp = xbt_trp_plugin_get_by_name(gras_if_SG() ? "sg" : "tcp");
 
   /* defaults settings */
-  gras_trp_socket_new(1, &sock);
-  sock->plugin = trp;
-  sock->buf_size = buf_size > 0 ? buf_size : 32 * 1024;
-  sock->meas = measurement;
+  xbt_socket_new_ext(1,
+                     &sock,
+                     trp,
+                     (buf_size > 0 ? buf_size : 32 * 1024),
+                     measurement);
 
   /* Call plugin socket creation function */
   XBT_DEBUG("Prepare socket with plugin (fct=%p)", trp->socket_server);
   TRY {
     trp->socket_server(trp, port, sock);
-    XBT_DEBUG("in=%c out=%c accept=%c",
-           sock->incoming ? 'y' : 'n',
-           sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
   }
   CATCH_ANONYMOUS {
     free(sock);
@@ -235,13 +79,13 @@ gras_socket_server_ext(unsigned short port,
  *
  * If none of the provided ports works, raises the exception got when trying the last possibility
  */
-gras_socket_t
+xbt_socket_t
 gras_socket_server_range(unsigned short minport, unsigned short maxport,
                          unsigned long int buf_size, int measurement)
 {
 
   int port;
-  gras_socket_t res = NULL;
+  xbt_socket_t res = NULL;
   xbt_ex_t e;
 
   for (port = minport; port < maxport; port++) {
@@ -268,30 +112,28 @@ gras_socket_server_range(unsigned short minport, unsigned short maxport,
  *
  * In real life, you'll get a TCP socket.
  */
-gras_socket_t
+xbt_socket_t
 gras_socket_client_ext(const char *host,
                        unsigned short port,
                        unsigned long int buf_size, int measurement)
 {
-  gras_trp_plugin_t trp;
-  gras_socket_t sock;
+  xbt_trp_plugin_t trp;
+  xbt_socket_t sock;
 
-  trp = gras_trp_plugin_get_by_name(gras_if_SG()? "sg" : "tcp");
+  trp = xbt_trp_plugin_get_by_name(gras_if_SG() ? "sg" : "tcp");
 
   XBT_DEBUG("Create a client socket from plugin %s",
          gras_if_RL()? "tcp" : "sg");
   /* defaults settings */
-  gras_trp_socket_new(0, &sock);
-  sock->plugin = trp;
-  sock->buf_size = buf_size > 0 ? buf_size : 32 * 1024;
-  sock->meas = measurement;
+  xbt_socket_new_ext(0,
+                     &sock,
+                     trp,
+                     (buf_size > 0 ? buf_size : 32 * 1024),
+                     measurement);
 
   /* plugin-specific */
   TRY {
-    (*trp->socket_client) (trp,host,port,sock);
-    XBT_DEBUG("in=%c out=%c accept=%c",
-           sock->incoming ? 'y' : 'n',
-           sock->outgoing ? 'y' : 'n', sock->accepting ? 'y' : 'n');
+    (*trp->socket_client) (trp, host, port, sock);
   }
   CATCH_ANONYMOUS {
     free(sock);
@@ -309,33 +151,33 @@ gras_socket_client_ext(const char *host,
  *
  * In real life, you'll get a TCP socket.
  */
-gras_socket_t gras_socket_server(unsigned short port)
+xbt_socket_t gras_socket_server(unsigned short port)
 {
   return gras_socket_server_ext(port, 32 * 1024, 0);
 }
 
 /** @brief Opens a client socket to a remote host */
-gras_socket_t gras_socket_client(const char *host, unsigned short port)
+xbt_socket_t gras_socket_client(const char *host, unsigned short port)
 {
   return gras_socket_client_ext(host, port, 0, 0);
 }
 
 /** @brief Opens a client socket to a remote host specified as '\a host:\a port' */
-gras_socket_t gras_socket_client_from_string(const char *host)
+xbt_socket_t gras_socket_client_from_string(const char *host)
 {
   xbt_peer_t p = xbt_peer_from_string(host);
-  gras_socket_t res = gras_socket_client_ext(p->name, p->port, 0, 0);
+  xbt_socket_t res = gras_socket_client_ext(p->name, p->port, 0, 0);
   xbt_peer_free(p);
   return res;
 }
 
 void gras_socket_close_voidp(void *sock)
 {
-  gras_socket_close((gras_socket_t) sock);
+  gras_socket_close((xbt_socket_t) sock);
 }
 
 /** \brief Close socket */
-void gras_socket_close(gras_socket_t sock)
+void gras_socket_close(xbt_socket_t sock)
 {
   if (--sock->refcount)
     return;
@@ -343,7 +185,7 @@ void gras_socket_close(gras_socket_t sock)
   xbt_dynar_t sockets =
       ((gras_trp_procdata_t)
        gras_libdata_by_id(gras_trp_libdata_id))->sockets;
-  gras_socket_t sock_iter = NULL;
+  xbt_socket_t sock_iter = NULL;
   unsigned int cursor;
 
   XBT_IN("");
@@ -386,220 +228,6 @@ void gras_socket_close(gras_socket_t sock)
   XBT_OUT();
 }
 
-/**
- * gras_trp_send:
- *
- * Send a bunch of bytes from on socket
- * (stable if we know the storage will keep as is until the next trp_flush)
- */
-void gras_trp_send(gras_socket_t sd, char *data, long int size, int stable)
-{
-  xbt_assert(sd->outgoing, "Socket not suited for data send");
-  sd->plugin->send(sd, data, size, stable);
-}
-
-/**
- * gras_trp_chunk_recv:
- *
- * Receive a bunch of bytes from a socket
- */
-void gras_trp_recv(gras_socket_t sd, char *data, long int size)
-{
-  xbt_assert(sd->incoming, "Socket not suited for data receive");
-  (sd->plugin->recv) (sd, data, size);
-}
-
-/**
- * gras_trp_flush:
- *
- * Make sure all pending communications are done
- */
-void gras_trp_flush(gras_socket_t sd)
-{
-  if (sd->plugin->flush)
-    (sd->plugin->flush) (sd);
-}
-
-gras_trp_plugin_t gras_trp_plugin_get_by_name(const char *name)
-{
-  return xbt_dict_get(_gras_trp_plugins, name);
-}
-
-int gras_socket_my_port(gras_socket_t sock)
-{
-  if (!sock->plugin->my_port)
-    THROWF(unknown_error,0,"Function my_port unimplemented in plugin %s",sock->plugin->name);
-  return sock->plugin->my_port(sock);
-
-}
-
-int gras_socket_peer_port(gras_socket_t sock)
-{
-  if (!sock->plugin->peer_port)
-    THROWF(unknown_error,0,"Function peer_port unimplemented in plugin %s",sock->plugin->name);
-  return sock->plugin->peer_port(sock);
-}
-
-const char *gras_socket_peer_name(gras_socket_t sock)
-{
-  xbt_assert(sock->plugin);
-  return sock->plugin->peer_name(sock);
-}
-
-const char *gras_socket_peer_proc(gras_socket_t sock)
-{
-  return sock->plugin->peer_proc(sock);
-}
-
-void gras_socket_peer_proc_set(gras_socket_t sock, char *peer_proc)
-{
-  return sock->plugin->peer_proc_set(sock,peer_proc);
-}
-
-/** \brief Check if the provided socket is a measurement one (or a regular one) */
-int gras_socket_is_meas(gras_socket_t sock)
-{
-  return sock->meas;
-}
-
-/** \brief Send a chunk of (random) data over a measurement socket
- *
- * @param peer measurement socket to use for the experiment
- * @param timeout timeout (in seconds)
- * @param msg_size size of each chunk sent over the socket (in bytes).
- * @param msg_amount how many of these packets you want to send.
- *
- * Calls to gras_socket_meas_send() and gras_socket_meas_recv() on
- * each side of the socket should be paired.
- *
- * The exchanged data is zeroed to make sure it's initialized, but
- * there is no way to control what is sent (ie, you cannot use these
- * functions to exchange data out of band).
- *
- * @warning: in SimGrid version 3.1 and previous, the numerical arguments
- *           were the total amount of data to send and the msg_size. This
- *           was changed for the fool wanting to send more than MAXINT
- *           bytes in a fat pipe.
- */
-void gras_socket_meas_send(gras_socket_t peer,
-                           unsigned int timeout,
-                           unsigned long int msg_size,
-                           unsigned long int msg_amount)
-{
-  char *chunk = NULL;
-  unsigned long int sent_sofar;
-
-  XBT_IN("");
-  THROWF(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
-      "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
-  if (gras_if_RL())
-    chunk = xbt_malloc0(msg_size);
-
-  xbt_assert(peer->meas,
-              "Asked to send measurement data on a regular socket");
-  xbt_assert(peer->outgoing,
-              "Socket not suited for data send (was created with gras_socket_server(), not gras_socket_client())");
-
-  for (sent_sofar = 0; sent_sofar < msg_amount; sent_sofar++) {
-    XBT_CDEBUG(gras_trp_meas,
-            "Sent %lu msgs of %lu (size of each: %ld) to %s:%d",
-            sent_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
-            gras_socket_peer_port(peer));
-    peer->plugin->raw_send(peer, chunk, msg_size);
-  }
-  XBT_CDEBUG(gras_trp_meas,
-          "Sent %lu msgs of %lu (size of each: %ld) to %s:%d", sent_sofar,
-          msg_amount, msg_size, gras_socket_peer_name(peer),
-          gras_socket_peer_port(peer));
-
-  if (gras_if_RL())
-    free(chunk);
-
-  XBT_OUT();
-}
-
-/** \brief Receive a chunk of data over a measurement socket
- *
- * Calls to gras_socket_meas_send() and gras_socket_meas_recv() on
- * each side of the socket should be paired.
- *
- * @warning: in SimGrid version 3.1 and previous, the numerical arguments
- *           were the total amount of data to send and the msg_size. This
- *           was changed for the fool wanting to send more than MAXINT
- *           bytes in a fat pipe.
- */
-void gras_socket_meas_recv(gras_socket_t peer,
-                           unsigned int timeout,
-                           unsigned long int msg_size,
-                           unsigned long int msg_amount)
-{
-
-  char *chunk = NULL;
-  unsigned long int got_sofar;
-
-  XBT_IN("");
-  THROWF(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
-      "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
-
-  if (gras_if_RL())
-    chunk = xbt_malloc(msg_size);
-
-  xbt_assert(peer->meas,
-              "Asked to receive measurement data on a regular socket");
-  xbt_assert(peer->incoming, "Socket not suited for data receive");
-
-  for (got_sofar = 0; got_sofar < msg_amount; got_sofar++) {
-    XBT_CDEBUG(gras_trp_meas,
-            "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
-            got_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
-            gras_socket_peer_port(peer));
-    (peer->plugin->raw_recv) (peer, chunk, msg_size);
-  }
-  XBT_CDEBUG(gras_trp_meas,
-          "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
-          got_sofar, msg_amount, msg_size, gras_socket_peer_name(peer),
-          gras_socket_peer_port(peer));
-
-  if (gras_if_RL())
-    free(chunk);
-  XBT_OUT();
-}
-
-/**
- * \brief Something similar to the good old accept system call.
- *
- * Make sure that there is someone speaking to the provided server socket.
- * In RL, it does an accept(2) and return the result as last argument.
- * In SG, as accepts are useless, it returns the provided argument as result.
- * You should thus test whether (peer != accepted) before closing both of them.
- *
- * You should only call this on measurement sockets. It is automatically
- * done for regular sockets, but you usually want more control about
- * what's going on with measurement sockets.
- */
-gras_socket_t gras_socket_meas_accept(gras_socket_t peer)
-{
-  gras_socket_t res;
-  THROWF(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
-      "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
-
-  xbt_assert(peer->meas,
-              "No need to accept on non-measurement sockets (it's automatic)");
-
-  if (!peer->accepting) {
-    /* nothing to accept here (must be in SG) */
-    /* BUG: FIXME: this is BAD! it makes tricky to free the accepted socket */
-    return peer;
-  }
-
-  res = (peer->plugin->socket_accept) (peer);
-  res->meas = peer->meas;
-  XBT_CDEBUG(gras_trp_meas, "meas_accepted onto %d", res->sd);
-
-  return res;
-}
-
-
 /*
  * Creating procdata for this module
  */
@@ -609,7 +237,7 @@ static void *gras_trp_procdata_new(void)
 
   res->name = xbt_strdup("gras_trp");
   res->name_len = 0;
-  res->sockets = xbt_dynar_new_sync(sizeof(gras_socket_t *), NULL);
+  res->sockets = xbt_dynar_new_sync(sizeof(xbt_socket_t *), NULL);
   res->myport = 0;
 
   return (void *) res;
@@ -633,12 +261,12 @@ void gras_trp_socketset_dump(const char *name)
       (gras_trp_procdata_t) gras_libdata_by_id(gras_trp_libdata_id);
 
   unsigned int it;
-  gras_socket_t s;
+  xbt_socket_t s;
 
   XBT_INFO("** Dump the socket set %s", name);
   xbt_dynar_foreach(procdata->sockets, it, s) {
     XBT_INFO("  %p -> %s:%d %s",
-          s, gras_socket_peer_name(s), gras_socket_peer_port(s),
+          s, xbt_socket_peer_name(s), xbt_socket_peer_port(s),
           s->valid ? "(valid)" : "(peer dead)");
   }
   XBT_INFO("** End of socket set %s", name);

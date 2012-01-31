@@ -58,9 +58,9 @@ static int amok_pm_cb_join(gras_msg_cb_ctx_t ctx, void *payload)
   xbt_dynar_t group = xbt_dict_get(g->groups, group_name);
   int rank;
 
-  gras_socket_t exp = gras_msg_cb_ctx_from(ctx);
-  xbt_peer_t dude = xbt_peer_new(gras_socket_peer_name(exp),
-                                 gras_socket_peer_port(exp));
+  xbt_socket_t exp = gras_msg_cb_ctx_from(ctx);
+  xbt_peer_t dude = xbt_peer_new(xbt_socket_peer_name(exp),
+                                 xbt_socket_peer_port(exp));
 
   rank = xbt_dynar_length(group);
   xbt_dynar_push(group, &dude);
@@ -78,9 +78,9 @@ static int amok_pm_cb_leave(gras_msg_cb_ctx_t ctx, void *payload)
   char *name = *(void **) payload;
   xbt_dynar_t group = xbt_dict_get(g->groups, name);
 
-  gras_socket_t exp = gras_msg_cb_ctx_from(ctx);
-  xbt_peer_t dude = xbt_peer_new(gras_socket_peer_name(exp),
-                                 gras_socket_peer_port(exp));
+  xbt_socket_t exp = gras_msg_cb_ctx_from(ctx);
+  xbt_peer_t dude = xbt_peer_new(xbt_socket_peer_name(exp),
+                                 xbt_socket_peer_port(exp));
 
   unsigned int cpt;
   xbt_peer_t peer_it;
@@ -121,19 +121,19 @@ void amok_pm_mainloop(double timeOut)
 /** \brief kill a buddy identified by its peername and port. Note that it is not removed from any group it may belong to. */
 void amok_pm_kill_hp(char *name, int port)
 {
-  gras_socket_t sock = gras_socket_client(name, port);
+  xbt_socket_t sock = gras_socket_client(name, port);
   amok_pm_kill(sock);
   gras_socket_close(sock);
 }
 
 /** \brief kill a buddy to which we have a socket already. Note that it is not removed from any group it may belong to. */
-void amok_pm_kill(gras_socket_t buddy)
+void amok_pm_kill(xbt_socket_t buddy)
 {
   gras_msg_send(buddy, "amok_pm_kill", NULL);
 }
 
 /** \brief kill syncronously a buddy (do not return before its death). Note that it is not removed from any group it may belong to. */
-void amok_pm_kill_sync(gras_socket_t buddy)
+void amok_pm_kill_sync(xbt_socket_t buddy)
 {
   gras_msg_rpccall(buddy, 30, "amok_pm_killrpc", NULL, NULL);
 }
@@ -161,7 +161,7 @@ xbt_dynar_t amok_pm_group_new(const char *group_name)
 }
 
 /** \brief retrieve all members of the given remote group */
-xbt_dynar_t amok_pm_group_get(gras_socket_t master, const char *group_name)
+xbt_dynar_t amok_pm_group_get(xbt_socket_t master, const char *group_name)
 {
   xbt_dynar_t res;
 
@@ -173,16 +173,16 @@ xbt_dynar_t amok_pm_group_get(gras_socket_t master, const char *group_name)
  *
  * Returns the rank of the process in the group.
  */
-int amok_pm_group_join(gras_socket_t master, const char *group_name)
+int amok_pm_group_join(xbt_socket_t master, const char *group_name)
 {
   int rank;
   XBT_VERB("Join group '%s' on %s:%d",
-        group_name, gras_socket_peer_name(master),
-        gras_socket_peer_port(master));
+        group_name, xbt_socket_peer_name(master),
+        xbt_socket_peer_port(master));
   gras_msg_rpccall(master, 30, "amok_pm_join", &group_name, &rank);
   XBT_VERB("Joined group '%s' on %s:%d. Got rank %d",
-        group_name, gras_socket_peer_name(master),
-        gras_socket_peer_port(master), rank);
+        group_name, xbt_socket_peer_name(master),
+        xbt_socket_peer_port(master), rank);
   return rank;
 }
 
@@ -190,12 +190,12 @@ int amok_pm_group_join(gras_socket_t master, const char *group_name)
  *
  * If not found, call is ignored 
  */
-void amok_pm_group_leave(gras_socket_t master, const char *group_name)
+void amok_pm_group_leave(xbt_socket_t master, const char *group_name)
 {
   gras_msg_rpccall(master, 30, "amok_pm_leave", &group_name, NULL);
   XBT_VERB("Leaved group '%s' on %s:%d",
-        group_name, gras_socket_peer_name(master),
-        gras_socket_peer_port(master));
+        group_name, xbt_socket_peer_name(master),
+        xbt_socket_peer_port(master));
 }
 
 /** \brief stops all members of the given local group */
@@ -216,7 +216,7 @@ void amok_pm_group_shutdown(const char *group_name)
 }
 
 /** \brief stops all members of the given remote group */
-void amok_pm_group_shutdown_remote(gras_socket_t master,
+void amok_pm_group_shutdown_remote(xbt_socket_t master,
                                    const char *group_name)
 {
   gras_msg_rpccall(master, 30, "amok_pm_shutdown", &group_name, NULL);
@@ -235,22 +235,22 @@ static void _amok_pm_init(void)
 {
   /* no world-wide globals */
   /* Datatype and message declarations */
-  gras_datadesc_type_t pm_group_type =
-      gras_datadesc_dynar(gras_datadesc_by_name("xbt_peer_t"),
+  xbt_datadesc_type_t pm_group_type =
+      xbt_datadesc_dynar(xbt_datadesc_by_name("xbt_peer_t"),
                           xbt_peer_free_voidp);
 
   gras_msgtype_declare("amok_pm_kill", NULL);
   gras_msgtype_declare_rpc("amok_pm_killrpc", NULL, NULL);
 
   gras_msgtype_declare_rpc("amok_pm_get",
-                           gras_datadesc_by_name("string"), pm_group_type);
-  gras_msgtype_declare_rpc("amok_pm_join", gras_datadesc_by_name("string"),
-                           gras_datadesc_by_name("int"));
+                           xbt_datadesc_by_name("string"), pm_group_type);
+  gras_msgtype_declare_rpc("amok_pm_join", xbt_datadesc_by_name("string"),
+                           xbt_datadesc_by_name("int"));
   gras_msgtype_declare_rpc("amok_pm_leave",
-                           gras_datadesc_by_name("string"), NULL);
+                           xbt_datadesc_by_name("string"), NULL);
 
   gras_msgtype_declare_rpc("amok_pm_shutdown",
-                           gras_datadesc_by_name("string"), NULL);
+                           xbt_datadesc_by_name("string"), NULL);
 }
 
 static void _amok_pm_join(void *p)

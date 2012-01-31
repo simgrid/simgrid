@@ -1,4 +1,4 @@
-/* buf trp (transport) - buffered transport using the TCP one               */
+/* buffered transport using the TCP plugin or a custom one                  */
 
 /* Copyright (c) 2004, 2005, 2006, 2007, 2009, 2010. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -13,8 +13,12 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
-#include "gras/Transport/transport_private.h"
-#include "gras/Msg/msg_interface.h"     /* listener_close_socket */
+#include "xbt/xbt_socket_private.h"
+
+#include "gras/Transport/transport_interface.h" /* FIXME */
+#include "gras/Virtu/virtu_interface.h" /* FIXME */
+#include "gras/Msg/msg_interface.h" /* FIXME */
+extern int gras_trp_libdata_id; /* FIXME */
 
 /* FIXME maybe READV is sometime a good thing? */
 #undef HAVE_READV
@@ -23,11 +27,7 @@
 #include <sys/uio.h>
 #endif
 
-#ifndef MIN
-#define MIN(a,b) ((a)<(b)?(a):(b))
-#endif
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_tcp, gras_trp,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_trp_tcp, xbt_trp,
                                 "TCP buffered transport");
 
 /***
@@ -39,7 +39,7 @@ typedef struct {
   int peer_port;                /* port on the other side */
   char *peer_name;              /* hostname of the other side */
   char *peer_proc;              /* process on the other side */
-} s_gras_trp_tcp_sock_data_t, *gras_trp_tcp_sock_data_t;
+} s_xbt_trp_tcp_sock_data_t, *xbt_trp_tcp_sock_data_t;
 
 typedef enum { buffering_buf, buffering_iov } buffering_kind;
 
@@ -47,13 +47,12 @@ typedef struct {
   int size;
   char *data;
   int pos;                      /* for receive; not exchanged over the net */
-} gras_trp_buf_t;
+} xbt_trp_buf_t;
 
-
-struct gras_trp_bufdata_ {
+struct s_xbt_trp_bufdata {
   int buffsize;
-  gras_trp_buf_t in_buf;
-  gras_trp_buf_t out_buf;
+  xbt_trp_buf_t in_buf;
+  xbt_trp_buf_t out_buf;
 
 #ifdef HAVE_READV
   xbt_dynar_t in_buf_v;
@@ -64,32 +63,32 @@ struct gras_trp_bufdata_ {
   buffering_kind out;
 };
 
-
 /*****************************/
 /****[ SOCKET MANAGEMENT ]****/
 /*****************************/
+
 /* we exchange port number on client side on socket creation,
    so we need to be able to talk right now. */
-static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock,
-                                         const char *data,
-                                         unsigned long int size);
-static int gras_trp_tcp_recv(gras_socket_t sock, char *data,
-                             unsigned long int size);
+static XBT_INLINE void xbt_trp_tcp_send(xbt_socket_t sock,
+                                        const char *data,
+                                        unsigned long int size);
+static int xbt_trp_tcp_recv(xbt_socket_t sock, char *data,
+                            unsigned long int size);
 
-
-static int _gras_tcp_proto_number(void);
+static int xbt_trp_tcp_proto_number(void);
+static void xbt_trp_sock_socket_close(xbt_socket_t sock);
 
 static XBT_INLINE
-void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
-                                 const char *host,
-                                 int port,
-                                 /*OUT*/gras_socket_t sock)
+void xbt_trp_sock_socket_client(xbt_trp_plugin_t ignored,
+                                const char *host,
+                                int port,
+                                /* OUT */ xbt_socket_t sock)
 {
-  gras_trp_tcp_sock_data_t sockdata = xbt_new(s_gras_trp_tcp_sock_data_t,1);
+  xbt_trp_tcp_sock_data_t sockdata = xbt_new(s_xbt_trp_tcp_sock_data_t,1);
   sockdata->port = port;
   sockdata->peer_proc = NULL;
   sockdata->peer_port = port;
-  sockdata->peer_name = (char *) strdup(host ? host : "localhost");
+  sockdata->peer_name = (char *) xbt_strdup(host ? host : "localhost");
   sock->data = sockdata;
 
   struct sockaddr_in addr;
@@ -137,7 +136,7 @@ void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
            sockdata->peer_name, sockdata->peer_port, sock_errstr(sock_errno));
   }
 
-  gras_trp_tcp_send(sock, (char *) &myport, sizeof(uint32_t));
+  xbt_trp_tcp_send(sock, (char *) &myport, sizeof(uint32_t));
   XBT_DEBUG("peerport sent to %d", sockdata->peer_port);
 
   XBT_VERB("Connect to %s:%d (sd=%d, port %d here)",
@@ -150,20 +149,20 @@ void gras_trp_sock_socket_client(gras_trp_plugin_t ignored,
  * Open a socket used to receive messages.
  */
 static XBT_INLINE
-void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
-                                 int port,
-                                 gras_socket_t sock)
+void xbt_trp_sock_socket_server(xbt_trp_plugin_t ignored,
+                                int port,
+                                xbt_socket_t sock)
 {
   int size = sock->buf_size;
   int on = 1;
   struct sockaddr_in server;
 
-  gras_trp_tcp_sock_data_t sockdata = xbt_new(s_gras_trp_tcp_sock_data_t,1);
+  xbt_trp_tcp_sock_data_t sockdata = xbt_new(s_xbt_trp_tcp_sock_data_t,1);
   sockdata->port = port;
   sockdata->peer_port = -1;
   sockdata->peer_name = NULL;
   sockdata->peer_proc = NULL;
-  sock->data=sockdata;
+  sock->data = sockdata;
 
   sock->outgoing = 1;           /* TCP => duplex mode */
 
@@ -207,9 +206,9 @@ void gras_trp_sock_socket_server(gras_trp_plugin_t ignored,
         sock->sd);
 }
 
-static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
+static xbt_socket_t xbt_trp_sock_socket_accept(xbt_socket_t sock)
 {
-  gras_socket_t res;
+  xbt_socket_t res;
 
   struct sockaddr_in peer_in;
   socklen_t peer_in_len = sizeof(peer_in);
@@ -223,34 +222,33 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
 
   uint32_t hisport;
 
-  int failed=0;
+  int failed = 0;
 
   XBT_IN("");
-  gras_trp_socket_new(1, &res);
+  xbt_socket_new_ext(1, &res, sock->plugin, sock->buf_size, 0);
 
   sd = accept(sock->sd, (struct sockaddr *) &peer_in, &peer_in_len);
   tmp_errno = sock_errno;
 
   if (sd == -1) {
-    gras_socket_close(sock);
+    xbt_trp_sock_socket_close(sock);
     THROWF(system_error, 0,
            "Accept failed (%s). Droping server socket.",
            sock_errstr(tmp_errno));
   }
 
-  if (_gras_tcp_proto_number()!=-1)
-    if (setsockopt(sd, _gras_tcp_proto_number(), TCP_NODELAY, (char *) &i,s))
-      failed=1;
+  if (xbt_trp_tcp_proto_number() != -1)
+    if (setsockopt(sd, xbt_trp_tcp_proto_number(), TCP_NODELAY, (char *) &i,s))
+      failed = 1;
 
   if (setsockopt(sd, SOL_SOCKET, SO_KEEPALIVE, (char *) &i, s))
-    failed=1;
+    failed = 1;
 
   if (failed)
     THROWF(system_error, 0,
            "setsockopt failed, cannot condition the socket: %s",
            sock_errstr(tmp_errno));
 
-  res->buf_size = sock->buf_size;
   size = sock->buf_size;
   if (setsockopt(sd, SOL_SOCKET, SO_RCVBUF, (char *) &size, sizeof(size))
       || setsockopt(sd, SOL_SOCKET, SO_SNDBUF, (char *) &size,
@@ -263,12 +261,11 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
   res->outgoing = sock->outgoing;
   res->accepting = 0;
   res->sd = sd;
-  gras_trp_tcp_sock_data_t sockdata = xbt_new(s_gras_trp_tcp_sock_data_t,1);
+  xbt_trp_tcp_sock_data_t sockdata = xbt_new(s_xbt_trp_tcp_sock_data_t, 1);
   sockdata->port = -1;
-  res->data=sockdata;
+  res->data = sockdata;
 
-
-  gras_trp_tcp_recv(res, (char *) &hisport, sizeof(hisport));
+  xbt_trp_tcp_recv(res, (char *) &hisport, sizeof(hisport));
   sockdata->peer_port = ntohl(hisport);
   XBT_DEBUG("peerport %d received", sockdata->peer_port);
 
@@ -292,24 +289,23 @@ static gras_socket_t gras_trp_sock_socket_accept(gras_socket_t sock)
   XBT_VERB("Accepted from %s:%d (sd=%d)", sockdata->peer_name, sockdata->peer_port, sd);
   xbt_dynar_push(((gras_trp_procdata_t)
                   gras_libdata_by_id(gras_trp_libdata_id))->sockets, &res);
+  /* FIXME we depend on GRAS here */
 
   XBT_OUT();
   return res;
 }
 
-static void gras_trp_sock_socket_close(gras_socket_t sock)
+static void xbt_trp_sock_socket_close(xbt_socket_t sock)
 {
-
   if (!sock)
     return;                     /* close only once */
 
-  free(((gras_trp_tcp_sock_data_t)sock->data)->peer_name);
+  free(((xbt_trp_tcp_sock_data_t)sock->data)->peer_name);
   free(sock->data);
 
   XBT_VERB("close tcp connection %d", sock->sd);
 
-  /* ask the listener to close the socket */
-  gras_msg_listener_close_socket(sock->sd);
+  gras_msg_listener_close_socket(sock->sd); /* FIXME */
 }
 
 /************************************/
@@ -322,11 +318,10 @@ static void gras_trp_sock_socket_close(gras_socket_t sock)
 /************************************/
 /* Temptation to merge this with file data exchange is great, 
    but doesn't work on BillWare (see tcp_write() in portable.h) */
-static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock,
-                                         const char *data,
-                                         unsigned long int size)
+static XBT_INLINE void xbt_trp_tcp_send(xbt_socket_t sock,
+                                        const char *data,
+                                        unsigned long int size)
 {
-
   while (size) {
     int status = 0;
 
@@ -356,12 +351,11 @@ static XBT_INLINE void gras_trp_tcp_send(gras_socket_t sock,
 }
 
 static XBT_INLINE int
-gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
-                             char *data,
-                             unsigned long int size,
-                             unsigned long int bufsize)
+xbt_trp_tcp_recv_withbuffer(xbt_socket_t sock,
+                            char *data,
+                            unsigned long int size,
+                            unsigned long int bufsize)
 {
-
   int got = 0;
 
   if (sock->recvd) {
@@ -382,8 +376,8 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
     if (status < 0) {
       THROWF(system_error, 0,
              "read(%d,%p,%d) from %s:%d failed: %s; got %d so far",
-             sock->sd, data + got, (int) size, gras_socket_peer_name(sock),
-             gras_socket_peer_port(sock), sock_errstr(sock_errno), got);
+             sock->sd, data + got, (int) size, xbt_socket_peer_name(sock),
+             xbt_socket_peer_port(sock), sock_errstr(sock_errno), got);
     }
     XBT_DEBUG("Got %d more bytes (%s)", status,
            hexa_str((unsigned char *) data + got, status, 0));
@@ -401,10 +395,11 @@ gras_trp_tcp_recv_withbuffer(gras_socket_t sock,
   return got;
 }
 
-static int gras_trp_tcp_recv(gras_socket_t sock,
-                             char *data, unsigned long int size)
+static int xbt_trp_tcp_recv(xbt_socket_t sock,
+                            char *data,
+                            unsigned long int size)
 {
-  return gras_trp_tcp_recv_withbuffer(sock, data, size, size);
+  return xbt_trp_tcp_recv_withbuffer(sock, data, size, size);
 
 }
 
@@ -417,24 +412,24 @@ static int gras_trp_tcp_recv(gras_socket_t sock,
 /**********************************/
 
 /* Make sure the data is sent */
-static void gras_trp_bufiov_flush(gras_socket_t sock)
+static void xbt_trp_bufiov_flush(xbt_socket_t sock)
 {
 #ifdef HAVE_READV
   xbt_dynar_t vect;
   int size;
 #endif
-  gras_trp_bufdata_t *data = sock->bufdata;
+  xbt_trp_bufdata_t *data = sock->bufdata;
   XBT_IN("");
 
   XBT_DEBUG("Flush");
   if (data->out == buffering_buf) {
-    if (XBT_LOG_ISENABLED(gras_trp_tcp, xbt_log_priority_debug))
+    if (XBT_LOG_ISENABLED(xbt_trp_tcp, xbt_log_priority_debug))
       hexa_print("chunk to send ",
                  (unsigned char *) data->out_buf.data, data->out_buf.size);
     if ((data->out_buf.size - data->out_buf.pos) != 0) {
       XBT_DEBUG("Send the chunk (size=%d) to %s:%d", data->out_buf.size,
-             gras_socket_peer_name(sock), gras_socket_peer_port(sock));
-      gras_trp_tcp_send(sock, data->out_buf.data, data->out_buf.size);
+             xbt_socket_peer_name(sock), xbt_socket_peer_port(sock));
+      xbt_trp_tcp_send(sock, data->out_buf.data, data->out_buf.size);
       XBT_VERB("Chunk sent (size=%d)", data->out_buf.size);
       data->out_buf.size = 0;
     }
@@ -464,12 +459,13 @@ static void gras_trp_bufiov_flush(gras_socket_t sock)
 }
 
 static void
-gras_trp_buf_send(gras_socket_t sock,
-                  const char *chunk,
-                  unsigned long int size, int stable_ignored)
+xbt_trp_buf_send(xbt_socket_t sock,
+                 const char *chunk,
+                 unsigned long int size,
+                 int stable_ignored)
 {
 
-  gras_trp_bufdata_t *data = (gras_trp_bufdata_t *) sock->bufdata;
+  xbt_trp_bufdata_t *data = (xbt_trp_bufdata_t *) sock->bufdata;
   int chunk_pos = 0;
 
   XBT_IN("");
@@ -493,17 +489,17 @@ gras_trp_buf_send(gras_socket_t sock,
            hexa_str((unsigned char *) chunk, chunk_pos, 0));
 
     if (data->out_buf.size == data->buffsize)   /* out of space. Flush it */
-      gras_trp_bufiov_flush(sock);
+      xbt_trp_bufiov_flush(sock);
   }
 
   XBT_OUT();
 }
 
 static int
-gras_trp_buf_recv(gras_socket_t sock, char *chunk, unsigned long int size)
+xbt_trp_buf_recv(xbt_socket_t sock, char *chunk, unsigned long int size)
 {
 
-  gras_trp_bufdata_t *data = sock->bufdata;
+  xbt_trp_bufdata_t *data = sock->bufdata;
   long int chunk_pos = 0;
 
   XBT_IN("");
@@ -518,12 +514,10 @@ gras_trp_buf_recv(gras_socket_t sock, char *chunk, unsigned long int size)
              (int) MIN(size - chunk_pos, data->buffsize),
              (int) data->buffsize);
 
-
       data->in_buf.size =
-          gras_trp_tcp_recv_withbuffer(sock, data->in_buf.data,
-                                       MIN(size - chunk_pos,
-                                           data->buffsize),
-                                       data->buffsize);
+          xbt_trp_tcp_recv_withbuffer(sock, data->in_buf.data,
+                                      MIN(size - chunk_pos, data->buffsize),
+                                      data->buffsize);
 
       data->in_buf.pos = 0;
     }
@@ -555,15 +549,15 @@ gras_trp_buf_recv(gras_socket_t sock, char *chunk, unsigned long int size)
 /********************************/
 #ifdef HAVE_READV
 static void
-gras_trp_iov_send(gras_socket_t sock,
-                  const char *chunk, unsigned long int size, int stable)
+xbt_trp_iov_send(xbt_socket_t sock,
+                 const char *chunk, unsigned long int size, int stable)
 {
   struct iovec elm;
-  gras_trp_bufdata_t *data = (gras_trp_bufdata_t *) sock->bufdata;
+  xbt_trp_bufdata_t *data = (xbt_trp_bufdata_t *) sock->bufdata;
 
 
   XBT_DEBUG("Buffer one chunk to be sent later (%s)",
-         hexa_str((char *) chunk, size, 0));
+      hexa_str((char *) chunk, size, 0));
 
   elm.iov_len = (size_t) size;
 
@@ -576,7 +570,7 @@ gras_trp_iov_send(gras_socket_t sock,
       elm.iov_base = (void *) chunk;
       xbt_dynar_push(data->out_buf_v, &elm);
 
-      gras_trp_bufiov_flush(sock);
+      xbt_trp_bufiov_flush(sock);
       return;
     } else {
       /* buffer big enough: 
@@ -597,7 +591,7 @@ gras_trp_iov_send(gras_socket_t sock,
 }
 
 static int
-gras_trp_iov_recv(gras_socket_t sock, char *chunk, unsigned long int size)
+xbt_trp_iov_recv(gras_socket_t sock, char *chunk, unsigned long int size)
 {
   struct iovec elm;
 
@@ -618,22 +612,22 @@ gras_trp_iov_recv(gras_socket_t sock, char *chunk, unsigned long int size)
 /***
  *** Prototypes of BUFFERED
  ***/
-
-void gras_trp_buf_socket_client(gras_trp_plugin_t self,
-    const char *host,
-    int port,
-                                gras_socket_t sock);
-void gras_trp_buf_socket_server(gras_trp_plugin_t self,
+static xbt_socket_t xbt_trp_buf_init_sock(xbt_socket_t sock);
+static void xbt_trp_buf_socket_client(xbt_trp_plugin_t self,
+                               const char *host,
+                               int port,
+                               xbt_socket_t sock);
+static void xbt_trp_buf_socket_server(xbt_trp_plugin_t self,
                                 int port,
-                                gras_socket_t sock);
-gras_socket_t gras_trp_buf_socket_accept(gras_socket_t sock);
+                                xbt_socket_t sock);
+static xbt_socket_t xbt_trp_buf_socket_accept(xbt_socket_t sock);
 
-void gras_trp_buf_socket_close(gras_socket_t sd);
+static void xbt_trp_buf_socket_close(xbt_socket_t sd);
 
 
-gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock)
+static xbt_socket_t xbt_trp_buf_init_sock(xbt_socket_t sock)
 {
-  gras_trp_bufdata_t *data = xbt_new(gras_trp_bufdata_t, 1);
+  xbt_trp_bufdata_t *data = xbt_new(xbt_trp_bufdata_t, 1);
 
   data->buffsize = 100 * 1024;  /* 100k */
 
@@ -663,105 +657,106 @@ gras_socket_t gras_trp_buf_init_sock(gras_socket_t sock)
 /***
  *** Info about who's speaking
  ***/
-static int gras_trp_tcp_my_port(gras_socket_t s) {
-  gras_trp_tcp_sock_data_t sockdata = s->data;
+static int xbt_trp_tcp_my_port(xbt_socket_t s) {
+  xbt_trp_tcp_sock_data_t sockdata = s->data;
   return sockdata->port;
 }
-static int gras_trp_tcp_peer_port(gras_socket_t s) {
-  gras_trp_tcp_sock_data_t sockdata = s->data;
+
+static int xbt_trp_tcp_peer_port(xbt_socket_t s) {
+  xbt_trp_tcp_sock_data_t sockdata = s->data;
   return sockdata->peer_port;
 }
-static const char* gras_trp_tcp_peer_name(gras_socket_t s) {
-  gras_trp_tcp_sock_data_t sockdata = s->data;
+
+static const char* xbt_trp_tcp_peer_name(xbt_socket_t s) {
+  xbt_trp_tcp_sock_data_t sockdata = s->data;
   return sockdata->peer_name;
 }
-static const char* gras_trp_tcp_peer_proc(gras_socket_t s) {
-  gras_trp_tcp_sock_data_t sockdata = s->data;
+
+static const char* xbt_trp_tcp_peer_proc(xbt_socket_t s) {
+  xbt_trp_tcp_sock_data_t sockdata = s->data;
   return sockdata->peer_proc;
 }
-static void gras_trp_tcp_peer_proc_set(gras_socket_t s,char *name) {
-  gras_trp_tcp_sock_data_t sockdata = s->data;
+
+static void xbt_trp_tcp_peer_proc_set(xbt_socket_t s,char *name) {
+  xbt_trp_tcp_sock_data_t sockdata = s->data;
   sockdata->peer_proc = xbt_strdup(name);
 }
 
 /***
  *** Code
  ***/
-void gras_trp_tcp_setup(gras_trp_plugin_t plug)
+void xbt_trp_tcp_setup(xbt_trp_plugin_t plug)
 {
+  plug->my_port = xbt_trp_tcp_my_port;
+  plug->peer_port = xbt_trp_tcp_peer_port;
+  plug->peer_name = xbt_trp_tcp_peer_name;
+  plug->peer_proc = xbt_trp_tcp_peer_proc;
+  plug->peer_proc_set = xbt_trp_tcp_peer_proc_set;
 
-  plug->my_port = gras_trp_tcp_my_port;
-  plug->peer_port = gras_trp_tcp_peer_port;
-  plug->peer_name = gras_trp_tcp_peer_name;
-  plug->peer_proc = gras_trp_tcp_peer_proc;
-  plug->peer_proc_set = gras_trp_tcp_peer_proc_set;
 
-
-  plug->socket_client = gras_trp_buf_socket_client;
-  plug->socket_server = gras_trp_buf_socket_server;
-  plug->socket_accept = gras_trp_buf_socket_accept;
-  plug->socket_close = gras_trp_buf_socket_close;
+  plug->socket_client = xbt_trp_buf_socket_client;
+  plug->socket_server = xbt_trp_buf_socket_server;
+  plug->socket_accept = xbt_trp_buf_socket_accept;
+  plug->socket_close = xbt_trp_buf_socket_close;
 
 #ifdef HAVE_READV
-  plug->send = gras_trp_iov_send;
+  plug->send = xbt_trp_iov_send;
 #else
-  plug->send = gras_trp_buf_send;
+  plug->send = xbt_trp_buf_send;
 #endif
-  plug->recv = gras_trp_buf_recv;
+  plug->recv = xbt_trp_buf_recv;
 
-  plug->raw_send = gras_trp_tcp_send;
-  plug->raw_recv = gras_trp_tcp_recv;
+  plug->raw_send = xbt_trp_tcp_send;
+  plug->raw_recv = xbt_trp_tcp_recv;
 
-  plug->flush = gras_trp_bufiov_flush;
+  plug->flush = xbt_trp_bufiov_flush;
 
   plug->data = NULL;
   plug->exit = NULL;
 }
 
-void gras_trp_buf_socket_client(gras_trp_plugin_t self,
-    const char *host,
-    int port,
-                                /* OUT */ gras_socket_t sock)
+static void xbt_trp_buf_socket_client(xbt_trp_plugin_t self,
+                               const char *host,
+                               int port,
+                               /* OUT */ xbt_socket_t sock)
 {
-
-  gras_trp_sock_socket_client(NULL, host,port,sock);
-  gras_trp_buf_init_sock(sock);
+  xbt_trp_sock_socket_client(NULL, host, port, sock);
+  xbt_trp_buf_init_sock(sock);
 }
 
 /**
- * gras_trp_buf_socket_server:
+ * xbt_trp_buf_socket_server:
  *
  * Open a socket used to receive messages.
  */
-void gras_trp_buf_socket_server(gras_trp_plugin_t self,
-      int port,
-                                /* OUT */ gras_socket_t sock)
+static void xbt_trp_buf_socket_server(xbt_trp_plugin_t self,
+                               int port,
+                               /* OUT */ xbt_socket_t sock)
 {
-
-  gras_trp_sock_socket_server(NULL, port, sock);
-  gras_trp_buf_init_sock(sock);
+  xbt_trp_sock_socket_server(NULL, port, sock);
+  xbt_trp_buf_init_sock(sock);
 }
 
-gras_socket_t gras_trp_buf_socket_accept(gras_socket_t sock)
+static xbt_socket_t xbt_trp_buf_socket_accept(xbt_socket_t sock)
 {
-  return gras_trp_buf_init_sock(gras_trp_sock_socket_accept(sock));
+  return xbt_trp_buf_init_sock(xbt_trp_sock_socket_accept(sock));
 }
 
-void gras_trp_buf_socket_close(gras_socket_t sock)
+static void xbt_trp_buf_socket_close(xbt_socket_t sock)
 {
-  gras_trp_bufdata_t *data = sock->bufdata;
+  xbt_trp_bufdata_t *data = sock->bufdata;
 
   if (data->in_buf.size != data->in_buf.pos) {
     XBT_WARN("Socket closed, but %d bytes were unread (size=%d,pos=%d)",
-          data->in_buf.size - data->in_buf.pos,
-          data->in_buf.size, data->in_buf.pos);
+        data->in_buf.size - data->in_buf.pos,
+        data->in_buf.size, data->in_buf.pos);
   }
   free(data->in_buf.data);
 
   if (data->out_buf.size != data->out_buf.pos) {
     XBT_DEBUG("Flush the socket before closing (in=%d,out=%d)",
            data->in_buf.size, data->out_buf.size);
-    gras_trp_bufiov_flush(sock);
+    xbt_trp_bufiov_flush(sock);
   }
   free(data->out_buf.data);
 
@@ -774,14 +769,14 @@ void gras_trp_buf_socket_close(gras_socket_t sock)
   if (data->out_buf_v) {
     if (!xbt_dynar_is_empty(data->out_buf_v)) {
       XBT_DEBUG("Flush the socket before closing");
-      gras_trp_bufiov_flush(sock);
+      xbt_trp_bufiov_flush(sock);
     }
     xbt_dynar_free(&data->out_buf_v);
   }
 #endif
 
   free(data);
-  gras_trp_sock_socket_close(sock);
+  xbt_trp_sock_socket_close(sock);
 }
 
 /****************************/
@@ -793,7 +788,7 @@ void gras_trp_buf_socket_close(gras_socket_t sock)
  *
  * getprotobyname() is not thread safe. We need to lock it.
  */
-static int _gras_tcp_proto_number(void)
+static int xbt_trp_tcp_proto_number(void)
 {
   struct protoent *fetchedEntry;
   static int returnValue = 0;
@@ -814,7 +809,7 @@ static int _gras_tcp_proto_number(void)
 #ifdef HAVE_WINSOCK_H
 #define RETSTR( x ) case x: return #x
 
-const char *gras_wsa_err2string(int err)
+const char *xbt_wsa_err2string(int err)
 {
   switch (err) {
     RETSTR(WSAEINTR);

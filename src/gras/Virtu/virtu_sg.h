@@ -29,7 +29,7 @@ typedef struct {
 
 } gras_hostdata_t;
 
-/* data for each socket (FIXME: find a better location for that)*/
+/* data for each socket (FIXME: find a better location for that) */
 typedef struct {
   smx_process_t server;
   smx_process_t client;
@@ -45,7 +45,8 @@ typedef struct {
 
 
 /** \brief Returns if I am on the server side of this socket (either server or listener of server) */
-int gras_socket_im_the_server(gras_socket_t sock);
+/* FIXME make an im_the_server function in each socket plugin */
+int gras_socket_im_the_server(xbt_socket_t sock);
 
 
 void *gras_libdata_by_name_from_remote(const char *name, smx_process_t p);

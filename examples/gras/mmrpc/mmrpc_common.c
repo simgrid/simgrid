@@ -14,12 +14,12 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(MatMult, "Messages specific to this example");
    (common to client and server) */
 void mmrpc_register_messages(void)
 {
-  gras_datadesc_type_t matrix_type, request_type;
+  xbt_datadesc_type_t matrix_type, request_type;
 
   matrix_type =
-      gras_datadesc_matrix(gras_datadesc_by_name("double"), NULL);
+      xbt_datadesc_matrix(xbt_datadesc_by_name("double"), NULL);
   request_type =
-      gras_datadesc_array_fixed("s_matrix_t(double)[2]", matrix_type, 2);
+      xbt_datadesc_array_fixed("s_matrix_t(double)[2]", matrix_type, 2);
 
   gras_msgtype_declare("answer", matrix_type);
   gras_msgtype_declare("request", request_type);

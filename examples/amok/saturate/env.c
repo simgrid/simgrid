@@ -32,7 +32,7 @@ static void env_hosttohost_bw(int argc, char *argv[])
   int i;
   xbt_host_t h1;
 
-  gras_socket_t peer;           /* socket to sensor */
+  xbt_socket_t peer;           /* socket to sensor */
 
   /* wait to ensure that all server sockets are there before starting the experiment */
   gras_os_sleep(0.5);
@@ -82,7 +82,7 @@ static void env_Pairwisehost_bw(int argc, char *argv[])
   xbt_host_t h1, h2;
 
   /* socket to sensor */
-  gras_socket_t peer;
+  xbt_socket_t peer;
 
   /* wait to ensure that all server sockets are there before starting the experiment */
   gras_os_sleep(0.5);

@@ -6,15 +6,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define GRAS_DEFINE_TYPE_EXTERN
+#define XBT_DEFINE_TYPE_EXTERN
 #include "xbt/matrix.h"
 #include "mmrpc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(MatMult);
 
-static gras_socket_t try_gras_socket_client(const char *host, int port)
+static xbt_socket_t try_gras_socket_client(const char *host, int port)
 {
-  volatile gras_socket_t sock = NULL;
+  volatile xbt_socket_t sock = NULL;
   xbt_ex_t e;
   TRY {
     sock = gras_socket_client(host, port);
@@ -29,9 +29,9 @@ static gras_socket_t try_gras_socket_client(const char *host, int port)
 
 int client(int argc, char *argv[])
 {
-  gras_socket_t toserver = NULL;        /* peer */
+  xbt_socket_t toserver = NULL;        /* peer */
 
-  gras_socket_t from;
+  xbt_socket_t from;
   xbt_matrix_t request[2], answer;
 
   int i;
@@ -61,7 +61,7 @@ int client(int argc, char *argv[])
 
   /* 5. Keep the user informed of what's going on */
   XBT_INFO(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
-        gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
+        xbt_socket_peer_name(toserver), xbt_socket_peer_port(toserver));
 
   /* 6. Prepare and send the request to the server */
 
@@ -78,7 +78,7 @@ int client(int argc, char *argv[])
   xbt_matrix_free(request[0]);
 
   XBT_INFO(">>>>>>>> Request sent to %s:%d <<<<<<<<",
-        gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
+        xbt_socket_peer_name(toserver), xbt_socket_peer_port(toserver));
 
   /* 7. Wait for the answer from the server, and deal with issues */
   gras_msg_wait(6000, "answer", &from, &answer);
@@ -96,7 +96,7 @@ int client(int argc, char *argv[])
 
   /* 8. Keep the user informed of what's going on, again */
   XBT_INFO(">>>>>>>> Got answer from %s:%d (values are right) <<<<<<<<",
-        gras_socket_peer_name(from), gras_socket_peer_port(from));
+        xbt_socket_peer_name(from), xbt_socket_peer_port(from));
 
   /* 9. Free the allocated resources, and shut GRAS down */
   xbt_matrix_free(request[1]);

@@ -91,7 +91,7 @@
 XBT_PUBLIC(void) amok_bw_init(void);
 XBT_PUBLIC(void) amok_bw_exit(void);
 
-XBT_PUBLIC(void) amok_bw_test(gras_socket_t peer,
+XBT_PUBLIC(void) amok_bw_test(xbt_socket_t peer,
                               unsigned long int buf_size,
                               unsigned long int msg_size,
                               unsigned long int msg_amount,

@@ -11,9 +11,9 @@
 #endif
 
 #include <stdio.h>
+#include "xbt/datadesc.h"
+#include "xbt/datadesc/datadesc_interface.h"
 #include "gras.h"
-
-#include "gras/DataDesc/datadesc_interface.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logging specific to this test");
 
 #define READ  0
@@ -24,11 +24,11 @@ const char *filename = "datadesc_usage.out";
 
 void
 write_read(const char *msgtype, void *src, void *dst,
-           gras_socket_t sock, int direction);
+           xbt_socket_t sock, int direction);
 
 void
 write_read(const char *msgtype, void *src, void *dst,
-           gras_socket_t sock, int direction)
+           xbt_socket_t sock, int direction)
 {
 
   switch (direction) {
@@ -41,7 +41,7 @@ write_read(const char *msgtype, void *src, void *dst,
     break;
 
   case COPY:
-    gras_datadesc_memcpy(gras_datadesc_by_name(msgtype), src, dst);
+    xbt_datadesc_memcpy(xbt_datadesc_by_name(msgtype), src, dst);
     break;
   }
 }
@@ -49,13 +49,13 @@ write_read(const char *msgtype, void *src, void *dst,
 
 /* defined in datadesc_structures.c, which in perl generated */
 void register_structures(void);
-void test_structures(gras_socket_t sock, int direction);
+void test_structures(xbt_socket_t sock, int direction);
 
 /************************
  * Each and every tests *
  ************************/
 
-static void test_int(gras_socket_t sock, int direction)
+static void test_int(xbt_socket_t sock, int direction)
 {
   int i = 5, j;
 
@@ -65,7 +65,7 @@ static void test_int(gras_socket_t sock, int direction)
     xbt_assert(i == j);
 }
 
-static void test_float(gras_socket_t sock, int direction)
+static void test_float(xbt_socket_t sock, int direction)
 {
   float i = 5.0, j;
 
@@ -75,7 +75,7 @@ static void test_float(gras_socket_t sock, int direction)
     xbt_assert(i == j, "%f != %f", i, j);
 }
 
-static void test_double(gras_socket_t sock, int direction)
+static void test_double(xbt_socket_t sock, int direction)
 {
   double i = -3252355.1234, j;
 
@@ -87,7 +87,7 @@ static void test_double(gras_socket_t sock, int direction)
 
 #define FIXED_ARRAY_SIZE 5
 typedef int array[FIXED_ARRAY_SIZE];
-static void test_array(gras_socket_t sock, int direction)
+static void test_array(xbt_socket_t sock, int direction)
 {
   array i = { 35212, -6226, 74337, 11414, 7733 };
   array j;
@@ -107,7 +107,7 @@ static void test_array(gras_socket_t sock, int direction)
 
 /*** Dynar of scalar ***/
 
-static void test_dynar_scal(gras_socket_t sock, int direction)
+static void test_dynar_scal(xbt_socket_t sock, int direction)
 {
   xbt_dynar_t i, j;
   int cpt;
@@ -138,7 +138,7 @@ static void test_dynar_scal(gras_socket_t sock, int direction)
 
 /*** Empty dynar ***/
 
-static void test_dynar_empty(gras_socket_t sock, int direction)
+static void test_dynar_empty(xbt_socket_t sock, int direction)
 {
   xbt_dynar_t i, j;
 
@@ -153,7 +153,7 @@ static void test_dynar_empty(gras_socket_t sock, int direction)
   xbt_dynar_free(&i);
 }
 
-static void test_intref(gras_socket_t sock, int direction)
+static void test_intref(xbt_socket_t sock, int direction)
 {
   int *i, *j;
 
@@ -173,7 +173,7 @@ static void test_intref(gras_socket_t sock, int direction)
 /***
  *** string (dynamic array)
  ***/
-static void test_string(gras_socket_t sock, int direction)
+static void test_string(xbt_socket_t sock, int direction)
 {
   char *i = xbt_strdup("Some data"), *j = NULL;
   int cpt;
@@ -197,7 +197,7 @@ static void test_string(gras_socket_t sock, int direction)
 typedef struct {
   int a, b, c, d;
 } homostruct;
-static void test_homostruct(gras_socket_t sock, int direction)
+static void test_homostruct(xbt_socket_t sock, int direction)
 {
   homostruct *i, *j;
 
@@ -229,7 +229,7 @@ typedef struct {
   unsigned char c2;
   unsigned long int l2;
 } hetestruct;
-static void test_hetestruct(gras_socket_t sock, int direction)
+static void test_hetestruct(xbt_socket_t sock, int direction)
 {
   hetestruct *i, *j;
 
@@ -253,7 +253,7 @@ static void test_hetestruct(gras_socket_t sock, int direction)
   free(i);
 }
 
-static void test_hetestruct_array(gras_socket_t sock, int direction)
+static void test_hetestruct_array(xbt_socket_t sock, int direction)
 {
   hetestruct *i, *j, *p, *q;
   int cpt;
@@ -290,7 +290,7 @@ typedef struct {
   hetestruct hete;
   homostruct homo;
 } nestedstruct;
-static void test_nestedstruct(gras_socket_t sock, int direction)
+static void test_nestedstruct(xbt_socket_t sock, int direction)
 {
   nestedstruct *i, *j;
 
@@ -360,7 +360,7 @@ int list_eq(chained_list_t * i, chained_list_t * j)
   return list_eq(i->l, j->l);
 }
 
-static void test_chain_list(gras_socket_t sock, int direction)
+static void test_chain_list(xbt_socket_t sock, int direction)
 {
   chained_list_t *i, *j;
 
@@ -382,7 +382,7 @@ static void test_chain_list(gras_socket_t sock, int direction)
 /***
  *** graph
  ***/
-static void test_graph(gras_socket_t sock, int direction)
+static void test_graph(xbt_socket_t sock, int direction)
 {
   chained_list_t *i, *j;
 
@@ -423,7 +423,7 @@ static void free_string(void *d)
   free(*(void **) d);
 }
 
-static void test_dynar_ref(gras_socket_t sock, int direction)
+static void test_dynar_ref(xbt_socket_t sock, int direction)
 {
   xbt_dynar_t i, j;
   char buf[1024];
@@ -456,22 +456,22 @@ static void test_dynar_ref(gras_socket_t sock, int direction)
 
 
 /**** PBIO *****/
-GRAS_DEFINE_TYPE(s_pbio, struct s_pbio {        /* structure presented in the IEEE article */
-                 int Cnstatv;
-                 double Cstatev[12]; int Cnprops; double Cprops[110];
-                 int Cndi[4];
-                 int Cnshr;
-                 int Cnpt; double Cdtime; double Ctime[2]; int Cntens;
-                 double Cdfgrd0[373][3];
-                 double Cdfgrd1[3][3]; double Cstress[106];
-                 double Cddsdde[106][106];
-                 };
+XBT_DEFINE_TYPE(s_pbio, struct s_pbio {        /* structure presented in the IEEE article */
+                int Cnstatv;
+                double Cstatev[12]; int Cnprops; double Cprops[110];
+                int Cndi[4];
+                int Cnshr;
+                int Cnpt; double Cdtime; double Ctime[2]; int Cntens;
+                double Cdfgrd0[373][3];
+                double Cdfgrd1[3][3]; double Cstress[106];
+                double Cddsdde[106][106];
+                };
 
     )
 
 typedef struct s_pbio pbio_t;
 
-static void test_pbio(gras_socket_t sock, int direction)
+static void test_pbio(xbt_socket_t sock, int direction)
 {
   int cpt;
   int cpt2;
@@ -479,7 +479,7 @@ static void test_pbio(gras_socket_t sock, int direction)
 
   XBT_INFO
       ("---- Test on the PBIO IEEE struct (also tests GRAS DEFINE TYPE) ----");
-  gras_datadesc_by_symbol(s_pbio); 
+  xbt_datadesc_by_symbol(s_pbio);
 
   /* Fill in that damn struct */
   i.Cnstatv = 325115;
@@ -543,14 +543,14 @@ static void test_pbio(gras_socket_t sock, int direction)
   }
 }
 
-GRAS_DEFINE_TYPE(s_clause, struct s_clause {
-                 int num_lits;
-                 int *literals GRAS_ANNOTE(size, num_lits);     /* Tells GRAS where to find the size */
-                 };)
+XBT_DEFINE_TYPE(s_clause, struct s_clause {
+                int num_lits;
+                int *literals XBT_ANNOTE(size, num_lits);     /* Tells GRAS where to find the size */
+                };)
 
 typedef struct s_clause Clause;
 
-static void test_clause(gras_socket_t sock, int direction)
+static void test_clause(xbt_socket_t sock, int direction)
 {
   Clause *i, *j;
   int cpt;
@@ -581,7 +581,7 @@ static void test_clause(gras_socket_t sock, int direction)
   free(i);
 }
 
-static void test_clause_empty(gras_socket_t sock, int direction)
+static void test_clause_empty(xbt_socket_t sock, int direction)
 {
   Clause *i, *j;
 
@@ -609,88 +609,88 @@ static void test_clause_empty(gras_socket_t sock, int direction)
 
 static void register_types(void)
 {
-  gras_datadesc_type_t my_type, ref_my_type;
+  xbt_datadesc_type_t my_type, ref_my_type;
 
-  gras_msgtype_declare("char", gras_datadesc_by_name("char"));
-  gras_msgtype_declare("int", gras_datadesc_by_name("int"));
-  gras_msgtype_declare("float", gras_datadesc_by_name("float"));
-  gras_msgtype_declare("double", gras_datadesc_by_name("double"));
+  gras_msgtype_declare("char", xbt_datadesc_by_name("char"));
+  gras_msgtype_declare("int", xbt_datadesc_by_name("int"));
+  gras_msgtype_declare("float", xbt_datadesc_by_name("float"));
+  gras_msgtype_declare("double", xbt_datadesc_by_name("double"));
 
-  my_type = gras_datadesc_array_fixed("fixed int array",
-                                      gras_datadesc_by_name("int"),
+  my_type = xbt_datadesc_array_fixed("fixed int array",
+                                      xbt_datadesc_by_name("int"),
                                       FIXED_ARRAY_SIZE);
   gras_msgtype_declare("fixed int array", my_type);
 
-  my_type = gras_datadesc_dynar(gras_datadesc_by_name("int"), NULL);
+  my_type = xbt_datadesc_dynar(xbt_datadesc_by_name("int"), NULL);
   gras_msgtype_declare("xbt_dynar_of_int", my_type);
 
-  my_type = gras_datadesc_ref("int*", gras_datadesc_by_name("int"));
+  my_type = xbt_datadesc_ref("int*", xbt_datadesc_by_name("int"));
   gras_msgtype_declare("int*", my_type);
 
-  gras_msgtype_declare("string", gras_datadesc_by_name("string"));
+  gras_msgtype_declare("string", xbt_datadesc_by_name("string"));
 
-  my_type = gras_datadesc_struct("homostruct");
-  gras_datadesc_struct_append(my_type, "a",
-                              gras_datadesc_by_name("signed int"));
-  gras_datadesc_struct_append(my_type, "b", gras_datadesc_by_name("int"));
-  gras_datadesc_struct_append(my_type, "c", gras_datadesc_by_name("int"));
-  gras_datadesc_struct_append(my_type, "d", gras_datadesc_by_name("int"));
-  gras_datadesc_struct_close(my_type);
+  my_type = xbt_datadesc_struct("homostruct");
+  xbt_datadesc_struct_append(my_type, "a",
+                              xbt_datadesc_by_name("signed int"));
+  xbt_datadesc_struct_append(my_type, "b", xbt_datadesc_by_name("int"));
+  xbt_datadesc_struct_append(my_type, "c", xbt_datadesc_by_name("int"));
+  xbt_datadesc_struct_append(my_type, "d", xbt_datadesc_by_name("int"));
+  xbt_datadesc_struct_close(my_type);
   my_type =
-      gras_datadesc_ref("homostruct*",
-                        gras_datadesc_by_name("homostruct"));
+      xbt_datadesc_ref("homostruct*",
+                        xbt_datadesc_by_name("homostruct"));
   gras_msgtype_declare("homostruct*", my_type);
 
-  my_type = gras_datadesc_struct("hetestruct");
-  gras_datadesc_struct_append(my_type, "c1",
-                              gras_datadesc_by_name("unsigned char"));
-  gras_datadesc_struct_append(my_type, "l1",
-                              gras_datadesc_by_name("unsigned long int"));
-  gras_datadesc_struct_append(my_type, "c2",
-                              gras_datadesc_by_name("unsigned char"));
-  gras_datadesc_struct_append(my_type, "l2",
-                              gras_datadesc_by_name("unsigned long int"));
-  gras_datadesc_struct_close(my_type);
+  my_type = xbt_datadesc_struct("hetestruct");
+  xbt_datadesc_struct_append(my_type, "c1",
+                              xbt_datadesc_by_name("unsigned char"));
+  xbt_datadesc_struct_append(my_type, "l1",
+                              xbt_datadesc_by_name("unsigned long int"));
+  xbt_datadesc_struct_append(my_type, "c2",
+                              xbt_datadesc_by_name("unsigned char"));
+  xbt_datadesc_struct_append(my_type, "l2",
+                              xbt_datadesc_by_name("unsigned long int"));
+  xbt_datadesc_struct_close(my_type);
   my_type =
-      gras_datadesc_ref("hetestruct*",
-                        gras_datadesc_by_name("hetestruct"));
+      xbt_datadesc_ref("hetestruct*",
+                        xbt_datadesc_by_name("hetestruct"));
   gras_msgtype_declare("hetestruct*", my_type);
 
   my_type =
-      gras_datadesc_array_fixed("hetestruct[10]",
-                                gras_datadesc_by_name("hetestruct"), 10);
-  my_type = gras_datadesc_ref("hetestruct[10]*", my_type);
+      xbt_datadesc_array_fixed("hetestruct[10]",
+                                xbt_datadesc_by_name("hetestruct"), 10);
+  my_type = xbt_datadesc_ref("hetestruct[10]*", my_type);
   gras_msgtype_declare("hetestruct[10]*", my_type);
 
-  my_type = gras_datadesc_struct("nestedstruct");
-  gras_datadesc_struct_append(my_type, "hete",
-                              gras_datadesc_by_name("hetestruct"));
-  gras_datadesc_struct_append(my_type, "homo",
-                              gras_datadesc_by_name("homostruct"));
-  gras_datadesc_struct_close(my_type);
+  my_type = xbt_datadesc_struct("nestedstruct");
+  xbt_datadesc_struct_append(my_type, "hete",
+                              xbt_datadesc_by_name("hetestruct"));
+  xbt_datadesc_struct_append(my_type, "homo",
+                              xbt_datadesc_by_name("homostruct"));
+  xbt_datadesc_struct_close(my_type);
   my_type =
-      gras_datadesc_ref("nestedstruct*",
-                        gras_datadesc_by_name("nestedstruct"));
+      xbt_datadesc_ref("nestedstruct*",
+                        xbt_datadesc_by_name("nestedstruct"));
   gras_msgtype_declare("nestedstruct*", my_type);
 
-  my_type = gras_datadesc_struct("chained_list_t");
-  ref_my_type = gras_datadesc_ref("chained_list_t*", my_type);
-  gras_datadesc_struct_append(my_type, "v", gras_datadesc_by_name("int"));
-  gras_datadesc_struct_append(my_type, "l", ref_my_type);
-  gras_datadesc_struct_close(my_type);
-  gras_datadesc_cycle_set(gras_datadesc_by_name("chained_list_t*"));
+  my_type = xbt_datadesc_struct("chained_list_t");
+  ref_my_type = xbt_datadesc_ref("chained_list_t*", my_type);
+  xbt_datadesc_struct_append(my_type, "v", xbt_datadesc_by_name("int"));
+  xbt_datadesc_struct_append(my_type, "l", ref_my_type);
+  xbt_datadesc_struct_close(my_type);
+  xbt_datadesc_cycle_set(xbt_datadesc_by_name("chained_list_t*"));
   gras_msgtype_declare("chained_list_t", my_type);
   gras_msgtype_declare("chained_list_t*", ref_my_type);
 
   my_type =
-      gras_datadesc_dynar(gras_datadesc_by_name("string"), &free_string);
+      xbt_datadesc_dynar(xbt_datadesc_by_name("string"), &free_string);
   gras_msgtype_declare("xbt_dynar_of_string", my_type);
 
-  my_type = gras_datadesc_by_symbol(s_pbio);
+  my_type = xbt_datadesc_by_symbol(s_pbio);
   gras_msgtype_declare("s_pbio", my_type);
 
-  my_type = gras_datadesc_by_symbol(s_clause);
-  my_type = gras_datadesc_ref("Clause*", my_type);
+  my_type = xbt_datadesc_by_symbol(s_clause);
+  my_type = xbt_datadesc_ref("Clause*", my_type);
   gras_msgtype_declare("Clause*", my_type);
 
 }
@@ -701,7 +701,7 @@ static void register_types(void)
 
 int main(int argc, char *argv[])
 {
-  gras_socket_t sock = NULL;
+  xbt_socket_t sock = NULL;
   int direction = WRITE;
   int cpt;
   char local_arch, remote_arch;
@@ -713,8 +713,8 @@ int main(int argc, char *argv[])
   for (cpt = 1; cpt < argc; cpt++) {
     if (!strcmp(argv[cpt], "--arch")) {
       XBT_INFO("We are on %s (#%d)",
-            gras_datadesc_arch_name(gras_arch_selfid()),
-            (int) gras_arch_selfid());
+            xbt_datadesc_arch_name(xbt_arch_selfid()),
+            (int) xbt_arch_selfid());
       exit(0);
     } else if (!strcmp(argv[cpt], "--help")) {
       printf("Usage: datadesc_usage [option] [filename]\n");
@@ -730,7 +730,7 @@ int main(int argc, char *argv[])
       direction = WRITE;
       filename =
           bprintf("datadesc.%s",
-                  gras_datadesc_arch_name(gras_arch_selfid()));
+                  xbt_datadesc_arch_name(xbt_arch_selfid()));
     } else if (!strcmp(argv[cpt], "--read")) {
       direction = READ;
     } else if (!strcmp(argv[cpt], "--write")) {
@@ -756,11 +756,11 @@ int main(int argc, char *argv[])
     XBT_INFO("Memory copy");
   }
 
-  local_arch = gras_arch_selfid();
+  local_arch = xbt_arch_selfid();
   write_read("char", &local_arch, &remote_arch, sock, direction);
   if (direction == READ)
     XBT_VERB("This file was generated on %s (%d)",
-          gras_datadesc_arch_name(remote_arch), (int) remote_arch);
+          xbt_datadesc_arch_name(remote_arch), (int) remote_arch);
 
 
   test_int(sock, direction);

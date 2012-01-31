@@ -10,7 +10,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "gras/transport.h"
-#include "gras/datadesc.h"
+#include "xbt/datadesc.h"
 #include "gras/messages.h"
 #include "gras_modinter.h"
 

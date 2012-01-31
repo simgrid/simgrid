@@ -21,8 +21,8 @@ typedef struct s_gras_msg_listener_ {
   xbt_thread_t listener; /* keep this first, gras_socket_im_the_server() does funky transtyping in sg_msg.c */
   xbt_queue_t incomming_messages;       /* messages received from the wire and still to be used by master */
   xbt_queue_t socks_to_close;   /* let the listener close the sockets, since it may be selecting on them. Darwin don't like this trick */
-  gras_socket_t wakeup_sock_listener_side;
-  gras_socket_t wakeup_sock_master_side;
+  xbt_socket_t wakeup_sock_listener_side;
+  xbt_socket_t wakeup_sock_master_side;
   int port; /* The port on which the listener opened the command socket */
   xbt_mutex_t init_mutex;       /* both this mutex and condition are used at initialization to make sure that */
   xbt_cond_t init_cond;         /* the main thread speaks to the listener only once it is started (FIXME: It would be easier using a semaphore, if only semaphores were in xbt_synchro) */
@@ -62,7 +62,7 @@ static void listener_function(void *p)
   while (1) {
     msg = gras_msg_recv_any();
     if (msg->type != msg_wakeup_listener_t) {
-		/* Cannot display who sent this since in SG, gras_socket_peer_* wont work:
+		/* Cannot display who sent this since in SG, xbt_socket_peer_* wont work:
 		   I'm not the user process but I'm just the listener. Too bad */
       XBT_VERB("Got a '%s' message (%s) from sock %p. Queue it for handling by main thread",
             gras_msgtype_get_name(msg->type),e_gras_msg_kind_names[msg->kind],msg->expe);
@@ -116,7 +116,7 @@ gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_received)
   arg->init_cond = xbt_cond_init();
 
   /* declare the message used to awake the listener from the master */
-  gras_msgtype_declare("_wakeup_listener", gras_datadesc_by_name("char"));
+  gras_msgtype_declare("_wakeup_listener", xbt_datadesc_by_name("char"));
 
   /* actually start the thread, and */
   /* wait for the listener to initialize before we connect to its socket */

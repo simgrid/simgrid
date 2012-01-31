@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define GRAS_DEFINE_TYPE_EXTERN
+#define XBT_DEFINE_TYPE_EXTERN
 #include "xbt/matrix.h"
 #include "mmrpc.h"
 
@@ -16,12 +16,12 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(MatMult, "Messages specific to this example");
    (common to client and server) */
 void mmrpc_register_messages(void)
 {
-  gras_datadesc_type_t matrix_type, request_type;
+  xbt_datadesc_type_t matrix_type, request_type;
 
-  matrix_type = gras_datadesc_matrix(gras_datadesc_by_name("double"),
+  matrix_type = xbt_datadesc_matrix(xbt_datadesc_by_name("double"),
                                      NULL);
   request_type =
-      gras_datadesc_array_fixed("s_matrix_t(double)[2]", matrix_type, 2);
+      xbt_datadesc_array_fixed("s_matrix_t(double)[2]", matrix_type, 2);
 
   gras_msgtype_declare("answer", matrix_type);
   gras_msgtype_declare("request", request_type);
@@ -32,7 +32,7 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
                                      void *payload_data)
 {
 
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
 
   /* 1. Get the payload into the data variable */
   xbt_matrix_t *request = (xbt_matrix_t *) payload_data;
@@ -55,7 +55,7 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
 
 int server(int argc, char *argv[])
 {
-  gras_socket_t sock = NULL;
+  xbt_socket_t sock = NULL;
   int port = 4000;
 
   /* 1. Init the GRAS infrastructure */
@@ -95,9 +95,9 @@ int server(int argc, char *argv[])
 
 int client(int argc, char *argv[])
 {
-  gras_socket_t toserver = NULL;        /* peer */
+  xbt_socket_t toserver = NULL;        /* peer */
 
-  gras_socket_t from;
+  xbt_socket_t from;
   xbt_matrix_t request[2], answer;
 
   int i, j;
@@ -134,7 +134,7 @@ int client(int argc, char *argv[])
 
   /* 6. Keep the user informed of what's going on */
   XBT_INFO(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
-        gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
+        xbt_socket_peer_name(toserver), xbt_socket_peer_port(toserver));
 
   /* 7. Prepare and send the request to the server */
 
@@ -151,7 +151,7 @@ int client(int argc, char *argv[])
   xbt_matrix_free(request[0]);
 
   XBT_INFO(">>>>>>>> Request sent to %s:%d <<<<<<<<",
-        gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
+        xbt_socket_peer_name(toserver), xbt_socket_peer_port(toserver));
 
   /* 8. Wait for the answer from the server, and deal with issues */
   gras_msg_wait(6000, "answer", &from, &answer);
@@ -169,7 +169,7 @@ int client(int argc, char *argv[])
 
   /* 9. Keep the user informed of what's going on, again */
   XBT_INFO(">>>>>>>> Got answer from %s:%d (values are right) <<<<<<<<",
-        gras_socket_peer_name(from), gras_socket_peer_port(from));
+        xbt_socket_peer_name(from), xbt_socket_peer_port(from));
 
   /* 10. Free the allocated resources, and shut GRAS down */
   xbt_matrix_free(request[1]);

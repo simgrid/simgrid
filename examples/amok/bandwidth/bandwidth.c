@@ -18,9 +18,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(Bandwidth,
  * Sensor code
  * **********************************************************************/
 
-static gras_socket_t try_gras_socket_client_from_string(const char *host)
+static xbt_socket_t try_gras_socket_client_from_string(const char *host)
 {
-  volatile gras_socket_t sock = NULL;
+  volatile xbt_socket_t sock = NULL;
   xbt_ex_t e;
   TRY {
     sock = gras_socket_client_from_string(host);
@@ -36,8 +36,8 @@ int sensor(int argc, char *argv[]);
 
 int sensor(int argc, char *argv[])
 {
-  gras_socket_t mysock;
-  gras_socket_t master = NULL;
+  xbt_socket_t mysock;
+  xbt_socket_t master = NULL;
   int connection_try = 10;
 
   gras_init(&argc, argv);
@@ -76,8 +76,8 @@ int maestro(int argc, char *argv[])
   int msg_amount = 1;
   double min_duration = 1;
 
-  gras_socket_t peer;
-  gras_socket_t mysock;
+  xbt_socket_t peer;
+  xbt_socket_t mysock;
   xbt_peer_t h1, h2, h_temp;
   xbt_dynar_t group;
 

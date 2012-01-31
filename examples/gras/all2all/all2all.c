@@ -31,8 +31,8 @@ int receiver(int argc, char *argv[])
   int todo;                     /* amount of messages I should get */
   char *data;                   /* message content */
 
-  gras_socket_t mysock;         /* socket on which other people contact me */
-  gras_socket_t expeditor;      /* to notice who wrote me */
+  xbt_socket_t mysock;         /* socket on which other people contact me */
+  xbt_socket_t expeditor;      /* to notice who wrote me */
 
   /* Init the GRAS infrastructure and declare my globals */
   gras_init(&argc, argv);
@@ -42,14 +42,14 @@ int receiver(int argc, char *argv[])
   todo = atoi(argv[2]);
 
   /* Register the known messages */
-  gras_msgtype_declare("data", gras_datadesc_by_name("string"));
+  gras_msgtype_declare("data", xbt_datadesc_by_name("string"));
 
   /* Create my master socket */
   mysock = gras_socket_server(myport);
 
   /* Get the data */
   XBT_INFO("Listening on port %d (expecting %d messages)",
-        gras_socket_my_port(mysock), todo);
+        xbt_socket_my_port(mysock), todo);
   while (todo > 0) {
     gras_msg_wait(60 /* wait up to one minute */ ,
                   "data", &expeditor, &data);
@@ -57,8 +57,8 @@ int receiver(int argc, char *argv[])
     free(data);
 
     XBT_INFO("Got Data from %s:%d (still %d to go)",
-          gras_socket_peer_name(expeditor),
-          gras_socket_peer_port(expeditor), todo);
+          xbt_socket_peer_name(expeditor),
+          xbt_socket_peer_port(expeditor), todo);
 
   }
 
@@ -82,7 +82,7 @@ int sender(int argc, char *argv[])
   xbt_peer_t h;                 /* iterator */
   int connected = 0;
 
-  volatile gras_socket_t peer = NULL;    /* socket to node */
+  volatile xbt_socket_t peer = NULL;    /* socket to node */
 
 
   /* xbt_dynar for peers */
@@ -107,7 +107,7 @@ int sender(int argc, char *argv[])
   XBT_INFO("Launch current node");
 
   /* Register the known messages */
-  gras_msgtype_declare("data", gras_datadesc_by_name("string"));
+  gras_msgtype_declare("data", xbt_datadesc_by_name("string"));
 
 
   /* write to the receivers */

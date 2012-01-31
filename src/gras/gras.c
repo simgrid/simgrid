@@ -11,6 +11,7 @@
 #include "xbt/module.h"         /* xbt_init/exit */
 #include "xbt/xbt_os_time.h"    /* xbt_os_time */
 #include "xbt/synchro.h"
+#include "xbt/socket.h"
 
 #include "Virtu/virtu_interface.h"      /* Module mechanism FIXME: deplace&rename */
 #include "Virtu/virtu_private.h"
@@ -20,6 +21,7 @@
 
 #include "gras.h"
 #include "gras/process.h"       /* FIXME: killme and put process_init in modinter */
+#include "gras/transport.h"
 #include "gras/Msg/msg_private.h"
 #include "portable.h"           /* hexa_*(); signalling stuff */
 
@@ -50,20 +52,11 @@ static void gras_sigint_handler(int sig)
 }
 #endif
 
-XBT_LOG_EXTERNAL_CATEGORY(gras_ddt);
-XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_cbps);
-XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_convert);
-XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_create);
-XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_exchange);
-XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_lexer);
-XBT_LOG_EXTERNAL_CATEGORY(gras_ddt_parse);
 XBT_LOG_EXTERNAL_CATEGORY(gras_modules);
 XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
 XBT_LOG_EXTERNAL_CATEGORY(gras_msg_read);
 XBT_LOG_EXTERNAL_CATEGORY(gras_msg_rpc);
 XBT_LOG_EXTERNAL_CATEGORY(gras_timer);
-XBT_LOG_EXTERNAL_CATEGORY(gras_trp);
-XBT_LOG_EXTERNAL_CATEGORY(gras_trp_meas);
 XBT_LOG_EXTERNAL_CATEGORY(gras_virtu);
 XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_emul);
 XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_process);
@@ -89,13 +82,6 @@ void gras_init(int *argc, char **argv)
   if (gras_running_process == 0) {
     first = 1;
     /* Connect our log channels: that must be done manually under windows */
-    XBT_LOG_CONNECT(gras_ddt, gras);
-    XBT_LOG_CONNECT(gras_ddt_cbps, gras_ddt);
-    XBT_LOG_CONNECT(gras_ddt_convert, gras_ddt);
-    XBT_LOG_CONNECT(gras_ddt_create, gras_ddt);
-    XBT_LOG_CONNECT(gras_ddt_exchange, gras_ddt);
-    XBT_LOG_CONNECT(gras_ddt_lexer, gras_ddt_parse);
-    XBT_LOG_CONNECT(gras_ddt_parse, gras_ddt);
 
     XBT_LOG_CONNECT(gras_modules, gras);
 
@@ -105,15 +91,18 @@ void gras_init(int *argc, char **argv)
 
     XBT_LOG_CONNECT(gras_timer, gras);
 
-    XBT_LOG_CONNECT(gras_trp, gras);
-    XBT_LOG_CONNECT(gras_trp_meas, gras_trp);
-
     XBT_LOG_CONNECT(gras_virtu, gras);
     XBT_LOG_CONNECT(gras_virtu_emul, gras_virtu);
     XBT_LOG_CONNECT(gras_virtu_process, gras_virtu);
 
     gras_trp_register();
     gras_msg_register();
+
+    xbt_trp_plugin_new("file", gras_trp_file_setup);
+    if (gras_if_SG()) {
+      xbt_trp_plugin_new("sg", gras_trp_sg_setup);
+    }
+    /* the TCP plugin (used in RL mode) is automatically loaded by XBT */
   }
   gras_running_process++;
 
@@ -128,8 +117,6 @@ void gras_init(int *argc, char **argv)
   if (first) {
     gras_emul_init();
     gras_msg_init();
-    gras_trp_init();
-    gras_datadesc_init();
 #if defined(HAVE_SIGNAL) && defined(HAVE_SIGNAL_H)
 # ifdef SIGUSR1
     signal(SIGUSR1, gras_sigusr_handler);
@@ -160,8 +147,6 @@ void gras_exit(void)
   gras_process_exit();
   if (--gras_running_process == 0) {
     gras_msg_exit();
-    gras_trp_exit();
-    gras_datadesc_exit();
     gras_emul_exit();
     gras_moddata_exit();
   }

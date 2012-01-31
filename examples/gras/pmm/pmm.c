@@ -20,21 +20,21 @@ const int submatrix_size = DATA_MATRIX_SIZE / PROC_MATRIX_SIZE;
 XBT_LOG_NEW_DEFAULT_CATEGORY(pmm, "Parallel Matrix Multiplication");
 
 /* struct for recovering results */
-GRAS_DEFINE_TYPE(s_result, struct s_result {
+XBT_DEFINE_TYPE(s_result, struct s_result {
                  int linepos; int rowpos;
-                 xbt_matrix_t C GRAS_ANNOTE(subtype, double);
+                 xbt_matrix_t C XBT_ANNOTE(subtype, double);
                  });
 
 typedef struct s_result result_t;
 
 /* struct to send initial data to slave */
-GRAS_DEFINE_TYPE(s_pmm_assignment, struct s_pmm_assignment {
+XBT_DEFINE_TYPE(s_pmm_assignment, struct s_pmm_assignment {
                  int linepos;
                  int rowpos;
                  xbt_peer_t line[NEIGHBOR_COUNT];
                  xbt_peer_t row[NEIGHBOR_COUNT];
-                 xbt_matrix_t A GRAS_ANNOTE(subtype, double);
-                 xbt_matrix_t B GRAS_ANNOTE(subtype, double);
+                 xbt_matrix_t A XBT_ANNOTE(subtype, double);
+                 xbt_matrix_t B XBT_ANNOTE(subtype, double);
                  });
 
 typedef struct s_pmm_assignment s_pmm_assignment_t;
@@ -42,12 +42,12 @@ typedef struct s_pmm_assignment s_pmm_assignment_t;
 /* register messages which may be sent (common to client and server) */
 static void register_messages(void)
 {
-  gras_datadesc_type_t result_type;
-  gras_datadesc_type_t pmm_assignment_type;
+  xbt_datadesc_type_t result_type;
+  xbt_datadesc_type_t pmm_assignment_type;
 
-  gras_datadesc_set_const("NEIGHBOR_COUNT", NEIGHBOR_COUNT);
-  result_type = gras_datadesc_by_symbol(s_result);
-  pmm_assignment_type = gras_datadesc_by_symbol(s_pmm_assignment);
+  xbt_datadesc_set_const("NEIGHBOR_COUNT", NEIGHBOR_COUNT);
+  result_type = xbt_datadesc_by_symbol(s_result);
+  pmm_assignment_type = xbt_datadesc_by_symbol(s_pmm_assignment);
 
   /* receive a final result from slave */
   gras_msgtype_declare("result", result_type);
@@ -57,19 +57,19 @@ static void register_messages(void)
 
   /* send data between slaves */
   gras_msgtype_declare("dataA",
-                       gras_datadesc_matrix(gras_datadesc_by_name
+                       xbt_datadesc_matrix(xbt_datadesc_by_name
                                             ("double"), NULL));
   gras_msgtype_declare("dataB",
-                       gras_datadesc_matrix(gras_datadesc_by_name
+                       xbt_datadesc_matrix(xbt_datadesc_by_name
                                             ("double"), NULL));
 
   /* synchronization message */
   gras_msgtype_declare("pmm_sync", 0);
 }
 
-static gras_socket_t try_gras_socket_client_from_string(const char *host)
+static xbt_socket_t try_gras_socket_client_from_string(const char *host)
 {
-  volatile gras_socket_t sock = NULL;
+  volatile xbt_socket_t sock = NULL;
   xbt_ex_t e;
   TRY {
     sock = gras_socket_client_from_string(host);
@@ -84,7 +84,7 @@ static gras_socket_t try_gras_socket_client_from_string(const char *host)
 }
 
 static void my_gras_msg_wait(double timeout, const char* msgt_want,
-                             gras_socket_t* expeditor, void *payload,
+                             xbt_socket_t* expeditor, void *payload,
                              const char *error_msg)
 {
   TRY {
@@ -119,11 +119,11 @@ int master(int argc, char *argv[])
   xbt_matrix_t A, B, C;
   result_t result;
 
-  gras_socket_t from;
+  xbt_socket_t from;
 
   xbt_dynar_t peers;            /* group of slaves */
   xbt_peer_t grid[SLAVE_COUNT]; /* The slaves as an array */
-  gras_socket_t socket[SLAVE_COUNT];    /* sockets for brodcast to slaves */
+  xbt_socket_t socket[SLAVE_COUNT];    /* sockets for brodcast to slaves */
 
   /* Init the GRAS's infrastructure */
   gras_init(&argc, argv);
@@ -266,7 +266,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
 {
   /* Recover my initialized Data and My Position */
   s_pmm_assignment_t assignment = *(s_pmm_assignment_t *) payload;
-  gras_socket_t master = gras_msg_cb_ctx_from(ctx);
+  xbt_socket_t master = gras_msg_cb_ctx_from(ctx);
 
   int step, l;
   xbt_matrix_t bA = xbt_matrix_new(submatrix_size, submatrix_size,
@@ -281,11 +281,11 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
 
   result_t result;
 
-  gras_socket_t from;           /* to exchange data with my neighbor */
+  xbt_socket_t from;           /* to exchange data with my neighbor */
 
   /* sockets for brodcast to other slave */
-  gras_socket_t socket_line[PROC_MATRIX_SIZE - 1];
-  gras_socket_t socket_row[PROC_MATRIX_SIZE - 1];
+  xbt_socket_t socket_line[PROC_MATRIX_SIZE - 1];
+  xbt_socket_t socket_row[PROC_MATRIX_SIZE - 1];
   memset(socket_line, 0, sizeof(socket_line));
   memset(socket_row, 0, sizeof(socket_row));
 
@@ -324,7 +324,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       XBT_VERB("LINE: step(%d) = Myline(%d). Broadcast my data.", step,
             myline);
       for (l = 0; l < PROC_MATRIX_SIZE - 1; l++) {
-        XBT_VERB("LINE:   Send to %s", gras_socket_peer_name(socket_row[l]));
+        XBT_VERB("LINE:   Send to %s", xbt_socket_peer_name(socket_row[l]));
         gras_msg_send(socket_row[l], "dataB", &mydataB);
       }
 
@@ -337,7 +337,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       my_gras_msg_wait(600, "dataB", &from, &bB,
                        "Can't get a data message from line");
       XBT_VERB("LINE: step(%d) <> Myline(%d). Receive data from %s", step,
-            myline, gras_socket_peer_name(from));
+            myline, xbt_socket_peer_name(from));
     }
 
     /* a row brodcast */
@@ -345,7 +345,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       XBT_VERB("ROW: step(%d)=myrow(%d). Broadcast my data.", step, myrow);
       for (l = 1; l < PROC_MATRIX_SIZE; l++) {
         XBT_VERB("ROW:   Send to %s",
-              gras_socket_peer_name(socket_line[l - 1]));
+              xbt_socket_peer_name(socket_line[l - 1]));
         gras_msg_send(socket_line[l - 1], "dataA", &mydataA);
       }
       xbt_matrix_free(bA);
@@ -356,7 +356,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
       my_gras_msg_wait(1200, "dataA", &from, &bA,
                        "Can't get a data message from row");
       XBT_VERB("ROW: step(%d)<>myrow(%d). Receive data from %s", step, myrow,
-            gras_socket_peer_name(from));
+            xbt_socket_peer_name(from));
     }
     xbt_matrix_double_addmult(bA, bB, bC);
 
@@ -374,7 +374,7 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
     RETHROWF("Failed to send answer to server: %s");
   }
   XBT_VERB(">>>>>>>> Result sent to %s:%d <<<<<<<<",
-        gras_socket_peer_name(master), gras_socket_peer_port(master));
+        xbt_socket_peer_name(master), xbt_socket_peer_port(master));
   /*  Free the allocated resources, and shut GRAS down */
 
   xbt_matrix_free(bA);
@@ -398,8 +398,8 @@ static int pmm_worker_cb(gras_msg_cb_ctx_t ctx, void *payload)
 
 int slave(int argc, char *argv[])
 {
-  gras_socket_t mysock;
-  gras_socket_t master = NULL;
+  xbt_socket_t mysock;
+  xbt_socket_t master = NULL;
   int rank;
 
   /* Init the GRAS's infrastructure */

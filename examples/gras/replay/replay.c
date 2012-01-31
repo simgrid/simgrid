@@ -32,11 +32,11 @@ static void declare_msg()
   xbt_workload_declare_datadesc();
   gras_msgtype_declare("go", NULL);
   gras_msgtype_declare("commands",
-                       gras_datadesc_dynar(gras_datadesc_by_name
+                       xbt_datadesc_dynar(xbt_datadesc_by_name
                                            ("xbt_workload_elm_t"),
                                            xbt_workload_elm_free_voidp));
   gras_msgtype_declare("chunk",
-                       gras_datadesc_by_name("xbt_workload_data_chunk_t"));
+                       xbt_datadesc_by_name("xbt_workload_data_chunk_t"));
 }
 
 int master(int argc, char *argv[])
@@ -89,10 +89,10 @@ int master(int argc, char *argv[])
 
   /* Check who came */
   xbt_dict_t pals = xbt_dict_new_homogeneous(NULL);
-  gras_socket_t pal;
+  xbt_socket_t pal;
   xbt_dynar_foreach(peers, cursor, peer) {
     //XBT_INFO("%s is here",peer->name);
-    gras_socket_t sock = gras_socket_client(peer->name, peer->port);
+    xbt_socket_t sock = gras_socket_client(peer->name, peer->port);
     xbt_dict_set(pals, peer->name, sock, NULL);
   }
   /* check that we have a dude for every element of the trace */
@@ -132,14 +132,14 @@ int master(int argc, char *argv[])
 typedef struct {
   xbt_dynar_t commands;
   xbt_dict_t peers;
-  gras_socket_t mysock;
+  xbt_socket_t mysock;
 } s_worker_data_t, *worker_data_t;
 
 
-static gras_socket_t get_peer_sock(char *peer)
+static xbt_socket_t get_peer_sock(char *peer)
 {
   worker_data_t g = gras_userdata_get();
-  gras_socket_t peer_sock = xbt_dict_get_or_null(g->peers, peer);
+  xbt_socket_t peer_sock = xbt_dict_get_or_null(g->peers, peer);
   if (!peer_sock) {
     XBT_INFO("Create a socket to %s", peer);
     peer_sock = gras_socket_client(peer, 4000);
@@ -161,10 +161,10 @@ static void do_command(int rank, void *c)
   xbt_workload_data_chunk_t chunk;
 
   if (cmd->action == XBT_WORKLOAD_SEND) {
-    gras_socket_t sock = get_peer_sock(cmd->str_arg);
+    xbt_socket_t sock = get_peer_sock(cmd->str_arg);
     chunk = xbt_workload_data_chunk_new((int) (cmd->d_arg));
     XBT_INFO("Send %.f bytes to %s %s:%d", cmd->d_arg, cmd->str_arg,
-          gras_socket_peer_name(sock), gras_socket_peer_port(sock));
+          xbt_socket_peer_name(sock), xbt_socket_peer_port(sock));
     gras_msg_send_(sock, gras_msgtype_by_name("chunk"), &chunk);
     XBT_INFO("Done sending %.f bytes to %s", cmd->d_arg, cmd->str_arg);
 
@@ -195,7 +195,7 @@ int worker(int argc, char *argv[])
   globals = gras_userdata_new(s_worker_data_t);
   /* Create the connexions */
   globals->mysock = gras_socket_server(4000);   /* FIXME: shouldn't be hardcoded */
-  gras_socket_t master = NULL;
+  xbt_socket_t master = NULL;
   int connected = 0;
 
   gras_cb_register("commands", worker_commands_cb);

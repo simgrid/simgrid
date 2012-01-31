@@ -13,6 +13,8 @@
 
 #include "gras/transport.h"
 #include "xbt/fifo.h"
+#include "xbt/dynar.h"
+#include "xbt/queue.h"
 
 /*
  * Data of this module specific to each process
@@ -45,7 +47,7 @@ typedef struct {
 } s_gras_msg_procdata_t, *gras_msg_procdata_t;
 
 
-void gras_msg_send_namev(gras_socket_t sock,
+void gras_msg_send_namev(xbt_socket_t sock,
                          const char *namev, void *payload);
 void gras_msg_listener_awake(void);
 void gras_msg_listener_close_socket(int sd);

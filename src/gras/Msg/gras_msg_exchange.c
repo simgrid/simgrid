@@ -8,6 +8,7 @@
 
 #include "xbt/ex.h"
 #include "xbt/ex_interface.h"
+#include "xbt/socket.h"
 #include "gras/Msg/msg_private.h"
 #include "gras/Virtu/virtu_interface.h"
 
@@ -35,7 +36,7 @@ const char *e_gras_msg_kind_names[e_gras_msg_kind_count] =
 void
 gras_msg_wait_ext_(double timeout,
                    gras_msgtype_t msgt_want,
-                   gras_socket_t expe_want,
+                   xbt_socket_t expe_want,
                    gras_msg_filter_t filter,
                    void *filter_ctx, gras_msg_t msg_got)
 {
@@ -54,8 +55,8 @@ gras_msg_wait_ext_(double timeout,
 
   xbt_dynar_foreach(pd->msg_waitqueue, cpt, msg) {
     if ((!msgt_want || (msg.type->code == msgt_want->code))
-        && (!expe_want || (!strcmp(gras_socket_peer_name(msg.expe),
-                                   gras_socket_peer_name(expe_want))))
+        && (!expe_want || (!strcmp(xbt_socket_peer_name(msg.expe),
+                                   xbt_socket_peer_name(expe_want))))
         && (!filter || filter(&msg, filter_ctx))) {
 
       memcpy(msg_got, &msg, sizeof(s_gras_msg_t));
@@ -67,8 +68,8 @@ gras_msg_wait_ext_(double timeout,
 
   xbt_dynar_foreach(pd->msg_queue, cpt, msg) {
     if ((!msgt_want || (msg.type->code == msgt_want->code))
-        && (!expe_want || (!strcmp(gras_socket_peer_name(msg.expe),
-                                   gras_socket_peer_name(expe_want))))
+        && (!expe_want || (!strcmp(xbt_socket_peer_name(msg.expe),
+                                   xbt_socket_peer_name(expe_want))))
         && (!filter || filter(&msg, filter_ctx))) {
 
       memcpy(msg_got, &msg, sizeof(s_gras_msg_t));
@@ -107,8 +108,8 @@ gras_msg_wait_ext_(double timeout,
     XBT_DEBUG("Got a message from the socket");
 
     if ((!msgt_want || (msg.type->code == msgt_want->code))
-        && (!expe_want || (!strcmp(gras_socket_peer_name(msg.expe),
-                                   gras_socket_peer_name(expe_want))))
+        && (!expe_want || (!strcmp(xbt_socket_peer_name(msg.expe),
+                                   xbt_socket_peer_name(expe_want))))
         && (!filter || filter(&msg, filter_ctx))) {
 
       memcpy(msg_got, &msg, sizeof(s_gras_msg_t));
@@ -145,7 +146,7 @@ gras_msg_wait_ext_(double timeout,
 void
 gras_msg_wait_(double timeout,
                gras_msgtype_t msgt_want,
-               gras_socket_t * expeditor, void *payload)
+               xbt_socket_t * expeditor, void *payload)
 {
   s_gras_msg_t msg;
 
@@ -230,7 +231,7 @@ void gras_msg_wait_or(double timeout,
 
 /** \brief Send the data pointed by \a payload as a message of type
  * \a msgtype to the peer \a sock */
-void gras_msg_send_(gras_socket_t sock, gras_msgtype_t msgtype,
+void gras_msg_send_(xbt_socket_t sock, gras_msgtype_t msgtype,
                     void *payload)
 {
 
@@ -382,7 +383,7 @@ void gras_msg_handle(volatile double timeOut)
     XBT_INFO
         ("No callback for message '%s' (type:%s) from %s:%d. Queue it for later gras_msg_wait() use.",
          msg.type->name, e_gras_msg_kind_names[msg.kind],
-         gras_socket_peer_name(msg.expe), gras_socket_peer_port(msg.expe));
+         xbt_socket_peer_name(msg.expe), xbt_socket_peer_port(msg.expe));
     xbt_dynar_push(pd->msg_waitqueue, &msg);
     return;                     /* FIXME: maybe we should call ourselves again until the end of the timer or a proper msg is got */
   }
@@ -429,8 +430,8 @@ void gras_msg_handle(volatile double timeOut)
         XBT_INFO
             ("Propagate %s exception ('%s') from '%s' RPC cb back to %s:%d",
              (e.remote ? "remote" : "local"), e.msg, msg.type->name,
-             gras_socket_peer_name(msg.expe),
-             gras_socket_peer_port(msg.expe));
+             xbt_socket_peer_name(msg.expe),
+             xbt_socket_peer_port(msg.expe));
         if (XBT_LOG_ISENABLED(gras_msg, xbt_log_priority_verbose))
           xbt_ex_display(&e);
         gras_msg_send_ext(msg.expe, e_gras_msg_kind_rpcerror,
@@ -458,24 +459,24 @@ void gras_msg_handle(volatile double timeOut)
       THROWF(mismatch_error, 0,
              "Message '%s' refused by all registered callbacks (maybe your callback misses a 'return 0' at the end)",
              msg.type->name);
-    /* FIXME: gras_datadesc_free not implemented => leaking the payload */
+    /* FIXME: xbt_datadesc_free not implemented => leaking the payload */
     break;
 
 
   case e_gras_msg_kind_rpcanswer:
     XBT_INFO("Unexpected RPC answer discarded (type: %s; from:%s:%d)",
-          msg.type->name, gras_socket_peer_name(msg.expe),
-          gras_socket_peer_port(msg.expe));
+          msg.type->name, xbt_socket_peer_name(msg.expe),
+          xbt_socket_peer_port(msg.expe));
     XBT_WARN
-        ("FIXME: gras_datadesc_free not implemented => leaking the payload");
+        ("FIXME: xbt_datadesc_free not implemented => leaking the payload");
     return;
 
   case e_gras_msg_kind_rpcerror:
     XBT_INFO("Unexpected RPC error discarded (type: %s; from:%s:%d)",
-          msg.type->name, gras_socket_peer_name(msg.expe),
-          gras_socket_peer_port(msg.expe));
+          msg.type->name, xbt_socket_peer_name(msg.expe),
+          xbt_socket_peer_port(msg.expe));
     XBT_WARN
-        ("FIXME: gras_datadesc_free not implemented => leaking the payload");
+        ("FIXME: xbt_datadesc_free not implemented => leaking the payload");
     return;
 
   default:

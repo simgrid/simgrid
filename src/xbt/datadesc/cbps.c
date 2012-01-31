@@ -7,29 +7,29 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
-#include "gras/DataDesc/datadesc_private.h"
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_cbps, gras_ddt,
+#include "xbt/datadesc/datadesc_private.h"
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ddt_cbps, xbt_ddt,
                                 "callback persistant state");
 
 typedef struct {
-  gras_datadesc_type_t type;
+  xbt_datadesc_type_t type;
   void *data;
-} s_gras_cbps_elm_t, *gras_cbps_elm_t;
+} s_xbt_cbps_elm_t, *xbt_cbps_elm_t;
 
-typedef struct s_gras_cbps {
+typedef struct s_xbt_cbps {
   xbt_dynar_t lints;            /* simple stack of long integers (easy interface) */
 
-  xbt_dict_t space;             /* varname x dynar of gras_cbps_elm_t */
+  xbt_dict_t space;             /* varname x dynar of xbt_cbps_elm_t */
   xbt_dynar_t frames;           /* of dynar of names defined within this frame
                                    (and to pop when we leave it) */
   xbt_dynar_t globals;
-} s_gras_cbps_t;
+} s_xbt_cbps_t;
 
-gras_cbps_t gras_cbps_new(void)
+xbt_cbps_t xbt_cbps_new(void)
 {
-  gras_cbps_t res;
+  xbt_cbps_t res;
 
-  res = xbt_new(s_gras_cbps_t, 1);
+  res = xbt_new(s_xbt_cbps_t, 1);
 
   res->lints = xbt_dynar_new(sizeof(int), NULL);
   res->space = xbt_dict_new_homogeneous(NULL);
@@ -37,17 +37,17 @@ gras_cbps_t gras_cbps_new(void)
   res->frames = xbt_dynar_new(sizeof(xbt_dynar_t), NULL);
   res->globals = xbt_dynar_new(sizeof(char *), NULL);
 
-  gras_cbps_block_begin(res);
+  xbt_cbps_block_begin(res);
 
   return res;
 }
 
-void gras_cbps_free(gras_cbps_t * state)
+void xbt_cbps_free(xbt_cbps_t * state)
 {
 
   xbt_dynar_free(&((*state)->lints));
 
-  gras_cbps_block_end(*state);
+  xbt_cbps_block_end(*state);
   xbt_dict_free(&((*state)->space));
   xbt_dynar_free(&((*state)->frames));
   xbt_dynar_free(&((*state)->globals));
@@ -56,7 +56,7 @@ void gras_cbps_free(gras_cbps_t * state)
   *state = NULL;
 }
 
-void gras_cbps_reset(gras_cbps_t state)
+void xbt_cbps_reset(xbt_cbps_t state)
 {
 
   xbt_dynar_reset(state->lints);
@@ -74,12 +74,12 @@ void gras_cbps_reset(gras_cbps_t state)
  * seeable again only after a pop to remove the value this push adds.
  */
 void
-gras_cbps_v_push(gras_cbps_t ps,
-                 const char *name, void *data, gras_datadesc_type_t ddt)
+xbt_cbps_v_push(xbt_cbps_t ps,
+                 const char *name, void *data, xbt_datadesc_type_t ddt)
 {
 
   xbt_dynar_t varstack = NULL, frame;
-  gras_cbps_elm_t var;
+  xbt_cbps_elm_t var;
   char *varname = (char *) xbt_strdup(name);
   xbt_ex_t e;
 
@@ -93,13 +93,13 @@ gras_cbps_v_push(gras_cbps_t ps,
       RETHROW;
 
     XBT_DEBUG("Create a new variable stack for '%s' into the space", name);
-    varstack = xbt_dynar_new(sizeof(gras_cbps_elm_t *), NULL);
+    varstack = xbt_dynar_new(sizeof(xbt_cbps_elm_t *), NULL);
     xbt_dict_set(ps->space, name, (void **) varstack, NULL);
     xbt_ex_free(e);
     /* leaking, you think? only if you do not close all the openned blocks ;) */
   }
 
-  var = xbt_new0(s_gras_cbps_elm_t, 1);
+  var = xbt_new0(s_xbt_cbps_elm_t, 1);
   var->type = ddt;
   var->data = data;
 
@@ -118,11 +118,11 @@ gras_cbps_v_push(gras_cbps_t ps,
  * and not search in upper blocks since this denotes a programmation error.
  */
 void
-gras_cbps_v_pop(gras_cbps_t ps,
-                const char *name, gras_datadesc_type_t * ddt, void **res)
+xbt_cbps_v_pop(xbt_cbps_t ps,
+                const char *name, xbt_datadesc_type_t * ddt, void **res)
 {
   xbt_dynar_t varstack = NULL, frame = NULL;
-  gras_cbps_elm_t var = NULL;
+  xbt_cbps_elm_t var = NULL;
   void *data = NULL;
   xbt_ex_t e;
 
@@ -181,21 +181,21 @@ gras_cbps_v_pop(gras_cbps_t ps,
  *   its value is changed.
  */
 void
-gras_cbps_v_set(gras_cbps_t ps,
-                const char *name, void *data, gras_datadesc_type_t ddt)
+xbt_cbps_v_set(xbt_cbps_t ps,
+                const char *name, void *data, xbt_datadesc_type_t ddt)
 {
 
   xbt_dynar_t dynar = NULL;
-  gras_cbps_elm_t elm = NULL;
+  xbt_cbps_elm_t elm = NULL;
 
   XBT_DEBUG("set(%s)", name);
   dynar = xbt_dict_get_or_null(ps->space, name);
 
   if (dynar == NULL) {
-    dynar = xbt_dynar_new(sizeof(gras_cbps_elm_t), NULL);
+    dynar = xbt_dynar_new(sizeof(xbt_cbps_elm_t), NULL);
     xbt_dict_set(ps->space, name, (void **) dynar, NULL);
 
-    elm = xbt_new0(s_gras_cbps_elm_t, 1);
+    elm = xbt_new0(s_xbt_cbps_elm_t, 1);
     xbt_dynar_push(ps->globals, &name);
   } else {
     xbt_dynar_pop(dynar, &elm);
@@ -215,12 +215,12 @@ gras_cbps_v_set(gras_cbps_t ps,
  * If it's not present in any of them, look in the globals
  * If not present there neither, the code may segfault (Oli?).
  */
-void *gras_cbps_v_get(gras_cbps_t ps, const char *name,
-                      /* OUT */ gras_datadesc_type_t * ddt)
+void *xbt_cbps_v_get(xbt_cbps_t ps, const char *name,
+                      /* OUT */ xbt_datadesc_type_t * ddt)
 {
 
   xbt_dynar_t dynar = NULL;
-  gras_cbps_elm_t elm = NULL;
+  xbt_cbps_elm_t elm = NULL;
 
   XBT_DEBUG("get(%s)", name);
   dynar = xbt_dict_get(ps->space, name);
@@ -246,7 +246,7 @@ void *gras_cbps_v_get(gras_cbps_t ps, const char *name,
  * use block_{begin,end} to do the trick.
  */
 
-void gras_cbps_block_begin(gras_cbps_t ps)
+void xbt_cbps_block_begin(xbt_cbps_t ps)
 {
 
   xbt_dynar_t dynar = NULL;
@@ -257,7 +257,7 @@ void gras_cbps_block_begin(gras_cbps_t ps)
 }
 
 /** \brief End the current block, and go back to the upper one. */
-void gras_cbps_block_end(gras_cbps_t ps)
+void xbt_cbps_block_end(xbt_cbps_t ps)
 {
 
   xbt_dynar_t frame = NULL;
@@ -271,7 +271,7 @@ void gras_cbps_block_end(gras_cbps_t ps)
   xbt_dynar_foreach(frame, cursor, name) {
 
     xbt_dynar_t varstack = NULL;
-    gras_cbps_elm_t var = NULL;
+    xbt_cbps_elm_t var = NULL;
 
     XBT_DEBUG("Get ride of %s (%p)", name, (void *) name);
     varstack = xbt_dict_get(ps->space, name);
@@ -292,19 +292,19 @@ void gras_cbps_block_end(gras_cbps_t ps)
 
 
 /** \brief Push a new integer value into the cbps. */
-void gras_cbps_i_push(gras_cbps_t ps, int val)
+void xbt_cbps_i_push(xbt_cbps_t ps, int val)
 {
   XBT_DEBUG("push %d as a size", val);
   xbt_dynar_push_as(ps->lints, int, val);
 }
 
 /** \brief Pop the lastly pushed integer value from the cbps. */
-int gras_cbps_i_pop(gras_cbps_t ps)
+int xbt_cbps_i_pop(xbt_cbps_t ps)
 {
   int ret;
 
   xbt_assert(!xbt_dynar_is_empty(ps->lints),
-              "gras_cbps_i_pop: no value to pop");
+              "xbt_cbps_i_pop: no value to pop");
   ret = xbt_dynar_pop_as(ps->lints, int);
   XBT_DEBUG("pop %d as a size", ret);
   return ret;
@@ -312,12 +312,12 @@ int gras_cbps_i_pop(gras_cbps_t ps)
 
 /** \brief Generic cb returning the lastly pushed value
  *
- * Used by \ref gras_datadesc_ref_pop_arr
+ * Used by \ref xbt_datadesc_ref_pop_arr
  */
-int gras_datadesc_cb_pop(gras_datadesc_type_t ignored, gras_cbps_t vars,
+int xbt_datadesc_cb_pop(xbt_datadesc_type_t ignored, xbt_cbps_t vars,
                          void *data)
 {
-  return gras_cbps_i_pop(vars);
+  return xbt_cbps_i_pop(vars);
 }
 
 /* ************************* */
@@ -325,81 +325,81 @@ int gras_datadesc_cb_pop(gras_datadesc_type_t ignored, gras_cbps_t vars,
 /* ************************* */
 
 /** \brief Cb to push an integer. Must be attached to the field you want to push */
-void gras_datadesc_cb_push_int(gras_datadesc_type_t ignored,
-                               gras_cbps_t vars, void *data)
+void xbt_datadesc_cb_push_int(xbt_datadesc_type_t ignored,
+                               xbt_cbps_t vars, void *data)
 {
   int *i = (int *) data;
-  gras_cbps_i_push(vars, (int) *i);
+  xbt_cbps_i_push(vars, (int) *i);
 }
 
 /** \brief Cb to push an unsigned integer. Must be attached to the field you want to push */
-void gras_datadesc_cb_push_uint(gras_datadesc_type_t ignored,
-                                gras_cbps_t vars, void *data)
+void xbt_datadesc_cb_push_uint(xbt_datadesc_type_t ignored,
+                                xbt_cbps_t vars, void *data)
 {
   unsigned int *i = (unsigned int *) data;
-  gras_cbps_i_push(vars, (int) *i);
+  xbt_cbps_i_push(vars, (int) *i);
 }
 
 /** \brief Cb to push an long integer. Must be attached to the field you want to push
  */
-void gras_datadesc_cb_push_lint(gras_datadesc_type_t ignored,
-                                gras_cbps_t vars, void *data)
+void xbt_datadesc_cb_push_lint(xbt_datadesc_type_t ignored,
+                                xbt_cbps_t vars, void *data)
 {
   long int *i = (long int *) data;
-  gras_cbps_i_push(vars, (int) *i);
+  xbt_cbps_i_push(vars, (int) *i);
 }
 
 /** \brief Cb to push an unsigned long integer. Must be attached to the field you want to push
  */
-void gras_datadesc_cb_push_ulint(gras_datadesc_type_t ignored,
-                                 gras_cbps_t vars, void *data)
+void xbt_datadesc_cb_push_ulint(xbt_datadesc_type_t ignored,
+                                 xbt_cbps_t vars, void *data)
 {
   unsigned long int *i = (unsigned long int *) data;
-  gras_cbps_i_push(vars, (int) *i);
+  xbt_cbps_i_push(vars, (int) *i);
 }
 
 /* ************************************ */
 /* **** PUSHy multiplier callbacks **** */
 /* ************************************ */
 /** \brief Cb to push an integer as multiplier. Must be attached to the field you want to push */
-void gras_datadesc_cb_push_int_mult(gras_datadesc_type_t ignored,
-                                    gras_cbps_t vars, void *data)
+void xbt_datadesc_cb_push_int_mult(xbt_datadesc_type_t ignored,
+                                    xbt_cbps_t vars, void *data)
 {
   int old = *(int *) data;
-  int new = gras_cbps_i_pop(vars);
+  int new = xbt_cbps_i_pop(vars);
   XBT_DEBUG("push %d x %d as a size", old, new);
-  gras_cbps_i_push(vars, old * new);
+  xbt_cbps_i_push(vars, old * new);
 }
 
 /** \brief Cb to push an unsigned integer as multiplier. Must be attached to the field you want to push */
-void gras_datadesc_cb_push_uint_mult(gras_datadesc_type_t ignored,
-                                     gras_cbps_t vars, void *data)
+void xbt_datadesc_cb_push_uint_mult(xbt_datadesc_type_t ignored,
+                                     xbt_cbps_t vars, void *data)
 {
   unsigned int old = *(unsigned int *) data;
-  unsigned int new = gras_cbps_i_pop(vars);
+  unsigned int new = xbt_cbps_i_pop(vars);
 
   XBT_DEBUG("push %d x %d as a size", old, new);
-  gras_cbps_i_push(vars, (int) (old * new));
+  xbt_cbps_i_push(vars, (int) (old * new));
 }
 
 /** \brief Cb to push an long integer as multiplier. Must be attached to the field you want to push
  */
-void gras_datadesc_cb_push_lint_mult(gras_datadesc_type_t ignored,
-                                     gras_cbps_t vars, void *data)
+void xbt_datadesc_cb_push_lint_mult(xbt_datadesc_type_t ignored,
+                                     xbt_cbps_t vars, void *data)
 {
   long int i = *(long int *) data;
-  i *= gras_cbps_i_pop(vars);
-  gras_cbps_i_push(vars, (int) i);
+  i *= xbt_cbps_i_pop(vars);
+  xbt_cbps_i_push(vars, (int) i);
 }
 
 /** \brief Cb to push an unsigned long integer as multiplier. Must be attached to the field you want to push
  */
-void gras_datadesc_cb_push_ulint_mult(gras_datadesc_type_t ignored,
-                                      gras_cbps_t vars, void *data)
+void xbt_datadesc_cb_push_ulint_mult(xbt_datadesc_type_t ignored,
+                                      xbt_cbps_t vars, void *data)
 {
   unsigned long int old = *(unsigned long int *) data;
-  unsigned long int new = gras_cbps_i_pop(vars);
+  unsigned long int new = xbt_cbps_i_pop(vars);
 
   XBT_DEBUG("push %ld x %ld as a size", old, new);
-  gras_cbps_i_push(vars, (int) (old * new));
+  xbt_cbps_i_push(vars, (int) (old * new));
 }

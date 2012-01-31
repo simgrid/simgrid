@@ -9,9 +9,9 @@
 #include "ping.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(Ping);
 
-static gras_socket_t try_gras_socket_client(const char *host, int port)
+static xbt_socket_t try_gras_socket_client(const char *host, int port)
 {
-  volatile gras_socket_t sock = NULL;
+  volatile xbt_socket_t sock = NULL;
   xbt_ex_t e;
   TRY {
     sock = gras_socket_client(host, port);
@@ -27,9 +27,9 @@ static gras_socket_t try_gras_socket_client(const char *host, int port)
 
 int client(int argc, char *argv[])
 {
-  gras_socket_t toserver = NULL;        /* peer */
+  xbt_socket_t toserver = NULL;        /* peer */
 
-  gras_socket_t from;
+  xbt_socket_t from;
   int ping, pong;
 
   const char *host = "127.0.0.1";
@@ -58,7 +58,7 @@ int client(int argc, char *argv[])
 
   /* 5. Keep the user informed of what's going on */
   XBT_INFO(">>>>>>>> Connected to server which is on %s:%d <<<<<<<<",
-        gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
+        xbt_socket_peer_name(toserver), xbt_socket_peer_port(toserver));
 
   /* 6. Prepare and send the ping message to the server */
   ping = 1234;
@@ -71,7 +71,7 @@ int client(int argc, char *argv[])
   }
   XBT_INFO(">>>>>>>> Message PING(%d) sent to %s:%d <<<<<<<<",
         ping,
-        gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
+        xbt_socket_peer_name(toserver), xbt_socket_peer_port(toserver));
 
   /* 7. Wait for the answer from the server, and deal with issues */
   TRY {
@@ -84,7 +84,7 @@ int client(int argc, char *argv[])
 
   /* 8. Keep the user informed of what's going on, again */
   XBT_INFO(">>>>>>>> Got PONG(%d) from %s:%d <<<<<<<<",
-        pong, gras_socket_peer_name(from), gras_socket_peer_port(from));
+        pong, xbt_socket_peer_name(from), xbt_socket_peer_port(from));
 
   /* 9. Free the allocated resources, and shut GRAS down */
   gras_socket_close(toserver);

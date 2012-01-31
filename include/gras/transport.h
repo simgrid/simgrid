@@ -11,6 +11,8 @@
 #ifndef GRAS_TRANSPORT_H
 #define GRAS_TRANSPORT_H
 
+#include "xbt/socket.h"
+
 /** \addtogroup GRAS_sock
  *  \brief Socket handling
  *
@@ -21,7 +23,7 @@
  *
  * The main difference is that you cannot exchange arbitrary bytes on
  * sockets, but messages. See the \ref GRAS_msg section for details.
- * 
+ *
  * If you need an example of how to use sockets, check \ref GRAS_ex_ping.
  *
  */
@@ -31,85 +33,28 @@
  *
  */
 /* @{*/
-/** \brief Opaque type describing a socket */
-typedef struct s_gras_socket *gras_socket_t;
 
 /** \brief Simply create a client socket (to speak to a remote host) */
-XBT_PUBLIC(gras_socket_t) gras_socket_client(const char *host,
+XBT_PUBLIC(xbt_socket_t) gras_socket_client(const char *host,
                                              unsigned short port);
-XBT_PUBLIC(gras_socket_t) gras_socket_client_from_string(const char *host);
+XBT_PUBLIC(xbt_socket_t) gras_socket_client_from_string(const char *host);
 /** \brief Simply create a server socket (to ear from remote hosts speaking to you) */
-XBT_PUBLIC(gras_socket_t) gras_socket_server(unsigned short port);
-XBT_PUBLIC(void) gras_socket_close(gras_socket_t sd);
+XBT_PUBLIC(xbt_socket_t) gras_socket_server(unsigned short port);
+XBT_PUBLIC(void) gras_socket_close(xbt_socket_t sd);
 XBT_PUBLIC(void) gras_socket_close_voidp(void *sock);
 
 /** \brief Create a client socket, full interface to all relevant settings */
-XBT_PUBLIC(gras_socket_t) gras_socket_client_ext(const char *host,
-                                                 unsigned short port,
-                                                 unsigned long int bufSize,
-                                                 int measurement);
+XBT_PUBLIC(xbt_socket_t) gras_socket_client_ext(const char *host,
+                                                unsigned short port,
+                                                unsigned long int bufSize,
+                                                int measurement);
 /** \brief Create a server socket, full interface to all relevant settings */
-XBT_PUBLIC(gras_socket_t) gras_socket_server_ext(unsigned short port,
-                                                 unsigned long int bufSize,
-                                                 int measurement);
-XBT_PUBLIC(gras_socket_t)
+XBT_PUBLIC(xbt_socket_t) gras_socket_server_ext(unsigned short port,
+                                                unsigned long int bufSize,
+                                                int measurement);
+XBT_PUBLIC(xbt_socket_t)
     gras_socket_server_range(unsigned short minport, unsigned short maxport,
-                         unsigned long int buf_size, int measurement);
-
-/* @}*/
-/** \defgroup GRAS_sock_info Retrieving data about sockets and peers 
- *  \ingroup GRAS_sock
- * 
- * Who are you talking to? 
- */
-/* @{*/
-
-/** Get the port number on which this socket is connected on my side */
-XBT_PUBLIC(int) gras_socket_my_port(gras_socket_t sock);
-/** @brief Get the port number on which this socket is connected on remote side 
- *
- * This is the port declared on remote side with the
- * gras_socket_master() function (if any, or a random number being uniq on 
- * the remote host). If remote used gras_socket_master() more than once, the 
- * lastly declared number will be used here.
- *
- * Note to BSD sockets experts: With BSD sockets, the sockaddr 
- * structure allows you to retrieve the port of the client socket on
- * remote side, but it is of no use (from user perspective, it is
- * some random number above 6000). That is why GRAS sockets differ
- * from BSD ones here. 
- */
-
-XBT_PUBLIC(int) gras_socket_peer_port(gras_socket_t sock);
-/** Get the host name of the remote side */
-XBT_PUBLIC(const char *) gras_socket_peer_name(gras_socket_t sock);
-/** Get the process name of the remote side */
-XBT_PUBLIC(const char *) gras_socket_peer_proc(gras_socket_t sock);
-/* @}*/
-
-/** \defgroup GRAS_sock_meas Using measurement sockets
- *  \ingroup GRAS_sock
- * 
- * You may want to use sockets not to exchange valuable data (in messages), 
- * but to conduct some bandwidth measurements and related experiments. If so, try those measurement sockets.
- * 
- * You can only use those functions on sockets openned with the "measurement" boolean set to true.
- * 
- */
-/* @{*/
-
-
-
-XBT_PUBLIC(int) gras_socket_is_meas(gras_socket_t sock);
-XBT_PUBLIC(void) gras_socket_meas_send(gras_socket_t peer,
-                                       unsigned int timeout,
-                                       unsigned long int msgSize,
-                                       unsigned long int msgAmount);
-XBT_PUBLIC(void) gras_socket_meas_recv(gras_socket_t peer,
-                                       unsigned int timeout,
-                                       unsigned long int msgSize,
-                                       unsigned long int msgAmount);
-XBT_PUBLIC(gras_socket_t) gras_socket_meas_accept(gras_socket_t peer);
+                             unsigned long int buf_size, int measurement);
 
 /* @}*/
 
@@ -125,9 +70,12 @@ XBT_PUBLIC(gras_socket_t) gras_socket_meas_accept(gras_socket_t peer);
  */
 /* @{*/
 /* debuging functions */
-XBT_PUBLIC(gras_socket_t) gras_socket_client_from_file(const char *path);
-XBT_PUBLIC(gras_socket_t) gras_socket_server_from_file(const char *path);
+XBT_PUBLIC(xbt_socket_t) gras_socket_client_from_file(const char *path);
+XBT_PUBLIC(xbt_socket_t) gras_socket_server_from_file(const char *path);
 
 /* @} */
+
+void gras_trp_sg_setup(xbt_trp_plugin_t plug);
+void gras_trp_file_setup(xbt_trp_plugin_t plug);
 
 #endif                          /* GRAS_TRANSPORT_H */

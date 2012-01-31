@@ -10,27 +10,27 @@
 /* C combines the power of assembler with the portability of assembler. */
 /************************************************************************/
 
-#include "gras/DataDesc/datadesc_private.h"
+#include "datadesc_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_convert, gras_ddt,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ddt_convert, xbt_ddt,
                                 "Inter-architecture convertions");
 
 /***
  *** Table of all known architectures:
  ***
-l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1: #gras_arch=0;  gras_size=32; gras_arch_name=little32_1;
-l_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2: #gras_arch=1;  gras_size=32; gras_arch_name=little32_2;
-l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4: #gras_arch=2;  gras_size=32; gras_arch_name=little32_4;
-l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8: #gras_arch=3;  gras_size=32; gras_arch_name=little32_8;
-l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8: #gras_arch=4;  gras_size=64; gras_arch_name=little64;
-l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8: #gras_arch=5;  gras_size=64; gras_arch_name=little64_2;
+l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1: #xbt_arch=0;  xbt_size=32; xbt_arch_name=little32_1;
+l_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2: #xbt_arch=1;  xbt_size=32; xbt_arch_name=little32_2;
+l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4: #xbt_arch=2;  xbt_size=32; xbt_arch_name=little32_4;
+l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8: #xbt_arch=3;  xbt_size=32; xbt_arch_name=little32_8;
+l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8: #xbt_arch=4;  xbt_size=64; xbt_arch_name=little64;
+l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8: #xbt_arch=5;  xbt_size=64; xbt_arch_name=little64_2;
 
-B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8: #gras_arch=6;  gras_size=32; gras_arch_name=big32_8;
-B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4: #gras_arch=7;  gras_size=32; gras_arch_name=big32_8_4;
-B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4: #gras_arch=8;  gras_size=32; gras_arch_name=big32_4;
-B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2: #gras_arch=9;  gras_size=32; gras_arch_name=big32_2;
-B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8: #gras_arch=10; gras_size=64; gras_arch_name=big64;
-B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4: #gras_arch=11; gras_size=64; gras_arch_name=big64_8_4;
+B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8: #xbt_arch=6;  xbt_size=32; xbt_arch_name=big32_8;
+B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4: #xbt_arch=7;  xbt_size=32; xbt_arch_name=big32_8_4;
+B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4: #xbt_arch=8;  xbt_size=32; xbt_arch_name=big32_4;
+B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2: #xbt_arch=9;  xbt_size=32; xbt_arch_name=big32_2;
+B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8: #xbt_arch=10; xbt_size=64; xbt_arch_name=big64;
+B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4: #xbt_arch=11; xbt_size=64; xbt_arch_name=big64_8_4;
 
   PLEASE DO NOT MESS WITH THESE HARDCODED VALUES
   
@@ -39,7 +39,7 @@ B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4: #gras_arch=11; gras_size=64; g
   
  ***/
 
-const gras_arch_desc_t gras_arches[gras_arch_count] = {
+const xbt_arch_desc_t xbt_arches[xbt_arch_count] = {
 
   {"little32_1", 0, {1, 2, 4, 4, 8, 4, 4, 4, 8},        /* little endian, 1 byte alignement (win32) */
    {1, 1, 1, 1, 1, 1, 1, 1, 1}},
@@ -78,32 +78,32 @@ const gras_arch_desc_t gras_arches[gras_arch_count] = {
    {1, 2, 4, 8, 8, 8, 8, 4, 4}}
 };
 
-const char *gras_datadesc_arch_name(int code)
+const char *xbt_datadesc_arch_name(int code)
 {
-  if (code < 0 || code >= gras_arch_count)
+  if (code < 0 || code >= xbt_arch_count)
     return "[unknown arch]";
-  return gras_arches[code].name;
+  return xbt_arches[code].name;
 }
 
 
 /**
  * Local function doing the grunt work
  */
-static void gras_dd_reverse_bytes(void *to, const void *from,
+static void xbt_dd_reverse_bytes(void *to, const void *from,
                                   size_t length);
 
 /**
- * gras_dd_convert_elm:
+ * xbt_dd_convert_elm:
  *
  * Convert the element described by @type comming from architecture @r_arch.
  * The data to be converted is stored in @src, and is to be stored in @dst.
  * Both pointers may be the same location if no resizing is needed.
  */
 void
-gras_dd_convert_elm(gras_datadesc_type_t type, int count,
+xbt_dd_convert_elm(xbt_datadesc_type_t type, int count,
                     int r_arch, void *src, void *dst)
 {
-  gras_dd_cat_scalar_t scal = type->category.scalar_data;
+  xbt_dd_cat_scalar_t scal = type->category.scalar_data;
   int cpt;
   const void *r_data;
   void *l_data;
@@ -115,7 +115,7 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
      } tester;
    */
 
-  xbt_assert(type->category_code == e_gras_datadesc_type_cat_scalar);
+  xbt_assert(type->category_code == e_xbt_datadesc_type_cat_scalar);
   xbt_assert(r_arch != GRAS_THISARCH);
 
   r_size = type->size[r_arch];
@@ -123,8 +123,8 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
   XBT_DEBUG("r_size=%lu l_size=%lu,    src=%p dst=%p", r_size, l_size, src,
          dst);
 
-  XBT_DEBUG("remote=%c local=%c", gras_arches[r_arch].endian ? 'B' : 'l',
-         gras_arches[GRAS_THISARCH].endian ? 'B' : 'l');
+  XBT_DEBUG("remote=%c local=%c", xbt_arches[r_arch].endian ? 'B' : 'l',
+         xbt_arches[GRAS_THISARCH].endian ? 'B' : 'l');
 
   if (r_size != l_size) {
     for (cpt = 0, r_data = src, l_data = dst;
@@ -148,8 +148,8 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
       unsigned char *l_sign, *r_sign;
       int padding;
       int sizeChange = l_size - r_size;
-      int lowOrderFirst = !gras_arches[r_arch].endian ||
-          gras_arches[r_arch].endian == gras_arches[GRAS_THISARCH].endian;
+      int lowOrderFirst = !xbt_arches[r_arch].endian ||
+          xbt_arches[r_arch].endian == xbt_arches[GRAS_THISARCH].endian;
 
       XBT_DEBUG("Resize integer %d from %lu @%p to %lu @%p",
              cpt, r_size, r_data, l_size, l_data);
@@ -159,19 +159,19 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
         XBT_DEBUG("Truncate %d bytes (%s,%s)", -sizeChange,
                lowOrderFirst ? "lowOrderFirst" : "bigOrderFirst",
                scal.encoding ==
-               e_gras_dd_scalar_encoding_sint ? "signed" : "unsigned");
+               e_xbt_dd_scalar_encoding_sint ? "signed" : "unsigned");
         /* Truncate high-order bytes. */
         memcpy(l_data,
-               gras_arches[r_arch].endian ? ((char *) r_data - sizeChange)
+               xbt_arches[r_arch].endian ? ((char *) r_data - sizeChange)
                : r_data, l_size);
 
-        if (scal.encoding == e_gras_dd_scalar_encoding_sint) {
+        if (scal.encoding == e_xbt_dd_scalar_encoding_sint) {
           XBT_DEBUG("This is signed");
           /* Make sure the high order bit of r_data and l_data are the same */
-          l_sign = gras_arches[GRAS_THISARCH].endian
+          l_sign = xbt_arches[GRAS_THISARCH].endian
               ? ((unsigned char *) l_data + l_size - 1)
               : (unsigned char *) l_data;
-          r_sign = gras_arches[r_arch].endian
+          r_sign = xbt_arches[r_arch].endian
               ? ((unsigned char *) r_data + r_size - 1)
               : (unsigned char *) r_data;
           XBT_DEBUG("This is signed (r_sign=%c l_sign=%c", *r_sign, *l_sign);
@@ -185,13 +185,13 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
         }
       } else {
         XBT_DEBUG("Extend %d bytes", sizeChange);
-        if (scal.encoding != e_gras_dd_scalar_encoding_sint) {
+        if (scal.encoding != e_xbt_dd_scalar_encoding_sint) {
           XBT_DEBUG("This is signed");
           padding = 0;          /* pad unsigned with 0 */
         } else {
           /* extend sign */
           r_sign =
-              gras_arches[r_arch].endian ? ((unsigned char *) r_data +
+              xbt_arches[r_arch].endian ? ((unsigned char *) r_data +
                                             r_size - 1)
               : (unsigned char *) r_data;
           padding = (*r_sign > 127) ? 0xff : 0;
@@ -200,7 +200,7 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
         if (l_size != 0) {
           memset(l_data, padding, l_size);
         }
-        memcpy(!gras_arches[r_arch].endian ? l_data
+        memcpy(!xbt_arches[r_arch].endian ? l_data
                : ((char *) l_data + sizeChange), r_data, r_size);
 
         /*
@@ -224,20 +224,20 @@ gras_dd_convert_elm(gras_datadesc_type_t type, int count,
   }
 
   /* flip bytes if needed */
-  if (gras_arches[r_arch].endian != gras_arches[GRAS_THISARCH].endian &&
+  if (xbt_arches[r_arch].endian != xbt_arches[GRAS_THISARCH].endian &&
       (l_size * count) > 1) {
 
     for (cpt = 0, r_data = dst, l_data = dst; cpt < count; cpt++, r_data = (char *) r_data + l_size,    /* resizing already done */
          l_data = (char *) l_data + l_size) {
 
       XBT_DEBUG("Flip elm %d", cpt);
-      gras_dd_reverse_bytes(l_data, r_data, l_size);
+      xbt_dd_reverse_bytes(l_data, r_data, l_size);
     }
   }
 
 }
 
-static void gras_dd_reverse_bytes(void *to, const void *from,
+static void xbt_dd_reverse_bytes(void *to, const void *from,
                                   size_t length)
 {
 
@@ -261,11 +261,11 @@ static void gras_dd_reverse_bytes(void *to, const void *from,
 
 
 /**
- * gras_arch_selfid:
+ * xbt_arch_selfid:
  *
  * returns the ID of the architecture the process is running on
  */
-int gras_arch_selfid(void)
+int xbt_arch_selfid(void)
 {
   return GRAS_THISARCH;
 }
