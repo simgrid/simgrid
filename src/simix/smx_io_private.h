@@ -16,7 +16,6 @@ typedef struct s_smx_file {
   char *name;                   /**< @brief host name if any */
   void *data;                   /**< @brief user data */
 } s_smx_file_t;
-typedef struct s_smx_file *smx_file_t;
 /** @} */
 
 void SIMIX_pre_file_read(smx_simcall_t simcall);
