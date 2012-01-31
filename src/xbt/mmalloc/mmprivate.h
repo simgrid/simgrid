@@ -33,7 +33,6 @@
 #define MMALLOC_MAGIC		"mmalloc"       /* Mapped file magic number */
 #define MMALLOC_MAGIC_SIZE	8       /* Size of magic number buf */
 #define MMALLOC_VERSION		1       /* Current mmalloc version */
-#define MMALLOC_KEYS		16      /* Keys for application use */
 
 /* The allocator divides the heap into blocks of fixed size; large
    requests receive one or more whole blocks, and small requests
@@ -259,11 +258,6 @@ struct mdesc {
      it may change each time the region is mapped and unmapped. */
 
   int fd;
-
-  /* An array of keys to data within the mapped region, for use by the
-     application.  */
-
-  void *keys[MMALLOC_KEYS];
 
 };
 
