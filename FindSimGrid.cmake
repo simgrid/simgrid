@@ -5,12 +5,16 @@ find_library(SIMGRID_LIB
     NAME simgrid
     HINTS
 	$ENV{SIMGRID_ROOT}
+	/usr/local
+	/usr
     PATH_SUFFIXES lib
 )
 
 find_path(SIMGRID_INCLUDES msg.h
     HINTS
 	$ENV{SIMGRID_ROOT}
+	/usr/local
+	/usr
     PATH_SUFFIXES include
 )
 
