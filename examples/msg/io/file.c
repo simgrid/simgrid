@@ -6,21 +6,31 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "simix/simix.h"
 #include "msg/msg.h"
 #include "surf/surf_private.h"
 
 int host(int argc, char *argv[]);
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(file,
-                             "Messages specific for this simix example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
+                             "Messages specific for this io example");
 
 int host(int argc, char *argv[])
 {
-  size_t read = simcall_file_read(NULL,0,0,NULL);
+  m_file_t* file;
+  file = MSG_file_open("test.txt","rw");
+  XBT_INFO("Host '%s' open %p",MSG_host_get_name(MSG_host_self()), file);
+
+  size_t read = MSG_file_read(NULL,0,0,file);
   XBT_INFO("Host '%s' read %ld",MSG_host_get_name(MSG_host_self()),read);
-  size_t write = simcall_file_write(NULL,0,0,NULL);
+
+  size_t write = MSG_file_write(NULL,0,0,file);
   XBT_INFO("Host '%s' write %ld",MSG_host_get_name(MSG_host_self()), write);
+
+  int res = MSG_file_stat(0,NULL);
+  XBT_INFO("Host '%s' stat %d",MSG_host_get_name(MSG_host_self()), res);
+
+  res = MSG_file_close(file);
+  XBT_INFO("Host '%s' close %d",MSG_host_get_name(MSG_host_self()), res);
   return 0;
 }
 
