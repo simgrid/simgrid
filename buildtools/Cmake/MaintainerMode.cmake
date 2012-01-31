@@ -92,7 +92,7 @@ ADD_CUSTOM_COMMAND(
 	COMMAND ${SED_EXE} -i ${string6} src/simdag/dax_dtd.h	
 	COMMAND ${SED_EXE} -i ${string7} src/simdag/dax_dtd.h
 	COMMAND ${SED_EXE} -i ${string14} src/simdag/dax_dtd.h
-	COMMAND ${FLEX_EXE} -o src/gras/DataDesc/ddt_parse.yy.c -Pgras_ddt_parse_ --noline src/gras/DataDesc/ddt_parse.yy.l
+	COMMAND ${FLEX_EXE} -o src/xbt/datadesc/ddt_parse.yy.c -Pxbt_ddt_parse_ --noline src/xbt/datadesc/ddt_parse.yy.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.h"
 	
 	#surf/simgrid_dtd.c: surf/simgrid_dtd.l

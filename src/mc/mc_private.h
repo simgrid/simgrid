@@ -39,7 +39,6 @@ extern char *prog_name;
 
 void MC_take_snapshot(mc_snapshot_t);
 void MC_take_snapshot_liveness(mc_snapshot_t s);
-void MC_take_snapshot_to_restore_liveness(mc_snapshot_t s);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 

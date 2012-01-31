@@ -399,6 +399,7 @@ void surf_exit(void)
 #ifdef CONTEXT_THREADS
   xbt_parmap_destroy(surf_parmap);
   xbt_free(surf_mins);
+  surf_mins = NULL;
 #endif
 
   xbt_dynar_free(&surf_path);

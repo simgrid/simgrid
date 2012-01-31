@@ -23,7 +23,7 @@ static int server_cb_hello_handler(gras_msg_cb_ctx_t ctx,
 
 int server(int argc, char *argv[])
 {
-  volatile gras_socket_t me = NULL, pal = NULL;
+  volatile xbt_socket_t me = NULL, pal = NULL;
   int myport;
   char *palstr;
 
@@ -114,7 +114,7 @@ int server(int argc, char *argv[])
 
 int client(int argc, char *argv[])
 {
-  volatile gras_socket_t me = NULL, pal = NULL;
+  volatile xbt_socket_t me = NULL, pal = NULL;
   int myport;
   char *palstr;
 

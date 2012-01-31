@@ -19,7 +19,7 @@
 #include "xbt/queue.h"
 #include "xbt/set.h"
 #include "gras/transport.h"
-#include "gras/datadesc.h"
+#include "xbt/datadesc.h"
 #include "gras/virtu.h"
 
 #include "gras/messages.h"
@@ -39,8 +39,8 @@ void
 gras_msgtype_declare_ext(const char *name,
                          short int version,
                          e_gras_msg_kind_t kind,
-                         gras_datadesc_type_t payload_request,
-                         gras_datadesc_type_t payload_answer);
+                         xbt_datadesc_type_t payload_request,
+                         xbt_datadesc_type_t payload_answer);
 
 /**
  * gras_msgtype_t:
@@ -56,8 +56,8 @@ typedef struct s_gras_msgtype {
   /* payload */
   short int version;
   e_gras_msg_kind_t kind;
-  gras_datadesc_type_t ctn_type;
-  gras_datadesc_type_t answer_type;     /* only used for RPC */
+  xbt_datadesc_type_t ctn_type;
+  xbt_datadesc_type_t answer_type;     /* only used for RPC */
 } s_gras_msgtype_t;
 
 extern xbt_set_t _gras_msgtype_set;     /* of gras_msgtype_t */
@@ -66,8 +66,8 @@ void gras_msgtype_free(void *msgtype);
 
 /* functions to extract msg from socket or put it on wire (depend RL vs SG) */
 gras_msg_t gras_msg_recv_any(void);     /* Get first message arriving */
-void gras_msg_recv(gras_socket_t sock, gras_msg_t msg /*OUT*/);
-void gras_msg_send_ext(gras_socket_t sock,
+void gras_msg_recv(xbt_socket_t sock, gras_msg_t msg /*OUT*/);
+void gras_msg_send_ext(xbt_socket_t sock,
                        e_gras_msg_kind_t kind,
                        unsigned long int ID,
                        gras_msgtype_t msgtype, void *payload);
@@ -98,7 +98,7 @@ void gras_cblist_free(void *cbl);
  * Context associated to a given callback (to either regular message or RPC)
  */
 struct s_gras_msg_cb_ctx {
-  gras_socket_t expeditor;
+  xbt_socket_t expeditor;
   gras_msgtype_t msgtype;
   unsigned long int ID;
   double timeout;
@@ -119,7 +119,7 @@ typedef struct {
 /* returns 0 if it handled a timer, or the delay until next timer, or -1 if no armed timer */
 double gras_msg_timer_handle(void);
 
-gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe,
+gras_msg_cb_ctx_t gras_msg_cb_ctx_new(xbt_socket_t expe,
                                       gras_msgtype_t msgtype,
                                       unsigned long int ID,
                                       int answer_due, double timeout);

@@ -19,13 +19,13 @@
 int node_nuke_handler(gras_msg_cb_ctx_t ctx, void *payload_data);
 
 // struct of a "get_successor" message, when a node look after the area in which he want to be.
-GRAS_DEFINE_TYPE(s_get_suc, struct s_get_suc {
+XBT_DEFINE_TYPE(s_get_suc, struct s_get_suc {
                  int xId; int yId; char host[1024]; int port;};);
 
 typedef struct s_get_suc get_suc_t;
 
 // struct of a "response_successor" message, hen a node receive the information of his new area.
-GRAS_DEFINE_TYPE(s_rep_suc, struct s_rep_suc {
+XBT_DEFINE_TYPE(s_rep_suc, struct s_rep_suc {
                  int x1;        // Xmin
                  int x2;        // Xmax
                  int y1;        // Ymin
@@ -43,16 +43,16 @@ int node(int argc, char **argv);
 // registering messages types
 static void register_messages()
 {
-  gras_msgtype_declare("can_get_suc", gras_datadesc_by_symbol(s_get_suc));
-  gras_msgtype_declare("can_rep_suc", gras_datadesc_by_symbol(s_rep_suc));
-  gras_msgtype_declare("can_nuke", gras_datadesc_by_symbol(s_nuke));    // can_test.c message // include can_tests.c must be ON.
+  gras_msgtype_declare("can_get_suc", xbt_datadesc_by_symbol(s_get_suc));
+  gras_msgtype_declare("can_rep_suc", xbt_datadesc_by_symbol(s_rep_suc));
+  gras_msgtype_declare("can_nuke", xbt_datadesc_by_symbol(s_nuke));    // can_test.c message // include can_tests.c must be ON.
 }
 
 
 // a forwarding function for a "get_suc" message.
 static void forward_get_suc(get_suc_t msg, char host[1024], int port)
 {
-  gras_socket_t temp_sock = NULL;
+  xbt_socket_t temp_sock = NULL;
   //XBT_INFO("Transmiting message to %s:%d",host,port);
   TRY {
     temp_sock = gras_socket_client(host, port);
@@ -74,13 +74,13 @@ static void forward_get_suc(get_suc_t msg, char host[1024], int port)
 // the handling function of a "get_suc" message (what do a node when he receive a "get_suc" message.
 static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
 {
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
   get_suc_t *incoming = (get_suc_t *) payload_data;
   xbt_ex_t e;                   // the error variable used in TRY.. CATCH tokens.
   node_data_t *globals = (node_data_t *) gras_userdata_get();
-  gras_socket_t temp_sock = NULL;
+  xbt_socket_t temp_sock = NULL;
   XBT_INFO("Received a get_successor message from %s for (%d;%d)",
-        gras_socket_peer_name(expeditor), incoming->xId, incoming->yId);
+        xbt_socket_peer_name(expeditor), incoming->xId, incoming->yId);
   //XBT_INFO("My area is [%d;%d;%d;%d]",globals->x1,globals->x2,globals->y1,globals->y2);
   if (incoming->xId < globals->x1)      // test if the message must be forwarded to a neighbour.
     forward_get_suc(*incoming, globals->west_host, globals->west_port);
@@ -190,7 +190,7 @@ static int node_get_suc_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
       }
       CATCH_ANONYMOUS {
         RETHROWF("%s:Timeout sending environment informations to %s: %s",
-                 globals->host, gras_socket_peer_name(expeditor));
+                 globals->host, xbt_socket_peer_name(expeditor));
       }
       gras_socket_close(temp_sock);
     } else                      // we have a problem!
@@ -218,12 +218,12 @@ int node(int argc, char **argv)
 {
   node_data_t *globals = NULL;
   xbt_ex_t e;                   // the error variable used in TRY.. CATCH tokens.
-  gras_socket_t temp_sock = NULL;
+  xbt_socket_t temp_sock = NULL;
 
   rep_suc_t rep_suc_msg;
 
   get_suc_t get_suc_msg;        // building the "get_suc" message.
-  gras_socket_t temp_sock2 = NULL;
+  xbt_socket_t temp_sock2 = NULL;
 
   XBT_INFO("Starting");
 

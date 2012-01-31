@@ -12,7 +12,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(Ping);
 
 /* Global private data */
 typedef struct {
-  gras_socket_t sock;
+  xbt_socket_t sock;
   int endcondition;
 } server_data_t;
 
@@ -21,7 +21,7 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload)
 {
   /* 1. Get the payload into the msg variable, and retrieve my caller */
   int msg = *(int *) payload;
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
 
   /* 2. Retrieve the server's state (globals) */
 
@@ -31,8 +31,8 @@ static int server_cb_ping_handler(gras_msg_cb_ctx_t ctx, void *payload)
   /* 3. Log which client connected */
   XBT_INFO(">>>>>>>> Got message PING(%d) from %s:%d <<<<<<<<",
         msg,
-        gras_socket_peer_name(expeditor),
-        gras_socket_peer_port(expeditor));
+        xbt_socket_peer_name(expeditor),
+        xbt_socket_peer_port(expeditor));
 
   /* 4. Change the value of the msg variable */
   msg = 4321;
@@ -85,7 +85,7 @@ int server(int argc, char *argv[])
   gras_cb_register("ping", &server_cb_ping_handler);
 
   XBT_INFO(">>>>>>>> Listening on port %d <<<<<<<<",
-        gras_socket_my_port(globals->sock));
+        xbt_socket_my_port(globals->sock));
   globals->endcondition = 0;
 
   /* 6. Wait up to 20 minutes for an incomming message to handle */

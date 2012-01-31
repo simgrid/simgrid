@@ -18,7 +18,7 @@ SG_BEGIN_DECL()
  * 
  *  Emulation and virtualization words have a lot of different meanings in
  *  computer science. Here is what we mean, and what this module allows you
- *  to do (if it does not match your personal belives, I'm sorry):
+ *  to do (if it does not match your personal beliefs, I'm sorry):
  * 
  *  - Virtualization: Having some specific code for the simulation or for the reality
  *  - Emulation: Report within the simulator the execution time of your code

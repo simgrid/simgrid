@@ -35,6 +35,8 @@ set(EXTRA_DIST
 	src/xbt/mmalloc/mvalloc.c
 	src/xbt/mmalloc/sbrk-sup.c
 	src/xbt/mmalloc/test/mmalloc_test.c
+	src/xbt/datadesc/ddt_parse.yy.l
+	src/xbt/datadesc/ddt_parse.yy.h
 	src/surf/maxmin_private.h
 	src/surf/trace_mgr_private.h
 	src/surf/surf_private.h
@@ -69,8 +71,6 @@ set(EXTRA_DIST
 	src/simdag/dax.dtd
 	src/simdag/dax_dtd.h
 	src/simdag/dax_dtd.c
-	src/gras/DataDesc/ddt_parse.yy.l
-	src/gras/DataDesc/ddt_parse.yy.h
 	src/gras/Virtu/virtu_rl.h
 	src/gras/Virtu/virtu_sg.h
 	src/gras/Virtu/virtu_interface.h
@@ -135,8 +135,6 @@ set(GRAS_RL_SRC
 	src/gras/rl_stubs.c
 	src/xbt/xbt_os_thread.c
 	src/gras/Transport/rl_transport.c
-	src/gras/Transport/transport_plugin_file.c
-	src/gras/Transport/transport_plugin_tcp.c
 	src/gras/Virtu/rl_emul.c
 	src/gras/Virtu/rl_process.c
 	src/gras/Virtu/rl_dns.c
@@ -182,6 +180,18 @@ set(XBT_SRC
 	src/xbt/xbt_replay_trace_reader.c
 	src/xbt/lib.c
 	src/xbt/automaton.c
+	src/xbt/datadesc/ddt_create.c
+	src/xbt/datadesc/ddt_convert.c
+	src/xbt/datadesc/ddt_exchange.c
+	src/xbt/datadesc/cbps.c
+	src/xbt/datadesc/datadesc.c
+	src/xbt/datadesc/datadesc_interface.h
+	src/xbt/datadesc/datadesc_private.h
+	src/xbt/datadesc/ddt_parse.c
+	src/xbt/datadesc/ddt_parse.yy.c
+	src/xbt/xbt_socket.c
+	src/xbt/xbt_socket_private.h
+	src/xbt/xbt_trp_plugin_tcp.c
 )
 
 if(HAVE_MMAP)
@@ -257,6 +267,7 @@ set(MSG_SRC
 	src/msg/msg_config.c
 	src/msg/msg_task.c
 	src/msg/msg_host.c
+	src/msg/msg_io.c
 	src/msg/msg_process.c
 	src/msg/msg_gos.c
 	src/msg/msg_global.c
@@ -287,6 +298,7 @@ set(GRAS_COMMON_SRC
 	src/gras/gras.c
 	src/gras/Transport/transport.c
 	src/gras/Transport/transport_private.h
+	src/gras/Transport/transport_plugin_file.c
 	src/gras/Msg/gras_msg_mod.c
 	src/gras/Msg/gras_msg_types.c
 	src/gras/Msg/gras_msg_exchange.c
@@ -297,15 +309,6 @@ set(GRAS_COMMON_SRC
 	src/gras/Msg/msg_private.h
 	src/gras/Virtu/process.c
 	src/gras/Virtu/gras_module.c
-	src/gras/DataDesc/ddt_create.c
-	src/gras/DataDesc/ddt_convert.c
-	src/gras/DataDesc/ddt_exchange.c
-	src/gras/DataDesc/cbps.c
-	src/gras/DataDesc/datadesc.c
-	src/gras/DataDesc/datadesc_interface.h
-	src/gras/DataDesc/datadesc_private.h
-	src/gras/DataDesc/ddt_parse.c
-	src/gras/DataDesc/ddt_parse.yy.c
 )
 
 set(GRAS_SG_SRC
@@ -420,6 +423,7 @@ set(headers_to_install
 	include/xbt/parmap.h
 	include/xbt/automaton.h
 	include/xbt/automatonparse_promela.h
+	include/xbt/datadesc.h
 	include/simgrid/platf.h
 	include/mc/modelchecker.h
 	include/msg/msg.h
@@ -433,7 +437,6 @@ set(headers_to_install
 	include/surf/surfxml_parse.h
 	include/surf/simgrid_dtd.h
 	include/surf/surf_routing.h
-	include/gras/datadesc.h
 	include/gras/transport.h
 	include/gras/virtu.h
 	include/gras/emul.h

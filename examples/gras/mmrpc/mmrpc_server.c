@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define GRAS_DEFINE_TYPE_EXTERN
+#define XBT_DEFINE_TYPE_EXTERN
 #include "xbt/matrix.h"
 #include "mmrpc.h"
 
@@ -18,7 +18,7 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
                                      void *payload_data)
 {
 
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
 
   /* 1. Get the payload into the data variable */
   xbt_matrix_t *request = (xbt_matrix_t *) payload_data;
@@ -38,9 +38,9 @@ static int server_cb_request_handler(gras_msg_cb_ctx_t ctx,
   return 0;
 }                               /* end_of_server_cb_request_handler */
 
-static gras_socket_t try_gras_socket_server(int port)
+static xbt_socket_t try_gras_socket_server(int port)
 {
-  volatile gras_socket_t sock = NULL;
+  volatile xbt_socket_t sock = NULL;
   TRY {
     sock = gras_socket_server(port);
   }
@@ -52,7 +52,7 @@ static gras_socket_t try_gras_socket_server(int port)
 
 int server(int argc, char *argv[])
 {
-  gras_socket_t sock = NULL;
+  xbt_socket_t sock = NULL;
   int port = 4002;
 
   /* 1. Init the GRAS infrastructure */

@@ -3,11 +3,6 @@ difference with the examples/gras directory is that what's in here
 tests some corner case that nobody would try in the first place. Here
 is a list of the directory content:
 
-datadesc/ Tests the marshalling facilities, trying to read messages
-	  comming from all the known architectures. This is done by
-	  storing these messages in files and loading them as if they
-	  were comming from a socket.
-	  	  
 empty_main/ Once upon a time, GRAS was broken when processes did
 	    nothing. This test is here to ensure that this never
 	    happen again.

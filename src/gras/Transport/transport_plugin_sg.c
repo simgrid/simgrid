@@ -16,6 +16,7 @@
 #include "gras/Msg/msg_private.h"
 #include "gras/Transport/transport_private.h"
 #include "gras/Virtu/virtu_sg.h"
+#include "xbt/xbt_socket_private.h" /* FIXME */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_sg, gras_trp,
                                 "SimGrid pseudo-transport");
@@ -27,22 +28,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_sg, gras_trp,
 /* retrieve the port record associated to a numerical port on an host */
 static gras_sg_portrec_t find_port(gras_hostdata_t * hd, int port);
 
-void gras_trp_sg_socket_client(gras_trp_plugin_t self,
+void gras_trp_sg_socket_client(xbt_trp_plugin_t self,
                                const char*host,
                                int port,
-                               /* OUT */ gras_socket_t sock);
-void gras_trp_sg_socket_server(gras_trp_plugin_t self,
+                               /* OUT */ xbt_socket_t sock);
+void gras_trp_sg_socket_server(xbt_trp_plugin_t self,
                                int port,
-                               /* OUT */ gras_socket_t sock);
-void gras_trp_sg_socket_close(gras_socket_t sd);
+                               /* OUT */ xbt_socket_t sock);
+void gras_trp_sg_socket_close(xbt_socket_t sd);
 
-void gras_trp_sg_chunk_send_raw(gras_socket_t sd,
+void gras_trp_sg_chunk_send_raw(xbt_socket_t sd,
                                 const char *data, unsigned long int size);
-void gras_trp_sg_chunk_send(gras_socket_t sd,
+void gras_trp_sg_chunk_send(xbt_socket_t sd,
                             const char *data,
                             unsigned long int size, int stable_ignored);
 
-int gras_trp_sg_chunk_recv(gras_socket_t sd,
+int gras_trp_sg_chunk_recv(xbt_socket_t sd,
                            char *data, unsigned long int size);
 
 /***
@@ -73,39 +74,41 @@ static gras_sg_portrec_t find_port(gras_hostdata_t * hd, int port)
 /***
  *** Info about who's speaking
  ***/
-static int gras_trp_sg_my_port(gras_socket_t s) {
-  gras_trp_sg_sock_data_t sockdata = s->data;
+static int gras_trp_sg_my_port(xbt_socket_t s)
+{
+  gras_trp_sg_sock_data_t sockdata = xbt_socket_get_data(s);
   if (gras_socket_im_the_server(s))
     return sockdata->server_port;
   else
     return sockdata->client_port;
 }
-static int gras_trp_sg_peer_port(gras_socket_t s) {
-  gras_trp_sg_sock_data_t sockdata = s->data;
+static int gras_trp_sg_peer_port(xbt_socket_t s)
+{
+  gras_trp_sg_sock_data_t sockdata = xbt_socket_get_data(s);
   if (gras_socket_im_the_server(s))
     return sockdata->client_port;
   else
     return sockdata->server_port;
 }
 
-static const char* gras_trp_sg_peer_name(gras_socket_t s) {
-  gras_trp_sg_sock_data_t sockdata = s->data;
+static const char* gras_trp_sg_peer_name(xbt_socket_t s)
+{
+  gras_trp_sg_sock_data_t sockdata = xbt_socket_get_data(s);
   if (gras_socket_im_the_server(s))
     return SIMIX_host_get_name(simcall_process_get_host(sockdata->client));
   else {
     return SIMIX_host_get_name(simcall_process_get_host(sockdata->server));
   }
 }
-static const char* gras_trp_sg_peer_proc(gras_socket_t s) {
+static const char* gras_trp_sg_peer_proc(xbt_socket_t s) {
   THROW_UNIMPLEMENTED;
 }
-static void gras_trp_sg_peer_proc_set(gras_socket_t s,char *name) {
+static void gras_trp_sg_peer_proc_set(xbt_socket_t s,char *name) {
   THROW_UNIMPLEMENTED;
 }
 
-void gras_trp_sg_setup(gras_trp_plugin_t plug)
+void gras_trp_sg_setup(xbt_trp_plugin_t plug)
 {
-
   plug->my_port = gras_trp_sg_my_port;
   plug->peer_port = gras_trp_sg_peer_port;
   plug->peer_name = gras_trp_sg_peer_name;
@@ -127,10 +130,10 @@ void gras_trp_sg_setup(gras_trp_plugin_t plug)
   plug->flush = NULL;           /* nothing cached */
 }
 
-void gras_trp_sg_socket_client(gras_trp_plugin_t self,
+void gras_trp_sg_socket_client(xbt_trp_plugin_t self,
                                const char*host,
                                int port,
-                               /* OUT */ gras_socket_t sock)
+                               /* OUT */ xbt_socket_t sock)
 {
 
   smx_host_t peer;
@@ -192,7 +195,7 @@ void gras_trp_sg_socket_client(gras_trp_plugin_t self,
          data->rdv_server,data->rdv_client,data->comm_recv);
 }
 
-void gras_trp_sg_socket_server(gras_trp_plugin_t self, int port, gras_socket_t sock)
+void gras_trp_sg_socket_server(xbt_trp_plugin_t self, int port, xbt_socket_t sock)
 {
 
   gras_hostdata_t *hd =
@@ -244,7 +247,7 @@ void gras_trp_sg_socket_server(gras_trp_plugin_t self, int port, gras_socket_t s
 
 }
 
-void gras_trp_sg_socket_close(gras_socket_t sock)
+void gras_trp_sg_socket_close(xbt_socket_t sock)
 {
   gras_hostdata_t *hd =
       (gras_hostdata_t *) SIMIX_host_self_get_data();
@@ -284,14 +287,14 @@ typedef struct {
   void *data;
 } sg_task_data_t;
 
-void gras_trp_sg_chunk_send(gras_socket_t sock,
+void gras_trp_sg_chunk_send(xbt_socket_t sock,
                             const char *data,
                             unsigned long int size, int stable_ignored)
 {
   gras_trp_sg_chunk_send_raw(sock, data, size);
 }
 
-void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
+void gras_trp_sg_chunk_send_raw(xbt_socket_t sock,
                                 const char *data, unsigned long int size)
 {
 #ifdef KILLME
@@ -323,7 +326,7 @@ void gras_trp_sg_chunk_send_raw(gras_socket_t sock,
   THROW_UNIMPLEMENTED;
 }
 
-int gras_trp_sg_chunk_recv(gras_socket_t sock,
+int gras_trp_sg_chunk_recv(xbt_socket_t sock,
                            char *data, unsigned long int size)
 {
   //gras_trp_sg_sock_data_t *sock_data =
@@ -333,7 +336,7 @@ int gras_trp_sg_chunk_recv(gras_socket_t sock,
   THROW_UNIMPLEMENTED;
 #ifdef KILLME
   gras_trp_sg_sock_data_t *remote_sock_data;
-  gras_socket_t remote_socket = NULL;
+  xbt_socket_t remote_socket = NULL;
   gras_msg_t msg_got;
   gras_msg_procdata_t msg_procdata =
       (gras_msg_procdata_t) gras_libdata_by_name("gras_msg");

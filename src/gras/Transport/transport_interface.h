@@ -20,80 +20,6 @@
  ***/
 extern int gras_opt_trp_nomoredata_on_close;
 
-/***
- *** Main user functions
- ***/
-/* stable if we know the storage will keep as is until the next trp_flush */
-XBT_PUBLIC(void) gras_trp_send(gras_socket_t sd, char *data, long int size,
-                               int stable);
-XBT_PUBLIC(void) gras_trp_recv(gras_socket_t sd, char *data,
-                               long int size);
-XBT_PUBLIC(void) gras_trp_flush(gras_socket_t sd);
-
-/* Find which socket needs to be read next */
-XBT_PUBLIC(gras_socket_t) gras_trp_select(double timeout);
-
-/* Set the peer process name (used by messaging layer) */
-XBT_PUBLIC(void) gras_socket_peer_proc_set(gras_socket_t sock,
-                                           char *peer_proc);
-
-/***
- *** Plugin mechanism 
- ***/
-
-/* A plugin type */
-typedef struct gras_trp_plugin_ s_gras_trp_plugin_t, *gras_trp_plugin_t;
-
-/* A plugin type */
-struct gras_trp_plugin_ {
-  char *name;
-
-  /* dst pointers are created and initialized with default values
-     before call to socket_client/server. 
-     Retrive the info you need from there. */
-  void (*socket_client) (gras_trp_plugin_t self,const char *host,int port, gras_socket_t dst);
-  void (*socket_server) (gras_trp_plugin_t self, int port,gras_socket_t dst);
-
-  gras_socket_t(*socket_accept) (gras_socket_t from);
-
-  /* Getting info about who's speaking */
-  int (*my_port)(gras_socket_t sd);
-  int (*peer_port)(gras_socket_t sd);
-  const char* (*peer_name)(gras_socket_t sd);
-  const char* (*peer_proc)(gras_socket_t sd);
-  void (*peer_proc_set)(gras_socket_t sd,char*peer_proc);
-
-
-  /* socket_close() is responsible of telling the OS that the socket is over,
-     but should not free the socket itself (beside the specific part) */
-  void (*socket_close) (gras_socket_t sd);
-
-  /* send/recv may be buffered */
-  void (*send) (gras_socket_t sd,
-                const char *data,
-                unsigned long int size,
-                int stable /* storage will survive until flush */ );
-  int (*recv) (gras_socket_t sd, char *data, unsigned long int size);
-  /* raw_send/raw_recv is never buffered (use it for measurement stuff) */
-  void (*raw_send) (gras_socket_t sd,
-                    const char *data, unsigned long int size);
-  int (*raw_recv) (gras_socket_t sd, char *data, unsigned long int size);
-
-  /* flush has to make sure that the pending communications are achieved */
-  void (*flush) (gras_socket_t sd);
-
-  void *data;                   /* plugin-specific data */
-
-  /* exit is responsible for freeing data and telling to the OS that 
-     this plugin is gone */
-  /* exit=NULL, data gets brutally free()d by the generic interface. 
-     (ie exit function needed only when data contains pointers) */
-  void (*exit) (gras_trp_plugin_t);
-};
-
-XBT_PUBLIC(gras_trp_plugin_t)
-    gras_trp_plugin_get_by_name(const char *name);
-
 /* Data of this module specific to each process
  * (used by sg_process.c to cleanup the SG channel cruft)
  */
@@ -117,5 +43,7 @@ typedef struct {
 
 /* Display the content of our socket set (debugging purpose) */
 XBT_PUBLIC(void) gras_trp_socketset_dump(const char *name);
+
+XBT_PUBLIC(xbt_socket_t) gras_trp_select(double timeout);
 
 #endif                          /* GRAS_TRP_INTERFACE_H */

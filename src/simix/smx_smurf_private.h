@@ -84,7 +84,12 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_SEM_WOULD_BLOCK),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_SEM_ACQUIRE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_SEM_ACQUIRE_TIMEOUT),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_SEM_GET_CAPACITY),\
-SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_READ)
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_READ),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_WRITE),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_OPEN),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_CLOSE),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_STAT)
+
 
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated
  * because they are not always present */
@@ -503,8 +508,39 @@ typedef struct s_smx_simcall {
     } sem_get_capacity;
 
     struct {
-      char* name;;
+      void *ptr;
+      size_t size;
+      size_t nmemb;
+      smx_file_t* stream;
+      size_t result;
     } file_read;
+
+    struct {
+      const void *ptr;
+      size_t size;
+      size_t nmemb;
+      smx_file_t* stream;
+      size_t result;
+    } file_write;
+
+    struct {
+      const char* path;
+      const char* mode;
+      smx_file_t* result;
+    } file_open;
+
+    struct {
+      smx_file_t* fp;
+      int result;
+    } file_close;
+
+    struct {
+      int fd;
+      //Next should be struct stat* buf
+      void* buf;
+      int result;
+    } file_stat;
+
   };
 } s_smx_simcall_t, *smx_simcall_t;
 

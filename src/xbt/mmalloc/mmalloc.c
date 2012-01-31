@@ -86,8 +86,9 @@ static void *morecore(struct mdesc *mdp, size_t size)
            mdp->heapsize * sizeof(malloc_info));
     oldinfo = mdp->heapinfo;
     newinfo[BLOCK(oldinfo)].busy.type = 0;
-    newinfo[BLOCK(oldinfo)].busy.info.size
+    newinfo[BLOCK(oldinfo)].busy.info.block.size
         = BLOCKIFY(mdp->heapsize * sizeof(malloc_info));
+    newinfo[BLOCK(oldinfo)].busy.info.block.busy_size = size;
     mdp->heapinfo = newinfo;
     __mmalloc_free(mdp, (void *) oldinfo);
     mdp->heapsize = newsize;
@@ -229,7 +230,8 @@ void *mmalloc(void *md, size_t size)
         }
         block = BLOCK(result);
         mdp->heapinfo[block].busy.type = 0;
-        mdp->heapinfo[block].busy.info.size = blocks;
+        mdp->heapinfo[block].busy.info.block.size = blocks;
+	mdp->heapinfo[block].busy.info.block.busy_size = size;
         mdp->heapstats.chunks_used++;
         mdp->heapstats.bytes_used += blocks * BLOCKSIZE;
         return (result);
@@ -262,7 +264,8 @@ void *mmalloc(void *md, size_t size)
     }
 
     mdp->heapinfo[block].busy.type = 0;
-    mdp->heapinfo[block].busy.info.size = blocks;
+    mdp->heapinfo[block].busy.info.block.size = blocks;
+    mdp->heapinfo[block].busy.info.block.busy_size = size;
     mdp->heapstats.chunks_used++;
     mdp->heapstats.bytes_used += blocks * BLOCKSIZE;
     mdp->heapstats.bytes_free -= blocks * BLOCKSIZE;

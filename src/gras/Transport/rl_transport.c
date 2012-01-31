@@ -7,12 +7,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
+#include "xbt/xbt_socket_private.h" /* FIXME */
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_trp);
 
 /* check transport_private.h for an explanation of this variable */
-gras_socket_t _gras_lastly_selected_socket = NULL;
+xbt_socket_t _gras_lastly_selected_socket = NULL;
 
 /**
  * gras_trp_select:
@@ -24,7 +26,7 @@ gras_socket_t _gras_lastly_selected_socket = NULL;
  *
  * if timeout>0 and no message there, wait at most that amount of time before giving up.
  */
-gras_socket_t gras_trp_select(double timeout)
+xbt_socket_t gras_trp_select(double timeout)
 {
   xbt_dynar_t sockets =
       ((gras_trp_procdata_t)
@@ -43,7 +45,7 @@ gras_socket_t gras_trp_select(double timeout)
   int ready;                    /* return of select: number of socket ready to be serviced */
   static int fd_setsize = -1;   /* FD_SETSIZE not always defined. Get this portably */
 
-  gras_socket_t sock_iter;      /* iterating over all sockets */
+  xbt_socket_t sock_iter;      /* iterating over all sockets */
   unsigned int cursor;          /* iterating over all sockets */
 
   /* Check whether there is more data to read from the socket we selected last time.
@@ -180,7 +182,7 @@ gras_socket_t gras_trp_select(double timeout)
 
       if (sock_iter->accepting && sock_iter->plugin->socket_accept) {
         /* not a socket but an ear. accept on it and serve next socket */
-        gras_socket_t accepted = NULL;
+        xbt_socket_t accepted = NULL;
 
         /* release mutex before accept; it will change the sockets dynar, so we have to break the foreach asap */
         xbt_dynar_cursor_unlock(sockets);
@@ -239,7 +241,8 @@ gras_socket_t gras_trp_select(double timeout)
   THROWF(timeout_error, 0, "Timeout");
 }
 
-void gras_trp_sg_setup(gras_trp_plugin_t plug)
+/* to make the linker happy in SG mode */
+void gras_trp_sg_setup(xbt_trp_plugin_t plug)
 {
   THROWF(mismatch_error, 0, "No SG transport on live platforms");
 }

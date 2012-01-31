@@ -26,6 +26,11 @@ void xbt_dict_postexit(void);
 void xbt_os_thread_mod_preinit(void);
 void xbt_os_thread_mod_postexit(void);
 
+void xbt_trp_preinit(void);
+void xbt_trp_postexit(void);
+void xbt_datadesc_preinit(void);
+void xbt_datadesc_postexit(void);
+
 void mmalloc_preinit(void);
 void mmalloc_postexit(void);
 

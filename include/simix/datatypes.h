@@ -13,6 +13,11 @@
 
 SG_BEGIN_DECL()
 
+/* ****************************** File *********************************** */
+typedef struct s_smx_file *smx_file_t;
+
+
+
 /* ******************************** Host ************************************ */
 /** @defgroup m_datatypes_management_details Details on SIMIX datatypes */
 /** @brief Host datatype  

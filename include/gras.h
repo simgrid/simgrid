@@ -18,7 +18,6 @@
 #include <gras/emul.h>
 
 #include <gras/transport.h>
-#include <gras/datadesc.h>
 #include <gras/messages.h>
 #include <gras/timer.h>
 

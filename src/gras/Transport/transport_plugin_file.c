@@ -9,6 +9,7 @@
 #include "portable.h"
 #include "gras/Transport/transport_private.h"
 #include "xbt/ex.h"
+#include "xbt/xbt_socket_private.h"
 #include "gras/Msg/msg_interface.h"     /* gras_msg_listener_awake */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_file, gras_trp,
@@ -17,15 +18,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_trp_file, gras_trp,
 /***
  *** Prototypes
  ***/
-void gras_trp_file_close(gras_socket_t sd);
+void gras_trp_file_close(xbt_socket_t sd);
 
-void gras_trp_file_chunk_send_raw(gras_socket_t sd,
+void gras_trp_file_chunk_send_raw(xbt_socket_t sd,
                                   const char *data,
                                   unsigned long int size);
-void gras_trp_file_chunk_send(gras_socket_t sd, const char *data,
+void gras_trp_file_chunk_send(xbt_socket_t sd, const char *data,
                               unsigned long int size, int stable_ignored);
 
-int gras_trp_file_chunk_recv(gras_socket_t sd,
+int gras_trp_file_chunk_recv(xbt_socket_t sd,
                              char *data, unsigned long int size);
 
 /***
@@ -43,26 +44,26 @@ typedef struct {
 /***
  *** Info about who's speaking
  ***/
-static int gras_trp_file_my_port(gras_socket_t s) {
+static int gras_trp_file_my_port(xbt_socket_t s) {
   THROW_UNIMPLEMENTED;
 }
-static int gras_trp_file_peer_port(gras_socket_t s) {
+static int gras_trp_file_peer_port(xbt_socket_t s) {
   THROW_UNIMPLEMENTED;
 }
-static const char* gras_trp_file_peer_name(gras_socket_t s) {
+static const char* gras_trp_file_peer_name(xbt_socket_t s) {
   THROW_UNIMPLEMENTED;
 }
-static const char* gras_trp_file_peer_proc(gras_socket_t s) {
+static const char* gras_trp_file_peer_proc(xbt_socket_t s) {
   THROW_UNIMPLEMENTED;
 }
-static void gras_trp_file_peer_proc_set(gras_socket_t s,char *name) {
+static void gras_trp_file_peer_proc_set(xbt_socket_t s,char *name) {
   THROW_UNIMPLEMENTED;
 }
 
 /***
  *** Code
  ***/
-void gras_trp_file_setup(gras_trp_plugin_t plug)
+void gras_trp_file_setup(xbt_trp_plugin_t plug)
 {
 
   gras_trp_file_plug_data_t *file = xbt_new(gras_trp_file_plug_data_t, 1);
@@ -92,15 +93,13 @@ void gras_trp_file_setup(gras_trp_plugin_t plug)
  *
  * This only possible in RL, and is mainly for debugging.
  */
-gras_socket_t gras_socket_client_from_file(const char *path)
+xbt_socket_t gras_socket_client_from_file(const char *path)
 {
-  gras_socket_t res;
+  xbt_socket_t res;
 
   xbt_assert(gras_if_RL(), "Cannot use file as socket in the simulator");
 
-  gras_trp_socket_new(0, &res);
-
-  res->plugin = gras_trp_plugin_get_by_name("file");
+  xbt_socket_new_ext(0, &res, xbt_trp_plugin_get_by_name("file"), 0, 0);
 
   if (strcmp("-", path)) {
     res->sd =
@@ -134,16 +133,13 @@ gras_socket_t gras_socket_client_from_file(const char *path)
  *
  * This only possible in RL, and is mainly for debugging.
  */
-gras_socket_t gras_socket_server_from_file(const char *path)
+xbt_socket_t gras_socket_server_from_file(const char *path)
 {
-  gras_socket_t res;
+  xbt_socket_t res;
 
   xbt_assert(gras_if_RL(), "Cannot use file as socket in the simulator");
 
-  gras_trp_socket_new(1, &res);
-
-  res->plugin = gras_trp_plugin_get_by_name("file");
-
+  xbt_socket_new_ext(1, &res, xbt_trp_plugin_get_by_name("file"), 0, 0);
 
   if (strcmp("-", path)) {
     res->sd = open(path, O_RDONLY | O_BINARY);
@@ -168,7 +164,7 @@ gras_socket_t gras_socket_server_from_file(const char *path)
   return res;
 }
 
-void gras_trp_file_close(gras_socket_t sock)
+void gras_trp_file_close(xbt_socket_t sock)
 {
   gras_trp_file_plug_data_t *data;
 
@@ -199,7 +195,7 @@ void gras_trp_file_close(gras_socket_t sock)
  * Send data on a file pseudo-socket
  */
 void
-gras_trp_file_chunk_send(gras_socket_t sock,
+gras_trp_file_chunk_send(xbt_socket_t sock,
                          const char *data,
                          unsigned long int size, int stable_ignored)
 {
@@ -207,7 +203,7 @@ gras_trp_file_chunk_send(gras_socket_t sock,
 }
 
 void
-gras_trp_file_chunk_send_raw(gras_socket_t sock,
+gras_trp_file_chunk_send_raw(xbt_socket_t sock,
                              const char *data, unsigned long int size)
 {
 
@@ -240,7 +236,7 @@ gras_trp_file_chunk_send_raw(gras_socket_t sock,
  * Receive data on a file pseudo-socket.
  */
 int
-gras_trp_file_chunk_recv(gras_socket_t sock,
+gras_trp_file_chunk_recv(xbt_socket_t sock,
                          char *data, unsigned long int size)
 {
 

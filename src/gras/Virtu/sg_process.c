@@ -66,10 +66,10 @@ void gras_process_init()
   } else
     pd->ppid = -1;
 
-  trp_pd->msg_selectable_sockets = xbt_queue_new(0, sizeof(gras_socket_t));
+  trp_pd->msg_selectable_sockets = xbt_queue_new(0, sizeof(xbt_socket_t));
 
   trp_pd->meas_selectable_sockets =
-      xbt_queue_new(0, sizeof(gras_socket_t));
+      xbt_queue_new(0, sizeof(xbt_socket_t));
 
   XBT_VERB("Creating process '%s' (%d)", SIMIX_process_self_get_name(),
       gras_os_getpid());
@@ -79,7 +79,7 @@ void gras_process_exit()
 {
   xbt_dynar_t sockets =
       ((gras_trp_procdata_t) gras_libdata_by_name("gras_trp"))->sockets;
-  gras_socket_t sock_iter;
+  xbt_socket_t sock_iter;
   unsigned int cursor;
   gras_hostdata_t *hd =
       (gras_hostdata_t *) SIMIX_host_self_get_data();
@@ -110,9 +110,9 @@ void gras_process_exit()
     xbt_dynar_foreach(msg_pd->msg_queue, cpt, msg) {
       XBT_WARN("   Message %s (%s) from %s@%s:%d", msg.type->name,
             e_gras_msg_kind_names[msg.kind],
-            gras_socket_peer_proc(msg.expe),
-            gras_socket_peer_name(msg.expe),
-            gras_socket_peer_port(msg.expe));
+            xbt_socket_peer_proc(msg.expe),
+            xbt_socket_peer_name(msg.expe),
+            xbt_socket_peer_port(msg.expe));
     }
   }
 

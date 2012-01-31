@@ -54,32 +54,32 @@ static int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx, void *payload);
 
 void amok_bw_bw_init()
 {
-  gras_datadesc_type_t bw_request_desc, bw_res_desc;
+  xbt_datadesc_type_t bw_request_desc, bw_res_desc;
 
   /* Build the Bandwidth datatype descriptions */
-  bw_request_desc = gras_datadesc_struct("s_bw_request_t");
-  gras_datadesc_struct_append(bw_request_desc, "peer",
-                              gras_datadesc_by_name("s_xbt_peer_t"));
-  gras_datadesc_struct_append(bw_request_desc, "buf_size",
-                              gras_datadesc_by_name("unsigned long int"));
-  gras_datadesc_struct_append(bw_request_desc, "msg_size",
-                              gras_datadesc_by_name("unsigned long int"));
-  gras_datadesc_struct_append(bw_request_desc, "msg_amount",
-                              gras_datadesc_by_name("unsigned long int"));
-  gras_datadesc_struct_append(bw_request_desc, "min_duration",
-                              gras_datadesc_by_name("double"));
-  gras_datadesc_struct_close(bw_request_desc);
-  bw_request_desc = gras_datadesc_ref("bw_request_t", bw_request_desc);
+  bw_request_desc = xbt_datadesc_struct("s_bw_request_t");
+  xbt_datadesc_struct_append(bw_request_desc, "peer",
+                              xbt_datadesc_by_name("s_xbt_peer_t"));
+  xbt_datadesc_struct_append(bw_request_desc, "buf_size",
+                              xbt_datadesc_by_name("unsigned long int"));
+  xbt_datadesc_struct_append(bw_request_desc, "msg_size",
+                              xbt_datadesc_by_name("unsigned long int"));
+  xbt_datadesc_struct_append(bw_request_desc, "msg_amount",
+                              xbt_datadesc_by_name("unsigned long int"));
+  xbt_datadesc_struct_append(bw_request_desc, "min_duration",
+                              xbt_datadesc_by_name("double"));
+  xbt_datadesc_struct_close(bw_request_desc);
+  bw_request_desc = xbt_datadesc_ref("bw_request_t", bw_request_desc);
 
-  bw_res_desc = gras_datadesc_struct("s_bw_res_t");
-  gras_datadesc_struct_append(bw_res_desc, "timestamp",
-                              gras_datadesc_by_name("unsigned int"));
-  gras_datadesc_struct_append(bw_res_desc, "seconds",
-                              gras_datadesc_by_name("double"));
-  gras_datadesc_struct_append(bw_res_desc, "bw",
-                              gras_datadesc_by_name("double"));
-  gras_datadesc_struct_close(bw_res_desc);
-  bw_res_desc = gras_datadesc_ref("bw_res_t", bw_res_desc);
+  bw_res_desc = xbt_datadesc_struct("s_bw_res_t");
+  xbt_datadesc_struct_append(bw_res_desc, "timestamp",
+                              xbt_datadesc_by_name("unsigned int"));
+  xbt_datadesc_struct_append(bw_res_desc, "seconds",
+                              xbt_datadesc_by_name("double"));
+  xbt_datadesc_struct_append(bw_res_desc, "bw",
+                              xbt_datadesc_by_name("double"));
+  xbt_datadesc_struct_close(bw_res_desc);
+  bw_res_desc = xbt_datadesc_ref("bw_res_t", bw_res_desc);
 
   gras_msgtype_declare_rpc("BW handshake", bw_request_desc,
                            bw_request_desc);
@@ -133,7 +133,7 @@ void amok_bw_bw_leave()
  *           bytes in a fat pipe.
  * 
  */
-void amok_bw_test(gras_socket_t peer,
+void amok_bw_test(xbt_socket_t peer,
                   unsigned long int buf_size,
                   unsigned long int msg_size,
                   unsigned long int msg_amount,
@@ -141,7 +141,7 @@ void amok_bw_test(gras_socket_t peer,
 {
 
   /* Measurement sockets for the experiments */
-  volatile gras_socket_t measMasterIn = NULL, measIn, measOut = NULL;
+  volatile xbt_socket_t measMasterIn = NULL, measIn, measOut = NULL;
   volatile int port;
   bw_request_t request, request_ack;
   xbt_ex_t e;
@@ -166,10 +166,10 @@ void amok_bw_test(gras_socket_t peer,
   request->msg_size = msg_size;
   request->msg_amount = msg_amount;
   request->peer.name = NULL;
-  request->peer.port = gras_socket_my_port(measMasterIn);
+  request->peer.port = xbt_socket_my_port(measMasterIn);
   XBT_DEBUG
       ("Handshaking with %s:%d to connect it back on my %d (bufsize=%ld, msg_size=%ld, msg_amount=%ld)",
-       gras_socket_peer_name(peer), gras_socket_peer_port(peer),
+       xbt_socket_peer_name(peer), xbt_socket_peer_port(peer),
        request->peer.port, request->buf_size, request->msg_size,
        request->msg_amount);
 
@@ -179,17 +179,17 @@ void amok_bw_test(gras_socket_t peer,
   CATCH_ANONYMOUS {
     RETHROWF("Error encountered while sending the BW request: %s");
   }
-  measIn = gras_socket_meas_accept(measMasterIn);
+  measIn = xbt_socket_meas_accept(measMasterIn);
 
   TRY {
-    measOut = gras_socket_client_ext(gras_socket_peer_name(peer),
+    measOut = gras_socket_client_ext(xbt_socket_peer_name(peer),
                                      request_ack->peer.port,
                                      request->buf_size, 1);
   }
   CATCH_ANONYMOUS {
     RETHROWF
         ("Error encountered while opening the measurement socket to %s:%d for BW test: %s",
-         gras_socket_peer_name(peer), request_ack->peer.port);
+         xbt_socket_peer_name(peer), request_ack->peer.port);
   }
   XBT_DEBUG
       ("Got ACK; conduct the experiment (msg_size = %ld, msg_amount=%ld)",
@@ -240,10 +240,10 @@ void amok_bw_test(gras_socket_t peer,
     first_pass = 0;
     *sec = gras_os_time();
     TRY {
-      gras_socket_meas_send(measOut, 120, request->msg_size,
+      xbt_socket_meas_send(measOut, 120, request->msg_size,
                             request->msg_amount);
       XBT_DEBUG("Data sent. Wait ACK");
-      gras_socket_meas_recv(measIn, 120, 1, 1);
+      xbt_socket_meas_recv(measIn, 120, 1, 1);
     }
     CATCH_ANONYMOUS {
       gras_socket_close(measOut);
@@ -288,8 +288,8 @@ void amok_bw_test(gras_socket_t peer,
 */
 int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
 {
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
-  volatile gras_socket_t measMasterIn = NULL,  measIn = NULL, measOut = NULL;
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  volatile xbt_socket_t measMasterIn = NULL,  measIn = NULL, measOut = NULL;
   volatile bw_request_t request = *(bw_request_t *) payload;
   bw_request_t answer;
   xbt_ex_t e;
@@ -300,7 +300,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
 
   XBT_DEBUG
       ("Handshaked to connect to %s:%d (sizes: buf=%lu msg=%lu msg_amount=%lu)",
-       gras_socket_peer_name(expeditor), request->peer.port,
+       xbt_socket_peer_name(expeditor), request->peer.port,
        request->buf_size, request->msg_size, request->msg_amount);
 
   /* Build our answer */
@@ -324,7 +324,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
   answer->buf_size = request->buf_size;
   answer->msg_size = request->msg_size;
   answer->msg_amount = request->msg_amount;
-  answer->peer.port = gras_socket_my_port(measMasterIn);
+  answer->peer.port = xbt_socket_my_port(measMasterIn);
 
   TRY {
     gras_msg_rpcreturn(60, ctx, &answer);
@@ -338,19 +338,19 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
 
   /* Don't connect asap to leave time to other side to enter the accept() */
   TRY {
-    measOut = gras_socket_client_ext(gras_socket_peer_name(expeditor),
+    measOut = gras_socket_client_ext(xbt_socket_peer_name(expeditor),
                                      request->peer.port,
                                      request->buf_size, 1);
   }
   CATCH_ANONYMOUS {
     RETHROWF
         ("Error encountered while opening a measurement socket back to %s:%d : %s",
-         gras_socket_peer_name(expeditor), request->peer.port);
+         xbt_socket_peer_name(expeditor), request->peer.port);
     /* FIXME: tell error to remote */
   }
 
   TRY {
-    measIn = gras_socket_meas_accept(measMasterIn);
+    measIn = xbt_socket_meas_accept(measMasterIn);
     XBT_DEBUG
         ("BW handshake answered. buf_size=%lu msg_size=%lu msg_amount=%lu port=%d",
          answer->buf_size, answer->msg_size, answer->msg_amount,
@@ -374,9 +374,9 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
     void *payload;
     int msggot;
     TRY {
-      gras_socket_meas_recv(measIn, 120, request->msg_size,
+      xbt_socket_meas_recv(measIn, 120, request->msg_size,
                             request->msg_amount);
-      gras_socket_meas_send(measOut, 120, 1, 1);
+      xbt_socket_meas_send(measOut, 120, 1, 1);
     }
     CATCH_ANONYMOUS {
       gras_socket_close(measMasterIn);
@@ -443,7 +443,7 @@ void amok_bw_request(const char *from_name, unsigned int from_port,
                      double min_duration, /*OUT*/ double *sec, double *bw)
 {
 
-  gras_socket_t sock;
+  xbt_socket_t sock;
   /* The request */
   bw_request_t request;
   bw_res_t result;
@@ -486,11 +486,11 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx, void *payload)
   /* specification of the test to run, and our answer */
   bw_request_t request = *(bw_request_t *) payload;
   bw_res_t result = xbt_new0(s_bw_res_t, 1);
-  gras_socket_t peer, asker;
+  xbt_socket_t peer, asker;
 
   asker = gras_msg_cb_ctx_from(ctx);
   XBT_VERB("Asked by %s:%d to conduct a bw XP with %s:%d (request: %ld %ld)",
-        gras_socket_peer_name(asker), gras_socket_peer_port(asker),
+        xbt_socket_peer_name(asker), xbt_socket_peer_port(asker),
         request->peer.name, request->peer.port,
         request->msg_size, request->msg_amount);
   peer = gras_socket_client(request->peer.name, request->peer.port);

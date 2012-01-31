@@ -25,8 +25,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg_rpc, gras_msg, "RPC mecanism");
  */
 void
 gras_msgtype_declare_rpc(const char *name,
-                         gras_datadesc_type_t payload_request,
-                         gras_datadesc_type_t payload_answer)
+                         xbt_datadesc_type_t payload_request,
+                         xbt_datadesc_type_t payload_answer)
 {
 
   gras_msgtype_declare_ext(name, 0,
@@ -53,8 +53,8 @@ gras_msgtype_declare_rpc(const char *name,
 void
 gras_msgtype_declare_rpc_v(const char *name,
                            short int version,
-                           gras_datadesc_type_t payload_request,
-                           gras_datadesc_type_t payload_answer)
+                           xbt_datadesc_type_t payload_request,
+                           xbt_datadesc_type_t payload_answer)
 {
 
   gras_msgtype_declare_ext(name, version,
@@ -111,7 +111,7 @@ void gras_msg_ctx_mallocator_reset_f(void *ctx)
 
 /** @brief Launch a RPC call, but do not block for the answer */
 gras_msg_cb_ctx_t
-gras_msg_rpc_async_call_(gras_socket_t server,
+gras_msg_rpc_async_call_(xbt_socket_t server,
                          double timeOut,
                          gras_msgtype_t msgtype, void *request)
 {
@@ -133,8 +133,8 @@ gras_msg_rpc_async_call_(gras_socket_t server,
   ctx->timeout = timeOut;
 
   XBT_VERB("Send to %s:%d a RPC of type '%s' (ID=%lu)",
-        gras_socket_peer_name(server),
-        gras_socket_peer_port(server), msgtype->name, ctx->ID);
+        xbt_socket_peer_name(server),
+        xbt_socket_peer_port(server), msgtype->name, ctx->ID);
 
   gras_msg_send_ext(server, e_gras_msg_kind_rpccall, ctx->ID, msgtype,
                     request);
@@ -174,8 +174,8 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
     XBT_INFO
         ("canceled RPC %ld pushed onto the stack (%s from %s:%d) Reason: %s",
          ctx->ID, ctx->msgtype->name,
-         gras_socket_peer_name(ctx->expeditor),
-         gras_socket_peer_port(ctx->expeditor), e.msg);
+         xbt_socket_peer_name(ctx->expeditor),
+         xbt_socket_peer_port(ctx->expeditor), e.msg);
     RETHROW;
   }
 
@@ -207,7 +207,7 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
 }
 
 /** @brief Conduct a RPC call */
-void gras_msg_rpccall_(gras_socket_t server,
+void gras_msg_rpccall_(xbt_socket_t server,
                        double timeout,
                        gras_msgtype_t msgtype, void *request, void *answer)
 {
@@ -233,8 +233,8 @@ void gras_msg_rpcreturn(double timeOut, gras_msg_cb_ctx_t ctx,
   ctx->answer_due = 0;
   XBT_DEBUG("Return to RPC '%s' from %s:%d (tOut=%f, payl=%p)",
          ctx->msgtype->name,
-         gras_socket_peer_name(ctx->expeditor),
-         gras_socket_peer_port(ctx->expeditor), timeOut, answer);
+         xbt_socket_peer_name(ctx->expeditor),
+         xbt_socket_peer_port(ctx->expeditor), timeOut, answer);
   gras_msg_send_ext(ctx->expeditor, e_gras_msg_kind_rpcanswer, ctx->ID,
                     ctx->msgtype, answer);
 }

@@ -36,9 +36,9 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
     /* Get as many statistics as early as we can.  */
     mdp->heapstats.chunks_used--;
     mdp->heapstats.bytes_used -=
-        mdp->heapinfo[block].busy.info.size * BLOCKSIZE;
+        mdp->heapinfo[block].busy.info.block.size * BLOCKSIZE;
     mdp->heapstats.bytes_free +=
-        mdp->heapinfo[block].busy.info.size * BLOCKSIZE;
+        mdp->heapinfo[block].busy.info.block.size * BLOCKSIZE;
 
     /* Find the free cluster previous to this one in the free list.
        Start searching at the last block referenced; this may benefit
@@ -59,11 +59,11 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
     /* Determine how to link this block into the free list.  */
     if (block == i + mdp->heapinfo[i].free.size) {
       /* Coalesce this block with its predecessor.  */
-      mdp->heapinfo[i].free.size += mdp->heapinfo[block].busy.info.size;
+      mdp->heapinfo[i].free.size += mdp->heapinfo[block].busy.info.block.size;
       block = i;
     } else {
       /* Really link this block back into the free list.  */
-      mdp->heapinfo[block].free.size = mdp->heapinfo[block].busy.info.size;
+      mdp->heapinfo[block].free.size = mdp->heapinfo[block].busy.info.block.size;
       mdp->heapinfo[block].free.next = mdp->heapinfo[i].free.next;
       mdp->heapinfo[block].free.prev = i;
       mdp->heapinfo[i].free.next = block;
@@ -130,7 +130,8 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
         next->prev = prev->prev;
       }
       mdp->heapinfo[block].busy.type = 0;
-      mdp->heapinfo[block].busy.info.size = 1;
+      mdp->heapinfo[block].busy.info.block.size = 1;
+      mdp->heapinfo[block].busy.info.block.busy_size = 0;
 
       /* Keep the statistics accurate.  */
       mdp->heapstats.chunks_used++;

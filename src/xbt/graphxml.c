@@ -1057,8 +1057,8 @@ char *xbt_graph_parse_text;
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
- * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp).
+ * FleXML is Copyright (C) 2003-2011 Martin Quinson.  All rights reserved.
+ * (Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1067,7 +1067,7 @@ char *xbt_graph_parse_text;
  * 
  * Some parts, here collectively called "Part A", are found in the 
  * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
- * and Copyright (C) 2003-2006 Martin Quinson. All rights reserved.
+ * and Copyright (C) 2003-2011 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -1103,7 +1103,7 @@ char *xbt_graph_parse_text;
 const char rcs_graphxml_flexml_skeleton[] =
  "$" "Id: skel,v 1.40 2007/10/11 09:57:24 mquinson Exp $";
 const char rcs_graphxml_flexml[] =
- "$" "Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp $";
 
 /* ANSI headers. */
 #include <stdlib.h> /* for realloc() -- needed here when using flex 2.5.4 */
@@ -1140,28 +1140,40 @@ extern char *graphxml_bufferstack;
 #define graphxml_pcdata (graphxml_bufferstack + graphxml_pcdata_ix)
 AT_graphxml_node_name AX_graphxml_node_name;
 #define A_graphxml_node_name (graphxml_bufferstack + AX_graphxml_node_name)
+short int graphxml_node_name_isset;
 AT_graphxml_edge_source AX_graphxml_edge_source;
 #define A_graphxml_edge_source (graphxml_bufferstack + AX_graphxml_edge_source)
+short int graphxml_edge_source_isset;
 AT_graphxml_node_position_y AX_graphxml_node_position_y;
 #define A_graphxml_node_position_y (graphxml_bufferstack + AX_graphxml_node_position_y)
+short int graphxml_node_position_y_isset;
 AT_graphxml_node_position_x AX_graphxml_node_position_x;
 #define A_graphxml_node_position_x (graphxml_bufferstack + AX_graphxml_node_position_x)
+short int graphxml_node_position_x_isset;
 AT_graphxml_edge_data AX_graphxml_edge_data;
 #define A_graphxml_edge_data (graphxml_bufferstack + AX_graphxml_edge_data)
+short int graphxml_edge_data_isset;
 AT_graphxml_edge_target AX_graphxml_edge_target;
 #define A_graphxml_edge_target (graphxml_bufferstack + AX_graphxml_edge_target)
+short int graphxml_edge_target_isset;
 AT_graphxml_graph_isDirected AX_graphxml_graph_isDirected;
 #define A_graphxml_graph_isDirected AX_graphxml_graph_isDirected
+short int graphxml_graph_isDirected_isset;
 AT_graphxml_node_label AX_graphxml_node_label;
 #define A_graphxml_node_label (graphxml_bufferstack + AX_graphxml_node_label)
+short int graphxml_node_label_isset;
 AT_graphxml_node_data AX_graphxml_node_data;
 #define A_graphxml_node_data (graphxml_bufferstack + AX_graphxml_node_data)
+short int graphxml_node_data_isset;
 AT_graphxml_edge_label AX_graphxml_edge_label;
 #define A_graphxml_edge_label (graphxml_bufferstack + AX_graphxml_edge_label)
+short int graphxml_edge_label_isset;
 AT_graphxml_edge_length AX_graphxml_edge_length;
 #define A_graphxml_edge_length (graphxml_bufferstack + AX_graphxml_edge_length)
+short int graphxml_edge_length_isset;
 AT_graphxml_edge_name AX_graphxml_edge_name;
 #define A_graphxml_edge_name (graphxml_bufferstack + AX_graphxml_edge_name)
+short int graphxml_edge_name_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -1764,6 +1776,7 @@ case 19:
 YY_RULE_SETUP
 {
   AX_graphxml_graph_isDirected = A_graphxml_graph_isDirected_true;
+  graphxml_graph_isDirected_isset = 0;
   ENTER(AL_graphxml_graph); pushbuffer(0);
   }
 	YY_BREAK
@@ -1854,10 +1867,15 @@ case 32:
 YY_RULE_SETUP
 {
   AX_graphxml_node_label = 0;
+  graphxml_node_label_isset = 0;
   AX_graphxml_node_name = 0;
+  graphxml_node_name_isset = 0;
   AX_graphxml_node_data = 0;
+  graphxml_node_data_isset = 0;
   AX_graphxml_node_position_x = 1;
+  graphxml_node_position_x_isset = 0;
   AX_graphxml_node_position_y = 6;
+  graphxml_node_position_y_isset = 0;
   ENTER(AL_graphxml_node); pushbuffer(0);
   }
 	YY_BREAK
@@ -1865,52 +1883,52 @@ YY_RULE_SETUP
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_node_label);
+if (graphxml_node_label_isset != 0) {FAIL("Multiple definition of attribute label in <graphxml_node>");} graphxml_node_label_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_node_label);
 	YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_node_label);
+if (graphxml_node_label_isset != 0) {FAIL("Multiple definition of attribute label in <graphxml_node>");}  graphxml_node_label_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_node_label);
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_node_name);
+if (graphxml_node_name_isset != 0) {FAIL("Multiple definition of attribute name in <graphxml_node>");} graphxml_node_name_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_node_name);
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_node_name);
+if (graphxml_node_name_isset != 0) {FAIL("Multiple definition of attribute name in <graphxml_node>");}  graphxml_node_name_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_node_name);
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_node_data);
+if (graphxml_node_data_isset != 0) {FAIL("Multiple definition of attribute data in <graphxml_node>");} graphxml_node_data_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_node_data);
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_node_data);
+if (graphxml_node_data_isset != 0) {FAIL("Multiple definition of attribute data in <graphxml_node>");}  graphxml_node_data_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_node_data);
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_node_position_x);
+if (graphxml_node_position_x_isset != 0) {FAIL("Multiple definition of attribute position_x in <graphxml_node>");} graphxml_node_position_x_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_node_position_x);
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_node_position_x);
+if (graphxml_node_position_x_isset != 0) {FAIL("Multiple definition of attribute position_x in <graphxml_node>");}  graphxml_node_position_x_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_node_position_x);
 	YY_BREAK
 case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_node_position_y);
+if (graphxml_node_position_y_isset != 0) {FAIL("Multiple definition of attribute position_y in <graphxml_node>");} graphxml_node_position_y_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_node_position_y);
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_node_position_y);
+if (graphxml_node_position_y_isset != 0) {FAIL("Multiple definition of attribute position_y in <graphxml_node>");}  graphxml_node_position_y_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_node_position_y);
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
@@ -1985,11 +2003,17 @@ case 51:
 YY_RULE_SETUP
 {
   AX_graphxml_edge_label = 0;
+  graphxml_edge_label_isset = 0;
   AX_graphxml_edge_name = 0;
+  graphxml_edge_name_isset = 0;
   AX_graphxml_edge_source = 0;
+  graphxml_edge_source_isset = 0;
   AX_graphxml_edge_target = 0;
+  graphxml_edge_target_isset = 0;
   AX_graphxml_edge_length = 11;
+  graphxml_edge_length_isset = 0;
   AX_graphxml_edge_data = 0;
+  graphxml_edge_data_isset = 0;
   ENTER(AL_graphxml_edge); pushbuffer(0);
   }
 	YY_BREAK
@@ -1997,62 +2021,62 @@ YY_RULE_SETUP
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_label);
+if (graphxml_edge_label_isset != 0) {FAIL("Multiple definition of attribute label in <graphxml_edge>");} graphxml_edge_label_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_label);
 	YY_BREAK
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_label);
+if (graphxml_edge_label_isset != 0) {FAIL("Multiple definition of attribute label in <graphxml_edge>");}  graphxml_edge_label_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_label);
 	YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_name);
+if (graphxml_edge_name_isset != 0) {FAIL("Multiple definition of attribute name in <graphxml_edge>");} graphxml_edge_name_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_name);
 	YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_name);
+if (graphxml_edge_name_isset != 0) {FAIL("Multiple definition of attribute name in <graphxml_edge>");}  graphxml_edge_name_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_name);
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_source);
+if (graphxml_edge_source_isset != 0) {FAIL("Multiple definition of attribute source in <graphxml_edge>");} graphxml_edge_source_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_source);
 	YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_source);
+if (graphxml_edge_source_isset != 0) {FAIL("Multiple definition of attribute source in <graphxml_edge>");}  graphxml_edge_source_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_source);
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_target);
+if (graphxml_edge_target_isset != 0) {FAIL("Multiple definition of attribute target in <graphxml_edge>");} graphxml_edge_target_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_target);
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_target);
+if (graphxml_edge_target_isset != 0) {FAIL("Multiple definition of attribute target in <graphxml_edge>");}  graphxml_edge_target_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_target);
 	YY_BREAK
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_length);
+if (graphxml_edge_length_isset != 0) {FAIL("Multiple definition of attribute length in <graphxml_edge>");} graphxml_edge_length_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_length);
 	YY_BREAK
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_length);
+if (graphxml_edge_length_isset != 0) {FAIL("Multiple definition of attribute length in <graphxml_edge>");}  graphxml_edge_length_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_length);
 	YY_BREAK
 case 62:
 /* rule 62 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_data);
+if (graphxml_edge_data_isset != 0) {FAIL("Multiple definition of attribute data in <graphxml_edge>");} graphxml_edge_data_isset = 1; ENTER(VALUE1); BUFFERSET(AX_graphxml_edge_data);
 	YY_BREAK
 case 63:
 /* rule 63 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_data);
+if (graphxml_edge_data_isset != 0) {FAIL("Multiple definition of attribute data in <graphxml_edge>");}  graphxml_edge_data_isset = 1; ENTER(VALUE2); BUFFERSET(AX_graphxml_edge_data);
 	YY_BREAK
 case 64:
 YY_RULE_SETUP

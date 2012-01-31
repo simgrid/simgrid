@@ -464,7 +464,7 @@ void surf_config_init(int *argc, char **argv)
     default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "contexts/nthreads",
                      "Number of parallel threads used to execute user contexts",
-                     xbt_cfgelm_int, &default_value, 1, 1,
+                     xbt_cfgelm_int, &default_value_int, 1, 1,
                      _surf_cfg_cb_contexts_nthreads, NULL);
 
     /* minimal number of user contexts to be run in parallel */

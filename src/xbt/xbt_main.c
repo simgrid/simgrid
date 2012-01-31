@@ -44,6 +44,15 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_set);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_sync_os);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap_unit);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_cbps);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_convert);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_create);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_exchange);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_lexer);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_parse);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_trp);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_trp_meas);
 
 int _surf_do_model_check = 0;   /* this variable is used accros the libraries, and must be declared in XBT so that it's also defined in GRAS (not only in libsimgrid) */
 
@@ -114,16 +123,29 @@ static void xbt_preinit(void)
   XBT_LOG_CONNECT(xbt_sync_os, xbt);
   XBT_LOG_CONNECT(xbt_parmap,xbt);
   XBT_LOG_CONNECT(xbt_parmap_unit,xbt_parmap);
-
+  XBT_LOG_CONNECT(xbt_ddt, xbt);
+  XBT_LOG_CONNECT(xbt_ddt_cbps, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_convert, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_create, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_exchange, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_lexer, xbt_ddt_parse);
+  XBT_LOG_CONNECT(xbt_ddt_parse, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_trp, xbt);
+  XBT_LOG_CONNECT(xbt_trp_meas, xbt_trp);
 
   xbt_backtrace_preinit();
   xbt_os_thread_mod_preinit();
   xbt_fifo_preinit();
   xbt_dict_preinit();
+  xbt_datadesc_preinit();
+  xbt_trp_preinit();
 }
 
 static void xbt_postexit(void)
 {
+  xbt_trp_postexit();
+  xbt_datadesc_postexit();
+
   xbt_backtrace_postexit();
 
   xbt_fifo_postexit();

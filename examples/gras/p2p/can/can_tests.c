@@ -13,7 +13,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(can, "Messages specific to this example");
 
 // struct of a "nuke" message, when a node send a nuke to (xId;yId).
-GRAS_DEFINE_TYPE(s_nuke, struct s_nuke {
+XBT_DEFINE_TYPE(s_nuke, struct s_nuke {
                  int xId; int yId; char host[1024];     // original expeditor..
                  int port;      // ..and his port.
                  int version;   // fun.
@@ -25,7 +25,7 @@ typedef struct s_nuke nuke_t;
 int start_war(int argc, char **argv);
 int start_war(int argc, char **argv)
 {
-  gras_socket_t temp_sock = NULL;
+  xbt_socket_t temp_sock = NULL;
   nuke_t nuke_msg;
   //return 0; // in order to inhibit the War of the Nodes 
   gras_init(&argc, argv);
@@ -63,7 +63,7 @@ int start_war(int argc, char **argv)
 static int send_nuke(nuke_t * msg, int xId, int yId)
 {
   node_data_t *globals = (node_data_t *) gras_userdata_get();
-  gras_socket_t temp_sock = NULL;
+  xbt_socket_t temp_sock = NULL;
 
   if (xId >= globals->x1 && xId <= globals->x2 && yId >= globals->y1
       && yId <= globals->y2) {
@@ -115,14 +115,14 @@ static int send_nuke(nuke_t * msg, int xId, int yId)
 
 static int node_nuke_handler(gras_msg_cb_ctx_t ctx, void *payload_data)
 {
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
   nuke_t *incoming = (nuke_t *) payload_data;
   node_data_t *globals = (node_data_t *) gras_userdata_get();
 
   int x;
   int y;
   nuke_t nuke_msg;              // writing my name one the nuke.
-  gras_socket_t temp_sock = NULL;
+  xbt_socket_t temp_sock = NULL;
   xbt_ex_t e;                   // the error variable used in TRY.. CATCH tokens.
 
 

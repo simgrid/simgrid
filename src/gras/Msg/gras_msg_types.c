@@ -9,7 +9,7 @@
 #include "xbt/ex.h"
 #include "gras/Msg/msg_private.h"
 #include "gras/Virtu/virtu_interface.h"
-#include "gras/DataDesc/datadesc_interface.h"
+#include "xbt/datadesc/datadesc_interface.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg, gras, "High level messaging");
 
@@ -44,11 +44,11 @@ void gras_msgtype_dumpall(void)
     XBT_INFO("  Message name: %s (v%d) %s; %s%s%s",
           msgtype->name, msgtype->version,
           e_gras_msg_kind_names[msgtype->kind],
-          gras_datadesc_get_name(msgtype->ctn_type),
+          xbt_datadesc_get_name(msgtype->ctn_type),
           (msgtype->kind == e_gras_msg_kind_rpccall ? " -> " : ""),
           (msgtype->kind ==
            e_gras_msg_kind_rpccall ?
-           gras_datadesc_get_name(msgtype->answer_type) : ""));
+           xbt_datadesc_get_name(msgtype->answer_type) : ""));
   }
 }
 
@@ -72,8 +72,8 @@ void
 gras_msgtype_declare_ext(const char *name,
                          short int version,
                          e_gras_msg_kind_t kind,
-                         gras_datadesc_type_t payload_request,
-                         gras_datadesc_type_t payload_answer)
+                         xbt_datadesc_type_t payload_request,
+                         xbt_datadesc_type_t payload_answer)
 {
 
   gras_msgtype_t msgtype = NULL;
@@ -90,17 +90,17 @@ gras_msgtype_declare_ext(const char *name,
                 "Message %s re-registered as a %s (it was known as a %s)",
                 namev, e_gras_msg_kind_names[kind],
                 e_gras_msg_kind_names[msgtype->kind]);
-    xbt_assert(!gras_datadesc_type_cmp
+    xbt_assert(!xbt_datadesc_type_cmp
                 (msgtype->ctn_type, payload_request),
                 "Message %s re-registered with another payload (%s was %s)",
-                namev, gras_datadesc_get_name(payload_request),
-                gras_datadesc_get_name(msgtype->ctn_type));
+                namev, xbt_datadesc_get_name(payload_request),
+                xbt_datadesc_get_name(msgtype->ctn_type));
 
-    xbt_assert(!gras_datadesc_type_cmp
+    xbt_assert(!xbt_datadesc_type_cmp
                 (msgtype->answer_type, payload_answer),
                 "Message %s re-registered with another answer payload (%s was %s)",
-                namev, gras_datadesc_get_name(payload_answer),
-                gras_datadesc_get_name(msgtype->answer_type));
+                namev, xbt_datadesc_get_name(payload_answer),
+                xbt_datadesc_get_name(msgtype->answer_type));
 
     xbt_free(namev);
     return;                     /* do really ignore it */
@@ -108,8 +108,8 @@ gras_msgtype_declare_ext(const char *name,
 
   XBT_VERB("Register version %d of message '%s' "
         "(payload: %s; answer payload: %s).",
-        version, name, gras_datadesc_get_name(payload_request),
-        gras_datadesc_get_name(payload_answer));
+        version, name, xbt_datadesc_get_name(payload_request),
+        xbt_datadesc_get_name(payload_answer));
 
   msgtype = xbt_new(s_gras_msgtype_t, 1);
   msgtype->name = namev;
@@ -129,7 +129,7 @@ gras_msgtype_declare_ext(const char *name,
  * @param name: name as it should be used for logging messages (must be uniq)
  * @param payload: datadescription of the payload
  */
-void gras_msgtype_declare(const char *name, gras_datadesc_type_t payload)
+void gras_msgtype_declare(const char *name, xbt_datadesc_type_t payload)
 {
   gras_msgtype_declare_ext(name, 0, e_gras_msg_kind_oneway, payload, NULL);
 }
@@ -150,7 +150,7 @@ void gras_msgtype_declare(const char *name, gras_datadesc_type_t payload)
  */
 void
 gras_msgtype_declare_v(const char *name,
-                       short int version, gras_datadesc_type_t payload)
+                       short int version, xbt_datadesc_type_t payload)
 {
 
   gras_msgtype_declare_ext(name, version,
@@ -294,13 +294,13 @@ void gras_cb_unregister_(gras_msgtype_t msgtype, gras_msg_cb_t cb)
 }
 
 /** \brief Retrieve the expeditor of the message */
-gras_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx)
+xbt_socket_t gras_msg_cb_ctx_from(gras_msg_cb_ctx_t ctx)
 {
   return ctx->expeditor;
 }
 
 /* \brief Creates a new message exchange context (user should never have to) */
-gras_msg_cb_ctx_t gras_msg_cb_ctx_new(gras_socket_t expe,
+gras_msg_cb_ctx_t gras_msg_cb_ctx_new(xbt_socket_t expe,
                                       gras_msgtype_t msgtype,
                                       unsigned long int ID,
                                       int answer_due, double timeout)

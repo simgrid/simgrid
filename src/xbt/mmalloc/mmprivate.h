@@ -92,8 +92,10 @@ typedef union {
         size_t nfree;           /* Free fragments in a fragmented block.  */
         size_t first;           /* First free fragment of the block.  */
       } frag;
-      /* Size (in blocks) of a large cluster.  */
-      size_t size;
+      struct {
+	size_t size; /* Size (in blocks) of a large cluster.  */
+	size_t busy_size; 
+      } block;
     } info;
   } busy;
   /* Heap information for a free block (that may be the first of

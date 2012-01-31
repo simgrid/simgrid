@@ -39,6 +39,14 @@ XBT_PUBLIC(double) MSG_get_clock(void);
 XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
 
 
+/************************** File handling ***********************************/
+XBT_PUBLIC(size_t) MSG_file_read(void* ptr, size_t size, size_t nmemb, m_file_t* stream);
+XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, size_t nmemb, m_file_t* stream);
+XBT_PUBLIC(m_file_t*) MSG_file_open(const char* path, const char* mode);
+XBT_PUBLIC(int) MSG_file_close(m_file_t* fp);
+XBT_PUBLIC(int) MSG_file_stat(int fd, void* buf);
+
+
 /************************** Host handling ***********************************/
 XBT_PUBLIC(MSG_error_t) MSG_host_set_data(m_host_t host, void *data);
 XBT_PUBLIC(void *) MSG_host_get_data(m_host_t host);

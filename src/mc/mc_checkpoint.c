@@ -113,42 +113,7 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
   /* FIXME: free the memory map */
 }
 
-
 void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
-{
-  unsigned int i = 0;
-  s_map_region_t reg;
-  memory_map_t maps = get_memory_map();
-
-  for(i=0; i< snapshot->num_reg; i++){
-    MC_region_destroy(snapshot->regions[i]);
-  }
-
-  snapshot->num_reg = 0;
-
-  i = 0;
-
-  /* Save the std heap and the writable mapped pages of libsimgrid */
-  while (i < maps->mapsize) {
-    reg = maps->regions[i];
-    if ((reg.prot & PROT_WRITE)){
-      if (maps->regions[i].pathname == NULL){
-        if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
-	  MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-        }
-      }else {
-        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
-          MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-        } 
-      }
-    }
-    i++;
-  }
-
-  /* FIXME: free the memory map */
-}
-
-void MC_take_snapshot_to_restore_liveness(mc_snapshot_t snapshot)
 {
   unsigned int i = 0;
   s_map_region_t reg;

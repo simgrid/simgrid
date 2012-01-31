@@ -24,10 +24,10 @@ int node(int argc, char *argv[]);
 
 /* Global private data */
 typedef struct {
-  gras_socket_t sock;           /* server socket on which I hear */
+  xbt_socket_t sock;           /* server socket on which I hear */
   int remaining_loop;           /* number of loops to do until done */
   int create;                   /* whether I have to create the token */
-  gras_socket_t tosuccessor;    /* how to connect to the successor on ring */
+  xbt_socket_t tosuccessor;    /* how to connect to the successor on ring */
   double start_time;            /* to measure the elapsed time. Only used by the 
                                    node that creates the token */
 } node_data_t;
@@ -38,7 +38,7 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload)
 {
   /* 1. Get the payload into the msg variable, and retrieve my caller */
   int msg = *(int *) payload;
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
 
 
   /* 2. Retrieve the node's state (globals) */
@@ -57,7 +57,7 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload)
     XBT_INFO("Begin a new loop. Still to do: %d", globals->remaining_loop);
   } else if (!(globals->remaining_loop % supersteps)) {
     XBT_VERB("Got token(%d) from %s remaining_loop=%d",
-          msg, gras_socket_peer_name(expeditor), globals->remaining_loop);
+          msg, xbt_socket_peer_name(expeditor), globals->remaining_loop);
   }
 
   /* 4. If the right shouldn't be stopped yet */
@@ -65,8 +65,8 @@ static int node_cb_stoken_handler(gras_msg_cb_ctx_t ctx, void *payload)
     msg += 1;
 
     XBT_DEBUG("Send token(%d) to %s:%d", msg,
-           gras_socket_peer_name(globals->tosuccessor),
-           gras_socket_peer_port(globals->tosuccessor));
+           xbt_socket_peer_name(globals->tosuccessor),
+           xbt_socket_peer_port(globals->tosuccessor));
 
     /* 5. Send the token as payload of a stoken message to the successor */
     TRY {
@@ -133,7 +133,7 @@ int node(int argc, char *argv[])
           myport, host, peerport);
 
   /* 4. Register the known messages.  */
-  gras_msgtype_declare("stoken", gras_datadesc_by_name("int"));
+  gras_msgtype_declare("stoken", xbt_datadesc_by_name("int"));
 
   /* 5. Create my master socket for listening */
   globals->sock = gras_socket_server(myport);

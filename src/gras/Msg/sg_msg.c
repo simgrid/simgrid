@@ -7,12 +7,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
-
+#include "xbt/xbt_socket_private.h" /* FIXME */
+#include "xbt/datadesc.h"
+#include "xbt/datadesc/datadesc_interface.h" /* FIXME */
 #include "gras/Virtu/virtu_sg.h"
-
 #include "gras/Msg/msg_private.h"
-
-#include "gras/DataDesc/datadesc_interface.h"
 #include "gras/Transport/transport_interface.h" /* gras_trp_chunk_send/recv */
 #include "gras/Transport/transport_private.h"   /* sock->data */
 
@@ -33,7 +32,8 @@ typedef struct {
   smx_process_t s_process;
 } *fake_xbt_thread_t;
 
-int gras_socket_im_the_server(gras_socket_t sock) {
+int gras_socket_im_the_server(xbt_socket_t sock)
+{
   gras_trp_sg_sock_data_t sock_data = sock->data;
   gras_procdata_t* pd;
   gras_msg_listener_t l;
@@ -103,7 +103,7 @@ gras_msg_t gras_msg_recv_any(void)
   xbt_dynar_t comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
   unsigned int cursor = 0;
   int got = 0;
-  gras_socket_t sock = NULL;
+  xbt_socket_t sock = NULL;
   gras_trp_sg_sock_data_t sock_data;
   xbt_dynar_foreach(trp_proc->sockets, cursor, sock) {
     sock_data = (gras_trp_sg_sock_data_t) sock->data;
@@ -164,7 +164,7 @@ gras_msg_t gras_msg_recv_any(void)
   got = simcall_comm_waitany(comms);
 
   /* retrieve the message sent in that communication */
-  sock = xbt_dynar_get_as(trp_proc->sockets, got, gras_socket_t);
+  sock = xbt_dynar_get_as(trp_proc->sockets, got, xbt_socket_t);
   sock_data = (gras_trp_sg_sock_data_t) sock->data;
   msg = sock_data->msg;
   XBT_VERB("Got something. Communication over rdv_server=%p, rdv_client=%p",
@@ -186,7 +186,7 @@ gras_msg_t gras_msg_recv_any(void)
 }
 
 
-void gras_msg_send_ext(gras_socket_t sock,
+void gras_msg_send_ext(xbt_socket_t sock,
                        e_gras_msg_kind_t kind,
                        unsigned long int ID,
                        gras_msgtype_t msgtype, void *payload)
@@ -209,32 +209,63 @@ void gras_msg_send_ext(gras_socket_t sock,
   msg->kind = kind;
   msg->type = msgtype;
   msg->ID = ID;
+  XBT_PUBLIC(xbt_datadesc_type_t) xbt_datadesc_by_id(long int code);
+
+  /* to debug */
+  XBT_PUBLIC(void) xbt_datadesc_type_dump(const xbt_datadesc_type_t ddt);
+  XBT_PUBLIC(const char *) xbt_datadesc_arch_name(int code);
+
+  /* compare two data type description */
+  XBT_PUBLIC(int)
+  xbt_datadesc_type_cmp(const xbt_datadesc_type_t d1,
+                         const xbt_datadesc_type_t d2);
+
+  /* Access function */
+  XBT_PUBLIC(int) xbt_datadesc_size(xbt_datadesc_type_t type);
+  /* Described data exchanges: direct use */
+  XBT_PUBLIC(int) xbt_datadesc_memcpy(xbt_datadesc_type_t type, void *src,
+                                       void *dst);
+  XBT_PUBLIC(void) xbt_datadesc_send(xbt_socket_t sock,
+                                      xbt_datadesc_type_t type, void *src);
+  XBT_PUBLIC(void) xbt_datadesc_recv(xbt_socket_t sock,
+                                      xbt_datadesc_type_t type, int r_arch,
+                                      void *dst);
+
+  /* Described data exchanges: IDL compilation FIXME: not implemented*/
+  void xbt_datadesc_gen_cpy(xbt_datadesc_type_t type, void *src,
+                             void **dst);
+  void xbt_datadesc_gen_send(xbt_socket_t sock,
+                              xbt_datadesc_type_t type, void *src);
+  void xbt_datadesc_gen_recv(xbt_socket_t sock,
+                              xbt_datadesc_type_t type, int r_arch,
+                              void *dst);
+
 
   XBT_VERB("Send msg %s (%s) to rdv %p sock %p",
       msgtype->name,  e_gras_msg_kind_names[kind], target_rdv, sock);
 
   if (kind == e_gras_msg_kind_rpcerror) {
     /* error on remote host, careful, payload is an exception */
-    msg->payl_size = gras_datadesc_size(gras_datadesc_by_name("ex_t"));
+    msg->payl_size = xbt_datadesc_size(xbt_datadesc_by_name("ex_t"));
     msg->payl = xbt_malloc(msg->payl_size);
     whole_payload_size =
-        gras_datadesc_memcpy(gras_datadesc_by_name("ex_t"), payload,
+        xbt_datadesc_memcpy(xbt_datadesc_by_name("ex_t"), payload,
                              msg->payl);
   } else if (kind == e_gras_msg_kind_rpcanswer) {
-    msg->payl_size = gras_datadesc_size(msgtype->answer_type);
+    msg->payl_size = xbt_datadesc_size(msgtype->answer_type);
     if (msg->payl_size)
       msg->payl = xbt_malloc(msg->payl_size);
     else
       msg->payl = NULL;
 
     if (msgtype->answer_type)
-      whole_payload_size = gras_datadesc_memcpy(msgtype->answer_type,
+      whole_payload_size = xbt_datadesc_memcpy(msgtype->answer_type,
                                                 payload, msg->payl);
   } else {
-    msg->payl_size = gras_datadesc_size(msgtype->ctn_type);
+    msg->payl_size = xbt_datadesc_size(msgtype->ctn_type);
     msg->payl = msg->payl_size ? xbt_malloc(msg->payl_size) : NULL;
     if (msgtype->ctn_type)
-      whole_payload_size = gras_datadesc_memcpy(msgtype->ctn_type,
+      whole_payload_size = xbt_datadesc_memcpy(msgtype->ctn_type,
                                                 payload, msg->payl);
   }
 

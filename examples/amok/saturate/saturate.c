@@ -28,8 +28,8 @@ int sensor(int argc, char *argv[]);
 
 int sensor(int argc, char *argv[])
 {
-  gras_socket_t mysock;
-  gras_socket_t master;
+  xbt_socket_t mysock;
+  xbt_socket_t master;
 
   gras_init(&argc, argv);
   amok_bw_init();
@@ -100,7 +100,7 @@ static double XP(const char *bw1, const char *bw2,
 
 static void kill_buddy(char *name, int port)
 {
-  gras_socket_t sock = gras_socket_client(name, port);
+  xbt_socket_t sock = gras_socket_client(name, port);
   gras_msg_send(sock, "kill", NULL);
   gras_socket_close(sock);
 }

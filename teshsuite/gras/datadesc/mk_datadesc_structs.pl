@@ -25,7 +25,7 @@ print "XBT_LOG_NEW_DEFAULT_SUBCATEGORY(structs,test,\"Logs about the gigantic st
 
 print "#define READ  0\n#define WRITE 1\n#define RW    2\n\n";
   
-print "void write_read(const char *type,void *src, void *dst, gras_socket_t *sock, int direction);\n\n";
+print "void write_read(const char *type,void *src, void *dst, xbt_socket_t *sock, int direction);\n\n";
 
 my ($i,$j,$k,$l);
 my $max=scalar @types;
@@ -36,7 +36,7 @@ my $max_j=0;
 my $max_k=$max-1;
 my $max_l=0;     
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
-    print "GRAS_DEFINE_TYPE(".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l].",".
+    print "XBT_DEFINE_TYPE(".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l].",".
       "struct ".$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l]." { ".
         $types[$i]." a; ".
         $types[$j]." b; ".
@@ -52,12 +52,12 @@ print "void register_structures(void);\n";
 print "void register_structures(void) {\n";
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
-    print "  gras_msgtype_declare(\"$struct\", gras_datadesc_by_symbol($struct));\n";
+    print "  gras_msgtype_declare(\"$struct\", xbt_datadesc_by_symbol($struct));\n";
 }}}}
 print "}\n";
 
-print "void test_structures(gras_socket_t *sock, int direction);\n";
-print "void test_structures(gras_socket_t *sock, int direction) {\n";
+print "void test_structures(xbt_socket_t *sock, int direction);\n";
+print "void test_structures(xbt_socket_t *sock, int direction) {\n";
 for $i (0..$max_i) { for $j (0..$max_j) { for $k (0..$max_k) { for $l (0..$max_l) {
     my $struct=$abrev[$i].$abrev[$j].$abrev[$k].$abrev[$l];
     print "  struct $struct my_$struct = {".$val[$i]."+(".$types[$i].")1,"

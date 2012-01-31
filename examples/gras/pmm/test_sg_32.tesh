@@ -1,39 +1,39 @@
 ! output sort 20
 $ $SG_TEST_EXENV ./pmm_simulator$EXEEXT ${srcdir:=.}/../../msg/msg_platform.xml ${srcdir:=.}/pmm.xml --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%2i:%P@%h)%e%m%n"
 > [  0.000000] ( 0:@) Configuration change: Set 'network/crosstraffic' to '0'
-> [  0.000156] ( 1:master@Jacquelin) Wait for peers for 2 sec
-> [  0.000156] ( 2:slave@Boivin) Sensor 0 starting
-> [  0.000156] ( 3:slave@Jean_Yves) Sensor 1 starting
-> [  0.000156] ( 4:slave@TeX) Sensor 2 starting
-> [  0.000156] ( 5:slave@Geoff) Sensor 3 starting
-> [  0.000156] ( 6:slave@Disney) Sensor 4 starting
-> [  0.000156] ( 7:slave@iRMX) Sensor 5 starting
-> [  0.000156] ( 8:slave@McGee) Sensor 6 starting
-> [  0.000156] ( 9:slave@Gatien) Sensor 7 starting
-> [  0.000156] (10:slave@Laroche) Sensor 8 starting
-> [  2.416827] ( 1:master@Jacquelin) Got only 2 pals (of 9). Wait 2 more seconds
-> [  4.476356] ( 1:master@Jacquelin) Got only 3 pals (of 9). Wait 2 more seconds
-> [  6.476356] ( 1:master@Jacquelin) Got only 5 pals (of 9). Wait 2 more seconds
-> [  9.355676] ( 1:master@Jacquelin) Got only 6 pals (of 9). Wait 2 more seconds
-> [ 12.524103] ( 1:master@Jacquelin) Good. Got 9 pals
-> [ 12.525507] ( 1:master@Jacquelin) XXXXXXXXXXXXXXXXXXXXXX begin Multiplication
-> [ 14.369272] ( 2:slave@Boivin) Receive my pos (0,0) and assignment
-> [ 15.113445] ( 3:slave@Jean_Yves) Receive my pos (0,1) and assignment
-> [ 16.571623] ( 4:slave@TeX) Receive my pos (0,2) and assignment
-> [ 16.576168] ( 5:slave@Geoff) Receive my pos (1,0) and assignment
-> [ 18.043128] ( 6:slave@Disney) Receive my pos (1,1) and assignment
-> [ 20.491553] ( 7:slave@iRMX) Receive my pos (1,2) and assignment
-> [ 21.206195] ( 8:slave@McGee) Receive my pos (2,0) and assignment
-> [ 22.231455] ( 9:slave@Gatien) Receive my pos (2,1) and assignment
-> [ 23.679910] (10:slave@Laroche) Receive my pos (2,2) and assignment
-> [ 73.315380] ( 1:master@Jacquelin) XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations
-> [ 74.153996] ( 2:slave@Boivin) Exiting GRAS
-> [ 74.893654] ( 3:slave@Jean_Yves) Exiting GRAS
-> [ 76.342765] ( 4:slave@TeX) Exiting GRAS
-> [ 76.347189] ( 5:slave@Geoff) Exiting GRAS
-> [ 77.805054] ( 6:slave@Disney) Exiting GRAS
-> [ 80.238265] ( 7:slave@iRMX) Exiting GRAS
-> [ 80.948556] ( 8:slave@McGee) Exiting GRAS
-> [ 81.967478] ( 9:slave@Gatien) Exiting GRAS
-> [ 83.407037] ( 1:master@Jacquelin) Exiting GRAS
-> [ 83.407037] (10:slave@Laroche) Exiting GRAS
+> [  0.000195] ( 1:master@Jacquelin) Wait for peers for 2 sec
+> [  0.000195] ( 2:slave@Boivin) Sensor 0 starting
+> [  0.000195] ( 3:slave@Jean_Yves) Sensor 1 starting
+> [  0.000195] ( 4:slave@TeX) Sensor 2 starting
+> [  0.000195] ( 5:slave@Geoff) Sensor 3 starting
+> [  0.000195] ( 6:slave@Disney) Sensor 4 starting
+> [  0.000195] ( 7:slave@iRMX) Sensor 5 starting
+> [  0.000195] ( 8:slave@McGee) Sensor 6 starting
+> [  0.000195] ( 9:slave@Gatien) Sensor 7 starting
+> [  0.000195] (10:slave@Laroche) Sensor 8 starting
+> [  3.601779] ( 1:master@Jacquelin) Got only 1 pals (of 9). Wait 2 more seconds
+> [  7.400400] ( 1:master@Jacquelin) Got only 4 pals (of 9). Wait 2 more seconds
+> [  9.400410] ( 1:master@Jacquelin) Got only 6 pals (of 9). Wait 2 more seconds
+> [ 13.504195] ( 1:master@Jacquelin) Got only 7 pals (of 9). Wait 2 more seconds
+> [ 15.667050] ( 1:master@Jacquelin) Good. Got 9 pals
+> [ 15.668806] ( 1:master@Jacquelin) XXXXXXXXXXXXXXXXXXXXXX begin Multiplication
+> [ 18.478552] (10:slave@Laroche) Receive my pos (0,0) and assignment
+> [ 19.532770] ( 2:slave@Boivin) Receive my pos (0,1) and assignment
+> [ 20.462558] ( 3:slave@Jean_Yves) Receive my pos (0,2) and assignment
+> [ 22.284313] ( 4:slave@TeX) Receive my pos (1,0) and assignment
+> [ 22.289915] ( 5:slave@Geoff) Receive my pos (1,1) and assignment
+> [ 24.122689] ( 6:slave@Disney) Receive my pos (1,2) and assignment
+> [ 27.181717] ( 7:slave@iRMX) Receive my pos (2,0) and assignment
+> [ 28.074555] ( 8:slave@McGee) Receive my pos (2,1) and assignment
+> [ 29.355457] ( 9:slave@Gatien) Receive my pos (2,2) and assignment
+> [ 91.389749] ( 1:master@Jacquelin) XXXXXXXXXXXXXXXXXXXXXX Ok, the result matches expectations
+> [ 93.190583] (10:slave@Laroche) Exiting GRAS
+> [ 94.239660] ( 2:slave@Boivin) Exiting GRAS
+> [ 95.164943] ( 3:slave@Jean_Yves) Exiting GRAS
+> [ 96.977725] ( 4:slave@TeX) Exiting GRAS
+> [ 96.983260] ( 5:slave@Geoff) Exiting GRAS
+> [ 98.806993] ( 6:slave@Disney) Exiting GRAS
+> [101.850845] ( 7:slave@iRMX) Exiting GRAS
+> [102.739392] ( 8:slave@McGee) Exiting GRAS
+> [104.014024] ( 1:master@Jacquelin) Exiting GRAS
+> [104.014024] ( 9:slave@Gatien) Exiting GRAS

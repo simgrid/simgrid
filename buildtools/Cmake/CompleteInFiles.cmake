@@ -437,8 +437,8 @@ else(BIGENDIAN)
   set(GRAS_BIGENDIAN 0)
 endif(BIGENDIAN)
 
-# The syntax of this magic string is given in src/gras/DataDesc/ddt_convert.c
-# It kinda matches the values that the gras_arch_desc_t structure can take
+# The syntax of this magic string is given in src/xbt/datadesc/ddt_convert.c
+# It kinda matches the values that the xbt_arch_desc_t structure can take
 
 # Basically, the syntax is one char l or B for endianness (little or Big)
 #   then there is a bunch of blocks separated by _.  
@@ -457,7 +457,7 @@ endif(BIGENDIAN)
 #    formalism to another. Only the GRAS_ARCH is transfered in the
 #    stream, and it it of cruxial importance to keep these detection
 #    information here synchronized with the data hardcoded in the
-#    source in src/gras/DataDesc/ddt_convert.c 
+#    source in src/xbt/datadesc/ddt_convert.c 
 
 # If you add something here (like a previously unknown architecture),
 #    please add it to the source code too. 

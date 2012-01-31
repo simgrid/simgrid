@@ -9,11 +9,11 @@
 #include <ctype.h>              /* isdigit */
 
 #include "xbt/ex.h"
-#include "gras/DataDesc/datadesc_private.h"
-#include "gras/DataDesc/ddt_parse.yy.h"
+#include "datadesc_private.h"
+#include "ddt_parse.yy.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_ddt_parse, gras_ddt,
-                                "Parsing C data structures to build GRAS data description");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ddt_parse, xbt_ddt,
+                                "Parsing C data structures to build XBT data description");
 
 typedef struct s_type_modifier {
   short is_long;
@@ -31,61 +31,61 @@ typedef struct s_type_modifier {
 } s_type_modifier_t, *type_modifier_t;
 
 typedef struct s_field {
-  gras_datadesc_type_t type;
+  xbt_datadesc_type_t type;
   char *type_name;
   char *name;
   s_type_modifier_t tm;
 } s_identifier_t;
 
-extern char *gras_ddt_parse_text;       /* text being considered in the parser */
+extern char *xbt_ddt_parse_text;       /* text being considered in the parser */
 
 /* local functions */
 static void parse_type_modifier(type_modifier_t type_modifier)
 {
   XBT_IN("");
   do {
-    if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_STAR) {
+    if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_STAR) {
       /* This only used when parsing 'short *' since this function returns when int, float, double,... is encountered */
       XBT_DEBUG("This is a reference");
       type_modifier->is_ref++;
 
-    } else if (!strcmp(gras_ddt_parse_text, "unsigned")) {
+    } else if (!strcmp(xbt_ddt_parse_text, "unsigned")) {
       XBT_DEBUG("This is an unsigned");
       type_modifier->is_unsigned = 1;
 
-    } else if (!strcmp(gras_ddt_parse_text, "short")) {
+    } else if (!strcmp(xbt_ddt_parse_text, "short")) {
       XBT_DEBUG("This is short");
       type_modifier->is_short = 1;
 
-    } else if (!strcmp(gras_ddt_parse_text, "long")) {
+    } else if (!strcmp(xbt_ddt_parse_text, "long")) {
       XBT_DEBUG("This is long");
       type_modifier->is_long++; /* handle "long long" */
 
-    } else if (!strcmp(gras_ddt_parse_text, "struct")) {
+    } else if (!strcmp(xbt_ddt_parse_text, "struct")) {
       XBT_DEBUG("This is a struct");
       type_modifier->is_struct = 1;
 
-    } else if (!strcmp(gras_ddt_parse_text, "union")) {
+    } else if (!strcmp(xbt_ddt_parse_text, "union")) {
       XBT_DEBUG("This is an union");
       type_modifier->is_union = 1;
 
-    } else if (!strcmp(gras_ddt_parse_text, "enum")) {
+    } else if (!strcmp(xbt_ddt_parse_text, "enum")) {
       XBT_DEBUG("This is an enum");
       type_modifier->is_enum = 1;
 
-    } else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_EMPTY) {
+    } else if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_EMPTY) {
       XBT_DEBUG("Pass space");
 
     } else {
-      XBT_DEBUG("Done with modifiers (got %s)", gras_ddt_parse_text);
+      XBT_DEBUG("Done with modifiers (got %s)", xbt_ddt_parse_text);
       break;
     }
 
-    gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
-    if ((gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD) &&
-        (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_STAR)) {
-      XBT_DEBUG("Done with modifiers (got %s,%d)", gras_ddt_parse_text,
-             gras_ddt_parse_tok_num);
+    xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
+    if ((xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_WORD) &&
+        (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_STAR)) {
+      XBT_DEBUG("Done with modifiers (got %s,%d)", xbt_ddt_parse_text,
+             xbt_ddt_parse_tok_num);
       break;
     }
   } while (1);
@@ -132,7 +132,7 @@ static void change_to_fixed_array(xbt_dynar_t dynar, long int size)
           (former.tm.is_long ? "l " : ""), former.type_name, size);
   free(former.type_name);
 
-  array.type = gras_datadesc_array_fixed(array.type_name, former.type, size);   /* redeclaration are ignored */
+  array.type = xbt_datadesc_array_fixed(array.type_name, former.type, size);   /* redeclaration are ignored */
   array.name = former.name;
 
   xbt_dynar_push(dynar, &array);
@@ -152,7 +152,7 @@ static void change_to_ref(xbt_dynar_t dynar)
   sprintf(ref.type_name, "%s*", former.type_name);
   free(former.type_name);
 
-  ref.type = gras_datadesc_ref(ref.type_name, former.type);     /* redeclaration are ignored */
+  ref.type = xbt_datadesc_ref(ref.type_name, former.type);     /* redeclaration are ignored */
   ref.name = former.name;
 
   xbt_dynar_push(dynar, &ref);
@@ -166,7 +166,7 @@ static void change_to_ref_pop_array(xbt_dynar_t dynar)
 
   XBT_IN("");
   xbt_dynar_pop(dynar, &former);
-  ref.type = gras_datadesc_ref_pop_arr(former.type);    /* redeclaration are ignored */
+  ref.type = xbt_datadesc_ref_pop_arr(former.type);    /* redeclaration are ignored */
   ref.type_name = (char *) strdup(ref.type->name);
   ref.name = former.name;
 
@@ -177,14 +177,14 @@ static void change_to_ref_pop_array(xbt_dynar_t dynar)
 }
 
 static void change_to_dynar_of(xbt_dynar_t dynar,
-                               gras_datadesc_type_t subtype)
+                               xbt_datadesc_type_t subtype)
 {
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
   XBT_IN("");
   xbt_dynar_pop(dynar, &former);
-  ref.type = gras_datadesc_dynar(subtype, NULL);        /* redeclaration are ignored */
+  ref.type = xbt_datadesc_dynar(subtype, NULL);        /* redeclaration are ignored */
   ref.type_name = (char *) strdup(ref.type->name);
   ref.name = former.name;
 
@@ -195,14 +195,14 @@ static void change_to_dynar_of(xbt_dynar_t dynar,
 }
 
 static void change_to_matrix_of(xbt_dynar_t dynar,
-                                gras_datadesc_type_t subtype)
+                                xbt_datadesc_type_t subtype)
 {
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
   XBT_IN("");
   xbt_dynar_pop(dynar, &former);
-  ref.type = gras_datadesc_matrix(subtype, NULL);       /* redeclaration are ignored */
+  ref.type = xbt_datadesc_matrix(subtype, NULL);       /* redeclaration are ignored */
   ref.type_name = (char *) strdup(ref.type->name);
   ref.name = former.name;
 
@@ -237,27 +237,27 @@ static void parse_statement(char *definition,
   XBT_IN("");
   memset(&identifier, 0, sizeof(identifier));
 
-  gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
-  if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_RA) {
+  xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
+  if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_RA) {
     XBT_OUT();
     THROWF(mismatch_error, 0, "End of the englobing structure or union");
   }
 
-  if (XBT_LOG_ISENABLED(gras_ddt_parse, xbt_log_priority_debug)) {
+  if (XBT_LOG_ISENABLED(xbt_ddt_parse, xbt_log_priority_debug)) {
     int colon_pos;
-    for (colon_pos = gras_ddt_parse_col_pos;
+    for (colon_pos = xbt_ddt_parse_col_pos;
          definition[colon_pos] != ';'; colon_pos++);
     definition[colon_pos] = '\0';
     XBT_DEBUG("Parse the statement \"%s%s;\" (col_pos=%d)",
-           gras_ddt_parse_text,
-           definition + gras_ddt_parse_col_pos, gras_ddt_parse_col_pos);
+           xbt_ddt_parse_text,
+           definition + xbt_ddt_parse_col_pos, xbt_ddt_parse_col_pos);
     definition[colon_pos] = ';';
   }
 
-  if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
+  if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_WORD)
     PARSE_ERROR
         ("Unparsable symbol: found a typeless statement (got '%s' instead)",
-         gras_ddt_parse_text);
+         xbt_ddt_parse_text);
 
         /**** get the type modifier of this statement ****/
   parse_type_modifier(&identifier.tm);
@@ -266,54 +266,54 @@ static void parse_statement(char *definition,
   if (identifier.tm.is_union || identifier.tm.is_enum
       || identifier.tm.is_struct)
     PARSE_ERROR
-        ("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle recursive type definition yet");
+        ("Unimplemented feature: XBT_DEFINE_TYPE cannot handle recursive type definition yet");
 
         /**** get the base type, giving "short a" the needed love ****/
   if (!identifier.tm.is_union &&
       !identifier.tm.is_enum &&
       !identifier.tm.is_struct &&
       (identifier.tm.is_short || identifier.tm.is_long
-       || identifier.tm.is_unsigned) && strcmp(gras_ddt_parse_text, "char")
-      && strcmp(gras_ddt_parse_text, "float")
-      && strcmp(gras_ddt_parse_text, "double")
-      && strcmp(gras_ddt_parse_text, "int")) {
+       || identifier.tm.is_unsigned) && strcmp(xbt_ddt_parse_text, "char")
+      && strcmp(xbt_ddt_parse_text, "float")
+      && strcmp(xbt_ddt_parse_text, "double")
+      && strcmp(xbt_ddt_parse_text, "int")) {
 
     /* bastard user, they omited "int" ! */
     identifier.type_name = (char *) strdup("int");
     XBT_DEBUG("the base type is 'int', which were omited (you vicious user)");
   } else {
-    identifier.type_name = (char *) strdup(gras_ddt_parse_text);
+    identifier.type_name = (char *) strdup(xbt_ddt_parse_text);
     XBT_DEBUG("the base type is '%s'", identifier.type_name);
-    gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
+    xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
   }
 
         /**** build the base type for latter use ****/
   if (identifier.tm.is_union) {
     PARSE_ERROR
-        ("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle union yet (get callback from annotation?)");
+        ("Unimplemented feature: XBT_DEFINE_TYPE cannot handle union yet (get callback from annotation?)");
 
   } else if (identifier.tm.is_enum) {
     PARSE_ERROR
-        ("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle enum yet");
+        ("Unimplemented feature: XBT_DEFINE_TYPE cannot handle enum yet");
 
   } else if (identifier.tm.is_struct) {
     sprintf(buffname, "struct %s", identifier.type_name);
-    identifier.type = gras_datadesc_struct(buffname);   /* Get created when does not exist */
+    identifier.type = xbt_datadesc_struct(buffname);   /* Get created when does not exist */
 
   } else if (identifier.tm.is_unsigned) {
     if (!strcmp(identifier.type_name, "int")) {
       if (identifier.tm.is_long == 2) {
-        identifier.type = gras_datadesc_by_name("unsigned long long int");
+        identifier.type = xbt_datadesc_by_name("unsigned long long int");
       } else if (identifier.tm.is_long) {
-        identifier.type = gras_datadesc_by_name("unsigned long int");
+        identifier.type = xbt_datadesc_by_name("unsigned long int");
       } else if (identifier.tm.is_short) {
-        identifier.type = gras_datadesc_by_name("unsigned short int");
+        identifier.type = xbt_datadesc_by_name("unsigned short int");
       } else {
-        identifier.type = gras_datadesc_by_name("unsigned int");
+        identifier.type = xbt_datadesc_by_name("unsigned int");
       }
 
     } else if (!strcmp(identifier.type_name, "char")) {
-      identifier.type = gras_datadesc_by_name("unsigned char");
+      identifier.type = xbt_datadesc_by_name("unsigned char");
 
     } else {                    /* impossible, gcc parses this shit before us */
       THROW_IMPOSSIBLE;
@@ -321,28 +321,28 @@ static void parse_statement(char *definition,
 
   } else if (!strcmp(identifier.type_name, "float")) {
     /* no modificator allowed by gcc */
-    identifier.type = gras_datadesc_by_name("float");
+    identifier.type = xbt_datadesc_by_name("float");
 
   } else if (!strcmp(identifier.type_name, "double")) {
     if (identifier.tm.is_long)
       PARSE_ERROR("long double not portable and thus not handled");
 
-    identifier.type = gras_datadesc_by_name("double");
+    identifier.type = xbt_datadesc_by_name("double");
 
   } else {                      /* signed integer elemental */
     if (!strcmp(identifier.type_name, "int")) {
       if (identifier.tm.is_long == 2) {
-        identifier.type = gras_datadesc_by_name("signed long long int");
+        identifier.type = xbt_datadesc_by_name("signed long long int");
       } else if (identifier.tm.is_long) {
-        identifier.type = gras_datadesc_by_name("signed long int");
+        identifier.type = xbt_datadesc_by_name("signed long int");
       } else if (identifier.tm.is_short) {
-        identifier.type = gras_datadesc_by_name("signed short int");
+        identifier.type = xbt_datadesc_by_name("signed short int");
       } else {
-        identifier.type = gras_datadesc_by_name("int");
+        identifier.type = xbt_datadesc_by_name("int");
       }
 
     } else if (!strcmp(identifier.type_name, "char")) {
-      identifier.type = gras_datadesc_by_name("char");
+      identifier.type = xbt_datadesc_by_name("char");
 
     } else {
       XBT_DEBUG("Base type is a constructed one (%s)", identifier.type_name);
@@ -351,7 +351,7 @@ static void parse_statement(char *definition,
       } else if (!strcmp(identifier.type_name, "xbt_dynar_t")) {
         identifier.tm.is_dynar = 1;
       } else {
-        identifier.type = gras_datadesc_by_name(identifier.type_name);
+        identifier.type = xbt_datadesc_by_name(identifier.type_name);
         if (!identifier.type)
           PARSE_ERROR("Unknown base type '%s'", identifier.type_name);
       }
@@ -365,37 +365,37 @@ static void parse_statement(char *definition,
    */
 
         /**** look for the symbols of this type ****/
-  for (expect_id_separator = 0; (       /*(gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_EMPTY) && FIXME */
-                                  (gras_ddt_parse_tok_num !=
-                                   GRAS_DDT_PARSE_TOKEN_SEMI_COLON));
-       gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump()) {
+  for (expect_id_separator = 0; (       /*(xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_EMPTY) && FIXME */
+                                  (xbt_ddt_parse_tok_num !=
+                                   XBT_DDT_PARSE_TOKEN_SEMI_COLON));
+       xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump()) {
 
     if (expect_id_separator) {
-      if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_COLON) {
+      if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_COLON) {
         expect_id_separator = 0;
         continue;
 
-      } else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_LB) {
+      } else if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_LB) {
         /* Handle fixed size arrays */
-        gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
-        if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_RB) {
+        xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
+        if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_RB) {
           PARSE_ERROR
-              ("Unimplemented feature: GRAS_DEFINE_TYPE cannot deal with [] constructs (yet)");
+              ("Unimplemented feature: XBT_DEFINE_TYPE cannot deal with [] constructs (yet)");
 
-        } else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
+        } else if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_WORD) {
           char *end;
-          long int size = strtol(gras_ddt_parse_text, &end, 10);
+          long int size = strtol(xbt_ddt_parse_text, &end, 10);
 
-          if (end == gras_ddt_parse_text || *end != '\0') {
+          if (end == xbt_ddt_parse_text || *end != '\0') {
             /* Not a number. Get the constant value, if any */
-            int *storage = xbt_dict_get_or_null(gras_dd_constants,
-                                                gras_ddt_parse_text);
+            int *storage = xbt_dict_get_or_null(xbt_dd_constants,
+                                                xbt_ddt_parse_text);
             if (storage) {
               size = *storage;
             } else {
               PARSE_ERROR
-                  ("Unparsable size of array. Found '%s', expected number or known constant. Need to use gras_datadesc_set_const(), huh?",
-                   gras_ddt_parse_text);
+                  ("Unparsable size of array. Found '%s', expected number or known constant. Need to use xbt_datadesc_set_const(), huh?",
+                   xbt_ddt_parse_text);
             }
           }
 
@@ -403,8 +403,8 @@ static void parse_statement(char *definition,
           change_to_fixed_array(identifiers, size);
 
           /* eat the closing bracket */
-          gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
-          if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RB)
+          xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
+          if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_RB)
             PARSE_ERROR("Unparsable size of array");
           XBT_DEBUG("Fixed size array, size=%ld", size);
           continue;
@@ -413,57 +413,57 @@ static void parse_statement(char *definition,
         }
         /* End of fixed size arrays handling */
 
-      } else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
+      } else if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_WORD) {
         /* Handle annotation */
         s_identifier_t array;
         char *keyname = NULL;
         char *keyval = NULL;
         memset(&array, 0, sizeof(array));
-        if (strcmp(gras_ddt_parse_text, "GRAS_ANNOTE"))
+        if (strcmp(xbt_ddt_parse_text, "XBT_ANNOTE"))
           PARSE_ERROR
-              ("Unparsable symbol: Expected 'GRAS_ANNOTE', got '%s'",
-               gras_ddt_parse_text);
+              ("Unparsable symbol: Expected 'XBT_ANNOTE', got '%s'",
+               xbt_ddt_parse_text);
 
-        gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
-        if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_LP)
+        xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
+        if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_LP)
           PARSE_ERROR
               ("Unparsable annotation: Expected parenthesis, got '%s'",
-               gras_ddt_parse_text);
+               xbt_ddt_parse_text);
 
-        while ((gras_ddt_parse_tok_num =
-                gras_ddt_parse_lex_n_dump()) ==
-               GRAS_DDT_PARSE_TOKEN_EMPTY);
+        while ((xbt_ddt_parse_tok_num =
+                xbt_ddt_parse_lex_n_dump()) ==
+               XBT_DDT_PARSE_TOKEN_EMPTY);
 
-        if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
+        if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_WORD)
           PARSE_ERROR
               ("Unparsable annotation: Expected key name, got '%s'",
-               gras_ddt_parse_text);
-        keyname = (char *) strdup(gras_ddt_parse_text);
+               xbt_ddt_parse_text);
+        keyname = (char *) strdup(xbt_ddt_parse_text);
 
-        while ((gras_ddt_parse_tok_num =
-                gras_ddt_parse_lex_n_dump()) ==
-               GRAS_DDT_PARSE_TOKEN_EMPTY);
+        while ((xbt_ddt_parse_tok_num =
+                xbt_ddt_parse_lex_n_dump()) ==
+               XBT_DDT_PARSE_TOKEN_EMPTY);
 
-        if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_COLON)
+        if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_COLON)
           PARSE_ERROR
               ("Unparsable annotation: expected ',' after the key name, got '%s'",
-               gras_ddt_parse_text);
+               xbt_ddt_parse_text);
 
-        while ((gras_ddt_parse_tok_num =
-                gras_ddt_parse_lex_n_dump()) ==
-               GRAS_DDT_PARSE_TOKEN_EMPTY);
+        while ((xbt_ddt_parse_tok_num =
+                xbt_ddt_parse_lex_n_dump()) ==
+               XBT_DDT_PARSE_TOKEN_EMPTY);
 
         /* get the value */
 
-        if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
+        if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_WORD)
           PARSE_ERROR
               ("Unparsable annotation: Expected key value, got '%s'",
-               gras_ddt_parse_text);
-        keyval = (char *) strdup(gras_ddt_parse_text);
+               xbt_ddt_parse_text);
+        keyval = (char *) strdup(xbt_ddt_parse_text);
 
-        while ((gras_ddt_parse_tok_num =
-                gras_ddt_parse_lex_n_dump()) ==
-               GRAS_DDT_PARSE_TOKEN_EMPTY);
+        while ((xbt_ddt_parse_tok_num =
+                xbt_ddt_parse_lex_n_dump()) ==
+               XBT_DDT_PARSE_TOKEN_EMPTY);
 
         /* Done with parsing the annotation. Now deal with it by replacing previously pushed type with the right one */
 
@@ -494,7 +494,7 @@ static void parse_statement(char *definition,
             }
           }
         } else if (!strcmp(keyname, "subtype")) {
-          gras_datadesc_type_t subtype = gras_datadesc_by_name(keyval);
+          xbt_datadesc_type_t subtype = xbt_datadesc_by_name(keyval);
           if (identifier.tm.is_matrix) {
             change_to_matrix_of(identifiers, subtype);
             identifier.tm.is_matrix = -1;
@@ -508,7 +508,7 @@ static void parse_statement(char *definition,
           }
           free(keyval);
         } else if (!strcmp(keyname, "free_f")) {
-          int *storage = xbt_dict_get_or_null(gras_dd_constants, keyval);
+          int *storage = xbt_dict_get_or_null(xbt_dd_constants, keyval);
           if (!storage)
             PARSE_ERROR
                 ("value for free_f annotation of field %s is not a known constant",
@@ -532,30 +532,30 @@ static void parse_statement(char *definition,
         free(keyname);
 
         /* Get all the multipliers */
-        while (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_STAR) {
+        while (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_STAR) {
 
-          gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
+          xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
 
-          if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
+          if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_WORD)
             PARSE_ERROR
                 ("Unparsable annotation: Expected field name after '*', got '%s'",
-                 gras_ddt_parse_text);
+                 xbt_ddt_parse_text);
 
-          keyval = xbt_malloc(strlen(gras_ddt_parse_text) + 2);
-          sprintf(keyval, "*%s", gras_ddt_parse_text);
+          keyval = xbt_malloc(strlen(xbt_ddt_parse_text) + 2);
+          sprintf(keyval, "*%s", xbt_ddt_parse_text);
 
           /* ask caller to push field as a multiplier */
           xbt_dynar_push(fields_to_push, &keyval);
 
           /* skip blanks after this block */
-          while ((gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump())
-                 == GRAS_DDT_PARSE_TOKEN_EMPTY);
+          while ((xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump())
+                 == XBT_DDT_PARSE_TOKEN_EMPTY);
         }
 
-        if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RP)
+        if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_RP)
           PARSE_ERROR
               ("Unparsable annotation: Expected parenthesis, got '%s'",
-               gras_ddt_parse_text);
+               xbt_ddt_parse_text);
 
         continue;
 
@@ -563,21 +563,21 @@ static void parse_statement(char *definition,
       } else {
         PARSE_ERROR
             ("Unparsable symbol: Got '%s' instead of expected comma (',')",
-             gras_ddt_parse_text);
+             xbt_ddt_parse_text);
       }
-    } else if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_COLON) {
+    } else if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_COLON) {
       PARSE_ERROR("Unparsable symbol: Unexpected comma (',')");
     }
 
-    if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_STAR) {
+    if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_STAR) {
       identifier.tm.is_ref++;   /* We indeed deal with multiple references with multiple annotations */
       continue;
     }
 
     /* found a symbol name. Build the type and push it to dynar */
-    if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
+    if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_WORD) {
 
-      identifier.name = (char *) strdup(gras_ddt_parse_text);
+      identifier.name = (char *) strdup(xbt_ddt_parse_text);
       XBT_DEBUG("Found the identifier \"%s\"", identifier.name);
 
       xbt_dynar_push(identifiers, &identifier);
@@ -598,7 +598,7 @@ static void parse_statement(char *definition,
   XBT_OUT();
 }
 
-static gras_datadesc_type_t parse_struct(char *definition)
+static xbt_datadesc_type_t parse_struct(char *definition)
 {
 
   xbt_ex_t e;
@@ -614,27 +614,27 @@ static gras_datadesc_type_t parse_struct(char *definition)
   xbt_dynar_t fields_to_push;
   char *name;
 
-  volatile gras_datadesc_type_t struct_type;
+  volatile xbt_datadesc_type_t struct_type;
 
   XBT_IN("");
   identifiers = xbt_dynar_new(sizeof(s_identifier_t), NULL);
   fields_to_push = xbt_dynar_new(sizeof(char *), NULL);
 
   /* Create the struct descriptor */
-  if (gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD) {
-    struct_type = gras_datadesc_struct(gras_ddt_parse_text);
-    XBT_VERB("Parse the struct '%s'", gras_ddt_parse_text);
-    gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
+  if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_WORD) {
+    struct_type = xbt_datadesc_struct(xbt_ddt_parse_text);
+    XBT_VERB("Parse the struct '%s'", xbt_ddt_parse_text);
+    xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
   } else {
     sprintf(buffname, "anonymous struct %d", anonymous_struct++);
     XBT_VERB("Parse the anonymous struct nb %d", anonymous_struct);
-    struct_type = gras_datadesc_struct(buffname);
+    struct_type = xbt_datadesc_struct(buffname);
   }
 
-  if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_LA)
+  if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_LA)
     PARSE_ERROR
         ("Unparasable symbol: Expecting struct definition, but got %s instead of '{'",
-         gras_ddt_parse_text);
+         xbt_ddt_parse_text);
 
   /* Parse the identifiers */
   done = 0;
@@ -655,11 +655,11 @@ static gras_datadesc_type_t parse_struct(char *definition)
     xbt_dynar_foreach(identifiers, iter, field) {
       if (field.tm.is_ref)
         PARSE_ERROR
-            ("Not enough GRAS_ANNOTATE to deal with all dereferencing levels of %s (%d '*' left)",
+            ("Not enough XBT_ANNOTATE to deal with all dereferencing levels of %s (%d '*' left)",
              field.name, field.tm.is_ref);
 
       XBT_VERB("Append field '%s' to %p", field.name, (void *) struct_type);
-      gras_datadesc_struct_append(struct_type, field.name, field.type);
+      xbt_datadesc_struct_append(struct_type, field.name, field.type);
       free(field.name);
       free(field.type_name);
 
@@ -673,25 +673,25 @@ static gras_datadesc_type_t parse_struct(char *definition)
       if (name[0] == '*') {
         XBT_VERB("Push field '%s' as a multiplier into size stack of %p",
               name + 1, (void *) struct_type);
-        gras_datadesc_cb_field_push_multiplier(struct_type, name + 1);
+        xbt_datadesc_cb_field_push_multiplier(struct_type, name + 1);
       } else {
         XBT_VERB("Push field '%s' into size stack of %p",
               name, (void *) struct_type);
-        gras_datadesc_cb_field_push(struct_type, name);
+        xbt_datadesc_cb_field_push(struct_type, name);
       }
       free(name);
     }
     xbt_dynar_reset(fields_to_push);
   } while (!done);
-  gras_datadesc_struct_close(struct_type);
+  xbt_datadesc_struct_close(struct_type);
 
   /* terminates */
-  if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_RA)
+  if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_RA)
     PARSE_ERROR
         ("Unparasable symbol: Expected '}' at the end of struct definition, got '%s'",
-         gras_ddt_parse_text);
+         xbt_ddt_parse_text);
 
-  gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
+  xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
 
   xbt_dynar_free(&identifiers);
   xbt_dynar_free(&fields_to_push);
@@ -699,12 +699,12 @@ static gras_datadesc_type_t parse_struct(char *definition)
   return struct_type;
 }
 
-static gras_datadesc_type_t parse_typedef(char *definition)
+static xbt_datadesc_type_t parse_typedef(char *definition)
 {
 
   s_type_modifier_t tm;
 
-  gras_datadesc_type_t typedef_desc = NULL;
+  xbt_datadesc_type_t typedef_desc = NULL;
 
   XBT_IN("");
   memset(&tm, 0, sizeof(tm));
@@ -720,17 +720,17 @@ static gras_datadesc_type_t parse_typedef(char *definition)
 
   if (tm.is_ref)
     PARSE_ERROR
-        ("GRAS_DEFINE_TYPE cannot handle reference without annotation");
+        ("XBT_DEFINE_TYPE cannot handle reference without annotation");
 
   /* get the aliasing name */
-  if (gras_ddt_parse_tok_num != GRAS_DDT_PARSE_TOKEN_WORD)
+  if (xbt_ddt_parse_tok_num != XBT_DDT_PARSE_TOKEN_WORD)
     PARSE_ERROR
         ("Unparsable typedef: Expected the alias name, and got '%s'",
-         gras_ddt_parse_text);
+         xbt_ddt_parse_text);
 
   /* (FIXME: should) build the alias */
   PARSE_ERROR
-      ("Unimplemented feature: GRAS_DEFINE_TYPE cannot handle typedef yet");
+      ("Unimplemented feature: XBT_DEFINE_TYPE cannot handle typedef yet");
 
   XBT_OUT();
   return typedef_desc;
@@ -738,15 +738,15 @@ static gras_datadesc_type_t parse_typedef(char *definition)
 
 
 /**
- * gras_datadesc_parse:
+ * xbt_datadesc_parse:
  *
  * Create a datadescription from the result of parsing the C type description
  */
-gras_datadesc_type_t
-gras_datadesc_parse(const char *name, const char *C_statement)
+xbt_datadesc_type_t
+xbt_datadesc_parse(const char *name, const char *C_statement)
 {
 
-  gras_datadesc_type_t res = NULL;
+  xbt_datadesc_type_t res = NULL;
   char *definition;
   int semicolon_count = 0;
   int def_count, C_count;
@@ -766,20 +766,20 @@ gras_datadesc_parse(const char *name, const char *C_statement)
   definition[def_count] = '\0';
 
   /* init */
-  XBT_VERB("_gras_ddt_type_parse(%s) -> %d chars", definition, def_count);
-  gras_ddt_parse_pointer_string_init(definition);
+  XBT_VERB("_xbt_ddt_type_parse(%s) -> %d chars", definition, def_count);
+  xbt_ddt_parse_pointer_string_init(definition);
 
   /* Do I have a typedef, or a raw struct ? */
-  gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
+  xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
 
-  if ((gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD)
-      && (!strcmp(gras_ddt_parse_text, "struct"))) {
-    gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
+  if ((xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_WORD)
+      && (!strcmp(xbt_ddt_parse_text, "struct"))) {
+    xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
     res = parse_struct(definition);
 
-  } else if ((gras_ddt_parse_tok_num == GRAS_DDT_PARSE_TOKEN_WORD)
-             && (!strcmp(gras_ddt_parse_text, "typedef"))) {
-    gras_ddt_parse_tok_num = gras_ddt_parse_lex_n_dump();
+  } else if ((xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_WORD)
+             && (!strcmp(xbt_ddt_parse_text, "typedef"))) {
+    xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
     res = parse_typedef(definition);
 
   } else {
@@ -789,27 +789,27 @@ gras_datadesc_parse(const char *name, const char *C_statement)
     xbt_abort();
   }
 
-  gras_ddt_parse_pointer_string_close();
-  XBT_VERB("end of _gras_ddt_type_parse()");
+  xbt_ddt_parse_pointer_string_close();
+  XBT_VERB("end of _xbt_ddt_type_parse()");
   free(definition);
   /* register it under the name provided as symbol */
   if (strcmp(res->name, name)) {
     XBT_ERROR
-        ("In GRAS_DEFINE_TYPE, the provided symbol (here %s) must be the C type name (here %s)",
+        ("In XBT_DEFINE_TYPE, the provided symbol (here %s) must be the C type name (here %s)",
          name, res->name);
     xbt_abort();
   }
-  gras_ddt_parse_lex_destroy();
+  xbt_ddt_parse_lex_destroy();
   XBT_OUT();
   return res;
 }
 
-xbt_dict_t gras_dd_constants;
+xbt_dict_t xbt_dd_constants;
 /** \brief Declare a constant to the parsing mecanism. See the "\#define and fixed size array" section */
-void gras_datadesc_set_const(const char *name, int value)
+void xbt_datadesc_set_const(const char *name, int value)
 {
   int *stored = xbt_new(int, 1);
   *stored = value;
 
-  xbt_dict_set(gras_dd_constants, name, stored, NULL);
+  xbt_dict_set(xbt_dd_constants, name, stored, NULL);
 }

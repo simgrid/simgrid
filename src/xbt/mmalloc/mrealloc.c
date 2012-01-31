@@ -68,23 +68,24 @@ void *mrealloc(void *md, void *ptr, size_t size)
     /* The new size is a large allocation as well;
        see if we can hold it in place. */
     blocks = BLOCKIFY(size);
-    if (blocks < mdp->heapinfo[block].busy.info.size) {
+    if (blocks < mdp->heapinfo[block].busy.info.block.size) {
       /* The new size is smaller; return excess memory to the free list. */
       //printf("(%s) return excess memory...",xbt_thread_self_name());
       mdp->heapinfo[block + blocks].busy.type = 0;
-      mdp->heapinfo[block + blocks].busy.info.size
-          = mdp->heapinfo[block].busy.info.size - blocks;
-      mdp->heapinfo[block].busy.info.size = blocks;
+      mdp->heapinfo[block + blocks].busy.info.block.size
+          = mdp->heapinfo[block].busy.info.block.size - blocks;
+      mdp->heapinfo[block].busy.info.block.size = blocks;
+      mdp->heapinfo[block].busy.info.block.busy_size = size;
       mfree(md, ADDRESS(block + blocks));
       result = ptr;
-    } else if (blocks == mdp->heapinfo[block].busy.info.size) {
+    } else if (blocks == mdp->heapinfo[block].busy.info.block.size) {
       /* No size change necessary.  */
       result = ptr;
     } else {
       /* Won't fit, so allocate a new region that will.
          Free the old region first in case there is sufficient
          adjacent free space to grow without moving. */
-      blocks = mdp->heapinfo[block].busy.info.size;
+      blocks = mdp->heapinfo[block].busy.info.block.size;
       /* Prevent free from actually returning memory to the system.  */
       oldlimit = mdp->heaplimit;
       mdp->heaplimit = 0;

@@ -14,8 +14,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(Rpc, "Messages specific to this example");
 static void register_messages(void)
 {
   gras_msgtype_declare_rpc("plain ping",
-                           gras_datadesc_by_name("int"),
-                           gras_datadesc_by_name("int"));
+                           xbt_datadesc_by_name("int"),
+                           xbt_datadesc_by_name("int"));
 
   gras_msgtype_declare_rpc("raise exception", NULL, NULL);
   gras_msgtype_declare_rpc("forward exception", NULL, NULL);
@@ -60,8 +60,8 @@ static void exception_catching(void)
  * Client code
  * **********************************************************************/
 
-static void client_create_sockets(gras_socket_t *toserver,
-                                  gras_socket_t *toforwarder,
+static void client_create_sockets(xbt_socket_t *toserver,
+                                  xbt_socket_t *toforwarder,
                                   const char *srv_host, int srv_port,
                                   const char *fwd_host, int fwd_port)
 {
@@ -78,8 +78,8 @@ static void client_create_sockets(gras_socket_t *toserver,
 int client(int argc, char *argv[])
 {
   xbt_ex_t e;
-  gras_socket_t toserver = NULL;        /* peer */
-  gras_socket_t toforwarder = NULL;     /* peer */
+  xbt_socket_t toserver = NULL;        /* peer */
+  xbt_socket_t toforwarder = NULL;     /* peer */
 
   int ping, pong, i;
   volatile int gotit = 0;
@@ -119,7 +119,7 @@ int client(int argc, char *argv[])
 
   /* 6. Keep the user informed of what's going on */
   XBT_INFO("Connected to server which is on %s:%d",
-        gras_socket_peer_name(toserver), gras_socket_peer_port(toserver));
+        xbt_socket_peer_name(toserver), xbt_socket_peer_port(toserver));
 
   /* 7. Prepare and send the ping message to the server */
   ping = 1234;
@@ -136,7 +136,7 @@ int client(int argc, char *argv[])
   /* 8. Keep the user informed of what's going on, again */
   XBT_INFO("The answer to PING(%d) on %s:%d is PONG(%d)",
         ping,
-        gras_socket_peer_name(toserver), gras_socket_peer_port(toserver),
+        xbt_socket_peer_name(toserver), xbt_socket_peer_port(toserver),
         pong);
 
   /* 9. Call a RPC which raises an exception (to test exception propagation) */
@@ -205,11 +205,11 @@ int client(int argc, char *argv[])
     exception_catching();
   }
 
-  XBT_INFO("Ask %s:%d to die", gras_socket_peer_name(toforwarder),
-        gras_socket_peer_port(toforwarder));
+  XBT_INFO("Ask %s:%d to die", xbt_socket_peer_name(toforwarder),
+        xbt_socket_peer_port(toforwarder));
   gras_msg_send(toforwarder, "kill", NULL);
-  XBT_INFO("Ask %s:%d to die", gras_socket_peer_name(toserver),
-        gras_socket_peer_port(toserver));
+  XBT_INFO("Ask %s:%d to die", xbt_socket_peer_name(toserver),
+        xbt_socket_peer_port(toserver));
   gras_msg_send(toserver, "kill", NULL);
 
   /* 11. Cleanup the place before leaving */
@@ -225,16 +225,16 @@ int client(int argc, char *argv[])
  * Forwarder code
  * **********************************************************************/
 typedef struct {
-  gras_socket_t server;
+  xbt_socket_t server;
   int done;
 } s_forward_data_t, *forward_data_t;
 
 static int forwarder_cb_kill(gras_msg_cb_ctx_t ctx, void *payload_data)
 {
   forward_data_t fdata;
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
-  XBT_INFO("Asked to die by %s:%d", gras_socket_peer_name(expeditor),
-        gras_socket_peer_port(expeditor));
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  XBT_INFO("Asked to die by %s:%d", xbt_socket_peer_name(expeditor),
+        xbt_socket_peer_port(expeditor));
   fdata = gras_userdata_get();
   fdata->done = 1;
   return 0;
@@ -252,7 +252,7 @@ static int forwarder_cb_forward_ex(gras_msg_cb_ctx_t ctx,
 
 int forwarder(int argc, char *argv[])
 {
-  gras_socket_t mysock;
+  xbt_socket_t mysock;
   int port;
   forward_data_t fdata;
 
@@ -290,17 +290,17 @@ int forwarder(int argc, char *argv[])
  * Server code
  * **********************************************************************/
 typedef struct {
-  gras_socket_t server;
+  xbt_socket_t server;
   int done;
 } s_server_data_t, *server_data_t;
 
 static int server_cb_kill(gras_msg_cb_ctx_t ctx, void *payload_data)
 {
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
   server_data_t sdata;
 
-  XBT_INFO("Asked to die by %s:%d", gras_socket_peer_name(expeditor),
-        gras_socket_peer_port(expeditor));
+  XBT_INFO("Asked to die by %s:%d", xbt_socket_peer_name(expeditor),
+        xbt_socket_peer_port(expeditor));
 
   sdata = gras_userdata_get();
   sdata->done = 1;
@@ -318,13 +318,13 @@ static int server_cb_ping(gras_msg_cb_ctx_t ctx, void *payload_data)
 
   /* 1. Get the payload into the msg variable, and retrieve who called us */
   int msg = *(int *) payload_data;
-  gras_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
+  xbt_socket_t expeditor = gras_msg_cb_ctx_from(ctx);
 
   /* 2. Log which client connected */
   XBT_INFO("Got message PING(%d) from %s:%d",
         msg,
-        gras_socket_peer_name(expeditor),
-        gras_socket_peer_port(expeditor));
+        xbt_socket_peer_name(expeditor),
+        xbt_socket_peer_port(expeditor));
 
   /* 4. Change the value of the msg variable */
   msg = 4321;
@@ -342,7 +342,7 @@ static int server_cb_ping(gras_msg_cb_ctx_t ctx, void *payload_data)
 
 int server(int argc, char *argv[])
 {
-  gras_socket_t mysock;
+  xbt_socket_t mysock;
   server_data_t sdata;
 
   int port = 4001;
@@ -368,13 +368,13 @@ int server(int argc, char *argv[])
   gras_cb_register("raise exception", &server_cb_raise_ex);
   gras_cb_register("kill", &server_cb_kill);
 
-  XBT_INFO("Listening on port %d", gras_socket_my_port(mysock));
+  XBT_INFO("Listening on port %d", xbt_socket_my_port(mysock));
 
   /* 5. Wait for the ping incomming messages */
 
   /** \bug if the server is gone before the forwarder tries to connect,
      it dies awfully with the following message. The problem stands somewhere
-     at the interface between the gras_socket_t and the msg mess. There is thus
+     at the interface between the xbt_socket_t and the msg mess. There is thus
      no way for me to dive into this before this interface is rewritten
 ==15875== Invalid read of size 4
 ==15875==    at 0x408B805: find_port (transport_plugin_sg.c:68)

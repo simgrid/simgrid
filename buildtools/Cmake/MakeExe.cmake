@@ -59,6 +59,8 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/parallel_contexts)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/pmm)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/io)
+
 if(HAVE_TRACING)
     add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing)
 endif(HAVE_TRACING)
