@@ -79,8 +79,9 @@ while ( defined( $line = <MAKETEST> ) ) {
                 $tesh_file =~ s/^[^\/\$]/$path\/$&/;
                 $tesh_file =~ s/\${CMAKE_HOME_DIRECTORY}/$proj_dir/g;
                 if ( ! -e "$tesh_file" ) {
-                    print "tesh_file : $tesh_file not exists!\n";
-                    die;
+                    print "# tesh_file: $tesh_file does not exist!\n";
+                    print "# $line\n";
+                    next;
                 }
             }
 
