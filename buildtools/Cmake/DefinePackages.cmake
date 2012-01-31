@@ -257,6 +257,7 @@ set(MSG_SRC
 	src/msg/msg_config.c
 	src/msg/msg_task.c
 	src/msg/msg_host.c
+	src/msg/msg_io.c
 	src/msg/msg_process.c
 	src/msg/msg_gos.c
 	src/msg/msg_global.c
