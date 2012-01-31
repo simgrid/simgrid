@@ -26,7 +26,7 @@ void SIMIX_pre_file_read(smx_simcall_t simcall)
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size, size_t nmemb, smx_file_t* stream)
+smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -68,7 +68,7 @@ void SIMIX_pre_file_write(smx_simcall_t simcall)
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr, size_t size, size_t nmemb, smx_file_t* stream)
+smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -147,7 +147,7 @@ void SIMIX_pre_file_close(smx_simcall_t simcall)
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t* fp)
+smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
