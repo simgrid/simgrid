@@ -1205,6 +1205,41 @@ size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t
   return simcall->file_write.result;
 }
 
+smx_file_t* simcall_file_open(const char* path, const char* mode)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_FILE_OPEN;
+  simcall->file_open.path = path;
+  simcall->file_open.mode = mode;
+  SIMIX_simcall_push(simcall->issuer);
+
+  return simcall->file_open.result;
+}
+
+int simcall_file_close(smx_file_t* fp)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_FILE_CLOSE;
+  simcall->file_close.fp = fp;
+  SIMIX_simcall_push(simcall->issuer);
+
+  return simcall->file_close.result;
+}
+
+int simcall_file_stat(int fd, void* buf)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_FILE_STAT;
+  simcall->file_stat.fd = fd;
+  simcall->file_stat.buf = buf;
+  SIMIX_simcall_push(simcall->issuer);
+
+  return simcall->file_stat.result;
+}
+
 /* ************************************************************************** */
 
 /** @brief returns a printable string representing a simcall */

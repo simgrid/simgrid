@@ -490,12 +490,15 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       break;
 
     case SIMCALL_FILE_OPEN:
+      SIMIX_pre_file_open(simcall);
       break;
 
     case SIMCALL_FILE_CLOSE:
+      SIMIX_pre_file_close(simcall);
       break;
 
     case SIMCALL_FILE_STAT:
+      SIMIX_pre_file_stat(simcall);
       break;
 
     case SIMCALL_NONE:

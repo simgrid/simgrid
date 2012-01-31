@@ -534,6 +534,13 @@ typedef struct s_smx_simcall {
       int result;
     } file_close;
 
+    struct {
+      int fd;
+      //Next should be struct stat* buf
+      void* buf;
+      int result;
+    } file_stat;
+
   };
 } s_smx_simcall_t, *smx_simcall_t;
 
