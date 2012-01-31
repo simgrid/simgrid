@@ -18,9 +18,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(file,
 int host(int argc, char *argv[])
 {
   size_t read = simcall_file_read(NULL,0,0,NULL);
-  XBT_INFO("Host '%s' read",MSG_host_get_name(MSG_host_self()) );
+  XBT_INFO("Host '%s' read %ld",MSG_host_get_name(MSG_host_self()),read);
   size_t write = simcall_file_write(NULL,0,0,NULL);
-  XBT_INFO("Host '%s' write",MSG_host_get_name(MSG_host_self()) );
+  XBT_INFO("Host '%s' write %ld",MSG_host_get_name(MSG_host_self()), write);
   return 0;
 }
 

@@ -522,6 +522,18 @@ typedef struct s_smx_simcall {
       smx_file_t* stream;
       size_t result;
     } file_write;
+
+    struct {
+      const char* path;
+      const char* mode;
+      smx_file_t* result;
+    } file_open;
+
+    struct {
+      smx_file_t* fp;
+      int result;
+    } file_close;
+
   };
 } s_smx_simcall_t, *smx_simcall_t;
 
