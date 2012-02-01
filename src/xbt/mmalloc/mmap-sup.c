@@ -20,10 +20,6 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 
-#ifndef SEEK_SET
-#define SEEK_SET 0
-#endif
-
 #include "mmprivate.h"
 #include "xbt/ex.h"
 
@@ -33,22 +29,17 @@
    it out. */
 
 static size_t pagesize;
-#if NEED_DECLARATION_GETPAGESIZE
-extern int getpagesize(void);
-#endif
 
 #define PAGE_ALIGN(addr) (void*) (((long)(addr) + pagesize - 1) & \
 				    ~(pagesize - 1))
 
 /* Return MAP_PRIVATE if MDP represents /dev/zero.  Otherwise, return
    MAP_SHARED.  */
-
 #define MAP_PRIVATE_OR_SHARED(MDP) (( MDP -> flags & MMALLOC_ANONYMOUS) \
                                     ? MAP_PRIVATE \
                                     : MAP_SHARED)
 
 /* Return MAP_ANONYMOUS if MDP uses anonymous mapping. Otherwise, return 0 */
-
 #define MAP_IS_ANONYMOUS(MDP) (((MDP) -> flags & MMALLOC_ANONYMOUS) \
                               ? MAP_ANONYMOUS \
                               : 0)

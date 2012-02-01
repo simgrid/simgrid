@@ -26,10 +26,6 @@
 #  endif
 #endif
 
-#ifndef MIN
-#  define MIN(A, B) ((A) < (B) ? (A) : (B))
-#endif
-
 #define MMALLOC_MAGIC		"mmalloc"       /* Mapped file magic number */
 #define MMALLOC_MAGIC_SIZE	8       /* Size of magic number buf */
 #define MMALLOC_VERSION		1       /* Current mmalloc version */
@@ -248,7 +244,6 @@ void mmalloc_display_info(void *h);
 #define MMALLOC_DEVZERO		(1 << 0)        /* Have mapped to /dev/zero */
 #define MMALLOC_ANONYMOUS (1 << 1)      /* Use anonymous mapping */
 #define MMALLOC_INITIALIZED	(1 << 2)        /* Initialized mmalloc */
-#define MMALLOC_MMCHECK_USED	(1 << 3)        /* mmcheckf() called already */
 
 /* Internal version of `mfree' used in `morecore'. */
 
