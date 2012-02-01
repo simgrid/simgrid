@@ -1177,7 +1177,7 @@ int simcall_sem_get_capacity(smx_sem_t sem)
   return simcall->sem_get_capacity.result;
 }
 
-size_t simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t* stream)
+size_t simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
@@ -1191,7 +1191,7 @@ size_t simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t* strea
   return simcall->file_read.result;
 }
 
-size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t* stream)
+size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
@@ -1205,7 +1205,7 @@ size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t
   return simcall->file_write.result;
 }
 
-smx_file_t* simcall_file_open(const char* path, const char* mode)
+smx_file_t simcall_file_open(const char* path, const char* mode)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
@@ -1217,7 +1217,7 @@ smx_file_t* simcall_file_open(const char* path, const char* mode)
   return simcall->file_open.result;
 }
 
-int simcall_file_close(smx_file_t* fp)
+int simcall_file_close(smx_file_t fp)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 

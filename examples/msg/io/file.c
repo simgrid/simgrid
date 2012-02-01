@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 
 int host(int argc, char *argv[])
 {
-  m_file_t* file;
+  m_file_t file;
   file = MSG_file_open("test.txt","rw");
   XBT_INFO("Host '%s' open %p",MSG_host_get_name(MSG_host_self()), file);
 

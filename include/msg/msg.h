@@ -40,10 +40,10 @@ XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
 
 
 /************************** File handling ***********************************/
-XBT_PUBLIC(size_t) MSG_file_read(void* ptr, size_t size, size_t nmemb, m_file_t* stream);
-XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, size_t nmemb, m_file_t* stream);
-XBT_PUBLIC(m_file_t*) MSG_file_open(const char* path, const char* mode);
-XBT_PUBLIC(int) MSG_file_close(m_file_t* fp);
+XBT_PUBLIC(size_t) MSG_file_read(void* ptr, size_t size, size_t nmemb, m_file_t stream);
+XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, size_t nmemb, m_file_t stream);
+XBT_PUBLIC(m_file_t) MSG_file_open(const char* path, const char* mode);
+XBT_PUBLIC(int) MSG_file_close(m_file_t fp);
 XBT_PUBLIC(int) MSG_file_stat(int fd, void* buf);
 
 

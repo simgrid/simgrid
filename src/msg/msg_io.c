@@ -8,24 +8,24 @@
 
 // FILE
 
-size_t MSG_file_read(void* ptr, size_t size, size_t nmemb,  m_file_t* stream)
+size_t MSG_file_read(void* ptr, size_t size, size_t nmemb,  m_file_t stream)
 {
-  return simcall_file_read(ptr, size, nmemb, (smx_file_t*)stream);
+  return simcall_file_read(ptr, size, nmemb, (smx_file_t)stream);
 }
 
-size_t MSG_file_write(const void* ptr, size_t size, size_t nmemb, m_file_t* stream)
+size_t MSG_file_write(const void* ptr, size_t size, size_t nmemb, m_file_t stream)
 {
-  return simcall_file_write(ptr, size, nmemb, (smx_file_t*)stream);
+  return simcall_file_write(ptr, size, nmemb, (smx_file_t)stream);
 }
 
-m_file_t* MSG_file_open(const char* path, const char* mode)
+m_file_t MSG_file_open(const char* path, const char* mode)
 {
-  return (m_file_t*) simcall_file_open(path, mode);
+  return (m_file_t) simcall_file_open(path, mode);
 }
 
-int MSG_file_close(m_file_t* fp)
+int MSG_file_close(m_file_t fp)
 {
-  return simcall_file_close((smx_file_t*)fp);
+  return simcall_file_close((smx_file_t)fp);
 }
 
 int MSG_file_stat(int fd, void* buf)

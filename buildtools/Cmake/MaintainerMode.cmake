@@ -52,20 +52,24 @@ ADD_CUSTOM_COMMAND(
   			${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
   			${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.c
   			${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
+			${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
   			${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
   			
   	DEPENDS	${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
   			${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.dtd
+			${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.l
   			${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
 		  			
 	#${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
 	COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=http://simgrid.gforge.inria.fr/simgrid.dtd -S src/surf/simgrid_dtd.l -L src/surf/simgrid.dtd
 	COMMAND ${SED_EXE} -i ${string14} src/surf/simgrid_dtd.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/surf/simgrid_dtd.l"
+
 	#${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.l: ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.dtd
 	COMMAND ${FLEXML_EXE} -b 1000000 -P graphxml --sysid=graphxml.dtd -S src/xbt/graphxml.l -L src/xbt/graphxml.dtd
 	COMMAND ${SED_EXE} -i ${string14} src/xbt/graphxml.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/xbt/graphxml.l"
+
 	#${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
 	COMMAND ${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S src/simdag/dax_dtd.l -L src/simdag/dax.dtd
 	COMMAND ${SED_EXE} -i ${string5} src/simdag/dax_dtd.l
@@ -79,6 +83,7 @@ ADD_CUSTOM_COMMAND(
 	COMMAND ${SED_EXE} -i ${string2} include/surf/simgrid_dtd.h	
 	COMMAND ${SED_EXE} -i ${string14} include/surf/simgrid_dtd.h
 	COMMAND ${CMAKE_COMMAND} -E echo "include/surf/simgrid_dtd.h"
+
 	#${CMAKE_HOME_DIRECTORY}/include/xbt/graphxml.h: ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.dtd
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/include/xbt/graphxml.h
 	COMMAND ${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H include/xbt/graphxml.h -L src/xbt/graphxml.dtd
@@ -86,13 +91,13 @@ ADD_CUSTOM_COMMAND(
 	COMMAND ${SED_EXE} -i ${string4} include/xbt/graphxml.h
 	COMMAND ${SED_EXE} -i ${string14} include/xbt/graphxml.h
 	COMMAND ${CMAKE_COMMAND} -E echo "include/xbt/graphxml.h"
+
 	#${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
 	COMMAND ${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H src/simdag/dax_dtd.h -L src/simdag/dax.dtd
 	COMMAND ${SED_EXE} -i ${string6} src/simdag/dax_dtd.h	
 	COMMAND ${SED_EXE} -i ${string7} src/simdag/dax_dtd.h
 	COMMAND ${SED_EXE} -i ${string14} src/simdag/dax_dtd.h
-	COMMAND ${FLEX_EXE} -o src/xbt/datadesc/ddt_parse.yy.c -Pxbt_ddt_parse_ --noline src/xbt/datadesc/ddt_parse.yy.l
 	COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.h"
 	
 	#surf/simgrid_dtd.c: surf/simgrid_dtd.l
@@ -101,9 +106,9 @@ ADD_CUSTOM_COMMAND(
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/surf
 	COMMAND ${FLEX_EXE} -o src/surf/simgrid_dtd.c -Psurf_parse_ --noline src/surf/simgrid_dtd.l
 	COMMAND ${SED_EXE} -i ${string9} src/surf/simgrid_dtd.c
-    COMMAND ${SED_EXE} -i ${string15} src/surf/simgrid_dtd.c
-	
+	COMMAND ${SED_EXE} -i ${string15} src/surf/simgrid_dtd.c
 	COMMAND ${CMAKE_COMMAND} -E echo "surf/simgrid_dtd.c"
+
 	#xbt/graphxml.c: xbt/graphxml.l
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
 	COMMAND ${SED_EXE} -i ${string10} src/xbt/graphxml.l	
@@ -111,6 +116,11 @@ ADD_CUSTOM_COMMAND(
 	COMMAND ${FLEX_EXE} -o src/xbt/graphxml.c -Pxbt_graph_parse_ --noline src/xbt/graphxml.l
 	COMMAND ${SED_EXE} -i ${string11} src/xbt/graphxml.c
 	COMMAND ${CMAKE_COMMAND} -E echo "xbt/graphxml.c"
+
+	# src/xbt/datadesc/ddt_parse.yy.c: src/xbt/datadesc/ddt_parse.yy.l
+	COMMAND ${FLEX_EXE} -o src/xbt/datadesc/ddt_parse.yy.c -Pxbt_ddt_parse_ --noline src/xbt/datadesc/ddt_parse.yy.l
+	COMMAND ${CMAKE_COMMAND} -E echo "xbt/datadesc/ddt_parse.yy.c"
+
 	#simdag/dax_dtd.c: simdag/dax_dtd.l
 	COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
 	COMMAND ${SED_EXE} -i ${string12} src/simdag/dax_dtd.l
@@ -129,6 +139,7 @@ ADD_CUSTOM_COMMAND(
 					  			${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
 					  			${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.c
 					  			${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
+								${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
 					  			${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
 						)
 
