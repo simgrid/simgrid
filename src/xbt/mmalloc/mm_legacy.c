@@ -352,16 +352,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap
     }
   }
 
-  if(mdp1->saved_errno != mdp2->saved_errno){
-    if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){
-      XBT_DEBUG("Different errno");
-      errors++;
-    }else{
-      return 1;
-    }
-  }
-
-  if(mdp1->version != mdp2->version){
+   if(mdp1->version != mdp2->version){
     if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){
       XBT_DEBUG("Different version of the mmalloc package");
       errors++;

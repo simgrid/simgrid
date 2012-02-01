@@ -161,10 +161,6 @@ struct mdesc {
   /* Some flag bits to keep track of various internal things. */
   unsigned int flags;
 
-  /* If a system call made by the mmalloc package fails, the errno is
-     preserved for future examination. */
-  int saved_errno;
-
   /* Number of info entries.  */
   size_t heapsize;
 
