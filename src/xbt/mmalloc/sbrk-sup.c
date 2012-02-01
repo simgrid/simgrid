@@ -20,13 +20,6 @@ static void *sbrk_morecore(struct mdesc *mdp, int size);
 extern void *sbrk(int size);
 #endif
 
-/* The mmalloc() package can use a single implicit malloc descriptor
-   for mmalloc/mrealloc/mfree operations which do not supply an explicit
-   descriptor.  For these operations, sbrk() is used to obtain more core
-   from the system, or return core.  This allows mmalloc() to provide
-   backwards compatibility with the non-mmap'd version. */
-
-struct mdesc *__mmalloc_default_mdp;
 
 /* Use sbrk() to get more core. */
 

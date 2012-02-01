@@ -13,6 +13,13 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mm_legacy, xbt,
                                 "Logging specific to mm_legacy in mmalloc");
 
+/* The mmalloc() package can use a single implicit malloc descriptor
+   for mmalloc/mrealloc/mfree operations which do not supply an explicit
+   descriptor.  This allows mmalloc() to provide
+   backwards compatibility with the non-mmap'd version. */
+struct mdesc *__mmalloc_default_mdp;
+
+
 static void *__mmalloc_current_heap = NULL;     /* The heap we are currently using. */
 
 #include "xbt_modinter.h"
