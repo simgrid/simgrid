@@ -269,6 +269,7 @@ if [ -n "${KEEP}" ] ; then
   echo ${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
 fi
 ${EXEC} ${SIMOPTS} ${TRACEOPTIONS} ${PLATFORMTMP} ${APPLICATIONTMP}
+status=$?
 
 if [ -z "${KEEP}" ] ; then
    if [ -z "${PLATFORM}" ]; then
@@ -276,3 +277,5 @@ if [ -z "${KEEP}" ] ; then
    fi
    rm ${APPLICATIONTMP}
 fi
+
+exit $status
