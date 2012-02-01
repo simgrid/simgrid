@@ -28,9 +28,9 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
 
   if (size == 0) {
     mfree(mdp, ptr);
-    return (mmalloc(mdp, 0));
+    return mmalloc(mdp, 0);
   } else if (ptr == NULL) {
-    return (mmalloc(mdp, size));
+    return mmalloc(mdp, size);
   }
 
 

@@ -48,15 +48,11 @@ void *malloc(size_t n)
 
 void *calloc(size_t nmemb, size_t size)
 {
-  size_t total_size = nmemb * size;
   xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
 
   LOCK(mdp);
-  void *ret = mmalloc(mdp, total_size);
+  void *ret = mcalloc(mdp, nmemb,size);
   UNLOCK(mdp);
-
-  /* Fill the allocated memory with zeroes to mimic calloc behaviour */
-  memset(ret, '\0', total_size);
 
   return ret;
 }
@@ -67,14 +63,7 @@ void *realloc(void *p, size_t s)
   xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
 
   LOCK(mdp);
-  if (s) {
-    if (p)
-      ret = mrealloc(mdp, p, s);
-    else
-      ret = mmalloc(mdp, s);
-  } else {
-    mfree(mdp, p);
-  }
+  ret = mrealloc(mdp, p, s);
   UNLOCK(mdp);
 
   return ret;
