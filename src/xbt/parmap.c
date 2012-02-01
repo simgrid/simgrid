@@ -479,43 +479,148 @@ static void xbt_parmap_busy_worker_wait(xbt_parmap_t parmap, unsigned round)
 #ifdef SIMGRID_TEST
 #include "xbt.h"
 #include "xbt/ex.h"
+#include "xbt/xbt_os_thread.h"
+#include "xbt/xbt_os_time.h"
+#include "gras_config.h"        /* HAVE_FUTEX_H */
 
 XBT_TEST_SUITE("parmap", "Parallel Map");
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_parmap_unit);
 
-xbt_parmap_t parmap;
+#ifdef HAVE_FUTEX_H
+#define TEST_PARMAP_SKIP_TEST(mode) 0
+#else
+#define TEST_PARMAP_SKIP_TEST(mode) ((mode) == XBT_PARMAP_FUTEX)
+#endif
 
-void fun(void *arg);
+#define TEST_PARMAP_VALIDATE_MODE(mode) \
+  if (TEST_PARMAP_SKIP_TEST(mode)) { xbt_test_skip(); return; } else ((void)0)
 
-void fun(void *arg)
+static void fun_double(void *arg)
 {
-  //XBT_INFO("I'm job %lu", (unsigned long)arg);
+  unsigned *u = arg;
+  *u = 2 * *u + 1;
 }
 
-XBT_TEST_UNIT("basic", test_parmap_basic, "Basic usage")
+/* Check that the computations are correctly done. */
+static void test_parmap_basic(e_xbt_parmap_mode_t mode)
 {
-  xbt_test_add("Create the parmap");
+  unsigned num_workers;
 
-  unsigned long i, j;
-  xbt_dynar_t data = xbt_dynar_new(sizeof(void *), NULL);
+  for (num_workers = 1 ; num_workers <= 16 ; num_workers *= 2) {
+    const unsigned len = 1033;
+    const unsigned num = 5;
+    unsigned *a;
+    xbt_dynar_t data;
+    xbt_parmap_t parmap;
+    unsigned i;
 
-  /* Create the parallel map */
-#ifdef HAVE_FUTEX_H
-  parmap = xbt_parmap_new(10, XBT_PARMAP_FUTEX);
-#else
-  parmap = xbt_parmap_new(10, XBT_PARMAP_BUSY_WAIT);
-#endif
-  for (j = 0; j < 100; j++) {
-    xbt_dynar_push_as(data, void *, (void *)j);
+    xbt_test_add("Basic parmap usage (%u workers)", num_workers);
+
+    TEST_PARMAP_VALIDATE_MODE(mode);
+    parmap = xbt_parmap_new(num_workers, mode);
+
+    a = xbt_malloc(len * sizeof *a);
+    data = xbt_dynar_new(sizeof a, NULL);
+    for (i = 0; i < len; i++) {
+      a[i] = i;
+      xbt_dynar_push_as(data, void *, &a[i]);
+    }
+
+    for (i = 0; i < num; i++)
+      xbt_parmap_apply(parmap, fun_double, data);
+
+    for (i = 0; i < len; i++) {
+      unsigned expected = (1U << num) * (i + 1) - 1;
+      xbt_test_assert(a[i] == expected,
+                      "a[%u]: expected %u, got %u", i, expected, a[i]);
+    }
+
+    xbt_dynar_free(&data);
+    xbt_free(a);
+    xbt_parmap_destroy(parmap);
   }
+}
 
-  for (i = 0; i < 5; i++) {
-    xbt_parmap_apply(parmap, fun, data);
+XBT_TEST_UNIT("basic_posix", test_parmap_basic_posix, "Basic usage: posix")
+{
+  test_parmap_basic(XBT_PARMAP_POSIX);
+}
+
+XBT_TEST_UNIT("basic_futex", test_parmap_basic_futex, "Basic usage: futex")
+{
+  test_parmap_basic(XBT_PARMAP_FUTEX);
+}
+
+XBT_TEST_UNIT("basic_busy_wait", test_parmap_basic_busy_wait, "Basic usage: busy_wait")
+{
+  test_parmap_basic(XBT_PARMAP_BUSY_WAIT);
+}
+
+static void fun_get_id(void *arg)
+{
+  *(uintptr_t *)arg = (uintptr_t)xbt_os_thread_self();
+  xbt_os_sleep(0.5);
+}
+
+static int fun_compare(const void *pa, const void *pb)
+{
+  uintptr_t a = *(uintptr_t *)pa;
+  uintptr_t b = *(uintptr_t *)pb;
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+/* Check that all threads are working. */
+static void test_parmap_extended(e_xbt_parmap_mode_t mode)
+{
+  unsigned num_workers;
+
+  for (num_workers = 1 ; num_workers <= 16 ; num_workers *= 2) {
+    const unsigned len = 2 * num_workers;
+    uintptr_t *a;
+    xbt_parmap_t parmap;
+    xbt_dynar_t data;
+    unsigned i;
+    unsigned count;
+
+    xbt_test_add("Extended parmap usage (%u workers)", num_workers);
+
+    TEST_PARMAP_VALIDATE_MODE(mode);
+    parmap = xbt_parmap_new(num_workers, mode);
+
+    a = xbt_malloc(len * sizeof *a);
+    data = xbt_dynar_new(sizeof a, NULL);
+    for (i = 0; i < len; i++)
+      xbt_dynar_push_as(data, void *, &a[i]);
+
+    xbt_parmap_apply(parmap, fun_get_id, data);
+
+    qsort(a, len, sizeof a[0], fun_compare);
+    count = 1;
+    for (i = 1; i < len; i++)
+      if (a[i] != a[i - 1])
+        count++;
+    xbt_test_assert(count == num_workers,
+                    "only %u/%u threads did some work", count, num_workers);
+
+    xbt_dynar_free(&data);
+    xbt_free(a);
+    xbt_parmap_destroy(parmap);
   }
+}
 
-  /* Destroy the parmap */
-  xbt_parmap_destroy(parmap);
-  xbt_dynar_free(&data);
+XBT_TEST_UNIT("extended_posix", test_parmap_extended_posix, "Extended usage: posix")
+{
+  test_parmap_extended(XBT_PARMAP_POSIX);
+}
+
+XBT_TEST_UNIT("extended_futex", test_parmap_extended_futex, "Extended usage: futex")
+{
+  test_parmap_extended(XBT_PARMAP_FUTEX);
+}
+
+XBT_TEST_UNIT("extended_busy_wait", test_parmap_extended_busy_wait, "Extended usage: busy_wait")
+{
+  test_parmap_extended(XBT_PARMAP_BUSY_WAIT);
 }
 
 #endif /* SIMGRID_TEST */
