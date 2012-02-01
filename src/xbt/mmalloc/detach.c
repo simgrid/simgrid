@@ -14,6 +14,20 @@
 #include <sys/types.h>
 #include "mmprivate.h"
 
+/* Terminate access to a mmalloc managed region, but do not free its content.
+ * This is for example useful for the base region where ldl stores its data
+ *   because it leaves the place after us.
+ */
+void mmalloc_detach_no_free(void *md)
+{
+  struct mdesc *mdp = md;
+
+  if(--mdp->refcount == 0){
+    LOCK(mdp) ;
+    sem_destroy(&mdp->sem);
+  }
+}
+
 /* Terminate access to a mmalloc managed region by unmapping all memory pages
    associated with the region, and closing the file descriptor if it is one
    that we opened.
@@ -28,16 +42,6 @@
    region we are about to unmap, so we first make a local copy of it on the
    stack and use the copy. */
 
-void mmalloc_pre_detach(void *md)
-{
-  struct mdesc *mdp = md;
-
-  if(--mdp->refcount == 0){
-    LOCK(mdp) ;
-    sem_destroy(&mdp->sem);
-  }
-}
-
 void *mmalloc_detach(void *md)
 {
   struct mdesc *mdp = (struct mdesc *)md;
@@ -51,7 +55,7 @@ void *mmalloc_detach(void *md)
 
     mdptemp->next_mdesc = mdp->next_mdesc;
 
-    mmalloc_pre_detach(md);
+    mmalloc_detach_no_free(md);
     mtemp = *(struct mdesc *) md;
 
     /* Now unmap all the pages associated with this region by asking for a

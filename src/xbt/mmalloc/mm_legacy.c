@@ -172,7 +172,7 @@ void mmalloc_postexit(void)
 {
   /* Do not detach the default mdp or ldl won't be able to free the memory it allocated since we're in memory */
   //  mmalloc_detach(__mmalloc_default_mdp);
-  mmalloc_pre_detach(__mmalloc_default_mdp);
+  mmalloc_detach_no_free(__mmalloc_default_mdp);
 }
 
 int mmalloc_compare_heap(void *h1, void *h2, void *std_heap_addr){

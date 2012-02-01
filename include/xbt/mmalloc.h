@@ -39,14 +39,12 @@ extern void *mvalloc(void *md, size_t size);
 
 extern void *mmalloc_attach(int fd, void *baseaddr);
 
-extern void mmalloc_pre_detach(void *md);
+extern void mmalloc_detach_no_free(void *md);
 
 extern void *mmalloc_detach(void *md);
 
 /* return the heap used when NULL is passed as first argument to any mm* function */
 extern void *mmalloc_get_default_md(void);
-
-extern int mmtrace(void);
 
 extern void *mmalloc_findbase(int size);
 
