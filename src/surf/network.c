@@ -373,7 +373,7 @@ void net_action_recycle(surf_action_t action)
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-static int net_get_link_latency_limited(surf_action_t action)
+int net_get_link_latency_limited(surf_action_t action)
 {
   return action->latency_limited;
 }
