@@ -34,12 +34,6 @@ extern void *mmemalign(void *md, size_t alignment, size_t size);
 
 extern void *mvalloc(void *md, size_t size);
 
-/* Activate a standard collection of debugging hooks.  */
-
-extern int mmcheck(void *md, void (*func) (void));
-
-extern int mmcheckf(void *md, void (*func) (void), int force);
-
 /* Pick up the current statistics. (see FIXME elsewhere) */
 
 extern struct mstats mmstats(void *md);

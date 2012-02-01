@@ -180,32 +180,6 @@ struct mdesc {
      needs to be maintained on a per-process basis. */
   void *(*morecore) (struct mdesc * mdp, int size);
 
-  /* Pointer to the function that causes an abort when the memory checking
-     features are activated.  By default this is set to abort(), but can
-     be set to another function by the application using mmalloc().
-
-     FIXME:  For mapped regions shared by more than one process, this
-     needs to be maintained on a per-process basis. */
-  void (*abortfunc) (void);
-
-  /* Debugging hook for free.
-
-     FIXME:  For mapped regions shared by more than one process, this
-     needs to be maintained on a per-process basis. */
-  void (*mfree_hook) (void *mdp, void *ptr);
-
-  /* Debugging hook for `malloc'.
-
-     FIXME:  For mapped regions shared by more than one process, this
-     needs to be maintained on a per-process basis. */
-  void *(*mmalloc_hook) (void *mdp, size_t size);
-
-  /* Debugging hook for realloc.
-
-     FIXME:  For mapped regions shared by more than one process, this
-     needs to be maintained on a per-process basis. */
-  void *(*mrealloc_hook) (void *mdp, void *ptr, size_t size);
-
   /* Number of info entries.  */
   size_t heapsize;
 

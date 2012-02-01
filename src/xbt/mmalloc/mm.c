@@ -18,7 +18,6 @@
 #include "mcalloc.c"
 #include "mfree.c"
 #include "mmalloc.c"
-#include "mmcheck.c"
 #include "mmemalign.c"
 #include "mmstats.c"
 #include "mrealloc.c"

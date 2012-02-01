@@ -197,9 +197,6 @@ static struct mdesc *reuse(int fd)
       sem_init(&mdp->sem, 1, 1);
       mdp->refcount++;
     }
-    if (mdp->mfree_hook != NULL) {
-      mmcheckf((void *) mdp, (void (*)(void)) NULL, 1);
-    }
   }
   
   /* Add the new heap to the linked list of heaps attached by mmalloc */  

@@ -187,10 +187,6 @@ void mfree(void *md, void *ptr)
         break;
       }
     }
-    if (mdp->mfree_hook != NULL) {
-      mdp->mfree_hook(mdp, ptr);
-    } else {
-      __mmalloc_free(mdp, ptr);
-    }
+    __mmalloc_free(mdp, ptr);
   }
 }

@@ -118,10 +118,6 @@ void *mmalloc(void *md, size_t size)
   mdp = MD_TO_MDP(md);
 //  printf("(%s) Mallocing %d bytes on %p (default: %p)...",xbt_thread_self_name(),size,mdp,__mmalloc_default_mdp);fflush(stdout);
 
-  if (mdp->mmalloc_hook != NULL) {
-    return mdp->mmalloc_hook(md, size);
-  }
-
   if (!(mdp->flags & MMALLOC_INITIALIZED)) {
     if (!initialize(mdp)) {
       return (NULL);

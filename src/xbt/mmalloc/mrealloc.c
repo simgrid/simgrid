@@ -9,6 +9,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <string.h>             /* Prototypes for memcpy, memmove, memset, etc */
+#include <stdlib.h> /* abort */
 
 #include "mmprivate.h"
 
@@ -39,14 +40,10 @@ void *mrealloc(void *md, void *ptr, size_t size)
 
   if ((char *) ptr < (char *) mdp->heapbase || BLOCK(ptr) > mdp->heapsize) {
     printf
-        ("FIXME. Ouch, this pointer is not mine. I will malloc it instead of reallocing it. (please report this bug)\n");
+        ("FIXME. Ouch, this pointer is not mine, refusing to proceed (another solution would be to malloc it instead of reallocing it, see source code)\n");
     result = mmalloc(md, size);
     abort();
     return result;
-  }
-
-  if (mdp->mrealloc_hook != NULL) {
-    return mdp->mrealloc_hook(md, ptr, size);
   }
 
   block = BLOCK(ptr);
