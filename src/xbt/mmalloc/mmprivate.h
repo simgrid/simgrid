@@ -200,8 +200,6 @@ struct mdesc {
 
 };
 
-int mmalloc_compare_heap(void *h1, void *h2, void *std_heap_addr);
-
 int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap_addr);
 
 void mmalloc_display_info(void *h);
@@ -225,12 +223,6 @@ extern struct mdesc *__mmalloc_default_mdp;
 
 extern struct mdesc *__mmalloc_create_default_mdp(void);
 
-/* Grow or shrink a contiguous mapped region using mmap().
-   Works much like sbrk(), only faster */
-
-extern void *__mmalloc_mmap_morecore(struct mdesc *mdp, int size);
-
-
 /* Remap a mmalloc region that was previously mapped. */
 
 extern void *__mmalloc_remap_core(struct mdesc *mdp);
@@ -240,28 +232,11 @@ extern void *__mmalloc_remap_core(struct mdesc *mdp);
     like sbrk(), but using mmap(). */
 extern void *mmorecore(struct mdesc *mdp, int size);
 
-/* Macro to convert from a user supplied malloc descriptor to pointer to the
-   internal malloc descriptor.  If the user supplied descriptor is NULL, then
-   use the default internal version, initializing it if necessary.  Otherwise
-   just cast the user supplied version (which is void *) to the proper type
-   (struct mdesc *). */
+/* Thread-safety (if the sem is already created) FIXME: KILLIT*/
+#define LOCK(mdp)                                        \
+  sem_wait(&mdp->sem)
 
-#define MD_TO_MDP(md) \
-  ((md) == NULL \
-   ? __mmalloc_default_mdp  \
-   : (struct mdesc *) (md))
-
-/* Thread-safety (if the sem is already created)*/
-#define LOCK(md)                                        \
-  do {\
-    struct mdesc *lock_local_mdp = MD_TO_MDP(md);       \
-    sem_wait(&lock_local_mdp->sem);     \
-  } while (0)
-
-#define UNLOCK(md)                                        \
-  do {                                                  \
-    struct mdesc *unlock_local_mdp = MD_TO_MDP(md);       \
-    sem_post(&unlock_local_mdp->sem);     \
-  } while (0)
+#define UNLOCK(mdp)                                        \
+    sem_post(&mdp->sem)
 
 #endif                          /* __MMPRIVATE_H */

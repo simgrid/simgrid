@@ -152,13 +152,11 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
 
 /* Return memory to the heap.  */
 
-void mfree(void *md, void *ptr)
+void mfree(xbt_mheap_t mdp, void *ptr)
 {
-  struct mdesc *mdp;
   register struct alignlist *l;
 
   if (ptr != NULL) {
-    mdp = MD_TO_MDP(md);
     for (l = mdp->aligned_blocks; l != NULL; l = l->next) {
       if (l->aligned == ptr) {
         l->aligned = NULL;      /* Mark the slot in the list as free. */

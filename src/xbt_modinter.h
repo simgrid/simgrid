@@ -31,7 +31,7 @@ void xbt_trp_postexit(void);
 void xbt_datadesc_preinit(void);
 void xbt_datadesc_postexit(void);
 
-void mmalloc_preinit(void);
+void *mmalloc_preinit(void);
 void mmalloc_postexit(void);
 
 

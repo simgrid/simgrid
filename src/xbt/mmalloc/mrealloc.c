@@ -20,28 +20,26 @@
    new region.  This module has incestuous knowledge of the
    internals of both mfree and mmalloc. */
 
-void *mrealloc(void *md, void *ptr, size_t size)
+void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
 {
-  struct mdesc *mdp;
   void *result;
   int type;
   size_t block, blocks, oldlimit;
 
   if (size == 0) {
-    mfree(md, ptr);
-    return (mmalloc(md, 0));
+    mfree(mdp, ptr);
+    return (mmalloc(mdp, 0));
   } else if (ptr == NULL) {
-    return (mmalloc(md, size));
+    return (mmalloc(mdp, size));
   }
 
-  mdp = MD_TO_MDP(md);
 
   //printf("(%s)realloc %p to %d...",xbt_thread_self_name(),ptr,(int)size);
 
   if ((char *) ptr < (char *) mdp->heapbase || BLOCK(ptr) > mdp->heapsize) {
     printf
         ("FIXME. Ouch, this pointer is not mine, refusing to proceed (another solution would be to malloc it instead of reallocing it, see source code)\n");
-    result = mmalloc(md, size);
+    result = mmalloc(mdp, size);
     abort();
     return result;
   }
@@ -54,10 +52,10 @@ void *mrealloc(void *md, void *ptr, size_t size)
     /* Maybe reallocate a large block to a small fragment.  */
     if (size <= BLOCKSIZE / 2) {
       //printf("(%s) alloc large block...",xbt_thread_self_name());
-      result = mmalloc(md, size);
+      result = mmalloc(mdp, size);
       if (result != NULL) {
         memcpy(result, ptr, size);
-        mfree(md, ptr);
+        mfree(mdp, ptr);
         return (result);
       }
     }
@@ -73,7 +71,7 @@ void *mrealloc(void *md, void *ptr, size_t size)
           = mdp->heapinfo[block].busy.info.block.size - blocks;
       mdp->heapinfo[block].busy.info.block.size = blocks;
       mdp->heapinfo[block].busy.info.block.busy_size = size;
-      mfree(md, ADDRESS(block + blocks));
+      mfree(mdp, ADDRESS(block + blocks));
       result = ptr;
     } else if (blocks == mdp->heapinfo[block].busy.info.block.size) {
       /* No size change necessary.  */
@@ -86,11 +84,11 @@ void *mrealloc(void *md, void *ptr, size_t size)
       /* Prevent free from actually returning memory to the system.  */
       oldlimit = mdp->heaplimit;
       mdp->heaplimit = 0;
-      mfree(md, ptr);
+      mfree(mdp, ptr);
       mdp->heaplimit = oldlimit;
-      result = mmalloc(md, size);
+      result = mmalloc(mdp, size);
       if (result == NULL) {
-        mmalloc(md, blocks * BLOCKSIZE);
+        mmalloc(mdp, blocks * BLOCKSIZE);
         return (NULL);
       }
       if (ptr != result)
@@ -110,12 +108,12 @@ void *mrealloc(void *md, void *ptr, size_t size)
          and copy the lesser of the new size and the old. */
       //printf("(%s) new size is different...",xbt_thread_self_name());
 
-      result = mmalloc(md, size);
+      result = mmalloc(mdp, size);
       if (result == NULL)
         return (NULL);
 
       memcpy(result, ptr, MIN(size, (size_t) 1 << type));
-      mfree(md, ptr);
+      mfree(mdp, ptr);
     }
     break;
   }

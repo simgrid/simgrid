@@ -18,7 +18,7 @@
  * This is for example useful for the base region where ldl stores its data
  *   because it leaves the place after us.
  */
-void mmalloc_detach_no_free(void *md)
+void mmalloc_detach_no_free(xbt_mheap_t md)
 {
   struct mdesc *mdp = md;
 
@@ -42,9 +42,8 @@ void mmalloc_detach_no_free(void *md)
    region we are about to unmap, so we first make a local copy of it on the
    stack and use the copy. */
 
-void *mmalloc_detach(void *md)
+void *mmalloc_detach(xbt_mheap_t mdp)
 {
-  struct mdesc *mdp = (struct mdesc *)md;
   struct mdesc mtemp, *mdptemp;
 
   if (mdp != NULL) {
@@ -55,8 +54,8 @@ void *mmalloc_detach(void *md)
 
     mdptemp->next_mdesc = mdp->next_mdesc;
 
-    mmalloc_detach_no_free(md);
-    mtemp = *(struct mdesc *) md;
+    mmalloc_detach_no_free(mdp);
+    mtemp = *mdp;
 
     /* Now unmap all the pages associated with this region by asking for a
        negative increment equal to the current size of the region. */
@@ -66,14 +65,14 @@ void *mmalloc_detach(void *md)
         NULL) {
       /* Deallocating failed.  Update the original malloc descriptor
          with any changes */
-      *(struct mdesc *) md = mtemp;
+      *mdp = mtemp;
     } else {
       if (mtemp.flags & MMALLOC_DEVZERO) {
         close(mtemp.fd);
       }
-      md = NULL;
+      mdp = NULL;
     }
   }
 
-  return (md);
+  return (mdp);
 }

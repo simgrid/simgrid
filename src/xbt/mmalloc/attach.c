@@ -68,10 +68,10 @@ static struct mdesc *reuse(int fd);
 
    On failure returns NULL. */
 
-void *mmalloc_attach(int fd, void *baseaddr)
+xbt_mheap_t mmalloc_attach(int fd, void *baseaddr)
 {
   struct mdesc mtemp;
-  struct mdesc *mdp;
+  xbt_mheap_t mdp;
   void *mbase;
   struct stat sbuf;
 
@@ -143,8 +143,8 @@ void *mmalloc_attach(int fd, void *baseaddr)
       mdp->next_mdesc = (struct mdesc *)mbase;
     UNLOCK(mdp);
   }
-  
-  return ((void *) mbase);
+
+  return mbase;
 }
 
 /* Given an valid file descriptor on an open file, test to see if that file

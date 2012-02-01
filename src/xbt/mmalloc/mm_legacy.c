@@ -17,19 +17,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mm_legacy, xbt,
    for mmalloc/mrealloc/mfree operations which do not supply an explicit
    descriptor.  This allows mmalloc() to provide
    backwards compatibility with the non-mmap'd version. */
-struct mdesc *__mmalloc_default_mdp;
+xbt_mheap_t __mmalloc_default_mdp = NULL;
 
 
-static void *__mmalloc_current_heap = NULL;     /* The heap we are currently using. */
+static xbt_mheap_t __mmalloc_current_heap = NULL;     /* The heap we are currently using. */
 
 #include "xbt_modinter.h"
 
-void *mmalloc_get_current_heap(void)
+xbt_mheap_t mmalloc_get_current_heap(void)
 {
   return __mmalloc_current_heap;
 }
 
-void mmalloc_set_current_heap(void *new_heap)
+void mmalloc_set_current_heap(xbt_mheap_t new_heap)
 {
   __mmalloc_current_heap = new_heap;
 }
@@ -37,11 +37,8 @@ void mmalloc_set_current_heap(void *new_heap)
 #ifdef MMALLOC_WANT_OVERIDE_LEGACY
 void *malloc(size_t n)
 {
-  void *mdp = __mmalloc_current_heap;
-#ifdef HAVE_MMAP
-  if (!mdp)
-    mmalloc_preinit();
-#endif
+  xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
+
   LOCK(mdp);
   void *ret = mmalloc(mdp, n);
   UNLOCK(mdp);
@@ -52,11 +49,8 @@ void *malloc(size_t n)
 void *calloc(size_t nmemb, size_t size)
 {
   size_t total_size = nmemb * size;
-  void *mdp = __mmalloc_current_heap;
-#ifdef HAVE_MMAP
-  if (!mdp)
-    mmalloc_preinit();
-#endif
+  xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
+
   LOCK(mdp);
   void *ret = mmalloc(mdp, total_size);
   UNLOCK(mdp);
@@ -70,11 +64,8 @@ void *calloc(size_t nmemb, size_t size)
 void *realloc(void *p, size_t s)
 {
   void *ret = NULL;
-  void *mdp = __mmalloc_current_heap;
-#ifdef HAVE_MMAP
-  if (!mdp)
-    mmalloc_preinit();
-#endif
+  xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
+
   LOCK(mdp);
   if (s) {
     if (p)
@@ -91,10 +82,8 @@ void *realloc(void *p, size_t s)
 
 void free(void *p)
 {
-  void *mdp = __mmalloc_current_heap;
-#ifdef HAVE_GTNETS
-  if(!mdp) return;
-#endif
+  xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
+
   LOCK(mdp);
   mfree(mdp, p);
   UNLOCK(mdp);
@@ -108,7 +97,7 @@ void free(void *p)
  * valgrind. */
 #define HEAP_OFFSET   (128UL<<20)
 
-void *mmalloc_get_default_md(void)
+xbt_mheap_t mmalloc_get_default_md(void)
 {
   xbt_assert(__mmalloc_default_mdp);
   return __mmalloc_default_mdp;
@@ -116,7 +105,7 @@ void *mmalloc_get_default_md(void)
 
 static void mmalloc_fork_prepare(void)
 {
-  struct mdesc* mdp = NULL;
+  xbt_mheap_t mdp = NULL;
   if ((mdp =__mmalloc_default_mdp)){
     while(mdp){
       LOCK(mdp);
@@ -130,7 +119,7 @@ static void mmalloc_fork_prepare(void)
 
 static void mmalloc_fork_parent(void)
 {
-  struct mdesc* mdp = NULL;
+  xbt_mheap_t mdp = NULL;
   if ((mdp =__mmalloc_default_mdp)){
     while(mdp){
       if(mdp->fd < 0)
@@ -152,10 +141,10 @@ static void mmalloc_fork_child(void)
 }
 
 /* Initialize the default malloc descriptor. */
-void mmalloc_preinit(void)
+void *mmalloc_preinit(void)
 {
   int res;
-  if (!__mmalloc_default_mdp) {
+  if (__mmalloc_default_mdp == NULL) {
     unsigned long mask = ~((unsigned long)getpagesize() - 1);
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = mmalloc_attach(-1, addr);
@@ -166,6 +155,8 @@ void mmalloc_preinit(void)
       THROWF(system_error,0,"xbt_os_thread_atfork() failed: return value %d",res);
   }
   xbt_assert(__mmalloc_default_mdp != NULL);
+
+  return __mmalloc_default_mdp;
 }
 
 void mmalloc_postexit(void)
@@ -175,18 +166,14 @@ void mmalloc_postexit(void)
   mmalloc_detach_no_free(__mmalloc_default_mdp);
 }
 
-int mmalloc_compare_heap(void *h1, void *h2, void *std_heap_addr){
+int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void *std_heap_addr){
 
-  if(h1 == NULL && h2 == NULL){
+  if(mdp1 == NULL && mdp2 == NULL){
     XBT_DEBUG("Malloc descriptors null");
     return 0;
   }
 
   /* Heapstats */
-
-  struct mdesc *mdp1, *mdp2;
-  mdp1 = MD_TO_MDP(h1);
-  mdp2 = MD_TO_MDP(h2);
 
   int errors = mmalloc_compare_mdesc(mdp1, mdp2, std_heap_addr);
 
@@ -558,8 +545,17 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap
 }
 
  
-void mmalloc_display_info_heap(void *h){
+void mmalloc_display_info_heap(xbt_mheap_t h){
 
 }  
+
+/* Useless prototype to make gcc happy */
+void *valloc(size_t size);
+
+void *valloc(size_t size)
+{ //FIXME: won't work
+  return mvalloc(NULL, size);
+}
+
   
 

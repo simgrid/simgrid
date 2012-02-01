@@ -15,7 +15,7 @@
 /* Allocate an array of NMEMB elements each SIZE bytes long.
    The entire array is initialized to zeros.  */
 
-void *mcalloc(void *md, register size_t nmemb, register size_t size)
+void *mcalloc(xbt_mheap_t md, register size_t nmemb, register size_t size)
 {
   register void *result;
 

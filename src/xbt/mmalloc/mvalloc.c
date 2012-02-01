@@ -21,19 +21,12 @@ static size_t cache_pagesize;
 extern int getpagesize PARAMS((void));
 #endif
 
-void *mvalloc(void *md, size_t size)
+void *mvalloc(xbt_mheap_t mdp, size_t size)
 {
   if (cache_pagesize == 0) {
     cache_pagesize = getpagesize();
   }
 
-  return (mmemalign(md, cache_pagesize, size));
+  return (mmemalign(mdp, cache_pagesize, size));
 }
 
-/* Useless prototype to make gcc happy */
-void *valloc(size_t size);
-
-void *valloc(size_t size)
-{
-  return mvalloc(NULL, size);
-}

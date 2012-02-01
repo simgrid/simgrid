@@ -100,9 +100,8 @@ static void *morecore(struct mdesc *mdp, size_t size)
 
 /* Allocate memory from the heap.  */
 
-void *mmalloc(void *md, size_t size)
+void *mmalloc(xbt_mheap_t mdp, size_t size)
 {
-  struct mdesc *mdp;
   void *result;
   size_t block, blocks, lastblocks, start;
   register size_t i;
@@ -115,7 +114,6 @@ void *mmalloc(void *md, size_t size)
   if (size == 0)
     size = 1;
 
-  mdp = MD_TO_MDP(md);
 //  printf("(%s) Mallocing %d bytes on %p (default: %p)...",xbt_thread_self_name(),size,mdp,__mmalloc_default_mdp);fflush(stdout);
 
   if (!(mdp->flags & MMALLOC_INITIALIZED)) {
@@ -160,7 +158,7 @@ void *mmalloc(void *md, size_t size)
       /* No free fragments of the desired size, so get a new block
          and break it into fragments, returning the first.  */
       //printf("(%s) No free fragment...",xbt_thread_self_name());
-      result = mmalloc(md, BLOCKSIZE);
+      result = mmalloc(mdp, BLOCKSIZE);
       //printf("(%s) Fragment: %p...",xbt_thread_self_name(),result);
       if (result == NULL) {
         return (NULL);
