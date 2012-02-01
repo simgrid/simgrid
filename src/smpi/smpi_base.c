@@ -65,7 +65,8 @@ static MPI_Request build_request(void *buf, int count,
 
 static void smpi_mpi_request_free_voidp(void* request)
 {
-  smpi_mpi_request_free(request);
+  MPI_Request req = request;
+  smpi_mpi_request_free(&req);
 }
 
 /* MPI Low level calls */
