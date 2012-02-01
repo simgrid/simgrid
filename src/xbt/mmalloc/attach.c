@@ -49,7 +49,7 @@ static struct mdesc *reuse(int fd);
 
    If the open file corresponding to FD is from a previous use of
    mmalloc and passes some basic sanity checks to ensure that it is
-   compatible with the current mmalloc package, then it's data is
+   compatible with the current mmalloc package, then its data is
    mapped in and is immediately accessible at the same addresses in
    the current process as the process that created the file (ignoring
    the BASEADDR parameter).
@@ -63,9 +63,8 @@ static struct mdesc *reuse(int fd);
 
    On success, returns a "malloc descriptor" which is used in subsequent
    calls to other mmalloc package functions.  It is explicitly "void *"
-   ("char *" for systems that don't fully support void) so that users
-   of the package don't have to worry about the actual implementation
-   details.
+   so that users of the package don't have to worry about the actual
+   implementation details.
 
    On failure returns NULL. */
 
