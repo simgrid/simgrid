@@ -25,5 +25,4 @@
 #include "mmap-sup.c"
 #include "attach.c"
 #include "detach.c"
-#include "sbrk-sup.c"
 #include "mm_legacy.c"
