@@ -19,7 +19,6 @@
 #include "mfree.c"
 #include "mmalloc.c"
 #include "mmemalign.c"
-#include "mmstats.c"
 #include "mrealloc.c"
 #include "mvalloc.c"
 #include "mmorecore.c"

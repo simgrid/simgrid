@@ -33,13 +33,6 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
   type = mdp->heapinfo[block].busy.type;
   switch (type) {
   case 0:
-    /* Get as many statistics as early as we can.  */
-    mdp->heapstats.chunks_used--;
-    mdp->heapstats.bytes_used -=
-        mdp->heapinfo[block].busy.info.block.size * BLOCKSIZE;
-    mdp->heapstats.bytes_free +=
-        mdp->heapinfo[block].busy.info.block.size * BLOCKSIZE;
-
     /* Find the free cluster previous to this one in the free list.
        Start searching at the last block referenced; this may benefit
        programs with locality of allocation.  */
@@ -68,7 +61,6 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[block].free.prev = i;
       mdp->heapinfo[i].free.next = block;
       mdp->heapinfo[mdp->heapinfo[block].free.next].free.prev = block;
-      mdp->heapstats.chunks_free++;
     }
 
     /* Now that the block is linked in, see if we can coalesce it
@@ -81,7 +73,6 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[block].free.next
           = mdp->heapinfo[mdp->heapinfo[block].free.next].free.next;
       mdp->heapinfo[mdp->heapinfo[block].free.next].free.prev = block;
-      mdp->heapstats.chunks_free--;
     }
 
     /* Now see if we can return stuff to the system.  */
@@ -106,12 +97,6 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
     break;
 
   default:
-    /* Do some of the statistics.  */
-    mdp->heapstats.chunks_used--;
-    mdp->heapstats.bytes_used -= 1 << type;
-    mdp->heapstats.chunks_free++;
-    mdp->heapstats.bytes_free += 1 << type;
-
     /* Get the address of the first free fragment in this block.  */
     prev = (struct list *)
         ((char *) ADDRESS(block) +
@@ -132,12 +117,6 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[block].busy.type = 0;
       mdp->heapinfo[block].busy.info.block.size = 1;
       mdp->heapinfo[block].busy.info.block.busy_size = 0;
-
-      /* Keep the statistics accurate.  */
-      mdp->heapstats.chunks_used++;
-      mdp->heapstats.bytes_used += BLOCKSIZE;
-      mdp->heapstats.chunks_free -= BLOCKSIZE >> type;
-      mdp->heapstats.bytes_free -= BLOCKSIZE;
 
       mfree((void *) mdp, (void *) ADDRESS(block));
     } else if (mdp->heapinfo[block].busy.info.frag.nfree != 0) {

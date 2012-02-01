@@ -118,20 +118,6 @@ struct list {
   struct list *prev;
 };
 
-/* Statistics available to the user.
-   FIXME:  By design, the internals of the malloc package are no longer
-   exported to the user via an include file, so access to this data needs
-   to be via some other mechanism, such as mmstat_<something> where the
-   return value is the <something> the user is interested in. */
-
-struct mstats {
-  size_t bytes_total;           /* Total size of the heap. */
-  size_t chunks_used;           /* Chunks allocated by the user. */
-  size_t bytes_used;            /* Byte total of user-allocated chunks. */
-  size_t chunks_free;           /* Chunks in the free list. */
-  size_t bytes_free;            /* Byte total of chunks in the free list. */
-};
-
 /* Internal structure that defines the format of the malloc-descriptor.
    This gets written to the base address of the region that mmalloc is
    managing, and thus also becomes the file header for the mapped file,
@@ -179,10 +165,6 @@ struct mdesc {
   /* Table indexed by block number giving per-block information.  */
 
   malloc_info *heapinfo;
-
-  /* Instrumentation.  */
-
-  struct mstats heapstats;
 
   /* Free list headers for each fragment size.  */
   /* Free lists for each fragment size.  */

@@ -34,10 +34,6 @@ extern void *mmemalign(void *md, size_t alignment, size_t size);
 
 extern void *mvalloc(void *md, size_t size);
 
-/* Pick up the current statistics. (see FIXME elsewhere) */
-
-extern struct mstats mmstats(void *md);
-
 extern void *mmalloc_attach(int fd, void *baseaddr);
 
 extern void mmalloc_pre_detach(void *md);
@@ -47,9 +43,6 @@ extern void *mmalloc_detach(void *md);
 extern int mmalloc_setkey(void *md, int keynum, void *key);
 
 extern void *mmalloc_getkey(void *md, int keynum);
-
-// FIXME: this function is not implemented anymore?
-//extern int mmalloc_errno (void* md);
 
 /* return the heap used when NULL is passed as first argument to any mm* function */
 extern void *mmalloc_get_default_md(void);

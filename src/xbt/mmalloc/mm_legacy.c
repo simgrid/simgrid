@@ -184,54 +184,13 @@ int mmalloc_compare_heap(void *h1, void *h2, void *std_heap_addr){
 
   /* Heapstats */
 
-  int errors = 0;
-
-  struct mstats ms1 = mmstats(h1);
-  struct mstats ms2 = mmstats(h2);
-
-  if(ms1.chunks_used !=  ms2.chunks_used){
-    if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){
-      XBT_DEBUG("Different chunks allocated by the user : %zu - %zu", ms1.chunks_used, ms2.chunks_used);
-      errors++;
-    }else{
-      return 1;
-    }
-  }
-
-  if(ms1.bytes_used !=  ms2.bytes_used){
-    if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){
-      XBT_DEBUG("Different byte total of user-allocated chunks : %zu - %zu", ms1.bytes_used, ms2.bytes_used);
-      errors++;
-    }else{
-      return 1;
-    }
-  }
-
-  if(ms1.bytes_free !=  ms2.bytes_free){
-    if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){
-      XBT_DEBUG("Different byte total of chunks in the free list : %zu - %zu", ms1.bytes_free, ms2.bytes_free);
-      errors++;
-    }else{
-      return 1;
-    }
-  }
-
-  if(ms1.chunks_free !=  ms2.chunks_free){
-    if(XBT_LOG_ISENABLED(xbt_mm_legacy, xbt_log_priority_debug)){
-      XBT_DEBUG("Different chunks in the free list : %zu - %zu", ms1.chunks_free, ms2.chunks_free);
-      errors++;
-    }else{
-      return 1;
-    }
-  }
-
   struct mdesc *mdp1, *mdp2;
   mdp1 = MD_TO_MDP(h1);
   mdp2 = MD_TO_MDP(h2);
 
-  int res = mmalloc_compare_mdesc(mdp1, mdp2, std_heap_addr);
+  int errors = mmalloc_compare_mdesc(mdp1, mdp2, std_heap_addr);
 
-  return ((errors + res ) > 0);
+  return (errors > 0);
 
 }
 

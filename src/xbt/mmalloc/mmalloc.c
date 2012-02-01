@@ -156,11 +156,6 @@ void *mmalloc(void *md, size_t size)
             RESIDUAL(next->next, BLOCKSIZE) >> log;
       }
 
-      /* Update the statistics.  */
-      mdp->heapstats.chunks_used++;
-      mdp->heapstats.bytes_used += 1 << log;
-      mdp->heapstats.chunks_free--;
-      mdp->heapstats.bytes_free -= 1 << log;
     } else {
       /* No free fragments of the desired size, so get a new block
          and break it into fragments, returning the first.  */
@@ -187,10 +182,6 @@ void *mmalloc(void *md, size_t size)
       mdp->heapinfo[block].busy.type = log;
       mdp->heapinfo[block].busy.info.frag.nfree = i - 1;
       mdp->heapinfo[block].busy.info.frag.first = i - 1;
-
-      mdp->heapstats.chunks_free += (BLOCKSIZE >> log) - 1;
-      mdp->heapstats.bytes_free += BLOCKSIZE - (1 << log);
-      mdp->heapstats.bytes_used -= BLOCKSIZE - (1 << log);
     }
   } else {
     /* Large allocation to receive one or more blocks.
@@ -217,7 +208,6 @@ void *mmalloc(void *md, size_t size)
           block = mdp->heapinfo[0].free.prev;
 
           mdp->heapinfo[block].free.size += (blocks - lastblocks);
-          mdp->heapstats.bytes_free += (blocks - lastblocks) * BLOCKSIZE;
           continue;
         }
         result = morecore(mdp, blocks * BLOCKSIZE);
@@ -228,8 +218,6 @@ void *mmalloc(void *md, size_t size)
         mdp->heapinfo[block].busy.type = 0;
         mdp->heapinfo[block].busy.info.block.size = blocks;
 	mdp->heapinfo[block].busy.info.block.busy_size = size;
-        mdp->heapstats.chunks_used++;
-        mdp->heapstats.bytes_used += blocks * BLOCKSIZE;
         return (result);
       }
     }
@@ -256,15 +244,11 @@ void *mmalloc(void *md, size_t size)
           = mdp->heapinfo[block].free.prev;
       mdp->heapinfo[mdp->heapinfo[block].free.prev].free.next
           = mdp->heapindex = mdp->heapinfo[block].free.next;
-      mdp->heapstats.chunks_free--;
     }
 
     mdp->heapinfo[block].busy.type = 0;
     mdp->heapinfo[block].busy.info.block.size = blocks;
     mdp->heapinfo[block].busy.info.block.busy_size = size;
-    mdp->heapstats.chunks_used++;
-    mdp->heapstats.bytes_used += blocks * BLOCKSIZE;
-    mdp->heapstats.bytes_free -= blocks * BLOCKSIZE;
   }
   //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
   return (result);
