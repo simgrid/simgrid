@@ -186,7 +186,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
     t_simdata->isused = 0;
   }
 
-
+  t_simdata->comm = NULL;
   p_simdata->waiting_task = NULL;
 #ifdef HAVE_TRACING
   if (call_end)
