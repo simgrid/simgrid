@@ -165,17 +165,6 @@ struct mdesc {
      preserved for future examination. */
   int saved_errno;
 
-  /* Pointer to the function that is used to get more core, or return core
-     to the system, for requests using this malloc descriptor.  For memory
-     mapped regions, this is the mmap() based routine.  There may also be
-     a single malloc descriptor that points to an sbrk() based routine
-     for systems without mmap() or for applications that call the mmalloc()
-     package with a NULL malloc descriptor.
-
-     FIXME:  For mapped regions shared by more than one process, this
-     needs to be maintained on a per-process basis. */
-  void *(*morecore) (struct mdesc * mdp, int size);
-
   /* Number of info entries.  */
   size_t heapsize;
 
@@ -267,6 +256,11 @@ extern void *__mmalloc_mmap_morecore(struct mdesc *mdp, int size);
 /* Remap a mmalloc region that was previously mapped. */
 
 extern void *__mmalloc_remap_core(struct mdesc *mdp);
+
+/*  Get core for the memory region specified by MDP, using SIZE as the
+    amount to either add to or subtract from the existing region.  Works
+    like sbrk(), but using mmap(). */
+extern void *mmorecore(struct mdesc *mdp, int size);
 
 /* Macro to convert from a user supplied malloc descriptor to pointer to the
    internal malloc descriptor.  If the user supplied descriptor is NULL, then

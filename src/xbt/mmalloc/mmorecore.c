@@ -53,7 +53,7 @@ static size_t pagesize;
     amount to either add to or subtract from the existing region.  Works
     like sbrk(), but using mmap(). */
 
-void *__mmalloc_mmap_morecore(struct mdesc *mdp, int size)
+void *mmorecore(struct mdesc *mdp, int size)
 {
   ssize_t test = 0;
   void *result = NULL;

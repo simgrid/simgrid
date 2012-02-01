@@ -105,7 +105,6 @@ void *mmalloc_attach(int fd, void *baseaddr)
   strncpy(mdp->magic, MMALLOC_MAGIC, MMALLOC_MAGIC_SIZE);
   mdp->headersize = sizeof(mtemp);
   mdp->version = MMALLOC_VERSION;
-  mdp->morecore = __mmalloc_mmap_morecore;
   mdp->fd = fd;
   mdp->base = mdp->breakval = mdp->top = baseaddr;
   mdp->next_mdesc = NULL;
@@ -129,7 +128,7 @@ void *mmalloc_attach(int fd, void *baseaddr)
      fails, then close the file descriptor if it was opened by us, and arrange
      to return a NULL. */
 
-  if ((mbase = mdp->morecore(mdp, sizeof(mtemp))) != NULL) {
+  if ((mbase = mmorecore(mdp, sizeof(mtemp))) != NULL) {
     memcpy(mbase, mdp, sizeof(mtemp));
   } else {
     THROWF(system_error,0,"morecore failed to get some memory!");
@@ -192,7 +191,6 @@ static struct mdesc *reuse(int fd)
   if (__mmalloc_remap_core(&mtemp) == mtemp.base) {
     mdp = (struct mdesc *) mtemp.base;
     mdp->fd = fd;
-    mdp->morecore = __mmalloc_mmap_morecore;
     if(!mdp->refcount){
       sem_init(&mdp->sem, 1, 1);
       mdp->refcount++;

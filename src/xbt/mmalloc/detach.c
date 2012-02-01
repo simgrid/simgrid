@@ -57,7 +57,7 @@ void *mmalloc_detach(void *md)
     /* Now unmap all the pages associated with this region by asking for a
        negative increment equal to the current size of the region. */
 
-    if ((mtemp.morecore(&mtemp,
+    if ((mmorecore(&mtemp,
                         (char *) mtemp.base - (char *) mtemp.breakval)) ==
         NULL) {
       /* Deallocating failed.  Update the original malloc descriptor

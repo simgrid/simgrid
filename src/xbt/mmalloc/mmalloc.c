@@ -27,11 +27,11 @@ static void *align(struct mdesc *mdp, size_t size)
   void *result;
   unsigned long int adj;
 
-  result = mdp->morecore(mdp, size);
+  result = mmorecore(mdp, size);
   adj = RESIDUAL(result, BLOCKSIZE);
   if (adj != 0) {
     adj = BLOCKSIZE - adj;
-    mdp->morecore(mdp, adj);
+    mmorecore(mdp, adj);
     result = (char *) result + adj;
   }
   return (result);
@@ -78,7 +78,7 @@ static void *morecore(struct mdesc *mdp, size_t size)
     }
     newinfo = (malloc_info *) align(mdp, newsize * sizeof(malloc_info));
     if (newinfo == NULL) {
-      mdp->morecore(mdp, -size);
+      mmorecore(mdp, -size);
       return (NULL);
     }
     memset((void *) newinfo, 0, newsize * sizeof(malloc_info));
@@ -209,7 +209,7 @@ void *mmalloc(void *md, size_t size)
         lastblocks = mdp->heapinfo[block].free.size;
         if (mdp->heaplimit != 0 &&
             block + lastblocks == mdp->heaplimit &&
-            mdp->morecore(mdp, 0) == ADDRESS(block + lastblocks) &&
+            mmorecore(mdp, 0) == ADDRESS(block + lastblocks) &&
             (morecore(mdp, (blocks - lastblocks) * BLOCKSIZE)) != NULL) {
           /* Which block we are extending (the `final free
              block' referred to above) might have changed, if

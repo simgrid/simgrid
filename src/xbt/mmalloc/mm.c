@@ -22,7 +22,7 @@
 #include "mmstats.c"
 #include "mrealloc.c"
 #include "mvalloc.c"
-#include "mmap-sup.c"
+#include "mmorecore.c"
 #include "attach.c"
 #include "detach.c"
 #include "mm_legacy.c"
