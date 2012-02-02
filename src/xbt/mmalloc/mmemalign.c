@@ -24,9 +24,9 @@ void *mmemalign(xbt_mheap_t mdp, size_t alignment, size_t size)
           break;
         }
       }
-      if (l == NULL) {
+      if (l == NULL) { /* No empty entry. Create & link a new one */
         l = (struct alignlist *) mmalloc(mdp, sizeof(struct alignlist));
-        if (l == NULL) {
+        if (l == NULL) {  /* malloc error */
           mfree(mdp, result);
           return (NULL);
         }

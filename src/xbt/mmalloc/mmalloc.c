@@ -32,7 +32,8 @@ static void *align(struct mdesc *mdp, size_t size)
    * complete the reservation by also asking for the full lastest block.
    *
    * Also, the returned block is aligned to the end of block (but I've
-   * no fucking idea of why, actually -- http://abstrusegoose.com/432).
+   * no fucking idea of why, actually -- http://abstrusegoose.com/432 --
+   * but not doing so seems to lead to issues).
    */
   adj = RESIDUAL(result, BLOCKSIZE);
   if (adj != 0) {

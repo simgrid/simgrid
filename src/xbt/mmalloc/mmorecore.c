@@ -113,17 +113,15 @@ void *mmorecore(struct mdesc *mdp, int size)
                    MAP_PRIVATE_OR_SHARED(mdp) | MAP_IS_ANONYMOUS(mdp) |
                    MAP_FIXED, MAP_ANON_OR_FD(mdp), foffset);
 
-      if (mapto != (void *) -1/* That's MAP_FAILED */) {
+      if (mapto == (void *) -1/* That's MAP_FAILED */)
+    	  THROWF(system_error,0,"mmap returned MAP_FAILED! error: %s",strerror(errno));
 
-        if (mdp->top == 0)
-          mdp->base = mdp->breakval = mapto;
+      if (mdp->top == 0)
+    	  mdp->base = mdp->breakval = mapto;
 
-        mdp->top = PAGE_ALIGN((char *) mdp->breakval + size);
-        result = (void *) mdp->breakval;
-        mdp->breakval = (char *) mdp->breakval + size;
-      } else {
-	THROWF(system_error,0,"mmap returned MAP_FAILED! error: %s",strerror(errno));
-      }
+      mdp->top = PAGE_ALIGN((char *) mdp->breakval + size);
+      result = (void *) mdp->breakval;
+      mdp->breakval = (char *) mdp->breakval + size;
     } else {
       result = (void *) mdp->breakval;
       mdp->breakval = (char *) mdp->breakval + size;
