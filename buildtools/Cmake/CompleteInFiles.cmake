@@ -327,7 +327,11 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 if(WIN32)
-	set(mcsc_flags "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    if(ARCH_32_BITS)
+    set(mcsc_flags "-D_XBT_WIN32 -D_I_X86_ -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    else(ARCH_32_BITS)
+    set(mcsc_flags "-D_XBT_WIN32 -D_AMD64_ -I${CMAKE_HOME_DIRECTORY}/include/xbt -I${CMAKE_HOME_DIRECTORY}/src/xbt")
+    endif(ARCH_32_BITS)
 endif(WIN32)
 
 IF(CMAKE_CROSSCOMPILING)
