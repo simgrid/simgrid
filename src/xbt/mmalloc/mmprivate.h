@@ -218,14 +218,9 @@ extern void __mmalloc_free(struct mdesc *mdp, void *ptr);
 
 extern struct mdesc *__mmalloc_default_mdp;
 
-/* Initialize the first use of the default malloc descriptor, which uses
-   an sbrk() region. */
-
-extern struct mdesc *__mmalloc_create_default_mdp(void);
-
 /* Remap a mmalloc region that was previously mapped. */
 
-extern void *__mmalloc_remap_core(struct mdesc *mdp);
+extern void *__mmalloc_remap_core(xbt_mheap_t mdp);
 
 /*  Get core for the memory region specified by MDP, using SIZE as the
     amount to either add to or subtract from the existing region.  Works

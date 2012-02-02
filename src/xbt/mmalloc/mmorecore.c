@@ -132,15 +132,12 @@ void *mmorecore(struct mdesc *mdp, int size)
   return (result);
 }
 
-void *__mmalloc_remap_core(struct mdesc *mdp)
+void *__mmalloc_remap_core(xbt_mheap_t mdp)
 {
-  void *base;
-
   /* FIXME:  Quick hack, needs error checking and other attention. */
 
-  base = mmap(mdp->base, (char *) mdp->top - (char *) mdp->base,
+  return mmap(mdp->base, (char*) mdp->top - (char*) mdp->base,
               PROT_READ | PROT_WRITE | PROT_EXEC,
               MAP_PRIVATE_OR_SHARED(mdp) | MAP_FIXED, mdp->fd, 0);
-  return ((void *) base);
 }
 
