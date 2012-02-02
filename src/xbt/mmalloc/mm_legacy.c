@@ -22,8 +22,6 @@ xbt_mheap_t __mmalloc_default_mdp = NULL;
 
 static xbt_mheap_t __mmalloc_current_heap = NULL;     /* The heap we are currently using. */
 
-#include "xbt_modinter.h"
-
 xbt_mheap_t mmalloc_get_current_heap(void)
 {
   return __mmalloc_current_heap;
@@ -79,81 +77,6 @@ void free(void *p)
 }
 #endif
 
-/* Make sure it works with md==NULL */
-
-/* Safety gap from the heap's break address.
- * Try to increase this first if you experience strange errors under
- * valgrind. */
-#define HEAP_OFFSET   (128UL<<20)
-
-xbt_mheap_t mmalloc_get_default_md(void)
-{
-  xbt_assert(__mmalloc_default_mdp);
-  return __mmalloc_default_mdp;
-}
-
-static void mmalloc_fork_prepare(void)
-{
-  xbt_mheap_t mdp = NULL;
-  if ((mdp =__mmalloc_default_mdp)){
-    while(mdp){
-      LOCK(mdp);
-      if(mdp->fd >= 0){
-        mdp->refcount++;
-      }
-      mdp = mdp->next_mdesc;
-    }
-  }
-}
-
-static void mmalloc_fork_parent(void)
-{
-  xbt_mheap_t mdp = NULL;
-  if ((mdp =__mmalloc_default_mdp)){
-    while(mdp){
-      if(mdp->fd < 0)
-        UNLOCK(mdp);
-      mdp = mdp->next_mdesc;
-    }
-  }
-}
-
-static void mmalloc_fork_child(void)
-{
-  struct mdesc* mdp = NULL;
-  if ((mdp =__mmalloc_default_mdp)){
-    while(mdp){
-      UNLOCK(mdp);
-      mdp = mdp->next_mdesc;
-    }
-  }
-}
-
-/* Initialize the default malloc descriptor. */
-void *mmalloc_preinit(void)
-{
-  int res;
-  if (__mmalloc_default_mdp == NULL) {
-    unsigned long mask = ~((unsigned long)getpagesize() - 1);
-    void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
-    __mmalloc_default_mdp = mmalloc_attach(-1, addr);
-    /* Fixme? only the default mdp in protected against forks */
-    res = xbt_os_thread_atfork(mmalloc_fork_prepare,
-			       mmalloc_fork_parent, mmalloc_fork_child);
-    if (res != 0)
-      THROWF(system_error,0,"xbt_os_thread_atfork() failed: return value %d",res);
-  }
-  xbt_assert(__mmalloc_default_mdp != NULL);
-
-  return __mmalloc_default_mdp;
-}
-
-void mmalloc_postexit(void)
-{
-  /* Do not detach the default mdp or ldl won't be able to free the memory it allocated since we're in memory */
-  //  mmalloc_detach(__mmalloc_default_mdp);
-  mmalloc_detach_no_free(__mmalloc_default_mdp);
-}
 
 int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void *std_heap_addr){
 

@@ -21,6 +21,5 @@
 #include "mmemalign.c"
 #include "mrealloc.c"
 #include "mmorecore.c"
-#include "attach.c"
-#include "detach.c"
+#include "mm_module.c"
 #include "mm_legacy.c"
