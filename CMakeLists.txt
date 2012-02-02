@@ -221,7 +221,9 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
 
 ### Setup the distrib
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
+if(NOT WIN32)
+    include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
+endif(NOT WIN32)
 
 ### Pipol compilation
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
