@@ -35,11 +35,6 @@ Boston, MA 02111-1307, USA.  */
 #define SEEK_SET 0
 #endif
 
-
-/* Forward declarations/prototypes for local functions */
-
-static struct mdesc *reuse(int fd);
-
 /* Initialize access to a mmalloc managed region.
 
    If FD is a valid file descriptor for an open file then data for the
@@ -87,8 +82,65 @@ xbt_mheap_t mmalloc_attach(int fd, void *baseaddr)
     if (fstat(fd, &sbuf) < 0)
       return (NULL);
 
-    else if (sbuf.st_size > 0)
-      return ((void *) reuse(fd));
+    else if (sbuf.st_size > 0) {
+    	/* We were given an valid file descriptor on an open file, so try to remap
+    	   it into the current process at the same address to which it was previously
+    	   mapped. It naturally have to pass some sanity checks for that.
+
+    	   Note that we have to update the file descriptor number in the malloc-
+    	   descriptor read from the file to match the current valid one, before
+    	   trying to map the file in, and again after a successful mapping and
+    	   after we've switched over to using the mapped in malloc descriptor
+    	   rather than the temporary one on the stack.
+
+    	   Once we've switched over to using the mapped in malloc descriptor, we
+    	   have to update the pointer to the morecore function, since it almost
+    	   certainly will be at a different address if the process reusing the
+    	   mapped region is from a different executable.
+
+    	   Also note that if the heap being remapped previously used the mmcheckf()
+    	   routines, we need to update the hooks since their target functions
+    	   will have certainly moved if the executable has changed in any way.
+    	   We do this by calling mmcheckf() internally.
+
+    	   Returns a pointer to the malloc descriptor if successful, or NULL if
+    	   unsuccessful for some reason. */
+
+    	  struct mdesc mtemp;
+    	  struct mdesc *mdp = NULL, *mdptemp = NULL;
+
+    	  if (lseek(fd, 0L, SEEK_SET) != 0)
+    	    return NULL;
+    	  if (read(fd, (char *) &mtemp, sizeof(mtemp)) != sizeof(mtemp))
+    	    return NULL;
+    	  if (mtemp.headersize != sizeof(mtemp))
+    	    return NULL;
+    	  if (strcmp(mtemp.magic, MMALLOC_MAGIC) != 0)
+    	    return NULL;
+    	  if (mtemp.version > MMALLOC_VERSION)
+    	    return NULL;
+
+    	  mtemp.fd = fd;
+    	  if (__mmalloc_remap_core(&mtemp) == mtemp.base) {
+    	    mdp = (struct mdesc *) mtemp.base;
+    	    mdp->fd = fd;
+    	    if(!mdp->refcount){
+    	      sem_init(&mdp->sem, 1, 1);
+    	      mdp->refcount++;
+    	    }
+    	  }
+
+    	  /* Add the new heap to the linked list of heaps attached by mmalloc */
+    	  mdptemp = __mmalloc_default_mdp;
+    	  while(mdptemp->next_mdesc)
+    	    mdptemp = mdptemp->next_mdesc;
+
+    	  LOCK(mdptemp);
+    	    mdptemp->next_mdesc = mdp;
+    	  UNLOCK(mdptemp);
+
+    	  return (mdp);
+    }
   }
 
   /* If the user provided NULL BASEADDR then fail */
@@ -148,66 +200,6 @@ xbt_mheap_t mmalloc_attach(int fd, void *baseaddr)
   return mbase;
 }
 
-/* Given an valid file descriptor on an open file, test to see if that file
-   is a valid mmalloc produced file, and if so, attempt to remap it into the
-   current process at the same address to which it was previously mapped.
-
-   Note that we have to update the file descriptor number in the malloc-
-   descriptor read from the file to match the current valid one, before
-   trying to map the file in, and again after a successful mapping and
-   after we've switched over to using the mapped in malloc descriptor 
-   rather than the temporary one on the stack.
-
-   Once we've switched over to using the mapped in malloc descriptor, we
-   have to update the pointer to the morecore function, since it almost
-   certainly will be at a different address if the process reusing the
-   mapped region is from a different executable.
-
-   Also note that if the heap being remapped previously used the mmcheckf()
-   routines, we need to update the hooks since their target functions
-   will have certainly moved if the executable has changed in any way.
-   We do this by calling mmcheckf() internally.
-
-   Returns a pointer to the malloc descriptor if successful, or NULL if
-   unsuccessful for some reason. */
-
-static struct mdesc *reuse(int fd)
-{
-  struct mdesc mtemp;
-  struct mdesc *mdp = NULL, *mdptemp = NULL;
-
-  if (lseek(fd, 0L, SEEK_SET) != 0)
-    return NULL;
-  if (read(fd, (char *) &mtemp, sizeof(mtemp)) != sizeof(mtemp))
-    return NULL;
-  if (mtemp.headersize != sizeof(mtemp))
-    return NULL;
-  if (strcmp(mtemp.magic, MMALLOC_MAGIC) != 0)
-    return NULL;
-  if (mtemp.version > MMALLOC_VERSION)
-    return NULL;
-
-  mtemp.fd = fd;
-  if (__mmalloc_remap_core(&mtemp) == mtemp.base) {
-    mdp = (struct mdesc *) mtemp.base;
-    mdp->fd = fd;
-    if(!mdp->refcount){
-      sem_init(&mdp->sem, 1, 1);
-      mdp->refcount++;
-    }
-  }
-  
-  /* Add the new heap to the linked list of heaps attached by mmalloc */  
-  mdptemp = __mmalloc_default_mdp;
-  while(mdptemp->next_mdesc)
-    mdptemp = mdptemp->next_mdesc;
-
-  LOCK(mdptemp);
-    mdptemp->next_mdesc = mdp;
-  UNLOCK(mdptemp);
-  
-  return (mdp);
-}
 
 
 /** Terminate access to a mmalloc managed region, but do not free its content.
