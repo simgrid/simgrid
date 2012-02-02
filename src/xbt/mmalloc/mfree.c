@@ -21,6 +21,7 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
   size_t block;
   register size_t i;
   struct list *prev, *next;
+  int it;
 
   block = BLOCK(ptr);
 
@@ -54,16 +55,25 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
 
     /* Determine how to link this block into the free list.  */
     if (block == i + mdp->heapinfo[i].free_block.size) {
+
       /* Coalesce this block with its predecessor.  */
       mdp->heapinfo[i].free_block.size += mdp->heapinfo[block].busy_block.size;
+      /* Mark all my ex-blocks as free */
+      for (it=0; it<mdp->heapinfo[block].busy_block.size; it++)
+    	  mdp->heapinfo[block+it].type = -1;
+
       block = i;
     } else {
+      //fprintf(stderr,"Free block %d to %d (as a new chunck)\n",block,block+mdp->heapinfo[block].busy_block.size);
       /* Really link this block back into the free list.  */
       mdp->heapinfo[block].free_block.size = mdp->heapinfo[block].busy_block.size;
       mdp->heapinfo[block].free_block.next = mdp->heapinfo[i].free_block.next;
       mdp->heapinfo[block].free_block.prev = i;
       mdp->heapinfo[i].free_block.next = block;
       mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev = block;
+      /* Mark all my ex-blocks as free */
+      for (it=0; it<mdp->heapinfo[block].free_block.size; it++)
+    	  mdp->heapinfo[block+it].type = -1;
     }
 
     /* Now that the block is linked in, see if we can coalesce it
@@ -117,6 +127,7 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
       if (next != NULL) {
         next->prev = prev->prev;
       }
+      /* pretend the block is used and free it so that it gets properly coalesced with adjacent free blocks */
       mdp->heapinfo[block].type = 0;
       mdp->heapinfo[block].busy_block.size = 1;
       mdp->heapinfo[block].busy_block.busy_size = 0;
@@ -135,8 +146,8 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
       }
       ++mdp->heapinfo[block].busy_frag.nfree;
     } else {
-      /* No fragments of this block are free, so link this
-         fragment into the fragment list and announce that
+      /* No fragments of this block were free before the one we just released,
+       * so link this fragment into the fragment list and announce that
          it is the first free fragment of this block. */
       prev = (struct list *) ptr;
       mdp->heapinfo[block].busy_frag.nfree = 1;

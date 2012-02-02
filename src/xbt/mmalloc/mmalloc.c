@@ -55,6 +55,7 @@ static int initialize(xbt_mheap_t mdp)
     return (0);
   }
   memset((void *) mdp->heapinfo, 0, mdp->heapsize * sizeof(malloc_info));
+  mdp->heapinfo[0].type=-1;
   mdp->heapinfo[0].free_block.size = 0;
   mdp->heapinfo[0].free_block.next = mdp->heapinfo[0].free_block.prev = 0;
   mdp->heapindex = 0;
@@ -194,6 +195,11 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
     blocks = BLOCKIFY(size);
     start = block = MALLOC_SEARCH_START;
     while (mdp->heapinfo[block].free_block.size < blocks) {
+    	if (mdp->heapinfo[block].type >=0) {
+    		fprintf(stderr,"Internal error: found a free block not marked as such (block=%lu type=%lu). Please report this bug.\n",(unsigned long)block,(unsigned long)mdp->heapinfo[block].type);
+    		abort();
+    	}
+
       block = mdp->heapinfo[block].free_block.next;
       if (block == start) {
         /* Need to get more from the system.  Check to see if
