@@ -26,13 +26,13 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   int type;
   size_t block, blocks, oldlimit;
 
+  /* Only keep real realloc and hidden malloc and free to the relevant functions */
   if (size == 0) {
     mfree(mdp, ptr);
     return mmalloc(mdp, 0);
   } else if (ptr == NULL) {
     return mmalloc(mdp, size);
   }
-
 
   //printf("(%s)realloc %p to %d...",xbt_thread_self_name(),ptr,(int)size);
 

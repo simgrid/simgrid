@@ -95,6 +95,11 @@ const char *xbt_thread_self_name(void);
  *    When looking for free blocks, we traverse the mdp->heapinfo looking
  *    for a cluster of free blocks that would be large enough.
  *
+ *    The size of the cluster is only to be trusted in the first block of the cluster.
+ *    If the cluster results of the fusion of several clusters, the previously first
+ *    block of their cluster will have partial data. The only information kept consistent over
+ *    all blocks of the clusters is their type (== -1).
+ *
  * Note that there is no way to determine if the block is free or busy by exploring
  * this structure only. It wasn't intended to be crawled for comparison and we should fix it (TODO).
  *
@@ -103,9 +108,8 @@ const char *xbt_thread_self_name(void);
  * I retrieve the first block of my cluster.
  *
  * TODO:
- *  - add an indication of the requested size in the busy.block structure
- *  - add the same for each fragments
- *  - make room to store the backtrace of where the fragment were malloced, too.
+ *  - add an indication of the requested size in each fragment, similarly to busy_block.busy_size
+ *  - make room to store the backtrace of where the blocks and fragment were malloced, too.
  */
 typedef struct {
 	int type; /*  0: busy large block
@@ -119,7 +123,7 @@ typedef struct {
 		} busy_frag;
 		struct {
 			size_t size; /* Size (in blocks) of a large cluster.  */
-			size_t busy_size;
+			size_t busy_size; /* Actually used space, in bytes */
 		} busy_block;
 		/* Heap information for a free block (that may be the first of a free cluster).  */
 		struct {
