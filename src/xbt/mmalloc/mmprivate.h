@@ -183,7 +183,7 @@ struct mdesc {
 	size_t heaplimit;
 
 	/* Block information table.
-     Allocated with malign/__mmalloc_free (not mmalloc/mfree).  */
+     Allocated with malign/mfree (not mmalloc/mfree).  */
 	/* Table indexed by block number giving per-block information.  */
 	malloc_info *heapinfo;
 
@@ -224,10 +224,6 @@ void mmalloc_display_info(void *h);
 #define MMALLOC_DEVZERO		(1 << 0)        /* Have mapped to /dev/zero */
 #define MMALLOC_ANONYMOUS (1 << 1)      /* Use anonymous mapping */
 #define MMALLOC_INITIALIZED	(1 << 2)        /* Initialized mmalloc */
-
-/* Internal version of `mfree' used in `morecore'. */
-
-extern void __mmalloc_free(struct mdesc *mdp, void *ptr);
 
 /* A default malloc descriptor for the single sbrk() managed region. */
 

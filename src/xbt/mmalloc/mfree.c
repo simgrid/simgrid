@@ -15,13 +15,17 @@
 /* Return memory to the heap.
    Like `mfree' but don't call a mfree_hook if there is one.  */
 
-void __mmalloc_free(struct mdesc *mdp, void *ptr)
+/* Return memory to the heap.  */
+void mfree(struct mdesc *mdp, void *ptr)
 {
   int type;
   size_t block;
   register size_t i;
   struct list *prev, *next;
   int it;
+
+  if (ptr == NULL)
+	  return;
 
   block = BLOCK(ptr);
 
@@ -162,12 +166,4 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
     }
     break;
   }
-}
-
-/* Return memory to the heap.  */
-
-void mfree(xbt_mheap_t mdp, void *ptr)
-{
-  if (ptr != NULL)
-    __mmalloc_free(mdp, ptr);
 }

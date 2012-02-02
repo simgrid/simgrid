@@ -96,7 +96,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     newinfo[BLOCK(oldinfo)].type = 0;
     newinfo[BLOCK(oldinfo)].busy_block.size = BLOCKIFY(mdp->heapsize * sizeof(malloc_info));
     newinfo[BLOCK(oldinfo)].busy_block.busy_size = size;
-    __mmalloc_free(mdp, (void *) oldinfo);
+    mfree(mdp, (void *) oldinfo);
     mdp->heapsize = newsize;
   }
 
