@@ -28,7 +28,9 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
 
   /* Only keep real realloc and hidden malloc and free to the relevant functions */
   if (size == 0) {
+	fprintf(stderr,"free from realloc...");
     mfree(mdp, ptr);
+    fprintf(stderr,"done\n");
     return mmalloc(mdp, 0);
   } else if (ptr == NULL) {
     return mmalloc(mdp, size);
@@ -67,13 +69,16 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
        see if we can hold it in place. */
     blocks = BLOCKIFY(size);
     if (blocks < mdp->heapinfo[block].busy_block.size) {
+    	int it;
       /* The new size is smaller; return excess memory to the free list. */
       //printf("(%s) return excess memory...",xbt_thread_self_name());
-      mdp->heapinfo[block + blocks].type = 0;
+     for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++)
+    	 mdp->heapinfo[it].type = 0;
       mdp->heapinfo[block + blocks].busy_block.size
           = mdp->heapinfo[block].busy_block.size - blocks;
       mdp->heapinfo[block].busy_block.size = blocks;
       mdp->heapinfo[block].busy_block.busy_size = size;
+
       mfree(mdp, ADDRESS(block + blocks));
       result = ptr;
     } else if (blocks == mdp->heapinfo[block].busy_block.size) {

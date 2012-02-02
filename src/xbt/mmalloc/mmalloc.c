@@ -79,6 +79,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
 
   /* Check if we need to grow the info table (in a multiplicative manner)  */
   if ((size_t) BLOCK((char *) result + size) > mdp->heapsize) {
+	int it;
 
     newsize = mdp->heapsize;
     while ((size_t) BLOCK((char *) result + size) > newsize)
@@ -93,7 +94,9 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
 
     /* mark the space previously occupied by the block info as free by first marking it
      * as occupied in the regular way, and then freing it */
-    newinfo[BLOCK(oldinfo)].type = 0;
+    for (it=0; it<BLOCKIFY(mdp->heapsize * sizeof(malloc_info)); it++)
+    	newinfo[BLOCK(oldinfo)+it].type = 0;
+
     newinfo[BLOCK(oldinfo)].busy_block.size = BLOCKIFY(mdp->heapsize * sizeof(malloc_info));
     newinfo[BLOCK(oldinfo)].busy_block.busy_size = size;
     mfree(mdp, (void *) oldinfo);
@@ -113,6 +116,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
   register size_t i;
   struct list *next;
   register size_t log;
+  int it;
 
   /* Work even if the user was stupid enough to ask a 0-byte block, ie return a valid block that can be realloced or freed
    * glibc malloc does not use this trick but return a constant pointer, but my hack is quicker to implement ;)
@@ -224,7 +228,8 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
           return (NULL);
         }
         block = BLOCK(result);
-        mdp->heapinfo[block].type = 0;
+        for (it=0;it<blocks;it++)
+        	mdp->heapinfo[block+it].type = 0;
         mdp->heapinfo[block].busy_block.size = blocks;
 	mdp->heapinfo[block].busy_block.busy_size = size;
         return (result);
@@ -255,7 +260,8 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
           = mdp->heapindex = mdp->heapinfo[block].free_block.next;
     }
 
-    mdp->heapinfo[block].type = 0;
+    for (it=0;it<blocks;it++)
+    	mdp->heapinfo[block+it].type = 0;
     mdp->heapinfo[block].busy_block.size = blocks;
     mdp->heapinfo[block].busy_block.busy_size = size;
   }

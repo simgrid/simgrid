@@ -63,8 +63,14 @@ void mfree(struct mdesc *mdp, void *ptr)
       /* Coalesce this block with its predecessor.  */
       mdp->heapinfo[i].free_block.size += mdp->heapinfo[block].busy_block.size;
       /* Mark all my ex-blocks as free */
-      for (it=0; it<mdp->heapinfo[block].busy_block.size; it++)
+      for (it=0; it<mdp->heapinfo[block].busy_block.size; it++) {
+    	  if (mdp->heapinfo[block+it].type <0) {
+      		fprintf(stderr,"Internal Error: Asked to free a block already marked as free (block=%lu it=%d type=%lu). Please report this bug.\n",
+      				(unsigned long)block,it,(unsigned long)mdp->heapinfo[block].type);
+      		abort();
+    	  }
     	  mdp->heapinfo[block+it].type = -1;
+      }
 
       block = i;
     } else {
@@ -76,8 +82,14 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[i].free_block.next = block;
       mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev = block;
       /* Mark all my ex-blocks as free */
-      for (it=0; it<mdp->heapinfo[block].free_block.size; it++)
+      for (it=0; it<mdp->heapinfo[block].free_block.size; it++) {
+    	  if (mdp->heapinfo[block+it].type <0) {
+      		fprintf(stderr,"Internal error: Asked to free a block already marked as free (block=%lu it=%d/%lu type=%lu). Please report this bug.\n",
+      				(unsigned long)block,it,(unsigned long)mdp->heapinfo[block].free_block.size,(unsigned long)mdp->heapinfo[block].type);
+      		abort();
+    	  }
     	  mdp->heapinfo[block+it].type = -1;
+      }
     }
 
     /* Now that the block is linked in, see if we can coalesce it
@@ -131,7 +143,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       if (next != NULL) {
         next->prev = prev->prev;
       }
-      /* pretend the block is used and free it so that it gets properly coalesced with adjacent free blocks */
+      /* pretend that this block is used and free it so that it gets properly coalesced with adjacent free blocks */
       mdp->heapinfo[block].type = 0;
       mdp->heapinfo[block].busy_block.size = 1;
       mdp->heapinfo[block].busy_block.busy_size = 0;
