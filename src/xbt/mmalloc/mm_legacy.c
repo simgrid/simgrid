@@ -460,14 +460,3 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap
 void mmalloc_display_info_heap(xbt_mheap_t h){
 
 }  
-
-/* Useless prototype to make gcc happy */
-void *valloc(size_t size);
-
-void *valloc(size_t size)
-{ //FIXME: won't work
-  return mvalloc(NULL, size);
-}
-
-  
-

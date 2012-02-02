@@ -154,16 +154,6 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
 
 void mfree(xbt_mheap_t mdp, void *ptr)
 {
-  register struct alignlist *l;
-
-  if (ptr != NULL) {
-    for (l = mdp->aligned_blocks; l != NULL; l = l->next) {
-      if (l->aligned == ptr) {
-        l->aligned = NULL;      /* Mark the slot in the list as free. */
-        ptr = l->exact;
-        break;
-      }
-    }
+  if (ptr != NULL)
     __mmalloc_free(mdp, ptr);
-  }
 }

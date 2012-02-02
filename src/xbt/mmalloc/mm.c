@@ -18,7 +18,6 @@
 #include "mcalloc.c"
 #include "mfree.c"
 #include "mmalloc.c"
-#include "mmemalign.c"
 #include "mrealloc.c"
 #include "mmorecore.c"
 #include "mm_module.c"

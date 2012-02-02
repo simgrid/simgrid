@@ -103,14 +103,6 @@ typedef union {
   } free;
 } malloc_info;
 
-/* List of blocks allocated with `mmemalign' (or `mvalloc').  */
-
-struct alignlist {
-  struct alignlist *next;
-  void *aligned;                /* The address that mmemaligned returned.  */
-  void *exact;                  /* The address that malloc returned.  */
-};
-
 /* Doubly linked lists of free fragments.  */
 struct list {
   struct list *next;
