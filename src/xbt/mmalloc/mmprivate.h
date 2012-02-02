@@ -78,35 +78,35 @@ const char *xbt_thread_self_name(void);
 
 /* Data structure giving per-block information.  */
 typedef union {
-  /* Heap information for a busy block.  */
-  struct {
-    /* Zero for a large block, or positive giving the
+	/* Heap information for a busy block.  */
+	struct {
+		/* Zero for a large block, or positive giving the
        logarithm to the base two of the fragment size.  */
-    int type;
-    union {
-      struct {
-        size_t nfree;           /* Free fragments in a fragmented block.  */
-        size_t first;           /* First free fragment of the block.  */
-      } frag;
-      struct {
-	size_t size; /* Size (in blocks) of a large cluster.  */
-	size_t busy_size; 
-      } block;
-    } info;
-  } busy;
-  /* Heap information for a free block (that may be the first of
+		int type;
+		union {
+			struct {
+				size_t nfree;           /* Free fragments in a fragmented block.  */
+				size_t first;           /* First free fragment of the block.  */
+			} frag;
+			struct {
+				size_t size; /* Size (in blocks) of a large cluster.  */
+				size_t busy_size;
+			} block;
+		} info;
+	} busy;
+	/* Heap information for a free block (that may be the first of
      a free cluster).  */
-  struct {
-    size_t size;                /* Size (in blocks) of a free cluster.  */
-    size_t next;                /* Index of next free cluster.  */
-    size_t prev;                /* Index of previous free cluster.  */
-  } free;
+	struct {
+		size_t size;                /* Size (in blocks) of a free cluster.  */
+		size_t next;                /* Index of next free cluster.  */
+		size_t prev;                /* Index of previous free cluster.  */
+	} free;
 } malloc_info;
 
 /* Doubly linked lists of free fragments.  */
 struct list {
-  struct list *next;
-  struct list *prev;
+	struct list *next;
+	struct list *prev;
 };
 
 /* Internal structure that defines the format of the malloc-descriptor.
@@ -116,78 +116,78 @@ struct list {
 
 struct mdesc {
 
-  /* Semaphore locking the access to the heap */
-  sem_t sem;
+	/* Semaphore locking the access to the heap */
+	sem_t sem;
 
-  /* Number of processes that attached the heap */
-  unsigned int refcount;
+	/* Number of processes that attached the heap */
+	unsigned int refcount;
 
-  /* Chained lists of mdescs */
-  struct mdesc *next_mdesc;
-  
-  /* The "magic number" for an mmalloc file. */
-  char magic[MMALLOC_MAGIC_SIZE];
+	/* Chained lists of mdescs */
+	struct mdesc *next_mdesc;
 
-  /* The size in bytes of this structure, used as a sanity check when reusing
+	/* The "magic number" for an mmalloc file. */
+	char magic[MMALLOC_MAGIC_SIZE];
+
+	/* The size in bytes of this structure, used as a sanity check when reusing
      a previously created mapped file. */
-  unsigned int headersize;
+	unsigned int headersize;
 
-  /* The version number of the mmalloc package that created this file. */
-  unsigned char version;
+	/* The version number of the mmalloc package that created this file. */
+	unsigned char version;
 
-  /* Some flag bits to keep track of various internal things. */
-  unsigned int flags;
+	/* Some flag bits to keep track of various internal things. */
+	unsigned int flags;
 
-  /* Number of info entries.  */
-  size_t heapsize;
+	/* Number of info entries.  */
+	size_t heapsize;
 
-  /* Pointer to first block of the heap (base of the first block).  */
-  void *heapbase;
+	/* Pointer to first block of the heap (base of the first block).  */
+	void *heapbase;
 
-  /* Current search index for the heap table.  */
-  /* Search index in the info table.  */
-  size_t heapindex;
+	/* Current search index for the heap table.  */
+	/* Search index in the info table.  */
+	size_t heapindex;
 
-  /* Limit of valid info table indices.  */
-  size_t heaplimit;
+	/* Limit of valid info table indices.  */
+	size_t heaplimit;
 
-  /* Block information table.
+	/* Block information table.
      Allocated with malign/__mmalloc_free (not mmalloc/mfree).  */
-  /* Table indexed by block number giving per-block information.  */
+	/* Table indexed by block number giving per-block information.  */
 
-  malloc_info *heapinfo;
+	malloc_info *heapinfo;
 
-  /* Free list headers for each fragment size.  */
-  /* Free lists for each fragment size.  */
+	/* Free list headers for each fragment size.  */
+	/* Free lists for each fragment size.  */
 
-  struct list fraghead[BLOCKLOG];
+	struct list fraghead[BLOCKLOG];
 
-  /* List of blocks allocated by memalign.  */
+	/* List of blocks allocated by memalign.  */
 
-  struct alignlist *aligned_blocks;
+	struct alignlist *aligned_blocks;
 
-  /* The base address of the memory region for this malloc heap.  This
+	/* The base address of the memory region for this malloc heap.  This
      is the location where the bookkeeping data for mmap and for malloc
      begins. */
 
-  void *base;
+	void *base;
 
-  /* The current location in the memory region for this malloc heap which
+	/* The current location in the memory region for this malloc heap which
      represents the end of memory in use. */
 
-  void *breakval;
+	void *breakval;
 
-  /* The end of the current memory region for this malloc heap.  This is
+	/* The end of the current memory region for this malloc heap.  This is
      the first location past the end of mapped memory. */
 
-  void *top;
+	void *top;
 
-  /* Open file descriptor for the file to which this malloc heap is mapped.
+	/* Open file descriptor for the file to which this malloc heap is mapped.
      This will always be a valid file descriptor, since /dev/zero is used
      by default if no open file is supplied by the client.  Also note that
      it may change each time the region is mapped and unmapped. */
 
-  int fd;
+	int fd;
 
 };
 
@@ -220,9 +220,9 @@ extern void *mmorecore(struct mdesc *mdp, int size);
 
 /* Thread-safety (if the sem is already created) FIXME: KILLIT*/
 #define LOCK(mdp)                                        \
-  sem_wait(&mdp->sem)
+		sem_wait(&mdp->sem)
 
 #define UNLOCK(mdp)                                        \
-    sem_post(&mdp->sem)
+		sem_post(&mdp->sem)
 
 #endif                          /* __MMPRIVATE_H */
