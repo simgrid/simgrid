@@ -112,7 +112,6 @@ struct alignlist {
 };
 
 /* Doubly linked lists of free fragments.  */
-
 struct list {
   struct list *next;
   struct list *prev;

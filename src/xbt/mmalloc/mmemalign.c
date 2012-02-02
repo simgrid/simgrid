@@ -48,10 +48,9 @@ static size_t cache_pagesize;
 
 void *mvalloc(xbt_mheap_t mdp, size_t size)
 {
-  if (cache_pagesize == 0) {
+  if (cache_pagesize == 0)
     cache_pagesize = getpagesize();
-  }
 
-  return (mmemalign(mdp, cache_pagesize, size));
+  return mmemalign(mdp, cache_pagesize, size);
 }
 

@@ -143,7 +143,8 @@ xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
     }
   }
 
-  /* If the user provided NULL BASEADDR then fail */
+  /* NULL is not a valid baseaddr as we cannot map anything there.
+     C'mon, user. Think! */
   if (baseaddr == NULL)
     return (NULL);
 

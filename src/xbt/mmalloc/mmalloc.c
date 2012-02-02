@@ -16,18 +16,24 @@
 
 /* Prototypes for local functions */
 
-static int initialize(struct mdesc *mdp);
-static void *morecore(struct mdesc *mdp, size_t size);
-static void *align(struct mdesc *mdp, size_t size);
+static int initialize(xbt_mheap_t mdp);
+static void *register_morecore(xbt_mheap_t mdp, size_t size);
+static void *align(xbt_mheap_t mdp, size_t size);
 
-/* Aligned allocation.  */
-
+/* Allocation aligned on block boundary */
 static void *align(struct mdesc *mdp, size_t size)
 {
   void *result;
   unsigned long int adj;
 
   result = mmorecore(mdp, size);
+
+  /* if this reservation does not fill up the last block of our resa,
+   * complete the reservation by also asking for the full lastest block.
+   *
+   * Also, the returned block is aligned to the end of block (but I've
+   * no fucking idea of why, actually -- http://abstrusegoose.com/432).
+   */
   adj = RESIDUAL(result, BLOCKSIZE);
   if (adj != 0) {
     adj = BLOCKSIZE - adj;
@@ -37,9 +43,9 @@ static void *align(struct mdesc *mdp, size_t size)
   return (result);
 }
 
-/* Set everything up and remember that we have.  */
-
-static int initialize(struct mdesc *mdp)
+/* Finish the initialization of the mheap. If we want to inline it
+ * properly, we need to make the align function publicly visible, too  */
+static int initialize(xbt_mheap_t mdp)
 {
   mdp->heapsize = HEAP / BLOCKSIZE;
   mdp->heapinfo = (malloc_info *)
@@ -56,10 +62,9 @@ static int initialize(struct mdesc *mdp)
   return (1);
 }
 
-/* Get neatly aligned memory, initializing or
-   growing the heap info table as necessary. */
-
-static void *morecore(struct mdesc *mdp, size_t size)
+/* Get neatly aligned memory from the low level layers, and register it
+ * into the heap info table as necessary. */
+static void *register_morecore(struct mdesc *mdp, size_t size)
 {
   void *result;
   malloc_info *newinfo, *oldinfo;
@@ -199,7 +204,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
         if (mdp->heaplimit != 0 &&
             block + lastblocks == mdp->heaplimit &&
             mmorecore(mdp, 0) == ADDRESS(block + lastblocks) &&
-            (morecore(mdp, (blocks - lastblocks) * BLOCKSIZE)) != NULL) {
+            (register_morecore(mdp, (blocks - lastblocks) * BLOCKSIZE)) != NULL) {
           /* Which block we are extending (the `final free
              block' referred to above) might have changed, if
              it got combined with a freed info table.  */
@@ -208,7 +213,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
           mdp->heapinfo[block].free.size += (blocks - lastblocks);
           continue;
         }
-        result = morecore(mdp, blocks * BLOCKSIZE);
+        result = register_morecore(mdp, blocks * BLOCKSIZE);
         if (result == NULL) {
           return (NULL);
         }
