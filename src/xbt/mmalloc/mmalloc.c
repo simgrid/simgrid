@@ -76,26 +76,25 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     return (NULL);
   }
 
-  /* Check if we need to grow the info table.  */
+  /* Check if we need to grow the info table (in a multiplicative manner)  */
   if ((size_t) BLOCK((char *) result + size) > mdp->heapsize) {
+
     newsize = mdp->heapsize;
-    while ((size_t) BLOCK((char *) result + size) > newsize) {
+    while ((size_t) BLOCK((char *) result + size) > newsize)
       newsize *= 2;
-    }
-    newinfo = (malloc_info *) align(mdp, newsize * sizeof(malloc_info));
-    if (newinfo == NULL) {
-      mmorecore(mdp, -size);
-      return (NULL);
-    }
-    memset((void *) newinfo, 0, newsize * sizeof(malloc_info));
-    memcpy((void *) newinfo, (void *) mdp->heapinfo,
-           mdp->heapsize * sizeof(malloc_info));
+
+    /* Copy old info into new location */
     oldinfo = mdp->heapinfo;
-    newinfo[BLOCK(oldinfo)].busy.type = 0;
-    newinfo[BLOCK(oldinfo)].busy.info.block.size
-        = BLOCKIFY(mdp->heapsize * sizeof(malloc_info));
-    newinfo[BLOCK(oldinfo)].busy.info.block.busy_size = size;
+    newinfo = (malloc_info *) align(mdp, newsize * sizeof(malloc_info));
+    memset(newinfo, 0, newsize * sizeof(malloc_info));
+    memcpy(newinfo, oldinfo, mdp->heapsize * sizeof(malloc_info));
     mdp->heapinfo = newinfo;
+
+    /* mark the space previously occupied by the block info as free by first marking it
+     * as occupied in the regular way, and then freing it */
+    newinfo[BLOCK(oldinfo)].busy.type = 0;
+    newinfo[BLOCK(oldinfo)].busy.info.block.size = BLOCKIFY(mdp->heapsize * sizeof(malloc_info));
+    newinfo[BLOCK(oldinfo)].busy.info.block.busy_size = size;
     __mmalloc_free(mdp, (void *) oldinfo);
     mdp->heapsize = newsize;
   }
