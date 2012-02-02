@@ -46,11 +46,11 @@ extern void *mmemalign(xbt_mheap_t md, size_t alignment, size_t size);
 /* Allocate SIZE bytes on a page boundary.  */
 extern void *mvalloc(xbt_mheap_t md, size_t size);
 
-extern xbt_mheap_t mmalloc_attach(int fd, void *baseaddr);
+extern xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr);
 
-extern void mmalloc_detach_no_free(xbt_mheap_t md);
+extern void xbt_mheap_destroy_no_free(xbt_mheap_t md);
 
-extern void *mmalloc_detach(xbt_mheap_t md);
+extern void *xbt_mheap_destroy(xbt_mheap_t md);
 
 /* return the heap used when NULL is passed as first argument to any mm* function */
 extern xbt_mheap_t mmalloc_get_default_md(void);

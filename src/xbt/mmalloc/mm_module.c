@@ -64,7 +64,7 @@ Boston, MA 02111-1307, USA.  */
 
    On failure returns NULL. */
 
-xbt_mheap_t mmalloc_attach(int fd, void *baseaddr)
+xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
 {
   struct mdesc mtemp;
   xbt_mheap_t mdp;
@@ -207,7 +207,7 @@ xbt_mheap_t mmalloc_attach(int fd, void *baseaddr)
  * This is for example useful for the base region where ldl stores its data
  *   because it leaves the place after us.
  */
-void mmalloc_detach_no_free(xbt_mheap_t md)
+void xbt_mheap_destroy_no_free(xbt_mheap_t md)
 {
   struct mdesc *mdp = md;
 
@@ -225,13 +225,13 @@ void mmalloc_detach_no_free(xbt_mheap_t md)
 
    Returns the malloc descriptor on failure, which can subsequently be used
    for further action, such as obtaining more information about the nature of
-   the failure by examining the preserved errno value.
+   the failure.
 
    Note that the malloc descriptor that we are using is currently located in
    region we are about to unmap, so we first make a local copy of it on the
    stack and use the copy. */
 
-void *mmalloc_detach(xbt_mheap_t mdp)
+void *xbt_mheap_destroy(xbt_mheap_t mdp)
 {
   struct mdesc mtemp, *mdptemp;
 
@@ -243,7 +243,7 @@ void *mmalloc_detach(xbt_mheap_t mdp)
 
     mdptemp->next_mdesc = mdp->next_mdesc;
 
-    mmalloc_detach_no_free(mdp);
+    xbt_mheap_destroy_no_free(mdp);
     mtemp = *mdp;
 
     /* Now unmap all the pages associated with this region by asking for a
@@ -323,7 +323,7 @@ void *mmalloc_preinit(void)
   if (__mmalloc_default_mdp == NULL) {
     unsigned long mask = ~((unsigned long)getpagesize() - 1);
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
-    __mmalloc_default_mdp = mmalloc_attach(-1, addr);
+    __mmalloc_default_mdp = xbt_mheap_new(-1, addr);
     /* Fixme? only the default mdp in protected against forks */
     res = xbt_os_thread_atfork(mmalloc_fork_prepare,
 			       mmalloc_fork_parent, mmalloc_fork_child);
@@ -339,5 +339,5 @@ void mmalloc_postexit(void)
 {
   /* Do not detach the default mdp or ldl won't be able to free the memory it allocated since we're in memory */
   //  mmalloc_detach(__mmalloc_default_mdp);
-  mmalloc_detach_no_free(__mmalloc_default_mdp);
+  xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
 }

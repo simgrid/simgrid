@@ -28,7 +28,7 @@ void MC_memory_init()
   xbt_assert(std_heap != NULL);
 
   /* Create the second region a page after the first one ends + safety gap */
-  raw_heap = mmalloc_attach(-1, (char*)(std_heap) + STD_HEAP_SIZE + getpagesize());
+  raw_heap = xbt_mheap_new(-1, (char*)(std_heap) + STD_HEAP_SIZE + getpagesize());
   xbt_assert(raw_heap != NULL);
 }
 
@@ -37,5 +37,5 @@ void MC_memory_init()
 void MC_memory_exit(void)
 {
   if (raw_heap)
-    mmalloc_detach(raw_heap);
+    xbt_mheap_destroy(raw_heap);
 }

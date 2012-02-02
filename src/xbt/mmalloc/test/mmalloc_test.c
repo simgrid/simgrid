@@ -26,7 +26,7 @@ int main()
     assert(fd1>0);
   */
 
-  heapA = mmalloc_attach(-1, sbrk(0) + BUFFSIZE);
+  heapA = xbt_mheap_new(-1, sbrk(0) + BUFFSIZE);
   if (heapA == NULL) {
     perror("attach 1 failed");
     fprintf(stderr, "bye\n");
