@@ -95,17 +95,10 @@ const char *xbt_thread_self_name(void);
  *    When looking for free blocks, we traverse the mdp->heapinfo looking
  *    for a cluster of free blocks that would be large enough.
  *
- *    The size of the cluster is only to be trusted in the first block of the cluster.
- *    If the cluster results of the fusion of several clusters, the previously first
- *    block of their cluster will have partial data. The only information kept consistent over
- *    all blocks of the clusters is their type (== -1).
+ *    The size of the cluster is only to be trusted in the first block of the cluster, not in the middle blocks.
  *
- * Note that there is no way to determine if the block is free or busy by exploring
- * this structure only. It wasn't intended to be crawled for comparison and we should fix it (TODO).
- *
- * TODO: understand whether the information are written in each blocks of a cluster (be it
- * free or busy) or only in the first block of the cluster. And in the latter case, how can
- * I retrieve the first block of my cluster.
+ * The type field is consistently updated for every blocks, even within clusters of blocks.
+ * You can crawl the array and rely on that value.
  *
  * TODO:
  *  - add an indication of the requested size in each fragment, similarly to busy_block.busy_size
