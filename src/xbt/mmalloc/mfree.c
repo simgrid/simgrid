@@ -30,7 +30,10 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
   }
 
 
-  type = mdp->heapinfo[block].busy.type;
+  type = mdp->heapinfo[block].type;
+  if (type<0)
+      THROWF(arg_error,0,"Asked to free a fragment in a block that is already free. I'm puzzled");
+
   switch (type) {
   case 0:
     /* Find the free cluster previous to this one in the free list.
@@ -39,40 +42,40 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
     i = mdp->heapindex;
     if (i > block) {
       while (i > block) {
-        i = mdp->heapinfo[i].free.prev;
+        i = mdp->heapinfo[i].free_block.prev;
       }
     } else {
       do {
-        i = mdp->heapinfo[i].free.next;
+        i = mdp->heapinfo[i].free_block.next;
       }
       while ((i != 0) && (i < block));
-      i = mdp->heapinfo[i].free.prev;
+      i = mdp->heapinfo[i].free_block.prev;
     }
 
     /* Determine how to link this block into the free list.  */
-    if (block == i + mdp->heapinfo[i].free.size) {
+    if (block == i + mdp->heapinfo[i].free_block.size) {
       /* Coalesce this block with its predecessor.  */
-      mdp->heapinfo[i].free.size += mdp->heapinfo[block].busy.info.block.size;
+      mdp->heapinfo[i].free_block.size += mdp->heapinfo[block].busy_block.size;
       block = i;
     } else {
       /* Really link this block back into the free list.  */
-      mdp->heapinfo[block].free.size = mdp->heapinfo[block].busy.info.block.size;
-      mdp->heapinfo[block].free.next = mdp->heapinfo[i].free.next;
-      mdp->heapinfo[block].free.prev = i;
-      mdp->heapinfo[i].free.next = block;
-      mdp->heapinfo[mdp->heapinfo[block].free.next].free.prev = block;
+      mdp->heapinfo[block].free_block.size = mdp->heapinfo[block].busy_block.size;
+      mdp->heapinfo[block].free_block.next = mdp->heapinfo[i].free_block.next;
+      mdp->heapinfo[block].free_block.prev = i;
+      mdp->heapinfo[i].free_block.next = block;
+      mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev = block;
     }
 
     /* Now that the block is linked in, see if we can coalesce it
        with its successor (by deleting its successor from the list
        and adding in its size).  */
-    if (block + mdp->heapinfo[block].free.size ==
-        mdp->heapinfo[block].free.next) {
-      mdp->heapinfo[block].free.size
-          += mdp->heapinfo[mdp->heapinfo[block].free.next].free.size;
-      mdp->heapinfo[block].free.next
-          = mdp->heapinfo[mdp->heapinfo[block].free.next].free.next;
-      mdp->heapinfo[mdp->heapinfo[block].free.next].free.prev = block;
+    if (block + mdp->heapinfo[block].free_block.size ==
+        mdp->heapinfo[block].free_block.next) {
+      mdp->heapinfo[block].free_block.size
+          += mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.size;
+      mdp->heapinfo[block].free_block.next
+          = mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.next;
+      mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev = block;
     }
 
     /* Now see if we can return stuff to the system.  */
@@ -100,9 +103,9 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
     /* Get the address of the first free fragment in this block.  */
     prev = (struct list *)
         ((char *) ADDRESS(block) +
-         (mdp->heapinfo[block].busy.info.frag.first << type));
+         (mdp->heapinfo[block].busy_frag.first << type));
 
-    if (mdp->heapinfo[block].busy.info.frag.nfree ==
+    if (mdp->heapinfo[block].busy_frag.nfree ==
         (BLOCKSIZE >> type) - 1) {
       /* If all fragments of this block are free, remove them
          from the fragment list and free the whole block.  */
@@ -114,12 +117,12 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
       if (next != NULL) {
         next->prev = prev->prev;
       }
-      mdp->heapinfo[block].busy.type = 0;
-      mdp->heapinfo[block].busy.info.block.size = 1;
-      mdp->heapinfo[block].busy.info.block.busy_size = 0;
+      mdp->heapinfo[block].type = 0;
+      mdp->heapinfo[block].busy_block.size = 1;
+      mdp->heapinfo[block].busy_block.busy_size = 0;
 
       mfree((void *) mdp, (void *) ADDRESS(block));
-    } else if (mdp->heapinfo[block].busy.info.frag.nfree != 0) {
+    } else if (mdp->heapinfo[block].busy_frag.nfree != 0) {
       /* If some fragments of this block are free, link this
          fragment into the fragment list after the first free
          fragment of this block. */
@@ -130,14 +133,14 @@ void __mmalloc_free(struct mdesc *mdp, void *ptr)
       if (next->next != NULL) {
         next->next->prev = next;
       }
-      ++mdp->heapinfo[block].busy.info.frag.nfree;
+      ++mdp->heapinfo[block].busy_frag.nfree;
     } else {
       /* No fragments of this block are free, so link this
          fragment into the fragment list and announce that
          it is the first free fragment of this block. */
       prev = (struct list *) ptr;
-      mdp->heapinfo[block].busy.info.frag.nfree = 1;
-      mdp->heapinfo[block].busy.info.frag.first =
+      mdp->heapinfo[block].busy_frag.nfree = 1;
+      mdp->heapinfo[block].busy_frag.first =
           RESIDUAL(ptr, BLOCKSIZE) >> type;
       prev->next = mdp->fraghead[type].next;
       prev->prev = &mdp->fraghead[type];

@@ -16,6 +16,7 @@
 #include "portable.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
+#include "xbt/ex.h"
 #include <semaphore.h>
 
 #ifdef HAVE_LIMITS_H
@@ -106,30 +107,27 @@ const char *xbt_thread_self_name(void);
  *  - add the same for each fragments
  *  - make room to store the backtrace of where the fragment were malloced, too.
  */
-typedef union {
+typedef struct {
+	int type; /*  0: busy large block
+		         >0: busy fragmented (fragments of size 2^type bytes)
+		         <0: free block */
+	union {
 	/* Heap information for a busy block.  */
-	struct {
-		/* Zero for a large block, or positive giving the
-       logarithm to the base two of the fragment size.  */
-		int type;
-		union {
-			struct {
-				size_t nfree;           /* Free fragments in a fragmented block.  */
-				size_t first;           /* First free fragment of the block.  */
-			} frag;
-			struct {
-				size_t size; /* Size (in blocks) of a large cluster.  */
-				size_t busy_size;
-			} block;
-		} info;
-	} busy;
-	/* Heap information for a free block (that may be the first of
-     a free cluster).  */
-	struct {
-		size_t size;                /* Size (in blocks) of a free cluster.  */
-		size_t next;                /* Index of next free cluster.  */
-		size_t prev;                /* Index of previous free cluster.  */
-	} free;
+		struct {
+			size_t nfree;           /* Free fragments in a fragmented block.  */
+			size_t first;           /* First free fragment of the block.  */
+		} busy_frag;
+		struct {
+			size_t size; /* Size (in blocks) of a large cluster.  */
+			size_t busy_size;
+		} busy_block;
+		/* Heap information for a free block (that may be the first of a free cluster).  */
+		struct {
+			size_t size;                /* Size (in blocks) of a free cluster.  */
+			size_t next;                /* Index of next free cluster.  */
+			size_t prev;                /* Index of previous free cluster.  */
+		} free_block;
+	};
 } malloc_info;
 
 /* Doubly linked lists of free fragments.  */

@@ -21,7 +21,6 @@
 #include <sys/mman.h>
 
 #include "mmprivate.h"
-#include "xbt/ex.h"
 
 /* Cache the pagesize for the current host machine.  Note that if the host
    does not readily provide a getpagesize() function, we need to emulate it

@@ -55,8 +55,8 @@ static int initialize(xbt_mheap_t mdp)
     return (0);
   }
   memset((void *) mdp->heapinfo, 0, mdp->heapsize * sizeof(malloc_info));
-  mdp->heapinfo[0].free.size = 0;
-  mdp->heapinfo[0].free.next = mdp->heapinfo[0].free.prev = 0;
+  mdp->heapinfo[0].free_block.size = 0;
+  mdp->heapinfo[0].free_block.next = mdp->heapinfo[0].free_block.prev = 0;
   mdp->heapindex = 0;
   mdp->heapbase = (void *) mdp->heapinfo;
   mdp->flags |= MMALLOC_INITIALIZED;
@@ -92,9 +92,9 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
 
     /* mark the space previously occupied by the block info as free by first marking it
      * as occupied in the regular way, and then freing it */
-    newinfo[BLOCK(oldinfo)].busy.type = 0;
-    newinfo[BLOCK(oldinfo)].busy.info.block.size = BLOCKIFY(mdp->heapsize * sizeof(malloc_info));
-    newinfo[BLOCK(oldinfo)].busy.info.block.busy_size = size;
+    newinfo[BLOCK(oldinfo)].type = 0;
+    newinfo[BLOCK(oldinfo)].busy_block.size = BLOCKIFY(mdp->heapsize * sizeof(malloc_info));
+    newinfo[BLOCK(oldinfo)].busy_block.busy_size = size;
     __mmalloc_free(mdp, (void *) oldinfo);
     mdp->heapsize = newsize;
   }
@@ -154,8 +154,8 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
         next->next->prev = next->prev;
       }
       block = BLOCK(result);
-      if (--mdp->heapinfo[block].busy.info.frag.nfree != 0) {
-        mdp->heapinfo[block].busy.info.frag.first =
+      if (--mdp->heapinfo[block].busy_frag.nfree != 0) {
+        mdp->heapinfo[block].busy_frag.first =
             RESIDUAL(next->next, BLOCKSIZE) >> log;
       }
 
@@ -182,9 +182,9 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
 
       /* Initialize the nfree and first counters for this block.  */
       block = BLOCK(result);
-      mdp->heapinfo[block].busy.type = log;
-      mdp->heapinfo[block].busy.info.frag.nfree = i - 1;
-      mdp->heapinfo[block].busy.info.frag.first = i - 1;
+      mdp->heapinfo[block].type = log;
+      mdp->heapinfo[block].busy_frag.nfree = i - 1;
+      mdp->heapinfo[block].busy_frag.first = i - 1;
     }
   } else {
     /* Large allocation to receive one or more blocks.
@@ -193,14 +193,14 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
        space we will have to get more memory from the system.  */
     blocks = BLOCKIFY(size);
     start = block = MALLOC_SEARCH_START;
-    while (mdp->heapinfo[block].free.size < blocks) {
-      block = mdp->heapinfo[block].free.next;
+    while (mdp->heapinfo[block].free_block.size < blocks) {
+      block = mdp->heapinfo[block].free_block.next;
       if (block == start) {
         /* Need to get more from the system.  Check to see if
            the new core will be contiguous with the final free
            block; if so we don't need to get as much.  */
-        block = mdp->heapinfo[0].free.prev;
-        lastblocks = mdp->heapinfo[block].free.size;
+        block = mdp->heapinfo[0].free_block.prev;
+        lastblocks = mdp->heapinfo[block].free_block.size;
         if (mdp->heaplimit != 0 &&
             block + lastblocks == mdp->heaplimit &&
             mmorecore(mdp, 0) == ADDRESS(block + lastblocks) &&
@@ -208,9 +208,9 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
           /* Which block we are extending (the `final free
              block' referred to above) might have changed, if
              it got combined with a freed info table.  */
-          block = mdp->heapinfo[0].free.prev;
+          block = mdp->heapinfo[0].free_block.prev;
 
-          mdp->heapinfo[block].free.size += (blocks - lastblocks);
+          mdp->heapinfo[block].free_block.size += (blocks - lastblocks);
           continue;
         }
         result = register_morecore(mdp, blocks * BLOCKSIZE);
@@ -218,9 +218,9 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
           return (NULL);
         }
         block = BLOCK(result);
-        mdp->heapinfo[block].busy.type = 0;
-        mdp->heapinfo[block].busy.info.block.size = blocks;
-	mdp->heapinfo[block].busy.info.block.busy_size = size;
+        mdp->heapinfo[block].type = 0;
+        mdp->heapinfo[block].busy_block.size = blocks;
+	mdp->heapinfo[block].busy_block.busy_size = size;
         return (result);
       }
     }
@@ -228,30 +228,30 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
     /* At this point we have found a suitable free list entry.
        Figure out how to remove what we need from the list. */
     result = ADDRESS(block);
-    if (mdp->heapinfo[block].free.size > blocks) {
+    if (mdp->heapinfo[block].free_block.size > blocks) {
       /* The block we found has a bit left over,
          so relink the tail end back into the free list. */
-      mdp->heapinfo[block + blocks].free.size
-          = mdp->heapinfo[block].free.size - blocks;
-      mdp->heapinfo[block + blocks].free.next
-          = mdp->heapinfo[block].free.next;
-      mdp->heapinfo[block + blocks].free.prev
-          = mdp->heapinfo[block].free.prev;
-      mdp->heapinfo[mdp->heapinfo[block].free.prev].free.next
-          = mdp->heapinfo[mdp->heapinfo[block].free.next].free.prev
+      mdp->heapinfo[block + blocks].free_block.size
+          = mdp->heapinfo[block].free_block.size - blocks;
+      mdp->heapinfo[block + blocks].free_block.next
+          = mdp->heapinfo[block].free_block.next;
+      mdp->heapinfo[block + blocks].free_block.prev
+          = mdp->heapinfo[block].free_block.prev;
+      mdp->heapinfo[mdp->heapinfo[block].free_block.prev].free_block.next
+          = mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev
           = mdp->heapindex = block + blocks;
     } else {
       /* The block exactly matches our requirements,
          so just remove it from the list. */
-      mdp->heapinfo[mdp->heapinfo[block].free.next].free.prev
-          = mdp->heapinfo[block].free.prev;
-      mdp->heapinfo[mdp->heapinfo[block].free.prev].free.next
-          = mdp->heapindex = mdp->heapinfo[block].free.next;
+      mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev
+          = mdp->heapinfo[block].free_block.prev;
+      mdp->heapinfo[mdp->heapinfo[block].free_block.prev].free_block.next
+          = mdp->heapindex = mdp->heapinfo[block].free_block.next;
     }
 
-    mdp->heapinfo[block].busy.type = 0;
-    mdp->heapinfo[block].busy.info.block.size = blocks;
-    mdp->heapinfo[block].busy.info.block.busy_size = size;
+    mdp->heapinfo[block].type = 0;
+    mdp->heapinfo[block].busy_block.size = blocks;
+    mdp->heapinfo[block].busy_block.busy_size = size;
   }
   //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
   return (result);
