@@ -20,7 +20,6 @@
 #include "mmalloc.c"
 #include "mmemalign.c"
 #include "mrealloc.c"
-#include "mvalloc.c"
 #include "mmorecore.c"
 #include "attach.c"
 #include "detach.c"

@@ -39,3 +39,19 @@ void *mmemalign(xbt_mheap_t mdp, size_t alignment, size_t size)
   }
   return (result);
 }
+
+/* Cache the pagesize for the current host machine.  Note that if the host
+   does not readily provide a getpagesize() function, we need to emulate it
+   elsewhere, not clutter up this file with lots of kluges to try to figure
+   it out. */
+static size_t cache_pagesize;
+
+void *mvalloc(xbt_mheap_t mdp, size_t size)
+{
+  if (cache_pagesize == 0) {
+    cache_pagesize = getpagesize();
+  }
+
+  return (mmemalign(mdp, cache_pagesize, size));
+}
+
