@@ -55,8 +55,6 @@ extern void *mmalloc_detach(xbt_mheap_t md);
 /* return the heap used when NULL is passed as first argument to any mm* function */
 extern xbt_mheap_t mmalloc_get_default_md(void);
 
-extern void *mmalloc_findbase(int size);
-
 extern void mmalloc_display_info_heap(xbt_mheap_t h);
 
 /* To change the heap used when using the legacy version malloc/free/realloc and such */
