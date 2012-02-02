@@ -76,7 +76,36 @@
 
 const char *xbt_thread_self_name(void);
 
-/* Data structure giving per-block information.  */
+/* Data structure giving per-block information.
+ *
+ * There is one such structure in the mdp->heapinfo array,
+ * that is addressed by block number.
+ *
+ * There is several types of blocks in memory:
+ *  - full busy blocks: used when we are asked to malloc a block which size is > BLOCKSIZE/2
+ *    In this situation, the full block is given to the malloc.
+ *
+ *  - fragmented busy blocks: when asked for smaller amount of memory.
+ *    Fragment sizes are only power of 2. When looking for such a free fragment,
+ *    we get one from mdp->fraghead (that contains a linked list of blocks fragmented at that
+ *    size and containing a free fragment), or we get a fresh block that we fragment.
+ *
+ *  - free blocks are grouped by clusters, that are chained together.
+ *    When looking for free blocks, we traverse the mdp->heapinfo looking
+ *    for a cluster of free blocks that would be large enough.
+ *
+ * Note that there is no way to determine if the block is free or busy by exploring
+ * this structure only. It wasn't intended to be crawled for comparison and we should fix it (TODO).
+ *
+ * TODO: understand whether the information are written in each blocks of a cluster (be it
+ * free or busy) or only in the first block of the cluster. And in the latter case, how can
+ * I retrieve the first block of my cluster.
+ *
+ * TODO:
+ *  - add an indication of the requested size in the busy.block structure
+ *  - add the same for each fragments
+ *  - make room to store the backtrace of where the fragment were malloced, too.
+ */
 typedef union {
 	/* Heap information for a busy block.  */
 	struct {
@@ -154,17 +183,10 @@ struct mdesc {
 	/* Block information table.
      Allocated with malign/__mmalloc_free (not mmalloc/mfree).  */
 	/* Table indexed by block number giving per-block information.  */
-
 	malloc_info *heapinfo;
 
-	/* Free list headers for each fragment size.  */
-	/* Free lists for each fragment size.  */
-
+	/* List of all blocks containing free fragments of this size. The array indice is the log2 of requested size */
 	struct list fraghead[BLOCKLOG];
-
-	/* List of blocks allocated by memalign.  */
-
-	struct alignlist *aligned_blocks;
 
 	/* The base address of the memory region for this malloc heap.  This
      is the location where the bookkeeping data for mmap and for malloc
