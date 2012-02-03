@@ -15,8 +15,6 @@
 	   __attribute__((__format__ (__printf__, format_idx, arg_idx)))
 # define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
 	       __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
-# define _XBT_GNUC_FORMAT( arg_idx )                \
-		   __attribute__((__format_arg__ (arg_idx)))
 # define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
 # define _XBT_GNUC_UNUSED  __attribute__((__unused__))
 # define _XBT_GNUC_CONSTRUCTOR __attribute__((__constructor__))
@@ -26,7 +24,6 @@
 #else                           /* !__GNUC__ */
 # define _XBT_GNUC_PRINTF( format_idx, arg_idx )
 # define _XBT_GNUC_SCANF( format_idx, arg_idx )
-# define _XBT_GNUC_FORMAT( arg_idx )
 # define _XBT_GNUC_NORETURN
 # define _XBT_GNUC_UNUSED
 # define _XBT_GNUC_CONSTRUCTOR
