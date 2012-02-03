@@ -164,7 +164,7 @@ void model_full_set_route(AS_t rc, const char *src,
   int *src_id, *dst_id;
   src_id = xbt_dict_get_or_null(rc->to_index, src);
   dst_id = xbt_dict_get_or_null(rc->to_index, dst);
-  routing_component_full_t routing = ((routing_component_full_t) rc);
+  routing_component_full_t routing = (routing_component_full_t) rc;
   size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
 
   xbt_assert(src_id, "Network elements %s not found", src);
@@ -187,9 +187,8 @@ void model_full_set_route(AS_t rc, const char *src,
       xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
       xbt_dynar_push(link_route_to_test, &link);
     }
-    if (xbt_dynar_compare((void *) TO_ROUTE_FULL(*src_id, *dst_id)->link_list,
-                          (void *) link_route_to_test,
-                          (int_f_cpvoid_cpvoid_t) full_pointer_resource_cmp)) {
+    if (xbt_dynar_compare(TO_ROUTE_FULL(*src_id, *dst_id)->link_list,
+                          link_route_to_test, full_pointer_resource_cmp)) {
       surf_parse_error("A route between \"%s\" and \"%s\" already exists "
                        "with a different content. "
                        "If you are trying to define a reverse route, "
@@ -229,10 +228,10 @@ void model_full_set_route(AS_t rc, const char *src,
 
       XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
                 src, route->src_gateway, dst, route->dst_gateway);
-      if (routing_get_network_element_type((const char *) route->dst_gateway) ==
+      if (routing_get_network_element_type(route->dst_gateway) ==
           SURF_NETWORK_ELEMENT_NULL)
         xbt_die("The dst_gateway '%s' does not exist!", route->dst_gateway);
-      if (routing_get_network_element_type((const char *) route->src_gateway) ==
+      if (routing_get_network_element_type(route->src_gateway) ==
           SURF_NETWORK_ELEMENT_NULL)
         xbt_die("The src_gateway '%s' does not exist!", route->src_gateway);
     }
@@ -260,10 +259,9 @@ void model_full_set_route(AS_t rc, const char *src,
         xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
         xbt_dynar_push(link_route_to_test, &link);
       }
-      xbt_assert(!xbt_dynar_compare
-                 ((void *) TO_ROUTE_FULL(*dst_id, *src_id)->link_list,
-                  (void *) link_route_to_test, (int_f_cpvoid_cpvoid_t)
-                  full_pointer_resource_cmp),
+      xbt_assert(!xbt_dynar_compare(TO_ROUTE_FULL(*dst_id, *src_id)->link_list,
+                                    link_route_to_test,
+                                    full_pointer_resource_cmp),
                  "The route between \"%s\" and \"%s\" already exists", src,
                  dst);
     } else {
