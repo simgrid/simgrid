@@ -67,6 +67,16 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     create homogeneous dictionaries, where all the elements share the
     same free function. Non homogeneous dictionnaries will be
     deprecated in the next release.
+  * mmalloc module: 
+    - cleanups and simplifications to make it maintainable again
+    - exotic features (such as memalign and valloc) were removed
+    - The metadata were extended and improved so that the
+      model-checker becomes able to explore and inspect the heaps.
+    - This may induce a performance drop when enable_model-checking is
+      ON in cmake (even if it's not used in the simulation), but it is
+      necessary at this point to get MC working. 
+      
+      Turn model-checking OFF if simulation performance matters to you.
 
   -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
