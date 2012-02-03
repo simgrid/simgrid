@@ -8,6 +8,7 @@
 
 /* Global vars */
 extern routing_global_t global_routing;
+extern int surf_parse_lineno;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
@@ -190,11 +191,15 @@ void model_full_set_route(AS_t rc, const char *src,
 			xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
 			xbt_dynar_push(link_route_to_test,&link);
 		}
-		xbt_assert(!xbt_dynar_compare(
-			  (void*)TO_ROUTE_FULL(*src_id, *dst_id)->link_list,
-			  (void*)link_route_to_test,
-			  (int_f_cpvoid_cpvoid_t) full_pointer_resource_cmp),
-			  "The route between \"%s\" and \"%s\" already exists. If you are trying to define a reverse route, you must set the symmetrical=no attribute to your routes tags.", src,dst);
+		if (xbt_dynar_compare((void*)TO_ROUTE_FULL(*src_id, *dst_id)->link_list,
+				              (void*)link_route_to_test,
+				              (int_f_cpvoid_cpvoid_t) full_pointer_resource_cmp)) {
+			surf_parse_error("A route between \"%s\" and \"%s\" already exists with a different content. "
+					         "If you are trying to define a reverse route, you must set the symmetrical=no "
+					         "attribute to your routes tags.", src,dst);
+		} else {
+			surf_parse_warn("Ignoring the identical redefinition of the route between \"%s\" and \"%s\"",src,dst);
+		}
 	}
 	else
 	{
