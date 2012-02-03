@@ -9,8 +9,5 @@
    <route src="Inmos" dst="Bellevue">
      <link_ctn id="link"/>
    </route>
-   <route src="Bellevue" dst="Inmos">
-     <link_ctn id="link"/>
-   </route>
  </AS>
  </platform>
