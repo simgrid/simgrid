@@ -52,7 +52,9 @@ typedef struct simdata_process {
   int PID;                      /* used for debugging purposes */
   int PPID;                     /* The parent PID */
   m_host_t put_host;            /* used for debugging purposes */
+#ifdef MSG_USE_DEPRECATED
   m_channel_t put_channel;      /* used for debugging purposes */
+#endif
   smx_action_t waiting_action;
   m_task_t waiting_task;
   char **argv;                  /* arguments table if any */
@@ -81,7 +83,9 @@ typedef struct msg_comm {
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
   xbt_fifo_t host;
+#ifdef MSG_USE_DEPRECATED
   int max_channel;
+#endif
   int PID;
   int session;
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
