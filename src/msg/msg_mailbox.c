@@ -147,6 +147,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
   t_simdata->isused=1;
+  t_simdata->comm = NULL;
   msg_global->sent_msg++;
 
 
