@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <stdarg.h> /* va_arg */
+
 #include "xbt/misc.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
@@ -23,8 +25,20 @@ char* surf_parsed_filename = NULL; // to locate parse error messages
 /*
  * Helping functions
  */
-void surf_parse_error(const char *msg) {
-  xbt_die("Parse error at %s:%d: %s\n", surf_parsed_filename, surf_parse_lineno, msg);
+void surf_parse_error(const char *fmt, ...) {
+	va_list va;
+	va_start(va,fmt);
+	char *msg = bvprintf(fmt,va);
+	va_end(va);
+	xbt_die("Parse error at %s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg);
+}
+void surf_parse_warn(const char *fmt, ...) {
+	va_list va;
+	va_start(va,fmt);
+	char *msg = bvprintf(fmt,va);
+	va_end(va);
+    XBT_WARN("%s:%d: %s", surf_parsed_filename, surf_parse_lineno, msg);
+    free(msg);
 }
 
 double surf_parse_get_double(const char *string) {
