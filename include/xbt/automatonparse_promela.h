@@ -5,9 +5,9 @@
 #include <string.h>
 #include "xbt/automaton.h"
 
-xbt_automaton_t automaton;
-
 SG_BEGIN_DECL()
+
+XBT_PUBLIC_DATA(xbt_automaton_t) automaton;
 
 XBT_PUBLIC(void) init(void);
 

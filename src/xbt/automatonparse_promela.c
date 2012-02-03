@@ -1,5 +1,6 @@
 #include "xbt/automatonparse_promela.h"
 
+xbt_automaton_t automaton;
 char* state_id_src;
 
 void init(){
