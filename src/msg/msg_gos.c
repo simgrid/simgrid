@@ -247,91 +247,6 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   }
 }
 
-/** \ingroup msg_gos_functions
- * \brief Listen on \a channel and waits for receiving a task from \a host.
- *
- * It takes three parameters.
- * \param task a memory location for storing a #m_task_t. It will
- hold a task when this function will return. Thus \a task should not
- be equal to \c NULL and \a *task should be equal to \c NULL. If one of
- those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
- listening. This value has to be >=0 and < than the maximal
- number of channels fixed with MSG_set_channel_number().
- * \param host the host that is to be watched.
- * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
- */
-MSG_error_t
-MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
-{
-  XBT_WARN("DEPRECATED! Now use MSG_task_receive_from_host");
-  return MSG_task_get_ext(task, channel, -1, host);
-}
-
-/** \ingroup msg_gos_functions
- * \brief Listen on a channel and wait for receiving a task.
- *
- * It takes two parameters.
- * \param task a memory location for storing a #m_task_t. It will
- hold a task when this function will return. Thus \a task should not
- be equal to \c NULL and \a *task should be equal to \c NULL. If one of
- those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
- listening. This value has to be >=0 and < than the maximal
- number of channels fixed with MSG_set_channel_number().
- * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
- */
-MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
-{
-  XBT_WARN("DEPRECATED! Now use MSG_task_receive");
-  return MSG_task_get_with_timeout(task, channel, -1);
-}
-
-/** \ingroup msg_gos_functions
- * \brief Listen on a channel and wait for receiving a task with a timeout.
- *
- * It takes three parameters.
- * \param task a memory location for storing a #m_task_t. It will
- hold a task when this function will return. Thus \a task should not
- be equal to \c NULL and \a *task should be equal to \c NULL. If one of
- those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
- listening. This value has to be >=0 and < than the maximal
- number of channels fixed with MSG_set_channel_number().
- * \param max_duration the maximum time to wait for a task before giving
- up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task
- will not be modified and will still be
- equal to \c NULL when returning.
- * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
- */
-MSG_error_t
-MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
-                          double max_duration)
-{
-  XBT_WARN("DEPRECATED! Now use MSG_task_receive_with_timeout");
-  return MSG_task_get_ext(task, channel, max_duration, NULL);
-}
-
-/** \defgroup msg_gos_functions MSG Operating System Functions
- *  \brief This section describes the functions that can be used
- *  by an agent for handling some task.
- */
-
-MSG_error_t
-MSG_task_get_ext(m_task_t * task, m_channel_t channel, double timeout,
-                 m_host_t host)
-{
-  XBT_WARN("DEPRECATED! Now use MSG_task_receive_ext");
-  xbt_assert((channel >= 0)
-              && (channel < msg_global->max_channel), "Invalid channel %d",
-              channel);
-
-  return
-      MSG_mailbox_get_task_ext(MSG_mailbox_get_by_channel
-                               (MSG_host_self(), channel), task, host,
-                               timeout);
-}
-
 MSG_error_t
 MSG_task_receive_from_host(m_task_t * task, const char *alias,
                            m_host_t host)
@@ -781,6 +696,69 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
   }
 }
 
+MSG_error_t MSG_task_send(m_task_t task, const char *alias)
+{
+  XBT_DEBUG("MSG_task_send: Trying to send a message on mailbox '%s'", alias);
+  return MSG_task_send_with_timeout(task, alias, -1);
+}
+
+
+MSG_error_t
+MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
+{
+  task->simdata->rate = maxrate;
+  return MSG_task_send(task, alias);
+}
+
+
+MSG_error_t
+MSG_task_send_with_timeout(m_task_t task, const char *alias,
+                           double timeout)
+{
+  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias),
+                                      task, timeout);
+}
+
+int MSG_task_listen(const char *alias)
+{
+  CHECK_HOST();
+
+  return !MSG_mailbox_is_empty(MSG_mailbox_get_by_alias(alias));
+}
+
+int MSG_task_listen_from_host(const char *alias, m_host_t host)
+{
+  CHECK_HOST();
+
+  return
+      MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias
+                                               (alias), host);
+}
+
+int MSG_task_listen_from(const char *alias)
+{
+  m_task_t task;
+
+  CHECK_HOST();
+
+  if (NULL ==
+      (task = MSG_mailbox_get_head(MSG_mailbox_get_by_alias(alias))))
+    return -1;
+
+  return MSG_process_get_PID(task->simdata->sender);
+}
+
+#ifdef MSG_USE_DEPRECATED
+/** \ingroup msg_gos_functions
+ *
+ * \brief Return the last value returned by a MSG function (except
+ * MSG_get_errno...).
+ */
+MSG_error_t MSG_get_errno(void)
+{
+  return PROCESS_GET_ERRNO();
+}
+
 /** \ingroup msg_gos_functions
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.
@@ -870,34 +848,33 @@ MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
                                    (dest, channel), task, timeout);
 }
 
-MSG_error_t MSG_task_send(m_task_t task, const char *alias)
+/** \ingroup msg_gos_functions
+ * \brief Test whether there is a pending communication on a channel, and who sent it.
+ *
+ * It takes one parameter.
+ * \param channel the channel on which the agent should be
+ listening. This value has to be >=0 and < than the maximal
+ number of channels fixed with MSG_set_channel_number().
+ * \return -1 if there is no pending communication and the PID of the process who sent it otherwise
+ */
+int MSG_task_probe_from(m_channel_t channel)
 {
-  XBT_DEBUG("MSG_task_send: Trying to send a message on mailbox '%s'", alias);
-  return MSG_task_send_with_timeout(task, alias, -1);
-}
+  XBT_WARN("DEPRECATED! Now use MSG_task_listen_from");
+  m_task_t task;
 
-
-MSG_error_t
-MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
-{
-  task->simdata->rate = maxrate;
-  return MSG_task_send(task, alias);
-}
-
-
-MSG_error_t
-MSG_task_send_with_timeout(m_task_t task, const char *alias,
-                           double timeout)
-{
-  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias),
-                                      task, timeout);
-}
-
-int MSG_task_listen(const char *alias)
-{
   CHECK_HOST();
 
-  return !MSG_mailbox_is_empty(MSG_mailbox_get_by_alias(alias));
+  xbt_assert((channel >= 0)
+              && (channel < msg_global->max_channel), "Invalid channel %d",
+              channel);
+
+  if (NULL ==
+      (task =
+       MSG_mailbox_get_head(MSG_mailbox_get_by_channel
+                            (MSG_host_self(), channel))))
+    return -1;
+
+  return MSG_process_get_PID(task->simdata->sender);
 }
 
 /** \ingroup msg_gos_functions
@@ -952,65 +929,89 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
 
 }
 
-int MSG_task_listen_from_host(const char *alias, m_host_t host)
-{
-  CHECK_HOST();
-
-  return
-      MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias
-                                               (alias), host);
-}
-
 /** \ingroup msg_gos_functions
- * \brief Test whether there is a pending communication on a channel, and who sent it.
+ * \brief Listen on \a channel and waits for receiving a task from \a host.
  *
- * It takes one parameter.
+ * It takes three parameters.
+ * \param task a memory location for storing a #m_task_t. It will
+ hold a task when this function will return. Thus \a task should not
+ be equal to \c NULL and \a *task should be equal to \c NULL. If one of
+ those two condition does not hold, there will be a warning message.
  * \param channel the channel on which the agent should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
- * \return -1 if there is no pending communication and the PID of the process who sent it otherwise
+ * \param host the host that is to be watched.
+ * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
-int MSG_task_probe_from(m_channel_t channel)
+MSG_error_t
+MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
 {
-  XBT_WARN("DEPRECATED! Now use MSG_task_listen_from");
-  m_task_t task;
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive_from_host");
+  return MSG_task_get_ext(task, channel, -1, host);
+}
 
-  CHECK_HOST();
+/** \ingroup msg_gos_functions
+ * \brief Listen on a channel and wait for receiving a task.
+ *
+ * It takes two parameters.
+ * \param task a memory location for storing a #m_task_t. It will
+ hold a task when this function will return. Thus \a task should not
+ be equal to \c NULL and \a *task should be equal to \c NULL. If one of
+ those two condition does not hold, there will be a warning message.
+ * \param channel the channel on which the agent should be
+ listening. This value has to be >=0 and < than the maximal
+ number of channels fixed with MSG_set_channel_number().
+ * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
+ */
+MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
+{
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive");
+  return MSG_task_get_with_timeout(task, channel, -1);
+}
 
+/** \ingroup msg_gos_functions
+ * \brief Listen on a channel and wait for receiving a task with a timeout.
+ *
+ * It takes three parameters.
+ * \param task a memory location for storing a #m_task_t. It will
+ hold a task when this function will return. Thus \a task should not
+ be equal to \c NULL and \a *task should be equal to \c NULL. If one of
+ those two condition does not hold, there will be a warning message.
+ * \param channel the channel on which the agent should be
+ listening. This value has to be >=0 and < than the maximal
+ number of channels fixed with MSG_set_channel_number().
+ * \param max_duration the maximum time to wait for a task before giving
+ up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task
+ will not be modified and will still be
+ equal to \c NULL when returning.
+ * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
+ */
+MSG_error_t
+MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
+                          double max_duration)
+{
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive_with_timeout");
+  return MSG_task_get_ext(task, channel, max_duration, NULL);
+}
+
+/** \defgroup msg_gos_functions MSG Operating System Functions
+ *  \brief This section describes the functions that can be used
+ *  by an agent for handling some task.
+ */
+
+MSG_error_t
+MSG_task_get_ext(m_task_t * task, m_channel_t channel, double timeout,
+                 m_host_t host)
+{
+  XBT_WARN("DEPRECATED! Now use MSG_task_receive_ext");
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
-  if (NULL ==
-      (task =
-       MSG_mailbox_get_head(MSG_mailbox_get_by_channel
-                            (MSG_host_self(), channel))))
-    return -1;
-
-  return MSG_process_get_PID(task->simdata->sender);
+  return
+      MSG_mailbox_get_task_ext(MSG_mailbox_get_by_channel
+                               (MSG_host_self(), channel), task, host,
+                               timeout);
 }
 
-int MSG_task_listen_from(const char *alias)
-{
-  m_task_t task;
-
-  CHECK_HOST();
-
-  if (NULL ==
-      (task = MSG_mailbox_get_head(MSG_mailbox_get_by_alias(alias))))
-    return -1;
-
-  return MSG_process_get_PID(task->simdata->sender);
-}
-
-#ifdef MSG_USE_DEPRECATED
-/** \ingroup msg_gos_functions
- *
- * \brief Return the last value returned by a MSG function (except
- * MSG_get_errno...).
- */
-MSG_error_t MSG_get_errno(void)
-{
-  return PROCESS_GET_ERRNO();
-}
 #endif

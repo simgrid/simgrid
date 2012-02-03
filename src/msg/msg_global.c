@@ -64,7 +64,9 @@ void MSG_global_init(int *argc, char **argv)
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
+#ifdef MSG_USE_DEPRECATED
     msg_global->max_channel = 0;
+#endif
     msg_global->PID = 1;
     msg_global->sent_msg = 0;
     msg_global->task_copy_callback = NULL;
@@ -85,6 +87,7 @@ void MSG_global_init(int *argc, char **argv)
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_destroy);
 }
 
+#ifdef MSG_USE_DEPRECATED
 /** \defgroup m_channel_management    Understanding channels
  *  \brief This section briefly describes the channel notion of MSG
  *  (#m_channel_t).
@@ -138,6 +141,7 @@ int MSG_get_channel_number(void)
 
   return msg_global->max_channel;
 }
+#endif
 
 /** \ingroup msg_simulation
  * \brief Launch the MSG simulation

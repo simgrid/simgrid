@@ -55,18 +55,6 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
   return mailbox;
 }
 
-msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host,
-                                         m_channel_t channel)
-{
-  XBT_WARN("DEPRECATED! Now use MSG_mailbox_get_by_alias");
-  xbt_assert((host != NULL), "Invalid host");
-  xbt_assert((channel >= 0)
-              && (channel < msg_global->max_channel), "Invalid channel %d",
-              channel);
-
-  return host->simdata->mailboxes[(size_t) channel];
-}
-
 MSG_error_t
 MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
                          m_host_t host, double timeout)
@@ -195,3 +183,17 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 #endif
   MSG_RETURN(ret);
 }
+
+#ifdef MSG_USE_DEPRECATED
+msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host,
+                                         m_channel_t channel)
+{
+  XBT_WARN("DEPRECATED! Now use MSG_mailbox_get_by_alias");
+  xbt_assert((host != NULL), "Invalid host");
+  xbt_assert((channel >= 0)
+              && (channel < msg_global->max_channel), "Invalid channel %d",
+              channel);
+
+  return host->simdata->mailboxes[(size_t) channel];
+}
+#endif

@@ -52,22 +52,6 @@ void MSG_mailbox_free(void *mailbox);
 XBT_PUBLIC(msg_mailbox_t)
     MSG_mailbox_get_by_alias(const char *alias);
 
-/* \brief MSG_mailbox_get_by_channel - get a mailbox of the specified host from its channel.
- *
- * The function MSG_mailbox_get_by_channel returns the mailbox of the
- * specified host from the channel specified by the parameter
- * channel. If the mailbox does not exists, the function fails.
- *
- * \param host		The host containing he mailbox to get.
- * \param channel	The channel used to identify the mailbox.
- *
- * \return The mailbox of the specified host associated the channel
- *         specified as parameter.
- *
- */
-XBT_PUBLIC(msg_mailbox_t)
-    MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel);
-
 /*! \brief MSG_mailbox_is_empty - test if a mailbox is empty.
  *
  * The function MSG_mailbox_is_empty tests if a mailbox is empty
@@ -108,6 +92,23 @@ XBT_PUBLIC(int)
 MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
                                          m_host_t host);
 
+#ifdef MSG_USE_DEPRECATED
+/* \brief MSG_mailbox_get_by_channel - get a mailbox of the specified host from its channel.
+ *
+ * The function MSG_mailbox_get_by_channel returns the mailbox of the
+ * specified host from the channel specified by the parameter
+ * channel. If the mailbox does not exists, the function fails.
+ *
+ * \param host      The host containing he mailbox to get.
+ * \param channel   The channel used to identify the mailbox.
+ *
+ * \return The mailbox of the specified host associated the channel
+ *         specified as parameter.
+ *
+ */
+XBT_PUBLIC(msg_mailbox_t)
+    MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel);
+#endif
 
 SG_END_DECL()
 #endif                          /* !SMX_MAILBOX_H */

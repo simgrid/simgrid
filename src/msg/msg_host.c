@@ -31,9 +31,6 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
   const char *name;
   simdata_host_t simdata = xbt_new0(s_simdata_host_t, 1);
   m_host_t host = xbt_new0(s_m_host_t, 1);
-  int i;
-
-  char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
 
   name = SIMIX_host_get_name(workstation);
   /* Host structure */
@@ -42,6 +39,10 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
   host->data = data;
 
   simdata->smx_host = workstation;
+
+#ifdef MSG_USE_DEPRECATED
+  int i;
+  char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
 
   if (msg_global->max_channel > 0)
     simdata->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
@@ -53,6 +54,7 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
     simdata->mailboxes[i] = MSG_mailbox_new(alias);
     memset(alias, 0, MAX_ALIAS_NAME + 1);
   }
+#endif
 
   simcall_host_set_data(workstation, host);
   xbt_lib_set(host_lib,name,MSG_HOST_LEVEL,host);
@@ -133,8 +135,10 @@ void __MSG_host_destroy(m_host_t host)
   /* Clean simulator data */
   simdata = (host)->simdata;
 
+#ifdef MSG_USE_DEPRECATED
   if (msg_global->max_channel > 0)
     free(simdata->mailboxes);
+#endif
 
   free(simdata);
 

@@ -106,6 +106,7 @@ typedef struct msg_comm *msg_comm_t;
 typedef struct s_smx_process *m_process_t;
 /** @} */
 
+#ifdef MSG_USE_DEPRECATED
 /* ********************************* Channel ******************************** */
 /** @brief Channel datatype  
     @ingroup m_datatypes_management 
@@ -116,6 +117,7 @@ typedef struct s_smx_process *m_process_t;
    @{ */
 typedef int m_channel_t;
 /** @} */
+#endif
 
 /* ******************************** Mailbox ************************************ */
 
