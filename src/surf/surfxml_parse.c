@@ -18,11 +18,13 @@ int ETag_surfxml_include_state(void);
 
 #include "simgrid_dtd.c"
 
+char* surf_parsed_filename = NULL; // to locate parse error messages
+
 /*
  * Helping functions
  */
 void surf_parse_error(const char *msg) {
-  xbt_die("Parse error on line %d: %s\n", surf_parse_lineno, msg);
+  xbt_die("Parse error at %s:%d: %s\n", surf_parsed_filename, surf_parse_lineno, msg);
 }
 
 double surf_parse_get_double(const char *string) {
@@ -90,21 +92,25 @@ static void add_randomness(void);
 /*
  * Stuff relative to the <include> tag
  */
-
 static xbt_dynar_t surf_input_buffer_stack = NULL;
 static xbt_dynar_t surf_file_to_parse_stack = NULL;
+static xbt_dynar_t surf_parsed_filename_stack = NULL;
 
 void STag_surfxml_include(void)
 {
   XBT_INFO("STag_surfxml_include '%s'",A_surfxml_include_file);
-  xbt_dynar_push(surf_file_to_parse_stack, &surf_file_to_parse); //save old filename
+  xbt_dynar_push(surf_parsed_filename_stack,&surf_parsed_filename); // save old file name
+  surf_parsed_filename = xbt_strdup(A_surfxml_include_file);
 
-  surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r"); // read new filename
+  xbt_dynar_push(surf_file_to_parse_stack, &surf_file_to_parse); //save old file descriptor
+
+  surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r"); // read new file descriptor
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n",
               A_surfxml_include_file);
   xbt_dynar_push(surf_input_buffer_stack,&surf_input_buffer);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse_push_buffer_state(surf_input_buffer);
+
   fflush(NULL);
 }
 
@@ -122,18 +128,26 @@ void ETag_surfxml_include(void) {
  *
  * Yeah, that's terribly hackish, but it works. A better solution should be dealed with in flexml
  * directly: a command line flag could instruct it to do the correct thing when #include is encountered
- * on a line.
+ * on a line. One day maybe, if the maya allow it.
  */
 int ETag_surfxml_include_state(void)
 {
   fflush(NULL);
   XBT_INFO("ETag_surfxml_include_state '%s'",A_surfxml_include_file);
-  if(!xbt_dynar_is_empty(surf_input_buffer_stack))
+
+  if(!xbt_dynar_is_empty(surf_input_buffer_stack)) // nope, that's a true premature EOF. Let the parser die verbosely.
 	  return 1;
+
+  // Yeah, we were in an <include> Restore state and proceed.
   fclose(surf_file_to_parse);
   xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse);
   surf_parse_pop_buffer_state();
   xbt_dynar_pop(surf_input_buffer_stack,surf_input_buffer);
+
+  // Restore the filename for error messages
+  free(surf_parsed_filename);
+  xbt_dynar_pop(surf_parsed_filename_stack,&surf_parsed_filename);
+
   return 0;
 }
 
@@ -502,6 +516,10 @@ void surf_parse_open(const char *file)
   if (!surf_file_to_parse_stack)
     surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
 
+  if (!surf_file_to_parse_stack)
+    surf_parsed_filename_stack = xbt_dynar_new(sizeof(FILE *), xbt_free_f);
+  surf_parsed_filename = xbt_strdup(file);
+
   surf_file_to_parse = surf_fopen(file, "r");
   xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", file);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
@@ -513,6 +531,9 @@ void surf_parse_close(void)
 {
   xbt_dynar_free(&surf_input_buffer_stack);
   xbt_dynar_free(&surf_file_to_parse_stack);
+  xbt_dynar_free(&surf_parsed_filename_stack);
+
+  free(surf_parsed_filename);
 
   if (surf_file_to_parse) {
     surf_parse__delete_buffer(surf_input_buffer);
