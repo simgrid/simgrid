@@ -15,7 +15,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>             /* Prototypes for lseek, sbrk (maybe) */
 #endif
-#include "mcalloc.c"
 #include "mfree.c"
 #include "mmalloc.c"
 #include "mrealloc.c"

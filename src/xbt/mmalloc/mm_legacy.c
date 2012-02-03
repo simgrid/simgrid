@@ -49,8 +49,10 @@ void *calloc(size_t nmemb, size_t size)
   xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
 
   LOCK(mdp);
-  void *ret = mcalloc(mdp, nmemb,size);
+  void *ret = mmalloc(mdp, nmemb*size);
   UNLOCK(mdp);
+  memset(ret, 0, nmemb * size);
+
 
   return ret;
 }

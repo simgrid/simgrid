@@ -34,9 +34,6 @@ extern void *mmalloc(xbt_mheap_t md, size_t size);
    SIZE bytes long.  */
 extern void *mrealloc(xbt_mheap_t md, void *ptr, size_t size);
 
-/* Allocate NMEMB elements of SIZE bytes each, all initialized to 0.  */
-extern void *mcalloc(xbt_mheap_t md, size_t nmemb, size_t size);
-
 /* Free a block allocated by `mmalloc', `mrealloc' or `mcalloc'.  */
 extern void mfree(xbt_mheap_t md, void *ptr);
 
