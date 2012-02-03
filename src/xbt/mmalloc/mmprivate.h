@@ -35,12 +35,25 @@
    requests receive one or more whole blocks, and small requests
    receive a fragment of a block.  Fragment sizes are powers of two,
    and all fragments of a block are the same size.  When all the
-   fragments in a block have been freed, the block itself is freed.  */
+   fragments in a block have been freed, the block itself is freed.
+
+   FIXME: we are not targeting 16bits machines anymore; update values */
 
 #define INT_BIT		(CHAR_BIT * sizeof(int))
 #define BLOCKLOG	(INT_BIT > 16 ? 12 : 9)
 #define BLOCKSIZE	((unsigned int) 1 << BLOCKLOG)
 #define BLOCKIFY(SIZE)	(((SIZE) + BLOCKSIZE - 1) / BLOCKSIZE)
+
+/* We keep fragment-specific meta-data for introspection purposes, and these
+ * information are kept in fixed lenght arrays. Here is the computation of
+ * that size.
+ *
+ * Never make SMALLEST_POSSIBLE_MALLOC smaller than sizeof(list) because we
+ * need to enlist the free fragments.
+ */
+
+#define SMALLEST_POSSIBLE_MALLOC (sizeof(struct list))
+#define MAX_FRAGMENT_PER_BLOCK (BLOCKSIZE / SMALLEST_POSSIBLE_MALLOC)
 
 /* The difference between two pointers is a signed int.  On machines where
    the data addresses have the high bit set, we need to ensure that the
@@ -58,8 +71,8 @@
 #define HEAP		(INT_BIT > 16 ? 4194304 : 65536)
 
 /* Number of contiguous free blocks allowed to build up at the end of
-   memory before they will be returned to the system.  */
-
+   memory before they will be returned to the system.
+   FIXME: this is not used anymore: we never return memory to the system. */
 #define FINAL_FREE_BLOCKS	8
 
 /* Where to start searching the free list when looking for new memory.
@@ -76,6 +89,12 @@
 #define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 
 const char *xbt_thread_self_name(void);
+
+/* Doubly linked lists of free fragments.  */
+struct list {
+	struct list *next;
+	struct list *prev;
+};
 
 /* Data structure giving per-block information.
  *
@@ -113,6 +132,7 @@ typedef struct {
 		struct {
 			size_t nfree;           /* Free fragments in a fragmented block.  */
 			size_t first;           /* First free fragment of the block.  */
+			unsigned short frag_size[MAX_FRAGMENT_PER_BLOCK];
 		} busy_frag;
 		struct {
 			size_t size; /* Size (in blocks) of a large cluster.  */
@@ -126,12 +146,6 @@ typedef struct {
 		} free_block;
 	};
 } malloc_info;
-
-/* Doubly linked lists of free fragments.  */
-struct list {
-	struct list *next;
-	struct list *prev;
-};
 
 /* Internal structure that defines the format of the malloc-descriptor.
    This gets written to the base address of the region that mmalloc is

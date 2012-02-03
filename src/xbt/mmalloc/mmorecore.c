@@ -50,12 +50,14 @@ static size_t pagesize;
 
 /*  Get core for the memory region specified by MDP, using SIZE as the
     amount to either add to or subtract from the existing region.  Works
-    like sbrk(), but using mmap(). */
+    like sbrk(), but using mmap().
+
+    It never returns NULL. Instead, it dies verbosely on errors. */
 
 void *mmorecore(struct mdesc *mdp, int size)
 {
   ssize_t test = 0;
-  void *result = NULL;
+  void *result; // please keep it uninitialized to track issues
   off_t foffset;                /* File offset at which new mapping will start */
   size_t mapbytes;              /* Number of bytes to map */
   void *moveto;                 /* Address where we wish to move "break value" to */
@@ -72,8 +74,8 @@ void *mmorecore(struct mdesc *mdp, int size)
   } else if (size < 0) {
     /* We are deallocating memory.  If the amount requested would cause
        us to try to deallocate back past the base of the mmap'd region
-       then do nothing, and return NULL.  Otherwise, deallocate the
-       memory and return the old break value. */
+       then die verbosely.  Otherwise, deallocate the memory and return
+       the old break value. */
     if (((char *) mdp->breakval) + size >= (char *) mdp->base) {
       result = (void *) mdp->breakval;
       mdp->breakval = (char *) mdp->breakval + size;
@@ -81,13 +83,16 @@ void *mmorecore(struct mdesc *mdp, int size)
       munmap(moveto,
              (size_t) (((char *) mdp->top) - ((char *) moveto)) - 1);
       mdp->top = moveto;
+    } else {
+    	fprintf(stderr,"Internal error: mmap was asked to deallocate more memory than it previously allocated. Bailling out now!\n");
+    	abort();
     }
   } else {
     /* We are allocating memory. Make sure we have an open file
        descriptor if not working with anonymous memory. */
     if (!(mdp->flags & MMALLOC_ANONYMOUS) && mdp->fd < 0) {
-      THROWF(system_error,0,"mmap file descriptor <0 (%d), without MMALLOC_ANONYMOUS being in the flags",mdp->fd);
-      result = NULL;
+    	fprintf(stderr,"Internal error: mmap file descriptor <0 (%d), without MMALLOC_ANONYMOUS being in the flags.\n",mdp->fd);
+    	abort();
     } else if ((char *) mdp->breakval + size > (char *) mdp->top) {
       /* The request would move us past the end of the currently
          mapped memory, so map in enough more memory to satisfy
@@ -102,8 +107,10 @@ void *mmorecore(struct mdesc *mdp, int size)
         /* FIXME:  Test results of lseek() */
         lseek(mdp->fd, foffset + mapbytes - 1, SEEK_SET);
         test = write(mdp->fd, &buf, 1);
-        if (test == -1)
-          THROWF(system_error, 0, "write to mmap'ed fd failed! error: %s", strerror(errno));
+        if (test == -1) {
+        	fprintf(stderr,"Internal error: write to mmap'ed fd failed! error: %s", strerror(errno));
+        	abort();
+        }
       }
 
       /* Let's call mmap. Note that it is possible that mdp->top
@@ -112,8 +119,10 @@ void *mmorecore(struct mdesc *mdp, int size)
                    MAP_PRIVATE_OR_SHARED(mdp) | MAP_IS_ANONYMOUS(mdp) |
                    MAP_FIXED, MAP_ANON_OR_FD(mdp), foffset);
 
-      if (mapto == (void *) -1/* That's MAP_FAILED */)
-    	  THROWF(system_error,0,"mmap returned MAP_FAILED! error: %s",strerror(errno));
+      if (mapto == (void *) -1/* That's MAP_FAILED */) {
+      	fprintf(stderr,"Internal error: mmap returned MAP_FAILED! error: %s",strerror(errno));
+      	abort();
+      }
 
       if (mdp->top == 0)
     	  mdp->base = mdp->breakval = mapto;

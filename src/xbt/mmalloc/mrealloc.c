@@ -55,10 +55,11 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   switch (type) {
   case 0:
     /* Maybe reallocate a large block to a small fragment.  */
-    if (size <= BLOCKSIZE / 2) {
-      //printf("(%s) alloc large block...",xbt_thread_self_name());
+
+    if (size <= BLOCKSIZE / 2) { // Full block -> Fragment; no need to optimize for time
+
       result = mmalloc(mdp, size);
-      if (result != NULL) {
+      if (result != NULL) { // useless (mmalloc never returns NULL), but harmless
         memcpy(result, ptr, size);
         mfree(mdp, ptr);
         return (result);

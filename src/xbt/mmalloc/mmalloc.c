@@ -16,11 +16,14 @@
 
 /* Prototypes for local functions */
 
-static int initialize(xbt_mheap_t mdp);
+static void initialize(xbt_mheap_t mdp);
 static void *register_morecore(xbt_mheap_t mdp, size_t size);
 static void *align(xbt_mheap_t mdp, size_t size);
 
-/* Allocation aligned on block boundary */
+/* Allocation aligned on block boundary.
+ *
+ * It never returns NULL, but dies verbosely on error.
+ */
 static void *align(struct mdesc *mdp, size_t size)
 {
   void *result;
@@ -46,14 +49,12 @@ static void *align(struct mdesc *mdp, size_t size)
 
 /* Finish the initialization of the mheap. If we want to inline it
  * properly, we need to make the align function publicly visible, too  */
-static int initialize(xbt_mheap_t mdp)
+static void initialize(xbt_mheap_t mdp)
 {
   mdp->heapsize = HEAP / BLOCKSIZE;
   mdp->heapinfo = (malloc_info *)
       align(mdp, mdp->heapsize * sizeof(malloc_info));
-  if (mdp->heapinfo == NULL) {
-    return (0);
-  }
+
   memset((void *) mdp->heapinfo, 0, mdp->heapsize * sizeof(malloc_info));
   mdp->heapinfo[0].type=-1;
   mdp->heapinfo[0].free_block.size = 0;
@@ -61,7 +62,6 @@ static int initialize(xbt_mheap_t mdp)
   mdp->heapindex = 0;
   mdp->heapbase = (void *) mdp->heapinfo;
   mdp->flags |= MMALLOC_INITIALIZED;
-  return (1);
 }
 
 /* Get neatly aligned memory from the low level layers, and register it
@@ -72,10 +72,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
   malloc_info *newinfo, *oldinfo;
   size_t newsize;
 
-  result = align(mdp, size);
-  if (result == NULL) {
-    return (NULL);
-  }
+  result = align(mdp, size); // Never returns NULL
 
   /* Check if we need to grow the info table (in a multiplicative manner)  */
   if ((size_t) BLOCK((char *) result + size) > mdp->heapsize) {
@@ -118,23 +115,19 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
   register size_t log;
   int it;
 
-  /* Work even if the user was stupid enough to ask a 0-byte block, ie return a valid block that can be realloced or freed
-   * glibc malloc does not use this trick but return a constant pointer, but my hack is quicker to implement ;)
+  size_t requested_size = size; // The amount of memory requested by user, for real
+
+  /* Work even if the user was stupid enough to ask a ridicullously small block (even 0-length),
+   *    ie return a valid block that can be realloced and freed.
+   * glibc malloc does not use this trick but return a constant pointer, but we need to enlist the free fragments later on.
    */
-  if (size == 0)
-    size = 1;
+  if (size < SMALLEST_POSSIBLE_MALLOC)
+    size = SMALLEST_POSSIBLE_MALLOC;
 
 //  printf("(%s) Mallocing %d bytes on %p (default: %p)...",xbt_thread_self_name(),size,mdp,__mmalloc_default_mdp);fflush(stdout);
 
-  if (!(mdp->flags & MMALLOC_INITIALIZED)) {
-    if (!initialize(mdp)) {
-      return (NULL);
-    }
-  }
-
-  if (size < sizeof(struct list)) {
-    size = sizeof(struct list);
-  }
+  if (!(mdp->flags & MMALLOC_INITIALIZED))
+	  initialize(mdp);
 
   /* Determine the allocation policy based on the request size.  */
   if (size <= BLOCKSIZE / 2) {
@@ -153,12 +146,18 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       /* There are free fragments of this size.
          Pop a fragment out of the fragment list and return it.
          Update the block's nfree and first counters. */
+      int frag_nb;
       result = (void *) next;
+      block = BLOCK(result);
+
+      frag_nb = RESIDUAL(result, BLOCKSIZE) >> log;
+      mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = requested_size;
+      //FIXME setup backtrace
+
       next->prev->next = next->next;
       if (next->next != NULL) {
         next->next->prev = next->prev;
       }
-      block = BLOCK(result);
       if (--mdp->heapinfo[block].busy_frag.nfree != 0) {
         mdp->heapinfo[block].busy_frag.first =
             RESIDUAL(next->next, BLOCKSIZE) >> log;
@@ -168,14 +167,13 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       /* No free fragments of the desired size, so get a new block
          and break it into fragments, returning the first.  */
       //printf("(%s) No free fragment...",xbt_thread_self_name());
-      result = mmalloc(mdp, BLOCKSIZE);
-      //printf("(%s) Fragment: %p...",xbt_thread_self_name(),result);
-      if (result == NULL) {
-        return (NULL);
-      }
 
-      /* Link all fragments but the first into the free list.  */
+      result = mmalloc(mdp, BLOCKSIZE); // does not return NULL
+
+      /* Link all fragments but the first into the free list, and mark their requested size to 0.  */
+      block = BLOCK(result);
       for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i) {
+    	mdp->heapinfo[block].busy_frag.frag_size[i] = 0;
         next = (struct list *) ((char *) result + (i << log));
         next->next = mdp->fraghead[log].next;
         next->prev = &mdp->fraghead[log];
@@ -184,9 +182,10 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
           next->next->prev = next;
         }
       }
+  	  mdp->heapinfo[block].busy_frag.frag_size[0] = requested_size;
+  	  // FIXME: setup backtrace
 
       /* Initialize the nfree and first counters for this block.  */
-      block = BLOCK(result);
       mdp->heapinfo[block].type = log;
       mdp->heapinfo[block].busy_frag.nfree = i - 1;
       mdp->heapinfo[block].busy_frag.first = i - 1;
@@ -199,7 +198,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
     blocks = BLOCKIFY(size);
     start = block = MALLOC_SEARCH_START;
     while (mdp->heapinfo[block].free_block.size < blocks) {
-    	if (mdp->heapinfo[block].type >=0) {
+    	if (mdp->heapinfo[block].type >=0) { // Don't trust xbt_die and friends in malloc-level library, you fool!
     		fprintf(stderr,"Internal error: found a free block not marked as such (block=%lu type=%lu). Please report this bug.\n",(unsigned long)block,(unsigned long)mdp->heapinfo[block].type);
     		abort();
     	}
@@ -224,16 +223,17 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
           continue;
         }
         result = register_morecore(mdp, blocks * BLOCKSIZE);
-        if (result == NULL) {
-          return (NULL);
-        }
+
         block = BLOCK(result);
         for (it=0;it<blocks;it++)
         	mdp->heapinfo[block+it].type = 0;
         mdp->heapinfo[block].busy_block.size = blocks;
-	mdp->heapinfo[block].busy_block.busy_size = size;
-        return (result);
+        mdp->heapinfo[block].busy_block.busy_size = requested_size;
+        // FIXME: setup backtrace
+
+        return result;
       }
+      /* Need large block(s), but found some in the existing heap */
     }
 
     /* At this point we have found a suitable free list entry.
@@ -263,7 +263,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
     for (it=0;it<blocks;it++)
     	mdp->heapinfo[block+it].type = 0;
     mdp->heapinfo[block].busy_block.size = blocks;
-    mdp->heapinfo[block].busy_block.busy_size = size;
+    mdp->heapinfo[block].busy_block.busy_size = requested_size;
   }
   //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
   return (result);
