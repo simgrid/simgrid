@@ -37,8 +37,8 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     (more work is needed here to fully achieve this goal)
     
   MSG:
-  * Deprecate the MSG_task_{get,put} functions and friends. This
-     interface were considered as deprecated since at least 2 years,
+  * Deprecate the MSG_task_{get,put} functions and friends. 
+    This interface were considered as deprecated since over 2 years,
      it's time to inform our users that it is.
     Switch to MSG_task_{send,recv} instead, or declare
      SIMGRID_DEPRECATED before loading the msg.h if you really need to
@@ -52,6 +52,14 @@ SimGrid (3.7) NOT RELEASED; urgency=low
       contexts in parallel (either futex, posix or busy_wait)
     - contexts/parallel_threshold: Minimal number of user contexts
       to be run in parallel (raw contexts only)
+      
+  SURF:
+  * Introduce a parallel mode for the models (see surf/nthreads
+     configuration item). In our tests, running the models in parallel
+     never lead to any speadups because they are so fast that the gain
+     of computing each model in parallel does not amortizes the
+     synchronization costs, even when ultra fast futexes are used.
+    This is released anyway because YMMV.
 
   SimDag:
   * Performance boost by using a swag internally to compute the set of
