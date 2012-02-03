@@ -410,6 +410,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
   t_simdata->isused = 1;
+  t_simdata->comm = NULL;
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
@@ -461,6 +462,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
               "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
 
   t_simdata->isused = 1;
+  t_simdata->comm = NULL;
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
