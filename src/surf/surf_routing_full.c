@@ -206,6 +206,13 @@ void model_full_set_route(AS_t rc, const char *src,
 		  if(!route->dst_gateway && !route->src_gateway)
 			  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
 		  else{
+			  if (xbt_dict_get_or_null(rc->to_index, route->src_gateway) == NULL)
+				  surf_parse_error("The ASroute source gateway must be part of the current AS (being in a sub-AS is not enough), but '%s' is not in '%s'.",
+						  route->src_gateway,rc->name);
+			  if (xbt_dict_get_or_null(rc->to_index, route->dst_gateway) == NULL)
+				  surf_parse_error("The ASroute destination gateway must be part of the current AS (being in a sub-AS is not enough), but '%s' is not in '%s'.",
+						  route->dst_gateway,rc->name);
+
 			  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
 			         route->src_gateway, dst, route->dst_gateway);
 			  if(routing_get_network_element_type((const char*)route->dst_gateway) == SURF_NETWORK_ELEMENT_NULL)
