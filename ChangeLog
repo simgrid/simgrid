@@ -35,6 +35,15 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     analytical models in parallel with N threads (default is 1).
   * Ongoing refactoring the model parsing to make XML files optional
     (more work is needed here to fully achieve this goal)
+    
+  MSG:
+  * Deprecate the MSG_task_{get,put} functions and friends. This
+     interface were considered as deprecated since at least 2 years,
+     it's time to inform our users that it is.
+    Switch to MSG_task_{send,recv} instead, or declare
+     SIMGRID_DEPRECATED before loading the msg.h if you really need to
+     use these (crappy) functions in your code.
+    These functions will be removed at some point. Stop using them now.
 
   Simix:
   * Stabilize the parallel execution mode of user contexts
@@ -56,7 +65,8 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Mallocators: allow value NULL for the reset function.
   * Dicts: new function xbt_dict_new_homogeneous(void(*)(void*)) to
     create homogeneous dictionaries, where all the elements share the
-    same free function.
+    same free function. Non homogeneous dictionnaries will be
+    deprecated in the next release.
 
   -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
