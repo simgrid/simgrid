@@ -1,9 +1,9 @@
 ! expect signal SIGABRT
 $ ${bindir:=.}/flatifier two_hosts_asymetric_BOGUS.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:@] surf_workstation_model_init_ptask_L07
-> [  0.000000] [0:@] Error while loading two_hosts_asymetric_BOGUS.xml: The route between "alice" and "bob" already exists. If you are trying to define a reverse route, you must set the symmetrical=no attribute to your routes tags.
+> [  0.000000] [0:@] Parse error at two_hosts_asymetric_BOGUS.xml:24: A route between "alice" and "bob" already exists with a different content. If you are trying to define a reverse route, you must set the symmetrical=no attribute to your routes tags.
 
 ! expect signal SIGABRT
 $ ${bindir:=.}/flatifier two_hosts_asymetric_BOGUS2.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:@] surf_workstation_model_init_ptask_L07
-> [  0.000000] [0:@] Error while loading two_hosts_asymetric_BOGUS2.xml: The route between "alice" and "bob" already exists. If you are trying to define a reverse route, you must set the symmetrical=no attribute to your routes tags.
+> [  0.000000] [0:@] Parse error at two_hosts_asymetric_BOGUS2.xml:26: A route between "alice" and "bob" already exists with a different content. If you are trying to define a reverse route, you must set the symmetrical=no attribute to your routes tags.
