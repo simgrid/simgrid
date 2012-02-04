@@ -61,10 +61,6 @@
      <link_ctn id="l169"/>
    </route>
  
-   <route src="Host 27" dst="Host 26">
-     <link_ctn id="l155"/>
-   </route>
- 
    <route src="Host 27" dst="Host 28">
      <link_ctn id="l154"/>
      <link_ctn id="l156"/>
@@ -87,17 +83,6 @@
      <link_ctn id="l170"/>
    </route>
  
-   <route src="Host 28" dst="Host 26">
-     <link_ctn id="l156"/>
-     <link_ctn id="l154"/>
-     <link_ctn id="l155"/>
-   </route>
- 
-   <route src="Host 28" dst="Host 27">
-     <link_ctn id="l156"/>
-     <link_ctn id="l154"/>
-   </route>
- 
    <route src="Host 28" dst="Host 29">
      <link_ctn id="l160"/>
    </route>
@@ -116,19 +101,6 @@
      <link_ctn id="l170"/>
    </route>
  
-   <route src="Host 29" dst="Host 26">
-     <link_ctn id="l157"/>
-     <link_ctn id="l152"/>
-   </route>
- 
-   <route src="Host 29" dst="Host 27">
-     <link_ctn id="l159"/>
-   </route>
- 
-   <route src="Host 29" dst="Host 28">
-     <link_ctn id="l160"/>
-   </route>
- 
    <route src="Host 29" dst="Host 30">
      <link_ctn id="l164"/>
    </route>
@@ -142,23 +114,6 @@
      <link_ctn id="l171"/>
    </route>
  
-   <route src="Host 30" dst="Host 26">
-     <link_ctn id="l161"/>
-     <link_ctn id="l152"/>
-   </route>
- 
-   <route src="Host 30" dst="Host 27">
-     <link_ctn id="l162"/>
-   </route>
- 
-   <route src="Host 30" dst="Host 28">
-     <link_ctn id="l163"/>
-   </route>
- 
-   <route src="Host 30" dst="Host 29">
-     <link_ctn id="l164"/>
-   </route>
- 
    <route src="Host 30" dst="Host 31">
      <link_ctn id="l168"/>
    </route>
@@ -167,56 +122,7 @@
      <link_ctn id="l172"/>
    </route>
  
-   <route src="Host 31" dst="Host 26">
-     <link_ctn id="l166"/>
-   </route>
- 
-   <route src="Host 31" dst="Host 27">
-     <link_ctn id="l167"/>
-   </route>
- 
-   <route src="Host 31" dst="Host 28">
-     <link_ctn id="l168"/>
-     <link_ctn id="l163"/>
-   </route>
- 
-   <route src="Host 31" dst="Host 29">
-     <link_ctn id="l167"/>
-     <link_ctn id="l159"/>
-   </route>
- 
-   <route src="Host 31" dst="Host 30">
-     <link_ctn id="l168"/>
-   </route>
- 
    <route src="Host 31" dst="Host 32">
-     <link_ctn id="l173"/>
-   </route>
- 
-   <route src="Host 32" dst="Host 26">
-     <link_ctn id="l169"/>
-     <link_ctn id="l152"/>
-   </route>
- 
-   <route src="Host 32" dst="Host 27">
-     <link_ctn id="l170"/>
-     <link_ctn id="l154"/>
-   </route>
- 
-   <route src="Host 32" dst="Host 28">
-     <link_ctn id="l170"/>
-     <link_ctn id="l156"/>
-   </route>
- 
-   <route src="Host 32" dst="Host 29">
-     <link_ctn id="l171"/>
-   </route>
- 
-   <route src="Host 32" dst="Host 30">
-     <link_ctn id="l172"/>
-   </route>
- 
-   <route src="Host 32" dst="Host 31">
      <link_ctn id="l173"/>
    </route>
  

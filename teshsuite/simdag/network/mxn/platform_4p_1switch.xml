@@ -33,12 +33,6 @@
      <link_ctn id="link3"/>
    </route>
  
-   <route src="cpu1" dst="cpu0">
-     <link_ctn id="link1"/>
-     <link_ctn id="switch"/>
-     <link_ctn id="link0"/>
-   </route>
- 
    <route src="cpu1" dst="cpu2">
      <link_ctn id="link1"/>
      <link_ctn id="switch"/>
@@ -51,41 +45,11 @@
      <link_ctn id="link3"/>
    </route>
    
-   <route src="cpu2" dst="cpu0">
-     <link_ctn id="link2"/>
-     <link_ctn id="switch"/>
-     <link_ctn id="link0"/>
-   </route>
- 
-   <route src="cpu2" dst="cpu1">
-     <link_ctn id="link2"/>
-     <link_ctn id="switch"/>
-     <link_ctn id="link1"/>
-   </route>
- 
    <route src="cpu2" dst="cpu3">
      <link_ctn id="link2"/>
      <link_ctn id="switch"/>
      <link_ctn id="link3"/>
    </route>
  
-   <route src="cpu3" dst="cpu0">
-     <link_ctn id="link3"/>
-     <link_ctn id="switch"/>
-     <link_ctn id="link0"/>
-   </route>
- 
-   <route src="cpu3" dst="cpu1">
-     <link_ctn id="link3"/>
-     <link_ctn id="switch"/>
-     <link_ctn id="link1"/>
-   </route>
- 
-   <route src="cpu3" dst="cpu2">
-     <link_ctn id="link3"/>
-     <link_ctn id="switch"/>
-     <link_ctn id="link2"/>
-   </route>
-   
  </AS>
  </platform>

@@ -17,11 +17,5 @@
      <link_ctn id="link1"/>
    </route>
    
-   <route src="cpu1" dst="cpu0">
-     <link_ctn id="link1"/>
-     <link_ctn id="switch"/>
-     <link_ctn id="link0"/>
-   </route>
-   
  </AS>
  </platform>

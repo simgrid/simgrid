@@ -10,10 +10,5 @@
    <route src="bob" dst="alice">
      <link_ctn id="link1"/>
    </route>
-   
-   <route src="alice" dst="bob">
-     <link_ctn id="link1"/>
-   </route>
-
  </AS>
  </platform>

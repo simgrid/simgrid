@@ -15,11 +15,5 @@
      <link_ctn id="switch"/>
      <link_ctn id="link_alice"/>
    </route>
- 
-   <route src="alice" dst="bob">
-     <link_ctn id="link_alice"/>
-     <link_ctn id="switch"/>
-     <link_ctn id="link_bob"/>
-   </route>
  </AS>
  </platform>
