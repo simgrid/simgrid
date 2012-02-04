@@ -45,7 +45,7 @@ double surf_parse_get_double(const char *string) {
   double res;
   int ret = sscanf(string, "%lg", &res);
   if (ret != 1)
-    surf_parse_error(bprintf("%s is not a double", string));
+    surf_parse_error("%s is not a double", string);
   return res;
 }
 
@@ -53,7 +53,7 @@ int surf_parse_get_int(const char *string) {
   int res;
   int ret = sscanf(string, "%d", &res);
   if (ret != 1)
-    surf_parse_error(bprintf("%s is not an integer", string));
+    surf_parse_error("%s is not an integer", string);
   return res;
 }
 
@@ -346,9 +346,8 @@ void STag_surfxml_cluster(void){
     cluster.sharing_policy = SURF_LINK_FATPIPE;
     break;
   default:
-    surf_parse_error(bprintf
-                     ("Invalid cluster sharing policy for cluster %s",
-                      cluster.id));
+    surf_parse_error("Invalid cluster sharing policy for cluster %s",
+                     cluster.id);
     break;
   }
   switch (AX_surfxml_cluster_bb_sharing_policy) {
@@ -359,9 +358,8 @@ void STag_surfxml_cluster(void){
     cluster.bb_sharing_policy = SURF_LINK_SHARED;
     break;
   default:
-    surf_parse_error(bprintf
-                     ("Invalid bb sharing policy in cluster %s",
-                      cluster.id));
+    surf_parse_error("Invalid bb sharing policy in cluster %s",
+                     cluster.id);
     break;
   }
 
@@ -414,7 +412,7 @@ void ETag_surfxml_link(void){
     link.state = SURF_RESOURCE_OFF;
     break;
   default:
-    surf_parse_error(bprintf("invalid state for link %s",link.id));
+    surf_parse_error("invalid state for link %s", link.id);
     break;
   }
   link.state_trace = tmgr_trace_new(A_surfxml_link_state_file);
@@ -430,7 +428,7 @@ void ETag_surfxml_link(void){
      link.policy = SURF_LINK_FULLDUPLEX;
      break;
   default:
-    surf_parse_error(bprintf("Invalid sharing policy in link %s",link.id));
+    surf_parse_error("Invalid sharing policy in link %s", link.id);
     break;
   }
 
