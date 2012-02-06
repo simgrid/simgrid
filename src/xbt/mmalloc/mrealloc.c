@@ -26,11 +26,9 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   int type;
   size_t block, blocks, oldlimit;
 
-  /* Only keep real realloc and hidden malloc and free to the relevant functions */
+  /* Only keep real realloc, and reroute hidden malloc and free to the relevant functions */
   if (size == 0) {
-	fprintf(stderr,"free from realloc...");
     mfree(mdp, ptr);
-    fprintf(stderr,"done\n");
     return mmalloc(mdp, 0);
   } else if (ptr == NULL) {
     return mmalloc(mdp, size);
@@ -49,10 +47,13 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
   block = BLOCK(ptr);
 
   type = mdp->heapinfo[block].type;
-  if (type<0)
-      THROWF(arg_error,0,"Asked realloc a fragment comming from a *free* block. I'm puzzled.");
 
   switch (type) {
+  case -1:
+    fprintf(stderr, "Asked realloc a fragment comming from a *free* block. I'm puzzled.\n");
+    abort();
+    break;
+
   case 0:
     /* Maybe reallocate a large block to a small fragment.  */
 

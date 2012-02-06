@@ -30,16 +30,19 @@ void mfree(struct mdesc *mdp, void *ptr)
   block = BLOCK(ptr);
 
   if ((char *) ptr < (char *) mdp->heapbase || block > mdp->heapsize) {
-    printf("Ouch, this pointer is not mine. I refuse to free it.\n");
-    return;
+    fprintf(stderr,"Ouch, this pointer is not mine. I refuse to free it. I refuse it to death!!\n");
+    abort();
   }
 
 
   type = mdp->heapinfo[block].type;
-  if (type<0)
-      THROWF(arg_error,0,"Asked to free a fragment in a block that is already free. I'm puzzled");
 
   switch (type) {
+  case -1: /* Already free */
+    fprintf(stderr,"Asked to free a fragment in a block that is already free. I'm puzzled\n");
+    abort();
+    break;
+
   case 0:
     /* Find the free cluster previous to this one in the free list.
        Start searching at the last block referenced; this may benefit

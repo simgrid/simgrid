@@ -184,7 +184,8 @@ xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
   if ((mbase = mmorecore(mdp, sizeof(mtemp))) != NULL) {
     memcpy(mbase, mdp, sizeof(mtemp));
   } else {
-    THROWF(system_error,0,"morecore failed to get some memory!");
+    fprintf(stderr, "morecore failed to get some more memory!\n");
+    abort();
   }
 
   /* Add the new heap to the linked list of heaps attached by mmalloc */  
