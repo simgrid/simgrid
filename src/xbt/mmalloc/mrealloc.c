@@ -44,13 +44,22 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
     return result;
   }
 
+  size_t requested_size = size; // The amount of memory requested by user, for real
+
+  /* Work even if the user was stupid enough to ask a ridicullously small block (even 0-length),
+   *    ie return a valid block that can be realloced and freed.
+   * glibc malloc does not use this trick but return a constant pointer, but we need to enlist the free fragments later on.
+   */
+  if (size < SMALLEST_POSSIBLE_MALLOC)
+    size = SMALLEST_POSSIBLE_MALLOC;
+
   block = BLOCK(ptr);
 
   type = mdp->heapinfo[block].type;
 
   switch (type) {
   case -1:
-    fprintf(stderr, "Asked realloc a fragment comming from a *free* block. I'm puzzled.\n");
+    fprintf(stderr, "Asked realloc a fragment coming from a *free* block. I'm puzzled.\n");
     abort();
     break;
 
@@ -61,31 +70,35 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
 
       result = mmalloc(mdp, size);
       if (result != NULL) { // useless (mmalloc never returns NULL), but harmless
-        memcpy(result, ptr, size);
+        memcpy(result, ptr, requested_size);
         mfree(mdp, ptr);
         return (result);
       }
     }
 
-    /* The new size is a large allocation as well;
-       see if we can hold it in place. */
+    /* Full blocks -> Full blocks; see if we can hold it in place. */
     blocks = BLOCKIFY(size);
     if (blocks < mdp->heapinfo[block].busy_block.size) {
     	int it;
       /* The new size is smaller; return excess memory to the free list. */
       //printf("(%s) return excess memory...",xbt_thread_self_name());
-     for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++)
-    	 mdp->heapinfo[it].type = 0;
+    	for (it= block+blocks; it< mdp->heapinfo[block].busy_block.size ; it++)
+    	  mdp->heapinfo[it].type = 0; // FIXME that should be useless, type should already be 0 here
+
       mdp->heapinfo[block + blocks].busy_block.size
           = mdp->heapinfo[block].busy_block.size - blocks;
-      mdp->heapinfo[block].busy_block.size = blocks;
-      mdp->heapinfo[block].busy_block.busy_size = size;
-
       mfree(mdp, ADDRESS(block + blocks));
+
+      mdp->heapinfo[block].busy_block.size = blocks;
+      mdp->heapinfo[block].busy_block.busy_size = requested_size;
+
       result = ptr;
     } else if (blocks == mdp->heapinfo[block].busy_block.size) {
-      /* No size change necessary.  */
+
+      /* No block size change necessary; only update the requested size  */
       result = ptr;
+      mdp->heapinfo[block].busy_block.busy_size = requested_size;
+
     } else {
       /* Won't fit, so allocate a new region that will.
          Free the old region first in case there is sufficient
@@ -96,33 +109,31 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       mdp->heaplimit = 0;
       mfree(mdp, ptr);
       mdp->heaplimit = oldlimit;
-      result = mmalloc(mdp, size);
-      if (result == NULL) {
-        mmalloc(mdp, blocks * BLOCKSIZE);
-        return (NULL);
-      }
+
+      result = mmalloc(mdp, requested_size);
       if (ptr != result)
         memmove(result, ptr, blocks * BLOCKSIZE);
     }
     break;
 
-  default:
-    /* Old size is a fragment; type is logarithm
-       to base two of the fragment size.  */
+  default: /* Fragment -> ??; type=logarithm to base two of the fragment size.  */
+
     if (size > (size_t) (1 << (type - 1)) && size <= (size_t) (1 << type)) {
       /* The new size is the same kind of fragment.  */
       //printf("(%s) new size is same kind of fragment...",xbt_thread_self_name());
+
       result = ptr;
-    } else {
+      int frag_nb = RESIDUAL(result, BLOCKSIZE) >> type;
+      mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = requested_size;
+
+    } else { /* fragment -> Either other fragment, or block */
       /* The new size is different; allocate a new space,
          and copy the lesser of the new size and the old. */
       //printf("(%s) new size is different...",xbt_thread_self_name());
 
-      result = mmalloc(mdp, size);
-      if (result == NULL)
-        return (NULL);
+      result = mmalloc(mdp, requested_size);
 
-      memcpy(result, ptr, MIN(size, (size_t) 1 << type));
+      memcpy(result, ptr, MIN(requested_size, (size_t) 1 << type));
       mfree(mdp, ptr);
     }
     break;
