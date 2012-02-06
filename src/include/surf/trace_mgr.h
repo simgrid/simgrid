@@ -18,7 +18,7 @@ XBT_PUBLIC(tmgr_history_t) tmgr_history_new(void);
 XBT_PUBLIC(void) tmgr_history_free(tmgr_history_t history);
 
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
-XBT_INLINE XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
+XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 /**
  * \brief Free a trace event structure
  *

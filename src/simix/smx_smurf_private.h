@@ -550,7 +550,7 @@ void SIMIX_simcall_push(smx_process_t self);
 void SIMIX_simcall_answer(smx_simcall_t);
 void SIMIX_simcall_pre(smx_simcall_t, int);
 void SIMIX_simcall_post(smx_action_t);
-XBT_INLINE smx_simcall_t SIMIX_simcall_mine(void);
+smx_simcall_t SIMIX_simcall_mine(void);
 const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 
 #endif

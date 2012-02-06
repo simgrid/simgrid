@@ -27,10 +27,10 @@ XBT_INLINE XBT_PUBLIC(int) SIMIX_comm_is_latency_bounded(smx_action_t comm);
 smx_rdv_t SIMIX_rdv_create(const char *name);
 void SIMIX_rdv_destroy(smx_rdv_t rdv);
 smx_rdv_t SIMIX_rdv_get_by_name(const char *name);
-XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm);
+void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm);
 int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host);
 smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv);
-XBT_INLINE void SIMIX_comm_start(smx_action_t action);
+void SIMIX_comm_start(smx_action_t action);
 void SIMIX_comm_send(smx_process_t src_proc, smx_rdv_t rdv,
                      double task_size, double rate,
                      void *src_buff, size_t src_buff_size,
