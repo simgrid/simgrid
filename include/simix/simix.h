@@ -28,7 +28,7 @@ XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_pfn_smxprocess_t func
 
 /* Simulation execution */
 XBT_PUBLIC(void) SIMIX_run(void);    
-XBT_INLINE XBT_PUBLIC(double) SIMIX_get_clock(void);
+XBT_PUBLIC(double) SIMIX_get_clock(void);
 
 /* Timer functions FIXME: should these be public? */
 XBT_PUBLIC(void) SIMIX_timer_set(double date, void *function, void *arg);
@@ -62,7 +62,7 @@ XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);
-XBT_INLINE XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
+XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 XBT_PUBLIC(const char*) SIMIX_process_self_get_name(void);
 XBT_PUBLIC(void) SIMIX_process_self_set_data(smx_process_t self, void *data);
 XBT_PUBLIC(void*) SIMIX_process_self_get_data(smx_process_t self);
@@ -91,7 +91,7 @@ XBT_PUBLIC(void) SIMIX_comm_finish(smx_action_t action);
 /******************************* Host simcalls ********************************/
 /* TODO use handlers and keep smx_host_t hidden from higher levels */
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_dict(void);
-XBT_INLINE XBT_PUBLIC(smx_host_t) simcall_host_get_by_name(const char *name);
+XBT_PUBLIC(smx_host_t) simcall_host_get_by_name(const char *name);
 XBT_PUBLIC(const char *) simcall_host_get_name(smx_host_t host);
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_properties(smx_host_t host);
 XBT_PUBLIC(double) simcall_host_get_speed(smx_host_t host);
@@ -144,7 +144,7 @@ XBT_PUBLIC(void) simcall_process_resume(smx_process_t process);
 XBT_PUBLIC(int) simcall_process_count(void);
 XBT_PUBLIC(void *) simcall_process_get_data(smx_process_t process);
 XBT_PUBLIC(void) simcall_process_set_data(smx_process_t process, void *data);
-XBT_INLINE XBT_PUBLIC(smx_host_t) simcall_process_get_host(smx_process_t process);
+XBT_PUBLIC(smx_host_t) simcall_process_get_host(smx_process_t process);
 XBT_PUBLIC(const char *) simcall_process_get_name(smx_process_t process);
 XBT_PUBLIC(int) simcall_process_is_suspended(smx_process_t process);
 XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_process_t host);
@@ -190,7 +190,7 @@ XBT_PUBLIC(smx_action_t) simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff,
 
 XBT_PUBLIC(void) simcall_comm_destroy(smx_action_t comm);
 
-XBT_INLINE XBT_PUBLIC(void) simcall_comm_cancel(smx_action_t comm);
+XBT_PUBLIC(void) simcall_comm_cancel(smx_action_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */
 XBT_PUBLIC(unsigned int) simcall_comm_waitany(xbt_dynar_t comms);

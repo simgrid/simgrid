@@ -35,15 +35,14 @@
 typedef struct s_xbt_socket *xbt_socket_t;
 typedef struct s_xbt_trp_plugin s_xbt_trp_plugin_t, *xbt_trp_plugin_t;
 
-void xbt_socket_new(int incoming,
-                    xbt_socket_t* dst);
-void xbt_socket_new_ext(int incoming,
-                        xbt_socket_t* dst,
-                        xbt_trp_plugin_t plugin,
-                        unsigned long int buf_size,
-                        int measurement);
-XBT_INLINE void* xbt_socket_get_data(xbt_socket_t sock);
-XBT_INLINE void xbt_socket_set_data(xbt_socket_t sock, void* data);
+XBT_PUBLIC(void) xbt_socket_new(int incoming, xbt_socket_t* dst);
+XBT_PUBLIC(void) xbt_socket_new_ext(int incoming,
+                                    xbt_socket_t* dst,
+                                    xbt_trp_plugin_t plugin,
+                                    unsigned long int buf_size,
+                                    int measurement);
+XBT_PUBLIC(void*) xbt_socket_get_data(xbt_socket_t sock);
+XBT_PUBLIC(void) xbt_socket_set_data(xbt_socket_t sock, void* data);
 
 /** \brief Simply create a client socket (to speak to a remote host) */
 XBT_PUBLIC(xbt_socket_t) xbt_socket_tcp_client(const char *host,
