@@ -60,7 +60,6 @@ static void update_action_remaining(double now);
 
 static xbt_swag_t net_modified_set = NULL;
 static xbt_heap_t net_action_heap = NULL;
-xbt_swag_t keep_track = NULL;
 
 /* added to manage the communication action's heap */
 static void net_action_update_index_heap(void *action, int i)
@@ -465,9 +464,9 @@ static double net_share_resources_lazy(double now)
   XBT_DEBUG("Before share resources, the size of modified actions set is %d", xbt_swag_size(net_modified_set));
   update_action_remaining(now);
 
-  keep_track = net_modified_set;
+  network_maxmin_system->keep_track = net_modified_set;
   lmm_solve(network_maxmin_system);
-  keep_track = NULL;
+  network_maxmin_system->keep_track = NULL;
 
   XBT_DEBUG("After share resources, The size of modified actions set is %d", xbt_swag_size(net_modified_set));
 
