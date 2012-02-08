@@ -19,7 +19,7 @@ extern int _surf_do_model_check;
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_assert_stateful(int);
 XBT_PUBLIC(int) MC_random(int min, int max);
-XBT_PUBLIC(void) MC_diff();
+XBT_PUBLIC(void) MC_diff(void);
 
 #else
 
