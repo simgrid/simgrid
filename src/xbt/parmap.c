@@ -12,6 +12,7 @@
 
 #ifdef HAVE_FUTEX_H
 #include <linux/futex.h>
+#include <limits.h>
 #endif
 
 #include "xbt/parmap.h"
@@ -383,7 +384,7 @@ static void xbt_parmap_futex_worker_signal(xbt_parmap_t parmap)
   unsigned count = __sync_add_and_fetch(&parmap->thread_counter, 1);
   if (count == parmap->num_workers) {
     /* all workers have finished, wake the controller */
-    futex_wake(&parmap->thread_counter, 1);
+    futex_wake(&parmap->thread_counter, INT_MAX);
   }
 }
 
@@ -399,7 +400,7 @@ static void xbt_parmap_futex_master_signal(xbt_parmap_t parmap)
   parmap->thread_counter = 1;
   __sync_add_and_fetch(&parmap->work, 1);
   /* wake all workers */
-  futex_wake(&parmap->work, parmap->num_workers - 1);
+  futex_wake(&parmap->work, INT_MAX);
 }
 
 /**
