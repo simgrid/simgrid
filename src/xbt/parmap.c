@@ -347,7 +347,7 @@ static void xbt_parmap_posix_worker_wait(xbt_parmap_t parmap, unsigned round)
 {
   xbt_os_mutex_acquire(parmap->ready_mutex);
   /* wait for more work */
-  if (parmap->work < round) {
+  if (parmap->work != round) {
     xbt_os_cond_wait(parmap->ready_cond, parmap->ready_mutex);
   }
   xbt_os_mutex_release(parmap->ready_mutex);
@@ -416,7 +416,7 @@ static void xbt_parmap_futex_worker_wait(xbt_parmap_t parmap, unsigned round)
 {
   unsigned work = parmap->work;
   /* wait for more work */
-  if (work < round)
+  if (work != round)
     futex_wait(&parmap->work, work);
 }
 #endif
@@ -472,7 +472,7 @@ static void xbt_parmap_busy_master_signal(xbt_parmap_t parmap)
 static void xbt_parmap_busy_worker_wait(xbt_parmap_t parmap, unsigned round)
 {
   /* wait for more work */
-  while (parmap->work < round) {
+  while (parmap->work != round) {
     xbt_os_thread_yield();
   }
 }
