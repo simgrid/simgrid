@@ -246,14 +246,20 @@ extern void *__mmalloc_remap_core(xbt_mheap_t mdp);
     like sbrk(), but using mmap(). */
 extern void *mmorecore(struct mdesc *mdp, int size);
 
-/* Thread-safety (if the sem is already created) FIXME: KILLIT*/
-#define LOCK(mdp)   do {  \
-    if (mdp->locked)      \
-      fprintf(stderr,"panic! I'm not reintrant\n"); \
-		sem_wait(&mdp->sem);  \
-		mdp->locked=1;        \
+/* Thread-safety (if the sem is already created)
+ *
+ * This is mandatory in the case where the user runs a parallel simulation
+ * in a model-checking enabled tree. Without this protection, our malloc
+ * implementation will not like multi-threading AT ALL.
+ */
+#define LOCK(mdp)   do {    \
+    if (0 && mdp->locked) {      \
+      fprintf(stderr,"panic! deadlock detected because %s is not reintrant.\n",__FUNCTION__); \
+      abort();              \
+    }                       \
+		sem_wait(&mdp->sem);    \
+		mdp->locked=1;          \
   } while(0)
-
 
 #define UNLOCK(mdp)  do {  \
 		sem_post(&mdp->sem);   \
