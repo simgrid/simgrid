@@ -132,6 +132,8 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /* If __thread is available */
 #cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@
 
+/* If Model-Checking support was requested */
+#cmakedefine HAVE_MC @HAVE_MC@
 
 SG_END_DECL()
 #endif /* SIMGRID_PUBLIC_CONFIG_H */
