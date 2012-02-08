@@ -509,6 +509,8 @@ XBT_PUBLIC(void) xbt_ex_free(xbt_ex_t e);
 
 /** @brief Shows a backtrace of the current location */
 XBT_PUBLIC(void) xbt_backtrace_display_current(void);
+/** @brief reimplementation of glibc backtrace based directly on gcc library, without implicit malloc  */
+XBT_PUBLIC(int)xbt_backtrace_no_malloc(void**bt, int size);
 /** @brief Captures a backtrace for further use */
 XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t * e);
 /** @brief Display a previously captured backtrace */

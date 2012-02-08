@@ -25,6 +25,51 @@ void xbt_backtrace_postexit(void)
 {
 }
 
+#include <unwind.h>
+struct trace_arg {
+  void **array;
+  int cnt, size;
+};
+
+static _Unwind_Reason_Code
+backtrace_helper (struct _Unwind_Context *ctx, void *a)
+{
+  struct trace_arg *arg = a;
+
+  /* We are first called with address in the __backtrace function.
+     Skip it.  */
+  if (arg->cnt != -1)
+    {
+      arg->array[arg->cnt] = (void *) _Unwind_GetIP(ctx);
+
+      /* Check whether we make any progress.  */
+      if (arg->cnt > 0 && arg->array[arg->cnt - 1] == arg->array[arg->cnt])
+        return _URC_END_OF_STACK;
+    }
+  if (++arg->cnt == arg->size)
+    return _URC_END_OF_STACK;
+  return _URC_NO_REASON;
+}
+
+/** @brief reimplementation of glibc backtrace based directly on gcc library, without implicit malloc
+ *
+ * See http://webloria.loria.fr/~quinson/blog/2012/0208/system_programming_fun_in_SimGrid/
+ * for the motivation behind this function
+ * */
+
+int xbt_backtrace_no_malloc(void **array, int size) {
+  struct trace_arg arg = { .array = array, .size = size, .cnt = -1 };
+
+  if (size >= 1)
+    _Unwind_Backtrace(backtrace_helper, &arg);
+
+  /* _Unwind_Backtrace on IA-64 seems to put NULL address above
+     _start.  Fix it up here.  */
+  if (arg.cnt > 1 && arg.array[arg.cnt - 1] == NULL)
+    --arg.cnt;
+  return arg.cnt != -1 ? arg.cnt : 0;
+}
+
 void xbt_backtrace_current(xbt_ex_t * e)
 {
   e->used = backtrace((void **) e->bt, XBT_BACKTRACE_SIZE);
@@ -37,7 +82,7 @@ void xbt_backtrace_current(xbt_ex_t * e)
 }
 
 
-void xbt_ex_setup_backtrace(xbt_ex_t * e)
+void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly improved/simplifyied with http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
 {
   int i;
 
@@ -66,6 +111,8 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
               && e->used,
               "Backtrace not setup yet, cannot set it up for display");
 
+  e->bt_strings = NULL;
+
   if (!xbt_binary_name) /* no binary name, nothing to do */
     return;
 
@@ -74,7 +121,6 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   e->used--;
   memmove(backtrace_syms, backtrace_syms + 1, sizeof(char *) * e->used);
 
-  e->bt_strings = NULL;
 
   /* Some arches only have stubs of backtrace, no implementation (hppa comes to mind) */
   if (!e->used)

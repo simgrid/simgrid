@@ -5,6 +5,49 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/ex_interface.h" /* internals of backtrace setup */
+
+extern char *xbt_binary_name;
+
+void mmalloc_backtrace_display(xbt_mheap_t mdp, void *ptr){
+  size_t block = BLOCK(ptr);
+  int type;
+  xbt_ex_t e;
+
+  if ((char *) ptr < (char *) mdp->heapbase || block > mdp->heapsize) {
+    fprintf(stderr,"Ouch, this pointer is not mine. I cannot display its backtrace. I refuse it to death!!\n");
+    abort();
+  }
+
+  type = mdp->heapinfo[block].type;
+
+  if (type != 0) {
+    //fprintf(stderr,"Only full blocks are backtraced for now. Ignoring your request.\n");
+    return;
+  }
+  if (mdp->heapinfo[block].busy_block.bt_size == 0) {
+    fprintf(stderr,"No backtrace available for that block, sorry.\n");
+    return;
+  }
+
+  memcpy(&e.bt,&(mdp->heapinfo[block].busy_block.bt),sizeof(void*)*XBT_BACKTRACE_SIZE);
+  e.used = mdp->heapinfo[block].busy_block.bt_size;
+
+  xbt_ex_setup_backtrace(&e);
+  if (e.used == 0) {
+    fprintf(stderr, "(backtrace not set)\n");
+  } else if (e.bt_strings == NULL) {
+    fprintf(stderr, "(backtrace not ready to be computed. %s)\n",xbt_binary_name?"Dunno why":"xbt_binary_name not setup yet");
+  } else {
+    int i;
+
+    fprintf(stderr, "Backtrace of where the block %p where malloced (%d frames):\n",ptr,e.used);
+    for (i = 0; i < e.used; i++)       /* no need to display "xbt_backtrace_display" */{
+      fprintf(stderr,"%d",i);fflush(NULL);
+      fprintf(stderr, "---> %s\n", e.bt_strings[i] + 4);
+    }
+  }
+}
 
 int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void *std_heap_addr){
 

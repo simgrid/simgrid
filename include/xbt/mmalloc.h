@@ -60,5 +60,7 @@ xbt_mheap_t mmalloc_get_current_heap(void);
 
 int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void *std_heap_addr);
 
+void mmalloc_backtrace_display(xbt_mheap_t mdp, void *addr);
+
 
 #endif                          /* MMALLOC_H */

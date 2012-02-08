@@ -29,7 +29,7 @@
 
 #define MMALLOC_MAGIC		"mmalloc"       /* Mapped file magic number */
 #define MMALLOC_MAGIC_SIZE	8       /* Size of magic number buf */
-#define MMALLOC_VERSION		1       /* Current mmalloc version */
+#define MMALLOC_VERSION		2       /* Current mmalloc version */
 
 /* The allocator divides the heap into blocks of fixed size; large
    requests receive one or more whole blocks, and small requests
@@ -88,8 +88,6 @@
 
 #define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 
-const char *xbt_thread_self_name(void);
-
 /* Doubly linked lists of free fragments.  */
 struct list {
 	struct list *next;
@@ -98,8 +96,8 @@ struct list {
 
 /* Data structure giving per-block information.
  *
- * There is one such structure in the mdp->heapinfo array,
- * that is addressed by block number.
+ * There is one such structure in the mdp->heapinfo array per block used in that heap,
+ *    the array index is the block number.
  *
  * There is several types of blocks in memory:
  *  - full busy blocks: used when we are asked to malloc a block which size is > BLOCKSIZE/2
@@ -120,7 +118,6 @@ struct list {
  * You can crawl the array and rely on that value.
  *
  * TODO:
- *  - add an indication of the requested size in each fragment, similarly to busy_block.busy_size
  *  - make room to store the backtrace of where the blocks and fragment were malloced, too.
  */
 typedef struct {
@@ -133,10 +130,13 @@ typedef struct {
 			size_t nfree;           /* Free fragments in a fragmented block.  */
 			size_t first;           /* First free fragment of the block.  */
 			unsigned short frag_size[MAX_FRAGMENT_PER_BLOCK];
+      //void *bt[XBT_BACKTRACE_SIZE][MAX_FRAGMENT_PER_BLOCK]; /* Where it was malloced (or realloced lastly) */
 		} busy_frag;
 		struct {
 			size_t size; /* Size (in blocks) of a large cluster.  */
 			size_t busy_size; /* Actually used space, in bytes */
+			void *bt[XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
+			int bt_size;
 		} busy_block;
 		/* Heap information for a free block (that may be the first of a free cluster).  */
 		struct {
@@ -156,6 +156,7 @@ struct mdesc {
 
 	/* Semaphore locking the access to the heap */
 	sem_t sem;
+	char locked;
 
 	/* Number of processes that attached the heap */
 	unsigned int refcount;
@@ -246,10 +247,17 @@ extern void *__mmalloc_remap_core(xbt_mheap_t mdp);
 extern void *mmorecore(struct mdesc *mdp, int size);
 
 /* Thread-safety (if the sem is already created) FIXME: KILLIT*/
-#define LOCK(mdp)                                        \
-		sem_wait(&mdp->sem)
+#define LOCK(mdp)   do {  \
+    if (mdp->locked)      \
+      fprintf(stderr,"panic! I'm not reintrant\n"); \
+		sem_wait(&mdp->sem);  \
+		mdp->locked=1;        \
+  } while(0)
 
-#define UNLOCK(mdp)                                        \
-		sem_post(&mdp->sem)
+
+#define UNLOCK(mdp)  do {  \
+		sem_post(&mdp->sem);   \
+    mdp->locked=0;         \
+  } while (0)
 
 #endif                          /* __MMPRIVATE_H */
