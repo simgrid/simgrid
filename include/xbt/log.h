@@ -365,9 +365,9 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define _XBT_LOG_ISENABLEDV(catv, priority)                  \
        (priority >= XBT_LOG_STATIC_THRESHOLD                 \
-        && priority >= catv.threshold                         \
         && (catv.threshold != xbt_log_priority_uninitialized \
-            || _xbt_log_cat_init(&catv, priority)) )
+            || _xbt_log_cat_init(&catv, priority))           \
+        && priority >= catv.threshold)
 
 /*
  * Internal Macros
