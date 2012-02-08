@@ -21,6 +21,7 @@
 
 #include "gras_stub_generator.h"
 #include <stdarg.h>
+extern char *xbt_binary_name;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen, gras, "Stub generator");
 
@@ -93,6 +94,8 @@ int main(int argc, char *argv[])
   char *project_name = NULL;
   char *deployment_file = NULL;
   int i;
+
+  xbt_binary_name=xbt_strdup(argv[0]);
 
   surf_init(&argc, argv);
   process_function_set = xbt_dict_new_homogeneous(NULL);
