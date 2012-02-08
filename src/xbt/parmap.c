@@ -416,8 +416,10 @@ static void xbt_parmap_futex_worker_wait(xbt_parmap_t parmap, unsigned round)
 {
   unsigned work = parmap->work;
   /* wait for more work */
-  if (work != round)
+  while (work != round) {
     futex_wait(&parmap->work, work);
+    work = parmap->work;
+  }
 }
 #endif
 
