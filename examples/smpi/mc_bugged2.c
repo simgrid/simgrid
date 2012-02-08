@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <mpi.h>
-#include <mc/modelchecker.h>
+#include <simgrid/modelchecker.h>
 
 
 int main(int argc, char **argv)

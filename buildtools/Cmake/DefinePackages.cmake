@@ -425,7 +425,7 @@ set(headers_to_install
 	include/xbt/automatonparse_promela.h
 	include/xbt/datadesc.h
 	include/simgrid/platf.h
-	include/mc/modelchecker.h
+	include/simgrid/modelchecker.h
 	include/msg/msg.h
 	include/msg/datatypes.h
 	include/simdag/simdag.h
