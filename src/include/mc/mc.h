@@ -12,15 +12,9 @@
 #include "xbt/function_types.h"
 #include "mc/datatypes.h"
 #include "simix/datatypes.h"
-#include "gras_config.h" /* Definition of HAVE_MC */
+#include "simgrid/modelchecker.h" /* our public interface (and definition of HAVE_MC) */
 #include "xbt/automaton.h"
 
-#ifdef HAVE_MC
-extern int _surf_do_model_check;
-#define MC_IS_ENABLED _surf_do_model_check
-#else
-#define MC_IS_ENABLED 0
-#endif
 
 SG_BEGIN_DECL()
 

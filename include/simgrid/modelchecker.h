@@ -12,16 +12,23 @@
 #define SIMGRID_MODELCHECKER_H
 
 #ifdef HAVE_MC
+
 extern int _surf_do_model_check;
 #define MC_IS_ENABLED _surf_do_model_check
-#else
-#define MC_IS_ENABLED 0
-#endif
-
 
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_assert_stateful(int);
 XBT_PUBLIC(int) MC_random(int min, int max);
 XBT_PUBLIC(void) MC_diff();
+
+#else
+
+#define MC_IS_ENABLED 0
+#define MC_assert(a) xbt_assert(a)
+#define MC_assert_stateful(a) xbt_assert(a)
+
+#endif
+
+
 
 #endif /* SIMGRID_MODELCHECKER_H */
