@@ -161,8 +161,8 @@ static XBT_INLINE e_smx_state_t SIMIX_action_map_state(e_surf_action_state_t sta
 void SIMIX_context_mod_init(void);
 void SIMIX_context_mod_exit(void);
 
-XBT_INLINE void SIMIX_context_set_current(smx_context_t context);
-XBT_INLINE smx_context_t SIMIX_context_get_current(void);
+void SIMIX_context_set_current(smx_context_t context);
+smx_context_t SIMIX_context_get_current(void);
 
 /* All factories init */
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);

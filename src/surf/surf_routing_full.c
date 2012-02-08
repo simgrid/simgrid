@@ -207,7 +207,8 @@ void model_full_set_route(AS_t rc, const char *src,
         surf_parse_error("The source of an ASroute must be a sub-AS "
                          "declared within the current AS, "
                          "but '%s' is not an AS within '%s'", src, rc->name);
-      if (xbt_dict_get_or_null(subas->to_index, route->src_gateway) == NULL)
+      if (subas->to_index
+          && xbt_dict_get_or_null(subas->to_index, route->src_gateway) == NULL)
         surf_parse_error("In an ASroute, source gateway must be part of "
                          "the source sub-AS (in particular, being in a "
                          "sub-sub-AS is not allowed), "
@@ -219,7 +220,8 @@ void model_full_set_route(AS_t rc, const char *src,
         surf_parse_error("The destination of an ASroute must be a sub-AS "
                          "declared within the current AS, "
                          "but '%s' is not an AS within '%s'", dst, rc->name);
-      if (xbt_dict_get_or_null(subas->to_index, route->dst_gateway) == NULL)
+      if (subas->to_index
+          && xbt_dict_get_or_null(subas->to_index, route->dst_gateway) == NULL)
         surf_parse_error("In an ASroute, destination gateway must be "
                          "part of the destination sub-AS (in particular, "
                          "in a sub-sub-AS is not allowed), "

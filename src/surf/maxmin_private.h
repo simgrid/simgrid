@@ -78,6 +78,8 @@ typedef struct lmm_system {
   s_xbt_swag_t saturated_variable_set;  /* a list of lmm_variable_t */
   s_xbt_swag_t saturated_constraint_set;        /* a list of lmm_constraint_t_t */
 
+  xbt_swag_t keep_track;
+
   xbt_mallocator_t variable_mallocator;
 } s_lmm_system_t;
 

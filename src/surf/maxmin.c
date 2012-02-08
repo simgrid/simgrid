@@ -25,7 +25,6 @@ static void lmm_update_modified_set(lmm_system_t sys,
 static void lmm_remove_all_modified_set(lmm_system_t sys);
 static int Global_debug_id = 1;
 static int Global_const_debug_id = 1;
-extern xbt_swag_t keep_track;
 
 lmm_system_t lmm_system_new(int selective_update)
 {
@@ -552,9 +551,8 @@ void lmm_solve(lmm_system_t sys)
           cnst->usage = elem->value / elem->variable->weight;
 
         make_elem_active(elem);
-        if(keep_track){
-            xbt_swag_insert((elem->variable)->id, keep_track);
-        }
+        if (sys->keep_track)
+          xbt_swag_insert(elem->variable->id, sys->keep_track);
       }
     }
     XBT_DEBUG("Constraint Usage '%d' : %f", cnst->id_int, cnst->usage);
