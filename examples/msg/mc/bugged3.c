@@ -8,7 +8,7 @@
 /******************************************************************************/
 
 #include <msg/msg.h>
-#include <mc/modelchecker.h>
+#include <simgrid/modelchecker.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged3, "this example");
 

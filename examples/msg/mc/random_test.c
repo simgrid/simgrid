@@ -1,5 +1,5 @@
 #include <msg/msg.h>
-#include <mc/modelchecker.h>
+#include <simgrid/modelchecker.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(random_test, "Random Test");
 

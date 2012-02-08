@@ -9,8 +9,7 @@
 #include "msg/msg.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-#include "mc/modelchecker.h"
-#include "mc/mc.h"
+#include "simgrid/modelchecker.h"
 #include "xbt/xbt_os_time.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,

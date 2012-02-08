@@ -4,7 +4,7 @@
 /******************************************************************************/
 
 #include <msg/msg.h>
-#include <mc/modelchecker.h>
+#include <simgrid/modelchecker.h>
 #define N 3
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
