@@ -11,7 +11,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     (see "example/platforms/tag_config.xml" to use "config tag").
     Note that the command line supersedes the platform file configuration.
   * Change the correction factors used in LMM model, according to
-    the lastest experiments described in INRIA RR-7821. 
+    the latest experiments described in INRIA RR-7821.
     Accuracy should be improved this way.
     (TODO: this is not true in the code, yet)
   * Use the partial invalidation optimization by default for the
@@ -28,16 +28,16 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Rename the TCP_gamma configuration option to network/TCP_gamma
   * Rename the coordinates configuration option to
     network/coordinates, and document it
-  * Use now crosstraffic keyword instead of the terribly missleading 
+  * Use now crosstraffic keyword instead of the terribly misleading
     fullduplex keyword. It is activated by default now in the current
     default model, use --cfg=network/crosstraffic:0 to turn it off.
   * Experimental: new configuration option --cfg=surf/nthreads:N to run
     analytical models in parallel with N threads (default is 1).
   * Ongoing refactoring the model parsing to make XML files optional
     (more work is needed here to fully achieve this goal)
-    
+
   MSG:
-  * Deprecate the MSG_task_{get,put} functions and friends. 
+  * Deprecate the MSG_task_{get,put} functions and friends.
     This interface were considered as deprecated since over 2 years,
      it's time to inform our users that it is.
     Switch to MSG_task_{send,recv} instead, or declare
@@ -52,11 +52,11 @@ SimGrid (3.7) NOT RELEASED; urgency=low
       contexts in parallel (either futex, posix or busy_wait)
     - contexts/parallel_threshold: Minimal number of user contexts
       to be run in parallel (raw contexts only)
-      
+
   SURF:
   * Introduce a parallel mode for the models (see surf/nthreads
      configuration item). In our tests, running the models in parallel
-     never lead to any speadups because they are so fast that the gain
+     never lead to any speedups because they are so fast that the gain
      of computing each model in parallel does not amortizes the
      synchronization costs, even when ultra fast futexes are used.
     This is released anyway because YMMV.
@@ -73,17 +73,17 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Mallocators: allow value NULL for the reset function.
   * Dicts: new function xbt_dict_new_homogeneous(void(*)(void*)) to
     create homogeneous dictionaries, where all the elements share the
-    same free function. Non homogeneous dictionnaries will be
+    same free function. Non homogeneous dictionaries will be
     deprecated in the next release.
-  * mmalloc module: 
+  * mmalloc module:
     - cleanups and simplifications to make it maintainable again
     - exotic features (such as memalign and valloc) were removed
     - The metadata were extended and improved so that the
       model-checker becomes able to explore and inspect the heaps.
     - This may induce a performance drop when enable_model-checking is
       ON in cmake (even if it's not used in the simulation), but it is
-      necessary at this point to get MC working. 
-      
+      necessary at this point to get MC working.
+
       Turn model-checking OFF if simulation performance matters to you.
 
   -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
@@ -94,12 +94,12 @@ SimGrid (3.6.2) stable; urgency=low
 
  General
  * New bindings to the NS3 packet level simulator (experimental)
- * Use the raw (efficient) execution contextes instead of the sysv
+ * Use the raw (efficient) execution contexts instead of the sysv
    (portable) ones when possible.
  * libpcre is now mandatory in any cases since not using it led to
     severe performance loss and possibly other issues
  * Update the XML platforms:
-   - G5K: include the lastest machine in Nancy
+   - G5K: include the latest machine in Nancy
    - GridPP and LCG: new platforms
  * Documentation was partially updated, at least (more to come)
 
@@ -115,9 +115,9 @@ SimGrid (3.6.2) stable; urgency=low
    - Add an hello world project to illustrate simgrid project creation.
    - Embed libpcre into the Simgrid installer to avoid
      its compilation burden
- * The raw execution contextes should work on Apple now
+ * The raw execution contexts should work on Apple now
  * Port to Windows 64 bits
-    - Sysv contextes now have an implementation for this arch
+    - Sysv contexts now have an implementation for this arch
     - GRAS communication features now support this arch
  * Drop support for borland compiler on windows
     - this code was not maintained, and we kinda depend on gcc nowadays
@@ -133,11 +133,11 @@ SimGrid (3.6.1) stable; urgency=low
  The "Oops, we broke Macs too" release
 
  Portability
- * Fixed contextes detection so that raw ones are used when possible
- * On Mac, do not use Posix Ucontextes with gcc v4.[1-5] since this
+ * Fixed contexts detection so that raw ones are used when possible
+ * On Mac, do not use Posix Ucontexts with gcc v4.[1-5] since this
    leads to a strange error, with user code segfaulting sometimes when
    the generated code is not perfectly aligned (which is not
-   controlable from the user side, depends on the amount of code)
+   controllable from the user side, depends on the amount of code)
 
  XBT
  * New macro: CATCH_ANONYMOUS, which is like CATCH(e) but without argument.
@@ -150,7 +150,7 @@ SimGrid (3.6) stable; urgency=medium
 
  Java and Ruby:
  * Bindings now constitute their own package, separated from the main one.
-   Rationale: reduce our maintainance nightmare by reducing the module coupling
+   Rationale: reduce our maintenance nightmare by reducing the module coupling
    They will soon be released on their own on gforge.
  * In the meanwhile:
    svn co svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/simgrid-java
@@ -164,7 +164,7 @@ SimGrid (3.6) stable; urgency=medium
  * New MPI functions supported: MPI_Comm_disconnect, MPI_Comm_get_name
  * Fortran: New user-level cache variable to store the rank of the running
    process. This improves performance by an order of magnitude.
- * C: New coccinelle script to automatically locate and modifiy global and
+ * C: New coccinelle script to automatically locate and modify global and
    local static variables.
  * Improved SMPI network model with a sender-side gap to account for multiple
    parallel sends.
@@ -213,7 +213,7 @@ SimGrid (3.6) stable; urgency=medium
  * Allow to change the used context factory at run time, not only at
    compilation time. Use --cfg=contexts/factory:raw for maximal speed.
  * Add an option --cfg=contexts/stacksize:N to set the stack size of the user
-   contextes at runtime (only with raw contexts or ucontexts).
+   contexts at runtime (only with raw contexts or ucontexts).
  * Completely rewrote this module to allow parallel execution of user
    processes. Use --cfg=contexts/nthreads:N to execute user processes
    with N parallel threads (the default is 1, meaning no parallelism).
@@ -267,7 +267,7 @@ SimGrid (3.6) stable; urgency=medium
    at the tools directory (fix-paje-trace.sh) can be used to put the events
    in order. We have changed the tracing so it can generate ordered timestamped
    events in the final trace, but depending on the simulator (and how much time
-   is simulated) that can lead to a huge memory utilization. It is desactivated
+   is simulated) that can lead to a huge memory utilization. It is deactivated
    by default, but it can be activated using the --cfg=tracing/buffer:1 switch.
 
  Build Infrastructure
@@ -371,7 +371,7 @@ SimGrid (3.5) stable; urgency=medium
    set of realistic platforms exploiting these properties (have a
    look at examples/platforms/ for the moment).
  * Take the opportunity of the XML format change to be a good XML citizen:
-   rename link:ctn to link_ctn and similar changes (also dealed with by
+   rename link:ctn to link_ctn and similar changes (also dealt with by
    simgrid_update_xml)
  * Add a new routing scheme (rule-based) using regular expressions. It
    enables to have an extremely low memory footprint when the
@@ -1269,10 +1269,10 @@ SimGrid (3.2) stable; urgency=high
          . Lesson 6: Logging informations properly
          . Lesson 7: Using internal timers
          . Lesson 8: Handling errors through exceptions
-         . Lesson 9: Exchanging simple data
-	 . Lesson 10: Remote Procedure Calling (RPC)
-	 . Lesson 11: Explicitely waiting for messages
-	 . Recapping of message passing features in GRAS
+         . Lesson 9: Exchanging simple data
+         . Lesson 10: Remote Procedure Calling (RPC)
+         . Lesson 11: Explicitely waiting for messages
+         . Recapping of message passing features in GRAS
      - A HOWTO section containing:
        o HOWTO design a GRAS application
        More are due, of course. They will come latter. In the meanwhile, you can
