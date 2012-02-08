@@ -10,7 +10,6 @@
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 #include "simgrid/modelchecker.h"
-#include "xbt/xbt_os_time.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
                              "Messages specific for this msg example");

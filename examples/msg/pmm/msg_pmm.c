@@ -8,7 +8,11 @@
 #include "msg/msg.h"
 #include "xbt/matrix.h"
 #include "xbt/log.h"
+
+// #define BENCH_THIS_CODE /* Will only work from within the source tree as we require xbt/xbt_os_time.h, that is not public yet) */
+#ifdef BENCH_THIS_CODE
 #include "xbt/xbt_os_time.h"
+#endif
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm,
                              "Messages specific for this msg example");
@@ -244,7 +248,9 @@ static void task_cleanup(void *arg){
  */
 int main(int argc, char *argv[])
 {
+#ifdef BENCH_THIS_CODE
   xbt_os_timer_t timer = xbt_os_timer_new();
+#endif
 
   MSG_global_init(&argc, argv);
 
@@ -257,9 +263,13 @@ int main(int argc, char *argv[])
   MSG_function_register("node", node);
   MSG_launch_application(application_file);
 
+#ifdef BENCH_THIS_CODE
   xbt_os_timer_start(timer);
+#endif
   MSG_error_t res = MSG_main();
+#ifdef BENCH_THIS_CODE
   xbt_os_timer_stop(timer);
+#endif
   XBT_CRITICAL("Simulated time: %g", MSG_get_clock());
 
   MSG_clean();
