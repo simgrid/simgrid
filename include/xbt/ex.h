@@ -305,7 +305,7 @@ typedef struct {
 #define XBT_RUNNING_CTX_INITIALIZER \
     { NULL, 0, { /* content */ NULL, unknown_error, 0, \
                  /* throw point*/ 0,NULL, NULL,0, NULL, 0, NULL,\
-                 /* backtrace */ 0,NULL,{NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL} } }
+                 /* backtrace */ 0, NULL, /* bt[] */ } }
 #define XBT_RUNNING_CTX_INITIALIZE(ctx) \
     do { \
         (ctx)->ctx_mctx          = NULL; \
