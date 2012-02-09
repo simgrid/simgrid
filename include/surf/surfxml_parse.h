@@ -81,17 +81,17 @@ extern unsigned int surfxml_buffer_stack_stack[1024];
   AX_ptr = 0; \
   memset(surfxml_bufferstack,0,surfxml_bufferstack_size); } while(0)
 
-#define SURFXML_START_TAG(tag) do{ \
-		surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr] = AX_ptr;\
-		surfxml_buffer_stack_stack_ptr++;\
-		STag_surfxml_##tag(); \
-		}while(0)
+#define SURFXML_START_TAG(tag) \
+  do{                                                                   \
+    surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr++] = AX_ptr; \
+    STag_surfxml_##tag();                                               \
+  }while(0)
 
-#define SURFXML_END_TAG(tag)  do{ \
-		surfxml_buffer_stack_stack_ptr--;\
-		AX_ptr = surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr-1];\
-		ETag_surfxml_##tag();\
-		} while(0)
+#define SURFXML_END_TAG(tag)                                            \
+  do{                                                                   \
+    AX_ptr = surfxml_buffer_stack_stack[--surfxml_buffer_stack_stack_ptr]; \
+    ETag_surfxml_##tag();                                               \
+  } while(0)
 
 XBT_PUBLIC(void) surfxml_add_callback(xbt_dynar_t cb_list,
                                       void_f_void_t function);
