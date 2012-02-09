@@ -107,24 +107,21 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   struct stat stat_buf;
   char *binary_name = NULL;
 
-  xbt_assert(e
-              && e->used,
-              "Backtrace not setup yet, cannot set it up for display");
+  xbt_assert(e, "Backtrace not setup yet, cannot set it up for display");
 
   e->bt_strings = NULL;
 
   if (!xbt_binary_name) /* no binary name, nothing to do */
     return;
 
-  backtrace_syms = backtrace_symbols(e->bt, e->used);
-  /* ignore first one, which is this xbt_backtrace_current() */
-  e->used--;
-  memmove(backtrace_syms, backtrace_syms + 1, sizeof(char *) * e->used);
-
-
-  /* Some arches only have stubs of backtrace, no implementation (hppa comes to mind) */
-  if (!e->used)
+  if (e->used <= 1)
     return;
+
+  /* ignore first one, which is xbt_backtrace_current() */
+  e->used--;
+  memmove(e->bt, e->bt + 1, (sizeof *e->bt) * e->used);
+
+  backtrace_syms = backtrace_symbols(e->bt, e->used);
 
   /* build the commandline */
   if (stat(xbt_binary_name, &stat_buf)) {

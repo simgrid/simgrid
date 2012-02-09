@@ -179,15 +179,15 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e)
   int i;
   char **backtrace_syms;
 
-  xbt_assert(e
-              && e->used,
-              "Backtrace not setup yet, cannot set it up for display");
+  xbt_assert(e, "Backtrace not setup yet, cannot set it up for display");
+
+  if (!e->used)
+    return;
 
   backtrace_syms = backtrace_symbols(e->bt, e->used);
   e->bt_strings = NULL;
   /* parse the output and build a new backtrace */
   e->bt_strings = xbt_new(char *, e->used);
-
 
   for (i = 0; i < e->used; i++)
     e->bt_strings[i] = backtrace_syms[i];
