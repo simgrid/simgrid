@@ -1236,14 +1236,17 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_dict_free(&head);
 }
 
+#ifdef XBT_USE_DEPRECATED
 static void str_free(void *s)
 {
   char *c = *(char **) s;
   free(c);
 }
+#endif
 
 XBT_TEST_UNIT("multicrash", test_dict_multicrash, "Multi-dict crash test")
 {
+#ifdef XBT_USE_DEPRECATED
 
 #undef NB_ELM
 #define NB_ELM 100              /*00 */
@@ -1311,5 +1314,7 @@ XBT_TEST_UNIT("multicrash", test_dict_multicrash, "Multi-dict crash test")
   xbt_dict_free(&mdict);
   xbt_dynar_free(&keys);
 
+#endif
 }
+
 #endif                          /* SIMGRID_TEST */

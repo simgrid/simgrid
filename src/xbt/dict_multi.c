@@ -6,6 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifdef XBT_USE_DEPRECATED
+
 #include "dict_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_multi, xbt_dict,
@@ -242,3 +244,5 @@ void xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys)
     RETHROW;
   }
 }
+
+#endif

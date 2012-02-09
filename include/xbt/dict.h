@@ -147,6 +147,8 @@ XBT_PUBLIC(int) xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
          xbt_dict_cursor_step(cursor) )
 
 /** @} */
+
+#ifdef XBT_USE_DEPRECATED
 /** @defgroup XBT_dict_multi Multi-level dictionaries
  *  @ingroup XBT_dict
  *
@@ -183,6 +185,7 @@ XBT_PUBLIC(void) xbt_multidict_remove_ext(xbt_dict_t mdict,
                                           xbt_dynar_t lens);
 
 /** @} */
+#endif
 
 SG_END_DECL()
 #endif                          /* _XBT_DICT_H */
