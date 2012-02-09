@@ -306,33 +306,9 @@ typedef struct {
     { NULL, 0, { /* content */ NULL, unknown_error, 0, \
                  /* throw point*/ 0,NULL, NULL,0, NULL, 0, NULL,\
                  /* backtrace */ 0, NULL, /* bt[] */ } }
-#define XBT_RUNNING_CTX_INITIALIZE(ctx) \
-    do { \
-        (ctx)->ctx_mctx          = NULL; \
-        (ctx)->ctx_caught        = 0;    \
-        (ctx)->exception.msg        = NULL; \
-        (ctx)->exception.category   = 0;    \
-        (ctx)->exception.value      = 0;    \
-        (ctx)->exception.remote     = 0;    \
-        (ctx)->exception.host       = NULL; \
-        (ctx)->exception.procname   = NULL; \
-        (ctx)->exception.pid        = 0;    \
-        (ctx)->exception.file       = NULL; \
-        (ctx)->exception.line       = 0;    \
-        (ctx)->exception.func       = NULL; \
-        (ctx)->exception.bt[0]      = NULL; \
-        (ctx)->exception.bt[1]      = NULL; \
-        (ctx)->exception.bt[2]      = NULL; \
-        (ctx)->exception.bt[3]      = NULL; \
-        (ctx)->exception.bt[4]      = NULL; \
-        (ctx)->exception.bt[5]      = NULL; \
-        (ctx)->exception.bt[6]      = NULL; \
-        (ctx)->exception.bt[7]      = NULL; \
-        (ctx)->exception.bt[8]      = NULL; \
-        (ctx)->exception.bt[9]      = NULL; \
-        (ctx)->exception.used       = 0; \
-        (ctx)->exception.bt_strings = NULL; \
-    } while (0)
+
+XBT_PUBLIC_DATA(const xbt_running_ctx_t) __xbt_ex_ctx_initializer;
+#define XBT_RUNNING_CTX_INITIALIZE(ctx) (*(ctx) = __xbt_ex_ctx_initializer)
 
 /* the exception context */
 typedef xbt_running_ctx_t *(*xbt_running_ctx_fetcher_t) (void);

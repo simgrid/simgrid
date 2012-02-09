@@ -65,6 +65,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mecanism");
 
+XBT_EXPORT_NO_IMPORT(const xbt_running_ctx_t) __xbt_ex_ctx_initializer = XBT_RUNNING_CTX_INITIALIZER;
+
 /* default __ex_ctx callback function */
 xbt_running_ctx_t *__xbt_ex_ctx_default(void)
 {
