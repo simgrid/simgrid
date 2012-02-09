@@ -402,7 +402,7 @@ msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
 
   CHECK_HOST();
 
-  /* FIXME: these functions are not tracable */
+  /* FIXME: these functions are not traceable */
 
   /* Sanity check */
   xbt_assert(task, "Null pointer for the task storage");
