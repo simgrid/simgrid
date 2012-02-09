@@ -146,28 +146,29 @@ void xbt_ex_display(xbt_ex_t * e)
           xbt_ex_catname(e->category), e->value, e->msg,
           e->procname, thrower ? thrower : " in this process");
   XBT_CRITICAL("%s", e->msg);
+  xbt_free(thrower);
 
   if (!e->remote && !e->bt_strings)
     xbt_ex_setup_backtrace(e);
 
 #ifdef HAVE_BACKTRACE
-  /* We have everything to build neat backtraces */
-  {
+  if (e->used && e->bt_strings) {
+    /* We have everything to build neat backtraces */
     int i;
 
-    if (!xbt_binary_name) {
-      fprintf(stderr, "variable 'xbt_binary_name' set to NULL. Cannot compute the backtrace\n");
-      return;
-    }
     fprintf(stderr, "\n");
     for (i = 0; i < e->used; i++)
       fprintf(stderr, "%s\n", e->bt_strings[i]);
 
-  }
-#else
-  fprintf(stderr, " at %s:%d:%s (no backtrace available on that arch)\n",
-          e->file, e->line, e->func);
+  } else
 #endif
+  {
+    fprintf(stderr,
+            "\n"
+            "**   In %s() at %s:%d\n"
+            "**   (no backtrace available)\n",
+            e->func, e->file, e->line);
+  }
 }
 
 
