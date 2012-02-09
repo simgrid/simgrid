@@ -127,7 +127,9 @@ void smpi_mpi_start(MPI_Request request)
 				    detached);
 
 #ifdef HAVE_TRACING
-    simcall_set_category (request->action, TRACE_internal_smpi_get_category());
+    /* FIXME: detached sends are not traceable (request->action == NULL) */
+    if (request->action)
+      simcall_set_category(request->action, TRACE_internal_smpi_get_category());
 #endif
   }
 }
