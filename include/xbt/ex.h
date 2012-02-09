@@ -391,13 +391,16 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
     } \
     else
 
-#define DO_THROW(running_ctx) \
-     /* deal with the exception */                                                     \
-     if (running_ctx->ctx_mctx == NULL)                                                \
-       __xbt_ex_terminate((xbt_ex_t*)&(running_ctx->exception)); /* not catched */     \
-     else                                                                              \
-       __ex_mctx_restore(running_ctx->ctx_mctx); /* catched somewhere */               \
-     abort()  /* nope, stupid GCC, we won't survive a THROW (this won't be reached) */
+#define DO_THROW(running_ctx)                                           \
+  do { /* deal with the exception */                                    \
+    xbt_running_ctx_t *ctx = (running_ctx);                             \
+    if (ctx->ctx_mctx == NULL)                                          \
+      __xbt_ex_terminate((xbt_ex_t*)&(ctx->exception)); /* not catched */ \
+    else                                                                \
+      __ex_mctx_restore(ctx->ctx_mctx); /* catched somewhere */         \
+    abort();  /* nope, stupid GCC, we won't survive a THROW */          \
+              /* (this won't be reached) */                             \
+  } while(0)
 
 /** @brief Helper macro for THROW and THROWF
  *  @hideinitializer
@@ -458,15 +461,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
 /** @brief re-throwing of an already caught exception (ie, pass it to the upper catch block) 
  *  @hideinitializer
  */
-#define RETHROW \
-  do { \
-   xbt_running_ctx_t *ctx = __xbt_running_ctx_fetch(); \
-   if (ctx->ctx_mctx == NULL) \
-     __xbt_ex_terminate((xbt_ex_t*)&(ctx->exception)); \
-   else \
-     __ex_mctx_restore(ctx->ctx_mctx); \
-   abort();\
-  } while(0)
+#define RETHROW DO_THROW(__xbt_running_ctx_fetch())
 
 /** @brief like THROWF, but adding some details to the message of an existing exception
  *  @hideinitializer
