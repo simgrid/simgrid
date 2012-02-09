@@ -1308,9 +1308,6 @@ XBT_TEST_UNIT("multicrash", test_dict_multicrash, "Multi-dict crash test")
 
   xbt_dynar_free(&keys);
 
-  /*  if (verbose>0)
-     xbt_dict_dump(mdict,&xbt_dict_print); */
-
   xbt_dict_free(&mdict);
   xbt_dynar_free(&keys);
 

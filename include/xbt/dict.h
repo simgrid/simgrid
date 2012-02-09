@@ -160,12 +160,6 @@ XBT_PUBLIC(int) xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
  * @{
  */
 
-/** \brief To dump multicache, this function dumps a cache                           */
-XBT_PUBLIC(void) xbt_dict_print(void *data);
-/** \brief To dump multicache, this one dumps a string                               */
-XBT_PUBLIC(void) xbt_dict_prints(void *data);
-
-
 /*----[ xbt_multidict_set ]--------------------------------------------------*/
 XBT_PUBLIC(void)
 xbt_multidict_set(xbt_dict_t mdict,
