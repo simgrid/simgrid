@@ -13,7 +13,8 @@ Then Download and install package Simgrid-java:
 \verbatim
 git clone git://scm.gforge.inria.fr/simgrid/simgrid-java.git
 cd simgrid-java
-cmake .
+cmake -DCMAKE_INSTALL_PREFIX=$HOME/Install/simgrid-java/ .
+make install
 \endverbatim
  
 Cmake output
@@ -51,7 +52,7 @@ LD_LIBRARY_PATH.
 
 \verbatim
 $ export SIMGRID_ROOT="$HOME/Install/simgrid/"
-$ export SIMGRID_JAVA_ROOT="$HOME/workspace/simgrid-java"
+$ export SIMGRID_JAVA_ROOT="$HOME/Install/simgrid-java"
 $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/lib:$SIMGRID_JAVA_ROOT/lib
 $ cd examples
 $ java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
