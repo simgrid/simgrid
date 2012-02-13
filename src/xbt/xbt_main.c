@@ -78,16 +78,23 @@ static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR;
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
                     LPVOID lpvReserved);
 
+/* Should not be necessary but for some reason,
+ * DllMain is called twice at attachment and
+ * at detachment.*/
+static int xbt_dll_process_is_dattached = 0;
+static int xbt_dll_process_is_attached = 0;
 
 /* see also http://msdn.microsoft.com/en-us/library/ms682583%28VS.85%29.aspx */
 /* and http://www.microsoft.com/whdc/driver/kernel/DLL_bestprac.mspx */
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
                     LPVOID lpvReserved)
 {
-  if (fdwReason == DLL_PROCESS_ATTACH) {
-    xbt_preinit();
-  } else if (fdwReason == DLL_PROCESS_DETACH) {
-    xbt_postexit();
+  if (fdwReason == DLL_PROCESS_ATTACH
+		  && xbt_dll_process_is_attached == 0) {
+	  xbt_preinit();
+  } else if (fdwReason == DLL_PROCESS_DETACH
+		  && xbt_dll_process_is_dattached == 0) {
+      xbt_postexit();
   }
   return 1;
 }
@@ -97,6 +104,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 
 static void xbt_preinit(void)
 {
+  xbt_dll_process_is_attached = 1;
 #ifdef MMALLOC_WANT_OVERIDE_LEGACY
   mmalloc_preinit();
 #endif
@@ -143,6 +151,7 @@ static void xbt_preinit(void)
 
 static void xbt_postexit(void)
 {
+  xbt_dll_process_is_dattached = 1;
   xbt_trp_postexit();
   xbt_datadesc_postexit();
 
