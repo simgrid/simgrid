@@ -129,6 +129,7 @@ typedef enum {
         NULL /* firstChild */,                          \
 	NULL /* nextSibling */,                         \
         #catName,                                       \
+        0 /*initialized */,                             \
         xbt_log_priority_uninitialized /* threshold */, \
         1 /* isThreshInherited */,                      \
         NULL /* appender */,                            \
@@ -247,6 +248,7 @@ struct xbt_log_category_s {
   xbt_log_category_t firstChild;
   xbt_log_category_t nextSibling;
   const char *name;
+  int initialized;
   int threshold;
   int isThreshInherited;
   xbt_log_appender_t appender;
@@ -361,12 +363,11 @@ extern xbt_log_layout_t xbt_log_default_layout;
  *
  * NOTES
  * First part is a compile-time constant.
- * Call to _log_initCat only happens once.
+ * Call to xbt_log_cat_init only happens once.
  */
 #define _XBT_LOG_ISENABLEDV(catv, priority)                  \
        (priority >= XBT_LOG_STATIC_THRESHOLD                 \
-        && (catv.threshold != xbt_log_priority_uninitialized \
-            || _xbt_log_cat_init(&catv, priority))           \
+        && (catv.initialized || _xbt_log_cat_init(&catv, priority)) \
         && priority >= catv.threshold)
 
 /*

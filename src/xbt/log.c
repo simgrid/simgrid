@@ -507,7 +507,8 @@ const char *xbt_log_priority_names[8] = {
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
   NULL /*parent */ , NULL /* firstChild */ , NULL /* nextSibling */ ,
-      "root", xbt_log_priority_uninitialized /* threshold */ ,
+      "root",
+      0 /*initialized */, xbt_log_priority_uninitialized /* threshold */ ,
       0 /* isThreshInherited */ ,
       NULL /* appender */ , NULL /* layout */ ,
       0                         /* additivity */
@@ -728,7 +729,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
     xbt_os_rmutex_acquire(log_cat_init_mutex);
   }
 
-  if (category->threshold != xbt_log_priority_uninitialized) {
+  if (category->initialized) {
     if (log_cat_init_mutex != NULL) {
       xbt_os_rmutex_release(log_cat_init_mutex);
     }
@@ -746,7 +747,6 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 
   if (category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)) {
     category->threshold = xbt_log_priority_info;
-    /* xbt_log_priority_debug */ ;
     category->appender = xbt_log_default_appender;
     category->layout = xbt_log_default_layout;
   } else {
@@ -756,9 +756,8 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 
     XBT_DEBUG("Set %s (%s) as father of %s ",
            category->parent->name,
-           (category->parent->threshold == xbt_log_priority_uninitialized ?
-            "uninited" : xbt_log_priority_names[category->
-                                                parent->threshold]),
+           (category->parent->initialized ?
+            xbt_log_priority_names[category->parent->threshold] : "uninited"),
            category->name);
     xbt_log_parent_set(category, category->parent);
 
@@ -787,36 +786,29 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   }
 
   /* Apply the control */
-  if (!xbt_log_settings) {
-    if (log_cat_init_mutex != NULL) {
-      xbt_os_rmutex_release(log_cat_init_mutex);
+  if (xbt_log_settings) {
+    xbt_assert(category, "NULL category");
+    xbt_assert(category->name);
+
+    xbt_dynar_foreach(xbt_log_settings, cursor, setting) {
+      xbt_assert(setting, "Damnit, NULL cat in the list");
+      xbt_assert(setting->catname, "NULL setting(=%p)->catname",
+                 (void *) setting);
+
+      if (!strcmp(setting->catname, category->name)) {
+        found = 1;
+        _xbt_log_cat_apply_set(category, setting);
+        xbt_dynar_cursor_rm(xbt_log_settings, &cursor);
+      }
     }
-    return priority >= category->threshold;
+
+    if (!found)
+      XBT_DEBUG("Category '%s': inherited threshold = %s (=%d)",
+                category->name, xbt_log_priority_names[category->threshold],
+                category->threshold);
   }
 
-  xbt_assert(category, "NULL category");
-  xbt_assert(category->name);
-
-  xbt_dynar_foreach(xbt_log_settings, cursor, setting) {
-    xbt_assert(setting, "Damnit, NULL cat in the list");
-    xbt_assert(setting->catname, "NULL setting(=%p)->catname",
-                (void *) setting);
-
-    if (!strcmp(setting->catname, category->name)) {
-
-      found = 1;
-
-      _xbt_log_cat_apply_set(category, setting);
-
-      xbt_dynar_cursor_rm(xbt_log_settings, &cursor);
-    }
-  }
-
-  if (!found)
-    XBT_DEBUG("Category '%s': inherited threshold = %s (=%d)",
-           category->name, xbt_log_priority_names[category->threshold],
-           category->threshold);
-
+  category->initialized = 1;
   if (log_cat_init_mutex != NULL) {
     xbt_os_rmutex_release(log_cat_init_mutex);
   }
@@ -830,11 +822,8 @@ void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
   xbt_assert(cat, "NULL category to be given a parent");
   xbt_assert(parent, "The parent category of %s is NULL", cat->name);
 
-  /*
-   * if the threshold is initialized
-   * unlink from current parent
-   */
-  if (cat->threshold != xbt_log_priority_uninitialized) {
+  /* if the category is initialized, unlink from current parent */
+  if (cat->initialized) {
 
     xbt_log_category_t *cpp = &cat->parent->firstChild;
 
@@ -851,11 +840,8 @@ void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
 
   parent->firstChild = cat;
 
-  if (parent->threshold == xbt_log_priority_uninitialized) {
-
-    _xbt_log_cat_init(parent,
-                      xbt_log_priority_uninitialized /* ignored */ );
-  }
+  if (!parent->initialized)
+    _xbt_log_cat_init(parent, xbt_log_priority_uninitialized /* ignored */ );
 
   cat->threshold = parent->threshold;
 
