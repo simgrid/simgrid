@@ -158,12 +158,12 @@ if(WIN32)
     
     if(ARCH_32_BITS)	### Arch 32bits
         set(_WIN32 1)
-        set(NSIS_WIN_VERSION "win32")
     else(ARCH_32_BITS)	### Arch 64bits
         set(_WIN64 1)
-        set(NSIS_WIN_VERSION "win64")
     endif(ARCH_32_BITS)
 
+    set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITEW6432})
+    string(TOLOWER ${NSIS_WIN_VERSION} NSIS_WIN_VERSION)
     
     set(_XBT_WIN32 1)
     
