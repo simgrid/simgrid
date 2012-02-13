@@ -836,7 +836,7 @@ void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
    */
   if (cat->threshold != xbt_log_priority_uninitialized) {
 
-    xbt_log_category_t *cpp = &parent->firstChild;
+    xbt_log_category_t *cpp = &cat->parent->firstChild;
 
     while (*cpp != cat && *cpp != NULL) {
       cpp = &(*cpp)->nextSibling;
