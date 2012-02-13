@@ -6,7 +6,7 @@ add_library(gras STATIC ${gras_sources})
 
 set_target_properties(gras            PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_STATIC -DDLL_STATIC" VERSION ${libgras_version}    OUTPUT_NAME "gras")
 set_target_properties(simgrid         PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_STATIC -DDLL_STATIC" VERSION ${libsimgrid_version} OUTPUT_NAME "simgrid")
-set_target_properties(simgrid_shared  PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" VERSION ${libsimgrid_version} OUTPUT_NAME "simgrid")
+set_target_properties(simgrid_shared  PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" VERSION ${libsimgrid_version} OUTPUT_NAME "simgrid_shared")
 
 set(GRAS_DEP "ws2_32 -lpthread")
 set(SIMGRID_DEP "ws2_32 -lpcre -lpthread")
@@ -26,5 +26,5 @@ find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
 message(STATUS "pexports: ${PEXPORTS_PATH}")
 if(PEXPORTS_PATH)
 add_custom_command(TARGET simgrid_shared POST_BUILD
-COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/libsimgrid.dll > ${CMAKE_BINARY_DIR}/lib/libsimgrid.ref)
+COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/libsimgrid_shared.dll > ${CMAKE_BINARY_DIR}/lib/libsimgrid_shared.ref)
 endif(PEXPORTS_PATH)
