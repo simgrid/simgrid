@@ -331,7 +331,7 @@ void SIMIX_host_execution_resume(smx_action_t action)
 
 void SIMIX_execution_finish(smx_action_t action)
 {
-  volatile xbt_fifo_item_t item;
+  xbt_fifo_item_t item;
   smx_simcall_t simcall;
 
   xbt_fifo_foreach(action->simcalls, item, simcall, smx_simcall_t) {
@@ -345,23 +345,13 @@ void SIMIX_execution_finish(smx_action_t action)
 
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->smx_host->name);
-        TRY {
-          THROWF(host_error, 0, "Host failed");
-        }
-	CATCH(simcall->issuer->running_ctx->exception) {
-	  simcall->issuer->doexception = 1;
-	}
-      break;
+        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        break;
 
       case SIMIX_CANCELED:
         XBT_DEBUG("SIMIX_execution_finished: execution canceled");
-        TRY {
-          THROWF(cancel_error, 0, "Canceled");
-        }
-	CATCH(simcall->issuer->running_ctx->exception) {
-	  simcall->issuer->doexception = 1;
-        }
-	break;
+        SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Canceled");
+        break;
 
       default:
         xbt_die("Internal error in SIMIX_execution_finish: unexpected action state %d",

@@ -96,21 +96,11 @@ static void SIMIX_synchro_finish(smx_action_t action)
   switch (action->state) {
 
     case SIMIX_SRC_TIMEOUT:
-      TRY {
-        THROWF(timeout_error, 0, "Synchro's wait timeout");
-      }
-      CATCH(simcall->issuer->running_ctx->exception) {
-        simcall->issuer->doexception = 1;
-      }
+      SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Synchro's wait timeout");
       break;
 
     case SIMIX_FAILED:
-      TRY {
-        THROWF(host_error, 0, "Host failed");
-      }
-      CATCH(simcall->issuer->running_ctx->exception) {
-        simcall->issuer->doexception = 1;
-      }
+      SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
       break;
 
     default:

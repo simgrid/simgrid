@@ -569,7 +569,7 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
  */
 void SIMIX_comm_finish(smx_action_t action)
 {
-  volatile unsigned int destroy_count = 0;
+  unsigned int destroy_count = 0;
   smx_simcall_t simcall;
 
   while ((simcall = xbt_fifo_shift(action->simcalls))) {
@@ -599,80 +599,52 @@ void SIMIX_comm_finish(smx_action_t action)
         break;
 
       case SIMIX_SRC_TIMEOUT:
-        TRY {
-          THROWF(timeout_error, 0, "Communication timeouted because of sender");
-        }
-	CATCH(simcall->issuer->running_ctx->exception) {
-          simcall->issuer->doexception = 1;
-        }
+        SMX_EXCEPTION(simcall->issuer, timeout_error, 0,
+                  "Communication timeouted because of sender");
         break;
 
       case SIMIX_DST_TIMEOUT:
-        TRY {
-          THROWF(timeout_error, 0, "Communication timeouted because of receiver");
-        }
-	CATCH(simcall->issuer->running_ctx->exception) {
-          simcall->issuer->doexception = 1;
-        }
+        SMX_EXCEPTION(simcall->issuer, timeout_error, 0,
+                  "Communication timeouted because of receiver");
         break;
 
       case SIMIX_SRC_HOST_FAILURE:
-        TRY {
-          if (simcall->issuer == action->comm.src_proc)
-            THROWF(host_error, 0, "Host failed");
-          else
-            THROWF(network_error, 0, "Remote peer failed");
-        }
-	CATCH(simcall->issuer->running_ctx->exception) {
-          simcall->issuer->doexception = 1;
-        }
+        if (simcall->issuer == action->comm.src_proc)
+          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        else
+          SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
         break;
 
       case SIMIX_DST_HOST_FAILURE:
-        TRY {
-          if (simcall->issuer == action->comm.dst_proc)
-            THROWF(host_error, 0, "Host failed");
-          else
-            THROWF(network_error, 0, "Remote peer failed");
-        }
-	CATCH(simcall->issuer->running_ctx->exception) {
-          simcall->issuer->doexception = 1;
-        }
+        if (simcall->issuer == action->comm.dst_proc)
+          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        else
+          SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
         break;
 
       case SIMIX_LINK_FAILURE:
-        TRY {
-          XBT_DEBUG("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
-              action,
-              action->comm.src_proc ? action->comm.src_proc->smx_host->name : NULL,
-              action->comm.dst_proc ? action->comm.dst_proc->smx_host->name : NULL,
-              simcall->issuer->name, simcall->issuer, action->comm.detached);
-          if (action->comm.src_proc == simcall->issuer) {
-            XBT_DEBUG("I'm source");
-          } else if (action->comm.dst_proc == simcall->issuer) {
-            XBT_DEBUG("I'm dest");
-          } else {
-            XBT_DEBUG("I'm neither source nor dest");
-          }
-          THROWF(network_error, 0, "Link failure");
+        XBT_DEBUG("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
+            action,
+            action->comm.src_proc ? action->comm.src_proc->smx_host->name : NULL,
+            action->comm.dst_proc ? action->comm.dst_proc->smx_host->name : NULL,
+            simcall->issuer->name, simcall->issuer, action->comm.detached);
+        if (action->comm.src_proc == simcall->issuer) {
+          XBT_DEBUG("I'm source");
+        } else if (action->comm.dst_proc == simcall->issuer) {
+          XBT_DEBUG("I'm dest");
+        } else {
+          XBT_DEBUG("I'm neither source nor dest");
         }
-	CATCH(simcall->issuer->running_ctx->exception) {
-          simcall->issuer->doexception = 1;
-        }
+        SMX_EXCEPTION(simcall->issuer, network_error, 0, "Link failure");
         break;
 
       case SIMIX_CANCELED:
-        TRY {
-          if (simcall->issuer == action->comm.dst_proc) {
-            THROWF(cancel_error, 0, "Communication canceled by the sender");
-          }
-          else {
-            THROWF(cancel_error, 0, "Communication canceled by the receiver");
-          }
-        }
-        CATCH(simcall->issuer->running_ctx->exception) {
-          simcall->issuer->doexception = 1;
-        }
+        if (simcall->issuer == action->comm.dst_proc)
+          SMX_EXCEPTION(simcall->issuer, cancel_error, 0,
+                    "Communication canceled by the sender");
+        else
+          SMX_EXCEPTION(simcall->issuer, cancel_error, 0,
+                    "Communication canceled by the receiver");
         break;
 
       default:

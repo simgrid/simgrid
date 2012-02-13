@@ -611,7 +611,7 @@ void SIMIX_process_yield(smx_process_t self)
   if (self->doexception) {
     XBT_DEBUG("Wait, maestro left me an exception");
     self->doexception = 0;
-    RETHROW;
+    SMX_THROW();
   }
   
   if (self->new_host) {

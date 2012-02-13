@@ -247,7 +247,7 @@ void SIMIX_io_destroy(smx_action_t action)
 
 void SIMIX_io_finish(smx_action_t action)
 {
-  volatile xbt_fifo_item_t item;
+  xbt_fifo_item_t item;
   smx_simcall_t simcall;
 
   xbt_fifo_foreach(action->simcalls, item, simcall, smx_simcall_t) {
@@ -259,22 +259,12 @@ void SIMIX_io_finish(smx_action_t action)
         break;
 
       case SIMIX_FAILED:
-        TRY {
-          THROWF(io_error, 0, "IO failed");
-        }
-	CATCH(simcall->issuer->running_ctx->exception) {
-	  simcall->issuer->doexception = 1;
-	}
-      break;
+        SMX_EXCEPTION(simcall->issuer, io_error, 0, "IO failed");
+        break;
 
       case SIMIX_CANCELED:
-        TRY {
-          THROWF(cancel_error, 0, "Canceled");
-        }
-	CATCH(simcall->issuer->running_ctx->exception) {
-	  simcall->issuer->doexception = 1;
-        }
-	break;
+        SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Canceled");
+        break;
 
       default:
         xbt_die("Internal error in SIMIX_io_finish: unexpected action state %d",

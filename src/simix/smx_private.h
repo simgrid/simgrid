@@ -46,6 +46,17 @@ typedef struct s_smx_global {
 extern smx_global_t simix_global;
 extern unsigned long simix_process_maxpid;
 
+/******************************** Exceptions *********************************/
+
+#define SMX_EXCEPTION(issuer, c, v, m)                                  \
+  if (1) {                                                              \
+    smx_process_t _smx_throw_issuer = (issuer);                         \
+    THROW_PREPARE(_smx_throw_issuer->running_ctx, (c), (v), xbt_strdup(m)); \
+    _smx_throw_issuer->doexception = 1;                                 \
+  } else ((void)0)
+
+#define SMX_THROW() RETHROW
+
 /*********************************** Time ************************************/
 
 /** @brief Timer datatype */
