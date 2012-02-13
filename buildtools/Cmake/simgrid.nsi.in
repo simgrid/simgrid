@@ -96,14 +96,12 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\parmap.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automaton.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automatonparse_promela.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\datadesc.h
 
 	CreateDirectory  $INSTDIR\include\simgrid
 	setOutPath $INSTDIR\include\simgrid
 	file @CMAKE_HOME_DIRECTORY@\include\simgrid\platf.h
-	
-	CreateDirectory  $INSTDIR\include\mc
-	setOutPath $INSTDIR\include\mc
-	file @CMAKE_HOME_DIRECTORY@\include\mc\modelchecker.h
+	file @CMAKE_HOME_DIRECTORY@\include\simgrid\modelchecker.h
 	
 	CreateDirectory  $INSTDIR\include\msg
 	setOutPath $INSTDIR\include\msg
@@ -131,7 +129,6 @@ Section "Libraries and Headers" LibSection
 	
 	CreateDirectory  $INSTDIR\include\gras
 	setOutPath $INSTDIR\include\gras
-	file @CMAKE_HOME_DIRECTORY@\include\gras\datadesc.h
 	file @CMAKE_HOME_DIRECTORY@\include\gras\transport.h
 	file @CMAKE_HOME_DIRECTORY@\include\gras\virtu.h
 	file @CMAKE_HOME_DIRECTORY@\include\gras\emul.h
