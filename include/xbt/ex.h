@@ -420,23 +420,26 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
  * CLEANUP and CATCH blocks.
  */
 
-#define _THROW(c,v,m) \
-  do { /* change this sequence into one block */                             \
-     xbt_running_ctx_t *_throw_ctx = __xbt_running_ctx_fetch();              \
-     /* build the exception */                                               \
-     _throw_ctx->exception.msg      = (m);                                   \
-     _throw_ctx->exception.category = (xbt_errcat_t)(c);                     \
-     _throw_ctx->exception.value    = (v);                                   \
-     _throw_ctx->exception.remote   = 0;                                     \
-     _throw_ctx->exception.host     = (char*)NULL;                           \
-     _throw_ctx->exception.procname = (char*)xbt_procname();                 \
-     _throw_ctx->exception.pid      = xbt_getpid();                          \
-     _throw_ctx->exception.file     = (char*)__FILE__;                       \
-     _throw_ctx->exception.line     = __LINE__;                              \
-     _throw_ctx->exception.func     = (char*)_XBT_FUNCTION;                  \
-     _throw_ctx->exception.bt_strings = NULL;                                \
-     xbt_backtrace_current( (xbt_ex_t *) &(_throw_ctx->exception) );         \
-     DO_THROW(_throw_ctx);                                                   \
+#define THROW_PREPARE(_throw_ctx, c, v, m)                              \
+  /* build the exception */                                             \
+  _throw_ctx->exception.msg      = (m);                                 \
+  _throw_ctx->exception.category = (xbt_errcat_t)(c);                   \
+  _throw_ctx->exception.value    = (v);                                 \
+  _throw_ctx->exception.remote   = 0;                                   \
+  _throw_ctx->exception.host     = (char*)NULL;                         \
+  _throw_ctx->exception.procname = (char*)xbt_procname();               \
+  _throw_ctx->exception.pid      = xbt_getpid();                        \
+  _throw_ctx->exception.file     = (char*)__FILE__;                     \
+  _throw_ctx->exception.line     = __LINE__;                            \
+  _throw_ctx->exception.func     = (char*)_XBT_FUNCTION;                \
+  _throw_ctx->exception.bt_strings = NULL;                              \
+  xbt_backtrace_current((xbt_ex_t *)&(_throw_ctx->exception));
+
+#define _THROW(c, v, m)                                        \
+  do { /* change this sequence into one block */               \
+    xbt_running_ctx_t *_throw_ctx = __xbt_running_ctx_fetch(); \
+    THROW_PREPARE(_throw_ctx, c, v, m);                        \
+    DO_THROW(_throw_ctx);                                      \
   } while (0)
 
 /** @brief Builds and throws an exception
