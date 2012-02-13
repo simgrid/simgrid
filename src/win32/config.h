@@ -67,9 +67,9 @@ typedef int socklen_t;
 #undef  sock_errstr
 #endif
 
-#define sock_errstr(err)   gras_wsa_err2string(err)
+#define sock_errstr(err)   xbt_wsa_err2string(err)
 
-const char *gras_wsa_err2string(int errcode);
+const char *xbt_wsa_err2string(int errcode);
 
 #ifdef S_IRGRP
 #undef S_IRGRP

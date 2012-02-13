@@ -860,7 +860,7 @@ const char *xbt_wsa_err2string(int err)
     RETSTR(WSANOTINITIALISED);
     RETSTR(WSAEDISCON);
 
-#ifdef HAVE_WINSOCK2
+#ifdef HAVE_WINSOCK2_H
     RETSTR(WSAENOMORE);
     RETSTR(WSAECANCELLED);
     RETSTR(WSAEINVALIDPROCTABLE);
@@ -871,7 +871,7 @@ const char *xbt_wsa_err2string(int err)
     RETSTR(WSA_E_NO_MORE);
     RETSTR(WSA_E_CANCELLED);
     RETSTR(WSAEREFUSED);
-#endif                          /* HAVE_WINSOCK2 */
+#endif                          /* HAVE_WINSOCK2_H */
 
     RETSTR(WSAHOST_NOT_FOUND);
     RETSTR(WSATRY_AGAIN);
