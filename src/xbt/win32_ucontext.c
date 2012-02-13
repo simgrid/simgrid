@@ -27,7 +27,7 @@ int getcontext(ucontext_t * ucp)
   int ret;
   
       /* Retrieve the full machine context */ 
-      ucp->uc_mcontext.ContextFlags = CONTEXT_FULL;
+      ucp->uc_mcontext.ContextFlags = CONTEXT_FULL | CONTEXT_DEBUG_REGISTERS;
   ret = GetThreadContext(GetCurrentThread(), &ucp->uc_mcontext);
   return (ret == 0) ? -1 : 0;
 }
@@ -72,7 +72,7 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
   #endif
 
       /* Save/Restore the full machine context */ 
-      ucp->uc_mcontext.ContextFlags = CONTEXT_FULL;
+      ucp->uc_mcontext.ContextFlags = CONTEXT_FULL | CONTEXT_DEBUG_REGISTERS;
   
       /* Copy the arguments */ 
       va_start(ap, argc);
