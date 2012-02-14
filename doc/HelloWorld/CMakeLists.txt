@@ -42,5 +42,5 @@ foreach(target "${TARGET_NAME}")
     message(STATUS "source_file: ${target}.c")
     message(STATUS "target name: ${target}.exe")
     # Any targets need to be linked with simgrid and pcre
-    target_link_libraries(${target} simgrid pcre pthread) 
+    target_link_libraries(${target} simgrid pcre pthread ws2_32) 
 endforeach(target ${SOURCE_FILE})
