@@ -189,6 +189,26 @@ int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
   return 0;
 }
 
+extern double sg_maxmin_precision;
+unsigned long long smpi_rastro_resolution (void)
+{
+  smpi_bench_end();
+  double resolution = (1/sg_maxmin_precision);
+  smpi_bench_begin();
+  return (unsigned long long)resolution;
+}
+
+unsigned long long smpi_rastro_timestamp (void)
+{
+  smpi_bench_end();
+  double now = SIMIX_get_clock();
+
+  unsigned long long sec = (unsigned long long)now;
+  unsigned long long pre = (now - sec) * smpi_rastro_resolution();
+  smpi_bench_begin();
+  return (unsigned long long)sec * smpi_rastro_resolution() + pre;
+}
+
 static char *sample_location(int global, const char *file, int line)
 {
   if (global) {

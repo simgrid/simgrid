@@ -425,6 +425,8 @@ XBT_PUBLIC(void) smpi_exit(int);
 
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
 XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
+XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);
+XBT_PUBLIC(unsigned long long) smpi_rastro_timestamp (void);
 XBT_PUBLIC(int) smpi_sample_1(int global, const char *file, int line,
                               int iters, double threshold);
 XBT_PUBLIC(int) smpi_sample_2(int global, const char *file, int line);
