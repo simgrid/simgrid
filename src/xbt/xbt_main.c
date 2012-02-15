@@ -74,6 +74,7 @@ static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR;
 #ifdef _XBT_WIN32
 #include <windows.h>
 
+#ifndef __GNUC__
 /* Dummy prototype to make gcc happy */
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
                     LPVOID lpvReserved);
@@ -90,22 +91,21 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 {
   if (fdwReason == DLL_PROCESS_ATTACH
 		  && xbt_dll_process_is_attached == 0) {
+	  xbt_dll_process_is_attached = 1;
 	  xbt_preinit();
   } else if (fdwReason == DLL_PROCESS_DETACH
 		  && xbt_dll_process_is_attached == 1) {
+	  xbt_dll_process_is_attached = 0;
       xbt_postexit();
   }
   return 1;
 }
-
+#endif
 
 #endif
 
 static void xbt_preinit(void)
 {
-#ifdef _XBT_WIN32
-  xbt_dll_process_is_attached = 1;
-#endif
 #ifdef MMALLOC_WANT_OVERIDE_LEGACY
   mmalloc_preinit();
 #endif
@@ -152,9 +152,6 @@ static void xbt_preinit(void)
 
 static void xbt_postexit(void)
 {
-#ifdef _XBT_WIN32
-  xbt_dll_process_is_attached = 0;
-#endif
   xbt_trp_postexit();
   xbt_datadesc_postexit();
 
