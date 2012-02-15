@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 2.8)
 ### Need to set rc ccompiler before enable language
 if(WIN32)
     SET(CMAKE_RC_COMPILER "windres")
+    set(LIBRARIES_DEP simgrid pcre ws2_32 pthread)
+else(WIN32)
+    set(LIBRARIES_DEP simgrid pcre pthread)
 endif(WIN32)
 
 project(MY_SIMGRID_PROJECT C)
@@ -24,7 +27,6 @@ else("$ENV{SIMGRID_ROOT}" STREQUAL "")
     include_directories($ENV{SIMGRID_ROOT}/include)
     include_directories($ENV{SIMGRID_ROOT}/src)
     include_directories($ENV{SIMGRID_ROOT}/src/include)
-    add_library(libsimgrid STATIC IMPORTED)
     message(STATUS "Looking for lib Simgrid - found") 
 endif("$ENV{SIMGRID_ROOT}" STREQUAL "")
 
@@ -41,6 +43,6 @@ foreach(target "${TARGET_NAME}")
     add_executable(${target} "${target}.c")
     message(STATUS "source_file: ${target}.c")
     message(STATUS "target name: ${target}.exe")
-    # Any targets need to be linked with simgrid and pcre
-    target_link_libraries(${target} simgrid pcre pthread ws2_32) 
+    # Any targets need to be linked with libraries
+    target_link_libraries(${target} ${LIBRARIES_DEP})
 endforeach(target ${SOURCE_FILE})
