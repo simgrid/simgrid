@@ -47,11 +47,9 @@ Section "Libraries and Headers" LibSection
 	# install lib
 	CreateDirectory $INSTDIR\lib
 	setOutPath $INSTDIR\lib
-	file lib\libgras.@LIB_EXE@
-	file lib\libsimgrid.@LIB_EXE@
-	file /nonfatal lib\libsimgrid_shared.dll
-	file /nonfatal lib\libsimgrid_shared.dll.a
-	file /nonfatal lib\libsimgrid_shared.ref
+	file lib\libgras.dll
+	file lib\libsimgrid.dll
+	file lib\libsimgrid.def
 	
 	#install headers
 	CreateDirectory  $INSTDIR\include
@@ -162,7 +160,6 @@ Section "Binaries" BinSection
 	setOutPath $INSTDIR\bin
 	file bin\colorize
 	file bin\graphicator@BIN_EXE@
-	file bin\gras_stub_generator@BIN_EXE@
 	file bin\simgrid_update_xml
 	
 SectionEnd
@@ -215,6 +212,19 @@ Section "Pcre library" PCRESection
 	file /nonfatal /r "@PCRE_LIBRARY_PATH@\share"
 SectionEnd
 
+Section "Java Bindings" JavaSection	
+	# install java library and examples
+	CreateDirectory $INSTDIR\examples\simgrid-java
+	setOutPath $INSTDIR\lib
+	file "$%SIMGRID_JAVA_SRC%\build\SG_java.dll"
+	file "$%SIMGRID_JAVA_SRC%\build\SG_java.def"
+	file "$%SIMGRID_JAVA_SRC%\simgrid.jar"
+	setOutPath $INSTDIR\examples\simgrid-java
+	file /r "$%SIMGRID_JAVA_SRC%\examples\"
+	# create shortcuts in the start menu programs directory
+	createShortCut  "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\Java project.lnk"	"$INSTDIR\examples\simgrid-java"
+SectionEnd
+
 # default section start
 section	
 	# define uninstaller name
@@ -232,10 +242,9 @@ section
 	# Set Variables
 	WriteRegExpandStr ${env_hkcu} SIMGRID_ROOT $INSTDIR
 	WriteRegExpandStr ${env_hkcu} SIMGRID_VERSION @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@
-
 	WriteRegExpandStr ${env_hkcu} SIMGRID_PCRE_LIBRARY_PATH $INSTDIR\GnuWin32
 	WriteRegExpandStr ${env_hkcu} SIMGRID_PCRE_LIBRARY_VERSION "8.21"
-
+	
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "Version" "@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "InstallPath" "$INSTDIR"
 	
@@ -249,12 +258,14 @@ LangString DESC_BinSection 		${LANG_ENGLISH} "Install some useful tools for Simg
 LangString DESC_DocSection 		${LANG_ENGLISH} "Generated (doxygen) documentation."
 LangString DESC_ExamplesSection ${LANG_ENGLISH} "Simgrid's HelloWorld example and some classical platforms."
 LangString DESC_PCRESection 	${LANG_ENGLISH} "Install the PCRE and PCREPOSIX libraries for SimGrid."
+LangString DESC_JAVASection 	${LANG_ENGLISH} "Install the Java binding and examples."
 
 LangString DESC_LibSection 		${LANG_FRENCH} 	"Installer les librairies Simgrid et Gras et leurs Entêtes."
 LangString DESC_BinSection 		${LANG_FRENCH} 	"Installer les outils optionnels."
 LangString DESC_DocSection 		${LANG_FRENCH} 	"Installer la documentation."
 LangString DESC_ExamplesSection ${LANG_FRENCH} 	"Installer un exemple 'HelloWorld' et des fichiers de plate-formes types."
 LangString DESC_PCRESection 	${LANG_FRENCH}  "Installer les librairies PCRE et PCREPOSIX for SimGrid."
+LangString DESC_JAVASection 	${LANG_FRENCH}  "Installer la librairie Simgrid-java and les examples."
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${LibSection} 		$(DESC_LibSection)
@@ -262,6 +273,7 @@ LangString DESC_PCRESection 	${LANG_FRENCH}  "Installer les librairies PCRE et P
   !insertmacro MUI_DESCRIPTION_TEXT ${DocSection} 		$(DESC_DocSection)
   !insertmacro MUI_DESCRIPTION_TEXT ${ExamplesSection} 	$(DESC_ExamplesSection)
   !insertmacro MUI_DESCRIPTION_TEXT ${PCRESection} 		$(DESC_PCRESection)
+  !insertmacro MUI_DESCRIPTION_TEXT ${JAVASection} 		$(DESC_JAVASection)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 # create a section to define what the uninstaller does.
@@ -272,16 +284,13 @@ section "Uninstall"
 	delete $INSTDIR\uninstaller@BIN_EXE@
 
 	# delete installed libs
-	delete $INSTDIR\lib\libgras.@LIB_EXE@
-	delete $INSTDIR\lib\libsimgrid.@LIB_EXE@
-	delete $INSTDIR\lib\libsimgrid_shared.dll
-	delete $INSTDIR\lib\libsimgrid_shared.dll.a
-	delete $INSTDIR\lib\libsimgrid_shared.ref
+	delete $INSTDIR\lib\libgras.dll
+	delete $INSTDIR\lib\libsimgrid.dll
+	delete $INSTDIR\lib\libsimgrid.def
 
 	# delete installed bin
 	delete $INSTDIR\bin\colorize
 	delete $INSTDIR\bin\graphicator@BIN_EXE@
-	delete $INSTDIR\bin\gras_stub_generator@BIN_EXE@
 	delete $INSTDIR\bin\simgrid_update_xml
 	delete $INSTDIR\bin\smpicc
 	delete $INSTDIR\bin\smpif2c
@@ -389,6 +398,9 @@ section "Uninstall"
 	DeleteRegValue ${env_hkcu} SIMGRID_PCRE_LIBRARY_PATH
 	DeleteRegValue ${env_hkcu} SIMGRID_PCRE_LIBRARY_VERSION
     DeleteRegKey HKCU "SOFTWARE\SimGrid"
+    
+    # delete JAVA-bindings
+    RMDir /r "$INSTDIR\simgrid-java"
     
     # delete INSTDIR
     RMDir  /r "$INSTDIR"
