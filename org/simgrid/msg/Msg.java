@@ -25,12 +25,6 @@ public final class Msg {
 		}
 	}
 
-	/* FIXME: kill these C crufts */
-    /** Returns the last error code of the simulation
-     * @return
-     */
-	public final static native int getErrCode();
-
 	/** Everything is right. Keep on going the way ! */
 	public static final int SUCCESS = 0;
 

@@ -757,13 +757,6 @@ Java_org_simgrid_msg_MsgNative_taskExecute(JNIEnv * env, jclass cls,
  * Unsortable functions                                                        *
  ***************************************************************************************/
 
-
-JNIEXPORT jint JNICALL
-Java_org_simgrid_msg_Msg_getErrCode(JNIEnv * env, jclass cls)
-{
-  return (jint) MSG_get_errno();
-}
-
 JNIEXPORT jdouble JNICALL
 Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
 {
