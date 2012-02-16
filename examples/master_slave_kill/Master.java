@@ -41,12 +41,8 @@ public class Master extends Process {
 				}
 		}
 		
-//		FinalizeTask task = new FinalizeTask();
-//		Msg.info("Send Mail2!");
-//		task.send("mail2");
-		
-		Process.waitFor(10);
 		Process.kill(process2);
-		
+
+		Msg.info("Process2 is now killed, should exit now");
 	}
 }

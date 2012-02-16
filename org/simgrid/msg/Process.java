@@ -94,6 +94,7 @@ public abstract class Process extends Thread {
      *
      */
     protected Sem schedBegin, schedEnd;
+    private boolean nativeStop = false;
 
 	/**
 	 * Default constructor (used in ApplicationHandler to initialize it)
@@ -190,14 +191,50 @@ public abstract class Process extends Thread {
 		return MsgNative.processKillAll(resetPID);
 	}
 
+	/**
+	 * This method sets a flag to indicate that this thread must be killed. End user must use static method kill
+	 *
+	 * @return				
+	 *			
+	 */ 
+	public void nativeStop()
+	{
+	nativeStop = true;
+	}
+	/**
+	 * getter for the flag that indicates that this thread must be killed
+	 *
+	 * @return				
+	 *			
+	 */ 
+	public boolean getNativeStop()
+	{
+		return nativeStop;
+	}
+	/**
+	 * checks  if the flag that indicates that this thread must be killed is set to true; if true, starts to kill it. End users should not have to deal with it
+	 * If you develop a new MSG native call, please include a call to interruptedStop() at the beginning of your method code, so as the process can be killed if he call 
+	 * your method. 
+	 *
+	 * @return				
+	 *			
+	 */ 
+	public static void ifInterruptedStop() {
+  	  if ( (Thread.currentThread() instanceof Process) &&((Process) Thread.currentThread()).getNativeStop()) {				
+    			throw new RuntimeException("Interrupted");
+  		}
+	}
+
 
 	/**
-	 * This method kill the current process.
+	 * This method kill a process.
 	 * @param process  the process to be killed.
 	 *
 	 */
 	public static void kill(Process process) {
-		 MsgNative.processKill(process);
+		 process.nativeStop();
+		 Msg.info("Process " + process.msgName() + " will be killed.");		  		
+		 		 
 	}
 	/**
 	 * This method adds an argument in the list of the arguments of the main function
@@ -218,6 +255,7 @@ public abstract class Process extends Thread {
 	 *
 	 */
 	public void pause() {
+		Process.ifInterruptedStop();
 		MsgNative.processSuspend(this);
 	}
 	/**
@@ -227,6 +265,7 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public void restart()  {
+		Process.ifInterruptedStop();
 		MsgNative.processResume(this);
 	}
 	/**
@@ -236,6 +275,7 @@ public abstract class Process extends Thread {
 	 *						Otherwise the method returns false.
 	 */ 
 	public boolean isSuspended() {
+		Process.ifInterruptedStop();
 		return MsgNative.processIsSuspended(this);
 	}
 	/**
@@ -246,6 +286,7 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public Host getHost() {
+		Process.ifInterruptedStop();
 		return MsgNative.processGetHost(this);
 	}
 	/**
@@ -258,6 +299,7 @@ public abstract class Process extends Thread {
 	 * @exception			NativeException on error in the native SimGrid code
 	 */ 
 	public static Process fromPID(int PID) throws NativeException {
+		Process.ifInterruptedStop();
 		return MsgNative.processFromPID(PID);
 	}
 	/**
@@ -267,6 +309,7 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public int getPID()  {
+		Process.ifInterruptedStop();
 		return MsgNative.processGetPID(this);
 	}
 	/**
@@ -276,6 +319,7 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public int getPPID()  {
+		Process.ifInterruptedStop();
 		return MsgNative.processGetPPID(this);
 	}
 	/**
@@ -285,6 +329,7 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public static Process currentProcess()  {
+		Process.ifInterruptedStop();
 		return MsgNative.processSelf();
 	}
 	/**
@@ -295,6 +340,7 @@ public abstract class Process extends Thread {
 	 *
 	 */
 	public static void migrate(Process process, Host host)  {
+		Process.ifInterruptedStop();
 		MsgNative.processMigrate(process, host);
 	}
 	/**
@@ -305,12 +351,14 @@ public abstract class Process extends Thread {
 	 * @exception			HostFailureException on error in the native SimGrid code
 	 */ 
 	public static void waitFor(double seconds) throws HostFailureException {
+		Process.ifInterruptedStop();
 		MsgNative.processWaitFor(seconds);
 	} 
     /**
      *
      */
     public void showArgs() {
+		Process.ifInterruptedStop();
 		Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
 				this.args.size());
 		for (int i = 0; i < this.args.size(); i++)
@@ -346,6 +394,19 @@ public abstract class Process extends Thread {
 			Msg.info("Unexpected behavior. Stopping now");
 			System.exit(1);
 		}
+		 catch(RuntimeException re) {
+			if (nativeStop)			
+			{
+			MsgNative.processExit(this);
+			Msg.info(" Process " + ((Process) Thread.currentThread()).msgName() + " has been killed.");						
+			schedEnd.release();			
+			}
+			else {
+			re.printStackTrace();
+			Msg.info("Unexpected behavior. Stopping now");
+			System.exit(1);
+			}
+		}	
 	}
 
 	/**
@@ -361,12 +422,11 @@ public abstract class Process extends Thread {
      *
      */
     public void unschedule() {
+		//Process.ifInterruptedStop();
 		try {
 			schedEnd.release();
 			schedBegin.acquire();
-		} catch (InterruptedException e) {
-			/* stopped by jprocess_exit: I must terminate right now */
-			/* FIXME: how to do that? */
+		} catch (InterruptedException e) {			
 		}
 	}
 
@@ -375,6 +435,7 @@ public abstract class Process extends Thread {
      */
     public void schedule() {
 	   //System.err.println("Scheduling process in Java");
+		//Process.ifInterruptedStop();
 		try {
 			schedBegin.release();
 			schedEnd.acquire();
@@ -392,6 +453,7 @@ public abstract class Process extends Thread {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
 	public void taskSend(String mailbox, Task task, double timeout) throws TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		MsgNative.taskSend(mailbox, task, timeout);
 	}
 
@@ -402,6 +464,7 @@ public abstract class Process extends Thread {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
 	public void taskSend(String mailbox, Task task) throws  TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		MsgNative.taskSend(mailbox, task, -1);
 	}
 
@@ -413,6 +476,7 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, -1.0, null);
 	}
 
@@ -425,6 +489,7 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, timeout, null);
 	}
 
@@ -438,6 +503,7 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox, double timeout, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, timeout, host);
 	}
 
@@ -450,6 +516,7 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, -1.0, host);
 	}
 }

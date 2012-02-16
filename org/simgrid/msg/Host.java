@@ -76,6 +76,7 @@ public class Host {
 	 */ 
 	public static Host getByName(String name) 
 	throws HostNotFoundException {
+	Process.ifInterruptedStop();
 		if (name==null)
 			throw new NullPointerException("No host can have a null name");
 		return MsgNative.hostGetByName(name);
@@ -88,6 +89,7 @@ public class Host {
 	 *
 	 */ 
 	public static int getCount() {
+	Process.ifInterruptedStop();
 		return MsgNative.hostGetCount();
 	}
 
@@ -97,6 +99,7 @@ public class Host {
 	 * @return			The host on which the current process is executed.
 	 */ 
 	public static Host currentHost() {
+	Process.ifInterruptedStop();
 		return MsgNative.hostSelf();
 	}
 
@@ -107,6 +110,7 @@ public class Host {
 	 *
 	 */ 
 	public static Host[] all()  {
+	Process.ifInterruptedStop();
 		return MsgNative.allHosts();
 	}
 
@@ -117,6 +121,7 @@ public class Host {
 	 *
 	 */ 
 	public String getName()  {
+	Process.ifInterruptedStop();
 		return MsgNative.hostGetName(this);
 	}
 
@@ -127,6 +132,7 @@ public class Host {
      * @param data
      */
 	public void setData(Object data) {
+	Process.ifInterruptedStop();
 		this.data = data;
 	} 
 	/**
@@ -135,6 +141,7 @@ public class Host {
      * @return
      */
 	public Object getData() {
+	Process.ifInterruptedStop();
 		return this.data;
 	}
 
@@ -144,6 +151,7 @@ public class Host {
      * @return
      */
 	public boolean hasData() {
+	Process.ifInterruptedStop();
 		return null != this.data;
 	}
 
@@ -154,6 +162,7 @@ public class Host {
 	 * @return			The number of tasks currently running on a host.
 	 */ 
 	public int getLoad() {
+	Process.ifInterruptedStop();
 		return MsgNative.hostGetLoad(this);
 	}
 
@@ -165,6 +174,7 @@ public class Host {
 	 *
 	 */ 
 	public double getSpeed() {
+	Process.ifInterruptedStop();
 		return MsgNative.hostGetSpeed(this);
 	}
 
@@ -172,6 +182,7 @@ public class Host {
      * @return
      */
 	public boolean isAvail() {
+	Process.ifInterruptedStop();
 		return MsgNative.hostIsAvail(this);
 	}
 } 

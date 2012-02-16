@@ -68,28 +68,33 @@ public class Task {
      * @return
      */
 	public String getName() {
+		Process.ifInterruptedStop();
 		return MsgNative.taskGetName(this);
 	}
 	/** Gets the sender of the task */ 
 	Process getSender() {
+		Process.ifInterruptedStop();
 		return MsgNative.taskGetSender(this);
 	}
     /** Gets the source of the task
      * @return
      */
 	public Host getSource()  {
+		Process.ifInterruptedStop();
 		return MsgNative.taskGetSource(this);
 	}
     /** Gets the computing amount of the task
      * @return
      */
 	public double getComputeDuration() {
+		Process.ifInterruptedStop();
 		return MsgNative.taskGetComputeDuration(this);
 	}
     /** Gets the remaining computation of the task
      * @return
      */
 	public double getRemainingDuration() {
+		Process.ifInterruptedStop();
 		return MsgNative.taskGetRemainingDuration(this);
 	}
 	/**
@@ -101,6 +106,7 @@ public class Task {
 	 * @param priority	The new priority of the task.
 	 */ 
 	public void setPriority(double priority) {
+		Process.ifInterruptedStop();
 		MsgNative.taskSetPriority(this, priority);
 	}
 	/* *                       * *
@@ -119,6 +125,7 @@ public class Task {
      * @throws TaskCancelledException
      */
 	public void execute() throws HostFailureException,TaskCancelledException {
+		Process.ifInterruptedStop();
 		MsgNative.taskExecute(this);
 	}
 	/**
@@ -126,6 +133,7 @@ public class Task {
 	 *
 	 */ 
 	public void cancel()  {
+		Process.ifInterruptedStop();
 		MsgNative.taskCancel(this);
 	}
 	/** Deletes a task.
@@ -133,6 +141,7 @@ public class Task {
 	 * @exception			NativeException if the destruction failed.
 	 */ 
 	protected void finalize() throws NativeException {
+		Process.ifInterruptedStop();
 		if (this.bind != 0)
 			MsgNative.taskDestroy(this);
 	}
@@ -146,6 +155,7 @@ public class Task {
 	 * @throws TransferFailureException 
 	 */
 	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		MsgNative.taskSend(mailbox, this, -1);
 	} 
 
@@ -160,6 +170,7 @@ public class Task {
 	 * @throws TransferFailureException 
 	 */
 	public void send(String mailbox, double timeout) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		MsgNative.taskSend(mailbox, this, timeout);
 	} 
 
@@ -173,6 +184,7 @@ public class Task {
      * @throws TimeoutException
 	 */
 	public void sendBounded(String alias, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		MsgNative.taskSendBounded(alias, this, maxrate);
 	} 
 
@@ -187,6 +199,7 @@ public class Task {
 	 */
 
 	public static Task receive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, -1.0, null);
 	}
 
@@ -201,6 +214,7 @@ public class Task {
      * @throws TimeoutException
 	 */
 	public static Task receive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, timeout, null);
 	}
 
@@ -216,6 +230,7 @@ public class Task {
 	 */
 
 	public static Task receive(String mailbox, Host host) throws TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, -1.0, host);
 	}
 
@@ -231,6 +246,7 @@ public class Task {
      * @throws TimeoutException
 	 */
 	public static Task receive(String mailbox, double timeout, Host host) throws TransferFailureException, HostFailureException, TimeoutException {
+		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, timeout, host);
 	}
 
@@ -242,6 +258,7 @@ public class Task {
      * @return
      */
 	public static int listenFrom(String mailbox)  {
+		Process.ifInterruptedStop();
 		return MsgNative.taskListenFrom(mailbox);
 	}
 	/**
@@ -252,6 +269,7 @@ public class Task {
      * @return
      */
 	public static boolean listen(String mailbox)   {
+		Process.ifInterruptedStop();
 		return MsgNative.taskListen(mailbox);
 	}
 
@@ -264,6 +282,7 @@ public class Task {
      * @return
      */
 	public static int listenFromHost(String alias, Host host)   {
+		Process.ifInterruptedStop();
 		return MsgNative.taskListenFromHost(alias, host);
 	}
 }

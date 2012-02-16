@@ -27,6 +27,6 @@ public class Slave extends Process {
 	task.send("mail1");
 	
 	Task task2 = Task.receive("mail2");
-	Msg.info("Receive Mail2!");
+	 Msg.info("Receive Mail2!");
 	}
 }

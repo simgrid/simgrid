@@ -97,11 +97,13 @@ static void smx_ctx_java_free(smx_context_t context)
   smx_ctx_base_free(context);
 }
 
+
 void smx_ctx_java_stop(smx_context_t context)
 {
-  xbt_assert(context == my_current_context,
-      "The context to stop must be the current one");
+ xbt_assert(context == my_current_context,
+     "The context to stop must be the current one");
   /* I am the current process and I am dying */
+  
   smx_ctx_base_stop(context);
 
   XBT_DEBUG("I am dying");
@@ -109,7 +111,7 @@ void smx_ctx_java_stop(smx_context_t context)
   /* suspend myself again, smx_ctx_java_free() will destroy me later
    * from maeastro */
   jprocess_unschedule(context);
-  xbt_die("This function was not supposed to return");
+  XBT_INFO("Java stop finished");
 }
 
 static void smx_ctx_java_suspend(smx_context_t context)
