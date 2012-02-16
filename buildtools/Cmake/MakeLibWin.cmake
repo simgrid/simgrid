@@ -22,5 +22,5 @@ find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
 message(STATUS "pexports: ${PEXPORTS_PATH}")
 if(PEXPORTS_PATH)
 add_custom_command(TARGET simgrid POST_BUILD
-COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/libsimgrid.dll > ${CMAKE_BINARY_DIR}/lib/libsimgrid.ref)
+COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/libsimgrid.dll > ${CMAKE_BINARY_DIR}/lib/libsimgrid.def)
 endif(PEXPORTS_PATH)
