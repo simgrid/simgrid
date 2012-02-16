@@ -7,7 +7,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib")
 set(soversion 1)
 
 set(SIMGRID_JAVA_VERSION_MAJOR "1")
-set(SIMGRID_JAVA_VERSION_MINOR "0")
+set(SIMGRID_JAVA_VERSION_MINOR "1")
 set(SIMGRID_JAVA_VERSION_PATCH "0")
 set(DIST_NAME ${PROJECT_NAME}-${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR})
 
@@ -174,23 +174,28 @@ string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES_CLASS}")
 # FLAGS #
 #########
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
-set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I${SIMGRID_INCLUDES}")
-set(LIB_PATH "-L${SIMGRID_LIB}")
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH} ${LIB_PATH} -DMSG_USE_DEPRECATED")
+set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I$ENV{SIMGRID_ROOT}/include")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH}")
 
 if(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unused-but-set-variable ")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unused-but-set-variable")
 endif(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
-
 
 ###########
 # TARGETS #
 ###########
 # SG_java
 add_library(SG_java SHARED ${JMSG_C_SRC})
-target_link_libraries(SG_java -lsimgrid)
-set_target_properties(SG_java PROPERTIES VERSION ${soversion})
-  
+target_link_libraries(SG_java pcre pthread)
+set_target_properties(SG_java PROPERTIES LINK_FLAGS "-Wl,--subsystem,windows,--kill-at $ENV{SIMGRID_ROOT}/lib/libsimgrid.dll -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
+
+find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
+message(STATUS "pexports: ${PEXPORTS_PATH}")
+if(PEXPORTS_PATH)
+add_custom_command(TARGET SG_java POST_BUILD
+COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/libSG_java.dll > ${CMAKE_BINARY_DIR}/libSG_java.def)
+endif(PEXPORTS_PATH)
+
 # java_classes
 add_custom_command(
 	OUTPUT 	${JMSG_JAVA_SRC_CLASS}
@@ -281,6 +286,7 @@ endif(APPLE)
 ##########################################
 # Set the  LD_LIBRARY_PATH for our tests #
 ##########################################
+if(NOT WIN32)
 if($ENV{LD_LIBRARY_PATH} STREQUAL "")
     set_tests_properties(${test_list}
     PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB}")
@@ -288,6 +294,7 @@ else($ENV{LD_LIBRARY_PATH} STREQUAL "")
     set_tests_properties(${test_list}
     PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB}")
 endif($ENV{LD_LIBRARY_PATH} STREQUAL "")
+endif(NOT WIN32)
 
 ###########
 # Install #
