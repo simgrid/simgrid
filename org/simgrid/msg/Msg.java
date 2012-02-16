@@ -15,7 +15,7 @@ public final class Msg {
 	/* Statically load the library which contains all native functions used in here */
 	static {
 		try {
-			System.loadLibrary("libSG_java");
+			System.loadLibrary("SG_java");
 		} catch(UnsatisfiedLinkError e) {
 			System.err.println("Cannot load the bindings to the simgrid library: ");
 			e.printStackTrace();
