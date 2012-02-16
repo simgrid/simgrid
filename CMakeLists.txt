@@ -186,16 +186,17 @@ endif(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
 ###########
 # SG_java
 add_library(SG_java SHARED ${JMSG_C_SRC})
-target_link_libraries(SG_java pcre pthread)
-set_target_properties(SG_java PROPERTIES LINK_FLAGS "${SIMGRID_LIB} -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
 if(WIN32)
-    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-Wl,--subsystem,windows,--kill-at" PREFIX "")
+    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-Wl,--subsystem,windows,--kill-at ${SIMGRID_LIB}" PREFIX "")
     find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
     message(STATUS "pexports: ${PEXPORTS_PATH}")
     if(PEXPORTS_PATH)
     add_custom_command(TARGET SG_java POST_BUILD
     COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java.dll > ${CMAKE_BINARY_DIR}/SG_java.def)
     endif(PEXPORTS_PATH)
+else(WIN32)
+    target_link_libraries(SG_java pcre pthread)
+    set_target_properties(SG_java PROPERTIES LINK_FLAGS "${SIMGRID_LIB} -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
 endif(WIN32)
 
 # java_classes
@@ -208,7 +209,7 @@ add_custom_command(
 	COMMENT "Compiling java sources of core library..."					
 )
 add_custom_target(java_classes ALL
-  DEPENDS ${JMSG_JAVA_SRC_CLASS}		
+  DEPENDS ${JMSG_JAVA_SRC_CLASS}
 )
 
 # simgrid_jar
