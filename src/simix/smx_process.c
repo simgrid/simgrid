@@ -306,7 +306,7 @@ void SIMIX_process_killall(smx_process_t issuer)
     }
   }
 
-  SIMIX_context_runall(simix_global->process_to_run);
+  SIMIX_context_runall();
 
   SIMIX_process_empty_trash();
 }
