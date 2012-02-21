@@ -323,12 +323,8 @@ xbt_datadesc_memcpy_rec(xbt_cbps_t state,
       array_count = array_data.fixed_size;
       if (array_count == -1)
         array_count = subsize;
-      if (array_count == -1) {
+      if (array_count == -1)
         array_count = array_data.dynamic_size(type, state, src);
-        xbt_assert(array_count >= 0,
-                    "Invalid (negative) array size for type %s",
-                    type->name);
-      }
 
       /* send the content */
       sub_type = array_data.type;

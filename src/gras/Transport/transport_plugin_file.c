@@ -208,7 +208,6 @@ gras_trp_file_chunk_send_raw(xbt_socket_t sock,
 {
 
   xbt_assert(sock->outgoing, "Cannot write on client file socket");
-  xbt_assert(size >= 0, "Cannot send a negative amount of data");
 
   while (size) {
     int status = 0;
@@ -244,7 +243,6 @@ gras_trp_file_chunk_recv(xbt_socket_t sock,
 
   xbt_assert(sock, "Cannot recv on an NULL socket");
   xbt_assert(sock->incoming, "Cannot recv on client file socket");
-  xbt_assert(size >= 0, "Cannot receive a negative amount of data");
 
   if (sock->recvd) {
     data[0] = sock->recvd_val;
