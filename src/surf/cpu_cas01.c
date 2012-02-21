@@ -305,9 +305,9 @@ static double cpu_share_resources_lazy(double now)
 }
 
 static double cpu_share_resources_full(double now) {
-  surf_action_cpu_Cas01_t action;
+  s_surf_action_cpu_Cas01_t action;
   return generic_maxmin_share_resources(surf_cpu_model->states.running_action_set,
-      xbt_swag_offset(*action, generic_lmm_action.variable),
+      xbt_swag_offset(action, generic_lmm_action.variable),
       cpu_maxmin_system, lmm_solve);
 }
 
@@ -434,8 +434,6 @@ static void cpu_update_resource_state(void *id,
       cpu->state_current = SURF_RESOURCE_ON;
     else {
       lmm_constraint_t cnst = cpu->constraint;
-      lmm_variable_t var = NULL;
-      lmm_element_t elem = NULL;
 
       cpu->state_current = SURF_RESOURCE_OFF;
 

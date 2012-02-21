@@ -46,7 +46,7 @@ void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function)
     return;
   }
   /* Start all workers */
-  XBT_DEBUG("Dopar for %ld elements", xbt_dynar_length(datas));
+  XBT_DEBUG("Dopar for %lu elements", xbt_dynar_length(datas));
   xbt_dynar_foreach(datas, cursor, data) {
     worker_data_t w = xbt_new0(s_worker_data_t, 1);
     w->data = datas;

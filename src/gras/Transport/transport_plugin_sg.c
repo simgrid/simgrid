@@ -266,7 +266,7 @@ void gras_trp_sg_socket_close(xbt_socket_t sock)
   if (sock->incoming && !sock->outgoing && sockdata->server_port >= 0) {
     /* server mode socket. Unregister it from 'OS' tables */
     xbt_dynar_foreach(hd->ports, cpt, pr) {
-      XBT_DEBUG("Check pr %d of %lu", cpt, xbt_dynar_length(hd->ports));
+      XBT_DEBUG("Check pr %u of %lu", cpt, xbt_dynar_length(hd->ports));
       if (pr->port == sockdata->server_port) {
         xbt_dynar_cursor_rm(hd->ports, &cpt);
         XBT_OUT();

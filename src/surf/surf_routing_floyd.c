@@ -248,7 +248,6 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 	/* set the size of table routing */
 	size_t table_size = xbt_dict_length(rc->to_index);
 	int *src_id, *dst_id;
-	int i,j;
 
 	src_id = xbt_dict_get_or_null(rc->to_index, src);
 	dst_id = xbt_dict_get_or_null(rc->to_index, dst);
@@ -258,6 +257,7 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 
 	if(!as->link_table)
 	{
+          int i,j;
 		/* Create Cost, Predecessor and Link tables */
 		as->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
 		as->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */

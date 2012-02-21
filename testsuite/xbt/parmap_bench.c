@@ -30,7 +30,7 @@ static const char *parmap_mode_name(e_xbt_parmap_mode_t mode)
     snprintf(name, sizeof name, "DEFAULT");
     break;
   default:
-    snprintf(name, sizeof name, "UNKNOWN(%d)", mode);
+    snprintf(name, sizeof name, "UNKNOWN(%d)", (int)mode);
     break;
   }
   return name;
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   if (argc == 3)
-    modes = atoi(argv[2]);
+    modes = strtol(argv[2], NULL, 0);
 
   printf("Parmap benchmark with %d workers (modes = %#x)...\n\n",
          nthreads, modes);

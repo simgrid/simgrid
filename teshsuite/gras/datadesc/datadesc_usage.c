@@ -245,7 +245,7 @@ static void test_hetestruct(xbt_socket_t sock, int direction)
   if (direction == READ || direction == COPY) {
     xbt_assert(i->c1 == j->c1);
     xbt_assert(i->c2 == j->c2);
-    xbt_assert(i->l1 == j->l1, "i->l1(=%ld)  !=  j->l1(=%ld)", i->l1,
+    xbt_assert(i->l1 == j->l1, "i->l1(=%lu)  !=  j->l1(=%lu)", i->l1,
                 j->l1);
     xbt_assert(i->l2 == j->l2);
     free(j);
@@ -274,7 +274,7 @@ static void test_hetestruct_array(xbt_socket_t sock, int direction)
       xbt_assert(p->c1 == q->c1);
       xbt_assert(p->c2 == q->c2);
       xbt_assert(p->l1 == p->l1,
-                  "for cpt=%d i->l1(=%ld)  !=  j->l1(=%ld)", cpt, p->l1,
+                  "for cpt=%d i->l1(=%lu)  !=  j->l1(=%lu)", cpt, p->l1,
                   q->l1);
       xbt_assert(q->l2 == p->l2);
     }

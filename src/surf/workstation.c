@@ -276,7 +276,7 @@ static double ws_get_link_latency(const void *link)
 
 static int ws_link_shared(const void *link)
 {
-  return surf_network_model->extension.network.get_link_latency(link);
+  return surf_network_model->extension.network.link_shared(link);
 }
 
 static void ws_finalize(void)

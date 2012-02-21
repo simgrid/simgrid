@@ -125,7 +125,7 @@ xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
     	    mdp = (struct mdesc *) mtemp.base;
     	    mdp->fd = fd;
     	    if(!mdp->refcount){
-    	      sem_init(&mdp->sem, 1, 1);
+              sem_init(&mdp->sem, 0, 1);
     	      mdp->refcount++;
     	    }
     	  }
@@ -168,10 +168,8 @@ xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
 
   if (mdp->fd < 0){
     mdp->flags |= MMALLOC_ANONYMOUS;
-    sem_init(&mdp->sem, 0, 1);
-  }else{
-    sem_init(&mdp->sem, 1, 1);
   }
+  sem_init(&mdp->sem, 0, 1);
   
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */

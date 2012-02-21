@@ -803,7 +803,7 @@ void xbt_graph_save (xbt_graph_t span,
   xbt_dynar_t edges = xbt_graph_get_edges (span);
   unsigned int cpt;
   xbt_node_t node;
-  fprintf (file, "%ld\n", xbt_dynar_length (nodes));
+  fprintf (file, "%lu\n", xbt_dynar_length (nodes));
   xbt_dynar_foreach (nodes, cpt, node) {
     if (nname){
       fprintf (file, "%s\n", nname(node));
@@ -811,7 +811,7 @@ void xbt_graph_save (xbt_graph_t span,
       fprintf (file, "%p\n", node);
     }
   }
-  fprintf (file, "%ld\n", xbt_dynar_length (edges));
+  fprintf (file, "%lu\n", xbt_dynar_length (edges));
   xbt_edge_t edge;
   xbt_dynar_foreach (edges, cpt, edge) {
     xbt_node_t source = xbt_graph_edge_get_source (edge);

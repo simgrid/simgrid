@@ -191,7 +191,7 @@ int _rand_r(unsigned int *pseed)
 
 #endif
 
-static double custom_random(Generator generator, long int *seed)
+static double custom_random(e_random_generator_t generator, long int *seed)
 {
   switch (generator) {
 
@@ -252,7 +252,7 @@ double random_generate(random_data_t random)
   return X * (random->max - random->min) + random->min;
 }
 
-random_data_t random_new(Generator generator, long int seed,
+random_data_t random_new(e_random_generator_t generator, long int seed,
                          double min, double max, double mean, double std)
 {
   random_data_t random = xbt_new0(s_random_data_t, 1);

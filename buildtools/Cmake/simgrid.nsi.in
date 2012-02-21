@@ -193,7 +193,7 @@ Section "Examples" ExamplesSection
 	file @CMAKE_HOME_DIRECTORY@\examples\msg\masterslave\deployment_masterslave_forwarder.xml
 	file @CMAKE_HOME_DIRECTORY@\examples\msg\msg_platform.xml
 	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\CMakeLists.txt
-	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\FindPCRE.cmake
+	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\FindPcreWin.cmake
 	
 	# create shortcuts in the start menu programs directory
 	CreateDirectory "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\"
@@ -207,9 +207,9 @@ Section "Pcre library" PCRESection
 	setOutPath $INSTDIR\GnuWin32
 	file /r "@PCRE_LIBRARY_PATH@\lib"
 	file /r "@PCRE_LIBRARY_PATH@\include"
-	file /nonfatal /r "@PCRE_LIBRARY_PATH@\bin"
-	file /nonfatal /r "@PCRE_LIBRARY_PATH@\man"
-	file /nonfatal /r "@PCRE_LIBRARY_PATH@\share"
+	file /r "@PCRE_LIBRARY_PATH@\bin"
+	file /r "@PCRE_LIBRARY_PATH@\man"
+	file /r "@PCRE_LIBRARY_PATH@\share"
 SectionEnd
 
 Section "Java Bindings" JavaSection	

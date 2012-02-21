@@ -372,7 +372,7 @@ void SD_task_dump(SD_task_t task)
     }
   }
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
-  XBT_INFO("  - Dependencies to satisfy: %d", task->unsatisfied_dependencies);
+  XBT_INFO("  - Dependencies to satisfy: %u", task->unsatisfied_dependencies);
   if (!xbt_dynar_is_empty(task->tasks_before)) {
     XBT_INFO("  - pre-dependencies:");
     xbt_dynar_foreach(task->tasks_before, counter, dependency) {
@@ -877,7 +877,7 @@ void __SD_task_really_run(SD_task_t task)
 
   xbt_assert(__SD_task_is_runnable_or_in_fifo(task),
               "Task '%s' is not runnable or in a fifo! Task state: %d",
-              SD_task_get_name(task), SD_task_get_state(task));
+             SD_task_get_name(task), (int)SD_task_get_state(task));
   xbt_assert(task->workstation_list != NULL,
               "Task '%s': workstation_list is NULL!",
               SD_task_get_name(task));
@@ -979,7 +979,7 @@ void __SD_task_really_run(SD_task_t task)
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   __SD_task_set_state(task, SD_RUNNING);
   xbt_assert(__SD_task_is_running(task), "Bad state of task '%s': %d",
-              SD_task_get_name(task), SD_task_get_state(task));
+             SD_task_get_name(task), (int)SD_task_get_state(task));
 
 }
 
@@ -998,7 +998,7 @@ int __SD_task_try_to_run(SD_task_t task)
 
   xbt_assert(__SD_task_is_runnable(task),
               "Task '%s' is not runnable! Task state: %d",
-              SD_task_get_name(task), SD_task_get_state(task));
+             SD_task_get_name(task), (int)SD_task_get_state(task));
 
 
   for (i = 0; i < task->workstation_nb; i++) {
@@ -1020,7 +1020,7 @@ int __SD_task_try_to_run(SD_task_t task)
     }
     __SD_task_set_state(task, SD_IN_FIFO);
     xbt_assert(__SD_task_is_in_fifo(task), "Bad state of task '%s': %d",
-                SD_task_get_name(task), SD_task_get_state(task));
+               SD_task_get_name(task), (int)SD_task_get_state(task));
     XBT_DEBUG("Task '%s' state is now SD_IN_FIFO", SD_task_get_name(task));
   } else {
     __SD_task_really_run(task);
@@ -1046,7 +1046,7 @@ void __SD_task_just_done(SD_task_t task)
 
   xbt_assert(__SD_task_is_running(task),
               "The task must be running! Task state: %d",
-              SD_task_get_state(task));
+              (int)SD_task_get_state(task));
   xbt_assert(task->workstation_list != NULL,
               "Task '%s': workstation_list is NULL!",
               SD_task_get_name(task));
@@ -1065,7 +1065,7 @@ void __SD_task_just_done(SD_task_t task)
   for (i = 0; i < task->workstation_nb; i++) {
     workstation = task->workstation_list[i];
     XBT_DEBUG("Workstation '%s': access_mode = %d",
-           SD_workstation_get_name(workstation), workstation->access_mode);
+              SD_workstation_get_name(workstation), (int)workstation->access_mode);
     if (workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
       xbt_assert(workstation->task_fifo != NULL,
                   "Workstation '%s' has sequential access but no fifo!",
@@ -1088,7 +1088,7 @@ void __SD_task_just_done(SD_task_t task)
         xbt_assert(__SD_task_is_in_fifo(candidate),
                     "Bad state of candidate '%s': %d",
                     SD_task_get_name(candidate),
-                    SD_task_get_state(candidate));
+                    (int)SD_task_get_state(candidate));
       }
 
       XBT_DEBUG("Candidate in fifo: %p", candidate);
@@ -1127,7 +1127,7 @@ void __SD_task_just_done(SD_task_t task)
 
     xbt_assert(__SD_task_is_in_fifo(candidate),
                 "Bad state of candidate '%s': %d",
-                SD_task_get_name(candidate), SD_task_get_state(candidate));
+               SD_task_get_name(candidate), (int)SD_task_get_state(candidate));
 
     for (j = 0; j < candidate->workstation_nb && can_start; j++) {
       workstation = candidate->workstation_list[j];
@@ -1161,7 +1161,7 @@ void __SD_task_just_done(SD_task_t task)
 
       /* finally execute the task */
       XBT_DEBUG("Task '%s' state: %d", SD_task_get_name(candidate),
-             SD_task_get_state(candidate));
+             (int)SD_task_get_state(candidate));
       __SD_task_really_run(candidate);
 
       XBT_DEBUG
@@ -1171,7 +1171,7 @@ void __SD_task_just_done(SD_task_t task)
       xbt_assert(__SD_task_is_running(candidate),
                   "Bad state of task '%s': %d",
                   SD_task_get_name(candidate),
-                  SD_task_get_state(candidate));
+                 (int)SD_task_get_state(candidate));
       XBT_DEBUG("Okay, the task is running.");
 
     }                           /* can start */

@@ -177,7 +177,7 @@ xbt_main_func_t SIMIX_get_registered_function(const char *name)
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_get_registered_function.");
 
-  res = xbt_dict_get_or_null(simix_global->registered_functions, name);
+  res = (xbt_main_func_t)xbt_dict_get_or_null(simix_global->registered_functions, name);
   return res ? res : default_function;
 }
 

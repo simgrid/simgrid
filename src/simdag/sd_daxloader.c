@@ -258,7 +258,7 @@ static void dump_res()
   unsigned int cursor;
   SD_task_t task;
   xbt_dynar_foreach(result, cursor, task) {
-    XBT_INFO("Task %d", cursor);
+    XBT_INFO("Task %u", cursor);
     SD_task_dump(task);
   }
 }
@@ -312,12 +312,11 @@ xbt_dynar_t SD_daxload(const char *filename)
 
   xbt_dict_foreach(files, cursor, name, file) {
     unsigned int cpt1, cpt2;
-    SD_task_t newfile = NULL;
+    SD_task_t newfile;
     SD_dependency_t depbefore, depafter;
     if (xbt_dynar_is_empty(file->tasks_before)) {
       xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
-        SD_task_t newfile =
-            SD_task_create_comm_e2e(file->name, NULL, file->amount);
+        newfile = SD_task_create_comm_e2e(file->name, NULL, file->amount);
         SD_task_dependency_add(NULL, NULL, root_task, newfile);
         SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
 #ifdef HAVE_TRACING
@@ -333,8 +332,7 @@ xbt_dynar_t SD_daxload(const char *filename)
       }
     } else if (xbt_dynar_is_empty(file->tasks_after)) {
       xbt_dynar_foreach(file->tasks_before, cpt2, depbefore) {
-        SD_task_t newfile =
-            SD_task_create_comm_e2e(file->name, NULL, file->amount);
+        newfile = SD_task_create_comm_e2e(file->name, NULL, file->amount);
         SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
         SD_task_dependency_add(NULL, NULL, newfile, end_task);
 #ifdef HAVE_TRACING
@@ -356,8 +354,7 @@ xbt_dynar_t SD_daxload(const char *filename)
                 ("File %s is produced and consumed by task %s. This loop dependency will prevent the execution of the task.",
                  file->name, depbefore->src->name);
           }
-          newfile =
-              SD_task_create_comm_e2e(file->name, NULL, file->amount);
+          newfile = SD_task_create_comm_e2e(file->name, NULL, file->amount);
           SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
           SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
 #ifdef HAVE_TRACING

@@ -402,7 +402,7 @@ void gras_msg_handle(volatile double timeOut)
         volatile unsigned int cpt2 = cpt;
         if (!ran_ok) {
           XBT_DEBUG
-              ("Use the callback #%d (@%p) for incomming msg '%s' (payload_size=%d)",
+              ("Use the callback #%u (@%p) for incomming msg '%s' (payload_size=%d)",
                cpt + 1, cb, msg.type->name, msg.payl_size);
           if (!cb(&ctx, msg.payl)) {
             /* cb handled the message */
@@ -442,7 +442,7 @@ void gras_msg_handle(volatile double timeOut)
         ran_ok = 1;
       } else {
         RETHROWF
-            ("Callback #%d (@%p) to message '%s' (payload size: %d) raised an exception: %s",
+            ("Callback #%u (@%p) to message '%s' (payload size: %d) raised an exception: %s",
              cpt + 1, cb, msg.type->name, msg.payl_size);
       }
     }
@@ -481,7 +481,7 @@ void gras_msg_handle(volatile double timeOut)
 
   default:
     THROWF(unknown_error, 0,
-           "Cannot handle messages of kind %d yet", msg.type->kind);
+           "Cannot handle messages of kind %d yet", (int)msg.type->kind);
   }
 
 }

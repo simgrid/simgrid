@@ -63,7 +63,7 @@ void gras_msg_send_ext(xbt_socket_t sock,
     break;
 
   default:
-    THROWF(unknown_error, 0, "Unknown msg kind %d", kind);
+    THROWF(unknown_error, 0, "Unknown msg kind %d", (int)kind);
   }
 
   xbt_datadesc_send(sock, string_type, &msgtype->name);

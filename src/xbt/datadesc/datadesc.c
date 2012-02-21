@@ -227,7 +227,7 @@ void xbt_datadesc_type_dump(const xbt_datadesc_type_t ddt)
 
   printf("  alignment[");
   for (cpt = 0; cpt < xbt_arch_count; cpt++) {
-    printf("%s%s%ld%s",
+    printf("%s%s%lu%s",
            cpt > 0 ? ", " : "",
            cpt == GRAS_THISARCH ? ">" : "",
            ddt->alignment[cpt], cpt == GRAS_THISARCH ? "<" : "");
@@ -236,7 +236,7 @@ void xbt_datadesc_type_dump(const xbt_datadesc_type_t ddt)
 
   printf("  aligned_size[");
   for (cpt = 0; cpt < xbt_arch_count; cpt++) {
-    printf("%s%s%ld%s",
+    printf("%s%s%lu%s",
            cpt > 0 ? ", " : "",
            cpt == GRAS_THISARCH ? ">" : "",
            ddt->aligned_size[cpt], cpt == GRAS_THISARCH ? "<" : "");
@@ -248,10 +248,10 @@ void xbt_datadesc_type_dump(const xbt_datadesc_type_t ddt)
 
     struct_data = ddt->category.struct_data;
     xbt_dynar_foreach(struct_data.fields, cpt, field) {
-      printf(">>> Dump field #%d (%s) (offset=%ld)\n",
+      printf(">>> Dump field #%u (%s) (offset=%ld)\n",
              cpt, field->name, field->offset[GRAS_THISARCH]);
       xbt_datadesc_type_dump(field->type);
-      printf("<<< end dump field #%d (%s)\n", cpt, field->name);
+      printf("<<< end dump field #%u (%s)\n", cpt, field->name);
     }
   }
   fflush(stdout);

@@ -208,7 +208,7 @@ void gras_socket_close(xbt_socket_t sock)
     for (cursor = 0; cursor < xbt_dynar_length(sockets); cursor++) {
       _xbt_dynar_cursor_get(sockets, cursor, &sock_iter);
       if (sock == sock_iter) {
-        XBT_DEBUG("remove sock cursor %d dize %lu\n", cursor,
+        XBT_DEBUG("remove sock cursor %u dize %lu\n", cursor,
                xbt_dynar_length(sockets));
         xbt_dynar_cursor_rm(sockets, &cursor);
         if (sock->plugin->socket_close)

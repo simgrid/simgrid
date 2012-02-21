@@ -97,10 +97,14 @@ __asm__ (
 );
 #elif PROCESSOR_x86_64
 __asm__ (
-#if defined(APPLE) || defined(_WIN32)
+#if defined(APPLE)
    ".text\n"
    ".globl _raw_makecontext\n"
    "_raw_makecontext:\n"
+#elif defined(_WIN32)
+   ".text\n"
+   ".globl raw_makecontext\n"
+   "raw_makecontext:\n"
 #else
    ".text\n"
    ".globl raw_makecontext\n"
@@ -128,10 +132,14 @@ __asm__ (
 );
 
 __asm__ (
-#if defined(APPLE) || defined(_WIN32)
+#if defined(APPLE)
    ".text\n"
    ".globl _raw_swapcontext\n"
    "_raw_swapcontext:\n"
+#elif defined(_WIN32)
+   ".text\n"
+   ".globl raw_swapcontext\n"
+   "raw_swapcontext:\n"
 #else
    ".text\n"
    ".globl raw_swapcontext\n"

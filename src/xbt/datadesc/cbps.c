@@ -378,7 +378,7 @@ void xbt_datadesc_cb_push_uint_mult(xbt_datadesc_type_t ignored,
   unsigned int old = *(unsigned int *) data;
   unsigned int new = xbt_cbps_i_pop(vars);
 
-  XBT_DEBUG("push %d x %d as a size", old, new);
+  XBT_DEBUG("push %u x %u as a size", old, new);
   xbt_cbps_i_push(vars, (int) (old * new));
 }
 
@@ -400,6 +400,6 @@ void xbt_datadesc_cb_push_ulint_mult(xbt_datadesc_type_t ignored,
   unsigned long int old = *(unsigned long int *) data;
   unsigned long int new = xbt_cbps_i_pop(vars);
 
-  XBT_DEBUG("push %ld x %ld as a size", old, new);
+  XBT_DEBUG("push %lu x %lu as a size", old, new);
   xbt_cbps_i_push(vars, (int) (old * new));
 }

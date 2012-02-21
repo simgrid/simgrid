@@ -159,7 +159,7 @@ gras_msg_t gras_msg_recv_any(void)
               sock_data->rdv_client : sock_data->rdv_server);
     xbt_dynar_push(comms, &(sock_data->comm_recv));
   }
-  XBT_VERB("Wait on %ld 'sockets'", xbt_dynar_length(comms));
+  XBT_VERB("Wait on %lu 'sockets'", xbt_dynar_length(comms));
   /* Wait for the end of any of these communications */
   got = simcall_comm_waitany(comms);
 

@@ -80,7 +80,7 @@ static void heap_insert(surf_action_network_CM02_t    action, double key, enum h
 }
 
 static void heap_remove(surf_action_network_CM02_t action){
-  action->hat = NONE;
+  action->hat = NOTSET;
   if(((surf_action_network_CM02_t) action)->index_heap >= 0){
       xbt_heap_remove(net_action_heap,action->index_heap);
   }

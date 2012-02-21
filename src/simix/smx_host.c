@@ -299,7 +299,7 @@ void SIMIX_pre_host_execution_wait(smx_simcall_t simcall)
 {
   smx_action_t action = simcall->host_execution_wait.execution;
 
-  XBT_DEBUG("Wait for execution of action %p, state %d", action, action->state);
+  XBT_DEBUG("Wait for execution of action %p, state %d", action, (int)action->state);
 
   /* Associate this simcall to the action */
   xbt_fifo_push(action->simcalls, simcall);
@@ -355,7 +355,7 @@ void SIMIX_execution_finish(smx_action_t action)
 
       default:
         xbt_die("Internal error in SIMIX_execution_finish: unexpected action state %d",
-            action->state);
+            (int)action->state);
     }
     simcall->issuer->waiting_action = NULL;
     simcall->host_execution_wait.result = action->state;

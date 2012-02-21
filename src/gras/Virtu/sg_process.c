@@ -105,7 +105,7 @@ void gras_process_exit()
     unsigned int cpt;
     s_gras_msg_t msg;
     XBT_WARN
-        ("process %d terminated, but %ld messages are still queued. Message list:",
+        ("process %d terminated, but %lu messages are still queued. Message list:",
          gras_os_getpid(), xbt_dynar_length(msg_pd->msg_queue));
     xbt_dynar_foreach(msg_pd->msg_queue, cpt, msg) {
       XBT_WARN("   Message %s (%s) from %s@%s:%d", msg.type->name,

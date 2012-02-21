@@ -253,7 +253,7 @@ static XBT_INLINE void SIMIX_context_suspend(smx_context_t context)
 /**
  \brief Executes all the processes to run (in parallel if possible).
  */
-static XBT_INLINE void SIMIX_context_runall()
+static XBT_INLINE void SIMIX_context_runall(void)
 {
   simix_global->context_factory->runall();
 }

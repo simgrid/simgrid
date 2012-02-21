@@ -30,7 +30,7 @@ xbt_dd_send_int(xbt_socket_t sock, int *i, int stable)
     xbt_assert(int_type);
   }
 
-  XBT_DEBUG("send_int(%u)", *i);
+  XBT_DEBUG("send_int(%d)", *i);
   xbt_trp_send(sock, (char *) i, int_type->size[GRAS_THISARCH], stable);
 }
 
@@ -55,7 +55,7 @@ xbt_dd_recv_int(xbt_socket_t sock, int r_arch, int *i)
       xbt_dd_convert_elm(int_type, 1, r_arch, ptr, i);
     free(ptr);
   }
-  XBT_DEBUG("recv_int(%u)", *i);
+  XBT_DEBUG("recv_int(%d)", *i);
 }
 
 /*
@@ -157,7 +157,7 @@ xbt_datadesc_memcpy_rec(xbt_cbps_t state,
 
         if (XBT_LOG_ISENABLED(xbt_ddt_exchange, xbt_log_priority_verbose)) {
           if (sub_type == xbt_datadesc_by_name("unsigned int")) {
-            XBT_VERB("Copied value for field '%s': %d (type: unsigned int)",
+            XBT_VERB("Copied value for field '%s': %u (type: unsigned int)",
                   field->name, *(unsigned int *) field_dst);
           } else if (sub_type == xbt_datadesc_by_name("int")) {
             XBT_VERB("Copied value for field '%s': %d (type: int)",
@@ -166,7 +166,7 @@ xbt_datadesc_memcpy_rec(xbt_cbps_t state,
           } else if (sub_type ==
                      xbt_datadesc_by_name("unsigned long int")) {
             XBT_VERB
-                ("Copied value for field '%s': %ld (type: unsigned long int)",
+                ("Copied value for field '%s': %lu (type: unsigned long int)",
                  field->name, *(unsigned long int *) field_dst);
           } else if (sub_type == xbt_datadesc_by_name("long int")) {
             XBT_VERB("Copied value for field '%s': %ld (type: long int)",
@@ -205,7 +205,7 @@ xbt_datadesc_memcpy_rec(xbt_cbps_t state,
                   type->name);
 
       xbt_assert(field_num < xbt_dynar_length(union_data.fields),
-                  "union field selector of %s returned %d but there is only %lu fields",
+                  "union field selector of %s returned %u but there is only %lu fields",
                   type->name, field_num,
                   xbt_dynar_length(union_data.fields));
 
@@ -323,18 +323,14 @@ xbt_datadesc_memcpy_rec(xbt_cbps_t state,
       array_count = array_data.fixed_size;
       if (array_count == -1)
         array_count = subsize;
-      if (array_count == -1) {
+      if (array_count == -1)
         array_count = array_data.dynamic_size(type, state, src);
-        xbt_assert(array_count >= 0,
-                    "Invalid (negative) array size for type %s",
-                    type->name);
-      }
 
       /* send the content */
       sub_type = array_data.type;
       elm_size = sub_type->aligned_size[GRAS_THISARCH];
       if (sub_type->category_code == e_xbt_datadesc_type_cat_scalar) {
-        XBT_VERB("Array of %ld scalars, copy it in one shot", array_count);
+        XBT_VERB("Array of %lu scalars, copy it in one shot", array_count);
         memcpy(dst, src,
                sub_type->aligned_size[GRAS_THISARCH] * array_count);
         count += sub_type->aligned_size[GRAS_THISARCH] * array_count;
@@ -343,7 +339,7 @@ xbt_datadesc_memcpy_rec(xbt_cbps_t state,
                  && sub_type->category.array_data.type->category_code ==
                  e_xbt_datadesc_type_cat_scalar) {
 
-        XBT_VERB("Array of %ld fixed array of scalars, copy it in one shot",
+        XBT_VERB("Array of %lu fixed array of scalars, copy it in one shot",
               array_count);
         memcpy(dst, src,
                sub_type->category.array_data.
@@ -354,10 +350,10 @@ xbt_datadesc_memcpy_rec(xbt_cbps_t state,
             * array_count * sub_type->category.array_data.fixed_size;
 
       } else {
-        XBT_VERB("Array of %ld stuff, copy it in one after the other",
+        XBT_VERB("Array of %lu stuff, copy it in one after the other",
               array_count);
         for (cpt = 0; cpt < array_count; cpt++) {
-          XBT_VERB("Copy the %dth stuff out of %ld", cpt, array_count);
+          XBT_VERB("Copy the %uth stuff out of %lu", cpt, array_count);
           count +=
               xbt_datadesc_memcpy_rec(state, refs, sub_type, src_ptr,
                                        dst_ptr, 0, detect_cycle

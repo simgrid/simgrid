@@ -20,7 +20,7 @@
 typedef enum {
   UM_FULL,
   UM_LAZY,
-  UM_UNDEFINED,
+  UM_UNDEFINED
 } e_UM_t;
 
 /* user-visible parameters */

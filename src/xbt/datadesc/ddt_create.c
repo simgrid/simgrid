@@ -224,7 +224,7 @@ xbt_datadesc_struct_append(xbt_datadesc_type_t struct_type,
   field->name = (char *) strdup(name);
 
   XBT_DEBUG("----------------");
-  XBT_DEBUG("PRE s={size=%ld,align=%ld,asize=%ld}",
+  XBT_DEBUG("PRE s={size=%ld,align=%lu,asize=%lu}",
          struct_type->size[GRAS_THISARCH],
          struct_type->alignment[GRAS_THISARCH],
          struct_type->aligned_size[GRAS_THISARCH]);
@@ -250,11 +250,11 @@ xbt_datadesc_struct_append(xbt_datadesc_type_t struct_type,
   XBT_DEBUG("Push a %s into %s at offset %ld.",
          field_type->name, struct_type->name,
          field->offset[GRAS_THISARCH]);
-  XBT_DEBUG("  f={size=%ld,align=%ld,asize=%ld}",
+  XBT_DEBUG("  f={size=%ld,align=%lu,asize=%lu}",
          field_type->size[GRAS_THISARCH],
          field_type->alignment[GRAS_THISARCH],
          field_type->aligned_size[GRAS_THISARCH]);
-  XBT_DEBUG("  s={size=%ld,align=%ld,asize=%ld}",
+  XBT_DEBUG("  s={size=%ld,align=%lu,asize=%lu}",
          struct_type->size[GRAS_THISARCH],
          struct_type->alignment[GRAS_THISARCH],
          struct_type->aligned_size[GRAS_THISARCH]);
@@ -273,7 +273,7 @@ void xbt_datadesc_struct_close(xbt_datadesc_type_t struct_type)
   for (arch = 0; arch < xbt_arch_count; arch++) {
     struct_type->size[arch] = struct_type->aligned_size[arch];
   }
-  XBT_DEBUG("structure %s closed. size=%ld,align=%ld,asize=%ld",
+  XBT_DEBUG("structure %s closed. size=%ld,align=%lu,asize=%lu",
          struct_type->name,
          struct_type->size[GRAS_THISARCH],
          struct_type->alignment[GRAS_THISARCH],
@@ -1012,7 +1012,7 @@ int xbt_datadesc_type_cmp(const xbt_datadesc_type_t d1,
     }
 
     if (d1->alignment[cpt] != d2->alignment[cpt]) {
-      XBT_DEBUG("ddt_cmp: %s->alignment=%ld  !=  %s->alignment=%ld (on %s)",
+      XBT_DEBUG("ddt_cmp: %s->alignment=%lu  !=  %s->alignment=%lu (on %s)",
              d1->name, d1->alignment[cpt], d2->name, d2->alignment[cpt],
              xbt_arches[cpt].name);
       return d1->alignment[cpt] > d2->alignment[cpt] ? 1 : -1;
@@ -1020,7 +1020,7 @@ int xbt_datadesc_type_cmp(const xbt_datadesc_type_t d1,
 
     if (d1->aligned_size[cpt] != d2->aligned_size[cpt]) {
       XBT_DEBUG
-          ("ddt_cmp: %s->aligned_size=%ld  !=  %s->aligned_size=%ld (on %s)",
+          ("ddt_cmp: %s->aligned_size=%lu  !=  %s->aligned_size=%lu (on %s)",
            d1->name, d1->aligned_size[cpt], d2->name,
            d2->aligned_size[cpt], xbt_arches[cpt].name);
       return d1->aligned_size[cpt] > d2->aligned_size[cpt] ? 1 : -1;
@@ -1073,7 +1073,7 @@ int xbt_datadesc_type_cmp(const xbt_datadesc_type_t d1,
       field_desc_2 = field2->type;
       ret = xbt_datadesc_type_cmp(field_desc_1, field_desc_2);
       if (ret) {
-        XBT_DEBUG("%s->field[%d]=%s != %s->field[%d]=%s",
+        XBT_DEBUG("%s->field[%u]=%s != %s->field[%u]=%s",
                d1->name, cpt, field1->name, d2->name, cpt, field2->name);
         return ret;
       }

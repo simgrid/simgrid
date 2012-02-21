@@ -731,13 +731,13 @@ XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
 	}
 	if((d1->elmsize)!=(d2->elmsize))
 	{
-		XBT_DEBUG("Size of elmsize d1=%ld d2=%ld",d1->elmsize,d2->elmsize);
+		XBT_DEBUG("Size of elmsize d1=%lu d2=%lu",d1->elmsize,d2->elmsize);
 		xbt_dynar_free(&d2);
 		return 1; // xbt_die
 	}
 	if(xbt_dynar_length(d1) != xbt_dynar_length(d2))
 	{
-		XBT_DEBUG("Size of dynar d1=%ld d2=%ld",xbt_dynar_length(d1),xbt_dynar_length(d2));
+		XBT_DEBUG("Size of dynar d1=%lu d2=%lu",xbt_dynar_length(d1),xbt_dynar_length(d2));
 		xbt_dynar_free(&d2);
 		return 1;
 	}
@@ -798,14 +798,14 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   for (cursor = 0; cursor < NB_ELEM; cursor++) {
     iptr = xbt_dynar_get_ptr(d, cursor);
     xbt_test_assert(cursor == *iptr,
-                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     "The retrieved value is not the same than the injected one (%u!=%d)",
                      cursor, cpt);
   }
 
   /* 3. Traverse the dynar using the neat macro to that extend */
   xbt_dynar_foreach(d, cursor, cpt) {
     xbt_test_assert(cursor == cpt,
-                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     "The retrieved value is not the same than the injected one (%u!=%d)",
                      cursor, cpt);
   }
   /* end_of_traversal */
@@ -937,7 +937,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
   /* 3. Traverse the dynar */
   xbt_dynar_foreach(d, cursor, cpt) {
     xbt_test_assert(cursor == cpt,
-                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     "The retrieved value is not the same than the injected one (%u!=%d)",
                      cursor, cpt);
   }
   /* end_of_traversal */
@@ -947,14 +947,14 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
     xbt_dynar_set_as(d, cpt, int, cpt);
   xbt_dynar_foreach(d, cursor, cpt)
     xbt_test_assert(cursor == cpt,
-                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     "The retrieved value is not the same than the injected one (%u!=%d)",
                      cursor, cpt);
 
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     int val;
     xbt_dynar_remove_at(d,0,&val);
     xbt_test_assert(cpt == val,
-                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     "The retrieved value is not the same than the injected one (%u!=%d)",
                      cursor, cpt);
   }
   xbt_test_assert(xbt_dynar_is_empty(d),
@@ -973,7 +973,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
   /* 3. Traverse the dynar */
   xbt_dynar_foreach(d, cursor, cpt) {
     xbt_test_assert(cursor == cpt,
-                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     "The retrieved value is not the same than the injected one (%u!=%d)",
                      cursor, cpt);
   }
   /* end_of_traversal */
@@ -982,7 +982,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
     int val;
     xbt_dynar_remove_at(d,xbt_dynar_length(d)-1,&val);
     xbt_test_assert(cpt == val,
-                     "The retrieved value is not the same than the injected one (%d!=%d)",
+                     "The retrieved value is not the same than the injected one (%u!=%d)",
                      cursor, cpt);
   }
   xbt_test_assert(xbt_dynar_is_empty(d),
@@ -1179,7 +1179,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   }
   /* 2. Traverse the dynar with the macro */
   xbt_dynar_foreach(d, iter, s1) {
-    sprintf(buf, "%d", NB_ELEM - iter - 1);
+    sprintf(buf, "%u", NB_ELEM - iter - 1);
     xbt_test_assert(!strcmp(buf, s1),
                      "The retrieved value is not the same than the injected one (%s!=%s)",
                      buf, s1);

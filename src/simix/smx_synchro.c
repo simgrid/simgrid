@@ -392,7 +392,7 @@ void SIMIX_cond_destroy(smx_cond_t cond)
 /** @brief Initialize a semaphore */
 smx_sem_t SIMIX_sem_init(unsigned int value)
 {
-  XBT_IN("(%d)",value);
+  XBT_IN("(%u)",value);
   s_smx_process_t p;
 
   smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);

@@ -258,7 +258,7 @@ void SIMIX_io_finish(smx_action_t action)
 
       default:
         xbt_die("Internal error in SIMIX_io_finish: unexpected action state %d",
-            action->state);
+            (int)action->state);
     }
     simcall->issuer->waiting_action = NULL;
     SIMIX_simcall_answer(simcall);

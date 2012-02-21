@@ -82,7 +82,7 @@ typedef enum {
 typedef enum {
   SD_TASK_NOT_TYPED = 0,      /**< @brief no specified type */
   SD_TASK_COMM_E2E = 1,       /**< @brief end to end communication */
-  SD_TASK_COMP_SEQ = 2,       /**< @brief sequential computation */
+  SD_TASK_COMP_SEQ = 2        /**< @brief sequential computation */
 } e_SD_task_kind_t;
 
 

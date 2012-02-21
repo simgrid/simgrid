@@ -154,7 +154,7 @@ smx_action_t SIMIX_rdv_get_comm(smx_rdv_t rdv, e_smx_comm_type_t type,
     }
     XBT_DEBUG("Sorry, communication action %p does not match our needs:"
            " its type is %d but we are looking for a comm of type %d",
-           action, action->comm.type, type);
+           action, (int)action->comm.type, (int)type);
   }
   XBT_DEBUG("No matching communication action found");
   return NULL;
@@ -247,7 +247,7 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
 void SIMIX_comm_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p (refcount: %d), state: %d",
-      action, action->comm.refcount, action->state);
+            action, action->comm.refcount, (int)action->state);
 
   if (action->comm.refcount <= 0) {
 	xbt_backtrace_display_current();
@@ -588,7 +588,7 @@ void SIMIX_comm_finish(smx_action_t action)
     if (action->comm.rdv)
       SIMIX_rdv_remove(action->comm.rdv, action);
 
-    XBT_DEBUG("SIMIX_comm_finish: action state = %d", action->state);
+    XBT_DEBUG("SIMIX_comm_finish: action state = %d", (int)action->state);
 
     /* Check out for errors */
     switch (action->state) {
@@ -648,7 +648,7 @@ void SIMIX_comm_finish(smx_action_t action)
         break;
 
       default:
-        xbt_die("Unexpected action state in SIMIX_comm_finish: %d", action->state);
+        xbt_die("Unexpected action state in SIMIX_comm_finish: %d", (int)action->state);
     }
 
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
@@ -698,7 +698,7 @@ void SIMIX_post_comm(smx_action_t action)
     action->state = SIMIX_DONE;
 
   XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d",
-      action, action->state, action->comm.src_proc, action->comm.dst_proc, action->comm.detached);
+      action, (int)action->state, action->comm.src_proc, action->comm.dst_proc, action->comm.detached);
 
   /* destroy the surf actions associated with the Simix communication */
   SIMIX_comm_destroy_internal_actions(action);

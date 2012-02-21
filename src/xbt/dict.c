@@ -252,7 +252,7 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
 
-  XBT_DEBUG("ADD %.*s hash = %d, size = %d, & = %d", key_len, key, hash_code,
+  XBT_DEBUG("ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
          dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
@@ -675,7 +675,7 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
         continue;
       if (size == 0)
         continue;
-      printf("%delm x %u cells; ", count, size);
+      printf("%uelm x %u cells; ", count, size);
     }
   }
   printf("\n");
@@ -728,7 +728,7 @@ void xbt_dict_postexit(void)
         continue;
       if (size == 0)
         continue;
-      printf("%delm x %d cells; ", count, size);
+      printf("%uelm x %d cells; ", count, size);
       avg += count * size;
       total_count += size;
     }
@@ -1144,7 +1144,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_dict_t head = NULL;
   int i, j, k;
   char *key;
-  void *data;
 
   srand((unsigned int) time(NULL));
 
@@ -1205,6 +1204,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_test_add("Search my %d elements 20 times", NB_ELM);
   key = xbt_malloc(10);
   for (i = 0; i < 20; i++) {
+    void *data;
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (j = 0; j < NB_ELM; j++) {
 
