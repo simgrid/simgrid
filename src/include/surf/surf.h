@@ -193,6 +193,12 @@ typedef struct surf_network_model_extension_public {
                            xbt_dict_t properties);
 } s_surf_model_extension_network_t;
 
+typedef struct s_surf_file {
+  char *name;                   /**< @brief host name if any */
+  void *data;                   /**< @brief user data */
+} s_surf_file_t;
+typedef struct s_surf_file *surf_file_t;
+
      /** \brief Workstation model extension public
       *  \ingroup SURF_models
       *
@@ -218,6 +224,11 @@ typedef struct surf_workstation_model_extension_public {
                                           double amount, double rate);
   double (*get_link_bandwidth) (const void *link);                                         /**< Return the current bandwidth of a network link */
   double (*get_link_latency) (const void *link);                                           /**< Return the current latency of a network link */
+  surf_action_t(*open) (void *workstation, const char* path, const char* mode);
+  surf_action_t(*close) (void *workstation, surf_file_t fp);
+  surf_action_t(*read) (void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
+  surf_action_t(*write) (void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
+  surf_action_t(*stat) (void *workstation, int fd, void* buf);
   int (*link_shared) (const void *link);
    xbt_dict_t(*get_properties) (const void *resource);
   void* (*link_create_resource) (const char *name,

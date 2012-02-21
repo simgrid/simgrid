@@ -46,9 +46,7 @@ smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size, size
 #endif
 
   action->io.host = host;
-  //  TODO in surf model disk???
-  //  action->io.surf_io = surf_workstation_model->extension.storage.read(host->host, name),
-  action->io.surf_io = surf_workstation_model->extension.workstation.sleep(host->host, 1.0);
+  action->io.surf_io = surf_workstation_model->extension.workstation.read(host->host, ptr, size, nmemb, (surf_file_t)stream),
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -88,9 +86,7 @@ smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr, size_t siz
 #endif
 
   action->io.host = host;
-  //  TODO in surf model disk???
-  //  action->io.surf_io = surf_workstation_model->extension.storage.write(host->host, name),
-  action->io.surf_io = surf_workstation_model->extension.workstation.sleep(host->host, 2.0);
+  action->io.surf_io = surf_workstation_model->extension.workstation.write(host->host, ptr, size, nmemb, (surf_file_t)stream);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -128,9 +124,7 @@ smx_action_t SIMIX_file_open(smx_process_t process, const char* path, const char
 #endif
 
   action->io.host = host;
-  //  TODO in surf model disk???
-  //  action->io.surf_io = surf_workstation_model->extension.storage.open(host->host, name),
-  action->io.surf_io = surf_workstation_model->extension.workstation.sleep(host->host, 3.0);
+  action->io.surf_io = surf_workstation_model->extension.workstation.open(host->host, path, mode);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -167,9 +161,7 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
 #endif
 
   action->io.host = host;
-  //  TODO in surf model disk???
-  //  action->io.surf_io = surf_workstation_model->extension.storage.close(host->host, name),
-  action->io.surf_io = surf_workstation_model->extension.workstation.sleep(host->host, 4.0);
+  action->io.surf_io = surf_workstation_model->extension.workstation.close(host->host, (surf_file_t)fp);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -207,9 +199,7 @@ smx_action_t SIMIX_file_stat(smx_process_t process, int fd, void* buf)
 #endif
 
   action->io.host = host;
-  //  TODO in surf model disk???
-  //  action->io.surf_io = surf_workstation_model->extension.storage.stat(host->host, name),
-  action->io.surf_io = surf_workstation_model->extension.workstation.sleep(host->host, 5.0);
+  action->io.surf_io = surf_workstation_model->extension.workstation.stat(host->host, fd, buf);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);

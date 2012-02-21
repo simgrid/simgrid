@@ -290,6 +290,36 @@ static xbt_dict_t ws_get_properties(const void *ws)
   return surf_resource_properties(((workstation_CLM03_t) ws)->cpu);
 }
 
+static surf_action_t ws_action_open(void *workstation, const char* path, const char* mode)
+{
+  return surf_cpu_model->extension.cpu.
+      sleep(((workstation_CLM03_t) workstation)->cpu, 1);
+}
+
+static surf_action_t ws_action_close(void *workstation, surf_file_t fp)
+{
+  return surf_cpu_model->extension.cpu.
+      sleep(((workstation_CLM03_t) workstation)->cpu, 2);
+}
+
+static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+{
+  return surf_cpu_model->extension.cpu.
+      sleep(((workstation_CLM03_t) workstation)->cpu, 3);
+}
+
+static surf_action_t ws_action_write(void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+{
+  return surf_cpu_model->extension.cpu.
+      sleep(((workstation_CLM03_t) workstation)->cpu, 4);
+}
+
+static surf_action_t ws_action_stat(void *workstation, int fd, void* buf)
+{
+  return surf_cpu_model->extension.cpu.
+      sleep(((workstation_CLM03_t) workstation)->cpu, 5);
+}
+
 static void surf_workstation_model_init_internal(void)
 {
   surf_workstation_model = surf_model_init();
@@ -342,6 +372,11 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.get_properties =
       ws_get_properties;
 
+  surf_workstation_model->extension.workstation.open = ws_action_open;
+  surf_workstation_model->extension.workstation.close = ws_action_close;
+  surf_workstation_model->extension.workstation.read = ws_action_read;
+  surf_workstation_model->extension.workstation.write = ws_action_write;
+  surf_workstation_model->extension.workstation.stat = ws_action_stat;
 }
 
 void surf_workstation_model_init_current_default(void)
