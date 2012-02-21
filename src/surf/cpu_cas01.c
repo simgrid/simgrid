@@ -305,9 +305,9 @@ static double cpu_share_resources_lazy(double now)
 }
 
 static double cpu_share_resources_full(double now) {
-  surf_action_cpu_Cas01_t action;
+  s_surf_action_cpu_Cas01_t action;
   return generic_maxmin_share_resources(surf_cpu_model->states.running_action_set,
-      xbt_swag_offset(*action, generic_lmm_action.variable),
+      xbt_swag_offset(action, generic_lmm_action.variable),
       cpu_maxmin_system, lmm_solve);
 }
 
