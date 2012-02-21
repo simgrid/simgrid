@@ -101,19 +101,19 @@ void xbt_set_add(xbt_set_t set, xbt_set_elm_t elm,
     elm->ID = _xbt_set_get_id(set);
     xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm, free_func);
     xbt_dynar_set(set->dynar, elm->ID, &elm);
-    XBT_DEBUG("Insertion of key '%s' (id %d)", elm->name, elm->ID);
+    XBT_DEBUG("Insertion of key '%s' (id %u)", elm->name, elm->ID);
     xbt_ex_free(e);
   }
 
   if (found) {
     if (elm == found_in_dict) {
       XBT_DEBUG
-          ("Ignoring request to insert the same element twice (key %s ; id %d)",
+          ("Ignoring request to insert the same element twice (key %s ; id %u)",
            elm->name, elm->ID);
       return;
     } else {
       elm->ID = found_in_dict->ID;
-      XBT_DEBUG("Reinsertion of key %s (id %d)", elm->name, elm->ID);
+      XBT_DEBUG("Reinsertion of key %s (id %u)", elm->name, elm->ID);
       xbt_dict_set_ext(set->dict, elm->name, elm->name_len, elm,
                        free_func);
       xbt_dynar_set(set->dynar, elm->ID, &elm);
@@ -380,7 +380,7 @@ static void search_name(xbt_set_t head, const char *key)
 
   xbt_test_add("Search by name %s", key);
   elm = (my_elem_t) xbt_set_get_by_name(head, key);
-  xbt_test_log(" Found %s (under ID %d)\n",
+  xbt_test_log(" Found %s (under ID %u)\n",
                 elm ? elm->data : "(null)", elm ? elm->ID : -1);
   if (strcmp(key, elm->name))
     THROWF(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
@@ -401,7 +401,7 @@ static void search_id(xbt_set_t head, int id, const char *key)
                 elm ? elm->name : "(null)", elm ? elm->data : "(null)");
   if (id != elm->ID)
     THROWF(mismatch_error, 0,
-           "The found ID (%d) is not the one expected (%d)", elm->ID, id);
+           "The found ID (%u) is not the one expected (%d)", elm->ID, id);
   if (strcmp(key, elm->name))
     THROWF(mismatch_error, 0, "The key (%s) is not the one expected (%s)",
            elm->name, key);
@@ -418,7 +418,7 @@ static void traverse(xbt_set_t set)
 
   xbt_set_foreach(set, cursor, elm) {
     xbt_test_assert(elm, "Dude ! Got a null elm during traversal!");
-    xbt_test_log("Id(%d):  %s->%s\n", elm->ID, elm->name, elm->data);
+    xbt_test_log("Id(%u):  %s->%s\n", elm->ID, elm->name, elm->data);
     xbt_test_assert(!strcmp(elm->name, elm->data),
                      "Key(%s) != value(%s). Abording", elm->name,
                      elm->data);
@@ -549,7 +549,7 @@ XBT_TEST_UNIT("remove", test_set_remove, "Removing some values")
 
   debuged_add(set, "12anew", "12anew");
   elm = (my_elem_t) xbt_set_get_by_id(set, 1);
-  xbt_test_assert(elm->ID == 1, "elm->ID is %d but should be 1", elm->ID);
+  xbt_test_assert(elm->ID == 1, "elm->ID is %u but should be 1", elm->ID);
 
   xbt_set_free(&set);
 }

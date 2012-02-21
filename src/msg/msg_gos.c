@@ -68,7 +68,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
 
   simdata->isused=0;
 
-  XBT_DEBUG("Execution task '%s' finished in state %d", task->name, comp_state);
+  XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
   if (comp_state == SIMIX_DONE) {
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     simdata->computation_amount = 0.0;
@@ -185,7 +185,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   comp_state = simcall_host_execution_wait(simdata->compute);
   p_simdata->waiting_action = NULL;
 
-  XBT_DEBUG("Finished waiting for execution of action %p, state = %d", simdata->compute, comp_state);
+  XBT_DEBUG("Finished waiting for execution of action %p, state = %d", simdata->compute, (int)comp_state);
 
   simdata->isused=0;
 

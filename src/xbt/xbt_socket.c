@@ -292,13 +292,13 @@ void xbt_socket_meas_send(xbt_socket_t peer,
 
   for (sent_sofar = 0; sent_sofar < msg_amount; sent_sofar++) {
     XBT_CDEBUG(xbt_trp_meas,
-            "Sent %lu msgs of %lu (size of each: %ld) to %s:%d",
+            "Sent %lu msgs of %lu (size of each: %lu) to %s:%d",
             sent_sofar, msg_amount, msg_size, xbt_socket_peer_name(peer),
             xbt_socket_peer_port(peer));
     peer->plugin->raw_send(peer, chunk, msg_size);
   }
   XBT_CDEBUG(xbt_trp_meas,
-          "Sent %lu msgs of %lu (size of each: %ld) to %s:%d", sent_sofar,
+          "Sent %lu msgs of %lu (size of each: %lu) to %s:%d", sent_sofar,
           msg_amount, msg_size, xbt_socket_peer_name(peer),
           xbt_socket_peer_port(peer));
 
@@ -342,13 +342,13 @@ void xbt_socket_meas_recv(xbt_socket_t peer,
 
   for (got_sofar = 0; got_sofar < msg_amount; got_sofar++) {
     XBT_CDEBUG(xbt_trp_meas,
-            "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
+            "Recvd %lu msgs of %lu (size of each: %lu) from %s:%d",
             got_sofar, msg_amount, msg_size, xbt_socket_peer_name(peer),
             xbt_socket_peer_port(peer));
     (peer->plugin->raw_recv) (peer, chunk, msg_size);
   }
   XBT_CDEBUG(xbt_trp_meas,
-          "Recvd %ld msgs of %lu (size of each: %ld) from %s:%d",
+          "Recvd %lu msgs of %lu (size of each: %lu) from %s:%d",
           got_sofar, msg_amount, msg_size, xbt_socket_peer_name(peer),
           xbt_socket_peer_port(peer));
 

@@ -30,7 +30,7 @@ static const char *parmap_mode_name(e_xbt_parmap_mode_t mode)
     snprintf(name, sizeof name, "DEFAULT");
     break;
   default:
-    snprintf(name, sizeof name, "UNKNOWN(%d)", mode);
+    snprintf(name, sizeof name, "UNKNOWN(%d)", (int)mode);
     break;
   }
   return name;

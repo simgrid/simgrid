@@ -79,7 +79,7 @@ void amok_bw_saturate_start(const char *from_name, unsigned int from_port,
   xbt_socket_t sock;
   sat_request_t request = xbt_new(s_sat_request_t, 1);
 
-  XBT_VERB("Start from_name %s:%d -> to_name %s:%d",
+  XBT_VERB("Start from_name %s:%u -> to_name %s:%u",
         from_name, from_port, to_name, to_port);
   sock = gras_socket_client(from_name, from_port);
 
@@ -151,7 +151,7 @@ void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
   /* Negociate the saturation with the peer */
   sat_request_t request = xbt_new(s_sat_request_t, 1);
 
-  XBT_DEBUG("Begin to saturate to %s:%d", to_name, to_port);
+  XBT_DEBUG("Begin to saturate to %s:%u", to_name, to_port);
   memset(&msg_got, 0, sizeof(msg_got));
 
   request->msg_size = msg_size;
@@ -170,7 +170,7 @@ void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
                  1,             /* at least one sec */
                  &sec, &bw);
     msg_size = request->msg_size = (int) bw;
-    XBT_DEBUG("Saturate with packets of %d bytes", request->msg_size);
+    XBT_DEBUG("Saturate with packets of %u bytes", request->msg_size);
   }
 
   /* Launch the saturation */
@@ -186,7 +186,7 @@ void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
   free(request);
 
   gras_socket_close(peer_cmd);
-  XBT_INFO("Saturation(%s:%d->%s:%d) started", gras_os_myname(),
+  XBT_INFO("Saturation(%s:%d->%s:%u) started", gras_os_myname(),
         gras_os_myport(), to_name, to_port);
 
   /* Start experiment */
@@ -215,7 +215,7 @@ void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
 
     /* Check whether the experiment has to be terminated by now */
     elapsed = gras_os_time() - start;
-    XBT_DEBUG("elapsed %f duration %f (msg_size=%d)", elapsed, duration,
+    XBT_DEBUG("elapsed %f duration %f (msg_size=%u)", elapsed, duration,
            msg_size);
 
   } while (saturate_further && (duration == 0 || elapsed < duration));
@@ -232,7 +232,7 @@ void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
     bw_res_t answer = xbt_new(s_bw_res_t, 1);
     s_gras_msg_cb_ctx_t ctx;
 
-    XBT_INFO("Saturation from %s:%d to %s:%d stopped by %s:%d",
+    XBT_INFO("Saturation from %s:%d to %s:%u stopped by %s:%d",
           gras_os_myname(), gras_os_myport(), to_name, to_port,
           xbt_socket_peer_name(msg_got.expe),
           xbt_socket_peer_port(msg_got.expe));
@@ -248,7 +248,7 @@ void amok_bw_saturate_begin(const char *to_name, unsigned int to_port,
     free(answer);
   } else {
     XBT_INFO
-        ("Saturation from %s:%d to %s:%d elapsed after %f sec (achieving %f kb/s)",
+        ("Saturation from %s:%d to %s:%u elapsed after %f sec (achieving %f kb/s)",
          gras_os_myname(), gras_os_myport(), to_name, to_port, elapsed,
          bw / 1024.0);
   }
@@ -332,12 +332,12 @@ void amok_bw_saturate_stop(const char *from_name, unsigned int from_port,
 {
   xbt_socket_t sock = gras_socket_client(from_name, from_port);
   bw_res_t answer;
-  XBT_VERB("Ask %s:%d to stop the saturation", from_name, from_port);
+  XBT_VERB("Ask %s:%u to stop the saturation", from_name, from_port);
   TRY {
     gras_msg_rpccall(sock, 60, "amok_bw_sat stop", NULL, &answer);
   }
   CATCH_ANONYMOUS {
-    RETHROWF("Cannot ask %s:%d to stop saturation: %s", from_name, from_port);
+    RETHROWF("Cannot ask %s:%u to stop saturation: %s", from_name, from_port);
   }
   gras_socket_close(sock);
   if (time)

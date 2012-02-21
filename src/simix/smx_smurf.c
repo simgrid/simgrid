@@ -20,7 +20,7 @@ void SIMIX_simcall_push(smx_process_t self)
 {
   if (self != simix_global->maestro_process) {
     XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-        SIMIX_simcall_name(self->simcall.call), self->simcall.call);
+              SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
     SIMIX_process_yield(self);
   } else {
     SIMIX_simcall_pre(&self->simcall, 0);
@@ -30,7 +30,7 @@ void SIMIX_simcall_push(smx_process_t self)
 void SIMIX_simcall_answer(smx_simcall_t simcall)
 {
   if (simcall->issuer != simix_global->maestro_process){
-    XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall->call), simcall->call,
+    XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall->call), (int)simcall->call,
         simcall->issuer->name, simcall->issuer);
     simcall->issuer->simcall.call = SIMCALL_NONE;
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, simcall->issuer);

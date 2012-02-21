@@ -326,7 +326,7 @@ static XBT_INLINE void xbt_trp_tcp_send(xbt_socket_t sock,
     int status = 0;
 
     status = tcp_write(sock->sd, data, (size_t) size);
-    XBT_DEBUG("write(%d, %p, %ld);", sock->sd, data, size);
+    XBT_DEBUG("write(%d, %p, %lu);", sock->sd, data, size);
 
     if (status < 0) {
 #ifdef EWOULDBLOCK
@@ -336,7 +336,7 @@ static XBT_INLINE void xbt_trp_tcp_send(xbt_socket_t sock,
 #endif
         continue;
 
-      THROWF(system_error, 0, "write(%d,%p,%ld) failed: %s",
+      THROWF(system_error, 0, "write(%d,%p,%lu) failed: %s",
              sock->sd, data, size, sock_errstr(sock_errno));
     }
 
@@ -368,15 +368,15 @@ xbt_trp_tcp_recv_withbuffer(xbt_socket_t sock,
   while (size > got) {
     int status = 0;
 
-    XBT_DEBUG("read(%d, %p, %ld) got %d so far (%s)",
+    XBT_DEBUG("read(%d, %p, %lu) got %d so far (%s)",
            sock->sd, data + got, bufsize, got,
            hexa_str((unsigned char *) data, got, 0));
     status = tcp_read(sock->sd, data + got, (size_t) bufsize);
 
     if (status < 0) {
       THROWF(system_error, 0,
-             "read(%d,%p,%d) from %s:%d failed: %s; got %d so far",
-             sock->sd, data + got, (int) size, xbt_socket_peer_name(sock),
+             "read(%d,%p,%lu) from %s:%d failed: %s; got %d so far",
+             sock->sd, data + got, size, xbt_socket_peer_name(sock),
              xbt_socket_peer_port(sock), sock_errstr(sock_errno), got);
     }
     XBT_DEBUG("Got %d more bytes (%s)", status,
@@ -474,9 +474,9 @@ xbt_trp_buf_send(xbt_socket_t sock,
     /* size of the chunk to receive in that shot */
     long int thissize =
         min(size - chunk_pos, data->buffsize - data->out_buf.size);
-    XBT_DEBUG("Set the chars %d..%ld into the buffer; size=%ld, ctn=(%s)",
-           (int) data->out_buf.size,
-           ((int) data->out_buf.size) + thissize - 1, size,
+    XBT_DEBUG("Set the chars %d..%ld into the buffer; size=%lu, ctn=(%s)",
+           data->out_buf.size,
+           data->out_buf.size + thissize - 1, size,
            hexa_str((unsigned char *) chunk, thissize, 0));
 
     memcpy(data->out_buf.data + data->out_buf.size, chunk + chunk_pos,
@@ -484,7 +484,7 @@ xbt_trp_buf_send(xbt_socket_t sock,
 
     data->out_buf.size += thissize;
     chunk_pos += thissize;
-    XBT_DEBUG("New pos = %d; Still to send = %ld of %ld; ctn sofar=(%s)",
+    XBT_DEBUG("New pos = %d; Still to send = %lu of %lu; ctn sofar=(%s)",
            data->out_buf.size, size - chunk_pos, size,
            hexa_str((unsigned char *) chunk, chunk_pos, 0));
 
@@ -528,7 +528,7 @@ xbt_trp_buf_recv(xbt_socket_t sock, char *chunk, unsigned long int size)
 
     data->in_buf.pos += thissize;
     chunk_pos += thissize;
-    XBT_DEBUG("New pos = %d; Still to receive = %ld of %ld. Ctn so far=(%s)",
+    XBT_DEBUG("New pos = %d; Still to receive = %lu of %lu. Ctn so far=(%s)",
            data->in_buf.pos, size - chunk_pos, size,
            hexa_str((unsigned char *) chunk, chunk_pos, 0));
   }

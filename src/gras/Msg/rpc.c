@@ -87,7 +87,7 @@ static int msgfilter_rpcID(gras_msg_t msg, void *ctx)
   xbt_dynar_foreach(_gras_rpc_cancelled, cursor, rpc_ctx) {
     if (msg->ID == rpc_ctx->ID && msg->kind == e_gras_msg_kind_rpcanswer) {
       XBT_VERB
-          ("Got an answer to the already canceled (timeouted?) RPC %ld. Ignore it (leaking the payload!).",
+          ("Got an answer to the already canceled (timeouted?) RPC %lu. Ignore it (leaking the payload!).",
            msg->ID);
       xbt_dynar_cursor_rm(_gras_rpc_cancelled, &cursor);
       return 1;
@@ -172,7 +172,7 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
       _gras_rpc_cancelled = xbt_dynar_new(sizeof(ctx), NULL);
     xbt_dynar_push(_gras_rpc_cancelled, &ctx);
     XBT_INFO
-        ("canceled RPC %ld pushed onto the stack (%s from %s:%d) Reason: %s",
+        ("canceled RPC %lu pushed onto the stack (%s from %s:%d) Reason: %s",
          ctx->ID, ctx->msgtype->name,
          xbt_socket_peer_name(ctx->expeditor),
          xbt_socket_peer_port(ctx->expeditor), e.msg);
@@ -185,7 +185,7 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
     memcpy(&e, received.payl, received.payl_size);
     free(received.payl);
     XBT_VERB("Raise a remote exception cat:%d coming from %s (%s)",
-          e.category, e.host, e.msg);
+             (int)e.category, e.host, e.msg);
     __xbt_running_ctx_fetch()->exception.msg = e.msg;
     __xbt_running_ctx_fetch()->exception.category = e.category;
     __xbt_running_ctx_fetch()->exception.value = e.value;

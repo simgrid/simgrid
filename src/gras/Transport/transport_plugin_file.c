@@ -255,7 +255,7 @@ gras_trp_file_chunk_recv(xbt_socket_t sock,
     int status = 0;
 
     status = read(sock->sd, data + got, (long int) size);
-    XBT_DEBUG("read(%d, %p, %ld);", sock->sd, data + got, size);
+    XBT_DEBUG("read(%d, %p, %lu);", sock->sd, data + got, size);
 
     if (status < 0) {
       THROWF(system_error, 0, "read(%d,%p,%d) failed: %s",

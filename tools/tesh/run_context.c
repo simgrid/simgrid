@@ -775,7 +775,7 @@ void *rctx_wait(void *r)
       XBT_INFO("<%s> No output before timeout", rctx->filepos);
     XBT_ERROR("Test suite `%s': NOK (<%s> timeout after %d sec)",
            testsuite_name, rctx->filepos, timeout_value);
-    XBT_DEBUG("<%s> Interrupted = %d", rctx->filepos, rctx->interrupted);
+    XBT_DEBUG("<%s> Interrupted = %d", rctx->filepos, (int)rctx->interrupted);
     if (!rctx->interrupted) {
       xbt_os_mutex_release(rctx->interruption);
       rctx_armageddon(rctx, 3);

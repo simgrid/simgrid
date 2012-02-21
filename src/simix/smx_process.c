@@ -56,7 +56,7 @@ void SIMIX_process_cleanup(smx_process_t process)
 
     if (action->comm.src_proc == process) {
       XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p",
-          action, action->comm.detached, action->state, action->comm.src_proc, action->comm.dst_proc);
+          action, action->comm.detached, (int)action->state, action->comm.src_proc, action->comm.dst_proc);
       action->comm.src_proc = NULL;
 
       if (action->comm.detached) {
@@ -76,7 +76,7 @@ void SIMIX_process_cleanup(smx_process_t process)
     }
     else if (action->comm.dst_proc == process){
       XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
-          action, action->state, action->comm.src_proc, action->comm.dst_proc);
+          action, (int)action->state, action->comm.src_proc, action->comm.dst_proc);
       action->comm.dst_proc = NULL;
 
       if (action->comm.detached && action->comm.refcount == 1
@@ -370,7 +370,7 @@ void SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 
         default:
           xbt_die("Internal error in SIMIX_process_suspend: unexpected action type %d",
-              process->waiting_action->type);
+              (int)process->waiting_action->type);
       }
     }
   }
@@ -410,7 +410,7 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 
         default:
           xbt_die("Internal error in SIMIX_process_resume: unexpected action type %d",
-              process->waiting_action->type);
+              (int)process->waiting_action->type);
       }
     }
     else {

@@ -289,7 +289,7 @@ void gras_cb_unregister_(gras_msgtype_t msgtype, gras_msg_cb_t cb)
     }
   }
   if (!found)
-    XBT_VERB("Ignoring removal of unexisting callback to msg id %d",
+    XBT_VERB("Ignoring removal of unexisting callback to msg id %u",
           msgtype->code);
 }
 

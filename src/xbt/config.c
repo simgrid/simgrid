@@ -213,7 +213,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
     *cfg = xbt_cfg_new();
   xbt_assert(type >= xbt_cfgelm_int && type <= xbt_cfgelm_peer,
               "type of %s not valid (%d should be between %d and %d)",
-              name, type, xbt_cfgelm_int, xbt_cfgelm_peer);
+             name, (int)type, xbt_cfgelm_int, xbt_cfgelm_peer);
   res = xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
 
   if (res) {
@@ -223,7 +223,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
 
   res = xbt_new(s_xbt_cfgelm_t, 1);
   XBT_DEBUG("Register cfg elm %s (%s) (%d to %d %s (=%d) @%p in set %p)",
-         name, desc, min, max, xbt_cfgelm_type_name[type], type, res,
+            name, desc, min, max, xbt_cfgelm_type_name[type], (int)type, res,
          *cfg);
 
   res->desc = xbt_strdup(desc);
@@ -260,7 +260,7 @@ xbt_cfg_register(xbt_cfg_t * cfg,
     break;
 
   default:
-    XBT_ERROR("%d is an invalide type code", type);
+    XBT_ERROR("%d is an invalide type code", (int)type);
   }
 
   xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
@@ -490,7 +490,7 @@ e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name)
            "Can't get the type of '%s' since this variable does not exist",
            name);
 
-  XBT_INFO("type in variable = %d", variable->type);
+  XBT_INFO("type in variable = %d", (int)variable->type);
 
   return variable->type;
 }
@@ -549,7 +549,7 @@ void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
     break;
 
   default:
-    xbt_die("Config element variable %s not valid (type=%d)", name, type);
+    xbt_die("Config element variable %s not valid (type=%d)", name, (int)type);
   }
 }
 
@@ -899,7 +899,7 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
   XBT_DEBUG("Variable: %d to %d %s (=%d) @%p",
          variable->min, variable->max,
-         xbt_cfgelm_type_name[variable->type], variable->type, variable);
+            xbt_cfgelm_type_name[variable->type], (int)variable->type, variable);
 
   if (variable->max == 1) {
     if (!xbt_dynar_is_empty(variable->content)) {

@@ -461,7 +461,7 @@ static void handle_task(node_t node, m_task_t task) {
 
     case TASK_FIND_SUCCESSOR_ANSWER:
     case TASK_GET_PREDECESSOR_ANSWER:
-      XBT_DEBUG("Ignoring unexpected task of type %d (%p)", type, task);
+      XBT_DEBUG("Ignoring unexpected task of type %d (%p)", (int)type, task);
       task_free(task);
       break;
   }
@@ -626,7 +626,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
 
       if (res != MSG_OK) {
         XBT_DEBUG("Failed to receive the answer to my 'Find Successor' request (task %p): %d",
-            task_sent, res);
+                  task_sent, (int)res);
         stop = 1;
 	MSG_comm_destroy(node->comm_receive);
 	node->comm_receive = NULL;
@@ -707,7 +707,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
 
       if (res != MSG_OK) {
         XBT_DEBUG("Failed to receive the answer to my 'Get Predecessor' request (task %p): %d",
-            task_sent, res);
+                  task_sent, (int)res);
         stop = 1;
 	MSG_comm_destroy(node->comm_receive);
 	node->comm_receive = NULL;

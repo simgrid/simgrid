@@ -656,7 +656,7 @@ static xbt_datadesc_type_t parse_struct(char *definition)
       if (field.tm.is_ref)
         PARSE_ERROR
             ("Not enough XBT_ANNOTATE to deal with all dereferencing levels of %s (%d '*' left)",
-             field.name, field.tm.is_ref);
+             field.name, (int)field.tm.is_ref);
 
       XBT_VERB("Append field '%s' to %p", field.name, (void *) struct_type);
       xbt_datadesc_struct_append(struct_type, field.name, field.type);

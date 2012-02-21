@@ -69,13 +69,13 @@ void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords,
 {
   unsigned int i, j;
 
-  fprintf(stderr, ">>> Matrix %s dump (%d x %d)\n", name, matrix->lines,
+  fprintf(stderr, ">>> Matrix %s dump (%u x %u)\n", name, matrix->lines,
           matrix->rows);
   for (i = 0; i < matrix->lines; i++) {
     fprintf(stderr, "  ");
     for (j = 0; j < matrix->rows; j++) {
       if (coords)
-        fprintf(stderr, " (%d,%d)=", i, j);
+        fprintf(stderr, " (%u,%u)=", i, j);
       else
         fprintf(stderr, " ");
       display_fun(xbt_matrix_get_ptr(matrix, i, j));
@@ -109,7 +109,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
   unsigned int i, j;
 
   XBT_DEBUG
-      ("Copy a %dx%d submatrix from %dx%d(of %dx%d) to %dx%d (of %dx%d)",
+      ("Copy a %ux%u submatrix from %ux%u(of %ux%u) to %ux%u (of %ux%u)",
        lsize, rsize, lpos_src, rpos_src, src->lines, src->rows, lpos_dst,
        rpos_dst, dst->lines, dst->rows);
 
@@ -212,7 +212,7 @@ void xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B,
   unsigned int i, j, k;
 
   xbt_assert(A->lines == C->lines,
-              "A->lines != C->lines (%d vs %d)", A->lines, C->lines);
+              "A->lines != C->lines (%u vs %u)", A->lines, C->lines);
   xbt_assert(B->rows == C->rows);
 
   for (i = 0; i < C->lines; i++)

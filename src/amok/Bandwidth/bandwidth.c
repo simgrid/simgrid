@@ -168,7 +168,7 @@ void amok_bw_test(xbt_socket_t peer,
   request->peer.name = NULL;
   request->peer.port = xbt_socket_my_port(measMasterIn);
   XBT_DEBUG
-      ("Handshaking with %s:%d to connect it back on my %d (bufsize=%ld, msg_size=%ld, msg_amount=%ld)",
+      ("Handshaking with %s:%d to connect it back on my %d (bufsize=%lu, msg_size=%lu, msg_amount=%lu)",
        xbt_socket_peer_name(peer), xbt_socket_peer_port(peer),
        request->peer.port, request->buf_size, request->msg_size,
        request->msg_amount);
@@ -192,7 +192,7 @@ void amok_bw_test(xbt_socket_t peer,
          xbt_socket_peer_name(peer), request_ack->peer.port);
   }
   XBT_DEBUG
-      ("Got ACK; conduct the experiment (msg_size = %ld, msg_amount=%ld)",
+      ("Got ACK; conduct the experiment (msg_size = %lu, msg_amount=%lu)",
        request->msg_size, request->msg_amount);
 
   *sec = 0;
@@ -462,7 +462,7 @@ void amok_bw_request(const char *from_name, unsigned int from_port,
 
 
 
-  XBT_DEBUG("Ask for a BW test between %s:%d and %s:%d", from_name, from_port,
+  XBT_DEBUG("Ask for a BW test between %s:%u and %s:%u", from_name, from_port,
          to_name, to_port);
   gras_msg_rpccall(sock, 20 * 60, "BW request", &request, &result);
 
@@ -471,7 +471,7 @@ void amok_bw_request(const char *from_name, unsigned int from_port,
   if (bw)
     *bw = result->bw;
 
-  XBT_VERB("BW test (%s:%d -> %s:%d) took %f sec (%f kb/s)",
+  XBT_VERB("BW test (%s:%u -> %s:%u) took %f sec (%f kb/s)",
         from_name, from_port, to_name, to_port,
         result->sec, ((double) result->bw) / 1024.0);
 
@@ -489,7 +489,7 @@ int amok_bw_cb_bw_request(gras_msg_cb_ctx_t ctx, void *payload)
   xbt_socket_t peer, asker;
 
   asker = gras_msg_cb_ctx_from(ctx);
-  XBT_VERB("Asked by %s:%d to conduct a bw XP with %s:%d (request: %ld %ld)",
+  XBT_VERB("Asked by %s:%d to conduct a bw XP with %s:%d (request: %lu %lu)",
         xbt_socket_peer_name(asker), xbt_socket_peer_port(asker),
         request->peer.name, request->peer.port,
         request->msg_size, request->msg_amount);

@@ -258,7 +258,7 @@ static void dump_res()
   unsigned int cursor;
   SD_task_t task;
   xbt_dynar_foreach(result, cursor, task) {
-    XBT_INFO("Task %d", cursor);
+    XBT_INFO("Task %u", cursor);
     SD_task_dump(task);
   }
 }

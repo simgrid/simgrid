@@ -134,14 +134,14 @@ void gras_procdata_init()
   xbt_dynar_foreach(_gras_procdata_fabrics, cursor, fab) {
 
     if (cursor + 1 <= xbt_set_length(pd->libdata)) {
-      XBT_DEBUG("Skip fabric %d: there is already %ld libdata",
+      XBT_DEBUG("Skip fabric %u: there is already %lu libdata",
              cursor, xbt_set_length(pd->libdata));
       continue;                 /* allow to recall this function to get recently added fabrics */
     }
-    XBT_DEBUG("Go ahead for cursor %d, there is %ld libdata",
+    XBT_DEBUG("Go ahead for cursor %u, there is %lu libdata",
            cursor, xbt_set_length(pd->libdata));
 
-    xbt_assert(fab.name, "Name of fabric #%d is NULL!", cursor);
+    xbt_assert(fab.name, "Name of fabric #%u is NULL!", cursor);
     XBT_DEBUG("Create the procdata for %s", fab.name);
     /* Check for our own errors */
 
