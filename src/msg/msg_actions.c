@@ -56,7 +56,8 @@ static int MSG_action_runner(int argc, char *argv[])
   if (action_fp) {              // A unique trace file
 
     while ((evt = action_get_action(argv[0]))) {
-      msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
+      msg_action_fun function =
+        (msg_action_fun)xbt_dict_get(action_funs, evt[1]);
       function(evt);
       free(evt);
     }
@@ -69,7 +70,8 @@ static int MSG_action_runner(int argc, char *argv[])
     xbt_replay_trace_reader_t reader = xbt_replay_trace_reader_new(argv[1]);
     while ((evt=xbt_replay_trace_reader_get(reader))) {
       if (!strcmp(argv[0],evt[0])) {
-        msg_action_fun function = xbt_dict_get(action_funs, evt[1]);
+        msg_action_fun function =
+          (msg_action_fun)xbt_dict_get(action_funs, evt[1]);
         function(evt);
         free(evt);
       } else {
