@@ -328,7 +328,7 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
     for (cpt = 0; routing_models[cpt].name; cpt++)
       fprintf(stderr, "   %s: %s\n", routing_models[cpt].name,
               routing_models[cpt].desc);
-    xbt_die(NULL);
+    xbt_die("dying");
   }
 
   /* make a new routing component */
