@@ -83,63 +83,63 @@ xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
       return (NULL);
 
     else if (sbuf.st_size > 0) {
-    	/* We were given an valid file descriptor on an open file, so try to remap
-    	   it into the current process at the same address to which it was previously
-    	   mapped. It naturally have to pass some sanity checks for that.
+      /* We were given an valid file descriptor on an open file, so try to remap
+	 it into the current process at the same address to which it was previously
+	 mapped. It naturally have to pass some sanity checks for that.
 
-    	   Note that we have to update the file descriptor number in the malloc-
-    	   descriptor read from the file to match the current valid one, before
-    	   trying to map the file in, and again after a successful mapping and
-    	   after we've switched over to using the mapped in malloc descriptor
-    	   rather than the temporary one on the stack.
+	 Note that we have to update the file descriptor number in the malloc-
+	 descriptor read from the file to match the current valid one, before
+	 trying to map the file in, and again after a successful mapping and
+	 after we've switched over to using the mapped in malloc descriptor
+	 rather than the temporary one on the stack.
 
-    	   Once we've switched over to using the mapped in malloc descriptor, we
-    	   have to update the pointer to the morecore function, since it almost
-    	   certainly will be at a different address if the process reusing the
-    	   mapped region is from a different executable.
+	 Once we've switched over to using the mapped in malloc descriptor, we
+	 have to update the pointer to the morecore function, since it almost
+	 certainly will be at a different address if the process reusing the
+	 mapped region is from a different executable.
 
-    	   Also note that if the heap being remapped previously used the mmcheckf()
-    	   routines, we need to update the hooks since their target functions
-    	   will have certainly moved if the executable has changed in any way.
-    	   We do this by calling mmcheckf() internally.
+	 Also note that if the heap being remapped previously used the mmcheckf()
+	 routines, we need to update the hooks since their target functions
+	 will have certainly moved if the executable has changed in any way.
+	 We do this by calling mmcheckf() internally.
 
-    	   Returns a pointer to the malloc descriptor if successful, or NULL if
-    	   unsuccessful for some reason. */
+	 Returns a pointer to the malloc descriptor if successful, or NULL if
+	 unsuccessful for some reason. */
 
-    	  struct mdesc mtemp;
-    	  struct mdesc *mdp = NULL, *mdptemp = NULL;
+      struct mdesc newmd;
+      struct mdesc *mdptr = NULL, *mdptemp = NULL;
 
-    	  if (lseek(fd, 0L, SEEK_SET) != 0)
-    	    return NULL;
-    	  if (read(fd, (char *) &mtemp, sizeof(mtemp)) != sizeof(mtemp))
-    	    return NULL;
-    	  if (mtemp.headersize != sizeof(mtemp))
-    	    return NULL;
-    	  if (strcmp(mtemp.magic, MMALLOC_MAGIC) != 0)
-    	    return NULL;
-    	  if (mtemp.version > MMALLOC_VERSION)
-    	    return NULL;
+      if (lseek(fd, 0L, SEEK_SET) != 0)
+	return NULL;
+      if (read(fd, (char *) &newmd, sizeof(newmd)) != sizeof(newmd))
+	return NULL;
+      if (newmd.headersize != sizeof(newmd))
+	return NULL;
+      if (strcmp(newmd.magic, MMALLOC_MAGIC) != 0)
+	return NULL;
+      if (newmd.version > MMALLOC_VERSION)
+	return NULL;
 
-    	  mtemp.fd = fd;
-    	  if (__mmalloc_remap_core(&mtemp) == mtemp.base) {
-    	    mdp = (struct mdesc *) mtemp.base;
-    	    mdp->fd = fd;
-    	    if(!mdp->refcount){
-              sem_init(&mdp->sem, 0, 1);
-    	      mdp->refcount++;
-    	    }
-    	  }
+      newmd.fd = fd;
+      if (__mmalloc_remap_core(&newmd) == newmd.base) {
+	mdptr = (struct mdesc *) newmd.base;
+	mdptr->fd = fd;
+	if(!mdptr->refcount){
+	  sem_init(&mdptr->sem, 0, 1);
+	  mdptr->refcount++;
+	}
+      }
 
-    	  /* Add the new heap to the linked list of heaps attached by mmalloc */
-    	  mdptemp = __mmalloc_default_mdp;
-    	  while(mdptemp->next_mdesc)
-    	    mdptemp = mdptemp->next_mdesc;
+      /* Add the new heap to the linked list of heaps attached by mmalloc */
+      mdptemp = __mmalloc_default_mdp;
+      while(mdptemp->next_mdesc)
+	mdptemp = mdptemp->next_mdesc;
 
-    	  LOCK(mdptemp);
-    	    mdptemp->next_mdesc = mdp;
-    	  UNLOCK(mdptemp);
+      LOCK(mdptemp);
+      mdptemp->next_mdesc = mdptr;
+      UNLOCK(mdptemp);
 
-    	  return (mdp);
+      return mdptr;
     }
   }
 
@@ -249,9 +249,7 @@ void *xbt_mheap_destroy(xbt_mheap_t mdp)
     /* Now unmap all the pages associated with this region by asking for a
        negative increment equal to the current size of the region. */
 
-    if ((mmorecore(&mtemp,
-                        (char *) mtemp.base - (char *) mtemp.breakval)) ==
-        NULL) {
+    if (mmorecore(&mtemp, (char *)mtemp.base - (char *)mtemp.breakval) == NULL) {
       /* Deallocating failed.  Update the original malloc descriptor
          with any changes */
       *mdp = mtemp;

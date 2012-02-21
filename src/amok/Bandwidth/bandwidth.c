@@ -371,7 +371,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
   }
 
   while (tooshort) {
-    void *payload;
+    void *payloadgot;
     int msggot;
     TRY {
       xbt_socket_meas_recv(measIn, 120, request->msg_size,
@@ -385,7 +385,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
       /* FIXME: tell error to remote ? */
       RETHROWF("Error encountered while receiving the experiment: %s");
     }
-    gras_msg_wait_or(60, msgtwaited, &ctx_reask, &msggot, &payload);
+    gras_msg_wait_or(60, msgtwaited, &ctx_reask, &msggot, &payloadgot);
     switch (msggot) {
     case 0:                    /* BW stop */
       tooshort = 0;
@@ -393,7 +393,7 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
     case 1:                    /* BW reask */
       tooshort = 1;
       free(request);
-      request = (bw_request_t) payload;
+      request = (bw_request_t) payloadgot;
       XBT_VERB("Return the reasking RPC");
       gras_msg_rpcreturn(60, ctx_reask, NULL);
     }
