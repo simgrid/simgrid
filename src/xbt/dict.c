@@ -1144,7 +1144,6 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_dict_t head = NULL;
   int i, j, k;
   char *key;
-  void *data;
 
   srand((unsigned int) time(NULL));
 
@@ -1205,6 +1204,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_test_add("Search my %d elements 20 times", NB_ELM);
   key = xbt_malloc(10);
   for (i = 0; i < 20; i++) {
+    void *data;
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (j = 0; j < NB_ELM; j++) {
 

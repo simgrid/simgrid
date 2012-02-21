@@ -94,7 +94,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
 
   /* to extract the addresses from the backtrace */
   char **addrs;
-  char buff[256], *p;
+  char buff[256];
 
   /* To read the output of addr2line */
   FILE *pipe;
@@ -126,8 +126,6 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   /* build the commandline */
   if (stat(xbt_binary_name, &stat_buf)) {
     /* Damn. binary not in current dir. We'll have to dig the PATH to find it */
-    int i;
-
     for (i = 0; environ[i]; i++) {
       if (!strncmp("PATH=", environ[i], 5)) {
         xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
@@ -170,6 +168,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
 
   addrs = xbt_new(char *, e->used);
   for (i = 0; i < e->used; i++) {
+    char *p;
     /* retrieve this address */
     XBT_DEBUG("Retrieving address number %d from '%s'", i, backtrace_syms[i]);
     snprintf(buff, 256, "%s", strchr(backtrace_syms[i], '[') + 1);

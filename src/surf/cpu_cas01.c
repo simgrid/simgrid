@@ -434,8 +434,6 @@ static void cpu_update_resource_state(void *id,
       cpu->state_current = SURF_RESOURCE_ON;
     else {
       lmm_constraint_t cnst = cpu->constraint;
-      lmm_variable_t var = NULL;
-      lmm_element_t elem = NULL;
 
       cpu->state_current = SURF_RESOURCE_OFF;
 
