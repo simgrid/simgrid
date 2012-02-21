@@ -202,31 +202,32 @@ void model_full_set_route(AS_t rc, const char *src,
     if (!route->dst_gateway && !route->src_gateway)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
     else {
-      AS_t subas = xbt_dict_get_or_null(rc->routing_sons, src);
-      if (subas == NULL)
-        surf_parse_error("The source of an ASroute must be a sub-AS "
-                         "declared within the current AS, "
-                         "but '%s' is not an AS within '%s'", src, rc->name);
-      if (subas->to_index
-          && xbt_dict_get_or_null(subas->to_index, route->src_gateway) == NULL)
-        surf_parse_error("In an ASroute, source gateway must be part of "
-                         "the source sub-AS (in particular, being in a "
-                         "sub-sub-AS is not allowed), "
-                         "but '%s' is not in '%s'.",
-                         route->src_gateway, subas->name);
-
-      subas = xbt_dict_get_or_null(rc->routing_sons, dst);
-      if (subas == NULL)
-        surf_parse_error("The destination of an ASroute must be a sub-AS "
-                         "declared within the current AS, "
-                         "but '%s' is not an AS within '%s'", dst, rc->name);
-      if (subas->to_index
-          && xbt_dict_get_or_null(subas->to_index, route->dst_gateway) == NULL)
-        surf_parse_error("In an ASroute, destination gateway must be "
-                         "part of the destination sub-AS (in particular, "
-                         "in a sub-sub-AS is not allowed), "
-                         "but '%s' is not in '%s'.",
-                         route->dst_gateway, subas->name);
+// FIXME We can call a gw wich is down the current AS (cf g5k.xml) but not upper.
+//      AS_t subas = xbt_dict_get_or_null(rc->routing_sons, src);
+//      if (subas == NULL)
+//        surf_parse_error("The source of an ASroute must be a sub-AS "
+//                         "declared within the current AS, "
+//                         "but '%s' is not an AS within '%s'", src, rc->name);
+//      if (subas->to_index
+//          && xbt_dict_get_or_null(subas->to_index, route->src_gateway) == NULL)
+//        surf_parse_error("In an ASroute, source gateway must be part of "
+//                         "the source sub-AS (in particular, being in a "
+//                         "sub-sub-AS is not allowed), "
+//                         "but '%s' is not in '%s'.",
+//                         route->src_gateway, subas->name);
+//
+//      subas = xbt_dict_get_or_null(rc->routing_sons, dst);
+//      if (subas == NULL)
+//        surf_parse_error("The destination of an ASroute must be a sub-AS "
+//                         "declared within the current AS, "
+//                         "but '%s' is not an AS within '%s'", dst, rc->name);
+//      if (subas->to_index
+//          && xbt_dict_get_or_null(subas->to_index, route->dst_gateway) == NULL)
+//        surf_parse_error("In an ASroute, destination gateway must be "
+//                         "part of the destination sub-AS (in particular, "
+//                         "in a sub-sub-AS is not allowed), "
+//                         "but '%s' is not in '%s'.",
+//                         route->dst_gateway, subas->name);
 
       XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
                 src, route->src_gateway, dst, route->dst_gateway);
