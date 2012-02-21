@@ -297,7 +297,7 @@ XBT_TEST_UNIT("value", test_value, "exception value passing")
   CATCH(ex) {
     xbt_test_add("exception value passing");
     if (ex.category != unknown_error)
-      xbt_test_fail("category=%d (!= 1)", ex.category);
+      xbt_test_fail("category=%d (!= 1)", (int)ex.category);
     if (ex.value != 2)
       xbt_test_fail("value=%d (!= 2)", ex.value);
     if (strcmp(ex.msg, "toto"))

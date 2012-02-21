@@ -585,7 +585,7 @@ void MC_diff(void){
 
   int i;
 
-  XBT_INFO("Number of regions : %d", sn->num_reg);
+  XBT_INFO("Number of regions : %u", sn->num_reg);
 
   for(i=0; i<sn->num_reg; i++){
     

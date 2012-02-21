@@ -37,7 +37,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   
   if(s1->num_reg != s2->num_reg){
-    XBT_DEBUG("Different num_reg (s1 = %d, s2 = %d)", s1->num_reg, s2->num_reg);
+    XBT_DEBUG("Different num_reg (s1 = %u, s2 = %u)", s1->num_reg, s2->num_reg);
     return 1;
   }
 
@@ -152,7 +152,7 @@ int reached(xbt_state_t st){
     //xbt_dict_t current_rdv_points = SIMIX_get_rdv_points();
      
     xbt_dynar_foreach(reached_pairs, cursor, pair_test){
-      XBT_DEBUG("Pair reached #%d", cursor+1);
+      XBT_DEBUG("Pair reached #%u", cursor+1);
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
 	  //XBT_DEBUG("Rdv points size %d - %d", xbt_dict_length(pair_test->rdv_points), xbt_dict_length(current_rdv_points));
@@ -244,7 +244,7 @@ int rdv_points_compare(xbt_dict_t d1, xbt_dict_t d2){ /* d1 = pair_test, d2 = cu
 	       req2 = (smx_simcall_t) xbt_fifo_get_item_content(item_req2);
 	       
 	       if(req1->call != req2->call){
-		 XBT_DEBUG("Different simcall call in simcalls of action (%d - %d)", req1->call, req2->call);
+		 XBT_DEBUG("Different simcall call in simcalls of action (%d - %d)", (int)req1->call, (int)req2->call);
 		 return 1;
 	       }
 	       if(req1->issuer->pid != req2->issuer->pid){
@@ -1008,7 +1008,7 @@ void MC_ddfs(int search_cycle){
 	      if(reached(pair_succ->automaton_state)){
 		//if(reached_hash(pair_succ->automaton_state)){
 	      
-		XBT_DEBUG("Next pair (depth = %d, %d interleave) already reached !", xbt_fifo_size(mc_stack_liveness) + 1, MC_state_interleave_size(pair_succ->graph_state));
+		XBT_DEBUG("Next pair (depth = %d, %u interleave) already reached !", xbt_fifo_size(mc_stack_liveness) + 1, MC_state_interleave_size(pair_succ->graph_state));
 
 		XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 		XBT_INFO("|             ACCEPTANCE CYCLE            |");
@@ -1098,7 +1098,7 @@ void MC_ddfs(int search_cycle){
 	}
 
 	if(MC_state_interleave_size(current_pair->graph_state) > 0){
-	  XBT_DEBUG("Backtracking to depth %u", xbt_fifo_size(mc_stack_liveness));
+	  XBT_DEBUG("Backtracking to depth %d", xbt_fifo_size(mc_stack_liveness));
 	  MC_replay_liveness(mc_stack_liveness, 0);
 	}
       }
@@ -1251,9 +1251,9 @@ void MC_ddfs(int search_cycle){
   }
 
   if(xbt_fifo_size(mc_stack_liveness) == MAX_DEPTH_LIVENESS ){
-    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %u, depth = %d) shifted in stack, maximum depth reached", current_pair->graph_state, current_pair->automaton_state, search_cycle, xbt_fifo_size(mc_stack_liveness) );
+    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %d, depth = %d) shifted in stack, maximum depth reached", current_pair->graph_state, current_pair->automaton_state, search_cycle, xbt_fifo_size(mc_stack_liveness) );
   }else{
-    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %u, depth = %d) shifted in stack", current_pair->graph_state, current_pair->automaton_state, search_cycle, xbt_fifo_size(mc_stack_liveness) );
+    XBT_DEBUG("Pair (graph=%p, automaton =%p, search_cycle = %d, depth = %d) shifted in stack", current_pair->graph_state, current_pair->automaton_state, search_cycle, xbt_fifo_size(mc_stack_liveness) );
   }
 
   
