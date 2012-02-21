@@ -69,11 +69,11 @@ if ( $height->bcmp(Math::BigInt->new("1")) != 0 && ($height->copy()->bpow($d))->
 	$height++; #will have to deal with empty set of clusters.	
 	}
 # debug stuff	
-#print "Computed : \n";
-#print STDERR "height: " . $height . "\n";
-#print STDERR "totalnumberofhosts: " . $totalnumberofhosts . "\n";
-#print STDERR "totalnumberofcluster: " .  $totalnumberofCluster . "\n";
-#print STDERR "last cluster size (if equals to cluster size, then all clusters will be homogeneous) : " . $last . "\n";
+# print "Computed : \n";
+# print STDERR "height: " . $height . "\n";
+# print STDERR "totalnumberofhosts: " . $totalnumberofhosts . "\n";
+# print STDERR "totalnumberofcluster: " .  $totalnumberofCluster . "\n";
+# print STDERR "last cluster size (if equals to cluster size, then all clusters will be homogeneous) : " . $last . "\n";
 
 # Counter for giving unique IDs to ASes.
 $ASnumber;
@@ -82,7 +82,7 @@ $ASnumber = 0;
 # Printing preamble
 print "<?xml version='1.0'?>\n";
 print "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n";
-print "<platform version=\"3\">\n";
+print "<platform version=\"3\">\n\n";
 
 	
 # Initiate recursion ...
@@ -90,6 +90,7 @@ print "<platform version=\"3\">\n";
 
 # Closing tag, and then back home
 print "</platform>\n";	
+
 
 # Recursive stuff for depth first Se... Creation
 sub DF_creation {
@@ -105,7 +106,7 @@ sub DF_creation {
 	# Saving my current number to return it to my father
 	my $toReturn = $ASnumber;
 	$ASnumber++;
-	if ($currDepth<$height && $totalnumberofCluster > 0)
+	if ($currDepth<=$height && $totalnumberofCluster > 0)
 		{		
 		# Creating current AS inner stuff
 		# I should have a table of sons numbers.
