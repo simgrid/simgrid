@@ -465,9 +465,12 @@ double surf_solve(double max_date)
   }
   surf_min_index = 0;
 
+
   if (surf_get_nthreads() > 1) {
     /* parallel version */
+#ifdef CONTEXT_THREADS
     xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_share_resources, model_list);
+#endif
   }
   else {
     /* sequential version */
@@ -551,7 +554,9 @@ double surf_solve(double max_date)
 
   if (surf_get_nthreads() > 1) {
     /* parallel version */
+#ifdef CONTEXT_THREADS
     xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_update_actions_state, model_list);
+#endif
   }
   else {
     /* sequential version */
