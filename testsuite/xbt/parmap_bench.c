@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
   if (argc == 3)
-    modes = atoi(argv[2]);
+    modes = strtol(argv[2], NULL, 0);
 
   printf("Parmap benchmark with %d workers (modes = %#x)...\n\n",
          nthreads, modes);
