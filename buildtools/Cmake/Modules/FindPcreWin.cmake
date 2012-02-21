@@ -38,5 +38,7 @@ else(PATH_PCRE_LIB)
 	   message(FATAL_ERROR "Please install the pcre package before using SimGrid.")
 endif(PATH_PCRE_LIB AND PATH_PCRE_H)
 
+set(PCRE_LIBRARY_PATH $ENV{PCRE_LIBRARY_PATH})
+
 mark_as_advanced(PATH_PCRE_H)
 mark_as_advanced(PATH_PCRE_LIB)
