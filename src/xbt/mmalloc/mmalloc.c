@@ -265,7 +265,8 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
     	mdp->heapinfo[block+it].type = 0;
     mdp->heapinfo[block].busy_block.size = blocks;
     mdp->heapinfo[block].busy_block.busy_size = requested_size;
-    mdp->heapinfo[block].busy_block.bt_size = 0;
+    //mdp->heapinfo[block].busy_block.bt_size = 0;
+    mdp->heapinfo[block].busy_block.bt_size = xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
   }
   //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
   return (result);
