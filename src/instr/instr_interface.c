@@ -15,7 +15,7 @@ typedef enum {
   INSTR_US_DECLARE,
   INSTR_US_SET,
   INSTR_US_ADD,
-  INSTR_US_SUB,
+  INSTR_US_SUB
 } InstrUserVariable;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");

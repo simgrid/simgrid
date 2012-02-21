@@ -27,7 +27,7 @@ typedef enum {
   PAJE_PopState,
   PAJE_StartLink,
   PAJE_EndLink,
-  PAJE_NewEvent,
+  PAJE_NewEvent
 } e_event_type;
 
 typedef struct paje_event *paje_event_t;
