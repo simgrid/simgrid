@@ -73,7 +73,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 	  return 1;
 	}
       }
-      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data, std_heap)){
+      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data)){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different heap (mmalloc_compare)");
 	  errors++; 
