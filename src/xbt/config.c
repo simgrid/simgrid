@@ -326,7 +326,7 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
               "; Should be <name>:<min nb>_to_<max nb>_<type>");
   tok++;
 
-  for (type = 0;
+  for (type = (e_xbt_cfgelm_type_t)0;
        type < xbt_cfgelm_type_count
        && strcmp(tok, xbt_cfgelm_type_name[type]); type++);
   xbt_assert(type < xbt_cfgelm_type_count,
@@ -509,7 +509,7 @@ void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
   char *str;
   int i;
   double d;
-  e_xbt_cfgelm_type_t type = 0; /* Set a dummy value to make gcc happy. It cannot get uninitialized */
+  e_xbt_cfgelm_type_t type = xbt_cfgelm_any; /* Set a dummy value to make gcc happy. It cannot get uninitialized */
 
   xbt_ex_t e;
 

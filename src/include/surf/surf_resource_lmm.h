@@ -20,7 +20,7 @@ static XBT_INLINE
                                               lmm_system_t system,
                                               double constraint_value,
                                               tmgr_history_t history,
-                                              int state_init,
+                                              e_surf_resource_state_t state_init,
                                               tmgr_trace_t state_trace,
                                               double metric_peak,
                                               tmgr_trace_t metric_trace)
