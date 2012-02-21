@@ -98,7 +98,6 @@ void _MSG_action_exit()
 
 static const char **action_get_action(char *name)
 {
-  ssize_t read;
   xbt_dynar_t evt = NULL;
   char *evtname = NULL;
 
@@ -110,7 +109,7 @@ static const char **action_get_action(char *name)
     }
     // Read lines until I reach something for me (which breaks in loop body)
     // or end of file reached
-    while ((read = getline(&action_line, &action_len, action_fp)) != -1) {
+    while (getline(&action_line, &action_len, action_fp) != -1) {
       // cleanup and split the string I just read
       char *comment = strchr(action_line, '#');
       if (comment != NULL)
