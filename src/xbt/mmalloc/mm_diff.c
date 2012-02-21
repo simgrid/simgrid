@@ -54,14 +54,9 @@ void mmalloc_backtrace_display(xbt_mheap_t mdp, void *ptr){
 
 
 void mmalloc_backtrace_block_display(xbt_mheap_t mdp, size_t block){
-  //size_t block = BLOCK(ptr);
+
   int type;
   xbt_ex_t e;
-
-  /*if ((char *) ptr < (char *) mdp->heapbase || block > mdp->heapsize) {
-    fprintf(stderr,"Ouch, this pointer is not mine. I cannot display its backtrace. I refuse it to death!!\n");
-    abort();
-    }*/
 
   type = mdp->heapinfo[block].type;
 
@@ -107,6 +102,8 @@ int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2){
 }
 
 int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
+
+  int errors = 0;
 
   if(mdp1->headersize != mdp2->headersize){
     fprintf(stderr, "Different size of the file header for the mapped files\n");
@@ -189,7 +186,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
     if(mdp1->heapinfo[i].type != mdp2->heapinfo[i].type){
       fprintf(stderr,"Different type of block : %d - %d\n", mdp1->heapinfo[i].type, mdp2->heapinfo[i].type);
-      return 1;
+      errors++;
     }
 
     addr_block1 = (char *)mdp1 + sizeof(struct mdesc) + (i * BLOCKSIZE);
@@ -199,19 +196,19 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
       if(mdp1->heapinfo[i].busy_block.size != mdp2->heapinfo[i].busy_block.size){
 	fprintf(stderr,"Different size of a large cluster : %zu - %zu\n", mdp1->heapinfo[i].busy_block.size, mdp2->heapinfo[i].busy_block.size);
-	return 1;
+	errors++;
       } 
 
       if(mdp1->heapinfo[i].busy_block.busy_size != mdp2->heapinfo[i].busy_block.busy_size){
 	fprintf(stderr,"Different busy_size of a large cluster : %zu - %zu\n", mdp1->heapinfo[i].busy_block.busy_size, mdp2->heapinfo[i].busy_block.busy_size);
-	return 1;
+	errors++;
       } 
 
       if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy_block.busy_size)) != 0){
 	fprintf(stderr,"Different data in large block %zu (size = %zu (in blocks), busy_size = %zu (in bytes))\n", i, mdp1->heapinfo[i].busy_block.size, mdp1->heapinfo[i].busy_block.busy_size);
-	fprintf(stderr, "Backtrace size : %d\n", mdp1->heapinfo[i].busy_block.bt_size);
+	//fprintf(stderr, "Backtrace size : %d\n", mdp1->heapinfo[i].busy_block.bt_size);
 	mmalloc_backtrace_block_display(mdp1, i);
-	return 1;
+	errors++;
       }
 
       //fprintf(stderr, "Backtrace size : %d\n", mdp1->heapinfo[i].busy_block.bt_size);
@@ -225,35 +222,36 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
 	if(mdp1->heapinfo[i].type != mdp2->heapinfo[i].type){
 	  fprintf(stderr,"Different size of fragments in fragmented block %zu : %d - %d\n", i, mdp1->heapinfo[i].type, mdp2->heapinfo[i].type);
-	  return 1;
+	  errors++;
 	}
 
 	if(mdp1->heapinfo[i].busy_frag.nfree != mdp2->heapinfo[i].busy_frag.nfree){
 	  fprintf(stderr,"Different free fragments in fragmented block %zu : %zu - %zu\n", i, mdp1->heapinfo[i].busy_frag.nfree, mdp2->heapinfo[i].busy_frag.nfree);
-	  return 1;
+	  errors++;
 	} 
 	
 	if(mdp1->heapinfo[i].busy_frag.first != mdp2->heapinfo[i].busy_frag.first){
 	  fprintf(stderr,"Different busy_size of a large cluster : %zu - %zu\n", mdp1->heapinfo[i].busy_block.busy_size, mdp2->heapinfo[i].busy_block.busy_size);
-	  return 1;
+	  errors++;
 	} 
 
-	for(j=0; j< MAX_FRAGMENT_PER_BLOCK; j++){
+	frag_size = pow(2, mdp1->heapinfo[i].type);
+
+	for(j=0; j< (BLOCKSIZE/frag_size); j++){
 
 	  if(mdp1->heapinfo[i].busy_frag.frag_size[j] != mdp2->heapinfo[i].busy_frag.frag_size[j]){
 	    fprintf(stderr,"Different busy_size for fragment %zu in block %zu : %u - %u\n", j, i, mdp1->heapinfo[i].busy_frag.frag_size[j], mdp2->heapinfo[i].busy_frag.frag_size[j]);
-	    return 1;
+	    errors++;
 	  }
 
 	  if(mdp1->heapinfo[i].busy_frag.frag_size[j] > 0){
 	    
-	    frag_size = pow(2, mdp1->heapinfo[i].type);
 	    addr_frag1 = (char *)addr_block1 + (j * frag_size);
 	    addr_frag2 = (char *)addr_block2 + (j * frag_size);
 
-	    if(memcmp(addr_frag1, addr_frag2, frag_size) != 0){
-	      fprintf(stderr,"Different data in fragment %zu in block %zu \n", j, i);
-	      return 1;
+	    if(memcmp(addr_frag1, addr_frag2, mdp1->heapinfo[i].busy_frag.frag_size[j]) != 0){
+	      fprintf(stderr,"Different data in fragment %zu (size = %zu, size used = %u) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
+	      errors++;
 	    }
 
 	  }
@@ -272,7 +270,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   }
 
 
-  return 0;
+  return (errors);
 }
 
 
