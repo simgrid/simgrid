@@ -240,7 +240,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	for(j=0; j< (BLOCKSIZE/frag_size); j++){
 
 	  if(mdp1->heapinfo[i].busy_frag.frag_size[j] != mdp2->heapinfo[i].busy_frag.frag_size[j]){
-	    fprintf(stderr,"Different busy_size for fragment %zu in block %zu : %u - %u\n", j, i, mdp1->heapinfo[i].busy_frag.frag_size[j], mdp2->heapinfo[i].busy_frag.frag_size[j]);
+	    fprintf(stderr,"Different busy_size for fragment %zu in block %zu : %hu - %hu\n", j, i, mdp1->heapinfo[i].busy_frag.frag_size[j], mdp2->heapinfo[i].busy_frag.frag_size[j]);
 	    errors++;
 	  }
 
@@ -250,7 +250,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	    addr_frag2 = (char *)addr_block2 + (j * frag_size);
 
 	    if(memcmp(addr_frag1, addr_frag2, mdp1->heapinfo[i].busy_frag.frag_size[j]) != 0){
-	      fprintf(stderr,"Different data in fragment %zu (size = %zu, size used = %u) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
+	      fprintf(stderr,"Different data in fragment %zu (size = %zu, size used = %hu) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
 	      errors++;
 	    }
 
