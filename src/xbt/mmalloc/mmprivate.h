@@ -156,7 +156,6 @@ struct mdesc {
 
 	/* Semaphore locking the access to the heap */
 	sem_t sem;
-	char locked;
 
 	/* Number of processes that attached the heap */
 	unsigned int refcount;
@@ -252,18 +251,7 @@ extern void *mmorecore(struct mdesc *mdp, int size);
  * in a model-checking enabled tree. Without this protection, our malloc
  * implementation will not like multi-threading AT ALL.
  */
-#define LOCK(mdp)   do {    \
-    if (0 && mdp->locked) {      \
-      fprintf(stderr,"panic! deadlock detected because %s is not reintrant.\n",__FUNCTION__); \
-      abort();              \
-    }                       \
-		sem_wait(&mdp->sem);    \
-		mdp->locked=1;          \
-  } while(0)
-
-#define UNLOCK(mdp)  do {  \
-		sem_post(&mdp->sem);   \
-    mdp->locked=0;         \
-  } while (0)
+#define LOCK(mdp) sem_wait(&mdp->sem)
+#define UNLOCK(mdp) sem_post(&mdp->sem)
 
 #endif                          /* __MMPRIVATE_H */
