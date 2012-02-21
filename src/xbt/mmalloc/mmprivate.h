@@ -223,7 +223,7 @@ struct mdesc {
 
 };
 
-int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap_addr);
+int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2);
 
 void mmalloc_display_info(void *h);
 

@@ -52,20 +52,61 @@ void mmalloc_backtrace_display(xbt_mheap_t mdp, void *ptr){
   }
 }
 
-int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void *std_heap_addr){
+
+void mmalloc_backtrace_block_display(xbt_mheap_t mdp, size_t block){
+  //size_t block = BLOCK(ptr);
+  int type;
+  xbt_ex_t e;
+
+  /*if ((char *) ptr < (char *) mdp->heapbase || block > mdp->heapsize) {
+    fprintf(stderr,"Ouch, this pointer is not mine. I cannot display its backtrace. I refuse it to death!!\n");
+    abort();
+    }*/
+
+  type = mdp->heapinfo[block].type;
+
+  if (type != 0) {
+    fprintf(stderr,"Only full blocks are backtraced for now. Ignoring your request.\n");
+    return;
+  }
+  if (mdp->heapinfo[block].busy_block.bt_size == 0) {
+    fprintf(stderr,"No backtrace available for that block, sorry.\n");
+    return;
+  }
+
+  memcpy(&e.bt,&(mdp->heapinfo[block].busy_block.bt),sizeof(void*)*XBT_BACKTRACE_SIZE);
+  e.used = mdp->heapinfo[block].busy_block.bt_size;
+
+  xbt_ex_setup_backtrace(&e);
+  if (e.used == 0) {
+    fprintf(stderr, "(backtrace not set)\n");
+  } else if (e.bt_strings == NULL) {
+    fprintf(stderr, "(backtrace not ready to be computed. %s)\n",xbt_binary_name?"Dunno why":"xbt_binary_name not setup yet");
+  } else {
+    int i;
+
+    fprintf(stderr, "Backtrace of where the block %zu where malloced (%d frames):\n", block ,e.used);
+    for (i = 0; i < e.used; i++)       /* no need to display "xbt_backtrace_display" */{
+      fprintf(stderr,"%d",i);fflush(NULL);
+      fprintf(stderr, "---> %s\n", e.bt_strings[i] + 4);
+    }
+  }
+}
+
+int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2){
 
   if(mdp1 == NULL && mdp2 == NULL){
     XBT_DEBUG("Malloc descriptors null\n");
     return 0;
   }
 
-  int errors = mmalloc_compare_mdesc(mdp1, mdp2, std_heap_addr);
+  int errors = mmalloc_compare_mdesc(mdp1, mdp2);
 
   return (errors > 0);
 
 }
 
-int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap_addr){
+int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   if(mdp1->headersize != mdp2->headersize){
     fprintf(stderr, "Different size of the file header for the mapped files\n");
@@ -168,9 +209,14 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void *std_heap
 
       if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy_block.busy_size)) != 0){
 	fprintf(stderr,"Different data in large block %zu (size = %zu (in blocks), busy_size = %zu (in bytes))\n", i, mdp1->heapinfo[i].busy_block.size, mdp1->heapinfo[i].busy_block.busy_size);
+	fprintf(stderr, "Backtrace size : %d\n", mdp1->heapinfo[i].busy_block.bt_size);
+	mmalloc_backtrace_block_display(mdp1, i);
 	return 1;
       }
 
+      //fprintf(stderr, "Backtrace size : %d\n", mdp1->heapinfo[i].busy_block.bt_size);
+      //mmalloc_backtrace_block_display(mdp1, i);
+	
       i = i + mdp1->heapinfo[i].busy_block.size;
 
     }else{
