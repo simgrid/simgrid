@@ -244,6 +244,7 @@ set(SURF_SRC
 	src/surf/cpu_ti.c
 	src/surf/cpu_cas01.c
 	src/surf/sg_platf.c
+	src/surf/storage.c
 	src/xbt/xbt_sg_stubs.c
 )
 

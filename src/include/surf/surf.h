@@ -199,6 +199,22 @@ typedef struct s_surf_file {
 } s_surf_file_t;
 typedef struct s_surf_file *surf_file_t;
 
+/* Storage model */
+
+/** \brief Storage model extension public
+ *  \ingroup SURF_models
+ *
+ *  Public functions specific to the Storage model.
+ */
+typedef struct surf_storage_model_extension_public {
+  surf_action_t(*open) (void *workstation, const char* path, const char* mode);
+  surf_action_t(*close) (void *workstation, surf_file_t fp);
+  surf_action_t(*read) (void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
+  surf_action_t(*write) (void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
+  surf_action_t(*stat) (void *workstation, int fd, void* buf);
+void* (*create_resource) (const char *name);
+} s_surf_model_extension_storage_t;
+
      /** \brief Workstation model extension public
       *  \ingroup SURF_models
       *
@@ -294,6 +310,7 @@ typedef struct surf_model {
   union extension {
     s_surf_model_extension_cpu_t cpu;
     s_surf_model_extension_network_t network;
+    s_surf_model_extension_storage_t storage;
     s_surf_model_extension_workstation_t workstation;
   } extension;
 } s_surf_model_t;
