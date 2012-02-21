@@ -497,16 +497,16 @@ void STag_surfxml_random(void){
 #define parse_method(type,name) \
 void type##Tag_surfxml_##name(void) \
 { surfxml_call_cb_functions(type##Tag_surfxml_##name##_cb_list); }
-parse_method(E, route);
-parse_method(E, link_ctn);
-parse_method(E, process);
-parse_method(E, argument);
-parse_method(E, prop);
-parse_method(E, trace);
-parse_method(E, trace_connect);
-parse_method(E, random);
-parse_method(E, ASroute);
-parse_method(E, bypassRoute);
+parse_method(E, route)
+parse_method(E, link_ctn)
+parse_method(E, process)
+parse_method(E, argument)
+parse_method(E, prop)
+parse_method(E, trace)
+parse_method(E, trace_connect)
+parse_method(E, random)
+parse_method(E, ASroute)
+parse_method(E, bypassRoute)
 
 /* Open and Close parse file */
 
