@@ -1012,7 +1012,24 @@ static void routing_parse_Srandom(void)
   int start, end;
   xbt_dynar_t radical_ends;
 
-  random->generator = A_surfxml_random_generator;
+  switch (A_surfxml_random_generator) {
+  case AU_surfxml_random_generator:
+  case A_surfxml_random_generator_NONE:
+    random->generator = NONE;
+    break;
+  case A_surfxml_random_generator_DRAND48:
+    random->generator = DRAND48;
+    break;
+  case A_surfxml_random_generator_RAND:
+    random->generator = RAND;
+    break;
+  case A_surfxml_random_generator_RNGSTREAM:
+    random->generator = RNGSTREAM;
+    break;
+  default:
+    surf_parse_error("Invalid random generator");
+    break;
+  }
   random->seed = seed;
   random->min = min;
   random->max = max;
@@ -1036,7 +1053,7 @@ static void routing_parse_Srandom(void)
   XBT_DEBUG
       ("id = '%s' min = '%f' max = '%f' mean = '%f' std_deviatinon = '%f' generator = '%d' seed = '%ld' radical = '%s'",
        random_id, random->min, random->max, random->mean, random->std,
-       random->generator, random->seed, random_radical);
+       (int)random->generator, random->seed, random_radical);
 
   if (!random_value)
     random_value = xbt_dict_new_homogeneous(free);

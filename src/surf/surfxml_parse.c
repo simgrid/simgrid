@@ -638,8 +638,8 @@ double get_cpu_power(const char *power)
   return power_scale;
 }
 
-double random_min, random_max, random_mean, random_std_deviation,
-    random_generator;
+double random_min, random_max, random_mean, random_std_deviation;
+e_random_generator_t random_generator;
 char *random_id;
 
 static void init_randomness(void)
@@ -649,7 +649,24 @@ static void init_randomness(void)
   random_max = surf_parse_get_double(A_surfxml_random_max);
   random_mean = surf_parse_get_double(A_surfxml_random_mean);
   random_std_deviation = surf_parse_get_double(A_surfxml_random_std_deviation);
-  random_generator = A_surfxml_random_generator;
+  switch (A_surfxml_random_generator) {
+  case AU_surfxml_random_generator:
+  case A_surfxml_random_generator_NONE:
+    random_generator = NONE;
+    break;
+  case A_surfxml_random_generator_DRAND48:
+    random_generator = DRAND48;
+    break;
+  case A_surfxml_random_generator_RAND:
+    random_generator = RAND;
+    break;
+  case A_surfxml_random_generator_RNGSTREAM:
+    random_generator = RNGSTREAM;
+    break;
+  default:
+    surf_parse_error("Invalid random generator");
+    break;
+  }
 }
 
 static void add_randomness(void)
