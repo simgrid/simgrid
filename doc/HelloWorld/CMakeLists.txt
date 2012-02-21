@@ -17,7 +17,7 @@ set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 ###############################
 # Test the build dependencies #
 ###############################
-include(FindPCRE.cmake)
+include(FindPcreWin.cmake)
 message(STATUS "Looking for lib Simgrid")
 if("$ENV{SIMGRID_ROOT}" STREQUAL "")
     message(STATUS "Looking for lib Simgrid - Not found")

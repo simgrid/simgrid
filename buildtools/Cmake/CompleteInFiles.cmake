@@ -68,7 +68,11 @@ include(TestBigEndian)
 TEST_BIG_ENDIAN(BIGENDIAN)
 
 include(FindGraphviz)
-include(FindPCRE)
+if(WIN32)
+include(FindPcreWin)
+else(WIN32)
+include(FindPCRE)  
+endif(WIN32)
 
 set(HAVE_GTNETS 0)
 if(enable_gtnets)	
