@@ -44,7 +44,7 @@ typedef enum {
   SIMIX_DST_HOST_FAILURE,
   SIMIX_SRC_TIMEOUT,
   SIMIX_DST_TIMEOUT,
-  SIMIX_LINK_FAILURE,
+  SIMIX_LINK_FAILURE
 } e_smx_state_t;
 /** @} */
 

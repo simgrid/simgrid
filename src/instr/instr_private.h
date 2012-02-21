@@ -29,7 +29,7 @@ typedef enum {
   TYPE_LINK,
   TYPE_CONTAINER,
   TYPE_STATE,
-  TYPE_EVENT,
+  TYPE_EVENT
 } e_entity_types;
 
 typedef struct s_type *type_t;
@@ -58,7 +58,7 @@ typedef enum {
   INSTR_AS,
   INSTR_SMPI,
   INSTR_MSG_PROCESS,
-  INSTR_MSG_TASK,
+  INSTR_MSG_TASK
 } e_container_types;
 
 typedef struct s_container *container_t;

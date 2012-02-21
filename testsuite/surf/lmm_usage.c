@@ -31,7 +31,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
 typedef enum {
   MAXMIN,
   LAGRANGE_RENO,
-  LAGRANGE_VEGAS,
+  LAGRANGE_VEGAS
 } method_t;
 
 static double dichotomy(double func(double), double min, double max,

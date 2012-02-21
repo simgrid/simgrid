@@ -13,7 +13,7 @@
 
 typedef enum {
   SURF_WORKSTATION_RESOURCE_CPU,
-  SURF_WORKSTATION_RESOURCE_LINK,
+  SURF_WORKSTATION_RESOURCE_LINK
 } e_surf_workstation_model_type_t;
 
 /**************************************/

@@ -25,7 +25,7 @@ typedef enum {
   SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
   SURF_NETWORK_ELEMENT_HOST,    /* host type */
   SURF_NETWORK_ELEMENT_ROUTER,  /* router type */
-  SURF_NETWORK_ELEMENT_AS,      /* AS type */
+  SURF_NETWORK_ELEMENT_AS       /* AS type */
 } e_surf_network_element_type_t;
 
 XBT_PUBLIC(e_surf_network_element_type_t)

@@ -145,7 +145,7 @@ typedef enum {
   MSG_HOST_FAILURE = 4,       /**< @brief System shutdown. The host on which you are
       running has just been rebooted. Free your datastructures and
       return now !*/
-  MSG_TASK_CANCELED = 8,     /**< @brief Canceled task. This task has been canceled by somebody!*/
+  MSG_TASK_CANCELED = 8      /**< @brief Canceled task. This task has been canceled by somebody!*/
 } MSG_error_t;
 /** @} */
 
