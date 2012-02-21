@@ -10,8 +10,6 @@
 #include "gras_config.h"
 #include <math.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mm_legacy, xbt,
-                                "Logging specific to mm_legacy in mmalloc");
 
 /* The mmalloc() package can use a single implicit malloc descriptor
    for mmalloc/mrealloc/mfree operations which do not supply an explicit
