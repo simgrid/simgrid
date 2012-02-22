@@ -757,18 +757,15 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
     int left_res = MC_automaton_evaluate_label(l->u.or_and.left_exp);
     int right_res = MC_automaton_evaluate_label(l->u.or_and.right_exp);
     return (left_res || right_res);
-    break;
   }
   case 1 : {
     int left_res = MC_automaton_evaluate_label(l->u.or_and.left_exp);
     int right_res = MC_automaton_evaluate_label(l->u.or_and.right_exp);
     return (left_res && right_res);
-    break;
   }
   case 2 : {
     int res = MC_automaton_evaluate_label(l->u.exp_not);
     return (!res);
-    break;
   }
   case 3 : { 
     unsigned int cursor = 0;
@@ -781,15 +778,12 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
       }
     }
     return -1;
-    break;
   }
   case 4 : {
     return 2;
-    break;
   }
   default : 
     return -1;
-    break;
   }
 }
 
