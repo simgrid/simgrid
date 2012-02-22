@@ -141,7 +141,7 @@ int reached(xbt_state_t st){
     unsigned int cursor = 0;
     xbt_propositional_symbol_t ps = NULL;
     xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-      f = ps->function;
+      f = (int (*)())ps->function;
       res = (*f)();
       xbt_dynar_push_as(prop_ato, int, res);
     }
@@ -367,7 +367,7 @@ void set_pair_reached(xbt_state_t st){
   int (*f)(); 
 
   xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-    f = ps->function;
+    f = (int (*)())ps->function;
     res = (*f)();
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
@@ -432,7 +432,7 @@ int reached_hash(xbt_state_t st){
     int (*f)();
 
     xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-      f = ps->function;
+      f = (int (*)())ps->function;
       res = (*f)();
       xbt_dynar_push_as(prop_ato, int, res);
     }
@@ -506,7 +506,7 @@ void set_pair_reached_hash(xbt_state_t st){
   int (*f)();
 
   xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-    f = ps->function;
+    f = (int (*)())ps->function;
     res = (*f)();
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
@@ -543,7 +543,7 @@ int visited(xbt_state_t st, int sc){
     int (*f)();
 
     xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-      f = ps->function;
+      f = (int (*)())ps->function;
       res = (*f)();
       xbt_dynar_push_as(prop_ato, int, res);
     }
@@ -618,7 +618,7 @@ int visited_hash(xbt_state_t st, int sc){
     int (*f)();
 
     xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-      f = ps->function;
+      f = (int (*)())ps->function;
       res = (*f)();
       xbt_dynar_push_as(prop_ato, int, res);
     }
@@ -696,7 +696,7 @@ void set_pair_visited_hash(xbt_state_t st, int sc){
   int (*f)();
 
   xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-    f = ps->function;
+    f = (int (*)())ps->function;
     res = (*f)();
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
@@ -730,7 +730,7 @@ void set_pair_visited(xbt_state_t st, int sc){
   int (*f)();
 
   xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
-    f = ps->function;
+    f = (int (*)())ps->function;
     res = (*f)();
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
@@ -776,7 +776,7 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
     int (*f)();
     xbt_dynar_foreach(automaton->propositional_symbols, cursor, p){
       if(strcmp(p->pred, l->u.predicat) == 0){
-	f = p->function;
+	f = (int (*)())p->function;
 	return (*f)();
       }
     }
