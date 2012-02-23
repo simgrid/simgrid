@@ -18,6 +18,7 @@
 #include "xbt/mmalloc.h"
 #include "xbt/ex.h"
 #include <semaphore.h>
+#include <stdint.h>
 
 #ifdef HAVE_LIMITS_H
 #  include <limits.h>
@@ -62,8 +63,8 @@
    sign of the result is machine dependent for negative values, so force
    it to be treated as an unsigned int. */
 
-#define ADDR2UINT(addr)	((unsigned int) ((char*) (addr) - (char*) NULL))
-#define RESIDUAL(addr,bsize) ((unsigned int) (ADDR2UINT (addr) % (bsize)))
+#define ADDR2UINT(addr)	((uintptr_t) ((char*) (addr) - (char*) NULL))
+#define RESIDUAL(addr,bsize) ((uintptr_t) (ADDR2UINT (addr) % (bsize)))
 
 /* Determine the amount of memory spanned by the initial heap table
    (not an absolute limit).  */
