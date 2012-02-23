@@ -149,7 +149,7 @@ CHECK_FUNCTION_EXISTS(mergesort HAVE_MERGESORT)
 execute_process(
 COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_thread_storage.c"
 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-OUTPUT_VARIABLE HAVE_thread_storage_run
+RESULT_VARIABLE HAVE_thread_storage_run
 )
 
 if(HAVE_thread_storage_run)

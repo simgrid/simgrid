@@ -120,6 +120,10 @@ XBT_PUBLIC(int) MSG_process_is_suspended(m_process_t process);
 XBT_PUBLIC(m_task_t) MSG_task_create(const char *name,
                                      double compute_duration,
                                      double message_size, void *data);
+XBT_PUBLIC(m_gpu_task_t) MSG_gpu_task_create(const char *name,
+                                     double compute_duration,
+                                     double dispatch_latency,
+                                     double collect_latency);
 XBT_PUBLIC(m_task_t) MSG_parallel_task_create(const char *name,
                                               int host_nb,
                                               const m_host_t * host_list,
