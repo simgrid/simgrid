@@ -45,6 +45,16 @@ typedef struct simdata_task {
   double *comm_amount;
 } s_simdata_task_t;
 
+
+/*************** Begin GPU ***************/
+typedef struct simdata_gpu_task {
+  double computation_amount;    /* Computation size */
+  double dispatch_latency;
+  double collect_latency;
+  int isused;  /* Indicates whether the task is used in SIMIX currently */
+} s_simdata_gpu_task_t;
+/*************** End GPU ***************/
+
 /******************************* Process *************************************/
 
 typedef struct simdata_process {

@@ -78,6 +78,31 @@ typedef struct m_task {
   @{ */
 typedef struct m_task *m_task_t;
 
+
+/*************** Begin GPU ***************/
+typedef struct simdata_gpu_task *simdata_gpu_task_t;
+
+/** @brief GPU task datatype
+    @ingroup m_datatypes_management_details */
+typedef struct m_gpu_task {
+  char *name;                   /**< @brief task name if any */
+  simdata_gpu_task_t simdata;       /**< @brief simulator data */
+#ifdef HAVE_TRACING
+  long long int counter;        /* task unique identifier for instrumentation */
+  char *category;               /* task category for instrumentation */
+#endif
+} s_m_gpu_task_t;
+
+/** @brief GPU task datatype
+    @ingroup m_datatypes_management
+
+    A <em>task</em> may then be defined by a <em>computing
+    amount</em>, a <em>dispatch latency</em> and a <em>collect latency</em>.
+    \see m_task_management
+  @{ */
+typedef struct m_gpu_task *m_gpu_task_t;
+/*************** End GPU ***************/
+
 /**
  * \brief @brief Communication action
  * \ingroup m_datatypes_management
