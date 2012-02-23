@@ -25,10 +25,15 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|include|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect)*,(bypassRoute|trace|trace_connect)*)|((include|host|router|link|trace|trace_connect)*,(route|trace|trace_connect)*))>
+<!ELEMENT AS (((AS|include|storage|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect)*,(bypassRoute|trace|trace_connect)*)|((include|storage|host|router|link|trace|trace_connect)*,(route|trace|trace_connect)*))>
 
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
+
+<!ELEMENT storage (prop*)>
+<!ATTLIST storage id CDATA #REQUIRED>
+<!ATTLIST storage model CDATA #REQUIRED>
+<!ATTLIST storage content  CDATA "0">
 
 <!ELEMENT host (prop*)>
 <!ATTLIST host id CDATA #REQUIRED>

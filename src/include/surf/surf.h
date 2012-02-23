@@ -206,13 +206,15 @@ typedef struct s_surf_file *surf_file_t;
  *
  *  Public functions specific to the Storage model.
  */
+
 typedef struct surf_storage_model_extension_public {
   surf_action_t(*open) (void *workstation, const char* path, const char* mode);
   surf_action_t(*close) (void *workstation, surf_file_t fp);
   surf_action_t(*read) (void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*write) (void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *workstation, int fd, void* buf);
-void* (*create_resource) (const char *name);
+  void* (*create_resource) (const char* id, const char* model,
+      const char* content, xbt_dict_t properties);
 } s_surf_model_extension_storage_t;
 
      /** \brief Workstation model extension public
@@ -327,14 +329,15 @@ static inline void *surf_workstation_resource_by_name(const char *name){
 static inline void *surf_network_resource_by_name(const char *name){
 	return xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL);
 }
+static inline void *surf_storage_resource_by_name(const char *name) {
+    return xbt_lib_get_or_null(storage_lib, name, SURF_STORAGE_LEVEL);
+}
 
 typedef struct surf_resource {
   surf_model_t model;
   char *name;
   xbt_dict_t properties;
 } s_surf_resource_t, *surf_resource_t;
-
-
 
 /**
  * Resource which have a metric handled by a maxmin system
@@ -568,6 +571,27 @@ XBT_PUBLIC(void) surf_network_model_init_Vegas(void);
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t)
     surf_network_model_description[];
+
+
+
+
+
+
+/** \brief The storage model
+ *  \ingroup SURF_models
+ */
+XBT_PUBLIC(void) surf_storage_model_init_default(void);
+
+/** \brief The list of all available storage modes.
+ *  \ingroup SURF_models
+ *  This storage mode can be set using --cfg=storage/model:...
+ */
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
+
+
+
+
+
 
 
 /** \brief The workstation model

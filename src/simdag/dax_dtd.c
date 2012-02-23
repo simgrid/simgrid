@@ -1259,8 +1259,8 @@ char *dax_text;
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
- * FleXML is Copyright (C) 2003-2011 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp).
+ * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
+ * (Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -1269,7 +1269,7 @@ char *dax_text;
  * 
  * Some parts, here collectively called "Part A", are found in the 
  * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
- * and Copyright (C) 2003-2011 Martin Quinson. All rights reserved.
+ * and Copyright (C) 2003-2006 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -1305,7 +1305,7 @@ char *dax_text;
 const char rcs_dax__flexml_skeleton[] =
  "$" "Id: skel,v 1.40 2007/10/11 09:57:24 mquinson Exp $";
 const char rcs_dax__flexml[] =
- "$" "Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp $";
 
 /* ANSI headers. */
 #include <stdlib.h> /* for realloc() -- needed here when using flex 2.5.4 */
@@ -1342,79 +1342,54 @@ extern char *dax__bufferstack;
 #define dax__pcdata (dax__bufferstack + dax__pcdata_ix)
 AT_dax__adag_version AX_dax__adag_version;
 #define A_dax__adag_version (dax__bufferstack + AX_dax__adag_version)
-short int dax__adag_version_isset;
 AT_dax__uses_type AX_dax__uses_type;
 #define A_dax__uses_type (dax__bufferstack + AX_dax__uses_type)
-short int dax__uses_type_isset;
 AT_dax__uses_optional AX_dax__uses_optional;
 #define A_dax__uses_optional AX_dax__uses_optional
-short int dax__uses_optional_isset;
 AT_dax__adag_name AX_dax__adag_name;
 #define A_dax__adag_name (dax__bufferstack + AX_dax__adag_name)
-short int dax__adag_name_isset;
 AT_dax__child_ref AX_dax__child_ref;
 #define A_dax__child_ref (dax__bufferstack + AX_dax__child_ref)
-short int dax__child_ref_isset;
 AT_dax__adag_xmlns AX_dax__adag_xmlns;
 #define A_dax__adag_xmlns (dax__bufferstack + AX_dax__adag_xmlns)
-short int dax__adag_xmlns_isset;
 AT_dax__uses_transfer AX_dax__uses_transfer;
 #define A_dax__uses_transfer AX_dax__uses_transfer
-short int dax__uses_transfer_isset;
 AT_dax__job_id AX_dax__job_id;
 #define A_dax__job_id (dax__bufferstack + AX_dax__job_id)
-short int dax__job_id_isset;
 AT_dax__uses_file AX_dax__uses_file;
 #define A_dax__uses_file (dax__bufferstack + AX_dax__uses_file)
-short int dax__uses_file_isset;
 AT_dax__parent_ref AX_dax__parent_ref;
 #define A_dax__parent_ref (dax__bufferstack + AX_dax__parent_ref)
-short int dax__parent_ref_isset;
 AT_dax__adag_count AX_dax__adag_count;
 #define A_dax__adag_count (dax__bufferstack + AX_dax__adag_count)
-short int dax__adag_count_isset;
 AT_dax__adag_xmlns_c_xsi AX_dax__adag_xmlns_c_xsi;
 #define A_dax__adag_xmlns_c_xsi (dax__bufferstack + AX_dax__adag_xmlns_c_xsi)
-short int dax__adag_xmlns_c_xsi_isset;
 AT_dax__adag_index AX_dax__adag_index;
 #define A_dax__adag_index (dax__bufferstack + AX_dax__adag_index)
-short int dax__adag_index_isset;
 AT_dax__uses_size AX_dax__uses_size;
 #define A_dax__uses_size (dax__bufferstack + AX_dax__uses_size)
-short int dax__uses_size_isset;
 AT_dax__adag_childCount AX_dax__adag_childCount;
 #define A_dax__adag_childCount (dax__bufferstack + AX_dax__adag_childCount)
-short int dax__adag_childCount_isset;
 AT_dax__uses_link AX_dax__uses_link;
 #define A_dax__uses_link AX_dax__uses_link
-short int dax__uses_link_isset;
 AT_dax__job_runtime AX_dax__job_runtime;
 #define A_dax__job_runtime (dax__bufferstack + AX_dax__job_runtime)
-short int dax__job_runtime_isset;
 AT_dax__job_level AX_dax__job_level;
 #define A_dax__job_level (dax__bufferstack + AX_dax__job_level)
-short int dax__job_level_isset;
 AT_dax__job_namespace AX_dax__job_namespace;
 #define A_dax__job_namespace (dax__bufferstack + AX_dax__job_namespace)
-short int dax__job_namespace_isset;
 AT_dax__job_name AX_dax__job_name;
 #define A_dax__job_name (dax__bufferstack + AX_dax__job_name)
-short int dax__job_name_isset;
 AT_dax__adag_jobCount AX_dax__adag_jobCount;
 #define A_dax__adag_jobCount (dax__bufferstack + AX_dax__adag_jobCount)
-short int dax__adag_jobCount_isset;
 AT_dax__job_version AX_dax__job_version;
 #define A_dax__job_version (dax__bufferstack + AX_dax__job_version)
-short int dax__job_version_isset;
 AT_dax__adag_xsi_c_schemaLocation AX_dax__adag_xsi_c_schemaLocation;
 #define A_dax__adag_xsi_c_schemaLocation (dax__bufferstack + AX_dax__adag_xsi_c_schemaLocation)
-short int dax__adag_xsi_c_schemaLocation_isset;
 AT_dax__uses_register AX_dax__uses_register;
 #define A_dax__uses_register AX_dax__uses_register
-short int dax__uses_register_isset;
 AT_dax__adag_fileCount AX_dax__adag_fileCount;
 #define A_dax__adag_fileCount (dax__bufferstack + AX_dax__adag_fileCount)
-short int dax__adag_fileCount_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -2024,25 +1999,15 @@ case 17:
 YY_RULE_SETUP
 {
   AX_dax__adag_xmlns = 1;
-  dax__adag_xmlns_isset = 0;
   AX_dax__adag_xmlns_c_xsi = 35;
-  dax__adag_xmlns_c_xsi_isset = 0;
   AX_dax__adag_xsi_c_schemaLocation = 77;
-  dax__adag_xsi_c_schemaLocation_isset = 0;
   AX_dax__adag_version = 153;
-  dax__adag_version_isset = 0;
   AX_dax__adag_count = 0;
-  dax__adag_count_isset = 0;
   AX_dax__adag_index = 0;
-  dax__adag_index_isset = 0;
   AX_dax__adag_name = 0;
-  dax__adag_name_isset = 0;
   AX_dax__adag_jobCount = 0;
-  dax__adag_jobCount_isset = 0;
   AX_dax__adag_fileCount = 0;
-  dax__adag_fileCount_isset = 0;
   AX_dax__adag_childCount = 0;
-  dax__adag_childCount_isset = 0;
   ENTER(AL_dax__adag); pushbuffer(0);
   }
 	YY_BREAK
@@ -2050,102 +2015,102 @@ YY_RULE_SETUP
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-if (dax__adag_xmlns_isset != 0) {FAIL("Multiple definition of attribute xmlns in <dax__adag>");} dax__adag_xmlns_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_xmlns);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_xmlns);
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-if (dax__adag_xmlns_isset != 0) {FAIL("Multiple definition of attribute xmlns in <dax__adag>");}  dax__adag_xmlns_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_xmlns);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_xmlns);
 	YY_BREAK
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
-if (dax__adag_xmlns_c_xsi_isset != 0) {FAIL("Multiple definition of attribute xmlns:xsi in <dax__adag>");} dax__adag_xmlns_c_xsi_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_xmlns_c_xsi);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_xmlns_c_xsi);
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-if (dax__adag_xmlns_c_xsi_isset != 0) {FAIL("Multiple definition of attribute xmlns:xsi in <dax__adag>");}  dax__adag_xmlns_c_xsi_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_xmlns_c_xsi);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_xmlns_c_xsi);
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-if (dax__adag_xsi_c_schemaLocation_isset != 0) {FAIL("Multiple definition of attribute xsi:schemaLocation in <dax__adag>");} dax__adag_xsi_c_schemaLocation_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_xsi_c_schemaLocation);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_xsi_c_schemaLocation);
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-if (dax__adag_xsi_c_schemaLocation_isset != 0) {FAIL("Multiple definition of attribute xsi:schemaLocation in <dax__adag>");}  dax__adag_xsi_c_schemaLocation_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_xsi_c_schemaLocation);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_xsi_c_schemaLocation);
 	YY_BREAK
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-if (dax__adag_version_isset != 0) {FAIL("Multiple definition of attribute version in <dax__adag>");} dax__adag_version_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_version);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_version);
 	YY_BREAK
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
-if (dax__adag_version_isset != 0) {FAIL("Multiple definition of attribute version in <dax__adag>");}  dax__adag_version_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_version);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_version);
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-if (dax__adag_count_isset != 0) {FAIL("Multiple definition of attribute count in <dax__adag>");} dax__adag_count_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_count);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_count);
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-if (dax__adag_count_isset != 0) {FAIL("Multiple definition of attribute count in <dax__adag>");}  dax__adag_count_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_count);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_count);
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-if (dax__adag_index_isset != 0) {FAIL("Multiple definition of attribute index in <dax__adag>");} dax__adag_index_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_index);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_index);
 	YY_BREAK
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-if (dax__adag_index_isset != 0) {FAIL("Multiple definition of attribute index in <dax__adag>");}  dax__adag_index_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_index);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_index);
 	YY_BREAK
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-if (dax__adag_name_isset != 0) {FAIL("Multiple definition of attribute name in <dax__adag>");} dax__adag_name_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_name);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_name);
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-if (dax__adag_name_isset != 0) {FAIL("Multiple definition of attribute name in <dax__adag>");}  dax__adag_name_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_name);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_name);
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
-if (dax__adag_jobCount_isset != 0) {FAIL("Multiple definition of attribute jobCount in <dax__adag>");} dax__adag_jobCount_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_jobCount);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_jobCount);
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-if (dax__adag_jobCount_isset != 0) {FAIL("Multiple definition of attribute jobCount in <dax__adag>");}  dax__adag_jobCount_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_jobCount);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_jobCount);
 	YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-if (dax__adag_fileCount_isset != 0) {FAIL("Multiple definition of attribute fileCount in <dax__adag>");} dax__adag_fileCount_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_fileCount);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_fileCount);
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-if (dax__adag_fileCount_isset != 0) {FAIL("Multiple definition of attribute fileCount in <dax__adag>");}  dax__adag_fileCount_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_fileCount);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_fileCount);
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-if (dax__adag_childCount_isset != 0) {FAIL("Multiple definition of attribute childCount in <dax__adag>");} dax__adag_childCount_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_childCount);
+ENTER(VALUE1); BUFFERSET(AX_dax__adag_childCount);
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
-if (dax__adag_childCount_isset != 0) {FAIL("Multiple definition of attribute childCount in <dax__adag>");}  dax__adag_childCount_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_childCount);
+ENTER(VALUE2); BUFFERSET(AX_dax__adag_childCount);
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
@@ -2213,17 +2178,11 @@ case 46:
 YY_RULE_SETUP
 {
   AX_dax__job_id = 0;
-  dax__job_id_isset = 0;
   AX_dax__job_namespace = 0;
-  dax__job_namespace_isset = 0;
   AX_dax__job_name = 0;
-  dax__job_name_isset = 0;
   AX_dax__job_version = 157;
-  dax__job_version_isset = 0;
   AX_dax__job_runtime = 0;
-  dax__job_runtime_isset = 0;
   AX_dax__job_level = 0;
-  dax__job_level_isset = 0;
   ENTER(AL_dax__job); pushbuffer(0);
   }
 	YY_BREAK
@@ -2231,62 +2190,62 @@ YY_RULE_SETUP
 case 47:
 /* rule 47 can match eol */
 YY_RULE_SETUP
-if (dax__job_id_isset != 0) {FAIL("Multiple definition of attribute id in <dax__job>");} dax__job_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_id);
+ENTER(VALUE1); BUFFERSET(AX_dax__job_id);
 	YY_BREAK
 case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
-if (dax__job_id_isset != 0) {FAIL("Multiple definition of attribute id in <dax__job>");}  dax__job_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_id);
+ENTER(VALUE2); BUFFERSET(AX_dax__job_id);
 	YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-if (dax__job_namespace_isset != 0) {FAIL("Multiple definition of attribute namespace in <dax__job>");} dax__job_namespace_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_namespace);
+ENTER(VALUE1); BUFFERSET(AX_dax__job_namespace);
 	YY_BREAK
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
-if (dax__job_namespace_isset != 0) {FAIL("Multiple definition of attribute namespace in <dax__job>");}  dax__job_namespace_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_namespace);
+ENTER(VALUE2); BUFFERSET(AX_dax__job_namespace);
 	YY_BREAK
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
-if (dax__job_name_isset != 0) {FAIL("Multiple definition of attribute name in <dax__job>");} dax__job_name_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_name);
+ENTER(VALUE1); BUFFERSET(AX_dax__job_name);
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-if (dax__job_name_isset != 0) {FAIL("Multiple definition of attribute name in <dax__job>");}  dax__job_name_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_name);
+ENTER(VALUE2); BUFFERSET(AX_dax__job_name);
 	YY_BREAK
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
-if (dax__job_version_isset != 0) {FAIL("Multiple definition of attribute version in <dax__job>");} dax__job_version_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_version);
+ENTER(VALUE1); BUFFERSET(AX_dax__job_version);
 	YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-if (dax__job_version_isset != 0) {FAIL("Multiple definition of attribute version in <dax__job>");}  dax__job_version_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_version);
+ENTER(VALUE2); BUFFERSET(AX_dax__job_version);
 	YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-if (dax__job_runtime_isset != 0) {FAIL("Multiple definition of attribute runtime in <dax__job>");} dax__job_runtime_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_runtime);
+ENTER(VALUE1); BUFFERSET(AX_dax__job_runtime);
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
-if (dax__job_runtime_isset != 0) {FAIL("Multiple definition of attribute runtime in <dax__job>");}  dax__job_runtime_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_runtime);
+ENTER(VALUE2); BUFFERSET(AX_dax__job_runtime);
 	YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
-if (dax__job_level_isset != 0) {FAIL("Multiple definition of attribute level in <dax__job>");} dax__job_level_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_level);
+ENTER(VALUE1); BUFFERSET(AX_dax__job_level);
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
-if (dax__job_level_isset != 0) {FAIL("Multiple definition of attribute level in <dax__job>");}  dax__job_level_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_level);
+ENTER(VALUE2); BUFFERSET(AX_dax__job_level);
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
@@ -2360,19 +2319,12 @@ case 67:
 YY_RULE_SETUP
 {
   AX_dax__uses_file = 0;
-  dax__uses_file_isset = 0;
   AX_dax__uses_link = AU_dax__uses_link;
-  dax__uses_link_isset = 0;
   AX_dax__uses_register = A_dax__uses_register_true;
-  dax__uses_register_isset = 0;
   AX_dax__uses_transfer = A_dax__uses_transfer_true;
-  dax__uses_transfer_isset = 0;
   AX_dax__uses_optional = A_dax__uses_optional_false;
-  dax__uses_optional_isset = 0;
   AX_dax__uses_type = 161;
-  dax__uses_type_isset = 0;
   AX_dax__uses_size = 0;
-  dax__uses_size_isset = 0;
   ENTER(AL_dax__uses); pushbuffer(0);
   }
 	YY_BREAK
@@ -2380,12 +2332,12 @@ YY_RULE_SETUP
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
-if (dax__uses_file_isset != 0) {FAIL("Multiple definition of attribute file in <dax__uses>");} dax__uses_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__uses_file);
+ENTER(VALUE1); BUFFERSET(AX_dax__uses_file);
 	YY_BREAK
 case 69:
 /* rule 69 can match eol */
 YY_RULE_SETUP
-if (dax__uses_file_isset != 0) {FAIL("Multiple definition of attribute file in <dax__uses>");}  dax__uses_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__uses_file);
+ENTER(VALUE2); BUFFERSET(AX_dax__uses_file);
 	YY_BREAK
 case 70:
 /* rule 70 can match eol */
@@ -2446,22 +2398,22 @@ A_dax__uses_optional = A_dax__uses_optional_true;
 case 86:
 /* rule 86 can match eol */
 YY_RULE_SETUP
-if (dax__uses_type_isset != 0) {FAIL("Multiple definition of attribute type in <dax__uses>");} dax__uses_type_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__uses_type);
+ENTER(VALUE1); BUFFERSET(AX_dax__uses_type);
 	YY_BREAK
 case 87:
 /* rule 87 can match eol */
 YY_RULE_SETUP
-if (dax__uses_type_isset != 0) {FAIL("Multiple definition of attribute type in <dax__uses>");}  dax__uses_type_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__uses_type);
+ENTER(VALUE2); BUFFERSET(AX_dax__uses_type);
 	YY_BREAK
 case 88:
 /* rule 88 can match eol */
 YY_RULE_SETUP
-if (dax__uses_size_isset != 0) {FAIL("Multiple definition of attribute size in <dax__uses>");} dax__uses_size_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__uses_size);
+ENTER(VALUE1); BUFFERSET(AX_dax__uses_size);
 	YY_BREAK
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
-if (dax__uses_size_isset != 0) {FAIL("Multiple definition of attribute size in <dax__uses>");}  dax__uses_size_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__uses_size);
+ENTER(VALUE2); BUFFERSET(AX_dax__uses_size);
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
@@ -2529,7 +2481,6 @@ case 98:
 YY_RULE_SETUP
 {
   AX_dax__child_ref = 0;
-  dax__child_ref_isset = 0;
   ENTER(AL_dax__child); pushbuffer(0);
   }
 	YY_BREAK
@@ -2537,12 +2488,12 @@ YY_RULE_SETUP
 case 99:
 /* rule 99 can match eol */
 YY_RULE_SETUP
-if (dax__child_ref_isset != 0) {FAIL("Multiple definition of attribute ref in <dax__child>");} dax__child_ref_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__child_ref);
+ENTER(VALUE1); BUFFERSET(AX_dax__child_ref);
 	YY_BREAK
 case 100:
 /* rule 100 can match eol */
 YY_RULE_SETUP
-if (dax__child_ref_isset != 0) {FAIL("Multiple definition of attribute ref in <dax__child>");}  dax__child_ref_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__child_ref);
+ENTER(VALUE2); BUFFERSET(AX_dax__child_ref);
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
@@ -2610,7 +2561,6 @@ case 109:
 YY_RULE_SETUP
 {
   AX_dax__parent_ref = 0;
-  dax__parent_ref_isset = 0;
   ENTER(AL_dax__parent); pushbuffer(0);
   }
 	YY_BREAK
@@ -2618,12 +2568,12 @@ YY_RULE_SETUP
 case 110:
 /* rule 110 can match eol */
 YY_RULE_SETUP
-if (dax__parent_ref_isset != 0) {FAIL("Multiple definition of attribute ref in <dax__parent>");} dax__parent_ref_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__parent_ref);
+ENTER(VALUE1); BUFFERSET(AX_dax__parent_ref);
 	YY_BREAK
 case 111:
 /* rule 111 can match eol */
 YY_RULE_SETUP
-if (dax__parent_ref_isset != 0) {FAIL("Multiple definition of attribute ref in <dax__parent>");}  dax__parent_ref_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__parent_ref);
+ENTER(VALUE2); BUFFERSET(AX_dax__parent_ref);
 	YY_BREAK
 case 112:
 YY_RULE_SETUP

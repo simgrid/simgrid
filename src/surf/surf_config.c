@@ -133,6 +133,25 @@ static void _surf_cfg_cb__optimization_mode(const char *name, int pos)
   find_model_description(surf_optimization_mode_description, val);
 }
 
+/* callback of the cpu/model variable */
+static void _surf_cfg_cb__storage_mode(const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert(_surf_init_status < 2,
+              "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_surf_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    model_help("storage", surf_storage_model_description);
+    exit(0);
+  }
+
+  /* New Module missing */
+  find_model_description(surf_storage_model_description, val);
+}
+
 /* callback of the workstation_model variable */
 static void _surf_cfg_cb__network_model(const char *name, int pos)
 {
@@ -330,6 +349,20 @@ void surf_config_init(int *argc, char **argv)
     default_value = xbt_strdup("Lazy");
     xbt_cfg_register(&_surf_cfg_set, "cpu/optim", description, xbt_cfgelm_string,
                      &default_value, 1, 1, &_surf_cfg_cb__optimization_mode, NULL);
+
+    sprintf(description,
+            "The model to use for the storage. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_storage_model_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_storage_model_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each model)");
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_surf_cfg_set, "storage/model", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__storage_mode,
+                     NULL);
 
     sprintf(description,
             "The model to use for the network. Possible values: ");
@@ -598,11 +631,14 @@ void surf_config_models_setup()
   int workstation_id = -1;
   char *network_model_name = NULL;
   char *cpu_model_name = NULL;
+  int storage_id = -1;
+  char *storage_model_name = NULL;
 
   workstation_model_name =
       xbt_cfg_get_string(_surf_cfg_set, "workstation/model");
   network_model_name = xbt_cfg_get_string(_surf_cfg_set, "network/model");
   cpu_model_name = xbt_cfg_get_string(_surf_cfg_set, "cpu/model");
+  storage_model_name = xbt_cfg_get_string(_surf_cfg_set, "storage/model");
 
   /* Check whether we use a net/cpu model differing from the default ones, in which case
    * we should switch to the "compound" workstation model to correctly dispatch stuff to
@@ -646,4 +682,8 @@ void surf_config_models_setup()
 
   XBT_DEBUG("Call workstation_model_init");
   surf_workstation_model_description[workstation_id].model_init_preparse();
+
+  XBT_DEBUG("Call storage_model_init");
+  storage_id = find_model_description(surf_storage_model_description, storage_model_name);
+  surf_storage_model_description[storage_id].model_init_preparse();
 }

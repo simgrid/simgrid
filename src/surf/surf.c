@@ -180,6 +180,13 @@ s_surf_model_description_t surf_optimization_mode_description[] = {
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
+s_surf_model_description_t surf_storage_model_description[] = {
+  {"default",
+   "Simplistic storage model.",
+   surf_storage_model_init_default},
+  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+};
+
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
@@ -300,19 +307,23 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 
 void surf_init(int *argc, char **argv)
 {
-	XBT_DEBUG("Create all Libs");
-	host_lib = xbt_lib_new();
-	link_lib = xbt_lib_new();
-	as_router_lib = xbt_lib_new();
+  XBT_DEBUG("Create all Libs");
+  host_lib = xbt_lib_new();
+  link_lib = xbt_lib_new();
+  as_router_lib = xbt_lib_new();
+  storage_lib = xbt_lib_new();
 
-	XBT_DEBUG("ADD ROUTING LEVEL");
-	ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_free);
-	ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_free);
+  XBT_DEBUG("ADD ROUTING LEVEL");
+  ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_free);
+  ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_free);
+  // FOR NOW UNUSED
+//  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,NULL);
 
-	XBT_DEBUG("ADD SURF LEVELS");
-	SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
-	SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
-	SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
+  XBT_DEBUG("ADD SURF LEVELS");
+  SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
+  SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
+  SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
+  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_resource_free);
 
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);
@@ -407,7 +418,7 @@ void surf_exit(void)
   xbt_lib_free(&host_lib);
   xbt_lib_free(&link_lib);
   xbt_lib_free(&as_router_lib);
-
+  xbt_lib_free(&storage_lib);
 
   tmgr_finalize();
   surf_parse_lex_destroy();
