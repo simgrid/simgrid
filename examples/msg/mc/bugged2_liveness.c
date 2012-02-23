@@ -81,10 +81,12 @@ int producer(int argc, char *argv[])
 
   char * my_mailbox = bprintf("%s", argv[1]);
   
-  //while(1) {
+  while(1) {
     
     /* Create message */
     const char *mess = "message";
+
+    pready = 1;
     
     /* CS request */
     XBT_INFO("Producer ask the request");
@@ -95,21 +97,18 @@ int producer(int argc, char *argv[])
     MSG_task_receive(&grant, my_mailbox);
     MSG_task_destroy(grant);
 
-    pready = 1;
-
     /* Push message (size of buffer = 1) */
     buffer = strdup(mess);
+
+    produce = 1;
 
     /* CS release */
     MSG_task_send(MSG_task_create("release", 0, 1000, my_mailbox), "coordinator");
 
-    produce = 1;
+    produce = 0;
     pready = 0;
 
-    //produce = 0;
-    //pready = 0;
-
-    //}
+  }
 
   return 0;
 
@@ -122,40 +121,38 @@ int consumer(int argc, char *argv[])
   char *mess;
 
 
-  //while(1) {
+  while(1) {
     
     /* CS request */
     XBT_INFO("Consumer ask the request");
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
+
+    cready = 1;
 
     /* Wait the answer */
     m_task_t grant = NULL;
     MSG_task_receive(&grant, my_mailbox);
     MSG_task_destroy(grant);
 
-    cready = 1;
-
     /* Pop message  */
     mess = malloc(8*sizeof(char));
     mess = strdup(buffer);
     buffer[0] = '\0'; 
 
-    /* CS release */
-    MSG_task_send(MSG_task_create("release", 0, 1000, my_mailbox), "coordinator");
-
-    /* Display message */
+     /* Display message */
     XBT_INFO("Message : %s", mess);
     if(strcmp(mess, "") != 0)
       consume = 1;
 
-    cready = 0;
+    /* CS release */
+    MSG_task_send(MSG_task_create("release", 0, 1000, my_mailbox), "coordinator");
 
     free(mess);
 
-    //consume = 0;
-    //cready = 0;
+    consume = 0;
+    cready = 0;
 
-    //}
+  }
 
   return 0;
 
