@@ -116,7 +116,7 @@ m_gpu_task_t MSG_gpu_task_create(const char *name, double compute_duration,
 
 #ifdef HAVE_TRACING
   //FIXME
-  TRACE_msg_gpu_task_create(task);
+  /* TRACE_msg_gpu_task_create(task); */
 #endif
 
   return task;
