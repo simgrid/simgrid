@@ -15,6 +15,7 @@
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
   void *cpu;
+  void *storage;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
@@ -22,13 +23,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 
 surf_model_t surf_workstation_model = NULL;
 
-static workstation_CLM03_t workstation_new(const char *name, void *cpu)
+static workstation_CLM03_t workstation_new(const char *name, void *cpu, void *storage)
 {
   workstation_CLM03_t workstation = xbt_new0(s_workstation_CLM03_t, 1);
 
   workstation->generic_resource.model = surf_workstation_model;
   workstation->generic_resource.name = xbt_strdup(name);
   workstation->cpu = cpu;
+  workstation->storage = storage;
 
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, workstation);
 
@@ -40,10 +42,11 @@ void create_workstations(void)
   xbt_lib_cursor_t cursor = NULL;
   char *name = NULL;
   void **cpu = NULL;
-
+  void *storage = NULL;
   xbt_lib_foreach(host_lib, cursor, name, cpu) {
 	  if(cpu[SURF_CPU_LEVEL])
-		  workstation_new(name, cpu[SURF_CPU_LEVEL]);
+	    // Need to find storage attached to workstation
+	    workstation_new(name, cpu[SURF_CPU_LEVEL],storage);
   }
 }
 
@@ -292,32 +295,32 @@ static xbt_dict_t ws_get_properties(const void *ws)
 
 static surf_action_t ws_action_open(void *workstation, const char* path, const char* mode)
 {
-  return surf_cpu_model->extension.cpu.
-      sleep(((workstation_CLM03_t) workstation)->cpu, 1);
+  void *storage = ((workstation_CLM03_t) workstation)->storage;
+  return ((surf_resource_t) storage)->model->extension.storage.open(storage, path, mode);
 }
 
 static surf_action_t ws_action_close(void *workstation, surf_file_t fp)
 {
-  return surf_cpu_model->extension.cpu.
-      sleep(((workstation_CLM03_t) workstation)->cpu, 2);
+  void *storage = ((workstation_CLM03_t) workstation)->storage;
+  return ((surf_resource_t) storage)->model->extension.storage.close(storage, fp);
 }
 
 static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
-  return surf_cpu_model->extension.cpu.
-      sleep(((workstation_CLM03_t) workstation)->cpu, 3);
+  void *storage = ((workstation_CLM03_t) workstation)->storage;
+  return ((surf_resource_t) storage)->model->extension.storage.read(storage, ptr, size, nmemb, stream);
 }
 
 static surf_action_t ws_action_write(void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
-  return surf_cpu_model->extension.cpu.
-      sleep(((workstation_CLM03_t) workstation)->cpu, 4);
+  void *storage = ((workstation_CLM03_t) workstation)->storage;
+  return ((surf_resource_t) storage)->model->extension.storage.write(storage, ptr, size, nmemb, stream);
 }
 
 static surf_action_t ws_action_stat(void *workstation, int fd, void* buf)
 {
-  return surf_cpu_model->extension.cpu.
-      sleep(((workstation_CLM03_t) workstation)->cpu, 5);
+  void *storage = ((workstation_CLM03_t) workstation)->storage;
+  return ((surf_resource_t) storage)->model->extension.storage.stat(storage, fd, buf);
 }
 
 static void surf_workstation_model_init_internal(void)
