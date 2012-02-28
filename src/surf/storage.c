@@ -63,6 +63,12 @@ static void* storage_create_resource(const char* id, const char* model,
     return storage;
 }
 
+static void storage_finalize(void)
+{
+  surf_model_exit(surf_storage_model);
+  surf_storage_model = NULL;
+}
+
 static void parse_storage_init(sg_platf_storage_cbarg_t storage)
 {
   storage_create_resource(storage->id,
@@ -89,6 +95,10 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.write = storage_action_write;
   surf_storage_model->extension.storage.stat = storage_action_stat;
   surf_storage_model->extension.storage.create_resource = storage_create_resource;
+
+  surf_storage_model->model_private->finalize = storage_finalize;
+
+  xbt_dynar_push(model_list, &surf_storage_model);
 }
 
 void surf_storage_model_init_default(void)
