@@ -32,7 +32,7 @@
 
 <!ELEMENT storage (prop*)>
 <!ATTLIST storage id CDATA #REQUIRED>
-<!ATTLIST storage model CDATA #REQUIRED>
+<!ATTLIST storage type CDATA #REQUIRED>
 <!ATTLIST storage content  CDATA "0">
 
 <!ELEMENT host (prop*)>

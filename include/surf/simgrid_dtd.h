@@ -166,14 +166,14 @@ typedef int AT_surfxml_cluster_state_file;
 typedef int AT_surfxml_link_bandwidth_file;
 #define AU_surfxml_link_bandwidth_file NULL
 typedef enum { AU_surfxml_route_symmetrical, A_surfxml_route_symmetrical_YES,A_surfxml_route_symmetrical_NO } AT_surfxml_route_symmetrical;
+typedef int AT_surfxml_storage_type;
+#define AU_surfxml_storage_type NULL
 typedef int AT_surfxml_random_id;
 #define AU_surfxml_random_id NULL
 typedef int AT_surfxml_random_max;
 #define AU_surfxml_random_max NULL
 typedef int AT_surfxml_link_id;
 #define AU_surfxml_link_id NULL
-typedef int AT_surfxml_storage_model;
-#define AU_surfxml_storage_model NULL
 typedef int AT_surfxml_process_host;
 #define AU_surfxml_process_host NULL
 typedef int AT_surfxml_host_availability_file;
@@ -379,6 +379,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_link_bandwidth_file_isset;
 XBT_PUBLIC_DATA(AT_surfxml_route_symmetrical ) AX_surfxml_route_symmetrical;
 #define A_surfxml_route_symmetrical AX_surfxml_route_symmetrical
 XBT_PUBLIC_DATA(short ) int surfxml_route_symmetrical_isset;
+XBT_PUBLIC_DATA(AT_surfxml_storage_type ) AX_surfxml_storage_type;
+#define A_surfxml_storage_type (surfxml_bufferstack + AX_surfxml_storage_type)
+XBT_PUBLIC_DATA(short ) int surfxml_storage_type_isset;
 XBT_PUBLIC_DATA(AT_surfxml_random_id ) AX_surfxml_random_id;
 #define A_surfxml_random_id (surfxml_bufferstack + AX_surfxml_random_id)
 XBT_PUBLIC_DATA(short ) int surfxml_random_id_isset;
@@ -388,9 +391,6 @@ XBT_PUBLIC_DATA(short ) int surfxml_random_max_isset;
 XBT_PUBLIC_DATA(AT_surfxml_link_id ) AX_surfxml_link_id;
 #define A_surfxml_link_id (surfxml_bufferstack + AX_surfxml_link_id)
 XBT_PUBLIC_DATA(short ) int surfxml_link_id_isset;
-XBT_PUBLIC_DATA(AT_surfxml_storage_model ) AX_surfxml_storage_model;
-#define A_surfxml_storage_model (surfxml_bufferstack + AX_surfxml_storage_model)
-XBT_PUBLIC_DATA(short ) int surfxml_storage_model_isset;
 XBT_PUBLIC_DATA(AT_surfxml_process_host ) AX_surfxml_process_host;
 #define A_surfxml_process_host (surfxml_bufferstack + AX_surfxml_process_host)
 XBT_PUBLIC_DATA(short ) int surfxml_process_host_isset;

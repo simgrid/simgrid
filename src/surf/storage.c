@@ -17,7 +17,7 @@ surf_model_t surf_storage_model = NULL;
 
 typedef struct surf_storage {
   s_surf_resource_t generic_resource;
-  const char* model;
+  const char* type;
   const char* content; /*should be a dict */
 } s_surf_storage_t, *surf_storage_t;
 
@@ -46,7 +46,7 @@ static surf_action_t storage_action_stat(void *storage, int fd, void* buf)
   return NULL;
 }
 
-static void* storage_create_resource(const char* id, const char* model,
+static void* storage_create_resource(const char* id, const char* type,
                                     const char* content, xbt_dict_t storage_properties)
 {
     XBT_DEBUG("Storage_create_resource '%s' at level SURF_STORAGE_LEVEL",id);
@@ -56,7 +56,7 @@ static void* storage_create_resource(const char* id, const char* model,
                 id);
     storage = (surf_storage_t) surf_resource_new(sizeof(s_surf_storage_t),
             surf_storage_model, id, storage_properties);
-    storage->model = model;
+    storage->type = type;
     storage->content = content;
     xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
@@ -137,7 +137,7 @@ static void storage_action_set_priority(surf_action_t action, double priority)
 static void parse_storage_init(sg_platf_storage_cbarg_t storage)
 {
   storage_create_resource(storage->id,
-      storage->model,
+      storage->type,
       storage->content,
       storage->properties);
 }

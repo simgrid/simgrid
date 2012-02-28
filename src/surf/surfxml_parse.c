@@ -118,7 +118,7 @@ void ETag_surfxml_storage(void)
   memset(&storage,0,sizeof(storage));
 
   storage.id = A_surfxml_storage_id;
-  storage.model = A_surfxml_storage_model;
+  storage.type = A_surfxml_storage_type;
   storage.properties = current_property_set;
   storage.content = A_surfxml_storage_content;
   current_property_set = NULL;
