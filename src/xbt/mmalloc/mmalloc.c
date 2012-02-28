@@ -153,7 +153,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
 
       frag_nb = RESIDUAL(result, BLOCKSIZE) >> log;
       mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = requested_size;
-      //FIXME setup backtrace
+      xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_frag.bt[frag_nb],XBT_BACKTRACE_SIZE);
 
       next->prev->next = next->next;
       if (next->next != NULL) {
@@ -184,8 +184,8 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
         }
       }
       mdp->heapinfo[block].busy_frag.frag_size[0] = requested_size;
-      // FIXME: setup backtrace
-
+      xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_frag.bt[0],XBT_BACKTRACE_SIZE);
+      
       /* Initialize the nfree and first counters for this block.  */
       mdp->heapinfo[block].type = log;
       mdp->heapinfo[block].busy_frag.nfree = i - 1;

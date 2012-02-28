@@ -131,7 +131,7 @@ typedef struct {
       size_t nfree;           /* Free fragments in a fragmented block.  */
       size_t first;           /* First free fragment of the block.  */
       unsigned short frag_size[MAX_FRAGMENT_PER_BLOCK];
-      //void *bt[XBT_BACKTRACE_SIZE][MAX_FRAGMENT_PER_BLOCK]; /* Where it was malloced (or realloced lastly) */
+      void *bt[MAX_FRAGMENT_PER_BLOCK][XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
     } busy_frag;
     struct {
       size_t size; /* Size (in blocks) of a large cluster.  */
