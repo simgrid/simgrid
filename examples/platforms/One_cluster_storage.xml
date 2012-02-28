@@ -1,0 +1,34 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+
+<platform version="3">
+	<AS id="AS0" routing="Full">
+
+		<storage id="Disk1" model="HDD" content="content.txt">
+			<prop id="Bwrite" value="30" />
+			<prop id="Bread" value="80" />
+		</storage>
+		<storage id="Disk2" model="SSD" content="content.txt">
+			<prop id="Bwrite" value="110" />
+			<prop id="Bread" value="300" />
+		</storage>
+		<storage id="Disk3" model="RAID0" content="content.txt">
+			<prop id="Bwrite" value="60" />
+			<prop id="Bread" value="160" />
+		</storage>
+
+		<host id="bob" power="1000000000">
+			<prop id="storage" value="Disk1" />
+		</host>
+		
+		<storage id="Disk4" model="RAID1" content="content.txt">
+			<prop id="Bwrite" value="30" />
+			<prop id="Bread" value="80" />
+		</storage>
+		
+		<host id="alice" power="1000000000">
+			<prop id="storage" value="Disk4" />
+		</host>		
+
+	</AS>
+</platform>

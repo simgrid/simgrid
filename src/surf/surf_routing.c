@@ -34,6 +34,10 @@ int NS3_ASR_LEVEL;              //host node for ns3
 
 static xbt_dict_t random_value = NULL;
 
+xbt_lib_t storage_lib;
+int ROUTING_STORAGE_LEVEL;      //Routing level
+int SURF_STORAGE_LEVEL;         //Surf level
+
 /* Global vars */
 routing_global_t global_routing = NULL;
 AS_t current_routing = NULL;
@@ -712,6 +716,14 @@ void routing_model_create(size_t size_of_links, void *loopback)
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
 
+static void routing_parse_storage(sg_platf_storage_cbarg_t storage)
+{
+  // FIXME THIS LEVEL IS UNUSED
+//  XBT_INFO("ROUTING Create a storage name '%s' with model '%s'",storage->id,storage->model);
+//  xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id, ROUTING_STORAGE_LEVEL),
+//             "Storage '%s' already exists", storage->id);
+//  xbt_lib_set(storage_lib, storage->id, ROUTING_STORAGE_LEVEL, NULL);
+}
 
 static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 {
@@ -1131,6 +1143,8 @@ void routing_register_callbacks()
 
   sg_platf_peer_add_cb(routing_parse_peer);
   sg_platf_postparse_add_cb(routing_parse_postparse);
+
+  sg_platf_storage_add_cb(routing_parse_storage);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();

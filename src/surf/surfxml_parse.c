@@ -88,6 +88,8 @@ xbt_dynar_t STag_surfxml_bypassRoute_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_bypassRoute_cb_list = NULL;
 xbt_dynar_t STag_surfxml_include_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_include_cb_list = NULL;
+xbt_dynar_t STag_surfxml_storage_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_storage_cb_list = NULL;
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = NULL;
@@ -102,6 +104,27 @@ FILE *surf_file_to_parse = NULL;
 
 static void init_randomness(void);
 static void add_randomness(void);
+
+/*
+ * Stuff relative to the <storage> tag
+ */
+void STag_surfxml_storage(void)
+{
+  XBT_DEBUG("STag_surfxml_storage");
+}
+void ETag_surfxml_storage(void)
+{
+  s_sg_platf_storage_cbarg_t storage;
+  memset(&storage,0,sizeof(storage));
+
+  storage.id = A_surfxml_storage_id;
+  storage.model = A_surfxml_storage_model;
+  storage.properties = current_property_set;
+  storage.content = A_surfxml_storage_content;
+  current_property_set = NULL;
+
+  sg_platf_new_storage(&storage);
+}
 
 /*
  * Stuff relative to the <include> tag
@@ -210,6 +233,10 @@ void surf_parse_init_callbacks(void)
 			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_include_cb_list =
 			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
+	  STag_surfxml_storage_cb_list =
+	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
+	  ETag_surfxml_storage_cb_list =
+	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 }
 
 void surf_parse_reset_callbacks(void)
@@ -246,6 +273,8 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_peer_cb_list);
   xbt_dynar_free(&STag_surfxml_include_cb_list);
   xbt_dynar_free(&ETag_surfxml_include_cb_list);
+  xbt_dynar_free(&STag_surfxml_storage_cb_list);
+  xbt_dynar_free(&ETag_surfxml_storage_cb_list);
 }
 
 /* Stag and Etag parse functions */
