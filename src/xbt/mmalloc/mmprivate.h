@@ -91,8 +91,8 @@
 
 /* Doubly linked lists of free fragments.  */
 struct list {
-	struct list *next;
-	struct list *prev;
+  struct list *next;
+  struct list *prev;
 };
 
 /* Data structure giving per-block information.
@@ -122,30 +122,30 @@ struct list {
  *  - make room to store the backtrace of where the blocks and fragment were malloced, too.
  */
 typedef struct {
-	int type; /*  0: busy large block
-		         >0: busy fragmented (fragments of size 2^type bytes)
-		         <0: free block */
-	union {
-	/* Heap information for a busy block.  */
-		struct {
-			size_t nfree;           /* Free fragments in a fragmented block.  */
-			size_t first;           /* First free fragment of the block.  */
-			unsigned short frag_size[MAX_FRAGMENT_PER_BLOCK];
+  int type; /*  0: busy large block
+		>0: busy fragmented (fragments of size 2^type bytes)
+		<0: free block */
+  union {
+    /* Heap information for a busy block.  */
+    struct {
+      size_t nfree;           /* Free fragments in a fragmented block.  */
+      size_t first;           /* First free fragment of the block.  */
+      unsigned short frag_size[MAX_FRAGMENT_PER_BLOCK];
       //void *bt[XBT_BACKTRACE_SIZE][MAX_FRAGMENT_PER_BLOCK]; /* Where it was malloced (or realloced lastly) */
-		} busy_frag;
-		struct {
-			size_t size; /* Size (in blocks) of a large cluster.  */
-			size_t busy_size; /* Actually used space, in bytes */
-			void *bt[XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
-			int bt_size;
-		} busy_block;
-		/* Heap information for a free block (that may be the first of a free cluster).  */
-		struct {
-			size_t size;                /* Size (in blocks) of a free cluster.  */
-			size_t next;                /* Index of next free cluster.  */
-			size_t prev;                /* Index of previous free cluster.  */
-		} free_block;
-	};
+    } busy_frag;
+    struct {
+      size_t size; /* Size (in blocks) of a large cluster.  */
+      size_t busy_size; /* Actually used space, in bytes */
+      void *bt[XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
+      int bt_size;
+    } busy_block;
+    /* Heap information for a free block (that may be the first of a free cluster).  */
+    struct {
+      size_t size;                /* Size (in blocks) of a free cluster.  */
+      size_t next;                /* Index of next free cluster.  */
+      size_t prev;                /* Index of previous free cluster.  */
+    } free_block;
+  };
 } malloc_info;
 
 /* Internal structure that defines the format of the malloc-descriptor.
@@ -155,71 +155,71 @@ typedef struct {
 
 struct mdesc {
 
-	/* Semaphore locking the access to the heap */
-	sem_t sem;
+  /* Semaphore locking the access to the heap */
+  sem_t sem;
 
-	/* Number of processes that attached the heap */
-	unsigned int refcount;
+  /* Number of processes that attached the heap */
+  unsigned int refcount;
 
-	/* Chained lists of mdescs */
-	struct mdesc *next_mdesc;
+  /* Chained lists of mdescs */
+  struct mdesc *next_mdesc;
 
-	/* The "magic number" for an mmalloc file. */
-	char magic[MMALLOC_MAGIC_SIZE];
+  /* The "magic number" for an mmalloc file. */
+  char magic[MMALLOC_MAGIC_SIZE];
 
-	/* The size in bytes of this structure, used as a sanity check when reusing
+  /* The size in bytes of this structure, used as a sanity check when reusing
      a previously created mapped file. */
-	unsigned int headersize;
+  unsigned int headersize;
 
-	/* The version number of the mmalloc package that created this file. */
-	unsigned char version;
+  /* The version number of the mmalloc package that created this file. */
+  unsigned char version;
 
-	/* Some flag bits to keep track of various internal things. */
-	unsigned int flags;
+  /* Some flag bits to keep track of various internal things. */
+  unsigned int flags;
 
-	/* Number of info entries.  */
-	size_t heapsize;
+  /* Number of info entries.  */
+  size_t heapsize;
 
-	/* Pointer to first block of the heap (base of the first block).  */
-	void *heapbase;
+  /* Pointer to first block of the heap (base of the first block).  */
+  void *heapbase;
 
-	/* Current search index for the heap table.  */
-	/* Search index in the info table.  */
-	size_t heapindex;
+  /* Current search index for the heap table.  */
+  /* Search index in the info table.  */
+  size_t heapindex;
 
-	/* Limit of valid info table indices.  */
-	size_t heaplimit;
+  /* Limit of valid info table indices.  */
+  size_t heaplimit;
 
-	/* Block information table.
+  /* Block information table.
      Allocated with malign/mfree (not mmalloc/mfree).  */
-	/* Table indexed by block number giving per-block information.  */
-	malloc_info *heapinfo;
+  /* Table indexed by block number giving per-block information.  */
+  malloc_info *heapinfo;
 
-	/* List of all blocks containing free fragments of this size. The array indice is the log2 of requested size */
-	struct list fraghead[BLOCKLOG];
+  /* List of all blocks containing free fragments of this size. The array indice is the log2 of requested size */
+  struct list fraghead[BLOCKLOG];
 
-	/* The base address of the memory region for this malloc heap.  This
+  /* The base address of the memory region for this malloc heap.  This
      is the location where the bookkeeping data for mmap and for malloc
      begins. */
 
-	void *base;
+  void *base;
 
-	/* The current location in the memory region for this malloc heap which
+  /* The current location in the memory region for this malloc heap which
      represents the end of memory in use. */
 
-	void *breakval;
+  void *breakval;
 
-	/* The end of the current memory region for this malloc heap.  This is
+  /* The end of the current memory region for this malloc heap.  This is
      the first location past the end of mapped memory. */
 
-	void *top;
+  void *top;
 
-	/* Open file descriptor for the file to which this malloc heap is mapped.
+  /* Open file descriptor for the file to which this malloc heap is mapped.
      This will always be a valid file descriptor, since /dev/zero is used
      by default if no open file is supplied by the client.  Also note that
      it may change each time the region is mapped and unmapped. */
 
-	int fd;
+  int fd;
 
 };
 
