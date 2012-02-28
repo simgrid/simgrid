@@ -447,9 +447,10 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
            SD_task_get_name(src));
 
   if (!__SD_task_is_not_scheduled(src) && !__SD_task_is_schedulable(src)
-      && !__SD_task_is_scheduled_or_runnable(src))
+      && !__SD_task_is_scheduled_or_runnable(src) && !__SD_task_is_running(src))
     THROWF(arg_error, 0,
-           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED or SD_RUNNABLE",
+           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED or SD_RUNNABLE"
+	   " or SD_RUNNING",
            SD_task_get_name(src));
 
   if (!__SD_task_is_not_scheduled(dst) && !__SD_task_is_schedulable(dst)
@@ -500,7 +501,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
 }
 
 /**
- * \brief Indacates whether there is a dependency between two tasks.
+ * \brief Indicates whether there is a dependency between two tasks.
  *
  * \param src a task
  * \param dst a task depending on \a src

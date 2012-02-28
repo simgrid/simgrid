@@ -107,7 +107,7 @@ typedef struct s_sg_platf_cluster_cbarg {
 
 typedef struct {
   const char* id;
-  const char* model;
+  const char* type;
   const char* content;
   xbt_dict_t properties;
 } s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;

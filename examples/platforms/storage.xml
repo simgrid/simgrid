@@ -4,15 +4,15 @@
 <platform version="3">
 	<AS id="AS0" routing="Full">
 
-		<storage id="Disk1" model="HDD" content="content.txt">
+		<storage id="Disk1" type="HDD" content="content.txt">
 			<prop id="Bwrite" value="30" />
 			<prop id="Bread" value="80" />
 		</storage>
-		<storage id="Disk2" model="SSD" content="content.txt">
+		<storage id="Disk2" type="SSD" content="content.txt">
 			<prop id="Bwrite" value="110" />
 			<prop id="Bread" value="300" />
 		</storage>
-		<storage id="Disk3" model="RAID0" content="content.txt">
+		<storage id="Disk3" type="RAID0" content="content.txt">
 			<prop id="Bwrite" value="60" />
 			<prop id="Bread" value="160" />
 		</storage>
@@ -21,14 +21,24 @@
 			<prop id="storage" value="Disk1" />
 		</host>
 		
-		<storage id="Disk4" model="RAID1" content="content.txt">
+		<storage id="Disk4" type="RAID1" content="content.txt">
 			<prop id="Bwrite" value="30" />
 			<prop id="Bread" value="80" />
 		</storage>
 		
 		<host id="alice" power="1000000000">
 			<prop id="storage" value="Disk4" />
-		</host>		
+		</host>	
+		
+		<link id="link1" bandwidth="125000000" latency="5E-5"/>
+		<link id="link2" bandwidth="125000000" latency="5E-5" />
+		<link id="link3" bandwidth="125000000" latency="5E-5" />
+	
+		<route src="bob" dst="alice" symmetrical="YES">
+			<link_ctn id="link1" />
+			<link_ctn id="link2" />
+			<link_ctn id="link3" />
+   		</route>	
 
 	</AS>
 </platform>

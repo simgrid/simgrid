@@ -20,6 +20,7 @@ typedef struct _WorkstationAttribute *WorkstationAttribute;
 struct _WorkstationAttribute {
   /* Earliest time at wich a workstation is ready to execute a task */
   double available_at;
+  SD_task_t last_scheduled_task;
 };
 
 static void SD_workstation_allocate_attribute(SD_workstation_t workstation)
@@ -51,6 +52,19 @@ static void SD_workstation_set_available_at(SD_workstation_t workstation,
   SD_workstation_set_data(workstation, attr);
 }
 
+static SD_task_t SD_workstation_get_last_scheduled_task( SD_workstation_t workstation){
+	WorkstationAttribute attr =
+			(WorkstationAttribute) SD_workstation_get_data(workstation);
+	return attr->last_scheduled_task;
+}
+
+static void SD_workstation_set_last_scheduled_task(SD_workstation_t workstation,
+		SD_task_t task){
+	WorkstationAttribute attr =
+			(WorkstationAttribute) SD_workstation_get_data(workstation);
+	attr->last_scheduled_task=task;
+	SD_workstation_set_data(workstation, attr);
+}
 
 static xbt_dynar_t get_ready_tasks(xbt_dynar_t dax)
 {
@@ -235,7 +249,7 @@ int main(int argc, char **argv)
 {
   unsigned int cursor;
   double finish_time, min_finish_time = -1.0;
-  SD_task_t task, selected_task = NULL;
+  SD_task_t task, selected_task = NULL, last_scheduled_task;
   xbt_dynar_t ready_tasks;
   SD_workstation_t workstation, selected_workstation = NULL;
   int total_nworkstations = 0;
@@ -318,6 +332,31 @@ int main(int argc, char **argv)
           SD_workstation_get_name(selected_workstation));
 
     SD_task_schedulel(selected_task, 1, selected_workstation);
+
+    /*
+     * SimDag allows tasks to be executed concurrently when they can by default.
+     * Yet schedulers take decisions assuming that tasks wait for resource
+     * availability to start.
+     * The solution (well crude hack is to keep track of the last task scheduled
+     * on a workstation and add a special type of dependency if needed to
+     * force the sequential execution meant by the scheduler.
+     * If the last scheduled task is already done, has failed or is a 
+     * predecessor of the current task, no need for a new dependency
+    */
+
+    last_scheduled_task = 
+      SD_workstation_get_last_scheduled_task(selected_workstation);
+    if (last_scheduled_task && 
+	(SD_task_get_state(last_scheduled_task) != SD_DONE) &&
+	(SD_task_get_state(last_scheduled_task) != SD_FAILED) &&
+	!SD_task_dependency_exists(
+	   SD_workstation_get_last_scheduled_task(selected_workstation),
+	   selected_task))
+      SD_task_dependency_add("resource", NULL,
+			     last_scheduled_task, selected_task);
+    
+    SD_workstation_set_last_scheduled_task(selected_workstation, selected_task);
+    
     SD_workstation_set_available_at(selected_workstation, min_finish_time);
 
     xbt_dynar_free_container(&ready_tasks);

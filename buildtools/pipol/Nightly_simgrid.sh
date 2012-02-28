@@ -44,10 +44,6 @@
 #MacOS Snow Leopard 10.6____________________________________________________________________________
 #PIPOL esn x86_mac-mac-osx-server-snow-leopard-navarro-2011-09-22-113726.dd.gz none 02:00 --user --silent
 
-#___________________________________________________________________________________________________
-#windows-server-2008-64bits_________________________________________________________________________
-#PIPOL esn amd64-windows-server-2008-64bits.dd.gz none 02:00 --root --user --silent
-
 if [ -e ./pipol ] ; then
         rm -rf ./pipol/$PIPOL_HOST
         mkdir ./pipol/$PIPOL_HOST
