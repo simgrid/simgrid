@@ -104,6 +104,7 @@ XBT_PUBLIC(const char *) MSG_process_get_name(m_process_t process);
 XBT_PUBLIC(int) MSG_process_self_PID(void);
 XBT_PUBLIC(int) MSG_process_self_PPID(void);
 XBT_PUBLIC(m_process_t) MSG_process_self(void);
+XBT_PUBLIC(xbt_dynar_t) MSG_processes_as_dynar(void);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_process_get_properties(m_process_t process);

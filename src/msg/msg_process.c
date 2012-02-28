@@ -312,6 +312,11 @@ m_process_t MSG_process_from_PID(int PID)
 	return SIMIX_process_from_PID(PID);
 }
 
+/** @brief returns a list of all currently existing processes */
+xbt_dynar_t MSG_processes_as_dynar(void) {
+  return SIMIX_processes_as_dynar();
+}
+
 /** \ingroup m_process_management
  * \brief Returns the process ID of \a process.
  *
