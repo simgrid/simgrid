@@ -89,7 +89,7 @@ static int l_host_get_name(lua_State * L)
  */
 static int l_host_number(lua_State * L)
 {
-  lua_pushnumber(L, MSG_get_host_number());
+  lua_pushnumber(L, xbt_dynar_length(MSG_hosts_as_dynar()));
   return 1;
 }
 
@@ -104,7 +104,7 @@ static int l_host_number(lua_State * L)
 static int l_host_at(lua_State * L)
 {
   int index = luaL_checkinteger(L, 1);
-  m_host_t host = MSG_get_host_table()[index - 1];      // lua indexing start by 1 (lua[1] <=> C[0])
+  m_host_t host = xbt_dynar_get_as(MSG_hosts_as_dynar(),index - 1,m_host_t);// lua indexing start by 1 (lua[1] <=> C[0])
   lua_newtable(L);              /* create a table, put the userdata on top of it */
   m_host_t *lua_host = (m_host_t *) lua_newuserdata(L, sizeof(m_host_t));
   *lua_host = host;
