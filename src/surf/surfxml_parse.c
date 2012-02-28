@@ -59,7 +59,7 @@ int surf_parse_get_int(const char *string) {
 
 
 /*
- * All the callback lists that can be overiden anywhere.
+ * All the callback lists that can be overridden anywhere.
  * (this list should probably be reduced to the bare minimum to allow the models to work)
  */
 
