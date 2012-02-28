@@ -18,30 +18,30 @@ surf_model_t surf_storage_model = NULL;
 typedef struct surf_storage {
   s_surf_resource_t generic_resource;
   const char* model;
-  const char* content;
+  const char* content; /*should be a dict */
 } s_surf_storage_t, *surf_storage_t;
 
-static surf_action_t storage_action_open(void *workstation, const char* path, const char* mode)
+static surf_action_t storage_action_open(void *storage, const char* path, const char* mode)
 {
   return NULL;
 }
 
-static surf_action_t storage_action_close(void *workstation, surf_file_t fp)
+static surf_action_t storage_action_close(void *storage, surf_file_t fp)
 {
   return NULL;
 }
 
-static surf_action_t storage_action_read(void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
   return NULL;
 }
 
-static surf_action_t storage_action_write(void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t storage_action_write(void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
   return NULL;
 }
 
-static surf_action_t storage_action_stat(void *workstation, int fd, void* buf)
+static surf_action_t storage_action_stat(void *storage, int fd, void* buf)
 {
   return NULL;
 }
