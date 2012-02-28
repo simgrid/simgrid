@@ -89,7 +89,9 @@ static int l_host_get_name(lua_State * L)
  */
 static int l_host_number(lua_State * L)
 {
-  lua_pushnumber(L, MSG_get_host_number());
+  xbt_dynar_t hosts = MSG_hosts_as_dynar();
+  lua_pushnumber(L, xbt_dynar_length(hosts));
+  xbt_dynar_free(&hosts);
   return 1;
 }
 
@@ -104,13 +106,15 @@ static int l_host_number(lua_State * L)
 static int l_host_at(lua_State * L)
 {
   int index = luaL_checkinteger(L, 1);
-  m_host_t host = MSG_get_host_table()[index - 1];      // lua indexing start by 1 (lua[1] <=> C[0])
+  xbt_dynar_t hosts = MSG_hosts_as_dynar();
+  m_host_t host = xbt_dynar_get_as(hosts,index - 1,m_host_t);// lua indexing start by 1 (lua[1] <=> C[0])
   lua_newtable(L);              /* create a table, put the userdata on top of it */
   m_host_t *lua_host = (m_host_t *) lua_newuserdata(L, sizeof(m_host_t));
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME);
   lua_setmetatable(L, -2);
   lua_setfield(L, -2, "__simgrid_host");        /* put the userdata as field of the table */
+  xbt_dynar_free(&hosts);
   return 1;
 }
 

@@ -123,8 +123,8 @@ static void ws_update_resource_state(void *id,
 
 static surf_action_t ws_execute(void *workstation, double size)
 {
-  return surf_cpu_model->extension.cpu.
-      execute(((workstation_CLM03_t) workstation)->cpu, size);
+  void *cpu = ((workstation_CLM03_t) workstation)->cpu;
+  return ((surf_resource_t) cpu)->model->extension.cpu.execute(cpu, size);
 }
 
 static surf_action_t ws_action_sleep(void *workstation, double duration)

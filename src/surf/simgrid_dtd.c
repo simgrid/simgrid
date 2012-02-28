@@ -3290,8 +3290,8 @@ char *surf_parse_text;
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
- * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp).
+ * FleXML is Copyright (C) 2003-2011 Martin Quinson.  All rights reserved.
+ * (Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -3300,7 +3300,7 @@ char *surf_parse_text;
  * 
  * Some parts, here collectively called "Part A", are found in the 
  * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
- * and Copyright (C) 2003-2006 Martin Quinson. All rights reserved.
+ * and Copyright (C) 2003-2011 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -3336,7 +3336,7 @@ char *surf_parse_text;
 const char rcs_surfxml_flexml_skeleton[] =
  "$" "Id: skel,v 1.40 2007/10/11 09:57:24 mquinson Exp $";
 const char rcs_surfxml_flexml[] =
- "$" "Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp $";
+ "$" "Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp $";
 
 /* ANSI headers. */
 #include <stdlib.h> /* for realloc() -- needed here when using flex 2.5.4 */
@@ -3373,172 +3373,256 @@ extern char *surfxml_bufferstack;
 #define surfxml_pcdata (surfxml_bufferstack + surfxml_pcdata_ix)
 AT_surfxml_random_generator AX_surfxml_random_generator;
 #define A_surfxml_random_generator AX_surfxml_random_generator
+short int surfxml_random_generator_isset;
 AT_surfxml_ASroute_gw_dst AX_surfxml_ASroute_gw_dst;
 #define A_surfxml_ASroute_gw_dst (surfxml_bufferstack + AX_surfxml_ASroute_gw_dst)
+short int surfxml_ASroute_gw_dst_isset;
 AT_surfxml_trace_connect_element AX_surfxml_trace_connect_element;
 #define A_surfxml_trace_connect_element (surfxml_bufferstack + AX_surfxml_trace_connect_element)
+short int surfxml_trace_connect_element_isset;
 AT_surfxml_prop_id AX_surfxml_prop_id;
 #define A_surfxml_prop_id (surfxml_bufferstack + AX_surfxml_prop_id)
+short int surfxml_prop_id_isset;
 AT_surfxml_host_id AX_surfxml_host_id;
 #define A_surfxml_host_id (surfxml_bufferstack + AX_surfxml_host_id)
+short int surfxml_host_id_isset;
 AT_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical;
 #define A_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical
+short int surfxml_ASroute_symmetrical_isset;
 AT_surfxml_peer_lat AX_surfxml_peer_lat;
 #define A_surfxml_peer_lat (surfxml_bufferstack + AX_surfxml_peer_lat)
+short int surfxml_peer_lat_isset;
 AT_surfxml_link_latency_file AX_surfxml_link_latency_file;
 #define A_surfxml_link_latency_file (surfxml_bufferstack + AX_surfxml_link_latency_file)
+short int surfxml_link_latency_file_isset;
 AT_surfxml_peer_availability_file AX_surfxml_peer_availability_file;
 #define A_surfxml_peer_availability_file (surfxml_bufferstack + AX_surfxml_peer_availability_file)
+short int surfxml_peer_availability_file_isset;
 AT_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction;
 #define A_surfxml_link_ctn_direction AX_surfxml_link_ctn_direction
+short int surfxml_link_ctn_direction_isset;
 AT_surfxml_host_state AX_surfxml_host_state;
 #define A_surfxml_host_state AX_surfxml_host_state
+short int surfxml_host_state_isset;
 AT_surfxml_AS_id AX_surfxml_AS_id;
 #define A_surfxml_AS_id (surfxml_bufferstack + AX_surfxml_AS_id)
+short int surfxml_AS_id_isset;
 AT_surfxml_host_power AX_surfxml_host_power;
 #define A_surfxml_host_power (surfxml_bufferstack + AX_surfxml_host_power)
+short int surfxml_host_power_isset;
 AT_surfxml_router_id AX_surfxml_router_id;
 #define A_surfxml_router_id (surfxml_bufferstack + AX_surfxml_router_id)
+short int surfxml_router_id_isset;
 AT_surfxml_process_start_time AX_surfxml_process_start_time;
 #define A_surfxml_process_start_time (surfxml_bufferstack + AX_surfxml_process_start_time)
+short int surfxml_process_start_time_isset;
 AT_surfxml_cluster_suffix AX_surfxml_cluster_suffix;
 #define A_surfxml_cluster_suffix (surfxml_bufferstack + AX_surfxml_cluster_suffix)
+short int surfxml_cluster_suffix_isset;
 AT_surfxml_ASroute_src AX_surfxml_ASroute_src;
 #define A_surfxml_ASroute_src (surfxml_bufferstack + AX_surfxml_ASroute_src)
+short int surfxml_ASroute_src_isset;
 AT_surfxml_cluster_prefix AX_surfxml_cluster_prefix;
 #define A_surfxml_cluster_prefix (surfxml_bufferstack + AX_surfxml_cluster_prefix)
+short int surfxml_cluster_prefix_isset;
 AT_surfxml_trace_file AX_surfxml_trace_file;
 #define A_surfxml_trace_file (surfxml_bufferstack + AX_surfxml_trace_file)
+short int surfxml_trace_file_isset;
 AT_surfxml_link_sharing_policy AX_surfxml_link_sharing_policy;
 #define A_surfxml_link_sharing_policy AX_surfxml_link_sharing_policy
+short int surfxml_link_sharing_policy_isset;
 AT_surfxml_random_min AX_surfxml_random_min;
 #define A_surfxml_random_min (surfxml_bufferstack + AX_surfxml_random_min)
+short int surfxml_random_min_isset;
 AT_surfxml_link_ctn_id AX_surfxml_link_ctn_id;
 #define A_surfxml_link_ctn_id (surfxml_bufferstack + AX_surfxml_link_ctn_id)
+short int surfxml_link_ctn_id_isset;
 AT_surfxml_peer_bw_out AX_surfxml_peer_bw_out;
 #define A_surfxml_peer_bw_out (surfxml_bufferstack + AX_surfxml_peer_bw_out)
+short int surfxml_peer_bw_out_isset;
 AT_surfxml_cluster_availability_file AX_surfxml_cluster_availability_file;
 #define A_surfxml_cluster_availability_file (surfxml_bufferstack + AX_surfxml_cluster_availability_file)
+short int surfxml_cluster_availability_file_isset;
 AT_surfxml_storage_content AX_surfxml_storage_content;
 #define A_surfxml_storage_content (surfxml_bufferstack + AX_surfxml_storage_content)
+short int surfxml_storage_content_isset;
 AT_surfxml_process_kill_time AX_surfxml_process_kill_time;
 #define A_surfxml_process_kill_time (surfxml_bufferstack + AX_surfxml_process_kill_time)
+short int surfxml_process_kill_time_isset;
 AT_surfxml_cluster_bb_bw AX_surfxml_cluster_bb_bw;
 #define A_surfxml_cluster_bb_bw (surfxml_bufferstack + AX_surfxml_cluster_bb_bw)
+short int surfxml_cluster_bb_bw_isset;
 AT_surfxml_argument_value AX_surfxml_argument_value;
 #define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
+short int surfxml_argument_value_isset;
 AT_surfxml_link_state AX_surfxml_link_state;
 #define A_surfxml_link_state AX_surfxml_link_state
+short int surfxml_link_state_isset;
 AT_surfxml_ASroute_gw_src AX_surfxml_ASroute_gw_src;
 #define A_surfxml_ASroute_gw_src (surfxml_bufferstack + AX_surfxml_ASroute_gw_src)
+short int surfxml_ASroute_gw_src_isset;
 AT_surfxml_AS_routing AX_surfxml_AS_routing;
 #define A_surfxml_AS_routing (surfxml_bufferstack + AX_surfxml_AS_routing)
+short int surfxml_AS_routing_isset;
 AT_surfxml_link_bandwidth AX_surfxml_link_bandwidth;
 #define A_surfxml_link_bandwidth (surfxml_bufferstack + AX_surfxml_link_bandwidth)
+short int surfxml_link_bandwidth_isset;
 AT_surfxml_cluster_id AX_surfxml_cluster_id;
 #define A_surfxml_cluster_id (surfxml_bufferstack + AX_surfxml_cluster_id)
+short int surfxml_cluster_id_isset;
 AT_surfxml_peer_bw_in AX_surfxml_peer_bw_in;
 #define A_surfxml_peer_bw_in (surfxml_bufferstack + AX_surfxml_peer_bw_in)
+short int surfxml_peer_bw_in_isset;
 AT_surfxml_random_mean AX_surfxml_random_mean;
 #define A_surfxml_random_mean (surfxml_bufferstack + AX_surfxml_random_mean)
+short int surfxml_random_mean_isset;
 AT_surfxml_cluster_bb_lat AX_surfxml_cluster_bb_lat;
 #define A_surfxml_cluster_bb_lat (surfxml_bufferstack + AX_surfxml_cluster_bb_lat)
+short int surfxml_cluster_bb_lat_isset;
 AT_surfxml_link_latency AX_surfxml_link_latency;
 #define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
+short int surfxml_link_latency_isset;
 AT_surfxml_trace_connect_kind AX_surfxml_trace_connect_kind;
 #define A_surfxml_trace_connect_kind AX_surfxml_trace_connect_kind
+short int surfxml_trace_connect_kind_isset;
 AT_surfxml_random_seed AX_surfxml_random_seed;
 #define A_surfxml_random_seed (surfxml_bufferstack + AX_surfxml_random_seed)
+short int surfxml_random_seed_isset;
 AT_surfxml_cluster_state_file AX_surfxml_cluster_state_file;
 #define A_surfxml_cluster_state_file (surfxml_bufferstack + AX_surfxml_cluster_state_file)
+short int surfxml_cluster_state_file_isset;
 AT_surfxml_link_bandwidth_file AX_surfxml_link_bandwidth_file;
 #define A_surfxml_link_bandwidth_file (surfxml_bufferstack + AX_surfxml_link_bandwidth_file)
+short int surfxml_link_bandwidth_file_isset;
 AT_surfxml_route_symmetrical AX_surfxml_route_symmetrical;
 #define A_surfxml_route_symmetrical AX_surfxml_route_symmetrical
+short int surfxml_route_symmetrical_isset;
 AT_surfxml_random_id AX_surfxml_random_id;
 #define A_surfxml_random_id (surfxml_bufferstack + AX_surfxml_random_id)
+short int surfxml_random_id_isset;
 AT_surfxml_random_max AX_surfxml_random_max;
 #define A_surfxml_random_max (surfxml_bufferstack + AX_surfxml_random_max)
+short int surfxml_random_max_isset;
 AT_surfxml_link_id AX_surfxml_link_id;
 #define A_surfxml_link_id (surfxml_bufferstack + AX_surfxml_link_id)
+short int surfxml_link_id_isset;
 AT_surfxml_storage_model AX_surfxml_storage_model;
 #define A_surfxml_storage_model (surfxml_bufferstack + AX_surfxml_storage_model)
+short int surfxml_storage_model_isset;
 AT_surfxml_process_host AX_surfxml_process_host;
 #define A_surfxml_process_host (surfxml_bufferstack + AX_surfxml_process_host)
+short int surfxml_process_host_isset;
 AT_surfxml_host_availability_file AX_surfxml_host_availability_file;
 #define A_surfxml_host_availability_file (surfxml_bufferstack + AX_surfxml_host_availability_file)
+short int surfxml_host_availability_file_isset;
 AT_surfxml_cluster_lat AX_surfxml_cluster_lat;
 #define A_surfxml_cluster_lat (surfxml_bufferstack + AX_surfxml_cluster_lat)
+short int surfxml_cluster_lat_isset;
 AT_surfxml_trace_periodicity AX_surfxml_trace_periodicity;
 #define A_surfxml_trace_periodicity (surfxml_bufferstack + AX_surfxml_trace_periodicity)
+short int surfxml_trace_periodicity_isset;
 AT_surfxml_cluster_bb_sharing_policy AX_surfxml_cluster_bb_sharing_policy;
 #define A_surfxml_cluster_bb_sharing_policy AX_surfxml_cluster_bb_sharing_policy
+short int surfxml_cluster_bb_sharing_policy_isset;
 AT_surfxml_router_coordinates AX_surfxml_router_coordinates;
 #define A_surfxml_router_coordinates (surfxml_bufferstack + AX_surfxml_router_coordinates)
+short int surfxml_router_coordinates_isset;
 AT_surfxml_peer_coordinates AX_surfxml_peer_coordinates;
 #define A_surfxml_peer_coordinates (surfxml_bufferstack + AX_surfxml_peer_coordinates)
+short int surfxml_peer_coordinates_isset;
 AT_surfxml_peer_state_file AX_surfxml_peer_state_file;
 #define A_surfxml_peer_state_file (surfxml_bufferstack + AX_surfxml_peer_state_file)
+short int surfxml_peer_state_file_isset;
 AT_surfxml_prop_value AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
+short int surfxml_prop_value_isset;
 AT_surfxml_ASroute_dst AX_surfxml_ASroute_dst;
 #define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
+short int surfxml_ASroute_dst_isset;
 AT_surfxml_random_radical AX_surfxml_random_radical;
 #define A_surfxml_random_radical (surfxml_bufferstack + AX_surfxml_random_radical)
+short int surfxml_random_radical_isset;
 AT_surfxml_link_state_file AX_surfxml_link_state_file;
 #define A_surfxml_link_state_file (surfxml_bufferstack + AX_surfxml_link_state_file)
+short int surfxml_link_state_file_isset;
 AT_surfxml_trace_connect_trace AX_surfxml_trace_connect_trace;
 #define A_surfxml_trace_connect_trace (surfxml_bufferstack + AX_surfxml_trace_connect_trace)
+short int surfxml_trace_connect_trace_isset;
 AT_surfxml_cluster_power AX_surfxml_cluster_power;
 #define A_surfxml_cluster_power (surfxml_bufferstack + AX_surfxml_cluster_power)
+short int surfxml_cluster_power_isset;
 AT_surfxml_process_function AX_surfxml_process_function;
 #define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
+short int surfxml_process_function_isset;
 AT_surfxml_peer_id AX_surfxml_peer_id;
 #define A_surfxml_peer_id (surfxml_bufferstack + AX_surfxml_peer_id)
+short int surfxml_peer_id_isset;
 AT_surfxml_cluster_router_id AX_surfxml_cluster_router_id;
 #define A_surfxml_cluster_router_id (surfxml_bufferstack + AX_surfxml_cluster_router_id)
+short int surfxml_cluster_router_id_isset;
 AT_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy;
 #define A_surfxml_cluster_sharing_policy AX_surfxml_cluster_sharing_policy
+short int surfxml_cluster_sharing_policy_isset;
 AT_surfxml_bypassRoute_dst AX_surfxml_bypassRoute_dst;
 #define A_surfxml_bypassRoute_dst (surfxml_bufferstack + AX_surfxml_bypassRoute_dst)
+short int surfxml_bypassRoute_dst_isset;
 AT_surfxml_host_core AX_surfxml_host_core;
 #define A_surfxml_host_core (surfxml_bufferstack + AX_surfxml_host_core)
+short int surfxml_host_core_isset;
 AT_surfxml_host_availability AX_surfxml_host_availability;
 #define A_surfxml_host_availability (surfxml_bufferstack + AX_surfxml_host_availability)
+short int surfxml_host_availability_isset;
 AT_surfxml_bypassRoute_src AX_surfxml_bypassRoute_src;
 #define A_surfxml_bypassRoute_src (surfxml_bufferstack + AX_surfxml_bypassRoute_src)
+short int surfxml_bypassRoute_src_isset;
 AT_surfxml_route_src AX_surfxml_route_src;
 #define A_surfxml_route_src (surfxml_bufferstack + AX_surfxml_route_src)
+short int surfxml_route_src_isset;
 AT_surfxml_bypassRoute_gw_dst AX_surfxml_bypassRoute_gw_dst;
 #define A_surfxml_bypassRoute_gw_dst (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_dst)
+short int surfxml_bypassRoute_gw_dst_isset;
 AT_surfxml_storage_id AX_surfxml_storage_id;
 #define A_surfxml_storage_id (surfxml_bufferstack + AX_surfxml_storage_id)
+short int surfxml_storage_id_isset;
 AT_surfxml_host_coordinates AX_surfxml_host_coordinates;
 #define A_surfxml_host_coordinates (surfxml_bufferstack + AX_surfxml_host_coordinates)
+short int surfxml_host_coordinates_isset;
 AT_surfxml_trace_id AX_surfxml_trace_id;
 #define A_surfxml_trace_id (surfxml_bufferstack + AX_surfxml_trace_id)
+short int surfxml_trace_id_isset;
 AT_surfxml_peer_power AX_surfxml_peer_power;
 #define A_surfxml_peer_power (surfxml_bufferstack + AX_surfxml_peer_power)
+short int surfxml_peer_power_isset;
 AT_surfxml_cluster_radical AX_surfxml_cluster_radical;
 #define A_surfxml_cluster_radical (surfxml_bufferstack + AX_surfxml_cluster_radical)
+short int surfxml_cluster_radical_isset;
 AT_surfxml_config_id AX_surfxml_config_id;
 #define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
+short int surfxml_config_id_isset;
 AT_surfxml_bypassRoute_gw_src AX_surfxml_bypassRoute_gw_src;
 #define A_surfxml_bypassRoute_gw_src (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_src)
+short int surfxml_bypassRoute_gw_src_isset;
 AT_surfxml_include_file AX_surfxml_include_file;
 #define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
+short int surfxml_include_file_isset;
 AT_surfxml_random_std_deviation AX_surfxml_random_std_deviation;
 #define A_surfxml_random_std_deviation (surfxml_bufferstack + AX_surfxml_random_std_deviation)
+short int surfxml_random_std_deviation_isset;
 AT_surfxml_cluster_core AX_surfxml_cluster_core;
 #define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
+short int surfxml_cluster_core_isset;
 AT_surfxml_host_state_file AX_surfxml_host_state_file;
 #define A_surfxml_host_state_file (surfxml_bufferstack + AX_surfxml_host_state_file)
+short int surfxml_host_state_file_isset;
 AT_surfxml_route_dst AX_surfxml_route_dst;
 #define A_surfxml_route_dst (surfxml_bufferstack + AX_surfxml_route_dst)
+short int surfxml_route_dst_isset;
 AT_surfxml_cluster_bw AX_surfxml_cluster_bw;
 #define A_surfxml_cluster_bw (surfxml_bufferstack + AX_surfxml_cluster_bw)
+short int surfxml_cluster_bw_isset;
 AT_surfxml_platform_version AX_surfxml_platform_version;
 #define A_surfxml_platform_version (surfxml_bufferstack + AX_surfxml_platform_version)
+short int surfxml_platform_version_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -4286,6 +4370,7 @@ case 17:
 YY_RULE_SETUP
 {
   AX_surfxml_platform_version = 1;
+  surfxml_platform_version_isset = 0;
   ENTER(AL_surfxml_platform); pushbuffer(0);
   }
 	YY_BREAK
@@ -4293,12 +4378,12 @@ YY_RULE_SETUP
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_platform_version);
+if (surfxml_platform_version_isset != 0) {FAIL("Multiple definition of attribute version in <surfxml_platform>");} surfxml_platform_version_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_platform_version);
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_platform_version);
+if (surfxml_platform_version_isset != 0) {FAIL("Multiple definition of attribute version in <surfxml_platform>");}  surfxml_platform_version_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_platform_version);
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
@@ -4368,6 +4453,7 @@ case 28:
 YY_RULE_SETUP
 {
   AX_surfxml_include_file = 0;
+  surfxml_include_file_isset = 0;
   ENTER(AL_surfxml_include); pushbuffer(0);
   }
 	YY_BREAK
@@ -4375,12 +4461,12 @@ YY_RULE_SETUP
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_include_file);
+if (surfxml_include_file_isset != 0) {FAIL("Multiple definition of attribute file in <surfxml_include>");} surfxml_include_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_include_file);
 	YY_BREAK
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_include_file);
+if (surfxml_include_file_isset != 0) {FAIL("Multiple definition of attribute file in <surfxml_include>");}  surfxml_include_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_include_file);
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
@@ -4452,8 +4538,11 @@ case 39:
 YY_RULE_SETUP
 {
   AX_surfxml_trace_id = 0;
+  surfxml_trace_id_isset = 0;
   AX_surfxml_trace_file = 0;
+  surfxml_trace_file_isset = 0;
   AX_surfxml_trace_periodicity = 0;
+  surfxml_trace_periodicity_isset = 0;
   ENTER(AL_surfxml_trace); pushbuffer(0);
   }
 	YY_BREAK
@@ -4461,32 +4550,32 @@ YY_RULE_SETUP
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_id);
+if (surfxml_trace_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_trace>");} surfxml_trace_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_id);
 	YY_BREAK
 case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_id);
+if (surfxml_trace_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_trace>");}  surfxml_trace_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_id);
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_file);
+if (surfxml_trace_file_isset != 0) {FAIL("Multiple definition of attribute file in <surfxml_trace>");} surfxml_trace_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_file);
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_file);
+if (surfxml_trace_file_isset != 0) {FAIL("Multiple definition of attribute file in <surfxml_trace>");}  surfxml_trace_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_file);
 	YY_BREAK
 case 44:
 /* rule 44 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_periodicity);
+if (surfxml_trace_periodicity_isset != 0) {FAIL("Multiple definition of attribute periodicity in <surfxml_trace>");} surfxml_trace_periodicity_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_periodicity);
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_periodicity);
+if (surfxml_trace_periodicity_isset != 0) {FAIL("Multiple definition of attribute periodicity in <surfxml_trace>");}  surfxml_trace_periodicity_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_periodicity);
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
@@ -4562,13 +4651,21 @@ case 53:
 YY_RULE_SETUP
 {
   AX_surfxml_random_id = 0;
+  surfxml_random_id_isset = 0;
   AX_surfxml_random_min = 0;
+  surfxml_random_min_isset = 0;
   AX_surfxml_random_max = 0;
+  surfxml_random_max_isset = 0;
   AX_surfxml_random_mean = 0;
+  surfxml_random_mean_isset = 0;
   AX_surfxml_random_std_deviation = 0;
+  surfxml_random_std_deviation_isset = 0;
   AX_surfxml_random_seed = 5;
+  surfxml_random_seed_isset = 0;
   AX_surfxml_random_radical = 0;
+  surfxml_random_radical_isset = 0;
   AX_surfxml_random_generator = A_surfxml_random_generator_DRAND48;
+  surfxml_random_generator_isset = 0;
   ENTER(AL_surfxml_random); pushbuffer(0);
   }
 	YY_BREAK
@@ -4576,72 +4673,72 @@ YY_RULE_SETUP
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_random_id);
+if (surfxml_random_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_random>");} surfxml_random_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_id);
 	YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_random_id);
+if (surfxml_random_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_random>");}  surfxml_random_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_id);
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_random_min);
+if (surfxml_random_min_isset != 0) {FAIL("Multiple definition of attribute min in <surfxml_random>");} surfxml_random_min_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_min);
 	YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_random_min);
+if (surfxml_random_min_isset != 0) {FAIL("Multiple definition of attribute min in <surfxml_random>");}  surfxml_random_min_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_min);
 	YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_random_max);
+if (surfxml_random_max_isset != 0) {FAIL("Multiple definition of attribute max in <surfxml_random>");} surfxml_random_max_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_max);
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_random_max);
+if (surfxml_random_max_isset != 0) {FAIL("Multiple definition of attribute max in <surfxml_random>");}  surfxml_random_max_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_max);
 	YY_BREAK
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_random_mean);
+if (surfxml_random_mean_isset != 0) {FAIL("Multiple definition of attribute mean in <surfxml_random>");} surfxml_random_mean_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_mean);
 	YY_BREAK
 case 61:
 /* rule 61 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_random_mean);
+if (surfxml_random_mean_isset != 0) {FAIL("Multiple definition of attribute mean in <surfxml_random>");}  surfxml_random_mean_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_mean);
 	YY_BREAK
 case 62:
 /* rule 62 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_random_std_deviation);
+if (surfxml_random_std_deviation_isset != 0) {FAIL("Multiple definition of attribute std_deviation in <surfxml_random>");} surfxml_random_std_deviation_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_std_deviation);
 	YY_BREAK
 case 63:
 /* rule 63 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_random_std_deviation);
+if (surfxml_random_std_deviation_isset != 0) {FAIL("Multiple definition of attribute std_deviation in <surfxml_random>");}  surfxml_random_std_deviation_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_std_deviation);
 	YY_BREAK
 case 64:
 /* rule 64 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_random_seed);
+if (surfxml_random_seed_isset != 0) {FAIL("Multiple definition of attribute seed in <surfxml_random>");} surfxml_random_seed_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_seed);
 	YY_BREAK
 case 65:
 /* rule 65 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_random_seed);
+if (surfxml_random_seed_isset != 0) {FAIL("Multiple definition of attribute seed in <surfxml_random>");}  surfxml_random_seed_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_seed);
 	YY_BREAK
 case 66:
 /* rule 66 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_random_radical);
+if (surfxml_random_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_random>");} surfxml_random_radical_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_random_radical);
 	YY_BREAK
 case 67:
 /* rule 67 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_random_radical);
+if (surfxml_random_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_random>");}  surfxml_random_radical_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_random_radical);
 	YY_BREAK
 case 68:
 /* rule 68 can match eol */
@@ -4745,8 +4842,11 @@ case 84:
 YY_RULE_SETUP
 {
   AX_surfxml_trace_connect_kind = A_surfxml_trace_connect_kind_HOST_AVAIL;
+  surfxml_trace_connect_kind_isset = 0;
   AX_surfxml_trace_connect_trace = 0;
+  surfxml_trace_connect_trace_isset = 0;
   AX_surfxml_trace_connect_element = 0;
+  surfxml_trace_connect_element_isset = 0;
   ENTER(AL_surfxml_trace_connect); pushbuffer(0);
   }
 	YY_BREAK
@@ -4789,22 +4889,22 @@ A_surfxml_trace_connect_kind = A_surfxml_trace_connect_kind_LATENCY;
 case 95:
 /* rule 95 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_connect_trace);
+if (surfxml_trace_connect_trace_isset != 0) {FAIL("Multiple definition of attribute trace in <surfxml_trace_connect>");} surfxml_trace_connect_trace_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_connect_trace);
 	YY_BREAK
 case 96:
 /* rule 96 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_connect_trace);
+if (surfxml_trace_connect_trace_isset != 0) {FAIL("Multiple definition of attribute trace in <surfxml_trace_connect>");}  surfxml_trace_connect_trace_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_connect_trace);
 	YY_BREAK
 case 97:
 /* rule 97 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_connect_element);
+if (surfxml_trace_connect_element_isset != 0) {FAIL("Multiple definition of attribute element in <surfxml_trace_connect>");} surfxml_trace_connect_element_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_trace_connect_element);
 	YY_BREAK
 case 98:
 /* rule 98 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_connect_element);
+if (surfxml_trace_connect_element_isset != 0) {FAIL("Multiple definition of attribute element in <surfxml_trace_connect>");}  surfxml_trace_connect_element_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_connect_element);
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
@@ -4882,7 +4982,9 @@ case 107:
 YY_RULE_SETUP
 {
   AX_surfxml_AS_id = 0;
+  surfxml_AS_id_isset = 0;
   AX_surfxml_AS_routing = 0;
+  surfxml_AS_routing_isset = 0;
   ENTER(AL_surfxml_AS); pushbuffer(0);
   }
 	YY_BREAK
@@ -4890,22 +4992,22 @@ YY_RULE_SETUP
 case 108:
 /* rule 108 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_AS_id);
+if (surfxml_AS_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_AS>");} surfxml_AS_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_AS_id);
 	YY_BREAK
 case 109:
 /* rule 109 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_AS_id);
+if (surfxml_AS_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_AS>");}  surfxml_AS_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_AS_id);
 	YY_BREAK
 case 110:
 /* rule 110 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_AS_routing);
+if (surfxml_AS_routing_isset != 0) {FAIL("Multiple definition of attribute routing in <surfxml_AS>");} surfxml_AS_routing_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_AS_routing);
 	YY_BREAK
 case 111:
 /* rule 111 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_AS_routing);
+if (surfxml_AS_routing_isset != 0) {FAIL("Multiple definition of attribute routing in <surfxml_AS>");}  surfxml_AS_routing_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_AS_routing);
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
@@ -4984,8 +5086,11 @@ case 120:
 YY_RULE_SETUP
 {
   AX_surfxml_storage_id = 0;
+  surfxml_storage_id_isset = 0;
   AX_surfxml_storage_model = 0;
+  surfxml_storage_model_isset = 0;
   AX_surfxml_storage_content = 0;
+  surfxml_storage_content_isset = 0;
   ENTER(AL_surfxml_storage); pushbuffer(0);
   }
 	YY_BREAK
@@ -4993,32 +5098,32 @@ YY_RULE_SETUP
 case 121:
 /* rule 121 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_id);
+if (surfxml_storage_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_storage>");} surfxml_storage_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_id);
 	YY_BREAK
 case 122:
 /* rule 122 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_id);
+if (surfxml_storage_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_storage>");}  surfxml_storage_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_id);
 	YY_BREAK
 case 123:
 /* rule 123 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_model);
+if (surfxml_storage_model_isset != 0) {FAIL("Multiple definition of attribute model in <surfxml_storage>");} surfxml_storage_model_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_model);
 	YY_BREAK
 case 124:
 /* rule 124 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_model);
+if (surfxml_storage_model_isset != 0) {FAIL("Multiple definition of attribute model in <surfxml_storage>");}  surfxml_storage_model_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_model);
 	YY_BREAK
 case 125:
 /* rule 125 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_content);
+if (surfxml_storage_content_isset != 0) {FAIL("Multiple definition of attribute content in <surfxml_storage>");} surfxml_storage_content_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_storage_content);
 	YY_BREAK
 case 126:
 /* rule 126 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_content);
+if (surfxml_storage_content_isset != 0) {FAIL("Multiple definition of attribute content in <surfxml_storage>");}  surfxml_storage_content_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_content);
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
@@ -5090,13 +5195,21 @@ case 135:
 YY_RULE_SETUP
 {
   AX_surfxml_host_id = 0;
+  surfxml_host_id_isset = 0;
   AX_surfxml_host_power = 0;
+  surfxml_host_power_isset = 0;
   AX_surfxml_host_core = 16;
+  surfxml_host_core_isset = 0;
   AX_surfxml_host_availability = 18;
+  surfxml_host_availability_isset = 0;
   AX_surfxml_host_availability_file = 0;
+  surfxml_host_availability_file_isset = 0;
   AX_surfxml_host_state = A_surfxml_host_state_ON;
+  surfxml_host_state_isset = 0;
   AX_surfxml_host_state_file = 0;
+  surfxml_host_state_file_isset = 0;
   AX_surfxml_host_coordinates = 0;
+  surfxml_host_coordinates_isset = 0;
   ENTER(AL_surfxml_host); pushbuffer(0);
   }
 	YY_BREAK
@@ -5104,52 +5217,52 @@ YY_RULE_SETUP
 case 136:
 /* rule 136 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_host_id);
+if (surfxml_host_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_host>");} surfxml_host_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_id);
 	YY_BREAK
 case 137:
 /* rule 137 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_host_id);
+if (surfxml_host_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_host>");}  surfxml_host_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_id);
 	YY_BREAK
 case 138:
 /* rule 138 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_host_power);
+if (surfxml_host_power_isset != 0) {FAIL("Multiple definition of attribute power in <surfxml_host>");} surfxml_host_power_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_power);
 	YY_BREAK
 case 139:
 /* rule 139 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_host_power);
+if (surfxml_host_power_isset != 0) {FAIL("Multiple definition of attribute power in <surfxml_host>");}  surfxml_host_power_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_power);
 	YY_BREAK
 case 140:
 /* rule 140 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_host_core);
+if (surfxml_host_core_isset != 0) {FAIL("Multiple definition of attribute core in <surfxml_host>");} surfxml_host_core_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_core);
 	YY_BREAK
 case 141:
 /* rule 141 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_host_core);
+if (surfxml_host_core_isset != 0) {FAIL("Multiple definition of attribute core in <surfxml_host>");}  surfxml_host_core_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_core);
 	YY_BREAK
 case 142:
 /* rule 142 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_host_availability);
+if (surfxml_host_availability_isset != 0) {FAIL("Multiple definition of attribute availability in <surfxml_host>");} surfxml_host_availability_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_availability);
 	YY_BREAK
 case 143:
 /* rule 143 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_host_availability);
+if (surfxml_host_availability_isset != 0) {FAIL("Multiple definition of attribute availability in <surfxml_host>");}  surfxml_host_availability_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_availability);
 	YY_BREAK
 case 144:
 /* rule 144 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_host_availability_file);
+if (surfxml_host_availability_file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_host>");} surfxml_host_availability_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_availability_file);
 	YY_BREAK
 case 145:
 /* rule 145 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_host_availability_file);
+if (surfxml_host_availability_file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_host>");}  surfxml_host_availability_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_availability_file);
 	YY_BREAK
 case 146:
 /* rule 146 can match eol */
@@ -5168,22 +5281,22 @@ A_surfxml_host_state = A_surfxml_host_state_OFF;
 case 150:
 /* rule 150 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_host_state_file);
+if (surfxml_host_state_file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_host>");} surfxml_host_state_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_state_file);
 	YY_BREAK
 case 151:
 /* rule 151 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_host_state_file);
+if (surfxml_host_state_file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_host>");}  surfxml_host_state_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_state_file);
 	YY_BREAK
 case 152:
 /* rule 152 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_host_coordinates);
+if (surfxml_host_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_host>");} surfxml_host_coordinates_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_host_coordinates);
 	YY_BREAK
 case 153:
 /* rule 153 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_host_coordinates);
+if (surfxml_host_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_host>");}  surfxml_host_coordinates_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_host_coordinates);
 	YY_BREAK
 case 154:
 YY_RULE_SETUP
@@ -5253,20 +5366,35 @@ case 162:
 YY_RULE_SETUP
 {
   AX_surfxml_cluster_id = 0;
+  surfxml_cluster_id_isset = 0;
   AX_surfxml_cluster_prefix = 0;
+  surfxml_cluster_prefix_isset = 0;
   AX_surfxml_cluster_suffix = 0;
+  surfxml_cluster_suffix_isset = 0;
   AX_surfxml_cluster_radical = 0;
+  surfxml_cluster_radical_isset = 0;
   AX_surfxml_cluster_power = 0;
+  surfxml_cluster_power_isset = 0;
   AX_surfxml_cluster_core = 22;
+  surfxml_cluster_core_isset = 0;
   AX_surfxml_cluster_bw = 0;
+  surfxml_cluster_bw_isset = 0;
   AX_surfxml_cluster_lat = 0;
+  surfxml_cluster_lat_isset = 0;
   AX_surfxml_cluster_sharing_policy = A_surfxml_cluster_sharing_policy_FULLDUPLEX;
+  surfxml_cluster_sharing_policy_isset = 0;
   AX_surfxml_cluster_bb_bw = 0;
+  surfxml_cluster_bb_bw_isset = 0;
   AX_surfxml_cluster_bb_lat = 0;
+  surfxml_cluster_bb_lat_isset = 0;
   AX_surfxml_cluster_bb_sharing_policy = A_surfxml_cluster_bb_sharing_policy_SHARED;
+  surfxml_cluster_bb_sharing_policy_isset = 0;
   AX_surfxml_cluster_availability_file = 0;
+  surfxml_cluster_availability_file_isset = 0;
   AX_surfxml_cluster_state_file = 0;
+  surfxml_cluster_state_file_isset = 0;
   AX_surfxml_cluster_router_id = 0;
+  surfxml_cluster_router_id_isset = 0;
   ENTER(AL_surfxml_cluster); pushbuffer(0);
   }
 	YY_BREAK
@@ -5274,82 +5402,82 @@ YY_RULE_SETUP
 case 163:
 /* rule 163 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_id);
+if (surfxml_cluster_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_cluster>");} surfxml_cluster_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_id);
 	YY_BREAK
 case 164:
 /* rule 164 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_id);
+if (surfxml_cluster_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_cluster>");}  surfxml_cluster_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_id);
 	YY_BREAK
 case 165:
 /* rule 165 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_prefix);
+if (surfxml_cluster_prefix_isset != 0) {FAIL("Multiple definition of attribute prefix in <surfxml_cluster>");} surfxml_cluster_prefix_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_prefix);
 	YY_BREAK
 case 166:
 /* rule 166 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_prefix);
+if (surfxml_cluster_prefix_isset != 0) {FAIL("Multiple definition of attribute prefix in <surfxml_cluster>");}  surfxml_cluster_prefix_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_prefix);
 	YY_BREAK
 case 167:
 /* rule 167 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_suffix);
+if (surfxml_cluster_suffix_isset != 0) {FAIL("Multiple definition of attribute suffix in <surfxml_cluster>");} surfxml_cluster_suffix_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_suffix);
 	YY_BREAK
 case 168:
 /* rule 168 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_suffix);
+if (surfxml_cluster_suffix_isset != 0) {FAIL("Multiple definition of attribute suffix in <surfxml_cluster>");}  surfxml_cluster_suffix_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_suffix);
 	YY_BREAK
 case 169:
 /* rule 169 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_radical);
+if (surfxml_cluster_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_cluster>");} surfxml_cluster_radical_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_radical);
 	YY_BREAK
 case 170:
 /* rule 170 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_radical);
+if (surfxml_cluster_radical_isset != 0) {FAIL("Multiple definition of attribute radical in <surfxml_cluster>");}  surfxml_cluster_radical_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_radical);
 	YY_BREAK
 case 171:
 /* rule 171 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_power);
+if (surfxml_cluster_power_isset != 0) {FAIL("Multiple definition of attribute power in <surfxml_cluster>");} surfxml_cluster_power_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_power);
 	YY_BREAK
 case 172:
 /* rule 172 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_power);
+if (surfxml_cluster_power_isset != 0) {FAIL("Multiple definition of attribute power in <surfxml_cluster>");}  surfxml_cluster_power_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_power);
 	YY_BREAK
 case 173:
 /* rule 173 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_core);
+if (surfxml_cluster_core_isset != 0) {FAIL("Multiple definition of attribute core in <surfxml_cluster>");} surfxml_cluster_core_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_core);
 	YY_BREAK
 case 174:
 /* rule 174 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_core);
+if (surfxml_cluster_core_isset != 0) {FAIL("Multiple definition of attribute core in <surfxml_cluster>");}  surfxml_cluster_core_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_core);
 	YY_BREAK
 case 175:
 /* rule 175 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bw);
+if (surfxml_cluster_bw_isset != 0) {FAIL("Multiple definition of attribute bw in <surfxml_cluster>");} surfxml_cluster_bw_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bw);
 	YY_BREAK
 case 176:
 /* rule 176 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bw);
+if (surfxml_cluster_bw_isset != 0) {FAIL("Multiple definition of attribute bw in <surfxml_cluster>");}  surfxml_cluster_bw_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bw);
 	YY_BREAK
 case 177:
 /* rule 177 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_lat);
+if (surfxml_cluster_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_cluster>");} surfxml_cluster_lat_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_lat);
 	YY_BREAK
 case 178:
 /* rule 178 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_lat);
+if (surfxml_cluster_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_cluster>");}  surfxml_cluster_lat_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_lat);
 	YY_BREAK
 case 179:
 /* rule 179 can match eol */
@@ -5375,22 +5503,22 @@ A_surfxml_cluster_sharing_policy = A_surfxml_cluster_sharing_policy_FATPIPE;
 case 185:
 /* rule 185 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bb_bw);
+if (surfxml_cluster_bb_bw_isset != 0) {FAIL("Multiple definition of attribute bb_bw in <surfxml_cluster>");} surfxml_cluster_bb_bw_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bb_bw);
 	YY_BREAK
 case 186:
 /* rule 186 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bb_bw);
+if (surfxml_cluster_bb_bw_isset != 0) {FAIL("Multiple definition of attribute bb_bw in <surfxml_cluster>");}  surfxml_cluster_bb_bw_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bb_bw);
 	YY_BREAK
 case 187:
 /* rule 187 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bb_lat);
+if (surfxml_cluster_bb_lat_isset != 0) {FAIL("Multiple definition of attribute bb_lat in <surfxml_cluster>");} surfxml_cluster_bb_lat_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_bb_lat);
 	YY_BREAK
 case 188:
 /* rule 188 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bb_lat);
+if (surfxml_cluster_bb_lat_isset != 0) {FAIL("Multiple definition of attribute bb_lat in <surfxml_cluster>");}  surfxml_cluster_bb_lat_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_bb_lat);
 	YY_BREAK
 case 189:
 /* rule 189 can match eol */
@@ -5409,32 +5537,32 @@ A_surfxml_cluster_bb_sharing_policy = A_surfxml_cluster_bb_sharing_policy_FATPIP
 case 193:
 /* rule 193 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_availability_file);
+if (surfxml_cluster_availability_file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_cluster>");} surfxml_cluster_availability_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_availability_file);
 	YY_BREAK
 case 194:
 /* rule 194 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_availability_file);
+if (surfxml_cluster_availability_file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_cluster>");}  surfxml_cluster_availability_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_availability_file);
 	YY_BREAK
 case 195:
 /* rule 195 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_state_file);
+if (surfxml_cluster_state_file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_cluster>");} surfxml_cluster_state_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_state_file);
 	YY_BREAK
 case 196:
 /* rule 196 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_state_file);
+if (surfxml_cluster_state_file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_cluster>");}  surfxml_cluster_state_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_state_file);
 	YY_BREAK
 case 197:
 /* rule 197 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_router_id);
+if (surfxml_cluster_router_id_isset != 0) {FAIL("Multiple definition of attribute router_id in <surfxml_cluster>");} surfxml_cluster_router_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_cluster_router_id);
 	YY_BREAK
 case 198:
 /* rule 198 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_router_id);
+if (surfxml_cluster_router_id_isset != 0) {FAIL("Multiple definition of attribute router_id in <surfxml_cluster>");}  surfxml_cluster_router_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_cluster_router_id);
 	YY_BREAK
 case 199:
 YY_RULE_SETUP
@@ -5514,13 +5642,21 @@ case 207:
 YY_RULE_SETUP
 {
   AX_surfxml_peer_id = 0;
+  surfxml_peer_id_isset = 0;
   AX_surfxml_peer_power = 0;
+  surfxml_peer_power_isset = 0;
   AX_surfxml_peer_bw_in = 0;
+  surfxml_peer_bw_in_isset = 0;
   AX_surfxml_peer_bw_out = 0;
+  surfxml_peer_bw_out_isset = 0;
   AX_surfxml_peer_lat = 0;
+  surfxml_peer_lat_isset = 0;
   AX_surfxml_peer_coordinates = 0;
+  surfxml_peer_coordinates_isset = 0;
   AX_surfxml_peer_availability_file = 0;
+  surfxml_peer_availability_file_isset = 0;
   AX_surfxml_peer_state_file = 0;
+  surfxml_peer_state_file_isset = 0;
   ENTER(AL_surfxml_peer); pushbuffer(0);
   }
 	YY_BREAK
@@ -5528,82 +5664,82 @@ YY_RULE_SETUP
 case 208:
 /* rule 208 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_id);
+if (surfxml_peer_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_peer>");} surfxml_peer_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_id);
 	YY_BREAK
 case 209:
 /* rule 209 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_id);
+if (surfxml_peer_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_peer>");}  surfxml_peer_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_id);
 	YY_BREAK
 case 210:
 /* rule 210 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_power);
+if (surfxml_peer_power_isset != 0) {FAIL("Multiple definition of attribute power in <surfxml_peer>");} surfxml_peer_power_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_power);
 	YY_BREAK
 case 211:
 /* rule 211 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_power);
+if (surfxml_peer_power_isset != 0) {FAIL("Multiple definition of attribute power in <surfxml_peer>");}  surfxml_peer_power_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_power);
 	YY_BREAK
 case 212:
 /* rule 212 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_bw_in);
+if (surfxml_peer_bw_in_isset != 0) {FAIL("Multiple definition of attribute bw_in in <surfxml_peer>");} surfxml_peer_bw_in_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_bw_in);
 	YY_BREAK
 case 213:
 /* rule 213 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_bw_in);
+if (surfxml_peer_bw_in_isset != 0) {FAIL("Multiple definition of attribute bw_in in <surfxml_peer>");}  surfxml_peer_bw_in_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_bw_in);
 	YY_BREAK
 case 214:
 /* rule 214 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_bw_out);
+if (surfxml_peer_bw_out_isset != 0) {FAIL("Multiple definition of attribute bw_out in <surfxml_peer>");} surfxml_peer_bw_out_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_bw_out);
 	YY_BREAK
 case 215:
 /* rule 215 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_bw_out);
+if (surfxml_peer_bw_out_isset != 0) {FAIL("Multiple definition of attribute bw_out in <surfxml_peer>");}  surfxml_peer_bw_out_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_bw_out);
 	YY_BREAK
 case 216:
 /* rule 216 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_lat);
+if (surfxml_peer_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_peer>");} surfxml_peer_lat_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_lat);
 	YY_BREAK
 case 217:
 /* rule 217 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_lat);
+if (surfxml_peer_lat_isset != 0) {FAIL("Multiple definition of attribute lat in <surfxml_peer>");}  surfxml_peer_lat_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_lat);
 	YY_BREAK
 case 218:
 /* rule 218 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_coordinates);
+if (surfxml_peer_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_peer>");} surfxml_peer_coordinates_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_coordinates);
 	YY_BREAK
 case 219:
 /* rule 219 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_coordinates);
+if (surfxml_peer_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_peer>");}  surfxml_peer_coordinates_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_coordinates);
 	YY_BREAK
 case 220:
 /* rule 220 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_availability_file);
+if (surfxml_peer_availability_file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_peer>");} surfxml_peer_availability_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_availability_file);
 	YY_BREAK
 case 221:
 /* rule 221 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_availability_file);
+if (surfxml_peer_availability_file_isset != 0) {FAIL("Multiple definition of attribute availability_file in <surfxml_peer>");}  surfxml_peer_availability_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_availability_file);
 	YY_BREAK
 case 222:
 /* rule 222 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_state_file);
+if (surfxml_peer_state_file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_peer>");} surfxml_peer_state_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_peer_state_file);
 	YY_BREAK
 case 223:
 /* rule 223 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_state_file);
+if (surfxml_peer_state_file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_peer>");}  surfxml_peer_state_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_peer_state_file);
 	YY_BREAK
 case 224:
 YY_RULE_SETUP
@@ -5679,7 +5815,9 @@ case 232:
 YY_RULE_SETUP
 {
   AX_surfxml_router_id = 0;
+  surfxml_router_id_isset = 0;
   AX_surfxml_router_coordinates = 0;
+  surfxml_router_coordinates_isset = 0;
   ENTER(AL_surfxml_router); pushbuffer(0);
   }
 	YY_BREAK
@@ -5687,22 +5825,22 @@ YY_RULE_SETUP
 case 233:
 /* rule 233 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_router_id);
+if (surfxml_router_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_router>");} surfxml_router_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_router_id);
 	YY_BREAK
 case 234:
 /* rule 234 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_router_id);
+if (surfxml_router_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_router>");}  surfxml_router_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_router_id);
 	YY_BREAK
 case 235:
 /* rule 235 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_router_coordinates);
+if (surfxml_router_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_router>");} surfxml_router_coordinates_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_router_coordinates);
 	YY_BREAK
 case 236:
 /* rule 236 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_router_coordinates);
+if (surfxml_router_coordinates_isset != 0) {FAIL("Multiple definition of attribute coordinates in <surfxml_router>");}  surfxml_router_coordinates_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_router_coordinates);
 	YY_BREAK
 case 237:
 YY_RULE_SETUP
@@ -5768,13 +5906,21 @@ case 245:
 YY_RULE_SETUP
 {
   AX_surfxml_link_id = 0;
+  surfxml_link_id_isset = 0;
   AX_surfxml_link_bandwidth = 0;
+  surfxml_link_bandwidth_isset = 0;
   AX_surfxml_link_bandwidth_file = 0;
+  surfxml_link_bandwidth_file_isset = 0;
   AX_surfxml_link_latency = 24;
+  surfxml_link_latency_isset = 0;
   AX_surfxml_link_latency_file = 0;
+  surfxml_link_latency_file_isset = 0;
   AX_surfxml_link_state = A_surfxml_link_state_ON;
+  surfxml_link_state_isset = 0;
   AX_surfxml_link_state_file = 0;
+  surfxml_link_state_file_isset = 0;
   AX_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+  surfxml_link_sharing_policy_isset = 0;
   ENTER(AL_surfxml_link); pushbuffer(0);
   }
 	YY_BREAK
@@ -5782,52 +5928,52 @@ YY_RULE_SETUP
 case 246:
 /* rule 246 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_link_id);
+if (surfxml_link_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_link>");} surfxml_link_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_id);
 	YY_BREAK
 case 247:
 /* rule 247 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_link_id);
+if (surfxml_link_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_link>");}  surfxml_link_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_id);
 	YY_BREAK
 case 248:
 /* rule 248 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_link_bandwidth);
+if (surfxml_link_bandwidth_isset != 0) {FAIL("Multiple definition of attribute bandwidth in <surfxml_link>");} surfxml_link_bandwidth_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_bandwidth);
 	YY_BREAK
 case 249:
 /* rule 249 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_link_bandwidth);
+if (surfxml_link_bandwidth_isset != 0) {FAIL("Multiple definition of attribute bandwidth in <surfxml_link>");}  surfxml_link_bandwidth_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_bandwidth);
 	YY_BREAK
 case 250:
 /* rule 250 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_link_bandwidth_file);
+if (surfxml_link_bandwidth_file_isset != 0) {FAIL("Multiple definition of attribute bandwidth_file in <surfxml_link>");} surfxml_link_bandwidth_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_bandwidth_file);
 	YY_BREAK
 case 251:
 /* rule 251 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_link_bandwidth_file);
+if (surfxml_link_bandwidth_file_isset != 0) {FAIL("Multiple definition of attribute bandwidth_file in <surfxml_link>");}  surfxml_link_bandwidth_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_bandwidth_file);
 	YY_BREAK
 case 252:
 /* rule 252 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_link_latency);
+if (surfxml_link_latency_isset != 0) {FAIL("Multiple definition of attribute latency in <surfxml_link>");} surfxml_link_latency_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_latency);
 	YY_BREAK
 case 253:
 /* rule 253 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_link_latency);
+if (surfxml_link_latency_isset != 0) {FAIL("Multiple definition of attribute latency in <surfxml_link>");}  surfxml_link_latency_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_latency);
 	YY_BREAK
 case 254:
 /* rule 254 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_link_latency_file);
+if (surfxml_link_latency_file_isset != 0) {FAIL("Multiple definition of attribute latency_file in <surfxml_link>");} surfxml_link_latency_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_latency_file);
 	YY_BREAK
 case 255:
 /* rule 255 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_link_latency_file);
+if (surfxml_link_latency_file_isset != 0) {FAIL("Multiple definition of attribute latency_file in <surfxml_link>");}  surfxml_link_latency_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_latency_file);
 	YY_BREAK
 case 256:
 /* rule 256 can match eol */
@@ -5846,12 +5992,12 @@ A_surfxml_link_state = A_surfxml_link_state_OFF;
 case 260:
 /* rule 260 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_link_state_file);
+if (surfxml_link_state_file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_link>");} surfxml_link_state_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_state_file);
 	YY_BREAK
 case 261:
 /* rule 261 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_link_state_file);
+if (surfxml_link_state_file_isset != 0) {FAIL("Multiple definition of attribute state_file in <surfxml_link>");}  surfxml_link_state_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_state_file);
 	YY_BREAK
 case 262:
 /* rule 262 can match eol */
@@ -5944,8 +6090,11 @@ case 276:
 YY_RULE_SETUP
 {
   AX_surfxml_route_src = 0;
+  surfxml_route_src_isset = 0;
   AX_surfxml_route_dst = 0;
+  surfxml_route_dst_isset = 0;
   AX_surfxml_route_symmetrical = A_surfxml_route_symmetrical_YES;
+  surfxml_route_symmetrical_isset = 0;
   ENTER(AL_surfxml_route); pushbuffer(0);
   }
 	YY_BREAK
@@ -5953,22 +6102,22 @@ YY_RULE_SETUP
 case 277:
 /* rule 277 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_route_src);
+if (surfxml_route_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_route>");} surfxml_route_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_route_src);
 	YY_BREAK
 case 278:
 /* rule 278 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_route_src);
+if (surfxml_route_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_route>");}  surfxml_route_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_route_src);
 	YY_BREAK
 case 279:
 /* rule 279 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_route_dst);
+if (surfxml_route_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_route>");} surfxml_route_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_route_dst);
 	YY_BREAK
 case 280:
 /* rule 280 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_route_dst);
+if (surfxml_route_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_route>");}  surfxml_route_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_route_dst);
 	YY_BREAK
 case 281:
 /* rule 281 can match eol */
@@ -6052,10 +6201,15 @@ case 293:
 YY_RULE_SETUP
 {
   AX_surfxml_ASroute_src = 0;
+  surfxml_ASroute_src_isset = 0;
   AX_surfxml_ASroute_dst = 0;
+  surfxml_ASroute_dst_isset = 0;
   AX_surfxml_ASroute_gw_src = 0;
+  surfxml_ASroute_gw_src_isset = 0;
   AX_surfxml_ASroute_gw_dst = 0;
+  surfxml_ASroute_gw_dst_isset = 0;
   AX_surfxml_ASroute_symmetrical = A_surfxml_ASroute_symmetrical_YES;
+  surfxml_ASroute_symmetrical_isset = 0;
   ENTER(AL_surfxml_ASroute); pushbuffer(0);
   }
 	YY_BREAK
@@ -6063,42 +6217,42 @@ YY_RULE_SETUP
 case 294:
 /* rule 294 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_src);
+if (surfxml_ASroute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_ASroute>");} surfxml_ASroute_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_src);
 	YY_BREAK
 case 295:
 /* rule 295 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_src);
+if (surfxml_ASroute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_ASroute>");}  surfxml_ASroute_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_src);
 	YY_BREAK
 case 296:
 /* rule 296 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_dst);
+if (surfxml_ASroute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_ASroute>");} surfxml_ASroute_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_dst);
 	YY_BREAK
 case 297:
 /* rule 297 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_dst);
+if (surfxml_ASroute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_ASroute>");}  surfxml_ASroute_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_dst);
 	YY_BREAK
 case 298:
 /* rule 298 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_gw_src);
+if (surfxml_ASroute_gw_src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_ASroute>");} surfxml_ASroute_gw_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_gw_src);
 	YY_BREAK
 case 299:
 /* rule 299 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_gw_src);
+if (surfxml_ASroute_gw_src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_ASroute>");}  surfxml_ASroute_gw_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_gw_src);
 	YY_BREAK
 case 300:
 /* rule 300 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_gw_dst);
+if (surfxml_ASroute_gw_dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_ASroute>");} surfxml_ASroute_gw_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_ASroute_gw_dst);
 	YY_BREAK
 case 301:
 /* rule 301 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_gw_dst);
+if (surfxml_ASroute_gw_dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_ASroute>");}  surfxml_ASroute_gw_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_ASroute_gw_dst);
 	YY_BREAK
 case 302:
 /* rule 302 can match eol */
@@ -6186,7 +6340,9 @@ case 314:
 YY_RULE_SETUP
 {
   AX_surfxml_link_ctn_id = 0;
+  surfxml_link_ctn_id_isset = 0;
   AX_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
+  surfxml_link_ctn_direction_isset = 0;
   ENTER(AL_surfxml_link_ctn); pushbuffer(0);
   }
 	YY_BREAK
@@ -6194,12 +6350,12 @@ YY_RULE_SETUP
 case 315:
 /* rule 315 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_link_ctn_id);
+if (surfxml_link_ctn_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_link_ctn>");} surfxml_link_ctn_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_link_ctn_id);
 	YY_BREAK
 case 316:
 /* rule 316 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_link_ctn_id);
+if (surfxml_link_ctn_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_link_ctn>");}  surfxml_link_ctn_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_link_ctn_id);
 	YY_BREAK
 case 317:
 /* rule 317 can match eol */
@@ -6290,9 +6446,13 @@ case 331:
 YY_RULE_SETUP
 {
   AX_surfxml_bypassRoute_src = 0;
+  surfxml_bypassRoute_src_isset = 0;
   AX_surfxml_bypassRoute_dst = 0;
+  surfxml_bypassRoute_dst_isset = 0;
   AX_surfxml_bypassRoute_gw_src = 0;
+  surfxml_bypassRoute_gw_src_isset = 0;
   AX_surfxml_bypassRoute_gw_dst = 0;
+  surfxml_bypassRoute_gw_dst_isset = 0;
   ENTER(AL_surfxml_bypassRoute); pushbuffer(0);
   }
 	YY_BREAK
@@ -6300,42 +6460,42 @@ YY_RULE_SETUP
 case 332:
 /* rule 332 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_src);
+if (surfxml_bypassRoute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_bypassRoute>");} surfxml_bypassRoute_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_src);
 	YY_BREAK
 case 333:
 /* rule 333 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_src);
+if (surfxml_bypassRoute_src_isset != 0) {FAIL("Multiple definition of attribute src in <surfxml_bypassRoute>");}  surfxml_bypassRoute_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_src);
 	YY_BREAK
 case 334:
 /* rule 334 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_dst);
+if (surfxml_bypassRoute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_bypassRoute>");} surfxml_bypassRoute_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_dst);
 	YY_BREAK
 case 335:
 /* rule 335 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_dst);
+if (surfxml_bypassRoute_dst_isset != 0) {FAIL("Multiple definition of attribute dst in <surfxml_bypassRoute>");}  surfxml_bypassRoute_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_dst);
 	YY_BREAK
 case 336:
 /* rule 336 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_gw_src);
+if (surfxml_bypassRoute_gw_src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_bypassRoute>");} surfxml_bypassRoute_gw_src_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_gw_src);
 	YY_BREAK
 case 337:
 /* rule 337 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_gw_src);
+if (surfxml_bypassRoute_gw_src_isset != 0) {FAIL("Multiple definition of attribute gw_src in <surfxml_bypassRoute>");}  surfxml_bypassRoute_gw_src_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_gw_src);
 	YY_BREAK
 case 338:
 /* rule 338 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_gw_dst);
+if (surfxml_bypassRoute_gw_dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_bypassRoute>");} surfxml_bypassRoute_gw_dst_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_bypassRoute_gw_dst);
 	YY_BREAK
 case 339:
 /* rule 339 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_gw_dst);
+if (surfxml_bypassRoute_gw_dst_isset != 0) {FAIL("Multiple definition of attribute gw_dst in <surfxml_bypassRoute>");}  surfxml_bypassRoute_gw_dst_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_bypassRoute_gw_dst);
 	YY_BREAK
 case 340:
 YY_RULE_SETUP
@@ -6409,9 +6569,13 @@ case 348:
 YY_RULE_SETUP
 {
   AX_surfxml_process_host = 0;
+  surfxml_process_host_isset = 0;
   AX_surfxml_process_function = 0;
+  surfxml_process_function_isset = 0;
   AX_surfxml_process_start_time = 28;
+  surfxml_process_start_time_isset = 0;
   AX_surfxml_process_kill_time = 33;
+  surfxml_process_kill_time_isset = 0;
   ENTER(AL_surfxml_process); pushbuffer(0);
   }
 	YY_BREAK
@@ -6419,42 +6583,42 @@ YY_RULE_SETUP
 case 349:
 /* rule 349 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_process_host);
+if (surfxml_process_host_isset != 0) {FAIL("Multiple definition of attribute host in <surfxml_process>");} surfxml_process_host_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_process_host);
 	YY_BREAK
 case 350:
 /* rule 350 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_process_host);
+if (surfxml_process_host_isset != 0) {FAIL("Multiple definition of attribute host in <surfxml_process>");}  surfxml_process_host_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_process_host);
 	YY_BREAK
 case 351:
 /* rule 351 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_process_function);
+if (surfxml_process_function_isset != 0) {FAIL("Multiple definition of attribute function in <surfxml_process>");} surfxml_process_function_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_process_function);
 	YY_BREAK
 case 352:
 /* rule 352 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_process_function);
+if (surfxml_process_function_isset != 0) {FAIL("Multiple definition of attribute function in <surfxml_process>");}  surfxml_process_function_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_process_function);
 	YY_BREAK
 case 353:
 /* rule 353 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_process_start_time);
+if (surfxml_process_start_time_isset != 0) {FAIL("Multiple definition of attribute start_time in <surfxml_process>");} surfxml_process_start_time_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_process_start_time);
 	YY_BREAK
 case 354:
 /* rule 354 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_process_start_time);
+if (surfxml_process_start_time_isset != 0) {FAIL("Multiple definition of attribute start_time in <surfxml_process>");}  surfxml_process_start_time_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_process_start_time);
 	YY_BREAK
 case 355:
 /* rule 355 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_process_kill_time);
+if (surfxml_process_kill_time_isset != 0) {FAIL("Multiple definition of attribute kill_time in <surfxml_process>");} surfxml_process_kill_time_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_process_kill_time);
 	YY_BREAK
 case 356:
 /* rule 356 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_process_kill_time);
+if (surfxml_process_kill_time_isset != 0) {FAIL("Multiple definition of attribute kill_time in <surfxml_process>");}  surfxml_process_kill_time_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_process_kill_time);
 	YY_BREAK
 case 357:
 YY_RULE_SETUP
@@ -6524,6 +6688,7 @@ case 365:
 YY_RULE_SETUP
 {
   AX_surfxml_argument_value = 0;
+  surfxml_argument_value_isset = 0;
   ENTER(AL_surfxml_argument); pushbuffer(0);
   }
 	YY_BREAK
@@ -6531,12 +6696,12 @@ YY_RULE_SETUP
 case 366:
 /* rule 366 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_argument_value);
+if (surfxml_argument_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_argument>");} surfxml_argument_value_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_argument_value);
 	YY_BREAK
 case 367:
 /* rule 367 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_argument_value);
+if (surfxml_argument_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_argument>");}  surfxml_argument_value_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_argument_value);
 	YY_BREAK
 case 368:
 YY_RULE_SETUP
@@ -6602,6 +6767,7 @@ case 376:
 YY_RULE_SETUP
 {
   AX_surfxml_config_id = 0;
+  surfxml_config_id_isset = 0;
   ENTER(AL_surfxml_config); pushbuffer(0);
   }
 	YY_BREAK
@@ -6609,12 +6775,12 @@ YY_RULE_SETUP
 case 377:
 /* rule 377 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_config_id);
+if (surfxml_config_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_config>");} surfxml_config_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_config_id);
 	YY_BREAK
 case 378:
 /* rule 378 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_config_id);
+if (surfxml_config_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_config>");}  surfxml_config_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_config_id);
 	YY_BREAK
 case 379:
 YY_RULE_SETUP
@@ -6682,7 +6848,9 @@ case 387:
 YY_RULE_SETUP
 {
   AX_surfxml_prop_id = 0;
+  surfxml_prop_id_isset = 0;
   AX_surfxml_prop_value = 0;
+  surfxml_prop_value_isset = 0;
   ENTER(AL_surfxml_prop); pushbuffer(0);
   }
 	YY_BREAK
@@ -6690,22 +6858,22 @@ YY_RULE_SETUP
 case 388:
 /* rule 388 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_prop_id);
+if (surfxml_prop_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_prop>");} surfxml_prop_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_prop_id);
 	YY_BREAK
 case 389:
 /* rule 389 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_prop_id);
+if (surfxml_prop_id_isset != 0) {FAIL("Multiple definition of attribute id in <surfxml_prop>");}  surfxml_prop_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_prop_id);
 	YY_BREAK
 case 390:
 /* rule 390 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE1); BUFFERSET(AX_surfxml_prop_value);
+if (surfxml_prop_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_prop>");} surfxml_prop_value_isset = 1; ENTER(VALUE1); BUFFERSET(AX_surfxml_prop_value);
 	YY_BREAK
 case 391:
 /* rule 391 can match eol */
 YY_RULE_SETUP
-ENTER(VALUE2); BUFFERSET(AX_surfxml_prop_value);
+if (surfxml_prop_value_isset != 0) {FAIL("Multiple definition of attribute value in <surfxml_prop>");}  surfxml_prop_value_isset = 1; ENTER(VALUE2); BUFFERSET(AX_surfxml_prop_value);
 	YY_BREAK
 case 392:
 YY_RULE_SETUP
