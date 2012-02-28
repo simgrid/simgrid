@@ -97,6 +97,7 @@ XBT_PUBLIC(void) *smx_ctx_base_get_data(smx_context_t context);
 
 XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_from_PID(int PID);
+XBT_PUBLIC(xbt_dynar_t) SIMIX_processes_as_dynar(void);
 
 /* parallelism */
 XBT_PUBLIC(int) SIMIX_context_is_parallel(void);

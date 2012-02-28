@@ -662,3 +662,13 @@ smx_process_t SIMIX_process_from_PID(int PID)
 	}
 	return NULL;
 }
+
+/** @brief returns a dynar containg all currently existing processes */
+xbt_dynar_t SIMIX_processes_as_dynar(void) {
+  smx_process_t proc;
+  xbt_dynar_t res = xbt_dynar_new(sizeof(smx_process_t),NULL);
+  xbt_swag_foreach(proc, simix_global->process_list) {
+    xbt_dynar_push(res,&proc);
+  }
+  return res;
+}
