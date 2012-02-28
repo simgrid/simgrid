@@ -14,7 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
-static int having_set_bypassroute = 0;
+static int no_bypassroute_declared = 1;
 
 AS_t model_generic_create_sized(size_t childsize) {
   AS_t new_component = model_none_create_sized(childsize);
@@ -83,7 +83,7 @@ void generic_parse_bypassroute(AS_t rc,
   xbt_free(e_route);
 
   xbt_dict_set(dict_bypassRoutes, route_name, new_e_route, NULL);
-  having_set_bypassroute = 1;
+  no_bypassroute_declared = 0;
   xbt_free(route_name);
 }
 
@@ -97,8 +97,8 @@ xbt_dynar_t generic_get_onelink_routes(AS_t rc) { // FIXME: kill that stub
 
 route_t generic_get_bypassroute(AS_t rc, const char *src, const char *dst)
 {
-  // If never set a bypass route return NULL
-  if(!having_set_bypassroute)
+  // If never set a bypass route return NULL without any further computations
+  if(no_bypassroute_declared)
     return NULL;
 
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
