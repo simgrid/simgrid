@@ -39,18 +39,17 @@ int main(int argc, char **argv)
     int i,res;
   MSG_global_init(&argc, argv);
   MSG_create_environment(argv[1]);
-  m_host_t *host_table =  MSG_get_host_table();
-  int number_of_hosts = MSG_get_host_number();
+  xbt_dynar_t hosts =  MSG_hosts_as_dynar();
   MSG_function_register("host", host);
 
-  XBT_INFO("Number of host '%d'",number_of_hosts);
-  for(i = 0 ; i<number_of_hosts; i++)
+  XBT_INFO("Number of host '%zu'",xbt_dynar_length(hosts));
+  for(i = 0 ; i<xbt_dynar_length(hosts); i++)
   {
     char* name_host = bprintf("%d",i);
-    MSG_process_create( name_host, host, NULL, host_table[i] );
+    MSG_process_create( name_host, host, NULL, xbt_dynar_get_as(hosts,i,m_host_t) );
     free(name_host);
   }
-  xbt_free(host_table);
+  xbt_dynar_free(&hosts);
 
   res = MSG_main();
   XBT_INFO("Simulation time %g", MSG_get_clock());

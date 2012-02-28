@@ -44,6 +44,9 @@ SimGrid (3.7) NOT RELEASED; urgency=low
      SIMGRID_DEPRECATED before loading the msg.h if you really need to
      use these (crappy) functions in your code.
     These functions will be removed at some point. Stop using them now.
+  * Deprecate MSG_get_host_{table,number}
+    Implement MSG_hosts_as_dynar() instead.
+  * Implement MSG_processes_as_dynar() (Closes gforge #13642)
 
   Simix:
   * Stabilize the parallel execution mode of user contexts

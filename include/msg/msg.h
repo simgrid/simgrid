@@ -65,8 +65,7 @@ XBT_PUBLIC(void) MSG_create_environment(const char *file);
 XBT_PUBLIC(void) MSG_load_platform_script(const char *script_file);
 
 XBT_PUBLIC(m_host_t) MSG_get_host_by_name(const char *name);
-XBT_PUBLIC(int) MSG_get_host_number(void);
-XBT_PUBLIC(m_host_t *) MSG_get_host_table(void);
+XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC(m_process_t) MSG_process_create(const char *name,
@@ -224,6 +223,9 @@ MSG_error_t MSG_action_trace_run(char *path);
 
 #ifdef MSG_USE_DEPRECATED
 /* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
+XBT_PUBLIC(int) MSG_get_host_number(void);
+XBT_PUBLIC(m_host_t *) MSG_get_host_table(void);
+
 #define MSG_TIMEOUT_FAILURE MSG_TIMEOUT
 #define MSG_TASK_CANCELLED MSG_TASK_CANCELED
 #define MSG_mailbox_put_with_time_out(mailbox, task, timeout) \

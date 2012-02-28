@@ -20,6 +20,7 @@ MSG_error_t test_all(const char *platform_file);
 /** Emitter function  */
 int test(int argc, char *argv[])
 {
+  xbt_dynar_t slaves_dynar;
   int slaves_count = 0;
   m_host_t *slaves = NULL;
   double task_comp_size = 100000;
@@ -29,8 +30,10 @@ int test(int argc, char *argv[])
   m_task_t ptask = NULL;
   int i, j;
 
-  slaves_count = MSG_get_host_number();
-  slaves = MSG_get_host_table();
+  slaves_dynar = MSG_hosts_as_dynar();
+  slaves_count = xbt_dynar_length(slaves_dynar);
+  slaves = xbt_dynar_to_array(slaves_dynar);
+  xbt_dynar_free(&slaves_dynar);
 
   computation_amount = xbt_new0(double, slaves_count);
   communication_amount = xbt_new0(double, slaves_count * slaves_count);
@@ -62,15 +65,17 @@ int test(int argc, char *argv[])
 MSG_error_t test_all(const char *platform_file)
 {
   MSG_error_t res = MSG_OK;
-  m_host_t *hosts;
+  xbt_dynar_t all_hosts;
+  m_host_t first_host;
 
   MSG_config("workstation/model", "ptask_L07");
   MSG_create_environment(platform_file);
 
-  hosts = MSG_get_host_table();
-  MSG_process_create("test", test, NULL, hosts[0]);
+  all_hosts = MSG_hosts_as_dynar();
+  first_host = xbt_dynar_pop_as(all_hosts,m_host_t);
+  MSG_process_create("test", test, NULL, first_host);
   res = MSG_main();
-  xbt_free(hosts);
+  xbt_dynar_free(&all_hosts);
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
   return res;

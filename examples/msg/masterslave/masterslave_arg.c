@@ -109,10 +109,12 @@ int main(int argc, char *argv[])
 
   number_of_jobs = atol(argv[2]);
   number_of_slaves = atol(argv[3]);
-  long number_max = MSG_get_host_number();
-  XBT_INFO("Got %ld slaves, %ld tasks to process, and %d hosts", number_of_slaves, number_of_jobs,MSG_get_host_number());
+  xbt_dynar_t host_dynar = MSG_hosts_as_dynar();
+  long number_max = xbt_dynar_length(host_dynar);
+  XBT_INFO("Got %ld slaves, %ld tasks to process, and %ld hosts", number_of_slaves, number_of_jobs,number_max);
 
-  m_host_t *host_table =  MSG_get_host_table();
+  m_host_t *host_table =  xbt_dynar_to_array(host_dynar);
+  xbt_dynar_free(&host_dynar);
 
   MSG_process_create( "master",
                       master,

@@ -23,10 +23,15 @@ int host(int argc, char *argv[])
 int main(int argc, char **argv)
 {
   int res;
+  xbt_dynar_t all_hosts;
+  m_host_t first_host;
   MSG_global_init(&argc, argv);
   MSG_create_environment(argv[1]);
   MSG_function_register("host", host);
-  MSG_process_create( "host", host, NULL, MSG_get_host_table()[0] );
+  all_hosts = MSG_hosts_as_dynar();
+  first_host = xbt_dynar_pop_as(all_hosts,m_host_t);
+  MSG_process_create( "host", host, NULL, first_host);
+  xbt_dynar_free(&all_hosts);
 
   res = MSG_main();
   XBT_INFO("Simulation time %g", MSG_get_clock());

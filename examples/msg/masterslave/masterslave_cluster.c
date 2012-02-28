@@ -134,9 +134,12 @@ static int bypass_deployment(void)
 	static int surfxml_bufferstack_size = 2048;
 	static int surfxml_buffer_stack_stack_ptr = 0;
 	static int surfxml_buffer_stack_stack[1024];
+	xbt_dynar_t hosts = MSG_hosts_as_dynar();
 	/* allocating memory to the buffer, I think 2MB should be enough */
 	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
-	nb_host = MSG_get_host_number();
+
+	nb_host = xbt_dynar_length(hosts);
+	xbt_dynar_free(&hosts);
 
 	/* <platform> */
 	SURFXML_BUFFER_SET(platform_version, "3");

@@ -147,17 +147,12 @@ void __MSG_host_destroy(m_host_t host)
   free(host);
 }
 
-/** \ingroup m_host_management
- * \brief Return the current number of #m_host_t.
- */
+#ifdef MSG_USE_DEPRECATED
 int MSG_get_host_number(void)
 {
   return xbt_lib_length(host_lib);
 }
 
-/** \ingroup m_host_management
- * \brief Return a array of all the #m_host_t.
- */
 m_host_t *MSG_get_host_table(void)
 {
       void **array;
@@ -177,6 +172,23 @@ m_host_t *MSG_get_host_table(void)
 	  }
 
 	  return (m_host_t *)array;
+}
+#endif
+
+/** \ingroup m_host_management
+ * \brief Return a dynar containing all the hosts declared at a given point of time
+ */
+xbt_dynar_t MSG_hosts_as_dynar(void) {
+  xbt_lib_cursor_t cursor;
+  char *key;
+  void **data;
+  xbt_dynar_t res = xbt_dynar_new(sizeof(m_host_t),NULL);
+
+  xbt_lib_foreach(host_lib, cursor, key, data) {
+    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
+      xbt_dynar_push(res, data + MSG_HOST_LEVEL);
+  }
+  return res;
 }
 
 /** \ingroup m_host_management
