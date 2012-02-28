@@ -49,7 +49,7 @@ static surf_action_t storage_action_stat(void *storage, int fd, void* buf)
 static void* storage_create_resource(const char* id, const char* model,
                                     const char* content, xbt_dict_t storage_properties)
 {
-    XBT_INFO("SURF: storage_create_resource '%s'",id);
+    XBT_DEBUG("Storage_create_resource '%s' at level SURF_STORAGE_LEVEL",id);
     surf_storage_t storage = NULL;
     xbt_assert(!surf_storage_resource_by_name(id),
                 "Storage '%s' declared several times in the platform file",
@@ -67,6 +67,71 @@ static void storage_finalize(void)
 {
   surf_model_exit(surf_storage_model);
   surf_storage_model = NULL;
+}
+
+static void storage_update_actions_state(double now, double delta)
+{
+
+}
+
+static double storage_share_resources(double NOW)
+{
+  double min_action_duration = -1;
+  return min_action_duration;
+}
+
+static int storage_resource_used(void *resource_id)
+{
+  THROW_UNIMPLEMENTED;
+  return 0;
+}
+
+static void storage_resources_state(void *id, tmgr_trace_event_t event_type,
+                                 double value, double time)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+static int storage_action_unref(surf_action_t action)
+{
+  THROW_UNIMPLEMENTED;
+  return 0;
+}
+
+static void storage_action_cancel(surf_action_t action)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+static void storage_action_suspend(surf_action_t action)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+static void storage_action_resume(surf_action_t action)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+static int storage_action_is_suspended(surf_action_t action)
+{
+  THROW_UNIMPLEMENTED;
+  return 0;
+}
+
+static void storage_action_set_max_duration(surf_action_t action, double duration)
+{
+  THROW_UNIMPLEMENTED;
+}
+
+static void storage_action_set_priority(surf_action_t action, double priority)
+{
+  THROW_UNIMPLEMENTED;
 }
 
 static void parse_storage_init(sg_platf_storage_cbarg_t storage)
@@ -88,6 +153,21 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model = surf_model_init();
 
   surf_storage_model->name = "Storage";
+  surf_storage_model->action_unref = storage_action_unref;
+  surf_storage_model->action_cancel = storage_action_cancel;
+  surf_storage_model->action_state_set = storage_action_state_set;
+
+  surf_storage_model->model_private->finalize = storage_finalize;
+  surf_storage_model->model_private->update_actions_state = storage_update_actions_state;
+  surf_storage_model->model_private->share_resources = storage_share_resources;
+  surf_storage_model->model_private->resource_used = storage_resource_used;
+  surf_storage_model->model_private->update_resource_state = storage_resources_state;
+
+  surf_storage_model->suspend = storage_action_suspend;
+  surf_storage_model->resume = storage_action_resume;
+  surf_storage_model->is_suspended = storage_action_is_suspended;
+  surf_storage_model->set_max_duration = storage_action_set_max_duration;
+  surf_storage_model->set_priority = storage_action_set_priority;
 
   surf_storage_model->extension.storage.open = storage_action_open;
   surf_storage_model->extension.storage.close = storage_action_close;
@@ -95,14 +175,12 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.write = storage_action_write;
   surf_storage_model->extension.storage.stat = storage_action_stat;
   surf_storage_model->extension.storage.create_resource = storage_create_resource;
-
-  surf_storage_model->model_private->finalize = storage_finalize;
-
-  xbt_dynar_push(model_list, &surf_storage_model);
 }
 
 void surf_storage_model_init_default(void)
 {
   surf_storage_model_init_internal();
   storage_define_callbacks();
+
+  xbt_dynar_push(model_list, &surf_storage_model);
 }
