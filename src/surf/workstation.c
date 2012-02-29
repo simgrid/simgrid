@@ -10,12 +10,10 @@
 #include "surf_private.h"
 #include "surf/surf_resource.h"
 
-
-
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
   void *cpu;
-  void *storage;
+  xbt_dynar_t storage;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
@@ -23,31 +21,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 
 surf_model_t surf_workstation_model = NULL;
 
-static workstation_CLM03_t workstation_new(const char *name, void *cpu, void *storage)
+static void workstation_new(sg_platf_host_cbarg_t host)
 {
   workstation_CLM03_t workstation = xbt_new0(s_workstation_CLM03_t, 1);
 
   workstation->generic_resource.model = surf_workstation_model;
-  workstation->generic_resource.name = xbt_strdup(name);
-  workstation->cpu = cpu;
-  workstation->storage = storage;
+  workstation->generic_resource.name = xbt_strdup(host->id);
+  workstation->cpu = xbt_lib_get_or_null(host_lib, host->id, SURF_CPU_LEVEL);
+  workstation->storage = NULL;
 
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, workstation);
-
-  return workstation;
-}
-
-void create_workstations(void)
-{
-  xbt_lib_cursor_t cursor = NULL;
-  char *name = NULL;
-  void **cpu = NULL;
-  void *storage = NULL;
-  xbt_lib_foreach(host_lib, cursor, name, cpu) {
-	  if(cpu[SURF_CPU_LEVEL])
-	    // Need to find storage attached to workstation
-	    workstation_new(name, cpu[SURF_CPU_LEVEL],storage);
-  }
+  xbt_lib_set(host_lib, host->id, SURF_WKS_LEVEL, workstation);
 }
 
 static int ws_resource_used(void *resource_id)
@@ -390,7 +373,8 @@ void surf_workstation_model_init_current_default(void)
   surf_network_model_init_LegrandVelho();
 
   xbt_dynar_push(model_list, &surf_workstation_model);
-  sg_platf_postparse_add_cb(create_workstations);
+  sg_platf_host_add_cb(workstation_new);
+//  sg_platf_postparse_add_cb(create_workstations);
 }
 
 void surf_workstation_model_init_compound()
@@ -400,5 +384,6 @@ void surf_workstation_model_init_compound()
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model_init_internal();
   xbt_dynar_push(model_list, &surf_workstation_model);
-  sg_platf_postparse_add_cb(create_workstations);
+  sg_platf_host_add_cb(workstation_new);
+//  sg_platf_postparse_add_cb(create_workstations);
 }
