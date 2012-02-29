@@ -71,7 +71,7 @@ MSG_error_t test_all(const char *platform_file)
   MSG_create_environment(platform_file);
 
   all_hosts = MSG_hosts_as_dynar();
-  first_host = xbt_dynar_pop_as(all_hosts,m_host_t);
+  first_host = xbt_dynar_getfirst_as(all_hosts,m_host_t);
   MSG_process_create("test", test, NULL, first_host);
   res = MSG_main();
   xbt_dynar_free(&all_hosts);
