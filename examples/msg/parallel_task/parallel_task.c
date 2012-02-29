@@ -33,7 +33,6 @@ int test(int argc, char *argv[])
   slaves_dynar = MSG_hosts_as_dynar();
   slaves_count = xbt_dynar_length(slaves_dynar);
   slaves = xbt_dynar_to_array(slaves_dynar);
-  xbt_dynar_free(&slaves_dynar);
 
   computation_amount = xbt_new0(double, slaves_count);
   communication_amount = xbt_new0(double, slaves_count * slaves_count);
