@@ -42,7 +42,7 @@ int main(int argc, char **argv)
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
   MSG_function_register("host", host);
 
-  XBT_INFO("Number of host '%zu'",xbt_dynar_length(hosts));
+  XBT_INFO("Number of host '%lu'",xbt_dynar_length(hosts));
   for(i = 0 ; i<xbt_dynar_length(hosts); i++)
   {
     char* name_host = bprintf("%d",i);
