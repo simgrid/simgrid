@@ -4,33 +4,47 @@
 <platform version="3">
 	<AS id="AS0" routing="Full">
 
-		<storage id="Disk1" type="HDD" content="content.txt">
+		<storage_type id="samsung" model="RAID5" content="content.txt_optionnel">
 			<prop id="Bwrite" value="30" />
 			<prop id="Bread" value="80" />
-		</storage>
-		<storage id="Disk2" type="SSD" content="content.txt">
-			<prop id="Bwrite" value="110" />
-			<prop id="Bread" value="300" />
-		</storage>
-		<storage id="Disk3" type="RAID0" content="content.txt">
-			<prop id="Bwrite" value="60" />
-			<prop id="Bread" value="160" />
-		</storage>
+		</storage_type>
+
+		<storage_type id="crucial" model="SSD" content="content.txt">
+			<prop id="Bwrite" value="30" />
+			<prop id="Bread" value="80" />
+		</storage_type>
+
+		<storage_type id="wdigital" model="RAID0" content="content.txt">
+			<prop id="Bwrite" value="30" />
+			<prop id="Bread" value="80" />
+		</storage_type>
+
+		<storage id="Disk1" type_id="crucial"/>
+		<storage id="Disk2" type_id="samsung"/>
+		<storage id="Disk3" type_id="wdigital"/>
 
 		<host id="bob" power="1000000000">
-			<prop id="storage" value="Disk1" />
-		</host>
-		
-		<storage id="Disk4" type="RAID1" content="content.txt">
-			<prop id="Bwrite" value="30" />
-			<prop id="Bread" value="80" />
-		</storage>
+			<mount id="Disk1" name="C:"/>
+			<mount id="Disk2" name="D:"/>
+			<mount id="Disk3" name="E:"/>
+			<mount id="Disk1" name="F:"/>			
+		</host>		
 		
 		<host id="alice" power="1000000000">
-			<prop id="storage" value="Disk4" />
-		</host>	
+			<mstorage type_id="crucial" name="C:"/>
+		</host>
+
+		<storage id="Disk4" type_id="wdigital"/>
+		<host id="carl" power="1000000000">		
+			<mount id="Disk4" name="C:"/>
+			<mount id="Disk1" name="D:"/>			
+		</host>
 		
-		<link id="link1" bandwidth="125000000" latency="5E-5"/>
+		<host id="denise" power="1000000000">
+			<mount id="Disk4" name="C:"/>	
+		</host>
+
+		<link id="link1" bandwidth="125000000" latency="5E-5" />
 		<link id="link2" bandwidth="125000000" latency="5E-5" />
 		<link id="link3" bandwidth="125000000" latency="5E-5" />
 	

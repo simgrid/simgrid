@@ -718,11 +718,19 @@ void routing_model_create(size_t size_of_links, void *loopback)
 
 static void routing_parse_storage(sg_platf_storage_cbarg_t storage)
 {
-  // FIXME THIS LEVEL IS UNUSED
-//  XBT_INFO("ROUTING Create a storage name '%s' with model '%s'",storage->id,storage->model);
-//  xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id, ROUTING_STORAGE_LEVEL),
-//             "Storage '%s' already exists", storage->id);
-//  xbt_lib_set(storage_lib, storage->id, ROUTING_STORAGE_LEVEL, NULL);
+  XBT_INFO("ROUTING Create a storage name '%s' with type_id '%s'",storage->id,storage->type_id);
+}
+static void routing_parse_mstorage(sg_platf_mstorage_cbarg_t mstorage)
+{
+  XBT_INFO("ROUTING Mount a storage name '%s' with type_id '%s'",mstorage->name, mstorage->type_id);
+}
+static void routing_parse_storage_type(sg_platf_storage_type_cbarg_t storage_type)
+{
+  XBT_INFO("ROUTING Create a storage type_id '%s' with model '%s'",storage_type->type_id,storage_type->model);
+}
+static void routing_parse_mount(sg_platf_mount_cbarg_t mount)
+{
+  XBT_INFO("ROUTING Mount '%s' on '%s'",mount->id, mount->name);
 }
 
 static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
@@ -1145,6 +1153,9 @@ void routing_register_callbacks()
   sg_platf_postparse_add_cb(routing_parse_postparse);
 
   sg_platf_storage_add_cb(routing_parse_storage);
+  sg_platf_mstorage_add_cb(routing_parse_mstorage);
+  sg_platf_storage_type_add_cb(routing_parse_storage_type);
+  sg_platf_mount_add_cb(routing_parse_mount);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
