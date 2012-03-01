@@ -25,12 +25,7 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|include|storage_type|storage|link|cluster|peer|trace|trace_connect)*,
-(ASroute|trace|trace_connect)*,
-(bypassRoute|trace|trace_connect)*)
-
-|((include|storage_type|storage|host|router|link|trace|trace_connect)*,
-(route|trace|trace_connect)*))>
+<!ELEMENT AS (((AS|include|storage_type|storage|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect)*,(bypassRoute|trace|trace_connect)*)|((include|storage_type|storage|host|router|link|trace|trace_connect)*,(route|trace|trace_connect)*))>
 
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
@@ -42,14 +37,14 @@
 
 <!ELEMENT storage (prop*)>
 <!ATTLIST storage id CDATA #REQUIRED>
-<!ATTLIST storage type_id CDATA #REQUIRED>
+<!ATTLIST storage typeId CDATA #REQUIRED>
 
 <!ELEMENT mount EMPTY>
 <!ATTLIST mount id CDATA #REQUIRED>
 <!ATTLIST mount name CDATA #REQUIRED>
 
 <!ELEMENT mstorage EMPTY>
-<!ATTLIST mstorage type_id CDATA #REQUIRED>
+<!ATTLIST mstorage typeId CDATA #REQUIRED>
 <!ATTLIST mstorage name CDATA #REQUIRED>
 
 <!ELEMENT host (prop|mount|mstorage)*>

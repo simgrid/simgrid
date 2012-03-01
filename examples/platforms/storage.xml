@@ -19,9 +19,9 @@
 			<prop id="Bread" value="80" />
 		</storage_type>
 
-		<storage id="Disk1" type_id="crucial"/>
-		<storage id="Disk2" type_id="samsung"/>
-		<storage id="Disk3" type_id="wdigital"/>
+		<storage id="Disk1" typeId="crucial"/>
+		<storage id="Disk2" typeId="samsung"/>
+		<storage id="Disk3" typeId="wdigital"/>
 
 		<host id="bob" power="1000000000">
 			<mount id="Disk1" name="C:"/>
@@ -31,10 +31,10 @@
 		</host>		
 		
 		<host id="alice" power="1000000000">
-			<mstorage type_id="crucial" name="C:"/>
+			<mstorage typeId="crucial" name="C:"/>
 		</host>
 
-		<storage id="Disk4" type_id="wdigital"/>
+		<storage id="Disk4" typeId="wdigital"/>
 		<host id="carl" power="1000000000">		
 			<mount id="Disk4" name="C:"/>
 			<mount id="Disk1" name="D:"/>			

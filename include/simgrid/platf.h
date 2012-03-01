@@ -111,7 +111,7 @@ typedef struct {
 } s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
 
 typedef struct {
-  const char* type_id;
+  const char* id;
   const char* model;
   const char* content;
   xbt_dict_t properties;

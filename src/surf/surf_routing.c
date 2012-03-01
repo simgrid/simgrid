@@ -726,7 +726,7 @@ static void routing_parse_mstorage(sg_platf_mstorage_cbarg_t mstorage)
 }
 static void routing_parse_storage_type(sg_platf_storage_type_cbarg_t storage_type)
 {
-  XBT_INFO("ROUTING Create a storage type_id '%s' with model '%s'",storage_type->type_id,storage_type->model);
+  XBT_INFO("ROUTING Create a storage type_id '%s' with model '%s'",storage_type->id,storage_type->model);
 }
 static void routing_parse_mount(sg_platf_mount_cbarg_t mount)
 {

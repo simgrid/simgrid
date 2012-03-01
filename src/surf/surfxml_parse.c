@@ -125,7 +125,7 @@ void ETag_surfxml_storage(void)
   memset(&storage,0,sizeof(storage));
 
   storage.id = A_surfxml_storage_id;
-  storage.type_id = A_surfxml_storage_id;
+  storage.type_id = A_surfxml_storage_typeId;
   sg_platf_new_storage(&storage);
 }
 void STag_surfxml_storage_type(void)
@@ -139,7 +139,7 @@ void ETag_surfxml_storage_type(void)
   memset(&storage_type,0,sizeof(storage_type));
 
   storage_type.content = A_surfxml_storage_type_content;
-  storage_type.type_id = A_surfxml_storage_type_id;
+  storage_type.id = A_surfxml_storage_type_id;
   storage_type.model = A_surfxml_storage_type_model;
   storage_type.properties = current_property_set;
   sg_platf_new_storage_type(&storage_type);
@@ -155,7 +155,7 @@ void ETag_surfxml_mstorage(void)
   memset(&mstorage,0,sizeof(mstorage));
 
   mstorage.name = A_surfxml_mstorage_name;
-  mstorage.type_id = A_surfxml_mstorage_type_id;
+  mstorage.type_id = A_surfxml_mstorage_typeId;
   sg_platf_new_mstorage(&mstorage);
 }
 void STag_surfxml_mount(void)

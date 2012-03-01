@@ -135,6 +135,8 @@ typedef int AT_surfxml_cluster_prefix;
 typedef int AT_surfxml_trace_file;
 #define AU_surfxml_trace_file NULL
 typedef enum { AU_surfxml_link_sharing_policy, A_surfxml_link_sharing_policy_SHARED,A_surfxml_link_sharing_policy_FATPIPE,A_surfxml_link_sharing_policy_FULLDUPLEX } AT_surfxml_link_sharing_policy;
+typedef int AT_surfxml_storage_typeId;
+#define AU_surfxml_storage_typeId NULL
 typedef int AT_surfxml_random_min;
 #define AU_surfxml_random_min NULL
 typedef int AT_surfxml_link_ctn_id;
@@ -201,6 +203,8 @@ typedef int AT_surfxml_peer_state_file;
 #define AU_surfxml_peer_state_file NULL
 typedef int AT_surfxml_prop_value;
 #define AU_surfxml_prop_value NULL
+typedef int AT_surfxml_mstorage_typeId;
+#define AU_surfxml_mstorage_typeId NULL
 typedef int AT_surfxml_ASroute_dst;
 #define AU_surfxml_ASroute_dst NULL
 typedef int AT_surfxml_link_state_file;
@@ -211,8 +215,6 @@ typedef int AT_surfxml_trace_connect_trace;
 #define AU_surfxml_trace_connect_trace NULL
 typedef int AT_surfxml_mount_id;
 #define AU_surfxml_mount_id NULL
-typedef int AT_surfxml_storage_type_id;
-#define AU_surfxml_storage_type_id NULL
 typedef int AT_surfxml_cluster_power;
 #define AU_surfxml_cluster_power NULL
 typedef int AT_surfxml_process_function;
@@ -224,8 +226,6 @@ typedef int AT_surfxml_cluster_router_id;
 typedef enum { AU_surfxml_cluster_sharing_policy, A_surfxml_cluster_sharing_policy_SHARED,A_surfxml_cluster_sharing_policy_FULLDUPLEX,A_surfxml_cluster_sharing_policy_FATPIPE } AT_surfxml_cluster_sharing_policy;
 typedef int AT_surfxml_bypassRoute_dst;
 #define AU_surfxml_bypassRoute_dst NULL
-typedef int AT_surfxml_mstorage_type_id;
-#define AU_surfxml_mstorage_type_id NULL
 typedef int AT_surfxml_host_core;
 #define AU_surfxml_host_core NULL
 typedef int AT_surfxml_host_availability;
@@ -337,6 +337,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_trace_file_isset;
 XBT_PUBLIC_DATA(AT_surfxml_link_sharing_policy ) AX_surfxml_link_sharing_policy;
 #define A_surfxml_link_sharing_policy AX_surfxml_link_sharing_policy
 XBT_PUBLIC_DATA(short ) int surfxml_link_sharing_policy_isset;
+XBT_PUBLIC_DATA(AT_surfxml_storage_typeId ) AX_surfxml_storage_typeId;
+#define A_surfxml_storage_typeId (surfxml_bufferstack + AX_surfxml_storage_typeId)
+XBT_PUBLIC_DATA(short ) int surfxml_storage_typeId_isset;
 XBT_PUBLIC_DATA(AT_surfxml_random_min ) AX_surfxml_random_min;
 #define A_surfxml_random_min (surfxml_bufferstack + AX_surfxml_random_min)
 XBT_PUBLIC_DATA(short ) int surfxml_random_min_isset;
@@ -442,6 +445,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_peer_state_file_isset;
 XBT_PUBLIC_DATA(AT_surfxml_prop_value ) AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
 XBT_PUBLIC_DATA(short ) int surfxml_prop_value_isset;
+XBT_PUBLIC_DATA(AT_surfxml_mstorage_typeId ) AX_surfxml_mstorage_typeId;
+#define A_surfxml_mstorage_typeId (surfxml_bufferstack + AX_surfxml_mstorage_typeId)
+XBT_PUBLIC_DATA(short ) int surfxml_mstorage_typeId_isset;
 XBT_PUBLIC_DATA(AT_surfxml_ASroute_dst ) AX_surfxml_ASroute_dst;
 #define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
 XBT_PUBLIC_DATA(short ) int surfxml_ASroute_dst_isset;
@@ -457,9 +463,6 @@ XBT_PUBLIC_DATA(short ) int surfxml_trace_connect_trace_isset;
 XBT_PUBLIC_DATA(AT_surfxml_mount_id ) AX_surfxml_mount_id;
 #define A_surfxml_mount_id (surfxml_bufferstack + AX_surfxml_mount_id)
 XBT_PUBLIC_DATA(short ) int surfxml_mount_id_isset;
-XBT_PUBLIC_DATA(AT_surfxml_storage_type_id ) AX_surfxml_storage_type_id;
-#define A_surfxml_storage_type_id (surfxml_bufferstack + AX_surfxml_storage_type_id)
-XBT_PUBLIC_DATA(short ) int surfxml_storage_type_id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_power ) AX_surfxml_cluster_power;
 #define A_surfxml_cluster_power (surfxml_bufferstack + AX_surfxml_cluster_power)
 XBT_PUBLIC_DATA(short ) int surfxml_cluster_power_isset;
@@ -478,9 +481,6 @@ XBT_PUBLIC_DATA(short ) int surfxml_cluster_sharing_policy_isset;
 XBT_PUBLIC_DATA(AT_surfxml_bypassRoute_dst ) AX_surfxml_bypassRoute_dst;
 #define A_surfxml_bypassRoute_dst (surfxml_bufferstack + AX_surfxml_bypassRoute_dst)
 XBT_PUBLIC_DATA(short ) int surfxml_bypassRoute_dst_isset;
-XBT_PUBLIC_DATA(AT_surfxml_mstorage_type_id ) AX_surfxml_mstorage_type_id;
-#define A_surfxml_mstorage_type_id (surfxml_bufferstack + AX_surfxml_mstorage_type_id)
-XBT_PUBLIC_DATA(short ) int surfxml_mstorage_type_id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_core ) AX_surfxml_host_core;
 #define A_surfxml_host_core (surfxml_bufferstack + AX_surfxml_host_core)
 XBT_PUBLIC_DATA(short ) int surfxml_host_core_isset;
