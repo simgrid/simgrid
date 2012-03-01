@@ -316,14 +316,14 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("ADD ROUTING LEVEL");
   ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_free);
   ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_free);
-  // FOR NOW UNUSED
-//  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,NULL);
+  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,xbt_free);
+  ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_lib,routing_storage_type_free);
+  ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib,routing_storage_host_free);
 
   XBT_DEBUG("ADD SURF LEVELS");
   SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
   SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
   SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
-  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_resource_free);
 
   /* Connect our log channels: that must be done manually under windows */
   XBT_LOG_CONNECT(surf_cpu, surf);

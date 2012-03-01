@@ -30,8 +30,9 @@ extern int COORD_ASR_LEVEL;	//Coordinates level
 extern int NS3_ASR_LEVEL;		//host node for ns3
 
 extern xbt_lib_t storage_lib;
-extern int ROUTING_STORAGE_LEVEL;   //Routing level
-extern int SURF_STORAGE_LEVEL;      //Surf level
+extern int ROUTING_STORAGE_LEVEL;        //Routing storage level
+extern int ROUTING_STORAGE_TYPE_LEVEL;   //Routing storage_type level
+extern int ROUTING_STORAGE_HOST_LEVEL;
 
 /* The callbacks to register for the routing to work */
 void routing_AS_begin(const char *AS_id, const char *wanted_routing_type);

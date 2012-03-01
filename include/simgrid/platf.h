@@ -106,20 +106,20 @@ typedef struct s_sg_platf_cluster_cbarg {
 } s_sg_platf_cluster_cbarg_t;
 
 typedef struct {
-  const char* id;
-  const char* type_id;
+  char* id;
+  char* type_id;
 } s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
 
 typedef struct {
-  const char* id;
-  const char* model;
-  const char* content;
+  char* id;
+  char* model;
+  char* content;
   xbt_dict_t properties;
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
 
 typedef struct {
-  const char* type_id;
-  const char* name;
+  char* type_id;
+  char* name;
 } s_sg_platf_mstorage_cbarg_t, *sg_platf_mstorage_cbarg_t;
 
 typedef struct {

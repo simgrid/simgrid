@@ -329,15 +329,27 @@ static inline void *surf_workstation_resource_by_name(const char *name){
 static inline void *surf_network_resource_by_name(const char *name){
 	return xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL);
 }
-static inline void *surf_storage_resource_by_name(const char *name) {
-    return xbt_lib_get_or_null(storage_lib, name, SURF_STORAGE_LEVEL);
-}
 
 typedef struct surf_resource {
   surf_model_t model;
   char *name;
   xbt_dict_t properties;
 } s_surf_resource_t, *surf_resource_t;
+
+/**
+ * Storage struct
+ */
+typedef struct s_storage_type {
+  char *model;
+  char *content;
+  xbt_dict_t properties;
+  char *type_id;
+} s_storage_type_t, *storage_type_t;
+
+typedef struct s_mount {
+  char *type_id;
+  char *name;
+} s_mount_t, *mount_t;
 
 /**
  * Resource which have a metric handled by a maxmin system
