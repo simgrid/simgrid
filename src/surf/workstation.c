@@ -8,6 +8,7 @@
 #include "xbt/dict.h"
 #include "portable.h"
 #include "surf_private.h"
+#include "storage_private.h"
 #include "surf/surf_resource.h"
 
 typedef struct workstation_CLM03 {
@@ -28,8 +29,8 @@ static void workstation_new(sg_platf_host_cbarg_t host)
   workstation->generic_resource.model = surf_workstation_model;
   workstation->generic_resource.name = xbt_strdup(host->id);
   workstation->cpu = xbt_lib_get_or_null(host_lib, host->id, SURF_CPU_LEVEL);
-  workstation->storage = NULL;
-
+  workstation->storage = xbt_lib_get_or_null(storage_lib,host->id,ROUTING_STORAGE_HOST_LEVEL);
+  XBT_DEBUG("Create workstation %s with %ld mounted disks",host->id,xbt_dynar_length(workstation->storage));
   xbt_lib_set(host_lib, host->id, SURF_WKS_LEVEL, workstation);
 }
 
@@ -276,34 +277,114 @@ static xbt_dict_t ws_get_properties(const void *ws)
   return surf_resource_properties(((workstation_CLM03_t) ws)->cpu);
 }
 
-static surf_action_t ws_action_open(void *workstation, const char* path, const char* mode)
+static surf_action_t ws_action_open(void *workstation, const char* storage, const char* path, const char* mode)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.open(storage, path, mode);
+  storage_t st = NULL;
+  mount_t mnt = NULL;
+  unsigned int cursor;
+  xbt_dynar_t storage_list = ((workstation_CLM03_t) workstation)->storage;
+
+  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  xbt_dynar_foreach(storage_list,cursor,mnt)
+  {
+     XBT_DEBUG("See '%s'",mnt->name);
+     if(!strcmp(storage,mnt->name)){
+       st = surf_storage_resource_by_name(mnt->id);
+       break;
+     }
+  }
+  if(!st) xbt_die("Don't find mount '%s' for '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  XBT_DEBUG("OPEN on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.open(st, path, mode);
 }
 
-static surf_action_t ws_action_close(void *workstation, surf_file_t fp)
+static surf_action_t ws_action_close(void *workstation, const char* storage, surf_file_t fp)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.close(storage, fp);
+  storage_t st = NULL;
+  mount_t mnt = NULL;
+  unsigned int cursor;
+  xbt_dynar_t storage_list = ((workstation_CLM03_t) workstation)->storage;
+
+  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  xbt_dynar_foreach(storage_list,cursor,mnt)
+  {
+    XBT_DEBUG("See '%s'",mnt->name);
+    if(!strcmp(storage,mnt->name)){
+      st = surf_storage_resource_by_name(mnt->id);
+      break;
+    }
+  }
+  if(!st) xbt_die("Don't find mount '%s' for '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  XBT_DEBUG("CLOSE on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.close(st, fp);
 }
 
-static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t ws_action_read(void *workstation, const char* storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.read(storage, ptr, size, nmemb, stream);
+  storage_t st = NULL;
+  mount_t mnt = NULL;
+  unsigned int cursor;
+  xbt_dynar_t storage_list = ((workstation_CLM03_t) workstation)->storage;
+
+  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  xbt_dynar_foreach(storage_list,cursor,mnt)
+  {
+    XBT_DEBUG("See '%s'",mnt->name);
+    if(!strcmp(storage,mnt->name)){
+      st = surf_storage_resource_by_name(mnt->id);
+      break;
+    }
+  }
+  if(!st) xbt_die("Don't find mount '%s' for '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  XBT_DEBUG("READ on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.read(st, ptr, size, nmemb, stream);
 }
 
-static surf_action_t ws_action_write(void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t ws_action_write(void *workstation, const char* storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.write(storage, ptr, size, nmemb, stream);
+  storage_t st = NULL;
+  mount_t mnt = NULL;
+  unsigned int cursor;
+  xbt_dynar_t storage_list = ((workstation_CLM03_t) workstation)->storage;
+
+  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  xbt_dynar_foreach(storage_list,cursor,mnt)
+  {
+    XBT_DEBUG("See '%s'",mnt->name);
+    if(!strcmp(storage,mnt->name)){
+      st = surf_storage_resource_by_name(mnt->id);
+      break;
+    }
+  }
+  if(!st) xbt_die("Don't find mount '%s' for '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  XBT_DEBUG("WRITE on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.write(st,  ptr, size, nmemb, stream);
 }
 
-static surf_action_t ws_action_stat(void *workstation, int fd, void* buf)
+static surf_action_t ws_action_stat(void *workstation, const char* storage, int fd, void* buf)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.stat(storage, fd, buf);
+  storage_t st = NULL;
+  mount_t mnt = NULL;
+  unsigned int cursor;
+  xbt_dynar_t storage_list = ((workstation_CLM03_t) workstation)->storage;
+
+  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  xbt_dynar_foreach(storage_list,cursor,mnt)
+  {
+    XBT_DEBUG("See '%s'",mnt->name);
+    if(!strcmp(storage,mnt->name)){
+      st = surf_storage_resource_by_name(mnt->id);
+      break;
+    }
+  }
+  if(!st) xbt_die("Don't find mount '%s' for '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  XBT_DEBUG("STAT on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.stat(st,  fd, buf);
 }
 
 static void surf_workstation_model_init_internal(void)
