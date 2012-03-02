@@ -481,9 +481,8 @@ static double net_share_resources_lazy(double now)
       continue;
 
     /* bogus priority, skip it */
-    if (GENERIC_ACTION(action).priority <= 0) {
+    if (GENERIC_ACTION(action).priority <= 0)
       continue;
-    }
 
     min = -1;
     value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
