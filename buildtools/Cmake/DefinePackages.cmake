@@ -44,6 +44,7 @@ set(EXTRA_DIST
 	src/surf/simgrid_dtd.c
 	src/surf/simgrid.dtd
 	src/surf/network_private.h
+	src/surf/storage_private.h
 	src/surf/network_gtnets_private.h
 	src/surf/gtnets/gtnets_interface.h
 	src/surf/gtnets/gtnets_simulator.h
