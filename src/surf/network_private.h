@@ -30,6 +30,9 @@ enum heap_action_type{
 typedef struct surf_action_network_CM02 {
   s_surf_action_lmm_t generic_lmm_action;
   s_xbt_swag_hookup_t action_list_hookup;
+  int index_heap;
+  double last_update;
+  enum heap_action_type hat;
   double latency;
   double lat_current;
   double weight;
@@ -47,9 +50,6 @@ typedef struct surf_action_network_CM02 {
   char *src_name;
   char *dst_name;
 #endif
-  int index_heap;
-  enum heap_action_type hat;
-  double last_update;
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 
 #endif                          /* _SURF_NETWORK_PRIVATE_H */
