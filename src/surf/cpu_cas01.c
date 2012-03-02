@@ -12,7 +12,7 @@ lmm_system_t cpu_maxmin_system = NULL;
 e_UM_t cpu_update_mechanism = UM_UNDEFINED;
 static int cpu_selective_update = 0;
 
-static xbt_swag_t cpu_modified_cpu = NULL;
+static xbt_swag_t cpu_modified_set = NULL;
 static xbt_heap_t cpu_action_heap = NULL;
 
 #undef GENERIC_LMM_ACTION
@@ -164,9 +164,7 @@ static int cpu_action_unref(surf_action_t action)
       /* remove from heap */
       xbt_heap_remove(cpu_action_heap,
 		      ((surf_action_cpu_Cas01_t) action)->index_heap);
-      xbt_swag_remove(action,
-		      ((cpu_Cas01_t) ACTION_GET_CPU(action))->action_set);
-      xbt_swag_insert(ACTION_GET_CPU(action), cpu_modified_cpu);
+      xbt_swag_remove(action, cpu_modified_set);
     }
 #ifdef HAVE_TRACING
     xbt_free(action->category);
@@ -245,17 +243,23 @@ static void cpu_update_remains(cpu_Cas01_t cpu, double now)
 static double cpu_share_resources_lazy(double now)
 {
   surf_action_cpu_Cas01_t action;
-  double min;
+  double min = -1.0;
   double value;
-  cpu_Cas01_t cpu, cpu_next;
 
-  xbt_swag_foreach(cpu, cpu_modified_cpu)
-      cpu_update_remains(cpu, now);
+  XBT_DEBUG
+      ("Before share resources, the size of modified actions set is %d",
+       xbt_swag_size(cpu_modified_set));
+  update_action_remaining_lazy(now);
 
   lmm_solve(cpu_maxmin_system);
 
-  xbt_swag_foreach_safe(cpu, cpu_next, cpu_modified_cpu) {
-    xbt_swag_foreach(action, cpu->action_set) {
+  XBT_DEBUG
+      ("After share resources, The size of modified actions set is %d",
+       xbt_swag_size(cpu_modified_set));
+
+  xbt_swag_foreach(action, cpu_modified_set) {
+    int max_dur_flag = 0;
+
       if (GENERIC_ACTION(action).state_set !=
 	  surf_cpu_model->states.running_action_set)
 	continue;
@@ -723,8 +727,8 @@ static void surf_cpu_model_init_internal()
     cpu_action_heap = xbt_heap_new(8, NULL);
     xbt_heap_set_update_callback(cpu_action_heap,
 				 cpu_action_update_index_heap);
-    cpu_modified_cpu =
-	xbt_swag_new(xbt_swag_offset(cpu, modified_cpu_hookup));
+    cpu_modified_set = xbt_swag_new(xbt_swag_offset(action, action_list_hookup));
+    cpu_maxmin_system->keep_track = cpu_modified_set;
   }
 }
 
