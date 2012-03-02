@@ -76,28 +76,20 @@ static void ptask_update_action_bound(surf_action_workstation_L07_t action)
   double lat_current = 0.0;
   double lat_bound = -1.0;
   int i, j;
-  unsigned int cpt;
-  link_L07_t link;
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       xbt_dynar_t route=NULL;
-      routing_get_route_and_latency(surf_resource_name
-          (action->workstation_list[i]),
-          surf_resource_name(action->workstation_list[j]),
-          &route, NULL);
-
-      // FIXME do we really need to recompute the latency here?
-      double lat = 0.0;
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
-        xbt_dynar_foreach(route, cpt, link) {
-          lat += link->lat_current;
-        }
+        double lat = 0.0;
+        routing_get_route_and_latency(surf_resource_name
+            (action->workstation_list[i]),
+            surf_resource_name(action->workstation_list[j]),
+            &route, &lat);
         lat_current =
             MAX(lat_current,
-                lat * action->communication_amount[i * workstation_nb +
-                                                   j]);
+                lat * action->communication_amount[i * workstation_nb + j]);
       }
     }
   }
@@ -461,21 +453,16 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
   /* Compute the number of affected resources... */
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
-      link_L07_t link;
       xbt_dynar_t route=NULL;
-      routing_get_route_and_latency(
-          surf_resource_name(workstation_list[i]),
-          surf_resource_name(workstation_list[j]),
-          &route,NULL); // FIXME: do we want to recompute the latency?
-      double lat = 0.0;
 
-      if (communication_amount[i * workstation_nb + j] > 0)
-        xbt_dynar_foreach(route, cpt, link) {
-        lat += link->lat_current;
-        xbt_dict_set(ptask_parallel_task_link_set,
-                     link->generic_resource.name, link, NULL);
-        }
-      latency = MAX(latency, lat);
+      if (communication_amount[i * workstation_nb + j] > 0) {
+        double lat=0.0;
+        routing_get_route_and_latency(
+            surf_resource_name(workstation_list[i]),
+            surf_resource_name(workstation_list[j]),
+            &route,&lat);
+        latency = MAX(latency, lat);
+      }
     }
   }
 
@@ -517,13 +504,14 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
     for (j = 0; j < workstation_nb; j++) {
       link_L07_t link;
       xbt_dynar_t route=NULL;
+      if (communication_amount[i * workstation_nb + j] == 0.0)
+        continue;
+
       routing_get_route_and_latency(
           surf_resource_name(workstation_list[i]),
           surf_resource_name(workstation_list[j]),
           &route,NULL);
 
-      if (communication_amount[i * workstation_nb + j] == 0.0)
-        continue;
       xbt_dynar_foreach(route, cpt, link) {
         lmm_expand_add(ptask_maxmin_system, link->constraint,
                        action->variable,
