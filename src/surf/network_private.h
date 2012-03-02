@@ -28,12 +28,11 @@ enum heap_action_type{
 };
 
 typedef struct surf_action_network_CM02 {
-  s_surf_action_t generic_action;
+  s_surf_action_lmm_t generic_lmm_action;
   s_xbt_swag_hookup_t action_list_hookup;
   double latency;
   double lat_current;
   double weight;
-  lmm_variable_t variable;
   double rate;
   struct {
      const char* link_name;
@@ -44,7 +43,6 @@ typedef struct surf_action_network_CM02 {
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int latency_limited;
 #endif
-  int suspended;
 #ifdef HAVE_TRACING
   char *src_name;
   char *dst_name;
