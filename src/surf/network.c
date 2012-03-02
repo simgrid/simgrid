@@ -514,8 +514,7 @@ static double net_share_resources_lazy(double now)
     }
 
     if (min != -1) {
-      heap_insert((surf_action_network_CM02_t) action, min,
-                  max_dur_flag ? MAX_DURATION : NORMAL);
+      heap_insert(action, min, max_dur_flag ? MAX_DURATION : NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min,
                 now);
     }
