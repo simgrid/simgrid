@@ -477,9 +477,8 @@ static double net_share_resources_lazy(double now)
     int max_dur_flag = 0;
 
     if (GENERIC_ACTION(action).state_set !=
-        surf_network_model->states.running_action_set) {
+        surf_network_model->states.running_action_set)
       continue;
-    }
 
     /* bogus priority, skip it */
     if (GENERIC_ACTION(action).priority <= 0) {
