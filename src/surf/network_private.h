@@ -20,13 +20,6 @@ typedef struct network_link_CM02 {
   tmgr_trace_event_t lat_event;
 } s_link_CM02_t, *link_CM02_t;
 
-enum heap_action_type{
-  LATENCY = 100,
-  MAX_DURATION,
-  NORMAL,
-  NOTSET
-};
-
 typedef struct surf_action_network_CM02 {
   s_surf_action_lmm_t generic_lmm_action;
   s_xbt_swag_hookup_t action_list_hookup;

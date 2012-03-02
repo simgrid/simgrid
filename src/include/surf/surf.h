@@ -56,6 +56,13 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 XBT_PUBLIC(void) model_help(const char *category,
                             s_surf_model_description_t * table);
 
+enum heap_action_type{
+  LATENCY = 100,
+  MAX_DURATION,
+  NORMAL,
+  NOTSET
+};
+
 /** \brief Action structure
  * \ingroup SURF_actions
  *
