@@ -17,20 +17,24 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 int host(int argc, char *argv[])
 {
   m_file_t file;
-  file = MSG_file_open("test.txt","rw");
+  char* mount = bprintf("C:");
+
+  file = MSG_file_open(mount,"test.txt","rw");
   XBT_INFO("Host '%s' open %p",MSG_host_get_name(MSG_host_self()), file);
 
-  size_t read = MSG_file_read(NULL,0,0,file);
+  size_t read = MSG_file_read(mount,NULL,0,0,file);
   XBT_INFO("Host '%s' read %zu", MSG_host_get_name(MSG_host_self()), read);
 
-  size_t write = MSG_file_write(NULL,0,0,file);
+  size_t write = MSG_file_write(mount,NULL,0,0,file);
   XBT_INFO("Host '%s' write %zu", MSG_host_get_name(MSG_host_self()), write);
 
-  int res = MSG_file_stat(0,NULL);
+  int res = MSG_file_stat(mount,0,NULL);
   XBT_INFO("Host '%s' stat %d",MSG_host_get_name(MSG_host_self()), res);
 
-  res = MSG_file_close(file);
+  res = MSG_file_close(mount,file);
   XBT_INFO("Host '%s' close %d",MSG_host_get_name(MSG_host_self()), res);
+
+  free(mount);
   return 0;
 }
 

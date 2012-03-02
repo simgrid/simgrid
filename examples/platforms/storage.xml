@@ -31,7 +31,7 @@
 		</host>		
 		
 		<host id="alice" power="1000000000">
-			<mstorage typeId="crucial" name="C:"/>
+			<mount id="Disk1" name="C:"/>
 		</host>
 
 		<storage id="Disk4" typeId="wdigital"/>
