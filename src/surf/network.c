@@ -522,11 +522,10 @@ static double net_share_resources_lazy(double now)
   }
 
   //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(net_action_heap) > 0) {
+  if (xbt_heap_size(net_action_heap) > 0)
     min = xbt_heap_maxkey(net_action_heap) - now;
-  } else {
+  else
     min = -1;
-  }
 
   XBT_DEBUG("The minimum with the HEAP %lf", min);
 
