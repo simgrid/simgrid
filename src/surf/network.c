@@ -510,7 +510,7 @@ static double net_share_resources_lazy(double now)
               GENERIC_ACTION(action).max_duration);
 
     if (action->index_heap >= 0) {
-      heap_remove((surf_action_network_CM02_t) action);
+      heap_remove(action);
     }
 
     if (min != -1) {
