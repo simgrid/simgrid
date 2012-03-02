@@ -69,6 +69,17 @@ static int ptask_host_count = 0;
 static xbt_dict_t ptask_parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
+static surf_action_t die_impossible_communicate (const char *src_name, const char *dst_name, double size, double rate)
+{
+  DIE_IMPOSSIBLE;
+  return NULL;
+}
+
+static xbt_dynar_t die_impossible_get_route(const char *src_name, const char *dst_name)
+{
+  DIE_IMPOSSIBLE;
+  return NULL;
+}
 
 static void ptask_update_action_bound(surf_action_workstation_L07_t action)
 {
@@ -457,11 +468,18 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
 
       if (communication_amount[i * workstation_nb + j] > 0) {
         double lat=0.0;
+        unsigned int cpt;
+        link_L07_t link;
+
         routing_get_route_and_latency(
             surf_resource_name(workstation_list[i]),
             surf_resource_name(workstation_list[j]),
             &route,&lat);
         latency = MAX(latency, lat);
+
+        xbt_dynar_foreach(route, cpt, link) {
+           xbt_dict_set(ptask_parallel_task_link_set,link->generic_resource.name,link,NULL);
+        }
       }
     }
   }
@@ -887,6 +905,15 @@ static void ptask_model_init_internal(void)
                                                   SURF_RESOURCE_ON, NULL,
                                                   SURF_LINK_FATPIPE, NULL));
 
+  surf_network_model = surf_model_init();
+
+  surf_network_model->extension.network.communicate = die_impossible_communicate;
+  surf_network_model->extension.network.get_route = die_impossible_get_route;
+  surf_network_model->extension.network.get_link_bandwidth = ptask_get_link_bandwidth;
+  surf_network_model->extension.network.get_link_latency = ptask_get_link_latency;
+  surf_network_model->extension.network.link_shared = ptask_link_shared;
+  surf_network_model->extension.network.add_traces = NULL;
+  surf_network_model->extension.network.create_resource = NULL;
 }
 
 /**************************************/
@@ -897,7 +924,6 @@ void surf_workstation_model_init_ptask_L07(void)
   XBT_INFO("surf_workstation_model_init_ptask_L07");
   xbt_assert(!surf_cpu_model, "CPU model type already defined");
   xbt_assert(!surf_network_model, "network model type already defined");
-  surf_network_model = surf_model_init();
   ptask_define_callbacks();
   ptask_model_init_internal();
   xbt_dynar_push(model_list, &surf_workstation_model);
