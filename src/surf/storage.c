@@ -163,7 +163,7 @@ static void storage_update_actions_state(double now, double delta)
 
 static double storage_share_resources(double NOW)
 {
-  XBT_INFO("storage_share_resources %f",NOW);
+  XBT_DEBUG("storage_share_resources %f",NOW);
   s_surf_action_storage_t action;
   return generic_maxmin_share_resources(surf_storage_model->states.running_action_set,
       xbt_swag_offset(action, generic_lmm_action.variable),
