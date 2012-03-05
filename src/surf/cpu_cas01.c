@@ -25,10 +25,6 @@ static xbt_heap_t cpu_action_heap = NULL;
 
 typedef struct surf_action_cpu_cas01 {
   s_surf_action_lmm_t generic_lmm_action;
-  s_xbt_swag_hookup_t action_list_hookup;
-  int index_heap;
-  double last_update;
-  enum heap_action_type hat;
 } s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
 typedef struct cpu_Cas01 {
@@ -54,7 +50,8 @@ static xbt_swag_t
 /* added to manage the communication action's heap */
 static void net_action_update_index_heap(void *action, int i)
 {
-  ((surf_action_cpu_Cas01_t) action)->index_heap = i;
+  surf_action_cpu_Cas01_t a = action;
+  GENERIC_LMM_ACTION(a).index_heap = i;
 }
 
 /* insert action on heap using a given key and a hat (heap_action_type)
@@ -67,15 +64,15 @@ static void net_action_update_index_heap(void *action, int i)
 static void heap_insert(surf_action_cpu_Cas01_t action, double key,
                         enum heap_action_type hat)
 {
-  action->hat = hat;
+  GENERIC_LMM_ACTION(action).hat = hat;
   xbt_heap_push(cpu_action_heap, action, key);
 }
 
 static void heap_remove(surf_action_cpu_Cas01_t action)
 {
-  action->hat = NOTSET;
-  if (((surf_action_cpu_Cas01_t) action)->index_heap >= 0) {
-    xbt_heap_remove(cpu_action_heap, action->index_heap);
+  GENERIC_LMM_ACTION(action).hat = NOTSET;
+  if (GENERIC_LMM_ACTION(action).index_heap >= 0) {
+    xbt_heap_remove(cpu_action_heap, GENERIC_LMM_ACTION(action).index_heap);
   }
 }
 
@@ -235,7 +232,7 @@ static void update_action_remaining_lazy(double now)
     if (GENERIC_ACTION(action).priority <= 0)
       continue;
 
-    delta = now - action->last_update;
+    delta = now - GENERIC_LMM_ACTION(action).last_update;
     if (GENERIC_ACTION(action).remains > 0) {
 
       double_update(&(GENERIC_ACTION(action).remains),
@@ -253,14 +250,14 @@ static void update_action_remaining_lazy(double now)
                                         (surf_action_t) action,
                                         lmm_variable_getvalue
                                         (GENERIC_LMM_ACTION(action).
-                                         variable), action->last_update,
-                                        now - action->last_update);
+                                         variable), GENERIC_LMM_ACTION(action).last_update,
+                                        now - GENERIC_LMM_ACTION(action).last_update);
       }
 #endif
       XBT_DEBUG("Update action(%p) remains %lf", action,
                 GENERIC_ACTION(action).remains);
     }
-    action->last_update = now;
+    GENERIC_LMM_ACTION(action).last_update = now;
   }
 
 }
@@ -364,13 +361,11 @@ static void cpu_update_actions_state_lazy(double now, double delta)
                             (cpu_maxmin_system,
                              GENERIC_LMM_ACTION(action).variable, 0));
       TRACE_surf_host_set_utilization(cpu->generic_resource.name,
-                                      GENERIC_LMM_ACTION(action).
-                                      generic_action.data,
+                                      GENERIC_LMM_ACTION(action).generic_action.data,
                                       (surf_action_t) action,
-                                      lmm_variable_getvalue
-                                      (GENERIC_LMM_ACTION(action).
-                                       variable), action->last_update,
-                                      now - action->last_update);
+                                      lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
+                                      GENERIC_LMM_ACTION(action).last_update,
+                                      now - GENERIC_LMM_ACTION(action).last_update);
     }
 #endif
     GENERIC_ACTION(action).remains = 0;
@@ -385,11 +380,11 @@ static void cpu_update_actions_state_lazy(double now, double delta)
     xbt_swag_t running_actions = surf_cpu_model->states.running_action_set;
     xbt_swag_foreach(action, running_actions) {
         if (smaller < 0) {
-          smaller = action->last_update;
+          smaller = GENERIC_LMM_ACTION(action).last_update;
           continue;
         }
-        if (action->last_update < smaller) {
-          smaller = action->last_update;
+        if (GENERIC_LMM_ACTION(action).last_update < smaller) {
+          smaller = GENERIC_LMM_ACTION(action).last_update;
         }
     }
     if (smaller > 0) {
@@ -519,8 +514,8 @@ static surf_action_t cpu_execute(void *cpu, double size)
                        GENERIC_ACTION(action).priority,
                        CPU->power_scale * CPU->power_peak, 1);
   if (cpu_update_mechanism == UM_LAZY) {
-    action->index_heap = -1;
-    action->last_update = surf_get_clock();
+    GENERIC_LMM_ACTION(action).index_heap = -1;
+    GENERIC_LMM_ACTION(action).last_update = surf_get_clock();
   }
   lmm_expand(cpu_maxmin_system, CPU->constraint,
              GENERIC_LMM_ACTION(action).variable, 1.0);
@@ -656,11 +651,6 @@ static double cpu_get_available_speed(void *cpu)
   return ((cpu_Cas01_t) cpu)->power_scale;
 }
 
-static void cpu_action_update_index_heap(void *action, int i)
-{
-  ((surf_action_cpu_Cas01_t) action)->index_heap = i;
-}
-
 static void cpu_finalize(void)
 {
   lmm_system_free(cpu_maxmin_system);
@@ -736,9 +726,9 @@ static void surf_cpu_model_init_internal()
   if (cpu_update_mechanism == UM_LAZY) {
     cpu_action_heap = xbt_heap_new(8, NULL);
     xbt_heap_set_update_callback(cpu_action_heap,
-                                 cpu_action_update_index_heap);
+        net_action_update_index_heap);
     cpu_modified_set =
-        xbt_swag_new(xbt_swag_offset(comp, action_list_hookup));
+        xbt_swag_new(xbt_swag_offset(comp, generic_lmm_action.action_list_hookup));
     cpu_maxmin_system->keep_track = cpu_modified_set;
   }
 }

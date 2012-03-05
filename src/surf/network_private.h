@@ -22,10 +22,6 @@ typedef struct network_link_CM02 {
 
 typedef struct surf_action_network_CM02 {
   s_surf_action_lmm_t generic_lmm_action;
-  s_xbt_swag_hookup_t action_list_hookup;
-  int index_heap;
-  double last_update;
-  enum heap_action_type hat;
   double latency;
   double lat_current;
   double weight;

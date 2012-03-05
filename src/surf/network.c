@@ -67,7 +67,8 @@ static xbt_heap_t net_action_heap = NULL;
 /* added to manage the communication action's heap */
 static void net_action_update_index_heap(void *action, int i)
 {
-  ((surf_action_network_CM02_t) action)->index_heap = i;
+  surf_action_network_CM02_t a = action;
+  GENERIC_LMM_ACTION(a).index_heap = i;
 }
 
 /* insert action on heap using a given key and a hat (heap_action_type)
@@ -80,15 +81,15 @@ static void net_action_update_index_heap(void *action, int i)
 static void heap_insert(surf_action_network_CM02_t action, double key,
                         enum heap_action_type hat)
 {
-  action->hat = hat;
+  GENERIC_LMM_ACTION(action).hat = hat;
   xbt_heap_push(net_action_heap, action, key);
 }
 
 static void heap_remove(surf_action_network_CM02_t action)
 {
-  action->hat = NOTSET;
-  if (((surf_action_network_CM02_t) action)->index_heap >= 0) {
-    xbt_heap_remove(net_action_heap, action->index_heap);
+  GENERIC_LMM_ACTION(action).hat = NOTSET;
+  if (GENERIC_LMM_ACTION(action).index_heap >= 0) {
+    xbt_heap_remove(net_action_heap, GENERIC_LMM_ACTION(action).index_heap);
   }
 }
 
@@ -396,7 +397,7 @@ static void update_action_remaining_lazy(double now)
       continue;
     }
 
-    delta = now - action->last_update;
+    delta = now - GENERIC_LMM_ACTION(action).last_update;
 
     double_update(&(((surf_action_t)action)->remains),
                   lmm_variable_getvalue(((surf_action_lmm_t) action)->variable) * delta);
@@ -418,7 +419,7 @@ static void update_action_remaining_lazy(double now)
       heap_remove(action);
     }
 
-    action->last_update = now;
+    GENERIC_LMM_ACTION(action).last_update = now;
   }
 }
 
@@ -617,14 +618,15 @@ static void net_update_actions_state_lazy(double now, double delta)
     GENERIC_ACTION(action).finish = surf_get_clock();
 
     // if I am wearing a latency hat
-    if (action->hat == LATENCY) {
+    if (GENERIC_LMM_ACTION(action).hat == LATENCY) {
       lmm_update_variable_weight(network_maxmin_system, GENERIC_LMM_ACTION(action).variable,
                                  action->weight);
       heap_remove(action);
-      action->last_update = surf_get_clock();
+      GENERIC_LMM_ACTION(action).last_update = surf_get_clock();
 
       // if I am wearing a max_duration or normal hat
-    } else if (action->hat == MAX_DURATION || action->hat == NORMAL) {
+    } else if (GENERIC_LMM_ACTION(action).hat == MAX_DURATION ||
+        GENERIC_LMM_ACTION(action).hat == NORMAL) {
       // no need to communicate anymore
       // assume that flows that reached max_duration have remaining of 0
       GENERIC_ACTION(action).remains = 0;
@@ -804,8 +806,8 @@ static surf_action_t net_communicate(const char *src_name,
   xbt_swag_insert(action, ((surf_action_t)action)->state_set);
   action->rate = rate;
   if (network_update_mechanism == UM_LAZY) {
-    action->index_heap = -1;
-    action->last_update = surf_get_clock();
+    GENERIC_LMM_ACTION(action).index_heap = -1;
+    GENERIC_LMM_ACTION(action).last_update = surf_get_clock();
   }
 
   bandwidth_bound = -1.0;
@@ -849,8 +851,8 @@ static surf_action_t net_communicate(const char *src_name,
     if (network_update_mechanism == UM_LAZY) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action,
-                action->latency + action->last_update);
-      heap_insert(action, action->latency + action->last_update,
+                action->latency + GENERIC_LMM_ACTION(action).last_update);
+      heap_insert(action, action->latency + GENERIC_LMM_ACTION(action).last_update,
                   xbt_dynar_is_empty(route) ? NORMAL : LATENCY);
     }
   } else
@@ -1113,7 +1115,7 @@ static void surf_network_model_init_internal(void)
     xbt_heap_set_update_callback(net_action_heap,
                                  net_action_update_index_heap);
     net_modified_set =
-        xbt_swag_new(xbt_swag_offset(comm, action_list_hookup));
+        xbt_swag_new(xbt_swag_offset(comm, generic_lmm_action.action_list_hookup));
     network_maxmin_system->keep_track = net_modified_set;
   }
 }

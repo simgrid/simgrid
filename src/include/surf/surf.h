@@ -99,6 +99,10 @@ typedef struct surf_action_lmm {
   s_surf_action_t generic_action;
   lmm_variable_t variable;
   int suspended;
+  s_xbt_swag_hookup_t action_list_hookup;
+  int index_heap;
+  double last_update;
+  enum heap_action_type hat;
 } s_surf_action_lmm_t, *surf_action_lmm_t;
 
 /** \brief Action states
