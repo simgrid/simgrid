@@ -56,7 +56,7 @@ e_UM_t network_update_mechanism = UM_UNDEFINED;
 static int net_selective_update = 0;
 
 static int net_action_is_suspended(surf_action_t action);
-static void update_action_remaining_lazy(double now);
+static void update_action_remaining(double now);
 
 static xbt_swag_t net_modified_set = NULL;
 static xbt_heap_t net_action_heap = NULL;
@@ -378,11 +378,11 @@ int net_get_link_latency_limited(surf_action_t action)
 double net_action_get_remains(surf_action_t action)
 {
   if (network_update_mechanism == UM_LAZY)	/* update remains before return it */
-    update_action_remaining_lazy(surf_get_clock());
+    update_action_remaining(surf_get_clock());
   return action->remains;
 }
 
-static void update_action_remaining_lazy(double now)
+static void update_action_remaining(double now)
 {
   surf_action_network_CM02_t action = NULL;
   double delta = 0.0;
@@ -456,13 +456,13 @@ static double net_share_resources_full(double now)
 static double net_share_resources_lazy(double now)
 {
   surf_action_network_CM02_t action = NULL;
-  double min = -1.0;
+  double min = -1;
   double value;
 
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %d",
        xbt_swag_size(net_modified_set));
-  update_action_remaining_lazy(now);
+  update_action_remaining(now);
 
   lmm_solve(network_maxmin_system);
 
@@ -474,7 +474,7 @@ static double net_share_resources_lazy(double now)
     int max_dur_flag = 0;
 
     if (GENERIC_ACTION(action).state_set !=
-        surf_network_model->states.running_action_set) {
+	surf_network_model->states.running_action_set) {
       continue;
     }
 
