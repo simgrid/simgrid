@@ -596,7 +596,6 @@ static void cpu_action_set_max_duration(surf_action_t action,
   XBT_IN("(%p,%g)", action, duration);
 
   action->max_duration = duration;
-  /* insert cpu in modified_cpu set to notice the max duration change */
   if (cpu_update_mechanism == UM_LAZY)
     heap_remove((surf_action_cpu_Cas01_t) action);
   XBT_OUT();
