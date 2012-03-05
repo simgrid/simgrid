@@ -208,13 +208,13 @@ typedef struct s_surf_file *surf_file_t;
  */
 
 typedef struct surf_storage_model_extension_public {
-  surf_action_t(*open) (void *workstation, const char* path, const char* mode);
-  surf_action_t(*close) (void *workstation, surf_file_t fp);
-  surf_action_t(*read) (void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
-  surf_action_t(*write) (void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
-  surf_action_t(*stat) (void *workstation, int fd, void* buf);
-  void* (*create_resource) (const char* id, const char* model,
-      const char* content, xbt_dict_t properties);
+  surf_action_t(*open) (void *storage, const char* path, const char* mode);
+  surf_action_t(*close) (void *storage, surf_file_t fp);
+  surf_action_t(*read) (void *storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
+  surf_action_t(*write) (void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
+  surf_action_t(*stat) (void *storage, int fd, void* buf);
+  void* (*create_resource) (const char* id, const char* model,const char* type_id,
+      const char* content, xbt_dict_t storage_properties);
 } s_surf_model_extension_storage_t;
 
      /** \brief Workstation model extension public
@@ -242,11 +242,11 @@ typedef struct surf_workstation_model_extension_public {
                                           double amount, double rate);
   double (*get_link_bandwidth) (const void *link);                                         /**< Return the current bandwidth of a network link */
   double (*get_link_latency) (const void *link);                                           /**< Return the current latency of a network link */
-  surf_action_t(*open) (void *workstation, const char* path, const char* mode);
-  surf_action_t(*close) (void *workstation, surf_file_t fp);
-  surf_action_t(*read) (void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
-  surf_action_t(*write) (void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
-  surf_action_t(*stat) (void *workstation, int fd, void* buf);
+  surf_action_t(*open) (void *workstation, const char* storage, const char* path, const char* mode);
+  surf_action_t(*close) (void *workstation, const char* storage, surf_file_t fp);
+  surf_action_t(*read) (void *workstation, const char* storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
+  surf_action_t(*write) (void *workstation, const char* storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
+  surf_action_t(*stat) (void *workstation, const char* storage, int fd, void* buf);
   int (*link_shared) (const void *link);
    xbt_dict_t(*get_properties) (const void *resource);
   void* (*link_create_resource) (const char *name,
@@ -329,6 +329,9 @@ static inline void *surf_workstation_resource_by_name(const char *name){
 static inline void *surf_network_resource_by_name(const char *name){
 	return xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL);
 }
+static inline void *surf_storage_resource_by_name(const char *name){
+    return xbt_lib_get_or_null(storage_lib, name, SURF_STORAGE_LEVEL);
+}
 
 typedef struct surf_resource {
   surf_model_t model;
@@ -342,12 +345,12 @@ typedef struct surf_resource {
 typedef struct s_storage_type {
   char *model;
   char *content;
-  xbt_dict_t properties;
   char *type_id;
+  xbt_dict_t properties;
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
-  char *type_id;
+  char *id;
   char *name;
 } s_mount_t, *mount_t;
 
