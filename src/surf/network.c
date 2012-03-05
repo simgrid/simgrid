@@ -509,15 +509,12 @@ static double net_share_resources_lazy(double now)
               GENERIC_ACTION(action).start, now + value,
               GENERIC_ACTION(action).max_duration);
 
-    if (action->index_heap >= 0) {
-      heap_remove(action);
-    }
-
     if (min != -1) {
+      heap_remove(action);
       heap_insert(action, min, max_dur_flag ? MAX_DURATION : NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min,
                 now);
-    }
+    } else DIE_IMPOSSIBLE;
   }
 
   //hereafter must have already the min value for this resource model
