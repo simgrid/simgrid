@@ -368,7 +368,7 @@ static void cpu_update_actions_state_lazy(double now, double delta)
 #endif
     GENERIC_ACTION(action).remains = 0;
     cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-//    heap_remove(action); //FIXME heap
+    heap_remove(action);
   }
 #ifdef HAVE_TRACING
   if (TRACE_is_enabled()) {
@@ -549,8 +549,13 @@ static surf_action_t cpu_action_sleep(void *cpu, double duration)
 
   lmm_update_variable_weight(cpu_maxmin_system,
                              GENERIC_LMM_ACTION(action).variable, 0.0);
-  if (cpu_update_mechanism == UM_LAZY)      // remove action from the heap
+  if (cpu_update_mechanism == UM_LAZY) {     // remove action from the heap
     heap_remove((surf_action_cpu_Cas01_t) action);
+    // this is necessary for a variable with weight 0 since such
+    // variables are ignored in lmm and we need to set its max_duration
+    // correctly at the next call to share_resources
+    xbt_swag_insert_at_head(action,cpu_modified_set);
+  }
 
   XBT_OUT();
   return (surf_action_t) action;
