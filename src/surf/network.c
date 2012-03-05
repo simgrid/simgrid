@@ -563,12 +563,11 @@ static void net_update_actions_state_full(double now, double delta)
       unsigned int i;
       xbt_dynar_foreach(route, i, link) {
         TRACE_surf_link_set_utilization(link->lmm_resource.
-                                        generic_resource.name,
-                                        (((surf_action_t)action)->data,
-                                        (surf_action_t) action,
-                                        lmm_variable_getvalue(action->
-                                                              variable),
-                                        now - delta, delta);
+            generic_resource.name,
+            GENERIC_ACTION(action).data,
+            (surf_action_t) action,
+            lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
+            now - delta, delta);
       }
     }
 #endif

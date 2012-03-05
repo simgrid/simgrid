@@ -243,14 +243,18 @@ static void update_action_remaining_lazy(double now)
 
 #ifdef HAVE_TRACING
       if (TRACE_is_enabled()) {
+        cpu_Cas01_t cpu =
+            lmm_constraint_id(lmm_get_cnst_from_var
+                              (cpu_maxmin_system,
+                               GENERIC_LMM_ACTION(action).variable, 0));
         TRACE_surf_host_set_utilization(cpu->generic_resource.name,
                                         action->generic_lmm_action.
                                         generic_action.data,
                                         (surf_action_t) action,
                                         lmm_variable_getvalue
                                         (GENERIC_LMM_ACTION(action).
-                                         variable), cpu->last_update,
-                                        now - cpu->last_update);
+                                         variable), action->last_update,
+                                        now - action->last_update);
       }
 #endif
       XBT_DEBUG("Update action(%p) remains %lf", action,
@@ -355,15 +359,18 @@ static void cpu_update_actions_state_lazy(double now, double delta)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      cpu_Cas01_t cpu = ((cpu_Cas01_t) (action->cpu));
+      cpu_Cas01_t cpu =
+          lmm_constraint_id(lmm_get_cnst_from_var
+                            (cpu_maxmin_system,
+                             GENERIC_LMM_ACTION(action).variable, 0));
       TRACE_surf_host_set_utilization(cpu->generic_resource.name,
                                       GENERIC_LMM_ACTION(action).
                                       generic_action.data,
                                       (surf_action_t) action,
                                       lmm_variable_getvalue
                                       (GENERIC_LMM_ACTION(action).
-                                       variable), cpu->last_update,
-                                      now - cpu->last_update);
+                                       variable), action->last_update,
+                                      now - action->last_update);
     }
 #endif
     GENERIC_ACTION(action).remains = 0;
@@ -374,22 +381,16 @@ static void cpu_update_actions_state_lazy(double now, double delta)
   if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
-    void **data;
-    cpu_Cas01_t cpu;
-    xbt_lib_cursor_t cursor;
-    char *key;
     double smaller = -1;
-    xbt_lib_foreach(host_lib, cursor, key, data) {
-      if (data[SURF_CPU_LEVEL]) {
-        cpu = data[SURF_CPU_LEVEL];
+    xbt_swag_t running_actions = surf_cpu_model->states.running_action_set;
+    xbt_swag_foreach(action, running_actions) {
         if (smaller < 0) {
-          smaller = cpu->last_update;
+          smaller = action->last_update;
           continue;
         }
-        if (cpu->last_update < smaller) {
-          smaller = cpu->last_update;
+        if (action->last_update < smaller) {
+          smaller = action->last_update;
         }
-      }
     }
     if (smaller > 0) {
       TRACE_last_timestamp_to_dump = smaller;
