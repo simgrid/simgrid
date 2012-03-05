@@ -788,29 +788,26 @@ static void routing_parse_mstorage(sg_platf_mstorage_cbarg_t mstorage)
 static void mount_free(void *p)
 {
   mount_t mnt = p;
-  xbt_free(mnt->id);
   xbt_free(mnt->name);
 }
 
 static void routing_parse_mount(sg_platf_mount_cbarg_t mount)
 {
-
   // Verification of an existing storage
   void* storage = xbt_lib_get_or_null(storage_lib, mount->id,ROUTING_STORAGE_LEVEL);
   xbt_assert(storage,"Disk id \"%s\" does not exists", mount->id);
 
   XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->id, mount->name);
 
-  mount_t mnt = xbt_new0(s_mount_t, 1);
-  mnt->id = xbt_strdup(mount->id);
-  mnt->name = xbt_strdup(mount->name);
+  s_mount_t mnt;
+  mnt.id = surf_storage_resource_by_name(mount->id);
+  mnt.name = xbt_strdup(mount->name);
 
   if(!mount_list){
     XBT_DEBUG("Create a Mount list for %s",A_surfxml_host_id);
     mount_list = xbt_dynar_new(sizeof(s_mount_t), mount_free);
   }
   xbt_dynar_push(mount_list,&mnt);
-
 }
 
 static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)

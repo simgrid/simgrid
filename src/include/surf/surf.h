@@ -357,7 +357,7 @@ typedef struct s_storage_type {
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
-  char *id;
+  void *id;
   char *name;
 } s_mount_t, *mount_t;
 
