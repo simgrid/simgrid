@@ -386,7 +386,10 @@ Java_org_simgrid_msg_MsgNative_hostGetName(JNIEnv * env, jclass cls,
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_MsgNative_hostGetNumber(JNIEnv * env, jclass cls)
 {
-  return (jint) MSG_get_host_number();
+  xbt_dynar_t hosts =  MSG_hosts_as_dynar();
+  int nb_host = xbt_dynar_length(hosts);
+  xbt_dynar_free(&hosts);
+  return (jint) nb_host;
 }
 
 JNIEXPORT jobject JNICALL
@@ -803,7 +806,7 @@ JNIEXPORT void JNICALL
 {
   MSG_error_t rv;
   int index;
-  m_host_t *hosts;
+  xbt_dynar_t hosts;
   jobject jhost;
 
   /* Run everything */
@@ -818,14 +821,14 @@ JNIEXPORT void JNICALL
 
   XBT_INFO("Clean java world");
   /* Cleanup java hosts */
-  hosts = MSG_get_host_table();
-  for (index = 0; index < MSG_get_host_number() - 1; index++) {
-    jhost = (jobject) hosts[index]->data;
+  hosts = MSG_hosts_as_dynar();
+  for (index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
+    jhost = (jobject) xbt_dynar_get_as(hosts,index,m_host_t)->data;
     if (jhost)
       jhost_unref(env, jhost);
 
   }
-
+  xbt_dynar_free(&hosts);
   XBT_INFO("Clean native world");
 }
 JNIEXPORT void JNICALL
@@ -890,8 +893,8 @@ Java_org_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
   jstring jname;
   m_host_t host;
 
-  int count = MSG_get_host_number();
-  m_host_t *table = MSG_get_host_table();
+  xbt_dynar_t table =  MSG_hosts_as_dynar();
+  int count = xbt_dynar_length(table);
 
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
 
@@ -907,7 +910,7 @@ Java_org_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
   }
 
   for (index = 0; index < count; index++) {
-    host = table[index];
+    host = xbt_dynar_get_as(table,index,m_host_t);
     jhost = (jobject) (MSG_host_get_data(host));
 
     if (!jhost) {
@@ -920,7 +923,7 @@ Java_org_simgrid_msg_MsgNative_allHosts(JNIEnv * env, jclass cls_arg)
 
     (*env)->SetObjectArrayElement(env, jtable, index, jhost);
   }
-
+  xbt_dynar_free(&table);
   return jtable;
 }
 
