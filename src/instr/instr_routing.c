@@ -87,7 +87,10 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 
   //declare type
   char link_typename[INSTR_DEFAULT_STR_SIZE];
-  snprintf (link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s", src->type->name, dst->type->name);
+  snprintf (link_typename, INSTR_DEFAULT_STR_SIZE, "%s-%s%s-%s%s",
+            father->type->name,
+            src->type->name, src->type->id,
+            dst->type->name, dst->type->id);
   type_t link_type = PJ_type_get_or_null (link_typename, father->type);
   if (link_type == NULL){
     link_type = PJ_type_link_new (link_typename, father->type, src->type, dst->type);
