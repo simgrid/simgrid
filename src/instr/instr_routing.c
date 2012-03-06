@@ -50,7 +50,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
   return NULL;
 }
 
-static void linkContainers (container_t father, container_t src, container_t dst, xbt_dict_t filter)
+static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 {
   //ignore loopback
   if (strcmp (src->name, "__loopback__") == 0 || strcmp (dst->name, "__loopback__") == 0)
@@ -139,10 +139,10 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
           link_CM02_t *link = ((link_CM02_t*)xbt_dynar_get_ptr (route, i));
           char *link_name = (*link)->lmm_resource.generic_resource.name;
           container_t current = PJ_container_get(link_name);
-          linkContainers(container, previous, current, filter);
+          linkContainers(previous, current, filter);
           previous = current;
         }
-        linkContainers(container, previous, child2, filter);
+        linkContainers(previous, child2, filter);
 
       }else if (child1->kind == INSTR_AS &&
                 child2->kind == INSTR_AS &&
@@ -157,11 +157,11 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
         xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
           container_t current = PJ_container_get(link_name);
-          linkContainers (container, previous, current, filter);
+          linkContainers (previous, current, filter);
           previous = current;
         }
         container_t last = PJ_container_get(route->dst_gateway);
-        linkContainers (container, previous, last, filter);
+        linkContainers (previous, last, filter);
         generic_free_route(route);
       }
     }
