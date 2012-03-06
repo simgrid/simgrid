@@ -182,13 +182,6 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
                                      surf_action_t surf_action,
                                      double value, double now,
                                      double delta);
-void TRACE_surf_resource_utilization_start(smx_action_t action);
-void TRACE_surf_resource_utilization_event(smx_action_t action, double now,
-                                           double delta,
-                                           const char *variable,
-                                           const char *resource,
-                                           double value);
-void TRACE_surf_resource_utilization_end(smx_action_t action);
 void TRACE_surf_resource_utilization_alloc(void);
 void TRACE_surf_resource_utilization_release(void);
 
