@@ -9,7 +9,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/categorized' to 'tracing/ms.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/uncategorized' to 'tracing/ms.uncat.plist'
-> [0.000000] [instr_config/INFO] Tracing resource utilization active, network/optim configuration now set to Full.
 
 p Testing tracing by process 
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/msg/process:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/ms.cat.plist --cfg=triva/uncategorized:tracing/ms.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
@@ -21,7 +20,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/ms
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/categorized' to 'tracing/ms.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/uncategorized' to 'tracing/ms.uncat.plist'
-> [0.000000] [instr_config/INFO] Tracing resource utilization active, network/optim configuration now set to Full.
 
 $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 > {
