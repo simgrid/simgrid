@@ -344,11 +344,6 @@ static int net_action_unref(surf_action_t action)
       heap_remove((surf_action_network_CM02_t) action);
       xbt_swag_remove(action, net_modified_set);
     }
-#ifdef HAVE_TRACING
-    xbt_free(((surf_action_network_CM02_t) action)->src_name);
-    xbt_free(((surf_action_network_CM02_t) action)->dst_name);
-    xbt_free(action->category);
-#endif
     surf_action_free(&action);
     return 1;
   }
@@ -886,14 +881,6 @@ static surf_action_t net_communicate(const char *src_name,
                  GENERIC_LMM_ACTION(action).variable, .05);
     }
   }
-#ifdef HAVE_TRACING
-  if (TRACE_is_enabled()) {
-    action->src_name = xbt_strdup(src_name);
-    action->dst_name = xbt_strdup(dst_name);
-  } else {
-    action->src_name = action->dst_name = NULL;
-  }
-#endif
 
   xbt_dynar_free(&route);
   XBT_OUT();

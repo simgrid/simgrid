@@ -34,10 +34,6 @@ typedef struct surf_action_network_CM02 {
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int latency_limited;
 #endif
-#ifdef HAVE_TRACING
-  char *src_name;
-  char *dst_name;
-#endif
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 
 #endif                          /* _SURF_NETWORK_PRIVATE_H */
