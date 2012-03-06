@@ -11,7 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
 
 //to check if variables were previously set to 0, otherwise paje won't simulate them
-static xbt_dict_t platform_variables;   /* host or link name -> array of categories */
+static xbt_dict_t platform_variables;
 
 //used by all methods
 static void __TRACE_surf_check_variable_set_to_zero(double now,
@@ -40,22 +40,6 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
   }
   xbt_free(key);
 }
-
-/*
-static void __TRACE_A_event(smx_action_t action, double now, double delta,
-                            const char *variable, const char *resource,
-                            double value)
-{
-  char valuestr[100];
-  snprintf(valuestr, 100, "%f", value);
-
-  __TRACE_surf_check_variable_set_to_zero(now, variable, resource);
-  container_t container = PJ_container_get (resource);
-  type_t type = getVariableType (variable, NULL, container->type);
-  new_pajeAddVariable(now, container, type, value);
-  new_pajeSubVariable(now + delta, container, type, value);
-}
-*/
 
 static void instr_event (double now, double delta, type_t variable, container_t resource, double value)
 {
