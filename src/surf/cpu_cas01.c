@@ -350,7 +350,6 @@ static void cpu_update_actions_state_lazy(double now, double delta)
     action = xbt_heap_pop(cpu_action_heap);
     XBT_DEBUG("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();
-    /* set the remains to 0 due to precision problems when updating the remaining amount */
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       cpu_Cas01_t cpu =
@@ -364,6 +363,7 @@ static void cpu_update_actions_state_lazy(double now, double delta)
                                       now - GENERIC_LMM_ACTION(action).last_update);
     }
 #endif
+    /* set the remains to 0 due to precision problems when updating the remaining amount */
     GENERIC_ACTION(action).remains = 0;
     cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     heap_remove(action);
