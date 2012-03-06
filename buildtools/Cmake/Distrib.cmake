@@ -26,7 +26,7 @@ add_custom_target(manpages ALL
 	COMMENT "Generating manpages"
 )
 install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1
-        DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/usr/share/man/man1)
+        DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)
 
 endif(NOT WIN32)
 
