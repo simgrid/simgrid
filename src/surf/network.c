@@ -1109,10 +1109,6 @@ static void surf_network_model_init_internal(void)
 
 static void set_update_mechanism(void)
 {
-#ifdef HAVE_TRACING
-  TRACE_set_network_update_mechanism();
-#endif
-
   char *optim = xbt_cfg_get_string(_surf_cfg_set, "network/optim");
   int select =
       xbt_cfg_get_int(_surf_cfg_set, "network/maxmin_selective_update");

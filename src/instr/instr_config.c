@@ -506,16 +506,6 @@ void TRACE_generate_triva_cat_conf (void)
   }
 }
 
-void TRACE_set_network_update_mechanism (void)
-{
-  if (TRACE_is_enabled()){
-    if (TRACE_categorized() || TRACE_uncategorized()){
-      XBT_INFO ("Tracing resource utilization active, network/optim configuration now set to Full.");
-      xbt_cfg_set_string (_surf_cfg_set, "network/optim", "Full");
-    }
-  }
-}
-
 #undef OPT_TRACING
 #undef OPT_TRACING_PLATFORM
 #undef OPT_TRACING_SMPI
