@@ -18,33 +18,35 @@ extern xbt_dict_t defined_types; /* from instr_interface.c */
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
 static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
 
-static container_t findChild (container_t root, container_t a1)
+static container_t lowestCommonAncestor (container_t a1, container_t a2)
 {
-  if (root == a1) return root;
-
-  xbt_dict_cursor_t cursor = NULL;
-  container_t child;
-  char *child_name;
-  xbt_dict_foreach(root->children, cursor, child_name, child) {
-    if (findChild (child, a1)) return child;
-  }
-  return NULL;
-}
-
-static container_t findCommonFather (container_t root, container_t a1, container_t a2)
-{
+  //this is only an optimization (since most of a1 and a2 share the same parent)
   if (a1->father == a2->father) return a1->father;
 
-  xbt_dict_cursor_t cursor = NULL;
-  container_t child;
-  char *child_name;
-  container_t a1_try = NULL;
-  container_t a2_try = NULL;
-  xbt_dict_foreach(root->children, cursor, child_name, child) {
-    a1_try = findChild (child, a1);
-    a2_try = findChild (child, a2);
-    if (a1_try && a2_try) return child;
+  //create an array with all ancestors of a1
+  xbt_dynar_t ancestors = xbt_dynar_new(sizeof(container_t), NULL);
+  container_t p;
+  p = a1->father;
+  while (p){
+    xbt_dynar_push_as (ancestors, container_t, p);
+    p = p->father;
   }
+
+  //find the lowest ancestor of a2 in the previously created array
+  p = a2->father;
+  while (p){
+    int cpt;
+    unsigned int cursor;
+    xbt_dynar_foreach (ancestors, cursor, cpt){
+      container_t pp = *(container_t*)xbt_dynar_get_ptr(ancestors, cursor);
+      if (p == pp){
+        return p;
+      }
+    }
+    p = p->father;
+  }
+
+  //not common ancestor found, return NULL
   return NULL;
 }
 
@@ -53,6 +55,12 @@ static void linkContainers (container_t father, container_t src, container_t dst
   //ignore loopback
   if (strcmp (src->name, "__loopback__") == 0 || strcmp (dst->name, "__loopback__") == 0)
     return;
+
+  //find common father
+  container_t father = lowestCommonAncestor (src, dst);
+  if (!father){
+    xbt_die ("common father unknown, this is a tracing problem");
+  }
 
   if (filter != NULL){
     //check if we already register this pair (we only need one direction)
