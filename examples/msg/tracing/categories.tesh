@@ -15,7 +15,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/categories$EXEEXT --cfg=tracing:1 --cfg=tr
 $ $SG_TEST_EXENV cat tracing/categories.cat.plist
 > {
 >   node = (LINK, HOST, );
->   edge = (HOST-LINK, LINK-HOST, LINK-LINK, );
+>   edge = (0-LINK4-HOST1, 0-HOST1-LINK4, 0-LINK4-LINK4, );
 > 
 >   host = {
 >     type = square;
@@ -32,7 +32,7 @@ $ $SG_TEST_EXENV cat tracing/categories.cat.plist
 $ $SG_TEST_EXENV cat tracing/categories.uncat.plist
 > {
 >   node = (LINK, HOST, );
->   edge = (HOST-LINK, LINK-HOST, LINK-LINK, );
+>   edge = (0-LINK4-HOST1, 0-HOST1-LINK4, 0-LINK4-LINK4, );
 > 
 >   host = {
 >     type = square;
