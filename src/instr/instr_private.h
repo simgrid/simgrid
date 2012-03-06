@@ -174,13 +174,14 @@ void TRACE_set_network_update_mechanism (void);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *resource,
-                                     smx_action_t smx_action,
-                                     surf_action_t surf_action,
-                                     double value, double now,
+                                     const char *category,
+                                     double value,
+                                     double now,
                                      double delta);
-void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_action,
-                                     surf_action_t surf_action,
-                                     double value, double now,
+void TRACE_surf_link_set_utilization(const char *resource,
+                                     const char *category,
+                                     double value,
+                                     double now,
                                      double delta);
 void TRACE_surf_resource_utilization_alloc(void);
 void TRACE_surf_resource_utilization_release(void);

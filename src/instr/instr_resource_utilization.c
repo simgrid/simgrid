@@ -51,9 +51,10 @@ static void instr_event (double now, double delta, type_t variable, container_t 
 /*
  * TRACE_surf_link_set_utilization: entry point from SimGrid
  */
-void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_action,
-                                     surf_action_t surf_action,
-                                     double value, double now,
+void TRACE_surf_link_set_utilization(const char *resource,
+                                     const char *category,
+                                     double value,
+                                     double now,
                                      double delta)
 {
   //only trace link utilization if link is known by tracing mechanism
@@ -72,11 +73,11 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
 
   //trace categorized utilization
   if (TRACE_categorized()){
-    if (!surf_action->category)
+    if (!category)
       return;
     //variable of this category starts by 'b', because we have a link here
     char category_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "b%s", surf_action->category);
+    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "b%s", category);
     XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
     container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get (category_type, container->type);
@@ -89,9 +90,9 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
  * TRACE_surf_host_set_utilization: entry point from SimGrid
  */
 void TRACE_surf_host_set_utilization(const char *resource,
-                                     smx_action_t smx_action,
-                                     surf_action_t surf_action,
-                                     double value, double now,
+                                     const char *category,
+                                     double value,
+                                     double now,
                                      double delta)
 {
   //only trace host utilization if host is known by tracing mechanism
@@ -110,11 +111,11 @@ void TRACE_surf_host_set_utilization(const char *resource,
 
   //trace categorized utilization
   if (TRACE_categorized()){
-    if (!surf_action->category)
+    if (!category)
       return;
     //variable of this category starts by 'p', because we have a host here
     char category_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "p%s", surf_action->category);
+    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "p%s", category);
     XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
     container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get (category_type, container->type);
