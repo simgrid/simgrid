@@ -557,12 +557,13 @@ static void net_update_actions_state_full(double now, double delta)
     }
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      xbt_dynar_t route = NULL;
-      routing_get_route_and_latency(action->src_name, action->dst_name,
-                                    &route, NULL);
-      link_CM02_t link;
+      int n = lmm_get_number_of_cnst_from_var(network_maxmin_system, GENERIC_LMM_ACTION(action).variable);
       unsigned int i;
-      xbt_dynar_foreach(route, i, link) {
+      for (i = 0; i < n; i++){
+        lmm_constraint_t constraint = lmm_get_cnst_from_var(network_maxmin_system,
+                                                            GENERIC_LMM_ACTION(action).variable,
+                                                            i);
+        link_CM02_t link = lmm_constraint_id(constraint);
         TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
                                         ((surf_action_t)action)->category,
                                         lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
