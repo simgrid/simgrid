@@ -611,6 +611,23 @@ static void net_update_actions_state_lazy(double now, double delta)
     action = xbt_heap_pop(net_action_heap);
     XBT_DEBUG("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();
+#ifdef HAVE_TRACING
+    if (TRACE_is_enabled()) {
+      int n = lmm_get_number_of_cnst_from_var(network_maxmin_system, GENERIC_LMM_ACTION(action).variable);
+      unsigned int i;
+      for (i = 0; i < n; i++){
+        lmm_constraint_t constraint = lmm_get_cnst_from_var(network_maxmin_system,
+                                                            GENERIC_LMM_ACTION(action).variable,
+                                                            i);
+        link_CM02_t link = lmm_constraint_id(constraint);
+        TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
+                                        ((surf_action_t)action)->category,
+                                        lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
+                                        GENERIC_LMM_ACTION(action).last_update,
+                                        now - GENERIC_LMM_ACTION(action).last_update);
+      }
+    }
+#endif
 
     // if I am wearing a latency hat
     if (GENERIC_LMM_ACTION(action).hat == LATENCY) {
