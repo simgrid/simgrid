@@ -245,12 +245,9 @@ static void update_action_remaining_lazy(double now)
                               (cpu_maxmin_system,
                                GENERIC_LMM_ACTION(action).variable, 0));
         TRACE_surf_host_set_utilization(cpu->generic_resource.name,
-                                        action->generic_lmm_action.
-                                        generic_action.data,
-                                        (surf_action_t) action,
-                                        lmm_variable_getvalue
-                                        (GENERIC_LMM_ACTION(action).
-                                         variable), GENERIC_LMM_ACTION(action).last_update,
+                                        ((surf_action_t)action)->category,
+                                        lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
+                                        GENERIC_LMM_ACTION(action).last_update,
                                         now - GENERIC_LMM_ACTION(action).last_update);
       }
 #endif
@@ -361,8 +358,7 @@ static void cpu_update_actions_state_lazy(double now, double delta)
                             (cpu_maxmin_system,
                              GENERIC_LMM_ACTION(action).variable, 0));
       TRACE_surf_host_set_utilization(cpu->generic_resource.name,
-                                      GENERIC_LMM_ACTION(action).generic_action.data,
-                                      (surf_action_t) action,
+                                      ((surf_action_t)action)->category,
                                       lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
                                       GENERIC_LMM_ACTION(action).last_update,
                                       now - GENERIC_LMM_ACTION(action).last_update);
@@ -409,11 +405,11 @@ static void cpu_update_actions_state_full(double now, double delta)
                              GENERIC_LMM_ACTION(action).variable, 0));
 
       TRACE_surf_host_set_utilization(x->generic_resource.name,
-                                      GENERIC_ACTION(action).data,
-                                      (surf_action_t) action,
-                                      lmm_variable_getvalue
-                                      (GENERIC_LMM_ACTION(action).
-                                       variable), now - delta, delta);
+                                      ((surf_action_t)action)->category,
+                                      lmm_variable_getvalue(GENERIC_LMM_ACTION(action).
+                                       variable),
+                                      now - delta,
+                                      delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
 #endif
