@@ -517,7 +517,7 @@ XBT_PUBLIC(void) surf_network_model_init_bypass(const char *id,
  *
  *  \see surf_workstation_model_init_GTNETS()
  */
-XBT_PUBLIC(void) surf_network_model_init_GbTNETS(void);
+XBT_PUBLIC(void) surf_network_model_init_GTNETS(void);
 #endif
 
 #ifdef HAVE_NS3
