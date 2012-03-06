@@ -107,10 +107,25 @@ typedef struct s_sg_platf_cluster_cbarg {
 
 typedef struct {
   const char* id;
-  const char* type;
+  const char* type_id;
+} s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
+
+typedef struct {
+  const char* id;
+  const char* model;
   const char* content;
   xbt_dict_t properties;
-} s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
+} s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
+
+typedef struct {
+  const char* type_id;
+  const char* name;
+} s_sg_platf_mstorage_cbarg_t, *sg_platf_mstorage_cbarg_t;
+
+typedef struct {
+  const char* id;
+  const char* name;
+} s_sg_platf_mount_cbarg_t, *sg_platf_mount_cbarg_t;
 
 
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
@@ -125,6 +140,9 @@ XBT_PUBLIC(void) sg_platf_new_link   (sg_platf_link_cbarg_t link);     // Add a 
 XBT_PUBLIC(void) sg_platf_new_peer   (sg_platf_peer_cbarg_t peer);     // Add a peer    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
-
+XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage);
+XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type);
+XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
 
 #endif                          /* SG_PLATF_H */

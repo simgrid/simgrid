@@ -19,7 +19,11 @@ xbt_dynar_t sg_platf_cluster_cb_list = NULL; // of sg_platf_cluster_cb_t
 xbt_dynar_t sg_platf_AS_begin_cb_list = NULL; //of sg_platf_AS_begin_cb_t
 xbt_dynar_t sg_platf_AS_end_cb_list = NULL; //of void_f_void_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
+
 xbt_dynar_t sg_platf_storage_cb_list = NULL; // of sg_platf_storage_cb_t
+xbt_dynar_t sg_platf_storage_type_cb_list = NULL; // of sg_platf_storage_cb_t
+xbt_dynar_t sg_platf_mstorage_cb_list = NULL; // of sg_platf_storage_cb_t
+xbt_dynar_t sg_platf_mount_cb_list = NULL; // of sg_platf_storage_cb_t
 
 static int surf_parse_models_setup_already_called;
 
@@ -34,7 +38,11 @@ void sg_platf_init(void) {
   sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t),NULL);
   sg_platf_AS_begin_cb_list = xbt_dynar_new(sizeof(sg_platf_AS_begin_cb_t),NULL);
   sg_platf_AS_end_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+
   sg_platf_storage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
+  sg_platf_storage_type_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
+  sg_platf_mstorage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
+  sg_platf_mount_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
 }
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
@@ -46,7 +54,11 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_cluster_cb_list);
   xbt_dynar_free(&sg_platf_AS_begin_cb_list);
   xbt_dynar_free(&sg_platf_AS_end_cb_list);
+
   xbt_dynar_free(&sg_platf_storage_cb_list);
+  xbt_dynar_free(&sg_platf_storage_type_cb_list);
+  xbt_dynar_free(&sg_platf_mstorage_cb_list);
+  xbt_dynar_free(&sg_platf_mount_cb_list);
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
@@ -92,6 +104,27 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage){
   sg_platf_storage_cb_t fun;
   xbt_dynar_foreach(sg_platf_storage_cb_list, iterator, fun) {
     fun(storage);
+  }
+}
+void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){
+  unsigned int iterator;
+  sg_platf_storage_type_cb_t fun;
+  xbt_dynar_foreach(sg_platf_storage_type_cb_list, iterator, fun) {
+    fun(storage_type);
+  }
+}
+void sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage){
+  unsigned int iterator;
+  sg_platf_mstorage_cb_t fun;
+  xbt_dynar_foreach(sg_platf_mstorage_cb_list, iterator, fun) {
+    fun(mstorage);
+  }
+}
+void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
+  unsigned int iterator;
+  sg_platf_mount_cb_t fun;
+  xbt_dynar_foreach(sg_platf_mount_cb_list, iterator, fun) {
+    fun(mount);
   }
 }
 
@@ -169,4 +202,12 @@ void sg_platf_AS_end_add_cb(void_f_void_t fct) {
 void sg_platf_storage_add_cb(sg_platf_storage_cb_t fct) {
   xbt_dynar_push(sg_platf_storage_cb_list, &fct);
 }
-
+void sg_platf_storage_type_add_cb(sg_platf_storage_type_cb_t fct) {
+  xbt_dynar_push(sg_platf_storage_type_cb_list, &fct);
+}
+void sg_platf_mstorage_add_cb(sg_platf_mstorage_cb_t fct) {
+  xbt_dynar_push(sg_platf_mstorage_cb_list, &fct);
+}
+void sg_platf_mount_add_cb(sg_platf_mount_cb_t fct) {
+  xbt_dynar_push(sg_platf_mount_cb_list, &fct);
+}

@@ -69,6 +69,17 @@ static int ptask_host_count = 0;
 static xbt_dict_t ptask_parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
+static surf_action_t die_impossible_communicate (const char *src_name, const char *dst_name, double size, double rate)
+{
+  DIE_IMPOSSIBLE;
+  return NULL;
+}
+
+static xbt_dynar_t die_impossible_get_route(const char *src_name, const char *dst_name)
+{
+  DIE_IMPOSSIBLE;
+  return NULL;
+}
 
 static void ptask_update_action_bound(surf_action_workstation_L07_t action)
 {
@@ -76,28 +87,20 @@ static void ptask_update_action_bound(surf_action_workstation_L07_t action)
   double lat_current = 0.0;
   double lat_bound = -1.0;
   int i, j;
-  unsigned int cpt;
-  link_L07_t link;
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
       xbt_dynar_t route=NULL;
-      routing_get_route_and_latency(surf_resource_name
-          (action->workstation_list[i]),
-          surf_resource_name(action->workstation_list[j]),
-          &route, NULL);
-
-      // FIXME do we really need to recompute the latency here?
-      double lat = 0.0;
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
-        xbt_dynar_foreach(route, cpt, link) {
-          lat += link->lat_current;
-        }
+        double lat = 0.0;
+        routing_get_route_and_latency(surf_resource_name
+            (action->workstation_list[i]),
+            surf_resource_name(action->workstation_list[j]),
+            &route, &lat);
         lat_current =
             MAX(lat_current,
-                lat * action->communication_amount[i * workstation_nb +
-                                                   j]);
+                lat * action->communication_amount[i * workstation_nb + j]);
       }
     }
   }
@@ -461,21 +464,23 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
   /* Compute the number of affected resources... */
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
-      link_L07_t link;
       xbt_dynar_t route=NULL;
-      routing_get_route_and_latency(
-          surf_resource_name(workstation_list[i]),
-          surf_resource_name(workstation_list[j]),
-          &route,NULL); // FIXME: do we want to recompute the latency?
-      double lat = 0.0;
 
-      if (communication_amount[i * workstation_nb + j] > 0)
+      if (communication_amount[i * workstation_nb + j] > 0) {
+        double lat=0.0;
+        unsigned int cpt;
+        link_L07_t link;
+
+        routing_get_route_and_latency(
+            surf_resource_name(workstation_list[i]),
+            surf_resource_name(workstation_list[j]),
+            &route,&lat);
+        latency = MAX(latency, lat);
+
         xbt_dynar_foreach(route, cpt, link) {
-        lat += link->lat_current;
-        xbt_dict_set(ptask_parallel_task_link_set,
-                     link->generic_resource.name, link, NULL);
+           xbt_dict_set(ptask_parallel_task_link_set,link->generic_resource.name,link,NULL);
         }
-      latency = MAX(latency, lat);
+      }
     }
   }
 
@@ -517,13 +522,14 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
     for (j = 0; j < workstation_nb; j++) {
       link_L07_t link;
       xbt_dynar_t route=NULL;
+      if (communication_amount[i * workstation_nb + j] == 0.0)
+        continue;
+
       routing_get_route_and_latency(
           surf_resource_name(workstation_list[i]),
           surf_resource_name(workstation_list[j]),
           &route,NULL);
 
-      if (communication_amount[i * workstation_nb + j] == 0.0)
-        continue;
       xbt_dynar_foreach(route, cpt, link) {
         lmm_expand_add(ptask_maxmin_system, link->constraint,
                        action->variable,
@@ -899,6 +905,15 @@ static void ptask_model_init_internal(void)
                                                   SURF_RESOURCE_ON, NULL,
                                                   SURF_LINK_FATPIPE, NULL));
 
+  surf_network_model = surf_model_init();
+
+  surf_network_model->extension.network.communicate = die_impossible_communicate;
+  surf_network_model->extension.network.get_route = die_impossible_get_route;
+  surf_network_model->extension.network.get_link_bandwidth = ptask_get_link_bandwidth;
+  surf_network_model->extension.network.get_link_latency = ptask_get_link_latency;
+  surf_network_model->extension.network.link_shared = ptask_link_shared;
+  surf_network_model->extension.network.add_traces = NULL;
+  surf_network_model->extension.network.create_resource = NULL;
 }
 
 /**************************************/
@@ -909,7 +924,6 @@ void surf_workstation_model_init_ptask_L07(void)
   XBT_INFO("surf_workstation_model_init_ptask_L07");
   xbt_assert(!surf_cpu_model, "CPU model type already defined");
   xbt_assert(!surf_network_model, "network model type already defined");
-  surf_network_model = surf_model_init();
   ptask_define_callbacks();
   ptask_model_init_internal();
   xbt_dynar_push(model_list, &surf_workstation_model);

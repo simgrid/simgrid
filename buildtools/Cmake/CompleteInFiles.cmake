@@ -197,10 +197,10 @@ endif(enable_latency_bound_tracking)
 
 if(enable_model-checking AND HAVE_MMAP)
 	SET(HAVE_MC 1)
-	SET(MMALLOC_WANT_OVERIDE_LEGACY 1)
+	SET(MMALLOC_WANT_OVERRIDE_LEGACY 1)
 else(enable_model-checking AND HAVE_MMAP)
 	SET(HAVE_MC 0)
-	SET(MMALLOC_WANT_OVERIDE_LEGACY 0)
+	SET(MMALLOC_WANT_OVERRIDE_LEGACY 0)
 endif(enable_model-checking AND HAVE_MMAP)
 
 #--------------------------------------------------------------------------------------------------

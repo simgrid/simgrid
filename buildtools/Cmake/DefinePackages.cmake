@@ -44,6 +44,7 @@ set(EXTRA_DIST
 	src/surf/simgrid_dtd.c
 	src/surf/simgrid.dtd
 	src/surf/network_private.h
+	src/surf/storage_private.h
 	src/surf/network_gtnets_private.h
 	src/surf/gtnets/gtnets_interface.h
 	src/surf/gtnets/gtnets_simulator.h
@@ -425,6 +426,7 @@ set(headers_to_install
 	include/xbt/automaton.h
 	include/xbt/automatonparse_promela.h
 	include/xbt/datadesc.h
+	include/xbt/socket.h
 	include/simgrid/platf.h
 	include/simgrid/modelchecker.h
 	include/msg/msg.h

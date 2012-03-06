@@ -312,12 +312,14 @@ void surf_init(int *argc, char **argv)
   link_lib = xbt_lib_new();
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
+  storage_type_lib = xbt_lib_new();
 
   XBT_DEBUG("ADD ROUTING LEVEL");
   ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_free);
   ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_free);
-  // FOR NOW UNUSED
-//  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,NULL);
+  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,xbt_free);
+  ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib,routing_storage_host_free);
+  ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib,routing_storage_type_free);
 
   XBT_DEBUG("ADD SURF LEVELS");
   SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
@@ -419,6 +421,7 @@ void surf_exit(void)
   xbt_lib_free(&link_lib);
   xbt_lib_free(&as_router_lib);
   xbt_lib_free(&storage_lib);
+  xbt_lib_free(&storage_type_lib);
 
   tmgr_finalize();
   surf_parse_lex_destroy();

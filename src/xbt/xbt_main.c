@@ -8,6 +8,7 @@
 
 #include "xbt/misc.h"
 #include "simgrid_config.h"     /*HAVE_MMAP _XBT_WIN32 */
+#include "gras_config.h"        /* MMALLOC_WANT_OVERRIDE_LEGACY */
 #include "time.h"               /* to seed the random generator */
 
 #include "xbt/sysdep.h"
@@ -106,7 +107,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 
 static void xbt_preinit(void)
 {
-#ifdef MMALLOC_WANT_OVERIDE_LEGACY
+#ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_preinit();
 #endif
   xbt_log_preinit();
@@ -164,7 +165,7 @@ static void xbt_postexit(void)
   xbt_os_thread_mod_postexit();
 
   free(xbt_binary_name);
-#ifdef MMALLOC_WANT_OVERIDE_LEGACY
+#ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_postexit();
 #endif
 }

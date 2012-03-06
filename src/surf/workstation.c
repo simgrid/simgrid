@@ -8,14 +8,13 @@
 #include "xbt/dict.h"
 #include "portable.h"
 #include "surf_private.h"
+#include "storage_private.h"
 #include "surf/surf_resource.h"
-
-
 
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
   void *cpu;
-  void *storage;
+  xbt_dynar_t storage;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
@@ -23,31 +22,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 
 surf_model_t surf_workstation_model = NULL;
 
-static workstation_CLM03_t workstation_new(const char *name, void *cpu, void *storage)
+static void workstation_new(sg_platf_host_cbarg_t host)
 {
   workstation_CLM03_t workstation = xbt_new0(s_workstation_CLM03_t, 1);
 
   workstation->generic_resource.model = surf_workstation_model;
-  workstation->generic_resource.name = xbt_strdup(name);
-  workstation->cpu = cpu;
-  workstation->storage = storage;
-
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, workstation);
-
-  return workstation;
-}
-
-void create_workstations(void)
-{
-  xbt_lib_cursor_t cursor = NULL;
-  char *name = NULL;
-  void **cpu = NULL;
-  void *storage = NULL;
-  xbt_lib_foreach(host_lib, cursor, name, cpu) {
-	  if(cpu[SURF_CPU_LEVEL])
-	    // Need to find storage attached to workstation
-	    workstation_new(name, cpu[SURF_CPU_LEVEL],storage);
-  }
+  workstation->generic_resource.name = xbt_strdup(host->id);
+  workstation->cpu = xbt_lib_get_or_null(host_lib, host->id, SURF_CPU_LEVEL);
+  workstation->storage = xbt_lib_get_or_null(storage_lib,host->id,ROUTING_STORAGE_HOST_LEVEL);
+  XBT_DEBUG("Create workstation %s with %ld mounted disks",host->id,xbt_dynar_length(workstation->storage));
+  xbt_lib_set(host_lib, host->id, SURF_WKS_LEVEL, workstation);
 }
 
 static int ws_resource_used(void *resource_id)
@@ -293,34 +277,64 @@ static xbt_dict_t ws_get_properties(const void *ws)
   return surf_resource_properties(((workstation_CLM03_t) ws)->cpu);
 }
 
-static surf_action_t ws_action_open(void *workstation, const char* path, const char* mode)
+static storage_t find_storage_on_mount_list(void *workstation,const char* storage)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.open(storage, path, mode);
+  storage_t st = NULL;
+  s_mount_t mnt;
+  unsigned int cursor;
+  xbt_dynar_t storage_list = ((workstation_CLM03_t) workstation)->storage;
+
+  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  xbt_dynar_foreach(storage_list,cursor,mnt)
+  {
+    XBT_DEBUG("See '%s'",mnt.name);
+    if(!strcmp(storage,mnt.name)){
+      st = mnt.id;
+      break;
+    }
+  }
+  if(!st) xbt_die("Can't find mount '%s' for '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  return st;
 }
 
-static surf_action_t ws_action_close(void *workstation, surf_file_t fp)
+static surf_action_t ws_action_open(void *workstation, const char* storage, const char* path, const char* mode)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.close(storage, fp);
+  storage_t st = find_storage_on_mount_list(workstation, storage);
+  XBT_DEBUG("OPEN on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.open(st, path, mode);
 }
 
-static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t ws_action_close(void *workstation, const char* storage, surf_file_t fp)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.read(storage, ptr, size, nmemb, stream);
+  storage_t st = find_storage_on_mount_list(workstation, storage);
+  XBT_DEBUG("CLOSE on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.close(st, fp);
 }
 
-static surf_action_t ws_action_write(void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t ws_action_read(void *workstation, const char* storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.write(storage, ptr, size, nmemb, stream);
+  storage_t st = find_storage_on_mount_list(workstation, storage);
+  XBT_DEBUG("READ on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.read(st, ptr, size, nmemb, stream);
 }
 
-static surf_action_t ws_action_stat(void *workstation, int fd, void* buf)
+static surf_action_t ws_action_write(void *workstation, const char* storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
-  void *storage = ((workstation_CLM03_t) workstation)->storage;
-  return ((surf_resource_t) storage)->model->extension.storage.stat(storage, fd, buf);
+  storage_t st = find_storage_on_mount_list(workstation, storage);
+  XBT_DEBUG("WRITE on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.write(st,  ptr, size, nmemb, stream);
+}
+
+static surf_action_t ws_action_stat(void *workstation, const char* storage, int fd, void* buf)
+{
+  storage_t st = find_storage_on_mount_list(workstation, storage);
+  XBT_DEBUG("STAT on disk '%s'",st->generic_resource.name);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.stat(st,  fd, buf);
 }
 
 static void surf_workstation_model_init_internal(void)
@@ -390,7 +404,8 @@ void surf_workstation_model_init_current_default(void)
   surf_network_model_init_LegrandVelho();
 
   xbt_dynar_push(model_list, &surf_workstation_model);
-  sg_platf_postparse_add_cb(create_workstations);
+  sg_platf_host_add_cb(workstation_new);
+//  sg_platf_postparse_add_cb(create_workstations);
 }
 
 void surf_workstation_model_init_compound()
@@ -400,5 +415,6 @@ void surf_workstation_model_init_compound()
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model_init_internal();
   xbt_dynar_push(model_list, &surf_workstation_model);
-  sg_platf_postparse_add_cb(create_workstations);
+  sg_platf_host_add_cb(workstation_new);
+//  sg_platf_postparse_add_cb(create_workstations);
 }

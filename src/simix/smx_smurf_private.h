@@ -508,6 +508,7 @@ typedef struct s_smx_simcall {
     } sem_get_capacity;
 
     struct {
+      const char* storage;
       void *ptr;
       size_t size;
       size_t nmemb;
@@ -516,6 +517,7 @@ typedef struct s_smx_simcall {
     } file_read;
 
     struct {
+      const char* storage;
       const void *ptr;
       size_t size;
       size_t nmemb;
@@ -524,17 +526,20 @@ typedef struct s_smx_simcall {
     } file_write;
 
     struct {
+      const char* storage;
       const char* path;
       const char* mode;
       smx_file_t result;
     } file_open;
 
     struct {
+      const char* storage;
       smx_file_t fp;
       int result;
     } file_close;
 
     struct {
+      const char* storage;
       int fd;
       //Next should be struct stat* buf
       void* buf;

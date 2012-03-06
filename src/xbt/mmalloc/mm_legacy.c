@@ -30,7 +30,7 @@ void mmalloc_set_current_heap(xbt_mheap_t new_heap)
   __mmalloc_current_heap = new_heap;
 }
 
-#ifdef MMALLOC_WANT_OVERIDE_LEGACY
+#ifdef MMALLOC_WANT_OVERRIDE_LEGACY
 void *malloc(size_t n)
 {
   xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();

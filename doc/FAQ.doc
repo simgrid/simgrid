@@ -970,9 +970,7 @@ informative bug repports:
 http://www.chiark.greenend.org.uk/~sgtatham/bugs.html (it is not SimGrid
 specific at all, but it's full of good advices).
 
-\author Arnaud Legrand (arnaud.legrand::imag.fr)
-\author Martin Quinson (martin.quinson::loria.fr)
-
+\author Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 */
 

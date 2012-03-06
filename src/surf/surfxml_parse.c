@@ -59,7 +59,7 @@ int surf_parse_get_int(const char *string) {
 
 
 /*
- * All the callback lists that can be overiden anywhere.
+ * All the callback lists that can be overridden anywhere.
  * (this list should probably be reduced to the bare minimum to allow the models to work)
  */
 
@@ -88,8 +88,15 @@ xbt_dynar_t STag_surfxml_bypassRoute_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_bypassRoute_cb_list = NULL;
 xbt_dynar_t STag_surfxml_include_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_include_cb_list = NULL;
+
 xbt_dynar_t STag_surfxml_storage_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_storage_cb_list = NULL;
+xbt_dynar_t STag_surfxml_storage_type_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_storage_type_cb_list = NULL;
+xbt_dynar_t STag_surfxml_mount_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_mount_cb_list = NULL;
+xbt_dynar_t STag_surfxml_mstorage_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_mstorage_cb_list = NULL;
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = NULL;
@@ -106,7 +113,7 @@ static void init_randomness(void);
 static void add_randomness(void);
 
 /*
- * Stuff relative to the <storage> tag
+ * Stuff relative to storage
  */
 void STag_surfxml_storage(void)
 {
@@ -118,12 +125,51 @@ void ETag_surfxml_storage(void)
   memset(&storage,0,sizeof(storage));
 
   storage.id = A_surfxml_storage_id;
-  storage.type = A_surfxml_storage_type;
-  storage.properties = current_property_set;
-  storage.content = A_surfxml_storage_content;
-  current_property_set = NULL;
-
+  storage.type_id = A_surfxml_storage_typeId;
   sg_platf_new_storage(&storage);
+}
+void STag_surfxml_storage_type(void)
+{
+  XBT_DEBUG("STag_surfxml_storage_type");
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+}
+void ETag_surfxml_storage_type(void)
+{
+  s_sg_platf_storage_type_cbarg_t storage_type;
+  memset(&storage_type,0,sizeof(storage_type));
+
+  storage_type.content = A_surfxml_storage_type_content;
+  storage_type.id = A_surfxml_storage_type_id;
+  storage_type.model = A_surfxml_storage_type_model;
+  storage_type.properties = current_property_set;
+  sg_platf_new_storage_type(&storage_type);
+  current_property_set = NULL;
+}
+void STag_surfxml_mstorage(void)
+{
+  XBT_DEBUG("STag_surfxml_mstorage");
+}
+void ETag_surfxml_mstorage(void)
+{
+  s_sg_platf_mstorage_cbarg_t mstorage;
+  memset(&mstorage,0,sizeof(mstorage));
+
+  mstorage.name = A_surfxml_mstorage_name;
+  mstorage.type_id = A_surfxml_mstorage_typeId;
+  sg_platf_new_mstorage(&mstorage);
+}
+void STag_surfxml_mount(void)
+{
+  XBT_DEBUG("STag_surfxml_mount");
+}
+void ETag_surfxml_mount(void)
+{
+  s_sg_platf_mount_cbarg_t mount;
+  memset(&mount,0,sizeof(mount));
+
+  mount.name = A_surfxml_mount_name;
+  mount.id = A_surfxml_mount_id;
+  sg_platf_new_mount(&mount);
 }
 
 /*
@@ -233,10 +279,15 @@ void surf_parse_init_callbacks(void)
 			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_include_cb_list =
 			  xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  STag_surfxml_storage_cb_list =
-	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
-	  ETag_surfxml_storage_cb_list =
-	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
+
+	  STag_surfxml_storage_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+	  ETag_surfxml_storage_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+      STag_surfxml_storage_type_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+      ETag_surfxml_storage_type_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+      STag_surfxml_mount_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+      ETag_surfxml_mount_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+      STag_surfxml_mstorage_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+      ETag_surfxml_mstorage_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
 }
 
 void surf_parse_reset_callbacks(void)
@@ -273,8 +324,15 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_peer_cb_list);
   xbt_dynar_free(&STag_surfxml_include_cb_list);
   xbt_dynar_free(&ETag_surfxml_include_cb_list);
+
   xbt_dynar_free(&STag_surfxml_storage_cb_list);
   xbt_dynar_free(&ETag_surfxml_storage_cb_list);
+  xbt_dynar_free(&STag_surfxml_mstorage_cb_list);
+  xbt_dynar_free(&ETag_surfxml_mstorage_cb_list);
+  xbt_dynar_free(&STag_surfxml_mount_cb_list);
+  xbt_dynar_free(&ETag_surfxml_mount_cb_list);
+  xbt_dynar_free(&STag_surfxml_storage_type_cb_list);
+  xbt_dynar_free(&ETag_surfxml_storage_type_cb_list);
 }
 
 /* Stag and Etag parse functions */

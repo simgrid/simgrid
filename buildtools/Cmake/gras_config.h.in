@@ -46,7 +46,7 @@
 	#endif
 #endif
 /* Set to true if enable_model-checking is true */
-#cmakedefine MMALLOC_WANT_OVERIDE_LEGACY @MMALLOC_WANT_OVERIDE_LEGACY@
+#cmakedefine MMALLOC_WANT_OVERRIDE_LEGACY @MMALLOC_WANT_OVERRIDE_LEGACY@
 #cmakedefine HAVE_MC @HAVE_MC@
 
 /* Set to true if have the mergesort function */

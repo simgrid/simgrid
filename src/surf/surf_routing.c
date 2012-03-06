@@ -35,8 +35,12 @@ int NS3_ASR_LEVEL;              //host node for ns3
 static xbt_dict_t random_value = NULL;
 
 xbt_lib_t storage_lib;
-int ROUTING_STORAGE_LEVEL;      //Routing level
-int SURF_STORAGE_LEVEL;         //Surf level
+int ROUTING_STORAGE_LEVEL;      //Routing for storagelevel
+int ROUTING_STORAGE_HOST_LEVEL;
+int SURF_STORAGE_LEVEL;
+
+xbt_lib_t storage_type_lib;
+int ROUTING_STORAGE_TYPE_LEVEL; //Routing for storage_type level
 
 /* Global vars */
 routing_global_t global_routing = NULL;
@@ -44,6 +48,7 @@ AS_t current_routing = NULL;
 
 /* global parse functions */
 xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
+xbt_dynar_t mount_list = NULL;  /* temporary store of current mount storage */
 static const char *src = NULL;  /* temporary store the source name of a route */
 static const char *dst = NULL;  /* temporary store the destination name of a route */
 static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
@@ -108,6 +113,12 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   xbt_lib_set(host_lib, host->id, ROUTING_HOST_LEVEL, (void *) info);
+
+  if(mount_list){
+    xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
+    mount_list = NULL;
+  }
+
   if (host->coord && strcmp(host->coord, "")) {
     unsigned int cursor;
     char*str;
@@ -718,11 +729,85 @@ void routing_model_create(size_t size_of_links, void *loopback)
 
 static void routing_parse_storage(sg_platf_storage_cbarg_t storage)
 {
-  // FIXME THIS LEVEL IS UNUSED
-//  XBT_INFO("ROUTING Create a storage name '%s' with model '%s'",storage->id,storage->model);
-//  xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id, ROUTING_STORAGE_LEVEL),
-//             "Storage '%s' already exists", storage->id);
-//  xbt_lib_set(storage_lib, storage->id, ROUTING_STORAGE_LEVEL, NULL);
+  xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id,ROUTING_STORAGE_LEVEL),
+               "Reading a storage, processing unit \"%s\" already exists", storage->id);
+
+  // Verification of an existing type_id
+  void* storage_type = xbt_lib_get_or_null(storage_type_lib, storage->type_id,ROUTING_STORAGE_TYPE_LEVEL);
+  xbt_assert(storage_type,"Reading a storage, type id \"%s\" does not exists", storage->type_id);
+
+  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s'",
+      storage->id,
+      storage->type_id);
+
+  xbt_lib_set(storage_lib,
+      storage->id,
+      ROUTING_STORAGE_LEVEL,
+      (void *) xbt_strdup(storage->type_id));
+}
+static void routing_parse_storage_type(sg_platf_storage_type_cbarg_t storage_type)
+{
+  xbt_assert(!xbt_lib_get_or_null(storage_type_lib, storage_type->id,ROUTING_STORAGE_TYPE_LEVEL),
+               "Reading a storage type, processing unit \"%s\" already exists", storage_type->id);
+
+  storage_type_t stype = xbt_new0(s_storage_type_t, 1);
+  stype->model = xbt_strdup(storage_type->model);
+  stype->properties = storage_type->properties;
+  stype->content = xbt_strdup(storage_type->content);
+  stype->type_id = xbt_strdup(storage_type->id);
+
+  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s' content '%s' and properties '%p'",
+      stype->type_id,
+      stype->model,
+      stype->content,
+      stype->properties);
+
+  xbt_lib_set(storage_type_lib,
+      stype->type_id,
+      ROUTING_STORAGE_TYPE_LEVEL,
+      (void *) stype);
+}
+static void routing_parse_mstorage(sg_platf_mstorage_cbarg_t mstorage)
+{
+  THROW_UNIMPLEMENTED;
+//  mount_t mnt = xbt_new0(s_mount_t, 1);
+//  mnt->id = xbt_strdup(mstorage->type_id);
+//  mnt->name = xbt_strdup(mstorage->name);
+//
+//  if(!mount_list){
+//    XBT_DEBUG("Creata a Mount list for %s",A_surfxml_host_id);
+//    mount_list = xbt_dynar_new(sizeof(char *), NULL);
+//  }
+//  xbt_dynar_push(mount_list,(void *) mnt);
+//  free(mnt->id);
+//  free(mnt->name);
+//  xbt_free(mnt);
+//  XBT_DEBUG("ROUTING Mount a storage name '%s' with type_id '%s'",mstorage->name, mstorage->id);
+}
+
+static void mount_free(void *p)
+{
+  mount_t mnt = p;
+  xbt_free(mnt->name);
+}
+
+static void routing_parse_mount(sg_platf_mount_cbarg_t mount)
+{
+  // Verification of an existing storage
+  void* storage = xbt_lib_get_or_null(storage_lib, mount->id,ROUTING_STORAGE_LEVEL);
+  xbt_assert(storage,"Disk id \"%s\" does not exists", mount->id);
+
+  XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->id, mount->name);
+
+  s_mount_t mnt;
+  mnt.id = surf_storage_resource_by_name(mount->id);
+  mnt.name = xbt_strdup(mount->name);
+
+  if(!mount_list){
+    XBT_DEBUG("Create a Mount list for %s",A_surfxml_host_id);
+    mount_list = xbt_dynar_new(sizeof(s_mount_t), mount_free);
+  }
+  xbt_dynar_push(mount_list,&mnt);
 }
 
 static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
@@ -1145,6 +1230,9 @@ void routing_register_callbacks()
   sg_platf_postparse_add_cb(routing_parse_postparse);
 
   sg_platf_storage_add_cb(routing_parse_storage);
+  sg_platf_mstorage_add_cb(routing_parse_mstorage);
+  sg_platf_storage_type_add_cb(routing_parse_storage_type);
+  sg_platf_mount_add_cb(routing_parse_mount);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
