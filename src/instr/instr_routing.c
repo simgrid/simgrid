@@ -24,30 +24,40 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
   if (a1->father == a2->father) return a1->father;
 
   //create an array with all ancestors of a1
-  xbt_dynar_t ancestors = xbt_dynar_new(sizeof(container_t), NULL);
+  xbt_dynar_t ancestors_a1 = xbt_dynar_new(sizeof(container_t), NULL);
   container_t p;
   p = a1->father;
   while (p){
-    xbt_dynar_push_as (ancestors, container_t, p);
+    xbt_dynar_push_as (ancestors_a1, container_t, p);
     p = p->father;
   }
 
-  //find the lowest ancestor of a2 in the previously created array
+  //create an array with all ancestors of a2
+  xbt_dynar_t ancestors_a2 = xbt_dynar_new(sizeof(container_t), NULL);
   p = a2->father;
   while (p){
-    int cpt;
-    unsigned int cursor;
-    xbt_dynar_foreach (ancestors, cursor, cpt){
-      container_t pp = *(container_t*)xbt_dynar_get_ptr(ancestors, cursor);
-      if (p == pp){
-        return p;
-      }
-    }
+    xbt_dynar_push_as (ancestors_a2, container_t, p);
     p = p->father;
   }
 
-  //not common ancestor found, return NULL
-  return NULL;
+  //find the lowest ancestor
+  p = NULL;
+  int i = xbt_dynar_length (ancestors_a1) - 1;
+  int j = xbt_dynar_length (ancestors_a2) - 1;
+  while (i >= 0 && j >= 0){
+    container_t a1p = *(container_t*)xbt_dynar_get_ptr (ancestors_a1, i);
+    container_t a2p = *(container_t*)xbt_dynar_get_ptr (ancestors_a2, j);
+    if (a1p == a2p){
+      p = a1p;
+    }else{
+      break;
+    }
+    i--;
+    j--;
+  }
+  xbt_dynar_free (&ancestors_a1);
+  xbt_dynar_free (&ancestors_a2);
+  return p;
 }
 
 static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
