@@ -56,6 +56,13 @@ XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
 XBT_PUBLIC(void) model_help(const char *category,
                             s_surf_model_description_t * table);
 
+enum heap_action_type{
+  LATENCY = 100,
+  MAX_DURATION,
+  NORMAL,
+  NOTSET
+};
+
 /** \brief Action structure
  * \ingroup SURF_actions
  *
@@ -92,6 +99,10 @@ typedef struct surf_action_lmm {
   s_surf_action_t generic_action;
   lmm_variable_t variable;
   int suspended;
+  s_xbt_swag_hookup_t action_list_hookup;
+  int index_heap;
+  double last_update;
+  enum heap_action_type hat;
 } s_surf_action_lmm_t, *surf_action_lmm_t;
 
 /** \brief Action states
@@ -350,7 +361,7 @@ typedef struct s_storage_type {
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
-  char *id;
+  void *id;
   char *name;
 } s_mount_t, *mount_t;
 
@@ -506,7 +517,7 @@ XBT_PUBLIC(void) surf_network_model_init_bypass(const char *id,
  *
  *  \see surf_workstation_model_init_GTNETS()
  */
-XBT_PUBLIC(void) surf_network_model_init_GbTNETS(void);
+XBT_PUBLIC(void) surf_network_model_init_GTNETS(void);
 #endif
 
 #ifdef HAVE_NS3
@@ -520,19 +531,6 @@ XBT_PUBLIC(void) surf_network_model_init_GbTNETS(void);
  *  \see surf_workstation_model_init_NS3()
  */
 XBT_PUBLIC(void) surf_network_model_init_NS3(void);
-
-XBT_PUBLIC(void) parse_ns3_add_host(void);
-XBT_PUBLIC(void) parse_ns3_add_router(void);
-XBT_PUBLIC(void) parse_ns3_add_link(void);
-XBT_PUBLIC(void) parse_ns3_add_AS(void);
-XBT_PUBLIC(void) parse_ns3_add_route(void);
-XBT_PUBLIC(void) parse_ns3_add_ASroute(void);
-XBT_PUBLIC(void) parse_ns3_add_cluster(void);
-XBT_PUBLIC(void) parse_ns3_end_platform(void);
-XBT_PUBLIC(void) create_ns3_topology(void);
-XBT_PUBLIC(double) ns3_get_link_latency(const void *link);
-XBT_PUBLIC(double) ns3_get_link_bandwidth(const void *link);
-
 #endif
 
 /** \brief Initializes the platform with the network model Reno

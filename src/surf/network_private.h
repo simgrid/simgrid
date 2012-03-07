@@ -1,5 +1,4 @@
-/* Copyright (c) 2004, 2005, 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,20 +19,11 @@ typedef struct network_link_CM02 {
   tmgr_trace_event_t lat_event;
 } s_link_CM02_t, *link_CM02_t;
 
-enum heap_action_type{
-  LATENCY = 100,
-  MAX_DURATION,
-  NORMAL,
-  NOTSET
-};
-
 typedef struct surf_action_network_CM02 {
-  s_surf_action_t generic_action;
-  s_xbt_swag_hookup_t action_list_hookup;
+  s_surf_action_lmm_t generic_lmm_action;
   double latency;
   double lat_current;
   double weight;
-  lmm_variable_t variable;
   double rate;
   struct {
      const char* link_name;
@@ -44,14 +34,6 @@ typedef struct surf_action_network_CM02 {
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int latency_limited;
 #endif
-  int suspended;
-#ifdef HAVE_TRACING
-  char *src_name;
-  char *dst_name;
-#endif
-  int index_heap;
-  enum heap_action_type hat;
-  double last_update;
 } s_surf_action_network_CM02_t, *surf_action_network_CM02_t;
 
 #endif                          /* _SURF_NETWORK_PRIVATE_H */

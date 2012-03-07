@@ -4,7 +4,6 @@ p Tracing master/slave application
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cfg=tracing/categorized:1 ${srcdir:=.}/tracing/platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
-> [0.000000] [instr_config/INFO] Tracing resource utilization active, network/optim configuration now set to Full.
 
 $ cat simgrid.trace
 > %EventDef PajeDefineContainerType 0 
@@ -156,10 +155,10 @@ $ cat simgrid.trace
 > 6 0 15 3 0 "5"
 > 8 0 4 15 27946250.000000
 > 8 0 5 15 0.000278
-> 4 6 0 1 3 HOST-LINK
+> 4 6 0 1 3 0-HOST1-LINK3
 > 14 0 6 0 G 3 0
 > 15 0 6 0 G 11 0
-> 4 7 0 3 3 LINK-LINK
+> 4 7 0 3 3 0-LINK3-LINK3
 > 14 0 7 0 G 11 1
 > 15 0 7 0 G 12 1
 > 14 0 7 0 G 12 2
@@ -170,7 +169,7 @@ $ cat simgrid.trace
 > 15 0 7 0 G 7 4
 > 14 0 7 0 G 7 5
 > 15 0 7 0 G 13 5
-> 4 8 0 3 1 LINK-HOST
+> 4 8 0 3 1 0-LINK3-HOST1
 > 14 0 8 0 G 13 6
 > 15 0 8 0 G 1 6
 > 14 0 7 0 G 11 7
@@ -213,7 +212,6 @@ $ cat simgrid.trace
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cfg=tracing/categorized:1 ${srcdir:=.}/../platforms/g5k.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
-> [0.000000] [instr_config/INFO] Tracing resource utilization active, network/optim configuration now set to Full.
 
 $ cat simgrid.trace
 > %EventDef PajeDefineContainerType 0 

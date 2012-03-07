@@ -12,6 +12,8 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+xbt_mutex_t mutex = NULL;
+xbt_cond_t cond = NULL;
 static m_process_t process_to_migrate = NULL;
 
 /** The guy we will move from host to host. It move alone and then is moved by policeman back  */
@@ -31,7 +33,10 @@ static int emigrant(int argc, char *argv[])
   MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name("Jacquelin"));
   MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name("Boivin"));
   MSG_process_sleep(4);
+  xbt_mutex_acquire(mutex);
   process_to_migrate = MSG_process_self();
+  xbt_cond_broadcast(cond);
+  xbt_mutex_release(mutex);
   MSG_process_suspend(MSG_process_self());
   m_host_t h = MSG_process_get_host(MSG_process_self());
   XBT_INFO("I've been moved on this new host: %s", h->name);
@@ -43,11 +48,15 @@ static int emigrant(int argc, char *argv[])
 /* This function move the emigrant on Jacquelin */
 static int policeman(int argc, char *argv[])
 {
+
+  xbt_mutex_acquire(mutex);
   XBT_INFO("Wait a bit before migrating the emigrant.");
-  while (process_to_migrate == NULL) MSG_process_sleep(1);
+  while (process_to_migrate == NULL) xbt_cond_wait(cond, mutex);
   MSG_process_migrate(process_to_migrate, MSG_get_host_by_name("Jacquelin"));
   XBT_INFO("I moved the emigrant");
   MSG_process_resume(process_to_migrate);
+  xbt_mutex_release(mutex);
+
   return 0;
 }                               /* end_of_policeman */
 
@@ -75,8 +84,13 @@ int main(int argc, char *argv[])
   MSG_launch_application(argv[2]);
 
   /* Run the simulation */
+  mutex = xbt_mutex_init();
+  cond = xbt_cond_init();
   res = MSG_main();
   XBT_INFO("Simulation time %g", MSG_get_clock());
+  xbt_cond_destroy(cond);
+  xbt_mutex_destroy(mutex);
+
   if (res == MSG_OK)
     res = MSG_clean();
 

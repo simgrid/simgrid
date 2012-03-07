@@ -77,7 +77,7 @@ xbt_socket_t gras_trp_select(double timeout)
       if (now == -1 || now >= wakeup) {
         /* didn't find anything; no need to update _gras_lastly_selected_socket since its moredata is 0 (or we would have returned it directly) */
         THROWF(timeout_error, 0,
-               "Timeout (%f) elapsed with selecting for incomming connexions",
+               "Timeout (%f) elapsed with selecting for incoming connections",
                timeout);
       }
     }
@@ -90,7 +90,7 @@ xbt_socket_t gras_trp_select(double timeout)
         continue;
 
       if (sock_iter->incoming) {
-        XBT_DEBUG("Considering socket %d for select", sock_iter->sd);
+        //XBT_DEBUG("Considering socket %d for select", sock_iter->sd);
 #ifndef HAVE_WINSOCK_H
         if (max_fds < sock_iter->sd)
           max_fds = sock_iter->sd;

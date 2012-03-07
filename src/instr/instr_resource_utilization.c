@@ -11,7 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
 
 //to check if variables were previously set to 0, otherwise paje won't simulate them
-static xbt_dict_t platform_variables;   /* host or link name -> array of categories */
+static xbt_dict_t platform_variables;
 
 //used by all methods
 static void __TRACE_surf_check_variable_set_to_zero(double now,
@@ -41,22 +41,6 @@ static void __TRACE_surf_check_variable_set_to_zero(double now,
   xbt_free(key);
 }
 
-/*
-static void __TRACE_A_event(smx_action_t action, double now, double delta,
-                            const char *variable, const char *resource,
-                            double value)
-{
-  char valuestr[100];
-  snprintf(valuestr, 100, "%f", value);
-
-  __TRACE_surf_check_variable_set_to_zero(now, variable, resource);
-  container_t container = PJ_container_get (resource);
-  type_t type = getVariableType (variable, NULL, container->type);
-  new_pajeAddVariable(now, container, type, value);
-  new_pajeSubVariable(now + delta, container, type, value);
-}
-*/
-
 static void instr_event (double now, double delta, type_t variable, container_t resource, double value)
 {
   __TRACE_surf_check_variable_set_to_zero(now, variable->name, resource->name);
@@ -67,9 +51,10 @@ static void instr_event (double now, double delta, type_t variable, container_t 
 /*
  * TRACE_surf_link_set_utilization: entry point from SimGrid
  */
-void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_action,
-                                     surf_action_t surf_action,
-                                     double value, double now,
+void TRACE_surf_link_set_utilization(const char *resource,
+                                     const char *category,
+                                     double value,
+                                     double now,
                                      double delta)
 {
   //only trace link utilization if link is known by tracing mechanism
@@ -88,11 +73,11 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
 
   //trace categorized utilization
   if (TRACE_categorized()){
-    if (!surf_action->category)
+    if (!category)
       return;
     //variable of this category starts by 'b', because we have a link here
     char category_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "b%s", surf_action->category);
+    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "b%s", category);
     XBT_DEBUG("CAT LINK [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
     container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get (category_type, container->type);
@@ -105,9 +90,9 @@ void TRACE_surf_link_set_utilization(const char *resource, smx_action_t smx_acti
  * TRACE_surf_host_set_utilization: entry point from SimGrid
  */
 void TRACE_surf_host_set_utilization(const char *resource,
-                                     smx_action_t smx_action,
-                                     surf_action_t surf_action,
-                                     double value, double now,
+                                     const char *category,
+                                     double value,
+                                     double now,
                                      double delta)
 {
   //only trace host utilization if host is known by tracing mechanism
@@ -126,11 +111,11 @@ void TRACE_surf_host_set_utilization(const char *resource,
 
   //trace categorized utilization
   if (TRACE_categorized()){
-    if (!surf_action->category)
+    if (!category)
       return;
     //variable of this category starts by 'p', because we have a host here
     char category_type[INSTR_DEFAULT_STR_SIZE];
-    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "p%s", surf_action->category);
+    snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "p%s", category);
     XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
     container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get (category_type, container->type);
