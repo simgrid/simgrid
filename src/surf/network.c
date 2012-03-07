@@ -436,10 +436,10 @@ static double net_share_resources_full(double now)
 
   xbt_swag_foreach(action, running_actions) {
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-    if (lmm_is_variable_limited_by_latency(action->variable)) {
-      GENERIC_LMM_ACTION(action).latency_limited = 1;
+    if (lmm_is_variable_limited_by_latency(GENERIC_LMM_ACTION(action).variable)) {
+      action->latency_limited = 1;
     } else {
-      GENERIC_LMM_ACTION(action).latency_limited = 0;
+      action->latency_limited = 0;
     }
 #endif
     if (action->latency > 0) {
@@ -811,7 +811,7 @@ static surf_action_t net_communicate(const char *src_name,
       surf_action_new(sizeof(s_surf_action_network_CM02_t), size,
                       surf_network_model, failed);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-  (GENERIC_LMM_ACTION(action)).latency_limited = 0;
+  action->latency_limited = 0;
 #endif
   action->weight = action->latency = latency;
 
