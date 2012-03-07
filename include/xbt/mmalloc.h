@@ -64,5 +64,8 @@ void mmalloc_backtrace_display(xbt_mheap_t mdp, void *addr);
 
 void mmalloc_backtrace_block_display(xbt_mheap_t mdp, size_t block);
 
+void mmalloc_backtrace_fragment_display(xbt_mheap_t mdp, size_t block, size_t frag);
+
+
 
 #endif                          /* MMALLOC_H */

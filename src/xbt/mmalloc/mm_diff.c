@@ -88,6 +88,29 @@ void mmalloc_backtrace_block_display(xbt_mheap_t mdp, size_t block){
   }
 }
 
+void mmalloc_backtrace_fragment_display(xbt_mheap_t mdp, size_t block, size_t frag){
+  
+  xbt_ex_t e;
+
+  memcpy(&e.bt,&(mdp->heapinfo[block].busy_frag.bt[frag]),sizeof(void*)*XBT_BACKTRACE_SIZE);
+  e.used = XBT_BACKTRACE_SIZE;
+
+  xbt_ex_setup_backtrace(&e);
+  if (e.used == 0) {
+    fprintf(stderr, "(backtrace not set)\n");
+  } else if (e.bt_strings == NULL) {
+    fprintf(stderr, "(backtrace not ready to be computed. %s)\n",xbt_binary_name?"Dunno why":"xbt_binary_name not setup yet");
+  } else {
+    int i;
+
+    fprintf(stderr, "Backtrace of where the fragment %zu in block %zu where malloced (%d frames):\n", frag, block ,e.used);
+    for (i = 0; i < e.used; i++)       /* no need to display "xbt_backtrace_display" */{
+      fprintf(stderr,"%d",i);fflush(NULL);
+      fprintf(stderr, "---> %s\n", e.bt_strings[i] + 4);
+    }
+  }
+}
+
 int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2){
 
   if(mdp1 == NULL && mdp2 == NULL){
@@ -208,6 +231,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	fprintf(stderr,"Different data in large block %zu (size = %zu (in blocks), busy_size = %zu (in bytes))\n", i, mdp1->heapinfo[i].busy_block.size, mdp1->heapinfo[i].busy_block.busy_size);
 	//fprintf(stderr, "Backtrace size : %d\n", mdp1->heapinfo[i].busy_block.bt_size);
 	mmalloc_backtrace_block_display(mdp1, i);
+	mmalloc_backtrace_block_display(mdp2, i);
 	errors++;
       }
 
@@ -251,6 +275,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
 	    if(memcmp(addr_frag1, addr_frag2, mdp1->heapinfo[i].busy_frag.frag_size[j]) != 0){
 	      fprintf(stderr,"Different data in fragment %zu (size = %zu, size used = %hu) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
+	      mmalloc_backtrace_fragment_display(mdp1, i, j);
+	      mmalloc_backtrace_fragment_display(mdp2, i, j);
 	      errors++;
 	    }
 
