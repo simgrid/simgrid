@@ -531,19 +531,6 @@ XBT_PUBLIC(void) surf_network_model_init_GTNETS(void);
  *  \see surf_workstation_model_init_NS3()
  */
 XBT_PUBLIC(void) surf_network_model_init_NS3(void);
-
-XBT_PUBLIC(void) parse_ns3_add_host(void);
-XBT_PUBLIC(void) parse_ns3_add_router(void);
-XBT_PUBLIC(void) parse_ns3_add_link(void);
-XBT_PUBLIC(void) parse_ns3_add_AS(void);
-XBT_PUBLIC(void) parse_ns3_add_route(void);
-XBT_PUBLIC(void) parse_ns3_add_ASroute(void);
-XBT_PUBLIC(void) parse_ns3_add_cluster(void);
-XBT_PUBLIC(void) parse_ns3_end_platform(void);
-XBT_PUBLIC(void) create_ns3_topology(void);
-XBT_PUBLIC(double) ns3_get_link_latency(const void *link);
-XBT_PUBLIC(double) ns3_get_link_bandwidth(const void *link);
-
 #endif
 
 /** \brief Initializes the platform with the network model Reno
