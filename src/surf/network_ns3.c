@@ -52,7 +52,7 @@ static void replace_lat_ns3(char ** lat)
 	xbt_free(temp);
 }
 
-void parse_ns3_add_host(void)
+static void parse_ns3_add_host(sg_platf_host_cbarg_t host)
 {
 	XBT_DEBUG("NS3_ADD_HOST '%s'",A_surfxml_host_id);
 	xbt_lib_set(host_lib,
@@ -67,7 +67,7 @@ static void ns3_free_dynar(void * elmts){
 	return;
 }
 
-void parse_ns3_add_link(void)
+static void parse_ns3_add_link(sg_platf_link_cbarg_t l)
 {
 	XBT_DEBUG("NS3_ADD_LINK '%s'",A_surfxml_link_id);
 
@@ -102,7 +102,8 @@ void parse_ns3_add_link(void)
 	xbt_lib_set(link_lib,A_surfxml_link_id,NS3_LINK_LEVEL,link_ns3);
 	xbt_lib_set(link_lib,A_surfxml_link_id,SURF_LINK_LEVEL,link);
 }
-void parse_ns3_add_router(void)
+
+static void parse_ns3_add_router(sg_platf_router_cbarg_t router)
 {
 	XBT_DEBUG("NS3_ADD_ROUTER '%s'",A_surfxml_router_id);
 	xbt_lib_set(as_router_lib,
@@ -111,7 +112,8 @@ void parse_ns3_add_router(void)
 				ns3_add_router(A_surfxml_router_id)
 				);
 }
-void parse_ns3_add_AS(void)
+
+static void parse_ns3_add_AS(const char*id, const char*routing)
 {
 	XBT_DEBUG("NS3_ADD_AS '%s'",A_surfxml_AS_id);
 	xbt_lib_set(as_router_lib,
@@ -120,7 +122,8 @@ void parse_ns3_add_AS(void)
 				ns3_add_AS(A_surfxml_AS_id)
 				);
 }
-void parse_ns3_add_cluster(void)
+
+static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 {
 	char *cluster_prefix = A_surfxml_cluster_prefix;
 	char *cluster_suffix = A_surfxml_cluster_suffix;
@@ -146,7 +149,7 @@ void parse_ns3_add_cluster(void)
 
 		switch (xbt_dynar_length(radical_ends)) {
 		case 1:
-		  surf_parse_get_int(&start,xbt_dynar_get_as(radical_ends, 0, char *));
+		  start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
 		  xbt_dynar_push_as(tab_elements_num, int, start);
 		  router_id = bprintf("ns3_%s%d%s", cluster_prefix, start, cluster_suffix);
 		  xbt_lib_set(host_lib,
@@ -159,8 +162,8 @@ void parse_ns3_add_cluster(void)
 		  break;
 
 		case 2:
-		  surf_parse_get_int(&start,xbt_dynar_get_as(radical_ends, 0, char *));
-		  surf_parse_get_int(&end, xbt_dynar_get_as(radical_ends, 1, char *));
+		  start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+		  end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
 		  for (i = start; i <= end; i++){
 			xbt_dynar_push_as(tab_elements_num, int, i);
 			router_id = bprintf("ns3_%s%d%s", cluster_prefix, i, cluster_suffix);
@@ -219,14 +222,14 @@ void parse_ns3_add_cluster(void)
 	xbt_free(bw);	
 }
 
-double ns3_get_link_latency (const void *link)
+static double ns3_get_link_latency (const void *link)
 {
 	double lat;
 	//XBT_DEBUG("link_id:%s link_lat:%s link_bdw:%s",((surf_ns3_link_t)link)->data->id,((surf_ns3_link_t)link)->data->lat,((surf_ns3_link_t)link)->data->bdw);
 	sscanf(((surf_ns3_link_t)link)->data->lat,"%lg",&lat);
 	return lat;
 }
-double ns3_get_link_bandwidth (const void *link)
+static double ns3_get_link_bandwidth (const void *link)
 {
 	double bdw;
 	//XBT_DEBUG("link_id:%s link_lat:%s link_bdw:%s",((surf_ns3_link_t)link)->data->id,((surf_ns3_link_t)link)->data->lat,((surf_ns3_link_t)link)->data->bdw);
@@ -236,16 +239,18 @@ double ns3_get_link_bandwidth (const void *link)
 
 static xbt_dynar_t ns3_get_route(const char *src, const char *dst)
 {
-  return global_routing->get_route(src, dst);
+  xbt_dynar_t route = NULL;
+  routing_get_route_and_latency(src, dst, &route, NULL);
+  return route;
 }
 
-void parse_ns3_end_platform(void)
+static void parse_ns3_end_platform(void)
 {
 	ns3_end_platform();
 }
 
 /* Create the ns3 topology based on routing strategy */
-void create_ns3_topology()
+static void create_ns3_topology(void)
 {
    XBT_DEBUG("Starting topology generation");
 
@@ -297,14 +302,13 @@ void create_ns3_topology()
 
 static void define_callbacks_ns3(void)
 {
-  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_ns3_add_host);	      //HOST
-  surfxml_add_callback(STag_surfxml_router_cb_list, &parse_ns3_add_router);	  //ROUTER
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_ns3_add_link);	      //LINK
-  surfxml_add_callback(STag_surfxml_AS_cb_list, &parse_ns3_add_AS);		      //AS
-  surfxml_add_callback(STag_surfxml_cluster_cb_list, &parse_ns3_add_cluster); //CLUSTER
-
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &create_ns3_topology);    //get_one_link_routes
-  surfxml_add_callback(ETag_surfxml_platform_cb_list, &parse_ns3_end_platform); //InitializeRoutes
+  sg_platf_host_add_cb (&parse_ns3_add_host);
+  sg_platf_router_add_cb (&parse_ns3_add_router);
+  sg_platf_link_add_cb (&parse_ns3_add_link);
+  sg_platf_cluster_add_cb (&parse_ns3_add_cluster);
+  sg_platf_AS_begin_add_cb (&parse_ns3_add_AS);
+  sg_platf_postparse_add_cb(&create_ns3_topology); //get_one_link_routes
+  sg_platf_postparse_add_cb(&parse_ns3_end_platform); //InitializeRoutes
 }
 
 static void free_ns3_link(void * elmts)
@@ -367,7 +371,7 @@ void surf_network_model_init_NS3()
 	xbt_die("Impossible to initialize NS3 interface");
 	}
 
-	routing_model_create(sizeof(s_surf_ns3_link_t), NULL, NULL);
+	routing_model_create(sizeof(s_surf_ns3_link_t), NULL);
 	define_callbacks_ns3();
 
 	NS3_HOST_LEVEL = xbt_lib_add_level(host_lib,(void_f_pvoid_t)free_ns3_host);
@@ -375,8 +379,6 @@ void surf_network_model_init_NS3()
 	NS3_LINK_LEVEL = xbt_lib_add_level(link_lib,(void_f_pvoid_t)free_ns3_link);
 
 	xbt_dynar_push(model_list, &surf_network_model);
-	update_model_description(surf_network_model_description,
-	            "NS3", surf_network_model);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 	surf_network_model->get_latency_limited = ns3_get_link_latency_limited;
@@ -446,16 +448,16 @@ static void ns3_update_actions_state(double now, double delta)
 	      double data_sent = ns3_get_socket_sent(data);
 	      double data_delta_sent = data_sent - action->last_sent;
 
-	      xbt_dynar_t route = global_routing->get_route(action->src_name, action->dst_name);
+	      xbt_dynar_t route = NULL;
+              routing_get_route_and_latency (action->src_name, action->dst_name, &route, NULL);
 	      unsigned int i;
 	      for (i = 0; i < xbt_dynar_length (route); i++){
 	        surf_ns3_link_t *link = ((surf_ns3_link_t*)xbt_dynar_get_ptr (route, i));
 	        TRACE_surf_link_set_utilization ((*link)->generic_resource.name,
-	            action->generic_action.data,
-	            (surf_action_t) action,
-	            (data_delta_sent)/delta,
-	            now-delta,
-	            delta);
+                                                 ((surf_action_t) action)->category,
+                                                 (data_delta_sent)/delta,
+                                                 now-delta,
+                                                 delta);
 	      }
 	      action->last_sent = data_sent;
 	    }
