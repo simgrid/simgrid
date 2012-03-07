@@ -504,8 +504,6 @@ static void elements_father(const char *src, const char *dst,
 static void _get_route_and_latency(const char *src, const char *dst,
                                    xbt_dynar_t * links, double *latency)
 {
-  void *link;
-  unsigned int cpt;
   s_route_t route;
   memset(&route,0,sizeof(route));
 
@@ -540,10 +538,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
 
 //    // FIXME this path is never tested. I need examples to check the bypass mechanism...
 //    THROW_UNIMPLEMENTED; // let's warn the users of the problem
-    xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
-      xbt_dynar_push(*links, &link);
-    }
-
+    xbt_dynar_merge(links,&(e_route_bypass->link_list));
     generic_free_route(e_route_bypass);
     return;
   }
@@ -564,9 +559,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
   if (strcmp(src, src_gateway))
     _get_route_and_latency(src, src_gateway, links, latency);
 
-  xbt_dynar_foreach(route.link_list, cpt, link) {
-    xbt_dynar_push(*links, &link);
-  }
+  xbt_dynar_merge(links,&(route.link_list));
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   // FIXME why can't I factorize it the same way than [src;src_gw] without breaking the examples??
@@ -612,25 +605,18 @@ static xbt_dynar_t recursive_get_onelink_routes(AS_t rc)
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
 
   //adding my one link routes
-  unsigned int cpt;
-  void *link;
   xbt_dynar_t onelink_mine = rc->get_onelink_routes(rc);
-  if (onelink_mine) {
-    xbt_dynar_foreach(onelink_mine, cpt, link) {
-      xbt_dynar_push(ret, &link);
-    }
-  }
+  if (onelink_mine)
+    xbt_dynar_merge(&ret,&onelink_mine);
+
   //recursing
   char *key;
   xbt_dict_cursor_t cursor = NULL;
   AS_t rc_child;
   xbt_dict_foreach(rc->routing_sons, cursor, key, rc_child) {
     xbt_dynar_t onelink_child = recursive_get_onelink_routes(rc_child);
-    if (onelink_child) {
-      xbt_dynar_foreach(onelink_child, cpt, link) {
-        xbt_dynar_push(ret, &link);
-      }
-    }
+    if (onelink_child)
+      xbt_dynar_merge(&ret,&onelink_child);
   }
   return ret;
 }

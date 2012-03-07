@@ -238,6 +238,28 @@ XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
   _dynar_unlock(dynar);
 }
 
+/** @brief Merge dynar d2 into d1
+ *
+ * \param d1 dynar to keep
+ * \param d2 dynar to merge into d1. This dynar is free at end.
+ */
+void xbt_dynar_merge(xbt_dynar_t *d1, xbt_dynar_t *d2)
+{
+  if((*d1)->elmsize != (*d2)->elmsize)
+    xbt_die("Element size must are not equal");
+
+  const unsigned long elmsize = (*d1)->elmsize;
+
+  void *ptr = _xbt_dynar_elm((*d2), 0);
+  _xbt_dynar_resize(*d1, (*d1)->size + (*d2)->size);
+  void *elm = _xbt_dynar_elm((*d1), (*d1)->used);
+
+  memcpy(elm, ptr, ((*d2)->size)*elmsize);
+  (*d1)->used += (*d2)->used;
+  (*d2)->used = 0;
+  xbt_dynar_free(d2);
+}
+
 /**
  * \brief Shrink the dynar by removing empty slots at the end of the internal array
  * \param dynar a dynar

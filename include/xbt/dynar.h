@@ -111,7 +111,7 @@ XBT_PUBLIC(void *) xbt_dynar_to_array (xbt_dynar_t dynar);
 XBT_PUBLIC(unsigned long) xbt_dynar_length(const xbt_dynar_t dynar);
 XBT_PUBLIC(int) xbt_dynar_is_empty(const xbt_dynar_t dynar);
 XBT_PUBLIC(void) xbt_dynar_reset(xbt_dynar_t const dynar);
-
+XBT_PUBLIC(void) xbt_dynar_merge(xbt_dynar_t *d1, xbt_dynar_t *d2);
 
 /** @} */
 /** @defgroup XBT_dynar_perl Perl-like use of dynars
