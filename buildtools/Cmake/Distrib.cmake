@@ -155,6 +155,8 @@ COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/simgrid_co
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/gras.h 
 COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/xbt.h
 COMMAND ${CMAKE_COMMAND} -E	echo "uninstall include ok"
+COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/simgrid_update_xml.1
+COMMAND ${CMAKE_COMMAND} -E	echo "uninstall man ok"
 WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
 )
 
