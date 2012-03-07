@@ -571,14 +571,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   // FIXME why can't I factorize it the same way than [src;src_gw] without breaking the examples??
   if (strcmp(dst_gateway, dst)) {
-    xbt_dynar_t route_dst = xbt_dynar_new(global_routing->size_of_link,NULL);
-
-    _get_route_and_latency(dst_gateway, dst, &route_dst, latency);
-
-    xbt_dynar_foreach(route_dst, cpt, link) {
-      xbt_dynar_push(*links, &link);
-    }
-    xbt_dynar_free(&route_dst);
+    _get_route_and_latency(dst_gateway, dst, links, latency);
   }
 
   xbt_free(src_gateway);
