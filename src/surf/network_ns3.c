@@ -35,22 +35,6 @@ static int action_unref(surf_action_t action);
 
 xbt_dynar_t IPV4addr;
 
-static void replace_str(char *str, const char *orig, const char *rep)
-{
-  char buffer[30];
-  char *p;
-
-  if(!(p = strstr(str, orig)))  // Is 'orig' even in 'str'?
-    return;
-
-  strncpy(buffer, str, p-str); // Copy characters from 'str' start to 'orig' st$
-  buffer[p-str] = '\0';
-
-  sprintf(buffer+(p-str), "%s%s", rep, p+strlen(orig));
-  xbt_free(str);
-  str = xbt_strdup(buffer);
-}
-
 static void replace_bdw_ns3(char ** bdw)
 {
 	char *temp = xbt_strdup(*bdw);
