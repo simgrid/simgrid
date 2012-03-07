@@ -212,7 +212,6 @@ $ cat simgrid.trace
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cfg=tracing/categorized:1 ${srcdir:=.}/../platforms/g5k.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
-> [0.000000] [instr_config/INFO] Tracing resource utilization active, network/optim configuration now set to Full.
 
 $ cat simgrid.trace
 > %EventDef PajeDefineContainerType 0 
