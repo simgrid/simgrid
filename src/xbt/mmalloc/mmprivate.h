@@ -53,7 +53,8 @@
  * need to enlist the free fragments.
  */
 
-#define SMALLEST_POSSIBLE_MALLOC (sizeof(struct list))
+//#define SMALLEST_POSSIBLE_MALLOC (sizeof(struct list))
+#define SMALLEST_POSSIBLE_MALLOC (16*sizeof(struct list))
 #define MAX_FRAGMENT_PER_BLOCK (BLOCKSIZE / SMALLEST_POSSIBLE_MALLOC)
 
 /* The difference between two pointers is a signed int.  On machines where
