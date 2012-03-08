@@ -38,15 +38,15 @@ XBT_PUBLIC(void*)  ns3_get_socket_action(void *socket);
 XBT_PUBLIC(double) ns3_get_socket_remains(void *socket);
 XBT_PUBLIC(double) ns3_get_socket_sent(void *socket);
 XBT_PUBLIC(char)   ns3_get_socket_is_finished(void *socket);
-XBT_PUBLIC(void *) ns3_add_host(char * id);
-XBT_PUBLIC(void *) ns3_add_host_cluster(char * id);
-XBT_PUBLIC(void *) ns3_add_router(char * id);
-XBT_PUBLIC(void *) ns3_add_AS(char * id);
+XBT_PUBLIC(void *) ns3_add_host(const char * id);
+XBT_PUBLIC(void *) ns3_add_host_cluster(const char * id);
+XBT_PUBLIC(void *) ns3_add_router(const char * id);
+XBT_PUBLIC(void *) ns3_add_AS(const char * id);
 XBT_PUBLIC(void *) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
 								int dst, e_ns3_network_element_type_t type_dst,
 								char * bw,char * lat);
 XBT_PUBLIC(void *) ns3_end_platform(void);
-XBT_PUBLIC(void *) ns3_add_cluster(char * bw,char * lat,char *id);
+XBT_PUBLIC(void *) ns3_add_cluster(char * bw,char * lat,const char *id);
 #ifdef __cplusplus
 }
 #endif
