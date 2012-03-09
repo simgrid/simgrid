@@ -1,8 +1,5 @@
 find_library(HAVE_GTNETS_LIB
     NAME gtnets
-    HINTS
-    $ENV{LD_LIBRARY_PATH}
-    $ENV{HOME}
     PATH_SUFFIXES lib64 lib lib64/gtnets lib/gtnets
     PATHS
     /opt
@@ -15,9 +12,6 @@ find_library(HAVE_GTNETS_LIB
 
 find_path(HAVE_SIMULATOR_H
 	NAME simulator.h
-    HINTS
-    $ENV{HOME}
-    $ENV{GTNETS_ROOT}
     PATH_SUFFIXES include include/gtnets
     PATHS
     /opt

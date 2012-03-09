@@ -1,8 +1,5 @@
 find_library(HAVE_NS3_LIB
     NAME ns3
-    HINTS
-    $ENV{LD_LIBRARY_PATH}
-    $ENV{HOME}
     PATH_SUFFIXES lib64 lib ns3/lib
     PATHS
     /opt
@@ -15,9 +12,6 @@ find_library(HAVE_NS3_LIB
 
 find_library(HAVE_NS3_CORE_LIB
     NAME ns3-core
-    HINTS
-    $ENV{LD_LIBRARY_PATH}
-    $ENV{HOME}
     PATH_SUFFIXES lib64 lib ns3/lib
     PATHS
     /opt
@@ -30,8 +24,6 @@ find_library(HAVE_NS3_CORE_LIB
 
 find_path(HAVE_CORE_MODULE_H
 	NAME ns3/core-module.h
-    HINTS
-    $ENV{HOME}
     PATH_SUFFIXES include ns3/include
     PATHS
     /opt
