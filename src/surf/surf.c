@@ -593,14 +593,15 @@ XBT_INLINE double surf_get_clock(void)
 
 static void surf_share_resources(surf_model_t model)
 {
+  double next_action_end = -1.0;
+  int i = __sync_fetch_and_add(&surf_min_index, 1);
   if (strcmp(model->name,"network NS3")) {
     XBT_DEBUG("Running for Resource [%s]", model->name);
-    double next_action_end = model->model_private->share_resources(NOW);
+    next_action_end = model->model_private->share_resources(NOW);
     XBT_DEBUG("Resource [%s] : next action end = %f",
         model->name, next_action_end);
-    int i = __sync_fetch_and_add(&surf_min_index, 1);
-    surf_mins[i] = next_action_end;
   }
+  surf_mins[i] = next_action_end;
 }
 
 static void surf_update_actions_state(surf_model_t model)
