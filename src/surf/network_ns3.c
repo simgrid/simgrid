@@ -62,17 +62,11 @@ static void parse_ns3_add_host(sg_platf_host_cbarg_t host)
     );
 }
 
-static void ns3_free_dynar(void * elmts)
-{
-  free(elmts);
-  return;
-}
-
 static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 {
   XBT_DEBUG("NS3_ADD_LINK '%s'",link->id);
 
-  if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),ns3_free_dynar);
+  if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
   tmgr_trace_t bw_trace;
   tmgr_trace_t state_trace;
