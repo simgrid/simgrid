@@ -90,7 +90,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
     XBT_INFO("The NS3 network model doesn't support link state traces");
 
   ns3_link_t link_ns3 = xbt_new0(s_ns3_link_t,1);;
-  link_ns3->id = (char*)(link->id);
+  link_ns3->id = xbt_strdup((char*)(link->id));
   link_ns3->bdw = bprintf("%f",link->bandwidth);
   link_ns3->lat = bprintf("%f",link->latency);
 

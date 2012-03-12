@@ -40,10 +40,5 @@
 	 gw_dst="c-my_cluster_2_router.me">
  		<link_ctn id="backbone"/>
      </ASroute>   
-     <ASroute src="my_cluster_2" dst="my_cluster_1" 
-	 gw_src="c-my_cluster_2_router.me" 
-	 gw_dst="c-my_cluster_1_router.me">
- 		<link_ctn id="backbone"/>
-     </ASroute> 
 </AS>
 </platform>
