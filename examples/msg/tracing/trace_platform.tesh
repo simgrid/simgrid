@@ -8,36 +8,36 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cf
 $ cat simgrid.trace
 > %EventDef PajeDefineContainerType 0 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %EndEventDef 
 > %EventDef PajeDefineVariableType 1 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
 > %EventDef PajeDefineStateType 2 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %EndEventDef 
 > %EventDef PajeDefineEventType 3 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
 > %EventDef PajeDefineLinkType 4 
 > %       Alias string 
-> %       ContainerType string 
-> %       SourceContainerType string 
-> %       DestContainerType string 
+> %       Type string 
+> %       StartContainerType string 
+> %       EndContainerType string 
 > %       Name string 
 > %EndEventDef 
 > %EventDef PajeDefineEntityValue 5 
 > %       Alias string 
-> %       EntityType string 
+> %       Type string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
@@ -93,7 +93,7 @@ $ cat simgrid.trace
 > %       Type string 
 > %       Container string 
 > %       Value string 
-> %       SourceContainer string 
+> %       StartContainer string 
 > %       Key string 
 > %EndEventDef
 > %EventDef PajeEndLink 15 
@@ -101,7 +101,7 @@ $ cat simgrid.trace
 > %       Type string 
 > %       Container string 
 > %       Value string 
-> %       DestContainer string 
+> %       EndContainer string 
 > %       Key string 
 > %EndEventDef
 > %EventDef PajeNewEvent 16 
@@ -216,36 +216,36 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cf
 $ cat simgrid.trace
 > %EventDef PajeDefineContainerType 0 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %EndEventDef 
 > %EventDef PajeDefineVariableType 1 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
 > %EventDef PajeDefineStateType 2 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %EndEventDef 
 > %EventDef PajeDefineEventType 3 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
 > %EventDef PajeDefineLinkType 4 
 > %       Alias string 
-> %       ContainerType string 
-> %       SourceContainerType string 
-> %       DestContainerType string 
+> %       Type string 
+> %       StartContainerType string 
+> %       EndContainerType string 
 > %       Name string 
 > %EndEventDef 
 > %EventDef PajeDefineEntityValue 5 
 > %       Alias string 
-> %       EntityType string 
+> %       Type string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
@@ -301,7 +301,7 @@ $ cat simgrid.trace
 > %       Type string 
 > %       Container string 
 > %       Value string 
-> %       SourceContainer string 
+> %       StartContainer string 
 > %       Key string 
 > %EndEventDef
 > %EventDef PajeEndLink 15 
@@ -309,7 +309,7 @@ $ cat simgrid.trace
 > %       Type string 
 > %       Container string 
 > %       Value string 
-> %       DestContainer string 
+> %       EndContainer string 
 > %       Key string 
 > %EndEventDef
 > %EventDef PajeNewEvent 16 
@@ -30162,36 +30162,36 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cf
 $ cat simgrid.trace
 > %EventDef PajeDefineContainerType 0 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %EndEventDef 
 > %EventDef PajeDefineVariableType 1 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
 > %EventDef PajeDefineStateType 2 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %EndEventDef 
 > %EventDef PajeDefineEventType 3 
 > %       Alias string 
-> %       ContainerType string 
+> %       Type string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
 > %EventDef PajeDefineLinkType 4 
 > %       Alias string 
-> %       ContainerType string 
-> %       SourceContainerType string 
-> %       DestContainerType string 
+> %       Type string 
+> %       StartContainerType string 
+> %       EndContainerType string 
 > %       Name string 
 > %EndEventDef 
 > %EventDef PajeDefineEntityValue 5 
 > %       Alias string 
-> %       EntityType string 
+> %       Type string 
 > %       Name string 
 > %       Color color 
 > %EndEventDef 
@@ -30247,7 +30247,7 @@ $ cat simgrid.trace
 > %       Type string 
 > %       Container string 
 > %       Value string 
-> %       SourceContainer string 
+> %       StartContainer string 
 > %       Key string 
 > %EndEventDef
 > %EventDef PajeEndLink 15 
@@ -30255,7 +30255,7 @@ $ cat simgrid.trace
 > %       Type string 
 > %       Container string 
 > %       Value string 
-> %       DestContainer string 
+> %       EndContainer string 
 > %       Key string 
 > %EndEventDef
 > %EventDef PajeNewEvent 16 
