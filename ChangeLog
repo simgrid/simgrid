@@ -23,7 +23,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     (e.g., --cfg=network/optim:lazy --cfg=cpu/optim:TI).
     Incompatible combinations should err at initialization. See
     --help-models for the list of all models and optimization modes.
-  * The CLM03 workstation model were dropped for simplicity because it
+  * The CLM03 workstation model was dropped for simplicity because it
     used the deprecated CM02 network model. Use default instead.
   * Rename the TCP_gamma configuration option to network/TCP_gamma
   * Rename the coordinates configuration option to
@@ -38,7 +38,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
 
   MSG:
   * Deprecate the MSG_task_{get,put} functions and friends.
-    This interface were considered as deprecated since over 2 years,
+    This interface was considered as deprecated since over 2 years,
      it's time to inform our users that it is.
     Switch to MSG_task_{send,recv} instead, or declare
      SIMGRID_DEPRECATED before loading the msg.h if you really need to
@@ -72,6 +72,13 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   SMPI:
   * Enable it by default now that it is considered rather stable.
 
+  Lua:
+  * Improve the API of Lua MSG bindings, using the Lua spirit.
+  * Each simulated process now lives in its own Lua world (globals are
+    automatically duplicated). It helps writing simulators. This is also the
+    first step towards running real distributed Lua programs with SimGrid.
+  * Add a Chord example in Lua, equivalent to the MSG one.
+
   XBT:
   * Mallocators: allow value NULL for the reset function.
   * Dicts:
@@ -82,8 +89,8 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     - Dicts of scalar elements (xbt_dicti_*) are deprecated.
     - Multi-level dictionaries are deprecated.
   * mmalloc module:
-    - cleanups and simplifications to make it maintainable again
-    - exotic features (such as memalign and valloc) were removed
+    - Cleanups and simplifications to make it maintainable again.
+    - Exotic features (such as memalign and valloc) were removed.
     - The metadata were extended and improved so that the
       model-checker becomes able to explore and inspect the heaps.
     - This may induce a performance drop when enable_model-checking is

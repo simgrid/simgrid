@@ -138,7 +138,7 @@ void model_full_end(AS_t current_routing)
     routing->routing_table = xbt_new0(route_t, table_size * table_size);
 
   /* Add the loopback if needed */
-  if (current_routing->hierarchy == SURF_ROUTING_BASE) {
+  if (global_routing->loopback && current_routing->hierarchy == SURF_ROUTING_BASE) {
     for (i = 0; i < table_size; i++) {
       e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {

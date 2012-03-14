@@ -14,6 +14,7 @@
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
   void *cpu;
+  void *net_card;
   xbt_dynar_t storage;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 

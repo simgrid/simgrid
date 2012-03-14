@@ -124,7 +124,7 @@ int ns3_initialize(const char* TcpProtocol){
   XBT_ERROR("The ns3/TcpModel must be : NewReno or Reno or Tahoe");
 }
 
-void * ns3_add_host(char * id)
+void * ns3_add_host(const char * id)
 {
 	ns3_nodes_t host  = xbt_new0(s_ns3_nodes_t,1);
 	XBT_DEBUG("Interface ns3 add host[%d] '%s'",number_of_nodes,id);
@@ -138,7 +138,7 @@ void * ns3_add_host(char * id)
 	return host;
 }
 
-void * ns3_add_host_cluster(char * id)
+void * ns3_add_host_cluster(const char * id)
 {
 	ns3_nodes_t host  = xbt_new0(s_ns3_nodes_t,1);
 	XBT_DEBUG("Interface ns3 add host[%d] '%s'",number_of_nodes,id);
@@ -153,7 +153,7 @@ void * ns3_add_host_cluster(char * id)
 	return host;
 }
 
-void * ns3_add_router(char * id)
+void * ns3_add_router(const char * id)
 {
 	ns3_nodes_t router  = xbt_new0(s_ns3_nodes_t,1);
 	XBT_DEBUG("Interface ns3 add router[%d] '%s'",number_of_nodes,id);
@@ -167,7 +167,7 @@ void * ns3_add_router(char * id)
 	return router;
 }
 
-void * ns3_add_cluster(char * bw,char * lat,char *id)
+void * ns3_add_cluster(char * bw,char * lat,const char *id)
 {
 
 	XBT_DEBUG("cluster_id: %s",id);
@@ -212,7 +212,7 @@ void * ns3_add_cluster(char * bw,char * lat,char *id)
 	XBT_DEBUG("Number of nodes in Cluster_nodes: %d",Cluster_nodes.GetN());
 }
 
-void * ns3_add_AS(char * id)
+void * ns3_add_AS(const char * id)
 {
 	XBT_DEBUG("Interface ns3 add AS '%s'",id);
 	return NULL;

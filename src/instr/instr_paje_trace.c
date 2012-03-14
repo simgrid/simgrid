@@ -211,36 +211,36 @@ void TRACE_paje_create_header(void)
   fprintf(tracing_file, "\
 %%EventDef PajeDefineContainerType %d \n\
 %%       Alias string \n\
-%%       ContainerType string \n\
+%%       Type string \n\
 %%       Name string \n\
 %%EndEventDef \n\
 %%EventDef PajeDefineVariableType %d \n\
 %%       Alias string \n\
-%%       ContainerType string \n\
+%%       Type string \n\
 %%       Name string \n\
 %%       Color color \n\
 %%EndEventDef \n\
 %%EventDef PajeDefineStateType %d \n\
 %%       Alias string \n\
-%%       ContainerType string \n\
+%%       Type string \n\
 %%       Name string \n\
 %%EndEventDef \n\
 %%EventDef PajeDefineEventType %d \n\
 %%       Alias string \n\
-%%       ContainerType string \n\
+%%       Type string \n\
 %%       Name string \n\
 %%       Color color \n\
 %%EndEventDef \n\
 %%EventDef PajeDefineLinkType %d \n\
 %%       Alias string \n\
-%%       ContainerType string \n\
-%%       SourceContainerType string \n\
-%%       DestContainerType string \n\
+%%       Type string \n\
+%%       StartContainerType string \n\
+%%       EndContainerType string \n\
 %%       Name string \n\
 %%EndEventDef \n\
 %%EventDef PajeDefineEntityValue %d \n\
 %%       Alias string \n\
-%%       EntityType string \n\
+%%       Type string \n\
 %%       Name string \n\
 %%       Color color \n\
 %%EndEventDef \n\
@@ -296,7 +296,7 @@ void TRACE_paje_create_header(void)
 %%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
-%%       SourceContainer string \n\
+%%       StartContainer string \n\
 %%       Key string \n\
 %%EndEventDef\n\
 %%EventDef PajeEndLink %d \n\
@@ -304,7 +304,7 @@ void TRACE_paje_create_header(void)
 %%       Type string \n\
 %%       Container string \n\
 %%       Value string \n\
-%%       DestContainer string \n\
+%%       EndContainer string \n\
 %%       Key string \n\
 %%EndEventDef\n\
 %%EventDef PajeNewEvent %d \n\

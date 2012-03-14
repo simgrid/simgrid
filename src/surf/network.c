@@ -45,6 +45,12 @@ typedef struct s_smpi_factor {
   double value;
 } s_smpi_factor_t;
 
+typedef struct s_net_card *net_card_t;
+typedef struct s_net_card {
+  char* name;
+  void* routing_obj;
+} s_net_card_t;
+
 double sg_sender_gap = 0.0;
 double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
 double sg_bandwidth_factor = 1.0;       /* default value; can be set by model or from command line */

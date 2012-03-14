@@ -200,7 +200,7 @@ void model_floyd_end(AS_t current_routing)
 	}
 
 	/* Add the loopback if needed */
-	if (current_routing->hierarchy == SURF_ROUTING_BASE) {
+	if (global_routing->loopback && current_routing->hierarchy == SURF_ROUTING_BASE) {
 		for (i = 0; i < table_size; i++) {
 		  route_t e_route = TO_FLOYD_LINK(i, i);
 		  if (!e_route) {

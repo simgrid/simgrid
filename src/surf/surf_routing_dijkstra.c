@@ -453,7 +453,7 @@ void model_dijkstra_both_end(AS_t as)
   THIS_AS->route_cache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
   /* Add the loopback if needed */
-  if (as->hierarchy == SURF_ROUTING_BASE)
+  if (global_routing->loopback && as->hierarchy == SURF_ROUTING_BASE)
     add_loopback_dijkstra(THIS_AS);
 
   /* initialize graph indexes in nodes after graph has been built */

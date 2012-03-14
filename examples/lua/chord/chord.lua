@@ -65,7 +65,7 @@ function node(...)
 
     while now < max_simulation_time do
 
-      task, err = simgrid.comm.test(my_node.comm_recv)
+      task, err = my_node.comm_recv:test()
 
       if task then
 	-- I received a task: answer it
@@ -271,7 +271,7 @@ function remote_find_successor(ask_to, id)
         " for id " .. id .. ", waiting for the answer")
 
     while true do
-      task = simgrid.comm.wait(my_node.comm_recv, timeout)
+      task = my_node.comm_recv:wait(timeout)
       my_node.comm_recv = simgrid.task.irecv(my_node.id)
     
       if not task then
@@ -312,7 +312,7 @@ function remote_get_predecessor(ask_to)
   if task:send(ask_to, timeout) then
     -- request successfully sent: wait for an answer
     while true do
-      task = simgrid.comm.wait(my_node.comm_recv, timeout)
+      task = my_node.comm_recv:wait(timeout)
       my_node.comm_recv = simgrid.task.irecv(my_node.id)
     
       if not task then

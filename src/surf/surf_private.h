@@ -169,6 +169,8 @@ typedef struct s_as {
 typedef struct s_network_element_info {
   AS_t rc_component;
   e_surf_network_element_type_t rc_type;
+  int id;
+  char *name;
 } s_network_element_info_t, *network_element_info_t;
 
 typedef int *network_element_t;

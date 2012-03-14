@@ -579,11 +579,10 @@ static XBT_INLINE int diff_get(xbt_matrix_t C, int i, int j)
   return (i == -1 || j == -1) ? 0 : xbt_matrix_get_as(C, i, j, int);
 }
 
-static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db)
+static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db,
+                                   int len_a, int len_b)
 {
-  xbt_matrix_t C =
-      xbt_matrix_new(xbt_dynar_length(da), xbt_dynar_length(db),
-                     sizeof(int), NULL);
+  xbt_matrix_t C = xbt_matrix_new(len_a, len_b, sizeof(int), NULL);
   int i, j;
 
   /* Compute the LCS */
@@ -602,8 +601,8 @@ static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db)
              C[i,j] := max(C[i,j-1], C[i-1,j])
        return C[m,n]
    */
-  for (i = 0; i < (int)xbt_dynar_length(da); i++)
-    for (j = 0; j < (int)xbt_dynar_length(db); j++) {
+  for (i = 0; i < len_a; i++)
+    for (j = 0; j < len_b; j++) {
 
       if (!strcmp(xbt_dynar_get_as(da, i, char *),
                   xbt_dynar_get_as(db, j, char *)))
@@ -661,32 +660,55 @@ char *xbt_str_diff(const char *a, const char *b)
   xbt_dynar_t diff;
   char *res;
   size_t len;
+  unsigned length_da;
+
+  diff = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 
   /* Clean empty lines at the end of da and db */
   len = strlen(a);
-  if (len > 0 && a[len - 1] == '\n') {
-    char *str;
-    xbt_dynar_pop(da, &str);
-    free(str);
-  }
+  if (len > 0 && a[len - 1] == '\n')
+    xbt_dynar_pop(da, NULL);
   len = strlen(b);
-  if (len > 0 && b[len - 1] == '\n') {
-    char *str;
-    xbt_dynar_pop(db, &str);
-    free(str);
+  if (len > 0 && b[len - 1] == '\n')
+    xbt_dynar_pop(db, NULL);
+
+  /* Find the common suffix, do it before extracting the prefix,
+   * as xbt_dynar_pop costs less than xbt_dynar_shift */
+  length_da = xbt_dynar_length(da);
+  while (length_da > 0 && xbt_dynar_length(db) > 0 &&
+         !strcmp(xbt_dynar_get_as(da, length_da - 1, char *),
+                 xbt_dynar_getlast_as(db, char *))) {
+    xbt_dynar_pop(db, NULL);
+    length_da--;
   }
 
-  C = diff_build_LCS(da, db);
-  diff = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+  /* Extract the common prefix */
+  while (length_da > 0 && xbt_dynar_length(db) > 0 &&
+         !strcmp(xbt_dynar_getfirst_as(da, char *),
+                 xbt_dynar_getfirst_as(db, char *))) {
+    char *topush = bprintf("  %s", xbt_dynar_getfirst_as(da, char *));
+    xbt_dynar_push(diff, &topush);
+    xbt_dynar_shift(da, NULL);
+    xbt_dynar_shift(db, NULL);
+    length_da--;
+  }
 
-  diff_build_diff(diff, C, da, db, xbt_dynar_length(da) - 1,
-                  xbt_dynar_length(db) - 1);
-  res = xbt_str_join(diff, "\n");
-
-  xbt_dynar_free(&da);
-  xbt_dynar_free(&db);
-  xbt_dynar_free(&diff);
+  /* Compute the diff for the remaining */
+  C = diff_build_LCS(da, db, length_da, xbt_dynar_length(db));
+  diff_build_diff(diff, C, da, db, length_da - 1, xbt_dynar_length(db) - 1);
   xbt_matrix_free(C);
+  xbt_dynar_free(&db);
+
+  /* Add the common suffix */
+  for (; length_da < xbt_dynar_length(da); length_da++) {
+    char *topush = bprintf("  %s", xbt_dynar_get_as(da, length_da, char *));
+    xbt_dynar_push(diff, &topush);
+  }
+  xbt_dynar_free(&da);
+
+  /* Build the final result */
+  res = xbt_str_join(diff, "\n");
+  xbt_dynar_free(&diff);
 
   return res;
 }

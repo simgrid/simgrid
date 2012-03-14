@@ -54,33 +54,27 @@ static void replace_lat_ns3(char ** lat)
 
 static void parse_ns3_add_host(sg_platf_host_cbarg_t host)
 {
-  XBT_DEBUG("NS3_ADD_HOST '%s'",A_surfxml_host_id);
+  XBT_DEBUG("NS3_ADD_HOST '%s'",host->id);
   xbt_lib_set(host_lib,
-              A_surfxml_host_id,
+              host->id,
               NS3_HOST_LEVEL,
-              ns3_add_host(A_surfxml_host_id)
+              ns3_add_host(host->id)
     );
 }
 
-static void ns3_free_dynar(void * elmts)
+static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 {
-  free(elmts);
-  return;
-}
+  XBT_DEBUG("NS3_ADD_LINK '%s'",link->id);
 
-static void parse_ns3_add_link(sg_platf_link_cbarg_t l)
-{
-  XBT_DEBUG("NS3_ADD_LINK '%s'",A_surfxml_link_id);
-
-  if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),ns3_free_dynar);
+  if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
   tmgr_trace_t bw_trace;
   tmgr_trace_t state_trace;
   tmgr_trace_t lat_trace;
 
-  bw_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
-  lat_trace = tmgr_trace_new(A_surfxml_link_latency_file);
-  state_trace = tmgr_trace_new(A_surfxml_link_state_file);
+  bw_trace = link->bandwidth_trace;
+  lat_trace = link->latency_trace;
+  state_trace = link->state_trace;
 
   if (bw_trace)
     XBT_INFO("The NS3 network model doesn't support bandwidth state traces");
@@ -90,50 +84,50 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t l)
     XBT_INFO("The NS3 network model doesn't support link state traces");
 
   ns3_link_t link_ns3 = xbt_new0(s_ns3_link_t,1);;
-  link_ns3->id = xbt_strdup(A_surfxml_link_id);
-  link_ns3->bdw = xbt_strdup(A_surfxml_link_bandwidth);
-  link_ns3->lat = xbt_strdup(A_surfxml_link_latency);
+  link_ns3->id = xbt_strdup((char*)(link->id));
+  link_ns3->bdw = bprintf("%f",link->bandwidth);
+  link_ns3->lat = bprintf("%f",link->latency);
 
-  surf_ns3_link_t link = xbt_new0(s_surf_ns3_link_t,1);
-  link->generic_resource.name = xbt_strdup(A_surfxml_link_id);
-  link->generic_resource.properties = current_property_set;
-  link->data = link_ns3;
-  link->created = 1;
+  surf_ns3_link_t l = xbt_new0(s_surf_ns3_link_t,1);
+  l->generic_resource.name = xbt_strdup(link->id);
+  l->generic_resource.properties = current_property_set;
+  l->data = link_ns3;
+  l->created = 1;
 
-  xbt_lib_set(link_lib,A_surfxml_link_id,NS3_LINK_LEVEL,link_ns3);
-  xbt_lib_set(link_lib,A_surfxml_link_id,SURF_LINK_LEVEL,link);
+  xbt_lib_set(link_lib,link->id,NS3_LINK_LEVEL,link_ns3);
+  xbt_lib_set(link_lib,link->id,SURF_LINK_LEVEL,l);
 }
 
 static void parse_ns3_add_router(sg_platf_router_cbarg_t router)
 {
-  XBT_DEBUG("NS3_ADD_ROUTER '%s'",A_surfxml_router_id);
+  XBT_DEBUG("NS3_ADD_ROUTER '%s'",router->id);
   xbt_lib_set(as_router_lib,
-              A_surfxml_router_id,
+              router->id,
               NS3_ASR_LEVEL,
-              ns3_add_router(A_surfxml_router_id)
+              ns3_add_router(router->id)
     );
 }
 
 static void parse_ns3_add_AS(const char*id, const char*routing)
 {
-  XBT_DEBUG("NS3_ADD_AS '%s'",A_surfxml_AS_id);
+  XBT_DEBUG("NS3_ADD_AS '%s'",id);
   xbt_lib_set(as_router_lib,
-              A_surfxml_AS_id,
+              id,
               NS3_ASR_LEVEL,
-              ns3_add_AS(A_surfxml_AS_id)
+              ns3_add_AS(id)
     );
 }
 
 static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 {
-  char *cluster_prefix = A_surfxml_cluster_prefix;
-  char *cluster_suffix = A_surfxml_cluster_suffix;
-  char *cluster_radical = A_surfxml_cluster_radical;
-  char *cluster_bb_bw = A_surfxml_cluster_bb_bw;
-  char *cluster_bb_lat = A_surfxml_cluster_bb_lat;
-  char *cluster_bw = A_surfxml_cluster_bw;
-  char *cluster_lat = A_surfxml_cluster_lat;
-  char *groups = NULL;
+  const char *cluster_prefix = cluster->prefix;
+  const char *cluster_suffix = cluster->suffix;
+  const char *cluster_radical = cluster->radical;
+  const char *cluster_bb_bw = bprintf("%f",cluster->bb_bw);
+  const char *cluster_bb_lat = bprintf("%f",cluster->bb_lat);
+  const char *cluster_bw = bprintf("%f",cluster->bw);
+  const char *cluster_lat = bprintf("%f",cluster->lat);
+  const char *groups = NULL;
 
   int start, end, i;
   unsigned int iter;
@@ -218,7 +212,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   bw =  xbt_strdup(cluster_bb_bw);
   replace_lat_ns3(&lat);
   replace_bdw_ns3(&bw);
-  ns3_add_cluster(bw,lat,A_surfxml_cluster_id);
+  ns3_add_cluster(bw,lat,cluster->id);
   xbt_free(lat);
   xbt_free(bw);	
 }

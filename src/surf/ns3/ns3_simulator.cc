@@ -41,6 +41,12 @@ static XBT_INLINE void transformSocketPtr (Ptr<Socket> localSocket){
   sprintf(socket_key,"%s",s.c_str());
 }
 
+static void delete_mysocket(void *p)
+{
+  MySocket *sock = (MySocket *)p;
+  delete(sock);
+}
+
 /*
  * This function create a flow from src to dst
  *
@@ -61,7 +67,7 @@ void NS3Sim::create_flow_NS3(
 		uint32_t totalBytes,
 		void * action)
 {
-	if(!dict_socket) dict_socket = xbt_dict_new_homogeneous(free);
+	if(!dict_socket) dict_socket = xbt_dict_new_homogeneous(delete_mysocket);
 
 	PacketSinkHelper sink ("ns3::TcpSocketFactory",
 							InetSocketAddress (Ipv4Address::GetAny(),
@@ -109,7 +115,7 @@ double NS3Sim::get_sent_from_socket(void *socket){
 void NS3Sim::simulator_start(double min){
   if(min > 0.0)
     Simulator::Stop(Seconds(min));
-  XBT_DEBUG("Start simulator");
+  XBT_DEBUG("Start simulator '%f'",min);
   Simulator::Run ();
 }
 
