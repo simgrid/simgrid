@@ -47,34 +47,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 static xbt_swag_t
     cpu_running_action_set_that_does_not_need_being_checked = NULL;
 
-/* added to manage the communication action's heap */
-static void net_action_update_index_heap(void *action, int i)
-{
-  surf_action_cpu_Cas01_t a = action;
-  GENERIC_LMM_ACTION(a).index_heap = i;
-}
-
-/* insert action on heap using a given key and a hat (heap_action_type)
- * a hat can be of three types for communications:
- *
- * NORMAL = this is a normal heap entry stating the date to finish transmitting
- * LATENCY = this is a heap entry to warn us when the latency is payed
- * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
- */
-static void heap_insert(surf_action_cpu_Cas01_t action, double key,
-                        enum heap_action_type hat)
-{
-  GENERIC_LMM_ACTION(action).hat = hat;
-  xbt_heap_push(cpu_action_heap, action, key);
-}
-
-static void heap_remove(surf_action_cpu_Cas01_t action)
-{
-  GENERIC_LMM_ACTION(action).hat = NOTSET;
-  if (GENERIC_LMM_ACTION(action).index_heap >= 0) {
-    xbt_heap_remove(cpu_action_heap, GENERIC_LMM_ACTION(action).index_heap);
-  }
-}
 
 static void *cpu_create_resource(const char *name, double power_peak,
                                  double power_scale,
@@ -183,7 +155,7 @@ static int cpu_action_unref(surf_action_t action)
                         ((surf_action_lmm_t) action)->variable);
     if (cpu_update_mechanism == UM_LAZY) {
       /* remove from heap */
-      heap_remove((surf_action_cpu_Cas01_t) action);
+      surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
       xbt_swag_remove(action, cpu_modified_set);
     }
 #ifdef HAVE_TRACING
@@ -200,7 +172,7 @@ static void cpu_action_cancel(surf_action_t action)
   surf_action_state_set(action, SURF_ACTION_FAILED);
   if (cpu_update_mechanism == UM_LAZY) {
     xbt_swag_remove(action, cpu_modified_set);
-    heap_remove((surf_action_cpu_Cas01_t) action);
+    surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
   }
   return;
 }
@@ -218,7 +190,7 @@ static void cpu_action_state_set(surf_action_t action,
   return;
 }
 
-static void update_action_remaining_lazy(double now)
+static void cpu_update_action_remaining_lazy(double now)
 {
   surf_action_cpu_Cas01_t action;
   double delta = 0.0;
@@ -268,7 +240,7 @@ static double cpu_share_resources_lazy(double now)
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %d",
        xbt_swag_size(cpu_modified_set));
-  update_action_remaining_lazy(now);
+  cpu_update_action_remaining_lazy(now);
 
   lmm_solve(cpu_maxmin_system);
 
@@ -313,8 +285,8 @@ static double cpu_share_resources_lazy(double now)
         GENERIC_ACTION(action).max_duration);
 
     if (min != -1) {
-      heap_remove(action);
-      heap_insert(action, min, max_dur_flag ? MAX_DURATION : NORMAL);
+      surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
+      surf_action_lmm_heap_insert(cpu_action_heap,(surf_action_lmm_t)action, min, max_dur_flag ? MAX_DURATION : NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min,
                 now);
     } else DIE_IMPOSSIBLE;
@@ -366,7 +338,7 @@ static void cpu_update_actions_state_lazy(double now, double delta)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     GENERIC_ACTION(action).remains = 0;
     cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    heap_remove(action);
+    surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
   }
 #ifdef HAVE_TRACING
   if (TRACE_is_enabled()) {
@@ -542,7 +514,7 @@ static surf_action_t cpu_action_sleep(void *cpu, double duration)
   lmm_update_variable_weight(cpu_maxmin_system,
                              GENERIC_LMM_ACTION(action).variable, 0.0);
   if (cpu_update_mechanism == UM_LAZY) {     // remove action from the heap
-    heap_remove((surf_action_cpu_Cas01_t) action);
+    surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
     // this is necessary for a variable with weight 0 since such
     // variables are ignored in lmm and we need to set its max_duration
     // correctly at the next call to share_resources
@@ -562,7 +534,7 @@ static void cpu_action_suspend(surf_action_t action)
                                0.0);
     ((surf_action_lmm_t) action)->suspended = 1;
     if (cpu_update_mechanism == UM_LAZY)
-      heap_remove((surf_action_cpu_Cas01_t) action);
+      surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
   }
   XBT_OUT();
 }
@@ -577,7 +549,7 @@ static void cpu_action_resume(surf_action_t action)
                                action->priority);
     ((surf_action_lmm_t) action)->suspended = 0;
     if (cpu_update_mechanism == UM_LAZY)
-      heap_remove((surf_action_cpu_Cas01_t) action);
+      surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
   }
   XBT_OUT();
 }
@@ -594,7 +566,7 @@ static void cpu_action_set_max_duration(surf_action_t action,
 
   action->max_duration = duration;
   if (cpu_update_mechanism == UM_LAZY)
-    heap_remove((surf_action_cpu_Cas01_t) action);
+    surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
   XBT_OUT();
 }
 
@@ -607,7 +579,7 @@ static void cpu_action_set_priority(surf_action_t action, double priority)
                              priority);
 
   if (cpu_update_mechanism == UM_LAZY)
-    heap_remove((surf_action_cpu_Cas01_t) action);
+    surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
   XBT_OUT();
 }
 
@@ -626,7 +598,7 @@ static double cpu_action_get_remains(surf_action_t action)
   XBT_IN("(%p)", action);
   /* update remains before return it */
   if (cpu_update_mechanism == UM_LAZY)
-    update_action_remaining_lazy(surf_get_clock());
+    cpu_update_action_remaining_lazy(surf_get_clock());
   XBT_OUT();
   return action->remains;
 }
@@ -722,7 +694,7 @@ static void surf_cpu_model_init_internal()
   if (cpu_update_mechanism == UM_LAZY) {
     cpu_action_heap = xbt_heap_new(8, NULL);
     xbt_heap_set_update_callback(cpu_action_heap,
-        net_action_update_index_heap);
+        surf_action_lmm_update_index_heap);
     cpu_modified_set =
         xbt_swag_new(xbt_swag_offset(comp, generic_lmm_action.action_list_hookup));
     cpu_maxmin_system->keep_track = cpu_modified_set;

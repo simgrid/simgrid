@@ -155,11 +155,32 @@ XBT_INLINE void surf_action_ref(surf_action_t action)
 }
 
 /*
-void surf_action_suspend(surf_action_t action)
-{
-  action->suspended = 1;
-}*/
-
-/*
  * Maxmin action
  */
+
+/* added to manage the communication action's heap */
+void surf_action_lmm_update_index_heap(void *action, int i) {
+  surf_action_lmm_t a = action;
+  a->index_heap = i;
+}
+/* insert action on heap using a given key and a hat (heap_action_type)
+ * a hat can be of three types for communications:
+ *
+ * NORMAL = this is a normal heap entry stating the date to finish transmitting
+ * LATENCY = this is a heap entry to warn us when the latency is payed
+ * MAX_DURATION =this is a heap entry to warn us when the max_duration limit is reached
+ */
+void surf_action_lmm_heap_insert(xbt_heap_t heap, surf_action_lmm_t action, double key,
+    enum heap_action_type hat)
+{
+  action->hat = hat;
+  xbt_heap_push(heap, action, key);
+}
+
+void surf_action_lmm_heap_remove(xbt_heap_t heap, surf_action_lmm_t action)
+{
+  action->hat = NOTSET;
+  if (action->index_heap >= 0) {
+    xbt_heap_remove(heap, action->index_heap);
+  }
+}

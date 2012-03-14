@@ -66,6 +66,13 @@ void surf_action_free(surf_action_t * action);
 void surf_action_state_set(surf_action_t action,
                            e_surf_action_state_t state);
 void surf_action_data_set(surf_action_t action, void *data);    /* cannot declare inline since we use a pointer to it */
+
+void surf_action_lmm_update_index_heap(void *action, int i); /* callback for heap management shared by cpu and net models */
+void surf_action_lmm_heap_insert(xbt_heap_t heap, surf_action_lmm_t action,
+    double key, enum heap_action_type hat);
+void surf_action_lmm_heap_remove(xbt_heap_t heap,surf_action_lmm_t action);
+
+
 FILE *surf_fopen(const char *name, const char *mode);
 
 extern tmgr_history_t history;

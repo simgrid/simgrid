@@ -313,7 +313,6 @@ static void cpu_ti_action_state_set(surf_action_t action,
 */
 static void cpu_ti_update_remaining_amount(cpu_ti_t cpu, double now)
 {
-#define GENERIC_ACTION(action) action->generic_action
   double area_total;
   surf_action_cpu_ti_t action;
 
@@ -329,13 +328,14 @@ static void cpu_ti_update_remaining_amount(cpu_ti_t cpu, double now)
          cpu->last_update);
 
   xbt_swag_foreach(action, cpu->action_set) {
+    surf_action_t generic = (surf_action_t)action;
     /* action not running, skip it */
-    if (GENERIC_ACTION(action).state_set !=
+    if (generic->state_set !=
         surf_cpu_model->states.running_action_set)
       continue;
 
     /* bogus priority, skip it */
-    if (GENERIC_ACTION(action).priority <= 0)
+    if (generic->priority <= 0)
       continue;
 
     /* action suspended, skip it */
@@ -343,20 +343,20 @@ static void cpu_ti_update_remaining_amount(cpu_ti_t cpu, double now)
       continue;
 
     /* action don't need update */
-    if (GENERIC_ACTION(action).start >= now)
+    if (generic->start >= now)
       continue;
 
     /* skip action that are finishing now */
-    if (GENERIC_ACTION(action).finish >= 0
-        && GENERIC_ACTION(action).finish <= now)
+    if (generic->finish >= 0
+        && generic->finish <= now)
       continue;
 
     /* update remaining */
-    double_update(&(GENERIC_ACTION(action).remains),
+    double_update(&(generic->remains),
                   area_total / (cpu->sum_priority *
-                                GENERIC_ACTION(action).priority));
+                                generic->priority));
     XBT_DEBUG("Update remaining action(%p) remaining %lf", action,
-           GENERIC_ACTION(action).remains);
+           generic->remains);
   }
   cpu->last_update = now;
 #undef GENERIC_ACTION
