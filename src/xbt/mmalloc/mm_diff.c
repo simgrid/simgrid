@@ -203,6 +203,9 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   i = 0;
 
+  int k;
+  int distance = 0;
+
   /* Check busy blocks*/
 
   while(i < mdp1->heapindex){
@@ -229,15 +232,22 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
       if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy_block.busy_size)) != 0){
 	fprintf(stderr,"Different data in large block %zu (size = %zu (in blocks), busy_size = %zu (in bytes))\n", i, mdp1->heapinfo[i].busy_block.size, mdp1->heapinfo[i].busy_block.busy_size);
-	//fprintf(stderr, "Backtrace size : %d\n", mdp1->heapinfo[i].busy_block.bt_size);
+
+	/* Hamming distance on different blocks */
+	distance = 0;
+	for(k=0;k<mdp1->heapinfo[i].busy_block.busy_size;k++){
+	  if(memcmp(((char *)addr_block1) + k, ((char *)addr_block2) + k, 1) != 0)
+	    distance++;
+	}
+
+	fprintf(stderr, "Hamming distance between blocks : %d\n", distance);
+
 	mmalloc_backtrace_block_display(mdp1, i);
 	mmalloc_backtrace_block_display(mdp2, i);
 	errors++;
       }
 
-      //fprintf(stderr, "Backtrace size : %d\n", mdp1->heapinfo[i].busy_block.bt_size);
-      //mmalloc_backtrace_block_display(mdp1, i);
-	
+   
       i = i + mdp1->heapinfo[i].busy_block.size;
 
     }else{
@@ -275,6 +285,16 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
 	    if(memcmp(addr_frag1, addr_frag2, mdp1->heapinfo[i].busy_frag.frag_size[j]) != 0){
 	      fprintf(stderr,"Different data in fragment %zu (size = %zu, size used = %hu) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
+
+	      /* Hamming distance on different blocks */
+	      distance = 0;
+	      for(k=0;k<mdp1->heapinfo[i].busy_frag.frag_size[j];k++){
+		if(memcmp(((char *)addr_frag1) + k, ((char *)addr_frag2) + k, 1) != 0)
+		  distance++;
+	      }
+
+	      fprintf(stderr, "Hamming distance between fragments : %d\n", distance);
+
 	      mmalloc_backtrace_fragment_display(mdp1, i, j);
 	      mmalloc_backtrace_fragment_display(mdp2, i, j);
 	      errors++;
