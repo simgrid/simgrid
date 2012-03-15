@@ -231,13 +231,15 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
       } 
 
       if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy_block.busy_size)) != 0){
-	fprintf(stderr,"Different data in large block %zu (size = %zu (in blocks), busy_size = %zu (in bytes))\n", i, mdp1->heapinfo[i].busy_block.size, mdp1->heapinfo[i].busy_block.busy_size);
+	fprintf(stderr,"\nDifferent data in large block %zu (size = %zu (in blocks), busy_size = %zu (in bytes))\n", i, mdp1->heapinfo[i].busy_block.size, mdp1->heapinfo[i].busy_block.busy_size);
 
 	/* Hamming distance on different blocks */
 	distance = 0;
 	for(k=0;k<mdp1->heapinfo[i].busy_block.busy_size;k++){
-	  if(memcmp(((char *)addr_block1) + k, ((char *)addr_block2) + k, 1) != 0)
+	  if(memcmp(((char *)addr_block1) + k, ((char *)addr_block2) + k, 1) != 0){
+	    fprintf(stderr, "Different byte (offset=%d) (%p - %p) in block %zu\n", k, (char *)addr_block1, (char *)addr_block2, i); 
 	    distance++;
+	  }
 	}
 
 	fprintf(stderr, "Hamming distance between blocks : %d\n", distance);
@@ -284,13 +286,15 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	    addr_frag2 = (char *)addr_block2 + (j * frag_size);
 
 	    if(memcmp(addr_frag1, addr_frag2, mdp1->heapinfo[i].busy_frag.frag_size[j]) != 0){
-	      fprintf(stderr,"Different data in fragment %zu (size = %zu, size used = %hu) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
+	      fprintf(stderr,"\nDifferent data in fragment %zu (size = %zu, size used = %hu) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
 
 	      /* Hamming distance on different blocks */
 	      distance = 0;
 	      for(k=0;k<mdp1->heapinfo[i].busy_frag.frag_size[j];k++){
-		if(memcmp(((char *)addr_frag1) + k, ((char *)addr_frag2) + k, 1) != 0)
+		if(memcmp(((char *)addr_frag1) + k, ((char *)addr_frag2) + k, 1) != 0){
+		  fprintf(stderr, "Different byte (offset=%d) (%p - %p) in fragment %zu in block %zu\n", k, (char *)addr_frag1, (char *)addr_frag2, j, i); 
 		  distance++;
+		}
 	      }
 
 	      fprintf(stderr, "Hamming distance between fragments : %d\n", distance);
