@@ -11,7 +11,7 @@
 #include "bugged2_liveness.h"
 #include "y.tab.c"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(example_liveness_with_cycle, "my log messages");
+XBT_LOG_NEW_DEFAULT_CATEGORY(bugged2_liveness, "my log messages");
 
 char* buffer;
 
