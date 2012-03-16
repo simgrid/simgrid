@@ -631,6 +631,7 @@ static void cpu_finalize(void)
   cpu_running_action_set_that_does_not_need_being_checked = NULL;
   if (cpu_action_heap)
     xbt_heap_free(cpu_action_heap);
+  xbt_swag_free(cpu_modified_set);
 }
 
 static void surf_cpu_model_init_internal()

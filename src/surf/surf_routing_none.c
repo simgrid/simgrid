@@ -50,15 +50,15 @@ AS_t model_none_create_sized(size_t childsize) {
   new_component->get_onelink_routes = none_get_onelink_routes;
   new_component->get_bypass_route = none_get_bypass_route;
   new_component->finalize = model_none_finalize;
-
   new_component->routing_sons = xbt_dict_new_homogeneous(NULL);
   new_component->index_network_elm = xbt_dynar_new(sizeof(char*),NULL);
+
   return new_component;
 }
 
 void model_none_finalize(AS_t as) {
   xbt_dict_free(&as->routing_sons);
-  xbt_free(as->name);
+  xbt_dynar_free(&as->index_network_elm);
   xbt_free(as);
 }
 

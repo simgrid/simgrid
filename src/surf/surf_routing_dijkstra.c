@@ -332,7 +332,7 @@ static void dijkstra_get_route_and_latency(AS_t asg,
   }
 
   /* compose route path with links */
-  network_element_t gw_src, gw_dst, prev_gw_src, first_gw;
+  network_element_t gw_src = NULL, gw_dst, prev_gw_src, first_gw = NULL;
   network_element_t gw_dst_net_elm = NULL, prev_gw_src_net_elm = NULL;
 
   for (v = dst_node_id; v != src_node_id; v = pred_arr[v]) {

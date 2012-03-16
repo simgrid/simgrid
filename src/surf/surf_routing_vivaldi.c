@@ -24,7 +24,7 @@ static void vivaldi_get_route_and_latency(
   char *src = (char*)src_p->name;
   char *dst = (char*)dst_p->name;
 
-  if(routing_get_network_element_type(src) == SURF_NETWORK_ELEMENT_AS) {
+  if(src_p->rc_type == SURF_NETWORK_ELEMENT_AS) {
     route->src_gateway = xbt_lib_get_or_null(as_router_lib,ROUTER_PEER(src),ROUTING_ASR_LEVEL);
     route->dst_gateway = xbt_lib_get_or_null(as_router_lib,ROUTER_PEER(dst),ROUTING_ASR_LEVEL);
   }

@@ -305,6 +305,13 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_route);
 XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 #endif
 
+static XBT_INLINE void routing_asr_host_free(void *p)
+{
+  network_element_t elm = (network_element_t)p;
+  free(elm->name);
+  xbt_free(elm);
+}
+
 void surf_init(int *argc, char **argv)
 {
   XBT_DEBUG("Create all Libs");
@@ -315,8 +322,8 @@ void surf_init(int *argc, char **argv)
   storage_type_lib = xbt_lib_new();
 
   XBT_DEBUG("ADD ROUTING LEVEL");
-  ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_free);
-  ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_free);
+  ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
+  ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,routing_asr_host_free);
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,xbt_free);
   ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib,routing_storage_host_free);
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib,routing_storage_type_free);

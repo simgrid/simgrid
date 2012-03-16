@@ -31,7 +31,6 @@ AS_t model_generic_create_sized(size_t childsize) {
   new_component->finalize = model_generic_finalize;
   new_component->bypassRoutes = xbt_dict_new_homogeneous((void (*)(void *)) generic_free_route);
 
-  new_component->index_network_elm = xbt_dynar_new(sizeof(char*),NULL);
   return new_component;
 }
 void model_generic_finalize(AS_t as) {
