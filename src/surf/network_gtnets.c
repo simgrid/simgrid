@@ -339,8 +339,8 @@ static void update_resource_state(void *id,
 }
 
 /* Max durations are not supported */
-static surf_action_t communicate(const char *src_name,
-                                 const char *dst_name, double size,
+static surf_action_t communicate(void *src_card,
+                                 void *dst_card, double size,
                                  double rate)
 {
   int src, dst;

@@ -102,17 +102,19 @@ struct s_model_type routing_models[] = {
  */
 static void parse_S_host(sg_platf_host_cbarg_t host)
 {
-  network_element_info_t info = NULL;
+  network_element_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL),
              "Reading a host, processing unit \"%s\" already exists", host->id);
 
-  current_routing->parse_PU(current_routing, host->id);
-  info = xbt_new0(s_network_element_info_t, 1);
+  info = xbt_new0(s_network_element_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
+  info->name = xbt_strdup(host->id);
+  info->id = current_routing->parse_PU(current_routing, host->id);
   xbt_lib_set(host_lib, host->id, ROUTING_HOST_LEVEL, (void *) info);
+  XBT_DEBUG("Having set name '%s' id '%d'",host->id,info->id);
 
   if(mount_list){
     xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
@@ -124,8 +126,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
     char*str;
 
     if (!COORD_HOST_LEVEL)
-      xbt_die ("To use host coordinates, please add --cfg=coordinates:yes to your command line");
-
+      xbt_die ("To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
     /* Pre-parse the host coordinates -- FIXME factorize with routers by overloading the routing->parse_PU function*/
     xbt_dynar_t ctn_str = xbt_str_split_str(host->coord, " ");
     xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
@@ -136,6 +137,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
     xbt_dynar_shrink(ctn, 0);
     xbt_dynar_free(&ctn_str);
     xbt_lib_set(host_lib, host->id, COORD_HOST_LEVEL, (void *) ctn);
+    XBT_DEBUG("Having set host coordinates for '%s'",host->id);
   }
 }
 
@@ -144,26 +146,27 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
  */
 static void parse_S_router(sg_platf_router_cbarg_t router)
 {
-  network_element_info_t info = NULL;
+  network_element_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
 
-  current_routing->parse_PU(current_routing, router->id);
-  info = xbt_new0(s_network_element_info_t, 1);
+  info = xbt_new0(s_network_element_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
-
+  info->name = xbt_strdup(router->id);
+  info->id = current_routing->parse_PU(current_routing, router->id);
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
+  XBT_DEBUG("Having set name '%s' id '%d'",router->id,info->id);
+
   if (strcmp(router->coord, "")) {
     unsigned int cursor;
     char*str;
 
     if (!COORD_ASR_LEVEL)
-      xbt_die ("To use host coordinates, please add --cfg=coordinates:yes to your command line");
-
+      xbt_die ("To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
     /* Pre-parse the host coordinates */
     xbt_dynar_t ctn_str = xbt_str_split_str(router->coord, " ");
     xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
@@ -174,6 +177,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
     xbt_dynar_shrink(ctn, 0);
     xbt_dynar_free(&ctn_str);
     xbt_lib_set(as_router_lib, router->id, COORD_ASR_LEVEL, (void *) ctn);
+    XBT_DEBUG("Having set router coordinates for '%s'",router->id);
   }
 }
 
@@ -279,8 +283,19 @@ static void routing_parse_E_ASroute(void)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = parsed_link_list;
-  e_route->src_gateway = xbt_strdup(gw_src);
-  e_route->dst_gateway = xbt_strdup(gw_dst);
+
+  if(!strcmp(current_routing->model_desc->name,"RuleBased")) {
+    e_route->src_gateway = (network_element_t) gw_src; // DIRTY HACK possible only
+    e_route->dst_gateway = (network_element_t) gw_dst; // because of what is in routing_parse_E_ASroute
+  }
+  else{
+  e_route->src_gateway =  ((network_element_t)xbt_lib_get_or_null(as_router_lib,gw_src,ROUTING_ASR_LEVEL));
+  if(!e_route->src_gateway)
+    e_route->src_gateway = ((network_element_t)xbt_lib_get_or_null(host_lib,gw_src,ROUTING_HOST_LEVEL));
+  e_route->dst_gateway =  ((network_element_t)xbt_lib_get_or_null(as_router_lib,gw_dst,ROUTING_ASR_LEVEL));
+  if(!e_route->dst_gateway)
+    e_route->dst_gateway = ((network_element_t)xbt_lib_get_or_null(host_lib,gw_dst,ROUTING_HOST_LEVEL));
+  }
   xbt_assert(current_routing->parse_ASroute,
              "no defined method \"set_ASroute\" in \"%s\"",
              current_routing->name);
@@ -300,8 +315,12 @@ static void routing_parse_E_bypassRoute(void)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = parsed_link_list;
-  e_route->src_gateway = xbt_strdup(gw_src);
-  e_route->dst_gateway = xbt_strdup(gw_dst);
+  e_route->src_gateway =  ((network_element_t)xbt_lib_get_or_null(as_router_lib,gw_src,ROUTING_ASR_LEVEL));
+  if(!e_route->src_gateway)
+    e_route->src_gateway = ((network_element_t)xbt_lib_get_or_null(host_lib,gw_src,ROUTING_HOST_LEVEL));
+  e_route->dst_gateway =  ((network_element_t)xbt_lib_get_or_null(as_router_lib,gw_dst,ROUTING_ASR_LEVEL));
+  if(!e_route->dst_gateway)
+    e_route->dst_gateway = ((network_element_t)xbt_lib_get_or_null(host_lib,gw_dst,ROUTING_HOST_LEVEL));
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
@@ -332,6 +351,10 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
   routing_model_description_t model = NULL;
   int cpt;
 
+  xbt_assert(!xbt_lib_get_or_null
+             (as_router_lib, AS_id, ROUTING_ASR_LEVEL),
+             "The AS \"%s\" already exists", AS_id);
+
   /* search the routing model */
   for (cpt = 0; routing_models[cpt].name; cpt++)
     if (!strcmp(wanted_routing_type, routing_models[cpt].name))
@@ -352,12 +375,15 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
   new_as->hierarchy = SURF_ROUTING_NULL;
   new_as->name = xbt_strdup(AS_id);
 
+  network_element_t info = NULL;
+  info = xbt_new0(s_network_element_t, 1);
+
   if (current_routing == NULL && global_routing->root == NULL) {
 
     /* it is the first one */
     new_as->routing_father = NULL;
     global_routing->root = new_as;
-
+    info->id = -1;
   } else if (current_routing != NULL && global_routing->root != NULL) {
 
     xbt_assert(!xbt_dict_get_or_null
@@ -372,12 +398,23 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
     xbt_dict_set(current_routing->routing_sons, AS_id,
                  (void *) new_as, NULL);
     /* add to the father element list */
-    current_routing->parse_AS(current_routing, AS_id);
+    info->id = current_routing->parse_AS(current_routing, AS_id);
   } else {
     THROWF(arg_error, 0, "All defined components must be belong to a AS");
   }
+
+  info->rc_component = new_as->routing_father;
+  info->rc_type = SURF_NETWORK_ELEMENT_AS;
+  info->name = new_as->name;
+
+  xbt_lib_set(as_router_lib, new_as->name, ROUTING_ASR_LEVEL,
+              (void *) info);
+  XBT_DEBUG("Having set name '%s' id '%d'",new_as->name,info->id);
+
   /* set the new current component of the tree */
   current_routing = new_as;
+  current_routing->net_elem = info;
+
 }
 
 /**
@@ -397,16 +434,6 @@ void routing_AS_end()
   if (current_routing == NULL) {
     THROWF(arg_error, 0, "Close an AS, but none was under construction");
   } else {
-    network_element_info_t info = NULL;
-    xbt_assert(!xbt_lib_get_or_null
-               (as_router_lib, current_routing->name, ROUTING_ASR_LEVEL),
-               "The AS \"%s\" already exists", current_routing->name);
-    info = xbt_new0(s_network_element_info_t, 1);
-    info->rc_component = current_routing->routing_father;
-    info->rc_type = SURF_NETWORK_ELEMENT_AS;
-    xbt_lib_set(as_router_lib, current_routing->name, ROUTING_ASR_LEVEL,
-                (void *) info);
-
     if (current_routing->model_desc->end)
       current_routing->model_desc->end(current_routing);
     current_routing = current_routing->routing_father;
@@ -424,7 +451,7 @@ void routing_AS_end()
  * Get the common father of the to processing units, and the first different 
  * father in the chain
  */
-static void elements_father(const char *src, const char *dst,
+static void elements_father(network_element_t src, network_element_t dst,
                             AS_t * res_father,
                             AS_t * res_src,
                             AS_t * res_dst)
@@ -442,19 +469,15 @@ static void elements_father(const char *src, const char *dst,
   AS_t father;
 
   /* (1) find the as where the src and dst are located */
-  network_element_info_t src_data = xbt_lib_get_or_null(host_lib, src,
-                                                        ROUTING_HOST_LEVEL);
-  network_element_info_t dst_data = xbt_lib_get_or_null(host_lib, dst,
-                                                        ROUTING_HOST_LEVEL);
-  if (!src_data)
-    src_data = xbt_lib_get_or_null(as_router_lib, src, ROUTING_ASR_LEVEL);
-  if (!dst_data)
-    dst_data = xbt_lib_get_or_null(as_router_lib, dst, ROUTING_ASR_LEVEL);
+  network_element_t src_data = src;
+  network_element_t dst_data = dst;
   src_as = src_data->rc_component;
   dst_as = dst_data->rc_component;
+  char* src_name = src_data->name;
+  char* dst_name = dst_data->name;
 
   xbt_assert(src_as && dst_as,
-             "Ask for route \"from\"(%s) or \"to\"(%s) no found", src, dst);
+             "Ask for route \"from\"(%s) or \"to\"(%s) no found", src_name, dst_name);
 
   /* (2) find the path to the root routing component */
   for (current = src_as; current != NULL; current = current->routing_father) {
@@ -501,18 +524,20 @@ static void elements_father(const char *src, const char *dst,
  * This function is called by "get_route" and "get_latency". It allows to walk
  * recursively through the ASes tree.
  */
-static void _get_route_and_latency(const char *src, const char *dst,
+static void _get_route_and_latency(network_element_t src, network_element_t dst,
                                    xbt_dynar_t * links, double *latency)
 {
   s_route_t route;
   memset(&route,0,sizeof(route));
 
-  XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src, dst);
+  XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src->name, dst->name);
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
 
   /* Find how src and dst are interconnected */
   AS_t common_father, src_father, dst_father;
   elements_father(src, dst, &common_father, &src_father, &dst_father);
+  XBT_DEBUG("elements_father: common father '%s' src_father '%s' dst_father '%s'",
+      common_father->name,src_father->name,dst_father->name);
 
   /* If src and dst are in the same AS, life is good */
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
@@ -520,9 +545,6 @@ static void _get_route_and_latency(const char *src, const char *dst,
     route.link_list = *links;
 
     common_father->get_route_and_latency(common_father, src, dst, &route,latency);
-
-    xbt_free(route.src_gateway);
-    xbt_free(route.dst_gateway);
     return;
   }
 
@@ -543,32 +565,32 @@ static void _get_route_and_latency(const char *src, const char *dst,
     return;
   }
 
-
   /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
 
   route.link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
-  common_father->get_route_and_latency(common_father, src_father->name, dst_father->name, &route,latency);
+  // Find the net_card corresponding to father
+  network_element_t src_father_net_elm = src_father->net_elem;
+  network_element_t dst_father_net_elm = dst_father->net_elem;
+
+  common_father->get_route_and_latency(common_father, src_father_net_elm, dst_father_net_elm, &route,latency);
 
   xbt_assert((route.src_gateway != NULL) && (route.dst_gateway != NULL),
-      "bad gateways for route from \"%s\" to \"%s\"", src, dst);
+      "bad gateways for route from \"%s\" to \"%s\"", src->name, dst->name);
 
-  char*src_gateway = route.src_gateway;
-  char*dst_gateway = route.dst_gateway;
+  network_element_t src_gateway_net_elm = route.src_gateway;
+  network_element_t dst_gateway_net_elm = route.dst_gateway;
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
-  if (strcmp(src, src_gateway))
-    _get_route_and_latency(src, src_gateway, links, latency);
+  if (strcmp(src->name, src_gateway_net_elm->name))
+    _get_route_and_latency(src, src_gateway_net_elm, links, latency);
 
   xbt_dynar_merge(links,&(route.link_list));
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   // FIXME why can't I factorize it the same way than [src;src_gw] without breaking the examples??
-  if (strcmp(dst_gateway, dst)) {
-    _get_route_and_latency(dst_gateway, dst, links, latency);
+  if (strcmp(dst_gateway_net_elm->name, dst->name)) {
+    _get_route_and_latency(dst_gateway_net_elm, dst, links, latency);
   }
-
-  xbt_free(src_gateway);
-  xbt_free_f(dst_gateway);
   xbt_dynar_free(&route.link_list);
 }
 
@@ -586,7 +608,7 @@ static void _get_route_and_latency(const char *src, const char *dst,
  * walk through the routing components tree and find a route between hosts
  * by calling the differents "get_route" functions in each routing component.
  */
-void routing_get_route_and_latency(const char *src, const char *dst,
+void routing_get_route_and_latency(network_element_t src, network_element_t dst,
                                    xbt_dynar_t * route, double *latency)
 {
   if (!*route) {
@@ -597,7 +619,7 @@ void routing_get_route_and_latency(const char *src, const char *dst,
   _get_route_and_latency(src, dst, route, latency);
 
   xbt_assert(!latency || *latency >= 0.0,
-             "negative latency on route between \"%s\" and \"%s\"", src, dst);
+             "negative latency on route between \"%s\" and \"%s\"", src->name, dst->name);
 }
 
 static xbt_dynar_t recursive_get_onelink_routes(AS_t rc)
@@ -628,7 +650,7 @@ static xbt_dynar_t get_onelink_routes(void)
 
 e_surf_network_element_type_t routing_get_network_element_type(const char *name)
 {
-  network_element_info_t rc = NULL;
+  network_element_t rc = NULL;
 
   rc = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
   if (rc)

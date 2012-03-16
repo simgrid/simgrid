@@ -23,12 +23,12 @@ static xbt_dict_t cluster_host_link = NULL;
 
 /* Business methods */
 static void cluster_get_route_and_latency(AS_t as,
-                                          const char *src, const char *dst,
+    network_element_t src, network_element_t dst,
                                           route_t route, double *lat) {
 
 	  surf_parsing_link_up_down_t info;
 
-	  info = xbt_dict_get_or_null(cluster_host_link,src);
+	  info = xbt_dict_get_or_null(cluster_host_link,src->name);
 	  if(info) { // link up
 	    xbt_dynar_push_as(route->link_list,void*,info->link_up);
       if (lat)
@@ -41,7 +41,7 @@ static void cluster_get_route_and_latency(AS_t as,
         *lat += surf_network_model->extension.network.get_link_latency(((as_cluster_t)as)->backbone);
 	  }
 
-	  info = xbt_dict_get_or_null(cluster_host_link,dst);
+	  info = xbt_dict_get_or_null(cluster_host_link,dst->name);
 	  if(info) { // link down
 	    xbt_dynar_push_as(route->link_list,void*,info->link_down);
       if (lat)

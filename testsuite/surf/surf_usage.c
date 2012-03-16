@@ -90,7 +90,7 @@ void test(char *platform)
   XBT_DEBUG("%s : %p", surf_resource_name(cardB), cardB);
 
   /* Let's do something on it */
-  surf_network_model->extension.network.communicate("Cpu A", "Cpu B",
+  surf_network_model->extension.network.communicate(cpuA, cpuB,
                                                     150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */

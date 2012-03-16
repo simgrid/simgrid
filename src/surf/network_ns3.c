@@ -232,10 +232,10 @@ static double ns3_get_link_bandwidth (const void *link)
   return bdw;
 }
 
-static xbt_dynar_t ns3_get_route(const char *src, const char *dst)
+static xbt_dynar_t ns3_get_route(void *src_card, void *dst_card)
 {
   xbt_dynar_t route = NULL;
-  routing_get_route_and_latency(src, dst, &route, NULL);
+  routing_get_route_and_latency(src_card, dst_card, &route, NULL);
   return route;
 }
 
@@ -478,8 +478,8 @@ static void ns3_update_actions_state(double now, double delta)
 }
 
 /* Max durations are not supported */
-static surf_action_t ns3_communicate(const char *src_name,
-                                 const char *dst_name, double size, double rate)
+static surf_action_t ns3_communicate(void *src_card,
+                                 void *dst_card, double size, double rate)
 {
   surf_action_network_ns3_t action = NULL;
 

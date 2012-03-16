@@ -30,35 +30,30 @@ AS_t model_generic_create_sized(size_t childsize) {
       generic_get_bypassroute;
   new_component->finalize = model_generic_finalize;
 
-  new_component->to_index = xbt_dict_new_homogeneous(xbt_free);
+  new_component->nb_index = 0;
   new_component->bypassRoutes = xbt_dict_new_homogeneous((void (*)(void *)) generic_free_route);
 
   return new_component;
 }
 void model_generic_finalize(AS_t as) {
-  xbt_dict_free(&as->to_index);
   xbt_dict_free(&as->bypassRoutes);
   model_none_finalize(as);
 }
 
-void generic_parse_PU(AS_t as, const char *name)
+int generic_parse_PU(AS_t as, const char *name)
 {
   XBT_DEBUG("Load process unit \"%s\"", name);
-  int *id = xbt_new0(int, 1);
-  xbt_dict_t _to_index;
-  _to_index = as->to_index;
-  *id = xbt_dict_length(_to_index);
-  xbt_dict_set(_to_index, name, id, NULL);
+  int id = as->nb_index;
+  (as->nb_index)++;
+  return id;
 }
 
-void generic_parse_AS(AS_t as, const char *name)
+int generic_parse_AS(AS_t as, const char *name)
 {
   XBT_DEBUG("Load Autonomous system \"%s\"", name);
-  int *id = xbt_new0(int, 1);
-  xbt_dict_t _to_index;
-  _to_index = as->to_index;
-  *id = xbt_dict_length(_to_index);
-  xbt_dict_set(_to_index, name, id, NULL);
+  int id = as->nb_index;
+  as->nb_index++;
+  return id;
 }
 
 void generic_parse_bypassroute(AS_t rc,
@@ -75,7 +70,7 @@ void generic_parse_bypassroute(AS_t rc,
              src, dst);
   xbt_assert(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),
              "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
-             src, e_route->src_gateway, dst, e_route->dst_gateway);
+             src, e_route->src_gateway->name, dst, e_route->dst_gateway->name);
 
   route_t new_e_route =
       generic_new_extended_route(SURF_ROUTING_RECURSIVE, e_route, 0);
@@ -95,7 +90,7 @@ xbt_dynar_t generic_get_onelink_routes(AS_t rc) { // FIXME: kill that stub
   return NULL;
 }
 
-route_t generic_get_bypassroute(AS_t rc, const char *src, const char *dst)
+route_t generic_get_bypassroute(AS_t rc, network_element_t src, network_element_t dst)
 {
   // If never set a bypass route return NULL without any further computations
   if(no_bypassroute_declared)
@@ -110,20 +105,15 @@ route_t generic_get_bypassroute(AS_t rc, const char *src, const char *dst)
   AS_t *current_src = NULL;
   AS_t *current_dst = NULL;
 
-  /* (1) find the as where the src and dst are located */
-  void *src_data = xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
-  void *dst_data = xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
-  if (!src_data)
-    src_data = xbt_lib_get_or_null(as_router_lib, src, ROUTING_ASR_LEVEL);
-  if (!dst_data)
-    dst_data = xbt_lib_get_or_null(as_router_lib, dst, ROUTING_ASR_LEVEL);
+  char* src_name = src->name;
+  char* dst_name = dst->name;
 
-  if (src_data == NULL || dst_data == NULL)
+  if (src == NULL || dst == NULL)
     xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-            src, dst, rc->name);
+            src_name, dst_name, rc->name);
 
-  src_as = ((network_element_info_t) src_data)->rc_component;
-  dst_as = ((network_element_info_t) dst_data)->rc_component;
+  src_as = src->rc_component;
+  dst_as = dst->rc_component;
 
   /* (2) find the path to the root routing component */
   path_src = xbt_dynar_new(sizeof(AS_t), NULL);
@@ -212,8 +202,8 @@ route_t generic_get_bypassroute(AS_t rc, const char *src, const char *dst)
     void *link;
     unsigned int cpt = 0;
     new_e_route = xbt_new0(s_route_t, 1);
-    new_e_route->src_gateway = xbt_strdup(e_route_bypass->src_gateway);
-    new_e_route->dst_gateway = xbt_strdup(e_route_bypass->dst_gateway);
+    new_e_route->src_gateway = e_route_bypass->src_gateway;
+    new_e_route->dst_gateway = e_route_bypass->dst_gateway;
     new_e_route->link_list =
         xbt_dynar_new(global_routing->size_of_link, NULL);
     xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
@@ -293,8 +283,8 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
     links = e_route->link_list;
 
     /* remeber not erase the gateway names */
-    new_e_route->src_gateway = strdup(e_route->src_gateway);
-    new_e_route->dst_gateway = strdup(e_route->dst_gateway);
+    new_e_route->src_gateway = e_route->src_gateway;
+    new_e_route->dst_gateway = e_route->dst_gateway;
   }
 
   links_id = new_e_route->link_list;
@@ -318,8 +308,6 @@ void generic_free_route(route_t route)
 {
   if (route) {
     xbt_dynar_free(&route->link_list);
-    xbt_free(route->src_gateway);
-    xbt_free(route->dst_gateway);
     xbt_free(route);
   }
 }
@@ -350,7 +338,7 @@ generic_autonomous_system_exist(AS_t rc, char *element)
   AS_t element_as, result, elem;
   xbt_dict_cursor_t cursor = NULL;
   char *key;
-  element_as = ((network_element_info_t)
+  element_as = ((network_element_t)
                 xbt_lib_get_or_null(as_router_lib, element,
                                     ROUTING_ASR_LEVEL))->rc_component;
   result = ((AS_t) - 1);
@@ -374,7 +362,7 @@ AS_t
 generic_processing_units_exist(AS_t rc, char *element)
 {
   AS_t element_as;
-  element_as = ((network_element_info_t)
+  element_as = ((network_element_t)
                 xbt_lib_get_or_null(host_lib,
                                     element, ROUTING_HOST_LEVEL))->rc_component;
   if (element_as == rc)
@@ -382,31 +370,35 @@ generic_processing_units_exist(AS_t rc, char *element)
   return generic_as_exist(rc, element_as);
 }
 
-void generic_src_dst_check(AS_t rc, const char *src,
-                           const char *dst)
+void generic_src_dst_check(AS_t rc, network_element_t src,
+    network_element_t dst)
 {
 
-  void *src_data = xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
-  void *dst_data = xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
-  if (!src_data)
-    src_data = xbt_lib_get_or_null(as_router_lib, src, ROUTING_ASR_LEVEL);
-  if (!dst_data)
-    dst_data = xbt_lib_get_or_null(as_router_lib, dst, ROUTING_ASR_LEVEL);
+  network_element_t src_data = src;
+  network_element_t dst_data = dst;
 
   if (src_data == NULL || dst_data == NULL)
     xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-            src, dst, rc->name);
+        src->name,
+        dst->name,
+        rc->name);
 
   AS_t src_as =
-      ((network_element_info_t) src_data)->rc_component;
+      (src_data)->rc_component;
   AS_t dst_as =
-      ((network_element_info_t) dst_data)->rc_component;
+      (dst_data)->rc_component;
 
   if (src_as != dst_as)
     xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",
-            src, src_as->name, dst, dst_as->name);
+        src->name, src_as->name,
+        dst->name, dst_as->name);
+
   if (rc != dst_as)
     xbt_die
         ("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
-         src, dst, src_as->name, dst_as->name, rc->name);
+            src->name,
+            dst->name,
+            src_as->name,
+            dst_as->name,
+            rc->name);
 }

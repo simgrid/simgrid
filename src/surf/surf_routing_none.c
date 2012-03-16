@@ -12,23 +12,25 @@ static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
   return NULL;
 }
 
-static void none_get_route_and_latency(AS_t rc, const char *src, const char *dst,
+static void none_get_route_and_latency(AS_t rc, network_element_t src, network_element_t dst,
                                        route_t res,double *lat)
 {
 }
 
 static route_t none_get_bypass_route(AS_t rc,
-                                              const char *src,
-                                              const char *dst) {
+    network_element_t src,
+    network_element_t dst) {
   return NULL;
 }
 
-static void none_parse_PU(AS_t rc, const char *name) {
+static int none_parse_PU(AS_t rc, const char *name) {
   /* don't care about PUs */
+  return -1;
 }
 
-static void none_parse_AS(AS_t rc, const char *name) {
+static int none_parse_AS(AS_t rc, const char *name) {
   /* even don't care about sub-ASes -- I'm as nihilist as an old punk*/
+  return -1;
 }
 
 /* Creation routing model functions */
