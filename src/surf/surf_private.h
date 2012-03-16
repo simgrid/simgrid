@@ -144,7 +144,7 @@ typedef enum {
 } e_surf_routing_hierarchy_t;
 
 typedef struct s_as {
-  int nb_index;
+  xbt_dynar_t index_network_elm;
   xbt_dict_t bypassRoutes;		/* store bypass routes */
   routing_model_description_t model_desc;
   e_surf_routing_hierarchy_t hierarchy;
@@ -164,8 +164,8 @@ typedef struct s_as {
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  int (*parse_PU) (AS_t as, const char *name); /* A host or a router, whatever */
-  int (*parse_AS) (AS_t as, const char *name);
+  int (*parse_PU) (AS_t as, network_element_t elm); /* A host or a router, whatever */
+  int (*parse_AS) (AS_t as, network_element_t elm);
   void (*parse_route) (AS_t as, const char *src,
                      const char *dst, route_t route);
   void (*parse_ASroute) (AS_t as, const char *src,

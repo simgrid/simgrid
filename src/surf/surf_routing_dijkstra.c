@@ -171,33 +171,34 @@ static void dijkstra_get_route_and_latency(AS_t as_generic,
 static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 {
 	  xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
-	  THROW_UNIMPLEMENTED;
-//	  //size_t table_size = xbt_dict_length(routing->generic_routing.to_index);
-//	  xbt_dict_cursor_t c1 = NULL, c2 = NULL;
-//	  char *k1, *d1, *k2, *d2;
-//	  xbt_dict_foreach(as->to_index, c1, k1, d1) {
-//	    xbt_dict_foreach(as->to_index, c2, k2, d2) {
-//	      route_t route = xbt_new0(s_route_t,1);
-//	      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-//	      dijkstra_get_route_and_latency(as, k1, k2,route, NULL);
-//
-//	      if (xbt_dynar_length(route->link_list) == 1) {
-//	        void *link =
-//	            *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-//	        onelink_t onelink = xbt_new0(s_onelink_t, 1);
-//	        onelink->link_ptr = link;
-//	        if (as->hierarchy == SURF_ROUTING_BASE) {
-//	          onelink->src = xbt_strdup(k1);
-//	          onelink->dst = xbt_strdup(k2);
-//	        } else if (as->hierarchy ==
-//	            SURF_ROUTING_RECURSIVE) {
-//	          onelink->src = route->src_gateway;
-//	          onelink->dst = route->dst_gateway;
-//	        }
-//	        xbt_dynar_push(ret, &onelink);
-//	      }
-//	    }
-//	  }
+      route_t route = xbt_new0(s_route_t,1);
+      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+
+	  int src,dst;
+	  network_element_t src_elm, dst_elm;
+	  size_t table_size = xbt_dynar_length(as->index_network_elm);
+	  for(src=0; src < table_size; src++) {
+	    for(dst=0; dst< table_size; dst++) {
+	      xbt_dynar_reset(route->link_list);
+	      src_elm = xbt_dynar_get_as(as->index_network_elm,src,network_element_t);
+	      dst_elm = xbt_dynar_get_as(as->index_network_elm,dst,network_element_t);
+	      dijkstra_get_route_and_latency(as, src_elm, dst_elm,route, NULL);
+
+	      if (xbt_dynar_length(route->link_list) == 1) {
+	        void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
+	        onelink_t onelink = xbt_new0(s_onelink_t, 1);
+	        onelink->link_ptr = link;
+	        if (as->hierarchy == SURF_ROUTING_BASE) {
+	          onelink->src = src_elm;
+	          onelink->dst = dst_elm;
+	        } else if (as->hierarchy == SURF_ROUTING_RECURSIVE) {
+	          onelink->src = route->src_gateway;
+	          onelink->dst = route->dst_gateway;
+	        }
+	        xbt_dynar_push(ret, &onelink);
+	      }
+	    }
+	  }
 	  return ret;
 }
 

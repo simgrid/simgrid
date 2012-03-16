@@ -25,39 +25,34 @@ typedef struct s_routing_component_full {
 static xbt_dynar_t full_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
-THROW_UNIMPLEMENTED;
-//  routing_component_full_t routing = (routing_component_full_t) rc;
-//  size_t table_size = routing->generic_routing.nb_index;
-//  xbt_dict_cursor_t c1 = NULL, c2 = NULL;
-//  char *k1, *d1, *k2, *d2;
-//  xbt_dict_foreach(routing->generic_routing.to_index, c1, k1, d1) {
-//    xbt_dict_foreach(routing->generic_routing.to_index, c2, k2, d2) {
-//      int *src_id = xbt_dict_get_or_null(routing->generic_routing.to_index, k1);
-//      int *dst_id = xbt_dict_get_or_null(routing->generic_routing.to_index, k2);
-//      xbt_assert(src_id && dst_id,
-//                 "Ask for route \"from\"(%s)  or \"to\"(%s) "
-//                 "no found in the local table", k1, k2);
-//      route_t route = TO_ROUTE_FULL(*src_id, *dst_id);
-//      if (route) {
-//        if (xbt_dynar_length(route->link_list) == 1) {
-//          void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-//          onelink_t onelink = xbt_new0(s_onelink_t, 1);
-//          onelink->link_ptr = link;
-//          if (routing->generic_routing.hierarchy == SURF_ROUTING_BASE) {
-//            onelink->src->routing_obj->name = xbt_strdup(k1);
-//            onelink->src->routing_obj->id = atoi(k1);
-//            onelink->dst->routing_obj->name = xbt_strdup(k2);
-//            onelink->dst->routing_obj->id = atoi(k2);
-//          } else if (routing->generic_routing.hierarchy ==
-//                     SURF_ROUTING_RECURSIVE) {
-//            onelink->src = route->src_gateway;
-//            onelink->dst = route->dst_gateway;
-//          }
-//          xbt_dynar_push(ret, &onelink);
-//        }
-//      }
-//    }
-//  }
+  routing_component_full_t routing = (routing_component_full_t) rc;
+
+  int src,dst;
+  int table_size = xbt_dynar_length(rc->index_network_elm);
+
+  for(src=0; src < table_size; src++) {
+    for(dst=0; dst< table_size; dst++) {
+      route_t route = TO_ROUTE_FULL(src, dst);
+      if (route) {
+        if (xbt_dynar_length(route->link_list) == 1) {
+          void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
+          onelink_t onelink = xbt_new0(s_onelink_t, 1);
+          onelink->link_ptr = link;
+          if (routing->generic_routing.hierarchy == SURF_ROUTING_BASE) {
+            onelink->src = xbt_dynar_get_as(routing->generic_routing.index_network_elm,src,network_element_t);
+            onelink->src->id = src;
+            onelink->dst = xbt_dynar_get_as(routing->generic_routing.index_network_elm,dst,network_element_t);
+            onelink->dst->id = dst;
+          } else if (routing->generic_routing.hierarchy ==
+                     SURF_ROUTING_RECURSIVE) {
+            onelink->src = route->src_gateway;
+            onelink->dst = route->dst_gateway;
+          }
+          xbt_dynar_push(ret, &onelink);
+        }
+      }
+    }
+  }
   return ret;
 }
 
@@ -73,7 +68,7 @@ static void full_get_route_and_latency(AS_t rc,
 
   /* set utils vars */
   routing_component_full_t routing = (routing_component_full_t) rc;
-  size_t table_size = routing->generic_routing.nb_index;
+  size_t table_size = xbt_dynar_length(routing->generic_routing.index_network_elm);
 
   route_t e_route = NULL;
   void *link;
@@ -95,7 +90,7 @@ static void full_get_route_and_latency(AS_t rc,
 static void full_finalize(AS_t rc)
 {
   routing_component_full_t routing = (routing_component_full_t) rc;
-  size_t table_size = routing->generic_routing.nb_index;
+  size_t table_size = xbt_dynar_length(routing->generic_routing.index_network_elm);
   int i, j;
   if (routing) {
     /* Delete routing table */
@@ -132,7 +127,7 @@ void model_full_end(AS_t current_routing)
   /* set utils vars */
   routing_component_full_t routing =
       ((routing_component_full_t) current_routing);
-  size_t table_size = routing->generic_routing.nb_index;
+  size_t table_size = xbt_dynar_length(routing->generic_routing.index_network_elm);
 
   /* Create table if necessary */
   if (!routing->routing_table)
@@ -173,7 +168,7 @@ void model_full_set_route(AS_t rc, const char *src,
   xbt_assert(dst_net_elm, "Network elements %s not found", dst);
 
   routing_component_full_t routing = (routing_component_full_t) rc;
-  size_t table_size = routing->generic_routing.nb_index;
+  size_t table_size = xbt_dynar_length(routing->generic_routing.index_network_elm);
 
   xbt_assert(!xbt_dynar_is_empty(route->link_list),
              "Invalid count of links, must be greater than zero (%s,%s)",

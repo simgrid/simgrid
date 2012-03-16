@@ -23,12 +23,14 @@ static route_t none_get_bypass_route(AS_t rc,
   return NULL;
 }
 
-static int none_parse_PU(AS_t rc, const char *name) {
+static int none_parse_PU(AS_t rc, network_element_t elm) {
+  xbt_dynar_push(rc->index_network_elm, (void *)elm);
   /* don't care about PUs */
   return -1;
 }
 
-static int none_parse_AS(AS_t rc, const char *name) {
+static int none_parse_AS(AS_t rc, network_element_t elm) {
+  xbt_dynar_push(rc->index_network_elm, (void *)elm);
   /* even don't care about sub-ASes -- I'm as nihilist as an old punk*/
   return -1;
 }
@@ -50,7 +52,7 @@ AS_t model_none_create_sized(size_t childsize) {
   new_component->finalize = model_none_finalize;
 
   new_component->routing_sons = xbt_dict_new_homogeneous(NULL);
-
+  new_component->index_network_elm = xbt_dynar_new(sizeof(char*),NULL);
   return new_component;
 }
 

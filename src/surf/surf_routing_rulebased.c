@@ -15,8 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_rulebased, surf, "Routing part of sur
 
 typedef struct {
   s_as_t generic_routing;
-  int nb_processing_units;
-  int nb_autonomous_systems;
   xbt_dynar_t list_route;
   xbt_dynar_t list_ASroute;
 } s_AS_rulebased_t, *AS_rulebased_t;
@@ -64,17 +62,17 @@ static void rule_route_extended_free(void *e)
 
 /* Parse routing model functions */
 
-static int model_rulebased_parse_PU(AS_t rc, const char *name)
+static int model_rulebased_parse_PU(AS_t rc, network_element_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
-  routing->nb_processing_units++;
+  xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
   return -1;
 }
 
-static int model_rulebased_parse_AS(AS_t rc, const char *name)
+static int model_rulebased_parse_AS(AS_t rc, network_element_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
-  routing->nb_autonomous_systems++;
+  xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
   return -1;
 }
 
@@ -214,52 +212,49 @@ static void rulebased_get_route_and_latency(AS_t rc,
 static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
-  THROW_UNIMPLEMENTED;
-//  //We have already bypass cluster routes with network NS3
-//  if(!strcmp(surf_network_model->name,"network NS3"))
-//	return ret;
-//
-//  AS_rulebased_t routing = (AS_rulebased_t)rc;
-//
-//  xbt_dict_cursor_t c1 = NULL;
-//  char *k1, *d1;
-//
-//  //find router
-//  char *router = NULL;
-//  xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
-//    if (routing_get_network_element_type(k1) == SURF_NETWORK_ELEMENT_ROUTER){
-//      router = k1;
-//      break;
-//    }
-//  }
-//
-//  if (!router)
-//    xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
-//
-//  xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
-//    route_t route = xbt_new0(s_route_t,1);
-//    route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-//    rulebased_get_route_and_latency (rc, router, k1, route,NULL);
-//
-//    int number_of_links = xbt_dynar_length(route->link_list);
-//
-//    if(number_of_links == 1) {
-//		//loopback
-//    }
-//    else{
-//		if (number_of_links != 2) {
-//		  xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
-//		}
-//
-//		void *link_ptr;
-//		xbt_dynar_get_cpy (route->link_list, 1, &link_ptr);
-//		onelink_t onelink = xbt_new0 (s_onelink_t, 1);
-//		onelink->src = xbt_strdup (k1);
-//		onelink->dst = xbt_strdup (router);
-//		onelink->link_ptr = link_ptr;
-//		xbt_dynar_push (ret, &onelink);
-//    }
-//  }
+  //We have already bypass cluster routes with network NS3
+  if(!strcmp(surf_network_model->name,"network NS3"))
+	return ret;
+
+  char *k1;
+
+  //find router
+  network_element_t router = NULL;
+  xbt_lib_cursor_t cursor;
+  xbt_lib_foreach(as_router_lib, cursor, k1, router)
+  {
+    if (router->rc_type == SURF_NETWORK_ELEMENT_ROUTER)
+      break;
+  }
+
+  if (!router)
+    xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
+
+  network_element_t host = NULL;
+  xbt_lib_foreach(as_router_lib, cursor, k1, host){
+    route_t route = xbt_new0(s_route_t,1);
+    route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+    rulebased_get_route_and_latency (rc, router, host, route,NULL);
+
+    int number_of_links = xbt_dynar_length(route->link_list);
+
+    if(number_of_links == 1) {
+		//loopback
+    }
+    else{
+		if (number_of_links != 2) {
+		  xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
+		}
+
+		void *link_ptr;
+		xbt_dynar_get_cpy (route->link_list, 1, &link_ptr);
+		onelink_t onelink = xbt_new0 (s_onelink_t, 1);
+		onelink->src = host;
+		onelink->dst = router;
+		onelink->link_ptr = link_ptr;
+		xbt_dynar_push (ret, &onelink);
+    }
+  }
   return ret;
 }
 

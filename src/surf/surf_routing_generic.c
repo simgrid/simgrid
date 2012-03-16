@@ -29,10 +29,9 @@ AS_t model_generic_create_sized(size_t childsize) {
   new_component->get_bypass_route =
       generic_get_bypassroute;
   new_component->finalize = model_generic_finalize;
-
-  new_component->nb_index = 0;
   new_component->bypassRoutes = xbt_dict_new_homogeneous((void (*)(void *)) generic_free_route);
 
+  new_component->index_network_elm = xbt_dynar_new(sizeof(char*),NULL);
   return new_component;
 }
 void model_generic_finalize(AS_t as) {
@@ -40,20 +39,18 @@ void model_generic_finalize(AS_t as) {
   model_none_finalize(as);
 }
 
-int generic_parse_PU(AS_t as, const char *name)
+int generic_parse_PU(AS_t as, network_element_t elm)
 {
-  XBT_DEBUG("Load process unit \"%s\"", name);
-  int id = as->nb_index;
-  (as->nb_index)++;
-  return id;
+  XBT_DEBUG("Load process unit \"%s\"", elm->name);
+  xbt_dynar_push(as->index_network_elm, elm);
+  return xbt_dynar_length(as->index_network_elm)-1;
 }
 
-int generic_parse_AS(AS_t as, const char *name)
+int generic_parse_AS(AS_t as, network_element_t elm)
 {
-  XBT_DEBUG("Load Autonomous system \"%s\"", name);
-  int id = as->nb_index;
-  as->nb_index++;
-  return id;
+  XBT_DEBUG("Load Autonomous system \"%s\"", elm->name);
+  xbt_dynar_push(as->index_network_elm, elm);
+  return xbt_dynar_length(as->index_network_elm)-1;
 }
 
 void generic_parse_bypassroute(AS_t rc,

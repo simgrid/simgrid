@@ -112,7 +112,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   info->name = xbt_strdup(host->id);
-  info->id = current_routing->parse_PU(current_routing, host->id);
+  info->id = current_routing->parse_PU(current_routing, (void *) info);
   xbt_lib_set(host_lib, host->id, ROUTING_HOST_LEVEL, (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'",host->id,info->id);
 
@@ -157,7 +157,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
   info->name = xbt_strdup(router->id);
-  info->id = current_routing->parse_PU(current_routing, router->id);
+  info->id = current_routing->parse_PU(current_routing, (void *) info);
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'",router->id,info->id);
 
@@ -398,7 +398,7 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
     xbt_dict_set(current_routing->routing_sons, AS_id,
                  (void *) new_as, NULL);
     /* add to the father element list */
-    info->id = current_routing->parse_AS(current_routing, AS_id);
+    info->id = current_routing->parse_AS(current_routing, (void *) info);
   } else {
     THROWF(arg_error, 0, "All defined components must be belong to a AS");
   }

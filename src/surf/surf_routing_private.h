@@ -29,8 +29,8 @@ void model_none_finalize(AS_t as);
 AS_t model_generic_create_sized(size_t childsize);
 void model_generic_finalize(AS_t as);
 
-int generic_parse_PU(AS_t rc, const char *name);
-int generic_parse_AS(AS_t rc, const char *name);
+int generic_parse_PU(AS_t rc, network_element_t elm);
+int generic_parse_AS(AS_t rc, network_element_t elm);
 void generic_parse_bypassroute(AS_t rc, const char *src, const char *dst,
                                route_t e_route);
 
