@@ -759,7 +759,7 @@ static surf_action_t net_communicate(void *src,
 
   XBT_IN("(%s,%s,%g,%g)", ((network_element_t)src)->name, ((network_element_t)dst)->name, size, rate);
 
-  routing_get_route_and_latency(src, dst, &route, &latency);
+  routing_get_route_and_latency((network_element_t)src, (network_element_t)dst, &route, &latency);
   xbt_assert(!xbt_dynar_is_empty(route) || latency,
              "You're trying to send data from %s to %s but there is no connection at all between these two hosts.",
              ((network_element_t)src)->name, ((network_element_t)dst)->name);
@@ -771,7 +771,7 @@ static surf_action_t net_communicate(void *src,
     }
   }
   if (sg_network_crosstraffic == 1) {
-    routing_get_route_and_latency(src, dst, &back_route, NULL);
+    routing_get_route_and_latency((network_element_t)dst, (network_element_t)src, &back_route, NULL);
     xbt_dynar_foreach(back_route, i, link) {
       if (link->lmm_resource.state_current == SURF_RESOURCE_OFF) {
         failed = 1;
