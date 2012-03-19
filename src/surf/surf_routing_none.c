@@ -24,13 +24,15 @@ static route_t none_get_bypass_route(AS_t rc,
 }
 
 static int none_parse_PU(AS_t rc, network_element_t elm) {
-  xbt_dynar_push(rc->index_network_elm, (void *)elm);
+  XBT_DEBUG("Load process unit \"%s\"", elm->name);
+  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
   /* don't care about PUs */
   return -1;
 }
 
 static int none_parse_AS(AS_t rc, network_element_t elm) {
-  xbt_dynar_push(rc->index_network_elm, (void *)elm);
+  XBT_DEBUG("Load Autonomous system \"%s\"", elm->name);
+  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
   /* even don't care about sub-ASes -- I'm as nihilist as an old punk*/
   return -1;
 }

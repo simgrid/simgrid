@@ -38,17 +38,19 @@ static xbt_dynar_t full_get_onelink_routes(AS_t rc)
           void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
           onelink_t onelink = xbt_new0(s_onelink_t, 1);
           onelink->link_ptr = link;
-          if (routing->generic_routing.hierarchy == SURF_ROUTING_BASE) {
-            onelink->src = xbt_dynar_get_as(routing->generic_routing.index_network_elm,src,network_element_t);
+          if (rc->hierarchy == SURF_ROUTING_BASE) {
+            onelink->src = xbt_dynar_get_as(rc->index_network_elm,src,network_element_t);
             onelink->src->id = src;
-            onelink->dst = xbt_dynar_get_as(routing->generic_routing.index_network_elm,dst,network_element_t);
+            onelink->dst = xbt_dynar_get_as(rc->index_network_elm,dst,network_element_t);
             onelink->dst->id = dst;
-          } else if (routing->generic_routing.hierarchy ==
-                     SURF_ROUTING_RECURSIVE) {
+          } else if (rc->hierarchy == SURF_ROUTING_RECURSIVE) {
             onelink->src = route->src_gateway;
             onelink->dst = route->dst_gateway;
           }
           xbt_dynar_push(ret, &onelink);
+          XBT_DEBUG("Push route from '%d' to '%d'",
+              src,
+              dst);
         }
       }
     }

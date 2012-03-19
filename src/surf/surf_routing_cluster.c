@@ -59,12 +59,14 @@ static void model_cluster_finalize(AS_t as) {
 }
 
 static int cluster_parse_PU(AS_t rc, network_element_t elm) {
-  xbt_dynar_push(rc->index_network_elm, (void *)elm);
+  XBT_DEBUG("Load process unit \"%s\"", elm->name);
+  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
   return xbt_dynar_length(rc->index_network_elm)-1;
 }
 
 static int cluster_parse_AS(AS_t rc, network_element_t elm) {
-  xbt_dynar_push(rc->index_network_elm, (void *)elm);
+  XBT_DEBUG("Load Autonomous system \"%s\"", elm->name);
+  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
   return xbt_dynar_length(rc->index_network_elm)-1;
 }
 

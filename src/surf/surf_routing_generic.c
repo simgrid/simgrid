@@ -41,14 +41,14 @@ void model_generic_finalize(AS_t as) {
 int generic_parse_PU(AS_t as, network_element_t elm)
 {
   XBT_DEBUG("Load process unit \"%s\"", elm->name);
-  xbt_dynar_push(as->index_network_elm, elm);
+  xbt_dynar_push_as(as->index_network_elm,network_element_t,elm);
   return xbt_dynar_length(as->index_network_elm)-1;
 }
 
 int generic_parse_AS(AS_t as, network_element_t elm)
 {
   XBT_DEBUG("Load Autonomous system \"%s\"", elm->name);
-  xbt_dynar_push(as->index_network_elm, elm);
+  xbt_dynar_push_as(as->index_network_elm,network_element_t,elm);
   return xbt_dynar_length(as->index_network_elm)-1;
 }
 
