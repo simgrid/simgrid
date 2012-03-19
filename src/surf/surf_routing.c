@@ -832,9 +832,11 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_dict_set(patterns, "suffix", xbt_strdup(cluster->suffix), NULL);
   }
 
-
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
   sg_platf_new_AS_begin(cluster->id, "Cluster");
+
+  current_routing->link_up_down_list
+            = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
   //Make all hosts
   radical_elements = xbt_str_split(cluster->radical, ",");
@@ -901,23 +903,22 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
       link.policy = cluster->sharing_policy;
       sg_platf_new_link(&link);
 
-      surf_parsing_link_up_down_t info =
-          xbt_new0(s_surf_parsing_link_up_down_t, 1);
+      s_surf_parsing_link_up_down_t info;
+
       if (link.policy == SURF_LINK_FULLDUPLEX) {
         char *tmp_link = bprintf("%s_UP", link_id);
-        info->link_up =
+        info.link_up =
             xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
         free(tmp_link);
         tmp_link = bprintf("%s_DOWN", link_id);
-        info->link_down =
+        info.link_down =
             xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
         free(tmp_link);
       } else {
-        info->link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
-        info->link_down = info->link_up;
+        info.link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+        info.link_down = info.link_up;
       }
-      surf_routing_cluster_add_link(host_id, info);
-
+      xbt_dynar_push(current_routing->link_up_down_list,&info);
       xbt_free(link_id);
       xbt_free(host_id);
     }

@@ -152,6 +152,7 @@ typedef struct s_as {
   struct s_as *routing_father;
   xbt_dict_t routing_sons;
   network_element_t net_elem;
+  xbt_dynar_t link_up_down_list;
 
   void (*get_route_and_latency) (AS_t as, network_element_t src, network_element_t dst, route_t into, double *latency);
 

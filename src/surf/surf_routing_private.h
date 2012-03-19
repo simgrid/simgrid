@@ -75,7 +75,6 @@ AS_t model_rulebased_create(void);      /* create structures for rulebased routi
 AS_t model_cluster_create(void);      /* create structures for cluster routing model */
 
 /* Pass info from the cluster parser to the cluster routing */
-void surf_routing_cluster_add_link(const char* host_id,surf_parsing_link_up_down_t info);
 void surf_routing_cluster_add_backbone(AS_t as, void* bb);
 
 /* ************************************************** */
