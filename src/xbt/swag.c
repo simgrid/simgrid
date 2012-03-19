@@ -100,7 +100,7 @@ XBT_INLINE void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
     swag->tail = obj;
     swag->count++;
   }
-  else if (obj != swag->head && !xbt_swag_getPrev(obj, swag->offset)) {
+  else if (obj != swag->tail && !xbt_swag_getNext(obj, swag->offset)) {
     xbt_swag_getPrev(obj, swag->offset) = swag->tail;
     xbt_swag_getNext(swag->tail, swag->offset) = obj;
     swag->tail = obj;
