@@ -597,8 +597,8 @@ static void _get_route_and_latency(network_element_t src, network_element_t dst,
 /**
  * \brief Find a route between hosts
  *
- * \param src the source host name
- * \param dst the destination host name
+ * \param src the network_element_t for src host
+ * \param dst the network_element_t for dst host
  * \param route where to store the list of links.
  *              If *route=NULL, create a short lived dynar. Else, fill the provided dynar
  * \param latency where to store the latency experienced on the path (or NULL if not interested)
@@ -1235,6 +1235,10 @@ void routing_register_callbacks()
   sg_platf_mstorage_add_cb(routing_parse_mstorage);
   sg_platf_storage_type_add_cb(routing_parse_storage_type);
   sg_platf_mount_add_cb(routing_parse_mount);
+
+  /* we care about the ASes while parsing the platf. Incredible, isnt it? */
+  sg_platf_AS_end_add_cb(routing_AS_end);
+  sg_platf_AS_begin_add_cb(routing_AS_begin);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
