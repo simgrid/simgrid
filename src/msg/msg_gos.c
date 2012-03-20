@@ -300,7 +300,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
  *
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
- * \param match_fun boolean function taking the #match_data provided by sender (here), and the one of the receiver (if any) and returning whether they match
+ * \param match_fun boolean function taking the match_data provided by sender (here), and the one of the receiver (if any) and returning whether they match
  * \param match_data user provided data passed to match_fun
  * \return the msg_comm_t communication created
  */
