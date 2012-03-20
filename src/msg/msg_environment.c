@@ -76,6 +76,7 @@ void MSG_create_environment(const char *file)
 }
 
 /**
+ * @ingroup MSG_LUA
  * \brief A platform constructor bypassing the parser.
  *
  * load lua script file to set up new platform, including hosts,links
@@ -94,6 +95,6 @@ void MSG_load_platform_script(const char *script_file)
   }
 #else
   xbt_die
-      ("Lua is not available!! to call MSG_load_platform_script, lua should be available...");
+      ("Lua is not available! It is mandatory to use MSG_load_platform_script however. Bailing out...");
 #endif
 }
