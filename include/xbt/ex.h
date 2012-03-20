@@ -405,6 +405,7 @@ extern void __xbt_ex_terminate_default(xbt_ex_t * e);
 /** @brief Helper macro for THROW and THROWF
  *  @hideinitializer
  *
+ *  @param _throw_ctx: the throwing context in which we should construct the exception
  *  @param c: category code (integer)
  *  @param v: value (integer)
  *  @param m: message text

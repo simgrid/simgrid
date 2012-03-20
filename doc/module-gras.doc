@@ -439,8 +439,8 @@
     \subsection GRAS_ex_mmrpc_serinc 2.a) Server intial settings
     
     All module symbols live in the mmrpc_common.c file. We thus have to
-    define \ref GRAS_DEFINE_TYPE_EXTERN to the preprocessor so that the
-    \ref GRAS_DEFINE_TYPE symbols don't get included here. Likewise, we use 
+    define \ref XBT_DEFINE_TYPE_EXTERN to the preprocessor so that the
+    \ref XBT_DEFINE_TYPE symbols don't get included here. Likewise, we use 
     \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY to get the log category in here.
     
     \dontinclude gras/mmrpc/mmrpc_server.c

@@ -103,12 +103,12 @@ following will do it:
 \section GRAS_tut_tour_simpleexchange_recaping Recaping everything together
 
 Here is the complete code of this example. Note the use of the functions
-\ref gras_socket_my_port, \ref gras_socket_peer_name and \ref
-gras_socket_peer_port to retrieve information about who you are connected to.
+\ref xbt_socket_my_port, \ref xbt_socket_peer_name and \ref
+xbt_socket_peer_port to retrieve information about who you are connected to.
 
 \include 02-simple.c
 
-Here is the output of the simulator. Note that \ref gras_socket_peer_port
+Here is the output of the simulator. Note that \ref xbt_socket_peer_port
 actually returns the port number of the <i>server</i> of the peer. This may
 sound a bit strange to BSD experts, but it is actually really useful: you
 can store this value, and contact your peer afterward passing this number to
