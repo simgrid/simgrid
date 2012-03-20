@@ -54,12 +54,12 @@ XBT_PUBLIC(void) TRACE_link_variable_add_with_time (double time, const char *lin
 XBT_PUBLIC(void) TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value);
 
 /* for link variables, but with src and dst used for get_route */
-XBT_PUBLIC(void) TRACE_link_srcdst_variable_set (void *src, void *dst, const char *variable, double value);
-XBT_PUBLIC(void) TRACE_link_srcdst_variable_add (void *src, void *dst, const char *variable, double value);
-XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub (void *src, void *dst, const char *variable, double value);
-XBT_PUBLIC(void) TRACE_link_srcdst_variable_set_with_time (double time, void *src, void *dst, const char *variable, double value);
-XBT_PUBLIC(void) TRACE_link_srcdst_variable_add_with_time (double time, void *src, void *dst, const char *variable, double value);
-XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, void *src, void *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_set (const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_add (const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value);
 
 #else                           /* HAVE_TRACING */
 
