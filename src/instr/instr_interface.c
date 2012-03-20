@@ -137,15 +137,23 @@ static void instr_user_variable(double time,
 }
 
 static void instr_user_srcdst_variable(double time,
-                              void *src,
-                              void *dst,
+                              const char *src,
+                              const char *dst,
                               const char *variable,
                               const char *father_type,
                               double value,
                               InstrUserVariable what)
 {
   xbt_dynar_t route=NULL;
-  routing_get_route_and_latency (src, dst, &route,NULL);
+  network_element_t src_elm = xbt_lib_get_or_null(host_lib,src,ROUTING_HOST_LEVEL);
+  if(!src_elm) src_elm = xbt_lib_get_or_null(as_router_lib,src,ROUTING_ASR_LEVEL);
+  if(!src_elm) xbt_die("Element '%s' not found!",src);
+
+  network_element_t dst_elm = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
+  if(!dst_elm) dst_elm = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
+  if(!dst_elm) xbt_die("Element '%s' not found!",dst);
+
+  routing_get_route_and_latency (src_elm, dst_elm, &route,NULL);
   unsigned int i;
   void *link;
   xbt_dynar_foreach (route, i, link) {
@@ -262,32 +270,32 @@ void TRACE_link_variable_sub_with_time (double time, const char *link, const cha
 }
 
 /* for link variables, but with src and dst used for get_route */
-void TRACE_link_srcdst_variable_set (void *src, void *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_set (const char *src, const char *dst, const char *variable, double value)
 {
   TRACE_link_srcdst_variable_set_with_time (MSG_get_clock(), src, dst, variable, value);
 }
 
-void TRACE_link_srcdst_variable_add (void *src, void *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_add (const char *src, const char *dst, const char *variable, double value)
 {
   TRACE_link_srcdst_variable_add_with_time (MSG_get_clock(), src, dst, variable, value);
 }
 
-void TRACE_link_srcdst_variable_sub (void *src, void *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const char *variable, double value)
 {
   TRACE_link_srcdst_variable_sub_with_time (MSG_get_clock(), src, dst, variable, value);
 }
 
-void TRACE_link_srcdst_variable_set_with_time (double time, void *src, void *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SET);
 }
 
-void TRACE_link_srcdst_variable_add_with_time (double time, void *src, void *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_ADD);
 }
 
-void TRACE_link_srcdst_variable_sub_with_time (double time, void *src, void *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SUB);
 }
