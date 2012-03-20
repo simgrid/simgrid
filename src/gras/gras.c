@@ -70,6 +70,7 @@ void gras_init(int *argc, char **argv)
   int first = 0;
   gras_procdata_t *pd;
   gras_msg_procdata_t msg_pd;
+  XBT_INFO("GRAS is not well maintained anymore. We consider it to be experimental (and not stable anymore) since SimGrid 3.6. Sorry about it, please consider contributing to improve this situation");
   XBT_VERB("Initialize GRAS");
 
   xbt_getpid = gras_os_getpid;
