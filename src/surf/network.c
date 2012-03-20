@@ -200,6 +200,7 @@ static void *net_create_resource(const char *name,
     lmm_constraint_shared(nw_link->lmm_resource.constraint);
 
   xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, nw_link);
+  XBT_DEBUG("Create link '%s'",name);
 
   return nw_link;
 }

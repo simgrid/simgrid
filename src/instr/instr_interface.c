@@ -137,8 +137,8 @@ static void instr_user_variable(double time,
 }
 
 static void instr_user_srcdst_variable(double time,
-                              const char *src,
-                              const char *dst,
+                              void *src,
+                              void *dst,
                               const char *variable,
                               const char *father_type,
                               double value,
@@ -262,32 +262,32 @@ void TRACE_link_variable_sub_with_time (double time, const char *link, const cha
 }
 
 /* for link variables, but with src and dst used for get_route */
-void TRACE_link_srcdst_variable_set (const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_set (void *src, void *dst, const char *variable, double value)
 {
   TRACE_link_srcdst_variable_set_with_time (MSG_get_clock(), src, dst, variable, value);
 }
 
-void TRACE_link_srcdst_variable_add (const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_add (void *src, void *dst, const char *variable, double value)
 {
   TRACE_link_srcdst_variable_add_with_time (MSG_get_clock(), src, dst, variable, value);
 }
 
-void TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_sub (void *src, void *dst, const char *variable, double value)
 {
   TRACE_link_srcdst_variable_sub_with_time (MSG_get_clock(), src, dst, variable, value);
 }
 
-void TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_set_with_time (double time, void *src, void *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SET);
 }
 
-void TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_add_with_time (double time, void *src, void *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_ADD);
 }
 
-void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_sub_with_time (double time, void *src, void *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SUB);
 }

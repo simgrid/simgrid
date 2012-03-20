@@ -54,6 +54,26 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   new->name = xbt_strdup (name); // name of the container
   new->id = xbt_strdup (id_str); // id (or alias) of the container
   new->father = father;
+
+  //Search for network_element_t
+  switch (kind){
+    case INSTR_HOST:
+      new->net_elm = xbt_lib_get_or_null(host_lib,name,ROUTING_HOST_LEVEL);
+      if(!new->net_elm) xbt_die("Element '%s' not found",name);
+      break;
+    case INSTR_ROUTER:
+      new->net_elm = xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL);
+      if(!new->net_elm) xbt_die("Element '%s' not found",name);
+      break;
+    case INSTR_AS:
+      new->net_elm = xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL);
+      if(!new->net_elm) xbt_die("Element '%s' not found",name);
+      break;
+    default:
+      new->net_elm = NULL;
+      break;
+  }
+
   // level depends on level of father
   if (new->father){
     new->level = new->father->level+1;
@@ -104,12 +124,15 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   if (xbt_dict_get_or_null(allContainers, new->name) != NULL){
     THROWF(tracing_error, 1, "container %s already present in allContainers data structure", new->name);
   }
+
   xbt_dict_set (allContainers, new->name, new, NULL);
+  XBT_DEBUG("Add container name '%s'",new->name);
 
   //register NODE types for triva configuration
   if (new->kind == INSTR_HOST || new->kind == INSTR_LINK || new->kind == INSTR_ROUTER) {
     xbt_dict_set (trivaNodeTypes, new->type->name, xbt_strdup("1"), NULL);
   }
+
   return new;
 }
 

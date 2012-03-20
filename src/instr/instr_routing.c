@@ -137,7 +137,9 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
         xbt_ex_t e;
 
         TRY {
-          routing_get_route_and_latency(child1_name, child2_name, &route, NULL);
+          routing_get_route_and_latency((network_element_t)(child1->net_elm),
+                                        (network_element_t)(child2->net_elm),
+                                        &route, NULL);
         } CATCH(e) {
           xbt_ex_free(e);
         }
@@ -163,17 +165,19 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
 
         route_t route = xbt_new0(s_route_t,1);
         route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-        rc->get_route_and_latency (rc, child1_name, child2_name, route,NULL);
+        rc->get_route_and_latency (rc,
+                                  (network_element_t)(child1->net_elm),
+                                  (network_element_t)(child2->net_elm), route,NULL);
         unsigned int cpt;
         void *link;
-        container_t previous = PJ_container_get(route->src_gateway);
+        container_t previous = PJ_container_get(route->src_gateway->name);
         xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
           container_t current = PJ_container_get(link_name);
           linkContainers (previous, current, filter);
           previous = current;
         }
-        container_t last = PJ_container_get(route->dst_gateway);
+        container_t last = PJ_container_get(route->dst_gateway->name);
         linkContainers (previous, last, filter);
         generic_free_route(route);
       }
@@ -465,7 +469,9 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
 
         // FIXME factorize route creation with else branch below (once possible)
         xbt_dynar_t route=NULL;
-        routing_get_route_and_latency (child1_name, child2_name,&route,NULL);
+        routing_get_route_and_latency ((network_element_t)(child1->net_elm),
+                                       (network_element_t)(child2->net_elm),
+                                       &route,NULL);
         if (TRACE_onelink_only()){
           if (xbt_dynar_length (route) > 1) continue;
         }
@@ -488,17 +494,19 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
 
         route_t route = xbt_new0(s_route_t,1);
         route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-        rc->get_route_and_latency (rc, child1_name, child2_name,route, NULL);
+        rc->get_route_and_latency (rc,
+                                   (network_element_t)(child1->net_elm),
+                                   (network_element_t)(child2->net_elm),route, NULL);
         unsigned int cpt;
         void *link;
-        xbt_node_t current, previous = new_xbt_graph_node(graph, route->src_gateway, nodes);
+        xbt_node_t current, previous = new_xbt_graph_node(graph, route->src_gateway->name, nodes);
         xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
           current = new_xbt_graph_node(graph, link_name, nodes);
           //previous -> current
           previous = current;
         }
-        current = new_xbt_graph_node(graph, route->dst_gateway, nodes);
+        current = new_xbt_graph_node(graph, route->dst_gateway->name, nodes);
         new_xbt_graph_edge (graph, previous, current, edges);
         generic_free_route(route);
       }

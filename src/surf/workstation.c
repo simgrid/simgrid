@@ -249,7 +249,7 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
 /* returns an array of network_link_CM02_t */
 static xbt_dynar_t ws_get_route(void *workstation_src, void *workstation_dst)
 {
-  XBT_INFO("ws_get_route");
+  XBT_DEBUG("ws_get_route");
   workstation_CLM03_t src = (workstation_CLM03_t) workstation_src;
   workstation_CLM03_t dst = (workstation_CLM03_t) workstation_dst;
   return surf_network_model->extension.

@@ -162,11 +162,6 @@ void parse_platform_file(const char *file)
   surfxml_add_callback(STag_surfxml_trace_connect_cb_list,
              &parse_Stag_trace_connect);
 
-  /* we care about the ASes while parsing the platf. Incredible, isnt it? */
-  sg_platf_AS_end_add_cb(routing_AS_end);
-  sg_platf_AS_begin_add_cb(routing_AS_begin);
-
-
   /* Do the actual parsing */
   parse_status = surf_parse();
 

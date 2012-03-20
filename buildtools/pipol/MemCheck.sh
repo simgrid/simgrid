@@ -10,6 +10,7 @@ else
 fi
 cd ./pipol/$PIPOL_HOST
 
+export GIT_SSL_NO_VERIFY=1
 git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid --quiet
 cd simgrid
 
