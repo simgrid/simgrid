@@ -427,7 +427,7 @@ void gras_msg_handle(volatile double timeOut)
           e.host = (char *) gras_os_myname();
           xbt_ex_setup_backtrace(&e);
         }
-        XBT_INFO
+        XBT_VERB
             ("Propagate %s exception ('%s') from '%s' RPC cb back to %s:%d",
              (e.remote ? "remote" : "local"), e.msg, msg.type->name,
              xbt_socket_peer_name(msg.expe),
