@@ -660,10 +660,10 @@ INPUT                  = index.doc \
                          @top_srcdir@/include/simdag \
                          @top_srcdir@/src/include/surf \
                          @top_srcdir@/src/xbt/ \
+                         @top_srcdir@/src/xbt/datadesc \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/msg/ \
                          @top_srcdir@/src/gras \
-                         @top_srcdir@/src/gras/DataDesc \
                          @top_srcdir@/src/gras/Msg \
                          @top_srcdir@/src/gras/Transport \
                          @top_srcdir@/src/gras/Virtu \

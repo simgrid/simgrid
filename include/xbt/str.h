@@ -51,7 +51,7 @@ XBT_PUBLIC(char *) xbt_str_from_file(FILE * file);
 
 /** @brief Classical alias to (char*)
  *
- * This of almost no use, beside cosmetics and the GRAS parsing macro (see \ref GRAS_dd_auto).
+ * This of almost no use, beside cosmetics and the XBT datadesc parsing macro (see \ref XBT_dd_auto).
  */
 typedef char *xbt_string_t;
 
