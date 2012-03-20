@@ -8,24 +8,6 @@
 
 */
 
-/** \defgroup SURF_API       SURF
-    \ingroup SimGrid_API
-    \brief Kernel of all the simulators used in SimGrid, and associated models.
- 
-      SURF provides the core functionnalities to simulate a virtual
-      platform. It is very low-level and is not intended to be used as
-      such but rather to serve as a basis for higher-level simulators.
-      We're still working on it and the structure is a little bit
-      complex.
-
-      It is where platform models are encoded. If you need a model that is not 
-      encoded yet, please tell me (<arnaud.legrand@imag.fr>) and we'll
-      see if it is feasible or not (hopefully it should be but who knows).
-
-      Please note that as it is not really intended for public use,
-      this module is only partially documented.
-*/
-
 /** \defgroup MSG_API      MSG
     \ingroup SimGrid_API
     \brief Simple programming environment 
@@ -144,3 +126,22 @@
     probably want to contact us before).
 
 */
+
+/** 
+@defgroup SURF_API SURF
+@ingroup SimGrid_API
+@brief Internal kernel of all the simulators used in SimGrid, and associated models.
+ 
+SURF provides the core functionnalities to simulate a virtual
+platform. It is very low-level and is not intended to be used by end
+users, but rather to serve as a basis for higher-level simulators. Its
+interface are not frozen (and will probably never be), and the
+structure emphasis on performance over ease of use. This module
+contains the platform models. If you need a model that is not encoded
+yet, please come to the devel mailing list so that we can discuss on
+the feasibility of your idea.
+
+Please note that as it is not really intended for public use, this
+module is only partially documented. 
+*/
+
