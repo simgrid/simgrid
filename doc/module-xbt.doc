@@ -19,6 +19,7 @@
       - \ref XBT_queue
       - \ref XBT_swag
       - \ref XBT_heap
+      - \ref XBT_peer
     - \ref XBT_misc
       - \ref XBT_graph
  

@@ -21,6 +21,7 @@ xbt_peer_t xbt_peer_new(const char *name, int port)
   return res;
 }
 
+/** \brief copy constructor */
 xbt_peer_t xbt_peer_copy(xbt_peer_t h)
 {
   return xbt_peer_new(h->name, h->port);

@@ -13,10 +13,21 @@
 
 SG_BEGIN_DECL()
 
-typedef struct {
+/** @addtogroup XBT_peer
+ *  \brief Helper functions to manipulate remote hosts
+ *
+ *  This module simply introduces some rather trivial functions to manipulate remote host denomination (in the form hostname:port)
+ *
+ *  @{
+ */
+/** @brief Object describing a remote host (as name:port) */
+typedef struct s_xbt_peer *xbt_peer_t;
+
+/** @brief Structure describing a remote host (as name:port) */
+typedef struct s_xbt_peer {
   char *name;
   int port;
-} s_xbt_peer_t, *xbt_peer_t;
+} s_xbt_peer_t;
 
 XBT_PUBLIC(xbt_peer_t) xbt_peer_new(const char *name, int port);
 XBT_PUBLIC(xbt_peer_t) xbt_peer_from_string(const char *peerport);
@@ -24,5 +35,6 @@ XBT_PUBLIC(xbt_peer_t) xbt_peer_copy(xbt_peer_t h);
 XBT_PUBLIC(void) xbt_peer_free(xbt_peer_t peer);
 XBT_PUBLIC(void) xbt_peer_free_voidp(void *d);
 
+/** @} */
 SG_END_DECL()
 #endif                          /* XBT_PEER_H */
