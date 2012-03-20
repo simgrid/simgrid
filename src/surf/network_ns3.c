@@ -443,7 +443,8 @@ static void ns3_update_actions_state(double now, double delta)
       double data_delta_sent = data_sent - action->last_sent;
 
       xbt_dynar_t route = NULL;
-      routing_get_route_and_latency (action->src_name, action->dst_name, &route, NULL);
+
+      routing_get_route_and_latency (action->src_elm, action->dst_elm, &route, NULL);
       unsigned int i;
       for (i = 0; i < xbt_dynar_length (route); i++){
         surf_ns3_link_t *link = ((surf_ns3_link_t*)xbt_dynar_get_ptr (route, i));
@@ -489,8 +490,8 @@ static surf_action_t ns3_communicate(void *src_elm,
 
 #ifdef HAVE_TRACING
   action->last_sent = 0;
-  action->src_name = xbt_strdup (src_name);
-  action->dst_name = xbt_strdup (dst_name);
+  action->src_elm = src_elm;
+  action->dst_elm = dst_elm;
 #endif
 
   return (surf_action_t) action;
@@ -521,8 +522,6 @@ static int action_unref(surf_action_t action)
     xbt_swag_remove(action, action->state_set);
 
 #ifdef HAVE_TRACING
-    xbt_free(((surf_action_network_ns3_t)action)->src_name);
-    xbt_free(((surf_action_network_ns3_t)action)->dst_name);
     xbt_free(action->category);
 #endif
     XBT_DEBUG ("Removing action %p", action);
