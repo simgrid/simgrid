@@ -55,7 +55,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/trace)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/icomms)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/chord)
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/parallel_contexts)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/pmm)
 
