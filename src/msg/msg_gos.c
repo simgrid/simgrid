@@ -994,11 +994,6 @@ MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
   return MSG_task_get_ext(task, channel, max_duration, NULL);
 }
 
-/** \defgroup msg_gos_functions MSG Operating System Functions
- *  \brief This section describes the functions that can be used
- *  by an agent for handling some task.
- */
-
 MSG_error_t
 MSG_task_get_ext(m_task_t * task, m_channel_t channel, double timeout,
                  m_host_t host)

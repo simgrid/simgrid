@@ -1,10 +1,5 @@
+/** \addtogroup MSG_API
 
-/** \defgroup MSG_C      MSG native
-    \ingroup MSG_API
-    \brief Native interface to MSG (\ref MSG_API)
-
-    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Native interface" --> \endhtmlonly 
-	  
       MSG was the first distributed programming environment provided within
       SimGrid. While almost realistic, it remains quite simple (simplistic?).
       This describes the native to MSG.
@@ -16,33 +11,6 @@
       use the C programming language, your are in the right
       section. To use the Java or Ruby programming interfaces, please refer to
       the documentation provided in the relevant packages.
-*/
-
-
-/**
-
-\defgroup MSG_LUA      lMSG
-    \ingroup MSG_API
-    \brief Lua bindings to MSG (\ref MSG_API)
-
-    \htmlonly <!-- 
-      DOXYGEN_NAVBAR_LABEL="LUA bindings" 
-    --> \endhtmlonly 
-	  
-      MSG was the first distributed programming environment provided within
-      SimGrid. While almost realistic, it remains quite simple (simplistic?).
-      This describes the Lua bindings to this interface.
-
-      \section lMSG_who Who should use this (and who shouldn't)
-      
-      You should use MSG if you want to study some heuristics for a
-      given problem you don't really want to implement. If you want to
-      use the Lua script language, your are in the right
-      section. To use the C interface, please refer to \ref MSG_C.
-
-*/
-
-/** @addtogroup MSG_C
 
   \section MSG_funct Offered functionnalities
    - \ref m_process_management
@@ -50,7 +18,6 @@
    - \ref m_host_management
    - \ref m_task_management
    - \ref msg_gos_functions
-   - \ref m_channel_management
    - \ref msg_easier_life
    - \ref msg_simulation
 
@@ -61,39 +28,90 @@
    - \ref MSG_ex_master_slave_scrip_lua
 */
 
-/** @addtogroup MSG_LUA
-
-  \section MSG_Lua_funct  Lua offered functionnalities in MSG
-   - \ref lua_host_management
-   - \ref lua_tasks_management
-   - \ref lua_environment_management
-  \section Lua_examples Examples of lua MSG
- 
-   - \ref MSG_ex_master_slave_lua
-   - \ref MSG_ex_master_slave_lua_bypass
-*/
-
 
 /** @defgroup m_datatypes_management MSG Data Types 
-    @ingroup MSG_C
+    @ingroup MSG_API
     @brief This section describes the different datatypes provided by MSG.
     
     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
 */
-/**     \addtogroup m_process_management
-        \ingroup MSG_C  */
-/**     \addtogroup m_host_management
-        \ingroup MSG_C  */
-/**     \addtogroup m_task_management
-        \ingroup MSG_C  */
-/**     \addtogroup msg_gos_functions
-        \ingroup MSG_C  */
-/**     \addtogroup m_channel_management
-        \ingroup MSG_C  */
-/**     \addtogroup msg_easier_life
-        \ingroup MSG_C  */
-/**     \addtogroup msg_simulation
-        \ingroup MSG_C  */
+
+/** @defgroup m_process_management Management Functions of Agents
+ *  @ingroup MSG_API
+ *  @brief This section describes the agent structure of MSG
+ *         (#m_process_t) and the functions for managing it.
+ */
+   
+/** @defgroup m_host_management Management functions of Hosts
+ *  @ingroup MSG_API
+ *  @brief This section describes the host structure of MSG
+ */
+  
+/** @defgroup m_task_management Managing functions of Tasks
+ *  @ingroup MSG_API
+ *  @brief This section describes the task structure of MSG
+ *         (#m_task_t) and the functions for managing it.
+ */
+   
+/** @defgroup msg_gos_functions MSG Operating System Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the functions that can be used
+ *         by an agent for handling some task.
+ */
+
+/** @defgroup msg_easier_life      Platform and Application management
+ *  @ingroup MSG_API
+ *  @brief This section describes functions to manage the platform creation
+ *         and the application deployment. Please check @ref
+ *         MSG_examples for an overview of their usage. 
+ */
+ 
+/** 
+@defgroup msg_simulation   MSG simulation Functions
+@ingroup MSG_API
+@brief This section describes the functions you need to know to
+       set up a simulation. You should have a look at \ref MSG_examples
+       to have an overview of their usage.
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation functions" --> @endhtmlonly
+*/
+ 
+/**
+@defgroup MSG_LUA      Lua bindings
+@ingroup MSG_API
+@brief Lua bindings to MSG (\ref MSG_API)
+
+@htmlonly <!--  DOXYGEN_NAVBAR_LABEL="LUA bindings" --> @endhtmlonly 
+	  
+      This is the lua bindings of the \ref MSG_API interface.
+
+      \section lMSG_who Who should use this (and who shouldn't)
+      
+      If you want to use MSG to study your algorithm, but you don't
+      want to use the C language (using \ref MSG_API), then you should
+      use some bindings such as this one. The advantage of the lua
+      bindings is that they are distributed directly with the main
+      archive (in contrary to Java and Ruby bindings, for example,
+      that are distributed separately). Another advantage of lua is
+      that there is almost no performance loss with regard to the C
+      version (at least there shouln't be any -- it is still to be
+      precisely assessed).
+
+  \section MSG_Lua_funct  Lua offered functionnalities in MSG
+  Almost all important features of the MSG interface are available
+  from the lua bindings. Unfortunately, since doxygen does not support
+  the lua modules implemented directly in C as we are using, there is
+  no ready to use reference documentation for this module. Even more
+  than for the other modules, you will have to dig into the source
+  code of the examples to learn how to use it. 
+
+  \section Lua_examples Examples of lua MSG
+ 
+   - \ref MSG_ex_master_slave_lua
+   - \ref MSG_ex_master_slave_lua_bypass
+   - Also, the Chord example (in the source tree) is a working
+     non-trivial example of use of the lua bindings
+*/
 
 
 /** \page MSG_ex_asynchronous_communications Asynchronous communication applications
@@ -496,3 +514,4 @@
       \until simgrid.clean()
       
 */
+

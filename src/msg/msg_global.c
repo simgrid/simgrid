@@ -17,16 +17,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
 
 MSG_Global_t msg_global = NULL;
 
-
-/** \defgroup msg_simulation   MSG simulation Functions
- *  \brief This section describes the functions you need to know to
- *  set up a simulation. You should have a look at \ref MSG_examples
- *  to have an overview of their usage.
- */
-/** @addtogroup msg_simulation
- *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation functions" --> \endhtmlonly
- */
-
 /********************************* MSG **************************************/
 
 /** \ingroup msg_simulation
@@ -88,25 +78,8 @@ void MSG_global_init(int *argc, char **argv)
 }
 
 #ifdef MSG_USE_DEPRECATED
-/** \defgroup m_channel_management    Understanding channels
- *  \brief This section briefly describes the channel notion of MSG
- *  (#m_channel_t).
- */
-/** @addtogroup m_channel_management
- *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Channels" --> \endhtmlonly
- *
- *
- *  For convenience, the simulator provides the notion of channel
- *  that is close to the tag notion in MPI. A channel is not a
- *  socket. It doesn't need to be opened neither closed. It rather
- *  corresponds to the ports opened on the different machines.
- */
 
-
-/** \ingroup m_channel_management
- * \brief Set the number of channel in the simulation.
- *
- * This function has to be called to fix the number of channel in the
+/* This deprecated function has to be called to fix the number of channel in the
    simulation before creating any host. Indeed, each channel is
    represented by a different mailbox on each #m_host_t. This
    function can then be called only once. This function takes only one
@@ -115,7 +88,7 @@ void MSG_global_init(int *argc, char **argv)
  */
 MSG_error_t MSG_set_channel_number(int number)
 {
-  XBT_WARN("DEPRECATED! Now use alias");
+  XBT_WARN("DEPRECATED! Please use aliases instead");
   xbt_assert((msg_global)
               && (msg_global->max_channel == 0),
               "Channel number already set!");
@@ -125,16 +98,13 @@ MSG_error_t MSG_set_channel_number(int number)
   return MSG_OK;
 }
 
-/** \ingroup m_channel_management
- * \brief Return the number of channel in the simulation.
- *
- * This function has to be called once the number of channel is fixed. I can't
+/* This deprecated function has to be called once the number of channel is fixed. I can't
    figure out a reason why anyone would like to call this function but nevermind.
  * \return the number of channel in the simulation.
  */
 int MSG_get_channel_number(void)
 {
-  XBT_WARN("DEPRECATED! Now use alias");
+  XBT_WARN("DEPRECATED! Please use aliases instead");
   xbt_assert((msg_global)
               && (msg_global->max_channel != 0),
               "Channel number not set yet!");

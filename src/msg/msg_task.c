@@ -8,10 +8,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-/** \defgroup m_task_management Managing functions of Tasks
- *  \brief This section describes the task structure of MSG
- *  (#m_task_t) and the functions for managing it.
- */
 /** @addtogroup m_task_management
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
  * 
