@@ -12,7 +12,12 @@
 #include "surf/surf_routing.h"
 #include "surf/surfxml_parse_values.h"
 
+/**
+ * @ingroup SURF_build_api
+ * @brief A library containing all known workstations
+ */
 xbt_lib_t host_lib;
+
 int ROUTING_HOST_LEVEL;         //Routing level
 int SURF_CPU_LEVEL;             //Surf cpu level
 int SURF_WKS_LEVEL;             //Surf workstation level
@@ -22,6 +27,10 @@ int SD_HOST_LEVEL;              //Simdag level
 int COORD_HOST_LEVEL=0;         //Coordinates level
 int NS3_HOST_LEVEL;             //host node for ns3
 
+/**
+ * @ingroup SURF_build_api
+ * @brief A library containing all known links
+ */
 xbt_lib_t link_lib;
 int SD_LINK_LEVEL;              //Simdag level
 int SURF_LINK_LEVEL;            //Surf level
