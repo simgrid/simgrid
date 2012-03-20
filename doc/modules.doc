@@ -39,7 +39,7 @@
       given problem you don't really want to implement.
       If you want to use DAGs, have a look at the \ref SD_API programming
       environment.
-      If you want to get a real implementation of your solution, have a look
+      If you want to get a real (but experimental) implementation of your solution, have a look
       at the \ref GRAS_API one. If you want to study an existing MPI program,
       have a look at the \ref SMPI_API one. If none of those programming
       environments fits your needs, you may consider implementing your own 
@@ -57,7 +57,8 @@
     of this interface (allowing you to work on your application within the
     comfort of the simulator), an implementation suited to real platforms is
     also provided (allowing you to really use your application once you're
-    done with developing it).
+    done with developing it). It may still contain rought corners as
+    GRAS is not the most used part of SimGrid, however.
   
     GRAS thus constitute a complete grid application developement framework,
     encompassing both developer helping tools (the simulator and associated
@@ -67,7 +68,10 @@
     
     You should use this programming environment if you want to develop real
     applications, ie if the final result of your work is a program which 
-    may eventually be distributed. 
+    may eventually be distributed. Rember however that GRAS is
+    considered as experimental at this point. Help would be welcomed
+    to improve this sorry situation...
+    
     If you just want to study some heuristics for a given problem you don't
     want to implement really (ie, if your result would be a theorem), have a
     look at the \ref MSG_API one, or the \ref SD_API one if you need to use DAGs.
