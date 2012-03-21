@@ -16,15 +16,25 @@
 #include "msg/msg.h"
 #include "simdag/simdag.h"
 
+/*
+ * Functions to manage tracing categories
+ */
 XBT_PUBLIC(void) TRACE_category(const char *category);
 XBT_PUBLIC(void) TRACE_category_with_color (const char *category, const char *color);
 XBT_PUBLIC(void) TRACE_msg_set_task_category(m_task_t task, const char *category);
 XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
 XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task, const char *category);
 
+/*
+ * Functions to manage tracing marks (used for trace comparison experiments)
+ */
 XBT_PUBLIC(void) TRACE_declare_mark(const char *mark_type);
 XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
 
+/*
+ * Functions used by graphicator (transform a SimGrid platform
+ * file in a graphviz dot file with the network topology)
+ */
 XBT_PUBLIC(const char *) TRACE_node_name (xbt_node_t node);
 XBT_PUBLIC(xbt_graph_t) TRACE_platform_graph (void);
 XBT_PUBLIC(void) TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
