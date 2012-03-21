@@ -162,12 +162,6 @@ static void instr_user_srcdst_variable(double time,
   }
 }
 
-const char *TRACE_node_name (xbt_node_t node)
-{
-  void *data = xbt_graph_node_get_data(node);
-  char *str = (char*)data;
-  return str;
-}
 
 xbt_graph_t TRACE_platform_graph (void)
 {

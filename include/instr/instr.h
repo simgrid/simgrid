@@ -35,7 +35,6 @@ XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
  * Functions used by graphicator (transform a SimGrid platform
  * file in a graphviz dot file with the network topology)
  */
-XBT_PUBLIC(const char *) TRACE_node_name (xbt_node_t node);
 XBT_PUBLIC(xbt_graph_t) TRACE_platform_graph (void);
 XBT_PUBLIC(void) TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
@@ -81,7 +80,6 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const ch
 #define TRACE_declare_mark(mark_type)
 #define TRACE_mark(mark_type,mark_value)
 
-#define TRACE_node_name(node)
 #define TRACE_platform_graph(void)
 #define TRACE_platform_graph_export_graphviz(g,filename)
 
