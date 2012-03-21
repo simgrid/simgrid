@@ -430,21 +430,25 @@ static xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_d
 static xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges)
 {
   xbt_edge_t ret;
-  char *name;
 
   const char *sn = instr_node_name (s);
   const char *dn = instr_node_name (d);
+  int len = strlen(sn)+strlen(dn)+1;
+  char *name = (char*)malloc(len * sizeof(char));
 
-  name = bprintf ("%s%s", sn, dn);
+
+  snprintf (name, len, "%s%s", sn, dn);
   ret = xbt_dict_get_or_null (edges, name);
-  if (ret) return ret;
+  if (ret == NULL){
+    snprintf (name, len, "%s%s", dn, sn);
+    ret = xbt_dict_get_or_null (edges, name);
+  }
+
+  if (ret == NULL){
+    ret = xbt_graph_new_edge(graph, s, d, NULL);
+    xbt_dict_set (edges, name, ret, NULL);
+  }
   free (name);
-  name = bprintf ("%s%s", dn, sn);
-  ret = xbt_dict_get_or_null (edges, name);
-  if (ret) return ret;
-
-  ret = xbt_graph_new_edge(graph, s, d, NULL);
-  xbt_dict_set (edges, name, ret, NULL);
   return ret;
 }
 
@@ -529,6 +533,8 @@ xbt_graph_t instr_routing_platform_graph (void)
   xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
   xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
   recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, PJ_container_get_root());
+  xbt_dict_free (&nodes);
+  xbt_dict_free (&edges);
   return ret;
 }
 
