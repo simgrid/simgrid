@@ -14,6 +14,14 @@
 #include "xbt/xbt_os_time.h"
 #endif
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>pmm/msg_pmm.c</b>: Parallel Matrix Multiplication is a little
+ *   application. This is something that most MPI developper have
+ *   written during their class, here implemented using MSG instead
+ *   of MPI. 
+ */
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm,
                              "Messages specific for this msg example");
 

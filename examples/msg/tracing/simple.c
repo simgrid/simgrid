@@ -8,6 +8,13 @@
 #include "msg/msg.h"
 #include "xbt/sysdep.h"         /* calloc, printf */
 
+/** @addtogroup MSG_examples
+ * 
+ * @section MSG_ex_tracing Tracing and vizualization features
+ * 
+ * - <b>tracing/simple.c</b> very simple program that creates, executes and destroy a task
+ */
+
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
 #include "xbt/asserts.h"

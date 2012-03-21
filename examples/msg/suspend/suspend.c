@@ -12,6 +12,10 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>suspend/suspend.c</b>: Demonstrates how to suspend and resume processes using @ref MSG_process_suspend and @ref MSG_process_resume.
+ */
 
 /** Lazy guy function. This process suspends itself asap.  */
 static int lazy_guy(int argc, char *argv[])

@@ -14,6 +14,11 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>msg/icomms/peer3.c</b>: demonstrates the @ref MSG_comm_waitany function
+ */
+
 int sender(int argc, char *argv[]);
 int receiver(int argc, char *argv[]);
 

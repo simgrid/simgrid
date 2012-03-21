@@ -14,6 +14,16 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>parallel_task/parallel_task.c</b>: Demonstrates the use of
+ *   @ref MSG_parallel_task_create, to create special tasks that run
+ *   on several hosts at the same time. The resulting simulations are
+ *   very close to what can be achieved in @ref SD_API, but still
+ *   allows to use the other features of MSG (it'd be cool to be able
+ *   to mix interfaces, but it's not possible ATM).
+ */
+
 int test(int argc, char *argv[]);
 MSG_error_t test_all(const char *platform_file);
 

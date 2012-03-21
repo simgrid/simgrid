@@ -21,11 +21,7 @@
    - \ref msg_easier_life
    - \ref msg_simulation
 
-  \section MSG_examples Examples of MSG
- 
-   - \ref MSG_ex_master_slave
-   - \ref MSG_ex_asynchronous_communications
-   - \ref MSG_ex_master_slave_scrip_lua
+  Also make sure to visit the page @ref MSG_examples.
 */
 
 
@@ -75,7 +71,19 @@
 
 @htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation functions" --> @endhtmlonly
 */
+
+
+/**
+@defgroup MSG_examples MSG Examples
+@ingroup MSG_API
  
+MSG comes with an extensive set of examples. It is sometimes difficult
+to find the one you need. 
+
+@section MSG_ex_basics Basic examples and features
+
+*/
+
 /**
 @defgroup MSG_LUA      Lua bindings
 @ingroup MSG_API
@@ -109,12 +117,13 @@
  
    - \ref MSG_ex_master_slave_lua
    - \ref MSG_ex_master_slave_lua_bypass
-   - Also, the Chord example (in the source tree) is a working
-     non-trivial example of use of the lua bindings
+   - Also, the lua version of the Chord example (in the source tree)
+     is a working non-trivial example of use of the lua bindings
 */
 
 
-/** \page MSG_ex_asynchronous_communications Asynchronous communication applications
+/** \defgroup MSG_ex_asynchronous_communications Asynchronous communications
+    \ingroup MSG_examples
 
     Simulation of asynchronous communications between a sender and a receiver using a realistic platform and
     an external description of the deployment.
@@ -221,89 +230,8 @@
 
 */
 
-/** \page MSG_ex_master_slave_scrip_lua Master/slave application using lua console
-	    
-    Simulation of a master-slave application using a realistic platform and
-    an external description of the deployment via a lua script.
-
-    \section MSG_ex_msl_TOC Table of contents:
-	
-     - \ref MSG_ext_msl_code
-       - \ref MSG_ext_msl_preliminary
-       - \ref MSG_ext_msl_master
-       - \ref MSG_ext_msl_slave
-       - \ref MSG_ext_msl_core
-       - \ref MSG_ext_msl_main
-     - \ref MSG_ext_msl_helping
-       - \ref MSG_ext_msl_platform
-
-<hr> 
-    
-    \dontinclude msg/masterslave/masterslave_console.c
-    
-    \section MSG_ext_msl_code Code of the application
-    
-    \subsection MSG_ext_msl_preliminary Preliminary declarations
-    
-    \skip include
-    \until } channel_t;
-    
-    \subsection MSG_ext_msl_master Master code
-    
-      This function has to be assigned to a m_process_t that will behave as the master.
-      It should not be called directly but either given as a parameter to
-      #MSG_process_create() or registered as a public function through 
-      #MSG_function_register() and then automatically assigned to a process through
-      #MSG_load_platform_script(). 
- 
-      C style arguments (argc/argv) are interpreted as:
-       - the number of tasks to distribute
-       - the computation size of each task
-       - the size of the files associated to each task
-       - number of hosts that will accept those tasks.
-
-      Tasks are dumbly sent in a round-robin style.
-      
-      \until end_of_master
-\subsection MSG_ext_msl_slave Slave code
-    
-      This function has to be assigned to a #m_process_t that has to behave as a slave.
-      Just like the master fuction (described in \ref MSG_ext_ms_master), it should not be called directly.
-
-      This function keeps waiting for tasks and executes them as it receives them.
-      
-      \until end_of_slave
-
-\subsection MSG_ext_msl_core Simulation core
-
-      This function is the core of the simulation and is divided now only into 2 parts
-      thanks to MSG_load_platform_script().
-         -# Simulation settings and application deployment : MSG_load_platform_script() loads and creates a realistic 
-            environment and the agents on the right locations, described in the lua script file (see example below).
-	    Note that the use of this function require a lua installation on your machine. 
-         -# The simulation is run with #MSG_main().
-	 
-      Its arguments are:
-	- <i>platform_script_file</i>: the name of the script file containing a valid  platform and application description, using bound lua methods to bypass the surfxml parser.
-
-      \until end_of_test_all
-
-\subsection MSG_ext_msl_main Main() function
-   
-      This initializes MSG, runs a simulation, and free all data-structures created by MSG.
-      
-      \until end_of_main
-
-   \section MSG_ext_msl_helping Helping files
-
-   \subsection MSG_ext_msl_platform Example of platform script file
-
-   \include msg/masterslave/platform_script.lua
-
-
-*/
-
-/** \page MSG_ex_master_slave Master/slave application
+/** @defgroup MSG_ex_master_slave Basic Master/Slaves
+    @ingroup MSG_examples
     
     Simulation of a master-slave application using a realistic platform and
     an external description of the deployment. 

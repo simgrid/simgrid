@@ -4,6 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>tracing/user_variables.c</b>: Demonstrates how to trace user-provided variables
+ */
+
 #include <stdio.h>
 #include "msg/msg.h"
 #include "xbt/sysdep.h"         /* calloc, printf */

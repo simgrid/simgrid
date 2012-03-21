@@ -14,6 +14,15 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+/** @addtogroup MSG_examples
+ * 
+ *  - <b>masterslave/masterslave_forwarder.c: Master/slaves
+ *    example</b>. This good old example is also very simple. Its basic
+ *    version is fully commented on this page: \ref MSG_ex_master_slave,
+ *    but several variants can be found in the same directory. 
+ */
+
+
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);

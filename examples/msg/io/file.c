@@ -4,6 +4,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/** @addtogroup MSG_examples
+ * 
+ * @subsection MSG_ex_resources Other resource kinds
+ * 
+ * This section contains some sparse examples of how to use the other
+ * kind of resources, such as disk or GPU. These resources are quite
+ * experimental for now, but here we go anyway.
+ * 
+ * - <b>io/file.c</b> Example with the disk resource
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "msg/msg.h"

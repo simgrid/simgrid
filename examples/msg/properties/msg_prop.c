@@ -14,6 +14,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>properties/msg_prop.c</b> Attaching arbitrary informations to
+ *   host, processes and such, and retrieving them with @ref
+ *   MSG_host_get_properties, @ref MSG_host_get_property_value, @ref
+ *   MSG_process_get_properties and @ref
+ *   MSG_process_get_property_value. Also make sure to read the
+ *   platform and deployment XML files to see how to declare these
+ *   data.
+ * 
+ */
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 
 int alice(int argc, char *argv[]);

@@ -1,7 +1,12 @@
-/* Copyright (c) 2009 The SimGrid team. All rights reserved.                */
+/* Copyright (c) 2010 The SimGrid team. All rights reserved.                */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/** @addtogroup MSG_examples
+ * 
+ * - <b>tracing/procmig.c</b> example to trace process migration using the mask TRACE_PROCESS
+ */
 
 #include "msg/msg.h"            /* core library */
 #include "xbt/sysdep.h"         /* calloc */

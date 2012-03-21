@@ -18,6 +18,16 @@ int nb_hosts; /* All declared hosts */
 XBT_LOG_NEW_DEFAULT_CATEGORY(ring,
                              "Messages specific for this msg example");
 
+/** @addtogroup MSG_examples
+ * 
+ *  @section MSG_ex_apps Examples of full applications
+ * 
+ * - <b>token_ring/ring_call.c</b>: Classical token ring
+ *   communication, where a token is exchanged along a ring to reach
+ *   every participant.
+ * 
+ */
+
 int host(int argc, char *argv[])
 {
   int host_number = atoi(MSG_process_get_name(MSG_process_self()));

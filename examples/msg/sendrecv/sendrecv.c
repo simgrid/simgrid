@@ -13,6 +13,13 @@
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 
+/** @addtogroup MSG_examples
+ * 
+ *  - <b>sendrecv/sendrecv.c: Ping-pong example</b>. It's hard to
+ *    think of a simpler example. The tesh files laying in the
+ *    directory are instructive concerning the way to pass options to the simulators (as described in \ref options).
+ */
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 

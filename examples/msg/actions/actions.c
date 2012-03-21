@@ -11,6 +11,34 @@
 #include "xbt.h"                /* calloc, printf */
 #include "instr/instr_private.h"
 
+/** @addtogroup MSG_examples
+ *
+ *  @section MSG_ex_actions Trace driven simulations
+ * 
+ *  The <b>actions/actions.c</b> example demonstrates how to run trace-driven simulations. It
+ *  is very handy when you want to test an algorithm or protocol that
+ *  does nothing unless it receives some events from outside. For
+ *  example, a P2P protocol reacts to requests from the user, but
+ *  does nothing if there is no such event. 
+ * 
+ *  In such situations, SimGrid allows to write your protocol in your
+ *  C file, and the events to react to in a separate text file.
+ *  Declare a function handling each of the events that you want to
+ *  accept in your trace files, register them using @ref
+ *  MSG_action_register in your main, and then use @ref
+ *  MSG_action_trace_run to launch the simulation. You can either
+ *  have one trace file containing all your events, or a file per
+ *  simulated process. Check the tesh files in the example directory
+ *  for details on how to do it.
+ *
+ *  This example uses this approach to replay MPI-like traces. It
+ *  comes with a set of event handlers reproducing MPI events. This
+ *  is somehow similar to SMPI, yet differently implemented. This
+ *  code should probably be changed to use SMPI internals instead,
+ *  but wasn't, so far.
+ * 
+ */
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions,
                              "Messages specific for this msg example");
 int communicator_size = 0;
