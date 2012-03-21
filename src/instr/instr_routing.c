@@ -18,6 +18,14 @@ extern xbt_dict_t defined_types; /* from instr_interface.c */
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
 static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
 
+static const char *instr_node_name (xbt_node_t node)
+{
+  void *data = xbt_graph_node_get_data(node);
+  char *str = (char*)data;
+  return str;
+}
+
+
 static container_t lowestCommonAncestor (container_t a1, container_t a2)
 {
   //this is only an optimization (since most of a1 and a2 share the same parent)
@@ -422,21 +430,25 @@ static xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_d
 static xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges)
 {
   xbt_edge_t ret;
-  char *name;
 
-  const char *sn = TRACE_node_name (s);
-  const char *dn = TRACE_node_name (d);
+  const char *sn = instr_node_name (s);
+  const char *dn = instr_node_name (d);
+  int len = strlen(sn)+strlen(dn)+1;
+  char *name = (char*)malloc(len * sizeof(char));
 
-  name = bprintf ("%s%s", sn, dn);
+
+  snprintf (name, len, "%s%s", sn, dn);
   ret = xbt_dict_get_or_null (edges, name);
-  if (ret) return ret;
+  if (ret == NULL){
+    snprintf (name, len, "%s%s", dn, sn);
+    ret = xbt_dict_get_or_null (edges, name);
+  }
+
+  if (ret == NULL){
+    ret = xbt_graph_new_edge(graph, s, d, NULL);
+    xbt_dict_set (edges, name, ret, NULL);
+  }
   free (name);
-  name = bprintf ("%s%s", dn, sn);
-  ret = xbt_dict_get_or_null (edges, name);
-  if (ret) return ret;
-
-  ret = xbt_graph_new_edge(graph, s, d, NULL);
-  xbt_dict_set (edges, name, ret, NULL);
   return ret;
 }
 
@@ -503,6 +515,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
         xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
           current = new_xbt_graph_node(graph, link_name, nodes);
+          new_xbt_graph_edge (graph, previous, current, edges);
           //previous -> current
           previous = current;
         }
@@ -521,6 +534,8 @@ xbt_graph_t instr_routing_platform_graph (void)
   xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
   xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
   recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, PJ_container_get_root());
+  xbt_dict_free (&nodes);
+  xbt_dict_free (&edges);
   return ret;
 }
 
@@ -546,11 +561,11 @@ void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *fi
           "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
-    fprintf(file, "  \"%s\";\n", TRACE_node_name(node));
+    fprintf(file, "  \"%s\";\n", instr_node_name(node));
   }
   xbt_dynar_foreach(g->edges, cursor, edge) {
-    const char *src_s = TRACE_node_name (edge->src);
-    const char *dst_s = TRACE_node_name (edge->dst);
+    const char *src_s = instr_node_name (edge->src);
+    const char *dst_s = instr_node_name (edge->dst);
     if (g->directed)
       fprintf(file, "  \"%s\" -> \"%s\";\n", src_s, dst_s);
     else

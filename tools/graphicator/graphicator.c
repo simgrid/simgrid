@@ -28,13 +28,9 @@ int main(int argc, char **argv)
 
   MSG_create_environment(platformFile);
 
-  //creating the graph structure
-  xbt_graph_t graph = TRACE_platform_graph();
-  if (graph == NULL){
+  int status = TRACE_platform_graph_export_graphviz (graphvizFile);
+  if (status == 0){
     XBT_INFO ("%s expects --cfg=tracing:1 --cfg=tracing/platform:1", argv[0]);
-  }else{
-    TRACE_platform_graph_export_graphviz (graph, graphvizFile);
-    XBT_INFO ("Output is in file %s", graphvizFile);
   }
   MSG_clean();
 #else

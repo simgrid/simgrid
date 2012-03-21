@@ -1,0 +1,6 @@
+#! ./tesh
+
+p Tracing master/slave application
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/link_user_variables$EXEEXT --cfg=tracing:1 --cfg=tracing/platform:1 ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'

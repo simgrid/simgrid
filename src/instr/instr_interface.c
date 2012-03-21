@@ -162,24 +162,16 @@ static void instr_user_srcdst_variable(double time,
   }
 }
 
-const char *TRACE_node_name (xbt_node_t node)
+int TRACE_platform_graph_export_graphviz (const char *filename)
 {
-  void *data = xbt_graph_node_get_data(node);
-  char *str = (char*)data;
-  return str;
-}
-
-xbt_graph_t TRACE_platform_graph (void)
-{
-  if (!TRACE_is_enabled()) return NULL;
-  return instr_routing_platform_graph ();
-}
-
-void TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename)
-{
+  /* returns 1 if successful, 0 otherwise */
+  if (!TRACE_is_enabled()) return 0;
+  xbt_graph_t g = instr_routing_platform_graph();
+  if (g == NULL) return 0;
   instr_routing_platform_graph_export_graphviz (g, filename);
+  xbt_graph_free_graph (g, xbt_free, xbt_free, NULL);
+  return 1;
 }
-
 
 /*
  * Derived functions that use instr_user_variable and TRACE_user_srcdst_variable.
