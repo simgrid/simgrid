@@ -515,6 +515,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
         xbt_dynar_foreach (route->link_list, cpt, link) {
           char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
           current = new_xbt_graph_node(graph, link_name, nodes);
+          new_xbt_graph_edge (graph, previous, current, edges);
           //previous -> current
           previous = current;
         }
