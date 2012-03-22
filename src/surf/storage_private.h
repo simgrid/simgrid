@@ -11,6 +11,7 @@
 typedef struct storage {
   s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interate with SURF */
   e_surf_resource_state_t state_current;        /*< STORAGE current state (ON or OFF) */
+  lmm_constraint_t constraint;
 } s_storage_t, *storage_t;
 
 typedef struct surf_action_storage {

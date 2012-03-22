@@ -760,15 +760,6 @@ static void routing_parse_storage(sg_platf_storage_cbarg_t storage)
       (void *) xbt_strdup(storage->type_id));
 }
 
-typedef struct s_content {
-  char *user_rights;
-  char *user;
-  char *group;
-  char *date;
-  char *time;
-  int size;
-} s_content_t, *content_t;
-
 static void free_storage_content(void *p)
 {
   content_t content = p;
@@ -839,7 +830,7 @@ static void routing_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
   stype->content = parse_storage_content(storage_type->content);
   stype->type_id = xbt_strdup(storage_type->id);
 
-  XBT_INFO("ROUTING Create a storage type id '%s' with model '%s' content '%s' and properties '%p'",
+  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s' content '%s' and properties '%p'",
       stype->type_id,
       stype->model,
       storage_type->content,

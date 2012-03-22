@@ -224,8 +224,7 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*read) (void *storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*write) (void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *storage, int fd, void* buf);
-  void* (*create_resource) (const char* id, const char* model,const char* type_id,
-      xbt_dict_t content, xbt_dict_t storage_properties);
+  void* (*create_resource) (const char* id, const char* model,const char* type_id);
 } s_surf_model_extension_storage_t;
 
      /** \brief Workstation model extension public
@@ -364,6 +363,15 @@ typedef struct s_mount {
   void *id;
   char *name;
 } s_mount_t, *mount_t;
+
+typedef struct s_content {
+  char *user_rights;
+  char *user;
+  char *group;
+  char *date;
+  char *time;
+  int size;
+} s_content_t, *content_t;
 
 /**
  * Resource which have a metric handled by a maxmin system

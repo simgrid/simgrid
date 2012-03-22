@@ -11,38 +11,34 @@
 
 		<storage_type id="samsung" model="RAID5" content="storage_content.txt">
 			<prop id="Bwrite" value="30" />
-			<prop id="Bread" value="80" />
+			<prop id="Bread" value="100000000" />
 		</storage_type>
 
-		<storage_type id="crucial" model="SSD" content="">
-			<prop id="Bwrite" value="30" />
-			<prop id="Bread" value="80" />
+		<storage_type id="crucial" model="SSD" content="storage_content.txt">
+			<prop id="Bwrite" value="80" />
+			<prop id="Bread" value="100000000" />
 		</storage_type>
 
-		<storage_type id="wdigital" model="RAID0" content="">
-			<prop id="Bwrite" value="30" />
-			<prop id="Bread" value="80" />
+		<storage_type id="wdigital" model="RAID0" content="storage_content.txt">
+			<prop id="Bwrite" value="60" />
+			<prop id="Bread" value="100000000" />
 		</storage_type>
 
 		<storage id="Disk1" typeId="crucial"/>
 		<storage id="Disk2" typeId="samsung"/>
 		<storage id="Disk3" typeId="wdigital"/>
+		<storage id="Disk4" typeId="wdigital"/>
 
 		<host id="bob" power="1000000000">
-			<mount id="Disk1" name="C:"/>
-			<mount id="Disk2" name="D:"/>
-			<mount id="Disk3" name="E:"/>
-			<mount id="Disk1" name="F:"/>			
+			<mount id="Disk1" name="C:"/>			
 		</host>		
 		
 		<host id="alice" power="1000000000">
-			<mount id="Disk1" name="C:"/>
+			<mount id="Disk2" name="C:"/>
 		</host>
 
-		<storage id="Disk4" typeId="wdigital"/>
 		<host id="carl" power="1000000000">		
-			<mount id="Disk4" name="C:"/>
-			<mount id="Disk1" name="D:"/>			
+			<mount id="Disk3" name="C:"/>		
 		</host>
 		
 		<host id="denise" power="1000000000">

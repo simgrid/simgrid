@@ -15,6 +15,8 @@
  * - <b>io/file.c</b> Example with the disk resource
  */
 
+#define FILENAME "/home/user/Install/simgrid/doc/simgrid/examples/cxx/basic/basic_platform.xml"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "msg/msg.h"
@@ -30,7 +32,7 @@ int host(int argc, char *argv[])
   m_file_t file;
   char* mount = bprintf("C:");
 
-  file = MSG_file_open(mount,"test.txt","rw");
+  file = MSG_file_open(mount,FILENAME,"rw");
   XBT_INFO("Host '%s' open %p",MSG_host_get_name(MSG_host_self()), file);
 
   size_t read = MSG_file_read(mount,NULL,0,0,file);

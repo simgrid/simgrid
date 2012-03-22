@@ -31,10 +31,24 @@ typedef struct surf_storage {
 
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
 static surf_action_t storage_action_sleep (void *storage, double duration);
+static surf_action_t storage_action_execute (void *storage, double size);
 
 static surf_action_t storage_action_open(void *storage, const char* path, const char* mode)
 {
-  return storage_action_sleep(storage,1.0);
+  char *storage_type_id = xbt_lib_get_or_null(
+      storage_lib,
+      ((storage_t)storage)->generic_resource.name,
+      ROUTING_STORAGE_LEVEL);
+  storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, storage_type_id,ROUTING_STORAGE_TYPE_LEVEL);
+  xbt_dict_t content_dict = storage_type->content;
+  content_t content = xbt_dict_get(content_dict,path);
+
+  double size = content->size;
+  XBT_DEBUG("Disk '%s' with type_d '%s'",((storage_t)storage)->generic_resource.name,storage_type_id);
+  XBT_INFO("\tFile '%s' size '%f'",path,size);
+
+  surf_action_t action = storage_action_execute(storage,size);
+  return action;
 }
 
 static surf_action_t storage_action_close(void *storage, surf_file_t fp)
@@ -71,6 +85,9 @@ static surf_action_t storage_action_execute (void *storage, double size)
                                                    calloc but it seems to help valgrind... */
   GENERIC_LMM_ACTION(action).variable =
       lmm_variable_new(storage_maxmin_system, action, 1.0, -1.0 , 1);
+
+  lmm_expand(storage_maxmin_system, STORAGE->constraint,
+             GENERIC_LMM_ACTION(action).variable, 1.0);
   XBT_OUT();
   return (surf_action_t) action;
 }
@@ -98,8 +115,7 @@ static surf_action_t storage_action_sleep (void *storage, double duration)
   return (surf_action_t) action;
 }
 
-static void* storage_create_resource(const char* id, const char* model,const char* type_id,
-                                    xbt_dict_t content, xbt_dict_t storage_properties)
+static void* storage_create_resource(const char* id, const char* model,const char* type_id)
 {
   storage_t storage = NULL;
 
@@ -107,18 +123,25 @@ static void* storage_create_resource(const char* id, const char* model,const cha
               "Storage '%s' declared several times in the platform file",
               id);
   storage = (storage_t) surf_resource_new(sizeof(s_storage_t),
-          surf_storage_model, id,storage_properties);
+          surf_storage_model, id,NULL);
 
   storage->state_current = SURF_RESOURCE_ON;
 
+  storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
+  int Bread = atoi(xbt_dict_get(storage_type->properties,"Bread"));
+
+  storage->constraint =
+      lmm_constraint_new(storage_maxmin_system, storage,
+          Bread);
+
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tcontent '%p'\n\t\tproperties '%p'\n",
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%d'\n",
       id,
       model,
       type_id,
-      content,
-      storage_properties);
+      storage_type->properties,
+      Bread);
 
   return storage;
 }
@@ -258,9 +281,7 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
 
  storage_create_resource(storage->id,
      ((storage_type_t) stype)->model,
-     ((storage_type_t) stype)->type_id,
-     ((storage_type_t) stype)->content,
-     NULL);
+     ((storage_type_t) stype)->type_id);
 }
 
 static void parse_mstorage_init(sg_platf_mstorage_cbarg_t mstorage)
