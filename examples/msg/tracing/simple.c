@@ -12,7 +12,10 @@
  * 
  * @section MSG_ex_tracing Tracing and vizualization features
  * 
- * - <b>tracing/simple.c</b> very simple program that creates, executes and destroy a task
+ * - <b>tracing/simple.c</b> very simple program where each process creates, executes and
+ *   destroy a task. You might want to run this program with the following parameters:
+ *   --cfg=tracing/uncategorized:1
+ *   (See \ref tracing_tracing_options for details)
  */
 
 /* Create a log channel to have nice outputs. */

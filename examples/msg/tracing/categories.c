@@ -6,7 +6,18 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/categories.c</b> example with the declaration of multiple categories
+ * - <b>tracing/categories.c</b> This is a master/slave program where the master creates
+ * tasks, send them to the slaves. For each task received, the slave executes
+ * it and then destroys it. This program declares several tracing categories that are
+ * used to classify tasks. When the program is executed, the tracing mechanism registers
+ * the resource utilization of hosts and links according to these categories. You might
+ * want to run this program with the following parameters:
+ * --cfg=tracing:1
+ * --cfg=tracing/categorized:1
+ * --cfg=tracing/uncategorized:1
+ * --cfg=triva/categorized:triva_cat.plist
+ * --cfg=triva/uncategorized:triva_uncat.plist
+ * (See \ref tracing_tracing_options for details)
  */
 
 #include <stdio.h>

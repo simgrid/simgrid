@@ -6,7 +6,12 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/user_variables.c</b>: Demonstrates how to trace user-provided variables
+ * - <b>tracing/user_variables.c</b>: This program demonstrates how to
+ * trace user variables associated to the hosts of the platform file.
+ * You might want to run this program with the following parameters:
+ * --cfg=tracing:1
+ * --cfg=tracing/platform:1
+ * (See \ref tracing_tracing_options for details)
  */
 
 #include <stdio.h>

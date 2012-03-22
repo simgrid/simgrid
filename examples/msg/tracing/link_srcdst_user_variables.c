@@ -6,6 +6,21 @@
 
 #include <msg/msg.h>
 
+/** @addtogroup MSG_examples
+ *
+ * - <b>tracing/link_srcdst_user_variables.c</b>: This program demonstrates how to
+ * trace user variables associated to the links of the platform file. Instead of
+ * providing the name of the link to update one of its variable, this example shows
+ * how to provide two hosts as parameter (source and destination, use their names as
+ * defined in the platform file). The tracing mechanism will get the route between
+ * these two hosts, if there is one defined in the platform file, and update the variable
+ * of all the links of that route to the value provided.
+ * You might want to run this program with the following parameters:
+ * --cfg=tracing:1
+ * --cfg=tracing/platform:1
+ * (See \ref tracing_tracing_options for details)
+ */
+
 int master(int argc, char *argv[]);
 
 //dump function to create and execute a task

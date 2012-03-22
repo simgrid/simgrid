@@ -693,6 +693,8 @@ INPUT +=                 @top_srcdir@/examples/msg/sendrecv/sendrecv.c \
 			 @top_srcdir@/examples/msg/tracing/procmig.c \
 			 @top_srcdir@/examples/msg/tracing/trace_platform.c \
 			 @top_srcdir@/examples/msg/tracing/user_variables.c \
+			 @top_srcdir@/examples/msg/tracing/link_user_variables.c \
+			 @top_srcdir@/examples/msg/tracing/link_srcdst_user_variables.c \
 			 @top_srcdir@/examples/msg/ns3 \
 			 @top_srcdir@/examples/msg/gtnets \
 			 @top_srcdir@/examples/msg/io \

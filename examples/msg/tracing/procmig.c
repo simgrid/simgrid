@@ -5,7 +5,14 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/procmig.c</b> example to trace process migration using the mask TRACE_PROCESS
+ * - <b>tracing/procmig.c</b> This program shows a process migration. Tracing
+ * this program with the options below enables a gantt-chart visualization
+ * of where the process has been during its execution. Migrations are represented by
+ * arrows from the origin to the destination host.
+ * You might want to run this program with the following parameters:
+ * --cfg=tracing:1
+ * --cfg=tracing/msg/process:1
+ * (See \ref tracing_tracing_options for details)
  */
 
 #include "msg/msg.h"            /* core library */
