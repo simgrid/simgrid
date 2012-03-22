@@ -482,8 +482,10 @@ static void elements_father(network_element_t src, network_element_t dst,
   network_element_t dst_data = dst;
   src_as = src_data->rc_component;
   dst_as = dst_data->rc_component;
+#ifndef NDEBUG
   char* src_name = src_data->name;
   char* dst_name = dst_data->name;
+#endif
 
   xbt_assert(src_as && dst_as,
              "Ask for route \"from\"(%s) or \"to\"(%s) no found", src_name, dst_name);
@@ -743,7 +745,9 @@ static void routing_parse_storage(sg_platf_storage_cbarg_t storage)
                "Reading a storage, processing unit \"%s\" already exists", storage->id);
 
   // Verification of an existing type_id
+#ifndef NDEBUG
   void* storage_type = xbt_lib_get_or_null(storage_type_lib, storage->type_id,ROUTING_STORAGE_TYPE_LEVEL);
+#endif
   xbt_assert(storage_type,"Reading a storage, type id \"%s\" does not exists", storage->type_id);
 
   XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s'",
@@ -873,7 +877,9 @@ static void mount_free(void *p)
 static void routing_parse_mount(sg_platf_mount_cbarg_t mount)
 {
   // Verification of an existing storage
+#ifndef NDEBUG
   void* storage = xbt_lib_get_or_null(storage_lib, mount->id,ROUTING_STORAGE_LEVEL);
+#endif
   xbt_assert(storage,"Disk id \"%s\" does not exists", mount->id);
 
   XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->id, mount->name);
