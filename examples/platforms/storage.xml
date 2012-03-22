@@ -4,17 +4,17 @@
 <platform version="3">
 	<AS id="AS0" routing="Full">
 
-		<storage_type id="samsung" model="RAID5" content="content.txt_optionnel">
+		<storage_type id="samsung" model="RAID5" content="../examples/platforms/storage_content.txt">
 			<prop id="Bwrite" value="30" />
 			<prop id="Bread" value="80" />
 		</storage_type>
 
-		<storage_type id="crucial" model="SSD" content="content.txt">
+		<storage_type id="crucial" model="SSD" content="">
 			<prop id="Bwrite" value="30" />
 			<prop id="Bread" value="80" />
 		</storage_type>
 
-		<storage_type id="wdigital" model="RAID0" content="content.txt">
+		<storage_type id="wdigital" model="RAID0" content="">
 			<prop id="Bwrite" value="30" />
 			<prop id="Bread" value="80" />
 		</storage_type>

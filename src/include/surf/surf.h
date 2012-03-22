@@ -225,7 +225,7 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*write) (void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *storage, int fd, void* buf);
   void* (*create_resource) (const char* id, const char* model,const char* type_id,
-      const char* content, xbt_dict_t storage_properties);
+      xbt_dict_t content, xbt_dict_t storage_properties);
 } s_surf_model_extension_storage_t;
 
      /** \brief Workstation model extension public
@@ -355,7 +355,7 @@ typedef struct surf_resource {
  */
 typedef struct s_storage_type {
   char *model;
-  char *content;
+  xbt_dict_t content;
   char *type_id;
   xbt_dict_t properties;
 } s_storage_type_t, *storage_type_t;

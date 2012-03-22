@@ -590,14 +590,14 @@ static void _get_route_and_latency(network_element_t src, network_element_t dst,
   network_element_t dst_gateway_net_elm = route.dst_gateway;
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
-  if (strcmp(src->name, src_gateway_net_elm->name))
+  if (src != src_gateway_net_elm)
     _get_route_and_latency(src, src_gateway_net_elm, links, latency);
 
   xbt_dynar_merge(links,&(route.link_list));
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   // FIXME why can't I factorize it the same way than [src;src_gw] without breaking the examples??
-  if (strcmp(dst_gateway_net_elm->name, dst->name)) {
+  if (dst_gateway_net_elm != dst) {
     _get_route_and_latency(dst_gateway_net_elm, dst, links, latency);
   }
   xbt_dynar_free(&route.link_list);
@@ -755,6 +755,75 @@ static void routing_parse_storage(sg_platf_storage_cbarg_t storage)
       ROUTING_STORAGE_LEVEL,
       (void *) xbt_strdup(storage->type_id));
 }
+
+typedef struct s_content {
+  char *user_rights;
+  char *user;
+  char *group;
+  char *date;
+  char *time;
+  int size;
+} s_content_t, *content_t;
+
+static void free_storage_content(void *p)
+{
+  content_t content = p;
+  free(content->date);
+  free(content->group);
+  free(content->time);
+  free(content->user);
+  free(content->user_rights);
+  free(content);
+}
+
+static xbt_dict_t parse_storage_content(const char *filename)
+{
+  if ((!filename) || (strcmp(filename, "") == 0))
+    return NULL;
+
+  xbt_dict_t parse_content = xbt_dict_new_homogeneous(free_storage_content);
+  FILE *file = NULL;
+
+  file = surf_fopen(filename, "r");
+  xbt_assert(file != NULL, "Cannot open file '%s' (path=%s)", filename,
+              xbt_str_join(surf_path, ":"));
+
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t read;
+  char user_rights[12];
+  char user[100];
+  char group[100];
+  char date[12];
+  char time[12];
+  char path[1024];
+  int nb, size;
+
+  content_t content;
+
+  while ((read = getline(&line, &len, file)) != -1) {
+    content = xbt_new0(s_content_t,1);
+    if(sscanf(line,"%s %d %s %s %d %s %s %s",user_rights,&nb,user,group,&size,date,time,path)==8) {
+      content->date = xbt_strdup(date);
+      content->group = xbt_strdup(group);
+      content->size = size;
+      content->time = xbt_strdup(time);
+      content->user = xbt_strdup(user);
+      content->user_rights = xbt_strdup(user_rights);
+      xbt_dict_set(parse_content,path,content,NULL);
+    } else {
+      xbt_die("Be sure of passing a good format for content file.\n");
+      // You can generate tjis kind of file with command line:
+      // find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
+    }
+  }
+  if (line)
+      free(line);
+
+  fclose(file);
+  return parse_content;
+}
+
 static void routing_parse_storage_type(sg_platf_storage_type_cbarg_t storage_type)
 {
   xbt_assert(!xbt_lib_get_or_null(storage_type_lib, storage_type->id,ROUTING_STORAGE_TYPE_LEVEL),
@@ -763,13 +832,13 @@ static void routing_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
   storage_type_t stype = xbt_new0(s_storage_type_t, 1);
   stype->model = xbt_strdup(storage_type->model);
   stype->properties = storage_type->properties;
-  stype->content = xbt_strdup(storage_type->content);
+  stype->content = parse_storage_content(storage_type->content);
   stype->type_id = xbt_strdup(storage_type->id);
 
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s' content '%s' and properties '%p'",
+  XBT_INFO("ROUTING Create a storage type id '%s' with model '%s' content '%s' and properties '%p'",
       stype->type_id,
       stype->model,
-      stype->content,
+      storage_type->content,
       stype->properties);
 
   xbt_lib_set(storage_type_lib,

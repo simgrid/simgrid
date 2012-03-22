@@ -23,10 +23,10 @@ static XBT_INLINE
 static XBT_INLINE void routing_storage_type_free(void *r)
 {
   storage_type_t stype = r;
-  free(stype->content);
   free(stype->model);
   free(stype->type_id);
-  xbt_dict_free(&stype->properties);
+  xbt_dict_free(&(stype->properties));
+  xbt_dict_free(&(stype->content));
   free(stype);
 }
 

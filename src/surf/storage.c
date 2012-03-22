@@ -99,7 +99,7 @@ static surf_action_t storage_action_sleep (void *storage, double duration)
 }
 
 static void* storage_create_resource(const char* id, const char* model,const char* type_id,
-                                    const char* content, xbt_dict_t storage_properties)
+                                    xbt_dict_t content, xbt_dict_t storage_properties)
 {
   storage_t storage = NULL;
 
@@ -113,7 +113,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tproperties '%p'\n",
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tcontent '%p'\n\t\tproperties '%p'\n",
       id,
       model,
       type_id,
