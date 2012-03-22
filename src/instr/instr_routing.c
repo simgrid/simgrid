@@ -133,62 +133,50 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
   container_t child1, child2;
   const char *child1_name, *child2_name;
   xbt_dict_foreach(container->children, cursor1, child1_name, child1) {
-    if (child1->kind == INSTR_LINK) continue;
+    //if child1 is not a link, a smpi node, a msg process or a msg task
+    if (child1->kind == INSTR_LINK || child1->kind == INSTR_SMPI || child1->kind == INSTR_MSG_PROCESS || child1->kind == INSTR_MSG_TASK) continue;
+
     xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
-      if (child2->kind == INSTR_LINK) continue;
+      //if child2 is not a link, a smpi node, a msg process or a msg task
+      if (child2->kind == INSTR_LINK || child2->kind == INSTR_SMPI || child2->kind == INSTR_MSG_PROCESS || child2->kind == INSTR_MSG_TASK) continue;
 
-      if ((child1->kind == INSTR_HOST || child1->kind == INSTR_ROUTER) &&
-          (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
-          strcmp (child1_name, child2_name) != 0){
+      //if child1 is not child2
+      if (strcmp (child1_name, child2_name) == 0) continue;
 
-        xbt_dynar_t route = NULL;
-        xbt_ex_t e;
+      //get the route
+      route_t route = xbt_new0(s_route_t,1);
+      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+      rc->get_route_and_latency (rc,
+          (network_element_t)(child1->net_elm),
+          (network_element_t)(child2->net_elm),route, NULL);
 
-        TRY {
-          routing_get_route_and_latency((network_element_t)(child1->net_elm),
-                                        (network_element_t)(child2->net_elm),
-                                        &route, NULL);
-        } CATCH(e) {
-          xbt_ex_free(e);
-        }
-        if (route == NULL) continue;
+      //user might want to extract a graph using routes with only one link
+      //see --cfg=tracing/onelink_only:1 or --help-tracing for details
+      if (TRACE_onelink_only() && xbt_dynar_length (route->link_list) > 1) continue;
 
-        if (TRACE_onelink_only()){
-          if (xbt_dynar_length (route) > 1) continue;
-        }
-        container_t previous = child1;
-        int i;
-        for (i = 0; i < xbt_dynar_length(route); i++){
-          link_CM02_t *link = ((link_CM02_t*)xbt_dynar_get_ptr (route, i));
-          char *link_name = (*link)->lmm_resource.generic_resource.name;
-          container_t current = PJ_container_get(link_name);
-          linkContainers(previous, current, filter);
-          previous = current;
-        }
-        linkContainers(previous, child2, filter);
-
-      }else if (child1->kind == INSTR_AS &&
-                child2->kind == INSTR_AS &&
-                strcmp(child1_name, child2_name) != 0){
-
-        route_t route = xbt_new0(s_route_t,1);
-        route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-        rc->get_route_and_latency (rc,
-                                  (network_element_t)(child1->net_elm),
-                                  (network_element_t)(child2->net_elm), route,NULL);
-        unsigned int cpt;
-        void *link;
-        container_t previous = PJ_container_get(route->src_gateway->name);
-        xbt_dynar_foreach (route->link_list, cpt, link) {
-          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-          container_t current = PJ_container_get(link_name);
-          linkContainers (previous, current, filter);
-          previous = current;
-        }
-        container_t last = PJ_container_get(route->dst_gateway->name);
-        linkContainers (previous, last, filter);
-        generic_free_route(route);
+      //traverse the route connecting the containers
+      unsigned int cpt;
+      void *link;
+      container_t current, previous;
+      if (route->src_gateway){
+        previous = PJ_container_get(route->src_gateway->name);
+      }else{
+        previous = child1;
       }
+
+      xbt_dynar_foreach (route->link_list, cpt, link) {
+        char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+        current = PJ_container_get(link_name);
+        linkContainers(previous, current, filter);
+        previous = current;
+      }
+      if (route->dst_gateway){
+        current = PJ_container_get(route->dst_gateway->name);
+      }else{
+        current = child2;
+      }
+      linkContainers(previous, current, filter);
+      generic_free_route(route);
     }
   }
 }
