@@ -1,5 +1,6 @@
 
 ! timeout 20
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_ENV gras/msg_handle/msg_handle_server$EXEEXT 4002 127.0.0.1:4003 --log=root.fmt=%P:%t%e%m%n $ARGS
 > server:main Launch server (port=4002)
 > server:main Initialization done.
@@ -9,6 +10,7 @@
 > server:main Exiting GRAS
 
 ! timeout 20
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_ENV gras/msg_handle/msg_handle_client$EXEEXT 4003 127.0.0.1:4002 --log=root.fmt=%P:%t%e%m%n $ARGS
 > client:main Launch client (port=4003)
 > client:main Initialization done.

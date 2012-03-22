@@ -1,6 +1,7 @@
 
 ! timeout 20
 p Try to crash the log mecanism by using it in parallel with a lot of threads
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ xbt/parallel_log_crashtest "--log=root.fmt:%m%n" 
 > XXX (XX|XX|XX|XX|XX|XX|XX|XX|XX)
 > XXX (XX|XX|XX|XX|XX|XX|XX|XX|XX)

@@ -1,5 +1,6 @@
 
 p Check the marshaling facilities (trying to read the result of linux/x86)
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ gras/datadesc/datadesc_usage --read ${srcdir:=.}/gras/datadesc/datadesc.little32_4  --log=test.thres:verbose --log=structs.thres:info "--log=root.fmt:%m%n"
 > Read from file datadesc.little32_4
 > This file was generated on little32_4 (2)

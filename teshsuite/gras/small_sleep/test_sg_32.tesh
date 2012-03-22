@@ -1,5 +1,6 @@
 p Runs the 'small_sleep' test within the simulator
 
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV ${bindir:=.}/small_sleep_simulator${EXEEXT:=} ${srcdir:=.}/../examples/msg/small_platform.xml ${srcdir:=.}/gras/small_sleep/small_sleep.xml
 > [Tremblay:function:(1) 100.000000] [test/INFO] Let's go 1E-5
 > [Tremblay:function:(1) 100.000010] [test/INFO] Let's go 1E-10

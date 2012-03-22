@@ -1,5 +1,6 @@
 ! timeout 10
 
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./rpc_server$EXEEXT 4202 --log=root.fmt:%m%n $@
 > Launch server (port=4202)
 > Listening on port 4202
@@ -9,6 +10,7 @@
 > Done.
 > Exiting GRAS
 
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./rpc_forwarder$EXEEXT 4203 127.0.0.1 4202 --log=root.fmt:%m%n $@
 > Launch forwarder (port=4203)
 > Forward a request
@@ -23,6 +25,7 @@
 # give the server and the forwarder  a chance to acquire the expected port numbers
 $ $SG_TEST_EXENV sleep 1
 
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./rpc_client$EXEEXT 127.0.0.1 4202 127.0.0.1 4203 --log=root.fmt:%m%n $@
 > Launch client (server on 127.0.0.1:4202)
 > Connected to 127.0.0.1:4202.

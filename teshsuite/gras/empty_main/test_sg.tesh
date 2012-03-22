@@ -1,4 +1,5 @@
 p Runs the 'empty_main' test within the simulator
 
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV ${bindir:=.}/empty_main_simulator${EXEEXT:=} ${srcdir:=.}/../examples/msg/small_platform.xml ${srcdir:=.}/gras/empty_main/empty_main.xml
 > [Tremblay:function:(1) 0.000000] [gras/INFO] Exiting GRAS

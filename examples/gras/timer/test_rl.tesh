@@ -2,6 +2,7 @@
 p This test is a bit long to run, since it setups timers and wait for them. Don't worry, that's expected
 
 ! timeout 20
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV ./timer_client$EXEEXT --log=root.fmt:%m%n
 > Programming the repetitive_action with a frequency of 1.000000 sec
 > Programming the delayed_action for after 2.000000 sec

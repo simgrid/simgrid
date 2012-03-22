@@ -7,6 +7,7 @@
 
 ! timeout 10
 ! output sort
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV ./rpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/rpc.xml "--log=root.fmt:[0]%e(%i:%P@%h)%e%m%n"
 > [0] (1:server@Tremblay) Launch server (port=4000)
 > [0] (1:server@Tremblay) Listening on port 4000

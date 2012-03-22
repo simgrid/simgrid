@@ -1,4 +1,5 @@
 
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV ./timer_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/timer.xml
 > [Fafard:client:(1) 0.000000] [test/INFO] Programming the repetitive_action with a frequency of 1.000000 sec
 > [Fafard:client:(1) 0.000000] [test/INFO] Programming the delayed_action for after 2.000000 sec

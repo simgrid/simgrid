@@ -1,4 +1,5 @@
 ! output sort 20
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV ./pmm_simulator$EXEEXT ${srcdir:=.}/../../msg/msg_platform.xml ${srcdir:=.}/pmm.xml --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%2i:%P@%h)%e%m%n"
 > [  0.000000] ( 0:@) Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000195] ( 1:master@Jacquelin) Wait for peers for 2 sec

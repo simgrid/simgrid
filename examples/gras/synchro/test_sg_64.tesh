@@ -2,6 +2,7 @@
 p Runs the 'philosopher' test within the simulator
 
 ! output sort 28
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV ./synchro_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/synchro.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:philosopher@Tremblay) Spawn the 5 threads (10 lunches scheduled)
 > [  0.000000] (1:thread 0@Tremblay) Thread 0 gets hungry (lunch #0)
