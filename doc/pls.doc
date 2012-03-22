@@ -47,6 +47,7 @@ cat ../AMD64-FATAL-Removed-DUL_SIZE_DIFF-Added-fPIC-compillin.patch | patch -p1
 
 \verbatim
 ln -sf Makefile.linux Makefile
+sed -i 's/-fPIC/-fPIC -fpermissive/g' Makefile
 make depend
 make debug
 \endverbatim
