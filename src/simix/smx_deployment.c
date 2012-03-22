@@ -207,7 +207,7 @@ void SIMIX_process_set_function(const char *process_host,
 
   /* add arguments */
   xbt_dynar_foreach(arguments, i, arg) {
-    parse_argv[parse_argc++] = xbt_strdup(arg);
+    parse_argv[i + 1] = xbt_strdup(arg);
   }
   parse_argv[parse_argc] = NULL;
 
