@@ -12,31 +12,15 @@ $ $SG_TEST_EXENV ./rpc_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xm
 > [0] (1:server@Tremblay) Listening on port 4000
 > [0] (1:server@Tremblay) Got message PING(1234) from Fafard:5000
 > [0] (1:server@Tremblay) Answered with PONG(4321)
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Fafard:5000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
-> [0] (1:server@Tremblay) Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to Ginette:4000
 > [0] (1:server@Tremblay) Asked to die by Fafard:5000
 > [0] (1:server@Tremblay) Done.
 > [0] (1:server@Tremblay) Exiting GRAS
 > [0] (2:forwarder@Ginette) Launch forwarder (port=4000)
 > [0] (2:forwarder@Ginette) Forward a request
-> [0] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [0] (2:forwarder@Ginette) Forward a request
-> [0] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [0] (2:forwarder@Ginette) Forward a request
-> [0] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [0] (2:forwarder@Ginette) Forward a request
-> [0] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [0] (2:forwarder@Ginette) Forward a request
-> [0] (2:forwarder@Ginette) Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to Fafard:5000
 > [0] (2:forwarder@Ginette) Asked to die by Fafard:5000
 > [0] (2:forwarder@Ginette) Done.
 > [0] (2:forwarder@Ginette) Exiting GRAS

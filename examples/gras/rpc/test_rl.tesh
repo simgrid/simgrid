@@ -5,17 +5,6 @@
 > Listening on port 4202
 > Got message PING(1234) from 127.0.0.1:5002
 > Answered with PONG(4321)
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:5002
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:5002
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:5002
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:5002
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:5002
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:5002
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
-> Propagate local exception ('Error for the client') from 'raise exception' RPC cb back to 127.0.0.1:4203
 > Asked to die by 127.0.0.1:5002
 > Done.
 > Exiting GRAS
@@ -23,15 +12,10 @@
 & $SG_TEST_EXENV ./rpc_forwarder$EXEEXT 4203 127.0.0.1 4202 --log=root.fmt:%m%n $@
 > Launch forwarder (port=4203)
 > Forward a request
-> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:5002
 > Forward a request
-> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:5002
 > Forward a request
-> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:5002
 > Forward a request
-> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:5002
 > Forward a request
-> Propagate remote exception ('Error for the client') from 'forward exception' RPC cb back to 127.0.0.1:5002
 > Asked to die by 127.0.0.1:5002
 > Done.
 > Exiting GRAS
