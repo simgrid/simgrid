@@ -181,7 +181,6 @@ void xbt_init(int *argc, char **argv)
 
   xbt_binary_name = xbt_strdup(argv[0]);
   srand((unsigned int) time(NULL));
-  XBT_VERB("Initialize XBT");
 
   xbt_log_init(argc, argv);
 }
