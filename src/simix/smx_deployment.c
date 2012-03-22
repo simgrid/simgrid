@@ -30,26 +30,24 @@ static void parse_process_init(void)
   parse_code = SIMIX_get_registered_function(A_surfxml_process_function);
   xbt_assert(parse_code, "Function '%s' unknown",
               A_surfxml_process_function);
-  parse_argc = 0;
-  parse_argv = NULL;
-  parse_argc++;
-  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_process_function);
+  parse_argv = xbt_new(char *, 2);
+  parse_argv[0] = xbt_strdup(A_surfxml_process_function);
+  parse_argc = 1;
   start_time= surf_parse_get_double(A_surfxml_process_start_time);
   kill_time = surf_parse_get_double(A_surfxml_process_kill_time);
 }
 
 static void parse_argument(void)
 {
-  parse_argc++;
-  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(A_surfxml_argument_value);
+  parse_argv = xbt_realloc(parse_argv, (parse_argc + 2) * sizeof(char *));
+  parse_argv[parse_argc++] = xbt_strdup(A_surfxml_argument_value);
 }
 
 static void parse_process_finalize(void)
 {
   smx_process_arg_t arg = NULL;
   smx_process_t process = NULL;
+  parse_argv[parse_argc] = NULL;
   if (start_time > SIMIX_get_clock()) {
     arg = xbt_new0(s_smx_process_arg_t, 1);
     arg->name = parse_argv[0];
@@ -203,20 +201,18 @@ void SIMIX_process_set_function(const char *process_host,
   parse_code = SIMIX_get_registered_function(process_function);
   xbt_assert(parse_code, "Function '%s' unknown", process_function);
 
-  parse_argc = 0;
-  parse_argv = NULL;
-  parse_argc++;
-  parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-  parse_argv[(parse_argc) - 1] = xbt_strdup(process_function);
-  start_time = process_start_time;
-  kill_time = process_kill_time;
+  parse_argc = 1 + xbt_dynar_length(arguments);
+  parse_argv = xbt_new(char *, parse_argc + 1);
+  parse_argv[0] = xbt_strdup(process_function);
 
   /* add arguments */
   xbt_dynar_foreach(arguments, i, arg) {
-    parse_argc++;
-    parse_argv = xbt_realloc(parse_argv, (parse_argc) * sizeof(char *));
-    parse_argv[(parse_argc) - 1] = xbt_strdup(arg);
+    parse_argv[parse_argc++] = xbt_strdup(arg);
   }
+  parse_argv[parse_argc] = NULL;
+
+  start_time = process_start_time;
+  kill_time = process_kill_time;
 
   /* finalize */
   parse_process_finalize();
