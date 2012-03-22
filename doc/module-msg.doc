@@ -78,7 +78,8 @@
 @ingroup MSG_API
  
 MSG comes with an extensive set of examples. It is sometimes difficult
-to find the one you need. 
+to find the one you need. This list aims at helping you finding the
+example from which you can learn what you want to.
 
 @section MSG_ex_basics Basic examples and features
 
