@@ -813,7 +813,7 @@ static xbt_dict_t parse_storage_content(const char *filename)
       xbt_dict_set(parse_content,path,content,NULL);
     } else {
       xbt_die("Be sure of passing a good format for content file.\n");
-      // You can generate tjis kind of file with command line:
+      // You can generate this kind of file with command line:
       // find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
     }
   }

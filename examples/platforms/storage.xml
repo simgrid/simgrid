@@ -2,9 +2,14 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 
 <platform version="3">
+
+<config>
+	<prop id="path" value="../examples/platforms/"/>
+</config>
+
 	<AS id="AS0" routing="Full">
 
-		<storage_type id="samsung" model="RAID5" content="../examples/platforms/storage_content.txt">
+		<storage_type id="samsung" model="RAID5" content="storage_content.txt">
 			<prop id="Bwrite" value="30" />
 			<prop id="Bread" value="80" />
 		</storage_type>
