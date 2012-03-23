@@ -85,7 +85,7 @@ static surf_action_t storage_action_execute (void *storage, double size)
                                                    calloc but it seems to help valgrind... */
 
   GENERIC_LMM_ACTION(action).variable =
-      lmm_variable_new(storage_maxmin_system, action, 1.0, -1.0 , 1);
+      lmm_variable_new(storage_maxmin_system, action, 1.0, -1.0 , 3);
 
   lmm_expand(storage_maxmin_system, STORAGE->constraint,
              GENERIC_LMM_ACTION(action).variable, 1.0);
@@ -133,11 +133,12 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage->state_current = SURF_RESOURCE_ON;
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
-  double Bread = atof(xbt_dict_get(storage_type->properties,"Bread"));
-
-  storage->constraint =
-      lmm_constraint_new(storage_maxmin_system, storage,
-          Bread);
+  double Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
+  double Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
+  double Bconnexion   = atof(xbt_dict_get(storage_type->properties,"Bconnexion"));
+  storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnexion);
+  storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
+  storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
