@@ -834,10 +834,11 @@ MSG_task_send_with_timeout(m_task_t task, const char *alias,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Look if there is a communication on a mailbox
+ * \brief Check if there is a communication going on in a mailbox.
  *
- * \param alias the mailbox to listen
- * \return return 1 if there is a communication or 0
+ * \param alias the name of the mailbox to be considered
+ *
+ * \return Returns 1 if there is a communication, 0 otherwise
  */
 int MSG_task_listen(const char *alias)
 {
@@ -847,12 +848,14 @@ int MSG_task_listen(const char *alias)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Look if there is a communication on a mailbox from
- * a given host
+ * \brief Check the number of communication actions of a given host pending in a mailbox.
  *
- * \param alias the mailbox to listen
+ * \param alias the name of the mailbox to be considered
  * \param host the host to check for communication
- * \return return 1 if there is a communication or 0
+ *
+ * \return Returns the number of pending communication actions of the host in the
+ * given mailbox, 0 if there is no pending communication actions.
+ *
  */
 int MSG_task_listen_from_host(const char *alias, m_host_t host)
 {
@@ -865,10 +868,12 @@ int MSG_task_listen_from_host(const char *alias, m_host_t host)
 
 /** \ingroup msg_gos_functions
  * \brief Look if there is a communication on a mailbox and return the
- * PID from sender process
+ * PID of the sender process.
  *
- * \param alias the mailbox to listen
- * \return return the PID of process(or 0 in case of problem)
+ * \param alias the name of the mailbox to be considered
+ *
+ * \return Returns the PID of sender process,
+ * -1 if there is no communication in the mailbox.
  */
 int MSG_task_listen_from(const char *alias)
 {
