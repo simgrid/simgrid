@@ -17,6 +17,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
 
 xbt_cfg_t _surf_cfg_set = NULL;
 
+static void LOG_help(void)
+{
+  printf("Description of the logging output:\n");
+  printf("\tIn your command line use option: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n");
+  printf("\t\tCATEGORY_NAME: defined in code with function 'XBT_LOG_NEW_CATEGORY'\n");
+  printf("\t\tPRIORITY_LEVEL: the level to print (trace,debug,verbose,info,warning,error,critical)\n");
+  printf("\n");
+}
+
 /* Parse the command line, looking for options */
 static void surf_config_cmd_line(int *argc, char **argv)
 {
@@ -41,6 +50,7 @@ static void surf_config_cmd_line(int *argc, char **argv)
 #ifdef HAVE_TRACING
       printf("\nYou can also use --help-tracing to see the details of all tracing options known by this simulator.\n");
 #endif
+      printf("\nYou can also use --help-logs to see the details of logging output.\n\n");
       exit(0);
     } else if (!strncmp(argv[i], "--help-models", strlen("--help-models") + 1)) {
       model_help("workstation", surf_workstation_model_description);
@@ -52,6 +62,9 @@ static void surf_config_cmd_line(int *argc, char **argv)
       for (i = 0; surf_optimization_mode_description[i].name; i++)
         printf("  %s: %s\n", surf_optimization_mode_description[i].name, surf_optimization_mode_description[i].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n");
+      exit(0);
+    } else if (!strncmp(argv[i], "--help-logs", strlen("--help-logs") + 1)) {
+      LOG_help ();
       exit(0);
 #ifdef HAVE_TRACING
     } else if (!strncmp(argv[i], "--help-tracing", strlen("--help-tracing") + 1)) {
