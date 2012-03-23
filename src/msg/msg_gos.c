@@ -27,7 +27,6 @@ MSG_error_t MSG_task_execute(m_task_t task)
   simdata_task_t simdata = NULL;
   simdata_process_t p_simdata;
   e_smx_state_t comp_state;
-  CHECK_HOST();
 
   simdata = task->simdata;
 
@@ -166,7 +165,6 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   simdata_task_t simdata = NULL;
   e_smx_state_t comp_state;
   simdata_process_t p_simdata;
-  CHECK_HOST();
 
   simdata = task->simdata;
   p_simdata = SIMIX_process_self_get_data(SIMIX_process_self());
@@ -382,8 +380,6 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
   m_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
-  CHECK_HOST();
-
   /* FIXME: these functions are not traceable */
 
   /* Prepare the task to send */
@@ -434,8 +430,6 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   m_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
-  CHECK_HOST();
-
   /* FIXME: these functions are not traceable */
 
   /* Prepare the task to send */
@@ -469,8 +463,6 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
 {
   smx_rdv_t rdv = MSG_mailbox_get_by_alias(name);
-
-  CHECK_HOST();
 
   /* FIXME: these functions are not traceable */
 
@@ -842,8 +834,6 @@ MSG_task_send_with_timeout(m_task_t task, const char *alias,
  */
 int MSG_task_listen(const char *alias)
 {
-  CHECK_HOST();
-
   return !MSG_mailbox_is_empty(MSG_mailbox_get_by_alias(alias));
 }
 
@@ -859,8 +849,6 @@ int MSG_task_listen(const char *alias)
  */
 int MSG_task_listen_from_host(const char *alias, m_host_t host)
 {
-  CHECK_HOST();
-
   return
       MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias
                                                (alias), host);
@@ -878,8 +866,6 @@ int MSG_task_listen_from_host(const char *alias, m_host_t host)
 int MSG_task_listen_from(const char *alias)
 {
   m_task_t task;
-
-  CHECK_HOST();
 
   if (NULL ==
       (task = MSG_mailbox_get_head(MSG_mailbox_get_by_alias(alias))))
@@ -1002,8 +988,6 @@ int MSG_task_probe_from(m_channel_t channel)
   XBT_WARN("DEPRECATED! Now use MSG_task_listen_from");
   m_task_t task;
 
-  CHECK_HOST();
-
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -1033,8 +1017,6 @@ int MSG_task_Iprobe(m_channel_t channel)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
-  CHECK_HOST();
-
   return
       !MSG_mailbox_is_empty(MSG_mailbox_get_by_channel
                             (MSG_host_self(), channel));
@@ -1059,8 +1041,6 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
-
-  CHECK_HOST();
 
   return
       MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_channel

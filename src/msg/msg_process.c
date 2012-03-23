@@ -427,7 +427,6 @@ m_process_t MSG_process_self(void)
 MSG_error_t MSG_process_suspend(m_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
-  CHECK_HOST();
 
 #ifdef HAVE_TRACING
   TRACE_msg_process_suspend(process);
@@ -446,7 +445,6 @@ MSG_error_t MSG_process_suspend(m_process_t process)
 MSG_error_t MSG_process_resume(m_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
-  CHECK_HOST();
 
 #ifdef HAVE_TRACING
   TRACE_msg_process_resume(process);
