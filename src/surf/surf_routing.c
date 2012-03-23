@@ -293,17 +293,20 @@ static void routing_parse_E_ASroute(void)
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = parsed_link_list;
 
-  if(!strcmp(current_routing->model_desc->name,"RuleBased")) {
+  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
     e_route->src_gateway = (network_element_t) gw_src; // DIRTY HACK possible only
     e_route->dst_gateway = (network_element_t) gw_dst; // because of what is in routing_parse_E_ASroute
-  }
-  else{
-  e_route->src_gateway =  ((network_element_t)xbt_lib_get_or_null(as_router_lib,gw_src,ROUTING_ASR_LEVEL));
-  if(!e_route->src_gateway)
-    e_route->src_gateway = ((network_element_t)xbt_lib_get_or_null(host_lib,gw_src,ROUTING_HOST_LEVEL));
-  e_route->dst_gateway =  ((network_element_t)xbt_lib_get_or_null(as_router_lib,gw_dst,ROUTING_ASR_LEVEL));
-  if(!e_route->dst_gateway)
-    e_route->dst_gateway = ((network_element_t)xbt_lib_get_or_null(host_lib,gw_dst,ROUTING_HOST_LEVEL));
+  } else {
+    e_route->src_gateway =  xbt_lib_get_or_null(as_router_lib, gw_src,
+                                                ROUTING_ASR_LEVEL);
+    if (!e_route->src_gateway)
+      e_route->src_gateway = xbt_lib_get_or_null(host_lib, gw_src,
+                                                 ROUTING_HOST_LEVEL);
+    e_route->dst_gateway =  xbt_lib_get_or_null(as_router_lib, gw_dst,
+                                                ROUTING_ASR_LEVEL);
+    if (!e_route->dst_gateway)
+      e_route->dst_gateway = xbt_lib_get_or_null(host_lib, gw_dst,
+                                                 ROUTING_HOST_LEVEL);
   }
   xbt_assert(current_routing->parse_ASroute,
              "no defined method \"set_ASroute\" in \"%s\"",
@@ -324,12 +327,16 @@ static void routing_parse_E_bypassRoute(void)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = parsed_link_list;
-  e_route->src_gateway =  ((network_element_t)xbt_lib_get_or_null(as_router_lib,gw_src,ROUTING_ASR_LEVEL));
-  if(!e_route->src_gateway)
-    e_route->src_gateway = ((network_element_t)xbt_lib_get_or_null(host_lib,gw_src,ROUTING_HOST_LEVEL));
-  e_route->dst_gateway =  ((network_element_t)xbt_lib_get_or_null(as_router_lib,gw_dst,ROUTING_ASR_LEVEL));
-  if(!e_route->dst_gateway)
-    e_route->dst_gateway = ((network_element_t)xbt_lib_get_or_null(host_lib,gw_dst,ROUTING_HOST_LEVEL));
+  e_route->src_gateway = xbt_lib_get_or_null(as_router_lib, gw_src,
+                                             ROUTING_ASR_LEVEL);
+  if (!e_route->src_gateway)
+    e_route->src_gateway = xbt_lib_get_or_null(host_lib, gw_src,
+                                               ROUTING_HOST_LEVEL);
+  e_route->dst_gateway = xbt_lib_get_or_null(as_router_lib, gw_dst,
+                                             ROUTING_ASR_LEVEL);
+  if (!e_route->dst_gateway)
+    e_route->dst_gateway = xbt_lib_get_or_null(host_lib, gw_dst,
+                                               ROUTING_HOST_LEVEL);
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
@@ -619,7 +626,8 @@ static void _get_route_and_latency(network_element_t src, network_element_t dst,
  * walk through the routing components tree and find a route between hosts
  * by calling the differents "get_route" functions in each routing component.
  */
-void routing_get_route_and_latency(network_element_t src, network_element_t dst,
+void routing_get_route_and_latency(network_element_t src,
+                                   network_element_t dst,
                                    xbt_dynar_t * route, double *latency)
 {
   if (!*route) {

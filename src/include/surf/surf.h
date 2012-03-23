@@ -176,6 +176,8 @@ typedef struct surf_cpu_model_extension_public {
   void (*add_traces) (void);
 } s_surf_model_extension_cpu_t;
 
+typedef struct s_network_element_info *network_element_t;
+
      /* Network model */
 
      /** \brief Network model extension public
@@ -184,9 +186,9 @@ typedef struct surf_cpu_model_extension_public {
       *  Public functions specific to the network model
       */
 typedef struct surf_network_model_extension_public {
-  surf_action_t(*communicate) (void* src,
-                               void* dst,
-                               double size, double rate);
+  surf_action_t (*communicate) (network_element_t src,
+                                network_element_t dst,
+                                double size, double rate);
   xbt_dynar_t(*get_route) (void *src, void *dst); //FIXME: kill field? That is done by the routing nowadays
   double (*get_link_bandwidth) (const void *link);
   double (*get_link_latency) (const void *link);

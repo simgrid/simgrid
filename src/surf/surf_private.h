@@ -108,7 +108,7 @@ typedef struct s_network_element_info {
   e_surf_network_element_type_t rc_type;
   int id;
   char *name;
-} s_network_element_t, *network_element_t;
+} s_network_element_t;
 
 /*
  * Link of lenght 1, alongside with its source and destination. This is mainly usefull in the bindings to gtnets and ns3

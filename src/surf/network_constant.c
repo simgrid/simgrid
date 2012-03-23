@@ -109,14 +109,14 @@ static void netcste_update_resource_state(void *id,
   DIE_IMPOSSIBLE;
 }
 
-static surf_action_t netcste_communicate(void *src,
-                                         void *dst, double size,
-                                         double rate)
+static surf_action_t netcste_communicate(network_element_t src,
+                                         network_element_t dst,
+                                         double size, double rate)
 {
   surf_action_network_Constant_t action = NULL;
 
-  char *src_name = ((network_element_t)src)->name;
-  char *dst_name = ((network_element_t)dst)->name;
+  char *src_name = src->name;
+  char *dst_name = dst->name;
 
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
 

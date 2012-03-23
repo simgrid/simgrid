@@ -333,16 +333,16 @@ static void update_resource_state(void *id,
 }
 
 /* Max durations are not supported */
-static surf_action_t communicate(void *src_card,
-                                 void *dst_card, double size,
-                                 double rate)
+static surf_action_t communicate(network_element_t src_card,
+                                 network_element_t dst_card,
+                                 double size, double rate)
 {
   surf_action_network_GTNETS_t action = NULL;
 
-  int src = ((network_element_t)src_card)->id;
-  int dst = ((network_element_t)dst_card)->id;
-  char *src_name = ((network_element_t)src_card)->name;
-  char *dst_name = ((network_element_t)dst_card)->name;
+  int src = src_card->id;
+  int dst = dst_card->id;
+  char *src_name = src_card->name;
+  char *dst_name = dst_card->name;
 
   xbt_assert((src >= 0
                && dst >= 0), "Either src or dst have invalid id (id<0)");
