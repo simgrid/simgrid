@@ -24,8 +24,8 @@
  *  In such situations, SimGrid allows to write your protocol in your
  *  C file, and the events to react to in a separate text file.
  *  Declare a function handling each of the events that you want to
- *  accept in your trace files, register them using @ref
- *  MSG_action_register in your main, and then use @ref
+ *  accept in your trace files, register them using \ref
+ *  MSG_action_register in your main, and then use \ref
  *  MSG_action_trace_run to launch the simulation. You can either
  *  have one trace file containing all your events, or a file per
  *  simulated process. Check the tesh files in the example directory

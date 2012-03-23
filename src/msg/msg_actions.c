@@ -24,7 +24,7 @@ static size_t action_len = 0;
 
 static const char **action_get_action(char *name);
 
-/** \ingroup msg_actions
+/** \ingroup msg_actions_functions
  * \brief Registers a function to handle a kind of action
  *
  * Registers a function to handle a kind of action
@@ -32,18 +32,18 @@ static const char **action_get_action(char *name);
  *
  * The argument of the function is the line describing the action, splitted on spaces with xbt_str_split_quoted()
  *
- * \param name the reference name of the action.
- * \param code the function; prototype given by the type: void...(xbt_dynar_t action)
+ * \param action_name the reference name of the action.
+ * \param function prototype given by the type: void...(xbt_dynar_t action)
  */
 void MSG_action_register(const char *action_name, msg_action_fun function)
 {
   xbt_dict_set(action_funs, action_name, function, NULL);
 }
 
-/** \ingroup msg_actions
+/** \ingroup msg_actions_functions
  * \brief Unregisters a function, which handled a kind of action
  *
- * \param name the reference name of the action.
+ * \param action_name the reference name of the action.
  */
 void MSG_action_unregister(const char *action_name)
 {
@@ -157,7 +157,7 @@ todo_done:
   return NULL;
 }
 
-/** \ingroup msg_actions
+/** \ingroup msg_actions_functions
  * \brief A trace loader
  *
  *  If path!=NULL, load a trace file containing actions, and execute them.

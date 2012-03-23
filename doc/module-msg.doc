@@ -18,6 +18,7 @@
    - \ref m_host_management
    - \ref m_task_management
    - \ref m_file_management
+   - \ref msg_actions_functions
    - \ref msg_gos_functions
    - \ref msg_easier_life
    - \ref msg_simulation
@@ -55,7 +56,12 @@
  *  @brief This section describes the file structure of MSG
  *         (#m_file_t) and the functions for managing it. It
  *   is based on POSIX functions.
- */  
+ */ 
+ 
+/** @defgroup msg_actions_functions Managing actions
+ *  @ingroup MSG_API
+ *  @brief This section describes functions for managing actions.
+ */ 
  
 /** @defgroup msg_gos_functions MSG Operating System Functions
  *  @ingroup MSG_API
@@ -70,16 +76,14 @@
  *         MSG_examples for an overview of their usage. 
  */
  
-/** 
-@defgroup msg_simulation   MSG simulation Functions
-@ingroup MSG_API
-@brief This section describes the functions you need to know to
-       set up a simulation. You should have a look at \ref MSG_examples
-       to have an overview of their usage.
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation functions" --> @endhtmlonly
+/** @defgroup msg_simulation   MSG simulation Functions
+*	@ingroup MSG_API
+*	@brief This section describes the functions you need to know to
+*       set up a simulation. You should have a look at \ref MSG_examples
+*       to have an overview of their usage.
+*
+*	@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation functions" --> @endhtmlonly
 */
-
 
 /**
 @defgroup MSG_examples MSG Examples
