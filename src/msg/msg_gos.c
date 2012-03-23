@@ -154,10 +154,12 @@ MSG_parallel_task_create(const char *name, int host_nb,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Executes a parallel task and waits for its termination.
  *
- * \param task
- * \return
+ * \param task a #m_task_t to execute on the location on which the agent is running.
+ *
+ * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
+ * or #MSG_HOST_FAILURE otherwise
  */
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
@@ -254,12 +256,12 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Starts listening for receiving a task from an specific host communication.
  *
- * \param task
- * \param alias
- * \param host
- * \return
+ * \param task a memory location for storing a #m_task_t.
+ * \param alias name of the mailbox to receive the task to
+ * \param host a #m_host_t host from where task were send
+ * \return return status #MSG_error_t
  */
 MSG_error_t
 MSG_task_receive_from_host(m_task_t * task, const char *alias,
@@ -269,11 +271,11 @@ MSG_task_receive_from_host(m_task_t * task, const char *alias,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Starts listening for receiving a task from a communication.
  *
- * \param task
- * \param alias
- * \return
+ * \param task a memory location for storing a #m_task_t.
+ * \param alias name of the mailbox to receive the task to
+ * \return return status #MSG_error_t
  */
 MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
 {
@@ -281,12 +283,12 @@ MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Starts listening for receiving a task from a communication.
  *
- * \param task
- * \param alias
- * \param timeout
- * \return
+ * \param task a memory location for storing a #m_task_t.
+ * \param alias name of the mailbox to receive the task to
+ * \param timeout is the maximum wait time for completion
+ * \return return status #MSG_error_t
  */
 MSG_error_t
 MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
@@ -296,13 +298,14 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Starts listening for receiving a task from an specific host communication
+ * with a timeout.
  *
- * \param task
- * \param alias
- * \param timeout
- * \param host
- * \return
+ * \param task a memory location for storing a #m_task_t.
+ * \param alias name of the mailbox to receive the task to
+ * \param timeout Maximum time for receiving task
+ * \param host a #m_host_t host from where task were send
+ * \return return status #MSG_error_t
  */
 MSG_error_t
 MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
@@ -709,10 +712,10 @@ MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Get a task (#m_task_t) from a communication
  *
- * \param comm
- * \return
+ * \param comm the communication where to get the task
+ * \return the task from the communication
  */
 m_task_t MSG_comm_get_task(msg_comm_t comm)
 {
@@ -741,11 +744,11 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Send a task into a mailbox
  *
- * \param task
- * \param alias
- * \return
+ * \param task the task to send
+ * \param alias the mailbox name where the task is send
+ * \return a return code (#MSG_error_t)
  */
 MSG_error_t MSG_task_send(m_task_t task, const char *alias)
 {
@@ -754,12 +757,12 @@ MSG_error_t MSG_task_send(m_task_t task, const char *alias)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Send a task into a mailbox with a maximum rate
  *
- * \param task
- * \param alias
- * \param maxrate
- * \return
+ * \param task the task to send
+ * \param alias the mailbox name where the task is send
+ * \param maxrate the maximum rate for communication
+ * \return a return code (#MSG_error_t)
  */
 MSG_error_t
 MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
@@ -769,12 +772,12 @@ MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Send a task into a mailbox with a timeout
  *
- * \param task
- * \param alias
- * \param timeout
- * \return
+ * \param task the task to send
+ * \param alias the mailbox name where the task is send
+ * \param timeout the time for the timeout
+ * \return a return code (#MSG_error_t)
  */
 MSG_error_t
 MSG_task_send_with_timeout(m_task_t task, const char *alias,
@@ -785,10 +788,10 @@ MSG_task_send_with_timeout(m_task_t task, const char *alias,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Look if there is a communication on a mailbox
  *
- * \param alias
- * \return
+ * \param alias the mailbox to listen
+ * \return return 1 if there is a communication or 0
  */
 int MSG_task_listen(const char *alias)
 {
@@ -798,11 +801,12 @@ int MSG_task_listen(const char *alias)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Look if there is a communication on a mailbox from
+ * a given host
  *
- * \param alias
- * \param host
- * \return
+ * \param alias the mailbox to listen
+ * \param host the host to check for communication
+ * \return return 1 if there is a communication or 0
  */
 int MSG_task_listen_from_host(const char *alias, m_host_t host)
 {
@@ -814,10 +818,11 @@ int MSG_task_listen_from_host(const char *alias, m_host_t host)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Look if there is a communication on a mailbox and return the
+ * PID from sender process
  *
- * \param alias
- * \return
+ * \param alias the mailbox to listen
+ * \return return the PID of process(or 0 in case of problem)
  */
 int MSG_task_listen_from(const char *alias)
 {
