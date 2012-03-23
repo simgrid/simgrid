@@ -256,12 +256,19 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Starts listening for receiving a task from an specific host communication.
+ * \brief Receives a task from a mailbox from a specific host.
+ *
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is received. See #MSG_task_irecv
+ * for receiving tasks asynchronously.
  *
  * \param task a memory location for storing a #m_task_t.
- * \param alias name of the mailbox to receive the task to
- * \param host a #m_host_t host from where task were send
- * \return return status #MSG_error_t
+ * \param alias name of the mailbox to receive the task from
+ * \param host a #m_host_t host from where the task was sent
+ *
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t
 MSG_task_receive_from_host(m_task_t * task, const char *alias,
@@ -271,11 +278,18 @@ MSG_task_receive_from_host(m_task_t * task, const char *alias,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Starts listening for receiving a task from a communication.
+ * \brief Receives a task from a mailbox.
+ *
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is received. See #MSG_task_irecv
+ * for receiving tasks asynchronously.
  *
  * \param task a memory location for storing a #m_task_t.
- * \param alias name of the mailbox to receive the task to
- * \return return status #MSG_error_t
+ * \param alias name of the mailbox to receive the task from
+ *
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
 {
@@ -283,12 +297,20 @@ MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Starts listening for receiving a task from a communication.
+ * \brief Receives a task from a mailbox with a given timeout.
+ *
+ * This is a blocking function with a timeout, the execution flow will be blocked
+ * until the task is received or the timeout is achieved. See #MSG_task_irecv
+ * for receiving tasks asynchronously.  You can provide a -1 timeout
+ * to obtain an infinite timeout.
  *
  * \param task a memory location for storing a #m_task_t.
- * \param alias name of the mailbox to receive the task to
- * \param timeout is the maximum wait time for completion
- * \return return status #MSG_error_t
+ * \param alias name of the mailbox to receive the task from
+ * \param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_receive)
+ *
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 MSG_error_t
 MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
@@ -298,14 +320,21 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Starts listening for receiving a task from an specific host communication
- * with a timeout.
+ * \brief Receives a task from a mailbox from a specific host with a given timeout.
+ *
+ * This is a blocking function with a timeout, the execution flow will be blocked
+ * until the task is received or the timeout is achieved. See #MSG_task_irecv
+ * for receiving tasks asynchronously. You can provide a -1 timeout
+ * to obtain an infinite timeout.
  *
  * \param task a memory location for storing a #m_task_t.
- * \param alias name of the mailbox to receive the task to
- * \param timeout Maximum time for receiving task
- * \param host a #m_host_t host from where task were send
- * \return return status #MSG_error_t
+ * \param alias name of the mailbox to receive the task from
+ * \param timeout is the maximum wait time for completion (provide -1 for no timeout)
+ * \param host a #m_host_t host from where the task was sent
+ *
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+* #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 MSG_error_t
 MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
@@ -703,7 +732,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
  * \ingroup msg_gos_functions
  * \brief Returns the error (if any) that occured during a finished communication.
  * \param comm a finished communication
- * \return the status of the communication, or MSG_OK if no error occured
+ * \return the status of the communication, or #MSG_OK if no error occured
  * during the communication
  */
 MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
@@ -744,11 +773,17 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
 }
 
 /** \ingroup msg_gos_functions
- * \brief Send a task into a mailbox
+ * \brief Sends a task to a mailbox
  *
- * \param task the task to send
- * \param alias the mailbox name where the task is send
- * \return a return code (#MSG_error_t)
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is sent (and received in the other side if #MSG_task_receive is used).
+ * See #MSG_task_isend for sending tasks asynchronously.
+ *
+ * \param task the task to be sent
+ * \param alias the mailbox name to where the task is sent
+ *
+ * \return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t MSG_task_send(m_task_t task, const char *alias)
 {
@@ -757,12 +792,18 @@ MSG_error_t MSG_task_send(m_task_t task, const char *alias)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Send a task into a mailbox with a maximum rate
+ * \brief Sends a task to a mailbox with a maximum rate
  *
- * \param task the task to send
- * \param alias the mailbox name where the task is send
- * \param maxrate the maximum rate for communication
- * \return a return code (#MSG_error_t)
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is sent. The maxrate parameter allows the application
+ * to limit the bandwidth utilization of network links when sending the task.
+ *
+ * \param task the task to be sent
+ * \param alias the mailbox name to where the task is sent
+ * \param maxrate the maximum communication rate for sending this task
+ *
+ * \return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t
 MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
@@ -772,12 +813,17 @@ MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Send a task into a mailbox with a timeout
+ * \brief Sends a task to a mailbox with a timeout
  *
- * \param task the task to send
- * \param alias the mailbox name where the task is send
- * \param timeout the time for the timeout
- * \return a return code (#MSG_error_t)
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is sent or the timeout is achieved.
+ *
+ * \param task the task to be sent
+ * \param alias the mailbox name to where the task is sent
+ * \param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_send)
+ *
+ * \return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 MSG_error_t
 MSG_task_send_with_timeout(m_task_t task, const char *alias,
