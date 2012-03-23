@@ -245,6 +245,6 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
  */
 int MSG_host_is_avail(m_host_t host)
 {
-  xbt_assert((h != NULL), "Invalid parameters (host is NULL)");
-  return (simcall_host_get_state(h->simdata->smx_host));
+  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+  return (simcall_host_get_state(host->simdata->smx_host));
 }
