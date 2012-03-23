@@ -10,7 +10,7 @@
  *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="File" --> \endhtmlonly
  * (#m_file_t) and the functions for managing it.
  *
- *  \see m_file_t
+ *  \see #m_file_t
  */
 
 /********************************* File **************************************/
@@ -60,7 +60,7 @@ size_t MSG_file_write(const char* storage, const void* ptr, size_t size, size_t 
  *      a+     Open for reading and appending (writing at end of file).  The file is created if it does not exist.  The initial file position for  reading
  *             is at the beginning of the file, but output is always appended to the end of the file.
  *
- * \return A m_file_t associated to the file
+ * \return An #m_file_t associated to the file
  */
 m_file_t MSG_file_open(const char* storage, const char* path, const char* mode)
 {

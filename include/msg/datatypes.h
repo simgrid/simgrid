@@ -48,8 +48,10 @@ typedef struct m_file {
   char *name;                   /**< @brief file name */
   void *data;                   /**< @brief user data */
 } s_m_file_t;
-
+/** @brief File datatype
+    @ingroup m_datatypes_management_details */
 typedef struct m_file *m_file_t;
+
 
 
 /* ******************************** Task ************************************ */
