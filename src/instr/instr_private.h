@@ -132,8 +132,7 @@ void TRACE_surf_link_set_latency(double date, const char *resource, double laten
 void TRACE_surf_action(surf_action_t surf_action, const char *category);
 
 //for tracing gtnets
-void TRACE_surf_gtnets_communicate(void *action, const char *src, const char *dst);
-void TRACE_surf_gtnets_destroy(void *action);
+void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst);
 
 /* from smpi_instr.c */
 void TRACE_internal_smpi_set_category (const char *category);

@@ -54,18 +54,11 @@ void TRACE_surf_link_set_latency(double date, const char *resource, double laten
 }
 
 /* to trace gtnets */
-void TRACE_surf_gtnets_communicate(void *action, const char *src, const char *dst)
+void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst)
 {
   surf_action_network_GTNETS_t gtnets_action = (surf_action_network_GTNETS_t)action;
-  gtnets_action->src_name = xbt_strdup (src);
-  gtnets_action->dst_name = xbt_strdup (dst);
-}
-
-void TRACE_surf_gtnets_destroy(void *action)
-{
-  surf_action_network_GTNETS_t gtnets_action = (surf_action_network_GTNETS_t)action;
-  xbt_free (gtnets_action->src_name);
-  xbt_free (gtnets_action->dst_name);
+  gtnets_action->src = src;
+  gtnets_action->dst = dst;
 }
 
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
