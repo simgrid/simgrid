@@ -240,9 +240,10 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
 /** \ingroup msg_gos_functions
  * \brief Determine if a host is available.
  *
- * \param h host to test
+ * \param host host to test
+ * \return Returns 1 if host is available, 0 otherwise
  */
-int MSG_host_is_avail(m_host_t h)
+int MSG_host_is_avail(m_host_t host)
 {
   xbt_assert((h != NULL), "Invalid parameters (host is NULL)");
   return (simcall_host_get_state(h->simdata->smx_host));
