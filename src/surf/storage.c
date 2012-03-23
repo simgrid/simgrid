@@ -83,6 +83,7 @@ static surf_action_t storage_action_execute (void *storage, double size)
 
   GENERIC_LMM_ACTION(action).suspended = 0;     /* Should be useless because of the
                                                    calloc but it seems to help valgrind... */
+
   GENERIC_LMM_ACTION(action).variable =
       lmm_variable_new(storage_maxmin_system, action, 1.0, -1.0 , 1);
 
@@ -111,6 +112,10 @@ static surf_action_t storage_action_sleep (void *storage, double duration)
         storage_running_action_set_that_does_not_need_being_checked;
     xbt_swag_insert(action, ((surf_action_t) action)->state_set);
   }
+
+  lmm_update_variable_weight(storage_maxmin_system,
+                             GENERIC_LMM_ACTION(action).variable, 0.0);
+
   XBT_OUT();
   return (surf_action_t) action;
 }
@@ -128,7 +133,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage->state_current = SURF_RESOURCE_ON;
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
-  int Bread = atoi(xbt_dict_get(storage_type->properties,"Bread"));
+  double Bread = atof(xbt_dict_get(storage_type->properties,"Bread"));
 
   storage->constraint =
       lmm_constraint_new(storage_maxmin_system, storage,
@@ -136,7 +141,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%d'\n",
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%f'\n",
       id,
       model,
       type_id,
