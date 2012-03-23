@@ -14,7 +14,7 @@
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
   void *cpu;
-  void *net_card;
+  void *net_elm;
   xbt_dynar_t storage;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
@@ -31,6 +31,7 @@ static void workstation_new(sg_platf_host_cbarg_t host)
   workstation->generic_resource.name = xbt_strdup(host->id);
   workstation->cpu = xbt_lib_get_or_null(host_lib, host->id, SURF_CPU_LEVEL);
   workstation->storage = xbt_lib_get_or_null(storage_lib,host->id,ROUTING_STORAGE_HOST_LEVEL);
+  workstation->net_elm = xbt_lib_get_or_null(host_lib,host->id,ROUTING_HOST_LEVEL);
   XBT_DEBUG("Create workstation %s with %ld mounted disks",host->id,xbt_dynar_length(workstation->storage));
   xbt_lib_set(host_lib, host->id, SURF_WKS_LEVEL, workstation);
 }
@@ -211,8 +212,8 @@ static surf_action_t ws_communicate(void *workstation_src,
   workstation_CLM03_t src = (workstation_CLM03_t) workstation_src;
   workstation_CLM03_t dst = (workstation_CLM03_t) workstation_dst;
   return surf_network_model->extension.network.
-      communicate(surf_resource_name(src->cpu),
-                  surf_resource_name(dst->cpu), size, rate);
+      communicate(src->net_elm,
+                  dst->net_elm, size, rate);
 }
 
 static e_surf_resource_state_t ws_get_state(void *workstation)
@@ -246,10 +247,14 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
 
 
 /* returns an array of network_link_CM02_t */
-static xbt_dynar_t ws_get_route(void *src, void *dst)
+static xbt_dynar_t ws_get_route(void *workstation_src, void *workstation_dst)
 {
+  XBT_DEBUG("ws_get_route");
+  workstation_CLM03_t src = (workstation_CLM03_t) workstation_src;
+  workstation_CLM03_t dst = (workstation_CLM03_t) workstation_dst;
   return surf_network_model->extension.
-      network.get_route(surf_resource_name(src), surf_resource_name(dst));
+      network.get_route(src->net_elm,
+                  dst->net_elm);
 }
 
 static double ws_get_link_bandwidth(const void *link)

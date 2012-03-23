@@ -9,7 +9,9 @@
 /***
  *** Options
  ***/
+#ifndef NDEBUG
 static int gras_opt_trp_nomoredata_on_close = 0;
+#endif
 
 #include "xbt/ex.h"
 #include "xbt/peer.h"

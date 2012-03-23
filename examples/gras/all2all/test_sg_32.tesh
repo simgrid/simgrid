@@ -1,6 +1,7 @@
 #! ./tesh
 
 ! output sort
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV ./all2all_simulator$EXEEXT ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/all2all.xml --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%.2i:%P@%h)%e%m%n"
 > [  0.000000] (00:@) Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000000] (01:sender@Tremblay) Launch current node

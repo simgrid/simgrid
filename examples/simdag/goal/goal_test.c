@@ -12,6 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/ex.h"
 #include <string.h>
+#include "xbt/xbt_os_time.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(goal, "The GOAL loader into SimDag");
 
@@ -51,6 +52,7 @@ static void send_one(int from, int to) {
 
 
 int main(int argc, char **argv) {
+  xbt_os_timer_t timer = xbt_os_timer_new();
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -64,6 +66,8 @@ int main(int argc, char **argv) {
   ws_list = SD_workstation_get_list();
   reclaimed = xbt_dynar_new(sizeof(bcast_task_t),xbt_free_ref);
   xbt_dynar_t done = NULL;
+
+  xbt_os_timer_start(timer);
   send_one(0,SD_workstation_get_number());
   do {
     if (done != NULL && !xbt_dynar_is_empty(done)) {
@@ -89,6 +93,9 @@ int main(int argc, char **argv) {
     }
     done=SD_simulate(-1);
   } while(!xbt_dynar_is_empty(done));
+  xbt_os_timer_stop(timer);
+  printf("%lf\n", xbt_os_timer_elapsed(timer) );
+
   xbt_dynar_free(&done);
   xbt_dynar_free(&reclaimed);
 

@@ -29,7 +29,7 @@ typedef enum {
 } e_surf_network_element_type_t;
 
 XBT_PUBLIC(e_surf_network_element_type_t)
-  routing_get_network_element_type(const char *name);
+  routing_get_network_element_type(const char* name);
 
 /** @Brief Specify that we use that action */
 XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
@@ -184,10 +184,10 @@ typedef struct surf_cpu_model_extension_public {
       *  Public functions specific to the network model
       */
 typedef struct surf_network_model_extension_public {
-  surf_action_t(*communicate) (const char *src_name,
-                               const char *dst_name,
+  surf_action_t(*communicate) (void* src,
+                               void* dst,
                                double size, double rate);
-  xbt_dynar_t(*get_route) (const char *src_name, const char *dst_name); //FIXME: kill field? That is done by the routing nowadays
+  xbt_dynar_t(*get_route) (void *src, void *dst); //FIXME: kill field? That is done by the routing nowadays
   double (*get_link_bandwidth) (const void *link);
   double (*get_link_latency) (const void *link);
   int (*link_shared) (const void *link);
@@ -224,8 +224,7 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*read) (void *storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*write) (void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *storage, int fd, void* buf);
-  void* (*create_resource) (const char* id, const char* model,const char* type_id,
-      const char* content, xbt_dict_t storage_properties);
+  void* (*create_resource) (const char* id, const char* model,const char* type_id);
 } s_surf_model_extension_storage_t;
 
      /** \brief Workstation model extension public
@@ -355,7 +354,7 @@ typedef struct surf_resource {
  */
 typedef struct s_storage_type {
   char *model;
-  char *content;
+  xbt_dict_t content;
   char *type_id;
   xbt_dict_t properties;
 } s_storage_type_t, *storage_type_t;
@@ -364,6 +363,15 @@ typedef struct s_mount {
   void *id;
   char *name;
 } s_mount_t, *mount_t;
+
+typedef struct s_content {
+  char *user_rights;
+  char *user;
+  char *group;
+  char *date;
+  char *time;
+  int size;
+} s_content_t, *content_t;
 
 /**
  * Resource which have a metric handled by a maxmin system

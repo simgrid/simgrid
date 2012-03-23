@@ -13,12 +13,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 #endif
-//#endif
-/** \defgroup msg_easier_life      Platform and Application management
- *  \brief This section describes functions to manage the platform creation
- *  and the application deployment. You should also have a look at 
- *  \ref MSG_examples  to have an overview of their usage.
- */
+
 /** @addtogroup msg_easier_life
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Platforms and Applications" --> \endhtmlonly
  * 
@@ -76,6 +71,7 @@ void MSG_create_environment(const char *file)
 }
 
 /**
+ * @ingroup MSG_LUA
  * \brief A platform constructor bypassing the parser.
  *
  * load lua script file to set up new platform, including hosts,links
@@ -94,6 +90,6 @@ void MSG_load_platform_script(const char *script_file)
   }
 #else
   xbt_die
-      ("Lua is not available!! to call MSG_load_platform_script, lua should be available...");
+      ("Lua is not available! It is mandatory to use MSG_load_platform_script however. Bailing out...");
 #endif
 }

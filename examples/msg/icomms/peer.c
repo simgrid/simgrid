@@ -14,6 +14,17 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+/** @addtogroup MSG_examples
+ * 
+ * @section MSG_ex_icomms Asynchronous communications
+ * 
+ * There is several examples of asynchronous communications coming in
+ * the archive. In addition to the fully documented example \ref
+ * MSG_ex_asynchronous_communications, there is several other
+ * examples in the archive:
+ * 
+ * - <b>msg/icomms/peer.c</b>: basic example of async functions (@ref MSG_task_isend, @ref MSG_task_irecv, @ref MSG_comm_wait)
+ */
 int sender(int argc, char *argv[]);
 int receiver(int argc, char *argv[]);
 

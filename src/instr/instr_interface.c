@@ -145,7 +145,15 @@ static void instr_user_srcdst_variable(double time,
                               InstrUserVariable what)
 {
   xbt_dynar_t route=NULL;
-  routing_get_route_and_latency (src, dst, &route,NULL);
+  network_element_t src_elm = xbt_lib_get_or_null(host_lib,src,ROUTING_HOST_LEVEL);
+  if(!src_elm) src_elm = xbt_lib_get_or_null(as_router_lib,src,ROUTING_ASR_LEVEL);
+  if(!src_elm) xbt_die("Element '%s' not found!",src);
+
+  network_element_t dst_elm = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
+  if(!dst_elm) dst_elm = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
+  if(!dst_elm) xbt_die("Element '%s' not found!",dst);
+
+  routing_get_route_and_latency (src_elm, dst_elm, &route,NULL);
   unsigned int i;
   void *link;
   xbt_dynar_foreach (route, i, link) {
@@ -154,24 +162,16 @@ static void instr_user_srcdst_variable(double time,
   }
 }
 
-const char *TRACE_node_name (xbt_node_t node)
+int TRACE_platform_graph_export_graphviz (const char *filename)
 {
-  void *data = xbt_graph_node_get_data(node);
-  char *str = (char*)data;
-  return str;
-}
-
-xbt_graph_t TRACE_platform_graph (void)
-{
-  if (!TRACE_is_enabled()) return NULL;
-  return instr_routing_platform_graph ();
-}
-
-void TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename)
-{
+  /* returns 1 if successful, 0 otherwise */
+  if (!TRACE_is_enabled()) return 0;
+  xbt_graph_t g = instr_routing_platform_graph();
+  if (g == NULL) return 0;
   instr_routing_platform_graph_export_graphviz (g, filename);
+  xbt_graph_free_graph (g, xbt_free, xbt_free, NULL);
+  return 1;
 }
-
 
 /*
  * Derived functions that use instr_user_variable and TRACE_user_srcdst_variable.

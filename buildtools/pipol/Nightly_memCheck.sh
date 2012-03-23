@@ -12,7 +12,8 @@ else
 fi
 cd ./pipol/$PIPOL_HOST
 
-git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid --quiet
+export GIT_SSL_NO_VERIFY=1
+git clone https://gforge.inria.fr/git/simgrid/simgrid.git
 cd simgrid
 
 perl ./buildtools/pipol/cmake.pl

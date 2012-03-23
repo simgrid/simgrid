@@ -28,7 +28,7 @@ typedef struct cpu_L07 {
   tmgr_trace_event_t power_event;
   tmgr_trace_event_t state_event;
   e_surf_resource_state_t state_current;
-  int id;                       /* cpu and network card are a single object... */
+  network_element_t info;
 } s_cpu_L07_t, *cpu_L07_t;
 
 /**************************************/
@@ -69,13 +69,13 @@ static int ptask_host_count = 0;
 static xbt_dict_t ptask_parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
-static surf_action_t die_impossible_communicate (const char *src_name, const char *dst_name, double size, double rate)
+static surf_action_t die_impossible_communicate (void *src, void *dst, double size, double rate)
 {
   DIE_IMPOSSIBLE;
   return NULL;
 }
 
-static xbt_dynar_t die_impossible_get_route(const char *src_name, const char *dst_name)
+static xbt_dynar_t die_impossible_get_route(void *src, void *dst)
 {
   DIE_IMPOSSIBLE;
   return NULL;
@@ -94,9 +94,8 @@ static void ptask_update_action_bound(surf_action_workstation_L07_t action)
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
         double lat = 0.0;
-        routing_get_route_and_latency(surf_resource_name
-            (action->workstation_list[i]),
-            surf_resource_name(action->workstation_list[j]),
+        routing_get_route_and_latency(action->workstation_list[i]->info,
+            action->workstation_list[j]->info,
             &route, &lat);
         lat_current =
             MAX(lat_current,
@@ -472,8 +471,8 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
         link_L07_t link;
 
         routing_get_route_and_latency(
-            surf_resource_name(workstation_list[i]),
-            surf_resource_name(workstation_list[j]),
+            ((cpu_L07_t)workstation_list[i])->info,
+            ((cpu_L07_t)workstation_list[j])->info,
             &route,&lat);
         latency = MAX(latency, lat);
 
@@ -526,8 +525,8 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
         continue;
 
       routing_get_route_and_latency(
-          surf_resource_name(workstation_list[i]),
-          surf_resource_name(workstation_list[j]),
+          ((cpu_L07_t)workstation_list[i])->info,
+          ((cpu_L07_t)workstation_list[j])->info,
           &route,NULL);
 
       xbt_dynar_foreach(route, cpt, link) {
@@ -599,7 +598,7 @@ static xbt_dynar_t ptask_get_route(void *src, void *dst) // FIXME: kill that cal
 {
   xbt_dynar_t route=NULL;
   routing_get_route_and_latency(
-      surf_resource_name(src), surf_resource_name(dst),
+      ((cpu_L07_t)src)->info, ((cpu_L07_t)dst)->info,
       &route,NULL);
   return route;
 }
@@ -639,7 +638,8 @@ static void* ptask_cpu_create_resource(const char *name, double power_scale,
           surf_workstation_model, name,cpu_properties);
 
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
-  cpu->id = ptask_host_count++;
+  cpu->info = (network_element_t)xbt_lib_get_or_null(host_lib,name,ROUTING_HOST_LEVEL);
+  if(!(cpu->info)) xbt_die("Don't find ROUTING_HOST_LEVEL for '%s'",name);
 
   cpu->power_scale = power_scale;
   xbt_assert(cpu->power_scale > 0, "Power has to be >0");

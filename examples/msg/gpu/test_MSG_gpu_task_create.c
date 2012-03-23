@@ -4,6 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>gpu/test_MSG_gpu_task_create.c</b> Example of use of the very experimental (for now) GPU resource. 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "msg/msg.h"

@@ -15,8 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_rulebased, surf, "Routing part of sur
 
 typedef struct {
   s_as_t generic_routing;
-  xbt_dict_t dict_processing_units;
-  xbt_dict_t dict_autonomous_systems;
   xbt_dynar_t list_route;
   xbt_dynar_t list_ASroute;
 } s_AS_rulebased_t, *AS_rulebased_t;
@@ -64,16 +62,18 @@ static void rule_route_extended_free(void *e)
 
 /* Parse routing model functions */
 
-static void model_rulebased_parse_PU(AS_t rc, const char *name)
+static int model_rulebased_parse_PU(AS_t rc, network_element_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
-  xbt_dict_set(routing->dict_processing_units, name, (void *) (-1), NULL);
+  xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
+  return -1;
 }
 
-static void model_rulebased_parse_AS(AS_t rc, const char *name)
+static int model_rulebased_parse_AS(AS_t rc, network_element_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
-  xbt_dict_set(routing->dict_autonomous_systems, name, (void *) (-1), NULL);
+  xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
+  return -1;
 }
 
 static void model_rulebased_parse_route(AS_t rc,
@@ -131,8 +131,8 @@ static void model_rulebased_parse_ASroute(AS_t rc,
               erroffset, dst, error);
   ruleroute_e->generic_rule_route.re_str_link =
       route->link_list;
-  ruleroute_e->re_src_gateway = route->src_gateway;
-  ruleroute_e->re_dst_gateway = route->dst_gateway;
+  ruleroute_e->re_src_gateway = xbt_strdup((char *)route->src_gateway); // DIRTY HACK possible only
+  ruleroute_e->re_dst_gateway = xbt_strdup((char *)route->dst_gateway); // because of what is in routing_parse_E_ASroute
   xbt_dynar_push(routing->list_ASroute, &ruleroute_e);
 
   /* make sure that they don't get freed */
@@ -207,37 +207,34 @@ static char *remplace(char *value, const char **src_list, int src_size,
 }
 
 static void rulebased_get_route_and_latency(AS_t rc,
-                                const char *src, const char *dst,
+    network_element_t src, network_element_t dst,
                                 route_t res,double*lat);
 static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
-
   //We have already bypass cluster routes with network NS3
   if(!strcmp(surf_network_model->name,"network NS3"))
 	return ret;
 
-  AS_rulebased_t routing = (AS_rulebased_t)rc;
-
-  xbt_dict_cursor_t c1 = NULL;
-  char *k1, *d1;
+  char *k1;
 
   //find router
-  char *router = NULL;
-  xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
-    if (routing_get_network_element_type(k1) == SURF_NETWORK_ELEMENT_ROUTER){
-      router = k1;
+  network_element_t router = NULL;
+  xbt_lib_cursor_t cursor;
+  xbt_lib_foreach(as_router_lib, cursor, k1, router)
+  {
+    if (router->rc_type == SURF_NETWORK_ELEMENT_ROUTER)
       break;
-    }
   }
 
   if (!router)
     xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
 
-  xbt_dict_foreach(routing->dict_processing_units, c1, k1, d1) {
+  network_element_t host = NULL;
+  xbt_lib_foreach(as_router_lib, cursor, k1, host){
     route_t route = xbt_new0(s_route_t,1);
     route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-    rulebased_get_route_and_latency (rc, router, k1, route,NULL);
+    rulebased_get_route_and_latency (rc, router, host, route,NULL);
 
     int number_of_links = xbt_dynar_length(route->link_list);
 
@@ -252,8 +249,8 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 		void *link_ptr;
 		xbt_dynar_get_cpy (route->link_list, 1, &link_ptr);
 		onelink_t onelink = xbt_new0 (s_onelink_t, 1);
-		onelink->src = xbt_strdup (k1);
-		onelink->dst = xbt_strdup (router);
+		onelink->src = host;
+		onelink->dst = router;
 		onelink->link_ptr = link_ptr;
 		xbt_dynar_push (ret, &onelink);
     }
@@ -263,9 +260,10 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 
 /* Business methods */
 static void rulebased_get_route_and_latency(AS_t rc,
-                                const char *src, const char *dst,
+    network_element_t src, network_element_t dst,
                                 route_t route, double *lat)
 {
+  XBT_DEBUG("rulebased_get_route_and_latency from '%s' to '%s'",src->name,dst->name);
   xbt_assert(rc && src
               && dst,
               "Invalid params for \"get_route\" function at AS \"%s\"",
@@ -274,24 +272,25 @@ static void rulebased_get_route_and_latency(AS_t rc,
   /* set utils vars */
   AS_rulebased_t routing = (AS_rulebased_t) rc;
 
+  char* src_name = src->name;
+  char* dst_name = dst->name;
+
   int are_processing_units=0;
   xbt_dynar_t rule_list;
-  if (xbt_dict_get_or_null(routing->dict_processing_units, src)
-      && xbt_dict_get_or_null(routing->dict_processing_units, dst)) {
+  if ((src->rc_type == SURF_NETWORK_ELEMENT_HOST || src->rc_type == SURF_NETWORK_ELEMENT_ROUTER)&&
+      (dst->rc_type == SURF_NETWORK_ELEMENT_HOST || dst->rc_type == SURF_NETWORK_ELEMENT_ROUTER)){
     are_processing_units = 1;
     rule_list = routing->list_route;
-  } else if (xbt_dict_get_or_null(routing->dict_autonomous_systems, src)
-             && xbt_dict_get_or_null(routing->dict_autonomous_systems,
-                                     dst)) {
+  } else if (src->rc_type == SURF_NETWORK_ELEMENT_AS && dst->rc_type == SURF_NETWORK_ELEMENT_AS) {
     are_processing_units = 0;
     rule_list = routing->list_ASroute;
   } else
-    THROWF(arg_error,0,"No route from '%s' to '%s'",src,dst);
+    THROWF(arg_error,0,"No route from '%s' to '%s'",src_name,dst_name);
 
   int rc_src = -1;
   int rc_dst = -1;
-  int src_length = (int) strlen(src);
-  int dst_length = (int) strlen(dst);
+  int src_length = (int) strlen(src_name);
+  int dst_length = (int) strlen(dst_name);
 
   rule_route_t ruleroute;
   unsigned int cpt;
@@ -302,17 +301,17 @@ static void rulebased_get_route_and_latency(AS_t rc,
   _XBT_GNUC_UNUSED int res;
   xbt_dynar_foreach(rule_list, cpt, ruleroute) {
     rc_src =
-        pcre_exec(ruleroute->re_src, NULL, src, src_length, 0, 0,
+        pcre_exec(ruleroute->re_src, NULL, src_name, src_length, 0, 0,
                   ovector_src, OVECCOUNT);
     if (rc_src >= 0) {
       rc_dst =
-          pcre_exec(ruleroute->re_dst, NULL, dst, dst_length, 0, 0,
+          pcre_exec(ruleroute->re_dst, NULL, dst_name, dst_length, 0, 0,
                     ovector_dst, OVECCOUNT);
       if (rc_dst >= 0) {
-        res = pcre_get_substring_list(src, ovector_src, rc_src, &list_src);
-        xbt_assert(!res, "error solving substring list for src \"%s\"", src);
-        res = pcre_get_substring_list(dst, ovector_dst, rc_dst, &list_dst);
-        xbt_assert(!res, "error solving substring list for src \"%s\"", dst);
+        res = pcre_get_substring_list(src_name, ovector_src, rc_src, &list_src);
+        xbt_assert(!res, "error solving substring list for src \"%s\"", src_name);
+        res = pcre_get_substring_list(dst_name, ovector_dst, rc_dst, &list_dst);
+        xbt_assert(!res, "error solving substring list for dst \"%s\"", dst_name);
         char *link_name;
         xbt_dynar_foreach(ruleroute->re_str_link, cpt, link_name) {
           char *new_link_name =
@@ -335,24 +334,37 @@ static void rulebased_get_route_and_latency(AS_t rc,
 
   if (rc_src >= 0 && rc_dst >= 0) {
     /* matched src and dest, nothing more to do (?) */
-  } else if (!strcmp(src, dst) && are_processing_units) {
+  } else if (!strcmp(src_name, dst_name) && are_processing_units) {
     xbt_dynar_push(route->link_list, &(global_routing->loopback));
     if (lat)
       *lat += surf_network_model->extension.network.get_link_latency(global_routing->loopback);
   } else {
-    THROWF(arg_error,0,"No route from '%s' to '%s'??",src,dst);
+    THROWF(arg_error,0,"No route from '%s' to '%s'??",src_name,dst_name);
     //xbt_dynar_reset(route->link_list);
   }
 
   if (!are_processing_units && !xbt_dynar_is_empty(route->link_list)) {
     rule_route_extended_t ruleroute_extended =
         (rule_route_extended_t) ruleroute;
-    route->src_gateway =
-        remplace(ruleroute_extended->re_src_gateway, list_src, rc_src,
-                 list_dst, rc_dst);
-    route->dst_gateway =
-        remplace(ruleroute_extended->re_dst_gateway, list_src, rc_src,
-                 list_dst, rc_dst);
+    char *gw_src_name = remplace(ruleroute_extended->re_src_gateway, list_src, rc_src,
+        list_dst, rc_dst);
+    route->src_gateway = (network_element_t)xbt_lib_get_or_null(host_lib, gw_src_name, ROUTING_HOST_LEVEL);
+    route->src_gateway = (network_element_t)xbt_lib_get_or_null(host_lib, gw_src_name, ROUTING_HOST_LEVEL);
+    if(!route->src_gateway)
+      route->src_gateway = (network_element_t)xbt_lib_get_or_null(as_router_lib, gw_src_name, ROUTING_ASR_LEVEL);
+    if(!route->src_gateway)
+      route->src_gateway = (network_element_t)xbt_lib_get_or_null(as_router_lib, gw_src_name, ROUTING_ASR_LEVEL);
+    xbt_free(gw_src_name);
+
+    char *gw_dst_name = remplace(ruleroute_extended->re_dst_gateway, list_src, rc_src,
+        list_dst, rc_dst);
+    route->dst_gateway = (network_element_t)xbt_lib_get_or_null(host_lib, gw_dst_name, ROUTING_HOST_LEVEL);
+    route->dst_gateway = (network_element_t)xbt_lib_get_or_null(host_lib, gw_dst_name, ROUTING_HOST_LEVEL);
+    if(!route->dst_gateway)
+      route->dst_gateway = (network_element_t)xbt_lib_get_or_null(as_router_lib, gw_dst_name, ROUTING_ASR_LEVEL);
+    if(!route->dst_gateway)
+      route->dst_gateway = (network_element_t)xbt_lib_get_or_null(as_router_lib, gw_dst_name, ROUTING_ASR_LEVEL);
+    xbt_free(gw_dst_name);
   }
 
   if (list_src)
@@ -361,7 +373,7 @@ static void rulebased_get_route_and_latency(AS_t rc,
     pcre_free_substring_list(list_dst);
 }
 
-static route_t rulebased_get_bypass_route(AS_t rc, const char *src, const char *dst) {
+static route_t rulebased_get_bypass_route(AS_t rc, network_element_t src, network_element_t dst) {
   return NULL;
 }
 
@@ -370,11 +382,8 @@ static void rulebased_finalize(AS_t rc)
   AS_rulebased_t routing =
       (AS_rulebased_t) rc;
   if (routing) {
-    xbt_dict_free(&routing->dict_processing_units);
-    xbt_dict_free(&routing->dict_autonomous_systems);
     xbt_dynar_free(&routing->list_route);
     xbt_dynar_free(&routing->list_ASroute);
-
     model_generic_finalize(rc);
   }
 }
@@ -395,8 +404,6 @@ AS_t model_rulebased_create(void) {
   new_component->generic_routing.get_bypass_route = rulebased_get_bypass_route;
   new_component->generic_routing.finalize = rulebased_finalize;
   /* initialization of internal structures */
-  new_component->dict_processing_units = xbt_dict_new_homogeneous(NULL);
-  new_component->dict_autonomous_systems = xbt_dict_new_homogeneous(NULL);
   new_component->list_route = xbt_dynar_new(sizeof(rule_route_t), &rule_route_free);
   new_component->list_ASroute =
       xbt_dynar_new(sizeof(rule_route_extended_t),

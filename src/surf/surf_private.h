@@ -102,19 +102,26 @@ const char *__surf_get_initial_path(void);
  */
 int __surf_is_absolute_file_path(const char *file_path);
 
+typedef struct s_as *AS_t;
+typedef struct s_network_element_info {
+  AS_t rc_component;
+  e_surf_network_element_type_t rc_type;
+  int id;
+  char *name;
+} s_network_element_t, *network_element_t;
+
 /*
  * Link of lenght 1, alongside with its source and destination. This is mainly usefull in the bindings to gtnets and ns3
  */
 typedef struct s_onelink {
-  char *src;
-  char *dst;
+  network_element_t src;
+  network_element_t dst;
   void *link_ptr;
 } s_onelink_t, *onelink_t;
 
 /**
  * Routing logic
  */
-typedef struct s_as *AS_t;
 
 typedef struct s_model_type {
   const char *name;
@@ -125,8 +132,8 @@ typedef struct s_model_type {
 
 typedef struct s_route {
   xbt_dynar_t link_list;
-  char *src_gateway;
-  char *dst_gateway;
+  network_element_t src_gateway;
+  network_element_t dst_gateway;
 } s_route_t, *route_t;
 
 /* This enum used in the routing structure helps knowing in which situation we are. */
@@ -137,18 +144,20 @@ typedef enum {
 } e_surf_routing_hierarchy_t;
 
 typedef struct s_as {
-  xbt_dict_t to_index;			/* char* -> network_element_t */
+  xbt_dynar_t index_network_elm;
   xbt_dict_t bypassRoutes;		/* store bypass routes */
   routing_model_description_t model_desc;
   e_surf_routing_hierarchy_t hierarchy;
   char *name;
   struct s_as *routing_father;
   xbt_dict_t routing_sons;
+  network_element_t net_elem;
+  xbt_dynar_t link_up_down_list;
 
-  void (*get_route_and_latency) (AS_t as, const char *src, const char *dst, route_t into, double *latency);
+  void (*get_route_and_latency) (AS_t as, network_element_t src, network_element_t dst, route_t into, double *latency);
 
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
-  route_t(*get_bypass_route) (AS_t as, const char *src, const char *dst);
+  route_t(*get_bypass_route) (AS_t as, network_element_t src, network_element_t dst);
   void (*finalize) (AS_t as);
 
 
@@ -156,8 +165,8 @@ typedef struct s_as {
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  void (*parse_PU) (AS_t as, const char *name); /* A host or a router, whatever */
-  void (*parse_AS) (AS_t as, const char *name);
+  int (*parse_PU) (AS_t as, network_element_t elm); /* A host or a router, whatever */
+  int (*parse_AS) (AS_t as, network_element_t elm);
   void (*parse_route) (AS_t as, const char *src,
                      const char *dst, route_t route);
   void (*parse_ASroute) (AS_t as, const char *src,
@@ -165,15 +174,6 @@ typedef struct s_as {
   void (*parse_bypassroute) (AS_t as, const char *src,
                            const char *dst, route_t e_route);
 } s_as_t;
-
-typedef struct s_network_element_info {
-  AS_t rc_component;
-  e_surf_network_element_type_t rc_type;
-  int id;
-  char *name;
-} s_network_element_info_t, *network_element_info_t;
-
-typedef int *network_element_t;
 
 struct s_routing_global {
   AS_t root;
@@ -190,7 +190,7 @@ XBT_PUBLIC(void) generic_free_route(route_t route); // FIXME rename to routing_r
  // FIXME: make previous function private to routing again?
 
 
-XBT_PUBLIC(void) routing_get_route_and_latency(const char *src, const char *dst,
+XBT_PUBLIC(void) routing_get_route_and_latency(network_element_t src, network_element_t dst,
                               xbt_dynar_t * route, double *latency);
 
 /**

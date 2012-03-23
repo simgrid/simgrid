@@ -31,7 +31,7 @@
  *  when the sender and receiver processor architecture are different,
  *  inducing extra delays. For this, GRAS provide the so-called measurement
  *  sockets. On them, you can send raw data which is not converted (see
- *  \ref GRAS_sock_meas). 
+ *  \ref XBT_sock_meas). 
  *
  *  Solving all these problems is quite error prone and anoying, so we
  *  implemented this in the current module so that you don't have to do it

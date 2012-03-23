@@ -18,6 +18,14 @@ extern xbt_dict_t defined_types; /* from instr_interface.c */
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
 static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
 
+static const char *instr_node_name (xbt_node_t node)
+{
+  void *data = xbt_graph_node_get_data(node);
+  char *str = (char*)data;
+  return str;
+}
+
+
 static container_t lowestCommonAncestor (container_t a1, container_t a2)
 {
   //this is only an optimization (since most of a1 and a2 share the same parent)
@@ -125,58 +133,50 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
   container_t child1, child2;
   const char *child1_name, *child2_name;
   xbt_dict_foreach(container->children, cursor1, child1_name, child1) {
-    if (child1->kind == INSTR_LINK) continue;
+    //if child1 is not a link, a smpi node, a msg process or a msg task
+    if (child1->kind == INSTR_LINK || child1->kind == INSTR_SMPI || child1->kind == INSTR_MSG_PROCESS || child1->kind == INSTR_MSG_TASK) continue;
+
     xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
-      if (child2->kind == INSTR_LINK) continue;
+      //if child2 is not a link, a smpi node, a msg process or a msg task
+      if (child2->kind == INSTR_LINK || child2->kind == INSTR_SMPI || child2->kind == INSTR_MSG_PROCESS || child2->kind == INSTR_MSG_TASK) continue;
 
-      if ((child1->kind == INSTR_HOST || child1->kind == INSTR_ROUTER) &&
-          (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
-          strcmp (child1_name, child2_name) != 0){
+      //if child1 is not child2
+      if (strcmp (child1_name, child2_name) == 0) continue;
 
-        xbt_dynar_t route = NULL;
-        xbt_ex_t e;
+      //get the route
+      route_t route = xbt_new0(s_route_t,1);
+      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+      rc->get_route_and_latency (rc,
+          (network_element_t)(child1->net_elm),
+          (network_element_t)(child2->net_elm),route, NULL);
 
-        TRY {
-          routing_get_route_and_latency(child1_name, child2_name, &route, NULL);
-        } CATCH(e) {
-          xbt_ex_free(e);
-        }
-        if (route == NULL) continue;
+      //user might want to extract a graph using routes with only one link
+      //see --cfg=tracing/onelink_only:1 or --help-tracing for details
+      if (TRACE_onelink_only() && xbt_dynar_length (route->link_list) > 1) continue;
 
-        if (TRACE_onelink_only()){
-          if (xbt_dynar_length (route) > 1) continue;
-        }
-        container_t previous = child1;
-        int i;
-        for (i = 0; i < xbt_dynar_length(route); i++){
-          link_CM02_t *link = ((link_CM02_t*)xbt_dynar_get_ptr (route, i));
-          char *link_name = (*link)->lmm_resource.generic_resource.name;
-          container_t current = PJ_container_get(link_name);
-          linkContainers(previous, current, filter);
-          previous = current;
-        }
-        linkContainers(previous, child2, filter);
-
-      }else if (child1->kind == INSTR_AS &&
-                child2->kind == INSTR_AS &&
-                strcmp(child1_name, child2_name) != 0){
-
-        route_t route = xbt_new0(s_route_t,1);
-        route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-        rc->get_route_and_latency (rc, child1_name, child2_name, route,NULL);
-        unsigned int cpt;
-        void *link;
-        container_t previous = PJ_container_get(route->src_gateway);
-        xbt_dynar_foreach (route->link_list, cpt, link) {
-          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-          container_t current = PJ_container_get(link_name);
-          linkContainers (previous, current, filter);
-          previous = current;
-        }
-        container_t last = PJ_container_get(route->dst_gateway);
-        linkContainers (previous, last, filter);
-        generic_free_route(route);
+      //traverse the route connecting the containers
+      unsigned int cpt;
+      void *link;
+      container_t current, previous;
+      if (route->src_gateway){
+        previous = PJ_container_get(route->src_gateway->name);
+      }else{
+        previous = child1;
       }
+
+      xbt_dynar_foreach (route->link_list, cpt, link) {
+        char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+        current = PJ_container_get(link_name);
+        linkContainers(previous, current, filter);
+        previous = current;
+      }
+      if (route->dst_gateway){
+        current = PJ_container_get(route->dst_gateway->name);
+      }else{
+        current = child2;
+      }
+      linkContainers(previous, current, filter);
+      generic_free_route(route);
     }
   }
 }
@@ -418,21 +418,25 @@ static xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_d
 static xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges)
 {
   xbt_edge_t ret;
-  char *name;
 
-  const char *sn = TRACE_node_name (s);
-  const char *dn = TRACE_node_name (d);
+  const char *sn = instr_node_name (s);
+  const char *dn = instr_node_name (d);
+  int len = strlen(sn)+strlen(dn)+1;
+  char *name = (char*)malloc(len * sizeof(char));
 
-  name = bprintf ("%s%s", sn, dn);
+
+  snprintf (name, len, "%s%s", sn, dn);
   ret = xbt_dict_get_or_null (edges, name);
-  if (ret) return ret;
+  if (ret == NULL){
+    snprintf (name, len, "%s%s", dn, sn);
+    ret = xbt_dict_get_or_null (edges, name);
+  }
+
+  if (ret == NULL){
+    ret = xbt_graph_new_edge(graph, s, d, NULL);
+    xbt_dict_set (edges, name, ret, NULL);
+  }
   free (name);
-  name = bprintf ("%s%s", dn, sn);
-  ret = xbt_dict_get_or_null (edges, name);
-  if (ret) return ret;
-
-  ret = xbt_graph_new_edge(graph, s, d, NULL);
-  xbt_dict_set (edges, name, ret, NULL);
   return ret;
 }
 
@@ -455,53 +459,51 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
   container_t child1, child2;
   const char *child1_name, *child2_name;
   xbt_dict_foreach(container->children, cursor1, child1_name, child1) {
-    if (child1->kind == INSTR_LINK) continue;
+    //if child1 is not a link, a smpi node, a msg process or a msg task
+    if (child1->kind == INSTR_LINK || child1->kind == INSTR_SMPI || child1->kind == INSTR_MSG_PROCESS || child1->kind == INSTR_MSG_TASK) continue;
+
     xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
-      if (child2->kind == INSTR_LINK) continue;
+      //if child2 is not a link, a smpi node, a msg process or a msg task
+      if (child2->kind == INSTR_LINK || child2->kind == INSTR_SMPI || child2->kind == INSTR_MSG_PROCESS || child2->kind == INSTR_MSG_TASK) continue;
 
-      if ((child1->kind == INSTR_HOST || child1->kind == INSTR_ROUTER) &&
-          (child2->kind == INSTR_HOST  || child2->kind == INSTR_ROUTER) &&
-          strcmp (child1_name, child2_name) != 0){
+      //if child1 is not child2
+      if (strcmp (child1_name, child2_name) == 0) continue;
 
-        // FIXME factorize route creation with else branch below (once possible)
-        xbt_dynar_t route=NULL;
-        routing_get_route_and_latency (child1_name, child2_name,&route,NULL);
-        if (TRACE_onelink_only()){
-          if (xbt_dynar_length (route) > 1) continue;
-        }
-        unsigned int cpt;
-        void *link;
-        xbt_node_t current, previous = new_xbt_graph_node(graph, child1_name, nodes);
-        xbt_dynar_foreach (route, cpt, link) {
-          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-          current = new_xbt_graph_node(graph, link_name, nodes);
-          new_xbt_graph_edge (graph, previous, current, edges);
-          //previous -> current
-          previous = current;
-        }
-        current = new_xbt_graph_node(graph, child2_name, nodes);
-        new_xbt_graph_edge (graph, previous, current, edges);
+      //get the route
+      route_t route = xbt_new0(s_route_t,1);
+      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+      rc->get_route_and_latency (rc,
+          (network_element_t)(child1->net_elm),
+          (network_element_t)(child2->net_elm),route, NULL);
 
-      }else if (child1->kind == INSTR_AS &&
-                child2->kind == INSTR_AS &&
-                strcmp(child1_name, child2_name) != 0){
+      //user might want to extract a graph using routes with only one link
+      //see --cfg=tracing/onelink_only:1 or --help-tracing for details
+      if (TRACE_onelink_only() && xbt_dynar_length (route->link_list) > 1) continue;
 
-        route_t route = xbt_new0(s_route_t,1);
-        route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
-        rc->get_route_and_latency (rc, child1_name, child2_name,route, NULL);
-        unsigned int cpt;
-        void *link;
-        xbt_node_t current, previous = new_xbt_graph_node(graph, route->src_gateway, nodes);
-        xbt_dynar_foreach (route->link_list, cpt, link) {
-          char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-          current = new_xbt_graph_node(graph, link_name, nodes);
-          //previous -> current
-          previous = current;
-        }
-        current = new_xbt_graph_node(graph, route->dst_gateway, nodes);
-        new_xbt_graph_edge (graph, previous, current, edges);
-        generic_free_route(route);
+      //traverse the route connecting the containers
+      unsigned int cpt;
+      void *link;
+      xbt_node_t current, previous;
+      if (route->src_gateway){
+        previous = new_xbt_graph_node(graph, route->src_gateway->name, nodes);
+      }else{
+        previous = new_xbt_graph_node(graph, child1_name, nodes);
       }
+
+      xbt_dynar_foreach (route->link_list, cpt, link) {
+        char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
+        current = new_xbt_graph_node(graph, link_name, nodes);
+        new_xbt_graph_edge (graph, previous, current, edges);
+        //previous -> current
+        previous = current;
+      }
+      if (route->dst_gateway){
+        current = new_xbt_graph_node(graph, route->dst_gateway->name, nodes);
+      }else{
+        current = new_xbt_graph_node(graph, child2_name, nodes);
+      }
+      new_xbt_graph_edge (graph, previous, current, edges);
+      generic_free_route(route);
     }
   }
 
@@ -513,6 +515,8 @@ xbt_graph_t instr_routing_platform_graph (void)
   xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
   xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
   recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, PJ_container_get_root());
+  xbt_dict_free (&nodes);
+  xbt_dict_free (&edges);
   return ret;
 }
 
@@ -538,11 +542,11 @@ void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *fi
           "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
-    fprintf(file, "  \"%s\";\n", TRACE_node_name(node));
+    fprintf(file, "  \"%s\";\n", instr_node_name(node));
   }
   xbt_dynar_foreach(g->edges, cursor, edge) {
-    const char *src_s = TRACE_node_name (edge->src);
-    const char *dst_s = TRACE_node_name (edge->dst);
+    const char *src_s = instr_node_name (edge->src);
+    const char *dst_s = instr_node_name (edge->dst);
     if (g->directed)
       fprintf(file, "  \"%s\" -> \"%s\";\n", src_s, dst_s);
     else

@@ -13,6 +13,11 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>gtnets</b> Simple ping-pong using GTNeTs instead of the SimGrid network models.
+ */
+
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 int timer(int argc, char *argv[]);

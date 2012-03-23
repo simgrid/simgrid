@@ -8,10 +8,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-/** \defgroup m_task_management Managing functions of Tasks
- *  \brief This section describes the task structure of MSG
- *  (#m_task_t) and the functions for managing it.
- */
 /** @addtogroup m_task_management
  *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
  * 
@@ -39,7 +35,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg,
    MSG_task_execute(). This value has to be >=0.
  * \param message_size a value of the amount of data (in bytes) needed to
    transfer this new task. If 0, then it cannot be transfered with
-   MSG_task_get() and MSG_task_put(). This value has to be >=0.
+   MSG_task_send() and MSG_task_recv(). This value has to be >=0.
  * \param data a pointer to any data may want to attach to the new
    object.  It is for user-level information and can be NULL. It can
    be retrieved with the function \ref MSG_task_get_data.

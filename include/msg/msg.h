@@ -141,7 +141,7 @@ XBT_PUBLIC(void) MSG_task_set_name(m_task_t task, const char *name);
 XBT_PUBLIC(MSG_error_t) MSG_task_cancel(m_task_t task);
 XBT_PUBLIC(MSG_error_t) MSG_task_destroy(m_task_t task);
 
-MSG_error_t MSG_task_receive_from_host(m_task_t * task, const char *alias,
+XBT_PUBLIC(MSG_error_t) MSG_task_receive_from_host(m_task_t * task, const char *alias,
                                        m_host_t host);
 
 XBT_PUBLIC(MSG_error_t) MSG_task_execute(m_task_t task);

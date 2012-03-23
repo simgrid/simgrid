@@ -38,8 +38,8 @@
      </ASroute>
      
      <bypassRoute src="my_cluster_1" dst="my_cluster_2"
-     gw_src="my_cluster_$1src_router" 
-     gw_dst="my_cluster_$1dst_router">
+     gw_src="my_cluster_1_router" 
+     gw_dst="my_cluster_2_router">
         <link_ctn id="link_tmp"/>  
      </bypassRoute>
 </AS>

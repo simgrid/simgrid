@@ -1,176 +1,137 @@
+MSG comes with an extensive set of examples. It is sometimes difficult
+to find the one you need. This list aims at helping you finding the
+example from which you can learn what you want to.
 
+Basic examples and features
+===========================
+ * sendrecv/sendrecv.c: Ping-pong example. It's hard to think of a
+   simpler example. The tesh files laying in the directory are
+   instructive concerning the way to pass options to the simulators
+   (as described in "Simgrid options and configurations").
 
-Examples containing in this directory
+ * masterslave/masterslave_forwarder.c: Master/slaves example. This
+   good old example is also very simple. Its basic version is fully
+   commented in the web documentation, but several variants can be
+   found in the same directory.
 
+ * masterslave/masterslave_console.c: demonstrate how to use lua files
+   instead of XML for the platform and deployment declaration using
+   MSG_load_platform_script(). The most interesting part is probably
+   not the C code, but rather the masterslave/masterslave_script.lua,
+   which demonstrates how to express the platform and deployment in
+   lua.
 
+ * migration/migration.c Demonstrates how to use the
+   MSG_process_migrate() function to let processes change the host
+   they run on after their start.
 
-===============================================================================
-* sendrecv/sendrecv.c           
-OLD NAME: ping_pong.c
-===============================================================================
+ * suspend/suspend.c: Demonstrates how to suspend and resume processes
+   using MSG_process_suspend() and MSG_process_resume().
 
+ * properties/msg_prop.c Attaching arbitrary informations to host,
+   processes and such, and retrieving them with
+   MSG_host_get_properties(), MSG_host_get_property_value(),
+   MSG_process_get_properties() and MSG_process_get_property_value().
+   Also make sure to read the platform and deployment XML files to see
+   how to declare these data.
 
-    - Description:
-    Simple sendrecv example to switch network model
+ * parallel_task/parallel_task.c: Demonstrates the use of
+   MSG_parallel_task_create(), to create special tasks that run on
+   several hosts at the same time. The resulting simulations are very
+   close to what can be achieved in SimDag, but still allows to use
+   the other features of MSG (it'd be cool to be able to mix
+   interfaces, but it's not possible ATM).
 
-    - Platform Files:
-    sendrecv/platform_sendrecv.xml
-	
-    - Deployment Files:
-    sendrecv/deployment_sendrecv.xml
+ * priority/priority.c: Demonstrates the use of
+   MSG_task_set_priority() to change the computation priority of a
+   given task.
 
-    - Compile: 
-    (WARNING: the current directory must be examples/msg/)
-    make sendrecv/sendrecv
-
-    - Execute:
-    sendrecv/sendrecv <platformfile.xml> <deploymentfile.xml> --cfg=workstation/model:<networkmodel>
-    where networkmodel can be one of the following:
-        1) CLM03                 - Simple fairness model
-        2) KFCCNL05              - Maxmin fairness
-        3) KFCCNL05_proportional - Vegas TCP fairness (proportional approach)
-        4) KFCCNL05_Vegas        - Vegas TCP fairness (lagrange approach)
-        5) KFCCNL05_Reno         - Reno  TCP fairness (lagrange approach)
-
-    - Debug: 
-    (WARNING: way may want to disable compiler optimizations)
-    libtool --mode=execute gdb --args sendrecv/sendrecv <parameters>
-
-    - More info:
-    sendrecv/README
-
-
-
-===============================================================================
-* masterslave/masterslave.c
-OLD NAME: msg_test_communication_time.c
-===============================================================================
-
-
-    - Description:
-    Simple master/slave application
-    
-    - Platform Files:
-    small_platform.xml    
-	
-    - Deployment Files:
-    masterslave/deployment_masterslave.xml
-
-    - Compile: 
-    (WARNING: the current directory must be examples/msg/)
-    make masterslave/masterslave
-
-    - Execute:
-    masterslave/masterslave <platformfile.xml> <deploymentfile.xml>	    
-
-
-
-===============================================================================
-* masterslave/masterslave_forwarder.c
-OLD NAME: msg_test.c
-===============================================================================
-
-
-    - Description:
-    Simple master/slave application using a forwarder module
-    
-    - Platform Files:
-    msg_platform.xml    
-	
-    - Deployment Files:
-    masterslave/deployment_masterslave_forwarder.xml
-
-    - Compile: 
-    (WARNING: the current directory must be examples/msg/)
-    make masterslave/masterslave_forwarder
-
-    - Execute:
-    masterslave/masterslave_forwarder <platformfile.xml> <deploymentfile.xml>	    
-
-
-===============================================================================
-* masterslave/masterslave_bypassed.c
-OLD NAME: msg_test_surfxml_bypassed.c
-===============================================================================
-
-    - Description:
-    The same master/slave example without using the xml parser.
-
-    - Platform Files:
-    NONE    
-	
-    - Deployment Files:
-    NONE
-
-    - Compile: 
-    (WARNING: the current directory must be examples/msg/)
-    make masterslave/masterslave_bypassed
-
-    - Execute:
-    masterslave/masterslave_bypassed
+Asynchronous communications
+===========================
+There is several examples of asynchronous communications coming in the
+archive. In addition to the fully documented example [50]Asynchronous
+communications, there is several other examples in the archive:
    
+ * msg/icomms/peer.c: basic example of async functions
+   (MSG_task_isend, MSG_task_irecv, MSG_comm_wait)
+ * msg/icomms/peer2.c: demonstrates the MSG_comm_waitall() function
+ * msg/icomms/peer3.c: demonstrates the MSG_comm_waitany() function
 
-===============================================================================
-* suspend/suspend.c
-OLD NAME: msg_test_test_suspend.c
-===============================================================================
+Tracing and vizualization features
+==================================
+ * tracing/simple.c very simple program that creates, executes and
+   destroy a task
+ * tracing/ms.c TODO
+ * tracing/categories.c example with the declaration of multiple
+   categories
+ * tracing/procmig.c example to trace process migration using the mask
+   TRACE_PROCESS
+ * tracing/trace_platform.c: Demonstrates how to trace the platform
+ * tracing/user_variables.c: Demonstrates how to trace user-provided
+   variables
 
+Models-related examples
+=======================
 
-    - Description: 
-    Test the suspend (MSG_process_suspend) and resume (MSG_process_resume)
-    msg features.
-    
-    - Platform Files:
-    msg_platform.xml
-	
-    - Deployment Files:
-    suspend/deployment_suspend.xml
+Packet level simulators
+-----------------------
+These examples demonstrate how to use the bindings to classical
+Packet-Level Simulators (PLS), as explained in the relevant part of
+the web documentation. The most interesting is probably not the C
+files since they are unchanged from the other simulations, but the
+associated files, such as the platform files to see how to declare a
+platform to be used with the PLS bindings of SimGrid and the tesh
+files to see how to actually start a simulation in these settings.
+   
+ * ns3: Simple ping-pong using ns3 instead of the SimGrid models
+ * gtnets Simple ping-pong using GTNeTs instead of the SimGrid models
 
-    - Compile: 
-    (WARNING: the current directory must be examples/msg/)
-    make suspend/suspend 
+Other resource kinds
+--------------------
+This section contains some sparse examples of how to use the other
+kind of resources, such as disk or GPU. These resources are quite
+experimental for now, but here we go anyway. 
 
-    - Execute:
-    suspend/suspend <platformfile.xml> <deploymentfile.xml>
+ * io/file.c Example with the disk resource
+ * gpu/test_MSG_gpu_task_create.c Example of use of the very
+   experimental (for now) GPU resource.
 
+Trace driven simulations
+========================
 
+The actions/actions.c example demonstrates how to run trace-driven
+simulations. It is very handy when you want to test an algorithm or
+protocol that does nothing unless it receives some events from
+outside. For example, a P2P protocol reacts to requests from the user,
+but does nothing if there is no such event.
 
+In such situations, SimGrid allows to write your protocol in your C
+file, and the events to react to in a separate text file. Declare a
+function handling each of the events that you want to accept in your
+trace files, register them using MSG_action_register in your main, and
+then use MSG_action_trace_run to launch the simulation. You can either
+have one trace file containing all your events, or a file per
+simulated process. Check the tesh files in the example directory for
+details on how to do it.
 
-===============================================================================
-CHANGE LOG
-===============================================================================
+This example uses this approach to replay MPI-like traces. It comes
+with a set of event handlers reproducing MPI events. This is somehow
+similar to SMPI, yet differently implemented. This code should
+probably be changed to use SMPI internals instead, but wasn't, so far.
 
-original file                              new file
+Examples of full applications
+=============================
 
+ * token_ring/ring_call.c: Classical token ring communication, where a
+   token is exchanged along a ring to reach every participant.
 
-SEND/RECV EXAMPLE
+ * pmm/msg_pmm.c: Parallel Matrix Multiplication is a little
+   application. This is something that most MPI developper have
+   written during their class, here implemented using MSG instead of
+   MPI.
 
-./ping_pong.c             ./sendrecv/sendrecv.c
-
-MASTER/SLAVE FORWARDER
-
-./msg_test.c              ./masterslave/masterslave_forwarder.c
-./msg_deployment.xml      ./masterslave/deployment_masterslave_forwarder.xml
-./msg_test.tesh.in        ./masterslave/masterslave_forwarder.tesh.in
-
-MASTER/SLAVE SIMPLE
-
-./msg_test_communication_time.c        ./masterslave/masterslave.c
-./small_deployment.xml                 ./masterslave/deployment_masterslave.xml
-./msg_test_communication_time.tesh.in  ./masterslave/masterslave.tesh.in
-
-MASTER/SLAVE BYPASS
-
-./msg_test_surfxml_bypassed.c ./masterslave/masterslave_bypass.c
-./flexml_bypass.tesh.in       ./masterslave/masterslave_bypass.tesh.in
-
-
-SUSPEND
-
-./msg_test_test_suspend.c     ./suspend/suspend.c
-                              ./suspend/deployment_suspend.xml
-./suspend.tesh.in             ./suspend/suspend.tesh.in
-
-
-
-
+ * chord/chord.c: Classical Chord P2P protocol This example implements
+   the well known Chord P2P protocol. Its main advantage is that it
+   constitute a fully working non-trivial example. In addition, its
+   implementation is rather efficient, as demonstrated in
+   [57]http://hal.inria.fr/inria-00602216/

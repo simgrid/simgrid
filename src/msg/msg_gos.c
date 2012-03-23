@@ -153,6 +153,12 @@ MSG_parallel_task_create(const char *name, int host_nb,
   return task;
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param task
+ * \return
+ */
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
   simdata_task_t simdata = NULL;
@@ -247,6 +253,14 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   }
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param task
+ * \param alias
+ * \param host
+ * \return
+ */
 MSG_error_t
 MSG_task_receive_from_host(m_task_t * task, const char *alias,
                            m_host_t host)
@@ -254,11 +268,26 @@ MSG_task_receive_from_host(m_task_t * task, const char *alias,
   return MSG_task_receive_ext(task, alias, -1, host);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param task
+ * \param alias
+ * \return
+ */
 MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
 {
   return MSG_task_receive_with_timeout(task, alias, -1);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param task
+ * \param alias
+ * \param timeout
+ * \return
+ */
 MSG_error_t
 MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
                               double timeout)
@@ -266,6 +295,15 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
   return MSG_task_receive_ext(task, alias, timeout, NULL);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param task
+ * \param alias
+ * \param timeout
+ * \param host
+ * \return
+ */
 MSG_error_t
 MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
                      m_host_t host)
@@ -300,7 +338,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
  *
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
- * \param match_fun boolean function taking the #match_data provided by sender (here), and the one of the receiver (if any) and returning whether they match
+ * \param match_fun boolean function taking the match_data provided by sender (here), and the one of the receiver (if any) and returning whether they match
  * \param match_data user provided data passed to match_fun
  * \return the msg_comm_t communication created
  */
@@ -670,6 +708,12 @@ MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
   return comm->status;
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param comm
+ * \return
+ */
 m_task_t MSG_comm_get_task(msg_comm_t comm)
 {
   xbt_assert(comm, "Invalid parameter");
@@ -696,13 +740,27 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
   }
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param task
+ * \param alias
+ * \return
+ */
 MSG_error_t MSG_task_send(m_task_t task, const char *alias)
 {
   XBT_DEBUG("MSG_task_send: Trying to send a message on mailbox '%s'", alias);
   return MSG_task_send_with_timeout(task, alias, -1);
 }
 
-
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param task
+ * \param alias
+ * \param maxrate
+ * \return
+ */
 MSG_error_t
 MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
 {
@@ -710,7 +768,14 @@ MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
   return MSG_task_send(task, alias);
 }
 
-
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param task
+ * \param alias
+ * \param timeout
+ * \return
+ */
 MSG_error_t
 MSG_task_send_with_timeout(m_task_t task, const char *alias,
                            double timeout)
@@ -719,6 +784,12 @@ MSG_task_send_with_timeout(m_task_t task, const char *alias,
                                       task, timeout);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param alias
+ * \return
+ */
 int MSG_task_listen(const char *alias)
 {
   CHECK_HOST();
@@ -726,6 +797,13 @@ int MSG_task_listen(const char *alias)
   return !MSG_mailbox_is_empty(MSG_mailbox_get_by_alias(alias));
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param alias
+ * \param host
+ * \return
+ */
 int MSG_task_listen_from_host(const char *alias, m_host_t host)
 {
   CHECK_HOST();
@@ -735,6 +813,12 @@ int MSG_task_listen_from_host(const char *alias, m_host_t host)
                                                (alias), host);
 }
 
+/** \ingroup msg_gos_functions
+ * \brief Description forthcoming (FIXME)
+ *
+ * \param alias
+ * \return
+ */
 int MSG_task_listen_from(const char *alias)
 {
   m_task_t task;
@@ -993,11 +1077,6 @@ MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
   XBT_WARN("DEPRECATED! Now use MSG_task_receive_with_timeout");
   return MSG_task_get_ext(task, channel, max_duration, NULL);
 }
-
-/** \defgroup msg_gos_functions MSG Operating System Functions
- *  \brief This section describes the functions that can be used
- *  by an agent for handling some task.
- */
 
 MSG_error_t
 MSG_task_get_ext(m_task_t * task, m_channel_t channel, double timeout,

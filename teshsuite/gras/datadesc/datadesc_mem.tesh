@@ -1,5 +1,6 @@
 
 p Check the marshaling facilities (trying to to do a in-memory copy)
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ gras/datadesc/datadesc_usage --copy "--log=root.fmt:%m%n"
 > Memory copy
 > ---- Test on integer ----

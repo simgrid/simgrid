@@ -16,19 +16,26 @@
 #include "msg/msg.h"
 #include "simdag/simdag.h"
 
+/*
+ * Functions to manage tracing categories
+ */
 XBT_PUBLIC(void) TRACE_category(const char *category);
 XBT_PUBLIC(void) TRACE_category_with_color (const char *category, const char *color);
 XBT_PUBLIC(void) TRACE_msg_set_task_category(m_task_t task, const char *category);
-XBT_PUBLIC(void) TRACE_msg_set_process_category(m_process_t process, const char *category, const char *color);
 XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
 XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task, const char *category);
 
+/*
+ * Functions to manage tracing marks (used for trace comparison experiments)
+ */
 XBT_PUBLIC(void) TRACE_declare_mark(const char *mark_type);
 XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
 
-XBT_PUBLIC(const char *) TRACE_node_name (xbt_node_t node);
-XBT_PUBLIC(xbt_graph_t) TRACE_platform_graph (void);
-XBT_PUBLIC(void) TRACE_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
+/*
+ * Function used by graphicator (transform a SimGrid platform
+ * file in a graphviz dot file with the network topology)
+ */
+XBT_PUBLIC(int) TRACE_platform_graph_export_graphviz (const char *filename);
 
 /*
  * User-variables related functions
@@ -66,16 +73,13 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const ch
 #define TRACE_category(category)
 #define TRACE_category_with_color(category,color)
 #define TRACE_msg_set_task_category(task,category)
-#define TRACE_msg_set_process_category(process,category,color)
 #define TRACE_smpi_set_category(category)
 #define TRACE_sd_set_task_category(task,category)
 
 #define TRACE_declare_mark(mark_type)
 #define TRACE_mark(mark_type,mark_value)
 
-#define TRACE_node_name(node)
-#define TRACE_platform_graph(void)
-#define TRACE_platform_graph_export_graphviz(g,filename)
+#define TRACE_platform_graph_export_graphviz(filename)
 
 #define TRACE_host_variable_declare(var)
 #define TRACE_host_variable_declare_with_color(var,color)

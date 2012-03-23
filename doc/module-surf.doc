@@ -8,15 +8,6 @@
 
 */
 
-/**     \addtogroup SURF_simulation
-        \ingroup SURF_API  */
-/**     \addtogroup SURF_actions
-        \ingroup SURF_API  */
-/**     \addtogroup SURF_resources
-        \ingroup SURF_API  */
-/**     \addtogroup SURF_build_api
-        \ingroup SURF_API  */
-
 /** \defgroup SURF_simulation Simulation
     \ingroup SURF_API
     \brief Functions for creating the environment and launching the simulation
@@ -64,8 +55,9 @@
     surf_workstation_resource_init_CLM03() or surf_workstation_resource_init_KCCFLN05()
     to create the platform.
 
-    Then you can access the workstations and the network links with the global variables \ref workstation_set
-    and \ref network_link_set. Some functions in \a surf_workstation_resource->extension_public can give
+    Then you can access the workstations and the network links with
+    the global variables \ref host_lib
+    and \ref link_lib. Some functions in \a surf_workstation_resource->extension_public can give
     you some information about:
 	- a workstation: get_speed(), get_available_speed();
 	- a network link: get_link_name(), get_link_latency(), get_link_bandwith();

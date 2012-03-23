@@ -2,6 +2,7 @@
 p Check the marshaling facilities (trying to read what we write)
 $ rm -f datadesc_usage.out
 
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ gras/datadesc/datadesc_usage --write "--log=root.fmt:%m%n"
 > Write to file datadesc_usage.out
 > ---- Test on integer ----
@@ -25,6 +26,7 @@ $ gras/datadesc/datadesc_usage --write "--log=root.fmt:%m%n"
 > ---- Test on struct containing dynamic array and its size when size=0 (cbps test) ----
 > Exiting GRAS
 
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ gras/datadesc/datadesc_usage --read "--log=root.fmt:%m%n"
 > Read from file datadesc_usage.out
 > ---- Test on integer ----

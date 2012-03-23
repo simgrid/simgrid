@@ -1,5 +1,6 @@
 
 ! setenv SG_TEST_blah=blah
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_ENV ./properties_alice --log=root.fmt=%P:%t%e%m%n $ARGS
 > alice:main == Dump all the properties of current host
 > alice:main == Dump all the properties of alice
@@ -9,6 +10,7 @@ $ $SG_TEST_ENV ./properties_alice --log=root.fmt=%P:%t%e%m%n $ARGS
 > alice:main Exiting GRAS
 
 ! setenv SG_TEST_blah=blah
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_ENV ./properties_bob --log=root.fmt=%P:%t%e%m%n $ARGS
 > bob:main == Dump all the properties of host1
 > bob:main == Try to get a property that does not exist

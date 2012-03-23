@@ -26,8 +26,8 @@ static double time_to_next_flow_completion = -1;
 static double ns3_share_resources(double min);
 static void ns3_update_actions_state(double now, double delta);
 static void finalize(void);
-static surf_action_t ns3_communicate(const char *src_name,
-                                 const char *dst_name, double size, double rate);
+static surf_action_t ns3_communicate(void *src_elm, void *dst_elm,
+    double size, double rate);
 static void action_suspend(surf_action_t action);
 static void action_resume(surf_action_t action);
 static int action_is_suspended(surf_action_t action);
@@ -232,10 +232,10 @@ static double ns3_get_link_bandwidth (const void *link)
   return bdw;
 }
 
-static xbt_dynar_t ns3_get_route(const char *src, const char *dst)
+static xbt_dynar_t ns3_get_route(void *src_card, void *dst_card)
 {
   xbt_dynar_t route = NULL;
-  routing_get_route_and_latency(src, dst, &route, NULL);
+  routing_get_route_and_latency(src_card, dst_card, &route, NULL);
   return route;
 }
 
@@ -260,10 +260,9 @@ static void create_ns3_topology(void)
   onelink_t onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
-    char *src = onelink->src;
-    char *dst = onelink->dst;
+    char *src = ((network_element_t)onelink->src)->name;
+    char *dst = ((network_element_t)onelink->dst)->name;
     void *link = onelink->link_ptr;
-
     if( strcmp(src,dst) && ((surf_ns3_link_t)link)->created){
       XBT_DEBUG("Route from '%s' to '%s' with link '%s'",src,dst,((surf_ns3_link_t)link)->data->id);
       char * link_bdw = xbt_strdup(((surf_ns3_link_t)link)->data->bdw);
@@ -444,7 +443,8 @@ static void ns3_update_actions_state(double now, double delta)
       double data_delta_sent = data_sent - action->last_sent;
 
       xbt_dynar_t route = NULL;
-      routing_get_route_and_latency (action->src_name, action->dst_name, &route, NULL);
+
+      routing_get_route_and_latency (action->src_elm, action->dst_elm, &route, NULL);
       unsigned int i;
       for (i = 0; i < xbt_dynar_length (route); i++){
         surf_ns3_link_t *link = ((surf_ns3_link_t*)xbt_dynar_get_ptr (route, i));
@@ -478,20 +478,20 @@ static void ns3_update_actions_state(double now, double delta)
 }
 
 /* Max durations are not supported */
-static surf_action_t ns3_communicate(const char *src_name,
-                                 const char *dst_name, double size, double rate)
+static surf_action_t ns3_communicate(void *src_elm,
+    void *dst_elm, double size, double rate)
 {
   surf_action_network_ns3_t action = NULL;
 
-  XBT_DEBUG("Communicate from %s to %s",src_name,dst_name);
+  XBT_DEBUG("Communicate from %s to %s",((network_element_t)src_elm)->name,((network_element_t)dst_elm)->name);
   action = surf_action_new(sizeof(s_surf_action_network_ns3_t), size, surf_network_model, 0);
 
-  ns3_create_flow(src_name, dst_name, surf_get_clock(), size, action);
+  ns3_create_flow(((network_element_t)src_elm)->name, ((network_element_t)dst_elm)->name, surf_get_clock(), size, action);
 
 #ifdef HAVE_TRACING
   action->last_sent = 0;
-  action->src_name = xbt_strdup (src_name);
-  action->dst_name = xbt_strdup (dst_name);
+  action->src_elm = src_elm;
+  action->dst_elm = dst_elm;
 #endif
 
   return (surf_action_t) action;
@@ -522,8 +522,6 @@ static int action_unref(surf_action_t action)
     xbt_swag_remove(action, action->state_set);
 
 #ifdef HAVE_TRACING
-    xbt_free(((surf_action_network_ns3_t)action)->src_name);
-    xbt_free(((surf_action_network_ns3_t)action)->dst_name);
     xbt_free(action->category);
 #endif
     XBT_DEBUG ("Removing action %p", action);

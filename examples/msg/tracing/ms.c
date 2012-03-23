@@ -4,6 +4,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>tracing/ms.c</b> This is a master/slave program where the master creates
+ * tasks, send them to the slaves. For each task received, the slave executes
+ * it and then destroys it. This program uses several tracing functions that
+ * enable the tracing of categorized resource utilization, the use of trace marks,
+ * and user variables associated to the hosts of the platform file.
+ * You might want to run this program with the following parameters:
+ * --cfg=tracing/categorized:1
+ * --cfg=tracing/uncategorized:1
+ * --cfg=triva/categorized:triva_cat.plist
+ * --cfg=triva/uncategorized:triva_uncat.plist
+ * (See \ref tracing_tracing_options for details)
+ */
+
 #include <stdio.h>
 #include "msg/msg.h"
 #include "xbt/sysdep.h"         /* calloc, printf */

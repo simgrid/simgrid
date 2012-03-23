@@ -11,7 +11,17 @@
 #include "xbt/asserts.h"
 #include "simgrid/modelchecker.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
+/** @addtogroup MSG_examples
+ *
+ *  - <b>chord/chord.c: Classical Chord P2P protocol</b>
+ *    This example implements the well known Chord P2P protocol. Its
+ *    main advantage is that it constitute a fully working non-trivial
+ *    example. In addition, its implementation is rather efficient, as 
+ *    demonstrated in http://hal.inria.fr/inria-00602216/
+ */
+
+ 
+ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
                              "Messages specific for this msg example");
 
 #define COMM_SIZE 10

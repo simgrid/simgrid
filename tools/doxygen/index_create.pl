@@ -47,7 +47,7 @@ print OUTPUT <<EOF;
 
 EOF
 
-foreach $type qw(define enumeration enumvalue function typedef) {
+foreach $type (qw(define enumeration enumvalue function typedef)) {
     if(defined $database{$type}) {
 	print OUTPUT "<h2>$type</h2> \n  <ul>\n";
 	foreach $name (sort keys %{$database{$type}}) {

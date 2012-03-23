@@ -45,11 +45,6 @@ typedef struct s_smpi_factor {
   double value;
 } s_smpi_factor_t;
 
-typedef struct s_net_card *net_card_t;
-typedef struct s_net_card {
-  char* name;
-  void* routing_obj;
-} s_net_card_t;
 
 double sg_sender_gap = 0.0;
 double sg_latency_factor = 1.0; /* default value; can be set by model or from command line */
@@ -205,6 +200,7 @@ static void *net_create_resource(const char *name,
     lmm_constraint_shared(nw_link->lmm_resource.constraint);
 
   xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, nw_link);
+  XBT_DEBUG("Create link '%s'",name);
 
   return nw_link;
 }
@@ -747,8 +743,8 @@ static void net_update_resource_state(void *id,
 }
 
 
-static surf_action_t net_communicate(const char *src_name,
-                                     const char *dst_name, double size,
+static surf_action_t net_communicate(void *src,
+                                     void *dst, double size,
                                      double rate)
 {
   unsigned int i;
@@ -762,12 +758,12 @@ static surf_action_t net_communicate(const char *src_name,
 
   xbt_dynar_t route = xbt_dynar_new(global_routing->size_of_link, NULL);
 
-  XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
+  XBT_IN("(%s,%s,%g,%g)", ((network_element_t)src)->name, ((network_element_t)dst)->name, size, rate);
 
-  routing_get_route_and_latency(src_name, dst_name, &route, &latency);
+  routing_get_route_and_latency((network_element_t)src, (network_element_t)dst, &route, &latency);
   xbt_assert(!xbt_dynar_is_empty(route) || latency,
              "You're trying to send data from %s to %s but there is no connection at all between these two hosts.",
-             src_name, dst_name);
+             ((network_element_t)src)->name, ((network_element_t)dst)->name);
 
   xbt_dynar_foreach(route, i, link) {
     if (link->lmm_resource.state_current == SURF_RESOURCE_OFF) {
@@ -776,7 +772,7 @@ static surf_action_t net_communicate(const char *src_name,
     }
   }
   if (sg_network_crosstraffic == 1) {
-    routing_get_route_and_latency(dst_name, src_name, &back_route, NULL);
+    routing_get_route_and_latency((network_element_t)dst, (network_element_t)src, &back_route, NULL);
     xbt_dynar_foreach(back_route, i, link) {
       if (link->lmm_resource.state_current == SURF_RESOURCE_OFF) {
         failed = 1;
@@ -826,7 +822,7 @@ static surf_action_t net_communicate(const char *src_name,
     link = *(link_CM02_t *) xbt_dynar_get_ptr(route, 0);
     gap_append(size, link, action);
     XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",
-              action, src_name, dst_name, action->sender.gap,
+              action, ((network_element_t)src)->name, ((network_element_t)dst)->name, action->sender.gap,
               action->latency);
   }
 
@@ -883,7 +879,7 @@ static surf_action_t net_communicate(const char *src_name,
   return (surf_action_t) action;
 }
 
-static xbt_dynar_t net_get_route(const char *src, const char *dst)
+static xbt_dynar_t net_get_route(void *src, void *dst)
 {
   xbt_dynar_t route = NULL;
   routing_get_route_and_latency(src, dst, &route, NULL);

@@ -57,6 +57,7 @@ void jedule_log_sd_event(SD_task_t task) {
 static void create_hierarchy(AS_t current_comp,
 		jed_simgrid_container_t current_container) {
 	xbt_dict_cursor_t cursor = NULL;
+	unsigned int dynar_cursor;
 	char *key;
 	AS_t elem;
 	network_element_t network_elem;
@@ -68,11 +69,10 @@ static void create_hierarchy(AS_t current_comp,
 
 		hosts = xbt_dynar_new(sizeof(char*), NULL);
 
-		xbt_dict_foreach(current_comp->to_index, cursor, key, network_elem) {
+		xbt_dynar_foreach(current_comp->index_network_elm, 
+				  dynar_cursor, network_elem) {
 			char *hostname;
-			XBT_DEBUG("key %s value %p\n", key, network_elem);
-			//xbt_dynar_push_as(hosts, char*, key);
-			hostname = strdup(key);
+			hostname = strdup(network_elem->name);
 			xbt_dynar_push(hosts, &hostname);
 		}
 

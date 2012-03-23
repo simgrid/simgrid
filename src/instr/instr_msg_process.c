@@ -10,14 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
-/*
- * TRACE_msg_set_process_category: tracing interface function
- */
-void TRACE_msg_set_process_category(m_process_t process, const char *category, const char *color)
-{
-  xbt_die("deprecated");
-}
-
 char *instr_process_id (m_process_t proc, char *str, int len)
 {
   return instr_process_id_2 (proc->name, proc->pid, str, len);//MSG_process_get_name(proc), MSG_process_get_PID(proc), str, len);

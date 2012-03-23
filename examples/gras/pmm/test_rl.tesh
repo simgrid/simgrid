@@ -1,60 +1,70 @@
 # Ignore the output of slaves since it depends on the order of connexion
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 0 --log=root.fmt:%m%n
 > Sensor 0 starting
 > Receive my pos and assignment
 > Exiting GRAS
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 1 --log=root.fmt:%m%n
 > Sensor 1 starting
 > Receive my pos and assignment
 > Exiting GRAS
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 2 --log=root.fmt:%m%n
 > Sensor 2 starting
 > Receive my pos and assignment
 > Exiting GRAS
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 3 --log=root.fmt:%m%n
 > Sensor 3 starting
 > Receive my pos and assignment
 > Exiting GRAS
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 4 --log=root.fmt:%m%n
 > Sensor 4 starting
 > Receive my pos and assignment
 > Exiting GRAS
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 5 --log=root.fmt:%m%n
 > Sensor 5 starting
 > Receive my pos and assignment
 > Exiting GRAS
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 6 --log=root.fmt:%m%n
 > Sensor 6 starting
 > Receive my pos and assignment
 > Exiting GRAS
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 7 --log=root.fmt:%m%n
 > Sensor 7 starting
 > Receive my pos and assignment
 > Exiting GRAS
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_slave$EXEEXT 127.0.0.1:4242 8 --log=root.fmt:%m%n
 > Sensor 8 starting
 > Receive my pos and assignment
 > Exiting GRAS
 
 ! timeout no
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 & $SG_TEST_EXENV ./pmm_master$EXEEXT 4242 --log=root.fmt:%m%n
 > Wait for peers for 2 sec
 > Good. Got 9 pals

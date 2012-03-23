@@ -1,6 +1,7 @@
 p Runs the 'ping' test within the simulator (simulation times valid for 32bits architectures)
 
 ! output sort
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV ./ping_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/ping.xml $ARGS "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:server@Tremblay) Launch server (port=4000)
 > [  0.000000] (2:client@Fafard) Launch client (server on Tremblay:4000)

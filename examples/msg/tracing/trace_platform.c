@@ -4,6 +4,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>tracing/trace_platform.c</b>: This program demonstrates how a
+ * platform file is traced to a Paje trace file format using the tracing
+ * mechanism of Simgrid.
+ * You might want to run this program with the following parameters:
+ * --cfg=tracing:1
+ * --cfg=tracing/categorized:1
+ * (See \ref tracing_tracing_options for details)
+ */
+
 #include <stdio.h>
 #include "msg/msg.h"
 #include "xbt/sysdep.h"         /* calloc, printf */

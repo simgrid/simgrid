@@ -1,3 +1,15 @@
+-- Copyright (c) 2010-2012. The SimGrid Team. All rights reserved.
+
+-- This program is free software; you can redistribute it and/or modify it
+--under the terms of the license (GNU LGPL) which comes with this package.
+
+
+-- This file describes a platform very similar to the small_platform.xml, but in lua
+-- It is naturally to be used with the MSG_load_platform_script function
+
+-- Of course, such a flat file is maybe not very interesting wrt xml.
+-- The full power of lua reveals when you describe your platform programatically. 
+
 require "simgrid"
 
   simgrid.AS.new{id="AS0",mode="Full"}; 

@@ -12,23 +12,29 @@ static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
   return NULL;
 }
 
-static void none_get_route_and_latency(AS_t rc, const char *src, const char *dst,
+static void none_get_route_and_latency(AS_t rc, network_element_t src, network_element_t dst,
                                        route_t res,double *lat)
 {
 }
 
 static route_t none_get_bypass_route(AS_t rc,
-                                              const char *src,
-                                              const char *dst) {
+    network_element_t src,
+    network_element_t dst) {
   return NULL;
 }
 
-static void none_parse_PU(AS_t rc, const char *name) {
+static int none_parse_PU(AS_t rc, network_element_t elm) {
+  XBT_DEBUG("Load process unit \"%s\"", elm->name);
+  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
   /* don't care about PUs */
+  return -1;
 }
 
-static void none_parse_AS(AS_t rc, const char *name) {
+static int none_parse_AS(AS_t rc, network_element_t elm) {
+  XBT_DEBUG("Load Autonomous system \"%s\"", elm->name);
+  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
   /* even don't care about sub-ASes -- I'm as nihilist as an old punk*/
+  return -1;
 }
 
 /* Creation routing model functions */
@@ -46,15 +52,15 @@ AS_t model_none_create_sized(size_t childsize) {
   new_component->get_onelink_routes = none_get_onelink_routes;
   new_component->get_bypass_route = none_get_bypass_route;
   new_component->finalize = model_none_finalize;
-
   new_component->routing_sons = xbt_dict_new_homogeneous(NULL);
+  new_component->index_network_elm = xbt_dynar_new(sizeof(char*),NULL);
 
   return new_component;
 }
 
 void model_none_finalize(AS_t as) {
   xbt_dict_free(&as->routing_sons);
-  xbt_free(as->name);
+  xbt_dynar_free(&as->index_network_elm);
   xbt_free(as);
 }
 

@@ -1,8 +1,18 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/** @addtogroup MSG_examples
+ * 
+ * - <b>masterslave/masterslave_console.c</b>: demonstrate how to use
+ *   lua files instead of XML for the platform and deployment
+ *   declaration using @ref MSG_load_platform_script. The most
+ *   interesting part is probably not the C code, but rather the
+ *   <b>masterslave/masterslave_script.lua</b>, which demonstrates
+ *   how to express the platform and deployment in lua. 
+ *
+ */
 
 #include <stdio.h>
 #include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */

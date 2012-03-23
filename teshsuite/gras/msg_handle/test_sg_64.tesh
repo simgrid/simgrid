@@ -1,6 +1,7 @@
 p Runs the 'msg_handle' test within the simulator (simulation times valid for 64bits architectures)
 
 ! output sort
+! setenv GRAS_NO_WARN_EXPERIMENTAL=1
 $ $SG_TEST_EXENV gras/msg_handle/msg_handle_simulator$EXEEXT ${srcdir:=.}/../examples/msg/small_platform.xml ${srcdir:=.}/gras/msg_handle/msg_handle.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:server@Tremblay) Launch server (port=4000)
 > [  0.000000] (2:client@Fafard) Launch client (port=4000)

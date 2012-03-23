@@ -14,6 +14,14 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
+/** @addtogroup MSG_examples
+ * 
+ * - <b>priority/priority.c</b>: Demonstrates the use of @ref
+ *   MSG_task_set_priority to change the computation priority of a
+ *   given task.
+ *
+ */
+
 static int test(int argc, char *argv[])
 {
   double computation_amount = 0.0;

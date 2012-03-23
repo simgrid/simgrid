@@ -70,11 +70,12 @@ void gras_init(int *argc, char **argv)
   int first = 0;
   gras_procdata_t *pd;
   gras_msg_procdata_t msg_pd;
-  XBT_VERB("Initialize GRAS");
 
   xbt_getpid = gras_os_getpid;
   /* First initialize the XBT */
   xbt_init(argc, argv);
+
+  XBT_VERB("Initialize GRAS");
 
   /* module registrations:
    *    - declare process specific data we need (without creating them)
@@ -94,6 +95,9 @@ void gras_init(int *argc, char **argv)
     XBT_LOG_CONNECT(gras_virtu, gras);
     XBT_LOG_CONNECT(gras_virtu_emul, gras_virtu);
     XBT_LOG_CONNECT(gras_virtu_process, gras_virtu);
+
+    if (!getenv("GRAS_NO_WARN_EXPERIMENTAL"))
+      XBT_WARN("GRAS is not well maintained anymore. We consider it to be experimental (and not stable anymore) since SimGrid 3.6. Sorry about it, please consider contributing to improve this situation");
 
     gras_trp_register();
     gras_msg_register();

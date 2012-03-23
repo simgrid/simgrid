@@ -209,7 +209,7 @@ case:
 \until }
 
 It is very similar to what we had previously, we simply retrieve the
-#gras_datadesc_type_t definitions of double and string and use them as payload
+#xbt_datadesc_type_t definitions of double and string and use them as payload
 type of our messages.
 
 The next step is to change our calls to gras_msg_send() to pass the data to
