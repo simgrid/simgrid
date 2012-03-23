@@ -17,6 +17,7 @@
    - \ref m_datatypes_management
    - \ref m_host_management
    - \ref m_task_management
+   - \ref m_file_management
    - \ref msg_gos_functions
    - \ref msg_easier_life
    - \ref msg_simulation
@@ -48,7 +49,14 @@
  *  @brief This section describes the task structure of MSG
  *         (#m_task_t) and the functions for managing it.
  */
-   
+ 
+ /** @defgroup m_file_management Managing functions of Files
+ *  @ingroup MSG_API
+ *  @brief This section describes the file structure of MSG
+ *         (#m_file_t) and the functions for managing it. It
+ *   is based on POSIX functions.
+ */  
+ 
 /** @defgroup msg_gos_functions MSG Operating System Functions
  *  @ingroup MSG_API
  *  @brief This section describes the functions that can be used
