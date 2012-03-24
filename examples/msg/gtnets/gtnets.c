@@ -70,7 +70,7 @@ int master(int argc, char *argv[])
   {                             /*  Task creation.  */
     char sprintf_buffer[64] = "Task_0";
     todo = MSG_task_create(sprintf_buffer, 0, task_comm_size, NULL);
-    TRACE_msg_set_task_category(todo, id_alias);
+    MSG_task_set_category(todo, id_alias);
     //keep track of running tasks
     gl_task_array[id] = todo;
     gl_data_size[id] = task_comm_size;
