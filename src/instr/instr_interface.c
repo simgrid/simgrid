@@ -230,6 +230,17 @@ static void instr_user_srcdst_variable(double time,
   }
 }
 
+/** \ingroup TRACE_API
+ *  \brief Creates a file with the topology of the platform file used for the simulator.
+ *
+ *  The graph topology will have the following properties: all hosts, links and routers
+ *  of the platform file are mapped to graph nodes; routes are mapped to edges.
+ *  The platform's AS are not represented in the output.
+ *
+ *  \param filename The name of the file that will hold the graph.
+ *
+ *  \return 1 of successful, 0 otherwise.
+ */
 int TRACE_platform_graph_export_graphviz (const char *filename)
 {
   /* returns 1 if successful, 0 otherwise */
