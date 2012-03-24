@@ -187,6 +187,7 @@ void TRACE_surf_resource_utilization_alloc(void);
 void TRACE_surf_resource_utilization_release(void);
 
 /* sd_instr.c */
+void TRACE_sd_set_task_category(SD_task_t task, const char *category);
 void TRACE_sd_task_create(SD_task_t task);
 void TRACE_sd_task_destroy(SD_task_t task);
 
