@@ -72,6 +72,20 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   SMPI:
   * Enable it by default now that it is considered rather stable.
 
+  TRACE:
+  * Documentation of the tracing functions.
+  * Performance gains when tracing categorized/uncategorized resource
+    utilization by avoiding calls to get route when updating resource
+    variables. LMM constraints are being used instead.
+  * API changed to set task categories. Use MSG_task_set_category instead
+    of TRACE_msg_set_task_category, and SD_task_set_category instead
+    of TRACE_sd_set_task_category. They only work if ENABLE_TRACING is ON.
+  * Bugfix for graphicator, routes not correctly obtained, memory leaks
+  * Examples for link user variables added (see at examples/msg/tracing/)
+  * Deprecated function TRACE_msg_set_process_category completely removed
+  * Trace header updated according to the latest Paje file format
+  * Tracing network lazy updates, no longer obligate users to use full updates
+
   Lua:
   * Improve the API of Lua MSG bindings, using the Lua spirit.
   * Each simulated process now lives in its own Lua world (globals are
