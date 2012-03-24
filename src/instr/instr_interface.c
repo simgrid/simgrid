@@ -37,7 +37,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
  *
  *  \param category The name of the new tracing category to be created.
  *
- *  \see TRACE_category_with_color, MSG_task_set_category
+ *  \see TRACE_category_with_color, MSG_task_set_category, SD_task_set_category
  */
 void TRACE_category(const char *category)
 {
@@ -60,7 +60,7 @@ void TRACE_category(const char *category)
  *  \param color The color of the category (see \ref tracing_tracing to
  *  know how to correctly specify the color)
  *
- *  \see MSG_task_set_category
+ *  \see MSG_task_set_category, SD_task_set_category
  */
 void TRACE_category_with_color (const char *category, const char *color)
 {
