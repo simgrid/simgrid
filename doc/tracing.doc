@@ -65,39 +65,36 @@ created with the function \c MSG_task_create. The second parameter
 
 \subsection instr_uservariables_functions Tracing user variables functions
 
-\li <b>\c TRACE_[host|link]_variable_declare (const char *variable)</b>:
-Declare a user variable that will be associated to host/link. A variable can
-be used to trace user variables such as the number of tasks in a server,
-the number of clients in an application (for hosts), and so on.
+For hosts:
 
-\li <b>\c TRACE_[host|link]_variable_declare_with_color (const char
-*var, const char *color)</b>: Same as \c
-TRACE_[host|link]_variable_declare, but user decides which color will
-be assigned to the variable. The color needs to be a string with three
-numbers separated by spaces in the range [0,1]. A light-gray color can
-be specified using "0.7 0.7 0.7" as color.
+\li \c TRACE_host_variable_declare(const char *variable)
+\li \c TRACE_host_variable_declare_with_color(const char *variable, const char *color)
+\li \c TRACE_host_variable_set(const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_add(const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_sub(const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_set_with_time(double time, const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_add_with_time(double time, const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_sub_with_time(double time, const char *host, const char *variable, double value)
 
-\li <b>\c TRACE_[host|link]_variable_[set|add|sub] (const char *[host|link], const char *variable, double value)</b>:
-Set the value of a given user variable for a given host/link. The value
-of this variable is always associated to the host/link. The host/link 
-parameters should be its name as the one listed in the platform file.
+For links:
 
-\li <b>\c TRACE_[host|link]_variable_[set|add|sub]_with_time (double time, const char *[host|link], const char *variable, double value)</b>:
-Same as TRACE_[host|link]_variable_[set|add|sub], but let user specify
-the time used to trace it. Users can specify a time that is not the 
-simulated clock time as defined by the core simulator. This allows
-a fine-grain control of time definition, but should be used with 
-caution since the trace can be inconsistent if resource utilization
-traces are also traced.
+\li \c TRACE_link_variable_declare(const char *variable)
+\li \c TRACE_link_variable_declare_with_color(const char *variable, const char *color)
+\li \c TRACE_link_variable_set(const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_add(const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_sub(const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_set_with_time(double time, const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_add_with_time(double time, const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_sub_with_time(double time, const char *link, const char *variable, double value)
 
-\li <b>\c TRACE_link_srcdst_variable_[set|add|sub] (const char *src, const char *dst, const char *variable, double value)</b>:
-Same as TRACE_link_variable_[set|add|sub], but now users specify a source and
-destination hosts (as the names from the platform file). The tracing library
-will get the corresponding route that connects those two hosts (src and dst) and
-[set|add|sub] the value's variable for all the links of the route.
+For links, but use source and destination to get route:
 
-\li <b>\c TRACE_link_srcdst_variable_[set|add|sub]_with_time (double time, const char *src, const char *dst, const char *variable, double value)</b>: 
-Same as TRACE_link_srcdst_variable_[set|add|sub], but user specify a time different from the simulated time.
+\li \c TRACE_link_srcdst_variable_set(const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_add(const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_sub(const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_set_with_time(double time, const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_add_with_time(double time, const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_sub_with_time(double time, const char *src, const char *dst, const char *variable, double value)
 
 \subsection tracing_tracing_options Tracing configuration Options
 
