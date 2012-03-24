@@ -875,11 +875,18 @@ int MSG_task_listen_from(const char *alias)
 }
 
 /** \ingroup msg_gos_functions
+ * \brief Sets the tracing category of a task.
+ *
+ * This function should be called after the creation of
+ * a MSG task, to define the category of that task. The
+ * first parameter #task must contain a task that was
+ * created with the function #MSG_task_create. The second
+ * parameter #category must contain a category that was
+ * previously declared with the function #TRACE_category
+ * (or with #TRACE_category_with_color).
  *
  * See \ref tracing_tracing for details on how to trace
  * the (categorized) resource utilization.
- *
- * \brief Sets the tracing category of a task.
  *
  * \param task the task that is going to be categorized
  * \param category the name of the category to be associated to the task
@@ -892,7 +899,6 @@ void MSG_task_set_category (m_task_t task, const char *category)
   TRACE_msg_set_task_category (task, category);
 #endif
 }
-
 
 /** \ingroup msg_gos_functions
  *

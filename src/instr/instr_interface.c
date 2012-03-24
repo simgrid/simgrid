@@ -7,7 +7,6 @@
 #include "simgrid_config.h"
 
 #ifdef HAVE_TRACING
-
 #include "instr/instr_private.h"
 #include "surf/network_private.h"
 
@@ -20,11 +19,49 @@ typedef enum {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
+/** \ingroup TRACE_category
+ *  \brief Declare a new category with a random color.
+ *
+ *  This function should be used to define a user category. The
+ *  category can be used to differentiate the tasks that are created
+ *  during the simulation (for example, tasks from server1, server2,
+ *  or request tasks, computation tasks, communication tasks). All
+ *  resource utilization (host power and link bandwidth) will be
+ *  classified according to the task category. Tasks that do not
+ *  belong to a category are not traced. The color for the category
+ *  that is being declared is random. This function has no effect
+ *  if a category with the same name has been already declared.
+ *
+ * See \ref tracing_tracing for details on how to trace
+ * the (categorized) resource utilization.
+ *
+ *  \param category The name of the new tracing category to be created.
+ *
+ *  \see TRACE_category_with_color, MSG_task_set_category
+ */
 void TRACE_category(const char *category)
 {
   TRACE_category_with_color (category, NULL);
 }
 
+/** \ingroup TRACE_category
+ *  \brief Declare a new category with a color.
+ *
+ *  Same as #TRACE_category, but let user specify a color encoded as a
+ *  RGB-like string with three floats from 0 to 1. So, to specify a
+ *  red color, pass "1 0 0" as color parameter. A light-gray color
+ *  can be specified using "0.7 0.7 0.7" as color. This function has
+ *  no effect if a category with the same name has been already declared.
+ *
+ * See \ref tracing_tracing for details on how to trace
+ * the (categorized) resource utilization.
+ *
+ *  \param category The name of the new tracing category to be created.
+ *  \param color The color of the category (see \ref tracing_tracing to
+ *  know how to correctly specify the color)
+ *
+ *  \see MSG_task_set_category
+ */
 void TRACE_category_with_color (const char *category, const char *color)
 {
   /* safe switch */
@@ -58,6 +95,19 @@ void TRACE_category_with_color (const char *category, const char *color)
   instr_new_variable_type (category, final_color);
 }
 
+/** \ingroup TRACE_mark
+ * \brief Declare a new type for tracing mark.
+ *
+ * This function declares a new Paje event
+ * type in the trace file that can be used by
+ * simulators to declare application-level
+ * marks. This function is independent of
+ * which API is used in SimGrid.
+ *
+ * \param mark_type The name of the new type.
+ *
+ * \see TRACE_mark
+ */
 void TRACE_declare_mark(const char *mark_type)
 {
   /* safe switch */
@@ -69,6 +119,24 @@ void TRACE_declare_mark(const char *mark_type)
   PJ_type_event_new(mark_type, NULL, PJ_type_get_root());
 }
 
+/**
+ * \ingroup TRACE_mark
+ * \brief Create a new instance of a tracing mark type.
+ *
+ * This function creates a mark in the trace file. The
+ * first parameter had to be previously declared using
+ * #TRACE_declare_mark, the second is the identifier
+ * for this mark instance. We recommend that the
+ * mark_value is a unique value for the whole simulation.
+ * Nevertheless, this is not a strong requirement: the
+ * trace will be valid even if there are multiple mark
+ * identifiers for the same trace.
+ *
+ * \param mark_type The name of the type for which the new instance will belong.
+ * \param mark_value The name of the new instance mark.
+ *
+ * \see TRACE_declare_mark
+ */
 void TRACE_mark(const char *mark_type, const char *mark_value)
 {
   /* safe switch */

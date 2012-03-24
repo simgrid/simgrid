@@ -46,28 +46,11 @@ $ cmake -Denable_tracing=ON .
 $ make
 \endverbatim
 
-\subsection tracing_tracing_functions Tracing Functions
-
-\li <b>\c TRACE_category (const char *category)</b>: This function should be used
-to define a user category. The category can be used to differentiate the tasks
-that are created during the simulation (for example, tasks from server1,
-server2, or request tasks, computation tasks, communication tasks).
-All resource utilization (host power and link bandwidth) will be
-classified according to the task category. Tasks that do not belong to a
-category are not traced. The color for the category that is being declared
-is random (use next function to specify a color).
-
-\li <b>\c TRACE_category_with_color (const char *category, const char *color)</b>: Same
-as TRACE_category, but let user specify a color encoded as a RGB-like string with
-three floats from 0 to 1. So, to specify a red color, the user can pass "1 0 0" as
-color parameter. A light-gray color can be specified using "0.7 0.7 0.7" as color.
-
-\li <b>\c TRACE_msg_set_task_category (m_task_t task, const char *category)</b>:
-This function should be called after the creation of a MSG task, to define the
-category of that task. The first parameter \c task must contain a task that was
-created with the function \c MSG_task_create. The second parameter
-\c category must contain a category that was previously defined by the function
-\c TRACE_category.
+\subsection instr_category_functions Tracing categories functions
+\li \c TRACE_category(const char *category)
+\li \c TRACE_category_with_color(const char *category, const char *color)
+\li \c MSG_task_set_category(m_task_t task, const char *category)
+\li \c MSG_task_get_category(m_task_t task)
 
 \li <b>\c TRACE_sd_set_task_category (SD_task_t task, const char *category)</b>:
 This function should be called after the creation of a SimDAG task, to define the
@@ -76,19 +59,11 @@ created with the function \c MSG_task_create. The second parameter
 \c category must contain a category that was previously defined by the function
 \c TRACE_category.
 
-\li <b>\c TRACE_declare_mark(const char *mark_type)</b>: This function
-declares a new Paje event type in the trace file that can be used by
-simulators to declare application-level marks. This function is
-independent of which API is used in SimGrid.
+\subsection instr_mark_functions Tracing marks functions
+\li \c TRACE_declare_mark(const char *mark_type)
+\li \c TRACE_mark(const char *mark_type, const char *mark_value)
 
-\li <b>\c TRACE_mark(const char *mark_type, const char *mark_value)</b>:
-This function creates a mark in the trace file. The first parameter
-had to be previously declared using \c TRACE_declare_mark, the second
-is the identifier for this mark instance. We recommend that the \c
-mark_value (the second parameter) is a unique value for the whole
-trace file (the whole simulation). Nevertheless, this is not a strong
-requirement: the trace will be valid if there are multiple mark
-identifiers for the same trace.
+\subsection instr_uservariables_functions Tracing user variables functions
 
 \li <b>\c TRACE_[host|link]_variable_declare (const char *variable)</b>:
 Declare a user variable that will be associated to host/link. A variable can
