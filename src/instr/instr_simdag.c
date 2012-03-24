@@ -10,16 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_simdag, instr, "Tracing SimDAG");
 
-void TRACE_sd_task_create(SD_task_t task)
-{
-  task->category = NULL;
-}
-
-void TRACE_sd_task_destroy(SD_task_t task)
-{
-  xbt_free(task->category);
-}
-
 void TRACE_sd_set_task_category(SD_task_t task, const char *category)
 {
   if (!TRACE_is_enabled())

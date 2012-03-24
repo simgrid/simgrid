@@ -91,7 +91,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   sd_global->task_number++;
 
 #ifdef HAVE_TRACING
-  TRACE_sd_task_create(task);
+  task->category = NULL;
 #endif
 
   return task;
@@ -131,7 +131,7 @@ void SD_task_destroy(SD_task_t task)
   sd_global->task_number--;
 
 #ifdef HAVE_TRACING
-  TRACE_sd_task_destroy(task);
+  if (task->category) xbt_free(task->category);
 #endif
 
   XBT_DEBUG("Task destroyed.");
