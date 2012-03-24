@@ -324,7 +324,7 @@ xbt_dynar_t SD_daxload(const char *filename)
           const char *category = depafter->src->category;
           if (category){
             TRACE_category (category);
-            TRACE_sd_set_task_category (newfile, category);
+            SD_task_set_category (newfile, category);
           }
         }
 #endif
@@ -340,7 +340,7 @@ xbt_dynar_t SD_daxload(const char *filename)
           const char *category = depbefore->src->category;
           if (category){
             TRACE_category (category);
-            TRACE_sd_set_task_category (newfile, category);
+            SD_task_set_category (newfile, category);
           }
         }
 #endif
@@ -362,7 +362,7 @@ xbt_dynar_t SD_daxload(const char *filename)
             const char *category = depbefore->src->category;
             if (category){
               TRACE_category (category);
-              TRACE_sd_set_task_category (newfile, category);
+              SD_task_set_category (newfile, category);
             }
           }
 #endif
@@ -409,7 +409,7 @@ void STag_dax__job(void)
   char *category = A_dax__job_name;
   if (category){
     TRACE_category (category);
-    TRACE_sd_set_task_category(current_job, category);
+    SD_task_set_category(current_job, category);
   }
 #endif
   xbt_dict_set(jobs, A_dax__job_id, current_job, NULL);

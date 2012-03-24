@@ -51,13 +51,8 @@ $ make
 \li \c TRACE_category_with_color(const char *category, const char *color)
 \li \c MSG_task_set_category(m_task_t task, const char *category)
 \li \c MSG_task_get_category(m_task_t task)
-
-\li <b>\c TRACE_sd_set_task_category (SD_task_t task, const char *category)</b>:
-This function should be called after the creation of a SimDAG task, to define the
-category of that task. The first parameter \c task must contain a task that was
-created with the function \c MSG_task_create. The second parameter
-\c category must contain a category that was previously defined by the function
-\c TRACE_category.
+\li \c SD_task_set_category(SD_task_t task, const char *category)
+\li \c SD_task_get_category(SD_task_t task)
 
 \subsection instr_mark_functions Tracing marks functions
 \li \c TRACE_declare_mark(const char *mark_type)
