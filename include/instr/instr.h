@@ -40,8 +40,8 @@ XBT_PUBLIC(int) TRACE_platform_graph_export_graphviz (const char *filename);
  * User-variables related functions
  */
 /* for host variables */
-XBT_PUBLIC(void) TRACE_host_variable_declare (const char *var);
-XBT_PUBLIC(void) TRACE_host_variable_declare_with_color (const char *var, const char *color);
+XBT_PUBLIC(void) TRACE_host_variable_declare (const char *variable);
+XBT_PUBLIC(void) TRACE_host_variable_declare_with_color (const char *variable, const char *color);
 XBT_PUBLIC(void) TRACE_host_variable_set (const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_add (const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_sub (const char *host, const char *variable, double value);

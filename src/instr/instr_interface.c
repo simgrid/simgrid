@@ -248,14 +248,14 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  */
 
 /* for host variables */
-void TRACE_host_variable_declare (const char *var)
+void TRACE_host_variable_declare (const char *variable)
 {
-  instr_user_variable(0, NULL, var, "HOST", 0, INSTR_US_DECLARE, NULL);
+  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, NULL);
 }
 
-void TRACE_host_variable_declare_with_color (const char *var, const char *color)
+void TRACE_host_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable(0, NULL, var, "HOST", 0, INSTR_US_DECLARE, color);
+  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, color);
 }
 
 void TRACE_host_variable_set (const char *host, const char *variable, double value)
