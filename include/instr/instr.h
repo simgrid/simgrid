@@ -70,9 +70,7 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const ch
 
 #define TRACE_category(category)
 #define TRACE_category_with_color(category,color)
-#define TRACE_msg_set_task_category(task,category)
 #define TRACE_smpi_set_category(category)
-#define TRACE_sd_set_task_category(task,category)
 
 #define TRACE_declare_mark(mark_type)
 #define TRACE_mark(mark_type,mark_value)

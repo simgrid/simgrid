@@ -256,8 +256,8 @@ simulator):
 For that, you will need to create tracing categories using the
 <b>TRACE_category (...)</b> function (as explained above),
 and then classify your tasks to a previously declared category
-using the <b>TRACE_msg_set_task_category (...)</b>
-(or <b>TRACE_sd_set_task_category (...)</b> for SimDAG tasks). After
+using the <b>MSG_task_set_category (...)</b>
+(or <b>SD_task_set_category (...)</b> for SimDAG tasks). After
 recompiling, run your simulator with the following parameters:
 \verbatim
 ./your_simulator \
@@ -288,16 +288,16 @@ int main (int argc, char **argv)
   m_task_t req2 = MSG_task_create("2nd_request_task", 10, 10, NULL);
   m_task_t req3 = MSG_task_create("3rd_request_task", 10, 10, NULL);
   m_task_t req4 = MSG_task_create("4th_request_task", 10, 10, NULL);
-  TRACE_msg_set_task_category (req1, "request");
-  TRACE_msg_set_task_category (req2, "request");
-  TRACE_msg_set_task_category (req3, "request");
-  TRACE_msg_set_task_category (req4, "request");
+  MSG_task_set_category (req1, "request");
+  MSG_task_set_category (req2, "request");
+  MSG_task_set_category (req3, "request");
+  MSG_task_set_category (req4, "request");
 
   m_task_t comp = MSG_task_create ("comp_task", 100, 100, NULL);
-  TRACE_msg_set_task_category (comp, "computation");
+  MSG_task_set_category (comp, "computation");
 
   m_task_t finalize = MSG_task_create ("finalize", 0, 0, NULL);
-  TRACE_msg_set_task_category (finalize, "finalize");
+  MSG_task_set_category (finalize, "finalize");
 
   //(...)
 

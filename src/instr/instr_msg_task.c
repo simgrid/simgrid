@@ -10,9 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
 
-/*
- * TRACE_msg_set_task_category: tracing interface function
- */
 void TRACE_msg_set_task_category(m_task_t task, const char *category)
 {
   xbt_assert(task->category == NULL, "Task %p(%s) already has a category (%s).",
