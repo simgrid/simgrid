@@ -874,6 +874,45 @@ int MSG_task_listen_from(const char *alias)
   return MSG_process_get_PID(task->simdata->sender);
 }
 
+/** \ingroup msg_gos_functions
+ *
+ * See \ref tracing_tracing for details on how to trace
+ * the (categorized) resource utilization.
+ *
+ * \brief Sets the tracing category of a task.
+ *
+ * \param task the task that is going to be categorized
+ * \param category the name of the category to be associated to the task
+ *
+ * \see MSG_task_get_category, TRACE_category, TRACE_category_with_color
+ */
+void MSG_task_set_category (m_task_t task, const char *category)
+{
+#ifdef HAVE_TRACING
+  TRACE_msg_set_task_category (task, category);
+#endif
+}
+
+
+/** \ingroup msg_gos_functions
+ *
+ * \brief Gets the current tracing category of a task.
+ *
+ * \param task the task to be considered
+ *
+ * \see MSG_task_set_category
+ *
+ * \return Returns the name of the tracing category of the given task, NULL otherwise
+ */
+const char *MSG_task_get_category (m_task_t task)
+{
+#ifdef HAVE_TRACING
+  return task->category;
+#else
+  return NULL;
+#endif
+}
+
 #ifdef MSG_USE_DEPRECATED
 /** \ingroup msg_gos_functions
  *
