@@ -1,0 +1,20 @@
+/**
+\addtogroup TRACE_API
+
+\section TRACE_doc TRACE documentation
+- \ref TRACE_category
+- \ref TRACE_mark
+- \ref TRACE_user_variables
+
+\defgroup TRACE_category Tracing categories
+\ingroup TRACE_API
+\brief Functions to declare tracing categories.
+
+\defgroup TRACE_mark Tracing marks
+\ingroup TRACE_API
+\brief Functions to declare and create tracing marks.
+
+\defgroup TRACE_user_variables Tracing user variables
+\ingroup TRACE_API
+\brief Functions to declare and define user variables associated to resources.
+*/
