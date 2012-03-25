@@ -1420,7 +1420,14 @@ void SD_task_schedulel(SD_task_t task, int count, ...)
 void SD_task_set_category (SD_task_t task, const char *category)
 {
 #ifdef HAVE_TRACING
-  TRACE_sd_set_task_category (task, category);
+  if (!TRACE_is_enabled()) return;
+  if (task == NULL) return;
+  if (category == NULL){
+    if (task->category) xbt_free (task->category);
+    task->category = NULL;
+  }else{
+    task->category = xbt_strdup (category);
+  }
 #endif
 }
 
