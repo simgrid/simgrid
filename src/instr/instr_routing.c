@@ -151,7 +151,10 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
 
       //user might want to extract a graph using routes with only one link
       //see --cfg=tracing/onelink_only:1 or --help-tracing for details
-      if (TRACE_onelink_only() && xbt_dynar_length (route->link_list) > 1) continue;
+      if (TRACE_onelink_only() && xbt_dynar_length (route->link_list) > 1){
+        generic_free_route(route);
+        continue;
+      }
 
       //traverse the route connecting the containers
       unsigned int cpt;
