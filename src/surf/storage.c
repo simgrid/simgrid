@@ -51,17 +51,17 @@ static surf_action_t storage_action_open(void *storage, const char* path, const 
   return action;
 }
 
-static surf_action_t storage_action_close(void *storage, surf_file_t fp)
+static surf_action_t storage_action_close(void *storage, m_file_t fp)
 {
   return storage_action_sleep(storage,2.0);
 }
 
-static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, size_t nmemb, m_file_t stream)
 {
   return storage_action_sleep(storage,3.0);
 }
 
-static surf_action_t storage_action_write(void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t storage_action_write(void *storage, const void* ptr, size_t size, size_t nmemb, m_file_t stream)
 {
   return storage_action_sleep(storage,4.0);
 }

@@ -512,7 +512,7 @@ typedef struct s_smx_simcall {
       void *ptr;
       size_t size;
       size_t nmemb;
-      smx_file_t stream;
+      m_file_t stream;
       size_t result;
     } file_read;
 
@@ -521,7 +521,7 @@ typedef struct s_smx_simcall {
       const void *ptr;
       size_t size;
       size_t nmemb;
-      smx_file_t stream;
+      m_file_t stream;
       size_t result;
     } file_write;
 
@@ -529,12 +529,12 @@ typedef struct s_smx_simcall {
       const char* storage;
       const char* path;
       const char* mode;
-      smx_file_t result;
+      m_file_t result;
     } file_open;
 
     struct {
       const char* storage;
-      smx_file_t fp;
+      m_file_t fp;
       int result;
     } file_close;
 

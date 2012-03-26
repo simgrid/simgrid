@@ -40,20 +40,6 @@ typedef struct m_host {
 typedef struct m_host *m_host_t;
 /** @} */
 
-
-/* ******************************** File ************************************ */
-/** @brief File datatype
-    @ingroup m_datatypes_management_details */
-typedef struct m_file {
-  char *name;                   /**< @brief file name */
-  void *data;                   /**< @brief user data */
-} s_m_file_t;
-/** @brief File datatype
-    @ingroup m_datatypes_management_details */
-typedef struct m_file *m_file_t;
-
-
-
 /* ******************************** Task ************************************ */
 
 typedef struct simdata_task *simdata_task_t;

@@ -27,7 +27,7 @@
  */
 size_t MSG_file_read(const char* storage, void* ptr, size_t size, size_t nmemb,  m_file_t stream)
 {
-  return simcall_file_read(storage, ptr, size, nmemb, (smx_file_t)stream);
+  return simcall_file_read(storage, ptr, size, nmemb, (m_file_t)stream);
 }
 
 /** \ingroup m_file_management
@@ -42,7 +42,7 @@ size_t MSG_file_read(const char* storage, void* ptr, size_t size, size_t nmemb, 
  */
 size_t MSG_file_write(const char* storage, const void* ptr, size_t size, size_t nmemb, m_file_t stream)
 {
-  return simcall_file_write(storage, ptr, size, nmemb, (smx_file_t)stream);
+  return simcall_file_write(storage, ptr, size, nmemb, (m_file_t)stream);
 }
 
 /** \ingroup m_file_management
@@ -76,7 +76,7 @@ m_file_t MSG_file_open(const char* storage, const char* path, const char* mode)
  */
 int MSG_file_close(const char* storage, m_file_t fp)
 {
-  return simcall_file_close(storage, (smx_file_t)fp);
+  return simcall_file_close(storage, (m_file_t)fp);
 }
 
 /** \ingroup m_file_management
