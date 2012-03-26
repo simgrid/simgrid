@@ -781,7 +781,7 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
     argc = (int) (*env)->GetArrayLength(env, jargs);
 
   argc++;
-  argv = xbt_new0(char *, argc);
+  argv = xbt_new(char *, argc + 1);
   argv[0] = strdup("java");
 
   for (index = 0; index < argc - 1; index++) {
@@ -790,6 +790,7 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
     argv[index + 1] = strdup(tmp);
     (*env)->ReleaseStringUTFChars(env, jval, tmp);
   }
+  argv[argc] = NULL;
 
   MSG_global_init(&argc, argv);
 
