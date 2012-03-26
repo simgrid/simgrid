@@ -547,7 +547,7 @@ void xbt_log_init(int *argc, char **argv)
   //    _XBT_LOGV(log).threshold = xbt_log_priority_debug; /* uncomment to set the LOG category to debug directly */
 
   /* Set logs and init log submodule */
-  for (j = i = 1; i < *argc; i++) {
+  for (i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--log=", strlen("--log=")) ||
         !strncmp(argv[i], "--gras-log=", strlen("--gras-log=")) ||
         !strncmp(argv[i], "--surf-log=", strlen("--surf-log=")) ||
@@ -564,12 +564,17 @@ void xbt_log_init(int *argc, char **argv)
       opt++;
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
-    } else {
-      argv[j++] = argv[i];
+      /*remove this from argv */
+
+      for (j = i + 1; j < *argc; j++) {
+        argv[j - 1] = argv[j];
+      }
+
+      argv[j - 1] = NULL;
+      (*argc)--;
+      i--;                      /* compensate effect of next loop incrementation */
     }
   }
-  argv[j] = NULL;
-  *argc = j;
 }
 
 static void log_cat_exit(xbt_log_category_t cat)
