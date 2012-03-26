@@ -2,11 +2,6 @@ find_library(HAVE_NS3_LIB
     NAME ns3
     PATH_SUFFIXES lib64 lib ns3/lib
     PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
     ${ns3_path}
 )
 
@@ -14,11 +9,6 @@ find_library(HAVE_NS3_CORE_LIB
     NAME ns3-core
     PATH_SUFFIXES lib64 lib ns3/lib
     PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
     ${ns3_path}
 )
 
@@ -26,11 +16,6 @@ find_path(HAVE_CORE_MODULE_H
 	NAME ns3/core-module.h
     PATH_SUFFIXES include ns3/include
     PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
     ${ns3_path}
 )
 
