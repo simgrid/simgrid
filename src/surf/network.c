@@ -318,6 +318,9 @@ static int net_action_unref(surf_action_t action)
       surf_action_lmm_heap_remove(net_action_heap,(surf_action_lmm_t) action);
       xbt_swag_remove(action, net_modified_set);
     }
+#ifdef HAVE_TRACING
+    if (action->category) xbt_free (action->category);
+#endif
     surf_action_free(&action);
     return 1;
   }
