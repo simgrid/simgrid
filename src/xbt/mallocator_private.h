@@ -8,7 +8,7 @@
 
 #ifndef _XBT_MALLOCATOR_PRIVATE_H__
 #define _XBT_MALLOCATOR_PRIVATE_H__
-
+#include "xbt/xbt_os_thread.h"
 typedef struct s_xbt_mallocator {
   void **objects;               /* objects stored by the mallocator and available for the user */
   int current_size;             /* number of objects currently stored */
@@ -16,6 +16,7 @@ typedef struct s_xbt_mallocator {
   pvoid_f_void_t new_f;         /* function to call when we are running out of objects */
   void_f_pvoid_t free_f;        /* function to call when we have got too many objects */
   void_f_pvoid_t reset_f;       /* function to call when an object is released by the user */
+  xbt_os_mutex_t mutex;         /* mutex to ensure the mallocator is thread-safe */
 } s_xbt_mallocator_t;
 
 #endif                          /* _XBT_MALLOCATOR_PRIVATE_H__ */

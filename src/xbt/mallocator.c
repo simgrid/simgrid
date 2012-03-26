@@ -68,7 +68,7 @@ xbt_mallocator_t xbt_mallocator_new(int size,
     m->objects = NULL;
     m->max_size = 0;
   }
-
+  m->mutex = xbt_os_mutex_init();
   return m;
 }
 
@@ -92,6 +92,7 @@ void xbt_mallocator_free(xbt_mallocator_t m)
     m->free_f(m->objects[i]);
   }
   xbt_free(m->objects);
+  xbt_os_mutex_destroy(m->mutex);
   xbt_free(m);
 }
 
@@ -116,6 +117,7 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
   void *object;
 
   if (MALLOCATOR_IS_ENABLED) {
+    xbt_os_mutex_acquire(m->mutex);
     if (m->current_size <= 0) {
       /* No object is ready yet. Create a bunch of them to try to group the
        * mallocs on the same memory pages (to help the cache lines) */
@@ -133,6 +135,7 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
     /* XBT_DEBUG("Reuse an old object for mallocator %p (size:%d/%d)", */
     /*           m, m->current_size, m->max_size); */
     object = m->objects[--m->current_size];
+    xbt_os_mutex_release(m->mutex);
   } else {
     object = m->new_f();
   }
@@ -157,6 +160,7 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
  */
 void xbt_mallocator_release(xbt_mallocator_t m, void *object)
 {
+  xbt_os_mutex_acquire(m->mutex);
   if (m->current_size < m->max_size) {
     /* there is enough place to push the object */
     /* XBT_DEBUG
@@ -169,4 +173,5 @@ void xbt_mallocator_release(xbt_mallocator_t m, void *object)
            m->current_size, m->max_size); */
     m->free_f(object);
   }
+  xbt_os_mutex_release(m->mutex);
 }
