@@ -101,7 +101,6 @@ void new_pajeNewEvent (double timestamp, container_t container, type_t type, val
 
 /* declaration of instrumentation functions from msg_task_instr.c */
 void TRACE_msg_set_task_category(m_task_t task, const char *category);
-char *TRACE_task_container(m_task_t task, char *output, int len);
 void TRACE_msg_task_create(m_task_t task);
 void TRACE_msg_task_execute_start(m_task_t task);
 void TRACE_msg_task_execute_end(m_task_t task);
@@ -185,9 +184,6 @@ void TRACE_surf_link_set_utilization(const char *resource,
                                      double delta);
 void TRACE_surf_resource_utilization_alloc(void);
 void TRACE_surf_resource_utilization_release(void);
-
-/* sd_instr.c */
-void TRACE_sd_set_task_category(SD_task_t task, const char *category);
 
 /* instr_paje.c */
 extern xbt_dict_t trivaNodeTypes;
