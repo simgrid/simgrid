@@ -93,6 +93,8 @@ typedef struct surf_action {
 #ifdef HAVE_TRACING
   char *category;               /**< tracing category for categorized resource utilization monitoring */
 #endif
+  void* file;        /**< m_file_t for storage model */
+  size_t read_write;
 } s_surf_action_t;
 
 typedef struct surf_action_lmm {
@@ -366,7 +368,7 @@ typedef struct s_content {
   char *group;
   char *date;
   char *time;
-  int size;
+  size_t size;
 } s_content_t, *content_t;
 
 /**
