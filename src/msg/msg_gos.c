@@ -879,9 +879,9 @@ int MSG_task_listen_from(const char *alias)
  *
  * This function should be called after the creation of
  * a MSG task, to define the category of that task. The
- * first parameter #task must contain a task that was
+ * first parameter task must contain a task that was
  * created with the function #MSG_task_create. The second
- * parameter #category must contain a category that was
+ * parameter category must contain a category that was
  * previously declared with the function #TRACE_category
  * (or with #TRACE_category_with_color).
  *
