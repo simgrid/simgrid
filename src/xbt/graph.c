@@ -286,9 +286,9 @@ void xbt_graph_edge_set_length(xbt_edge_t e, double length)
 
 }
 
-double xbt_graph_edge_get_length(xbt_edge_t e)
+double xbt_graph_edge_get_length(xbt_edge_t edge)
 {
-  return e->length;
+  return edge->length;
 }
 
 
