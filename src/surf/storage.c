@@ -23,6 +23,12 @@ static xbt_swag_t
 #define GENERIC_LMM_ACTION(action) action->generic_lmm_action
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
+typedef enum {
+  READ = 0,
+  WRITE = 1,
+  DEFAULT = 2
+} STORAGE_execute_type_t;
+
 typedef struct surf_storage {
   s_surf_resource_t generic_resource;
   const char* type;
@@ -31,10 +37,11 @@ typedef struct surf_storage {
 
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
 static surf_action_t storage_action_sleep (void *storage, double duration);
-static surf_action_t storage_action_execute (void *storage, double size);
+static surf_action_t storage_action_execute (void *storage, size_t size, STORAGE_execute_type_t type);
 
 static surf_action_t storage_action_open(void *storage, const char* path, const char* mode)
 {
+  XBT_DEBUG("\tOpen file '%s'",path);
   char *storage_type_id = xbt_lib_get_or_null(
       storage_lib,
       ((storage_t)storage)->generic_resource.name,
@@ -43,40 +50,59 @@ static surf_action_t storage_action_open(void *storage, const char* path, const 
   xbt_dict_t content_dict = storage_type->content;
   content_t content = xbt_dict_get(content_dict,path);
 
-  double size = content->size;
-  XBT_DEBUG("Disk '%s' with type_d '%s'",((storage_t)storage)->generic_resource.name,storage_type_id);
-  XBT_INFO("\tFile '%s' size '%f'",path,size);
+  m_file_t file = xbt_new0(s_m_file_t,1);
+  file->name = xbt_strdup(path);
+  file->content = content;
 
-  surf_action_t action = storage_action_execute(storage,size);
+  surf_action_t action = storage_action_execute(storage,0, DEFAULT);
   return action;
 }
 
 static surf_action_t storage_action_close(void *storage, m_file_t fp)
 {
-  return storage_action_sleep(storage,2.0);
+  char *filename = fp->name;
+  free(fp->name);
+  fp->content = NULL;
+  xbt_free(fp);
+  surf_action_t action = storage_action_execute(storage,0, DEFAULT);
+  XBT_DEBUG("\tClose file '%s'",filename);
+  return action;
 }
 
 static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, size_t nmemb, m_file_t stream)
 {
-  return storage_action_sleep(storage,3.0);
+  char *filename = stream->name;
+  content_t content = (content_t)(stream->content);
+  XBT_DEBUG("\tRead file '%s' size '%Zu/%Zu'",filename,size,content->size);
+  if(size > content->size)
+    size = content->size;
+  surf_action_t action = storage_action_execute(storage,size,READ);
+  return action;
 }
 
 static surf_action_t storage_action_write(void *storage, const void* ptr, size_t size, size_t nmemb, m_file_t stream)
 {
-  return storage_action_sleep(storage,4.0);
+  char *filename = stream->name;
+  content_t content = (content_t)(stream->content);
+  XBT_DEBUG("\tWrite file '%s' size '%Zu/%Zu'",filename,size,content->size);
+
+  surf_action_t action = storage_action_execute(storage,size,WRITE);
+  content->size += size;
+  return action;
 }
 
 static surf_action_t storage_action_stat(void *storage, int fd, void* buf)
 {
-  return storage_action_sleep(storage,5.0);
+  THROW_UNIMPLEMENTED;
+  return NULL;
 }
 
-static surf_action_t storage_action_execute (void *storage, double size)
+static surf_action_t storage_action_execute (void *storage, size_t size, STORAGE_execute_type_t type)
 {
   surf_action_storage_t action = NULL;
   storage_t STORAGE = storage;
 
-  XBT_IN("(%s,%g)", surf_resource_name(STORAGE), size);
+  XBT_IN("(%s,%Zu)", surf_resource_name(STORAGE), size);
   action =
       surf_action_new(sizeof(s_surf_action_storage_t), size, surf_storage_model,
           STORAGE->state_current != SURF_RESOURCE_ON);
@@ -87,8 +113,17 @@ static surf_action_t storage_action_execute (void *storage, double size)
   GENERIC_LMM_ACTION(action).variable =
       lmm_variable_new(storage_maxmin_system, action, 1.0, -1.0 , 3);
 
+  if(type == DEFAULT)
   lmm_expand(storage_maxmin_system, STORAGE->constraint,
              GENERIC_LMM_ACTION(action).variable, 1.0);
+  else if(type == READ)
+    lmm_expand(storage_maxmin_system, STORAGE->constraint_read,
+               GENERIC_LMM_ACTION(action).variable, 1.0);
+  else if(type == WRITE)
+    lmm_expand(storage_maxmin_system, STORAGE->constraint_write,
+               GENERIC_LMM_ACTION(action).variable, 1.0);
+  else xbt_die("storage_action_execute with type '%d'",(int) type);
+
   XBT_OUT();
   return (surf_action_t) action;
 }
@@ -101,7 +136,7 @@ static surf_action_t storage_action_sleep (void *storage, double duration)
     duration = MAX(duration, MAXMIN_PRECISION);
 
   XBT_IN("(%s,%g)", surf_resource_name(storage), duration);
-  action = (surf_action_storage_t) storage_action_execute(storage, 1.0);
+  action = (surf_action_storage_t) storage_action_execute(storage, 1.0, DEFAULT);
   GENERIC_ACTION(action).max_duration = duration;
   GENERIC_LMM_ACTION(action).suspended = 2;
   if (duration == NO_MAX_DURATION) {
@@ -133,16 +168,17 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage->state_current = SURF_RESOURCE_ON;
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
-  double Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
-  double Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
-  double Bconnexion   = atof(xbt_dict_get(storage_type->properties,"Bconnexion"));
+  size_t Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
+  size_t Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
+  size_t Bconnexion   = atof(xbt_dict_get(storage_type->properties,"Bconnexion"));
+  XBT_INFO("Create resource with Bconnexion '%Zu' Bread '%Zu' Bwrite '%Zu'",Bconnexion,Bread,Bwrite);
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnexion);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%f'\n",
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%Zu'\n",
       id,
       model,
       type_id,
