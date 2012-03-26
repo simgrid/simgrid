@@ -16,13 +16,13 @@
 		</storage_type>
 
 		<storage_type id="crucial" model="SSD" content="storage_content.txt">
-			<prop id="Bwrite" value="80" />
+			<prop id="Bwrite" value="30000000" />
 			<prop id="Bread" value="100000000" />
 			<prop id="Bconnexion" value="6000000000" />
 		</storage_type>
 
 		<storage_type id="wdigital" model="RAID0" content="storage_content.txt">
-			<prop id="Bwrite" value="60" />
+			<prop id="Bwrite" value="30000000" />
 			<prop id="Bread" value="100000000" />
 			<prop id="Bconnexion" value="6000000000" />
 		</storage_type>
