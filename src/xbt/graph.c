@@ -81,6 +81,7 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
   return edge;
 }
 
+/** @brief Get the edge connecting src and dst */
 xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src,
                               xbt_node_t dst)
 {
@@ -102,21 +103,25 @@ xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src,
   return NULL;
 }
 
+/** @brief Get the user data associated to a node */
 void *xbt_graph_node_get_data(xbt_node_t node)
 {
   return node->data;
 }
 
+/** @brief Set the user data associated to a node */
 void xbt_graph_node_set_data(xbt_node_t node, void *data)
 {
   node->data = data;
 }
 
+/** @brief Get the user data associated to a edge */
 void *xbt_graph_edge_get_data(xbt_edge_t edge)
 {
   return edge->data;
 }
 
+/** @brief Set the user data associated to a edge */
 void xbt_graph_edge_set_data(xbt_edge_t edge, void *data)
 {
   edge->data = data;
@@ -286,6 +291,7 @@ void xbt_graph_edge_set_length(xbt_edge_t e, double length)
 
 }
 
+/** @brief Get the length of a edge */
 double xbt_graph_edge_get_length(xbt_edge_t edge)
 {
   return edge->length;
