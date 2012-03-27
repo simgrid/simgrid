@@ -37,11 +37,11 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     (more work is needed here to fully achieve this goal)
 
   MSG:
-  * Deprecate the MSG_task_{get,put} functions and friends.
-    This interface was considered as deprecated since over 2 years,
-     it's time to inform our users that it is.
-    Switch to MSG_task_{send,recv} instead, or declare
-     SIMGRID_DEPRECATED before loading the msg.h if you really need to
+  * Deprecate the use of m_channel_t mecanism like MSG_task_{get,put}
+    functions and friends. This interface was considered as 
+    deprecated since over 2 years, it's time to inform our users that it is.
+    Switch to MSG_task_{send,recv} instead, or compile Simgrid command line
+    'cmake -Dcustom_flags="-DMSG_USE_DEPRECATED" .' if you really need to
      use these (crappy) functions in your code.
     These functions will be removed at some point. Stop using them now.
   * Deprecate MSG_get_host_{table,number}
