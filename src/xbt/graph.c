@@ -670,16 +670,30 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
           "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
-    fprintf(file, "  \"%p\" ", node);
-    if ((node_name) && ((name = node_name(node))))
-      fprintf(file, "[label=\"%s\"]", name);
-    fprintf(file, ";\n");
+    if (node_name){
+      fprintf(file, "  \"%s\";\n", node_name(node));
+    }else{
+      fprintf(file, "  \"%p\";\n", node);
+    }
   }
   xbt_dynar_foreach(g->edges, cursor, edge) {
-    if (g->directed)
-      fprintf(file, "  \"%p\" -> \"%p\"", edge->src, edge->dst);
-    else
-      fprintf(file, "  \"%p\" -- \"%p\"", edge->src, edge->dst);
+    const char *c;
+    const char *c_dir = "->";
+    const char *c_ndir = "--";
+    if (g->directed){
+      c = c_dir;
+    }else{
+      c = c_ndir;
+    }
+    const char *src_name, *dst_name;
+    if (node_name){
+      src_name = node_name(edge->src);
+      dst_name = node_name(edge->dst);
+      fprintf(file, "  \"%s\" %s \"%s\"", src_name, c, dst_name);
+    }else{
+      fprintf(file, "  \"%p\" %s \"%p\"", edge->src, c, edge->dst);
+    }
+
     if ((edge_name) && ((name = edge_name(edge))))
       fprintf(file, "[label=\"%s\"]", name);
     fprintf(file, ";\n");
