@@ -629,6 +629,7 @@ INPUT                  = index.doc \
                          module-amok.doc \
                          module-sd.doc \
                          module-surf.doc \
+                         module-trace.doc \
                          gtut-main.doc \
                          gtut-introduction.doc \
                          gtut-tour.doc \
@@ -652,6 +653,7 @@ INPUT                  = index.doc \
                          gtut-tour-16-exchangecb.doc \
                          gtut-howto.doc \
                          gtut-howto-design.doc \
+                         @top_srcdir@/src/instr/ \
                          @top_srcdir@/include/ \
                          @top_srcdir@/include/msg \
                          @top_srcdir@/include/gras \
@@ -1547,7 +1549,8 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = DOXYGEN \
                          DOXYGEN_SKIP_IT \
                          XBT_PUBLIC= \
-                         XBT_INLINE=
+                         XBT_INLINE= \
+                         HAVE_TRACING
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.

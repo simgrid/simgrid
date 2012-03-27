@@ -256,10 +256,12 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 	size_t table_size = xbt_dynar_length(rc->index_network_elm);
     network_element_t src_net_elm, dst_net_elm;
 
-    src_net_elm = (network_element_t)xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
-    dst_net_elm = (network_element_t)xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
-    if(!src_net_elm) src_net_elm = (network_element_t)xbt_lib_get_or_null(as_router_lib, src, ROUTING_ASR_LEVEL);
-    if(!dst_net_elm) dst_net_elm = (network_element_t)xbt_lib_get_or_null(as_router_lib, dst, ROUTING_ASR_LEVEL);
+    src_net_elm = xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
+    dst_net_elm = xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
+    if (!src_net_elm)
+      src_net_elm = xbt_lib_get_or_null(as_router_lib, src, ROUTING_ASR_LEVEL);
+    if (!dst_net_elm)
+      dst_net_elm = xbt_lib_get_or_null(as_router_lib, dst, ROUTING_ASR_LEVEL);
 
 	xbt_assert(src_net_elm, "Network elements %s not found", src);
 	xbt_assert(dst_net_elm, "Network elements %s not found", dst);

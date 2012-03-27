@@ -15,7 +15,10 @@
  * - <b>io/file.c</b> Example with the disk resource
  */
 
-#define FILENAME "/home/user/Install/simgrid/doc/simgrid/examples/cxx/basic/basic_platform.xml"
+#define FILENAME1 "/home/user/Install/simgrid/doc/simgrid/examples/platforms/g5k.xml"
+#define FILENAME2 "/home/user/Install/simgrid/doc/simgrid/examples/platforms/One_cluster_no_backbone.xml"
+#define FILENAME3 "/home/user/Install/simgrid/doc/simgrid/examples/platforms/g5k_cabinets.xml"
+#define FILENAME4 "/home/user/Install/simgrid/doc/simgrid/examples/platforms/nancy.xml"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,21 +34,33 @@ int host(int argc, char *argv[])
 {
   m_file_t file;
   char* mount = bprintf("C:");
+  size_t read,write;
+  if(!strcmp(MSG_process_get_name(MSG_process_self()),"0"))
+    file = MSG_file_open(mount,FILENAME1,"rw");
+  else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1"))
+    file = MSG_file_open(mount,FILENAME2,"rw");
+  else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2"))
+    file = MSG_file_open(mount,FILENAME3,"rw");
+  else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3"))
+    file = MSG_file_open(mount,FILENAME4,"rw");
+  else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
 
-  file = MSG_file_open(mount,FILENAME,"rw");
-  XBT_INFO("Host '%s' open %p",MSG_host_get_name(MSG_host_self()), file);
+  XBT_INFO("\tOpen file '%s'",file->name);
 
-  size_t read = MSG_file_read(mount,NULL,0,0,file);
-  XBT_INFO("Host '%s' read %zu", MSG_host_get_name(MSG_host_self()), read);
+  read = MSG_file_read(mount,NULL,10000000,sizeof(char*),file);     // Read for 10Mo
+  XBT_INFO("\tHaving read  %Zu \ton %s",read,file->name);
 
-  size_t write = MSG_file_write(mount,NULL,0,0,file);
-  XBT_INFO("Host '%s' write %zu", MSG_host_get_name(MSG_host_self()), write);
+  write = MSG_file_write(mount,NULL,100000,sizeof(char*),file);  // Write for 100Ko
+  XBT_INFO("\tHaving write %Zu \ton %s",write,file->name);
 
-  int res = MSG_file_stat(mount,0,NULL);
-  XBT_INFO("Host '%s' stat %d",MSG_host_get_name(MSG_host_self()), res);
+  read = MSG_file_read(mount,NULL,10000000,sizeof(char*),file);     // Read for 10Mo
+  XBT_INFO("\tHaving read  %Zu \ton %s",read,file->name);
 
-  res = MSG_file_close(mount,file);
-  XBT_INFO("Host '%s' close %d",MSG_host_get_name(MSG_host_self()), res);
+//  res = MSG_file_stat(mount,0,NULL);
+//  XBT_INFO("Host '%s' stat %d",MSG_host_get_name(MSG_host_self()), res);
+
+  XBT_INFO("\tClose file '%s'",file->name);
+  MSG_file_close(mount,file);
 
   free(mount);
   return 0;

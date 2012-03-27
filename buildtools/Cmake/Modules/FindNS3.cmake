@@ -2,11 +2,6 @@ find_library(HAVE_NS3_LIB
     NAME ns3
     PATH_SUFFIXES lib64 lib ns3/lib
     PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
     ${ns3_path}
 )
 
@@ -14,11 +9,6 @@ find_library(HAVE_NS3_CORE_LIB
     NAME ns3-core
     PATH_SUFFIXES lib64 lib ns3/lib
     PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
     ${ns3_path}
 )
 
@@ -26,11 +16,6 @@ find_path(HAVE_CORE_MODULE_H
 	NAME ns3/core-module.h
     PATH_SUFFIXES include ns3/include
     PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
     ${ns3_path}
 )
 
@@ -78,7 +63,6 @@ if(HAVE_NS3)
 	string(REGEX MATCH "${HAVE_NS3_LIB}" operation "$ENV{LD_LIBRARY_PATH}")
 	if(NOT operation)
 		message(STATUS "Warning: To use NS-3 don't forget to set LD_LIBRARY_PATH with:	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HAVE_NS3_LIB}")
-		set(HAVE_NS3 0)
 	else(NOT operation)
 	
 		string(REGEX MATCH "-L${HAVE_NS3_LIB} " operation1 "${CMAKE_C_FLAGS}")

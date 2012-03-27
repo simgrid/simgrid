@@ -218,5 +218,16 @@ XBT_PUBLIC(const char *) xbt_procname(void);
 
 #define XBT_BACKTRACE_SIZE 10   /* FIXME: better place? Do document */
 
+/** @brief File datatype
+    @ingroup m_datatypes_management_details */
+typedef struct m_file {
+  char *name;                   /**< @brief file name */
+  void *content;                   /**< @brief user data */
+} s_m_file_t;
+/** @brief File datatype
+    @ingroup m_datatypes_management_details */
+typedef struct m_file *m_file_t;
+
+
 SG_END_DECL()
 #endif                          /* XBT_MISC_H */

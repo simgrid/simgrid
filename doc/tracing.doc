@@ -34,11 +34,13 @@ of resource utilization by using a special parameter that is detailed below.
 
 \subsection tracing_tracing_enabling Enabling using CMake
 
-With the sources of SimGrid, it is possible to enable the tracing 
-using the parameter <b>-Denable_tracing=ON</b> when the cmake is executed.
-The section \ref tracing_tracing_functions describes all the functions available
-when this Cmake options is activated. These functions will have no effect
-if SimGrid is configured without this option (they are wiped-out by the
+With the sources of SimGrid, it is possible to enable the tracing
+using the parameter <b>-Denable_tracing=ON</b> when the cmake is
+executed.  The sections \ref instr_category_functions, \ref
+instr_mark_functions, and \ref instr_uservariables_functions describe
+all the functions available when this Cmake options is
+activated. These functions will have no effect if SimGrid is
+configured without this option (they are wiped-out by the
 C-preprocessor).
 
 \verbatim
@@ -46,83 +48,50 @@ $ cmake -Denable_tracing=ON .
 $ make
 \endverbatim
 
-\subsection tracing_tracing_functions Tracing Functions
+\subsection instr_category_functions Tracing categories functions
+\li \c TRACE_category(const char *category)
+\li \c TRACE_category_with_color(const char *category, const char *color)
+\li \c MSG_task_set_category(m_task_t task, const char *category)
+\li \c MSG_task_get_category(m_task_t task)
+\li \c SD_task_set_category(SD_task_t task, const char *category)
+\li \c SD_task_get_category(SD_task_t task)
 
-\li <b>\c TRACE_category (const char *category)</b>: This function should be used
-to define a user category. The category can be used to differentiate the tasks
-that are created during the simulation (for example, tasks from server1,
-server2, or request tasks, computation tasks, communication tasks).
-All resource utilization (host power and link bandwidth) will be
-classified according to the task category. Tasks that do not belong to a
-category are not traced. The color for the category that is being declared
-is random (use next function to specify a color).
+\subsection instr_mark_functions Tracing marks functions
+\li \c TRACE_declare_mark(const char *mark_type)
+\li \c TRACE_mark(const char *mark_type, const char *mark_value)
 
-\li <b>\c TRACE_category_with_color (const char *category, const char *color)</b>: Same
-as TRACE_category, but let user specify a color encoded as a RGB-like string with
-three floats from 0 to 1. So, to specify a red color, the user can pass "1 0 0" as
-color parameter. A light-gray color can be specified using "0.7 0.7 0.7" as color.
+\subsection instr_uservariables_functions Tracing user variables functions
 
-\li <b>\c TRACE_msg_set_task_category (m_task_t task, const char *category)</b>:
-This function should be called after the creation of a MSG task, to define the
-category of that task. The first parameter \c task must contain a task that was
-created with the function \c MSG_task_create. The second parameter
-\c category must contain a category that was previously defined by the function
-\c TRACE_category.
+For hosts:
 
-\li <b>\c TRACE_sd_set_task_category (SD_task_t task, const char *category)</b>:
-This function should be called after the creation of a SimDAG task, to define the
-category of that task. The first parameter \c task must contain a task that was
-created with the function \c MSG_task_create. The second parameter
-\c category must contain a category that was previously defined by the function
-\c TRACE_category.
+\li \c TRACE_host_variable_declare(const char *variable)
+\li \c TRACE_host_variable_declare_with_color(const char *variable, const char *color)
+\li \c TRACE_host_variable_set(const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_add(const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_sub(const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_set_with_time(double time, const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_add_with_time(double time, const char *host, const char *variable, double value)
+\li \c TRACE_host_variable_sub_with_time(double time, const char *host, const char *variable, double value)
 
-\li <b>\c TRACE_declare_mark(const char *mark_type)</b>: This function
-declares a new Paje event type in the trace file that can be used by
-simulators to declare application-level marks. This function is
-independent of which API is used in SimGrid.
+For links:
 
-\li <b>\c TRACE_mark(const char *mark_type, const char *mark_value)</b>:
-This function creates a mark in the trace file. The first parameter
-had to be previously declared using \c TRACE_declare_mark, the second
-is the identifier for this mark instance. We recommend that the \c
-mark_value (the second parameter) is a unique value for the whole
-trace file (the whole simulation). Nevertheless, this is not a strong
-requirement: the trace will be valid if there are multiple mark
-identifiers for the same trace.
+\li \c TRACE_link_variable_declare(const char *variable)
+\li \c TRACE_link_variable_declare_with_color(const char *variable, const char *color)
+\li \c TRACE_link_variable_set(const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_add(const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_sub(const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_set_with_time(double time, const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_add_with_time(double time, const char *link, const char *variable, double value)
+\li \c TRACE_link_variable_sub_with_time(double time, const char *link, const char *variable, double value)
 
-\li <b>\c TRACE_[host|link]_variable_declare (const char *variable)</b>:
-Declare a user variable that will be associated to host/link. A variable can
-be used to trace user variables such as the number of tasks in a server,
-the number of clients in an application (for hosts), and so on.
+For links, but use source and destination to get route:
 
-\li <b>\c TRACE_[host|link]_variable_declare_with_color (const char
-*var, const char *color)</b>: Same as \c
-TRACE_[host|link]_variable_declare, but user decides which color will
-be assigned to the variable. The color needs to be a string with three
-numbers separated by spaces in the range [0,1]. A light-gray color can
-be specified using "0.7 0.7 0.7" as color.
-
-\li <b>\c TRACE_[host|link]_variable_[set|add|sub] (const char *[host|link], const char *variable, double value)</b>:
-Set the value of a given user variable for a given host/link. The value
-of this variable is always associated to the host/link. The host/link 
-parameters should be its name as the one listed in the platform file.
-
-\li <b>\c TRACE_[host|link]_variable_[set|add|sub]_with_time (double time, const char *[host|link], const char *variable, double value)</b>:
-Same as TRACE_[host|link]_variable_[set|add|sub], but let user specify
-the time used to trace it. Users can specify a time that is not the 
-simulated clock time as defined by the core simulator. This allows
-a fine-grain control of time definition, but should be used with 
-caution since the trace can be inconsistent if resource utilization
-traces are also traced.
-
-\li <b>\c TRACE_link_srcdst_variable_[set|add|sub] (const char *src, const char *dst, const char *variable, double value)</b>:
-Same as TRACE_link_variable_[set|add|sub], but now users specify a source and
-destination hosts (as the names from the platform file). The tracing library
-will get the corresponding route that connects those two hosts (src and dst) and
-[set|add|sub] the value's variable for all the links of the route.
-
-\li <b>\c TRACE_link_srcdst_variable_[set|add|sub]_with_time (double time, const char *src, const char *dst, const char *variable, double value)</b>: 
-Same as TRACE_link_srcdst_variable_[set|add|sub], but user specify a time different from the simulated time.
+\li \c TRACE_link_srcdst_variable_set(const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_add(const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_sub(const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_set_with_time(double time, const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_add_with_time(double time, const char *src, const char *dst, const char *variable, double value)
+\li \c TRACE_link_srcdst_variable_sub_with_time(double time, const char *src, const char *dst, const char *variable, double value)
 
 \subsection tracing_tracing_options Tracing configuration Options
 
@@ -289,8 +258,8 @@ simulator):
 For that, you will need to create tracing categories using the
 <b>TRACE_category (...)</b> function (as explained above),
 and then classify your tasks to a previously declared category
-using the <b>TRACE_msg_set_task_category (...)</b>
-(or <b>TRACE_sd_set_task_category (...)</b> for SimDAG tasks). After
+using the <b>MSG_task_set_category (...)</b>
+(or <b>SD_task_set_category (...)</b> for SimDAG tasks). After
 recompiling, run your simulator with the following parameters:
 \verbatim
 ./your_simulator \
@@ -321,16 +290,16 @@ int main (int argc, char **argv)
   m_task_t req2 = MSG_task_create("2nd_request_task", 10, 10, NULL);
   m_task_t req3 = MSG_task_create("3rd_request_task", 10, 10, NULL);
   m_task_t req4 = MSG_task_create("4th_request_task", 10, 10, NULL);
-  TRACE_msg_set_task_category (req1, "request");
-  TRACE_msg_set_task_category (req2, "request");
-  TRACE_msg_set_task_category (req3, "request");
-  TRACE_msg_set_task_category (req4, "request");
+  MSG_task_set_category (req1, "request");
+  MSG_task_set_category (req2, "request");
+  MSG_task_set_category (req3, "request");
+  MSG_task_set_category (req4, "request");
 
   m_task_t comp = MSG_task_create ("comp_task", 100, 100, NULL);
-  TRACE_msg_set_task_category (comp, "computation");
+  MSG_task_set_category (comp, "computation");
 
   m_task_t finalize = MSG_task_create ("finalize", 0, 0, NULL);
-  TRACE_msg_set_task_category (finalize, "finalize");
+  MSG_task_set_category (finalize, "finalize");
 
   //(...)
 

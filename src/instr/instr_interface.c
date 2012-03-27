@@ -7,7 +7,6 @@
 #include "simgrid_config.h"
 
 #ifdef HAVE_TRACING
-
 #include "instr/instr_private.h"
 #include "surf/network_private.h"
 
@@ -20,11 +19,49 @@ typedef enum {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
+/** \ingroup TRACE_category
+ *  \brief Declare a new category with a random color.
+ *
+ *  This function should be used to define a user category. The
+ *  category can be used to differentiate the tasks that are created
+ *  during the simulation (for example, tasks from server1, server2,
+ *  or request tasks, computation tasks, communication tasks). All
+ *  resource utilization (host power and link bandwidth) will be
+ *  classified according to the task category. Tasks that do not
+ *  belong to a category are not traced. The color for the category
+ *  that is being declared is random. This function has no effect
+ *  if a category with the same name has been already declared.
+ *
+ * See \ref tracing_tracing for details on how to trace
+ * the (categorized) resource utilization.
+ *
+ *  \param category The name of the new tracing category to be created.
+ *
+ *  \see TRACE_category_with_color, MSG_task_set_category, SD_task_set_category
+ */
 void TRACE_category(const char *category)
 {
   TRACE_category_with_color (category, NULL);
 }
 
+/** \ingroup TRACE_category
+ *  \brief Declare a new category with a color.
+ *
+ *  Same as #TRACE_category, but let user specify a color encoded as a
+ *  RGB-like string with three floats from 0 to 1. So, to specify a
+ *  red color, pass "1 0 0" as color parameter. A light-gray color
+ *  can be specified using "0.7 0.7 0.7" as color. This function has
+ *  no effect if a category with the same name has been already declared.
+ *
+ * See \ref tracing_tracing for details on how to trace
+ * the (categorized) resource utilization.
+ *
+ *  \param category The name of the new tracing category to be created.
+ *  \param color The color of the category (see \ref tracing_tracing to
+ *  know how to correctly specify the color)
+ *
+ *  \see MSG_task_set_category, SD_task_set_category
+ */
 void TRACE_category_with_color (const char *category, const char *color)
 {
   /* safe switch */
@@ -58,6 +95,19 @@ void TRACE_category_with_color (const char *category, const char *color)
   instr_new_variable_type (category, final_color);
 }
 
+/** \ingroup TRACE_mark
+ * \brief Declare a new type for tracing mark.
+ *
+ * This function declares a new Paje event
+ * type in the trace file that can be used by
+ * simulators to declare application-level
+ * marks. This function is independent of
+ * which API is used in SimGrid.
+ *
+ * \param mark_type The name of the new type.
+ *
+ * \see TRACE_mark
+ */
 void TRACE_declare_mark(const char *mark_type)
 {
   /* safe switch */
@@ -69,6 +119,24 @@ void TRACE_declare_mark(const char *mark_type)
   PJ_type_event_new(mark_type, NULL, PJ_type_get_root());
 }
 
+/**
+ * \ingroup TRACE_mark
+ * \brief Create a new instance of a tracing mark type.
+ *
+ * This function creates a mark in the trace file. The
+ * first parameter had to be previously declared using
+ * #TRACE_declare_mark, the second is the identifier
+ * for this mark instance. We recommend that the
+ * mark_value is a unique value for the whole simulation.
+ * Nevertheless, this is not a strong requirement: the
+ * trace will be valid even if there are multiple mark
+ * identifiers for the same trace.
+ *
+ * \param mark_type The name of the type for which the new instance will belong.
+ * \param mark_value The name of the new instance mark.
+ *
+ * \see TRACE_declare_mark
+ */
 void TRACE_mark(const char *mark_type, const char *mark_value)
 {
   /* safe switch */
@@ -162,6 +230,17 @@ static void instr_user_srcdst_variable(double time,
   }
 }
 
+/** \ingroup TRACE_API
+ *  \brief Creates a file with the topology of the platform file used for the simulator.
+ *
+ *  The graph topology will have the following properties: all hosts, links and routers
+ *  of the platform file are mapped to graph nodes; routes are mapped to edges.
+ *  The platform's AS are not represented in the output.
+ *
+ *  \param filename The name of the file that will hold the graph.
+ *
+ *  \return 1 of successful, 0 otherwise.
+ */
 int TRACE_platform_graph_export_graphviz (const char *filename)
 {
   /* returns 1 if successful, 0 otherwise */
@@ -180,113 +259,420 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  */
 
 /* for host variables */
-void TRACE_host_variable_declare (const char *var)
+/** \ingroup TRACE_user_variables
+ *  \brief Declare a new user variable associated to hosts.
+ *
+ *  Declare a user variable that will be associated to hosts.
+ *  A user host variable can be used to trace user variables
+ *  such as the number of tasks in a server, the number of
+ *  clients in an application (for hosts), and so on. The color
+ *  associated to this new variable will be random.
+ *
+ *  \param variable The name of the new variable to be declared.
+ *
+ *  \see TRACE_host_variable_declare_with_color
+ */
+void TRACE_host_variable_declare (const char *variable)
 {
-  instr_user_variable(0, NULL, var, "HOST", 0, INSTR_US_DECLARE, NULL);
+  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, NULL);
 }
 
-void TRACE_host_variable_declare_with_color (const char *var, const char *color)
+/** \ingroup TRACE_user_variables
+ *  \brief Declare a new user variable associated to hosts with a color.
+ *
+ *  Same as #TRACE_host_variable_declare, but associated a color
+ *  to the newly created user host variable. The color needs to be
+ *  a string with three numbers separated by spaces in the range [0,1].
+ *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
+ *
+ *  \param variable The name of the new variable to be declared.
+ *  \param color The color for the new variable.
+ *
+ */
+void TRACE_host_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable(0, NULL, var, "HOST", 0, INSTR_US_DECLARE, color);
+  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, color);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Set the value of a variable of a host.
+ *
+ *  \param host The name of the host to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The new value of the variable.
+ *
+ *  \see TRACE_host_variable_declare, TRACE_host_variable_add, TRACE_host_variable_sub
+ */
 void TRACE_host_variable_set (const char *host, const char *variable, double value)
 {
   TRACE_host_variable_set_with_time (MSG_get_clock(), host, variable, value);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Add a value to a variable of a host.
+ *
+ *  \param host The name of the host to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be added to the variable.
+ *
+ *  \see TRACE_host_variable_declare, TRACE_host_variable_set, TRACE_host_variable_sub
+ */
 void TRACE_host_variable_add (const char *host, const char *variable, double value)
 {
   TRACE_host_variable_add_with_time (MSG_get_clock(), host, variable, value);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Subtract a value from a variable of a host.
+ *
+ *  \param host The name of the host to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be subtracted from the variable.
+ *
+ *  \see TRACE_host_variable_declare, TRACE_host_variable_set, TRACE_host_variable_add
+ */
 void TRACE_host_variable_sub (const char *host, const char *variable, double value)
 {
   TRACE_host_variable_sub_with_time (MSG_get_clock(), host, variable, value);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Set the value of a variable of a host at a given timestamp.
+ *
+ *  Same as #TRACE_host_variable_set, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param host The name of the host to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The new value of the variable.
+ *
+ *  \see TRACE_host_variable_declare, TRACE_host_variable_add_with_time, TRACE_host_variable_sub_with_time
+ */
 void TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value)
 {
   instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET, NULL);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Add a value to a variable of a host at a given timestamp.
+ *
+ *  Same as #TRACE_host_variable_add, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param host The name of the host to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be added to the variable.
+ *
+ *  \see TRACE_host_variable_declare, TRACE_host_variable_set_with_time, TRACE_host_variable_sub_with_time
+ */
 void TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value)
 {
   instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD, NULL);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Subtract a value from a variable of a host at a given timestamp.
+ *
+ *  Same as #TRACE_host_variable_sub, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param host The name of the host to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be subtracted from the variable.
+ *
+ *  \see TRACE_host_variable_declare, TRACE_host_variable_set_with_time, TRACE_host_variable_add_with_time
+ */
 void TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value)
 {
   instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, NULL);
 }
 
 /* for link variables */
-void TRACE_link_variable_declare (const char *var)
+/** \ingroup TRACE_user_variables
+ *  \brief Declare a new user variable associated to links.
+ *
+ *  Declare a user variable that will be associated to links.
+ *  A user link variable can be used, for example, to trace
+ *  user variables such as the number of messages being
+ *  transferred through network links. The color
+ *  associated to this new variable will be random.
+ *
+ *  \param variable The name of the new variable to be declared.
+ *
+ *  \see TRACE_link_variable_declare_with_color
+ */
+void TRACE_link_variable_declare (const char *variable)
 {
-  instr_user_variable (0, NULL, var, "LINK", 0, INSTR_US_DECLARE, NULL);
+  instr_user_variable (0, NULL, variable, "LINK", 0, INSTR_US_DECLARE, NULL);
 }
 
-void TRACE_link_variable_declare_with_color (const char *var, const char *color)
+/** \ingroup TRACE_user_variables
+ *  \brief Declare a new user variable associated to links with a color.
+ *
+ *  Same as #TRACE_link_variable_declare, but associated a color
+ *  to the newly created user link variable. The color needs to be
+ *  a string with three numbers separated by spaces in the range [0,1].
+ *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
+ *
+ *  \param variable The name of the new variable to be declared.
+ *  \param color The color for the new variable.
+ *
+ */
+void TRACE_link_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable (0, NULL, var, "LINK", 0, INSTR_US_DECLARE, color);
+  instr_user_variable (0, NULL, variable, "LINK", 0, INSTR_US_DECLARE, color);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Set the value of a variable of a link.
+ *
+ *  \param link The name of the link to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The new value of the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_variable_add, TRACE_link_variable_sub
+ */
 void TRACE_link_variable_set (const char *link, const char *variable, double value)
 {
   TRACE_link_variable_set_with_time (MSG_get_clock(), link, variable, value);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Add a value to a variable of a link.
+ *
+ *  \param link The name of the link to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be added to the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_variable_set, TRACE_link_variable_sub
+ */
 void TRACE_link_variable_add (const char *link, const char *variable, double value)
 {
   TRACE_link_variable_add_with_time (MSG_get_clock(), link, variable, value);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Subtract a value from a variable of a link.
+ *
+ *  \param link The name of the link to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be subtracted from the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_variable_set, TRACE_link_variable_add
+ */
 void TRACE_link_variable_sub (const char *link, const char *variable, double value)
 {
   TRACE_link_variable_sub_with_time (MSG_get_clock(), link, variable, value);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Set the value of a variable of a link at a given timestamp.
+ *
+ *  Same as #TRACE_link_variable_set, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param link The name of the link to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The new value of the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_variable_add_with_time, TRACE_link_variable_sub_with_time
+ */
 void TRACE_link_variable_set_with_time (double time, const char *link, const char *variable, double value)
 {
   instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SET, NULL);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Add a value to a variable of a link at a given timestamp.
+ *
+ *  Same as #TRACE_link_variable_add, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param link The name of the link to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be added to the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_variable_set_with_time, TRACE_link_variable_sub_with_time
+ */
 void TRACE_link_variable_add_with_time (double time, const char *link, const char *variable, double value)
 {
   instr_user_variable (time, link, variable, "LINK", value, INSTR_US_ADD, NULL);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Subtract a value from a variable of a link at a given timestamp.
+ *
+ *  Same as #TRACE_link_variable_sub, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param link The name of the link to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be subtracted from the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_variable_set_with_time, TRACE_link_variable_add_with_time
+ */
 void TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value)
 {
   instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SUB, NULL);
 }
 
 /* for link variables, but with src and dst used for get_route */
+/** \ingroup TRACE_user_variables
+ *  \brief Set the value of the variable present in the links connecting source and destination.
+ *
+ *  Same as #TRACE_link_variable_set, but instead of providing the
+ *  name of link to be considered, provide the source and destination
+ *  hosts. All links that are part of the route between source and
+ *  destination will have the variable set to the provided value.
+ *
+ *  \param src The name of the source host for get route.
+ *  \param dst The name of the destination host for get route.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The new value of the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_srcdst_variable_add, TRACE_link_srcdst_variable_sub
+ */
 void TRACE_link_srcdst_variable_set (const char *src, const char *dst, const char *variable, double value)
 {
   TRACE_link_srcdst_variable_set_with_time (MSG_get_clock(), src, dst, variable, value);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Add a value to the variable present in the links connecting source and destination.
+ *
+ *  Same as #TRACE_link_variable_add, but instead of providing the
+ *  name of link to be considered, provide the source and destination
+ *  hosts. All links that are part of the route between source and
+ *  destination will have the value passed as parameter added to
+ *  the current value of the variable name to be considered.
+ *
+ *  \param src The name of the source host for get route.
+ *  \param dst The name of the destination host for get route.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be added to the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set, TRACE_link_srcdst_variable_sub
+ */
 void TRACE_link_srcdst_variable_add (const char *src, const char *dst, const char *variable, double value)
 {
   TRACE_link_srcdst_variable_add_with_time (MSG_get_clock(), src, dst, variable, value);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Subtract a value from the variable present in the links connecting source and destination.
+ *
+ *  Same as #TRACE_link_variable_sub, but instead of providing the
+ *  name of link to be considered, provide the source and destination
+ *  hosts. All links that are part of the route between source and
+ *  destination will have the value passed as parameter subtracted from
+ *  the current value of the variable name to be considered.
+ *
+ *  \param src The name of the source host for get route.
+ *  \param dst The name of the destination host for get route.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be subtracted from the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set, TRACE_link_srcdst_variable_add
+ */
 void TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const char *variable, double value)
 {
   TRACE_link_srcdst_variable_sub_with_time (MSG_get_clock(), src, dst, variable, value);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Set the value of the variable present in the links connecting source and destination at a given timestamp.
+ *
+ *  Same as #TRACE_link_srcdst_variable_set, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param src The name of the source host for get route.
+ *  \param dst The name of the destination host for get route.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The new value of the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_srcdst_variable_add_with_time, TRACE_link_srcdst_variable_sub_with_time
+ */
 void TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SET);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Add a value to the variable present in the links connecting source and destination at a given timestamp.
+ *
+ *  Same as #TRACE_link_srcdst_variable_add, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param src The name of the source host for get route.
+ *  \param dst The name of the destination host for get route.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be added to the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set_with_time, TRACE_link_srcdst_variable_sub_with_time
+ */
 void TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_ADD);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Subtract a value from the variable present in the links connecting source and destination at a given timestamp.
+ *
+ *  Same as #TRACE_link_srcdst_variable_sub, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param src The name of the source host for get route.
+ *  \param dst The name of the destination host for get route.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be subtracted from the variable.
+ *
+ *  \see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set_with_time, TRACE_link_srcdst_variable_add_with_time
+ */
 void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SUB);

@@ -145,3 +145,24 @@ Please note that as it is not really intended for public use, this
 module is only partially documented. 
 */
 
+
+/**
+@defgroup TRACE_API TRACE
+@ingroup SimGrid_API
+@brief Tracing mechanism and its functions.
+
+SimGrid can trace the resource (of hosts and links) utilization using
+any of its programming interfaces (MSG, SimDAG and SMPI). This means
+that the tracing will register how much power is used for each host
+and how much bandwidth is used for each link of the platform.
+
+The idea of the tracing facilities is to give SimGrid users to
+possibility to classify MSG and SimDAG tasks by category, tracing the
+platform utilization (hosts and links) for each of the categories.
+The API enables the declaration of categories and a function to
+associate them to the tasks (MSG and SD). The tasks that are not
+classified according to a category are not traced. If no categories
+are specified, simulations can still be traced using a special
+parameter in the command line (see \ref tracing_tracing for details).
+*/
+

@@ -69,7 +69,9 @@ static int ptask_host_count = 0;
 static xbt_dict_t ptask_parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
-static surf_action_t die_impossible_communicate (void *src, void *dst, double size, double rate)
+static surf_action_t die_impossible_communicate (network_element_t src,
+                                                 network_element_t dst,
+                                                 double size, double rate)
 {
   DIE_IMPOSSIBLE;
   return NULL;
@@ -638,7 +640,7 @@ static void* ptask_cpu_create_resource(const char *name, double power_scale,
           surf_workstation_model, name,cpu_properties);
 
   cpu->type = SURF_WORKSTATION_RESOURCE_CPU;
-  cpu->info = (network_element_t)xbt_lib_get_or_null(host_lib,name,ROUTING_HOST_LEVEL);
+  cpu->info = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
   if(!(cpu->info)) xbt_die("Don't find ROUTING_HOST_LEVEL for '%s'",name);
 
   cpu->power_scale = power_scale;

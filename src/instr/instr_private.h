@@ -63,7 +63,7 @@ typedef enum {
 
 typedef struct s_container *container_t;
 typedef struct s_container {
-  void *net_elm;  /* network_element_t */
+  network_element_t net_elm;
   char *name;     /* Unique name of this container */
   char *id;       /* Unique id of this container */
   type_t type;    /* Type of this container */
@@ -100,7 +100,7 @@ void new_pajeEndLink (double timestamp, container_t container, type_t type, cont
 void new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
 
 /* declaration of instrumentation functions from msg_task_instr.c */
-char *TRACE_task_container(m_task_t task, char *output, int len);
+void TRACE_msg_set_task_category(m_task_t task, const char *category);
 void TRACE_msg_task_create(m_task_t task);
 void TRACE_msg_task_execute_start(m_task_t task);
 void TRACE_msg_task_execute_end(m_task_t task);
@@ -132,8 +132,7 @@ void TRACE_surf_link_set_latency(double date, const char *resource, double laten
 void TRACE_surf_action(surf_action_t surf_action, const char *category);
 
 //for tracing gtnets
-void TRACE_surf_gtnets_communicate(void *action, const char *src, const char *dst);
-void TRACE_surf_gtnets_destroy(void *action);
+void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst);
 
 /* from smpi_instr.c */
 void TRACE_internal_smpi_set_category (const char *category);
@@ -185,10 +184,6 @@ void TRACE_surf_link_set_utilization(const char *resource,
                                      double delta);
 void TRACE_surf_resource_utilization_alloc(void);
 void TRACE_surf_resource_utilization_release(void);
-
-/* sd_instr.c */
-void TRACE_sd_task_create(SD_task_t task);
-void TRACE_sd_task_destroy(SD_task_t task);
 
 /* instr_paje.c */
 extern xbt_dict_t trivaNodeTypes;

@@ -307,7 +307,7 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
 
 static XBT_INLINE void routing_asr_host_free(void *p)
 {
-  network_element_t elm = (network_element_t)p;
+  network_element_t elm = p;
   free(elm->name);
   xbt_free(elm);
 }

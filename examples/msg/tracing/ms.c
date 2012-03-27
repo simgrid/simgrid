@@ -54,14 +54,14 @@ int master(int argc, char *argv[])
 
     //setting the category of task to "compute"
     //the category of a task must be defined before it is sent or executed
-    TRACE_msg_set_task_category(task, "compute");
+    MSG_task_set_category(task, "compute");
     MSG_task_send(task, "master_mailbox");
   }
   TRACE_mark("msmark", "finish_send_tasks");
 
   for (i = 0; i < slaves_count; i++) {
     m_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
-    TRACE_msg_set_task_category(finalize, "finalize");
+    MSG_task_set_category(finalize, "finalize");
     MSG_task_send(finalize, "master_mailbox");
   }
 

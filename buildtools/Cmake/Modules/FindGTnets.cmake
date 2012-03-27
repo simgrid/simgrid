@@ -2,11 +2,6 @@ find_library(HAVE_GTNETS_LIB
     NAME gtnets
     PATH_SUFFIXES lib64 lib lib64/gtnets lib/gtnets
     PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
     ${gtnets_path}
 )
 
@@ -14,11 +9,6 @@ find_path(HAVE_SIMULATOR_H
 	NAME simulator.h
     PATH_SUFFIXES include include/gtnets
     PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr
     ${gtnets_path}
 )
 

@@ -206,6 +206,9 @@ XBT_PUBLIC(MSG_error_t)
 
 XBT_PUBLIC(int) MSG_task_listen_from(const char *alias);
 
+XBT_PUBLIC(void) MSG_task_set_category (m_task_t task, const char *category);
+XBT_PUBLIC(const char *) MSG_task_get_category (m_task_t task);
+
 /************************** Task handling ************************************/
 XBT_PUBLIC(MSG_error_t)
     MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,

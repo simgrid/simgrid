@@ -27,7 +27,6 @@ MSG_error_t MSG_task_execute(m_task_t task)
   simdata_task_t simdata = NULL;
   simdata_process_t p_simdata;
   e_smx_state_t comp_state;
-  CHECK_HOST();
 
   simdata = task->simdata;
 
@@ -154,17 +153,18 @@ MSG_parallel_task_create(const char *name, int host_nb,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Executes a parallel task and waits for its termination.
  *
- * \param task
- * \return
+ * \param task a #m_task_t to execute on the location on which the agent is running.
+ *
+ * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
+ * or #MSG_HOST_FAILURE otherwise
  */
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
   simdata_task_t simdata = NULL;
   e_smx_state_t comp_state;
   simdata_process_t p_simdata;
-  CHECK_HOST();
 
   simdata = task->simdata;
   p_simdata = SIMIX_process_self_get_data(SIMIX_process_self());
@@ -254,12 +254,19 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Receives a task from a mailbox from a specific host.
  *
- * \param task
- * \param alias
- * \param host
- * \return
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is received. See #MSG_task_irecv
+ * for receiving tasks asynchronously.
+ *
+ * \param task a memory location for storing a #m_task_t.
+ * \param alias name of the mailbox to receive the task from
+ * \param host a #m_host_t host from where the task was sent
+ *
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t
 MSG_task_receive_from_host(m_task_t * task, const char *alias,
@@ -269,11 +276,18 @@ MSG_task_receive_from_host(m_task_t * task, const char *alias,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Receives a task from a mailbox.
  *
- * \param task
- * \param alias
- * \return
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is received. See #MSG_task_irecv
+ * for receiving tasks asynchronously.
+ *
+ * \param task a memory location for storing a #m_task_t.
+ * \param alias name of the mailbox to receive the task from
+ *
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
 {
@@ -281,12 +295,20 @@ MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Receives a task from a mailbox with a given timeout.
  *
- * \param task
- * \param alias
- * \param timeout
- * \return
+ * This is a blocking function with a timeout, the execution flow will be blocked
+ * until the task is received or the timeout is achieved. See #MSG_task_irecv
+ * for receiving tasks asynchronously.  You can provide a -1 timeout
+ * to obtain an infinite timeout.
+ *
+ * \param task a memory location for storing a #m_task_t.
+ * \param alias name of the mailbox to receive the task from
+ * \param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_receive)
+ *
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 MSG_error_t
 MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
@@ -296,13 +318,21 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Receives a task from a mailbox from a specific host with a given timeout.
  *
- * \param task
- * \param alias
- * \param timeout
- * \param host
- * \return
+ * This is a blocking function with a timeout, the execution flow will be blocked
+ * until the task is received or the timeout is achieved. See #MSG_task_irecv
+ * for receiving tasks asynchronously. You can provide a -1 timeout
+ * to obtain an infinite timeout.
+ *
+ * \param task a memory location for storing a #m_task_t.
+ * \param alias name of the mailbox to receive the task from
+ * \param timeout is the maximum wait time for completion (provide -1 for no timeout)
+ * \param host a #m_host_t host from where the task was sent
+ *
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+* #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 MSG_error_t
 MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
@@ -349,8 +379,6 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
-
-  CHECK_HOST();
 
   /* FIXME: these functions are not traceable */
 
@@ -402,8 +430,6 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   m_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
-  CHECK_HOST();
-
   /* FIXME: these functions are not traceable */
 
   /* Prepare the task to send */
@@ -437,8 +463,6 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
 {
   smx_rdv_t rdv = MSG_mailbox_get_by_alias(name);
-
-  CHECK_HOST();
 
   /* FIXME: these functions are not traceable */
 
@@ -700,7 +724,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
  * \ingroup msg_gos_functions
  * \brief Returns the error (if any) that occured during a finished communication.
  * \param comm a finished communication
- * \return the status of the communication, or MSG_OK if no error occured
+ * \return the status of the communication, or #MSG_OK if no error occured
  * during the communication
  */
 MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
@@ -709,10 +733,10 @@ MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Get a task (#m_task_t) from a communication
  *
- * \param comm
- * \return
+ * \param comm the communication where to get the task
+ * \return the task from the communication
  */
 m_task_t MSG_comm_get_task(msg_comm_t comm)
 {
@@ -741,11 +765,17 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Sends a task to a mailbox
  *
- * \param task
- * \param alias
- * \return
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is sent (and received in the other side if #MSG_task_receive is used).
+ * See #MSG_task_isend for sending tasks asynchronously.
+ *
+ * \param task the task to be sent
+ * \param alias the mailbox name to where the task is sent
+ *
+ * \return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t MSG_task_send(m_task_t task, const char *alias)
 {
@@ -754,12 +784,18 @@ MSG_error_t MSG_task_send(m_task_t task, const char *alias)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Sends a task to a mailbox with a maximum rate
  *
- * \param task
- * \param alias
- * \param maxrate
- * \return
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is sent. The maxrate parameter allows the application
+ * to limit the bandwidth utilization of network links when sending the task.
+ *
+ * \param task the task to be sent
+ * \param alias the mailbox name to where the task is sent
+ * \param maxrate the maximum communication rate for sending this task
+ *
+ * \return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t
 MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
@@ -769,12 +805,17 @@ MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Sends a task to a mailbox with a timeout
  *
- * \param task
- * \param alias
- * \param timeout
- * \return
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is sent or the timeout is achieved.
+ *
+ * \param task the task to be sent
+ * \param alias the mailbox name to where the task is sent
+ * \param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_send)
+ *
+ * \return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 MSG_error_t
 MSG_task_send_with_timeout(m_task_t task, const char *alias,
@@ -785,51 +826,97 @@ MSG_task_send_with_timeout(m_task_t task, const char *alias,
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Check if there is a communication going on in a mailbox.
  *
- * \param alias
- * \return
+ * \param alias the name of the mailbox to be considered
+ *
+ * \return Returns 1 if there is a communication, 0 otherwise
  */
 int MSG_task_listen(const char *alias)
 {
-  CHECK_HOST();
-
   return !MSG_mailbox_is_empty(MSG_mailbox_get_by_alias(alias));
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Check the number of communication actions of a given host pending in a mailbox.
  *
- * \param alias
- * \param host
- * \return
+ * \param alias the name of the mailbox to be considered
+ * \param host the host to check for communication
+ *
+ * \return Returns the number of pending communication actions of the host in the
+ * given mailbox, 0 if there is no pending communication actions.
+ *
  */
 int MSG_task_listen_from_host(const char *alias, m_host_t host)
 {
-  CHECK_HOST();
-
   return
       MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias
                                                (alias), host);
 }
 
 /** \ingroup msg_gos_functions
- * \brief Description forthcoming (FIXME)
+ * \brief Look if there is a communication on a mailbox and return the
+ * PID of the sender process.
  *
- * \param alias
- * \return
+ * \param alias the name of the mailbox to be considered
+ *
+ * \return Returns the PID of sender process,
+ * -1 if there is no communication in the mailbox.
  */
 int MSG_task_listen_from(const char *alias)
 {
   m_task_t task;
-
-  CHECK_HOST();
 
   if (NULL ==
       (task = MSG_mailbox_get_head(MSG_mailbox_get_by_alias(alias))))
     return -1;
 
   return MSG_process_get_PID(task->simdata->sender);
+}
+
+/** \ingroup msg_gos_functions
+ * \brief Sets the tracing category of a task.
+ *
+ * This function should be called after the creation of
+ * a MSG task, to define the category of that task. The
+ * first parameter task must contain a task that was
+ * created with the function #MSG_task_create. The second
+ * parameter category must contain a category that was
+ * previously declared with the function #TRACE_category
+ * (or with #TRACE_category_with_color).
+ *
+ * See \ref tracing_tracing for details on how to trace
+ * the (categorized) resource utilization.
+ *
+ * \param task the task that is going to be categorized
+ * \param category the name of the category to be associated to the task
+ *
+ * \see MSG_task_get_category, TRACE_category, TRACE_category_with_color
+ */
+void MSG_task_set_category (m_task_t task, const char *category)
+{
+#ifdef HAVE_TRACING
+  TRACE_msg_set_task_category (task, category);
+#endif
+}
+
+/** \ingroup msg_gos_functions
+ *
+ * \brief Gets the current tracing category of a task.
+ *
+ * \param task the task to be considered
+ *
+ * \see MSG_task_set_category
+ *
+ * \return Returns the name of the tracing category of the given task, NULL otherwise
+ */
+const char *MSG_task_get_category (m_task_t task)
+{
+#ifdef HAVE_TRACING
+  return task->category;
+#else
+  return NULL;
+#endif
 }
 
 #ifdef MSG_USE_DEPRECATED
@@ -946,8 +1033,6 @@ int MSG_task_probe_from(m_channel_t channel)
   XBT_WARN("DEPRECATED! Now use MSG_task_listen_from");
   m_task_t task;
 
-  CHECK_HOST();
-
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
@@ -977,8 +1062,6 @@ int MSG_task_Iprobe(m_channel_t channel)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
-  CHECK_HOST();
-
   return
       !MSG_mailbox_is_empty(MSG_mailbox_get_by_channel
                             (MSG_host_self(), channel));
@@ -1003,8 +1086,6 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
-
-  CHECK_HOST();
 
   return
       MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_channel

@@ -411,15 +411,16 @@ void SD_exit(void)
   xbt_swag_free(sd_global->failed_task_set);
   xbt_swag_free(sd_global->return_set);
 
+#ifdef HAVE_TRACING
+  TRACE_end();
+#endif
+
   XBT_DEBUG("Exiting Surf...");
   surf_exit();
 
   xbt_free(sd_global);
   sd_global = NULL;
 
-#ifdef HAVE_TRACING
-  TRACE_end();
-#endif
 #ifdef HAVE_JEDULE
   jedule_sd_dump();
   jedule_sd_cleanup();

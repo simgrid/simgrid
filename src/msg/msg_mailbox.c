@@ -65,7 +65,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   if (host)
     THROW_UNIMPLEMENTED;
 
-  CHECK_HOST();
 #ifdef HAVE_TRACING
   TRACE_msg_task_get_start();
   volatile double start_time = MSG_get_clock();
@@ -120,7 +119,6 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   simdata_task_t t_simdata = NULL;
   m_process_t process = MSG_process_self();
   simdata_process_t p_simdata = SIMIX_process_self_get_data(process);
-  CHECK_HOST();
 
 #ifdef HAVE_TRACING
   int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()

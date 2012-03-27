@@ -318,6 +318,9 @@ static int net_action_unref(surf_action_t action)
       surf_action_lmm_heap_remove(net_action_heap,(surf_action_lmm_t) action);
       xbt_swag_remove(action, net_modified_set);
     }
+#ifdef HAVE_TRACING
+    if (action->category) xbt_free (action->category);
+#endif
     surf_action_free(&action);
     return 1;
   }
@@ -743,9 +746,9 @@ static void net_update_resource_state(void *id,
 }
 
 
-static surf_action_t net_communicate(void *src,
-                                     void *dst, double size,
-                                     double rate)
+static surf_action_t net_communicate(network_element_t src,
+                                     network_element_t dst,
+                                     double size, double rate)
 {
   unsigned int i;
   link_CM02_t link;
@@ -758,12 +761,12 @@ static surf_action_t net_communicate(void *src,
 
   xbt_dynar_t route = xbt_dynar_new(global_routing->size_of_link, NULL);
 
-  XBT_IN("(%s,%s,%g,%g)", ((network_element_t)src)->name, ((network_element_t)dst)->name, size, rate);
+  XBT_IN("(%s,%s,%g,%g)", src->name, dst->name, size, rate);
 
-  routing_get_route_and_latency((network_element_t)src, (network_element_t)dst, &route, &latency);
+  routing_get_route_and_latency(src, dst, &route, &latency);
   xbt_assert(!xbt_dynar_is_empty(route) || latency,
              "You're trying to send data from %s to %s but there is no connection at all between these two hosts.",
-             ((network_element_t)src)->name, ((network_element_t)dst)->name);
+             src->name, dst->name);
 
   xbt_dynar_foreach(route, i, link) {
     if (link->lmm_resource.state_current == SURF_RESOURCE_OFF) {
@@ -772,7 +775,7 @@ static surf_action_t net_communicate(void *src,
     }
   }
   if (sg_network_crosstraffic == 1) {
-    routing_get_route_and_latency((network_element_t)dst, (network_element_t)src, &back_route, NULL);
+    routing_get_route_and_latency(dst, src, &back_route, NULL);
     xbt_dynar_foreach(back_route, i, link) {
       if (link->lmm_resource.state_current == SURF_RESOURCE_OFF) {
         failed = 1;
@@ -822,7 +825,7 @@ static surf_action_t net_communicate(void *src,
     link = *(link_CM02_t *) xbt_dynar_get_ptr(route, 0);
     gap_append(size, link, action);
     XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",
-              action, ((network_element_t)src)->name, ((network_element_t)dst)->name, action->sender.gap,
+              action, src->name, dst->name, action->sender.gap,
               action->latency);
   }
 

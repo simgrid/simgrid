@@ -87,7 +87,7 @@ static void TRACE_sd_dotloader (SD_task_t task, const char *category)
   if (category){
     if (strlen (category) != 0){
       TRACE_category (category);
-      TRACE_sd_set_task_category (task, category);
+      SD_task_set_category (task, category);
     }
   }
 }

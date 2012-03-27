@@ -91,7 +91,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   sd_global->task_number++;
 
 #ifdef HAVE_TRACING
-  TRACE_sd_task_create(task);
+  task->category = NULL;
 #endif
 
   return task;
@@ -131,7 +131,7 @@ void SD_task_destroy(SD_task_t task)
   sd_global->task_number--;
 
 #ifdef HAVE_TRACING
-  TRACE_sd_task_destroy(task);
+  if (task->category) xbt_free(task->category);
 #endif
 
   XBT_DEBUG("Task destroyed.");
@@ -1400,4 +1400,51 @@ void SD_task_schedulel(SD_task_t task, int count, ...)
   va_end(ap);
   SD_task_schedulev(task, count, list);
   free(list);
+}
+
+/**
+ * \brief Sets the tracing category of a task.
+ *
+ * This function should be called after the creation of a
+ * SimDAG task, to define the category of that task. The first
+ * parameter must contain a task that was created with the
+ * function #SD_task_create. The second parameter must contain
+ * a category that was previously declared with the function
+ * #TRACE_category.
+ *
+ * \param task The task to be considered
+ * \param category the name of the category to be associated to the task
+ *
+ * \see SD_task_get_category, TRACE_category, TRACE_category_with_color
+ */
+void SD_task_set_category (SD_task_t task, const char *category)
+{
+#ifdef HAVE_TRACING
+  if (!TRACE_is_enabled()) return;
+  if (task == NULL) return;
+  if (category == NULL){
+    if (task->category) xbt_free (task->category);
+    task->category = NULL;
+  }else{
+    task->category = xbt_strdup (category);
+  }
+#endif
+}
+
+/**
+ * \brief Gets the current tracing category of a task.
+ *
+ * \param task The task to be considered
+ *
+ * \see SD_task_set_category
+ *
+ * \return Returns the name of the tracing category of the given task, NULL otherwise
+ */
+const char *SD_task_get_category (SD_task_t task)
+{
+#ifdef HAVE_TRACING
+  return task->category;
+#else
+  return NULL;
+#endif
 }

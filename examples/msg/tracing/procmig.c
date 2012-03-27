@@ -68,7 +68,7 @@ static int master(int argc, char *argv[])
     if (destination){
       MSG_task_set_data(task, xbt_strdup (destination));
     }
-    TRACE_msg_set_task_category(task, "migration_order");
+    MSG_task_set_category(task, "migration_order");
     MSG_task_send (task, "master_mailbox");
     task = NULL;
   }

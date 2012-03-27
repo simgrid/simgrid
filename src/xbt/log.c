@@ -568,8 +568,10 @@ void xbt_log_init(int *argc, char **argv)
       argv[j++] = argv[i];
     }
   }
-  argv[j] = NULL;
-  *argc = j;
+  if (j < *argc) {
+    argv[j] = NULL;
+    *argc = j;
+  }
 }
 
 static void log_cat_exit(xbt_log_category_t cat)

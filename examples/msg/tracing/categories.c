@@ -45,20 +45,20 @@ int master(int argc, char *argv[])
     //creating task and setting its category
     if (i % 2) {
       task = MSG_task_create("task_compute", 10000000, 0, NULL);
-      TRACE_msg_set_task_category(task, "compute");
+      MSG_task_set_category(task, "compute");
     } else if (i % 3) {
       task = MSG_task_create("task_request", 10, 10, NULL);
-      TRACE_msg_set_task_category(task, "request");
+      MSG_task_set_category(task, "request");
     } else {
       task = MSG_task_create("task_data", 10, 10000000, NULL);
-      TRACE_msg_set_task_category(task, "data");
+      MSG_task_set_category(task, "data");
     }
     MSG_task_send(task, "master_mailbox");
   }
 
   for (i = 0; i < slaves_count; i++) {
     m_task_t finalize = MSG_task_create("finalize", 0, 1000, 0);
-    TRACE_msg_set_task_category(finalize, "finalize");
+    MSG_task_set_category(finalize, "finalize");
     MSG_task_send(finalize, "master_mailbox");
   }
 
