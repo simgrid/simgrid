@@ -507,7 +507,7 @@ const char *xbt_log_priority_names[8] = {
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
   NULL /*parent */ , NULL /* firstChild */ , NULL /* nextSibling */ ,
-      "root",
+      "root", "The common ancestor for all categories",
       0 /*initialized */, xbt_log_priority_uninitialized /* threshold */ ,
       0 /* isThreshInherited */ ,
       NULL /* appender */ , NULL /* layout */ ,
@@ -1191,7 +1191,7 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category,
     if (i == xbt_dynar_length(dynar) - 1 && category->parent)
       *strrchr(child_prefix, '|') = ' ';
     cat = xbt_dynar_get_as(dynar, i, xbt_log_category_t);
-    printf("%s%s\n", this_prefix, cat->name);
+    printf("%s%s: %s\n", this_prefix, cat->name, cat->description);
     xbt_log_help_categories_rec(cat->firstChild, child_prefix);
   }
 

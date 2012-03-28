@@ -139,6 +139,7 @@ typedef enum {
         NULL /* firstChild */,                          \
 	NULL /* nextSibling */,                         \
         #catName,                                       \
+        desc,                                           \
         0 /*initialized */,                             \
         xbt_log_priority_uninitialized /* threshold */, \
         1 /* isThreshInherited */,                      \
@@ -258,6 +259,7 @@ struct xbt_log_category_s {
   xbt_log_category_t firstChild;
   xbt_log_category_t nextSibling;
   const char *name;
+  const char *description;
   int initialized;
   int threshold;
   int isThreshInherited;
