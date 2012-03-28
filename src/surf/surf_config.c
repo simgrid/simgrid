@@ -70,15 +70,13 @@ static void surf_config_cmd_line(int *argc, char **argv)
   int i, j;
   char *opt;
 
-  for (i = 1; i < *argc; i++) {
-    int remove_it = 0;
+  for (j = i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
       opt = strchr(argv[i], '=');
       opt++;
 
       xbt_cfg_set_parse(_surf_cfg_set, opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
-      remove_it = 1;
     } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
       printf
           ("Description of the configuration accepted by this simulator:\n");
@@ -114,16 +112,13 @@ static void surf_config_cmd_line(int *argc, char **argv)
       TRACE_help (1);
       exit(0);
 #endif
+    } else {
+      argv[j++] = argv[i];
     }
-    if (remove_it) {            /*remove this from argv */
-      for (j = i + 1; j < *argc; j++) {
-        argv[j - 1] = argv[j];
-      }
-
-      argv[j - 1] = NULL;
-      (*argc)--;
-      i--;                      /* compensate effect of next loop incrementation */
-    }
+  }
+  if (j < *argc) {
+    argv[j] = NULL;
+    *argc = j;
   }
 }
 
