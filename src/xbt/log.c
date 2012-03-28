@@ -715,18 +715,7 @@ void xbt_log_init(int *argc, char **argv)
 
   /* Set logs and init log submodule */
   for (j = i = 1; i < *argc; i++) {
-    if (!strncmp(argv[i], "--log=", strlen("--log=")) ||
-        !strncmp(argv[i], "--gras-log=", strlen("--gras-log=")) ||
-        !strncmp(argv[i], "--surf-log=", strlen("--surf-log=")) ||
-        !strncmp(argv[i], "--msg-log=", strlen("--msg-log=")) ||
-        !strncmp(argv[i], "--simix-log=", strlen("--simix-log=")) ||
-        !strncmp(argv[i], "--xbt-log=", strlen("--xbt-log="))) {
-
-      if (strncmp(argv[i], "--log=", strlen("--log=")))
-        XBT_WARN
-            ("Option %.*s is deprecated and will disapear in the future. Use --log instead.",
-             (int) (strchr(argv[i], '=') - argv[i]), argv[i]);
-
+    if (!strncmp(argv[i], "--log=", strlen("--log="))) {
       opt = strchr(argv[i], '=');
       opt++;
       xbt_log_control_set(opt);
