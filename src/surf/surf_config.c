@@ -63,12 +63,6 @@ static void surf_config_cmd_line(int *argc, char **argv)
                surf_optimization_mode_description[k].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
       shall_exit = 1;
-    } else if (!strcmp(argv[i], "--help-logs")) {
-      xbt_log_help();
-      shall_exit = 1;
-    } else if (!strcmp(argv[i], "--help-log-categories")) {
-      xbt_log_help_categories();
-      shall_exit = 1;
 #ifdef HAVE_TRACING
     } else if (!strcmp(argv[i], "--help-tracing")) {
       TRACE_help (1);

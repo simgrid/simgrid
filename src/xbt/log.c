@@ -702,12 +702,16 @@ static void xbt_log_connect_categories(void)
 #endif /* simgrid_EXPORTS */
 }
 
+static void xbt_log_help(void);
+static void xbt_log_help_categories(void);
+
 /** @brief Get all logging settings from the command line
  *
  * xbt_log_control_set() is called on each string we got from cmd line
  */
 void xbt_log_init(int *argc, char **argv)
 {
+  unsigned help_requested = 0;  /* 1: logs; 2: categories */
   int i, j;
   char *opt;
 
@@ -720,6 +724,10 @@ void xbt_log_init(int *argc, char **argv)
       opt++;
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
+    } else if (!strcmp(argv[i], "--help-logs")) {
+      help_requested |= 1;
+    } else if (!strcmp(argv[i], "--help-log-categories")) {
+      help_requested |= 2;
     } else {
       argv[j++] = argv[i];
     }
@@ -730,6 +738,14 @@ void xbt_log_init(int *argc, char **argv)
   }
 
   xbt_log_connect_categories();
+
+  if (help_requested) {
+    if (help_requested & 1)
+      xbt_log_help();
+    if (help_requested & 2)
+      xbt_log_help_categories();
+    exit(0);
+  }
 }
 
 static void log_cat_exit(xbt_log_category_t cat)
@@ -1264,7 +1280,7 @@ void xbt_log_additivity_set(xbt_log_category_t cat, int additivity)
   cat->additivity = additivity;
 }
 
-void xbt_log_help(void)
+static void xbt_log_help(void)
 {
   printf(
 "Description of the logging output:\n"
@@ -1358,7 +1374,7 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category,
   xbt_free(child_prefix);
 }
 
-void xbt_log_help_categories(void)
+static void xbt_log_help_categories(void)
 {
   printf("Current log category hierarchy:\n");
   xbt_log_help_categories_rec(&_XBT_LOGV(XBT_LOG_ROOT_CAT), "   ");
