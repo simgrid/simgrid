@@ -24,43 +24,22 @@ my %c_ancestor;
 
 sub cleanup_ctn {
     my $ctn = shift;        # cleanup the content of a macro call
-    $ctn =~ s/ *\n//gs;										 
-    $ctn =~ s/,\s*"/,"/gs;
-    $ctn =~ s/"\s*$/"/gs;
-    $ctn =~ s/,\s*/,/gs;
-    my @elms_tmp=split (/,/,$ctn); 
+    $ctn =~ s/^\s*(.*)\s*$/$1/gs;
     my @elms;
     print "ctn=$ctn\n" if $debug > 1;
-    # There may be some ',' in the description. Remerge the stuff like: "description, really"
-    while (1) {
-	my $acc = shift @elms_tmp;
-	last unless defined $acc;
-  	if ($acc =~ /^"/) { # ") {
-	    while (shift @elms_tmp) { 
-		$acc .= $_;
- 	    }
-	    die "Unparsable content: $ctn\n"
-	      unless ($acc =~ s/^"(.*)"$/$1/);
-	}
-	print "  seen $acc\n" if $debug > 1;
-	push @elms, $acc;
-    }
-    if (scalar(@elms) eq 3) {
+    if ($ctn =~ m/^(\w+)\s*,\s*(\w+)\s*,\s*"?([^"]*)"?$/s) {
 	# Perfect, we got 0->name; 1->anc; 2->desc
-    } elsif (scalar(@elms) eq 2) {
+	$elms[0] = $1;
+	$elms[1] = $2;
+	$elms[2] = $3;
+    } elsif ($ctn =~ m/^(\w+)\s*,\s*"?([^"]*)"?$/s) {
 	# Mmm. got no ancestor. Add the default one.
-	$elms[2] = $elms[1]; # shift the desc
+	$elms[0] = $1;
 	$elms[1] = "XBT_LOG_ROOT_CAT";
+	$elms[2] = $2;
     } else {
-	my $l = scalar(@elms);
-	my $s = "";
-	map {$s .= $_;} @elms;
-	die "Unparsable content: $ctn (length=$l) (content=$s)\n";
+	die "Unparsable content: $ctn\n";
     }
-    
-    $elms[0] =~ s/^\s*(\S*)\s*$/$1/; # trim
-    $elms[1]  =~ s/^\s*(\S*)\s*$/$1/; # trim
-
     return @elms;
 }
 
