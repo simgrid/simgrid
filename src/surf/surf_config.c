@@ -44,7 +44,7 @@ static void surf_config_cmd_line(int *argc, char **argv)
 "You can also use --help-tracing to see the details of all tracing options known by this simulator.\n"
 #endif
 "\n"
-"You can also use --help-logs to see the details of logging output.\n"
+"You can also use --help-logs and --help-log-categories to see the details of logging output.\n"
 "\n"
         );
       shall_exit = 1;
@@ -65,6 +65,9 @@ static void surf_config_cmd_line(int *argc, char **argv)
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-logs")) {
       xbt_log_help();
+      shall_exit = 1;
+    } else if (!strcmp(argv[i], "--help-log-categories")) {
+      xbt_log_help_categories();
       shall_exit = 1;
 #ifdef HAVE_TRACING
     } else if (!strcmp(argv[i], "--help-tracing")) {

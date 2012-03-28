@@ -362,6 +362,13 @@ extern xbt_log_layout_t xbt_log_default_layout;
 XBT_PUBLIC(void) xbt_log_help(void);
 
 /**
+ * \ingroup XBT_log
+ *
+ * Prints the log category hierarchy.
+ */
+XBT_PUBLIC(void) xbt_log_help_categories(void);
+
+/**
  * \ingroup XBT_log 
  * \param catName name of the category
  * \param priority minimal priority to be enabled to return true (must be #e_xbt_log_priority_t)

@@ -1153,3 +1153,56 @@ void xbt_log_help(void)
 "\n"
     );
 }
+
+static int xbt_log_cat_cmp(const void *pa, const void *pb)
+{
+  xbt_log_category_t a = *(xbt_log_category_t *)pa;
+  xbt_log_category_t b = *(xbt_log_category_t *)pb;
+  return strcmp(a->name, b->name);
+}
+
+static void xbt_log_help_categories_rec(xbt_log_category_t category,
+                                        const char *prefix)
+{
+  char *this_prefix;
+  char *child_prefix;
+  xbt_dynar_t dynar;
+  unsigned i;
+  xbt_log_category_t cat;
+
+  if (!category)
+    return;
+
+  if (category->parent) {
+    this_prefix = bprintf("%s \\_ ", prefix);
+    child_prefix = bprintf("%s |  ", prefix);
+  } else {
+    this_prefix = bprintf("%s", prefix);
+    child_prefix = bprintf("%s", prefix);
+  }
+
+  dynar = xbt_dynar_new(sizeof(xbt_log_category_t), NULL);
+  for (cat = category ; cat != NULL; cat = cat->nextSibling)
+    xbt_dynar_push_as(dynar, xbt_log_category_t, cat);
+
+  xbt_dynar_sort(dynar, xbt_log_cat_cmp);
+
+  for (i = 0; i < xbt_dynar_length(dynar); i++) {
+    if (i == xbt_dynar_length(dynar) - 1 && category->parent)
+      *strrchr(child_prefix, '|') = ' ';
+    cat = xbt_dynar_get_as(dynar, i, xbt_log_category_t);
+    printf("%s%s\n", this_prefix, cat->name);
+    xbt_log_help_categories_rec(cat->firstChild, child_prefix);
+  }
+
+  xbt_dynar_free(&dynar);
+  xbt_free(this_prefix);
+  xbt_free(child_prefix);
+}
+
+void xbt_log_help_categories(void)
+{
+  printf("Current log category hierarchy:\n");
+  xbt_log_help_categories_rec(&_XBT_LOGV(XBT_LOG_ROOT_CAT), "   ");
+  printf("\n");
+}
