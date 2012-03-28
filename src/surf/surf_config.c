@@ -67,6 +67,7 @@ static void LOG_help(void)
 /* Parse the command line, looking for options */
 static void surf_config_cmd_line(int *argc, char **argv)
 {
+  int shall_exit = 0;
   int i, j;
   char *opt;
 
@@ -92,7 +93,7 @@ static void surf_config_cmd_line(int *argc, char **argv)
 "You can also use --help-logs to see the details of logging output.\n"
 "\n"
         );
-      exit(0);
+      shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-models")) {
       model_help("workstation", surf_workstation_model_description);
       printf("\n");
@@ -103,14 +104,14 @@ static void surf_config_cmd_line(int *argc, char **argv)
       for (i = 0; surf_optimization_mode_description[i].name; i++)
         printf("  %s: %s\n", surf_optimization_mode_description[i].name, surf_optimization_mode_description[i].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n");
-      exit(0);
+      shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-logs")) {
       LOG_help ();
-      exit(0);
+      shall_exit = 1;
 #ifdef HAVE_TRACING
     } else if (!strcmp(argv[i], "--help-tracing")) {
       TRACE_help (1);
-      exit(0);
+      shall_exit = 1;
 #endif
     } else {
       argv[j++] = argv[i];
@@ -120,6 +121,8 @@ static void surf_config_cmd_line(int *argc, char **argv)
     argv[j] = NULL;
     *argc = j;
   }
+  if (shall_exit)
+    exit(0);
 }
 
 
