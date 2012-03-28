@@ -784,8 +784,7 @@ XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
 #define NB_ELEM 5000
 
 XBT_TEST_SUITE("dynar", "Dynar data container");
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
-XBT_LOG_DEFAULT_CATEGORY(xbt_dyn);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dyn);
 
 XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 {
