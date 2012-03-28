@@ -11,7 +11,7 @@
 #include "datadesc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ddt_create, xbt_ddt,
-                                "Creating new datadescriptions");
+                                "Creating new data descriptions");
 
 /*** prototypes ***/
 static xbt_dd_cat_field_t
