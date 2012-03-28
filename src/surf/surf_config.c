@@ -61,6 +61,7 @@ static void LOG_help(void)
 "\n"
 "         -> %%d: date (UNIX-like epoch)\n"
 "         -> %%r: application age (time elapsed since the beginning of the application)\n"
+"\n"
     );
 }
 
@@ -107,7 +108,7 @@ static void surf_config_cmd_line(int *argc, char **argv)
         printf("  %s: %s\n",
                surf_optimization_mode_description[k].name,
                surf_optimization_mode_description[k].description);
-      printf("Both network and CPU models have 'Lazy' as default optimization level\n");
+      printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-logs")) {
       LOG_help ();
