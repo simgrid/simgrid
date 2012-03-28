@@ -13,7 +13,6 @@
 #include "mc/mc.h"
 
 XBT_LOG_EXTERNAL_CATEGORY(simix);
-XBT_LOG_EXTERNAL_CATEGORY(simix_action);
 XBT_LOG_EXTERNAL_CATEGORY(simix_deployment);
 XBT_LOG_EXTERNAL_CATEGORY(simix_environment);
 XBT_LOG_EXTERNAL_CATEGORY(simix_host);
@@ -67,7 +66,6 @@ void SIMIX_global_init(int *argc, char **argv)
 
   if (!simix_global) {
     /* Connect our log channels: that must be done manually under windows */
-    XBT_LOG_CONNECT(simix_action, simix);
     XBT_LOG_CONNECT(simix_deployment, simix);
     XBT_LOG_CONNECT(simix_environment, simix);
     XBT_LOG_CONNECT(simix_host, simix);

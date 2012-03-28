@@ -34,7 +34,9 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_cursor);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_elm);
+#ifdef XBT_USE_DEPRECATED
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_multi);
+#endif
 XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_ex);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_fifo);
@@ -122,7 +124,9 @@ static void xbt_preinit(void)
   XBT_LOG_CONNECT(xbt_dict, xbt);
   XBT_LOG_CONNECT(xbt_dict_cursor, xbt_dict);
   XBT_LOG_CONNECT(xbt_dict_elm, xbt_dict);
+#ifdef XBT_USE_DEPRECATED
   XBT_LOG_CONNECT(xbt_dict_multi, xbt_dict);
+#endif
   XBT_LOG_CONNECT(xbt_dyn, xbt);
   XBT_LOG_CONNECT(xbt_ex, xbt);
   XBT_LOG_CONNECT(xbt_fifo, xbt);

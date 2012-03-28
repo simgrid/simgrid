@@ -296,7 +296,6 @@ XBT_LOG_EXTERNAL_CATEGORY(surf_maxmin);
 XBT_LOG_EXTERNAL_CATEGORY(surf_network);
 XBT_LOG_EXTERNAL_CATEGORY(surf_trace);
 XBT_LOG_EXTERNAL_CATEGORY(surf_parse);
-XBT_LOG_EXTERNAL_CATEGORY(surf_timer);
 XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
 XBT_LOG_EXTERNAL_CATEGORY(surf_config);
 XBT_LOG_EXTERNAL_CATEGORY(surf_route);
@@ -343,7 +342,6 @@ void surf_init(int *argc, char **argv)
   XBT_LOG_CONNECT(surf_network, surf);
   XBT_LOG_CONNECT(surf_trace, surf);
   XBT_LOG_CONNECT(surf_parse, surf);
-  XBT_LOG_CONNECT(surf_timer, surf);
   XBT_LOG_CONNECT(surf_workstation, surf);
   XBT_LOG_CONNECT(surf_config, surf);
   XBT_LOG_CONNECT(surf_route, surf);
