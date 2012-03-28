@@ -647,9 +647,11 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_process, msg);
   XBT_LOG_CONNECT(msg_task, msg);
 
-  /* sd */
+  /* simdag */
   XBT_LOG_CONNECT(sd_daxparse, sd);
+#ifdef HAVE_GRAPHVIZ
   XBT_LOG_CONNECT(sd_dotparse, sd);
+#endif
   XBT_LOG_CONNECT(sd_kernel, sd);
   XBT_LOG_CONNECT(sd_task, sd);
   XBT_LOG_CONNECT(sd_workstation, sd);
