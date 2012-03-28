@@ -12,7 +12,6 @@
 
 #include <string.h>             /* strlen() */
 
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor, xbt_dict,
                                 "To traverse dictionaries");
 

@@ -288,22 +288,6 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   return min;
 }
 
-XBT_LOG_EXTERNAL_CATEGORY(surf_cpu);
-XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
-XBT_LOG_EXTERNAL_CATEGORY(surf_lagrange);
-XBT_LOG_EXTERNAL_CATEGORY(surf_lagrange_dichotomy);
-XBT_LOG_EXTERNAL_CATEGORY(surf_maxmin);
-XBT_LOG_EXTERNAL_CATEGORY(surf_network);
-XBT_LOG_EXTERNAL_CATEGORY(surf_trace);
-XBT_LOG_EXTERNAL_CATEGORY(surf_parse);
-XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
-XBT_LOG_EXTERNAL_CATEGORY(surf_config);
-XBT_LOG_EXTERNAL_CATEGORY(surf_route);
-
-#ifdef HAVE_GTNETS
-XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
-#endif
-
 static XBT_INLINE void routing_asr_host_free(void *p)
 {
   network_element_t elm = p;

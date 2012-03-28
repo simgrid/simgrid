@@ -8,7 +8,6 @@
 
 #include "dict_private.h"       /* prototypes of this module */
 
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_elm, xbt_dict,
                                 "Dictionaries internals");
 

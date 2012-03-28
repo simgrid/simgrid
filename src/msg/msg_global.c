@@ -27,12 +27,6 @@ void MSG_global_init_args(int *argc, char **argv)
   MSG_global_init(argc, argv);
 }
 
-
-XBT_LOG_EXTERNAL_CATEGORY(msg_gos);
-XBT_LOG_EXTERNAL_CATEGORY(msg_kernel);
-XBT_LOG_EXTERNAL_CATEGORY(msg_mailbox);
-XBT_LOG_EXTERNAL_CATEGORY(msg_process);
-
 /** \ingroup msg_simulation
  * \brief Initialize some MSG internal data.
  */

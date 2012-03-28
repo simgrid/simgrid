@@ -30,10 +30,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd,
 
 SD_global_t sd_global = NULL;
 
-XBT_LOG_EXTERNAL_CATEGORY(sd_kernel);
-XBT_LOG_EXTERNAL_CATEGORY(sd_task);
-XBT_LOG_EXTERNAL_CATEGORY(sd_workstation);
-
 /**
  * \brief Initialises SD internal data
  *

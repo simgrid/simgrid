@@ -52,15 +52,6 @@ static void gras_sigint_handler(int sig)
 }
 #endif
 
-XBT_LOG_EXTERNAL_CATEGORY(gras_modules);
-XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
-XBT_LOG_EXTERNAL_CATEGORY(gras_msg_read);
-XBT_LOG_EXTERNAL_CATEGORY(gras_msg_rpc);
-XBT_LOG_EXTERNAL_CATEGORY(gras_timer);
-XBT_LOG_EXTERNAL_CATEGORY(gras_virtu);
-XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_emul);
-XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_process);
-
 /**
  * @ingroup GRAS_API
  * \brief Initialize the gras mechanisms.

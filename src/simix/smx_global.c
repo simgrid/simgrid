@@ -12,13 +12,6 @@
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
 
-XBT_LOG_EXTERNAL_CATEGORY(simix);
-XBT_LOG_EXTERNAL_CATEGORY(simix_deployment);
-XBT_LOG_EXTERNAL_CATEGORY(simix_environment);
-XBT_LOG_EXTERNAL_CATEGORY(simix_host);
-XBT_LOG_EXTERNAL_CATEGORY(simix_process);
-XBT_LOG_EXTERNAL_CATEGORY(simix_synchro);
-XBT_LOG_EXTERNAL_CATEGORY(simix_context);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
                                 "Logging specific to SIMIX (kernel)");
 

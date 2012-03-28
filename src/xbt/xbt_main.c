@@ -25,38 +25,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
 char *xbt_binary_name = NULL;   /* Mandatory to retrieve neat backtraces */
 int xbt_initialized = 0;
 
-XBT_LOG_EXTERNAL_CATEGORY(graphxml_parse);
-XBT_LOG_EXTERNAL_CATEGORY(log);
-XBT_LOG_EXTERNAL_CATEGORY(module);
-XBT_LOG_EXTERNAL_CATEGORY(peer);
-XBT_LOG_EXTERNAL_CATEGORY(strbuff);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_cursor);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_elm);
-#ifdef XBT_USE_DEPRECATED
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dict_multi);
-#endif
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_ex);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_fifo);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_graph);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_matrix);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_queue);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_set);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_sync_os);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap_unit);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_cbps);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_convert);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_create);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_exchange);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_lexer);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_ddt_parse);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_trp);
-XBT_LOG_EXTERNAL_CATEGORY(xbt_trp_meas);
-
 int _surf_do_model_check = 0;   /* this variable is used accros the libraries, and must be declared in XBT so that it's also defined in GRAS (not only in libsimgrid) */
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
