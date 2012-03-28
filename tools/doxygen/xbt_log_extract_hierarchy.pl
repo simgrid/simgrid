@@ -40,6 +40,7 @@ sub cleanup_ctn {
     } else {
 	die "Unparsable content: $ctn\n";
     }
+    $elms[2] =~ s/\\\\/\\/gs;
     return @elms;
 }
 

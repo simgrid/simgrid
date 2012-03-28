@@ -26,7 +26,7 @@
 #include "portable.h"           /* hexa_*(); signalling stuff */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(gras,
-                             "All GRAS categories (cf. section \ref GRAS_API)");
+                             "All GRAS categories (cf. section \\ref GRAS_API)");
 static int gras_running_process = 0;
 #if defined(HAVE_SIGNAL) && defined(HAVE_SIGNAL_H)
 static void gras_sigusr_handler(int sig)
