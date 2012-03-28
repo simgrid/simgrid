@@ -89,29 +89,35 @@ static void xbt_preinit(void)
   XBT_LOG_CONNECT(peer, xbt);
   XBT_LOG_CONNECT(strbuff, xbt);
   XBT_LOG_CONNECT(xbt_cfg, xbt);
+
   XBT_LOG_CONNECT(xbt_dict, xbt);
   XBT_LOG_CONNECT(xbt_dict_cursor, xbt_dict);
   XBT_LOG_CONNECT(xbt_dict_elm, xbt_dict);
 #ifdef XBT_USE_DEPRECATED
   XBT_LOG_CONNECT(xbt_dict_multi, xbt_dict);
 #endif
-  XBT_LOG_CONNECT(xbt_dyn, xbt);
-  XBT_LOG_CONNECT(xbt_ex, xbt);
-  XBT_LOG_CONNECT(xbt_fifo, xbt);
-  XBT_LOG_CONNECT(xbt_graph, xbt);
-  XBT_LOG_CONNECT(xbt_matrix, xbt);
-  XBT_LOG_CONNECT(xbt_queue, xbt);
-  XBT_LOG_CONNECT(xbt_set, xbt);
-  XBT_LOG_CONNECT(xbt_sync_os, xbt);
-  XBT_LOG_CONNECT(xbt_parmap,xbt);
-  XBT_LOG_CONNECT(xbt_parmap_unit,xbt_parmap);
+
   XBT_LOG_CONNECT(xbt_ddt, xbt);
   XBT_LOG_CONNECT(xbt_ddt_cbps, xbt_ddt);
   XBT_LOG_CONNECT(xbt_ddt_convert, xbt_ddt);
   XBT_LOG_CONNECT(xbt_ddt_create, xbt_ddt);
   XBT_LOG_CONNECT(xbt_ddt_exchange, xbt_ddt);
-  XBT_LOG_CONNECT(xbt_ddt_lexer, xbt_ddt_parse);
   XBT_LOG_CONNECT(xbt_ddt_parse, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_lexer, xbt_ddt_parse);
+
+  XBT_LOG_CONNECT(xbt_dyn, xbt);
+  XBT_LOG_CONNECT(xbt_ex, xbt);
+  XBT_LOG_CONNECT(xbt_fifo, xbt);
+  XBT_LOG_CONNECT(xbt_graph, xbt);
+  XBT_LOG_CONNECT(xbt_matrix, xbt);
+
+  XBT_LOG_CONNECT(xbt_parmap, xbt);
+  XBT_LOG_CONNECT(xbt_parmap_unit, xbt_parmap);
+
+  XBT_LOG_CONNECT(xbt_queue, xbt);
+  XBT_LOG_CONNECT(xbt_set, xbt);
+  XBT_LOG_CONNECT(xbt_sync_os, xbt);
+
   XBT_LOG_CONNECT(xbt_trp, xbt);
   XBT_LOG_CONNECT(xbt_trp_meas, xbt_trp);
 

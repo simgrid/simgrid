@@ -318,21 +318,22 @@ void surf_init(int *argc, char **argv)
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_resource_free);
 
   /* Connect our log channels: that must be done manually under windows */
+  XBT_LOG_CONNECT(surf_config, surf);
   XBT_LOG_CONNECT(surf_cpu, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);
+
   XBT_LOG_CONNECT(surf_lagrange, surf);
   XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
+
   XBT_LOG_CONNECT(surf_maxmin, surf);
   XBT_LOG_CONNECT(surf_network, surf);
-  XBT_LOG_CONNECT(surf_trace, surf);
-  XBT_LOG_CONNECT(surf_parse, surf);
-  XBT_LOG_CONNECT(surf_workstation, surf);
-  XBT_LOG_CONNECT(surf_config, surf);
-  XBT_LOG_CONNECT(surf_route, surf);
-
 #ifdef HAVE_GTNETS
   XBT_LOG_CONNECT(surf_network_gtnets, surf);
 #endif
+  XBT_LOG_CONNECT(surf_parse, surf);
+  XBT_LOG_CONNECT(surf_route, surf);
+  XBT_LOG_CONNECT(surf_trace, surf);
+  XBT_LOG_CONNECT(surf_workstation, surf);
 
   xbt_init(argc, argv);
   if (!model_list)
