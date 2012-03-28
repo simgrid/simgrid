@@ -540,12 +540,19 @@ static void xbt_log_connect_categories(void)
   /* Connect our log channels: that must be done manually under windows */
   /* Also permit that they are correctly listed by xbt_log_help_categories() */
 
+  /* amok */
+  XBT_LOG_CONNECT(amok_bw, amok);
+  XBT_LOG_CONNECT(amok_bw_sat, amok_bw);
+  XBT_LOG_CONNECT(amok_pm, amok);
+
   /* gras */
   XBT_LOG_CONNECT(gras_modules, gras);
   XBT_LOG_CONNECT(gras_msg, gras);
   XBT_LOG_CONNECT(gras_msg_read, gras_msg);
   XBT_LOG_CONNECT(gras_msg_rpc, gras_msg);
   XBT_LOG_CONNECT(gras_timer, gras);
+  XBT_LOG_CONNECT(gras_trp, gras);
+  XBT_LOG_CONNECT(gras_trp_file, gras_trp);
   XBT_LOG_CONNECT(gras_virtu, gras);
   XBT_LOG_CONNECT(gras_virtu_emul, gras_virtu);
   XBT_LOG_CONNECT(gras_virtu_process, gras_virtu);
@@ -553,8 +560,10 @@ static void xbt_log_connect_categories(void)
   /* xbt */
   XBT_LOG_CONNECT(graphxml_parse, xbt);
   XBT_LOG_CONNECT(log, xbt);
+  XBT_LOG_CONNECT(mm_diff, xbt);
   XBT_LOG_CONNECT(module, xbt);
   XBT_LOG_CONNECT(peer, xbt);
+  XBT_LOG_CONNECT(replay, xbt);
   XBT_LOG_CONNECT(strbuff, xbt);
   XBT_LOG_CONNECT(xbt_cfg, xbt);
   XBT_LOG_CONNECT(xbt_dict, xbt);
@@ -574,14 +583,19 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_ex, xbt);
   XBT_LOG_CONNECT(xbt_fifo, xbt);
   XBT_LOG_CONNECT(xbt_graph, xbt);
+  XBT_LOG_CONNECT(xbt_lib, xbt);
+  XBT_LOG_CONNECT(xbt_mallocator, xbt);
+
   XBT_LOG_CONNECT(xbt_matrix, xbt);
   XBT_LOG_CONNECT(xbt_parmap, xbt);
   XBT_LOG_CONNECT(xbt_parmap_unit, xbt_parmap);
   XBT_LOG_CONNECT(xbt_queue, xbt);
   XBT_LOG_CONNECT(xbt_set, xbt);
+  XBT_LOG_CONNECT(xbt_sync, xbt);
   XBT_LOG_CONNECT(xbt_sync_os, xbt);
   XBT_LOG_CONNECT(xbt_trp, xbt);
   XBT_LOG_CONNECT(xbt_trp_meas, xbt_trp);
+  XBT_LOG_CONNECT(xbt_trp_tcp, xbt_trp);
 
 #ifdef simgrid_EXPORTS
   /* The following categories are only defined in libsimgrid */
@@ -589,18 +603,53 @@ static void xbt_log_connect_categories(void)
   /* gras (sg) */
   XBT_LOG_CONNECT(gras_trp_sg, gras_trp);
 
+  /* bindings */
+#ifdef HAVE_LUA
+  XBT_LOG_CONNECT(lua, bindings);
+  XBT_LOG_CONNECT(lua_comm, bindings);
+  XBT_LOG_CONNECT(lua_host, bindings);
+  XBT_LOG_CONNECT(lua_platf, bindings);
+  XBT_LOG_CONNECT(lua_process, bindings);
+  XBT_LOG_CONNECT(lua_state_cloner, bindings);
+  XBT_LOG_CONNECT(lua_task, bindings);
+  XBT_LOG_CONNECT(lua_utils, bindings);
+#endif
+
+  /* instr */
+#ifdef HAVE_TRACING
+  XBT_LOG_CONNECT(instr_paje_trace, instr);
+  XBT_LOG_CONNECT(instr_smpi, instr);
+  XBT_LOG_CONNECT(instr_surf, instr);
+#endif
+
   /* jedule */
 #ifdef HAVE_JEDULE
+  XBT_LOG_CONNECT(jed_out, jedule);
   XBT_LOG_CONNECT(jed_sd, jedule);
 #endif
 
+  /* mc */
+#ifdef HAVE_MC
+  XBT_LOG_CONNECT(mc_checkpoint, mc);
+  XBT_LOG_CONNECT(mc_dpor, mc);
+  XBT_LOG_CONNECT(mc_global, mc);
+  XBT_LOG_CONNECT(mc_liveness, mc);
+  XBT_LOG_CONNECT(mc_memory, mc);
+  XBT_LOG_CONNECT(mc_memory_map, mc);
+  XBT_LOG_CONNECT(mc_request, mc);
+#endif
+
   /* msg */
+  XBT_LOG_CONNECT(msg_action, msg);
   XBT_LOG_CONNECT(msg_gos, msg);
   XBT_LOG_CONNECT(msg_kernel, msg);
   XBT_LOG_CONNECT(msg_mailbox, msg);
   XBT_LOG_CONNECT(msg_process, msg);
+  XBT_LOG_CONNECT(msg_task, msg);
 
   /* sd */
+  XBT_LOG_CONNECT(sd_daxparse, sd);
+  XBT_LOG_CONNECT(sd_dotparse, sd);
   XBT_LOG_CONNECT(sd_kernel, sd);
   XBT_LOG_CONNECT(sd_task, sd);
   XBT_LOG_CONNECT(sd_workstation, sd);
@@ -610,13 +659,21 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_deployment, simix);
   XBT_LOG_CONNECT(simix_environment, simix);
   XBT_LOG_CONNECT(simix_host, simix);
+  XBT_LOG_CONNECT(simix_io, simix);
   XBT_LOG_CONNECT(simix_kernel, simix);
+  XBT_LOG_CONNECT(simix_network, simix);
   XBT_LOG_CONNECT(simix_process, simix);
+  XBT_LOG_CONNECT(simix_smurf, simix);
   XBT_LOG_CONNECT(simix_synchro, simix);
 
+  /* smpi */
+  /* SMPI categories are connected in smpi_global.c */
+
   /* surf */
+  XBT_LOG_CONNECT(random, surf);
   XBT_LOG_CONNECT(surf_config, surf);
   XBT_LOG_CONNECT(surf_cpu, surf);
+  XBT_LOG_CONNECT(surf_cpu_ti, surf);
   XBT_LOG_CONNECT(surf_kernel, surf);
   XBT_LOG_CONNECT(surf_lagrange, surf);
   XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
@@ -625,8 +682,20 @@ static void xbt_log_connect_categories(void)
 #ifdef HAVE_GTNETS
   XBT_LOG_CONNECT(surf_network_gtnets, surf);
 #endif
+#ifdef HAVE_NS3
+  XBT_LOG_CONNECT(surf_network_ns3, surf);
+#endif
   XBT_LOG_CONNECT(surf_parse, surf);
   XBT_LOG_CONNECT(surf_route, surf);
+  XBT_LOG_CONNECT(surf_routing_generic, surf_route);
+  XBT_LOG_CONNECT(surf_route_cluster, surf);
+  XBT_LOG_CONNECT(surf_route_dijkstra, surf);
+  XBT_LOG_CONNECT(surf_route_floyd, surf);
+  XBT_LOG_CONNECT(surf_route_full, surf);
+  XBT_LOG_CONNECT(surf_route_none, surf);
+  XBT_LOG_CONNECT(surf_route_rulebased, surf);
+  XBT_LOG_CONNECT(surf_route_vivaldi, surf);
+  XBT_LOG_CONNECT(surf_storage, surf);
   XBT_LOG_CONNECT(surf_trace, surf);
   XBT_LOG_CONNECT(surf_workstation, surf);
 

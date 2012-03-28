@@ -251,6 +251,17 @@ int MAIN__(void)
     return 0;
   }
 
+  /* Connect log categories.  See xbt/log.c */
+  XBT_LOG_CONNECT(smpi_base, smpi);
+  XBT_LOG_CONNECT(smpi_bench, smpi);
+  XBT_LOG_CONNECT(smpi_coll, smpi);
+  XBT_LOG_CONNECT(smpi_comm, smpi);
+  XBT_LOG_CONNECT(smpi_group, smpi);
+  XBT_LOG_CONNECT(smpi_kernel, smpi);
+  XBT_LOG_CONNECT(smpi_mpi, smpi);
+  XBT_LOG_CONNECT(smpi_mpi_dt, smpi);
+  XBT_LOG_CONNECT(smpi_pmpi, smpi);
+
 #ifdef HAVE_TRACING
   TRACE_global_init(&xargc, xargv);
 #endif
