@@ -1105,3 +1105,51 @@ void xbt_log_additivity_set(xbt_log_category_t cat, int additivity)
 {
   cat->additivity = additivity;
 }
+
+void xbt_log_help(void)
+{
+  printf(
+"Description of the logging output:\n"
+"\n"
+"   Threshold configuration: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n"
+"      CATEGORY_NAME: defined in code with function 'XBT_LOG_NEW_CATEGORY'\n"
+"      PRIORITY_LEVEL: the level to print (trace,debug,verbose,info,warning,error,critical)\n"
+"         -> trace: enter and return of some functions\n"
+"         -> debug: crufty output\n"
+"         -> verbose: verbose output for the user wanting more\n"
+"         -> info: output about the regular functionning\n"
+"         -> warning: minor issue encountered\n"
+"         -> error: issue encountered\n"
+"         -> critical: major issue encountered\n"
+"\n"
+"   Format configuration: --log=CATEGORY_NAME.fmt:OPTIONS\n"
+"      OPTIONS may be:\n"
+"         -> %%%%: the %% char\n"
+"         -> %%n: platform-dependent line separator (LOG4J compatible)\n"
+"         -> %%e: plain old space (SimGrid extension)\n"
+"\n"
+"         -> %%m: user-provided message\n"
+"\n"
+"         -> %%c: Category name (LOG4J compatible)\n"
+"         -> %%p: Priority name (LOG4J compatible)\n"
+"\n"
+"         -> %%h: Hostname (SimGrid extension)\n"
+"         -> %%P: Process name (SimGrid extension)\n"
+"         -> %%t: Thread \"name\" (LOG4J compatible -- actually the address of the thread in memory)\n"
+"         -> %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)\n"
+"\n"
+"         -> %%F: file name where the log event was raised (LOG4J compatible)\n"
+"         -> %%l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as in 'l'etter)\n"
+"         -> %%L: line number where the log event was raised (LOG4J compatible)\n"
+"         -> %%M: function name (LOG4J compatible -- called method name here of course).\n"
+"                 Defined only when using gcc because there is no __FUNCTION__ elsewhere.\n"
+"\n"
+"         -> %%b: full backtrace (Called %%throwable in LOG4J). Defined only under windows or when using the GNU libc because\n"
+"                 backtrace() is not defined elsewhere, and we only have a fallback for windows boxes, not mac ones for example.\n"
+"         -> %%B: short backtrace (only the first line of the %%b). Called %%throwable{short} in LOG4J; defined where %%b is.\n"
+"\n"
+"         -> %%d: date (UNIX-like epoch)\n"
+"         -> %%r: application age (time elapsed since the beginning of the application)\n"
+"\n"
+    );
+}
