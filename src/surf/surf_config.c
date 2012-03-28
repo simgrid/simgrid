@@ -79,8 +79,7 @@ static void surf_config_cmd_line(int *argc, char **argv)
       xbt_cfg_set_parse(_surf_cfg_set, opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
       remove_it = 1;
-    } else if (!strncmp(argv[i], "--cfg-help", strlen("--cfg-help") + 1) ||
-               !strncmp(argv[i], "--help", strlen("--help") + 1)) {
+    } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
       printf
           ("Description of the configuration accepted by this simulator:\n");
       xbt_cfg_help(_surf_cfg_set);
@@ -96,7 +95,7 @@ static void surf_config_cmd_line(int *argc, char **argv)
 "\n"
         );
       exit(0);
-    } else if (!strncmp(argv[i], "--help-models", strlen("--help-models") + 1)) {
+    } else if (!strcmp(argv[i], "--help-models")) {
       model_help("workstation", surf_workstation_model_description);
       printf("\n");
       model_help("CPU", surf_cpu_model_description);
@@ -107,11 +106,11 @@ static void surf_config_cmd_line(int *argc, char **argv)
         printf("  %s: %s\n", surf_optimization_mode_description[i].name, surf_optimization_mode_description[i].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n");
       exit(0);
-    } else if (!strncmp(argv[i], "--help-logs", strlen("--help-logs") + 1)) {
+    } else if (!strcmp(argv[i], "--help-logs")) {
       LOG_help ();
       exit(0);
 #ifdef HAVE_TRACING
-    } else if (!strncmp(argv[i], "--help-tracing", strlen("--help-tracing") + 1)) {
+    } else if (!strcmp(argv[i], "--help-tracing")) {
       TRACE_help (1);
       exit(0);
 #endif
