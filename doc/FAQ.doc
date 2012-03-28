@@ -714,6 +714,46 @@ of SimGrid -- see \ref faq_more_processes), you must absolutely
 specify <tt>-lpthread</tt> on the linker command line. As usual, this should
 come after <tt>-lsimgrid</tt> on this command line.
 
+\subsubsection faq_trouble_lib_msg_deprecated "gcc: undefined reference to MSG_*"
+
+Since version 3.7 all the #m_channel_t mecanism is deprecated. So functions 
+about this mecanism may get removed in future releases.
+
+List of functions:
+
+\li XBT_PUBLIC(int) MSG_get_host_number(void);
+
+\li XBT_PUBLIC(m_host_t *) MSG_get_host_table(void);
+
+\li XBT_PUBLIC(MSG_error_t) MSG_get_errno(void);
+
+\li XBT_PUBLIC(MSG_error_t) MSG_task_get(m_task_t * task, m_channel_t channel);
+
+\li XBT_PUBLIC(MSG_error_t) MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel, double max_duration);
+
+\li XBT_PUBLIC(MSG_error_t) MSG_task_get_from_host(m_task_t * task, int channel, m_host_t host);
+
+\li XBT_PUBLIC(MSG_error_t) MSG_task_get_ext(m_task_t * task, int channel, double max_duration, m_host_t host);
+
+\li XBT_PUBLIC(MSG_error_t) MSG_task_put(m_task_t task, m_host_t dest, m_channel_t channel);
+
+\li XBT_PUBLIC(MSG_error_t) MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel, double max_rate);
+
+\li XBT_PUBLIC(MSG_error_t) MSG_task_put_with_timeout(m_task_t task, m_host_t dest, m_channel_t channel, double max_duration);
+
+\li XBT_PUBLIC(int) MSG_task_Iprobe(m_channel_t channel);
+
+\li XBT_PUBLIC(int) MSG_task_probe_from(m_channel_t channel);
+
+\li XBT_PUBLIC(int) MSG_task_probe_from_host(int channel, m_host_t host);
+
+\li XBT_PUBLIC(MSG_error_t) MSG_set_channel_number(int number);
+
+\li XBT_PUBLIC(int) MSG_get_channel_number(void);
+
+If you want them you have to compile Simgrid v3.7 with option "-Denable_msg_deprecated=ON".
+Using them should print warning to inform what new function you have to use.
+
 \subsection faq_trouble_errors Runtime error messages
 
 \subsubsection faq_flexml_limit "surf_parse_lex: Assertion `next limit' failed."

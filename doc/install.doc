@@ -37,6 +37,7 @@ For Windows :
 "cmake -D[name]=[value] ... ./"
 
 [name] 	enable_gtnets		[value] ON/OFF or TRUE/FALSE or 1/0
+	enable_ns3			ON/OFF or TRUE/FALSE or 1/0
 	enable_lua			ON/OFF or TRUE/FALSE or 1/0
 	enable_compile_optimizations	ON/OFF or TRUE/FALSE or 1/0
 	enable_compile_warnings		ON/OFF or TRUE/FALSE or 1/0
@@ -50,8 +51,12 @@ For Windows :
 	enable_jedule 	 		ON/OFF or TRUE/FALSE or 1/0
 	enable_latency_bound_tracking 	ON/OFF or TRUE/FALSE or 1/0
 	enable_lib_static		ON/OFF or TRUE/FALSE or 1/0
+	enable_supernovae       	ON/OFF or TRUE/FALSE or 1/0
+	enable_msg_deprecated   	ON/OFF or TRUE/FALSE or 1/0                                                                                                                                                                                                                                                                               
+	enable_print_message    	ON/OFF or TRUE/FALSE or 1/0 
 	custom_flags 			<flags>
 	gtnets_path			<path_to_gtnets_directory>
+	ns3_path			<path_to_ns3_directory>
 	CMAKE_INSTALL_PREFIX		<path_to_install_directory>
 	CMAKE_C_COMPILER		<path_to_compiler>
 	CMAKE_CXX_COMPILER		<path_to_compiler>
@@ -61,6 +66,8 @@ For Windows :
 \subsubsection install_cmakeoption2 Options explaination
 
   \li enable_gtnets : set to true implie that user wants to use gtnets.
+  
+  \li enable_ns3 : set to true implie that user wants to use ns3.
 
   \li enable_lua : set to true implie that user wants to add lua langage into simgrid compilation.
 
@@ -86,11 +93,19 @@ For Windows :
   
   \li enable_latency_bound_tracking : Set to on if you want to be warned when communications are limited by round trip time.
   
-  \li enable_lib_static : Enable generated Simgrid and smpi static libraries.	
+  \li enable_lib_static : Enable generated Simgrid and smpi static libraries.
+  
+  \li enable_supernovae : Set to true make one file for each lib and compile with those generated files.
+  
+  \li enable_msg_deprecated : Simgrid is compiled with msg deprecated functions.                                                                                                                                                                                                                                                                              
+  
+  \li enable_print_message : When set to true configuration print more debug output.
   
   \li custom_flags : If user wants to use a specific flag during compilation, give here.
 
   \li gtnets_path : Path to gtnets install directory (ex /usr)
+  
+  \li ns3_path : Path to ns3 install directory (ex /usr)
 
   \li CMAKE_INSTALL_PREFIX : Path where are installed lib/ doc/ and include/ directories (ex /usr/local)
   
