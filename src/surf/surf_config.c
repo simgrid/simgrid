@@ -95,14 +95,18 @@ static void surf_config_cmd_line(int *argc, char **argv)
         );
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-models")) {
+      int k;
+
       model_help("workstation", surf_workstation_model_description);
       printf("\n");
       model_help("CPU", surf_cpu_model_description);
       printf("\n");
       model_help("network", surf_network_model_description);
       printf("\nLong description of all optimization levels accepted by the models of this simulator:\n");
-      for (i = 0; surf_optimization_mode_description[i].name; i++)
-        printf("  %s: %s\n", surf_optimization_mode_description[i].name, surf_optimization_mode_description[i].description);
+      for (k = 0; surf_optimization_mode_description[k].name; k++)
+        printf("  %s: %s\n",
+               surf_optimization_mode_description[k].name,
+               surf_optimization_mode_description[k].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n");
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-logs")) {
