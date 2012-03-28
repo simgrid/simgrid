@@ -19,8 +19,10 @@ xbt_cfg_t _surf_cfg_set = NULL;
 
 static void LOG_help(void)
 {
-  printf("Description of the logging output:\n"
-"\n   Threshold configuration: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n"
+  printf(
+"Description of the logging output:\n"
+"\n"
+"   Threshold configuration: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n"
 "      CATEGORY_NAME: defined in code with function 'XBT_LOG_NEW_CATEGORY'\n"
 "      PRIORITY_LEVEL: the level to print (trace,debug,verbose,info,warning,error,critical)\n"
 "         -> trace: enter and return of some functions\n"
@@ -30,8 +32,9 @@ static void LOG_help(void)
 "         -> warning: minor issue encountered\n"
 "         -> error: issue encountered\n"
 "         -> critical: major issue encountered\n"
-"\n   Format configuration: --log=CATEGORY_NAME.fmt:OPTIONS\n"
-"     OPTIONS may be:\n"
+"\n"
+"   Format configuration: --log=CATEGORY_NAME.fmt:OPTIONS\n"
+"      OPTIONS may be:\n"
 "         -> %%%%: the %% char\n"
 "         -> %%n: platform-dependent line separator (LOG4J compatible)\n"
 "         -> %%e: plain old space (SimGrid extension)\n"
@@ -57,7 +60,8 @@ static void LOG_help(void)
 "         -> %%B: short backtrace (only the first line of the %%b). Called %%throwable{short} in LOG4J; defined where %%b is.\n"
 "\n"
 "         -> %%d: date (UNIX-like epoch)\n"
-"         -> %%r: application age (time elapsed since the beginning of the application)\n");
+"         -> %%r: application age (time elapsed since the beginning of the application)\n"
+    );
 }
 
 /* Parse the command line, looking for options */
@@ -80,11 +84,17 @@ static void surf_config_cmd_line(int *argc, char **argv)
       printf
           ("Description of the configuration accepted by this simulator:\n");
       xbt_cfg_help(_surf_cfg_set);
-      printf("\nYou can also use --help-models to see the details of all models known by this simulator.\n");
+      printf(
+"\n"
+"You can also use --help-models to see the details of all models known by this simulator.\n"
 #ifdef HAVE_TRACING
-      printf("\nYou can also use --help-tracing to see the details of all tracing options known by this simulator.\n");
+"\n"
+"You can also use --help-tracing to see the details of all tracing options known by this simulator.\n"
 #endif
-      printf("\nYou can also use --help-logs to see the details of logging output.\n\n");
+"\n"
+"You can also use --help-logs to see the details of logging output.\n"
+"\n"
+        );
       exit(0);
     } else if (!strncmp(argv[i], "--help-models", strlen("--help-models") + 1)) {
       model_help("workstation", surf_workstation_model_description);
