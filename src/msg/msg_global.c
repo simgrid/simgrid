@@ -38,12 +38,6 @@ void MSG_global_init(int *argc, char **argv)
 
   xbt_getpid = MSG_process_self_PID;
   if (!msg_global) {
-    /* Connect our log channels: that must be done manually under windows */
-    XBT_LOG_CONNECT(msg_gos, msg);
-    XBT_LOG_CONNECT(msg_kernel, msg);
-    XBT_LOG_CONNECT(msg_mailbox, msg);
-    XBT_LOG_CONNECT(msg_process, msg);
-
     SIMIX_global_init(argc, argv);
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);

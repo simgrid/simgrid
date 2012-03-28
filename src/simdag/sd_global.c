@@ -50,12 +50,6 @@ void SD_init(int *argc, char **argv)
 
   xbt_assert(sd_global == NULL, "SD_init() already called");
 
-  /* Connect our log channels: that must be done manually under windows */
-  XBT_LOG_CONNECT(sd_kernel, sd);
-  XBT_LOG_CONNECT(sd_task, sd);
-  XBT_LOG_CONNECT(sd_workstation, sd);
-
-
   sd_global = xbt_new(s_SD_global_t, 1);
   sd_global->workstation_list = NULL;
   sd_global->link_list = NULL;

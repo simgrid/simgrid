@@ -535,6 +535,104 @@ void xbt_log_preinit(void)
   log_cat_init_mutex = xbt_os_rmutex_init();
 }
 
+static void xbt_log_connect_categories(void)
+{
+  /* Connect our log channels: that must be done manually under windows */
+  /* Also permit that they are correctly listed by xbt_log_help_categories() */
+
+  /* gras */
+  XBT_LOG_CONNECT(gras_modules, gras);
+  XBT_LOG_CONNECT(gras_msg, gras);
+  XBT_LOG_CONNECT(gras_msg_read, gras_msg);
+  XBT_LOG_CONNECT(gras_msg_rpc, gras_msg);
+  XBT_LOG_CONNECT(gras_timer, gras);
+  XBT_LOG_CONNECT(gras_virtu, gras);
+  XBT_LOG_CONNECT(gras_virtu_emul, gras_virtu);
+  XBT_LOG_CONNECT(gras_virtu_process, gras_virtu);
+
+  /* xbt */
+  XBT_LOG_CONNECT(graphxml_parse, xbt);
+  XBT_LOG_CONNECT(log, xbt);
+  XBT_LOG_CONNECT(module, xbt);
+  XBT_LOG_CONNECT(peer, xbt);
+  XBT_LOG_CONNECT(strbuff, xbt);
+  XBT_LOG_CONNECT(xbt_cfg, xbt);
+  XBT_LOG_CONNECT(xbt_dict, xbt);
+  XBT_LOG_CONNECT(xbt_dict_cursor, xbt_dict);
+  XBT_LOG_CONNECT(xbt_dict_elm, xbt_dict);
+#ifdef XBT_USE_DEPRECATED
+  XBT_LOG_CONNECT(xbt_dict_multi, xbt_dict);
+#endif
+  XBT_LOG_CONNECT(xbt_ddt, xbt);
+  XBT_LOG_CONNECT(xbt_ddt_cbps, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_convert, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_create, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_exchange, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_parse, xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_lexer, xbt_ddt_parse);
+  XBT_LOG_CONNECT(xbt_dyn, xbt);
+  XBT_LOG_CONNECT(xbt_ex, xbt);
+  XBT_LOG_CONNECT(xbt_fifo, xbt);
+  XBT_LOG_CONNECT(xbt_graph, xbt);
+  XBT_LOG_CONNECT(xbt_matrix, xbt);
+  XBT_LOG_CONNECT(xbt_parmap, xbt);
+  XBT_LOG_CONNECT(xbt_parmap_unit, xbt_parmap);
+  XBT_LOG_CONNECT(xbt_queue, xbt);
+  XBT_LOG_CONNECT(xbt_set, xbt);
+  XBT_LOG_CONNECT(xbt_sync_os, xbt);
+  XBT_LOG_CONNECT(xbt_trp, xbt);
+  XBT_LOG_CONNECT(xbt_trp_meas, xbt_trp);
+
+#ifdef simgrid_EXPORTS
+  /* The following categories are only defined in libsimgrid */
+
+  /* gras (sg) */
+  XBT_LOG_CONNECT(gras_trp_sg, gras_trp);
+
+  /* jedule */
+#ifdef HAVE_JEDULE
+  XBT_LOG_CONNECT(jed_sd, jedule);
+#endif
+
+  /* msg */
+  XBT_LOG_CONNECT(msg_gos, msg);
+  XBT_LOG_CONNECT(msg_kernel, msg);
+  XBT_LOG_CONNECT(msg_mailbox, msg);
+  XBT_LOG_CONNECT(msg_process, msg);
+
+  /* sd */
+  XBT_LOG_CONNECT(sd_kernel, sd);
+  XBT_LOG_CONNECT(sd_task, sd);
+  XBT_LOG_CONNECT(sd_workstation, sd);
+
+  /* simix */
+  XBT_LOG_CONNECT(simix_context, simix);
+  XBT_LOG_CONNECT(simix_deployment, simix);
+  XBT_LOG_CONNECT(simix_environment, simix);
+  XBT_LOG_CONNECT(simix_host, simix);
+  XBT_LOG_CONNECT(simix_kernel, simix);
+  XBT_LOG_CONNECT(simix_process, simix);
+  XBT_LOG_CONNECT(simix_synchro, simix);
+
+  /* surf */
+  XBT_LOG_CONNECT(surf_config, surf);
+  XBT_LOG_CONNECT(surf_cpu, surf);
+  XBT_LOG_CONNECT(surf_kernel, surf);
+  XBT_LOG_CONNECT(surf_lagrange, surf);
+  XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
+  XBT_LOG_CONNECT(surf_maxmin, surf);
+  XBT_LOG_CONNECT(surf_network, surf);
+#ifdef HAVE_GTNETS
+  XBT_LOG_CONNECT(surf_network_gtnets, surf);
+#endif
+  XBT_LOG_CONNECT(surf_parse, surf);
+  XBT_LOG_CONNECT(surf_route, surf);
+  XBT_LOG_CONNECT(surf_trace, surf);
+  XBT_LOG_CONNECT(surf_workstation, surf);
+
+#endif /* simgrid_EXPORTS */
+}
+
 /** @brief Get all logging settings from the command line
  *
  * xbt_log_control_set() is called on each string we got from cmd line
@@ -572,6 +670,8 @@ void xbt_log_init(int *argc, char **argv)
     argv[j] = NULL;
     *argc = j;
   }
+
+  xbt_log_connect_categories();
 }
 
 static void log_cat_exit(xbt_log_category_t cat)

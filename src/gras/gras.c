@@ -73,19 +73,6 @@ void gras_init(int *argc, char **argv)
    */
   if (gras_running_process == 0) {
     first = 1;
-    /* Connect our log channels: that must be done manually under windows */
-
-    XBT_LOG_CONNECT(gras_modules, gras);
-
-    XBT_LOG_CONNECT(gras_msg, gras);
-    XBT_LOG_CONNECT(gras_msg_read, gras_msg);
-    XBT_LOG_CONNECT(gras_msg_rpc, gras_msg);
-
-    XBT_LOG_CONNECT(gras_timer, gras);
-
-    XBT_LOG_CONNECT(gras_virtu, gras);
-    XBT_LOG_CONNECT(gras_virtu_emul, gras_virtu);
-    XBT_LOG_CONNECT(gras_virtu_process, gras_virtu);
 
     if (!getenv("GRAS_NO_WARN_EXPERIMENTAL"))
       XBT_WARN("GRAS is not well maintained anymore. We consider it to be experimental (and not stable anymore) since SimGrid 3.6. Sorry about it, please consider contributing to improve this situation");

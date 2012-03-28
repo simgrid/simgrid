@@ -58,15 +58,6 @@ void SIMIX_global_init(int *argc, char **argv)
   s_smx_process_t proc;
 
   if (!simix_global) {
-    /* Connect our log channels: that must be done manually under windows */
-    XBT_LOG_CONNECT(simix_context, simix);
-    XBT_LOG_CONNECT(simix_deployment, simix);
-    XBT_LOG_CONNECT(simix_environment, simix);
-    XBT_LOG_CONNECT(simix_host, simix);
-    XBT_LOG_CONNECT(simix_kernel, simix);
-    XBT_LOG_CONNECT(simix_process, simix);
-    XBT_LOG_CONNECT(simix_synchro, simix);
-
     simix_global = xbt_new0(s_smx_global_t, 1);
 
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), NULL);

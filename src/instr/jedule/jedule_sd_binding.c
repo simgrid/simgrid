@@ -120,8 +120,6 @@ void jedule_sd_cleanup() {
 
 void jedule_sd_init() {
 
-	XBT_LOG_CONNECT(jed_sd, jedule);
-
 	jedule_init_output();
 }
 

@@ -213,7 +213,6 @@ xbt_dict_t gras_os_host_properties(void)
 
 void gras_global_init(int *argc, char **argv)
 {
-  XBT_LOG_CONNECT(gras_trp_sg, gras_trp);
   SIMIX_global_init(argc, argv);
 }
 
