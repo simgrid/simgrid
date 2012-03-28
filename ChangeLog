@@ -38,7 +38,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
 
   MSG:
   * Deprecate the use of m_channel_t mecanism like MSG_task_{get,put}
-    functions and friends. This interface was considered as 
+    functions and friends. This interface was considered as
     deprecated since over 2 years, it's time to inform our users that it is.
     Switch to MSG_task_{send,recv} instead, or compile Simgrid command line
     'cmake -Dcustom_flags="-DMSG_USE_DEPRECATED" .' if you really need to
@@ -94,6 +94,12 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Add a Chord example in Lua, equivalent to the MSG one.
 
   XBT:
+  * Logs:
+    - Add new runtime parameters --help-logs and --help-log-categories
+      to display informations about supported logging parameters and
+      categories.
+    - Old deprecated parameters --{gras,surf,msg.simix,xbt}-log=...
+      don't exists anymore.
   * Mallocators: allow value NULL for the reset function.
   * Dicts:
     - New function xbt_dict_new_homogeneous(void(*)(void*)) to
