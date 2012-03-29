@@ -2,7 +2,7 @@
 <!ELEMENT platform ((config|random)*,(include|cluster|peer|AS|trace|trace_connect)*,(include|process)*)>
 <!ATTLIST platform version CDATA "0.0">
 
-<!ELEMENT include EMPTY>
+<!ELEMENT include (AS*)>
 <!ATTLIST include file CDATA #REQUIRED>
 
 <!ELEMENT trace (#PCDATA)>
