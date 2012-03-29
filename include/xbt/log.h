@@ -126,8 +126,8 @@ typedef enum {
 # define XBT_LOG_CONNECT(child, parent_cat)                             \
   if (1) {                                                              \
     XBT_LOG_EXTERNAL_CATEGORY(child);                                   \
-    XBT_LOG_EXTERNAL_CATEGORY(parent_cat);                              \
-    xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent_cat));      \
+    /* XBT_LOG_EXTERNAL_CATEGORY(parent_cat); */                        \
+    /* xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent_cat)); */ \
     _xbt_log_cat_init(&_XBT_LOGV(child), xbt_log_priority_uninitialized); \
   } else ((void)0)
 #endif
