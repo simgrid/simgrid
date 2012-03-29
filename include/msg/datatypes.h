@@ -66,6 +66,21 @@ typedef struct m_task {
   @{ */
 typedef struct m_task *m_task_t;
 
+/* ******************************** File ************************************ */
+
+typedef struct simdata_file *simdata_file_t;
+
+/** @brief File datatype
+    @ingroup m_datatypes_management_details */
+typedef struct msg_file {
+  char *name;                   /**< @brief file name */
+  simdata_file_t simdata;                /**< @brief simulator data  */
+  void *data;                   /**< @brief user data */
+} s_msg_file_t;
+/** @brief File datatype
+    @ingroup m_datatypes_management_details */
+typedef struct msg_file *msg_file_t;
+
 
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task *simdata_gpu_task_t;

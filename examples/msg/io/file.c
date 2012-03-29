@@ -32,7 +32,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 
 int host(int argc, char *argv[])
 {
-  m_file_t file;
+  msg_file_t file;
   char* mount = bprintf("C:");
   size_t read,write;
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0"))

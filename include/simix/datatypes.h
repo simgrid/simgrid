@@ -46,6 +46,8 @@ typedef enum {
 
 typedef struct s_smx_timer* smx_timer_t;
 
+/* ******************************** File ************************************ */
+typedef struct s_smx_file *smx_file_t;
 
 /* ******************************** Synchro ************************************ */
 typedef struct s_smx_mutex *smx_mutex_t;

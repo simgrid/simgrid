@@ -8,9 +8,9 @@
 
 /** @addtogroup m_file_management
  *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="File" --> \endhtmlonly
- * (#m_file_t) and the functions for managing it.
+ * (#msg_file_t) and the functions for managing it.
  *
- *  \see #m_file_t
+ *  \see #msg_file_t
  */
 
 /********************************* File **************************************/
@@ -25,9 +25,9 @@
  * \param stream to read
  * \return the number of items successfully read
  */
-size_t MSG_file_read(const char* storage, void* ptr, size_t size, size_t nmemb,  m_file_t stream)
+size_t MSG_file_read(const char* storage, void* ptr, size_t size, size_t nmemb,  msg_file_t stream)
 {
-  return simcall_file_read(storage, ptr, size, nmemb, (m_file_t)stream);
+  return simcall_file_read(storage, ptr, size, nmemb, (smx_file_t)stream);
 }
 
 /** \ingroup m_file_management
@@ -40,9 +40,9 @@ size_t MSG_file_read(const char* storage, void* ptr, size_t size, size_t nmemb, 
  * \param stream to write
  * \return the number of items successfully write
  */
-size_t MSG_file_write(const char* storage, const void* ptr, size_t size, size_t nmemb, m_file_t stream)
+size_t MSG_file_write(const char* storage, const void* ptr, size_t size, size_t nmemb, msg_file_t stream)
 {
-  return simcall_file_write(storage, ptr, size, nmemb, (m_file_t)stream);
+  return simcall_file_write(storage, ptr, size, nmemb, (smx_file_t)stream);
 }
 
 /** \ingroup m_file_management
@@ -60,11 +60,11 @@ size_t MSG_file_write(const char* storage, const void* ptr, size_t size, size_t 
  *      a+     Open for reading and appending (writing at end of file).  The file is created if it does not exist.  The initial file position for  reading
  *             is at the beginning of the file, but output is always appended to the end of the file.
  *
- * \return An #m_file_t associated to the file
+ * \return An #msg_file_t associated to the file
  */
-m_file_t MSG_file_open(const char* storage, const char* path, const char* mode)
+msg_file_t MSG_file_open(const char* storage, const char* path, const char* mode)
 {
-  return (m_file_t) simcall_file_open(storage, path, mode);
+  return (msg_file_t) simcall_file_open(storage, path, mode);
 }
 
 /** \ingroup m_file_management
@@ -74,9 +74,9 @@ m_file_t MSG_file_open(const char* storage, const char* path, const char* mode)
  * \param fp is the file to close
  * \return 0 on success or 1 on error
  */
-int MSG_file_close(const char* storage, m_file_t fp)
+int MSG_file_close(const char* storage, msg_file_t fp)
 {
-  return simcall_file_close(storage, (m_file_t)fp);
+  return simcall_file_close(storage, (smx_file_t)fp);
 }
 
 /** \ingroup m_file_management

@@ -50,30 +50,30 @@ static surf_action_t storage_action_open(void *storage, const char* path, const 
   xbt_dict_t content_dict = storage_type->content;
   content_t content = xbt_dict_get(content_dict,path);
 
-  m_file_t file = xbt_new0(s_m_file_t,1);
+  surf_file_t file = xbt_new0(s_surf_file_t,1);
   file->name = xbt_strdup(path);
-  file->content = content;
+  file->simdata = content;
 
   surf_action_t action = storage_action_execute(storage,0, DEFAULT);
   action->file = (void *)file;
   return action;
 }
 
-static surf_action_t storage_action_close(void *storage, m_file_t fp)
+static surf_action_t storage_action_close(void *storage, surf_file_t fp)
 {
   char *filename = fp->name;
   free(fp->name);
-  fp->content = NULL;
+  fp->simdata = NULL;
   xbt_free(fp);
   surf_action_t action = storage_action_execute(storage,0, DEFAULT);
   XBT_DEBUG("\tClose file '%s'",filename);
   return action;
 }
 
-static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, size_t nmemb, m_file_t stream)
+static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
   char *filename = stream->name;
-  content_t content = (content_t)(stream->content);
+  content_t content = (content_t)(stream->simdata);
   XBT_DEBUG("\tRead file '%s' size '%Zu/%Zu'",filename,size,content->size);
   if(size > content->size)
     size = content->size;
@@ -82,10 +82,10 @@ static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, 
   return action;
 }
 
-static surf_action_t storage_action_write(void *storage, const void* ptr, size_t size, size_t nmemb, m_file_t stream)
+static surf_action_t storage_action_write(void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
   char *filename = stream->name;
-  content_t content = (content_t)(stream->content);
+  content_t content = (content_t)(stream->simdata);
   XBT_DEBUG("\tWrite file '%s' size '%Zu/%Zu'",filename,size,content->size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
