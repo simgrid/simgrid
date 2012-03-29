@@ -541,11 +541,13 @@ static void xbt_log_connect_categories(void)
   /* Also permit that they are correctly listed by xbt_log_help_categories() */
 
   /* amok */
+  XBT_LOG_CONNECT(amok);
   XBT_LOG_CONNECT(amok_bw);
   XBT_LOG_CONNECT(amok_bw_sat);
   XBT_LOG_CONNECT(amok_pm);
 
   /* gras */
+  XBT_LOG_CONNECT(gras);
   XBT_LOG_CONNECT(gras_modules);
   XBT_LOG_CONNECT(gras_msg);
   XBT_LOG_CONNECT(gras_msg_read);
@@ -558,6 +560,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(gras_virtu_process);
 
   /* xbt */
+  XBT_LOG_CONNECT(xbt);
   XBT_LOG_CONNECT(graphxml_parse);
   XBT_LOG_CONNECT(log);
   XBT_LOG_CONNECT(mm_diff);
@@ -585,7 +588,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_graph);
   XBT_LOG_CONNECT(xbt_lib);
   XBT_LOG_CONNECT(xbt_mallocator);
-
   XBT_LOG_CONNECT(xbt_matrix);
   XBT_LOG_CONNECT(xbt_parmap);
   XBT_LOG_CONNECT(xbt_parmap_unit);
@@ -605,6 +607,7 @@ static void xbt_log_connect_categories(void)
 
   /* bindings */
 #ifdef HAVE_LUA
+  XBT_LOG_CONNECT(bindings);
   XBT_LOG_CONNECT(lua);
   XBT_LOG_CONNECT(lua_comm);
   XBT_LOG_CONNECT(lua_host);
@@ -617,6 +620,7 @@ static void xbt_log_connect_categories(void)
 
   /* instr */
 #ifdef HAVE_TRACING
+  XBT_LOG_CONNECT(instr);
   XBT_LOG_CONNECT(instr_paje_trace);
   XBT_LOG_CONNECT(instr_smpi);
   XBT_LOG_CONNECT(instr_surf);
@@ -624,12 +628,14 @@ static void xbt_log_connect_categories(void)
 
   /* jedule */
 #ifdef HAVE_JEDULE
+  XBT_LOG_CONNECT(jedule);
   XBT_LOG_CONNECT(jed_out);
   XBT_LOG_CONNECT(jed_sd);
 #endif
 
   /* mc */
 #ifdef HAVE_MC
+  XBT_LOG_CONNECT(mc);
   XBT_LOG_CONNECT(mc_checkpoint);
   XBT_LOG_CONNECT(mc_dpor);
   XBT_LOG_CONNECT(mc_global);
@@ -640,6 +646,7 @@ static void xbt_log_connect_categories(void)
 #endif
 
   /* msg */
+  XBT_LOG_CONNECT(msg);
   XBT_LOG_CONNECT(msg_action);
   XBT_LOG_CONNECT(msg_gos);
   XBT_LOG_CONNECT(msg_kernel);
@@ -648,6 +655,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_task);
 
   /* simdag */
+  XBT_LOG_CONNECT(sd);
   XBT_LOG_CONNECT(sd_daxparse);
 #ifdef HAVE_GRAPHVIZ
   XBT_LOG_CONNECT(sd_dotparse);
@@ -657,6 +665,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(sd_workstation);
 
   /* simix */
+  XBT_LOG_CONNECT(simix);
   XBT_LOG_CONNECT(simix_context);
   XBT_LOG_CONNECT(simix_deployment);
   XBT_LOG_CONNECT(simix_environment);
@@ -672,6 +681,7 @@ static void xbt_log_connect_categories(void)
   /* SMPI categories are connected in smpi_global.c */
 
   /* surf */
+  XBT_LOG_CONNECT(surf);
   XBT_LOG_CONNECT(random);
   XBT_LOG_CONNECT(surf_config);
   XBT_LOG_CONNECT(surf_cpu);

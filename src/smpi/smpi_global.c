@@ -252,6 +252,7 @@ int MAIN__(void)
   }
 
   /* Connect log categories.  See xbt/log.c */
+  XBT_LOG_CONNECT(smpi);
   XBT_LOG_CONNECT(smpi_base);
   XBT_LOG_CONNECT(smpi_bench);
   XBT_LOG_CONNECT(smpi_coll);
