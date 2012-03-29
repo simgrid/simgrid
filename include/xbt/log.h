@@ -94,36 +94,20 @@ typedef enum {
 /* The root of the category hierarchy. */
 #define XBT_LOG_ROOT_CAT   root
 
-/* The whole tree of categories is connected by setting the address of
- * the parent category as a field of the child one.
+/* The whole tree of categories is connected by setting the address of the
+ * parent category as a field of the child one.  This is normally done at the
+ * first use of the category.
  *
- * In strict ansi C, we are allowed to initialize a variable with "a
- * pointer to an lvalue designating an object of static storage
- * duration" [ISO/IEC 9899:1999, Section 6.6].
- * 
- * Unfortunately, Visual C builder does not target any standard
- * compliance, and C99 is not an exception to this unfortunate rule.
- * 
- * So, we work this around by adding a XBT_LOG_CONNECT_PARENT() macro,
- * allowing to connect a child to its parent. It should be used
- * during the initialization of the code, before the child category
- * gets used.
- * 
- * When compiling with gcc, this is not necessary (XBT_LOG_CONNECT_PARENT
- * defines to nothing). When compiling with MSVC, this is needed if
- * you don't want to see your child category become a child of root
- * directly.
+ * It is however necessary to make this connections as early as possible, if we
+ * want the category to be listed by --help-log-categories.
+ *
+ * When possible, the initializations takes place automatically before the start
+ * of main().  It's the case when compiling with gcc.
+ *
+ * For the other cases, you can use the XBT_LOG_CONNECT(cat) macro to force
+ * early initialization.  See, for example, in xbt/log.c, the function
+ * xbt_log_connect_categories().
  */
-#if defined(_MSC_VER)
-# define _XBT_LOG_PARENT_INITIALIZER(parent) NULL
-# define XBT_LOG_CONNECT_PARENT(child, parent_cat)                      \
-  _XBT_LOGV(child).parent = &_XBT_LOGV(parent_cat)
-#else
-# define _XBT_LOG_PARENT_INITIALIZER(parent) &_XBT_LOGV(parent)
-# define XBT_LOG_CONNECT_PARENT(child, parent_cat)                      \
-  /* xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent_cat)); */  \
-  ((void)0)
-#endif
 
 #define XBT_LOG_CONNECT(cat)                    \
   if (1) {                                      \
@@ -141,13 +125,11 @@ typedef enum {
   {                                                                     \
     XBT_LOG_EXTERNAL_CATEGORY(catName);                                 \
     if (!_XBT_LOGV(catName).initialized) {                              \
-      /* Note: _XBT_LOGV(parent) should be already declared here. */    \
-      XBT_LOG_CONNECT_PARENT(catName, parent);                          \
       _xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized); \
     }                                                                   \
   }                                                                     \
   XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {     \
-    _XBT_LOG_PARENT_INITIALIZER(parent),                                \
+    &_XBT_LOGV(parent),                                                 \
     NULL /* firstChild */,                                              \
     NULL /* nextSibling */,                                             \
     #catName,                                                           \
