@@ -338,7 +338,8 @@ WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 add_dependencies(sync-gforge-doc simgrid_documentation)
 
 add_custom_target(sync-gforge-dtd
-COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/${release_version}/
+COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
+COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 
