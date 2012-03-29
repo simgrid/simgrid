@@ -17,10 +17,8 @@ my %desc;
 #    ie, when the channel toto is initialized (does not work under windows)
 
 # $desc{"toto"} is its description
-my %c_ancestor;
-# $c_ancestor{"toto"} is the ancestor of the toto channel, as declared by XBT_LOG_CONNECT
-#    ie, in a initialization function (only way to do so under windows)
-#    we want $ancestor{"toto"} == $c_ancestor{"toto"} for each toto, or bad things will happen under windows
+my %connected;
+# $connected{"toto"} is defined if XBT_LOG_CONNECT("toto") is used
 
 sub cleanup_ctn {
     my $ctn = shift;        # cleanup the content of a macro call
@@ -65,7 +63,7 @@ sub parse_file {
 
     my $connect_data = $data; # save a copy for second parsing phase
     while ($data =~ s/^.*?XBT_LOG_NEW(_DEFAULT)?_(SUB)?CATEGORY\(//s) {
-	$data =~ s/([^"]*"[^"]*")\)//s || die "unparsable macro: $data"; # ]]);
+	$data =~ s/([^"]*"[^"]*")\)//s || die "unparsable macro: $data";
 	    
         my ($name,$anc,$desc) = cleanup_ctn($1);
 	    
@@ -82,14 +80,8 @@ sub parse_file {
    # Now, look for XBT_LOG_CONNECT calls
    $data = $connect_data;
    while ($data =~ s/^.*?XBT_LOG_CONNECT\(//s) {
-									 
-	$data =~ s/([^\)]*)\)//s || die "unparsable macro: $data"; # ]]);	    
-        my ($name, $ignoreme, $anc) = cleanup_ctn($1);
-	    
-        # build the tree, checking for name conflict
-       $c_ancestor{$name}=$anc;
-   
-       print STDERR " $name -> $anc\n" if $debug;
+       $data =~ s/\s*(\w+)\s*\)//s || die "unparsable macro: $data";
+       $connected{$1} = 1;
    }
 }
 # Retrieve all the file names, and add their content to $data
@@ -119,20 +111,12 @@ sub display_subtree {
     
 display_subtree("XBT_LOG_ROOT_CAT","");
 
-sub check_connection {
-    my $name=shift;
-    
-    foreach my $cat (grep {$ancestor{$_} eq $name} sort keys %ancestor) {
-	unless ($ancestor{$cat} eq "XBT_LOG_ROOT_CAT" || (defined($c_ancestor{$cat}) && $c_ancestor{$cat} eq $name)) {
-	    warn "Category $cat will be disconnected under windows. Add the following to an initialization function:\n   XBT_LOG_CONNECT($cat, $ancestor{$cat});\n";
-	} else {
-	    warn "Correctly connected, even under windows: Category $cat.\n" if $debug;
-	}
-	check_connection($cat);
-    }
-}
-check_connection("XBT_LOG_ROOT_CAT");	
-map {warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";} grep {!defined $used{$_}} sort keys %ancestor;    
+map {
+    warn "Category $_ does not seem to be connected.  Use XBT_LOG_CONNECT($_).\n";
+} grep {!defined $connected{$_}} sort keys %ancestor;
+map {
+    warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";
+} grep {!defined $used{$_}} sort keys %ancestor;
 
 	
 print "@}*/\n";
