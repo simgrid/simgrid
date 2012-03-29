@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-//for i in $(seq 1 100); do teshsuite/simdag/platforms/evaluate_get_route_time ../examples/platforms/One_cluster.xml 1 2> /tmp/null ; done
+//for i in $(seq 1 100); do teshsuite/simdag/platforms/evaluate_get_route_time ../examples/platforms/cluster.xml 1 2> /tmp/null ; done
 
 
 #include <stdio.h>

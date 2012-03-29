@@ -382,9 +382,9 @@ endif(HAVE_RAWCTX)
 endif(HAVE_GTNETS)
 
 if(HAVE_NS3)
-ADD_TEST(msg-ns3-thread	    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:thread		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
-ADD_TEST(msg-ns3-ucontext	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:ucontext		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
-ADD_TEST(msg-ns3-raw        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:raw    		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
+ADD_TEST(msg-ns3-thread	    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:thread		--setenv srcdir=${CMAKE_HOME_DIRECTORY}	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
+ADD_TEST(msg-ns3-ucontext	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:ucontext		--setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
+ADD_TEST(msg-ns3-raw        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:raw    		--setenv srcdir=${CMAKE_HOME_DIRECTORY}	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
 endif(HAVE_NS3)
 
 IF(HAVE_TRACING)

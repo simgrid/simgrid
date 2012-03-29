@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 
 <platform version="3">
-<AS  id="AS0"  routing="Floyd">
+<AS  id="AS0"  routing="bob">
     
   <cluster id="my_cluster_1" prefix="c-" suffix=""
   		radical="0-1"	power="1000000000"    bw="125000000"     lat="5E-5"

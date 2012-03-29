@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+
+<!--                  _________________________________________
+                 ____|_____                                    |
+                |          |                                   |
+                |  router1 |                                   |
+    ____________|__________|_____________ backbone1            |
+      |   |   |              |     |   |                       | backbone
+    l0|	l1| l2|            l7|   l8|   |l9                     |
+      |   |   |   ........   |     |   |                       |
+      |                                |                       |
+    c-0.me                             c-9.me                  |
+                     __________________________________________|
+                 ___|______
+                |          |
+                |  router2 |
+    ____________|__________|_____________ backbone2
+      |   |   |              |     |   |  	
+   l10|l11|l12|           l17| l18 |   | l19
+      |   |   |   ........   |     |   |
+      |                                |
+   c-10.me                             c-19.me	
+-->
+
+<AS id="AS0" routing="Full">
+	<cluster id="my_cluster_1" prefix="c-" suffix=".me" radical="0-9"
+		power="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000"
+		bb_lat="5E-4" />
+
+	<cluster id="my_cluster_2" prefix="c-" suffix=".me" radical="10-19"
+		power="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000"
+		bb_lat="5E-4" />
+
+	<link id="backbone" bandwidth="1250000000" latency="5E-4" />
+
+	<ASroute src="my_cluster_1" dst="my_cluster_2" gw_src="c-my_cluster_1_router.me"
+		gw_dst="c-my_cluster_2_router.me">
+		<link_ctn id="backbone" />
+	</ASroute>
+</AS>
+</platform>
