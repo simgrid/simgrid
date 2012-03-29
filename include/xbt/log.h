@@ -35,6 +35,7 @@
 
 #include "xbt/misc.h"
 #include <stdarg.h>
+#include <stddef.h>             /* NULL */
 SG_BEGIN_DECL()
 /**\brief Log priorities
  * \ingroup XBT_log
