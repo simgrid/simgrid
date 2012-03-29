@@ -719,6 +719,8 @@ void xbt_log_init(int *argc, char **argv)
 
   //    _XBT_LOGV(log).threshold = xbt_log_priority_debug; /* uncomment to set the LOG category to debug directly */
 
+  xbt_log_connect_categories();
+
   /* Set logs and init log submodule */
   for (j = i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--log=", strlen("--log="))) {
@@ -738,8 +740,6 @@ void xbt_log_init(int *argc, char **argv)
     argv[j] = NULL;
     *argc = j;
   }
-
-  xbt_log_connect_categories();
 
   if (help_requested) {
     if (help_requested & 1)
