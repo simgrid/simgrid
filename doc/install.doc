@@ -336,7 +336,19 @@ Step 3: Choice where to install packets previously selected. Please don't use sp
 <a href="win_install_04.png" border=0><img src="win_install_04.png" border=0></a>
 \endhtmlonly
 
-Step 4: Restart your computer to take in consideration environment variables.
+Step 4: Add CLASSPATH to environment variables.
+
+\htmlonly
+<a href="win_install_05.png" border=0><img src="win_install_05.png" border=0></a>
+\endhtmlonly
+
+Step 5: Add PATH to environment variables.
+
+\htmlonly
+<a href="win_install_06.png" border=0><img src="win_install_06.png" border=0></a>
+\endhtmlonly
+
+Step 6: Restart your computer to take in consideration environment variables.
 
 \subsection install_Win_compile1 Compile a project "HelloWorld"
 

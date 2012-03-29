@@ -43,6 +43,8 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSI
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
+		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
+		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
 	)
 	
 	configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
