@@ -619,7 +619,8 @@ INPUT                  = index.doc \
                          bindings.doc \
                          options.doc \
                          tracing.doc \
-                         use.doc \
+                         platform.doc \
+			 use.doc \
                          pls.doc \
                          ./index-API.doc \
                          modules.doc \
