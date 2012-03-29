@@ -18,7 +18,7 @@
  *     
  *  This is the list of all existing log categories in SimGrid.
  *  This list was automatically extracted from the source code by
- *  the src/xbt_log_extract_hierarchy utility.
+ *  the tools/doxygen/xbt_log_extract_hierarchy.pl utility.
  *     
  *  You can thus be certain that it is uptodate, but it may somehow
  *  lack a final manual touch.
