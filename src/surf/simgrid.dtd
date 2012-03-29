@@ -1,8 +1,8 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((config|random)*,(include|cluster|peer|AS|trace|trace_connect)*,(include|process)*)>
+<!ELEMENT platform ((config|random)*,(include|cluster|peer|AS|trace|trace_connect)*,(process)*)>
 <!ATTLIST platform version CDATA "0.0">
 
-<!ELEMENT include (AS*)>
+<!ELEMENT include (include|cluster|peer|AS|trace|trace_connect)*>
 <!ATTLIST include file CDATA #REQUIRED>
 
 <!ELEMENT trace (#PCDATA)>
