@@ -469,7 +469,7 @@ DijsktraCache example :
 XXX?
 \endverbatim
 
-\subsubsection pf_rm_sh Manually-entered route models 
+\subsubsection pf_rm_me Manually-entered route models 
 
 \li <b>Full</b>: You have to enter all necessary routes manually
 \li <b>RuleBased</b>: Rule-Based routing data; same as Full except you can use regexp to express route. As SimGrid has to evaluate the regexp, it's slower than Full, but requires less memory. Regexp syntax is similar as <a href="http://www.pcre.org">pcre</a> ones, as this is the lib SimGrid use to do so.
@@ -529,9 +529,9 @@ RuleBased example :
 
 The example upper contains $1. Those $1 are evaluated as follow XXX?
 
-\subsubsection pf_rm_sh Simple/fast models 
+\subsubsection pf_rm_sf Simple/fast models 
 
-\li <b>none</b>: No routing (usable with Constant network only)
+\li <b>none</b>: No routing (Unless you know what you are doing, avoid using this mode in combination with a non Constant network model).
 None Example :
 \verbatim
 XXX?
@@ -634,7 +634,7 @@ Let's say you have an AS named AS_Big that contains two other AS, AS_1 and AS_2.
 
 As said before, there are mainly 2 tags for routing :
 \li <b>ASroute</b>: to define routes between two  <b>AS</b>
-\li <b>router</b>: to define routes between two <b>host/router</b>
+\li <b>route</b>: to define routes between two <b>host/router</b>
 
 As we are dealing with routes between AS, it means that those we'll have some definition at AS_Big level. Let consider AS_1 and AS_2 contains 1 host, 1 link and one router. 
 
