@@ -135,4 +135,4 @@ check_connection("XBT_LOG_ROOT_CAT");
 map {warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";} grep {!defined $used{$_}} sort keys %ancestor;    
 
 	
-print "@}*/";
+print "@}*/\n";
