@@ -13,7 +13,7 @@
 #include "xbt/fifo.h"
 #include "mc_private.h"
 
-
+XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 

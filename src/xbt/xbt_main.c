@@ -20,6 +20,7 @@
 
 #include "xbt_modinter.h"       /* prototype of other module's init/exit in XBT */
 
+XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
 
 char *xbt_binary_name = NULL;   /* Mandatory to retrieve neat backtraces */

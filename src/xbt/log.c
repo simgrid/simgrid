@@ -514,13 +514,6 @@ s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
       0                         /* additivity */
 };
 
-XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
-XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
-XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
-XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
-XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
-XBT_LOG_NEW_CATEGORY(bindings, "All bindings categories");
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log, xbt,
                                 "Loggings from the logging mechanism itself");
 

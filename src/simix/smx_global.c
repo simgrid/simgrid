@@ -12,6 +12,7 @@
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
 
+XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
                                 "Logging specific to SIMIX (kernel)");
 
