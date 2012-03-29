@@ -320,6 +320,16 @@ XBT_INLINE lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
     return NULL;
 }
 
+XBT_INLINE double lmm_get_cnst_weight_from_var(lmm_system_t sys,
+                                                         lmm_variable_t var,
+                                                         int num)
+{
+  if (num < var->cnsts_number)
+    return (var->cnsts[num].value);
+  else
+    return 0.0;
+}
+
 XBT_INLINE int lmm_get_number_of_cnst_from_var(lmm_system_t sys,
                                                lmm_variable_t var)
 {
