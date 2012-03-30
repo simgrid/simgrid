@@ -94,7 +94,6 @@ typedef struct surf_action {
   char *category;               /**< tracing category for categorized resource utilization monitoring */
 #endif
   surf_file_t file;        /**< surf_file_t for storage model */
-  size_t read_write;
 } s_surf_action_t;
 
 typedef struct surf_action_lmm {

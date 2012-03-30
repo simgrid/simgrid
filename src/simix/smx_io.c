@@ -25,7 +25,6 @@ void SIMIX_pre_file_read(smx_simcall_t simcall)
       simcall->file_read.stream);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
-  simcall->file_read.result = (action->io.surf_io)->read_write;
 }
 
 smx_action_t SIMIX_file_read(smx_process_t process, const char* storage, void* ptr, size_t size, size_t nmemb, smx_file_t stream)
@@ -67,7 +66,6 @@ void SIMIX_pre_file_write(smx_simcall_t simcall)
       simcall->file_write.stream);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
-  simcall->file_write.result = (action->io.surf_io)->read_write;
 }
 
 smx_action_t SIMIX_file_write(smx_process_t process, const char* storage, const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
@@ -107,8 +105,6 @@ void SIMIX_pre_file_open(smx_simcall_t simcall)
       simcall->file_open.mode);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
-  simcall->file_open.result = xbt_new(s_smx_file_t,1); /* FIXME */
-  simcall->file_open.result->surf_file = (action->io.surf_io)->file;
 }
 
 smx_action_t SIMIX_file_open(smx_process_t process ,const char* storage, const char* path, const char* mode)
@@ -147,7 +143,6 @@ void SIMIX_pre_file_close(smx_simcall_t simcall)
       simcall->file_close.fp);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
-  simcall->file_close.result = 0;
 }
 
 smx_action_t SIMIX_file_close(smx_process_t process ,const char* storage, smx_file_t fp)
@@ -187,7 +182,6 @@ void SIMIX_pre_file_stat(smx_simcall_t simcall)
       simcall->file_stat.buf);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
-  simcall->file_stat.result = 0;
 }
 
 smx_action_t SIMIX_file_stat(smx_process_t process ,const char* storage, int fd, void* buf)
@@ -220,6 +214,32 @@ smx_action_t SIMIX_file_stat(smx_process_t process ,const char* storage, int fd,
 
 void SIMIX_post_io(smx_action_t action)
 {
+  xbt_fifo_item_t i;
+  smx_simcall_t simcall;
+
+  xbt_fifo_foreach(action->simcalls,i,simcall,smx_simcall_t) {
+    switch (simcall->call) {
+    case SIMCALL_FILE_OPEN:
+      simcall->file_open.result = xbt_new(s_smx_file_t,1);
+      simcall->file_open.result->surf_file = (action->io.surf_io)->file;
+      break;
+    case SIMCALL_FILE_CLOSE:
+      simcall->file_read.result = 0;
+      break;
+    case SIMCALL_FILE_WRITE:
+      simcall->file_write.result = (action->io.surf_io)->cost;
+      break;
+    case SIMCALL_FILE_READ:
+      simcall->file_read.result = (action->io.surf_io)->cost;
+      break;
+    case SIMCALL_FILE_STAT:
+      simcall->file_read.result = 0;
+      break;
+    default:
+      break;
+    }
+  }
+
   switch (surf_workstation_model->action_state_get(action->io.surf_io)) {
 
     case SURF_ACTION_FAILED:

@@ -87,7 +87,6 @@ static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, 
   if(size > content->size)
     size = content->size;
   surf_action_t action = storage_action_execute(storage,size,READ);
-  action->read_write = size;
   return action;
 }
 
@@ -98,7 +97,6 @@ static surf_action_t storage_action_write(void *storage, const void* ptr, size_t
   XBT_DEBUG("\tWrite file '%s' size '%Zu/%Zu'",filename,size,content->size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
-  action->read_write = size;
   content->size += size;
   return action;
 }
