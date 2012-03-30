@@ -140,9 +140,11 @@ typedef enum {
   void _XBT_LOGV_CTOR(catName)(void)                                    \
   {                                                                     \
     XBT_LOG_EXTERNAL_CATEGORY(catName);                                 \
-    /* Note: _XBT_LOGV(parent) should be already declared here. */      \
-    XBT_LOG_CONNECT_PARENT(catName, parent);                            \
-    _xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized); \
+    if (!_XBT_LOGV(catName).initialized) {                              \
+      /* Note: _XBT_LOGV(parent) should be already declared here. */    \
+      XBT_LOG_CONNECT_PARENT(catName, parent);                          \
+      _xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized); \
+    }                                                                   \
   }                                                                     \
   XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {     \
     _XBT_LOG_PARENT_INITIALIZER(parent),                                \
