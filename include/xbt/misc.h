@@ -17,8 +17,8 @@
 	       __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
 # define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
 # define _XBT_GNUC_UNUSED  __attribute__((__unused__))
-# define _XBT_GNUC_CONSTRUCTOR __attribute__((__constructor__))
-# define _XBT_GNUC_DESTRUCTOR __attribute__((__destructor__))
+# define _XBT_GNUC_CONSTRUCTOR(prio) __attribute__((__constructor__ (prio)))
+# define _XBT_GNUC_DESTRUCTOR(prio) __attribute__((__destructor__ (prio)))
 # undef _XBT_NEED_INIT_PRAGMA
 
 #else                           /* !__GNUC__ */
@@ -26,8 +26,8 @@
 # define _XBT_GNUC_SCANF( format_idx, arg_idx )
 # define _XBT_GNUC_NORETURN
 # define _XBT_GNUC_UNUSED
-# define _XBT_GNUC_CONSTRUCTOR
-# define _XBT_GNUC_DESTRUCTOR
+# define _XBT_GNUC_CONSTRUCTOR(prio)
+# define _XBT_GNUC_DESTRUCTOR(prio)
 # define  _XBT_NEED_INIT_PRAGMA 1
 
 #endif                          /* !__GNUC__ */

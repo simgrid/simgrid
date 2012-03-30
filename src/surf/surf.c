@@ -12,6 +12,7 @@
 #include "surf/surf_resource.h"
 #include "xbt/xbt_os_thread.h"
 
+XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
 
@@ -288,23 +289,6 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   return min;
 }
 
-XBT_LOG_EXTERNAL_CATEGORY(surf_cpu);
-XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
-XBT_LOG_EXTERNAL_CATEGORY(surf_lagrange);
-XBT_LOG_EXTERNAL_CATEGORY(surf_lagrange_dichotomy);
-XBT_LOG_EXTERNAL_CATEGORY(surf_maxmin);
-XBT_LOG_EXTERNAL_CATEGORY(surf_network);
-XBT_LOG_EXTERNAL_CATEGORY(surf_trace);
-XBT_LOG_EXTERNAL_CATEGORY(surf_parse);
-XBT_LOG_EXTERNAL_CATEGORY(surf_timer);
-XBT_LOG_EXTERNAL_CATEGORY(surf_workstation);
-XBT_LOG_EXTERNAL_CATEGORY(surf_config);
-XBT_LOG_EXTERNAL_CATEGORY(surf_route);
-
-#ifdef HAVE_GTNETS
-XBT_LOG_EXTERNAL_CATEGORY(surf_network_gtnets);
-#endif
-
 static XBT_INLINE void routing_asr_host_free(void *p)
 {
   network_element_t elm = p;
@@ -333,24 +317,6 @@ void surf_init(int *argc, char **argv)
   SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
   SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_resource_free);
-
-  /* Connect our log channels: that must be done manually under windows */
-  XBT_LOG_CONNECT(surf_cpu, surf);
-  XBT_LOG_CONNECT(surf_kernel, surf);
-  XBT_LOG_CONNECT(surf_lagrange, surf);
-  XBT_LOG_CONNECT(surf_lagrange_dichotomy, surf_lagrange);
-  XBT_LOG_CONNECT(surf_maxmin, surf);
-  XBT_LOG_CONNECT(surf_network, surf);
-  XBT_LOG_CONNECT(surf_trace, surf);
-  XBT_LOG_CONNECT(surf_parse, surf);
-  XBT_LOG_CONNECT(surf_timer, surf);
-  XBT_LOG_CONNECT(surf_workstation, surf);
-  XBT_LOG_CONNECT(surf_config, surf);
-  XBT_LOG_CONNECT(surf_route, surf);
-
-#ifdef HAVE_GTNETS
-  XBT_LOG_CONNECT(surf_network_gtnets, surf);
-#endif
 
   xbt_init(argc, argv);
   if (!model_list)

@@ -741,8 +741,7 @@ void xbt_dict_postexit(void)
 #include "xbt/ex.h"
 #include "portable.h"
 
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dict);
-XBT_LOG_DEFAULT_CATEGORY(xbt_dict);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 
 XBT_TEST_SUITE("dict", "Dict data container");
 

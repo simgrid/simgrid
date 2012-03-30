@@ -95,7 +95,7 @@ struct s_model_type routing_models[] = {
   {"DijkstraCache",
    "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)",
    model_dijkstracache_create, model_dijkstra_both_end},
-  {"none", "No routing (usable with Constant network only)",
+  {"none", "No routing (Unless you know what you are doing, avoid using this mode in combination with a non Constant network model).",
    model_none_create,  NULL},
   {"RuleBased", "Rule-Based routing data (...)",
    model_rulebased_create, NULL},

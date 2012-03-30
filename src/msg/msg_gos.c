@@ -920,7 +920,7 @@ const char *MSG_task_get_category (m_task_t task)
 }
 
 #ifdef MSG_USE_DEPRECATED
-/** \ingroup msg_gos_functions
+/** \ingroup msg_deprecated_functions
  *
  * \brief Return the last value returned by a MSG function (except
  * MSG_get_errno...).
@@ -930,7 +930,7 @@ MSG_error_t MSG_get_errno(void)
   return PROCESS_GET_ERRNO();
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_deprecated_functions
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.
  *
@@ -961,7 +961,7 @@ MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, m_channel_t channel)
   return MSG_task_put_with_timeout(task, dest, channel, -1.0);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_deprecated_functions
  * \brief Does exactly the same as MSG_task_put but with a bounded transmition
  * rate.
  *
@@ -976,7 +976,9 @@ MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
   return MSG_task_put(task, dest, channel);
 }
 
-/** \ingroup msg_gos_functions \brief Put a task on a channel of an
+/** \ingroup msg_deprecated_functions
+ *
+ * \brief Put a task on a channel of an
  * host (with a timeout on the waiting of the destination host) and
  * waits for the end of the transmission.
  *
@@ -1019,7 +1021,7 @@ MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
                                    (dest, channel), task, timeout);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_deprecated_functions
  * \brief Test whether there is a pending communication on a channel, and who sent it.
  *
  * It takes one parameter.
@@ -1046,7 +1048,7 @@ int MSG_task_probe_from(m_channel_t channel)
   return MSG_process_get_PID(task->simdata->sender);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_deprecated_functions
  * \brief Test whether there is a pending communication on a channel.
  *
  * It takes one parameter.
@@ -1067,7 +1069,7 @@ int MSG_task_Iprobe(m_channel_t channel)
                             (MSG_host_self(), channel));
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_deprecated_functions
 
  * \brief Return the number of tasks waiting to be received on a \a
  channel and sent by \a host.
@@ -1094,7 +1096,7 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
 
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_deprecated_functions
  * \brief Listen on \a channel and waits for receiving a task from \a host.
  *
  * It takes three parameters.
@@ -1115,7 +1117,7 @@ MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
   return MSG_task_get_ext(task, channel, -1, host);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_deprecated_functions
  * \brief Listen on a channel and wait for receiving a task.
  *
  * It takes two parameters.
@@ -1134,7 +1136,7 @@ MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
   return MSG_task_get_with_timeout(task, channel, -1);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_deprecated_functions
  * \brief Listen on a channel and wait for receiving a task with a timeout.
  *
  * It takes three parameters.

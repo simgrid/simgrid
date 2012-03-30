@@ -202,9 +202,6 @@ static void test_sha(const char *clear, const char *hashed)
 
 XBT_TEST_SUITE("hash", "Various hash functions");
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(hash, "Tests of various hash functions ");
-
-
 XBT_TEST_UNIT("sha", test_crypto_sha, "Test of the sha algorithm")
 {
   /* Empty string as test vector */

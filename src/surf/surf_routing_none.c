@@ -15,6 +15,7 @@ static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
 static void none_get_route_and_latency(AS_t rc, network_element_t src, network_element_t dst,
                                        route_t res,double *lat)
 {
+  *lat = 0.0;
 }
 
 static route_t none_get_bypass_route(AS_t rc,

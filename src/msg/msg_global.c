@@ -12,6 +12,7 @@
 #include "xbt/virtu.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 
+XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
                                 "Logging specific to MSG (kernel)");
 
@@ -27,12 +28,6 @@ void MSG_global_init_args(int *argc, char **argv)
   MSG_global_init(argc, argv);
 }
 
-
-XBT_LOG_EXTERNAL_CATEGORY(msg_gos);
-XBT_LOG_EXTERNAL_CATEGORY(msg_kernel);
-XBT_LOG_EXTERNAL_CATEGORY(msg_mailbox);
-XBT_LOG_EXTERNAL_CATEGORY(msg_process);
-
 /** \ingroup msg_simulation
  * \brief Initialize some MSG internal data.
  */
@@ -44,12 +39,6 @@ void MSG_global_init(int *argc, char **argv)
 
   xbt_getpid = MSG_process_self_PID;
   if (!msg_global) {
-    /* Connect our log channels: that must be done manually under windows */
-    XBT_LOG_CONNECT(msg_gos, msg);
-    XBT_LOG_CONNECT(msg_kernel, msg);
-    XBT_LOG_CONNECT(msg_mailbox, msg);
-    XBT_LOG_CONNECT(msg_process, msg);
-
     SIMIX_global_init(argc, argv);
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);

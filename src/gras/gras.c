@@ -26,7 +26,7 @@
 #include "portable.h"           /* hexa_*(); signalling stuff */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(gras,
-                             "All GRAS categories (cf. section \ref GRAS_API)");
+                             "All GRAS categories (cf. section \\ref GRAS_API)");
 static int gras_running_process = 0;
 #if defined(HAVE_SIGNAL) && defined(HAVE_SIGNAL_H)
 static void gras_sigusr_handler(int sig)
@@ -52,15 +52,6 @@ static void gras_sigint_handler(int sig)
 }
 #endif
 
-XBT_LOG_EXTERNAL_CATEGORY(gras_modules);
-XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
-XBT_LOG_EXTERNAL_CATEGORY(gras_msg_read);
-XBT_LOG_EXTERNAL_CATEGORY(gras_msg_rpc);
-XBT_LOG_EXTERNAL_CATEGORY(gras_timer);
-XBT_LOG_EXTERNAL_CATEGORY(gras_virtu);
-XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_emul);
-XBT_LOG_EXTERNAL_CATEGORY(gras_virtu_process);
-
 /**
  * @ingroup GRAS_API
  * \brief Initialize the gras mechanisms.
@@ -82,19 +73,6 @@ void gras_init(int *argc, char **argv)
    */
   if (gras_running_process == 0) {
     first = 1;
-    /* Connect our log channels: that must be done manually under windows */
-
-    XBT_LOG_CONNECT(gras_modules, gras);
-
-    XBT_LOG_CONNECT(gras_msg, gras);
-    XBT_LOG_CONNECT(gras_msg_read, gras_msg);
-    XBT_LOG_CONNECT(gras_msg_rpc, gras_msg);
-
-    XBT_LOG_CONNECT(gras_timer, gras);
-
-    XBT_LOG_CONNECT(gras_virtu, gras);
-    XBT_LOG_CONNECT(gras_virtu_emul, gras_virtu);
-    XBT_LOG_CONNECT(gras_virtu_process, gras_virtu);
 
     if (!getenv("GRAS_NO_WARN_EXPERIMENTAL"))
       XBT_WARN("GRAS is not well maintained anymore. We consider it to be experimental (and not stable anymore) since SimGrid 3.6. Sorry about it, please consider contributing to improve this situation");

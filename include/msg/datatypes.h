@@ -122,7 +122,7 @@ typedef struct s_smx_process *m_process_t;
 #ifdef MSG_USE_DEPRECATED
 /* ********************************* Channel ******************************** */
 /** @brief Channel datatype  
-    @ingroup m_datatypes_management 
+    @ingroup msg_deprecated_functions
 
     A <em>channel</em>  is a number and identifies a mailbox type (just as a 
     port number does).

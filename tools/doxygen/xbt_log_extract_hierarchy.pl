@@ -17,50 +17,28 @@ my %desc;
 #    ie, when the channel toto is initialized (does not work under windows)
 
 # $desc{"toto"} is its description
-my %c_ancestor;
-# $c_ancestor{"toto"} is the ancestor of the toto channel, as declared by XBT_LOG_CONNECT
-#    ie, in a initialization function (only way to do so under windows)
-#    we want $ancestor{"toto"} == $c_ancestor{"toto"} for each toto, or bad things will happen under windows
+my %connected;
+# $connected{"toto"} is defined if XBT_LOG_CONNECT("toto") is used
 
 sub cleanup_ctn {
     my $ctn = shift;        # cleanup the content of a macro call
-    $ctn =~ s/ *\n//gs;										 
-    $ctn =~ s/,\s*"/,"/gs;
-    $ctn =~ s/"\s*$/"/gs;
-    $ctn =~ s/,\s*/,/gs;
-    my @elms_tmp=split (/,/,$ctn); 
+    $ctn =~ s/^\s*(.*)\s*$/$1/gs;
     my @elms;
     print "ctn=$ctn\n" if $debug > 1;
-    # There may be some ',' in the description. Remerge the stuff like: "description, really"
-    while (1) {
-	my $acc = shift @elms_tmp;
-	last unless defined $acc;
-  	if ($acc =~ /^"/) { # ") {
-	    while (shift @elms_tmp) { 
-		$acc .= $_;
- 	    }
-	    die "Unparsable content: $ctn\n"
-	      unless ($acc =~ s/^"(.*)"$/$1/);
-	}
-	print "  seen $acc\n" if $debug > 1;
-	push @elms, $acc;
-    }
-    if (scalar(@elms) eq 3) {
+    if ($ctn =~ m/^(\w+)\s*,\s*(\w+)\s*,\s*"?([^"]*)"?$/s) {
 	# Perfect, we got 0->name; 1->anc; 2->desc
-    } elsif (scalar(@elms) eq 2) {
+	$elms[0] = $1;
+	$elms[1] = $2;
+	$elms[2] = $3;
+    } elsif ($ctn =~ m/^(\w+)\s*,\s*"?([^"]*)"?$/s) {
 	# Mmm. got no ancestor. Add the default one.
-	$elms[2] = $elms[1]; # shift the desc
+	$elms[0] = $1;
 	$elms[1] = "XBT_LOG_ROOT_CAT";
+	$elms[2] = $2;
     } else {
-	my $l = scalar(@elms);
-	my $s = "";
-	map {$s .= $_;} @elms;
-	die "Unparsable content: $ctn (length=$l) (content=$s)\n";
+	die "Unparsable content: $ctn\n";
     }
-    
-    $elms[0] =~ s/^\s*(\S*)\s*$/$1/; # trim
-    $elms[1]  =~ s/^\s*(\S*)\s*$/$1/; # trim
-
+    $elms[2] =~ s/\\\\/\\/gs;
     return @elms;
 }
 
@@ -85,7 +63,7 @@ sub parse_file {
 
     my $connect_data = $data; # save a copy for second parsing phase
     while ($data =~ s/^.*?XBT_LOG_NEW(_DEFAULT)?_(SUB)?CATEGORY\(//s) {
-	$data =~ s/([^"]*"[^"]*")\)//s || die "unparsable macro: $data"; # ]]);
+	$data =~ s/([^"]*"[^"]*")\)//s || die "unparsable macro: $data";
 	    
         my ($name,$anc,$desc) = cleanup_ctn($1);
 	    
@@ -102,14 +80,8 @@ sub parse_file {
    # Now, look for XBT_LOG_CONNECT calls
    $data = $connect_data;
    while ($data =~ s/^.*?XBT_LOG_CONNECT\(//s) {
-									 
-	$data =~ s/([^\)]*)\)//s || die "unparsable macro: $data"; # ]]);	    
-        my ($name, $ignoreme, $anc) = cleanup_ctn($1);
-	    
-        # build the tree, checking for name conflict
-       $c_ancestor{$name}=$anc;
-   
-       print STDERR " $name -> $anc\n" if $debug;
+       $data =~ s/\s*(\w+)\s*\)//s || die "unparsable macro: $data";
+       $connected{$1} = 1;
    }
 }
 # Retrieve all the file names, and add their content to $data
@@ -139,20 +111,12 @@ sub display_subtree {
     
 display_subtree("XBT_LOG_ROOT_CAT","");
 
-sub check_connection {
-    my $name=shift;
-    
-    foreach my $cat (grep {$ancestor{$_} eq $name} sort keys %ancestor) {
-	unless ($ancestor{$cat} eq "XBT_LOG_ROOT_CAT" || (defined($c_ancestor{$cat}) && $c_ancestor{$cat} eq $name)) {
-	    warn "Category $cat will be disconnected under windows. Add the following to an initialization function:\n   XBT_LOG_CONNECT($cat, $ancestor{$cat});\n";
-	} else {
-	    warn "Correctly connected, even under windows: Category $cat.\n" if $debug;
-	}
-	check_connection($cat);
-    }
-}
-check_connection("XBT_LOG_ROOT_CAT");	
-map {warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";} grep {!defined $used{$_}} sort keys %ancestor;    
+map {
+    warn "Category $_ does not seem to be connected.  Use XBT_LOG_CONNECT($_).\n";
+} grep {!defined $connected{$_}} sort keys %ancestor;
+map {
+    warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";
+} grep {!defined $used{$_}} sort keys %ancestor;
 
 	
-print "@}*/";
+print "@}*/\n";

@@ -27,7 +27,7 @@
 ;--------------------------------
 
 Name "Simgrid"
-outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_@NSIS_WIN_VERSION@@BIN_EXE@"
+outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_SGjava_@NSIS_WIN_VERSION@@BIN_EXE@"
 Icon "@CMAKE_HOME_DIRECTORY@\doc\webcruft\SimGrid.ico"
 
 RequestExecutionLevel admin
@@ -223,6 +223,8 @@ Section "Java Bindings" JavaSection
 	file /r "$%SIMGRID_JAVA_SRC%\examples\"
 	# create shortcuts in the start menu programs directory
 	createShortCut  "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\Java project.lnk"	"$INSTDIR\examples\simgrid-java"
+	# create a popup box, with an OK button"
+	messageBox MB_OK "WARNING! Please add to your environment variable CLASSPATH value '$INSTDIR\lib\simgrid.jar;.' before executing Simgrid classes."
 SectionEnd
 
 # default section start
@@ -247,6 +249,9 @@ section
 	
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "Version" "@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@"
 	WriteRegStr HKCU "SOFTWARE\SimGrid" "InstallPath" "$INSTDIR"
+	
+	# create a popup box, with an OK button"
+	messageBox MB_OK "WARNING! Please add to your environment variable PATH value '$INSTDIR\lib;$INSTDIR\GnuWin32\bin' before executing Simgrid binaries."
 	
 	SetRebootFlag true
 

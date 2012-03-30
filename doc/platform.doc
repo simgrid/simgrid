@@ -1,0 +1,1017 @@
+/*! \page platform Platform description
+
+\htmlinclude .platform.doc.toc
+
+In order to run any simulation, SimGrid needs 3 things: something to run 
+(so, your code), a description of the platform on which you want to run your 
+application, and finally it needs something to know where to deploy what.
+
+For the latest 2 entries, you have basically 2 ways to give it as an input :
+\li You can program it, either using the Lua console or if you're using MSG some 
+of its platform and deployments functions. If you want to use it, please refer 
+to its doc. (you can also  check the section  \ref pf_flexml_bypassing but this is strongly deprecated, as there is a new way to do it properly, but not yet documented).
+\li You can use two XML files: a platform description file and a deployment 
+description one.
+
+As the second one (deployment description) just consists of saying which 
+process runs where and which arguments it should take as input, the easier way to 
+understand how to write it is just to take a look at the examples. Here is an example of it:
+
+\verbatim
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <!-- The master process (with some arguments) -->
+  <process host="Tremblay" function="master">
+     <argument value="20"/>       <!-- Number of tasks -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="1000000"/>   <!-- Communication size of tasks -->
+     <argument value="Jupiter"/>  <!-- First slave -->
+     <argument value="Fafard"/>   <!-- Second slave -->
+     <argument value="Ginette"/>  <!-- Third slave -->
+     <argument value="Bourassa"/> <!-- Last slave -->
+     <argument value="Tremblay"/> <!-- Me! I can work too! -->
+  </process>
+  <!-- The slave processes (with no argument) -->
+  <process host="Tremblay" function="slave"/>
+  <process host="Jupiter" function="slave"/>
+  <process host="Fafard" function="slave"/>
+  <process host="Ginette" function="slave"/>
+  <process host="Bourassa" function="slave"/>
+</platform>
+\endverbatim
+
+The platform description is slightly more complicated. This documentation is all about how to write this file: what are the basic concept it relies on, what possibilities are offered, and some hints and tips on how to write a good platform description.
+
+\section pf_overview Some words about XML and DTD
+
+We choose to use XML because of some of its possibilities: if you're 
+using an accurate XML editor, or simply using any XML plug-in for eclipse, it 
+will allow you to have cool stuff like auto-completion, validation and checking,
+so all syntaxic errors may be avoided this way.
+
+the XML checking is done based on the dtd which is nowaday online at 
+<a href="http://simgrid.gforge.inria.fr/simgrid.dtd">http://simgrid.gforge.inria.fr/simgrid.dtd</a>
+while you might be tempted to read it, it will not help you that much.
+
+If you read it, you should notice two or three important things :
+\li The platform tags contains a version attributes. At the time of writing this doc
+the current version is 3.
+\li The DTD contains definitions for the 2 files used by SimGrid (platform 
+description and deployment).
+\li There is a bunch of possibilities ! Let's see what's in it
+
+
+\section pf_basics Basic concepts
+
+Nowadays, the Internet is composed of a bunch of independently managed networks. Within each of those networks, there are entry and exit points (most of the time, you can both enter and exit through the same point) that allows to go out of the current network and reach other networks. At the upper level, these networks are known as <b>Autonomous System (AS)</b>, while at the lower level they are named sub-networks, or LAN. Indeed they are autonomous: routing is defined within the limits of his network by the administrator, and so, those networks can continue to operate without the existence of other networks. There are some rules to get out of networks by the entry points (or gateways). Those gateways allow you to go from a network to another one. Inside of each autonomous system, there is a bunch of equipments (cables, routers, switches, computers) that belong to the autonomous system owner.
+
+SimGrid platform description file relies exactly on the same concepts as real life platform. Every resource (computers, network equipments, and so on) belongs to an AS. Within this AS, you can define the routing you want between its elements (that's done with the routing model attribute and eventually with some \<route\> tag). You define AS by using ... well ... the \<AS\> tag. An AS can also contain some AS : AS allows you to define the hierarchy of your platform. 
+
+Within each AS, you basically have the following type of resources:
+\li <b>host</b>: an host, with cores in it, and so on
+\li <b>router</b>: a router or a gateway.
+\li <b>link</b>: a link, that defines a connection between two (or more) resources (and have a bandwidth and a latency)
+\li <b>cluster</b>: like a real cluster, contains many hosts interconnected by some dedicated network.
+
+Between those elements, a routing has to be defined. As the AS is supposed to be Autonomous, this has to be done at the AS level. As AS handles two different types of entities (<b>host/router</b> and <b>AS</b>) you will have to define routes between those elements. A network model have to be provided for AS, but you may/will need, depending of the network model, or because you want to bypass the default beahviour to defines routes manually. There are 3 tags to use :
+\li <b>ASroute</b>: to define routes between two  <b>AS</b>
+\li <b>route</b>: to define routes between two <b>host/router</b>
+\li <b>bypassRoute</b>: to define routes between two <b>AS</b> that will bypass default routing.
+
+Here is an illustration of the overall concepts:
+
+\htmlonly
+<a href="AS_hierarchy.png" border=0><img src="AS_hierarchy.png" width="30%" border=0 align="center"></a>
+<br/>
+\endhtmlonly
+ Circles represent processing units and squares represent network routers. Bold
+    lines represent communication links. AS2 models the core of a national
+    network interconnecting a small flat cluster (AS4) and a larger
+    hierarchical cluster (AS5), a subset of a LAN (AS6), and a set of peers
+    scattered around the world (AS7).
+
+
+This is all for the concepts ! To make a long story short, a SimGrid platform is made of a hierarchy of AS, each of them containing resources, and routing is defined at AS level. Let's have a deeper look in the tags.
+
+
+
+\section pf_pftags Describing resources and their organization
+
+\subsection  pf_As Platform organization tag : AS
+
+AS (or Autonomous System) is an organizational unit that contains resources and defines routing between them, and eventually some other AS. So it allows you to define a hierarchy into your platform. <b>*ANY*</b> resource <b>*MUST*</b> belong to an AS. There are a few attributes.
+
+<b>AS</b> attributes : 
+\li <b>name (mandatory)</b>: the identifier of AS to be used when referring to it. 
+\li <b>routing (mandatory)</b>: the routing model used into it. By model we mean the internal way the simulator will manage routing. That also have a big impact on how many information you'll have to provide to help the simulator to route between the AS elements. <b>routing</b> possible values are <b>Full, Floyd, Dijkstra, DijkstraCache, none, RuleBased, Vivaldi, Cluster</b>. For more explanation about what to choose, take a look at the section devoted to it below.
+
+Elements into an AS are basically resources (computers, network equipments) and some routing informations if necessary (see below for more explanation).
+
+<b>AS example</b>
+\verbatim
+<AS  id="AS0"  routing="Full">
+   <host id="host1" power="1000000000"/>
+   <host id="host2" power="1000000000"/>
+   <link id="link1" bandwidth="125000000" latency="0.000100"/>
+   <route src="host1" dst="host2"><link_ctn id="link1"/></route>
+ </AS>
+\endverbatim
+
+
+In this example, AS0 contains two hosts (host1 and host2). The route between the hosts goes through link1.
+\subsection pf_Cr Computing resources: hosts, clusters and peers.
+
+\subsubsection pf_host host
+A <b>host</b> represents a computer, where you will be able to execute code and from which you can send and receive information. A host can contain more than 1 core. Here are the attributes of a host :
+
+
+<b>host</b> attributes : 
+\li <b>id (mandatory)</b>: the identifier of the host to be used when referring to it.
+\li <b>power (mandatory)</b>:the peak number FLOPS the CPU can manage. Expressed in ﬂop/s.
+\li <b>core</b>: The number of core of this host. If setted, the power gives the power of one core. The specified computing power will be available to up to 6 sequential
+tasks without sharing. If more tasks are placed on this host, the
+resource will be shared accordingly. For example, if you schedule 12
+tasks on the host, each will get half of the computing power. Please
+note that although sound, this model were never scientifically
+assessed. Please keep this fact in mind when using it.
+
+\li <b>availability</b>: specify if the percentage of power available. 
+\li <b>availability_file</b>: Allow you to use a file as input. This file will contain availability traces for this computer. The syntax of this file is defined below. Possible values : absolute or relative path, syntax similar to the one in use on your system.
+\li <b>state</b>: the computer state, as in : is that computer ON or OFF. Possible values : "ON" or "OFF".
+\li <b>state_file</b>: Same mechanism as availability_file, similar syntax for value.
+\li <b>coordinates</b>: you'll have to give it if you choose the vivaldi, coordinate-based routing model for the AS the host belongs to. More details about it in the P2P coordinate based section.
+
+An host can also contain the <b>prop</b> tag. the prop tag allows you to define additional informations on this host following the attribute/value schema. You may want to use it to give information to the tool you use for rendering your simulation, for example.
+
+<b>host example</b>
+\verbatim
+   <host id="host1" power="1000000000"/>
+   <host id="host2" power="1000000000">
+     	<prop id="color" value="blue"/>
+     	<prop id="rendershape" value="square"/>
+   </host>	
+\endverbatim
+
+
+<b>Expressing dynamicity.</b>
+It is also possible to seamlessly declare a host whose
+availability changes over time using the availability_file
+attribute and a separate text file whose syntax is exemplified below.
+
+<b>Adding a trace file</b>
+\verbatim
+    <platform version="1">
+      <host id="bob" power="500000000" 
+            availability_file="bob.trace" />
+    </platform>
+\endverbatim
+<b>Example of "bob.trace" file</b>
+\verbatim
+PERIODICITY 1.0
+  0.0 1.0
+  11.0 0.5
+  20.0 0.8
+\endverbatim
+
+At time 0, our host will deliver 500~Mflop/s. At time 11.0, it will
+deliver half, that is 250~Mflop/s until time 20.0 where it will
+will start delivering 80\% of its power, that is 400~Mflop/s. Last, at
+time 21.0 (20.0 plus the periodicity 1.0), we loop back to the
+beginning and the host will deliver again 500~Mflop/s.
+
+<b>Changing initial state</b> 
+
+It is also possible to specify whether the host
+is up or down by setting the <b>state</b> attribute to either <b>ON</b>
+(default value) or <b>OFF</b>.
+
+<b>Expliciting the default value "ON"</b>
+\verbatim
+  <platform version="1">
+     <host id="bob" 
+           power="500000000" 
+          state="ON" />
+  </platform>
+\endverbatim
+<b>Host switched off</b>
+\verbatim
+  <platform version="1">
+     <host id="bob" 
+           power="500000000" 
+           state="OFF" />
+  </platform>
+\endverbatim
+<b>Expressing churn</b>
+To express the fact that a host can change state over time (as in P2P
+systems, for instance), it is possible to use a file describing the time
+at which the host is turned on or off. An example of the content
+of such a file is presented below.
+<b>Adding a state file</b>
+  \verbatim  
+    <platform version="1">
+      <host id="bob" power="500000000" 
+           state_file="bob.fail" />
+    </platform>
+  \endverbatim
+<b>Example of "bob.fail" file</b>
+\verbatim
+  PERIODICITY 10.0
+  1.0 -1.0
+  2.0 1.0
+\endverbatim
+
+A negative value means <b>down</b> while a positive one means <b>up and
+  running</b>. From time 0.0 to time 1.0, the host is on. At time 1.0, it is
+turned off and at time 2.0, it is turned on again until time 12 (2.0 plus the
+periodicity 10.0). It will be turned on again at time 13.0 until time 23.0, and
+so on.
+
+
+
+\subsubsection pf_cluster cluster
+A <b>cluster</b> represents a cluster. It is most of the time used when you want to have a bunch of machine defined quickly. It must be noted that cluster is meta-tag : <b>from the inner SimGrid point of view, a cluster is an AS where some optimized routing is defined</b> . The default inner organisation of the cluster is as follow :  
+\verbatim
+                 _________
+                |          |
+                |  router  |
+    ____________|__________|_____________ backbone
+      |   |   |              |     |   |  	
+    l0|	l1| l2|           l97| l96 |   | l99
+      |   |   |   ........   |     |   |
+      |                                |
+    c-0.me                             c-99.me	
+\endverbatim
+
+You have a set of <b>host</b> defined. Each of them has a <b>link</b> to a central backbone (backbone is a <b>link</b> itsef, as a link can be used to represent a switch, see the switch or <b>link</b> section below for more details about it). A <b>router</b> gives a way to the <b>cluster</b> to be connected to the outside world. Internally, cluster is then an AS containing all hosts : the router is the default gateway for the cluster. 
+
+There is an alternative organization, which is as follow : 
+\verbatim
+                 _________
+                |          |
+                |  router  |
+                |__________|
+                    / | \
+                   /  |  \
+               l0 / l1|   \l2 
+                 /    |    \
+                /     |     \
+            host0   host1   host2	
+\endverbatim
+
+The principle is the same, except we don't have the backbone. The way to obtain it is simple : you just have to let bb_* attributes unsetted.
+
+
+
+<b>cluster</b> attributes : 
+\li <b>id (mandatory)</b>: the identifier of the cluster to be used when referring to it.
+\li <b>prefix (mandatory)</b>: each node of the cluster has to have a name. This is its prefix.
+\li <b>suffix (mandatory)</b>: node suffix name.
+\li <b>radical (mandatory)</b>: regexp used to generate cluster nodes name. Syntax is quite common, "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated  between prefix and suffix to form machine names.
+\li <b>power (mandatory)</b>: same as <b>host</b> power.
+\li <b>core</b>: same as <b>host</b> core.
+\li <b>bw (mandatory)</b>: bandwidth for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
+\li <b>lat (mandatory)</b>: latency for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
+\li <b>sharing_policy</b>: sharing policy for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
+\li <b>bb_bw </b>: bandwidth for backbone (if any). See <b>link</b> section for syntax/details. If both bb_* attributes are ommited, no backbone is create (alternative cluster architecture described before).
+\li <b>bb_lat </b>: latency for backbone (if any). See <b>link</b> section for syntax/details. If both bb_* attributes are ommited, no backbone is create (alternative cluster architecture described before).
+\li <b>bb_sharing_policy</b>: sharing policy for the backbone (if any). See <b>link</b> section for syntax/details.
+\li <b>availability_file</b>: Allow you to use a file as input for availability. Similar to <b>hosts</b> attribute.
+\li <b>state_file</b>: Allow you to use a file as input for states. Similar to <b>hosts</b> attribute.
+
+the router name is defined as the resulting String in the following java line of code: router_name = prefix + "router_ + suffix ;
+
+
+<b>cluster example</b>
+\verbatim
+<cluster id="my_cluster_1" prefix="" suffix=""
+  		radical="0-262144"	power="1000000000"    bw="125000000"     lat="5E-5"/>
+<cluster id="my_cluster_1" prefix="c-" suffix=".me"
+  		radical="0-99"	power="1000000000"    bw="125000000"     lat="5E-5"
+        bb_bw="2250000000" bb_lat="5E-4"/>
+\endverbatim
+
+\subsubsection pf_peer peer
+A <b>peer</b> represents a peer, as in Peer-to-Peer (P2P). Basically, as cluster, <b>A PEER IS INTERNALLY INTERPRETED AS AN \<AS\></b>. It's just a kind of shortcut that does the following : 
+\li It creates an host that has coordinates
+\li Two links : one for download and one for upload. This is convenient to use and simulate stuff under the last mile model (as ADSL peers).
+ 
+<b>peer</b> attributes : 
+\li <b>id (mandatory)</b>: the identifier of the peer to be used when referring to it.
+\li <b>power CDATA (mandatory)</b>:
+\li <b>bw_in CDATA (mandatory)</b>:
+\li <b>bw_out CDATA (mandatory)</b>:
+\li <b>lat CDATA (mandatory)</b>:
+\li <b>coordinates</b>:
+\li <b>sharing_policy</b>: sharing policy for links. Can be SHARED or FULLDUPLEX, FULLDUPLEX is the default. See <b>link</b> description for details.
+\li <b>availability_file</b>: availability file for the peer. Same as host availability file. See <b>host</b> description for details.
+\li <b>state_file </b>: state file for the peer. Same as host state file. See <b>host</b> description for details.
+
+\subsection pf_ne Network equipments: links and routers
+
+You have basically two entities available to represent network entities : 
+\li <b>link</b>: represents something that has a limited bandwidth, a latency, and that can be shared according to TCP way to share this bandwidth. <b>LINKS ARE NOT EDGES BUT HYPEREDGES</b>: it means that you can have more than 2 equipments connected to it.
+\li <b>router</b>: represents something that one message can be routed to, but does not accept any code, nor have any influence on the performances (no bandwidth, no latency, not anything).<b>ROUTERS ARE ENTITIES (ALMOST) IGNORED BY THE SIMULATOR WHEN THE SIMULATION HAS BEGUN</b>. If you want to represent something like a switch, you must use <b>link</b> (see section below). Routers are used in order to run some routing algorithm and determine routes (see routing section for details).
+
+let's see deeper what those entities hide.
+
+\subsubsection pf_router router
+As said before, <b>router</b> is used only to give some information for routing algorithms. So, it does not have any attributes except : 
+ 
+<b>router</b> attributes : 
+\li <b>id (mandatory)</b>: the identifier of the router to be used when referring to it.
+\li <b>coordinates</b>: you'll have to give it if you choose the vivaldi, coordinate-based routing model for the AS the host belongs to. More details about it in the P2P coordinates based section.
+
+
+<b>router example</b>
+\verbatim
+ <router id="gw_dc1_horizdist"/>
+\endverbatim
+
+\subsubsection pf_link link
+Network links can represent one-hop network connections. They are characterized by their id and their bandwidth.
+The latency is optional with a default value of 0.0. For instance, we can declare a network link named link1
+having bandwidth of 1Gb/s and a latency of 50µs.
+Example link:
+\verbatim
+ <link id="LINK1" bandwidth="125000000" latency="5E-5"/>
+\endverbatim
+<b>Expressing sharing policy</b>
+
+By default a network link is SHARED, that is if more than one ﬂow go through
+a link, each gets a share of the available bandwidth similar to the share TCP connections offers. 
+
+Conversely if a link is deﬁned as a FATPIPE, each ﬂow going through this link will get all the available bandwidth, whatever the number of ﬂows. The FATPIPE
+behavior allows to describe big backbones that won't affect performances (except latency). Finally a link can be considered as FULLDUPLEX, that means that in the simulator, 2 links (one named UP and the other DOWN) will be created for each link, so as the transfers from one side to the other will interact similarly as TCP when ACK returning packets circulate on the other direction. More discussion about it is available in <b>link_ctn</b> description. 
+
+\verbatim
+ <link id="SWITCH" bandwidth="125000000" latency="5E-5" sharing_policy="FATPIPE" />
+\endverbatim
+
+<b>Expressing dynamicity and failures</b>
+
+ As for hosts, it is possible to declare links whose state, bandwidth or latency change over the time. In this case, the bandwidth and latency attributes are respectively replaced by the bandwidth file and latency file attributes and the corresponding text ﬁles.
+
+\verbatim
+ <link id="LINK1" state_file="link1.fail" bandwidth="80000000" latency=".0001" bandwidth_file="link1.bw" latency_file="link1.lat" />
+\endverbatim
+
+It has to be noted that even if the syntax is the same, the semantic of bandwidth and latency trace ﬁles
+diﬀers from that of host availability ﬁles. Those ﬁles do not express availability as a fraction of the available
+capacity but directly in bytes per seconds for the bandwidth and in seconds for the latency. This is because
+most tools allowing to capture traces on real platforms (such as NWS ) express their results this way.
+
+<b>Example of "link1.bw" file</b>
+\verbatim
+ 
+1 PERIODICITY 12.0
+2 4.0 40000000
+3 8.0 60000000
+\endverbatim
+<b>Example of "link1.lat" file</b>
+\verbatim
+ 1 PERIODICITY 5.0
+2 1.0 0.001
+3 2.0 0.01
+4 3.0 0.001
+\endverbatim
+In this example, the bandwidth varies with a period of 12 seconds while the latency varies with a period of
+5 seconds. At the beginning of simulation, the link’s bandwidth is of 80,000,000 B/s (i.e., 80 Mb/s). After four
+seconds, it drops at 40 Mb/s, and climbs back to 60 Mb/s after eight seconds. It keeps that way until second
+12 (ie, until the end of the period), point at which it loops its behavior (seconds 12-16 will experience 80 Mb/s,
+16-20 40 Mb/s and so on). In the same time, the latency values are 100µs (initial value) on the [0, 1[ time
+interval, 1ms on [1, 2[, 10ms on [2, 3[, 1ms on [3,5[ (i.e., until the end of period). It then loops back, starting
+at 100µs for one second.
+
+<b>link</b> attributes : 
+\li <b>id (mandatory)</b>: the identifier of the cluster to be used when referring to it.
+\li <b>bandwidth (mandatory)</b>: bandwidth for the link.
+\li <b>lat </b>: latency for the link. Default is 0.0.
+\li <b>sharing_policy</b>: sharing policy for the link.
+\li <b>state</b>: Allow you to to set link as ON or OFF. Default is ON.
+\li <b>bandwidth_file</b>: Allow you to use a file as input for bandwidth.
+\li <b>latency_file</b>: Allow you to use a file as input for latency.
+\li <b>state_file</b>: Allow you to use a file as input for states.
+
+As an host, a <b>link</b> tag can also contain the <b>prop</b> tag.
+
+<b>link example</b>
+\verbatim
+   <link id="link1" bandwidth="125000000" latency="0.000100"/>
+\endverbatim
+
+
+\subsection pf_storage Storage
+
+At the time of writing this doc, a storage protoype has been implemented. While it is not stable, no doc for it, sorry.
+
+\section pf_routing Routing
+
+In order to run fast, it has been chosen to use static routing within SimGrid. By static, it means that it is calculated once, and will not change during execution. We chose to do that because it is rare to have a real deficience of a resource ; most of the time, a communication fails because the links are too overloaded, and so your connection stops before the time out, or because the computer at the other end is not answering. 
+
+We also chose to use shortests paths algorithms in order to emulate routing. Doing so is consistent with the reality: RIP, OSPF, BGP are all calculating shortest paths. They have some convergence time, but at the end, so when the platform is stable (and this should be the moment you want to simulate something using SimGrid) your packets will follow the shortest paths.  
+ 
+\subsection pf_rm Routing models
+
+Within each AS, you have to define a routing model to use. You have basically 3 main kind of routing models :
+\li Shortest-path based models: you let SimGrid calculates shortest paths and manage it. Behaves more or less as most real life routing.
+\li Manually-entered route models: you'll have to define all routes manually by yourself into the platform description file. Consistent with some manually managed real life routing.
+\li Simple/fast models: those models offers fast, low memory routing algorithms. You should consider to use it if you can make some assumptions about your AS. Routing in this case is more or less ignored
+
+\subsubsection pf_raf The router affair
+
+Expressing routers becomes mandatory when using shortest-path based models or when using ns-3 or the bindings to the GTNetS packet-level simulator instead of the native analytical network model implemented in SimGrid. 
+
+For graph-based shortest path algorithms, routers are mandatory, because both algorithms need a graph, and so we need to have source and destination for each edge. 
+
+Routers are naturally an important concept in GTNetS or ns-3 since the way they run the packet routing algorithms is actually simulated. Instead, the
+SimGrid’s analytical models aggregate the routing time with the transfer time.
+Rebuilding a graph representation only from the route information turns to be a very diﬃcult task, because
+of the missing information about how routes intersect. That is why we introduced a \<router\> tag, which is
+simply used to express these intersection points. The only attribute accepted by this tag an id.
+It is important to understand that the \<router\> tag is only used to provide topological information. 
+
+To express those topological information, some <b>route</b> have to be defined saying which link is between which routers. Description or the route syntax is given below, as well as example for the different models.
+
+\subsubsection pf_rm_sh Shortest-path based models 
+
+Here is the complete list of such models, that computes routes using classic shortest-paths algorithms. How to choose the best suited algorithm is discussed later in the section devoted to it.
+\li <b>Floyd</b>: Floyd routing data
+\li <b>Dijkstra</b>: Dijkstra routing data 
+\li <b>DijkstraCache</b>: Dijkstra routing data 
+
+Floyd example : 
+\verbatim
+<AS  id="AS0"  routing="Floyd">
+    
+  <cluster id="my_cluster_1" prefix="c-" suffix=""
+  		radical="0-1"	power="1000000000"    bw="125000000"     lat="5E-5"
+        router_id="router1"/>
+
+ <AS id="AS1" routing="none">
+    <host id="host1" power="1000000000"/>
+ </AS>
+
+  <link id="link1" bandwidth="100000" latency="0.01"/>
+  
+  <ASroute src="my_cluster_1" dst="AS1"
+    gw_src="router1"
+    gw_dst="host1">
+    <link_ctn id="link1"/>
+  </ASroute>
+  
+</AS>
+\endverbatim
+ASroute given at the end gives a topological information : link1 is between router1 and host1.
+
+
+Dijsktra example : 
+\verbatim
+XXX?
+\endverbatim
+
+DijsktraCache example : 
+\verbatim
+XXX?
+\endverbatim
+
+\subsubsection pf_rm_me Manually-entered route models 
+
+\li <b>Full</b>: You have to enter all necessary routes manually
+\li <b>RuleBased</b>: Rule-Based routing data; same as Full except you can use regexp to express route. As SimGrid has to evaluate the regexp, it's slower than Full, but requires less memory. Regexp syntax is similar as <a href="http://www.pcre.org">pcre</a> ones, as this is the lib SimGrid use to do so.
+
+Full example : 
+\verbatim
+<AS  id="AS0"  routing="Full">
+   <host id="host1" power="1000000000"/>
+   <host id="host2" power="1000000000"/>
+   <link id="link1" bandwidth="125000000" latency="0.000100"/>
+   <route src="host1" dst="host2"><link_ctn id="link1"/></route>
+ </AS>
+\endverbatim
+
+RuleBased example : 
+\verbatim
+<AS id="AS_orsay" routing="RuleBased" >
+			<cluster id="AS_gdx" prefix="gdx-" suffix=".orsay.grid5000.fr"
+				radical="1-310" power="4.7153E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_gdx" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<cluster id="AS_netgdx" prefix="netgdx-" suffix=".orsay.grid5000.fr"
+				radical="1-30" power="4.7144E9" bw="1.25E8" lat="1.0E-4"
+				bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+			<link   id="link_netgdx" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<AS id="gw_AS_orsay" routing="Full">
+				<router id="gw_orsay"/>
+			</AS>
+			<link   id="link_gw_orsay" bandwidth="1.25E9" latency="1.0E-4"/>
+
+			<ASroute src="^AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.orsay.grid5000.fr"
+				gw_dst="$1dst-AS_$1dst_router.orsay.grid5000.fr"
+				symmetrical="YES">
+					<link_ctn id="link_$1src"/>
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+			<ASroute src="^AS_(.*)$" dst="^gw_AS_(.*)$"
+				gw_src="$1src-AS_$1src_router.orsay.grid5000.fr"
+				gw_dst="gw_$1dst"
+				symmetrical="NO">
+					<link_ctn id="link_$1src"/>
+			</ASroute>
+
+			<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.orsay.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+
+		</AS>
+\endverbatim
+
+The example upper contains $1. Those $1 are evaluated as follow XXX?
+
+\subsubsection pf_rm_sf Simple/fast models 
+
+\li <b>none</b>: No routing (Unless you know what you are doing, avoid using this mode in combination with a non Constant network model).
+None Example :
+\verbatim
+XXX?
+\endverbatim
+
+\li <b>Vivaldi</b>: Vivaldi routing, so when you want to use coordinates. See the corresponding section P2P below for details.
+\li <b>Cluster</b>: Cluster routing, specific to cluster tag, should not be used, except internally.
+
+\subsection ps_dec Defining routes
+
+The principle of route definition is the same for the 4 available tags for doing it. Those for tags are: 
+
+\li <b>route</b>: to define route between host/router
+\li <b>ASroute</b>: to define route between AS
+\li <b>bypassRoute</b>: to bypass normal routes as calculated by the network model between host/router
+\li <b>bypassASroute</b>: same as bypassRoute, but for AS
+
+Basically all those tags will contain an (ordered) list of references to link that compose the route you want to define. 
+
+Consider the example below: 
+
+\verbatim
+<route src="Alice" dst="Bob">
+	<link_ctn id="link1"/>
+	<link_ctn id="link2"/>
+	<link_ctn id="link3"/>
+   </route>
+\endverbatim
+
+The route here fom host Alice to Bob will be first link1, then link2, and finally link3. What about the reverse route ? <b>route</b> and <b>ASroute</b> have an optional attribute <b>symmetrical</b>, that can be either YES or NO. YES means that the reverse route is the same route in the inverse order, and is setted to YES by default. Note that this is not the case for bypass*Route, as it is more probable that you want to bypass only one default route.
+
+For an ASroute, things are just sligthly more complicated, as you have to give the id of the gateway which is inside the AS you're talking about you want to access ... So it looks like this : 
+
+
+\verbatim
+  <ASroute src="AS1" dst="AS2"
+    gw_src="router1" gw_dst="router2">
+    <link_ctn id="link1"/>
+  </ASroute>
+\endverbatim
+
+gw == gateway, so when any message are trying to go from AS1 to AS2, it means that it must pass through router1 to get out of the AS, then pass through link1, and get into AS2 by being received by router2. router1 must belong to AS1 and router2 must belong to AS2. 
+
+\subsubsection pf_linkctn link_ctn
+
+a <b>link_ctn</b> is the tag that is used in order to reference a <b>link</b> in a route. Its id is the link id it refers to.
+
+<b>link_ctn</b> attributes : 
+\li <b>id (mandatory)</b>: Id of the link this tag refers to
+\li <b>direction</b>: if the link referenced by <b>id</b> has been declared as FULLDUPLEX, this is used to indicate in which direction the route you're defining is going through this link. Possible values "UP" or "DOWN".
+
+\subsubsection pf_asro ASroute
+
+ASroute tag purpose is to let people write manually their routes between AS. It's usefull when you're in Full or Rule-based model.
+
+<b>ASroute</b> attributes : 
+\li <b>src (mandatory)</b>: the source AS id.
+\li <b>dst (mandatory)</b>: the destination AS id.
+\li <b>gw_src (mandatory)</b>: the gateway to be used within the AS. Can be any <b>host</b> or \b router defined into the \b src AS or into one of the AS it includes.  
+\li <b>gw_dst (mandatory)</b>: the gateway to be used within the AS. Can be any <b>host</b> or \b router defined into the \b dst AS or into one of the AS it includes.
+\li <b>symmetrical</b>: if the route is symmetric, the reverse route will be the opposite of the one defined. Can be either YES or NO, default is  YES.
+
+<b>Example of ASroute with RuleBased</b>
+\verbatim
+<ASroute src="^gw_AS_(.*)$" dst="^AS_(.*)$"
+				gw_src="gw_$1src"
+				gw_dst="$1dst-AS_$1dst_router.orsay.grid5000.fr"
+				symmetrical="NO">
+					<link_ctn id="link_$1dst"/>
+			</ASroute>
+\endverbatim
+<b>Example of ASroute with Full</b>
+\verbatim
+<AS  id="AS0"  routing="Full">
+  <cluster id="my_cluster_1" prefix="c-" suffix=".me"
+  		radical="0-149"	power="1000000000"    bw="125000000"     lat="5E-5"
+        bb_bw="2250000000" bb_lat="5E-4"/>
+		
+  <cluster id="my_cluster_2" prefix="c-" suffix=".me"
+ 	    radical="150-299" power="1000000000"	bw="125000000"	lat="5E-5"
+ 	    bb_bw="2250000000" bb_lat="5E-4"/>  
+       
+     <link id="backbone" bandwidth="1250000000" latency="5E-4"/>  
+ 	
+     <ASroute src="my_cluster_1" dst="my_cluster_2" 
+	 gw_src="c-my_cluster_1_router.me" 
+	 gw_dst="c-my_cluster_2_router.me">
+ 		<link_ctn id="backbone"/>
+     </ASroute>   
+     <ASroute src="my_cluster_2" dst="my_cluster_1" 
+	 gw_src="c-my_cluster_2_router.me" 
+	 gw_dst="c-my_cluster_1_router.me">
+ 		<link_ctn id="backbone"/>
+     </ASroute> 
+</AS>
+\endverbatim
+
+\subsubsection pf_ro route
+The principle is the same as ASroute : <b>route</b> contains list of links that are in the path between src and dst, except that it is for routes between a src that can be either <b>host</b> or \b router and a dst that can be either <b>host</b> or \b router. Usefull for Full and RuleBased, as well as for the shortest-paths based models, where you have to give topological informations.
+
+
+<b>route</b> attributes : 
+\li <b>src (mandatory)</b>: the source id.
+\li <b>dst (mandatory)</b>: the destination id.
+\li <b>symmetrical</b>: if the route is symmetric, the reverse route will be the opposite of the one defined. Can be either YES or NO, default is  YES.
+
+<b>route example in Full</b>
+\verbatim
+ <route src="Tremblay" dst="Bourassa">
+     <link_ctn id="4"/><link_ctn id="3"/><link_ctn id="2"/><link_ctn id="0"/><link_ctn id="1"/><link_ctn id="6"/><link_ctn id="7"/>
+   </route>
+\endverbatim
+
+<b>route example in a shortest-path model</b>
+\verbatim
+ <route src="Tremblay" dst="Bourassa">
+     <link_ctn id="3"/>
+   </route>
+\endverbatim
+Note that when using route to give topological information, you have to give routes with one link only in it, as SimGrid needs to know which host are at the end of the link.
+
+\subsubsection pf_byro bypassASroute
+<b>Note : bypassASroute and bypassRoute are under rewriting to perform better ; so you may not use it yet</b>
+As said before, once you choose a model, it (if so) calculates routes for you. But maybe you want to define some of your routes, which will be specific. You may also want to bypass some routes defined in lower level AS at an upper stage : <b>bypassASroute</b> is the tag you're looking for. It allows to bypass routes defined between already defined between AS (if you want to bypass route for a specific host, you should just use byPassRoute). The principle is the same as ASroute : <b>bypassASroute</b> contains list of links that are in the path between src and dst.
+
+<b>bypassASroute</b> attributes : 
+\li <b>src (mandatory)</b>: the source AS id.
+\li <b>dst (mandatory)</b>: the destination AS id.
+\li <b>gw_src (mandatory)</b>: the gateway to be used within the AS. Can be any <b>host</b> or \b router defined into the \b src AS or into one of the AS it includes.  
+\li <b>gw_dst (mandatory)</b>: the gateway to be used within the AS. Can be any <b>host</b> or \b router defined into the \b dst AS or into one of the AS it includes.
+\li <b>symmetrical</b>: if the route is symmetric, the reverse route will be the opposite of the one defined. Can be either YES or NO, default is  YES.
+
+<b>bypassASroute Example</b>
+\verbatim
+    <bypassASRoute src="my_cluster_1" dst="my_cluster_2"
+     gw_src="my_cluster_1_router" 
+     gw_dst="my_cluster_2_router">
+        <link_ctn id="link_tmp"/>  
+     </bypassASroute>
+\endverbatim
+
+\subsubsection pf_byro bypassRoute
+<b>Note : bypassASRoute and bypassRoute are under rewriting to perform better ; so you may not use it yet</b>
+As said before, once you choose a model, it (if so) calculates routes for you. But maybe you want to define some of your routes, which will be specific. You may also want to bypass some routes defined in lower level AS at an upper stage : <b>bypassRoute</b> is the tag you're looking for. It allows to bypass routes defined between <b>host/router</b>. The principle is the same as route : <b>bypassRoute</b> contains list of links references of links that are in the path between src and dst.
+
+<b>bypassRoute</b> attributes : 
+\li <b>src (mandatory)</b>: the source AS id.
+\li <b>dst (mandatory)</b>: the destination AS id.
+\li <b>symmetrical</b>: if the route is symmetric, the reverse route will be the opposite of the one defined. Can be either YES or NO, default is  YES.
+
+<b>bypassRoute Example</b>
+\verbatim
+<b>bypassRoute Example</b>
+\verbatim
+    <bypassRoute src="host_1" dst="host_2">
+        <link_ctn id="link_tmp"/>  
+     </bypassRoute>
+\endverbatim
+
+
+\subsection pb_baroex Basic Routing Example
+
+Let's say you have an AS named AS_Big that contains two other AS, AS_1 and AS_2. If you want to make an host (h1) from AS_1 with another one (h2) from  AS_2 and you did not have choosen to use some routing model that compute routes automatically, then you'll have to proceed as follow: 
+\li First, you have to ensure that a route is defined from h1 to the AS_1's exit gateway and from h2 to AS_2's exit gateway.
+\li Then, you'll have to define a route between AS_1 to AS_2. As those AS are both resources belonging to AS_Big, then it has to be done at AS_big level. To define such a route, you have to give the source AS (AS_1), the destination AS (AS_2), and their respective gateway (as the route is effectively defined between those two entry/exit points). Elements of this route can only be elements belonging to AS_Big, so links and routers in this route should be defined inside AS_Big. 
+
+As said before, there are mainly 2 tags for routing :
+\li <b>ASroute</b>: to define routes between two  <b>AS</b>
+\li <b>route</b>: to define routes between two <b>host/router</b>
+
+As we are dealing with routes between AS, it means that those we'll have some definition at AS_Big level. Let consider AS_1 and AS_2 contains 1 host, 1 link and one router. 
+
+\section pf_other_tags Tags not (directly) describing the platform
+
+There are 3 tags, that you can use inside a \<platform\> tag that are not describing the platform:
+\li random: it allows you to define random generators you want to use for your simulation.
+\li config: it allows you to pass some configuration stuff like, for example, the network model and so on. It follows the 
+\li include: simply allows you to include another file into the current one.
+
+\subsection pf_conf config
+<b>config</b> attributes : 
+\li <b>id (mandatory)</b>: the identifier of the config to be used when referring to it.
+
+
+<b>config</b> tag only purpose is to include <b>prop</b> tags. Valid id are basically the same as the list of possible parameters you can use by command line, except that "/" are used for namespace definition. See the \ref options config and options page for more information.
+
+
+<b>config example</b>
+\verbatim
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">	
+<config id="General">
+	<prop id="maxmin/precision" value="0.000010"></prop>
+	<prop id="cpu/optim" value="TI"></prop>
+	<prop id="workstation/model" value="compound"></prop>
+	<prop id="network/model" value="SMPI"></prop>
+	<prop id="path" value="~/"></prop>
+	<prop id="smpi/bw_factor" value="65472:0.940694;15424:0.697866;9376:0.58729"></prop>
+</config>
+	
+<AS  id="AS0"  routing="Full">
+...
+\endverbatim
+
+
+\subsection pf_rand random
+Not yet in use, and possibly subject to huge modifications.
+
+\subsection pf_incl include
+<b>include</b> tag allows to import into a file platform parts located in another file. This is done with the intention to help people combine their different AS and provide new platforms. Those files should contains XML part that contains either <b>include,cluster,peer,AS,trace,trace_connect</b> tags.
+
+<b>include</b> attributes : 
+\li <b>file (mandatory)</b>: filename of the file to include. Possible values : absolute or relative path, syntax similar to the one in use on your system.
+
+<b>Note</b> : due to some obscure technical reasons, you have to open and close tag in order to let it work. 
+<b>include Example</b>
+\verbatim
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+	<AS id="main" routing="Full">
+		<include file="clusterA.xml"></include>
+		<include file="clusterB.xml"></include>
+	</AS>
+</platform>
+\endverbatim
+
+\subsection pf_tra trace and trace_connect
+Both tags are an alternate way to passe availability, state, and so on files to entity. Instead of refering to the file directly in the host, link, or cluster tag, you proceed by defining a trace with an id corresponding to a file, later an host/link/cluster, and finally using trace_connect you say that the file trace must be used by the entity. Get it ? Let's have a look at an example :
+
+\verbatim
+<AS  id="AS0"  routing="Full">
+  <host id="bob" power="1000000000"/>  
+</AS>
+  <trace id="myTrace" file="bob.trace" periodicity="1.0"/>
+  <trace_connect trace="myTrace" element="bob" kind="POWER"/>
+\endverbatim
+
+All constraints you have is that <b>trace_connect</b> is after <b>trace</b> and <b>host</b> definitions. 
+
+
+<b>trace</b> attributes : 
+\li <b>id (mandatory)</b>: the identifier of the trace to be used when referring to it.
+\li <b>file</b>: filename of the file to include. Possible values : absolute or relative path, syntax similar to the one in use on your system.
+\li <b>trace periodicity (mandatory)</b>: trace periodicity, same definition as in hosts (see upper for details).
+
+<b>trace_connect</b> attributes : 
+\li <b>kind</b>: the type of trace, possible values <b>HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY,</b>  default: <b>HOST_AVAIL</b>
+\li <b>trace (mandatory)</b>: the identifier of the trace referenced.
+\li <b>element (mandatory)</b>: the identifier of the entity referenced.
+
+
+
+\section pf_hints Hints and tips, or how to write a platform efficiently
+
+Now you should know at least the syntax dans be able to create a platform. However, after having ourselves wrote some platforms, there are some best practices you should pay attention to in order to produce good platform and some choices you can make in order to have faster simulations. Here's some hints and tips, then.
+
+\subsection pf_as_h AS Hierarchy 
+The AS design allows SimGrid to go fast, because computing route is done only for the set of resources defined in this AS. If you're using only a big AS containing all resource with no AS into it and you're using Full model, then ... you'll loose all interest into it. On the other hand, designing a binary tree of AS with, at the lower level, only one host, then you'll also loose all the good AS hierarchy can give you. Remind you should always be "reasonable" in your platform definition when choosing the hierarchy. A good choice if you try to describe a real life platform is to follow the AS described in reality, since this kind og trade-off works well for real life platforms.
+
+\subsection pf_exit_as Exit AS: why and how
+Users that have looked at some of our platforms may have notice a non-intuitive schema ... Something like that : 
+
+
+\verbatim
+<AS id="AS_4"  routing="Full">
+<AS id="exitAS_4"  routing="Full">
+	<router id="router_4"/>
+</AS>
+<cluster id="cl_4_1" prefix="c_4_1-" suffix="" radical="1-20" power="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000" bb_lat="5E-4"/>
+<cluster id="cl_4_2" prefix="c_4_2-" suffix="" radical="1-20" power="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000" bb_lat="5E-4"/>
+<link id="4_1" bandwidth="2250000000" latency="5E-5"/>
+<link id="4_2" bandwidth="2250000000" latency="5E-5"/>
+<link id="bb_4" bandwidth="2250000000" latency="5E-4"/>
+<ASroute src="cl_4_1"
+	dst="cl_4_2"
+	gw_src="c_4_1-cl_4_1_router"
+	gw_dst="c_4_2-cl_4_2_router"
+	symmetrical="YES">
+		<link_ctn id="4_1"/>
+		<link_ctn id="bb_4"/>
+		<link_ctn id="4_2"/>
+</ASroute>
+<ASroute src="cl_4_1"
+	dst="exitAS_4"
+	gw_src="c_4_1-cl_4_1_router"
+	gw_dst="router_4"
+	symmetrical="YES">
+		<link_ctn id="4_1"/>
+		<link_ctn id="bb_4"/>
+</ASroute>
+<ASroute src="cl_4_2"
+	dst="exitAS_4"
+	gw_src="c_4_2-cl_4_2_router"
+	gw_dst="router_4"
+	symmetrical="YES">
+		<link_ctn id="4_2"/>
+		<link_ctn id="bb_4"/>
+</ASroute>
+</AS>
+\endverbatim
+
+In the AS_4, you have an exitAS_4 defined, containing only one router, and routes defined to that AS from all other AS (as cluster is only a shortcut for an AS, see cluster description for details). If there was an upper AS, it would define routes to and from AS_4 with the gateway router_4. It's just because, as we did not allowed (for performances issues) to have routes from an AS to a single host/router, you have to enclose your gateway, when you have AS included in your AS, within an AS to define routes to it. 
+
+
+\subsection pf_P2P_tags P2P or how to use coordinates
+SimGrid allows you to use some coordinated-based system, like vivaldi, to describe a platform. The main concept is that you have some peers that are located somewhere: this is the function of the  <b>coordinates</b> of the \<peer\> or \<host\> tag. There's nothing complicated in using it, here is an example of it:
+
+\verbatim
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+	
+<config id="General">
+	<prop id="network/coordinates" value="yes"></prop>
+</config>	
+ <AS  id="AS0"  routing="Vivaldi">
+	<host id="100030591" coordinates="25.5 9.4 1.4" power="1500000000.0" />
+	<host id="100036570" coordinates="-12.7 -9.9 2.1" power="730000000.0" />
+	...
+	<host id="100429957" coordinates="17.5 6.7 18.8" power="830000000.0" />
+	</AS>
+</platform>
+\endverbatim
+
+Coordinates are then used to calculate latency between two hosts by calculating the euclidian distance between the two hosts coordinates. The results express the latency in ms.
+
+\subsection pf_wisely Choosing wisely the routing model to use
+
+
+Choosing wisely the routing model to use can significantly fasten your simulation/save your time when writing the platform/save tremendeous disk space. Here is the list of available model and their characteristics (lookup : time to resolve a route):
+
+\li <b>Full</b>: Full routing data (fast, large memory requirements, fully expressive)
+\li <b>Floyd</b>: Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)
+\li <b>Dijkstra</b>: Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)
+\li <b>DijkstraCache</b>: Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only) 
+\li <b>none</b>: No routing (usable with Constant network only)
+\li <b>RuleBased</b>: Rule-Based routing data (...)
+\li <b>Vivaldi</b>: Vivaldi routing, so when you want to use coordinates
+\li <b>Cluster</b>: Cluster routing, specific to cluster tag, should not be used.
+
+
+
+\subsection pf_switch Hey, I want to describe a switch but there is no switch tag !
+
+Actually we did not include swith tag, ok. But when you're trying to simulate a switch, the only major impact it has when you're using fluid model (and SimGrid uses fluid model unless you activate GTNetS, ns-3, or constant network mode) is the impact of the upper limit of the switch motherboard speed that will eventually be reached if you're using intensively your switch. So, the switch impact is similar to a link one. That's why we are used to describe a switch using a link tag (as a link is not an edge by a hyperedge, you can connect more than 2 other links to it).
+\subsection pf_platform_multipath How to express multipath routing in platform files?
+
+It is unfortunately impossible to express the fact that there is more
+than one routing path between two given hosts. Let's consider the
+following platform file:
+
+\verbatim
+<route src="A" dst="B">
+   <link_ctn id="1"/>
+</route>
+<route src="B" dst="C">
+  <link_ctn id="2"/>
+</route>
+<route src="A" dst="C">
+  <link_ctn id="3"/>
+</route>
+\endverbatim
+
+Although it is perfectly valid, it does not mean that data traveling
+from A to C can either go directly (using link 3) or through B (using
+links 1 and 2). It simply means that the routing on the graph is not
+trivial, and that data do not following the shortest path in number of
+hops on this graph. Another way to say it is that there is no implicit
+in these routing descriptions. The system will only use the routes you
+declare (such as &lt;route src="A" dst="C"&gt;&lt;link_ctn
+id="3"/&gt;&lt;/route&gt;), without trying to build new routes by aggregating
+the provided ones.
+  
+You are also free to declare platform where the routing is not
+symmetric. For example, add the following to the previous file:
+
+\verbatim
+<route src="C" dst="A">
+  <link_ctn id="2"/>
+  <link_ctn id="1"/>
+</route>
+\endverbatim
+
+This makes sure that data from C to A go through B where data from A
+to C go directly. Don't worry about realism of such settings since
+we've seen ways more weird situation in real settings (in fact, that's
+the realism of very regular platforms which is questionable, but
+that's another story).
+
+\section pf_flexml_bypassing Bypassing the XML parser with your own C functions
+<b>NOTE THAT THIS DOCUMENTATION, WHILE STILL WORKING, IS STRONGLY DEPRECATED</b>
+
+So you want to bypass the XML files parser, uh? Maybe doing some parameter
+sweep experiments on your simulations or so? This is possible, and
+it's not even really difficult (well. Such a brutal idea could be
+harder to implement). Here is how it goes.
+
+For this, you have to first remember that the XML parsing in SimGrid is done
+using a tool called FleXML. Given a DTD, this gives a flex-based parser. If
+you want to bypass the parser, you need to provide some code mimicking what
+it does and replacing it in its interactions with the SURF code. So, let's
+have a look at these interactions.
+
+FleXML parser are close to classical SAX parsers. It means that a
+well-formed SimGrid platform XML file might result in the following
+"events":
+
+  - start "platform_description" with attribute version="2"
+  - start "host" with attributes id="host1" power="1.0"
+  - end "host"
+  - start "host" with attributes id="host2" power="2.0"
+  - end "host"
+  - start "link" with ...
+  - end "link"
+  - start "route" with ...
+  - start "link_ctn" with ...
+  - end "link_ctn"
+  - end "route"
+  - end "platform_description"
+
+The communication from the parser to the SURF code uses two means:
+Attributes get copied into some global variables, and a surf-provided
+function gets called by the parser for each event. For example, the event
+  - start "host" with attributes id="host1" power="1.0"
+
+let the parser do something roughly equivalent to:
+\verbatim
+  strcpy(A_host_id,"host1");
+  A_host_power = 1.0;
+  STag_host();
+\endverbatim
+
+In SURF, we attach callbacks to the different events by initializing the
+pointer functions to some the right surf functions. Since there can be
+more than one callback attached to the same event (if more than one
+model is in use, for example), they are stored in a dynar. Example in
+workstation_ptask_L07.c:
+\verbatim
+  /* Adding callback functions */
+  surf_parse_reset_parser();
+  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
+  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
+  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
+  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
+  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
+                
+  /* Parse the file */
+  surf_parse_open(file);
+  xbt_assert(!surf_parse(), "Parse error in %s", file);
+  surf_parse_close();
+\endverbatim
+    
+So, to bypass the FleXML parser, you need to write your own version of the
+surf_parse function, which should do the following:
+   - Fill the A_<tag>_<attribute> variables with the wanted values
+   - Call the corresponding STag_<tag>_fun function to simulate tag start
+   - Call the corresponding ETag_<tag>_fun function to simulate tag end
+   - (do the same for the next set of values, and loop)
+
+Then, tell SimGrid that you want to use your own "parser" instead of the stock one:
+\verbatim
+  surf_parse = surf_parse_bypass_environment;
+  MSG_create_environment(NULL);
+  surf_parse = surf_parse_bypass_application;
+  MSG_launch_application(NULL);
+\endverbatim
+
+A set of macros are provided at the end of
+include/surf/surfxml_parse.h to ease the writing of the bypass
+functions. An example of this trick is distributed in the file
+examples/msg/masterslave/masterslave_bypass.c
+
+
+*/

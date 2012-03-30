@@ -13,8 +13,7 @@
 #include "gras/Msg/msg_private.h"
 #include "gras/Transport/transport_interface.h"
 
-XBT_LOG_EXTERNAL_CATEGORY(gras_msg);
-XBT_LOG_DEFAULT_CATEGORY(gras_msg);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_msg);
 
 void gras_msg_recv(xbt_socket_t sock, gras_msg_t msg);
 

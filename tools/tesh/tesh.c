@@ -199,6 +199,8 @@ int main(int argc, char *argv[])
   int i;
   char *suitename = NULL;
   struct sigaction newact;
+
+  XBT_LOG_CONNECT(tesh);
   xbt_init(&argc, argv);
   rctx_init();
   parse_environ();

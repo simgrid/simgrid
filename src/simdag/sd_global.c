@@ -30,10 +30,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd,
 
 SD_global_t sd_global = NULL;
 
-XBT_LOG_EXTERNAL_CATEGORY(sd_kernel);
-XBT_LOG_EXTERNAL_CATEGORY(sd_task);
-XBT_LOG_EXTERNAL_CATEGORY(sd_workstation);
-
 /**
  * \brief Initialises SD internal data
  *
@@ -53,12 +49,6 @@ void SD_init(int *argc, char **argv)
   s_SD_task_t task;
 
   xbt_assert(sd_global == NULL, "SD_init() already called");
-
-  /* Connect our log channels: that must be done manually under windows */
-  XBT_LOG_CONNECT(sd_kernel, sd);
-  XBT_LOG_CONNECT(sd_task, sd);
-  XBT_LOG_CONNECT(sd_workstation, sd);
-
 
   sd_global = xbt_new(s_SD_global_t, 1);
   sd_global->workstation_list = NULL;

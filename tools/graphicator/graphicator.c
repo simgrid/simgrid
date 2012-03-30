@@ -16,6 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator,
 
 int main(int argc, char **argv)
 {
+  XBT_LOG_CONNECT(graphicator);
 #ifdef HAVE_TRACING
   MSG_global_init(&argc, argv);
 

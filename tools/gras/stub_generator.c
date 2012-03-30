@@ -95,6 +95,8 @@ int main(int argc, char *argv[])
   char *deployment_file = NULL;
   int i;
 
+  XBT_LOG_CONNECT(stubgen);
+
   xbt_binary_name=xbt_strdup(argv[0]);
 
   surf_init(&argc, argv);

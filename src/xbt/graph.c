@@ -81,6 +81,7 @@ xbt_edge_t xbt_graph_new_edge(xbt_graph_t g,
   return edge;
 }
 
+/** @brief Get the edge connecting src and dst */
 xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src,
                               xbt_node_t dst)
 {
@@ -102,21 +103,25 @@ xbt_edge_t xbt_graph_get_edge(xbt_graph_t g, xbt_node_t src,
   return NULL;
 }
 
+/** @brief Get the user data associated to a node */
 void *xbt_graph_node_get_data(xbt_node_t node)
 {
   return node->data;
 }
 
+/** @brief Set the user data associated to a node */
 void xbt_graph_node_set_data(xbt_node_t node, void *data)
 {
   node->data = data;
 }
 
+/** @brief Get the user data associated to a edge */
 void *xbt_graph_edge_get_data(xbt_edge_t edge)
 {
   return edge->data;
 }
 
+/** @brief Set the user data associated to a edge */
 void xbt_graph_edge_set_data(xbt_edge_t edge, void *data)
 {
   edge->data = data;
@@ -286,9 +291,10 @@ void xbt_graph_edge_set_length(xbt_edge_t e, double length)
 
 }
 
-double xbt_graph_edge_get_length(xbt_edge_t e)
+/** @brief Get the length of a edge */
+double xbt_graph_edge_get_length(xbt_edge_t edge)
 {
-  return e->length;
+  return edge->length;
 }
 
 
@@ -664,16 +670,30 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
           "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
-    fprintf(file, "  \"%p\" ", node);
-    if ((node_name) && ((name = node_name(node))))
-      fprintf(file, "[label=\"%s\"]", name);
-    fprintf(file, ";\n");
+    if (node_name){
+      fprintf(file, "  \"%s\";\n", node_name(node));
+    }else{
+      fprintf(file, "  \"%p\";\n", node);
+    }
   }
   xbt_dynar_foreach(g->edges, cursor, edge) {
-    if (g->directed)
-      fprintf(file, "  \"%p\" -> \"%p\"", edge->src, edge->dst);
-    else
-      fprintf(file, "  \"%p\" -- \"%p\"", edge->src, edge->dst);
+    const char *c;
+    const char *c_dir = "->";
+    const char *c_ndir = "--";
+    if (g->directed){
+      c = c_dir;
+    }else{
+      c = c_ndir;
+    }
+    const char *src_name, *dst_name;
+    if (node_name){
+      src_name = node_name(edge->src);
+      dst_name = node_name(edge->dst);
+      fprintf(file, "  \"%s\" %s \"%s\"", src_name, c, dst_name);
+    }else{
+      fprintf(file, "  \"%p\" %s \"%p\"", edge->src, c, edge->dst);
+    }
+
     if ((edge_name) && ((name = edge_name(edge))))
       fprintf(file, "[label=\"%s\"]", name);
     fprintf(file, ";\n");

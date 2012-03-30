@@ -181,7 +181,7 @@ static xbt_dynar_t surf_parsed_filename_stack = NULL;
 
 void STag_surfxml_include(void)
 {
-  XBT_INFO("STag_surfxml_include '%s'",A_surfxml_include_file);
+  XBT_DEBUG("STag_surfxml_include '%s'",A_surfxml_include_file);
   xbt_dynar_push(surf_parsed_filename_stack,&surf_parsed_filename); // save old file name
   surf_parsed_filename = xbt_strdup(A_surfxml_include_file);
 
@@ -216,22 +216,22 @@ void ETag_surfxml_include(void) {
 int ETag_surfxml_include_state(void)
 {
   fflush(NULL);
-  XBT_INFO("ETag_surfxml_include_state '%s'",A_surfxml_include_file);
+  XBT_DEBUG("ETag_surfxml_include_state '%s'",A_surfxml_include_file);
 
-  if(!xbt_dynar_is_empty(surf_input_buffer_stack)) // nope, that's a true premature EOF. Let the parser die verbosely.
-	  return 1;
+  if(xbt_dynar_is_empty(surf_input_buffer_stack)) // nope, that's a true premature EOF. Let the parser die verbosely.
+	  return 0;
 
   // Yeah, we were in an <include> Restore state and proceed.
   fclose(surf_file_to_parse);
   xbt_dynar_pop(surf_file_to_parse_stack, &surf_file_to_parse);
   surf_parse_pop_buffer_state();
-  xbt_dynar_pop(surf_input_buffer_stack,surf_input_buffer);
+  xbt_dynar_pop(surf_input_buffer_stack,&surf_input_buffer);
 
   // Restore the filename for error messages
   free(surf_parsed_filename);
   xbt_dynar_pop(surf_parsed_filename_stack,&surf_parsed_filename);
 
-  return 0;
+  return 1;
 }
 
 
@@ -615,8 +615,8 @@ void surf_parse_open(const char *file)
   if (!surf_file_to_parse_stack)
     surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
 
-  if (!surf_file_to_parse_stack)
-    surf_parsed_filename_stack = xbt_dynar_new(sizeof(FILE *), xbt_free_f);
+  if (!surf_parsed_filename_stack)
+    surf_parsed_filename_stack = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   surf_parsed_filename = xbt_strdup(file);
 
   surf_file_to_parse = surf_fopen(file, "r");

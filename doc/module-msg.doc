@@ -20,6 +20,7 @@
    - \ref m_file_management
    - \ref msg_actions_functions
    - \ref msg_gos_functions
+   - \ref msg_deprecated_functions
    - \ref msg_easier_life
    - \ref msg_simulation
 
@@ -68,7 +69,13 @@
  *  @brief This section describes the functions that can be used
  *         by an agent for handling some task.
  */
-
+ 
+/** @defgroup msg_deprecated_functions MSG Deprecated
+ *  @ingroup MSG_API
+ *  @brief This section describes the deprecated functions and. They
+ *	should be remove on next release.
+ */
+ 
 /** @defgroup msg_easier_life      Platform and Application management
  *  @ingroup MSG_API
  *  @brief This section describes functions to manage the platform creation

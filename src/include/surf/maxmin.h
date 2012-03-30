@@ -59,6 +59,8 @@ void lmm_elem_set_value(lmm_system_t sys, lmm_constraint_t cnst,
 
 lmm_constraint_t lmm_get_cnst_from_var(lmm_system_t sys,
                                        lmm_variable_t var, int num);
+double lmm_get_cnst_weight_from_var(lmm_system_t sys, lmm_variable_t var,
+                                    int num);
 int lmm_get_number_of_cnst_from_var(lmm_system_t sys, lmm_variable_t var);
 lmm_variable_t lmm_get_var_from_cnst(lmm_system_t sys,
                                      lmm_constraint_t cnst,

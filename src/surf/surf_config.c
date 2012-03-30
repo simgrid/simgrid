@@ -7,6 +7,7 @@
 /* surf_config: configuration infrastructure for the simulation world       */
 
 #include "xbt/config.h"
+#include "xbt/log.h"
 #include "xbt/str.h"
 #include "surf/surf_private.h"
 #include "surf/surf_routing.h"	/* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
@@ -17,105 +18,66 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
 
 xbt_cfg_t _surf_cfg_set = NULL;
 
-static void LOG_help(void)
-{
-  printf("Description of the logging output:\n"
-"\n   Threshold configuration: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n"
-"      CATEGORY_NAME: defined in code with function 'XBT_LOG_NEW_CATEGORY'\n"
-"      PRIORITY_LEVEL: the level to print (trace,debug,verbose,info,warning,error,critical)\n"
-"         -> trace: enter and return of some functions\n"
-"         -> debug: crufty output\n"
-"         -> verbose: verbose output for the user wanting more\n"
-"         -> info: output about the regular functionning\n"
-"         -> warning: minor issue encountered\n"
-"         -> error: issue encountered\n"
-"         -> critical: major issue encountered\n"
-"\n   Format configuration: --log=CATEGORY_NAME.fmt:OPTIONS\n"
-"     OPTIONS may be:\n"
-"         -> %%%%: the %% char\n"
-"         -> %%n: platform-dependent line separator (LOG4J compatible)\n"
-"         -> %%e: plain old space (SimGrid extension)\n"
-"\n"
-"         -> %%m: user-provided message\n"
-"\n"
-"         -> %%c: Category name (LOG4J compatible)\n"
-"         -> %%p: Priority name (LOG4J compatible)\n"
-"\n"
-"         -> %%h: Hostname (SimGrid extension)\n"
-"         -> %%P: Process name (SimGrid extension)\n"
-"         -> %%t: Thread \"name\" (LOG4J compatible -- actually the address of the thread in memory)\n"
-"         -> %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)\n"
-"\n"
-"         -> %%F: file name where the log event was raised (LOG4J compatible)\n"
-"         -> %%l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as in 'l'etter)\n"
-"         -> %%L: line number where the log event was raised (LOG4J compatible)\n"
-"         -> %%M: function name (LOG4J compatible -- called method name here of course).\n"
-"                 Defined only when using gcc because there is no __FUNCTION__ elsewhere.\n"
-"\n"
-"         -> %%b: full backtrace (Called %%throwable in LOG4J). Defined only under windows or when using the GNU libc because\n"
-"                 backtrace() is not defined elsewhere, and we only have a fallback for windows boxes, not mac ones for example.\n"
-"         -> %%B: short backtrace (only the first line of the %%b). Called %%throwable{short} in LOG4J; defined where %%b is.\n"
-"\n"
-"         -> %%d: date (UNIX-like epoch)\n"
-"         -> %%r: application age (time elapsed since the beginning of the application)\n");
-}
-
 /* Parse the command line, looking for options */
 static void surf_config_cmd_line(int *argc, char **argv)
 {
+  int shall_exit = 0;
   int i, j;
   char *opt;
 
-  for (i = 1; i < *argc; i++) {
-    int remove_it = 0;
+  for (j = i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
       opt = strchr(argv[i], '=');
       opt++;
 
       xbt_cfg_set_parse(_surf_cfg_set, opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
-      remove_it = 1;
-    } else if (!strncmp(argv[i], "--cfg-help", strlen("--cfg-help") + 1) ||
-               !strncmp(argv[i], "--help", strlen("--help") + 1)) {
+    } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
       printf
           ("Description of the configuration accepted by this simulator:\n");
       xbt_cfg_help(_surf_cfg_set);
-      printf("\nYou can also use --help-models to see the details of all models known by this simulator.\n");
+      printf(
+"\n"
+"You can also use --help-models to see the details of all models known by this simulator.\n"
 #ifdef HAVE_TRACING
-      printf("\nYou can also use --help-tracing to see the details of all tracing options known by this simulator.\n");
+"\n"
+"You can also use --help-tracing to see the details of all tracing options known by this simulator.\n"
 #endif
-      printf("\nYou can also use --help-logs to see the details of logging output.\n\n");
-      exit(0);
-    } else if (!strncmp(argv[i], "--help-models", strlen("--help-models") + 1)) {
+"\n"
+"You can also use --help-logs and --help-log-categories to see the details of logging output.\n"
+"\n"
+        );
+      shall_exit = 1;
+    } else if (!strcmp(argv[i], "--help-models")) {
+      int k;
+
       model_help("workstation", surf_workstation_model_description);
       printf("\n");
       model_help("CPU", surf_cpu_model_description);
       printf("\n");
       model_help("network", surf_network_model_description);
       printf("\nLong description of all optimization levels accepted by the models of this simulator:\n");
-      for (i = 0; surf_optimization_mode_description[i].name; i++)
-        printf("  %s: %s\n", surf_optimization_mode_description[i].name, surf_optimization_mode_description[i].description);
-      printf("Both network and CPU models have 'Lazy' as default optimization level\n");
-      exit(0);
-    } else if (!strncmp(argv[i], "--help-logs", strlen("--help-logs") + 1)) {
-      LOG_help ();
-      exit(0);
+      for (k = 0; surf_optimization_mode_description[k].name; k++)
+        printf("  %s: %s\n",
+               surf_optimization_mode_description[k].name,
+               surf_optimization_mode_description[k].description);
+      printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
+      shall_exit = 1;
 #ifdef HAVE_TRACING
-    } else if (!strncmp(argv[i], "--help-tracing", strlen("--help-tracing") + 1)) {
+    } else if (!strcmp(argv[i], "--help-tracing")) {
       TRACE_help (1);
-      exit(0);
+      shall_exit = 1;
 #endif
-    }
-    if (remove_it) {            /*remove this from argv */
-      for (j = i + 1; j < *argc; j++) {
-        argv[j - 1] = argv[j];
-      }
-
-      argv[j - 1] = NULL;
-      (*argc)--;
-      i--;                      /* compensate effect of next loop incrementation */
+    } else {
+      argv[j++] = argv[i];
     }
   }
+  if (j < *argc) {
+    argv[j] = NULL;
+    *argc = j;
+  }
+  if (shall_exit)
+    exit(0);
 }
 
 

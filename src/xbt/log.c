@@ -507,19 +507,12 @@ const char *xbt_log_priority_names[8] = {
 
 s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
   NULL /*parent */ , NULL /* firstChild */ , NULL /* nextSibling */ ,
-      "root",
+      "root", "The common ancestor for all categories",
       0 /*initialized */, xbt_log_priority_uninitialized /* threshold */ ,
       0 /* isThreshInherited */ ,
       NULL /* appender */ , NULL /* layout */ ,
       0                         /* additivity */
 };
-
-XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
-XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
-XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
-XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
-XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
-XBT_LOG_NEW_CATEGORY(bindings, "All bindings categories");
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log, xbt,
                                 "Loggings from the logging mechanism itself");
@@ -535,35 +528,213 @@ void xbt_log_preinit(void)
   log_cat_init_mutex = xbt_os_rmutex_init();
 }
 
+static void xbt_log_connect_categories(void)
+{
+  /* Connect our log channels: that must be done manually under windows */
+  /* Also permit that they are correctly listed by xbt_log_help_categories() */
+
+  /* amok */
+  XBT_LOG_CONNECT(amok);
+  XBT_LOG_CONNECT(amok_bw);
+  XBT_LOG_CONNECT(amok_bw_sat);
+  XBT_LOG_CONNECT(amok_pm);
+
+  /* gras */
+  XBT_LOG_CONNECT(gras);
+  XBT_LOG_CONNECT(gras_modules);
+  XBT_LOG_CONNECT(gras_msg);
+  XBT_LOG_CONNECT(gras_msg_read);
+  XBT_LOG_CONNECT(gras_msg_rpc);
+  XBT_LOG_CONNECT(gras_timer);
+  XBT_LOG_CONNECT(gras_trp);
+  XBT_LOG_CONNECT(gras_trp_file);
+  XBT_LOG_CONNECT(gras_virtu);
+  XBT_LOG_CONNECT(gras_virtu_emul);
+  XBT_LOG_CONNECT(gras_virtu_process);
+
+  /* xbt */
+  XBT_LOG_CONNECT(xbt);
+  XBT_LOG_CONNECT(graphxml_parse);
+  XBT_LOG_CONNECT(log);
+  XBT_LOG_CONNECT(mm_diff);
+  XBT_LOG_CONNECT(module);
+  XBT_LOG_CONNECT(peer);
+  XBT_LOG_CONNECT(replay);
+  XBT_LOG_CONNECT(strbuff);
+  XBT_LOG_CONNECT(xbt_cfg);
+  XBT_LOG_CONNECT(xbt_dict);
+  XBT_LOG_CONNECT(xbt_dict_cursor);
+  XBT_LOG_CONNECT(xbt_dict_elm);
+#ifdef XBT_USE_DEPRECATED
+  XBT_LOG_CONNECT(xbt_dict_multi);
+#endif
+  XBT_LOG_CONNECT(xbt_ddt);
+  XBT_LOG_CONNECT(xbt_ddt_cbps);
+  XBT_LOG_CONNECT(xbt_ddt_convert);
+  XBT_LOG_CONNECT(xbt_ddt_create);
+  XBT_LOG_CONNECT(xbt_ddt_exchange);
+  XBT_LOG_CONNECT(xbt_ddt_parse);
+  XBT_LOG_CONNECT(xbt_ddt_lexer);
+  XBT_LOG_CONNECT(xbt_dyn);
+  XBT_LOG_CONNECT(xbt_ex);
+  XBT_LOG_CONNECT(xbt_fifo);
+  XBT_LOG_CONNECT(xbt_graph);
+  XBT_LOG_CONNECT(xbt_lib);
+  XBT_LOG_CONNECT(xbt_mallocator);
+  XBT_LOG_CONNECT(xbt_matrix);
+  XBT_LOG_CONNECT(xbt_parmap);
+  XBT_LOG_CONNECT(xbt_parmap_unit);
+  XBT_LOG_CONNECT(xbt_queue);
+  XBT_LOG_CONNECT(xbt_set);
+  XBT_LOG_CONNECT(xbt_sync);
+  XBT_LOG_CONNECT(xbt_sync_os);
+  XBT_LOG_CONNECT(xbt_trp);
+  XBT_LOG_CONNECT(xbt_trp_meas);
+  XBT_LOG_CONNECT(xbt_trp_tcp);
+
+#ifdef simgrid_EXPORTS
+  /* The following categories are only defined in libsimgrid */
+
+  /* gras (sg) */
+  XBT_LOG_CONNECT(gras_trp_sg);
+
+  /* bindings */
+#ifdef HAVE_LUA
+  XBT_LOG_CONNECT(bindings);
+  XBT_LOG_CONNECT(lua);
+  XBT_LOG_CONNECT(lua_comm);
+  XBT_LOG_CONNECT(lua_host);
+  XBT_LOG_CONNECT(lua_platf);
+  XBT_LOG_CONNECT(lua_process);
+  XBT_LOG_CONNECT(lua_state_cloner);
+  XBT_LOG_CONNECT(lua_task);
+  XBT_LOG_CONNECT(lua_utils);
+#endif
+
+  /* instr */
+#ifdef HAVE_TRACING
+  XBT_LOG_CONNECT(instr);
+  XBT_LOG_CONNECT(instr_paje_trace);
+  XBT_LOG_CONNECT(instr_smpi);
+  XBT_LOG_CONNECT(instr_surf);
+#endif
+
+  /* jedule */
+#ifdef HAVE_JEDULE
+  XBT_LOG_CONNECT(jedule);
+  XBT_LOG_CONNECT(jed_out);
+  XBT_LOG_CONNECT(jed_sd);
+#endif
+
+  /* mc */
+#ifdef HAVE_MC
+  XBT_LOG_CONNECT(mc);
+  XBT_LOG_CONNECT(mc_checkpoint);
+  XBT_LOG_CONNECT(mc_dpor);
+  XBT_LOG_CONNECT(mc_global);
+  XBT_LOG_CONNECT(mc_liveness);
+  XBT_LOG_CONNECT(mc_memory);
+  XBT_LOG_CONNECT(mc_memory_map);
+  XBT_LOG_CONNECT(mc_request);
+#endif
+
+  /* msg */
+  XBT_LOG_CONNECT(msg);
+  XBT_LOG_CONNECT(msg_action);
+  XBT_LOG_CONNECT(msg_gos);
+  XBT_LOG_CONNECT(msg_kernel);
+  XBT_LOG_CONNECT(msg_mailbox);
+  XBT_LOG_CONNECT(msg_process);
+  XBT_LOG_CONNECT(msg_task);
+
+  /* simdag */
+  XBT_LOG_CONNECT(sd);
+  XBT_LOG_CONNECT(sd_daxparse);
+#ifdef HAVE_GRAPHVIZ
+  XBT_LOG_CONNECT(sd_dotparse);
+#endif
+  XBT_LOG_CONNECT(sd_kernel);
+  XBT_LOG_CONNECT(sd_task);
+  XBT_LOG_CONNECT(sd_workstation);
+
+  /* simix */
+  XBT_LOG_CONNECT(simix);
+  XBT_LOG_CONNECT(simix_context);
+  XBT_LOG_CONNECT(simix_deployment);
+  XBT_LOG_CONNECT(simix_environment);
+  XBT_LOG_CONNECT(simix_host);
+  XBT_LOG_CONNECT(simix_io);
+  XBT_LOG_CONNECT(simix_kernel);
+  XBT_LOG_CONNECT(simix_network);
+  XBT_LOG_CONNECT(simix_process);
+  XBT_LOG_CONNECT(simix_smurf);
+  XBT_LOG_CONNECT(simix_synchro);
+
+  /* smpi */
+  /* SMPI categories are connected in smpi_global.c */
+
+  /* surf */
+  XBT_LOG_CONNECT(surf);
+  XBT_LOG_CONNECT(random);
+  XBT_LOG_CONNECT(surf_config);
+  XBT_LOG_CONNECT(surf_cpu);
+  XBT_LOG_CONNECT(surf_cpu_ti);
+  XBT_LOG_CONNECT(surf_kernel);
+  XBT_LOG_CONNECT(surf_lagrange);
+  XBT_LOG_CONNECT(surf_lagrange_dichotomy);
+  XBT_LOG_CONNECT(surf_maxmin);
+  XBT_LOG_CONNECT(surf_network);
+#ifdef HAVE_GTNETS
+  XBT_LOG_CONNECT(surf_network_gtnets);
+#endif
+#ifdef HAVE_NS3
+  XBT_LOG_CONNECT(surf_network_ns3);
+#endif
+  XBT_LOG_CONNECT(surf_parse);
+  XBT_LOG_CONNECT(surf_route);
+  XBT_LOG_CONNECT(surf_routing_generic);
+  XBT_LOG_CONNECT(surf_route_cluster);
+  XBT_LOG_CONNECT(surf_route_dijkstra);
+  XBT_LOG_CONNECT(surf_route_floyd);
+  XBT_LOG_CONNECT(surf_route_full);
+  XBT_LOG_CONNECT(surf_route_none);
+  XBT_LOG_CONNECT(surf_route_rulebased);
+  XBT_LOG_CONNECT(surf_route_vivaldi);
+  XBT_LOG_CONNECT(surf_storage);
+  XBT_LOG_CONNECT(surf_trace);
+  XBT_LOG_CONNECT(surf_workstation);
+
+#endif /* simgrid_EXPORTS */
+}
+
+static void xbt_log_help(void);
+static void xbt_log_help_categories(void);
+
 /** @brief Get all logging settings from the command line
  *
  * xbt_log_control_set() is called on each string we got from cmd line
  */
 void xbt_log_init(int *argc, char **argv)
 {
+  unsigned help_requested = 0;  /* 1: logs; 2: categories */
   int i, j;
   char *opt;
 
   //    _XBT_LOGV(log).threshold = xbt_log_priority_debug; /* uncomment to set the LOG category to debug directly */
 
+  xbt_log_connect_categories();
+
   /* Set logs and init log submodule */
   for (j = i = 1; i < *argc; i++) {
-    if (!strncmp(argv[i], "--log=", strlen("--log=")) ||
-        !strncmp(argv[i], "--gras-log=", strlen("--gras-log=")) ||
-        !strncmp(argv[i], "--surf-log=", strlen("--surf-log=")) ||
-        !strncmp(argv[i], "--msg-log=", strlen("--msg-log=")) ||
-        !strncmp(argv[i], "--simix-log=", strlen("--simix-log=")) ||
-        !strncmp(argv[i], "--xbt-log=", strlen("--xbt-log="))) {
-
-      if (strncmp(argv[i], "--log=", strlen("--log=")))
-        XBT_WARN
-            ("Option %.*s is deprecated and will disapear in the future. Use --log instead.",
-             (int) (strchr(argv[i], '=') - argv[i]), argv[i]);
-
+    if (!strncmp(argv[i], "--log=", strlen("--log="))) {
       opt = strchr(argv[i], '=');
       opt++;
       xbt_log_control_set(opt);
       XBT_DEBUG("Did apply '%s' as log setting", opt);
+    } else if (!strcmp(argv[i], "--help-logs")) {
+      help_requested |= 1;
+    } else if (!strcmp(argv[i], "--help-log-categories")) {
+      help_requested |= 2;
     } else {
       argv[j++] = argv[i];
     }
@@ -571,6 +742,14 @@ void xbt_log_init(int *argc, char **argv)
   if (j < *argc) {
     argv[j] = NULL;
     *argc = j;
+  }
+
+  if (help_requested) {
+    if (help_requested & 1)
+      xbt_log_help();
+    if (help_requested & 2)
+      xbt_log_help_categories();
+    exit(0);
   }
 }
 
@@ -1104,4 +1283,105 @@ void xbt_log_layout_set(xbt_log_category_t cat, xbt_log_layout_t lay)
 void xbt_log_additivity_set(xbt_log_category_t cat, int additivity)
 {
   cat->additivity = additivity;
+}
+
+static void xbt_log_help(void)
+{
+  printf(
+"Description of the logging output:\n"
+"\n"
+"   Threshold configuration: --log=CATEGORY_NAME.thres:PRIORITY_LEVEL\n"
+"      CATEGORY_NAME: defined in code with function 'XBT_LOG_NEW_CATEGORY'\n"
+"      PRIORITY_LEVEL: the level to print (trace,debug,verbose,info,warning,error,critical)\n"
+"         -> trace: enter and return of some functions\n"
+"         -> debug: crufty output\n"
+"         -> verbose: verbose output for the user wanting more\n"
+"         -> info: output about the regular functionning\n"
+"         -> warning: minor issue encountered\n"
+"         -> error: issue encountered\n"
+"         -> critical: major issue encountered\n"
+"\n"
+"   Format configuration: --log=CATEGORY_NAME.fmt:OPTIONS\n"
+"      OPTIONS may be:\n"
+"         -> %%%%: the %% char\n"
+"         -> %%n: platform-dependent line separator (LOG4J compatible)\n"
+"         -> %%e: plain old space (SimGrid extension)\n"
+"\n"
+"         -> %%m: user-provided message\n"
+"\n"
+"         -> %%c: Category name (LOG4J compatible)\n"
+"         -> %%p: Priority name (LOG4J compatible)\n"
+"\n"
+"         -> %%h: Hostname (SimGrid extension)\n"
+"         -> %%P: Process name (SimGrid extension)\n"
+"         -> %%t: Thread \"name\" (LOG4J compatible -- actually the address of the thread in memory)\n"
+"         -> %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)\n"
+"\n"
+"         -> %%F: file name where the log event was raised (LOG4J compatible)\n"
+"         -> %%l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as in 'l'etter)\n"
+"         -> %%L: line number where the log event was raised (LOG4J compatible)\n"
+"         -> %%M: function name (LOG4J compatible -- called method name here of course).\n"
+"                 Defined only when using gcc because there is no __FUNCTION__ elsewhere.\n"
+"\n"
+"         -> %%b: full backtrace (Called %%throwable in LOG4J). Defined only under windows or when using the GNU libc because\n"
+"                 backtrace() is not defined elsewhere, and we only have a fallback for windows boxes, not mac ones for example.\n"
+"         -> %%B: short backtrace (only the first line of the %%b). Called %%throwable{short} in LOG4J; defined where %%b is.\n"
+"\n"
+"         -> %%d: date (UNIX-like epoch)\n"
+"         -> %%r: application age (time elapsed since the beginning of the application)\n"
+"\n"
+    );
+}
+
+static int xbt_log_cat_cmp(const void *pa, const void *pb)
+{
+  xbt_log_category_t a = *(xbt_log_category_t *)pa;
+  xbt_log_category_t b = *(xbt_log_category_t *)pb;
+  return strcmp(a->name, b->name);
+}
+
+static void xbt_log_help_categories_rec(xbt_log_category_t category,
+                                        const char *prefix)
+{
+  char *this_prefix;
+  char *child_prefix;
+  xbt_dynar_t dynar;
+  unsigned i;
+  xbt_log_category_t cat;
+
+  if (!category)
+    return;
+
+  if (category->parent) {
+    this_prefix = bprintf("%s \\_ ", prefix);
+    child_prefix = bprintf("%s |  ", prefix);
+  } else {
+    this_prefix = bprintf("%s", prefix);
+    child_prefix = bprintf("%s", prefix);
+  }
+
+  dynar = xbt_dynar_new(sizeof(xbt_log_category_t), NULL);
+  for (cat = category ; cat != NULL; cat = cat->nextSibling)
+    xbt_dynar_push_as(dynar, xbt_log_category_t, cat);
+
+  xbt_dynar_sort(dynar, xbt_log_cat_cmp);
+
+  for (i = 0; i < xbt_dynar_length(dynar); i++) {
+    if (i == xbt_dynar_length(dynar) - 1 && category->parent)
+      *strrchr(child_prefix, '|') = ' ';
+    cat = xbt_dynar_get_as(dynar, i, xbt_log_category_t);
+    printf("%s%s: %s\n", this_prefix, cat->name, cat->description);
+    xbt_log_help_categories_rec(cat->firstChild, child_prefix);
+  }
+
+  xbt_dynar_free(&dynar);
+  xbt_free(this_prefix);
+  xbt_free(child_prefix);
+}
+
+static void xbt_log_help_categories(void)
+{
+  printf("Current log category hierarchy:\n");
+  xbt_log_help_categories_rec(&_XBT_LOGV(XBT_LOG_ROOT_CAT), "   ");
+  printf("\n");
 }

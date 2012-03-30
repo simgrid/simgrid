@@ -330,6 +330,10 @@ set(AMOK_SRC
 	src/amok/PeerManagement/peermanagement.c
 )
 
+set(BINDINGS_SRC
+	src/bindings/bindings_global.c
+)
+
 set(LUA_SRC
 	src/bindings/lua/simgrid_lua.c
 	src/bindings/lua/lua_task.c
@@ -513,6 +517,7 @@ set(simgrid_sources
 	${GRAS_COMMON_SRC}
 	${GRAS_SG_SRC}
 	${AMOK_SRC}
+	${BINDINGS_SRC}
 	${JEDULE_SRC}
 	${RNGSTREAM_SRC}
 )

@@ -33,8 +33,12 @@ if(APPLE AND COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
 endif(APPLE AND COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
 
 if(NOT enable_debug)
-		set(CMAKE_C_FLAGS "-DNDEBUG ${CMAKE_C_FLAGS}")
+    set(CMAKE_C_FLAGS "-DNDEBUG ${CMAKE_C_FLAGS}")
 endif(NOT enable_debug)
+
+if(enable_msg_deprecated)
+    set(CMAKE_C_FLAGS "-DMSG_USE_DEPRECATED ${CMAKE_C_FLAGS}")
+endif(enable_msg_deprecated)
 
 set(CMAKE_C_FLAGS "${optCFLAGS}${warnCFLAGS}${CMAKE_C_FLAGS}")
 

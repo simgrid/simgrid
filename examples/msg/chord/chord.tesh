@@ -439,7 +439,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT -nb_bits=6 ${srcdir:=.}/../msg_platfo
 > [652.548539] (0:@) Simulated time: 652.549
 
 ! output sort
-$ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/../../platforms/One_cluster.xml ${srcdir:=.}/chord10.xml --cfg=network/crosstraffic:0 --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant
+$ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/../../platforms/cluster.xml ${srcdir:=.}/chord10.xml --cfg=network/crosstraffic:0 --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant
 > [   0.000000] (0:@) Configuration change: Set 'network/crosstraffic' to '0'
 > [   0.000000] (0:@) Configuration change: Set 'network/model' to 'Constant'
 > [   0.000000] (0:@) Switching workstation model to compound since you changed the network and/or cpu model(s)

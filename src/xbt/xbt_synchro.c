@@ -66,8 +66,7 @@ void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function)
 #include "xbt/synchro.h"
 
 XBT_TEST_SUITE("synchro", "Advanced synchronization mecanisms");
-XBT_LOG_EXTERNAL_CATEGORY(xbt_dyn);
-XBT_LOG_DEFAULT_CATEGORY(xbt_dyn);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dyn);
 
 static void add100(int rank, void *data)
 {

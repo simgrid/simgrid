@@ -12,14 +12,7 @@
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
 
-XBT_LOG_EXTERNAL_CATEGORY(simix);
-XBT_LOG_EXTERNAL_CATEGORY(simix_action);
-XBT_LOG_EXTERNAL_CATEGORY(simix_deployment);
-XBT_LOG_EXTERNAL_CATEGORY(simix_environment);
-XBT_LOG_EXTERNAL_CATEGORY(simix_host);
-XBT_LOG_EXTERNAL_CATEGORY(simix_process);
-XBT_LOG_EXTERNAL_CATEGORY(simix_synchro);
-XBT_LOG_EXTERNAL_CATEGORY(simix_context);
+XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
                                 "Logging specific to SIMIX (kernel)");
 
@@ -66,16 +59,6 @@ void SIMIX_global_init(int *argc, char **argv)
   s_smx_process_t proc;
 
   if (!simix_global) {
-    /* Connect our log channels: that must be done manually under windows */
-    XBT_LOG_CONNECT(simix_action, simix);
-    XBT_LOG_CONNECT(simix_deployment, simix);
-    XBT_LOG_CONNECT(simix_environment, simix);
-    XBT_LOG_CONNECT(simix_host, simix);
-    XBT_LOG_CONNECT(simix_kernel, simix);
-    XBT_LOG_CONNECT(simix_process, simix);
-    XBT_LOG_CONNECT(simix_synchro, simix);
-    XBT_LOG_CONNECT(simix_context, simix);
-
     simix_global = xbt_new0(s_smx_global_t, 1);
 
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), NULL);
@@ -334,33 +317,33 @@ void SIMIX_display_process_status(void)
       const char* action_description = "unknown";
       switch (process->waiting_action->type) {
 
-	case SIMIX_ACTION_EXECUTE:
-	  action_description = "execution";
-	  break;
+      case SIMIX_ACTION_EXECUTE:
+        action_description = "execution";
+        break;
 
-	case SIMIX_ACTION_PARALLEL_EXECUTE:
-	  action_description = "parallel execution";
-	  break;
+      case SIMIX_ACTION_PARALLEL_EXECUTE:
+        action_description = "parallel execution";
+        break;
 
-	case SIMIX_ACTION_COMMUNICATE:
-	  action_description = "communication";
-	  break;
+      case SIMIX_ACTION_COMMUNICATE:
+        action_description = "communication";
+        break;
 
-	case SIMIX_ACTION_SLEEP:
-	  action_description = "sleeping";
-	  break;
+      case SIMIX_ACTION_SLEEP:
+        action_description = "sleeping";
+        break;
 
-	case SIMIX_ACTION_SYNCHRO:
-	  action_description = "synchronization";
-	  break;
+      case SIMIX_ACTION_SYNCHRO:
+        action_description = "synchronization";
+        break;
 
-	case SIMIX_ACTION_IO:
-	  action_description = "I/O";
-	  break;
+      case SIMIX_ACTION_IO:
+        action_description = "I/O";
+        break;
       }
       XBT_INFO("Process %lu (%s@%s): waiting for %s action %p (%s) in state %d to finish",
           process->pid, process->name, process->smx_host->name,
-	  action_description, process->waiting_action,
+          action_description, process->waiting_action,
           process->waiting_action->name, (int)process->waiting_action->state);
     }
     else {

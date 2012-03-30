@@ -538,7 +538,10 @@ static void net_update_actions_state_full(double now, double delta)
         link_CM02_t link = lmm_constraint_id(constraint);
         TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
                                         ((surf_action_t)action)->category,
-                                        lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
+                                        (lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable)*
+                                        lmm_get_cnst_weight_from_var(network_maxmin_system,
+                                            GENERIC_LMM_ACTION(action).variable,
+                                            i)),
                                         now - delta,
                                         delta);
       }
@@ -599,7 +602,10 @@ static void net_update_actions_state_lazy(double now, double delta)
         link_CM02_t link = lmm_constraint_id(constraint);
         TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
                                         ((surf_action_t)action)->category,
-                                        lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
+                                        (lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable)*
+                                            lmm_get_cnst_weight_from_var(network_maxmin_system,
+                                                GENERIC_LMM_ACTION(action).variable,
+                                                i)),
                                         GENERIC_LMM_ACTION(action).last_update,
                                         now - GENERIC_LMM_ACTION(action).last_update);
       }

@@ -10,15 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi,
                                 "Logging specific to SMPI (base)");
-XBT_LOG_EXTERNAL_CATEGORY(smpi_base);
-XBT_LOG_EXTERNAL_CATEGORY(smpi_bench);
-XBT_LOG_EXTERNAL_CATEGORY(smpi_kernel);
-XBT_LOG_EXTERNAL_CATEGORY(smpi_mpi);
-XBT_LOG_EXTERNAL_CATEGORY(smpi_mpi_dt);
-XBT_LOG_EXTERNAL_CATEGORY(smpi_coll);
-XBT_LOG_EXTERNAL_CATEGORY(smpi_receiver);
-XBT_LOG_EXTERNAL_CATEGORY(smpi_sender);
-XBT_LOG_EXTERNAL_CATEGORY(smpi_util);
 
 static int match_recv(void* a, void* b) {
    MPI_Request ref = (MPI_Request)a;
