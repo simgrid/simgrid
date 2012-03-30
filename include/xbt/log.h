@@ -86,8 +86,10 @@ typedef enum {
 #endif                          /* !defined(NLOG) */
 
 /* Transforms a category name to a global variable name. */
-#define _XBT_LOGV(cat)   _XBT_LOG_CONCAT(_simgrid_log_category__, cat)
-#define _XBT_LOG_CONCAT(x,y) x ## y
+#define _XBT_LOGV(cat) _XBT_LOG_CONCAT(_simgrid_log_category__, cat)
+#define _XBT_LOGV_CTOR(cat) _XBT_LOG_CONCAT2(_XBT_LOGV(cat), __constructor__)
+#define _XBT_LOG_CONCAT(x, y) x ## y
+#define _XBT_LOG_CONCAT2(x, y) _XBT_LOG_CONCAT(x, y)
 
 /* The root of the category hierarchy. */
 #define XBT_LOG_ROOT_CAT   root
@@ -102,54 +104,60 @@ typedef enum {
  * Unfortunately, Visual C builder does not target any standard
  * compliance, and C99 is not an exception to this unfortunate rule.
  * 
- * So, we work this around by adding a XBT_LOG_CONNECT() macro,
+ * So, we work this around by adding a XBT_LOG_CONNECT_PARENT() macro,
  * allowing to connect a child to its parent. It should be used
  * during the initialization of the code, before the child category
  * gets used.
  * 
- * When compiling with gcc, this is not necessary (XBT_LOG_CONNECT
+ * When compiling with gcc, this is not necessary (XBT_LOG_CONNECT_PARENT
  * defines to nothing). When compiling with MSVC, this is needed if
  * you don't want to see your child category become a child of root
  * directly.
  */
 #if defined(_MSC_VER)
 # define _XBT_LOG_PARENT_INITIALIZER(parent) NULL
-# define XBT_LOG_CONNECT(child, parent_cat)                             \
-  if (1) {                                                              \
-    XBT_LOG_EXTERNAL_CATEGORY(child);                                   \
-    XBT_LOG_EXTERNAL_CATEGORY(parent_cat);                              \
-    _XBT_LOGV(child).parent = &_XBT_LOGV(parent_cat);                   \
-    _xbt_log_cat_init(&_XBT_LOGV(child), xbt_log_priority_uninitialized); \
-  } else ((void)0)
+# define XBT_LOG_CONNECT_PARENT(child, parent_cat)                      \
+  _XBT_LOGV(child).parent = &_XBT_LOGV(parent_cat)
 #else
 # define _XBT_LOG_PARENT_INITIALIZER(parent) &_XBT_LOGV(parent)
-# define XBT_LOG_CONNECT(child, parent_cat)                             \
-  if (1) {                                                              \
-    XBT_LOG_EXTERNAL_CATEGORY(child);                                   \
-    /* XBT_LOG_EXTERNAL_CATEGORY(parent_cat); */                        \
-    /* xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent_cat)); */ \
-    _xbt_log_cat_init(&_XBT_LOGV(child), xbt_log_priority_uninitialized); \
-  } else ((void)0)
+# define XBT_LOG_CONNECT_PARENT(child, parent_cat)                      \
+  /* xbt_assert(_XBT_LOGV(child).parent == &_XBT_LOGV(parent_cat)); */  \
+  ((void)0)
 #endif
+
+#define XBT_LOG_CONNECT(child, parent_cat)      \
+  if (1) {                                      \
+    extern void _XBT_LOGV_CTOR(child)(void);    \
+    _XBT_LOGV_CTOR(child)();                    \
+  } else ((void)0)
 
 /* XBT_LOG_NEW_SUBCATEGORY_helper:
  * Implementation of XBT_LOG_NEW_SUBCATEGORY, which must declare "extern parent" in addition
  * to avoid an extra declaration of root when XBT_LOG_NEW_SUBCATEGORY is called by
  * XBT_LOG_NEW_CATEGORY */
-#define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
-    XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {       \
-        _XBT_LOG_PARENT_INITIALIZER(parent),            \
-        NULL /* firstChild */,                          \
-	NULL /* nextSibling */,                         \
-        #catName,                                       \
-        desc,                                           \
-        0 /*initialized */,                             \
-        xbt_log_priority_uninitialized /* threshold */, \
-        1 /* isThreshInherited */,                      \
-        NULL /* appender */,                            \
-	NULL /* layout */,                              \
-	1 /* additivity */                              \
-    }
+#define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)           \
+  XBT_PUBLIC(void) _XBT_LOGV_CTOR(catName)(void);                       \
+  void _XBT_LOGV_CTOR(catName)(void)                                    \
+  {                                                                     \
+    XBT_LOG_EXTERNAL_CATEGORY(catName);                                 \
+    /* Note: _XBT_LOGV(parent) should be already declared here. */      \
+    XBT_LOG_CONNECT_PARENT(catName, parent);                            \
+    _xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized); \
+  }                                                                     \
+  XBT_EXPORT_NO_IMPORT(s_xbt_log_category_t) _XBT_LOGV(catName) = {     \
+    _XBT_LOG_PARENT_INITIALIZER(parent),                                \
+    NULL /* firstChild */,                                              \
+    NULL /* nextSibling */,                                             \
+    #catName,                                                           \
+    desc,                                                               \
+    0 /*initialized */,                                                 \
+    xbt_log_priority_uninitialized /* threshold */,                     \
+    1 /* isThreshInherited */,                                          \
+    NULL /* appender */,                                                \
+    NULL /* layout */,                                                  \
+    1 /* additivity */                                                  \
+  }
+
 /**
  * \ingroup XBT_log
  * \param catName name of new category
