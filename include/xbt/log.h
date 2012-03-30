@@ -160,8 +160,8 @@ typedef enum {
  * Defines a new subcategory of the parent. 
  */
 #define XBT_LOG_NEW_SUBCATEGORY(catName, parent, desc)    \
-    extern s_xbt_log_category_t _XBT_LOGV(parent); \
-    XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc) \
+  XBT_LOG_EXTERNAL_CATEGORY(parent);                      \
+  XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)   \
 
 /**
  * \ingroup XBT_log  
