@@ -31,8 +31,8 @@ int _surf_do_model_check = 0;   /* this variable is used accros the libraries, a
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
  */
-static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR;
-static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR;
+static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR(200);
+static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR(200);
 
 #ifdef _XBT_WIN32
 # undef _XBT_NEED_INIT_PRAGMA
