@@ -125,10 +125,10 @@ typedef enum {
   ((void)0)
 #endif
 
-#define XBT_LOG_CONNECT(child, parent_cat)      \
+#define XBT_LOG_CONNECT(cat)                    \
   if (1) {                                      \
-    extern void _XBT_LOGV_CTOR(child)(void);    \
-    _XBT_LOGV_CTOR(child)();                    \
+    extern void _XBT_LOGV_CTOR(cat)(void);      \
+    _XBT_LOGV_CTOR(cat)();                      \
   } else ((void)0)
 
 /* XBT_LOG_NEW_SUBCATEGORY_helper:
