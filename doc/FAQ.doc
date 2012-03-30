@@ -356,7 +356,7 @@ of processes in your simulations.
      file, so I wrote a little script
      <tt>examples/gras/mutual_exclusion/simple_token/make_deployment.pl</tt>, which you may
      want to adapt to your case. You could also think about hijacking
-     the SURFXML parser (have look at \ref faq_flexml_bypassing).
+     the SURFXML parser (have look at \ref pf_flexml_bypassing).
    - The deployment file became quite big, so I had to do what is in
      the FAQ entry \ref faq_flexml_limit
    - Each UNIX98 context has its own stack entry. As debugging this is
@@ -461,19 +461,6 @@ annotate Tiers-generated topologies. This perl-script is in
 <tt>tools/platform_generation/</tt> directory of the SVN. Dinda et Al.
 released a very comparable tool, and called it GridG.
 
-\subsubsection faq_SURF_multicore Modeling multi-core resources 
-
-Since version 3.6 of simgrid we can specify the core number of a resource.
-To use this feature use tag 'host' with 'core' attribute. 
-\verbatim
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
-    <AS  id="AS0"  routing="Full">
-        <host id="Tremblay" power="98095000" core="6"/>
-    </AS>
-</platform>
-\endverbatim
 
 The specified computing power will be available to up to 6 sequential
 tasks without sharing. If more tasks are placed on this host, the
@@ -482,188 +469,8 @@ tasks on the host, each will get half of the computing power. Please
 note that although sound, this model were never scientifically
 assessed. Please keep this fact in mind when using it.
 
-\subsubsection faq_SURF_dynamic Modeling dynamic resource availability 
 
-A nice feature of SimGrid is that it enables you to seamlessly have
-resources whose availability change over time. When you build a
-platform, you generally declare hosts like that:
 
-\verbatim
-  <host id="host A" power="100.00"/>
-\endverbatim 
-
-If you want the availability of "host A" to change over time, the only
-thing you have to do is change this definition like that:
-
-\verbatim
-  <host id="host A" power="100.00" availability_file="trace_A.txt" state_file="trace_A_failure.txt"/>
-\endverbatim
-
-For hosts, availability files are expressed in fraction of available
-power. Let's have a look at what "trace_A.txt" may look like:
-
-\verbatim
-PERIODICITY 1.0
-0.0 1.0
-11.0 0.5
-20.0 0.9
-\endverbatim
-
-At time 0, our host will deliver 100 flop/s. At time 11.0, it will
-deliver only 50 flop/s until time 20.0 where it will start
-delivering 90 flop/s. Last at time 21.0 (20.0 plus the periodicity
-1.0), we'll be back to the beginning and it will deliver 100 flop/s.
-
-Now let's look at the state file:
-\verbatim
-PERIODICITY 10.0
-1.0 -1.0
-2.0 1.0
-\endverbatim
-
-A negative value means "off" while a positive one means "on". At time
-1.0, the host is on. At time 1.0, it is turned off and at time 2.0, it
-is turned on again until time 12 (2.0 plus the periodicity 10.0). It
-will be turned on again at time 13.0 until time 23.0, and so on.
-
-Now, let's look how the same kind of thing can be done for network
-links. A usual declaration looks like:
-
-\verbatim
-  <link id="LinkA" bandwidth="10.0" latency="0.2"/>
-\endverbatim
-
-You have at your disposal the following options: bandwidth_file,
-latency_file and state_file. The only difference with hosts is that
-bandwidth_file and latency_file do not express fraction of available
-power but are expressed directly in bytes per seconds and seconds.
-
-\subsubsection faq_platform_multipath How to express multipath routing in platform files?
-
-It is unfortunately impossible to express the fact that there is more
-than one routing path between two given hosts. Let's consider the
-following platform file:
-
-\verbatim
-<route src="A" dst="B">
-   <link_ctn id="1"/>
-</route>
-<route src="B" dst="C">
-  <link_ctn id="2"/>
-</route>
-<route src="A" dst="C">
-  <link_ctn id="3"/>
-</route>
-\endverbatim
-
-Although it is perfectly valid, it does not mean that data traveling
-from A to C can either go directly (using link 3) or through B (using
-links 1 and 2). It simply means that the routing on the graph is not
-trivial, and that data do not following the shortest path in number of
-hops on this graph. Another way to say it is that there is no implicit
-in these routing descriptions. The system will only use the routes you
-declare (such as &lt;route src="A" dst="C"&gt;&lt;link_ctn
-id="3"/&gt;&lt;/route&gt;), without trying to build new routes by aggregating
-the provided ones.
-  
-You are also free to declare platform where the routing is not
-symmetric. For example, add the following to the previous file:
-
-\verbatim
-<route src="C" dst="A">
-  <link_ctn id="2"/>
-  <link_ctn id="1"/>
-</route>
-\endverbatim
-
-This makes sure that data from C to A go through B where data from A
-to C go directly. Don't worry about realism of such settings since
-we've seen ways more weird situation in real settings (in fact, that's
-the realism of very regular platforms which is questionable, but
-that's another story).
-
-\subsubsection faq_flexml_bypassing Bypassing the XML parser with your own C functions
-
-So you want to bypass the XML files parser, uh? Maybe doing some parameter
-sweep experiments on your simulations or so? This is possible, and
-it's not even really difficult (well. Such a brutal idea could be
-harder to implement). Here is how it goes.
-
-For this, you have to first remember that the XML parsing in SimGrid is done
-using a tool called FleXML. Given a DTD, this gives a flex-based parser. If
-you want to bypass the parser, you need to provide some code mimicking what
-it does and replacing it in its interactions with the SURF code. So, let's
-have a look at these interactions.
-
-FleXML parser are close to classical SAX parsers. It means that a
-well-formed SimGrid platform XML file might result in the following
-"events":
-
-  - start "platform_description" with attribute version="2"
-  - start "host" with attributes id="host1" power="1.0"
-  - end "host"
-  - start "host" with attributes id="host2" power="2.0"
-  - end "host"
-  - start "link" with ...
-  - end "link"
-  - start "route" with ...
-  - start "link_ctn" with ...
-  - end "link_ctn"
-  - end "route"
-  - end "platform_description"
-
-The communication from the parser to the SURF code uses two means:
-Attributes get copied into some global variables, and a surf-provided
-function gets called by the parser for each event. For example, the event
-  - start "host" with attributes id="host1" power="1.0"
-
-let the parser do something roughly equivalent to:
-\verbatim
-  strcpy(A_host_id,"host1");
-  A_host_power = 1.0;
-  STag_host();
-\endverbatim
-
-In SURF, we attach callbacks to the different events by initializing the
-pointer functions to some the right surf functions. Since there can be
-more than one callback attached to the same event (if more than one
-model is in use, for example), they are stored in a dynar. Example in
-workstation_ptask_L07.c:
-\verbatim
-  /* Adding callback functions */
-  surf_parse_reset_parser();
-  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-                
-  /* Parse the file */
-  surf_parse_open(file);
-  xbt_assert(!surf_parse(), "Parse error in %s", file);
-  surf_parse_close();
-\endverbatim
-    
-So, to bypass the FleXML parser, you need to write your own version of the
-surf_parse function, which should do the following:
-   - Fill the A_<tag>_<attribute> variables with the wanted values
-   - Call the corresponding STag_<tag>_fun function to simulate tag start
-   - Call the corresponding ETag_<tag>_fun function to simulate tag end
-   - (do the same for the next set of values, and loop)
-
-Then, tell SimGrid that you want to use your own "parser" instead of the stock one:
-\verbatim
-  surf_parse = surf_parse_bypass_environment;
-  MSG_create_environment(NULL);
-  surf_parse = surf_parse_bypass_application;
-  MSG_launch_application(NULL);
-\endverbatim
-
-A set of macros are provided at the end of
-include/surf/surfxml_parse.h to ease the writing of the bypass
-functions. An example of this trick is distributed in the file
-examples/msg/masterslave/masterslave_bypass.c
 
 \section faq_troubleshooting Troubleshooting
 
@@ -797,7 +604,7 @@ was done by William Dowling, who use it in his own work. The good point is
 that it now use a dynamic buffer, and that the memory usage was greatly
 improved. The downside is that William also changed some things internally,
 and it breaks the hack we devised to bypass the parser, as explained in 
-\ref faq_flexml_bypassing. Indeed, this is not a classical usage of the
+\ref pf_flexml_bypassing. Indeed, this is not a classical usage of the
 parser, and Will didn't imagine that we may have used (and even documented)
 such a crude usage of FleXML. So, we now have to repair the bypassing
 functionality to use the lastest FleXML version and fix the memory usage in
