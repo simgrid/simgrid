@@ -20,21 +20,6 @@ static XBT_INLINE
   res->properties = props;
   return res;
 }
-static XBT_INLINE void routing_storage_type_free(void *r)
-{
-  storage_type_t stype = r;
-  free(stype->model);
-  free(stype->type_id);
-  xbt_dict_free(&(stype->properties));
-  xbt_dict_free(&(stype->content));
-  free(stype);
-}
-
-static XBT_INLINE void routing_storage_host_free(void *r)
-{
-  xbt_dynar_t dyn = r;
-  xbt_dynar_free(&dyn);
-}
 
 static XBT_INLINE void surf_resource_free(void *r)
 {

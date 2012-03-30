@@ -45,6 +45,10 @@ typedef struct simdata_task {
   double *comm_amount;
 } s_simdata_task_t;
 
+/********************************* File **************************************/
+typedef struct simdata_file {
+  smx_file_t smx_file;
+} s_simdata_file_t;
 
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task {

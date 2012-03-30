@@ -185,6 +185,7 @@ struct s_routing_global {
 
 XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback);
 XBT_PUBLIC(void) routing_exit(void);
+XBT_PUBLIC(void) storage_register_callbacks(void);
 XBT_PUBLIC(void) routing_register_callbacks(void);
 XBT_PUBLIC(void) generic_free_route(route_t route); // FIXME rename to routing_route_free
  // FIXME: make previous function private to routing again?

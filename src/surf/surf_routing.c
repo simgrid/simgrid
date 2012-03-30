@@ -43,21 +43,14 @@ int NS3_ASR_LEVEL;              //host node for ns3
 
 static xbt_dict_t random_value = NULL;
 
-xbt_lib_t storage_lib;
-int ROUTING_STORAGE_LEVEL;      //Routing for storagelevel
-int ROUTING_STORAGE_HOST_LEVEL;
-int SURF_STORAGE_LEVEL;
-
-xbt_lib_t storage_type_lib;
-int ROUTING_STORAGE_TYPE_LEVEL; //Routing for storage_type level
-
 /* Global vars */
 routing_global_t global_routing = NULL;
 AS_t current_routing = NULL;
 
 /* global parse functions */
 xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
-xbt_dynar_t mount_list = NULL;  /* temporary store of current mount storage */
+extern xbt_dynar_t mount_list;
+
 static const char *src = NULL;  /* temporary store the source name of a route */
 static const char *dst = NULL;  /* temporary store the destination name of a route */
 static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
@@ -747,153 +740,6 @@ void routing_model_create(size_t size_of_links, void *loopback)
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
 
-static void routing_parse_storage(sg_platf_storage_cbarg_t storage)
-{
-  xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id,ROUTING_STORAGE_LEVEL),
-               "Reading a storage, processing unit \"%s\" already exists", storage->id);
-
-  // Verification of an existing type_id
-#ifndef NDEBUG
-  void* storage_type = xbt_lib_get_or_null(storage_type_lib, storage->type_id,ROUTING_STORAGE_TYPE_LEVEL);
-#endif
-  xbt_assert(storage_type,"Reading a storage, type id \"%s\" does not exists", storage->type_id);
-
-  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s'",
-      storage->id,
-      storage->type_id);
-
-  xbt_lib_set(storage_lib,
-      storage->id,
-      ROUTING_STORAGE_LEVEL,
-      (void *) xbt_strdup(storage->type_id));
-}
-
-static void free_storage_content(void *p)
-{
-  content_t content = p;
-  free(content->date);
-  free(content->group);
-  free(content->time);
-  free(content->user);
-  free(content->user_rights);
-  free(content);
-}
-
-static xbt_dict_t parse_storage_content(const char *filename)
-{
-  if ((!filename) || (strcmp(filename, "") == 0))
-    return NULL;
-
-  xbt_dict_t parse_content = xbt_dict_new_homogeneous(free_storage_content);
-  FILE *file = NULL;
-
-  file = surf_fopen(filename, "r");
-  xbt_assert(file != NULL, "Cannot open file '%s' (path=%s)", filename,
-              xbt_str_join(surf_path, ":"));
-
-  char *line = NULL;
-  size_t len = 0;
-  ssize_t read;
-  char user_rights[12];
-  char user[100];
-  char group[100];
-  char date[12];
-  char time[12];
-  char path[1024];
-  int nb, size;
-
-  content_t content;
-
-  while ((read = getline(&line, &len, file)) != -1) {
-    content = xbt_new0(s_content_t,1);
-    if(sscanf(line,"%s %d %s %s %d %s %s %s",user_rights,&nb,user,group,&size,date,time,path)==8) {
-      content->date = xbt_strdup(date);
-      content->group = xbt_strdup(group);
-      content->size = size;
-      content->time = xbt_strdup(time);
-      content->user = xbt_strdup(user);
-      content->user_rights = xbt_strdup(user_rights);
-      xbt_dict_set(parse_content,path,content,NULL);
-    } else {
-      xbt_die("Be sure of passing a good format for content file.\n");
-      // You can generate this kind of file with command line:
-      // find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
-    }
-  }
-  if (line)
-      free(line);
-
-  fclose(file);
-  return parse_content;
-}
-
-static void routing_parse_storage_type(sg_platf_storage_type_cbarg_t storage_type)
-{
-  xbt_assert(!xbt_lib_get_or_null(storage_type_lib, storage_type->id,ROUTING_STORAGE_TYPE_LEVEL),
-               "Reading a storage type, processing unit \"%s\" already exists", storage_type->id);
-
-  storage_type_t stype = xbt_new0(s_storage_type_t, 1);
-  stype->model = xbt_strdup(storage_type->model);
-  stype->properties = storage_type->properties;
-  stype->content = parse_storage_content(storage_type->content);
-  stype->type_id = xbt_strdup(storage_type->id);
-
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s' content '%s' and properties '%p'",
-      stype->type_id,
-      stype->model,
-      storage_type->content,
-      stype->properties);
-
-  xbt_lib_set(storage_type_lib,
-      stype->type_id,
-      ROUTING_STORAGE_TYPE_LEVEL,
-      (void *) stype);
-}
-static void routing_parse_mstorage(sg_platf_mstorage_cbarg_t mstorage)
-{
-  THROW_UNIMPLEMENTED;
-//  mount_t mnt = xbt_new0(s_mount_t, 1);
-//  mnt->id = xbt_strdup(mstorage->type_id);
-//  mnt->name = xbt_strdup(mstorage->name);
-//
-//  if(!mount_list){
-//    XBT_DEBUG("Creata a Mount list for %s",A_surfxml_host_id);
-//    mount_list = xbt_dynar_new(sizeof(char *), NULL);
-//  }
-//  xbt_dynar_push(mount_list,(void *) mnt);
-//  free(mnt->id);
-//  free(mnt->name);
-//  xbt_free(mnt);
-//  XBT_DEBUG("ROUTING Mount a storage name '%s' with type_id '%s'",mstorage->name, mstorage->id);
-}
-
-static void mount_free(void *p)
-{
-  mount_t mnt = p;
-  xbt_free(mnt->name);
-}
-
-static void routing_parse_mount(sg_platf_mount_cbarg_t mount)
-{
-  // Verification of an existing storage
-#ifndef NDEBUG
-  void* storage = xbt_lib_get_or_null(storage_lib, mount->id,ROUTING_STORAGE_LEVEL);
-#endif
-  xbt_assert(storage,"Disk id \"%s\" does not exists", mount->id);
-
-  XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->id, mount->name);
-
-  s_mount_t mnt;
-  mnt.id = surf_storage_resource_by_name(mount->id);
-  mnt.name = xbt_strdup(mount->name);
-
-  if(!mount_list){
-    XBT_DEBUG("Create a Mount list for %s",A_surfxml_host_id);
-    mount_list = xbt_dynar_new(sizeof(s_mount_t), mount_free);
-  }
-  xbt_dynar_push(mount_list,&mnt);
-}
-
 static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   char *host_id, *groups, *link_id = NULL;
@@ -1313,11 +1159,6 @@ void routing_register_callbacks()
 
   sg_platf_peer_add_cb(routing_parse_peer);
   sg_platf_postparse_add_cb(routing_parse_postparse);
-
-  sg_platf_storage_add_cb(routing_parse_storage);
-  sg_platf_mstorage_add_cb(routing_parse_mstorage);
-  sg_platf_storage_type_add_cb(routing_parse_storage_type);
-  sg_platf_mount_add_cb(routing_parse_mount);
 
   /* we care about the ASes while parsing the platf. Incredible, isnt it? */
   sg_platf_AS_end_add_cb(routing_AS_end);

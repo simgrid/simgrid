@@ -22,7 +22,7 @@ typedef struct surf_model *surf_model_t;
  * It is represented as a cost, a priority, a duration and a state.
  */
 typedef struct surf_action *surf_action_t;
-
+typedef struct surf_file *surf_file_t;
 
 typedef struct lmm_element *lmm_element_t;
 typedef struct lmm_variable *lmm_variable_t;

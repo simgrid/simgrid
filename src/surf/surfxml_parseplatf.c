@@ -138,6 +138,7 @@ void parse_platform_file(const char *file)
 
   /* Register classical callbacks */
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
+  storage_register_callbacks();
   routing_register_callbacks();
 
   /* init the flex parser */

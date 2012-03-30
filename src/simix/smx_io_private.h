@@ -10,13 +10,6 @@
 #include "simix/datatypes.h"
 #include "smx_smurf_private.h"
 
-/** @brief File datatype */
-typedef struct s_smx_file {
-  char *name;              /**< @brief host name if any */
-  void *simdata;
-  void *data;              /**< @brief user data */
-} s_smx_file_t;
-
 void SIMIX_pre_file_read(smx_simcall_t simcall);
 void SIMIX_pre_file_write(smx_simcall_t simcall);
 void SIMIX_pre_file_open(smx_simcall_t simcall);

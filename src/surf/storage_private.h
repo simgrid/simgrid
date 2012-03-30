@@ -8,6 +8,33 @@
 #ifndef STORAGE_PRIVATE_H_
 #define STORAGE_PRIVATE_H_
 
+typedef struct s_storage_type {
+  char *model;
+  xbt_dict_t content;
+  char *type_id;
+  xbt_dict_t properties;
+} s_storage_type_t, *storage_type_t;
+
+typedef struct s_mount {
+  void *id;
+  char *name;
+} s_mount_t, *mount_t;
+
+typedef struct s_content {
+  char *user_rights;
+  char *user;
+  char *group;
+  char *date;
+  char *time;
+  size_t size;
+} s_content_t, *content_t;
+
+
+typedef struct surf_file {
+  char *name;
+  content_t content;
+} s_surf_file_t;
+
 typedef struct storage {
   s_surf_resource_t generic_resource;   /*< Structure with generic data. Needed at begin to interate with SURF */
   e_surf_resource_state_t state_current;        /*< STORAGE current state (ON or OFF) */

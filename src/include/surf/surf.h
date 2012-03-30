@@ -93,7 +93,7 @@ typedef struct surf_action {
 #ifdef HAVE_TRACING
   char *category;               /**< tracing category for categorized resource utilization monitoring */
 #endif
-  void* file;        /**< surf_file_t for storage model */
+  surf_file_t file;        /**< surf_file_t for storage model */
   size_t read_write;
 } s_surf_action_t;
 
@@ -215,12 +215,6 @@ typedef struct surf_network_model_extension_public {
  *
  *  Public functions specific to the Storage model.
  */
-
-typedef struct surf_file {
-  char *name;              /**< @brief host name if any */
-  void *simdata;
-  void *data;              /**< @brief user data */
-}s_surf_file_t, *surf_file_t;
 
 typedef struct surf_storage_model_extension_public {
   surf_action_t(*open) (void *storage, const char* path, const char* mode);
@@ -354,30 +348,6 @@ typedef struct surf_resource {
   char *name;
   xbt_dict_t properties;
 } s_surf_resource_t, *surf_resource_t;
-
-/**
- * Storage struct
- */
-typedef struct s_storage_type {
-  char *model;
-  xbt_dict_t content;
-  char *type_id;
-  xbt_dict_t properties;
-} s_storage_type_t, *storage_type_t;
-
-typedef struct s_mount {
-  void *id;
-  char *name;
-} s_mount_t, *mount_t;
-
-typedef struct s_content {
-  char *user_rights;
-  char *user;
-  char *group;
-  char *date;
-  char *time;
-  size_t size;
-} s_content_t, *content_t;
 
 /**
  * Resource which have a metric handled by a maxmin system
