@@ -138,7 +138,8 @@ SMPI_SAMPLE_GLOBAL. Of course, none of this will work if the execution
 time of your loop iteration are not stable.
 
 Yes, that's right, these macros are not documented yet, but we'll fix
-it as soon as time permits. Sorry about that -- patch welcomed! 
+it as soon as time permits. Sorry about that -- patch welcomed!
+Meanwhile, grep for them on the examples for more information.
 
 \section SMPI_compiling Compiling your code
 
