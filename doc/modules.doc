@@ -79,25 +79,102 @@
     \ingroup SimGrid_API
     \brief Programming environment for the simulation of MPI applications
   
-    Once implemented, this programming environment will allow you to study
-    within the simulator any MPI application without having to modify them
-    for that. In other words, it will constitute an emulation solution for
-    parallel codes.
+This programming environment permits to study existing MPI application
+by emulating them on top of the SimGrid simulator. In other words, it
+will constitute an emulation solution for parallel codes. You don't
+even have to modify your code for that, although that may help, as
+detailed below.
     
-    \section SMPI_who Who should use this (and who shouldn't)
+\section SMPI_who Who should use SMPI (and who shouldn't)
     
-    You should use this programming environment of the SimGrid suite if you
-    want to study existing MPI applications.
-    If you want to work on a distributed application, have a look at the 
-    \ref GRAS_API environment. 
-    If you want to study some heuristics for a given problem (and if your
-    goal is to produce theorems, not code), have a look at the \ref MSG_API
-    environment, or the \ref SD_API one if you need to use DAGs.
-    If none of those programming environments fits your needs, you may
-    consider implementing your own directly on top of \ref SURF_API (but you
-    probably want to contact us before).
+You should use this programming environment of the SimGrid suite if
+you want to study existing MPI applications. If you want to create a
+distributed application, you may be interested in the \ref GRAS_API
+environment instead (but note that GRAS is not very actively
+maintained nowadays). If you want to study some heuristics for a given
+problem (and if your goal is to produce theorems and publications, not
+code), have a look at the \ref MSG_API environment, or the \ref SD_API
+one if you need to use DAGs. If none of those programming environments
+fits your needs, you may consider implementing your own directly on
+top of \ref SURF_API (but you probably want to contact us before).
   
- */
+\section SMPI_what What can run within SMPI?
+
+You can run unmodified MPI applications (both C and Fortran) within
+SMPI, provided you only use MPI calls that we implemented in MPI. Our
+coverage of the interface is not bad, but will probably never be
+complete. One sided communications and I/O primitives are not targeted
+for now. The full list of not yet implemented functions is available
+in file <tt>include/smpi/smpi.h</tt> of the archive, between two lines
+containing the <tt>FIXME</tt> marker. If you really need a missing
+feature, please get in touch with us: we can guide you though the
+SimGrid code to help you implementing it, and we'd glad to integrate
+it in the main project afterward if you contribute them back.
+
+\section SMPI_adapting Adapting your MPI code to the use of SMPI
+
+As detailed in the reference article (available at
+http://hal.inria.fr/inria-00527150), you may want to adapt your code
+to improve the simulation performance. But these tricks may seriously
+hinder the result qualtity (or even prevent the app to run) if used
+wrongly. We assume that if you want to simulate an HPC application,
+you know what you are doing. Don't prove us wrong!
+
+If you get short on memory (the whole app is executed on a single node
+when simulated), you should have a look at the SMPI_SHARED_MALLOC and
+SMPI_SHARED_FREE macros. It allows to share memory areas between
+processes. For example, matrix multiplication code may want to store
+the blocks on the same area. Of course, the resulting computations
+will useless, but you can still study the application behavior this
+way. Of course, if your code is data-dependent, this won't work.
+
+If your application is too slow, try using SMPI_SAMPLE_LOCAL,
+SMPI_SAMPLE_GLOBAL and friends to indicate which computation loops can
+be sampled. Some of the loop iterations will be executed to measure
+their duration, and this duration will be used for the subsequent
+iterations. These samples are done per processor with
+SMPI_SAMPLE_LOCAL, and shared between all processors with
+SMPI_SAMPLE_GLOBAL. Of course, none of this will work if the execution
+time of your loop iteration are not stable.
+
+Yes, that's right, these macros are not documented yet, but we'll fix
+it as soon as time permits. Sorry about that -- patch welcomed! 
+
+\section SMPI_compiling Compiling your code
+
+This is very simply done with the <tt>smpicc</tt> script. If you
+already compiled any MPI code before, you already know how to use it.
+If not, you should try to get your MPI code running on top of MPI
+before giving SMPI a spin. Actually, that's very simple even if it's
+the first time you use MPI code: just use smpicc as a compiler (in
+replacement of gcc or your usual compiler), and you're set.
+
+\section SMPI_executing Executing your code on top of the simulator
+
+This is done though the <tt>smpirun</tt> script as follows.
+<tt>my_hostfile.txt</tt> is a classical MPI hostfile (that is, this
+file lists the machines on which the processes must be dispatched, one
+per line)  <tt>my_platform.xml</tt> is a classical SimGrid platform
+file. Of course, the hosts of the hostfile must exist in the provided
+platform. <tt>./program</tt> is the MPI program that you want to
+simulate (must be compiled by <tt>smpicc</tt>) while <tt>-arg</tt> is
+a command-line parameter passed to this program.
+
+\verbatim
+smpirun -hostfile my_hostfile.txt -platform my_platform.xml ./program -arg
+\endverbatim
+
+smpirun accepts other parameters, such as <tt>-np</tt> if you don't
+want to use all the hosts defined in the hostfile, <tt>-map</tt> to
+display on which host each rank gets mapped of <tt>-trace</tt> to
+activate the tracing during the simulation. You can get the full list
+by running 
+\verbatim 
+smpirun -help
+\endverbatim
+
+
+*/
 
 
 /** \defgroup SD_API      SimDag
