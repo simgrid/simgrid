@@ -131,14 +131,18 @@ shift
 
 ##-----------------------------------
 
-# test if we have something to execute, otherwise show usage and exit
-if [ -z ${EXEC} ]
-then
-    echo "Program is missing"
+# Basic checks on the provided arguments
+if [ -z ${EXEC} ] ; then
+    echo "You must provide a program to execute."
     usage
     exit 1
 fi
 
+if [ -z ${HOSTFILE} ] ; then
+    echo "No hostfile specified."
+    usage
+    exit 1
+fi
 
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
