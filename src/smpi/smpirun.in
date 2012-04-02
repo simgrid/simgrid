@@ -13,7 +13,6 @@ LOOPBACK_BANDWIDTH="${DEFAULT_LOOPBACK_BANDWIDTH}"
 LOOPBACK_LATENCY="${DEFAULT_LOOPBACK_LATENCY}"
 NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
 NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
-NUMPROCS="${DEFAULT_NUMPROCS}"
 POWER="${DEFAULT_POWER}"
 
 SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
@@ -25,6 +24,8 @@ function usage () {
     echo "      [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
     echo "      [-keep-temps]             # don't remove the generated files after execution"
     echo "      [-map]                    # display the machine on which each process rank is mapped"
+    echo "      [-np <numprocs>]          # use that amount of processes from the hostfile."
+    echo "                                # By default, all processes of the hostfile are used."
     echo "      [-trace]                  # activate tracing"
     echo "      [-trace-grouped]          # group MPI processes by location"
     echo "      [-trace-resource]         # trace resource utilization"
@@ -144,6 +145,19 @@ if [ -z ${HOSTFILE} ] ; then
     exit 1
 fi
 
+# Don't use wc -l to compute it to avoid issues with trailing \n at EOF
+hostfile_procs=`grep -c [a-zA-Z0-9] $HOSTFILE`
+
+if [ -z ${NUMPROCS} ] ; then
+    # Use the amount of processes in the hostfile as default value for the -np parameter
+    NUMPROC=$hostfile_procs
+fi
+
+
+if [ ${NUMPROCS} -gt ${hostfile_procs} ] ; then
+    echo "You requested to use ${NUMPROCS} processes, but there is only ${hostfile_procs} processes in your hostfile..."
+    exit 1
+fi
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
 if [ -z "${PLATFORM}" ]; then
