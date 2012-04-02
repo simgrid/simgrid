@@ -155,8 +155,7 @@ fi
 
 
 if [ ${NUMPROCS} -gt ${hostfile_procs} ] ; then
-    echo "You requested to use ${NUMPROCS} processes, but there is only ${hostfile_procs} processes in your hostfile..."
-    exit 1
+    echo "You requested to use ${NUMPROCS} processes, but there is only ${hostfile_procs} processes in your hostfile..." >&2
 fi
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
