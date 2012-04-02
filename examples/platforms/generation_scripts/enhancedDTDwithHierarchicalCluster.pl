@@ -1,10 +1,10 @@
 #! /usr/bin/perl
 
 # L.Bobelin (Perl newbie) 24th of November
-# Quick script to generate hierarchical clusters. Usage : add the special cluster tag (description below) in your "normal" platform file. Then run the script :
+# Quick script to generate hierarchical clusters. Usage : add the special cluster tag (description below) in your "normal" platform file. Then run the script :
 # - First arg : the input file where you midified your cluster tag
-# - Second one : the output file where all the stuff will be generated.
-# Builds a complete tree to access clusters ; each node of the tree is inclosed in an AS, where full routing applies.
+# - Second one : the output file where all the stuff will be generated.
+# Builds a complete tree to access clusters ; each node of the tree is inclosed in an AS, where full routing applies.
 #
 # Number of cluster per leaf is given by cabinetnodes attr.
 #
@@ -13,19 +13,19 @@
 # - nbsons : degree of inner  
 # - height : tree heigth
 # - cabinetnodes : cluster per leaf
-# 
-# Each node is numbered by a DFS in the tree. Each cluster is numbered by the DFS number of the leaf it is attached to and the number of cluster for each leaf. 
-# 
-# 	 
+#
+# Each node is numbered by a DFS in the tree. Each cluster is numbered by the DFS number of the leaf it is attached to and the number of cluster for each leaf. 
+#
+#
 # Example syntax for hierarchical cluster creation : 
 # <cluster id="AS_cb1" prefix="cb1-" suffix=".dc1.acloud.com" power="5.2297E9" bw="1.25E8" lat="1.0E-4 bb_bw="1.25E9" bb_lat="1.0E-4" radical="0-99" cabinetnodes="4" height="3" nbsons="2" links_lat="1.0E-4" links_bw="1.25E9"/>
 # Other infos : 
-# - special tag has to be on one line because I don't want to bother with parsing issues
+# - special tag has to be on one line because I don't want to bother with parsing issues
 # - Same bb_lat used for any routers inside (not that complicated to modify too)
 # - lame perl ? I'm a script kiddie in perl, it may well be my first perl stuff. 
 # - Don't try to check or validate the modified file with the DTD, of course, as this is not a part of it.
 
-# Counter for giving unique IDs to ASes.
+# Counter for giving unique IDs to ASes.
 $ASnumber;
 $ASnumber = 0;
 
@@ -102,14 +102,14 @@ print $infile . " -> " . $outfile . " ... Done.\n";
 sub DF_creation {
 	my($currDepth) = @_;
 	
-	# Curr AS creation
+	# Curr AS creation
 	print OUT "<AS id=\"". $prefix . "AS_" . $ASnumber . $suffix . "\"  routing=\"Full\">\n";	
 	
-	# Curr router AS creation stuff
+	# Curr router AS creation stuff
 	print OUT "<AS id=\"". $prefix . "exitAS_" . $ASnumber . $suffix . "\"  routing=\"Full\">\n";			 
 	print OUT "	<router id=\"" . $prefix . "router_" . $ASnumber . $suffix . "\"/>\n";
 	print OUT "</AS>\n";
-	# Saving my current number to return it to my father
+	# Saving my current number to return it to my father
 	my $toReturn = $ASnumber;
 	$ASnumber++;
 	if ($currDepth<$height)
@@ -167,7 +167,7 @@ sub DF_creation {
 			print OUT "<cluster id=\"". $prefix . "cluster_" . $toReturn . $i . $suffix . "\" prefix=\"" . $prefix . "c_" . $toReturn. $i . "-\" suffix=\"" . $suffix . "\" radical=\""
 				. $radical . "\" power=\"" . $power . "\" bw=\"" . $bw . "\" lat=\"" . $lat . "\" bb_bw=\"" . $bb_bw . "\" bb_lat=\"" . $bb_lat . "\"/>\n";	
 			}	
-		# Creating links to clusters 
+		# Creating links to clusters
 		for(my $i = 1; $i <= $cabinetnodes; $i++) {
 			print OUT "<link id=\"". $prefix . $toReturn . "_" . $i . $suffix . "\" bandwidth=\"" . $links_bw . "\" latency=\"" . $links_lat . "\"/>\n";
 		}
@@ -176,7 +176,7 @@ sub DF_creation {
 		# curr backbone creation 
 		print OUT "<link id=\"". $prefix . "bb_" . $toReturn . $suffix . "\" bandwidth=\"" . $bb_bw . "\" latency=\"" . $bb_lat . "\"/>\n";
 	
-		# I must create routes between clusters now 
+		# I must create routes between clusters now
 		for (my $i =1; $i<=$cabinetnodes ; $i++)
 			{
 					for (my $j =$i+1; $j<=$cabinetnodes ; $j++)
@@ -199,7 +199,7 @@ sub DF_creation {
 		{
 			print OUT  "<ASroute src=\""  . $prefix . "cluster_" . $toReturn . $i . $suffix  . "\"\n";
 			print OUT "	dst=\"" . $prefix . "exitAS_" . $toReturn . $suffix . "\"\n";
-			# SAME HERE !!
+			# SAME HERE !!
 			print OUT "	gw_src=\"" . $prefix . "c_" . $toReturn. $i . "-" . $prefix . "cluster_" . $toReturn . $i . $suffix . "_router" . $suffix  ."\"\n";
 			print OUT "	gw_dst=\"" . $prefix . "router_" . $toReturn . $suffix . "\"\n";
 			print OUT "	symmetrical=\"YES\">\n";						
@@ -208,7 +208,7 @@ sub DF_creation {
 			print OUT "</ASroute>\n";			
 		}
 		print OUT "</AS>\n";
-	# Should be done with it...
+	# Should be done with it...
 	return $toReturn;
 	}
 

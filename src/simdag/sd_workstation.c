@@ -254,7 +254,7 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
 }
 
 /**
- * \brief Returns the latency of the route between two workstations, i.e. the sum of all link latencies
+ * \brief Returns the latency of the route between two workstations, i.e. the sum of all link latencies
  * between the workstations.
  *
  * \param src the first workstation
@@ -283,7 +283,7 @@ double SD_route_get_current_latency(SD_workstation_t src,
 }
 
 /**
- * \brief Returns the bandwidth of the route between two workstations, i.e. the minimum link bandwidth of all
+ * \brief Returns the bandwidth of the route between two workstations, i.e. the minimum link bandwidth of all
  * between the workstations.
  *
  * \param src the first workstation

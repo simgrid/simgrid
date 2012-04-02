@@ -172,7 +172,7 @@ void xbt_graph_free_graph(xbt_graph_t g,
 }
 
 
-/** @brief remove the given node from the given graph */
+/** @brief remove the given node from the given graph */
 void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
                          void_f_pvoid_t node_free_function,
                          void_f_pvoid_t edge_free_function)
@@ -210,7 +210,7 @@ void xbt_graph_free_node(xbt_graph_t g, xbt_node_t n,
   return;
 }
 
-/** @brief remove the given edge from the given graph */
+/** @brief remove the given edge from the given graph */
 void xbt_graph_free_edge(xbt_graph_t g, xbt_edge_t e,
                          void_f_pvoid_t free_function)
 {

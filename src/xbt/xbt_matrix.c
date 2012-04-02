@@ -138,7 +138,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
 
 }
 
-/** \brief Creates a new matrix of double filled with zeros */
+/** \brief Creates a new matrix of double filled with zeros */
 xbt_matrix_t xbt_matrix_double_new_zeros(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_new(lines, rows, sizeof(double), NULL);
@@ -147,7 +147,7 @@ xbt_matrix_t xbt_matrix_double_new_zeros(int lines, int rows)
   return res;
 }
 
-/** \brief Creates a new matrix of double being the identity matrix */
+/** \brief Creates a new matrix of double being the identity matrix */
 xbt_matrix_t xbt_matrix_double_new_id(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_double_new_zeros(lines, rows);
@@ -158,7 +158,7 @@ xbt_matrix_t xbt_matrix_double_new_id(int lines, int rows)
   return res;
 }
 
-/** \brief Creates a new matrix of double randomly filled */
+/** \brief Creates a new matrix of double randomly filled */
 xbt_matrix_t xbt_matrix_double_new_rand(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_new(lines, rows, sizeof(double), NULL);
@@ -170,7 +170,7 @@ xbt_matrix_t xbt_matrix_double_new_rand(int lines, int rows)
   return res;
 }
 
-/** \brief Creates a new matrix of double containing the sequence of numbers in order */
+/** \brief Creates a new matrix of double containing the sequence of numbers in order */
 xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_new(lines, rows, sizeof(double), NULL);
@@ -182,7 +182,7 @@ xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
   return res;
 }
 
-/** \brief Checks whether the matrix contains the sequence of numbers */
+/** \brief Checks whether the matrix contains the sequence of numbers */
 int xbt_matrix_double_is_seq(xbt_matrix_t mat)
 {
   int i;

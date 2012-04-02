@@ -1,21 +1,21 @@
 #! /usr/bin/perl
 
 # L.Bobelin (Perl newbie) 25th of November
-# Quick script to generate hierarchical clusters. Usage : <the script> p s d  where :
+# Quick script to generate hierarchical clusters. Usage : <the script> p s d  where :
 # - p : 2^p gives the total number of hosts.
-# - s : cluster size
-# - d : degree of inner nodes.
+# - s : cluster size
+# - d : degree of inner nodes.
 #
-# output is the standard one. 
-# 
+# output is the standard one.
+#
 #
 #Each node is numbered by a DFS in the tree. Each cluster is numbered by the DFS number of the leaf it is attached to and the number of cluster for each leaf. 
 # Other infos : 
 # - Same bb_lat used for any routers inside (not that complicated to modify too).
 # - constants defined in the first part of the script corresponding to classic cluster parameters. links_bw and links_lat added for the inner tree links
 # - bb_lat and bb_bw used in any backbone of the tree.
-# - fails if you set an obviously too small total number of hosts compared to the cluster size (generates a lot of stuff for nothing actually).
-# 
+# - fails if you set an obviously too small total number of hosts compared to the cluster size (generates a lot of stuff for nothing actually).
+#
 
 use Math::BigInt;
 
@@ -75,11 +75,11 @@ if ( $height->bcmp(Math::BigInt->new("1")) != 0 && ($height->copy()->bpow($d))->
 # print STDERR "totalnumberofcluster: " .  $totalnumberofCluster . "\n";
 # print STDERR "last cluster size (if equals to cluster size, then all clusters will be homogeneous) : " . $last . "\n";
 
-# Counter for giving unique IDs to ASes.
+# Counter for giving unique IDs to ASes.
 $ASnumber;
 $ASnumber = 0;
 
-# Printing preamble
+# Printing preamble
 print "<?xml version='1.0'?>\n";
 print "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n";
 print "<platform version=\"3\">\n\n";
@@ -96,14 +96,14 @@ print "</platform>\n";
 sub DF_creation {
 	my($currDepth) = @_;
 	
-	# Curr AS creation
+	# Curr AS creation
 	print "<AS id=\"". $prefix . "AS_" . $ASnumber . $suffix . "\"  routing=\"Full\">\n";	
 	
-	# Curr router AS creation stuff
+	# Curr router AS creation stuff
 	print "<AS id=\"". $prefix . "exitAS_" . $ASnumber . $suffix . "\"  routing=\"Full\">\n";			 
 	print "	<router id=\"" . $prefix . "router_" . $ASnumber . $suffix . "\"/>\n";
 	print "</AS>\n";
-	# Saving my current number to return it to my father
+	# Saving my current number to return it to my father
 	my $toReturn = $ASnumber;
 	$ASnumber++;
 	if ($currDepth<=$height && $totalnumberofCluster > 0)
@@ -173,7 +173,7 @@ sub DF_creation {
 			}
 			$totalnumberofCluster--;
 			}	
-		# Creating links to clusters 
+		# Creating links to clusters
 		for(my $i = 1; $i <= $lastNumberOfClusterCreated ; $i++) {
 			print "<link id=\"". $prefix . $toReturn . "_" . $i . $suffix . "\" bandwidth=\"" . $links_bw . "\" latency=\"" . $links_lat . "\"/>\n";
 		}
@@ -182,7 +182,7 @@ sub DF_creation {
 		# curr backbone creation 
 		print "<link id=\"". $prefix . "bb_" . $toReturn . $suffix . "\" bandwidth=\"" . $bb_bw . "\" latency=\"" . $bb_lat . "\"/>\n";
 	
-		# I must create routes between clusters now 
+		# I must create routes between clusters now 
 		for (my $i =1; $i<=$lastNumberOfClusterCreated ; $i++)
 			{
 					for (my $j =$i+1; $j<=$lastNumberOfClusterCreated ; $j++)
@@ -205,7 +205,7 @@ sub DF_creation {
 		{
 			print  "<ASroute src=\""  . $prefix . "cl_" . $toReturn . "_" . $i . $suffix  . "\"\n";
 			print "	dst=\"" . $prefix . "exitAS_" . $toReturn . $suffix . "\"\n";
-			# SAME HERE !!
+			# SAME HERE !!
 			print "	gw_src=\"" . $prefix . "c_" . $toReturn . "_" . $i . "-" . $prefix . "cl_" . $toReturn . "_" . $i . $suffix . "_router" . $suffix  ."\"\n";
 			print "	gw_dst=\"" . $prefix . "router_" . $toReturn . $suffix . "\"\n";
 			print "	symmetrical=\"YES\">\n";						
@@ -214,7 +214,7 @@ sub DF_creation {
 			print "</ASroute>\n";			
 		}
 		print "</AS>\n";
-	# Should be done with it...
+	# Should be done with it...
 	return $toReturn;
 	}
 

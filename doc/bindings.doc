@@ -11,7 +11,7 @@
 \section bindings_binding_lua Lua Binding
 
 Most of Simgrid modules require a  good level in C programming, since simgrid is used to be as standard C library.
- Sometime users prefer using some kind of « easy scripts » or a language easier to code with, for their works,
+ Sometime users prefer using some kind of “easy scripts” or a language easier to code with, for their works,
  which avoid dealing with C errors, and sometime an important  gain of time.
 Besides Java Binding, Lua  and Ruby bindings are available since version 3.4 of Simgrid
 for MSG Module, and we are currenlty working on bindings for other modules.
