@@ -23,6 +23,8 @@ function usage () {
     echo "usage:"
     echo "$0 [-quiet] [-keep-temps]"
     echo "      [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+    echo "      [-keep-temps]             # don't remove the generated files after execution"
+    echo "      [-map]                    # display the machine on which each process rank is mapped"
     echo "      [-trace]                  # activate tracing"
     echo "      [-trace-grouped]          # group MPI processes by location"
     echo "      [-trace-resource]         # trace resource utilization"
