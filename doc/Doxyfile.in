@@ -654,6 +654,7 @@ INPUT                  = index.doc \
                          gtut-tour-16-exchangecb.doc \
                          gtut-howto.doc \
                          gtut-howto-design.doc \
+                         @top_srcdir@/doc/logcategories.doc \
                          @top_srcdir@/src/instr/ \
                          @top_srcdir@/include/ \
                          @top_srcdir@/include/msg \

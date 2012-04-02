@@ -613,6 +613,7 @@ set(DOC_SOURCES
 	
 	#doc/index-API.doc
 	doc/index.doc
+	${CMAKE_HOME_DIRECTORY}/doc/logcategories.doc
 	doc/module-amok.doc
 	doc/module-gras.doc
 	doc/module-msg.doc
