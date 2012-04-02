@@ -16,13 +16,12 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 # second test
 p Test Broadcast with as much processes than hosts
 ! setenv LD_LIBRARY_PATH=../../lib
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 6 ./bcast -q
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 5 ./bcast -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 > [rank 4] -> Bourassa
-> [rank 5] -> Tremblay
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
