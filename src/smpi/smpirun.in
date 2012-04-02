@@ -59,7 +59,7 @@ while true; do
     ;;
    "-platform")
 	PLATFORM="$2"
-      if [ ! -f ${PLATFORM} ]; then
+      if [ ! -f "${PLATFORM}" ]; then
 		echo "[$0] ** error: the file '${PLATFORM}' does not exist. Aborting."
 		exit 1
       fi
@@ -67,7 +67,7 @@ while true; do
     ;;
    "-hostfile")
 	HOSTFILE="$2"
-      if [ ! -f ${HOSTFILE} ]; then
+      if [ ! -f "${HOSTFILE}" ]; then
 		echo "[$0] ** error: the file '${HOSTFILE}' does not exist. Aborting."
 		exit 1
       fi
@@ -133,13 +133,13 @@ shift
 ##-----------------------------------
 
 # Basic checks on the provided arguments
-if [ -z ${EXEC} ] ; then
+if [ -z "${EXEC}" ] ; then
     echo "You must provide a program to execute."
     usage
     exit 1
 fi
 
-if [ -z ${HOSTFILE} ] ; then
+if [ -z "${HOSTFILE}" ] ; then
     echo "No hostfile specified."
     usage
     exit 1
@@ -148,13 +148,13 @@ fi
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
 hostfile_procs=`grep -c [a-zA-Z0-9] $HOSTFILE`
 
-if [ -z ${NUMPROCS} ] ; then
+if [ -z "${NUMPROCS}" ] ; then
     # Use the amount of processes in the hostfile as default value for the -np parameter
-    NUMPROC=$hostfile_procs
+    NUMPROCS=$hostfile_procs
 fi
 
 
-if [ ${NUMPROCS} -gt ${hostfile_procs} ] ; then
+if [ ${NUMPROCS} -gt ${hostfile_procs} ] ; then
     echo "You requested to use ${NUMPROCS} processes, but there is only ${hostfile_procs} processes in your hostfile..."
     exit 1
 fi
