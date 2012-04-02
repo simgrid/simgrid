@@ -17,6 +17,7 @@
 
 #include "smx_private.h"
 #include "mc/mc.h"
+#include "xbt/ex.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
@@ -1078,6 +1079,8 @@ void simcall_cond_wait_timeout(smx_cond_t cond,
                                  smx_mutex_t mutex,
                                  double timeout)
 {
+  xbt_ex_t e;
+
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1087,7 +1090,20 @@ void simcall_cond_wait_timeout(smx_cond_t cond,
   simcall->cond_wait_timeout.mutex = mutex;
   simcall->cond_wait_timeout.timeout = timeout;
 
-  SIMIX_simcall_push(simcall->issuer);
+  TRY {
+    SIMIX_simcall_push(simcall->issuer);
+  }
+  CATCH(e) {
+    switch (e.category) {
+      case timeout_error:
+        simcall->issuer->waiting_action = NULL; // FIXME: should clean ?
+        break;
+      default:
+        break;
+    }
+    RETHROW;
+    xbt_ex_free(e);
+  }
 }
 
 void simcall_cond_broadcast(smx_cond_t cond)
