@@ -63,8 +63,8 @@ enum heap_action_type{
   NOTSET
 };
 
-/** \brief Action structure
- * \ingroup SURF_actions
+/** \ingroup SURF_actions
+ *  \brief Action structure
  *
  *  Never create s_surf_action_t by yourself ! The actions are created
  *  on the fly when you call execute or communicate on a model.
@@ -107,8 +107,8 @@ typedef struct surf_action_lmm {
   enum heap_action_type hat;
 } s_surf_action_lmm_t, *surf_action_lmm_t;
 
-/** \brief Action states
- *  \ingroup SURF_actions
+/** \ingroup SURF_actions
+ *  \brief Action states
  *
  *  Action states.
  *
@@ -124,8 +124,8 @@ typedef enum {
                                 /**< Not in the system anymore. Why did you ask ? */
 } e_surf_action_state_t;
 
-/** \brief Action state sets
- *  \ingroup SURF_actions
+/** \ingroup SURF_actions
+ *  \brief Action state sets
  *
  *  This structure contains some sets of actions.
  *  It provides a fast access to the actions in each state.
@@ -150,15 +150,15 @@ typedef struct s_routing_global s_routing_global_t, *routing_global_t;
 XBT_PUBLIC_DATA(routing_global_t) global_routing;
 
 
-/** \brief Private data available on all models
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Private data available on all models
  */
 typedef struct surf_model_private *surf_model_private_t;
 
      /* Cpu model */
 
-     /** \brief CPU model extension public
-      *  \ingroup SURF_models
+     /** \ingroup SURF_models
+      *  \brief CPU model extension public
       *
       *  Public functions specific to the CPU model.
       */
@@ -182,8 +182,8 @@ typedef struct s_network_element_info *network_element_t;
 
      /* Network model */
 
-     /** \brief Network model extension public
-      *  \ingroup SURF_models
+     /** \ingroup SURF_models
+      *  \brief Network model extension public
       *
       *  Public functions specific to the network model
       */
@@ -210,8 +210,8 @@ typedef struct surf_network_model_extension_public {
 
 /* Storage model */
 
-/** \brief Storage model extension public
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Storage model extension public
  *
  *  Public functions specific to the Storage model.
  */
@@ -225,8 +225,8 @@ typedef struct surf_storage_model_extension_public {
   void* (*create_resource) (const char* id, const char* model,const char* type_id);
 } s_surf_model_extension_storage_t;
 
-     /** \brief Workstation model extension public
-      *  \ingroup SURF_models
+     /** \ingroup SURF_models
+      *  \brief Workstation model extension public
       *
       *  Public functions specific to the workstation model.
       */
@@ -280,8 +280,8 @@ typedef struct surf_workstation_model_extension_public {
 
 
 
-/** \brief Model datatype
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Model datatype
  *
  *  Generic data structure for a model. The workstations,
  *  the CPUs and the network links are examples of models.
@@ -395,13 +395,13 @@ typedef struct surf_resource_lmm {
 /**************************************/
 
 
-/** \brief The CPU model
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief The CPU model
  */
 XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model;
 
-/** \brief Initializes the CPU model with the model Cas01
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the CPU model with the model Cas01
  *
  *  By default, this model uses the lazy optimization mechanism that
  *  relies on partial invalidation in LMM and a heap for lazy action update.
@@ -415,8 +415,8 @@ XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model;
  */
 XBT_PUBLIC(void) surf_cpu_model_init_Cas01(void);
 
-/** \brief Initializes the CPU model with trace integration [Deprecated]
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the CPU model with trace integration [Deprecated]
  *
  *  You shouldn't have to call it by yourself.
  *  \see surf_workstation_model_init_CLM03()
@@ -433,14 +433,14 @@ XBT_PUBLIC(double) generic_share_resources(double now);
  */
 XBT_PUBLIC(void)   generic_update_actions_state(double now, double delta);
 
-/** \brief The list of all available optimization modes (both for cpu and networks).
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:...
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_optimization_mode_description[];
 
-/** \brief The list of all available cpu model models
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief The list of all available cpu model models
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
 
@@ -451,8 +451,8 @@ XBT_PUBLIC(void) create_workstations(void);
  */
 
 
-/** \brief The network model
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief The network model
  *
  *  When creating a new API on top on SURF, you shouldn't use the
  *  network model unless you know what you are doing. Only the workstation
@@ -461,8 +461,8 @@ XBT_PUBLIC(void) create_workstations(void);
  */
 XBT_PUBLIC_DATA(surf_model_t) surf_network_model;
 
-/** \brief Same as network model 'LagrangeVelho', only with different correction factors.
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Same as network model 'LagrangeVelho', only with different correction factors.
  *
  * This model is proposed by Pierre-Nicolas Clauss and Martin Quinson and Stéphane Génaud
  * based on the model 'LV08' and different correction factors depending on the communication
@@ -473,8 +473,8 @@ XBT_PUBLIC_DATA(surf_model_t) surf_network_model;
  */
 XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
 
-/** \brief Initializes the platform with the network model 'LegrandVelho'
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the network model 'LegrandVelho'
  *
  * This model is proposed by Arnaud Legrand and Pedro Velho based on
  * the results obtained with the GTNets simulator for onelink and
@@ -484,8 +484,8 @@ XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
  */
 XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(void);
 
-/** \brief Initializes the platform with the network model 'Constant'
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the network model 'Constant'
  *
  *  In this model, the communication time between two network cards is
  *  constant, hence no need for a routing table. This is particularly
@@ -497,8 +497,8 @@ XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(void);
  */
 XBT_PUBLIC(void) surf_network_model_init_Constant(void);
 
-/** \brief Initializes the platform with the network model CM02
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the network model CM02
  *
  *  This function is called by surf_workstation_model_init_CLM03
  *  or by yourself only if you plan using surf_workstation_model_init_compound
@@ -516,8 +516,8 @@ XBT_PUBLIC(void) surf_network_model_init_bypass(const char *id,
                                                 double initial_lat);
 
 #ifdef HAVE_GTNETS
-/** \brief Initializes the platform with the network model GTNETS
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the network model GTNETS
  *  \param filename XML platform file name
  *
  *  This function is called by surf_workstation_model_init_GTNETS
@@ -529,8 +529,8 @@ XBT_PUBLIC(void) surf_network_model_init_GTNETS(void);
 #endif
 
 #ifdef HAVE_NS3
-/** \brief Initializes the platform with the network model NS3
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the network model NS3
  *  \param filename XML platform file name
  *
  *  This function is called by surf_workstation_model_init_NS3
@@ -541,8 +541,8 @@ XBT_PUBLIC(void) surf_network_model_init_GTNETS(void);
 XBT_PUBLIC(void) surf_network_model_init_NS3(void);
 #endif
 
-/** \brief Initializes the platform with the network model Reno
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the network model Reno
  *  \param filename XML platform file name
  *
  *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
@@ -556,8 +556,8 @@ XBT_PUBLIC(void) surf_network_model_init_NS3(void);
  */
 XBT_PUBLIC(void) surf_network_model_init_Reno(void);
 
-/** \brief Initializes the platform with the network model Reno2
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the network model Reno2
  *  \param filename XML platform file name
  *
  *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
@@ -571,8 +571,8 @@ XBT_PUBLIC(void) surf_network_model_init_Reno(void);
  */
 XBT_PUBLIC(void) surf_network_model_init_Reno2(void);
 
-/** \brief Initializes the platform with the network model Vegas
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the network model Vegas
  *  \param filename XML platform file name
  *
  *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent
@@ -587,8 +587,8 @@ XBT_PUBLIC(void) surf_network_model_init_Reno2(void);
  */
 XBT_PUBLIC(void) surf_network_model_init_Vegas(void);
 
-/** \brief The list of all available network model models
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief The list of all available network model models
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t)
     surf_network_model_description[];
@@ -598,13 +598,13 @@ XBT_PUBLIC_DATA(s_surf_model_description_t)
 
 
 
-/** \brief The storage model
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief The storage model
  */
 XBT_PUBLIC(void) surf_storage_model_init_default(void);
 
-/** \brief The list of all available storage modes.
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief The list of all available storage modes.
  *  This storage mode can be set using --cfg=storage/model:...
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
@@ -615,8 +615,8 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
 
 
 
-/** \brief The workstation model
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief The workstation model
  *
  *  Note that when you create an API on top of SURF,
  *  the workstation model should be the only one you use
@@ -625,8 +625,8 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
  */
 XBT_PUBLIC_DATA(surf_model_t) surf_workstation_model;
 
-/** \brief Initializes the platform with a compound workstation model
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with a compound workstation model
  *
  *  This function should be called after a cpu_model and a
  *  network_model have been set up.
@@ -634,8 +634,8 @@ XBT_PUBLIC_DATA(surf_model_t) surf_workstation_model;
  */
 XBT_PUBLIC(void) surf_workstation_model_init_compound(void);
 
-/** \brief Initializes the platform with the current best network and cpu models at hand
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the current best network and cpu models at hand
  *
  *  This platform model seperates the workstation model and the network model.
  *  The workstation model will be initialized with the model compound, the network
@@ -646,8 +646,8 @@ XBT_PUBLIC(void) surf_workstation_model_init_compound(void);
  */
 XBT_PUBLIC(void) surf_workstation_model_init_current_default(void);
 
-/** \brief Initializes the platform with the workstation model CLM03
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the workstation model CLM03
  *
  *  This platform model seperates the workstation model and the network model.
  *  The workstation model will be initialized with the model CLM03, the network
@@ -658,8 +658,8 @@ XBT_PUBLIC(void) surf_workstation_model_init_current_default(void);
  */
 XBT_PUBLIC(void) surf_workstation_model_init_CLM03(void);
 
-/** \brief Initializes the platform with the model KCCFLN05
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Initializes the platform with the model KCCFLN05
  *
  *  With this model, only parallel tasks can be used. Resource sharing
  *  is done by identifying bottlenecks and giving an equal share of
@@ -668,14 +668,14 @@ XBT_PUBLIC(void) surf_workstation_model_init_CLM03(void);
  */
 XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(void);
 
-/** \brief The list of all available workstation model models
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief The list of all available workstation model models
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t)
     surf_workstation_model_description[];
 
-/** \brief List of initialized models
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief List of initialized models
  */
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 
@@ -684,8 +684,8 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 /*******************************************/
 XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
 
-/** \brief Initialize SURF
- *  \ingroup SURF_simulation
+/** \ingroup SURF_simulation
+ *  \brief Initialize SURF
  *  \param argc argument number
  *  \param argv arguments
  *
@@ -698,15 +698,15 @@ XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
 
-/** \brief Finish simulation initialization
- *  \ingroup SURF_simulation
+/** \ingroup SURF_simulation
+ *  \brief Finish simulation initialization
  *
  *  This function must be called before the first call to surf_solve()
  */
 XBT_PUBLIC(void) surf_presolve(void);
 
-/** \brief Performs a part of the simulation
- *  \ingroup SURF_simulation
+/** \ingroup SURF_simulation
+ *  \brief Performs a part of the simulation
  *  \param max_date Maximum date to update the simulation to, or -1
  *  \return the elapsed time, or -1.0 if no event could be executed
  *
@@ -718,15 +718,15 @@ XBT_PUBLIC(void) surf_presolve(void);
  */
 XBT_PUBLIC(double) surf_solve(double max_date);
 
-/** \brief Return the current time
- *  \ingroup SURF_simulation
+/** \ingroup SURF_simulation
+ *  \brief Return the current time
  *
  *  Return the current time in millisecond.
  */
 XBT_PUBLIC(double) surf_get_clock(void);
 
-/** \brief Exit SURF
- *  \ingroup SURF_simulation
+/** \ingroup SURF_simulation
+ *  \brief Exit SURF
  *
  *  Clean everything.
  *

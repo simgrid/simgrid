@@ -21,24 +21,22 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 
 # second test
 ! setenv LD_LIBRARY_PATH=../../lib
-p Test Reduce with 6 processes 
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 6 ./reduce -q
+p Test Reduce with 5 processes
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 5 ./reduce -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 > [rank 4] -> Bourassa
-> [rank 5] -> Tremblay
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > ** Scalar Int Test Result:
-> 	[0] sum=21 ... validation ok.
+> 	[0] sum=15 ... validation ok.
 > 	[0] min=1 ... validation ok.
-> 	[0] max=6 ... validation ok.
+> 	[0] max=5 ... validation ok.
 > ** IBM Test Result: ... 
-> 	ok.
 > 	ok.
 > 	ok.
 > 	ok.
@@ -50,6 +48,7 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 ! setenv LD_LIBRARY_PATH=../../lib
 p Test Reduce with 12 processes 
 $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 12 ./reduce -q 
+> You requested to use 12 processes, but there is only 5 processes in your hostfile...
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard

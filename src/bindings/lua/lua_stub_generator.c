@@ -327,7 +327,7 @@ void generate_makefile_local(const char *project)
           "\t$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<\n" "\n");
 
   fprintf(OUT,
-          "## Rules for tarballs and cleaning\n"
+          "## Rules for tarballs and cleaning\n"
           "DIST_FILES= $(EXTRA_DIST) $(GENERATED_C_FILES) $(PRECIOUS_C_FILES) "
           MAKEFILE_FILENAME_LOCAL " " /*MAKEFILE_FILENAME_REMOTE */ "\n"
           "distdir: $(DIST_FILES)\n" "\trm -rf $(DISTDIR)\n"

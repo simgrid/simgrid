@@ -128,7 +128,7 @@ A <b>host</b> represents a computer, where you will be able to execute code and 
 
 <b>host</b> attributes : 
 \li <b>id (mandatory)</b>: the identifier of the host to be used when referring to it.
-\li <b>power (mandatory)</b>:the peak number FLOPS the CPU can manage. Expressed in ﬂop/s.
+\li <b>power (mandatory)</b>:the peak number FLOPS the CPU can manage. Expressed in flop/s.
 \li <b>core</b>: The number of core of this host. If setted, the power gives the power of one core. The specified computing power will be available to up to 6 sequential
 tasks without sharing. If more tasks are placed on this host, the
 resource will be shared accordingly. For example, if you schedule 12
@@ -338,10 +338,10 @@ Example link:
 \endverbatim
 <b>Expressing sharing policy</b>
 
-By default a network link is SHARED, that is if more than one ﬂow go through
+By default a network link is SHARED, that is if more than one flow go through
 a link, each gets a share of the available bandwidth similar to the share TCP connections offers. 
 
-Conversely if a link is deﬁned as a FATPIPE, each ﬂow going through this link will get all the available bandwidth, whatever the number of ﬂows. The FATPIPE
+Conversely if a link is defined as a FATPIPE, each flow going through this link will get all the available bandwidth, whatever the number of flows. The FATPIPE
 behavior allows to describe big backbones that won't affect performances (except latency). Finally a link can be considered as FULLDUPLEX, that means that in the simulator, 2 links (one named UP and the other DOWN) will be created for each link, so as the transfers from one side to the other will interact similarly as TCP when ACK returning packets circulate on the other direction. More discussion about it is available in <b>link_ctn</b> description. 
 
 \verbatim
@@ -350,14 +350,14 @@ behavior allows to describe big backbones that won't affect performances (except
 
 <b>Expressing dynamicity and failures</b>
 
- As for hosts, it is possible to declare links whose state, bandwidth or latency change over the time. In this case, the bandwidth and latency attributes are respectively replaced by the bandwidth file and latency file attributes and the corresponding text ﬁles.
+ As for hosts, it is possible to declare links whose state, bandwidth or latency change over the time. In this case, the bandwidth and latency attributes are respectively replaced by the bandwidth file and latency file attributes and the corresponding text files.
 
 \verbatim
  <link id="LINK1" state_file="link1.fail" bandwidth="80000000" latency=".0001" bandwidth_file="link1.bw" latency_file="link1.lat" />
 \endverbatim
 
-It has to be noted that even if the syntax is the same, the semantic of bandwidth and latency trace ﬁles
-diﬀers from that of host availability ﬁles. Those ﬁles do not express availability as a fraction of the available
+It has to be noted that even if the syntax is the same, the semantic of bandwidth and latency trace files
+differs from that of host availability files. Those files do not express availability as a fraction of the available
 capacity but directly in bytes per seconds for the bandwidth and in seconds for the latency. This is because
 most tools allowing to capture traces on real platforms (such as NWS ) express their results this way.
 
@@ -426,7 +426,7 @@ For graph-based shortest path algorithms, routers are mandatory, because both al
 
 Routers are naturally an important concept in GTNetS or ns-3 since the way they run the packet routing algorithms is actually simulated. Instead, the
 SimGrid’s analytical models aggregate the routing time with the transfer time.
-Rebuilding a graph representation only from the route information turns to be a very diﬃcult task, because
+Rebuilding a graph representation only from the route information turns to be a very difficult task, because
 of the missing information about how routes intersect. That is why we introduced a \<router\> tag, which is
 simply used to express these intersection points. The only attribute accepted by this tag an id.
 It is important to understand that the \<router\> tag is only used to provide topological information. 

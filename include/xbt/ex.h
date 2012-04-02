@@ -516,5 +516,5 @@ XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t * e);
 
 SG_END_DECL()
 
-/** @} */
+/** @} */
 #endif                          /* __XBT_EX_H__ */

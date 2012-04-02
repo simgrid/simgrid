@@ -13,7 +13,6 @@ LOOPBACK_BANDWIDTH="${DEFAULT_LOOPBACK_BANDWIDTH}"
 LOOPBACK_LATENCY="${DEFAULT_LOOPBACK_LATENCY}"
 NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
 NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
-NUMPROCS="${DEFAULT_NUMPROCS}"
 POWER="${DEFAULT_POWER}"
 
 SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
@@ -21,15 +20,19 @@ SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_
 #usage to print the way this script should be called
 function usage () {
     echo "usage:"
-    echo "$0 [-quiet] [-keep-temps]"
+    echo "$0 [-keep-temps]"
     echo "      [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
+    echo "      [-keep-temps]             # don't remove the generated files after execution"
+    echo "      [-map]                    # display the machine on which each process rank is mapped"
+    echo "      [-np <numprocs>]          # use that amount of processes from the hostfile."
+    echo "                                # By default, all processes of the hostfile are used."
     echo "      [-trace]                  # activate tracing"
     echo "      [-trace-grouped]          # group MPI processes by location"
     echo "      [-trace-resource]         # trace resource utilization"
     echo "      [-trace-triva]            # generate configuration for Triva's GraphView"
     echo "      [-trace-file <tracefile>] # name of the tracefile (simgrid_smpi.trace)"
     echo "or (deprecated usage):"
-    echo "$0 [-quiet] [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
+    echo "$0 [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
     echo
 }
 
@@ -56,7 +59,7 @@ while true; do
     ;;
    "-platform")
 	PLATFORM="$2"
-      if [ ! -f ${PLATFORM} ]; then
+      if [ ! -f "${PLATFORM}" ]; then
 		echo "[$0] ** error: the file '${PLATFORM}' does not exist. Aborting."
 		exit 1
       fi
@@ -64,7 +67,7 @@ while true; do
     ;;
    "-hostfile")
 	HOSTFILE="$2"
-      if [ ! -f ${HOSTFILE} ]; then
+      if [ ! -f "${HOSTFILE}" ]; then
 		echo "[$0] ** error: the file '${HOSTFILE}' does not exist. Aborting."
 		exit 1
       fi
@@ -129,15 +132,31 @@ shift
 
 ##-----------------------------------
 
-# test if we have something to execute, otherwise show usage and exit
-if [ -z ${EXEC} ]
-then
-    echo "Program is missing"
+# Basic checks on the provided arguments
+if [ -z "${EXEC}" ] ; then
+    echo "You must provide a program to execute."
     usage
     exit 1
 fi
 
+if [ -z "${HOSTFILE}" ] ; then
+    echo "No hostfile specified."
+    usage
+    exit 1
+fi
 
+# Don't use wc -l to compute it to avoid issues with trailing \n at EOF
+hostfile_procs=`grep -c [a-zA-Z0-9] $HOSTFILE`
+
+if [ -z "${NUMPROCS}" ] ; then
+    # Use the amount of processes in the hostfile as default value for the -np parameter
+    NUMPROCS=$hostfile_procs
+fi
+
+
+if [ ${NUMPROCS} -gt ${hostfile_procs} ] ; then
+    echo "You requested to use ${NUMPROCS} processes, but there is only ${hostfile_procs} processes in your hostfile..." >&2
+fi
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
 if [ -z "${PLATFORM}" ]; then

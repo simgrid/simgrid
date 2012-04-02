@@ -70,6 +70,7 @@ Testing/
 Makefile
 bin/
 lib/
+manpages/
 build_dir/
 build/
 buildtools/Cmake/test_prog/prog_va_copy.c
@@ -94,6 +95,7 @@ doc/latex/
 doc/html
 doc/index-API.doc
 doc/index.php
+doc/logcategories.doc
 doc/simgrid.tag
 doc/simgrid_modules.map
 doc/publis_core.bib
@@ -133,6 +135,11 @@ examples/msg/masterslave/toto.txt
 examples/msg/simulation.trace
 examples/msg/toto.txt
 examples/msg/z_gtnets.trace
+examples/msg/tracing/link_srcdst_user_variables
+examples/msg/tracing/link_user_variables
+examples/msg/tracing/simple
+examples/msg/tracing/trace_platform
+examples/msg/tracing/user_variables
 examples/msg/tracing/procmig
 examples/msg/tracing/tasks
 examples/msg/tracing/volume
@@ -263,6 +270,7 @@ teshsuite/gras/small_sleep/log.txt
 teshsuite/gras/small_sleep/small_sleep_function
 teshsuite/gras/modelcheck/modelcheck_checker
 teshsuite/msg/get_sender
+teshsuite/msg/trace/test_trace_integration
 teshsuite/simdag/basic0
 teshsuite/simdag/basic1
 teshsuite/simdag/basic2
@@ -287,6 +295,7 @@ teshsuite/simdag/partask/test_comp_only_par
 teshsuite/simdag/partask/test_comp_only_seq
 teshsuite/xbt/log_large_test
 teshsuite/xbt/parallel_log_crashtest
+testsuite/xbt/parmap_bench
 testsuite/run_tests
 testsuite/simdag/sd_test
 testsuite/surf/lmm_usage

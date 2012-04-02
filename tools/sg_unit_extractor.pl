@@ -240,7 +240,7 @@ EOF
 	   last if /SGU: BEGIN SUITES DECLARATION/;
        }
        
-       ### Done with prototypes. And now, the actual code
+       ### Done with prototypes. And now, the actual code
        
        # search my prototype
        while (<IN>) {
