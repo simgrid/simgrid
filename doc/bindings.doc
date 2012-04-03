@@ -149,7 +149,7 @@ Don't forget to register your platform, that SURF callbacks starts their work ;)
 \verbatim
    simgrid.register_application();
 \endverbatim
-Yes, Here too you have to resgiter your application before running the simulation.
+Yes, Here too you have to register your application before running the simulation.
 
 the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
