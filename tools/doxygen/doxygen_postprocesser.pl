@@ -409,10 +409,10 @@ foreach my $file (@allfiles) {
 				$tmp_buff .= '        	<li><a href="modules.html"><span>Modules&#160;API</span></a></li>'."\n";
       			$tmp_buff .= '        	<li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="options.html"><span>Options & configurations</span></a></li>'."\n";
-				$tmp_buff .= '        	<li><a href="platform.html"><span>Platform description</span></a></li>'."\n";
+				$tmp_buff .= '        	<li><a href="platform.html"><span>Platform Description</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="tracing.html"><span>Tracing Simulations</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="bindings.html"><span>Bindings</span></a></li>'."\n";
-				$tmp_buff .= '        	<li><a href="pls.html"><span>Packet level simulation</span></a></li>'."\n";
+				$tmp_buff .= '        	<li><a href="pls.html"><span>Packet Level Simulation</span></a></li>'."\n";
 				$tmp_buff .= '      	</ul></div>'."\n";
 				$tmp_buff .= '      </div>'."\n";
 				

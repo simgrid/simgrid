@@ -32,7 +32,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
 
 int host(int argc, char *argv[])
 {
-  m_file_t file;
+  msg_file_t file = NULL;
+  s_msg_stat_t stat;
+
   char* mount = bprintf("C:");
   size_t read,write;
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0"))
@@ -56,8 +58,8 @@ int host(int argc, char *argv[])
   read = MSG_file_read(mount,NULL,10000000,sizeof(char*),file);     // Read for 10Mo
   XBT_INFO("\tHaving read  %Zu \ton %s",read,file->name);
 
-//  res = MSG_file_stat(mount,0,NULL);
-//  XBT_INFO("Host '%s' stat %d",MSG_host_get_name(MSG_host_self()), res);
+  MSG_file_stat(mount,file,&stat);
+  XBT_INFO("\tFile %s Size %d",file->name,(int)stat.size);
 
   XBT_INFO("\tClose file '%s'",file->name);
   MSG_file_close(mount,file);

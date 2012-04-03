@@ -47,11 +47,6 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
     //create new container on the new_host location
     msg = PJ_container_new(instr_process_id(process, str, len), INSTR_MSG_PROCESS, PJ_container_get(new_host->name));
 
-    //set the state of this new container
-    type = PJ_type_get ("MSG_PROCESS_STATE", msg->type);
-    val_t value = PJ_value_get ("executing", type);
-    new_pajeSetState (MSG_get_clock(), msg, type, value);
-
     //end link
     msg = PJ_container_get(instr_process_id(process, str, len));
     type = PJ_type_get ("MSG_PROCESS_LINK", PJ_type_get_root());
@@ -66,11 +61,7 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, m_host
     char str[INSTR_DEFAULT_STR_SIZE];
 
     container_t host_container = PJ_container_get (host->name);
-    container_t msg = PJ_container_new(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
-
-    type_t type = PJ_type_get ("MSG_PROCESS_STATE", msg->type);
-    val_t value = PJ_value_get ("executing", type);
-    new_pajeSetState (MSG_get_clock(), msg, type, value);
+    PJ_container_new(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
   }
 }
 

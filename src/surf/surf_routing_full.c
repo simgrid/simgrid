@@ -160,7 +160,7 @@ void model_full_set_route(AS_t rc, const char *src,
                           const char *dst, route_t route)
 {
   network_element_t src_net_elm, dst_net_elm;
-
+  int as_route = 0;
   src_net_elm = xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
   dst_net_elm = xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
   if (!src_net_elm)
@@ -232,7 +232,7 @@ void model_full_set_route(AS_t rc, const char *src,
 //                         "in a sub-sub-AS is not allowed), "
 //                         "but '%s' is not in '%s'.",
 //                         route->dst_gateway, subas->name);
-
+      as_route = 1;
       XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
                 src, route->src_gateway->name, dst, route->dst_gateway->name);
       if (route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
@@ -245,8 +245,9 @@ void model_full_set_route(AS_t rc, const char *src,
     xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->id, dst_net_elm->id)->link_list, 0);
   }
 
-  if (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES
-      || A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES) {
+  if ( (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES && as_route == 0)
+       || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
+     ) {
     if (route->dst_gateway && route->src_gateway) {
       network_element_t gw_tmp;
       gw_tmp = route->src_gateway;

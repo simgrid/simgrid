@@ -471,6 +471,19 @@ void model_dijkstra_both_end(AS_t as)
 void model_dijkstra_both_parse_route (AS_t asg, const char *src,
                      const char *dst, route_t route)
 {
+    int as_route = 0;
+    if(!route->dst_gateway && !route->src_gateway)
+      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
+    else{
+      XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+             route->src_gateway->name, dst, route->dst_gateway->name);
+      as_route = 1;
+      if(route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
+          xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway->name);
+      if(route->src_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
+          xbt_die("The src_gateway '%s' does not exist!",route->src_gateway->name);
+    }
+
 	as_dijkstra_t as = (as_dijkstra_t) asg;
     network_element_t src_net_elm, dst_net_elm;
 
@@ -493,21 +506,36 @@ void model_dijkstra_both_parse_route (AS_t asg, const char *src,
 	if (as->cached && !as->route_cache)
 	as->route_cache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
-	if( A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES
-		|| A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES )
-		xbt_die("Route symmetrical not supported on model dijkstra");
-
-	if(!route->dst_gateway && !route->src_gateway)
-	  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
-	else{
-	  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
-			 route->src_gateway->name, dst, route->dst_gateway->name);
-	  if(route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
-		  xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway->name);
-	  if(route->src_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
-		  xbt_die("The src_gateway '%s' does not exist!",route->src_gateway->name);
-	}
-
 	route_t e_route = generic_new_extended_route(asg->hierarchy, route, 1);
 	route_new_dijkstra(as, src_net_elm->id, dst_net_elm->id, e_route);
+
+	// Symmetrical YES
+    if ( (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES && as_route == 0)
+         || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
+       )
+    {
+      if(!route->dst_gateway && !route->src_gateway)
+        XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
+      else
+        XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
+               route->dst_gateway->name, src, route->src_gateway->name);
+
+      xbt_dynar_t nodes = xbt_graph_get_nodes(as->route_graph);
+      xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_net_elm->id, xbt_node_t);
+      xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst_net_elm->id, xbt_node_t);
+      xbt_edge_t edge =
+          xbt_graph_get_edge(as->route_graph, node_e_v, node_s_v);
+
+      if (edge)
+        THROWF(arg_error,0,"(AS)Route from '%s' to '%s' already exists",src,dst);
+
+      if (route->dst_gateway && route->src_gateway) {
+        network_element_t gw_tmp;
+        gw_tmp = route->src_gateway;
+        route->src_gateway = route->dst_gateway;
+        route->dst_gateway = gw_tmp;
+      }
+      route_t link_route_back = generic_new_extended_route(asg->hierarchy, route, 0);
+      route_new_dijkstra(as, dst_net_elm->id, src_net_elm->id, link_route_back);
+    }
 }

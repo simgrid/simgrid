@@ -14,7 +14,6 @@ struct s_smx_process_t {
   smx_action_t waiting_action;  
   xbt_fifo_t comms;       
   xbt_dict_t properties;
-  s_smx_simcall_t simcall;
   
 
 } s_smx_process_t;
