@@ -1,4 +1,4 @@
-/*! \page platform Platform description
+/*! \page platform Platform Description
 
 \htmlinclude .platform.doc.toc
 
@@ -7,8 +7,8 @@ In order to run any simulation, SimGrid needs 3 things: something to run
 application, and finally it needs something to know where to deploy what.
 
 For the latest 2 entries, you have basically 2 ways to give it as an input :
-\li You can program it, either using the Lua console or if you're using MSG some 
-of its platform and deployments functions. If you want to use it, please refer 
+\li You can program it, either using the Lua console (\ref MSG_Lua_funct) or if you're using MSG some 
+of its platform and deployments functions(\ref msg_easier_life). If you want to use it, please refer 
 to its doc. (you can also  check the section  \ref pf_flexml_bypassing but this is strongly deprecated, as there is a new way to do it properly, but not yet documented).
 \li You can use two XML files: a platform description file and a deployment 
 description one.
@@ -141,6 +141,8 @@ assessed. Please keep this fact in mind when using it.
 \li <b>state</b>: the computer state, as in : is that computer ON or OFF. Possible values : "ON" or "OFF".
 \li <b>state_file</b>: Same mechanism as availability_file, similar syntax for value.
 \li <b>coordinates</b>: you'll have to give it if you choose the vivaldi, coordinate-based routing model for the AS the host belongs to. More details about it in the P2P coordinate based section.
+
+An host can contain some <b>mount</b> that defines mounting points between some storage resource and the <b>host</b>. Please refer to the storage doc for more information. 
 
 An host can also contain the <b>prop</b> tag. the prop tag allows you to define additional informations on this host following the attribute/value schema. You may want to use it to give information to the tool you use for rendering your simulation, for example.
 
@@ -293,16 +295,17 @@ the router name is defined as the resulting String in the following java line of
 
 \subsubsection pf_peer peer
 A <b>peer</b> represents a peer, as in Peer-to-Peer (P2P). Basically, as cluster, <b>A PEER IS INTERNALLY INTERPRETED AS AN \<AS\></b>. It's just a kind of shortcut that does the following : 
-\li It creates an host that has coordinates
+\li It creates an host 
 \li Two links : one for download and one for upload. This is convenient to use and simulate stuff under the last mile model (as ADSL peers).
+\li It creates a gateway that serve as entry point for this peer zone. This router has coordinates.
  
 <b>peer</b> attributes : 
 \li <b>id (mandatory)</b>: the identifier of the peer to be used when referring to it.
-\li <b>power CDATA (mandatory)</b>:
-\li <b>bw_in CDATA (mandatory)</b>:
-\li <b>bw_out CDATA (mandatory)</b>:
-\li <b>lat CDATA (mandatory)</b>:
-\li <b>coordinates</b>:
+\li <b>power CDATA (mandatory)</b>: as in host
+\li <b>bw_in CDATA (mandatory)</b>: bandwidth in.
+\li <b>bw_out CDATA (mandatory)</b>:bandwidth out.
+\li <b>lat CDATA (mandatory)</b>: Latency for in and out links.
+\li <b>coordinates</b>: coordinates of the gateway for this peer.
 \li <b>sharing_policy</b>: sharing policy for links. Can be SHARED or FULLDUPLEX, FULLDUPLEX is the default. See <b>link</b> description for details.
 \li <b>availability_file</b>: availability file for the peer. Same as host availability file. See <b>host</b> description for details.
 \li <b>state_file </b>: state file for the peer. Same as host state file. See <b>host</b> description for details.
@@ -384,7 +387,7 @@ interval, 1ms on [1, 2[, 10ms on [2, 3[, 1ms on [3,5[ (i.e., until the end of pe
 at 100µs for one second.
 
 <b>link</b> attributes : 
-\li <b>id (mandatory)</b>: the identifier of the cluster to be used when referring to it.
+\li <b>id (mandatory)</b>: the identifier of the link to be used when referring to it.
 \li <b>bandwidth (mandatory)</b>: bandwidth for the link.
 \li <b>lat </b>: latency for the link. Default is 0.0.
 \li <b>sharing_policy</b>: sharing policy for the link.
@@ -402,12 +405,57 @@ As an host, a <b>link</b> tag can also contain the <b>prop</b> tag.
 
 
 \subsection pf_storage Storage
+<b>Note : This is a prototype version that should evolve quickly, this is just some doc valuable only at the time of writing this doc</b>
+This section describes the storage management under SimGrid ; nowadays it's only usable with MSG. It relies basically on linux-like concepts. You also may want to have a look to its corresponding section in \ref m_file_management ; functions access are organized as a POSIX-like interface.
 
-At the time of writing this doc, a storage protoype has been implemented. While it is not stable, no doc for it, sorry.
+\subsubsection pf_sto_conc Storage Main concepts
+Basically there is 3 different entities to know : 
+\li the <b>storage_type</b>: here you define some kind of storage that you will instantiate many type on your platform. Think of it like a definition of throughput of a specific disk.
+\li the <b>storage</b>: instance of a <b>storage_type</b>. Defines a new storage of <b>storage_type</b>
+\li the <b>mount</b>: says that the storage is located into this specific resource.
+
+the content of a storage has to be defined in a content file that contains the content. The path to this file has to be passed within the <b>content</b> attribute . Here is a way to generate it:
+\verbatim
+find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
+\endverbatim
+
+\subsubsection pf_sto_sttp storage_type
+
+
+<b>storage_type</b> attributes : 
+\li <b>id (mandatory)</b>: the identifier of the storage_type to be used when referring to it.
+\li <b>model (mandatory)</b>: Unused for now by the simulator (but mandatory, ok)
+\li <b>content</b>: default value 0. The file containing the disk content. (may be moved soon or later to <b>storage</b> tag.
+
+The tag must contains some predefined prop, as may do some other resources tags. This should moved to attributes soon or later.
+<b>storage_type</b> mandatory <b>prop</b> : 
+\li <b>Bwrite</b>: value in B/s. Write throughput
+\li <b>Bread</b>: value in B/s. Read throughput
+\li <b>Bconnexion</b>: value in B/s. Connection throughput (i.e. the throughput of the storage connector).
+
+\subsubsection pf_sto_st storage
+
+<b>storage_type</b> attributes : 
+\li <b>id (mandatory)</b>: the identifier of the storage to be used when referring to it.
+\li <b>typeId (mandatory)</b>: the identifier of the storage_type that this storage  belongs to.
+
+
+\subsubsection pf_sto_mo mount
+
+
+<b>mount</b> attributes : 
+\li <b>id (mandatory)</b>: the id of the <b>storage</b> that must be mounted on that computer.
+\li <b>name (mandatory)</b>: the name that will be the logical reference to this disk (the mount point).
+
+\subsubsection pf_sto_mst mstorage
+<b>Note : unused for now</b>
+<b>mstorage</b> attributes : 
+\li <b>typeId (mandatory)</b>: the id of the <b>storage</b> that must be mounted on that computer.
+\li <b>name (mandatory)</b>: the name that will be the logical reference to this disk (the mount point).
 
 \section pf_routing Routing
 
-In order to run fast, it has been chosen to use static routing within SimGrid. By static, it means that it is calculated once, and will not change during execution. We chose to do that because it is rare to have a real deficience of a resource ; most of the time, a communication fails because the links are too overloaded, and so your connection stops before the time out, or because the computer at the other end is not answering. 
+In order to run fast, it has been chosen to use static routing within SimGrid. By static, it means that it is calculated once (or almost), and will not change during execution. We chose to do that because it is rare to have a real deficience of a resource ; most of the time, a communication fails because the links are too overloaded, and so your connection stops before the time out, or because the computer at the other end is not answering. 
 
 We also chose to use shortests paths algorithms in order to emulate routing. Doing so is consistent with the reality: RIP, OSPF, BGP are all calculating shortest paths. They have some convergence time, but at the end, so when the platform is stable (and this should be the moment you want to simulate something using SimGrid) your packets will follow the shortest paths.  
  
@@ -436,9 +484,11 @@ To express those topological information, some <b>route</b> have to be defined s
 \subsubsection pf_rm_sh Shortest-path based models 
 
 Here is the complete list of such models, that computes routes using classic shortest-paths algorithms. How to choose the best suited algorithm is discussed later in the section devoted to it.
-\li <b>Floyd</b>: Floyd routing data
-\li <b>Dijkstra</b>: Dijkstra routing data 
-\li <b>DijkstraCache</b>: Dijkstra routing data 
+\li <b>Floyd</b>: Floyd routing data. Pre-calculates all routes once.
+\li <b>Dijkstra</b>: Dijkstra routing data ,calculating routes when necessary.
+\li <b>DijkstraCache</b>: Dijkstra routing data. Handle some cache for already calculated routes.
+
+All those shortest-path models are instanciated the same way. Here are some example of it: 
 
 Floyd example : 
 \verbatim
@@ -467,12 +517,30 @@ ASroute given at the end gives a topological information : link1 is between rout
 
 Dijsktra example : 
 \verbatim
-XXX?
+ <AS id="AS_2" routing="Dijsktra">    
+     <host id="AS_2_host1" power="1000000000"/>	
+     <host id="AS_2_host2" power="1000000000"/>	
+     <host id="AS_2_host3" power="1000000000"/>	
+     <link id="AS_2_link1" bandwidth="1250000000" latency="5E-4"/>  
+     <link id="AS_2_link2" bandwidth="1250000000" latency="5E-4"/>  
+     <link id="AS_2_link3" bandwidth="1250000000" latency="5E-4"/>  
+     <link id="AS_2_link4" bandwidth="1250000000" latency="5E-4"/>  
+     <router id="central_router"/>
+     <router id="AS_2_gateway"/>
+     <!-- routes providing topological information -->	
+     <route src="central_router" dst="AS_2_host1"><link_ctn id="AS_2_link1"/></route>	
+     <route src="central_router" dst="AS_2_host2"><link_ctn id="AS_2_link2"/></route>	
+     <route src="central_router" dst="AS_2_host3"><link_ctn id="AS_2_link3"/></route>	
+     <route src="central_router" dst="AS_2_gateway"><link_ctn id="AS_2_link4"/></route>	
+  </AS>
 \endverbatim
 
 DijsktraCache example : 
 \verbatim
-XXX?
+<AS id="AS_2" routing="DijsktraCache">    
+     <host id="AS_2_host1" power="1000000000"/>	
+     ...
+(platform unchanged compared to upper example)
 \endverbatim
 
 \subsubsection pf_rm_me Manually-entered route models 
@@ -533,15 +601,16 @@ RuleBased example :
 		</AS>
 \endverbatim
 
-The example upper contains $1. Those $1 are evaluated as follow XXX?
+The example upper contains $1src and $1dst. It's simply a reference to string matching regexp enclosed by "()" within respectively <b>src</b> and <b>dst</b> attributes. If they were more than 1 "()", then you could referer to it as $2src, $3src and so on.
 
 \subsubsection pf_rm_sf Simple/fast models 
 
 \li <b>none</b>: No routing (Unless you know what you are doing, avoid using this mode in combination with a non Constant network model).
 None Example :
 \verbatim
-XXX?
-\endverbatim
+<AS id="exitAS"  routing="none">
+	<router id="exit_gateway"/>
+</AS>\endverbatim
 
 \li <b>Vivaldi</b>: Vivaldi routing, so when you want to use coordinates. See the corresponding section P2P below for details.
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should not be used, except internally.
@@ -700,15 +769,51 @@ As said before, once you choose a model, it (if so) calculates routes for you. B
 
 \subsection pb_baroex Basic Routing Example
 
-Let's say you have an AS named AS_Big that contains two other AS, AS_1 and AS_2. If you want to make an host (h1) from AS_1 with another one (h2) from  AS_2 and you did not have choosen to use some routing model that compute routes automatically, then you'll have to proceed as follow: 
+Let's say you have an AS named AS_Big that contains two other AS, AS_1 and AS_2. If you want to make an host (h1) from AS_1 with another one (h2) from  AS_2 then you'll have to proceed as follow: 
 \li First, you have to ensure that a route is defined from h1 to the AS_1's exit gateway and from h2 to AS_2's exit gateway.
-\li Then, you'll have to define a route between AS_1 to AS_2. As those AS are both resources belonging to AS_Big, then it has to be done at AS_big level. To define such a route, you have to give the source AS (AS_1), the destination AS (AS_2), and their respective gateway (as the route is effectively defined between those two entry/exit points). Elements of this route can only be elements belonging to AS_Big, so links and routers in this route should be defined inside AS_Big. 
+\li Then, you'll have to define a route between AS_1 to AS_2. As those AS are both resources belonging to AS_Big, then it has to be done at AS_big level. To define such a route, you have to give the source AS (AS_1), the destination AS (AS_2), and their respective gateway (as the route is effectively defined between those two entry/exit points). Elements of this route can only be elements belonging to AS_Big, so links and routers in this route should be defined inside AS_Big. If you choose some shortest-path model, this route will be computed automatically.
 
 As said before, there are mainly 2 tags for routing :
 \li <b>ASroute</b>: to define routes between two  <b>AS</b>
 \li <b>route</b>: to define routes between two <b>host/router</b>
 
-As we are dealing with routes between AS, it means that those we'll have some definition at AS_Big level. Let consider AS_1 and AS_2 contains 1 host, 1 link and one router. 
+As we are dealing with routes between AS, it means that those we'll have some definition at AS_Big level. Let consider AS_1  contains 1 host, 1 link and one router and AS_2 3 hosts, 4 links and one router. There will be a central router, and a cross-like topology. At the end of the crosses arms, you'll find the 3 hosts and the router that will act as a gateway. We have to define routes inside those two AS. Let say that AS_1 contains full routes, and AS_2 contains some Floyd routing (as we don't want to bother with defining all routes). As we're using some shortest path algorithms to  route into AS_2, we'll then have to define some <b>route</b> to gives some topological information to SimGrid. Here is a file doing it all :
+
+\verbatim
+<AS  id="AS_Big"  routing="Dijsktra">
+  <AS id="AS_1" routing="Full">    
+     <host id="AS_1_host1" power="1000000000"/>	
+     <link id="AS_1_link" bandwidth="1250000000" latency="5E-4"/>  
+     <router id="AS_1_gateway"/>
+     <route src="AS_1_host1" dst="AS_1_gateway">
+            <link_ctn id="AS_1_link"/>
+     </route>	
+  </AS>
+  <AS id="AS_2" routing="Floyd">    
+     <host id="AS_2_host1" power="1000000000"/>	
+     <host id="AS_2_host2" power="1000000000"/>	
+     <host id="AS_2_host3" power="1000000000"/>	
+     <link id="AS_2_link1" bandwidth="1250000000" latency="5E-4"/>  
+     <link id="AS_2_link2" bandwidth="1250000000" latency="5E-4"/>  
+     <link id="AS_2_link3" bandwidth="1250000000" latency="5E-4"/>  
+     <link id="AS_2_link4" bandwidth="1250000000" latency="5E-4"/>  
+     <router id="central_router"/>
+     <router id="AS_2_gateway"/>
+     <!-- routes providing topological information -->	
+     <route src="central_router" dst="AS_2_host1"><link_ctn id="AS_2_link1"/></route>	
+     <route src="central_router" dst="AS_2_host2"><link_ctn id="AS_2_link2"/></route>	
+     <route src="central_router" dst="AS_2_host3"><link_ctn id="AS_2_link3"/></route>	
+     <route src="central_router" dst="AS_2_gateway"><link_ctn id="AS_2_link4"/></route>	
+  </AS>
+    <link id="backbone" bandwidth="1250000000" latency="5E-4"/>  	
+
+     <ASroute src="AS_1" dst="AS_2" 
+	 gw_src="AS_1_gateway" 
+	 gw_dst="AS_2_gateway">
+ 		<link_ctn id="backbone"/>
+     </ASroute>   
+</AS>
+\endverbatim
 
 \section pf_other_tags Tags not (directly) describing the platform
 
@@ -872,11 +977,11 @@ Coordinates are then used to calculate latency between two hosts by calculating 
 Choosing wisely the routing model to use can significantly fasten your simulation/save your time when writing the platform/save tremendeous disk space. Here is the list of available model and their characteristics (lookup : time to resolve a route):
 
 \li <b>Full</b>: Full routing data (fast, large memory requirements, fully expressive)
-\li <b>Floyd</b>: Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)
-\li <b>Dijkstra</b>: Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)
-\li <b>DijkstraCache</b>: Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only) 
-\li <b>none</b>: No routing (usable with Constant network only)
-\li <b>RuleBased</b>: Rule-Based routing data (...)
+\li <b>Floyd</b>: Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only). Calculates all routes at once at the beginning.
+\li <b>Dijkstra</b>: Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only). Calculates a route when necessary.
+\li <b>DijkstraCache</b>: Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only). Same as Dijkstra, except it handles a cache for latest used routes.
+\li <b>none</b>: No routing (usable with Constant network only). Defines that there is no routes, so if you try to determine a route without constant network within this AS, SimGrid will raie an exception.
+\li <b>RuleBased</b>: Rule-Based routing data (fast initialisation, relatively slow lookup, moderate memory requirements, fully expressive): uses regexp to define routes;
 \li <b>Vivaldi</b>: Vivaldi routing, so when you want to use coordinates
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should not be used.
 
