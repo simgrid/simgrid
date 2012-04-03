@@ -193,7 +193,6 @@
 #define TRUE  1
 #define FALSE 0
 
-#define XBT_MAX_CHANNEL 10      /* FIXME: killme */
 /*! C++ users need love */
 #ifndef SG_BEGIN_DECL
 # ifdef __cplusplus
