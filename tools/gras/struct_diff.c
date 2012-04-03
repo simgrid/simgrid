@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
     exit(1);
   }
 
-  parse_from_file("s_smx_simcall_t");
+//  parse_from_file("s_smx_simcall_t");
   parse_from_file(argv[1]);
 
   int cpt;
