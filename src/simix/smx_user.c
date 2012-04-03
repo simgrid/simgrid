@@ -1232,15 +1232,16 @@ int simcall_file_close(const char* storage, smx_file_t fp)
   return simcall->file_close.result;
 }
 
-int simcall_file_stat(const char* storage, int fd, void* buf)
+int simcall_file_stat(const char* storage, smx_file_t fd, s_file_stat_t *buf)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
-
   simcall->call = SIMCALL_FILE_STAT;
   simcall->file_stat.storage = storage;
   simcall->file_stat.fd = fd;
-  simcall->file_stat.buf = buf;
+
   SIMIX_simcall_push(simcall->issuer);
+
+  *buf = simcall->file_stat.buf;
 
   return simcall->file_stat.result;
 }

@@ -23,6 +23,7 @@ typedef struct surf_model *surf_model_t;
  */
 typedef struct surf_action *surf_action_t;
 typedef struct surf_file *surf_file_t;
+typedef struct surf_stat *surf_stat_t;
 
 typedef struct lmm_element *lmm_element_t;
 typedef struct lmm_variable *lmm_variable_t;

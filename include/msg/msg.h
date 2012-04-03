@@ -42,7 +42,7 @@ XBT_PUBLIC(size_t) MSG_file_read(const char* storage, void* ptr, size_t size, si
 XBT_PUBLIC(size_t) MSG_file_write(const char* storage, const void* ptr, size_t size, size_t nmemb, msg_file_t stream);
 XBT_PUBLIC(msg_file_t) MSG_file_open(const char* storage, const char* path, const char* mode);
 XBT_PUBLIC(int) MSG_file_close(const char* storage, msg_file_t fp);
-XBT_PUBLIC(int) MSG_file_stat(const char* storage, int fd, void* buf);
+XBT_PUBLIC(int) MSG_file_stat(const char* storage, msg_file_t fd, s_msg_stat_t *buf);
 
 
 /************************** Host handling ***********************************/

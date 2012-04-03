@@ -184,11 +184,10 @@ void SIMIX_pre_file_stat(smx_simcall_t simcall)
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_stat(smx_process_t process ,const char* storage, int fd, void* buf)
+smx_action_t SIMIX_file_stat(smx_process_t process ,const char* storage, smx_file_t fd, s_file_stat_t buf)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
-
   /* check if the host is active */
   if (surf_workstation_model->extension.
       workstation.get_state(host->host) != SURF_RESOURCE_ON) {
@@ -204,7 +203,7 @@ smx_action_t SIMIX_file_stat(smx_process_t process ,const char* storage, int fd,
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.stat(host->host, storage, fd, buf);
+  action->io.surf_io = surf_workstation_model->extension.workstation.stat(host->host, storage, fd->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -233,7 +232,10 @@ void SIMIX_post_io(smx_action_t action)
       simcall->file_read.result = (action->io.surf_io)->cost;
       break;
     case SIMCALL_FILE_STAT:
-      simcall->file_read.result = 0;
+      simcall->file_stat.result = 0;
+      s_file_stat_t *dst = &(simcall->file_stat.buf);
+      s_file_stat_t *src = &((action->io.surf_io)->stat);
+      file_stat_copy(src,dst);
       break;
     default:
       break;

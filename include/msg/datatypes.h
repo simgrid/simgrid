@@ -7,6 +7,7 @@
 #ifndef MSG_DATATYPE_H
 #define MSG_DATATYPE_H
 #include "xbt/misc.h"
+#include "xbt/file_stat.h"
 #include "simgrid_config.h"     // for HAVE_TRACING
 
 SG_BEGIN_DECL()
@@ -79,7 +80,10 @@ typedef struct msg_file {
 } s_msg_file_t;
 /** @brief File datatype
     @ingroup m_datatypes_management_details */
+
 typedef struct msg_file *msg_file_t;
+
+typedef s_file_stat_t s_msg_stat_t, *msg_stat_t;
 
 
 /*************** Begin GPU ***************/

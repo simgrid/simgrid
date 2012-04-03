@@ -540,9 +540,8 @@ typedef struct s_smx_simcall {
 
     struct {
       const char* storage;
-      int fd;
-      //Next should be struct stat* buf
-      void* buf;
+      smx_file_t fd;
+      s_file_stat_t buf;
       int result;
     } file_stat;
 

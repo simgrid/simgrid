@@ -5,6 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package.              */
 
 #include "msg_private.h"
+#include "xbt/log.h"
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, simix,
+                                "Logging specific to MSG (io)");
 
 /** @addtogroup m_file_management
  *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="File" --> \endhtmlonly
@@ -87,11 +91,13 @@ int MSG_file_close(const char* storage, msg_file_t fp)
  * \brief Stats the file pointed by fd
  *
  * \param storage is the name where find the stream
- * \param fd is the file descriptor
+ * \param fd is the file descriptor (#msg_file_t)
  * \param buf is the return structure with informations
  * \return 0 on success or 1 on error
  */
-int MSG_file_stat(const char* storage, int fd, void* buf)
+int MSG_file_stat(const char* storage, msg_file_t fd, s_msg_stat_t *buf)
 {
-  return simcall_file_stat(storage, fd, buf);
+  int res;
+  res = simcall_file_stat(storage, fd->simdata->smx_file, buf);
+  return res;
 }

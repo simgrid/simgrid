@@ -10,6 +10,7 @@
 #include "xbt/misc.h"
 #include "xbt/fifo.h"
 #include "xbt/dict.h"
+#include "xbt/file_stat.h"
 #include "xbt/function_types.h"
 #include "simix/datatypes.h"
 #include "simix/context.h"
@@ -248,7 +249,7 @@ XBT_PUBLIC(size_t) simcall_file_read(const char* storage, void* ptr, size_t size
 XBT_PUBLIC(size_t) simcall_file_write(const char* storage, const void* ptr, size_t size, size_t nmemb, smx_file_t stream);
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path, const char* mode);
 XBT_PUBLIC(int) simcall_file_close(const char* storage, smx_file_t fp);
-XBT_PUBLIC(int) simcall_file_stat(const char* storage, int fd, void* buf);
+XBT_PUBLIC(int) simcall_file_stat(const char* storage, smx_file_t fd, s_file_stat_t *buf);
 
 SG_END_DECL()
 #endif                          /* _SIMIX_SIMIX_H */

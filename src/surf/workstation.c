@@ -335,12 +335,12 @@ static surf_action_t ws_action_write(void *workstation, const char* storage, con
   return model->extension.storage.write(st,  ptr, size, nmemb, stream);
 }
 
-static surf_action_t ws_action_stat(void *workstation, const char* storage, int fd, void* buf)
+static surf_action_t ws_action_stat(void *workstation, const char* storage, surf_file_t stream)
 {
   storage_t st = find_storage_on_mount_list(workstation, storage);
   XBT_DEBUG("STAT on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.stat(st,  fd, buf);
+  return model->extension.storage.stat(st,  stream);
 }
 
 static void surf_workstation_model_init_internal(void)

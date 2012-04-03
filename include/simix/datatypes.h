@@ -53,6 +53,7 @@ typedef struct s_smx_sem *smx_sem_t;
 
 /********************************** File *************************************/
 typedef struct s_smx_file *smx_file_t;
+typedef struct s_smx_stat *smx_stat_t;
 
 /********************************** Action *************************************/
 typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized action handlers */

@@ -6,6 +6,7 @@
 
 #include "xbt/ex.h"
 #include "xbt/dict.h"
+#include "xbt/file_stat.h"
 #include "portable.h"
 #include "surf_private.h"
 #include "storage_private.h"
@@ -32,12 +33,6 @@ static xbt_swag_t
 #define GENERIC_LMM_ACTION(action) action->generic_lmm_action
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
-typedef enum {
-  READ = 0,
-  WRITE = 1,
-  DEFAULT = 2
-} STORAGE_execute_type_t;
-
 typedef struct surf_storage {
   s_surf_resource_t generic_resource;
   const char* type;
@@ -45,8 +40,15 @@ typedef struct surf_storage {
 } s_surf_storage_t, *surf_storage_t;
 
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
-static surf_action_t storage_action_sleep (void *storage, double duration);
-static surf_action_t storage_action_execute (void *storage, size_t size, STORAGE_execute_type_t type);
+static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type);
+
+static surf_action_t storage_action_stat(void *storage, surf_file_t stream)
+{
+  surf_action_t action = storage_action_execute(storage,0, STAT);
+  action->file = stream;
+  action->stat = stream->content->stat;
+  return action;
+}
 
 static surf_action_t storage_action_open(void *storage, const char* path, const char* mode)
 {
@@ -57,13 +59,13 @@ static surf_action_t storage_action_open(void *storage, const char* path, const 
       ROUTING_STORAGE_LEVEL);
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, storage_type_id,ROUTING_STORAGE_TYPE_LEVEL);
   xbt_dict_t content_dict = storage_type->content;
-  content_t content = xbt_dict_get(content_dict,path);
+  surf_stat_t content = xbt_dict_get(content_dict,path);
 
   surf_file_t file = xbt_new0(s_surf_file_t,1);
   file->name = xbt_strdup(path);
   file->content = content;
 
-  surf_action_t action = storage_action_execute(storage,0, DEFAULT);
+  surf_action_t action = storage_action_execute(storage,0, OPEN);
   action->file = (void *)file;
   return action;
 }
@@ -74,7 +76,7 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fp)
   free(fp->name);
   fp->content = NULL;
   xbt_free(fp);
-  surf_action_t action = storage_action_execute(storage,0, DEFAULT);
+  surf_action_t action = storage_action_execute(storage,0, CLOSE);
   XBT_DEBUG("\tClose file '%s'",filename);
   return action;
 }
@@ -82,10 +84,10 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fp)
 static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
   char *filename = stream->name;
-  content_t content = stream->content;
-  XBT_DEBUG("\tRead file '%s' size '%Zu/%Zu'",filename,size,content->size);
-  if(size > content->size)
-    size = content->size;
+  surf_stat_t content = stream->content;
+  XBT_DEBUG("\tRead file '%s' size '%Zu/%Zu'",filename,size,content->stat.size);
+  if(size > content->stat.size)
+    size = content->stat.size;
   surf_action_t action = storage_action_execute(storage,size,READ);
   return action;
 }
@@ -93,21 +95,15 @@ static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, 
 static surf_action_t storage_action_write(void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
   char *filename = stream->name;
-  content_t content = stream->content;
-  XBT_DEBUG("\tWrite file '%s' size '%Zu/%Zu'",filename,size,content->size);
+  surf_stat_t content = stream->content;
+  XBT_DEBUG("\tWrite file '%s' size '%Zu/%Zu'",filename,size,content->stat.size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
-  content->size += size;
+  content->stat.size += size;
   return action;
 }
 
-static surf_action_t storage_action_stat(void *storage, int fd, void* buf)
-{
-  THROW_UNIMPLEMENTED;
-  return NULL;
-}
-
-static surf_action_t storage_action_execute (void *storage, size_t size, STORAGE_execute_type_t type)
+static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type)
 {
   surf_action_storage_t action = NULL;
   storage_t STORAGE = storage;
@@ -123,43 +119,22 @@ static surf_action_t storage_action_execute (void *storage, size_t size, STORAGE
   GENERIC_LMM_ACTION(action).variable =
       lmm_variable_new(storage_maxmin_system, action, 1.0, -1.0 , 3);
 
-  if(type == DEFAULT)
-  lmm_expand(storage_maxmin_system, STORAGE->constraint,
-             GENERIC_LMM_ACTION(action).variable, 1.0);
-  else if(type == READ)
+  switch(type) {
+  case OPEN:
+  case CLOSE:
+  case STAT:
+    lmm_expand(storage_maxmin_system, STORAGE->constraint,
+               GENERIC_LMM_ACTION(action).variable, 1.0);
+    break;
+  case READ:
     lmm_expand(storage_maxmin_system, STORAGE->constraint_read,
                GENERIC_LMM_ACTION(action).variable, 1.0);
-  else if(type == WRITE)
+    break;
+  case WRITE:
     lmm_expand(storage_maxmin_system, STORAGE->constraint_write,
                GENERIC_LMM_ACTION(action).variable, 1.0);
-  else xbt_die("storage_action_execute with type '%d'",(int) type);
-
-  XBT_OUT();
-  return (surf_action_t) action;
-}
-
-static surf_action_t storage_action_sleep (void *storage, double duration)
-{
-  surf_action_storage_t action = NULL;
-
-  if (duration > 0)
-    duration = MAX(duration, MAXMIN_PRECISION);
-
-  XBT_IN("(%s,%g)", surf_resource_name(storage), duration);
-  action = (surf_action_storage_t) storage_action_execute(storage, 1.0, DEFAULT);
-  GENERIC_ACTION(action).max_duration = duration;
-  GENERIC_LMM_ACTION(action).suspended = 2;
-  if (duration == NO_MAX_DURATION) {
-    /* Move to the *end* of the corresponding action set. This convention
-       is used to speed up update_resource_state  */
-    xbt_swag_remove(action, ((surf_action_t) action)->state_set);
-    ((surf_action_t) action)->state_set =
-        storage_running_action_set_that_does_not_need_being_checked;
-    xbt_swag_insert(action, ((surf_action_t) action)->state_set);
+    break;
   }
-
-  lmm_update_variable_weight(storage_maxmin_system,
-                             GENERIC_LMM_ACTION(action).variable, 0.0);
 
   XBT_OUT();
   return (surf_action_t) action;
@@ -216,8 +191,8 @@ static void storage_update_actions_state(double now, double delta)
   surf_action_storage_t action = NULL;
   surf_action_storage_t next_action = NULL;
   xbt_swag_t running_actions = surf_storage_model->states.running_action_set;
-  xbt_swag_foreach_safe(action, next_action, running_actions) {
 
+  xbt_swag_foreach_safe(action, next_action, running_actions) {
     double_update(&(GENERIC_ACTION(action).remains),
                   lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * delta);
     if (GENERIC_LMM_ACTION(action).generic_action.max_duration != NO_MAX_DURATION)
@@ -430,12 +405,12 @@ static void storage_parse_storage(sg_platf_storage_cbarg_t storage)
 
 static void free_storage_content(void *p)
 {
-  content_t content = p;
-  free(content->date);
-  free(content->group);
-  free(content->time);
-  free(content->user);
-  free(content->user_rights);
+  surf_stat_t content = p;
+  free(content->stat.date);
+  free(content->stat.group);
+  free(content->stat.time);
+  free(content->stat.user);
+  free(content->stat.user_rights);
   free(content);
 }
 
@@ -462,17 +437,17 @@ static xbt_dict_t parse_storage_content(const char *filename)
   char path[1024];
   int nb, size;
 
-  content_t content;
+  surf_stat_t content;
 
   while ((read = getline(&line, &len, file)) != -1) {
-    content = xbt_new0(s_content_t,1);
+    content = xbt_new0(s_surf_stat_t,1);
     if(sscanf(line,"%s %d %s %s %d %s %s %s",user_rights,&nb,user,group,&size,date,time,path)==8) {
-      content->date = xbt_strdup(date);
-      content->group = xbt_strdup(group);
-      content->size = size;
-      content->time = xbt_strdup(time);
-      content->user = xbt_strdup(user);
-      content->user_rights = xbt_strdup(user_rights);
+      content->stat.date = xbt_strdup(date);
+      content->stat.group = xbt_strdup(group);
+      content->stat.size = size;
+      content->stat.time = xbt_strdup(time);
+      content->stat.user = xbt_strdup(user);
+      content->stat.user_rights = xbt_strdup(user_rights);
       xbt_dict_set(parse_content,path,content,NULL);
     } else {
       xbt_die("Be sure of passing a good format for content file.\n");
