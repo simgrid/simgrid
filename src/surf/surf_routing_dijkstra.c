@@ -473,9 +473,9 @@ void model_dijkstra_both_parse_route (AS_t asg, const char *src,
 {
     int as_route = 0;
     if(!route->dst_gateway && !route->src_gateway)
-      XBT_INFO("Load Route from \"%s\" to \"%s\"", src, dst);
+      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
     else{
-      XBT_INFO("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+      XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
              route->src_gateway->name, dst, route->dst_gateway->name);
       as_route = 1;
       if(route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
@@ -515,9 +515,9 @@ void model_dijkstra_both_parse_route (AS_t asg, const char *src,
        )
     {
       if(!route->dst_gateway && !route->src_gateway)
-        XBT_INFO("Load Route from \"%s\" to \"%s\"", dst, src);
+        XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
       else
-        XBT_INFO("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
+        XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
                route->dst_gateway->name, src, route->src_gateway->name);
 
       xbt_dynar_t nodes = xbt_graph_get_nodes(as->route_graph);
