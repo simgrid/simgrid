@@ -180,9 +180,9 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
   size_t Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
   size_t Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
-  size_t Bconnexion   = atof(xbt_dict_get(storage_type->properties,"Bconnexion"));
-  XBT_INFO("Create resource with Bconnexion '%Zu' Bread '%Zu' Bwrite '%Zu'",Bconnexion,Bread,Bwrite);
-  storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnexion);
+  size_t Bconnection   = atof(xbt_dict_get(storage_type->properties,"Bconnection"));
+  XBT_INFO("Create resource with Bconnection '%Zu' Bread '%Zu' Bwrite '%Zu'",Bconnection,Bread,Bwrite);
+  storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
 
