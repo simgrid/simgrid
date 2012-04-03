@@ -1177,7 +1177,7 @@ int simcall_sem_get_capacity(smx_sem_t sem)
   return simcall->sem_get_capacity.result;
 }
 
-size_t simcall_file_read(const char* storage, void* ptr, size_t size, size_t nmemb, m_file_t stream)
+size_t simcall_file_read(const char* storage, void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
@@ -1192,7 +1192,7 @@ size_t simcall_file_read(const char* storage, void* ptr, size_t size, size_t nme
   return simcall->file_read.result;
 }
 
-size_t simcall_file_write(const char* storage, const void* ptr, size_t size, size_t nmemb, m_file_t stream)
+size_t simcall_file_write(const char* storage, const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
@@ -1207,7 +1207,7 @@ size_t simcall_file_write(const char* storage, const void* ptr, size_t size, siz
   return simcall->file_write.result;
 }
 
-m_file_t simcall_file_open(const char* storage, const char* path, const char* mode)
+smx_file_t simcall_file_open(const char* storage, const char* path, const char* mode)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
@@ -1220,7 +1220,7 @@ m_file_t simcall_file_open(const char* storage, const char* path, const char* mo
   return simcall->file_open.result;
 }
 
-int simcall_file_close(const char* storage, m_file_t fp)
+int simcall_file_close(const char* storage, smx_file_t fp)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
@@ -1232,15 +1232,16 @@ int simcall_file_close(const char* storage, m_file_t fp)
   return simcall->file_close.result;
 }
 
-int simcall_file_stat(const char* storage, int fd, void* buf)
+int simcall_file_stat(const char* storage, smx_file_t fd, s_file_stat_t *buf)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
-
   simcall->call = SIMCALL_FILE_STAT;
   simcall->file_stat.storage = storage;
   simcall->file_stat.fd = fd;
-  simcall->file_stat.buf = buf;
+
   SIMIX_simcall_push(simcall->issuer);
+
+  *buf = simcall->file_stat.buf;
 
   return simcall->file_stat.result;
 }

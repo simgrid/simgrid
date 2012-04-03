@@ -307,7 +307,6 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
     if (msg_process == NULL){
       msg_process = PJ_type_container_new("MSG_PROCESS", new->type);
       type_t state = PJ_type_state_new ("MSG_PROCESS_STATE", msg_process);
-      PJ_value_new ("executing", "0 1 0", state);
       PJ_value_new ("suspend", "1 0 1", state);
       PJ_value_new ("sleep", "1 1 0", state);
       PJ_value_new ("receive", "1 0 0", state);

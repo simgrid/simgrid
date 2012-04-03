@@ -57,6 +57,15 @@ extern unsigned long simix_process_maxpid;
 
 #define SMX_THROW() RETHROW
 
+/* ******************************** File ************************************ */
+typedef struct s_smx_file {
+  surf_file_t surf_file;
+} s_smx_file_t;
+
+typedef struct s_smx_stat {
+  s_file_stat_t surf_stat;
+} s_smx_stat_t, *smx_stat_t;
+
 /*********************************** Time ************************************/
 
 /** @brief Timer datatype */
@@ -83,6 +92,13 @@ typedef enum {
   SIMIX_COMM_READY,
   SIMIX_COMM_DONE
 } e_smx_comm_type_t;
+
+typedef enum {
+  SIMIX_IO_OPEN,
+  SIMIX_IO_WRITE,
+  SIMIX_IO_READ,
+  SIMIX_IO_STAT
+} e_smx_io_type_t;
 
 /** @brief Action datatype */
 typedef struct s_smx_action {

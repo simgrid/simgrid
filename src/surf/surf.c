@@ -308,15 +308,11 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("ADD ROUTING LEVEL");
   ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
   ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,routing_asr_host_free);
-  ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,xbt_free);
-  ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib,routing_storage_host_free);
-  ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib,routing_storage_type_free);
 
   XBT_DEBUG("ADD SURF LEVELS");
   SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
   SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
   SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
-  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_resource_free);
 
   xbt_init(argc, argv);
   if (!model_list)

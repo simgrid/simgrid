@@ -7,21 +7,23 @@
 #ifndef MAXMIN_DATATYPES_H
 #define MAXMIN_DATATYPES_H
 
-/** \brief Model datatype
- *  \ingroup SURF_models
+/** \ingroup SURF_models
+ *  \brief Model datatype
  *
  *  Generic data structure for a model. The workstations,
  *  the CPUs and the network links are examples of models.
  */
 typedef struct surf_model *surf_model_t;
-/** \brief Action datatype
- *  \ingroup SURF_actions
+
+/** \ingroup SURF_actions
+ *  \brief Action datatype
  *
  * An action is some working amount on a model.
  * It is represented as a cost, a priority, a duration and a state.
  */
 typedef struct surf_action *surf_action_t;
-
+typedef struct surf_file *surf_file_t;
+typedef struct surf_stat *surf_stat_t;
 
 typedef struct lmm_element *lmm_element_t;
 typedef struct lmm_variable *lmm_variable_t;

@@ -16,6 +16,7 @@
 
 #include "xbt.h"
 #include "xbt/datadesc.h"
+#include "xbt/file_stat.h"
 #include "../../src/xbt/datadesc/datadesc_private.h" // RAAAAH! ugly relative path, but it's late, I want it to be done NOW.
 #include "simix/datatypes.h"
 #include "../../src/simix/smx_smurf_private.h" // RAAAAH! ugly relative path, but it's even later and it still doesn't work

@@ -69,7 +69,7 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSI
 		string(REPLACE ".fig" ".png" tmp_file ${file})
 		string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/fig/" "${CMAKE_HOME_DIRECTORY}/doc/html/" tmp_file ${tmp_file})
 		ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
-			COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng ${file} ${tmp_file}
+			COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file}
 		)
 	endforeach(file ${DOC_FIGS})
 	

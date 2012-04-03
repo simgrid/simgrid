@@ -574,14 +574,82 @@ long getline(char **buf, size_t * n, FILE * stream)
 /*
  * Diff related functions
  */
+static XBT_INLINE void diff_push(xbt_dynar_t dyn, char prefix, const char *s)
+{
+  char *topush = bprintf("%c %s", prefix, s);
+  xbt_dynar_push(dyn, &topush);
+}
+
+static int diff_member(const char *s, xbt_dynar_t d, unsigned from, unsigned to)
+{
+  unsigned i;
+  for (i = from; i < to; i++)
+    if (!strcmp(s, xbt_dynar_get_as(d, i, char *)))
+      return 1;
+  return 0;
+}
+
+static void diff_easy_prefix(xbt_dynar_t res, xbt_dynar_t da, xbt_dynar_t db)
+{
+  while (xbt_dynar_length(da) > 0 && xbt_dynar_length(db) > 0) {
+    char *sa = xbt_dynar_getfirst_as(da, char *);
+    char *sb = xbt_dynar_getfirst_as(db, char *);
+
+    if (!strcmp(sa, sb)) {
+      /* sa == sb */
+      diff_push(res, ' ', sa);
+      xbt_dynar_shift(da, NULL);
+      xbt_dynar_shift(db, NULL);
+    } else if (!diff_member(sa, db, 1, xbt_dynar_length(db))) {
+      /* sa not in db */
+      diff_push(res, '-', sa);
+      xbt_dynar_shift(da, NULL);
+    } else if (!diff_member(sb, da, 1, xbt_dynar_length(da))) {
+      /* sb not in da */
+      diff_push(res, '+', sb);
+      xbt_dynar_shift(db, NULL);
+    } else {
+      /* sa in db, and sb in da: cannot go further */
+      return;
+    }
+  }
+}
+
+static void diff_easy_suffix(xbt_dynar_t res, xbt_dynar_t da, xbt_dynar_t db)
+{
+  while (xbt_dynar_length(da) > 0 && xbt_dynar_length(db) > 0) {
+    char *sa = xbt_dynar_getlast_as(da, char *);
+    char *sb = xbt_dynar_getlast_as(db, char *);
+
+    if (!strcmp(sa, sb)) {
+      /* sa == sb */
+      diff_push(res, ' ', sa);
+      xbt_dynar_pop(da, NULL);
+      xbt_dynar_pop(db, NULL);
+    } else if (!diff_member(sb, da, 0, xbt_dynar_length(da) - 1)) {
+      /* sb not in da */
+      diff_push(res, '+', sb);
+      xbt_dynar_pop(db, NULL);
+    } else if (!diff_member(sa, db, 0, xbt_dynar_length(db) - 1)) {
+      /* sa not in db */
+      diff_push(res, '-', sa);
+      xbt_dynar_pop(da, NULL);
+    } else {
+      /* sa in db, and sb in da: cannot go further */
+      return;
+    }
+  }
+}
+
 static XBT_INLINE int diff_get(xbt_matrix_t C, int i, int j)
 {
   return (i == -1 || j == -1) ? 0 : xbt_matrix_get_as(C, i, j, int);
 }
 
-static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db,
-                                   int len_a, int len_b)
+static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db)
 {
+  unsigned len_a = xbt_dynar_length(da);
+  unsigned len_b = xbt_dynar_length(db);
   xbt_matrix_t C = xbt_matrix_new(len_a, len_b, sizeof(int), NULL);
   int i, j;
 
@@ -606,10 +674,10 @@ static xbt_matrix_t diff_build_LCS(xbt_dynar_t da, xbt_dynar_t db,
 
       if (!strcmp(xbt_dynar_get_as(da, i, char *),
                   xbt_dynar_get_as(db, j, char *)))
-        *((int *) xbt_matrix_get_ptr(C, i, j)) = diff_get(C, i - 1, j - 1) + 1;
+        xbt_matrix_get_as(C, i, j, int) = diff_get(C, i - 1, j - 1) + 1;
       else
-        *((int *) xbt_matrix_get_ptr(C, i, j)) = max(diff_get(C, i, j - 1),
-                                                     diff_get(C, i - 1, j));
+        xbt_matrix_get_as(C, i, j, int) = max(diff_get(C, i, j - 1),
+                                              diff_get(C, i - 1, j));
     }
   return C;
 }
@@ -618,7 +686,6 @@ static void diff_build_diff(xbt_dynar_t res,
                             xbt_matrix_t C,
                             xbt_dynar_t da, xbt_dynar_t db, int i, int j)
 {
-  char *topush;
   /* Construct the diff
      function printDiff(C[0..m,0..n], X[1..m], Y[1..n], i, j)
        if i > 0 and j > 0 and X[i] = Y[j]
@@ -636,18 +703,15 @@ static void diff_build_diff(xbt_dynar_t res,
   if (i >= 0 && j >= 0 && !strcmp(xbt_dynar_get_as(da, i, char *),
                                   xbt_dynar_get_as(db, j, char *))) {
     diff_build_diff(res, C, da, db, i - 1, j - 1);
-    topush = bprintf("  %s", xbt_dynar_get_as(da, i, char *));
-    xbt_dynar_push(res, &topush);
+    diff_push(res, ' ', xbt_dynar_get_as(da, i, char *));
   } else if (j >= 0 &&
              (i == -1 || diff_get(C, i, j - 1) >= diff_get(C, i - 1, j))) {
     diff_build_diff(res, C, da, db, i, j - 1);
-    topush = bprintf("+ %s", xbt_dynar_get_as(db, j, char *));
-    xbt_dynar_push(res, &topush);
+    diff_push(res, '+', xbt_dynar_get_as(db, j, char *));
   } else if (i >= 0 &&
              (j == -1 || diff_get(C, i, j - 1) < diff_get(C, i - 1, j))) {
     diff_build_diff(res, C, da, db, i - 1, j);
-    topush = bprintf("- %s", xbt_dynar_get_as(da, i, char *));
-    xbt_dynar_push(res, &topush);
+    diff_push(res, '-', xbt_dynar_get_as(da, i, char *));
   }
 }
 
@@ -658,11 +722,12 @@ char *xbt_str_diff(const char *a, const char *b)
   xbt_dynar_t db = xbt_str_split(b, "\n");
   xbt_matrix_t C;
   xbt_dynar_t diff;
+  xbt_dynar_t diff2;
   char *res;
   size_t len;
-  unsigned length_da;
 
   diff = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+  diff2 = xbt_dynar_new(sizeof(char *), NULL);
 
   /* Clean empty lines at the end of da and db */
   len = strlen(a);
@@ -672,39 +737,27 @@ char *xbt_str_diff(const char *a, const char *b)
   if (len > 0 && b[len - 1] == '\n')
     xbt_dynar_pop(db, NULL);
 
-  /* Find the common suffix, do it before extracting the prefix,
+  /* Extract the easy suffix, do it before extracting the prefix,
    * as xbt_dynar_pop costs less than xbt_dynar_shift */
-  length_da = xbt_dynar_length(da);
-  while (length_da > 0 && xbt_dynar_length(db) > 0 &&
-         !strcmp(xbt_dynar_get_as(da, length_da - 1, char *),
-                 xbt_dynar_getlast_as(db, char *))) {
-    xbt_dynar_pop(db, NULL);
-    length_da--;
-  }
+  diff_easy_suffix(diff2, da, db);
 
-  /* Extract the common prefix */
-  while (length_da > 0 && xbt_dynar_length(db) > 0 &&
-         !strcmp(xbt_dynar_getfirst_as(da, char *),
-                 xbt_dynar_getfirst_as(db, char *))) {
-    char *topush = bprintf("  %s", xbt_dynar_getfirst_as(da, char *));
-    xbt_dynar_push(diff, &topush);
-    xbt_dynar_shift(da, NULL);
-    xbt_dynar_shift(db, NULL);
-    length_da--;
-  }
+  /* Extract the easy prefix */
+  diff_easy_prefix(diff, da, db);
 
   /* Compute the diff for the remaining */
-  C = diff_build_LCS(da, db, length_da, xbt_dynar_length(db));
-  diff_build_diff(diff, C, da, db, length_da - 1, xbt_dynar_length(db) - 1);
+  C = diff_build_LCS(da, db);
+  diff_build_diff(diff, C, da, db,
+                  xbt_dynar_length(da) - 1, xbt_dynar_length(db) - 1);
   xbt_matrix_free(C);
   xbt_dynar_free(&db);
+  xbt_dynar_free(&da);
 
-  /* Add the common suffix */
-  for (; length_da < xbt_dynar_length(da); length_da++) {
-    char *topush = bprintf("  %s", xbt_dynar_get_as(da, length_da, char *));
+  /* Add the easy suffix, in reverse order */
+  while (!xbt_dynar_is_empty(diff2)) {
+    char *topush = xbt_dynar_pop_as(diff2, char *);
     xbt_dynar_push(diff, &topush);
   }
-  xbt_dynar_free(&da);
+  xbt_dynar_free(&diff2);
 
   /* Build the final result */
   res = xbt_str_join(diff, "\n");

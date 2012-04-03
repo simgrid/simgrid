@@ -250,7 +250,8 @@ static int floyd_pointer_resource_cmp(const void *a, const void *b) {
 void model_floyd_parse_route(AS_t rc, const char *src,
         const char *dst, route_t route)
 {
-	as_floyd_t as = (as_floyd_t) rc;
+    int as_route = 0;
+    as_floyd_t as = (as_floyd_t) rc;
 
 	/* set the size of table routing */
 	size_t table_size = xbt_dynar_length(rc->index_network_elm);
@@ -282,14 +283,21 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 		  TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
 		}
 	}
+    if(!route->dst_gateway && !route->src_gateway)
+      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
+    else{
+        as_route = 1;
+        XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+             route->src_gateway->name, dst, route->dst_gateway->name);
+        if(route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
+            xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway->name);
+        if(route->src_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
+            xbt_die("The src_gateway '%s' does not exist!",route->src_gateway->name);
+    }
 
 	if(TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id))
 	{
-		if(!route->dst_gateway && !route->src_gateway)
-			XBT_DEBUG("See Route from \"%s\" to \"%s\"", src, dst);
-		else
-			XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
-				 route->src_gateway->name, dst, route->dst_gateway->name);
+
 		char * link_name;
 		unsigned int cpt;
 		xbt_dynar_t link_route_to_test = xbt_dynar_new(global_routing->size_of_link, NULL);
@@ -307,16 +315,6 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 	}
 	else
 	{
-		if(!route->dst_gateway && !route->src_gateway)
-		  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
-		else{
-			XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
-				 route->src_gateway->name, dst, route->dst_gateway->name);
-			if(route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
-				xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway->name);
-			if(route->src_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
-				xbt_die("The src_gateway '%s' does not exist!",route->src_gateway->name);
-		}
 	    TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id) =
 	    		generic_new_extended_route(rc->hierarchy, route, 1);
 	    TO_FLOYD_PRED(src_net_elm->id, dst_net_elm->id) = src_net_elm->id;
@@ -324,8 +322,9 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 	    		((TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id))->link_list)->used;   /* count of links, old model assume 1 */
 	}
 
-	if( A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES
-		|| A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES )
+    if ( (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES && as_route == 0)
+         || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
+       )
 	{
 		if(TO_FLOYD_LINK(dst_net_elm->id, src_net_elm->id))
 		{

@@ -49,7 +49,7 @@ XBT_PUBLIC(char *) xbt_str_diff(const char *a, const char *b);
 
 XBT_PUBLIC(char *) xbt_str_from_file(FILE * file);
 
-/** @brief Classical alias to (char*)
+/** @brief Classical alias to (char*)
  *
  * This of almost no use, beside cosmetics and the XBT datadesc parsing macro (see \ref XBT_dd_auto).
  */

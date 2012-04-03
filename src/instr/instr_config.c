@@ -264,7 +264,7 @@ void TRACE_global_init(int *argc, char **argv)
                    NULL, NULL);
 
   /* tracing buffer */
-  int default_buffer = 0;
+  int default_buffer = 1;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_BUFFER,
                    "Buffer trace events to put them in temporal order.",
                    xbt_cfgelm_int, &default_buffer, 0, 1,

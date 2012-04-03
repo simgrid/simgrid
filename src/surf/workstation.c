@@ -311,7 +311,7 @@ static surf_action_t ws_action_open(void *workstation, const char* storage, cons
   return model->extension.storage.open(st, path, mode);
 }
 
-static surf_action_t ws_action_close(void *workstation, const char* storage, m_file_t fp)
+static surf_action_t ws_action_close(void *workstation, const char* storage, surf_file_t fp)
 {
   storage_t st = find_storage_on_mount_list(workstation, storage);
   XBT_DEBUG("CLOSE on disk '%s'",st->generic_resource.name);
@@ -319,7 +319,7 @@ static surf_action_t ws_action_close(void *workstation, const char* storage, m_f
   return model->extension.storage.close(st, fp);
 }
 
-static surf_action_t ws_action_read(void *workstation, const char* storage, void* ptr, size_t size, size_t nmemb, m_file_t stream)
+static surf_action_t ws_action_read(void *workstation, const char* storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
   storage_t st = find_storage_on_mount_list(workstation, storage);
   XBT_DEBUG("READ on disk '%s'",st->generic_resource.name);
@@ -327,7 +327,7 @@ static surf_action_t ws_action_read(void *workstation, const char* storage, void
   return model->extension.storage.read(st, ptr, size, nmemb, stream);
 }
 
-static surf_action_t ws_action_write(void *workstation, const char* storage, const void* ptr, size_t size, size_t nmemb, m_file_t stream)
+static surf_action_t ws_action_write(void *workstation, const char* storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)
 {
   storage_t st = find_storage_on_mount_list(workstation, storage);
   XBT_DEBUG("WRITE on disk '%s'",st->generic_resource.name);
@@ -335,12 +335,12 @@ static surf_action_t ws_action_write(void *workstation, const char* storage, con
   return model->extension.storage.write(st,  ptr, size, nmemb, stream);
 }
 
-static surf_action_t ws_action_stat(void *workstation, const char* storage, int fd, void* buf)
+static surf_action_t ws_action_stat(void *workstation, const char* storage, surf_file_t stream)
 {
   storage_t st = find_storage_on_mount_list(workstation, storage);
   XBT_DEBUG("STAT on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.stat(st,  fd, buf);
+  return model->extension.storage.stat(st,  stream);
 }
 
 static void surf_workstation_model_init_internal(void)

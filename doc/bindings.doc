@@ -11,7 +11,7 @@
 \section bindings_binding_lua Lua Binding
 
 Most of Simgrid modules require a  good level in C programming, since simgrid is used to be as standard C library.
- Sometime users prefer using some kind of « easy scripts » or a language easier to code with, for their works,
+ Sometime users prefer using some kind of “easy scripts” or a language easier to code with, for their works,
  which avoid dealing with C errors, and sometime an important  gain of time.
 Besides Java Binding, Lua  and Ruby bindings are available since version 3.4 of Simgrid
 for MSG Module, and we are currenlty working on bindings for other modules.
@@ -149,7 +149,7 @@ Don't forget to register your platform, that SURF callbacks starts their work ;)
 \verbatim
    simgrid.register_application();
 \endverbatim
-Yes, Here too you have to resgiter your application before running the simulation.
+Yes, Here too you have to register your application before running the simulation.
 
 the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
