@@ -120,6 +120,9 @@ XBT_dict, \ref XBT_heap, \ref XBT_set and \ref XBT_swag.
 See the \ref XBT_API section for more details.
 
 
+\subsection lucas_layer Tracing simulation
+Finally, a transversal module allows you to trace your simulation. More documentation in the section \ref TRACE_doc
+
 \htmlonly <!-- ______BODY_BEGIN______ --!> \endhtmlonly
 <br>
 The SimGrid software package can be downloaded from 
