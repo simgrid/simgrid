@@ -18,7 +18,7 @@
    - \ref m_host_management
    - \ref m_task_management
    - \ref m_file_management
-   - \ref msg_actions_functions
+   - \ref msg_trace_driven
    - \ref msg_gos_functions
    - \ref msg_deprecated_functions
    - \ref msg_simulation
@@ -30,6 +30,8 @@
 @defgroup MSG_examples MSG Examples
 @ingroup MSG_API
  
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Examples" --> @endhtmlonly
+
 MSG comes with an extensive set of examples. It is sometimes difficult
 to find the one you need. This list aims at helping you finding the
 example from which you can learn what you want to.
@@ -56,7 +58,7 @@ details).
  -# Cleanup the library with #MSG_clean before ending your program
     (optional).
 
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation control" --> @endhtmlonly
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation Control" --> @endhtmlonly
 */
 
 
@@ -91,9 +93,28 @@ details).
  *   is based on POSIX functions.
  */ 
  
-/** @defgroup msg_actions_functions Managing actions
- *  @ingroup MSG_API
- *  @brief This section describes functions for managing actions.
+/** 
+@defgroup msg_trace_driven Trace-driven simulations
+@ingroup MSG_API
+@brief This section describes the functions allowing to build trace-driven simulations.
+
+\htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Trace-Driven" --> \endhtmlonly
+
+This is very handy when you want to test an algorithm or protocol that
+does nothing unless it receives some events from outside. For example,
+a P2P protocol reacts to requests from the user, but does nothing if
+there is no such event. 
+      
+In such situations, SimGrid allows to write your protocol in your C
+file, and the events to react to in a separate text file. Declare a
+function handling each of the events that you want to accept in your
+trace files, register them using #MSG_action_register in your main,
+and then use #MSG_action_trace_run to launch the simulation. You can
+either have one trace file containing all your events, or a file per
+simulated process. 
+	 
+Check the examples in <b>examples/msg/actions/actions.c</b> for details.
+ 
  */ 
 
 /** @defgroup msg_gos_functions MSG Operating System Functions

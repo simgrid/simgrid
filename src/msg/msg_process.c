@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
                                 "Logging specific to MSG (process)");
 
 /** @addtogroup m_process_management
- *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Process" --> \endhtmlonly
+ *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Processes" --> \endhtmlonly
  *
  *  We need to simulate many independent scheduling decisions, so
  *  the concept of <em>process</em> is at the heart of the
