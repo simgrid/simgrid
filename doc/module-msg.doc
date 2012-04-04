@@ -17,7 +17,7 @@
    - \ref m_datatypes_management
    - \ref m_host_management
    - \ref m_task_management
-   - \ref m_file_management
+   - \ref msg_file_management
    - \ref msg_trace_driven
    - \ref msg_gos_functions
    - \ref msg_deprecated_functions
@@ -86,10 +86,10 @@ details).
  *         (#m_task_t) and the functions for managing it.
  */
  
- /** @defgroup m_file_management File Management Functions
+ /** @defgroup msg_file_management File Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the file structure of MSG
- *         (#m_file_t) and the functions for managing it. It
+ *         (#msg_file_t) and the functions for managing it. It
  *   is based on POSIX functions.
  */ 
  

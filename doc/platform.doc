@@ -406,7 +406,10 @@ As an host, a <b>link</b> tag can also contain the <b>prop</b> tag.
 
 \subsection pf_storage Storage
 <b>Note : This is a prototype version that should evolve quickly, this is just some doc valuable only at the time of writing this doc</b>
-This section describes the storage management under SimGrid ; nowadays it's only usable with MSG. It relies basically on linux-like concepts. You also may want to have a look to its corresponding section in \ref m_file_management ; functions access are organized as a POSIX-like interface.
+This section describes the storage management under SimGrid ; nowadays
+it's only usable with MSG. It relies basically on linux-like concepts.
+You also may want to have a look to its corresponding section in \ref
+msg_file_management ; functions access are organized as a POSIX-like interface.
 
 \subsubsection pf_sto_conc Storage Main concepts
 Basically there is 3 different entities to know : 
