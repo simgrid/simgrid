@@ -137,11 +137,15 @@ example from which you can learn what you want to.
 
 /** @defgroup msg_deprecated_functions MSG Deprecated
  *  @ingroup MSG_API
- *  @brief This section describes the deprecated functions and. They
- *	should be remove on next release.
+ *  @brief This section describes the deprecated functions. PLEASE STOP USING THEM.
+ *
+ *  We don't remove them because the ability to run old scientific
+ *  code is something important to us. But these functionalities are
+ *  not actively supported anymore. 
+ *
+ *  To access these functions, you should define the relevant option
+ *  at configuration time in ccmake.
  */
- 
-
 
 
 /** \defgroup MSG_ex_asynchronous_communications Asynchronous communications
