@@ -57,9 +57,9 @@ void generic_parse_bypassroute(AS_t rc,
                              route_t e_route)
 {
   if(e_route->dst_gateway)
-    XBT_INFO("Load bypassASroute from \"%s\" to \"%s\"", src, dst);
+    XBT_DEBUG("Load bypassASroute from \"%s\" to \"%s\"", src, dst);
   else
-    XBT_INFO("Load bypassRoute from \"%s\" to \"%s\"", src, dst);
+    XBT_DEBUG("Load bypassRoute from \"%s\" to \"%s\"", src, dst);
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
   char *route_name;
 
@@ -100,17 +100,111 @@ route_t generic_get_bypassroute(AS_t rc, network_element_t src, network_element_
   if(no_bypassroute_declared)
     return NULL;
 
+  route_t e_route_bypass = NULL;
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
 
-  if (src == NULL || dst == NULL)
-    xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-            src->name, dst->name, rc->name);
+  if(dst->rc_component == rc && src->rc_component == rc ){
+    char *route_name = bprintf("%s#%s", src->name, dst->name);
+    e_route_bypass = xbt_dict_get_or_null(dict_bypassRoutes, route_name);
+    if(e_route_bypass)
+      XBT_DEBUG("Find bypass route with %ld links",xbt_dynar_length(e_route_bypass->link_list));
+    free(route_name);
+  }
+  else{
+    AS_t src_as, dst_as;
+    int index_src, index_dst;
+    xbt_dynar_t path_src = NULL;
+    xbt_dynar_t path_dst = NULL;
+    AS_t current = NULL;
+    AS_t *current_src = NULL;
+    AS_t *current_dst = NULL;
 
-  char *route_name = bprintf("%s#%s", src->name, dst->name);
-  route_t e_route_bypass = xbt_dict_get_or_null(dict_bypassRoutes, route_name);
-  if(e_route_bypass)
-    XBT_DEBUG("Find bypass route with %ld links",xbt_dynar_length(e_route_bypass->link_list));
-  free(route_name);
+    if (src == NULL || dst == NULL)
+      xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
+              src->name, dst->name, rc->name);
+
+    src_as = src->rc_component;
+    dst_as = dst->rc_component;
+
+    /* (2) find the path to the root routing component */
+    path_src = xbt_dynar_new(sizeof(AS_t), NULL);
+    current = src_as;
+    while (current != NULL) {
+      xbt_dynar_push(path_src, &current);
+      current = current->routing_father;
+    }
+    path_dst = xbt_dynar_new(sizeof(AS_t), NULL);
+    current = dst_as;
+    while (current != NULL) {
+      xbt_dynar_push(path_dst, &current);
+      current = current->routing_father;
+    }
+
+    /* (3) find the common father */
+    index_src = path_src->used - 1;
+    index_dst = path_dst->used - 1;
+    current_src = xbt_dynar_get_ptr(path_src, index_src);
+    current_dst = xbt_dynar_get_ptr(path_dst, index_dst);
+    while (index_src >= 0 && index_dst >= 0 && *current_src == *current_dst) {
+      xbt_dynar_pop_ptr(path_src);
+      xbt_dynar_pop_ptr(path_dst);
+      index_src--;
+      index_dst--;
+      current_src = xbt_dynar_get_ptr(path_src, index_src);
+      current_dst = xbt_dynar_get_ptr(path_dst, index_dst);
+    }
+
+    int max_index_src = path_src->used - 1;
+    int max_index_dst = path_dst->used - 1;
+
+    int max_index = max(max_index_src, max_index_dst);
+    int i, max;
+
+    for (max = 0; max <= max_index; max++) {
+      for (i = 0; i < max; i++) {
+        if (i <= max_index_src && max <= max_index_dst) {
+          char *route_name = bprintf("%s#%s",
+                                     (*(AS_t *)
+                                      (xbt_dynar_get_ptr(path_src, i)))->name,
+                                     (*(AS_t *)
+                                      (xbt_dynar_get_ptr(path_dst, max)))->name);
+          e_route_bypass = xbt_dict_get_or_null(dict_bypassRoutes, route_name);
+          xbt_free(route_name);
+        }
+        if (e_route_bypass)
+          break;
+        if (max <= max_index_src && i <= max_index_dst) {
+          char *route_name = bprintf("%s#%s",
+                                     (*(AS_t *)
+                                      (xbt_dynar_get_ptr(path_src, max)))->name,
+                                     (*(AS_t *)
+                                      (xbt_dynar_get_ptr(path_dst, i)))->name);
+          e_route_bypass = xbt_dict_get_or_null(dict_bypassRoutes, route_name);
+          xbt_free(route_name);
+        }
+        if (e_route_bypass)
+          break;
+      }
+
+      if (e_route_bypass)
+        break;
+
+      if (max <= max_index_src && max <= max_index_dst) {
+        char *route_name = bprintf("%s#%s",
+                                   (*(AS_t *)
+                                    (xbt_dynar_get_ptr(path_src, max)))->name,
+                                   (*(AS_t *)
+                                    (xbt_dynar_get_ptr(path_dst, max)))->name);
+        e_route_bypass = xbt_dict_get_or_null(dict_bypassRoutes, route_name);
+        xbt_free(route_name);
+      }
+      if (e_route_bypass)
+        break;
+    }
+
+    xbt_dynar_free(&path_src);
+    xbt_dynar_free(&path_dst);
+  }
 
   route_t new_e_route = NULL;
   if (e_route_bypass) {
