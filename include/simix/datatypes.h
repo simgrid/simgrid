@@ -61,10 +61,10 @@ typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized acti
 
 
 /* ****************************** Process *********************************** */
-/** @brief Agent datatype  
+/** @brief Process datatype  
     @ingroup m_datatypes_management 
 
-    An agent may be defined as a <em>code</em>, with some <em>private
+    A processt may be defined as a <em>code</em>, with some <em>private
     data</em>, executing in a <em>location</em>.
     \see m_process_management
   @{ */
@@ -77,9 +77,9 @@ typedef struct s_smx_process *smx_process_t;
  * The function must accept the following parameters:
  * void* process: the process created will be stored there
  * const char *name: a name for the object. It is for user-level information and can be NULL
- * xbt_main_func_t code: is a function describing the behavior of the agent
+ * xbt_main_func_t code: is a function describing the behavior of the process
  * void *data: data a pointer to any data one may want to attach to the new object.
- * smx_host_t host: the location where the new agent is executed
+ * smx_host_t host: the location where the new process is executed
  * int argc, char **argv: parameters passed to code
  * xbt_dict_t pros: properties
  */

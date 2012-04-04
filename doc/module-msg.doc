@@ -27,71 +27,6 @@
   Also make sure to visit the page @ref MSG_examples.
 */
 
-
-/** @defgroup m_datatypes_management MSG Data Types 
-    @ingroup MSG_API
-    @brief This section describes the different datatypes provided by MSG.
-    
-    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
-*/
-
-/** @defgroup m_process_management Processes Management Functions 
- *  @ingroup MSG_API
- *  @brief This section describes the process structure of MSG
- *         (#m_process_t) and the functions for managing it.
- */
-   
-/** @defgroup m_host_management Management functions of Hosts
- *  @ingroup MSG_API
- *  @brief This section describes the host structure of MSG
- */
-  
-/** @defgroup m_task_management Managing functions of Tasks
- *  @ingroup MSG_API
- *  @brief This section describes the task structure of MSG
- *         (#m_task_t) and the functions for managing it.
- */
- 
- /** @defgroup m_file_management Managing functions of Files
- *  @ingroup MSG_API
- *  @brief This section describes the file structure of MSG
- *         (#m_file_t) and the functions for managing it. It
- *   is based on POSIX functions.
- */ 
- 
-/** @defgroup msg_actions_functions Managing actions
- *  @ingroup MSG_API
- *  @brief This section describes functions for managing actions.
- */ 
- 
-/** @defgroup msg_gos_functions MSG Operating System Functions
- *  @ingroup MSG_API
- *  @brief This section describes the functions that can be used
- *         by a process for handling some task.
- */
- 
-/** @defgroup msg_deprecated_functions MSG Deprecated
- *  @ingroup MSG_API
- *  @brief This section describes the deprecated functions and. They
- *	should be remove on next release.
- */
- 
-/** @defgroup msg_easier_life      Platform and Application management
- *  @ingroup MSG_API
- *  @brief This section describes functions to manage the platform creation
- *         and the application deployment. Please check @ref
- *         MSG_examples for an overview of their usage. 
- */
- 
-/** @defgroup msg_simulation   MSG simulation Functions
-*	@ingroup MSG_API
-*	@brief This section describes the functions you need to know to
-*       set up a simulation. You should have a look at \ref MSG_examples
-*       to have an overview of their usage.
-*
-*	@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation functions" --> @endhtmlonly
-*/
-
 /**
 @defgroup MSG_examples MSG Examples
 @ingroup MSG_API
@@ -104,6 +39,65 @@ example from which you can learn what you want to.
 
 */
 
+/** @defgroup msg_simulation   Main MSG simulation Functions
+*	@ingroup MSG_API
+*	@brief This section describes the functions you need to know to
+*       set up a simulation. You should have a look at \ref MSG_examples
+*       to have an overview of their usage.
+*
+*	@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation control" --> @endhtmlonly
+*/
+
+
+/** @defgroup m_datatypes_management MSG Data Types 
+    @ingroup MSG_API
+    @brief This section describes the different datatypes provided by MSG.
+    
+    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
+*/
+
+/** @defgroup m_process_management Process Management Functions 
+ *  @ingroup MSG_API
+ *  @brief This section describes the process structure of MSG
+ *         (#m_process_t) and the functions for managing it.
+ */
+   
+/** @defgroup m_host_management Host Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the host structure of MSG
+ */
+  
+/** @defgroup m_task_management Task Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the task structure of MSG
+ *         (#m_task_t) and the functions for managing it.
+ */
+ 
+ /** @defgroup m_file_management File Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the file structure of MSG
+ *         (#m_file_t) and the functions for managing it. It
+ *   is based on POSIX functions.
+ */ 
+ 
+/** @defgroup msg_actions_functions Managing actions
+ *  @ingroup MSG_API
+ *  @brief This section describes functions for managing actions.
+ */ 
+
+/** @defgroup msg_gos_functions MSG Operating System Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the functions that can be used
+ *         by a process for handling some task.
+ */
+ 
+/** @defgroup msg_easier_life      Platform and Application management
+ *  @ingroup MSG_API
+ *  @brief This section describes functions to manage the platform creation
+ *         and the application deployment. Please check @ref
+ *         MSG_examples for an overview of their usage. 
+ */
+ 
 /**
 @defgroup MSG_LUA      Lua bindings
 @ingroup MSG_API
@@ -140,6 +134,14 @@ example from which you can learn what you want to.
    - Also, the lua version of the Chord example (in the source tree)
      is a working non-trivial example of use of the lua bindings
 */
+
+/** @defgroup msg_deprecated_functions MSG Deprecated
+ *  @ingroup MSG_API
+ *  @brief This section describes the deprecated functions and. They
+ *	should be remove on next release.
+ */
+ 
+
 
 
 /** \defgroup MSG_ex_asynchronous_communications Asynchronous communications

@@ -15,10 +15,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
 /** \ingroup msg_gos_functions
  * \brief Executes a task and waits for its termination.
  *
- * This function is used for describing the behavior of an agent. It
+ * This function is used for describing the behavior of a process. It
  * takes only one parameter.
- * \param task a #m_task_t to execute on the location on which the
- agent is running.
+ * \param task a #m_task_t to execute on the location on which the process is running.
  * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
  * or #MSG_HOST_FAILURE otherwise
  */
@@ -155,7 +154,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
 /** \ingroup msg_gos_functions
  * \brief Executes a parallel task and waits for its termination.
  *
- * \param task a #m_task_t to execute on the location on which the agent is running.
+ * \param task a #m_task_t to execute on the location on which the process is running.
  *
  * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
  * or #MSG_HOST_FAILURE otherwise
@@ -934,7 +933,7 @@ MSG_error_t MSG_get_errno(void)
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.
  *
- * This function is used for describing the behavior of an agent. It
+ * This function is used for describing the behavior of a process. It
  * takes three parameter.
  * \param task a #m_task_t to send on another location. This task
  will not be usable anymore when the function will return. There is
@@ -947,7 +946,7 @@ MSG_error_t MSG_get_errno(void)
  can be transfered iff it has been correctly created with
  MSG_task_create().
  * \param dest the destination of the message
- * \param channel the channel on which the agent should put this
+ * \param channel the channel on which the process should put this
  task. This value has to be >=0 and < than the maximal number of
  channels fixed with MSG_set_channel_number().
  * \return #MSG_HOST_FAILURE if the host on which
@@ -982,7 +981,7 @@ MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
  * host (with a timeout on the waiting of the destination host) and
  * waits for the end of the transmission.
  *
- * This function is used for describing the behavior of an agent. It
+ * This function is used for describing the behavior of a process. It
  * takes four parameter.
  * \param task a #m_task_t to send on another location. This task
  will not be usable anymore when the function will return. There is
@@ -995,7 +994,7 @@ MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
  can be transfered iff it has been correctly created with
  MSG_task_create().
  * \param dest the destination of the message
- * \param channel the channel on which the agent should put this
+ * \param channel the channel on which the process should put this
  task. This value has to be >=0 and < than the maximal number of
  channels fixed with MSG_set_channel_number().
  * \param timeout the maximum time to wait for a task before giving
@@ -1025,7 +1024,7 @@ MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
  * \brief Test whether there is a pending communication on a channel, and who sent it.
  *
  * It takes one parameter.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \return -1 if there is no pending communication and the PID of the process who sent it otherwise
@@ -1052,7 +1051,7 @@ int MSG_task_probe_from(m_channel_t channel)
  * \brief Test whether there is a pending communication on a channel.
  *
  * It takes one parameter.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \return 1 if there is a pending communication and 0 otherwise
@@ -1075,7 +1074,7 @@ int MSG_task_Iprobe(m_channel_t channel)
  channel and sent by \a host.
  *
  * It takes two parameters.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \param host the host that is to be watched.
@@ -1104,7 +1103,7 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
  hold a task when this function will return. Thus \a task should not
  be equal to \c NULL and \a *task should be equal to \c NULL. If one of
  those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \param host the host that is to be watched.
@@ -1125,7 +1124,7 @@ MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
  hold a task when this function will return. Thus \a task should not
  be equal to \c NULL and \a *task should be equal to \c NULL. If one of
  those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
@@ -1144,7 +1143,7 @@ MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
  hold a task when this function will return. Thus \a task should not
  be equal to \c NULL and \a *task should be equal to \c NULL. If one of
  those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \param max_duration the maximum time to wait for a task before giving
