@@ -35,9 +35,9 @@
     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
 */
 
-/** @defgroup m_process_management Management Functions of Agents
+/** @defgroup m_process_management Processes Management Functions 
  *  @ingroup MSG_API
- *  @brief This section describes the agent structure of MSG
+ *  @brief This section describes the process structure of MSG
  *         (#m_process_t) and the functions for managing it.
  */
    
@@ -67,7 +67,7 @@
 /** @defgroup msg_gos_functions MSG Operating System Functions
  *  @ingroup MSG_API
  *  @brief This section describes the functions that can be used
- *         by an agent for handling some task.
+ *         by a process for handling some task.
  */
  
 /** @defgroup msg_deprecated_functions MSG Deprecated
@@ -207,7 +207,7 @@ example from which you can learn what you want to.
       thanks to MSG_create_environment() and MSG_launch_application().
          -# Simulation settings : MSG_create_environment() creates a realistic 
             environment
-         -# Application deployment : create the agents on the right locations with  
+         -# Application deployment : create the processes on the right locations with  
             MSG_launch_application()
          -# The simulation is run with #MSG_main()
 	 
@@ -326,7 +326,7 @@ example from which you can learn what you want to.
       thanks to MSG_create_environment() and MSG_launch_application().
          -# Simulation settings : MSG_create_environment() creates a realistic 
             environment
-         -# Application deployment : create the agents on the right locations with  
+         -# Application deployment : create the processes on the right locations with  
             MSG_launch_application()
          -# The simulation is run with #MSG_main()
 	 
@@ -399,7 +399,7 @@ example from which you can learn what you want to.
       
          -# Simulation settings : <i>simgrid.platform</i> creates a realistic 
             environment 
-         -# Application deployment : create the agents on the right locations with  
+         -# Application deployment : create the processes on the right locations with  
             <i>simgrid.application</i>
          -# The simulation is run with <i>simgrid.run</i>
 	 
