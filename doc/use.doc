@@ -8,6 +8,10 @@ Afterward, you probably want to proceed to the \ref MSG_API. Of
 course, if you're curious or if you know what you want, you may prefer
 to go to \ref SMPI_API, or even \ref GRAS_API.
 
+\latexonly
+\includepdf[nup=2x4,pages=1-]{../webcruft/simgrid-101.pdf}
+\endlatexonly
+
 \htmlonly 
 <script language="javascript">
 var base="simgrid-101",max=30,cur=1;
