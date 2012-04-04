@@ -35,6 +35,8 @@ XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_ASroute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_ASroute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_bypassRoute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_bypassRoute_cb_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_bypassASroute_cb_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_bypassASroute_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_peer_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_peer_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_include_cb_list;

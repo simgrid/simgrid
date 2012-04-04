@@ -40,7 +40,8 @@ void generic_parse_bypassroute(AS_t rc, const char *src, const char *dst,
 xbt_dynar_t generic_get_onelink_routes(AS_t rc);
 route_t generic_get_bypassroute(AS_t rc,
     network_element_t src,
-    network_element_t dst);
+    network_element_t dst,
+    double *lat);
 
 /* ************************************************************************** */
 /* ****************** GENERIC AUX FUNCTIONS (declarations) ****************** */

@@ -230,8 +230,8 @@ static void routing_parse_S_bypassRoute(void)
            A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
   src = A_surfxml_bypassRoute_src;
   dst = A_surfxml_bypassRoute_dst;
-  gw_src = A_surfxml_bypassRoute_gw_src;
-  gw_dst = A_surfxml_bypassRoute_gw_dst;
+  gw_src = NULL;
+  gw_dst = NULL;
   xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
              || strlen(gw_dst) > 0,
              "Some limits are null in the route between \"%s\" and \"%s\"",
@@ -239,6 +239,25 @@ static void routing_parse_S_bypassRoute(void)
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
+/**
+ * \brief Set the end points for a bypassASroute
+ */
+static void routing_parse_S_bypassASroute(void)
+{
+  if (src != NULL && dst != NULL && parsed_link_list != NULL)
+    THROWF(arg_error, 0,
+           "Bypass AS Route between %s to %s can not be defined",
+           A_surfxml_bypassASroute_src, A_surfxml_bypassASroute_dst);
+  src = A_surfxml_bypassASroute_src;
+  dst = A_surfxml_bypassASroute_dst;
+  gw_src = A_surfxml_bypassASroute_gw_src;
+  gw_dst = A_surfxml_bypassASroute_gw_dst;
+  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
+             || strlen(gw_dst) > 0,
+             "Some limits are null in the route between \"%s\" and \"%s\"",
+             src, dst);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+}
 /**
  * \brief Set a new link on the actual list of link for a route or ASroute from XML
  */
@@ -317,6 +336,25 @@ static void routing_parse_E_ASroute(void)
  * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
  */
 static void routing_parse_E_bypassRoute(void)
+{
+  route_t e_route = xbt_new0(s_route_t, 1);
+  e_route->link_list = parsed_link_list;
+
+  xbt_assert(current_routing->parse_bypassroute,
+             "Bypassing mechanism not implemented by routing '%s'",
+             current_routing->name);
+
+  current_routing->parse_bypassroute(current_routing, src, dst, e_route);
+  parsed_link_list = NULL;
+  src = NULL;
+  dst = NULL;
+  gw_src = NULL;
+  gw_dst = NULL;
+}
+/**
+ * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
+ */
+static void routing_parse_E_bypassASroute(void)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = parsed_link_list;
@@ -550,29 +588,24 @@ static void _get_route_and_latency(network_element_t src, network_element_t dst,
   XBT_DEBUG("elements_father: common father '%s' src_father '%s' dst_father '%s'",
       common_father->name,src_father->name,dst_father->name);
 
+  /* Check whether a direct bypass is defined */
+  route_t e_route_bypass = NULL;
+  if (common_father->get_bypass_route)
+    e_route_bypass = common_father->get_bypass_route(common_father, src, dst, latency);
+
+  /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */
+  if (e_route_bypass) {
+    xbt_dynar_merge(links,&(e_route_bypass->link_list));
+    generic_free_route(e_route_bypass);
+    return;
+  }
+
   /* If src and dst are in the same AS, life is good */
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
 
     route.link_list = *links;
 
     common_father->get_route_and_latency(common_father, src, dst, &route,latency);
-    return;
-  }
-
-  /* If we are here, src and dst are not in the same AS; check whether a direct bypass is defined */
-
-  route_t e_route_bypass = NULL;
-  if (common_father->get_bypass_route)
-    e_route_bypass = common_father->get_bypass_route(common_father, src, dst);
-
-  if (e_route_bypass) { /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */
-    if (latency)
-      xbt_die("Bypass cannot work yet with get_latency"); // FIXME: get_bypass_route should update the latency itself, just like get_route
-
-//    // FIXME this path is never tested. I need examples to check the bypass mechanism...
-//    THROW_UNIMPLEMENTED; // let's warn the users of the problem
-    xbt_dynar_merge(links,&(e_route_bypass->link_list));
-    generic_free_route(e_route_bypass);
     return;
   }
 
@@ -623,6 +656,7 @@ void routing_get_route_and_latency(network_element_t src,
                                    network_element_t dst,
                                    xbt_dynar_t * route, double *latency)
 {
+  XBT_DEBUG("routing_get_route_and_latency from %s to %s",src->name,dst->name);
   if (!*route) {
     xbt_dynar_reset(global_routing->last_route);
     *route = global_routing->last_route;
@@ -1147,6 +1181,8 @@ void routing_register_callbacks()
   surfxml_add_callback(STag_surfxml_ASroute_cb_list, &routing_parse_S_ASroute);
   surfxml_add_callback(STag_surfxml_bypassRoute_cb_list,
                        &routing_parse_S_bypassRoute);
+  surfxml_add_callback(STag_surfxml_bypassASroute_cb_list,
+                       &routing_parse_S_bypassASroute);
 
   surfxml_add_callback(ETag_surfxml_link_ctn_cb_list, &routing_parse_link_ctn);
 
@@ -1154,6 +1190,8 @@ void routing_register_callbacks()
   surfxml_add_callback(ETag_surfxml_ASroute_cb_list, &routing_parse_E_ASroute);
   surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
                        &routing_parse_E_bypassRoute);
+  surfxml_add_callback(ETag_surfxml_bypassASroute_cb_list,
+                       &routing_parse_E_bypassASroute);
 
   sg_platf_cluster_add_cb(routing_parse_cluster);
 

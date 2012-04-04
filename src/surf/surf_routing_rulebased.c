@@ -381,7 +381,7 @@ static void rulebased_get_route_and_latency(AS_t rc,
     pcre_free_substring_list(list_dst);
 }
 
-static route_t rulebased_get_bypass_route(AS_t rc, network_element_t src, network_element_t dst) {
+static route_t rulebased_get_bypass_route(AS_t rc, network_element_t src, network_element_t dst, double *lat) {
   return NULL;
 }
 

@@ -157,7 +157,7 @@ typedef struct s_as {
   void (*get_route_and_latency) (AS_t as, network_element_t src, network_element_t dst, route_t into, double *latency);
 
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
-  route_t(*get_bypass_route) (AS_t as, network_element_t src, network_element_t dst);
+  route_t(*get_bypass_route) (AS_t as, network_element_t src, network_element_t dst, double *lat);
   void (*finalize) (AS_t as);
 
 

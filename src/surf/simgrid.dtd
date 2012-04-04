@@ -25,7 +25,7 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|include|storage_type|storage|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect)*,(bypassRoute|trace|trace_connect)*)|((include|storage_type|storage|host|router|link|trace|trace_connect)*,(route|trace|trace_connect)*))>
+<!ELEMENT AS (((AS|include|storage_type|storage|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect|bypassASroute)*,(trace|trace_connect)*)|((include|storage_type|storage|host|router|link|trace|trace_connect)*,(route|trace|trace_connect|bypassRoute)*))>
 
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing CDATA #REQUIRED>
@@ -117,8 +117,12 @@
 <!ELEMENT bypassRoute (link_ctn*)>
 <!ATTLIST bypassRoute src CDATA #REQUIRED>
 <!ATTLIST bypassRoute dst CDATA #REQUIRED>
-<!ATTLIST bypassRoute gw_src CDATA #REQUIRED>
-<!ATTLIST bypassRoute gw_dst CDATA #REQUIRED>
+
+<!ELEMENT bypassASroute (link_ctn*)>
+<!ATTLIST bypassASroute src CDATA #REQUIRED>
+<!ATTLIST bypassASroute dst CDATA #REQUIRED>
+<!ATTLIST bypassASroute gw_src CDATA #REQUIRED>
+<!ATTLIST bypassASroute gw_dst CDATA #REQUIRED>
 
 <!ELEMENT process ((argument|prop)*)>
 <!ATTLIST process host CDATA #REQUIRED>

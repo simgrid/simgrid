@@ -20,7 +20,7 @@ static void none_get_route_and_latency(AS_t rc, network_element_t src, network_e
 
 static route_t none_get_bypass_route(AS_t rc,
     network_element_t src,
-    network_element_t dst) {
+    network_element_t dst, double *lat) {
   return NULL;
 }
 
