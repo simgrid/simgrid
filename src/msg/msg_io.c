@@ -7,7 +7,7 @@
 #include "msg_private.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, simix,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
                                 "Logging specific to MSG (io)");
 
 /** @addtogroup msg_file_management

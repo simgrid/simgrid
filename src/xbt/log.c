@@ -646,6 +646,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_mailbox);
   XBT_LOG_CONNECT(msg_process);
   XBT_LOG_CONNECT(msg_task);
+  XBT_LOG_CONNECT(msg_io);
 
   /* simdag */
   XBT_LOG_CONNECT(sd);
