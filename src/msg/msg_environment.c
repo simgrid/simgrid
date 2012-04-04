@@ -14,32 +14,9 @@
 #include <lualib.h>
 #endif
 
-/** @addtogroup msg_easier_life
- *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Platforms and Applications" --> \endhtmlonly
- * 
- */
-
 /********************************* MSG **************************************/
 
-/** \ingroup msg_easier_life
- * \brief A name directory service...
- *
- * Finds a m_host_t using its name.
- * \param name the name of an host.
- * \return the corresponding host
- */
-m_host_t MSG_get_host_by_name(const char *name)
-{
-  smx_host_t simix_h = NULL;
-  simix_h = simcall_host_get_by_name(name);
-
-  if (simix_h == NULL)
-    return NULL;
-
-  return (m_host_t) simcall_host_get_data(simix_h);
-}
-
-/** \ingroup msg_easier_life
+/** \ingroup msg_simulation
  * \brief A platform constructor.
  *
  * Creates a new platform, including hosts, links and the

@@ -8,7 +8,7 @@ application, and finally it needs something to know where to deploy what.
 
 For the latest 2 entries, you have basically 2 ways to give it as an input :
 \li You can program it, either using the Lua console (\ref MSG_Lua_funct) or if you're using MSG some 
-of its platform and deployments functions(\ref msg_easier_life). If you want to use it, please refer 
+of its platform and deployments functions(\ref msg_simulation). If you want to use it, please refer 
 to its doc. (you can also  check the section  \ref pf_flexml_bypassing but this is strongly deprecated, as there is a new way to do it properly, but not yet documented).
 \li You can use two XML files: a platform description file and a deployment 
 description one.

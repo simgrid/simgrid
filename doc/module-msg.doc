@@ -21,7 +21,6 @@
    - \ref msg_actions_functions
    - \ref msg_gos_functions
    - \ref msg_deprecated_functions
-   - \ref msg_easier_life
    - \ref msg_simulation
 
   Also make sure to visit the page @ref MSG_examples.
@@ -39,13 +38,25 @@ example from which you can learn what you want to.
 
 */
 
-/** @defgroup msg_simulation   Main MSG simulation Functions
-*	@ingroup MSG_API
-*	@brief This section describes the functions you need to know to
-*       set up a simulation. You should have a look at \ref MSG_examples
-*       to have an overview of their usage.
-*
-*	@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation control" --> @endhtmlonly
+/** 
+@defgroup msg_simulation   Main MSG simulation Functions
+@ingroup MSG_API
+@brief Describes how to setup and control your simulation.
+
+The basic workflow is the following (check the \ref MSG_examples for
+details).
+
+ -# Initialize the library with #MSG_global_init
+ -# Create a platform (usually by parsing a file with
+    #MSG_create_environment)
+ -# Register the functions that your processes are supposed to run with
+    #MSG_function_register (and maybe #MSG_function_register_default)
+ -# Launch your processes from a deployment file with #MSG_launch_application
+ -# Run the simulation with #MSG_main
+ -# Cleanup the library with #MSG_clean before ending your program
+    (optional).
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation control" --> @endhtmlonly
 */
 
 
@@ -91,12 +102,6 @@ example from which you can learn what you want to.
  *         by a process for handling some task.
  */
  
-/** @defgroup msg_easier_life      Platform and Application management
- *  @ingroup MSG_API
- *  @brief This section describes functions to manage the platform creation
- *         and the application deployment. Please check @ref
- *         MSG_examples for an overview of their usage. 
- */
  
 /**
 @defgroup MSG_LUA      Lua bindings
