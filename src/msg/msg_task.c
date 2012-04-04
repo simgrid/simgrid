@@ -9,7 +9,7 @@
 #include "xbt/log.h"
 
 /** @addtogroup m_task_management
- *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
+ *    
  * 
  *  Since most scheduling algorithms rely on a concept of task
  *  that can be either <em>computed</em> locally or

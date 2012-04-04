@@ -97,7 +97,7 @@ m_process_t MSG_process_create(const char *name,
    in \ref m_host_management (only the read-only functions i.e. whose
    name contains the word get), in \ref m_task_management (to create
    or destroy some #m_task_t for example) and in \ref
-   msg_gos_functions (to handle file transfers and task processing).
+   msg_task_usage (to handle file transfers and task processing).
  * \param data a pointer to any data one may want to attach to the new
    object.  It is for user-level information and can be NULL. It can
    be retrieved with the function \ref MSG_process_get_data.
@@ -131,7 +131,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
    in \ref m_host_management (only the read-only functions i.e. whose
    name contains the word get), in \ref m_task_management (to create
    or destroy some #m_task_t for example) and in \ref
-   msg_gos_functions (to handle file transfers and task processing).
+   msg_task_usage (to handle file transfers and task processing).
  * \param data a pointer to any data one may want to attach to the new
    object.  It is for user-level information and can be NULL. It can
    be retrieved with the function \ref MSG_process_get_data.

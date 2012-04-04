@@ -13,15 +13,16 @@
       the documentation provided in the relevant packages.
 
   \section MSG_funct Offered functionnalities
+   - \ref msg_simulation
    - \ref m_process_management
    - \ref m_datatypes_management
    - \ref m_host_management
    - \ref m_task_management
    - \ref msg_file_management
+   - \ref msg_task_usage
    - \ref msg_trace_driven
-   - \ref msg_gos_functions
    - \ref msg_deprecated_functions
-   - \ref msg_simulation
+
 
   Also make sure to visit the page @ref MSG_examples.
 */
@@ -83,16 +84,26 @@ details).
 /** @defgroup m_task_management Task Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the task structure of MSG
- *         (#m_task_t) and the functions for managing it.
+ *         (#m_task_t) and the functions for managing it. See
+ *         \ref msg_task_usage to see how to put the tasks in action.
+ *
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
  */
  
- /** @defgroup msg_file_management File Management Functions
+/** @defgroup msg_task_usage Task Usage
+ *  @ingroup MSG_API
+ *  @brief This section describes the functions that can be used
+ *         by a process to execute, communicate or otherwise handle some task.
+ */
+
+/** @defgroup msg_file_management File Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the file structure of MSG
  *         (#msg_file_t) and the functions for managing it. It
  *   is based on POSIX functions.
  */ 
- 
+
+
 /** 
 @defgroup msg_trace_driven Trace-driven simulations
 @ingroup MSG_API
@@ -117,11 +128,6 @@ Check the examples in <b>examples/msg/actions/actions.c</b> for details.
  
  */ 
 
-/** @defgroup msg_gos_functions MSG Operating System Functions
- *  @ingroup MSG_API
- *  @brief This section describes the functions that can be used
- *         by a process for handling some task.
- */
  
  
 /**

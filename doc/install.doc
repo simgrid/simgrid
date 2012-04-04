@@ -415,7 +415,7 @@ feel free to organize it as you want).
       \li <tt>sched.c</tt>: a C file including <tt>sched.h</tt> and
           implementing the core of the scheduler. Most of these
           functions use the MSG functions defined in section \ref
-          msg_gos_functions.
+          msg_task_usage.
 
       \li <tt>masterslave.c</tt>: a C file with the main function, i.e.
           the MSG initialization (MSG_global_init()), the platform
