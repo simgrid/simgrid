@@ -37,10 +37,10 @@
         <link_ctn id="link3"/>
      </ASroute>
      
-     <bypassRoute src="my_cluster_1" dst="my_cluster_2"
+     <bypassASroute src="my_cluster_1" dst="my_cluster_2"
      gw_src="my_cluster_1_router" 
      gw_dst="my_cluster_2_router">
         <link_ctn id="link_tmp"/>  
-     </bypassRoute>
+     </bypassASroute>
 </AS>
 </platform>
