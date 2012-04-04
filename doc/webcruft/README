@@ -1,0 +1,19 @@
+The sources of the SimGrid 101 presentation are in the propagenda
+section. The script to generate the pngs from the pdf are on Martin's
+hard disk only (sorry). Here are the interesting bits of it:
+
+error=0
+for n in `seq 0 $NUM` ; do
+ if [ x$n != x$NUM ] ; then # lame. should iterate over [0,NUM-1] the  proper way
+   m=`expr $n + 1`
+   echo -n "Page $m of $NUM... ";
+   file=${PNGDIR}_`printf %03d $m`.png
+   if [ ! -e $file ] || [ $file -ot ${PDF} ] ; then
+     convert -density 400% "${PDF}[$n]" -resize 30% $file || error=1 
+     echo "converted"
+   else
+     echo "kept previous version"
+   fi
+ fi
+done
+		 
