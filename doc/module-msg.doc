@@ -15,7 +15,6 @@
   \section MSG_funct Offered functionnalities
    - \ref msg_simulation
    - \ref m_process_management
-   - \ref m_datatypes_management
    - \ref m_host_management
    - \ref m_task_management
    - \ref msg_file_management
@@ -60,14 +59,6 @@ details).
     (optional).
 
 @htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation Control" --> @endhtmlonly
-*/
-
-
-/** @defgroup m_datatypes_management MSG Data Types 
-    @ingroup MSG_API
-    @brief This section describes the different datatypes provided by MSG.
-    
-    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
 */
 
 /** @defgroup m_process_management Process Management Functions 

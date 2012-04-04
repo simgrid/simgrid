@@ -101,10 +101,9 @@ typedef struct m_gpu_task *m_gpu_task_t;
 
 /**
  * \brief @brief Communication action.
- * \ingroup m_datatypes_management
+ * \ingroup msg_task_usage
  *
- * Communication actions transfer tasks between processes.
- * For a given task, the sender and the receiver have distinct objects.
+ * Object representing an ongoing communication between processes. Such beast is usually obtained by using #MSG_task_isend, #MSG_task_irecv or friends.
  */
 typedef struct msg_comm *msg_comm_t;
 
@@ -134,8 +133,15 @@ typedef int m_channel_t;
 /* ******************************** Mailbox ************************************ */
 
 /** @brief Mailbox datatype
-    @ingroup m_datatypes_management
- */
+ *  @ingroup msg_task_usage
+ * 
+ * Object representing a communication rendez-vous point, on which
+ * the sender finds the receiver it wants to communicate with. As a
+ * MSG user, you will only rarely manipulate any of these objects
+ * directly, since most of the public interface (such as
+ * #MSG_task_send and friends) hide this object behind a string
+ * alias. That mean that you don't provide the mailbox on which you
+ * want to send your task, but only the name of this mailbox. */
 typedef struct s_smx_rvpoint *msg_mailbox_t;
 
 
