@@ -407,7 +407,6 @@ foreach my $file (@allfiles) {
 				$tmp_buff .= '      	<ul class="tablist">'."\n";
 				$tmp_buff .= '        	<li><a href="install.html"><span>Installing SimGrid</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="modules.html"><span>Modules&#160;API</span></a></li>'."\n";
-				$tmp_buff .= '        	<li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="options.html"><span>Options & configurations</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="platform.html"><span>Platform Description</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="tracing.html"><span>Tracing Simulations</span></a></li>'."\n";
