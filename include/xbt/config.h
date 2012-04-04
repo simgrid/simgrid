@@ -44,8 +44,6 @@ SG_BEGIN_DECL()
  *
  *  To some extend, configuration sets can be seen as typed hash structures.
  *
- *  \todo This great mechanism is not used in SimGrid yet...
- *
  *
  *  \section XBT_cfg_ex Example of use
  *
