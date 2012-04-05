@@ -430,6 +430,7 @@ set(headers_to_install
 	include/xbt/automatonparse_promela.h
 	include/xbt/datadesc.h
 	include/xbt/socket.h
+	include/xbt/file_stat.h
 	include/simgrid/platf.h
 	include/simgrid/modelchecker.h
 	include/msg/msg.h
