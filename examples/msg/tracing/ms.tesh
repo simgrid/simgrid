@@ -41,7 +41,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/ms
 $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 > {
 >   node = (LINK, HOST, );
->   edge = (0-HOST1-LINK14, 0-LINK14-HOST1, 0-LINK14-LINK14, );
+>   edge = (0-HOST1-LINK13, 0-LINK13-HOST1, 0-LINK13-LINK13, );
 > 
 >   host = {
 >     type = square;
@@ -58,7 +58,7 @@ $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 $ $SG_TEST_EXENV cat tracing/ms.cat.plist
 > {
 >   node = (LINK, HOST, );
->   edge = (0-HOST1-LINK14, 0-LINK14-HOST1, 0-LINK14-LINK14, );
+>   edge = (0-HOST1-LINK13, 0-LINK13-HOST1, 0-LINK13-LINK13, );
 > 
 >   host = {
 >     type = square;
