@@ -40,8 +40,6 @@ static int trace_disable_destroy;
 static int trace_configured = 0;
 static int trace_active = 0;
 
-xbt_dict_t created_categories; //declared in instr_interface.c
-
 static void TRACE_getopts(void)
 {
   trace_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);

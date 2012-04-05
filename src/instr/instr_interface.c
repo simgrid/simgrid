@@ -19,6 +19,7 @@ typedef enum {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
+xbt_dict_t created_categories = NULL;
 /** \ingroup TRACE_category
  *  \brief Declare a new category with a random color.
  *
