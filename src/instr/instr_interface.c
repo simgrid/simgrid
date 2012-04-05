@@ -24,6 +24,20 @@ xbt_dict_t declared_marks = NULL;
 xbt_dict_t user_host_variables = NULL;
 xbt_dict_t user_link_variables = NULL;
 
+static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
+{
+  if (!TRACE_is_enabled()) return NULL;
+  if (!TRACE_needs_platform()) return NULL;
+
+  xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
+  xbt_dict_cursor_t cursor = NULL;
+  char *name, *value;
+  xbt_dict_foreach(filter, cursor, name, value) {
+    xbt_dynar_push_as (ret, char*, xbt_strdup(name));
+  }
+  return ret;
+}
+
 /** \ingroup TRACE_category
  *  \brief Declare a new category with a random color.
  *
@@ -119,13 +133,7 @@ xbt_dynar_t TRACE_get_categories (void)
   if (!TRACE_is_enabled()) return NULL;
   if (!TRACE_categorized()) return NULL;
 
-  xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
-  xbt_dict_cursor_t cursor = NULL;
-  char *name, *value;
-  xbt_dict_foreach(created_categories, cursor, name, value) {
-    xbt_dynar_push_as (ret, char*, xbt_strdup(name));
-  }
-  return ret;
+  return instr_dict_to_dynar (created_categories);
 }
 
 /** \ingroup TRACE_mark
@@ -211,13 +219,7 @@ xbt_dynar_t TRACE_get_marks (void)
 {
   if (!TRACE_is_enabled()) return NULL;
 
-  xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
-  xbt_dict_cursor_t cursor = NULL;
-  char *name, *value;
-  xbt_dict_foreach(declared_marks, cursor, name, value) {
-    xbt_dynar_push_as (ret, char*, xbt_strdup(name));
-  }
-  return ret;
+  return instr_dict_to_dynar (declared_marks);
 }
 
 static void instr_user_variable(double time,
@@ -483,20 +485,6 @@ void TRACE_host_variable_sub_with_time (double time, const char *host, const cha
   instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, NULL, user_host_variables);
 }
 
-static xbt_dynar_t instr_get_user_variables (xbt_dict_t filter)
-{
-  if (!TRACE_is_enabled()) return NULL;
-  if (!TRACE_needs_platform()) return NULL;
-
-  xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
-  xbt_dict_cursor_t cursor = NULL;
-  char *name, *value;
-  xbt_dict_foreach(filter, cursor, name, value) {
-    xbt_dynar_push_as (ret, char*, xbt_strdup(name));
-  }
-  return ret;
-}
-
 /** \ingroup TRACE_user_variables
  *  \brief Get declared user host variables
  *
@@ -507,7 +495,7 @@ static xbt_dynar_t instr_get_user_variables (xbt_dict_t filter)
  */
 xbt_dynar_t TRACE_get_host_variables (void)
 {
-  return instr_get_user_variables (user_host_variables);
+  return instr_dict_to_dynar (user_host_variables);
 }
 
 /* for link variables */
@@ -796,7 +784,7 @@ void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, con
  */
 xbt_dynar_t TRACE_get_link_variables (void)
 {
-  return instr_get_user_variables (user_link_variables);
+  return instr_dict_to_dynar (user_link_variables);
 }
 
 #endif /* HAVE_TRACING */
