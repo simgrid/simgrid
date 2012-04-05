@@ -75,6 +75,8 @@ typedef struct s_container {
 
 extern xbt_dict_t created_categories;
 extern xbt_dict_t declared_marks;
+extern xbt_dict_t user_host_variables;
+extern xbt_dict_t user_link_variables;
 extern double TRACE_last_timestamp_to_dump;
 
 /* from paje.c */

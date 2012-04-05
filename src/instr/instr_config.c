@@ -80,6 +80,8 @@ int TRACE_start()
   /* other trace initialization */
   created_categories = xbt_dict_new_homogeneous(xbt_free);
   declared_marks = xbt_dict_new_homogeneous (xbt_free);
+  user_host_variables = xbt_dict_new_homogeneous (xbt_free);
+  user_link_variables = xbt_dict_new_homogeneous (xbt_free);
   TRACE_surf_alloc();
   TRACE_smpi_alloc();
   return 0;

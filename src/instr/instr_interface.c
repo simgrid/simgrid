@@ -21,6 +21,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
 xbt_dict_t created_categories = NULL;
 xbt_dict_t declared_marks = NULL;
+xbt_dict_t user_host_variables = NULL;
+xbt_dict_t user_link_variables = NULL;
 
 /** \ingroup TRACE_category
  *  \brief Declare a new category with a random color.
@@ -224,13 +226,30 @@ static void instr_user_variable(double time,
                          const char *father_type,
                          double value,
                          InstrUserVariable what,
-                         const char *color)
+                         const char *color,
+                         xbt_dict_t filter)
 {
   /* safe switch */
   if (!TRACE_is_enabled()) return;
 
-  /* if platform is not traced, we can't deal user variables */
+  /* if platform is not traced, we don't allow user variables */
   if (!TRACE_needs_platform()) return;
+
+  //check if variable is already declared
+  char *created = xbt_dict_get_or_null(declared_marks, variable);
+  if (what == INSTR_US_DECLARE){
+    if (created){
+      //already declared
+      return;
+    }else{
+      xbt_dict_set (filter, variable, xbt_strdup("1"), NULL);
+    }
+  }else{
+    if (!created){
+      //not declared, ignore
+      return;
+    }
+  }
 
   char valuestr[100];
   snprintf(valuestr, 100, "%g", value);
@@ -288,7 +307,7 @@ static void instr_user_srcdst_variable(double time,
   void *link;
   xbt_dynar_foreach (route, i, link) {
     char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
-    instr_user_variable (time, link_name, variable, father_type, value, what, NULL);
+    instr_user_variable (time, link_name, variable, father_type, value, what, NULL, user_link_variables);
   }
 }
 
@@ -336,7 +355,7 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  */
 void TRACE_host_variable_declare (const char *variable)
 {
-  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, NULL);
+  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, NULL, user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -353,7 +372,7 @@ void TRACE_host_variable_declare (const char *variable)
  */
 void TRACE_host_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, color);
+  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, color, user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -417,7 +436,7 @@ void TRACE_host_variable_sub (const char *host, const char *variable, double val
  */
 void TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET, NULL);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET, NULL, user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -439,7 +458,7 @@ void TRACE_host_variable_set_with_time (double time, const char *host, const cha
  */
 void TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD, NULL);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD, NULL, user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -461,7 +480,7 @@ void TRACE_host_variable_add_with_time (double time, const char *host, const cha
  */
 void TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, NULL);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, NULL, user_host_variables);
 }
 
 /* for link variables */
@@ -480,7 +499,7 @@ void TRACE_host_variable_sub_with_time (double time, const char *host, const cha
  */
 void TRACE_link_variable_declare (const char *variable)
 {
-  instr_user_variable (0, NULL, variable, "LINK", 0, INSTR_US_DECLARE, NULL);
+  instr_user_variable (0, NULL, variable, "LINK", 0, INSTR_US_DECLARE, NULL, user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -497,7 +516,7 @@ void TRACE_link_variable_declare (const char *variable)
  */
 void TRACE_link_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable (0, NULL, variable, "LINK", 0, INSTR_US_DECLARE, color);
+  instr_user_variable (0, NULL, variable, "LINK", 0, INSTR_US_DECLARE, color, user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -561,7 +580,7 @@ void TRACE_link_variable_sub (const char *link, const char *variable, double val
  */
 void TRACE_link_variable_set_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SET, NULL);
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SET, NULL, user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -583,7 +602,7 @@ void TRACE_link_variable_set_with_time (double time, const char *link, const cha
  */
 void TRACE_link_variable_add_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_ADD, NULL);
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_ADD, NULL, user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -605,7 +624,7 @@ void TRACE_link_variable_add_with_time (double time, const char *link, const cha
  */
 void TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SUB, NULL);
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SUB, NULL, user_link_variables);
 }
 
 /* for link variables, but with src and dst used for get_route */
