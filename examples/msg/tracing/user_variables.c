@@ -79,6 +79,27 @@ int main(int argc, char *argv[])
   MSG_launch_application(deployment_file);
 
   MSG_main();
+
+  //get user declared variables
+  unsigned int cursor;
+  char *variable;
+  xbt_dynar_t host_variables = TRACE_get_host_variables ();
+  if (host_variables){
+    XBT_INFO ("Declared host variables:");
+    xbt_dynar_foreach (host_variables, cursor, variable){
+      XBT_INFO ("%s", variable);
+    }
+    xbt_dynar_free (&host_variables);
+  }
+  xbt_dynar_t link_variables = TRACE_get_link_variables ();
+  if (link_variables){
+    XBT_INFO ("Declared link variables:");
+    xbt_dynar_foreach (link_variables, cursor, variable){
+      XBT_INFO ("%s", variable);
+    }
+    xbt_dynar_free (&link_variables);
+  }
+
   MSG_clean();
   return 0;
 }
