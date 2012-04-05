@@ -12,8 +12,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing eve
 
 static container_t rootContainer = NULL;    /* the root container */
 static xbt_dict_t allContainers = NULL;     /* all created containers indexed by name */
-xbt_dict_t trivaNodeTypes = NULL;     /* all link types defined */
-xbt_dict_t trivaEdgeTypes = NULL;     /* all host types defined */
+xbt_dict_t trivaNodeTypes = NULL;     /* all host types defined */
+xbt_dict_t trivaEdgeTypes = NULL;     /* all link types defined */
 
 long long int instr_new_paje_id (void)
 {
