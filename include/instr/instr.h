@@ -29,6 +29,7 @@ XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
  */
 XBT_PUBLIC(void) TRACE_declare_mark(const char *mark_type);
 XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_marks (void);
 
 /*
  * Function used by graphicator (transform a SimGrid platform

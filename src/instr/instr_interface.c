@@ -20,6 +20,8 @@ typedef enum {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
 xbt_dict_t created_categories = NULL;
+xbt_dict_t declared_marks = NULL;
+
 /** \ingroup TRACE_category
  *  \brief Declare a new category with a random color.
  *
@@ -144,6 +146,11 @@ void TRACE_declare_mark(const char *mark_type)
 
   if (!mark_type) return;
 
+  //check if mark_type is already declared
+  char *created = xbt_dict_get_or_null(declared_marks, mark_type);
+  if (created) return;
+  xbt_dict_set (declared_marks, mark_type, xbt_strdup("1"), NULL);
+
   XBT_DEBUG("MARK,declare %s", mark_type);
   PJ_type_event_new(mark_type, NULL, PJ_type_get_root());
 }
@@ -173,6 +180,10 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 
   if (!mark_type || !mark_value) return;
 
+  //check if mark_type is already declared
+  char *created = xbt_dict_get_or_null(declared_marks, mark_type);
+  if (created) return;
+
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
   if (type == NULL){
@@ -183,6 +194,28 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
     value = PJ_value_new (mark_value, NULL, type);
   }
   new_pajeNewEvent (MSG_get_clock(), PJ_container_get_root(), type, value);
+}
+
+/** \ingroup TRACE_mark
+ *  \brief Get declared marks
+ *
+ * This function should be used to get marks that were already
+ * declared with #TRACE_declare_mark.
+ *
+ * \return A dynar with the declared marks, must be freed with xbt_dynar_free.
+ *
+ */
+xbt_dynar_t TRACE_get_marks (void)
+{
+  if (!TRACE_is_enabled()) return NULL;
+
+  xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
+  xbt_dict_cursor_t cursor = NULL;
+  char *name, *value;
+  xbt_dict_foreach(declared_marks, cursor, name, value) {
+    xbt_dynar_push_as (ret, char*, xbt_strdup(name));
+  }
+  return ret;
 }
 
 static void instr_user_variable(double time,
