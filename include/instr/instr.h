@@ -70,6 +70,10 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_add_with_time (double time, const ch
 XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value);
 XBT_PUBLIC(xbt_dynar_t) TRACE_get_link_variables (void);
 
+/* for creating graph configuration files for Triva by hand */
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_node_types (void);
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_edge_types (void);
+
 #else                           /* HAVE_TRACING */
 
 #define TRACE_category(category)
@@ -109,6 +113,9 @@ XBT_PUBLIC(xbt_dynar_t) TRACE_get_link_variables (void);
 #define TRACE_link_srcdst_variable_add_with_time(time,src,dst,var,value)
 #define TRACE_link_srcdst_variable_sub_with_time(time,src,dst,var,value)
 #define TRACE_get_host_variables()
+
+#define TRACE_get_node_types()
+#define TRACE_get_edge_types()
 
 #endif                          /* HAVE_TRACING */
 

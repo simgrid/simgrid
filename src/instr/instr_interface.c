@@ -23,6 +23,8 @@ xbt_dict_t created_categories = NULL;
 xbt_dict_t declared_marks = NULL;
 xbt_dict_t user_host_variables = NULL;
 xbt_dict_t user_link_variables = NULL;
+extern xbt_dict_t trivaNodeTypes;
+extern xbt_dict_t trivaEdgeTypes;
 
 static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
 {
@@ -785,6 +787,34 @@ void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, con
 xbt_dynar_t TRACE_get_link_variables (void)
 {
   return instr_dict_to_dynar (user_link_variables);
+}
+
+/** \ingroup TRACE_API
+ *  \brief Get Paje container types that can be mapped to the nodes of a graph.
+ *
+ *  This function can be used to create a user made
+ *  graph configuration file for Triva. Normally, it is
+ *  used with the functions defined in \ref TRACE_user_variables.
+ *
+ *  \return A dynar with the types, must be freed with xbt_dynar_free.
+ */
+xbt_dynar_t TRACE_get_node_types (void)
+{
+  return instr_dict_to_dynar (trivaNodeTypes);
+}
+
+/** \ingroup TRACE_API
+ *  \brief Get Paje container types that can be mapped to the edges of a graph.
+ *
+ *  This function can be used to create a user made
+ *  graph configuration file for Triva. Normally, it is
+ *  used with the functions defined in \ref TRACE_user_variables.
+ *
+ *  \return A dynar with the types, must be freed with xbt_dynar_free.
+ */
+xbt_dynar_t TRACE_get_edge_types (void)
+{
+  return instr_dict_to_dynar (trivaEdgeTypes);
 }
 
 #endif /* HAVE_TRACING */
