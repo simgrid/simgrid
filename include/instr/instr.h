@@ -74,10 +74,12 @@ XBT_PUBLIC(xbt_dynar_t) TRACE_get_link_variables (void);
 
 #define TRACE_category(category)
 #define TRACE_category_with_color(category,color)
+#define TRACE_get_categories()
 #define TRACE_smpi_set_category(category)
 
 #define TRACE_declare_mark(mark_type)
 #define TRACE_mark(mark_type,mark_value)
+#define TRACE_get_marks()
 
 #define TRACE_platform_graph_export_graphviz(filename)
 
@@ -89,6 +91,7 @@ XBT_PUBLIC(xbt_dynar_t) TRACE_get_link_variables (void);
 #define TRACE_host_variable_set_with_time(time,host,var,value)
 #define TRACE_host_variable_add_with_time(time,host,var,value)
 #define TRACE_host_variable_sub_with_time(time,host,var,value)
+#define TRACE_get_host_variables()
 
 #define TRACE_link_variable_declare(var)
 #define TRACE_link_variable_declare_with_color(var,color)
@@ -105,6 +108,7 @@ XBT_PUBLIC(xbt_dynar_t) TRACE_get_link_variables (void);
 #define TRACE_link_srcdst_variable_set_with_time(time,src,dst,var,value)
 #define TRACE_link_srcdst_variable_add_with_time(time,src,dst,var,value)
 #define TRACE_link_srcdst_variable_sub_with_time(time,src,dst,var,value)
+#define TRACE_get_host_variables()
 
 #endif                          /* HAVE_TRACING */
 
