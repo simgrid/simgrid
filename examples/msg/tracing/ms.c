@@ -128,6 +128,16 @@ int main(int argc, char *argv[])
   MSG_launch_application(deployment_file);
 
   MSG_main();
+
+  XBT_INFO ("Declared tracing categories:");
+  xbt_dynar_t categories = TRACE_get_categories ();
+  unsigned int cursor;
+  char *category;
+  xbt_dynar_foreach (categories, cursor, category){
+    XBT_INFO ("%s", category);
+  }
+  xbt_dynar_free (&categories);
+
   MSG_clean();
   return 0;
 }                               /* end_of_main */
