@@ -483,6 +483,33 @@ void TRACE_host_variable_sub_with_time (double time, const char *host, const cha
   instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, NULL, user_host_variables);
 }
 
+static xbt_dynar_t instr_get_user_variables (xbt_dict_t filter)
+{
+  if (!TRACE_is_enabled()) return NULL;
+  if (!TRACE_needs_platform()) return NULL;
+
+  xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
+  xbt_dict_cursor_t cursor = NULL;
+  char *name, *value;
+  xbt_dict_foreach(filter, cursor, name, value) {
+    xbt_dynar_push_as (ret, char*, xbt_strdup(name));
+  }
+  return ret;
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Get declared user host variables
+ *
+ * This function should be used to get host variables that were already
+ * declared with #TRACE_host_variable_declare or with #TRACE_host_variable_declare_with_color.
+ *
+ * \return A dynar with the declared host variables, must be freed with xbt_dynar_free.
+ */
+xbt_dynar_t TRACE_get_host_variables (void)
+{
+  return instr_get_user_variables (user_host_variables);
+}
+
 /* for link variables */
 /** \ingroup TRACE_user_variables
  *  \brief Declare a new user variable associated to links.
@@ -757,6 +784,19 @@ void TRACE_link_srcdst_variable_add_with_time (double time, const char *src, con
 void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SUB);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Get declared user link variables
+ *
+ * This function should be used to get link variables that were already
+ * declared with #TRACE_link_variable_declare or with #TRACE_link_variable_declare_with_color.
+ *
+ * \return A dynar with the declared link variables, must be freed with xbt_dynar_free.
+ */
+xbt_dynar_t TRACE_get_link_variables (void)
+{
+  return instr_get_user_variables (user_link_variables);
 }
 
 #endif /* HAVE_TRACING */

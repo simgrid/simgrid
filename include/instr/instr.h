@@ -49,6 +49,7 @@ XBT_PUBLIC(void) TRACE_host_variable_sub (const char *host, const char *variable
 XBT_PUBLIC(void) TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value);
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_host_variables (void);
 
 /* for link variables */
 XBT_PUBLIC(void) TRACE_link_variable_declare (const char *var);
@@ -67,6 +68,7 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub (const char *src, const char *ds
 XBT_PUBLIC(void) TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_link_variables (void);
 
 #else                           /* HAVE_TRACING */
 
