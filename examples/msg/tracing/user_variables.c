@@ -133,6 +133,7 @@ int main(int argc, char *argv[])
   fprintf (fp, " host = {\n  type = square;\n  size = HDD_capacity; \n  values = (HDD_utilization);\n };\n");
   fprintf (fp, " link = {\n  type = rhombus;\n  size = bandwidth;\n };\n");
   fprintf (fp, "}\n");
+  fclose (fp);
 
   MSG_clean();
   return 0;
