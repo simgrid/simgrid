@@ -1,22 +1,6 @@
-#####################################################################
-###########################  CORE ###################################
-#####################################################################
-
 /** \addtogroup GRAS_API
 
-\htmlonly
-<div class="toc">
-<div class="tocTitle">Table of content</div>
-<ol type="1">
-<li> <a href="#GRAS_funct">API documentation</a>
-<li> <a href="#GRAS_example">Examples</a>
-<li> <a href="#GRAS_tut_presentation">Tutorial</a>
-<li> <a href="#GRAS_howto_presentation">HOWTOs</a>
-</div>
-\endhtmlonly
-
-    \section GRAS_funct API documentation
-     GRAS offers the following functionnalities
+    \section GRAS_funct GRAS offers the following functionnalities
      - <b>\ref GRAS_comm</b>: Exchanging messages between peers
        - \ref GRAS_dd : any data which may transit on the network must be
          described beforehand so that GRAS can handle the platform
@@ -44,8 +28,8 @@
          execution time into the simulator and having code sections specific
          to simulation or to real mode).     
 	  
-    \section GRAS_example Examples
-      
+    \section GRAS_examples Examples
+ 
     There is for now rather few examples of GRAS, but it's better than
     nothing, isn't it?
     
@@ -58,7 +42,7 @@
      most proeminent one is:
       
        - \ref GRAS_tut_tour_explicitwait_use
-       
+
     \section GRAS_tut_presentation Tutorial
     
     We even have a tutorial for the GRAS framework. It details in a
@@ -84,7 +68,7 @@
 	 - \ref GRAS_tut_tour_explicitwait
 	 - \ref GRAS_tut_tour_message_recaping
 
-    \section GRAS_howto_presentation HOWTOs
+    \section GRAS_howto_presentation HOWTOsbis
     
     The tutorial and the API documentation present the framework little
     piece by little piece and provide a lot of information on each of them.
@@ -99,7 +83,7 @@
        /** @defgroup GRAS_comm    Communication facilities */
        /** @defgroup GRAS_run     Virtualization */
        /** @defgroup GRAS_ex      Examples */
-       /** @defgroup GRAS_tut     GRAS Tutorial */
+       /** @defgroup GRAS_tut     Tutorial */
 /** @} */
 #####################################################################
 /** @addtogroup GRAS_comm
@@ -150,13 +134,6 @@
      most proeminent one is:
       
        - \ref GRAS_tut_tour_explicitwait_use
-       
-    \htmlonly <!-- 
-      DOXYGEN_NAVBAR_CHILD "Ping-Pong"=GRAS_ex_ping.html
-      DOXYGEN_NAVBAR_CHILD "RPC"=GRAS_ex_mmrpc.html
-      DOXYGEN_NAVBAR_CHILD "Token Ring"=GRAS_ex_token.html
-      DOXYGEN_NAVBAR_CHILD "Timers"=GRAS_ex_timer.html
-    --> \endhtmlonly
 
   There is some more examples in the distribution, under the directory
   <tt>examples/gras</tt>.
@@ -165,12 +142,11 @@
 #####################################################################
 #########################  EXAMPLES #################################
 #####################################################################
-
 ---------------------------------------------------------------------
 ------------------------- Ping Pong ---------------------------------
 ---------------------------------------------------------------------
-
-/** \page GRAS_ex_ping The classical Ping-Pong in GRAS
+/** @defgroup GRAS_ex_ping Ping-Pong
+    @ingroup GRAS_ex
 
     This example implements the very classical ping-pong in GRAS. It
     involves a client (initiating the ping-pong) and a server (answering to 
@@ -284,7 +260,8 @@
 --------------------- Simple Token Ring -----------------------------
 ---------------------------------------------------------------------
 
-/** \page GRAS_ex_token Token Ring example
+/** @defgroup GRAS_ex_token Token Ring example
+    @ingroup GRAS_ex
 
    This example implements the token ring algorithm. It involves several
    nodes arranged in a ring (each of them have a left and a right neighbour)
@@ -351,7 +328,8 @@
 -------------------------- MM RPC -----------------------------------
 ---------------------------------------------------------------------
 
-/** \page GRAS_ex_mmrpc A simple RPC for matrix multiplication
+/** @defgroup GRAS_ex_mmrpc A simple RPC for matrix multiplication
+    @ingroup GRAS_ex
 
     This example implements a remote matrix multiplication. It involves a client 
     (creating the matrices and sending the multiplications requests) and a server 
@@ -498,7 +476,8 @@
 ---------------------------- Timers ---------------------------------
 ---------------------------------------------------------------------
 
-/** \page GRAS_ex_timer Some timer games
+/** @defgroup GRAS_ex_timer Some timer games
+    @ingroup GRAS_ex
 
     This example fools around with the GRAS timers (\ref GRAS_timer). It is
     mainly a regression test, since it uses almost all timer features.

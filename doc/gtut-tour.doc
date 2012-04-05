@@ -1,6 +1,5 @@
-
-/** 
-@page GRAS_tut_tour GRAS initiatic tour
+/** @defgroup GRAS_tut_tour Initiatic tour
+    @ingroup GRAS_tut 
 
 During this tour, you will learn all you need to write your own GRAS
 applications, from the installation of the framework to the use of (almost)

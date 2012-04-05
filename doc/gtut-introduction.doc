@@ -1,5 +1,5 @@
-/** 
-@page GRAS_tut_intro Introduction to the GRAS framework
+/** @defgroup GRAS_tut_intro What is GRAS
+    @ingroup GRAS_tut 
 
 \htmlinclude .gtut-introduction.doc.toc
 

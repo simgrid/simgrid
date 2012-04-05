@@ -1,4 +1,5 @@
-/** @page GRAS_howto_design HOWTO design a GRAS application
+/** @defgroup GRAS_howto_design HOWTO design a GRAS application
+    @ingroup GRAS_howto HOWTOs 
 
 This page tries to give some hints on how to design a GRAS application. The
 provided model and functionnalities are somehow different from the other
