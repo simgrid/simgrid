@@ -14,6 +14,9 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [4.485137] [msg_test/INFO] finalize
 > [4.485137] [msg_test/INFO] report
 > [4.485137] [msg_test/INFO] compute
+> [4.485137] [msg_test/INFO] Declared marks:
+> [4.485137] [msg_test/INFO] msmark
+
 
 p Testing tracing by process 
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/msg/process:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/ms.cat.plist --cfg=triva/uncategorized:tracing/ms.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
@@ -30,6 +33,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/ms
 > [4.485137] [msg_test/INFO] finalize
 > [4.485137] [msg_test/INFO] report
 > [4.485137] [msg_test/INFO] compute
+> [4.485137] [msg_test/INFO] Declared marks:
+> [4.485137] [msg_test/INFO] msmark
 
 $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 > {

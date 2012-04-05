@@ -138,6 +138,16 @@ int main(int argc, char *argv[])
   }
   xbt_dynar_free (&categories);
 
+  XBT_INFO ("Declared marks:");
+  xbt_dynar_t marks = TRACE_get_marks ();
+  char *mark;
+  xbt_dynar_foreach (marks, cursor, mark){
+    XBT_INFO ("%s", mark);
+  }
+  xbt_dynar_free (&marks);
+
+
+
   MSG_clean();
   return 0;
 }                               /* end_of_main */
