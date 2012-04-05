@@ -240,7 +240,7 @@ static void instr_user_variable(double time,
   if (!TRACE_needs_platform()) return;
 
   //check if variable is already declared
-  char *created = xbt_dict_get_or_null(declared_marks, variable);
+  char *created = xbt_dict_get_or_null(filter, variable);
   if (what == INSTR_US_DECLARE){
     if (created){
       //already declared
