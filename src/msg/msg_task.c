@@ -248,7 +248,7 @@ MSG_error_t MSG_task_destroy(m_task_t task)
 }
 
 
-/** \ingroup m_task_management
+/** \ingroup m_task_usage
  * \brief Cancel a #m_task_t.
  * \param task the task to cancel. If it was executed or transfered, it
           stops the process that were working on it.
