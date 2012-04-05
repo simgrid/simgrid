@@ -95,6 +95,34 @@ void TRACE_category_with_color (const char *category, const char *color)
   instr_new_variable_type (category, final_color);
 }
 
+
+/** \ingroup TRACE_category
+ *  \brief Get declared categories
+ *
+ * This function should be used to get categories that were already
+ * declared with #TRACE_category or with #TRACE_category_with_color.
+ *
+ * See \ref tracing_tracing for details on how to trace
+ * the (categorized) resource utilization.
+ *
+ * \return A dynar with the declared categories, must be freed with xbt_dynar_free.
+ *
+ *  \see MSG_task_set_category, SD_task_set_category
+ */
+xbt_dynar_t TRACE_get_categories (void)
+{
+  if (!TRACE_is_enabled()) return NULL;
+  if (!TRACE_categorized()) return NULL;
+
+  xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
+  xbt_dict_cursor_t cursor = NULL;
+  char *name, *value;
+  xbt_dict_foreach(created_categories, cursor, name, value) {
+    xbt_dynar_push_as (ret, char*, xbt_strdup(name));
+  }
+  return ret;
+}
+
 /** \ingroup TRACE_mark
  * \brief Declare a new type for tracing mark.
  *
