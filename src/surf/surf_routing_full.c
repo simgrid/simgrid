@@ -60,7 +60,7 @@ static xbt_dynar_t full_get_onelink_routes(AS_t rc)
 
 static void full_get_route_and_latency(AS_t rc,
     network_element_t src, network_element_t dst,
-                                       route_t res, double *lat)
+    route_t res, double *lat)
 {
   XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]",
       src->name,
@@ -109,7 +109,7 @@ static void full_finalize(AS_t rc)
 AS_t model_full_create(void)
 {
   routing_component_full_t new_component = (routing_component_full_t)
-      model_generic_create_sized(sizeof(s_routing_component_full_t));
+          model_generic_create_sized(sizeof(s_routing_component_full_t));
 
   new_component->generic_routing.parse_route = model_full_set_route;
   new_component->generic_routing.parse_ASroute = model_full_set_route;
@@ -157,7 +157,7 @@ static int full_pointer_resource_cmp(const void *a, const void *b)
 }
 
 void model_full_set_route(AS_t rc, const char *src,
-                          const char *dst, route_t route)
+    const char *dst, route_t route)
 {
   network_element_t src_net_elm, dst_net_elm;
   int as_route = 0;
@@ -175,8 +175,8 @@ void model_full_set_route(AS_t rc, const char *src,
   size_t table_size = xbt_dynar_length(routing->generic_routing.index_network_elm);
 
   xbt_assert(!xbt_dynar_is_empty(route->link_list),
-             "Invalid count of links, must be greater than zero (%s,%s)",
-             src, dst);
+      "Invalid count of links, must be greater than zero (%s,%s)",
+      src, dst);
 
   if (!routing->routing_table)
     routing->routing_table = xbt_new0(route_t, table_size * table_size);
@@ -192,49 +192,49 @@ void model_full_set_route(AS_t rc, const char *src,
       xbt_dynar_push(link_route_to_test, &link);
     }
     if (xbt_dynar_compare(TO_ROUTE_FULL(src_net_elm->id, dst_net_elm->id)->link_list,
-                          link_route_to_test, full_pointer_resource_cmp)) {
+        link_route_to_test, full_pointer_resource_cmp)) {
       surf_parse_error("A route between \"%s\" and \"%s\" already exists "
-                       "with a different content. "
-                       "If you are trying to define a reverse route, "
-                       "you must set the symmetrical=no attribute to "
-                       "your routes tags.", src, dst);
+          "with a different content. "
+          "If you are trying to define a reverse route, "
+          "you must set the symmetrical=no attribute to "
+          "your routes tags.", src, dst);
     } else {
       surf_parse_warn("Ignoring the identical redefinition of the route "
-                      "between \"%s\" and \"%s\"", src, dst);
+          "between \"%s\" and \"%s\"", src, dst);
     }
   } else {
     if (!route->dst_gateway && !route->src_gateway)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
     else {
-// FIXME We can call a gw wich is down the current AS (cf g5k.xml) but not upper.
-//      AS_t subas = xbt_dict_get_or_null(rc->routing_sons, src);
-//      if (subas == NULL)
-//        surf_parse_error("The source of an ASroute must be a sub-AS "
-//                         "declared within the current AS, "
-//                         "but '%s' is not an AS within '%s'", src, rc->name);
-//      if (subas->to_index
-//          && xbt_dict_get_or_null(subas->to_index, route->src_gateway) == NULL)
-//        surf_parse_error("In an ASroute, source gateway must be part of "
-//                         "the source sub-AS (in particular, being in a "
-//                         "sub-sub-AS is not allowed), "
-//                         "but '%s' is not in '%s'.",
-//                         route->src_gateway, subas->name);
-//
-//      subas = xbt_dict_get_or_null(rc->routing_sons, dst);
-//      if (subas == NULL)
-//        surf_parse_error("The destination of an ASroute must be a sub-AS "
-//                         "declared within the current AS, "
-//                         "but '%s' is not an AS within '%s'", dst, rc->name);
-//      if (subas->to_index
-//          && xbt_dict_get_or_null(subas->to_index, route->dst_gateway) == NULL)
-//        surf_parse_error("In an ASroute, destination gateway must be "
-//                         "part of the destination sub-AS (in particular, "
-//                         "in a sub-sub-AS is not allowed), "
-//                         "but '%s' is not in '%s'.",
-//                         route->dst_gateway, subas->name);
+      // FIXME We can call a gw wich is down the current AS (cf g5k.xml) but not upper.
+      //      AS_t subas = xbt_dict_get_or_null(rc->routing_sons, src);
+      //      if (subas == NULL)
+      //        surf_parse_error("The source of an ASroute must be a sub-AS "
+      //                         "declared within the current AS, "
+      //                         "but '%s' is not an AS within '%s'", src, rc->name);
+      //      if (subas->to_index
+      //          && xbt_dict_get_or_null(subas->to_index, route->src_gateway) == NULL)
+      //        surf_parse_error("In an ASroute, source gateway must be part of "
+      //                         "the source sub-AS (in particular, being in a "
+      //                         "sub-sub-AS is not allowed), "
+      //                         "but '%s' is not in '%s'.",
+      //                         route->src_gateway, subas->name);
+      //
+      //      subas = xbt_dict_get_or_null(rc->routing_sons, dst);
+      //      if (subas == NULL)
+      //        surf_parse_error("The destination of an ASroute must be a sub-AS "
+      //                         "declared within the current AS, "
+      //                         "but '%s' is not an AS within '%s'", dst, rc->name);
+      //      if (subas->to_index
+      //          && xbt_dict_get_or_null(subas->to_index, route->dst_gateway) == NULL)
+      //        surf_parse_error("In an ASroute, destination gateway must be "
+      //                         "part of the destination sub-AS (in particular, "
+      //                         "in a sub-sub-AS is not allowed), "
+      //                         "but '%s' is not in '%s'.",
+      //                         route->dst_gateway, subas->name);
       as_route = 1;
       XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
-                src, route->src_gateway->name, dst, route->dst_gateway->name);
+          src, route->src_gateway->name, dst, route->dst_gateway->name);
       if (route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
         xbt_die("The dst_gateway '%s' does not exist!", route->dst_gateway->name);
       if (route->src_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
@@ -246,8 +246,8 @@ void model_full_set_route(AS_t rc, const char *src,
   }
 
   if ( (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES && as_route == 0)
-       || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
-     ) {
+      || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
+  ) {
     if (route->dst_gateway && route->src_gateway) {
       network_element_t gw_tmp;
       gw_tmp = route->src_gateway;
@@ -266,16 +266,16 @@ void model_full_set_route(AS_t rc, const char *src,
         xbt_dynar_push(link_route_to_test, &link);
       }
       xbt_assert(!xbt_dynar_compare(TO_ROUTE_FULL(dst_net_elm->id, src_net_elm->id)->link_list,
-                                    link_route_to_test,
-                                    full_pointer_resource_cmp),
-                 "The route between \"%s\" and \"%s\" already exists", src,
-                 dst);
+          link_route_to_test,
+          full_pointer_resource_cmp),
+          "The route between \"%s\" and \"%s\" already exists", src,
+          dst);
     } else {
       if (!route->dst_gateway && !route->src_gateway)
         XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
       else
         XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
-                  dst, route->src_gateway->name, src, route->dst_gateway->name);
+            dst, route->src_gateway->name, src, route->dst_gateway->name);
       TO_ROUTE_FULL(dst_net_elm->id, src_net_elm->id) =
           generic_new_extended_route(rc->hierarchy, route, 0);
       xbt_dynar_shrink(TO_ROUTE_FULL(dst_net_elm->id, src_net_elm->id)->link_list, 0);

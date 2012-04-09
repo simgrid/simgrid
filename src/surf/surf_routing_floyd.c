@@ -96,9 +96,9 @@ static void floyd_get_route_and_latency(AS_t asg, network_element_t src, network
     if (pred == -1)             /* if no pred in route -> no route to host */
       break;
     xbt_assert(TO_FLOYD_LINK(pred, prev_pred),
-                "Invalid link for the route between \"%s\" or \"%s\"",
-                src->name,
-                dst->name);
+        "Invalid link for the route between \"%s\" or \"%s\"",
+        src->name,
+        dst->name);
 
     prev_gw_src = gw_src;
 
@@ -182,62 +182,62 @@ AS_t model_floyd_create(void)
 void model_floyd_end(AS_t current_routing)
 {
 
-	as_floyd_t as =
-	  ((as_floyd_t) current_routing);
+  as_floyd_t as =
+      ((as_floyd_t) current_routing);
 
-	unsigned int i, j, a, b, c;
+  unsigned int i, j, a, b, c;
 
-	/* set the size of table routing */
-	size_t table_size = xbt_dynar_length(as->generic_routing.index_network_elm);
+  /* set the size of table routing */
+  size_t table_size = xbt_dynar_length(as->generic_routing.index_network_elm);
 
-	if(!as->link_table)
-	{
-		/* Create Cost, Predecessor and Link tables */
-		as->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
-		as->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
-		as->link_table = xbt_new0(route_t, table_size * table_size);    /* actual link between src and dst */
+  if(!as->link_table)
+  {
+    /* Create Cost, Predecessor and Link tables */
+    as->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
+    as->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
+    as->link_table = xbt_new0(route_t, table_size * table_size);    /* actual link between src and dst */
 
-		/* Initialize costs and predecessors */
-		for (i = 0; i < table_size; i++)
-		for (j = 0; j < table_size; j++) {
-		  TO_FLOYD_COST(i, j) = DBL_MAX;
-		  TO_FLOYD_PRED(i, j) = -1;
-		  TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
-		}
-	}
+    /* Initialize costs and predecessors */
+    for (i = 0; i < table_size; i++)
+      for (j = 0; j < table_size; j++) {
+        TO_FLOYD_COST(i, j) = DBL_MAX;
+        TO_FLOYD_PRED(i, j) = -1;
+        TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
+      }
+  }
 
-	/* Add the loopback if needed */
-	if (global_routing->loopback && current_routing->hierarchy == SURF_ROUTING_BASE) {
-		for (i = 0; i < table_size; i++) {
-		  route_t e_route = TO_FLOYD_LINK(i, i);
-		  if (!e_route) {
-			e_route = xbt_new0(s_route_t, 1);
-			e_route->src_gateway = NULL;
-			e_route->dst_gateway = NULL;
-			e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-			xbt_dynar_push(e_route->link_list, &global_routing->loopback);
-			TO_FLOYD_LINK(i, i) = e_route;
-			TO_FLOYD_PRED(i, i) = i;
-			TO_FLOYD_COST(i, i) = 1;
-		  }
-		}
-	}
-	/* Calculate path costs */
-	for (c = 0; c < table_size; c++) {
-		for (a = 0; a < table_size; a++) {
-		  for (b = 0; b < table_size; b++) {
-			if (TO_FLOYD_COST(a, c) < DBL_MAX && TO_FLOYD_COST(c, b) < DBL_MAX) {
-			  if (TO_FLOYD_COST(a, b) == DBL_MAX ||
-				  (TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b) <
-				   TO_FLOYD_COST(a, b))) {
-				TO_FLOYD_COST(a, b) =
-					TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b);
-				TO_FLOYD_PRED(a, b) = TO_FLOYD_PRED(c, b);
-			  }
-			}
-		  }
-		}
-	}
+  /* Add the loopback if needed */
+  if (global_routing->loopback && current_routing->hierarchy == SURF_ROUTING_BASE) {
+    for (i = 0; i < table_size; i++) {
+      route_t e_route = TO_FLOYD_LINK(i, i);
+      if (!e_route) {
+        e_route = xbt_new0(s_route_t, 1);
+        e_route->src_gateway = NULL;
+        e_route->dst_gateway = NULL;
+        e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+        xbt_dynar_push(e_route->link_list, &global_routing->loopback);
+        TO_FLOYD_LINK(i, i) = e_route;
+        TO_FLOYD_PRED(i, i) = i;
+        TO_FLOYD_COST(i, i) = 1;
+      }
+    }
+  }
+  /* Calculate path costs */
+  for (c = 0; c < table_size; c++) {
+    for (a = 0; a < table_size; a++) {
+      for (b = 0; b < table_size; b++) {
+        if (TO_FLOYD_COST(a, c) < DBL_MAX && TO_FLOYD_COST(c, b) < DBL_MAX) {
+          if (TO_FLOYD_COST(a, b) == DBL_MAX ||
+              (TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b) <
+                  TO_FLOYD_COST(a, b))) {
+            TO_FLOYD_COST(a, b) =
+                TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b);
+            TO_FLOYD_PRED(a, b) = TO_FLOYD_PRED(c, b);
+          }
+        }
+      }
+    }
+  }
 }
 
 static int floyd_pointer_resource_cmp(const void *a, const void *b) {
@@ -247,128 +247,128 @@ static int floyd_pointer_resource_cmp(const void *a, const void *b) {
 //FIXME: kill dupplicates in next function with full routing
 
 void model_floyd_parse_route(AS_t rc, const char *src,
-        const char *dst, route_t route)
+    const char *dst, route_t route)
 {
-    int as_route = 0;
-    as_floyd_t as = (as_floyd_t) rc;
+  int as_route = 0;
+  as_floyd_t as = (as_floyd_t) rc;
 
-	/* set the size of table routing */
-	size_t table_size = xbt_dynar_length(rc->index_network_elm);
-    network_element_t src_net_elm, dst_net_elm;
+  /* set the size of table routing */
+  size_t table_size = xbt_dynar_length(rc->index_network_elm);
+  network_element_t src_net_elm, dst_net_elm;
 
-    src_net_elm = xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
-    dst_net_elm = xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
-    if (!src_net_elm)
-      src_net_elm = xbt_lib_get_or_null(as_router_lib, src, ROUTING_ASR_LEVEL);
-    if (!dst_net_elm)
-      dst_net_elm = xbt_lib_get_or_null(as_router_lib, dst, ROUTING_ASR_LEVEL);
+  src_net_elm = xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
+  dst_net_elm = xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
+  if (!src_net_elm)
+    src_net_elm = xbt_lib_get_or_null(as_router_lib, src, ROUTING_ASR_LEVEL);
+  if (!dst_net_elm)
+    dst_net_elm = xbt_lib_get_or_null(as_router_lib, dst, ROUTING_ASR_LEVEL);
 
-	xbt_assert(src_net_elm, "Network elements %s not found", src);
-	xbt_assert(dst_net_elm, "Network elements %s not found", dst);
+  xbt_assert(src_net_elm, "Network elements %s not found", src);
+  xbt_assert(dst_net_elm, "Network elements %s not found", dst);
 
-	if(!as->link_table)
-	{
-          int i,j;
-		/* Create Cost, Predecessor and Link tables */
-		as->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
-		as->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
-		as->link_table = xbt_new0(route_t, table_size * table_size);    /* actual link between src and dst */
+  if(!as->link_table)
+  {
+    int i,j;
+    /* Create Cost, Predecessor and Link tables */
+    as->cost_table = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
+    as->predecessor_table = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
+    as->link_table = xbt_new0(route_t, table_size * table_size);    /* actual link between src and dst */
 
-		/* Initialize costs and predecessors */
-		for (i = 0; i < table_size; i++)
-		for (j = 0; j < table_size; j++) {
-		  TO_FLOYD_COST(i, j) = DBL_MAX;
-		  TO_FLOYD_PRED(i, j) = -1;
-		  TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
-		}
-	}
-    if(!route->dst_gateway && !route->src_gateway)
-      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
-    else{
-        as_route = 1;
-        XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
-             route->src_gateway->name, dst, route->dst_gateway->name);
-        if(route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
-            xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway->name);
-        if(route->src_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
-            xbt_die("The src_gateway '%s' does not exist!",route->src_gateway->name);
+    /* Initialize costs and predecessors */
+    for (i = 0; i < table_size; i++)
+      for (j = 0; j < table_size; j++) {
+        TO_FLOYD_COST(i, j) = DBL_MAX;
+        TO_FLOYD_PRED(i, j) = -1;
+        TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
+      }
+  }
+  if(!route->dst_gateway && !route->src_gateway)
+    XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
+  else{
+    as_route = 1;
+    XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
+        route->src_gateway->name, dst, route->dst_gateway->name);
+    if(route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
+      xbt_die("The dst_gateway '%s' does not exist!",route->dst_gateway->name);
+    if(route->src_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
+      xbt_die("The src_gateway '%s' does not exist!",route->src_gateway->name);
+  }
+
+  if(TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id))
+  {
+
+    char * link_name;
+    unsigned int cpt;
+    xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+    xbt_dynar_foreach(route->link_list,cpt,link_name)
+    {
+      void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+      xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
+      xbt_dynar_push(link_route_to_test,&link);
     }
+    xbt_assert(!xbt_dynar_compare(
+        (void*)TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id)->link_list,
+        (void*)link_route_to_test,
+        (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
+        "The route between \"%s\" and \"%s\" already exists", src,dst);
+  }
+  else
+  {
+    TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id) =
+        generic_new_extended_route(rc->hierarchy, route, 1);
+    TO_FLOYD_PRED(src_net_elm->id, dst_net_elm->id) = src_net_elm->id;
+    TO_FLOYD_COST(src_net_elm->id, dst_net_elm->id) =
+        ((TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id))->link_list)->used;   /* count of links, old model assume 1 */
+  }
 
-	if(TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id))
-	{
+  if ( (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES && as_route == 0)
+      || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
+  )
+  {
+    if(TO_FLOYD_LINK(dst_net_elm->id, src_net_elm->id))
+    {
+      if(!route->dst_gateway && !route->src_gateway)
+        XBT_DEBUG("See Route from \"%s\" to \"%s\"", dst, src);
+      else
+        XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
+            route->src_gateway->name, src, route->dst_gateway->name);
+      char * link_name;
+      unsigned int i;
+      xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+      for(i=xbt_dynar_length(route->link_list) ;i>0 ;i--)
+      {
+        link_name = xbt_dynar_get_as(route->link_list,i-1,void *);
+        void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+        xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
+        xbt_dynar_push(link_route_to_test,&link);
+      }
+      xbt_assert(!xbt_dynar_compare(
+          (void*)TO_FLOYD_LINK(dst_net_elm->id, src_net_elm->id)->link_list,
+          (void*)link_route_to_test,
+          (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
+          "The route between \"%s\" and \"%s\" already exists", src,dst);
+    }
+    else
+    {
+      if(route->dst_gateway && route->src_gateway)
+      {
+        network_element_t gw_src = route->src_gateway;
+        network_element_t gw_dst = route->dst_gateway;
+        route->src_gateway = gw_dst;
+        route->dst_gateway = gw_src;
+      }
 
-		char * link_name;
-		unsigned int cpt;
-		xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-		xbt_dynar_foreach(route->link_list,cpt,link_name)
-		{
-			void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
-			xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
-			xbt_dynar_push(link_route_to_test,&link);
-		}
-		xbt_assert(!xbt_dynar_compare(
-			  (void*)TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id)->link_list,
-			  (void*)link_route_to_test,
-			  (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
-			  "The route between \"%s\" and \"%s\" already exists", src,dst);
-	}
-	else
-	{
-	    TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id) =
-	    		generic_new_extended_route(rc->hierarchy, route, 1);
-	    TO_FLOYD_PRED(src_net_elm->id, dst_net_elm->id) = src_net_elm->id;
-	    TO_FLOYD_COST(src_net_elm->id, dst_net_elm->id) =
-	    		((TO_FLOYD_LINK(src_net_elm->id, dst_net_elm->id))->link_list)->used;   /* count of links, old model assume 1 */
-	}
+      if(!route->dst_gateway && !route->src_gateway)
+        XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
+      else
+        XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
+            route->src_gateway->name, src, route->dst_gateway->name);
 
-    if ( (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES && as_route == 0)
-         || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
-       )
-	{
-		if(TO_FLOYD_LINK(dst_net_elm->id, src_net_elm->id))
-		{
-			if(!route->dst_gateway && !route->src_gateway)
-			  XBT_DEBUG("See Route from \"%s\" to \"%s\"", dst, src);
-			else
-			  XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
-					 route->src_gateway->name, src, route->dst_gateway->name);
-			char * link_name;
-			unsigned int i;
-			xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-			for(i=xbt_dynar_length(route->link_list) ;i>0 ;i--)
-			{
-				link_name = xbt_dynar_get_as(route->link_list,i-1,void *);
-				void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
-				xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
-				xbt_dynar_push(link_route_to_test,&link);
-			}
-			xbt_assert(!xbt_dynar_compare(
-				  (void*)TO_FLOYD_LINK(dst_net_elm->id, src_net_elm->id)->link_list,
-			      (void*)link_route_to_test,
-				  (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
-				  "The route between \"%s\" and \"%s\" already exists", src,dst);
-		}
-		else
-		{
-			if(route->dst_gateway && route->src_gateway)
-			{
-			  network_element_t gw_src = route->src_gateway;
-			  network_element_t gw_dst = route->dst_gateway;
-                          route->src_gateway = gw_dst;
-                          route->dst_gateway = gw_src;
-			}
-
-			if(!route->dst_gateway && !route->src_gateway)
-			  XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
-			else
-			  XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
-					 route->src_gateway->name, src, route->dst_gateway->name);
-
-		    TO_FLOYD_LINK(dst_net_elm->id, src_net_elm->id) =
-		    		generic_new_extended_route(rc->hierarchy, route, 0);
-		    TO_FLOYD_PRED(dst_net_elm->id, src_net_elm->id) = dst_net_elm->id;
-		    TO_FLOYD_COST(dst_net_elm->id, src_net_elm->id) =
-		    		((TO_FLOYD_LINK(dst_net_elm->id, src_net_elm->id))->link_list)->used;   /* count of links, old model assume 1 */
-		}
-	}
+      TO_FLOYD_LINK(dst_net_elm->id, src_net_elm->id) =
+          generic_new_extended_route(rc->hierarchy, route, 0);
+      TO_FLOYD_PRED(dst_net_elm->id, src_net_elm->id) = dst_net_elm->id;
+      TO_FLOYD_COST(dst_net_elm->id, src_net_elm->id) =
+          ((TO_FLOYD_LINK(dst_net_elm->id, src_net_elm->id))->link_list)->used;   /* count of links, old model assume 1 */
+    }
+  }
 }
