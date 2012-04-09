@@ -75,7 +75,7 @@ void generic_parse_bypassroute(AS_t rc,
   if(e_route->dst_gateway)
     new_e_route =  generic_new_extended_route(SURF_ROUTING_RECURSIVE, e_route, 1);
   else
-    new_e_route =  generic_new_route(SURF_ROUTING_BASE, e_route, 1);
+    new_e_route =  generic_new_extended_route(SURF_ROUTING_BASE, e_route, 1);
 
   xbt_dynar_free(&(e_route->link_list));
   xbt_free(e_route);
@@ -227,40 +227,6 @@ route_t generic_get_bypassroute(AS_t rc, network_element_t src, network_element_
 
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
-
-route_t
-generic_new_route(e_surf_routing_hierarchy_t hierarchy, route_t data, int order)
-{
-
-  char *link_name;
-  route_t new_route;
-  unsigned int cpt;
-  xbt_dynar_t links = NULL, links_id = NULL;
-
-  new_route = xbt_new0(s_route_t, 1);
-  new_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
-
-  xbt_assert(hierarchy == SURF_ROUTING_BASE,
-             "the hierarchy type is not SURF_ROUTING_BASE");
-
-  links = ((route_t) data)->link_list;
-  links_id = new_route->link_list;
-
-  xbt_dynar_foreach(links, cpt, link_name) {
-
-    void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
-    if (link) {
-      if (order)
-        xbt_dynar_push(links_id, &link);
-      else
-        xbt_dynar_unshift(links_id, &link);
-    } else
-      THROWF(mismatch_error, 0, "Link %s not found", link_name);
-  }
-
-  return new_route;
-}
-
 route_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
                            route_t data, int order)
