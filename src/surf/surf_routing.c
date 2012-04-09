@@ -316,8 +316,12 @@ static void routing_parse_E_ASroute(void)
   e_route->link_list = parsed_link_list;
 
   if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
-    e_route->src_gateway = (sg_routing_edge_t) gw_src; // DIRTY HACK possible only FIXME
-    e_route->dst_gateway = (sg_routing_edge_t) gw_dst; // because of what is in routing_parse_E_ASroute
+    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
+    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
+    //
+    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
+    e_route->src_gateway = (sg_routing_edge_t) gw_src;
+    e_route->dst_gateway = (sg_routing_edge_t) gw_dst;
   } else {
     e_route->src_gateway = sg_routing_edge_by_name_or_null(gw_src);
     e_route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst);

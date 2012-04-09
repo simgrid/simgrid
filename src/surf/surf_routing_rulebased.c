@@ -131,8 +131,13 @@ static void model_rulebased_parse_ASroute(AS_t rc,
       erroffset, dst, error);
   ruleroute_e->generic_rule_route.re_str_link =
       route->link_list;
-  ruleroute_e->re_src_gateway = xbt_strdup((char *)route->src_gateway); // DIRTY HACK possible only
-  ruleroute_e->re_dst_gateway = xbt_strdup((char *)route->dst_gateway); // because of what is in routing_parse_E_ASroute
+
+  // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
+  // store the provided name instead of the entity directly (routing_parse_E_ASroute knows)
+  //
+  // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
+  ruleroute_e->re_src_gateway = xbt_strdup((char *)route->src_gateway);
+  ruleroute_e->re_dst_gateway = xbt_strdup((char *)route->dst_gateway);
   xbt_dynar_push(routing->list_ASroute, &ruleroute_e);
 
   /* make sure that they don't get freed */
