@@ -179,8 +179,6 @@ typedef struct surf_cpu_model_extension_public {
   void (*add_traces) (void);
 } s_surf_model_extension_cpu_t;
 
-typedef struct s_network_element_info *network_element_t;
-
      /* Network model */
 
      /** \ingroup SURF_models
@@ -189,8 +187,8 @@ typedef struct s_network_element_info *network_element_t;
       *  Public functions specific to the network model
       */
 typedef struct surf_network_model_extension_public {
-  surf_action_t (*communicate) (network_element_t src,
-                                network_element_t dst,
+  surf_action_t (*communicate) (sg_routing_edge_t src,
+                                sg_routing_edge_t dst,
                                 double size, double rate);
   xbt_dynar_t(*get_route) (void *src, void *dst); //FIXME: kill field? That is done by the routing nowadays
   double (*get_link_bandwidth) (const void *link);
@@ -336,7 +334,7 @@ static inline void *surf_workstation_resource_by_name(const char *name){
 	return xbt_lib_get_or_null(host_lib, name, SURF_WKS_LEVEL);
 }
 static inline void *surf_network_resource_by_name(const char *name){
-    network_element_t net_elm = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
+    sg_routing_edge_t net_elm = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
     if(!net_elm) net_elm = xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
 	return net_elm;
 }

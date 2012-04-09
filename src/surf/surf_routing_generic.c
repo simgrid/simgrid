@@ -38,17 +38,17 @@ void model_generic_finalize(AS_t as) {
   model_none_finalize(as);
 }
 
-int generic_parse_PU(AS_t as, network_element_t elm)
+int generic_parse_PU(AS_t as, sg_routing_edge_t elm)
 {
   XBT_DEBUG("Load process unit \"%s\"", elm->name);
-  xbt_dynar_push_as(as->index_network_elm,network_element_t,elm);
+  xbt_dynar_push_as(as->index_network_elm,sg_routing_edge_t,elm);
   return xbt_dynar_length(as->index_network_elm)-1;
 }
 
-int generic_parse_AS(AS_t as, network_element_t elm)
+int generic_parse_AS(AS_t as, sg_routing_edge_t elm)
 {
   XBT_DEBUG("Load Autonomous system \"%s\"", elm->name);
-  xbt_dynar_push_as(as->index_network_elm,network_element_t,elm);
+  xbt_dynar_push_as(as->index_network_elm,sg_routing_edge_t,elm);
   return xbt_dynar_length(as->index_network_elm)-1;
 }
 
@@ -93,7 +93,7 @@ xbt_dynar_t generic_get_onelink_routes(AS_t rc) { // FIXME: kill that stub
   return NULL;
 }
 
-route_t generic_get_bypassroute(AS_t rc, network_element_t src, network_element_t dst, double *lat)
+route_t generic_get_bypassroute(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat)
 {
   // If never set a bypass route return NULL without any further computations
   XBT_DEBUG("generic_get_bypassroute from %s to %s",src->name,dst->name);
@@ -302,7 +302,7 @@ generic_autonomous_system_exist(AS_t rc, char *element)
   AS_t element_as, result, elem;
   xbt_dict_cursor_t cursor = NULL;
   char *key;
-  element_as = ((network_element_t)
+  element_as = ((sg_routing_edge_t)
       xbt_lib_get_or_null(as_router_lib, element,
           ROUTING_ASR_LEVEL))->rc_component;
   result = ((AS_t) - 1);
@@ -326,7 +326,7 @@ AS_t
 generic_processing_units_exist(AS_t rc, char *element)
 {
   AS_t element_as;
-  element_as = ((network_element_t)
+  element_as = ((sg_routing_edge_t)
       xbt_lib_get_or_null(host_lib,
           element, ROUTING_HOST_LEVEL))->rc_component;
   if (element_as == rc)
@@ -334,12 +334,12 @@ generic_processing_units_exist(AS_t rc, char *element)
   return generic_as_exist(rc, element_as);
 }
 
-void generic_src_dst_check(AS_t rc, network_element_t src,
-    network_element_t dst)
+void generic_src_dst_check(AS_t rc, sg_routing_edge_t src,
+    sg_routing_edge_t dst)
 {
 
-  network_element_t src_data = src;
-  network_element_t dst_data = dst;
+  sg_routing_edge_t src_data = src;
+  sg_routing_edge_t dst_data = dst;
 
   if (src_data == NULL || dst_data == NULL)
     xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",

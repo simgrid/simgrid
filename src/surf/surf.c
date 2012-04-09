@@ -291,7 +291,7 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
 
 static XBT_INLINE void routing_asr_host_free(void *p)
 {
-  network_element_t elm = p;
+  sg_routing_edge_t elm = p;
   free(elm->name);
   xbt_free(elm);
 }

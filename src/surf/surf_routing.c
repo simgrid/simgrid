@@ -104,7 +104,7 @@ struct s_model_type routing_models[] = {
  */
 static void parse_S_host(sg_platf_host_cbarg_t host)
 {
-  network_element_t info = NULL;
+  sg_routing_edge_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL),
@@ -148,7 +148,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
  */
 static void parse_S_router(sg_platf_router_cbarg_t router)
 {
-  network_element_t info = NULL;
+  sg_routing_edge_t info = NULL;
   if (current_routing->hierarchy == SURF_ROUTING_NULL)
     current_routing->hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
@@ -306,8 +306,8 @@ static void routing_parse_E_ASroute(void)
   e_route->link_list = parsed_link_list;
 
   if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
-    e_route->src_gateway = (network_element_t) gw_src; // DIRTY HACK possible only
-    e_route->dst_gateway = (network_element_t) gw_dst; // because of what is in routing_parse_E_ASroute
+    e_route->src_gateway = (sg_routing_edge_t) gw_src; // DIRTY HACK possible only
+    e_route->dst_gateway = (sg_routing_edge_t) gw_dst; // because of what is in routing_parse_E_ASroute
   } else {
     e_route->src_gateway =  xbt_lib_get_or_null(as_router_lib, gw_src,
                                                 ROUTING_ASR_LEVEL);
@@ -422,7 +422,7 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
   new_as->hierarchy = SURF_ROUTING_NULL;
   new_as->name = xbt_strdup(AS_id);
 
-  network_element_t info = NULL;
+  sg_routing_edge_t info = NULL;
   info = xbt_new0(s_network_element_t, 1);
 
   if (current_routing == NULL && global_routing->root == NULL) {
@@ -498,7 +498,7 @@ void routing_AS_end()
  * Get the common father of the to processing units, and the first different 
  * father in the chain
  */
-static void elements_father(network_element_t src, network_element_t dst,
+static void elements_father(sg_routing_edge_t src, sg_routing_edge_t dst,
                             AS_t * res_father,
                             AS_t * res_src,
                             AS_t * res_dst)
@@ -516,8 +516,8 @@ static void elements_father(network_element_t src, network_element_t dst,
   AS_t father;
 
   /* (1) find the as where the src and dst are located */
-  network_element_t src_data = src;
-  network_element_t dst_data = dst;
+  sg_routing_edge_t src_data = src;
+  sg_routing_edge_t dst_data = dst;
   src_as = src_data->rc_component;
   dst_as = dst_data->rc_component;
 #ifndef NDEBUG
@@ -573,7 +573,7 @@ static void elements_father(network_element_t src, network_element_t dst,
  * This function is called by "get_route" and "get_latency". It allows to walk
  * recursively through the ASes tree.
  */
-static void _get_route_and_latency(network_element_t src, network_element_t dst,
+static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
                                    xbt_dynar_t * links, double *latency)
 {
   s_route_t route;
@@ -613,16 +613,16 @@ static void _get_route_and_latency(network_element_t src, network_element_t dst,
 
   route.link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
   // Find the net_card corresponding to father
-  network_element_t src_father_net_elm = src_father->net_elem;
-  network_element_t dst_father_net_elm = dst_father->net_elem;
+  sg_routing_edge_t src_father_net_elm = src_father->net_elem;
+  sg_routing_edge_t dst_father_net_elm = dst_father->net_elem;
 
   common_father->get_route_and_latency(common_father, src_father_net_elm, dst_father_net_elm, &route,latency);
 
   xbt_assert((route.src_gateway != NULL) && (route.dst_gateway != NULL),
       "bad gateways for route from \"%s\" to \"%s\"", src->name, dst->name);
 
-  network_element_t src_gateway_net_elm = route.src_gateway;
-  network_element_t dst_gateway_net_elm = route.dst_gateway;
+  sg_routing_edge_t src_gateway_net_elm = route.src_gateway;
+  sg_routing_edge_t dst_gateway_net_elm = route.dst_gateway;
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != src_gateway_net_elm)
@@ -652,8 +652,8 @@ static void _get_route_and_latency(network_element_t src, network_element_t dst,
  * walk through the routing components tree and find a route between hosts
  * by calling the differents "get_route" functions in each routing component.
  */
-void routing_get_route_and_latency(network_element_t src,
-                                   network_element_t dst,
+void routing_get_route_and_latency(sg_routing_edge_t src,
+                                   sg_routing_edge_t dst,
                                    xbt_dynar_t * route, double *latency)
 {
   XBT_DEBUG("routing_get_route_and_latency from %s to %s",src->name,dst->name);
@@ -696,7 +696,7 @@ static xbt_dynar_t get_onelink_routes(void)
 
 e_surf_network_element_type_t routing_get_network_element_type(const char *name)
 {
-  network_element_t rc = NULL;
+  sg_routing_edge_t rc = NULL;
 
   rc = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
   if (rc)

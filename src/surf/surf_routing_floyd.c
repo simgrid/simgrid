@@ -25,7 +25,7 @@ typedef struct {
   route_t *link_table;
 } s_as_floyd_t, *as_floyd_t;
 
-static void floyd_get_route_and_latency(AS_t asg, network_element_t src, network_element_t dst,
+static void floyd_get_route_and_latency(AS_t asg, sg_routing_edge_t src, sg_routing_edge_t dst,
     route_t res, double *lat);
 
 /* Business methods */
@@ -36,13 +36,13 @@ static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
   route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
   int src,dst;
-  network_element_t src_elm, dst_elm;
+  sg_routing_edge_t src_elm, dst_elm;
   int table_size = xbt_dynar_length(asg->index_network_elm);
   for(src=0; src < table_size; src++) {
     for(dst=0; dst< table_size; dst++) {
       xbt_dynar_reset(route->link_list);
-      src_elm = xbt_dynar_get_as(asg->index_network_elm,src,network_element_t);
-      dst_elm = xbt_dynar_get_as(asg->index_network_elm,dst,network_element_t);
+      src_elm = xbt_dynar_get_as(asg->index_network_elm,src,sg_routing_edge_t);
+      dst_elm = xbt_dynar_get_as(asg->index_network_elm,dst,sg_routing_edge_t);
       floyd_get_route_and_latency(asg, src_elm, dst_elm, route, NULL);
 
       if (xbt_dynar_length(route->link_list) == 1) {
@@ -64,7 +64,7 @@ static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
   return ret;
 }
 
-static void floyd_get_route_and_latency(AS_t asg, network_element_t src, network_element_t dst,
+static void floyd_get_route_and_latency(AS_t asg, sg_routing_edge_t src, sg_routing_edge_t dst,
     route_t res, double *lat)
 {
 
@@ -85,7 +85,7 @@ static void floyd_get_route_and_latency(AS_t asg, network_element_t src, network
   int first = 1;
   int pred = *dst_id;
   int prev_pred = 0;
-  network_element_t gw_src, gw_dst, prev_gw_src, first_gw;
+  sg_routing_edge_t gw_src, gw_dst, prev_gw_src, first_gw;
   unsigned int cpt;
   void *link;
   xbt_dynar_t links;
@@ -254,7 +254,7 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 
   /* set the size of table routing */
   size_t table_size = xbt_dynar_length(rc->index_network_elm);
-  network_element_t src_net_elm, dst_net_elm;
+  sg_routing_edge_t src_net_elm, dst_net_elm;
 
   src_net_elm = xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
   dst_net_elm = xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
@@ -352,8 +352,8 @@ void model_floyd_parse_route(AS_t rc, const char *src,
     {
       if(route->dst_gateway && route->src_gateway)
       {
-        network_element_t gw_src = route->src_gateway;
-        network_element_t gw_dst = route->dst_gateway;
+        sg_routing_edge_t gw_src = route->src_gateway;
+        sg_routing_edge_t gw_dst = route->dst_gateway;
         route->src_gateway = gw_dst;
         route->dst_gateway = gw_src;
       }

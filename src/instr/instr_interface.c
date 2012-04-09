@@ -298,11 +298,11 @@ static void instr_user_srcdst_variable(double time,
                               InstrUserVariable what)
 {
   xbt_dynar_t route=NULL;
-  network_element_t src_elm = xbt_lib_get_or_null(host_lib,src,ROUTING_HOST_LEVEL);
+  sg_routing_edge_t src_elm = xbt_lib_get_or_null(host_lib,src,ROUTING_HOST_LEVEL);
   if(!src_elm) src_elm = xbt_lib_get_or_null(as_router_lib,src,ROUTING_ASR_LEVEL);
   if(!src_elm) xbt_die("Element '%s' not found!",src);
 
-  network_element_t dst_elm = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
+  sg_routing_edge_t dst_elm = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
   if(!dst_elm) dst_elm = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
   if(!dst_elm) xbt_die("Element '%s' not found!",dst);
 

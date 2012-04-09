@@ -752,8 +752,8 @@ static void net_update_resource_state(void *id,
 }
 
 
-static surf_action_t net_communicate(network_element_t src,
-                                     network_element_t dst,
+static surf_action_t net_communicate(sg_routing_edge_t src,
+                                     sg_routing_edge_t dst,
                                      double size, double rate)
 {
   unsigned int i;

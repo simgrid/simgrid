@@ -30,8 +30,8 @@ typedef struct surf_action_network_GTNETS {
   double rate;
   int suspended;
 #ifdef HAVE_TRACING
-  network_element_t src;
-  network_element_t dst;
+  sg_routing_edge_t src;
+  sg_routing_edge_t dst;
 #endif //HAVE_TRACING
 } s_surf_action_network_GTNETS_t, *surf_action_network_GTNETS_t;
 

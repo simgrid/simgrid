@@ -53,8 +53,8 @@ int main(int argc, char **argv)
   xbt_lib_cursor_t cursor_src = NULL;
   xbt_lib_cursor_t cursor_dst = NULL;
   char *src,*dst,*key,*data;
-  network_element_t value1;
-  network_element_t value2;
+  sg_routing_edge_t value1;
+  sg_routing_edge_t value2;
   xbt_ex_t e;
 
   const SD_workstation_t *hosts;
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 
   // Routers
   xbt_lib_foreach(as_router_lib, cursor_src, key, value1) {
-	  if(((network_element_t)xbt_lib_get_or_null(as_router_lib, key,
+	  if(((sg_routing_edge_t)xbt_lib_get_or_null(as_router_lib, key,
 			  ROUTING_ASR_LEVEL))->rc_type == SURF_NETWORK_ELEMENT_ROUTER)
 	  {
 		  printf("  <router id=\"%s\"/>\n",key);
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 					  ,dst);
 				xbt_dynar_t route=NULL;
 				value2 = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-				routing_get_route_and_latency((network_element_t)value1,(network_element_t)value2,&route,NULL);
+				routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route,NULL);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
 					  ,dst);
 				xbt_dynar_t route=NULL;
 				value2 = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-				routing_get_route_and_latency((network_element_t)value1,(network_element_t)value2,&route,NULL);
+				routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route,NULL);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
 					  ,src, dst);
 				xbt_dynar_t route=NULL;
 				value2 = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
-				routing_get_route_and_latency((network_element_t)value1,(network_element_t)value2,&route, NULL);
+				routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route, NULL);
 				for(i=0;i<xbt_dynar_length(route) ;i++)
 				{
 					void *link = xbt_dynar_get_as(route,i,void *);

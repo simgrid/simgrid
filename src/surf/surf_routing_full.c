@@ -39,9 +39,9 @@ static xbt_dynar_t full_get_onelink_routes(AS_t rc)
           onelink_t onelink = xbt_new0(s_onelink_t, 1);
           onelink->link_ptr = link;
           if (rc->hierarchy == SURF_ROUTING_BASE) {
-            onelink->src = xbt_dynar_get_as(rc->index_network_elm,src,network_element_t);
+            onelink->src = xbt_dynar_get_as(rc->index_network_elm,src,sg_routing_edge_t);
             onelink->src->id = src;
-            onelink->dst = xbt_dynar_get_as(rc->index_network_elm,dst,network_element_t);
+            onelink->dst = xbt_dynar_get_as(rc->index_network_elm,dst,sg_routing_edge_t);
             onelink->dst->id = dst;
           } else if (rc->hierarchy == SURF_ROUTING_RECURSIVE) {
             onelink->src = route->src_gateway;
@@ -59,7 +59,7 @@ static xbt_dynar_t full_get_onelink_routes(AS_t rc)
 }
 
 static void full_get_route_and_latency(AS_t rc,
-    network_element_t src, network_element_t dst,
+    sg_routing_edge_t src, sg_routing_edge_t dst,
     route_t res, double *lat)
 {
   XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]",
@@ -159,7 +159,7 @@ static int full_pointer_resource_cmp(const void *a, const void *b)
 void model_full_set_route(AS_t rc, const char *src,
     const char *dst, route_t route)
 {
-  network_element_t src_net_elm, dst_net_elm;
+  sg_routing_edge_t src_net_elm, dst_net_elm;
   int as_route = 0;
   src_net_elm = xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
   dst_net_elm = xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
@@ -249,7 +249,7 @@ void model_full_set_route(AS_t rc, const char *src,
       || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
   ) {
     if (route->dst_gateway && route->src_gateway) {
-      network_element_t gw_tmp;
+      sg_routing_edge_t gw_tmp;
       gw_tmp = route->src_gateway;
       route->src_gateway = route->dst_gateway;
       route->dst_gateway = gw_tmp;

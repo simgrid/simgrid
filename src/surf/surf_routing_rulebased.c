@@ -62,14 +62,14 @@ static void rule_route_extended_free(void *e)
 
 /* Parse routing model functions */
 
-static int model_rulebased_parse_PU(AS_t rc, network_element_t elm)
+static int model_rulebased_parse_PU(AS_t rc, sg_routing_edge_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
   xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
   return -1;
 }
 
-static int model_rulebased_parse_AS(AS_t rc, network_element_t elm)
+static int model_rulebased_parse_AS(AS_t rc, sg_routing_edge_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
   xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
@@ -207,7 +207,7 @@ static char *remplace(char *value, const char **src_list, int src_size,
 }
 
 static void rulebased_get_route_and_latency(AS_t rc,
-    network_element_t src, network_element_t dst,
+    sg_routing_edge_t src, sg_routing_edge_t dst,
     route_t res,double*lat);
 static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 {
@@ -219,7 +219,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
   char *k1;
 
   //find router
-  network_element_t router = NULL;
+  sg_routing_edge_t router = NULL;
   xbt_lib_cursor_t cursor;
   xbt_lib_foreach(as_router_lib, cursor, k1, router)
   {
@@ -230,7 +230,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
   if (!router)
     xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
 
-  network_element_t host = NULL;
+  sg_routing_edge_t host = NULL;
   xbt_lib_foreach(as_router_lib, cursor, k1, host){
     route_t route = xbt_new0(s_route_t,1);
     route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
@@ -260,7 +260,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 
 /* Business methods */
 static void rulebased_get_route_and_latency(AS_t rc,
-    network_element_t src, network_element_t dst,
+    sg_routing_edge_t src, sg_routing_edge_t dst,
     route_t route, double *lat)
 {
   XBT_DEBUG("rulebased_get_route_and_latency from '%s' to '%s'",src->name,dst->name);
@@ -381,7 +381,7 @@ static void rulebased_get_route_and_latency(AS_t rc,
     pcre_free_substring_list(list_dst);
 }
 
-static route_t rulebased_get_bypass_route(AS_t rc, network_element_t src, network_element_t dst, double *lat) {
+static route_t rulebased_get_bypass_route(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat) {
   return NULL;
 }
 

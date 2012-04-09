@@ -17,7 +17,7 @@ static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dyn
 }
 
 static void vivaldi_get_route_and_latency(
-    AS_t rc, network_element_t src_p, network_element_t dst_p,
+    AS_t rc, sg_routing_edge_t src_p, sg_routing_edge_t dst_p,
     route_t route, double *lat)
 {
   XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]",src_p->name,src_p->id,dst_p->name,dst_p->id);

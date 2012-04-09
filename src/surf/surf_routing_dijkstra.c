@@ -166,7 +166,7 @@ static void add_loopback_dijkstra(as_dijkstra_t as) {
 }
 
 static void dijkstra_get_route_and_latency(AS_t as_generic,
-    network_element_t src, network_element_t dst, route_t route, double *lat);
+    sg_routing_edge_t src, sg_routing_edge_t dst, route_t route, double *lat);
 
 static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 {
@@ -175,13 +175,13 @@ static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
   route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
 
   int src,dst;
-  network_element_t src_elm, dst_elm;
+  sg_routing_edge_t src_elm, dst_elm;
   size_t table_size = xbt_dynar_length(as->index_network_elm);
   for(src=0; src < table_size; src++) {
     for(dst=0; dst< table_size; dst++) {
       xbt_dynar_reset(route->link_list);
-      src_elm = xbt_dynar_get_as(as->index_network_elm,src,network_element_t);
-      dst_elm = xbt_dynar_get_as(as->index_network_elm,dst,network_element_t);
+      src_elm = xbt_dynar_get_as(as->index_network_elm,src,sg_routing_edge_t);
+      dst_elm = xbt_dynar_get_as(as->index_network_elm,dst,sg_routing_edge_t);
       dijkstra_get_route_and_latency(as, src_elm, dst_elm,route, NULL);
 
       if (xbt_dynar_length(route->link_list) == 1) {
@@ -203,7 +203,7 @@ static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 }
 
 static void dijkstra_get_route_and_latency(AS_t asg,
-    network_element_t src, network_element_t dst,
+    sg_routing_edge_t src, sg_routing_edge_t dst,
     route_t route, double *lat)
 {
 
@@ -332,8 +332,8 @@ static void dijkstra_get_route_and_latency(AS_t asg,
   }
 
   /* compose route path with links */
-  network_element_t gw_src = NULL, gw_dst, prev_gw_src, first_gw = NULL;
-  network_element_t gw_dst_net_elm = NULL, prev_gw_src_net_elm = NULL;
+  sg_routing_edge_t gw_src = NULL, gw_dst, prev_gw_src, first_gw = NULL;
+  sg_routing_edge_t gw_dst_net_elm = NULL, prev_gw_src_net_elm = NULL;
 
   for (v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v =
@@ -485,7 +485,7 @@ void model_dijkstra_both_parse_route (AS_t asg, const char *src,
   }
 
   as_dijkstra_t as = (as_dijkstra_t) asg;
-  network_element_t src_net_elm, dst_net_elm;
+  sg_routing_edge_t src_net_elm, dst_net_elm;
 
   src_net_elm = xbt_lib_get_or_null(host_lib, src, ROUTING_HOST_LEVEL);
   dst_net_elm = xbt_lib_get_or_null(host_lib, dst, ROUTING_HOST_LEVEL);
@@ -530,7 +530,7 @@ void model_dijkstra_both_parse_route (AS_t asg, const char *src,
       THROWF(arg_error,0,"(AS)Route from '%s' to '%s' already exists",src,dst);
 
     if (route->dst_gateway && route->src_gateway) {
-      network_element_t gw_tmp;
+      sg_routing_edge_t gw_tmp;
       gw_tmp = route->src_gateway;
       route->src_gateway = route->dst_gateway;
       route->dst_gateway = gw_tmp;

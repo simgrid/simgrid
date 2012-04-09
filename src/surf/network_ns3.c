@@ -26,8 +26,8 @@ static double time_to_next_flow_completion = -1;
 static double ns3_share_resources(double min);
 static void ns3_update_actions_state(double now, double delta);
 static void finalize(void);
-static surf_action_t ns3_communicate(network_element_t src_elm,
-                                     network_element_t dst_elm,
+static surf_action_t ns3_communicate(sg_routing_edge_t src_elm,
+                                     sg_routing_edge_t dst_elm,
                                      double size, double rate);
 static void action_suspend(surf_action_t action);
 static void action_resume(surf_action_t action);
@@ -479,8 +479,8 @@ static void ns3_update_actions_state(double now, double delta)
 }
 
 /* Max durations are not supported */
-static surf_action_t ns3_communicate(network_element_t src_elm,
-                                     network_element_t dst_elm,
+static surf_action_t ns3_communicate(sg_routing_edge_t src_elm,
+                                     sg_routing_edge_t dst_elm,
                                      double size, double rate)
 {
   surf_action_network_ns3_t action = NULL;

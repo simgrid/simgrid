@@ -103,7 +103,7 @@ const char *__surf_get_initial_path(void);
 int __surf_is_absolute_file_path(const char *file_path);
 
 typedef struct s_as *AS_t;
-typedef struct s_network_element_info {
+typedef struct s_routing_edge {
   AS_t rc_component;
   e_surf_network_element_type_t rc_type;
   int id;
@@ -114,8 +114,8 @@ typedef struct s_network_element_info {
  * Link of lenght 1, alongside with its source and destination. This is mainly usefull in the bindings to gtnets and ns3
  */
 typedef struct s_onelink {
-  network_element_t src;
-  network_element_t dst;
+  sg_routing_edge_t src;
+  sg_routing_edge_t dst;
   void *link_ptr;
 } s_onelink_t, *onelink_t;
 
@@ -132,8 +132,8 @@ typedef struct s_model_type {
 
 typedef struct s_route {
   xbt_dynar_t link_list;
-  network_element_t src_gateway;
-  network_element_t dst_gateway;
+  sg_routing_edge_t src_gateway;
+  sg_routing_edge_t dst_gateway;
 } s_route_t, *route_t;
 
 /* This enum used in the routing structure helps knowing in which situation we are. */
@@ -151,13 +151,13 @@ typedef struct s_as {
   char *name;
   struct s_as *routing_father;
   xbt_dict_t routing_sons;
-  network_element_t net_elem;
+  sg_routing_edge_t net_elem;
   xbt_dynar_t link_up_down_list;
 
-  void (*get_route_and_latency) (AS_t as, network_element_t src, network_element_t dst, route_t into, double *latency);
+  void (*get_route_and_latency) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, route_t into, double *latency);
 
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
-  route_t(*get_bypass_route) (AS_t as, network_element_t src, network_element_t dst, double *lat);
+  route_t(*get_bypass_route) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat);
   void (*finalize) (AS_t as);
 
 
@@ -165,8 +165,8 @@ typedef struct s_as {
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  int (*parse_PU) (AS_t as, network_element_t elm); /* A host or a router, whatever */
-  int (*parse_AS) (AS_t as, network_element_t elm);
+  int (*parse_PU) (AS_t as, sg_routing_edge_t elm); /* A host or a router, whatever */
+  int (*parse_AS) (AS_t as, sg_routing_edge_t elm);
   void (*parse_route) (AS_t as, const char *src,
                      const char *dst, route_t route);
   void (*parse_ASroute) (AS_t as, const char *src,
@@ -190,7 +190,7 @@ XBT_PUBLIC(void) generic_free_route(route_t route); // FIXME rename to routing_r
  // FIXME: make previous function private to routing again?
 
 
-XBT_PUBLIC(void) routing_get_route_and_latency(network_element_t src, network_element_t dst,
+XBT_PUBLIC(void) routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
                               xbt_dynar_t * route, double *latency);
 
 /**

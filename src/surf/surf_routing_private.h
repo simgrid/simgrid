@@ -29,8 +29,8 @@ void model_none_finalize(AS_t as);
 AS_t model_generic_create_sized(size_t childsize);
 void model_generic_finalize(AS_t as);
 
-int generic_parse_PU(AS_t rc, network_element_t elm);
-int generic_parse_AS(AS_t rc, network_element_t elm);
+int generic_parse_PU(AS_t rc, sg_routing_edge_t elm);
+int generic_parse_AS(AS_t rc, sg_routing_edge_t elm);
 void generic_parse_bypassroute(AS_t rc, const char *src, const char *dst,
                                route_t e_route);
 
@@ -39,8 +39,8 @@ void generic_parse_bypassroute(AS_t rc, const char *src, const char *dst,
 
 xbt_dynar_t generic_get_onelink_routes(AS_t rc);
 route_t generic_get_bypassroute(AS_t rc,
-    network_element_t src,
-    network_element_t dst,
+    sg_routing_edge_t src,
+    sg_routing_edge_t dst,
     double *lat);
 
 /* ************************************************************************** */
@@ -55,8 +55,8 @@ AS_t
 generic_autonomous_system_exist(AS_t rc, char *element);
 AS_t
 generic_processing_units_exist(AS_t rc, char *element);
-void generic_src_dst_check(AS_t rc, network_element_t src,
-    network_element_t dst);
+void generic_src_dst_check(AS_t rc, sg_routing_edge_t src,
+    sg_routing_edge_t dst);
 
 
 /* ************************************************************************** */

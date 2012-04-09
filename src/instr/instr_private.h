@@ -63,7 +63,7 @@ typedef enum {
 
 typedef struct s_container *container_t;
 typedef struct s_container {
-  network_element_t net_elm;
+  sg_routing_edge_t net_elm;
   char *name;     /* Unique name of this container */
   char *id;       /* Unique id of this container */
   type_t type;    /* Type of this container */
