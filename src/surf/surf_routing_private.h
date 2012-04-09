@@ -48,10 +48,10 @@ route_t generic_get_bypassroute(AS_t rc,
 
 route_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
-                           void *data, int order);
+                           route_t data, int order);
 route_t
 generic_new_route(e_surf_routing_hierarchy_t hierarchy,
-                           void *data, int order);
+                           route_t data, int order);
 AS_t
 generic_autonomous_system_exist(AS_t rc, char *element);
 AS_t

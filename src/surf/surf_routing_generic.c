@@ -229,7 +229,7 @@ route_t generic_get_bypassroute(AS_t rc, network_element_t src, network_element_
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 
 route_t
-generic_new_route(e_surf_routing_hierarchy_t hierarchy, void *data, int order)
+generic_new_route(e_surf_routing_hierarchy_t hierarchy, route_t data, int order)
 {
 
   char *link_name;
@@ -244,8 +244,6 @@ generic_new_route(e_surf_routing_hierarchy_t hierarchy, void *data, int order)
              "the hierarchy type is not SURF_ROUTING_BASE");
 
   links = ((route_t) data)->link_list;
-
-
   links_id = new_route->link_list;
 
   xbt_dynar_foreach(links, cpt, link_name) {
@@ -265,7 +263,7 @@ generic_new_route(e_surf_routing_hierarchy_t hierarchy, void *data, int order)
 
 route_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
-                           void *data, int order)
+                           route_t data, int order)
 {
 
   char *link_name;
