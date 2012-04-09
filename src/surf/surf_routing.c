@@ -199,13 +199,10 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
  */
 static void routing_parse_S_route(void)
 {
-  if (src != NULL && dst != NULL && parsed_link_list != NULL)
-    THROWF(arg_error, 0, "Route between %s to %s can not be defined",
-           A_surfxml_route_src, A_surfxml_route_dst);
   src = A_surfxml_route_src;
   dst = A_surfxml_route_dst;
   xbt_assert(strlen(src) > 0 || strlen(dst) > 0,
-             "Some limits are null in the route between \"%s\" and \"%s\"",
+             "Missing end-points while defining route \"%s\"->\"%s\"",
              src, dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
@@ -215,17 +212,13 @@ static void routing_parse_S_route(void)
  */
 static void routing_parse_S_ASroute(void)
 {
-  if (src != NULL && dst != NULL && parsed_link_list != NULL)
-    THROWF(arg_error, 0, "Route between %s to %s can not be defined",
-           A_surfxml_ASroute_src, A_surfxml_ASroute_dst);
   src = A_surfxml_ASroute_src;
   dst = A_surfxml_ASroute_dst;
   gw_src = A_surfxml_ASroute_gw_src;
   gw_dst = A_surfxml_ASroute_gw_dst;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
-             || strlen(gw_dst) > 0,
-             "Some limits are null in the route between \"%s\" and \"%s\"",
-             src, dst);
+  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0 || strlen(gw_dst) > 0,
+             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
+             src, dst,gw_src,gw_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
@@ -234,18 +227,13 @@ static void routing_parse_S_ASroute(void)
  */
 static void routing_parse_S_bypassRoute(void)
 {
-  if (src != NULL && dst != NULL && parsed_link_list != NULL)
-    THROWF(arg_error, 0,
-           "Bypass Route between %s to %s can not be defined",
-           A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
   src = A_surfxml_bypassRoute_src;
   dst = A_surfxml_bypassRoute_dst;
   gw_src = NULL;
   gw_dst = NULL;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
-             || strlen(gw_dst) > 0,
-             "Some limits are null in the route between \"%s\" and \"%s\"",
-             src, dst);
+  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0 || strlen(gw_dst) > 0,
+             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
+             src, dst,gw_src,gw_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
@@ -254,18 +242,13 @@ static void routing_parse_S_bypassRoute(void)
  */
 static void routing_parse_S_bypassASroute(void)
 {
-  if (src != NULL && dst != NULL && parsed_link_list != NULL)
-    THROWF(arg_error, 0,
-           "Bypass AS Route between %s to %s can not be defined",
-           A_surfxml_bypassASroute_src, A_surfxml_bypassASroute_dst);
   src = A_surfxml_bypassASroute_src;
   dst = A_surfxml_bypassASroute_dst;
   gw_src = A_surfxml_bypassASroute_gw_src;
   gw_dst = A_surfxml_bypassASroute_gw_dst;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0
-             || strlen(gw_dst) > 0,
-             "Some limits are null in the route between \"%s\" and \"%s\"",
-             src, dst);
+  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0 || strlen(gw_dst) > 0,
+             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
+             src, dst,gw_src,gw_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 /**
