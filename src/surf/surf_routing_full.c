@@ -143,7 +143,7 @@ void model_full_end(AS_t current_routing)
         e_route = xbt_new0(s_route_t, 1);
         e_route->src_gateway = NULL;
         e_route->dst_gateway = NULL;
-        e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+        e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
         xbt_dynar_push(e_route->link_list, &global_routing->loopback);
         TO_ROUTE_FULL(i, i) = e_route;
       }
@@ -185,7 +185,7 @@ void model_full_set_route(AS_t rc, const char *src,
     char *link_name;
     unsigned int i;
     xbt_dynar_t link_route_to_test =
-        xbt_dynar_new(global_routing->size_of_link, NULL);
+        xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
     xbt_dynar_foreach(route->link_list, i, link_name) {
       void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
       xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
@@ -258,7 +258,7 @@ void model_full_set_route(AS_t rc, const char *src,
       char *link_name;
       unsigned int i;
       xbt_dynar_t link_route_to_test =
-          xbt_dynar_new(global_routing->size_of_link, NULL);
+          xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
       for (i = xbt_dynar_length(route->link_list); i > 0; i--) {
         link_name = xbt_dynar_get_as(route->link_list, i - 1, void *);
         void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);

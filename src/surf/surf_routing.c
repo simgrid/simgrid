@@ -611,7 +611,7 @@ static void _get_route_and_latency(network_element_t src, network_element_t dst,
 
   /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
 
-  route.link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+  route.link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
   // Find the net_card corresponding to father
   network_element_t src_father_net_elm = src_father->net_elem;
   network_element_t dst_father_net_elm = dst_father->net_elem;
@@ -714,15 +714,14 @@ e_surf_network_element_type_t routing_get_network_element_type(const char *name)
  * 
  * Make a global routing structure and set all the parsing functions.
  */
-void routing_model_create(size_t size_of_links, void *loopback)
+void routing_model_create( void *loopback)
 {
   /* config the uniq global routing */
   global_routing = xbt_new0(s_routing_global_t, 1);
   global_routing->root = NULL;
   global_routing->get_onelink_routes = get_onelink_routes;
   global_routing->loopback = loopback;
-  global_routing->size_of_link = size_of_links;
-  global_routing->last_route = xbt_dynar_new(global_routing->size_of_link,NULL);
+  global_routing->last_route = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
   /* no current routing at moment */
   current_routing = NULL;
 }

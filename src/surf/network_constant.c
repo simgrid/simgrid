@@ -234,5 +234,5 @@ void surf_network_model_init_Constant()
   netcste_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
 
-  routing_model_create(sizeof(double), NULL);
+  routing_model_create(NULL);
 }

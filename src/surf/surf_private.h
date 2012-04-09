@@ -178,12 +178,11 @@ typedef struct s_as {
 struct s_routing_global {
   AS_t root;
   void *loopback;
-  size_t size_of_link;
   xbt_dynar_t last_route;
   xbt_dynar_t(*get_onelink_routes) (void);
 };
 
-XBT_PUBLIC(void) routing_model_create(size_t size_of_link, void *loopback);
+XBT_PUBLIC(void) routing_model_create(void *loopback);
 XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) storage_register_callbacks(void);
 XBT_PUBLIC(void) routing_register_callbacks(void);

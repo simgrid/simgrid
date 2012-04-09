@@ -157,7 +157,7 @@ static void add_loopback_dijkstra(as_dijkstra_t as) {
 
     if (!found) {
       route_t e_route = xbt_new0(s_route_t, 1);
-      e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+      e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
       xbt_dynar_push(e_route->link_list,
                      &global_routing->loopback);
       xbt_graph_new_edge(as->route_graph, node, node, e_route);
@@ -172,7 +172,7 @@ static xbt_dynar_t dijkstra_get_onelink_routes(AS_t as)
 {
 	  xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
       route_t route = xbt_new0(s_route_t,1);
-      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
 
 	  int src,dst;
 	  network_element_t src_elm, dst_elm;

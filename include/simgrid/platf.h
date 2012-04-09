@@ -11,6 +11,9 @@
 
 #include <xbt.h>
 
+typedef void *sg_routing_link_t; /* The actual type is model-dependent so use void* instead*/
+
+
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new(const char *filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,

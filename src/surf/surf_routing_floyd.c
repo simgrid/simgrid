@@ -33,7 +33,7 @@ static xbt_dynar_t floyd_get_onelink_routes(AS_t asg)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(onelink_t), xbt_free);
   route_t route =   xbt_new0(s_route_t, 1);
-  route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+  route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
   int src,dst;
   network_element_t src_elm, dst_elm;
@@ -112,7 +112,7 @@ static void floyd_get_route_and_latency(AS_t asg, network_element_t src, network
     if (asg->hierarchy == SURF_ROUTING_RECURSIVE && !first
         && strcmp(gw_dst->name, prev_gw_src->name)) {
       xbt_dynar_t e_route_as_to_as;
-      e_route_as_to_as = xbt_dynar_new(global_routing->size_of_link, NULL);
+      e_route_as_to_as = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
       routing_get_route_and_latency(gw_dst, prev_gw_src,&e_route_as_to_as,NULL);
       links = e_route_as_to_as;
       int pos = 0;
@@ -214,8 +214,7 @@ void model_floyd_end(AS_t current_routing)
 			e_route = xbt_new0(s_route_t, 1);
 			e_route->src_gateway = NULL;
 			e_route->dst_gateway = NULL;
-			e_route->link_list =
-				xbt_dynar_new(global_routing->size_of_link, NULL);
+			e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 			xbt_dynar_push(e_route->link_list, &global_routing->loopback);
 			TO_FLOYD_LINK(i, i) = e_route;
 			TO_FLOYD_PRED(i, i) = i;
@@ -300,7 +299,7 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 
 		char * link_name;
 		unsigned int cpt;
-		xbt_dynar_t link_route_to_test = xbt_dynar_new(global_routing->size_of_link, NULL);
+		xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 		xbt_dynar_foreach(route->link_list,cpt,link_name)
 		{
 			void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
@@ -335,7 +334,7 @@ void model_floyd_parse_route(AS_t rc, const char *src,
 					 route->src_gateway->name, src, route->dst_gateway->name);
 			char * link_name;
 			unsigned int i;
-			xbt_dynar_t link_route_to_test = xbt_dynar_new(global_routing->size_of_link, NULL);
+			xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 			for(i=xbt_dynar_length(route->link_list) ;i>0 ;i--)
 			{
 				link_name = xbt_dynar_get_as(route->link_list,i-1,void *);

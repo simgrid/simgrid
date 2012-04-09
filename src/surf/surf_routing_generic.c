@@ -214,7 +214,7 @@ route_t generic_get_bypassroute(AS_t rc, network_element_t src, network_element_
     new_e_route->src_gateway = e_route_bypass->src_gateway;
     new_e_route->dst_gateway = e_route_bypass->dst_gateway;
     new_e_route->link_list =
-        xbt_dynar_new(global_routing->size_of_link, NULL);
+        xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
     xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
       xbt_dynar_push(new_e_route->link_list, &link);
       if (lat)
@@ -237,7 +237,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
   unsigned int cpt;
 
   result = xbt_new0(s_route_t, 1);
-  result->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+  result->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
   xbt_assert(hierarchy == SURF_ROUTING_BASE
              || hierarchy == SURF_ROUTING_RECURSIVE,

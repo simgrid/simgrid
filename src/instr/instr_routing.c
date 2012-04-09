@@ -145,7 +145,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
 
       //get the route
       route_t route = xbt_new0(s_route_t,1);
-      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
       rc->get_route_and_latency(rc, child1->net_elm, child2->net_elm,
                                 route, NULL);
 
@@ -472,7 +472,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
 
       //get the route
       route_t route = xbt_new0(s_route_t,1);
-      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
       rc->get_route_and_latency(rc, child1->net_elm, child2->net_elm,
                                 route, NULL);
 

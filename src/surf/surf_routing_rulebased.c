@@ -233,7 +233,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
   network_element_t host = NULL;
   xbt_lib_foreach(as_router_lib, cursor, k1, host){
     route_t route = xbt_new0(s_route_t,1);
-    route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+    route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
     rulebased_get_route_and_latency (rc, router, host, route,NULL);
 
     int number_of_links = xbt_dynar_length(route->link_list);
