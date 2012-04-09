@@ -46,9 +46,11 @@ route_t generic_get_bypassroute(AS_t rc,
 /* ************************************************************************** */
 /* ****************** GENERIC AUX FUNCTIONS (declarations) ****************** */
 
-route_t
-generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
-                           route_t data, int order);
+/* change a route containing link names into a route containing link entities.
+ * If change_order is true, the links are put in reverse order in the
+ * produced route */
+route_t generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
+                                   route_t data, int preserve_order);
 AS_t
 generic_autonomous_system_exist(AS_t rc, char *element);
 AS_t

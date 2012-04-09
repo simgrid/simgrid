@@ -227,56 +227,45 @@ route_t generic_get_bypassroute(AS_t rc, network_element_t src, network_element_
 
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
+/* change a route containing link names into a route containing link entities */
 route_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
-                           route_t data, int order)
-{
+                           route_t routearg, int change_order) {
 
+  route_t result;
   char *link_name;
-  route_t e_route, new_e_route;
-  route_t route;
   unsigned int cpt;
-  xbt_dynar_t links = NULL, links_id = NULL;
 
-  new_e_route = xbt_new0(s_route_t, 1);
-  new_e_route->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
+  result = xbt_new0(s_route_t, 1);
+  result->link_list = xbt_dynar_new(global_routing->size_of_link, NULL);
 
   xbt_assert(hierarchy == SURF_ROUTING_BASE
              || hierarchy == SURF_ROUTING_RECURSIVE,
-             "the hierarchy type is not defined");
+             "The hierarchy of this AS is neither BASIC nor RECURSIVE, I'm lost here.");
 
-  if (hierarchy == SURF_ROUTING_BASE) {
+  if (hierarchy == SURF_ROUTING_RECURSIVE) {
 
-    route = (route_t) data;
-    links = route->link_list;
-
-  } else if (hierarchy == SURF_ROUTING_RECURSIVE) {
-
-    e_route = (route_t) data;
-    xbt_assert(e_route->src_gateway
-               && e_route->dst_gateway, "bad gateway, is null");
-    links = e_route->link_list;
+    xbt_assert(routearg->src_gateway && routearg->dst_gateway,
+        "NULL is obviously a bad gateway");
 
     /* remeber not erase the gateway names */
-    new_e_route->src_gateway = e_route->src_gateway;
-    new_e_route->dst_gateway = e_route->dst_gateway;
+    result->src_gateway = routearg->src_gateway;
+    result->dst_gateway = routearg->dst_gateway;
   }
 
-  links_id = new_e_route->link_list;
-
-  xbt_dynar_foreach(links, cpt, link_name) {
+  xbt_dynar_foreach(routearg->link_list, cpt, link_name) {
 
     void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
     if (link) {
-      if (order)
-        xbt_dynar_push(links_id, &link);
+      if (change_order)
+        xbt_dynar_push(result->link_list, &link);
       else
-        xbt_dynar_unshift(links_id, &link);
+        xbt_dynar_unshift(result->link_list, &link);
     } else
       THROWF(mismatch_error, 0, "Link %s not found", link_name);
   }
 
-  return new_e_route;
+  return result;
 }
 
 void generic_free_route(route_t route)
