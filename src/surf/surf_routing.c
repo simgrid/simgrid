@@ -43,6 +43,16 @@ int NS3_ASR_LEVEL;              //host node for ns3
 
 static xbt_dict_t random_value = NULL;
 
+/** @brief Retrieve a routing edge from its name
+ *
+ * Routing edges are either CPU/workstation and routers, whatever
+ */
+sg_routing_edge_t sg_routing_edge_by_name_or_null(const char *name) {
+    sg_routing_edge_t net_elm = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
+    if(!net_elm) net_elm = xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
+  return net_elm;
+}
+
 /* Global vars */
 routing_global_t global_routing = NULL;
 AS_t current_routing = NULL;
@@ -306,19 +316,11 @@ static void routing_parse_E_ASroute(void)
   e_route->link_list = parsed_link_list;
 
   if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
-    e_route->src_gateway = (sg_routing_edge_t) gw_src; // DIRTY HACK possible only
+    e_route->src_gateway = (sg_routing_edge_t) gw_src; // DIRTY HACK possible only FIXME
     e_route->dst_gateway = (sg_routing_edge_t) gw_dst; // because of what is in routing_parse_E_ASroute
   } else {
-    e_route->src_gateway =  xbt_lib_get_or_null(as_router_lib, gw_src,
-                                                ROUTING_ASR_LEVEL);
-    if (!e_route->src_gateway)
-      e_route->src_gateway = xbt_lib_get_or_null(host_lib, gw_src,
-                                                 ROUTING_HOST_LEVEL);
-    e_route->dst_gateway =  xbt_lib_get_or_null(as_router_lib, gw_dst,
-                                                ROUTING_ASR_LEVEL);
-    if (!e_route->dst_gateway)
-      e_route->dst_gateway = xbt_lib_get_or_null(host_lib, gw_dst,
-                                                 ROUTING_HOST_LEVEL);
+    e_route->src_gateway = sg_routing_edge_by_name_or_null(gw_src);
+    e_route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst);
   }
   xbt_assert(current_routing->parse_ASroute,
              "no defined method \"set_ASroute\" in \"%s\"",
@@ -358,16 +360,8 @@ static void routing_parse_E_bypassASroute(void)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = parsed_link_list;
-  e_route->src_gateway = xbt_lib_get_or_null(as_router_lib, gw_src,
-                                             ROUTING_ASR_LEVEL);
-  if (!e_route->src_gateway)
-    e_route->src_gateway = xbt_lib_get_or_null(host_lib, gw_src,
-                                               ROUTING_HOST_LEVEL);
-  e_route->dst_gateway = xbt_lib_get_or_null(as_router_lib, gw_dst,
-                                             ROUTING_ASR_LEVEL);
-  if (!e_route->dst_gateway)
-    e_route->dst_gateway = xbt_lib_get_or_null(host_lib, gw_dst,
-                                               ROUTING_HOST_LEVEL);
+  e_route->src_gateway = sg_routing_edge_by_name_or_null(gw_src);
+  e_route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst);
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
@@ -696,13 +690,7 @@ static xbt_dynar_t get_onelink_routes(void)
 
 e_surf_network_element_type_t routing_get_network_element_type(const char *name)
 {
-  sg_routing_edge_t rc = NULL;
-
-  rc = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
-  if (rc)
-    return rc->rc_type;
-
-  rc = xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
+  sg_routing_edge_t rc = sg_routing_edge_by_name_or_null(name);
   if (rc)
     return rc->rc_type;
 

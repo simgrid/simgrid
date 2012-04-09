@@ -333,11 +333,6 @@ static inline void *surf_cpu_resource_by_name(const char *name) {
 static inline void *surf_workstation_resource_by_name(const char *name){
 	return xbt_lib_get_or_null(host_lib, name, SURF_WKS_LEVEL);
 }
-static inline void *surf_network_resource_by_name(const char *name){
-    sg_routing_edge_t net_elm = xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
-    if(!net_elm) net_elm = xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
-	return net_elm;
-}
 static inline void *surf_storage_resource_by_name(const char *name){
     return xbt_lib_get_or_null(storage_lib, name, SURF_STORAGE_LEVEL);
 }

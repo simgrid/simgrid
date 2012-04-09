@@ -348,30 +348,12 @@ static void rulebased_get_route_and_latency(AS_t rc,
         (rule_route_extended_t) ruleroute;
     char *gw_src_name = remplace(ruleroute_extended->re_src_gateway, list_src, rc_src,
         list_dst, rc_dst);
-    route->src_gateway = xbt_lib_get_or_null(host_lib, gw_src_name,
-        ROUTING_HOST_LEVEL);
-    route->src_gateway = xbt_lib_get_or_null(host_lib, gw_src_name,
-        ROUTING_HOST_LEVEL);
-    if (!route->src_gateway)
-      route->src_gateway = xbt_lib_get_or_null(as_router_lib, gw_src_name,
-          ROUTING_ASR_LEVEL);
-    if (!route->src_gateway)
-      route->src_gateway = xbt_lib_get_or_null(as_router_lib, gw_src_name,
-          ROUTING_ASR_LEVEL);
+    route->src_gateway = sg_routing_edge_by_name_or_null(gw_src_name);
     xbt_free(gw_src_name);
 
     char *gw_dst_name = remplace(ruleroute_extended->re_dst_gateway, list_src, rc_src,
         list_dst, rc_dst);
-    route->dst_gateway = xbt_lib_get_or_null(host_lib, gw_dst_name,
-        ROUTING_HOST_LEVEL);
-    route->dst_gateway = xbt_lib_get_or_null(host_lib, gw_dst_name,
-        ROUTING_HOST_LEVEL);
-    if (!route->dst_gateway)
-      route->dst_gateway = xbt_lib_get_or_null(as_router_lib, gw_dst_name,
-          ROUTING_ASR_LEVEL);
-    if (!route->dst_gateway)
-      route->dst_gateway = xbt_lib_get_or_null(as_router_lib, gw_dst_name,
-          ROUTING_ASR_LEVEL);
+    route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst_name);
     xbt_free(gw_dst_name);
   }
 

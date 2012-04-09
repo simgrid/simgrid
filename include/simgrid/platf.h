@@ -14,6 +14,8 @@
 typedef void *sg_routing_link_t; /* The actual type is model-dependent so use void* instead*/
 typedef struct s_routing_edge *sg_routing_edge_t;
 
+XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
+
 
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
