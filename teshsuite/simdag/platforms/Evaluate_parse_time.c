@@ -12,7 +12,7 @@
 #include "surf/surf_private.h"
 #include "xbt/xbt_os_time.h"
 
-extern routing_global_t global_routing;
+extern routing_platf_t routing_platf;
 
 int main(int argc, char **argv)
 {

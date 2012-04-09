@@ -7,7 +7,7 @@
 #include "surf_routing_private.h"
 
 /* Global vars */
-extern routing_global_t global_routing;
+extern routing_platf_t routing_platf;
 extern int surf_parse_lineno;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
@@ -136,7 +136,7 @@ void model_full_end(AS_t current_routing)
     routing->routing_table = xbt_new0(route_t, table_size * table_size);
 
   /* Add the loopback if needed */
-  if (global_routing->loopback && current_routing->hierarchy == SURF_ROUTING_BASE) {
+  if (routing_platf->loopback && current_routing->hierarchy == SURF_ROUTING_BASE) {
     for (i = 0; i < table_size; i++) {
       e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {
@@ -144,7 +144,7 @@ void model_full_end(AS_t current_routing)
         e_route->src_gateway = NULL;
         e_route->dst_gateway = NULL;
         e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-        xbt_dynar_push(e_route->link_list, &global_routing->loopback);
+        xbt_dynar_push(e_route->link_list, &routing_platf->loopback);
         TO_ROUTE_FULL(i, i) = e_route;
       }
     }

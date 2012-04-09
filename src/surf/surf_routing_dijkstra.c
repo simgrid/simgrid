@@ -7,7 +7,7 @@
 #include "surf_routing_private.h"
 
 /* Global vars */
-extern routing_global_t global_routing;
+extern routing_platf_t routing_platf;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
 
@@ -159,7 +159,7 @@ static void add_loopback_dijkstra(as_dijkstra_t as) {
       route_t e_route = xbt_new0(s_route_t, 1);
       e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
       xbt_dynar_push(e_route->link_list,
-          &global_routing->loopback);
+          &routing_platf->loopback);
       xbt_graph_new_edge(as->route_graph, node, node, e_route);
     }
   }
@@ -456,7 +456,7 @@ void model_dijkstra_both_end(AS_t as)
     THIS_AS->route_cache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
   /* Add the loopback if needed */
-  if (global_routing->loopback && as->hierarchy == SURF_ROUTING_BASE)
+  if (routing_platf->loopback && as->hierarchy == SURF_ROUTING_BASE)
     add_loopback_dijkstra(THIS_AS);
 
   /* initialize graph indexes in nodes after graph has been built */

@@ -54,7 +54,7 @@ sg_routing_edge_t sg_routing_edge_by_name_or_null(const char *name) {
 }
 
 /* Global vars */
-routing_global_t global_routing = NULL;
+routing_platf_t routing_platf = NULL;
 AS_t current_routing = NULL;
 
 /* global parse functions */
@@ -406,13 +406,13 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
   sg_routing_edge_t info = NULL;
   info = xbt_new0(s_network_element_t, 1);
 
-  if (current_routing == NULL && global_routing->root == NULL) {
+  if (current_routing == NULL && routing_platf->root == NULL) {
 
     /* it is the first one */
     new_as->routing_father = NULL;
-    global_routing->root = new_as;
+    routing_platf->root = new_as;
     info->id = -1;
-  } else if (current_routing != NULL && global_routing->root != NULL) {
+  } else if (current_routing != NULL && routing_platf->root != NULL) {
 
     xbt_assert(!xbt_dict_get_or_null
                (current_routing->routing_sons, AS_id),
@@ -639,8 +639,8 @@ void routing_get_route_and_latency(sg_routing_edge_t src,
 {
   XBT_DEBUG("routing_get_route_and_latency from %s to %s",src->name,dst->name);
   if (!*route) {
-    xbt_dynar_reset(global_routing->last_route);
-    *route = global_routing->last_route;
+    xbt_dynar_reset(routing_platf->last_route);
+    *route = routing_platf->last_route;
   }
 
   _get_route_and_latency(src, dst, route, latency);
@@ -672,7 +672,7 @@ static xbt_dynar_t recursive_get_onelink_routes(AS_t rc)
 
 static xbt_dynar_t get_onelink_routes(void)
 {
-  return recursive_get_onelink_routes(global_routing->root);
+  return recursive_get_onelink_routes(routing_platf->root);
 }
 
 e_surf_network_element_type_t routing_get_network_element_type(const char *name)
@@ -692,11 +692,11 @@ e_surf_network_element_type_t routing_get_network_element_type(const char *name)
 void routing_model_create( void *loopback)
 {
   /* config the uniq global routing */
-  global_routing = xbt_new0(s_routing_global_t, 1);
-  global_routing->root = NULL;
-  global_routing->get_onelink_routes = get_onelink_routes;
-  global_routing->loopback = loopback;
-  global_routing->last_route = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
+  routing_platf = xbt_new0(s_routing_platf_t, 1);
+  routing_platf->root = NULL;
+  routing_platf->get_onelink_routes = get_onelink_routes;
+  routing_platf->loopback = loopback;
+  routing_platf->last_route = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
   /* no current routing at moment */
   current_routing = NULL;
 }
@@ -1203,9 +1203,9 @@ static void finalize_rec(AS_t as) {
 
 /** \brief Frees all memory allocated by the routing module */
 void routing_exit(void) {
-  if (!global_routing)
+  if (!routing_platf)
     return;
-  xbt_dynar_free(&global_routing->last_route);
-  finalize_rec(global_routing->root);
-  xbt_free(global_routing);
+  xbt_dynar_free(&routing_platf->last_route);
+  finalize_rec(routing_platf->root);
+  xbt_free(routing_platf);
 }

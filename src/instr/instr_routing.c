@@ -329,7 +329,7 @@ static void instr_routing_parse_end_platform ()
   xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free);
-  recursiveGraphExtraction (global_routing->root, PJ_container_get_root(), filter);
+  recursiveGraphExtraction (routing_platf->root, PJ_container_get_root(), filter);
   xbt_dict_free(&filter);
   platform_created = 1;
   TRACE_paje_dump_buffer(1);
@@ -514,7 +514,7 @@ xbt_graph_t instr_routing_platform_graph (void)
   xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
   xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
   xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
-  recursiveXBTGraphExtraction (ret, nodes, edges, global_routing->root, PJ_container_get_root());
+  recursiveXBTGraphExtraction (ret, nodes, edges, routing_platf->root, PJ_container_get_root());
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
   return ret;

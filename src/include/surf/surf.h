@@ -147,8 +147,8 @@ typedef struct surf_action_state {
 /***************************/
 /* Generic model object */
 /***************************/
-typedef struct s_routing_global s_routing_global_t, *routing_global_t;
-XBT_PUBLIC_DATA(routing_global_t) global_routing;
+typedef struct s_routing_platf s_routing_platf_t, *routing_platf_t;
+XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
 
 /** \ingroup SURF_models

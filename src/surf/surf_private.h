@@ -175,7 +175,7 @@ typedef struct s_as {
                            const char *dst, route_t e_route);
 } s_as_t;
 
-struct s_routing_global {
+struct s_routing_platf {
   AS_t root;
   void *loopback;
   xbt_dynar_t last_route;

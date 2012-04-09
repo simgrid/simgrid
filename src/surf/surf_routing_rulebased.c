@@ -7,7 +7,7 @@
 #include <pcre.h>               /* regular expression library */
 
 /* Global vars */
-extern routing_global_t global_routing;
+extern routing_platf_t routing_platf;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_rulebased, surf, "Routing part of surf");
 
@@ -340,9 +340,9 @@ static void rulebased_get_route_and_latency(AS_t rc,
   if (rc_src >= 0 && rc_dst >= 0) {
     /* matched src and dest, nothing more to do (?) */
   } else if (!strcmp(src_name, dst_name) && are_processing_units) {
-    xbt_dynar_push(route->link_list, &(global_routing->loopback));
+    xbt_dynar_push(route->link_list, &(routing_platf->loopback));
     if (lat)
-      *lat += surf_network_model->extension.network.get_link_latency(global_routing->loopback);
+      *lat += surf_network_model->extension.network.get_link_latency(routing_platf->loopback);
   } else {
     THROWF(arg_error,0,"No route from '%s' to '%s'??",src_name,dst_name);
     //xbt_dynar_reset(route->link_list);

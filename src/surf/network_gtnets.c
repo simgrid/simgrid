@@ -14,7 +14,7 @@ static double time_to_next_flow_completion = -1;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets, surf,
                                 "Logging specific to the SURF network GTNetS module");
 
-extern routing_global_t global_routing;
+extern routing_platf_t routing_platf;
 
 double sg_gtnets_jitter = 0.0;
 int sg_gtnets_jitter_seed = 10;
@@ -113,7 +113,7 @@ static void create_gtnets_topology(void)
 //   and then you can use the id to reimplement properly the following GTNets calls
 
    //get the onelinks from the parsed platform
-   xbt_dynar_t onelink_routes = global_routing->get_onelink_routes();
+   xbt_dynar_t onelink_routes = routing_platf->get_onelink_routes();
    if (!onelink_routes)
      return;
 

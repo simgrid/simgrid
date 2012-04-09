@@ -18,7 +18,7 @@ extern xbt_lib_t as_router_lib;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_ns3, surf,
                                 "Logging specific to the SURF network NS3 module");
 
-extern routing_global_t global_routing;
+extern routing_platf_t routing_platf;
 extern xbt_dict_t dict_socket;
 
 static double time_to_next_flow_completion = -1;
@@ -253,7 +253,7 @@ static void create_ns3_topology(void)
   xbt_dynar_shrink(IPV4addr,0);
 
   //get the onelinks from the parsed platform
-  xbt_dynar_t onelink_routes = global_routing->get_onelink_routes();
+  xbt_dynar_t onelink_routes = routing_platf->get_onelink_routes();
   if (!onelink_routes)
     xbt_die("There is no routes!");
   XBT_DEBUG("Have get_onelink_routes, found %ld routes",onelink_routes->used);
