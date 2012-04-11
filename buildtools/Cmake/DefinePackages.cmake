@@ -17,23 +17,18 @@ set(EXTRA_DIST
 	src/xbt/backtrace_dummy.c
 	src/xbt/setset_private.h
 	src/xbt/automatonparse_promela.c
-	src/xbt/mmalloc/attach.c
-	src/xbt/mmalloc/detach.c	
-	src/xbt/mmalloc/keys.c
-	src/xbt/mmalloc/mcalloc.c
 	src/xbt/mmalloc/mfree.c
-	src/xbt/mmalloc/mm_legacy.c		
-	src/xbt/mmalloc/mm.c
 	src/xbt/mmalloc/mmalloc.c
-	src/xbt/mmalloc/mmap-sup.c
-	src/xbt/mmalloc/mmcheck.c
-	src/xbt/mmalloc/mmemalign.c
-	src/xbt/mmalloc/mmprivate.h
-	src/xbt/mmalloc/mmstats.c
-	src/xbt/mmalloc/mmtrace.c
-	src/xbt/mmalloc/mrealloc.c
-	src/xbt/mmalloc/mvalloc.c
-	src/xbt/mmalloc/sbrk-sup.c
+	src/xbt/mmalloc/mmalloc.info
+	src/xbt/mmalloc/mmalloc.texi
+	src/xbt/mmalloc/mm.c
+    src/xbt/mmalloc/mm_diff.c
+	src/xbt/mmalloc/mm_legacy.c
+	src/xbt/mmalloc/mm_module.c
+	src/xbt/mmalloc/mmorecore.c
+	src/xbt/mmalloc/mmprivate.h		
+	src/xbt/mmalloc/mmtrace.awk
+	src/xbt/mmalloc/mrealloc.c	
 	src/xbt/mmalloc/test/mmalloc_test.c
 	src/xbt/datadesc/ddt_parse.yy.l
 	src/xbt/datadesc/ddt_parse.yy.h
