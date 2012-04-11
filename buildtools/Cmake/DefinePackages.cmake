@@ -90,6 +90,15 @@ set(EXTRA_DIST
 	examples/gras/ping/ping.h
 	examples/gras/console/ping.h
 	examples/gras/mmrpc/mmrpc.h
+	
+    examples/msg/mc/parserPromela.yacc
+    examples/msg/mc/parserPromela.lex
+    examples/msg/mc/automaton.h
+    examples/msg/mc/bugged1_liveness.h
+    examples/msg/mc/centralized_liveness.h
+    examples/msg/mc/automatonparse_promela.h
+    examples/msg/mc/bugged2_liveness.h
+    examples/msg/mc/y.tab.h
 
 	tools/gras/gras_stub_generator.h
 	tools/tesh/run_context.h  
@@ -565,6 +574,8 @@ endif(${HAVE_LUA})
 file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.c"
 "examples/*.h"
+"examples/*yacc"
+"examples/*lex"
 "examples/*.cxx"
 "examples/*.hpp"
 "examples/*.rb"
@@ -573,8 +584,6 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.xml"
 "examples/*README"
 )
-
-
     
 set(DOC_SOURCES
 	doc/install.doc
