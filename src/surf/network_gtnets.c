@@ -438,7 +438,7 @@ static void surf_network_model_init_internal(void)
     xbt_die("Impossible to initialize GTNetS interface");
   }
 
-  routing_model_create(sizeof(network_link_GTNETS_t), NULL);
+  routing_model_create(NULL);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING

@@ -366,7 +366,7 @@ void surf_network_model_init_NS3()
     xbt_die("Impossible to initialize NS3 interface");
   }
 
-  routing_model_create(sizeof(s_surf_ns3_link_t), NULL);
+  routing_model_create(NULL);
   define_callbacks_ns3();
 
   NS3_HOST_LEVEL = xbt_lib_add_level(host_lib,(void_f_pvoid_t)free_ns3_host);
