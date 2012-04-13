@@ -31,6 +31,8 @@ else(SIMGRID_LIB)
   message(STATUS "Looking for lib SimGrid - not found")
 endif(SIMGRID_LIB)
 
+message(STATUS "Simgrid: ${SIMGRID_LIB}")
+
 message(STATUS "Looking for msg.h")
 if(SIMGRID_INCLUDES)
   message(STATUS "Looking for msg.h - found")
