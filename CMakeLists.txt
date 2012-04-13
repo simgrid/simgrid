@@ -195,8 +195,8 @@ if(WIN32)
     COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java.dll > ${CMAKE_BINARY_DIR}/SG_java.def)
     endif(PEXPORTS_PATH)
 else(WIN32)
-    target_link_libraries(SG_java pcre pthread)
-    set_target_properties(SG_java PROPERTIES LINK_FLAGS "${SIMGRID_LIB} -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
+    target_link_libraries(SG_java pcre pthread simgrid)
+    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L$ENV{SIMGRID_ROOT}/lib -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
 endif(WIN32)
 
 # java_classes
