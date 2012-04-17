@@ -53,7 +53,7 @@ LD_LIBRARY_PATH.
 \verbatim
 $ export SIMGRID_ROOT="$HOME/Install/simgrid/"
 $ export SIMGRID_JAVA_ROOT="$HOME/Install/simgrid-java"
-$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/lib:$SIMGRID_JAVA_ROOT/lib
+$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/lib:$SIMGRID_JAVA_ROOT/java
 $ cd examples
 $ java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 \endverbatim
