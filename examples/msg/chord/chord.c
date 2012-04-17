@@ -42,7 +42,7 @@ extern long int smx_total_comms;
 /**
  * Finger element.
  */
-typedef struct finger {
+typedef struct s_finger {
   int id;
   char mailbox[MAILBOX_NAME_SIZE]; // string representation of the id
 } s_finger_t, *finger_t;
@@ -50,7 +50,7 @@ typedef struct finger {
 /**
  * Node data.
  */
-typedef struct node {
+typedef struct s_node {
   int id;                                 // my id
   char mailbox[MAILBOX_NAME_SIZE];        // my mailbox name (string representation of the id)
   s_finger_t *fingers;                    // finger table, of size nb_bits (fingers[0] is my successor)
@@ -77,7 +77,7 @@ typedef enum {
 /**
  * Data attached with the tasks sent and received
  */
-typedef struct task_data {
+typedef struct s_task_data {
   e_task_type_t type;                     // type of task
   int request_id;                         // id paramater (used by some types of tasks)
   int request_finger;                     // finger parameter (used by some types of tasks)
