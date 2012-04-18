@@ -585,8 +585,8 @@ struct subsequence {
 };
 
 static XBT_INLINE
-void diff_snake(const xbt_dynar_t da, int a0, int len_a,
-                const xbt_dynar_t db, int b0, int len_b,
+void diff_snake(const char *vec_a[], int a0, int len_a,
+                const char *vec_b[], int b0, int len_b,
                 struct subsequence *seqs, int *fp, int k, int limit)
 {
   int record_seq;
@@ -608,8 +608,7 @@ void diff_snake(const xbt_dynar_t da, int a0, int len_a,
   } else {
     seqs[k] = seqs[record_seq];
   }
-  while (x < len_a && y < len_b && !strcmp(xbt_dynar_get_as(da, a0 + x, char*),
-                                           xbt_dynar_get_as(db, b0 + y, char*)))
+  while (x < len_a && y < len_b && !strcmp(vec_a[a0 + x], vec_b[b0 + y]))
     ++x, ++y;
   fp[k] = x;
   if (record_seq == k)
@@ -619,8 +618,8 @@ void diff_snake(const xbt_dynar_t da, int a0, int len_a,
 /* Returns the length of a shortest edit script, and a common
  * subsequence from the middle.
  */
-static int diff_middle_subsequence(const xbt_dynar_t da, int a0,  int len_a,
-                                   const xbt_dynar_t db, int b0,  int len_b,
+static int diff_middle_subsequence(const char *vec_a[], int a0,  int len_a,
+                                   const char *vec_b[], int b0,  int len_b,
                                    struct subsequence *subseq,
                                    struct subsequence *seqs, int *fp)
 {
@@ -644,9 +643,9 @@ static int diff_middle_subsequence(const xbt_dynar_t da, int a0,  int len_a,
     p++;
     fp[kmin - p - 1] = fp[kmax + p + 1] = -1;
     for (k = kmax + p; k > delta; k--)
-      diff_snake(da, a0, len_a, db, b0, len_b, seqs, fp, k, limit);
+      diff_snake(vec_a, a0, len_a, vec_b, b0, len_b, seqs, fp, k, limit);
     for (k = kmin - p; k <= delta; k++)
-      diff_snake(da, a0, len_a, db, b0, len_b, seqs, fp, k, limit);
+      diff_snake(vec_a, a0, len_a, vec_b, b0, len_b, seqs, fp, k, limit);
   } while (fp[delta] != len_a);
 
   subseq->x = a0 + seqs[delta].x;
@@ -657,23 +656,23 @@ static int diff_middle_subsequence(const xbt_dynar_t da, int a0,  int len_a,
 
 /* Finds a longest common subsequence.
  */
-static void diff_compute_lcs(const xbt_dynar_t da, int a0, int len_a,
-                             const xbt_dynar_t db, int b0, int len_b,
+static void diff_compute_lcs(const char *vec_a[], int a0, int len_a,
+                             const char *vec_b[], int b0, int len_b,
                              xbt_dynar_t common_sequence,
                              struct subsequence *seqs, int *fp)
 {
   if (len_a > 0 && len_b > 0) {
     struct subsequence subseq;
-    int ses_len = diff_middle_subsequence(da, a0, len_a, db, b0, len_b,
+    int ses_len = diff_middle_subsequence(vec_a, a0, len_a, vec_b, b0, len_b,
                                           &subseq, seqs, fp);
     if (ses_len > 1) {
       int u = subseq.x + subseq.len;
       int v = subseq.y + subseq.len;
-      diff_compute_lcs(da, a0, subseq.x - a0, db, b0, subseq.y - b0,
+      diff_compute_lcs(vec_a, a0, subseq.x - a0, vec_b, b0, subseq.y - b0,
                        common_sequence, seqs, fp);
       if (subseq.len > 0)
         xbt_dynar_push(common_sequence, &subseq);
-      diff_compute_lcs(da, u, a0 + len_a - u, db, v, b0 + len_b - v,
+      diff_compute_lcs(vec_a, u, a0 + len_a - u, vec_b, v, b0 + len_b - v,
                        common_sequence, seqs, fp);
     } else {
       int len = MIN(len_a, len_b) - subseq.len;
@@ -697,18 +696,18 @@ static void diff_compute_lcs(const xbt_dynar_t da, int a0, int len_a,
   }
 }
 
-static int diff_member(const char *s, xbt_dynar_t d, int from, int to)
+static int diff_member(const char *s, const char *vec[], int from, int to)
 {
   for ( ; from < to ; from++)
-    if (!strcmp(s, xbt_dynar_get_as(d, from, char *)))
+    if (!strcmp(s, vec[from]))
       return 1;
   return 0;
 }
 
 /* Extract common prefix.
  */
-static void diff_easy_prefix(const xbt_dynar_t da, int *a0_p, int *len_a_p,
-                             const xbt_dynar_t db, int *b0_p, int *len_b_p,
+static void diff_easy_prefix(const char *vec_a[], int *a0_p, int *len_a_p,
+                             const char *vec_b[], int *b0_p, int *len_b_p,
                              xbt_dynar_t common_sequence)
 {
   int a0 = *a0_p;
@@ -718,8 +717,7 @@ static void diff_easy_prefix(const xbt_dynar_t da, int *a0_p, int *len_a_p,
 
   while (len_a > 0 && len_b > 0) {
     struct subsequence subseq = {a0, b0, 0};
-    while (len_a > 0 && len_b > 0 && !strcmp(xbt_dynar_get_as(da, a0, char*),
-                                             xbt_dynar_get_as(db, b0, char*))) {
+    while (len_a > 0 && len_b > 0 && !strcmp(vec_a[a0], vec_b[b0])) {
       a0++, len_a--;
       b0++, len_b--;
       subseq.len++;
@@ -727,8 +725,7 @@ static void diff_easy_prefix(const xbt_dynar_t da, int *a0_p, int *len_a_p,
     if (subseq.len > 0)
       xbt_dynar_push(common_sequence, &subseq);
     if (len_a > 0 && len_b > 0 &&
-        !diff_member(xbt_dynar_get_as(da, a0, char*),
-                     db, b0 + 1, b0 + len_b)) {
+        !diff_member(vec_a[a0], vec_b, b0 + 1, b0 + len_b)) {
       a0++, len_a--;
     } else {
       break;
@@ -743,8 +740,8 @@ static void diff_easy_prefix(const xbt_dynar_t da, int *a0_p, int *len_a_p,
 
 /* Extract common suffix.
  */
-static void diff_easy_suffix(const xbt_dynar_t da, int *a0_p, int *len_a_p,
-                             const xbt_dynar_t db, int *b0_p, int *len_b_p,
+static void diff_easy_suffix(const char *vec_a[], int *a0_p, int *len_a_p,
+                             const char *vec_b[], int *b0_p, int *len_b_p,
                              xbt_dynar_t common_suffix)
 {
   int a0 = *a0_p;
@@ -756,8 +753,7 @@ static void diff_easy_suffix(const xbt_dynar_t da, int *a0_p, int *len_a_p,
     struct subsequence subseq;
     subseq.len = 0;
     while (len_a > 0 && len_b > 0 &&
-           !strcmp(xbt_dynar_get_as(da, a0 + len_a - 1, char*),
-                   xbt_dynar_get_as(db, b0 + len_b - 1, char*))) {
+           !strcmp(vec_a[a0 + len_a - 1], vec_b[b0 + len_b - 1])) {
       len_a--;
       len_b--;
       subseq.len++;
@@ -768,8 +764,7 @@ static void diff_easy_suffix(const xbt_dynar_t da, int *a0_p, int *len_a_p,
       xbt_dynar_push(common_suffix, &subseq);
     }
     if (len_a > 0 && len_b > 0 &&
-        !diff_member(xbt_dynar_get_as(db, b0 + len_b - 1, char*),
-                     da, a0, a0 + len_a - 1)) {
+        !diff_member(vec_b[b0 + len_b - 1], vec_a, a0, a0 + len_a - 1)) {
       len_b--;
     } else {
       break;
@@ -789,6 +784,7 @@ char *xbt_str_diff(const char *a, const char *b)
   xbt_dynar_t db = xbt_str_split(b, "\n");
   xbt_dynar_t common_sequence, common_suffix;
   size_t len;
+  const char **vec_a, **vec_b;
   int a0, b0;
   int len_a, len_b;
   int max;
@@ -809,10 +805,13 @@ char *xbt_str_diff(const char *a, const char *b)
     xbt_dynar_pop(db, NULL);
 
   /* Various initializations */
+  /* Assume that dynar's content is contiguous */
   a0 = 0;
   len_a = xbt_dynar_length(da);
+  vec_a = len_a ? xbt_dynar_get_ptr(da, 0) : NULL;
   b0 = 0;
   len_b = xbt_dynar_length(db);
+  vec_b = len_b ? xbt_dynar_get_ptr(db, 0) : NULL;
   max = MAX(len_a, len_b) + 1;
   fp_base = xbt_new(int, 2 * max + 1);
   fp = fp_base + max;           /* indexes in [-max..max] */
@@ -828,9 +827,9 @@ char *xbt_str_diff(const char *a, const char *b)
   xbt_dynar_push(common_suffix, &subseq);
 
   /* Compute the Longest Common Subsequence */
-  diff_easy_prefix(da, &a0, &len_a, db, &b0, &len_b, common_sequence);
-  diff_easy_suffix(da, &a0, &len_a, db, &b0, &len_b, common_suffix);
-  diff_compute_lcs(da, a0, len_a, db, b0, len_b, common_sequence, seqs, fp);
+  diff_easy_prefix(vec_a, &a0, &len_a, vec_b, &b0, &len_b, common_sequence);
+  diff_easy_suffix(vec_a, &a0, &len_a, vec_b, &b0, &len_b, common_suffix);
+  diff_compute_lcs(vec_a, a0, len_a, vec_b, b0, len_b, common_sequence, seqs, fp);
   while (!xbt_dynar_is_empty(common_suffix)) {
     xbt_dynar_pop(common_suffix, &subseq);
     xbt_dynar_push(common_sequence, &subseq);
@@ -842,15 +841,15 @@ char *xbt_str_diff(const char *a, const char *b)
   y = 0;
   xbt_dynar_foreach(common_sequence, s, subseq) {
     while (x < subseq.x) {
-      char *topush = bprintf("- %s", xbt_dynar_get_as(da, x++, char*));
+      char *topush = bprintf("- %s", vec_a[x++]);
       xbt_dynar_push_as(diff, char*, topush);
     }
     while (y < subseq.y) {
-      char *topush = bprintf("+ %s", xbt_dynar_get_as(db, y++, char*));
+      char *topush = bprintf("+ %s", vec_b[y++]);
       xbt_dynar_push_as(diff, char*, topush);
     }
     while (x < subseq.x + subseq.len) {
-      char *topush = bprintf("  %s", xbt_dynar_get_as(da, x++, char*));
+      char *topush = bprintf("  %s", vec_a[x++]);
       xbt_dynar_push_as(diff, char*, topush);
       y++;
     }
