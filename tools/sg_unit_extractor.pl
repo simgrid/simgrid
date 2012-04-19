@@ -148,11 +148,11 @@ int main(int argc, char *argv[]) {
           strcat(selection, \",\");
           strcat(selection, p);
         }
-      } else if (!strncmp(argv[i],\"--dump-only\",strlen(\"--dump-only\"))||
- 	         !strncmp(argv[i],\"--dump\",     strlen(\"--dump\"))) {
+      } else if (!strcmp(argv[i], \"--dump-only\")||
+                 !strcmp(argv[i], \"--dump\")) {
         xbt_test_dump(selection);
         return 0;
-      } else if (!strncmp(argv[i],\"--help\",strlen(\"--help\"))) {
+      } else if (!strcmp(argv[i], \"--help\")) {
 	  printf(
 	      "Usage: testall [--help] [--tests=selection] [--dump-only]\\n\\n"
 	      "--help: display this help\\n"
