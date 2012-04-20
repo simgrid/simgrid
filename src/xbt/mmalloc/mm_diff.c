@@ -114,7 +114,7 @@ void mmalloc_backtrace_fragment_display(xbt_mheap_t mdp, size_t block, size_t fr
 int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2){
 
   if(mdp1 == NULL && mdp2 == NULL){
-    XBT_DEBUG("Malloc descriptors null\n");
+    fprintf(stderr, "Malloc descriptors null\n");
     return 0;
   }
 
@@ -151,20 +151,17 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   if(mdp1->heapsize != mdp2->heapsize){
     fprintf(stderr,"Different number of info entries\n");
     return 1;
-  }
-  
+  }  
 
   if(mdp1->heapbase != mdp2->heapbase){
     fprintf(stderr,"Different first block of the heap\n");
     return 1;
   }
 
-
   if(mdp1->heapindex != mdp2->heapindex){
     fprintf(stderr,"Different index for the heap table : %zu - %zu\n", mdp1->heapindex, mdp2->heapindex);
     return 1;
   }
-
 
   if(mdp1->base != mdp2->base){
     fprintf(stderr,"Different base address of the memory region\n");
@@ -205,6 +202,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   int k;
   int distance = 0;
+  int pointer_align;
 
   /* Check busy blocks*/
 
@@ -237,8 +235,10 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	distance = 0;
 	for(k=0;k<mdp1->heapinfo[i].busy_block.busy_size;k++){
 	  if(memcmp(((char *)addr_block1) + k, ((char *)addr_block2) + k, 1) != 0){
-	    fprintf(stderr, "Different byte (offset=%d) (%p - %p) in block %zu\n", k, (char *)addr_block1, (char *)addr_block2, i); 
+	    fprintf(stderr, "Different byte (offset=%d) (%p - %p) in block %zu\n", k, (char *)addr_block1 + k, (char *)addr_block2 + k, i); 
 	    distance++;
+	    pointer_align = (k / sizeof(void*)) * sizeof(void*); 
+	    fprintf(stderr, "Pointer address : %p - %p\n", *((void **)((char *)addr_block1 + pointer_align)), *((void **)((char *)addr_block2 + pointer_align)));
 	  }
 	}
 
@@ -285,6 +285,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	    addr_frag1 = (char *)addr_block1 + (j * frag_size);
 	    addr_frag2 = (char *)addr_block2 + (j * frag_size);
 
+
 	    if(memcmp(addr_frag1, addr_frag2, mdp1->heapinfo[i].busy_frag.frag_size[j]) != 0){
 	      fprintf(stderr,"\nDifferent data in fragment %zu (size = %zu, size used = %hu) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
 
@@ -292,8 +293,10 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	      distance = 0;
 	      for(k=0;k<mdp1->heapinfo[i].busy_frag.frag_size[j];k++){
 		if(memcmp(((char *)addr_frag1) + k, ((char *)addr_frag2) + k, 1) != 0){
-		  fprintf(stderr, "Different byte (offset=%d) (%p - %p) in fragment %zu in block %zu\n", k, (char *)addr_frag1, (char *)addr_frag2, j, i); 
+		  fprintf(stderr, "Different byte (offset=%d) (%p - %p) in fragment %zu in block %zu\n", k, (char *)addr_frag1 + k, (char *)addr_frag2 + k, j, i); 
 		  distance++;
+		  pointer_align = (k / sizeof(void*)) * sizeof(void*);
+		  fprintf(stderr, "Pointer address : %p - %p\n", *((void **)((char *)addr_frag1 + pointer_align)), *((void **)((char *)addr_frag2 + pointer_align)));
 		}
 	      }
 
