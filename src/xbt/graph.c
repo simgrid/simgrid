@@ -140,35 +140,30 @@ void xbt_graph_free_graph(xbt_graph_t g,
                           void_f_pvoid_t edge_free_function,
                           void_f_pvoid_t graph_free_function)
 {
-  unsigned int cursor = 0;
-  xbt_node_t node = NULL;
-  xbt_edge_t edge = NULL;
+  unsigned int cursor;
+  xbt_node_t node;
+  xbt_edge_t edge;
 
+  xbt_dynar_foreach(g->edges, cursor, edge) {
+    if (edge_free_function)
+      edge_free_function(edge->data);
+    free(edge);
+  }
+  xbt_dynar_free(&(g->edges));
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
     xbt_dynar_free(&(node->out));
     xbt_dynar_free(&(node->in));
     if (node_free_function)
       node_free_function(node->data);
+    free(node);
   }
-
-  xbt_dynar_foreach(g->edges, cursor, edge) {
-    if (edge_free_function)
-      edge_free_function(edge->data);
-  }
-
-  xbt_dynar_foreach(g->nodes, cursor, node)
-      free(node);
   xbt_dynar_free(&(g->nodes));
 
-  xbt_dynar_foreach(g->edges, cursor, edge)
-      free(edge);
-  xbt_dynar_free(&(g->edges));
   if (graph_free_function)
     graph_free_function(g->data);
   free(g);
   xbt_graph_parse_lex_destroy();
-  return;
 }
 
 
