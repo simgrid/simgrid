@@ -87,6 +87,7 @@ int producer(int argc, char *argv[])
     const char *mess = "message";
 
     pready = 1;
+    XBT_INFO("pready = 1");
     
     /* CS request */
     XBT_INFO("Producer ask the request");
@@ -101,12 +102,15 @@ int producer(int argc, char *argv[])
     buffer = strdup(mess);
 
     produce = 1;
+    XBT_INFO("produce = 1");
 
     /* CS release */
     MSG_task_send(MSG_task_create("release", 0, 1000, my_mailbox), "coordinator");
 
     produce = 0;
     pready = 0;
+
+    XBT_INFO("pready et produce = 0");
 
   }
 
@@ -128,6 +132,7 @@ int consumer(int argc, char *argv[])
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
 
     cready = 1;
+    XBT_INFO("cready = 1");
 
     /* Wait the answer */
     m_task_t grant = NULL;
@@ -139,10 +144,12 @@ int consumer(int argc, char *argv[])
     mess = strdup(buffer);
     buffer[0] = '\0'; 
 
-     /* Display message */
+    /* Display message */
     XBT_INFO("Message : %s", mess);
-    if(strcmp(mess, "") != 0)
+    if(strcmp(mess, "") != 0){
       consume = 1;
+      XBT_INFO("consume = 1");
+    }
 
     /* CS release */
     MSG_task_send(MSG_task_create("release", 0, 1000, my_mailbox), "coordinator");
@@ -151,6 +158,8 @@ int consumer(int argc, char *argv[])
 
     consume = 0;
     cready = 0;
+
+    XBT_INFO("cready et consume = 0");
 
   }
 
