@@ -655,25 +655,34 @@ static int diff_middle_subsequence(const char *vec_a[], int a0,  int len_a,
 }
 
 /* Finds a longest common subsequence.
+ * Returns its length.
  */
-static void diff_compute_lcs(const char *vec_a[], int a0, int len_a,
-                             const char *vec_b[], int b0, int len_b,
-                             xbt_dynar_t common_sequence,
-                             struct subsequence *seqs, int *fp)
+static int diff_compute_lcs(const char *vec_a[], int a0, int len_a,
+                            const char *vec_b[], int b0, int len_b,
+                            xbt_dynar_t common_sequence,
+                            struct subsequence *seqs, int *fp)
 {
   if (len_a > 0 && len_b > 0) {
     struct subsequence subseq;
     int ses_len = diff_middle_subsequence(vec_a, a0, len_a, vec_b, b0, len_b,
                                           &subseq, seqs, fp);
-    if (ses_len > 1) {
-      int u = subseq.x + subseq.len;
-      int v = subseq.y + subseq.len;
-      diff_compute_lcs(vec_a, a0, subseq.x - a0, vec_b, b0, subseq.y - b0,
-                       common_sequence, seqs, fp);
+    int lcs_len = (len_a + len_b - ses_len) / 2;
+    if (lcs_len == 0) {
+      return 0;
+    } else if (ses_len > 1) {
+      int lcs_len1 = subseq.len;
+      if (lcs_len1 < lcs_len)
+        lcs_len1 += diff_compute_lcs(vec_a, a0, subseq.x - a0,
+                                     vec_b, b0, subseq.y - b0,
+                                     common_sequence, seqs, fp);
       if (subseq.len > 0)
         xbt_dynar_push(common_sequence, &subseq);
-      diff_compute_lcs(vec_a, u, a0 + len_a - u, vec_b, v, b0 + len_b - v,
-                       common_sequence, seqs, fp);
+      if (lcs_len1 < lcs_len) {
+        int u = subseq.x + subseq.len;
+        int v = subseq.y + subseq.len;
+        diff_compute_lcs(vec_a, u, a0 + len_a - u, vec_b, v, b0 + len_b - v,
+                         common_sequence, seqs, fp);
+      }
     } else {
       int len = MIN(len_a, len_b) - subseq.len;
       if (subseq.x == a0 && subseq.y == b0) {
@@ -693,6 +702,9 @@ static void diff_compute_lcs(const char *vec_a[], int a0, int len_a,
           xbt_dynar_push(common_sequence, &subseq);
       }
     }
+    return lcs_len;
+  } else {
+    return 0;
   }
 }
 
