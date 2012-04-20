@@ -63,7 +63,7 @@ typedef enum {
 
 typedef struct s_container *container_t;
 typedef struct s_container {
-  network_element_t net_elm;
+  sg_routing_edge_t net_elm;
   char *name;     /* Unique name of this container */
   char *id;       /* Unique id of this container */
   type_t type;    /* Type of this container */
@@ -74,6 +74,9 @@ typedef struct s_container {
 }s_container_t;
 
 extern xbt_dict_t created_categories;
+extern xbt_dict_t declared_marks;
+extern xbt_dict_t user_host_variables;
+extern xbt_dict_t user_link_variables;
 extern double TRACE_last_timestamp_to_dump;
 
 /* from paje.c */

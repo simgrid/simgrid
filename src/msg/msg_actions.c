@@ -24,7 +24,7 @@ static size_t action_len = 0;
 
 static const char **action_get_action(char *name);
 
-/** \ingroup msg_actions_functions
+/** \ingroup msg_trace_driven
  * \brief Registers a function to handle a kind of action
  *
  * Registers a function to handle a kind of action
@@ -40,7 +40,7 @@ void MSG_action_register(const char *action_name, msg_action_fun function)
   xbt_dict_set(action_funs, action_name, function, NULL);
 }
 
-/** \ingroup msg_actions_functions
+/** \ingroup msg_trace_driven
  * \brief Unregisters a function, which handled a kind of action
  *
  * \param action_name the reference name of the action.
@@ -157,7 +157,7 @@ todo_done:
   return NULL;
 }
 
-/** \ingroup msg_actions_functions
+/** \ingroup msg_trace_driven
  * \brief A trace loader
  *
  *  If path!=NULL, load a trace file containing actions, and execute them.

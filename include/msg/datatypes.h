@@ -14,12 +14,8 @@ SG_BEGIN_DECL()
 
 /* ******************************** Host ************************************ */
 
-/** @defgroup m_datatypes_management_details Details on MSG datatypes
-    @ingroup  m_datatypes_management*/
 typedef struct simdata_host *simdata_host_t;
 
-/** @brief Host datatype 
-    @ingroup m_datatypes_management_details */
 typedef struct m_host {
   char *name;                   /**< @brief host name if any */
   simdata_host_t simdata;       /**< @brief simulator data */
@@ -27,7 +23,7 @@ typedef struct m_host {
 } s_m_host_t;
 
 /** @brief Host datatype  
-    @ingroup m_datatypes_management
+    @ingroup m_host_management
 
     A <em>location</em> (or <em>host</em>) is any possible place where
     a process may run. Thus it is represented as a <em>physical
@@ -35,18 +31,13 @@ typedef struct m_host {
     to enable running process to communicate with remote ones, and
     some <em>private data</em> that can be only accessed by local
     process.
-
-    \see m_host_management
-  @{ */
+ */
 typedef struct m_host *m_host_t;
-/** @} */
 
 /* ******************************** Task ************************************ */
 
 typedef struct simdata_task *simdata_task_t;
 
-/** @brief Task datatype 
-    @ingroup m_datatypes_management_details */
 typedef struct m_task {
   char *name;                   /**< @brief task name if any */
   simdata_task_t simdata;       /**< @brief simulator data */
@@ -58,29 +49,29 @@ typedef struct m_task {
 } s_m_task_t;
 
 /** @brief Task datatype  
-    @ingroup m_datatypes_management 
+    @ingroup m_task_management 
 
     A <em>task</em> may then be defined by a <em>computing
     amount</em>, a <em>message size</em> and some <em>private
     data</em>.
-    \see m_task_management
-  @{ */
+ */
 typedef struct m_task *m_task_t;
 
-/* ******************************** File ************************************ */
 
+/* ******************************** File ************************************ */
 typedef struct simdata_file *simdata_file_t;
 
-/** @brief File datatype
-    @ingroup m_datatypes_management_details */
 typedef struct msg_file {
   char *name;                   /**< @brief file name */
   simdata_file_t simdata;                /**< @brief simulator data  */
   void *data;                   /**< @brief user data */
 } s_msg_file_t;
-/** @brief File datatype
-    @ingroup m_datatypes_management_details */
 
+/** @brief File datatype.
+    @ingroup msg_file_management 
+ 
+    You should consider this as an opaque object.
+ */
 typedef struct msg_file *msg_file_t;
 
 typedef s_file_stat_t s_msg_stat_t, *msg_stat_t;
@@ -89,8 +80,6 @@ typedef s_file_stat_t s_msg_stat_t, *msg_stat_t;
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task *simdata_gpu_task_t;
 
-/** @brief GPU task datatype
-    @ingroup m_datatypes_management_details */
 typedef struct m_gpu_task {
   char *name;                   /**< @brief task name if any */
   simdata_gpu_task_t simdata;       /**< @brief simulator data */
@@ -101,85 +90,59 @@ typedef struct m_gpu_task {
 } s_m_gpu_task_t;
 
 /** @brief GPU task datatype
-    @ingroup m_datatypes_management
+    @ingroup m_task_management
 
     A <em>task</em> may then be defined by a <em>computing
     amount</em>, a <em>dispatch latency</em> and a <em>collect latency</em>.
     \see m_task_management
-  @{ */
+*/
 typedef struct m_gpu_task *m_gpu_task_t;
 /*************** End GPU ***************/
 
 /**
- * \brief @brief Communication action
- * \ingroup m_datatypes_management
+ * \brief @brief Communication action.
+ * \ingroup msg_task_usage
  *
- * Communication actions transfer tasks between processes.
- * For a given task, the sender and the receiver have distinct objects.
+ * Object representing an ongoing communication between processes. Such beast is usually obtained by using #MSG_task_isend, #MSG_task_irecv or friends.
  */
 typedef struct msg_comm *msg_comm_t;
 
 /** \brief Default value for an uninitialized #m_task_t.
-    \ingroup m_datatypes_management 
+    \ingroup m_task_management 
 */
 #define MSG_TASK_UNINITIALIZED NULL
 
-/** @} */
-
 /* ****************************** Process *********************************** */
 
-/** @brief Process datatype
-    @ingroup m_datatypes_management 
+/** @brief Process datatype.
+    @ingroup m_process_management
 
-    A process may be defined as a <em>code</em>, with some <em>private
-    data</em>, executing in a <em>location</em>.
-    \see m_process_management
-  @{ */
+    A process may be defined as a <em>code</em>, with some
+    <em>private data</em>, executing in a <em>location</em>. 
+ 
+    You should not access directly to the fields of the pointed
+    structure, but always use the provided API to interact with
+    processes.
+ */
 typedef struct s_smx_process *m_process_t;
-/** @} */
 
 #ifdef MSG_USE_DEPRECATED
-/* ********************************* Channel ******************************** */
-/** @brief Channel datatype  
-    @ingroup msg_deprecated_functions
-
-    A <em>channel</em>  is a number and identifies a mailbox type (just as a 
-    port number does).
-    \see m_channel_management
-   @{ */
 typedef int m_channel_t;
-/** @} */
 #endif
 
 /* ******************************** Mailbox ************************************ */
 
-typedef struct s_smx_rvpoint *msg_mailbox_t;
 /** @brief Mailbox datatype
-    @ingroup m_datatypes_management_details @{ */
-
-void MSG_mailbox_free(void *mailbox);
-
-
-/** @} */
-
-
-/* ***************************** Error handling ***************************** */
-/** @brief Error handling 
-    @ingroup m_datatypes_management 
-         @{
-*//* Keep these code as binary values: java bindings manipulate | of these values */
-typedef enum {
-  MSG_OK = 0,                 /**< @brief Everything is right. Keep on going this way ! */
-  MSG_TIMEOUT = 1,            /**< @brief nothing good happened before the timer you provided elapsed */
-  MSG_TRANSFER_FAILURE = 2,   /**< @brief There has been a problem during you task
-      transfer. Either the network is down or the remote host has been
-      shutdown. */
-  MSG_HOST_FAILURE = 4,       /**< @brief System shutdown. The host on which you are
-      running has just been rebooted. Free your datastructures and
-      return now !*/
-  MSG_TASK_CANCELED = 8      /**< @brief Canceled task. This task has been canceled by somebody!*/
-} MSG_error_t;
-/** @} */
+ *  @ingroup msg_task_usage
+ * 
+ * Object representing a communication rendez-vous point, on which
+ * the sender finds the receiver it wants to communicate with. As a
+ * MSG user, you will only rarely manipulate any of these objects
+ * directly, since most of the public interface (such as
+ * #MSG_task_send and friends) hide this object behind a string
+ * alias. That mean that you don't provide the mailbox on which you
+ * want to send your task, but only the name of this mailbox. */
+typedef struct s_smx_rvpoint *msg_mailbox_t;
 
 
 SG_END_DECL()

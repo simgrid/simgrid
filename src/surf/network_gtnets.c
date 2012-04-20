@@ -333,8 +333,8 @@ static void update_resource_state(void *id,
 }
 
 /* Max durations are not supported */
-static surf_action_t communicate(network_element_t src_card,
-                                 network_element_t dst_card,
+static surf_action_t communicate(sg_routing_edge_t src_card,
+                                 sg_routing_edge_t dst_card,
                                  double size, double rate)
 {
   surf_action_network_GTNETS_t action = NULL;
@@ -438,7 +438,7 @@ static void surf_network_model_init_internal(void)
     xbt_die("Impossible to initialize GTNetS interface");
   }
 
-  routing_model_create(sizeof(network_link_GTNETS_t), NULL);
+  routing_model_create(NULL);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING

@@ -26,8 +26,8 @@ static double time_to_next_flow_completion = -1;
 static double ns3_share_resources(double min);
 static void ns3_update_actions_state(double now, double delta);
 static void finalize(void);
-static surf_action_t ns3_communicate(network_element_t src_elm,
-                                     network_element_t dst_elm,
+static surf_action_t ns3_communicate(sg_routing_edge_t src_elm,
+                                     sg_routing_edge_t dst_elm,
                                      double size, double rate);
 static void action_suspend(surf_action_t action);
 static void action_resume(surf_action_t action);
@@ -366,7 +366,7 @@ void surf_network_model_init_NS3()
     xbt_die("Impossible to initialize NS3 interface");
   }
 
-  routing_model_create(sizeof(s_surf_ns3_link_t), NULL);
+  routing_model_create(NULL);
   define_callbacks_ns3();
 
   NS3_HOST_LEVEL = xbt_lib_add_level(host_lib,(void_f_pvoid_t)free_ns3_host);
@@ -479,8 +479,8 @@ static void ns3_update_actions_state(double now, double delta)
 }
 
 /* Max durations are not supported */
-static surf_action_t ns3_communicate(network_element_t src_elm,
-                                     network_element_t dst_elm,
+static surf_action_t ns3_communicate(sg_routing_edge_t src_elm,
+                                     sg_routing_edge_t dst_elm,
                                      double size, double rate)
 {
   surf_action_network_ns3_t action = NULL;

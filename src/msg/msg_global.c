@@ -200,7 +200,7 @@ MSG_error_t MSG_clean(void)
 }
 
 
-/** \ingroup msg_easier_life
+/** \ingroup msg_simulation
  * \brief A clock (in second).
  */
 XBT_INLINE double MSG_get_clock(void)

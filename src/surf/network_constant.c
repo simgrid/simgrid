@@ -109,8 +109,8 @@ static void netcste_update_resource_state(void *id,
   DIE_IMPOSSIBLE;
 }
 
-static surf_action_t netcste_communicate(network_element_t src,
-                                         network_element_t dst,
+static surf_action_t netcste_communicate(sg_routing_edge_t src,
+                                         sg_routing_edge_t dst,
                                          double size, double rate)
 {
   surf_action_network_Constant_t action = NULL;
@@ -234,5 +234,5 @@ void surf_network_model_init_Constant()
   netcste_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
 
-  routing_model_create(sizeof(double), NULL);
+  routing_model_create(NULL);
 }

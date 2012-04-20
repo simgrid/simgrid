@@ -42,7 +42,7 @@ extern long int smx_total_comms;
 /**
  * Finger element.
  */
-typedef struct finger {
+typedef struct s_finger {
   int id;
   char mailbox[MAILBOX_NAME_SIZE]; // string representation of the id
 } s_finger_t, *finger_t;
@@ -50,7 +50,7 @@ typedef struct finger {
 /**
  * Node data.
  */
-typedef struct node {
+typedef struct s_node {
   int id;                                 // my id
   char mailbox[MAILBOX_NAME_SIZE];        // my mailbox name (string representation of the id)
   s_finger_t *fingers;                    // finger table, of size nb_bits (fingers[0] is my successor)
@@ -77,7 +77,7 @@ typedef enum {
 /**
  * Data attached with the tasks sent and received
  */
-typedef struct task_data {
+typedef struct s_task_data {
   e_task_type_t type;                     // type of task
   int request_id;                         // id paramater (used by some types of tasks)
   int request_finger;                     // finger parameter (used by some types of tasks)
@@ -323,8 +323,8 @@ int node(int argc, char *argv[])
 
   if (join_success) {
     while (MSG_get_clock() < init_time + deadline
-//	&& MSG_get_clock() < node.last_change_date + 1000
-	&& MSG_get_clock() < max_simulation_time) {
+//      && MSG_get_clock() < node.last_change_date + 1000
+        && MSG_get_clock() < max_simulation_time) {
 
       if (node.comm_receive == NULL) {
         task_received = NULL;
@@ -347,10 +347,10 @@ int node(int argc, char *argv[])
           check_predecessor(&node);
           next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
         }
-	else if (MSG_get_clock() >= next_lookup_date) {
-	  random_lookup(&node);
-	  next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
-	}
+        else if (MSG_get_clock() >= next_lookup_date) {
+          random_lookup(&node);
+          next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
+        }
         else {
           // nothing to do: sleep for a while
           MSG_process_sleep(5);
@@ -415,7 +415,7 @@ static void handle_task(node_t node, m_task_t task) {
         task_data->answer_id = node->fingers[0].id;
         XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
             task_data->issuer_host_name,
-	    task_data->answer_to,
+            task_data->answer_to,
             task_data->request_id, task_data->answer_id);
         MSG_task_dsend(task, task_data->answer_to, task_free);
       }
@@ -552,7 +552,7 @@ static void quit_notify(node_t node, int to)
   if (to == 1) {    // notify my successor
     to_mailbox = node->fingers[0].mailbox;
     XBT_INFO("Telling my Successor %d about my departure via mailbox %s",
-	  node->fingers[0].id, to_mailbox);
+          node->fingers[0].id, to_mailbox);
     req_data->type = TASK_PREDECESSOR_LEAVING;
   }
   else if (to == -1) {    // notify my predecessor
@@ -563,7 +563,7 @@ static void quit_notify(node_t node, int to)
 
     to_mailbox = node->pred_mailbox;
     XBT_INFO("Telling my Predecessor %d about my departure via mailbox %s",
-	  node->pred_id, to_mailbox);
+          node->pred_id, to_mailbox);
     req_data->type = TASK_SUCCESSOR_LEAVING;
   }
   m_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
@@ -638,22 +638,22 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         XBT_DEBUG("Failed to receive the answer to my 'Find Successor' request (task %p): %d",
                   task_sent, (int)res);
         stop = 1;
-	MSG_comm_destroy(node->comm_receive);
-	node->comm_receive = NULL;
+        MSG_comm_destroy(node->comm_receive);
+        node->comm_receive = NULL;
       }
       else {
         m_task_t task_received = MSG_comm_get_task(node->comm_receive);
         XBT_DEBUG("Received a task (%p)", task_received);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
-	if (MC_IS_ENABLED) {
-	  MC_assert(task_received == task_sent);
-	}
+        if (MC_IS_ENABLED) {
+          MC_assert(task_received == task_sent);
+        }
 
         if (task_received != task_sent) {
           // this is not the expected answer
-	  MSG_comm_destroy(node->comm_receive);
-	  node->comm_receive = NULL;
+          MSG_comm_destroy(node->comm_receive);
+          node->comm_receive = NULL;
           handle_task(node, task_received);
         }
         else {
@@ -662,8 +662,8 @@ static int remote_find_successor(node_t node, int ask_to, int id)
               ans_data->request_id, task_received, id, ans_data->answer_id);
           successor = ans_data->answer_id;
           stop = 1;
-	  MSG_comm_destroy(node->comm_receive);
-	  node->comm_receive = NULL;
+          MSG_comm_destroy(node->comm_receive);
+          node->comm_receive = NULL;
           task_free(task_received);
         }
       }
@@ -717,22 +717,22 @@ static int remote_get_predecessor(node_t node, int ask_to)
 
       if (res != MSG_OK) {
         XBT_DEBUG("Failed to receive the answer to my 'Get Predecessor' request (task %p): %d",
-                  task_sent, (int)res);
+            task_sent, (int)res);
         stop = 1;
-	MSG_comm_destroy(node->comm_receive);
-	node->comm_receive = NULL;
+        MSG_comm_destroy(node->comm_receive);
+        node->comm_receive = NULL;
       }
       else {
         m_task_t task_received = MSG_comm_get_task(node->comm_receive);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
-	if (MC_IS_ENABLED) {
-	  MC_assert(task_received == task_sent);
-	}
+        if (MC_IS_ENABLED) {
+          MC_assert(task_received == task_sent);
+        }
 
         if (task_received != task_sent) {
-	  MSG_comm_destroy(node->comm_receive);
-	  node->comm_receive = NULL;
+          MSG_comm_destroy(node->comm_receive);
+          node->comm_receive = NULL;
           handle_task(node, task_received);
         }
         else {
@@ -740,8 +740,8 @@ static int remote_get_predecessor(node_t node, int ask_to)
               task_received, ask_to, ans_data->answer_id);
           predecessor_id = ans_data->answer_id;
           stop = 1;
-	  MSG_comm_destroy(node->comm_receive);
-	  node->comm_receive = NULL;
+          MSG_comm_destroy(node->comm_receive);
+          node->comm_receive = NULL;
           task_free(task_received);
         }
       }
@@ -903,11 +903,11 @@ int main(int argc, char *argv[])
 
       length = strlen("-timeout=");
       if (!strncmp(options[0], "-timeout=", length) && strlen(options[0]) > length) {
-	timeout = atoi(options[0] + length);
-	XBT_DEBUG("Set timeout to %d", timeout);
+        timeout = atoi(options[0] + length);
+        XBT_DEBUG("Set timeout to %d", timeout);
       }
       else {
-	xbt_die("Invalid chord option '%s'", options[0]);
+        xbt_die("Invalid chord option '%s'", options[0]);
       }
     }
     options++;

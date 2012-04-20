@@ -128,6 +128,28 @@ int main(int argc, char *argv[])
   MSG_launch_application(deployment_file);
 
   MSG_main();
+
+  unsigned int cursor;
+  xbt_dynar_t categories = TRACE_get_categories ();
+  if (categories){
+    XBT_INFO ("Declared tracing categories:");
+    char *category;
+    xbt_dynar_foreach (categories, cursor, category){
+      XBT_INFO ("%s", category);
+    }
+    xbt_dynar_free (&categories);
+  }
+
+  xbt_dynar_t marks = TRACE_get_marks ();
+  if (marks){
+    XBT_INFO ("Declared marks:");
+    char *mark;
+    xbt_dynar_foreach (marks, cursor, mark){
+      XBT_INFO ("%s", mark);
+    }
+    xbt_dynar_free (&marks);
+  }
+
   MSG_clean();
   return 0;
 }                               /* end_of_main */

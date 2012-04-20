@@ -86,6 +86,8 @@ xbt_dynar_t STag_surfxml_ASroute_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_ASroute_cb_list = NULL;
 xbt_dynar_t STag_surfxml_bypassRoute_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_bypassRoute_cb_list = NULL;
+xbt_dynar_t STag_surfxml_bypassASroute_cb_list = NULL;
+xbt_dynar_t ETag_surfxml_bypassASroute_cb_list = NULL;
 xbt_dynar_t STag_surfxml_include_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_include_cb_list = NULL;
 
@@ -271,6 +273,10 @@ void surf_parse_init_callbacks(void)
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_bypassRoute_cb_list =
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
+      STag_surfxml_bypassASroute_cb_list =
+          xbt_dynar_new(sizeof(void_f_void_t), NULL);
+      ETag_surfxml_bypassASroute_cb_list =
+          xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  STag_surfxml_peer_cb_list =
 	      xbt_dynar_new(sizeof(void_f_void_t), NULL);
 	  ETag_surfxml_peer_cb_list =
@@ -320,6 +326,8 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_ASroute_cb_list);
   xbt_dynar_free(&STag_surfxml_bypassRoute_cb_list);
   xbt_dynar_free(&ETag_surfxml_bypassRoute_cb_list);
+  xbt_dynar_free(&STag_surfxml_bypassASroute_cb_list);
+  xbt_dynar_free(&ETag_surfxml_bypassASroute_cb_list);
   xbt_dynar_free(&STag_surfxml_peer_cb_list);
   xbt_dynar_free(&ETag_surfxml_peer_cb_list);
   xbt_dynar_free(&STag_surfxml_include_cb_list);
@@ -557,6 +565,9 @@ void STag_surfxml_ASroute(void){
 void STag_surfxml_bypassRoute(void){
 	surfxml_call_cb_functions(STag_surfxml_bypassRoute_cb_list);
 }
+void STag_surfxml_bypassASroute(void){
+  surfxml_call_cb_functions(STag_surfxml_bypassASroute_cb_list);
+}
 void STag_surfxml_config(void){
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
@@ -594,6 +605,7 @@ parse_method(E, trace_connect)
 parse_method(E, random)
 parse_method(E, ASroute)
 parse_method(E, bypassRoute)
+parse_method(E, bypassASroute)
 
 /* Open and Close parse file */
 

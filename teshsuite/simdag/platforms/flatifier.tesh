@@ -883,7 +883,7 @@ $ ${bindir:=.}/flatifier$EXEEXT two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT three_clusters_bypass.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:@] surf_workstation_model_init_ptask_L07
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">

@@ -13,89 +13,25 @@
       the documentation provided in the relevant packages.
 
   \section MSG_funct Offered functionnalities
+   - \ref msg_simulation
    - \ref m_process_management
-   - \ref m_datatypes_management
    - \ref m_host_management
    - \ref m_task_management
-   - \ref m_file_management
-   - \ref msg_actions_functions
-   - \ref msg_gos_functions
+   - \ref msg_file_management
+   - \ref msg_task_usage
+   - \ref msg_trace_driven
    - \ref msg_deprecated_functions
-   - \ref msg_easier_life
-   - \ref msg_simulation
+
 
   Also make sure to visit the page @ref MSG_examples.
-*/
-
-
-/** @defgroup m_datatypes_management MSG Data Types 
-    @ingroup MSG_API
-    @brief This section describes the different datatypes provided by MSG.
-    
-    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
-*/
-
-/** @defgroup m_process_management Management Functions of Agents
- *  @ingroup MSG_API
- *  @brief This section describes the agent structure of MSG
- *         (#m_process_t) and the functions for managing it.
- */
-   
-/** @defgroup m_host_management Management functions of Hosts
- *  @ingroup MSG_API
- *  @brief This section describes the host structure of MSG
- */
-  
-/** @defgroup m_task_management Managing functions of Tasks
- *  @ingroup MSG_API
- *  @brief This section describes the task structure of MSG
- *         (#m_task_t) and the functions for managing it.
- */
- 
- /** @defgroup m_file_management Managing functions of Files
- *  @ingroup MSG_API
- *  @brief This section describes the file structure of MSG
- *         (#m_file_t) and the functions for managing it. It
- *   is based on POSIX functions.
- */ 
- 
-/** @defgroup msg_actions_functions Managing actions
- *  @ingroup MSG_API
- *  @brief This section describes functions for managing actions.
- */ 
- 
-/** @defgroup msg_gos_functions MSG Operating System Functions
- *  @ingroup MSG_API
- *  @brief This section describes the functions that can be used
- *         by an agent for handling some task.
- */
- 
-/** @defgroup msg_deprecated_functions MSG Deprecated
- *  @ingroup MSG_API
- *  @brief This section describes the deprecated functions and. They
- *	should be remove on next release.
- */
- 
-/** @defgroup msg_easier_life      Platform and Application management
- *  @ingroup MSG_API
- *  @brief This section describes functions to manage the platform creation
- *         and the application deployment. Please check @ref
- *         MSG_examples for an overview of their usage. 
- */
- 
-/** @defgroup msg_simulation   MSG simulation Functions
-*	@ingroup MSG_API
-*	@brief This section describes the functions you need to know to
-*       set up a simulation. You should have a look at \ref MSG_examples
-*       to have an overview of their usage.
-*
-*	@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation functions" --> @endhtmlonly
 */
 
 /**
 @defgroup MSG_examples MSG Examples
 @ingroup MSG_API
  
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Examples" --> @endhtmlonly
+
 MSG comes with an extensive set of examples. It is sometimes difficult
 to find the one you need. This list aims at helping you finding the
 example from which you can learn what you want to.
@@ -104,6 +40,87 @@ example from which you can learn what you want to.
 
 */
 
+/** 
+@defgroup msg_simulation   Main MSG simulation Functions
+@ingroup MSG_API
+@brief Describes how to setup and control your simulation.
+
+The basic workflow is the following (check the \ref MSG_examples for
+details).
+
+ -# Initialize the library with #MSG_global_init
+ -# Create a platform (usually by parsing a file with
+    #MSG_create_environment)
+ -# Register the functions that your processes are supposed to run with
+    #MSG_function_register (and maybe #MSG_function_register_default)
+ -# Launch your processes from a deployment file with #MSG_launch_application
+ -# Run the simulation with #MSG_main
+ -# Cleanup the library with #MSG_clean before ending your program
+    (optional).
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation Control" --> @endhtmlonly
+*/
+
+/** @defgroup m_process_management Process Management Functions 
+ *  @ingroup MSG_API
+ *  @brief This section describes the process structure of MSG
+ *         (#m_process_t) and the functions for managing it.
+ */
+   
+/** @defgroup m_host_management Host Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the host structure of MSG
+ */
+  
+/** @defgroup m_task_management Task Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the task structure of MSG
+ *         (#m_task_t) and the functions for managing it. See
+ *         \ref msg_task_usage to see how to put the tasks in action.
+ *
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
+ */
+ 
+/** @defgroup msg_task_usage Task Actions
+ *  @ingroup MSG_API
+ *  @brief This section describes the functions that can be used
+ *         by a process to execute, communicate or otherwise handle some task.
+ */
+
+/** @defgroup msg_file_management File Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the file structure of MSG
+ *         (#msg_file_t) and the functions for managing it. It
+ *   is based on POSIX functions.
+ */ 
+
+
+/** 
+@defgroup msg_trace_driven Trace-driven simulations
+@ingroup MSG_API
+@brief This section describes the functions allowing to build trace-driven simulations.
+
+\htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Trace-Driven" --> \endhtmlonly
+
+This is very handy when you want to test an algorithm or protocol that
+does nothing unless it receives some events from outside. For example,
+a P2P protocol reacts to requests from the user, but does nothing if
+there is no such event. 
+      
+In such situations, SimGrid allows to write your protocol in your C
+file, and the events to react to in a separate text file. Declare a
+function handling each of the events that you want to accept in your
+trace files, register them using #MSG_action_register in your main,
+and then use #MSG_action_trace_run to launch the simulation. You can
+either have one trace file containing all your events, or a file per
+simulated process. 
+	 
+Check the examples in <b>examples/msg/actions/actions.c</b> for details.
+ 
+ */ 
+
+ 
+ 
 /**
 @defgroup MSG_LUA      Lua bindings
 @ingroup MSG_API
@@ -111,246 +128,263 @@ example from which you can learn what you want to.
 
 @htmlonly <!--  DOXYGEN_NAVBAR_LABEL="LUA bindings" --> @endhtmlonly 
 	  
-      This is the lua bindings of the \ref MSG_API interface.
+This is the lua bindings of the \ref MSG_API interface.
 
-      \section lMSG_who Who should use this (and who shouldn't)
+\section lMSG_who Who should use this (and who shouldn't)
       
-      If you want to use MSG to study your algorithm, but you don't
-      want to use the C language (using \ref MSG_API), then you should
-      use some bindings such as this one. The advantage of the lua
-      bindings is that they are distributed directly with the main
-      archive (in contrary to Java and Ruby bindings, for example,
-      that are distributed separately). Another advantage of lua is
-      that there is almost no performance loss with regard to the C
-      version (at least there shouln't be any -- it is still to be
-      precisely assessed).
+If you want to use MSG to study your algorithm, but you don't want to
+use the C language (using \ref MSG_API), then you should use some
+bindings such as this one. The advantage of the lua bindings is that
+they are distributed directly with the main archive (in contrary to
+Java and Ruby bindings, for example, that are distributed separately).
+Another advantage of lua is that there is almost no performance loss
+with regard to the C version (at least there shouln't be any -- it is
+still to be precisely assessed).
 
-  \section MSG_Lua_funct  Lua offered functionnalities in MSG
-  Almost all important features of the MSG interface are available
-  from the lua bindings. Unfortunately, since doxygen does not support
-  the lua modules implemented directly in C as we are using, there is
-  no ready to use reference documentation for this module. Even more
-  than for the other modules, you will have to dig into the source
-  code of the examples to learn how to use it. 
+\section MSG_Lua_funct  Lua offered functionnalities in MSG
 
-  \section Lua_examples Examples of lua MSG
+Almost all important features of the MSG interface are available from
+the lua bindings. Unfortunately, since doxygen does not support the
+lua modules implemented directly in C as we are using, there is no
+ready to use reference documentation for this module. Even more than
+for the other modules, you will have to dig into the source code of
+the examples to learn how to use it. 
+
+\section Lua_examples Examples of lua MSG
  
-   - \ref MSG_ex_master_slave_lua
-   - \ref MSG_ex_master_slave_lua_bypass
-   - Also, the lua version of the Chord example (in the source tree)
-     is a working non-trivial example of use of the lua bindings
+  - \ref MSG_ex_master_slave_lua
+  - \ref MSG_ex_master_slave_lua_bypass
+  - Also, the lua version of the Chord example (in the source tree)
+    is a working non-trivial example of use of the lua bindings
 */
 
+/**
+@defgroup msg_deprecated_functions MSG Deprecated
+@ingroup MSG_API
+@brief This section describes the deprecated functions. PLEASE STOP USING THEM.
 
-/** \defgroup MSG_ex_asynchronous_communications Asynchronous communications
-    \ingroup MSG_examples
+We don't remove them because the ability to run old scientific
+code is something important to us. But these functionalities are
+not actively supported anymore. 
 
-    Simulation of asynchronous communications between a sender and a receiver using a realistic platform and
-    an external description of the deployment.
- 
-    \section MSG_ex_ms_TOC Table of contents:
-     - \ref MSG_ext_icomms_code
-       - \ref MSG_ext_icomms_preliminary
-       - \ref MSG_ext_icomms_Sender
-       - \ref MSG_ext_icomms_Receiver
-       - \ref MSG_ext_icomms_core
-       - \ref MSG_ext_icomms_Main
-     - \ref MSG_ext_icomms_fct_Waitall
-     - \ref MSG_ext_icomms_fct_Waitany
+To access these functions, you should define the relevant option
+at configuration time in ccmake.
+ */
 
-    <hr> 
-    
-    \dontinclude msg/icomms/peer.c
 
-    \section MSG_ext_icomms_code Code of the application
+/** 
+@defgroup MSG_ex_asynchronous_communications Asynchronous communications
+@ingroup MSG_examples
 
-    \subsection MSG_ext_icomms_preliminary Preliminary declarations
-    \skip include
-    \until Sender function
+Simulation of asynchronous communications between a sender and a receiver using a realistic platform and
+an external description of the deployment.
 
-    \subsection MSG_ext_icomms_Sender Sender function
+\section MSG_ex_ms_TOC Table of contents:
+ - \ref MSG_ext_icomms_code
+   - \ref MSG_ext_icomms_preliminary
+   - \ref MSG_ext_icomms_Sender
+   - \ref MSG_ext_icomms_Receiver
+   - \ref MSG_ext_icomms_core
+   - \ref MSG_ext_icomms_Main
+ - \ref MSG_ext_icomms_fct_Waitall
+ - \ref MSG_ext_icomms_fct_Waitany
 
-    The sender send to a receiver an asynchronous message with the function "MSG_task_isend()". Cause this function is non-blocking 
-    we have to make "MSG_comm_test()" to know   if the communication is finished for finally destroy it with function "MSG_comm_destroy()".
-    It also available to "make MSG_comm_wait()" which make both of them.  
+<hr> 
 
-      C style arguments (argc/argv) are interpreted as:
-       - the number of tasks to distribute
-       - the computation size of each task
-       - the size of the files associated to each task
-       - a list of host that will accept those tasks.
-       - the time to sleep at the beginning of the function
-       - This time defined the process sleep time
+\dontinclude msg/icomms/peer.c
+
+\section MSG_ext_icomms_code Code of the application
+
+\subsection MSG_ext_icomms_preliminary Preliminary declarations
+\skip include
+\until Sender function
+
+\subsection MSG_ext_icomms_Sender Sender function
+
+The sender send to a receiver an asynchronous message with the function "MSG_task_isend()". Cause this function is non-blocking 
+we have to make "MSG_comm_test()" to know   if the communication is finished for finally destroy it with function "MSG_comm_destroy()".
+It also available to "make MSG_comm_wait()" which make both of them.  
+
+  C style arguments (argc/argv) are interpreted as:
+   - the number of tasks to distribute
+   - the computation size of each task
+   - the size of the files associated to each task
+   - a list of host that will accept those tasks.
+   - the time to sleep at the beginning of the function
+   - This time defined the process sleep time
 			if time = 0 use of MSG_comm_wait()
 			if time > 0 use of MSG_comm_test()
 
 
-    \until Receiver function
+\until Receiver function
 
-    \subsection MSG_ext_icomms_Receiver Receiver function
+\subsection MSG_ext_icomms_Receiver Receiver function
 
-    This function executes tasks when it receives them. As the receiving is asynchronous we have to test the communication to know
-    if it is completed or not with "MSG_comm_test()" or wait for the completion "MSG_comm_wait()".
+This function executes tasks when it receives them. As the receiving is asynchronous we have to test the communication to know
+if it is completed or not with "MSG_comm_test()" or wait for the completion "MSG_comm_wait()".
 
-      C style arguments (argc/argv) are interpreted as:
-       - the id to use for received the communication.
-       - the time to sleep at the beginning of the function
-       - This time defined the process sleep time
+  C style arguments (argc/argv) are interpreted as:
+   - the id to use for received the communication.
+   - the time to sleep at the beginning of the function
+   - This time defined the process sleep time
 			if time = 0 use of MSG_comm_wait()
 			if time > 0 use of MSG_comm_test()
 
-    \until Test function
+\until Test function
 
-    \subsection MSG_ext_icomms_core Simulation core
+\subsection MSG_ext_icomms_core Simulation core
 
-      This function is the core of the simulation and is divided only into 3 parts
-      thanks to MSG_create_environment() and MSG_launch_application().
-         -# Simulation settings : MSG_create_environment() creates a realistic 
-            environment
-         -# Application deployment : create the agents on the right locations with  
-            MSG_launch_application()
-         -# The simulation is run with #MSG_main()
+  This function is the core of the simulation and is divided only into 3 parts
+  thanks to MSG_create_environment() and MSG_launch_application().
+     -# Simulation settings : MSG_create_environment() creates a realistic 
+        environment
+     -# Application deployment : create the processes on the right locations with  
+        MSG_launch_application()
+     -# The simulation is run with #MSG_main()
 	 
-      Its arguments are:
+  Its arguments are:
 	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
 	- <i>application_file</i>: the name of a file containing a valid surfxml application description
 
-    \until Main function
+\until Main function
 
-    \subsection MSG_ext_icomms_Main Main function
+\subsection MSG_ext_icomms_Main Main function
 
-    This initializes MSG, runs a simulation, and free all data-structures created by MSG.
+This initializes MSG, runs a simulation, and free all data-structures created by MSG.
 
-    \until end_of_main
+\until end_of_main
 
-    \dontinclude msg/icomms/peer2.c
+\dontinclude msg/icomms/peer2.c
 
-    \section MSG_ext_icomms_fct_Waitall Waitall function for sender
+\section MSG_ext_icomms_fct_Waitall Waitall function for sender
 
-    The use of this function permit to send all messages and wait for the completion of all in one time.
+The use of this function permit to send all messages and wait for the completion of all in one time.
 
-    \skipline Sender function
-    \until end_of_sender
+\skipline Sender function
+\until end_of_sender
 
-    \section MSG_ext_icomms_fct_Waitany Waitany function
+\section MSG_ext_icomms_fct_Waitany Waitany function
 
-    The MSG_comm_waitany() function return the place of the first message send or receive from a xbt_dynar_t table.
+The MSG_comm_waitany() function return the place of the first message send or receive from a xbt_dynar_t table.
 
-    \subsection MSG_ext_icomms_fct_Waitany_sender From a sender
-	We can use this function to wait all sended messages.
-    \dontinclude msg/icomms/peer3.c
-    \skipline Sender function
-    \until end_of_sender
+\subsection MSG_ext_icomms_fct_Waitany_sender From a sender
+We can use this function to wait all sent messages.
+\dontinclude msg/icomms/peer3.c
+\skipline Sender function
+\until end_of_sender
 
-    \subsection MSG_ext_icomms_fct_Waitany_receiver From a receiver
-	We can also wait for the receiving of all messages.
-    \dontinclude msg/icomms/peer3.c
-    \skipline Receiver function
-    \until end_of_receiver
+\subsection MSG_ext_icomms_fct_Waitany_receiver From a receiver
+We can also wait for the arrival of all messages.
+\dontinclude msg/icomms/peer3.c
+\skipline Receiver function
+\until end_of_receiver
 
 */
 
-/** @defgroup MSG_ex_master_slave Basic Master/Slaves
-    @ingroup MSG_examples
+/** 
+@defgroup MSG_ex_master_slave Basic Master/Slaves
+@ingroup MSG_examples
     
-    Simulation of a master-slave application using a realistic platform and
-    an external description of the deployment. 
+Simulation of a master-slave application using a realistic platform
+and an external description of the deployment. 
 
-    \section MSG_ex_ms_TOC Table of contents:
+\section MSG_ex_ms_TOC Table of contents:
     
-     - \ref MSG_ext_ms_code
-       - \ref MSG_ext_ms_preliminary
-       - \ref MSG_ext_ms_master
-       - \ref MSG_ext_ms_slave
-       - \ref MSG_ext_ms_forwarder
-       - \ref MSG_ext_ms_core
-       - \ref MSG_ext_ms_main
-     - \ref MSG_ext_ms_helping
-       - \ref MSG_ext_ms_application 
-       - \ref MSG_ext_ms_platform
-     
-    <hr> 
-    
-    \dontinclude msg/masterslave/masterslave_forwarder.c
-    
-    \section MSG_ext_ms_code Code of the application
-    
-    \subsection MSG_ext_ms_preliminary Preliminary declarations
-    
-    \skip include
-    \until printf
-    \until }
-    
-    \subsection MSG_ext_ms_master Master code
-    
-      This function has to be assigned to a m_process_t that will behave as the master.
-      It should not be called directly but either given as a parameter to
-      #MSG_process_create() or registered as a public function through 
-      #MSG_function_register() and then automatically assigned to a process through
-      #MSG_launch_application().
+ - \ref MSG_ext_ms_code
+   - \ref MSG_ext_ms_preliminary
+   - \ref MSG_ext_ms_master
+   - \ref MSG_ext_ms_slave
+   - \ref MSG_ext_ms_forwarder
+   - \ref MSG_ext_ms_core
+   - \ref MSG_ext_ms_main
+ - \ref MSG_ext_ms_helping
+   - \ref MSG_ext_ms_application 
+   - \ref MSG_ext_ms_platform
  
-      C style arguments (argc/argv) are interpreted as:
-       - the number of tasks to distribute
-       - the computation size of each task
-       - the size of the files associated to each task
-       - a list of host that will accept those tasks.
+<hr> 
 
-      Tasks are dumbly sent in a round-robin style.
-      
-      \until end_of_master
+\dontinclude msg/masterslave/masterslave_forwarder.c
+
+\section MSG_ext_ms_code Code of the application
+
+\subsection MSG_ext_ms_preliminary Preliminary declarations
+
+\skip include
+\until printf
+\until }
+
+\subsection MSG_ext_ms_master Master code
     
-    \subsection MSG_ext_ms_slave Slave code
-    
-      This function has to be assigned to a #m_process_t that has to behave as a slave.
-      Just like the master fuction (described in \ref MSG_ext_ms_master), it should not be called directly.
+This function has to be assigned to a m_process_t that will behave as
+the master. It should not be called directly but either given as a
+parameter to #MSG_process_create() or registered as a public function
+through #MSG_function_register() and then automatically assigned to a
+process through #MSG_launch_application().
+ 
+C style arguments (argc/argv) are interpreted as:
+   - the number of tasks to distribute
+   - the computation size of each task
+   - the size of the files associated to each task
+   - a list of host that will accept those tasks.
 
-      This function keeps waiting for tasks and executes them as it receives them.
+Tasks are dumbly sent in a round-robin style.
       
-      \until end_of_slave
+\until end_of_master
+    
+\subsection MSG_ext_ms_slave Slave code
+    
+This function has to be assigned to a #m_process_t that has to behave
+as a slave. Just like the master fuction (described in \ref
+MSG_ext_ms_master), it should not be called directly.
 
-   \subsection MSG_ext_ms_forwarder Forwarder code
+This function keeps waiting for tasks and executes them as it receives them.
+      
+\until end_of_slave
+
+\subsection MSG_ext_ms_forwarder Forwarder code
    
-      This function has to be assigned to a #m_process_t that has to behave as a forwarder.
-      Just like the master function (described in \ref MSG_ext_ms_master), it should not be called directly.
+This function has to be assigned to a #m_process_t that has to behave
+as a forwarder. Just like the master function (described in \ref
+MSG_ext_ms_master), it should not be called directly.
 
-      C style arguments (argc/argv) are interpreted as a list of host
-      that will accept those tasks.
+C style arguments (argc/argv) are interpreted as a list of host that
+will accept those tasks.
 
-      This function keeps waiting for tasks and dispathes them to its slaves.
+This function keeps waiting for tasks and dispathes them to its slaves.
 
-      \until end_of_forwarder
+\until end_of_forwarder
 
-   \subsection MSG_ext_ms_core Simulation core
+\subsection MSG_ext_ms_core Simulation core
 
-      This function is the core of the simulation and is divided only into 3 parts
-      thanks to MSG_create_environment() and MSG_launch_application().
-         -# Simulation settings : MSG_create_environment() creates a realistic 
-            environment
-         -# Application deployment : create the agents on the right locations with  
-            MSG_launch_application()
-         -# The simulation is run with #MSG_main()
+This function is the core of the simulation and is divided only into 3 parts
+thanks to MSG_create_environment() and MSG_launch_application().
+   -# Simulation settings : MSG_create_environment() creates a realistic 
+      environment
+   -# Application deployment : create the processes on the right locations with  
+      MSG_launch_application()
+   -# The simulation is run with #MSG_main()
 	 
-      Its arguments are:
+Its arguments are:
 	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
 	- <i>application_file</i>: the name of a file containing a valid surfxml application description
 	
-      \until end_of_test_all
+\until end_of_test_all
       
-   \subsection MSG_ext_ms_main Main() function
+\subsection MSG_ext_ms_main Main() function
    
-      This initializes MSG, runs a simulation, and free all data-structures created by MSG.
+This initializes MSG, runs a simulation, and free all data-structures created by MSG.
       
-      \until end_of_main
+\until end_of_main
 
-   \section MSG_ext_ms_helping Helping files
+\section MSG_ext_ms_helping Helping files
 
-   \subsection MSG_ext_ms_application Example of application file
+\subsection MSG_ext_ms_application Example of application file
 
-   \include msg/masterslave/deployment_masterslave.xml
+\include msg/masterslave/deployment_masterslave.xml
 
-   \subsection MSG_ext_ms_platform Example of platform file
-   
-   \include msg/small_platform.xml
+\subsection MSG_ext_ms_platform Example of platform file
+
+\include msg/small_platform.xml
    
 */
 
@@ -399,7 +433,7 @@ example from which you can learn what you want to.
       
          -# Simulation settings : <i>simgrid.platform</i> creates a realistic 
             environment 
-         -# Application deployment : create the agents on the right locations with  
+         -# Application deployment : create the processes on the right locations with  
             <i>simgrid.application</i>
          -# The simulation is run with <i>simgrid.run</i>
 	 

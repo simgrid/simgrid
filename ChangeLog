@@ -85,6 +85,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Deprecated function TRACE_msg_set_process_category completely removed
   * Trace header updated according to the latest Paje file format
   * Tracing network lazy updates, no longer obligate users to use full updates
+  * --cfg=tracing/platform:1 also registers power/bandwidth variables
 
   Lua:
   * Improve the API of Lua MSG bindings, using the Lua spirit.

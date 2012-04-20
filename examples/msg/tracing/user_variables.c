@@ -79,6 +79,62 @@ int main(int argc, char *argv[])
   MSG_launch_application(deployment_file);
 
   MSG_main();
+
+  //get user declared variables
+  unsigned int cursor;
+  char *variable;
+  xbt_dynar_t host_variables = TRACE_get_host_variables ();
+  if (host_variables){
+    XBT_INFO ("Declared host variables:");
+    xbt_dynar_foreach (host_variables, cursor, variable){
+      XBT_INFO ("%s", variable);
+    }
+    xbt_dynar_free (&host_variables);
+  }
+  xbt_dynar_t link_variables = TRACE_get_link_variables ();
+  if (link_variables){
+    XBT_INFO ("Declared link variables:");
+    xbt_dynar_foreach (link_variables, cursor, variable){
+      XBT_INFO ("%s", variable);
+    }
+    xbt_dynar_free (&link_variables);
+  }
+
+  //create a customized triva graph configuration file
+  FILE *fp;
+  fp = fopen ("triva_graph.plist", "w");
+  if (!fp){
+    MSG_clean();
+    return 1;
+  }
+  fprintf (fp, "{\n node = (");
+  xbt_dynar_t nodes_type = TRACE_get_node_types ();
+  if (nodes_type){
+    XBT_INFO ("Node types in the trace:");
+    char *node_type;
+    xbt_dynar_foreach (nodes_type, cursor, node_type){
+      XBT_INFO ("%s", node_type);
+      fprintf (fp, "%s, ", node_type);
+    }
+    xbt_dynar_free (&nodes_type);
+  }
+  fprintf (fp, ");\n edge = (");
+  xbt_dynar_t edges_type = TRACE_get_edge_types ();
+  if (edges_type){
+    XBT_INFO ("Node types in the trace:");
+    char *edge_type;
+    xbt_dynar_foreach (edges_type, cursor, edge_type){
+      XBT_INFO ("%s", edge_type);
+      fprintf (fp, "%s, ", edge_type);
+    }
+    xbt_dynar_free (&edges_type);
+  }
+  fprintf (fp, ");\n");
+  fprintf (fp, " host = {\n  type = square;\n  size = HDD_capacity; \n  values = (HDD_utilization);\n };\n");
+  fprintf (fp, " link = {\n  type = rhombus;\n  size = bandwidth;\n };\n");
+  fprintf (fp, "}\n");
+  fclose (fp);
+
   MSG_clean();
   return 0;
 }

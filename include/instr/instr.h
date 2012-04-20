@@ -21,6 +21,7 @@
  */
 XBT_PUBLIC(void) TRACE_category(const char *category);
 XBT_PUBLIC(void) TRACE_category_with_color (const char *category, const char *color);
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_categories (void);
 XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
 
 /*
@@ -28,6 +29,7 @@ XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
  */
 XBT_PUBLIC(void) TRACE_declare_mark(const char *mark_type);
 XBT_PUBLIC(void) TRACE_mark(const char *mark_type, const char *mark_value);
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_marks (void);
 
 /*
  * Function used by graphicator (transform a SimGrid platform
@@ -47,6 +49,7 @@ XBT_PUBLIC(void) TRACE_host_variable_sub (const char *host, const char *variable
 XBT_PUBLIC(void) TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value);
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_host_variables (void);
 
 /* for link variables */
 XBT_PUBLIC(void) TRACE_link_variable_declare (const char *var);
@@ -65,15 +68,22 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub (const char *src, const char *ds
 XBT_PUBLIC(void) TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable, double value);
 XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value);
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_link_variables (void);
+
+/* for creating graph configuration files for Triva by hand */
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_node_types (void);
+XBT_PUBLIC(xbt_dynar_t) TRACE_get_edge_types (void);
 
 #else                           /* HAVE_TRACING */
 
 #define TRACE_category(category)
 #define TRACE_category_with_color(category,color)
+#define TRACE_get_categories()
 #define TRACE_smpi_set_category(category)
 
 #define TRACE_declare_mark(mark_type)
 #define TRACE_mark(mark_type,mark_value)
+#define TRACE_get_marks()
 
 #define TRACE_platform_graph_export_graphviz(filename)
 
@@ -85,6 +95,7 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const ch
 #define TRACE_host_variable_set_with_time(time,host,var,value)
 #define TRACE_host_variable_add_with_time(time,host,var,value)
 #define TRACE_host_variable_sub_with_time(time,host,var,value)
+#define TRACE_get_host_variables()
 
 #define TRACE_link_variable_declare(var)
 #define TRACE_link_variable_declare_with_color(var,color)
@@ -101,6 +112,10 @@ XBT_PUBLIC(void) TRACE_link_srcdst_variable_sub_with_time (double time, const ch
 #define TRACE_link_srcdst_variable_set_with_time(time,src,dst,var,value)
 #define TRACE_link_srcdst_variable_add_with_time(time,src,dst,var,value)
 #define TRACE_link_srcdst_variable_sub_with_time(time,src,dst,var,value)
+#define TRACE_get_host_variables()
+
+#define TRACE_get_node_types()
+#define TRACE_get_edge_types()
 
 #endif                          /* HAVE_TRACING */
 

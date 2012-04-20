@@ -17,7 +17,7 @@ static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dyn
 }
 
 static void vivaldi_get_route_and_latency(
-    AS_t rc, network_element_t src_p, network_element_t dst_p,
+    AS_t rc, sg_routing_edge_t src_p, sg_routing_edge_t dst_p,
     route_t route, double *lat)
 {
   XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]",src_p->name,src_p->id,dst_p->name,dst_p->id);
@@ -65,7 +65,7 @@ static void vivaldi_get_route_and_latency(
   free(tmp_dst_name);
 
   euclidean_dist = sqrt (euclidean_dist_comp(0,src_ctn,dst_ctn)+euclidean_dist_comp(1,src_ctn,dst_ctn))
-                  + fabs(xbt_dynar_get_as(src_ctn, 2, double))+fabs(xbt_dynar_get_as(dst_ctn, 2, double));
+                      + fabs(xbt_dynar_get_as(src_ctn, 2, double))+fabs(xbt_dynar_get_as(dst_ctn, 2, double));
 
   if (lat)
     *lat += euclidean_dist / 1000; //From .ms to .s
@@ -75,7 +75,7 @@ static void vivaldi_get_route_and_latency(
 /* Creation routing model functions */
 AS_t model_vivaldi_create(void)
 {
-	  AS_t new_component = model_rulebased_create();
-	  new_component->get_route_and_latency = vivaldi_get_route_and_latency;
-	  return new_component;
+  AS_t new_component = model_rulebased_create();
+  new_component->get_route_and_latency = vivaldi_get_route_and_latency;
+  return new_component;
 }

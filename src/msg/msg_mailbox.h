@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SMX_MAILBOX_H
-#define SMX_MAILBOX_H
+#ifndef MSG_MAILBOX_H
+#define MSG_MAILBOX_H
 
 #include "xbt/fifo.h"
 #include "simix/simix.h"
@@ -26,6 +26,8 @@ SG_BEGIN_DECL()
  */
 XBT_PUBLIC(msg_mailbox_t)
     MSG_mailbox_new(const char *alias);
+
+void MSG_mailbox_free(void *mailbox);
 
 /* \brief MSG_mailbox_free - release a mailbox from the memory.
  *
@@ -111,4 +113,4 @@ XBT_PUBLIC(msg_mailbox_t)
 #endif
 
 SG_END_DECL()
-#endif                          /* !SMX_MAILBOX_H */
+#endif                          /* !MSG_MAILBOX_H */

@@ -17,23 +17,18 @@ set(EXTRA_DIST
 	src/xbt/backtrace_dummy.c
 	src/xbt/setset_private.h
 	src/xbt/automatonparse_promela.c
-	src/xbt/mmalloc/attach.c
-	src/xbt/mmalloc/detach.c	
-	src/xbt/mmalloc/keys.c
-	src/xbt/mmalloc/mcalloc.c
 	src/xbt/mmalloc/mfree.c
-	src/xbt/mmalloc/mm_legacy.c		
-	src/xbt/mmalloc/mm.c
 	src/xbt/mmalloc/mmalloc.c
-	src/xbt/mmalloc/mmap-sup.c
-	src/xbt/mmalloc/mmcheck.c
-	src/xbt/mmalloc/mmemalign.c
-	src/xbt/mmalloc/mmprivate.h
-	src/xbt/mmalloc/mmstats.c
-	src/xbt/mmalloc/mmtrace.c
-	src/xbt/mmalloc/mrealloc.c
-	src/xbt/mmalloc/mvalloc.c
-	src/xbt/mmalloc/sbrk-sup.c
+	src/xbt/mmalloc/mmalloc.info
+	src/xbt/mmalloc/mmalloc.texi
+	src/xbt/mmalloc/mm.c
+    src/xbt/mmalloc/mm_diff.c
+	src/xbt/mmalloc/mm_legacy.c
+	src/xbt/mmalloc/mm_module.c
+	src/xbt/mmalloc/mmorecore.c
+	src/xbt/mmalloc/mmprivate.h		
+	src/xbt/mmalloc/mmtrace.awk
+	src/xbt/mmalloc/mrealloc.c	
 	src/xbt/mmalloc/test/mmalloc_test.c
 	src/xbt/datadesc/ddt_parse.yy.l
 	src/xbt/datadesc/ddt_parse.yy.h
@@ -95,6 +90,15 @@ set(EXTRA_DIST
 	examples/gras/ping/ping.h
 	examples/gras/console/ping.h
 	examples/gras/mmrpc/mmrpc.h
+	
+    examples/msg/mc/parserPromela.yacc
+    examples/msg/mc/parserPromela.lex
+    examples/msg/mc/automaton.h
+    examples/msg/mc/bugged1_liveness.h
+    examples/msg/mc/centralized_liveness.h
+    examples/msg/mc/automatonparse_promela.h
+    examples/msg/mc/bugged2_liveness.h
+    examples/msg/mc/y.tab.h
 
 	tools/gras/gras_stub_generator.h
 	tools/tesh/run_context.h  
@@ -430,6 +434,7 @@ set(headers_to_install
 	include/xbt/automatonparse_promela.h
 	include/xbt/datadesc.h
 	include/xbt/socket.h
+	include/xbt/file_stat.h
 	include/simgrid/platf.h
 	include/simgrid/modelchecker.h
 	include/msg/msg.h
@@ -569,6 +574,8 @@ endif(${HAVE_LUA})
 file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.c"
 "examples/*.h"
+"examples/*yacc"
+"examples/*lex"
 "examples/*.cxx"
 "examples/*.hpp"
 "examples/*.rb"
@@ -577,8 +584,6 @@ file(GLOB_RECURSE examples_to_install_in_doc
 "examples/*.xml"
 "examples/*README"
 )
-
-
     
 set(DOC_SOURCES
 	doc/install.doc

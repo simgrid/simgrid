@@ -11,7 +11,9 @@ my @extra_files = qw(html/index.html html/pages.html html/modules.html html/anno
 # GRAS tutorial
 map {push @extra_files, "html/GRAS_tut_$_.html"} qw (intro 
                                                      tour tour_install tour_setup tour_simpleexchange tour_args tour_callbacks tour_globals 
-                                                          tour_logs tour_timers tour_exceptions tour_rpc);
+                                                          tour_logs tour_timers tour_exceptions tour_simpledata tour_rpc tour_explicitwait
+                                                          tour_message_recaping tour_staticstruct tour_pointers tour_dynar 
+                                                          tour_manualdatadef tour_exchangecb);
 
 # GRAS examples
 map {push @extra_files, "html/GRAS_ex_$_.html"} qw (ping mmrpc token timer);
@@ -401,18 +403,18 @@ foreach my $file (@allfiles) {
 	      || $file =~ /^html\/modules.*/
 	      || $file =~ /^html\/annotated.*/
 	      || $file =~ /^html\/group__.*/
-	      || $file =~ /^html\/functions.*/)
+	      || $file =~ /^html\/functions.*/
+	      || $file =~ /^html\/GRAS_tut_tour_.*/)
 	      {
 				$tmp_buff .= '      <div class="tabs_group_use">'."\n";
 				$tmp_buff .= '      	<ul class="tablist">'."\n";
-				$tmp_buff .= '        	<li><a href="install.html"><span>Install SimGrid</span></a></li>'."\n";
+				$tmp_buff .= '        	<li><a href="install.html"><span>Installing SimGrid</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="modules.html"><span>Modules&#160;API</span></a></li>'."\n";
-      			$tmp_buff .= '        	<li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="options.html"><span>Options & configurations</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="platform.html"><span>Platform Description</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="tracing.html"><span>Tracing Simulations</span></a></li>'."\n";
 				$tmp_buff .= '        	<li><a href="bindings.html"><span>Bindings</span></a></li>'."\n";
-				$tmp_buff .= '        	<li><a href="pls.html"><span>Packet Level Simulation</span></a></li>'."\n";
+				$tmp_buff .= '        	<li><a href="pls.html"><span>Packet-Level Simulation</span></a></li>'."\n";
 				$tmp_buff .= '      	</ul></div>'."\n";
 				$tmp_buff .= '      </div>'."\n";
 				
@@ -437,7 +439,8 @@ foreach my $file (@allfiles) {
 		      $tmp_buff =~ s/<li class="current">/<li>/g;
 		      $tmp_buff =~ s/<li><a href="$filename.html">/<li class="current"><a href="$filename.html">/g;     
 	      }
-	      if($file =~ /^html\/group__.*/)
+	      if($file =~ /^html\/group__.*/
+	      || $file =~ /^html\/GRAS_tut_tour_.*/)
 	      {
 	      	$tmp_buff =~ s/<li><a href="modules.html">/<li class="current"><a href="modules.html">/g;
 	      }
@@ -446,7 +449,6 @@ foreach my $file (@allfiles) {
 	      	$tmp_buff =~ s/<li><a href="annotated.html">/<li class="current"><a href="annotated.html">/g;
 	      }
 	      
-
 	      print TO $tmp_buff;	      
 	      next;
     }

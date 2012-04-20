@@ -8,7 +8,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-/** \ingroup msg_easier_life
+/** \ingroup msg_simulation
  * \brief An application deployer.
  *
  * Creates the process described in \a file.
@@ -34,8 +34,8 @@ void MSG_launch_application(const char *file)
   return;
 }
 
-/** \ingroup msg_easier_life
- * \brief Registers the main function of an agent in a global table.
+/** \ingroup msg_simulation
+ * \brief Registers the main function of a process in a global table.
  *
  * Registers a code function in a global table. 
  * This table is then used by #MSG_launch_application. 
@@ -48,8 +48,8 @@ void MSG_function_register(const char *name, xbt_main_func_t code)
   return;
 }
 
-/** \ingroup msg_easier_life
- * \brief Registers a function as the default main function of agents.
+/** \ingroup msg_simulation
+ * \brief Registers a function as the default main function of processes.
  *
  * Registers a code function as being the default value. This function will get used by MSG_launch_application() when there is no registered function of the requested name in.
  * \param code the function (must have the same prototype than the main function of any C program: int ..(int argc, char *argv[]))
@@ -59,7 +59,7 @@ void MSG_function_register_default(xbt_main_func_t code)
   SIMIX_function_register_default(code);
 }
 
-/** \ingroup msg_easier_life
+/** \ingroup msg_simulation
  * \brief Retrieves a registered main function
  *
  * Registers a code function in a global table. 

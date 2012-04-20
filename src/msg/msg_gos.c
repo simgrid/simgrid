@@ -12,13 +12,12 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
                                 "Logging specific to MSG (gos)");
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Executes a task and waits for its termination.
  *
- * This function is used for describing the behavior of an agent. It
+ * This function is used for describing the behavior of a process. It
  * takes only one parameter.
- * \param task a #m_task_t to execute on the location on which the
- agent is running.
+ * \param task a #m_task_t to execute on the location on which the process is running.
  * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
  * or #MSG_HOST_FAILURE otherwise
  */
@@ -152,10 +151,10 @@ MSG_parallel_task_create(const char *name, int host_nb,
   return task;
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Executes a parallel task and waits for its termination.
  *
- * \param task a #m_task_t to execute on the location on which the agent is running.
+ * \param task a #m_task_t to execute on the location on which the process is running.
  *
  * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
  * or #MSG_HOST_FAILURE otherwise
@@ -215,7 +214,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 }
 
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Sleep for the specified number of seconds
  *
  * Makes the current process sleep until \a time seconds have elapsed.
@@ -253,7 +252,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   }
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Receives a task from a mailbox from a specific host.
  *
  * This is a blocking function, the execution flow will be blocked
@@ -275,7 +274,7 @@ MSG_task_receive_from_host(m_task_t * task, const char *alias,
   return MSG_task_receive_ext(task, alias, -1, host);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Receives a task from a mailbox.
  *
  * This is a blocking function, the execution flow will be blocked
@@ -294,7 +293,7 @@ MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
   return MSG_task_receive_with_timeout(task, alias, -1);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Receives a task from a mailbox with a given timeout.
  *
  * This is a blocking function with a timeout, the execution flow will be blocked
@@ -317,7 +316,7 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
   return MSG_task_receive_ext(task, alias, timeout, NULL);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Receives a task from a mailbox from a specific host with a given timeout.
  *
  * This is a blocking function with a timeout, the execution flow will be blocked
@@ -345,7 +344,7 @@ MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
                                   host, timeout);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Sends a task on a mailbox.
  *
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
@@ -360,7 +359,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
   return MSG_task_isend_with_matching(task,alias,NULL,NULL);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Sends a task on a mailbox, with support for matching requests
  *
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
@@ -407,7 +406,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
   return comm;
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Sends a task on a mailbox.
  *
  * This is a non blocking detached send function.
@@ -450,7 +449,7 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
   t_simdata->comm = comm;
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Starts listening for receiving a task from an asynchronous communication.
  *
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
@@ -483,7 +482,7 @@ msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
   return comm;
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Checks whether a communication is done, and if yes, finalizes it.
  * \param comm the communication to test
  * \return TRUE if the communication is finished
@@ -530,7 +529,7 @@ int MSG_comm_test(msg_comm_t comm)
   return finished;
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief This function checks if a communication is finished.
  * \param comms a vector of communications
  * \return the position of the finished communication if any
@@ -593,7 +592,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
   return finished_index;
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Destroys a communication.
  * \param comm the communication to destroy.
  */
@@ -602,7 +601,7 @@ void MSG_comm_destroy(msg_comm_t comm)
   xbt_free(comm);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Wait for the completion of a communication.
  *
  * It takes two parameters.
@@ -643,7 +642,7 @@ MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
   return comm->status;
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
 * \brief This function is called by a sender and permit to wait for each communication
 *
 * \param comm a vector of communication
@@ -658,7 +657,7 @@ void MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout)
   }
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief This function waits for the first communication finished in a list.
  * \param comms a vector of communications
  * \return the position of the first finished communication
@@ -721,7 +720,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 }
 
 /**
- * \ingroup msg_gos_functions
+ * \ingroup msg_task_usage
  * \brief Returns the error (if any) that occured during a finished communication.
  * \param comm a finished communication
  * \return the status of the communication, or #MSG_OK if no error occured
@@ -732,7 +731,7 @@ MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
   return comm->status;
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Get a task (#m_task_t) from a communication
  *
  * \param comm the communication where to get the task
@@ -764,7 +763,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
   }
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Sends a task to a mailbox
  *
  * This is a blocking function, the execution flow will be blocked
@@ -783,7 +782,7 @@ MSG_error_t MSG_task_send(m_task_t task, const char *alias)
   return MSG_task_send_with_timeout(task, alias, -1);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Sends a task to a mailbox with a maximum rate
  *
  * This is a blocking function, the execution flow will be blocked
@@ -804,7 +803,7 @@ MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
   return MSG_task_send(task, alias);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Sends a task to a mailbox with a timeout
  *
  * This is a blocking function, the execution flow will be blocked
@@ -825,7 +824,7 @@ MSG_task_send_with_timeout(m_task_t task, const char *alias,
                                       task, timeout);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Check if there is a communication going on in a mailbox.
  *
  * \param alias the name of the mailbox to be considered
@@ -837,7 +836,7 @@ int MSG_task_listen(const char *alias)
   return !MSG_mailbox_is_empty(MSG_mailbox_get_by_alias(alias));
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Check the number of communication actions of a given host pending in a mailbox.
  *
  * \param alias the name of the mailbox to be considered
@@ -854,7 +853,7 @@ int MSG_task_listen_from_host(const char *alias, m_host_t host)
                                                (alias), host);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Look if there is a communication on a mailbox and return the
  * PID of the sender process.
  *
@@ -874,7 +873,7 @@ int MSG_task_listen_from(const char *alias)
   return MSG_process_get_PID(task->simdata->sender);
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  * \brief Sets the tracing category of a task.
  *
  * This function should be called after the creation of
@@ -900,7 +899,7 @@ void MSG_task_set_category (m_task_t task, const char *category)
 #endif
 }
 
-/** \ingroup msg_gos_functions
+/** \ingroup msg_task_usage
  *
  * \brief Gets the current tracing category of a task.
  *
@@ -934,7 +933,7 @@ MSG_error_t MSG_get_errno(void)
  * \brief Put a task on a channel of an host and waits for the end of the
  * transmission.
  *
- * This function is used for describing the behavior of an agent. It
+ * This function is used for describing the behavior of a process. It
  * takes three parameter.
  * \param task a #m_task_t to send on another location. This task
  will not be usable anymore when the function will return. There is
@@ -947,7 +946,7 @@ MSG_error_t MSG_get_errno(void)
  can be transfered iff it has been correctly created with
  MSG_task_create().
  * \param dest the destination of the message
- * \param channel the channel on which the agent should put this
+ * \param channel the channel on which the process should put this
  task. This value has to be >=0 and < than the maximal number of
  channels fixed with MSG_set_channel_number().
  * \return #MSG_HOST_FAILURE if the host on which
@@ -982,7 +981,7 @@ MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
  * host (with a timeout on the waiting of the destination host) and
  * waits for the end of the transmission.
  *
- * This function is used for describing the behavior of an agent. It
+ * This function is used for describing the behavior of a process. It
  * takes four parameter.
  * \param task a #m_task_t to send on another location. This task
  will not be usable anymore when the function will return. There is
@@ -995,7 +994,7 @@ MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
  can be transfered iff it has been correctly created with
  MSG_task_create().
  * \param dest the destination of the message
- * \param channel the channel on which the agent should put this
+ * \param channel the channel on which the process should put this
  task. This value has to be >=0 and < than the maximal number of
  channels fixed with MSG_set_channel_number().
  * \param timeout the maximum time to wait for a task before giving
@@ -1025,7 +1024,7 @@ MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
  * \brief Test whether there is a pending communication on a channel, and who sent it.
  *
  * It takes one parameter.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \return -1 if there is no pending communication and the PID of the process who sent it otherwise
@@ -1052,7 +1051,7 @@ int MSG_task_probe_from(m_channel_t channel)
  * \brief Test whether there is a pending communication on a channel.
  *
  * It takes one parameter.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \return 1 if there is a pending communication and 0 otherwise
@@ -1075,7 +1074,7 @@ int MSG_task_Iprobe(m_channel_t channel)
  channel and sent by \a host.
  *
  * It takes two parameters.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \param host the host that is to be watched.
@@ -1104,7 +1103,7 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
  hold a task when this function will return. Thus \a task should not
  be equal to \c NULL and \a *task should be equal to \c NULL. If one of
  those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \param host the host that is to be watched.
@@ -1125,7 +1124,7 @@ MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
  hold a task when this function will return. Thus \a task should not
  be equal to \c NULL and \a *task should be equal to \c NULL. If one of
  those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
@@ -1144,7 +1143,7 @@ MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
  hold a task when this function will return. Thus \a task should not
  be equal to \c NULL and \a *task should be equal to \c NULL. If one of
  those two condition does not hold, there will be a warning message.
- * \param channel the channel on which the agent should be
+ * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \param max_duration the maximum time to wait for a task before giving

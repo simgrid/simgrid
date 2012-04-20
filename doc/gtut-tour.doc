@@ -1,6 +1,5 @@
-
-/** 
-@page GRAS_tut_tour GRAS initiatic tour
+/** @defgroup GRAS_tut_tour Initiatic tour
+    @ingroup GRAS_tut 
 
 During this tour, you will learn all you need to write your own GRAS
 applications, from the installation of the framework to the use of (almost)
@@ -22,7 +21,7 @@ all features available in GRAS.
       DOXYGEN_NAVBAR_CHILD "Recapping part 1"=GRAS_tut_tour_message_recaping.html
       DOXYGEN_NAVBAR_CHILD "12: Static data definition"=GRAS_tut_tour_staticstruct.html
       DOXYGEN_NAVBAR_CHILD "13: Pointers definition"=GRAS_tut_tour_pointers.html
-      DOXYGEN_NAVBAR_CHILD "14: Dynars definition"=GRAS_tut_tour_dynars.html
+      DOXYGEN_NAVBAR_CHILD "14: Dynars definition"=GRAS_tut_tour_dynar.html
       DOXYGEN_NAVBAR_CHILD "15: Manual data definition"=GRAS_tut_tour_manualdatadef.html
       DOXYGEN_NAVBAR_CHILD "16: Advanced data definition"=GRAS_tut_tour_exchangecb.html
     --> \endhtmlonly

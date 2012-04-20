@@ -21,7 +21,7 @@ typedef struct {
 
 typedef struct s_rule_route s_rule_route_t, *rule_route_t;
 typedef struct s_rule_route_extended s_rule_route_extended_t,
-    *rule_route_extended_t;
+*rule_route_extended_t;
 
 struct s_rule_route {
   xbt_dynar_t re_str_link;      // dynar of char*
@@ -62,14 +62,14 @@ static void rule_route_extended_free(void *e)
 
 /* Parse routing model functions */
 
-static int model_rulebased_parse_PU(AS_t rc, network_element_t elm)
+static int model_rulebased_parse_PU(AS_t rc, sg_routing_edge_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
   xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
   return -1;
 }
 
-static int model_rulebased_parse_AS(AS_t rc, network_element_t elm)
+static int model_rulebased_parse_AS(AS_t rc, sg_routing_edge_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
   xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
@@ -77,8 +77,8 @@ static int model_rulebased_parse_AS(AS_t rc, network_element_t elm)
 }
 
 static void model_rulebased_parse_route(AS_t rc,
-                                      const char *src, const char *dst,
-                                      route_t route)
+    const char *src, const char *dst,
+    route_t route)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
   rule_route_t ruleroute = xbt_new0(s_rule_route_t, 1);
@@ -86,18 +86,18 @@ static void model_rulebased_parse_route(AS_t rc,
   int erroffset;
 
   if(!strcmp(rc->model_desc->name,"Vivaldi")){
-	  if(!xbt_dynar_is_empty(route->link_list))
-		  xbt_die("You can't have link_ctn with Model Vivaldi.");
+    if(!xbt_dynar_is_empty(route->link_list))
+      xbt_die("You can't have link_ctn with Model Vivaldi.");
   }
 
   ruleroute->re_src = pcre_compile(src, 0, &error, &erroffset, NULL);
   xbt_assert(ruleroute->re_src,
-              "PCRE compilation failed at offset %d (\"%s\"): %s\n",
-              erroffset, src, error);
+      "PCRE compilation failed at offset %d (\"%s\"): %s\n",
+      erroffset, src, error);
   ruleroute->re_dst = pcre_compile(dst, 0, &error, &erroffset, NULL);
   xbt_assert(ruleroute->re_src,
-              "PCRE compilation failed at offset %d (\"%s\"): %s\n",
-              erroffset, dst, error);
+      "PCRE compilation failed at offset %d (\"%s\"): %s\n",
+      erroffset, dst, error);
 
   ruleroute->re_str_link = route->link_list;
   route->link_list = NULL; // Don't free it twice in each container
@@ -106,8 +106,8 @@ static void model_rulebased_parse_route(AS_t rc,
 }
 
 static void model_rulebased_parse_ASroute(AS_t rc,
-                                        const char *src, const char *dst,
-                                        route_t route)
+    const char *src, const char *dst,
+    route_t route)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
   rule_route_extended_t ruleroute_e = xbt_new0(s_rule_route_extended_t, 1);
@@ -115,24 +115,29 @@ static void model_rulebased_parse_ASroute(AS_t rc,
   int erroffset;
 
   if(!strcmp(rc->model_desc->name,"Vivaldi")){
-	  if(!xbt_dynar_is_empty(route->link_list))
-		  xbt_die("You can't have link_ctn with Model Vivaldi.");
+    if(!xbt_dynar_is_empty(route->link_list))
+      xbt_die("You can't have link_ctn with Model Vivaldi.");
   }
 
   ruleroute_e->generic_rule_route.re_src =
       pcre_compile(src, 0, &error, &erroffset, NULL);
   xbt_assert(ruleroute_e->generic_rule_route.re_src,
-              "PCRE compilation failed at offset %d (\"%s\"): %s\n",
-              erroffset, src, error);
+      "PCRE compilation failed at offset %d (\"%s\"): %s\n",
+      erroffset, src, error);
   ruleroute_e->generic_rule_route.re_dst =
       pcre_compile(dst, 0, &error, &erroffset, NULL);
   xbt_assert(ruleroute_e->generic_rule_route.re_src,
-              "PCRE compilation failed at offset %d (\"%s\"): %s\n",
-              erroffset, dst, error);
+      "PCRE compilation failed at offset %d (\"%s\"): %s\n",
+      erroffset, dst, error);
   ruleroute_e->generic_rule_route.re_str_link =
       route->link_list;
-  ruleroute_e->re_src_gateway = xbt_strdup((char *)route->src_gateway); // DIRTY HACK possible only
-  ruleroute_e->re_dst_gateway = xbt_strdup((char *)route->dst_gateway); // because of what is in routing_parse_E_ASroute
+
+  // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
+  // store the provided name instead of the entity directly (routing_parse_E_ASroute knows)
+  //
+  // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
+  ruleroute_e->re_src_gateway = xbt_strdup((char *)route->src_gateway);
+  ruleroute_e->re_dst_gateway = xbt_strdup((char *)route->dst_gateway);
   xbt_dynar_push(routing->list_ASroute, &ruleroute_e);
 
   /* make sure that they don't get freed */
@@ -141,9 +146,9 @@ static void model_rulebased_parse_ASroute(AS_t rc,
 }
 
 static void model_rulebased_parse_bypassroute(AS_t rc,
-                                            const char *src,
-                                            const char *dst,
-                                            route_t e_route)
+    const char *src,
+    const char *dst,
+    route_t e_route)
 {
   xbt_die("bypass routing not supported for Route-Based model");
 }
@@ -152,7 +157,7 @@ static void model_rulebased_parse_bypassroute(AS_t rc,
 #define OVECCOUNT 30            /* should be a multiple of 3 */
 
 static char *remplace(char *value, const char **src_list, int src_size,
-                      const char **dst_list, int dst_size)
+    const char **dst_list, int dst_size)
 {
   char result[BUFFER_SIZE];
   int i_res = 0;
@@ -163,7 +168,7 @@ static char *remplace(char *value, const char **src_list, int src_size,
       i++;                      /* skip the '$' */
       if (value[i] < '0' || value[i] > '9')
         xbt_die("bad string parameter, no number indication, at offset: "
-                "%d (\"%s\")", i, value);
+            "%d (\"%s\")", i, value);
 
       /* solve the number */
       int number = value[i++] - '0';
@@ -177,18 +182,18 @@ static char *remplace(char *value, const char **src_list, int src_size,
         param_list = src_list;
         param_size = src_size;
       } else if (value[i] == 'd' && value[i + 1] == 's'
-                 && value[i + 2] == 't') {
+          && value[i + 2] == 't') {
         param_list = dst_list;
         param_size = dst_size;
       } else {
         xbt_die("bad string parameter, support only \"src\" and \"dst\", "
-                "at offset: %d (\"%s\")", i, value);
+            "at offset: %d (\"%s\")", i, value);
       }
       i += 3;
 
       xbt_assert(number < param_size,
-                 "bad string parameter, not enough length param_size, "
-                 "at offset: %d (\"%s\") %d %d", i, value, param_size, number);
+          "bad string parameter, not enough length param_size, "
+          "at offset: %d (\"%s\") %d %d", i, value, param_size, number);
 
       const char *param = param_list[number];
       int j = 0;
@@ -199,7 +204,7 @@ static char *remplace(char *value, const char **src_list, int src_size,
     }
     if (i_res >= BUFFER_SIZE)
       xbt_die("solving string \"%s\", small buffer size (%d)",
-              value, BUFFER_SIZE);
+          value, BUFFER_SIZE);
   }
   result[i_res++] = '\0';
   char *res = xbt_malloc(i_res);
@@ -207,19 +212,19 @@ static char *remplace(char *value, const char **src_list, int src_size,
 }
 
 static void rulebased_get_route_and_latency(AS_t rc,
-    network_element_t src, network_element_t dst,
-                                route_t res,double*lat);
+    sg_routing_edge_t src, sg_routing_edge_t dst,
+    route_t res,double*lat);
 static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
   //We have already bypass cluster routes with network NS3
   if(!strcmp(surf_network_model->name,"network NS3"))
-	return ret;
+    return ret;
 
   char *k1;
 
   //find router
-  network_element_t router = NULL;
+  sg_routing_edge_t router = NULL;
   xbt_lib_cursor_t cursor;
   xbt_lib_foreach(as_router_lib, cursor, k1, router)
   {
@@ -230,29 +235,29 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
   if (!router)
     xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
 
-  network_element_t host = NULL;
+  sg_routing_edge_t host = NULL;
   xbt_lib_foreach(as_router_lib, cursor, k1, host){
     route_t route = xbt_new0(s_route_t,1);
-    route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+    route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
     rulebased_get_route_and_latency (rc, router, host, route,NULL);
 
     int number_of_links = xbt_dynar_length(route->link_list);
 
     if(number_of_links == 1) {
-		//loopback
+      //loopback
     }
     else{
-		if (number_of_links != 2) {
-		  xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
-		}
+      if (number_of_links != 2) {
+        xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
+      }
 
-		void *link_ptr;
-		xbt_dynar_get_cpy (route->link_list, 1, &link_ptr);
-		onelink_t onelink = xbt_new0 (s_onelink_t, 1);
-		onelink->src = host;
-		onelink->dst = router;
-		onelink->link_ptr = link_ptr;
-		xbt_dynar_push (ret, &onelink);
+      void *link_ptr;
+      xbt_dynar_get_cpy (route->link_list, 1, &link_ptr);
+      onelink_t onelink = xbt_new0 (s_onelink_t, 1);
+      onelink->src = host;
+      onelink->dst = router;
+      onelink->link_ptr = link_ptr;
+      xbt_dynar_push (ret, &onelink);
     }
   }
   return ret;
@@ -260,14 +265,14 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 
 /* Business methods */
 static void rulebased_get_route_and_latency(AS_t rc,
-    network_element_t src, network_element_t dst,
-                                route_t route, double *lat)
+    sg_routing_edge_t src, sg_routing_edge_t dst,
+    route_t route, double *lat)
 {
   XBT_DEBUG("rulebased_get_route_and_latency from '%s' to '%s'",src->name,dst->name);
   xbt_assert(rc && src
-              && dst,
-              "Invalid params for \"get_route\" function at AS \"%s\"",
-              rc->name);
+      && dst,
+      "Invalid params for \"get_route\" function at AS \"%s\"",
+      rc->name);
 
   /* set utils vars */
   AS_rulebased_t routing = (AS_rulebased_t) rc;
@@ -302,11 +307,11 @@ static void rulebased_get_route_and_latency(AS_t rc,
   xbt_dynar_foreach(rule_list, cpt, ruleroute) {
     rc_src =
         pcre_exec(ruleroute->re_src, NULL, src_name, src_length, 0, 0,
-                  ovector_src, OVECCOUNT);
+            ovector_src, OVECCOUNT);
     if (rc_src >= 0) {
       rc_dst =
           pcre_exec(ruleroute->re_dst, NULL, dst_name, dst_length, 0, 0,
-                    ovector_dst, OVECCOUNT);
+              ovector_dst, OVECCOUNT);
       if (rc_dst >= 0) {
         res = pcre_get_substring_list(src_name, ovector_src, rc_src, &list_src);
         xbt_assert(!res, "error solving substring list for src \"%s\"", src_name);
@@ -317,7 +322,7 @@ static void rulebased_get_route_and_latency(AS_t rc,
           char *new_link_name =
               remplace(link_name, list_src, rc_src, list_dst, rc_dst);
           void *link =
-        		  xbt_lib_get_or_null(link_lib, new_link_name, SURF_LINK_LEVEL);
+              xbt_lib_get_or_null(link_lib, new_link_name, SURF_LINK_LEVEL);
           if (link) {
             xbt_dynar_push(route->link_list, &link);
             if (lat)
@@ -348,30 +353,12 @@ static void rulebased_get_route_and_latency(AS_t rc,
         (rule_route_extended_t) ruleroute;
     char *gw_src_name = remplace(ruleroute_extended->re_src_gateway, list_src, rc_src,
         list_dst, rc_dst);
-    route->src_gateway = xbt_lib_get_or_null(host_lib, gw_src_name,
-                                             ROUTING_HOST_LEVEL);
-    route->src_gateway = xbt_lib_get_or_null(host_lib, gw_src_name,
-                                             ROUTING_HOST_LEVEL);
-    if (!route->src_gateway)
-      route->src_gateway = xbt_lib_get_or_null(as_router_lib, gw_src_name,
-                                               ROUTING_ASR_LEVEL);
-    if (!route->src_gateway)
-      route->src_gateway = xbt_lib_get_or_null(as_router_lib, gw_src_name,
-                                               ROUTING_ASR_LEVEL);
+    route->src_gateway = sg_routing_edge_by_name_or_null(gw_src_name);
     xbt_free(gw_src_name);
 
     char *gw_dst_name = remplace(ruleroute_extended->re_dst_gateway, list_src, rc_src,
         list_dst, rc_dst);
-    route->dst_gateway = xbt_lib_get_or_null(host_lib, gw_dst_name,
-                                             ROUTING_HOST_LEVEL);
-    route->dst_gateway = xbt_lib_get_or_null(host_lib, gw_dst_name,
-                                             ROUTING_HOST_LEVEL);
-    if (!route->dst_gateway)
-      route->dst_gateway = xbt_lib_get_or_null(as_router_lib, gw_dst_name,
-                                               ROUTING_ASR_LEVEL);
-    if (!route->dst_gateway)
-      route->dst_gateway = xbt_lib_get_or_null(as_router_lib, gw_dst_name,
-                                               ROUTING_ASR_LEVEL);
+    route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst_name);
     xbt_free(gw_dst_name);
   }
 
@@ -381,7 +368,7 @@ static void rulebased_get_route_and_latency(AS_t rc,
     pcre_free_substring_list(list_dst);
 }
 
-static route_t rulebased_get_bypass_route(AS_t rc, network_element_t src, network_element_t dst) {
+static route_t rulebased_get_bypass_route(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat) {
   return NULL;
 }
 
@@ -400,7 +387,7 @@ static void rulebased_finalize(AS_t rc)
 AS_t model_rulebased_create(void) {
 
   AS_rulebased_t new_component = (AS_rulebased_t)
-      model_generic_create_sized(sizeof(s_AS_rulebased_t));
+          model_generic_create_sized(sizeof(s_AS_rulebased_t));
 
   new_component->generic_routing.parse_PU = model_rulebased_parse_PU;
   new_component->generic_routing.parse_AS = model_rulebased_parse_AS;
@@ -415,7 +402,7 @@ AS_t model_rulebased_create(void) {
   new_component->list_route = xbt_dynar_new(sizeof(rule_route_t), &rule_route_free);
   new_component->list_ASroute =
       xbt_dynar_new(sizeof(rule_route_extended_t),
-                    &rule_route_extended_free);
+          &rule_route_extended_free);
 
   return (AS_t) new_component;
 }

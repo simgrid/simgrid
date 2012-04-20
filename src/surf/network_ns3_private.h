@@ -26,8 +26,8 @@ typedef struct surf_action_network_ns3 {
   s_surf_action_t generic_action;
 #ifdef HAVE_TRACING
   double last_sent;
-  network_element_t src_elm;
-  network_element_t dst_elm;
+  sg_routing_edge_t src_elm;
+  sg_routing_edge_t dst_elm;
 #endif //HAVE_TRACING
 } s_surf_action_network_ns3_t, *surf_action_network_ns3_t;
 

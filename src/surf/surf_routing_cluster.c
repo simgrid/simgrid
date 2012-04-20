@@ -20,7 +20,7 @@ typedef struct {
 
 /* Business methods */
 static void cluster_get_route_and_latency(AS_t as,
-    network_element_t src, network_element_t dst,
+    sg_routing_edge_t src, sg_routing_edge_t dst,
                                           route_t route, double *lat) {
 
       s_surf_parsing_link_up_down_t info;
@@ -58,15 +58,15 @@ static void model_cluster_finalize(AS_t as) {
   model_none_finalize(as);
 }
 
-static int cluster_parse_PU(AS_t rc, network_element_t elm) {
+static int cluster_parse_PU(AS_t rc, sg_routing_edge_t elm) {
   XBT_DEBUG("Load process unit \"%s\"", elm->name);
-  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
+  xbt_dynar_push_as(rc->index_network_elm,sg_routing_edge_t,elm);
   return xbt_dynar_length(rc->index_network_elm)-1;
 }
 
-static int cluster_parse_AS(AS_t rc, network_element_t elm) {
+static int cluster_parse_AS(AS_t rc, sg_routing_edge_t elm) {
   XBT_DEBUG("Load Autonomous system \"%s\"", elm->name);
-  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
+  xbt_dynar_push_as(rc->index_network_elm,sg_routing_edge_t,elm);
   return xbt_dynar_length(rc->index_network_elm)-1;
 }
 

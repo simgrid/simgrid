@@ -1,4 +1,8 @@
-$ ${bindir:=.}/basic_parsing_test ./three_clusters_bypass.xml FULL_LINK
+#! ./tesh
+
+p Testing a bypass ASroute
+
+$ ${bindir:=.}/basic_parsing_test ${srcdir:=.}/examples/platforms/bypassASroute.xml FULL_LINK
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > Workstation number: 3, link number: 11
 > Route between 1 and 1
@@ -55,3 +59,98 @@ $ ${bindir:=.}/basic_parsing_test ./three_clusters_bypass.xml FULL_LINK
 >   Link my_cluster_3_link_3_UP: latency = 0.000050, bandwidth = 125000000.000000
 >   Link my_cluster_3_link_3_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000100, route bandwidth = 125000000.000000
+
+p Testing a bypass route
+
+$ ${bindir:=.}/basic_parsing_test ${srcdir:=.}/examples/platforms/bypassRoute.xml FULL_LINK
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> Workstation number: 4, link number: 10
+> Route between AS_2_host1 and AS_2_host1
+>   Route size 1
+>   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+>   Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between AS_2_host1 and AS_2_host2
+>   Route size 3
+>   Link AS_2_link7: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link6: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link5: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.001500, route bandwidth = 1250000000.000000
+> Route between AS_2_host1 and AS_2_host3
+>   Route size 2
+>   Link AS_2_link1: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link3: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.001000, route bandwidth = 1250000000.000000
+> Route between AS_2_host1 and AS_1_host1
+>   Route size 4
+>   Link AS_2_link1: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_1_link: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.002000, route bandwidth = 1250000000.000000
+> Route between AS_2_host2 and AS_2_host1
+>   Route size 2
+>   Link AS_2_link2: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link1: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.001000, route bandwidth = 1250000000.000000
+> Route between AS_2_host2 and AS_2_host2
+>   Route size 1
+>   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+>   Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between AS_2_host2 and AS_2_host3
+>   Route size 2
+>   Link AS_2_link2: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link3: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.001000, route bandwidth = 1250000000.000000
+> Route between AS_2_host2 and AS_1_host1
+>   Route size 4
+>   Link AS_2_link2: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_1_link: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.002000, route bandwidth = 1250000000.000000
+> Route between AS_2_host3 and AS_2_host1
+>   Route size 2
+>   Link AS_2_link3: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link1: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.001000, route bandwidth = 1250000000.000000
+> Route between AS_2_host3 and AS_2_host2
+>   Route size 2
+>   Link AS_2_link3: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link2: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.001000, route bandwidth = 1250000000.000000
+> Route between AS_2_host3 and AS_2_host3
+>   Route size 1
+>   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+>   Route latency = 0.000015, route bandwidth = 498000000.000000
+> Route between AS_2_host3 and AS_1_host1
+>   Route size 4
+>   Link AS_2_link3: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_1_link: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.002000, route bandwidth = 1250000000.000000
+> Route between AS_1_host1 and AS_2_host1
+>   Route size 4
+>   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link1: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_1_link: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.002000, route bandwidth = 1250000000.000000
+> Route between AS_1_host1 and AS_2_host2
+>   Route size 4
+>   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link2: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_1_link: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.002000, route bandwidth = 1250000000.000000
+> Route between AS_1_host1 and AS_2_host3
+>   Route size 4
+>   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link3: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_1_link: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Route latency = 0.002000, route bandwidth = 1250000000.000000
+> Route between AS_1_host1 and AS_1_host1
+>   Route size 1
+>   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
+>   Route latency = 0.000015, route bandwidth = 498000000.000000

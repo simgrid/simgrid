@@ -28,7 +28,7 @@ typedef struct cpu_L07 {
   tmgr_trace_event_t power_event;
   tmgr_trace_event_t state_event;
   e_surf_resource_state_t state_current;
-  network_element_t info;
+  sg_routing_edge_t info;
 } s_cpu_L07_t, *cpu_L07_t;
 
 /**************************************/
@@ -69,8 +69,8 @@ static int ptask_host_count = 0;
 static xbt_dict_t ptask_parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
-static surf_action_t die_impossible_communicate (network_element_t src,
-                                                 network_element_t dst,
+static surf_action_t die_impossible_communicate (sg_routing_edge_t src,
+                                                 sg_routing_edge_t dst,
                                                  double size, double rate)
 {
   DIE_IMPOSSIBLE;
@@ -900,8 +900,7 @@ static void ptask_model_init_internal(void)
   if (!ptask_maxmin_system)
     ptask_maxmin_system = lmm_system_new(1);
 
-  routing_model_create(sizeof(link_L07_t),
-                       ptask_link_create_resource("__loopback__",
+  routing_model_create(ptask_link_create_resource("__loopback__",
                                                   498000000, NULL,
                                                   0.000015, NULL,
                                                   SURF_RESOURCE_ON, NULL,

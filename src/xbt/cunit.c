@@ -245,7 +245,7 @@ void xbt_test_suite_push(xbt_test_suite_t suite, const char *name,
 }
 
 /* run test one suite */
-static int xbt_test_suite_run(xbt_test_suite_t suite)
+static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
 {
   xbt_test_unit_t unit;
   xbt_test_test_t test;
@@ -324,7 +324,8 @@ static int xbt_test_suite_run(xbt_test_suite_t suite)
 
 
       /* Display whether this unit went well */
-      if (unit->test_failed > 0 || unit->test_expect) {
+      if (unit->test_failed > 0 || unit->test_expect ||
+          (verbosity && unit->nb_tests > 0)) {
         /* some tests failed (or were supposed to), so do detailed reporting of test case */
         if (unit->test_failed > 0) {
           fprintf(stderr, ".. failed\n");
@@ -612,7 +613,7 @@ void xbt_test_dump(char *selection)
   }
 }
 
-int xbt_test_run(char *selection)
+int xbt_test_run(char *selection, int verbosity)
 {
   apply_selection(selection);
 
@@ -623,7 +624,7 @@ int xbt_test_run(char *selection)
 
     /* Run all the suites */
     xbt_dynar_foreach(_xbt_test_suites, it_suite, suite)
-        xbt_test_suite_run(suite);
+      xbt_test_suite_run(suite, verbosity);
 
     /* Display some more statistics */
     fprintf(stderr, "\n\n TOTAL: Suites: %.0f%% ok (%d suites: ",

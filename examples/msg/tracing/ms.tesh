@@ -9,6 +9,16 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/categorized' to 'tracing/ms.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/uncategorized' to 'tracing/ms.uncat.plist'
+> [4.485137] [msg_test/INFO] Declared tracing categories:
+> [4.485137] [msg_test/INFO] request
+> [4.485137] [msg_test/INFO] finalize
+> [4.485137] [msg_test/INFO] report
+> [4.485137] [msg_test/INFO] compute
+> [4.485137] [msg_test/INFO] Declared marks:
+> [4.485137] [msg_test/INFO] msmark
+
+p Not tracing master/slave application
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 
 p Testing tracing by process 
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/msg/process:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/ms.cat.plist --cfg=triva/uncategorized:tracing/ms.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
@@ -20,11 +30,18 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/ms
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/categorized' to 'tracing/ms.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/uncategorized' to 'tracing/ms.uncat.plist'
+> [4.485137] [msg_test/INFO] Declared tracing categories:
+> [4.485137] [msg_test/INFO] request
+> [4.485137] [msg_test/INFO] finalize
+> [4.485137] [msg_test/INFO] report
+> [4.485137] [msg_test/INFO] compute
+> [4.485137] [msg_test/INFO] Declared marks:
+> [4.485137] [msg_test/INFO] msmark
 
 $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 > {
 >   node = (LINK, HOST, );
->   edge = (0-HOST1-LINK14, 0-LINK14-HOST1, 0-LINK14-LINK14, );
+>   edge = (0-HOST1-LINK13, 0-LINK13-HOST1, 0-LINK13-LINK13, );
 > 
 >   host = {
 >     type = square;
@@ -41,7 +58,7 @@ $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 $ $SG_TEST_EXENV cat tracing/ms.cat.plist
 > {
 >   node = (LINK, HOST, );
->   edge = (0-HOST1-LINK14, 0-LINK14-HOST1, 0-LINK14-LINK14, );
+>   edge = (0-HOST1-LINK13, 0-LINK13-HOST1, 0-LINK13-LINK13, );
 > 
 >   host = {
 >     type = square;

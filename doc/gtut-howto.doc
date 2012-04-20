@@ -1,12 +1,6 @@
-/**
-@page GRAS_howto GRAS HOWTOs
-
-  \htmlonly <!--
-    DOXYGEN_NAVBAR_LABEL="HOWTOs"
-    DOXYGEN_NAVBAR_CHILD "Designing GRAS application"=GRAS_howto_design.html
-  --> \endhtmlonly
+/** @defgroup GRAS_howto HOWTOs
+    @ingroup GRAS_tut
 			  
-
 This page tries to explain how to use the GRAS framework. It does not focus
 on specific functionalities (which are detailed in the initiatic tour), but
 rather on global aspects. Here is the list of existing howtos for now:

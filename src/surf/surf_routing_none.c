@@ -12,28 +12,28 @@ static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
   return NULL;
 }
 
-static void none_get_route_and_latency(AS_t rc, network_element_t src, network_element_t dst,
+static void none_get_route_and_latency(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst,
                                        route_t res,double *lat)
 {
   *lat = 0.0;
 }
 
 static route_t none_get_bypass_route(AS_t rc,
-    network_element_t src,
-    network_element_t dst) {
+    sg_routing_edge_t src,
+    sg_routing_edge_t dst, double *lat) {
   return NULL;
 }
 
-static int none_parse_PU(AS_t rc, network_element_t elm) {
+static int none_parse_PU(AS_t rc, sg_routing_edge_t elm) {
   XBT_DEBUG("Load process unit \"%s\"", elm->name);
-  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
+  xbt_dynar_push_as(rc->index_network_elm,sg_routing_edge_t,elm);
   /* don't care about PUs */
   return -1;
 }
 
-static int none_parse_AS(AS_t rc, network_element_t elm) {
+static int none_parse_AS(AS_t rc, sg_routing_edge_t elm) {
   XBT_DEBUG("Load Autonomous system \"%s\"", elm->name);
-  xbt_dynar_push_as(rc->index_network_elm,network_element_t,elm);
+  xbt_dynar_push_as(rc->index_network_elm,sg_routing_edge_t,elm);
   /* even don't care about sub-ASes -- I'm as nihilist as an old punk*/
   return -1;
 }

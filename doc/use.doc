@@ -1,23 +1,44 @@
 /*! \page use Using SimGrid
 
-\section use_generic First steps with SimGrid
+\section use_welcome Welcome to SimGrid!
 
-If you decide to go for the MSG interface, please read carefully the
-\ref MSG_examples. You'll find in \ref MSG_ex_master_slave a very
-simple consisting of a master (that owns a bunch of tasks and
-distributes them) , some slaves (that process tasks whenever they
-receive one) and some forwarder agents (that simply pass the tasks
-they receive to some slaves).
+If you don't know were to look to start with, you should probably have
+a look at the following presentation first to get the basic concepts.
+Afterward, you probably want to proceed to the \ref MSG_API. Of
+course, if you're curious or if you know what you want, you may prefer
+to go to \ref SMPI_API, or even \ref GRAS_API.
 
-If you decide to go for the GRAS interface, you should definitively
-read the \ref GRAS_tut. The first section constitutes an introduction
-to the tool and presents the model we use. The second section
-constitutes a complete step-by-step tutorial building a distributed
-application from the beginning and exemplifying most of the GRAS
-features in the process. The last section groups some HOWTOS
-highlighting a given feature of the framework in a more concise way.
+\latexonly
+\includepdf[nup=2x4,pages=1-]{../webcruft/simgrid-101.pdf}
+\endlatexonly
 
-If you decide to go for another interface, I'm afraid your only sources
-of information will be the source code and the mailing lists...
+\htmlonly 
+<script language="javascript">
+var base="simgrid-101",max=30,cur=1;
+function pad(){ return cur < 10 ? '00' + cur : cur < 100 ? '0' + cur : '' + cur; }
+function slidemove(dir) {
+        var nums=document.getElementById('nums'), display=document.getElementById('display');
+        if (cur+dir>0 && cur+dir<=max)  cur+=dir;
+	display.src=base+'_'+pad()+'.png';
+	nums.innerHTML=(cur)+'/'+max;
+}
+</script>
+
+<div id='blah' style='text-align:center;'>
+  <div id='practical-simgrid' > 
+    <img src='simgrid-101_001.png' id="display" onclick='slidemove(1)'/>
+    <br/>
+    <form>
+      <input type='button' value='&laquo; Previous' onclick="slidemove(-1)"/>
+      &nbsp;&nbsp;
+      <span id="nums">1/30</span>&nbsp;&nbsp
+      <input type='button' value='Next &raquo;' onclick="slidemove(1)"/>
+      <br/>  
+      <a href='simgrid-101.pdf'>Download PDF version</a>
+    </form>  
+  </div>
+</div>
+\endhtmlonly		  
+
 
 */

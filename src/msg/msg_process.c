@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
                                 "Logging specific to MSG (process)");
 
 /** @addtogroup m_process_management
- *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Agents" --> \endhtmlonly
+ *    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Processes" --> \endhtmlonly
  *
  *  We need to simulate many independent scheduling decisions, so
  *  the concept of <em>process</em> is at the heart of the
@@ -91,17 +91,17 @@ m_process_t MSG_process_create(const char *name,
  * created, and put in the list of ready process.
  * \param name a name for the object. It is for user-level information
    and can be NULL.
- * \param code is a function describing the behavior of the agent. It
+ * \param code is a function describing the behavior of the process. It
    should then only use functions described in \ref
    m_process_management (to create a new #m_process_t for example),
    in \ref m_host_management (only the read-only functions i.e. whose
    name contains the word get), in \ref m_task_management (to create
    or destroy some #m_task_t for example) and in \ref
-   msg_gos_functions (to handle file transfers and task processing).
+   msg_task_usage (to handle file transfers and task processing).
  * \param data a pointer to any data one may want to attach to the new
    object.  It is for user-level information and can be NULL. It can
    be retrieved with the function \ref MSG_process_get_data.
- * \param host the location where the new agent is executed.
+ * \param host the location where the new process is executed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
  * \see m_process_t
@@ -125,17 +125,17 @@ m_process_t MSG_process_create_with_arguments(const char *name,
  * created, and put in the list of ready process.
  * \param name a name for the object. It is for user-level information
    and can be NULL.
- * \param code is a function describing the behavior of the agent. It
+ * \param code is a function describing the behavior of the process. It
    should then only use functions described in \ref
    m_process_management (to create a new #m_process_t for example),
    in \ref m_host_management (only the read-only functions i.e. whose
    name contains the word get), in \ref m_task_management (to create
    or destroy some #m_task_t for example) and in \ref
-   msg_gos_functions (to handle file transfers and task processing).
+   msg_task_usage (to handle file transfers and task processing).
  * \param data a pointer to any data one may want to attach to the new
    object.  It is for user-level information and can be NULL. It can
    be retrieved with the function \ref MSG_process_get_data.
- * \param host the location where the new agent is executed.
+ * \param host the location where the new process is executed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
  * \param properties list a properties defined for this process
@@ -218,7 +218,7 @@ void MSG_process_kill(m_process_t process)
 }
 
 /** \ingroup m_process_management
- * \brief Migrates an agent to another location.
+ * \brief Migrates a process to another location.
  *
  * This function checks whether \a process and \a host are valid pointers
    and change the value of the #m_host_t on which \a process is running.
@@ -278,7 +278,7 @@ XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
 }
 
 /** \ingroup m_process_management
- * \brief Return the location on which an agent is running.
+ * \brief Return the location on which a process is running.
  * \param process a process (NULL means the current one)
  * \return the m_host_t corresponding to the location on which \a
  * process is running.
@@ -336,8 +336,8 @@ int MSG_process_get_PID(m_process_t process)
  * \brief Returns the process ID of the parent of \a process.
  *
  * This function checks whether \a process is a valid pointer or not
-   and return its PID. Returns -1 if the agent has not been created by
-   another agent.
+   and return its PID. Returns -1 if the process has not been created by
+   any other process.
  */
 int MSG_process_get_PPID(m_process_t process)
 {
@@ -349,7 +349,7 @@ int MSG_process_get_PPID(m_process_t process)
 }
 
 /** \ingroup m_process_management
- * \brief Return the name of an agent.
+ * \brief Return the name of a process.
  *
  * This function checks whether \a process is a valid pointer or not
    and return its name.
@@ -388,7 +388,7 @@ xbt_dict_t MSG_process_get_properties(m_process_t process)
 }
 
 /** \ingroup m_process_management
- * \brief Return the PID of the current agent.
+ * \brief Return the PID of the current process.
  *
  * This function returns the PID of the currently running #m_process_t.
  */
@@ -398,7 +398,7 @@ int MSG_process_self_PID(void)
 }
 
 /** \ingroup m_process_management
- * \brief Return the PPID of the current agent.
+ * \brief Return the PPID of the current process.
  *
  * This function returns the PID of the parent of the currently
  * running #m_process_t.

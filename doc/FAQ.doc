@@ -523,7 +523,7 @@ come after <tt>-lsimgrid</tt> on this command line.
 
 \subsubsection faq_trouble_lib_msg_deprecated "gcc: undefined reference to MSG_*"
 
-Since version 3.7 all the #m_channel_t mecanism is deprecated. So functions 
+Since version 3.7 all the m_channel_t mecanism is deprecated. So functions 
 about this mecanism may get removed in future releases.
 
 List of functions:

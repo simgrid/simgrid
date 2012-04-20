@@ -86,6 +86,8 @@ XBT_PUBLIC(void ) STag_surfxml_link_ctn(void);
 XBT_PUBLIC(void ) ETag_surfxml_link_ctn(void);
 XBT_PUBLIC(void ) STag_surfxml_bypassRoute(void);
 XBT_PUBLIC(void ) ETag_surfxml_bypassRoute(void);
+XBT_PUBLIC(void ) STag_surfxml_bypassASroute(void);
+XBT_PUBLIC(void ) ETag_surfxml_bypassASroute(void);
 XBT_PUBLIC(void ) STag_surfxml_process(void);
 XBT_PUBLIC(void ) ETag_surfxml_process(void);
 XBT_PUBLIC(void ) STag_surfxml_argument(void);
@@ -128,6 +130,8 @@ typedef int AT_surfxml_process_start_time;
 #define AU_surfxml_process_start_time NULL
 typedef int AT_surfxml_cluster_suffix;
 #define AU_surfxml_cluster_suffix NULL
+typedef int AT_surfxml_bypassASroute_dst;
+#define AU_surfxml_bypassASroute_dst NULL
 typedef int AT_surfxml_ASroute_src;
 #define AU_surfxml_ASroute_src NULL
 typedef int AT_surfxml_cluster_prefix;
@@ -201,6 +205,8 @@ typedef int AT_surfxml_peer_coordinates;
 #define AU_surfxml_peer_coordinates NULL
 typedef int AT_surfxml_peer_state_file;
 #define AU_surfxml_peer_state_file NULL
+typedef int AT_surfxml_bypassASroute_src;
+#define AU_surfxml_bypassASroute_src NULL
 typedef int AT_surfxml_prop_value;
 #define AU_surfxml_prop_value NULL
 typedef int AT_surfxml_mstorage_typeId;
@@ -211,6 +217,8 @@ typedef int AT_surfxml_link_state_file;
 #define AU_surfxml_link_state_file NULL
 typedef int AT_surfxml_random_radical;
 #define AU_surfxml_random_radical NULL
+typedef int AT_surfxml_bypassASroute_gw_src;
+#define AU_surfxml_bypassASroute_gw_src NULL
 typedef int AT_surfxml_trace_connect_trace;
 #define AU_surfxml_trace_connect_trace NULL
 typedef int AT_surfxml_mount_id;
@@ -236,8 +244,6 @@ typedef int AT_surfxml_bypassRoute_src;
 #define AU_surfxml_bypassRoute_src NULL
 typedef int AT_surfxml_route_src;
 #define AU_surfxml_route_src NULL
-typedef int AT_surfxml_bypassRoute_gw_dst;
-#define AU_surfxml_bypassRoute_gw_dst NULL
 typedef int AT_surfxml_storage_id;
 #define AU_surfxml_storage_id NULL
 typedef int AT_surfxml_host_coordinates;
@@ -250,8 +256,8 @@ typedef int AT_surfxml_cluster_radical;
 #define AU_surfxml_cluster_radical NULL
 typedef int AT_surfxml_config_id;
 #define AU_surfxml_config_id NULL
-typedef int AT_surfxml_bypassRoute_gw_src;
-#define AU_surfxml_bypassRoute_gw_src NULL
+typedef int AT_surfxml_bypassASroute_gw_dst;
+#define AU_surfxml_bypassASroute_gw_dst NULL
 typedef int AT_surfxml_include_file;
 #define AU_surfxml_include_file NULL
 typedef int AT_surfxml_random_std_deviation;
@@ -325,6 +331,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_process_start_time_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_suffix ) AX_surfxml_cluster_suffix;
 #define A_surfxml_cluster_suffix (surfxml_bufferstack + AX_surfxml_cluster_suffix)
 XBT_PUBLIC_DATA(short ) int surfxml_cluster_suffix_isset;
+XBT_PUBLIC_DATA(AT_surfxml_bypassASroute_dst ) AX_surfxml_bypassASroute_dst;
+#define A_surfxml_bypassASroute_dst (surfxml_bufferstack + AX_surfxml_bypassASroute_dst)
+XBT_PUBLIC_DATA(short ) int surfxml_bypassASroute_dst_isset;
 XBT_PUBLIC_DATA(AT_surfxml_ASroute_src ) AX_surfxml_ASroute_src;
 #define A_surfxml_ASroute_src (surfxml_bufferstack + AX_surfxml_ASroute_src)
 XBT_PUBLIC_DATA(short ) int surfxml_ASroute_src_isset;
@@ -442,6 +451,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_peer_coordinates_isset;
 XBT_PUBLIC_DATA(AT_surfxml_peer_state_file ) AX_surfxml_peer_state_file;
 #define A_surfxml_peer_state_file (surfxml_bufferstack + AX_surfxml_peer_state_file)
 XBT_PUBLIC_DATA(short ) int surfxml_peer_state_file_isset;
+XBT_PUBLIC_DATA(AT_surfxml_bypassASroute_src ) AX_surfxml_bypassASroute_src;
+#define A_surfxml_bypassASroute_src (surfxml_bufferstack + AX_surfxml_bypassASroute_src)
+XBT_PUBLIC_DATA(short ) int surfxml_bypassASroute_src_isset;
 XBT_PUBLIC_DATA(AT_surfxml_prop_value ) AX_surfxml_prop_value;
 #define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
 XBT_PUBLIC_DATA(short ) int surfxml_prop_value_isset;
@@ -457,6 +469,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_link_state_file_isset;
 XBT_PUBLIC_DATA(AT_surfxml_random_radical ) AX_surfxml_random_radical;
 #define A_surfxml_random_radical (surfxml_bufferstack + AX_surfxml_random_radical)
 XBT_PUBLIC_DATA(short ) int surfxml_random_radical_isset;
+XBT_PUBLIC_DATA(AT_surfxml_bypassASroute_gw_src ) AX_surfxml_bypassASroute_gw_src;
+#define A_surfxml_bypassASroute_gw_src (surfxml_bufferstack + AX_surfxml_bypassASroute_gw_src)
+XBT_PUBLIC_DATA(short ) int surfxml_bypassASroute_gw_src_isset;
 XBT_PUBLIC_DATA(AT_surfxml_trace_connect_trace ) AX_surfxml_trace_connect_trace;
 #define A_surfxml_trace_connect_trace (surfxml_bufferstack + AX_surfxml_trace_connect_trace)
 XBT_PUBLIC_DATA(short ) int surfxml_trace_connect_trace_isset;
@@ -496,9 +511,6 @@ XBT_PUBLIC_DATA(short ) int surfxml_bypassRoute_src_isset;
 XBT_PUBLIC_DATA(AT_surfxml_route_src ) AX_surfxml_route_src;
 #define A_surfxml_route_src (surfxml_bufferstack + AX_surfxml_route_src)
 XBT_PUBLIC_DATA(short ) int surfxml_route_src_isset;
-XBT_PUBLIC_DATA(AT_surfxml_bypassRoute_gw_dst ) AX_surfxml_bypassRoute_gw_dst;
-#define A_surfxml_bypassRoute_gw_dst (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_dst)
-XBT_PUBLIC_DATA(short ) int surfxml_bypassRoute_gw_dst_isset;
 XBT_PUBLIC_DATA(AT_surfxml_storage_id ) AX_surfxml_storage_id;
 #define A_surfxml_storage_id (surfxml_bufferstack + AX_surfxml_storage_id)
 XBT_PUBLIC_DATA(short ) int surfxml_storage_id_isset;
@@ -517,9 +529,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_cluster_radical_isset;
 XBT_PUBLIC_DATA(AT_surfxml_config_id ) AX_surfxml_config_id;
 #define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
 XBT_PUBLIC_DATA(short ) int surfxml_config_id_isset;
-XBT_PUBLIC_DATA(AT_surfxml_bypassRoute_gw_src ) AX_surfxml_bypassRoute_gw_src;
-#define A_surfxml_bypassRoute_gw_src (surfxml_bufferstack + AX_surfxml_bypassRoute_gw_src)
-XBT_PUBLIC_DATA(short ) int surfxml_bypassRoute_gw_src_isset;
+XBT_PUBLIC_DATA(AT_surfxml_bypassASroute_gw_dst ) AX_surfxml_bypassASroute_gw_dst;
+#define A_surfxml_bypassASroute_gw_dst (surfxml_bufferstack + AX_surfxml_bypassASroute_gw_dst)
+XBT_PUBLIC_DATA(short ) int surfxml_bypassASroute_gw_dst_isset;
 XBT_PUBLIC_DATA(AT_surfxml_include_file ) AX_surfxml_include_file;
 #define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
 XBT_PUBLIC_DATA(short ) int surfxml_include_file_isset;

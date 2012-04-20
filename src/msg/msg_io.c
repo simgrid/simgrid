@@ -7,11 +7,11 @@
 #include "msg_private.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, simix,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
                                 "Logging specific to MSG (io)");
 
-/** @addtogroup m_file_management
- *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="File" --> \endhtmlonly
+/** @addtogroup msg_file_management
+ *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Files" --> \endhtmlonly
  * (#msg_file_t) and the functions for managing it.
  *
  *  \see #msg_file_t
@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, simix,
 
 /********************************* File **************************************/
 
-/** \ingroup m_file_management
+/** \ingroup msg_file_management
  * \brief Read elements of a file
  *
  * \param storage is the name where find the stream
@@ -34,7 +34,7 @@ size_t MSG_file_read(const char* storage, void* ptr, size_t size, size_t nmemb, 
   return simcall_file_read(storage, ptr, size, nmemb, stream->simdata->smx_file);
 }
 
-/** \ingroup m_file_management
+/** \ingroup msg_file_management
  * \brief Write elements into a file
  *
  * \param storage is the name where find the stream
@@ -49,7 +49,7 @@ size_t MSG_file_write(const char* storage, const void* ptr, size_t size, size_t 
   return simcall_file_write(storage, ptr, size, nmemb, stream->simdata->smx_file);
 }
 
-/** \ingroup m_file_management
+/** \ingroup msg_file_management
  * \brief Opens the file whose name is the string pointed to by path
  *
  * \param storage is the name where find the file to open
@@ -75,7 +75,7 @@ msg_file_t MSG_file_open(const char* storage, const char* path, const char* mode
   return file;
 }
 
-/** \ingroup m_file_management
+/** \ingroup msg_file_management
  * \brief Close the file
  *
  * \param storage is the name where find the stream
@@ -87,7 +87,7 @@ int MSG_file_close(const char* storage, msg_file_t fp)
   return simcall_file_close(storage, fp->simdata->smx_file);
 }
 
-/** \ingroup m_file_management
+/** \ingroup msg_file_management
  * \brief Stats the file pointed by fd
  *
  * \param storage is the name where find the stream

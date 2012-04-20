@@ -145,7 +145,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
 
       //get the route
       route_t route = xbt_new0(s_route_t,1);
-      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
       rc->get_route_and_latency(rc, child1->net_elm, child2->net_elm,
                                 route, NULL);
 
@@ -251,7 +251,7 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 
     container_t new = PJ_container_new (link_name, INSTR_LINK, father);
 
-    if (TRACE_categorized() || TRACE_uncategorized()){
+    if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()){
       type_t bandwidth = PJ_type_get_or_null ("bandwidth", new->type);
       if (bandwidth == NULL){
         bandwidth = PJ_type_variable_new ("bandwidth", NULL, new->type);
@@ -279,7 +279,7 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t new = PJ_container_new (host->id, INSTR_HOST, father);
 
-  if (TRACE_categorized() || TRACE_uncategorized()) {
+  if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
     type_t power = PJ_type_get_or_null ("power", new->type);
     if (power == NULL){
       power = PJ_type_variable_new ("power", NULL, new->type);
@@ -472,7 +472,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
 
       //get the route
       route_t route = xbt_new0(s_route_t,1);
-      route->link_list = xbt_dynar_new(global_routing->size_of_link,NULL);
+      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
       rc->get_route_and_latency(rc, child1->net_elm, child2->net_elm,
                                 route, NULL);
 

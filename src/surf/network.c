@@ -752,8 +752,8 @@ static void net_update_resource_state(void *id,
 }
 
 
-static surf_action_t net_communicate(network_element_t src,
-                                     network_element_t dst,
+static surf_action_t net_communicate(sg_routing_edge_t src,
+                                     sg_routing_edge_t dst,
                                      double size, double rate)
 {
   unsigned int i;
@@ -765,7 +765,7 @@ static surf_action_t net_communicate(network_element_t src,
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
 
-  xbt_dynar_t route = xbt_dynar_new(global_routing->size_of_link, NULL);
+  xbt_dynar_t route = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
   XBT_IN("(%s,%s,%g,%g)", src->name, dst->name, size, rate);
 
@@ -1091,8 +1091,7 @@ static void surf_network_model_init_internal(void)
   if (!network_maxmin_system)
     network_maxmin_system = lmm_system_new(net_selective_update);
 
-  routing_model_create(sizeof(link_CM02_t),
-                       net_create_resource("__loopback__",
+  routing_model_create(net_create_resource("__loopback__",
                                            498000000, NULL, 0.000015, NULL,
                                            SURF_RESOURCE_ON, NULL,
                                            SURF_LINK_FATPIPE, NULL));
