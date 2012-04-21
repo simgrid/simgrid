@@ -574,9 +574,11 @@ long getline(char **buf, size_t * n, FILE * stream)
 /*
  * Diff related functions
  *
- * Implementation of the algorithm described in "An O(NP) Sequence
- * Comparison Algorithm", by Sun Wu, Udi Manber, Gene Myers, and Webb
- * Miller.
+ * Implementation of the algorithm described in "An O(NP) Sequence Comparison
+ * Algorithm", by Sun Wu, Udi Manber, Gene Myers, and Webb Miller (Information
+ * Processing Letters 35(6):317-323, 1990), with the linear-space
+ * divide-and-conquer strategy described in "An O(ND) Difference Algorithm and
+ * Its Variations", by Eugene W. Myers (Algorithmica 1:251-266, 1986).
  */
 
 struct subsequence {
