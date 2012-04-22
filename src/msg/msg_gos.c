@@ -253,11 +253,27 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 }
 
 /** \ingroup msg_task_usage
- * \brief Receives a task from a mailbox from a specific host.
+ * \brief Deprecated function that used to receive a task from a mailbox from a specific host.
  *
- * This is a blocking function, the execution flow will be blocked
- * until the task is received. See #MSG_task_irecv
- * for receiving tasks asynchronously.
+ * Sorry, this function is not supported anymore. That wouldn't be
+ * impossible to reimplement it, but we are lacking the time to do so ourselves.
+ * If you need this functionality, you can either:
+ *
+ *  - implement the buffering mechanism on the user-level by queuing all messages
+ *    received in the mailbox that do not match your expectation
+ *  - change your application logic to leverage the mailboxes features. For example,
+ *    if you have A receiving messages from B and C, you could have A waiting on
+ *    mailbox "A" most of the time, but on "A#B" when it's waiting for specific
+ *    messages from B and "A#C" when waiting for messages from C. You could even get A
+ *    sometime waiting on all these mailboxes using @ref MSG_comm_waitany. You can find
+ *    an example of use of this function in the @ref MSG_examples section.
+ *  - Provide a proper patch to implement this functionality back in MSG. That wouldn't be
+ *    very difficult actually. Check the function @ref MSG_mailbox_get_task_ext. During its call to
+ *    simcall_comm_recv(), the 5th argument, match_fun, is NULL. Create a function that filters
+ *    messages according to the host (that you will pass as sixth argument to simcall_comm_recv()
+ *    and that your filtering function will receive as first parameter, and then, the filter could
+ *    simply compare the host names, for example. After sufficient testing, provide an example that
+ *    we could add to the distribution, and your first contribution to SimGrid is ready. Thanks in advance.
  *
  * \param task a memory location for storing a #m_task_t.
  * \param alias name of the mailbox to receive the task from
