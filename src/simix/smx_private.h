@@ -64,7 +64,7 @@ typedef struct s_smx_file {
 
 typedef struct s_smx_stat {
   s_file_stat_t surf_stat;
-} s_smx_stat_t, *smx_stat_t;
+} s_smx_stat_t;
 
 /*********************************** Time ************************************/
 

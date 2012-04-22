@@ -56,8 +56,6 @@ static void graph_edge_data_free(void *e) // FIXME: useless code dupplication
   route_t e_route = (route_t) e;
   if (e_route) {
     xbt_dynar_free(&(e_route->link_list));
-    xbt_free(e_route->src_gateway);
-    xbt_free(e_route->dst_gateway);
     xbt_free(e_route);
   }
 }

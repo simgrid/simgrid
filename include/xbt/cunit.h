@@ -51,7 +51,7 @@ XBT_PUBLIC(void) xbt_test_suite_push(xbt_test_suite_t suite,
  * * testname: if given, the test on which the directive acts. If not, acts on any tests.
  */
 
-XBT_PUBLIC(int) xbt_test_run(char *selection);
+XBT_PUBLIC(int) xbt_test_run(char *selection, int verbosity);
 /* Show information about the selection of tests */
 XBT_PUBLIC(void) xbt_test_dump(char *selection);
 /* Cleanup the mess */

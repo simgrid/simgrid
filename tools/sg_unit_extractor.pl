@@ -130,8 +130,10 @@ sub process_one($) {
 int main(int argc, char *argv[]) {
   xbt_test_suite_t suite; 
   char selection[1024];
-  int i;\n
-  int res;\n
+  int verbosity = 0;
+  int i;
+  int res;
+
   /* SGU: BEGIN SUITES DECLARATION */
   /* SGU: END SUITES DECLARATION */
       
@@ -148,14 +150,17 @@ int main(int argc, char *argv[]) {
           strcat(selection, \",\");
           strcat(selection, p);
         }
-      } else if (!strncmp(argv[i],\"--dump-only\",strlen(\"--dump-only\"))||
- 	         !strncmp(argv[i],\"--dump\",     strlen(\"--dump\"))) {
+      } else if (!strcmp(argv[i], \"--verbose\")) {
+        verbosity++;
+      } else if (!strcmp(argv[i], \"--dump-only\")||
+                 !strcmp(argv[i], \"--dump\")) {
         xbt_test_dump(selection);
         return 0;
-      } else if (!strncmp(argv[i],\"--help\",strlen(\"--help\"))) {
+      } else if (!strcmp(argv[i], \"--help\")) {
 	  printf(
 	      "Usage: testall [--help] [--tests=selection] [--dump-only]\\n\\n"
 	      "--help: display this help\\n"
+	      "--verbose: print the name for each running test\\n"
 	      "--dump-only: don't run the tests, but display some debuging info about the tests\\n"
 	      "--tests=selection: Use argument to select which suites/units/tests to run\\n"
 	      "                   --tests can be used more than once, and selection may be a comma\\n"
@@ -180,7 +185,7 @@ int main(int argc, char *argv[]) {
     }
   /* Got all my tests to do */
       
-  res = xbt_test_run(selection);
+  res = xbt_test_run(selection, verbosity);
   xbt_test_exit();
   return res;
 }

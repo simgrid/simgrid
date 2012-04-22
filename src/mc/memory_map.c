@@ -33,14 +33,12 @@ memory_map_t get_memory_map(void)
   xbt_assert(fp,
               "Cannot open /proc/self/maps to investigate the memory map of the process. Please report this bug.");
 
-  //XBT_DEBUG("/proc/self/maps");
-
   ret = xbt_new0(s_memory_map_t, 1);
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
   while ((read = getline(&line, &n, fp)) != -1) {
 
-    XBT_DEBUG("%s", line);
+    //fprintf(stderr,"%s", line);
 
     /* Wipeout the new line character */
     line[read - 1] = '\0';
