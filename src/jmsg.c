@@ -20,6 +20,15 @@
 
 #include "jmsg.h"
 
+/* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
+#ifndef JNIEXPORT
+#define JNIEXPORT
+#endif
+#ifndef JNICALL
+#define JNICALL
+#endif
+/* end of eclipse-mandated pimple */
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 static JavaVM *__java_vm = NULL;
@@ -340,7 +349,7 @@ Java_org_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
 
   if (!MSG_host_get_data(host)) {       /* native host not associated yet with java host */
 
-    /* instanciate a new java host */
+    /* Instantiate a new java host */
     jhost = jhost_new_instance(env);
 
     if (!jhost) {
