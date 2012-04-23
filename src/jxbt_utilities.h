@@ -53,7 +53,7 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
 /* ***************** */
 
 #define jxbt_check_res(fun, res, allowed_exceptions, detail) do {\
-    if (res != MSG_OK && res | allowed_exceptions) { \
+    if (res != MSG_OK && (res | allowed_exceptions)) { \
       xbt_die("%s failed with error code %d, which is not an allowed exception. Please fix me.",fun,res); \
     } else if (res == MSG_HOST_FAILURE) { \
       jxbt_throw_host_failure(env, detail); \
