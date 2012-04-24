@@ -1,6 +1,12 @@
+SimGrid-java (3.6.1) unstable; urgency=low
+ * Fix a bug around Process.kill()
+ * Add dsend and simulatedSleep to the bindings.
+
+ -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 SimGrid-java (3.6) unstable; urgency=low
 
  * Initial release.
  * Split of every thing from simgrid v3.5 into a separate package.
 
- -- Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- 2011-10-05 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
