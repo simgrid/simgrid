@@ -7,7 +7,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib")
 set(soversion 1)
 
 set(SIMGRID_JAVA_VERSION_MAJOR "1")
-set(SIMGRID_JAVA_VERSION_MINOR "1")
+set(SIMGRID_JAVA_VERSION_MINOR "2")
 set(SIMGRID_JAVA_VERSION_PATCH "0")
 set(DIST_NAME ${PROJECT_NAME}-${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR})
 
@@ -174,7 +174,7 @@ string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES_CLASS}")
 # FLAGS #
 #########
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
-set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I$ENV{SIMGRID_ROOT}/include")
+set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I${SIMGRID_INCLUDES} ")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH}")
 
 if(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
@@ -196,7 +196,7 @@ if(WIN32)
     endif(PEXPORTS_PATH)
 else(WIN32)
     target_link_libraries(SG_java pcre pthread simgrid)
-    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L$ENV{SIMGRID_ROOT}/lib -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
+    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB} -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
 endif(WIN32)
 
 # java_classes
