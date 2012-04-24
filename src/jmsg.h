@@ -32,7 +32,7 @@ Java_org_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
  * Signature	(Lsimgrid/msg/Process;)V
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_MsgNative_processSuspend(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_MsgNative_processSuspend(JNIEnv * env, jobject obj,
                                           jobject jprocess);
 
 /*
@@ -42,6 +42,12 @@ Java_org_simgrid_msg_MsgNative_processSuspend(JNIEnv * env, jclass cls,
  */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_MsgNative_processResume
     (JNIEnv *, jclass, jobject);
+
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_simulatedSleep(JNIEnv * env, jclass cls,
+                                           jdouble jmillis);
+
 
 /*
  * Class		simgrid_msg_Msg
@@ -274,15 +280,12 @@ JNIEXPORT jobject JNICALL
     (JNIEnv *, jclass, jstring, jdouble, jobject);
 
 JNIEXPORT void JNICALL
+Java_org_simgrid_msg_MsgNative_taskDSend(JNIEnv * env, jclass cls,
+                                    jstring jalias, jobject jtask);
+
+JNIEXPORT void JNICALL
     Java_org_simgrid_msg_MsgNative_taskSend
     (JNIEnv *, jclass, jstring, jobject, jdouble);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		getErrCode
- * Signature	()I
- */
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_Msg_getErrCode(JNIEnv *, jclass);
 
 /*
  * Class		simgrid_msg_Msg

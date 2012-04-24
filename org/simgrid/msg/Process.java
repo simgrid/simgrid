@@ -365,6 +365,15 @@ public abstract class Process extends Thread {
 			Msg.info("[" + this.msgName() + "/" + this.getHost().getName() +
 					"] args[" + i + "]=" + (String) (this.args.get(i)));
 	}
+    /**
+     * Let the simulated process sleep for the given amount of millisecond in the simulated world.
+     * 
+     *  You don't want to use sleep instead, because it would freeze your simulation 
+     *  run without any impact on the simulated world.
+     * @param millis
+     */
+    public native void simulatedSleep(double seconds);
+
 	/**
 	 * This method runs the process. Il calls the method function that you must overwrite.
 	 */

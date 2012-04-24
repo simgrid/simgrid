@@ -135,6 +135,11 @@ set(JAVA_EXAMPLES
 	examples/master_slave_kill/MsKill.java
 	examples/master_slave_kill/Slave.java
 	examples/master_slave_kill/FinalizeTask.java
+	examples/async/AsyncTest.java
+	examples/async/FinalizeTask.java  
+	examples/async/Forwarder.java
+	examples/async/Master.java  
+	examples/async/Slave.java
 )
 
 set(CMAKE_SRC
@@ -154,6 +159,7 @@ set(XML_FILES
     examples/basic/deploy.xml
     examples/master_slave_bypass/platform.xml
     examples/master_slave_kill/platform.xml
+    examples/async/asyncDeployment.xml
 )
 
 set(source_to_pack
@@ -225,6 +231,7 @@ add_custom_command(
 	OUTPUT	${JAVA_EXAMPLES_CLASS}
 	DEPENDS ${JAVA_EXAMPLES}
   	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/basic/*.java  
+  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/async/*.java
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
   	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/commTime/*.java
   	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
@@ -255,6 +262,9 @@ ENABLE_TESTING()
 ADD_TEST(basic
 java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar basic/BasicTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/basic/basicDeployment.xml
 )
+ADD_TEST(async
+java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar async/AsyncTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/async/asyncDeployment.xml
+)
 ADD_TEST(pingPong
 java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar pingPong/PingPongTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingPongDeployment.xml
 )
@@ -271,7 +281,7 @@ ADD_TEST(kill
 java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar master_slave_kill/MsKill ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/platform.xml
 )
 #Don't forget to put new test in this list!!!
-set(test_list basic pingPong CommTime mutualExclusion bypass kill)
+set(test_list basic async pingPong CommTime mutualExclusion bypass kill)
 
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #

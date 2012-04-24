@@ -146,6 +146,14 @@ public class Task {
 			MsgNative.taskDestroy(this);
 	}
 
+	/** Send the task asynchronously on the mailbox identified by the specified name, 
+	 *  with no way to retrieve whether the communication succeeded or not
+	 * 
+	 */
+	public void dsend(String mailbox) {
+		MsgNative.taskDSend(mailbox, this);
+	} 
+	
 	/**
 	 * Sends the task on the mailbox identified by the specified name 
 	 *

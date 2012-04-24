@@ -427,4 +427,6 @@ final class MsgNative {
 	 */ 
 	final static native void taskSendBounded(String alias, Task task, double maxrate) throws TransferFailureException,HostFailureException,TimeoutException;
 
+	final static native void taskDSend(String mailbox, Task task);
+
 }

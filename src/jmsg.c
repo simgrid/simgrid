@@ -141,6 +141,22 @@ Java_org_simgrid_msg_MsgNative_processSuspend(JNIEnv * env, jclass cls,
 }
 
 JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_simulatedSleep(JNIEnv * env, jobject jprocess,
+                                           jdouble jseconds) {
+	  m_process_t process = jprocess_to_native_process(jprocess, env);
+
+	  if (!process) {
+	    jxbt_throw_notbound(env, "process", jprocess);
+	    return;
+	  }
+	  MSG_error_t rv = MSG_process_sleep((double)jseconds);
+
+	  jxbt_check_res("MSG_process_sleep()", rv, MSG_OK,
+	                 bprintf("unexpected error , please report this bug"));
+}
+
+
+JNIEXPORT void JNICALL
 Java_org_simgrid_msg_MsgNative_processResume(JNIEnv * env, jclass cls,
                                          jobject jprocess)
 {
@@ -966,6 +982,41 @@ Java_org_simgrid_msg_MsgNative_taskSend(JNIEnv * env, jclass cls,
                  bprintf("while sending task %s to mailbox %s",
                          MSG_task_get_name(task), alias));
 }
+
+static void msg_task_cancel_on_failed_dsend(void*t) {
+	m_task_t task = t;
+	JNIEnv *env =get_current_thread_env();
+	jobject jtask_global = MSG_task_get_data(task);
+
+	/* Destroy the global ref so that the JVM can free the stuff */
+	(*env)->DeleteGlobalRef(env, jtask_global);
+	MSG_task_set_data(task, NULL);
+	MSG_task_destroy(task);
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_MsgNative_taskDSend(JNIEnv * env, jclass cls,
+                                    jstring jalias, jobject jtask)
+{
+
+  const char *alias = (*env)->GetStringUTFChars(env, jalias, 0);
+
+  m_task_t task = jtask_to_native_task(jtask, env);
+
+
+  if (!task) {
+    (*env)->ReleaseStringUTFChars(env, jalias, alias);
+    jxbt_throw_notbound(env, "task", jtask);
+    return;
+  }
+
+  /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
+  MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
+  MSG_task_dsend(task, alias, msg_task_cancel_on_failed_dsend);
+
+  (*env)->ReleaseStringUTFChars(env, jalias, alias);
+}
+
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_MsgNative_taskSendBounded(JNIEnv * env, jclass cls,
