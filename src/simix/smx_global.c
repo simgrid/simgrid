@@ -165,6 +165,14 @@ XBT_INLINE double SIMIX_get_clock(void)
   }
 }
 
+int process_syscall_color(void *p) {
+  e_smx_simcall_t s = (*((smx_process_t *)p))->simcall.call;
+
+  if (s == SIMCALL_NONE || s == SIMCALL_PROCESS_KILL) return 2;
+  else if (s == SIMCALL_PROCESS_RESUME)  return 1;
+  else return 0;
+}
+
 void SIMIX_run(void)
 {
   double time = 0;
@@ -185,6 +193,7 @@ void SIMIX_run(void)
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
               xbt_dynar_length(simix_global->process_to_run));
       SIMIX_process_runall();
+      xbt_dynar_three_way_partition(simix_global->process_that_ran, process_syscall_color);
       xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
         if (process->simcall.call != SIMCALL_NONE) {
           SIMIX_simcall_pre(&process->simcall, 0);
