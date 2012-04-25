@@ -6,7 +6,12 @@ If you don't know were to look to start with, you should probably have
 a look at the following presentation first to get the basic concepts.
 Afterward, you probably want to proceed to the \ref MSG_API. Of
 course, if you're curious or if you know what you want, you may prefer
-to go to \ref SMPI_API, or even \ref GRAS_API.
+to go to \ref SMPI_API, or even \ref GRAS_API. 
+
+The scientific bases of the SimGrid project are presented in a 3 ou 4
+hours-long tutorial. It can be found at the following locations.
+ - https://gforge.inria.fr/plugins/scmgit/cgi-bin/gitweb.cgi?p=simgrid/propaganda.git;a=blob_plain;f=tutorial/simgrid-tutorial.pdf;hb=HEAD
+ - http://webloria.loria.fr/~quinson/blog/2010/0628/Tutorial_at_HPCS/
 
 \latexonly
 \includepdf[nup=2x4,pages=1-]{../webcruft/simgrid-101.pdf}
