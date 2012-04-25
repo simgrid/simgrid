@@ -5,8 +5,9 @@ p Testing a simple master/slave example application
 $ $SG_TEST_EXENV masterslave/masterslave_kill$EXEEXT ${srcdir:=.}/masterslave/platform_kill.xml ${srcdir:=.}/masterslave/deployment_masterslave_kill.xml
 > [alice:master:(1) 0.000000] [msg_test/INFO] Hello!
 > [bob:slave:(2) 0.000000] [msg_test/INFO] Hello!
-> [bob:slave:(2) 0.000000] [msg_test/INFO] Suspend process
+> [bob:slave:(2) 0.000000] [msg_test/INFO] Suspending myself
 > [alice:master:(1) 10.000000] [msg_test/INFO] Resume process
+> [bob:slave:(2) 10.000000] [msg_test/INFO] OK, OK. Let's work
 > [alice:master:(1) 10.000000] [msg_test/INFO] Kill process
 > [alice:master:(1) 10.000000] [msg_test/INFO] OK, goodbye now.
 > [10.000000] [msg_test/INFO] Simulation time 10
