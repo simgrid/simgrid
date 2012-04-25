@@ -396,7 +396,41 @@ void instr_new_user_variable_type  (const char *father_type, const char *new_typ
   recursiveNewUserVariableType (father_type, new_typename, color, PJ_type_get_root());
 }
 
+static void recursiveNewUserStateType (const char *father_type, const char *new_typename, type_t root)
+{
+  if (!strcmp (root->name, father_type)){
+    PJ_type_state_new (new_typename, root);
+  }
+  xbt_dict_cursor_t cursor = NULL;
+  type_t child_type;
+  char *name;
+  xbt_dict_foreach(root->children, cursor, name, child_type) {
+    recursiveNewUserStateType (father_type, new_typename, child_type);
+  }
+}
 
+void instr_new_user_state_type (const char *father_type, const char *new_typename)
+{
+  recursiveNewUserStateType (father_type, new_typename, PJ_type_get_root());
+}
+
+static void recursiveNewValueForUserStateType (const char *typename, const char *value, const char *color, type_t root)
+{
+  if (!strcmp (root->name, typename)){
+    PJ_value_new (value, color, root);
+  }
+  xbt_dict_cursor_t cursor = NULL;
+  type_t child_type;
+  char *name;
+  xbt_dict_foreach(root->children, cursor, name, child_type) {
+    recursiveNewValueForUserStateType (typename, value, color, child_type);
+  }
+}
+
+void instr_new_value_for_user_state_type (const char *typename, const char *value, const char *color)
+{
+  recursiveNewValueForUserStateType (typename, value, color, PJ_type_get_root());
+}
 
 int instr_platform_traced ()
 {

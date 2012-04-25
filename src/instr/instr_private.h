@@ -226,6 +226,8 @@ void PJ_value_free (val_t value);
 void instr_routing_define_callbacks (void);
 void instr_new_variable_type (const char *new_typename, const char *color);
 void instr_new_user_variable_type  (const char *father_type, const char *new_typename, const char *color);
+void instr_new_user_state_type (const char *father_type, const char *new_typename);
+void instr_new_value_for_user_state_type (const char *typename, const char *value, const char *color);
 int instr_platform_traced (void);
 xbt_graph_t instr_routing_platform_graph (void);
 void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
