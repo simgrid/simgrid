@@ -326,7 +326,7 @@ void SIMIX_host_execution_suspend(smx_action_t action)
 void SIMIX_host_execution_resume(smx_action_t action)
 {
   if(action->execution.surf_exec)
-    surf_workstation_model->suspend(action->execution.surf_exec);
+    surf_workstation_model->resume(action->execution.surf_exec);
 }
 
 void SIMIX_execution_finish(smx_action_t action)
