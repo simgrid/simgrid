@@ -289,8 +289,8 @@ void SIMIX_process_kill(smx_process_t process) {
         break;
     }
   }
-
-  xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
+  if(!xbt_dynar_member(simix_global->process_to_run, &(process)))
+    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
 }
 
 /**
@@ -410,7 +410,8 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
       }
     }
     else {
-      xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
+      if(!xbt_dynar_member(simix_global->process_to_run, &(process)))
+        xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
     }
   }
 }
