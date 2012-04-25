@@ -2,7 +2,7 @@
 
 p Testing a simple master/slave example application
 
-$ $SG_TEST_EXENV masterslave/masterslave_kill$EXEEXT ${srcdir:=.}/masterslave/platform_kill.xml ${srcdir:=.}/masterslave/deployment_masterslave_kill.xml
+$ $SG_TEST_EXENV masterslave/masterslave_kill$EXEEXT ${srcdir:=.}/masterslave/platform_kill.xml ${srcdir:=.}/masterslave/deployment_masterslave_kill.xml --log=surf_maxmin.thres:error
 > [alice:master:(1) 0.000000] [msg_test/INFO] Hello!
 > [bob:slave:(2) 0.000000] [msg_test/INFO] Hello!
 > [bob:slave:(2) 0.000000] [msg_test/INFO] Suspending myself
