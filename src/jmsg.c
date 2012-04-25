@@ -1071,6 +1071,22 @@ Java_org_simgrid_msg_MsgNative_taskReceive(JNIEnv * env, jclass cls,
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
 
   rv = MSG_task_receive_ext(&task, alias, (double) jtimeout, host);
+  if (rv != MSG_OK) {
+  	switch (rv) {
+  		case MSG_TIMEOUT:
+  			jxbt_throw_time_out_failure(env,NULL);
+  		break;
+  		case MSG_TRANSFER_FAILURE:
+  			jxbt_throw_transfer_failure(env,NULL);
+  		break;
+  		case MSG_HOST_FAILURE:
+  			jxbt_throw_host_failure(env,NULL);
+  		break;
+  		default:
+  			jxbt_throw_native(env,bprintf("receive failed"));
+  	}
+  	return NULL;
+  }
   jtask_global = MSG_task_get_data(task);
 
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
