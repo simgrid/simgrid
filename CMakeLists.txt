@@ -202,7 +202,7 @@ if(WIN32)
     endif(PEXPORTS_PATH)
 else(WIN32)
     target_link_libraries(SG_java pcre pthread simgrid)
-    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB} -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
+    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH} -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
 endif(WIN32)
 
 # java_classes
