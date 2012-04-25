@@ -144,14 +144,14 @@ int main(int argc, char** argv) {
       if (field->offset[GRAS_THISARCH]<= offset&&
           field->offset[GRAS_THISARCH]+field->type->size[GRAS_THISARCH] >= offset) {
         found = 1;
-        printf("This offset is somewhere in field %s, which starts at offset %zu and is of size %zu\n",
+        printf("This offset is somewhere in field %s, which starts at offset %ld and is of size %ld\n",
               field->name,field->offset[GRAS_THISARCH],field->type->size[GRAS_THISARCH]);
 
       }
     }
     if (!found) {
 
-      printf("Damnit, the structure is too short to find the the field (last field %s was at offset %zu, with size %zu). Weird.\n",
+      printf("Damnit, the structure is too short to find the the field (last field %s was at offset %ld, with size %ld). Weird.\n",
           field->name,field->offset[GRAS_THISARCH],field->type->size[GRAS_THISARCH]);
     }
   }
