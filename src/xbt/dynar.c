@@ -737,12 +737,12 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
 {
   _dynar_lock(dynar);
   unsigned long size = xbt_dynar_length(dynar);
-  void *data = dynar->data;
+  char *data = (char *) dynar->data;
   unsigned long int i;
   unsigned long int p = -1;
   unsigned long int q = size;
-  unsigned long elmsize = dynar->elmsize;
-  void *tmp = xbt_malloc(elmsize);
+  const unsigned long elmsize = dynar->elmsize;
+  char *tmp = xbt_malloc(elmsize);
 
 #define swap(a,b) do {     \
     memcpy(tmp,  a , elmsize);  \
@@ -751,20 +751,21 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
   } while(0)
 
   for (i = 0; i < q;) {
-    unsigned long int datai = ((unsigned long int) data) + i*elmsize;
-    int colori = color((void *) datai);
+    char *datai = data + i*elmsize;
+    int colori = color(datai);
 
     if(colori==0) {
-      unsigned long int datap = ((unsigned long int) data) + (++p)*elmsize;
-      swap((void *) datai, (void *) datap);
+      char *datap = data + (++p)*elmsize;
+      swap(datai, datap);
       ++i;
     } else if (colori==2) {
-      unsigned long int dataq = ((unsigned long int) data) + (--q)*elmsize;
-      swap((void *) datai, (void *) dataq);
+      char *dataq = data + (--q)*elmsize;
+      swap(datai, dataq);
     } else {
       ++i;
     }
   }
+  xbt_free(tmp);
   _dynar_unlock(dynar);
 }
 
