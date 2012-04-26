@@ -165,7 +165,7 @@ XBT_INLINE double SIMIX_get_clock(void)
   }
 }
 
-int process_syscall_color(void *p) {
+static int process_syscall_color(void *p) {
   e_smx_simcall_t s = (*((smx_process_t *)p))->simcall.call;
 
   if (s == SIMCALL_NONE || s == SIMCALL_PROCESS_KILL) return 2;
