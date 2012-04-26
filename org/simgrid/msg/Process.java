@@ -236,18 +236,6 @@ public abstract class Process extends Thread {
 		 Msg.info("Process " + msgName() + " will be killed.");		  		
 		 		 
 	}
-	/**
-	 * This method adds an argument in the list of the arguments of the main function
-	 * of the process. 
-	 *
-	 * @param arg			The argument to add.
-     *
-     * @deprecated
-     */
-	@Deprecated
-	protected void addArg(String arg) {
-		args.add(arg);
-	}
 
 	/**
 	 * Suspends the process by suspending the task on which it was
