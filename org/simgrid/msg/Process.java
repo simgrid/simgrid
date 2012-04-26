@@ -231,9 +231,9 @@ public abstract class Process extends Thread {
 	 * @param process  the process to be killed.
 	 *
 	 */
-	public static void kill(Process process) {
-		 process.nativeStop();
-		 Msg.info("Process " + process.msgName() + " will be killed.");		  		
+	public void kill() {
+		 nativeStop();
+		 Msg.info("Process " + msgName() + " will be killed.");		  		
 		 		 
 	}
 	/**

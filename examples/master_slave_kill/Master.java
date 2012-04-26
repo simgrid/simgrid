@@ -41,7 +41,7 @@ public class Master extends Process {
 				}
 		}
 		
-		Process.kill(process2);
+		process2.kill();
 
 		Msg.info("Process2 is now killed, should exit now");
 	}
