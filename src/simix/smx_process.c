@@ -96,6 +96,7 @@ void SIMIX_process_cleanup(smx_process_t process)
   xbt_swag_remove(process, simix_global->process_list);
   xbt_swag_remove(process, process->smx_host->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
+  process->context->iwannadie = 0;
 }
 
 /** 
@@ -288,8 +289,8 @@ void SIMIX_process_kill(smx_process_t process) {
         break;
     }
   }
-
-  xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
+  if(!xbt_dynar_member(simix_global->process_to_run, &(process)))
+    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
 }
 
 /**
@@ -380,12 +381,8 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 {
   xbt_assert((process != NULL), "Invalid parameters");
 
-  if (!process->suspended) {
-    XBT_DEBUG("Process '%s' is not suspended", process->name);
-    return;
-  }
-
-  process->suspended = 0;
+  if(process->context->iwannadie) return;
+    process->suspended = 0;
 
   /* If we are resuming another process, resume the action it was waiting for
      if any. Otherwise add it to the list of process to run in the next round. */
@@ -414,7 +411,8 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
       }
     }
     else {
-      xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
+      if(!xbt_dynar_member(simix_global->process_to_run, &(process)))
+        xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
     }
   }
 }

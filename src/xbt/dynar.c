@@ -720,6 +720,54 @@ XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
   _dynar_unlock(dynar);
 }
 
+/** @brief Sorts a dynar according to their color assuming elements can have only three colors.
+ * Since there are only three colors, it is linear and much faster than a classical sort.
+ * See for example http://en.wikipedia.org/wiki/Dutch_national_flag_problem
+ *
+ * \param dynar the dynar to sort
+ * \param color the color function of type (int (compar_fn*) (void*) (void*)). The return value of color is assumed to be 0, 1, or 2.
+ *
+ * At the end of the call, elements with color 0 are at the beginning of the dynar, elements with color 2 are at the end and elements with color 1 are in the middle.
+ *
+ * Remark: if the elements stored in the dynar are structures, the color
+ * function has to retrieve the field to sort first.
+ */
+XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
+                                               int_f_pvoid_t color)
+{
+  _dynar_lock(dynar);
+  unsigned long size = xbt_dynar_length(dynar);
+  void *data = dynar->data;
+  unsigned long int i;
+  unsigned long int p = -1;
+  unsigned long int q = size;
+  unsigned long elmsize = dynar->elmsize;
+  void *tmp = xbt_malloc(elmsize);
+
+#define swap(a,b) do {     \
+    memcpy(tmp,  a , elmsize);  \
+    memcpy( a ,  b , elmsize);  \
+    memcpy( b , tmp, elmsize);  \
+  } while(0)
+
+  for (i = 0; i < q;) {
+    unsigned long int datai = ((unsigned long int) data) + i*elmsize;
+    int colori = color((void *) datai);
+
+    if(colori==0) {
+      unsigned long int datap = ((unsigned long int) data) + (++p)*elmsize;
+      swap((void *) datai, (void *) datap);
+      ++i;
+    } else if (colori==2) {
+      unsigned long int dataq = ((unsigned long int) data) + (--q)*elmsize;
+      swap((void *) datai, (void *) dataq);
+    } else {
+      ++i;
+    }
+  }
+  _dynar_unlock(dynar);
+}
+
 /** @brief Transform a dynar into a NULL terminated array
  *
  * \param dynar the dynar to transform

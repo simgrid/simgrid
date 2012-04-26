@@ -206,11 +206,11 @@ void MSG_process_kill(m_process_t process)
   TRACE_msg_process_kill(process);
 #endif
 
-  /* FIXME: why do we only cancel communication actions? is this useful? */
-  simdata_process_t p_simdata = simcall_process_get_data(process);
-  if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
-    simcall_comm_cancel(p_simdata->waiting_task->simdata->comm);
-  }
+//  /* FIXME: why do we only cancel communication actions? is this useful? */
+//  simdata_process_t p_simdata = simcall_process_get_data(process);
+//  if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
+//    simcall_comm_cancel(p_simdata->waiting_task->simdata->comm);
+//  }
  
   simcall_process_kill(process);
 

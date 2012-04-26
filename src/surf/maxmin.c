@@ -227,7 +227,8 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
     xbt_swag_insert_at_head(var, &(sys->variable_set));
   else
     xbt_swag_insert_at_tail(var, &(sys->variable_set));
-  XBT_OUT();
+
+  XBT_LOG(xbt_log_priority_trace, "<< end of %s returns %p", _XBT_FUNCTION, var);
   return var;
 }
 

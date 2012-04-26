@@ -33,7 +33,10 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
     XBT_DEBUG("Answer simcall %s (%d) issued by %s (%p)", SIMIX_simcall_name(simcall->call), (int)simcall->call,
         simcall->issuer->name, simcall->issuer);
     simcall->issuer->simcall.call = SIMCALL_NONE;
-    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, simcall->issuer);
+    if(!xbt_dynar_member(simix_global->process_to_run, &(simcall->issuer)))
+      xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, simcall->issuer);
+    else
+      DIE_IMPOSSIBLE;
   }
 }
 

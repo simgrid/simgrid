@@ -787,6 +787,102 @@ xbt_dynar_t TRACE_get_link_variables (void)
   return instr_dict_to_dynar (user_link_variables);
 }
 
+/** \ingroup TRACE_user_variables
+ *  \brief Declare a new user state associated to hosts.
+ *
+ *  Declare a user state that will be associated to hosts.
+ *  A user host state can be used to trace application states.
+ *
+ *  \param state The name of the new state to be declared.
+ *
+ *  \see TRACE_host_state_declare_value
+ */
+void TRACE_host_state_declare (const char *state)
+{
+  instr_new_user_state_type("HOST", state);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Declare a new value for a user state associated to hosts.
+ *
+ *  Declare a value for a state. The color needs to be
+ *  a string with three numbers separated by spaces in the range [0,1].
+ *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
+ *
+ *  \param state The name of the new state to be declared.
+ *  \param value The name of the value
+ *  \param color The color of the value
+ *
+ *  \see TRACE_host_state_declare
+ */
+void TRACE_host_state_declare_value (const char *state, const char *value, const char *color)
+{
+  instr_new_value_for_user_state_type (state, value, color);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Set the user state to the given value.
+ *
+ *  Change a user state previously declared to the given value.
+ *
+ *  \param host The name of the host to be considered.
+ *  \param state The name of the state previously declared.
+ *  \param value The new value of the state.
+ *
+ *  \see TRACE_host_state_declare, TRACE_host_push_state, TRACE_host_pop_state
+ */
+void TRACE_host_set_state (const char *host, const char *state, const char *value)
+{
+  container_t container = PJ_container_get(host);
+  type_t type = PJ_type_get (state, container->type);
+  val_t val = PJ_value_get (value, type);
+  if (val == NULL){
+    //if user didn't declare a value with a color, user a NULL color
+    PJ_value_new (value, NULL, type);
+  }
+  new_pajeSetState(MSG_get_clock(), container, type, val);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Push a new value for a state of a given host.
+ *
+ *  Change a user state previously declared by pushing the new value to the state.
+ *
+ *  \param host The name of the host to be considered.
+ *  \param state The name of the state previously declared.
+ *  \param value The value to be pushed.
+ *
+ *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_pop_state
+ */
+void TRACE_host_push_state (const char *host, const char *state, const char *value)
+{
+  container_t container = PJ_container_get(host);
+  type_t type = PJ_type_get (state, container->type);
+  val_t val = PJ_value_get (value, type);
+  if (val == NULL){
+    //if user didn't declare a value with a color, user a NULL color
+    PJ_value_new (value, NULL, type);
+  }
+  new_pajePushState(MSG_get_clock(), container, type, val);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Pop the last value of a state of a given host.
+ *
+ *  Change a user state previously declared by removing the last value of the state.
+ *
+ *  \param host The name of the host to be considered.
+ *  \param state The name of the state to be popped.
+ *
+ *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_push_state
+ */
+void TRACE_host_pop_state (const char *host, const char *state)
+{
+  container_t container = PJ_container_get(host);
+  type_t type = PJ_type_get (state, container->type);
+  new_pajePopState(MSG_get_clock(), container, type);
+}
+
 /** \ingroup TRACE_API
  *  \brief Get Paje container types that can be mapped to the nodes of a graph.
  *

@@ -16,8 +16,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 static int slave(int argc, char *argv[])
 {
   XBT_INFO("Hello!");
-  XBT_INFO("Suspend process");
+  XBT_INFO("Suspending myself");
   MSG_process_suspend(MSG_process_self());
+  XBT_INFO("OK, OK. Let's work");
   MSG_task_execute(MSG_task_create("toto", 1e9, 0, NULL));
   XBT_INFO("Bye!");
   return 0;
