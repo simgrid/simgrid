@@ -76,6 +76,18 @@ public abstract class Process extends Thread {
 	 * The name of the process.							
 	 */
 	protected String name;
+	/**
+	  * The PID of the process
+	  */
+	protected int pid = -1;
+	/**
+	 * The PPID of the process 
+	 */
+	protected int ppid = -1;
+	/**
+	 * The host of the process
+	 */
+	protected Host host = null;
     /**
      *
      * @return
@@ -174,6 +186,7 @@ public abstract class Process extends Thread {
 			this.args.addAll(Arrays.asList(args));
 
 		MsgNative.processCreate(this, host);
+		
 	}
 
 
@@ -287,7 +300,10 @@ public abstract class Process extends Thread {
 	 */ 
 	public Host getHost() {
 		Process.ifInterruptedStop();
-		return MsgNative.processGetHost(this);
+		if (this.host == null) {
+			this.host = MsgNative.processGetHost(this);
+		}
+		return this.host;
 	}
 	/**
 	 * This static method gets a process from a PID.
@@ -310,7 +326,10 @@ public abstract class Process extends Thread {
 	 */ 
 	public int getPID()  {
 		Process.ifInterruptedStop();
-		return MsgNative.processGetPID(this);
+		if (pid == -1) {
+			pid = MsgNative.processGetPID(this);
+		}
+		return pid;
 	}
 	/**
 	 * This method returns the PID of the parent of a process.
@@ -320,7 +339,10 @@ public abstract class Process extends Thread {
 	 */ 
 	public int getPPID()  {
 		Process.ifInterruptedStop();
-		return MsgNative.processGetPPID(this);
+		if (ppid == -1) {
+			ppid = MsgNative.processGetPPID(this);
+		}
+		return ppid;
 	}
 	/**
 	 * This static method returns the currently running process.
@@ -342,6 +364,7 @@ public abstract class Process extends Thread {
 	public static void migrate(Process process, Host host)  {
 		Process.ifInterruptedStop();
 		MsgNative.processMigrate(process, host);
+		process.host = null;
 	}
 	/**
 	 * Makes the current process sleep until time seconds have elapsed.
