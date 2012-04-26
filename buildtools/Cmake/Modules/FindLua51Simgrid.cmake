@@ -11,7 +11,7 @@ find_path(HAVE_LUA_H lua.h
 )
 
 find_library(HAVE_LUA51_LIB
-    NAME lua.5.1 lua5.1 lua51 lua-5.1
+    NAME lua.5.1 lua5.1 lua51 lua-5.1 lua
     HINTS
     $ENV{LD_LIBRARY_PATH}
     PATH_SUFFIXES lib64 lib
