@@ -185,6 +185,8 @@ static XBT_INLINE e_smx_state_t SIMIX_action_map_state(e_surf_action_state_t sta
   }
 }
 
+int process_syscall_color(void *p);
+
 void SIMIX_context_mod_init(void);
 void SIMIX_context_mod_exit(void);
 

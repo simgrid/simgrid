@@ -751,16 +751,16 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
   } while(0)
 
   for (i = 0; i < q;) {
-    void *datai = data + i*elmsize;
-    int colori = color(datai);
+    unsigned long int datai = ((unsigned long int) data) + i*elmsize;
+    int colori = color((void *) datai);
 
     if(colori==0) {
-      void *datap = data + (++p)*elmsize;
-      swap(datai, datap);
+      unsigned long int datap = ((unsigned long int) data) + (++p)*elmsize;
+      swap((void *) datai, (void *) datap);
       ++i;
     } else if (colori==2) {
-      void *dataq = data + (--q)*elmsize;
-      swap(datai, dataq);
+      unsigned long int dataq = ((unsigned long int) data) + (--q)*elmsize;
+      swap((void *) datai, (void *) dataq);
     } else {
       ++i;
     }
