@@ -9,7 +9,7 @@
 
 #include "xbt.h"
 #include "xbt/xbt_os_time.h"
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "smpi/smpi.h"
 #include "smpi/smpif.h"
 #include "smpi/smpi_cocci.h"

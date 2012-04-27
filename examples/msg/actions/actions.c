@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
-#include "simix/simix.h"        /* semaphores for the barrier */
+#include "simgrid/simix.h"        /* semaphores for the barrier */
 #include "xbt.h"                /* calloc, printf */
 #include "instr/instr_private.h"
 

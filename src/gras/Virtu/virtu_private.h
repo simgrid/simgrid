@@ -14,7 +14,7 @@
 
 #include "xbt/dynar.h"
 #include "gras/Virtu/virtu_interface.h"
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "gras/Msg/msg_private.h"
 
 /** @brief Data for each process */

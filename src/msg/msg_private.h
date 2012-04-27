@@ -8,7 +8,7 @@
 #define METASIMGRID_PRIVATE_H
 
 #include "msg/msg.h"
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "surf/surf.h"
 #include "xbt/fifo.h"
 #include "xbt/dynar.h"

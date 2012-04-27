@@ -8,7 +8,7 @@
 
 
 #include "xbt/function_types.h"
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "simix/context.h"
 #include "smx_private.h"
 

@@ -7,7 +7,7 @@
 #ifndef _SIMIX_IO_PRIVATE_H
 #define _SIMIX_IO_PRIVATE_H
 
-#include "simix/datatypes.h"
+#include "simgrid/simix.h"
 #include "smx_smurf_private.h"
 
 void SIMIX_pre_file_read(smx_simcall_t simcall);

@@ -7,7 +7,7 @@
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 
 /** \brief set a configuration variable
  *

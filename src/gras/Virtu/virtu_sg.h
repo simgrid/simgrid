@@ -11,7 +11,7 @@
 
 #include "gras/Virtu/virtu_private.h"
 #include "xbt/dynar.h"
-#include "simix/simix.h"        /* SimGrid header */
+#include "simgrid/simix.h"        /* SimGrid header */
 #include "gras/Transport/transport_private.h"
 
 typedef struct {

@@ -8,7 +8,7 @@
 
 #include "xbt_modinter.h"
 #include "xbt/sysdep.h"
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 
 void SIMIX_display_process_status(void)
 {

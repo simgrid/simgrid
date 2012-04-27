@@ -13,8 +13,7 @@
 
 #include "xbt/synchro.h"        /* This module */
 
-#include "simix/simix.h"        /* used implementation */
-#include "simix/datatypes.h"
+#include "simgrid/simix.h"        /* used implementation */
 #include "../simix/smx_private.h" /* FIXME */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt,

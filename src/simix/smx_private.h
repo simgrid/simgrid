@@ -7,7 +7,7 @@
 #ifndef _SIMIX_PRIVATE_H
 #define _SIMIX_PRIVATE_H
 
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "surf/surf.h"
 #include "xbt/fifo.h"
 #include "xbt/swag.h"

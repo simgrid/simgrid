@@ -12,7 +12,7 @@
 #include "msg/datatypes.h"
 #include "xbt/automaton.h"
 
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 
 SG_BEGIN_DECL()
 
@@ -287,7 +287,6 @@ XBT_PUBLIC(int) MSG_get_channel_number(void);
 #include "instr/instr.h"
 
 /* Used only by the bindings */
-#include "simix/simix.h"
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(m_process_t process);
 
 SG_END_DECL()

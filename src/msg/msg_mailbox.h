@@ -8,7 +8,7 @@
 #define MSG_MAILBOX_H
 
 #include "xbt/fifo.h"
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "msg/datatypes.h"
 
 
