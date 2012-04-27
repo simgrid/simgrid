@@ -20,3 +20,11 @@ $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/plat
 p Test2 Process with start and kill times
 
 $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_start_kill.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:master@c-0.me) Hello!
+> [  1.000000] (2:slave@c-1.me) Hello!
+> [  2.000000] (3:slave@c-2.me) Hello!
+> [  3.000000] (4:slave@c-3.me) Hello!
+> [  4.000000] (5:slave@c-4.me) Hello!
+> [  5.000000] (6:slave@c-5.me) Hello!
+> [ 10.000000] (1:master@c-0.me) OK, goodbye now.
+> [ 10.000000] (0:@) Simulation time 10

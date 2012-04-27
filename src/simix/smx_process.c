@@ -227,7 +227,7 @@ void SIMIX_process_create(smx_process_t *process,
 
   if (kill_time > SIMIX_get_clock()) {
     if (simix_global->kill_process_function) {
-      XBT_INFO("Process %s(%s) will be kill at time %f", (*process)->name,
+      XBT_DEBUG("Process %s(%s) will be kill at time %f", (*process)->name,
           (*process)->smx_host->name, kill_time);
       SIMIX_timer_set(kill_time, simix_global->kill_process_function, *process);
     }
@@ -263,7 +263,7 @@ void SIMIX_process_runall(void)
  */
 void SIMIX_process_kill(smx_process_t process) {
 
-  XBT_INFO("Killing process %s on %s", process->name, process->smx_host->name);
+  XBT_DEBUG("Killing process %s on %s", process->name, process->smx_host->name);
 
   process->context->iwannadie = 1;
   process->blocked = 0;
