@@ -131,24 +131,24 @@ $ ${bindir:=.}/basic_parsing_test ${srcdir:=.}/examples/platforms/bypassRoute.xm
 >   Route latency = 0.002000, route bandwidth = 1250000000.000000
 > Route between AS_1_host1 and AS_2_host1
 >   Route size 4
->   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
->   Link AS_2_link1: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link AS_1_link: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link1: latency = 0.000500, bandwidth = 1250000000.000000
 >   Route latency = 0.002000, route bandwidth = 1250000000.000000
 > Route between AS_1_host1 and AS_2_host2
 >   Route size 4
->   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
->   Link AS_2_link2: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link AS_1_link: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link2: latency = 0.000500, bandwidth = 1250000000.000000
 >   Route latency = 0.002000, route bandwidth = 1250000000.000000
 > Route between AS_1_host1 and AS_2_host3
 >   Route size 4
->   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
->   Link AS_2_link3: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link AS_1_link: latency = 0.000500, bandwidth = 1250000000.000000
 >   Link backbone: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link4: latency = 0.000500, bandwidth = 1250000000.000000
+>   Link AS_2_link3: latency = 0.000500, bandwidth = 1250000000.000000
 >   Route latency = 0.002000, route bandwidth = 1250000000.000000
 > Route between AS_1_host1 and AS_1_host1
 >   Route size 1
