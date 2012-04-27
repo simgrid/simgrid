@@ -736,37 +736,35 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
                                                int_f_pvoid_t color)
 {
   _dynar_lock(dynar);
-  unsigned long size = xbt_dynar_length(dynar);
-  char *data = (char *) dynar->data;
   unsigned long int i;
   unsigned long int p = -1;
-  unsigned long int q = size;
+  unsigned long int q = dynar->used;
   const unsigned long elmsize = dynar->elmsize;
-  char *tmp = xbt_malloc(elmsize);
-
-#define swap(a,b) do {     \
-    memcpy(tmp,  a , elmsize);  \
-    memcpy( a ,  b , elmsize);  \
-    memcpy( b , tmp, elmsize);  \
-  } while(0)
+  void *tmp = xbt_malloc(elmsize);
+  void *elm;
 
   for (i = 0; i < q;) {
-    char *datai = data + i*elmsize;
-    int colori = color(datai);
+    void *elmi = _xbt_dynar_elm(dynar, i);
+    int colori = color(elmi);
 
-    if(colori==0) {
-      char *datap = data + (++p)*elmsize;
-      swap(datai, datap);
+    if (colori == 1) {
       ++i;
-    } else if (colori==2) {
-      char *dataq = data + (--q)*elmsize;
-      swap(datai, dataq);
     } else {
-      ++i;
+      if (colori == 0) {
+        elm = _xbt_dynar_elm(dynar, ++p);
+        ++i;
+      } else {                  /* colori == 2 */
+        elm = _xbt_dynar_elm(dynar, --q);
+      }
+      if (elm != elmi) {
+        memcpy(tmp,  elm,  elmsize);
+        memcpy(elm,  elmi, elmsize);
+        memcpy(elmi, tmp,  elmsize);
+      }
     }
   }
-  xbt_free(tmp);
   _dynar_unlock(dynar);
+  xbt_free(tmp);
 }
 
 /** @brief Transform a dynar into a NULL terminated array
