@@ -165,12 +165,17 @@ XBT_INLINE double SIMIX_get_clock(void)
   }
 }
 
-static int process_syscall_color(void *p) {
-  e_smx_simcall_t s = (*((smx_process_t *)p))->simcall.call;
-
-  if (s == SIMCALL_NONE || s == SIMCALL_PROCESS_KILL) return 2;
-  else if (s == SIMCALL_PROCESS_RESUME)  return 1;
-  else return 0;
+static int process_syscall_color(void *p)
+{
+  switch ((*(smx_process_t *)p)->simcall.call) {
+  case SIMCALL_NONE:
+  case SIMCALL_PROCESS_KILL:
+    return 2;
+  case SIMCALL_PROCESS_RESUME:
+    return 1;
+  default:
+    return 0;
+  }
 }
 
 void SIMIX_run(void)
