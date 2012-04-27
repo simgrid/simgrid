@@ -362,12 +362,10 @@ XBT_INLINE void *lmm_variable_id(lmm_variable_t var)
 }
 
 static XBT_INLINE int saturated_constraint_set_update(lmm_system_t sys,
-                                                       lmm_constraint_t
-                                                       cnst,
-                                                       double *min_usage)
+                                                      lmm_constraint_t
+                                                      cnst,
+                                                      double *min_usage)
 {
-  lmm_constraint_t useless_cnst = NULL;
-
   XBT_IN("sys=%p, cnst=%p, min_usage=%f", sys, cnst, *min_usage);
   if (cnst->usage <= 0) {
     XBT_OUT();
@@ -381,13 +379,10 @@ static XBT_INLINE int saturated_constraint_set_update(lmm_system_t sys,
     *min_usage = cnst->remaining / cnst->usage;
     XBT_HERE(" min_usage=%f (cnst->remaining=%f, cnst->usage=%f)",
              *min_usage, cnst->remaining, cnst->usage);
-    while ((useless_cnst =
-            xbt_swag_getFirst(&(sys->saturated_constraint_set))))
-      xbt_swag_remove(useless_cnst, &(sys->saturated_constraint_set));
-
-    xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
+    xbt_swag_reset(&sys->saturated_constraint_set);
+    xbt_swag_insert(cnst, &sys->saturated_constraint_set);
   } else if (*min_usage == cnst->remaining / cnst->usage) {
-    xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
+    xbt_swag_insert(cnst, &sys->saturated_constraint_set);
   }
   XBT_OUT();
   return 0;
