@@ -43,7 +43,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     Switch to MSG_task_{send,recv} instead, or compile Simgrid command line
     'cmake -Dcustom_flags="-DMSG_USE_DEPRECATED" .' if you really need to
      use these (crappy) functions in your code.
-    These functions will be removed at some point. Stop using them now.
+    These functions will be removed soon. Stop using them now.
   * Deprecate MSG_get_host_{table,number}
     Implement MSG_hosts_as_dynar() instead.
   * Implement MSG_processes_as_dynar() (Closes gforge #13642)
