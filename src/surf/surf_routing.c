@@ -576,16 +576,14 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
 
   /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */
   if (e_route_bypass) {
-    xbt_dynar_merge(links,&(e_route_bypass->link_list));
+    xbt_dynar_merge(links, &e_route_bypass->link_list);
     generic_free_route(e_route_bypass);
     return;
   }
 
   /* If src and dst are in the same AS, life is good */
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
-
     route.link_list = *links;
-
     common_father->get_route_and_latency(common_father, src, dst, &route,latency);
     return;
   }
@@ -597,7 +595,9 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
   sg_routing_edge_t src_father_net_elm = src_father->net_elem;
   sg_routing_edge_t dst_father_net_elm = dst_father->net_elem;
 
-  common_father->get_route_and_latency(common_father, src_father_net_elm, dst_father_net_elm, &route,latency);
+  common_father->get_route_and_latency(common_father,
+                                       src_father_net_elm, dst_father_net_elm,
+                                       &route, latency);
 
   xbt_assert((route.src_gateway != NULL) && (route.dst_gateway != NULL),
       "bad gateways for route from \"%s\" to \"%s\"", src->name, dst->name);
@@ -609,14 +609,11 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
   if (src != src_gateway_net_elm)
     _get_route_and_latency(src, src_gateway_net_elm, links, latency);
 
-  xbt_dynar_merge(links,&(route.link_list));
+  xbt_dynar_merge(links, &route.link_list);
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
-  // FIXME why can't I factorize it the same way than [src;src_gw] without breaking the examples??
-  if (dst_gateway_net_elm != dst) {
+  if (dst_gateway_net_elm != dst)
     _get_route_and_latency(dst_gateway_net_elm, dst, links, latency);
-  }
-  xbt_dynar_free(&route.link_list);
 }
 
 /**
