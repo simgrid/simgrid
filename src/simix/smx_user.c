@@ -343,6 +343,7 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
  * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be NULL.
  * It can be retrieved with the function \ref simcall_process_get_data.
  * \param hostname name of the host where the new agent is executed.
+ * \param kill_time time when the process is killed
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
  * \param properties the properties of the process
@@ -351,6 +352,7 @@ void simcall_process_create(smx_process_t *process, const char *name,
                               xbt_main_func_t code,
                               void *data,
                               const char *hostname,
+                              double kill_time,
                               int argc, char **argv,
                               xbt_dict_t properties)
 {
@@ -362,6 +364,7 @@ void simcall_process_create(smx_process_t *process, const char *name,
   simcall->process_create.code = code;
   simcall->process_create.data = data;
   simcall->process_create.hostname = hostname;
+  simcall->process_create.kill_time = kill_time;
   simcall->process_create.argc = argc;
   simcall->process_create.argv = argv;
   simcall->process_create.properties = properties;

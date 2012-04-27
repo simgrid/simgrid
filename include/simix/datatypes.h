@@ -88,6 +88,7 @@ typedef void (*smx_creation_func_t) ( /* process */ smx_process_t*,
                                       /* code */ xbt_main_func_t,
                                       /* userdata */ void*,
                                       /* hostname */ const char*,
+                                      /* kill_time */ double,
                                       /* argc */ int,
                                       /* argv */ char**,
                                       /* props */ xbt_dict_t);

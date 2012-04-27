@@ -128,6 +128,7 @@ XBT_PUBLIC(void) simcall_process_create(smx_process_t *process,
                                           xbt_main_func_t code,
                                           void *data,
                                           const char *hostname,
+                                          double kill_time,
                                           int argc, char **argv,
                                           xbt_dict_t properties);
 

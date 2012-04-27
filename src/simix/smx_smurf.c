@@ -306,6 +306,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
 	  simcall->process_create.code,
 	  simcall->process_create.data,
 	  simcall->process_create.hostname,
+	  simcall->process_create.kill_time,
 	  simcall->process_create.argc,
 	  simcall->process_create.argv,
 	  simcall->process_create.properties);

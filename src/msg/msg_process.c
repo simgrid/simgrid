@@ -58,12 +58,12 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
 void MSG_process_create_from_SIMIX(smx_process_t* process, const char *name,
                                     xbt_main_func_t code, void *data,
-                                    const char *hostname, int argc, char **argv,
+                                    const char *hostname, double kill_time, int argc, char **argv,
                                     xbt_dict_t properties)
 {
   m_host_t host = MSG_get_host_by_name(hostname);
   m_process_t p = MSG_process_create_with_environment(name, code, data,
-                                                      host, argc, argv,
+                                                      host, kill_time, argc, argv,
                                                       properties);
   *((m_process_t*) process) = p;
 }
@@ -79,7 +79,7 @@ m_process_t MSG_process_create(const char *name,
                                xbt_main_func_t code, void *data,
                                m_host_t host)
 {
-  return MSG_process_create_with_environment(name, code, data, host, -1,
+  return MSG_process_create_with_environment(name, code, data, host, -1, -1,
                                              NULL, NULL);
 }
 
@@ -113,7 +113,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
                                               void *data, m_host_t host,
                                               int argc, char **argv)
 {
-  return MSG_process_create_with_environment(name, code, data, host,
+  return MSG_process_create_with_environment(name, code, data, host, -1.0,
                                              argc, argv, NULL);
 }
 
@@ -136,6 +136,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
    object.  It is for user-level information and can be NULL. It can
    be retrieved with the function \ref MSG_process_get_data.
  * \param host the location where the new process is executed.
+ * \param kill_time the time when the process is killed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
  * \param properties list a properties defined for this process
@@ -145,6 +146,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
 m_process_t MSG_process_create_with_environment(const char *name,
                                                 xbt_main_func_t code,
                                                 void *data, m_host_t host,
+                                                double kill_time,
                                                 int argc, char **argv,
                                                 xbt_dict_t properties)
 {
@@ -174,7 +176,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  simcall_process_create(&process, name, code, simdata, host->name,
+  simcall_process_create(&process, name, code, simdata, host->name, kill_time,
                            argc, argv, properties);
 
   if (!process) {
