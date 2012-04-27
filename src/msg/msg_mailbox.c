@@ -41,7 +41,7 @@ MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
                                          m_host_t host)
 {
   return simcall_rdv_comm_count_by_host(mailbox,
-                                      host->simdata->smx_host);
+                                      host->smx_host);
 }
 
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)

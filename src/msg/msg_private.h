@@ -20,10 +20,6 @@
 SG_BEGIN_DECL()
 
 /**************** datatypes **********************************/
-typedef struct simdata_host {
-  smx_host_t smx_host;          /* SURF modeling                                                                */
-  msg_mailbox_t *mailboxes;     /* mailboxes to store msg tasks of of the host  */
-} s_simdata_host_t;
 
 /********************************* Task **************************************/
 

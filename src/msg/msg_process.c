@@ -231,7 +231,7 @@ MSG_error_t MSG_process_migrate(m_process_t process, m_host_t host)
   m_host_t now = simdata->m_host;
   TRACE_msg_process_change_host(process, now, host);
 #endif
-  simcall_process_change_host(process, host->simdata->smx_host);
+  simcall_process_change_host(process, host->smx_host);
   return MSG_OK;
 }
 

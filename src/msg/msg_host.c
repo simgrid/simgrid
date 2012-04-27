@@ -26,28 +26,26 @@
 m_host_t __MSG_host_create(smx_host_t workstation)
 {
   const char *name;
-  simdata_host_t simdata = xbt_new0(s_simdata_host_t, 1);
   m_host_t host = xbt_new0(s_m_host_t, 1);
 
   name = SIMIX_host_get_name(workstation);
   /* Host structure */
   host->name = xbt_strdup(name);
-  host->simdata = simdata;
 
-  simdata->smx_host = workstation;
+  host->smx_host = workstation;
 
 #ifdef MSG_USE_DEPRECATED
   int i;
   char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
 
   if (msg_global->max_channel > 0)
-    simdata->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
+    host->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
 
   for (i = 0; i < msg_global->max_channel; i++) {
     sprintf(alias, "%s:%d", name, i);
 
     /* the key of the mailbox (in this case) is build from the name of the host and the channel number */
-    simdata->mailboxes[i] = MSG_mailbox_new(alias);
+    host->mailboxes[i] = MSG_mailbox_new(alias);
     memset(alias, 0, MAX_ALIAS_NAME + 1);
   }
 #endif
@@ -86,7 +84,7 @@ m_host_t MSG_get_host_by_name(const char *name)
  */
 MSG_error_t MSG_host_set_data(m_host_t host, void *data)
 {
-  SIMIX_host_set_data(host->simdata->smx_host,data);
+  SIMIX_host_set_data(host->smx_host,data);
 
   return MSG_OK;
 }
@@ -101,7 +99,7 @@ MSG_error_t MSG_host_set_data(m_host_t host, void *data)
 void *MSG_host_get_data(m_host_t host)
 {
 
-  return SIMIX_host_get_data(host->simdata->smx_host);
+  return SIMIX_host_get_data(host->smx_host);
 }
 
 /** \ingroup m_host_management
@@ -113,9 +111,6 @@ void *MSG_host_get_data(m_host_t host)
  */
 const char *MSG_host_get_name(m_host_t host)
 {
-
-  xbt_assert((host != NULL)
-              && (host->simdata != NULL), "Invalid parameters");
 
   /* Return data */
   return (host->name);
@@ -136,19 +131,15 @@ m_host_t MSG_host_self(void)
  */
 void __MSG_host_destroy(m_host_t host)
 {
-  simdata_host_t simdata = NULL;
 
   xbt_assert((host != NULL), "Invalid parameters");
 
   /* Clean simulator data */
-  simdata = (host)->simdata;
 
 #ifdef MSG_USE_DEPRECATED
   if (msg_global->max_channel > 0)
-    free(simdata->mailboxes);
+    free(host->mailboxes);
 #endif
-
-  free(simdata);
 
   /* Clean host structure */
   free(host->name);
@@ -219,7 +210,7 @@ double MSG_get_host_speed(m_host_t h)
 {
   xbt_assert((h != NULL), "Invalid parameters");
 
-  return (simcall_host_get_speed(h->simdata->smx_host));
+  return (simcall_host_get_speed(h->smx_host));
 }
 
 /** \ingroup m_host_management
@@ -244,7 +235,7 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 
-  return (simcall_host_get_properties(host->simdata->smx_host));
+  return (simcall_host_get_properties(host->smx_host));
 }
 
 
@@ -257,5 +248,5 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
 int MSG_host_is_avail(m_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-  return (simcall_host_get_state(host->simdata->smx_host));
+  return (simcall_host_get_state(host->smx_host));
 }

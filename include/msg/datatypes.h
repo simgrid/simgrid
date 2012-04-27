@@ -8,17 +8,34 @@
 #define MSG_DATATYPE_H
 #include "xbt/misc.h"
 #include "xbt/file_stat.h"
+#include "simgrid/simix.h"
 #include "simgrid_config.h"     // for HAVE_TRACING
 
 SG_BEGIN_DECL()
 
-/* ******************************** Host ************************************ */
+/* ******************************** Mailbox ************************************ */
 
-typedef struct simdata_host *simdata_host_t;
+/** @brief Mailbox datatype
+ *  @ingroup msg_task_usage
+ *
+ * Object representing a communication rendez-vous point, on which
+ * the sender finds the receiver it wants to communicate with. As a
+ * MSG user, you will only rarely manipulate any of these objects
+ * directly, since most of the public interface (such as
+ * #MSG_task_send and friends) hide this object behind a string
+ * alias. That mean that you don't provide the mailbox on which you
+ * want to send your task, but only the name of this mailbox. */
+typedef struct s_smx_rvpoint *msg_mailbox_t;
+
+
+/* ******************************** Host ************************************ */
 
 typedef struct m_host {
   char *name;                   /**< @brief host name if any */
-  simdata_host_t simdata;       /**< @brief simulator data */
+  smx_host_t smx_host;          /**< SIMIX representation of this host   */
+#ifdef MSG_USE_DEPRECATED
+  msg_mailbox_t *mailboxes;     /**< the channels  */
+#endif
 } s_m_host_t;
 
 /** @brief Host datatype  
@@ -129,19 +146,6 @@ typedef struct s_smx_process *m_process_t;
 typedef int m_channel_t;
 #endif
 
-/* ******************************** Mailbox ************************************ */
-
-/** @brief Mailbox datatype
- *  @ingroup msg_task_usage
- * 
- * Object representing a communication rendez-vous point, on which
- * the sender finds the receiver it wants to communicate with. As a
- * MSG user, you will only rarely manipulate any of these objects
- * directly, since most of the public interface (such as
- * #MSG_task_send and friends) hide this object behind a string
- * alias. That mean that you don't provide the mailbox on which you
- * want to send your task, but only the name of this mailbox. */
-typedef struct s_smx_rvpoint *msg_mailbox_t;
 
 
 SG_END_DECL()

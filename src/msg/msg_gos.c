@@ -53,7 +53,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
   p_simdata = SIMIX_process_self_get_data(self);
   simdata->isused=1;
   simdata->compute =
-      simcall_host_execute(task->name, p_simdata->m_host->simdata->smx_host,
+      simcall_host_execute(task->name, p_simdata->m_host->smx_host,
                            simdata->computation_amount,
                            simdata->priority);
 #ifdef HAVE_TRACING
@@ -146,7 +146,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
   simdata->comm_amount = communication_amount;
 
   for (i = 0; i < host_nb; i++)
-    simdata->host_list[i] = host_list[i]->simdata->smx_host;
+    simdata->host_list[i] = host_list[i]->smx_host;
 
   return task;
 }
