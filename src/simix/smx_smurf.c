@@ -7,7 +7,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
 
 XBT_INLINE smx_simcall_t SIMIX_simcall_mine()
 {
-  smx_process_t issuer = SIMIX_process_self();
+  volatile smx_process_t issuer = SIMIX_process_self();
   return &issuer->simcall;
 }
 
