@@ -73,76 +73,56 @@ static void floyd_get_route_and_latency(AS_t asg, sg_routing_edge_t src, sg_rout
   size_t table_size = xbt_dynar_length(asg->index_network_elm);
 
   generic_src_dst_check(asg, src, dst);
-  int *src_id = &(src->id);
-  int *dst_id = &(dst->id);
-  if (src_id == NULL || dst_id == NULL)
-    THROWF(arg_error,0,"No route from '%s' to '%s'",
-        src->name,
-        dst->name);
 
   /* create a result route */
-
-  int first = 1;
-  int pred = *dst_id;
-  int prev_pred = 0;
-  sg_routing_edge_t gw_src, gw_dst, prev_gw_src, first_gw;
-  unsigned int cpt;
-  void *link;
-  xbt_dynar_t links;
-
+  xbt_dynar_t route_stack = xbt_dynar_new(sizeof(route_t), NULL);
+  int pred;
+  int cur = dst->id;
   do {
-    prev_pred = pred;
-    pred = TO_FLOYD_PRED(*src_id, pred);
-    if (pred == -1)             /* if no pred in route -> no route to host */
-      break;
-    xbt_assert(TO_FLOYD_LINK(pred, prev_pred),
-        "Invalid link for the route between \"%s\" or \"%s\"",
-        src->name,
-        dst->name);
+    pred = TO_FLOYD_PRED(src->id, cur);
+    if (pred == -1)
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name, dst->name);
+    xbt_dynar_push_as(route_stack, route_t, TO_FLOYD_LINK(pred, cur));
+    cur = pred;
+  } while (cur != src->id);
 
-    prev_gw_src = gw_src;
+  if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
+    res->src_gateway = xbt_dynar_getlast_as(route_stack, route_t)->src_gateway;
+    res->dst_gateway = xbt_dynar_getfirst_as(route_stack, route_t)->dst_gateway;
+  }
 
-    route_t e_route = TO_FLOYD_LINK(pred, prev_pred);
-    gw_src = e_route->src_gateway;
-    gw_dst = e_route->dst_gateway;
+  sg_routing_edge_t prev_dst_gw = NULL;
+  while (!xbt_dynar_is_empty(route_stack)) {
+    route_t e_route = xbt_dynar_pop_as(route_stack, route_t);
+    xbt_dynar_t links;
+    sg_routing_link_t link;
+    unsigned int cpt;
 
-    if (first)
-      first_gw = gw_dst;
-
-    if (asg->hierarchy == SURF_ROUTING_RECURSIVE && !first
-        && strcmp(gw_dst->name, prev_gw_src->name)) {
-      xbt_dynar_t e_route_as_to_as;
-      e_route_as_to_as = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-      routing_get_route_and_latency(gw_dst, prev_gw_src,&e_route_as_to_as,NULL);
-      links = e_route_as_to_as;
-      int pos = 0;
+    if (asg->hierarchy == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL
+        && strcmp(prev_dst_gw->name, e_route->src_gateway->name)) {
+      links = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+      /* Would it be right to pass 'res->link_list' and 'lat' to
+       * routing_get_route_and_latency() here, and avoid the following loop? */
+      routing_get_route_and_latency(prev_dst_gw, e_route->src_gateway,
+                                    &links, NULL);
       xbt_dynar_foreach(links, cpt, link) {
-        xbt_dynar_insert_at(res->link_list, pos, &link);
+        xbt_dynar_push_as(res->link_list, sg_routing_link_t, link);
         if (lat)
           *lat += surf_network_model->extension.network.get_link_latency(link);
-        pos++;
       }
-      xbt_dynar_free(&e_route_as_to_as);
+      xbt_dynar_free(&links);
     }
 
     links = e_route->link_list;
     xbt_dynar_foreach(links, cpt, link) {
-      xbt_dynar_unshift(res->link_list, &link);
+      xbt_dynar_push_as(res->link_list, sg_routing_link_t, link);
       if (lat)
         *lat += surf_network_model->extension.network.get_link_latency(link);
     }
-    first = 0;
 
-  } while (pred != *src_id);
-  if (pred == -1)
-    THROWF(arg_error,0,"No route from '%s' to '%s'",
-        src->name,
-        dst->name);
-
-  if (asg->hierarchy == SURF_ROUTING_RECURSIVE) {
-    res->src_gateway = gw_src;
-    res->dst_gateway = first_gw;
+    prev_dst_gw = e_route->dst_gateway;
   }
+  xbt_dynar_free(&route_stack);
 }
 
 static void floyd_finalize(AS_t rc)
