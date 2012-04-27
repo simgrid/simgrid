@@ -190,7 +190,7 @@ void gras_socket_close(xbt_socket_t sock)
   xbt_socket_t sock_iter = NULL;
   unsigned int cursor;
 
-  XBT_IN("");
+  XBT_IN();
   XBT_VERB("Close %p", sock);
   if (sock == _gras_lastly_selected_socket) {
     xbt_assert(!gras_opt_trp_nomoredata_on_close || !sock->moredata,

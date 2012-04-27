@@ -224,7 +224,7 @@ static xbt_socket_t xbt_trp_sock_socket_accept(xbt_socket_t sock)
 
   int failed = 0;
 
-  XBT_IN("");
+  XBT_IN();
   xbt_socket_new_ext(1, &res, sock->plugin, sock->buf_size, 0);
 
   sd = accept(sock->sd, (struct sockaddr *) &peer_in, &peer_in_len);
@@ -419,7 +419,7 @@ static void xbt_trp_bufiov_flush(xbt_socket_t sock)
   int size;
 #endif
   xbt_trp_bufdata_t *data = sock->bufdata;
-  XBT_IN("");
+  XBT_IN();
 
   XBT_DEBUG("Flush");
   if (data->out == buffering_buf) {
@@ -468,7 +468,7 @@ xbt_trp_buf_send(xbt_socket_t sock,
   xbt_trp_bufdata_t *data = (xbt_trp_bufdata_t *) sock->bufdata;
   int chunk_pos = 0;
 
-  XBT_IN("");
+  XBT_IN();
 
   while (chunk_pos < size) {
     /* size of the chunk to receive in that shot */
@@ -502,7 +502,7 @@ xbt_trp_buf_recv(xbt_socket_t sock, char *chunk, unsigned long int size)
   xbt_trp_bufdata_t *data = sock->bufdata;
   long int chunk_pos = 0;
 
-  XBT_IN("");
+  XBT_IN();
 
   while (chunk_pos < size) {
     /* size of the chunk to receive in that shot */

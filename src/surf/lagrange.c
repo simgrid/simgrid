@@ -376,7 +376,7 @@ static double dichotomy(double init, double diff(double, void *),
   double diff_0 = 0.0;
   min = max = init;
 
-  XBT_IN("");
+  XBT_IN();
 
   if (init == 0.0) {
     min = max = 0.5;
@@ -485,7 +485,7 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
   double diff = 0.0;
   double sigma_i = 0.0;
 
-  XBT_IN("");
+  XBT_IN();
   elem_list = &(cnst->element_set);
 
   XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", cnst);

@@ -122,7 +122,7 @@ xbt_datadesc_scalar(const char *name,
   xbt_datadesc_type_t res;
   long int arch;
 
-  XBT_IN("");
+  XBT_IN();
   res = xbt_datadesc_by_name_or_null(name);
   if (res) {
     xbt_assert(res->category_code == e_xbt_datadesc_type_cat_scalar,
@@ -156,7 +156,7 @@ xbt_datadesc_scalar(const char *name,
 void xbt_dd_cat_field_free(void *f)
 {
   xbt_dd_cat_field_t field = *(xbt_dd_cat_field_t *) f;
-  XBT_IN("");
+  XBT_IN();
   if (field) {
     free(field->name);
     free(field);
@@ -268,7 +268,7 @@ xbt_datadesc_struct_append(xbt_datadesc_type_t struct_type,
 void xbt_datadesc_struct_close(xbt_datadesc_type_t struct_type)
 {
   int arch;
-  XBT_IN("");
+  XBT_IN();
   struct_type->category.struct_data.closed = 1;
   for (arch = 0; arch < xbt_arch_count; arch++) {
     struct_type->size[arch] = struct_type->aligned_size[arch];

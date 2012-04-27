@@ -42,7 +42,7 @@ extern char *xbt_ddt_parse_text;       /* text being considered in the parser */
 /* local functions */
 static void parse_type_modifier(type_modifier_t type_modifier)
 {
-  XBT_IN("");
+  XBT_IN();
   do {
     if (xbt_ddt_parse_tok_num == XBT_DDT_PARSE_TOKEN_STAR) {
       /* This only used when parsing 'short *' since this function returns when int, float, double,... is encountered */
@@ -96,7 +96,7 @@ static void print_type_modifier(s_type_modifier_t tm)
 {
   int i;
 
-  XBT_IN("");
+  XBT_IN();
   if (tm.is_unsigned)
     printf("(unsigned) ");
   if (tm.is_short)
@@ -121,7 +121,7 @@ static void change_to_fixed_array(xbt_dynar_t dynar, long int size)
   s_identifier_t former, array;
   memset(&array, 0, sizeof(array));
 
-  XBT_IN("");
+  XBT_IN();
   xbt_dynar_pop(dynar, &former);
   array.type_name = (char *) xbt_malloc(strlen(former.type->name) + 48);
   XBT_DEBUG("Array specification (size=%ld, elm='%s'), change pushed type",
@@ -144,7 +144,7 @@ static void change_to_ref(xbt_dynar_t dynar)
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN("");
+  XBT_IN();
   xbt_dynar_pop(dynar, &former);
   ref.type_name = (char *) xbt_malloc(strlen(former.type->name) + 2);
   XBT_DEBUG("Ref specification (elm='%s'), change pushed type",
@@ -164,7 +164,7 @@ static void change_to_ref_pop_array(xbt_dynar_t dynar)
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN("");
+  XBT_IN();
   xbt_dynar_pop(dynar, &former);
   ref.type = xbt_datadesc_ref_pop_arr(former.type);    /* redeclaration are ignored */
   ref.type_name = (char *) strdup(ref.type->name);
@@ -182,7 +182,7 @@ static void change_to_dynar_of(xbt_dynar_t dynar,
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN("");
+  XBT_IN();
   xbt_dynar_pop(dynar, &former);
   ref.type = xbt_datadesc_dynar(subtype, NULL);        /* redeclaration are ignored */
   ref.type_name = (char *) strdup(ref.type->name);
@@ -200,7 +200,7 @@ static void change_to_matrix_of(xbt_dynar_t dynar,
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN("");
+  XBT_IN();
   xbt_dynar_pop(dynar, &former);
   ref.type = xbt_datadesc_matrix(subtype, NULL);       /* redeclaration are ignored */
   ref.type_name = (char *) strdup(ref.type->name);
@@ -217,7 +217,7 @@ static void add_free_f(xbt_dynar_t dynar, void_f_pvoid_t free_f)
   s_identifier_t former, ref;
   memset(&ref, 0, sizeof(ref));
 
-  XBT_IN("");
+  XBT_IN();
   xbt_dynar_pop(dynar, &former);
   memcpy(former.type->extra, free_f, sizeof(free_f));
   xbt_dynar_push(dynar, &former);
@@ -234,7 +234,7 @@ static void parse_statement(char *definition,
 
   int expect_id_separator = 0;
 
-  XBT_IN("");
+  XBT_IN();
   memset(&identifier, 0, sizeof(identifier));
 
   xbt_ddt_parse_tok_num = xbt_ddt_parse_lex_n_dump();
@@ -616,7 +616,7 @@ static xbt_datadesc_type_t parse_struct(char *definition)
 
   volatile xbt_datadesc_type_t struct_type;
 
-  XBT_IN("");
+  XBT_IN();
   identifiers = xbt_dynar_new(sizeof(s_identifier_t), NULL);
   fields_to_push = xbt_dynar_new(sizeof(char *), NULL);
 
@@ -706,7 +706,7 @@ static xbt_datadesc_type_t parse_typedef(char *definition)
 
   xbt_datadesc_type_t typedef_desc = NULL;
 
-  XBT_IN("");
+  XBT_IN();
   memset(&tm, 0, sizeof(tm));
 
   /* get the aliased type */
@@ -751,7 +751,7 @@ xbt_datadesc_parse(const char *name, const char *C_statement)
   int semicolon_count = 0;
   int def_count, C_count;
 
-  XBT_IN("");
+  XBT_IN();
   /* reput the \n in place for debug */
   for (C_count = 0; C_statement[C_count] != '\0'; C_count++)
     if (C_statement[C_count] == ';' || C_statement[C_count] == '{')

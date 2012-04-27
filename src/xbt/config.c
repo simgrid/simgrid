@@ -595,7 +595,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
 
   int len;
 
-  XBT_IN("");
+  XBT_IN();
   if (!options || !strlen(options)) {   /* nothing to do */
     return;
   }

@@ -277,7 +277,7 @@ void xbt_socket_meas_send(xbt_socket_t peer,
   char *chunk = NULL;
   unsigned long int sent_sofar;
 
-  XBT_IN("");
+  XBT_IN();
   THROWF(unknown_error, 0, "measurement sockets were broken in this release of SimGrid and should be ported back in the future."
       "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
 
@@ -328,7 +328,7 @@ void xbt_socket_meas_recv(xbt_socket_t peer,
   char *chunk = NULL;
   unsigned long int got_sofar;
 
-  XBT_IN("");
+  XBT_IN();
   THROWF(unknown_error,0,"measurement sockets were broken in this release of SimGrid and should be ported back in the future."
       "If you depend on it, sorry, you have to use an older version, or wait for the future version using it...");
 
