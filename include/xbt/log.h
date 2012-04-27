@@ -492,28 +492,30 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_CRITICAL(...) XBT_LOG(xbt_log_priority_critical, __VA_ARGS__)
 
+#define _XBT_IN_OUT(...) \
+  _XBT_IF_ONE_ARG(_XBT_IN_OUT_ARG1, _XBT_IN_OUT_ARGN, __VA_ARGS__)(__VA_ARGS__)
+#define _XBT_IN_OUT_ARG1(fmt) \
+  XBT_LOG(xbt_log_priority_trace, fmt, _XBT_FUNCTION)
+#define _XBT_IN_OUT_ARGN(fmt, ...) \
+  XBT_LOG(xbt_log_priority_trace, fmt, _XBT_FUNCTION, __VA_ARGS__)
+
 /** @ingroup XBT_log
  *  @hideinitializer
  *  @brief Log at TRACE priority that we entered in current function, appending a user specified format.
  */
-#define XBT_IN(...) \
-  _XBT_IF_ONE_ARG(_XBT_IN_ARG1, _XBT_IN_ARGN, __VA_ARGS__)(__VA_ARGS__)
-#define _XBT_IN_ARG1(fmt) \
-  XBT_LOG(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION)
-#define _XBT_IN_ARGN(fmt, ...) \
-  XBT_LOG(xbt_log_priority_trace, ">> begin of %s" fmt, _XBT_FUNCTION, __VA_ARGS__)
+#define XBT_IN(...) _XBT_IN_OUT(">> begin of %s" __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log at TRACE priority that we exited the current function.
+ *  @brief Log at TRACE priority that we exited the current function, appending a user specified format.
  */
-#define XBT_OUT() XBT_LOG(xbt_log_priority_trace, "<< end of %s", _XBT_FUNCTION)
+#define XBT_OUT(...) _XBT_IN_OUT("<< end of %s" __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer
- *  @brief Log at TRACE priority a message indicating that we reached that point.
+ *  @brief Log at TRACE priority a message indicating that we reached that point, appending a user specified format.
  */
-#define XBT_HERE() XBT_LOG(xbt_log_priority_trace, "-- was here")
+#define XBT_HERE(...) XBT_LOG(xbt_log_priority_trace, "-- was here" __VA_ARGS__)
 
 #ifdef XBT_USE_DEPRECATED
 
