@@ -31,7 +31,6 @@ typedef struct s_smx_rvpoint *msg_mailbox_t;
 /* ******************************** Host ************************************ */
 
 typedef struct m_host {
-  char *name;                   /**< @brief host name if any */
   smx_host_t smx_host;          /**< SIMIX representation of this host   */
 #ifdef MSG_USE_DEPRECATED
   msg_mailbox_t *mailboxes;     /**< the channels  */

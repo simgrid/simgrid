@@ -25,12 +25,8 @@
 /********************************* Host **************************************/
 m_host_t __MSG_host_create(smx_host_t workstation)
 {
-  const char *name;
+  const char *name = SIMIX_host_get_name(workstation);
   m_host_t host = xbt_new0(s_m_host_t, 1);
-
-  name = SIMIX_host_get_name(workstation);
-  /* Host structure */
-  host->name = xbt_strdup(name);
 
   host->smx_host = workstation;
 
@@ -109,11 +105,8 @@ void *MSG_host_get_data(m_host_t host)
  * This functions checks whether \a host is a valid pointer or not and return
    its name.
  */
-const char *MSG_host_get_name(m_host_t host)
-{
-
-  /* Return data */
-  return (host->name);
+const char *MSG_host_get_name(m_host_t host) {
+  return SIMIX_host_get_name(host->smx_host);
 }
 
 /** \ingroup m_host_management
@@ -127,22 +120,15 @@ m_host_t MSG_host_self(void)
 
 /** \ingroup m_host_management
  *
- * \brief Destroys a host
+ * \brief Destroys a host (internal call only)
  */
-void __MSG_host_destroy(m_host_t host)
-{
-
-  xbt_assert((host != NULL), "Invalid parameters");
-
-  /* Clean simulator data */
+void __MSG_host_destroy(m_host_t host) {
 
 #ifdef MSG_USE_DEPRECATED
   if (msg_global->max_channel > 0)
     free(host->mailboxes);
 #endif
 
-  /* Clean host structure */
-  free(host->name);
   free(host);
 }
 

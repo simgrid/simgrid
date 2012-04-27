@@ -77,11 +77,11 @@ int master(int argc, char *argv[])
   XBT_INFO("Got %d slaves and %d tasks to process", slaves_count,
         number_of_tasks);
   for (i = 0; i < slaves_count; i++)
-    XBT_DEBUG("%s", slaves[i]->name);
+    XBT_DEBUG("%s", MSG_host_get_name(slaves[i]));
 
   for (i = 0; i < number_of_tasks; i++) {
     XBT_INFO("Sending \"%s\" to \"%s\"",
-          todo[i]->name, slaves[i % slaves_count]->name);
+          todo[i]->name, MSG_host_get_name(slaves[i % slaves_count]));
     if (MSG_host_self() == slaves[i % slaves_count]) {
       XBT_INFO("Hey ! It's me ! :)");
     }
@@ -165,7 +165,7 @@ int forwarder(int argc, char *argv[])
         break;
       }
       XBT_INFO("Sending \"%s\" to \"%s\"",
-            MSG_task_get_name(task), slaves[i % slaves_count]->name);
+            MSG_task_get_name(task), MSG_host_get_name(slaves[i % slaves_count]));
       MSG_task_send(task, MSG_host_get_name(slaves[i % slaves_count]));
       i++;
     } else {

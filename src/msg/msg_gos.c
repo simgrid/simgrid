@@ -175,7 +175,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   xbt_assert(simdata->host_nb,
               "This is not a parallel task. Go to hell.");
 
-  XBT_DEBUG("Parallel computing on %s", p_simdata->m_host->name);
+  XBT_DEBUG("Parallel computing on %s", SIMIX_host_get_name(p_simdata->m_host->smx_host));
 
   simdata->isused=1;
 

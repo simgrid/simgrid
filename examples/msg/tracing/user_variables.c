@@ -27,7 +27,7 @@ int master(int argc, char *argv[]);
 
 int master(int argc, char *argv[])
 {
-  char *hostname = MSG_host_self()->name;
+  const char *hostname = MSG_host_get_name(MSG_host_self());
   int i;
 
   //the hostname has an empty HDD with a capacity of 100000 (bytes)
