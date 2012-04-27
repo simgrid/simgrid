@@ -99,7 +99,7 @@ void jedule_setup_platform() {
 
 	jed_create_jedule(&jedule);
 
-	root_comp = global_routing->root;
+	root_comp = routing_platf->root;
 	XBT_DEBUG("root name %s\n", root_comp->name);
 
 	// that doesn't work
