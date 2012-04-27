@@ -109,6 +109,7 @@ static void SIMIX_synchro_finish(smx_action_t action)
   }
 
   SIMIX_synchro_stop_waiting(simcall->issuer, simcall);
+  simcall->issuer->waiting_action = NULL;
   SIMIX_synchro_destroy(action);
   SIMIX_simcall_answer(simcall);
   XBT_OUT();
