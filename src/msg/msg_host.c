@@ -23,7 +23,7 @@
  */
 
 /********************************* Host **************************************/
-m_host_t __MSG_host_create(smx_host_t workstation, void *data)
+m_host_t __MSG_host_create(smx_host_t workstation)
 {
   const char *name;
   simdata_host_t simdata = xbt_new0(s_simdata_host_t, 1);
@@ -33,7 +33,6 @@ m_host_t __MSG_host_create(smx_host_t workstation, void *data)
   /* Host structure */
   host->name = xbt_strdup(name);
   host->simdata = simdata;
-  host->data = data;
 
   simdata->smx_host = workstation;
 
@@ -87,11 +86,7 @@ m_host_t MSG_get_host_by_name(const char *name)
  */
 MSG_error_t MSG_host_set_data(m_host_t host, void *data)
 {
-  xbt_assert((host != NULL), "Invalid parameters");
-  xbt_assert((host->data == NULL), "Data already set");
-
-  /* Assign data */
-  host->data = data;
+  SIMIX_host_set_data(host->simdata->smx_host,data);
 
   return MSG_OK;
 }
@@ -106,10 +101,7 @@ MSG_error_t MSG_host_set_data(m_host_t host, void *data)
 void *MSG_host_get_data(m_host_t host)
 {
 
-  xbt_assert((host != NULL), "Invalid parameters");
-
-  /* Return data */
-  return (host->data);
+  return SIMIX_host_get_data(host->simdata->smx_host);
 }
 
 /** \ingroup m_host_management

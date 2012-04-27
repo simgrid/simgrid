@@ -125,7 +125,7 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #  define MSG_RETURN(val) return(val)
 #endif
 
-m_host_t __MSG_host_create(smx_host_t workstation, void *data);
+m_host_t __MSG_host_create(smx_host_t workstation);
 void __MSG_host_destroy(m_host_t host);
 
 void __MSG_display_process_status(void);

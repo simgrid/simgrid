@@ -19,7 +19,6 @@ typedef struct simdata_host *simdata_host_t;
 typedef struct m_host {
   char *name;                   /**< @brief host name if any */
   simdata_host_t simdata;       /**< @brief simulator data */
-  void *data;                   /**< @brief user data */
 } s_m_host_t;
 
 /** @brief Host datatype  
