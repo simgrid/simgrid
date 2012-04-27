@@ -228,7 +228,7 @@ lmm_variable_t lmm_variable_new(lmm_system_t sys, void *id,
   else
     xbt_swag_insert_at_tail(var, &(sys->variable_set));
 
-  XBT_LOG(xbt_log_priority_trace, "<< end of %s returns %p", _XBT_FUNCTION, var);
+  XBT_OUT(" returns %p", var);
   return var;
 }
 
@@ -379,9 +379,8 @@ static XBT_INLINE int saturated_constraint_set_update(lmm_system_t sys,
   }
   if ((*min_usage < 0) || (*min_usage > cnst->remaining / cnst->usage)) {
     *min_usage = cnst->remaining / cnst->usage;
-    XBT_LOG(xbt_log_priority_trace,
-         "min_usage=%f (cnst->remaining=%f, cnst->usage=%f)", *min_usage,
-         cnst->remaining, cnst->usage);
+    XBT_HERE(" min_usage=%f (cnst->remaining=%f, cnst->usage=%f)",
+             *min_usage, cnst->remaining, cnst->usage);
     while ((useless_cnst =
             xbt_swag_getFirst(&(sys->saturated_constraint_set))))
       xbt_swag_remove(useless_cnst, &(sys->saturated_constraint_set));
