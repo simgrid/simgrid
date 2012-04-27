@@ -1,4 +1,5 @@
 SimGrid-java (3.6.1) unstable; urgency=low
+ * Make Process.kill(process) an instance method, not a static one
  * Fix a bug around Process.kill()
  * Add dsend and simulatedSleep to the bindings.
 

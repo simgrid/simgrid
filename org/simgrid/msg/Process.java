@@ -244,22 +244,10 @@ public abstract class Process extends Thread {
 	 * @param process  the process to be killed.
 	 *
 	 */
-	public static void kill(Process process) {
-		 process.nativeStop();
-		 Msg.info("Process " + process.msgName() + " will be killed.");		  		
+	public void kill() {
+		 nativeStop();
+		 Msg.info("Process " + msgName() + " will be killed.");		  		
 		 		 
-	}
-	/**
-	 * This method adds an argument in the list of the arguments of the main function
-	 * of the process. 
-	 *
-	 * @param arg			The argument to add.
-     *
-     * @deprecated
-     */
-	@Deprecated
-	protected void addArg(String arg) {
-		args.add(arg);
 	}
 
 	/**
