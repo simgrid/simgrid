@@ -8,7 +8,7 @@
 
 
 #include <xbt/function_types.h>
-#include <simix/simix.h>
+#include <simgrid/simix.h>
 #include "smx_context_java.h"
 #include "xbt/dynar.h"
 

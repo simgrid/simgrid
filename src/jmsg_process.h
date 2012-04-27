@@ -10,8 +10,8 @@
 #define MSG_JPROCESS_H
 
 #include <jni.h>
-#include "msg/msg.h"
-#include "simix/simix.h"
+#include <msg/msg.h>
+#include <simgrid/simix.h>
 
 /**
  * This function returns a global reference to the  java process instance 

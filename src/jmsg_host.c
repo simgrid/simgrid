@@ -56,21 +56,7 @@ m_host_t jhost_get_native(JNIEnv * env, jobject jhost)
 const char *jhost_get_name(jobject jhost, JNIEnv * env)
 {
   m_host_t host = jhost_get_native(env, jhost);
-  return (const char *) host->name;
-}
-
-void jhost_set_name(jobject jhost, jstring jname, JNIEnv * env)
-{
-  const char *name;
-  m_host_t host = jhost_get_native(env, jhost);
-
-  name = (*env)->GetStringUTFChars(env, jname, 0);
-
-  if (host->name)
-    free(host->name);
-
-  host->name = xbt_strdup(name);
-  (*env)->ReleaseStringUTFChars(env, jname, name);
+  return MSG_host_get_name(host);
 }
 
 jboolean jhost_is_valid(jobject jhost, JNIEnv * env)

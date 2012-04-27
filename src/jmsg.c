@@ -7,7 +7,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <msg/msg.h>
-#include <simix/context.h>
+#include <simgrid/simix.h>
 #include <surf/surfxml_parse.h>
 
 #include "smx_context_java.h"
@@ -354,7 +354,7 @@ Java_org_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
   XBT_DEBUG("Looking for host '%s'",name);
   /* get the host by name       (the hosts are created during the grid resolution) */
   host = MSG_get_host_by_name(name);
-  XBT_DEBUG("MSG gave %p as native host (simdata=%p)", host,host? host->simdata:NULL);
+  XBT_DEBUG("MSG gave %p as native host (smx_host=%p)", host,host? host->smx_host:NULL);
 
   if (!host) {                  /* invalid name */
     jxbt_throw_host_not_found(env, name);
@@ -849,7 +849,7 @@ JNIEXPORT void JNICALL
   /* Cleanup java hosts */
   hosts = MSG_hosts_as_dynar();
   for (index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
-    jhost = (jobject) xbt_dynar_get_as(hosts,index,m_host_t)->data;
+    jhost = (jobject) MSG_host_get_data(xbt_dynar_get_as(hosts,index,m_host_t));
     if (jhost)
       jhost_unref(env, jhost);
 

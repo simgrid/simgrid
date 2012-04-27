@@ -8,7 +8,7 @@
 #define _XBT_CONTEXT_JAVA_H
 
 #include <xbt/misc.h>
-#include <simix/context.h>
+#include <simgrid/simix.h>
 #include "jmsg.h"
 #include "jmsg_process.h"
 

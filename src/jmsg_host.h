@@ -85,16 +85,6 @@ m_host_t jhost_get_native(JNIEnv * env, jobject jhost);
  */
 const char *jhost_get_name(jobject jhost, JNIEnv * env);
 
-
-/**
- * This function sets the name of a MSG	host.
- *
- * @param host			The host concerned by the operation.
- * @param jname			The new name of the host.
- * @param env			The environment of the current thread
- */
-void jhost_set_name(jobject jhost, jstring jname, JNIEnv * env);
-
 /**
  * This function tests if a java host instance is valid.
  * A java host object is valid if it is bind to a native host.
