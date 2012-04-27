@@ -57,6 +57,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/icomms)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/chord)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/pmm)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/start_kill_time)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/io)
 
