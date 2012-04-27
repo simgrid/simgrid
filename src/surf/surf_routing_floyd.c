@@ -100,17 +100,8 @@ static void floyd_get_route_and_latency(AS_t asg, sg_routing_edge_t src, sg_rout
 
     if (asg->hierarchy == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL
         && strcmp(prev_dst_gw->name, e_route->src_gateway->name)) {
-      links = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-      /* Would it be right to pass 'res->link_list' and 'lat' to
-       * routing_get_route_and_latency() here, and avoid the following loop? */
       routing_get_route_and_latency(prev_dst_gw, e_route->src_gateway,
-                                    &links, NULL);
-      xbt_dynar_foreach(links, cpt, link) {
-        xbt_dynar_push_as(res->link_list, sg_routing_link_t, link);
-        if (lat)
-          *lat += surf_network_model->extension.network.get_link_latency(link);
-      }
-      xbt_dynar_free(&links);
+                                    &res->link_list, lat);
     }
 
     links = e_route->link_list;
