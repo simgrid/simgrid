@@ -23,8 +23,6 @@ static int slave(int argc, char *argv[])
 
 static int master(int argc, char *argv[])
 {
-  m_process_t bob = NULL;
-
   XBT_INFO("Hello!");
   MSG_process_sleep(10.0);
   XBT_INFO("OK, goodbye now.");
