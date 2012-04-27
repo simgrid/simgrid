@@ -224,19 +224,6 @@ public abstract class Process extends Thread {
 	{
 		return nativeStop;
 	}
-	/**
-	 * checks  if the flag that indicates that this thread must be killed is set to true; if true, starts to kill it. End users should not have to deal with it
-	 * If you develop a new MSG native call, please include a call to interruptedStop() at the beginning of your method code, so as the process can be killed if he call 
-	 * your method. 
-	 *
-	 * @return				
-	 *			
-	 */ 
-	@Deprecated
-	public static void ifInterruptedStop() {
-		/* This function does nothing anymore and will get removed very soon */
-	}
-
 
 	/**
 	 * This method kill a process.
@@ -255,7 +242,6 @@ public abstract class Process extends Thread {
 	 *
 	 */
 	public void pause() {
-		Process.ifInterruptedStop();
 		MsgNative.processSuspend(this);
 	}
 	/**
@@ -265,7 +251,6 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public void restart()  {
-		Process.ifInterruptedStop();
 		MsgNative.processResume(this);
 	}
 	/**
@@ -275,7 +260,6 @@ public abstract class Process extends Thread {
 	 *						Otherwise the method returns false.
 	 */ 
 	public boolean isSuspended() {
-		Process.ifInterruptedStop();
 		return MsgNative.processIsSuspended(this);
 	}
 	/**
@@ -286,7 +270,6 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public Host getHost() {
-		Process.ifInterruptedStop();
 		if (this.host == null) {
 			this.host = MsgNative.processGetHost(this);
 		}
@@ -302,7 +285,6 @@ public abstract class Process extends Thread {
 	 * @exception			NativeException on error in the native SimGrid code
 	 */ 
 	public static Process fromPID(int PID) throws NativeException {
-		Process.ifInterruptedStop();
 		return MsgNative.processFromPID(PID);
 	}
 	/**
@@ -312,7 +294,6 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public int getPID()  {
-		Process.ifInterruptedStop();
 		if (pid == -1) {
 			pid = MsgNative.processGetPID(this);
 		}
@@ -325,7 +306,6 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public int getPPID()  {
-		Process.ifInterruptedStop();
 		if (ppid == -1) {
 			ppid = MsgNative.processGetPPID(this);
 		}
@@ -338,7 +318,6 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public static Process currentProcess()  {
-		Process.ifInterruptedStop();
 		return MsgNative.processSelf();
 	}
 	/**
@@ -349,7 +328,6 @@ public abstract class Process extends Thread {
 	 *
 	 */
 	public static void migrate(Process process, Host host)  {
-		Process.ifInterruptedStop();
 		MsgNative.processMigrate(process, host);
 		process.host = null;
 	}
@@ -361,14 +339,12 @@ public abstract class Process extends Thread {
 	 * @exception			HostFailureException on error in the native SimGrid code
 	 */ 
 	public static void waitFor(double seconds) throws HostFailureException {
-		Process.ifInterruptedStop();
 		MsgNative.processWaitFor(seconds);
 	} 
     /**
      *
      */
     public void showArgs() {
-		Process.ifInterruptedStop();
 		Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
 				this.args.size());
 		for (int i = 0; i < this.args.size(); i++)
@@ -540,7 +516,6 @@ public abstract class Process extends Thread {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
 	public void taskSend(String mailbox, Task task, double timeout) throws TransferFailureException, HostFailureException, TimeoutException {
-		Process.ifInterruptedStop();
 		MsgNative.taskSend(mailbox, task, timeout);
 	}
 
@@ -551,7 +526,6 @@ public abstract class Process extends Thread {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
 	public void taskSend(String mailbox, Task task) throws  TransferFailureException, HostFailureException, TimeoutException {
-		Process.ifInterruptedStop();
 		MsgNative.taskSend(mailbox, task, -1);
 	}
 
@@ -563,7 +537,6 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
-		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, -1.0, null);
 	}
 
@@ -576,7 +549,6 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
-		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, timeout, null);
 	}
 
@@ -590,7 +562,6 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox, double timeout, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
-		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, timeout, host);
 	}
 
@@ -603,7 +574,6 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
-		Process.ifInterruptedStop();
 		return MsgNative.taskReceive(mailbox, -1.0, host);
 	}
 }
