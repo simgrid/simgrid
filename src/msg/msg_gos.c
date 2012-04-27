@@ -383,12 +383,15 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
  *
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
- * \param match_fun boolean function taking the match_data provided by sender (here), and the one of the receiver (if any) and returning whether they match
+ * \param match_fun boolean function which parameters are:
+ *        - match_data_provided_here
+ *        - match_data_provided_by_other_side_if_any
+ *        - the_smx_action_describing_the_other_side
  * \param match_data user provided data passed to match_fun
  * \return the msg_comm_t communication created
  */
 XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *alias,
-    int (*match_fun)(void*,void*),
+    int (*match_fun)(void*,void*, smx_action_t),
     void *match_data)
 {
   simdata_task_t t_simdata = NULL;

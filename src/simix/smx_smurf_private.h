@@ -319,7 +319,7 @@ typedef struct s_smx_simcall {
       double rate;
       void *src_buff;
       size_t src_buff_size;
-      int (*match_fun)(void *, void *);
+      int (*match_fun)(void *, void *, smx_action_t);
       void *data;
       double timeout;
     } comm_send;
@@ -330,7 +330,7 @@ typedef struct s_smx_simcall {
       double rate;
       void *src_buff;
       size_t src_buff_size;
-      int (*match_fun)(void *, void *);
+      int (*match_fun)(void *, void *, smx_action_t);
       void (*clean_fun)(void *);
       void *data;
       int detached;
@@ -341,7 +341,7 @@ typedef struct s_smx_simcall {
       smx_rdv_t rdv;
       void *dst_buff;
       size_t *dst_buff_size;
-      int (*match_fun)(void *, void *);
+      int (*match_fun)(void *, void *, smx_action_t);
       void *data;
       double timeout;
     } comm_recv;
@@ -350,8 +350,8 @@ typedef struct s_smx_simcall {
       smx_rdv_t rdv;
       void *dst_buff;
       size_t *dst_buff_size;
-      int (*match_fun)(void *, void *);
-          void *data;
+      int (*match_fun)(void *, void *, smx_action_t);
+      void *data;
       smx_action_t result;
     } comm_irecv;
 

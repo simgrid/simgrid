@@ -12,6 +12,8 @@
 #include "msg/datatypes.h"
 #include "xbt/automaton.h"
 
+#include "simix/simix.h"
+
 SG_BEGIN_DECL()
 
 /** @brief Return code of most MSG functions
@@ -191,7 +193,7 @@ XBT_PUBLIC(MSG_error_t)
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(m_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(m_task_t task,
                                                     const char *alias,
-                                                    int (*match_fun)(void*,void*),
+                                                    int (*match_fun)(void*,void*, smx_action_t),
                                                     void *match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup);

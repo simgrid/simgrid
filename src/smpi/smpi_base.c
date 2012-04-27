@@ -11,7 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi,
                                 "Logging specific to SMPI (base)");
 
-static int match_recv(void* a, void* b) {
+static int match_recv(void* a, void* b, smx_action_t ignored) {
    MPI_Request ref = (MPI_Request)a;
    MPI_Request req = (MPI_Request)b;
 
@@ -21,7 +21,7 @@ static int match_recv(void* a, void* b) {
           && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag);
 }
 
-static int match_send(void* a, void* b) {
+static int match_send(void* a, void* b,smx_action_t ignored) {
    MPI_Request ref = (MPI_Request)a;
    MPI_Request req = (MPI_Request)b;
 
