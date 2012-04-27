@@ -392,8 +392,10 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 {
   xbt_assert((process != NULL), "Invalid parameters");
 
-  if(process->context->iwannadie) return;
-    process->suspended = 0;
+  if(process->context->iwannadie)
+    return;
+
+  process->suspended = 0;
 
   /* If we are resuming another process, resume the action it was waiting for
      if any. Otherwise add it to the list of process to run in the next round. */
