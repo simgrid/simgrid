@@ -156,6 +156,7 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
       args->code,
       args->data,
       args->hostname,
+      args->kill_time,
       args->argc,
       args->argv,
       args->properties);
@@ -177,6 +178,7 @@ void SIMIX_process_create(smx_process_t *process,
                           xbt_main_func_t code,
                           void *data,
                           const char *hostname,
+                          double kill_time,
                           int argc, char **argv,
                           xbt_dict_t properties) {
 
@@ -221,6 +223,14 @@ void SIMIX_process_create(smx_process_t *process,
     xbt_swag_insert(*process, simix_global->process_list);
     XBT_DEBUG("Inserting %s(%s) in the to_run list", (*process)->name, host->name);
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, *process);
+  }
+
+  if (kill_time > SIMIX_get_clock()) {
+    if (simix_global->kill_process_function) {
+      XBT_DEBUG("Process %s(%s) will be kill at time %f", (*process)->name,
+          (*process)->smx_host->name, kill_time);
+      SIMIX_timer_set(kill_time, simix_global->kill_process_function, *process);
+    }
   }
 }
 

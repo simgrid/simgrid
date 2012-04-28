@@ -223,6 +223,7 @@ typedef struct s_smx_simcall {
       xbt_main_func_t code;
       void *data;
       const char *hostname;
+      double kill_time;
       int argc;
       char **argv;
       xbt_dict_t properties;

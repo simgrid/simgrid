@@ -65,7 +65,7 @@ xbt_thread_t xbt_thread_create(const char *name, void_f_pvoid_t code,
   /*   char*name = bprintf("%s#%p",SIMIX_process_self_get_name(), param); */
   simcall_process_create(&res->s_process, name,
                            xbt_thread_create_wrapper, res,
-                           SIMIX_host_self_get_name(), 0, NULL,
+                           SIMIX_host_self_get_name(), -1.0, 0, NULL,
                            /*props */ NULL);
   res->joinable = joinable;
   res->done = 0;

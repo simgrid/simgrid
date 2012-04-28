@@ -29,7 +29,7 @@ void gras_agent_spawn(const char *name,
 
   smx_process_t process;
   simcall_process_create(&process, name, code, NULL,
-                           gras_os_myname(), argc, argv, properties);
+                           gras_os_myname(), -1.0, argc, argv, properties);
 }
 
 /* **************************************************************************

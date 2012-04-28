@@ -93,6 +93,7 @@ typedef void (*smx_creation_func_t) ( /* process */ smx_process_t*,
                                       /* code */ xbt_main_func_t,
                                       /* userdata */ void*,
                                       /* hostname */ const char*,
+                                      /* kill_time */ double,
                                       /* argc */ int,
                                       /* argv */ char**,
                                       /* props */ xbt_dict_t);
@@ -307,6 +308,7 @@ XBT_PUBLIC(void) simcall_process_create(smx_process_t *process,
                                           xbt_main_func_t code,
                                           void *data,
                                           const char *hostname,
+                                          double kill_time,
                                           int argc, char **argv,
                                           xbt_dict_t properties);
 

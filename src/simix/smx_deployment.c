@@ -33,8 +33,8 @@ static void parse_process_init(void)
   parse_argv = xbt_new(char *, 2);
   parse_argv[0] = xbt_strdup(A_surfxml_process_function);
   parse_argc = 1;
-  start_time= surf_parse_get_double(A_surfxml_process_start_time);
-  kill_time = surf_parse_get_double(A_surfxml_process_kill_time);
+  start_time = surf_parse_get_double(A_surfxml_process_start_time);
+  kill_time  = surf_parse_get_double(A_surfxml_process_kill_time);
 }
 
 static void parse_argument(void)
@@ -48,6 +48,7 @@ static void parse_process_finalize(void)
   smx_process_arg_t arg = NULL;
   smx_process_t process = NULL;
   parse_argv[parse_argc] = NULL;
+
   if (start_time > SIMIX_get_clock()) {
     arg = xbt_new0(s_smx_process_arg_t, 1);
     arg->name = parse_argv[0];
@@ -68,21 +69,20 @@ static void parse_process_finalize(void)
     if (simix_global->create_process_function)
       simix_global->create_process_function(&process,
                                             parse_argv[0],
-                                            parse_code, NULL,
-                                            parse_host, parse_argc,
+                                            parse_code,
+                                            NULL,
+                                            parse_host,
+                                            kill_time,
+                                            parse_argc,
                                             parse_argv,
                                             current_property_set);
     else
-      simcall_process_create(&process, parse_argv[0], parse_code, NULL, parse_host, parse_argc, parse_argv,
+      simcall_process_create(&process, parse_argv[0], parse_code, NULL, parse_host, kill_time, parse_argc, parse_argv,
                                current_property_set);
+
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process) {
       return;
-    }
-    if (kill_time > SIMIX_get_clock()) {
-      if (simix_global->kill_process_function) {
-        SIMIX_timer_set(start_time, simix_global->kill_process_function, process);
-      }
     }
   }
   current_property_set = NULL;
