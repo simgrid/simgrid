@@ -32,7 +32,7 @@ final class MsgNative {
 	 * @see  Process constructors.
 	 */
 	final static native
-	void processCreate(Process process, Host host);
+	void processCreate(Process process, String hostName) throws HostNotFoundException;
 
 	/**
 	 * The natively implemented method to kill all the process of the simulation.

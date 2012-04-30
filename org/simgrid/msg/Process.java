@@ -185,7 +185,11 @@ public abstract class Process extends Thread {
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
 
-		MsgNative.processCreate(this, host);
+		try {
+			MsgNative.processCreate(this, host.getName());
+		} catch (HostNotFoundException e) {
+			throw new RuntimeException("The impossible happend (yet again): the host that I have were not found",e);
+		}
 		
 	}
 

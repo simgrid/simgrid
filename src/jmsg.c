@@ -61,18 +61,21 @@ static jobject native_to_java_process(m_process_t process)
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
                                          jobject jprocess_arg,
-                                         jobject jhost)
+                                         jobject jhostname)
 {
      
    
   jobject jprocess;             /* the global reference to the java process instance    */
   jstring jname;                /* the name of the java process instance                */
   const char *name;             /* the C name of the process                            */
+  const char *hostname;
   m_process_t process;          /* the native process to create                         */
   m_host_t host;                /* Where that process lives */
    
-  XBT_DEBUG("Java_org_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,jhost=%p)",
-	 env, cls, jprocess_arg, jhost);
+  hostname = (*env)->GetStringUTFChars(env, jhostname, 0);
+
+  XBT_DEBUG("Java_org_simgrid_msg_MsgNative_processCreate(env=%p,cls=%p,jproc=%p,host=%s)",
+	 env, cls, jprocess_arg, hostname);
    
    
   /* get the name of the java process */
@@ -84,10 +87,10 @@ Java_org_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
   }
 
   /* bind/retrieve the msg host */
-  host = jhost_get_native(env, jhost);
+  host = MSG_get_host_by_name(hostname);
 
   if (!(host)) {    /* not binded */
-    jxbt_throw_notbound(env, "host", jhost);
+    jxbt_throw_host_not_found(env, hostname);
     return;
   }
 
@@ -116,6 +119,7 @@ Java_org_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
   /* release our reference to the process name (variable name becomes invalid) */
   //FIXME : This line should be uncommented but with mac it doesn't work. BIG WARNING
   //(*env)->ReleaseStringUTFChars(env, jname, name);
+  (*env)->ReleaseStringUTFChars(env, jhostname, hostname);
    
   /* bind the java process instance to the native process */
   jprocess_bind(jprocess, process, env);
