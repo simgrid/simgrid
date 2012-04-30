@@ -226,14 +226,16 @@ Java_org_simgrid_msg_MsgNative_processGetHost(JNIEnv * env, jclass cls,
   }
 
   host = MSG_process_get_host(process);
+  jobject res = (jobject)MSG_host_get_data(host);
 
-  if (!MSG_host_get_data(host)) {
-    jxbt_throw_jni(env, "MSG_process_get_host() failed");
-    return NULL;
+  if (!res) {
+	  XBT_INFO("Binding error for host %s ",MSG_host_get_name(host));
+	  jxbt_throw_jni(env, bprintf("Binding error for host %s ",MSG_host_get_name(host)));
+	  return NULL;
   }
 
   /* return the global reference to the java host instance */
-  return (jobject) MSG_host_get_data(host);
+  return res;
 
 }
 
@@ -359,7 +361,7 @@ Java_org_simgrid_msg_MsgNative_hostGetByName(JNIEnv * env, jclass cls,
   XBT_DEBUG("Looking for host '%s'",name);
   /* get the host by name       (the hosts are created during the grid resolution) */
   host = MSG_get_host_by_name(name);
-  XBT_DEBUG("MSG gave %p as native host (smx_host=%p)", host,host? host->smx_host:NULL);
+  XBT_DEBUG("MSG gave %p as native host", host);
 
   if (!host) {                  /* invalid name */
     jxbt_throw_host_not_found(env, name);
@@ -404,13 +406,18 @@ Java_org_simgrid_msg_MsgNative_hostGetName(JNIEnv * env, jclass cls,
                                        jobject jhost)
 {
   m_host_t host = jhost_get_native(env, jhost);
+  const char* name;
 
   if (!host) {
     jxbt_throw_notbound(env, "host", jhost);
     return NULL;
   }
 
-  return (*env)->NewStringUTF(env, MSG_host_get_name(host));
+  name = MSG_host_get_name(host);
+  if (!name)
+	  xbt_die("This host has no name...");
+
+  return (*env)->NewStringUTF(env, name);
 }
 
 JNIEXPORT jint JNICALL
