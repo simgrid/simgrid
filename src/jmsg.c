@@ -110,7 +110,7 @@ Java_org_simgrid_msg_MsgNative_processCreate(JNIEnv * env, jclass cls,
 						(xbt_main_func_t) jprocess,
 						/*data*/ NULL,
 						host,
-						/*kill_time*/0.,
+						/* kill_time */-1,
 						/*argc, argv, properties*/
 						0,NULL,NULL);
      
