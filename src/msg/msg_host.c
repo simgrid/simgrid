@@ -46,7 +46,6 @@ m_host_t __MSG_host_create(smx_host_t workstation)
   }
 #endif
 
-  simcall_host_set_data(workstation, host);
   xbt_lib_set(host_lib,name,MSG_HOST_LEVEL,host);
 
   return host;
@@ -61,15 +60,8 @@ m_host_t __MSG_host_create(smx_host_t workstation)
  */
 m_host_t MSG_get_host_by_name(const char *name)
 {
-  smx_host_t simix_h = NULL;
-  simix_h = simcall_host_get_by_name(name);
-
-  if (simix_h == NULL)
-    return NULL;
-
-  return (m_host_t) simcall_host_get_data(simix_h);
+  return (m_host_t) xbt_lib_get_or_null(host_lib,name,MSG_HOST_LEVEL);
 }
-
 
 /** \ingroup m_host_management
  *
@@ -94,7 +86,6 @@ MSG_error_t MSG_host_set_data(m_host_t host, void *data)
  */
 void *MSG_host_get_data(m_host_t host)
 {
-
   return SIMIX_host_get_data(host->smx_host);
 }
 
