@@ -101,7 +101,6 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/Process.java
 	org/simgrid/msg/ProcessKilled.java
 	org/simgrid/msg/ProcessNotFoundException.java
-	org/simgrid/msg/Sem.java
 	org/simgrid/msg/Task.java
 	org/simgrid/msg/TaskCancelledException.java
 	org/simgrid/msg/TimeoutException.java

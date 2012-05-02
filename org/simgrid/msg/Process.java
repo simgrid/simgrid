@@ -14,6 +14,7 @@ package org.simgrid.msg;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.concurrent.Semaphore;
 
 /**
  * A process may be defined as a code, with some private data, executing 
@@ -105,7 +106,7 @@ public abstract class Process extends Thread {
     /**
      *
      */
-    protected Sem schedBegin, schedEnd;
+    protected Semaphore schedBegin, schedEnd;
     private boolean nativeStop = false;
 
 	/**
@@ -118,8 +119,8 @@ public abstract class Process extends Thread {
 		this.bind = 0;
 		this.args = new Vector<String>();
 		this.properties = null;
-		schedBegin = new Sem(0);
-		schedEnd = new Sem(0);
+		schedBegin = new Semaphore(0);
+		schedEnd = new Semaphore(0);
 	}
 
 
