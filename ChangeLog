@@ -1,5 +1,6 @@
 SimGrid-java (3.6.1) unstable; urgency=low
 
+ * Introduce msg.simgrid.Mutex, exporting simgrid mutex to Java.
  * Do not embeed our version of semaphores, java 1.5 can be considered
    as sufficiently prevalent for us to not dupplicate its features.
  * Make Process.kill(process) an instance method, not a static one

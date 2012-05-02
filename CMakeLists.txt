@@ -84,6 +84,8 @@ set(JMSG_C_SRC
 	src/jmsg_process.h
 	src/jmsg_task.c
 	src/jmsg_task.h
+	src/jmsg_synchro.c
+	src/jmsg_synchro.h
 	src/jmsg_application_handler.c
 	src/jmsg_application_handler.h
 )
@@ -105,6 +107,7 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/TaskCancelledException.java
 	org/simgrid/msg/TimeoutException.java
 	org/simgrid/msg/TransferFailureException.java	
+	org/simgrid/msg/Mutex.java
 )
 
 set(JAVA_EXAMPLES
