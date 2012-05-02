@@ -74,6 +74,9 @@ int slave(int argc, char *argv[])
   m_task_t task = NULL;
 
   TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "is_slave", 1);
+  TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()),
+                          "task_computation",
+                          0);
   while (1) {
     MSG_task_receive(&(task), "master_mailbox");
 
