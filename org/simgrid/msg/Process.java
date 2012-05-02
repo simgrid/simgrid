@@ -100,13 +100,9 @@ public abstract class Process extends Thread {
 	public Vector<String> args;
 
 	/* process synchronization tools */
-    /**
-     *
-     */
-    /**
-     *
-     */
-    protected Semaphore schedBegin, schedEnd;
+	
+	/* give the full path to semaphore to ensure that our own implementation don't get selected */
+    protected java.util.concurrent.Semaphore schedBegin, schedEnd;
     private boolean nativeStop = false;
 
 	/**
@@ -119,8 +115,8 @@ public abstract class Process extends Thread {
 		this.bind = 0;
 		this.args = new Vector<String>();
 		this.properties = null;
-		schedBegin = new Semaphore(0);
-		schedEnd = new Semaphore(0);
+		schedBegin = new java.util.concurrent.Semaphore(0);
+		schedEnd = new java.util.concurrent.Semaphore(0);
 	}
 
 
