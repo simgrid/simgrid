@@ -267,11 +267,14 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
     xbt_swag_insert_at_head(elem, &(elem->constraint->element_set));
   else
     xbt_swag_insert_at_tail(elem, &(elem->constraint->element_set));
-
-  make_constraint_active(sys, cnst);
-  lmm_update_modified_set(sys, cnst);
-  if (var->cnsts_number > 1)
-    lmm_update_modified_set(sys, var->cnsts[0].constraint);
+  if(!sys->selective_update_active) {
+    make_constraint_active(sys, cnst);
+  } else if(elem->value>0 || var->weight >0) {
+    make_constraint_active(sys, cnst);
+    lmm_update_modified_set(sys, cnst);
+    if (var->cnsts_number > 1)
+      lmm_update_modified_set(sys, var->cnsts[0].constraint);
+  }
 }
 
 void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
