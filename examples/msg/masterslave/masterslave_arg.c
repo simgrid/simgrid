@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
   XBT_INFO("Got %ld slaves, %ld tasks to process, and %ld hosts", number_of_slaves, number_of_jobs,number_max);
 
   m_host_t *host_table =  xbt_dynar_to_array(host_dynar);
-  xbt_dynar_free(&host_dynar);
+  //xbt_dynar_free(&host_dynar);
 
   MSG_process_create( "master",
                       master,
