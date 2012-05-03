@@ -370,7 +370,6 @@ p Testing the bypassing of the flexml parser
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
-> [  0.000000] (2:slave@host B) I'm a slave
 > [  0.000000] (1:master@host A) Got 1 slave(s) :
 > [  0.000000] (1:master@host A) 	 host B
 > [  0.000000] (1:master@host A) Got 20 task to process :
@@ -395,6 +394,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI
 > [  0.000000] (1:master@host A) 	"Task_18"
 > [  0.000000] (1:master@host A) 	"Task_19"
 > [  0.000000] (1:master@host A) Sending "Task_0" to "host B"
+> [  0.000000] (2:slave@host B) I'm a slave
 > [  4.602000] (2:slave@host B) Received "Task_0" 
 > [  4.602000] (2:slave@host B) Processing "Task_0" 
 > [  4.602000] (1:master@host A) Send completed
