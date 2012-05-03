@@ -33,6 +33,46 @@ unsigned int hash_region(char *str, int str_len){
 
 }
 
+int data_program_region_compare(void *d1, void *d2, size_t size){
+  int distance = 0;
+  int pointer_align;
+  int i;
+  
+  for(i=0; i<size; i++){
+    if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
+      fprintf(stderr,"Different byte (offset=%d) (%p - %p) in data program region\n", i, (char *)d1 + i, (char *)d2 + i);
+      distance++;
+      pointer_align = (i /sizeof(void *)) * sizeof(void *);
+      fprintf(stderr, "Pointer address : %p - %p\n", (char *)d1 + pointer_align, (char *)d2 + pointer_align);
+      fprintf(stderr, "Pointed address : %p - %p\n", *((void **)((char *)d1 + pointer_align)), *((void **)((char *)d2 + pointer_align)));
+    }
+  }
+  
+  fprintf(stderr, "Hamming distance between data program regions : %d", distance);
+
+  return distance;
+}
+
+int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
+  int distance = 0;
+  int pointer_align;
+  int i;
+  
+  for(i=0; i<size; i++){
+    if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
+      fprintf(stderr, "Different byte (offset=%d) (%p - %p) in data libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);
+      distance++;
+      pointer_align = (i /sizeof(void *)) * sizeof(void *);
+      fprintf(stderr, "Pointer address : %p - %p\n", (char *)d1 + pointer_align, (char *)d2 + pointer_align);
+      fprintf(stderr, "Pointed address : %p - %p\n", *((void **)((char *)d1 + pointer_align)), *((void **)((char *)d2 + pointer_align)));
+    }
+  }
+  
+  fprintf(stderr, "Hamming distance between data libsimgrid regions : %d", distance);
+  
+  return distance;
+}
+
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   
@@ -82,7 +122,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 	}
       }
       break;
-      /*case 1 :
+    case 1 :
       if(s1->regions[i]->size != s2->regions[i]->size){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different size of libsimgrid (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
@@ -99,23 +139,47 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 	  return 1;
 	}
       }
-      if(memcmp(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+      if(data_program_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different memcmp for data in libsimgrid");
-	  XBT_DEBUG("Size : %zu", s1->regions[i]->size);
  	  errors++;
 	}else{
 	  return 1;
 	}
       }
-      break;*/
+      break;
+    case 2 :
+      if(s1->regions[i]->size != s2->regions[i]->size){
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different size of data program (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
+	  errors++;
+	}else{
+	  return 1;
+	}
+      }
+      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different start addr of data program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+ 	  errors++;
+	}else{
+	  return 1;
+	}
+      }
+      if(data_libsimgrid_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+	  XBT_DEBUG("Different memcmp for data in libsimgrid");
+ 	  errors++;
+	}else{
+	  return 1;
+	}
+      }
+      break;
     default:
       break;
     }
   }
 
   return (errors > 0);
-  
   
 }
 
@@ -645,16 +709,16 @@ int visited_hash(xbt_state_t st, int sc){
 	      MC_UNSET_RAW_MEM;
 	      return 1;
 	    }else{
-	      XBT_DEBUG("Different snapshot");
+	      //XBT_DEBUG("Different snapshot");
 	    }
 	  }else{
-	    XBT_DEBUG("Different values of propositional symbols"); 
+	    //XBT_DEBUG("Different values of propositional symbols"); 
 	  }
 	}else{
-	  XBT_DEBUG("Different automaton state");
+	  //XBT_DEBUG("Different automaton state");
 	}
       }else{
-	XBT_DEBUG("Different value of search_cycle");
+	//XBT_DEBUG("Different value of search_cycle");
       }
       
       region_diff = 0;
@@ -812,9 +876,13 @@ void MC_ddfs_init(void){
   XBT_DEBUG("Double-DFS init");
   XBT_DEBUG("**************************************************");
 
+  XBT_DEBUG("Std heap : %p", std_heap);
+  XBT_DEBUG("Raw heap : %p", raw_heap);
+
   mc_pair_stateless_t mc_initial_pair = NULL;
   mc_state_t initial_graph_state = NULL;
   smx_process_t process; 
+
  
   MC_wait_for_requests();
 
@@ -903,7 +971,7 @@ void MC_ddfs(int search_cycle){
  
   mc_stats_pair->visited_pairs++;
 
-  sleep(1);
+  //sleep(1);
 
   int value;
   mc_state_t next_graph_state = NULL;
