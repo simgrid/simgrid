@@ -390,7 +390,7 @@ smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
       }
       return NULL;
     } else {
-      DIE_IMPOSSIBLE;
+      /* Suspension is delayed to when the process is rescheduled. */
       return NULL;
     }
   } else {
@@ -402,9 +402,12 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 {
   xbt_assert((process != NULL), "Invalid parameters");
 
+  XBT_IN("process = %p, issuer = %p", process, issuer);
+
   if(process->context->iwannadie)
     return;
 
+  if(!process->suspended) return;
   process->suspended = 0;
 
   /* If we are resuming another process, resume the action it was waiting for
@@ -433,12 +436,10 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
               (int)process->waiting_action->type);
       }
     }
-    else {
-      DIE_IMPOSSIBLE;
-//      if(!xbt_dynar_member(simix_global->process_to_run, &(process)))
-//        xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
-    }
+    else
+      XBT_WARN("Strange. Process %p is trying to resume himself.", issuer);
   }
+  XBT_OUT();
 }
 
 int SIMIX_process_get_maxpid(void) {
@@ -628,6 +629,12 @@ void SIMIX_process_yield(smx_process_t self)
   if (self->context->iwannadie){
     XBT_DEBUG("I wanna die!");
     SIMIX_context_stop(self->context);
+  }
+
+  if(self->suspended) {
+    xbt_assert(!self->doexception, "Gloups! This exception may be lost by subsequent calls.");
+    self->suspended = 0;
+    SIMIX_process_suspend(self,self);
   }
 
   if (self->doexception) {

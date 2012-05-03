@@ -128,7 +128,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   int errors = 0;
 
-  if(mdp1->headersize != mdp2->headersize){
+  /*if(mdp1->headersize != mdp2->headersize){
     fprintf(stderr, "Different size of the file header for the mapped files\n");
     return 1;
   }
@@ -191,7 +191,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   if(mdp1->version != mdp2->version){
     fprintf(stderr,"Different version of the mmalloc package\n");
     return 1;
-  }
+    }*/
 
 
   size_t i, j;

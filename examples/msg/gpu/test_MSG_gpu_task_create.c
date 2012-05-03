@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
   mytask = MSG_gpu_task_create("testTask", 2000.0, 20.0, 20.0);
 
-
+  XBT_INFO("GPU task %p was created", mytask);
 
   MSG_clean();
 
