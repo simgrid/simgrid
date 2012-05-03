@@ -40,3 +40,14 @@ Java_org_simgrid_msg_Mutex_release(JNIEnv * env, jobject obj) {
 	mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, id);
 	xbt_mutex_release(mutex);
 }
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Mutex_exit(JNIEnv * env, jobject obj) {
+		xbt_mutex_t mutex;
+
+		jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Mutex", "bind", "J");
+		if (!id) return;
+
+		mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, id);
+		xbt_mutex_destroy(mutex);
+}

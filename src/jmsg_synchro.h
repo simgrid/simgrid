@@ -22,5 +22,7 @@ Java_org_simgrid_msg_Mutex_acquire(JNIEnv * env, jobject obj);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_release(JNIEnv * env, jobject obj);
 
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Mutex_exit(JNIEnv * env, jobject obj);
 
 #endif                          /* !MSG_JPROCESS_H */

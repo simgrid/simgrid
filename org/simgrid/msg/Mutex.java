@@ -16,7 +16,12 @@ public class Mutex {
 	public Mutex(int capa) {
 		init(capa);
 	}
+	protected void finalize() {
+		exit();
+	}
+	private native void exit();
 	private native void init(int capacity);
 	public native void acquire();
 	public native void release();
+	
 }
