@@ -33,6 +33,7 @@ public class Master extends Process {
 			//Msg.info("Sending \"" + task.getName()+ "\" to \"slave_" + i % slavesCount + "\"");
 			task.send("slave_"+(i%slavesCount));
 		}
+		simulatedSleep(1);
 
 		Msg.info("All tasks have been dispatched. Let's tell (asynchronously) everybody the computation is over, and sleep 20s so that nobody gets a message from a terminated process.");
 

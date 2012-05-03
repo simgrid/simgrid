@@ -78,6 +78,8 @@ set(JMSG_C_SRC
 	src/jxbt_utilities.h
 	src/jmsg.c 
 	src/jmsg.h
+	src/jmsg_comm.c
+	src/jmsg_comm.h
 	src/jmsg_host.c
 	src/jmsg_host.h
 	src/jmsg_process.c
@@ -108,6 +110,7 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/TimeoutException.java
 	org/simgrid/msg/TransferFailureException.java	
 	org/simgrid/msg/Mutex.java
+	org/simgrid/msg/Comm.java
 )
 
 set(JAVA_EXAMPLES

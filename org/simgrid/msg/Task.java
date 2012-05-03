@@ -137,6 +137,7 @@ public class Task {
 			MsgNative.taskDestroy(this);
 	}
 
+
 	/** Send the task asynchronously on the mailbox identified by the specified name, 
 	 *  with no way to retrieve whether the communication succeeded or not
 	 * 
@@ -183,7 +184,17 @@ public class Task {
 	public void sendBounded(String alias, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
 		MsgNative.taskSendBounded(alias, this, maxrate);
 	} 
-
+	/**
+	 * Starts listening for receiving a task from an asynchronous communication
+	 * @param mailbox
+	 * @return
+	 */
+	public static Comm irecv(String mailbox) {
+		Comm comm = new Comm();
+		irecvBind(comm,mailbox);
+		return comm;
+	}
+	public static native void irecvBind(Comm comm, String mailbox);
 	/**
 	 * Retrieves next task from the mailbox identified by the specified name
 	 *
