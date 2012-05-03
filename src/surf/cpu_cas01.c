@@ -190,45 +190,43 @@ static void cpu_action_state_set(surf_action_t action,
   return;
 }
 
-static void cpu_update_action_remaining_lazy(double now)
+static void cpu_update_action_remaining_lazy(surf_action_cpu_Cas01_t action, double now)
 {
-  surf_action_cpu_Cas01_t action;
   double delta = 0.0;
 
-  xbt_swag_foreach(action, cpu_modified_set) {
-    if (GENERIC_ACTION(action).state_set !=
-        surf_cpu_model->states.running_action_set)
-      continue; // FIXME useless ????
+  xbt_assert(GENERIC_ACTION(action).state_set == surf_cpu_model->states.running_action_set,
+      "You're updating an action that is not running.");
 
     /* bogus priority, skip it */
-    if (GENERIC_ACTION(action).priority <= 0)
-      continue;
+  xbt_assert(GENERIC_ACTION(action).priority > 0,
+      "You're updating an action that seems suspended.");
 
-    delta = now - GENERIC_LMM_ACTION(action).last_update;
-    if (GENERIC_ACTION(action).remains > 0) {
-
-      double_update(&(GENERIC_ACTION(action).remains),
-                    lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * delta);
+  delta = now - GENERIC_LMM_ACTION(action).last_update;
+  if (GENERIC_ACTION(action).remains > 0) {
+    XBT_DEBUG("Updating action(%p): remains was %lf, last_update was: %lf", action,
+        GENERIC_ACTION(action).remains,
+        GENERIC_LMM_ACTION(action).last_update);
+    double_update(&(GENERIC_ACTION(action).remains),
+        GENERIC_LMM_ACTION(action).last_value * delta);
 
 #ifdef HAVE_TRACING
-      if (TRACE_is_enabled()) {
-        cpu_Cas01_t cpu =
-            lmm_constraint_id(lmm_get_cnst_from_var
-                              (cpu_maxmin_system,
-                               GENERIC_LMM_ACTION(action).variable, 0));
-        TRACE_surf_host_set_utilization(cpu->generic_resource.name,
-                                        ((surf_action_t)action)->category,
-                                        lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
-                                        GENERIC_LMM_ACTION(action).last_update,
-                                        now - GENERIC_LMM_ACTION(action).last_update);
-      }
-#endif
-      XBT_DEBUG("Update action(%p) remains %lf", action,
-                GENERIC_ACTION(action).remains);
+    if (TRACE_is_enabled()) {
+      cpu_Cas01_t cpu =
+          lmm_constraint_id(lmm_get_cnst_from_var
+              (cpu_maxmin_system,
+                  GENERIC_LMM_ACTION(action).variable, 0));
+      TRACE_surf_host_set_utilization(cpu->generic_resource.name,
+          ((surf_action_t)action)->category,
+          GENERIC_LMM_ACTION(action).last_value,
+          GENERIC_LMM_ACTION(action).last_update,
+          now - GENERIC_LMM_ACTION(action).last_update);
     }
-    GENERIC_LMM_ACTION(action).last_update = now;
+#endif
+    XBT_DEBUG("Updating action(%p): remains is now %lf", action,
+    GENERIC_ACTION(action).remains);
   }
-
+  GENERIC_LMM_ACTION(action).last_update = now;
+  GENERIC_LMM_ACTION(action).last_value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
 }
 
 static double cpu_share_resources_lazy(double now)
@@ -240,7 +238,6 @@ static double cpu_share_resources_lazy(double now)
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %d",
        xbt_swag_size(cpu_modified_set));
-  cpu_update_action_remaining_lazy(now);
 
   lmm_solve(cpu_maxmin_system);
 
@@ -248,7 +245,7 @@ static double cpu_share_resources_lazy(double now)
       ("After share resources, The size of modified actions set is %d",
        xbt_swag_size(cpu_modified_set));
 
-  xbt_swag_foreach(action, cpu_modified_set) {
+  while((action = xbt_swag_extract(cpu_modified_set))) {
     int max_dur_flag = 0;
 
     if (GENERIC_ACTION(action).state_set !=
@@ -258,6 +255,8 @@ static double cpu_share_resources_lazy(double now)
     /* bogus priority, skip it */
     if (GENERIC_ACTION(action).priority <= 0)
       continue;
+
+    cpu_update_action_remaining_lazy(action,now);
 
     min = -1;
     value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
@@ -338,7 +337,7 @@ static void cpu_update_actions_state_lazy(double now, double delta)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     GENERIC_ACTION(action).remains = 0;
     cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action);
+    surf_action_lmm_heap_remove(cpu_action_heap,(surf_action_lmm_t)action); //FIXME: strange call since action was already popped
   }
 #ifdef HAVE_TRACING
   if (TRACE_is_enabled()) {
@@ -484,6 +483,7 @@ static surf_action_t cpu_execute(void *cpu, double size)
   if (cpu_update_mechanism == UM_LAZY) {
     GENERIC_LMM_ACTION(action).index_heap = -1;
     GENERIC_LMM_ACTION(action).last_update = surf_get_clock();
+    GENERIC_LMM_ACTION(action).last_value = 0.0;
   }
   lmm_expand(cpu_maxmin_system, CPU->constraint,
              GENERIC_LMM_ACTION(action).variable, 1.0);
@@ -500,6 +500,7 @@ static surf_action_t cpu_action_sleep(void *cpu, double duration)
 
   XBT_IN("(%s,%g)", surf_resource_name(cpu), duration);
   action = (surf_action_cpu_Cas01_t) cpu_execute(cpu, 1.0);
+  // FIXME: sleep variables should not consume 1.0 in lmm_expand
   GENERIC_ACTION(action).max_duration = duration;
   GENERIC_LMM_ACTION(action).suspended = 2;
   if (duration == NO_MAX_DURATION) {
@@ -598,7 +599,8 @@ static double cpu_action_get_remains(surf_action_t action)
   XBT_IN("(%p)", action);
   /* update remains before return it */
   if (cpu_update_mechanism == UM_LAZY)
-    cpu_update_action_remaining_lazy(surf_get_clock());
+    cpu_update_action_remaining_lazy((surf_action_cpu_Cas01_t)action,
+        surf_get_clock());
   XBT_OUT();
   return action->remains;
 }
