@@ -240,6 +240,8 @@ XBT_PUBLIC(const char*) SIMIX_host_self_get_name(void);
 XBT_PUBLIC(const char*) SIMIX_host_get_name(smx_host_t host); /* FIXME: make private: only the name of SIMIX_host_self() should be public without request */
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
+XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
+XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
 
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);

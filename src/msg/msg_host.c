@@ -8,6 +8,7 @@
 #include "msg/msg_mailbox.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "simgrid/simix.h"
 
 /** @addtogroup m_host_management
  *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
