@@ -10,7 +10,7 @@
 #include "xbt/misc.h"           /* XBT_PUBLIC(), SG_BEGIN_DECL() and SG_END_DECL() definitions  */
 #include "xbt/function_types.h" /* function pointer types declarations                                                  */
 #include "xbt_modinter.h"       /* xbt_context_init() and xbt_context_exit() declarations               */
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 
 SG_BEGIN_DECL()
 

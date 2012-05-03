@@ -43,7 +43,7 @@ void MSG_create_environment(const char *file)
   /* Initialize MSG hosts */
   xbt_lib_foreach(host_lib, cursor, name, data) {
     if(data[SIMIX_HOST_LEVEL])
-      __MSG_host_create((smx_host_t)data[SIMIX_HOST_LEVEL], NULL);
+      __MSG_host_create((smx_host_t)data[SIMIX_HOST_LEVEL]);
   }
 }
 

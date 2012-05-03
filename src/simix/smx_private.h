@@ -7,7 +7,7 @@
 #ifndef _SIMIX_PRIVATE_H
 #define _SIMIX_PRIVATE_H
 
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "surf/surf.h"
 #include "xbt/fifo.h"
 #include "xbt/swag.h"
@@ -123,6 +123,9 @@ typedef struct s_smx_action {
       int detached;                   /* If detached or not */
 
       void (*clean_fun)(void*);       /* Function to clean the detached src_buf if something goes wrong */
+      int (*match_fun)(void*,void*,smx_action_t);  /* Filter function used by the other side. It is used when
+                                         looking if a given communication matches my needs. For that, myself must match the
+                                         expectations of the other side, too. See  */
 
       /* Surf action data */
       surf_action_t surf_comm;        /* The Surf communication action encapsulated */

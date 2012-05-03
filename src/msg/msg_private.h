@@ -8,7 +8,7 @@
 #define METASIMGRID_PRIVATE_H
 
 #include "msg/msg.h"
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "surf/surf.h"
 #include "xbt/fifo.h"
 #include "xbt/dynar.h"
@@ -20,10 +20,6 @@
 SG_BEGIN_DECL()
 
 /**************** datatypes **********************************/
-typedef struct simdata_host {
-  smx_host_t smx_host;          /* SURF modeling                                                                */
-  msg_mailbox_t *mailboxes;     /* mailboxes to store msg tasks of of the host  */
-} s_simdata_host_t;
 
 /********************************* Task **************************************/
 
@@ -125,7 +121,7 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #  define MSG_RETURN(val) return(val)
 #endif
 
-m_host_t __MSG_host_create(smx_host_t workstation, void *data);
+m_host_t __MSG_host_create(smx_host_t workstation);
 void __MSG_host_destroy(m_host_t host);
 
 void __MSG_display_process_status(void);

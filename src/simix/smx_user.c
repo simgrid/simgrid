@@ -700,7 +700,7 @@ smx_action_t simcall_rdv_get_head(smx_rdv_t rdv)
 
 void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
-                         int (*match_fun)(void *, void *), void *data,
+                         int (*match_fun)(void *, void *, smx_action_t), void *data,
                          double timeout)
 {
   /* checking for infinite values */
@@ -735,7 +735,7 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
 
 smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *),
+                              int (*match_fun)(void *, void *, smx_action_t),
                               void (*clean_fun)(void *),
                               void *data,
                               int detached)
@@ -764,7 +764,7 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
 }
 
 void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
-                         int (*match_fun)(void *, void *), void *data, double timeout)
+                         int (*match_fun)(void *, void *, smx_action_t), void *data, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   xbt_assert(rdv, "No rendez-vous point defined for recv");
@@ -791,7 +791,7 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
 }
 
 smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
-                                  int (*match_fun)(void *, void *), void *data)
+                                  int (*match_fun)(void *, void *, smx_action_t), void *data)
 {
   xbt_assert(rdv, "No rendez-vous point defined for irecv");
 

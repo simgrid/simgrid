@@ -437,6 +437,7 @@ set(headers_to_install
 	include/xbt/file_stat.h
 	include/simgrid/platf.h
 	include/simgrid/modelchecker.h
+	include/simgrid/simix.h
 	include/msg/msg.h
 	include/msg/datatypes.h
 	include/simdag/simdag.h
@@ -460,9 +461,6 @@ set(headers_to_install
 	include/instr/instr.h
 	include/gras.h 
 	include/xbt.h
-	include/simix/simix.h
-	include/simix/datatypes.h
-	include/simix/context.h
 )
 set(source_of_generated_headers
 	include/simgrid_config.h.in

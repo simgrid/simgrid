@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "gras/Virtu/virtu_sg.h"
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 
 /*
  * Time elapsed since the begining of the simulation.

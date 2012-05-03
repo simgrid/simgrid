@@ -19,7 +19,6 @@
 #include "xbt/hash.h"
 #include "msg/msg.h"
 #include "msg/datatypes.h"
-#include "simix/datatypes.h"
 
 /****************************** Snapshots ***********************************/
 

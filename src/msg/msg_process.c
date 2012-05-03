@@ -176,7 +176,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  simcall_process_create(&process, name, code, simdata, host->name, kill_time,
+  simcall_process_create(&process, name, code, simdata, SIMIX_host_get_name(host->smx_host), kill_time,
                            argc, argv, properties);
 
   if (!process) {
@@ -233,7 +233,7 @@ MSG_error_t MSG_process_migrate(m_process_t process, m_host_t host)
   m_host_t now = simdata->m_host;
   TRACE_msg_process_change_host(process, now, host);
 #endif
-  simcall_process_change_host(process, host->simdata->smx_host);
+  simcall_process_change_host(process, host->smx_host);
   return MSG_OK;
 }
 

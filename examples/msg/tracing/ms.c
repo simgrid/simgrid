@@ -41,7 +41,7 @@ int master(int argc, char *argv[])
   long slaves_count = atol(argv[4]);
 
   //setting the variable "is_master" (previously declared) to value 1
-  TRACE_host_variable_set(MSG_host_self()->name, "is_master", 1);
+  TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "is_master", 1);
 
   TRACE_mark("msmark", "start_send_tasks");
   int i;
@@ -50,7 +50,7 @@ int master(int argc, char *argv[])
     task = MSG_task_create("task", task_comp_size, task_comm_size, NULL);
 
     //setting the variable "task_creation" to value i
-    TRACE_host_variable_set(MSG_host_self()->name, "task_creation", i);
+    TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "task_creation", i);
 
     //setting the category of task to "compute"
     //the category of a task must be defined before it is sent or executed
@@ -73,7 +73,10 @@ int slave(int argc, char *argv[])
 {
   m_task_t task = NULL;
 
-  TRACE_host_variable_set(MSG_host_self()->name, "is_slave", 1);
+  TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "is_slave", 1);
+  TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()),
+                          "task_computation",
+                          0);
   while (1) {
     MSG_task_receive(&(task), "master_mailbox");
 
@@ -83,7 +86,7 @@ int slave(int argc, char *argv[])
     }
     //adding the value returned by MSG_task_get_compute_duration(task)
     //to the variable "task_computation"
-    TRACE_host_variable_add(MSG_host_self()->name,
+    TRACE_host_variable_add(MSG_host_get_name(MSG_host_self()),
                             "task_computation",
                             MSG_task_get_compute_duration(task));
     MSG_task_execute(task);

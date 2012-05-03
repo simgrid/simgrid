@@ -69,7 +69,7 @@ int master(int argc, char *argv[])
 
   XBT_INFO("Got %d slave(s) :", slaves_count);
   for (i = 0; i < slaves_count; i++)
-    XBT_INFO("\t %s", slaves[i]->name);
+    XBT_INFO("\t %s", MSG_host_get_name(slaves[i]));
 
   XBT_INFO("Got %d task to process :", number_of_tasks);
 
@@ -78,7 +78,7 @@ int master(int argc, char *argv[])
 
   for (i = 0; i < number_of_tasks; i++) {
     XBT_INFO("Sending \"%s\" to \"%s\"",
-          todo[i]->name, slaves[i % slaves_count]->name);
+          todo[i]->name, MSG_host_get_name(slaves[i % slaves_count]));
     if (MSG_host_self() == slaves[i % slaves_count]) {
       XBT_INFO("Hey ! It's me ! :)");
     }

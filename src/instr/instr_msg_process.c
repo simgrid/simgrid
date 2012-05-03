@@ -45,7 +45,7 @@ void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_hos
     PJ_container_free(existing_container);
 
     //create new container on the new_host location
-    msg = PJ_container_new(instr_process_id(process, str, len), INSTR_MSG_PROCESS, PJ_container_get(new_host->name));
+    msg = PJ_container_new(instr_process_id(process, str, len), INSTR_MSG_PROCESS, PJ_container_get(SIMIX_host_get_name(new_host->smx_host)));
 
     //end link
     msg = PJ_container_get(instr_process_id(process, str, len));
@@ -60,7 +60,7 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, m_host
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t host_container = PJ_container_get (host->name);
+    container_t host_container = PJ_container_get (SIMIX_host_get_name(host->smx_host));
     PJ_container_new(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
   }
 }

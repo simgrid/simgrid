@@ -12,7 +12,7 @@
 #define GRAS_TRP_INTERFACE_H
 
 #include "portable.h"           /* sometimes needed for fd_set */
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "xbt/queue.h"
 
 /* Data of this module specific to each process

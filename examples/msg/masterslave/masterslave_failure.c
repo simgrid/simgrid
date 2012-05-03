@@ -55,7 +55,7 @@ int master(int argc, char *argv[])
 
   XBT_INFO("Got %d slave(s) :", slaves_count);
   for (i = 0; i < slaves_count; i++)
-    XBT_INFO("%s", slaves[i]->name);
+    XBT_INFO("%s", MSG_host_get_name(slaves[i]));
 
   XBT_INFO("Got %d task to process :", number_of_tasks);
 
@@ -79,13 +79,13 @@ int master(int argc, char *argv[])
     } else if (a == MSG_TRANSFER_FAILURE) {
       XBT_INFO
           ("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!",
-           slaves[i % slaves_count]->name);
+              MSG_host_get_name(slaves[i % slaves_count]));
       free(task->data);
       MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
       XBT_INFO
           ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
-           slaves[i % slaves_count]->name);
+              MSG_host_get_name(slaves[i % slaves_count]));
       free(task->data);
       MSG_task_destroy(task);
     } else {
@@ -109,16 +109,16 @@ int master(int argc, char *argv[])
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
       XBT_INFO("Mmh. Can't reach '%s'! Nevermind. Let's keep going!",
-            slaves[i]->name);
+          MSG_host_get_name(slaves[i]));
       MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
       XBT_INFO
           ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
-           slaves[i % slaves_count]->name);
+              MSG_host_get_name(slaves[i % slaves_count]));
       MSG_task_destroy(task);
     } else {
       XBT_INFO("Hey ?! What's up ? ");
-      xbt_die("Unexpected behavior with '%s': %d", slaves[i]->name, a);
+      xbt_die("Unexpected behavior with '%s': %d", MSG_host_get_name(slaves[i]), a);
     }
   }
 

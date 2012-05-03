@@ -7,7 +7,7 @@
 #ifndef _SIMIX_HOST_PRIVATE_H
 #define _SIMIX_HOST_PRIVATE_H
 
-#include "simix/datatypes.h"
+#include "simgrid/simix.h"
 #include "smx_smurf_private.h"
 
 /** @brief Host datatype */

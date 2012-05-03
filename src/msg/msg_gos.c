@@ -53,7 +53,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
   p_simdata = SIMIX_process_self_get_data(self);
   simdata->isused=1;
   simdata->compute =
-      simcall_host_execute(task->name, p_simdata->m_host->simdata->smx_host,
+      simcall_host_execute(task->name, p_simdata->m_host->smx_host,
                            simdata->computation_amount,
                            simdata->priority);
 #ifdef HAVE_TRACING
@@ -146,7 +146,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
   simdata->comm_amount = communication_amount;
 
   for (i = 0; i < host_nb; i++)
-    simdata->host_list[i] = host_list[i]->simdata->smx_host;
+    simdata->host_list[i] = host_list[i]->smx_host;
 
   return task;
 }
@@ -175,7 +175,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   xbt_assert(simdata->host_nb,
               "This is not a parallel task. Go to hell.");
 
-  XBT_DEBUG("Parallel computing on %s", p_simdata->m_host->name);
+  XBT_DEBUG("Parallel computing on %s", SIMIX_host_get_name(p_simdata->m_host->smx_host));
 
   simdata->isused=1;
 
@@ -383,12 +383,15 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
  *
  * \param task a #m_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
- * \param match_fun boolean function taking the match_data provided by sender (here), and the one of the receiver (if any) and returning whether they match
+ * \param match_fun boolean function which parameters are:
+ *        - match_data_provided_here
+ *        - match_data_provided_by_other_side_if_any
+ *        - the_smx_action_describing_the_other_side
  * \param match_data user provided data passed to match_fun
  * \return the msg_comm_t communication created
  */
 XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *alias,
-    int (*match_fun)(void*,void*),
+    int (*match_fun)(void*,void*, smx_action_t),
     void *match_data)
 {
   simdata_task_t t_simdata = NULL;

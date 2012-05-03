@@ -12,10 +12,190 @@
 #include "xbt/dict.h"
 #include "xbt/file_stat.h"
 #include "xbt/function_types.h"
-#include "simix/datatypes.h"
-#include "simix/context.h"
+#include "xbt/parmap.h"
+#include "xbt/swag.h"
 
 SG_BEGIN_DECL()
+
+
+/* ******************************** Host ************************************ */
+/** @defgroup m_datatypes_management_details Details on SIMIX datatypes */
+/** @brief Host datatype
+    @ingroup m_datatypes_management
+
+    A <em>location</em> (or <em>host</em>) is any possible place where
+    a process may run. Thus it is represented as a <em>physical
+    resource with computing capabilities</em>, some <em>mailboxes</em>
+    to enable running process to communicate with remote ones, and
+    some <em>private data</em> that can be only accessed by local
+    process.
+
+    \see m_host_management
+  @{ */
+typedef struct s_smx_host *smx_host_t;
+typedef enum {
+  SIMIX_WAITING,
+  SIMIX_READY,
+  SIMIX_RUNNING,
+  SIMIX_DONE,
+  SIMIX_CANCELED,
+  SIMIX_FAILED,
+  SIMIX_SRC_HOST_FAILURE,
+  SIMIX_DST_HOST_FAILURE,
+  SIMIX_SRC_TIMEOUT,
+  SIMIX_DST_TIMEOUT,
+  SIMIX_LINK_FAILURE
+} e_smx_state_t;
+/** @} */
+
+
+typedef struct s_smx_timer* smx_timer_t;
+
+/* ******************************** Synchro ************************************ */
+typedef struct s_smx_mutex *smx_mutex_t;
+typedef struct s_smx_cond *smx_cond_t;
+typedef struct s_smx_sem *smx_sem_t;
+
+/********************************** File *************************************/
+typedef struct s_smx_file *smx_file_t;
+typedef struct s_smx_stat *smx_stat_t;
+
+/********************************** Action *************************************/
+typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized action handlers */
+
+
+
+/* ****************************** Process *********************************** */
+/** @brief Process datatype
+    @ingroup m_datatypes_management
+
+    A processt may be defined as a <em>code</em>, with some <em>private
+    data</em>, executing in a <em>location</em>.
+    \see m_process_management
+  @{ */
+typedef struct s_smx_process *smx_process_t;
+/** @} */
+
+
+/*
+ * Type of function that creates a process.
+ * The function must accept the following parameters:
+ * void* process: the process created will be stored there
+ * const char *name: a name for the object. It is for user-level information and can be NULL
+ * xbt_main_func_t code: is a function describing the behavior of the process
+ * void *data: data a pointer to any data one may want to attach to the new object.
+ * smx_host_t host: the location where the new process is executed
+ * int argc, char **argv: parameters passed to code
+ * xbt_dict_t pros: properties
+ */
+typedef void (*smx_creation_func_t) ( /* process */ smx_process_t*,
+                                      /* name */ const char*,
+                                      /* code */ xbt_main_func_t,
+                                      /* userdata */ void*,
+                                      /* hostname */ const char*,
+                                      /* kill_time */ double,
+                                      /* argc */ int,
+                                      /* argv */ char**,
+                                      /* props */ xbt_dict_t);
+
+
+/******************************* Networking ***********************************/
+typedef struct s_smx_rvpoint *smx_rdv_t;
+
+/******************************** Context *************************************/
+typedef struct s_smx_context *smx_context_t;
+typedef struct s_smx_context_factory *smx_context_factory_t;
+
+/* Process creation/destruction callbacks */
+typedef void (*void_pfn_smxprocess_t) (smx_process_t);
+
+
+/* The following function pointer types describe the interface that any context
+   factory should implement */
+
+
+typedef smx_context_t(*smx_pfn_context_factory_create_context_t)
+  (xbt_main_func_t, int, char **, void_pfn_smxprocess_t, void* data);
+typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
+typedef void (*smx_pfn_context_free_t) (smx_context_t);
+typedef void (*smx_pfn_context_start_t) (smx_context_t);
+typedef void (*smx_pfn_context_stop_t) (smx_context_t);
+typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
+typedef void (*smx_pfn_context_runall_t) (void);
+typedef smx_context_t (*smx_pfn_context_self_t) (void);
+typedef void* (*smx_pfn_context_get_data_t) (smx_context_t context);
+
+/* interface of the context factories */
+typedef struct s_smx_context_factory {
+  const char *name;
+  smx_pfn_context_factory_create_context_t create_context;
+  smx_pfn_context_factory_finalize_t finalize;
+  smx_pfn_context_free_t free;
+  smx_pfn_context_stop_t stop;
+  smx_pfn_context_suspend_t suspend;
+  smx_pfn_context_runall_t runall;
+  smx_pfn_context_self_t self;
+  smx_pfn_context_get_data_t get_data;
+} s_smx_context_factory_t;
+
+/* Hack: let msg load directly the right factory */
+typedef void (*smx_ctx_factory_initializer_t)(smx_context_factory_t*);
+XBT_PUBLIC(smx_ctx_factory_initializer_t) smx_factory_initializer_to_use;
+extern char* smx_context_factory_name;
+extern int smx_context_stack_size;
+
+#ifdef HAVE_THREAD_LOCAL_STORAGE
+extern __thread smx_context_t smx_current_context;
+#else
+extern smx_context_t smx_current_context;
+#endif
+
+/* *********************** */
+/* Context type definition */
+/* *********************** */
+/* the following function pointers types describe the interface that all context
+   concepts must implement */
+/* each context type derive from this structure, so they must contain this structure
+ * at their beginning -- OOP in C :/ */
+typedef struct s_smx_context {
+  s_xbt_swag_hookup_t hookup;
+  xbt_main_func_t code;
+  void_pfn_smxprocess_t cleanup_func;
+  void *data;   /* Here SIMIX stores the smx_process_t containing the context */
+  char **argv;
+  int argc;
+  int iwannadie:1;
+} s_smx_ctx_base_t;
+
+/* methods of this class */
+XBT_PUBLIC(void) smx_ctx_base_factory_init(smx_context_factory_t *factory);
+XBT_PUBLIC(int) smx_ctx_base_factory_finalize(smx_context_factory_t *factory);
+
+XBT_PUBLIC(smx_context_t)
+smx_ctx_base_factory_create_context_sized(size_t size,
+                                          xbt_main_func_t code, int argc,
+                                          char **argv,
+                                          void_pfn_smxprocess_t cleanup,
+                                          void* data);
+XBT_PUBLIC(void) smx_ctx_base_free(smx_context_t context);
+XBT_PUBLIC(void) smx_ctx_base_stop(smx_context_t context);
+XBT_PUBLIC(smx_context_t) smx_ctx_base_self(void);
+XBT_PUBLIC(void) *smx_ctx_base_get_data(smx_context_t context);
+
+XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable(void);
+XBT_PUBLIC(smx_process_t) SIMIX_process_from_PID(int PID);
+XBT_PUBLIC(xbt_dynar_t) SIMIX_processes_as_dynar(void);
+
+/* parallelism */
+XBT_PUBLIC(int) SIMIX_context_is_parallel(void);
+XBT_PUBLIC(int) SIMIX_context_get_nthreads(void);
+XBT_PUBLIC(void) SIMIX_context_set_nthreads(int nb_threads);
+XBT_PUBLIC(int) SIMIX_context_get_parallel_threshold(void);
+XBT_PUBLIC(void) SIMIX_context_set_parallel_threshold(int threshold);
+XBT_PUBLIC(e_xbt_parmap_mode_t) SIMIX_context_get_parallel_mode(void);
+XBT_PUBLIC(void) SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
+
+
 
 /********************************** Global ************************************/
 /* Initialization and exit */
@@ -170,24 +350,24 @@ XBT_PUBLIC(xbt_dict_t) SIMIX_get_rdv_points(void);
 XBT_PUBLIC(void) simcall_comm_send(smx_rdv_t rdv, double task_size,
                                      double rate, void *src_buff,
                                      size_t src_buff_size,
-                                     int (*match_fun)(void *, void *),
+                                     int (*match_fun)(void *, void *, smx_action_t),
                                      void *data, double timeout);
 
 XBT_PUBLIC(smx_action_t) simcall_comm_isend(smx_rdv_t rdv, double task_size,
                                               double rate, void *src_buff,
                                               size_t src_buff_size,
-                                              int (*match_fun)(void *, void *),
+                                              int (*match_fun)(void *, void *, smx_action_t),
                                               void (*clean_fun)(void *),
                                               void *data, int detached);
 
 XBT_PUBLIC(void) simcall_comm_recv(smx_rdv_t rdv, void *dst_buff,
                                      size_t * dst_buff_size,
-                                     int (*match_fun)(void *, void *),
+                                     int (*match_fun)(void *, void *, smx_action_t),
                                      void *data, double timeout);
 
 XBT_PUBLIC(smx_action_t) simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff,
                                               size_t * dst_buff_size,
-                                              int (*match_fun)(void *, void *),
+                                              int (*match_fun)(void *, void *, smx_action_t),
                                               void *data);
 
 XBT_PUBLIC(void) simcall_comm_destroy(smx_action_t comm);

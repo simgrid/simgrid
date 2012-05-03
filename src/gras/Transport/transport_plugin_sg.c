@@ -12,7 +12,7 @@
 
 #include "xbt/ex.h"
 
-#include "simix/simix.h"
+#include "simgrid/simix.h"
 #include "gras/Msg/msg_private.h"
 #include "gras/Transport/transport_private.h"
 #include "gras/Virtu/virtu_sg.h"
