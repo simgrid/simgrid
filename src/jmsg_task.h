@@ -75,6 +75,9 @@ m_task_t jtask_to_native_task(jobject jtask, JNIEnv * env);
  */
 jboolean jtask_is_valid(jobject jtask, JNIEnv * env);
 
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls);
+
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass cls, jstring jmailbox);
 

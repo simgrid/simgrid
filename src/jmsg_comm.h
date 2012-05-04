@@ -6,8 +6,20 @@
 #define MSG_JCOMM_H
 #include <jni.h>
 #include <msg/msg.h>
+/**
+ * This function binds the task associated with the communication to
+ * the java communication object.
+ */
 void jcomm_bind_task(JNIEnv *env, jobject jcomm);
+/**
+ * This function throws the correct exception according to the status
+ * returned.
+ */
 void jcomm_throw(JNIEnv *env, MSG_error_t status);
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls);
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_unbind(JNIEnv *env, jobject jcomm);
 

@@ -25,7 +25,7 @@ public class Comm {
 	/**
 	 * Represents the bind for the task object pointer. Don't touch it.
 	 */
-	public long bindTask = 0;
+	public long taskBind = 0;
 	/**
 	 * Task associated with the comm. Beware, it can be null 
 	 */
@@ -65,5 +65,12 @@ public class Comm {
 	public Task getTask() {
 		return task;
 	}
-	
+
+	/**
+	 * Class initializer, to initialize various JNI stuff
+	 */
+	public static native void nativeInit();
+	static {
+		nativeInit();
+	}	
 }

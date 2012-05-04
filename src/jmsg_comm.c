@@ -5,24 +5,23 @@
 #include "jxbt_utilities.h"
 #include <msg/msg.h>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+
+static jfieldID jtask_field_Comm_task;
+static jfieldID jcomm_field_Comm_bind;
+static jfieldID jcomm_field_Comm_taskBind;
+static jfieldID jcomm_field_Comm_receiving;
+
 void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
-	jfieldID id_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
-	jclass jclass = jxbt_get_class(env,"org/simgrid/msg/Comm");
-	jfieldID id_task = jxbt_get_jfield(env, jclass, "task", "Lorg/simgrid/msg/Task;");
-	jfieldID id_comm = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
-
-	msg_comm_t comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, id_comm);
-
+	msg_comm_t comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
 	//test if we are receiving or sending a task.
-	jboolean jreceiving = (*env)->GetBooleanField(env, jcomm, id_receiving);
+	jboolean jreceiving = (*env)->GetBooleanField(env, jcomm, jcomm_field_Comm_receiving);
 	if (jreceiving == JNI_TRUE) {
 		//bind the task object.
 		m_task_t task = MSG_comm_get_task(comm);
 		xbt_assert(task != NULL, "Task is NULL");
 		jobject jtask_global = MSG_task_get_data(task);
 		//case where the data has already been retrieved
-		if (jtask_global == NULL)
-		{
+		if (jtask_global == NULL) {
 			return;
 		}
 
@@ -30,7 +29,7 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
 		jobject jtask_local = (*env)->NewLocalRef(env, jtask_global);
 		(*env)->DeleteGlobalRef(env, jtask_global);
 
-		(*env)->SetObjectField(env, jcomm, id_task, jtask_local);
+		(*env)->SetObjectField(env, jcomm, jtask_field_Comm_task, jtask_local);
 
 		MSG_task_set_data(task, NULL);
 	}
@@ -51,39 +50,35 @@ void jcomm_throw(JNIEnv *env, MSG_error_t status) {
 			jxbt_throw_native(env,bprintf("communication failed"));
 	}
 }
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
+	jclass jfield_class_Comm = (*env)->FindClass(env, "org/simgrid/msg/Comm");
+	jcomm_field_Comm_bind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
+	jcomm_field_Comm_taskBind  = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "taskBind", "J");
+	jcomm_field_Comm_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
+	jtask_field_Comm_task = jxbt_get_jfield(env, jfield_class_Comm, "task", "Lorg/simgrid/msg/Task;");
+}
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_unbind(JNIEnv *env, jobject jcomm) {
-	jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
-	jfieldID id_task = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bindTask", "J");
 	msg_comm_t comm;
 	m_task_t *task_received;
-	if (!id || !id_task)
-		return;
 
-	task_received = (m_task_t*)  (long) (*env)->GetLongField(env, jcomm, id_task);
+	task_received = (m_task_t*)  (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_taskBind);
 	if (task_received != NULL) {
 		xbt_free(task_received);
 	}
 
-	comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, id);
+	comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
 	MSG_comm_destroy(comm);
 }
 
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
 	msg_comm_t comm;
+	comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
 
-	jfieldID idComm = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
-	jclass jclass = jxbt_get_class(env,"org/simgrid/msg/Comm");
-	jfieldID idTask = jxbt_get_jfield(env, jclass, "task", "Lorg/simgrid/msg/Task;");
-
-
-	if (!jclass || !idComm || !idTask) {
-		jxbt_throw_native(env,bprintf("idTask/idComm/jclass/idComm is null"));
-		return JNI_FALSE;
-	}
-
-	comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, idComm);
 	if (!comm) {
 		jxbt_throw_native(env,bprintf("comm is null"));
 		return JNI_FALSE;
@@ -106,17 +101,7 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
-	jclass jclass = jxbt_get_class(env,"org/simgrid/msg/Comm");
-	jfieldID id_comm = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
-	jfieldID id_task = jxbt_get_jfield(env, jclass, "task", "Lorg/simgrid/msg/Task;");
-	jfieldID id_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
-
-	if (!jclass || !id_comm || !id_task || !id_receiving) {
-		jxbt_throw_native(env,bprintf("idTask/idComm/jclass/idComm is null"));
-		return;
-	}
-
-	msg_comm_t comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, id_comm);
+	msg_comm_t comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
 	if (!comm) {
 		jxbt_throw_native(env,bprintf("comm is null"));
 		return;

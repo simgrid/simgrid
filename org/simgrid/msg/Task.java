@@ -285,4 +285,12 @@ public class Task {
 	public static int listenFromHost(String alias, Host host)   {
 		return MsgNative.taskListenFromHost(alias, host);
 	}
+	
+	/**
+	 * Class initializer, to initialize various JNI stuff
+	 */
+	public static native void nativeInit();
+	static {
+		nativeInit();
+	}
 }
