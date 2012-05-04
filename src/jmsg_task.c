@@ -7,9 +7,13 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "jmsg.h"
-#include "jmsg_task.h"
-#include "jxbt_utilities.h"
+
+#include "smx_context_java.h"
+
 #include "jmsg_host.h"
+#include "jmsg_task.h"
+
+#include "jxbt_utilities.h"
 
 #include <msg/msg.h>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
@@ -191,6 +195,22 @@ Java_org_simgrid_msg_Task_getName(JNIEnv * env,
 }
 
 JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Task_getSender(JNIEnv * env,
+                                         jobject jtask) {
+  m_process_t process;
+
+  m_task_t task = jtask_to_native_task(jtask, env);
+
+  if (!task) {
+    jxbt_throw_notbound(env, "task", jtask);
+    return NULL;
+  }
+
+  process = MSG_task_get_sender(task);
+  return (jobject) native_to_java_process(process);
+}
+
+JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass cls, jstring jmailbox) {
 	msg_comm_t comm;
 	const char *mailbox;
@@ -262,4 +282,90 @@ Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject jtask, jstring jmailbox) {
 	(*env)->ReleaseStringUTFChars(env, jmailbox, mailbox);
 
 	return jcomm;
+}
+
+static void msg_task_cancel_on_failed_dsend(void*t) {
+	m_task_t task = t;
+	JNIEnv *env =get_current_thread_env();
+	jobject jtask_global = MSG_task_get_data(task);
+
+	/* Destroy the global ref so that the JVM can free the stuff */
+	(*env)->DeleteGlobalRef(env, jtask_global);
+	MSG_task_set_data(task, NULL);
+	MSG_task_destroy(task);
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jtask,
+                                jstring jalias) {
+
+  const char *alias = (*env)->GetStringUTFChars(env, jalias, 0);
+
+  m_task_t task = jtask_to_native_task(jtask, env);
+
+
+  if (!task) {
+    (*env)->ReleaseStringUTFChars(env, jalias, alias);
+    jxbt_throw_notbound(env, "task", jtask);
+    return;
+  }
+
+  /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
+  MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
+  MSG_task_dsend(task, alias, msg_task_cancel_on_failed_dsend);
+
+  (*env)->ReleaseStringUTFChars(env, jalias, alias);
+}
+
+JNIEXPORT jboolean JNICALL
+Java_org_simgrid_msg_Task_listen(JNIEnv * env, jclass cls,
+    													   jstring jalias) {
+
+  const char *alias;
+  int rv;
+
+  alias = (*env)->GetStringUTFChars(env, jalias, 0);
+
+  rv = MSG_task_listen(alias);
+
+  (*env)->ReleaseStringUTFChars(env, jalias, alias);
+
+  return (jboolean) rv;
+}
+
+JNIEXPORT jint JNICALL
+Java_org_simgrid_msg_Task_listenFromHost(JNIEnv * env, jclass cls,
+    																	   jstring jalias,
+    																	   jobject jhost) {
+  int rv;
+  const char *alias;
+
+  m_host_t host = jhost_get_native(env, jhost);
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return -1;
+  }
+  alias = (*env)->GetStringUTFChars(env, jalias, 0);
+
+  rv = MSG_task_listen_from_host(alias, host);
+
+  (*env)->ReleaseStringUTFChars(env, jalias, alias);
+
+  return (jint) rv;
+}
+
+
+JNIEXPORT jint JNICALL
+Java_org_simgrid_msg_Task_listenFrom(JNIEnv * env, jclass cls,
+                                          		jstring jalias) {
+
+  int rv;
+  const char *alias = (*env)->GetStringUTFChars(env, jalias, 0);
+
+  rv = MSG_task_listen_from(alias);
+
+  (*env)->ReleaseStringUTFChars(env, jalias, alias);
+
+  return (jint) rv;
 }

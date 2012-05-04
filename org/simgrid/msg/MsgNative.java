@@ -265,17 +265,6 @@ final class MsgNative {
 	 ******************************************************************/
 
 	/**
-	 * The natively implemented method to get the sender of a task.
-	 *
-	 * @param    task            The task (valid) to get the sender.
-	 *
-	 * @return                The sender of the task.
-	 *
-	 * @see                    Task.getSender()
-	 */
-	final static native Process taskGetSender(Task task);
-
-	/**
 	 * The natively implementd method to get the source of a task.
 	 *
 	 * @param task            The task to get the source.
@@ -286,17 +275,6 @@ final class MsgNative {
 	 * @see                    Task.getSource()
 	 */
 	final static native Host taskGetSource(Task task);
-
-	/**
-	 * The natively implemented method to get the name of the task.
-	 *
-	 * @param task            The task to get the name.
-	 *
-	 * @return                 The name of the specified task.
-	 *
-	 * @see                    Task.getName()
-	 */
-	final static native String taskGetName(Task task);
 
 	/**
 	 * The natively implemented method to cancel a task.
@@ -377,7 +355,5 @@ final class MsgNative {
 	 * @exception             NativeException on error in the C world
 	 */ 
 	final static native void taskSendBounded(String alias, Task task, double maxrate) throws TransferFailureException,HostFailureException,TimeoutException;
-
-	final static native void taskDSend(String mailbox, Task task);
 
 }

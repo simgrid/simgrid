@@ -104,10 +104,8 @@ public class Task {
      */
 	public native String getName();
 	/** Gets the sender of the task */ 
-	Process getSender() {
-		return MsgNative.taskGetSender(this);
-	}
-    /** Gets the source of the task
+	public native Process getSender();
+	/** Gets the source of the task
      * @return
      */
 	public Host getSource()  {
@@ -177,10 +175,7 @@ public class Task {
 	 *  with no way to retrieve whether the communication succeeded or not
 	 * 
 	 */
-	public void dsend(String mailbox) {
-		MsgNative.taskDSend(mailbox, this);
-	} 
-	
+	public native void dsend(String mailbox);	
 	/**
 	 * Sends the task on the mailbox identified by the specified name 
 	 *
@@ -290,36 +285,17 @@ public class Task {
 
 	/**
 	 * Tests whether there is a pending communication on the mailbox identified by the specified alias, and who sent it
-	 *
-     *
-     * @param mailbox
-     * @return
      */
-	public static int listenFrom(String mailbox)  {
-		return MsgNative.taskListenFrom(mailbox);
-	}
+	public native static int listenFrom(String mailbox);
 	/**
 	 * Listen whether there is a waiting task on the mailbox identified by the specified alias
-	 *
-     *
-     * @param mailbox
-     * @return
      */
-	public static boolean listen(String mailbox)   {
-		return MsgNative.taskListen(mailbox);
-	}
+	public native static boolean listen(String mailbox);
 
 	/**
 	 * Counts the number of tasks waiting to be received on the \a mailbox identified by the specified alia and sended by the specified \a host.
-	 *
-     *
-     * @param alias
-     * @param host
-     * @return
      */
-	public static int listenFromHost(String alias, Host host)   {
-		return MsgNative.taskListenFromHost(alias, host);
-	}
+	public native static int listenFromHost(String alias, Host host);
 	
 	/**
 	 * Class initializer, to initialize various JNI stuff

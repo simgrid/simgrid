@@ -13,6 +13,8 @@
 #include <msg/msg.h>
 #include <simgrid/simix.h>
 
+jobject native_to_java_process(m_process_t process);
+
 /**
  * This function returns a global reference to the  java process instance 
  * specified by the parameter jprocess.

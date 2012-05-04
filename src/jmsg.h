@@ -207,14 +207,6 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_MsgNative_taskGetSource
 
 /*
  * Class		simgrid_msg_Msg
- * Method		taskGetName
- * Signature	(Lsimgrid/msg/Task;)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_simgrid_msg_MsgNative_taskGetName
-    (JNIEnv *, jclass, jobject);
-
-/*
- * Class		simgrid_msg_Msg
  * Method		taskCancel
  * Signature	(Lsimgrid/msg/Task;)V
  */
@@ -257,10 +249,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_MsgNative_taskExecute
 JNIEXPORT jobject JNICALL
     Java_org_simgrid_msg_MsgNative_taskReceive
     (JNIEnv *, jclass, jstring, jdouble, jobject);
-
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_MsgNative_taskDSend(JNIEnv * env, jclass cls,
-                                    jstring jalias, jobject jtask);
 
 JNIEXPORT void JNICALL
     Java_org_simgrid_msg_MsgNative_taskSend

@@ -10,9 +10,11 @@
 #include <simgrid/simix.h>
 #include <surf/surfxml_parse.h>
 
+
 #include "smx_context_java.h"
 
 #include "jmsg_process.h"
+
 #include "jmsg_host.h"
 #include "jmsg_task.h"
 #include "jmsg_application_handler.h"
@@ -33,7 +35,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 static JavaVM *__java_vm = NULL;
 
-static jobject native_to_java_process(m_process_t process);
 
 JavaVM *get_java_VM(void)
 {
@@ -47,11 +48,6 @@ JNIEnv *get_current_thread_env(void)
   (*__java_vm)->AttachCurrentThread(__java_vm, (void **) &env, NULL);
 
   return env;
-}
-
-static jobject native_to_java_process(m_process_t process)
-{
-  return ((smx_ctx_java_t)MSG_process_get_smx_ctx(process))->jprocess;
 }
 
 /*
@@ -514,23 +510,6 @@ Java_org_simgrid_msg_MsgNative_hostIsAvail(JNIEnv * env, jclass cls,
  ***************************************************************************************/
 
 JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_MsgNative_taskGetSender(JNIEnv * env, jclass cls,
-                                         jobject jtask)
-{
-  m_process_t process;
-
-  m_task_t task = jtask_to_native_task(jtask, env);
-
-  if (!task) {
-    jxbt_throw_notbound(env, "task", jtask);
-    return NULL;
-  }
-
-  process = MSG_task_get_sender(task);
-  return (jobject) native_to_java_process(process);
-}
-
-JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_MsgNative_taskGetSource(JNIEnv * env, jclass cls,
                                          jobject jtask)
 {
@@ -550,21 +529,6 @@ Java_org_simgrid_msg_MsgNative_taskGetSource(JNIEnv * env, jclass cls,
   }
 
   return (jobject) MSG_host_get_data(host);
-}
-
-
-JNIEXPORT jstring JNICALL
-Java_org_simgrid_msg_MsgNative_taskGetName(JNIEnv * env, jclass cls,
-                                       jobject jtask)
-{
-  m_task_t task = jtask_to_native_task(jtask, env);
-
-  if (!task) {
-    jxbt_throw_notbound(env, "task", jtask);
-    return NULL;
-  }
-
-  return (*env)->NewStringUTF(env, MSG_task_get_name(task));
 }
 
 JNIEXPORT void JNICALL
@@ -854,29 +818,6 @@ static void msg_task_cancel_on_failed_dsend(void*t) {
 	(*env)->DeleteGlobalRef(env, jtask_global);
 	MSG_task_set_data(task, NULL);
 	MSG_task_destroy(task);
-}
-
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_MsgNative_taskDSend(JNIEnv * env, jclass cls,
-                                    jstring jalias, jobject jtask)
-{
-
-  const char *alias = (*env)->GetStringUTFChars(env, jalias, 0);
-
-  m_task_t task = jtask_to_native_task(jtask, env);
-
-
-  if (!task) {
-    (*env)->ReleaseStringUTFChars(env, jalias, alias);
-    jxbt_throw_notbound(env, "task", jtask);
-    return;
-  }
-
-  /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
-  MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
-  MSG_task_dsend(task, alias, msg_task_cancel_on_failed_dsend);
-
-  (*env)->ReleaseStringUTFChars(env, jalias, alias);
 }
 
 

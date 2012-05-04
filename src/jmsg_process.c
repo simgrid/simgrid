@@ -14,6 +14,11 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+jobject native_to_java_process(m_process_t process)
+{
+  return ((smx_ctx_java_t)MSG_process_get_smx_ctx(process))->jprocess;
+}
+
 jobject jprocess_new_global_ref(jobject jprocess, JNIEnv * env)
 {
   return (*env)->NewGlobalRef(env, jprocess);

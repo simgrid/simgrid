@@ -74,6 +74,15 @@ m_task_t jtask_to_native_task(jobject jtask, JNIEnv * env);
  *						Otherwise the function returns false.
  */
 jboolean jtask_is_valid(jobject jtask, JNIEnv * env);
+
+/*
+ * Class		org_simgrid_msg_Task
+ * Method		nativeInit
+ * Signature	();
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls);
+
 /*
  * Class		org_simgrid_msg_Task
  * Method		create
@@ -108,11 +117,12 @@ JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Task_getName
 
 /*
  * Class		org_simgrid_msg_Task
- * Method		nativeInit
- * Signature	();
+ * Method		getSender
+ * Signature	()Lsimgrid/msg/Process;
  */
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender
+    (JNIEnv *, jobject);
+
 /**
  * Class 		org_simgrid_msg_Task
  * Method		irecv
@@ -127,5 +137,33 @@ Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass cls, jstring jmailbox);
  */
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject jtask, jstring jmailbox);
+/**
+ * Class 		org_simgrid_msg_Task
+ * Method		dsend
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jtask,
+                                jstring jalias);
+/**
+ * Class 		org_simgrid_msg_Task
+ * Method		listen
+ */
+JNIEXPORT jboolean JNICALL
+Java_org_simgrid_msg_Task_listen(JNIEnv *, jclass, jstring);
+/**
+ * Class 		org_simgrid_msg_Task
+ * Method		listenFromHost
+ */
+JNIEXPORT jint JNICALL
+Java_org_simgrid_msg_Task_listenFromHost(JNIEnv *, jclass, jstring,
+                                              jobject);
+/**
+ * Class 		org_simgrid_msg_Task
+ * Method		listenFrom
+ */
+JNIEXPORT jint JNICALL
+Java_org_simgrid_msg_Task_listenFrom(JNIEnv *, jclass, jstring);
+
+
 
 #endif                          /* !MSG_JTASK_H */
