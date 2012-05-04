@@ -66,9 +66,7 @@ Java_org_simgrid_msg_Comm_unbind(JNIEnv *env, jobject jcomm) {
 	m_task_t *task_received;
 
 	task_received = (m_task_t*)  (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_taskBind);
-	if (task_received != NULL) {
-		xbt_free(task_received);
-	}
+	xbt_free(task_received);
 
 	comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
 	MSG_comm_destroy(comm);

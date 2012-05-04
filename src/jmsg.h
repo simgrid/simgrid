@@ -191,19 +191,6 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_MsgNative_hostIsAvail
 
 /*
  * Class		simgrid_msg_Msg
- * Method		taskCreate
- * Signature	(Lsimgrid/msg/Task;Ljava/lang/String;DD)V
- */
-JNIEXPORT void JNICALL Java_org_simgrid_msg_MsgNative_taskCreate
-    (JNIEnv *, jclass, jobject, jstring, jdouble, jdouble);
-
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_MsgNative_parallel_taskCreate(JNIEnv *, jclass, jobject,
-                                               jstring, jobjectArray,
-                                               jdoubleArray, jdoubleArray);
-
-/*
- * Class		simgrid_msg_Msg
  * Method		taskGetSender
  * Signature	(Lsimgrid/msg/Task;)Lsimgrid/msg/Process;
  */
@@ -258,14 +245,6 @@ Java_org_simgrid_msg_MsgNative_taskGetRemainingDuration(JNIEnv *, jclass,
  */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_MsgNative_taskSetPriority
     (JNIEnv *, jclass, jobject, jdouble);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		taskDestroy
- * Signature	(Lsimgrid/msg/Task;)V
- */
-JNIEXPORT void JNICALL Java_org_simgrid_msg_MsgNative_taskDestroy
-    (JNIEnv *, jclass, jobject);
 
 /*
  * Class		simgrid_msg_Msg

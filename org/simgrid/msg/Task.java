@@ -27,8 +27,9 @@ public class Task {
 
 	/** Default constructor (all fields to 0 or null) */
 	public Task() {
-		MsgNative.taskCreate(this, null, 0, 0);
+		create(null, 0, 0);
 	}
+
 	/* *              * *
 	 * * Constructors * *
 	 * *              * */
@@ -47,7 +48,7 @@ public class Task {
 	 *				This value has to be >= 0.
 	 */ 
 	public Task(String name, double computeDuration, double messageSize) {
-		MsgNative.taskCreate(this, name, computeDuration, messageSize);
+		create(name, computeDuration, messageSize);
 	}
 	/**
 	 * Construct an new parallel task with the specified processing amount and amount for each host
@@ -59,17 +60,49 @@ public class Task {
 	 * @param messageSizes	A matrix describing the amount of data to exchange between hosts.
 	 */ 
 	public Task(String name, Host[]hosts, double[]computeDurations, double[]messageSizes) {
-		MsgNative.parallelTaskCreate(this, name, hosts, computeDurations, messageSizes);
+		parallelCreate(name, hosts, computeDurations, messageSizes);
 	}
+	
+	/**
+	 * The natively implemented method to create a MSG task.
+	 *
+	 * @param name            The name of th task.
+	 * @param computeDuration    A value of the processing amount (in flop) needed 
+	 *                        to process the task. If 0, then it cannot be executed
+	 *                        with the execute() method. This value has to be >= 0.
+	 * @param messageSize        A value of amount of data (in bytes) needed to transfert 
+	 *                        this task. If 0, then it cannot be transfered this task. 
+	 *                        If 0, then it cannot be transfered with the get() and put() 
+	 *                        methods. This value has to be >= 0.
+	 * @exception             IllegalArgumentException if compute duration <0 or message size <0
+	 */
+	final native void create(String name,
+			double computeDuration,
+			double messageSize)
+	throws IllegalArgumentException;		
+	/**
+	 * The natively implemented method to create a MSG parallel task.
+	 *
+	 * @param name                The name of the parallel task.
+	 * @param hosts                The list of hosts implied by the parallel task.
+	 * @param computeDurations    The total number of operations that have to be performed
+	 *                            on the hosts.
+	 * @param messageSizes        An array of doubles
+	 *
+	 */
+	final native void parallelCreate(String name,
+			Host[]hosts,
+			double[]computeDurations,
+			double[]messageSizes)
+	throws NullPointerException, IllegalArgumentException;
 	/* *                   * *
 	 * * Getters / Setters * *
 	 * *                   * */
     /** Gets the name of a task
+     * FIXME: Cache it.
      * @return
      */
-	public String getName() {
-		return MsgNative.taskGetName(this);
-	}
+	public native String getName();
 	/** Gets the sender of the task */ 
 	Process getSender() {
 		return MsgNative.taskGetSender(this);
@@ -133,10 +166,12 @@ public class Task {
 	 * @exception			NativeException if the destruction failed.
 	 */ 
 	protected void finalize() throws NativeException {
-		if (this.bind != 0)
-			MsgNative.taskDestroy(this);
+		destroy();
 	}
-
+	/**
+	 * The natively implemented method to destroy a MSG task.
+	 */
+	protected native void destroy();
 
 	/** Send the task asynchronously on the mailbox identified by the specified name, 
 	 *  with no way to retrieve whether the communication succeeded or not

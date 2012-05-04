@@ -9,6 +9,7 @@
 #include "jmsg.h"
 #include "jmsg_task.h"
 #include "jxbt_utilities.h"
+#include "jmsg_host.h"
 
 #include <msg/msg.h>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
@@ -45,6 +46,148 @@ Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
 	jtask_field_Comm_bind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
 	jtask_field_Comm_taskBind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "taskBind", "J");
 	jtask_field_Comm_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_create(JNIEnv * env,
+                                      jobject jtask, jstring jname,
+                                      jdouble jcomputeDuration,
+                                      jdouble jmessageSize)
+{
+  m_task_t task;                /* the native task to create                            */
+  const char *name = NULL;      /* the name of the task                                 */
+
+  if (jcomputeDuration < 0) {
+    jxbt_throw_illegal(env,
+                       bprintf
+                       ("Task ComputeDuration (%f) cannot be negative",
+                        (double) jcomputeDuration));
+    return;
+  }
+
+  if (jmessageSize < 0) {
+    jxbt_throw_illegal(env,
+                       bprintf("Task MessageSize (%f) cannot be negative",
+                               (double) jmessageSize));
+    return;
+  }
+
+  if (jname) {
+    /* get the C string from the java string */
+    name = (*env)->GetStringUTFChars(env, jname, 0);
+  }
+
+
+  /* create the task */
+  task =
+      MSG_task_create(name, (double) jcomputeDuration,
+                      (double) jmessageSize, NULL);
+  if (jname)
+    (*env)->ReleaseStringUTFChars(env, jname, name);
+
+  /* bind & store the task */
+  jtask_bind(jtask, task, env);
+  MSG_task_set_data(task, jtask);
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env,
+                                               jobject jtask,
+                                               jstring jname,
+                                               jobjectArray jhosts,
+                                               jdoubleArray
+                                               jcomputeDurations_arg,
+                                               jdoubleArray
+                                               jmessageSizes_arg) {
+
+  m_task_t task;                /* the native parallel task to create           */
+  const char *name;             /* the name of the task                         */
+  int host_count;
+  m_host_t *hosts;
+  double *computeDurations;
+  double *messageSizes;
+  jdouble *jcomputeDurations;
+  jdouble *jmessageSizes;
+
+  jobject jhost;
+  int index;
+
+
+  if (!jcomputeDurations_arg) {
+    jxbt_throw_null(env,
+                    xbt_strdup
+                    ("Parallel task compute durations cannot be null"));
+    return;
+  }
+
+  if (!jmessageSizes_arg) {
+    jxbt_throw_null(env,
+                    xbt_strdup
+                    ("Parallel task message sizes cannot be null"));
+    return;
+  }
+
+  if (!jname) {
+    jxbt_throw_null(env, xbt_strdup("Parallel task name cannot be null"));
+    return;
+  }
+
+  host_count = (int) (*env)->GetArrayLength(env, jhosts);
+
+
+  hosts = xbt_new0(m_host_t, host_count);
+  computeDurations = xbt_new0(double, host_count);
+  messageSizes = xbt_new0(double, host_count * host_count);
+
+  jcomputeDurations =
+      (*env)->GetDoubleArrayElements(env, jcomputeDurations_arg, 0);
+  jmessageSizes =
+      (*env)->GetDoubleArrayElements(env, jmessageSizes_arg, 0);
+
+  for (index = 0; index < host_count; index++) {
+    jhost = (*env)->GetObjectArrayElement(env, jhosts, index);
+    hosts[index] = jhost_get_native(env, jhost);
+    computeDurations[index] = jcomputeDurations[index];
+  }
+  for (index = 0; index < host_count * host_count; index++) {
+    messageSizes[index] = jmessageSizes[index];
+  }
+
+  (*env)->ReleaseDoubleArrayElements(env, jcomputeDurations_arg,
+                                     jcomputeDurations, 0);
+  (*env)->ReleaseDoubleArrayElements(env, jmessageSizes_arg, jmessageSizes,
+                                     0);
+
+
+  /* get the C string from the java string */
+  name = (*env)->GetStringUTFChars(env, jname, 0);
+
+  task =
+      MSG_parallel_task_create(name, host_count, hosts, computeDurations,
+                               messageSizes, NULL);
+
+  (*env)->ReleaseStringUTFChars(env, jname, name);
+
+  /* associate the java task object and the native task */
+  jtask_bind(jtask, task, env);
+
+  MSG_task_set_data(task, (void *) jtask);
+
+  if (!MSG_task_get_data(task))
+    jxbt_throw_jni(env, "global ref allocation failed");
+}
+
+JNIEXPORT jstring JNICALL
+Java_org_simgrid_msg_Task_getName(JNIEnv * env,
+                                       jobject jtask) {
+  m_task_t task = jtask_to_native_task(jtask, env);
+
+  if (!task) {
+    jxbt_throw_notbound(env, "task", jtask);
+    return NULL;
+  }
+
+  return (*env)->NewStringUTF(env, MSG_task_get_name(task));
 }
 
 JNIEXPORT jobject JNICALL

@@ -265,28 +265,6 @@ final class MsgNative {
 	 ******************************************************************/
 
 	/**
-	 * The natively implemented method to create a MSG task.
-	 *
-	 * @param name            The name of th task.
-	 * @param computeDuration    A value of the processing amount (in flop) needed 
-	 *                        to process the task. If 0, then it cannot be executed
-	 *                        with the execute() method. This value has to be >= 0.
-	 * @param messageSize        A value of amount of data (in bytes) needed to transfert 
-	 *                        this task. If 0, then it cannot be transfered this task. 
-	 *                        If 0, then it cannot be transfered with the get() and put() 
-	 *                        methods. This value has to be >= 0.
-	 * @param task            The java task object to bind with the native task to create.
-	 *
-	 * @exception             IllegalArgumentException if compute duration <0 or message size <0
-	 *
-	 * @see                    Task.create()
-	 */
-	final static native void taskCreate(Task task, String name,
-			double computeDuration,
-			double messageSize)
-	throws IllegalArgumentException;
-
-	/**
 	 * The natively implemented method to get the sender of a task.
 	 *
 	 * @param    task            The task (valid) to get the sender.
@@ -331,23 +309,6 @@ final class MsgNative {
 	final static native void taskCancel(Task task);
 
 	/**
-	 * The natively implemented method to create a MSG parallel task.
-	 *
-	 * @param name                The name of the parallel task.
-	 * @param hosts                The list of hosts implied by the parallel task.
-	 * @param computeDurations    The total number of operations that have to be performed
-	 *                            on the hosts.
-	 * @param messageSizes        An array of doubles
-	 *
-	 * @see                        ParallelTask.create()
-	 */
-	final static native void parallelTaskCreate(Task pTask, String name,
-			Host[]hosts,
-			double[]computeDurations,
-			double[]messageSizes)
-	throws NullPointerException, IllegalArgumentException;
-
-	/**
 	 * The natively implemented method to get the computing amount of the task.
 	 *
 	 * @param task            The task to get the computing amount.
@@ -379,16 +340,6 @@ final class MsgNative {
 	 * @see                    Task.setPriority()
 	 */
 	final static native void taskSetPriority(Task task, double priority);
-
-	/**
-	 * The natively implemented method to destroy a MSG task.
-	 *
-	 * @param                    The task to destroy.
-	 *
-	 *
-	 * @see                    Task.destroy()
-	 */
-	final static native void taskDestroy(Task task) ;
 
 	/**
 	 * The natively implemented method to execute a MSG task.
