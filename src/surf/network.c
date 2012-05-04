@@ -60,7 +60,7 @@ e_UM_t network_update_mechanism = UM_UNDEFINED;
 static int net_selective_update = 0;
 
 static int net_action_is_suspended(surf_action_t action);
-static void net_update_action_remaining_lazy(double now);
+static void net_update_action_remaining_lazy(surf_action_network_CM02_t action, double now);
 
 static xbt_swag_t net_modified_set = NULL;
 static xbt_heap_t net_action_heap = NULL;
@@ -353,46 +353,47 @@ int net_get_link_latency_limited(surf_action_t action)
 
 double net_action_get_remains(surf_action_t action)
 {
+  XBT_IN("(%p)", action);
+  /* update remains before return it */
   if (network_update_mechanism == UM_LAZY)      /* update remains before return it */
-    net_update_action_remaining_lazy(surf_get_clock());
+    net_update_action_remaining_lazy((surf_action_network_CM02_t)action,
+        surf_get_clock());
+  XBT_OUT();
   return action->remains;
 }
 
-static void net_update_action_remaining_lazy(double now)
+static void net_update_action_remaining_lazy(surf_action_network_CM02_t action, double now)
 {
-  surf_action_lmm_t action = NULL;
   double delta = 0.0;
 
-  xbt_swag_foreach(action, net_modified_set) {
+  if (GENERIC_LMM_ACTION(action).suspended != 0)
+    return;
 
-    if (action->suspended != 0) {
-      continue;
-    }
+  delta = now - GENERIC_LMM_ACTION(action).last_update;
 
-    delta = now - action->last_update;
+  double_update(&(((surf_action_t)action)->remains),
+      GENERIC_LMM_ACTION(action).last_value * delta);
 
-    double_update(&(((surf_action_t)action)->remains),
-                  lmm_variable_getvalue(action->variable) * delta);
+  if (((surf_action_t)action)->max_duration != NO_MAX_DURATION)
+    double_update(&(((surf_action_t)action)->max_duration), delta);
 
-    if (((surf_action_t)action)->max_duration != NO_MAX_DURATION)
-      double_update(&(((surf_action_t)action)->max_duration), delta);
+  if ((((surf_action_t)action)->remains <= 0) &&
+      (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0)) {
+    ((surf_action_t)action)->finish = surf_get_clock();
+    surf_network_model->action_state_set((surf_action_t) action,
+        SURF_ACTION_DONE);
 
-    if ((((surf_action_t)action)->remains <= 0) &&
-        (lmm_get_variable_weight(action->variable) > 0)) {
-      ((surf_action_t)action)->finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action,
-                                           SURF_ACTION_DONE);
-      surf_action_lmm_heap_remove(net_action_heap,action);
-    } else if (((((surf_action_t)action)->max_duration != NO_MAX_DURATION)
-               && (((surf_action_t)action)->max_duration <= 0))) {
-      ((surf_action_t)action)->finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action,
-                                           SURF_ACTION_DONE);
-      surf_action_lmm_heap_remove(net_action_heap,action);
-    }
-
-    action->last_update = now;
+    surf_action_lmm_heap_remove(net_action_heap,(surf_action_lmm_t)action);
+  } else if (((((surf_action_t)action)->max_duration != NO_MAX_DURATION)
+      && (((surf_action_t)action)->max_duration <= 0))) {
+    ((surf_action_t)action)->finish = surf_get_clock();
+    surf_network_model->action_state_set((surf_action_t) action,
+        SURF_ACTION_DONE);
+    surf_action_lmm_heap_remove(net_action_heap,(surf_action_lmm_t)action);
   }
+
+  GENERIC_LMM_ACTION(action).last_update = now;
+  GENERIC_LMM_ACTION(action).last_value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
 }
 
 static double net_share_resources_full(double now)
@@ -438,7 +439,6 @@ static double net_share_resources_lazy(double now)
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %d",
        xbt_swag_size(net_modified_set));
-  net_update_action_remaining_lazy(now);
 
   lmm_solve(network_maxmin_system);
 
@@ -446,7 +446,7 @@ static double net_share_resources_lazy(double now)
       ("After share resources, The size of modified actions set is %d",
        xbt_swag_size(net_modified_set));
 
-  xbt_swag_foreach(action, net_modified_set) {
+  while((action = xbt_swag_extract(net_modified_set))) {
     int max_dur_flag = 0;
 
     if (GENERIC_ACTION(action).state_set !=
@@ -456,6 +456,8 @@ static double net_share_resources_lazy(double now)
     /* bogus priority, skip it */
     if (GENERIC_ACTION(action).priority <= 0)
       continue;
+
+    net_update_action_remaining_lazy(action,now);
 
     min = -1;
     value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
