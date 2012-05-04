@@ -111,7 +111,7 @@ void smx_ctx_java_stop(smx_context_t context)
   /* suspend myself again, smx_ctx_java_free() will destroy me later
    * from maeastro */
   jprocess_unschedule(context);
-  XBT_INFO("Java stop finished");
+  XBT_DEBUG("Java stop finished");
 }
 
 static void smx_ctx_java_suspend(smx_context_t context)
