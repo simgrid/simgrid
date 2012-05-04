@@ -97,12 +97,15 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automaton.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automatonparse_promela.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\datadesc.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\socket.h
+	file @CMAKE_HOME_DIRECTORY@\include\xbt\file_stat.h
 
 	CreateDirectory  $INSTDIR\include\simgrid
 	setOutPath $INSTDIR\include\simgrid
 	file @CMAKE_HOME_DIRECTORY@\include\simgrid\platf.h
 	file @CMAKE_HOME_DIRECTORY@\include\simgrid\modelchecker.h
-	
+	file @CMAKE_HOME_DIRECTORY@\include\simgrid\simix.h
+
 	CreateDirectory  $INSTDIR\include\msg
 	setOutPath $INSTDIR\include\msg
 	file @CMAKE_HOME_DIRECTORY@\include\msg\msg.h
@@ -145,12 +148,6 @@ Section "Libraries and Headers" LibSection
 	CreateDirectory  $INSTDIR\include\instr
 	setOutPath $INSTDIR\include\instr
 	file @CMAKE_HOME_DIRECTORY@\include\instr\instr.h
-	
-	CreateDirectory  $INSTDIR\include\simix
-	setOutPath $INSTDIR\include\simix
-	file @CMAKE_HOME_DIRECTORY@\include\simix\simix.h
-	file @CMAKE_HOME_DIRECTORY@\include\simix\datatypes.h
-	file @CMAKE_HOME_DIRECTORY@\include\simix\context.h
 	
 SectionEnd
 Section "Binaries" BinSection	
@@ -341,7 +338,13 @@ section "Uninstall"
 	delete $INSTDIR\include\xbt\mmalloc.h
 	delete $INSTDIR\include\xbt\replay_trace_reader.h
 	delete $INSTDIR\include\xbt\parmap.h
-	delete $INSTDIR\include\mc\modelchecker.h
+	delete $INSTDIR\include\xbt\socket.h
+	delete $INSTDIR\include\xbt\file_stat.h
+
+	delete $INSTDIR\include\simgrid\platf.h
+	delete $INSTDIR\include\simgrid\modelchecker.h
+	delete $INSTDIR\include\simgrid\simix.h
+
 	delete $INSTDIR\include\msg\msg.h
 	delete $INSTDIR\include\msg\datatypes.h	
 	delete $INSTDIR\include\simdag\simdag.h
@@ -365,9 +368,6 @@ section "Uninstall"
 	delete $INSTDIR\include\amok\peermanagement.h
 	delete $INSTDIR\include\amok\bandwidth.h
 	delete $INSTDIR\include\instr\instr.h
-	delete $INSTDIR\include\simix\simix.h
-	delete $INSTDIR\include\simix\datatypes.h
-	delete $INSTDIR\include\simix\context.h
 		
 	# delete EXTRA FILES
 	delete $INSTDIR\AUTHORS
