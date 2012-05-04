@@ -547,7 +547,6 @@ Java_org_simgrid_msg_MsgNative_taskCreate(JNIEnv * env, jclass cls,
   task =
       MSG_task_create(name, (double) jcomputeDuration,
                       (double) jmessageSize, NULL);
-  XBT_INFO("Name: %s %p",name,task);
   if (jname)
     (*env)->ReleaseStringUTFChars(env, jname, name);
 

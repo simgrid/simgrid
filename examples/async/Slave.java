@@ -37,14 +37,16 @@ public class Slave extends Process {
 						Task task = comm.getTask();
 	
 						if (task instanceof FinalizeTask) {
+							comm = null;
 							break;
 						}
 						Msg.info("Received \"" + task.getName() +  "\". Processing it.");
 						try {
 							task.execute();
 						} catch (TaskCancelledException e) {
-							
+						
 						}
+						comm = null;							
 					}
 					else {
 						simulatedSleep(1);
@@ -52,7 +54,7 @@ public class Slave extends Process {
 				}
 			}
 			catch (Exception e) {
-
+				e.printStackTrace();
 			}
 		}
 		Msg.info("Received Finalize. I'm done. See you!");
