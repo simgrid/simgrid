@@ -177,73 +177,6 @@ final class MsgNative {
 	 ******************************************************************/
 
 	/**
-	 * The natively implemented method to get an host from his name.
-	 *
-	 * @param name            The name of the host to get.
-	 *
-	 * @return                The host having the specified name.
-	 *
-	 * @exception            HostNotFoundException if there is no such host
-	 *                       
-	 *
-	 * @see                Host.getByName()
-	 */
-	final static native Host hostGetByName(String name) throws HostNotFoundException;
-
-	/**
-	 * The natively implemented method to get the name of an MSG host.
-	 *
-	 * @param host            The host (valid) to get the name.
-	 *
-	 * @return                The name of the specified host.
-	 *
-	 * @see                Host.getName()
-	 */
-	final static native String hostGetName(Host host);
-
-	/**
-	 * The natively implemented method to get the number of hosts of the simulation.
-	 *
-	 * @return                The number of hosts of the simulation.
-	 *
-	 * @see                Host.getNumber()
-	 */
-	final static native int hostGetCount();
-
-	/**
-	 * The natively implemented method to get the host of the current runing process.
-	 *
-	 * @return                The host of the current running process.
-	 *
-	 * @see                Host.currentHost()
-	 */
-	final static native Host hostSelf();
-
-	/**
-	 * The natively implemented method to get the speed of a MSG host.
-	 *
-	 * @param host            The host to get the host.
-	 *
-	 * @return                The speed of the specified host.
-	 *
-	 * @see                Host.getSpeed()
-	 */
-
-	final static native double hostGetSpeed(Host host);
-
-	/**
-	 * The natively implemented native method to test if an host is avail.
-	 *
-	 * @param host            The host to test.
-	 *
-	 * @return                If the host is avail the method returns true. 
-	 *                        Otherwise the method returns false.
-	 *
-	 * @see                Host.isAvail()
-	 */
-	final static native boolean hostIsAvail(Host host);
-
-	/**
 	 * The natively implemented native method to get all the hosts of the simulation.
 	 *
 	 * @return                A array which contains all the hosts of simulation.
@@ -251,12 +184,4 @@ final class MsgNative {
 
 	final static native Host[] allHosts();
 
-	/**
-	 * The natively implemented native method to get the number of running tasks on a host.
-	 *
-	 * @param                The host concerned by the operation.
-	 *
-	 * @return                The number of running tasks.
-	 */
-	final static native int hostGetLoad(Host host);
 }

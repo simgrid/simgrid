@@ -172,7 +172,7 @@ public class Task {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public void send(String mailbox) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
+	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
 		send(mailbox, -1);
 	} 
 
@@ -186,7 +186,7 @@ public class Task {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public native void send(String mailbox, double timeout) throws NativeException, TransferFailureException, HostFailureException, TimeoutException;
+	public native void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
 	/**
 	 * Sends the task on the mailbox identified by the specified alias  (capping the sending rate to \a maxrate) 
 	 *

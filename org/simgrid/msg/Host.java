@@ -74,31 +74,22 @@ public class Host {
      * @exception		HostNotFoundException if the name of the host is not valid.
 	 *					NativeException if the native version of this method failed.
 	 */ 
-	public static Host getByName(String name) 
-	throws HostNotFoundException {
-		if (name==null)
-			throw new NullPointerException("No host can have a null name");
-		return MsgNative.hostGetByName(name);
-	}
-
+	public native static Host getByName(String name) 
+	throws HostNotFoundException, NullPointerException;
 	/**
 	 * This static method returns the count of the installed hosts.
 	 *
 	 * @return			The count of the installed hosts.
-	 *
+	 * FIXME: Not implemented... ?
 	 */ 
-	public static int getCount() {
-		return MsgNative.hostGetCount();
-	}
+	public native static int getCount();
 
 	/**
 	 * This static method return an instance to the host of the current process.
 	 *
 	 * @return			The host on which the current process is executed.
 	 */ 
-	public static Host currentHost() {
-		return MsgNative.hostSelf();
-	}
+	public native static Host currentHost();
 
 	/**
 	 * This static method returns all of the hosts of the installed platform.
@@ -116,10 +107,7 @@ public class Host {
 	 * @return			The name of the host.
 	 *
 	 */ 
-	public String getName()  {
-		return MsgNative.hostGetName(this);
-	}
-
+	public native String getName();
 	/**
 	 * Sets the data of the host.
 	 *
@@ -153,9 +141,7 @@ public class Host {
 	 *
 	 * @return			The number of tasks currently running on a host.
 	 */ 
-	public int getLoad() {
-		return MsgNative.hostGetLoad(this);
-	}
+	public native int getLoad();
 
 	/**
 	 * This method returns the speed of the processor of a host,
@@ -164,14 +150,12 @@ public class Host {
 	 * @return			The speed of the processor of the host in flops.
 	 *
 	 */ 
-	public double getSpeed() {
-		return MsgNative.hostGetSpeed(this);
-	}
+	public native double getSpeed();
 
     /** This method tests if a host is avail.
      * @return
      */
-	public boolean isAvail() {
-		return MsgNative.hostIsAvail(this);
-	}
+	public native boolean isAvail();
+	
+	
 } 

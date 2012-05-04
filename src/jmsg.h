@@ -137,57 +137,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_MsgNative_processMigrate
 JNIEXPORT void JNICALL Java_org_simgrid_msg_MsgNative_processWaitFor
     (JNIEnv *, jclass, jdouble);
 
-/*
- * Class		simgrid_msg_Msg
- * Method		hostGetByName
- * Signature	(Ljava/lang/String;)Lsimgrid/msg/Host;
- */
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_MsgNative_hostGetByName
-    (JNIEnv *, jclass, jstring);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		hostGetName
- * Signature	(Lsimgrid/msg/Host;)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_simgrid_msg_MsgNative_hostGetName
-    (JNIEnv *, jclass, jobject);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		hostGetNumber
- * Signature	()I
- */
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_MsgNative_hostGetNumber
-    (JNIEnv *, jclass);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		hostSelf
- * Signature	()Lsimgrid/msg/Host;
- */
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_MsgNative_hostSelf
-    (JNIEnv *, jclass);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		hostGetSpeed
- * Signature	(Lsimgrid/msg/Host;)D
- */
-JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_MsgNative_hostGetSpeed
-    (JNIEnv *, jclass, jobject);
-
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_MsgNative_hostGetLoad(JNIEnv * env, jclass cls,
                                        jobject jhost);
-
-/*
- * Class		simgrid_msg_Msg
- * Method		hostIsAvail
- * Signature	(Lsimgrid/msg/Host;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_MsgNative_hostIsAvail
-    (JNIEnv *, jclass, jobject);
 
 /*
  * Class		simgrid_msg_Msg
@@ -229,7 +181,6 @@ Java_org_simgrid_msg_MsgNative_allHosts(JNIEnv *, jclass);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
                                        jstring jplatformFile);
-
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
                                        jstring jdeploymentFile);
