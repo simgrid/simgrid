@@ -28,7 +28,7 @@
 
 Name "Simgrid"
 outFile "SimGrid@SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@_SGjava_@NSIS_WIN_VERSION@@BIN_EXE@"
-Icon "@CMAKE_HOME_DIRECTORY@\doc\webcruft\SimGrid.ico"
+Icon "@CMAKE_HOME_DIRECTORY@\doc\webcruft\SGicon.ico"
 
 RequestExecutionLevel admin
 
