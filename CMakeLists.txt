@@ -265,27 +265,13 @@ ${CMAKE_HOME_DIRECTORY}/simgrid.jar
 INCLUDE(CTest)
 ENABLE_TESTING()
 
-ADD_TEST(basic
-java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar basic/BasicTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/basic/basicDeployment.xml
-)
-ADD_TEST(async
-java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar async/AsyncTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/async/asyncDeployment.xml
-)
-ADD_TEST(pingPong
-java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar pingPong/PingPongTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingPongDeployment.xml
-)
-ADD_TEST(CommTime
-java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar commTime/CommTimeTest ${CMAKE_HOME_DIRECTORY}/examples/platform.xml ${CMAKE_HOME_DIRECTORY}/examples/commTime/commTimeDeployment.xml
-)
-ADD_TEST(mutualExclusion
-java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar mutualExclusion/centralized/MutexCentral ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/ring3.xml ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
-)
-ADD_TEST(bypass
-java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar master_slave_bypass/MsBypass ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/platform.xml
-)
-ADD_TEST(kill
-java -cp .:${CMAKE_HOME_DIRECTORY}/examples:${CMAKE_HOME_DIRECTORY}/simgrid.jar master_slave_kill/MsKill ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/platform.xml
-)
+ADD_TEST(basic           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/basic/basic.tesh)
+ADD_TEST(async           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/async/async.tesh)
+ADD_TEST(pingPong        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingpong.tesh)
+ADD_TEST(CommTime        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/commTime/commtime.tesh)
+ADD_TEST(mutualExclusion ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/mutualexclusion.tesh)
+ADD_TEST(bypass          ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/bypass.tesh)
+ADD_TEST(kill            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh)
 #Don't forget to put new test in this list!!!
 set(test_list basic async pingPong CommTime mutualExclusion bypass kill)
 
