@@ -516,8 +516,8 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
-	public void taskSend(String mailbox, Task task, double timeout) throws TransferFailureException, HostFailureException, TimeoutException {
-		MsgNative.taskSend(mailbox, task, timeout);
+	public void taskSend(String mailbox, Task task, double timeout) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
+		task.send(mailbox, timeout);
 	}
 
 	/** Send the given task in the mailbox associated with the specified alias
@@ -526,8 +526,8 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException */
-	public void taskSend(String mailbox, Task task) throws  TransferFailureException, HostFailureException, TimeoutException {
-		MsgNative.taskSend(mailbox, task, -1);
+	public void taskSend(String mailbox, Task task) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
+		task.send(mailbox, -1);
 	}
 
     /** Receive a task on mailbox associated with the specified mailbox
@@ -538,7 +538,7 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
-		return MsgNative.taskReceive(mailbox, -1.0, null);
+		return Task.receive(mailbox, -1.0, null);
 	}
 
     /** Receive a task on mailbox associated with the specified alias (waiting at most given time)
@@ -550,7 +550,7 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
-		return MsgNative.taskReceive(mailbox, timeout, null);
+		return Task.receive(mailbox, timeout, null);
 	}
 
     /** Receive a task on mailbox associated with the specified alias from given sender
@@ -563,7 +563,7 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox, double timeout, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
-		return MsgNative.taskReceive(mailbox, timeout, host);
+		return Task.receive(mailbox, timeout, host);
 	}
 
     /** Receive a task on mailbox associated with the specified alias from given sender
@@ -575,6 +575,6 @@ public abstract class Process extends Thread {
      * @throws TimeoutException
      */
 	public Task taskReceive(String mailbox, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
-		return MsgNative.taskReceive(mailbox, -1.0, host);
+		return Task.receive(mailbox, -1.0, host);
 	}
 }

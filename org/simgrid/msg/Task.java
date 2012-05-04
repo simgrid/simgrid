@@ -103,26 +103,20 @@ public class Task {
      * @return
      */
 	public native String getName();
-	/** Gets the sender of the task */ 
+	/** Gets the sender of the task */
+	//FIXME: Don't crash when the task has just been created.
 	public native Process getSender();
 	/** Gets the source of the task
-     * @return
+	 * FIXME: Not defensive enough, can crash.
      */
-	public Host getSource()  {
-		return MsgNative.taskGetSource(this);
-	}
-    /** Gets the computing amount of the task
-     * @return
+	public native Host getSource();   
+	/** Gets the computing amount of the task
+     * FIXME: Cache it !
      */
-	public double getComputeDuration() {
-		return MsgNative.taskGetComputeDuration(this);
-	}
-    /** Gets the remaining computation of the task
-     * @return
+	public native double getComputeDuration();
+	/** Gets the remaining computation of the task
      */
-	public double getRemainingDuration() {
-		return MsgNative.taskGetRemainingDuration(this);
-	}
+	public native double getRemainingDuration();
 	/**
 	 * This method sets the priority of the computation of the task.
 	 * The priority doesn't affect the transfer rate. For example a
@@ -131,9 +125,7 @@ public class Task {
 	 *
 	 * @param priority	The new priority of the task.
 	 */ 
-	public void setPriority(double priority) {
-		MsgNative.taskSetPriority(this, priority);
-	}
+	public native void setPriority(double priority);
 	/* *                       * *
 	 * * Communication-related * *
 	 * *                       * */
@@ -149,16 +141,12 @@ public class Task {
      * @throws HostFailureException
      * @throws TaskCancelledException
      */
-	public void execute() throws HostFailureException,TaskCancelledException {
-		MsgNative.taskExecute(this);
-	}
+	public native void execute() throws HostFailureException,TaskCancelledException;
 	/**
 	 * Cancels a task.
 	 *
 	 */ 
-	public void cancel()  {
-		MsgNative.taskCancel(this);
-	}
+	public native void cancel();
 	/** Deletes a task.
 	 *
 	 * @exception			NativeException if the destruction failed.
@@ -184,8 +172,8 @@ public class Task {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
-		MsgNative.taskSend(mailbox, this, -1);
+	public void send(String mailbox) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
+		send(mailbox, -1);
 	} 
 
 	/**
@@ -198,10 +186,7 @@ public class Task {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public void send(String mailbox, double timeout) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
-		MsgNative.taskSend(mailbox, this, timeout);
-	} 
-
+	public native void send(String mailbox, double timeout) throws NativeException, TransferFailureException, HostFailureException, TimeoutException;
 	/**
 	 * Sends the task on the mailbox identified by the specified alias  (capping the sending rate to \a maxrate) 
 	 *
@@ -211,9 +196,7 @@ public class Task {
      * @throws HostFailureException
      * @throws TimeoutException
 	 */
-	public void sendBounded(String alias, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
-		MsgNative.taskSendBounded(alias, this, maxrate);
-	} 
+	public native void sendBounded(String alias, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException;
 	/**
 	 * Sends the task on the mailbox asynchronously
 	 */
@@ -222,21 +205,16 @@ public class Task {
 	/**
 	 * Starts listening for receiving a task from an asynchronous communication
 	 * @param mailbox
-	 * @return
 	 */
 	public static native Comm irecv(String mailbox);
 	/**
 	 * Retrieves next task from the mailbox identified by the specified name
 	 *
      * @param mailbox
-     * @return
-     * @throws TransferFailureException
-     * @throws HostFailureException
-     * @throws TimeoutException
 	 */
 
 	public static Task receive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
-		return MsgNative.taskReceive(mailbox, -1.0, null);
+		return receive(mailbox, -1.0, null);
 	}
 
 	/**
@@ -244,13 +222,9 @@ public class Task {
 	 *
      * @param mailbox
      * @param timeout
-     * @return 
-     * @throws TransferFailureException
-     * @throws HostFailureException
-     * @throws TimeoutException
 	 */
 	public static Task receive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
-		return MsgNative.taskReceive(mailbox, timeout, null);
+		return receive(mailbox, timeout, null);
 	}
 
 	/**
@@ -258,14 +232,10 @@ public class Task {
 	 *
      * @param mailbox
      * @param host
-     * @return
-     * @throws TransferFailureException
-     * @throws TimeoutException
-     * @throws HostFailureException
 	 */
 
 	public static Task receive(String mailbox, Host host) throws TransferFailureException, HostFailureException, TimeoutException {
-		return MsgNative.taskReceive(mailbox, -1.0, host);
+		return receive(mailbox, -1.0, host);
 	}
 
 	/**
@@ -274,15 +244,8 @@ public class Task {
      * @param mailbox
      * @param timeout 
      * @param host
-     * @return 
-     * @throws TransferFailureException
-     * @throws HostFailureException
-     * @throws TimeoutException
 	 */
-	public static Task receive(String mailbox, double timeout, Host host) throws TransferFailureException, HostFailureException, TimeoutException {
-		return MsgNative.taskReceive(mailbox, timeout, host);
-	}
-
+	public native static Task receive(String mailbox, double timeout, Host host) throws TransferFailureException, HostFailureException, TimeoutException;
 	/**
 	 * Tests whether there is a pending communication on the mailbox identified by the specified alias, and who sent it
      */

@@ -107,6 +107,23 @@ Java_org_simgrid_msg_Task_parallelCreate
  */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_destroy
     (JNIEnv *, jobject);
+
+/*
+ * Class		org_simgrid_msg_Task
+ * Method		cancel
+ * Signature	()V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_cancel
+    (JNIEnv *, jobject);
+
+/*
+ * Class		org_simgrid_msg_Task
+ * Method		execute
+ * Signature	()V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_execute
+    (JNIEnv *, jobject);
+
 /*
  * Class		org_simgrid_msg_Task
  * Method		getName
@@ -122,6 +139,60 @@ JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Task_getName
  */
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSender
     (JNIEnv *, jobject);
+/*
+ * Class		org_simgrid_msg_Task
+ * Method		getSource
+ * Signature	()Lsimgrid/msg/Host;
+ */
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource
+    (JNIEnv *, jobject);
+/*
+ * Class		org_simgrid_msg_Task
+ * Method		getComputeDuration
+ * Signature	()D
+ */
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getComputeDuration
+    (JNIEnv *, jobject);
+
+/*
+ * Class		org_simgrid_msg_Task
+ * Method		getRemainingDuration
+ * Signature	()D
+ */
+JNIEXPORT jdouble JNICALL
+Java_org_simgrid_msg_Task_getRemainingDuration(JNIEnv *, jobject);
+
+/*
+ * Class		org_simgrid_msg_Task
+ * Method		setPriority
+ * Signature	(D)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority
+    (JNIEnv *, jobject, jdouble);
+
+/**
+ * Class		org_simgrid_msg_Task
+ * Method		send
+ */
+JNIEXPORT void JNICALL
+    Java_org_simgrid_msg_Task_send
+    (JNIEnv *, jobject, jstring, jdouble);
+
+/*
+ * Class		org_simgrid_msg_Task
+ * Method		sendBounded
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_sendBounded(JNIEnv *, jobject, jstring,
+                                               jdouble);
+
+/**
+ * Class		org_simgrid_msg_Task
+ * Method		receive
+ */
+JNIEXPORT jobject JNICALL
+    Java_org_simgrid_msg_Task_receive
+    (JNIEnv *, jclass, jstring, jdouble, jobject);
 
 /**
  * Class 		org_simgrid_msg_Task
