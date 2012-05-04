@@ -5,10 +5,15 @@
 #ifndef MSG_JCOMM_H
 #define MSG_JCOMM_H
 #include <jni.h>
-
+#include <msg/msg.h>
+void jcomm_bind_task(JNIEnv *env, jobject jcomm);
+void jcomm_throw(JNIEnv *env, MSG_error_t status);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_unbind(JNIEnv *env, jobject jcomm);
 
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm);
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout);
 #endif /* MSG_JCOMM_H */
