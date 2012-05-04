@@ -13,6 +13,10 @@ package org.simgrid.msg;
  */
 public class Comm {
 	/**
+	 * Indicates if the communication is a receiving communication
+	 */
+	boolean receiving;
+	/**
 	 * Represents the bind between the java comm and the
 	 * native C comm. You must never access it, since it is 
 	 * automatically set.
@@ -36,13 +40,13 @@ public class Comm {
 	/**
 	 * Finalize the communication object, destroying it.
 	 */
-	protected void finalize() {
+	protected void finalize() throws Throwable {
 		unbind();
 	}
 	/**
 	 * Unbind the communication object
 	 */
-	public native void unbind();
+	public native void unbind() throws NativeException;
 	/**
 	 * Returns if the communication is finished or not.
 	 * If the communication has finished and there was an error,

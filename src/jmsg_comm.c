@@ -12,12 +12,13 @@ Java_org_simgrid_msg_Comm_unbind(JNIEnv *env, jobject jcomm) {
 	jfieldID id_task = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bindTask", "J");
 	msg_comm_t comm;
 	m_task_t *task_received;
-
 	if (!id || !id_task)
 		return;
 
 	task_received = (m_task_t*)  (long) (*env)->GetLongField(env, jcomm, id_task);
-	xbt_free(task_received);
+	if (task_received != NULL) {
+		xbt_free(task_received);
+	}
 
 	comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, id);
 	MSG_comm_destroy(comm);
@@ -30,7 +31,10 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
 	jfieldID idComm = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
 	jclass jclass = jxbt_get_class(env,"org/simgrid/msg/Comm");
 	jfieldID idTask = jxbt_get_jfield(env, jclass, "task", "Lorg/simgrid/msg/Task;");
-	if (!idComm || !idTask) {
+	jfieldID id_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
+
+
+	if (!idComm || !idTask || !id_receiving) {
 		jxbt_throw_native(env,bprintf("idTask or idComm is null"));
 		return JNI_FALSE;
 	}
@@ -44,17 +48,27 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
 		MSG_error_t status = MSG_comm_get_status(comm);
 
 		if (status == MSG_OK) {
-			//bind the task object.
-			m_task_t task = MSG_comm_get_task(comm);
-			jobject jtask_global = MSG_task_get_data(task);
-			jobject jtask_local = (*env)->NewLocalRef(env, jtask_global);
+			//test if we are receiving or sending a task.
+			jboolean jreceiving = (*env)->GetBooleanField(env, jcomm, id_receiving);
+			if (jreceiving == JNI_TRUE) {
+				//bind the task object.
+				m_task_t task = MSG_comm_get_task(comm);
+				xbt_assert(task != NULL, "Task is NULL");
+				jobject jtask_global = MSG_task_get_data(task);
+				//case where the data has already been retrieved
+				if (jtask_global == NULL)
+				{
+					return JNI_TRUE;
+				}
 
-			(*env)->DeleteGlobalRef(env, jtask_global);
+				//Make sure the data will be correctly gc.
+				jobject jtask_local = (*env)->NewLocalRef(env, jtask_global);
+				(*env)->DeleteGlobalRef(env, jtask_global);
 
-			(*env)->SetObjectField(env, jcomm, idTask, jtask_local);
+				(*env)->SetObjectField(env, jcomm, idTask, jtask_local);
 
-			MSG_task_set_data(task, NULL);
-
+				MSG_task_set_data(task, NULL);
+			}
 			return JNI_TRUE;
 		}
 		else {

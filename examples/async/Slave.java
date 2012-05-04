@@ -40,6 +40,7 @@ public class Slave extends Process {
 							comm = null;
 							break;
 						}
+						Msg.info("Received a task");
 						Msg.info("Received \"" + task.getName() +  "\". Processing it.");
 						try {
 							task.execute();

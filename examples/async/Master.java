@@ -8,6 +8,9 @@
  */
 
 package async;
+import java.util.ArrayList;
+
+import org.simgrid.msg.Comm;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Task;
@@ -27,13 +30,32 @@ public class Master extends Process {
 		int slavesCount = Integer.valueOf(args[3]).intValue();
 
 		Msg.info("Hello! Got "+  slavesCount + " slaves and "+tasksCount+" tasks to process");
-
+		
+		ArrayList<Comm> comms = new ArrayList<Comm>();
+		
 		for (int i = 0; i < tasksCount; i++) {
 			Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize); 
-			//Msg.info("Sending \"" + task.getName()+ "\" to \"slave_" + i % slavesCount + "\"");
-			task.send("slave_"+(i%slavesCount));
+			Msg.info("Sending \"" + task.getName()+ "\" to \"slave_" + i % slavesCount + "\"");
+			//task.send("slave_"+(i%slavesCount));
+			Comm comm = task.isend("slave_"+(i%slavesCount));
+			comms.add(comm);
 		}
-
+		
+		while (comms.size() > 0) {
+			for (int i = 0; i < comms.size(); i++) {
+				try {
+					if (comms.get(i).test()) {
+						comms.remove(i);
+						i--;
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			simulatedSleep(1);
+		}
+		
 		Msg.info("All tasks have been dispatched. Let's tell (asynchronously) everybody the computation is over, and sleep 20s so that nobody gets a message from a terminated process.");
 
 		for (int i = 0; i < slavesCount; i++) {

@@ -758,7 +758,6 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
                                        jobject jtask_arg)
 {
-
   /* get the native task */
   m_task_t task = jtask_to_native_task(jtask_arg, env);
 
@@ -766,7 +765,6 @@ Java_org_simgrid_msg_MsgNative_taskDestroy(JNIEnv * env, jclass cls,
     jxbt_throw_notbound(env, "task", task);
     return;
   }
-
   MSG_error_t rv = MSG_task_destroy(task);
 
   jxbt_check_res("MSG_task_destroy()", rv, MSG_OK,

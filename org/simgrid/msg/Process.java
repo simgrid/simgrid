@@ -185,7 +185,7 @@ public abstract class Process extends Thread {
 		try {
 			MsgNative.processCreate(this, host.getName());
 		} catch (HostNotFoundException e) {
-			throw new RuntimeException("The impossible happend (yet again): the host that I have were not found",e);
+			throw new RuntimeException("The impossible happened (yet again): the host that I have were not found",e);
 		}
 		
 	}

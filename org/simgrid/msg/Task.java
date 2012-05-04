@@ -185,16 +185,16 @@ public class Task {
 		MsgNative.taskSendBounded(alias, this, maxrate);
 	} 
 	/**
+	 * Sends the task on the mailbox asynchronously
+	 */
+	public native Comm isend(String mailbox);
+	
+	/**
 	 * Starts listening for receiving a task from an asynchronous communication
 	 * @param mailbox
 	 * @return
 	 */
-	public static Comm irecv(String mailbox) {
-		Comm comm = new Comm();
-		irecvBind(comm,mailbox);
-		return comm;
-	}
-	public static native void irecvBind(Comm comm, String mailbox);
+	public static native Comm irecv(String mailbox);
 	/**
 	 * Retrieves next task from the mailbox identified by the specified name
 	 *
