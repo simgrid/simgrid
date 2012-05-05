@@ -54,10 +54,17 @@ void jcomm_throw(JNIEnv *env, MSG_error_t status) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
 	jclass jfield_class_Comm = (*env)->FindClass(env, "org/simgrid/msg/Comm");
+	if (!jfield_class_Comm) {
+		jxbt_throw_native(env,bprintf("Can't find the org/simgrid/msg/Comm class."));
+		return;
+	}
 	jcomm_field_Comm_bind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
 	jcomm_field_Comm_taskBind  = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "taskBind", "J");
 	jcomm_field_Comm_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
 	jtask_field_Comm_task = jxbt_get_jfield(env, jfield_class_Comm, "task", "Lorg/simgrid/msg/Task;");
+	if (!jcomm_field_Comm_bind || !jcomm_field_Comm_taskBind || !jcomm_field_Comm_receiving || !jtask_field_Comm_task) {
+  	jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));
+	}
 }
 
 JNIEXPORT void JNICALL
