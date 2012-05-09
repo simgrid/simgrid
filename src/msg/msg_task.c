@@ -196,7 +196,7 @@ const char *MSG_task_get_name(m_task_t task)
 }
 
 /** \ingroup m_task_management
- * \brief Return the name of a #m_task_t.
+ * \brief Sets the name of a #m_task_t.
  *
  * This functions allows to associate a name to a task
  */
