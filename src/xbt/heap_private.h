@@ -9,6 +9,7 @@
 
 #include "xbt/dynar.h"          /* void_f_pvoid_t */
 #include "xbt/heap.h"
+#include <float.h>
 
 typedef struct xbt_heap_item {
   void *content;
@@ -30,6 +31,6 @@ typedef struct xbt_heap {
 #define KEY(H,i)     ((H->items)[i]).key
 #define CONTENT(H,i) ((H->items)[i]).content
 
-#define MIN_KEY_VALUE -10000
+#define MIN_KEY_VALUE -DBL_MAX
 
 #endif                          /* _XBT_HEAP_PRIVATE_H */

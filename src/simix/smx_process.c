@@ -384,6 +384,10 @@ smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
           SIMIX_process_sleep_suspend(process->waiting_action);
           break;
 
+        case SIMIX_ACTION_SYNCHRO:
+          /* Suspension is delayed to when the process is rescheduled. */
+          break;
+
         default:
           xbt_die("Internal error in SIMIX_process_suspend: unexpected action type %d",
               (int)process->waiting_action->type);
@@ -431,14 +435,18 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
           SIMIX_process_sleep_resume(process->waiting_action);
           break;
 
+        case SIMIX_ACTION_SYNCHRO:
+          /* I cannot resume it now. This is delayed to when the process is rescheduled at
+           * the end of the synchro. */
+          break;
+
         default:
           xbt_die("Internal error in SIMIX_process_resume: unexpected action type %d",
               (int)process->waiting_action->type);
       }
     }
-    else
-      XBT_WARN("Strange. Process %p is trying to resume himself.", issuer);
-  }
+  } else XBT_WARN("Strange. Process %p is trying to resume himself.", issuer);
+
   XBT_OUT();
 }
 

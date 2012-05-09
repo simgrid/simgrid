@@ -148,7 +148,7 @@ void *xbt_heap_pop(xbt_heap_t H)
  * \param i	element position
  * \return the element at position i if ok, NULL otherwise
  *
- * Extracts from the heap and returns the element at position i. The head is automatically reorded.
+ * Extracts from the heap and returns the element at position i. The heap is automatically reorded.
  */
 void *xbt_heap_remove(xbt_heap_t H, int i)
 {

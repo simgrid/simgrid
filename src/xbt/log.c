@@ -556,7 +556,9 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt);
   XBT_LOG_CONNECT(graphxml_parse);
   XBT_LOG_CONNECT(log);
+#if HAVE_MMAP
   XBT_LOG_CONNECT(mm_diff);
+#endif
   XBT_LOG_CONNECT(module);
   XBT_LOG_CONNECT(peer);
   XBT_LOG_CONNECT(replay);
