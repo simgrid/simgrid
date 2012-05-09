@@ -74,7 +74,7 @@ static void *cpu_create_resource(const char *name, double power_peak,
         tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
 
   cpu->constraint =
-      lmm_constraint_new(surf_cpu_model->maxmin_system, cpu,
+      lmm_constraint_new(surf_cpu_model->model_private->maxmin_system, cpu,
                          cpu->core * cpu->power_scale * cpu->power_peak);
 
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
@@ -135,7 +135,7 @@ static void cpu_define_callbacks()
 
 static int cpu_resource_used(void *resource)
 {
-  return lmm_constraint_used(surf_cpu_model->maxmin_system,
+  return lmm_constraint_used(surf_cpu_model->model_private->maxmin_system,
                              ((cpu_Cas01_t) resource)->constraint);
 }
 
@@ -145,12 +145,12 @@ static int cpu_action_unref(surf_action_t action)
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
     if (((surf_action_lmm_t) action)->variable)
-      lmm_variable_free(surf_cpu_model->maxmin_system,
+      lmm_variable_free(surf_cpu_model->model_private->maxmin_system,
                         ((surf_action_lmm_t) action)->variable);
-    if (surf_cpu_model->update_mechanism == UM_LAZY) {
+    if (surf_cpu_model->model_private->update_mechanism == UM_LAZY) {
       /* remove from heap */
-      surf_action_lmm_heap_remove(surf_cpu_model->action_heap,(surf_action_lmm_t)action);
-      xbt_swag_remove(action, surf_cpu_model->modified_set);
+      surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action);
+      xbt_swag_remove(action, surf_cpu_model->model_private->modified_set);
     }
 #ifdef HAVE_TRACING
     xbt_free(action->category);
@@ -164,9 +164,9 @@ static int cpu_action_unref(surf_action_t action)
 static void cpu_action_cancel(surf_action_t action)
 {
   surf_action_state_set(action, SURF_ACTION_FAILED);
-  if (surf_cpu_model->update_mechanism == UM_LAZY) {
-    xbt_swag_remove(action, surf_cpu_model->modified_set);
-    surf_action_lmm_heap_remove(surf_cpu_model->action_heap,(surf_action_lmm_t)action);
+  if (surf_cpu_model->model_private->update_mechanism == UM_LAZY) {
+    xbt_swag_remove(action, surf_cpu_model->model_private->modified_set);
+    surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action);
   }
   return;
 }
@@ -207,7 +207,7 @@ static void cpu_update_action_remaining_lazy(surf_action_cpu_Cas01_t action, dou
     if (TRACE_is_enabled()) {
       cpu_Cas01_t cpu =
           lmm_constraint_id(lmm_get_cnst_from_var
-              (surf_cpu_model->maxmin_system,
+              (surf_cpu_model->model_private->maxmin_system,
                   GENERIC_LMM_ACTION(action).variable, 0));
       TRACE_surf_host_set_utilization(cpu->generic_resource.name,
           ((surf_action_t)action)->category,
@@ -231,15 +231,15 @@ static double cpu_share_resources_lazy(double now)
 
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %d",
-       xbt_swag_size(surf_cpu_model->modified_set));
+       xbt_swag_size(surf_cpu_model->model_private->modified_set));
 
-  lmm_solve(surf_cpu_model->maxmin_system);
+  lmm_solve(surf_cpu_model->model_private->maxmin_system);
 
   XBT_DEBUG
       ("After share resources, The size of modified actions set is %d",
-       xbt_swag_size(surf_cpu_model->modified_set));
+       xbt_swag_size(surf_cpu_model->model_private->modified_set));
 
-  while((action = xbt_swag_extract(surf_cpu_model->modified_set))) {
+  while((action = xbt_swag_extract(surf_cpu_model->model_private->modified_set))) {
     int max_dur_flag = 0;
 
     if (GENERIC_ACTION(action).state_set !=
@@ -278,16 +278,16 @@ static double cpu_share_resources_lazy(double now)
         GENERIC_ACTION(action).max_duration);
 
     if (min != -1) {
-      surf_action_lmm_heap_remove(surf_cpu_model->action_heap,(surf_action_lmm_t)action);
-      surf_action_lmm_heap_insert(surf_cpu_model->action_heap,(surf_action_lmm_t)action, min, max_dur_flag ? MAX_DURATION : NORMAL);
+      surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action);
+      surf_action_lmm_heap_insert(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action, min, max_dur_flag ? MAX_DURATION : NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min,
                 now);
     } else DIE_IMPOSSIBLE;
   }
 
   //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(surf_cpu_model->action_heap) > 0)
-    min = xbt_heap_maxkey(surf_cpu_model->action_heap) - now;
+  if (xbt_heap_size(surf_cpu_model->model_private->action_heap) > 0)
+    min = xbt_heap_maxkey(surf_cpu_model->model_private->action_heap) - now;
   else
     min = -1;
 
@@ -304,22 +304,22 @@ static double cpu_share_resources_full(double now)
                                         xbt_swag_offset(action,
                                                         generic_lmm_action.
                                                         variable),
-                                        surf_cpu_model->maxmin_system, lmm_solve);
+                                        surf_cpu_model->model_private->maxmin_system, lmm_solve);
 }
 
 static void cpu_update_actions_state_lazy(double now, double delta)
 {
   surf_action_cpu_Cas01_t action;
-  while ((xbt_heap_size(surf_cpu_model->action_heap) > 0)
-         && (double_equals(xbt_heap_maxkey(surf_cpu_model->action_heap), now))) {
-    action = xbt_heap_pop(surf_cpu_model->action_heap);
+  while ((xbt_heap_size(surf_cpu_model->model_private->action_heap) > 0)
+         && (double_equals(xbt_heap_maxkey(surf_cpu_model->model_private->action_heap), now))) {
+    action = xbt_heap_pop(surf_cpu_model->model_private->action_heap);
     XBT_DEBUG("Action %p: finish", action);
     GENERIC_ACTION(action).finish = surf_get_clock();
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       cpu_Cas01_t cpu =
           lmm_constraint_id(lmm_get_cnst_from_var
-                            (surf_cpu_model->maxmin_system,
+                            (surf_cpu_model->model_private->maxmin_system,
                              GENERIC_LMM_ACTION(action).variable, 0));
       TRACE_surf_host_set_utilization(cpu->generic_resource.name,
                                       ((surf_action_t)action)->category,
@@ -331,7 +331,7 @@ static void cpu_update_actions_state_lazy(double now, double delta)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     GENERIC_ACTION(action).remains = 0;
     cpu_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    surf_action_lmm_heap_remove(surf_cpu_model->action_heap,(surf_action_lmm_t)action); //FIXME: strange call since action was already popped
+    surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action); //FIXME: strange call since action was already popped
   }
 #ifdef HAVE_TRACING
   if (TRACE_is_enabled()) {
@@ -366,7 +366,7 @@ static void cpu_update_actions_state_full(double now, double delta)
     if (TRACE_is_enabled()) {
       cpu_Cas01_t x =
           lmm_constraint_id(lmm_get_cnst_from_var
-                            (surf_cpu_model->maxmin_system,
+                            (surf_cpu_model->model_private->maxmin_system,
                              GENERIC_LMM_ACTION(action).variable, 0));
 
       TRACE_surf_host_set_utilization(x->generic_resource.name,
@@ -409,7 +409,7 @@ static void cpu_update_resource_state(void *id,
 
   if (event_type == cpu->power_event) {
     cpu->power_scale = value;
-    lmm_update_constraint_bound(surf_cpu_model->maxmin_system, cpu->constraint,
+    lmm_update_constraint_bound(surf_cpu_model->model_private->maxmin_system, cpu->constraint,
                                 cpu->core * cpu->power_scale *
                                 cpu->power_peak);
 #ifdef HAVE_TRACING
@@ -418,9 +418,9 @@ static void cpu_update_resource_state(void *id,
                               cpu->power_peak);
 #endif
     while ((var = lmm_get_var_from_cnst
-            (surf_cpu_model->maxmin_system, cpu->constraint, &elem))) {
+            (surf_cpu_model->model_private->maxmin_system, cpu->constraint, &elem))) {
       surf_action_cpu_Cas01_t action = lmm_variable_id(var);
-      lmm_update_variable_bound(surf_cpu_model->maxmin_system,
+      lmm_update_variable_bound(surf_cpu_model->model_private->maxmin_system,
                                 GENERIC_LMM_ACTION(action).variable,
                                 cpu->power_scale * cpu->power_peak);
     }
@@ -434,7 +434,7 @@ static void cpu_update_resource_state(void *id,
 
       cpu->state_current = SURF_RESOURCE_OFF;
 
-      while ((var = lmm_get_var_from_cnst(surf_cpu_model->maxmin_system, cnst, &elem))) {
+      while ((var = lmm_get_var_from_cnst(surf_cpu_model->model_private->maxmin_system, cnst, &elem))) {
         surf_action_t action = lmm_variable_id(var);
 
         if (surf_action_state_get(action) == SURF_ACTION_RUNNING ||
@@ -471,15 +471,15 @@ static surf_action_t cpu_execute(void *cpu, double size)
                                                    calloc but it seems to help valgrind... */
 
   GENERIC_LMM_ACTION(action).variable =
-      lmm_variable_new(surf_cpu_model->maxmin_system, action,
+      lmm_variable_new(surf_cpu_model->model_private->maxmin_system, action,
                        GENERIC_ACTION(action).priority,
                        CPU->power_scale * CPU->power_peak, 1);
-  if (surf_cpu_model->update_mechanism == UM_LAZY) {
+  if (surf_cpu_model->model_private->update_mechanism == UM_LAZY) {
     GENERIC_LMM_ACTION(action).index_heap = -1;
     GENERIC_LMM_ACTION(action).last_update = surf_get_clock();
     GENERIC_LMM_ACTION(action).last_value = 0.0;
   }
-  lmm_expand(surf_cpu_model->maxmin_system, CPU->constraint,
+  lmm_expand(surf_cpu_model->model_private->maxmin_system, CPU->constraint,
              GENERIC_LMM_ACTION(action).variable, 1.0);
   XBT_OUT();
   return (surf_action_t) action;
@@ -506,14 +506,14 @@ static surf_action_t cpu_action_sleep(void *cpu, double duration)
     xbt_swag_insert(action, ((surf_action_t) action)->state_set);
   }
 
-  lmm_update_variable_weight(surf_cpu_model->maxmin_system,
+  lmm_update_variable_weight(surf_cpu_model->model_private->maxmin_system,
                              GENERIC_LMM_ACTION(action).variable, 0.0);
-  if (surf_cpu_model->update_mechanism == UM_LAZY) {     // remove action from the heap
-    surf_action_lmm_heap_remove(surf_cpu_model->action_heap,(surf_action_lmm_t)action);
+  if (surf_cpu_model->model_private->update_mechanism == UM_LAZY) {     // remove action from the heap
+    surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action);
     // this is necessary for a variable with weight 0 since such
     // variables are ignored in lmm and we need to set its max_duration
     // correctly at the next call to share_resources
-    xbt_swag_insert_at_head(action,surf_cpu_model->modified_set);
+    xbt_swag_insert_at_head(action,surf_cpu_model->model_private->modified_set);
   }
 
   XBT_OUT();
@@ -524,12 +524,12 @@ static void cpu_action_suspend(surf_action_t action)
 {
   XBT_IN("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
-    lmm_update_variable_weight(surf_cpu_model->maxmin_system,
+    lmm_update_variable_weight(surf_cpu_model->model_private->maxmin_system,
                                ((surf_action_lmm_t) action)->variable,
                                0.0);
     ((surf_action_lmm_t) action)->suspended = 1;
-    if (surf_cpu_model->update_mechanism == UM_LAZY)
-      surf_action_lmm_heap_remove(surf_cpu_model->action_heap,(surf_action_lmm_t)action);
+    if (surf_cpu_model->model_private->update_mechanism == UM_LAZY)
+      surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action);
   }
   XBT_OUT();
 }
@@ -539,12 +539,12 @@ static void cpu_action_resume(surf_action_t action)
 
   XBT_IN("(%p)", action);
   if (((surf_action_lmm_t) action)->suspended != 2) {
-    lmm_update_variable_weight(surf_cpu_model->maxmin_system,
+    lmm_update_variable_weight(surf_cpu_model->model_private->maxmin_system,
                                ((surf_action_lmm_t) action)->variable,
                                action->priority);
     ((surf_action_lmm_t) action)->suspended = 0;
-    if (surf_cpu_model->update_mechanism == UM_LAZY)
-      surf_action_lmm_heap_remove(surf_cpu_model->action_heap,(surf_action_lmm_t)action);
+    if (surf_cpu_model->model_private->update_mechanism == UM_LAZY)
+      surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action);
   }
   XBT_OUT();
 }
@@ -560,8 +560,8 @@ static void cpu_action_set_max_duration(surf_action_t action,
   XBT_IN("(%p,%g)", action, duration);
 
   action->max_duration = duration;
-  if (surf_cpu_model->update_mechanism == UM_LAZY)
-    surf_action_lmm_heap_remove(surf_cpu_model->action_heap,(surf_action_lmm_t)action);
+  if (surf_cpu_model->model_private->update_mechanism == UM_LAZY)
+    surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action);
   XBT_OUT();
 }
 
@@ -569,12 +569,12 @@ static void cpu_action_set_priority(surf_action_t action, double priority)
 {
   XBT_IN("(%p,%g)", action, priority);
   action->priority = priority;
-  lmm_update_variable_weight(surf_cpu_model->maxmin_system,
+  lmm_update_variable_weight(surf_cpu_model->model_private->maxmin_system,
                              ((surf_action_lmm_t) action)->variable,
                              priority);
 
-  if (surf_cpu_model->update_mechanism == UM_LAZY)
-    surf_action_lmm_heap_remove(surf_cpu_model->action_heap,(surf_action_lmm_t)action);
+  if (surf_cpu_model->model_private->update_mechanism == UM_LAZY)
+    surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action);
   XBT_OUT();
 }
 
@@ -592,7 +592,7 @@ static double cpu_action_get_remains(surf_action_t action)
 {
   XBT_IN("(%p)", action);
   /* update remains before return it */
-  if (surf_cpu_model->update_mechanism == UM_LAZY)
+  if (surf_cpu_model->model_private->update_mechanism == UM_LAZY)
     cpu_update_action_remaining_lazy((surf_action_cpu_Cas01_t)action,
         surf_get_clock());
   XBT_OUT();
@@ -617,12 +617,12 @@ static double cpu_get_available_speed(void *cpu)
 
 static void cpu_finalize(void)
 {
-  lmm_system_free(surf_cpu_model->maxmin_system);
-  surf_cpu_model->maxmin_system = NULL;
+  lmm_system_free(surf_cpu_model->model_private->maxmin_system);
+  surf_cpu_model->model_private->maxmin_system = NULL;
 
-  if (surf_cpu_model->action_heap)
-    xbt_heap_free(surf_cpu_model->action_heap);
-  xbt_swag_free(surf_cpu_model->modified_set);
+  if (surf_cpu_model->model_private->action_heap)
+    xbt_heap_free(surf_cpu_model->model_private->action_heap);
+  xbt_swag_free(surf_cpu_model->model_private->modified_set);
 
   surf_model_exit(surf_cpu_model);
   surf_cpu_model = NULL;
@@ -643,11 +643,11 @@ static void surf_cpu_model_init_internal()
   surf_cpu_model = surf_model_init();
 
   if (!strcmp(optim, "Full")) {
-    surf_cpu_model->update_mechanism = UM_FULL;
-    surf_cpu_model->selective_update = select;
+    surf_cpu_model->model_private->update_mechanism = UM_FULL;
+    surf_cpu_model->model_private->selective_update = select;
   } else if (!strcmp(optim, "Lazy")) {
-    surf_cpu_model->update_mechanism = UM_LAZY;
-    surf_cpu_model->selective_update = 1;
+    surf_cpu_model->model_private->update_mechanism = UM_LAZY;
+    surf_cpu_model->model_private->selective_update = 1;
     xbt_assert((select == 1)
                ||
                (xbt_cfg_is_default_value
@@ -668,12 +668,12 @@ static void surf_cpu_model_init_internal()
 
   surf_cpu_model->model_private->resource_used = cpu_resource_used;
 
-  if (surf_cpu_model->update_mechanism == UM_LAZY) {
+  if (surf_cpu_model->model_private->update_mechanism == UM_LAZY) {
     surf_cpu_model->model_private->share_resources =
         cpu_share_resources_lazy;
     surf_cpu_model->model_private->update_actions_state =
         cpu_update_actions_state_lazy;
-  } else if (surf_cpu_model->update_mechanism == UM_FULL) {
+  } else if (surf_cpu_model->model_private->update_mechanism == UM_FULL) {
     surf_cpu_model->model_private->share_resources =
         cpu_share_resources_full;
     surf_cpu_model->model_private->update_actions_state =
@@ -705,16 +705,16 @@ static void surf_cpu_model_init_internal()
   surf_cpu_model->extension.cpu.create_resource = cpu_create_resource;
   surf_cpu_model->extension.cpu.add_traces = cpu_add_traces_cpu;
 
-  if (!surf_cpu_model->maxmin_system) {
-    surf_cpu_model->maxmin_system = lmm_system_new(surf_cpu_model->selective_update);
+  if (!surf_cpu_model->model_private->maxmin_system) {
+    surf_cpu_model->model_private->maxmin_system = lmm_system_new(surf_cpu_model->model_private->selective_update);
   }
-  if (surf_cpu_model->update_mechanism == UM_LAZY) {
-    surf_cpu_model->action_heap = xbt_heap_new(8, NULL);
-    xbt_heap_set_update_callback(surf_cpu_model->action_heap,
+  if (surf_cpu_model->model_private->update_mechanism == UM_LAZY) {
+    surf_cpu_model->model_private->action_heap = xbt_heap_new(8, NULL);
+    xbt_heap_set_update_callback(surf_cpu_model->model_private->action_heap,
         surf_action_lmm_update_index_heap);
-    surf_cpu_model->modified_set =
+    surf_cpu_model->model_private->modified_set =
         xbt_swag_new(xbt_swag_offset(comp, generic_lmm_action.action_list_hookup));
-    surf_cpu_model->maxmin_system->keep_track = surf_cpu_model->modified_set;
+    surf_cpu_model->model_private->maxmin_system->keep_track = surf_cpu_model->model_private->modified_set;
   }
 }
 

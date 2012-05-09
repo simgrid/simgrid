@@ -46,10 +46,10 @@ surf_model_t surf_model_init(void)
   model->action_get_finish_time = surf_action_get_finish_time;
   model->action_data_set = surf_action_data_set;
 
-  model->modified_set = NULL;
-  model->action_heap = NULL;
-  model->update_mechanism = UM_UNDEFINED;
-  model->selective_update = 0;
+  model->model_private->modified_set = NULL;
+  model->model_private->action_heap = NULL;
+  model->model_private->update_mechanism = UM_UNDEFINED;
+  model->model_private->selective_update = 0;
 
   return model;
 }

@@ -33,6 +33,12 @@ extern int sg_gtnets_jitter_seed;
 
 extern const char *surf_action_state_names[6];
 
+typedef enum {
+  UM_FULL,
+  UM_LAZY,
+  UM_UNDEFINED
+} e_UM_t;
+
 typedef struct surf_model_private {
   int (*resource_used) (void *resource_id);
   /* Share the resources to the actions and return in how much time
@@ -43,6 +49,13 @@ typedef struct surf_model_private {
   void (*update_resource_state) (void *id, tmgr_trace_event_t event_type,
                                  double value, double time);
   void (*finalize) (void);
+
+  lmm_system_t maxmin_system;
+  e_UM_t update_mechanism;
+  xbt_swag_t modified_set;
+  xbt_heap_t action_heap;
+  int selective_update;
+
 } s_surf_model_private_t;
 
 double generic_maxmin_share_resources(xbt_swag_t running_actions,
