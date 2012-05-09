@@ -804,8 +804,7 @@ static void surf_cpu_ti_model_init_internal(void)
 
 void surf_cpu_model_init_ti()
 {
-  if (surf_cpu_model)
-    return;
+  xbt_assert(!surf_cpu_model,"CPU model already initialized. This should not happen.");
   surf_cpu_ti_model_init_internal();
   cpu_ti_define_callbacks();
   xbt_dynar_push(model_list, &surf_cpu_model);

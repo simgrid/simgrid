@@ -23,6 +23,12 @@ SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
 
 typedef enum {
+  UM_FULL,
+  UM_LAZY,
+  UM_UNDEFINED
+} e_UM_t;
+
+typedef enum {
   SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
   SURF_NETWORK_ELEMENT_HOST,    /* host type */
   SURF_NETWORK_ELEMENT_ROUTER,  /* router type */
@@ -316,6 +322,13 @@ typedef struct surf_model {
 #endif
 
   surf_model_private_t model_private;
+
+  // for action
+  lmm_system_t maxmin_system;
+  e_UM_t update_mechanism;
+  xbt_swag_t modified_set;
+  xbt_heap_t action_heap;
+  int selective_update;
 
   union extension {
     s_surf_model_extension_cpu_t cpu;
