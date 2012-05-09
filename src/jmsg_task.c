@@ -247,6 +247,10 @@ Java_org_simgrid_msg_Task_getSender(JNIEnv * env,
   }
 
   process = MSG_task_get_sender(task);
+  if (process == NULL) {
+  	jxbt_throw_illegal(env,bprintf("Tried to get the sender of a task that hasn't been sent yet."));
+  	return NULL;
+  }
   return (jobject) native_to_java_process(process);
 }
 
@@ -263,7 +267,10 @@ Java_org_simgrid_msg_Task_getSource(JNIEnv * env,
   }
 
   host = MSG_task_get_source(task);
-
+  if (host == NULL) {
+  	jxbt_throw_illegal(env,bprintf("Tried to get the source of a task that hasn't been sent yet."));
+  	return NULL;
+  }
   if (!MSG_host_get_data(host)) {
     jxbt_throw_jni(env, "MSG_task_get_source() failed");
     return NULL;
