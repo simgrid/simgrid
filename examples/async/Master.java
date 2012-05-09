@@ -35,7 +35,6 @@ public class Master extends Process {
 		
 		for (int i = 0; i < tasksCount; i++) {
 			Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize); 
-			Process p = task.getSender();
 			Msg.info("Sending \"" + task.getName()+ "\" to \"slave_" + i % slavesCount + "\"");
 			//task.send("slave_"+(i%slavesCount));
 			Comm comm = task.isend("slave_"+(i%slavesCount));
