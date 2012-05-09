@@ -409,6 +409,16 @@ Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env,
   /* true is the process is suspended, false otherwise */
   return (jboolean) MSG_process_is_suspended(process);
 }
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep
+	(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos) {
+
+	double time =  jmillis / 1000 + jnanos / 1000;
+
+	MSG_error_t rv = MSG_process_sleep(time);
+  jxbt_check_res("MSG_process_sleep()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
+}
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
                                      jdouble jseconds)

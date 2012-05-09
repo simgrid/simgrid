@@ -310,6 +310,24 @@ public abstract class Process extends Thread {
 		process.host = null;
 	}
 	/**
+	 * Makes the current process sleep until millis millisecondes have elapsed.
+	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds.
+	 * FIXME: Not optimal, maybe we should have two native functions.
+	 * @param millis the length of time to sleep in milliseconds.
+	 */
+	public static void sleep(long millis) {
+		sleep(millis,0);
+	}
+	/**
+	 * Makes the current process sleep until millis milliseconds and nanos nanoseconds 
+	 * have elapsed.
+	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds and nanoseconds.
+	 * Overloads Thread.sleep.
+	 * @param millis the length of time to sleep in milliseconds.
+	 * @param nanos additionnal nanoseconds to sleep.
+	 */
+	public native static void sleep(long millis, int nanos);
+	/**
 	 * Makes the current process sleep until time seconds have elapsed.
 	 * @param seconds		The time the current process must sleep.
 	 */ 

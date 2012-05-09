@@ -301,6 +301,13 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart
  */
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended
     (JNIEnv *, jobject);
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		sleep
+ * Signature	(DI)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep
+    (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class		org_simgrid_msg_Process
