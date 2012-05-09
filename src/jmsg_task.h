@@ -169,7 +169,14 @@ Java_org_simgrid_msg_Task_getRemainingDuration(JNIEnv *, jobject);
  */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority
     (JNIEnv *, jobject, jdouble);
-
+/**
+ * Class		org_simgrid_msg_Task
+ * Method		setComputationAmount
+ * Signature	(D)V
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_setComputeDuration
+		(JNIEnv *env, jobject jtask, jdouble computationAmount);
 /**
  * Class		org_simgrid_msg_Task
  * Method		send

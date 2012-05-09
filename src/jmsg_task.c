@@ -16,6 +16,7 @@
 #include "jxbt_utilities.h"
 
 #include <msg/msg.h>
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 static jmethodID jtask_method_Comm_constructor;
@@ -318,6 +319,17 @@ Java_org_simgrid_msg_Task_setPriority(JNIEnv * env,
     return;
   }
   MSG_task_set_priority(task, (double) priority);
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_setComputeDuration
+		(JNIEnv *env, jobject jtask, jdouble computationAmount) {
+	m_task_t task = jtask_to_native_task(jtask, env);
+
+	if (!task) {
+    jxbt_throw_notbound(env, "task", jtask);
+    return;
+	}
+	MSG_task_set_compute_duration(task, (double) computationAmount);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask,

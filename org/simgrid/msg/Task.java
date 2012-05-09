@@ -132,7 +132,11 @@ public class Task {
 	 * @param priority	The new priority of the task.
 	 */ 
 	public native void setPriority(double priority);
-
+	/**
+	 * Set the computation amount needed to process the task
+	 * @param computationAmount the amount of computation needed to process the task
+	 */
+	public native void setComputeDuration(double computationAmount);
 	/* *                     * *
 	 * * Computation-related * *
 	 * *                     * */
