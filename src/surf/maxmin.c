@@ -571,11 +571,21 @@ void lmm_solve(lmm_system_t sys)
     XBT_DEBUG("Constraint Usage '%d' : %f", cnst->id_int, cnst->usage);
     /* Saturated constraints update */
     if(cnst->usage>0) {
+      // TODO Créer une contrainte light
+      // À partir de maintenant, usage et remaining sont dans cnst_light uniquement.
+      // En fait, usage et remaining doivent disparaitre complètement de cnst pour n'être que dans cnst_light.
       xbt_swag_remove(cnst, cnst_list);
       xbt_swag_insert_at_head(cnst, cnst_list);
     }
+    // On a deux dynars:
+    //    - Celui de cnst_list avec les csnt_light
+    //    - saturated_constraint_set, celui des indexes de cnst_list qui sont saturées
+    // Si la cnst_light est un minimum_usage on la met dans saturated_constraint_set
     saturated_constraint_set_update(sys, cnst, &min_usage);
   }
+  // On parcours saturated_constraint_set (le tableau d'index) dans le sens décroissant
+  //   - on accède aux contraintes correspondantes pour mettre les variables dans saturated_variable_set
+  //   - on se permutte si besoin avec le dernier élément; on enlève le dernier élément de cnst_list
   saturated_variable_set_update(sys);
 
   /* Saturated variables update */
