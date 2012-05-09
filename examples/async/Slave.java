@@ -50,7 +50,7 @@ public class Slave extends Process {
 						comm = null;							
 					}
 					else {
-						simulatedSleep(1);
+						waitFor(1);
 					}
 				}
 			}
@@ -59,6 +59,6 @@ public class Slave extends Process {
 			}
 		}
 		Msg.info("Received Finalize. I'm done. See you!");
-		simulatedSleep(20);
+		waitFor(20);
 	}
 }

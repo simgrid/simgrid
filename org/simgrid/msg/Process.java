@@ -68,9 +68,6 @@ public abstract class Process extends Thread {
 	 */
 	public long id;
 
-    /**
-     *
-     */
     public Hashtable<String,String> properties;
 
 	/**
@@ -89,13 +86,7 @@ public abstract class Process extends Thread {
 	 * The host of the process
 	 */
 	protected Host host = null;
-    /**
-     *
-     * @return
-     */
-    public String msgName() {
-		return this.name;
-	}
+
 	/** The arguments of the method function of the process. */     
 	public Vector<String> args;
 
@@ -183,14 +174,17 @@ public abstract class Process extends Thread {
 			this.args.addAll(Arrays.asList(args));
 
 		try {
-			MsgNative.processCreate(this, host.getName());
+			create(host.getName());
 		} catch (HostNotFoundException e) {
 			throw new RuntimeException("The impossible happened (yet again): the host that I have were not found",e);
 		}
 		
 	}
-
-
+	/**
+	 * The natively implemented method to create an MSG process.
+	 * @param host    A valid (binded) host where create the process.
+	 */
+	protected native void create(String hostName) throws HostNotFoundException;
 	/**
 	 * This method kills all running process of the simulation.
 	 *
@@ -201,19 +195,15 @@ public abstract class Process extends Thread {
 	 * @return				The function returns the PID of the next created process.
 	 *			
 	 */ 
-	public static int killAll(int resetPID) {
-		return MsgNative.processKillAll(resetPID);
-	}
-
+	public static native int killAll(int resetPID);
 	/**
 	 * This method sets a flag to indicate that this thread must be killed. End user must use static method kill
 	 *
 	 * @return				
 	 *			
 	 */ 
-	public void nativeStop()
-	{
-	nativeStop = true;
+	public void nativeStop() {
+		nativeStop = true;
 	}
 	/**
 	 * getter for the flag that indicates that this thread must be killed
@@ -221,8 +211,7 @@ public abstract class Process extends Thread {
 	 * @return				
 	 *			
 	 */ 
-	public boolean getNativeStop()
-	{
+	public boolean getNativeStop() {
 		return nativeStop;
 	}
 
@@ -233,8 +222,7 @@ public abstract class Process extends Thread {
 	 */
 	public void kill() {
 		 nativeStop();
-		 Msg.info("Process " + msgName() + " will be killed.");		  		
-		 		 
+		 Msg.info("Process " + msgName() + " will be killed.");		  			 		 
 	}
 
 	/**
@@ -242,38 +230,32 @@ public abstract class Process extends Thread {
 	 * waiting for the completion.
 	 *
 	 */
-	public void pause() {
-		MsgNative.processSuspend(this);
-	}
+	public native void pause();
 	/**
 	 * Resumes a suspended process by resuming the task on which it was
 	 * waiting for the completion.
 	 *
 	 *
 	 */ 
-	public void restart()  {
-		MsgNative.processResume(this);
-	}
+	public native void restart();
 	/**
 	 * Tests if a process is suspended.
 	 *
 	 * @return				The method returns true if the process is suspended.
 	 *						Otherwise the method returns false.
 	 */ 
-	public boolean isSuspended() {
-		return MsgNative.processIsSuspended(this);
+	public native boolean isSuspended();
+	/**
+	 * Returns the name of the process
+	 */
+	public String msgName() {
+		return this.name;
 	}
 	/**
-	 * Returns the host of a process.
-	 *
+	 * Returns the host of the process.
 	 * @return				The host instance of the process.
-	 *
-	 *
 	 */ 
 	public Host getHost() {
-		if (this.host == null) {
-			this.host = MsgNative.processGetHost(this);
-		}
 		return this.host;
 	}
 	/**
@@ -285,9 +267,7 @@ public abstract class Process extends Thread {
 	 *
 	 * @exception			NativeException on error in the native SimGrid code
 	 */ 
-	public static Process fromPID(int PID) throws NativeException {
-		return MsgNative.processFromPID(PID);
-	}
+	public static native Process fromPID(int PID) throws NativeException;
 	/**
 	 * This method returns the PID of the process.
 	 *
@@ -295,9 +275,6 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public int getPID()  {
-		if (pid == -1) {
-			pid = MsgNative.processGetPID(this);
-		}
 		return pid;
 	}
 	/**
@@ -307,9 +284,6 @@ public abstract class Process extends Thread {
 	 *
 	 */ 
 	public int getPPID()  {
-		if (ppid == -1) {
-			ppid = MsgNative.processGetPPID(this);
-		}
 		return ppid;
 	}
 	/**
@@ -318,9 +292,12 @@ public abstract class Process extends Thread {
 	 * @return				The current process.
 	 *
 	 */ 
-	public static Process currentProcess()  {
-		return MsgNative.processSelf();
-	}
+	public static native Process currentProcess();
+	/**
+	 * Kills a MSG process
+	 * @param process Valid java process to kill
+	 */
+	final static native void kill(Process process);	
 	/**
 	 * Migrates a process to another host.
 	 *
@@ -339,10 +316,7 @@ public abstract class Process extends Thread {
 	 *
 	 * @exception			HostFailureException on error in the native SimGrid code
 	 */ 
-	public static void waitFor(double seconds) throws HostFailureException {
-		MsgNative.processWaitFor(seconds);
-	} 
-    /**
+	public native void waitFor(double seconds) throws HostFailureException;    /**
      *
      */
     public void showArgs() {
@@ -353,20 +327,16 @@ public abstract class Process extends Thread {
 					"] args[" + i + "]=" + (String) (this.args.get(i)));
 	}
     /**
-     * Let the simulated process sleep for the given amount of millisecond in the simulated world.
-     * 
-     *  You don't want to use sleep instead, because it would freeze your simulation 
-     *  run without any impact on the simulated world.
-     * @param millis
+     * Exit the process
      */
-    public native void simulatedSleep(double seconds);
+    public native void exit();
 
 	/**
 	 * This method runs the process. Il calls the method function that you must overwrite.
 	 */
 	public void run() {
 
-		String[]args = null;      /* do not fill it before the signal or this.args will be empty */
+		String[] args = null;      /* do not fill it before the signal or this.args will be empty */
 
 		//waitSignal(); /* wait for other people to fill the process in */
 
@@ -383,7 +353,7 @@ public abstract class Process extends Thread {
 			}
 
 			this.main(args);
-			MsgNative.processExit(this);
+			exit();
 			schedEnd.release();
 		} catch(MsgException e) {
 			e.printStackTrace();
@@ -393,7 +363,7 @@ public abstract class Process extends Thread {
 		 catch(ProcessKilled pk) {
 			if (nativeStop) {
 				try {
-					MsgNative.processExit(this);
+					exit();
 				} catch (ProcessKilled pk2) {
 					/* Ignore that other exception that *will* occur all the time. 
 					 * This is because the C mechanic gives the control to the now-killed process 
@@ -405,13 +375,13 @@ public abstract class Process extends Thread {
 					 */
 					System.err.println(currentThread().getName()+": I ignore that other exception");					
 				}
-			Msg.info(" Process " + ((Process) Thread.currentThread()).msgName() + " has been killed.");						
-			schedEnd.release();			
+				Msg.info(" Process " + ((Process) Thread.currentThread()).msgName() + " has been killed.");						
+				schedEnd.release();			
 			}
 			else {
-			pk.printStackTrace();
-			Msg.info("Unexpected behavior. Stopping now");
-			System.exit(1);
+				pk.printStackTrace();
+				Msg.info("Unexpected behavior. Stopping now");
+				System.exit(1);
 			}
 		}	
 	}
@@ -508,73 +478,12 @@ public abstract class Process extends Thread {
 			throw new RuntimeException("The impossible did happend once again: I got interrupted in schedEnd.acquire()",e);
 		}
 	}
-
-	/** Send the given task in the mailbox associated with the specified alias  (waiting at most given time) 
-     * @param mailbox
-     * @param task 
-     * @param timeout
-     * @throws TimeoutException
-	 * @throws HostFailureException 
-	 * @throws TransferFailureException */
-	public void taskSend(String mailbox, Task task, double timeout) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
-		task.send(mailbox, timeout);
-	}
-
-	/** Send the given task in the mailbox associated with the specified alias
-     * @param mailbox
-     * @param task
-     * @throws TimeoutException
-	 * @throws HostFailureException 
-	 * @throws TransferFailureException */
-	public void taskSend(String mailbox, Task task) throws NativeException, TransferFailureException, HostFailureException, TimeoutException {
-		task.send(mailbox, -1);
-	}
-
-    /** Receive a task on mailbox associated with the specified mailbox
-     * @param mailbox
-     * @return
-     * @throws TransferFailureException
-     * @throws HostFailureException
-     * @throws TimeoutException
-     */
-	public Task taskReceive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
-		return Task.receive(mailbox, -1.0, null);
-	}
-
-    /** Receive a task on mailbox associated with the specified alias (waiting at most given time)
-     * @param mailbox
-     * @param timeout
-     * @return
-     * @throws TransferFailureException
-     * @throws HostFailureException
-     * @throws TimeoutException
-     */
-	public Task taskReceive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
-		return Task.receive(mailbox, timeout, null);
-	}
-
-    /** Receive a task on mailbox associated with the specified alias from given sender
-     * @param mailbox
-     * @param host
-     * @param timeout
-     * @return
-     * @throws TransferFailureException
-     * @throws HostFailureException
-     * @throws TimeoutException
-     */
-	public Task taskReceive(String mailbox, double timeout, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
-		return Task.receive(mailbox, timeout, host);
-	}
-
-    /** Receive a task on mailbox associated with the specified alias from given sender
-     * @param mailbox
-     * @param host
-     * @return
-     * @throws TransferFailureException
-     * @throws HostFailureException
-     * @throws TimeoutException
-     */
-	public Task taskReceive(String mailbox, Host host) throws  TransferFailureException, HostFailureException, TimeoutException {
-		return Task.receive(mailbox, -1.0, host);
+    
+	/**
+	 * Class initializer, to initialize various JNI stuff
+	 */
+	public static native void nativeInit();
+	static {
+		nativeInit();
 	}
 }

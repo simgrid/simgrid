@@ -98,7 +98,7 @@ const char *jhost_get_name(jobject jhost, JNIEnv * env);
 jboolean jhost_is_valid(jobject jhost, JNIEnv * env);
 
 /*
- * Class		simgrid_msg_Host
+ * Class		org_simgrid_msg_Host
  * Method		getByName
  * Signature	(Ljava/lang/String;)Lsimgrid/msg/Host;
  */
@@ -106,7 +106,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName
     (JNIEnv *, jclass, jstring);
 
 /*
- * Class		simgrid_msg_Host
+ * Class		org_simgrid_msg_Host
  * Method		currentHost
  * Signature	()Lsimgrid/msg/Host;
  */
@@ -114,14 +114,14 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost
     (JNIEnv *, jclass);
 
 /*
- * Class		simgrid_msg_Host
+ * Class		org_simgrid_msg_Host
  * Method		getName
  * Signature	()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Host_getName
     (JNIEnv *, jobject);
 /*
- * Class		simgrid_msg_Host
+ * Class		org_simgrid_msg_Host
  * Method		getCount
  * Signature	()I
  */
@@ -129,14 +129,14 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getCount
     (JNIEnv *, jclass);
 
 /*
- * Class		simgrid_msg_Host
+ * Class		org_simgrid_msg_Host
  * Method		getSpeed
  * Signature	()D
  */
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed
     (JNIEnv *, jobject);
 /*
- * Class		simgrid_msg_Host
+ * Class		org_simgrid_msg_Host
  * Method		getLoad
  * Signature	()I
  */
@@ -145,11 +145,18 @@ Java_org_simgrid_msg_Host_getLoad(JNIEnv * env,
                                        jobject jhost);
 
 /*
- * Class		simgrid_msg_Msg
+ * Class		org_simgrid_msg_Host
  * Method		isAvail
  * Signature	()Z
  */
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isAvail
     (JNIEnv *, jobject);
+
+/**
+ * Class org_simgrid_msg_Host
+ * Method all
+ */
+JNIEXPORT jobjectArray JNICALL
+Java_org_simgrid_msg_Host_all(JNIEnv *, jclass);
 
 #endif                          /*!MSG_JHOST_H */

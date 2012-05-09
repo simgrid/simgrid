@@ -37,7 +37,7 @@ public class Forwarder extends Process {
 					Task tf = new FinalizeTask();
 					tf.dsend("slave_"+cpt);
 				}
-				simulatedSleep(20);
+				waitFor(20);
 				break;
 			}
 			int dest = firstOutput + (taskCount % slavesCount);

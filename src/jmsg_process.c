@@ -5,14 +5,19 @@
 
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
-
 #include "jmsg_process.h"
+
 #include "jmsg.h"
+#include "jmsg_host.h"
 #include "jxbt_utilities.h"
 
 #include "smx_context_java.h"  
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+
+static jfieldID jprocess_field_Process_pid;
+static jfieldID jprocess_field_Process_ppid;
+static jfieldID jprocess_field_Process_host;
 
 jobject native_to_java_process(m_process_t process)
 {
@@ -219,4 +224,257 @@ void jprocess_unschedule(smx_context_t context)
     return;
 
   (*env)->CallVoidMethod(env, ((smx_ctx_java_t) context)->jprocess, id);
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
+	jclass jprocess_class_Process = (*env)->FindClass(env, "org/simgrid/msg/Process");
+
+	jprocess_field_Process_pid = jxbt_get_sfield(env, "org/simgrid/msg/Process", "pid", "I");
+	jprocess_field_Process_ppid = jxbt_get_sfield(env, "org/simgrid/msg/Process", "ppid", "I");
+	jprocess_field_Process_host = jxbt_get_jfield(env, jprocess_class_Process, "host", "Lorg/simgrid/msg/Host;");
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_create(JNIEnv * env,
+                                    jobject jprocess_arg,
+                                    jobject jhostname)
+{
+
+
+  jobject jprocess;             /* the global reference to the java process instance    */
+  jstring jname;                /* the name of the java process instance                */
+  const char *name;             /* the C name of the process                            */
+  const char *hostname;
+  m_process_t process;          /* the native process to create                         */
+  m_host_t host;                /* Where that process lives */
+
+  hostname = (*env)->GetStringUTFChars(env, jhostname, 0);
+
+  XBT_DEBUG("Java_org_simgrid_msg_MsgNative_processCreate(env=%p,jproc=%p,host=%s)",
+	 env, jprocess_arg, hostname);
+
+
+  /* get the name of the java process */
+  jname = jprocess_get_name(jprocess_arg, env);
+  if (!jname) {
+    jxbt_throw_null(env,
+            xbt_strdup("Internal error: Process name cannot be NULL"));
+    return;
+  }
+
+  /* bind/retrieve the msg host */
+  host = MSG_get_host_by_name(hostname);
+
+  if (!(host)) {    /* not binded */
+    jxbt_throw_host_not_found(env, hostname);
+    return;
+  }
+
+  /* create a global java process instance */
+  jprocess = jprocess_new_global_ref(jprocess_arg, env);
+  if (!jprocess) {
+    jxbt_throw_jni(env, "Can't get a global ref to the java process");
+    return;
+  }
+
+  /* build the C name of the process */
+  name = (*env)->GetStringUTFChars(env, jname, 0);
+  name = xbt_strdup(name);
+
+  /* Actually build the MSG process */
+  process = MSG_process_create_with_environment(name,
+						(xbt_main_func_t) jprocess,
+						/*data*/ NULL,
+						host,
+						/* kill_time */-1,
+						/*argc, argv, properties*/
+						0,NULL,NULL);
+
+  MSG_process_set_data(process,&process);
+
+  /* release our reference to the process name (variable name becomes invalid) */
+  //FIXME : This line should be uncommented but with mac it doesn't work. BIG WARNING
+  //(*env)->ReleaseStringUTFChars(env, jname, name);
+  (*env)->ReleaseStringUTFChars(env, jhostname, hostname);
+
+  /* bind the java process instance to the native process */
+  jprocess_bind(jprocess, process, env);
+
+  /* sets the PID and the PPID of the process */
+  (*env)->SetIntField(env, jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
+  (*env)->SetIntField(env, jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
+  /* sets the Host of the process */
+  jobject jhost = Java_org_simgrid_msg_Host_getByName(env,NULL,jhostname);
+
+  (*env)->SetObjectField(env, jprocess, jprocess_field_Process_host, jhost);
+}
+
+JNIEXPORT jint JNICALL
+Java_org_simgrid_msg_Process_killAll(JNIEnv * env, jclass cls,
+                                     jint jresetPID)
+{
+  return (jint) MSG_process_killall((int) jresetPID);
+}
+
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jclass cls,
+                                     jint PID)
+{
+  m_process_t process = MSG_process_from_PID(PID);
+
+  if (!process) {
+    jxbt_throw_process_not_found(env, bprintf("PID = %d",(int) PID));
+    return NULL;
+  }
+
+  jobject jprocess = native_to_java_process(process);
+
+  if (!jprocess) {
+    jxbt_throw_jni(env, "SIMIX_process_get_jprocess() failed");
+    return NULL;
+  }
+
+  return jprocess;
+}
+
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Process_currentProcess(JNIEnv * env, jclass cls)
+{
+  m_process_t process = MSG_process_self();
+  jobject jprocess;
+
+  if (!process) {
+    jxbt_throw_jni(env, xbt_strdup("MSG_process_self() failed"));
+    return NULL;
+  }
+
+  jprocess = native_to_java_process(process);
+
+  if (!jprocess)
+    jxbt_throw_jni(env, xbt_strdup("SIMIX_process_get_jprocess() failed"));
+
+  return jprocess;
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_pause(JNIEnv * env,
+                                   jobject jprocess)
+{
+  m_process_t process = jprocess_to_native_process(jprocess, env);
+
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+
+  /* try to suspend the process */
+  MSG_error_t rv = MSG_process_suspend(process);
+
+  jxbt_check_res("MSG_process_suspend()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
+
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_restart(JNIEnv * env,
+                                     jobject jprocess)
+{
+  m_process_t process = jprocess_to_native_process(jprocess, env);
+
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+
+  /* try to resume the process */
+  MSG_error_t rv = MSG_process_resume(process);
+
+  jxbt_check_res("MSG_process_resume()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
+}
+JNIEXPORT jboolean JNICALL
+Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env,
+                                         jobject jprocess)
+{
+  m_process_t process = jprocess_to_native_process(jprocess, env);
+
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return 0;
+  }
+
+  /* true is the process is suspended, false otherwise */
+  return (jboolean) MSG_process_is_suspended(process);
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
+                                     jdouble jseconds)
+{
+  m_process_t process = jprocess_to_native_process(jprocess, env);
+
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+  MSG_error_t rv = MSG_process_sleep((double)jseconds);
+
+  jxbt_check_res("MSG_process_sleep()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
+
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_exit(JNIEnv * env,
+                                  jobject jprocess)
+{
+
+  m_process_t process = jprocess_to_native_process(jprocess, env);
+
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+
+  smx_ctx_java_stop(MSG_process_get_smx_ctx(process));
+}
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_kill(JNIEnv * env, jclass cls,
+                                  jobject jprocess)
+{
+  /* get the native instances from the java ones */
+  m_process_t process = jprocess_to_native_process(jprocess, env);
+
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+
+  /* kill the native process (this wrapper is call by the destructor of the java
+   * process instance)
+   */
+  MSG_process_kill(process);
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_migrate(JNIEnv * env,
+                                     jobject jprocess, jobject jhost)
+{
+  m_process_t process = jprocess_to_native_process(jprocess, env);
+
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+
+  m_host_t host = jhost_get_native(env, jhost);
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return;
+  }
+
+  /* try to change the host of the process */
+  MSG_error_t rv = MSG_process_migrate(process, host);
+  jxbt_check_res("MSG_process_migrate()", rv, MSG_OK,
+                 bprintf("unexpected error , please report this bug"));
+  /* change the host java side */
+  (*env)->SetObjectField(env, jprocess, jprocess_field_Process_host, jhost);
 }

@@ -103,7 +103,7 @@ public final class ApplicationHandler {
 				 process.name = function;
 				 process.id = org.simgrid.msg.Process.nextProcessId++;
 
-				 MsgNative.processCreate(process, hostName);
+				process.create(hostName);
 				 Vector<String> args_ = args;
 				 int size = args_.size();
 

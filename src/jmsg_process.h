@@ -239,6 +239,97 @@ void jprocess_wait_cond(jobject jprocess, JNIEnv * env);
 void jprocess_schedule(smx_context_t context);
 
 void jprocess_unschedule(smx_context_t context);
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		nativeInit
+ * Signature	();
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls);
 
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		create
+ * Signature	(Lsimgrid/msg/Host;)V
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_create(JNIEnv * env,
+                                         jobject jprocess, jobject jhost);
+
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		killAll
+ * Signature	(I)I
+ */
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll
+    (JNIEnv *, jclass, jint);
+
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		fromPID
+ * Signature	(I)Lsimgrid/msg/Process;
+ */
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID
+    (JNIEnv *, jclass, jint);
+
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		currentProcess
+ * Signature	()Lsimgrid/msg/Process;
+ */
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_currentProcess
+    (JNIEnv *, jclass);
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		pause
+ * Signature	(Lsimgrid/msg/Process;)V
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_pause(JNIEnv * env,
+                                          jobject jprocess);
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		restart
+ * Signature	(Lsimgrid/msg/Process;)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart
+    (JNIEnv *, jobject);
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		isSuspended
+ * Signature	(Lsimgrid/msg/Process;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Process_isSuspended
+    (JNIEnv *, jobject);
+
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		waitFor
+ * Signature	(D)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_waitFor
+    (JNIEnv *, jobject, jdouble);
+/**
+ * Class 		org_simgrid_msg_Process
+ * Method		exit
+ * Signature 	()V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_exit
+    (JNIEnv *, jobject);
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		kill
+ * Signature	(Lsimgrid/msg/Process;)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill
+    (JNIEnv *, jclass, jobject);
+
+/*
+ * Class		org_simgrid_msg_Process
+ * Method		migrate
+ * Signature	(Lsimgrid/msg/Host;)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate
+    (JNIEnv *, jobject, jobject);
 
 #endif                          /* !MSG_JPROCESS_H */

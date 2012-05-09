@@ -103,11 +103,12 @@ public class Task {
      * @return
      */
 	public native String getName();
-	/** Gets the sender of the task */
-	//FIXME: Don't crash when the task has just been created.
+	/** Gets the sender of the task 
+	 * Returns null if the task hasn't been sent yet
+	 */
 	public native Process getSender();
-	/** Gets the source of the task
-	 * FIXME: Not defensive enough, can crash.
+	/** Gets the source of the task.
+	 * Returns null if the task hasn't been sent yet.
      */
 	public native Host getSource();   
 	/** Gets the computing amount of the task

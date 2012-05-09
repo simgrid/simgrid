@@ -80,7 +80,7 @@ public class Host {
 	 * This static method returns the count of the installed hosts.
 	 *
 	 * @return			The count of the installed hosts.
-	 * FIXME: Not implemented... ?
+	 * FIXME: Not implemented.
 	 */ 
 	public native static int getCount();
 
@@ -97,28 +97,24 @@ public class Host {
 	 * @return			An array containing all the hosts installed.
 	 *
 	 */ 
-	public static Host[] all()  {
-		return MsgNative.allHosts();
-	}
+	public native static Host[] all();
 
 	/**
 	 * This method returns the name of a host.
-	 *
+	 * FIXME: Cache it.
 	 * @return			The name of the host.
 	 *
 	 */ 
 	public native String getName();
 	/**
 	 * Sets the data of the host.
-	 *
-     *
      * @param data
      */
 	public void setData(Object data) {
 		this.data = data;
 	} 
 	/**
-	 * Gets the data of the host.
+	 * Gets the d	ata of the host.
      *
      * @return
      */

@@ -100,7 +100,6 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/JniException.java
 	org/simgrid/msg/Msg.java
 	org/simgrid/msg/MsgException.java
-	org/simgrid/msg/MsgNative.java
 	org/simgrid/msg/NativeException.java
 	org/simgrid/msg/Process.java
 	org/simgrid/msg/ProcessKilled.java

@@ -218,3 +218,46 @@ Java_org_simgrid_msg_Host_isAvail(JNIEnv * env, jobject jhost) {
 
   return (jboolean) MSG_host_is_avail(host);
 }
+
+JNIEXPORT jobjectArray JNICALL
+Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
+{
+  int index;
+  jobjectArray jtable;
+  jobject jhost;
+  jstring jname;
+  m_host_t host;
+
+  xbt_dynar_t table =  MSG_hosts_as_dynar();
+  int count = xbt_dynar_length(table);
+
+  jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
+
+  if (!cls) {
+    return NULL;
+  }
+
+  jtable = (*env)->NewObjectArray(env, (jsize) count, cls, NULL);
+
+  if (!jtable) {
+    jxbt_throw_jni(env, "Hosts table allocation failed");
+    return NULL;
+  }
+
+  for (index = 0; index < count; index++) {
+    host = xbt_dynar_get_as(table,index,m_host_t);
+    jhost = (jobject) (MSG_host_get_data(host));
+
+    if (!jhost) {
+      jname = (*env)->NewStringUTF(env, MSG_host_get_name(host));
+
+      jhost =
+      		Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
+      /* FIXME: leak of jname ? */
+    }
+
+    (*env)->SetObjectArrayElement(env, jtable, index, jhost);
+  }
+  xbt_dynar_free(&table);
+  return jtable;
+}
