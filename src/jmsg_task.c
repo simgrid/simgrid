@@ -307,7 +307,21 @@ Java_org_simgrid_msg_Task_getRemainingDuration(JNIEnv * env, jobject jtask)
   }
   return (jdouble) MSG_task_get_remaining_computation(ptask);
 }
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jtask, jobject jname) {
+	m_task_t task = jtask_to_native_task(jtask, env);
 
+	if (!task) {
+		jxbt_throw_notbound(env, "task", jtask);
+		return;
+	}
+	const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+
+	(*env)->SetObjectField(env, jtask, jtask_field_Task_name, jname);
+	MSG_task_set_name(task, name);
+
+	(*env)->ReleaseStringUTFChars(env, jname, name);
+}
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_setPriority(JNIEnv * env,
                                            jobject jtask, jdouble priority)

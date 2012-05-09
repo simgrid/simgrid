@@ -124,6 +124,11 @@ public class Task {
      */
 	public native double getRemainingDuration();
 	/**
+	 * Sets the name of the task
+	 * @param name the new task name.c
+	 */
+	public native void setName(String name);
+	/**
 	 * This method sets the priority of the computation of the task.
 	 * The priority doesn't affect the transfer rate. For example a
 	 * priority of 2 will make the task receive two times more cpu than

@@ -161,7 +161,13 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getComputeDuration
  */
 JNIEXPORT jdouble JNICALL
 Java_org_simgrid_msg_Task_getRemainingDuration(JNIEnv *, jobject);
-
+/**
+ * Class		org_simgrid_msg_Task
+ * Method		setName
+ * Signature	(Ljava/lang/string;)V
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jtask, jobject jname);
 /*
  * Class		org_simgrid_msg_Task
  * Method		setPriority
