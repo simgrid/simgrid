@@ -13,15 +13,14 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+static jmethodID jhost_method_Host_constructor;
+static jfieldID jhost_field_Host_bind;
+static jfieldID jhost_field_Host_name;
+
+
 jobject jhost_new_instance(JNIEnv * env) {
-
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
-  jmethodID constructor = jxbt_get_jmethod(env, cls, "<init>", "()V");
-
-  if (!constructor)
-    return NULL;
-
-  return (*env)->NewObject(env, cls, constructor);
+  return (*env)->NewObject(env, cls, jhost_method_Host_constructor);
 }
 
 jobject jhost_ref(JNIEnv * env, jobject jhost) {
@@ -33,21 +32,11 @@ void jhost_unref(JNIEnv * env, jobject jhost) {
 }
 
 void jhost_bind(jobject jhost, m_host_t host, JNIEnv * env) {
-  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Host", "bind", "J");
-
-  if (!id)
-    return;
-
-  (*env)->SetLongField(env, jhost, id, (jlong) (long) (host));
+  (*env)->SetLongField(env, jhost, jhost_field_Host_bind, (jlong) (long) (host));
 }
 
 m_host_t jhost_get_native(JNIEnv * env, jobject jhost) {
-  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Host", "bind", "J");
-
-  if (!id)
-    return NULL;
-
-  return (m_host_t) (long) (*env)->GetLongField(env, jhost, id);
+  return (m_host_t) (long) (*env)->GetLongField(env, jhost, jhost_field_Host_bind);
 }
 
 const char *jhost_get_name(jobject jhost, JNIEnv * env) {
@@ -56,18 +45,24 @@ const char *jhost_get_name(jobject jhost, JNIEnv * env) {
 }
 
 jboolean jhost_is_valid(jobject jhost, JNIEnv * env) {
-  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Host", "bind", "J");
-
-  if (!id)
-    return 0;
-
-  if ((*env)->GetLongField(env, jhost, id)) {
+  if ((*env)->GetLongField(env, jhost, jhost_field_Host_bind)) {
     return JNI_TRUE;
   } else {
     return JNI_FALSE;
   }
 }
 
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls) {
+	jclass class_Host = (*env)->FindClass(env, "org/simgrid/msg/Host");
+	jhost_method_Host_constructor = (*env)->GetMethodID(env, class_Host, "<init>", "()V");
+	//FIXME: Don't use jxbt_get_sfield directly, it is slower.
+	jhost_field_Host_bind = jxbt_get_sfield(env,"org/simgrid/msg/Host", "bind", "J");
+	jhost_field_Host_name = jxbt_get_jfield(env, class_Host, "name", "Ljava/lang/String;");
+	if (!class_Host || !jhost_field_Host_name || !jhost_method_Host_constructor || !jhost_field_Host_bind) {
+  	jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
+	}
+}
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
                                          jstring jname) {
@@ -109,7 +104,8 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
       jxbt_throw_jni(env, "new global ref allocation failed");
       return NULL;
     }
-
+    /* Sets the java host name */
+    (*env)->SetObjectField(env, jhost, jhost_field_Host_name, jname);
     /* bind the java host and the native host */
     jhost_bind(jhost, host, env);
 
@@ -147,7 +143,10 @@ Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
       jxbt_throw_jni(env, "global ref allocation failed");
       return NULL;
     }
-
+    /* Sets the host name */
+    const char *name = MSG_host_get_name(host);
+    jobject jname = (*env)->NewStringUTF(env,name);
+    (*env)->SetObjectField(env, jhost, jhost_field_Host_name, jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
     MSG_host_set_data(host, (void *) jhost);

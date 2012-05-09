@@ -15,9 +15,9 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+static jfieldID jprocess_field_Process_host;
 static jfieldID jprocess_field_Process_pid;
 static jfieldID jprocess_field_Process_ppid;
-static jfieldID jprocess_field_Process_host;
 
 jobject native_to_java_process(m_process_t process)
 {
@@ -232,6 +232,11 @@ Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
 	jprocess_field_Process_pid = jxbt_get_sfield(env, "org/simgrid/msg/Process", "pid", "I");
 	jprocess_field_Process_ppid = jxbt_get_sfield(env, "org/simgrid/msg/Process", "ppid", "I");
 	jprocess_field_Process_host = jxbt_get_jfield(env, jprocess_class_Process, "host", "Lorg/simgrid/msg/Host;");
+
+	if (!jprocess_class_Process || !jprocess_field_Process_pid ||
+			!jprocess_field_Process_ppid || !jprocess_field_Process_host) {
+  	jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
+	}
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_create(JNIEnv * env,

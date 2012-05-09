@@ -18,7 +18,7 @@
 #include <msg/msg.h>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
-static jmethodID jtask_field_Comm_constructor;
+static jmethodID jtask_method_Comm_constructor;
 
 static jfieldID jtask_field_Task_bind;
 static jfieldID jtask_field_Comm_bind;
@@ -44,14 +44,14 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
 	jclass jtask_class_Comm = (*env)->FindClass(env, "org/simgrid/msg/Comm");
 
-	jtask_field_Comm_constructor = (*env)->GetMethodID(env, jtask_class_Comm, "<init>", "()V");
+	jtask_method_Comm_constructor = (*env)->GetMethodID(env, jtask_class_Comm, "<init>", "()V");
 	//FIXME: Don't use jxbt_get_sfield directly, it is slower.
 	jtask_field_Task_bind = jxbt_get_sfield(env, "org/simgrid/msg/Task", "bind", "J");
 	jtask_field_Comm_bind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
 	jtask_field_Comm_taskBind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "taskBind", "J");
 	jtask_field_Comm_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
 	if (!jtask_field_Task_bind || !jtask_field_Comm_bind || !jtask_field_Comm_taskBind ||
-		  !jtask_field_Comm_receiving || !jtask_field_Comm_constructor) {
+		  !jtask_field_Comm_receiving || !jtask_method_Comm_constructor) {
 		  	jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));
 		  }
 }
@@ -446,7 +446,7 @@ Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass cls, jstring jmailbox) {
 		return NULL;
 	}
 
-	jobject jcomm = (*env)->NewObject(env, comm_class, jtask_field_Comm_constructor);
+	jobject jcomm = (*env)->NewObject(env, comm_class, jtask_method_Comm_constructor);
 	if (!jcomm) {
 		jxbt_throw_native(env,bprintf("Can't create a Comm object."));
 		return NULL;
@@ -480,7 +480,7 @@ Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject jtask, jstring jmailbox) {
 
 	if (!comm_class) return NULL;
 
-	jcomm = (*env)->NewObject(env, comm_class, jtask_field_Comm_constructor);
+	jcomm = (*env)->NewObject(env, comm_class, jtask_method_Comm_constructor);
 	mailbox = (*env)->GetStringUTFChars(env, jmailbox, 0);
 
 	task = jtask_to_native_task(jtask, env);

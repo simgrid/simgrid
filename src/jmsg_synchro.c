@@ -8,7 +8,6 @@
 #include "jmsg_synchro.h"
 #include "jxbt_utilities.h"
 
-
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_init(JNIEnv * env, jobject obj) {
 	xbt_mutex_t mutex = xbt_mutex_init();

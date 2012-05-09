@@ -96,6 +96,13 @@ const char *jhost_get_name(jobject jhost, JNIEnv * env);
  *						Otherwise the function returns false.
  */
 jboolean jhost_is_valid(jobject jhost, JNIEnv * env);
+/*
+ * Class		org_simgrid_msg_Host
+ * Method		nativeInit
+ * Signature	();
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls);
 
 /*
  * Class		org_simgrid_msg_Host

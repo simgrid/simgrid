@@ -50,7 +50,10 @@ public class Host {
 	 * @see				Host.getByName().
 	 */ 
 	public long bind;
-
+	/**
+	 * Host name
+	 */
+	private String name;
 
 	/**
 	 * User data.
@@ -101,11 +104,12 @@ public class Host {
 
 	/**
 	 * This method returns the name of a host.
-	 * FIXME: Cache it.
 	 * @return			The name of the host.
 	 *
 	 */ 
-	public native String getName();
+	public String getName() {
+		return name;
+	}
 	/**
 	 * Sets the data of the host.
      * @param data
@@ -153,5 +157,11 @@ public class Host {
      */
 	public native boolean isAvail();
 	
-	
+	/**
+	 * Class initializer, to initialize various JNI stuff
+	 */
+	public static native void nativeInit();
+	static {
+		nativeInit();
+	}	
 } 
