@@ -119,14 +119,6 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName
  */
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost
     (JNIEnv *, jclass);
-
-/*
- * Class		org_simgrid_msg_Host
- * Method		getName
- * Signature	()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_simgrid_msg_Host_getName
-    (JNIEnv *, jobject);
 /*
  * Class		org_simgrid_msg_Host
  * Method		getCount

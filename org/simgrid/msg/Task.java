@@ -23,7 +23,10 @@ public class Task {
 	 * access to it. It is set automatically during the build of the object.
 	 */
 	public long bind = 0;
-
+	/**
+	 * Task name
+	 */
+	protected String name;
 
 	/** Default constructor (all fields to 0 or null) */
 	public Task() {
@@ -98,12 +101,14 @@ public class Task {
 	/* *                   * *
 	 * * Getters / Setters * *
 	 * *                   * */
-    /** Gets the name of a task
-     * FIXME: Cache it.
-     * @return
+    /** 
+     * Gets the name of a task
      */
-	public native String getName();
-	/** Gets the sender of the task 
+	public String getName() {
+		return name;
+	}
+	/**
+	 * Gets the sender of the task 
 	 * Returns null if the task hasn't been sent yet
 	 */
 	public native Process getSender();
@@ -127,10 +132,6 @@ public class Task {
 	 * @param priority	The new priority of the task.
 	 */ 
 	public native void setPriority(double priority);
-	/* *                       * *
-	 * * Communication-related * *
-	 * *                       * */
-
 
 	/* *                     * *
 	 * * Computation-related * *
@@ -159,6 +160,9 @@ public class Task {
 	 * The natively implemented method to destroy a MSG task.
 	 */
 	protected native void destroy();
+	/* *                       * *
+	 * * Communication-related * *
+	 * *                       * */
 
 	/** Send the task asynchronously on the mailbox identified by the specified name, 
 	 *  with no way to retrieve whether the communication succeeded or not

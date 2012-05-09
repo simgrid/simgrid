@@ -21,6 +21,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 static jmethodID jtask_method_Comm_constructor;
 
 static jfieldID jtask_field_Task_bind;
+static jfieldID jtask_field_Task_name;
 static jfieldID jtask_field_Comm_bind;
 static jfieldID jtask_field_Comm_taskBind;
 static jfieldID jtask_field_Comm_receiving;
@@ -43,14 +44,16 @@ jboolean jtask_is_valid(jobject jtask, JNIEnv * env)
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
 	jclass jtask_class_Comm = (*env)->FindClass(env, "org/simgrid/msg/Comm");
+	jclass jtask_class_Task = (*env)->FindClass(env, "org/simgrid/msg/Task");
 
 	jtask_method_Comm_constructor = (*env)->GetMethodID(env, jtask_class_Comm, "<init>", "()V");
 	//FIXME: Don't use jxbt_get_sfield directly, it is slower.
 	jtask_field_Task_bind = jxbt_get_sfield(env, "org/simgrid/msg/Task", "bind", "J");
+	jtask_field_Task_name = jxbt_get_jfield(env, jtask_class_Task, "name", "Ljava/lang/String;");
 	jtask_field_Comm_bind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
 	jtask_field_Comm_taskBind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "taskBind", "J");
 	jtask_field_Comm_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
-	if (!jtask_field_Task_bind || !jtask_field_Comm_bind || !jtask_field_Comm_taskBind ||
+	if (!jtask_field_Task_bind || !jtask_class_Task || !jtask_field_Comm_bind || !jtask_field_Comm_taskBind ||
 		  !jtask_field_Comm_receiving || !jtask_method_Comm_constructor) {
 		  	jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));
 		  }
@@ -92,7 +95,8 @@ Java_org_simgrid_msg_Task_create(JNIEnv * env,
                       (double) jmessageSize, NULL);
   if (jname)
     (*env)->ReleaseStringUTFChars(env, jname, name);
-
+  /* sets the task name */
+  (*env)->SetObjectField(env, jtask, jtask_field_Task_name, jname);
   /* bind & store the task */
   jtask_bind(jtask, task, env);
   MSG_task_set_data(task, jtask);
@@ -175,7 +179,8 @@ Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env,
                                messageSizes, NULL);
 
   (*env)->ReleaseStringUTFChars(env, jname, name);
-
+  /* sets the task name */
+  (*env)->SetObjectField(env, jtask, jtask_field_Task_name, jname);
   /* associate the java task object and the native task */
   jtask_bind(jtask, task, env);
 

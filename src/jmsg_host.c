@@ -156,25 +156,6 @@ Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
 
   return jhost;
 }
-
-JNIEXPORT jstring JNICALL
-Java_org_simgrid_msg_Host_getName(JNIEnv * env,
-                                  jobject jhost) {
-  m_host_t host = jhost_get_native(env, jhost);
-  const char* name;
-
-  if (!host) {
-    jxbt_throw_notbound(env, "host", jhost);
-    return NULL;
-  }
-
-  name = MSG_host_get_name(host);
-  if (!name)
-	  xbt_die("This host has no name...");
-
-  return (*env)->NewStringUTF(env, name);
-}
-
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
