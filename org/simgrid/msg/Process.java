@@ -311,12 +311,10 @@ public abstract class Process extends Thread {
 	}
 	/**
 	 * Makes the current process sleep until time seconds have elapsed.
-	 *
 	 * @param seconds		The time the current process must sleep.
-	 *
-	 * @exception			HostFailureException on error in the native SimGrid code
 	 */ 
-	public native void waitFor(double seconds) throws HostFailureException;    /**
+	public native void waitFor(double seconds);    
+	/**
      *
      */
     public void showArgs() {
