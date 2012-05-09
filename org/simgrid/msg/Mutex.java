@@ -24,4 +24,13 @@ public class Mutex {
 	public native void acquire();
 	public native void release();
 	
+	/**
+	 * Class initializer, to initialize various JNI stuff
+	 */
+	public static native void nativeInit();
+	static {
+		nativeInit();
+	}	
 }
+
+

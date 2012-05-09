@@ -14,6 +14,9 @@
 #include <simgrid/simix.h>
 
 JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Mutex_nativeInit(JNIEnv *env, jclass cls);
+
+JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_init(JNIEnv * env, jobject obj);
 
 JNIEXPORT void JNICALL
