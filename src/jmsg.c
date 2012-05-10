@@ -9,7 +9,7 @@
 #include <msg/msg.h>
 #include <simgrid/simix.h>
 #include <surf/surfxml_parse.h>
-
+#include <locale.h>
 
 #include "smx_context_java.h"
 
@@ -69,6 +69,8 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   const char *tmp;
 
   smx_factory_initializer_to_use = SIMIX_ctx_java_factory_init;
+
+  setlocale(LC_NUMERIC,"C");
 
   if (jargs)
     argc = (int) (*env)->GetArrayLength(env, jargs);
