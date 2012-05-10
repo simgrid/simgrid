@@ -473,8 +473,8 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
  *
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
  * to end the communication.
- *
- * \param task a memory location for storing a #m_task_t.
+ * 
+ * \param task a memory location for storing a #m_task_t. has to be valid until the end of the communication.
  * \param name of the mailbox to receive the task on
  * \return the msg_comm_t communication created
  */
