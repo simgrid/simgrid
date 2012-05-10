@@ -179,6 +179,8 @@ public abstract class Process extends Thread {
 			throw new RuntimeException("The impossible happened (yet again): the host that I have were not found",e);
 		}
 		
+		this.properties = new Hashtable<String,String>();
+		
 	}
 	/**
 	 * The natively implemented method to create an MSG process.
@@ -315,7 +317,7 @@ public abstract class Process extends Thread {
 	 * FIXME: Not optimal, maybe we should have two native functions.
 	 * @param millis the length of time to sleep in milliseconds.
 	 */
-	public static void sleep(long millis) {
+	public static void sleep(long millis)  {
 		sleep(millis,0);
 	}
 	/**

@@ -14,7 +14,9 @@ import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
 
 public class Sender extends Process {
-  
+	public Sender(String hostname, String name) throws HostNotFoundException {
+		super(hostname, name);
+	}
     private final double commSizeLat = 1;
     final double commSizeBw = 100000000;
    

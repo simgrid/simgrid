@@ -10,7 +10,10 @@ package commTime;
 import org.simgrid.msg.*;
 
 public class Slave extends org.simgrid.msg.Process {
-   public void main(String[] args) throws MsgException {
+	public Slave(Host host, String name, String[]args) {
+		super(host,name,args);
+	}
+	public void main(String[] args) throws MsgException {
       if (args.length < 1) {
 	 Msg.info("Slave needs 1 argument (its number)");
 	 System.exit(1);

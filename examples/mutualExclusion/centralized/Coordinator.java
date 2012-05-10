@@ -17,7 +17,9 @@ import org.simgrid.msg.Process;
 
 
 public class Coordinator extends Process  {
-
+	public Coordinator(String hostname, String name) throws HostNotFoundException {
+		super(hostname, name);
+	}
 	LinkedList<RequestTask> waitingQueue=new LinkedList<RequestTask>();
 	int CsToServe;
 		

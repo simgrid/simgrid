@@ -22,7 +22,7 @@ typedef struct s_smx_ctx_java {
 
 void SIMIX_ctx_java_factory_init(smx_context_factory_t *factory);
 void smx_ctx_java_stop(smx_context_t context);
-
+smx_context_t smx_ctx_java_self(void);
 SG_END_DECL()
 
 #endif                          /* !_XBT_CONTEXT_JAVA_H */

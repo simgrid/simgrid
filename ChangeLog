@@ -5,8 +5,10 @@ SimGrid-java (3.6.1) unstable; urgency=low
    as sufficiently prevalent for us to not dupplicate its features.
  * Make Process.kill(process) an instance method, not a static one
  * Fix a bug around Process.kill()
- * Add dsend and simulatedSleep to the bindings.
-
+ * Add the asynchronous API to the bindings.
+ * Add "sleep" in Process with Thread-like syntax/use.
+ * Change the way the Process are created in ApplicationHandler: a full 
+constructor is now needed for your child classes.
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid-java (3.6) unstable; urgency=low

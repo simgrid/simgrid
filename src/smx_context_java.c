@@ -16,7 +16,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
 
 static smx_context_t my_current_context = NULL;
 
-static smx_context_t smx_ctx_java_self(void);
 static smx_context_t
 smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     char **argv,
@@ -46,7 +45,7 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
   (*factory)->get_data = smx_ctx_base_get_data;
 }
 
-static smx_context_t smx_ctx_java_self(void)
+smx_context_t smx_ctx_java_self(void)
 {
 	return my_current_context;
 }
@@ -68,7 +67,8 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
     context->jenv = get_current_thread_env();
     jprocess_start(((smx_ctx_java_t) context)->jprocess,
                    get_current_thread_env());
-  }else{
+  }
+  else {
     my_current_context = (smx_context_t)context;
   }
   context->super.data = data;

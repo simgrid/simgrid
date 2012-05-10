@@ -10,9 +10,10 @@
  */
 
 package org.simgrid.msg;
-
 import java.util.Hashtable;
 import java.util.Vector;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public final class ApplicationHandler {
 
@@ -92,28 +93,24 @@ public final class ApplicationHandler {
 		 }
 
          /**
-          *
+          * Method called to create the process
           */
          @SuppressWarnings("unchecked")
 		 public  static void createProcess() {
 			 try {
 				 Class<Process> cls = (Class<Process>) Class.forName(function);
-
-				 Process process = cls.newInstance();
-				 process.name = function;
-				 process.id = org.simgrid.msg.Process.nextProcessId++;
-
-				process.create(hostName);
-				 Vector<String> args_ = args;
-				 int size = args_.size();
-
-				 for (int index = 0; index < size; index++)
-					 process.args.add(args_.get(index));
-
-				 process.properties = properties;
-				 properties = new Hashtable<String,String>();
-
-			 } catch(HostNotFoundException e) {
+				 Constructor<Process> constructor = cls.getConstructor(new Class [] {Host.class, java.lang.String.class, java.lang.String[].class});
+				 String[] args_ = args.toArray(new String[args.size()]);
+				 Process process = constructor.newInstance(Host.getByName(hostName), function, args_);
+			 } 
+			 catch (NoSuchMethodException e) {
+				 throw new RuntimeException("Can't find the correct constructor for the class " + function + ". \n" +
+				 "Is there a constructor with the signature: \"Host host, String name, String[]args\" in the class ?");
+			 }
+			 catch (InvocationTargetException e) {
+				 e.printStackTrace();
+			 }
+			 catch(HostNotFoundException e) {
 				 System.out.println(e.toString());
 				 e.printStackTrace();
 

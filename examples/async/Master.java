@@ -11,6 +11,7 @@ package async;
 import java.util.ArrayList;
 
 import org.simgrid.msg.Comm;
+import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
@@ -18,6 +19,9 @@ import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;;
 
 public class Master extends Process {
+	public Master(Host host, String name, String[]args) {
+		super(host,name,args);
+	}
 	public void main(String[] args) throws MsgException {
 		if (args.length < 4) {
 			Msg.info("Master needs 4 arguments");
