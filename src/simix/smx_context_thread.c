@@ -113,7 +113,7 @@ static void smx_ctx_thread_free(smx_context_t pcontext)
 {
   smx_ctx_thread_t context = (smx_ctx_thread_t) pcontext;
 
-  /* check if this is the context of maestro (it doesn't has a real thread) */
+  /* check if this is the context of maestro (it doesn't have a real thread) */
   if (context->thread) {
     /* wait about the thread terminason */
     xbt_os_thread_join(context->thread, NULL);
