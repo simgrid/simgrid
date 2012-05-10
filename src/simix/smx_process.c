@@ -408,8 +408,10 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 
   XBT_IN("process = %p, issuer = %p", process, issuer);
 
-  if(process->context->iwannadie)
+  if(process->context->iwannadie) {
+    XBT_VERB("Ignoring request to suspend a process that is currently dying.");
     return;
+  }
 
   if(!process->suspended) return;
   process->suspended = 0;
