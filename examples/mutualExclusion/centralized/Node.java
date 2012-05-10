@@ -8,14 +8,15 @@
  */
 package mutualExclusion.centralized;
 
+import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
 
 public class Node extends Process {
-	public Node(String hostname, String name) throws HostNotFoundException {
-		super(hostname, name);
+	public Node(Host host, String name, String[]args) {
+		super(host,name,args);
 	}
 	public void request(double CStime) throws MsgException {
 		RequestTask req = new RequestTask(this.name);

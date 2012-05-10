@@ -10,6 +10,7 @@
 package mutualExclusion.centralized;
 import java.util.LinkedList;
 
+import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Task;
@@ -17,8 +18,8 @@ import org.simgrid.msg.Process;
 
 
 public class Coordinator extends Process  {
-	public Coordinator(String hostname, String name) throws HostNotFoundException {
-		super(hostname, name);
+	public Coordinator(Host host, String name, String[]args) {
+		super(host,name,args);
 	}
 	LinkedList<RequestTask> waitingQueue=new LinkedList<RequestTask>();
 	int CsToServe;

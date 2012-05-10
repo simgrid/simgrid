@@ -8,6 +8,7 @@
  */
 
 package basic;
+import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Task;
