@@ -161,6 +161,10 @@ It is also possible to seamlessly declare a host whose
 availability changes over time using the availability_file
 attribute and a separate text file whose syntax is exemplified below.
 
+
+<b>IMPORTANT NOTE:</b> the numeric separator in both trace and availability depends on your system locale. Examples below holds for LC_NUMERIC=C. 
+
+
 <b>Adding a trace file</b>
 \verbatim
     <platform version="1">
