@@ -528,7 +528,16 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
     if (SIMIX_process_is_suspended(action->comm.src_proc) ||
         SIMIX_process_is_suspended(action->comm.dst_proc)) {
       /* FIXME: check what should happen with the action state */
+
+      if (SIMIX_process_is_suspended(action->comm.src_proc))
+        XBT_DEBUG("The communication is suspended on startup because src (%s:%s) were suspended since it initiated the communication",
+            SIMIX_host_get_name(action->comm.src_proc->smx_host), action->comm.src_proc->name);
+      else
+        XBT_DEBUG("The communication is suspended on startup because dst (%s:%s) were suspended since it initiated the communication",
+            SIMIX_host_get_name(action->comm.dst_proc->smx_host), action->comm.dst_proc->name);
+
       surf_workstation_model->suspend(action->comm.surf_comm);
+
     }
   }
 }
@@ -706,13 +715,17 @@ void SIMIX_comm_cancel(smx_action_t action)
 void SIMIX_comm_suspend(smx_action_t action)
 {
   /*FIXME: shall we suspend also the timeout actions? */
-  surf_workstation_model->suspend(action->comm.surf_comm);
+  if (action->comm.surf_comm)
+    surf_workstation_model->suspend(action->comm.surf_comm);
+  /* in the other case, the action will be suspended on creation, in SIMIX_comm_start() */
 }
 
 void SIMIX_comm_resume(smx_action_t action)
 {
   /*FIXME: check what happen with the timeouts */
-  surf_workstation_model->resume(action->comm.surf_comm);
+  if (action->comm.surf_comm)
+    surf_workstation_model->resume(action->comm.surf_comm);
+  /* in the other case, the action were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 
 
