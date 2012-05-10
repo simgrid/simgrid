@@ -13,7 +13,8 @@ XBT_INLINE smx_simcall_t SIMIX_simcall_mine()
 
 /**
  * \brief Makes the current process do a simcall to the kernel and yields
- * until completion.
+ * until completion. If the current thread is maestro, we don't yield and
+ * execute the simcall directly.
  * \param self the current process
  */
 void SIMIX_simcall_push(smx_process_t self)
