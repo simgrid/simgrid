@@ -110,6 +110,11 @@ SimGrid (3.7) NOT RELEASED; urgency=low
       deprecated in the next release.
     - Dicts of scalar elements (xbt_dicti_*) are deprecated.
     - Multi-level dictionaries are deprecated.
+  * Dynars:
+    - new function xbt_dynar_search_or_negative() that is useful when
+      you have less than 2 million elements in your dynar and don't
+      want of the extra complexity of catching exceptions when the
+      element is not found.
   * mmalloc module:
     - Cleanups and simplifications to make it maintainable again.
     - Exotic features (such as memalign and valloc) were removed.

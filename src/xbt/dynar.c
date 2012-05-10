@@ -523,7 +523,9 @@ xbt_dynar_remove_at(xbt_dynar_t const dynar,
 
 /** @brief Returns the position of the element in the dynar
  *
- * Raises not_found_error if not found.
+ * Raises not_found_error if not found. If you have less than 2 millions elements,
+ * you probably want to use #xbt_dynar_search_or_negative() instead, so that you
+ * don't have to TRY/CATCH on element not found.
  */
 unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void *const elem)
 {
@@ -539,6 +541,26 @@ unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void *const elem)
   _dynar_unlock(dynar);
   THROWF(not_found_error, 0, "Element %p not part of dynar %p", elem,
          dynar);
+}
+
+/** @brief Returns the position of the element in the dynar (or -1 if not found)
+ *
+ * Note that usually, the dynar indices are unsigned integers. If you have more
+ * than 2 million elements in your dynar, this very function will not work (but the other will).
+ */
+signed int xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void *const elem)
+{
+  unsigned long it;
+
+  _dynar_lock(dynar);
+  for (it = 0; it < dynar->used; it++)
+    if (!memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
+      _dynar_unlock(dynar);
+      return it;
+    }
+
+  _dynar_unlock(dynar);
+  return -1;
 }
 
 /** @brief Returns a boolean indicating whether the element is part of the dynar */
