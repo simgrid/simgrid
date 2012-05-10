@@ -62,6 +62,7 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
                                       size_t offset,
                                       lmm_system_t sys,
                                       void (*solve) (lmm_system_t));
+void generic_update_action_remaining_lazy( surf_action_t action, double now);
 
 /* Generic functions common to all models */
 void surf_action_init(void);
@@ -79,6 +80,18 @@ void surf_action_lmm_heap_insert(xbt_heap_t heap, surf_action_lmm_t action,
     double key, enum heap_action_type hat);
 void surf_action_lmm_heap_remove(xbt_heap_t heap,surf_action_lmm_t action);
 
+void surf_action_cancel(surf_action_t action);
+int surf_action_unref(surf_action_t action);
+void surf_action_suspend(surf_action_t action);
+void surf_action_resume(surf_action_t action);
+int surf_action_is_suspended(surf_action_t action);
+void surf_action_set_max_duration(surf_action_t action, double duration);
+void surf_action_set_priority(surf_action_t action, double priority);
+#ifdef HAVE_TRACING
+void surf_action_set_category(surf_action_t action,
+                                    const char *category);
+#endif
+double surf_action_get_remains(surf_action_t action);
 
 FILE *surf_fopen(const char *name, const char *mode);
 
@@ -94,7 +107,7 @@ double net_action_get_remains(surf_action_t action);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 int net_get_link_latency_limited(surf_action_t action);
 #endif
-void net_action_set_max_duration(surf_action_t action, double duration);
+
 /*
  * Returns the initial path. On Windows the initial path is
  * the current directory for the current process in the other

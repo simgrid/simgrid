@@ -34,6 +34,7 @@ XBT_PUBLIC(e_surf_network_element_type_t)
 
 /** @Brief Specify that we use that action */
 XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
+
 /** @brief Creates a new action.
  *
  * @param size The size is the one of the subtype you want to create

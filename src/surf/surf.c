@@ -289,6 +289,11 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   return min;
 }
 
+void generic_update_action_remaining_lazy( surf_action_t action, double now)
+{
+ // TODO merge for cpu and net
+}
+
 static XBT_INLINE void routing_asr_host_free(void *p)
 {
   sg_routing_edge_t elm = p;

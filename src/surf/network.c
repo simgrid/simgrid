@@ -55,7 +55,6 @@ int sg_network_crosstraffic = 0;
 
 xbt_dict_t gap_lookup = NULL;
 
-static int net_action_is_suspended(surf_action_t action);
 static void net_update_action_remaining_lazy(surf_action_network_CM02_t action, double now);
 
 /******************************************************************************/
@@ -295,40 +294,6 @@ static int net_resource_used(void *resource_id)
   return lmm_constraint_used(surf_network_model->model_private->maxmin_system, ((surf_resource_lmm_t)
                                                      resource_id)->
                              constraint);
-}
-
-static int net_action_unref(surf_action_t action)
-{
-  action->refcount--;
-  if (!action->refcount) {
-    xbt_swag_remove(action, action->state_set);
-    if (((surf_action_lmm_t)action)->variable) {
-      lmm_variable_free(surf_network_model->model_private->maxmin_system,
-                        ((surf_action_lmm_t) action)->variable);
-    }
-    if (surf_network_model->model_private->update_mechanism == UM_LAZY) {  // remove action from the heap
-      surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t) action);
-      xbt_swag_remove(action, surf_network_model->model_private->modified_set);
-    }
-#ifdef HAVE_TRACING
-    if (action->category) xbt_free (action->category);
-#endif
-    surf_action_free(&action);
-    return 1;
-  }
-  return 0;
-}
-
-
-
-static void net_action_cancel(surf_action_t action)
-{
-  XBT_DEBUG("cancel action %p", action);
-  surf_network_model->action_state_set(action, SURF_ACTION_FAILED);
-  if (surf_network_model->model_private->update_mechanism == UM_LAZY) {    // remove action from the heap
-    xbt_swag_remove(action, surf_network_model->model_private->modified_set);
-    surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t) action);
-  }
 }
 
 void net_action_recycle(surf_action_t action)
@@ -906,51 +871,6 @@ static int net_link_shared(const void *link)
       lmm_constraint_is_shared(((surf_resource_lmm_t) link)->constraint);
 }
 
-static void net_action_suspend(surf_action_t action)
-{
-  ((surf_action_network_CM02_t) action)->generic_lmm_action.suspended = 1;
-  lmm_update_variable_weight(surf_network_model->model_private->maxmin_system,
-                             ((surf_action_network_CM02_t)
-                              action)->generic_lmm_action.variable, 0.0);
-
-  if (surf_network_model->model_private->update_mechanism == UM_LAZY)      // remove action from the heap
-    surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
-}
-
-static void net_action_resume(surf_action_t action)
-{
-  if (((surf_action_network_CM02_t) action)->generic_lmm_action.suspended) {
-    lmm_update_variable_weight(surf_network_model->model_private->maxmin_system,
-                               ((surf_action_network_CM02_t)
-                                action)->generic_lmm_action.variable,
-                               ((surf_action_network_CM02_t)
-                                action)->weight);
-    ((surf_action_network_CM02_t) action)->generic_lmm_action.suspended = 0;
-    if (surf_network_model->model_private->update_mechanism == UM_LAZY)    // remove action from the heap
-      surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
-  }
-}
-
-static int net_action_is_suspended(surf_action_t action)
-{
-  return ((surf_action_network_CM02_t) action)->generic_lmm_action.suspended;
-}
-
-void net_action_set_max_duration(surf_action_t action, double duration)
-{
-  action->max_duration = duration;
-  if (surf_network_model->model_private->update_mechanism == UM_LAZY)      // remove action from the heap
-    surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
-}
-
-#ifdef HAVE_TRACING
-static void net_action_set_category(surf_action_t action,
-                                    const char *category)
-{
-  action->category = xbt_strdup(category);
-}
-#endif
-
 static void net_finalize(void)
 {
   lmm_system_free(surf_network_model->model_private->maxmin_system);
@@ -1062,15 +982,17 @@ static void surf_network_model_init_internal(void)
   set_update_mechanism();
 
   surf_network_model->name = "network";
-  surf_network_model->action_unref = net_action_unref;
-  surf_network_model->action_cancel = net_action_cancel;
+  surf_network_model->action_unref = surf_action_unref;
+  surf_network_model->action_cancel = surf_action_cancel;
   surf_network_model->action_recycle = net_action_recycle;
+
   surf_network_model->get_remains = net_action_get_remains;
+
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   surf_network_model->get_latency_limited = net_get_link_latency_limited;
 #endif
 #ifdef HAVE_TRACING
-  surf_network_model->set_category = net_action_set_category;
+  surf_network_model->set_category = surf_action_set_category;
 #endif
 
   surf_network_model->model_private->resource_used = net_resource_used;
@@ -1090,10 +1012,10 @@ static void surf_network_model_init_internal(void)
       net_update_resource_state;
   surf_network_model->model_private->finalize = net_finalize;
 
-  surf_network_model->suspend = net_action_suspend;
-  surf_network_model->resume = net_action_resume;
-  surf_network_model->is_suspended = net_action_is_suspended;
-  surf_cpu_model->set_max_duration = net_action_set_max_duration;
+  surf_network_model->suspend = surf_action_suspend;
+  surf_network_model->resume = surf_action_resume;
+  surf_network_model->is_suspended = surf_action_is_suspended;
+  surf_cpu_model->set_max_duration = surf_action_set_max_duration;
 
   surf_network_model->extension.network.communicate = net_communicate;
   surf_network_model->extension.network.get_route = net_get_route;

@@ -184,3 +184,117 @@ void surf_action_lmm_heap_remove(xbt_heap_t heap, surf_action_lmm_t action)
     xbt_heap_remove(heap, action->index_heap);
   }
 }
+
+void surf_action_cancel(surf_action_t action)
+{
+  surf_model_t model = action->model_type;
+  surf_action_state_set(action, SURF_ACTION_FAILED);
+  if (model->model_private->update_mechanism == UM_LAZY) {
+    xbt_swag_remove(action, model->model_private->modified_set);
+    surf_action_lmm_heap_remove(model->model_private->action_heap,(surf_action_lmm_t)action);
+  }
+  return;
+}
+
+int surf_action_unref(surf_action_t action)
+{
+  surf_model_t model = action->model_type;
+  action->refcount--;
+  if (!action->refcount) {
+    xbt_swag_remove(action, action->state_set);
+    if (((surf_action_lmm_t) action)->variable)
+      lmm_variable_free(model->model_private->maxmin_system,
+                        ((surf_action_lmm_t) action)->variable);
+    if (model->model_private->update_mechanism == UM_LAZY) {
+      /* remove from heap */
+      surf_action_lmm_heap_remove(model->model_private->action_heap,(surf_action_lmm_t)action);
+      xbt_swag_remove(action, model->model_private->modified_set);
+    }
+#ifdef HAVE_TRACING
+    xbt_free(action->category);
+#endif
+    surf_action_free(&action);
+    return 1;
+  }
+  return 0;
+}
+
+void surf_action_suspend(surf_action_t action)
+{
+  surf_model_t model = action->model_type;
+  XBT_IN("(%p)", action);
+  if (((surf_action_lmm_t) action)->suspended != 2) {
+    lmm_update_variable_weight(model->model_private->maxmin_system,
+                               ((surf_action_lmm_t) action)->variable,
+                               0.0);
+    ((surf_action_lmm_t) action)->suspended = 1;
+    if (model->model_private->update_mechanism == UM_LAZY)
+      surf_action_lmm_heap_remove(model->model_private->action_heap,(surf_action_lmm_t)action);
+  }
+  XBT_OUT();
+}
+
+void surf_action_resume(surf_action_t action)
+{
+  surf_model_t model = action->model_type;
+  XBT_IN("(%p)", action);
+  if (((surf_action_lmm_t) action)->suspended != 2) {
+    lmm_update_variable_weight(model->model_private->maxmin_system,
+                               ((surf_action_lmm_t) action)->variable,
+                               action->priority);
+    ((surf_action_lmm_t) action)->suspended = 0;
+    if (model->model_private->update_mechanism == UM_LAZY)
+      surf_action_lmm_heap_remove(model->model_private->action_heap,(surf_action_lmm_t)action);
+  }
+  XBT_OUT();
+}
+
+int surf_action_is_suspended(surf_action_t action)
+{
+  return (((surf_action_lmm_t) action)->suspended == 1);
+}
+
+void surf_action_set_max_duration(surf_action_t action, double duration)
+{
+  surf_model_t model = action->model_type;
+  XBT_IN("(%p,%g)", action, duration);
+  action->max_duration = duration;
+  if (model->model_private->update_mechanism == UM_LAZY)      // remove action from the heap
+    surf_action_lmm_heap_remove(model->model_private->action_heap,(surf_action_lmm_t)action);
+  XBT_OUT();
+}
+
+void surf_action_set_priority(surf_action_t action, double priority)
+{
+  surf_model_t model = action->model_type;
+  XBT_IN("(%p,%g)", action, priority);
+  action->priority = priority;
+  lmm_update_variable_weight(model->model_private->maxmin_system,
+                             ((surf_action_lmm_t) action)->variable,
+                             priority);
+
+  if (model->model_private->update_mechanism == UM_LAZY)
+    surf_action_lmm_heap_remove(model->model_private->action_heap,(surf_action_lmm_t)action);
+  XBT_OUT();
+}
+
+#ifdef HAVE_TRACING
+void surf_action_set_category(surf_action_t action,
+                                    const char *category)
+{
+  XBT_IN("(%p,%s)", action, category);
+  action->category = xbt_strdup(category);
+  XBT_OUT();
+}
+#endif
+
+double surf_action_get_remains(surf_action_t action)
+{
+  XBT_IN("(%p)", action);
+  surf_model_t model = action->model_type;
+  /* update remains before return it */
+  if (model->model_private->update_mechanism == UM_LAZY)      /* update remains before return it */
+    generic_update_action_remaining_lazy(action, surf_get_clock());
+  XBT_OUT();
+  return action->remains;
+}
