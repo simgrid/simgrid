@@ -332,7 +332,7 @@ COMMAND chmod g+rw -R doc/
 COMMAND chmod a+rX -R doc/
 COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
 doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
-COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo.png  doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
+COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/rm _2011.png  doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 add_dependencies(sync-gforge-doc simgrid_documentation)

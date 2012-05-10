@@ -33,7 +33,6 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSI
 
 
 	set(DOC_PNGS 
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_small.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png

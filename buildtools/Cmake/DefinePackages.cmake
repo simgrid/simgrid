@@ -664,7 +664,7 @@ set(DOC_SOURCES
 	doc/webcruft/Paje_MSG_screenshot.jpg
 	doc/webcruft/Paje_MSG_screenshot_thn.jpg
 	doc/webcruft/poster_thumbnail.png
-	doc/webcruft/simgrid_logo.png
+	doc/webcruft/simgrid_logo_2011.png
 	doc/webcruft/simgrid_logo_small.png
 	doc/triva-graph_configuration.png
 	doc/triva-graph_visualization.png
