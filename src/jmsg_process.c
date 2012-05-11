@@ -10,8 +10,7 @@
 #include "jmsg.h"
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
-
-#include "smx_context_java.h"  
+#include "smx_context_java.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -34,26 +33,11 @@ void jprocess_delete_global_ref(jobject jprocess, JNIEnv * env)
   (*env)->DeleteGlobalRef(env, jprocess);
 }
 
-jboolean jprocess_is_alive(jobject jprocess, JNIEnv * env)
-{
-  jmethodID id =
-      jxbt_get_smethod(env, "org/simgrid/msg/Process", "isAlive", "()Z");
-
-  if (!id)
-    return 0;
-
-  return (*env)->CallBooleanMethod(env, jprocess, id);
-}
-
 void jprocess_join(jobject jprocess, JNIEnv * env)
 {
-  jmethodID id =
-      jxbt_get_smethod(env, "org/simgrid/msg/Process", "join", "()V");
-
-  if (!id)
-    return;
-
-  (*env)->CallVoidMethod(env, jprocess, id);
+	m_process_t process = jprocess_to_native_process(jprocess,env);
+	smx_ctx_java_t context = (smx_ctx_java_t)MSG_process_get_smx_ctx(process);
+	xbt_os_thread_join(context->thread,NULL);
 }
 
 void jprocess_exit(jobject jprocess, JNIEnv * env)
@@ -66,63 +50,6 @@ void jprocess_exit(jobject jprocess, JNIEnv * env)
 
   (*env)->CallVoidMethod(env, jprocess, id);
 }
-
-void jprocess_yield(jobject jprocess, JNIEnv * env)
-{
-  jmethodID id =
-      jxbt_get_smethod(env, "org/simgrid/msg/Process", "switchProcess", "()V");
-
-  if (!id)
-    return;
-
-  (*env)->CallVoidMethod(env, jprocess, id);
-}
-
-void jprocess_lock_mutex(jobject jprocess, JNIEnv * env)
-{
-  jmethodID id =
-      jxbt_get_smethod(env, "org/simgrid/msg/Process", "lockMutex", "()V");
-
-  if (!id)
-    return;
-
-  (*env)->CallVoidMethod(env, jprocess, id);
-}
-
-void jprocess_unlock_mutex(jobject jprocess, JNIEnv * env)
-{
-  jmethodID id =
-      jxbt_get_smethod(env, "org/simgrid/msg/Process", "unlockMutex", "()V");
-
-  if (!id)
-    return;
-
-  (*env)->CallVoidMethod(env, jprocess, id);
-}
-
-
-void jprocess_signal_cond(jobject jprocess, JNIEnv * env)
-{
-  jmethodID id =
-      jxbt_get_smethod(env, "org/simgrid/msg/Process", "signalCond", "()V");
-
-  if (!id)
-    return;
-
-  (*env)->CallVoidMethod(env, jprocess, id);
-}
-
-void jprocess_wait_cond(jobject jprocess, JNIEnv * env)
-{
-  jmethodID id =
-      jxbt_get_smethod(env, "org/simgrid/msg/Process", "waitCond", "()V");
-
-  if (!id)
-    return;
-
-  (*env)->CallVoidMethod(env, jprocess, id);
-}
-
 
 void jprocess_start(jobject jprocess, JNIEnv * env)
 {
@@ -141,8 +68,10 @@ m_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
 {
   jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Process", "bind", "J");
 
-  if (!id)
+  if (!id) {
+  	XBT_INFO("Can't find bind field in Process");
     return NULL;
+  }
 
   return (m_process_t) (long) (*env)->GetLongField(env, jprocess, id);
 }
@@ -189,41 +118,6 @@ jboolean jprocess_is_valid(jobject jprocess, JNIEnv * env)
     return JNI_FALSE;
 
   return (*env)->GetLongField(env, jprocess, id) ? JNI_TRUE : JNI_FALSE;
-}
-
-void jprocess_schedule(smx_context_t context)
-{
-  JNIEnv *env;
-  jmethodID id;
-
-  env = get_current_thread_env();
-
-  id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "schedule", "()V");
-
-  if (!id) {
-    XBT_CRITICAL("Cannot find java method org/simgrid/msg/Process/schedule()V");
-    return;
-  }
-
-  (*env)->CallVoidMethod(env, ((smx_ctx_java_t) context)->jprocess, id);
-}
-
-
-
-void jprocess_unschedule(smx_context_t context)
-{
-  JNIEnv *env;
-  jmethodID id;
-
-  env = get_current_thread_env();
-
-
-  id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "unschedule", "()V");
-
-  if (!id)
-    return;
-
-  (*env)->CallVoidMethod(env, ((smx_ctx_java_t) context)->jprocess, id);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
@@ -446,8 +340,9 @@ Java_org_simgrid_msg_Process_exit(JNIEnv * env,
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
-
-  smx_ctx_java_stop(MSG_process_get_smx_ctx(process));
+	smx_ctx_java_t context = (smx_ctx_java_t)MSG_process_get_smx_ctx(process);
+	smx_ctx_java_stop(MSG_process_get_smx_ctx(process));
+  xbt_os_sem_release(context->end);
 }
 
 JNIEXPORT void JNICALL

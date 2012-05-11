@@ -14,6 +14,7 @@ package org.simgrid.msg;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.lang.Runnable;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -47,7 +48,7 @@ import java.util.concurrent.Semaphore;
  * 
  */
 
-public abstract class Process extends Thread {
+public abstract class Process implements Runnable {
 	/**
 	 * This attribute represents a bind between a java process object and
 	 * a native process. Even if this attribute is public you must never
@@ -92,22 +93,17 @@ public abstract class Process extends Thread {
 
 	/* process synchronization tools */
 	
-	/* give the full path to semaphore to ensure that our own implementation don't get selected */
-    protected java.util.concurrent.Semaphore schedBegin, schedEnd;
     private boolean nativeStop = false;
 
 	/**
 	 * Default constructor (used in ApplicationHandler to initialize it)
 	 */
 	protected Process() {
-		super();
 		this.id = nextProcessId++;
 		this.name = null;
 		this.bind = 0;
 		this.args = new Vector<String>();
 		this.properties = null;
-		schedBegin = new java.util.concurrent.Semaphore(0);
-		schedEnd = new java.util.concurrent.Semaphore(0);
 	}
 
 
@@ -164,7 +160,7 @@ public abstract class Process extends Thread {
 	public Process(Host host, String name, String[]args) {
 		/* This is the constructor called by all others */
 		this();
-		
+		this.host = host;
 		if (name == null)
 			throw new NullPointerException("Process name cannot be NULL");
 		this.name = name;
@@ -172,12 +168,6 @@ public abstract class Process extends Thread {
 		this.args = new Vector<String>();
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
-
-		try {
-			create(host.getName());
-		} catch (HostNotFoundException e) {
-			throw new RuntimeException("The impossible happened (yet again): the host that I have were not found",e);
-		}
 		
 		this.properties = new Hashtable<String,String>();
 		
@@ -345,21 +335,21 @@ public abstract class Process extends Thread {
      * Exit the process
      */
     public native void exit();
-
+    /**
+     * This method actually creates and run the process.
+     * @throws HostNotFoundException
+     */
+    public void start() throws HostNotFoundException {
+    	create(host.getName());
+    }
+    
 	/**
 	 * This method runs the process. Il calls the method function that you must overwrite.
 	 */
 	public void run() {
 
 		String[] args = null;      /* do not fill it before the signal or this.args will be empty */
-
 		//waitSignal(); /* wait for other people to fill the process in */
-
-
-		try {
-			schedBegin.acquire();
-		} catch(InterruptedException e) {
-		}
 
 		try {
 			args = new String[this.args.size()];
@@ -369,7 +359,6 @@ public abstract class Process extends Thread {
 
 			this.main(args);
 			exit();
-			schedEnd.release();
 		} catch(MsgException e) {
 			e.printStackTrace();
 			Msg.info("Unexpected behavior. Stopping now");
@@ -388,10 +377,9 @@ public abstract class Process extends Thread {
 					 * exception now. This should be ok since we ignore only a very specific exception 
 					 * class and not a generic (such as any RuntimeException).
 					 */
-					System.err.println(currentThread().getName()+": I ignore that other exception");					
+					//System.err.println(currentThread().getName()+": I ignore that other exception");					
 				}
-				Msg.info(" Process " + ((Process) Thread.currentThread()).msgName() + " has been killed.");						
-				schedEnd.release();			
+				//Msg.info(" Process " + ((Process) Thread.currentThread()).msgName() + " has been killed.");						
 			}
 			else {
 				pk.printStackTrace();
@@ -409,90 +397,6 @@ public abstract class Process extends Thread {
      */
 	public abstract void main(String[]args) throws MsgException;
 
-
-    /** @brief Gives the control from the given user thread back to the maestro 
-     * 
-     * schedule() and unschedule() are the basis of interactions between the user threads 
-     * (executing the user code), and the maestro thread (executing the platform models to decide 
-     * which user thread should get executed when. Once it decided which user thread should be run 
-     * (because the blocking action it were blocked onto are terminated in the simulated world), the 
-     * maestro passes the control to this uthread by calling uthread.schedule() in the maestro thread 
-     * (check its code for the simple semaphore-based synchronization schema). 
-     * 
-     * The uthread executes (while the maestro is blocked), until it starts another blocking 
-     * action, such as a communication or so. In that case, uthread.unschedule() gets called from 
-     * the user thread.    
-     *
-     * As other complications, these methods are called directly by the C through a JNI upcall in 
-     * response to the JNI downcalls done by the Java code. For example, you have this (simplified) 
-     * execution path: 
-     *   - a process calls the Task.send() method in java
-     *   - this calls Java_org_simgrid_msg_MsgNative_taskSend() in C through JNI
-     *   - this ends up calling jprocess_unschedule(), still in C
-     *   - this calls the java method "org/simgrid/msg/Process/unschedule()V" through JNI
-     *   - that is to say, the unschedule() method that you are reading the documentation of.
-     *   
-     * To understand all this, you must keep in mind that there is no difference between the C thread 
-     * describing a process, and the Java thread doing the same. Most of the time, they are system 
-     * threads from the kernel anyway. In the other case (such as when using green java threads when 
-     * the OS does not provide any thread feature), I'm unsure of what happens: it's a very long time 
-     * that I didn't see any such OS. 
-     * 
-     * The synchronization itself is implemented using simple semaphores in Java, as you can see by
-     * checking the code of these functions (and run() above). That's super simple, and thus welcome
-     * given the global complexity of the synchronization architecture: getting C and Java cooperate
-     * with regard to thread handling in a portable manner is very uneasy. A simple and straightforward 
-     * implementation of each synchronization point is precious. 
-     *  
-     * But this kinda limits the system scalability. It may reveal difficult to simulate dozens of 
-     * thousands of processes this way, both for memory limitations and for hard limits pushed by the 
-     * system on the amount of threads and semaphores (we have 2 semaphores per user process).
-     * 
-     * At time of writing, the best source of information on how to simulate large systems within the 
-     * Java bindings of simgrid is here: http://tomp2p.net/dev/simgrid/
-     * 
-     */
-    public void unschedule() {
-    	/* this function is called from the user thread only */
-		try {  	  
-			
-			/* unlock the maestro before going to sleep */
-			schedEnd.release();
-			/* Here, the user thread is locked, waiting for the semaphore, and maestro executes instead */
-			schedBegin.acquire();
-			/* now that the semaphore is acquired, it means that maestro gave us the control back */
-			
-			/* the user thread is starting again after giving the control to maestro. 
-			 * Let's check if we were asked to die in between */
-			if ( (Thread.currentThread() instanceof Process) &&((Process) Thread.currentThread()).getNativeStop()) {				
-				throw new ProcessKilled();
-			}
-			
-		} catch (InterruptedException e) {
-			/* ignore this exception because this is how we get killed on process.kill or end of simulation.
-			 * I don't like hiding exceptions this way, but fail to see any other solution 
-			 */
-		}
-		
-	}
-
-    /** @brief Gives the control from the maestro back to the given user thread 
-     * 
-     * Must be called from the maestro thread -- see unschedule() for details.
-     *
-     */
-    public void schedule() {
-		try {
-			/* unlock the user thread before going to sleep */
-			schedBegin.release();
-			/* Here, maestro is locked, waiting for the schedEnd semaphore to get signaled by used thread, that executes instead */
-			schedEnd.acquire();
-			/* Maestro now has the control back and the user thread went to sleep gently */
-			
-		} catch(InterruptedException e) {
-			throw new RuntimeException("The impossible did happend once again: I got interrupted in schedEnd.acquire()",e);
-		}
-	}
     
 	/**
 	 * Class initializer, to initialize various JNI stuff

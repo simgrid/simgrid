@@ -26,7 +26,7 @@ public class MsBypass {
 
     /* bypass deployment */
     try {
-    	new Master("bob","process1");
+    	new Master("bob","process1").start();
     }
     catch (MsgException e){
     	System.out.println("Create processes failed!");

@@ -9,6 +9,8 @@
 
 #include <xbt/misc.h>
 #include <simgrid/simix.h>
+#include <xbt/os_thread.h>
+
 #include "jmsg.h"
 #include "jmsg_process.h"
 
@@ -18,6 +20,9 @@ typedef struct s_smx_ctx_java {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
   jobject jprocess;             /* the java process instance binded with the msg process structure */
   JNIEnv *jenv;                 /* jni interface pointer associated to this thread */
+  xbt_os_thread_t thread;
+  xbt_os_sem_t begin;           /* this semaphore is used to schedule/yield the process  */
+  xbt_os_sem_t end;             /* this semaphore is used to schedule/unschedule the process   */
 } s_smx_ctx_java_t, *smx_ctx_java_t;
 
 void SIMIX_ctx_java_factory_init(smx_context_factory_t *factory);

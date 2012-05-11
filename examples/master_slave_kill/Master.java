@@ -27,6 +27,7 @@ public class Master extends Process {
 		try {
 			Msg.info("Create process on host 'alice'");
 		    process2 = new Slave("alice","slave");
+		    process2.start();
 		} catch (MsgException e){
 		    System.out.println("Process2!");
 		}

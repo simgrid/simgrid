@@ -26,7 +26,8 @@ public class MsKill {
 
     /* bypass deploymemt */
     try {
-    Master process1 = new Master("bob","master");
+	    Master process1 = new Master("bob","master");
+	    process1.start();
     }
     catch (MsgException e){
     	System.out.println("Create processes failed!");

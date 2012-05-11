@@ -39,24 +39,6 @@ jobject jprocess_new_global_ref(jobject jprocess, JNIEnv * env);
  */
 void jprocess_delete_global_ref(jobject jprocess, JNIEnv * env);
 
-/**
- *
- * This function tests if the specified java process instance is alive. 
- * A java process object is alive if it has been started and has not yet 
- * terminated.
- * 
- * @param jprocess		The java process to test.
- * @param env			The env of the current thread
- *
- * @exception			If the class Process is not found the function throws 
- *						the ClassNotFoundException. If the methos isAlive() of 
- *						this class is not found the function throws the exception 
- *						NotSuchMethodException.	
- *
- * @return				If the java process is alive the function returns
- *						true. Otherwise the function returns false.
- */
-jboolean jprocess_is_alive(jobject jprocess, JNIEnv * env);
 
 /**
  * This function waits for a java process to terminate.
@@ -171,74 +153,6 @@ jboolean jprocess_is_valid(jobject jprocess, JNIEnv * env);
  */
 jstring jprocess_get_name(jobject jprocess, JNIEnv * env);
 
-/**
- * This function yields the specified java process.
- *
- * @param jprocess		The java process to yield.
- * @param env			The env of the current thread.
- *
- * @exception			If the class Process is not found the function throws 
- *						the ClassNotFoundException. If the method switchProcess of 
- *						this class is not found the function throws the exception 
- *						NotSuchMethodException.
- */
-void jprocess_yield(jobject jprocess, JNIEnv * env);
-
-/**
- * This function locks the mutex of the specified java process.
- *
- * @param jprocess		The java process of the mutex to lock.
- * @param env			The env of the current thread.
- *
- * @exception			If the class Process is not found the function throws 
- *						the ClassNotFoundException. If the method lockMutex of 
- *						this class is not found the function throws the exception 
- *						NotSuchMethodException.
- */
-void jprocess_lock_mutex(jobject jprocess, JNIEnv * env);
-
-/**
- * This function unlocks the mutex of the specified java process.
- *
- * @param jprocess		The java process of the mutex to unlock.
- * @param env			The env of the current thread.
- *
- * @exception			If the class Process is not found the function throws 
- *						the ClassNotFoundException. If the method unlockMutex of 
- *						this class is not found the function throws the exception 
- *						NotSuchMethodException.
- */
-void jprocess_unlock_mutex(jobject jprocess, JNIEnv * env);
-
-/**
- * This function signals the condition of the mutex of the specified java process.
- *
- * @param jprocess		The java process of the condtion to signal.
- * @param env			The env of the current thread.
- *
- * @exception			If the class Process is not found the function throws 
- *						the ClassNotFoundException. If the method signalCond of 
- *						this class is not found the function throws the exception 
- *						NotSuchMethodException.
- */
-void jprocess_signal_cond(jobject jprocess, JNIEnv * env);
-
-/**
- * This function waits the condition of the mutex of the specified java process.
- *
- * @param jprocess		The java process of the condtion to wait for.
- * @param env			The env of the current thread.
- *
- * @exception			If the class Process is not found the function throws 
- *						the ClassNotFoundException. If the method waitCond of 
- *						this class is not found the function throws the exception 
- *						NotSuchMethodException.
- */
-void jprocess_wait_cond(jobject jprocess, JNIEnv * env);
-
-void jprocess_schedule(smx_context_t context);
-
-void jprocess_unschedule(smx_context_t context);
 /*
  * Class		org_simgrid_msg_Process
  * Method		nativeInit
@@ -338,5 +252,4 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill
  */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate
     (JNIEnv *, jobject, jobject);
-
 #endif                          /* !MSG_JPROCESS_H */

@@ -102,6 +102,7 @@ public final class ApplicationHandler {
 				 Constructor<Process> constructor = cls.getConstructor(new Class [] {Host.class, java.lang.String.class, java.lang.String[].class});
 				 String[] args_ = args.toArray(new String[args.size()]);
 				 Process process = constructor.newInstance(Host.getByName(hostName), function, args_);
+				 process.start();
 			 } 
 			 catch (NoSuchMethodException e) {
 				 throw new RuntimeException("Can't find the correct constructor for the class " + function + ". \n" +
