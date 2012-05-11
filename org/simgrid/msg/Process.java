@@ -307,10 +307,7 @@ public abstract class Process extends Thread {
 	 * @param host			The host where to migrate the process.
 	 *
 	 */
-	public static void migrate(Process process, Host host)  {
-		MsgNative.processMigrate(process, host);
-		process.host = null;
-	}
+	public native static void migrate(Process process, Host host);	
 	/**
 	 * Makes the current process sleep until millis millisecondes have elapsed.
 	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds.
