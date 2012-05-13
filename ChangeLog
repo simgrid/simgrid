@@ -1,6 +1,6 @@
 SimGrid (3.7) NOT RELEASED; urgency=low
 
-  The "sprint cleanups (before spring)" release.
+  The "sprint cleanups (before the next Big Project kicks in)" release.
 
   Models:
   * We can specify the smpi latency/bandwidth factor with command line
@@ -13,7 +13,6 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Change the correction factors used in LMM model, according to
     the latest experiments described in INRIA RR-7821.
     Accuracy should be improved this way.
-    (TODO: this is not true in the code, yet)
   * Use the partial invalidation optimization by default for the
     network too. Should produce the exact same results, only faster.
   * Major cleanup in surf to merge models and split some optimization
@@ -31,12 +30,11 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Use now crosstraffic keyword instead of the terribly misleading
     fullduplex keyword. It is activated by default now in the current
     default model, use --cfg=network/crosstraffic:0 to turn it off.
-  * Experimental: new configuration option --cfg=surf/nthreads:N to run
-    analytical models in parallel with N threads (default is 1).
   * Ongoing refactoring the model parsing to make XML files optional
-    (more work is needed here to fully achieve this goal)
+    See include/simgrid/platf.h for details (still to be completed)
 
   MSG:
+  * Major overhault of the documentation. Almost instructive now :/
   * Deprecate the use of m_channel_t mecanism like MSG_task_{get,put}
     functions and friends. This interface was considered as
     deprecated since over 2 years, it's time to inform our users that it is.
@@ -55,10 +53,11 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     - contexts/synchro: Synchronization mode to use when running
       contexts in parallel (either futex, posix or busy_wait)
     - contexts/parallel_threshold: Minimal number of user contexts
-      to be run in parallel (raw contexts only)
+      that must be part of a scheduling round to switch to parallel 
+      execution mode (raw contexts only)
 
   SURF:
-  * Introduce a parallel mode for the models (see surf/nthreads
+  * Introduce a parallel mode for the models (controled by surf/nthreads
      configuration item). In our tests, running the models in parallel
      never lead to any speedups because they are so fast that the gain
      of computing each model in parallel does not amortizes the
@@ -94,9 +93,14 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   Lua:
   * Improve the API of Lua MSG bindings, using the Lua spirit.
   * Each simulated process now lives in its own Lua world (globals are
-    automatically duplicated). It helps writing simulators. This is also the
-    first step towards running real distributed Lua programs with SimGrid.
+    automatically duplicated). It helps writing simulators. Will allow
+    to run Splay programs within SimGrid in the future.
   * Add a Chord example in Lua, equivalent to the MSG one.
+
+  MODEL-CHECKING:
+  * Start the implementation of a solution to express temporal
+    properties, not only local assertions. This is still an
+    experimental work in progress, stay clear from it to be safe.
 
   XBT:
   * Logs:
@@ -131,6 +135,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
       necessary at this point to get MC working.
 
       Turn model-checking OFF if simulation performance matters to you.
+      Not enabling it at runtime is not enough, disable it in cmake.
 
   -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
