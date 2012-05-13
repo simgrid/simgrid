@@ -3,9 +3,16 @@ __   _____ _ __ ___(_) ___  _ __   |___ /|___  |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   / /
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / /
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_/
+                May 15 2012
 
-The "Simplicity does not preceed complexity, but follows it" release.
-(still to be done)
+The "sprint cleanups (before the next Big Project kicks in)" release.
+Major changes:
+
+ * Major cleanups all around (doc, user options, MSG, lua, internals)
+   Small backward compatibility glitches may have been introduced
+ * Parallel executino of user code should be stable and efficient now
+ * SMPI is now considered stable
+ * Add temporals to Model-Checking (highly experimental right now)
                     _               _____  __    ____
 __   _____ _ __ ___(_) ___  _ __   |___ / / /_  |___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \| '_ \   __) |
@@ -18,7 +25,7 @@ The "Not coding new stuff allows to polish old things" release.
  * Portability to Mac and Windows improved.
  * Possible misconfigurations (contextes, libPCRE) made impossible by
    removing the option or providing sane default value.
- * Exerimental support to NS3 simulator as a backend.
+ * Experimental support to NS3 simulator as a backend.
 
                     _               _____  __    _
 __   _____ _ __ ___(_) ___  _ __   |___ / / /_  / |
