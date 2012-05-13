@@ -57,7 +57,6 @@ set(EXTRA_DIST
 	src/include/surf/surf_resource_lmm.h
 	src/include/xbt/wine_dbghelp.h
 	src/include/xbt/xbt_os_time.h
-	src/include/xbt/xbt_os_thread.h
 	src/include/mc/datatypes.h
 	src/include/mc/mc.h
 	src/include/simix/context.h
@@ -435,6 +434,7 @@ set(headers_to_install
 	include/xbt/datadesc.h
 	include/xbt/socket.h
 	include/xbt/file_stat.h
+	include/xbt/xbt_os_thread.h
 	include/simgrid/platf.h
 	include/simgrid/modelchecker.h
 	include/simgrid/simix.h
