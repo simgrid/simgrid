@@ -1,17 +1,14 @@
-/* xbt/xbt_thread.h -- Thread portability layer                             */
+/* xbt/xbt_os_thread.h -- Thread portability layer                          */
 
-/* Copyright (c) 2007, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
 #ifndef _XBT_OS_THREAD_H
 #define _XBT_OS_THREAD_H
 
-#include "gras_config.h"
-#include "xbt/misc.h"           /* SG_BEGIN_DECL */
+#include "simgrid_config.h" /* Windows or Posix */
 #include "xbt/function_types.h"
 
 SG_BEGIN_DECL()
@@ -27,12 +24,12 @@ SG_BEGIN_DECL()
   /** \brief Thread data type (opaque structure) */
 typedef struct xbt_os_thread_ *xbt_os_thread_t;
 
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-typedef pthread_key_t xbt_os_thread_key_t;
-#elif defined(_XBT_WIN32)
+#ifdef _XBT_WIN32 /* defined if this is a windows system, 32bits or 64bits) */
 #include <WinDef.h>
 typedef DWORD xbt_os_thread_key_t;
+#else /* assume that every non-windows system is POSIX-compatible */
+#include <pthread.h>
+typedef pthread_key_t xbt_os_thread_key_t;
 #endif
 
 /* Calls pthread_atfork() if present, and else does nothing.
