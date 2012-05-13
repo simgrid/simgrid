@@ -87,6 +87,9 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   * Trace header updated according to the latest Paje file format
   * Tracing network lazy updates, no longer obligate users to use full updates
   * --cfg=tracing/platform:1 also registers power/bandwidth variables
+  * Experimental: let user code declare/set/push/pop application states for hosts
+  * API changed to allow the manual creation of graph configuration files
+    for Triva. See TRACE_get_node_types() and TRACE_get_edge_types().
 
   Lua:
   * Improve the API of Lua MSG bindings, using the Lua spirit.
