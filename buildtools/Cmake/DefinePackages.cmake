@@ -99,6 +99,8 @@ set(EXTRA_DIST
     examples/msg/mc/bugged2_liveness.h
     examples/msg/mc/y.tab.h
 
+    examples/platforms/content/storage_content.txt
+
 	tools/gras/gras_stub_generator.h
 	tools/tesh/run_context.h  
 	tools/tesh/tesh.h
