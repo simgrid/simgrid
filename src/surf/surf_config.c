@@ -11,7 +11,6 @@
 #include "xbt/str.h"
 #include "surf/surf_private.h"
 #include "surf/surf_routing.h"	/* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
-#include "simix/context.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of surf (and the rest of the simulation)");

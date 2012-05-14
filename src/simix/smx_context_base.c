@@ -9,7 +9,6 @@
 
 #include "xbt/function_types.h"
 #include "simgrid/simix.h"
-#include "simix/context.h"
 #include "smx_private.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
