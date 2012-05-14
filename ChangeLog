@@ -3,7 +3,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
   The "sprint cleanups (before the next Big Project kicks in)" release.
 
   Models:
-  * We can specify the smpi latency/bandwidth factor with command line
+  * We can specify the SMPI latency/bandwidth factor with command line
     add --cfg=smpi/bw_factor:"threshold0:value0;...;thresholdN:valueN"
     or add --cfg=smpi/lat_factor:"threshold0:value0;...;thresholdN:valueN"
     You can also use the "config tag" from platform file by adding this line
@@ -34,11 +34,11 @@ SimGrid (3.7) NOT RELEASED; urgency=low
     See include/simgrid/platf.h for details (still to be completed)
 
   MSG:
-  * Major overhault of the documentation. Almost instructive now :/
-  * Deprecate the use of m_channel_t mecanism like MSG_task_{get,put}
+  * Major overhaul of the documentation. Almost instructive now :/
+  * Deprecate the use of m_channel_t mechanism like MSG_task_{get,put}
     functions and friends. This interface was considered as
     deprecated since over 2 years, it's time to inform our users that it is.
-    Switch to MSG_task_{send,recv} instead, or compile Simgrid command line
+    Switch to MSG_task_{send,recv} instead, or compile SimGrid command line
     'cmake -Dcustom_flags="-DMSG_USE_DEPRECATED" .' if you really need to
      use these (crappy) functions in your code.
     These functions will be removed soon. Stop using them now.
@@ -57,7 +57,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
       execution mode (raw contexts only)
 
   SURF:
-  * Introduce a parallel mode for the models (controled by surf/nthreads
+  * Introduce a parallel mode for the models (controlled by surf/nthreads
      configuration item). In our tests, running the models in parallel
      never lead to any speedups because they are so fast that the gain
      of computing each model in parallel does not amortizes the
