@@ -9,7 +9,7 @@
 
 #include <xbt/misc.h>
 #include <simgrid/simix.h>
-#include <xbt/os_thread.h>
+#include <xbt/xbt_os_thread.h>
 
 #include "jmsg.h"
 #include "jmsg_process.h"
