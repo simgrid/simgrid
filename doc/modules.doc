@@ -30,6 +30,15 @@
 */
 
 
+/** \defgroup SIMIX_API      SIMIX
+    \ingroup SimGrid_API
+    \brief POSIX-like interface for building simulation
+
+    This is a developer-level interface that should be useful only if you
+    plan to design a new interface for SimGrid.
+*/
+
+
 /** \defgroup GRAS_API      GRAS
     \ingroup SimGrid_API
     \brief Realistic programming environment (Grid Reality And Simulation)

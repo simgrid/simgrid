@@ -49,6 +49,7 @@ XBT_INLINE double SIMIX_timer_next(void)
 }
 
 /**
+ * \ingroup SIMIX_API
  * \brief Initialize SIMIX internal data.
  *
  * \param argc Argc
@@ -101,6 +102,7 @@ void SIMIX_global_init(int *argc, char **argv)
 }
 
 /**
+ * \ingroup SIMIX_API
  * \brief Clean the SIMIX simulation
  *
  * This functions remove the memory used by SIMIX
@@ -152,6 +154,7 @@ void SIMIX_clean(void)
 
 
 /**
+ * \ingroup SIMIX_API
  * \brief A clock (in second).
  *
  * \return Return the clock.
@@ -178,6 +181,10 @@ static int process_syscall_color(void *p)
   }
 }
 
+/**
+ * \ingroup SIMIX_API
+ * \brief Run the main simulation loop.
+ */
 void SIMIX_run(void)
 {
   double time = 0;

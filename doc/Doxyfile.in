@@ -662,6 +662,7 @@ INPUT                  = index.doc \
                          @top_srcdir@/include/amok \
                          @top_srcdir@/include/xbt \
                          @top_srcdir@/include/simdag \			 
+                         @top_srcdir@/include/simgrid \			 
                          @top_srcdir@/src/include/surf \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/src/xbt/datadesc \
@@ -674,7 +675,8 @@ INPUT                  = index.doc \
                          @top_srcdir@/src/amok \
                          @top_srcdir@/src/amok/Bandwidth \
                          @top_srcdir@/src/amok/PeerManagement \
-                         @top_srcdir@/src/simdag
+                         @top_srcdir@/src/simdag \
+                         @top_srcdir@/src/simix
 
 ###################################################
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
@@ -1647,7 +1649,7 @@ HIDE_UNDOC_RELATIONS   = YES
 # toolkit from AT&T and Lucent Bell Labs. The other options in this section
 # have no effect if this option is set to NO (the default)
 
-HAVE_DOT               = NO
+HAVE_DOT               = YES
 
 # The DOT_NUM_THREADS specifies the number of dot invocations doxygen is
 # allowed to run in parallel. When set to 0 (the default) doxygen will
@@ -1729,7 +1731,7 @@ INCLUDED_BY_GRAPH      = YES
 # the time of a run. So in most cases it will be better to enable call graphs
 # for selected functions only using the \callgraph command.
 
-CALL_GRAPH             = NO
+CALL_GRAPH             = YES
 
 # If the CALLER_GRAPH and HAVE_DOT tags are set to YES then
 # doxygen will generate a caller dependency graph for every global function
@@ -1737,7 +1739,7 @@ CALL_GRAPH             = NO
 # the time of a run. So in most cases it will be better to enable caller
 # graphs for selected functions only using the \callergraph command.
 
-CALLER_GRAPH           = NO
+CALLER_GRAPH           = YES
 
 # If the GRAPHICAL_HIERARCHY and HAVE_DOT tags are set to YES then doxygen
 # will generate a graphical hierarchy of all classes instead of a textual one.
