@@ -48,12 +48,11 @@ Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
 	jclass jtask_class_Task = (*env)->FindClass(env, "org/simgrid/msg/Task");
 
 	jtask_method_Comm_constructor = (*env)->GetMethodID(env, jtask_class_Comm, "<init>", "()V");
-	//FIXME: Don't use jxbt_get_sfield directly, it is slower.
-	jtask_field_Task_bind = jxbt_get_sfield(env, "org/simgrid/msg/Task", "bind", "J");
+	jtask_field_Task_bind = jxbt_get_jfield(env, jtask_class_Task, "bind", "J");
 	jtask_field_Task_name = jxbt_get_jfield(env, jtask_class_Task, "name", "Ljava/lang/String;");
-	jtask_field_Comm_bind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
-	jtask_field_Comm_taskBind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "taskBind", "J");
-	jtask_field_Comm_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
+	jtask_field_Comm_bind = jxbt_get_jfield(env, jtask_class_Comm, "bind", "J");
+	jtask_field_Comm_taskBind = jxbt_get_jfield(env, jtask_class_Comm, "taskBind", "J");
+	jtask_field_Comm_receiving = jxbt_get_jfield(env, jtask_class_Comm, "receiving", "Z");
 	if (!jtask_field_Task_bind || !jtask_class_Task || !jtask_field_Comm_bind || !jtask_field_Comm_taskBind ||
 		  !jtask_field_Comm_receiving || !jtask_method_Comm_constructor) {
 		  	jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));

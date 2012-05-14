@@ -58,9 +58,9 @@ Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
 		jxbt_throw_native(env,bprintf("Can't find the org/simgrid/msg/Comm class."));
 		return;
 	}
-	jcomm_field_Comm_bind = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "bind", "J");
-	jcomm_field_Comm_taskBind  = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "taskBind", "J");
-	jcomm_field_Comm_receiving = jxbt_get_sfield(env, "org/simgrid/msg/Comm", "receiving", "Z");
+	jcomm_field_Comm_bind = jxbt_get_jfield(env, jfield_class_Comm, "bind", "J");
+	jcomm_field_Comm_taskBind  = jxbt_get_jfield(env, jfield_class_Comm, "taskBind", "J");
+	jcomm_field_Comm_receiving = jxbt_get_jfield(env, jfield_class_Comm, "receiving", "Z");
 	jtask_field_Comm_task = jxbt_get_jfield(env, jfield_class_Comm, "task", "Lorg/simgrid/msg/Task;");
 	if (!jcomm_field_Comm_bind || !jcomm_field_Comm_taskBind || !jcomm_field_Comm_receiving || !jtask_field_Comm_task) {
   	jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));
