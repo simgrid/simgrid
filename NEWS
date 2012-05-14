@@ -10,7 +10,7 @@ Major changes:
 
  * Major cleanups all around (doc, user options, MSG, lua, internals)
    Small backward compatibility glitches may have been introduced
- * Parallel executino of user code should be stable and efficient now
+ * Parallel execution of user code should be stable and efficient now
  * SMPI is now considered stable
  * Add temporals to Model-Checking (highly experimental right now)
                     _               _____  __    ____
