@@ -102,7 +102,7 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/MsgException.java
 	org/simgrid/msg/NativeException.java
 	org/simgrid/msg/Process.java
-	org/simgrid/msg/ProcessKilled.java
+	org/simgrid/msg/ProcessKilledException.java
 	org/simgrid/msg/ProcessNotFoundException.java
 	org/simgrid/msg/Task.java
 	org/simgrid/msg/TaskCancelledException.java

@@ -426,8 +426,12 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
   }
 
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
-
-  rv = MSG_task_receive_ext(&task, alias, (double) jtimeout, host);
+  TRY {
+  	rv = MSG_task_receive_ext(&task, alias, (double) jtimeout, host);
+  }
+  CATCH_ANONYMOUS {
+  	return NULL;
+  }
   if (rv != MSG_OK) {
   	switch (rv) {
   		case MSG_TIMEOUT:
@@ -576,9 +580,12 @@ Java_org_simgrid_msg_Task_listen(JNIEnv * env, jclass cls,
   int rv;
 
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
-
-  rv = MSG_task_listen(alias);
-
+  TRY {
+  	rv = MSG_task_listen(alias);
+  }
+  CATCH_ANONYMOUS {
+  	return 0;
+  }
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
   return (jboolean) rv;
@@ -598,9 +605,12 @@ Java_org_simgrid_msg_Task_listenFromHost(JNIEnv * env, jclass cls,
     return -1;
   }
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
-
-  rv = MSG_task_listen_from_host(alias, host);
-
+  TRY {
+  	rv = MSG_task_listen_from_host(alias, host);
+  }
+  CATCH_ANONYMOUS {
+  	return 0;
+  }
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
   return (jint) rv;
@@ -613,9 +623,12 @@ Java_org_simgrid_msg_Task_listenFrom(JNIEnv * env, jclass cls,
 
   int rv;
   const char *alias = (*env)->GetStringUTFChars(env, jalias, 0);
-
-  rv = MSG_task_listen_from(alias);
-
+  TRY {
+  	rv = MSG_task_listen_from(alias);
+  }
+  CATCH_ANONYMOUS {
+  	return 0;
+  }
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
   return (jint) rv;

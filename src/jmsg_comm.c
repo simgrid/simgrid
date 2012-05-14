@@ -88,21 +88,27 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
 		jxbt_throw_native(env,bprintf("comm is null"));
 		return JNI_FALSE;
 	}
-	if (MSG_comm_test(comm)) {
-		MSG_error_t status = MSG_comm_get_status(comm);
-		if (status == MSG_OK) {
-			jcomm_bind_task(env,jcomm);
-			return JNI_TRUE;
+	TRY {
+		if (MSG_comm_test(comm)) {
+			MSG_error_t status = MSG_comm_get_status(comm);
+			if (status == MSG_OK) {
+				jcomm_bind_task(env,jcomm);
+				return JNI_TRUE;
+			}
+			else {
+				//send the correct exception
+				jcomm_throw(env,status);
+				return JNI_FALSE;
+			}
 		}
 		else {
-			//send the correct exception
-			jcomm_throw(env,status);
 			return JNI_FALSE;
 		}
 	}
-	else {
-		return JNI_FALSE;
+	CATCH_ANONYMOUS {
+
 	}
+	return JNI_FALSE;
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
@@ -111,8 +117,13 @@ Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble tim
 		jxbt_throw_native(env,bprintf("comm is null"));
 		return;
 	}
-
-	MSG_error_t status = MSG_comm_wait(comm,(double)timeout);
+	MSG_error_t status;
+	TRY {
+		status = MSG_comm_wait(comm,(double)timeout);
+	}
+	CATCH_ANONYMOUS {
+		return;
+	}
 	if (status == MSG_OK) {
 		jcomm_bind_task(env,jcomm);
 		return;

@@ -9,6 +9,7 @@ SimGrid-java (3.6.1) unstable; urgency=low
  * Add "sleep" in Process with Thread-like syntax/use.
  * Change the way the Process are created in ApplicationHandler: a full 
 constructor is now needed for your child classes.
+ * Change the way Process are created: Process are no longer a Thread subclass.
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid-java (3.6) unstable; urgency=low

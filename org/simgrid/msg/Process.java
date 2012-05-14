@@ -90,11 +90,7 @@ public abstract class Process implements Runnable {
 
 	/** The arguments of the method function of the process. */     
 	public Vector<String> args;
-
-	/* process synchronization tools */
 	
-    private boolean nativeStop = false;
-
 	/**
 	 * Default constructor (used in ApplicationHandler to initialize it)
 	 */
@@ -188,35 +184,13 @@ public abstract class Process implements Runnable {
 	 *			
 	 */ 
 	public static native int killAll(int resetPID);
-	/**
-	 * This method sets a flag to indicate that this thread must be killed. End user must use static method kill
-	 *
-	 * @return				
-	 *			
-	 */ 
-	public void nativeStop() {
-		nativeStop = true;
-	}
-	/**
-	 * getter for the flag that indicates that this thread must be killed
-	 *
-	 * @return				
-	 *			
-	 */ 
-	public boolean getNativeStop() {
-		return nativeStop;
-	}
 
 	/**
 	 * This method kill a process.
 	 * @param process  the process to be killed.
 	 *
 	 */
-	public void kill() {
-		 nativeStop();
-		 Msg.info("Process " + msgName() + " will be killed.");		  			 		 
-	}
-
+	public native void kill();
 	/**
 	 * Suspends the process by suspending the task on which it was
 	 * waiting for the completion.
@@ -286,11 +260,6 @@ public abstract class Process implements Runnable {
 	 */ 
 	public static native Process currentProcess();
 	/**
-	 * Kills a MSG process
-	 * @param process Valid java process to kill
-	 */
-	final static native void kill(Process process);	
-	/**
 	 * Migrates a process to another host.
 	 *
 	 * @param process		The process to migrate.
@@ -359,16 +328,9 @@ public abstract class Process implements Runnable {
 			Msg.info("Unexpected behavior. Stopping now");
 			System.exit(1);
 		}
-		 catch(ProcessKilled pk) {
-			if (nativeStop) {
+		 catch(ProcessKilledException pk) {
 
-			}
-			else {
-				pk.printStackTrace();
-				Msg.info("Unexpected behavior. Stopping now");
-				System.exit(1);
-			}
-		}	
+		 }	
 	}
 
 	/**

@@ -9,6 +9,7 @@
 
 #include <xbt/function_types.h>
 #include <simgrid/simix.h>
+#include <xbt/ex.h>
 #include "smx_context_java.h"
 #include "jxbt_utilities.h"
 #include "xbt/dynar.h"
@@ -74,6 +75,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
     context->jprocess = (jobject) code;
     context->begin = xbt_os_sem_init(0);
     context->end = xbt_os_sem_init(0);
+    context->killed = 0;
     context->thread = xbt_os_thread_create(NULL,smx_ctx_java_thread_run,context,NULL);
   }
   else {
@@ -99,7 +101,6 @@ static void* smx_ctx_java_thread_run(void *data) {
   jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
   xbt_assert( (id != NULL), "Method not found...");
   (*env)->CallVoidMethod(env, context->jprocess, id);
-
   smx_ctx_java_stop((smx_context_t)context);
 
   return NULL;
@@ -125,15 +126,24 @@ void smx_ctx_java_stop(smx_context_t context)
 	xbt_assert(context == my_current_context,
      "The context to stop must be the current one");
   /* I am the current process and I am dying */
-  smx_ctx_base_stop(context);
-  /* detach the thread and kills it */
-  JNIEnv *env = ctx_java->jenv;
-  (*env)->DeleteGlobalRef(env,ctx_java->jprocess);
-  JavaVM *jvm = get_current_vm();
-  jint error = (*jvm)->DetachCurrentThread(jvm);
-  xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
-  xbt_os_sem_release(((smx_ctx_java_t)context)->end);
-  xbt_os_thread_exit(NULL);
+  if (ctx_java->killed == 1) {
+  	ctx_java->killed = 0;
+  	JNIEnv *env = get_current_thread_env();
+  	jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledException", bprintf("Process killed :)"));
+  	THROWF(cancel_error, 0, "process cancelled");
+  }
+  else {
+    smx_ctx_base_stop(context);
+		/* detach the thread and kills it */
+		JNIEnv *env = ctx_java->jenv;
+		(*env)->DeleteGlobalRef(env,ctx_java->jprocess);
+		JavaVM *jvm = get_current_vm();
+		jint error = (*jvm)->DetachCurrentThread(jvm);
+		xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
+		xbt_os_sem_release(((smx_ctx_java_t)context)->end);
+		xbt_os_thread_exit(NULL);
+
+  }
 }
 
 static void smx_ctx_java_suspend(smx_context_t context)
@@ -148,7 +158,7 @@ static void smx_ctx_java_resume(smx_context_t new_context)
 {
   XBT_DEBUG("XXXX Context Resume\n");
 	smx_ctx_java_t ctx_java = (smx_ctx_java_t) new_context;
-  xbt_os_sem_release(ctx_java->begin);
+	xbt_os_sem_release(ctx_java->begin);
 	xbt_os_sem_acquire(ctx_java->end);
 }
 

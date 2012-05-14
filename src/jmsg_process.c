@@ -40,17 +40,6 @@ void jprocess_join(jobject jprocess, JNIEnv * env)
 	xbt_os_thread_join(context->thread,NULL);
 }
 
-void jprocess_exit(jobject jprocess, JNIEnv * env)
-{
-  jmethodID id =
-      jxbt_get_smethod(env, "org/simgrid/msg/Process", "interrupt", "()V");
-
-  if (!id)
-    return;
-
-  (*env)->CallVoidMethod(env, jprocess, id);
-}
-
 void jprocess_start(jobject jprocess, JNIEnv * env)
 {
   jmethodID id =
@@ -72,16 +61,13 @@ m_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
   	XBT_INFO("Can't find bind field in Process");
     return NULL;
   }
-
   return (m_process_t) (long) (*env)->GetLongField(env, jprocess, id);
 }
 
 void jprocess_bind(jobject jprocess, m_process_t process, JNIEnv * env)
 {
   jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Process", "bind", "J");
-  if (!id)
-    return;
-
+  xbt_assert((id != NULL), "field bind not found in org/simgrid/msg/Process");
   (*env)->SetLongField(env, jprocess, id, (jlong) (long) (process));
 }
 
@@ -189,14 +175,13 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
 						0,NULL,NULL);
 
   MSG_process_set_data(process,&process);
+  /* bind the java process instance to the native process */
+  jprocess_bind(jprocess, process, env);
 
   /* release our reference to the process name (variable name becomes invalid) */
   //FIXME : This line should be uncommented but with mac it doesn't work. BIG WARNING
   //(*env)->ReleaseStringUTFChars(env, jname, name);
   (*env)->ReleaseStringUTFChars(env, jhostname, hostname);
-
-  /* bind the java process instance to the native process */
-  jprocess_bind(jprocess, process, env);
 
   /* sets the PID and the PPID of the process */
   (*env)->SetIntField(env, jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
@@ -330,21 +315,20 @@ Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Process_kill(JNIEnv * env, jclass cls,
+Java_org_simgrid_msg_Process_kill(JNIEnv * env,
                                   jobject jprocess)
 {
-  /* get the native instances from the java ones */
+	/* get the native instances from the java ones */
   m_process_t process = jprocess_to_native_process(jprocess, env);
-
   if (!process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
+  /* Sets the "killed" flag to kill the process on the next unschedule */
+  smx_ctx_java_t context = (smx_ctx_java_t)MSG_process_get_smx_ctx(process);
+	context->killed = 1;
 
-  /* kill the native process (this wrapper is call by the destructor of the java
-   * process instance)
-   */
-  MSG_process_kill(process);
+	MSG_process_kill(process);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_migrate(JNIEnv * env,

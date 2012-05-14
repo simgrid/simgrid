@@ -3,17 +3,14 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar master_slave_kill/MsKill ${srcdir:=.}/examples/master_slave_kill/platform.xml
-> Thread-1: I ignore that other exception
 > [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
 > [0.013010] [jmsg/INFO] Done running MSG_MAIN
 > [0.013010] [jmsg/INFO] MSG_main finished
 > [0.013010] [jmsg/INFO] Clean java world
 > [0.013010] [jmsg/INFO] Clean native world
-> [0.013010] [jmsg/INFO]  Process slave has been killed.
 > [alice:slave:(2) 0.000000] [jmsg/INFO] Slave Hello!
 > [alice:slave:(2) 0.000000] [jmsg/INFO] Send Mail1!
 > [bob:master:(1) 0.000000] [jmsg/INFO] Master Hello!
 > [bob:master:(1) 0.000000] [jmsg/INFO] Create process on host 'alice'
 > [bob:master:(1) 0.013010] [jmsg/INFO] Received mail1!
-> [bob:master:(1) 0.013010] [jmsg/INFO] Process slave will be killed.
 > [bob:master:(1) 0.013010] [jmsg/INFO] Process2 is now killed, should exit now

@@ -65,6 +65,8 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
       jxbt_throw_task_cancelled(env,detail); \
    } } while (0)
 
+/* Throws an exception according to its name */
+void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg);
 /** Thrown on internal error of this layer, or on problem with JNI */
 void jxbt_throw_jni(JNIEnv * env, const char *msg);
 /** Thrown when using an object not bound to a native one where it should, or reverse (kinda JNI issue) */

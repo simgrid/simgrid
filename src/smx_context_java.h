@@ -23,6 +23,7 @@ typedef struct s_smx_ctx_java {
   xbt_os_thread_t thread;
   xbt_os_sem_t begin;           /* this semaphore is used to schedule/yield the process  */
   xbt_os_sem_t end;             /* this semaphore is used to schedule/unschedule the process   */
+  int killed;
 } s_smx_ctx_java_t, *smx_ctx_java_t;
 
 void SIMIX_ctx_java_factory_init(smx_context_factory_t *factory);

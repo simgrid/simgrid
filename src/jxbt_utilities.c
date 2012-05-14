@@ -201,7 +201,7 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
 /* ***************** */
 /* EXCEPTION RAISING */
 /* ***************** */
-static void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg)
+void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg)
 {
   jclass cls = (*env)->FindClass(env, name);
 
