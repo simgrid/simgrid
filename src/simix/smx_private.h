@@ -23,7 +23,6 @@
 #include "smx_network_private.h"
 #include "smx_smurf_private.h"
 #include "smx_synchro_private.h"
-#include "simix/context.h"
 
 /* Define only for SimGrid benchmarking purposes */
 #undef TIME_BENCH

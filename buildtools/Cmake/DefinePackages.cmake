@@ -59,7 +59,6 @@ set(EXTRA_DIST
 	src/include/xbt/xbt_os_time.h
 	src/include/mc/datatypes.h
 	src/include/mc/mc.h
-	src/include/simix/context.h
 	src/msg/msg_private.h
 	src/msg/msg_mailbox.h
 	src/simdag/private.h
