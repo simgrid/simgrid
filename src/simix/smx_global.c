@@ -209,6 +209,11 @@ void SIMIX_run(void)
       /* WARNING, the order *must* be fixed or you'll jeopardize the simulation reproducibility (see RR-7653) */
 
       /* Here, the order is ok because:
+       *
+       *   Short proof: only maestro adds stuff to the process_to_run array, so the execution order of user contexts do not impact its order.
+       *
+       *   Long proof: processes remain sorted through an arbitrary (implicit, complex but fixed) order in all cases.
+       *
        *   - if there is no kill during the simulation, processes remain sorted according by their PID.
        *     rational: This can be proved inductively.
        *        Assume that process_to_run is sorted at a beginning of one round (it is at round 0: the deployment file is parsed linearly).
