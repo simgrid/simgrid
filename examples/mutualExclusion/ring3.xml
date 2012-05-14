@@ -18,21 +18,10 @@
     <link_ctn id="l1"/>
   </route>
 
-  <route src="Host 1" dst="Host 0">
-    <link_ctn id="l0"/>
-  </route>
-
   <route src="Host 1" dst="Host 2">
     <link_ctn id="l2"/>
   </route>
 
-  <route src="Host 2" dst="Host 0">
-    <link_ctn id="l1"/>
-  </route>
-
-  <route src="Host 2" dst="Host 1">
-    <link_ctn id="l2"/>
-  </route>
 </AS>
 </platform>
 

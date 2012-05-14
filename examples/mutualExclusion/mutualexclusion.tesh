@@ -3,9 +3,6 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar mutualExclusion/centralized/MutexCentral ${srcdir:=.}/examples/mutualExclusion/ring3.xml ${srcdir:=.}/examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
-> [0.000000] /home/navarro/workspace/simgrid/src/surf/surfxml_parse.c:40: [surf_parse/WARNING] /home/navarro/workspace/simgrid-java/examples/mutualExclusion/ring3.xml:23: Ignoring the identical redefinition of the route between "Host 1" and "Host 0"
-> [0.000000] /home/navarro/workspace/simgrid/src/surf/surfxml_parse.c:40: [surf_parse/WARNING] /home/navarro/workspace/simgrid-java/examples/mutualExclusion/ring3.xml:31: Ignoring the identical redefinition of the route between "Host 2" and "Host 0"
-> [0.000000] /home/navarro/workspace/simgrid/src/surf/surfxml_parse.c:40: [surf_parse/WARNING] /home/navarro/workspace/simgrid-java/examples/mutualExclusion/ring3.xml:35: Ignoring the identical redefinition of the route between "Host 2" and "Host 1"
 > [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
 > [0.007806] [jmsg/INFO] Done running MSG_MAIN
 > [0.007806] [jmsg/INFO] MSG_main finished
