@@ -330,22 +330,6 @@ Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Process_exit(JNIEnv * env,
-                                  jobject jprocess)
-{
-
-  m_process_t process = jprocess_to_native_process(jprocess, env);
-
-  if (!process) {
-    jxbt_throw_notbound(env, "process", jprocess);
-    return;
-  }
-	smx_ctx_java_t context = (smx_ctx_java_t)MSG_process_get_smx_ctx(process);
-	smx_ctx_java_stop(MSG_process_get_smx_ctx(process));
-  xbt_os_sem_release(context->end);
-}
-
-JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_kill(JNIEnv * env, jclass cls,
                                   jobject jprocess)
 {

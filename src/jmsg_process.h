@@ -73,10 +73,10 @@ void jprocess_start(jobject jprocess, JNIEnv * env);
  * @param jprocess		The java process to stop.
  * @param env			The env of the current thread
  *
- * @exception			If the class Process is not found the function throws 
- *						the ClassNotFoundException. If the methos stop() of 
- *						this class is not found the function throws the exception 
- *						NotSuchMethodException.	
+ * @exception			If the class Process is not found the function throws
+ *						the ClassNotFoundException. If the methos stop() of
+ *						this class is not found the function throws the exception
+ *						NotSuchMethodException.
  */
 void jprocess_exit(jobject jprocess, JNIEnv * env);
 
@@ -230,13 +230,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep
  */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_waitFor
     (JNIEnv *, jobject, jdouble);
-/**
- * Class 		org_simgrid_msg_Process
- * Method		exit
- * Signature 	()V
- */
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_exit
-    (JNIEnv *, jobject);
 /*
  * Class		org_simgrid_msg_Process
  * Method		kill

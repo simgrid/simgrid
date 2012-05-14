@@ -46,7 +46,6 @@ JNIEnv *get_current_thread_env(void)
   JNIEnv *env;
 
   (*__java_vm)->AttachCurrentThread(__java_vm, (void **) &env, NULL);
-
   return env;
 }
 /***************************************************************************************

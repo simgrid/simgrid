@@ -332,10 +332,6 @@ public abstract class Process implements Runnable {
 					"] args[" + i + "]=" + (String) (this.args.get(i)));
 	}
     /**
-     * Exit the process
-     */
-    public native void exit();
-    /**
      * This method actually creates and run the process.
      * @throws HostNotFoundException
      */
@@ -358,7 +354,6 @@ public abstract class Process implements Runnable {
 			}
 
 			this.main(args);
-			exit();
 		} catch(MsgException e) {
 			e.printStackTrace();
 			Msg.info("Unexpected behavior. Stopping now");
@@ -366,20 +361,7 @@ public abstract class Process implements Runnable {
 		}
 		 catch(ProcessKilled pk) {
 			if (nativeStop) {
-				try {
-					exit();
-				} catch (ProcessKilled pk2) {
-					/* Ignore that other exception that *will* occur all the time. 
-					 * This is because the C mechanic gives the control to the now-killed process 
-					 * so that it does some garbage collecting on its own. When it does so here, 
-					 * the Java thread checks when starting if it's supposed to be killed (to inform 
-					 * the C world). To avoid the infinite loop or anything similar, we ignore that 
-					 * exception now. This should be ok since we ignore only a very specific exception 
-					 * class and not a generic (such as any RuntimeException).
-					 */
-					//System.err.println(currentThread().getName()+": I ignore that other exception");					
-				}
-				//Msg.info(" Process " + ((Process) Thread.currentThread()).msgName() + " has been killed.");						
+
 			}
 			else {
 				pk.printStackTrace();

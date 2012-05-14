@@ -65,7 +65,6 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     void_pfn_smxprocess_t cleanup_func,
                                     void* data)
 {
-  XBT_DEBUG("XXXX Create Context\n");
   smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
 
   /* If the user provided a function for the process then use it
@@ -73,12 +72,12 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
   if (code) {
     context->super.cleanup_func = cleanup_func;
     context->jprocess = (jobject) code;
-    context->jenv = get_current_thread_env();
     context->begin = xbt_os_sem_init(0);
     context->end = xbt_os_sem_init(0);
     context->thread = xbt_os_thread_create(NULL,smx_ctx_java_thread_run,context,NULL);
   }
   else {
+  	context->thread = NULL;
     my_current_context = (smx_context_t)context;
   }
   context->super.data = data;
@@ -91,31 +90,29 @@ static void* smx_ctx_java_thread_run(void *data) {
 	//Attach the thread to the JVM
 	JNIEnv *env;
 	JavaVM *jvm = get_current_vm();
-  (*jvm)->AttachCurrentThread(jvm, (void **) &env, NULL);
-	//Wait for the first scheduling round to happen.
+  jint error = (*jvm)->AttachCurrentThread(jvm, (void **) &env, NULL);
+  xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
+  context->jenv = get_current_thread_env();
+  //Wait for the first scheduling round to happen.
   xbt_os_sem_acquire(context->begin);
   //Execution of the "run" method.
   jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
   xbt_assert( (id != NULL), "Method not found...");
   (*env)->CallVoidMethod(env, context->jprocess, id);
 
+  smx_ctx_java_stop((smx_context_t)context);
+
   return NULL;
 }
 
 static void smx_ctx_java_free(smx_context_t context)
 {
-  if (context) {
+	if (context) {
 		smx_ctx_java_t ctx_java = (smx_ctx_java_t) context;
-		if (ctx_java->jprocess) { /* the java process still exists */
-			jobject jprocess = ctx_java->jprocess;
-			ctx_java->jprocess = NULL;			 /* stop it */
-			XBT_DEBUG("The process still exists, making it exit now");
-			/* detach the thread and exit it */
-			JavaVM *jvm = get_current_vm();
-		  (*jvm)->DetachCurrentThread(jvm);
-		  xbt_os_thread_exit(NULL);
-			/* it's dead now, remove it from the JVM */
-			jprocess_delete_global_ref(jprocess, get_current_thread_env());
+		if (ctx_java->thread) { /* We are not in maestro context */
+			xbt_os_thread_join(ctx_java->thread, NULL);
+			xbt_os_sem_destroy(ctx_java->begin);
+			xbt_os_sem_destroy(ctx_java->end);
 		}
   }
   smx_ctx_base_free(context);
@@ -124,18 +121,19 @@ static void smx_ctx_java_free(smx_context_t context)
 
 void smx_ctx_java_stop(smx_context_t context)
 {
- xbt_assert(context == my_current_context,
+	smx_ctx_java_t ctx_java = (smx_ctx_java_t)context;
+	xbt_assert(context == my_current_context,
      "The context to stop must be the current one");
   /* I am the current process and I am dying */
-  
   smx_ctx_base_stop(context);
-
-  XBT_DEBUG("I am dying");
-
-  /* suspend myself again, smx_ctx_java_free() will destroy me later
-   * from maeastro */
-  smx_ctx_java_suspend(context);
-  XBT_DEBUG("Java stop finished");
+  /* detach the thread and kills it */
+  JNIEnv *env = ctx_java->jenv;
+  (*env)->DeleteGlobalRef(env,ctx_java->jprocess);
+  JavaVM *jvm = get_current_vm();
+  jint error = (*jvm)->DetachCurrentThread(jvm);
+  xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
+  xbt_os_sem_release(((smx_ctx_java_t)context)->end);
+  xbt_os_thread_exit(NULL);
 }
 
 static void smx_ctx_java_suspend(smx_context_t context)
@@ -143,7 +141,6 @@ static void smx_ctx_java_suspend(smx_context_t context)
 	smx_ctx_java_t ctx_java = (smx_ctx_java_t) context;
 	xbt_os_sem_release(ctx_java->end);
 	xbt_os_sem_acquire(ctx_java->begin);
-  //jprocess_unschedule(context);
 }
 
 // FIXME: inline those functions
@@ -153,7 +150,6 @@ static void smx_ctx_java_resume(smx_context_t new_context)
 	smx_ctx_java_t ctx_java = (smx_ctx_java_t) new_context;
   xbt_os_sem_release(ctx_java->begin);
 	xbt_os_sem_acquire(ctx_java->end);
-  //jprocess_schedule(new_context);
 }
 
 static void smx_ctx_java_runall(void)
