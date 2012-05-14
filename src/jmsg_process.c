@@ -14,7 +14,10 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+static jfieldID jprocess_field_Process_bind;
+static jfieldID jprocess_field_Process_name;
 static jfieldID jprocess_field_Process_host;
+static jfieldID jprocess_field_Process_id;
 static jfieldID jprocess_field_Process_pid;
 static jfieldID jprocess_field_Process_ppid;
 
@@ -40,58 +43,24 @@ void jprocess_join(jobject jprocess, JNIEnv * env)
 	xbt_os_thread_join(context->thread,NULL);
 }
 
-void jprocess_start(jobject jprocess, JNIEnv * env)
-{
-  jmethodID id =
-      jxbt_get_smethod(env, "org/simgrid/msg/Process", "start", "()V");
-
-  if (!id)
-    return;
-
-  XBT_DEBUG("jprocess_start(jproc=%p,env=%p)", jprocess, env);
-  (*env)->CallVoidMethod(env, jprocess, id);
-  XBT_DEBUG("jprocess started");
-}
-
 m_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
 {
-  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Process", "bind", "J");
-
-  if (!id) {
-  	XBT_INFO("Can't find bind field in Process");
-    return NULL;
-  }
-  return (m_process_t) (long) (*env)->GetLongField(env, jprocess, id);
+  return (m_process_t) (long) (*env)->GetLongField(env, jprocess, jprocess_field_Process_bind);
 }
 
 void jprocess_bind(jobject jprocess, m_process_t process, JNIEnv * env)
 {
-  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Process", "bind", "J");
-  xbt_assert((id != NULL), "field bind not found in org/simgrid/msg/Process");
-  (*env)->SetLongField(env, jprocess, id, (jlong) (long) (process));
+  (*env)->SetLongField(env, jprocess, jprocess_field_Process_bind, (jlong) (long) (process));
 }
 
 jlong jprocess_get_id(jobject jprocess, JNIEnv * env)
 {
-  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Process", "id", "J");
-
-  if (!id)
-    return 0;
-
-  return (*env)->GetLongField(env, jprocess, id);
+  return (*env)->GetLongField(env, jprocess, jprocess_field_Process_id);
 }
 
 jstring jprocess_get_name(jobject jprocess, JNIEnv * env)
 {
-  jfieldID id = jxbt_get_sfield(env, "org/simgrid/msg/Process", "name",
-                                "Ljava/lang/String;");
-  jobject jname;
-
-  if (!id)
-    return NULL;
-
-  jname = (jstring) (*env)->GetObjectField(env, jprocess, id);
-
+  jstring jname = (jstring) (*env)->GetObjectField(env, jprocess, jprocess_field_Process_name);
   return (*env)->NewGlobalRef(env, jname);
 
 }
@@ -109,11 +78,14 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
 	jclass jprocess_class_Process = (*env)->FindClass(env, "org/simgrid/msg/Process");
 
-	jprocess_field_Process_pid = jxbt_get_sfield(env, "org/simgrid/msg/Process", "pid", "I");
-	jprocess_field_Process_ppid = jxbt_get_sfield(env, "org/simgrid/msg/Process", "ppid", "I");
+	jprocess_field_Process_name = jxbt_get_jfield(env, jprocess_class_Process, "name", "Ljava/lang/String;");
+	jprocess_field_Process_bind = jxbt_get_jfield(env, jprocess_class_Process, "bind", "J");
+	jprocess_field_Process_id = jxbt_get_jfield(env, jprocess_class_Process, "id", "J");
+	jprocess_field_Process_pid = jxbt_get_jfield(env, jprocess_class_Process, "pid", "I");
+	jprocess_field_Process_ppid = jxbt_get_jfield(env, jprocess_class_Process, "ppid", "I");
 	jprocess_field_Process_host = jxbt_get_jfield(env, jprocess_class_Process, "host", "Lorg/simgrid/msg/Host;");
 
-	if (!jprocess_class_Process || !jprocess_field_Process_pid ||
+	if (!jprocess_class_Process || !jprocess_field_Process_id || !jprocess_field_Process_name || !jprocess_field_Process_pid ||
 			!jprocess_field_Process_ppid || !jprocess_field_Process_host) {
   	jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
 	}

@@ -53,20 +53,6 @@ void jprocess_delete_global_ref(jobject jprocess, JNIEnv * env);
  *
  */
 void jprocess_join(jobject jprocess, JNIEnv * env);
-
-/**
- * This function starts the specified java process.
- *
- * @param jprocess		The java process to start.
- * @param env			The env of the current thread
- *
- * @exception			If the class Process is not found the function throws 
- *						the ClassNotFoundException. If the methos start() of 
- *						this class is not found the function throws the exception 
- *						NotSuchMethodException.	
- */
-void jprocess_start(jobject jprocess, JNIEnv * env);
-
 /**
  * This function associated a native process to a java process instance.
  *
