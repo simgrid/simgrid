@@ -169,7 +169,7 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
  *
  * This function actually creates the process.
  * It may be called when a SIMCALL_PROCESS_CREATE simcall occurs,
- * or directly for SIMIX internal purposes.
+ * or directly for SIMIX internal purposes. The sure thing is that it's called from maestro context.
  *
  * \return the process created
  */
