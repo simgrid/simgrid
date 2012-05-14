@@ -204,7 +204,7 @@ void SD_create_environment(const char *platform_file)
  * Then you can call SD_simulate() again.
  *
  * \param how_long maximum duration of the simulation (a negative value means no time limit)
- * \return a NULL-terminated array of \ref SD_task_t whose state has changed.
+ * \return a dynar of \ref SD_task_t whose state has changed.
  * \see SD_task_schedule(), SD_task_watch()
  */
 
