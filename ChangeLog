@@ -137,7 +137,7 @@ SimGrid (3.7) NOT RELEASED; urgency=low
       Turn model-checking OFF if simulation performance matters to you.
       Not enabling it at runtime is not enough, disable it in cmake.
 
-  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+  -- Tue May 15 11:30:19 UTC 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.6.2) stable; urgency=low
 
