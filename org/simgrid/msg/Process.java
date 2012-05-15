@@ -328,7 +328,7 @@ public abstract class Process implements Runnable {
 			Msg.info("Unexpected behavior. Stopping now");
 			System.exit(1);
 		}
-		 catch(ProcessKilledException pk) {
+		 catch(ProcessKilledError pk) {
 
 		 }	
 	}

@@ -129,7 +129,7 @@ void smx_ctx_java_stop(smx_context_t context)
   if (ctx_java->killed == 1) {
   	ctx_java->killed = 0;
   	JNIEnv *env = get_current_thread_env();
-  	jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledException", bprintf("Process killed :)"));
+  	jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process killed :)"));
   	THROWF(cancel_error, 0, "process cancelled");
   }
   else {
