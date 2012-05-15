@@ -53,8 +53,12 @@ SimGrid (3.7) stable; urgency=low
     - contexts/synchro: Synchronization mode to use when running
       contexts in parallel (either futex, posix or busy_wait)
     - contexts/parallel_threshold: Minimal number of user contexts
-      that must be part of a scheduling round to switch to parallel 
+      that must be part of a scheduling round to switch to parallel
       execution mode (raw contexts only)
+  * Fix bugs that prevented to use suspend/resume along with
+    synchronization structures.
+  * Fix bugs in process termination that lead to invalid memory access
+    in very specific conditions.
 
   SURF:
   * Introduce a parallel mode for the models (controlled by surf/nthreads
