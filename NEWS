@@ -5,7 +5,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ /|___  |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_/
                 May 15 2012
 
-The "sprint cleanups (before the next Big Project kicks in)" release.
+The "spring cleanups (before the next Big Project kicks in)" release.
 Major changes:
 
  * Major cleanups all around (doc, user options, MSG, Lua, internals)

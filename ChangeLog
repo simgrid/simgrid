@@ -1,6 +1,6 @@
 SimGrid (3.7) NOT RELEASED; urgency=low
 
-  The "sprint cleanups (before the next Big Project kicks in)" release.
+  The "spring cleanups (before the next Big Project kicks in)" release.
 
   Models:
   * We can specify the SMPI latency/bandwidth factor with command line
