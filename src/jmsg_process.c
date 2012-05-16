@@ -265,9 +265,14 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep
 	(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos) {
 
 	double time =  jmillis / 1000 + jnanos / 1000;
-
-	MSG_error_t rv = MSG_process_sleep(time);
-  jxbt_check_res("MSG_process_sleep()", rv, MSG_OK,
+	MSG_error_t rv;
+	TRY {
+		rv = MSG_process_sleep(time);
+	}
+	CATCH_ANONYMOUS {
+		return;
+	}
+	jxbt_check_res("MSG_process_sleep()", rv, MSG_OK,
                  bprintf("unexpected error , please report this bug"));
 }
 JNIEXPORT void JNICALL
@@ -280,7 +285,13 @@ Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
-  MSG_error_t rv = MSG_process_sleep((double)jseconds);
+  MSG_error_t rv;
+  TRY {
+  	 rv = MSG_process_sleep((double)jseconds);
+  }
+  CATCH_ANONYMOUS {
+  	return;
+  }
   if (rv != MSG_OK) {
 //  	smx_ctx_java_stop(smx_ctx_java_self());
   }
@@ -296,9 +307,6 @@ Java_org_simgrid_msg_Process_kill(JNIEnv * env,
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
-  /* Sets the "killed" flag to kill the process on the next unschedule */
-  smx_ctx_java_t context = (smx_ctx_java_t)MSG_process_get_smx_ctx(process);
-	context->killed = 1;
 
 	MSG_process_kill(process);
 }

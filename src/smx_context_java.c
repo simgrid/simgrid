@@ -75,7 +75,6 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
     context->jprocess = (jobject) code;
     context->begin = xbt_os_sem_init(0);
     context->end = xbt_os_sem_init(0);
-    context->killed = 0;
     context->thread = xbt_os_thread_create(NULL,smx_ctx_java_thread_run,context,NULL);
   }
   else {
@@ -133,8 +132,8 @@ void smx_ctx_java_stop(smx_context_t context)
 	xbt_assert(context == my_current_context,
      "The context to stop must be the current one");
   /* I am the current process and I am dying */
-  if (ctx_java->killed == 1) {
-  	ctx_java->killed = 0;
+	if (context->iwannadie == -1) {
+  	context->iwannadie = 0;
   	JNIEnv *env = get_current_thread_env();
   	jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process killed :)"));
   	THROWF(cancel_error, 0, "process cancelled");
