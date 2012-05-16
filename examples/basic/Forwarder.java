@@ -15,9 +15,9 @@ import org.simgrid.msg.Process;
 
 
 public class Forwarder extends Process {
-	public Forwarder(Host host, String name, String[]args, double startTime, double killTime) {
-		super(host,name,args,startTime,killTime);
-	} 
+	public Forwarder(Host host, String name, String[]args) {
+		super(host,name,args);
+	}
    public void main(String[] args) throws MsgException {
       if (args.length < 3) {	 
 	 Msg.info("Forwarder needs 3 arguments (input mailbox, first output mailbox, last one)");

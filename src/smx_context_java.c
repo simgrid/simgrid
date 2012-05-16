@@ -66,16 +66,25 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     void_pfn_smxprocess_t cleanup_func,
                                     void* data)
 {
-  smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
-
+	smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if (code) {
-    context->super.cleanup_func = cleanup_func;
-    context->jprocess = (jobject) code;
-    context->begin = xbt_os_sem_init(0);
-    context->end = xbt_os_sem_init(0);
-    context->thread = xbt_os_thread_create(NULL,smx_ctx_java_thread_run,context,NULL);
+		if (argc == 0) {
+			context->jprocess = (jobject) code;
+		}
+		else {
+			context->jprocess = NULL;
+		}
+		context->super.cleanup_func = cleanup_func;
+		context->begin = xbt_os_sem_init(0);
+		context->end = xbt_os_sem_init(0);
+
+		context->super.argc = argc;
+		context->super.argv = argv;
+		context->super.code = code;
+
+		context->thread = xbt_os_thread_create(NULL,smx_ctx_java_thread_run,context,NULL);
   }
   else {
   	context->thread = NULL;
@@ -96,6 +105,11 @@ static void* smx_ctx_java_thread_run(void *data) {
   context->jenv = get_current_thread_env();
   //Wait for the first scheduling round to happen.
   xbt_os_sem_acquire(context->begin);
+  //Create the "Process" object if needed.
+	if (context->super.argc > 0) {
+		(*(context->super.code))(context->super.argc, context->super.argv);
+	}
+	xbt_assert((context->jprocess != NULL), "Process not created...");
   //wait for the process to be able to begin
   //TODO: Cache it
 	jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");

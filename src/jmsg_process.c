@@ -14,13 +14,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
-static jfieldID jprocess_field_Process_bind;
-static jfieldID jprocess_field_Process_name;
-static jfieldID jprocess_field_Process_host;
-static jfieldID jprocess_field_Process_id;
-static jfieldID jprocess_field_Process_pid;
-static jfieldID jprocess_field_Process_ppid;
-
 jobject native_to_java_process(m_process_t process)
 {
   return ((smx_ctx_java_t)MSG_process_get_smx_ctx(process))->jprocess;
@@ -84,7 +77,7 @@ Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
 	jprocess_field_Process_pid = jxbt_get_jfield(env, jprocess_class_Process, "pid", "I");
 	jprocess_field_Process_ppid = jxbt_get_jfield(env, jprocess_class_Process, "ppid", "I");
 	jprocess_field_Process_host = jxbt_get_jfield(env, jprocess_class_Process, "host", "Lorg/simgrid/msg/Host;");
-
+	jprocess_field_Process_killTime = jxbt_get_jfield(env, jprocess_class_Process, "killTime", "D");
 	if (!jprocess_class_Process || !jprocess_field_Process_id || !jprocess_field_Process_name || !jprocess_field_Process_pid ||
 			!jprocess_field_Process_ppid || !jprocess_field_Process_host) {
   	jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
@@ -93,7 +86,7 @@ Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_create(JNIEnv * env,
                                     jobject jprocess_arg,
-                                    jobject jhostname, jdouble jstartTime, jdouble jkillTime)
+                                    jobject jhostname)
 {
 
 
@@ -137,12 +130,14 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
   name = (*env)->GetStringUTFChars(env, jname, 0);
   name = xbt_strdup(name);
 
+  /* Retrieve the kill time from the process */
+  jdouble jkill = (*env)->GetDoubleField(env, jprocess, jprocess_field_Process_killTime);
   /* Actually build the MSG process */
   process = MSG_process_create_with_environment(name,
 						(xbt_main_func_t) jprocess,
-						/*data*/ NULL,
+						/*data*/ jprocess,
 						host,
-						(double)jkillTime, /* kill time */
+						(double)jkill, /* kill time */
 						/*argc, argv, properties*/
 						0,NULL,NULL);
 

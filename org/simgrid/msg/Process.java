@@ -75,11 +75,11 @@ public abstract class Process implements Runnable {
 	/**
 	 * Start time of the process
 	 */
-	public double startTime;
+	public double startTime = 0;
 	/**
 	 * Kill time of the process
 	 */
-	public double killTime;
+	public double killTime = -1;
 
     public Hashtable<String,String> properties;
 
@@ -128,7 +128,7 @@ public abstract class Process implements Runnable {
 	 *
 	 */
 	public Process(String hostname, String name) throws HostNotFoundException {
-		this(Host.getByName(hostname), name, null, 0, -1);
+		this(Host.getByName(hostname), name, null);
 	}
 	/**
 	 * Constructs a new process from the name of a host and his name. The arguments
@@ -144,7 +144,7 @@ public abstract class Process implements Runnable {
 	 *
 	 */ 
 	public Process(String hostname, String name, String args[]) throws HostNotFoundException, NativeException {
-		this(Host.getByName(hostname), name, args, 0, -1);
+		this(Host.getByName(hostname), name, args);
 	}
 	/**
 	 * Constructs a new process from a host and his name. The method function of the 
@@ -155,8 +155,29 @@ public abstract class Process implements Runnable {
 	 *
 	 */
 	public Process(Host host, String name) {
-		this(host, name, null, 0, -1);
+		this(host, name, null);
 	}
+	/**
+	 * Constructs a new process from a host and his name, the arguments of here method function are
+	 * specified by the parameter args.
+	 *
+	 * @param host			The host of the process to create.
+	 * @param name			The name of the process.
+	 * @param args			The arguments of main method of the process.
+	 */	
+	public Process(Host host, String name, String[]args) {
+		this();
+		this.host = host;
+		if (name == null)
+			throw new NullPointerException("Process name cannot be NULL");
+		this.name = name;
+
+		this.args = new Vector<String>();
+		if (null != args)
+			this.args.addAll(Arrays.asList(args));
+		
+		this.properties = new Hashtable<String,String>();
+	}	
 	/**
 	 * Constructs a new process from a host and his name, the arguments of here method function are
 	 * specified by the parameter args.
@@ -169,7 +190,6 @@ public abstract class Process implements Runnable {
 	 *
 	 */
 	public Process(Host host, String name, String[]args, double startTime, double killTime) {
-		/* This is the constructor called by all others */
 		this();
 		this.host = host;
 		if (name == null)
@@ -189,7 +209,7 @@ public abstract class Process implements Runnable {
 	 * The natively implemented method to create an MSG process.
 	 * @param host    A valid (binded) host where create the process.
 	 */
-	protected native void create(String hostName, double startTime, double killTime) throws HostNotFoundException;
+	protected native void create(String hostName) throws HostNotFoundException;
 	/**
 	 * This method kills all running process of the simulation.
 	 *
@@ -325,7 +345,7 @@ public abstract class Process implements Runnable {
     public final void start() throws HostNotFoundException {
     	if (!started) {
     		started = true;
-    		create(host.getName(), startTime, killTime);
+    		create(host.getName());
     	}
     }
     

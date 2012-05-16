@@ -17,7 +17,6 @@
 
 #include "jmsg_host.h"
 #include "jmsg_task.h"
-#include "jmsg_application_handler.h"
 #include "jxbt_utilities.h"
 
 #include "jmsg.h"
@@ -30,6 +29,8 @@
 #define JNICALL
 #endif
 /* end of eclipse-mandated pimple */
+
+static int create_jprocess(int argc, char *argv[]);
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -165,30 +166,51 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
   const char *deploymentFile =
       (*env)->GetStringUTFChars(env, jdeploymentFile, 0);
 
-  surf_parse_reset_callbacks();
-
-  surfxml_add_callback(STag_surfxml_process_cb_list,
-                       japplication_handler_on_begin_process);
-
-  surfxml_add_callback(ETag_surfxml_argument_cb_list,
-                       japplication_handler_on_process_arg);
-
-  surfxml_add_callback(STag_surfxml_prop_cb_list,
-                       japplication_handler_on_property);
-
-  surfxml_add_callback(ETag_surfxml_process_cb_list,
-                       japplication_handler_on_end_process);
-
-  surf_parse_open(deploymentFile);
-
-  japplication_handler_on_start_document();
-
-  if (surf_parse())
-    jxbt_throw_jni(env, "surf_parse() failed");
-
-  surf_parse_close();
-
-  japplication_handler_on_end_document();
-
-  (*env)->ReleaseStringUTFChars(env, jdeploymentFile, deploymentFile);
+  SIMIX_function_register_default(create_jprocess);
+  MSG_launch_application(deploymentFile);
 }
+/**
+ * Function called when there is the need to create the java Process object
+ * (when we are using deployement files).
+ * it HAS to be executed on the process context, else really bad things will happen.
+ */
+static int create_jprocess(int argc, char *argv[]) {
+	JNIEnv *env = get_current_thread_env();
+	//Change the "." in class name for "/".
+	xbt_str_subst(argv[0],'.','/',0);
+	jclass class_Process = (*env)->FindClass(env, argv[0]);
+	xbt_str_subst(argv[0],'/','.',0);
+	//Retrieve the methodID for the constructor
+	xbt_assert((class_Process != NULL), "Class not found.");
+	jmethodID constructor_Process = (*env)->GetMethodID(env, class_Process, "<init>", "(Lorg/simgrid/msg/Host;Ljava/lang/String;[Ljava/lang/String;)V");
+	xbt_assert((constructor_Process != NULL), "Constructor not found for class %s. Is there a (Host, String ,String[]) constructor in your class ?", argv[0]);
+
+	//Retrieve the name of the process.
+	jstring jname = (*env)->NewStringUTF(env, argv[0]);
+	//Build the arguments
+	jobjectArray args = (jobjectArray)((*env)->NewObjectArray(env,argc - 1,
+	(*env)->FindClass(env,"java/lang/String"),
+	(*env)->NewStringUTF(env,"")));
+	int i;
+	for (i = 1; i < argc; i++)
+		(*env)->SetObjectArrayElement(env,args,i - 1,(*env)->NewStringUTF(env, argv[i]));
+	//Retrieve the host for the process.
+	jstring jhostName = (*env)->NewStringUTF(env, MSG_host_get_name(MSG_host_self()));
+	jobject jhost = Java_org_simgrid_msg_Host_getByName(env, NULL, jhostName);
+	//creates the process
+	jobject jprocess = (*env)->NewObject(env, class_Process, constructor_Process, jhost, jname, args);
+	xbt_assert((jprocess != NULL), "Process allocation failed.");
+	jprocess = (*env)->NewGlobalRef(env, jprocess);
+	//bind the process to the context
+	m_process_t process = MSG_process_self();
+	smx_ctx_java_t context = (smx_ctx_java_t)MSG_process_get_smx_ctx(process);
+	context->jprocess = jprocess;
+  /* sets the PID and the PPID of the process */
+  (*env)->SetIntField(env, jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
+  (*env)->SetIntField(env, jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
+
+	jprocess_bind(jprocess, process, env);
+
+	return 0;
+}
+

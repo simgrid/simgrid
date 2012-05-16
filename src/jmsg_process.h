@@ -13,6 +13,16 @@
 #include <msg/msg.h>
 #include <simgrid/simix.h>
 
+//Cached java fields
+jfieldID jprocess_field_Process_bind;
+jfieldID jprocess_field_Process_host;
+jfieldID jprocess_field_Process_killTime;
+jfieldID jprocess_field_Process_id;
+jfieldID jprocess_field_Process_name;
+jfieldID jprocess_field_Process_pid;
+jfieldID jprocess_field_Process_ppid;
+
+
 jobject native_to_java_process(m_process_t process);
 
 /**
@@ -142,7 +152,7 @@ Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_create(JNIEnv * env,
                                     jobject jprocess_arg,
-                                    jobject jhostname, jdouble jstartTime, jdouble jkillTime);
+                                    jobject jhostname);
 
 /*
  * Class		org_simgrid_msg_Process

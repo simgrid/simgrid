@@ -88,12 +88,9 @@ set(JMSG_C_SRC
 	src/jmsg_task.h
 	src/jmsg_synchro.c
 	src/jmsg_synchro.h
-	src/jmsg_application_handler.c
-	src/jmsg_application_handler.h
 )
 
 set(JMSG_JAVA_SRC
-	org/simgrid/msg/ApplicationHandler.java
 	org/simgrid/msg/Host.java
 	org/simgrid/msg/HostFailureException.java	
 	org/simgrid/msg/HostNotFoundException.java	

@@ -18,9 +18,9 @@ import org.simgrid.msg.Process;
 
 
 public class Coordinator extends Process  {
-	public Coordinator(Host host, String name, String[]args, double startTime, double killTime) {
-		super(host,name,args, startTime, killTime);
-	}
+    public Coordinator(Host host, String name, String[]args) {
+		super(host,name,args);
+    } 
 	LinkedList<RequestTask> waitingQueue=new LinkedList<RequestTask>();
 	int CsToServe;
 		

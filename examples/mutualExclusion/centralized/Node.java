@@ -15,9 +15,9 @@ import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
 
 public class Node extends Process {
-	public Node(Host host, String name, String[]args, double startTime, double killTime) {
-		super(host,name,args,startTime,killTime);
-	}
+    public Node(Host host, String name, String[]args) {
+		super(host,name,args);
+    } 
 	public void request(double CStime) throws MsgException {
 		RequestTask req = new RequestTask(this.name);
 	   Msg.info("Send a request to the coordinator");
