@@ -97,6 +97,13 @@ static void* smx_ctx_java_thread_run(void *data) {
   context->jenv = get_current_thread_env();
   //Wait for the first scheduling round to happen.
   xbt_os_sem_acquire(context->begin);
+  //wait for the process to be able to begin
+  //TODO: Cache it
+	jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
+  jdouble startTime =  (*env)->GetDoubleField(env, context->jprocess, jprocess_field_Process_startTime);
+  if (startTime > MSG_get_clock()) {
+  	MSG_process_sleep(startTime - MSG_get_clock());
+  }
   //Execution of the "run" method.
   jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
   xbt_assert( (id != NULL), "Method not found...");

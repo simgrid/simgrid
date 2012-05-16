@@ -10,8 +10,8 @@ package commTime;
 import org.simgrid.msg.*;
 
 public class Slave extends org.simgrid.msg.Process {
-	public Slave(Host host, String name, String[]args) {
-		super(host,name,args);
+	public Slave(Host host, String name, String[]args, double startTime, double killTime) {
+		super(host,name,args, startTime, killTime);
 	}
 	public void main(String[] args) throws MsgException {
       if (args.length < 1) {

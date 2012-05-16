@@ -15,8 +15,8 @@ import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
 
 public class Receiver extends Process {
-	public Receiver(Host host, String name, String[]args) {
-		super(host,name,args);
+	public Receiver(Host host, String name, String[]args, double startTime, double killTime) {
+		super(host,name,args,startTime,killTime);
 	}
    final double commSizeLat = 1;
    final double commSizeBw = 100000000;

@@ -38,7 +38,14 @@ public final class ApplicationHandler {
 		 * The function of the process.
 		 */
 		private  static String function;
-		
+		/**
+		 * Start time of the process
+		 */
+		private static double startTime;
+		/**
+		 * Kill time of the process
+		 */
+		private static double killTime;
 		/**
 		 * This method is called by the start element handler.
 		 * It sets the host and the function of the process to create,
@@ -51,9 +58,11 @@ public final class ApplicationHandler {
 		 * @function			The function of the process to create.
 		 *
 		 */
-		public  static void setProcessIdentity(String hostName_, String function_) {
-			hostName = hostName_;    
-			function = function_;
+		public  static void setProcessIdentity(String hostName, String function, String startTime, String killTime) {
+			ApplicationHandler.hostName = hostName;    
+			ApplicationHandler.function = function;
+			ApplicationHandler.startTime = Double.valueOf(startTime);
+			ApplicationHandler.killTime = Double.valueOf(killTime);
 
 			if (!args.isEmpty())
 				args.clear();
@@ -99,14 +108,14 @@ public final class ApplicationHandler {
 		 public  static void createProcess() {
 			 try {
 				 Class<Process> cls = (Class<Process>) Class.forName(function);
-				 Constructor<Process> constructor = cls.getConstructor(new Class [] {Host.class, java.lang.String.class, java.lang.String[].class});
+				 Constructor<Process> constructor = cls.getConstructor(new Class [] {Host.class, java.lang.String.class, java.lang.String[].class, double.class, double.class});
 				 String[] args_ = args.toArray(new String[args.size()]);
-				 Process process = constructor.newInstance(Host.getByName(hostName), function, args_);
+				 Process process = constructor.newInstance(Host.getByName(hostName), function, args_, startTime, killTime);
 				 process.start();
 			 } 
 			 catch (NoSuchMethodException e) {
 				 throw new RuntimeException("Can't find the correct constructor for the class " + function + ". \n" +
-				 "Is there a constructor with the signature: \"Host host, String name, String[]args\" in the class ?");
+				 "Is there a constructor with the signature: \"Host host, String name, String[]args, double startTime, double killTime\" in the class ?");
 			 }
 			 catch (InvocationTargetException e) {
 				 e.printStackTrace();
@@ -139,6 +148,8 @@ public final class ApplicationHandler {
 			properties = new Hashtable<String,String>();
 			hostName = null;
 			function = null;
+			startTime = 0;
+			killTime = -1;
 	}
 
          /**
@@ -146,8 +157,8 @@ public final class ApplicationHandler {
           * @param hostName
           * @param function
           */
-         public  static void onBeginProcess(String hostName, String function) {
-		setProcessIdentity(hostName, function);
+         public  static void onBeginProcess(String hostName, String function, String startTime, String killTime) {
+		setProcessIdentity(hostName, function, startTime, killTime);
 		
 	}
     /**
@@ -156,7 +167,7 @@ public final class ApplicationHandler {
      * @param value
      */
     public  static void onProperty(String id, String value) {
-		setProperty(id, value);
+    	setProperty(id, value);
 	}
 
     /**
@@ -164,7 +175,7 @@ public final class ApplicationHandler {
      * @param arg
      */
     public  static void onProcessArg(String arg) {
-		registerProcessArg(arg);
+    	registerProcessArg(arg);
 	}
 
     /**

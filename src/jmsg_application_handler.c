@@ -46,19 +46,25 @@ void japplication_handler_on_begin_process(void)
 {
   jstring jhostName;
   jstring jfunction;
+  jstring jstartTime, jkillTime;
   jclass cls;
   JNIEnv *env = get_current_thread_env();
   jmethodID id =
       jxbt_get_static_smethod(env, "org/simgrid/msg/ApplicationHandler",
                               "onBeginProcess",
-                              "(Ljava/lang/String;Ljava/lang/String;)V");
+                              "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
   if (!id
       || !(cls = jxbt_get_class(env, "org/simgrid/msg/ApplicationHandler")))
     return;
   jhostName = (jstring) (*env)->NewStringUTF(env, A_surfxml_process_host);
   jfunction =
       (jstring) (*env)->NewStringUTF(env, A_surfxml_process_function);
-  (*env)->CallStaticVoidMethod(env, cls, id, jhostName, jfunction);
+
+  jstartTime = (jstring) (*env)->NewStringUTF(env, A_surfxml_process_start_time);
+  jkillTime = (jstring) (*env)->NewStringUTF(env, A_surfxml_process_kill_time);
+
+
+  (*env)->CallStaticVoidMethod(env, cls, id, jhostName, jfunction, jstartTime, jkillTime);
 }
 
 void japplication_handler_on_process_arg(void)

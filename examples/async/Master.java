@@ -19,8 +19,8 @@ import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;;
 
 public class Master extends Process {
-	public Master(Host host, String name, String[]args) {
-		super(host,name,args);
+	public Master(Host host, String name, String[]args, double startTime, double killTime) {
+		super(host,name,args,startTime,killTime);
 	}
 	public void main(String[] args) throws MsgException {
 		if (args.length < 4) {

@@ -93,7 +93,7 @@ Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_create(JNIEnv * env,
                                     jobject jprocess_arg,
-                                    jobject jhostname)
+                                    jobject jhostname, jdouble jstartTime, jdouble jkillTime)
 {
 
 
@@ -142,7 +142,7 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
 						(xbt_main_func_t) jprocess,
 						/*data*/ NULL,
 						host,
-						/* kill_time */-1,
+						(double)jkillTime, /* kill time */
 						/*argc, argv, properties*/
 						0,NULL,NULL);
 

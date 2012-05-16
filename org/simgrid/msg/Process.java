@@ -55,19 +55,31 @@ public abstract class Process implements Runnable {
 	 * access to it. It is set automatically during the build of the object.
 	 */
 	public long bind;
-
+	/**
+	 * Indicates if the process is started
+	 */
+	boolean started;
 	/**
 	 * Even if this attribute is public you must never access to it.
 	 * It is used to compute the id of an MSG process.
 	 */
 	public static long nextProcessId = 0;
-
+	
 	/**
 	 * Even if this attribute is public you must never access to it.
 	 * It is compute automatically during the creation of the object. 
 	 * The native functions use this identifier to synchronize the process.
 	 */
 	public long id;
+	
+	/**
+	 * Start time of the process
+	 */
+	public double startTime;
+	/**
+	 * Kill time of the process
+	 */
+	public double killTime;
 
     public Hashtable<String,String> properties;
 
@@ -90,6 +102,7 @@ public abstract class Process implements Runnable {
 
 	/** The arguments of the method function of the process. */     
 	public Vector<String> args;
+
 	
 	/**
 	 * Default constructor (used in ApplicationHandler to initialize it)
@@ -115,7 +128,7 @@ public abstract class Process implements Runnable {
 	 *
 	 */
 	public Process(String hostname, String name) throws HostNotFoundException {
-		this(Host.getByName(hostname), name, null);
+		this(Host.getByName(hostname), name, null, 0, -1);
 	}
 	/**
 	 * Constructs a new process from the name of a host and his name. The arguments
@@ -131,7 +144,7 @@ public abstract class Process implements Runnable {
 	 *
 	 */ 
 	public Process(String hostname, String name, String args[]) throws HostNotFoundException, NativeException {
-		this(Host.getByName(hostname), name, args);
+		this(Host.getByName(hostname), name, args, 0, -1);
 	}
 	/**
 	 * Constructs a new process from a host and his name. The method function of the 
@@ -142,7 +155,7 @@ public abstract class Process implements Runnable {
 	 *
 	 */
 	public Process(Host host, String name) {
-		this(host, name, null);
+		this(host, name, null, 0, -1);
 	}
 	/**
 	 * Constructs a new process from a host and his name, the arguments of here method function are
@@ -151,9 +164,11 @@ public abstract class Process implements Runnable {
 	 * @param host			The host of the process to create.
 	 * @param name			The name of the process.
 	 * @param args			The arguments of main method of the process.
+	 * @param startTime		Start time of the process
+	 * @param killTime		Kill time of the process
 	 *
 	 */
-	public Process(Host host, String name, String[]args) {
+	public Process(Host host, String name, String[]args, double startTime, double killTime) {
 		/* This is the constructor called by all others */
 		this();
 		this.host = host;
@@ -167,12 +182,14 @@ public abstract class Process implements Runnable {
 		
 		this.properties = new Hashtable<String,String>();
 		
+		this.startTime = startTime;
+		this.killTime = killTime;		
 	}
 	/**
 	 * The natively implemented method to create an MSG process.
 	 * @param host    A valid (binded) host where create the process.
 	 */
-	protected native void create(String hostName) throws HostNotFoundException;
+	protected native void create(String hostName, double startTime, double killTime) throws HostNotFoundException;
 	/**
 	 * This method kills all running process of the simulation.
 	 *
@@ -302,10 +319,14 @@ public abstract class Process implements Runnable {
 	}
     /**
      * This method actually creates and run the process.
+     * It is a noop if the process is already launched.
      * @throws HostNotFoundException
      */
-    public void start() throws HostNotFoundException {
-    	create(host.getName());
+    public final void start() throws HostNotFoundException {
+    	if (!started) {
+    		started = true;
+    		create(host.getName(), startTime, killTime);
+    	}
     }
     
 	/**
@@ -329,7 +350,7 @@ public abstract class Process implements Runnable {
 			System.exit(1);
 		}
 		 catch(ProcessKilledError pk) {
-
+			 
 		 }	
 	}
 

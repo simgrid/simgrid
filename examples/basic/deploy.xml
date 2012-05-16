@@ -11,7 +11,7 @@
   </process>
   <!-- The slave process (with no argument) -->
   <process host="Jacquelin" function="basic.Slave"><argument value="0"/></process>
-  <process host="Boivin" function="basic.Slave"><argument value="1"/></process>
+  <process host="Boivin" function="basic.Slave" start_time="5"><argument value="1"/></process>
 <!--  <process host="Jean_Yves" function="Slave"><argument value="2"/></process>
   <process host="TeX" function="Slave"><argument value="3"/></process>
   <process host="Geoff" function="Slave"><argument value="4"/></process>

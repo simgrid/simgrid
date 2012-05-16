@@ -17,8 +17,8 @@ import org.simgrid.msg.TransferFailureException;
 import org.simgrid.msg.Process;
 
 public class Slave extends Process {
-	public Slave(Host host, String name, String[]args) {
-		super(host,name,args);
+	public Slave(Host host, String name, String[]args, double startTime, double killTime) {
+		super(host,name,args,startTime,killTime);
 	}
 	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
 		if (args.length < 1) {
