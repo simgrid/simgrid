@@ -1,0 +1,14 @@
+#! ./tesh
+$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar startKillTime/StartKillTime ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/startKillTime/deployment_start_kill.xml
+> [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
+> [Jacquelin:startKillTime.Master:(1) 0.000000] [jmsg/INFO] Hello!
+> [Boivin:startKillTime.Slave:(2) 1.000000] [jmsg/INFO] Hello!
+> [Jean_Yves:startKillTime.Slave:(3) 2.000000] [jmsg/INFO] Hello!
+> [TeX:startKillTime.Slave:(4) 3.000000] [jmsg/INFO] Hello!
+> [Geoff:startKillTime.Slave:(5) 4.000000] [jmsg/INFO] Hello!
+> [Disney:startKillTime.Slave:(6) 5.000000] [jmsg/INFO] Hello!
+> [Jacquelin:startKillTime.Master:(1) 10.000000] [jmsg/INFO] OK, goodbye now.
+> [10.000000] [jmsg/INFO] Done running MSG_MAIN
+> [10.000000] [jmsg/INFO] MSG_main finished
+> [10.000000] [jmsg/INFO] Clean java world
+> [10.000000] [jmsg/INFO] Clean native world

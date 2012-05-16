@@ -113,6 +113,7 @@ set(JMSG_JAVA_SRC
 )
 
 set(JAVA_EXAMPLES
+
 	examples/mutualExclusion/centralized/MutexCentral.java
 	examples/mutualExclusion/centralized/GrantTask.java
 	examples/mutualExclusion/centralized/Coordinator.java
@@ -145,6 +146,9 @@ set(JAVA_EXAMPLES
 	examples/async/Forwarder.java
 	examples/async/Master.java  
 	examples/async/Slave.java
+	examples/startKillTime/Slave.java
+	examples/startKillTime/Master.java
+	examples/startKillTime/StartKillTime.java
 )
 
 set(CMAKE_SRC
@@ -242,6 +246,7 @@ add_custom_command(
   	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/*.java
 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/*.java
+	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/*.java
 )
 
 add_custom_target(simgrid_java_examples ALL
@@ -271,8 +276,9 @@ ADD_TEST(CommTime        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(mutualExclusion ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/mutualexclusion.tesh)
 ADD_TEST(bypass          ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/bypass.tesh)
 ADD_TEST(kill            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh)
+ADD_TEST(startKillTime            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh)
 #Don't forget to put new test in this list!!!
-set(test_list basic async pingPong CommTime mutualExclusion bypass kill)
+set(test_list basic async pingPong CommTime mutualExclusion bypass kill startKillTime)
 
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #
