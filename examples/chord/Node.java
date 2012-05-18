@@ -124,7 +124,8 @@ public class Node extends Process {
 					}
 				}
 				catch (Exception e) {
-					
+					currentClock = Msg.getClock();
+					commReceive = null;
 				}
 				
 			}
