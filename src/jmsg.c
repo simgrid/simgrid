@@ -49,6 +49,24 @@ JNIEnv *get_current_thread_env(void)
   (*__java_vm)->AttachCurrentThread(__java_vm, (void **) &env, NULL);
   return env;
 }
+
+void jmsg_throw_status(JNIEnv *env, MSG_error_t status) {
+	switch (status) {
+		case MSG_TIMEOUT:
+			jxbt_throw_time_out_failure(env,NULL);
+		break;
+		case MSG_TRANSFER_FAILURE:
+			jxbt_throw_transfer_failure(env,NULL);
+		break;
+		case MSG_HOST_FAILURE:
+			jxbt_throw_host_failure(env,NULL);
+		break;
+		default:
+			jxbt_throw_native(env,bprintf("communication failed"));
+	}
+}
+
+
 /***************************************************************************************
  * Unsortable functions                                                        *
  ***************************************************************************************/

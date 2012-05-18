@@ -367,10 +367,10 @@ Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  jxbt_check_res("MSG_task_send_with_timeout()", rv,
-                 MSG_HOST_FAILURE | MSG_TRANSFER_FAILURE | MSG_TIMEOUT,
-                 bprintf("while sending task %s to mailbox %s",
-                         MSG_task_get_name(task), alias));
+  if (rv != MSG_OK) {
+  	jmsg_throw_status(env, rv);
+  	return;
+  }
 }
 
 JNIEXPORT void JNICALL
@@ -432,19 +432,7 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
   	return NULL;
   }
   if (rv != MSG_OK) {
-  	switch (rv) {
-  		case MSG_TIMEOUT:
-  			jxbt_throw_time_out_failure(env,NULL);
-  		break;
-  		case MSG_TRANSFER_FAILURE:
-  			jxbt_throw_transfer_failure(env,NULL);
-  		break;
-  		case MSG_HOST_FAILURE:
-  			jxbt_throw_host_failure(env,NULL);
-  		break;
-  		default:
-  			jxbt_throw_native(env,bprintf("receive failed"));
-  	}
+  	jmsg_throw_status(env,rv);
   	return NULL;
   }
   jtask_global = MSG_task_get_data(task);

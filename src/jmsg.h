@@ -8,12 +8,17 @@
 
 #ifndef MSG4JAVA_H
 #define MSG4JAVA_H
-
+#include <msg/msg.h>
 #include <jni.h>
 
 JavaVM *get_java_VM(void);
 
 JNIEnv *get_current_thread_env(void);
+/**
+ * This function throws the correct exception according to the status
+ * provided.
+ */
+void jmsg_throw_status(JNIEnv *env, MSG_error_t status);
 
 /*
  * Class		org_simgrid_msg_Msg

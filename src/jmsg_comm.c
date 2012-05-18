@@ -3,6 +3,8 @@
 /* Copyright (c) 2012. The SimGrid Team. All rights reserved.                   */
 #include "jmsg_comm.h"
 #include "jxbt_utilities.h"
+#include "jmsg.h"
+
 #include <msg/msg.h>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -35,21 +37,6 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
 	}
 
 }
-void jcomm_throw(JNIEnv *env, MSG_error_t status) {
-	switch (status) {
-		case MSG_TIMEOUT:
-			jxbt_throw_time_out_failure(env,NULL);
-		break;
-		case MSG_TRANSFER_FAILURE:
-			jxbt_throw_transfer_failure(env,NULL);
-		break;
-		case MSG_HOST_FAILURE:
-			jxbt_throw_host_failure(env,NULL);
-		break;
-		default:
-			jxbt_throw_native(env,bprintf("communication failed"));
-	}
-}
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
@@ -68,7 +55,7 @@ Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_unbind(JNIEnv *env, jobject jcomm) {
+Java_org_simgrid_msg_Comm_destroy(JNIEnv *env, jobject jcomm) {
 	msg_comm_t comm;
 	m_task_t *task_received;
 
@@ -97,7 +84,7 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
 			}
 			else {
 				//send the correct exception
-				jcomm_throw(env,status);
+				jmsg_throw_status(env,status);
 				return JNI_FALSE;
 			}
 		}
@@ -129,7 +116,7 @@ Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble tim
 		return;
 	}
 	else {
-		jcomm_throw(env,status);
+		jmsg_throw_status(env,status);
 	}
 
 

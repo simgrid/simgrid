@@ -41,12 +41,12 @@ public class Comm {
 	 * Finalize the communication object, destroying it.
 	 */
 	protected void finalize() throws Throwable {
-		unbind();
+		destroy();
 	}
 	/**
 	 * Unbind the communication object
 	 */
-	public native void unbind() throws NativeException;
+	public native void destroy() throws NativeException;
 	/**
 	 * Returns if the communication is finished or not.
 	 * If the communication has finished and there was an error,

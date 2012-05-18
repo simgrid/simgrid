@@ -11,17 +11,12 @@
  * the java communication object.
  */
 void jcomm_bind_task(JNIEnv *env, jobject jcomm);
-/**
- * This function throws the correct exception according to the status
- * returned.
- */
-void jcomm_throw(JNIEnv *env, MSG_error_t status);
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls);
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_unbind(JNIEnv *env, jobject jcomm);
+Java_org_simgrid_msg_Comm_destroy(JNIEnv *env, jobject jcomm);
 
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm);
