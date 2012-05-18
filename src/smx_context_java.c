@@ -25,8 +25,6 @@ JavaVM *get_current_vm(void)
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
 
-static smx_context_t my_current_context = NULL;
-
 static smx_context_t
 smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     char **argv,
@@ -57,7 +55,7 @@ void SIMIX_ctx_java_factory_init(smx_context_factory_t * factory)
 }
 smx_context_t smx_ctx_java_self(void)
 {
-	return my_current_context;
+	return (smx_context_t)xbt_os_thread_get_extra_data();
 }
 
 static smx_context_t
@@ -88,7 +86,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
   }
   else {
   	context->thread = NULL;
-    my_current_context = (smx_context_t)context;
+    xbt_os_thread_set_extra_data(context);
   }
   context->super.data = data;
   
@@ -97,6 +95,7 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
 
 static void* smx_ctx_java_thread_run(void *data) {
 	smx_ctx_java_t context = (smx_ctx_java_t)data;
+	xbt_os_thread_set_extra_data(context);
 	//Attach the thread to the JVM
 	JNIEnv *env;
 	JavaVM *jvm = get_current_vm();
@@ -143,8 +142,6 @@ static void smx_ctx_java_free(smx_context_t context)
 void smx_ctx_java_stop(smx_context_t context)
 {
 	smx_ctx_java_t ctx_java = (smx_ctx_java_t)context;
-	xbt_assert(context == my_current_context,
-     "The context to stop must be the current one");
   /* I am the current process and I am dying */
 	if (context->iwannadie == -1) {
   	context->iwannadie = 0;
@@ -176,7 +173,6 @@ static void smx_ctx_java_suspend(smx_context_t context)
 // FIXME: inline those functions
 static void smx_ctx_java_resume(smx_context_t new_context)
 {
-  XBT_DEBUG("XXXX Context Resume\n");
 	smx_ctx_java_t ctx_java = (smx_ctx_java_t) new_context;
 	xbt_os_sem_release(ctx_java->begin);
 	xbt_os_sem_acquire(ctx_java->end);
@@ -185,16 +181,9 @@ static void smx_ctx_java_resume(smx_context_t new_context)
 static void smx_ctx_java_runall(void)
 {
   xbt_dynar_t processes = SIMIX_process_get_runnable();
-  XBT_DEBUG("XXXX Run all\n");
   smx_process_t process;
-  smx_context_t old_context;
   unsigned int cursor;
   xbt_dynar_foreach(processes, cursor, process) {
-    old_context = my_current_context;
-    my_current_context = SIMIX_process_get_context(process);
-    smx_ctx_java_resume(my_current_context);
-    my_current_context = old_context;
+    smx_ctx_java_resume(SIMIX_process_get_context(process));
   }
-
-  XBT_DEBUG("XXXX End of run all\n");
 }
