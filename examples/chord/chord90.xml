@@ -1,0 +1,99 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+
+  <process host="Jacquelin" function="chord.Node">
+    <argument value="42"/>               <!-- my id -->
+    <argument value ="10000"/>             <!-- quit date -->
+  </process>
+
+  <process host="Boivin" function="chord.Node"><argument value="45743" /><argument value="42" /><argument value="10" /><argument value="10000" /></process>
+  <process host="Jean_Yves" function="chord.Node"><argument value="49540" /><argument value="45743" /><argument value="20" /><argument value="10000" /></process>
+  <process host="TeX" function="chord.Node"><argument value="42066" /><argument value="42" /><argument value="30" /><argument value="10000" /></process>
+  <process host="Geoff" function="chord.Node"><argument value="8641" /><argument value="49540" /><argument value="40" /><argument value="10000" /></process>
+  <process host="Disney" function="chord.Node"><argument value="47294" /><argument value="8641" /><argument value="50" /><argument value="10000" /></process>
+  <process host="iRMX" function="chord.Node"><argument value="4255" /><argument value="49540" /><argument value="60" /><argument value="10000" /></process>
+  <process host="McGee" function="chord.Node"><argument value="13460" /><argument value="45743" /><argument value="70" /><argument value="10000" /></process>
+  <process host="Gatien" function="chord.Node"><argument value="5974" /><argument value="42" /><argument value="80" /><argument value="10000" /></process>
+  <process host="Laroche" function="chord.Node"><argument value="38967" /><argument value="47294" /><argument value="90" /><argument value="10000" /></process>
+  <process host="Tanguay" function="chord.Node"><argument value="64924" /><argument value="47294" /><argument value="100" /><argument value="10000" /></process>
+  <process host="Morin" function="chord.Node"><argument value="8328" /><argument value="49540" /><argument value="110" /><argument value="10000" /></process>
+  <process host="Ethernet" function="chord.Node"><argument value="35288" /><argument value="45743" /><argument value="120" /><argument value="10000" /></process>
+  <process host="Bellemarre" function="chord.Node"><argument value="21612" /><argument value="35288" /><argument value="130" /><argument value="10000" /></process>
+  <process host="Kuenning" function="chord.Node"><argument value="42578" /><argument value="21612" /><argument value="140" /><argument value="10000" /></process>
+  <process host="Gaston" function="chord.Node"><argument value="62486" /><argument value="42578" /><argument value="150" /><argument value="10000" /></process>
+  <process host="Harry" function="chord.Node"><argument value="35280" /><argument value="42" /><argument value="160" /><argument value="10000" /></process>
+  <process host="Bousquet" function="chord.Node"><argument value="12812" /><argument value="42" /><argument value="170" /><argument value="10000" /></process>
+  <process host="Paul" function="chord.Node"><argument value="7629" /><argument value="42" /><argument value="180" /><argument value="10000" /></process>
+  <process host="St_Jean" function="chord.Node"><argument value="21882" /><argument value="42" /><argument value="190" /><argument value="10000" /></process>
+  <process host="Jill" function="chord.Node"><argument value="6345" /><argument value="42" /><argument value="200" /><argument value="10000" /></process>
+  <process host="Marcel" function="chord.Node"><argument value="34784" /><argument value="38967" /><argument value="210" /><argument value="10000" /></process>
+  <process host="Wright" function="chord.Node"><argument value="9686" /><argument value="4255" /><argument value="220" /><argument value="10000" /></process>
+  <process host="Jackson" function="chord.Node"><argument value="57934" /><argument value="4255" /><argument value="230" /><argument value="10000" /></process>
+  <process host="Fernand" function="chord.Node"><argument value="22592" /><argument value="62486" /><argument value="240" /><argument value="10000" /></process>
+  <process host="Soucy" function="chord.Node"><argument value="62311" /><argument value="57934" /><argument value="250" /><argument value="10000" /></process>
+  <process host="Ste_Julie" function="chord.Node"><argument value="7413" /><argument value="57934" /><argument value="260" /><argument value="10000" /></process>
+  <process host="Victoria" function="chord.Node"><argument value="58188" /><argument value="7413" /><argument value="270" /><argument value="10000" /></process>
+  <process host="Lessard" function="chord.Node"><argument value="45305" /><argument value="7413" /><argument value="280" /><argument value="10000" /></process>
+  <process host="Florient" function="chord.Node"><argument value="12202" /><argument value="7413" /><argument value="290" /><argument value="10000" /></process>
+  <process host="Marcoux" function="chord.Node"><argument value="24642" /><argument value="7413" /><argument value="300" /><argument value="10000" /></process>
+  <process host="Gavrel" function="chord.Node"><argument value="12412" /><argument value="7413" /><argument value="310" /><argument value="10000" /></process>
+  <process host="Bescherelle" function="chord.Node"><argument value="56041" /><argument value="7413" /><argument value="320" /><argument value="10000" /></process>
+  <process host="Pierre" function="chord.Node"><argument value="46691" /><argument value="7413" /><argument value="330" /><argument value="10000" /></process>
+  <process host="Jamie" function="chord.Node"><argument value="23457" /><argument value="7413" /><argument value="340" /><argument value="10000" /></process>
+  <process host="Rubin" function="chord.Node"><argument value="19096" /><argument value="7413" /><argument value="350" /><argument value="10000" /></process>
+  <process host="Olivier" function="chord.Node"><argument value="50820" /><argument value="42578" /><argument value="360" /><argument value="10000" /></process>
+  <process host="Boucherville" function="chord.Node"><argument value="55902" /><argument value="8328" /><argument value="370" /><argument value="10000" /></process>
+  <process host="Pointe_Claire" function="chord.Node"><argument value="28052" /><argument value="5974" /><argument value="380" /><argument value="10000" /></process>
+  <process host="Kansas" function="chord.Node"><argument value="31120" /><argument value="55902" /><argument value="390" /><argument value="10000" /></process>
+  <process host="King" function="chord.Node"><argument value="52051" /><argument value="58188" /><argument value="400" /><argument value="10000" /></process>
+  <process host="Lapointe" function="chord.Node"><argument value="58470" /><argument value="19096" /><argument value="410" /><argument value="10000" /></process>
+  <process host="Julian" function="chord.Node"><argument value="1280" /><argument value="7413" /><argument value="420" /><argument value="10000" /></process>
+  <process host="Lafontaine" function="chord.Node"><argument value="46920" /><argument value="47294" /><argument value="430" /><argument value="10000" /></process>
+  <process host="Gordon" function="chord.Node"><argument value="52974" /><argument value="4255" /><argument value="440" /><argument value="10000" /></process>
+  <process host="Drouin" function="chord.Node"><argument value="50233" /><argument value="8641" /><argument value="450" /><argument value="10000" /></process>
+  <process host="Robert" function="chord.Node"><argument value="48917" /><argument value="50820" /><argument value="460" /><argument value="10000" /></process>
+  <process host="Jocelyne" function="chord.Node"><argument value="5476" /><argument value="7629" /><argument value="470" /><argument value="10000" /></process>
+  <process host="Stephen" function="chord.Node"><argument value="38304" /><argument value="50820" /><argument value="480" /><argument value="10000" /></process>
+  <process host="Provost" function="chord.Node"><argument value="4181" /><argument value="7629" /><argument value="490" /><argument value="10000" /></process>
+  <process host="Juneau" function="chord.Node"><argument value="14672" /><argument value="8641" /><argument value="500" /><argument value="10000" /></process>
+  <process host="Casavant" function="chord.Node"><argument value="64444" /><argument value="62311" /><argument value="510" /><argument value="10000" /></process>
+  <process host="St_Antoine" function="chord.Node"><argument value="17176" /><argument value="4181" /><argument value="520" /><argument value="10000" /></process>
+  <process host="Louis" function="chord.Node"><argument value="56445" /><argument value="64444" /><argument value="530" /><argument value="10000" /></process>
+  <process host="Julien" function="chord.Node"><argument value="53326" /><argument value="52974" /><argument value="540" /><argument value="10000" /></process>
+  <process host="St_Paul" function="chord.Node"><argument value="44773" /><argument value="52974" /><argument value="550" /><argument value="10000" /></process>
+  <process host="Mathematica" function="chord.Node"><argument value="56062" /><argument value="31120" /><argument value="560" /><argument value="10000" /></process>
+  <process host="LaTeX" function="chord.Node"><argument value="17446" /><argument value="62311" /><argument value="570" /><argument value="10000" /></process>
+  <process host="Sirois" function="chord.Node"><argument value="8672" /><argument value="8641" /><argument value="580" /><argument value="10000" /></process>
+  <process host="Monique" function="chord.Node"><argument value="23543" /><argument value="45305" /><argument value="590" /><argument value="10000" /></process>
+  <process host="Audy" function="chord.Node"><argument value="12767" /><argument value="7629" /><argument value="600" /><argument value="10000" /></process>
+  <process host="Bourassa" function="chord.Node"><argument value="39639" /><argument value="23543" /><argument value="610" /><argument value="10000" /></process>
+  <process host="OHara" function="chord.Node"><argument value="11729" /><argument value="39639" /><argument value="620" /><argument value="10000" /></process>
+  <process host="Boston" function="chord.Node"><argument value="28853" /><argument value="50233" /><argument value="630" /><argument value="10000" /></process>
+  <process host="Papineau" function="chord.Node"><argument value="41870" /><argument value="31120" /><argument value="640" /><argument value="10000" /></process>
+  <process host="Fraser" function="chord.Node"><argument value="41142" /><argument value="45305" /><argument value="650" /><argument value="10000" /></process>
+  <process host="Browne" function="chord.Node"><argument value="52840" /><argument value="56062" /><argument value="660" /><argument value="10000" /></process>
+  <process host="SunOS" function="chord.Node"><argument value="14017" /><argument value="11729" /><argument value="670" /><argument value="10000" /></process>
+  <process host="Varennes" function="chord.Node"><argument value="16097" /><argument value="8672" /><argument value="680" /><argument value="10000" /></process>
+  <process host="Jacques" function="chord.Node"><argument value="61643" /><argument value="16097" /><argument value="690" /><argument value="10000" /></process>
+  <process host="Thierry" function="chord.Node"><argument value="48384" /><argument value="61643" /><argument value="700" /><argument value="10000" /></process>
+  <process host="Lachapelle" function="chord.Node"><argument value="49196" /><argument value="48384" /><argument value="710" /><argument value="10000" /></process>
+  <process host="kV" function="chord.Node"><argument value="3041" /><argument value="49196" /><argument value="720" /><argument value="10000" /></process>
+  <process host="Yolande" function="chord.Node"><argument value="57006" /><argument value="3041" /><argument value="730" /><argument value="10000" /></process>
+  <process host="Pronovost" function="chord.Node"><argument value="50752" /><argument value="57006" /><argument value="740" /><argument value="10000" /></process>
+  <process host="SPICE" function="chord.Node"><argument value="25862" /><argument value="39639" /><argument value="750" /><argument value="10000" /></process>
+  <process host="Europe" function="chord.Node"><argument value="9368" /><argument value="42" /><argument value="760" /><argument value="10000" /></process>
+  <process host="Roy" function="chord.Node"><argument value="21230" /><argument value="13460" /><argument value="770" /><argument value="10000" /></process>
+  <process host="Amadeus" function="chord.Node"><argument value="38231" /><argument value="50233" /><argument value="780" /><argument value="10000" /></process>
+  <process host="Intel" function="chord.Node"><argument value="16977" /><argument value="19096" /><argument value="790" /><argument value="10000" /></process>
+  <process host="Cambridge" function="chord.Node"><argument value="25608" /><argument value="14017" /><argument value="800" /><argument value="10000" /></process>
+  <process host="Tremblay" function="chord.Node"><argument value="34574" /><argument value="41142" /><argument value="810" /><argument value="10000" /></process>
+  <process host="UNIX" function="chord.Node"><argument value="594" /><argument value="44773" /><argument value="820" /><argument value="10000" /></process>
+  <process host="Domey" function="chord.Node"><argument value="20647" /><argument value="44773" /><argument value="830" /><argument value="10000" /></process>
+  <process host="St_Bruno" function="chord.Node"><argument value="14594" /><argument value="61643" /><argument value="840" /><argument value="10000" /></process>
+  <process host="Jean_Claude" function="chord.Node"><argument value="54654" /><argument value="3041" /><argument value="850" /><argument value="10000" /></process>
+  <process host="Doyon" function="chord.Node"><argument value="5384" /><argument value="3041" /><argument value="860" /><argument value="10000" /></process>
+  <process host="Fafard" function="chord.Node"><argument value="12482" /><argument value="57006" /><argument value="870" /><argument value="10000" /></process>
+  <process host="Croteau" function="chord.Node"><argument value="54647" /><argument value="16977" /><argument value="880" /><argument value="10000" /></process>
+  <process host="Dodge" function="chord.Node"><argument value="17524" /><argument value="594" /><argument value="890" /><argument value="10000" /></process>
+</platform>
