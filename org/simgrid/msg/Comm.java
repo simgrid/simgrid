@@ -46,7 +46,7 @@ public class Comm {
 	/**
 	 * Unbind the communication object
 	 */
-	public native void destroy() throws NativeException;
+	protected native void destroy() throws NativeException;
 	/**
 	 * Returns if the communication is finished or not.
 	 * If the communication has finished and there was an error,

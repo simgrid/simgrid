@@ -167,7 +167,13 @@ Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
 
   (*env)->ReleaseStringUTFChars(env, jplatformFile, platformFile);
 }
-
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Msg_debug(JNIEnv * env, jclass cls, jstring js)
+{
+  const char *s = (*env)->GetStringUTFChars(env, js, 0);
+  XBT_DEBUG("%s", s);
+  (*env)->ReleaseStringUTFChars(env, js, s);
+}
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring js)
 {

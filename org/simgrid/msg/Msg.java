@@ -50,7 +50,11 @@ public final class Msg {
      * @return
      */
 	public final static native double getClock();
-
+	/**
+	 * Issue an "debug" logging message.
+	 * @param s message to log.
+	 */
+	public final static native void debug(String s);
     /** Issue an information logging message
      * @param s
      */
