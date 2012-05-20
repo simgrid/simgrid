@@ -450,6 +450,8 @@ XBT_INLINE int xbt_fifo_size(xbt_fifo_t f)
 /**
  * \param l a list
  * \return the head of \a l.
+ *
+ * Returns NULL if the list is empty.
  */
 XBT_INLINE xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
 {
@@ -459,6 +461,8 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
 /**
  * \param l a list
  * \return the tail of \a l.
+ *
+ * Returns NULL if the list is empty.
  */
 XBT_INLINE xbt_fifo_item_t xbt_fifo_get_last_item(xbt_fifo_t l)
 {
@@ -476,6 +480,8 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
 /**
  * \param i a bucket
  * \return the bucket that comes next
+ *
+ * Returns NULL if \a i is the tail of the list.
  */
 XBT_INLINE xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i)
 {
@@ -495,6 +501,8 @@ xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i)
 /**
  * \param i a bucket
  * \return the bucket that is just before \a i.
+ *
+ * Returns NULL if \a i is the head of the list.
  */
 XBT_INLINE xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i)
 {
