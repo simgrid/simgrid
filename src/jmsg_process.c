@@ -267,8 +267,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep
 	CATCH_ANONYMOUS {
 		return;
 	}
-	jxbt_check_res("MSG_process_sleep()", rv, MSG_OK,
-                 bprintf("unexpected error , please report this bug"));
+  if (rv != MSG_OK) {
+  	jmsg_throw_status(env,rv);
+  }
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
@@ -288,7 +289,8 @@ Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
   	return;
   }
   if (rv != MSG_OK) {
-//  	smx_ctx_java_stop(smx_ctx_java_self());
+  	XBT_INFO("Status NOK");
+  	jmsg_throw_status(env,rv);
   }
 }
 

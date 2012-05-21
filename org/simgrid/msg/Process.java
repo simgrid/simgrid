@@ -310,7 +310,7 @@ public abstract class Process implements Runnable {
 	 * FIXME: Not optimal, maybe we should have two native functions.
 	 * @param millis the length of time to sleep in milliseconds.
 	 */
-	public static void sleep(long millis)  {
+	public static void sleep(long millis) throws HostFailureException  {
 		sleep(millis,0);
 	}
 	/**
@@ -321,12 +321,12 @@ public abstract class Process implements Runnable {
 	 * @param millis the length of time to sleep in milliseconds.
 	 * @param nanos additionnal nanoseconds to sleep.
 	 */
-	public native static void sleep(long millis, int nanos);
+	public native static void sleep(long millis, int nanos) throws HostFailureException;
 	/**
 	 * Makes the current process sleep until time seconds have elapsed.
 	 * @param seconds		The time the current process must sleep.
 	 */ 
-	public native void waitFor(double seconds);    
+	public native void waitFor(double seconds) throws HostFailureException;    
 	/**
      *
      */
