@@ -252,7 +252,7 @@ int reached(xbt_state_t st);
 void set_pair_reached(xbt_state_t st);
 int reached_hash(xbt_state_t st);
 void set_pair_reached_hash(xbt_state_t st);
-int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, void* s_heap, void* r_heap);
 int data_program_region_compare(void *d1, void *d2, size_t size);
 int data_libsimgrid_region_compare(void *d1, void *d2, size_t size);
 void MC_pair_delete(mc_pair_t pair);
@@ -265,6 +265,7 @@ void set_pair_visited_hash(xbt_state_t st, int search_cycle);
 unsigned int hash_region(char *str, int str_len);
 int rdv_points_compare(xbt_dict_t d1, xbt_dict_t d2);
 
+const char* get_memory_map_addr(void *addr);
 
 /* **** Double-DFS stateless **** */
 

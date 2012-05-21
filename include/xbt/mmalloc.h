@@ -58,7 +58,7 @@ extern void mmalloc_display_info_heap(xbt_mheap_t h);
 void mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
-int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2);
+int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void* s_heap, void* r_heap);
 
 void mmalloc_backtrace_display(xbt_mheap_t mdp, void *addr);
 

@@ -111,20 +111,20 @@ void mmalloc_backtrace_fragment_display(xbt_mheap_t mdp, size_t block, size_t fr
   }
 }
 
-int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2){
+int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void* s_heap, void* r_heap){
 
   if(mdp1 == NULL && mdp2 == NULL){
     fprintf(stderr, "Malloc descriptors null\n");
     return 0;
   }
 
-  int errors = mmalloc_compare_mdesc(mdp1, mdp2);
+  int errors = mmalloc_compare_mdesc(mdp1, mdp2, s_heap, r_heap);
 
   return (errors > 0);
 
 }
 
-int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
+int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, void* r_heap){
 
   int errors = 0;
 
@@ -238,7 +238,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	    fprintf(stderr, "Different byte (offset=%d) (%p - %p) in block %zu\n", k, (char *)addr_block1 + k, (char *)addr_block2 + k, i); 
 	    distance++;
 	    pointer_align = (k / sizeof(void*)) * sizeof(void*); 
-	    fprintf(stderr, "Pointer address : %p - %p\n", *((void **)((char *)addr_block1 + pointer_align)), *((void **)((char *)addr_block2 + pointer_align)));
+	    fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)addr_block1 + pointer_align)), get_addr_memory_map(*((void **)((char *)addr_block1 + pointer_align)), s_heap, r_heap), *((void **)((char *)addr_block2 + pointer_align)),get_addr_memory_map(*((void **)((char *)addr_block2 + pointer_align)), s_heap, r_heap) );
 	  }
 	}
 
@@ -296,7 +296,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 		  fprintf(stderr, "Different byte (offset=%d) (%p - %p) in fragment %zu in block %zu\n", k, (char *)addr_frag1 + k, (char *)addr_frag2 + k, j, i); 
 		  distance++;
 		  pointer_align = (k / sizeof(void*)) * sizeof(void*);
-		  fprintf(stderr, "Pointer address : %p - %p\n", *((void **)((char *)addr_frag1 + pointer_align)), *((void **)((char *)addr_frag2 + pointer_align)));
+		  fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)addr_frag1 + pointer_align)), get_addr_memory_map(*((void **)((char *)addr_frag1 + pointer_align)), s_heap, r_heap), *((void **)((char *)addr_frag2 + pointer_align)), get_addr_memory_map(*((void **)((char *)addr_frag2 + pointer_align)), s_heap, r_heap));
 		}
 	      }
 
@@ -326,6 +326,62 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   return (errors);
 }
 
+
+const char* get_addr_memory_map(void *addr, void* s_heap, void* r_heap){
+
+  FILE *fp;                     /* File pointer to process's proc maps file */
+  char *line = NULL;            /* Temporal storage for each line that is readed */
+  ssize_t read;                 /* Number of bytes readed */
+  size_t n = 0;                 /* Amount of bytes to read by getline */
+
+  fp = fopen("/proc/self/maps", "r");
+  
+  if(fp == NULL)
+    perror("fopen failed");
+
+  if(addr == NULL)
+    return "nil";
+
+  char *lfields[6], *start, *end, *endptr;
+  int i;
+  void *start_addr;
+  void *end_addr;
+
+  while ((read = getline(&line, &n, fp)) != -1) {
+
+    line[read - 1] = '\0';
+
+    lfields[0] = strtok(line, " ");
+
+    for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
+      lfields[i] = strtok(NULL, " ");
+    }
+
+    start = strtok(lfields[0], "-");
+    start_addr = (void *) strtoul(start, &endptr, 16); 
+   
+    if(start_addr == s_heap)
+      lfields[5] = strdup("std_heap");
+    if(start_addr == r_heap)
+      lfields[5] = strdup("raw_heap");
+    end = strtok(NULL, "-");
+    end_addr = (void *) strtoul(end, &endptr, 16); 
+   
+    if((addr > start_addr) && ( addr < end_addr)){
+      free(line);
+      fclose(fp);
+      if(lfields[5] != NULL){
+	return lfields[5];
+      }else{
+	return "Anonymous";
+      }
+    }
+    
+  }
+
+  return "Unknown area";
+
+}
 
 void mmalloc_display_info_heap(xbt_mheap_t h){
 

@@ -33,6 +33,62 @@ unsigned int hash_region(char *str, int str_len){
 
 }
 
+const char* get_memory_map_addr(void *addr){
+
+  FILE *fp;                     /* File pointer to process's proc maps file */
+  char *line = NULL;            /* Temporal storage for each line that is readed */
+  ssize_t read;                 /* Number of bytes readed */
+  size_t n = 0;                 /* Amount of bytes to read by getline */
+
+  fp = fopen("/proc/self/maps", "r");
+  
+  if(fp == NULL)
+    perror("fopen failed");
+
+  if(addr == NULL)
+    return "nil";
+
+  char *lfields[6], *start, *end, *endptr;
+  int i;
+  void *start_addr;
+  void *end_addr;
+
+  while ((read = getline(&line, &n, fp)) != -1) {
+
+    line[read - 1] = '\0';
+
+    lfields[0] = strtok(line, " ");
+
+    for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
+      lfields[i] = strtok(NULL, " ");
+    }
+
+    start = strtok(lfields[0], "-");
+    start_addr = (void *) strtoul(start, &endptr, 16); 
+   
+    if(start_addr == std_heap)
+      lfields[5] = strdup("std_heap");
+    if(start_addr == raw_heap)
+      lfields[5] = strdup("raw_heap");
+    end = strtok(NULL, "-");
+    end_addr = (void *) strtoul(end, &endptr, 16); 
+   
+    if((addr > start_addr) && ( addr < end_addr)){
+      free(line);
+      fclose(fp);
+      if(lfields[5] != NULL){
+	return lfields[5];
+      }else{
+	return "Anonymous";
+      }
+    }
+    
+  }
+
+  return "Unknown area";
+
+}
+
 int data_program_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
   int pointer_align;
@@ -43,12 +99,11 @@ int data_program_region_compare(void *d1, void *d2, size_t size){
       fprintf(stderr,"Different byte (offset=%d) (%p - %p) in data program region\n", i, (char *)d1 + i, (char *)d2 + i);
       distance++;
       pointer_align = (i /sizeof(void *)) * sizeof(void *);
-      fprintf(stderr, "Pointer address : %p - %p\n", (char *)d1 + pointer_align, (char *)d2 + pointer_align);
-      fprintf(stderr, "Pointed address : %p - %p\n", *((void **)((char *)d1 + pointer_align)), *((void **)((char *)d2 + pointer_align)));
+      fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)d1 + pointer_align)),  get_memory_map_addr(*((void **)((char *)d1 + pointer_align))), *((void **)((char *)d2 + pointer_align)), get_memory_map_addr(*((void **)((char *)d2 + pointer_align))));
     }
   }
   
-  fprintf(stderr, "Hamming distance between data program regions : %d", distance);
+  fprintf(stderr, "Hamming distance between data program regions : %d\n", distance);
 
   return distance;
 }
@@ -60,20 +115,19 @@ int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
   
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
-      fprintf(stderr, "Different byte (offset=%d) (%p - %p) in data libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);
+      fprintf(stderr, "Different byte (offset=%d) (%p - %p) in data libsimgrid region\n", i, (char *)d1 + i, (char *)d2 + i);
       distance++;
       pointer_align = (i /sizeof(void *)) * sizeof(void *);
-      fprintf(stderr, "Pointer address : %p - %p\n", (char *)d1 + pointer_align, (char *)d2 + pointer_align);
-      fprintf(stderr, "Pointed address : %p - %p\n", *((void **)((char *)d1 + pointer_align)), *((void **)((char *)d2 + pointer_align)));
+      fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)d1 + pointer_align)), get_memory_map_addr(*((void **)((char *)d1 + pointer_align))), *((void **)((char *)d2 + pointer_align)), get_memory_map_addr(*((void **)((char *)d2 + pointer_align))));
     }
   }
   
-  fprintf(stderr, "Hamming distance between data libsimgrid regions : %d", distance);
+  fprintf(stderr, "Hamming distance between data libsimgrid regions : %d\n", distance);
   
   return distance;
 }
 
-int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, void* s_heap, void* r_heap){
 
   
   if(s1->num_reg != s2->num_reg){
@@ -113,7 +167,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 	  return 1;
 	}
       }
-      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data)){
+      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data, s_heap, r_heap)){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different heap (mmalloc_compare)");
 	  errors++; 
@@ -222,7 +276,7 @@ int reached(xbt_state_t st){
 	  //XBT_DEBUG("Rdv points size %d - %d", xbt_dict_length(pair_test->rdv_points), xbt_dict_length(current_rdv_points));
 	  //if(xbt_dict_length(pair_test->rdv_points) == xbt_dict_length(current_rdv_points)){
 	  //if(rdv_points_compare(pair_test->rdv_points, current_rdv_points) == 0){
-	      if(snapshot_compare(pair_test->system_state, sn) == 0){
+	  if(snapshot_compare(pair_test->system_state, sn, std_heap, raw_heap) == 0){
 		MC_free_snapshot(sn);
 		xbt_dynar_reset(prop_ato);
 		xbt_free(prop_ato);
@@ -619,7 +673,7 @@ int visited(xbt_state_t st, int sc){
       if(pair_test->search_cycle == sc) {
 	if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	  if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
-	    if(snapshot_compare(pair_test->system_state, sn) == 0){
+	    if(snapshot_compare(pair_test->system_state, sn, std_heap, raw_heap) == 0){
 	    
 	      MC_free_snapshot(sn);
 	      xbt_dynar_reset(prop_ato);

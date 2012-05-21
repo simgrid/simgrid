@@ -224,9 +224,11 @@ struct mdesc {
 
 };
 
-int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2);
+int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, void* r_heap);
 
 void mmalloc_display_info(void *h);
+
+const char* get_addr_memory_map(void *addr, void* s_heap, void* r_heap);
 
 /* Bits to look at in the malloc descriptor flags word */
 
