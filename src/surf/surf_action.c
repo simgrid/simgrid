@@ -366,3 +366,95 @@ double surf_action_get_remains(surf_action_t action)
   XBT_OUT();
   return action->remains;
 }
+
+void generic_update_actions_state_lazy(double now, double delta, surf_model_t model)
+{
+  surf_action_lmm_t action;
+  while ((xbt_heap_size(model->model_private->action_heap) > 0)
+         && (double_equals(xbt_heap_maxkey(model->model_private->action_heap), now))) {
+    action = xbt_heap_pop(model->model_private->action_heap);
+    XBT_DEBUG("Action %p: finish", action);
+    action->generic_action.finish = surf_get_clock();
+#ifdef HAVE_TRACING
+    if (TRACE_is_enabled()) {
+      if(model == surf_cpu_model){
+      surf_resource_t cpu =
+          lmm_constraint_id(lmm_get_cnst_from_var
+                            (model->model_private->maxmin_system,
+                             action->variable, 0));
+      TRACE_surf_host_set_utilization(cpu->name,
+                                      ((surf_action_t)action)->category,
+                                      lmm_variable_getvalue(action->variable),
+                                      action->last_update,
+                                      now - action->last_update);
+      }
+      else{
+        int n = lmm_get_number_of_cnst_from_var(model->model_private->maxmin_system, action->variable);
+        unsigned int i;
+        for (i = 0; i < n; i++){
+          lmm_constraint_t constraint = lmm_get_cnst_from_var(model->model_private->maxmin_system,
+                                                              action->variable,
+                                                              i);
+          link_CM02_t link = lmm_constraint_id(constraint);
+          TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
+                                          ((surf_action_t)action)->category,
+                                          (lmm_variable_getvalue(action->variable)*
+                                              lmm_get_cnst_weight_from_var(model->model_private->maxmin_system,
+                                                  action->variable,
+                                                  i)),
+                                          action->last_update,
+                                          now - action->last_update);
+        }
+      }
+    }
+#endif
+
+    if(model == surf_cpu_model){
+      /* set the remains to 0 due to precision problems when updating the remaining amount */
+      action->generic_action.remains = 0;
+      surf_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
+      surf_action_lmm_heap_remove(model->model_private->action_heap,action); //FIXME: strange call since action was already popped
+    }
+    else{
+      // if I am wearing a latency hat
+      if (action->hat == LATENCY) {
+        lmm_update_variable_weight(model->model_private->maxmin_system, action->variable,
+            ((surf_action_network_CM02_t)(action))->weight);
+        surf_action_lmm_heap_remove(model->model_private->action_heap,action);
+        action->last_update = surf_get_clock();
+
+        // if I am wearing a max_duration or normal hat
+      } else if (action->hat == MAX_DURATION ||
+          action->hat == NORMAL) {
+        // no need to communicate anymore
+        // assume that flows that reached max_duration have remaining of 0
+        action->generic_action.remains = 0;
+        ((surf_action_t)action)->finish = surf_get_clock();
+        model->action_state_set((surf_action_t) action,
+                                             SURF_ACTION_DONE);
+        surf_action_lmm_heap_remove(model->model_private->action_heap,action);
+      }
+    }
+  }
+#ifdef HAVE_TRACING
+  if (TRACE_is_enabled() && model == surf_cpu_model) {
+    //defining the last timestamp that we can safely dump to trace file
+    //without losing the event ascending order (considering all CPU's)
+    double smaller = -1;
+    xbt_swag_t running_actions = model->states.running_action_set;
+    xbt_swag_foreach(action, running_actions) {
+        if (smaller < 0) {
+          smaller = action->last_update;
+          continue;
+        }
+        if (action->last_update < smaller) {
+          smaller = action->last_update;
+        }
+    }
+    if (smaller > 0) {
+      TRACE_last_timestamp_to_dump = smaller;
+    }
+  }
+#endif
+  return;
+}

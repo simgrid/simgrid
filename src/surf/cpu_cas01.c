@@ -157,51 +157,7 @@ static double cpu_share_resources_full(double now)
 
 static void cpu_update_actions_state_lazy(double now, double delta)
 {
-  surf_action_cpu_Cas01_t action;
-  while ((xbt_heap_size(surf_cpu_model->model_private->action_heap) > 0)
-         && (double_equals(xbt_heap_maxkey(surf_cpu_model->model_private->action_heap), now))) {
-    action = xbt_heap_pop(surf_cpu_model->model_private->action_heap);
-    XBT_DEBUG("Action %p: finish", action);
-    GENERIC_ACTION(action).finish = surf_get_clock();
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
-      cpu_Cas01_t cpu =
-          lmm_constraint_id(lmm_get_cnst_from_var
-                            (surf_cpu_model->model_private->maxmin_system,
-                             GENERIC_LMM_ACTION(action).variable, 0));
-      TRACE_surf_host_set_utilization(cpu->generic_resource.name,
-                                      ((surf_action_t)action)->category,
-                                      lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable),
-                                      GENERIC_LMM_ACTION(action).last_update,
-                                      now - GENERIC_LMM_ACTION(action).last_update);
-    }
-#endif
-    /* set the remains to 0 due to precision problems when updating the remaining amount */
-    GENERIC_ACTION(action).remains = 0;
-    surf_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    surf_action_lmm_heap_remove(surf_cpu_model->model_private->action_heap,(surf_action_lmm_t)action); //FIXME: strange call since action was already popped
-  }
-#ifdef HAVE_TRACING
-  if (TRACE_is_enabled()) {
-    //defining the last timestamp that we can safely dump to trace file
-    //without losing the event ascending order (considering all CPU's)
-    double smaller = -1;
-    xbt_swag_t running_actions = surf_cpu_model->states.running_action_set;
-    xbt_swag_foreach(action, running_actions) {
-        if (smaller < 0) {
-          smaller = GENERIC_LMM_ACTION(action).last_update;
-          continue;
-        }
-        if (GENERIC_LMM_ACTION(action).last_update < smaller) {
-          smaller = GENERIC_LMM_ACTION(action).last_update;
-        }
-    }
-    if (smaller > 0) {
-      TRACE_last_timestamp_to_dump = smaller;
-    }
-  }
-#endif
-  return;
+  generic_update_actions_state_lazy(now, delta, surf_cpu_model);
 }
 
 static void cpu_update_actions_state_full(double now, double delta)

@@ -428,54 +428,7 @@ static void net_update_actions_state_full(double now, double delta)
 
 static void net_update_actions_state_lazy(double now, double delta)
 {
-  surf_action_network_CM02_t action = NULL;
-
-  while ((xbt_heap_size(surf_network_model->model_private->action_heap) > 0)
-         && (double_equals(xbt_heap_maxkey(surf_network_model->model_private->action_heap), now))) {
-    action = xbt_heap_pop(surf_network_model->model_private->action_heap);
-    XBT_DEBUG("Action %p: finish", action);
-    GENERIC_ACTION(action).finish = surf_get_clock();
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
-      int n = lmm_get_number_of_cnst_from_var(surf_network_model->model_private->maxmin_system, GENERIC_LMM_ACTION(action).variable);
-      unsigned int i;
-      for (i = 0; i < n; i++){
-        lmm_constraint_t constraint = lmm_get_cnst_from_var(surf_network_model->model_private->maxmin_system,
-                                                            GENERIC_LMM_ACTION(action).variable,
-                                                            i);
-        link_CM02_t link = lmm_constraint_id(constraint);
-        TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
-                                        ((surf_action_t)action)->category,
-                                        (lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable)*
-                                            lmm_get_cnst_weight_from_var(surf_network_model->model_private->maxmin_system,
-                                                GENERIC_LMM_ACTION(action).variable,
-                                                i)),
-                                        GENERIC_LMM_ACTION(action).last_update,
-                                        now - GENERIC_LMM_ACTION(action).last_update);
-      }
-    }
-#endif
-
-    // if I am wearing a latency hat
-    if (GENERIC_LMM_ACTION(action).hat == LATENCY) {
-      lmm_update_variable_weight(surf_network_model->model_private->maxmin_system, GENERIC_LMM_ACTION(action).variable,
-                                 action->weight);
-      surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
-      GENERIC_LMM_ACTION(action).last_update = surf_get_clock();
-
-      // if I am wearing a max_duration or normal hat
-    } else if (GENERIC_LMM_ACTION(action).hat == MAX_DURATION ||
-        GENERIC_LMM_ACTION(action).hat == NORMAL) {
-      // no need to communicate anymore
-      // assume that flows that reached max_duration have remaining of 0
-      GENERIC_ACTION(action).remains = 0;
-      ((surf_action_t)action)->finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action,
-                                           SURF_ACTION_DONE);
-      surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
-    }
-  }
-  return;
+  generic_update_actions_state_lazy(now, delta, surf_network_model);
 }
 
 static void net_update_resource_state(void *id,
