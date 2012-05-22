@@ -243,7 +243,7 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
     action->execution.surf_exec =
       surf_workstation_model->extension.workstation.
       execute_parallel_task(host_nb, workstation_list, computation_amount,
-	                    communication_amount, amount, rate);
+	                    communication_amount, rate);
 
     surf_workstation_model->action_data_set(action->execution.surf_exec, action);
   }
