@@ -154,7 +154,6 @@ static double (*bandwidth_constraint_callback) (double, double, double) =
 
 static void (*gap_append) (double, const link_CM02_t,
                            surf_action_network_CM02_t) = NULL;
-static void (*gap_remove) (surf_action_network_CM02_t) = NULL;
 
 static void *net_create_resource(const char *name,
                                  double bw_initial,
@@ -347,83 +346,7 @@ static double net_share_resources_lazy(double now)
 
 static void net_update_actions_state_full(double now, double delta)
 {
-  double deltap = 0.0;
-  surf_action_network_CM02_t action = NULL;
-  surf_action_network_CM02_t next_action = NULL;
-  xbt_swag_t running_actions =
-      surf_network_model->states.running_action_set;
-  /*
-     xbt_swag_t failed_actions =
-     surf_network_model->states.failed_action_set;
-   */
-
-  xbt_swag_foreach_safe(action, next_action, running_actions) {
-    deltap = delta;
-    if (action->latency > 0) {
-      if (action->latency > deltap) {
-        double_update(&(action->latency), deltap);
-        deltap = 0.0;
-      } else {
-        double_update(&(deltap), action->latency);
-        action->latency = 0.0;
-      }
-      if ((action->latency == 0.0) && !(GENERIC_LMM_ACTION(action).suspended))
-        lmm_update_variable_weight(surf_network_model->model_private->maxmin_system, GENERIC_LMM_ACTION(action).variable,
-                                   action->weight);
-    }
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
-      int n = lmm_get_number_of_cnst_from_var(surf_network_model->model_private->maxmin_system, GENERIC_LMM_ACTION(action).variable);
-      unsigned int i;
-      for (i = 0; i < n; i++){
-        lmm_constraint_t constraint = lmm_get_cnst_from_var(surf_network_model->model_private->maxmin_system,
-                                                            GENERIC_LMM_ACTION(action).variable,
-                                                            i);
-        link_CM02_t link = lmm_constraint_id(constraint);
-        TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
-                                        ((surf_action_t)action)->category,
-                                        (lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable)*
-                                        lmm_get_cnst_weight_from_var(surf_network_model->model_private->maxmin_system,
-                                            GENERIC_LMM_ACTION(action).variable,
-                                            i)),
-                                        now - delta,
-                                        delta);
-      }
-    }
-#endif
-    if (!lmm_get_number_of_cnst_from_var
-        (surf_network_model->model_private->maxmin_system, GENERIC_LMM_ACTION(action).variable)) {
-      /* There is actually no link used, hence an infinite bandwidth.
-       * This happens often when using models like vivaldi.
-       * In such case, just make sure that the action completes immediately.
-       */
-      double_update(&(GENERIC_ACTION(action).remains),
-                    GENERIC_ACTION(action).remains);
-    }
-    double_update(&(GENERIC_ACTION(action).remains),
-                  lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * deltap);
-    if (((surf_action_t)action)->max_duration != NO_MAX_DURATION)
-      double_update(&(((surf_action_t)action)->max_duration), delta);
-
-    if ((GENERIC_ACTION(action).remains <= 0) &&
-        (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0)) {
-      ((surf_action_t)action)->finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action,
-                                           SURF_ACTION_DONE);
-
-      if (gap_remove)
-        gap_remove(action);
-    } else if ((((surf_action_t)action)->max_duration != NO_MAX_DURATION)
-               && (((surf_action_t)action)->max_duration <= 0)) {
-      ((surf_action_t)action)->finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action,
-                                           SURF_ACTION_DONE);
-      if (gap_remove)
-        gap_remove(action);
-    }
-  }
-
-  return;
+  generic_update_actions_state_full(now, delta, surf_network_model);
 }
 
 static void net_update_actions_state_lazy(double now, double delta)
@@ -767,10 +690,11 @@ static void smpi_gap_append(double size, const link_CM02_t link,
   }
 }
 
-static void smpi_gap_remove(surf_action_network_CM02_t action)
+static void smpi_gap_remove(surf_action_lmm_t lmm_action)
 {
   xbt_fifo_t fifo;
   size_t size;
+  surf_action_network_CM02_t action = (surf_action_network_CM02_t)(lmm_action);
 
   if (sg_sender_gap > 0.0 && action->sender.link_name
       && action->sender.fifo_item) {
@@ -882,6 +806,8 @@ static void surf_network_model_init_internal(void)
         xbt_swag_new(xbt_swag_offset(comm, generic_lmm_action.action_list_hookup));
     surf_network_model->model_private->maxmin_system->keep_track = surf_network_model->model_private->modified_set;
   }
+
+  surf_network_model->gap_remove = NULL;
 }
 
 /************************************************************************/
@@ -906,7 +832,7 @@ void surf_network_model_init_SMPI(void)
   bandwidth_factor_callback = &smpi_bandwidth_factor;
   bandwidth_constraint_callback = &smpi_bandwidth_constraint;
   gap_append = &smpi_gap_append;
-  gap_remove = &smpi_gap_remove;
+  surf_network_model->gap_remove = &smpi_gap_remove;
   net_define_callbacks();
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;

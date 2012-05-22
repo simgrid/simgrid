@@ -162,45 +162,7 @@ static void cpu_update_actions_state_lazy(double now, double delta)
 
 static void cpu_update_actions_state_full(double now, double delta)
 {
-  surf_action_cpu_Cas01_t action = NULL;
-  surf_action_cpu_Cas01_t next_action = NULL;
-  xbt_swag_t running_actions = surf_cpu_model->states.running_action_set;
-  xbt_swag_foreach_safe(action, next_action, running_actions) {
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
-      cpu_Cas01_t x =
-          lmm_constraint_id(lmm_get_cnst_from_var
-                            (surf_cpu_model->model_private->maxmin_system,
-                             GENERIC_LMM_ACTION(action).variable, 0));
-
-      TRACE_surf_host_set_utilization(x->generic_resource.name,
-                                      ((surf_action_t)action)->category,
-                                      lmm_variable_getvalue(GENERIC_LMM_ACTION(action).
-                                       variable),
-                                      now - delta,
-                                      delta);
-      TRACE_last_timestamp_to_dump = now - delta;
-    }
-#endif
-    double_update(&(GENERIC_ACTION(action).remains),
-                  lmm_variable_getvalue(GENERIC_LMM_ACTION(action).
-                                        variable) * delta);
-    if (GENERIC_LMM_ACTION(action).generic_action.max_duration !=
-        NO_MAX_DURATION)
-      double_update(&(GENERIC_ACTION(action).max_duration), delta);
-    if ((GENERIC_ACTION(action).remains <= 0) &&
-        (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) >
-         0)) {
-      GENERIC_ACTION(action).finish = surf_get_clock();
-      surf_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    } else if ((GENERIC_ACTION(action).max_duration != NO_MAX_DURATION) &&
-               (GENERIC_ACTION(action).max_duration <= 0)) {
-      GENERIC_ACTION(action).finish = surf_get_clock();
-      surf_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
-    }
-  }
-
-  return;
+  generic_update_actions_state_full(now, delta, surf_cpu_model);
 }
 
 static void cpu_update_resource_state(void *id,

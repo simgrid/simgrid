@@ -316,6 +316,8 @@ typedef struct surf_model {
   int (*get_latency_limited) (surf_action_t action);     /**< Return 1 if action is limited by latency, 0 otherwise */
 #endif
 
+  void (*gap_remove) (surf_action_lmm_t action);
+
   surf_model_private_t model_private;
 
   union extension {

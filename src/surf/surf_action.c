@@ -291,15 +291,16 @@ void surf_action_set_category(surf_action_t action,
 void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
 {
   double delta = 0.0;
+  surf_model_t model = action->generic_action.model_type;
 
-  if(action->generic_action.model_type == surf_network_model)
+  if(model == surf_network_model)
   {
     if (action->suspended != 0)
       return;
   }
   else
   {
-    xbt_assert(action->generic_action.state_set == surf_cpu_model->states.running_action_set,
+    xbt_assert(action->generic_action.state_set == model->states.running_action_set,
         "You're updating an action that is not running.");
 
       /* bogus priority, skip it */
@@ -315,10 +316,10 @@ void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
         action->last_value * delta);
 
 #ifdef HAVE_TRACING
-    if (action->generic_action.model_type == surf_cpu_model && TRACE_is_enabled()) {
+    if (model == surf_cpu_model && TRACE_is_enabled()) {
       surf_resource_t cpu =
           lmm_constraint_id(lmm_get_cnst_from_var
-              (surf_cpu_model->model_private->maxmin_system,
+              (model->model_private->maxmin_system,
                   action->variable, 0));
       TRACE_surf_host_set_utilization(cpu->name,
           action->generic_action.category,
@@ -331,7 +332,7 @@ void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
         action->generic_action.remains);
   }
 
-  if(action->generic_action.model_type == surf_network_model)
+  if(model == surf_network_model)
   {
     if (((surf_action_t)action)->max_duration != NO_MAX_DURATION)
       double_update(&(((surf_action_t)action)->max_duration), delta);
@@ -339,16 +340,16 @@ void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
     if ((((surf_action_t)action)->remains <= 0) &&
         (lmm_get_variable_weight(action->variable) > 0)) {
       ((surf_action_t)action)->finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action,
+      model->action_state_set((surf_action_t) action,
           SURF_ACTION_DONE);
 
-      surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
+      surf_action_lmm_heap_remove(model->model_private->action_heap,(surf_action_lmm_t)action);
     } else if (((((surf_action_t)action)->max_duration != NO_MAX_DURATION)
         && (((surf_action_t)action)->max_duration <= 0))) {
       ((surf_action_t)action)->finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action,
+      model->action_state_set((surf_action_t) action,
           SURF_ACTION_DONE);
-      surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
+      surf_action_lmm_heap_remove(model->model_private->action_heap,(surf_action_lmm_t)action);
     }
   }
 
@@ -456,5 +457,106 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
     }
   }
 #endif
+  return;
+}
+
+void generic_update_actions_state_full(double now, double delta, surf_model_t model)
+{
+  surf_action_lmm_t action = NULL;
+  surf_action_lmm_t next_action = NULL;
+  xbt_swag_t running_actions = model->states.running_action_set;
+
+  xbt_swag_foreach_safe(action, next_action, running_actions) {
+
+    if(model == surf_network_model)
+    {
+      double deltap = 0.0;
+      deltap = delta;
+      if (((surf_action_network_CM02_t)action)->latency > 0) {
+        if (((surf_action_network_CM02_t)action)->latency > deltap) {
+          double_update(&(((surf_action_network_CM02_t)action)->latency), deltap);
+          deltap = 0.0;
+        } else {
+          double_update(&(deltap), ((surf_action_network_CM02_t)action)->latency);
+          ((surf_action_network_CM02_t)action)->latency = 0.0;
+        }
+        if ((((surf_action_network_CM02_t)action)->latency == 0.0) && !(action->suspended))
+          lmm_update_variable_weight(model->model_private->maxmin_system, action->variable,
+              ((surf_action_network_CM02_t)action)->weight);
+      }
+  #ifdef HAVE_TRACING
+      if (TRACE_is_enabled()) {
+        int n = lmm_get_number_of_cnst_from_var(model->model_private->maxmin_system, action->variable);
+        unsigned int i;
+        for (i = 0; i < n; i++){
+          lmm_constraint_t constraint = lmm_get_cnst_from_var(model->model_private->maxmin_system,
+                                                              action->variable,
+                                                              i);
+          link_CM02_t link = lmm_constraint_id(constraint);
+          TRACE_surf_link_set_utilization(link->lmm_resource.generic_resource.name,
+                                          ((surf_action_t)action)->category,
+                                          (lmm_variable_getvalue(action->variable)*
+                                          lmm_get_cnst_weight_from_var(model->model_private->maxmin_system,
+                                              action->variable,
+                                              i)),
+                                          now - delta,
+                                          delta);
+        }
+      }
+  #endif
+      if (!lmm_get_number_of_cnst_from_var
+          (model->model_private->maxmin_system, action->variable)) {
+        /* There is actually no link used, hence an infinite bandwidth.
+         * This happens often when using models like vivaldi.
+         * In such case, just make sure that the action completes immediately.
+         */
+        double_update(&(action->generic_action.remains),
+                      action->generic_action.remains);
+      }
+    }
+    else
+    {
+#ifdef HAVE_TRACING
+      if (TRACE_is_enabled()) {
+        surf_resource_t x =
+            lmm_constraint_id(lmm_get_cnst_from_var
+                              (model->model_private->maxmin_system,
+                               action->variable, 0));
+
+        TRACE_surf_host_set_utilization(x->name,
+                                        ((surf_action_t)action)->category,
+                                        lmm_variable_getvalue(action->variable),
+                                        now - delta,
+                                        delta);
+        TRACE_last_timestamp_to_dump = now - delta;
+      }
+#endif
+    }
+
+    double_update(&(action->generic_action.remains),
+                  lmm_variable_getvalue(action->variable) * delta);
+
+
+    if (action->generic_action.max_duration != NO_MAX_DURATION)
+      double_update(&(action->generic_action.max_duration), delta);
+
+
+    if ((action->generic_action.remains <= 0) &&
+        (lmm_get_variable_weight(action->variable) > 0)) {
+      action->generic_action.finish = surf_get_clock();
+      surf_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
+
+      if (model->gap_remove && model == surf_network_model)
+        model->gap_remove(action);
+    } else if ((action->generic_action.max_duration != NO_MAX_DURATION) &&
+               (action->generic_action.max_duration <= 0)) {
+      action->generic_action.finish = surf_get_clock();
+      surf_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
+
+      if (model->gap_remove && model == surf_network_model)
+        model->gap_remove(action);
+    }
+  }
+
   return;
 }
