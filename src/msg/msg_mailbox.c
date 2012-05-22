@@ -8,6 +8,7 @@
 
 #include "msg_mailbox.h"
 #include "msg_private.h"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg,
                                 "Logging specific to MSG (mailbox)");
 
@@ -192,6 +193,6 @@ msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host,
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
-  return host->simdata->mailboxes[(size_t) channel];
+  return host->mailboxes[(size_t) channel];
 }
 #endif
