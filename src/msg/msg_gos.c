@@ -1033,7 +1033,7 @@ MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
               && (channel < msg_global->max_channel), "Invalid channel %d",
               channel);
 
-  XBT_DEBUG("MSG_task_put_with_timout: Trying to send a task to '%s'", dest->smx_host->name);
+  XBT_DEBUG("MSG_task_put_with_timout: Trying to send a task to '%s'", SIMIX_host_get_name(dest->smx_host));
   return
       MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_channel
                                    (dest, channel), task, timeout);
