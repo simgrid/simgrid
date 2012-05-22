@@ -62,13 +62,14 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   if (MALLOCATOR_IS_ENABLED) {
     m->objects = xbt_new0(void *, size);
     m->max_size = size;
+    m->mutex = xbt_os_mutex_init();
   } else {
     if (!MALLOCATOR_IS_WANTED) /* Warn to avoid to commit debugging settings */
       XBT_WARN("Mallocator is disabled!");
     m->objects = NULL;
     m->max_size = 0;
+    m->mutex = NULL;
   }
-  m->mutex = xbt_os_mutex_init();
   return m;
 }
 
@@ -160,18 +161,23 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
  */
 void xbt_mallocator_release(xbt_mallocator_t m, void *object)
 {
-  xbt_os_mutex_acquire(m->mutex);
-  if (m->current_size < m->max_size) {
-    /* there is enough place to push the object */
-    /* XBT_DEBUG
-        ("Store deleted object in mallocator %p for further use (size:%d/%d)",
+  if (MALLOCATOR_IS_ENABLED) {
+    xbt_os_mutex_acquire(m->mutex);
+    if (m->current_size < m->max_size) {
+      /* there is enough place to push the object */
+      /* XBT_DEBUG
+         ("Store deleted object in mallocator %p for further use (size:%d/%d)",
          m, m->current_size, m->max_size); */
-    m->objects[m->current_size++] = object;
+      m->objects[m->current_size++] = object;
+      xbt_os_mutex_release(m->mutex);
+    } else {
+      xbt_os_mutex_release(m->mutex);
+      /* otherwise we don't have a choice, we must free the object */
+      /* XBT_DEBUG("Free deleted object: mallocator %p is full (size:%d/%d)", m,
+         m->current_size, m->max_size); */
+      m->free_f(object);
+    }
   } else {
-    /* otherwise we don't have a choice, we must free the object */
-    /* XBT_DEBUG("Free deleted object: mallocator %p is full (size:%d/%d)", m,
-           m->current_size, m->max_size); */
     m->free_f(object);
   }
-  xbt_os_mutex_release(m->mutex);
 }
