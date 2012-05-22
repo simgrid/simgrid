@@ -200,7 +200,7 @@ void surf_network_model_init_Constant()
   surf_network_model->action_unref = netcste_action_unref;
   surf_network_model->action_cancel = netcste_action_cancel;
   surf_network_model->action_recycle = net_action_recycle;
-  surf_network_model->get_remains = net_action_get_remains;
+  surf_network_model->get_remains = surf_action_get_remains;
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   surf_network_model->get_latency_limited = net_get_link_latency_limited;
 #endif

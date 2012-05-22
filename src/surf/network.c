@@ -308,51 +308,6 @@ int net_get_link_latency_limited(surf_action_t action)
 }
 #endif
 
-double net_action_get_remains(surf_action_t action)
-{
-  XBT_IN("(%p)", action);
-  /* update remains before return it */
-  if (surf_network_model->model_private->update_mechanism == UM_LAZY)      /* update remains before return it */
-    net_update_action_remaining_lazy((surf_action_network_CM02_t)action,
-        surf_get_clock());
-  XBT_OUT();
-  return action->remains;
-}
-
-static void net_update_action_remaining_lazy(surf_action_network_CM02_t action, double now)
-{
-  double delta = 0.0;
-
-  if (GENERIC_LMM_ACTION(action).suspended != 0)
-    return;
-
-  delta = now - GENERIC_LMM_ACTION(action).last_update;
-
-  double_update(&(((surf_action_t)action)->remains),
-      GENERIC_LMM_ACTION(action).last_value * delta);
-
-  if (((surf_action_t)action)->max_duration != NO_MAX_DURATION)
-    double_update(&(((surf_action_t)action)->max_duration), delta);
-
-  if ((((surf_action_t)action)->remains <= 0) &&
-      (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0)) {
-    ((surf_action_t)action)->finish = surf_get_clock();
-    surf_network_model->action_state_set((surf_action_t) action,
-        SURF_ACTION_DONE);
-
-    surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
-  } else if (((((surf_action_t)action)->max_duration != NO_MAX_DURATION)
-      && (((surf_action_t)action)->max_duration <= 0))) {
-    ((surf_action_t)action)->finish = surf_get_clock();
-    surf_network_model->action_state_set((surf_action_t) action,
-        SURF_ACTION_DONE);
-    surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
-  }
-
-  GENERIC_LMM_ACTION(action).last_update = now;
-  GENERIC_LMM_ACTION(action).last_value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
-}
-
 static double net_share_resources_full(double now)
 {
   s_surf_action_lmm_t s_action;
@@ -389,75 +344,7 @@ static double net_share_resources_full(double now)
 
 static double net_share_resources_lazy(double now)
 {
-  surf_action_network_CM02_t action = NULL;
-  double min = -1;
-  double value;
-
-  XBT_DEBUG
-      ("Before share resources, the size of modified actions set is %d",
-       xbt_swag_size(surf_network_model->model_private->modified_set));
-
-  lmm_solve(surf_network_model->model_private->maxmin_system);
-
-  XBT_DEBUG
-      ("After share resources, The size of modified actions set is %d",
-       xbt_swag_size(surf_network_model->model_private->modified_set));
-
-  while((action = xbt_swag_extract(surf_network_model->model_private->modified_set))) {
-    int max_dur_flag = 0;
-
-    if (GENERIC_ACTION(action).state_set !=
-        surf_network_model->states.running_action_set)
-      continue;
-
-    /* bogus priority, skip it */
-    if (GENERIC_ACTION(action).priority <= 0)
-      continue;
-
-    net_update_action_remaining_lazy(action,now);
-
-    min = -1;
-    value = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
-    if (value > 0) {
-      if (GENERIC_ACTION(action).remains > 0) {
-        value = GENERIC_ACTION(action).remains / value;
-        min = now + value;
-      } else {
-        value = 0.0;
-        min = now;
-      }
-    }
-
-    if ((GENERIC_ACTION(action).max_duration != NO_MAX_DURATION)
-        && (min == -1
-            || GENERIC_ACTION(action).start +
-            GENERIC_ACTION(action).max_duration < min)) {
-      min = GENERIC_ACTION(action).start +
-          GENERIC_ACTION(action).max_duration;
-      max_dur_flag = 1;
-    }
-
-    XBT_DEBUG("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
-              GENERIC_ACTION(action).start, now + value,
-              GENERIC_ACTION(action).max_duration);
-
-    if (min != -1) {
-      surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
-      surf_action_lmm_heap_insert(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action, min, max_dur_flag ? MAX_DURATION : NORMAL);
-      XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min,
-                now);
-    } else DIE_IMPOSSIBLE;
-  }
-
-  //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(surf_network_model->model_private->action_heap) > 0)
-    min = xbt_heap_maxkey(surf_network_model->model_private->action_heap) - now;
-  else
-    min = -1;
-
-  XBT_DEBUG("The minimum with the HEAP %lf", min);
-
-  return min;
+  return generic_share_resources_lazy(now, surf_network_model);
 }
 
 static void net_update_actions_state_full(double now, double delta)
@@ -986,7 +873,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model->action_cancel = surf_action_cancel;
   surf_network_model->action_recycle = net_action_recycle;
 
-  surf_network_model->get_remains = net_action_get_remains;
+  surf_network_model->get_remains = surf_action_get_remains;
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   surf_network_model->get_latency_limited = net_get_link_latency_limited;

@@ -288,13 +288,81 @@ void surf_action_set_category(surf_action_t action,
 }
 #endif
 
+void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now)
+{
+  double delta = 0.0;
+
+  if(action->generic_action.model_type == surf_network_model)
+  {
+    if (action->suspended != 0)
+      return;
+  }
+  else
+  {
+    xbt_assert(action->generic_action.state_set == surf_cpu_model->states.running_action_set,
+        "You're updating an action that is not running.");
+
+      /* bogus priority, skip it */
+    xbt_assert(action->generic_action.priority > 0,
+        "You're updating an action that seems suspended.");
+  }
+
+  delta = now - action->last_update;
+
+  if (action->generic_action.remains > 0) {
+    XBT_DEBUG("Updating action(%p): remains was %lf, last_update was: %lf", action, action->generic_action.remains, action->last_update);
+    double_update(&(action->generic_action.remains),
+        action->last_value * delta);
+
+#ifdef HAVE_TRACING
+    if (action->generic_action.model_type == surf_cpu_model && TRACE_is_enabled()) {
+      surf_resource_t cpu =
+          lmm_constraint_id(lmm_get_cnst_from_var
+              (surf_cpu_model->model_private->maxmin_system,
+                  action->variable, 0));
+      TRACE_surf_host_set_utilization(cpu->name,
+          action->generic_action.category,
+          action->last_value,
+          action->last_update,
+          now - action->last_update);
+    }
+#endif
+    XBT_DEBUG("Updating action(%p): remains is now %lf", action,
+        action->generic_action.remains);
+  }
+
+  if(action->generic_action.model_type == surf_network_model)
+  {
+    if (((surf_action_t)action)->max_duration != NO_MAX_DURATION)
+      double_update(&(((surf_action_t)action)->max_duration), delta);
+
+    if ((((surf_action_t)action)->remains <= 0) &&
+        (lmm_get_variable_weight(action->variable) > 0)) {
+      ((surf_action_t)action)->finish = surf_get_clock();
+      surf_network_model->action_state_set((surf_action_t) action,
+          SURF_ACTION_DONE);
+
+      surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
+    } else if (((((surf_action_t)action)->max_duration != NO_MAX_DURATION)
+        && (((surf_action_t)action)->max_duration <= 0))) {
+      ((surf_action_t)action)->finish = surf_get_clock();
+      surf_network_model->action_state_set((surf_action_t) action,
+          SURF_ACTION_DONE);
+      surf_action_lmm_heap_remove(surf_network_model->model_private->action_heap,(surf_action_lmm_t)action);
+    }
+  }
+
+  action->last_update = now;
+  action->last_value = lmm_variable_getvalue(action->variable);
+}
+
 double surf_action_get_remains(surf_action_t action)
 {
   XBT_IN("(%p)", action);
   surf_model_t model = action->model_type;
   /* update remains before return it */
   if (model->model_private->update_mechanism == UM_LAZY)      /* update remains before return it */
-    generic_update_action_remaining_lazy(action, surf_get_clock());
+    generic_update_action_remaining_lazy((surf_action_lmm_t)action, surf_get_clock());
   XBT_OUT();
   return action->remains;
 }
