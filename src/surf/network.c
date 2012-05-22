@@ -55,8 +55,6 @@ int sg_network_crosstraffic = 0;
 
 xbt_dict_t gap_lookup = NULL;
 
-static void net_update_action_remaining_lazy(surf_action_network_CM02_t action, double now);
-
 /******************************************************************************/
 /*                           Factors callbacks                                */
 /******************************************************************************/
