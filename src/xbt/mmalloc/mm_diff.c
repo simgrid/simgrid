@@ -353,7 +353,7 @@ const char* get_addr_memory_map(void *addr, void* s_heap, void* r_heap){
 
     lfields[0] = strtok(line, " ");
 
-    for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
+    for (i = 1; i < 6; i++) {
       lfields[i] = strtok(NULL, " ");
     }
 
