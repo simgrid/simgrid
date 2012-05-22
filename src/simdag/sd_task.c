@@ -97,6 +97,91 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   return task;
 }
 
+static XBT_INLINE SD_task_t SD_task_create_sized(const char *name,
+                                                 void *data, double amount,
+                                                 int ws_count)
+{
+  SD_task_t task = SD_task_create(name, data, amount);
+  task->communication_amount = xbt_new0(double, ws_count * ws_count);
+  task->computation_amount = xbt_new0(double, ws_count);
+  task->workstation_nb = ws_count;
+  task->workstation_list = xbt_new0(SD_workstation_t, ws_count);
+  return task;
+}
+
+/** @brief create a end-to-end communication task that can then be auto-scheduled
+ *
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
+ * allows to specify the task costs at creation, and decouple them from the
+ * scheduling process where you just specify which resource should deliver the
+ * mandatory power.
+ *
+ * A end-to-end communication must be scheduled on 2 hosts, and the amount
+ * specified at creation is sent from hosts[0] to hosts[1].
+ */
+SD_task_t SD_task_create_comm_e2e(const char *name, void *data,
+                                  double amount)
+{
+  SD_task_t res = SD_task_create_sized(name, data, amount, 2);
+  res->communication_amount[2] = amount;
+  res->kind = SD_TASK_COMM_E2E;
+  return res;
+}
+
+/** @brief create a sequential computation task that can then be auto-scheduled
+ *
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
+ * allows to specify the task costs at creation, and decouple them from the
+ * scheduling process where you just specify which resource should deliver the
+ * mandatory power.
+ *
+ * A sequential computation must be scheduled on 1 host, and the amount
+ * specified at creation to be run on hosts[0].
+ *
+ * \param name the name of the task (can be \c NULL)
+ * \param data the user data you want to associate with the task (can be \c NULL)
+ * \param amount amount of compute work to be done by the task
+ * \return the new SD_TASK_COMP_SEQ typed task
+ */
+SD_task_t SD_task_create_comp_seq(const char *name, void *data,
+                                  double amount)
+{
+  SD_task_t res = SD_task_create_sized(name, data, amount, 1);
+  res->computation_amount[0] = amount;
+  res->kind = SD_TASK_COMP_SEQ;
+  return res;
+}
+
+/** @brief create a parallel computation task that can then be auto-scheduled
+ *
+ * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
+ * allows to specify the task costs at creation, and decouple them from the
+ * scheduling process where you just specify which resource should deliver the
+ * mandatory power.
+ *
+ * A parallel computation can be scheduled on any number of host.
+ * The underlying speedup model is Amdahl's law. 
+ * To be auto-scheduled, \see SD_task_distribute_comp_amdhal has to be called 
+ * first.
+ * \param name the name of the task (can be \c NULL)
+ * \param data the user data you want to associate with the task (can be \c NULL)
+ * \param amount amount of compute work to be done by the task
+ * \param purely serial fraction of the work to be done (in [0.;1.[)
+ * \return the new task
+ */
+SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data,
+                                  double amount, double alpha)
+{
+  xbt_assert(alpha < 1. && alpha >= 0.,
+              "Invalid parameter: alpha must be in [0.;1.[");
+	
+  SD_task_t res = SD_task_create(name, data, amount);
+  res->alpha = alpha;
+  res->kind = SD_TASK_COMP_PAR_AMDAHL;
+  return res;
+}
+
+
 /**
  * \brief Destroys a task.
  *
@@ -366,6 +451,9 @@ void SD_task_dump(SD_task_t task)
       break;
     case SD_TASK_COMP_SEQ:
       XBT_INFO("  - kind: sequential computation");
+      break;
+    case SD_TASK_COMP_PAR_AMDAHL:
+      XBT_INFO("  - kind: parallel computation following Amdahl's law");
       break;
     default:
       XBT_INFO("  - (unknown kind %d)", task->kind);
@@ -963,7 +1051,7 @@ void __SD_task_really_run(SD_task_t task)
                                           surf_workstations,
                                           computation_amount,
                                           communication_amount,
-                                          task->amount, task->rate);
+                                          task->rate);
   } else {
     xbt_free(surf_workstations);
   }
@@ -1236,56 +1324,27 @@ double SD_task_get_finish_time(SD_task_t task)
   else
     return task->finish_time;
 }
-
-static XBT_INLINE SD_task_t SD_task_create_sized(const char *name,
-                                                 void *data, double amount,
-                                                 int ws_count)
+/** @brief Blah
+ *
+ */
+void SD_task_distribute_comp_amdhal(SD_task_t task, int ws_count)
 {
-  SD_task_t task = SD_task_create(name, data, amount);
-  task->communication_amount = xbt_new0(double, ws_count * ws_count);
+  int i;
+  xbt_assert(task->kind == SD_TASK_COMP_PAR_AMDAHL,
+              "Task %s is not a SD_TASK_COMP_PAR_AMDAHL typed task."
+              "Cannot use this function.",
+              SD_task_get_name(task));  
+              
   task->computation_amount = xbt_new0(double, ws_count);
+  task->communication_amount = xbt_new0(double, ws_count * ws_count);
   task->workstation_nb = ws_count;
   task->workstation_list = xbt_new0(SD_workstation_t, ws_count);
-  return task;
-}
-
-/** @brief create a end-to-end communication task that can then be auto-scheduled
- *
- * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
- * allows to specify the task costs at creation, and decorelate them from the
- * scheduling process where you just specify which resource should deliver the
- * mandatory power.
- *
- * A end-to-end communication must be scheduled on 2 hosts, and the amount
- * specified at creation is sent from hosts[0] to hosts[1].
- */
-SD_task_t SD_task_create_comm_e2e(const char *name, void *data,
-                                  double amount)
-{
-  SD_task_t res = SD_task_create_sized(name, data, amount, 2);
-  res->communication_amount[2] = amount;
-  res->kind = SD_TASK_COMM_E2E;
-  return res;
-}
-
-/** @brief create a sequential computation task that can then be auto-scheduled
- *
- * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
- * allows to specify the task costs at creation, and decorelate them from the
- * scheduling process where you just specify which resource should deliver the
- * mandatory power.
- *
- * A sequential computation must be scheduled on 1 host, and the amount
- * specified at creation to be run on hosts[0].
- */
-SD_task_t SD_task_create_comp_seq(const char *name, void *data,
-                                  double amount)
-{
-  SD_task_t res = SD_task_create_sized(name, data, amount, 1);
-  res->computation_amount[0] = amount;
-  res->kind = SD_TASK_COMP_SEQ;
-  return res;
-}
+  
+  for(i=0;i<ws_count;i++){
+    task->computation_amount[i] = 
+    	(task->alpha + (1 - task->alpha)/ws_count) * task->amount;
+  }
+} 
 
 /** @brief Auto-schedules a task.
  *
@@ -1317,6 +1376,8 @@ void SD_task_schedulev(SD_task_t task, int count,
               SD_task_get_name(task));
   switch (task->kind) {
   case SD_TASK_COMM_E2E:
+  case SD_TASK_COMP_PAR_AMDAHL:
+    xbt_assert(task->computation_amount, "SD_task_distribute_comp_amdhal should be called first.");
   case SD_TASK_COMP_SEQ:
     xbt_assert(task->workstation_nb == count,"Got %d locations, but were expecting %d locations",count,task->workstation_nb);
     for (i = 0; i < count; i++)
@@ -1335,6 +1396,13 @@ void SD_task_schedulev(SD_task_t task, int count,
           task->communication_amount[2]);
 
   }
+ if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
+ 	  XBT_VERB("Schedule computation task %s on %d hosts. It costs %.f flops on each host",
+    	    SD_task_get_name(task),
+        	task->workstation_nb,
+          	task->computation_amount[0]);
+ } 
+
   /* Iterate over all childs and parent being COMM_E2E to say where I am located (and start them if runnable) */
   if (task->kind == SD_TASK_COMP_SEQ) {
     XBT_VERB("Schedule computation task %s on %s. It costs %.f flops",

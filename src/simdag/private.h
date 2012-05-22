@@ -75,6 +75,7 @@ typedef struct SD_task {
   char *name;
   int kind;
   double amount;
+  double alpha;					/* used by typed parallel tasks */
   double remains;
   double start_time;
   double finish_time;
