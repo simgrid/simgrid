@@ -248,7 +248,7 @@ typedef struct surf_workstation_model_extension_public {
                                           void **workstation_list,
                                           double *computation_amount,
                                           double *communication_amount,
-                                          double amount, double rate);
+                                          double rate);
   double (*get_link_bandwidth) (const void *link);                                         /**< Return the current bandwidth of a network link */
   double (*get_link_latency) (const void *link);                                           /**< Return the current latency of a network link */
   surf_action_t(*open) (void *workstation, const char* storage, const char* path, const char* mode);

@@ -239,7 +239,7 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
                                               void **workstation_list,
                                               double *computation_amount,
                                               double *communication_amount,
-                                              double amount, double rate)
+                                              double rate)
 {
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
   return NULL;

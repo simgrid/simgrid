@@ -447,7 +447,6 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
                                                  double
                                                  *computation_amount, double
                                                  *communication_amount,
-                                                 double amount,
                                                  double rate)
 {
   surf_action_workstation_L07_t action = NULL;
@@ -493,7 +492,7 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
       nb_host++;
 
   action =
-      surf_action_new(sizeof(s_surf_action_workstation_L07_t), amount,
+      surf_action_new(sizeof(s_surf_action_workstation_L07_t), 1,
                       surf_workstation_model, 0);
   XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
          action, workstation_nb, nb_link);
@@ -559,7 +558,7 @@ static surf_action_t ptask_execute(void *cpu, double size)
 
   return ptask_execute_parallel_task(1, workstation_list,
                                      computation_amount,
-                                     communication_amount, 1, -1);
+                                     communication_amount, -1);
 }
 
 static surf_action_t ptask_communicate(void *src, void *dst, double size,
@@ -576,7 +575,7 @@ static surf_action_t ptask_communicate(void *src, void *dst, double size,
 
   res = ptask_execute_parallel_task(2, workstation_list,
                                     computation_amount,
-                                    communication_amount, 1, rate);
+                                    communication_amount, rate);
 
   return res;
 }
