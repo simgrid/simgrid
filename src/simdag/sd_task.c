@@ -963,7 +963,7 @@ void __SD_task_really_run(SD_task_t task)
                                           surf_workstations,
                                           computation_amount,
                                           communication_amount,
-                                          task->amount, task->rate);
+                                          task->rate);
   } else {
     xbt_free(surf_workstations);
   }
