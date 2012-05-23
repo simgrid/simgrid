@@ -217,7 +217,7 @@ else(WIN32)
     target_link_libraries(SG_java pcre pthread simgrid)
     if($ENV{SIMGRID_PCRE_LIBRARY_PATH} STREQUAL "")
         set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH}")
-    elseif($ENV{SIMGRID_PCRE_LIBRARY_PATH} STREQUAL "")
+    else($ENV{SIMGRID_PCRE_LIBRARY_PATH} STREQUAL "")
         set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH} -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
     endif($ENV{SIMGRID_PCRE_LIBRARY_PATH} STREQUAL "")
 endif(WIN32)
@@ -300,8 +300,7 @@ if(APPLE)
         set_tests_properties(${test_list}
         PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=$ENV{DYLD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
     endif($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
-
-elseif(APPLE)
+else(APPLE)
     ##########################################
     # Set the  LD_LIBRARY_PATH for our tests #
     ##########################################
