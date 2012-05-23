@@ -4,13 +4,57 @@ p Simple test of simdag
 
 $ $SG_TEST_EXENV ./sd_seq_access ${srcdir:=.}/2clusters.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
-> [0.000000] [sd_seq_access/INFO] Access mode of C2-05 is sequential
-> [0.000000] [sd_seq_access/INFO] Access mode of C2-06 is sequential
-> [0.000000] [sd_seq_access/INFO] Task A is currently running on C2-05 (SD_TASK_COMP_SEQ)
-> [0.000000] [sd_seq_access/INFO] There is no task running on C2-06
-> [0.400000] [sd_seq_access/INFO] Task B is currently running on C2-05 (SD_TASK_COMM_E2E)
-> [0.400000] [sd_seq_access/INFO] Task B is currently running on C2-06 (SD_TASK_COMM_E2E)
-> [30.400300] [sd_seq_access/INFO] Task C is currently running on C2-05 (SD_TASK_COMP_SEQ)
-> [30.400300] [sd_seq_access/INFO] There is no task running on C2-06
-> [30.800300] [sd_seq_access/INFO] There is no task running on C2-05
-> [30.800300] [sd_seq_access/INFO] There is no task running on C2-06
+> [0.000000] [sd_workstation/INFO] Displaying workstation C2-05
+> [0.000000] [sd_workstation/INFO]   - power: 5000000000
+> [0.000000] [sd_workstation/INFO]   - available power: 1.00
+> [0.000000] [sd_workstation/INFO]   - access mode: Space shared
+> [0.000000] [sd_seq_access/INFO]  Change access mode of C2-05 to sequential
+> [0.000000] [sd_workstation/INFO] Displaying workstation C2-06
+> [0.000000] [sd_workstation/INFO]   - power: 5000000000
+> [0.000000] [sd_workstation/INFO]   - available power: 1.00
+> [0.000000] [sd_workstation/INFO]   - access mode: Space shared
+> [0.000000] [sd_seq_access/INFO]  Change access mode of C2-06 to sequential
+> [0.000000] [sd_seq_access/INFO]  Simulation was suspended, check workstation states
+> [0.000000] [sd_workstation/INFO] Displaying workstation C2-05
+> [0.000000] [sd_workstation/INFO]   - power: 5000000000
+> [0.000000] [sd_workstation/INFO]   - available power: 1.00
+> [0.000000] [sd_workstation/INFO]   - access mode: Exclusive
+> [0.000000] [sd_workstation/INFO]     current running task: Task A
+> [0.000000] [sd_workstation/INFO] Displaying workstation C2-06
+> [0.000000] [sd_workstation/INFO]   - power: 5000000000
+> [0.000000] [sd_workstation/INFO]   - available power: 1.00
+> [0.000000] [sd_workstation/INFO]   - access mode: Exclusive
+> [0.000000] [sd_workstation/INFO]     no task running
+> [4.000000] [sd_seq_access/INFO]  Simulation was suspended, check workstation states
+> [4.000000] [sd_workstation/INFO] Displaying workstation C2-05
+> [4.000000] [sd_workstation/INFO]   - power: 5000000000
+> [4.000000] [sd_workstation/INFO]   - available power: 1.00
+> [4.000000] [sd_workstation/INFO]   - access mode: Exclusive
+> [4.000000] [sd_workstation/INFO]     current running task: Task B
+> [4.000000] [sd_workstation/INFO] Displaying workstation C2-06
+> [4.000000] [sd_workstation/INFO]   - power: 5000000000
+> [4.000000] [sd_workstation/INFO]   - available power: 1.00
+> [4.000000] [sd_workstation/INFO]   - access mode: Exclusive
+> [4.000000] [sd_workstation/INFO]     current running task: Task B
+> [10.000300] [sd_seq_access/INFO]  Simulation was suspended, check workstation states
+> [10.000300] [sd_workstation/INFO] Displaying workstation C2-05
+> [10.000300] [sd_workstation/INFO]   - power: 5000000000
+> [10.000300] [sd_workstation/INFO]   - available power: 1.00
+> [10.000300] [sd_workstation/INFO]   - access mode: Exclusive
+> [10.000300] [sd_workstation/INFO]     no task running
+> [10.000300] [sd_workstation/INFO] Displaying workstation C2-06
+> [10.000300] [sd_workstation/INFO]   - power: 5000000000
+> [10.000300] [sd_workstation/INFO]   - available power: 1.00
+> [10.000300] [sd_workstation/INFO]   - access mode: Exclusive
+> [10.000300] [sd_workstation/INFO]     current running task: Task C
+> [12.000300] [sd_seq_access/INFO]  Simulation was suspended, check workstation states
+> [12.000300] [sd_workstation/INFO] Displaying workstation C2-05
+> [12.000300] [sd_workstation/INFO]   - power: 5000000000
+> [12.000300] [sd_workstation/INFO]   - available power: 1.00
+> [12.000300] [sd_workstation/INFO]   - access mode: Exclusive
+> [12.000300] [sd_workstation/INFO]     no task running
+> [12.000300] [sd_workstation/INFO] Displaying workstation C2-06
+> [12.000300] [sd_workstation/INFO]   - power: 5000000000
+> [12.000300] [sd_workstation/INFO]   - available power: 1.00
+> [12.000300] [sd_workstation/INFO]   - access mode: Exclusive
+> [12.000300] [sd_workstation/INFO]     no task running
