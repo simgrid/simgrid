@@ -18,7 +18,7 @@ int main(int argc, char **argv)
   int i;
   const char *platform_file;
   const SD_workstation_t *workstations;
-  SD_task_t task, taskA, taskB, taskC;
+  SD_task_t taskA, taskB, taskC;
   xbt_dynar_t changed_tasks;
 
   /* initialisation of SD */
