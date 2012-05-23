@@ -3,6 +3,19 @@ SimGrid (3.7.1) NOT RELEASED; urgency=low
  SURF:
  * Fix weird behaviors when dealing with parallel tasks.
 
+ SimDag:
+ * New type of typed tasks SD_TASK_COMP_PAR_AMDAHL that represents a
+   parallel task whose initial work is distributed among host according
+   to the Amdahl's law. Such tasks are created with a parameter alpha
+   that corresponds to the non-parallelizable part of the computation.
+
+   Before calling SD_task_schedulel or SD_task_schedulev, the
+   SD_task_distribute_comp_amdahl function has to be called with the
+   desired number of workstations. The filling of computation_amount and
+   communication_amount (actually empty) structures is then done
+   seamlessly.
+ * New function SD_workstation_dump to display various information
+
  Bug fixes, cosmetics and small improvements
  * Fix compilation when using MSG_USE_DEPRECATED.
 
