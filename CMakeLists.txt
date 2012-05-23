@@ -14,11 +14,11 @@ set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 # 3.5.9{1,2} -> beta{1,2}
 # 3.5.9{3,4,5} -> rc{1,2,3}
 # 3.6.{0,1,2} -> release 3.6, 3.6.1, 3.6.2
-# 3.7.0
+# 3.7.{0,1} -> release 3.7, 3.7.1
 
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "7")
-set(SIMGRID_VERSION_PATCH "0")
+set(SIMGRID_VERSION_PATCH "1")
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
 	set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
