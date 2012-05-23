@@ -1,3 +1,9 @@
+SimGrid (3.7.1) NOT RELEASED; urgency=low
+
+  (to complete)
+
+ -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 SimGrid (3.7) stable; urgency=low
 
   The "spring cleanups (before the next Big Project kicks in)" release.
@@ -181,7 +187,6 @@ SimGrid (3.6.2) stable; urgency=low
    argument order
 
  -- Wed Oct  5 15:51:01 CEST 2011 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
-
 
 SimGrid (3.6.1) stable; urgency=low
 
