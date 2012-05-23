@@ -50,13 +50,13 @@ int host(int argc, char *argv[])
   XBT_INFO("\tOpen file '%s'",file->name);
 
   read = MSG_file_read(mount,NULL,10000000,sizeof(char*),file);     // Read for 10Mo
-  XBT_INFO("\tHaving read  %Zu \ton %s",read,file->name);
+  XBT_INFO("\tHaving read  %zu \ton %s",read,file->name);
 
   write = MSG_file_write(mount,NULL,100000,sizeof(char*),file);  // Write for 100Ko
-  XBT_INFO("\tHaving write %Zu \ton %s",write,file->name);
+  XBT_INFO("\tHaving write %zu \ton %s",write,file->name);
 
   read = MSG_file_read(mount,NULL,10000000,sizeof(char*),file);     // Read for 10Mo
-  XBT_INFO("\tHaving read  %Zu \ton %s",read,file->name);
+  XBT_INFO("\tHaving read  %zu \ton %s",read,file->name);
 
   MSG_file_stat(mount,file,&stat);
   XBT_INFO("\tFile %s Size %d",file->name,(int)stat.size);
