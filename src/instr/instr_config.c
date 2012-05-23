@@ -487,14 +487,14 @@ void TRACE_generate_triva_cat_conf (void)
     //configuration for all nodes
     fprintf (file,
              "  host = {\n"
-             "    type = square;\n"
-             "    size = power;\n");
+             "    type = \"square\";\n"
+             "    size = \"power\";\n");
     output_categories ("p", TRACE_get_categories(), file);
     fprintf (file,
              "  };\n"
              "  link = {\n"
-             "    type = rhombus;\n"
-             "    size = bandwidth;\n");
+             "    type = \"rhombus\";\n"
+             "    size = \"bandwidth\";\n");
     output_categories ("b", TRACE_get_categories(), file);
     fprintf (file, "  };\n");
     //close
