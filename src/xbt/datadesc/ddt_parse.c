@@ -219,7 +219,7 @@ static void add_free_f(xbt_dynar_t dynar, void_f_pvoid_t free_f)
 
   XBT_IN();
   xbt_dynar_pop(dynar, &former);
-  memcpy(former.type->extra, free_f, sizeof(free_f));
+  memcpy(former.type->extra, &free_f, sizeof(free_f));
   xbt_dynar_push(dynar, &former);
   XBT_OUT();
 }
