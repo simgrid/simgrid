@@ -167,7 +167,7 @@ void SD_workstation_dump(SD_workstation_t ws)
   
   XBT_INFO("Displaying workstation %s", SD_workstation_get_name(ws));
   XBT_INFO("  - power: %.0f", SD_workstation_get_power(ws));
-  XBT_INFO("  - available power: %.0f", SD_workstation_get_available_power(ws));
+  XBT_INFO("  - available power: %.2f", SD_workstation_get_available_power(ws));
   switch (ws->access_mode){
   case SD_WORKSTATION_SHARED_ACCESS:
       XBT_INFO("  - access mode: Space shared");
@@ -176,8 +176,10 @@ void SD_workstation_dump(SD_workstation_t ws)
       XBT_INFO("  - access mode: Exclusive");
 	  task = SD_workstation_get_current_task(ws);
 	  if(task)
-	  XBT_INFO("    current running task: %s",
-	  	SD_task_get_name(task));	
+	    XBT_INFO("    current running task: %s",
+	  	         SD_task_get_name(task));
+	  else
+	    XBT_INFO("    no task running");
       break;
   default:
   	  XBT_INFO("  - (unknown access mode)");
