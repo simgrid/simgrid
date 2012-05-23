@@ -62,7 +62,7 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
                                       size_t offset,
                                       lmm_system_t sys,
                                       void (*solve) (lmm_system_t));
-void generic_update_action_remaining_lazy( surf_action_t action, double now);
+double generic_share_resources_lazy(double now, surf_model_t model);
 
 /* Generic functions common to all models */
 void surf_action_init(void);
@@ -92,6 +92,9 @@ void surf_action_set_category(surf_action_t action,
                                     const char *category);
 #endif
 double surf_action_get_remains(surf_action_t action);
+void generic_update_action_remaining_lazy( surf_action_lmm_t action, double now);
+void generic_update_actions_state_lazy(double now, double delta, surf_model_t model);
+void generic_update_actions_state_full(double now, double delta, surf_model_t model);
 
 FILE *surf_fopen(const char *name, const char *mode);
 

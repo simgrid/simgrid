@@ -289,11 +289,78 @@ double generic_maxmin_share_resources(xbt_swag_t running_actions,
   return min;
 }
 
-void generic_update_action_remaining_lazy( surf_action_t action, double now)
+double generic_share_resources_lazy(double now, surf_model_t model)
 {
- // TODO merge for cpu and net
-}
+  surf_action_lmm_t action = NULL;
+  double min = -1;
+  double value;
 
+  XBT_DEBUG
+      ("Before share resources, the size of modified actions set is %d",
+       xbt_swag_size(model->model_private->modified_set));
+
+  lmm_solve(model->model_private->maxmin_system);
+
+  XBT_DEBUG
+      ("After share resources, The size of modified actions set is %d",
+       xbt_swag_size(model->model_private->modified_set));
+
+  while((action = xbt_swag_extract(model->model_private->modified_set))) {
+    int max_dur_flag = 0;
+
+    if (action->generic_action.state_set !=
+        model->states.running_action_set)
+      continue;
+
+    /* bogus priority, skip it */
+    if (action->generic_action.priority <= 0)
+      continue;
+
+    generic_update_action_remaining_lazy(action,now);
+
+    min = -1;
+    value = lmm_variable_getvalue(action->variable);
+    if (value > 0) {
+      if (action->generic_action.remains > 0) {
+        value = action->generic_action.remains / value;
+        min = now + value;
+      } else {
+        value = 0.0;
+        min = now;
+      }
+    }
+
+    if ((action->generic_action.max_duration != NO_MAX_DURATION)
+        && (min == -1
+            || action->generic_action.start +
+            action->generic_action.max_duration < min)) {
+      min = action->generic_action.start +
+          action->generic_action.max_duration;
+      max_dur_flag = 1;
+    }
+
+    XBT_DEBUG("Action(%p) Start %lf Finish %lf Max_duration %lf", action,
+        action->generic_action.start, now + value,
+        action->generic_action.max_duration);
+
+    if (min != -1) {
+      surf_action_lmm_heap_remove(model->model_private->action_heap,action);
+      surf_action_lmm_heap_insert(model->model_private->action_heap,action, min, max_dur_flag ? MAX_DURATION : NORMAL);
+      XBT_DEBUG("Insert at heap action(%p) min %lf now %lf", action, min,
+                now);
+    } else DIE_IMPOSSIBLE;
+  }
+
+  //hereafter must have already the min value for this resource model
+  if (xbt_heap_size(model->model_private->action_heap) > 0)
+    min = xbt_heap_maxkey(model->model_private->action_heap) - now;
+  else
+    min = -1;
+
+  XBT_DEBUG("The minimum with the HEAP %lf", min);
+
+  return min;
+}
 static XBT_INLINE void routing_asr_host_free(void *p)
 {
   sg_routing_edge_t elm = p;
