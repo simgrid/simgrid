@@ -34,8 +34,7 @@ static int create_jprocess(int argc, char *argv[]);
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
-static JavaVM *__java_vm = NULL;
-
+JavaVM *__java_vm = NULL;
 
 JavaVM *get_java_VM(void)
 {
@@ -86,6 +85,8 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   jstring jval;
   const char *tmp;
 
+  (*env)->GetJavaVM(env, &__java_vm);
+
   smx_factory_initializer_to_use = SIMIX_ctx_java_factory_init;
 
   setlocale(LC_NUMERIC,"C");
@@ -111,8 +112,6 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
     free(argv[index]);
 
   free(argv);
-
-  (*env)->GetJavaVM(env, &__java_vm);
 }
 
 JNIEXPORT void JNICALL

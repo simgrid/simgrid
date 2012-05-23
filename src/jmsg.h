@@ -12,7 +12,6 @@
 #include <jni.h>
 
 JavaVM *get_java_VM(void);
-
 JNIEnv *get_current_thread_env(void);
 /**
  * This function throws the correct exception according to the status

@@ -13,15 +13,7 @@
 #include "smx_context_java.h"
 #include "jxbt_utilities.h"
 #include "xbt/dynar.h"
-JavaVM *get_current_vm(void);
-JavaVM *get_current_vm(void)
-{
-	JavaVM *jvm;
-	JNI_GetCreatedJavaVMs(&jvm,1,NULL);
-  return jvm;
-}
-
-
+extern JavaVM *__java_vm;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
 
@@ -98,8 +90,7 @@ static void* smx_ctx_java_thread_run(void *data) {
 	xbt_os_thread_set_extra_data(context);
 	//Attach the thread to the JVM
 	JNIEnv *env;
-	JavaVM *jvm = get_current_vm();
-  jint error = (*jvm)->AttachCurrentThread(jvm, (void **) &env, NULL);
+  jint error = (*__java_vm)->AttachCurrentThread(__java_vm, (void **) &env, NULL);
   xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
   context->jenv = get_current_thread_env();
   //Wait for the first scheduling round to happen.
@@ -154,8 +145,7 @@ void smx_ctx_java_stop(smx_context_t context)
 		/* detach the thread and kills it */
 		JNIEnv *env = ctx_java->jenv;
 		(*env)->DeleteGlobalRef(env,ctx_java->jprocess);
-		JavaVM *jvm = get_current_vm();
-		jint error = (*jvm)->DetachCurrentThread(jvm);
+		jint error = (*__java_vm)->DetachCurrentThread(__java_vm);
 		xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
 		xbt_os_sem_release(((smx_ctx_java_t)context)->end);
 		xbt_os_thread_exit(NULL);
