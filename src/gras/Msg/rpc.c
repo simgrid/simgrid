@@ -198,7 +198,7 @@ void gras_msg_rpc_async_wait(gras_msg_cb_ctx_t ctx, void *answer)
     __xbt_running_ctx_fetch()->exception.func = e.func;
     __xbt_running_ctx_fetch()->exception.used = e.used;
     __xbt_running_ctx_fetch()->exception.bt_strings = e.bt_strings;
-    memset(&__xbt_running_ctx_fetch()->exception.bt, 0,
+    memset((void*)&__xbt_running_ctx_fetch()->exception.bt, 0,
            sizeof(__xbt_running_ctx_fetch()->exception.bt));
     DO_THROW(__xbt_running_ctx_fetch());
   }
