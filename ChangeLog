@@ -1,6 +1,13 @@
 SimGrid (3.7.1) NOT RELEASED; urgency=low
 
-  (to complete)
+ SURF:
+ * Fix weird behaviors when dealing with parallel tasks.
+
+ Bug fixes, cosmetics and small improvements
+ * Fix compilation when using MSG_USE_DEPRECATED.
+
+ Portability:
+ * Fix compilation on Macs.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
