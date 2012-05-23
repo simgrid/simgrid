@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex_interface.h" /* internals of backtrace setup */
+#include "xbt/str.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mm_diff, xbt,
                                 "Logging specific to mm_diff in mmalloc");
@@ -342,10 +343,10 @@ const char* get_addr_memory_map(void *addr, void* s_heap, void* r_heap){
   if(addr == NULL)
     return "nil";
 
-  char *lfields[6], *start, *end, *endptr;
-  int i;
+  char *lfields[6], *start, *end, *endptr, *map;
   void *start_addr;
   void *end_addr;
+  int i;
 
   while ((read = getline(&line, &n, fp)) != -1) {
 
@@ -353,9 +354,15 @@ const char* get_addr_memory_map(void *addr, void* s_heap, void* r_heap){
 
     lfields[0] = strtok(line, " ");
 
-    for (i = 1; i < 6; i++) {
-      lfields[i] = strtok(NULL, " ");
+    for (i = 1; i < 5 && lfields[i - 1] != NULL ; i++) {
+      lfields[i] = strdup(strtok(NULL, " "));
     }
+
+    map = strtok(NULL, " ");
+    if(map != NULL)
+      lfields[5] = strdup(map);
+    else
+      lfields[5] = strdup("Anonymous");
 
     start = strtok(lfields[0], "-");
     start_addr = (void *) strtoul(start, &endptr, 16); 
@@ -364,21 +371,20 @@ const char* get_addr_memory_map(void *addr, void* s_heap, void* r_heap){
       lfields[5] = strdup("std_heap");
     if(start_addr == r_heap)
       lfields[5] = strdup("raw_heap");
+
     end = strtok(NULL, "-");
     end_addr = (void *) strtoul(end, &endptr, 16); 
    
     if((addr > start_addr) && ( addr < end_addr)){
       free(line);
       fclose(fp);
-      if(lfields[5] != NULL){
-	return lfields[5];
-      }else{
-	return "Anonymous";
-      }
+      return lfields[5];
     }
     
   }
 
+  free(line);
+  fclose(fp);
   return "Unknown area";
 
 }

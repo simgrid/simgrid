@@ -48,7 +48,7 @@ const char* get_memory_map_addr(void *addr){
   if(addr == NULL)
     return "nil";
 
-  char *lfields[6], *start, *end, *endptr;
+  char *lfields[6], *start, *end, *endptr, *map;
   int i;
   void *start_addr;
   void *end_addr;
@@ -59,10 +59,16 @@ const char* get_memory_map_addr(void *addr){
 
     lfields[0] = strtok(line, " ");
 
-    for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
+    for (i = 1; i < 5 && lfields[i - 1] != NULL; i++) {
       lfields[i] = strtok(NULL, " ");
     }
 
+    map = strtok(NULL, " ");
+    if(map != NULL)
+      lfields[5] = strdup(map);
+    else
+      lfields[5] = strdup("Anonymous");
+    
     start = strtok(lfields[0], "-");
     start_addr = (void *) strtoul(start, &endptr, 16); 
    
@@ -929,9 +935,6 @@ void MC_ddfs_init(void){
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Double-DFS init");
   XBT_DEBUG("**************************************************");
-
-  XBT_DEBUG("Std heap : %p", std_heap);
-  XBT_DEBUG("Raw heap : %p", raw_heap);
 
   mc_pair_stateless_t mc_initial_pair = NULL;
   mc_state_t initial_graph_state = NULL;
