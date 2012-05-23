@@ -296,20 +296,21 @@ if(APPLE)
         set_tests_properties(${test_list}
         PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=$ENV{DYLD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
     endif($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
-endif(APPLE)
 
-##########################################
-# Set the  LD_LIBRARY_PATH for our tests #
-##########################################
-if(NOT WIN32)
-if($ENV{LD_LIBRARY_PATH} STREQUAL "")
-    set_tests_properties(${test_list}
-    PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-else($ENV{LD_LIBRARY_PATH} STREQUAL "")
-    set_tests_properties(${test_list}
-    PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-endif($ENV{LD_LIBRARY_PATH} STREQUAL "")
-endif(NOT WIN32)
+elseif(APPLE)
+    ##########################################
+    # Set the  LD_LIBRARY_PATH for our tests #
+    ##########################################
+    if(NOT WIN32)
+        if($ENV{LD_LIBRARY_PATH} STREQUAL "")
+            set_tests_properties(${test_list}
+            PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
+        else($ENV{LD_LIBRARY_PATH} STREQUAL "")
+            set_tests_properties(${test_list}
+            PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
+        endif($ENV{LD_LIBRARY_PATH} STREQUAL "")
+    endif(NOT WIN32)
+endif(APPLE)
 
 ###########
 # Install #
