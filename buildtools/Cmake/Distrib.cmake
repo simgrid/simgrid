@@ -330,6 +330,7 @@ WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 add_custom_target(sync-gforge-doc
 COMMAND chmod g+rw -R doc/
 COMMAND chmod a+rX -R doc/
+COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/
 COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
 doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
 COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png  doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/

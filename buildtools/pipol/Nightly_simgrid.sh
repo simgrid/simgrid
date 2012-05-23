@@ -70,7 +70,9 @@ export CXX=g++
 fi
 
 #DEFAULT CONF
-cmake -Drelease=on .
+cmake \
+-Drelease=on \
+-Denable_lua=on .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
@@ -82,8 +84,9 @@ make clean
 cmake \
 -Denable_coverage=on \
 -Denable_model-checking=on \
--Denable_compile_optimizations=off \
--Drelease=on .
+-Denable_lua=off \
+-Drelease=on \
+-Denable_supernovae=off .
 ctest -D NightlyStart
 ctest -D NightlyConfigure
 ctest -D NightlyBuild
