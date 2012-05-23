@@ -90,8 +90,8 @@ typedef enum {
 #define _XBT_LOGV_CTOR(cat) _XBT_LOG_CONCAT2(_XBT_LOGV(cat), __constructor__)
 #define _XBT_LOG_CONCAT(x, y) x ## y
 #define _XBT_LOG_CONCAT2(x, y) _XBT_LOG_CONCAT(x, y)
-/* Apparently, constructor priorities are not supported on Macs */
-#if APPLE
+/* Apparently, constructor priorities are not supported by gcc on Macs */
+#if __GNUC__ && __APPLE__
 #  define _XBT_LOGV_CTOR_ATTRIBUTE
 #else
 #  define _XBT_LOGV_CTOR_ATTRIBUTE _XBT_GNUC_CONSTRUCTOR(600)
