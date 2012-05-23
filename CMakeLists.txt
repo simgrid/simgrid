@@ -293,6 +293,7 @@ set(test_list basic async pingPong CommTime mutualExclusion bypass kill startKil
 # Set the  DYLD_LIBRARY_PATH for mac     #
 ##########################################
 if(APPLE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DAPPLE")
     if($ENV{DYLD_LIBRARY_PATH})
         set_tests_properties(${test_list}
         PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
