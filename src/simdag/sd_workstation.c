@@ -157,6 +157,41 @@ xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
 
 }
 
+/** @brief Displays debugging informations about a workstation */
+void SD_workstation_dump(SD_workstation_t ws)
+{
+  xbt_dict_t props;
+  xbt_dict_cursor_t cursor=NULL;
+  char *key,*data;
+  SD_task_t task = NULL;
+  
+  XBT_INFO("Displaying workstation %s", SD_workstation_get_name(ws));
+  XBT_INFO("  - power: %.0f", SD_workstation_get_power(ws));
+  XBT_INFO("  - available power: %.0f", SD_workstation_get_available_power(ws));
+  switch (ws->access_mode){
+  case SD_WORKSTATION_SHARED_ACCESS:
+      XBT_INFO("  - access mode: Space shared");
+      break;
+  case SD_WORKSTATION_SEQUENTIAL_ACCESS:
+      XBT_INFO("  - access mode: Exclusive");
+	  task = SD_workstation_get_current_task(ws);
+	  if(task)
+	  XBT_INFO("    current running task: %s",
+	  	SD_task_get_name(task));	
+      break;
+  default:
+  	  XBT_INFO("  - (unknown access mode)");
+  }
+  props = SD_workstation_get_properties(ws);
+  
+  if (!xbt_dict_is_empty(props)){
+    XBT_INFO("  - properties:");
+
+    xbt_dict_foreach(props,cursor,key,data) {
+      XBT_INFO("    %s->%s",key,data);
+    }
+  }
+}
 
 /**
  * \brief Returns the route between two workstations
