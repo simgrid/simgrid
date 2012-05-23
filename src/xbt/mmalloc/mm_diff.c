@@ -343,44 +343,34 @@ const char* get_addr_memory_map(void *addr, void* s_heap, void* r_heap){
   if(addr == NULL)
     return "nil";
 
-  char *lfields[6], *start, *end, *endptr, *map;
+  xbt_dynar_t lfields = NULL;
+  xbt_dynar_t start_end  = NULL;
   void *start_addr;
   void *end_addr;
-  int i;
 
   while ((read = getline(&line, &n, fp)) != -1) {
 
-    line[read - 1] = '\0';
+    xbt_str_trim(line, NULL);
+    xbt_str_strip_spaces(line);
+    lfields = xbt_str_split(line,NULL);
 
-    lfields[0] = strtok(line, " ");
+    start_end = xbt_str_split(xbt_dynar_get_as(lfields, 0, char*), "-");
+    start_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 0, char*), NULL, 16);
+    end_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 1, char*), NULL, 16);
 
-    for (i = 1; i < 5 && lfields[i - 1] != NULL ; i++) {
-      lfields[i] = strdup(strtok(NULL, " "));
-    }
-
-    map = strtok(NULL, " ");
-    if(map != NULL)
-      lfields[5] = strdup(map);
-    else
-      lfields[5] = strdup("Anonymous");
-
-    start = strtok(lfields[0], "-");
-    start_addr = (void *) strtoul(start, &endptr, 16); 
-   
-    if(start_addr == s_heap)
-      lfields[5] = strdup("std_heap");
-    if(start_addr == r_heap)
-      lfields[5] = strdup("raw_heap");
-
-    end = strtok(NULL, "-");
-    end_addr = (void *) strtoul(end, &endptr, 16); 
-   
     if((addr > start_addr) && ( addr < end_addr)){
       free(line);
       fclose(fp);
-      return lfields[5];
+      if(start_addr == s_heap)
+	return "std_heap";
+      if(start_addr == r_heap)
+	return "raw_heap";
+      if(xbt_dynar_length(lfields) == 6)
+	return xbt_dynar_get_as(lfields, xbt_dynar_length(lfields) - 1, char*);
+      else
+	return "Anonymous";
     }
-    
+
   }
 
   free(line);
