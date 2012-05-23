@@ -85,7 +85,7 @@ static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, 
 {
   char *filename = stream->name;
   surf_stat_t content = stream->content;
-  XBT_DEBUG("\tRead file '%s' size '%Zu/%Zu'",filename,size,content->stat.size);
+  XBT_DEBUG("\tRead file '%s' size '%zu/%zu'",filename,size,content->stat.size);
   if(size > content->stat.size)
     size = content->stat.size;
   surf_action_t action = storage_action_execute(storage,size,READ);
@@ -96,7 +96,7 @@ static surf_action_t storage_action_write(void *storage, const void* ptr, size_t
 {
   char *filename = stream->name;
   surf_stat_t content = stream->content;
-  XBT_DEBUG("\tWrite file '%s' size '%Zu/%Zu'",filename,size,content->stat.size);
+  XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,content->stat.size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
   content->stat.size += size;
@@ -108,7 +108,7 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
   surf_action_storage_t action = NULL;
   storage_t STORAGE = storage;
 
-  XBT_IN("(%s,%Zu)", surf_resource_name(STORAGE), size);
+  XBT_IN("(%s,%zu)", surf_resource_name(STORAGE), size);
   action =
       surf_action_new(sizeof(s_surf_action_storage_t), size, surf_storage_model,
           STORAGE->state_current != SURF_RESOURCE_ON);
@@ -156,14 +156,14 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   size_t Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
   size_t Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
   size_t Bconnection   = atof(xbt_dict_get(storage_type->properties,"Bconnection"));
-  XBT_INFO("Create resource with Bconnection '%Zu' Bread '%Zu' Bwrite '%Zu'",Bconnection,Bread,Bwrite);
+  XBT_INFO("Create resource with Bconnection '%zu' Bread '%zu' Bwrite '%zu'",Bconnection,Bread,Bwrite);
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%Zu'\n",
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%zu'\n",
       id,
       model,
       type_id,
