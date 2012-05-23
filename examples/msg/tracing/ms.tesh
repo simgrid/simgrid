@@ -40,35 +40,35 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/ms
 
 $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 > {
->   node = (LINK, HOST, );
->   edge = (0-HOST1-LINK13, 0-LINK13-HOST1, 0-LINK13-LINK13, );
+>   node = ("HOST","LINK");
+>   edge = ("0-LINK13-LINK13","0-LINK13-HOST1","0-HOST1-LINK13");
 > 
 >   host = {
->     type = square;
->     size = power;
->     values = (power_used);
+>     type = "square";
+>     size = "power";
+>     values = ("power_used");
 >   };
 >   link = {
->     type = rhombus;
->     size = bandwidth;
->     values = (bandwidth_used);
+>     type = "rhombus";
+>     size = "bandwidth";
+>     values = ("bandwidth_used");
 >   };
 > }
 
 $ $SG_TEST_EXENV cat tracing/ms.cat.plist
 > {
->   node = (LINK, HOST, );
->   edge = (0-HOST1-LINK13, 0-LINK13-HOST1, 0-LINK13-LINK13, );
+>   node = ("HOST","LINK");
+>   edge = ("0-LINK13-LINK13","0-LINK13-HOST1","0-HOST1-LINK13");
 > 
 >   host = {
->     type = square;
->     size = power;
->     values = (prequest, pfinalize, preport, pcompute, );
+>     type = "square";
+>     size = "power";
+>     values = ("pcompute","preport","pfinalize","prequest");
 >   };
 >   link = {
->     type = rhombus;
->     size = bandwidth;
->     values = (brequest, bfinalize, breport, bcompute, );
+>     type = "rhombus";
+>     size = "bandwidth";
+>     values = ("bcompute","breport","bfinalize","brequest");
 >   };
 > }
 
