@@ -2,20 +2,24 @@
 * Installation information specific to SimGrid *
 ************************************************
 
-The main source of information on how to compile SimGrid is the project documentation available in doc/install.html or online on our website http://simgrid.gforge.inria.fr/ . This INSTALL file contains mainly generic information on how to compile SimGrid or any project using cmake.
+The main source of information on how to compile SimGrid is the project
+documentation available in doc/install.html or online on our website
+http://simgrid.gforge.inria.fr/ . This INSTALL file contains mainly generic
+information on how to compile SimGrid or any project using cmake.
 
 Quick way to compile
 ====================
 
-In short, the way to compile SimGrid depends on whether you are
-compiling a tar.gz archive or directly from the SVN.
+In short, the way to compile SimGrid depends on whether you are compiling a
+tar.gz archive or directly from the SVN.
 
 (1) configure SimGrid (both in SVN and archives)
 $ cmake <all options> ./
 
 Main options are:
   -DCMAKE_INSTALL_PREFIX=<path>: specify where to install SimGrid
-  -Denable_maintainer_mode=on/off: get the maintainer files regenerated automatically
+  -Denable_maintainer_mode=on/off: get the maintainer files regenerated
+                                   automatically
   -Denable_compile_optimizations=on/off: compile or not with -O0 instead of -O3
   -Denable_java=on/off: enable or not binding java
   -Denable_lua=on/off: enable or not binding lua
@@ -39,20 +43,20 @@ Dependencies
 ============
 SimGrid archives do not have any firm dependencies. 
 
-If you want to compile, you must have installed perl and cmake version 2.6 or above.
+If you want to compile, you must have installed perl and cmake version 2.6 or
+above.
 In order to improve memory management you should install libpcre.
 
-If you want to compile the java bindings, you have to have a java
-compiler, and the jni.h header file (available from the JDK)
+If you want to compile the java bindings, you have to have a java compiler, and
+the jni.h header file (available from the JDK).
 
-If you want to compile the lua bindings, you have to have lua5.1 executable and liblua5.1-dev. 
+If you want to compile the lua bindings, you have to have lua5.1 executable and
+liblua5.1-dev.
 
-If you want to compile the ruby bindings, you have to install ruby executable and ruby-dev version 1.9.
+If you want to compile the ruby bindings, you have to install ruby executable
+and ruby-dev version 1.9.
 
 If you want to compile smpi, you should install f2c for use Fortran code.
 
-If you want to compile the GTNetS backend, you have to have a patched
-version of GTNetS installed. The patch lives in the contrib section of
-the SVN.
-
-
+If you want to compile the GTNetS backend, you have to have a patched version of
+GTNetS installed. The patch lives in the contrib section of the SVN.
