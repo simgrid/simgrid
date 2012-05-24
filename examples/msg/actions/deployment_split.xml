@@ -1,12 +1,11 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <!-- Example file of how to use trace replay, with actions split in
      separate files, one per process.
      Launch it like this: 
      
   ./actions homogeneous_3_hosts.xml deployment_split.xml 
 -->
-
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
   <process host="host0" function="p0">
     <argument value="actions_split_p0.txt"/>
