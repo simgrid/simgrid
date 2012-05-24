@@ -70,7 +70,7 @@ XBT_PUBLIC(const char *) SD_workstation_get_property_value(SD_workstation_t
                                                            workstation,
                                                            const char
                                                            *name);
-
+XBT_PUBLIC(void) SD_workstation_dump(SD_workstation_t ws);
 XBT_PUBLIC(const SD_link_t *) SD_route_get_list(SD_workstation_t src,
                                                 SD_workstation_t dst);
 XBT_PUBLIC(int) SD_route_get_size(SD_workstation_t src,

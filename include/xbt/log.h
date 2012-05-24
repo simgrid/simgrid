@@ -90,6 +90,12 @@ typedef enum {
 #define _XBT_LOGV_CTOR(cat) _XBT_LOG_CONCAT2(_XBT_LOGV(cat), __constructor__)
 #define _XBT_LOG_CONCAT(x, y) x ## y
 #define _XBT_LOG_CONCAT2(x, y) _XBT_LOG_CONCAT(x, y)
+/* Apparently, constructor priorities are not supported by gcc on Macs */
+#if __GNUC__ && __APPLE__
+#  define _XBT_LOGV_CTOR_ATTRIBUTE
+#else
+#  define _XBT_LOGV_CTOR_ATTRIBUTE _XBT_GNUC_CONSTRUCTOR(600)
+#endif
 
 /* The root of the category hierarchy. */
 #define XBT_LOG_ROOT_CAT   root
@@ -120,7 +126,7 @@ typedef enum {
  * to avoid an extra declaration of root when XBT_LOG_NEW_SUBCATEGORY is called by
  * XBT_LOG_NEW_CATEGORY */
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)           \
-  XBT_PUBLIC(void) _XBT_LOGV_CTOR(catName)(void) _XBT_GNUC_CONSTRUCTOR(600); \
+  XBT_PUBLIC(void) _XBT_LOGV_CTOR(catName)(void) _XBT_LOGV_CTOR_ATTRIBUTE; \
   void _XBT_LOGV_CTOR(catName)(void)                                    \
   {                                                                     \
     XBT_LOG_EXTERNAL_CATEGORY(catName);                                 \

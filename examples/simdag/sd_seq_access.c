@@ -18,14 +18,8 @@ int main(int argc, char **argv)
   int i;
   const char *platform_file;
   const SD_workstation_t *workstations;
-  int kind;
-  SD_task_t task, taskA, taskB, taskC;
+  SD_task_t taskA, taskB, taskC;
   xbt_dynar_t changed_tasks;
-  SD_workstation_t workstation_list[2];
-  double computation_amount[2];
-  double communication_amount[4] = { 0 };
-  double rate = -1.0;
-  SD_workstation_t w1, w2;
 
   /* initialisation of SD */
   SD_init(&argc, argv);
@@ -44,21 +38,21 @@ int main(int argc, char **argv)
 
   /* Change the access mode of the workstations */
   workstations = SD_workstation_get_list();
-  w1 = workstations[0];
-  w2 = workstations[1];
   for (i = 0; i < 2; i++) {
+  	SD_workstation_dump(workstations[i]);
+  	
     SD_workstation_set_access_mode(workstations[i],
                                    SD_WORKSTATION_SEQUENTIAL_ACCESS);
-    XBT_INFO("Access mode of %s is %s",
+    XBT_INFO(" Change access mode of %s to %s",
           SD_workstation_get_name(workstations[i]),
           (SD_workstation_get_access_mode(workstations[i]) ==
            SD_WORKSTATION_SEQUENTIAL_ACCESS) ? "sequential" : "shared");
   }
 
   /* creation of the tasks and their dependencies */
-  taskA = SD_task_create_comp_seq("Task A", NULL, 2e9);
-  taskB = SD_task_create_comm_e2e("Task B", NULL, 2e9);
-  taskC = SD_task_create_comp_seq("Task C", NULL, 1e9);
+  taskA = SD_task_create_comp_seq("Task A", NULL, 2e10);
+  taskB = SD_task_create_comm_e2e("Task B", NULL, 2e8);
+  taskC = SD_task_create_comp_seq("Task C", NULL, 1e10);
 
   /* if everything is ok, no exception is forwarded or rethrown by main() */
 
@@ -70,51 +64,15 @@ int main(int argc, char **argv)
 
 
   /* scheduling parameters */
-  workstation_list[0] = w1;
-  workstation_list[1] = w2;
-  computation_amount[0] = SD_task_get_amount(taskA);
-  computation_amount[1] = SD_task_get_amount(taskB);
-
-  communication_amount[1] = SD_task_get_amount(taskC);
-  communication_amount[2] = 0.0;
-
-  SD_task_schedule(taskA, 1, &w1,
-                   &(computation_amount[0]), SD_SCHED_NO_COST, rate);
-  SD_task_schedule(taskB, 2, workstation_list,
-                   SD_SCHED_NO_COST, communication_amount, rate);
-  SD_task_schedule(taskC, 1, &w1,
-                   &(computation_amount[1]), SD_SCHED_NO_COST, rate);
+  SD_task_schedulel(taskA, 1, workstations[0]);
+  SD_task_schedulel(taskB, 2, workstations[0], workstations[1]);
+  SD_task_schedulel(taskC, 1, workstations[1]);
 
   /* let's launch the simulation! */
   while (!xbt_dynar_is_empty(changed_tasks = SD_simulate(-1.0))) {
+  	XBT_INFO(" Simulation was suspended, check workstation states"); 
     for (i = 0; i < 2; i++) {
-      task = SD_workstation_get_current_task(workstations[i]);
-      if (task)
-        kind = SD_task_get_kind(task);
-      else {
-        XBT_INFO("There is no task running on %s",
-              SD_workstation_get_name(workstations[i]));
-        continue;
-      }
-
-      switch (kind) {
-      case SD_TASK_COMP_SEQ:
-        XBT_INFO("%s is currently running on %s (SD_TASK_COMP_SEQ)",
-              SD_task_get_name(task),
-              SD_workstation_get_name(workstations[i]));
-        break;
-      case SD_TASK_COMM_E2E:
-        XBT_INFO("%s is currently running on %s (SD_TASK_COMM_E2E)",
-              SD_task_get_name(task),
-              SD_workstation_get_name(workstations[i]));
-        break;
-      case SD_TASK_NOT_TYPED:
-        XBT_INFO("Task running on %s has no type",
-              SD_workstation_get_name(workstations[i]));
-        break;
-      default:
-        XBT_ERROR("Shouldn't be here");
-      }
+	  SD_workstation_dump(workstations[i]);
     }
     xbt_dynar_free(&changed_tasks);
   }

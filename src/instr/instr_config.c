@@ -389,13 +389,42 @@ void TRACE_help (int detailed)
       detailed);
 }
 
+static void output_types (const char *name, xbt_dynar_t types, FILE *file)
+{
+  unsigned int i;
+  fprintf (file, "  %s = (", name);
+  for (i = xbt_dynar_length(types); i > 0; i--) {
+    char *type = *(char**)xbt_dynar_get_ptr(types, i - 1);
+    fprintf (file, "\"%s\"", type);
+    if (i - 1 > 0){
+      fprintf (file, ",");
+    }else{
+      fprintf (file, ");\n");
+    }
+  }
+  xbt_dynar_free (&types);
+}
+
+static void output_categories (const char *name, xbt_dynar_t cats, FILE *file)
+{
+  unsigned int i;
+  fprintf (file, "    values = (");
+  for (i = xbt_dynar_length(cats); i > 0; i--) {
+    char *cat = *(char**)xbt_dynar_get_ptr(cats, i - 1);
+    fprintf (file, "\"%s%s\"", name, cat);
+    if (i - 1 > 0){
+      fprintf (file, ",");
+    }else{
+      fprintf (file, ");\n");
+    }
+  }
+  xbt_dynar_free (&cats);
+}
+
 void TRACE_generate_triva_uncat_conf (void)
 {
   char *output = TRACE_get_triva_uncat_conf ();
   if (output && strlen(output) > 0){
-    xbt_dict_cursor_t cursor=NULL;
-    char *name, *value;
-
     FILE *file = fopen (output, "w");
     if (file == NULL){
       THROWF (system_error, 1, "Unable to open file (%s) for writing triva graph "
@@ -405,34 +434,22 @@ void TRACE_generate_triva_uncat_conf (void)
     //open
     fprintf (file, "{\n");
 
-    //register NODE types
-    fprintf (file, "  node = (");
-    xbt_dict_foreach(trivaNodeTypes, cursor, name, value) {
-      fprintf (file, "%s, ", name);
-    }
-
-    //register EDGE types
-    fprintf (file,
-        ");\n"
-        "  edge = (");
-    xbt_dict_foreach(trivaEdgeTypes, cursor, name, value) {
-      fprintf (file, "%s, ", name);
-    }
-    fprintf (file,
-        ");\n"
-        "\n");
+    //register NODE and EDGE types
+    output_types ("node", TRACE_get_node_types(), file);
+    output_types ("edge", TRACE_get_edge_types(), file);
+    fprintf (file, "\n");
 
     //configuration for all nodes
     fprintf (file,
         "  host = {\n"
-        "    type = square;\n"
-        "    size = power;\n"
-        "    values = (power_used);\n"
+        "    type = \"square\";\n"
+        "    size = \"power\";\n"
+        "    values = (\"power_used\");\n"
         "  };\n"
         "  link = {\n"
-        "    type = rhombus;\n"
-        "    size = bandwidth;\n"
-        "    values = (bandwidth_used);\n"
+        "    type = \"rhombus\";\n"
+        "    size = \"bandwidth\";\n"
+        "    values = (\"bandwidth_used\");\n"
         "  };\n");
     //close
     fprintf (file, "}\n");
@@ -462,45 +479,24 @@ void TRACE_generate_triva_cat_conf (void)
     //open
     fprintf (file, "{\n");
 
-    //register NODE types
-    fprintf (file, "  node = (");
-    xbt_dict_foreach(trivaNodeTypes, cursor, name, value) {
-      fprintf (file, "%s, ", name);
-    }
-
-    //register EDGE types
-    fprintf (file,
-        ");\n"
-        "  edge = (");
-    xbt_dict_foreach(trivaEdgeTypes, cursor, name, value) {
-      fprintf (file, "%s, ", name);
-    }
-    fprintf (file,
-        ");\n"
-        "\n");
+    //register NODE and EDGE types
+    output_types ("node", TRACE_get_node_types(), file);
+    output_types ("edge", TRACE_get_edge_types(), file);
+    fprintf (file, "\n");
 
     //configuration for all nodes
     fprintf (file,
-        "  host = {\n"
-        "    type = square;\n"
-        "    size = power;\n"
-        "    values = (");
-    xbt_dict_foreach(created_categories,cursor2,name2,value2) {
-      fprintf (file, "p%s, ", name2);
-    }
+             "  host = {\n"
+             "    type = \"square\";\n"
+             "    size = \"power\";\n");
+    output_categories ("p", TRACE_get_categories(), file);
     fprintf (file,
-        ");\n"
-        "  };\n"
-        "  link = {\n"
-        "    type = rhombus;\n"
-        "    size = bandwidth;\n"
-        "    values = (");
-    xbt_dict_foreach(created_categories,cursor2,name2,value2) {
-      fprintf (file, "b%s, ", name2);
-    }
-    fprintf (file,
-        ");\n"
-        "  };\n");
+             "  };\n"
+             "  link = {\n"
+             "    type = \"rhombus\";\n"
+             "    size = \"bandwidth\";\n");
+    output_categories ("b", TRACE_get_categories(), file);
+    fprintf (file, "  };\n");
     //close
     fprintf (file, "}\n");
     fclose (file);

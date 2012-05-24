@@ -2,9 +2,9 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
  <AS  id="AS0"  routing="Full">
- <!---   S1  --------- C1
-         link 1
-         100MB, 5ms
+ <!---   S1  ________ C1
+              link 1
+             100MB, 5ms
  -->
  
    <host id="S1" power="1000000000"/>

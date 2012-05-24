@@ -13,35 +13,35 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/categories$EXEEXT --cfg=tracing:1 --cfg=tr
 
 $ $SG_TEST_EXENV cat tracing/categories.cat.plist
 > {
->   node = (LINK, HOST, );
->   edge = (0-LINK4-HOST1, 0-HOST1-LINK4, 0-LINK4-LINK4, );
+>   node = ("HOST","LINK");
+>   edge = ("0-LINK4-LINK4","0-HOST1-LINK4","0-LINK4-HOST1");
 > 
 >   host = {
->     type = square;
->     size = power;
->     values = (prequest, pfinalize, pcompute, pdata, );
+>     type = "square";
+>     size = "power";
+>     values = ("pdata","pcompute","pfinalize","prequest");
 >   };
 >   link = {
->     type = rhombus;
->     size = bandwidth;
->     values = (brequest, bfinalize, bcompute, bdata, );
+>     type = "rhombus";
+>     size = "bandwidth";
+>     values = ("bdata","bcompute","bfinalize","brequest");
 >   };
 > }
 
 $ $SG_TEST_EXENV cat tracing/categories.uncat.plist
 > {
->   node = (LINK, HOST, );
->   edge = (0-LINK4-HOST1, 0-HOST1-LINK4, 0-LINK4-LINK4, );
+>   node = ("HOST","LINK");
+>   edge = ("0-LINK4-LINK4","0-HOST1-LINK4","0-LINK4-HOST1");
 > 
 >   host = {
->     type = square;
->     size = power;
->     values = (power_used);
+>     type = "square";
+>     size = "power";
+>     values = ("power_used");
 >   };
 >   link = {
->     type = rhombus;
->     size = bandwidth;
->     values = (bandwidth_used);
+>     type = "rhombus";
+>     size = "bandwidth";
+>     values = ("bandwidth_used");
 >   };
 > }
 
