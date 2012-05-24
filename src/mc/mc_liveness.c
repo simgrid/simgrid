@@ -274,13 +274,13 @@ int reached(xbt_state_t st){
 	  //if(xbt_dict_length(pair_test->rdv_points) == xbt_dict_length(current_rdv_points)){
 	  //if(rdv_points_compare(pair_test->rdv_points, current_rdv_points) == 0){
 	  if(snapshot_compare(pair_test->system_state, sn, std_heap, raw_heap) == 0){
-		MC_free_snapshot(sn);
-		xbt_dynar_reset(prop_ato);
-		xbt_free(prop_ato);
-		MC_UNSET_RAW_MEM;
-		return 1;
-	      }
-	      /* }
+	    MC_free_snapshot(sn);
+	    xbt_dynar_reset(prop_ato);
+	    xbt_free(prop_ato);
+	    MC_UNSET_RAW_MEM;
+	    return 1;
+	  }
+	  /* }
 	  }else{
 	    XBT_DEBUG("Different size of rdv points (%d - %d)",xbt_dict_length(pair_test->rdv_points), xbt_dict_length(current_rdv_points) );
 	    }*/
