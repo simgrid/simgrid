@@ -894,8 +894,18 @@ All constraints you have is that <b>trace_connect</b> is after <b>trace</b> and 
 
 <b>trace</b> attributes : 
 \li <b>id (mandatory)</b>: the identifier of the trace to be used when referring to it.
-\li <b>file</b>: filename of the file to include. Possible values : absolute or relative path, syntax similar to the one in use on your system.
+\li <b>file</b>: filename of the file to include. Possible values : absolute or relative path, syntax similar to the one in use on your system. If ommited, the system expects that you provide the trace values inside the trace tags (see below).
 \li <b>trace periodicity (mandatory)</b>: trace periodicity, same definition as in hosts (see upper for details).
+
+Here is an example  of trace when no file name is provided: 
+
+\verbatim
+ <trace id="myTrace" periodicity="1.0">
+    0.0 1.0
+    11.0 0.5
+    20.0 0.8
+  </trace>
+\endverbatim
 
 <b>trace_connect</b> attributes : 
 \li <b>kind</b>: the type of trace, possible values <b>HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY,</b>  default: <b>HOST_AVAIL</b>
