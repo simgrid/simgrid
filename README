@@ -1,21 +1,13 @@
-This is the SimGrid project.
 
-This file is a bit outdated, sorry.
 
-There is at least 5 sub-projects in the tree:
+Welcome to the SimGrid project! 
 
- - XBT: eXtended Bundle of Tools (low-level toolbox: logging, datatypes).
- - SURF: a SimUlation aRtiFact. This is the simulation kernel.
- - MSG:  originally MetaSimGrid, MSG is a simple distributed application
-         simulator.
- - GRAS: Grid Reality And Simulation (message passing API with two
-         implementations allowing to compile programs on top of the
-         simulator or for the real life without code modification)
- - AMOK: Advanced Metacomputing Overlay Kit (high level toolbox; Grid
-         application elements such as distributed database, topology
-         discovery service, and so on)
+Up-to-date documentation about installation and how to use SimGrid is available online at http://simgrid.gforge.inria.fr/ and the documentation for the version you downloaded is available in the doc/ directory. Check doc/index.html for more information.
 
-More informations are available in the doc/ directory.
+In case of trouble, you can additionnally try to have a look to our user mailing-list ( http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user ) or post us a mail.
 
-In particular, don't forget to read the FAQ in there. It probably contains
-the answer to your question ;)
+Thanks to have downloaded our software,
+
+Cheers,
+
+Da SimGrid Team.
