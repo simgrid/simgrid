@@ -20,11 +20,10 @@ SimGrid (3.7.1) NOT RELEASED; urgency=low
  SURF:
  * Fix weird behaviors when dealing with parallel tasks.
 
- Bug fixes, cosmetics and small improvements
+ Build System:
  * Fix compilation when using MSG_USE_DEPRECATED.
-
- Portability:
  * Fix compilation on Macs.
+ * Environment variables CFLAGS and LDFLAGS are now honored by cmake.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
