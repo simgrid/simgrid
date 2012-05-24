@@ -190,7 +190,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, void* s_heap, void* r_h
 	  return 1;
 	}
       }
-      if(data_program_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+      if(data_libsimgrid_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
 	  XBT_DEBUG("Different memcmp for data in libsimgrid");
  	  errors++;
@@ -216,9 +216,9 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, void* s_heap, void* r_h
 	  return 1;
 	}
       }
-      if(data_libsimgrid_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+      if(data_program_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
 	if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-	  XBT_DEBUG("Different memcmp for data in libsimgrid");
+	  XBT_DEBUG("Different memcmp for data in program");
  	  errors++;
 	}else{
 	  return 1;
