@@ -2,9 +2,7 @@
 * Installation information specific to SimGrid *
 ************************************************
 
-The main source of information to compile SimGrid is the project FAQ.
-It is available online from http://simgrid.gforge.inria.fr/doc/faq.html or
-in the doc/ directory of this archive.
+The main source of information on how to compile SimGrid is the project documentation available in doc/install.html or online on our website http://simgrid.gforge.inria.fr/ . This INSTALL file contains mainly generic information on how to compile SimGrid or any project using cmake.
 
 Quick way to compile
 ====================
@@ -57,4 +55,4 @@ If you want to compile the GTNetS backend, you have to have a patched
 version of GTNetS installed. The patch lives in the contrib section of
 the SVN.
 
-Again, you should check the FAQ for more information.
+
