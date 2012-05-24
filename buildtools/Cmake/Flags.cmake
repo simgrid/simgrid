@@ -62,3 +62,7 @@ if(enable_coverage)
 	endif(GCOV_PATH)
 endif(enable_coverage)
 
+if(NOT $ENV{CFLAGS} STREQUAL "")
+    message(STATUS "Add CFLAGS: \"$ENV{CFLAGS}\" to CMAKE_C_FLAGS")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} $ENV{CFLAGS}")
+endif(NOT $ENV{CFLAGS} STREQUAL "")
