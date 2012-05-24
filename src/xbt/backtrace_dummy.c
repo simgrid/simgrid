@@ -27,3 +27,7 @@ void xbt_backtrace_current(xbt_ex_t * e)
 void xbt_ex_setup_backtrace(xbt_ex_t * e)
 {
 }
+
+int xbt_backtrace_no_malloc(void **array, int size) {
+  return 0;
+}
