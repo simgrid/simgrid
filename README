@@ -2,9 +2,14 @@
 
 Welcome to the SimGrid project! 
 
-Up-to-date documentation about installation and how to use SimGrid is available online at http://simgrid.gforge.inria.fr/ and the documentation for the version you downloaded is available in the doc/ directory. Check doc/index.html for more information.
+Up-to-date documentation about installation and how to use SimGrid is available
+online at http://simgrid.gforge.inria.fr/ and the documentation for the version
+you downloaded is available in the doc/ directory. Check doc/index.html for more
+information.
 
-In case of trouble, you can additionnally try to have a look to our user mailing-list ( http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user ) or post us a mail.
+In case of trouble, you can additionnally try to have a look to our user
+mailing-list ( http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user ) or
+post us a mail.
 
 Thanks to have downloaded our software,
 

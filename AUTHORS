@@ -4,16 +4,27 @@ SimGrid team is composed of a core team and a bunch of crew members.
 Simgrid Core Team
 _________________
 
-SimGrid is a joint project between University of Hawaii at Manoa, LIG Laboratory (INRIA MEScal project, Grenoble, France) and University of Nancy (INRIA Algorille project, Nancy, France). The authors of SimGrid are:
+SimGrid is a joint project between University of Hawaii at Manoa, LIG Laboratory
+(INRIA MEScal project, Grenoble, France) and University of Nancy (INRIA
+Algorille project, Nancy, France). The authors of SimGrid are:
 
-Henri Casanova <casanova::cs.ucsd.edu> (Information and Computer Sciences Department, University of Hawai`i at Manoa)
-Arnaud Legrand <arnaud.legrand::imag.fr> (CNRS, LIG Laboratory (Grenoble, France), INRIA MEScal project)
-Martin Quinson <martin.quinson::loria.fr> (University of Nancy I (Nancy, France), LORIA Laboratory, INRIA Algorille project)
-Fred Suter <frederic.suter::cc.in2p3.fr> (CNRS, IN2P3 Computing Center)
+Henri Casanova <casanova::cs.ucsd.edu>
+  Information and Computer Sciences Department, University of Hawaii at Manoa
+
+Arnaud Legrand <arnaud.legrand::imag.fr>
+  CNRS, LIG Laboratory (Grenoble, France), INRIA MEScal project
+
+Martin Quinson <martin.quinson::loria.fr>
+  University of Nancy I (Nancy, France), LORIA Laboratory,
+  INRIA Algorille project
+
+Fred Suter <frederic.suter::cc.in2p3.fr>
+  CNRS, IN2P3 Computing Center
 
 
 
 Project Crew Members
 ____________________
 
-Check out our website http://simgrid.gforge.inria.fr/ to see who's doing what in simgrid!
+Check out our website http://simgrid.gforge.inria.fr/ to see who's doing what in
+SimGrid!
