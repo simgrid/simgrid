@@ -166,7 +166,7 @@ SD_task_t SD_task_create_comp_seq(const char *name, void *data,
  * \param name the name of the task (can be \c NULL)
  * \param data the user data you want to associate with the task (can be \c NULL)
  * \param amount amount of compute work to be done by the task
- * \param purely serial fraction of the work to be done (in [0.;1.[)
+ * \param alpha purely serial fraction of the work to be done (in [0.;1.[)
  * \return the new task
  */
 SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data,
