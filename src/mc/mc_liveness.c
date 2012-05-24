@@ -45,8 +45,10 @@ const char* get_memory_map_addr(void *addr){
   if(fp == NULL)
     perror("fopen failed");
 
-  if(addr == NULL)
+  if(addr == NULL){
+    fclose(fp);
     return "nil";
+  }
 
   xbt_dynar_t lfields = NULL;
   xbt_dynar_t start_end  = NULL;
