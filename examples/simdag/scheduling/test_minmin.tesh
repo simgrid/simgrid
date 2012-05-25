@@ -33,3 +33,5 @@ $ $SG_TEST_EXENV ${bindir:=.}/minmin_test --log=sd_daxparse.thresh:critical ${sr
 > [98.218679] [test/INFO] Simulation Time: 98.218679
 > [98.218679] [test/INFO] ------------------- Produce the trace file---------------------------
 > [98.218679] [test/INFO] Producing the trace of the run into ./Montage_25.jed
+
+$ cmake -E remove -f ${srcdir:=.}/Montage_25.jed
