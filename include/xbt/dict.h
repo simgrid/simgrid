@@ -139,8 +139,24 @@ XBT_PUBLIC(void) xbt_dict_cursor_first(const xbt_dict_t dict,
 XBT_PUBLIC(void) xbt_dict_cursor_step(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(int) xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
                                             char **key, void **data);
-  /** @def xbt_dict_foreach
-      @hideinitializer */
+/** @def xbt_dict_foreach
+ *  @param dict a \ref xbt_dict_t iterator
+ *  @param cursor an \ref xbt_dict_cursor_t used as cursor
+ *  @param key a char*
+ *  @param data a void** output
+ *  @hideinitializer
+ *
+ * \note An example of usage:
+ * \code
+xbt_dict_cursor_t cursor = NULL;
+char *key;
+char *data;
+
+xbt_dict_foreach(head, cursor, key, data) {
+ printf("Key %s with data %s\n",key,data);
+}
+\endcode
+ */
 #  define xbt_dict_foreach(dict,cursor,key,data)                       \
     for (cursor=NULL, xbt_dict_cursor_first((dict),&(cursor)) ;        \
          xbt_dict_cursor_get_or_free(&(cursor),(char**)&(key),(void**)(&data));\
