@@ -164,45 +164,6 @@ close OUT;
 close IN;
 rename("html/modules.new.html","html/modules.html") unless $debug{'rename'};
 
-# the publication pages deserves some special handling too
-my %pub_tabs = ("publis.html"       =>"Reference publications",
-                "publis_core.html"  =>"Other publication about SimGrid",
-                "publis_extern.html"=>"External papers using SimGrid",
-                "publis_intra.html"=>"Internal papers using SimGrid");
-# force ordering
-my @pub_titles = ("publis.html", "publis_core.html", "publis_extern.html", "publis_intra.html");
-sub handle_pub{
-    my $oldname = shift;
-    my $newname = $oldname;
-    $newname =~ s/\.html$/.new.html/;
- 
-#    print "Handle_pub($oldname -> $newname)\n";
-    
-    open IN,"html/$oldname" || die "Cannot open $oldname";
-    open OUT,">html/$newname" || die "Cannot open $newname";
-    my $line;
-    while ($line = <IN>) {
-	last if $line =~ /<h1>/;
-	print OUT $line;
-    }
-
-    print OUT "<div class=\"tabs\">\n<ul class=\"tablist\">\n";
-    foreach my $page (@pub_titles) {
-	print OUT "         <li".($page eq $oldname? " class=\"current\"":"" )."> <a href=\"$page\"><span>".($pub_tabs{$page})."</span></a></li>\n";
-    }
-
-    print OUT "  </ul></div>\n";
-    print OUT $line;
-    while ($line = <IN>) {
-	print OUT $line;
-    }
-    close OUT;
-    close IN;
-    rename("html/$newname","html/$oldname") unless $debug{'rename'};
-}
-map {handle_pub($_)} @pub_titles;
-
-
 # Operate the recursion
 sub handle_page {
   my $current=shift;
