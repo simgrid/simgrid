@@ -322,8 +322,6 @@ xbt_dynar_t MSG_processes_as_dynar(void) {
  */
 MSG_error_t MSG_process_set_kill_time(m_process_t process, double kill_time)
 {
-  xbt_assert(process != NULL, "Invalid parameter");
-
   simcall_process_set_kill_time(process,kill_time);
   return MSG_OK;
 }
