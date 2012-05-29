@@ -88,6 +88,8 @@ set(JMSG_C_SRC
 	src/jmsg_task.h
 	src/jmsg_synchro.c
 	src/jmsg_synchro.h
+	src/jtrace.c
+	src/jtrace.h
 )
 
 set(JMSG_JAVA_SRC
@@ -107,6 +109,7 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/TransferFailureException.java	
 	org/simgrid/msg/Mutex.java
 	org/simgrid/msg/Comm.java
+	org/simgrid/trace/Trace.java
 )
 
 set(JAVA_EXAMPLES
@@ -215,12 +218,24 @@ if(WIN32)
     endif(PEXPORTS_PATH)
 else(WIN32)
     target_link_libraries(SG_java pcre pthread simgrid)
-    if($ENV{SIMGRID_PCRE_LIBRARY_PATH} STREQUAL "")
-        set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH}")
-    else($ENV{SIMGRID_PCRE_LIBRARY_PATH} STREQUAL "")
-        set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH} -L$ENV{SIMGRID_PCRE_LIBRARY_PATH}/lib")
-    endif($ENV{SIMGRID_PCRE_LIBRARY_PATH} STREQUAL "")
+    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH}")
 endif(WIN32)
+
+# SG_java_tracing
+add_library(SG_java_tracing SHARED ${JMSG_C_SRC})
+if(WIN32)
+    set_target_properties(SG_java_tracing PROPERTIES LINK_FLAGS "-Wl,--subsystem,windows,--kill-at ${SIMGRID_LIB}" PREFIX "")
+    find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
+    message(STATUS "pexports: ${PEXPORTS_PATH}")
+    if(PEXPORTS_PATH)
+    add_custom_command(TARGET SG_java_tracing POST_BUILD
+    COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java_tracing.dll > ${CMAKE_BINARY_DIR}/SG_java_tracing.def)
+    endif(PEXPORTS_PATH)
+else(WIN32)
+    target_link_libraries(SG_java_tracing pcre pthread simgrid)
+    set_target_properties(SG_java_tracing PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH}")
+endif(WIN32)
+
 
 # java_classes
 add_custom_command(
@@ -266,7 +281,7 @@ add_custom_target(simgrid_java_examples ALL
 # Declare dependencies #
 ########################
 add_dependencies(simgrid_jar java_classes)
-add_dependencies(simgrid_java_examples simgrid_jar SG_java)
+add_dependencies(simgrid_java_examples simgrid_jar SG_java_tracing SG_java)
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 ${CMAKE_HOME_DIRECTORY}/simgrid.jar
@@ -318,7 +333,7 @@ endif(APPLE)
 ###########
 # Install #
 ###########
-install(TARGETS SG_java
+install(TARGETS SG_java SG_java_tracing
 	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
 install(FILES ${CMAKE_HOME_DIRECTORY}/simgrid.jar
 	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
