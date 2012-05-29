@@ -521,7 +521,7 @@ void simcall_process_set_data(smx_process_t process, void *data)
   }
 }
 
-/** \ingroup m_process_management
+/**
  * \brief Set the kill time of a process.
  *
  * \param process a process
