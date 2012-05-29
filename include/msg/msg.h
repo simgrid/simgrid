@@ -102,7 +102,6 @@ XBT_PUBLIC(m_process_t) MSG_process_create_with_environment(const char
                                                             code,
                                                             void *data,
                                                             m_host_t host,
-                                                            double kill_time,
                                                             int argc,
                                                             char **argv,
                                                             xbt_dict_t

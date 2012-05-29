@@ -63,8 +63,9 @@ void MSG_process_create_from_SIMIX(smx_process_t* process, const char *name,
 {
   m_host_t host = MSG_get_host_by_name(hostname);
   m_process_t p = MSG_process_create_with_environment(name, code, data,
-                                                      host, kill_time, argc, argv,
+                                                      host, argc, argv,
                                                       properties);
+  MSG_process_set_kill_time(p,kill_time);
   *((m_process_t*) process) = p;
 }
 
@@ -79,7 +80,7 @@ m_process_t MSG_process_create(const char *name,
                                xbt_main_func_t code, void *data,
                                m_host_t host)
 {
-  return MSG_process_create_with_environment(name, code, data, host, -1, -1,
+  return MSG_process_create_with_environment(name, code, data, host, -1,
                                              NULL, NULL);
 }
 
@@ -113,7 +114,7 @@ m_process_t MSG_process_create_with_arguments(const char *name,
                                               void *data, m_host_t host,
                                               int argc, char **argv)
 {
-  return MSG_process_create_with_environment(name, code, data, host, -1.0,
+  return MSG_process_create_with_environment(name, code, data, host,
                                              argc, argv, NULL);
 }
 
@@ -136,7 +137,6 @@ m_process_t MSG_process_create_with_arguments(const char *name,
    object.  It is for user-level information and can be NULL. It can
    be retrieved with the function \ref MSG_process_get_data.
  * \param host the location where the new process is executed.
- * \param kill_time the time when the process is killed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
  * \param properties list a properties defined for this process
@@ -146,7 +146,6 @@ m_process_t MSG_process_create_with_arguments(const char *name,
 m_process_t MSG_process_create_with_environment(const char *name,
                                                 xbt_main_func_t code,
                                                 void *data, m_host_t host,
-                                                double kill_time,
                                                 int argc, char **argv,
                                                 xbt_dict_t properties)
 {
@@ -176,7 +175,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  simcall_process_create(&process, name, code, simdata, SIMIX_host_get_name(host->smx_host), kill_time,
+  simcall_process_create(&process, name, code, simdata, SIMIX_host_get_name(host->smx_host), -1,
                            argc, argv, properties);
 
   if (!process) {
@@ -319,7 +318,7 @@ xbt_dynar_t MSG_processes_as_dynar(void) {
  * \brief Set the kill time of a process.
  *
  * \param process a process
- * \param kill_time a double
+ * \param kill_time the time when the process is killed.
  */
 MSG_error_t MSG_process_set_kill_time(m_process_t process, double kill_time)
 {
