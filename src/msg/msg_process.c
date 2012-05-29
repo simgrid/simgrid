@@ -316,6 +316,20 @@ xbt_dynar_t MSG_processes_as_dynar(void) {
 }
 
 /** \ingroup m_process_management
+ * \brief Set the kill time of a process.
+ *
+ * \param process a process
+ * \param kill_time a double
+ */
+MSG_error_t MSG_process_set_kill_time(m_process_t process, double kill_time)
+{
+  xbt_assert(process != NULL, "Invalid parameter");
+
+  simcall_process_set_kill_time(process,kill_time);
+  return MSG_OK;
+}
+
+/** \ingroup m_process_management
  * \brief Returns the process ID of \a process.
  *
  * This function checks whether \a process is a valid pointer or not
