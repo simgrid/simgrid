@@ -521,6 +521,24 @@ void simcall_process_set_data(smx_process_t process, void *data)
   }
 }
 
+/** \ingroup m_process_management
+ * \brief Set the kill time of a process.
+ *
+ * \param process a process
+ * \param kill_time a double
+ */
+void simcall_process_set_kill_time(smx_process_t process, double kill_time)
+{
+
+  if (kill_time > SIMIX_get_clock()) {
+    if (simix_global->kill_process_function) {
+      XBT_DEBUG("Set kill time %f for process %s(%s)",kill_time, process->name,
+          process->smx_host->name);
+      SIMIX_timer_set(kill_time, simix_global->kill_process_function, process);
+    }
+  }
+}
+
 /**
  * \brief Return the location on which an agent is running.
  *

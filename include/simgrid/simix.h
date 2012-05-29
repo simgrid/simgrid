@@ -332,6 +332,7 @@ XBT_PUBLIC(smx_host_t) simcall_process_get_host(smx_process_t process);
 XBT_PUBLIC(const char *) simcall_process_get_name(smx_process_t process);
 XBT_PUBLIC(int) simcall_process_is_suspended(smx_process_t process);
 XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_process_t host);
+XBT_PUBLIC(void) simcall_process_set_kill_time(smx_process_t process, double kill_time);
 
 /* Sleep control */
 XBT_PUBLIC(e_smx_state_t) simcall_process_sleep(double duration);
