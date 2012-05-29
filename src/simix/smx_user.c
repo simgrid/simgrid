@@ -1005,6 +1005,10 @@ int simcall_comm_is_latency_bounded(smx_action_t comm)
 
 smx_mutex_t simcall_mutex_init(void)
 {
+  if(!simix_global) {
+    fprintf(stderr,"You must run MSG_global_init or gras_init before using MSG or GRAS\n"); // I would have loved using xbt_die but I can't since it is not initialized yet... :)
+    abort();
+  }
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_MUTEX_INIT;
