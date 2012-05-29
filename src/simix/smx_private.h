@@ -281,7 +281,7 @@ static XBT_INLINE void SIMIX_context_runall(void)
  */
 static XBT_INLINE smx_context_t SIMIX_context_self(void)
 {
-  if (simix_global && simix_global->context_factory != NULL) {
+  if (simix_global && simix_global->context_factory) {
     return simix_global->context_factory->self();
   }
 
