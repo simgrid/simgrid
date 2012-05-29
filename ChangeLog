@@ -17,6 +17,11 @@ SimGrid (3.8) NOT RELEASED; urgency=low
 
 SimGrid (3.7.1) NOT RELEASED; urgency=low
 
+ MSG:
+ * Restore the prototype of MSG_process_create_with_environment() to
+   the pre-3.7 situation by removing the kill_time argument.
+ * Add a MSG_process_set_kill_time() function instead.
+
  SURF:
  * Fix weird behaviors when dealing with parallel tasks.
 
