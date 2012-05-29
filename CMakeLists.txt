@@ -308,25 +308,25 @@ set(test_list basic async pingPong CommTime mutualExclusion bypass kill startKil
 # Set the  DYLD_LIBRARY_PATH for mac     #
 ##########################################
 if(APPLE)
-    if($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
+    if($ENV{DYLD_LIBRARY_PATH})
         set_tests_properties(${test_list}
         PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-    else($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
+    else($ENV{DYLD_LIBRARY_PATH})
         set_tests_properties(${test_list}
         PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=$ENV{DYLD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-    endif($ENV{DYLD_LIBRARY_PATH} STREQUAL "")
+    endif($ENV{DYLD_LIBRARY_PATH})
 else(APPLE)
     ##########################################
     # Set the  LD_LIBRARY_PATH for our tests #
     ##########################################
     if(NOT WIN32)
-        if($ENV{LD_LIBRARY_PATH} STREQUAL "")
+        if($ENV{LD_LIBRARY_PATH})
             set_tests_properties(${test_list}
             PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-        else($ENV{LD_LIBRARY_PATH} STREQUAL "")
+        else($ENV{LD_LIBRARY_PATH})
             set_tests_properties(${test_list}
             PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-        endif($ENV{LD_LIBRARY_PATH} STREQUAL "")
+        endif($ENV{LD_LIBRARY_PATH})
     endif(NOT WIN32)
 endif(APPLE)
 

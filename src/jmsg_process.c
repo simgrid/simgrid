@@ -275,12 +275,6 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
                                      jdouble jseconds)
 {
-  m_process_t process = jprocess_to_native_process(jprocess, env);
-
-  if (!process) {
-    jxbt_throw_notbound(env, "process", jprocess);
-    return;
-  }
   MSG_error_t rv;
   TRY {
   	 rv = MSG_process_sleep((double)jseconds);
