@@ -146,6 +146,12 @@ ADD_TEST(msg-masterslave-failure-thread        ${CMAKE_BINARY_DIR}/bin/tesh ${TE
 ADD_TEST(msg-masterslave-mailbox-thread        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread       --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg    --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave/masterslave_mailbox_crosstraffic.tesh)
 ADD_TEST(msg-masterslave-cpu-ti-thread         ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread       --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave    --cd ${CMAKE_HOME_DIRECTORY}/examples/msg masterslave/masterslave_cpu_ti_crosstraffic.tesh)
 
+ADD_TEST(msg-masterslave-virtual-machines
+         ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} 
+            --cfg contexts/factory:thread  
+	    --setenvbindir=${CMAKE_BINARY_DIR}/examples/msg/cloud 
+	    --cd ${CMAKE_HOME_DIRECTORY}/examples/msg cloud/masterslave_virtual_machines.tesh)
+
 if(HAVE_UCONTEXT_H)
 	ADD_TEST(msg-sendrecv-CLM03-ucontext	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:ucontext		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_CLM03.tesh)
 	ADD_TEST(msg-sendrecv-Vegas-ucontext	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:ucontext		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_Vegas.tesh)

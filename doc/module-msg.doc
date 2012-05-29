@@ -19,6 +19,7 @@
    - \ref m_task_management
    - \ref msg_file_management
    - \ref msg_task_usage
+   - \ref msg_VMs
    - \ref msg_trace_driven
    - \ref msg_deprecated_functions
 
@@ -85,6 +86,23 @@ details).
  *  @ingroup MSG_API
  *  @brief This section describes the functions that can be used
  *         by a process to execute, communicate or otherwise handle some task.
+ */
+
+/** @defgroup msg_VMs VMs
+ *  @ingroup MSG_API
+ *  @brief This section describes the interface created to mimick IaaS clouds.
+ *
+ *  With it, you can create virtual machines to put your processes
+ *  into, and interact directly with the VMs to manage groups of
+ *  processes. 
+ *
+ *  This interface is highly experimental at this point. Testing is
+ *  welcomed, but do not expect too much of it right now. Even the
+ *  interfaces may be changed in future releases of SimGrid (although
+ *  things are expected to stabilize nicely before SimGrid v3.8).
+ *  There is no guaranty on the rest of SimGrid, and there is less
+ *  than that on this part.
+ *
  */
 
 /** @defgroup msg_file_management File Management Functions

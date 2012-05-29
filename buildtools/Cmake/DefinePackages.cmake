@@ -281,6 +281,7 @@ set(MSG_SRC
 	src/msg/msg_deployment.c
 	src/msg/msg_mailbox.c
 	src/msg/msg_actions.c
+	src/msg/msg_vm.c
 )
 
 set(SIMDAG_SRC

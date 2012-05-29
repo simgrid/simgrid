@@ -1,5 +1,12 @@
 SimGrid (3.8) NOT RELEASED; urgency=low
 
+ The "SimGrid makes psssshiiiit and jumps into the cloud" release.
+  
+ MSG:
+ * Add an experimental interface to manipulate VMs. They are mainly
+   process groups with very few intrinsic semantic, but they should
+   allow you to build the semantic you want easily.
+
  SimDag:
  * New type of typed tasks SD_TASK_COMP_PAR_AMDAHL that represents a
    parallel task whose initial work is distributed among host according

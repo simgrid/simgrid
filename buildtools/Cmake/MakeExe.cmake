@@ -60,6 +60,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/pmm)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/start_kill_time)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/io)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/cloud)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/gpu)
 
