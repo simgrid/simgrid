@@ -13,19 +13,19 @@ function set_global_string(...)
   print_global()
 end
 
--- Replaces the function please_don't_change_me() by set_global_string()
+-- Replaces the function please_dont_change_me() by set_global_string()
 -- and calls it
 function replace(...)
 
-  simgrid.info("Overwriting function please_don't_replace_me()")
-  please_don't_replace_me = set_global_string
-  please_don't_replace_me(...)
+  simgrid.info("Overwriting function please_dont_replace_me()")
+  please_dont_replace_me = set_global_string
+  please_dont_replace_me(...)
 end
 
 -- Shows a hello message and prints the global string
-function please_don't_replace_me(...)
+function please_dont_replace_me(...)
 
-  simgrid.info("Hello from please_don't_replace_me(). I'm lucky, I still exist in this state.")
+  simgrid.info("Hello from please_dont_replace_me(). I'm lucky, I still exist in this state.")
   print_global()
 end
 

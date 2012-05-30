@@ -7,7 +7,7 @@
   <process host="Bourassa" function="replace">
     <argument value="Calling replace() from Bourassa"/>
   </process>
-  <process host="Jupiter" function="please_don't_replace_me">
-    <argument value="Calling please_don't_replace_me() from Jupiter"/>
+  <process host="Jupiter" function="please_dont_replace_me">
+    <argument value="Calling please_dont_replace_me() from Jupiter"/>
   </process>
 </platform>
