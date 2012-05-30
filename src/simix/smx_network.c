@@ -205,9 +205,9 @@ void SIMIX_comm_destroy(smx_action_t action)
             action, action->comm.refcount, (int)action->state);
 
   if (action->comm.refcount <= 0) {
-	xbt_backtrace_display_current();
-    xbt_die("the refcount of comm %p is already 0 before decreasing it. "
-            "That's a bug!", action);
+    xbt_backtrace_display_current();
+    xbt_die("The refcount of comm %p is already 0 before decreasing it. "
+            "That's a bug! If you didn't test and/or wait the same communication twice in your code, then the bug is SimGrid's...", action);
   }
   action->comm.refcount--;
   if (action->comm.refcount > 0)

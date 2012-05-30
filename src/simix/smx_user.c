@@ -522,6 +522,24 @@ void simcall_process_set_data(smx_process_t process, void *data)
 }
 
 /**
+ * \brief Set the kill time of a process.
+ *
+ * \param process a process
+ * \param kill_time a double
+ */
+void simcall_process_set_kill_time(smx_process_t process, double kill_time)
+{
+
+  if (kill_time > SIMIX_get_clock()) {
+    if (simix_global->kill_process_function) {
+      XBT_DEBUG("Set kill time %f for process %s(%s)",kill_time, process->name,
+          process->smx_host->name);
+      SIMIX_timer_set(kill_time, simix_global->kill_process_function, process);
+    }
+  }
+}
+
+/**
  * \brief Return the location on which an agent is running.
  *
  * This functions checks whether \a process is a valid pointer or not and return the m_host_t corresponding to the location on which \a process is running.
@@ -987,6 +1005,10 @@ int simcall_comm_is_latency_bounded(smx_action_t comm)
 
 smx_mutex_t simcall_mutex_init(void)
 {
+  if(!simix_global) {
+    fprintf(stderr,"You must run MSG_global_init or gras_init before using MSG or GRAS\n"); // I would have loved using xbt_die but I can't since it is not initialized yet... :)
+    abort();
+  }
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_MUTEX_INIT;

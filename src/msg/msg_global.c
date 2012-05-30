@@ -39,6 +39,8 @@ void MSG_global_init(int *argc, char **argv)
 
   xbt_getpid = MSG_process_self_PID;
   if (!msg_global) {
+    s_msg_vm_t vm; // to compute the offset
+
     SIMIX_global_init(argc, argv);
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
@@ -50,6 +52,7 @@ void MSG_global_init(int *argc, char **argv)
     msg_global->sent_msg = 0;
     msg_global->task_copy_callback = NULL;
     msg_global->process_data_cleanup = NULL;
+    msg_global->vms = xbt_swag_new(xbt_swag_offset(vm,all_vms_hookup));
 
     /* initialization of the action module */
     _MSG_action_init();
@@ -64,6 +67,7 @@ void MSG_global_init(int *argc, char **argv)
 
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_destroy);
+
 }
 
 #ifdef MSG_USE_DEPRECATED
@@ -193,6 +197,7 @@ MSG_error_t MSG_clean(void)
 
   SIMIX_clean();
 
+  xbt_swag_free(msg_global->vms);
   free(msg_global);
   msg_global = NULL;
 

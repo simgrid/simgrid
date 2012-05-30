@@ -140,7 +140,7 @@ typedef struct s_smx_action {
       void *dst_buff;
       size_t src_buff_size;
       size_t *dst_buff_size;
-      char copied;
+      int copied:1;                   /* whether the data were already copied */
 
       void* src_data;                     /* User data associated to communication */
       void* dst_data;
@@ -281,7 +281,7 @@ static XBT_INLINE void SIMIX_context_runall(void)
  */
 static XBT_INLINE smx_context_t SIMIX_context_self(void)
 {
-  if (simix_global && simix_global->context_factory != NULL) {
+  if (simix_global && simix_global->context_factory) {
     return simix_global->context_factory->self();
   }
 

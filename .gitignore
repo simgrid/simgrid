@@ -135,6 +135,7 @@ examples/msg/masterslave/toto.txt
 examples/msg/simulation.trace
 examples/msg/toto.txt
 examples/msg/z_gtnets.trace
+examples/msg/cloud/masterslave_virtual_machines
 examples/msg/tracing/link_srcdst_user_variables
 examples/msg/tracing/link_user_variables
 examples/msg/tracing/simple
