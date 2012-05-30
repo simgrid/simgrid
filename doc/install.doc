@@ -54,7 +54,6 @@ For Windows :
 	enable_supernovae       	ON/OFF or TRUE/FALSE or 1/0
 	enable_msg_deprecated   	ON/OFF or TRUE/FALSE or 1/0                                                                                                                                                                                                                                                                               
 	enable_print_message    	ON/OFF or TRUE/FALSE or 1/0 
-	custom_flags 			<flags>
 	gtnets_path			<path_to_gtnets_directory>
 	ns3_path			<path_to_ns3_directory>
 	CMAKE_INSTALL_PREFIX		<path_to_install_directory>
@@ -101,8 +100,6 @@ For Windows :
   
   \li enable_print_message : When set to true configuration print more debug output.
   
-  \li custom_flags : If user wants to use a specific flag during compilation, give here.
-
   \li gtnets_path : Path to gtnets install directory (ex /usr)
   
   \li ns3_path : Path to ns3 install directory (ex /usr)
@@ -135,7 +132,6 @@ enable_jedule 	 		off
 enable_latency_bound_tracking 	off 
 enable_lib_static		off
 CMAKE_INSTALL_PREFIX		/usr/local
-custom_flags			null
 gtnets_path			null
 pipol_user			null
 \endverbatim
