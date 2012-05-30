@@ -475,7 +475,7 @@ double surf_solve(double max_date)
     }
   }
 
-  XBT_DEBUG("Min for resources (remember that NS3 dont update that value) : %f", min);
+  XBT_DEBUG("Min for resources (remember that NS3 don't update that value) : %f", min);
 
   XBT_DEBUG("Looking for next trace event");
 

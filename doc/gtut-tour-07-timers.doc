@@ -36,7 +36,7 @@ must be function without argument nor result (<tt>void my_action(void){
 
 It is important to note that timers are not prehemptive. They will not start
 as soon as they are ready. Instead, they get served when you go into
-gras_msg_handle() (and they are served before incomming messages). This is
+gras_msg_handle() (and they are served before incoming messages). This is
 because allowing timers to run in parallel to the callbacks would add
 parallelism to the user code, which would have to protect data with mutexes.
 This is a level of complexity I really don't want for user code. If you

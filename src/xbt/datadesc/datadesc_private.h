@@ -234,7 +234,7 @@ xbt_datadesc_scalar(const char *name,
                      enum e_xbt_dd_scalar_encoding encoding);
 
 /****************************************************
- * Callback persistant state constructor/destructor *
+ * Callback persistent state constructor/destructor *
  ****************************************************/
 xbt_cbps_t xbt_cbps_new(void);
 void xbt_cbps_free(xbt_cbps_t * state);

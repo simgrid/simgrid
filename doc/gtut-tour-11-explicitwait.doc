@@ -117,7 +117,7 @@ Note that this is where the explicit wait feature is used.
 
 The core of our distributed service is implemented (protocol, actions on
 server side, and accessing function on client side). We should now
-initialize the server and let it wait for incomming messages. 
+initialize the server and let it wait for incoming messages. 
 
 Defining when to stop the server can become tricky. The simplest solution is
 to never let the server stop. It simply runs forever. But the simulator will
