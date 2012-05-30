@@ -28,7 +28,7 @@ it with the gras_userdata_* functions (there is only 3 of them ;).
 We will now modify the example to add a "kill" message, and let the server
 loop on incoming messages until it gets such a message. We only need a
 boolean, so the structure is quite simple: 
-\don'tinclude 05-globals.c
+\dontinclude 05-globals.c
 \skip struct
 \until server_data
  
@@ -38,7 +38,7 @@ helper macro mallocing the space needed by the structure and passing it to
 gras using the latter function. If you go for gras_userdata_set(), you
 should pass it a pointer to your data you want to retrieve afterward.
 
-\don'tinclude 05-globals.c
+\dontinclude 05-globals.c
 \skip userdata_new
 \until userdata_new
 
@@ -49,13 +49,13 @@ defined as being of type server_data_t*.
 
 Once you declared a global that way, retriving this (for example in a
 callback) is really easy:
-\don'tinclude 05-globals.c
+\dontinclude 05-globals.c
 \skip userdata_get
 \until userdata_get
 
 We can now write the callback, which simply retrive the globals and change
 the value of the <tt>kileld</tt> field.
-\don'tinclude 05-globals.c
+\dontinclude 05-globals.c
 \skip kill_cb
 \until end_of_kill_callback
 

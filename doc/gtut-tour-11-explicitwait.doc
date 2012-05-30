@@ -92,7 +92,7 @@ definition discrepency.
 
 Here, there is no payload attached to the messages.
 
-\don'tinclude 11-explicitwait.c
+\dontinclude 11-explicitwait.c
 \skip message_declaration
 \until }
 
@@ -129,7 +129,7 @@ service, the server stops. This would be a bit difficult to implement
 Here, we will just hardcode that the clients ask 5 times for the token, and
 that there is two clients. This clearly simplify the problem.
 
-\don'tinclude 11-explicitwait.c
+\dontinclude 11-explicitwait.c
 \skip gras_userdata_new
 \until gras_msg_handle
 

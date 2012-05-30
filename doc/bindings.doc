@@ -32,7 +32,7 @@ Actually, the use of lua in Simgrid is quite simple, you have just to follow the
   - loading the platforme/deployment XML file that describe the environment of simulation
   - and … Running the Simulation.
   
-\don'tinclude lua/masterslave/master.lua
+\dontinclude lua/masterslave/master.lua
 \subsection bindings_binding_lua_example_master_slave Master/Slave Example
 
  \li Master Code
@@ -41,13 +41,13 @@ we mainly  use   simgrid.Task.new(task_name,computation_size,communication_size)
 	 then simgrid.Task.send(task,alias) to send it.
 we use also simgrid.Task.name(task), to get the task's name. 
 
-\don'tinclude lua/masterslave/slave.lua
+\dontinclude lua/masterslave/slave.lua
 \li Slave Code
 \until end_of_slave
 Here, we see the use of simgrid.Task.recv(alias) to receive a task with a specific alias,
 this function return directly the task recevied.
 
-\don'tinclude lua/masterslave/master_slave.lua
+\dontinclude lua/masterslave/master_slave.lua
 \li Set Environmenet and run application
 \until simgrid.clean()
 

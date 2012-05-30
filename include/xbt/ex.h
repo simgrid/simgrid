@@ -207,7 +207,7 @@ __ex_mctx_struct} __ex_mctx_t;
  * following code which shows some pitfalls and contains many errors (assuming
  * a mallocex() function which throws an exception if malloc(3) fails):
  *
- * \don'tinclude ex.c
+ * \dontinclude ex.c
  * \skip BAD_EXAMPLE
  * \until end_of_bad_example
  *

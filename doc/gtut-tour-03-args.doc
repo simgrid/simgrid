@@ -19,7 +19,7 @@ situation.
 In RL, the situation is quite simple: we just have to use the command line
 arguments as we would do in a usual C program. In the server, only change
 concern the opennong of the master socket:
-\don'tinclude 03-args.c
+\dontinclude 03-args.c
 \skip gras_socket_server
 \until gras_socket_server
 
