@@ -6,7 +6,6 @@
 #include "y.tab.c"
 
 #define AMOUNT_OF_CLIENTS 2
-#define CS_PER_PROCESS 1
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(centralized, "my log messages");
  
