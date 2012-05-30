@@ -209,7 +209,7 @@ an external description of the deployment.
 
 <hr> 
 
-\dontinclude msg/icomms/peer.c
+\don'tinclude msg/icomms/peer.c
 
 \section MSG_ext_icomms_code Code of the application
 
@@ -272,7 +272,7 @@ This initializes MSG, runs a simulation, and free all data-structures created by
 
 \until end_of_main
 
-\dontinclude msg/icomms/peer2.c
+\don'tinclude msg/icomms/peer2.c
 
 \section MSG_ext_icomms_fct_Waitall Waitall function for sender
 
@@ -287,13 +287,13 @@ The MSG_comm_waitany() function return the place of the first message send or re
 
 \subsection MSG_ext_icomms_fct_Waitany_sender From a sender
 We can use this function to wait all sent messages.
-\dontinclude msg/icomms/peer3.c
+\don'tinclude msg/icomms/peer3.c
 \skipline Sender function
 \until end_of_sender
 
 \subsection MSG_ext_icomms_fct_Waitany_receiver From a receiver
 We can also wait for the arrival of all messages.
-\dontinclude msg/icomms/peer3.c
+\don'tinclude msg/icomms/peer3.c
 \skipline Receiver function
 \until end_of_receiver
 
@@ -321,7 +321,7 @@ and an external description of the deployment.
  
 <hr> 
 
-\dontinclude msg/masterslave/masterslave_forwarder.c
+\don'tinclude msg/masterslave/masterslave_forwarder.c
 
 \section MSG_ext_ms_code Code of the application
 
@@ -419,7 +419,7 @@ This initializes MSG, runs a simulation, and free all data-structures created by
        - \ref MSG_ext_ms_platform
        
        
-      \dontinclude lua/masterslave/master_slave.lua
+      \don'tinclude lua/masterslave/master_slave.lua
       
       \section MSG_ext_ms_code_lua Code of the application
       
@@ -472,7 +472,7 @@ This initializes MSG, runs a simulation, and free all data-structures created by
        - \ref MSG_ext_ms_core_lua
        
        
-      \dontinclude lua/console/master_slave_bypass.lua
+      \don'tinclude lua/console/master_slave_bypass.lua
       
       \section MSG_ext_ms_code_lua Code of the application
       

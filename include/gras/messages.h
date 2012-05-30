@@ -164,8 +164,8 @@ XBT_PUBLIC(void) gras_msg_send_(xbt_socket_t sock,
  *  @hideinitializer
  * @param timeout: How long should we wait for this message.
  * @param msgt_want: type of awaited msg
- * @param[out] expeditor: where to create a socket to answer the incomming message
- * @param[out] payload: where to write the payload of the incomming message
+ * @param[out] expeditor: where to create a socket to answer the incoming message
+ * @param[out] payload: where to write the payload of the incoming message
  * @return the error code (or no_error).
  *
  * Every message of another type received before the one waited will be queued
@@ -193,7 +193,7 @@ XBT_PUBLIC(void) gras_msg_handle(double timeOut);
  * right answer from the right host and so on.  Any exception raised on the
  * server is also passed over the network to the client.
  * 
- * Callbacks are attached to RPC incomming messages the regular way using
+ * Callbacks are attached to RPC incoming messages the regular way using
  * \ref gras_cb_register.
  * 
  * For an example of use, check the examples/gras/rpc directory of the distribution.
@@ -272,7 +272,7 @@ typedef enum {
      group communication
    */
 
-  e_gras_msg_kind_count = 5     /* sentinel, dont mess with */
+  e_gras_msg_kind_count = 5     /* sentinel, don't mess with */
 } e_gras_msg_kind_t;
 
 

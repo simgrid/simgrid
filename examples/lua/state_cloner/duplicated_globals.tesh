@@ -4,8 +4,8 @@ $ lua duplicated_globals.lua
 > [0.000000] [lua/INFO] Global string is 'A global string set by maestro'
 > [Tremblay:set_global_string:(1) 0.000000] [lua/INFO] Changing the global string
 > [Tremblay:set_global_string:(1) 0.000000] [lua/INFO] Global string is 'Calling set_global_string() from Tremblay'
-> [Bourassa:replace:(2) 0.000000] [lua/INFO] Overwriting function please_dont_replace_me()
+> [Bourassa:replace:(2) 0.000000] [lua/INFO] Overwriting function please_don't_replace_me()
 > [Bourassa:replace:(2) 0.000000] [lua/INFO] Changing the global string
 > [Bourassa:replace:(2) 0.000000] [lua/INFO] Global string is 'Calling replace() from Bourassa'
-> [Jupiter:please_dont_replace_me:(3) 0.000000] [lua/INFO] Hello from please_dont_replace_me(). I'm lucky, I still exist in this state.
-> [Jupiter:please_dont_replace_me:(3) 0.000000] [lua/INFO] Global string is 'A global string set by maestro'
+> [Jupiter:please_don't_replace_me:(3) 0.000000] [lua/INFO] Hello from please_don't_replace_me(). I'm lucky, I still exist in this state.
+> [Jupiter:please_don't_replace_me:(3) 0.000000] [lua/INFO] Global string is 'A global string set by maestro'

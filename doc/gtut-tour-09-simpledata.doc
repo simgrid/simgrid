@@ -204,7 +204,7 @@ differ from node types to node types (the server attach 2 callbacks where
 the client don't attach any). Here is the message declaring function in our
 case:
 
-\dontinclude 09-simpledata.c
+\don'tinclude 09-simpledata.c
 \skip message_declaration(void)
 \until }
 
@@ -235,7 +235,7 @@ So, it you want to retrieve a double, you have to cast the pointer using
 <tt>(double*)</tt>, and then dereference the obtained pointer by adding a
 star before the cast. This is what we do here:
 
-\dontinclude 09-simpledata.c
+\don'tinclude 09-simpledata.c
 \skip server_kill_cb
 \until delay
 

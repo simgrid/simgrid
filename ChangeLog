@@ -1210,7 +1210,7 @@ SimGrid (3.3) stable; urgency=high
     [contributed by Sékou Diakite, many thanks]
 
  GRAS:
-  * Introduce a listener thread in charge of receiving incomming
+  * Introduce a listener thread in charge of receiving incoming
     messages from the network. It allows to overlap communication and
     computation but most notably, it removes some stupid deadlocks due
     to the fact that so far, a process could not send and receive at

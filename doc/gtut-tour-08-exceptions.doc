@@ -109,7 +109,7 @@ have to find from itself. For this, it will try to open socket and send the
 kill message to each ports of the search range. If it manage to close the
 socket after sending the message without being interrupted by an exception,
 it can assume that it killed the server and stop searching.
-\dontinclude 08-exceptions.c
+\don'tinclude 08-exceptions.c
 \skip port=3000
 \until end_of_loop
 
@@ -117,7 +117,7 @@ To make the game a bit more fun (and to show you what an exception actually
 look like when it's not catched), we add a potential command line argument
 to the server, asking it to cheat and to not open its port within the search
 range but elsewhere:
-\dontinclude 08-exceptions.c
+\don'tinclude 08-exceptions.c
 \skip strcmp
 \until gras_socket_my_port
 \until }

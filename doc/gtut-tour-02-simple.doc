@@ -22,7 +22,7 @@ Fortunately, such discrepency will be detected in SG.
 
 We won't convey any payload in this lesson, so we just have to give the name
 of message to declare them:
-\dontinclude 02-simple.c
+\don'tinclude 02-simple.c
 \skip gras_msgtype_declare
 \until gras_msgtype_declare
 
@@ -65,7 +65,7 @@ messages, you have to create a so-called <i>client socket</i>. For this, use
 \ref gras_socket_client with the hostname and the port of the process you
 want to contact as arguments. Our client should simply do:
 
-\dontinclude 02-simple.c
+\don'tinclude 02-simple.c
 \skip socket_client
 \until socket_client
 
@@ -84,7 +84,7 @@ gras_msg_send on the sender side, and \ref gras_msg_wait on the receiver side.
 message, the message type (described by its name), and a pointer to the actual content of the
 message. Since we don't have any payload, this becomes:
 
-\dontinclude 02-simple.c
+\don'tinclude 02-simple.c
 \skip msg_send
 \until msg_send
 
@@ -96,7 +96,7 @@ message you received while the last argument is where to put the payload.
 
 Since our server is willing to wait up to 60 seconds for a message, the
 following will do it:
-\dontinclude 02-simple.c
+\don'tinclude 02-simple.c
 \skip msg_wait
 \until msg_wait
 

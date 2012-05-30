@@ -171,7 +171,7 @@ int node(int argc, char *argv[])
     }
   }
 
-  /* 8. Wait up to 10 seconds for an incomming message to handle */
+  /* 8. Wait up to 10 seconds for an incoming message to handle */
   while (globals->remaining_loop > (globals->create ? -1 : 0)) {
     gras_msg_handle(-1);
 

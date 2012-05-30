@@ -1,4 +1,4 @@
-/* cbps - persistant states for callbacks                                   */
+/* cbps - persistent states for callbacks                                   */
 
 /* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -9,7 +9,7 @@
 #include "xbt/ex.h"
 #include "xbt/datadesc/datadesc_private.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ddt_cbps, xbt_ddt,
-                                "callback persistant state");
+                                "callback persistent state");
 
 typedef struct {
   xbt_datadesc_type_t type;

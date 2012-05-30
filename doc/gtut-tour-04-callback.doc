@@ -26,7 +26,7 @@ speaking about the message we are handling while the second is the payload.
 The callback returns an integer being its error code, just like the "main()"
 function. Here is the actual code of our callback:
 
-\dontinclude 04-callback.c
+\don'tinclude 04-callback.c
 \skip gras_msg_cb_ctx_t 
 \until end_of_callback
 

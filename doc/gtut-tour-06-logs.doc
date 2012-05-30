@@ -74,7 +74,7 @@ of channel we want:
 What we want here is a root category (it does not belong to any existing
 channel, for sure), and we want it to be the default one in our file (of
 course, it's the only one).
-\dontinclude 06-logs.c
+\don'tinclude 06-logs.c
 \skip XBT_LOG
 \until XBT_LOG
 

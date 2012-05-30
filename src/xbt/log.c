@@ -955,7 +955,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
         cpp = cpp->nextSibling;
       }
 
-      XBT_DEBUG("Childs of %s: %s; nextSibling: %s",
+      XBT_DEBUG("Children of %s: %s; nextSibling: %s",
              category->parent->name, res,
              (category->parent->nextSibling ?
               category->parent->nextSibling->name : "none"));
