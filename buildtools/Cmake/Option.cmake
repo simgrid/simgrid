@@ -4,7 +4,6 @@
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib and include")
 set(ns3_path ${ns3_path} CACHE PATH "Path to ns3 lib and include")
-set(custom_flags ${custom_flags} CACHE FORCE "Customers flags add to cmake_c_flag")
 
 if(NOT CMAKE_INSTALL_PREFIX)
 	set(CMAKE_INSTALL_PREFIX "/usr/local/simgrid/" CACHE PATH "Path where to install project")
@@ -73,3 +72,4 @@ mark_as_advanced(CMAKE_OSX_DEPLOYMENT_TARGET)
 mark_as_advanced(CMAKE_OSX_SYSROOT)                                                                         
 mark_as_advanced(SED_EXE)
 mark_as_advanced(BIBTEX2HTML)
+mark_as_advanced(CMAKE_C_LINK_FLAGS)

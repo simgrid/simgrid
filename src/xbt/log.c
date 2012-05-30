@@ -649,7 +649,8 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_mailbox);
   XBT_LOG_CONNECT(msg_process);
   XBT_LOG_CONNECT(msg_task);
-
+  XBT_LOG_CONNECT(msg_vm);
+   
   /* simdag */
   XBT_LOG_CONNECT(sd);
   XBT_LOG_CONNECT(sd_daxparse);
@@ -954,7 +955,7 @@ int _xbt_log_cat_init(xbt_log_category_t category,
         cpp = cpp->nextSibling;
       }
 
-      XBT_DEBUG("Childs of %s: %s; nextSibling: %s",
+      XBT_DEBUG("Children of %s: %s; nextSibling: %s",
              category->parent->name, res,
              (category->parent->nextSibling ?
               category->parent->nextSibling->name : "none"));

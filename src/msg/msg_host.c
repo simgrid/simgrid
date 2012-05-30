@@ -10,6 +10,8 @@
 #include "xbt/log.h"
 #include "simgrid/simix.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
+
 /** @addtogroup m_host_management
  *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
  * (#m_host_t) and the functions for managing it.
@@ -28,8 +30,10 @@ m_host_t __MSG_host_create(smx_host_t workstation)
 {
   const char *name = SIMIX_host_get_name(workstation);
   m_host_t host = xbt_new0(s_m_host_t, 1);
+  s_msg_vm_t vm; // simply to compute the offset
 
   host->smx_host = workstation;
+  host->vms = xbt_swag_new(xbt_swag_offset(vm,host_vms_hookup));
 
 #ifdef MSG_USE_DEPRECATED
   int i;
@@ -120,7 +124,11 @@ void __MSG_host_destroy(m_host_t host) {
   if (msg_global->max_channel > 0)
     free(host->mailboxes);
 #endif
-
+  if (xbt_swag_size(host->vms) > 0 ) {
+    XBT_VERB("Host %s shut down, but it still hosts %d VMs. They will be leaked.",
+        MSG_host_get_name(host),xbt_swag_size(host->vms));
+  }
+  xbt_swag_free(host->vms);
   free(host);
 }
 

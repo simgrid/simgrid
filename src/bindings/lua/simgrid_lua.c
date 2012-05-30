@@ -196,7 +196,7 @@ static int simgrid_gc(lua_State * L)
  */
 static int msg_register_platform(lua_State * L)
 {
-  /* Tell Simgrid we dont wanna use its parser */
+  /* Tell Simgrid we don't wanna use its parser */
   //surf_parse = console_parse_platform;
   surf_parse_reset_callbacks();
   MSG_create_environment(NULL);

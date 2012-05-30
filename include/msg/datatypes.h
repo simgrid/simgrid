@@ -1,5 +1,4 @@
-/* Copyright (c) 2004, 2005, 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -31,6 +30,7 @@ typedef struct s_smx_rvpoint *msg_mailbox_t;
 /* ******************************** Host ************************************ */
 
 typedef struct m_host {
+  xbt_swag_t vms;
   smx_host_t smx_host;          /**< SIMIX representation of this host   */
 #ifdef MSG_USE_DEPRECATED
   msg_mailbox_t *mailboxes;     /**< the channels  */

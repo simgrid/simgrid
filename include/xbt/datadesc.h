@@ -313,7 +313,7 @@ XBT_PUBLIC(xbt_datadesc_type_t)
 /* @{ */
 
 
-/** \brief Opaque type describing a type description callback persistant state. */
+/** \brief Opaque type describing a type description callback persistent state. */
 typedef struct s_xbt_cbps *xbt_cbps_t;
 
 /* callbacks prototypes */

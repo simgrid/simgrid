@@ -1,5 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -287,7 +286,59 @@ XBT_PUBLIC(int) MSG_get_channel_number(void);
 
 #include "instr/instr.h"
 
-/* Used only by the bindings */
+/** @brief Opaque type describing a Virtual Machine.
+ *  @ingroup msg_VMs
+ *
+ * All this is highly experimental and the interface will probably change in the future.
+ * Please don't depend on this yet (although testing is welcomed if you feel so).
+ * Usual lack of guaranty of any kind applies here, and is even increased.
+ *
+ */
+typedef struct msg_vm *msg_vm_t;
+/* This function should not be called directly, but rather from MSG_vm_start_from_template that does not exist yet*/
+XBT_PUBLIC(msg_vm_t) MSG_vm_start(m_host_t location, int coreAmount);
+
+XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
+
+XBT_PUBLIC(void) MSG_vm_bind(msg_vm_t vm, m_process_t process);
+XBT_PUBLIC(void) MSG_vm_unbind(msg_vm_t vm, m_process_t process); // simple wrapper over process_kill
+
+XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, m_host_t destination);
+
+XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
+  // \forall p in VM, MSG_process_suspend(p) // Freeze the processes
+
+XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);  // Simulate the fact of reading the processes from disk and resuming them
+  // \forall p in VM, MSG_process_resume(p) // unfreeze them
+
+XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm); // killall
+
+XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar(void);
+
+/*
+void* MSG_process_get_property(msg_process_t, char* key)
+void MSG_process_set_property(msg_process_t, char* key, void* data)
+void MSG_vm_set_property(msg_vm_t, char* key, void* data)
+
+void MSG_vm_setMemoryUsed(msg_vm_t vm, double size);
+void MSG_vm_setCpuUsed(msg_vm_t vm, double inducedLoad);
+  // inducedLoad: un pourcentage (>100 si ca charge plus d'un coeur;
+  //                              <100 si c'est pas CPU intensive)
+  // Contraintes à poser:
+  //   HOST_Power >= CpuUsedVm (\forall VM) + CpuUsedTask (\forall Task)
+  //   VM_coreAmount >= Load de toutes les tasks
+*/
+
+  /*
+xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_host(msg_host_t)
+xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
++ des fonctions de filtrage sur les dynar
+*/
+
+
+/* ****************************************************************************************** */
+/* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(m_process_t process);
 
 SG_END_DECL()

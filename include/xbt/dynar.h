@@ -27,7 +27,7 @@ SG_BEGIN_DECL()
   * structure creation (of type void_f_ppvoid_t or void_f_pvoid_t).
   *
   * \section XBT_dynar_exscal Example with scalar
-  * \dontinclude dynar.c
+  * \don'tinclude dynar.c
   *
   * \skip Vars_decl
   * \skip dyn

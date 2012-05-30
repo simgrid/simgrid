@@ -93,7 +93,7 @@ execute when a process receives the given request. In other words, you want
 to attach a callback to the message. Of course, you usualy don't want to do
 so on every nodes, but only on "servers" or "workers" or such. First of all,
 you need to declare the callback itself. This function that will be executed
-on request incomming must follow a very specific prototype (the same
+on request incoming must follow a very specific prototype (the same
 regardless of the call semantic): 
 
 \verbatim

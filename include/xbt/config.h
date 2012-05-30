@@ -47,7 +47,7 @@ SG_BEGIN_DECL()
  *
  *  \section XBT_cfg_ex Example of use
  *
- *  \dontinclude config.c
+ *  \don'tinclude config.c
  *
  *  First, let's create a configuration set with some registered variables.
  *  This must be done by the configurable library before the user interactions.

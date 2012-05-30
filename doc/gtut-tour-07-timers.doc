@@ -36,7 +36,7 @@ must be function without argument nor result (<tt>void my_action(void){
 
 It is important to note that timers are not prehemptive. They will not start
 as soon as they are ready. Instead, they get served when you go into
-gras_msg_handle() (and they are served before incomming messages). This is
+gras_msg_handle() (and they are served before incoming messages). This is
 because allowing timers to run in parallel to the callbacks would add
 parallelism to the user code, which would have to protect data with mutexes.
 This is a level of complexity I really don't want for user code. If you
@@ -52,7 +52,7 @@ first need to add a global to the server too, containing the socket binded
 onto the server (to send messages) and a boolean indicating whether we are
 done or not, just like we did on the server side in \ref
 GRAS_tut_tour_globals. Here is the resulting global structure:
-\dontinclude 07-timers.c
+\don'tinclude 07-timers.c
 \skip client_data
 \until client_data_t
 
@@ -71,7 +71,7 @@ Desinstalling this is not harder. You tell the action to unschedule, and the
 periodicity at which it was desinstalled (so that the same action can be
 scheduled at different intervals, and each of them be desinstallable
 separately).
-\dontinclude 07-timers.c
+\don'tinclude 07-timers.c
 \skip gras_timer_cancel_repeat
 \until gras_timer_cancel_repeat
 
@@ -79,7 +79,7 @@ Then comes the delayed action in charge of stopping everything, which should
 be self-explanatory at this point. It could be cancelled before its
 expiration using gras_timer_cancel_delay(), which accepts exactly the same
 kind of arguments than gras_timer_cancel_repeat().
-\dontinclude 07-timers.c
+\don'tinclude 07-timers.c
 \skip client_do_stop
 \until end_of_client_do_stop
 

@@ -176,7 +176,7 @@
 	
     <hr>
 
-    \dontinclude gras/ping/ping_common.c
+    \don'tinclude gras/ping/ping_common.c
     
     \section GRAS_ex_ping_common 1) Common code to the client and the server 
     
@@ -190,7 +190,7 @@
     
     The module header <tt>ping.h</tt> reads:
     
-    \dontinclude gras/ping/ping.h
+    \don'tinclude gras/ping/ping.h
     \skip include
     \until argv
     \until argv
@@ -203,7 +203,7 @@
     (to exchange more complicated types, see \ref GRAS_dd or 
     \ref GRAS_ex_mmrpc for an example).
 
-    \dontinclude gras/ping/ping_common.c
+    \don'tinclude gras/ping/ping_common.c
     \skip register_messages
     \until }
 
@@ -218,7 +218,7 @@
     struct definition so that they can be handled properly in GRAS (see the
     \ref GRAS_tut_tour_globals for more info).
 
-    \dontinclude gras/ping/ping_server.c
+    \don'tinclude gras/ping/ping_server.c
     \skip typedef struct
     \until }
     
@@ -249,7 +249,7 @@
     This function is quite straightforward, and the inlined comments should
     be enough to understand it.
 
-    \dontinclude gras/ping/ping_client.c
+    \don'tinclude gras/ping/ping_client.c
     \skip client
     \until end_of_client
 
@@ -300,7 +300,7 @@
    message to the next node. That is why we have to store all variable in a
    global, as explained in the \ref GRAS_globals section. 
 
-   \dontinclude examples/gras/mutual_exclusion/simple_token/simple_token.c
+   \don'tinclude examples/gras/mutual_exclusion/simple_token/simple_token.c
    \skip typedef
    \until }
    
@@ -375,7 +375,7 @@
     This loads the gras header and declare the function's prototypes as well
     as the matrix size.
 
-    \dontinclude gras/mmrpc/mmrpc.h
+    \don'tinclude gras/mmrpc/mmrpc.h
     \skip include
     \until argv
     \until argv
@@ -395,7 +395,7 @@
     \ref XBT_LOG_NEW_DEFAULT_CATEGORY here and 
     \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY in mmrpc_client.c and mmrpc_server.c.
     
-    \dontinclude gras/mmrpc/mmrpc_common.c
+    \don'tinclude gras/mmrpc/mmrpc_common.c
     \skip include
     \until XBT_LOG
 
@@ -421,7 +421,7 @@
     \ref XBT_DEFINE_TYPE symbols don't get included here. Likewise, we use 
     \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY to get the log category in here.
     
-    \dontinclude gras/mmrpc/mmrpc_server.c
+    \don'tinclude gras/mmrpc/mmrpc_server.c
     \skip define
     \until XBT_LOG
 
@@ -456,7 +456,7 @@
     datatype parsing and log categories do work even if we are using several
     files.  
     
-    \dontinclude gras/mmrpc/mmrpc_client.c
+    \don'tinclude gras/mmrpc/mmrpc_client.c
     \skip define
     \until XBT_LOG
 
@@ -465,7 +465,7 @@
     This function is quite straightforward, and the inlined comments should
     be enough to understand it.
 
-    \dontinclude gras/mmrpc/mmrpc_client.c
+    \don'tinclude gras/mmrpc/mmrpc_client.c
     \skip argv
     \until end_of_client
 
@@ -509,7 +509,7 @@
      - \ref GRAS_ex_timer_repeat
      - \ref GRAS_ex_timer_main
 
-    \dontinclude timer.c
+    \don'tinclude timer.c
     
     \section GRAS_ex_timer_decl   1. Declarations and headers
     \skip include

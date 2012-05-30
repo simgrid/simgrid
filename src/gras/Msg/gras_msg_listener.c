@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(gras_msg_read, gras_msg,
 
 typedef struct s_gras_msg_listener_ {
   xbt_thread_t listener; /* keep this first, gras_socket_im_the_server() does funky transtyping in sg_msg.c */
-  xbt_queue_t incomming_messages;       /* messages received from the wire and still to be used by master */
+  xbt_queue_t incoming_messages;       /* messages received from the wire and still to be used by master */
   xbt_queue_t socks_to_close;   /* let the listener close the sockets, since it may be selecting on them. Darwin don't like this trick */
   xbt_socket_t wakeup_sock_listener_side;
   xbt_socket_t wakeup_sock_master_side;
@@ -66,7 +66,7 @@ static void listener_function(void *p)
 		   I'm not the user process but I'm just the listener. Too bad */
       XBT_VERB("Got a '%s' message (%s) from sock %p. Queue it for handling by main thread",
             gras_msgtype_get_name(msg->type),e_gras_msg_kind_names[msg->kind],msg->expe);
-      xbt_queue_push(me->incomming_messages, msg);
+      xbt_queue_push(me->incoming_messages, msg);
     } else {
       char got = *(char *) msg->payl;
       if (got == '1') {
@@ -110,7 +110,7 @@ gras_msg_listener_t gras_msg_listener_launch(xbt_queue_t msg_received)
   gras_msg_listener_t arg = xbt_new0(s_gras_msg_listener_t, 1);
 
   XBT_VERB("Launch listener");
-  arg->incomming_messages = msg_received;
+  arg->incoming_messages = msg_received;
   arg->socks_to_close = xbt_queue_new(0, sizeof(int));
   arg->init_mutex = xbt_mutex_init();
   arg->init_cond = xbt_cond_init();
@@ -150,7 +150,7 @@ void gras_msg_listener_shutdown()
   xbt_thread_join(pd->listener->listener);
 
   //  gras_socket_close(pd->listener->wakeup_sock_master_side); FIXME: uncommenting this leads to deadlock at terminaison
-  xbt_queue_free(&pd->listener->incomming_messages);
+  xbt_queue_free(&pd->listener->incoming_messages);
   xbt_queue_free(&pd->listener->socks_to_close);
   xbt_free(pd->listener);
 }

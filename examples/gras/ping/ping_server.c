@@ -88,7 +88,7 @@ int server(int argc, char *argv[])
         xbt_socket_my_port(globals->sock));
   globals->endcondition = 0;
 
-  /* 6. Wait up to 10 minutes for an incomming message to handle */
+  /* 6. Wait up to 10 minutes for an incoming message to handle */
   gras_msg_handle(10.0);
 
   /* 7. Housekeeping */

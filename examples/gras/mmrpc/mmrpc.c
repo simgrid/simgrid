@@ -81,7 +81,7 @@ int server(int argc, char *argv[])
   /* 5. Register my callback */
   gras_cb_register("request", &server_cb_request_handler);
 
-  /* 6. Wait up to 10 minutes for an incomming message to handle */
+  /* 6. Wait up to 10 minutes for an incoming message to handle */
   gras_msg_handle(600.0);
 
   /* 7. Free the allocated resources, and shut GRAS down */

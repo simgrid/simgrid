@@ -136,8 +136,8 @@ gras_msg_wait_ext_(double timeout,
  *
  * @param timeout: How long should we wait for this message.
  * @param msgt_want: type of awaited msg
- * @param[out] expeditor: where to create a socket to answer the incomming message
- * @param[out] payload: where to write the payload of the incomming message
+ * @param[out] expeditor: where to create a socket to answer the incoming message
+ * @param[out] payload: where to write the payload of the incoming message
  * @return the error code (or no_error).
  *
  * Every message of another type received before the one waited will be queued
@@ -188,7 +188,7 @@ static int gras_msg_wait_or_filter(gras_msg_t msg, void *ctx)
  * @param msgt_want: a dynar containing all accepted message type
  * @param[out] ctx: the context of received message (in case it's a RPC call we want to answer to)
  * @param[out] msgt_got: indice in the dynar of the type of the received message
- * @param[out] payload: where to write the payload of the incomming message
+ * @param[out] payload: where to write the payload of the incoming message
  * @return the error code (or no_error).
  *
  * Every message of a type not in the accepted list received before the one
@@ -282,7 +282,7 @@ void gras_msg_handleall(double period)
   } while (period - now + begin > 0);
 }
 
-/** @brief Handle an incomming message or timer (or wait up to \a timeOut seconds)
+/** @brief Handle an incoming message or timer (or wait up to \a timeOut seconds)
  *
  * @param timeOut: How long to wait for incoming messages (in seconds)
  * @return the error code (or no_error).
@@ -402,7 +402,7 @@ void gras_msg_handle(volatile double timeOut)
         volatile unsigned int cpt2 = cpt;
         if (!ran_ok) {
           XBT_DEBUG
-              ("Use the callback #%u (@%p) for incomming msg '%s' (payload_size=%d)",
+              ("Use the callback #%u (@%p) for incoming msg '%s' (payload_size=%d)",
                cpt + 1, cb, msg.type->name, msg.payl_size);
           if (!cb(&ctx, msg.payl)) {
             /* cb handled the message */

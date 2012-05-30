@@ -1,5 +1,16 @@
 SimGrid (3.8) NOT RELEASED; urgency=low
 
+ The "SimGrid makes psssshiiiit and jumps into the cloud" release.
+ 
+ CMAKE:
+ * Remove option custom_flags. Now use environment variables CFLAGS 
+   and LDFLAGS.
+  
+ MSG:
+ * Add an experimental interface to manipulate VMs. They are mainly
+   process groups with very few intrinsic semantic, but they should
+   allow you to build the semantic you want easily.
+
  SimDag:
  * New type of typed tasks SD_TASK_COMP_PAR_AMDAHL that represents a
    parallel task whose initial work is distributed among host according
@@ -16,6 +27,11 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.7.1) NOT RELEASED; urgency=low
+
+ MSG:
+ * Restore the prototype of MSG_process_create_with_environment() to
+   the pre-3.7 situation by removing the kill_time argument.
+ * Add a MSG_process_set_kill_time() function instead.
 
  SURF:
  * Fix weird behaviors when dealing with parallel tasks.
@@ -1198,7 +1214,7 @@ SimGrid (3.3) stable; urgency=high
     [contributed by Sékou Diakite, many thanks]
 
  GRAS:
-  * Introduce a listener thread in charge of receiving incomming
+  * Introduce a listener thread in charge of receiving incoming
     messages from the network. It allows to overlap communication and
     computation but most notably, it removes some stupid deadlocks due
     to the fact that so far, a process could not send and receive at

@@ -44,7 +44,7 @@ message. In our example, we accept one string in input, and a long in
 output for the a2i conversion (a=char 2=to i=integer), and the contrary in
 the other direction.
 
-\dontinclude 10-rpc.c
+\don'tinclude 10-rpc.c
 \skip gras_msgtype_declare_rpc
 \until long
 \until string
