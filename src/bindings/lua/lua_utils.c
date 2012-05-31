@@ -103,7 +103,8 @@ const char* sglua_get_spaces(int length) {
 
   static char spaces[128];
 
-  xbt_assert(length < 128);
+  xbt_assert(length >= 0 && length < 128,
+      "Invalid indentation length: %d", length);
   if (length != 0) {
     memset(spaces, ' ', length);
   }
