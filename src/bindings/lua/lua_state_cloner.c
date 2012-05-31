@@ -234,7 +234,6 @@ void sglua_copy_value(lua_State* src, lua_State* dst) {
       break;
   }
 
-  indent -= 2;
   XBT_DEBUG("%sData copied", sglua_get_spaces(indent));
 
   sglua_stack_dump("src after copying a value (should be ... value): ", src);
