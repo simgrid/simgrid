@@ -88,6 +88,8 @@ set(JMSG_C_SRC
 	src/jmsg_task.h
 	src/jmsg_synchro.c
 	src/jmsg_synchro.h
+	src/jmsg_rngstream.c
+	src/jmsg_rngstream.h
 )
 
 set(JMSG_JAVA_SRC
@@ -107,6 +109,7 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/TransferFailureException.java	
 	org/simgrid/msg/Mutex.java
 	org/simgrid/msg/Comm.java
+	org/simgrid/msg/RngStream.java
 )
 
 set(JAVA_EXAMPLES

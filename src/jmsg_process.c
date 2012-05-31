@@ -43,7 +43,7 @@ m_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
 
 void jprocess_bind(jobject jprocess, m_process_t process, JNIEnv * env)
 {
-  (*env)->SetLongField(env, jprocess, jprocess_field_Process_bind, (jlong) (long) (process));
+  (*env)->SetLongField(env, jprocess, jprocess_field_Process_bind, (jlong)(process));
 }
 
 jlong jprocess_get_id(jobject jprocess, JNIEnv * env)
