@@ -110,7 +110,6 @@ while ( defined( $line = <MAKETEST> ) ) {
                     $command = var_subst($command, "SG_TEST_EXENV", "");
                     $command = var_subst($command, "SG_TEST_ENV", "");
                     $command = var_subst($command, "SG_EXENV_TEST", "");
-                    $command = var_subst($command, "ARGS", "");
                     $command =~ s/\$@//g;
 #                    $command =~ s/..\/..\/bin\/smpirun/\${CMAKE_BINARY_DIR\}\/bin\/smpirun/g;
                     $command =~ s/^\s+//;
