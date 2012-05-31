@@ -15,7 +15,11 @@ public class Comm {
 	/**
 	 * Indicates if the communication is a receiving communication
 	 */
-	boolean receiving;
+	protected boolean receiving;
+	/**
+	 * Indicates if the communication is finished
+	 */
+	protected boolean finished = false;
 	/**
 	 * Represents the bind between the java comm and the
 	 * native C comm. You must never access it, since it is 

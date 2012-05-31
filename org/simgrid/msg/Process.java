@@ -224,7 +224,6 @@ public abstract class Process implements Runnable {
 
 	/**
 	 * This method kill a process.
-	 * @param process  the process to be killed.
 	 *
 	 */
 	public native void kill();
