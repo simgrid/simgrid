@@ -1,14 +1,14 @@
 ! timeout 20
-& $SG_TEST_ENV saturate/saturate_sensor$EXEEXT 127.0.0.1:3333 "--log=root.fmt=%P:%t%e%m%n" $ARGS
+& $SG_TEST_ENV saturate/saturate_sensor$EXEEXT 127.0.0.1:3333 "--log=root.fmt=%P:%t%e%m%n"
 
 ! timeout 20
-& $SG_TEST_ENV saturate/saturate_sensor$EXEEXT 127.0.0.1:3333 "--log=root.fmt=%P:%t%e%m%n" $ARGS
+& $SG_TEST_ENV saturate/saturate_sensor$EXEEXT 127.0.0.1:3333 "--log=root.fmt=%P:%t%e%m%n"
 
 ! timeout 20
-& $SG_TEST_ENV saturate/saturate_sensor$EXEEXT 127.0.0.1:3333 "--log=root.fmt=%P:%t%e%m%n" $ARGS
+& $SG_TEST_ENV saturate/saturate_sensor$EXEEXT 127.0.0.1:3333 "--log=root.fmt=%P:%t%e%m%n"
 
 ! timeout 20
-& $SG_TEST_ENV saturate/saturate_sensor$EXEEXT 127.0.0.1:3333 "--log=root.fmt=%P:%t%e%m%n" $ARGS
+& $SG_TEST_ENV saturate/saturate_sensor$EXEEXT 127.0.0.1:3333 "--log=root.fmt=%P:%t%e%m%n"
 
 ! timeout 20
-& $SG_TEST_ENV saturate/saturate_maestro$EXEEXT 3333 "--log=root.fmt=%P:%t%e%m%n" $ARGS
+& $SG_TEST_ENV saturate/saturate_maestro$EXEEXT 3333 "--log=root.fmt=%P:%t%e%m%n"
