@@ -113,7 +113,7 @@ message("")
 message("        INSTALL_PREFIX ......: ${CMAKE_INSTALL_PREFIX}")
 
 exec_program("${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/Testing/Notes/" OUTPUT_VARIABLE OKIDOKI)
-file(WRITE ${PROJECT_BINARY_DIR}/Testing/Notes/Build  "SVN version : ${SVN_VERSION}\n")
+file(WRITE ${PROJECT_BINARY_DIR}/Testing/Notes/Build  "GIT version : ${GIT_VERSION}\n")
 file(APPEND ${PROJECT_BINARY_DIR}/Testing/Notes/Build "Release     : simgrid-${release_version}\n")
 file(APPEND ${PROJECT_BINARY_DIR}/Testing/Notes/Build "Pipol user  : $ENV{PIPOL_USER}\n")
 file(APPEND ${PROJECT_BINARY_DIR}/Testing/Notes/Build "Pipol image : $ENV{PIPOL_IMAGE}\n")
