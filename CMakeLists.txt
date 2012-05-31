@@ -276,6 +276,7 @@ ENABLE_TESTING()
 
 ADD_TEST(basic           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/basic/basic.tesh)
 ADD_TEST(async           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/async/async.tesh)
+ADD_TEST(chord        	 ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.tesh)
 ADD_TEST(pingPong        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingpong.tesh)
 ADD_TEST(CommTime        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/commTime/commtime.tesh)
 ADD_TEST(mutualExclusion ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/mutualexclusion.tesh)
@@ -283,7 +284,7 @@ ADD_TEST(bypass          ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(kill            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh)
 ADD_TEST(startKillTime            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh)
 #Don't forget to put new test in this list!!!
-set(test_list basic async pingPong CommTime mutualExclusion bypass kill startKillTime)
+set(test_list basic chord async pingPong CommTime mutualExclusion bypass kill startKillTime)
 
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #
