@@ -208,7 +208,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 
   /* Check busy blocks*/
 
-  while(i < mdp1->heapindex){
+  while(i < mdp1->heaplimit){
 
     if(mdp1->heapinfo[i].type != mdp2->heapinfo[i].type){
       fprintf(stderr,"Different type of block : %d - %d\n", mdp1->heapinfo[i].type, mdp2->heapinfo[i].type);
