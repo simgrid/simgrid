@@ -3,7 +3,7 @@
 #ifndef RNGSTREAM_H
 #define RNGSTREAM_H
  
-
+#include "misc.h"
 
 typedef struct RngStream_InfoState * RngStream;
 
@@ -15,49 +15,49 @@ struct RngStream_InfoState {
 };
 
 
-int RngStream_SetPackageSeed (unsigned long seed[6]);
+XBT_PUBLIC(int) RngStream_SetPackageSeed (unsigned long seed[6]);
 
 
-RngStream RngStream_CreateStream (const char name[]);
+XBT_PUBLIC(RngStream) RngStream_CreateStream (const char name[]);
 
 
-void RngStream_DeleteStream (RngStream *pg);
+XBT_PUBLIC(void) RngStream_DeleteStream (RngStream *pg);
 
 
-void RngStream_ResetStartStream (RngStream g);
+XBT_PUBLIC(void) RngStream_ResetStartStream (RngStream g);
 
 
-void RngStream_ResetStartSubstream (RngStream g);
+XBT_PUBLIC(void) RngStream_ResetStartSubstream (RngStream g);
 
 
-void RngStream_ResetNextSubstream (RngStream g);
+XBT_PUBLIC(void) RngStream_ResetNextSubstream (RngStream g);
 
 
-void RngStream_SetAntithetic (RngStream g, int a);
+XBT_PUBLIC(void) RngStream_SetAntithetic (RngStream g, int a);
 
 
-void RngStream_IncreasedPrecis (RngStream g, int incp);
+XBT_PUBLIC(void) RngStream_IncreasedPrecis (RngStream g, int incp);
 
 
-int RngStream_SetSeed (RngStream g, unsigned long seed[6]);
+XBT_PUBLIC(int) RngStream_SetSeed (RngStream g, unsigned long seed[6]);
 
 
-void RngStream_AdvanceState (RngStream g, long e, long c);
+XBT_PUBLIC(void) RngStream_AdvanceState (RngStream g, long e, long c);
 
 
-void RngStream_GetState (RngStream g, unsigned long seed[6]);
+XBT_PUBLIC(void) RngStream_GetState (RngStream g, unsigned long seed[6]);
 
 
-void RngStream_WriteState (RngStream g);
+XBT_PUBLIC(void) RngStream_WriteState (RngStream g);
 
 
-void RngStream_WriteStateFull (RngStream g);
+XBT_PUBLIC(void) RngStream_WriteStateFull (RngStream g);
 
 
-double RngStream_RandU01 (RngStream g);
+XBT_PUBLIC(double) RngStream_RandU01 (RngStream g);
 
 
-int RngStream_RandInt (RngStream g, int i, int j);
+XBT_PUBLIC(int) RngStream_RandInt (RngStream g, int i, int j);
  
 
 #endif
