@@ -199,6 +199,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Wunused -Wmissing-prototypes -
 set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I${SIMGRID_INCLUDES} ")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH}")
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=int-to-pointer-cast -Wno-error=pointer-to-int-cast")
 if(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unused-but-set-variable")
 endif(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
