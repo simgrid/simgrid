@@ -24,11 +24,12 @@ SG_BEGIN_DECL()
   /** \brief Thread data type (opaque structure) */
 typedef struct xbt_os_thread_ *xbt_os_thread_t;
 
+#include <pthread.h>
+
 #ifdef _XBT_WIN32 /* defined if this is a windows system, 32bits or 64bits) */
 #include <WinDef.h>
 typedef DWORD xbt_os_thread_key_t;
 #else /* assume that every non-windows system is POSIX-compatible */
-#include <pthread.h>
 typedef pthread_key_t xbt_os_thread_key_t;
 #endif
 
