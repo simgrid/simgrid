@@ -215,11 +215,11 @@ Section "Java Bindings" JavaSection
 	# install java library and examples
 	CreateDirectory $INSTDIR\examples\simgrid-java
 	setOutPath $INSTDIR\lib
-	file "$%SIMGRID_JAVA_SRC%\build\SG_java.dll"
-	file "$%SIMGRID_JAVA_SRC%\build\SG_java.def"
-	file "$%SIMGRID_JAVA_SRC%\simgrid.jar"
+	file /nonfatal "$%SIMGRID_JAVA_SRC%\build\SG_java.dll"
+	file /nonfatal "$%SIMGRID_JAVA_SRC%\build\SG_java.def"
+	file /nonfatal "$%SIMGRID_JAVA_SRC%\simgrid.jar"
 	setOutPath $INSTDIR\examples\simgrid-java
-	file /r "$%SIMGRID_JAVA_SRC%\examples\"
+	file /nonfatal /r "$%SIMGRID_JAVA_SRC%\examples\"
 	# create shortcuts in the start menu programs directory
 	createShortCut  "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\Java project.lnk"	"$INSTDIR\examples\simgrid-java"
 	# create a popup box, with an OK button"
