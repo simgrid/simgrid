@@ -38,12 +38,29 @@ int console_open(lua_State *L) {
   sg_platf_init();
   sg_platf_begin();
   surf_parse_init_callbacks();
+  routing_register_callbacks();
+
   return 0;
 }
 
 int console_close(lua_State *L) {
   sg_platf_end();
   sg_platf_exit();
+
+  xbt_lib_cursor_t cursor;
+  void **data;
+  char *name;
+
+  /* Initialize MSG and WKS hosts */
+  XBT_DEBUG("Initialize MSG and WKS hosts");
+  xbt_lib_foreach(host_lib, cursor, name, data) {
+    if(data[SURF_WKS_LEVEL]){
+      XBT_DEBUG("\tSee surf host %s",name);
+      SIMIX_host_create(name, data[SURF_WKS_LEVEL], NULL);
+      __MSG_host_create((smx_host_t)data[SIMIX_HOST_LEVEL]);
+    }
+  }
+
   return 0;
 }
 
