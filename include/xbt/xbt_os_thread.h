@@ -10,7 +10,9 @@
 
 #include "simgrid_config.h" /* Windows or Posix */
 #include "xbt/function_types.h"
-
+#ifdef _XBT_WIN32
+#include "pthread.h"
+#endif
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_thread
