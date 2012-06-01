@@ -352,8 +352,12 @@ ADD_TEST(simdag-test-prop		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv 
 ADD_TEST(simdag-minmin-test		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling 	--cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
 
 ADD_TEST(msg-gtnets-crosstraffic-thread   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread       --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg    --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-crosstraffic.tesh)
-ADD_TEST(msg-gtnets-crosstraffic-ucontext ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg    --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-crosstraffic.tesh)
-ADD_TEST(msg-gtnets-crosstraffic-raw      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg    --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-crosstraffic.tesh)
+if(CONTEXT_UCONTEXT)
+  ADD_TEST(msg-gtnets-crosstraffic-ucontext ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg    --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-crosstraffic.tesh)
+endif(CONTEXT_UCONTEXT)
+if(HAVE_RAWCTX)
+  ADD_TEST(msg-gtnets-crosstraffic-raw      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg    --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-crosstraffic.tesh)
+endif(HAVE_RAWCTX)
 
 if(HAVE_GTNETS)
 ADD_TEST(msg-gtnets-waxman-thread	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--cfg contexts/factory:thread		--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg 	--cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-waxman.tesh)
