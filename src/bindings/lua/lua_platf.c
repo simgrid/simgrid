@@ -88,6 +88,15 @@ int console_add_host(lua_State *L) {
   host.power_peak = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
+  // get core
+  lua_pushstring(L, "core");
+  lua_gettable(L, -2);
+  if(!lua_isnumber(L,-1)) host.core_amount = 1;// Default value
+  else host.core_amount = lua_tonumber(L, -1);
+  if (host.core_amount == 0)
+    host.core_amount = 1;
+  lua_pop(L, 1);
+
   //get power_scale
   lua_pushstring(L, "power_scale");
   lua_gettable(L, -2);
@@ -100,18 +109,13 @@ int console_add_host(lua_State *L) {
   host.power_trace = tmgr_trace_new(lua_tostring(L, -1));
   lua_pop(L, 1);
 
-  lua_pushstring(L, "core");
-  lua_gettable(L, -2);
-  host.core_amount = lua_tonumber(L, -1);
-  if (host.core_amount == 0)
-    host.core_amount = 1;
-  lua_pop(L, 1);
-
   //get state initial
   lua_pushstring(L, "state_initial");
   lua_gettable(L, -2);
-  state = lua_tonumber(L, -1);
+  if(!lua_isnumber(L,-1)) state = 1;// Default value
+  else state = lua_tonumber(L, -1);
   lua_pop(L, 1);
+
   if (state)
     host.initial_state = SURF_RESOURCE_ON;
   else
