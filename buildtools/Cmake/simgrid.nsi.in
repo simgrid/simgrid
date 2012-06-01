@@ -99,6 +99,8 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\datadesc.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\socket.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\file_stat.h
+    file @CMAKE_HOME_DIRECTORY@\include\xbt\xbt_os_thread.h
+    file @CMAKE_HOME_DIRECTORY@\include\xbt\RngStream.h
 
 	CreateDirectory  $INSTDIR\include\simgrid
 	setOutPath $INSTDIR\include\simgrid
