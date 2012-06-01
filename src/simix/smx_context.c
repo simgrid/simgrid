@@ -28,7 +28,7 @@ static xbt_os_thread_key_t smx_current_context_key = 0;
 static smx_context_t smx_current_context_serial;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
-static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_FUTEX;
+static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
 
 /** 
  * This function is called by SIMIX_global_init() to initialize the context module.
