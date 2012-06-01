@@ -194,7 +194,6 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
     return 1;
     }*/
 
-
   size_t i, j;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
   size_t frag_size;
@@ -204,6 +203,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
   int k;
   int distance = 0;
   int pointer_align;
+
+  char *pointed_address1, *pointed_address2;
 
   /* Check busy blocks*/
 
@@ -229,17 +230,24 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	errors++;
       } 
 
+      //if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy_block.size)) != 0){
       if(memcmp(addr_block1, addr_block2, (mdp1->heapinfo[i].busy_block.busy_size)) != 0){
 	fprintf(stderr,"\nDifferent data in large block %zu (size = %zu (in blocks), busy_size = %zu (in bytes))\n", i, mdp1->heapinfo[i].busy_block.size, mdp1->heapinfo[i].busy_block.busy_size);
 
 	/* Hamming distance on different blocks */
 	distance = 0;
+	//for(k=0;k<mdp1->heapinfo[i].busy_block.size;k++){
 	for(k=0;k<mdp1->heapinfo[i].busy_block.busy_size;k++){
 	  if(memcmp(((char *)addr_block1) + k, ((char *)addr_block2) + k, 1) != 0){
 	    fprintf(stderr, "Different byte (offset=%d) (%p - %p) in block %zu\n", k, (char *)addr_block1 + k, (char *)addr_block2 + k, i); 
 	    distance++;
 	    pointer_align = (k / sizeof(void*)) * sizeof(void*); 
-	    fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)addr_block1 + pointer_align)), get_addr_memory_map(*((void **)((char *)addr_block1 + pointer_align)), s_heap, r_heap), *((void **)((char *)addr_block2 + pointer_align)),get_addr_memory_map(*((void **)((char *)addr_block2 + pointer_align)), s_heap, r_heap) );
+	    pointed_address1 = xbt_strdup(get_addr_memory_map(*((void **)((char *)addr_block1 + pointer_align)), s_heap, r_heap));
+	    pointed_address2 = xbt_strdup(get_addr_memory_map(*((void **)((char *)addr_block2 + pointer_align)), s_heap, r_heap));
+	    fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)addr_block1 + pointer_align)), pointed_address1, *((void **)((char *)addr_block2 + pointer_align)), pointed_address2);
+	    if((strcmp(pointed_address1, pointed_address2) == 0) && (strcmp(pointed_address1, "std_heap") == 0)){
+	      /* FIXME : compare value pointed thanks to DWARF */
+	    } 
 	  }
 	}
 
@@ -250,8 +258,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	errors++;
       }
 
-   
-      i = i + mdp1->heapinfo[i].busy_block.size;
+      i = i + mdp1->heapinfo[i].busy_block.size + 1;
 
     }else{
       
@@ -286,18 +293,24 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	    addr_frag1 = (char *)addr_block1 + (j * frag_size);
 	    addr_frag2 = (char *)addr_block2 + (j * frag_size);
 
-
+	    //if(memcmp(addr_frag1, addr_frag2, frag_size) != 0){
 	    if(memcmp(addr_frag1, addr_frag2, mdp1->heapinfo[i].busy_frag.frag_size[j]) != 0){
 	      fprintf(stderr,"\nDifferent data in fragment %zu (size = %zu, size used = %hu) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
 
 	      /* Hamming distance on different blocks */
 	      distance = 0;
+	      //for(k=0;k<frag_size;k++){
 	      for(k=0;k<mdp1->heapinfo[i].busy_frag.frag_size[j];k++){
 		if(memcmp(((char *)addr_frag1) + k, ((char *)addr_frag2) + k, 1) != 0){
 		  fprintf(stderr, "Different byte (offset=%d) (%p - %p) in fragment %zu in block %zu\n", k, (char *)addr_frag1 + k, (char *)addr_frag2 + k, j, i); 
 		  distance++;
 		  pointer_align = (k / sizeof(void*)) * sizeof(void*);
-		  fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)addr_frag1 + pointer_align)), get_addr_memory_map(*((void **)((char *)addr_frag1 + pointer_align)), s_heap, r_heap), *((void **)((char *)addr_frag2 + pointer_align)), get_addr_memory_map(*((void **)((char *)addr_frag2 + pointer_align)), s_heap, r_heap));
+		  pointed_address1 = xbt_strdup(get_addr_memory_map(*((void **)((char *)addr_frag1 + pointer_align)), s_heap, r_heap));
+		  pointed_address2 = xbt_strdup(get_addr_memory_map(*((void **)((char *)addr_frag2 + pointer_align)), s_heap, r_heap));
+		  fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)addr_frag1 + pointer_align)), pointed_address1, *((void **)((char *)addr_frag2 + pointer_align)), pointed_address2);
+		  if((strcmp(pointed_address1, pointed_address2) == 0) && (strcmp(pointed_address1, "std_heap") == 0)){
+		    /* FIXME : compare value pointed thanks to DWARF */
+		  } 
 		}
 	      }
 
@@ -340,8 +353,10 @@ const char* get_addr_memory_map(void *addr, void* s_heap, void* r_heap){
   if(fp == NULL)
     perror("fopen failed");
 
-  if(addr == NULL)
+  if(addr == NULL){
+    fclose(fp);
     return "nil";
+  }
 
   xbt_dynar_t lfields = NULL;
   xbt_dynar_t start_end  = NULL;
