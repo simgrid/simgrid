@@ -91,7 +91,7 @@ int data_program_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
   int pointer_align;
   int i;
-  char *pointed_address1, *pointed_address2;
+  char *pointed_address1 = NULL, *pointed_address2 = NULL;
   
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
@@ -117,7 +117,7 @@ int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
   int pointer_align;
   int i;
-  char *pointed_address1, *pointed_address2;
+  char *pointed_address1 = NULL, *pointed_address2 = NULL;
   
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
