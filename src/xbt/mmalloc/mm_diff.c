@@ -356,6 +356,7 @@ const char* get_addr_memory_map(void *addr, void* s_heap, void* r_heap){
     perror("fopen failed");
 
   if(addr == NULL){
+    free(line);
     fclose(fp);
     return "nil";
   }
