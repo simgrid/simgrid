@@ -217,6 +217,7 @@ typedef struct s_mc_pair{
 }s_mc_pair_t, *mc_pair_t;
 
 typedef struct s_mc_pair_reached{
+  int nb;
   xbt_state_t automaton_state;
   xbt_dynar_t prop_ato;
   mc_snapshot_t system_state;

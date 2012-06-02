@@ -46,6 +46,7 @@ const char* get_memory_map_addr(void *addr){
     perror("fopen failed");
 
   if(addr == NULL){
+    free(line);
     fclose(fp);
     return "nil";
   }
@@ -90,17 +91,24 @@ int data_program_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
   int pointer_align;
   int i;
+  char *pointed_address1, *pointed_address2;
   
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
       fprintf(stderr,"Different byte (offset=%d) (%p - %p) in data program region\n", i, (char *)d1 + i, (char *)d2 + i);
       distance++;
       pointer_align = (i /sizeof(void *)) * sizeof(void *);
-      fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)d1 + pointer_align)),  get_memory_map_addr(*((void **)((char *)d1 + pointer_align))), *((void **)((char *)d2 + pointer_align)), get_memory_map_addr(*((void **)((char *)d2 + pointer_align))));
+      pointed_address1 = strdup(get_memory_map_addr(*((void **)((char *)d1 + pointer_align))));
+      pointed_address2 = strdup(get_memory_map_addr(*((void **)((char *)d2 + pointer_align))));
+      fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)d1 + pointer_align)), pointed_address1, *((void **)((char *)d2 + pointer_align)), pointed_address2);
+      /* FIXME : compare values in pointed address thanks to DWARF */
     }
   }
   
   fprintf(stderr, "Hamming distance between data program regions : %d\n", distance);
+
+  free(pointed_address1);
+  free(pointed_address2);
 
   return distance;
 }
@@ -109,17 +117,24 @@ int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
   int pointer_align;
   int i;
+  char *pointed_address1, *pointed_address2;
   
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
       fprintf(stderr, "Different byte (offset=%d) (%p - %p) in data libsimgrid region\n", i, (char *)d1 + i, (char *)d2 + i);
       distance++;
       pointer_align = (i /sizeof(void *)) * sizeof(void *);
-      fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)d1 + pointer_align)), get_memory_map_addr(*((void **)((char *)d1 + pointer_align))), *((void **)((char *)d2 + pointer_align)), get_memory_map_addr(*((void **)((char *)d2 + pointer_align))));
+      pointed_address1 = strdup(get_memory_map_addr(*((void **)((char *)d1 + pointer_align))));
+      pointed_address2 = strdup(get_memory_map_addr(*((void **)((char *)d2 + pointer_align))));
+      fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)d1 + pointer_align)), pointed_address1, *((void **)((char *)d2 + pointer_align)), pointed_address2);
+      /* FIXME : compare values in pointed address thanks to DWARF */
     }
   }
   
   fprintf(stderr, "Hamming distance between data libsimgrid regions : %d\n", distance);
+
+  free(pointed_address1);
+  free(pointed_address2);
   
   return distance;
 }
@@ -227,13 +242,14 @@ int reached(xbt_state_t st){
     //xbt_dict_t current_rdv_points = SIMIX_get_rdv_points();
      
     xbt_dynar_foreach(reached_pairs, cursor, pair_test){
-      XBT_INFO("Pair reached #%u", cursor+1);
+      XBT_INFO("Pair reached #%d", pair_test->nb);
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
 	  //XBT_INFO("Rdv points size %d - %d", xbt_dict_length(pair_test->rdv_points), xbt_dict_length(current_rdv_points));
 	  //if(xbt_dict_length(pair_test->rdv_points) == xbt_dict_length(current_rdv_points)){
 	  //if(rdv_points_compare(pair_test->rdv_points, current_rdv_points) == 0){
 	  if(snapshot_compare(pair_test->system_state, sn, std_heap, raw_heap) == 0){
+	   
 	    MC_free_snapshot(sn);
 	    xbt_dynar_reset(prop_ato);
 	    xbt_free(prop_ato);
@@ -429,6 +445,7 @@ void set_pair_reached(xbt_state_t st){
   
   mc_pair_reached_t pair = NULL;
   pair = xbt_new0(s_mc_pair_reached_t, 1);
+  pair->nb = xbt_dynar_length(reached_pairs) + 1;
   pair->automaton_state = st;
   pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
   pair->system_state = xbt_new0(s_mc_snapshot_t, 1);
@@ -992,7 +1009,7 @@ void MC_ddfs(int search_cycle){
 
   mc_pair_stateless_t next_pair = NULL;
   mc_pair_stateless_t pair_succ;
-
+  
   if(xbt_fifo_size(mc_stack_liveness) < MAX_DEPTH_LIVENESS){
 
     //set_pair_visited(current_pair->automaton_state, search_cycle);
@@ -1012,7 +1029,7 @@ void MC_ddfs(int search_cycle){
 	xbt_free(req_str);
 
 	MC_state_set_executed_request(current_pair->graph_state, req, value);   
-    
+
 	/* Answer the request */
 	SIMIX_simcall_pre(req, value);
 
@@ -1226,7 +1243,7 @@ void MC_ddfs(int search_cycle){
 	      //if(reached_hash(pair_succ->automaton_state)){
 
 	      XBT_INFO("Next pair (depth = %d) already reached !", xbt_fifo_size(mc_stack_liveness) + 1);
-
+	      
 	      XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 	      XBT_INFO("|             ACCEPTANCE CYCLE            |");
 	      XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
