@@ -197,6 +197,7 @@ set(XBT_SRC
 	src/xbt/xbt_socket.c
 	src/xbt/xbt_socket_private.h
 	src/xbt/xbt_trp_plugin_tcp.c
+	src/xbt/RngStream.c
 )
 
 if(HAVE_MMAP)
@@ -391,11 +392,6 @@ set(MC_SRC
 	src/mc/mc_liveness.c
 )
 
-set(RNGSTREAM_SRC
-	src/rngstreams/RngStream.h
-	src/rngstreams/RngStream.c
-)
-
 set(headers_to_install
 	include/xbt/misc.h
 	include/xbt/sysdep.h
@@ -437,6 +433,7 @@ set(headers_to_install
 	include/xbt/socket.h
 	include/xbt/file_stat.h
 	include/xbt/xbt_os_thread.h
+  include/xbt/RngStream.h
 	include/simgrid/platf.h
 	include/simgrid/modelchecker.h
 	include/simgrid/simix.h
@@ -524,7 +521,6 @@ set(simgrid_sources
 	${AMOK_SRC}
 	${BINDINGS_SRC}
 	${JEDULE_SRC}
-	${RNGSTREAM_SRC}
 )
 
 if(HAVE_MC)

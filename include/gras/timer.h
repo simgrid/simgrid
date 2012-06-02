@@ -28,7 +28,7 @@ SG_BEGIN_DECL()
  *  and such within a specific process.
  *
  *  Timers are served by the gras_handle() function: if there is an elapsed 
- *  timer, the associated code gets executed before any incomming connexion 
+ *  timer, the associated code gets executed before any incoming connexion 
  *  are checked. 
  *
  *  The section \ref GRAS_ex_timer constitutes a perfect example of these features.

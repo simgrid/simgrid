@@ -38,12 +38,29 @@ int console_open(lua_State *L) {
   sg_platf_init();
   sg_platf_begin();
   surf_parse_init_callbacks();
+  routing_register_callbacks();
+
   return 0;
 }
 
 int console_close(lua_State *L) {
   sg_platf_end();
   sg_platf_exit();
+
+  xbt_lib_cursor_t cursor;
+  void **data;
+  char *name;
+
+  /* Initialize MSG and WKS hosts */
+  XBT_DEBUG("Initialize MSG and WKS hosts");
+  xbt_lib_foreach(host_lib, cursor, name, data) {
+    if(data[SURF_WKS_LEVEL]){
+      XBT_DEBUG("\tSee surf host %s",name);
+      SIMIX_host_create(name, data[SURF_WKS_LEVEL], NULL);
+      __MSG_host_create((smx_host_t)data[SIMIX_HOST_LEVEL]);
+    }
+  }
+
   return 0;
 }
 
@@ -71,6 +88,15 @@ int console_add_host(lua_State *L) {
   host.power_peak = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
+  // get core
+  lua_pushstring(L, "core");
+  lua_gettable(L, -2);
+  if(!lua_isnumber(L,-1)) host.core_amount = 1;// Default value
+  else host.core_amount = lua_tonumber(L, -1);
+  if (host.core_amount == 0)
+    host.core_amount = 1;
+  lua_pop(L, 1);
+
   //get power_scale
   lua_pushstring(L, "power_scale");
   lua_gettable(L, -2);
@@ -83,18 +109,13 @@ int console_add_host(lua_State *L) {
   host.power_trace = tmgr_trace_new(lua_tostring(L, -1));
   lua_pop(L, 1);
 
-  lua_pushstring(L, "core");
-  lua_gettable(L, -2);
-  host.core_amount = lua_tonumber(L, -1);
-  if (host.core_amount == 0)
-    host.core_amount = 1;
-  lua_pop(L, 1);
-
   //get state initial
   lua_pushstring(L, "state_initial");
   lua_gettable(L, -2);
-  state = lua_tonumber(L, -1);
+  if(!lua_isnumber(L,-1)) state = 1;// Default value
+  else state = lua_tonumber(L, -1);
   lua_pop(L, 1);
+
   if (state)
     host.initial_state = SURF_RESOURCE_ON;
   else

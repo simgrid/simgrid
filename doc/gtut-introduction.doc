@@ -209,7 +209,7 @@ Two main types of events may change the internal state of a given process:
    messages during the transition associated to this event.\n
    \n
    Incoming messages are not handled as soon as they arrive, but only when
-   the process declares to be ready to accept incomming events (using \ref
+   the process declares to be ready to accept incoming events (using \ref
    gras_msg_handle or related functions). It ensures that the treatment of a
    given message won't run in parallel to any other callback, so that
    process globals (its state) can be accessed and modified without
@@ -221,7 +221,7 @@ Two main types of events may change the internal state of a given process:
    \n
    Processes can also wait explicitely for incoming messages matching some
    given criterions (using \ref gras_msg_wait). Any messages received before the
-   one matching the criterions will be added to the incomming messages'
+   one matching the criterions will be added to the incoming messages'
    queue for further use. This may breaks the message delivery order.
    Moreover, there is no restriction on when this can be done. So, a
    callback to a given message can consume messages of other types. There is
@@ -287,14 +287,14 @@ The experimental scenario is as follows: <ul>
 
 <li>Process A sends a first message (depicted in red) with gras_msg_send(), do
     some more computation, and then send another message (depicted in
-    yellow). Then, this process handles any incomming message with
+    yellow). Then, this process handles any incoming message with
     gras_msg_handle(). Since no message is already queued in process A at this
     point, this is a blocking call until the third message (depicted in
     magenta) arrives from the other process.</li>
 
 <li>On its side, the process B explicitely wait for the second message with
     gras_msg_wait(), do some computation with it, and then call
-    gras_msg_handle() to handle any incomming message. This will pop the red
+    gras_msg_handle() to handle any incoming message. This will pop the red
     message from the queue, and start the callback attached to that kind of
     messages. This callback sends back a new message (depicted in magenta) back
     to process A.</li>
@@ -331,7 +331,7 @@ network. The order of unexpected messages and subsequent ones is thus preserved
 from the receiver point of view.</li>
 
 <li>gras_msg_wait() and gras_msg_handle() accept timeouts as argument to
-specify how long you are willing to wait at most for incomming messages. These
+specify how long you are willing to wait at most for incoming messages. These
 were ignored here to not complexify the example any further. It is worth
 mentionning that the send operation cannot be timeouted. The existance of the
 listener should make it useless.</li>
@@ -341,7 +341,7 @@ listener should make it useless.</li>
 \subsection GRAS_tut_intro_model_timing_policy Timing policy
 
 All communication primitives allow 3 timout policies: one can only poll for
-incomming events (using timeout=0), wait endlessly for the communication to
+incoming events (using timeout=0), wait endlessly for the communication to
 be performed (using timeout<0) or specify a maximal delay to wait for the
 communication to proceed (using timeout>0, being a number of seconds).
 

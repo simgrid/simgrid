@@ -1,13 +1,13 @@
 ! timeout 20
-& $SG_TEST_ENV bandwidth/bandwidth_sensor$EXEEXT 127.0.0.1:6000 "--log=root.fmt=%P:%t%e%m%n" $ARGS
+& $SG_TEST_ENV bandwidth/bandwidth_sensor$EXEEXT 127.0.0.1:6000 "--log=root.fmt=%P:%t%e%m%n"
 > sensor:main Sensor starting (on port 3000)
 
 ! timeout 20
-& $SG_TEST_ENV bandwidth/bandwidth_sensor$EXEEXT 127.0.0.1:6000 "--log=root.fmt=%P:%t%e%m%n" $ARGS
+& $SG_TEST_ENV bandwidth/bandwidth_sensor$EXEEXT 127.0.0.1:6000 "--log=root.fmt=%P:%t%e%m%n"
 > sensor:main Sensor starting (on port 3001)
 
 ! timeout 20
-& $SG_TEST_ENV bandwidth/bandwidth_maestro$EXEEXT 6000 "--log=root.fmt=%P:%t%e%m%n" $ARGS
+& $SG_TEST_ENV bandwidth/bandwidth_maestro$EXEEXT 6000 "--log=root.fmt=%P:%t%e%m%n"
 > maestro:main Maestro starting
 > maestro:main Wait for peers for 5 sec
 > maestro:main Contact 127.0.0.1:3000

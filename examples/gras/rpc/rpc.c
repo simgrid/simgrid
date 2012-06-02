@@ -370,7 +370,7 @@ int server(int argc, char *argv[])
 
   XBT_INFO("Listening on port %d", xbt_socket_my_port(mysock));
 
-  /* 5. Wait for the ping incomming messages */
+  /* 5. Wait for the ping incoming messages */
 
   /** \bug if the server is gone before the forwarder tries to connect,
      it dies awfully with the following message. The problem stands somewhere

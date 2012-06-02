@@ -408,7 +408,7 @@ endif(pthread)
 
 
 ###############
-## SVN version check
+## GIT version check
 ##
 if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
 exec_program("git remote | head -n 1" OUTPUT_VARIABLE remote RETURN_VALUE ret)

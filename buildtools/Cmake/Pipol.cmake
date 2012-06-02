@@ -8,10 +8,6 @@ IF(pipol_user)
 
 	set(CMAKE_OPTIONS "	-Wno-dev")
 	
-	if(custom_flags)
-	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dcustom_flags=${custom_flags}")
-	endif(custom_flags)
-	
 	if(with_context)
 	set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dwith_context=${with_context}")
 	endif(with_context)

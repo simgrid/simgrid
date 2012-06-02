@@ -12,7 +12,7 @@
 \***********************************************************************/
 
 
-#include "RngStream.h"
+#include "xbt/RngStream.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -517,3 +517,15 @@ int RngStream_RandInt (RngStream g, int i, int j)
 {
    return i + (int) ((j - i + 1.0) * RngStream_RandU01 (g));
 }
+
+/* Undefine this terms, or supernovae build will fail. */
+#undef norm
+#undef m1
+#undef m2
+#undef a12
+#undef a13n
+#undef a21
+#undef a23n
+#undef two17
+#undef two53
+#undef fact

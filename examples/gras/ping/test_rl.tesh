@@ -1,7 +1,7 @@
 
 ! timeout 20
 ! setenv GRAS_NO_WARN_EXPERIMENTAL=1
-& $SG_TEST_ENV ./ping_server$EXEEXT 4302 --log=root.fmt=%P:%t%e%m%n $ARGS
+& $SG_TEST_ENV ./ping_server$EXEEXT 4302 --log=root.fmt=%P:%t%e%m%n
 > server:main Launch server (port=4302)
 > server:main Messages registered
 > server:main Messages registered
@@ -16,7 +16,7 @@ $ $SG_TEST_ENV sleep 1
 
 ! timeout 20
 ! setenv GRAS_NO_WARN_EXPERIMENTAL=1
-& $SG_TEST_ENV ./ping_client$EXEEXT 127.0.0.1 4302 --log=root.fmt=%P:%t%e%m%n $ARGS
+& $SG_TEST_ENV ./ping_client$EXEEXT 127.0.0.1 4302 --log=root.fmt=%P:%t%e%m%n
 > client:main Launch client (server on 127.0.0.1:4302)
 > client:main Connected to 127.0.0.1:4302.
 > client:main Messages registered

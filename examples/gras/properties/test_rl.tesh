@@ -1,7 +1,7 @@
 
 ! setenv SG_TEST_blah=blah
 ! setenv GRAS_NO_WARN_EXPERIMENTAL=1
-$ $SG_TEST_ENV ./properties_alice --log=root.fmt=%P:%t%e%m%n $ARGS
+$ $SG_TEST_ENV ./properties_alice --log=root.fmt=%P:%t%e%m%n
 > alice:main == Dump all the properties of current host
 > alice:main == Dump all the properties of alice
 > alice:main   Process property: 'SG_TEST_blah' has value: 'blah'
@@ -11,7 +11,7 @@ $ $SG_TEST_ENV ./properties_alice --log=root.fmt=%P:%t%e%m%n $ARGS
 
 ! setenv SG_TEST_blah=blah
 ! setenv GRAS_NO_WARN_EXPERIMENTAL=1
-$ $SG_TEST_ENV ./properties_bob --log=root.fmt=%P:%t%e%m%n $ARGS
+$ $SG_TEST_ENV ./properties_bob --log=root.fmt=%P:%t%e%m%n
 > bob:main == Dump all the properties of host1
 > bob:main == Try to get a property that does not exist
 > bob:main == Set a host property that alice will try to retrieve in SG (from bob->hello)
