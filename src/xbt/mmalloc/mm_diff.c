@@ -336,6 +336,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 
   }
 
+  free(pointed_address1);
+  free(pointed_address2);
 
   return (errors);
 }
