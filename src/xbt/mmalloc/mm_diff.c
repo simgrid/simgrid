@@ -204,7 +204,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
   int distance = 0;
   int pointer_align;
 
-  char *pointed_address1, *pointed_address2;
+  char *pointed_address1 = NULL, *pointed_address2 = NULL;
 
   /* Check busy blocks*/
 
@@ -215,8 +215,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
       errors++;
     }
 
-    addr_block1 = (char *)mdp1 + sizeof(struct mdesc) + (i * BLOCKSIZE);
-    addr_block2 = (char *)mdp2 + sizeof(struct mdesc) + (i * BLOCKSIZE);
+    addr_block1 = (char *)mdp1 + mdp1->headersize + ((i-1) * BLOCKSIZE);
+    addr_block2 = (char *)mdp2 + mdp2->headersize + ((i-1) * BLOCKSIZE); 
 
     if(mdp1->heapinfo[i].type == 0){ /* busy large block */
 
@@ -247,7 +247,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	    fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)addr_block1 + pointer_align)), pointed_address1, *((void **)((char *)addr_block2 + pointer_align)), pointed_address2);
 	    if((strcmp(pointed_address1, pointed_address2) == 0) && (strcmp(pointed_address1, "std_heap") == 0)){
 	      /* FIXME : compare value pointed thanks to DWARF */
-	    } 
+	    }
 	  }
 	}
 
@@ -258,7 +258,10 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	errors++;
       }
 
-      i = i + mdp1->heapinfo[i].busy_block.size + 1;
+      if( mdp1->heapinfo[i].busy_block.size == 0)
+	i = i + 1;
+      else
+	i = i + mdp1->heapinfo[i].busy_block.size;
 
     }else{
       
