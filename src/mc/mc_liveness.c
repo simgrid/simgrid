@@ -69,18 +69,37 @@ const char* get_memory_map_addr(void *addr){
     if((addr > start_addr) && ( addr < end_addr)){
       free(line);
       fclose(fp);
-      if(start_addr == std_heap)
+      if(start_addr == std_heap){
+	xbt_dynar_reset(lfields);
+	xbt_free(lfields);
+	xbt_dynar_reset(start_end);
+	xbt_free(start_end);
 	return "std_heap";
-      if(start_addr == raw_heap)
+      }
+      if(start_addr == raw_heap){
+	xbt_dynar_reset(lfields);
+	xbt_free(lfields);
+	xbt_dynar_reset(start_end);
+	xbt_free(start_end);
 	return "raw_heap";
-      if(xbt_dynar_length(lfields) == 6)
+      }
+      if(xbt_dynar_length(lfields) == 6){
 	return xbt_dynar_get_as(lfields, xbt_dynar_length(lfields) - 1, char*);
-      else
+      }else{
+	xbt_dynar_reset(lfields);
+	xbt_free(lfields);
+	xbt_dynar_reset(start_end);
+	xbt_free(start_end);
 	return "Anonymous";
+      }
     }
 
   }
 
+  xbt_dynar_reset(lfields);
+  xbt_free(lfields);
+  xbt_dynar_reset(start_end);
+  xbt_free(start_end);
   free(line);
   fclose(fp);
   return "Unknown area";
