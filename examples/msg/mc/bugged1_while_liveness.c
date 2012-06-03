@@ -85,7 +85,7 @@ int client(int argc, char *argv[])
     if(strcmp(my_mailbox, "1") == 0){
       r = 1;
       cs = 0;
-      XBT_DEBUG("Propositions changed : r=1, cs=0");
+      XBT_INFO("Propositions changed : r=1, cs=0");
     }
 
     // wait the answer
@@ -96,7 +96,7 @@ int client(int argc, char *argv[])
     if((strcmp(my_mailbox, "1") == 0) && (strcmp("grant", kind) == 0)){
       cs = 1;
       r = 0;
-      XBT_DEBUG("Propositions changed : r=0, cs=1");
+      XBT_INFO("Propositions changed : r=0, cs=1");
     }
 
 
@@ -110,7 +110,7 @@ int client(int argc, char *argv[])
     if(strcmp(my_mailbox, "1") == 0){
       cs=0;
       r=0;
-      XBT_DEBUG("Propositions changed : r=0, cs=0");
+      XBT_INFO("Propositions changed : r=0, cs=0");
     }
     
   }
