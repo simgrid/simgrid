@@ -13,6 +13,7 @@ add_executable(bugged1_for_liveness automaton.c automatonparse_promela.c bugged1
 add_executable(bugged1_while_liveness automaton.c automatonparse_promela.c bugged1_while_liveness.c)
 add_executable(bugged2_liveness automaton.c automatonparse_promela.c bugged2_liveness.c)
 add_executable(centralized_liveness automaton.c automatonparse_promela.c centralized_liveness.c)
+add_executable(centralized_liveness_deadlock automaton.c automatonparse_promela.c centralized_liveness_deadlock.c)
 add_executable(test_snapshot automaton.c automatonparse_promela.c test_snapshot.c)
 
 target_link_libraries(centralized simgrid m )
@@ -26,4 +27,5 @@ target_link_libraries(bugged1_for_liveness     simgrid m )
 target_link_libraries(bugged1_while_liveness     simgrid m )
 target_link_libraries(bugged2_liveness     simgrid m )
 target_link_libraries(centralized_liveness     simgrid m )
+target_link_libraries(centralized_liveness_deadlock     simgrid m )
 target_link_libraries(test_snapshot     simgrid m )
