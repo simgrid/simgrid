@@ -1,11 +1,12 @@
-never { /* !(GFcs2) */
+never { /* !(!(GFcs)) */
 T0_init :    /* init */
 	if
+	:: (cs) -> goto accept_S1
 	:: (1) -> goto T0_init
-	:: (!cs2) -> goto accept_S2
 	fi;
-accept_S2 :    /* 1 */
+accept_S1 :    /* 1 */
 	if
-	:: (!cs2) -> goto accept_S2
+	:: (cs) -> goto accept_S1
+	:: (1) -> goto T0_init
 	fi;
 }
