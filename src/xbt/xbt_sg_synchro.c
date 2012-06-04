@@ -28,7 +28,7 @@ typedef struct s_xbt_thread_ {
   void *userparam;
   void *father_data;
   /* stuff to allow other people to wait on me with xbt_thread_join */
-  int joinable:1, done:1;
+  unsigned joinable:1, done:1;
   xbt_cond_t cond;
   xbt_mutex_t mutex;
 } s_xbt_thread_t;

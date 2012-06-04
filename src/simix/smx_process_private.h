@@ -22,9 +22,9 @@ typedef struct s_smx_process {
   smx_host_t smx_host;          /* the host on which the process is running */
   smx_context_t context;        /* the context (either uctx or thread) that executes the user function */
   xbt_running_ctx_t *running_ctx;
-  int doexception:1;
-  int blocked:1;
-  int suspended:1;
+  unsigned doexception:1;
+  unsigned blocked:1;
+  unsigned suspended:1;
   smx_host_t new_host;          /* if not null, the host on which the process must migrate to */
   smx_action_t waiting_action;  /* the current blocking action if any */
   xbt_fifo_t comms;       /* the current non-blocking communication actions */

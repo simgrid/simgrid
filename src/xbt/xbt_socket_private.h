@@ -28,12 +28,12 @@ typedef struct s_xbt_socket {
 
   xbt_trp_plugin_t plugin;
 
-  int incoming:1;               /* true if we can read from this sock */
-  int outgoing:1;               /* true if we can write on this sock */
-  int accepting:1;              /* true if master incoming sock in tcp */
-  int meas:1;                   /* true if this is an experiment socket instead of messaging */
-  int valid:1;                  /* false if a select returned that the peer has left, forcing us to "close" the socket */
-  int moredata:1;               /* TCP socket use a buffer and read operation get as much 
+  unsigned incoming:1;          /* true if we can read from this sock */
+  unsigned outgoing:1;          /* true if we can write on this sock */
+  unsigned accepting:1;         /* true if master incoming sock in tcp */
+  unsigned meas:1;              /* true if this is an experiment socket instead of messaging */
+  unsigned valid:1;             /* false if a select returned that the peer has left, forcing us to "close" the socket */
+  unsigned moredata:1;          /* TCP socket use a buffer and read operation get as much 
                                    data as possible. It is possible that several messages
                                    are received in one shoot, and select won't catch them 
                                    afterward again. 
@@ -42,7 +42,7 @@ typedef struct s_xbt_socket {
                                    sockets are not concerned since they use the TCP
                                    interface directly, with no buffer. */
 
-  int recvd:1;                  /* true if the recvd_val field contains one byte of the stream (that we peek'ed to check the socket validity) */
+  unsigned recvd:1;             /* true if the recvd_val field contains one byte of the stream (that we peek'ed to check the socket validity) */
   char recvd_val;               /* what we peeked from the socket, if any */
 
   int refcount;                 /* refcounting on shared sockets */

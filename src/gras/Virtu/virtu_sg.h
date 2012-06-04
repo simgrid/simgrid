@@ -16,7 +16,7 @@
 
 typedef struct {
   int port;                     /* list of ports used by a server socket */
-  int meas:1;                   /* (boolean) the channel is for measurements or for messages */
+  unsigned meas:1;              /* (boolean) the channel is for measurements or for messages */
   smx_process_t server;
   smx_rdv_t rdv;
 } s_gras_sg_portrec_t, *gras_sg_portrec_t;

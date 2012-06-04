@@ -23,18 +23,18 @@ typedef struct {
   int env_size;
   char *filepos;
   int pid;
-  int is_background:1;
-  int is_empty:1;
-  int is_stoppable:1;
+  unsigned is_background:1;
+  unsigned is_empty:1;
+  unsigned is_stoppable:1;
 
-  int brokenpipe:1;
-  int timeout:1;
+  unsigned brokenpipe:1;
+  unsigned timeout:1;
 
-  int reader_done:1;            /* reader set this to true when he's done because
+  unsigned reader_done:1;       /* reader set this to true when he's done because
                                    the child is dead. The main thread use it to detect
                                    that the child is not dead before the end of timeout */
 
-  int interrupted:1;            /* Whether we got stopped by an armageddon */
+  unsigned interrupted:1;       /* Whether we got stopped by an armageddon */
   xbt_os_mutex_t interruption;  /* To allow main thread to kill a runner
                                    one only at certain points */
 
@@ -46,7 +46,7 @@ typedef struct {
   int end_time;                 /* begin_time + timeout, as epoch */
   char *expected_signal;        /* name of signal to raise (or NULL if none) */
   int expected_return;          /* the exepeted return code of following command */
-  int output_sort:1;            /* whether the output must be sorted before comparison */
+  unsigned output_sort:1;       /* whether the output must be sorted before comparison */
 
   /* buffers */
   xbt_strbuff_t input;
