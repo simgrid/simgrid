@@ -113,6 +113,13 @@ set(JMSG_JAVA_SRC
 )
 
 set(JAVA_EXAMPLES
+  examples/bittorrent/Bittorrent.java
+  examples/bittorrent/Common.java
+  examples/bittorrent/Connection.java
+  examples/bittorrent/MessageTask.java
+  examples/bittorrent/Peer.java
+  examples/bittorrent/Tracker.java
+  examples/bittorrent/TrackerTask.java
   examples/chord/Chord.java
   examples/chord/Common.java
   examples/chord/Node.java
@@ -176,6 +183,7 @@ set(XML_FILES
     examples/master_slave_bypass/platform.xml
     examples/master_slave_kill/platform.xml
     examples/async/asyncDeployment.xml
+    examples/bittorrent/bittorrent.xml
 )
 
 set(source_to_pack
@@ -256,6 +264,8 @@ add_custom_command(
   	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/*.java
+	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/*.java
+
 )
 
 add_custom_target(simgrid_java_examples ALL
@@ -278,8 +288,9 @@ ${CMAKE_HOME_DIRECTORY}/simgrid.jar
 INCLUDE(CTest)
 ENABLE_TESTING()
 
-ADD_TEST(basic           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/basic/basic.tesh)
 ADD_TEST(async           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/async/async.tesh)
+ADD_TEST(basic           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/basic/basic.tesh)
+ADD_TEST(bittorrent           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/bittorrent.tesh)
 ADD_TEST(chord        	 ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.tesh)
 ADD_TEST(pingPong        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingpong.tesh)
 ADD_TEST(CommTime        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/commTime/commtime.tesh)
@@ -288,7 +299,7 @@ ADD_TEST(bypass          ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(kill            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh)
 ADD_TEST(startKillTime            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh)
 #Don't forget to put new test in this list!!!
-set(test_list basic chord async pingPong CommTime mutualExclusion bypass kill startKillTime)
+set(test_list basic bittorrent chord async pingPong CommTime mutualExclusion bypass kill startKillTime)
 
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #
