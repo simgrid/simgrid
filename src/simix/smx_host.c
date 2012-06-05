@@ -254,16 +254,19 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
 
 void SIMIX_host_execution_destroy(smx_action_t action)
 {
+  int destroyed=0;
   XBT_DEBUG("Destroy action %p", action);
 
-  xbt_free(action->name);
 
   if (action->execution.surf_exec) {
-    surf_workstation_model->action_unref(action->execution.surf_exec);
+    destroyed = surf_workstation_model->action_unref(action->execution.surf_exec);
     action->execution.surf_exec = NULL;
   }
 
-  xbt_mallocator_release(simix_global->action_mallocator, action);
+  if (destroyed) {
+    xbt_free(action->name);
+    xbt_mallocator_release(simix_global->action_mallocator, action);
+  }
 }
 
 void SIMIX_host_execution_cancel(smx_action_t action)
@@ -345,11 +348,13 @@ void SIMIX_execution_finish(smx_action_t action)
 
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->smx_host->name);
-        if (simcall->issuer->smx_host == action->execution.host)
+        if (simcall->issuer->smx_host == action->execution.host) {
+          // add a reference to the action that will be destroyed when the killed process is cleaned up, and by the end of the current function
+          surf_action_ref(action->execution.surf_exec);
           SIMIX_process_kill(simcall->issuer);
-//          simcall->issuer->context->iwannadie = 1; // Bye bye, little process.
-        else
+        } else {
           SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        }
         break;
 
       case SIMIX_CANCELED:
