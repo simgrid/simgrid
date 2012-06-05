@@ -56,7 +56,6 @@ public class Tracker extends Process {
 					if (task instanceof TrackerTask) {
 						TrackerTask tTask = (TrackerTask)task;
 						//Sending peers to the peer
-						//TODO: Send RANDOM pairs using RngStreams.
 						int nbPeers = 0;
 						while (nbPeers < Common.MAXIMUM_PAIRS && nbPeers < peersList.size()) {
 							int nextPeer;

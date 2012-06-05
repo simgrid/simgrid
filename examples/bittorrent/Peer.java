@@ -9,6 +9,7 @@ import org.simgrid.msg.Comm;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
+import org.simgrid.msg.RngStream;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Task;
 
@@ -19,6 +20,8 @@ public class Peer extends Process {
 	protected int round = 0;
 	
 	protected double deadline;
+	
+	protected static RngStream stream = new RngStream();
 	
 	protected int id;
 	protected String mailbox;
@@ -317,7 +320,6 @@ public class Peer extends Process {
 					if (bitfield[message.index] == '0') {
 						piecesRequested--;
 						//Removing the piece from our piece list.
-						//TODO: It can not work, I should test it
 						if (!currentPieces.remove((Object)Integer.valueOf(message.index))) {
 						}
 						//Setting the fact that we have the piece
@@ -393,7 +395,7 @@ public class Peer extends Process {
 		if (true || pieces < 3) {
 			int i = 0, peerPiece;
 			do {
-				currentPiece = ((int)Msg.getClock() + id + i) % Common.FILE_PIECES;
+				currentPiece = stream.randInt(0,Common.FILE_PIECES - 1);
 				i++;
 			} while (!(bitfield[currentPiece] == '0' && !currentPieces.contains(currentPiece)));
 		}
@@ -448,6 +450,7 @@ public class Peer extends Process {
 				sendUnchoked(peerChoosed.mailbox);
 			}
 		}
+		//TODO: Use the leecher choke algorithm.
 	}
 	/**	
 	 * Updates our "interested" state about peers: send "not interested" to peers
