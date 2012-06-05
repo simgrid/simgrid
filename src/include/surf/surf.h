@@ -299,7 +299,7 @@ typedef struct surf_model {
 
   double (*action_get_start_time) (surf_action_t action);     /**< Return the start time of an action */
   double (*action_get_finish_time) (surf_action_t action);     /**< Return the finish time of an action */
-  int (*action_unref) (surf_action_t action);     /**< Specify that we don't use that action anymore. Returns true if the action were destroyed and false if someone still has references on it. */
+  int (*action_unref) (surf_action_t action);     /**< Specify that we don't use that action anymore. Returns true if the action was destroyed and false if someone still has references on it. */
   void (*action_cancel) (surf_action_t action);     /**< Cancel a running action */
   void (*action_recycle) (surf_action_t action);     /**< Recycle an action */
   void (*action_data_set) (surf_action_t action, void *data);     /**< Set the user data of an action */
