@@ -458,6 +458,8 @@ double surf_solve(double max_date)
     /* parallel version */
 #ifdef CONTEXT_THREADS
     xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_share_resources, model_list);
+#else
+    xbt_die("Asked to run in parallel, but no thread at hand...");
 #endif
   }
   else {
