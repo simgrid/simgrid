@@ -8,10 +8,11 @@
 #include <msg/msg.h>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
-static jfieldID jtask_field_Comm_task;
 static jfieldID jcomm_field_Comm_bind;
-static jfieldID jcomm_field_Comm_taskBind;
+static jfieldID jcomm_field_Comm_finished;
 static jfieldID jcomm_field_Comm_receiving;
+static jfieldID jtask_field_Comm_task;
+static jfieldID jcomm_field_Comm_taskBind;
 
 void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
 	msg_comm_t comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
@@ -49,7 +50,8 @@ Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
 	jcomm_field_Comm_taskBind  = jxbt_get_jfield(env, jfield_class_Comm, "taskBind", "J");
 	jcomm_field_Comm_receiving = jxbt_get_jfield(env, jfield_class_Comm, "receiving", "Z");
 	jtask_field_Comm_task = jxbt_get_jfield(env, jfield_class_Comm, "task", "Lorg/simgrid/msg/Task;");
-	if (!jcomm_field_Comm_bind || !jcomm_field_Comm_taskBind || !jcomm_field_Comm_receiving || !jtask_field_Comm_task) {
+	jcomm_field_Comm_finished = jxbt_get_jfield(env, jfield_class_Comm, "finished", "Z");
+	if (!jcomm_field_Comm_bind || !jcomm_field_Comm_taskBind || !jcomm_field_Comm_receiving || !jtask_field_Comm_task || !jcomm_field_Comm_finished) {
   	jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));
 	}
 }
@@ -70,6 +72,11 @@ JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
 	msg_comm_t comm;
 	comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
+
+	jboolean finished = (*env)->GetBooleanField(env, jcomm, jcomm_field_Comm_finished);
+	if (finished == JNI_TRUE) {
+		return JNI_TRUE;
+	}
 
 	if (!comm) {
 		jxbt_throw_native(env,bprintf("comm is null"));
@@ -104,6 +111,12 @@ Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble tim
 		jxbt_throw_native(env,bprintf("comm is null"));
 		return;
 	}
+
+	jboolean finished = (*env)->GetBooleanField(env, jcomm, jcomm_field_Comm_finished);
+	if (finished == JNI_TRUE) {
+		return;
+	}
+
 	MSG_error_t status;
 	TRY {
 		status = MSG_comm_wait(comm,(double)timeout);
@@ -111,6 +124,7 @@ Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble tim
 	CATCH_ANONYMOUS {
 		return;
 	}
+	(*env)->SetBooleanField(env, jcomm, jcomm_field_Comm_finished, JNI_TRUE);
 	if (status == MSG_OK) {
 		jcomm_bind_task(env,jcomm);
 		return;

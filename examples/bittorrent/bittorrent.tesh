@@ -1,0 +1,27 @@
+#! ./tesh
+
+! output sort
+
+$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar bittorrent/Bittorrent ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/bittorrent/bittorrent.xml
+> [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
+> [5000.832370] [jmsg/INFO] Done running MSG_MAIN
+> [5000.832370] [jmsg/INFO] MSG_main finished
+> [5000.832370] [jmsg/INFO] Clean java world
+> [5000.832370] [jmsg/INFO] Clean native world
+> [Boivin:bittorrent.Peer:(2) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 2
+> [Boivin:bittorrent.Peer:(2) 5000.048882] [jmsg/INFO] Here is my current status: 1111111111
+> [Disney:bittorrent.Peer:(6) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 6
+> [Disney:bittorrent.Peer:(6) 5000.131405] [jmsg/INFO] Here is my current status: 1111111111
+> [Geoff:bittorrent.Peer:(5) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 5
+> [Geoff:bittorrent.Peer:(5) 5000.764583] [jmsg/INFO] Here is my current status: 1111111111
+> [Jacquelin:bittorrent.Tracker:(1) 0.000000] [jmsg/INFO] Tracker launched.
+> [Jacquelin:bittorrent.Tracker:(1) 3000.000000] [jmsg/INFO] Tracker is leaving
+> [Jean_Yves:bittorrent.Peer:(3) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 3
+> [Jean_Yves:bittorrent.Peer:(3) 5000.832370] [jmsg/INFO] Here is my current status: 1111111111
+> [McGee:bittorrent.Peer:(8) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 8
+> [McGee:bittorrent.Peer:(8) 5000.783574] [jmsg/INFO] Here is my current status: 1111111111
+> [TeX:bittorrent.Peer:(4) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 4
+> [TeX:bittorrent.Peer:(4) 5000.304959] [jmsg/INFO] Here is my current status: 1111111111
+> [iRMX:bittorrent.Peer:(7) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 7
+> [iRMX:bittorrent.Peer:(7) 5000.729205] [jmsg/INFO] Here is my current status: 1111111111
+

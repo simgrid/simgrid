@@ -90,6 +90,8 @@ set(JMSG_C_SRC
 	src/jmsg_synchro.h
 	src/jtrace.c
 	src/jtrace.h
+	src/jmsg_rngstream.c
+	src/jmsg_rngstream.h
 )
 
 set(JMSG_JAVA_SRC
@@ -110,9 +112,17 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/Mutex.java
 	org/simgrid/msg/Comm.java
 	org/simgrid/trace/Trace.java
+	org/simgrid/msg/RngStream.java
 )
 
 set(JAVA_EXAMPLES
+  examples/bittorrent/Bittorrent.java
+  examples/bittorrent/Common.java
+  examples/bittorrent/Connection.java
+  examples/bittorrent/MessageTask.java
+  examples/bittorrent/Peer.java
+  examples/bittorrent/Tracker.java
+  examples/bittorrent/TrackerTask.java
   examples/chord/Chord.java
   examples/chord/Common.java
   examples/chord/Node.java
@@ -181,6 +191,7 @@ set(XML_FILES
     examples/master_slave_kill/platform.xml
     examples/async/asyncDeployment.xml
     examples/tracing/tracingPingPongDeployment.xml
+    examples/bittorrent/bittorrent.xml
 )
 
 set(source_to_pack
@@ -204,6 +215,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g -Wall -Wunused -Wmissing-prototypes -
 set(INCLUDE_PATH "-I${CMAKE_HOME_DIRECTORY}/src -I${SIMGRID_INCLUDES} ")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH}")
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=int-to-pointer-cast -Wno-error=pointer-to-int-cast")
 if(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unused-but-set-variable")
 endif(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
@@ -277,6 +289,7 @@ add_custom_command(
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/*.java
 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/tracing/*.java
+	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/*.java
 )
 
 add_custom_target(simgrid_java_examples ALL
@@ -299,8 +312,10 @@ ${CMAKE_HOME_DIRECTORY}/simgrid.jar
 INCLUDE(CTest)
 ENABLE_TESTING()
 
-ADD_TEST(basic           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/basic/basic.tesh)
 ADD_TEST(async           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/async/async.tesh)
+ADD_TEST(basic           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/basic/basic.tesh)
+ADD_TEST(bittorrent           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/bittorrent.tesh)
+ADD_TEST(chord        	 ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.tesh)
 ADD_TEST(pingPong        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingpong.tesh)
 ADD_TEST(CommTime        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/commTime/commtime.tesh)
 ADD_TEST(mutualExclusion ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/mutualexclusion.tesh)
@@ -309,7 +324,7 @@ ADD_TEST(kill            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(startKillTime   ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh)
 ADD_TEST(tracing         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/tracing/tracingPingPong.tesh)
 #Don't forget to put new test in this list!!!
-set(test_list basic async pingPong CommTime mutualExclusion bypass kill startKillTime tracing)
+set(test_list basic bittorrent chord async pingPong CommTime mutualExclusion bypass kill startKillTime tracing)
 
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #

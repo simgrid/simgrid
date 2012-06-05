@@ -43,7 +43,7 @@ m_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
 
 void jprocess_bind(jobject jprocess, m_process_t process, JNIEnv * env)
 {
-  (*env)->SetLongField(env, jprocess, jprocess_field_Process_bind, (jlong) (long) (process));
+  (*env)->SetLongField(env, jprocess, jprocess_field_Process_bind, (jlong)(process));
 }
 
 jlong jprocess_get_id(jobject jprocess, JNIEnv * env)
@@ -137,10 +137,9 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
 						(xbt_main_func_t) jprocess,
 						/*data*/ jprocess,
 						host,
-						(double)jkill, /* kill time */
 						/*argc, argv, properties*/
 						0,NULL,NULL);
-
+  MSG_process_set_kill_time(process, (double)jkill);
   MSG_process_set_data(process,&process);
   /* bind the java process instance to the native process */
   jprocess_bind(jprocess, process, env);
@@ -275,7 +274,7 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
                                      jdouble jseconds)
 {
-  MSG_error_t rv;
+	MSG_error_t rv;
   TRY {
   	 rv = MSG_process_sleep((double)jseconds);
   }
