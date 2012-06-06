@@ -169,10 +169,14 @@ int TRACE_disable_destroy (void);
 char *TRACE_get_filename(void);
 char *TRACE_get_triva_uncat_conf (void);
 char *TRACE_get_triva_cat_conf (void);
+char *TRACE_get_viva_uncat_conf (void);
+char *TRACE_get_viva_cat_conf (void);
 void TRACE_global_init(int *argc, char **argv);
 void TRACE_help(int detailed);
 void TRACE_generate_triva_uncat_conf (void);
 void TRACE_generate_triva_cat_conf (void);
+void TRACE_generate_viva_uncat_conf (void);
+void TRACE_generate_viva_cat_conf (void);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *resource,
