@@ -45,7 +45,7 @@ void mmalloc_backtrace_display(xbt_mheap_t mdp, void *ptr){
   } else {
     int i;
 
-    fprintf(stderr, "Backtrace of where the block %p where malloced (%d frames):\n",ptr,e.used);
+    fprintf(stderr, "Backtrace of where the block %p was malloced (%d frames):\n",ptr,e.used);
     for (i = 0; i < e.used; i++)       /* no need to display "xbt_backtrace_display" */{
       fprintf(stderr,"%d",i);fflush(NULL);
       fprintf(stderr, "---> %s\n", e.bt_strings[i] + 4);
@@ -81,7 +81,7 @@ void mmalloc_backtrace_block_display(xbt_mheap_t mdp, size_t block){
   } else {
     int i;
 
-    fprintf(stderr, "Backtrace of where the block %zu where malloced (%d frames):\n", block ,e.used);
+    fprintf(stderr, "Backtrace of where the block %zu was malloced (%d frames):\n", block ,e.used);
     for (i = 0; i < e.used; i++)       /* no need to display "xbt_backtrace_display" */{
       fprintf(stderr,"%d",i);fflush(NULL);
       fprintf(stderr, "---> %s\n", e.bt_strings[i] + 4);
@@ -104,7 +104,7 @@ void mmalloc_backtrace_fragment_display(xbt_mheap_t mdp, size_t block, size_t fr
   } else {
     int i;
 
-    fprintf(stderr, "Backtrace of where the fragment %zu in block %zu where malloced (%d frames):\n", frag, block ,e.used);
+    fprintf(stderr, "Backtrace of where the fragment %zu in block %zu was malloced (%d frames):\n", frag, block ,e.used);
     for (i = 0; i < e.used; i++)       /* no need to display "xbt_backtrace_display" */{
       fprintf(stderr,"%d",i);fflush(NULL);
       fprintf(stderr, "---> %s\n", e.bt_strings[i] + 4);
