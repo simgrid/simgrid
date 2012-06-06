@@ -39,7 +39,9 @@ val_t PJ_value_get (const char *name, type_t father)
   if (father->kind == TYPE_VARIABLE) return NULL; //Variables can't have different values
   val_t ret = (val_t)xbt_dict_get_or_null (father->values, name);
   if (ret == NULL){
-    return NULL;
+    if (ret == NULL){
+      THROWF (tracing_error, 2, "value with name (%s) not found in father type (%s)", name, father->name);
+    }
   }
   return ret;
 }
