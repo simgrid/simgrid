@@ -98,6 +98,7 @@ void new_pajeSubVariable (double timestamp, container_t container, type_t type, 
 void new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
 void new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
 void new_pajePopState (double timestamp, container_t container, type_t type);
+void new_pajeResetState (double timestamp, container_t container, type_t type);
 void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);
 void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key);
 void new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);

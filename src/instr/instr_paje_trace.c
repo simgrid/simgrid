@@ -25,6 +25,7 @@ typedef enum {
   PAJE_SetState,
   PAJE_PushState,
   PAJE_PopState,
+  PAJE_ResetState,
   PAJE_StartLink,
   PAJE_EndLink,
   PAJE_NewEvent
@@ -121,6 +122,12 @@ typedef struct s_popState {
   container_t container;
   type_t type;
 }s_popState_t;
+
+typedef struct s_resetState *resetState_t;
+typedef struct s_resetState {
+  container_t container;
+  type_t type;
+}s_resetState_t;
 
 typedef struct s_startLink *startLink_t;
 typedef struct s_startLink {
@@ -291,6 +298,11 @@ void TRACE_paje_create_header(void)
 %%       Type string \n\
 %%       Container string \n\
 %%EndEventDef\n\
+%%EventDef PajeResetState %d \n\
+%%       Time date \n\
+%%       Type string \n\
+%%       Container string \n\
+%%EndEventDef\n\
 %%EventDef PajeStartLink %d \n\
 %%       Time date \n\
 %%       Type string \n\
@@ -327,6 +339,7 @@ void TRACE_paje_create_header(void)
   PAJE_SetState,
   PAJE_PushState,
   PAJE_PopState,
+  PAJE_ResetState,
   PAJE_StartLink,
   PAJE_EndLink,
   PAJE_NewEvent);
@@ -569,6 +582,23 @@ static void print_pajePopState(paje_event_t event)
         event->timestamp,
         ((popState_t)event->data)->type->id,
         ((popState_t)event->data)->container->id);
+  }
+}
+
+static void print_pajeResetState(paje_event_t event)
+{
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+  if (event->timestamp == 0){
+    fprintf(tracing_file, "%d 0 %s %s\n",
+        (int)event->event_type,
+        ((resetState_t)event->data)->type->id,
+        ((resetState_t)event->data)->container->id);
+  }else{
+    fprintf(tracing_file, "%d %lf %s %s\n",
+        (int)event->event_type,
+        event->timestamp,
+        ((resetState_t)event->data)->type->id,
+        ((resetState_t)event->data)->container->id);
   }
 }
 
@@ -892,6 +922,23 @@ void new_pajePopState (double timestamp, container_t container, type_t type)
   event->data = xbt_new0(s_popState_t, 1);
   ((popState_t)(event->data))->type = type;
   ((popState_t)(event->data))->container = container;
+
+  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
+
+  insert_into_buffer (event);
+}
+
+
+void new_pajeResetState (double timestamp, container_t container, type_t type)
+{
+  paje_event_t event = xbt_new0(s_paje_event_t, 1);
+  event->event_type = PAJE_ResetState;
+  event->timestamp = timestamp;
+  event->print = print_pajeResetState;
+  event->free = free_paje_event;
+  event->data = xbt_new0(s_resetState_t, 1);
+  ((resetState_t)(event->data))->type = type;
+  ((resetState_t)(event->data))->container = container;
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 
