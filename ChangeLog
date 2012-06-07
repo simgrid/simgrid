@@ -1,11 +1,11 @@
 SimGrid (3.8) NOT RELEASED; urgency=low
 
  The "SimGrid makes psssshiiiit and jumps into the cloud" release.
- 
+
  CMAKE:
- * Remove option custom_flags. Now use environment variables CFLAGS 
+ * Remove option custom_flags. Now use environment variables CFLAGS
    and LDFLAGS.
-  
+
  MSG:
  * Add an experimental interface to manipulate VMs. They are mainly
    process groups with very few intrinsic semantic, but they should
