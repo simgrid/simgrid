@@ -11,13 +11,14 @@ SimGrid (3.7.1) stable; urgency=low
  Build System:
  * Fix compilation when using MSG_USE_DEPRECATED.
  * Fix some compilation issues on Macs and Windows.
+ * Reduce the number of failing tests on exotic systems, like Debian/Hurd.
  * Environment variables CFLAGS and LDFLAGS are now honored by cmake.
- 
+
  We discovered that the Lua console is broken, but we are missing the
  manpower to fix it right now. The problem existed in 3.7 too, so we
  are not blocking the release for that. Sorry if you depended on this
  feature, any help would be really welcome.
- 
+
  -- Thu Jun 7 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.7) stable; urgency=low
