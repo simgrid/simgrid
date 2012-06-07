@@ -15206,9 +15206,11 @@
 					<key>IFInstallationScriptsPostinstall</key>
 					<dict>
 						<key>Path</key>
-						<string></string>
+						<string>postinstall.sh</string>
+						<key>Path Type</key>
+						<integer>2</integer>
 						<key>Status</key>
-						<false/>
+						<true/>
 					</dict>
 					<key>IFInstallationScriptsPostupgrade</key>
 					<dict>
@@ -15227,9 +15229,11 @@
 					<key>IFInstallationScriptsPreinstall</key>
 					<dict>
 						<key>Path</key>
-						<string></string>
+						<string>preinstall.sh</string>
+						<key>Path Type</key>
+						<integer>2</integer>
 						<key>Status</key>
-						<false/>
+						<true/>
 					</dict>
 					<key>IFInstallationScriptsPreupgrade</key>
 					<dict>
