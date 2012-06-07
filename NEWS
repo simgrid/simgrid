@@ -3,8 +3,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ /|___  / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   / /| |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / /_| |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_/(_)_|
+                June 7 2012
 
-(to complete)
+The "cleaning the cleanup" release. Major changes:
+
+ * Portability fixups for Mac OSX and Windows
+ * Some other bug fixing and various polishing.
                     _               ____  _____
 __   _____ _ __ ___(_) ___  _ __   |___ /|___  |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   / /
