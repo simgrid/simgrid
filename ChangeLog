@@ -8,6 +8,14 @@ SimGrid (3.7.1) stable; urgency=low
  SURF:
  * Fix weird behaviors when dealing with parallel tasks.
 
+ WINDOWS:
+ * Simgrid is now built as a dll.
+ * Simgrid-java now works on Windows.
+ * Simgrid-Java is now included into Windows package.
+ 
+ MacOS:
+ * First pre-build package for MacOSX.
+ 
  Build System:
  * Fix compilation when using MSG_USE_DEPRECATED.
  * Fix some compilation issues on Macs and Windows.
