@@ -393,6 +393,22 @@ can use the SimGrid Ruby bindings in a virtual machine using
 VirtualBox. Thanks to him for that. You can find his project here:
 https://github.com/aespinosa/simgrid-vagrant
 
+\section install_mac Installing the SimGrid framework on Mac OS X
+
+The Mac OS X system is part of the UNIX familly, but it exibits some
+specificities that complicate a bit the build of SimGrid. Current
+versions of SimGrid (3.7.x) can only be build with the GCC Compiler,
+but recent OS X version provide only an ancient version of that tool
+in the hope to see the users switch to the LLVM compiler family. The
+problem is that SimGrid uses internal libraries of GCC, for stack
+manipulation for example. We are working on removing this dependency
+onto gcc to ease the build process, but this is still ongoing.
+
+For the time being, you need to get a recent version of GCC on your
+system to build SimGrid. Version 3.7.1  was successfully built on Mac
+Lion 10.7.4 using a GCC compiler retrieved from macport. The package
+used were gcc47, and the binary in the package were gcc-mp-4.7.
+
 \section install_setting_MSG Setting up your own MSG code
 
 Do not build your simulator by modifying the SimGrid examples.  Go
