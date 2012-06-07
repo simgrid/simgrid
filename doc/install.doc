@@ -24,6 +24,9 @@ For Unix and MacOS:
   \li c and c++ compiler
   \li ccmake for graphical used of CMake
   \li cmake <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
+                                                                                                                                                                                               
+On MacOSX some users reported that it is still possible to build with clang, provided that you use the 
+following package versions clang3.1 and clang++3.1. If it fails on you, try to use gcc47 (port install gcc47).
 
 For Windows :
   \li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
@@ -31,6 +34,14 @@ For Windows :
   \li perl <a href="http://www.activestate.com/activeperl/downloads">(download page)</a>
   \li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
   
+Note that if you want change the compiler, you can simply specify the environment variables CC and CXX.
+\verbatim
+ 	export CC=gcc-4.4
+ 	export CXX=g++-4.4
+ 	export CC=clang
+ 	export CXX=clang++
+\endverbatim 
+
 \subsubsection install_cmakeoption1 Liste of options
 
 \verbatim
@@ -58,8 +69,6 @@ For Windows :
 	gtnets_path			<path_to_gtnets_directory>
 	ns3_path			<path_to_ns3_directory>
 	CMAKE_INSTALL_PREFIX		<path_to_install_directory>
-	CMAKE_C_COMPILER		<path_to_compiler>
-	CMAKE_CXX_COMPILER		<path_to_compiler>
 	pipol_user			<pipol_username>
 \endverbatim
                                                                                                                                                           
@@ -108,10 +117,6 @@ For Windows :
   \li ns3_path : Path to ns3 install directory (ex /usr)
 
   \li CMAKE_INSTALL_PREFIX : Path where are installed lib/ doc/ and include/ directories (ex /usr/local)
-  
-  \li CMAKE_C_COMPILER : Change the c compiler.
-  
-  \li CMAKE_CXX_COMPILER : Change the c++ compiler. 
   
   \li pipol_user : specify your pipol username if you want to use the pipol-remote command.
 
