@@ -1,12 +1,12 @@
 
-/** 
+/**
 @page GRAS_tut_tour_args Lesson 3: Passing arguments to the processes (in SG)
 
 \section GRAS_tut_tour_args_toc Table of Contents
  - \ref GRAS_tut_tour_args_use
  - \ref GRAS_tut_tour_args_sg
  - \ref GRAS_tut_tour_args_recap
-   
+
 <hr>
 
 The most problematic issue with the code of previous lesson is that it does
@@ -27,7 +27,7 @@ In the client, we only need to change the way we open the client socket:
 \skip gras_socket_client
 \until gras_socket_client
 
-The rest of the program remains inchanged. 
+The rest of the program remains inchanged.
 
 \section GRAS_tut_tour_args_sg Passing command line arguments in deployment files
 

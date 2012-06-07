@@ -1,5 +1,5 @@
 
-/** 
+/**
 @page GRAS_tut_tour_callbacks Lesson 4: Attaching callbacks to messages
 
 \section GRAS_tut_tour_callbacks_toc Table of Contents
@@ -7,7 +7,7 @@
  - \ref GRAS_tut_tour_callbacks_attach
  - \ref GRAS_tut_tour_callbacks_handle
  - \ref GRAS_tut_tour_callback_recap
-    
+
 <hr>
 
 Our program is well and good, but if we had to write a longer program,
@@ -27,7 +27,7 @@ The callback returns an integer being its error code, just like the "main()"
 function. Here is the actual code of our callback:
 
 \dontinclude 04-callback.c
-\skip gras_msg_cb_ctx_t 
+\skip gras_msg_cb_ctx_t
 \until end_of_callback
 
 \section GRAS_tut_tour_callbacks_attach Attaching callbacks
@@ -47,7 +47,7 @@ a message. If the delay is negative, the process will block until a message
 arrives. With delay=0, the process just polls for already arrived messages,
 but do not wait at all if none arrived yet. If the delay is greater than 0,
 the process will wait for at most that amount of seconds. If a message
-arrives in the meanwhile, it won't even wait that long. 
+arrives in the meanwhile, it won't even wait that long.
 
 Sometimes, you want to handle all messages arriving in a given period
 without really knowing how much messages will come (this is often the case
@@ -69,7 +69,7 @@ And here is the output (unchanged wrt previous version):
 \include 04-callback.output
 
 Our little example turns slowly to a quite advanced GRAS program. It entails
-most of the mecanism most program will use. 
+most of the mecanism most program will use.
 
 There is one last thing you should know about callbacks: you can stack them,
 ie attach several callbacks to the same message. GRAS will pass it to the

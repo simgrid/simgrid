@@ -5,7 +5,7 @@
       This describes the native to MSG.
 
       \section jMSG_who Who should use this (and who shouldn't)
-      
+
       You should use MSG if you want to study some heuristics for a
       given problem you don't really want to implement. If you want to
       use the C programming language, your are in the right
@@ -29,7 +29,7 @@
 /**
 @defgroup MSG_examples MSG Examples
 @ingroup MSG_API
- 
+
 @htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Examples" --> @endhtmlonly
 
 MSG comes with an extensive set of examples. It is sometimes difficult
@@ -40,7 +40,7 @@ example from which you can learn what you want to.
 
 */
 
-/** 
+/**
 @defgroup msg_simulation   Main MSG simulation Functions
 @ingroup MSG_API
 @brief Describes how to setup and control your simulation.
@@ -61,17 +61,17 @@ details).
 @htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation Control" --> @endhtmlonly
 */
 
-/** @defgroup m_process_management Process Management Functions 
+/** @defgroup m_process_management Process Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the process structure of MSG
  *         (#m_process_t) and the functions for managing it.
  */
-   
+
 /** @defgroup m_host_management Host Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the host structure of MSG
  */
-  
+
 /** @defgroup m_task_management Task Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the task structure of MSG
@@ -80,7 +80,7 @@ details).
  *
  * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
  */
- 
+
 /** @defgroup msg_task_usage Task Actions
  *  @ingroup MSG_API
  *  @brief This section describes the functions that can be used
@@ -92,10 +92,10 @@ details).
  *  @brief This section describes the file structure of MSG
  *         (#msg_file_t) and the functions for managing it. It
  *   is based on POSIX functions.
- */ 
+ */
 
 
-/** 
+/**
 @defgroup msg_trace_driven Trace-driven simulations
 @ingroup MSG_API
 @brief This section describes the functions allowing to build trace-driven simulations.
@@ -105,33 +105,33 @@ details).
 This is very handy when you want to test an algorithm or protocol that
 does nothing unless it receives some events from outside. For example,
 a P2P protocol reacts to requests from the user, but does nothing if
-there is no such event. 
-      
+there is no such event.
+
 In such situations, SimGrid allows to write your protocol in your C
 file, and the events to react to in a separate text file. Declare a
 function handling each of the events that you want to accept in your
 trace files, register them using #MSG_action_register in your main,
 and then use #MSG_action_trace_run to launch the simulation. You can
 either have one trace file containing all your events, or a file per
-simulated process. 
-	 
-Check the examples in <b>examples/msg/actions/actions.c</b> for details.
- 
- */ 
+simulated process.
 
- 
- 
+Check the examples in <b>examples/msg/actions/actions.c</b> for details.
+
+ */
+
+
+
 /**
 @defgroup MSG_LUA      Lua bindings
 @ingroup MSG_API
 @brief Lua bindings to MSG (\ref MSG_API)
 
-@htmlonly <!--  DOXYGEN_NAVBAR_LABEL="LUA bindings" --> @endhtmlonly 
-	  
+@htmlonly <!--  DOXYGEN_NAVBAR_LABEL="LUA bindings" --> @endhtmlonly
+
 This is the lua bindings of the \ref MSG_API interface.
 
 \section lMSG_who Who should use this (and who shouldn't)
-      
+
 If you want to use MSG to study your algorithm, but you don't want to
 use the C language (using \ref MSG_API), then you should use some
 bindings such as this one. The advantage of the lua bindings is that
@@ -148,10 +148,10 @@ the lua bindings. Unfortunately, since doxygen does not support the
 lua modules implemented directly in C as we are using, there is no
 ready to use reference documentation for this module. Even more than
 for the other modules, you will have to dig into the source code of
-the examples to learn how to use it. 
+the examples to learn how to use it.
 
 \section Lua_examples Examples of lua MSG
- 
+
   - \ref MSG_ex_master_slave_lua
   - \ref MSG_ex_master_slave_lua_bypass
   - Also, the lua version of the Chord example (in the source tree)
@@ -165,14 +165,14 @@ the examples to learn how to use it.
 
 We don't remove them because the ability to run old scientific
 code is something important to us. But these functionalities are
-not actively supported anymore. 
+not actively supported anymore.
 
 To access these functions, you should define the relevant option
 at configuration time in ccmake.
  */
 
 
-/** 
+/**
 @defgroup MSG_ex_asynchronous_communications Asynchronous communications
 @ingroup MSG_examples
 
@@ -189,7 +189,7 @@ an external description of the deployment.
  - \ref MSG_ext_icomms_fct_Waitall
  - \ref MSG_ext_icomms_fct_Waitany
 
-<hr> 
+<hr>
 
 \dontinclude msg/icomms/peer.c
 
@@ -201,9 +201,9 @@ an external description of the deployment.
 
 \subsection MSG_ext_icomms_Sender Sender function
 
-The sender send to a receiver an asynchronous message with the function "MSG_task_isend()". Cause this function is non-blocking 
+The sender send to a receiver an asynchronous message with the function "MSG_task_isend()". Cause this function is non-blocking
 we have to make "MSG_comm_test()" to know   if the communication is finished for finally destroy it with function "MSG_comm_destroy()".
-It also available to "make MSG_comm_wait()" which make both of them.  
+It also available to "make MSG_comm_wait()" which make both of them.
 
   C style arguments (argc/argv) are interpreted as:
    - the number of tasks to distribute
@@ -236,12 +236,12 @@ if it is completed or not with "MSG_comm_test()" or wait for the completion "MSG
 
   This function is the core of the simulation and is divided only into 3 parts
   thanks to MSG_create_environment() and MSG_launch_application().
-     -# Simulation settings : MSG_create_environment() creates a realistic 
+     -# Simulation settings : MSG_create_environment() creates a realistic
         environment
-     -# Application deployment : create the processes on the right locations with  
+     -# Application deployment : create the processes on the right locations with
         MSG_launch_application()
      -# The simulation is run with #MSG_main()
-	 
+
   Its arguments are:
 	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
 	- <i>application_file</i>: the name of a file containing a valid surfxml application description
@@ -281,15 +281,15 @@ We can also wait for the arrival of all messages.
 
 */
 
-/** 
+/**
 @defgroup MSG_ex_master_slave Basic Master/Slaves
 @ingroup MSG_examples
-    
+
 Simulation of a master-slave application using a realistic platform
-and an external description of the deployment. 
+and an external description of the deployment.
 
 \section MSG_ex_ms_TOC Table of contents:
-    
+
  - \ref MSG_ext_ms_code
    - \ref MSG_ext_ms_preliminary
    - \ref MSG_ext_ms_master
@@ -298,10 +298,10 @@ and an external description of the deployment.
    - \ref MSG_ext_ms_core
    - \ref MSG_ext_ms_main
  - \ref MSG_ext_ms_helping
-   - \ref MSG_ext_ms_application 
+   - \ref MSG_ext_ms_application
    - \ref MSG_ext_ms_platform
- 
-<hr> 
+
+<hr>
 
 \dontinclude msg/masterslave/masterslave_forwarder.c
 
@@ -314,13 +314,13 @@ and an external description of the deployment.
 \until }
 
 \subsection MSG_ext_ms_master Master code
-    
+
 This function has to be assigned to a m_process_t that will behave as
 the master. It should not be called directly but either given as a
 parameter to #MSG_process_create() or registered as a public function
 through #MSG_function_register() and then automatically assigned to a
 process through #MSG_launch_application().
- 
+
 C style arguments (argc/argv) are interpreted as:
    - the number of tasks to distribute
    - the computation size of each task
@@ -328,21 +328,21 @@ C style arguments (argc/argv) are interpreted as:
    - a list of host that will accept those tasks.
 
 Tasks are dumbly sent in a round-robin style.
-      
+
 \until end_of_master
-    
+
 \subsection MSG_ext_ms_slave Slave code
-    
+
 This function has to be assigned to a #m_process_t that has to behave
 as a slave. Just like the master fuction (described in \ref
 MSG_ext_ms_master), it should not be called directly.
 
 This function keeps waiting for tasks and executes them as it receives them.
-      
+
 \until end_of_slave
 
 \subsection MSG_ext_ms_forwarder Forwarder code
-   
+
 This function has to be assigned to a #m_process_t that has to behave
 as a forwarder. Just like the master function (described in \ref
 MSG_ext_ms_master), it should not be called directly.
@@ -358,22 +358,22 @@ This function keeps waiting for tasks and dispathes them to its slaves.
 
 This function is the core of the simulation and is divided only into 3 parts
 thanks to MSG_create_environment() and MSG_launch_application().
-   -# Simulation settings : MSG_create_environment() creates a realistic 
+   -# Simulation settings : MSG_create_environment() creates a realistic
       environment
-   -# Application deployment : create the processes on the right locations with  
+   -# Application deployment : create the processes on the right locations with
       MSG_launch_application()
    -# The simulation is run with #MSG_main()
-	 
+
 Its arguments are:
 	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
 	- <i>application_file</i>: the name of a file containing a valid surfxml application description
-	
+
 \until end_of_test_all
-      
+
 \subsection MSG_ext_ms_main Main() function
-   
+
 This initializes MSG, runs a simulation, and free all data-structures created by MSG.
-      
+
 \until end_of_main
 
 \section MSG_ext_ms_helping Helping files
@@ -385,11 +385,11 @@ This initializes MSG, runs a simulation, and free all data-structures created by
 \subsection MSG_ext_ms_platform Example of platform file
 
 \include msg/small_platform.xml
-   
+
 */
 
 /** \page MSG_ex_master_slave_lua Master/slave Lua application
-    
+
     Simulation of a master-slave application using lua bindings
        - \ref MSG_ext_ms_code_lua
        - \ref MSG_ext_ms_master_lua
@@ -397,18 +397,18 @@ This initializes MSG, runs a simulation, and free all data-structures created by
        - \ref MSG_ext_ms_core_lua
 
      - \ref MSG_ext_ms_helping
-       - \ref MSG_ext_ms_application 
+       - \ref MSG_ext_ms_application
        - \ref MSG_ext_ms_platform
-       
-       
+
+
       \dontinclude lua/masterslave/master_slave.lua
-      
+
       \section MSG_ext_ms_code_lua Code of the application
-      
+
       \subsection MSG_ext_ms_master_lua Master code
-      
+
             as described ine the C native master/Slave exmaple , this function has to be assigned to a m_process_t that will behave as the master.
- 
+
       Lua style arguments (...) in for the master are interpreted as:
        - the number of tasks to distribute
        - the computation size of each task
@@ -416,52 +416,52 @@ This initializes MSG, runs a simulation, and free all data-structures created by
        - a list of host that will accept those tasks.
 
       Tasks are dumbly sent in a round-robin style.
-      
+
       \until end_of_master
-      
-      
+
+
       \subsection MSG_ext_ms_slave_lua Slave code
-    
+
       This function has to be assigned to a #m_process_t that has to behave as a slave.
       This function keeps waiting for tasks and executes them as it receives them.
-      
+
       \until end_of_slave
          \subsection MSG_ext_ms_core_lua Simulation core
 
       in this section the core of the simulation which start by including the simgrid lib for bindings
       : <i>require "simgrid" </i>
-      
-         -# Simulation settings : <i>simgrid.platform</i> creates a realistic 
-            environment 
-         -# Application deployment : create the processes on the right locations with  
+
+         -# Simulation settings : <i>simgrid.platform</i> creates a realistic
+            environment
+         -# Application deployment : create the processes on the right locations with
             <i>simgrid.application</i>
          -# The simulation is run with <i>simgrid.run</i>
-	 
+
       Its arguments are:
 	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.( first command line argument)
 	- <i>application_file</i>: the name of a file containing a valid surfxml application description ( second commande line argument )
-	
+
       \until simgrid.clean()
-      
+
 */
 
 /** \page MSG_ex_master_slave_lua_bypass Master/slave Bypass Lua application
-    
+
     Simulation of a master-slave application using lua bindings, Bypassing the XML parser
        - \ref MSG_ext_ms_code_lua
        - \ref MSG_ext_ms_master_lua
        - \ref MSG_ext_ms_slave_lua
        - \ref MSG_ext_ms_core_lua
-       
-       
+
+
       \dontinclude lua/console/master_slave_bypass.lua
-      
+
       \section MSG_ext_ms_code_lua Code of the application
-      
+
       \subsection MSG_ext_ms_master_lua Master code
-      
+
             as described ine the C native master/Slave exmaple , this function has to be assigned to a m_process_t that will behave as the master.
- 
+
       Lua style arguments (...) in for the master are interpreted as:
        - the number of tasks to distribute
        - the computation size of each task
@@ -469,21 +469,21 @@ This initializes MSG, runs a simulation, and free all data-structures created by
        - a list of host that will accept those tasks.
 
       Tasks are dumbly sent in a round-robin style.
-      
+
       \until end_of_master
-      
-      
+
+
       \subsection MSG_ext_ms_slave_lua Slave code
-    
+
       This function has to be assigned to a #m_process_t that has to behave as a slave.
       This function keeps waiting for tasks and executes them as it receives them.
-      
+
       \until end_of_slave
          \subsection MSG_ext_ms_core_lua Simulation core
 
       in this section the core of the simulation which start by including the simgrid lib for bindings, then create the resources we need to set up our environment bypassing the XML parser.
       : <i>require "simgrid" </i>
-      
+
 	 -# Hosts : <i>simgrid.Host.new</i> instanciate a new host with an id, and power.
 	 -# Links : <i>simgrid.Link.new</i> instanictae a new link that will require an id, bandwith and latency values.
 	 -# Route : <i>simgrid.Route.new</i> define a route between two hosts specifying the links to use.
@@ -494,6 +494,6 @@ This initializes MSG, runs a simulation, and free all data-structures created by
 	- <i>simgrid.register_application()</i>: saving the deployment settings before running the simualtion.
 
       \until simgrid.clean()
-      
+
 */
 

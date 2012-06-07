@@ -1,4 +1,4 @@
-/** \addtogroup SURF_API 
+/** \addtogroup SURF_API
 
   \section SURF_doc Surf documentation
    - \ref SURF_simulation
@@ -11,7 +11,7 @@
 /** \defgroup SURF_simulation Simulation
     \ingroup SURF_API
     \brief Functions for creating the environment and launching the simulation
-	
+
     This section describes the functions for initialising SURF, performing
     the simulation and exiting SURF.
 */
@@ -19,14 +19,14 @@
 /** \defgroup SURF_actions SURF actions
     \ingroup SURF_API
     \brief This section describes the different datatypes and operations related to the actions in SURF.
-    
+
     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Actions" --> \endhtmlonly
 */
 
 /** \defgroup SURF_resources SURF resources
     \ingroup SURF_API
     \brief This section describes the different datatypes and operations related to the resources in SURF.
-    
+
     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Resources" --> \endhtmlonly
 */
 
@@ -74,7 +74,7 @@
     time elapsed to execute the actions. You can know what actions have changed their state thanks
     to the states sets. For example, if your want to know what actions are finished,
     extract them from \a surf_workstation_resource->common_public->states.done_action_set.
-    Depending on these results, you can schedule other tasks and call surf_solve() again. 
+    Depending on these results, you can schedule other tasks and call surf_solve() again.
 
     When the simulation is over, just call surf_exit() to clean the memory.
 

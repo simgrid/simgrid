@@ -8,7 +8,7 @@
    - \ref GRAS_tut_tour_simpledata_use
  - \ref GRAS_tut_tour_simpledata_example
  - \ref GRAS_tut_tour_simpledata_recap
-   
+
 <hr>
 
 \section GRAS_tut_tour_simpledata_intro Introduction
@@ -37,7 +37,7 @@ other side. Of course, GRAS can do so for you.
 The platforms targeted by GRAS complicate the data transfers since the
 machines may well be heterogeneous. You may want to exchange data between a
 regular x86 machine (Intel and assimilated) and amd64 machine or even a ppc
-machine (Mac). 
+machine (Mac).
 
 The first problem comes from the fact that C datatypes are not always of the
 same size depending on the processor. On 32 bits machines (such as x86 and
@@ -122,7 +122,7 @@ and there is very few thing you should do yourself to get it working.
 Simply, when you declare a message type with gras_msgtype_declare(), you
 should provide a description of the payload data type as last argument. GRAS
 will serialize the data, send it on the socket, convert it on need and
-deserialize it for you automatically. 
+deserialize it for you automatically.
 
 That means that any given message type can only convey a payload of a
 predefined type. You cannot have a message type sometimes conveying an
@@ -144,7 +144,7 @@ check the number of arguments in any way, and the symptom on error is often
 a segfault. Try passing too few parameters to printf with regard to the
 format string if you want an example. Moreover, since you can convey
 structures, it is easy to overcome this limitation: if you want several
-arguments, simply pack them into a structure before doing so. 
+arguments, simply pack them into a structure before doing so.
 
 There is absolutely no limitation on the type of data you can exchange in
 GRAS. If you can build a C representation of your data, you can exchange it
@@ -163,7 +163,7 @@ data:
  - int
  - long int
  - long long int
- 
+
 For all these types, there is three variant: signed, unsigned and the
 version where it is not specified. For example, "signed char", "char" and
 "unsigned char" are all GRAS predefined datatype. The use of the unqualified
@@ -183,13 +183,13 @@ You also have some more advanced types:
    over the network and are thus predefined)
  - #xbt_peer_t (a datatype describing a peer. There is a plenty of situation
    in which you want to exchange data of this type, so this is also predefined)
- 
+
 \section GRAS_tut_tour_simpledata_example Back to our example
 
 We will now modify our example to add some data to the "hello" and the
 "kill" messages. "hello" will convey a string being displayed in the logs
 while "kill" will convey an double indicating the number of seconds to wait
-before dying. 
+before dying.
 
 The first thing is to modify the message declarations to specify that they
 convey a payload. Of course, all nodes have to agree on message definitions,
@@ -229,7 +229,7 @@ the variable passed during the send. Ok, it got serialized, exchanged over
 the network, converted and deserialized, but really, you can consider that
 it's the exact copy of your variable. So, to retrieve the content, you have
 to cast the <tt>void*</tt> pointer to a pointer on your datatype, and then
-derefence it. 
+derefence it.
 
 So, it you want to retrieve a double, you have to cast the pointer using
 <tt>(double*)</tt>, and then dereference the obtained pointer by adding a

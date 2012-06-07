@@ -49,9 +49,9 @@ extern xbt_cfg_t _surf_cfg_set;
 
 int main(int argc, char *argv[]) {
      MSG_global_init(&argc, argv);
-     
+
      xbt_cfg_set_parse(_surf_cfg_set,"Item:Value");
-     
+
      // Rest of your code
 }
 \endcode
@@ -65,7 +65,7 @@ can change the used model at runtime by changing the passed
 configuration. The three main configuration items are given below.
 For each of these items, passing the special \c help value gives
 you a short description of all possible values. Also, \c --help-models
-should provide information about all models for all existing resources. 
+should provide information about all models for all existing resources.
    - \b network/model: specify the used network model
    - \b cpu/model: specify the used CPU model
    - \b workstation/model: specify the used workstation model
@@ -76,7 +76,7 @@ removed; check the values on your simulators for an uptodate
 information. Note that the CM02 model is described in the research report
 <a href="ftp://ftp.ens-lyon.fr/pub/LIP/Rapports/RR/RR2002/RR2002-40.ps.gz">A
 Network Model for Simulation of Grid Application</a> while LV08 is
-described in 
+described in
 <a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>.
 
   - \b LV08 (default one): Realistic network analytic model
@@ -104,13 +104,13 @@ simulators as network models (see \ref pls). In that case, you have
 two extra models, described below, and some \ref options_pls "specific
 additional configuration flags".
   - \b GTNets: Network pseudo-model using the GTNets simulator instead
-    of an analytic model 
+    of an analytic model
   - \b NS3: Network pseudo-model using the NS3 tcp model instead of an
-    analytic model	
+    analytic model
 
 Concerning the CPU, we have only one model for now:
   - \b Cas01: Simplistic CPU model (time=size/power)
-  
+
 The workstation concept is the aggregation of a CPU with a network
 card. Three models exists, but actually, only 2 of them are
 interesting. The "compound" one is simply due to the way our internal
@@ -120,13 +120,13 @@ existing CPU model with an existing network model, but does not allow
 parallel tasks because these beasts need some collaboration between
 the network and CPU model. That is why, ptask_07 is used by default
 when using SimDag.
-  - \b default: Default workstation model. Currently, CPU:Cas01 and 
+  - \b default: Default workstation model. Currently, CPU:Cas01 and
     network:LV08 (with cross traffic enabled)
   - \b compound: Workstation model that is automatically chosen if
     you change the network and CPU models
   - \b ptask_L07: Workstation model somehow similar to Cas01+CM02 but
     allowing parallel tasks
-  
+
 \subsection options_model_optim Optimization level of the platform models
 
 The network and CPU models that are based on lmm_solve (that
@@ -137,14 +137,14 @@ configurations.
       heap in action remaining).
     - \b TI: Trace integration. Highly optimized mode when using
       availability traces (only available for the Cas01 CPU model for
-      now). 
+      now).
     - \b Full: Full update of remaining and variables. Slow but may be
       useful when debugging.
   - items \b network/maxmin_selective_update and
     \b cpu/maxmin_selective_update: configure whether the underlying
     should be lazily updated or not. It should have no impact on the
-    computed timings, but should speed up the computation. 
-    
+    computed timings, but should speed up the computation.
+
 It is still possible to disable the \c maxmin_selective_update feature
 because it can reveal counter-productive in very specific scenarios
 where the interaction level is high. In particular, if all your
@@ -189,12 +189,12 @@ cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
 cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
 \endverbatim
 
-\subsubsection options_model_network_coefs Corrective simulation factors 
+\subsubsection options_model_network_coefs Corrective simulation factors
 
 These factors allow to betterly take the slow start into account.
 The corresponding values were computed through data fitting one the
 timings of packet-level simulators. You should not change these values
-unless you are really certain of what you are doing. See 
+unless you are really certain of what you are doing. See
 <a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>
 for more informations about these coeficients.
 
@@ -216,7 +216,7 @@ pair of interconnected hosts. An example of usable platform is
 available in <tt>examples/msg/gtnets/crosstraffic-p.xml</tt>.
 
 This is activated through the \b network/crosstraffic item, that
-can be set to 0 (disable this feature) or 1 (enable it). 
+can be set to 0 (disable this feature) or 1 (enable it).
 
 Note that with the default workstation model this option is activated by default.
 
@@ -250,7 +250,7 @@ corresponding to the ns3::TcpL4Protocol::SocketType configuration item
 in NS3. The only valid values (enforced on the SimGrid side) are
 'NewReno' or 'Reno' or 'Tahoe'.
 
-When using GTNeTS, two items exist: 
+When using GTNeTS, two items exist:
  - \b gtnets/jitter, that is a double value to oscillate
    the link latency, uniformly in random interval
    [-latency*gtnets_jitter,latency*gtnets_jitter). It defaults to 0.
@@ -260,9 +260,9 @@ When using GTNeTS, two items exist:
 \section options_modelchecking Configuring the Model-Checking
 
 To enable the experimental SimGrid model-checking support the program should
-be executed with the command line argument 
+be executed with the command line argument
 \verbatim
---cfg=model-check:1 
+--cfg=model-check:1
 \endverbatim
 Properties are expressed as assertions using the function
 \verbatim
@@ -288,11 +288,11 @@ should be the most effcient one (please report bugs if the
 auto-detection fails for you). They are sorted here from the slowest
 to the most effient:
  - \b thread: very slow factory using full featured threads (either
-   ptheads or windows native threads) 
+   ptheads or windows native threads)
  - \b ucontext: fast factory using System V contexts (or a portability
    layer of our own on top of Windows fibers)
  - \b raw: amazingly fast factory using a context switching mecanism
-   of our own, directly implemented in assembly (only available for x86 
+   of our own, directly implemented in assembly (only available for x86
    and amd64 platforms for now)
 
 The only reason to change this setting is when the debuging tools get
@@ -318,7 +318,7 @@ as 16 Kib, for example.
 \subsection options_virt_parallel Running user code in parallel
 
 Parallel execution of the user code is only considered stable in
-SimGrid v3.7 and higher. It is described in 
+SimGrid v3.7 and higher. It is described in
 <a href="http://hal.inria.fr/inria-00602216/">INRIA RR-7653</a>.
 
 If you are using the \c ucontext or \c raw context factories, you can
@@ -349,7 +349,7 @@ which value is either:
    primitives.
  - \b busy_wait: not really a synchronisation: the worker threads
    constantly request new contexts to execute. It should be the most
-   efficient synchronisation schema, but it loads all the cores of your 
+   efficient synchronisation schema, but it loads all the cores of your
    machine for no good reason. You probably prefer the other less
    eager schemas.
 
@@ -417,7 +417,7 @@ computations. The \b smpi/cpu_threshold item becomes handy when this
 impacts badly the simulation performance. It specify a threshold (in
 second) under which the execution chunks are not reported to the
 simulation kernel (default value: 1e-6). Please note that in some
-circonstances, this optimization can hinder the simulation accuracy. 
+circonstances, this optimization can hinder the simulation accuracy.
 
 \subsection options_smpi_timing Reporting simulation time
 
@@ -445,7 +445,7 @@ item several times, as in \verbatim
 
 By default, when Ctrl-C is pressed, the status of all existing
 simulated processes is displayed. This is very useful to debug your
-code, but it can reveal troublesome in some cases (such as when the 
+code, but it can reveal troublesome in some cases (such as when the
 amount of processes becomes really big). This behavior is disabled
 when \b verbose-exit is set to 0 (it is to 1 by default).
 
@@ -468,7 +468,7 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 
 - \c network/bandwidth_factor: \ref options_model_network_coefs
 - \c network/coordinates: \ref options_model_network_coord
-- \c network/crosstraffic: \ref options_model_network_crosstraffic 
+- \c network/crosstraffic: \ref options_model_network_crosstraffic
 - \c network/latency_factor: \ref options_model_network_coefs
 - \c network/maxmin_selective_update: \ref options_model_optim
 - \c network/model: \ref options_model_select

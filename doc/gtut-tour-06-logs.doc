@@ -8,7 +8,7 @@
  - \ref GRAS_tut_tour_logs_config
    - \ref GRAS_tut_tour_logs_config_prio
    - \ref GRAS_tut_tour_logs_config_layout
-   
+
 <hr>
 
 \section GRAS_tut_tour_logs_intro Introduction
@@ -43,7 +43,7 @@ One of the strong idea of log4j is that log events get structured to give
 the user a fine control at run time of what gets displayed and what don't.
 For that, <i>log event</i> are produced into <i>log channels</i> at a given
 <i>log priority</i>. Then, you can select the minimal priority an event
-should have on a given channel to get displayed. 
+should have on a given channel to get displayed.
 
 Then, to keep things managable even when the number of channels increase,
 the channels form a tree and properties get inherited from parent channel to
@@ -55,7 +55,7 @@ time of writing): <tt>gras_ddt</tt>, <tt>gras_msg</tt>, <tt>gras_timer</tt>,
 their respective subchannels too). Finally, channels are not just open or
 closed, but filter messages below a given priority (as we said). The
 priorities are defined by type #e_xbt_log_priority_t.
-	    
+
 That is all you really need to know about the logs before diving into
 practice. If you want more information on that topic, refer to the \ref
 XBT_log section, which contains much more information than this page.
@@ -90,7 +90,7 @@ line, it gets automatically added.
 \section GRAS_tut_tour_logs_recap Recapping everything together
 
 Once we changed any fprintf of our code to some of these macros, the program
-may read:  
+may read:
 \include 06-logs.c
 
 And the output now looks better:
@@ -108,7 +108,7 @@ Note that a VERBOSE line appears on client side:
 \include 06-logs.output.verbose
 
 On the contrary, if we want to reduce the amount of logging, we may want to
-do pass <tt>--log=test.thres:error</tt>: 
+do pass <tt>--log=test.thres:error</tt>:
 
 \subsection GRAS_tut_tour_logs_config_layout Choosing how things get displayed
 

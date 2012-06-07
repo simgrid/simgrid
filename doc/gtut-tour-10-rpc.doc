@@ -9,7 +9,7 @@
    - \ref GRAS_tut_tour_rpc_use_a2i_cb
    - \ref GRAS_tut_tour_rpc_use_rest
  - \ref GRAS_tut_tour_rpc_recap
-   
+
 <hr>
 
 \section GRAS_tut_tour_rpc_intro Introduction
@@ -58,11 +58,11 @@ sending back the result (we must use callbacks when doing network
 communication to avoid deadlocks and such issues). The second argument is
 the callback context that the callback got as first argument. It denotes how
 to reach the caller and such. The last argument is a pointer to a variable
-containing the result to pass to the caller. 
+containing the result to pass to the caller.
 
 Having the callee explicitly returning data to the caller allows to free
 data that were allocated to do the job asked by the client, as in this
-example. 
+example.
 
 \skip server_convert_i2a_cb
 \until end_of_convert_callback
@@ -98,7 +98,7 @@ Which produces the expected output:
 \include 10-rpc.output
 
 Now, you know how to send messages, attach callbacks and do RPCs. The next
-lesson will learn you the last missing part of the messaging library: 
+lesson will learn you the last missing part of the messaging library:
 \ref GRAS_tut_tour_explicitwait
 
 */

@@ -12,7 +12,7 @@ CMake is a family of tools designed to build, test and package software. CMake i
 
 \subsubsection install_intro2 Why cmake?
 
-CMake permits to developers to compil projects on different plateforms. Then many tools are embedded like ctest for making test, a link to cdash for vizualise results but also test coverage and bug reports. 
+CMake permits to developers to compil projects on different plateforms. Then many tools are embedded like ctest for making test, a link to cdash for vizualise results but also test coverage and bug reports.
 
 \subsubsection install_intro3 What cmake need?
 
@@ -24,8 +24,8 @@ For Unix and MacOS:
   \li c and c++ compiler
   \li ccmake for graphical used of CMake
   \li cmake <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
-                                                                                                                                                                                               
-On MacOSX some users reported that it is still possible to build with clang, provided that you use the 
+
+On MacOSX some users reported that it is still possible to build with clang, provided that you use the
 following package versions clang3.1 and clang++3.1. If it fails on you, try to use gcc47 (port install gcc47).
 
 For Windows :
@@ -33,14 +33,14 @@ For Windows :
   \li MinGW <a href="http://sourceforge.net/projects/mingw/files/MinGW/">(download page)</a>
   \li perl <a href="http://www.activestate.com/activeperl/downloads">(download page)</a>
   \li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
-  
+
 Note that if you want change the compiler, you can simply specify the environment variables CC and CXX.
 \verbatim
- 	export CC=gcc-4.4
- 	export CXX=g++-4.4
- 	export CC=clang
- 	export CXX=clang++
-\endverbatim 
+	export CC=gcc-4.4
+	export CXX=g++-4.4
+	export CC=clang
+	export CXX=clang++
+\endverbatim
 
 \subsubsection install_cmakeoption1 Liste of options
 
@@ -63,19 +63,19 @@ Note that if you want change the compiler, you can simply specify the environmen
 	enable_latency_bound_tracking 	ON/OFF or TRUE/FALSE or 1/0
 	enable_lib_static		ON/OFF or TRUE/FALSE or 1/0
 	enable_supernovae       	ON/OFF or TRUE/FALSE or 1/0
-	enable_msg_deprecated   	ON/OFF or TRUE/FALSE or 1/0                                                                                                                                                                                                                                                                               
-	enable_print_message    	ON/OFF or TRUE/FALSE or 1/0 
+	enable_msg_deprecated   	ON/OFF or TRUE/FALSE or 1/0
+	enable_print_message    	ON/OFF or TRUE/FALSE or 1/0
 	custom_flags 			<flags>
 	gtnets_path			<path_to_gtnets_directory>
 	ns3_path			<path_to_ns3_directory>
 	CMAKE_INSTALL_PREFIX		<path_to_install_directory>
 	pipol_user			<pipol_username>
 \endverbatim
-                                                                                                                                                          
+
 \subsubsection install_cmakeoption2 Options explaination
 
   \li enable_gtnets : set to true implie that user wants to use gtnets.
-  
+
   \li enable_ns3 : set to true implie that user wants to use ns3.
 
   \li enable_lua : set to true implie that user wants to add lua langage into simgrid compilation.
@@ -86,7 +86,7 @@ Note that if you want change the compiler, you can simply specify the environmen
 
   \li enable_smpi : Set to true if you want to use smpi lib. Actually on simgrid v3.4.1 Mac doesn't support lib smpi.
 
-  \li enable_maintainer_mode : set to true it remakes some files. 
+  \li enable_maintainer_mode : set to true it remakes some files.
 
   \li enable_tracing : To enable the generation of simulation traces for visualization.
 
@@ -97,27 +97,27 @@ Note that if you want change the compiler, you can simply specify the environmen
   \li enable_model-checking : Enable the model checking when set to true.
 
   \li enable_debug : If enable_debug is set to 'off' Simgrid compil flag has '-DNDEBUG' option.
-  
-  \li enable_jedule : To enable jedule mode, which creates visualizations of task schedules with Simdag. 
-  
+
+  \li enable_jedule : To enable jedule mode, which creates visualizations of task schedules with Simdag.
+
   \li enable_latency_bound_tracking : Set to on if you want to be warned when communications are limited by round trip time.
-  
+
   \li enable_lib_static : Enable generated Simgrid and smpi static libraries.
-  
+
   \li enable_supernovae : Set to true make one file for each lib and compile with those generated files.
-  
-  \li enable_msg_deprecated : Simgrid is compiled with msg deprecated functions.                                                                                                                                                                                                                                                                              
-  
+
+  \li enable_msg_deprecated : Simgrid is compiled with msg deprecated functions.
+
   \li enable_print_message : When set to true configuration print more debug output.
-  
+
   \li custom_flags : If user wants to use a specific flag during compilation, give here.
 
   \li gtnets_path : Path to gtnets install directory (ex /usr)
-  
+
   \li ns3_path : Path to ns3 install directory (ex /usr)
 
   \li CMAKE_INSTALL_PREFIX : Path where are installed lib/ doc/ and include/ directories (ex /usr/local)
-  
+
   \li pipol_user : specify your pipol username if you want to use the pipol-remote command.
 
 \subsubsection install_cmakeoption3 Initialisation
@@ -137,7 +137,7 @@ enable_coverage 		off
 enable_memcheck 		off
 enable_model-checking		off
 enable_jedule 	 		off
-enable_latency_bound_tracking 	off 
+enable_latency_bound_tracking 	off
 enable_lib_static		off
 CMAKE_INSTALL_PREFIX		/usr/local
 custom_flags			null
@@ -147,7 +147,7 @@ pipol_user			null
 
 \subsubsection install_cmakeoption4 Option's cache and how to reset?
 
-When options have been set they are keep into a cache file named "CMakeCache.txt". So if you want 
+When options have been set they are keep into a cache file named "CMakeCache.txt". So if you want
 reset values you just delete this file located to the project directory.
 
 \subsection install_cmakecompilation Cmake compilation
@@ -210,7 +210,7 @@ ming32-make				buill all targets for windows
 (g)make VERBOSE=1		build all targets and print build command lines
 make check			test all targets and summarize
 make dist			make the distrib
-make distcheck			check the dist (make + make dist + make check) 
+make distcheck			check the dist (make + make dist + make check)
 (g)make install 		install the project (doc/ bin/ lib/ include/)
 (g)make uninstall		uninstall the project (doc/ bin/ lib/ include/)
 (g)make clean			clean all targets
@@ -228,7 +228,7 @@ ctest -D Continuous(Test|Coverage|MemCheck|Submit)
 ctest -D Experimental
 ctest -D Experimental(Start|Update|Configure|Build)
 ctest -D Experimental(Test|Coverage|MemCheck|Submit)
-ctest -D Nightly				
+ctest -D Nightly
 ctest -D Nightly(Start|Update|Configure|Build)
 ctest -D Nightly(Test|Coverage|MemCheck|Submit)
 ctest -D NightlyMemoryCheck
@@ -238,13 +238,13 @@ If you want to test before make a commit you can simply make "ctest -D Experimen
 
 \subsection install_cmakeinstall How to install with cmake?
 
-\subsubsection install_cmakeinstall1 From Git. 
+\subsubsection install_cmakeinstall1 From Git.
 
 \verbatim
 git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid
 cd simgrid
 cmake -Denable_maintainer_mode=on -DCMAKE_INSTALL_PREFIX=/home/navarrop/Bureau/install_simgrid ./
-make 
+make
 make install
 \endverbatim
 
@@ -264,13 +264,13 @@ make install
 
 \subsubsection install_cmakehowto1 Add an executable or examples.
 
-If you want make an executable you have to create a CMakeList.txt to the src directory. 
+If you want make an executable you have to create a CMakeList.txt to the src directory.
 You must specified where to create the executable, source list, dependencies and the name of the binary.
 
 \verbatim
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "./")			
+set(EXECUTABLE_OUTPUT_PATH "./")
 set(LIBRARY_OUTPUT_PATH "${CMAKE_HOME_DIRECTORY}/lib")
 
 add_executable(get_sender get_sender.c)					#add_executable(<name_of_target> <src list>)
@@ -279,7 +279,7 @@ add_executable(get_sender get_sender.c)					#add_executable(<name_of_target> <sr
 target_link_libraries(get_sender simgrid m pthread) 	#target_link_libraries(<name_of_targe> <dependencies>)
 \endverbatim
 
-Then you have to modified <project/directory>/buildtools/Cmake/MakeExeLib.cmake and add 
+Then you have to modified <project/directory>/buildtools/Cmake/MakeExeLib.cmake and add
 this line :
 \verbatim
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
@@ -315,7 +315,7 @@ Before start the installation, you need to be sure to have the following depende
   \li MinGW <a href="http://sourceforge.net/projects/mingw/files/MinGW/">(download page)</a>
   \li perl <a href="http://www.activestate.com/activeperl/downloads">(download page)</a>
   \li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
-  
+
 Then download the package <a href="https://gforge.inria.fr/frs/?group_id=12">SimGrid Installer</a>,
 execute it and follow instructions.
 
@@ -323,7 +323,7 @@ execute it and follow instructions.
 <a href="win_install_01.png" border=0><img src="win_install_01.png" border=0></a>
 \endhtmlonly
 
-Step 1: Accept the license. 
+Step 1: Accept the license.
 
 \htmlonly
 <a href="win_install_02.png" border=0><img src="win_install_02.png" border=0></a>
@@ -336,7 +336,7 @@ Step 2: Select packets to install.
 \endhtmlonly
 
 Step 3: Choice where to install packets previously selected. Please don't use spaces in path.
- 
+
 \htmlonly
 <a href="win_install_04.png" border=0><img src="win_install_04.png" border=0></a>
 \endhtmlonly
@@ -357,7 +357,7 @@ Step 6: Restart your computer to take in consideration environment variables.
 
 \subsection install_Win_compile1 Compile a project "HelloWorld"
 
-In the SimGrid install directroy you should have an HelloWorld project to explain you how to start 
+In the SimGrid install directroy you should have an HelloWorld project to explain you how to start
 compiling a source file. There are:
 \verbatim
 - HelloWorld.c		The example source file.
@@ -375,19 +375,19 @@ Now let's compil this example:
 \li You should obtain a runnable example ("HelloWorld.exe").
 
 For compiling your own code you can simply copy the HelloWorld project and rename source name. It will
-create a target with the same name of the source. 
+create a target with the same name of the source.
 
 \subsection install_Win_compile2 How to add and compile a new example
 
 \li Put your source file into the helloWord directory.
 \li Edit CMakeLists.txt by removing the Find Targets section and add those two lines into this section
-\verbatim 
+\verbatim
 ################
 # FIND TARGETS #
 ################
 add_executable(TARGET_NAME SOURCES) 		#It creates a target called 'TARGET_NAME.exe' with the sources 'SOURCES'
 target_link_libraries(TARGET_NAME simgrid pcre) #Links TARGET_NAME with simgrid and pcre
-\endverbatim	
+\endverbatim
 \li To initialize and build your project, you'll need to run
 \verbatim
 cmake -G"MinGW Makefiles" \<path_to_HelloWorld_project\>
@@ -395,7 +395,7 @@ cmake -G"MinGW Makefiles" \<path_to_HelloWorld_project\>
 \li Run "mingw32-make"
 \li You should obtain "TARGET_NAME.exe".
 
-\subsection install_Win_ruby Setup a virtualbox to use SimGrid-Ruby on windows 
+\subsection install_Win_ruby Setup a virtualbox to use SimGrid-Ruby on windows
 
 Allan Espinosa made these set of Vagrant rules available so that you
 can use the SimGrid Ruby bindings in a virtual machine using
@@ -450,7 +450,7 @@ Makefile. It is a generic Makefile that we have used many times with
 our students when we teach the C language.
 
 \verbatim
-all: masterslave 
+all: masterslave
 masterslave: masterslave.o sched.o
 
 INSTALL_PATH = $$HOME
@@ -461,17 +461,17 @@ PEDANTIC_PARANOID_FREAK =       -O0 -Wshadow -Wcast-align \
 				-Wmissing-noreturn -Wredundant-decls -Wnested-externs \
 				-Wpointer-arith -Wwrite-strings -finline-functions
 REASONABLY_CAREFUL_DUDE =	-Wall
-NO_PRAYER_FOR_THE_WICKED =	-w -O2 
+NO_PRAYER_FOR_THE_WICKED =	-w -O2
 WARNINGS = 			$(REASONABLY_CAREFUL_DUDE)
 CFLAGS = -g $(WARNINGS)
 
 INCLUDES = -I$(INSTALL_PATH)/include
 DEFS = -L$(INSTALL_PATH)/lib/
-LDADD = -lm -lsimgrid 
-LIBS = 
+LDADD = -lm -lsimgrid
+LIBS =
 
 %: %.o
-	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS) $(LDADD) -o $@ 
+	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS) $(LDADD) -o $@
 
 %.o: %.c
 	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<

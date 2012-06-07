@@ -1,5 +1,5 @@
 
-/** 
+/**
 @page GRAS_tut_tour_simpleexchange Lesson 2: Exchanging simple messages
 
 \section GRAS_tut_tour_simpleexchange_toc Table of Contents
@@ -7,8 +7,8 @@
  - \ref GRAS_tut_tour_simpleexchange_socks
  - \ref GRAS_tut_tour_simpleexchange_exchange
  - \ref GRAS_tut_tour_simpleexchange_recaping
-    
-<hr>      
+
+<hr>
 
 \section GRAS_tut_tour_simpleexchange_msgtype Declaring the messages to be exchanged
 
