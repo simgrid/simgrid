@@ -13,7 +13,7 @@
    - \ref GRAS_tut_tour_message_recaping_rpc_aside2
    - \ref GRAS_tut_tour_message_recaping_rpc_aside3
  - \ref GRAS_tut_tour_message_recaping_sync
-   
+
 <hr>
 
 This is the end of the first big part of this tutorial. At this point, you
@@ -25,16 +25,16 @@ types. But for now, it is time to recap what we have seen so far.
 \section GRAS_tut_tour_message_recaping_intro Message passing compared to procedure call
 
 In GRAS, you pass message to get remote component to achieve some work for
-you. In some sense, this is very similar to the good old procedure 
+you. In some sense, this is very similar to the good old procedure
 abstraction: you call some procedure to get <i>it</i> doing some work for
 you. Looking closer at this good old abstraction, we notice 4 call semantics:
 
  - <tt>void procedure(void)</tt> this is a procedure accepting no argument
-   and returning no result (<b>type 1</b>).   
+   and returning no result (<b>type 1</b>).
  - <tt>void procedure2(int i)</tt> this is a procedure accepting an
-   argument, but returning no result (<b>type 2</b>).  
+   argument, but returning no result (<b>type 2</b>).
  - <tt>int function(void)</tt> this is a function accepting no argument, but
-   returning a result (<b>type 3</b>).   
+   returning a result (<b>type 3</b>).
  - <tt>int function(int i)</tt> this is a function accepting an argument,
    and returning a result (<b>type 4</b>).
 
@@ -94,7 +94,7 @@ to attach a callback to the message. Of course, you usualy don't want to do
 so on every nodes, but only on "servers" or "workers" or such. First of all,
 you need to declare the callback itself. This function that will be executed
 on request incoming must follow a very specific prototype (the same
-regardless of the call semantic): 
+regardless of the call semantic):
 
 \verbatim
 int callback_name(gras_msg_cb_ctx_t context, void *payload) \endverbatim
@@ -125,7 +125,7 @@ int **myvariable = *(int ** *) payload; \endverbatim
 
 If your message is of semantic T3 or T4 (ie, it returns a value to the
 caller), then you must use the function gras_msg_rpcreturn() to do so. It
-takes three arguments: 
+takes three arguments:
   - a timeout to use (so that the server don't get frozen if the client is
     unresponsive)
   - the message context (the variable ctx of type #gras_msg_cb_ctx_t you got
@@ -135,7 +135,7 @@ After it returned the result this way, you should free any data you
 mallocated in your callback (including the data you returned to the caller:
 GRAS made a copy of it during the call to gras_msg_rpcreturn()).
 
-The callback is expected to return 0 if ok, as detailed in 
+The callback is expected to return 0 if ok, as detailed in
 \ref GRAS_tut_tour_message_recaping_rpc_aside1.
 
 \subsection GRAS_tut_tour_message_recaping_rpc4 4. Attaching callbacks to the messages

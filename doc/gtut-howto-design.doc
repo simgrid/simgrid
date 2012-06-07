@@ -1,5 +1,5 @@
 /** @defgroup GRAS_howto_design HOWTO design a GRAS application
-    @ingroup GRAS_howto HOWTOs 
+    @ingroup GRAS_howto HOWTOs
 
 This page tries to give some hints on how to design a GRAS application. The
 provided model and functionnalities are somehow different from the other
@@ -29,7 +29,7 @@ which somehow follows the guidelines given here.
 \section GRAS_howto_design_what What is a GRAS application
 
 As explained in \ref GRAS_tut_intro, you should see a GRAS application as a
-distributed service. There is two main parts: 
+distributed service. There is two main parts:
  - a user API, composed of regular functions offering services to the users
  - a set of nodes (or processes, or agents, name them as you want)
    collaborating and exchanging messages to achieve the requested service on
@@ -55,7 +55,7 @@ about their syntax and semantic.
 
 Note that we are not speaking about the amount of processes in your
 application, but rather on the type of processes. The amount of distinct
-roles. 
+roles.
 
 Depending on your application, there may be only one type (for example in a
 peer-to-peer system), two types of processes (for example in a client/server
@@ -85,21 +85,21 @@ its name) and a type description describing what kind of data you can
 include in the message. The message type is a qualitative information
 "someone asked you to run that function" while the payload is the
 quantitative information (the arguments to the function).
-   
+
 A rule of thumb: <b>A given message type have only one semantic meaning, and
 one syntaxic payload datatype</b>. If you don't do so, you have a problem.
-   
+
    - If the same message type may have two semantic value depending on some
      fields of the payload, I'd say that you used MPI too much before. You
      should use the full power of the GRAS messaging functions by using
      several message types. It will simplify your code and yield better
      performance.
-		     		     
+
    - You shouldn't have a given message type with differing payload
      datatypes. It is possible to do so (using gras_datadesc_ref_generic()),
      but it's quite painful, and is rarely what you really want. Are you
      sure you don't want to split these messages in two separate types?
-       
+
 \subsubsection GRAS_howto_design_design_protocol_cb Message callbacks
 
 Also sketch what your processes should do when they get the given message.
@@ -108,7 +108,7 @@ implementation. But you should first go through a design phase of the
 application level-protocol, were these action remain simplistic. Also
 identify the process-wide globals needed to write the callbacks (even if it
 can be later).
-     
+
 
 \section GRAS_howto_design_implem The implementation phase
 
@@ -116,7 +116,7 @@ can be later).
 
 Most of the time, you will find tons of specific cases you didn't thought
 about in the design phase, and going from a code sketch to an actual
-implementation is often quite difficult. 
+implementation is often quite difficult.
 
 You will probably need some process-wide globals to store some state of your
 processes. See \ref GRAS_tut_tour_globals on need.
@@ -129,7 +129,7 @@ easy.
 \subsection GRAS_howto_design_implem_init Implement the initialization code
 
 You must write some initialization code for all the process kinds of your
-application. 
+application.
 
 You may want to turn your code into a clean GRAS library by using the adhoc
 mecanism, but unfortunately, it's not documented yet. Worse, there is two
@@ -170,7 +170,7 @@ when going outside of the simulator. Fix'em all before going further.
 
 If you find you've found a discrepency between both implementation of GRAS,
 please drop us a mail. That would be a bug.
-   
+
 \subsection GRAS_howto_design_test_dist Test it in a distributed setting
 
 You are now ready for the big jump...

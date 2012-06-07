@@ -1,11 +1,11 @@
 /** @defgroup GRAS_howto HOWTOs
     @ingroup GRAS_tut
-			  
+
 This page tries to explain how to use the GRAS framework. It does not focus
 on specific functionalities (which are detailed in the initiatic tour), but
 rather on global aspects. Here is the list of existing howtos for now:
 
  - \ref GRAS_howto_design
  - I plan to write a document on how to debug a GRAS application, one day.
- 
+
 */

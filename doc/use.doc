@@ -6,7 +6,7 @@ If you don't know were to look to start with, you should probably have
 a look at the following presentation first to get the basic concepts.
 Afterward, you probably want to proceed to the \ref MSG_API. Of
 course, if you're curious or if you know what you want, you may prefer
-to go to \ref SMPI_API, or even \ref GRAS_API. 
+to go to \ref SMPI_API, or even \ref GRAS_API.
 
 The scientific bases of the SimGrid project are presented in a 3 ou 4
 hours-long tutorial. It can be found at the following locations.
@@ -17,7 +17,7 @@ hours-long tutorial. It can be found at the following locations.
 \includepdf[nup=2x4,pages=1-]{../webcruft/simgrid-101.pdf}
 \endlatexonly
 
-\htmlonly 
+\htmlonly
 <script language="javascript">
 var base="simgrid-101",max=30,cur=1;
 function pad(){ return cur < 10 ? '00' + cur : cur < 100 ? '0' + cur : '' + cur; }
@@ -30,7 +30,7 @@ function slidemove(dir) {
 </script>
 
 <div id='blah' style='text-align:center;'>
-  <div id='practical-simgrid' > 
+  <div id='practical-simgrid' >
     <img src='simgrid-101_001.png' id="display" onclick='slidemove(1)'/>
     <br/>
     <form>
@@ -38,12 +38,12 @@ function slidemove(dir) {
       &nbsp;&nbsp;
       <span id="nums">1/30</span>&nbsp;&nbsp
       <input type='button' value='Next &raquo;' onclick="slidemove(1)"/>
-      <br/>  
+      <br/>
       <a href='simgrid-101.pdf'>Download PDF version</a>
-    </form>  
+    </form>
   </div>
 </div>
-\endhtmlonly		  
+\endhtmlonly
 
 
 */

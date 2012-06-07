@@ -5,7 +5,7 @@
  - \ref GRAS_tut_tour_timers_intro
  - \ref GRAS_tut_tour_timers_use
  - \ref GRAS_tut_tour_timers_recap
-   
+
 <hr>
 
 \section GRAS_tut_tour_timers_intro Introduction
@@ -25,7 +25,7 @@ coordinator?
 
 One solution is to have the members re-register periodically, so that the
 coordinator can detect the processes which didn't do so since a while, and
-dismiss them. 
+dismiss them.
 
 To implement this in GRAS, we need some more functions: gras_timer_repeat()
 allows to specify a periodic action and gras_timer_delay() allows to get an

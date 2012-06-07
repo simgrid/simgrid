@@ -1,4 +1,4 @@
-/** @addtogroup SD_API 
+/** @addtogroup SD_API
 
   \section SD_func Offered functionnalities
    - \ref SD_datatypes_management
@@ -10,7 +10,7 @@
 
 */
 
-/** @defgroup SD_datatypes_management SD Data Types 
+/** @defgroup SD_datatypes_management SD Data Types
     @ingroup SD_API
     @brief This section describes the different datatypes provided by SD.
  */

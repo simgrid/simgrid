@@ -3,11 +3,11 @@
 #####################################################################
 
 /** \addtogroup AMOK_API
- * 
- *  @{ */     
+ *
+ *  @{ */
 
-       /** \defgroup AMOK_bw      Bandwidth        */       
-       /** \defgroup AMOK_pm      Peer Management  */       
+       /** \defgroup AMOK_bw      Bandwidth        */
+       /** \defgroup AMOK_pm      Peer Management  */
 
 /** @} */
 

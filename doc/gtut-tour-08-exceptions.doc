@@ -5,7 +5,7 @@
  - \ref GRAS_tut_tour_exceptions_intro
  - \ref GRAS_tut_tour_exceptions_use
  - \ref GRAS_tut_tour_exceptions_recap
-   
+
 <hr>
 
 \section GRAS_tut_tour_exceptions_intro Introduction
@@ -31,7 +31,7 @@ SimGrid and GRAS are written in C, and everybody knows that there is no
 exception in C but only in C++, Java and such. This is true, exceptions are
 not part of the C language, but this is such a great tool that we
 implemented an exception mecanism as part of the SimGrid library (with
-setjmp and longjmp, for the curious). 
+setjmp and longjmp, for the curious).
 
 Being "home-grown" make our exception mecanic both stronger and weaker at
 the same time. First it is weaker because, well, we are more limitated
@@ -52,8 +52,8 @@ its own arguments. So, you may have something like the following:
 \verbatim THROWF(system_error, 0, "Cannot connect to %s:%d because of %s", hostname, port, reason);\endverbatim
 
 Then, you simply add a #TRY/#CATCH block around your code:
-\verbatim TRY{ 
-  /* your code */ 
+\verbatim TRY{
+  /* your code */
 }
 CATCH(e) {
   /* error handling code */
@@ -84,7 +84,7 @@ misusing the exceptions.
 So, as you can see, you don't want to include large sections of your program
 in TRY blocks. If you do so, it's quite sure that one day, you'll do a break
 or a return within this block. And believe me, finding such typos is a real
-pain. 
+pain.
 
 If you are suspecting this kind of error, I made a little script for you:
 check <tt>tools/xbt_exception_checker</tt> from the CVS. Given a set of C
@@ -134,7 +134,7 @@ bails out because of an uncatched exception, it displays its backtrace just
 like a JVM would do (ok, it'a a bit cruder than the one of the JVM, but
 anyway). For each function frame of the calling stack, it displays the
 function name and its location in the source files (if it manage to retrieve
-it). Don't be jalous, you can display such stacks wherever you want with 
+it). Don't be jalous, you can display such stacks wherever you want with
 xbt_backtrace_display() ;)
 
 Unfortunately, this feature is only offered under Linux for now since I have

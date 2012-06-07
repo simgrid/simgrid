@@ -1,5 +1,5 @@
 /** @addtogroup XBT_API
- 
+
    The XBT functionalities fall into several categories:
     - Portability support
       - \ref XBT_syscall
@@ -11,9 +11,9 @@
       - \ref XBT_config
       - \ref XBT_mallocator
     - Data structures
-      - \ref XBT_dynar 
+      - \ref XBT_dynar
       - \ref XBT_dict
-      - \ref XBT_set 
+      - \ref XBT_set
         Data are associated to both an ID (0(1) search) and a name
       - \ref XBT_fifo
       - \ref XBT_queue
@@ -22,7 +22,7 @@
       - \ref XBT_peer
     - \ref XBT_misc
       - \ref XBT_graph
- 
+
   @{ */
    /** @defgroup XBT_grounding   Grounding features */
    /** @defgroup XBT_adt         Usual data structures */
@@ -33,12 +33,12 @@
 ########################################################################
 
 
-/** @addtogroup XBT_grounding 
- 
+/** @addtogroup XBT_grounding
+
   Grounding features are the basement of SimGrid. You'll find portable (and
   secure) wrappers to the malloc-like functions, logging support, error
   reporting features, etc.
- 
+
   @{ */
 
      /** @defgroup XBT_syscall Malloc and friends */
@@ -54,10 +54,10 @@
 ########################################################################
 
 /** @addtogroup XBT_adt
- 
+
   Here are the basic data containers that every C programmer rewrites one day.
   You won't need to do so yourself, you lucky one, because we did it for you.
- 
+
   @{ */
      /** @defgroup XBT_dynar  Dynar: generic dynamic array */
      /** @defgroup XBT_dict   Dict: generic dictionnary */
@@ -65,16 +65,16 @@
      /** @defgroup XBT_fifo   Fifo: generic workqueue */
      /** @defgroup XBT_swag   Swag: O(1) set datatype */
      /** @defgroup XBT_heap Heap: generic heap data structure */
-/** @} */ 
+/** @} */
 
 
 ########################################################################
 
 /** @addtogroup XBT_misc
- 
+
   Here are several general purposes library components designed specially
   for you, you lucky one.
- 
+
 
   @{ */
      /** @defgroup XBT_graph General purpose graph library */
@@ -85,11 +85,11 @@
  * ************************* */
 
  /** \defgroup XBT_context Portable context implementation
-  *  \brief Contexts are a higher level system than <tt>setjump/longjmp</tt> 
+  *  \brief Contexts are a higher level system than <tt>setjump/longjmp</tt>
   *  for non-preemptible threads.
   *
-  *  You shouldn't use it directly since it is merely intended to ease the 
-  *  implementation of the several programmation environment of the 
+  *  You shouldn't use it directly since it is merely intended to ease the
+  *  implementation of the several programmation environment of the
   *  SimGrid toolkit (namely, \ref MSG_API, \ref GRAS_API and \ref SMPI_API).
   *
   *  You should use those environments instead.

@@ -6,14 +6,14 @@ It is possible to use a packet-level network simulator
 instead of the default flow-based simulation. You may want to use such
 an approach if you have doubts about the validity of the default model
 or if you want to perform some validation experiments. At the moment,
-we support the GTNetS simulator and since version 3.6.2, ns-3. 
+we support the GTNetS simulator and since version 3.6.2, ns-3.
 
 
 \section pls_simgrid_configuration_gtnets Using GTNetS
 
 
 <i>
-To enable GTNetS model inside SimGrid it is needed to patch the GTNetS simulator source code 
+To enable GTNetS model inside SimGrid it is needed to patch the GTNetS simulator source code
 and build/install it from scratch
 </i>
 
@@ -29,7 +29,7 @@ cd GTNetS
 
 \verbatim
 unzip gtnets-current.zip
-tar zxvf gtnets-current-patch.tgz 
+tar zxvf gtnets-current-patch.tgz
 cd gtnets-current
 cat ../00*.patch | patch -p1
 \endverbatim
@@ -42,7 +42,7 @@ cat ../AMD64-FATAL-Removed-DUL_SIZE_DIFF-Added-fPIC-compillin.patch | patch -p1
 
  - <b>Compile GTNetS</b>
 
-   Due to portability issues it is possible that GTNetS does not compile in your architecture. The patches furnished in SimGrid SVN repository are intended for use in Linux architecture only. Unfortunately, we do not have the time, the money, neither the manpower to guarantee GTNetS portability. We advice you to use one of GTNetS communication channel to get more help in compiling GTNetS. 
+   Due to portability issues it is possible that GTNetS does not compile in your architecture. The patches furnished in SimGrid SVN repository are intended for use in Linux architecture only. Unfortunately, we do not have the time, the money, neither the manpower to guarantee GTNetS portability. We advice you to use one of GTNetS communication channel to get more help in compiling GTNetS.
 
 
 \verbatim
@@ -78,7 +78,7 @@ cp -fr SRC/*.h /<userhome>/usr/include/gtnets
 
 
  - <b>Enable GTNetS support in SimGrid</b>
- 
+
 In order to enable gtnets with simgrid you have to give where is gtnets. (path to \<gtnets_path\>/lib and \<gtnets_path\>/include)
 
 \verbatim
@@ -86,7 +86,7 @@ cmake . -Denable_gtnets=ON -Dgtnets_path=/<userhome>/usr
 \endverbatim
 
  - <b>Once you have followed all the instructions for compiling and
-   installing successfully you can activate this feature at 
+   installing successfully you can activate this feature at
    runntime with the following options:</b>
 
 \verbatim
@@ -102,16 +102,16 @@ ctest -R gtnets
 gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=network_model:GTNets
 \endverbatim
 
- 
- A long version of this <a href="http://gforge.inria.fr/docman/view.php/12/6283/GTNetS HowTo.html">HowTo</a>  it is available 
+
+ A long version of this <a href="http://gforge.inria.fr/docman/view.php/12/6283/GTNetS HowTo.html">HowTo</a>  it is available
 
 
  More about GTNetS simulator at <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html">GTNetS Website</a>
 
 
  - <b>DISCLAIMER</b>
- The patches provided by us worked successfully with GTNetS found 
- <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/software/gtnets-current.zip">here</a>, 
+ The patches provided by us worked successfully with GTNetS found
+ <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/software/gtnets-current.zip">here</a>,
  dated from 12th June 2008. Due to the discontinuing development of
  GTNetS it is impossible to precise a version number. We STRONGLY recommend you
  to download and install the GTNetS version found in SimGrid repository as explained above.
@@ -119,9 +119,9 @@ gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=network_model:GTNe
 \section pls_simgrid_configuration_ns3 Using NS3
 
 It is possible to use discrete-event network simulator <a href="http://www.nsnam.org/">(ns-3)</a> for Internet systems
-instead of the default one. 
+instead of the default one.
 
-A ns-3 platform is created according to the platform file you provide in SimGrid format. However from this configuration, we had to set up some extra parameters : 
+A ns-3 platform is created according to the platform file you provide in SimGrid format. However from this configuration, we had to set up some extra parameters :
 
 <ul>
 <li>
@@ -133,8 +133,8 @@ Second, routing used inside ns-3 is a global and static one, relying on a shorte
 </li>
 
 <li>
-Third, we also choose to restrict the way your platform is built : end hosts cannot have more than one interface card (so, only one &lt;link&gt; in your SimGrid platform should link 
-an end host to the platform ; if not, your end host will be considered as a router. 
+Third, we also choose to restrict the way your platform is built : end hosts cannot have more than one interface card (so, only one &lt;link&gt; in your SimGrid platform should link
+an end host to the platform ; if not, your end host will be considered as a router.
 </li>
 
 </ul>
@@ -159,10 +159,10 @@ cd ns-allinone-3.12.1/ns-3.12.1/
 \endverbatim
 
 After install ns-3 you should have directories into your "ns-3_install_directory":
-	\li include/ns3/ 
-	\li lib/ 
+	\li include/ns3/
+	\li lib/
 	\li bin/ (with 3.12)
-	
+
 You also need to add to the LD_LIBRARY_PATH : "ns-3_install_directory/lib".
 
 - <b>Enable ns-3 support on SimGrid</b>
@@ -186,15 +186,15 @@ Configuration of package `simgrid' on arch (=4):
 	 Compiler: c   :	/usr/bin/gcc
 	        version:	4.6.1
 
-	       CFlags  :	-O3 -finline-functions -funroll-loops -fno-strict-aliasing -L/usr/lib/x86_64-linux-gnu -I/usr/include 
+	       CFlags  :	-O3 -finline-functions -funroll-loops -fno-strict-aliasing -L/usr/lib/x86_64-linux-gnu -I/usr/include
 	       				-L/home/navarrop/Install/ns3-3.10/lib -I/home/navarrop/Install/ns3-3.10/include -g3  -D_NS3_3_10
-	       CPPFlags:	-I/home/navarrop/Install/ns3-3.10/include -L/home/navarrop/Install/ns3-3.10/lib 
+	       CPPFlags:	-I/home/navarrop/Install/ns3-3.10/include -L/home/navarrop/Install/ns3-3.10/lib
 
 	Compile Gtnets : 	0
 	Compile NS-3   : 	1 ---------------------> Be sure this option is "1" otherwise ns-3 is not activated
-	Gtnets path    : 	
+	Gtnets path    :
 	NS-3 path      : 	/home/navarrop/Install/ns3-3.10
-	Compile Lua    :    	
+	Compile Lua    :
 	Compile Smpi   :    	OFF
 	Compile Static :    	OFF
 	Compile pcre   :    	AUTO
@@ -205,11 +205,11 @@ Configuration of package `simgrid' on arch (=4):
 	Tracing mode   :	OFF
 	Jedule  mode   :	OFF
 	Latency bound  :	OFF
-        Graphviz mode  :        
+        Graphviz mode  :
 
 	Simgrid dependencies: 	-lm -lpcre -lpthread -lns3 -lrt
 	Gras dependencies   : 	-lm -lpthread -lrt
-	Smpi dependencies   : 	
+	Smpi dependencies   :
 
 	INSTALL_PREFIX: 	/usr/local
 -- Configuring done

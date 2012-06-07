@@ -12,7 +12,7 @@
      - \ref GRAS_tut_tour_explicitwait_code_smain
      - \ref GRAS_tut_tour_explicitwait_code_cmain
  - \ref GRAS_tut_tour_explicitwait_recap
-   
+
 <hr>
 
 \section GRAS_tut_tour_explicitwait_intro Introduction
@@ -21,14 +21,14 @@ The messaging primitive we have seen so far are somehow limited on the
 receiver side. You have to attach a callback to a message type, and then go
 into an infinite loop. Sometimes, you want to block your execution until a
 message of a given type arrives. This often occures when you want to deal
-with synchronization problems. 
+with synchronization problems.
 
 As an example, we will study a simple centralized algorithm for mutual
 exclusion. In short, when the client wants to enter the critical section
 (CS), it sends a specific message to the server, and waits for the server to
 answer back with another message. While the client is "locked" waiting for
 the message, nothing else should occure for it (no callback or timer should
-be served). 
+be served).
 
 The simplest interface to explicit message waiting allows you to specify the
 message type you are willing to accept (using gras_msg_wait()). But you can
@@ -46,12 +46,12 @@ next gras_msg_handle() or gras_msg_wait().
 \subsection GRAS_tut_tour_explicitwait_algo GRAS modelization of the algorithm
 
 This section naturally provides an example of how to use gras_msg_wait(),
-but it can also be seen as an example of the guidelines provided in 
+but it can also be seen as an example of the guidelines provided in
 \ref GRAS_howto_design.
 
 So, here are the caracteristics of our example:
 
-There is two types of processes: 
+There is two types of processes:
  - several <i>clients</i> which want to enter a critical section
  - a <i>server</i>, which grants clients to enter the CS when no other
    process is already in it.
@@ -68,11 +68,11 @@ The server has 2 callbacks attached:
  - When it gets a <i>release</i>, it checks whether there is some waiting
    processes in the waiting queue. If yes, it dequeues the first one and
    send a <i>grant</i> message to it. If no, it notes that the CS is free.
-   
+
 The server has two private data (for the callbacks to work):
  - a boolean indicating whether there is a process in the CS already
  - a waiting queue (#xbt_dynar_t is quite natural to code this).
- 
+
 The client interface is composed of two functions:
  - lock(), which tries to get the grant from the server to enter the CS.
    This is where explicit waiting comes into the game. This function sends a
@@ -98,7 +98,7 @@ Here, there is no payload attached to the messages.
 
 \subsubsection GRAS_tut_tour_explicitwait_code_cb b) Defining private data and callbacks of the server
 
-Then, we define the callbacks that should be invoqued on the server side 
+Then, we define the callbacks that should be invoqued on the server side
 when some messages are received, as previously. For this, we also have to
 declare a structure for the private data of the server.
 
@@ -117,7 +117,7 @@ Note that this is where the explicit wait feature is used.
 
 The core of our distributed service is implemented (protocol, actions on
 server side, and accessing function on client side). We should now
-initialize the server and let it wait for incoming messages. 
+initialize the server and let it wait for incoming messages.
 
 Defining when to stop the server can become tricky. The simplest solution is
 to never let the server stop. It simply runs forever. But the simulator will
@@ -147,6 +147,6 @@ The program now reads:
 
 Which produces the expected output:
 \include 11-explicitwait.output
- 
+
 
 */

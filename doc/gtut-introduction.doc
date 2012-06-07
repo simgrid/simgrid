@@ -1,5 +1,5 @@
 /** @defgroup GRAS_tut_intro What is GRAS
-    @ingroup GRAS_tut 
+    @ingroup GRAS_tut
 
 \htmlinclude .gtut-introduction.doc.toc
 
@@ -12,7 +12,7 @@
 
 \section GRAS_tut_intro_further Further readings
 
-After this page, you may find these one interesting: 
+After this page, you may find these one interesting:
 \ref GRAS_howto_design. If you're new to GRAS, you may want to read the
 initiatic tour first, begining with \ref GRAS_tut_tour_install or
 \ref GRAS_tut_tour_setup.
@@ -31,7 +31,7 @@ GRAS differs from the other existing messaging API by several points:
   - \ref GRAS_tut_intro_what_grid
   - \ref GRAS_tut_intro_what_target
   - \ref GRAS_tut_intro_what_simple
-  
+
 We now detail each of these points.
 
 \subsection GRAS_tut_intro_what_2ways GRAS allows you to run both in simulation mode and on real platforms
@@ -41,7 +41,7 @@ of the SimGrid simulator, allowing you to run your application in a
 controled environment, which reveals precious to debug and study algorithms.
 Everyone who tried to run even simple tests on more than 100 real machines
 will consider a simulator as a nirvana.
-    
+
 The experiments can be reproduced in the exact same conditions (which is
 somehow hard in real settings), allowing for example to reproduce a bug as
 many times as you want while debugging. You can also test your algorithm
@@ -49,7 +49,7 @@ under experimental conditions which you couldn't achieve on a real platform
 (like a network topology and/or size you do don't have access to). Under
 some conditions, SimGrid simulations are also much faster than real
 executions, allowing you to run more experiments in less time.
- 
+
 Once you assessed the quality of your algorithm in the simulator, you can
 deploy it on real platforms using the second implementation of the library.
 Usually, taking an algorithm out of a simulator implies an almost complete
@@ -62,7 +62,7 @@ The sequential parts of your code are not mediated by GRAS or slowed down
 anyhow. The communications use advanced data exchange and conversion
 mecanism ensuring that you are likely to get performance at least comparable
 to other communication solutions (FIXME: cite the paper once it gets
-accepted). 
+accepted).
 
 GRAS applications are portable on several operating systems (Linux, MacOS X,
 Solaris, IRIX, AIX and soon Windows) and several processor architectures
@@ -70,10 +70,10 @@ Solaris, IRIX, AIX and soon Windows) and several processor architectures
 efficiently even when deployed on differing material. You can for example
 have a process deployed on ppc/MacOS X interacting transparently with
 another one deployed on alpha/Linux.
-    
+
 The simulation mode of GRAS is called usually SG (for SimGrid) while the in
 situ execution mode is called RL (for Real Life).
-    
+
 \subsection GRAS_tut_intro_what_dist GRAS was designed for distributed computing, not parallel computing
 
 In GRAS, you build your algorithm as a set of independent processes
@@ -127,7 +127,7 @@ available bandwidth between two remote hosts. It could be used in a
 network-aware parallel matrix multiplication library assigning more work to
 well interconnected nodes. I wouldn't advice to build a physical or
 biological compututation program on top of GRAS, even if it would be
-possible in theory. 
+possible in theory.
 
 In other words, GRAS is not a grid middleware in the common understanding of
 the world, but rather a tool to constitute the building bricks of such a
@@ -144,7 +144,7 @@ There is no threads like the pthread ones in GRAS, and it is not planned to
 introduce this in the future. This is an explicit choice since I consider
 multi-threading as too complicated for usual users. There is too much
 non-determinism, too many race conditions, and too few language-level
-constructs to keep yourself from screwing up. This idea is well expressed 
+constructs to keep yourself from screwing up. This idea is well expressed
 by John Ousterhout in <i>Why Threads Are a Bad Idea (for most purposes)</i>,
 published at USENIX'96. See section \ref GRAS_tut_intro_what_dist for
 platform performance consideration.
@@ -160,14 +160,14 @@ sure that nothing will happen between each lines of it. This assumption
 considerably simplify the code written in GRAS. The main use of of
 interruptions in a distributed application is to timeout communications when
 they fail. GRAS communication calls allow to setup a timeout value, and
-handle it internally (see below). 
+handle it internally (see below).
 
 The only interruption mecanism used is constituted by exceptions, just like
 in C++ or Java (but implemented directly in C). They are propagated from the
 point where they are raised to a point where they will be trapped, if any,
 or abort the execution when not trapped. You can still be certain that
 nothing will happen between two lines of your code, but the second line may
-never be executed if the first one raises an exception ;) 
+never be executed if the first one raises an exception ;)
 
 This exception mecanism was introduced because without it, user code has to
 be loaded by tons of non-functional code to check whether an operation was
@@ -235,7 +235,7 @@ Two main types of events may change the internal state of a given process:
    and start the callbacks associated to them. GRAS thus supports both the
    pure event-based programming model and the more classical message passing
    model.\n
- 
+
  - <b>Internal timers</b>. There is two types of timers: delayed actions and
    repetitive actions. The former happen only once when the delay expires
    while the second happen regularly each time that a period expires.\n
@@ -281,7 +281,7 @@ Here is a graphical representation of a scenario involving two processes A and
 B.  Both are naturally composed of two threads: the one running user code, and
 the listener in charge of listening incoming messages from the network. Both
 processes also have a queue for the communication between the two threads, even
-if only the queue of process B is depicted in the graph. 
+if only the queue of process B is depicted in the graph.
 
 The experimental scenario is as follows: <ul>
 
