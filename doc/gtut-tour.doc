@@ -1,11 +1,11 @@
 /** @defgroup GRAS_tut_tour Initiatic tour
-    @ingroup GRAS_tut 
+    @ingroup GRAS_tut
 
 During this tour, you will learn all you need to write your own GRAS
 applications, from the installation of the framework to the use of (almost)
 all features available in GRAS.
 
-    \htmlonly <!-- 
+    \htmlonly <!--
       DOXYGEN_NAVBAR_CHILD "0: Installing"=GRAS_tut_tour_install.html
       DOXYGEN_NAVBAR_CHILD "1: Setup a project"=GRAS_tut_tour_setup.html
       DOXYGEN_NAVBAR_CHILD "2: Simple messaging"=GRAS_tut_tour_simpleexchange.html
@@ -37,32 +37,32 @@ all features available in GRAS.
     - \ref GRAS_tut_tour_setup_glue
     - \ref GRAS_tut_tour_setup_make
     - \ref GRAS_tut_tour_setup_start
-  
+
 <b>Part 2: Message passing</b>
-  
+
  - \ref GRAS_tut_tour_simpleexchange
     - \ref GRAS_tut_tour_simpleexchange_msgtype
     - \ref GRAS_tut_tour_simpleexchange_socks
     - \ref GRAS_tut_tour_simpleexchange_exchange
     - \ref GRAS_tut_tour_simpleexchange_recaping
-  
+
  - \ref GRAS_tut_tour_args
     - \ref GRAS_tut_tour_args_use
     - \ref GRAS_tut_tour_args_sg
     - \ref GRAS_tut_tour_args_recap
-  
+
  - \ref GRAS_tut_tour_callbacks
     - \ref GRAS_tut_tour_callbacks_declare
     - \ref GRAS_tut_tour_callbacks_attach
     - \ref GRAS_tut_tour_callbacks_handle
     - \ref GRAS_tut_tour_callback_recap
-    
+
  - \ref GRAS_tut_tour_globals
     - \ref GRAS_tut_tour_globals_intro
     - \ref GRAS_tut_tour_globals_use
     - \ref GRAS_tut_tour_callback_pitfall
     - \ref GRAS_tut_tour_callback_recap
-     
+
  - \ref GRAS_tut_tour_logs
     - \ref GRAS_tut_tour_logs_intro
     - \ref GRAS_tut_tour_logs_practice
@@ -75,12 +75,12 @@ all features available in GRAS.
     - \ref GRAS_tut_tour_timers_intro
     - \ref GRAS_tut_tour_timers_use
     - \ref GRAS_tut_tour_timers_recap
-   
+
  - \ref GRAS_tut_tour_exceptions
     - \ref GRAS_tut_tour_exceptions_intro
     - \ref GRAS_tut_tour_exceptions_use
     - \ref GRAS_tut_tour_exceptions_recap
-    
+
  - \ref GRAS_tut_tour_simpledata
     - \ref GRAS_tut_tour_simpledata_intro
       - \ref GRAS_tut_tour_simpledata_intro_conv
@@ -88,7 +88,7 @@ all features available in GRAS.
       - \ref GRAS_tut_tour_simpledata_use
     - \ref GRAS_tut_tour_simpledata_example
     - \ref GRAS_tut_tour_simpledata_recap
-      
+
  - \ref GRAS_tut_tour_rpc
     - \ref GRAS_tut_tour_rpc_intro
     - \ref GRAS_tut_tour_rpc_use
@@ -97,7 +97,7 @@ all features available in GRAS.
       - \ref GRAS_tut_tour_rpc_use_a2i_cb
       - \ref GRAS_tut_tour_rpc_use_rest
     - \ref GRAS_tut_tour_rpc_recap
- 
+
  - \ref GRAS_tut_tour_explicitwait
     - \ref GRAS_tut_tour_explicitwait_intro
     - \ref GRAS_tut_tour_explicitwait_use
@@ -109,7 +109,7 @@ all features available in GRAS.
         - \ref GRAS_tut_tour_explicitwait_code_smain
         - \ref GRAS_tut_tour_explicitwait_code_cmain
     - \ref GRAS_tut_tour_explicitwait_recap
-     
+
  - \ref GRAS_tut_tour_message_recaping
     - \ref GRAS_tut_tour_message_recaping_intro
     - \ref GRAS_tut_tour_message_recaping_rpc
@@ -122,30 +122,30 @@ all features available in GRAS.
       - \ref GRAS_tut_tour_message_recaping_rpc_aside2
       - \ref GRAS_tut_tour_message_recaping_rpc_aside3
     - \ref GRAS_tut_tour_message_recaping_sync
-		       
+
 <b>Part 3: Data description</b>
 
  - \ref GRAS_tut_tour_staticstruct
     - \ref GRAS_tut_tour_staticstruct_intro
     - \ref GRAS_tut_tour_staticstruct_use
     - \ref GRAS_tut_tour_staticstruct_recap
-      
+
  - \ref GRAS_tut_tour_pointers
     - \ref GRAS_tut_tour_pointers_intro
     - \ref GRAS_tut_tour_pointers_use
     - \ref GRAS_tut_tour_pointers_recap
     - \ref GRAS_tut_tour_pointers_cste
-      
+
  - \ref GRAS_tut_tour_dynar
     - \ref GRAS_tut_tour_dynar_intro
     - \ref GRAS_tut_tour_dynar_use
     - \ref GRAS_tut_tour_dynar_recap
-      
+
  - \ref GRAS_tut_tour_manualdatadef
     - \ref GRAS_tut_tour_manualdatadef_intro
     - \ref GRAS_tut_tour_manualdatadef_use
     - \ref GRAS_tut_tour_manualdatadef_recap
-      
+
  - \ref GRAS_tut_tour_exchangecb
     - \ref GRAS_tut_tour_exchangecb_intro
     - \ref GRAS_tut_tour_exchangecb_use
@@ -160,7 +160,7 @@ of missi^W lessons I want to add:
    - Splitting in several files (logs, datadesc)
    - Debugging GRAS programs
    - Doing proper GRAS modules
-  
+
 <hr>
 
 

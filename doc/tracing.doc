@@ -100,7 +100,7 @@ can just run it with the option <b>--help-tracing</b>. These are the
 options accepted by the tracing system of SimGrid as of today, you
 can use them by running your simulator with the <b>--cfg=</b> switch:
 
-\li <b>\c 
+\li <b>\c
 tracing
 </b>:
   Safe switch. It activates (or deactivates) the tracing system.
@@ -109,7 +109,7 @@ tracing
 --cfg=tracing:1
 \endverbatim
 
-\li <b>\c 
+\li <b>\c
 tracing/categorized
 </b>:
   It activates the categorized resource utilization tracing. It should
@@ -118,7 +118,7 @@ tracing/categorized
 --cfg=tracing/categorized:1
 \endverbatim
 
-\li <b>\c 
+\li <b>\c
 tracing/uncategorized
 </b>:
   It activates the uncategorized resource utilization tracing. Use it if
@@ -128,7 +128,7 @@ tracing/uncategorized
 --cfg=tracing/uncategorized:1
 \endverbatim
 
-\li <b>\c 
+\li <b>\c
 tracing/filename
 </b>:
   A file with this name will be created to register the simulation. The file
@@ -152,7 +152,7 @@ tracing/onelink_only
 --cfg=tracing/onelink_only:1
 \endverbatim
 
-\li <b>\c 
+\li <b>\c
 tracing/smpi
 </b>:
   This option only has effect if this simulator is SMPI-based. Traces the MPI
@@ -163,7 +163,7 @@ tracing/smpi
 --cfg=tracing/smpi:1
 \endverbatim
 
-\li <b>\c 
+\li <b>\c
 tracing/smpi/group
 </b>:
   This option only has effect if this simulator is SMPI-based. The processes
@@ -172,7 +172,7 @@ tracing/smpi/group
 --cfg=tracing/smpi/group:1
 \endverbatim
 
-\li <b>\c 
+\li <b>\c
 tracing/msg/process
 </b>:
   This option only has effect if this simulator is MSG-based. It traces the
@@ -218,7 +218,7 @@ can be used with simulators that have a different notion of time
 --cfg=tracing/disable_destroy:1
 \endverbatim
 
-\li <b>\c 
+\li <b>\c
 triva/categorized
 </b>:
   This option generates a graph configuration file for Triva considering
@@ -227,7 +227,7 @@ triva/categorized
 --cfg=triva/categorized:graph_categorized.plist
 \endverbatim
 
-\li <b>\c 
+\li <b>\c
 triva/uncategorized
 </b>:
   This option generates a graph configuration file for Triva considering
@@ -317,7 +317,7 @@ visualization tool <a href="http://triva.gforge.inria.fr">Triva</a>, with
 special configurations tunned to SimGrid needs. This part of the documentation
 explains how to configure and use Triva to analyse a SimGrid trace file.
 
-- <b>Installing Triva</b>: the tool is available in the Inria's Forge, 
+- <b>Installing Triva</b>: the tool is available in the Inria's Forge,
 at <a href="http://triva.gforge.inria.fr">http://triva.gforge.inria.fr</a>.
 Use the following command to get the sources, and then check the file
 <i>INSTALL</i>. This file contains instructions to install
@@ -371,7 +371,7 @@ GraphConfiguration
     --gc_apply                 Apply the configuration
     --gc_hide                  Hide the GraphConfiguration window
 \endverbatim
-Triva expects that the user choose one of the available options 
+Triva expects that the user choose one of the available options
 (currently <em>--graph</em> or <em>--treemap</em> for a visualization analysis)
 and the trace file from the simulation.
 
@@ -388,8 +388,8 @@ the two fields show the beggining of the trace (which usually starts in 0) and
 the end (that depends on the time simulated by SimGrid). The middle of the
 window, in the square named <i>Time Slice Configuration</i>, contains the
 aspects related to the time-slice, including its <i>start</i> and its
-<i>size</i>. The gray rectangle in the bottom of this part indicates the 
-<i>current time-slice</i> that is considered for the drawings. If the checkbox 
+<i>size</i>. The gray rectangle in the bottom of this part indicates the
+<i>current time-slice</i> that is considered for the drawings. If the checkbox
 <i>Update Drawings on Sliders Change</i> is not selected, the button
 <i>Apply</i> must be clicked in order to inform triva that the
 new time-slice must be considered. The bottom part of the window, in the space
@@ -461,7 +461,7 @@ indicates which values from the trace will be used to fill the shape.
 
 For <em>LINK</em> we have:
 
-\verbatim 
+\verbatim
   LINK = {
     type = rhombus;
     size = bandwidth;

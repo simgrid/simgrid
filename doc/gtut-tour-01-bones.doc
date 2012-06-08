@@ -1,5 +1,5 @@
 
-/** 
+/**
 @page GRAS_tut_tour_setup Lesson 1: Setting up your own project
 
 \section GRAS_tut_tour_setup_toc Table of Contents
@@ -10,23 +10,23 @@
  - \ref GRAS_tut_tour_setup_make
  - \ref GRAS_tut_tour_setup_start
 
-<hr>      
+<hr>
 
 Any GRAS project should be constituted of at least 3 files, and possibly
 much more.
 
   - <tt>&lt;project&gt;.c</tt>: A source file providing the source code of your
     processes.
-    
+
   - <tt>&lt;platform&gt;.xml</tt>: A platform description file. It describes
     the virtual platform you want to run your application onto following the
     SurfXML formatting so that the simulator can parse it. This file is only
     needed in SG, and you don't need any to run on real platforms (of
     course). The simplest is to use one of the pre-existing one.
-    
+
   - <tt>&lt;project&gt;.xml</tt>: A deployment file. It describes which of
     your processes to start, on which machine and with which arguments.
-    
+
   - A makefile is often needed, too, even if it's not mandatory.
 
 If we start a project called <tt>test</tt>, we have to write 3 files:
@@ -51,7 +51,7 @@ int server(int argc, char *argv[]) {
 \endverbatim
 
 Note that each of the processes's main function have the exact same
-prototype of the classical <tt>main()</tt> function in C. 
+prototype of the classical <tt>main()</tt> function in C.
 
 This is on purpose, each of them can assume this role when running in RL.
 But you shouldn't write a main() function yourself since all processes will
@@ -63,7 +63,7 @@ GRAS_tut_tour_setup_glue), but for now just note the similarity between the
 function.
 
 Then, each process must initialize the GRAS framework at the beginning (with
-\ref gras_init) and should finalize it at the end (with \ref gras_exit). 
+\ref gras_init) and should finalize it at the end (with \ref gras_exit).
 
 You should pass to \ref gras_init the <tt>argc</tt> and <tt>argv</tt> you
 received in your "main" function so that the users of your application can
@@ -122,7 +122,7 @@ code generated. If you installed SimGrid in a regular place, this program is
 now in your path. Its source resides in the tools/gras/ directory of the
 archive, if you wonder.
 
-Here is the calling syntax: 	
+Here is the calling syntax:
 \verbatim gras_stub_generator <project_name> <deployment_file.xml>\endverbatim
 
 It parses the deployment file (called <tt>test.xml</tt> in our example),
@@ -183,8 +183,8 @@ There is nothing to know to start your processes in RL. Simply call the
 generated binaries, and that's it. To start the simulation, simply call:
 \verbatim ./<project>_simulator platform.xml deployment.xml\endverbatim
 
-If you have an error message similar to 
-\verbatim 
+If you have an error message similar to
+\verbatim
 ./<project>_simulator: error while loading shared libraries: libsimgrid.so.2: cannot open shared object file: No such file or directory
 \endverbatim
 it simply means that the dynamic linker of you system fails to find

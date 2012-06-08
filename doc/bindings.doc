@@ -31,15 +31,15 @@ Actually, the use of lua in Simgrid is quite simple, you have just to follow the
   - Coding functions coresponding to each process
   - loading the platforme/deployment XML file that describe the environment of simulation
   - and … Running the Simulation.
-  
+
 \dontinclude lua/masterslave/master.lua
 \subsection bindings_binding_lua_example_master_slave Master/Slave Example
 
  \li Master Code
  \until end_of_master
-we mainly  use   simgrid.Task.new(task_name,computation_size,communication_size) to create our MSG Task, 
+we mainly  use   simgrid.Task.new(task_name,computation_size,communication_size) to create our MSG Task,
 	 then simgrid.Task.send(task,alias) to send it.
-we use also simgrid.Task.name(task), to get the task's name. 
+we use also simgrid.Task.name(task), to get the task's name.
 
 \dontinclude lua/masterslave/slave.lua
 \li Slave Code
@@ -57,7 +57,7 @@ since lua is based itself on a mechanism of tables,
 so you can exchange any kind of data (tables, matrix, strings,…) between process via tasks.
 
 \li Sender process
-\verbatim 
+\verbatim
   task = simgrid.Task.new("data_task",task_comp,task_comm);
   task['matrix'] = my_matrix;
   task['table'] = my_table;
@@ -79,7 +79,7 @@ so you can exchange any kind of data (tables, matrix, strings,…) between proce
 \endverbatim
   	Note that in lua, both sender and receiver share the same lua task.
 	So that the receiver could joint data directly on the received task without sending it back.
-	You can find  a complet example (matrix multiplication case) in the file example/lua/mult_matrix.lua. 
+	You can find  a complet example (matrix multiplication case) in the file example/lua/mult_matrix.lua.
 
 
 \subsection bindings_binding_lua_example_bypass Bypass XML
@@ -87,7 +87,7 @@ so you can exchange any kind of data (tables, matrix, strings,…) between proce
 	 and describe your platform directly from the code, with lua bindings it's Possible !! how ?
 	We provide some additional (tricky?) functions in lua that allows you to set up your own platform without using the XML files
      ( this can be useful for large platforms, so a simple for loop will avoid you to deal with an annoying XML File ;) )
-     
+
 
 \li set Routing mode
 \verbatim
@@ -127,7 +127,7 @@ so you can exchange any kind of data (tables, matrix, strings,…) between proce
    ...
 \endverbatim
   for each host you have to specify which route to choose to access to the rest of hosts connected in the grid.
-  
+
 \li Save platform
 \verbatim
   simgrid.register_platform();
@@ -142,7 +142,7 @@ Don't forget to register your platform, that SURF callbacks starts their work ;)
    simgrid.Host.setFunction("Fafard","Slave",1,{"2"});
    simgrid.Host.setFunction("Ginette","Slave",1,{"3"});
 \endverbatim
-  you don't  need to use a deployment XML file, thanks to  simgrid.Host.setFunction(host_id,function,args_number,args_list) 
+  you don't  need to use a deployment XML file, thanks to  simgrid.Host.setFunction(host_id,function,args_number,args_list)
   you can associate functions for each host with arguments if needed .
 
 \li

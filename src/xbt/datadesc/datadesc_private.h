@@ -216,7 +216,7 @@ typedef struct s_xbt_datadesc_type {
   xbt_datadesc_type_cb_void_t recv;
 
   /* flags */
-  int cycle:1;
+  unsigned cycle:1;
 
   /* random value for users (like default value or whatever) */
   char extra[SIZEOF_MAX];

@@ -829,7 +829,7 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
  *  \param state The name of the state previously declared.
  *  \param value The new value of the state.
  *
- *  \see TRACE_host_state_declare, TRACE_host_push_state, TRACE_host_pop_state
+ *  \see TRACE_host_state_declare, TRACE_host_push_state, TRACE_host_pop_state, TRACE_host_reset_state
  */
 void TRACE_host_set_state (const char *host, const char *state, const char *value)
 {
@@ -852,7 +852,7 @@ void TRACE_host_set_state (const char *host, const char *state, const char *valu
  *  \param state The name of the state previously declared.
  *  \param value The value to be pushed.
  *
- *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_pop_state
+ *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_pop_state, TRACE_host_reset_state
  */
 void TRACE_host_push_state (const char *host, const char *state, const char *value)
 {
@@ -874,13 +874,30 @@ void TRACE_host_push_state (const char *host, const char *state, const char *val
  *  \param host The name of the host to be considered.
  *  \param state The name of the state to be popped.
  *
- *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_push_state
+ *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_push_state, TRACE_host_reset_state
  */
 void TRACE_host_pop_state (const char *host, const char *state)
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
   new_pajePopState(MSG_get_clock(), container, type);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Reset the state of a given host.
+ *
+ *  Clear all previous values of a user state.
+ *
+ *  \param host The name of the host to be considered.
+ *  \param state The name of the state to be cleared.
+ *
+ *  \see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_push_state, TRACE_host_pop_state
+ */
+void TRACE_host_reset_state (const char *host, const char *state)
+{
+  container_t container = PJ_container_get(host);
+  type_t type = PJ_type_get (state, container->type);
+  new_pajeResetState(MSG_get_clock(), container, type);
 }
 
 /** \ingroup TRACE_API

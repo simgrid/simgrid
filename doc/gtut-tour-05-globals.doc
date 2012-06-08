@@ -6,7 +6,7 @@
  - \ref GRAS_tut_tour_globals_use
  - \ref GRAS_tut_tour_callback_pitfall
  - \ref GRAS_tut_tour_callback_recap
-    
+
 <hr>
 
 \section GRAS_tut_tour_globals_intro Introduction
@@ -21,17 +21,17 @@ within the same naming space in SG so your globals will be shared between
 the several instances of your process, leading to bad problems.
 
 Instead, you you have to put all globals in a structure, and let GRAS handle
-it with the gras_userdata_* functions (there is only 3 of them ;). 
+it with the gras_userdata_* functions (there is only 3 of them ;).
 
 \section GRAS_tut_tour_globals_use Putting globals into action
 
 We will now modify the example to add a "kill" message, and let the server
 loop on incoming messages until it gets such a message. We only need a
-boolean, so the structure is quite simple: 
+boolean, so the structure is quite simple:
 \dontinclude 05-globals.c
 \skip struct
 \until server_data
- 
+
 Then, we need to create this structure in the process main function. We
 could use either gras_userdata_new() or gras_userdata_set(). The former is an
 helper macro mallocing the space needed by the structure and passing it to
@@ -78,9 +78,9 @@ This is to write something like:
 \verbatim int server(int argc, char *argv[]) {
   server_data_t globals=gras_user_new(server_data_t);
   /* other variable definition */
-  
+
   gras_init(&argc, argv);
-  
+
   /* rest of the code */
 }\endverbatim
 

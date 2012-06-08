@@ -140,9 +140,9 @@ typedef struct s_smx_action {
       void *dst_buff;
       size_t src_buff_size;
       size_t *dst_buff_size;
-      int copied:1;                   /* whether the data were already copied */
+      unsigned copied:1;              /* whether the data were already copied */
 
-      void* src_data;                     /* User data associated to communication */
+      void* src_data;                 /* User data associated to communication */
       void* dst_data;
     } comm;    
 

@@ -164,7 +164,7 @@ typedef struct s_smx_context {
   void *data;   /* Here SIMIX stores the smx_process_t containing the context */
   char **argv;
   int argc;
-  int iwannadie:1;
+  unsigned iwannadie:1;
 } s_smx_ctx_base_t;
 
 /* methods of this class */

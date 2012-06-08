@@ -1,4 +1,4 @@
-/** 
+/**
   \defgroup SimGrid_API  SimGrid modules */
 
 /** \defgroup XBT_API      XBT
@@ -10,13 +10,13 @@
 
 /** \defgroup MSG_API      MSG
     \ingroup SimGrid_API
-    \brief Simple programming environment 
-  
+    \brief Simple programming environment
+
       MSG was the first distributed programming environment provided within
       SimGrid. While almost realistic, it remains quite simple (simplistic?).
 
       \section MSG_who Who should use this (and who shouldn't)
-      
+
       You should use this module if you want to study some heuristics for a
       given problem you don't really want to implement.
       If you want to use DAGs, have a look at the \ref SD_API programming
@@ -24,9 +24,9 @@
       If you want to get a real (but experimental) implementation of your solution, have a look
       at the \ref GRAS_API one. If you want to study an existing MPI program,
       have a look at the \ref SMPI_API one. If none of those programming
-      environments fits your needs, you may consider implementing your own 
+      environments fits your needs, you may consider implementing your own
       directly on top of \ref SURF_API (but you probably want to contact us
-      before). 
+      before).
 */
 
 
@@ -42,7 +42,7 @@
 /** \defgroup GRAS_API      GRAS
     \ingroup SimGrid_API
     \brief Realistic programming environment (Grid Reality And Simulation)
-  
+
     GRAS provides a complete API to implement distributed application on top
     of heterogeneous plateforms. In addition to the SimGrid implementation
     of this interface (allowing you to work on your application within the
@@ -50,24 +50,24 @@
     also provided (allowing you to really use your application once you're
     done with developing it). It may still contain rought corners as
     GRAS is not the most used part of SimGrid, however.
-  
+
     GRAS thus constitute a complete grid application developement framework,
     encompassing both developer helping tools (the simulator and associated
     tools) and an efficient while portable execution runtime.
-  
+
     \section GRAS_who Who should use this (and who shouldn't)
-    
+
     You should use this programming environment if you want to develop real
-    applications, ie if the final result of your work is a program which 
+    applications, ie if the final result of your work is a program which
     may eventually be distributed. Rember however that GRAS is
     considered as experimental at this point. Help would be welcomed
     to improve this sorry situation...
-    
+
     If you just want to study some heuristics for a given problem you don't
     want to implement really (ie, if your result would be a theorem), have a
     look at the \ref MSG_API one, or the \ref SD_API one if you need to use DAGs.
-    If you want to study an existing MPI program, have a look at the 
-    \ref SMPI_API one. 
+    If you want to study an existing MPI program, have a look at the
+    \ref SMPI_API one.
     If none of those programming environments fits your needs, you may
     consider implementing your own directly on top of \ref SURF_API (but you
     probably want to contact us before).
@@ -77,25 +77,25 @@
     \ingroup SimGrid_API
     \brief Distributed toolkit built over \ref GRAS_API (Advanced Metacomputing Overlay Kit)
 
-    AMOK provides several tools useful to most applications built on top of GRAS, 
-    but yet not belonging to GRAS itself. It is planned that those modules will be 
+    AMOK provides several tools useful to most applications built on top of GRAS,
+    but yet not belonging to GRAS itself. It is planned that those modules will be
     changed to real plugins one day, allowing users to load only the needed parts at
-    run time. For now, they live in another library against which you should link your 
+    run time. For now, they live in another library against which you should link your
     programs explicitly.
 */
 
 /** \defgroup SMPI_API      SMPI
     \ingroup SimGrid_API
     \brief Programming environment for the simulation of MPI applications
-  
+
 This programming environment permits to study existing MPI application
 by emulating them on top of the SimGrid simulator. In other words, it
 will constitute an emulation solution for parallel codes. You don't
 even have to modify your code for that, although that may help, as
 detailed below.
-    
+
 \section SMPI_who Who should use SMPI (and who shouldn't)
-    
+
 You should use this programming environment of the SimGrid suite if
 you want to study existing MPI applications. If you want to create a
 distributed application, you may be interested in the \ref GRAS_API
@@ -106,7 +106,7 @@ code), have a look at the \ref MSG_API environment, or the \ref SD_API
 one if you need to use DAGs. If none of those programming environments
 fits your needs, you may consider implementing your own directly on
 top of \ref SURF_API (but you probably want to contact us before).
-  
+
 \section SMPI_what What can run within SMPI?
 
 You can run unmodified MPI applications (both C and Fortran) within
@@ -178,8 +178,8 @@ smpirun accepts other parameters, such as <tt>-np</tt> if you don't
 want to use all the hosts defined in the hostfile, <tt>-map</tt> to
 display on which host each rank gets mapped of <tt>-trace</tt> to
 activate the tracing during the simulation. You can get the full list
-by running 
-\verbatim 
+by running
+\verbatim
 smpirun -help
 \endverbatim
 
@@ -190,35 +190,35 @@ smpirun -help
 /** \defgroup SD_API      SimDag
     \ingroup SimGrid_API
     \brief Programming environment for DAG applications
-   
+
     SimDag provides some functionnalities to simulate parallel task scheduling
     with DAGs models (Direct Acyclic Graphs).
     The old versions of SimGrid were based on DAGs. But the DAG part (named SG)
     was removed in SimGrid 3 because the new kernel (\ref SURF_API) was implemented. \ref SURF_API
     was much faster and more flexible than SG and did not use DAGs.
     SimDag is a new implementation of DAGs handling and it is built on top of \ref SURF_API.
-    
+
     \section SD_who Who should use this (and who shouldn't)
-    
+
     You should use this programming environment of the SimGrid suite if you want
     to study algorithms and heuristics with DAGs of parallel tasks.
     If you don't need to use DAGs for your simulation, have a look at the
     \ref MSG_API programming environment.
     If you want to implement a real distributed application, have a look at the
     \ref GRAS_API programming environment.
-    If you want to study an existing MPI program, have a look at the 
-    \ref SMPI_API one. 
+    If you want to study an existing MPI program, have a look at the
+    \ref SMPI_API one.
     If none of those programming environments fits your needs, you may
     consider implementing your own directly on top of \ref SURF_API (but you
     probably want to contact us before).
 
 */
 
-/** 
+/**
 @defgroup SURF_API SURF
 @ingroup SimGrid_API
 @brief Internal kernel of all the simulators used in SimGrid, and associated models.
- 
+
 SURF provides the core functionnalities to simulate a virtual
 platform. It is very low-level and is not intended to be used by end
 users, but rather to serve as a basis for higher-level simulators. Its
@@ -229,7 +229,7 @@ yet, please come to the devel mailing list so that we can discuss on
 the feasibility of your idea.
 
 Please note that as it is not really intended for public use, this
-module is only partially documented. 
+module is only partially documented.
 */
 
 

@@ -39,7 +39,7 @@ is not limited to the simulator. Once you're done writing your GRAS code,
 you can run your code both in the simulator and on a real platform. For this,
 there are two implementations of the GRAS interface, one for simulation, and one
 for real execution. So, you just have to relink your code to choose one of
-both worlds. 
+both worlds.
 
 \subsection faq_visualization Visualizing and analyzing the results
 
@@ -47,8 +47,8 @@ It is sometime convenient to "see" how the agents are behaving. If you
 like colors, you can use <tt>tools/MSG_visualization/colorize.pl </tt>
 as a filter to your MSG outputs. It works directly with INFO. Beware,
 INFO() prints on stderr. Do not forget to redirect if you want to
-filter (e.g. with bash): 
-\verbatim 
+filter (e.g. with bash):
+\verbatim
 ./msg_test small_platform.xml small_deployment.xml 2>&1 | ../../tools/MSG_visualization/colorize.pl
 \endverbatim
 
@@ -56,7 +56,7 @@ We also have a more graphical output. Have a look at section \ref options_tracin
 
 \subsection faq_C Argh! Do I really have to code in C?
 
-Currently bindings on top of MSG are supported for Java, Ruby and Lua. You can find a few 
+Currently bindings on top of MSG are supported for Java, Ruby and Lua. You can find a few
 documentation about them on the doc page. Note that bindings are released separately from the main dist
 and so have their own version numbers.
 
@@ -99,7 +99,7 @@ it with MSG. Feel free to contribute...
 
 Many people have come to ask me a more complex example and each time,
 they have realized afterward that the basics were in the previous three
-examples. 
+examples.
 
 Of course they have often been needing more complex functions like
 MSG_process_suspend(), MSG_process_resume() and
@@ -145,8 +145,8 @@ you still don't see how to do it, please come back to us...
 
 \subsubsection faq_MIA_asynchronous I want to do asynchronous communications in MSG
 
-In the past (version <= 3.4), there was no function to perform asynchronous communications. 
-It could easily be implemented by creating new process when needed though. Since version 3.5, 
+In the past (version <= 3.4), there was no function to perform asynchronous communications.
+It could easily be implemented by creating new process when needed though. Since version 3.5,
 we have introduced the following functions:
  - MSG_task_isend()
  - MSG_task_irecv()
@@ -156,13 +156,13 @@ we have introduced the following functions:
  - MSG_comm_waitany()
  - MSG_comm_destroy()
 
-We refer you to the description of these functions for more details on their usage as well 
+We refer you to the description of these functions for more details on their usage as well
 as to the example section on \ref MSG_ex_asynchronous_communications.
 
 \subsubsection faq_MIA_thread_synchronization I need to synchronize my MSG processes
 
-You obviously cannot use pthread_mutexes of pthread_conds since we handle every 
-scheduling related decision within SimGrid. 
+You obviously cannot use pthread_mutexes of pthread_conds since we handle every
+scheduling related decision within SimGrid.
 
 In the past (version <=3.3.4) you could do it by playing with
 MSG_process_suspend() and MSG_process_resume() or with fake communications (using MSG_task_get(),
@@ -198,7 +198,7 @@ like NWS that performs active probes. The best solution is probably to do
 the same within MSG, as in next code snippet. It is very close from what you
 would have to do out of the simulator, and thus gives you information that
 you could also get in real settings to not hinder the realism of your
-simulation. 
+simulation.
 
 \verbatim
 double get_host_load() {
@@ -216,7 +216,7 @@ Of course, it may not match your personal definition of "host load". In this
 case, please detail what you mean on the mailing list, and we will extend
 this FAQ section to fit your taste if possible.
 
-\subsubsection faq_MIA_communication_time How can I get the *real* communication time?  
+\subsubsection faq_MIA_communication_time How can I get the *real* communication time?
 
 Communications are synchronous and thus if you simply get the time
 before and after a communication, you'll only get the transmission
@@ -228,7 +228,7 @@ hard either. The following solution is a good starting point.
 \verbatim
 int sender()
 {
-  m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size, 
+  m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
                                   calloc(1,sizeof(double)));
   *((double*) task->data) = MSG_get_clock();
   MSG_task_put(task, slaves[i % slaves_count], PORT_22);
@@ -306,7 +306,7 @@ has to be done before T2.
    }
  }
 \endverbatim
- 
+
 If you decide that the distributed part is not that much important and that
 DAG is really the level of abstraction you want to work with, then you should
 give a try to \ref SD_API.
@@ -340,7 +340,7 @@ of processes in your simulations.
    switch manually to the pthread version, and provide us with a good
    patch for the configure script so that it is done automatically ;)
 
- - <b>Hundred thousands of simulated processes</b> (hard-core tricks)\n 
+ - <b>Hundred thousands of simulated processes</b> (hard-core tricks)\n
    As explained above, SimGrid can use UNIX98 contexts to represent
    and handle the simulated processes. Thanks to this, the main
    limitation to the number of simulated processes becomes the
@@ -363,11 +363,11 @@ of processes in your simulations.
      quite hairy, the default value is a bit overestimated so that
      user doesn't get into trouble about this. You want to tune this
      size to increase the number of processes. This is the
-     <tt>STACK_SIZE</tt> define in 
+     <tt>STACK_SIZE</tt> define in
      <tt>src/xbt/xbt_context_sysv.c</tt>, which is 128kb by default.
      Reduce this as much as you can, but be warned that if this value
      is too low, you'll get a segfault. The token ring example, which
-     is quite simple, runs with 40kb stacks.     
+     is quite simple, runs with 40kb stacks.
    - You may tweak the logs to reduce the stack size further.  When
      logging something, we try to build the string to display in a
      char array on the stack. The size of this array is constant (and
@@ -376,7 +376,7 @@ of processes in your simulations.
      sized buffer. In which case, we have to traverse one time the log
      event arguments to compute the size we need for the buffer,
      malloc it, and traverse the argument list again to do the actual
-     job.\n     
+     job.\n
      The idea here is to move XBT_LOG_BUFF_SIZE to 1, forcing the logs
      to use a dynamic array each time. This allows us to lower further
      the stack size at the price of some performance loss...\n
@@ -395,12 +395,12 @@ keep working on it. You may find inspiring ideas in it.
 \subsubsection faq_MIA_checkpointing I need a checkpointing thing
 
 Actually, it depends on whether you want to checkpoint the simulation, or to
-simulate checkpoints. 
+simulate checkpoints.
 
 The first one could help if your simulation is a long standing process you
 want to keep running even on hardware issues. It could also help to
 <i>rewind</i> the simulation by jumping sometimes on an old checkpoint to
-cancel recent calculations.\n 
+cancel recent calculations.\n
 Unfortunately, such thing will probably never exist in SG. One would have to
 duplicate all data structures because doing a rewind at the simulator level
 is very very hard (not talking about the malloc free operations that might
@@ -429,7 +429,7 @@ subtasks.
 
 There are several little examples in the archive, in the examples/msg
 directory. From time to time, we are asked for other files, but we
-don't have much at hand right now. 
+don't have much at hand right now.
 
 You should refer to the Platform Description Archive
 (http://pda.gforge.inria.fr) project to see the other platform file we
@@ -493,7 +493,7 @@ Don't assume we never run this target, because we do. Check
 http://cdash.inria.fr/CDash/index.php?project=Simgrid (click on
 previous if there is no result for today: results are produced only by
 11am, French time) and
-https://buildd.debian.org/status/logs.php?pkg=simgrid if you don't believe us. 
+https://buildd.debian.org/status/logs.php?pkg=simgrid if you don't believe us.
 
 If it's failing on your machine in a way not experienced by the
 autobuilders above, please drop us a mail on the mailing list so that
@@ -514,7 +514,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY() or XBT_LOG_NEW_DEFAULT_SUBCATEGORY().
 This indicates that one of the library SimGrid depends on (libpthread
 here) was missing on the linking command line. Dependencies of
 libsimgrid are expressed directly in the dynamic library, so it's
-quite impossible that you see this message when doing dynamic linking. 
+quite impossible that you see this message when doing dynamic linking.
 
 If you compile your code statically (and if you use a pthread version
 of SimGrid -- see \ref faq_more_processes), you must absolutely
@@ -523,7 +523,7 @@ come after <tt>-lsimgrid</tt> on this command line.
 
 \subsubsection faq_trouble_lib_msg_deprecated "gcc: undefined reference to MSG_*"
 
-Since version 3.7 all the m_channel_t mecanism is deprecated. So functions 
+Since version 3.7 all the m_channel_t mecanism is deprecated. So functions
 about this mecanism may get removed in future releases.
 
 List of functions:
@@ -565,7 +565,7 @@ Using them should print warning to inform what new function you have to use.
 
 \subsubsection faq_flexml_limit "surf_parse_lex: Assertion `next limit' failed."
 
-This is because your platform file is too big for the parser. 
+This is because your platform file is too big for the parser.
 
 Actually, the message comes directly from FleXML, the technology on top of
 which the parser is built. FleXML has the bad idea of fetching the whole
@@ -603,7 +603,7 @@ welcome and quickly integrated.
 was done by William Dowling, who use it in his own work. The good point is
 that it now use a dynamic buffer, and that the memory usage was greatly
 improved. The downside is that William also changed some things internally,
-and it breaks the hack we devised to bypass the parser, as explained in 
+and it breaks the hack we devised to bypass the parser, as explained in
 \ref pf_flexml_bypassing. Indeed, this is not a classical usage of the
 parser, and Will didn't imagine that we may have used (and even documented)
 such a crude usage of FleXML. So, we now have to repair the bypassing
@@ -620,7 +620,7 @@ reason:
  - <b>Transport endpoint is not connected</b>: several processes try to open
    a server socket on the same port number of the same machine. This is
    naturally bad and each process should pick its own port number for this.\n
-   Maybe, you just have some processes remaining from a previous experiment 
+   Maybe, you just have some processes remaining from a previous experiment
    on your machine.\n
    Killing them may help, but again if you kill -KILL them, you'll have to
    wait for a while: they didn't close there sockets properly and the system
@@ -628,9 +628,9 @@ reason:
 
  - <b>Socket closed by remote side</b>: if the remote process is not
    supposed to close the socket at this point, it may be dead.
-   
+
  - <b>Connection reset by peer</b>: I found this on Internet about this
-   error. I think it's what's happening here, too:\n   
+   error. I think it's what's happening here, too:\n
    <i>This basically means that a network error occurred while the client was
    receiving data from the server. But what is really happening is that the
    server actually accepts the connection, processes the request, and sends
@@ -773,7 +773,7 @@ Here is what happens with a single transfer of size L on a link
 \endverbatim
 
 In more complex situations, this min is the solution of a complex
-max-min linear system.  Have a look 
+max-min linear system.  Have a look
 <a href="http://lists.gforge.inria.fr/pipermail/simgrid-devel/2006-April/thread.html">here</a>
 and read the two threads "Bug in SURF?" and "Surf bug not
 fixed?". You'll have a few other examples of such computations. You
@@ -807,7 +807,7 @@ or the simgrid-devel mailing list and explain us about the issue.  You can
 also decide to open a formal bug report using the
 <a href="https://gforge.inria.fr/tracker/?atid=165&group_id=12&func=browse">relevant
 interface</a>. You need to login on the server to get the ability to submit
-bugs. 
+bugs.
 
 We will do our best to solve any problem repported, but you need to help us
 finding the issue. Just telling "it segfault" isn't enough. Telling "It
@@ -856,11 +856,11 @@ for. The i586-mingw32msvc string is what you have to pass to use the mingw32
 environment as distributed in Debian.
 
 After that, you can run all make targets from both directories, and test
-easily that what you change for one arch does not break the other one. 
+easily that what you change for one arch does not break the other one.
 
 It is possible that this VPATH build thing breaks from time to time in the
 SVN since it's quite fragile, but it's granted to work in any released
-version. If you experience problems, drop us a mail. 
+version. If you experience problems, drop us a mail.
 
 Another possible source of issue is that at the moment, building the
 examples request to use the gras_stub_generator tool, which is a compiled
@@ -868,19 +868,19 @@ program, not a script. In cross-compilation, you need to cross-execute with
 wine for example, which is not really pleasant. We are working on this, but
 in the meanwhile, simply don't build the examples in cross-compilation
 (<tt>cd src</tt> before running make).
-    
+
 Program (cross-)compiled with mingw32 do request an extra DLL at run-time to be
 usable. For example, if you want to test your build with wine, you should do
 the following to put this library where wine looks for DLLs.
-\verbatim 
+\verbatim
 cp /usr/share/doc/mingw32-runtime/mingwm10.dll.gz ~/.wine/c/windows/system/
 gunzip ~/.wine/c/windows/system/mingwm10.dll.gz
 \endverbatim
 
 The DLL is built in src/.libs, and installed in the <i>prefix</i>/bin directory
-when you run make install. 
+when you run make install.
 
-If you want to use it in a native project on windows, you need to use 
+If you want to use it in a native project on windows, you need to use
 simgrid.dll and mingwm10.dll. For each DLL, you need to build .def file
 under linux (listing the defined symbols), and convert it into a .lib file
 under windows (specifying this in a way that windows compilers like). To

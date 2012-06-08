@@ -25,6 +25,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_DISABLE_DESTROY "tracing/disable_destroy"
 #define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
+#define OPT_VIVA_UNCAT_CONF      "viva/uncategorized"
+#define OPT_VIVA_CAT_CONF        "viva/categorized"
 
 static int trace_enabled;
 static int trace_platform;
@@ -92,15 +94,10 @@ int TRACE_end()
   if (!trace_active)
     return 1;
 
-  /* generate uncategorized graph configuration for triva */
-  if (TRACE_get_triva_uncat_conf()){
-    TRACE_generate_triva_uncat_conf();
-  }
-
-  /* generate categorized graph configuration for triva */
-  if (TRACE_get_triva_cat_conf()){
-    TRACE_generate_triva_cat_conf();
-  }
+  TRACE_generate_triva_uncat_conf();
+  TRACE_generate_triva_cat_conf();
+  TRACE_generate_viva_uncat_conf();
+  TRACE_generate_viva_cat_conf();
 
   /* dump trace buffer */
   TRACE_last_timestamp_to_dump = surf_get_clock();
@@ -205,6 +202,16 @@ char *TRACE_get_triva_cat_conf (void)
   return xbt_cfg_get_string(_surf_cfg_set, OPT_TRIVA_CAT_CONF);
 }
 
+char *TRACE_get_viva_uncat_conf (void)
+{
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_VIVA_UNCAT_CONF);
+}
+
+char *TRACE_get_viva_cat_conf (void)
+{
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_VIVA_CAT_CONF);
+}
+
 void TRACE_global_init(int *argc, char **argv)
 {
   /* name of the tracefile */
@@ -299,6 +306,20 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_string, &default_triva_cat_conf_file, 1, 1,
                    NULL, NULL);
 
+  /* Viva graph configuration for uncategorized tracing */
+  char *default_viva_uncat_conf_file = xbt_strdup ("");
+  xbt_cfg_register(&_surf_cfg_set, OPT_VIVA_UNCAT_CONF,
+                   "Viva Graph configuration file for uncategorized resource utilization traces.",
+                   xbt_cfgelm_string, &default_viva_uncat_conf_file, 1, 1,
+                   NULL, NULL);
+
+  /* Viva graph configuration for uncategorized tracing */
+  char *default_viva_cat_conf_file = xbt_strdup ("");
+  xbt_cfg_register(&_surf_cfg_set, OPT_VIVA_CAT_CONF,
+                   "Viva Graph configuration file for categorized resource utilization traces.",
+                   xbt_cfgelm_string, &default_viva_cat_conf_file, 1, 1,
+                   NULL, NULL);
+
   /* instrumentation can be considered configured now */
   trace_configured = 1;
 }
@@ -387,6 +408,20 @@ void TRACE_help (int detailed)
       "  file for the Triva visualization tool that can be used to analyze a categorized\n"
       "  resource utilization.",
       detailed);
+  print_line (OPT_VIVA_UNCAT_CONF, "Generate a graph configuration for Viva",
+      "  This option can be used in all types of simulators build with SimGrid\n"
+      "  to generate a uncategorized resource utilization graph to be used as\n"
+      "  configuration for the Viva visualization tool. This option\n"
+      "  can be used with tracing/categorized:1 and tracing:1 options to\n"
+      "  analyze an unmodified simulator before changing it to contain\n"
+      "  categories.",
+      detailed);
+  print_line (OPT_VIVA_CAT_CONF, "Generate an uncategorized graph configuration for Viva",
+      "  This option can be used if this simulator uses tracing categories\n"
+      "  in its code. The file specified by this option holds a graph configuration\n"
+      "  file for the Viva visualization tool that can be used to analyze a categorized\n"
+      "  resource utilization.",
+      detailed);
 }
 
 static void output_types (const char *name, xbt_dynar_t types, FILE *file)
@@ -421,83 +456,107 @@ static void output_categories (const char *name, xbt_dynar_t cats, FILE *file)
   xbt_dynar_free (&cats);
 }
 
-void TRACE_generate_triva_uncat_conf (void)
+static void uncat_configuration (FILE *file)
 {
-  char *output = TRACE_get_triva_uncat_conf ();
+  //register NODE and EDGE types
+  output_types ("node", TRACE_get_node_types(), file);
+  output_types ("edge", TRACE_get_edge_types(), file);
+  fprintf (file, "\n");
+
+  //configuration for all nodes
+  fprintf (file,
+      "  host = {\n"
+      "    type = \"square\";\n"
+      "    size = \"power\";\n"
+      "    values = (\"power_used\");\n"
+      "  };\n"
+      "  link = {\n"
+      "    type = \"rhombus\";\n"
+      "    size = \"bandwidth\";\n"
+      "    values = (\"bandwidth_used\");\n"
+      "  };\n");
+  //close
+}
+
+static void cat_configuration (FILE *file)
+{
+  //register NODE and EDGE types
+  output_types ("node", TRACE_get_node_types(), file);
+  output_types ("edge", TRACE_get_edge_types(), file);
+  fprintf (file, "\n");
+
+  //configuration for all nodes
+  fprintf (file,
+           "  host = {\n"
+           "    type = \"square\";\n"
+           "    size = \"power\";\n");
+  output_categories ("p", TRACE_get_categories(), file);
+  fprintf (file,
+           "  };\n"
+           "  link = {\n"
+           "    type = \"rhombus\";\n"
+           "    size = \"bandwidth\";\n");
+  output_categories ("b", TRACE_get_categories(), file);
+  fprintf (file, "  };\n");
+  //close
+}
+
+static void generate_uncat_configuration (const char *output, const char *name, int brackets)
+{
   if (output && strlen(output) > 0){
     FILE *file = fopen (output, "w");
     if (file == NULL){
-      THROWF (system_error, 1, "Unable to open file (%s) for writing triva graph "
-          "configuration (uncategorized).", output);
+      THROWF (system_error, 1, "Unable to open file (%s) for writing %s graph "
+          "configuration (uncategorized).", output, name);
     }
 
-    //open
-    fprintf (file, "{\n");
-
-    //register NODE and EDGE types
-    output_types ("node", TRACE_get_node_types(), file);
-    output_types ("edge", TRACE_get_edge_types(), file);
-    fprintf (file, "\n");
-
-    //configuration for all nodes
-    fprintf (file,
-        "  host = {\n"
-        "    type = \"square\";\n"
-        "    size = \"power\";\n"
-        "    values = (\"power_used\");\n"
-        "  };\n"
-        "  link = {\n"
-        "    type = \"rhombus\";\n"
-        "    size = \"bandwidth\";\n"
-        "    values = (\"bandwidth_used\");\n"
-        "  };\n");
-    //close
-    fprintf (file, "}\n");
+    if (brackets) fprintf (file, "{\n");
+    uncat_configuration (file);
+    if (brackets) fprintf (file, "}\n");
     fclose (file);
   }
 }
 
-void TRACE_generate_triva_cat_conf (void)
+static void generate_cat_configuration (const char *output, const char *name, int brackets)
 {
-  char *output = TRACE_get_triva_cat_conf();
   if (output && strlen(output) > 0){
     //check if we do have categories declared
     if (xbt_dict_is_empty(created_categories)){
-      XBT_INFO("No categories declared, ignoring generation of triva graph configuration");
+      XBT_INFO("No categories declared, ignoring generation of %s graph configuration", name);
       return;
     }
 
     FILE *file = fopen (output, "w");
     if (file == NULL){
-      THROWF (system_error, 1, "Unable to open file (%s) for writing triva graph "
-          "configuration (categorized).", output);
+      THROWF (system_error, 1, "Unable to open file (%s) for writing %s graph "
+          "configuration (categorized).", output, name);
     }
 
-    //open
     fprintf (file, "{\n");
-
-    //register NODE and EDGE types
-    output_types ("node", TRACE_get_node_types(), file);
-    output_types ("edge", TRACE_get_edge_types(), file);
-    fprintf (file, "\n");
-
-    //configuration for all nodes
-    fprintf (file,
-             "  host = {\n"
-             "    type = \"square\";\n"
-             "    size = \"power\";\n");
-    output_categories ("p", TRACE_get_categories(), file);
-    fprintf (file,
-             "  };\n"
-             "  link = {\n"
-             "    type = \"rhombus\";\n"
-             "    size = \"bandwidth\";\n");
-    output_categories ("b", TRACE_get_categories(), file);
-    fprintf (file, "  };\n");
-    //close
+    cat_configuration (file);
     fprintf (file, "}\n");
     fclose (file);
   }
+}
+
+void TRACE_generate_triva_uncat_conf (void)
+{
+  generate_uncat_configuration (TRACE_get_triva_uncat_conf (), "triva", 1);
+}
+
+void TRACE_generate_triva_cat_conf (void)
+{
+  generate_cat_configuration (TRACE_get_triva_cat_conf(), "triva", 1);
+}
+
+void TRACE_generate_viva_uncat_conf (void)
+{
+  generate_uncat_configuration (TRACE_get_viva_uncat_conf (), "viva", 0);
+}
+
+void TRACE_generate_viva_cat_conf (void)
+{
+  generate_cat_configuration (TRACE_get_viva_cat_conf(), "viva", 0);
 }
 
 #undef OPT_TRACING
@@ -513,5 +572,7 @@ void TRACE_generate_triva_cat_conf (void)
 #undef OPT_TRACING_DISABLE_DESTROY
 #undef OPT_TRIVA_UNCAT_CONF
 #undef OPT_TRIVA_CAT_CONF
+#undef OPT_VIVA_UNCAT_CONF
+#undef OPT_VIVA_CAT_CONF
 
 #endif /* HAVE_TRACING */

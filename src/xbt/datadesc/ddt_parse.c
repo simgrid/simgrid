@@ -17,14 +17,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ddt_parse, xbt_ddt,
 
 typedef struct s_type_modifier {
   short is_long;
-  int is_unsigned:1;
-  int is_short:1;
+  unsigned is_unsigned:1;
+  unsigned is_short:1;
 
-  int is_struct:1;
-  int is_union:1;
-  int is_enum:1;
+  unsigned is_struct:1;
+  unsigned is_union:1;
+  unsigned is_enum:1;
 
-  int is_ref:1;
+  unsigned is_ref:1;
 
   int is_dynar:2;
   int is_matrix:2;

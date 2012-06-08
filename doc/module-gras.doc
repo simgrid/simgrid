@@ -9,7 +9,7 @@
          other processes, and retrive information about them.
        - \ref GRAS_msg : communications are message oriented. You have to
          describe all possible messages and their payload beforehand, and
-         can then attach callbacks to the arrival of a given kind of message. 
+         can then attach callbacks to the arrival of a given kind of message.
        - \ref GRAS_timer : this is how to program repetitive and delayed
          tasks, not unlike cron(8) and at(1). This cannot be used to timeout
          a function (like setitimer(2) or signal(2) games could do).
@@ -26,31 +26,31 @@
 	 This is how to let GRAS handle your globals properly.
        - \ref GRAS_emul : Support to emulate code excution (ie, reporting
          execution time into the simulator and having code sections specific
-         to simulation or to real mode).     
-	  
+         to simulation or to real mode).
+
     \section GRAS_examples Examples
- 
+
     There is for now rather few examples of GRAS, but it's better than
     nothing, isn't it?
-    
+
        - \ref GRAS_ex_ping
        - \ref GRAS_ex_mmrpc
        - \ref GRAS_ex_token
        - \ref GRAS_ex_timer
-      
+
      The initiatic tour of the tutorial also contains several examples. The
      most proeminent one is:
-      
+
        - \ref GRAS_tut_tour_explicitwait_use
 
     \section GRAS_tut_presentation Tutorial
-    
+
     We even have a tutorial for the GRAS framework. It details in a
     hopefully pedagogic order all the points of the API, along with example
     of use for each of them. Unfortunately, it is not finished yet (the main
     part missing is the one on how to describe data). Here is the table of
     content:
-    
+
        - \ref GRAS_tut_intro
          - \ref GRAS_tut_intro_what
          - \ref GRAS_tut_intro_model
@@ -69,7 +69,7 @@
 	 - \ref GRAS_tut_tour_message_recaping
 
     \section GRAS_howto_presentation HOWTOsbis
-    
+
     The tutorial and the API documentation present the framework little
     piece by little piece and provide a lot of information on each of them.
     Quite orthogonally to this, the HOWTOs try to present transversal
@@ -99,23 +99,23 @@
    allows you to run a repetitive task ("do this every N second until I tell
    you to stop"), or to deffer a treatment ("do this in 3 sec").
 
-    @{ */     
-       /** @defgroup GRAS_dd      Data description      */       
-       /** @defgroup GRAS_sock    Sockets               */           
-       /** @defgroup GRAS_msg     Messages              */               
-       /** @defgroup GRAS_timer   Timers                */               
-     
+    @{ */
+       /** @defgroup GRAS_dd      Data description      */
+       /** @defgroup GRAS_sock    Sockets               */
+       /** @defgroup GRAS_msg     Messages              */
+       /** @defgroup GRAS_timer   Timers                */
+
 /** @} */
 #####################################################################
 /** @addtogroup GRAS_run
 
    Virtualization facilities allow your code to run both on top of the simulator or in real setting.
 
-    @{ */     
-	 
-       /** @defgroup GRAS_globals Globals               */ 
-       /** @defgroup GRAS_emul    Emulation support */ 
-       /** @defgroup GRAS_virtu   Syscalls              */ 
+    @{ */
+
+       /** @defgroup GRAS_globals Globals               */
+       /** @defgroup GRAS_emul    Emulation support */
+       /** @defgroup GRAS_virtu   Syscalls              */
 
 /** @} */
 
@@ -132,7 +132,7 @@
 
      The initiatic tour of the tutorial also contains several examples. The
      most proeminent one is:
-      
+
        - \ref GRAS_tut_tour_explicitwait_use
 
   There is some more examples in the distribution, under the directory
@@ -149,7 +149,7 @@
     @ingroup GRAS_ex
 
     This example implements the very classical ping-pong in GRAS. It
-    involves a client (initiating the ping-pong) and a server (answering to 
+    involves a client (initiating the ping-pong) and a server (answering to
     client's requests).
 
     It works the following way:
@@ -158,7 +158,7 @@
        to the expeditor
      - The client sends the ping message to the server, and waits for the
        pong message as an answer.
- 
+
     This example resides in the <b>examples/gras/ping/ping.c</b> file. Yes, both
     the code of the client and of the server is placed in the same file. See
     the \ref GRAS_tut_tour_setup of the tutorial if wondering.
@@ -173,34 +173,34 @@
 	- \ref GRAS_ex_ping_sermain
       - \ref GRAS_ex_ping_client
 	- \ref GRAS_ex_ping_climain
-	
+
     <hr>
 
     \dontinclude gras/ping/ping_common.c
-    
-    \section GRAS_ex_ping_common 1) Common code to the client and the server 
-    
+
+    \section GRAS_ex_ping_common 1) Common code to the client and the server
+
     \subsection GRAS_ex_ping_initial 1.a) Initial settings
-    
+
     Let's first load the module header and declare a logging category (see
     \ref XBT_log for more info on logging).
-    
+
     \skip include
     \until XBT_LOG
-    
+
     The module header <tt>ping.h</tt> reads:
-    
+
     \dontinclude gras/ping/ping.h
     \skip include
     \until argv
     \until argv
 
     \subsection GRAS_ex_ping_register 1.b) Register the messages
-    
+
     This function, called by both the client and the server is in charge of
     declaring the existing messages to GRAS. Since the payload does not
-    involve any newly created types but only int, this is quite easy. 
-    (to exchange more complicated types, see \ref GRAS_dd or 
+    involve any newly created types but only int, this is quite easy.
+    (to exchange more complicated types, see \ref GRAS_dd or
     \ref GRAS_ex_mmrpc for an example).
 
     \dontinclude gras/ping/ping_common.c
@@ -210,7 +210,7 @@
     [Back to \ref GRAS_ex_ping_toc]
 
     \section GRAS_ex_ping_server 2) Server's code
-    
+
     \subsection GRAS_ex_ping_serdata 2.a) The server's globals
 
     In order to ensure the communication between the "main" and the callback
@@ -221,31 +221,31 @@
     \dontinclude gras/ping/ping_server.c
     \skip typedef struct
     \until }
-    
+
     \subsection GRAS_ex_ping_sercb 2.b) The callback to the ping message
 
     Here is the callback run when the server receives any ping message (this
     will be registered later by the server).
-    
+
     \skip server_cb_ping_handler
     \until end_of_server_cb_ping_handler
 
     \subsection GRAS_ex_ping_sermain 2.c) The "main" of the server
-    
+
     This is the "main" of the server. As explained in the tutorial, \ref
     GRAS_tut_tour_setup, you must not write any main()
     function yourself. Instead, you just have to write a regular function
     like this one which will act as a main.
-    
+
     \skip server
     \until end_of_server
 
     [Back to \ref GRAS_ex_ping_toc]
-    
+
     \section GRAS_ex_ping_client 3) Client's code
-    
+
     \subsection GRAS_ex_ping_climain 3.a) Client's "main" function
-    
+
     This function is quite straightforward, and the inlined comments should
     be enough to understand it.
 
@@ -271,12 +271,12 @@
    only one having it. So, if there is an action you want all processes to
    do alternativly, but you cannot afford to have two processes doing it at
    the same time, let the process having the token doing it.
-   
+
    Actually, there is a lot of different token ring algorithms in the
    litterature, so this example implements one of them: the simplest one.
    The ring is static (no new node can join it, and you'll get trouble if
    one node dies or leaves), and nothing is done for the case in which the
-   token is lost. 
+   token is lost.
 
    - \ref GRAS_ex_stoken_deploy
    - \ref GRAS_ex_stoken_global
@@ -287,38 +287,38 @@
 
    Here is the deployment file:
    \include examples/gras/mutual_exclusion/simple_token/simple_token.xml
-   
+
    The neighbour of each node is given at startup as command line argument.
    Moreover, one of the nodes is instructed by a specific argument (the one
    on Tremblay here) to create the token at the begining of the algorithm.
-   
+
    \section GRAS_ex_stoken_global 2) Global definition
-   
+
    The token is incarned by a specific message, which circulates from node
    to node (the payload is an integer incremented at each hop). So, the most
    important part of the code is the message callback, which forwards the
    message to the next node. That is why we have to store all variable in a
-   global, as explained in the \ref GRAS_globals section. 
+   global, as explained in the \ref GRAS_globals section.
 
    \dontinclude examples/gras/mutual_exclusion/simple_token/simple_token.c
    \skip typedef
    \until }
-   
+
    \section GRAS_ex_stoken_callback 3) The callback
-   
+
    Even if this is the core of this algorithm, this function is quite
    straightforward.
-   
+
    \skip node_cb_stoken_handler
    \until end_of_node_cb_stoken_handler
 
    \section GRAS_ex_stoken_main 4) The main function
-   
+
    This function is splited in two parts: The first one performs all the
-   needed initialisations (points 1-7) while the end (point 8. below) calls 
+   needed initialisations (points 1-7) while the end (point 8. below) calls
    gras_msg_handle() as long as the planned amount of ring loops are not
    performed.
-   
+
    \skip node
    \until end_of_node
 
@@ -331,21 +331,21 @@
 /** @defgroup GRAS_ex_mmrpc A simple RPC for matrix multiplication
     @ingroup GRAS_ex
 
-    This example implements a remote matrix multiplication. It involves a client 
-    (creating the matrices and sending the multiplications requests) and a server 
+    This example implements a remote matrix multiplication. It involves a client
+    (creating the matrices and sending the multiplications requests) and a server
     (computing the multiplication on client's behalf).
 
-    This example also constitutes a more advanced example of data description 
-    mechanisms, since the message payload type is a bit more complicated than in 
+    This example also constitutes a more advanced example of data description
+    mechanisms, since the message payload type is a bit more complicated than in
     other examples such as the ping one (\ref GRAS_ex_ping).
 
     It works the following way (not very different from the ping example):
      - Both the client and the server register all needed messages and datatypes
      - The server registers a callback to the "request" message, which computes
        what needs to be and returns the result to the expeditor.
-     - The client creates two matrices, ask for their multiplication and check 
+     - The client creates two matrices, ask for their multiplication and check
        the server's answer.
- 
+
     This example resides in the <b>examples/gras/mmrpc/mmrpc.c</b> file. (See
     the \ref GRAS_tut_tour_setup of the tutorial if wondering why both the server
     and the client live in the same source file)
@@ -363,13 +363,13 @@
       - \ref GRAS_ex_mmrpc_client
 	- \ref GRAS_ex_mmrpc_cliinc
 	- \ref GRAS_ex_mmrpc_climain
-	
+
     <hr>
 
-    
+
     \section GRAS_ex_mmrpc_common 1) Common code to the client and the server (mmrpc_common.c and mmrpc.h)
-    
-    
+
+
     \subsection GRAS_ex_mmrpc_header 1.a) Module header (mmrpc.h)
 
     This loads the gras header and declare the function's prototypes as well
@@ -387,40 +387,40 @@
     xbt/matrix module.
 
     \subsection GRAS_ex_mmrpc_logdef 1.c) Logging category definition (mmrpc_common.c)
-    
+
     Let's first load the module header and declare a logging category (see
     \ref XBT_log for more info on logging). This logging category does live
     in this file (ie the required symbols are defined here and declared as
-    "extern" in any other file using them). That is why we use 
-    \ref XBT_LOG_NEW_DEFAULT_CATEGORY here and 
+    "extern" in any other file using them). That is why we use
+    \ref XBT_LOG_NEW_DEFAULT_CATEGORY here and
     \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY in mmrpc_client.c and mmrpc_server.c.
-    
+
     \dontinclude gras/mmrpc/mmrpc_common.c
     \skip include
     \until XBT_LOG
 
     \subsection GRAS_ex_mmrpc_msgregister 1.d) Register the messages (mmrpc_common.c)
-    
+
     This function, called by both the client and the server is in charge of
     declaring the existing messages to GRAS.
 
-    The datatype description builded that way can then be used to build an array datatype or 
+    The datatype description builded that way can then be used to build an array datatype or
     to declare messages.
-    
+
     \skip register_messages
     \until }
 
     [Back to \ref GRAS_ex_mmrpc_toc]
 
     \section GRAS_ex_mmrpc_server 2) Server's code (mmrpc_server.c)
-    
+
     \subsection GRAS_ex_mmrpc_serinc 2.a) Server intial settings
-    
+
     All module symbols live in the mmrpc_common.c file. We thus have to
     define \ref XBT_DEFINE_TYPE_EXTERN to the preprocessor so that the
-    \ref XBT_DEFINE_TYPE symbols don't get included here. Likewise, we use 
+    \ref XBT_DEFINE_TYPE symbols don't get included here. Likewise, we use
     \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY to get the log category in here.
-    
+
     \dontinclude gras/mmrpc/mmrpc_server.c
     \skip define
     \until XBT_LOG
@@ -428,40 +428,40 @@
     \subsection GRAS_ex_mmrpc_sercb 2.b) The callback to the mmrpc message
 
     Here is the callback run when the server receives any mmrpc message (this
-    will be registered later by the server). Note the way we get the message 
-    payload. In the ping example, there was one additional level of pointer 
+    will be registered later by the server). Note the way we get the message
+    payload. In the ping example, there was one additional level of pointer
     indirection (see \ref GRAS_ex_ping_sercb). This is because the payload is
     an array here (ie a pointer) whereas it is a scalar in the ping example.
-    
+
     \skip server_cb_request_handler
     \until end_of_server_cb_request_handler
 
     \subsection GRAS_ex_mmrpc_sermain 2.c) The "main" of the server
-    
+
     This is the "main" of the server. As explained in the tutorial, \ref
     GRAS_tut_tour_setup, you must not write any main()
     function yourself. Instead, you just have to write a regular function
     like this one which will act as a main.
-    
+
     \skip server
     \until end_of_server
-    
+
     [Back to \ref GRAS_ex_mmrpc_toc]
 
     \section GRAS_ex_mmrpc_client 3) Client's code (mmrpc_client.c)
-    
+
     \subsection GRAS_ex_mmrpc_cliinc 2.a) Server intial settings
-    
+
     As for the server, some extra love is needed to make sure that automatic
     datatype parsing and log categories do work even if we are using several
-    files.  
-    
+    files.
+
     \dontinclude gras/mmrpc/mmrpc_client.c
     \skip define
     \until XBT_LOG
 
     \subsection GRAS_ex_mmrpc_climain 3.b) Client's "main" function
-    
+
     This function is quite straightforward, and the inlined comments should
     be enough to understand it.
 
@@ -481,7 +481,7 @@
 
     This example fools around with the GRAS timers (\ref GRAS_timer). It is
     mainly a regression test, since it uses almost all timer features.
-    
+
     The main program registers a repetititive task and a delayed one, and
     then loops until the <tt>still_to_do</tt> variables of its globals reach
     0. The delayed task set it to 5, and the repetititive one decrease it
@@ -510,19 +510,19 @@
      - \ref GRAS_ex_timer_main
 
     \dontinclude timer.c
-    
+
     \section GRAS_ex_timer_decl   1. Declarations and headers
     \skip include
     \until my_globals
-    
+
     \section GRAS_ex_timer_delay  2. Source code of the delayed action
     \skip repetitive_action
     \until end_of_repetitive_action
-    
+
     \section GRAS_ex_timer_repeat 3. Source code of the repetitive action
     \skip delayed_action
     \until end_of_delayed_action
-    
+
     \section GRAS_ex_timer_main   4. Source code of main function
     \skip client
     \until end_of_client

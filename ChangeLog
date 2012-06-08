@@ -1,15 +1,19 @@
 SimGrid (3.8) NOT RELEASED; urgency=low
 
  The "SimGrid makes psssshiiiit and jumps into the cloud" release.
- 
+
  CMAKE:
- * Remove option custom_flags. Now use environment variables CFLAGS 
+ * Remove option custom_flags. Now use environment variables CFLAGS
    and LDFLAGS.
-  
+
  MSG:
  * Add an experimental interface to manipulate VMs. They are mainly
    process groups with very few intrinsic semantic, but they should
    allow you to build the semantic you want easily.
+
+ Simix:
+ * Bug fixes around the resource failures: don't let the processes
+   survive the host they are running onto
 
  SimDag:
  * New type of typed tasks SD_TASK_COMP_PAR_AMDAHL that represents a
@@ -26,7 +30,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
-SimGrid (3.7.1) NOT RELEASED; urgency=low
+SimGrid (3.7.1) stable; urgency=low
 
  MSG:
  * Restore the prototype of MSG_process_create_with_environment() to
@@ -36,12 +40,26 @@ SimGrid (3.7.1) NOT RELEASED; urgency=low
  SURF:
  * Fix weird behaviors when dealing with parallel tasks.
 
+ WINDOWS:
+ * Simgrid is now built as a dll.
+ * Simgrid-java now works on Windows.
+ * Simgrid-Java is now included into Windows package.
+
+ MacOS:
+ * First pre-build package for MacOSX.
+
  Build System:
  * Fix compilation when using MSG_USE_DEPRECATED.
- * Fix compilation on Macs.
+ * Fix some compilation issues on Macs and Windows.
+ * Reduce the number of failing tests on exotic systems, like Debian/Hurd.
  * Environment variables CFLAGS and LDFLAGS are now honored by cmake.
 
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ We discovered that the Lua console is broken, but we are missing the
+ manpower to fix it right now. The problem existed in 3.7 too, so we
+ are not blocking the release for that. Sorry if you depended on this
+ feature, any help would be really welcome.
+
+ -- Thu Jun 7 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.7) stable; urgency=low
 

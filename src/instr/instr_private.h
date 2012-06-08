@@ -98,6 +98,7 @@ void new_pajeSubVariable (double timestamp, container_t container, type_t type, 
 void new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
 void new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
 void new_pajePopState (double timestamp, container_t container, type_t type);
+void new_pajeResetState (double timestamp, container_t container, type_t type);
 void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);
 void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key);
 void new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
@@ -169,10 +170,14 @@ int TRACE_disable_destroy (void);
 char *TRACE_get_filename(void);
 char *TRACE_get_triva_uncat_conf (void);
 char *TRACE_get_triva_cat_conf (void);
+char *TRACE_get_viva_uncat_conf (void);
+char *TRACE_get_viva_cat_conf (void);
 void TRACE_global_init(int *argc, char **argv);
 void TRACE_help(int detailed);
 void TRACE_generate_triva_uncat_conf (void);
 void TRACE_generate_triva_cat_conf (void);
+void TRACE_generate_viva_uncat_conf (void);
+void TRACE_generate_viva_cat_conf (void);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *resource,

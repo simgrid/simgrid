@@ -858,7 +858,7 @@ void SIMIX_comm_copy_data(smx_action_t comm)
 {
   size_t buff_size = comm->comm.src_buff_size;
   /* If there is no data to be copy then return */
-  if (!comm->comm.src_buff || !comm->comm.dst_buff || comm->comm.copied == 1)
+  if (!comm->comm.src_buff || !comm->comm.dst_buff || comm->comm.copied)
     return;
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",

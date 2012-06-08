@@ -254,16 +254,19 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
 
 void SIMIX_host_execution_destroy(smx_action_t action)
 {
+  int destroyed=0;
   XBT_DEBUG("Destroy action %p", action);
 
-  xbt_free(action->name);
 
   if (action->execution.surf_exec) {
-    surf_workstation_model->action_unref(action->execution.surf_exec);
+    destroyed = surf_workstation_model->action_unref(action->execution.surf_exec);
     action->execution.surf_exec = NULL;
   }
 
-  xbt_mallocator_release(simix_global->action_mallocator, action);
+  if (destroyed) {
+    xbt_free(action->name);
+    xbt_mallocator_release(simix_global->action_mallocator, action);
+  }
 }
 
 void SIMIX_host_execution_cancel(smx_action_t action)
@@ -345,7 +348,13 @@ void SIMIX_execution_finish(smx_action_t action)
 
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->smx_host->name);
-        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        if (simcall->issuer->smx_host == action->execution.host) {
+          // add a reference to the action that will be destroyed when the killed process is cleaned up, and by the end of the current function
+          surf_action_ref(action->execution.surf_exec);
+          SIMIX_process_kill(simcall->issuer);
+        } else {
+          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        }
         break;
 
       case SIMIX_CANCELED:
@@ -368,14 +377,15 @@ void SIMIX_execution_finish(smx_action_t action)
 
 void SIMIX_post_host_execute(smx_action_t action)
 {
-  /* FIXME: check if the host running the action failed or not*/
-  /*if(surf_workstation_model->extension.workstation.get_state(action->host->host))*/
-
-  /* If the host running the action didn't fail, then the action was canceled */
-  if (surf_workstation_model->action_state_get(action->execution.surf_exec) == SURF_ACTION_FAILED)
+  if (surf_workstation_model->extension.workstation.get_state(action->execution.host->host)==SURF_RESOURCE_OFF) {
+    /* if the host running the action failed, notice it so that the asking process can be killed if it runs on that host itself */
+    action->state = SIMIX_FAILED;
+  } else if (surf_workstation_model->action_state_get(action->execution.surf_exec) == SURF_ACTION_FAILED) {
+    /* If the host running the action didn't fail, then the action was canceled */
      action->state = SIMIX_CANCELED;
-  else
+  } else {
      action->state = SIMIX_DONE;
+  }
 
   if (action->execution.surf_exec) {
     surf_workstation_model->action_unref(action->execution.surf_exec);

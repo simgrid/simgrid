@@ -33,7 +33,7 @@ typedef struct {
   /* Allowed type of the variable */
   e_xbt_cfgelm_type_t type;
   int min, max;
-  int isdefault:1;
+  unsigned isdefault:1;
 
   /* Callbacks */
   xbt_cfg_cb_t cb_set;
