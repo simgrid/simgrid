@@ -19,7 +19,7 @@ XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
 
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new(const char *filename);
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
                                                     const char *input,
                                                     double periodicity);

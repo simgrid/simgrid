@@ -16,9 +16,36 @@ typedef struct tmgr_event {
   double value;
 } s_tmgr_event_t, *tmgr_event_t;
 
+enum e_trace_type {
+  e_trace_list, e_trace_uniform, e_trace_exponential, e_trace_weibull
+};
+
 typedef struct tmgr_trace {
-  xbt_dynar_t event_list;
+  enum e_trace_type type;
+  union {
+    struct {
+      xbt_dynar_t event_list;
+    } s_list;
+    struct {
+      double alpha;
+      double beta;
+      s_tmgr_event_t next_event;
+      /* and probably other things */
+    } s_uniform;
+    struct {
+      double lambda;
+      s_tmgr_event_t next_event;
+      /* and probably other things */
+    } s_exponential;
+    struct {
+      double lambda;
+      double k;
+      s_tmgr_event_t next_event;
+      /* and probably other things */
+    } s_weibull;
+  };
 } s_tmgr_trace_t;
+
 
 typedef struct tmgr_trace_event {
   tmgr_trace_t trace;

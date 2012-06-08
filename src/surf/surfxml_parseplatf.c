@@ -75,7 +75,7 @@ static void parse_Etag_trace(void)
 {
   tmgr_trace_t trace;
   if (!trace_file || strcmp(trace_file, "") != 0) {
-    trace = tmgr_trace_new(trace_file);
+    trace = tmgr_trace_new_from_file(trace_file);
   } else if (strcmp(surfxml_pcdata, "") == 0) {
       trace = NULL;
   } else {
