@@ -25,7 +25,7 @@
  *  C file, and the events to react to in a separate text file.
  *  Declare a function handling each of the events that you want to
  *  accept in your trace files, register them using \ref
- *  MSG_action_register in your main, and then use \ref
+ *  xbt_replay_action_register in your main, and then use \ref
  *  MSG_action_trace_run to launch the simulation. You can either
  *  have one trace file containing all your events, or a file per
  *  simulated process. Check the tesh files in the example directory
@@ -568,20 +568,20 @@ int main(int argc, char *argv[])
   MSG_launch_application(argv[2]);
 
   /*   Action registration */
-  MSG_action_register("init",     action_init);
-  MSG_action_register("finalize", action_finalize);
-  MSG_action_register("comm_size",action_comm_size);
-  MSG_action_register("send",     action_send);
-  MSG_action_register("Isend",    action_Isend);
-  MSG_action_register("recv",     action_recv);
-  MSG_action_register("Irecv",    action_Irecv);
-  MSG_action_register("wait",     action_wait);
-  MSG_action_register("barrier",  action_barrier);
-  MSG_action_register("bcast",    action_bcast);
-  MSG_action_register("reduce",   action_reduce);
-  MSG_action_register("allReduce",action_allReduce);
-  MSG_action_register("sleep",    action_sleep);
-  MSG_action_register("compute",  action_compute);
+  xbt_replay_action_register("init",     action_init);
+  xbt_replay_action_register("finalize", action_finalize);
+  xbt_replay_action_register("comm_size",action_comm_size);
+  xbt_replay_action_register("send",     action_send);
+  xbt_replay_action_register("Isend",    action_Isend);
+  xbt_replay_action_register("recv",     action_recv);
+  xbt_replay_action_register("Irecv",    action_Irecv);
+  xbt_replay_action_register("wait",     action_wait);
+  xbt_replay_action_register("barrier",  action_barrier);
+  xbt_replay_action_register("bcast",    action_bcast);
+  xbt_replay_action_register("reduce",   action_reduce);
+  xbt_replay_action_register("allReduce",action_allReduce);
+  xbt_replay_action_register("sleep",    action_sleep);
+  xbt_replay_action_register("compute",  action_compute);
 
 
   /* Actually do the simulation using MSG_action_trace_run */
