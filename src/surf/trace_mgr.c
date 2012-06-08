@@ -32,6 +32,48 @@ XBT_INLINE void tmgr_history_free(tmgr_history_t h)
   free(h);
 }
 
+tmgr_trace_t tmgr_trace_new_uniform(double alpha, double beta)
+{  
+  tmgr_trace_t trace = NULL;
+  
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_uniform;
+  trace->s_uniform.alpha = alpha;
+  trace->s_uniform.beta = beta;
+  
+  //FIXME Generate a new event date
+  
+  return trace;
+}
+
+
+tmgr_trace_t tmgr_trace_new_exponential(double lambda)
+{  
+  tmgr_trace_t trace = NULL;
+  
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_exponential;
+  trace->s_exponential.lambda = lambda;
+  
+  // FIXME Generate a new event date
+  
+  return trace;
+}
+
+tmgr_trace_t tmgr_trace_new_weibull(double lambda, double k)
+{  
+  tmgr_trace_t trace = NULL;
+  
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_weibull;
+  trace->s_weibull.lambda = lambda;
+  trace->s_weibull.k = k;
+  
+  // FIXME Generate a new event date
+  
+  return trace;
+}
+
 tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
                                         double periodicity)
 {
