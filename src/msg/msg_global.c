@@ -11,6 +11,7 @@
 #include "xbt/log.h"
 #include "xbt/virtu.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
+#include "xbt/replay.h"
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,

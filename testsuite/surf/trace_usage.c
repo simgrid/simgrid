@@ -23,8 +23,8 @@ void test(void);
 void test(void)
 {
   tmgr_history_t history = tmgr_history_new();
-  tmgr_trace_t trace_A = tmgr_trace_new("trace_A.txt");
-  tmgr_trace_t trace_B = tmgr_trace_new("trace_B.txt");
+  tmgr_trace_t trace_A = tmgr_trace_new_from_file("trace_A.txt");
+  tmgr_trace_t trace_B = tmgr_trace_new_from_file("trace_B.txt");
   double next_event_date = -1.0;
   double value = -1.0;
   char *resource = NULL;

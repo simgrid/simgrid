@@ -182,7 +182,7 @@ set(XBT_SRC
 	src/xbt/graphxml_parse.c
 	src/xbt/setset.c
 	src/xbt/parmap.c
-	src/xbt/xbt_replay_trace_reader.c
+	src/xbt/xbt_replay.c
 	src/xbt/lib.c
 	src/xbt/automaton.c
 	src/xbt/datadesc/ddt_create.c
@@ -425,7 +425,7 @@ set(headers_to_install
 	include/xbt/queue.h
 	include/xbt/setset.h
 	include/xbt/mmalloc.h
-	include/xbt/replay_trace_reader.h
+	include/xbt/replay.h
 	include/xbt/parmap.h
 	include/xbt/automaton.h
 	include/xbt/automatonparse_promela.h

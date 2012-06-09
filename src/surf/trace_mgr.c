@@ -32,6 +32,48 @@ XBT_INLINE void tmgr_history_free(tmgr_history_t h)
   free(h);
 }
 
+tmgr_trace_t tmgr_trace_new_uniform(double alpha, double beta)
+{  
+  tmgr_trace_t trace = NULL;
+  
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_uniform;
+  trace->s_uniform.alpha = alpha;
+  trace->s_uniform.beta = beta;
+  
+  //FIXME Generate a new event date
+  
+  return trace;
+}
+
+
+tmgr_trace_t tmgr_trace_new_exponential(double lambda)
+{  
+  tmgr_trace_t trace = NULL;
+  
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_exponential;
+  trace->s_exponential.lambda = lambda;
+  
+  // FIXME Generate a new event date
+  
+  return trace;
+}
+
+tmgr_trace_t tmgr_trace_new_weibull(double lambda, double k)
+{  
+  tmgr_trace_t trace = NULL;
+  
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_weibull;
+  trace->s_weibull.lambda = lambda;
+  trace->s_weibull.k = k;
+  
+  // FIXME Generate a new event date
+  
+  return trace;
+}
+
 tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
                                         double periodicity)
 {
@@ -55,7 +97,8 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
               "Invalid periodicity %lg (must be positive)", periodicity);
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
-  trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
+  trace->type = e_trace_list;
+  trace->s_list.event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
   list = xbt_str_split(input, "\n\r");
 
@@ -79,10 +122,10 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
       }
       last_event->delta = event.delta - last_event->delta;
     }
-    xbt_dynar_push(trace->event_list, &event);
+    xbt_dynar_push(trace->s_list.event_list, &event);
     last_event =
-        xbt_dynar_get_ptr(trace->event_list,
-                          xbt_dynar_length(trace->event_list) - 1);
+        xbt_dynar_get_ptr(trace->s_list.event_list,
+                          xbt_dynar_length(trace->s_list.event_list) - 1);
   }
   if (last_event)
     last_event->delta = periodicity;
@@ -96,7 +139,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
   return trace;
 }
 
-tmgr_trace_t tmgr_trace_new(const char *filename)
+tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
 {
   char *tstr = NULL;
   FILE *f = NULL;
@@ -131,11 +174,11 @@ tmgr_trace_t tmgr_empty_trace_new(void)
   s_tmgr_event_t event;
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
-  trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
+  trace->s_list.event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
   event.delta = 0.0;
   event.value = 0.0;
-  xbt_dynar_push(trace->event_list, &event);
+  xbt_dynar_push(trace->s_list.event_list, &event);
 
   return trace;
 }
@@ -144,7 +187,7 @@ XBT_INLINE void tmgr_trace_free(tmgr_trace_t trace)
 {
   if (!trace)
     return;
-  xbt_dynar_free(&(trace->event_list));
+  xbt_dynar_free(&(trace->s_list.event_list));
   free(trace);
 }
 
@@ -160,7 +203,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
   trace_event->idx = offset;
   trace_event->model = model;
 
-  xbt_assert((trace_event->idx < xbt_dynar_length(trace->event_list)),
+  xbt_assert((trace_event->idx < xbt_dynar_length(trace->s_list.event_list)),
               "You're referring to an event that does not exist!");
 
   xbt_heap_push(h->heap, trace_event, start_time);
@@ -193,12 +236,12 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
     return NULL;
 
   trace = trace_event->trace;
-  event = xbt_dynar_get_ptr(trace->event_list, trace_event->idx);
+  event = xbt_dynar_get_ptr(trace->s_list.event_list, trace_event->idx);
 
   *value = event->value;
   *model = trace_event->model;
 
-  if (trace_event->idx < xbt_dynar_length(trace->event_list) - 1) {
+  if (trace_event->idx < xbt_dynar_length(trace->s_list.event_list) - 1) {
     xbt_heap_push(h->heap, trace_event, event_date + event->delta);
     trace_event->idx++;
   } else if (event->delta > 0) {        /* Last element, checking for periodicity */

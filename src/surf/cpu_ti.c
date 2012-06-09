@@ -73,12 +73,12 @@ static surf_cpu_ti_trace_t surf_cpu_ti_trace_new(tmgr_trace_t power_trace)
   trace = xbt_new0(s_surf_cpu_ti_trace_t, 1);
   trace->time_points =
       xbt_malloc0(sizeof(double) *
-                  (xbt_dynar_length(power_trace->event_list) + 1));
+                  (xbt_dynar_length(power_trace->s_list.event_list) + 1));
   trace->integral =
       xbt_malloc0(sizeof(double) *
-                  (xbt_dynar_length(power_trace->event_list) + 1));
-  trace->nb_points = xbt_dynar_length(power_trace->event_list);
-  xbt_dynar_foreach(power_trace->event_list, cpt, val) {
+                  (xbt_dynar_length(power_trace->s_list.event_list) + 1));
+  trace->nb_points = xbt_dynar_length(power_trace->s_list.event_list);
+  xbt_dynar_foreach(power_trace->s_list.event_list, cpt, val) {
     trace->time_points[i] = time;
     trace->integral[i] = integral;
     integral += val.delta * val.value;
@@ -116,8 +116,8 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
   }
 
   /* only one point available, fixed trace */
-  if (xbt_dynar_length(power_trace->event_list) == 1) {
-    xbt_dynar_get_cpy(power_trace->event_list, 0, &val);
+  if (xbt_dynar_length(power_trace->s_list.event_list) == 1) {
+    xbt_dynar_get_cpy(power_trace->s_list.event_list, 0, &val);
     trace->type = TRACE_FIXED;
     trace->value = val.value;
     return trace;
@@ -127,7 +127,7 @@ static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
   trace->power_trace = power_trace;
 
   /* count the total time of trace file */
-  xbt_dynar_foreach(power_trace->event_list, cpt, val) {
+  xbt_dynar_foreach(power_trace->s_list.event_list, cpt, val) {
     total_time += val.delta;
   }
   trace->trace = surf_cpu_ti_trace_new(power_trace);
@@ -172,10 +172,10 @@ static void* cpu_ti_create_resource(const char *name, double power_peak,
   if (state_trace)
     cpu->state_event =
         tmgr_history_add_trace(history, state_trace, 0.0, 0, cpu);
-  if (power_trace && xbt_dynar_length(power_trace->event_list) > 1) {
+  if (power_trace && xbt_dynar_length(power_trace->s_list.event_list) > 1) {
     /* add a fake trace event if periodicity == 0 */
-    xbt_dynar_get_cpy(power_trace->event_list,
-                      xbt_dynar_length(power_trace->event_list) - 1, &val);
+    xbt_dynar_get_cpy(power_trace->s_list.event_list,
+                      xbt_dynar_length(power_trace->s_list.event_list) - 1, &val);
     if (val.delta == 0) {
       empty_trace = tmgr_empty_trace_new();
       cpu->power_event =
@@ -244,10 +244,10 @@ static void add_traces_cpu_ti(void)
     cpu->avail_trace = cpu_ti_parse_trace(trace, cpu->power_scale);
 
     /* add a fake trace event if periodicity == 0 */
-    if (trace && xbt_dynar_length(trace->event_list) > 1) {
+    if (trace && xbt_dynar_length(trace->s_list.event_list) > 1) {
       s_tmgr_event_t val;
-      xbt_dynar_get_cpy(trace->event_list,
-                        xbt_dynar_length(trace->event_list) - 1, &val);
+      xbt_dynar_get_cpy(trace->s_list.event_list,
+                        xbt_dynar_length(trace->s_list.event_list) - 1, &val);
       if (val.delta == 0) {
         tmgr_trace_t empty_trace;
         empty_trace = tmgr_empty_trace_new();
@@ -506,8 +506,8 @@ static void cpu_ti_update_resource_state(void *id,
     xbt_swag_insert(cpu, cpu_ti_modified_cpu);
 
     power_trace = cpu->avail_trace->power_trace;
-    xbt_dynar_get_cpy(power_trace->event_list,
-                      xbt_dynar_length(power_trace->event_list) - 1, &val);
+    xbt_dynar_get_cpy(power_trace->s_list.event_list,
+                      xbt_dynar_length(power_trace->s_list.event_list) - 1, &val);
     /* free old trace */
     surf_cpu_ti_free_tmgr(cpu->avail_trace);
     cpu->power_scale = val.value;
@@ -714,7 +714,7 @@ static double surf_cpu_ti_get_power_scale(surf_cpu_ti_tgmr_t trace,
   point =
       surf_cpu_ti_binary_search(trace->trace->time_points, reduced_a, 0,
                                 trace->trace->nb_points - 1);
-  xbt_dynar_get_cpy(trace->power_trace->event_list, point, &val);
+  xbt_dynar_get_cpy(trace->power_trace->s_list.event_list, point, &val);
   return val.value;
 }
 

@@ -389,8 +389,8 @@ void ETag_surfxml_host(void)    {
   host.power_peak = get_cpu_power(A_surfxml_host_power);
   host.power_scale = surf_parse_get_double( A_surfxml_host_availability);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
-  host.power_trace = tmgr_trace_new(A_surfxml_host_availability_file);
-  host.state_trace = tmgr_trace_new(A_surfxml_host_state_file);
+  host.power_trace = tmgr_trace_new_from_file(A_surfxml_host_availability_file);
+  host.state_trace = tmgr_trace_new_from_file(A_surfxml_host_state_file);
   xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
         (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
@@ -475,8 +475,8 @@ void STag_surfxml_peer(void){
 	peer.bw_out = surf_parse_get_double(A_surfxml_peer_bw_out);
 	peer.lat = surf_parse_get_double(A_surfxml_peer_lat);
 	peer.coord = A_surfxml_peer_coordinates;
-	peer.availability_trace = tmgr_trace_new(A_surfxml_peer_availability_file);
-	peer.state_trace = tmgr_trace_new(A_surfxml_peer_state_file);
+	peer.availability_trace = tmgr_trace_new_from_file(A_surfxml_peer_availability_file);
+	peer.state_trace = tmgr_trace_new_from_file(A_surfxml_peer_state_file);
 
 	surfxml_call_cb_functions(STag_surfxml_peer_cb_list);
 	sg_platf_new_peer(&peer);
@@ -495,9 +495,9 @@ void ETag_surfxml_link(void){
 
   link.id = A_surfxml_link_id;
   link.bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
-  link.bandwidth_trace = tmgr_trace_new(A_surfxml_link_bandwidth_file);
+  link.bandwidth_trace = tmgr_trace_new_from_file(A_surfxml_link_bandwidth_file);
   link.latency = surf_parse_get_double(A_surfxml_link_latency);
-  link.latency_trace = tmgr_trace_new(A_surfxml_link_latency_file);
+  link.latency_trace = tmgr_trace_new_from_file(A_surfxml_link_latency_file);
 
   switch (A_surfxml_link_state) {
   case A_surfxml_link_state_ON:
@@ -510,7 +510,7 @@ void ETag_surfxml_link(void){
     surf_parse_error("invalid state for link %s", link.id);
     break;
   }
-  link.state_trace = tmgr_trace_new(A_surfxml_link_state_file);
+  link.state_trace = tmgr_trace_new_from_file(A_surfxml_link_state_file);
 
   switch (A_surfxml_link_sharing_policy) {
   case A_surfxml_link_sharing_policy_SHARED:
