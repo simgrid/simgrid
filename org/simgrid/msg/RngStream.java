@@ -91,14 +91,14 @@ public class RngStream {
 	/**
 	  * Advances the state of the stream by k values, without modifying the states of other streams (as
 	  * in RngStream_SetSeed), nor the values of Bg and Ig associated with this stream. If e > 0, then
-	  * k = 2e + c; if e < 0, then k = −2−e + c; and if e = 0, then k = c. Note: c is allowed to take
-	  *negative values. We discourage the use of this procedure.	 
+	  * k = 2e + c; if e < 0, then k = -2-e + c; and if e = 0, then k = c. Note: c is allowed to take
+	  * negative values. We discourage the use of this procedure.	 
 	  */
 	public native void advanceState(int e, int g);
 	
 	/**
 	 * Returns a (pseudo)random number from the uniform distribution over the interval (0, 1), after advancing the state by one step. The returned number has 32 bits of precision
-	 * in the sense that it is always a multiple of 1/(232 − 208), unless RngStream_IncreasedPrecis
+	 * in the sense that it is always a multiple of 1/(232 - 208), unless RngStream_IncreasedPrecis
 	 * has been called for this stream.
 	 */
 	public native double randU01();
