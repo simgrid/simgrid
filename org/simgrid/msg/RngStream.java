@@ -76,7 +76,7 @@ public class RngStream {
 	 */
 	public native void resetNextSubstream();
 	/**
-	 * If a = true the stream g will start generating antithetic variates, i.e., 1 − U instead of U , until
+	 * If a = true the stream g will start generating antithetic variates, i.e., 1 - U instead of U , until
 	 *  this method is called again with a = false.
 	 */
 	public native void setAntithetic(boolean a);

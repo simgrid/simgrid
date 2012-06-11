@@ -72,6 +72,8 @@ include(FindJavaSG.cmake)
 # Declare our package content #
 ###############################
 set(JMSG_C_SRC
+	src/smx_context_cojava.h
+	src/smx_context_cojava.c
 	src/smx_context_java.h
 	src/smx_context_java.c
 	src/jxbt_utilities.c

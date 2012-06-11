@@ -22,6 +22,9 @@ jfieldID jprocess_field_Process_name;
 jfieldID jprocess_field_Process_pid;
 jfieldID jprocess_field_Process_ppid;
 
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject);
+
 
 jobject native_to_java_process(m_process_t process);
 
@@ -229,4 +232,5 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_kill
  */
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate
     (JNIEnv *, jobject, jobject);
+
 #endif                          /* !MSG_JPROCESS_H */
