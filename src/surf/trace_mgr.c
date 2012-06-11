@@ -11,6 +11,7 @@
 #include "trace_mgr_private.h"
 #include "surf_private.h"
 #include "xbt/RngStream.h"
+#include <math.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
@@ -61,7 +62,7 @@ probabilist_event_generator_t tmgr_event_generator_new_uniform(RngStream rng_str
   event_generator->s_uniform_parameters.beta = beta;
   event_generator->rng_stream = rng_stream;
 
-  //FIXME Generate a new event date
+  tmgr_event_generator_next_value(event_generator);
   
   return event_generator;
 }
@@ -76,7 +77,7 @@ probabilist_event_generator_t tmgr_event_generator_new_exponential(RngStream rng
   event_generator->s_exponential_parameters.lambda = lambda;
   event_generator->rng_stream = rng_stream;
 
-  //FIXME Generate a new event date
+  tmgr_event_generator_next_value(event_generator);
   
   return event_generator;
 }
@@ -93,9 +94,31 @@ probabilist_event_generator_t tmgr_event_generator_new_weibull(RngStream rng_str
   event_generator->s_weibull_parameters.k = k;
   event_generator->rng_stream = rng_stream;
 
-  // FIXME Generate a new event date
+  tmgr_event_generator_next_value(event_generator);
   
   return event_generator;
+}
+
+double tmgr_event_generator_next_value(probabilist_event_generator_t generator)
+{
+  
+  switch(generator->type) {
+    case e_generator_uniform:
+      generator->next_value = (RngStream_RandU01(generator->rng_stream)
+                  * (generator->s_uniform_parameters.beta - generator->s_uniform_parameters.alpha))
+                  + generator->s_uniform_parameters.alpha;
+      break;
+    case e_generator_exponential:
+      generator->next_value = -log(RngStream_RandU01(generator->rng_stream))
+                              / generator->s_exponential_parameters.lambda;
+      break;
+    case e_generator_weibull:
+      generator->next_value = - generator->s_weibull_parameters.lambda
+                              * pow( log(RngStream_RandU01(generator->rng_stream)),
+                                    1.0 / generator->s_weibull_parameters.k );
+  }
+  
+  return generator->next_value;
 }
 
 tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,

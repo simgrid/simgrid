@@ -70,5 +70,6 @@ typedef struct tmgr_history {
   xbt_heap_t heap;
 } s_tmgr_history_t;
 
+double tmgr_event_generator_next_value(probabilist_event_generator_t generator);
 
 #endif                          /* _SURF_TMGR_PRIVATE_H */
