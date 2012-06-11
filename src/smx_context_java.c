@@ -1,6 +1,6 @@
 /* context_java - implementation of context switching for java threads */
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009, 2010, 2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -98,6 +98,10 @@ static void* smx_ctx_java_thread_run(void *data) {
   //Create the "Process" object if needed.
 	if (context->super.argc > 0) {
 		(*(context->super.code))(context->super.argc, context->super.argv);
+	}
+	else {
+		smx_process_t process = SIMIX_process_self();
+		(*env)->SetLongField(env, context->jprocess, jprocess_field_Process_bind, (jlong)process);
 	}
 	xbt_assert((context->jprocess != NULL), "Process not created...");
   //wait for the process to be able to begin
