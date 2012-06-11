@@ -6,15 +6,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define DJB2_HASH_FUNCTION
-//#define FNV_HASH_FUNCTION
-
 #include <string.h>
 #include <stdio.h>
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "xbt_modinter.h"
+#include "xbt/str.h"
 #include "dict_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
@@ -103,85 +101,6 @@ void xbt_dict_free(xbt_dict_t * dict)
 XBT_INLINE unsigned int xbt_dict_size(xbt_dict_t dict)
 {
   return (dict ? (unsigned int) dict->count : (unsigned int) 0);
-}
-
-/**
- * Returns the hash code of a string.
- */
-static XBT_INLINE unsigned int xbt_dict_hash_ext(const char *str,
-                                                 int str_len)
-{
-
-
-#ifdef DJB2_HASH_FUNCTION
-  /* fast implementation of djb2 algorithm */
-  int c;
-  register unsigned int hash = 5381;
-
-  while (str_len--) {
-    c = *str++;
-    hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
-  }
-# elif defined(FNV_HASH_FUNCTION)
-  register unsigned int hash = 0x811c9dc5;
-  unsigned char *bp = (unsigned char *) str;    /* start of buffer */
-  unsigned char *be = bp + str_len;     /* beyond end of buffer */
-
-  while (bp < be) {
-    /* multiply by the 32 bit FNV magic prime mod 2^32 */
-    hash +=
-        (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) +
-        (hash << 24);
-
-    /* xor the bottom with the current octet */
-    hash ^= (unsigned int) *bp++;
-  }
-
-# else
-  register unsigned int hash = 0;
-
-  while (str_len--) {
-    hash += (*str) * (*str);
-    str++;
-  }
-#endif
-
-  return hash;
-}
-
-static XBT_INLINE unsigned int xbt_dict_hash(const char *str)
-{
-#ifdef DJB2_HASH_FUNCTION
-  /* fast implementation of djb2 algorithm */
-  int c;
-  register unsigned int hash = 5381;
-
-  while ((c = *str++)) {
-    hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
-  }
-
-# elif defined(FNV_HASH_FUNCTION)
-  register unsigned int hash = 0x811c9dc5;
-
-  while (*str) {
-    /* multiply by the 32 bit FNV magic prime mod 2^32 */
-    hash +=
-        (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) +
-        (hash << 24);
-
-    /* xor the bottom with the current byte */
-    hash ^= (unsigned int) *str++;
-  }
-
-# else
-  register unsigned int hash = 0;
-
-  while (*str) {
-    hash += (*str) * (*str);
-    str++;
-  }
-#endif
-  return hash;
 }
 
 /* Expend the size of the dict */
