@@ -1,3 +1,10 @@
+# If you use NS-3 version 3.14 (prefer used at most 3.13) be sure having do
+# ln -sf libns3.14.1-applications-debug.so libns3-applications.so
+# ln -sf libns3.14.1-internet-debug.so libns3-internet.so
+# ln -sf libns3.14.1-point-to-point-debug.so libns3-point-to-point.so
+# ln -sf libns3.14.1-csma-debug.so libns3-csma.so
+# ln -sf libns3.14.1-core-debug.so libns3-core.so
+
 find_library(HAVE_NS3_LIB
     NAME ns3
     PATH_SUFFIXES lib64 lib ns3/lib
@@ -14,7 +21,7 @@ find_library(HAVE_NS3_CORE_LIB
 
 find_path(HAVE_CORE_MODULE_H
 	NAME ns3/core-module.h
-    PATH_SUFFIXES include ns3/include
+    PATH_SUFFIXES include ns3/include include/ns3.14.1
     PATHS
     ${ns3_path}
 )
@@ -41,6 +48,7 @@ message(STATUS "Looking for lib ns3-core - found")
 else(HAVE_NS3_CORE_LIB)
 message(STATUS "Looking for lib ns3-core - not found")
 endif(HAVE_NS3_CORE_LIB)
+
 mark_as_advanced(HAVE_NS3_LIB)
 mark_as_advanced(HAVE_NS3_CORE_LIB)
 
@@ -78,7 +86,7 @@ if(HAVE_NS3)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-I${HAVE_CORE_MODULE_H} -L${HAVE_NS3_LIB} ")
 	endif(NOT operation)		
 else(HAVE_NS3)
-    message(STATUS "Warning: To use NS-3 Please install ns3 at least version 3.10 (http://www.nsnam.org/releases/)")
+        message(STATUS "Warning: To use NS-3 Please install ns3 at least version 3.10 (http://www.nsnam.org/releases/)")
 endif(HAVE_NS3)
 
 if(HAVE_NS3 AND enable_supernovae)
