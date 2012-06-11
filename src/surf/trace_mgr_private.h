@@ -10,6 +10,7 @@
 #include "xbt/swag.h"
 #include "xbt/heap.h"
 #include "surf/trace_mgr.h"
+#include "xbt/RngStream.h"
 
 typedef struct tmgr_event {
   double delta;
@@ -17,8 +18,31 @@ typedef struct tmgr_event {
 } s_tmgr_event_t, *tmgr_event_t;
 
 enum e_trace_type {
-  e_trace_list, e_trace_uniform, e_trace_exponential, e_trace_weibull
+  e_trace_list, e_trace_probabilist
 };
+
+enum e_event_generator_type {
+  e_generator_uniform, e_generator_exponential, e_generator_weibull
+};
+
+typedef struct probabilist_event_generator {
+  enum e_event_generator_type type;
+  RngStream rng_stream;
+  double next_value;
+  union {
+    struct {
+      double alpha;
+      double beta;
+    } s_uniform_parameters;
+    struct {
+      double lambda;
+    } s_exponential_parameters;
+    struct {
+      double lambda;
+      double k;
+    } s_weibull_parameters;
+  };
+} s_probabilist_event_generator_t, *probabilist_event_generator_t;
 
 typedef struct tmgr_trace {
   enum e_trace_type type;
@@ -27,22 +51,10 @@ typedef struct tmgr_trace {
       xbt_dynar_t event_list;
     } s_list;
     struct {
-      double alpha;
-      double beta;
-      s_tmgr_event_t next_event;
-      /* and probably other things */
-    } s_uniform;
-    struct {
-      double lambda;
-      s_tmgr_event_t next_event;
-      /* and probably other things */
-    } s_exponential;
-    struct {
-      double lambda;
-      double k;
-      s_tmgr_event_t next_event;
-      /* and probably other things */
-    } s_weibull;
+      probabilist_event_generator_t event1_generator;
+      probabilist_event_generator_t event2_generator;
+      int next_event;
+    } s_probabilist;
   };
 } s_tmgr_trace_t;
 
@@ -57,5 +69,6 @@ typedef struct tmgr_trace_event {
 typedef struct tmgr_history {
   xbt_heap_t heap;
 } s_tmgr_history_t;
+
 
 #endif                          /* _SURF_TMGR_PRIVATE_H */

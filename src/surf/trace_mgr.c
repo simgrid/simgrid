@@ -10,10 +10,15 @@
 #include "xbt/dict.h"
 #include "trace_mgr_private.h"
 #include "surf_private.h"
+#include "xbt/RngStream.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
 static xbt_dict_t trace_list = NULL;
+
+// a unique RngStream structure for everyone
+// FIXME : has to be created by someone
+static RngStream common_rng_stream = NULL;
 
 XBT_INLINE tmgr_history_t tmgr_history_new(void)
 {
@@ -32,46 +37,65 @@ XBT_INLINE void tmgr_history_free(tmgr_history_t h)
   free(h);
 }
 
-tmgr_trace_t tmgr_trace_new_uniform(double alpha, double beta)
+RngStream tmgr_rng_stream_from_id(char* id)
+{
+  unsigned int id_hash;
+  RngStream rng_stream = NULL;
+  
+  rng_stream = RngStream_CopyStream(common_rng_stream);
+  id_hash = xbt_dict_hash(id);
+  RngStream_AdvanceState(rng_stream, 0, id_hash);
+  
+  return rng_stream;
+}
+
+probabilist_event_generator_t tmgr_event_generator_new_uniform(RngStream rng_stream,
+                                                               double alpha,
+                                                               double beta)
 {  
-  tmgr_trace_t trace = NULL;
+  probabilist_event_generator_t event_generator = NULL;
   
-  trace = xbt_new0(s_tmgr_trace_t, 1);
-  trace->type = e_trace_uniform;
-  trace->s_uniform.alpha = alpha;
-  trace->s_uniform.beta = beta;
-  
+  event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
+  event_generator->type = e_generator_uniform;
+  event_generator->s_uniform_parameters.alpha = alpha;
+  event_generator->s_uniform_parameters.beta = beta;
+  event_generator->rng_stream = rng_stream;
+
   //FIXME Generate a new event date
   
-  return trace;
+  return event_generator;
 }
 
-
-tmgr_trace_t tmgr_trace_new_exponential(double lambda)
+probabilist_event_generator_t tmgr_event_generator_new_exponential(RngStream rng_stream,
+                                                                   double lambda)
 {  
-  tmgr_trace_t trace = NULL;
+  probabilist_event_generator_t event_generator = NULL;
   
-  trace = xbt_new0(s_tmgr_trace_t, 1);
-  trace->type = e_trace_exponential;
-  trace->s_exponential.lambda = lambda;
+  event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
+  event_generator->type = e_generator_exponential;
+  event_generator->s_exponential_parameters.lambda = lambda;
+  event_generator->rng_stream = rng_stream;
+
+  //FIXME Generate a new event date
   
-  // FIXME Generate a new event date
-  
-  return trace;
+  return event_generator;
 }
 
-tmgr_trace_t tmgr_trace_new_weibull(double lambda, double k)
+probabilist_event_generator_t tmgr_event_generator_new_weibull(RngStream rng_stream,
+                                                               double lambda,
+                                                               double k)
 {  
-  tmgr_trace_t trace = NULL;
+  probabilist_event_generator_t event_generator = NULL;
   
-  trace = xbt_new0(s_tmgr_trace_t, 1);
-  trace->type = e_trace_weibull;
-  trace->s_weibull.lambda = lambda;
-  trace->s_weibull.k = k;
-  
+  event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
+  event_generator->type = e_generator_weibull;
+  event_generator->s_weibull_parameters.lambda = lambda;
+  event_generator->s_weibull_parameters.k = k;
+  event_generator->rng_stream = rng_stream;
+
   // FIXME Generate a new event date
   
-  return trace;
+  return event_generator;
 }
 
 tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,

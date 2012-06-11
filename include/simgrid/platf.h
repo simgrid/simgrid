@@ -19,13 +19,24 @@ XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
 
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
+
+/** opaque structure defining a event generator for avaibility based on a probability distribution */
+typedef struct probabilist_event_generator *probabilist_event_generator_t;
+
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
                                                     const char *input,
                                                     double periodicity);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_uniform(double alpha, double beta);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_exponential(double lambda);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_weibull(double lambda, double k);
+typedef struct RngStream_InfoState *RngStream;
+XBT_PUBLIC(RngStream) tmgr_rng_stream_from_id(char* id);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(RngStream rng_stream,
+                                                                           double alpha,
+                                                                           double beta);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(RngStream rng_stream,
+                                                                               double lambda);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(RngStream rng_stream,
+                                                                           double lambda,
+                                                                           double k);
 
 /** Defines whether a given resource is working or not */
 typedef enum {
