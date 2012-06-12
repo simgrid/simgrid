@@ -13,7 +13,7 @@ static void smpi_free_static(int status, void* arg) {
 
 void smpi_register_static(void* arg) {
 
-#ifndef APPLE
+#ifndef __APPLE__
 // FIXME
 // On Apple this error occurs:
 //	Undefined symbols for architecture x86_64:

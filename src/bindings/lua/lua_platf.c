@@ -110,7 +110,7 @@ int console_add_host(lua_State *L) {
   //get power_trace
   lua_pushstring(L, "power_trace");
   lua_gettable(L, -2);
-  host.power_trace = tmgr_trace_new(lua_tostring(L, -1));
+  host.power_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get state initial
@@ -128,7 +128,7 @@ int console_add_host(lua_State *L) {
   //get trace state
   lua_pushstring(L, "state_trace");
   lua_gettable(L, -2);
-  host.state_trace = tmgr_trace_new(lua_tostring(L, -1));
+  host.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   sg_platf_new_host(&host);
@@ -170,19 +170,19 @@ int  console_add_link(lua_State *L) {
   //get bandwidth_trace value
   lua_pushstring(L, "bandwidth_trace");
   lua_gettable(L, -2);
-  link.bandwidth_trace = tmgr_trace_new(lua_tostring(L, -1));
+  link.bandwidth_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get latency_trace value
   lua_pushstring(L, "latency_trace");
   lua_gettable(L, -2);
-  link.latency_trace = tmgr_trace_new(lua_tostring(L, -1));
+  link.latency_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get state_trace value
   lua_pushstring(L, "state_trace");
   lua_gettable(L, -2);
-  link.state_trace = tmgr_trace_new(lua_tostring(L, -1));
+  link.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get state_initial value

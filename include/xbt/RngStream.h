@@ -24,6 +24,9 @@ XBT_PUBLIC(RngStream) RngStream_CreateStream (const char name[]);
 XBT_PUBLIC(void) RngStream_DeleteStream (RngStream *pg);
 
 
+XBT_PUBLIC(RngStream) RngStream_CopyStream (const RngStream src);
+
+
 XBT_PUBLIC(void) RngStream_ResetStartStream (RngStream g);
 
 

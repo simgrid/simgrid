@@ -346,6 +346,27 @@ void RngStream_DeleteStream (RngStream * p)
 
 /*-------------------------------------------------------------------------*/
 
+RngStream RngStream_CopyStream (const RngStream src)
+{
+   RngStream g;
+   
+   if(src == NULL) {
+     printf ("RngStream_CopyStream: 'src' not initialized\n\n");
+     exit (EXIT_FAILURE);
+   }
+
+   g = (RngStream) malloc (sizeof (struct RngStream_InfoState));
+   if (g == NULL) {
+      printf ("RngStream_CopyStream: No more memory\n\n");
+      exit (EXIT_FAILURE);
+   }
+   memcpy((void*) g, (void*) src, sizeof (struct RngStream_InfoState));
+
+   return g;
+}
+
+/*-------------------------------------------------------------------------*/
+
 void RngStream_ResetStartStream (RngStream g)
 {
    int i;
