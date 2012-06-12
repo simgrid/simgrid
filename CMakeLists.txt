@@ -88,11 +88,14 @@ set(JMSG_C_SRC
 	src/jmsg_task.h
 	src/jmsg_synchro.c
 	src/jmsg_synchro.h
-	src/jtrace.c
-	src/jtrace.h
 	src/jmsg_rngstream.c
 	src/jmsg_rngstream.h
 )
+
+set(JTRACE_C_SRC
+	src/jtrace.c
+	src/jtrace.h
+)	
 
 set(JMSG_JAVA_SRC
 	org/simgrid/msg/Host.java
@@ -111,8 +114,10 @@ set(JMSG_JAVA_SRC
 	org/simgrid/msg/TransferFailureException.java	
 	org/simgrid/msg/Mutex.java
 	org/simgrid/msg/Comm.java
-	org/simgrid/trace/Trace.java
 	org/simgrid/msg/RngStream.java
+)
+set(JTRACE_JAVA_SRC
+	org/simgrid/trace/Trace.java
 )
 
 set(JAVA_EXAMPLES
@@ -197,14 +202,19 @@ set(XML_FILES
 set(source_to_pack
 ${CMAKE_SRC}
 ${JMSG_C_SRC}
+${JTRACE_C_SRC}
 ${JMSG_JAVA_SRC}
+${JTRACE_JAVA_SRC}
 ${JAVA_EXAMPLES}
 ${XML_FILES}
 )
 
-string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/org/" JAVA_FILES "${JMSG_JAVA_SRC}") 
+string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/org/" JAVA_FILES_MSG "${JMSG_JAVA_SRC}") 
+string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/org/" JAVA_FILES_TRACE "${JTRACE_JAVA_SRC}") 
 string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/classes/org/" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC}")
+string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/classes/org/" JTRACE_JAVA_SRC_CLASS "${JTRACE_JAVA_SRC}")
 string(REPLACE ".java" ".class" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC_CLASS}")
+string(REPLACE ".java" ".class" JTRACE_JAVA_SRC_CLASS "${JTRACE_JAVA_SRC_CLASS}")
 string(REPLACE "examples/" "${CMAKE_HOME_DIRECTORY}/examples/" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES}") 
 string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES_CLASS}")
 
@@ -239,7 +249,7 @@ else(WIN32)
 endif(WIN32)
 
 # SG_java_tracing
-add_library(SG_java_tracing SHARED ${JMSG_C_SRC})
+add_library(SG_java_tracing SHARED ${JTRACE_C_SRC})
 if(WIN32)
     set_target_properties(SG_java_tracing PROPERTIES LINK_FLAGS "-Wl,--subsystem,windows,--kill-at ${SIMGRID_LIB}" PREFIX "")
     find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
@@ -256,15 +266,25 @@ endif(WIN32)
 
 # java_classes
 add_custom_command(
-	OUTPUT 	${JMSG_JAVA_SRC_CLASS}
+	OUTPUT  ${JMSG_JAVA_SRC_CLASS}
 	DEPENDS ${JMSG_JAVA_SRC}
 	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
-  					-cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES}
-	COMMENT "Compiling java sources of core library..."					
+	-cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES_MSG}
+	COMMENT "Compiling java sources of core libraries..."					
 )
+
+add_custom_command(
+	OUTPUT  ${JTRACE_JAVA_SRC_CLASS}
+	DEPENDS ${JTRACE_JAVA_SRC}
+	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
+	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
+	-cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES_TRACE}
+	COMMENT "Compiling java sources of core libraries..."					
+)
+
 add_custom_target(java_classes ALL
-  DEPENDS ${JMSG_JAVA_SRC_CLASS}
+		  DEPENDS ${JMSG_JAVA_SRC_CLASS} ${JTRACE_JAVA_SRC_CLASS}
 )
 
 # simgrid_jar
@@ -300,7 +320,7 @@ add_custom_target(simgrid_java_examples ALL
 # Declare dependencies #
 ########################
 add_dependencies(simgrid_jar java_classes)
-add_dependencies(simgrid_java_examples simgrid_jar SG_java_tracing SG_java)
+add_dependencies(simgrid_java_examples simgrid_jar SG_java SG_java_tracing)
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
 ${CMAKE_HOME_DIRECTORY}/simgrid.jar

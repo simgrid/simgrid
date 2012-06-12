@@ -1,3 +1,11 @@
+SimGrid-java (3.8) unstable; urgency=low
+
+ * Introduce org.simgrid.trace.Trace (partial implementation of JAVA bindings
+   for the TRACE API). 
+   Although all TRACE methods appear in the Trace class, please not that only
+   few of thems are really implemented at the JNI level (see ./src/jtrace.c
+   for further information). 
+
 SimGrid-java (3.6.1) unstable; urgency=low
 
  * Introduce msg.simgrid.Mutex, exporting simgrid mutex to Java.
