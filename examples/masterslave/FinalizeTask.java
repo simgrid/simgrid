@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. 
  */
 
-package basic;
+package masterslave;
 import org.simgrid.msg.Task;
 
 public class FinalizeTask extends Task {    	

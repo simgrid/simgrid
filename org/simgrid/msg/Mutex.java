@@ -1,8 +1,4 @@
-package org.simgrid.msg;
-/** A mutex  implemented on top of SimGrid synchronization mechanisms. 
- * You can use it exactly the same way that you use the mutexes, 
- * but to handle the interactions between the threads within the simulation.   
- * 
+/* 
  * Copyright 2012 The SimGrid team. All right reserved. 
  *
  * This program is free software; you can redistribute 
@@ -10,17 +6,23 @@ package org.simgrid.msg;
  * (GNU LGPL) which comes with this package.
  *
  */
+package org.simgrid.msg;
+/** A mutex  implemented on top of SimGrid synchronization mechanisms. 
+ * You can use it exactly the same way that you use the mutexes, 
+ * but to handle the interactions between the processes within the simulation.   
+ *
+ */
 public class Mutex {
 	private long bind; // The C object -- don't touch it
 	
-	public Mutex(int capa) {
-		init(capa);
+	public Mutex() {
+		init();
 	}
 	protected void finalize() {
 		exit();
 	}
 	private native void exit();
-	private native void init(int capacity);
+	private native void init();
 	public native void acquire();
 	public native void release();
 	

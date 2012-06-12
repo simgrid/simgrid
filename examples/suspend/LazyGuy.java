@@ -10,7 +10,7 @@ public class LazyGuy extends Process {
 	} 
 	public void main(String[] args) throws MsgException {
 		Msg.info("Nobody's watching me ? Let's go to sleep.");
-		pause();
+		suspend();
 		Msg.info("Uuuh ? Did somebody call me ?");
 		Msg.info("Mmmh, goodbye now.");
 	}

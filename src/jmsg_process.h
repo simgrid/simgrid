@@ -182,18 +182,18 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_currentProcess
     (JNIEnv *, jclass);
 /*
  * Class		org_simgrid_msg_Process
- * Method		pause
+ * Method		suspend
  * Signature	(Lorg/simgrid/msg/Process;)V
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Process_pause(JNIEnv * env,
+Java_org_simgrid_msg_Process_suspend(JNIEnv * env,
                                           jobject jprocess);
 /*
  * Class		org_simgrid_msg_Process
- * Method		restart
+ * Method		resume
  * Signature	(Lorg/simgrid/msg/Process;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume
     (JNIEnv *, jobject);
 /*
  * Class		org_simgrid_msg_Process

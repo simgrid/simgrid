@@ -216,7 +216,7 @@ Java_org_simgrid_msg_Process_currentProcess(JNIEnv * env, jclass cls)
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Process_pause(JNIEnv * env,
+Java_org_simgrid_msg_Process_suspend(JNIEnv * env,
                                    jobject jprocess)
 {
   m_process_t process = jprocess_to_native_process(jprocess, env);
@@ -234,7 +234,7 @@ Java_org_simgrid_msg_Process_pause(JNIEnv * env,
 
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Process_restart(JNIEnv * env,
+Java_org_simgrid_msg_Process_resume(JNIEnv * env,
                                      jobject jprocess)
 {
   m_process_t process = jprocess_to_native_process(jprocess, env);

@@ -120,13 +120,6 @@ set(JAVA_EXAMPLES
 	examples/async/Forwarder.java
 	examples/async/Master.java  
 	examples/async/Slave.java
-	examples/startKillTime/Slave.java
-	examples/basic/FinalizeTask.java
-	examples/basic/Forwarder.java
-	examples/basic/Master.java
-	examples/basic/BasicTest.java
-	examples/basic/Slave.java
-
   examples/bittorrent/Bittorrent.java
   examples/bittorrent/Common.java
   examples/bittorrent/Connection.java
@@ -146,6 +139,11 @@ set(JAVA_EXAMPLES
 	examples/commTime/Master.java
 	examples/commTime/Slave.java
 	examples/commTime/CommTimeTest.java
+	examples/masterslave/FinalizeTask.java
+	examples/masterslave/Forwarder.java
+	examples/masterslave/Master.java
+	examples/masterslave/Masterslave.java
+	examples/masterslave/Slave.java	
 	examples/master_slave_bypass/Master.java
 	examples/master_slave_bypass/MsBypass.java
 	examples/master_slave_bypass/Slave.java
@@ -154,6 +152,9 @@ set(JAVA_EXAMPLES
 	examples/master_slave_kill/MsKill.java
 	examples/master_slave_kill/Slave.java
 	examples/master_slave_kill/FinalizeTask.java
+	examples/migration/Emigrant.java
+	examples/migration/Migration.java
+	examples/migration/Policeman.java
 	examples/mutualExclusion/centralized/MutexCentral.java
 	examples/mutualExclusion/centralized/GrantTask.java
 	examples/mutualExclusion/centralized/Coordinator.java
@@ -165,6 +166,7 @@ set(JAVA_EXAMPLES
 	examples/pingPong/Receiver.java
 	examples/pingPong/PingPongTest.java
 	examples/startKillTime/Master.java
+	examples/startKillTime/Slave.java
 	examples/startKillTime/StartKillTime.java
 	examples/suspend/DreamMaster.java
 	examples/suspend/LazyGuy.java
@@ -179,17 +181,17 @@ ${CMAKE_HOME_DIRECTORY}/FindSimGrid.cmake
 )
 
 set(XML_FILES
-    examples/commTime/commTimeDeployment.xml
-    examples/mutualExclusion/ring3.xml
-    examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
     examples/platform.xml
-    examples/pingPong/pingPongDeployment.xml
-    examples/basic/basicDeployment.xml
-    examples/basic/deploy.xml
-    examples/master_slave_bypass/platform.xml
-    examples/master_slave_kill/platform.xml
     examples/async/asyncDeployment.xml
     examples/bittorrent/bittorrent.xml
+    examples/commTime/commTimeDeployment.xml
+    examples/masterslave/masterslaveDeployment.xml
+    examples/masterslave/deploy.xml
+    examples/master_slave_bypass/platform.xml
+    examples/master_slave_kill/platform.xml
+    examples/mutualExclusion/ring3.xml  
+    examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
+    examples/pingPong/pingPongDeployment.xml
 )
 
 set(source_to_pack
@@ -262,12 +264,13 @@ add_custom_command(
 	OUTPUT	${JAVA_EXAMPLES_CLASS}
 	DEPENDS ${JAVA_EXAMPLES}
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/async/*.java
-  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/basic/*.java  
-	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/chord/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/commTime/*.java
+	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/masterslave/*.java
 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/*.java
+ 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/migration/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/priority/*.java   	
@@ -297,19 +300,20 @@ INCLUDE(CTest)
 ENABLE_TESTING()
 
 ADD_TEST(async           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/async/async.tesh)
-ADD_TEST(basic           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/basic/basic.tesh)
 ADD_TEST(bittorrent      ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/bittorrent.tesh)
 ADD_TEST(bypass          ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/bypass.tesh)
 ADD_TEST(commTime        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/commTime/commtime.tesh)
 ADD_TEST(chord        	 ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.tesh)
 ADD_TEST(kill            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh)
+ADD_TEST(masterslave     ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/masterslave/masterslave.tesh)
+ADD_TEST(migration       ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/migration/migration.tesh)
 ADD_TEST(mutualExclusion ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/mutualexclusion.tesh)
 ADD_TEST(pingPong        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingpong.tesh)
 ADD_TEST(priority        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/priority/priority.tesh)
 ADD_TEST(startKillTime   ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh)
 ADD_TEST(suspend         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspend.tesh)
 #Don't forget to put new test in this list!!!
-set(test_list async basic bittorrent bypass chord commTime kill mutualExclusion pingPong priority startKillTime)
+set(test_list async bittorrent bypass chord commTime kill masterslave migration mutualExclusion pingPong priority startKillTime)
 
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #
