@@ -1,26 +1,34 @@
-SimGrid-java (1.2 (3.7.1) ) stable; urgency=low
+SimGrid-java (3.7.1) stable; urgency=low
   
-  The "Java aint got to be bloated and slow" release
+ The "Java aint got to be bloated and slow" release
 
- * Introduce org.simgrid.msg.Mutex, exporting simgrid mutex to Java.
- * Introduce org.simgrid.msg.RngStream, exporting RngStreams to Java. 
- * Add the asynchronous API to the bindings.
-
+ Major cleanups:
+ * Various internal cleanups and performance improvement
+   Simulations are expected to run up to twice faster or so
  * Make Process.kill(process) an instance method, not a static one
- * Add examples for almost every part of the API
-
- * Add "sleep" in Process with Thread-like syntax/use.
-
- * Change the way Process are created: Process are no longer a Thread subclass.
- * Change the way the Process are created in ApplicationHandler: a full 
-constructor is now needed for your child classes.
- 
- * Improve the performances
- * Fix a lot of bugs.
+ * User processes are not java.lang.Thread subclasses. 
+   This breaks the compatibility (sorry), but previous API was
+   brain-dead, making it impossible to have non-trivial
+   initializations in the process constructor. 
+ * Require a full constructor per Process sub-class.
+   Kinda breaks the compatibility (sorry), but this allows a much more
+   efficient way to launch the processes at simulation startup.
  * Do not embeed our version of semaphores, java 1.5 can be considered
    as sufficiently prevalent for us to not dupplicate its features.
+ * Lot of bug fixes
+ 
+ Extend the API:
+ * Add examples for almost every part of the API
+   We spotted and fixed a lot of bugs in the process
+ 
+ * New module: asynchronous communication API
+ * New function: Process.sleep()
+   It takes milliseconds as argument, just as java.lang.Thread.sleep()
+ * New module: org.simgrid.msg.Mutex (SimGrid mutexes)
+ * New module: org.simgrid.msg.RngStream (RngStreams random generators)
 
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- 2012-06-12 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ 
 SimGrid-java (1.0 (3.6) unstable; urgency=low
 
  * Initial release.
