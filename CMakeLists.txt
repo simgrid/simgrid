@@ -215,7 +215,7 @@ set(source_to_pack
 
 string(REPLACE "org/" "classes/org/" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC}")
 string(REPLACE ".java" ".class" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC_CLASS}")
-string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES_CLASS}")
+string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES}")
 
 #########
 # FLAGS #
@@ -274,7 +274,7 @@ add_custom_target(simgrid_jar ALL
 # simgrid_java_examples
 add_custom_command(
   COMMENT "Build examples for java"
-  OUTPUT	${JAVA_EXAMPLES_CLASS}
+  OUTPUT  ${JAVA_EXAMPLES_CLASS}
   DEPENDS ${JAVA_EXAMPLES}
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/async/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/*.java
@@ -292,7 +292,7 @@ add_custom_command(
 )
 
 add_custom_target(simgrid_java_examples ALL
-  DEPENDS ${JAVA_EXAMPLES}
+  DEPENDS ${JAVA_EXAMPLES_CLASS}
 )
 
 ########################
