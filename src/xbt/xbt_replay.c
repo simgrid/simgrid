@@ -105,13 +105,13 @@ void xbt_replay_action_unregister(const char *action_name)
   xbt_dict_remove(action_funs, action_name);
 }
 
-void _xbt_replay_action_init()
+void _xbt_replay_action_init(void)
 {
   action_funs = xbt_dict_new_homogeneous(NULL);
   action_queues = xbt_dict_new_homogeneous(NULL);
 }
 
-void _xbt_replay_action_exit()
+void _xbt_replay_action_exit(void)
 {
   xbt_dict_free(&action_queues);
   xbt_dict_free(&action_funs);
