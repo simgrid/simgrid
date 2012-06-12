@@ -38,8 +38,11 @@ XBT_INLINE void tmgr_history_free(tmgr_history_t h)
   free(h);
 }
 
-RngStream tmgr_rng_stream_from_id(char* id)
+tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
+                                          probabilist_event_generator_t generator1,
+                                          probabilist_event_generator_t generator2)
 {
+  tmgr_trace_t trace = NULL;
   unsigned int id_hash;
   RngStream rng_stream = NULL;
   
@@ -47,11 +50,28 @@ RngStream tmgr_rng_stream_from_id(char* id)
   id_hash = xbt_dict_hash(id);
   RngStream_AdvanceState(rng_stream, 0, id_hash);
   
-  return rng_stream;
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_probabilist;
+  
+  trace->s_probabilist.event_generator[0] = generator1;
+  trace->s_probabilist.event_generator[0]->rng_stream = rng_stream;
+  tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
+  
+  //FIXME : may also be a parameter
+  trace->s_probabilist.next_event = 0;
+  
+  if(generator2 == NULL) {
+    trace->s_probabilist.event_generator[0] = generator1;
+  } else {
+    trace->s_probabilist.event_generator[1] = generator2;
+    trace->s_probabilist.event_generator[1]->rng_stream = rng_stream;
+    tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
+  }
+  
+  return trace;
 }
 
-probabilist_event_generator_t tmgr_event_generator_new_uniform(RngStream rng_stream,
-                                                               double alpha,
+probabilist_event_generator_t tmgr_event_generator_new_uniform(double alpha,
                                                                double beta)
 {  
   probabilist_event_generator_t event_generator = NULL;
@@ -60,30 +80,24 @@ probabilist_event_generator_t tmgr_event_generator_new_uniform(RngStream rng_str
   event_generator->type = e_generator_uniform;
   event_generator->s_uniform_parameters.alpha = alpha;
   event_generator->s_uniform_parameters.beta = beta;
-  event_generator->rng_stream = rng_stream;
 
   tmgr_event_generator_next_value(event_generator);
   
   return event_generator;
 }
 
-probabilist_event_generator_t tmgr_event_generator_new_exponential(RngStream rng_stream,
-                                                                   double lambda)
+probabilist_event_generator_t tmgr_event_generator_new_exponential(double lambda)
 {  
   probabilist_event_generator_t event_generator = NULL;
   
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_exponential;
   event_generator->s_exponential_parameters.lambda = lambda;
-  event_generator->rng_stream = rng_stream;
 
-  tmgr_event_generator_next_value(event_generator);
-  
   return event_generator;
 }
 
-probabilist_event_generator_t tmgr_event_generator_new_weibull(RngStream rng_stream,
-                                                               double lambda,
+probabilist_event_generator_t tmgr_event_generator_new_weibull(double lambda,
                                                                double k)
 {  
   probabilist_event_generator_t event_generator = NULL;
@@ -92,7 +106,6 @@ probabilist_event_generator_t tmgr_event_generator_new_weibull(RngStream rng_str
   event_generator->type = e_generator_weibull;
   event_generator->s_weibull_parameters.lambda = lambda;
   event_generator->s_weibull_parameters.k = k;
-  event_generator->rng_stream = rng_stream;
 
   tmgr_event_generator_next_value(event_generator);
   
@@ -221,6 +234,7 @@ tmgr_trace_t tmgr_empty_trace_new(void)
   s_tmgr_event_t event;
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_list;
   trace->s_list.event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
   event.delta = 0.0;
@@ -234,7 +248,15 @@ XBT_INLINE void tmgr_trace_free(tmgr_trace_t trace)
 {
   if (!trace)
     return;
-  xbt_dynar_free(&(trace->s_list.event_list));
+  
+  switch(trace->type) {
+    case e_trace_list:
+      xbt_dynar_free(&(trace->s_list.event_list));
+      break;
+    case e_trace_probabilist:
+      THROW_UNIMPLEMENTED;
+      break;
+  }
   free(trace);
 }
 
@@ -250,9 +272,11 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
   trace_event->idx = offset;
   trace_event->model = model;
 
-  xbt_assert((trace_event->idx < xbt_dynar_length(trace->s_list.event_list)),
+  if(trace->type == e_trace_list) {
+    xbt_assert((trace_event->idx < xbt_dynar_length(trace->s_list.event_list)),
               "You're referring to an event that does not exist!");
-
+  }
+  
   xbt_heap_push(h->heap, trace_event, start_time);
 
   return trace_event;
@@ -283,19 +307,29 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
     return NULL;
 
   trace = trace_event->trace;
-  event = xbt_dynar_get_ptr(trace->s_list.event_list, trace_event->idx);
+  
+  switch(trace->type) {
+    case e_trace_list:
+        
+      event = xbt_dynar_get_ptr(trace->s_list.event_list, trace_event->idx);
 
-  *value = event->value;
-  *model = trace_event->model;
+      *value = event->value;
+      *model = trace_event->model;
 
-  if (trace_event->idx < xbt_dynar_length(trace->s_list.event_list) - 1) {
-    xbt_heap_push(h->heap, trace_event, event_date + event->delta);
-    trace_event->idx++;
-  } else if (event->delta > 0) {        /* Last element, checking for periodicity */
-    xbt_heap_push(h->heap, trace_event, event_date + event->delta);
-    trace_event->idx = 0;
-  } else {                      /* We don't need this trace_event anymore */
-    trace_event->free_me = 1;
+      if (trace_event->idx < xbt_dynar_length(trace->s_list.event_list) - 1) {
+        xbt_heap_push(h->heap, trace_event, event_date + event->delta);
+        trace_event->idx++;
+      } else if (event->delta > 0) {        /* Last element, checking for periodicity */
+        xbt_heap_push(h->heap, trace_event, event_date + event->delta);
+        trace_event->idx = 0;
+      } else {                      /* We don't need this trace_event anymore */
+        trace_event->free_me = 1;
+      }
+      break;
+      
+    case e_trace_probabilist:
+      THROW_UNIMPLEMENTED;
+      break;
   }
 
   return trace_event;
