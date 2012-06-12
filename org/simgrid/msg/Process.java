@@ -289,6 +289,12 @@ public abstract class Process implements Runnable {
 		return ppid;
 	}
 	/**
+	 * Set the kill time of the process
+	 * @param killTime the time when the process is killed
+	 */
+	public native void setKillTime(double killTime);
+	
+	/**
 	 * This static method returns the currently running process.
 	 *
 	 * @return				The current process.

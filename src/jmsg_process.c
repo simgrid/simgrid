@@ -325,3 +325,8 @@ Java_org_simgrid_msg_Process_migrate(JNIEnv * env,
   /* change the host java side */
   (*env)->SetObjectField(env, jprocess, jprocess_field_Process_host, jhost);
 }
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , jobject jprocess, jdouble jkilltime) {
+	m_process_t process = jprocess_to_native_process(jprocess, env);
+	MSG_process_set_kill_time(process, (double)jkilltime);
+}
