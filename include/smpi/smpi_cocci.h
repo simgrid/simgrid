@@ -47,15 +47,10 @@ void __attribute__((weak,destructor)) __postfini_##name(void) { \
  *
  * This function is rather internal, mainly used for the
  * privatization of global variables through coccinelle.
- *
- * Since its implementation relies on the on_exit() function that
- * is not implemented on Mac, this function is a no-op on that
- * architecture. But the only issue raised is that the memory is
- * not raised right before the process terminaison. This is only
- * important if you want to run valgrind on the code, or
- * equivalent.
  */
 XBT_PUBLIC(void) smpi_register_static(void* arg);
+
+XBT_PUBLIC(void) smpi_free_static(void);
 
 #define SMPI_VARINIT_STATIC(name,type)                      \
 static type *name = NULL;                                   \
