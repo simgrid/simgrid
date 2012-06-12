@@ -82,22 +82,25 @@ set(JMSG_C_SRC
 	src/jmsg.h
 	src/jmsg_comm.c
 	src/jmsg_comm.h
+	src/jmsg_file.c
+	src/jmsg_file.h
 	src/jmsg_host.c
 	src/jmsg_host.h
 	src/jmsg_process.c
 	src/jmsg_process.h
-	src/jmsg_task.c
-	src/jmsg_task.h
-	src/jmsg_synchro.c
-	src/jmsg_synchro.h
 	src/jmsg_rngstream.c
 	src/jmsg_rngstream.h
+	src/jmsg_synchro.c
+	src/jmsg_synchro.h
+	src/jmsg_task.c
+	src/jmsg_task.h
 )
 
 set(JMSG_JAVA_SRC
 	org/simgrid/msg/Host.java
 	org/simgrid/msg/HostFailureException.java	
 	org/simgrid/msg/HostNotFoundException.java	
+    org/simgrid/msg/File.java
 	org/simgrid/msg/JniException.java
 	org/simgrid/msg/Msg.java
 	org/simgrid/msg/MsgException.java
@@ -139,6 +142,8 @@ set(JAVA_EXAMPLES
 	examples/commTime/Master.java
 	examples/commTime/Slave.java
 	examples/commTime/CommTimeTest.java
+	examples/io/IO.java
+	examples/io/Node.java
 	examples/masterslave/FinalizeTask.java
 	examples/masterslave/Forwarder.java
 	examples/masterslave/Master.java
@@ -267,8 +272,9 @@ add_custom_command(
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/chord/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/commTime/*.java
-	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/masterslave/*.java
-	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/io/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/masterslave/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/*.java
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/migration/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
