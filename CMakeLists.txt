@@ -213,10 +213,8 @@ set(source_to_pack
   ${XML_FILES}
 )
 
-string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/org/" JAVA_FILES "${JMSG_JAVA_SRC}") 
-string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/classes/org/" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC}")
+string(REPLACE "org/" "classes/org/" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC}")
 string(REPLACE ".java" ".class" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC_CLASS}")
-string(REPLACE "examples/" "${CMAKE_HOME_DIRECTORY}/examples/" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES}") 
 string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES_CLASS}")
 
 #########
@@ -255,12 +253,16 @@ add_custom_command(
   DEPENDS ${JMSG_JAVA_SRC}
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
-				-cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES}
+				-cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JMSG_JAVA_SRC}
   COMMENT "Compiling java sources of core library..."					
 )
 add_custom_target(java_classes ALL
   DEPENDS ${JMSG_JAVA_SRC_CLASS}
 )
+SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
+  ${JMSG_JAVA_SRC_CLASS}
+)
+
 
 # simgrid_jar
 add_custom_target(simgrid_jar ALL
@@ -290,7 +292,7 @@ add_custom_command(
 )
 
 add_custom_target(simgrid_java_examples ALL
-  DEPENDS ${JAVA_EXAMPLES_CLASS}
+  DEPENDS ${JAVA_EXAMPLES}
 )
 
 ########################
