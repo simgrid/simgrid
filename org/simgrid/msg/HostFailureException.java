@@ -12,7 +12,7 @@
 package org.simgrid.msg;
 
 /**
- * This exception is raised when The host on which you are running has just been rebooted.
+ * This exception is raised when the host on which you are running has just been rebooted.
  */
 public class HostFailureException extends MsgException {
 	private static final long serialVersionUID = 1L;
