@@ -184,7 +184,7 @@ void smx_ctx_cojava_stop(smx_context_t context)
 	 * The java stack needs to be empty, otherwise weird stuff
 	 * will happen
 	 */
-	if (context->iwannadie == -1) {
+	if (context->iwannadie) {
   	context->iwannadie = 0;
   	JNIEnv *env = get_current_thread_env();
   	jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process killed :)"));
