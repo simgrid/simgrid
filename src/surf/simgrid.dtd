@@ -33,6 +33,7 @@
 <!ELEMENT storage_type (prop*)>
 <!ATTLIST storage_type id       CDATA #REQUIRED>
 <!ATTLIST storage_type model    CDATA #REQUIRED>
+<!ATTLIST storage_type size     CDATA #REQUIRED>
 <!ATTLIST storage_type content  CDATA "0">
 
 <!ELEMENT storage (prop*)>

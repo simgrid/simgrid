@@ -13,6 +13,8 @@ typedef struct s_storage_type {
   xbt_dict_t content; /* char * -> s_surf_stat_t */
   char *type_id;
   xbt_dict_t properties;
+  unsigned long size;
+  unsigned long used_size;
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
@@ -35,7 +37,7 @@ typedef struct storage {
   e_surf_resource_state_t state_current;        /*< STORAGE current state (ON or OFF) */
   lmm_constraint_t constraint;          /* Constraint for maximum bandwidth from connexion */
   lmm_constraint_t constraint_write;    /* Constraint for maximum write bandwidth*/
-  lmm_constraint_t constraint_read;    /* Constraint for maximum write bandwidth*/
+  lmm_constraint_t constraint_read;     /* Constraint for maximum write bandwidth*/
 } s_storage_t, *storage_t;
 
 typedef enum {

@@ -119,12 +119,14 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
   GENERIC_LMM_ACTION(action).variable =
       lmm_variable_new(storage_maxmin_system, action, 1.0, -1.0 , 3);
 
+  // Must be less than the max bandwidth for all actions
+  lmm_expand(storage_maxmin_system, STORAGE->constraint,
+             GENERIC_LMM_ACTION(action).variable, 1.0);
+
   switch(type) {
   case OPEN:
   case CLOSE:
   case STAT:
-    lmm_expand(storage_maxmin_system, STORAGE->constraint,
-               GENERIC_LMM_ACTION(action).variable, 1.0);
     break;
   case READ:
     lmm_expand(storage_maxmin_system, STORAGE->constraint_read,
@@ -153,17 +155,17 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage->state_current = SURF_RESOURCE_ON;
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
-  size_t Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
-  size_t Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
-  size_t Bconnection   = atof(xbt_dict_get(storage_type->properties,"Bconnection"));
   XBT_INFO("Create resource with Bconnection '%zu' Bread '%zu' Bwrite '%zu'",Bconnection,Bread,Bwrite);
+  double Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
+  double Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
+  double Bconnection   = atof(xbt_dict_get(storage_type->properties,"Bconnection"));
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%zu'\n",
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tproperties '%p'\n\t\tBread '%f'\n",
       id,
       model,
       type_id,
@@ -414,8 +416,9 @@ static void free_storage_content(void *p)
   free(content);
 }
 
-static xbt_dict_t parse_storage_content(const char *filename)
+static xbt_dict_t parse_storage_content(const char *filename, unsigned long *used_size)
 {
+  *used_size = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
     return NULL;
 
@@ -435,19 +438,21 @@ static xbt_dict_t parse_storage_content(const char *filename)
   char date[12];
   char time[12];
   char path[1024];
-  int nb, size;
+  int nb;
+  long size;
 
   surf_stat_t content;
 
   while ((read = getline(&line, &len, file)) != -1) {
     content = xbt_new0(s_surf_stat_t,1);
-    if(sscanf(line,"%s %d %s %s %d %s %s %s",user_rights,&nb,user,group,&size,date,time,path)==8) {
+    if(sscanf(line,"%s %d %s %s %ld %s %s %s",user_rights,&nb,user,group,&size,date,time,path)==8) {
       content->stat.date = xbt_strdup(date);
       content->stat.group = xbt_strdup(group);
       content->stat.size = size;
       content->stat.time = xbt_strdup(time);
       content->stat.user = xbt_strdup(user);
       content->stat.user_rights = xbt_strdup(user_rights);
+      *used_size += content->stat.size;
       xbt_dict_set(parse_content,path,content,NULL);
     } else {
       xbt_die("Be sure of passing a good format for content file.\n");
@@ -457,7 +462,6 @@ static xbt_dict_t parse_storage_content(const char *filename)
   }
   if (line)
       free(line);
-
   fclose(file);
   return parse_content;
 }
@@ -470,14 +474,14 @@ static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
   storage_type_t stype = xbt_new0(s_storage_type_t, 1);
   stype->model = xbt_strdup(storage_type->model);
   stype->properties = storage_type->properties;
-  stype->content = parse_storage_content(storage_type->content);
+  stype->content = parse_storage_content(storage_type->content,&(stype->used_size));
   stype->type_id = xbt_strdup(storage_type->id);
+  stype->size = storage_type->size * 1000000000; /* storage_type->size is in Gbytes and stype->sizeis in bytes */
 
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s' content '%s' and properties '%p'",
+  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s' content '%s'",
       stype->type_id,
       stype->model,
-      storage_type->content,
-      stype->properties);
+      storage_type->content);
 
   xbt_lib_set(storage_type_lib,
       stype->type_id,
