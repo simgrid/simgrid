@@ -33,13 +33,7 @@ static smx_context_t maestro_context = NULL;
 xbt_dynar_t cojava_processes;
 static unsigned long int cojava_process_index = 0;
 
-static JavaVM *get_current_vm(void);
-static JavaVM *get_current_vm(void)
-{
-	JavaVM *jvm;
-	JNI_GetCreatedJavaVMs(&jvm,1,NULL);
-  return jvm;
-}
+extern JavaVM *__java_vm;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
