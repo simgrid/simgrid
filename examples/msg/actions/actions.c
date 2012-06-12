@@ -10,6 +10,7 @@
 #include "simgrid/simix.h"        /* semaphores for the barrier */
 #include "xbt.h"                /* calloc, printf */
 #include "instr/instr_private.h"
+#include <xbt/replay.h>
 
 /** @addtogroup MSG_examples
  *
