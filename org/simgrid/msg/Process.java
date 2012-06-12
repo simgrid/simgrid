@@ -308,7 +308,7 @@ public abstract class Process implements Runnable {
 	 * @param host			The host where to migrate the process.
 	 *
 	 */
-	public native static void migrate(Process process, Host host);	
+	public native void migrate(Host host);	
 	/**
 	 * Makes the current process sleep until millis millisecondes have elapsed.
 	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds.
