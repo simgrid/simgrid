@@ -47,7 +47,7 @@ tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
   RngStream rng_stream = NULL;
   
   rng_stream = RngStream_CopyStream(common_rng_stream);
-  id_hash = xbt_dict_hash(id);
+  id_hash = xbt_str_hash(id);
   RngStream_AdvanceState(rng_stream, 0, id_hash);
   
   trace = xbt_new0(s_tmgr_trace_t, 1);

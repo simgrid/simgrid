@@ -166,7 +166,7 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
                                  void *data, void_f_pvoid_t free_ctn)
 {
 
-  unsigned int hash_code = xbt_dict_hash_ext(key, key_len);
+  unsigned int hash_code = xbt_str_hash_ext(key, key_len);
 
   xbt_dictelm_t current, previous = NULL;
   xbt_assert(dict);
@@ -237,7 +237,7 @@ XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key,
 {
 
 
-  unsigned int hash_code = xbt_dict_hash_ext(key, key_len);
+  unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t current;
 
   xbt_assert(dict);
@@ -262,7 +262,7 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key,
                                int key_len)
 {
 
-  unsigned int hash_code = xbt_dict_hash_ext(key, key_len);
+  unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t current;
 
   xbt_assert(dict);
@@ -317,7 +317,7 @@ char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
 XBT_INLINE void *xbt_dict_get(xbt_dict_t dict, const char *key)
 {
 
-  unsigned int hash_code = xbt_dict_hash(key);
+  unsigned int hash_code = xbt_str_hash(key);
   xbt_dictelm_t current;
 
   xbt_assert(dict);
@@ -338,7 +338,7 @@ XBT_INLINE void *xbt_dict_get(xbt_dict_t dict, const char *key)
  */
 XBT_INLINE void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 {
-  unsigned int hash_code = xbt_dict_hash(key);
+  unsigned int hash_code = xbt_str_hash(key);
   xbt_dictelm_t current;
 
   xbt_assert(dict);
@@ -369,7 +369,7 @@ XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
 {
 
 
-  unsigned int hash_code = xbt_dict_hash_ext(key, key_len);
+  unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t current, previous = NULL;
 
   xbt_assert(dict);

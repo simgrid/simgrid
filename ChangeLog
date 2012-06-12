@@ -28,6 +28,10 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    seamlessly.
  * New function SD_workstation_dump to display various information
 
+ XBT:
+ * Functions xbt_dict_hash() and xbt_dict_hash_ext() are made public,
+  and renamed to xbt_str_hash() and xbt_str_ext()._
+
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.7.1) stable; urgency=low
