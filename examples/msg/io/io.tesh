@@ -2,10 +2,6 @@
 
 $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'path' to '../examples/platforms/'
-> [  0.000000] (0:@) Create resource with Bconnection '150000000' Bread '100000000' Bwrite '30000000'
-> [  0.000000] (0:@) Create resource with Bconnection '150000000' Bread '100000000' Bwrite '30000000'
-> [  0.000000] (0:@) Create resource with Bconnection '150000000' Bread '100000000' Bwrite '30000000'
-> [  0.000000] (0:@) Create resource with Bconnection '150000000' Bread '100000000' Bwrite '30000000'
 > [  0.000000] (0:@) Number of host '4'
 > [  0.000000] (1:0@denise) 	Open file '/home/user/Install/simgrid/doc/simgrid/examples/platforms/g5k.xml'
 > [  0.000000] (2:1@alice) 	Open file '/home/user/Install/simgrid/doc/simgrid/examples/platforms/One_cluster_no_backbone.xml'

@@ -155,10 +155,10 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage->state_current = SURF_RESOURCE_ON;
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
-  XBT_INFO("Create resource with Bconnection '%zu' Bread '%zu' Bwrite '%zu'",Bconnection,Bread,Bwrite);
   double Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
   double Bwrite = atof(xbt_dict_get(storage_type->properties,"Bwrite"));
   double Bconnection   = atof(xbt_dict_get(storage_type->properties,"Bconnection"));
+  XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%ld'",Bconnection,Bread,Bwrite,storage_type->size);
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
