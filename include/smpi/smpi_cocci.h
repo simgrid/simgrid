@@ -43,7 +43,18 @@ void __attribute__((weak,destructor)) __postfini_##name(void) { \
 #define SMPI_VARGET_GLOBAL(name) name[smpi_process_index()]
 
 /* The following handle local static variables */
-
+/** @brief Make sure that the passed pointer is freed on process exit.
+ *
+ * This function is rather internal, mainly used for the
+ * privatization of global variables through coccinelle.
+ *
+ * Since its implementation relies on the on_exit() function that
+ * is not implemented on Mac, this function is a no-op on that
+ * architecture. But the only issue raised is that the memory is
+ * not raised right before the process terminaison. This is only
+ * important if you want to run valgrind on the code, or
+ * equivalent.
+ */
 XBT_PUBLIC(void) smpi_register_static(void* arg);
 
 #define SMPI_VARINIT_STATIC(name,type)                      \
