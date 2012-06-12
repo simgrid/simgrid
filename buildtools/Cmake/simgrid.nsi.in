@@ -92,7 +92,6 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\queue.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\setset.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\mmalloc.h
-	file @CMAKE_HOME_DIRECTORY@\include\xbt\replay_trace_reader.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\parmap.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automaton.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automatonparse_promela.h
