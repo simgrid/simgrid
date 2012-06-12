@@ -504,7 +504,7 @@ void MC_dump_stack_liveness(xbt_fifo_t stack){
 
 void MC_print_statistics(mc_stats_t stats)
 {
-  XBT_INFO("State space size ~= %lu", stats->state_size);
+  //XBT_INFO("State space size ~= %lu", stats->state_size);
   XBT_INFO("Expanded states = %lu", stats->expanded_states);
   XBT_INFO("Visited states = %lu", stats->visited_states);
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
