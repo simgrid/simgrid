@@ -6,9 +6,9 @@ set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib")
 set(soversion 1)
 
-set(SIMGRID_JAVA_VERSION_MAJOR "1")
-set(SIMGRID_JAVA_VERSION_MINOR "2")
-set(SIMGRID_JAVA_VERSION_PATCH "0")
+set(SIMGRID_JAVA_VERSION_MAJOR "3")
+set(SIMGRID_JAVA_VERSION_MINOR "7")
+set(SIMGRID_JAVA_VERSION_PATCH "1")
 set(DIST_NAME ${PROJECT_NAME}-${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR})
 
 ########
@@ -23,19 +23,19 @@ string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH 
 ## GIT #
 ########
 if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
-exec_program("git remote | head -n 1" OUTPUT_VARIABLE remote RETURN_VALUE ret)
-exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
+  exec_program("git remote | head -n 1" OUTPUT_VARIABLE remote RETURN_VALUE ret)
+  exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
 
-if(url)
-	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
-	message(STATUS "Git version: ${GIT_VERSION}")
-	exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
-	message(STATUS "Git date: ${GIT_DATE}")
-	string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
-	STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
-	STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
-	STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
-endif(url)
+  if(url)
+    exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
+    message(STATUS "Git version: ${GIT_VERSION}")
+    exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
+    message(STATUS "Git date: ${GIT_DATE}")
+    string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
+    STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
+    STRING(REPLACE " " "~" GIT_DATE ${GIT_DATE})
+    STRING(REPLACE ":" "-" GIT_DATE ${GIT_DATE})
+  endif(url)
 endif(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
 
 #########
@@ -72,132 +72,145 @@ include(FindJavaSG.cmake)
 # Declare our package content #
 ###############################
 set(JMSG_C_SRC
-	src/smx_context_java.h
-	src/smx_context_java.c
-	src/jxbt_utilities.c
-	src/jxbt_utilities.h
-	src/jmsg.c 
-	src/jmsg.h
-	src/jmsg_comm.c
-	src/jmsg_comm.h
-	src/jmsg_host.c
-	src/jmsg_host.h
-	src/jmsg_process.c
-	src/jmsg_process.h
-	src/jmsg_task.c
-	src/jmsg_task.h
-	src/jmsg_synchro.c
-	src/jmsg_synchro.h
-	src/jmsg_rngstream.c
-	src/jmsg_rngstream.h
+  ${CMAKE_HOME_DIRECTORY}/src/smx_context_java.h
+  ${CMAKE_HOME_DIRECTORY}/src/smx_context_java.c
+  ${CMAKE_HOME_DIRECTORY}/src/jxbt_utilities.c
+  ${CMAKE_HOME_DIRECTORY}/src/jxbt_utilities.h
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg.c 
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg.h
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_comm.c
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_comm.h
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_host.c
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_host.h
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_process.c
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_process.h
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_task.c
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_task.h
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_synchro.c
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_synchro.h
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_rngstream.c
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_rngstream.h
 )
 
 set(JMSG_JAVA_SRC
-	org/simgrid/msg/Host.java
-	org/simgrid/msg/HostFailureException.java	
-	org/simgrid/msg/HostNotFoundException.java	
-	org/simgrid/msg/JniException.java
-	org/simgrid/msg/Msg.java
-	org/simgrid/msg/MsgException.java
-	org/simgrid/msg/NativeException.java
-	org/simgrid/msg/Process.java
-	org/simgrid/msg/ProcessKilledError.java
-	org/simgrid/msg/ProcessNotFoundException.java
-	org/simgrid/msg/Task.java
-	org/simgrid/msg/TaskCancelledException.java
-	org/simgrid/msg/TimeoutException.java
-	org/simgrid/msg/TransferFailureException.java	
-	org/simgrid/msg/Mutex.java
-	org/simgrid/msg/Comm.java
-	org/simgrid/msg/RngStream.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/Host.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/HostFailureException.java	
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/HostNotFoundException.java	
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/JniException.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/Msg.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/MsgException.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/NativeException.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/Process.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/ProcessKilledError.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/ProcessNotFoundException.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/Task.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/TaskCancelledException.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/TimeoutException.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/TransferFailureException.java	
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/Mutex.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/Comm.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/RngStream.java
 )
 
 set(JAVA_EXAMPLES
-	examples/async/AsyncTest.java
-	examples/async/FinalizeTask.java  
-	examples/async/Forwarder.java
-	examples/async/Master.java  
-	examples/async/Slave.java
-  examples/bittorrent/Bittorrent.java
-  examples/bittorrent/Common.java
-  examples/bittorrent/Connection.java
-  examples/bittorrent/MessageTask.java
-  examples/bittorrent/Peer.java
-  examples/bittorrent/Tracker.java
-  examples/bittorrent/TrackerTask.java
-  examples/chord/Chord.java
-  examples/chord/Common.java
-  examples/chord/Node.java
-  examples/chord/ChordTask.java
-	examples/chord/FindSuccessorAnswerTask.java
-	examples/chord/FindSuccessorTask.java
-	examples/chord/GetPredecessorAnswerTask.java
-	examples/chord/NotifyTask.java
-	examples/commTime/FinalizeTask.java
-	examples/commTime/Master.java
-	examples/commTime/Slave.java
-	examples/commTime/CommTimeTest.java
-	examples/masterslave/FinalizeTask.java
-	examples/masterslave/Forwarder.java
-	examples/masterslave/Master.java
-	examples/masterslave/Masterslave.java
-	examples/masterslave/Slave.java	
-	examples/master_slave_bypass/Master.java
-	examples/master_slave_bypass/MsBypass.java
-	examples/master_slave_bypass/Slave.java
-	examples/master_slave_bypass/FinalizeTask.java
-	examples/master_slave_kill/Master.java
-	examples/master_slave_kill/MsKill.java
-	examples/master_slave_kill/Slave.java
-	examples/master_slave_kill/FinalizeTask.java
-	examples/migration/Emigrant.java
-	examples/migration/Migration.java
-	examples/migration/Policeman.java
-	examples/mutualExclusion/centralized/MutexCentral.java
-	examples/mutualExclusion/centralized/GrantTask.java
-	examples/mutualExclusion/centralized/Coordinator.java
-	examples/mutualExclusion/centralized/ReleaseTask.java
-	examples/mutualExclusion/centralized/Node.java
-	examples/mutualExclusion/centralized/RequestTask.java
-	examples/pingPong/PingPongTask.java
-	examples/pingPong/Sender.java
-	examples/pingPong/Receiver.java
-	examples/pingPong/PingPongTest.java
-	examples/startKillTime/Master.java
-	examples/startKillTime/Slave.java
-	examples/startKillTime/StartKillTime.java
-	examples/suspend/DreamMaster.java
-	examples/suspend/LazyGuy.java
-	examples/suspend/Suspend.java
+  ${CMAKE_HOME_DIRECTORY}/examples/async/AsyncTest.java
+  ${CMAKE_HOME_DIRECTORY}/examples/async/FinalizeTask.java  
+  ${CMAKE_HOME_DIRECTORY}/examples/async/Forwarder.java
+  ${CMAKE_HOME_DIRECTORY}/examples/async/Master.java  
+  ${CMAKE_HOME_DIRECTORY}/examples/async/Slave.java
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/Bittorrent.java
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/Common.java
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/Connection.java
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/MessageTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/Peer.java
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/Tracker.java
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/TrackerTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/Chord.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/Common.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/Node.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/ChordTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/FindSuccessorAnswerTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/FindSuccessorTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/GetPredecessorAnswerTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/NotifyTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/commTime/FinalizeTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/commTime/Master.java
+  ${CMAKE_HOME_DIRECTORY}/examples/commTime/Slave.java
+  ${CMAKE_HOME_DIRECTORY}/examples/commTime/CommTimeTest.java
+  ${CMAKE_HOME_DIRECTORY}/examples/masterslave/FinalizeTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/masterslave/Forwarder.java
+  ${CMAKE_HOME_DIRECTORY}/examples/masterslave/Master.java
+  ${CMAKE_HOME_DIRECTORY}/examples/masterslave/Masterslave.java
+  ${CMAKE_HOME_DIRECTORY}/examples/masterslave/Slave.java	
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/Master.java
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/MsBypass.java
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/Slave.java
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/FinalizeTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/Master.java
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/MsKill.java
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/Slave.java
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/FinalizeTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/migration/Emigrant.java
+  ${CMAKE_HOME_DIRECTORY}/examples/migration/Migration.java
+  ${CMAKE_HOME_DIRECTORY}/examples/migration/Policeman.java
+  ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/MutexCentral.java
+  ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/GrantTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/Coordinator.java
+  ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/ReleaseTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/Node.java
+  ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/RequestTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/pingPong/PingPongTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/pingPong/Sender.java
+  ${CMAKE_HOME_DIRECTORY}/examples/pingPong/Receiver.java
+  ${CMAKE_HOME_DIRECTORY}/examples/pingPong/PingPongTest.java
+  ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/Master.java
+  ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/Slave.java
+  ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/StartKillTime.java
+  ${CMAKE_HOME_DIRECTORY}/examples/suspend/DreamMaster.java
+  ${CMAKE_HOME_DIRECTORY}/examples/suspend/LazyGuy.java
+  ${CMAKE_HOME_DIRECTORY}/examples/suspend/Suspend.java
 )
 
 set(CMAKE_SRC
-${CMAKE_HOME_DIRECTORY}/ChangeLog
-${CMAKE_HOME_DIRECTORY}/CMakeLists.txt
-${CMAKE_HOME_DIRECTORY}/FindJavaSG.cmake
-${CMAKE_HOME_DIRECTORY}/FindSimGrid.cmake
+  ${CMAKE_HOME_DIRECTORY}/ChangeLog
+  ${CMAKE_HOME_DIRECTORY}/CMakeLists.txt
+  ${CMAKE_HOME_DIRECTORY}/FindJavaSG.cmake
+  ${CMAKE_HOME_DIRECTORY}/FindSimGrid.cmake
 )
 
 set(XML_FILES
-    examples/platform.xml
-    examples/async/asyncDeployment.xml
-    examples/bittorrent/bittorrent.xml
-    examples/commTime/commTimeDeployment.xml
-    examples/masterslave/masterslaveDeployment.xml
-    examples/masterslave/deploy.xml
-    examples/master_slave_bypass/platform.xml
-    examples/master_slave_kill/platform.xml
-    examples/mutualExclusion/ring3.xml  
-    examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
-    examples/pingPong/pingPongDeployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/platform.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/bittorrent.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/platform.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/commTime/commTimeDeployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/async/asyncDeployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/migration/migrationDeployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/masterslave/deploy.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/masterslave/masterslaveDeployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/chord100.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/chord10.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/chord10000.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/chord1000.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/chord90.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspendDeployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/platform.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/ring3.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/priority/priorityDeployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingPongDeployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment_kill.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment_start.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment_start_kill.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment.xml
 )
 
 set(source_to_pack
-${CMAKE_SRC}
-${JMSG_C_SRC}
-${JMSG_JAVA_SRC}
-${JAVA_EXAMPLES}
-${XML_FILES}
+  ${CMAKE_SRC}
+  ${JMSG_C_SRC}
+  ${JMSG_JAVA_SRC}
+  ${JAVA_EXAMPLES}
+  ${XML_FILES}
 )
 
 string(REPLACE "org/" "${CMAKE_HOME_DIRECTORY}/org/" JAVA_FILES "${JMSG_JAVA_SRC}") 
@@ -215,7 +228,7 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${INCLUDE_PATH}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=int-to-pointer-cast -Wno-error=pointer-to-int-cast")
 if(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unused-but-set-variable")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unused-but-set-variable")
 endif(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
 
 ###########
@@ -224,26 +237,26 @@ endif(COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
 # SG_java
 add_library(SG_java SHARED ${JMSG_C_SRC})
 if(WIN32)
-    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-Wl,--subsystem,windows,--kill-at ${SIMGRID_LIB}" PREFIX "")
-    find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
-    message(STATUS "pexports: ${PEXPORTS_PATH}")
-    if(PEXPORTS_PATH)
+  set_target_properties(SG_java PROPERTIES LINK_FLAGS "-Wl,--subsystem,windows,--kill-at ${SIMGRID_LIB}" PREFIX "")
+  find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
+  message(STATUS "pexports: ${PEXPORTS_PATH}")
+  if(PEXPORTS_PATH)
     add_custom_command(TARGET SG_java POST_BUILD
     COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java.dll > ${CMAKE_BINARY_DIR}/SG_java.def)
-    endif(PEXPORTS_PATH)
+  endif(PEXPORTS_PATH)
 else(WIN32)
-    target_link_libraries(SG_java pcre pthread simgrid)
-    set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH}")
+  target_link_libraries(SG_java pcre pthread simgrid)
+  set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH}")
 endif(WIN32)
 
 # java_classes
 add_custom_command(
-	OUTPUT 	${JMSG_JAVA_SRC_CLASS}
-	DEPENDS ${JMSG_JAVA_SRC}
-	COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
-	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
-  					-cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES}
-	COMMENT "Compiling java sources of core library..."					
+  OUTPUT 	${JMSG_JAVA_SRC_CLASS}
+  DEPENDS ${JMSG_JAVA_SRC}
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
+				-cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES}
+  COMMENT "Compiling java sources of core library..."					
 )
 add_custom_target(java_classes ALL
   DEPENDS ${JMSG_JAVA_SRC_CLASS}
@@ -258,27 +271,26 @@ add_custom_target(simgrid_jar ALL
 
 # simgrid_java_examples
 add_custom_command(
-	COMMENT "Build examples for java"
-	OUTPUT	${JAVA_EXAMPLES_CLASS}
-	DEPENDS ${JAVA_EXAMPLES}
+  COMMENT "Build examples for java"
+  OUTPUT	${JAVA_EXAMPLES_CLASS}
+  DEPENDS ${JAVA_EXAMPLES}
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/async/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/chord/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/commTime/*.java
-	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/masterslave/*.java
-	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/masterslave/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/*.java
- 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/migration/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/migration/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
- 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
- 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/priority/*.java   	
-	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/*.java
-	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/suspend/*.java
-
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/priority/*.java   	
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/suspend/*.java
 )
 
 add_custom_target(simgrid_java_examples ALL
-	DEPENDS ${JAVA_EXAMPLES_CLASS}
+  DEPENDS ${JAVA_EXAMPLES_CLASS}
 )
 
 ########################
@@ -288,7 +300,7 @@ add_dependencies(simgrid_jar java_classes)
 add_dependencies(simgrid_java_examples simgrid_jar SG_java)
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-${CMAKE_HOME_DIRECTORY}/simgrid.jar
+  ${CMAKE_HOME_DIRECTORY}/simgrid.jar
 )
 
 #####################
@@ -317,35 +329,35 @@ set(test_list async bittorrent bypass chord commTime kill masterslave migration 
 # Set the  DYLD_LIBRARY_PATH for mac     #
 ##########################################
 if(APPLE)
-    if($ENV{DYLD_LIBRARY_PATH})
-        set_tests_properties(${test_list}
-        PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-    else($ENV{DYLD_LIBRARY_PATH})
-        set_tests_properties(${test_list}
-        PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=$ENV{DYLD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-    endif($ENV{DYLD_LIBRARY_PATH})
+  if($ENV{DYLD_LIBRARY_PATH})
+    set_tests_properties(${test_list}
+    PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
+  else($ENV{DYLD_LIBRARY_PATH})
+    set_tests_properties(${test_list}
+    PROPERTIES ENVIRONMENT "DYLD_LIBRARY_PATH=$ENV{DYLD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
+  endif($ENV{DYLD_LIBRARY_PATH})
 else(APPLE)
-    ##########################################
-    # Set the  LD_LIBRARY_PATH for our tests #
-    ##########################################
-    if(NOT WIN32)
-        if($ENV{LD_LIBRARY_PATH})
-            set_tests_properties(${test_list}
-            PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-        else($ENV{LD_LIBRARY_PATH})
-            set_tests_properties(${test_list}
-            PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
-        endif($ENV{LD_LIBRARY_PATH})
-    endif(NOT WIN32)
+##########################################
+# Set the  LD_LIBRARY_PATH for our tests #
+##########################################
+  if(NOT WIN32)
+    if($ENV{LD_LIBRARY_PATH})
+      set_tests_properties(${test_list}
+      PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
+    else($ENV{LD_LIBRARY_PATH})
+      set_tests_properties(${test_list}
+      PROPERTIES ENVIRONMENT "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${CMAKE_HOME_DIRECTORY}/lib:${SIMGRID_LIB_PATH}")
+    endif($ENV{LD_LIBRARY_PATH})
+  endif(NOT WIN32)
 endif(APPLE)
 
 ###########
 # Install #
 ###########
 install(TARGETS SG_java
-	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
+  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
 install(FILES ${CMAKE_HOME_DIRECTORY}/simgrid.jar
-	DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
+  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
 
 
 #########
@@ -369,18 +381,18 @@ foreach(file ${source_to_pack})
   get_filename_component(file_location ${file} PATH)
   string(REGEX MATCH ";${file_location};" OPERATION "${dirs_in_tarball}")
   if(NOT OPERATION)
-       set(dirs_in_tarball "${dirs_in_tarball};${file_location};")
-       add_custom_command(
-         TARGET dist-dir
-         COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_NAME}/${file_location}/
-       )       
-   endif(NOT OPERATION)
+    set(dirs_in_tarball "${dirs_in_tarball};${file_location};")
+    add_custom_command(
+      TARGET dist-dir
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_NAME}/${file_location}/
+    )       
+  endif(NOT OPERATION)
    
    # Actually copy the file
-   add_custom_command(
-     TARGET dist-dir
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${DIST_NAME}/${file_location}/
-   )
+  add_custom_command(
+    TARGET dist-dir
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${DIST_NAME}/${file_location}/
+  )
 endforeach(file ${source_to_pack})
 
 add_custom_target(dist
@@ -388,11 +400,11 @@ add_custom_target(dist
   COMMENT "Generated ${DIST_NAME}"
 )
 add_custom_command(
-	OUTPUT ${CMAKE_BINARY_DIR}/${DIST_NAME}.tar.gz	
-	COMMENT "Compressing the archive from the distribution directory"
-	COMMAND ${CMAKE_COMMAND} -E tar cf ${DIST_NAME}.tar ${DIST_NAME}/
-  	COMMAND gzip -9v ${DIST_NAME}.tar
-  	COMMAND ${CMAKE_COMMAND} -E remove_directory ${DIST_NAME}/
+  OUTPUT ${CMAKE_BINARY_DIR}/${DIST_NAME}.tar.gz	
+  COMMENT "Compressing the archive from the distribution directory"
+  COMMAND ${CMAKE_COMMAND} -E tar cf ${DIST_NAME}.tar ${DIST_NAME}/
+  COMMAND gzip -9v ${DIST_NAME}.tar
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${DIST_NAME}/
 )
 add_dependencies(dist dist-dir)
 
