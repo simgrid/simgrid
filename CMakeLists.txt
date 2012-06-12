@@ -9,7 +9,7 @@ set(soversion 1)
 set(SIMGRID_JAVA_VERSION_MAJOR "3")
 set(SIMGRID_JAVA_VERSION_MINOR "7")
 set(SIMGRID_JAVA_VERSION_PATCH "1")
-set(DIST_NAME ${PROJECT_NAME}-${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR})
+set(DIST_NAME ${PROJECT_NAME}-${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR}.${SIMGRID_JAVA_VERSION_PATCH})
 
 ########
 ## GCC #
@@ -132,6 +132,7 @@ set(JAVA_EXAMPLES
   ${CMAKE_HOME_DIRECTORY}/examples/chord/FindSuccessorAnswerTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/FindSuccessorTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/GetPredecessorAnswerTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/GetPredecessorTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/NotifyTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/commTime/FinalizeTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/commTime/Master.java
@@ -163,6 +164,8 @@ set(JAVA_EXAMPLES
   ${CMAKE_HOME_DIRECTORY}/examples/pingPong/Sender.java
   ${CMAKE_HOME_DIRECTORY}/examples/pingPong/Receiver.java
   ${CMAKE_HOME_DIRECTORY}/examples/pingPong/PingPongTest.java
+  ${CMAKE_HOME_DIRECTORY}/examples/priority/Priority.java
+  ${CMAKE_HOME_DIRECTORY}/examples/priority/Test.java
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/Master.java
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/Slave.java
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/StartKillTime.java
@@ -174,8 +177,18 @@ set(JAVA_EXAMPLES
 set(CMAKE_SRC
   ${CMAKE_HOME_DIRECTORY}/ChangeLog
   ${CMAKE_HOME_DIRECTORY}/CMakeLists.txt
+  ${CMAKE_HOME_DIRECTORY}/doxygen_postprocesser.pl
   ${CMAKE_HOME_DIRECTORY}/FindJavaSG.cmake
   ${CMAKE_HOME_DIRECTORY}/FindSimGrid.cmake
+  ${CMAKE_HOME_DIRECTORY}/GenerateDoc.cmake
+  ${CMAKE_HOME_DIRECTORY}/README
+)
+
+set(CMAKE_DOC_SRC
+  ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in
+  ${CMAKE_HOME_DIRECTORY}/doc/footer.html.in
+  ${CMAKE_HOME_DIRECTORY}/doc/index.doc
+  ${CMAKE_HOME_DIRECTORY}/doc/install.doc
 )
 
 set(XML_FILES
@@ -205,12 +218,30 @@ set(XML_FILES
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment.xml
 )
 
+set(TESH_FILES
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/bypass.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/bittorrent.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/commTime/commtime.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/async/async.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/migration/migration.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/masterslave/masterslave.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspend.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/mutualexclusion.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/priority/priority.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingpong.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh
+)
+
 set(source_to_pack
   ${CMAKE_SRC}
   ${JMSG_C_SRC}
   ${JMSG_JAVA_SRC}
   ${JAVA_EXAMPLES}
   ${XML_FILES}
+  ${CMAKE_DOC_SRC}
+  ${TESH_FILES}
 )
 
 string(REPLACE "org/" "classes/org/" JMSG_JAVA_SRC_CLASS "${JMSG_JAVA_SRC}")
@@ -373,6 +404,8 @@ add_custom_target(dist-dir
   COMMAND test -e ${DIST_NAME}/ && chmod -R a+w ${DIST_NAME}/ || true
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${DIST_NAME}/
   COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_NAME}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_NAME}/doc/html/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ ${DIST_NAME}/doc/html/
 )
 
 set(dirs_in_tarball "")
