@@ -61,9 +61,9 @@ add_dependencies(pdf simgrid_documentation)
 add_custom_target(sync-gforge-doc
 COMMAND chmod g+rw -R doc/
 COMMAND chmod a+rX -R doc/
-COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid-java/${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR} || true 
+COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid-java/${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR}.${SIMGRID_JAVA_VERSION_PATCH} || true 
 COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
-doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid-java/${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR}/doc/ || true
+doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid-java/${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR}.${SIMGRID_JAVA_VERSION_PATCH}/doc/ || true
 WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 )
 add_dependencies(sync-gforge-doc documentation)
