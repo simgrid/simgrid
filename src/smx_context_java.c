@@ -1,6 +1,6 @@
 /* context_java - implementation of context switching for java threads */
 
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009, 2010, 2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -99,6 +99,10 @@ static void* smx_ctx_java_thread_run(void *data) {
 	if (context->super.argc > 0) {
 		(*(context->super.code))(context->super.argc, context->super.argv);
 	}
+	else {
+		smx_process_t process = SIMIX_process_self();
+		(*env)->SetLongField(env, context->jprocess, jprocess_field_Process_bind, (jlong)process);
+	}
 	xbt_assert((context->jprocess != NULL), "Process not created...");
   //wait for the process to be able to begin
   //TODO: Cache it
@@ -134,7 +138,7 @@ void smx_ctx_java_stop(smx_context_t context)
 {
 	smx_ctx_java_t ctx_java = (smx_ctx_java_t)context;
   /* I am the current process and I am dying */
-	if (context->iwannadie == -1) {
+	if (context->iwannadie) {
   	context->iwannadie = 0;
   	JNIEnv *env = get_current_thread_env();
   	jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process killed :)"));

@@ -230,16 +230,31 @@ public abstract class Process implements Runnable {
 	/**
 	 * Suspends the process by suspending the task on which it was
 	 * waiting for the completion.
-	 *
 	 */
-	public native void pause();
+	public native void suspend();
+	/**
+	 * Suspends the process by suspending the task on which it was
+	 * waiting for the completion.
+	 * DEPRECATED: use suspend instead.
+	 */
+	@Deprecated
+	public void pause() {
+		suspend();
+	}
 	/**
 	 * Resumes a suspended process by resuming the task on which it was
 	 * waiting for the completion.
-	 *
-	 *
+	 * DEPRECATED: use resume instead.
 	 */ 
-	public native void restart();
+	@Deprecated
+	public void restart() {
+		resume();
+	}
+	/**
+	 * Resumes a suspended process by resuming the task on which it was
+	 * waiting for the completion.
+	 */
+	public native void resume();	
 	/**
 	 * Tests if a process is suspended.
 	 *
@@ -289,6 +304,12 @@ public abstract class Process implements Runnable {
 		return ppid;
 	}
 	/**
+	 * Set the kill time of the process
+	 * @param killTime the time when the process is killed
+	 */
+	public native void setKillTime(double killTime);
+	
+	/**
 	 * This static method returns the currently running process.
 	 *
 	 * @return				The current process.
@@ -302,7 +323,7 @@ public abstract class Process implements Runnable {
 	 * @param host			The host where to migrate the process.
 	 *
 	 */
-	public native static void migrate(Process process, Host host);	
+	public native void migrate(Host host);	
 	/**
 	 * Makes the current process sleep until millis millisecondes have elapsed.
 	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds.
@@ -371,6 +392,7 @@ public abstract class Process implements Runnable {
 		 catch(ProcessKilledError pk) {
 			 
 		 }	
+		exit();
 	}
 
 	/**
@@ -381,7 +403,7 @@ public abstract class Process implements Runnable {
      */
 	public abstract void main(String[]args) throws MsgException;
 
-    
+	public native void exit();    
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */

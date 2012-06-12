@@ -12,6 +12,7 @@
 #include <locale.h>
 
 #include "smx_context_java.h"
+#include "smx_context_cojava.h"
 
 #include "jmsg_process.h"
 
@@ -87,7 +88,18 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 
   (*env)->GetJavaVM(env, &__java_vm);
 
-  smx_factory_initializer_to_use = SIMIX_ctx_java_factory_init;
+  if ((*env)->FindClass(env, "java/dyn/Coroutine")) {
+  	XBT_VERB("Using Coroutines");
+  	smx_factory_initializer_to_use = SIMIX_ctx_cojava_factory_init;
+  }
+  else {
+  	XBT_VERB("Using java threads");
+  	smx_factory_initializer_to_use = SIMIX_ctx_java_factory_init;
+  }
+  jthrowable exc = (*env)->ExceptionOccurred(env);
+  if (exc) {
+    (*env)->ExceptionClear(env);
+  }
 
   setlocale(LC_NUMERIC,"C");
 
@@ -231,7 +243,6 @@ static int create_jprocess(int argc, char *argv[]) {
   /* sets the PID and the PPID of the process */
   (*env)->SetIntField(env, jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
   (*env)->SetIntField(env, jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
-
 	jprocess_bind(jprocess, process, env);
 
 	return 0;

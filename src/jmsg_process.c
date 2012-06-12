@@ -11,8 +11,18 @@
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
 #include "smx_context_java.h"
+#include "smx_context_cojava.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject jprocess) {
+	if (smx_factory_initializer_to_use == SIMIX_ctx_cojava_factory_init) {
+                m_process_t process = jprocess_to_native_process(jprocess, env);
+                smx_context_t context = MSG_process_get_smx_ctx(process);
+                smx_ctx_cojava_stop(context);
+        }
+}
 
 jobject native_to_java_process(m_process_t process)
 {
@@ -206,7 +216,7 @@ Java_org_simgrid_msg_Process_currentProcess(JNIEnv * env, jclass cls)
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Process_pause(JNIEnv * env,
+Java_org_simgrid_msg_Process_suspend(JNIEnv * env,
                                    jobject jprocess)
 {
   m_process_t process = jprocess_to_native_process(jprocess, env);
@@ -224,7 +234,7 @@ Java_org_simgrid_msg_Process_pause(JNIEnv * env,
 
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Process_restart(JNIEnv * env,
+Java_org_simgrid_msg_Process_resume(JNIEnv * env,
                                      jobject jprocess)
 {
   m_process_t process = jprocess_to_native_process(jprocess, env);
@@ -324,4 +334,9 @@ Java_org_simgrid_msg_Process_migrate(JNIEnv * env,
                  bprintf("unexpected error , please report this bug"));
   /* change the host java side */
   (*env)->SetObjectField(env, jprocess, jprocess_field_Process_host, jhost);
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , jobject jprocess, jdouble jkilltime) {
+	m_process_t process = jprocess_to_native_process(jprocess, env);
+	MSG_process_set_kill_time(process, (double)jkilltime);
 }

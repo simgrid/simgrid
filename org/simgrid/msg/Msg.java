@@ -24,28 +24,6 @@ public final class Msg {
 			System.exit(1);
 		}
 	}
-
-	/** Everything is right. Keep on going the way ! */
-	public static final int SUCCESS = 0;
-
-	/** Something must be not perfectly clean (but I may be paranoid freak...) */
-	public static final int WARNING = 1;
-
-	/** There has been a problem during your task transfer.
-	 *  Either the network is  down or the remote host has been shutdown */
-	public static final int TRANSFERT_FAILURE = 2;
-
-	/** System shutdown. 
-	 *  The host on which you are running has just been rebooted.
-	 *  Free your data structures and return now ! */
-	public static final int HOST_FAILURE = 3;
-
-	/** Canceled task. This task has been canceled by somebody ! */
-	public static final int TASK_CANCELLLED = 4;
-
-	/** You've done something wrong. You'd better look at it... */
-	public static final int FATAL_ERROR = 5;
-
     /** Retrieve the simulation time
      * @return
      */

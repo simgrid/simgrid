@@ -56,7 +56,7 @@ Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
 	if (!jtask_field_Task_bind || !jtask_class_Task || !jtask_field_Comm_bind || !jtask_field_Comm_taskBind ||
 		  !jtask_field_Comm_receiving || !jtask_method_Comm_constructor) {
 		  	jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));
-		  }
+	}
 }
 
 JNIEXPORT void JNICALL
@@ -410,7 +410,9 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
                                        jobject jhost)
 {
   MSG_error_t rv;
-  m_task_t task = NULL;
+  m_task_t *task = xbt_new(m_task_t,1);
+  *task = NULL;
+
   m_host_t host = NULL;
   jobject jtask_global, jtask_local;
   const char *alias;
@@ -426,7 +428,7 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
 
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
   TRY {
-  	rv = MSG_task_receive_ext(&task, alias, (double) jtimeout, host);
+  	rv = MSG_task_receive_ext(task, alias, (double) jtimeout, host);
   }
   CATCH_ANONYMOUS {
   	return NULL;
@@ -435,14 +437,16 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
   	jmsg_throw_status(env,rv);
   	return NULL;
   }
-  jtask_global = MSG_task_get_data(task);
+  jtask_global = MSG_task_get_data(*task);
 
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
   jtask_local = (*env)->NewLocalRef(env, jtask_global);
   (*env)->DeleteGlobalRef(env, jtask_global);
-  MSG_task_set_data(task, NULL);
+  MSG_task_set_data(*task, NULL);
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
+
+  xbt_free(task);
 
   jxbt_check_res("MSG_task_receive_ext()", rv,
                  MSG_HOST_FAILURE | MSG_TRANSFER_FAILURE | MSG_TIMEOUT,

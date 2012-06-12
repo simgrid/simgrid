@@ -8,6 +8,8 @@
 #include "jmsg_synchro.h"
 #include "jxbt_utilities.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+
 static jfieldID jsyncro_field_Mutex_bind;
 
 JNIEXPORT void JNICALL
