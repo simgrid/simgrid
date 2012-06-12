@@ -22,22 +22,15 @@ public class AsyncTest {
 		/* initialize the MSG simulation. Must be done before anything else (even logging). */
 		Msg.init(args);
 
-		if(args.length == 0) {
-			Msg.createEnvironment("async_platform.xml");
-			Msg.deployApplication("async_deployment.xml");
-
-		} else if (args.length < 2) {
-
-
+	    if (args.length < 2) {    		
 			Msg.info("Usage   : Async platform_file deployment_file");
-			Msg.info("example : Async async_platform.xml async_deployment.xml");
-			System.exit(1);
-		} else {
-
-			/* construct the platform and deploy the application */
-			Msg.createEnvironment(args[0]);
-			Msg.deployApplication(args[1]);
+			Msg.info("example : Async basic_platform.xml basic_deployment.xml");
+			System.exit(1);	
 		}
+
+		/* construct the platform and deploy the application */
+		Msg.createEnvironment(args[0]);
+		Msg.deployApplication(args[1]);
 
 		/*  execute the simulation. */
 		Msg.run();
