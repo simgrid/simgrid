@@ -1,18 +1,27 @@
-SimGrid-java (3.6.1) unstable; urgency=low
+SimGrid-java (1.2 (3.7.1) ) stable; urgency=low
+  
+  The "Java aint got to be bloated and slow" release
 
- * Introduce msg.simgrid.Mutex, exporting simgrid mutex to Java.
- * Do not embeed our version of semaphores, java 1.5 can be considered
-   as sufficiently prevalent for us to not dupplicate its features.
- * Make Process.kill(process) an instance method, not a static one
- * Fix a bug around Process.kill()
+ * Introduce org.simgrid.msg.Mutex, exporting simgrid mutex to Java.
+ * Introduce org.simgrid.msg.RngStream, exporting RngStreams to Java. 
  * Add the asynchronous API to the bindings.
+
+ * Make Process.kill(process) an instance method, not a static one
+ * Add examples for almost every part of the API
+
  * Add "sleep" in Process with Thread-like syntax/use.
+
+ * Change the way Process are created: Process are no longer a Thread subclass.
  * Change the way the Process are created in ApplicationHandler: a full 
 constructor is now needed for your child classes.
- * Change the way Process are created: Process are no longer a Thread subclass.
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ 
+ * Improve the performances
+ * Fix a lot of bugs.
+ * Do not embeed our version of semaphores, java 1.5 can be considered
+   as sufficiently prevalent for us to not dupplicate its features.
 
-SimGrid-java (3.6) unstable; urgency=low
+ -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+SimGrid-java (1.0 (3.6) unstable; urgency=low
 
  * Initial release.
  * Split of every thing from simgrid v3.5 into a separate package.
