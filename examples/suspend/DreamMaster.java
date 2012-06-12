@@ -15,7 +15,7 @@ public class DreamMaster extends Process {
 		Msg.info("Let's wait a little bit...");
 		waitFor(10);
 		Msg.info("Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!");
-		lazyGuy.restart();
+		lazyGuy.resume();
 		Msg.info("OK, goodbye now.");
 	}
 }

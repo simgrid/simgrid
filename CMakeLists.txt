@@ -150,6 +150,9 @@ set(JAVA_EXAMPLES
 	examples/master_slave_kill/MsKill.java
 	examples/master_slave_kill/Slave.java
 	examples/master_slave_kill/FinalizeTask.java
+	examples/migration/Emigrant.java
+	examples/migration/Migration.java
+	examples/migration/Policeman.java
 	examples/mutualExclusion/centralized/MutexCentral.java
 	examples/mutualExclusion/centralized/GrantTask.java
 	examples/mutualExclusion/centralized/Coordinator.java
@@ -176,17 +179,17 @@ ${CMAKE_HOME_DIRECTORY}/FindSimGrid.cmake
 )
 
 set(XML_FILES
-    examples/commTime/commTimeDeployment.xml
-    examples/mutualExclusion/ring3.xml
-    examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
     examples/platform.xml
-    examples/pingPong/pingPongDeployment.xml
-    examples/masterslave/basicDeployment.xml
+    examples/async/asyncDeployment.xml
+    examples/bittorrent/bittorrent.xml
+    examples/commTime/commTimeDeployment.xml
+    examples/masterslave/masterslaveDeployment.xml
     examples/masterslave/deploy.xml
     examples/master_slave_bypass/platform.xml
     examples/master_slave_kill/platform.xml
-    examples/async/asyncDeployment.xml
-    examples/bittorrent/bittorrent.xml
+    examples/mutualExclusion/ring3.xml  
+    examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
+    examples/pingPong/pingPongDeployment.xml
 )
 
 set(source_to_pack
@@ -265,6 +268,7 @@ add_custom_command(
 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/masterslave/*.java
 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/*.java
+ 	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/migration/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
  	COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/priority/*.java   	
@@ -299,7 +303,7 @@ ADD_TEST(bypass          ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(commTime        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/commTime/commtime.tesh)
 ADD_TEST(chord        	 ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.tesh)
 ADD_TEST(kill            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh)
-ADD_TEST(masterslave           ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/masterslave/masterslave.tesh)
+ADD_TEST(masterslave     ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/masterslave/masterslave.tesh)
 ADD_TEST(mutualExclusion ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/mutualexclusion.tesh)
 ADD_TEST(pingPong        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingpong.tesh)
 ADD_TEST(priority        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/priority/priority.tesh)

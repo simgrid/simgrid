@@ -15,14 +15,14 @@ package org.simgrid.msg;
 public class Mutex {
 	private long bind; // The C object -- don't touch it
 	
-	public Mutex(int capa) {
-		init(capa);
+	public Mutex() {
+		init();
 	}
 	protected void finalize() {
 		exit();
 	}
 	private native void exit();
-	private native void init(int capacity);
+	private native void init();
 	public native void acquire();
 	public native void release();
 	
