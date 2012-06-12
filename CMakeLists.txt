@@ -249,7 +249,7 @@ endif(WIN32)
 
 # java_classes
 add_custom_command(
-  OUTPUT 	${JMSG_JAVA_SRC_CLASS}
+  OUTPUT  ${JMSG_JAVA_SRC_CLASS}
   DEPENDS ${JMSG_JAVA_SRC}
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
@@ -259,10 +259,6 @@ add_custom_command(
 add_custom_target(java_classes ALL
   DEPENDS ${JMSG_JAVA_SRC_CLASS}
 )
-SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-  ${JMSG_JAVA_SRC_CLASS}
-)
-
 
 # simgrid_jar
 add_custom_target(simgrid_jar ALL
@@ -272,6 +268,16 @@ add_custom_target(simgrid_jar ALL
 )
 
 # simgrid_java_examples
+set(JAVA_EXAMPLES_CLASS
+  ${JAVA_EXAMPLES_CLASS}
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/MessageTask$Type.class
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/Peer$1.class
+  ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/TrackerTask$Type.class
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/GetPredecessorTask.class
+  ${CMAKE_HOME_DIRECTORY}/examples/priority/Test.class
+  ${CMAKE_HOME_DIRECTORY}/examples/priority/Priority.class
+)
+
 add_custom_command(
   COMMENT "Build examples for java"
   OUTPUT  ${JAVA_EXAMPLES_CLASS}
@@ -300,10 +306,6 @@ add_custom_target(simgrid_java_examples ALL
 ########################
 add_dependencies(simgrid_jar java_classes)
 add_dependencies(simgrid_java_examples simgrid_jar SG_java)
-
-SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-  ${CMAKE_HOME_DIRECTORY}/simgrid.jar
-)
 
 #####################
 # Declare our tests #
@@ -409,6 +411,13 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${DIST_NAME}/
 )
 add_dependencies(dist dist-dir)
+
+##########################
+# Extra make clean files #
+##########################
+SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
+  ${CMAKE_HOME_DIRECTORY}/simgrid.jar
+)
 
 ########
 # NOTE #
