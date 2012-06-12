@@ -199,7 +199,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
     
   size_t i, j;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
-  size_t frag_size, frag_size_pointed;
+  size_t frag_size = 0;         /* FIXME: arbitrary initialization */
+  /* size_t frag_size_pointed; FIXME: unused */
 
   i = 1;
 
@@ -280,7 +281,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 		    distance++;
 		  }
 		}else{ // Fragmented block
-		  frag_size_pointed = pow(2, mdp1->heapinfo[block_pointed1].type);
+		  /* frag_size_pointed = pow(2, mdp1->heapinfo[block_pointed1].type); FIXME: unused*/
 		  address_pointed1 = (char*)mdp1 + ((char*)address_pointed1 - (char*)s_heap);
 		  address_pointed2 = (char*)mdp2 + ((char*)address_pointed2 - (char*)s_heap);
 		  addr_block_pointed1 = (void*) (((ADDR2UINT((size_t)block_pointed1)) - 1) * BLOCKSIZE + (char*)heapbase1);
@@ -397,7 +398,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 			  distance++;
 			}
 		      }else{ // Fragmented block
-			frag_size_pointed = pow(2, mdp1->heapinfo[block_pointed1].type);
+			/* frag_size_pointed = pow(2, mdp1->heapinfo[block_pointed1].type); FIXME: unused */
 			address_pointed1 = (char*)mdp1 + ((char*)address_pointed1 - (char*)s_heap);
 			address_pointed2 = (char*)mdp2 + ((char*)address_pointed2 - (char*)s_heap);
 			addr_block_pointed1 = (void*) (((ADDR2UINT((size_t)block_pointed1)) - 1) * BLOCKSIZE + (char*)heapbase1);
