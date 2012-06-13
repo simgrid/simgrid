@@ -188,8 +188,9 @@ void PJ_container_free (container_t container)
   TRACE_paje_dump_buffer(1);
 
   //trace my destruction
-  if (!TRACE_disable_destroy()){
+  if (!TRACE_disable_destroy() && container != PJ_container_get_root()){
     //do not trace the container destruction if user requests
+    //or if the container is root
     new_pajeDestroyContainer(container);
   }
 
