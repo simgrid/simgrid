@@ -156,6 +156,9 @@ void TRACE_declare_mark(const char *mark_type)
   /* safe switch */
   if (!TRACE_is_enabled()) return;
 
+  /* if platform is not traced, we don't allow marks */
+  if (!TRACE_needs_platform()) return;
+
   if (!mark_type) return;
 
   //check if mark_type is already declared
@@ -189,6 +192,9 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 {
   /* safe switch */
   if (!TRACE_is_enabled()) return;
+
+  /* if platform is not traced, we don't allow marks */
+  if (!TRACE_needs_platform()) return;
 
   if (!mark_type || !mark_value) return;
 
