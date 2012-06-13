@@ -184,10 +184,7 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation)
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
-  val_t value = PJ_value_get (operation, type);
-  if (value == NULL){
-    value = PJ_value_new (operation, color, type);
-  }
+  val_t value = PJ_value_get_or_new (operation, color, type);
   new_pajePushState (SIMIX_get_clock(), container, type, value);
 }
 
@@ -213,10 +210,7 @@ void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
-  val_t value = PJ_value_get (operation, type);
-  if (value == NULL){
-    value = PJ_value_new (operation, color, type);
-  }
+  val_t value = PJ_value_get_or_new (operation, color, type);
   new_pajePushState (SIMIX_get_clock(), container, type, value);
 }
 

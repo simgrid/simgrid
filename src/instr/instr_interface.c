@@ -201,10 +201,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   if (type == NULL){
     THROWF (tracing_error, 1, "mark_type with name (%s) not declared before", mark_type);
   }
-  val_t value = PJ_value_get (mark_value, type);
-  if (value == NULL){
-    value = PJ_value_new (mark_value, NULL, type);
-  }
+  val_t value = PJ_value_get_or_new (mark_value, NULL, type);
   new_pajeNewEvent (MSG_get_clock(), PJ_container_get_root(), type, value);
 }
 
@@ -835,11 +832,7 @@ void TRACE_host_set_state (const char *host, const char *state, const char *valu
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  val_t val = PJ_value_get (value, type);
-  if (val == NULL){
-    //if user didn't declare a value with a color, user a NULL color
-    PJ_value_new (value, NULL, type);
-  }
+  val_t val = PJ_value_get_or_new (value, NULL, type); /* if user didn't declare a value with a color, user a NULL color */
   new_pajeSetState(MSG_get_clock(), container, type, val);
 }
 
@@ -858,11 +851,7 @@ void TRACE_host_push_state (const char *host, const char *state, const char *val
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  val_t val = PJ_value_get (value, type);
-  if (val == NULL){
-    //if user didn't declare a value with a color, user a NULL color
-    PJ_value_new (value, NULL, type);
-  }
+  val_t val = PJ_value_get_or_new (value, NULL, type); /* if user didn't declare a value with a color, user a NULL color */
   new_pajePushState(MSG_get_clock(), container, type, val);
 }
 
