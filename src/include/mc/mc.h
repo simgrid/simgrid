@@ -15,6 +15,7 @@
 #include "simgrid/modelchecker.h" /* our public interface (and definition of HAVE_MC) */
 #include "xbt/automaton.h"
 
+#define STD_HEAP_SIZE   20480000        /* Maximum size of the system's heap */
 
 SG_BEGIN_DECL()
 

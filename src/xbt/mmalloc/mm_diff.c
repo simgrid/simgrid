@@ -7,6 +7,7 @@
 
 #include "xbt/ex_interface.h" /* internals of backtrace setup */
 #include "xbt/str.h"
+#include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mm_diff, xbt,
                                 "Logging specific to mm_diff in mmalloc");
@@ -197,7 +198,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   //void* heapbase1 = (char *)mdp1 + ((char *)mdp1->heapbase - (char *)s_heap);
   //void* heapbase2 = (char *)mdp2 + ((char *)mdp2->heapbase - (char *)s_heap);
 
-  xbt_mheap_t s_heap = mmalloc_get_current_heap();
+  void* s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - getpagesize();
     
   void *heapbase1 = (char *)mdp1 + BLOCKSIZE;
   void *heapbase2 = (char *)mdp2 + BLOCKSIZE;
