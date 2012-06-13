@@ -65,7 +65,7 @@ int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
   return distance;
 }
 
-int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, void* s_heap, void* r_heap){
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, void* s_heap){
 
   
   if(s1->num_reg != s2->num_reg){
@@ -93,7 +93,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, void* s_heap, void* r_h
 	XBT_INFO("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
 	errors++;
       }
-      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data, s_heap, r_heap)){
+      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data, s_heap)){
 	XBT_INFO("Different heap (mmalloc_compare)");
 	errors++; 
       }
@@ -174,7 +174,7 @@ int reached(xbt_state_t st){
 	  //XBT_INFO("Rdv points size %d - %d", xbt_dict_length(pair_test->rdv_points), xbt_dict_length(current_rdv_points));
 	  //if(xbt_dict_length(pair_test->rdv_points) == xbt_dict_length(current_rdv_points)){
 	  //if(rdv_points_compare(pair_test->rdv_points, current_rdv_points) == 0){
-	  if(snapshot_compare(pair_test->system_state, sn, std_heap, raw_heap) == 0){
+	  if(snapshot_compare(pair_test->system_state, sn, std_heap) == 0){
 	   
 	    MC_free_snapshot(sn);
 	    xbt_dynar_reset(prop_ato);
@@ -573,7 +573,7 @@ int visited(xbt_state_t st, int sc){
       if(pair_test->search_cycle == sc) {
 	if(automaton_state_compare(pair_test->automaton_state, st) == 0){
 	  if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
-	    if(snapshot_compare(pair_test->system_state, sn, std_heap, raw_heap) == 0){
+	    if(snapshot_compare(pair_test->system_state, sn, std_heap) == 0){
 	    
 	      MC_free_snapshot(sn);
 	      xbt_dynar_reset(prop_ato);

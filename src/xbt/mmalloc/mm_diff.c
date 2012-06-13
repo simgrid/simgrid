@@ -112,20 +112,20 @@ void mmalloc_backtrace_fragment_display(xbt_mheap_t mdp, size_t block, size_t fr
   }
 }
 
-int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void* s_heap, void* r_heap){
+int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void* s_heap){
 
   if(mdp1 == NULL && mdp2 == NULL){
     fprintf(stderr, "Malloc descriptors null\n");
     return 0;
   }
 
-  int errors = mmalloc_compare_mdesc(mdp1, mdp2, s_heap, r_heap);
+  int errors = mmalloc_compare_mdesc(mdp1, mdp2, s_heap);
 
   return (errors > 0);
 
 }
 
-int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, void* r_heap){
+int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap){
 
   int errors = 0;
 

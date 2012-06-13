@@ -224,7 +224,7 @@ struct mdesc {
 
 };
 
-int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, void* r_heap);
+int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap);
 
 void mmalloc_display_info(void *h);
 
