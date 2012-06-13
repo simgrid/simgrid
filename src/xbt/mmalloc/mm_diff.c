@@ -112,20 +112,20 @@ void mmalloc_backtrace_fragment_display(xbt_mheap_t mdp, size_t block, size_t fr
   }
 }
 
-int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2, void* s_heap, void* r_heap){
+int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2){
 
   if(mdp1 == NULL && mdp2 == NULL){
     fprintf(stderr, "Malloc descriptors null\n");
     return 0;
   }
 
-  int errors = mmalloc_compare_mdesc(mdp1, mdp2, s_heap, r_heap);
+  int errors = mmalloc_compare_mdesc(mdp1, mdp2);
 
   return (errors > 0);
 
 }
 
-int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, void* r_heap){
+int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   int errors = 0;
 
@@ -196,6 +196,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 
   //void* heapbase1 = (char *)mdp1 + ((char *)mdp1->heapbase - (char *)s_heap);
   //void* heapbase2 = (char *)mdp2 + ((char *)mdp2->heapbase - (char *)s_heap);
+
+  xbt_mheap_t s_heap = mmalloc_get_current_heap();
     
   void *heapbase1 = (char *)mdp1 + BLOCKSIZE;
   void *heapbase2 = (char *)mdp2 + BLOCKSIZE;
@@ -209,6 +211,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 
   int k;
   int distance = 0;
+  int total_distance = 0;
 
   void *end_heap = get_end_addr_heap(s_heap);
 
@@ -263,7 +266,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	  pointer_align = (k / sizeof(void*)) * sizeof(void*); 
 	  address_pointed1 = *((void **)((char *)addr_block1 + pointer_align));
 	  address_pointed2 = *((void **)((char *)addr_block2 + pointer_align));				   
-	  if(((address_pointed1 > s_heap) && (address_pointed1 < end_heap)) && ((address_pointed2 > s_heap) && (address_pointed2 < end_heap))){
+	  if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < end_heap)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < end_heap))){
 	    block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
 	    block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
 	    //fprintf(stderr, "Blocks pointed : %d - %d\n", block_pointed1, block_pointed2);
@@ -334,6 +337,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	mmalloc_backtrace_block_display(mdp1, i);
 	mmalloc_backtrace_block_display(mdp2, i);
 	errors++; 
+	total_distance += distance;
       }
     
       
@@ -384,7 +388,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 		pointer_align = (k / sizeof(void*)) * sizeof(void*);
 		address_pointed1 = *((void **)((char *)addr_frag1 + pointer_align));
 		address_pointed2 = *((void **)((char *)addr_frag2 + pointer_align));				   
-		if(((address_pointed1 > s_heap) && (address_pointed1 < end_heap)) && ((address_pointed2 > s_heap) && (address_pointed2 < end_heap))){
+		if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < end_heap)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < end_heap))){
 		  block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
 		  block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
 		  //fprintf(stderr, "Blocks pointed : %d - %d\n", block_pointed1, block_pointed2);
@@ -450,6 +454,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	      mmalloc_backtrace_fragment_display(mdp1, i, j);
 	      mmalloc_backtrace_fragment_display(mdp2, i, j);
 	      errors++;
+	      total_distance += distance;
 	      
 	    }
 
@@ -473,11 +478,13 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
   //free(pointed_address1);
   //free(pointed_address2);
 
+  fprintf(stderr, "Hamming distance between heap regions : %d\n", total_distance);
+
   return (errors);
 }
 
 
-void *get_end_addr_heap(void *s_heap){
+void *get_end_addr_heap(void *heap){
 
   FILE *fp;                     /* File pointer to process's proc maps file */
   char *line = NULL;            /* Temporal storage for each line that is readed */
@@ -505,7 +512,7 @@ void *get_end_addr_heap(void *s_heap){
     start_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 0, char*), NULL, 16);
     end_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 1, char*), NULL, 16);
 
-    if(start_addr == s_heap){
+    if(start_addr == heap){
       free(line);
       fclose(fp);
       xbt_dynar_reset(lfields);
