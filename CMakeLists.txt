@@ -68,6 +68,14 @@ message(STATUS "BUILDNAME   : ${BUILDNAME}")
 include(FindSimGrid.cmake)
 include(FindJavaSG.cmake)
 
+# Check for option tracing in SimGrid
+include(CheckLibraryExists)
+CHECK_LIBRARY_EXISTS(${SIMGRID_LIB} TRACE_start "" HAVE_TRACING)
+if(NOT HAVE_TRACING)
+  message(STATUS "SimGrid-java must be compile with library Simgrid included Tracing option.")
+  message(FATAL_ERROR "See http://simgrid.gforge.inria.fr/simgrid/3.8/doc/tracing.html to see how compile SimGrid library with good options.")
+endif(NOT HAVE_TRACING)
+
 ###############################
 # Declare our package content #
 ###############################
@@ -233,6 +241,8 @@ set(XML_FILES
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment_start.xml
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment_start_kill.xml
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/io/storage.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/tracing/tracingPingPongDeployment.xml
 )
 
 set(TESH_FILES
@@ -249,6 +259,7 @@ set(TESH_FILES
   ${CMAKE_HOME_DIRECTORY}/examples/priority/priority.tesh
   ${CMAKE_HOME_DIRECTORY}/examples/pingPong/pingpong.tesh
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/tracing/tracingPingPong.tesh
 )
 
 set(source_to_pack
