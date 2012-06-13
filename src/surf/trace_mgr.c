@@ -61,7 +61,7 @@ tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
   trace->s_probabilist.next_event = 0;
   
   if(generator2 == NULL) {
-    trace->s_probabilist.event_generator[0] = generator1;
+    trace->s_probabilist.event_generator[1] = generator1;
   } else {
     trace->s_probabilist.event_generator[1] = generator2;
     trace->s_probabilist.event_generator[1]->rng_stream = rng_stream;
@@ -299,6 +299,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
   tmgr_trace_event_t trace_event = NULL;
   tmgr_event_t event = NULL;
   tmgr_trace_t trace = NULL;
+  double event_delta;
 
   if (event_date > date)
     return NULL;
@@ -307,6 +308,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
     return NULL;
 
   trace = trace_event->trace;
+  *model = trace_event->model;
   
   switch(trace->type) {
     case e_trace_list:
@@ -314,7 +316,6 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
       event = xbt_dynar_get_ptr(trace->s_list.event_list, trace_event->idx);
 
       *value = event->value;
-      *model = trace_event->model;
 
       if (trace_event->idx < xbt_dynar_length(trace->s_list.event_list) - 1) {
         xbt_heap_push(h->heap, trace_event, event_date + event->delta);
@@ -328,7 +329,19 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
       break;
       
     case e_trace_probabilist:
-      THROW_UNIMPLEMENTED;
+      
+      //FIXME : Simplist and not tested
+      //Would only work for failure events for now
+      *value = (double) trace->s_probabilist.next_event;
+      if(trace->s_probabilist.next_event == 0) {
+        event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
+        trace->s_probabilist.next_event = 0;
+      } else {
+        event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
+        trace->s_probabilist.next_event = 1;
+      }
+      xbt_heap_push(h->heap, trace_event, event_date + event_delta);
+      
       break;
   }
 
