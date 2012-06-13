@@ -10,6 +10,7 @@
  */
 package org.simgrid.msg;
 
+import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 
 public class VM {
@@ -26,14 +27,14 @@ public class VM {
 	 * @bug it is expected that in the future, the coreAmount parameter will be used
 	 * to add extra constraints on the execution, but the argument is ignored for now.
 	 */
-	public VM(int coreAmount) {
+	public VM(Host host, int coreAmount) {
 		this.coreAmount = coreAmount;
 	}
 	/**
 	 * Natively implemented method starting the VM.
 	 * @param coreAmount
 	 */
-	private native void start(int coreAmount);
+	private native void start(Host host, int coreAmount);
 	
 	/**
 	 * @brief Returns a new array containing all existing VMs.

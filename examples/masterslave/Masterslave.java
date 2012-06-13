@@ -11,7 +11,8 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
 public class Masterslave {
-   
+   public static final int TASK_COMP_SIZE = 10000000;
+   public static final int TASK_COMM_SIZE = 10000000;
    /* This only contains the launcher. If you do nothing more than than you can run 
     *   java simgrid.msg.Msg
     * which also contains such a launcher
