@@ -50,7 +50,7 @@ static surf_action_t storage_action_stat(void *storage, surf_file_t stream)
   return action;
 }
 
-static surf_action_t storage_action_open(void *storage, const char* path, const char* mode)
+static surf_action_t storage_action_open(void *storage, const char* mount, const char* path, const char* mode)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   char *storage_type_id = xbt_lib_get_or_null(
@@ -64,6 +64,7 @@ static surf_action_t storage_action_open(void *storage, const char* path, const 
   surf_file_t file = xbt_new0(s_surf_file_t,1);
   file->name = xbt_strdup(path);
   file->content = content;
+  file->storage = mount;
 
   surf_action_t action = storage_action_execute(storage,0, OPEN);
   action->file = (void *)file;

@@ -18,7 +18,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
 void SIMIX_pre_file_read(smx_simcall_t simcall)
 {
   smx_action_t action = SIMIX_file_read(simcall->issuer,
-      simcall->file_read.storage,
       simcall->file_read.ptr,
       simcall->file_read.size,
       simcall->file_read.nmemb,
@@ -27,7 +26,7 @@ void SIMIX_pre_file_read(smx_simcall_t simcall)
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_read(smx_process_t process, const char* storage, void* ptr, size_t size, size_t nmemb, smx_file_t stream)
+smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -47,7 +46,7 @@ smx_action_t SIMIX_file_read(smx_process_t process, const char* storage, void* p
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.read(host->host, storage, ptr, size, nmemb, stream->surf_file),
+  action->io.surf_io = surf_workstation_model->extension.workstation.read(host->host, ptr, size, nmemb, stream->surf_file),
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -59,7 +58,6 @@ smx_action_t SIMIX_file_read(smx_process_t process, const char* storage, void* p
 void SIMIX_pre_file_write(smx_simcall_t simcall)
 {
   smx_action_t action = SIMIX_file_write(simcall->issuer,
-      simcall->file_write.storage,
       simcall->file_write.ptr,
       simcall->file_write.size,
       simcall->file_write.nmemb,
@@ -68,7 +66,7 @@ void SIMIX_pre_file_write(smx_simcall_t simcall)
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_write(smx_process_t process, const char* storage, const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
+smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -88,7 +86,7 @@ smx_action_t SIMIX_file_write(smx_process_t process, const char* storage, const 
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.write(host->host, storage, ptr, size, nmemb, stream->surf_file);
+  action->io.surf_io = surf_workstation_model->extension.workstation.write(host->host, ptr, size, nmemb, stream->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -100,14 +98,14 @@ smx_action_t SIMIX_file_write(smx_process_t process, const char* storage, const 
 void SIMIX_pre_file_open(smx_simcall_t simcall)
 {
   smx_action_t action = SIMIX_file_open(simcall->issuer,
-      simcall->file_open.storage,
+      simcall->file_open.mount,
       simcall->file_open.path,
       simcall->file_open.mode);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_open(smx_process_t process ,const char* storage, const char* path, const char* mode)
+smx_action_t SIMIX_file_open(smx_process_t process ,const char* mount, const char* path, const char* mode)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -127,7 +125,7 @@ smx_action_t SIMIX_file_open(smx_process_t process ,const char* storage, const c
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.open(host->host, storage, path, mode);
+  action->io.surf_io = surf_workstation_model->extension.workstation.open(host->host, mount, path, mode);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -139,13 +137,12 @@ smx_action_t SIMIX_file_open(smx_process_t process ,const char* storage, const c
 void SIMIX_pre_file_close(smx_simcall_t simcall)
 {
   smx_action_t action = SIMIX_file_close(simcall->issuer,
-      simcall->file_close.storage,
       simcall->file_close.fp);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_close(smx_process_t process ,const char* storage, smx_file_t fp)
+smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -165,7 +162,7 @@ smx_action_t SIMIX_file_close(smx_process_t process ,const char* storage, smx_fi
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.close(host->host, storage, fp->surf_file);
+  action->io.surf_io = surf_workstation_model->extension.workstation.close(host->host, fp->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -177,14 +174,13 @@ smx_action_t SIMIX_file_close(smx_process_t process ,const char* storage, smx_fi
 void SIMIX_pre_file_stat(smx_simcall_t simcall)
 {
   smx_action_t action = SIMIX_file_stat(simcall->issuer,
-      simcall->file_stat.storage,
       simcall->file_stat.fd,
       simcall->file_stat.buf);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
 
-smx_action_t SIMIX_file_stat(smx_process_t process ,const char* storage, smx_file_t fd, s_file_stat_t buf)
+smx_action_t SIMIX_file_stat(smx_process_t process, smx_file_t fd, s_file_stat_t buf)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
@@ -203,7 +199,7 @@ smx_action_t SIMIX_file_stat(smx_process_t process ,const char* storage, smx_fil
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.stat(host->host, storage, fd->surf_file);
+  action->io.surf_io = surf_workstation_model->extension.workstation.stat(host->host, fd->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
