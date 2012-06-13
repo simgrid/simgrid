@@ -30,6 +30,19 @@ val_t PJ_value_new (const char *name, const char *color, type_t father)
   return ret;
 }
 
+val_t PJ_value_get_or_new (const char *name, const char *color, type_t father)
+{
+  xbt_ex_t e;
+  TRY {
+    return PJ_value_get(name, father);
+  }
+  CATCH(e) {
+    xbt_ex_free(e);
+    return PJ_value_new(name, color, father);
+  }
+  THROW_IMPOSSIBLE;
+}
+
 val_t PJ_value_get (const char *name, type_t father)
 {
   if (name == NULL || father == NULL){

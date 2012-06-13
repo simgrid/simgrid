@@ -224,6 +224,7 @@ void PJ_type_free_all (void);
 
 /* instr_paje_values.c */
 val_t PJ_value_new (const char *name, const char *color, type_t father);
+val_t PJ_value_get_or_new (const char *name, const char *color, type_t father);
 val_t PJ_value_get (const char *name, const type_t father);
 void PJ_value_free (val_t value);
 
