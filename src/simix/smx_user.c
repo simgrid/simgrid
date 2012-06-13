@@ -1203,12 +1203,11 @@ int simcall_sem_get_capacity(smx_sem_t sem)
   return simcall->sem_get_capacity.result;
 }
 
-size_t simcall_file_read(const char* storage, void* ptr, size_t size, size_t nmemb, smx_file_t stream)
+size_t simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_FILE_READ;
-  simcall->file_read.storage = storage;
   simcall->file_read.ptr = ptr;
   simcall->file_read.size = size;
   simcall->file_read.nmemb = nmemb;
@@ -1218,12 +1217,11 @@ size_t simcall_file_read(const char* storage, void* ptr, size_t size, size_t nme
   return simcall->file_read.result;
 }
 
-size_t simcall_file_write(const char* storage, const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
+size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_FILE_WRITE;
-  simcall->file_write.storage = storage;
   simcall->file_write.ptr = ptr;
   simcall->file_write.size = size;
   simcall->file_write.nmemb = nmemb;
@@ -1233,12 +1231,12 @@ size_t simcall_file_write(const char* storage, const void* ptr, size_t size, siz
   return simcall->file_write.result;
 }
 
-smx_file_t simcall_file_open(const char* storage, const char* path, const char* mode)
+smx_file_t simcall_file_open(const char* mount, const char* path, const char* mode)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_FILE_OPEN;
-  simcall->file_open.storage = storage;
+  simcall->file_open.mount = mount;
   simcall->file_open.path = path;
   simcall->file_open.mode = mode;
   SIMIX_simcall_push(simcall->issuer);
@@ -1246,23 +1244,21 @@ smx_file_t simcall_file_open(const char* storage, const char* path, const char* 
   return simcall->file_open.result;
 }
 
-int simcall_file_close(const char* storage, smx_file_t fp)
+int simcall_file_close(smx_file_t fp)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_FILE_CLOSE;
-  simcall->file_close.storage = storage;
   simcall->file_close.fp = fp;
   SIMIX_simcall_push(simcall->issuer);
 
   return simcall->file_close.result;
 }
 
-int simcall_file_stat(const char* storage, smx_file_t fd, s_file_stat_t *buf)
+int simcall_file_stat(smx_file_t fd, s_file_stat_t *buf)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
   simcall->call = SIMCALL_FILE_STAT;
-  simcall->file_stat.storage = storage;
   simcall->file_stat.fd = fd;
 
   SIMIX_simcall_push(simcall->issuer);

@@ -30,6 +30,7 @@ typedef struct surf_stat { /* file status structure */
 typedef struct surf_file {
   char *name;
   surf_stat_t content;
+  const char* storage;
 } s_surf_file_t;
 
 typedef struct storage {

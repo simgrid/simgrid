@@ -34,9 +34,10 @@ int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
   s_msg_stat_t stat;
-
-  char* mount = bprintf("C:");
+  void *ptr = NULL;
+  char* mount = bprintf("/home");
   size_t read,write;
+
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0"))
     file = MSG_file_open(mount,FILENAME1,"rw");
   else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1"))
@@ -49,20 +50,20 @@ int host(int argc, char *argv[])
 
   XBT_INFO("\tOpen file '%s'",file->name);
 
-  read = MSG_file_read(mount,NULL,10000000,sizeof(char*),file);     // Read for 10Mo
+  read = MSG_file_read(ptr,10000000,sizeof(char*),file);     // Read for 10Mo
   XBT_INFO("\tHaving read  %zu \ton %s",read,file->name);
 
-  write = MSG_file_write(mount,NULL,100000,sizeof(char*),file);  // Write for 100Ko
+  write = MSG_file_write(ptr,100000,sizeof(char*),file);  // Write for 100Ko
   XBT_INFO("\tHaving write %zu \ton %s",write,file->name);
 
-  read = MSG_file_read(mount,NULL,10000000,sizeof(char*),file);     // Read for 10Mo
+  read = MSG_file_read(ptr,10000000,sizeof(char*),file);     // Read for 10Mo
   XBT_INFO("\tHaving read  %zu \ton %s",read,file->name);
 
-  MSG_file_stat(mount,file,&stat);
+  MSG_file_stat(file,&stat);
   XBT_INFO("\tFile %s Size %d",file->name,(int)stat.size);
 
   XBT_INFO("\tClose file '%s'",file->name);
-  MSG_file_close(mount,file);
+  MSG_file_close(file);
 
   free(mount);
   return 0;

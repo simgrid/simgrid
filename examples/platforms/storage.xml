@@ -33,19 +33,19 @@
 		<storage id="Disk4" typeId="wdigital"/>
 
 		<host id="bob" power="1000000000">
-			<mount id="Disk1" name="C:"/>			
+			<mount id="Disk1" name="/home"/>			
 		</host>		
 		
 		<host id="alice" power="1000000000">
-			<mount id="Disk2" name="C:"/>
+			<mount id="Disk2" name="/home"/>
 		</host>
 
 		<host id="carl" power="1000000000">		
-			<mount id="Disk3" name="C:"/>		
+			<mount id="Disk3" name="/home"/>		
 		</host>
 		
 		<host id="denise" power="1000000000">
-			<mount id="Disk4" name="C:"/>	
+			<mount id="Disk4" name="/home"/>	
 		</host>
 
 		<link id="link1" bandwidth="125000000" latency="5E-5" />
