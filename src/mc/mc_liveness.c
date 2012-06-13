@@ -1280,3 +1280,31 @@ void MC_ddfs(int search_cycle){
   
 
 }
+
+
+#ifdef SIMGRID_TEST
+
+XBT_TEST_SUITE("mc_liveness", "Model checking liveness properties");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(mc_liveness);
+
+XBT_TEST_UNIT("snapshots_comparison", test_compare_snapshot, "Comparison of snapshots")
+{
+
+  MC_SET_RAW_MEM;
+
+  /* Save first snapshot */
+  mc_snapshot_t snapshot1 = xbt_new0(s_mc_snapshot_t, 1);
+  MC_take_snapshot_liveness(snapshot1);
+
+  /* Save second snapshot */
+  mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
+  MC_take_snapshot_liveness(snapshot2);
+
+  MC_UNSET_RAW_MEM;
+
+  xbt_test_assert(snapshot_compare(snapshot1, snapshot2, std_heap, raw_heap) == 0, "Different consecutive snapshot");
+  
+
+}
+
+#endif
