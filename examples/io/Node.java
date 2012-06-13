@@ -47,13 +47,13 @@ public class Node extends Process {
 		Msg.info("Open file " + filename);
 		File file = new File(mount,filename, "rw");
 
-		long read = file.read(mount,10000000,1);
+		long read = file.read(10000000,1);
 		Msg.info("Having read " + read + " on " + filename);
 		
-		long write = file.read(mount,100000,1);
+		long write = file.read(100000,1);
 		Msg.info("Having write " + write + " on " + filename);
 
-		read = file.read(mount,10000000,1);
+		read = file.read(10000000,1);
 		Msg.info("Having read " + read + " on " + filename);		
 	}
 }

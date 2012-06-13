@@ -33,18 +33,18 @@ Java_org_simgrid_msg_File_open(JNIEnv*, jobject, jobject, jobject, jobject);
  * Method			read
  */
 JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_read(JNIEnv*, jobject, jobject, jlong, jlong);
+Java_org_simgrid_msg_File_read(JNIEnv*, jobject, jlong, jlong);
 /**
  * Class			org_simgrid_msg_File
  * Method			write
  */
 JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_write(JNIEnv*, jobject, jobject, jlong, jlong);
+Java_org_simgrid_msg_File_write(JNIEnv*, jobject, jlong, jlong);
 /**
  * Class			org_simgrid_msg_File
  * Method			close
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_File_close(JNIEnv*, jobject, jobject);
+Java_org_simgrid_msg_File_close(JNIEnv*, jobject);
 
 #endif

@@ -23,7 +23,7 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cls) {
 	jclass jprocess_class_VM = (*env)->FindClass(env, "org/simgrid/msg/VM");
 	jvm_field_bind = jxbt_get_jfield(env, jprocess_class_VM, "bind", "J");
-	if (!jvm_field_bind) {
+	if (!jvm_field_bind	) {
   	jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
 	}
 }

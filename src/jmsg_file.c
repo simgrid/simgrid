@@ -37,40 +37,27 @@ Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jstorage, job
 	(*env)->ReleaseStringUTFChars(env, jmode, mode);
 }
 JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_read(JNIEnv *env, jobject jfile, jobject jstorage, jlong jsize, jlong jnmemb) {
+Java_org_simgrid_msg_File_read(JNIEnv *env, jobject jfile, jlong jsize, jlong jnmemb) {
 	msg_file_t file = jfile_get_native(env, jfile);
 
-	const char *storage = (*env)->GetStringUTFChars(env, jstorage, 0);
-
-	size_t n = MSG_file_read(storage, NULL,(size_t)jsize, (size_t)jnmemb, file);
-
-	(*env)->ReleaseStringUTFChars(env, jstorage, storage);
+	size_t n = MSG_file_read(NULL,(size_t)jsize, (size_t)jnmemb, file);
 
 	return (jlong)n;
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_write(JNIEnv *env, jobject jfile, jobject jstorage, jlong jsize, jlong jnmemb) {
+Java_org_simgrid_msg_File_write(JNIEnv *env, jobject jfile, jlong jsize, jlong jnmemb) {
 	msg_file_t file = jfile_get_native(env, jfile);
 
-	const char *storage = (*env)->GetStringUTFChars(env, jstorage, 0);
-
-	size_t n = MSG_file_write(storage, NULL, (size_t)jsize, (size_t)jnmemb, file);
-
-	(*env)->ReleaseStringUTFChars(env, jstorage, storage);
+	size_t n = MSG_file_write(NULL, (size_t)jsize, (size_t)jnmemb, file);
 
 	return (jlong)n;
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_File_close(JNIEnv *env, jobject jfile, jobject jstorage) {
+Java_org_simgrid_msg_File_close(JNIEnv *env, jobject jfile) {
 	msg_file_t file = jfile_get_native(env, jfile);
 
-	const char *storage = (*env)->GetStringUTFChars(env, jstorage, 0);
-
-	MSG_file_close(storage, file);
+	MSG_file_close(file);
 	jfile_bind(env, jfile, NULL);
-
-	(*env)->ReleaseStringUTFChars(env, jstorage, storage);
-
 }
 

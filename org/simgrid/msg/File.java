@@ -27,7 +27,7 @@ public class File {
 		open(storage, path, mode);
 	}
 	protected void finalize() {
-		close(storage);
+
 	}
 	/**
 	 * Opens the file whose name is the string pointed to by path. 
@@ -42,19 +42,19 @@ public class File {
 	 * @param size of each element
 	 * @param nMemb is the number of elements of data to write 
 	 */
-	public native long read(String storage, long size, long nMemb);
+	public native long read(long size, long nMemb);
 	/**
 	 * Write elements into a file. 
 	 * @param storage is the name where you can find the stream 
 	 * @param size of each element  
 	 * @param nMemb is the number of elements of data to write 
 	 */
-	public native long write(String storage, long size, long nMemb);
+	public native long write(long size, long nMemb);
 	/**
 	 * Close the file. 	
 	 * @param storage is the name where you can find the stream 
 	 */
-	public native void close(String storage);
+	public native void close();
 	
 	/**
 	 * Class initializer, to initialize various JNI stuff
