@@ -34,7 +34,7 @@ int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
   s_msg_stat_t stat;
-  void *ptr;
+  void *ptr = NULL;
   char* mount = bprintf("/home");
   size_t read,write;
 
