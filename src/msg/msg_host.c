@@ -224,6 +224,19 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
   return (simcall_host_get_properties(host->smx_host));
 }
 
+/** \ingroup m_host_management
+ * \brief Change the value of a given host property
+ *
+ * \param host a host
+ * \param name a property name
+ * \param value what to change the property to
+ * \param free_ctn the freeing function to use to kill the value on need
+ */
+void MSG_host_set_property_value(m_host_t host, const char *name, char *value,void_f_pvoid_t free_ctn) {
+
+  xbt_dict_set(MSG_host_get_properties(host), name, value,free_ctn);
+}
+
 
 /** \ingroup msg_gos_functions
  * \brief Determine if a host is available.

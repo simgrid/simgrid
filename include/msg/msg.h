@@ -78,6 +78,10 @@ XBT_PUBLIC(void) __MSG_host_destroy(m_host_t host);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(m_host_t host);
 XBT_PUBLIC(const char *) MSG_host_get_property_value(m_host_t host,
                                                      const char *name);
+XBT_PUBLIC(void) MSG_host_set_property_value(m_host_t host,
+                                             const char *name, char *value,
+                                             void_f_pvoid_t free_ctn);
+
 
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
 XBT_PUBLIC(void) MSG_load_platform_script(const char *script_file);

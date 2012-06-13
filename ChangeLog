@@ -11,6 +11,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Add an experimental interface to manipulate VMs. They are mainly
    process groups with very few intrinsic semantic, but they should
    allow you to build the semantic you want easily.
+ * New function: MSG_host_set_property_value()
 
  Simix:
  * Bug fixes around the resource failures: don't let the processes
