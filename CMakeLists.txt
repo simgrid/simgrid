@@ -107,8 +107,8 @@ set(JMSG_C_SRC
 )
 
 set(JTRACE_C_SRC
-	src/jtrace.c
-	src/jtrace.h
+  ${CMAKE_HOME_DIRECTORY}/src/jtrace.c
+  ${CMAKE_HOME_DIRECTORY}/src/jtrace.h
 )	
 
 set(JMSG_JAVA_SRC
@@ -133,7 +133,7 @@ set(JMSG_JAVA_SRC
   ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/VM.java
 )
 set(JTRACE_JAVA_SRC
-	org/simgrid/trace/Trace.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/trace/Trace.java
 )
 
 set(JAVA_EXAMPLES
@@ -192,14 +192,15 @@ set(JAVA_EXAMPLES
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/Master.java
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/Slave.java
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/StartKillTime.java
-  ${CMAKE_HOME_DIRECTORY}/examples/tracing/PingPongTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/suspend/DreamMaster.java
   ${CMAKE_HOME_DIRECTORY}/examples/suspend/LazyGuy.java
   ${CMAKE_HOME_DIRECTORY}/examples/suspend/Suspend.java
+)
+set(JAVA_TRACING_EXAMPLES
+  ${CMAKE_HOME_DIRECTORY}/examples/tracing/PingPongTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/tracing/Sender.java
   ${CMAKE_HOME_DIRECTORY}/examples/tracing/Receiver.java
   ${CMAKE_HOME_DIRECTORY}/examples/tracing/TracingTest.java
-
 )
 
 set(CMAKE_SRC
@@ -272,6 +273,7 @@ set(source_to_pack
   ${JMSG_JAVA_SRC}
   ${JTRACE_JAVA_SRC}
   ${JAVA_EXAMPLES}
+  ${JAVA_TRACING_EXAMPLES}
   ${XML_FILES}
   ${CMAKE_DOC_SRC}
   ${TESH_FILES}
@@ -284,6 +286,7 @@ string(REPLACE "org/" "classes/org/" JTRACE_JAVA_SRC_CLASS "${JTRACE_JAVA_SRC}")
 string(REPLACE ".java" ".class" JTRACE_JAVA_SRC_CLASS "${JTRACE_JAVA_SRC_CLASS}")
 
 string(REPLACE ".java" ".class" JAVA_EXAMPLES_CLASS "${JAVA_EXAMPLES}")
+string(REPLACE ".java" ".class" JAVA_TRACING_EXAMPLES_CLASS "${JAVA_TRACING_EXAMPLES}")
 
 #########
 # FLAGS #
@@ -332,30 +335,40 @@ add_library(SG_java_tracing SHARED ${JTRACE_C_SRC})
   endif(WIN32)
 endif(HAVE_TRACING)
 
+set(JAVA_SRC
+  ${JMSG_JAVA_SRC}
+)
+set(JAVA_SRC_CLASS
+  ${JMSG_JAVA_SRC_CLASS}
+)
+if(HAVE_TRACING)
+  set(JAVA_SRC
+    ${JAVA_SRC}
+    ${JTRACE_JAVA_SRC}
+  )
+  set(JAVA_SRC_CLASS
+    ${JAVA_SRC_CLASS}
+    ${JTRACE_JAVA_SRC_CLASS}
+  )
+endif(HAVE_TRACING)
+
 # java_classes
 add_custom_command(
-  OUTPUT  ${JMSG_JAVA_SRC_CLASS}
-  DEPENDS ${JMSG_JAVA_SRC}
+  OUTPUT  ${JAVA_SRC_CLASS}
+  DEPENDS ${JAVA_SRC}
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
-    -cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JMSG_JAVA_SRC}
+    -cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_SRC}
   COMMENT "Compiling java sources of core library..."					
-)
-add_custom_target(java_classes ALL
-  DEPENDS ${JMSG_JAVA_SRC_CLASS}
 )
 
 if(HAVE_TRACING)
-  add_custom_command(
-    OUTPUT  ${JTRACE_JAVA_SRC_CLASS}
-    DEPENDS ${JTRACE_JAVA_SRC}
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
-    COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
-      -cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES_TRACE}
-    COMMENT "Compiling java sources of core libraries..."					
+  add_custom_target(java_classes ALL
+    DEPENDS ${JMSG_JAVA_SRC_CLASS}
   )
-  add_custom_command(TARGET java_classes
-    DEPENDS ${JTRACE_JAVA_SRC_CLASS}
+else(HAVE_TRACING)
+  add_custom_command(java_classes ALL
+    DEPENDS ${JTRACE_JAVA_SRC_CLASS} ${JMSG_JAVA_SRC_CLASS}
   )
 endif(HAVE_TRACING)
 
@@ -397,14 +410,16 @@ add_custom_command(
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/suspend/*.java
 )
 if(HAVE_TRACING)
-  add_custom_command(
-    DEPENDS ${JAVA_EXAMPLES}
-    COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/tracing/*.java
-)
+    add_custom_command(
+      COMMENT "Build examples for tracing java"
+      OUTPUT  ${JAVA_TRACING_EXAMPLES_CLASS} 
+      DEPENDS ${JAVA_TRACING_EXAMPLES} ${JAVA_EXAMPLES_CLASS}
+      COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/tracing/*.java
+  )
 endif(HAVE_TRACING)
 
 add_custom_target(simgrid_java_examples ALL
-  DEPENDS ${JAVA_EXAMPLES_CLASS}
+  DEPENDS ${JAVA_EXAMPLES_CLASS} ${JAVA_TRACING_EXAMPLES_CLASS}
 )
 
 ########################
@@ -413,7 +428,7 @@ add_custom_target(simgrid_java_examples ALL
 add_dependencies(simgrid_jar java_classes)
 add_dependencies(simgrid_java_examples simgrid_jar SG_java)
 if(HAVE_TRACING)
-  add_dependencies(SG_java_tracing)
+  add_dependencies(simgrid_java_examples SG_java_tracing)
 endif(HAVE_TRACING)
 
 #####################
@@ -436,10 +451,10 @@ ADD_TEST(priority        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(startKillTime   ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh)
 ADD_TEST(suspend         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspend.tesh)
 #Don't forget to put new test in this list!!!
-set(test_list async bittorrent bypass chord commTime kill masterslave migration mutualExclusion pingPong priority startKillTime)
+set(test_list async bittorrent bypass chord commTime kill masterslave migration mutualExclusion pingPong priority startKillTime suspend)
 if(HAVE_TRACING)
   ADD_TEST(tracing         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/tracing/tracingPingPong.tesh)
-  set(test_list "${test_list} tracing")
+  set(test_list ${test_list} tracing)
 endif(HAVE_TRACING)
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #
