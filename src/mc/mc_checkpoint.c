@@ -5,7 +5,7 @@
 
 #include <libgen.h>
 #include "mc_private.h"
-#include <xbt/module.h>
+#include "xbt/module.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
