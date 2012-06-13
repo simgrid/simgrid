@@ -83,6 +83,7 @@ typedef struct process_arg {
   double kill_time;
 } s_process_arg_t, *process_arg_t;
 
+
 typedef struct msg_comm {
   smx_action_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
   m_task_t task_sent;           /* task sent (NULL for the receiver) */
@@ -102,6 +103,11 @@ typedef struct msg_vm {
   m_host_t location;
   int coreAmount;
 } s_msg_vm_t;
+
+typedef struct s_msg_process_data {
+	void *data;
+	msg_vm_t current_vm;
+} s_msg_process_data_t, *msg_process_data_t;
 
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
