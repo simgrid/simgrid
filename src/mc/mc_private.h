@@ -253,7 +253,7 @@ int reached(xbt_state_t st);
 void set_pair_reached(xbt_state_t st);
 int reached_hash(xbt_state_t st);
 void set_pair_reached_hash(xbt_state_t st);
-int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, void* s_heap);
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
 int data_program_region_compare(void *d1, void *d2, size_t size);
 int data_libsimgrid_region_compare(void *d1, void *d2, size_t size);
 void MC_pair_delete(mc_pair_t pair);
