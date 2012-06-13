@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
   MSG_function_register("consumer", consumer);
   MSG_function_register("producer", producer);
   MSG_launch_application("deploy_bugged2_liveness.xml");
-  MSG_main_liveness(automaton, argv[0]);
+  MSG_main_liveness(automaton);
 
   return 0;
 

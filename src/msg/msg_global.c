@@ -141,14 +141,14 @@ MSG_error_t MSG_main_stateful(void)
 }
 
 
-MSG_error_t MSG_main_liveness(xbt_automaton_t a, char *prgm)
+MSG_error_t MSG_main_liveness(xbt_automaton_t a)
 {
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);
 
   if (MC_IS_ENABLED) {
-    MC_modelcheck_liveness(a, prgm);
+    MC_modelcheck_liveness(a);
   }
   else {
     SIMIX_run();

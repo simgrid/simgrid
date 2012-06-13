@@ -5,6 +5,7 @@
 
 #include <libgen.h>
 #include "mc_private.h"
+#include <xbt/module.h>
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
@@ -139,7 +140,7 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
         } else {
-	  if (!memcmp(basename(maps->regions[i].pathname), basename(prog_name), strlen(basename(prog_name)))){
+	  if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
 	    MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
 	  } 
 	}

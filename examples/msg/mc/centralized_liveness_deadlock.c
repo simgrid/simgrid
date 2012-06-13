@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
   MSG_launch_application("deploy_centralized_liveness.xml");
-  MSG_main_liveness(automaton, argv[0]);
+  MSG_main_liveness(automaton);
 
   return 0;
 

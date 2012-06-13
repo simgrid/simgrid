@@ -37,9 +37,8 @@ xbt_fifo_t mc_stack_liveness = NULL;
 mc_snapshot_t initial_snapshot_liveness = NULL;
 
 xbt_automaton_t automaton;
-char *prog_name;
 
-static void MC_init_liveness(xbt_automaton_t a, char *prgm);
+static void MC_init_liveness(xbt_automaton_t a);
 static void MC_assert_pair(int prop);
 
 
@@ -104,7 +103,7 @@ void MC_init_safety_stateful(void){
 
 }
 
-static void MC_init_liveness(xbt_automaton_t a, char *prgm){
+static void MC_init_liveness(xbt_automaton_t a){
 
   XBT_DEBUG("Start init mc");
   
@@ -126,7 +125,6 @@ static void MC_init_liveness(xbt_automaton_t a, char *prgm){
   MC_UNSET_RAW_MEM;
 
   automaton = a;
-  prog_name = strdup(prgm);
 
   MC_ddfs_init();
 
@@ -149,8 +147,8 @@ void MC_modelcheck_stateful(void)
 }
 
 
-void MC_modelcheck_liveness(xbt_automaton_t a, char *prgm){
-  MC_init_liveness(a, prgm);
+void MC_modelcheck_liveness(xbt_automaton_t a){
+  MC_init_liveness(a);
   MC_exit_liveness();
 }
 
