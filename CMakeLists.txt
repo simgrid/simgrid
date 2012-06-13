@@ -102,6 +102,8 @@ set(JMSG_C_SRC
   ${CMAKE_HOME_DIRECTORY}/src/jmsg_synchro.h
   ${CMAKE_HOME_DIRECTORY}/src/jmsg_rngstream.c
   ${CMAKE_HOME_DIRECTORY}/src/jmsg_rngstream.h
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_vm.c
+  ${CMAKE_HOME_DIRECTORY}/src/jmsg_vm.h
 )
 
 set(JTRACE_C_SRC
@@ -128,6 +130,7 @@ set(JMSG_JAVA_SRC
   ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/Mutex.java
   ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/Comm.java
   ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/RngStream.java
+  ${CMAKE_HOME_DIRECTORY}/org/simgrid/msg/VM.java
 )
 set(JTRACE_JAVA_SRC
 	org/simgrid/trace/Trace.java
