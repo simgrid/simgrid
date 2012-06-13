@@ -1329,9 +1329,9 @@ XBT_TEST_UNIT("snapshots_comparison2", test2_compare_snapshot, "Comparison of sn
   mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(snapshot2);
 
-  MC_UNSET_RAW_MEM;
-
   xbt_test_assert(snapshot_compare(snapshot1, snapshot2) != 0, "Same snapshot with new allocations");
+
+  MC_UNSET_RAW_MEM;
   
 
 }
