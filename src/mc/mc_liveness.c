@@ -36,7 +36,6 @@ unsigned int hash_region(char *str, int str_len){
 int data_program_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
   int i;
-  char *pointed_address1 = NULL, *pointed_address2 = NULL;
   
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
@@ -47,16 +46,12 @@ int data_program_region_compare(void *d1, void *d2, size_t size){
   
   fprintf(stderr, "Hamming distance between data program regions : %d\n", distance);
 
-  free(pointed_address1);
-  free(pointed_address2);
-
   return distance;
 }
 
 int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
   int i;
-  char *pointed_address1 = NULL, *pointed_address2 = NULL;
   
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
@@ -66,9 +61,6 @@ int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
   }
   
   fprintf(stderr, "Hamming distance between data libsimgrid regions : %d\n", distance);
-
-  free(pointed_address1);
-  free(pointed_address2);
   
   return distance;
 }
