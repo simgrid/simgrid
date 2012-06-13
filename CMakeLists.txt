@@ -72,8 +72,8 @@ include(FindJavaSG.cmake)
 include(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(${SIMGRID_LIB} TRACE_start "" HAVE_TRACING)
 if(NOT HAVE_TRACING)
-  message(STATUS "SimGrid-java must be compile with library Simgrid included Tracing option.")
-  message(FATAL_ERROR "See http://simgrid.gforge.inria.fr/simgrid/3.8/doc/tracing.html to see how compile SimGrid library with good options.")
+  message(STATUS "Warning: SimGrid-java must be linked with library Simgrid included trace option to enable tracing.")
+  message(STATUS "Warning: See http://simgrid.gforge.inria.fr/simgrid/3.8/doc/tracing.html to see how compile SimGrid library with this option.")
 endif(NOT HAVE_TRACING)
 
 ###############################
@@ -312,21 +312,22 @@ else(WIN32)
   set_target_properties(SG_java PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH}")
 endif(WIN32)
 
+if(HAVE_TRACING)
 # SG_java_tracing
 add_library(SG_java_tracing SHARED ${JTRACE_C_SRC})
-if(WIN32)
-  set_target_properties(SG_java_tracing PROPERTIES LINK_FLAGS "-Wl,--subsystem,windows,--kill-at ${SIMGRID_LIB}" PREFIX "")
-  find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
-  message(STATUS "pexports: ${PEXPORTS_PATH}")
-  if(PEXPORTS_PATH)
-    add_custom_command(TARGET SG_java_tracing POST_BUILD
-    COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java_tracing.dll > ${CMAKE_BINARY_DIR}/SG_java_tracing.def)
-  endif(PEXPORTS_PATH)
-else(WIN32)
-  target_link_libraries(SG_java_tracing pcre pthread simgrid)
-  set_target_properties(SG_java_tracing PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH}")
-endif(WIN32)
-
+  if(WIN32)
+    set_target_properties(SG_java_tracing PROPERTIES LINK_FLAGS "-Wl,--subsystem,windows,--kill-at ${SIMGRID_LIB}" PREFIX "")
+    find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
+    message(STATUS "pexports: ${PEXPORTS_PATH}")
+    if(PEXPORTS_PATH)
+      add_custom_command(TARGET SG_java_tracing POST_BUILD
+      COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java_tracing.dll > ${CMAKE_BINARY_DIR}/SG_java_tracing.def)
+    endif(PEXPORTS_PATH)
+  else(WIN32)
+    target_link_libraries(SG_java_tracing pcre pthread simgrid)
+    set_target_properties(SG_java_tracing PROPERTIES LINK_FLAGS "-L${SIMGRID_LIB_PATH}")
+  endif(WIN32)
+endif(HAVE_TRACING)
 
 # java_classes
 add_custom_command(
@@ -337,19 +338,23 @@ add_custom_command(
     -cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JMSG_JAVA_SRC}
   COMMENT "Compiling java sources of core library..."					
 )
-
-add_custom_command(
-  OUTPUT  ${JTRACE_JAVA_SRC_CLASS}
-  DEPENDS ${JTRACE_JAVA_SRC}
-  COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
-  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
-    -cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES_TRACE}
-  COMMENT "Compiling java sources of core libraries..."					
-)
-
 add_custom_target(java_classes ALL
-  DEPENDS ${JMSG_JAVA_SRC_CLASS} ${JTRACE_JAVA_SRC_CLASS}
+  DEPENDS ${JMSG_JAVA_SRC_CLASS}
 )
+
+if(HAVE_TRACING)
+  add_custom_command(
+    OUTPUT  ${JTRACE_JAVA_SRC_CLASS}
+    DEPENDS ${JTRACE_JAVA_SRC}
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
+    COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
+      -cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_FILES_TRACE}
+    COMMENT "Compiling java sources of core libraries..."					
+  )
+  add_custom_command(TARGET java_classes
+    DEPENDS ${JTRACE_JAVA_SRC_CLASS}
+  )
+endif(HAVE_TRACING)
 
 # simgrid_jar
 add_custom_target(simgrid_jar ALL
@@ -383,12 +388,17 @@ add_custom_command(
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/migration/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/*.java              			
-  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/tracing/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/pingPong/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/priority/*.java   	
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/suspend/*.java
 )
+if(HAVE_TRACING)
+  add_custom_command(
+    DEPENDS ${JAVA_EXAMPLES}
+    COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/tracing/*.java
+)
+endif(HAVE_TRACING)
 
 add_custom_target(simgrid_java_examples ALL
   DEPENDS ${JAVA_EXAMPLES_CLASS}
@@ -398,7 +408,10 @@ add_custom_target(simgrid_java_examples ALL
 # Declare dependencies #
 ########################
 add_dependencies(simgrid_jar java_classes)
-add_dependencies(simgrid_java_examples simgrid_jar SG_java SG_java_tracing)
+add_dependencies(simgrid_java_examples simgrid_jar SG_java)
+if(HAVE_TRACING)
+  add_dependencies(SG_java_tracing)
+endif(HAVE_TRACING)
 
 #####################
 # Declare our tests #
@@ -419,10 +432,12 @@ ADD_TEST(pingPong        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(priority        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/priority/priority.tesh)
 ADD_TEST(startKillTime   ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh)
 ADD_TEST(suspend         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspend.tesh)
-ADD_TEST(tracing         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/tracing/tracingPingPong.tesh)
 #Don't forget to put new test in this list!!!
-set(test_list async bittorrent bypass chord commTime kill masterslave migration mutualExclusion pingPong priority startKillTime tracing)
-
+set(test_list async bittorrent bypass chord commTime kill masterslave migration mutualExclusion pingPong priority startKillTime)
+if(HAVE_TRACING)
+  ADD_TEST(tracing         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/tracing/tracingPingPong.tesh)
+  set(test_list "${test_list} tracing")
+endif(HAVE_TRACING)
 ##########################################
 # Set the  DYLD_LIBRARY_PATH for mac     #
 ##########################################
@@ -454,10 +469,12 @@ endif(APPLE)
 ###########
 install(TARGETS SG_java
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
-  
-install(TARGETS SG_java_tracing
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
-  
+
+if(HAVE_TRACING)
+  install(TARGETS SG_java_tracing
+    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
+endif(HAVE_TRACING)
+ 
 install(FILES ${CMAKE_HOME_DIRECTORY}/simgrid.jar
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
 
