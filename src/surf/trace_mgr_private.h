@@ -42,7 +42,7 @@ typedef struct probabilist_event_generator {
       double k;
     } s_weibull_parameters;
   };
-} s_probabilist_event_generator_t, *probabilist_event_generator_t;
+} s_probabilist_event_generator_t;
 
 typedef struct tmgr_trace {
   enum e_trace_type type;
@@ -51,8 +51,7 @@ typedef struct tmgr_trace {
       xbt_dynar_t event_list;
     } s_list;
     struct {
-      probabilist_event_generator_t event1_generator;
-      probabilist_event_generator_t event2_generator;
+      probabilist_event_generator_t event_generator[2];
       int next_event;
     } s_probabilist;
   };

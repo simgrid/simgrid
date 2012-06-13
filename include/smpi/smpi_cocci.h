@@ -43,8 +43,14 @@ void __attribute__((weak,destructor)) __postfini_##name(void) { \
 #define SMPI_VARGET_GLOBAL(name) name[smpi_process_index()]
 
 /* The following handle local static variables */
-
+/** @brief Make sure that the passed pointer is freed on process exit.
+ *
+ * This function is rather internal, mainly used for the
+ * privatization of global variables through coccinelle.
+ */
 XBT_PUBLIC(void) smpi_register_static(void* arg);
+
+XBT_PUBLIC(void) smpi_free_static(void);
 
 #define SMPI_VARINIT_STATIC(name,type)                      \
 static type *name = NULL;                                   \

@@ -228,6 +228,8 @@ void smpi_global_destroy(void)
   }
   xbt_free(process_data);
   process_data = NULL;
+
+  smpi_free_static();
 }
 
 /* Fortran specific stuff */

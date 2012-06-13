@@ -433,7 +433,7 @@ set(headers_to_install
 	include/xbt/socket.h
 	include/xbt/file_stat.h
 	include/xbt/xbt_os_thread.h
-  include/xbt/RngStream.h
+    include/xbt/RngStream.h
 	include/simgrid/platf.h
 	include/simgrid/modelchecker.h
 	include/simgrid/simix.h

@@ -168,6 +168,8 @@ typedef int AT_surfxml_peer_bw_in;
 #define AU_surfxml_peer_bw_in NULL
 typedef int AT_surfxml_random_mean;
 #define AU_surfxml_random_mean NULL
+typedef int AT_surfxml_storage_type_size;
+#define AU_surfxml_storage_type_size NULL
 typedef int AT_surfxml_cluster_bb_lat;
 #define AU_surfxml_cluster_bb_lat NULL
 typedef int AT_surfxml_link_latency;
@@ -391,6 +393,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_peer_bw_in_isset;
 XBT_PUBLIC_DATA(AT_surfxml_random_mean ) AX_surfxml_random_mean;
 #define A_surfxml_random_mean (surfxml_bufferstack + AX_surfxml_random_mean)
 XBT_PUBLIC_DATA(short ) int surfxml_random_mean_isset;
+XBT_PUBLIC_DATA(AT_surfxml_storage_type_size ) AX_surfxml_storage_type_size;
+#define A_surfxml_storage_type_size (surfxml_bufferstack + AX_surfxml_storage_type_size)
+XBT_PUBLIC_DATA(short ) int surfxml_storage_type_size_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_bb_lat ) AX_surfxml_cluster_bb_lat;
 #define A_surfxml_cluster_bb_lat (surfxml_bufferstack + AX_surfxml_cluster_bb_lat)
 XBT_PUBLIC_DATA(short ) int surfxml_cluster_bb_lat_isset;

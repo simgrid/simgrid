@@ -144,6 +144,7 @@ void ETag_surfxml_storage_type(void)
   storage_type.id = A_surfxml_storage_type_id;
   storage_type.model = A_surfxml_storage_type_model;
   storage_type.properties = current_property_set;
+  storage_type.size = surf_parse_get_int(A_surfxml_storage_type_size);
   sg_platf_new_storage_type(&storage_type);
   current_property_set = NULL;
 }

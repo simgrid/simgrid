@@ -9,19 +9,19 @@
 
 	<AS id="AS0" routing="Full">
 
-		<storage_type id="samsung" model="RAID5" content="content/storage_content.txt">
+		<storage_type id="samsung" model="RAID5" content="content/storage_content.txt" size="500">
 			<prop id="Bwrite" value="30000000" /> <!-- 30Mo/s -->
 			<prop id="Bread" value="100000000" /> <!-- 100Mo/s -->
 			<prop id="Bconnection" value="150000000" /> <!-- 150Mo/s -->
 		</storage_type>
 
-		<storage_type id="crucial" model="SSD" content="content/storage_content.txt">
+		<storage_type id="crucial" model="SSD" content="content/storage_content.txt" size="500">
 			<prop id="Bwrite" value="30000000" />
 			<prop id="Bread" value="100000000" />
 			<prop id="Bconnection" value="150000000" />
 		</storage_type>
 
-		<storage_type id="wdigital" model="RAID0" content="content/storage_content.txt">
+		<storage_type id="wdigital" model="RAID0" content="content/storage_content.txt" size="500">
 			<prop id="Bwrite" value="30000000" />
 			<prop id="Bread" value="100000000" />
 			<prop id="Bconnection" value="150000000" />
