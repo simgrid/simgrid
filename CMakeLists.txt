@@ -362,15 +362,9 @@ add_custom_command(
   COMMENT "Compiling java sources of core library..."					
 )
 
-if(HAVE_TRACING)
-  add_custom_target(java_classes ALL
-    DEPENDS ${JMSG_JAVA_SRC_CLASS}
-  )
-else(HAVE_TRACING)
-  add_custom_command(java_classes ALL
-    DEPENDS ${JTRACE_JAVA_SRC_CLASS} ${JMSG_JAVA_SRC_CLASS}
-  )
-endif(HAVE_TRACING)
+add_custom_target(java_classes ALL
+  DEPENDS ${JAVA_SRC_CLASS}
+)
 
 # simgrid_jar
 add_custom_target(simgrid_jar ALL
@@ -416,11 +410,15 @@ if(HAVE_TRACING)
       DEPENDS ${JAVA_TRACING_EXAMPLES} ${JAVA_EXAMPLES_CLASS}
       COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/tracing/*.java
   )
+  add_custom_target(simgrid_java_examples ALL
+    DEPENDS ${JAVA_EXAMPLES_CLASS} ${JAVA_TRACING_EXAMPLES_CLASS}
+  )
+else(HAVE_TRACING)
+  add_custom_target(simgrid_java_examples ALL
+    DEPENDS ${JAVA_EXAMPLES_CLASS}
+  )
 endif(HAVE_TRACING)
 
-add_custom_target(simgrid_java_examples ALL
-  DEPENDS ${JAVA_EXAMPLES_CLASS} ${JAVA_TRACING_EXAMPLES_CLASS}
-)
 
 ########################
 # Declare dependencies #
@@ -551,6 +549,9 @@ add_dependencies(dist dist-dir)
 ##########################
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
   ${CMAKE_HOME_DIRECTORY}/simgrid.jar
+)
+SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
+  ${CMAKE_BINARY_DIR}/simulation.trace
 )
 
 ########
