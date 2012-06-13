@@ -266,8 +266,6 @@ void set_pair_visited_hash(xbt_state_t st, int search_cycle);
 unsigned int hash_region(char *str, int str_len);
 int rdv_points_compare(xbt_dict_t d1, xbt_dict_t d2);
 
-const char* get_memory_map_addr(void *addr);
-
 /* **** Double-DFS stateless **** */
 
 typedef struct s_mc_pair_stateless{

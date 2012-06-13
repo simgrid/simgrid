@@ -33,82 +33,8 @@ unsigned int hash_region(char *str, int str_len){
 
 }
 
-const char* get_memory_map_addr(void *addr){
-
-  FILE *fp;                     /* File pointer to process's proc maps file */
-  char *line = NULL;            /* Temporal storage for each line that is readed */
-  ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by getline */
-
-  fp = fopen("/proc/self/maps", "r");
-  
-  if(fp == NULL)
-    perror("fopen failed");
-
-  if(addr == NULL){
-    free(line);
-    fclose(fp);
-    return "nil";
-  }
-
-  xbt_dynar_t lfields = NULL;
-  xbt_dynar_t start_end  = NULL;
-  void *start_addr;
-  void *end_addr;
-
-  while ((read = getline(&line, &n, fp)) != -1) {
-
-    xbt_str_trim(line, NULL);
-    xbt_str_strip_spaces(line);
-    lfields = xbt_str_split(line,NULL);
-
-    start_end = xbt_str_split(xbt_dynar_get_as(lfields, 0, char*), "-");
-    start_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 0, char*), NULL, 16);
-    end_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 1, char*), NULL, 16);
-
-    if((addr > start_addr) && ( addr < end_addr)){
-      free(line);
-      fclose(fp);
-      if(start_addr == std_heap){
-	xbt_dynar_reset(lfields);
-	xbt_free(lfields);
-	xbt_dynar_reset(start_end);
-	xbt_free(start_end);
-	return "std_heap";
-      }
-      if(start_addr == raw_heap){
-	xbt_dynar_reset(lfields);
-	xbt_free(lfields);
-	xbt_dynar_reset(start_end);
-	xbt_free(start_end);
-	return "raw_heap";
-      }
-      if(xbt_dynar_length(lfields) == 6){
-	return xbt_dynar_get_as(lfields, xbt_dynar_length(lfields) - 1, char*);
-      }else{
-	xbt_dynar_reset(lfields);
-	xbt_free(lfields);
-	xbt_dynar_reset(start_end);
-	xbt_free(start_end);
-	return "Anonymous";
-      }
-    }
-
-  }
-
-  xbt_dynar_reset(lfields);
-  xbt_free(lfields);
-  xbt_dynar_reset(start_end);
-  xbt_free(start_end);
-  free(line);
-  fclose(fp);
-  return "Unknown area";
-
-}
-
 int data_program_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
-  int pointer_align;
   int i;
   char *pointed_address1 = NULL, *pointed_address2 = NULL;
   
@@ -116,11 +42,6 @@ int data_program_region_compare(void *d1, void *d2, size_t size){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
       fprintf(stderr,"Different byte (offset=%d) (%p - %p) in data program region\n", i, (char *)d1 + i, (char *)d2 + i);
       distance++;
-      pointer_align = (i /sizeof(void *)) * sizeof(void *);
-      pointed_address1 = strdup(get_memory_map_addr(*((void **)((char *)d1 + pointer_align))));
-      pointed_address2 = strdup(get_memory_map_addr(*((void **)((char *)d2 + pointer_align))));
-      fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)d1 + pointer_align)), pointed_address1, *((void **)((char *)d2 + pointer_align)), pointed_address2);
-      /* FIXME : compare values in pointed address thanks to DWARF */
     }
   }
   
@@ -134,7 +55,6 @@ int data_program_region_compare(void *d1, void *d2, size_t size){
 
 int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
-  int pointer_align;
   int i;
   char *pointed_address1 = NULL, *pointed_address2 = NULL;
   
@@ -142,11 +62,6 @@ int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
       fprintf(stderr, "Different byte (offset=%d) (%p - %p) in data libsimgrid region\n", i, (char *)d1 + i, (char *)d2 + i);
       distance++;
-      pointer_align = (i /sizeof(void *)) * sizeof(void *);
-      pointed_address1 = strdup(get_memory_map_addr(*((void **)((char *)d1 + pointer_align))));
-      pointed_address2 = strdup(get_memory_map_addr(*((void **)((char *)d2 + pointer_align))));
-      fprintf(stderr, "Pointed address : %p (in %s) - %p (in %s)\n", *((void **)((char *)d1 + pointer_align)), pointed_address1, *((void **)((char *)d2 + pointer_align)), pointed_address2);
-      /* FIXME : compare values in pointed address thanks to DWARF */
     }
   }
   
