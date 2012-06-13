@@ -16,7 +16,7 @@ public class RngStream {
 	/**
 	 * Represents the bind between the RngStream java object and the C object.
 	 */
-	public long bind;
+	private long bind;
 	/**
 	 * Creates and returns a new stream without identifier. 
 	 * This procedure reserves space to keep the information relative to

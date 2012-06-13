@@ -49,7 +49,7 @@ public class Host {
 	 *
 	 * @see				Host.getByName().
 	 */ 
-	public long bind;
+	private long bind;
 	/**
 	 * Host name
 	 */

@@ -54,7 +54,7 @@ public abstract class Process implements Runnable {
 	 * a native process. Even if this attribute is public you must never
 	 * access to it. It is set automatically during the build of the object.
 	 */
-	public long bind;
+	private long bind;
 	/**
 	 * Indicates if the process is started
 	 */

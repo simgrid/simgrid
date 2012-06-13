@@ -22,7 +22,7 @@ public class Task {
 	 * a native task. Even if this attribute is public you must never
 	 * access to it. It is set automatically during the build of the object.
 	 */
-	public long bind = 0;
+	private long bind = 0;
 	/**
 	 * Task name
 	 */

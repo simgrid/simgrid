@@ -15,7 +15,7 @@ public class File {
 	 * native C comm. You must never access it, since it is 
 	 * automatically set.
 	 */
-	public long bind = 0;
+	private long bind = 0;
 	/**
 	 * Constructor, opens the file.
 	 * @param storage is the name where you can find the stream 

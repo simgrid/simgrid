@@ -25,11 +25,11 @@ public class Comm {
 	 * native C comm. You must never access it, since it is 
 	 * automatically set.
 	 */
-	public long bind = 0;
+	private long bind = 0;
 	/**
 	 * Represents the bind for the task object pointer. Don't touch it.
 	 */
-	public long taskBind = 0;
+	private long taskBind = 0;
 	/**
 	 * Task associated with the comm. Beware, it can be null 
 	 */
