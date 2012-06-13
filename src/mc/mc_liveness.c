@@ -1307,4 +1307,33 @@ XBT_TEST_UNIT("snapshots_comparison", test_compare_snapshot, "Comparison of snap
 
 }
 
+XBT_TEST_UNIT("snapshots_comparison2", test2_compare_snapshot, "Comparison of snapshots with modification between")
+{
+
+  MC_SET_RAW_MEM;
+
+  /* Save first snapshot */
+  mc_snapshot_t snapshot1 = xbt_new0(s_mc_snapshot_t, 1);
+  MC_take_snapshot_liveness(snapshot1);
+
+  MC_UNSET_RAW_MEM;
+
+  void *test = snapshot1;
+  test = (char*)test+1;
+  char* t= strdup("toto");
+  t=strdup("tat");
+
+  MC_SET_RAW_MEM;
+
+  /* Save second snapshot */
+  mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
+  MC_take_snapshot_liveness(snapshot2);
+
+  MC_UNSET_RAW_MEM;
+
+  xbt_test_assert(snapshot_compare(snapshot1, snapshot2, std_heap) != 0, "Same snapshot with new allocations");
+  
+
+}
+
 #endif
