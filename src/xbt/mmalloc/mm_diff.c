@@ -209,6 +209,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 
   int k;
   int distance = 0;
+  int total_distance = 0;
 
   void *end_heap = get_end_addr_heap(s_heap);
 
@@ -334,6 +335,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	mmalloc_backtrace_block_display(mdp1, i);
 	mmalloc_backtrace_block_display(mdp2, i);
 	errors++; 
+	total_distance += distance;
       }
     
       
@@ -450,6 +452,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 	      mmalloc_backtrace_fragment_display(mdp1, i, j);
 	      mmalloc_backtrace_fragment_display(mdp2, i, j);
 	      errors++;
+	      total_distance += distance;
 	      
 	    }
 
@@ -472,6 +475,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2, void* s_heap, 
 
   //free(pointed_address1);
   //free(pointed_address2);
+
+  fprintf(stderr, "Hamming distance between heap regions : %d\n", total_distance);
 
   return (errors);
 }
