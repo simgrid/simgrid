@@ -173,10 +173,12 @@ endif(WIN32)
 
 set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
-SET(HAVE_TRACING 0)
+SET(HAVE_TRACING 1)
 
 if(enable_tracing)
 	SET(HAVE_TRACING 1)
+else(enable_tracing)	
+	SET(HAVE_TRACING 0)
 endif(enable_tracing)
 
 if(enable_jedule)

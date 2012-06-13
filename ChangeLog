@@ -5,6 +5,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  CMAKE:
  * Remove option custom_flags. Now use environment variables CFLAGS
    and LDFLAGS.
+ * Enable tracing by default. This modules rocks you should use it.
 
  MSG:
  * Add an experimental interface to manipulate VMs. They are mainly
