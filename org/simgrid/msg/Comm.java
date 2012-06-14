@@ -58,8 +58,15 @@ public class Comm {
 	 */
 	public native boolean test() throws TransferFailureException, HostFailureException, TimeoutException ;
 	/**
+	 * Wait for the complemetion of the communication for an indefinite time
+	 */
+	public void waitCompletion() throws TransferFailureException, HostFailureException, TimeoutException {
+		waitCompletion(-1);
+	}
+	/**
 	 * Wait for the completion of the communication.
 	 * Throws an exception if there were an error in the communication.
+	 * @param timeout Time before giving up
 	 */
 	public native void waitCompletion(double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
 	/**
