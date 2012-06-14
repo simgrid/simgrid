@@ -72,7 +72,10 @@ public class VM {
 	 * of VM resume to you.
 	 */
 	public native void resume();
-	
+	/**
+	 * @brief Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
+	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep() or something
+	 */
 	public native void shutdown();
 		
 }
