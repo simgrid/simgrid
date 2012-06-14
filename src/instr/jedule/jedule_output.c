@@ -71,13 +71,38 @@ static void get_hierarchy_list(xbt_dynar_t hier_list, jed_simgrid_container_t co
 
 }
 
+static void get_hierarchy_string(jed_simgrid_container_t container, char *outbuf) {
+    char buf[1024];
+    xbt_dynar_t hier_list;
+    unsigned int iter;
+    int number;
+    int length;
+    
+    outbuf[0] = '\0';
+    hier_list = xbt_dynar_new(sizeof(int), NULL);
+    get_hierarchy_list(hier_list, container);
+    
+    length = xbt_dynar_length(hier_list);
+    
+    xbt_dynar_foreach(hier_list, iter, number) {
+        if( iter != length-1 ) {
+            sprintf(buf, "%d.\0", number);
+        } else {
+            sprintf(buf, "%d\0", number);
+        }
+        strcat(outbuf, buf);
+    }
+    
+    xbt_dynar_free(&hier_list);    
+}
+
 static void print_key_value_dict(xbt_dict_t key_value_dict) {
 	xbt_dict_cursor_t cursor=NULL;
 	char *key,*data;
 
 	if( key_value_dict != NULL ) {
 		xbt_dict_foreach(key_value_dict,cursor,key,data) {
-			fprintf(jed_file, "<prop key=\"%s\" values=\"%s\" />\n",key,data);
+			fprintf(jed_file, "<prop key=\"%s\" value=\"%s\" />\n",key,data);
 		}
 	}
 }
@@ -103,11 +128,14 @@ static void print_resources(jed_simgrid_container_t resource_parent) {
 	int res_nb;
 	unsigned int i;
 	char *res_name;
+    char resid[1024];
 	xbt_assert( resource_parent->resource_list != NULL );
 
 	res_nb = xbt_dynar_length(resource_parent->resource_list);
+    
+    get_hierarchy_string(resource_parent, resid);
 
-	fprintf(jed_file, "<rset nb=\"%d\" names=\"", res_nb);
+	fprintf(jed_file, "<rset id=\"%s\" nb=\"%d\" names=\"", resid, res_nb);
 	xbt_dynar_foreach(resource_parent->resource_list, i, res_name) {
 		fprintf(jed_file, "%s", res_name);
 		if( i != res_nb-1 ) {
@@ -136,10 +164,10 @@ static void print_event(jed_event_t event) {
 	fprintf(jed_file, "<event>\n");
 
 
-	fprintf(jed_file, "<prop value=\"name\" value=\"%s\" />\n", event->name);
-	fprintf(jed_file, "<prop value=\"start\" value=\"%g\" />\n", event->start_time);
-	fprintf(jed_file, "<prop value=\"end\" value=\"%g\" />\n", event->end_time);
-	fprintf(jed_file, "<prop value=\"type\" value=\"%s\" />\n", event->type);
+	fprintf(jed_file, "<prop key=\"name\" value=\"%s\" />\n", event->name);
+	fprintf(jed_file, "<prop key=\"start\" value=\"%g\" />\n", event->start_time);
+	fprintf(jed_file, "<prop key=\"end\" value=\"%g\" />\n", event->end_time);
+	fprintf(jed_file, "<prop key=\"type\" value=\"%s\" />\n", event->type);
 
 	fprintf(jed_file, "<res_util>\n");
 
@@ -147,26 +175,15 @@ static void print_event(jed_event_t event) {
 
 		int start = subset->start_idx;
 		int end   = subset->start_idx + subset->nres - 1;
-		xbt_dynar_t hier_list;
-		unsigned int iter;
-		int number;
+        char resid[1024];
 
-		hier_list = xbt_dynar_new(sizeof(int), NULL);
-
-		//printf("subset start %d nres %d\n", subset->start_idx, subset->nres);
-
-		//printf("parent %s\n", event->resource_selection[i]->parent->name);
-		get_hierarchy_list(hier_list, subset->parent);
-
+        get_hierarchy_string(subset->parent, resid);
+        
 		fprintf(jed_file, "<select resources=\"");
-
-		xbt_dynar_foreach(hier_list, iter, number) {
-			fprintf(jed_file, "%d.", number);
-		}
-		fprintf(jed_file, "[%d-%d]", start, end);
+        fprintf(jed_file, "%s", resid);
+		fprintf(jed_file, ".[%d-%d]", start, end);
 		fprintf(jed_file, "\" />\n");
 
-		xbt_dynar_free(&hier_list);
 	}
 
 	fprintf(jed_file, "</res_util>\n");

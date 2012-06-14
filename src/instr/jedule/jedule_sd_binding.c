@@ -125,8 +125,13 @@ void jedule_sd_init() {
 
 void jedule_sd_dump() {
 	FILE *fh;
+    char fname[1024];
 
-	fh = fopen("simgrid.jed", "w");
+    fname[0] = '\0';
+    strcat(fname, xbt_binary_name);
+    strcat(fname, ".jed\0");
+    
+	fh = fopen(fname, "w");
 
 	write_jedule_output(fh, jedule, jedule_event_list, NULL);
 
