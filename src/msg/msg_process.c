@@ -33,35 +33,25 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 
   // get the MSG process from the SIMIX process
   if (smx_proc == SIMIX_process_self()) {
-  	/* avoid a SIMIX request if this function is called by the process itself */
+    /* avoid a SIMIX request if this function is called by the process itself */
     msg_proc = SIMIX_process_self_get_data(smx_proc);
-
     SIMIX_process_self_set_data(smx_proc, NULL);
   }
   else {
     msg_proc = simcall_process_get_data(smx_proc);
     simcall_process_set_data(smx_proc, NULL);
   }
+
 #ifdef HAVE_TRACING
   TRACE_msg_process_end(smx_proc);
 #endif
 
-  msg_process_data_t process_data = (msg_process_data_t)msg_proc->data;
-  //free the process data
-  if (process_data) {
-  	//Remove the process from its vm
-  	if (process_data->current_vm) {
-  	  int pos = xbt_dynar_search(process_data->current_vm->processes,&smx_proc);
-  	  xbt_dynar_remove_at(process_data->current_vm->processes,pos, NULL);
-  	}
-  	//Free the data if a function was provided
-    if (process_data->data && msg_global->process_data_cleanup) {
-      msg_global->process_data_cleanup(process_data->data);
-    }
-    xbt_free(process_data);
+  // free the data if a function was provided
+  if (msg_proc->data && msg_global->process_data_cleanup) {
+    msg_global->process_data_cleanup(msg_proc->data);
   }
 
-  //free the MSG process
+  // free the MSG process
   xbt_free(msg_proc);
 }
 
@@ -258,10 +248,7 @@ void* MSG_process_get_data(m_process_t process)
 
   /* get from SIMIX the MSG process data, and then the user data */
   simdata_process_t simdata = simcall_process_get_data(process);
-  if (!simdata->data) {
-  	return NULL;
-  }
-  return ((msg_process_data_t)simdata->data)->data;
+  return simdata->data;
 }
 
 /** \ingroup m_process_management
@@ -275,10 +262,8 @@ MSG_error_t MSG_process_set_data(m_process_t process, void *data)
   xbt_assert(process != NULL, "Invalid parameter");
 
   simdata_process_t simdata = simcall_process_get_data(process);
-  if (!simdata->data) {
-  	simdata->data = xbt_new0(s_msg_process_data_t, 1);
-  }
-	((msg_process_data_t)simdata->data)->data = data;
+  simdata->data = data;
+
   return MSG_OK;
 }
 
