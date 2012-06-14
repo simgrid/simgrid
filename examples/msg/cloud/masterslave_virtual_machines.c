@@ -124,6 +124,7 @@ int master(int argc, char *argv[]) {
   for (i=0;i<xbt_dynar_length(vms);i++) {
     msg_vm_t vm = xbt_dynar_get_as(vms,i,msg_vm_t);
     MSG_vm_shutdown(vm);
+    MSG_vm_destroy(vm);
   }
 
   XBT_INFO("Goodbye now!");
@@ -158,6 +159,7 @@ int slave_fun(int argc, char *argv[])
     MSG_task_destroy(task);
     task = NULL;
   }
+
   free(mailbox_name);
   return 0;
 }                               /* end_of_slave */

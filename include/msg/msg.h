@@ -314,6 +314,8 @@ XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);  // Simulate the fact of reading th
 
 XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm); // killall
 
+XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
+
 XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar(void);
 
 /*

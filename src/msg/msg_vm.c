@@ -158,3 +158,18 @@ void MSG_vm_shutdown(msg_vm_t vm) {
   	MSG_process_kill(process);
   }
 }
+
+/** @brief Destroy a msg_vm_t.
+ *  @ingroup msg_VMs
+ */
+void MSG_vm_destroy(msg_vm_t vm) {
+	unsigned int cpt;
+	m_process_t process;
+	xbt_dynar_foreach(vm->processes,cpt,process) {
+		//FIXME: Slow ?
+		simdata_process_t simdata = simcall_process_get_data(process);
+		simdata->vm = NULL;
+	}
+	xbt_dynar_free(&vm->processes);
+	xbt_free(vm);
+}
