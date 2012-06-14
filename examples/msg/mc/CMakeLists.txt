@@ -29,3 +29,71 @@ target_link_libraries(bugged2_liveness     simgrid m )
 target_link_libraries(centralized_liveness     simgrid m )
 target_link_libraries(centralized_liveness_deadlock     simgrid m )
 target_link_libraries(test_snapshot     simgrid m )
+
+set(tesh_files
+  ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/centralized.tesh
+  PARENT_SCOPE
+)
+set(xml_files
+  ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1_liveness.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2_liveness.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged3.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_cennralized_liveness.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_mutex.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_random_test.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
+  PARENT_SCOPE
+)
+set(examples_src
+  ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/automanon.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/automatonparse_promela.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_for_liveness.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_stateful.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_while_liveness.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_stateful.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged3.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness_deadlock.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/centralized_munex.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/lex.yy.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/random_test.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/y.tab.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/automaton.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/automatonparse_promela.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/y.tab.h
+  PARENT_SCOPE
+)
+set(bin_files
+  ${bin_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/dwarf
+  ${CMAKE_CURRENT_SOURCE_DIR}/parse_dwarf
+  ${CMAKE_CURRENT_SOURCE_DIR}/parserPromela.lex
+  ${CMAKE_CURRENT_SOURCE_DIR}/parserPromela.yacc
+  ${CMAKE_CURRENT_SOURCE_DIR}/promela1_bugged1_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/promela2_bugged1_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/promela2_bugged2_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/promela2_centralized_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/promela_centralized_liveness
+  
+  PARENT_SCOPE
+)
+set(txt_files
+  ${txt_files}
+  PARENT_SCOPE
+)

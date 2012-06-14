@@ -25,11 +25,37 @@ add_custom_command(
 
 ### Add definitions for compile
 if(NOT WIN32)
-target_link_libraries(msg_handle_simulator simgrid m pthread )
-target_link_libraries(msg_handle_client gras m pthread )
-target_link_libraries(msg_handle_server gras m pthread )
+  target_link_libraries(msg_handle_simulator simgrid m pthread )
+  target_link_libraries(msg_handle_client gras m pthread )
+  target_link_libraries(msg_handle_server gras m pthread )
 else(NOT WIN32)
-target_link_libraries(msg_handle_simulator simgrid)
-target_link_libraries(msg_handle_client gras)
-target_link_libraries(msg_handle_server gras)
+  target_link_libraries(msg_handle_simulator simgrid)
+  target_link_libraries(msg_handle_client gras)
+  target_link_libraries(msg_handle_server gras)
 endif(NOT WIN32)
+
+set(tesh_files
+  ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_rl.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_32.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_64.tesh
+  PARENT_SCOPE
+)
+set(xml_files
+  ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/msg_handle.xml
+  PARENT_SCOPE
+)
+set(teshsuite_src
+  ${teshsuite_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/msg_handle.c
+  PARENT_SCOPE
+)
+set(bin_files
+  ${bin_files}
+  PARENT_SCOPE
+)
+set(txt_files
+  ${txt_files}
+  PARENT_SCOPE
+)

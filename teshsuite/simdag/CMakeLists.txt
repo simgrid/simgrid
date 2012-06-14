@@ -28,3 +28,40 @@ target_link_libraries(basic4 simgrid)
 target_link_libraries(basic5 simgrid)
 target_link_libraries(basic6 simgrid)
 endif(NOT WIN32)
+
+set(tesh_files
+  ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic0.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic1.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic2.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic3.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic4.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic5.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic6.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/simdag.tesh
+  PARENT_SCOPE
+)
+set(xml_files
+  ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic_platform.xml
+  PARENT_SCOPE
+)
+set(teshsuite_src
+  ${teshsuite_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic0.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic1.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic3.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic4.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic5.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic6.c
+  PARENT_SCOPE
+)
+set(bin_files
+  ${bin_files}
+  PARENT_SCOPE
+)
+set(txt_files
+  ${txt_files}
+  PARENT_SCOPE
+)

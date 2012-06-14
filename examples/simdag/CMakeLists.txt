@@ -11,39 +11,71 @@ add_executable(simdag_tracing simdag_trace.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
-	target_link_libraries(ex_sd_test simgrid pthread m )
-	target_link_libraries(sd_test2 simgrid pthread m )
-	target_link_libraries(sd_typed_tasks_test simgrid pthread m )
-	target_link_libraries(sd_seq_access simgrid pthread m )
-	target_link_libraries(sd_test_console simgrid pthread m )
-	target_link_libraries(simdag_tracing simgrid pthread m )
-	
-	add_custom_command(TARGET ex_sd_test
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/ex_sd_test ${CMAKE_CURRENT_BINARY_DIR}/sd_test
-		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
-	)
-	get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
-	set_directory_properties(
-	 PROPERTIES
-	 ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/sd_test")
- 
+  target_link_libraries(ex_sd_test simgrid pthread m )
+  target_link_libraries(sd_test2 simgrid pthread m )
+  target_link_libraries(sd_typed_tasks_test simgrid pthread m )
+  target_link_libraries(sd_seq_access simgrid pthread m )
+  target_link_libraries(sd_test_console simgrid pthread m )
+  target_link_libraries(simdag_tracing simgrid pthread m )
+
+  add_custom_command(TARGET ex_sd_test
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/ex_sd_test ${CMAKE_CURRENT_BINARY_DIR}/sd_test
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
+  )
+  get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
+  set_directory_properties(
+    PROPERTIES
+    ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/sd_test")
+
 else(NOT WIN32)
-	target_link_libraries(ex_sd_test simgrid)
-	target_link_libraries(sd_test2 simgrid)
-	target_link_libraries(sd_typed_tasks_test simgrid)
-	target_link_libraries(sd_seq_access simgrid)
-	target_link_libraries(sd_test_console simgrid)
-	target_link_libraries(simdag_tracing simgrid)
-	
-	add_custom_command(TARGET ex_sd_test
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/ex_sd_test.exe ${CMAKE_CURRENT_BINARY_DIR}/sd_test.exe
-		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
-	)
-	get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
-	set_directory_properties(
-	 PROPERTIES
-	 ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/sd_test.exe")
+  target_link_libraries(ex_sd_test simgrid)
+  target_link_libraries(sd_test2 simgrid)
+  target_link_libraries(sd_typed_tasks_test simgrid)
+  target_link_libraries(sd_seq_access simgrid)
+  target_link_libraries(sd_test_console simgrid)
+  target_link_libraries(simdag_tracing simgrid)
+
+  add_custom_command(TARGET ex_sd_test
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/ex_sd_test.exe ${CMAKE_CURRENT_BINARY_DIR}/sd_test.exe
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
+  )
+  get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
+  set_directory_properties(
+    PROPERTIES
+    ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/sd_test.exe")
 endif(NOT WIN32)
 
+set(tesh_files
+  ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag2.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_seq_access.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag.tesh
+  PARENT_SCOPE
+)
+set(xml_files
+  ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/2clusters.xml
+  PARENT_SCOPE
+)
+set(examples_src
+  ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/sd_seq_access.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/sd_test2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/sd_test.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/sd_test_console.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/sd_typed_tasks_test.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/simdag_trace.c
+  PARENT_SCOPE
+)
+set(bin_files
+  ${bin_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform_script.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag.in
+  PARENT_SCOPE
+)
+set(txt_files
+  ${txt_files}
+  PARENT_SCOPE
+)
