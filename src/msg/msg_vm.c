@@ -78,6 +78,8 @@ void MSG_vm_bind(msg_vm_t vm, m_process_t process) {
 	}
 	simdata->vm = vm;
 
+	XBT_DEBUG("binding Process %s to %p",MSG_process_get_name(process),vm);
+
   xbt_dynar_push_as(vm->processes,m_process_t,process);
 }
 /** @brief Removes the given process from the given VM, and kill it
@@ -150,7 +152,9 @@ void MSG_vm_resume(msg_vm_t vm) {
 void MSG_vm_shutdown(msg_vm_t vm) {
   unsigned int cpt;
   m_process_t process;
-  xbt_dynar_foreach(vm->processes,cpt,process) {
+  XBT_DEBUG("%d processes in the VM",xbt_dynar_length(vm->processes));
+  while (xbt_dynar_length(vm->processes) > 0) {
+  	process = xbt_dynar_get_as(vm->processes,0,m_process_t);
   	MSG_process_kill(process);
   }
 }
