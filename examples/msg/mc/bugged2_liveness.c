@@ -7,9 +7,7 @@
 #include "msg/msg.h"
 #include "mc/mc.h"
 #include "xbt/automaton.h"
-#include "xbt/automatonparse_promela.h"
 #include "bugged2_liveness.h"
-#include "y.tab.c"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged2_liveness, "my log messages");
 
@@ -174,13 +172,11 @@ int main(int argc, char *argv[])
   buffer = malloc(8*sizeof(char));
   buffer[0]='\0';
 
-  init();
-  yyparse();
-  automaton = get_automaton();
-  xbt_new_propositional_symbol(automaton,"pready", &predPready); 
-  xbt_new_propositional_symbol(automaton,"cready", &predCready); 
-  xbt_new_propositional_symbol(automaton,"consume", &predConsume);
-  xbt_new_propositional_symbol(automaton,"produce", &predProduce); 
+  xbt_automaton_t a = MC_create_automaton("promela2_bugged2_liveness");
+  xbt_new_propositional_symbol(a,"pready", &predPready); 
+  xbt_new_propositional_symbol(a,"cready", &predCready); 
+  xbt_new_propositional_symbol(a,"consume", &predConsume);
+  xbt_new_propositional_symbol(a,"produce", &predProduce); 
   
   MSG_global_init(&argc, argv);
   MSG_create_environment("../msg_platform.xml");
@@ -188,7 +184,7 @@ int main(int argc, char *argv[])
   MSG_function_register("consumer", consumer);
   MSG_function_register("producer", producer);
   MSG_launch_application("deploy_bugged2_liveness.xml");
-  MSG_main_liveness(automaton);
+  MSG_main_liveness(a);
 
   return 0;
 

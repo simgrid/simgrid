@@ -3,7 +3,7 @@
 #include "xbt/automaton.h"
 #include "xbt/automatonparse_promela.h"
 #include "test_snapshot.h"
-#include "y.tab.c"
+//#include "y.tab.c"
 #include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test_snapshot, "my log messages");

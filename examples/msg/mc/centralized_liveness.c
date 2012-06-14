@@ -6,9 +6,7 @@
 #include "msg/msg.h"
 #include "mc/mc.h"
 #include "xbt/automaton.h"
-#include "xbt/automatonparse_promela.h"
 #include "centralized_liveness.h"
-#include "y.tab.c"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(centralized, "my log messages");
  
@@ -100,17 +98,16 @@ int client(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  init();
-  yyparse();
-  automaton = get_automaton();
-  xbt_new_propositional_symbol(automaton,"cs", &predCS); 
+  
+  xbt_automaton_t a = MC_create_automaton("promela_centralized_liveness");
+  xbt_new_propositional_symbol(a,"cs", &predCS); 
   
   MSG_global_init(&argc, argv);
   MSG_create_environment("../msg_platform.xml");
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
   MSG_launch_application("deploy_centralized_liveness.xml");
-  MSG_main_liveness(automaton);
+  MSG_main_liveness(a);
 
   return 0;
 
