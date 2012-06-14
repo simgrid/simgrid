@@ -159,15 +159,52 @@ void TRACE_declare_mark(const char *mark_type)
   /* if platform is not traced, we don't allow marks */
   if (!TRACE_needs_platform()) return;
 
-  if (!mark_type) return;
+  if (!mark_type) THROWF (tracing_error, 1, "mark_type is NULL");
 
   //check if mark_type is already declared
   char *created = xbt_dict_get_or_null(declared_marks, mark_type);
-  if (created) return;
-  xbt_dict_set (declared_marks, mark_type, xbt_strdup("1"), NULL);
+  if (created) {
+    THROWF (tracing_error, 1, "mark_type with name (%s) is already declared", mark_type);
+  }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
   PJ_type_event_new(mark_type, NULL, PJ_type_get_root());
+  xbt_dict_set (declared_marks, mark_type, xbt_strdup("1"), NULL);
+}
+
+
+/** \ingroup TRACE_mark
+ * \brief Declare a new value for a previously declared mark type.
+ *
+ * This function declares a new value for a Paje event
+ * type in the trace file that can be used by
+ * simulators to declare application-level
+ * marks. This function is independent of
+ * which API is used in SimGrid.
+ *
+ * \param mark_type The name of the new type.
+ * \param mark_value The name of the new value for this type.
+ *
+ * \see TRACE_mark
+ */
+void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
+{
+  /* safe switch */
+  if (!TRACE_is_enabled()) return;
+
+  /* if platform is not traced, we don't allow marks */
+  if (!TRACE_needs_platform()) return;
+
+  if (!mark_type) THROWF (tracing_error, 1, "mark_type is NULL");
+  if (!mark_value) THROWF (tracing_error, 1, "mark_value is NULL");
+
+  type_t type = PJ_type_get (mark_type, PJ_type_get_root());
+  if (!type){
+    THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
+  }
+
+  XBT_DEBUG("MARK,declare_value %s %s", mark_type, mark_value);
+  PJ_value_new (mark_value, NULL, type);
 }
 
 /**
@@ -196,18 +233,17 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   /* if platform is not traced, we don't allow marks */
   if (!TRACE_needs_platform()) return;
 
-  if (!mark_type || !mark_value) return;
+  if (!mark_type) THROWF (tracing_error, 1, "mark_type is NULL");
+  if (!mark_value) THROWF (tracing_error, 1, "mark_value is NULL");
 
   //check if mark_type is already declared
-  char *created = xbt_dict_get_or_null(declared_marks, mark_type);
-  if (!created) return;
-
-  XBT_DEBUG("MARK %s %s", mark_type, mark_value);
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
-  if (type == NULL){
-    THROWF (tracing_error, 1, "mark_type with name (%s) not declared before", mark_type);
+  if (!type){
+    THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
-  val_t value = PJ_value_get_or_new (mark_value, NULL, type);
+
+  val_t value = PJ_value_get (mark_value, type);
+  XBT_DEBUG("MARK %s %s", mark_type, mark_value);
   new_pajeNewEvent (MSG_get_clock(), PJ_container_get_root(), type, value);
 }
 

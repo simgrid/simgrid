@@ -115,8 +115,10 @@ int main(int argc, char *argv[])
   TRACE_host_variable_declare("task_creation");
   TRACE_host_variable_declare("task_computation");
 
-  //declaring user markers
+  //declaring user markers and values
   TRACE_declare_mark("msmark");
+  TRACE_declare_mark_value ("msmark", "start_send_tasks");
+  TRACE_declare_mark_value ("msmark", "finish_send_tasks");
 
   //declaring user categories with RGB colors (values from 0 to 1)
   TRACE_category_with_color ("compute", "1 0 0");  //compute is red
