@@ -625,7 +625,8 @@ void MSG_comm_destroy(msg_comm_t comm)
  *
  * It takes two parameters.
  * \param comm the communication to wait.
- * \param timeout Wait until the communication terminates or the timeout occurs
+ * \param timeout Wait until the communication terminates or the timeout 
+occurs. You can provide a -1 timeout to obtain an infinite timeout.
  * \return MSG_error_t
  */
 MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
