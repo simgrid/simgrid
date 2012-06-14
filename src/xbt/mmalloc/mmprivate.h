@@ -228,7 +228,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2);
 
 void mmalloc_display_info(void *h);
 
-void *get_end_addr_heap(void *s_heap);
+//void *get_end_addr_heap(void *s_heap);
 
 /* Bits to look at in the malloc descriptor flags word */
 

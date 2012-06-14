@@ -214,7 +214,9 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   int distance = 0;
   int total_distance = 0;
 
-  void *end_heap = get_end_addr_heap(s_heap);
+  //void *end_heap = (char *)mdp1 + ((char*)mdp1->top - (char *)s_heap);
+  void *breakval1 = (char *)mdp1 + ((char*)mdp1->breakval - (char *)s_heap);
+  void *breakval2 = (char *)mdp2 + ((char*)mdp2->breakval - (char *)s_heap);
 
   int pointer_align;
   void *address_pointed1, *address_pointed2;
@@ -222,8 +224,6 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   int block_pointed1, block_pointed2;
   void *addr_block_pointed1, *addr_block_pointed2;
   int frag_pointed1, frag_pointed2;
-
-
 
   /* Check busy blocks*/
 
@@ -267,7 +267,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	  pointer_align = (k / sizeof(void*)) * sizeof(void*); 
 	  address_pointed1 = *((void **)((char *)addr_block1 + pointer_align));
 	  address_pointed2 = *((void **)((char *)addr_block2 + pointer_align));				   
-	  if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < end_heap)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < end_heap))){
+	  if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < mdp1->breakval)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < mdp2->breakval))){
 	    block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
 	    block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
 	    //fprintf(stderr, "Blocks pointed : %d - %d\n", block_pointed1, block_pointed2);
@@ -389,7 +389,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 		pointer_align = (k / sizeof(void*)) * sizeof(void*);
 		address_pointed1 = *((void **)((char *)addr_frag1 + pointer_align));
 		address_pointed2 = *((void **)((char *)addr_frag2 + pointer_align));				   
-		if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < end_heap)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < end_heap))){
+		if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < mdp1->breakval)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < mdp2->breakval))){
 		  block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
 		  block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
 		  //fprintf(stderr, "Blocks pointed : %d - %d\n", block_pointed1, block_pointed2);
@@ -485,56 +485,56 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 }
 
 
-void *get_end_addr_heap(void *heap){
+/* void *get_end_addr_heap(void *heap){ */
 
-  FILE *fp;                     /* File pointer to process's proc maps file */
-  char *line = NULL;            /* Temporal storage for each line that is readed */
-  ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by getline */
+/*   FILE *fp;                     /\* File pointer to process's proc maps file *\/ */
+/*   char *line = NULL;            /\* Temporal storage for each line that is readed *\/ */
+/*   ssize_t read;                 /\* Number of bytes readed *\/ */
+/*   size_t n = 0;                 /\* Amount of bytes to read by getline *\/ */
 
-  fp = fopen("/proc/self/maps", "r");
+/*   fp = fopen("/proc/self/maps", "r"); */
   
-  if(fp == NULL)
-    perror("fopen failed");
+/*   if(fp == NULL) */
+/*     perror("fopen failed"); */
 
 
-  xbt_dynar_t lfields = NULL;
-  xbt_dynar_t start_end  = NULL;
-  void *start_addr;
-  void *end_addr;
+/*   xbt_dynar_t lfields = NULL; */
+/*   xbt_dynar_t start_end  = NULL; */
+/*   void *start_addr; */
+/*   void *end_addr; */
 
-  while ((read = getline(&line, &n, fp)) != -1) {
+/*   while ((read = getline(&line, &n, fp)) != -1) { */
 
-    xbt_str_trim(line, NULL);
-    xbt_str_strip_spaces(line);
-    lfields = xbt_str_split(line,NULL);
+/*     xbt_str_trim(line, NULL); */
+/*     xbt_str_strip_spaces(line); */
+/*     lfields = xbt_str_split(line,NULL); */
 
-    start_end = xbt_str_split(xbt_dynar_get_as(lfields, 0, char*), "-");
-    start_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 0, char*), NULL, 16);
-    end_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 1, char*), NULL, 16);
+/*     start_end = xbt_str_split(xbt_dynar_get_as(lfields, 0, char*), "-"); */
+/*     start_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 0, char*), NULL, 16); */
+/*     end_addr = (void *) strtoul(xbt_dynar_get_as(start_end, 1, char*), NULL, 16); */
 
-    if(start_addr == heap){
-      free(line);
-      fclose(fp);
-      xbt_dynar_reset(lfields);
-      xbt_free(lfields);
-      xbt_dynar_reset(start_end);
-      xbt_free(start_end);
-      return end_addr;
-    }
+/*     if(start_addr == heap){ */
+/*       free(line); */
+/*       fclose(fp); */
+/*       xbt_dynar_reset(lfields); */
+/*       xbt_free(lfields); */
+/*       xbt_dynar_reset(start_end); */
+/*       xbt_free(start_end); */
+/*       return end_addr; */
+/*     } */
 
-  }
+/*   } */
 
-  xbt_dynar_reset(lfields);
-  xbt_free(lfields);
-  xbt_dynar_reset(start_end);
-  xbt_free(start_end);
-  free(line);
-  fclose(fp);
-  return NULL;
+/*   xbt_dynar_reset(lfields); */
+/*   xbt_free(lfields); */
+/*   xbt_dynar_reset(start_end); */
+/*   xbt_free(start_end); */
+/*   free(line); */
+/*   fclose(fp); */
+/*   return NULL; */
 
 
-}
+/* } */
 
 
 void mmalloc_display_info_heap(xbt_mheap_t h){
