@@ -1,11 +1,3 @@
-/*  xbt/automatonparse_promela.h -- implementation automaton from promela file    */
-
-/* Copyright (c) 2011. The SimGrid Team.
- * All rights reserved.                                                     */
-
-/* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. */
-
 #ifndef _XBT_AUTOMATONPARSE_PROMELA_H
 #define _XBT_AUTOMATONPARSE_PROMELA_H
 

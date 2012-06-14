@@ -12,6 +12,7 @@
 #include "../simix/smx_private.h"
 #include "xbt/fifo.h"
 #include "mc_private.h"
+#include "xbt/automaton/automaton_create.h"
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
@@ -606,4 +607,8 @@ void MC_diff(void){
 
   }
 
+}
+
+xbt_automaton_t MC_create_automaton(const char *file){
+  return xbt_create_automaton(file);
 }

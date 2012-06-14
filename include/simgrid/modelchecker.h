@@ -7,6 +7,7 @@
 
 #include <simgrid_config.h> /* HAVE_MC ? */
 #include <xbt.h>
+#include "xbt/automaton.h"
 
 #ifndef SIMGRID_MODELCHECKER_H
 #define SIMGRID_MODELCHECKER_H
@@ -20,6 +21,7 @@ XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(void) MC_assert_stateful(int);
 XBT_PUBLIC(int) MC_random(int min, int max);
 XBT_PUBLIC(void) MC_diff(void);
+XBT_PUBLIC(xbt_automaton_t) MC_create_automaton(const char *file);
 
 #else
 

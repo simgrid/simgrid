@@ -16,7 +16,6 @@ set(EXTRA_DIST
 	src/xbt/backtrace_windows.c
 	src/xbt/backtrace_dummy.c
 	src/xbt/setset_private.h
-	src/xbt/automatonparse_promela.c
 	src/xbt/mmalloc/mfree.c
 	src/xbt/mmalloc/mmalloc.c
 	src/xbt/mmalloc/mmalloc.info
@@ -89,12 +88,8 @@ set(EXTRA_DIST
 	examples/gras/console/ping.h
 	examples/gras/mmrpc/mmrpc.h
 	
-    examples/msg/mc/parserPromela.yacc
-    examples/msg/mc/parserPromela.lex
-    examples/msg/mc/automaton.h
     examples/msg/mc/bugged1_liveness.h
     examples/msg/mc/centralized_liveness.h
-    examples/msg/mc/automatonparse_promela.h
     examples/msg/mc/bugged2_liveness.h
     examples/msg/mc/y.tab.h
 
@@ -184,7 +179,11 @@ set(XBT_SRC
 	src/xbt/parmap.c
 	src/xbt/xbt_replay.c
 	src/xbt/lib.c
-	src/xbt/automaton.c
+	src/xbt/automaton/automaton.c
+	src/xbt/automaton/automatonparse_promela.c
+	src/xbt/automaton/automaton.c
+	src/xbt/automaton/automatonparse_promela.c
+	src/xbt/automaton/automaton_create.c
 	src/xbt/datadesc/ddt_create.c
 	src/xbt/datadesc/ddt_convert.c
 	src/xbt/datadesc/ddt_exchange.c
@@ -401,6 +400,8 @@ set(headers_to_install
 	include/xbt/hash.h
 	include/xbt/function_types.h
 	include/xbt/asserts.h 
+	include/xbt/automaton.h
+	include/xbt/automatonparse_promela.h
 	include/xbt/ex.h
 	include/xbt/log.h
 	include/xbt/module.h
@@ -427,8 +428,6 @@ set(headers_to_install
 	include/xbt/mmalloc.h
 	include/xbt/replay.h
 	include/xbt/parmap.h
-	include/xbt/automaton.h
-	include/xbt/automatonparse_promela.h
 	include/xbt/datadesc.h
 	include/xbt/socket.h
 	include/xbt/file_stat.h

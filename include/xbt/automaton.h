@@ -1,11 +1,3 @@
-/*  xbt/automaton.h -- büchi automaton                                      */
-
-/* Copyright (c) 2011. The SimGrid Team.
- * All rights reserved.                                                     */
-
-/* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. */
-
 #ifndef _XBT_AUTOMATON_H
 #define _XBT_AUTOMATON_H
 
@@ -36,9 +28,7 @@ typedef struct xbt_automaton {
 typedef struct xbt_automaton* xbt_automaton_t;
 
 typedef struct xbt_exp_label{
-  /* fixme: "or", "and", and "not" are reserved keywords in C++ */
-  /* enum{or=0, and=1, not=2, predicat=3, one=4} type; */
-  int type;
+  enum{or=0, and=1, not=2, predicat=3, one=4} type;
   union{
     struct{
       struct xbt_exp_label* left_exp;
