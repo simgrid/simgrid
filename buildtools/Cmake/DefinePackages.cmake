@@ -85,21 +85,6 @@ set(EXTRA_DIST
 	src/smpi/README
 	src/mk_supernovae.pl
 	
-	examples/gras/ping/ping.h
-	examples/gras/console/ping.h
-	examples/gras/mmrpc/mmrpc.h
-	
-    examples/msg/mc/parserPromela.yacc
-    examples/msg/mc/parserPromela.lex
-    examples/msg/mc/automaton.h
-    examples/msg/mc/bugged1_liveness.h
-    examples/msg/mc/centralized_liveness.h
-    examples/msg/mc/automatonparse_promela.h
-    examples/msg/mc/bugged2_liveness.h
-    examples/msg/mc/y.tab.h
-
-    examples/platforms/content/storage_content.txt
-
 	tools/gras/gras_stub_generator.h
 	tools/tesh/run_context.h  
 	tools/tesh/tesh.h
@@ -566,20 +551,6 @@ elseif(${HAVE_LUA})
 		${LUA_SRC}
 	)
 endif(${HAVE_LUA})
-
-file(GLOB_RECURSE examples_to_install
-"examples/*.c"
-"examples/*.h"
-"examples/*yacc"
-"examples/*lex"
-"examples/*.cxx"
-"examples/*.hpp"
-"examples/*.rb"
-"examples/*.lua"
-"examples/*.java"
-"examples/*.xml"
-"examples/*README"
-)
     
 set(DOC_SOURCES
 	doc/install.doc
@@ -688,20 +659,12 @@ set(DOC_FIGS
 )
 
 file(GLOB_RECURSE add_src_files
-"teshsuite/*.c"
-"teshsuite/*.cxx"
-"teshsuite/*CMakeLists.txt"
 "testsuite/*.c"
 "testsuite/*.cxx"
 "testsuite/*CMakeLists.txt"
 "tools/*.c"
 "tools/*.cxx"
 "tools/*CMakeLists.txt"
-"examples/*.c"
-"examples/*.cxx"
-"examples/*.lua"
-"examples/*.rb"
-"examples/*CMakeLists.txt"
 "src/bindings/*.lua"
 "src/bindings/*.rb"
 "src/bindings/*.c"
@@ -710,7 +673,6 @@ file(GLOB_RECURSE add_src_files
 )
 set(add_src_files
 	${add_src_files}
-        CMakeLists.txt
 	src/smpi/smpicc.in
 	src/smpi/smpif2c.in
 	src/smpi/smpiff.in
@@ -718,163 +680,166 @@ set(add_src_files
 )
 
 file(GLOB_RECURSE xml_files
-"examples/*.xml"
 "include/*.xml"
 "src/*.xml"
-"teshsuite/*.xml"
 "testsuite/*.xml"
 "tools/*.xml"
 )
 
 file(GLOB_RECURSE tesh_files
-"examples/*.tesh"
 "include/*.tesh"
 "src/*.tesh"
-"teshsuite/*.tesh"
 "testsuite/*.tesh"
 "tools/*.tesh"
 )
 
 set(txt_files
-"testsuite/surf/trace_A_failure.txt"
-"testsuite/surf/trace_A.txt"
-"testsuite/surf/trace_B.txt"
-"examples/smpi/hostfile"
-"examples/msg/link5_state.trace"
-"examples/msg/fafard_state.trace"
-"examples/msg/jupiter_state.trace"
-"examples/msg/actions/actions_allReduce.txt"
-"examples/msg/actions/actions_reduce.txt"
-"examples/msg/actions/actions.txt"
-"examples/msg/actions/actions_barrier.txt"
-"examples/msg/actions/actions_split_p0.txt"
-"examples/msg/actions/actions_with_isend.txt"
-"examples/msg/actions/actions_bcast.txt"
-"examples/msg/actions/actions_split_p1.txt"
-"examples/msg/actions/CMakeLists.txt"
-"examples/msg/migration/migration.deploy"
-"teshsuite/gras/datadesc/datadesc.little32_4"
-"teshsuite/gras/datadesc/datadesc.little64"
-"teshsuite/gras/datadesc/datadesc.big32_8_4"
-"teshsuite/gras/datadesc/mk_datadesc_structs.pl"
-"teshsuite/gras/msg_handle/test_rl.tesh"
-"teshsuite/gras/msg_handle/test_sg_32.tesh"
-"teshsuite/gras/msg_handle/test_sg_64.tesh"
-"teshsuite/gras/empty_main/test_rl.tesh"
-"teshsuite/gras/empty_main/test_sg.tesh"
-"teshsuite/gras/small_sleep/test_sg_32.tesh"
-"teshsuite/gras/small_sleep/test_sg_64.tesh"
-"teshsuite/msg/trace/file.trace"
-"teshsuite/simdag/platforms/bob.fail"
-"teshsuite/simdag/platforms/bob.trace"
-"teshsuite/simdag/platforms/bob0_availability_file.trace"
-"teshsuite/simdag/platforms/bob0_state_file.trace"
-"teshsuite/simdag/platforms/bob2_availability_file.trace"
-"teshsuite/simdag/platforms/bob2_state_file.trace"
-"teshsuite/simdag/platforms/link1.bw"
-"teshsuite/simdag/platforms/link1.fail"
-"teshsuite/simdag/platforms/link1.lat"
-"examples/gras/ping/test_rl.tesh"
-"examples/gras/rpc/test_rl.tesh"
-"examples/gras/spawn/test_rl.tesh"
-"examples/gras/timer/test_rl.tesh"
-"examples/gras/chrono/test_rl.tesh"
-"examples/gras/mutual_exclusion/simple_token/test_rl.tesh"
-"examples/gras/mmrpc/test_rl.tesh"
-"examples/gras/all2all/test_rl.tesh"
-"examples/gras/pmm/test_rl.tesh"
-"examples/gras/synchro/test_rl.tesh"
-"examples/gras/properties/test_rl.tesh"
-"examples/gras/ping/test_sg_32.tesh"
-"examples/gras/rpc/test_sg_32.tesh"
-"examples/gras/spawn/test_sg_32.tesh"
-"examples/gras/timer/test_sg_32.tesh"
-"examples/gras/chrono/test_sg_32.tesh"
-"examples/gras/mutual_exclusion/simple_token/test_sg_32.tesh"
-"examples/gras/mmrpc/test_sg_32.tesh"
-"examples/gras/all2all/test_sg_32.tesh"
-"examples/gras/pmm/test_sg_32.tesh"
-"examples/gras/synchro/test_sg_32.tesh"
-"examples/gras/ping/test_sg_64.tesh"
-"examples/gras/rpc/test_sg_64.tesh"
-"examples/gras/spawn/test_sg_64.tesh"
-"examples/gras/timer/test_sg_64.tesh"
-"examples/gras/chrono/test_sg_64.tesh"
-"examples/gras/mutual_exclusion/simple_token/test_sg_64.tesh"
-"examples/gras/mmrpc/test_sg_64.tesh"
-"examples/gras/all2all/test_sg_64.tesh"
-"examples/gras/pmm/test_sg_64.tesh"
-"examples/gras/synchro/test_sg_64.tesh"
-"examples/gras/properties/test_sg.tesh"
-)
-
-set(txt_files
-	${txt_files}
-	AUTHORS
-	ChangeLog
-	COPYING
-	LICENSE-LGPL-2.1
-	NEWS
-	TODO
-	configure
-	INSTALL
-)
-
-file(GLOB_RECURSE README_files
-"*README"
-)
-	
-string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" README_files "${README_files}")
-
-file(GLOB_RECURSE CMAKE_SOURCE_FILES
-"buildtools/Cmake/Scripts/Makefile.default"
-"buildtools/Cmake/Srcipts/test_java.sh"
-"buildtools/Cmake/*.cmake"
-"buildtools/Cmake/*.h.in"
-"buildtools/Cmake/*.pl"
-"buildtools/Cmake/*.sh"
-"buildtools/Cmake/test_prog/*.c"
-"buildtools/Cmake/test_prog/*.cpp"
+${txt_files}
+  "testsuite/surf/trace_A_failure.txt"
+  "testsuite/surf/trace_A.txt"
+  "testsuite/surf/trace_B.txt"
+  AUTHORS
+  ChangeLog
+  COPYING
+  LICENSE-LGPL-2.1
+  NEWS
+  TODO
+  configure
+  INSTALL
 )
 
 set(bin_files
-tools/MSG_visualization/colorize.pl
-tools/sg_unit_extractor.pl
-tools/simgrid_update_xml.pl
-buildtools/Cmake/tesh.pl
+  ${bin_files}
+  tools/MSG_visualization/colorize.pl
+  tools/sg_unit_extractor.pl
+  tools/simgrid_update_xml.pl
 )
 
-# This is the complete list of what will be added to the source archive
-set(source_to_pack	
-	${headers_to_install}
-	${source_of_generated_headers}
-	${XBT_RL_SRC}
-	${EXTRA_DIST}
-	${SMPI_SRC}
-	${GRAS_RL_SRC}
-	${XBT_SRC}
-	${GTNETS_SRC}
-	${NS3_SRC}
-	${SURF_SRC}
-	${SIMIX_SRC}
-	${TRACING_SRC}
-	${MSG_SRC}
-	${SIMDAG_SRC}
-	${GRAS_COMMON_SRC}
-	${GRAS_SG_SRC}
-	${AMOK_SRC}
-	${LUA_SRC}
-	${MC_SRC}
-	${JEDULE_SRC}
-	${RNGSTREAM_SRC}
-	${add_src_files}
-	${xml_files}
-	${tesh_files}
-	${txt_files}
-	${CMAKE_SOURCE_FILES}
-	${bin_files}
-	${DOC_SOURCES}
-	${DOC_FIGS}
-	${README_files}
-	buildtools/Cmake/simgrid.nsi.in 
+set(EXAMPLES_CMAKEFILES_TXT
+examples/smpi/CMakeLists.txt
+examples/amok/saturate/CMakeLists.txt
+examples/amok/bandwidth/CMakeLists.txt
+examples/simdag/dot/CMakeLists.txt
+examples/simdag/goal/CMakeLists.txt
+examples/simdag/properties/CMakeLists.txt
+examples/simdag/scheduling/CMakeLists.txt
+examples/simdag/metaxml/CMakeLists.txt
+examples/simdag/dax/CMakeLists.txt
+examples/simdag/CMakeLists.txt
+examples/msg/gpu/CMakeLists.txt
+examples/msg/pmm/CMakeLists.txt
+examples/msg/migration/CMakeLists.txt
+examples/msg/properties/CMakeLists.txt
+examples/msg/mc/CMakeLists.txt
+examples/msg/masterslave/CMakeLists.txt
+examples/msg/chord/CMakeLists.txt
+examples/msg/suspend/CMakeLists.txt
+examples/msg/actions/CMakeLists.txt
+examples/msg/io/CMakeLists.txt
+examples/msg/sendrecv/CMakeLists.txt
+examples/msg/start_kill_time/CMakeLists.txt
+examples/msg/parallel_task/CMakeLists.txt
+examples/msg/priority/CMakeLists.txt
+examples/msg/cloud/CMakeLists.txt
+examples/msg/gtnets/CMakeLists.txt
+examples/msg/icomms/CMakeLists.txt
+examples/msg/tracing/CMakeLists.txt
+examples/msg/ns3/CMakeLists.txt
+examples/msg/token_ring/CMakeLists.txt
+examples/gras/mutual_exclusion/simple_token/CMakeLists.txt
+examples/gras/ping/CMakeLists.txt
+examples/gras/pmm/CMakeLists.txt
+examples/gras/properties/CMakeLists.txt
+examples/gras/rpc/CMakeLists.txt
+examples/gras/chrono/CMakeLists.txt
+examples/gras/timer/CMakeLists.txt
+examples/gras/mmrpc/CMakeLists.txt
+examples/gras/all2all/CMakeLists.txt
+examples/gras/synchro/CMakeLists.txt
+examples/gras/console/CMakeLists.txt
+examples/gras/spawn/CMakeLists.txt
+examples/lua/CMakeLists.txt
+examples/msg/CMakeLists.txt
+examples/xbt/CMakeLists.txt
+)
+
+set(TESHSUITE_CMAKEFILES_TXT
+teshsuite/xbt/CMakeLists.txt
+teshsuite/simdag/network/p2p/CMakeLists.txt
+teshsuite/simdag/network/mxn/CMakeLists.txt
+teshsuite/simdag/network/CMakeLists.txt
+teshsuite/simdag/platforms/CMakeLists.txt
+teshsuite/simdag/partask/CMakeLists.txt
+teshsuite/simdag/CMakeLists.txt
+teshsuite/msg/trace/CMakeLists.txt
+teshsuite/msg/CMakeLists.txt
+teshsuite/gras/small_sleep/CMakeLists.txt
+teshsuite/gras/empty_main/CMakeLists.txt
+teshsuite/gras/msg_handle/CMakeLists.txt
+teshsuite/gras/datadesc/CMakeLists.txt
+teshsuite/CMakeLists.txt
+teshsuite/gras/CMakeLists.txt
+)
+
+set(CMAKE_SOURCE_FILES
+buildtools/Cmake/CTestConfig.cmake
+buildtools/Cmake/UnitTesting.cmake
+buildtools/Cmake/AddTests.cmake
+buildtools/Cmake/Option.cmake
+buildtools/Cmake/memcheck_tests.cmake
+buildtools/Cmake/MakeLibWin.cmake
+buildtools/Cmake/Flags.cmake
+buildtools/Cmake/DefinePackages.cmake
+buildtools/Cmake/CompleteInFiles.cmake
+buildtools/Cmake/Scripts/SimGrid.packproj
+buildtools/Cmake/Scripts/update_tesh.pl
+buildtools/Cmake/Scripts/test_java.sh
+buildtools/Cmake/Scripts/my_valgrind.pl
+buildtools/Cmake/Scripts/tesh.pl
+buildtools/Cmake/Scripts/Makefile.default
+buildtools/Cmake/Scripts/preinstall.sh
+buildtools/Cmake/Scripts/Diff.pm
+buildtools/Cmake/Scripts/generate_new_tests.pl
+buildtools/Cmake/Scripts/postinstall.sh
+buildtools/Cmake/Scripts/generate_memcheck_tests.pl
+buildtools/Cmake/MaintainerMode.cmake
+buildtools/Cmake/Supernovae.cmake
+buildtools/Cmake/Pipol.cmake
+buildtools/Cmake/GenerateDoc.cmake
+buildtools/Cmake/test_prog/prog_getline.c
+buildtools/Cmake/test_prog/prog_mutex_timedlock.c
+buildtools/Cmake/test_prog/prog_gtnets.cpp
+buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
+buildtools/Cmake/test_prog/prog_printf_null.c
+buildtools/Cmake/test_prog/prog_sem_timedwait.c
+buildtools/Cmake/test_prog/prog_va_copy.c
+buildtools/Cmake/test_prog/prog_thread_storage.c
+buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
+buildtools/Cmake/test_prog/prog_stacksetup.c
+buildtools/Cmake/test_prog/prog_snprintf.c
+buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
+buildtools/Cmake/test_prog/prog_sem_init.c
+buildtools/Cmake/test_prog/prog_sem_open.c
+buildtools/Cmake/test_prog/prog_stackgrowth.c
+buildtools/Cmake/test_prog/prog_max_size.c
+buildtools/Cmake/test_prog/prog_vsnprintf.c
+buildtools/Cmake/Modules/FindRubySimgrid.cmake
+buildtools/Cmake/Modules/FindF2c.cmake
+buildtools/Cmake/Modules/FindPCRE.cmake
+buildtools/Cmake/Modules/FindPcreWin.cmake
+buildtools/Cmake/Modules/FindGTnets.cmake
+buildtools/Cmake/Modules/FindNS3.cmake
+buildtools/Cmake/Modules/FindSimGrid.cmake
+buildtools/Cmake/Modules/FindLua51Simgrid.cmake
+buildtools/Cmake/Modules/FindGraphviz.cmake
+buildtools/Cmake/Modules/FindValgrind.cmake
+buildtools/Cmake/Modules/FindRngStream.cmake
+buildtools/Cmake/GenerateDocWin.cmake
+buildtools/Cmake/MakeExe.cmake
+buildtools/Cmake/PrintArgs.cmake
+buildtools/Cmake/MakeLib.cmake
+buildtools/Cmake/Distrib.cmake
+buildtools/Cmake/src/gras_config.h.in
+buildtools/Cmake/src/simgrid.nsi.in
+CMakeLists.txt
 )

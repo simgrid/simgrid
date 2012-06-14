@@ -174,6 +174,44 @@ endif(HAVE_LUA)
 ##   (instead of any cruft laying on my disk as CPack does)  ###
 ################################################################
 
+# This is the complete list of what will be added to the source archive
+set(source_to_pack  
+  ${headers_to_install}
+  ${source_of_generated_headers}
+  ${XBT_RL_SRC}
+  ${EXTRA_DIST}
+  ${SMPI_SRC}
+  ${GRAS_RL_SRC}
+  ${XBT_SRC}
+  ${GTNETS_SRC}
+  ${NS3_SRC}
+  ${SURF_SRC}
+  ${SIMIX_SRC}
+  ${TRACING_SRC}
+  ${MSG_SRC}
+  ${SIMDAG_SRC}
+  ${GRAS_COMMON_SRC}
+  ${GRAS_SG_SRC}
+  ${AMOK_SRC}
+  ${LUA_SRC}
+  ${MC_SRC}
+  ${JEDULE_SRC}
+  ${RNGSTREAM_SRC}
+  ${add_src_files}
+  ${CMAKE_SOURCE_FILES}
+  ${EXAMPLES_CMAKEFILES_TXT}
+  ${TESHSUITE_CMAKEFILES_TXT}
+  ${DOC_SOURCES}
+  ${DOC_FIGS}
+  ${README_files}
+  ${xml_files}
+  ${tesh_files}
+  ${txt_files}
+  ${bin_files}
+  ${examples_src}
+  ${teshsuite_src}
+)
+
 ##########################################
 ### Fill in the "make dist-dir" target ###
 ##########################################

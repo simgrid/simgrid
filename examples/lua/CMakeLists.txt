@@ -1,0 +1,61 @@
+cmake_minimum_required(VERSION 2.6)
+
+set(tesh_files
+  ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/mult_matrix.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/master_slave.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/state_cloner/duplicated_globals.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/console/master_slave_bypass.tesh
+  PARENT_SCOPE
+)
+set(xml_files
+  ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/quicksort_deployment.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/quicksort_platform.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/state_cloner/deployment_duplicated_globals.xml
+  PARENT_SCOPE
+)
+set(examples_src
+  ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/sender.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/receiver.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/mult_matrix.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/master.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/master_slave.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/platform.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/slave.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/splaySim/master.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/splaySim/splay_deploy_masterslave.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/splaySim/splay_ctrl.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/splaySim/splay_platform.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/splaySim/slave.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/SimSplay/splay_school.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/SimSplay/chord.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/SimSplay/sim_splay.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/SimSplay/platform_script.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/tracing/master.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/tracing/master_slave_trace.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/tracing/slave.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/state_cloner/duplicated_globals.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/console/master.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/console/platform.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/console/slave.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/console/master_slave_bypass.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/console/deploy.lua
+  PARENT_SCOPE
+)
+set(bin_files
+  ${bin_files}
+  PARENT_SCOPE
+)
+set(txt_files
+  ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/SimSplay/TODO
+  ${CMAKE_CURRENT_SOURCE_DIR}/README
+  ${CMAKE_CURRENT_SOURCE_DIR}/tracing/file.trace
+  ${CMAKE_CURRENT_SOURCE_DIR}/tracing/simgrid.trace
+  PARENT_SCOPE
+)

@@ -1,6 +1,15 @@
 ###################################################################
 ### Load all files declaring binaries (tools, examples and tests) #
 ###################################################################
+##################################################################
+# Those CMakelists or just here to define extra files in dist    #
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/lua)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/xbt)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/gras)
+##################################################################
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/gras)
 
 if(WIN32)
