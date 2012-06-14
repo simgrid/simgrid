@@ -5,9 +5,9 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/gras)
 
 if(WIN32)
 	add_custom_target(tesh ALL
-	DEPENDS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl
-	COMMENT "Install ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl"
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
+	DEPENDS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl
+	COMMENT "Install ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl"
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
 	)
 else(WIN32)
 	add_subdirectory(${CMAKE_HOME_DIRECTORY}/tools/tesh)

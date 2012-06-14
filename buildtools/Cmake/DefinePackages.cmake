@@ -567,7 +567,7 @@ elseif(${HAVE_LUA})
 	)
 endif(${HAVE_LUA})
 
-file(GLOB_RECURSE examples_to_install_in_doc
+file(GLOB_RECURSE examples_to_install
 "examples/*.c"
 "examples/*.h"
 "examples/*yacc"
@@ -827,8 +827,8 @@ file(GLOB_RECURSE README_files
 string(REPLACE "${CMAKE_HOME_DIRECTORY}/" "" README_files "${README_files}")
 
 file(GLOB_RECURSE CMAKE_SOURCE_FILES
-"buildtools/Cmake/Makefile.default"
-"buildtools/Cmake/test_java.sh"
+"buildtools/Cmake/Scripts/Makefile.default"
+"buildtools/Cmake/Srcipts/test_java.sh"
 "buildtools/Cmake/*.cmake"
 "buildtools/Cmake/*.h.in"
 "buildtools/Cmake/*.pl"

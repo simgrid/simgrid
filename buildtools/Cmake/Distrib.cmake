@@ -95,12 +95,12 @@ foreach(file ${HEADERS})
 endforeach(file ${HEADERS})
 
 # example files
-foreach(file ${examples_to_install_in_doc})
+foreach(file ${examples_to_install})
   string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/examples/" "" file ${file})
   get_filename_component(location ${file} PATH)
   install(FILES "examples/${file}"
           DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
-endforeach(file ${examples_to_install_in_doc})
+endforeach(file ${examples_to_install})
 
 # bindings cruft
 
@@ -214,7 +214,7 @@ foreach(file ${source_to_pack})
    
    add_custom_command(
      TARGET dist-dir
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
    )
 endforeach(file ${source_to_pack})
 
