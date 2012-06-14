@@ -65,6 +65,19 @@ int MSG_vm_is_running(msg_vm_t vm) {
  * @bug for now, if a binded process terminates, every VM functions will segfault. Baaaad.
  */
 void MSG_vm_bind(msg_vm_t vm, m_process_t process) {
+	/* check if the process is already in a VM */
+	simdata_process_t simdata = simcall_process_get_data(process);
+	if (simdata->vm) {
+		msg_vm_t old_vm = simdata->vm;
+		int pos = xbt_dynar_search(old_vm->processes,&process);
+		xbt_dynar_remove_at(old_vm->processes,pos, NULL);
+	}
+	/* check if the host is in the right host */
+	if (simdata->m_host != vm->location) {
+		MSG_process_migrate(process,vm->location);
+	}
+	simdata->vm = vm;
+
   xbt_dynar_push_as(vm->processes,m_process_t,process);
 }
 /** @brief Removes the given process from the given VM, and kill it
@@ -107,7 +120,7 @@ void MSG_vm_suspend(msg_vm_t vm) {
   unsigned int cpt;
   m_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {
-    XBT_INFO("suspend process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
+    XBT_DEBUG("suspend process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
     MSG_process_suspend(process);
   }
 }
@@ -123,7 +136,7 @@ void MSG_vm_resume(msg_vm_t vm) {
   unsigned int cpt;
   m_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {
-    XBT_INFO("resume process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
+  	XBT_DEBUG("resume process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
     MSG_process_resume(process);
   }
 }
@@ -138,6 +151,6 @@ void MSG_vm_shutdown(msg_vm_t vm) {
   unsigned int cpt;
   m_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {
-    MSG_process_kill(process);
+  	MSG_process_kill(process);
   }
 }

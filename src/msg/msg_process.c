@@ -51,6 +51,12 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
     msg_global->process_data_cleanup(msg_proc->data);
   }
 
+  // remove the process from its virtual machine
+  if (msg_proc->vm) {
+  	int pos = xbt_dynar_search(msg_proc->vm->processes,&smx_proc);
+  	xbt_dynar_remove_at(msg_proc->vm->processes,pos, NULL);
+  }
+
   // free the MSG process
   xbt_free(msg_proc);
 }

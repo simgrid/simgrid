@@ -87,7 +87,7 @@ int master(int argc, char *argv[]) {
   XBT_INFO("Sleep long enough for everyone to be done with previous batch of work");
   MSG_process_sleep(1000-MSG_get_clock());
 
-  XBT_INFO("Add one more process per VM, and dispatch a batch of work to everyone");
+  XBT_INFO("Add one more process per VM");
   for (i=0;i<xbt_dynar_length(vms);i++) {
     msg_vm_t vm = xbt_dynar_get_as(vms,i,msg_vm_t);
     char slavename[64];
@@ -98,7 +98,6 @@ int master(int argc, char *argv[]) {
     argv[2] = NULL;
     MSG_vm_bind(vm, MSG_process_create_with_arguments(slavename,slave_fun,NULL,slaves[i],2,argv));
   }
-  work_batch(slaves_count*2);
 
   XBT_INFO("Migrate everyone to the second host.");
   for (i=0;i<xbt_dynar_length(vms);i++)
@@ -112,7 +111,7 @@ int master(int argc, char *argv[]) {
     MSG_vm_resume(vm);
   }
 
-
+  work_batch(slaves_count*2);
 
   XBT_INFO("Let's shut down the simulation. 10 first processes will be shut down cleanly while the second half will forcefully get killed");
   for (i = 0; i < slaves_count; i++) {

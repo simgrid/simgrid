@@ -70,6 +70,9 @@ typedef struct simdata_process {
   char **argv;                  /* arguments table if any */
   int argc;                     /* arguments number if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */
+
+  msg_vm_t vm; 								/* virtual machine the process is in */
+
   void* data;                   /* user data */
 } s_simdata_process_t, *simdata_process_t;
 
