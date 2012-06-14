@@ -86,9 +86,9 @@ static void get_hierarchy_string(jed_simgrid_container_t container, char *outbuf
     
     xbt_dynar_foreach(hier_list, iter, number) {
         if( iter != length-1 ) {
-            sprintf(buf, "%d.\0", number);
+            sprintf(buf, "%d.", number);
         } else {
-            sprintf(buf, "%d\0", number);
+            sprintf(buf, "%d", number);
         }
         strcat(outbuf, buf);
     }
