@@ -6,7 +6,33 @@ add_executable(get_sender ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
-target_link_libraries(get_sender simgrid m pthread )
+  target_link_libraries(get_sender simgrid m pthread )
 else(NOT WIN32)
-target_link_libraries(get_sender simgrid)
+  target_link_libraries(get_sender simgrid)
 endif(NOT WIN32)
+
+set(tesh_files
+  ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/get_sender.tesh
+  PARENT_SCOPE
+)
+set(xml_files
+  ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/get_sender.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/get_sender_d.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/get_sender_p.xml
+  PARENT_SCOPE
+)
+set(teshsuite_src
+  ${teshsuite_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/get_sender.c
+  PARENT_SCOPE
+)
+set(bin_files
+  ${bin_files}
+  PARENT_SCOPE
+)
+set(txt_files
+  ${txt_files}
+  PARENT_SCOPE
+)

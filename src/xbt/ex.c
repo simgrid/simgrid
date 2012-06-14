@@ -211,24 +211,33 @@ const char *xbt_ex_catname(xbt_errcat_t cat)
 {
   switch (cat) {
   case unknown_error:
-    return "unknown_err";
+    return "unknown error";
   case arg_error:
-    return "invalid_arg";
+    return "invalid argument";
+  case bound_error:
+    return "out of bounds";
   case mismatch_error:
     return "mismatch";
   case not_found_error:
     return "not found";
   case system_error:
-    return "system_err";
+    return "system error";
   case network_error:
-    return "network_err";
+    return "network error";
   case timeout_error:
     return "timeout";
+  case cancel_error:
+    return "action canceled";
   case thread_error:
-    return "thread_err";
-  default:
-    return "INVALID_ERR";
+    return "thread error";
+  case host_error:
+    return "host failed";
+  case tracing_error:
+    return "tracing error";
+  case io_error:
+    return "io error";
   }
+  return "INVALID ERROR";
 }
 
 

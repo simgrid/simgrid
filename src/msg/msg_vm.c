@@ -78,6 +78,8 @@ void MSG_vm_bind(msg_vm_t vm, m_process_t process) {
 	}
 	simdata->vm = vm;
 
+	XBT_DEBUG("binding Process %s to %p",MSG_process_get_name(process),vm);
+
   xbt_dynar_push_as(vm->processes,m_process_t,process);
 }
 /** @brief Removes the given process from the given VM, and kill it
@@ -147,10 +149,27 @@ void MSG_vm_resume(msg_vm_t vm) {
  * No extra delay occurs. If you want to simulate this too, you want to
  * use a #MSG_process_sleep() or something. I'm not quite sure.
  */
-void MSG_vm_shutdown(msg_vm_t vm) {
-  unsigned int cpt;
+void MSG_vm_shutdown(msg_vm_t vm)
+{
   m_process_t process;
-  xbt_dynar_foreach(vm->processes,cpt,process) {
+  XBT_DEBUG("%lu processes in the VM", xbt_dynar_length(vm->processes));
+  while (xbt_dynar_length(vm->processes) > 0) {
+  	process = xbt_dynar_get_as(vm->processes,0,m_process_t);
   	MSG_process_kill(process);
   }
+}
+
+/** @brief Destroy a msg_vm_t.
+ *  @ingroup msg_VMs
+ */
+void MSG_vm_destroy(msg_vm_t vm) {
+	unsigned int cpt;
+	m_process_t process;
+	xbt_dynar_foreach(vm->processes,cpt,process) {
+	  //FIXME: Slow ?
+	  simdata_process_t simdata = simcall_process_get_data(process);
+	  simdata->vm = NULL;
+	}
+	xbt_dynar_free(&vm->processes);
+	xbt_free(vm);
 }

@@ -53,3 +53,52 @@ target_link_libraries(mc_bugged1 m simgrid smpi )
 target_link_libraries(mc_bugged2 m simgrid smpi )
 
 set_target_properties(smpi_sendrecv PROPERTIES RENAME sendrecv)
+
+set(tesh_files
+  ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/bcast.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/reduce.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced.tesh
+  PARENT_SCOPE
+)
+set(xml_files
+  ${xml_files}
+  PARENT_SCOPE
+)
+set(examples_src
+  ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc_bugged2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/get_processor_name.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/pingpong.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bcast.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/allreduce.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_basic.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc_bugged1.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/reduce.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mvmul.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/compute2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/split.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/dsend.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/ttest01.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/compute.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/compute3.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoall2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/scatter.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/sendtest.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/barrier.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bcbench.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced_simple.c
+  PARENT_SCOPE
+)
+set(bin_files
+  ${bin_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
+  PARENT_SCOPE
+)
+set(txt_files
+  ${txt_files}
+  PARENT_SCOPE
+)

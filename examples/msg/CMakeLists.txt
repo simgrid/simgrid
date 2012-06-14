@@ -1,0 +1,34 @@
+cmake_minimum_required(VERSION 2.6)
+
+set(tesh_files
+  ${tesh_files}
+  PARENT_SCOPE
+)
+set(xml_files
+  ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/msg_platform.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/small_platform_with_failures.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/small_platform_with_routers.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/small_platform.xml
+  PARENT_SCOPE
+)
+set(examples_src
+  ${examples_src}
+  PARENT_SCOPE
+)
+set(bin_files
+  ${bin_files}
+  PARENT_SCOPE
+)
+set(txt_files
+  ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/bourassa_state.trace
+  ${CMAKE_CURRENT_SOURCE_DIR}/fafard_state.trace
+  ${CMAKE_CURRENT_SOURCE_DIR}/ginette_state.trace
+  ${CMAKE_CURRENT_SOURCE_DIR}/jupiter_state.trace
+  ${CMAKE_CURRENT_SOURCE_DIR}/link3_state.trace
+  ${CMAKE_CURRENT_SOURCE_DIR}/link4_state.trace
+  ${CMAKE_CURRENT_SOURCE_DIR}/link5_state.trace
+  ${CMAKE_CURRENT_SOURCE_DIR}/README
+  PARENT_SCOPE
+)

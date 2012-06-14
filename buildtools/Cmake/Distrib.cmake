@@ -95,12 +95,12 @@ foreach(file ${HEADERS})
 endforeach(file ${HEADERS})
 
 # example files
-foreach(file ${examples_to_install_in_doc})
+foreach(file ${examples_to_install})
   string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/examples/" "" file ${file})
   get_filename_component(location ${file} PATH)
   install(FILES "examples/${file}"
           DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
-endforeach(file ${examples_to_install_in_doc})
+endforeach(file ${examples_to_install})
 
 # bindings cruft
 
@@ -174,6 +174,44 @@ endif(HAVE_LUA)
 ##   (instead of any cruft laying on my disk as CPack does)  ###
 ################################################################
 
+# This is the complete list of what will be added to the source archive
+set(source_to_pack  
+  ${headers_to_install}
+  ${source_of_generated_headers}
+  ${XBT_RL_SRC}
+  ${EXTRA_DIST}
+  ${SMPI_SRC}
+  ${GRAS_RL_SRC}
+  ${XBT_SRC}
+  ${GTNETS_SRC}
+  ${NS3_SRC}
+  ${SURF_SRC}
+  ${SIMIX_SRC}
+  ${TRACING_SRC}
+  ${MSG_SRC}
+  ${SIMDAG_SRC}
+  ${GRAS_COMMON_SRC}
+  ${GRAS_SG_SRC}
+  ${AMOK_SRC}
+  ${LUA_SRC}
+  ${MC_SRC}
+  ${JEDULE_SRC}
+  ${RNGSTREAM_SRC}
+  ${add_src_files}
+  ${CMAKE_SOURCE_FILES}
+  ${EXAMPLES_CMAKEFILES_TXT}
+  ${TESHSUITE_CMAKEFILES_TXT}
+  ${DOC_SOURCES}
+  ${DOC_FIGS}
+  ${README_files}
+  ${xml_files}
+  ${tesh_files}
+  ${txt_files}
+  ${bin_files}
+  ${examples_src}
+  ${teshsuite_src}
+)
+
 ##########################################
 ### Fill in the "make dist-dir" target ###
 ##########################################
@@ -214,7 +252,7 @@ foreach(file ${source_to_pack})
    
    add_custom_command(
      TARGET dist-dir
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
    )
 endforeach(file ${source_to_pack})
 

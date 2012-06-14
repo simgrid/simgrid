@@ -532,9 +532,9 @@ static void generate_cat_configuration (const char *output, const char *name, in
           "configuration (categorized).", output, name);
     }
 
-    fprintf (file, "{\n");
+    if (brackets) fprintf (file, "{\n");
     cat_configuration (file);
-    fprintf (file, "}\n");
+    if (brackets) fprintf (file, "}\n");
     fclose (file);
   }
 }

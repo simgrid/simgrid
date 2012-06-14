@@ -1,0 +1,121 @@
+#! ./tesh
+
+p Testing the Cloud API with a simple masterslave
+
+! output sort
+
+$ $SG_TEST_EXENV cloud/masterslave_virtual_machines$EXEEXT ${srcdir:=.}/msg_platform.xml -log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+> Other parameters (such as the deployment file) are ignored.[Jacquelin:master:(1) 0.000000] [msg_test/INFO] Launched 10 VMs
+> Usage: cloud/masterslave_virtual_machines platform_file
+> [2843.063797] [msg_test/INFO] Simulation time 2843.06
+> [Bescherelle:Slave 4:(6) 427.243795] [msg_test/INFO] Received "Task_4" from mailbox Slave_4
+> [Bescherelle:Slave 4:(6) 427.316611] [msg_test/INFO] "Task_4" done
+> [Dodge:Slave 7:(9) 685.569407] [msg_test/INFO] Received "Task_7" from mailbox Slave_7
+> [Dodge:Slave 7:(9) 685.656786] [msg_test/INFO] "Task_7" done
+> [Ethernet:Slave 5:(7) 509.794890] [msg_test/INFO] Received "Task_5" from mailbox Slave_5
+> [Ethernet:Slave 5:(7) 509.896832] [msg_test/INFO] "Task_5" done
+> [Fafard:Slave 9:(11) 912.133629] [msg_test/INFO] Received "Task_9" from mailbox Slave_9
+> [Fafard:Slave 9:(11) 914.206445] [msg_test/INFO] "Task_9" done
+> [Fernand:Slave 3:(5) 360.063805] [msg_test/INFO] Received "Task_3" from mailbox Slave_3
+> [Fernand:Slave 3:(5) 360.515251] [msg_test/INFO] "Task_3" done
+> [Intel:Slave 1:(3) 71.553756] [msg_test/INFO] Received "Task_1" from mailbox Slave_1
+> [Intel:Slave 1:(3) 71.626572] [msg_test/INFO] "Task_1" done
+> [Jacquelin:Slave 0:(2) 0.020275] [msg_test/INFO] Received "Task_0" from mailbox Slave_0
+> [Jacquelin:Slave 0:(2) 0.093091] [msg_test/INFO] "Task_0" done
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Send a first batch of work to every one
+> [Jacquelin:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" to "Slave_0"
+> [Jacquelin:master:(1) 0.020275] [msg_test/INFO] Sending "Task_1" to "Slave_1"
+> [Jacquelin:master:(1) 71.553756] [msg_test/INFO] Sending "Task_2" to "Slave_2"
+> [Jacquelin:master:(1) 217.911039] [msg_test/INFO] Sending "Task_3" to "Slave_3"
+> [Jacquelin:master:(1) 360.063805] [msg_test/INFO] Sending "Task_4" to "Slave_4"
+> [Jacquelin:master:(1) 427.243795] [msg_test/INFO] Sending "Task_5" to "Slave_5"
+> [Jacquelin:master:(1) 509.794890] [msg_test/INFO] Sending "Task_6" to "Slave_6"
+> [Jacquelin:master:(1) 576.548296] [msg_test/INFO] Sending "Task_7" to "Slave_7"
+> [Jacquelin:master:(1) 685.569407] [msg_test/INFO] Sending "Task_8" to "Slave_8"
+> [Jacquelin:master:(1) 757.600403] [msg_test/INFO] Sending "Task_9" to "Slave_9"
+> [Jacquelin:master:(1) 912.133629] [msg_test/INFO] Now suspend all VMs, just for fun
+> [Jacquelin:master:(1) 912.133629] [msg_test/INFO] Wait a while
+> [Jacquelin:master:(1) 914.133629] [msg_test/INFO] Enough. Let's resume everybody.
+> [Jacquelin:master:(1) 914.133629] [msg_test/INFO] Sleep long enough for everyone to be done with previous batch of work
+> [Jacquelin:master:(1) 1000.000000] [msg_test/INFO] Add one more process per VM
+> [Jacquelin:master:(1) 1000.000000] [msg_test/INFO] Migrate everyone to the second host.
+> [Jacquelin:master:(1) 1000.000000] [msg_test/INFO] Suspend everyone, move them to the third host, and resume them.
+> [Jacquelin:master:(1) 1000.000000] [msg_test/INFO] Sending "Task_0" to "Slave_0"
+> [Jacquelin:master:(1) 1000.020275] [msg_test/INFO] Sending "Task_1" to "Slave_1"
+> [Jacquelin:master:(1) 1071.553756] [msg_test/INFO] Sending "Task_2" to "Slave_2"
+> [Jacquelin:master:(1) 1217.911039] [msg_test/INFO] Sending "Task_3" to "Slave_3"
+> [Jacquelin:master:(1) 1360.063805] [msg_test/INFO] Sending "Task_4" to "Slave_4"
+> [Jacquelin:master:(1) 1427.243795] [msg_test/INFO] Sending "Task_5" to "Slave_5"
+> [Jacquelin:master:(1) 1509.794890] [msg_test/INFO] Sending "Task_6" to "Slave_6"
+> [Jacquelin:master:(1) 1576.548296] [msg_test/INFO] Sending "Task_7" to "Slave_7"
+> [Jacquelin:master:(1) 1685.569407] [msg_test/INFO] Sending "Task_8" to "Slave_8"
+> [Jacquelin:master:(1) 1757.600403] [msg_test/INFO] Sending "Task_9" to "Slave_9"
+> [Jacquelin:master:(1) 1912.133629] [msg_test/INFO] Sending "Task_10" to "Slave_10"
+> [Jacquelin:master:(1) 1912.153904] [msg_test/INFO] Sending "Task_11" to "Slave_11"
+> [Jacquelin:master:(1) 1983.687385] [msg_test/INFO] Sending "Task_12" to "Slave_12"
+> [Jacquelin:master:(1) 2130.044668] [msg_test/INFO] Sending "Task_13" to "Slave_13"
+> [Jacquelin:master:(1) 2272.197433] [msg_test/INFO] Sending "Task_14" to "Slave_14"
+> [Jacquelin:master:(1) 2339.377424] [msg_test/INFO] Sending "Task_15" to "Slave_15"
+> [Jacquelin:master:(1) 2421.928519] [msg_test/INFO] Sending "Task_16" to "Slave_16"
+> [Jacquelin:master:(1) 2488.681925] [msg_test/INFO] Sending "Task_17" to "Slave_17"
+> [Jacquelin:master:(1) 2597.703036] [msg_test/INFO] Sending "Task_18" to "Slave_18"
+> [Jacquelin:master:(1) 2669.734032] [msg_test/INFO] Sending "Task_19" to "Slave_19"
+> [Jacquelin:master:(1) 2824.267258] [msg_test/INFO] Let's shut down the simulation. 10 first processes will be shut down cleanly while the second half will forcefully get killed
+> [Jacquelin:master:(1) 2843.063797] [msg_test/INFO] Goodbye now!
+> [Jean_Yves:Slave 8:(10) 757.600403] [msg_test/INFO] Received "Task_8" from mailbox Slave_8
+> [Jean_Yves:Slave 8:(10) 757.702345] [msg_test/INFO] "Task_8" done
+> [Kuenning:Slave 6:(8) 576.548296] [msg_test/INFO] Received "Task_6" from mailbox Slave_6
+> [Kuenning:Slave 6:(8) 576.664802] [msg_test/INFO] "Task_6" done
+> [Provost:Slave 0:(2) 1000.020275] [msg_test/INFO] Received "Task_0" from mailbox Slave_0
+> [Provost:Slave 0:(2) 1000.093091] [msg_test/INFO] "Task_0" done
+> [Provost:Slave 0:(2) 2826.146912] [msg_test/INFO] Received "finalize" from mailbox Slave_0
+> [Provost:Slave 10:(12) 1912.153904] [msg_test/INFO] Received "Task_10" from mailbox Slave_10
+> [Provost:Slave 10:(12) 1912.279260] [msg_test/INFO] "Task_10" done
+> [Provost:Slave 11:(13) 1983.687385] [msg_test/INFO] Received "Task_11" from mailbox Slave_11
+> [Provost:Slave 11:(13) 1983.760201] [msg_test/INFO] "Task_11" done
+> [Provost:Slave 12:(14) 2130.044668] [msg_test/INFO] Received "Task_12" from mailbox Slave_12
+> [Provost:Slave 12:(14) 2130.117484] [msg_test/INFO] "Task_12" done
+> [Provost:Slave 13:(15) 2272.197433] [msg_test/INFO] Received "Task_13" from mailbox Slave_13
+> [Provost:Slave 13:(15) 2272.270249] [msg_test/INFO] "Task_13" done
+> [Provost:Slave 14:(16) 2339.377424] [msg_test/INFO] Received "Task_14" from mailbox Slave_14
+> [Provost:Slave 14:(16) 2339.450240] [msg_test/INFO] "Task_14" done
+> [Provost:Slave 15:(17) 2421.928519] [msg_test/INFO] Received "Task_15" from mailbox Slave_15
+> [Provost:Slave 15:(17) 2422.001335] [msg_test/INFO] "Task_15" done
+> [Provost:Slave 16:(18) 2488.681925] [msg_test/INFO] Received "Task_16" from mailbox Slave_16
+> [Provost:Slave 16:(18) 2488.754741] [msg_test/INFO] "Task_16" done
+> [Provost:Slave 17:(19) 2597.703036] [msg_test/INFO] Received "Task_17" from mailbox Slave_17
+> [Provost:Slave 17:(19) 2597.775851] [msg_test/INFO] "Task_17" done
+> [Provost:Slave 18:(20) 2669.734032] [msg_test/INFO] Received "Task_18" from mailbox Slave_18
+> [Provost:Slave 18:(20) 2669.806848] [msg_test/INFO] "Task_18" done
+> [Provost:Slave 19:(21) 2824.267258] [msg_test/INFO] Received "Task_19" from mailbox Slave_19
+> [Provost:Slave 19:(21) 2824.340073] [msg_test/INFO] "Task_19" done
+> [Provost:Slave 1:(3) 1071.553756] [msg_test/INFO] Received "Task_1" from mailbox Slave_1
+> [Provost:Slave 1:(3) 1071.626572] [msg_test/INFO] "Task_1" done
+> [Provost:Slave 1:(3) 2828.026566] [msg_test/INFO] Received "finalize" from mailbox Slave_1
+> [Provost:Slave 2:(4) 217.911039] [msg_test/INFO] Received "Task_2" from mailbox Slave_2
+> [Provost:Slave 2:(4) 217.983855] [msg_test/INFO] "Task_2" done
+> [Provost:Slave 2:(4) 1217.911039] [msg_test/INFO] Received "Task_2" from mailbox Slave_2
+> [Provost:Slave 2:(4) 1217.983855] [msg_test/INFO] "Task_2" done
+> [Provost:Slave 2:(4) 2829.906220] [msg_test/INFO] Received "finalize" from mailbox Slave_2
+> [Provost:Slave 3:(5) 1360.063805] [msg_test/INFO] Received "Task_3" from mailbox Slave_3
+> [Provost:Slave 3:(5) 1360.136620] [msg_test/INFO] "Task_3" done
+> [Provost:Slave 3:(5) 2831.785873] [msg_test/INFO] Received "finalize" from mailbox Slave_3
+> [Provost:Slave 4:(6) 1427.243795] [msg_test/INFO] Received "Task_4" from mailbox Slave_4
+> [Provost:Slave 4:(6) 1427.316611] [msg_test/INFO] "Task_4" done
+> [Provost:Slave 4:(6) 2833.665527] [msg_test/INFO] Received "finalize" from mailbox Slave_4
+> [Provost:Slave 5:(7) 1509.794890] [msg_test/INFO] Received "Task_5" from mailbox Slave_5
+> [Provost:Slave 5:(7) 1509.867706] [msg_test/INFO] "Task_5" done
+> [Provost:Slave 5:(7) 2835.545181] [msg_test/INFO] Received "finalize" from mailbox Slave_5
+> [Provost:Slave 6:(8) 1576.548296] [msg_test/INFO] Received "Task_6" from mailbox Slave_6
+> [Provost:Slave 6:(8) 1576.621112] [msg_test/INFO] "Task_6" done
+> [Provost:Slave 6:(8) 2837.424835] [msg_test/INFO] Received "finalize" from mailbox Slave_6
+> [Provost:Slave 7:(9) 1685.569407] [msg_test/INFO] Received "Task_7" from mailbox Slave_7
+> [Provost:Slave 7:(9) 1685.642222] [msg_test/INFO] "Task_7" done
+> [Provost:Slave 7:(9) 2839.304489] [msg_test/INFO] Received "finalize" from mailbox Slave_7
+> [Provost:Slave 8:(10) 1757.600403] [msg_test/INFO] Received "Task_8" from mailbox Slave_8
+> [Provost:Slave 8:(10) 1757.673219] [msg_test/INFO] "Task_8" done
+> [Provost:Slave 8:(10) 2841.184143] [msg_test/INFO] Received "finalize" from mailbox Slave_8
+> [Provost:Slave 9:(11) 1912.133629] [msg_test/INFO] Received "Task_9" from mailbox Slave_9
+> [Provost:Slave 9:(11) 1912.258985] [msg_test/INFO] "Task_9" done
+> [Provost:Slave 9:(11) 2843.063797] [msg_test/INFO] Received "finalize" from mailbox Slave_9
+
