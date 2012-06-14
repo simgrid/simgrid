@@ -14,38 +14,38 @@ static jfieldID jsyncro_field_Mutex_bind;
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_nativeInit(JNIEnv *env, jclass cls) {
-	jsyncro_field_Mutex_bind = jxbt_get_sfield(env, "org/simgrid/msg/Mutex", "bind", "J");
-	if (!jsyncro_field_Mutex_bind) {
-  	jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
-	}
+  jsyncro_field_Mutex_bind = jxbt_get_sfield(env, "org/simgrid/msg/Mutex", "bind", "J");
+  if (!jsyncro_field_Mutex_bind) {
+    jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
+  }
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_init(JNIEnv * env, jobject obj) {
-	xbt_mutex_t mutex = xbt_mutex_init();
+  xbt_mutex_t mutex = xbt_mutex_init();
 
-	(*env)->SetLongField(env, obj, jsyncro_field_Mutex_bind, (jlong) (long) (mutex));
+  (*env)->SetLongField(env, obj, jsyncro_field_Mutex_bind, (jlong) (long) (mutex));
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_acquire(JNIEnv * env, jobject obj) {
-	xbt_mutex_t mutex;
+  xbt_mutex_t mutex;
 
-	mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, jsyncro_field_Mutex_bind);
-	xbt_mutex_acquire(mutex);
+  mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, jsyncro_field_Mutex_bind);
+  xbt_mutex_acquire(mutex);
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_release(JNIEnv * env, jobject obj) {
-	xbt_mutex_t mutex;
+  xbt_mutex_t mutex;
 
-	mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, jsyncro_field_Mutex_bind);
-	xbt_mutex_release(mutex);
+  mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, jsyncro_field_Mutex_bind);
+  xbt_mutex_release(mutex);
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_exit(JNIEnv * env, jobject obj) {
-		xbt_mutex_t mutex;
+  xbt_mutex_t mutex;
 
-		mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, jsyncro_field_Mutex_bind);
-		xbt_mutex_destroy(mutex);
+  mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, jsyncro_field_Mutex_bind);
+  xbt_mutex_destroy(mutex);
 }

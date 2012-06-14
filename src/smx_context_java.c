@@ -60,21 +60,21 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if (code) {
-		if (argc == 0) {
-			context->jprocess = (jobject) code;
-		}
-		else {
-			context->jprocess = NULL;
-		}
-		context->super.cleanup_func = cleanup_func;
-		context->begin = xbt_os_sem_init(0);
-		context->end = xbt_os_sem_init(0);
+    if (argc == 0) {
+      context->jprocess = (jobject) code;
+    }
+    else {
+      context->jprocess = NULL;
+    }
+    context->super.cleanup_func = cleanup_func;
+    context->begin = xbt_os_sem_init(0);
+    context->end = xbt_os_sem_init(0);
 
-		context->super.argc = argc;
-		context->super.argv = argv;
-		context->super.code = code;
+    context->super.argc = argc;
+    context->super.argv = argv;
+    context->super.code = code;
 
-		context->thread = xbt_os_thread_create(NULL,smx_ctx_java_thread_run,context,NULL);
+    context->thread = xbt_os_thread_create(NULL,smx_ctx_java_thread_run,context,NULL);
   }
   else {
   	context->thread = NULL;
@@ -86,24 +86,24 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
 }
 
 static void* smx_ctx_java_thread_run(void *data) {
-	smx_ctx_java_t context = (smx_ctx_java_t)data;
-	xbt_os_thread_set_extra_data(context);
-	//Attach the thread to the JVM
-	JNIEnv *env;
+  smx_ctx_java_t context = (smx_ctx_java_t)data;
+  xbt_os_thread_set_extra_data(context);
+  //Attach the thread to the JVM
+  JNIEnv *env;
   jint error = (*__java_vm)->AttachCurrentThread(__java_vm, (void **) &env, NULL);
   xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
   context->jenv = get_current_thread_env();
   //Wait for the first scheduling round to happen.
   xbt_os_sem_acquire(context->begin);
   //Create the "Process" object if needed.
-	if (context->super.argc > 0) {
-		(*(context->super.code))(context->super.argc, context->super.argv);
-	}
-	else {
-		smx_process_t process = SIMIX_process_self();
-		(*env)->SetLongField(env, context->jprocess, jprocess_field_Process_bind, (jlong)process);
-	}
-	xbt_assert((context->jprocess != NULL), "Process not created...");
+  if (context->super.argc > 0) {
+    (*(context->super.code))(context->super.argc, context->super.argv);
+  }
+  else {
+    smx_process_t process = SIMIX_process_self();
+    (*env)->SetLongField(env, context->jprocess, jprocess_field_Process_bind, (jlong)process);
+  }
+  xbt_assert((context->jprocess != NULL), "Process not created...");
   //wait for the process to be able to begin
   //TODO: Cache it
 	jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
@@ -122,13 +122,13 @@ static void* smx_ctx_java_thread_run(void *data) {
 
 static void smx_ctx_java_free(smx_context_t context)
 {
-	if (context) {
-		smx_ctx_java_t ctx_java = (smx_ctx_java_t) context;
-		if (ctx_java->thread) { /* We are not in maestro context */
-			xbt_os_thread_join(ctx_java->thread, NULL);
-			xbt_os_sem_destroy(ctx_java->begin);
-			xbt_os_sem_destroy(ctx_java->end);
-		}
+  if (context) {
+    smx_ctx_java_t ctx_java = (smx_ctx_java_t) context;
+    if (ctx_java->thread) { /* We are not in maestro context */
+      xbt_os_thread_join(ctx_java->thread, NULL);
+      xbt_os_sem_destroy(ctx_java->begin);
+      xbt_os_sem_destroy(ctx_java->end);
+    }
   }
   smx_ctx_base_free(context);
 }
@@ -136,9 +136,9 @@ static void smx_ctx_java_free(smx_context_t context)
 
 void smx_ctx_java_stop(smx_context_t context)
 {
-	smx_ctx_java_t ctx_java = (smx_ctx_java_t)context;
+  smx_ctx_java_t ctx_java = (smx_ctx_java_t)context;
   /* I am the current process and I am dying */
-	if (context->iwannadie) {
+  if (context->iwannadie) {
   	context->iwannadie = 0;
   	JNIEnv *env = get_current_thread_env();
   	jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process killed :)"));
@@ -146,30 +146,29 @@ void smx_ctx_java_stop(smx_context_t context)
   }
   else {
     smx_ctx_base_stop(context);
-		/* detach the thread and kills it */
-		JNIEnv *env = ctx_java->jenv;
-		(*env)->DeleteGlobalRef(env,ctx_java->jprocess);
-		jint error = (*__java_vm)->DetachCurrentThread(__java_vm);
-		xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
-		xbt_os_sem_release(((smx_ctx_java_t)context)->end);
-		xbt_os_thread_exit(NULL);
-
+    /* detach the thread and kills it */
+    JNIEnv *env = ctx_java->jenv;
+    (*env)->DeleteGlobalRef(env,ctx_java->jprocess);
+    jint error = (*__java_vm)->DetachCurrentThread(__java_vm);
+    xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
+    xbt_os_sem_release(((smx_ctx_java_t)context)->end);
+    xbt_os_thread_exit(NULL);
   }
 }
 
 static void smx_ctx_java_suspend(smx_context_t context)
 {
-	smx_ctx_java_t ctx_java = (smx_ctx_java_t) context;
-	xbt_os_sem_release(ctx_java->end);
-	xbt_os_sem_acquire(ctx_java->begin);
+  smx_ctx_java_t ctx_java = (smx_ctx_java_t) context;
+  xbt_os_sem_release(ctx_java->end);
+  xbt_os_sem_acquire(ctx_java->begin);
 }
 
 // FIXME: inline those functions
 static void smx_ctx_java_resume(smx_context_t new_context)
 {
-	smx_ctx_java_t ctx_java = (smx_ctx_java_t) new_context;
-	xbt_os_sem_release(ctx_java->begin);
-	xbt_os_sem_acquire(ctx_java->end);
+  smx_ctx_java_t ctx_java = (smx_ctx_java_t) new_context;
+  xbt_os_sem_release(ctx_java->begin);
+  xbt_os_sem_acquire(ctx_java->end);
 }
 
 static void smx_ctx_java_runall(void)

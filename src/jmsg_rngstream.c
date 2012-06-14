@@ -13,123 +13,123 @@
 jfieldID jrngstream_bind;
 
 RngStream jrngstream_to_native(JNIEnv *env, jobject jrngstream) {
-	RngStream rngstream = (RngStream) (*env)->GetLongField(env, jrngstream, jrngstream_bind);
-	if (!rngstream) {
+  RngStream rngstream = (RngStream) (*env)->GetLongField(env, jrngstream, jrngstream_bind);
+  if (!rngstream) {
     jxbt_throw_notbound(env, "rngstream", jrngstream);
     return NULL;
-	}
-	return rngstream;
+  }
+  return rngstream;
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_nativeInit(JNIEnv *env, jclass cls) {
-	jclass class_RngStream = (*env)->FindClass(env, "org/simgrid/msg/RngStream");
+  jclass class_RngStream = (*env)->FindClass(env, "org/simgrid/msg/RngStream");
 
-	jrngstream_bind = jxbt_get_jfield(env, class_RngStream, "bind", "J");
+  jrngstream_bind = jxbt_get_jfield(env, class_RngStream, "bind", "J");
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_create(JNIEnv *env, jobject jrngstream, jstring jname) {
-	const char *name = (*env)->GetStringUTFChars(env, jname, 0);
-	RngStream rngstream = RngStream_CreateStream(name);
-	//Bind the RngStream object
-	(*env)->SetLongField(env, jrngstream, jrngstream_bind, (jlong)rngstream);
+  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+  RngStream rngstream = RngStream_CreateStream(name);
+  //Bind the RngStream object
+  (*env)->SetLongField(env, jrngstream, jrngstream_bind, (jlong)rngstream);
 
   (*env)->ReleaseStringUTFChars(env, jname, name);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_destroy(JNIEnv *env, jobject jrngstream) {
-	RngStream rngstream = jrngstream_to_native(env, jrngstream);
-	RngStream_DeleteStream(&rngstream);
-	(*env)->SetLongField(env, jrngstream, jrngstream_bind, (jlong)NULL);
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  RngStream_DeleteStream(&rngstream);
+  (*env)->SetLongField(env, jrngstream, jrngstream_bind, (jlong)NULL);
 }
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_RngStream_setPackageSeed(JNIEnv *env, jobject jrngstream, jintArray jseed) {
-		jint buffer[6];
+  jint buffer[6];
 
-		(*env)->GetIntArrayRegion(env, jseed, 0, 6, buffer);
+  (*env)->GetIntArrayRegion(env, jseed, 0, 6, buffer);
 
-		RngStream rngstream = jrngstream_to_native(env, jrngstream);
-		if (!rngstream)
-			return JNI_FALSE;
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  if (!rngstream)
+    return JNI_FALSE;
 
-		int result = RngStream_SetPackageSeed((unsigned long*)buffer);
+  int result = RngStream_SetPackageSeed((unsigned long*)buffer);
 
-		return result == -1 ? JNI_FALSE : JNI_TRUE;
+  return result == -1 ? JNI_FALSE : JNI_TRUE;
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_resetStart(JNIEnv *env, jobject jrngstream) {
-	RngStream rngstream = jrngstream_to_native(env, jrngstream);
-	if (!rngstream)
-		return;
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  if (!rngstream)
+    return;
 
-	RngStream_ResetStartStream(rngstream);
+  RngStream_ResetStartStream(rngstream);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_resetStartSubstream(JNIEnv *env, jobject jrngstream) {
-	RngStream rngstream = jrngstream_to_native(env, jrngstream);
-	if (!rngstream)
-		return;
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  if (!rngstream)
+    return;
 
-	RngStream_ResetStartSubstream(rngstream);
+  RngStream_ResetStartSubstream(rngstream);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_resetNextSubstream(JNIEnv *env, jobject jrngstream) {
-	RngStream rngstream = jrngstream_to_native(env, jrngstream);
-	if (!rngstream)
-		return;
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  if (!rngstream)
+    return;
 
-	RngStream_ResetNextSubstream(rngstream);
+  RngStream_ResetNextSubstream(rngstream);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_setAntithetic(JNIEnv *env, jobject jrngstream, jboolean ja) {
-	RngStream rngstream = jrngstream_to_native(env, jrngstream);
-	if (!rngstream)
-		return;
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  if (!rngstream)
+    return;
 
-	if (ja == JNI_TRUE) {
-		RngStream_SetAntithetic(rngstream,-1);
-	}
-	else {
-		RngStream_SetAntithetic(rngstream,0);
-	}
+  if (ja == JNI_TRUE) {
+    RngStream_SetAntithetic(rngstream,-1);
+  }
+  else {
+    RngStream_SetAntithetic(rngstream,0);
+  }
 }
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_RngStream_setSeed(JNIEnv *env, jobject jrngstream, jintArray jseed) {
-	jint buffer[6];
+  jint buffer[6];
 
-	(*env)->GetIntArrayRegion(env, jseed, 0, 6, buffer);
+  (*env)->GetIntArrayRegion(env, jseed, 0, 6, buffer);
 
-	RngStream rngstream = jrngstream_to_native(env, jrngstream);
-	if (!rngstream)
-		return JNI_FALSE;
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  if (!rngstream)
+    return JNI_FALSE;
 
 
-	int result = RngStream_SetSeed(rngstream, (unsigned long*)buffer);
+  int result = RngStream_SetSeed(rngstream, (unsigned long*)buffer);
 
-	return result == -1 ? JNI_FALSE : JNI_TRUE;
+  return result == -1 ? JNI_FALSE : JNI_TRUE;
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_advanceState(JNIEnv *env, jobject jrngstream, jint e, jint g) {
-	RngStream rngstream = jrngstream_to_native(env, jrngstream);
-	if (!rngstream)
-		return;
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  if (!rngstream)
+    return;
 
-	RngStream_AdvanceState(rngstream, (long)e, (long)g);
+  RngStream_AdvanceState(rngstream, (long)e, (long)g);
 }
 JNIEXPORT jdouble JNICALL
 Java_org_simgrid_msg_RngStream_randU01(JNIEnv *env, jobject jrngstream) {
-	RngStream rngstream = jrngstream_to_native(env, jrngstream);
-	if (!rngstream)
-		return 0;
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  if (!rngstream)
+    return 0;
 
-	return (jdouble)RngStream_RandU01(rngstream);
+  return (jdouble)RngStream_RandU01(rngstream);
 }
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_RngStream_randInt(JNIEnv *env, jobject jrngstream, jint i, jint j) {
-	RngStream rngstream = jrngstream_to_native(env, jrngstream);
-	if (!rngstream)
-		return 0;
+  RngStream rngstream = jrngstream_to_native(env, jrngstream);
+  if (!rngstream)
+    return 0;
 
-	return (jint)RngStream_RandInt(rngstream, (int)i, (int)j);
+  return (jint)RngStream_RandInt(rngstream, (int)i, (int)j);
 }
