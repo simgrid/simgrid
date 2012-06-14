@@ -126,20 +126,8 @@ if(HAVE_CGRAPH_LIB OR HAVE_AGRAPH_LIB)
         	set(CGRAPH_H 1)
         endif(HAVE_CGRAPH_H)  
          
-        string(REGEX MATCH "-I${file_graphviz_h} " operation "${CMAKE_C_FLAGS}")
-    	if(NOT operation)
-    		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${file_graphviz_h} ")
-    	endif(NOT operation)
-    	
-    	string(REGEX MATCH "-I${file_graphviz_h}/graphviz " operation "${CMAKE_C_FLAGS}")
-    	if(NOT operation)
-    		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-I${file_graphviz_h}/graphviz ")
-    	endif(NOT operation)
-    	
-    	string(REGEX MATCH "-L${lib_graphviz} " operation "${CMAKE_C_FLAGS}")
-    	if(NOT operation)
-    		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-L${lib_graphviz} ")
-    	endif(NOT operation)
+        include_directories(${file_graphviz_h} ${file_graphviz_h}/graphviz)
+        link_directories(${lib_graphviz})
 	
     	set(HAVE_GRAPHVIZ "1")
     else(HAVE_GRAPH_H OR HAVE_AGRAPH_H OR HAVE_CGRAPH_H)
