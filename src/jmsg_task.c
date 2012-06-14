@@ -217,13 +217,16 @@ Java_org_simgrid_msg_Task_execute(JNIEnv * env,
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
-
-  MSG_error_t rv = MSG_task_execute(task);
-
-  jxbt_check_res("MSG_task_execute()", rv,
-                 MSG_HOST_FAILURE | MSG_TASK_CANCELED,
-                 bprintf("while executing task %s",
-                         MSG_task_get_name(task)));
+  MSG_error_t rv;
+  TRY {
+     rv = MSG_task_execute(task);
+  }
+  CATCH_ANONYMOUS {
+  	return;
+  }
+  if (rv != MSG_OK) {
+  	jmsg_throw_status(env, rv);
+  }
 }
 
 JNIEXPORT jstring JNICALL
@@ -369,7 +372,6 @@ Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask,
 
   if (rv != MSG_OK) {
   	jmsg_throw_status(env, rv);
-  	return;
   }
 }
 
