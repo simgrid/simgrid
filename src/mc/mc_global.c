@@ -525,19 +525,14 @@ void MC_print_statistics_pairs(mc_stats_pair_t stats)
 
 void MC_assert(int prop)
 {
-  if (MC_IS_ENABLED ){
-    if(!prop) {
-      XBT_INFO("**************************");
-      XBT_INFO("*** PROPERTY NOT VALID ***");
-      XBT_INFO("**************************");
-      XBT_INFO("Counter-example execution trace:");
-      MC_dump_stack_safety_stateless(mc_stack_safety_stateless);
-      MC_print_statistics(mc_stats);
-      xbt_abort();
-    }else{
-      MC_print_statistics(mc_stats);
-      xbt_abort();
-    }
+  if (MC_IS_ENABLED && !prop){
+    XBT_INFO("**************************");
+    XBT_INFO("*** PROPERTY NOT VALID ***");
+    XBT_INFO("**************************");
+    XBT_INFO("Counter-example execution trace:");
+    MC_dump_stack_safety_stateless(mc_stack_safety_stateless);
+    MC_print_statistics(mc_stats);
+    xbt_abort();
   }
 }
 

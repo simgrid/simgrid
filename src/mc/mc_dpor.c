@@ -173,6 +173,7 @@ void MC_dpor(void)
       MC_UNSET_RAW_MEM;
     }
   }
+  MC_print_statistics(mc_stats);
   MC_UNSET_RAW_MEM;
   return;
 }
