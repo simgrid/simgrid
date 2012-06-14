@@ -36,12 +36,7 @@ public class VM {
 	 * @param coreAmount
 	 */
 	private native void start(Host host, int coreAmount);
-	
-	/**
-	 * @brief Returns a new array containing all existing VMs.
-	 */
-	public static native VM[] all();
-	
+		
 	/** @brief Returns whether the given VM is currently suspended
 	 */	
 	public native boolean isSuspended();
