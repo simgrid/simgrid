@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
+if(enable_smpi)
 set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
@@ -53,6 +54,7 @@ target_link_libraries(mc_bugged1 m simgrid smpi )
 target_link_libraries(mc_bugged2 m simgrid smpi )
 
 set_target_properties(smpi_sendrecv PROPERTIES RENAME sendrecv)
+endif(enable_smpi)
 
 set(tesh_files
   ${tesh_files}

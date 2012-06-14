@@ -197,10 +197,12 @@ set(source_to_pack
   ${MC_SRC}
   ${JEDULE_SRC}
   ${RNGSTREAM_SRC}
-  ${add_src_files}
+  ${BINDINGS_FILES}
   ${CMAKE_SOURCE_FILES}
   ${EXAMPLES_CMAKEFILES_TXT}
   ${TESHSUITE_CMAKEFILES_TXT}
+  ${TOOLS_CMAKEFILES_TXT}
+  ${TESTSUITE_CMAKEFILES_TXT}
   ${DOC_SOURCES}
   ${DOC_FIGS}
   ${README_files}
@@ -210,6 +212,8 @@ set(source_to_pack
   ${bin_files}
   ${examples_src}
   ${teshsuite_src}
+  ${tools_src}
+  ${testsuite_src}
 )
 
 ##########################################

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
+if(HAVE_MC)
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(centralized centralized_mutex.c)
@@ -29,6 +30,7 @@ target_link_libraries(bugged2_liveness     simgrid m )
 target_link_libraries(centralized_liveness     simgrid m )
 target_link_libraries(centralized_liveness_deadlock     simgrid m )
 target_link_libraries(test_snapshot     simgrid m )
+endif(HAVE_MC)
 
 set(tesh_files
   ${tesh_files}
@@ -44,7 +46,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2_liveness.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged3.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_cennralized_liveness.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_centralized_liveness.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_mutex.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_random_test.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
@@ -52,7 +54,7 @@ set(xml_files
 )
 set(examples_src
   ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/automanon.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/automaton.c
   ${CMAKE_CURRENT_SOURCE_DIR}/automatonparse_promela.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_for_liveness.c
@@ -64,7 +66,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged3.c
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness_deadlock.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/centralized_munex.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.c
   ${CMAKE_CURRENT_SOURCE_DIR}/lex.yy.c
   ${CMAKE_CURRENT_SOURCE_DIR}/random_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.c

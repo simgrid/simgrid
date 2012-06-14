@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
+if(HAVE_GRAPHVIZ)
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")		
 	
 #add_executable(<name_of_target> <src list>)
@@ -25,6 +26,7 @@ else(NOT WIN32)
     PROPERTIES
     ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/dot_test; ${CMAKE_CURRENT_BINARY_DIR}/simulate_dot;")
 endif(NOT WIN32)
+endif(HAVE_GRAPHVIZ)
 
 set(tesh_files
   ${tesh_files}

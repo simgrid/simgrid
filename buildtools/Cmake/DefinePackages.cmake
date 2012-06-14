@@ -330,15 +330,24 @@ set(BINDINGS_SRC
 )
 
 set(LUA_SRC
-	src/bindings/lua/simgrid_lua.c
-	src/bindings/lua/lua_task.c
-	src/bindings/lua/lua_comm.c
-	src/bindings/lua/lua_host.c
-	src/bindings/lua/lua_process.c
-	src/bindings/lua/lua_platf.c
-        src/bindings/lua/lua_utils.c
-        src/bindings/lua/lua_state_cloner.c
-	src/bindings/lua/lua_stub_generator.c
+  src/bindings/lua/simgrid_lua.c
+  src/bindings/lua/lua_task.c
+  src/bindings/lua/lua_comm.c
+  src/bindings/lua/lua_host.c
+  src/bindings/lua/lua_process.c
+  src/bindings/lua/lua_platf.c
+  src/bindings/lua/lua_utils.c
+  src/bindings/lua/lua_state_cloner.c
+  src/bindings/lua/lua_stub_generator.c
+)
+
+set(BINDINGS_FILES
+  ${LUA_SRC}
+  src/bindings/lua/simgrid_lua.h
+  src/bindings/lua/lua_utils.h
+  src/bindings/lua/lua_state_cloner.h
+  src/bindings/lua/lua_private.h
+  src/bindings/bindings_global.c
 )
 
 set(TRACING_SRC
@@ -662,39 +671,12 @@ set(DOC_FIGS
 	${CMAKE_HOME_DIRECTORY}/doc/fig/gras_comm.fig
 )
 
-file(GLOB_RECURSE add_src_files
-"testsuite/*.c"
-"testsuite/*.cxx"
-"testsuite/*CMakeLists.txt"
-"tools/*.c"
-"tools/*.cxx"
-"tools/*CMakeLists.txt"
-"src/bindings/*.lua"
-"src/bindings/*.rb"
-"src/bindings/*.c"
-"src/bindings/*.h"
-"src/bindings/*CMakeLists.txt"
-)
-set(add_src_files
-	${add_src_files}
+set(bin_files
+	${bin_files}
 	src/smpi/smpicc.in
 	src/smpi/smpif2c.in
 	src/smpi/smpiff.in
 	src/smpi/smpirun.in
-)
-
-file(GLOB_RECURSE xml_files
-"include/*.xml"
-"src/*.xml"
-"testsuite/*.xml"
-"tools/*.xml"
-)
-
-file(GLOB_RECURSE tesh_files
-"include/*.tesh"
-"src/*.tesh"
-"testsuite/*.tesh"
-"tools/*.tesh"
 )
 
 set(txt_files
@@ -710,13 +692,6 @@ ${txt_files}
   TODO
   configure
   INSTALL
-)
-
-set(bin_files
-  ${bin_files}
-  tools/MSG_visualization/colorize.pl
-  tools/sg_unit_extractor.pl
-  tools/simgrid_update_xml.pl
 )
 
 set(EXAMPLES_CMAKEFILES_TXT
@@ -783,6 +758,18 @@ teshsuite/gras/msg_handle/CMakeLists.txt
 teshsuite/gras/datadesc/CMakeLists.txt
 teshsuite/CMakeLists.txt
 teshsuite/gras/CMakeLists.txt
+)
+
+set(TOOLS_CMAKEFILES_TXT
+tools/tesh/CMakeLists.txt
+tools/graphicator/CMakeLists.txt
+tools/CMakeLists.txt
+tools/gras/CMakeLists.txt
+)
+
+set(TESTSUITE_CMAKEFILES_TXT
+testsuite/surf/CMakeLists.txt
+testsuite/xbt/CMakeLists.txt
 )
 
 set(CMAKE_SOURCE_FILES

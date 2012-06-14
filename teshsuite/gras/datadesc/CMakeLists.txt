@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
 
+if(NOT WIN32)
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(datadesc_usage datadesc_usage.c datadesc_structs.c)
 
 ### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(datadesc_usage gras m pthread)
-elseif(NOT WIN32)
-  target_link_libraries(datadesc_usage gras)
+target_link_libraries(datadesc_usage gras m pthread)
 endif(NOT WIN32)
 
 set(tesh_files
