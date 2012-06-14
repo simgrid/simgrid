@@ -4,7 +4,6 @@
 
 
 #include <stdio.h>
-#include "automaton.h"
 #include "y.tab.h"
   
   extern YYSTYPE yylval;
