@@ -200,7 +200,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 
   //check if mark_type is already declared
   char *created = xbt_dict_get_or_null(declared_marks, mark_type);
-  if (created) return;
+  if (!created) return;
 
   XBT_DEBUG("MARK %s %s", mark_type, mark_value);
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
