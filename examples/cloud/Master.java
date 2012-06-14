@@ -55,10 +55,10 @@ public class Master extends Process {
 		Msg.info("Sleep long enough for everyone to be done with previous batch of work");
 		waitFor(1000 - Msg.getClock());
 		
-		Msg.info("Add one more process per VM, and dispatch a batch of work to everyone");
+		Msg.info("Add one more process per VM.");
 		for (int i = 0; i < vms.size(); i++) {
 			VM vm = vms.get(i);
-			Slave slave = new Slave(hosts[i],i + slavesCount);
+			Slave slave = new Slave(hosts[i],i + vms.size());
 			slave.start();
 			vm.bind(slave);
 		}
@@ -73,25 +73,23 @@ public class Master extends Process {
 			VM vm = vms.get(i);
 			vm.suspend();
 			vm.migrate(hosts[2]);
+			vm.resume();
 		}
 		
 		workBatch(slavesCount * 2);
 		
-		Msg.info("Let's shut down the simulation. 10 first processes will be shut down cleanly while the second half will forcefully get killed");
-		
-		for (int i = 0; i < 10; i++) {
-			FinalizeTask task = new FinalizeTask(0,0);
-			task.send("slave_" + i);
-		}
+		Msg.info("Let's shut down the simulation and kill everyone.");
 		
 		for (int i = 0; i < vms.size(); i++) {
 			vms.get(i).shutdown();
 		}				
+		Msg.info("Master done.");
 	}
 	
 	public void workBatch(int slavesCount) throws MsgException {
 		for (int i = 0; i < slavesCount; i++) {
 			Task task = new Task("Task_" + i, Cloud.task_comp_size, Cloud.task_comm_size);
+			Msg.info("Sending to " + i);
 			task.send("slave_" + i);
 		}
 	}

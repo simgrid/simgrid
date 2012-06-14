@@ -261,6 +261,7 @@ set(TESH_FILES
   ${CMAKE_HOME_DIRECTORY}/examples/migration/migration.tesh
   ${CMAKE_HOME_DIRECTORY}/examples/masterslave/masterslave.tesh
   ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.tesh
+  ${CMAKE_HOME_DIRECTORY}/examples/cloud/cloud.tesh
   ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspend.tesh
   ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh
   ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/mutualexclusion.tesh
@@ -445,6 +446,7 @@ ADD_TEST(bittorrent      ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(bypass          ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/bypass.tesh)
 ADD_TEST(commTime        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/commTime/commtime.tesh)
 ADD_TEST(chord        	 ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.tesh)
+ADD_TEST(cloud        	 ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/cloud/cloud.tesh)
 ADD_TEST(kill            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh)
 ADD_TEST(masterslave     ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/masterslave/masterslave.tesh)
 ADD_TEST(migration       ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/migration/migration.tesh)
@@ -454,7 +456,7 @@ ADD_TEST(priority        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(startKillTime   ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh)
 ADD_TEST(suspend         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspend.tesh)
 #Don't forget to put new test in this list!!!
-set(test_list async bittorrent bypass chord commTime kill masterslave migration mutualExclusion pingPong priority startKillTime suspend)
+set(test_list async bittorrent bypass chord cloud commTime kill masterslave migration mutualExclusion pingPong priority startKillTime suspend)
 if(HAVE_TRACING)
   ADD_TEST(tracing         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/tracing/tracingPingPong.tesh)
   set(test_list ${test_list} tracing)

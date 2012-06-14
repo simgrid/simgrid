@@ -14,8 +14,8 @@ import org.simgrid.msg.MsgException;
  * Example showing the use of the new experimental Cloud API.
  */
 public class Cloud {
-	public static final double task_comp_size = 10000000;
-	public static final double task_comm_size = 10000000;
+	public static final double task_comp_size = 10;
+	public static final double task_comm_size = 10;
 
 	public static void main(String[] args) throws MsgException {       
 	    Msg.init(args); 

@@ -27,7 +27,6 @@ public class Slave extends Process {
 		}
 
 		int num = Integer.valueOf(args[0]).intValue();
-		
 		Comm comm = null;
 		boolean slaveFinished = false;
 		while(!slaveFinished) {  

@@ -87,4 +87,11 @@ Java_org_simgrid_msg_VM_suspend(JNIEnv *env, jobject jvm);
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_resume(JNIEnv *env, jobject jvm);
+/**
+ * Class			org_simgrid_msg_VM
+ * Method			shutdown
+ * Signature	()V
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_VM_shutdown(JNIEnv *env, jobject jvm);
 #endif

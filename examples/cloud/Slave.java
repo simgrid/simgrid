@@ -11,7 +11,6 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Task;
-import org.simgrid.msg.TaskCancelledException;
 
 public class Slave extends Process {
 	private int number;
@@ -20,7 +19,8 @@ public class Slave extends Process {
 		this.number = number;
 	}
 	public void main(String[] args) throws MsgException {
-		while(true) {  
+		while(true) {  			
+			Msg.info("Receiving on " + "slave_" + number);
 			Task task = Task.receive("slave_"+number);	
 
 			if (task instanceof FinalizeTask) {
@@ -29,10 +29,10 @@ public class Slave extends Process {
 			Msg.info("Received \"" + task.getName() +  "\". Processing it.");
 			try {
 				task.execute();
-			} catch (TaskCancelledException e) {
+			} catch (MsgException e) {
 
 			}
-		//	Msg.info("\"" + task.getName() + "\" done ");
+			Msg.info("\"" + task.getName() + "\" done ");
 		}
 
 		Msg.info("Received Finalize. I'm done. See you!");
