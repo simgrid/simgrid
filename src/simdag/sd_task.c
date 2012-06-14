@@ -250,6 +250,20 @@ void SD_task_set_data(SD_task_t task, void *data)
 }
 
 /**
+ * \brief Sets the rate of a task
+ *
+ * This will change the percentage of the available power or network bandwidth
+ * a task can use.
+ *
+ * \param task a task
+ * \param rate the new rate you want to associate with this task
+ */
+void SD_task_set_rate(SD_task_t task, double rate)
+{
+  task->rate = rate;
+}
+
+/**
  * \brief Returns the state of a task
  *
  * \param task a task
