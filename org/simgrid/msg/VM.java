@@ -29,6 +29,7 @@ public class VM {
 	 */
 	public VM(Host host, int coreAmount) {
 		this.coreAmount = coreAmount;
+		start(host,coreAmount);
 	}
 	/**
 	 * Natively implemented method starting the VM.
@@ -76,5 +77,7 @@ public class VM {
 	 * of VM resume to you.
 	 */
 	public native void resume();
+	
+	public native void shutdown();
 		
 }

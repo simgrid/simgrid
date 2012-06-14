@@ -35,6 +35,7 @@ Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm, jobject jhost, jint jcor
 
 	jvm_bind(env,jvm,vm);
 }
+
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_VM_isSuspended(JNIEnv *env, jobject jvm) {
 	msg_vm_t vm = jvm_get_native(env,jvm);
@@ -51,6 +52,9 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_bind(JNIEnv *env, jobject jvm, jobject jprocess) {
 	msg_vm_t vm = jvm_get_native(env,jvm);
 	m_process_t process = jprocess_to_native_process(jprocess,env);
+
+	xbt_assert((vm != NULL), "VM object is not binded");
+	xbt_assert((process != NULL), "Process object is not binded.");
 
 	MSG_vm_bind(vm,process);
 }

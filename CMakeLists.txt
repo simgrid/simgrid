@@ -157,6 +157,10 @@ set(JAVA_EXAMPLES
   ${CMAKE_HOME_DIRECTORY}/examples/chord/FindSuccessorTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/GetPredecessorAnswerTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/NotifyTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/cloud/Cloud.java
+  ${CMAKE_HOME_DIRECTORY}/examples/cloud/FinalizeTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/cloud/Master.java
+  ${CMAKE_HOME_DIRECTORY}/examples/cloud/Slave.java
   ${CMAKE_HOME_DIRECTORY}/examples/commTime/FinalizeTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/commTime/Master.java
   ${CMAKE_HOME_DIRECTORY}/examples/commTime/Slave.java
@@ -391,6 +395,7 @@ add_custom_command(
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/async/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/bittorrent/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/chord/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/cloud/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/commTime/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/io/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/masterslave/*.java

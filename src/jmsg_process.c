@@ -150,7 +150,6 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
 						/*argc, argv, properties*/
 						0,NULL,NULL);
   MSG_process_set_kill_time(process, (double)jkill);
-  MSG_process_set_data(process,&process);
   /* bind the java process instance to the native process */
   jprocess_bind(jprocess, process, env);
 
