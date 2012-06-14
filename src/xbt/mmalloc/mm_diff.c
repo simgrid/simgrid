@@ -215,8 +215,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   int total_distance = 0;
 
   //void *end_heap = (char *)mdp1 + ((char*)mdp1->top - (char *)s_heap);
-  void *breakval1 = (char *)mdp1 + ((char*)mdp1->breakval - (char *)s_heap);
-  void *breakval2 = (char *)mdp2 + ((char*)mdp2->breakval - (char *)s_heap);
+  //void *breakval1 = (char *)mdp1 + ((char*)mdp1->breakval - (char *)s_heap);
+  //void *breakval2 = (char *)mdp2 + ((char*)mdp2->breakval - (char *)s_heap);
 
   int pointer_align;
   void *address_pointed1, *address_pointed2;
