@@ -149,8 +149,8 @@ void MSG_vm_resume(msg_vm_t vm) {
  * No extra delay occurs. If you want to simulate this too, you want to
  * use a #MSG_process_sleep() or something. I'm not quite sure.
  */
-void MSG_vm_shutdown(msg_vm_t vm) {
-  unsigned int cpt;
+void MSG_vm_shutdown(msg_vm_t vm)
+{
   m_process_t process;
   XBT_DEBUG("%d processes in the VM",xbt_dynar_length(vm->processes));
   while (xbt_dynar_length(vm->processes) > 0) {
