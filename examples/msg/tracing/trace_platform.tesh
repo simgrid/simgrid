@@ -212,7 +212,6 @@ $ cat simgrid.trace
 > 7 0 1 5
 > 7 0 1 2
 > 7 0 1 4
-> 7 0 0 0
 
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cfg=tracing/categorized:1 ${srcdir:=.}/../platforms/g5k.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
@@ -30401,6 +30400,5 @@ $ cat simgrid.trace
 > 7 0 9 4147
 > 7 0 6 4094
 > 7 0 1 3921
-> 7 0 0 0
 
 $ rm -rf simgrid.trace
