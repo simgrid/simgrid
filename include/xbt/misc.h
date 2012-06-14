@@ -18,7 +18,7 @@
 # define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
 # define _XBT_GNUC_UNUSED  __attribute__((__unused__))
 /* Apparently, constructor priorities are not supported by gcc on Macs */
-# if __APPLE__
+# if defined(__APPLE__) || (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 6) ))
 #  define _XBT_GNUC_CONSTRUCTOR(prio) __attribute__((__constructor__))
 #  define _XBT_GNUC_DESTRUCTOR(prio) __attribute__((__destructor__))
 # else
