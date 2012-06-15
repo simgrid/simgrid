@@ -875,7 +875,7 @@ examples/platforms/syscoord/median_p2psim.xml
 )
 
 set(generated_src_files
-src/xbt/datadesc/ddt_parse.yy.c
+${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
 src/xbt/automaton/y.tab.c
 src/xbt/automaton/y.tab.h
 src/xbt/automaton/automaton_parse.yy.c
