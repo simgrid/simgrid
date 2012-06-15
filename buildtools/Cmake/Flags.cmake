@@ -70,3 +70,7 @@ if(NOT $ENV{LDFLAGS} STREQUAL "")
     message(STATUS "Add LDFLAGS: \"$ENV{LDFLAGS}\" to CMAKE_C_LINK_FLAGS")
     set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} $ENV{LDFLAGS}")
 endif(NOT $ENV{LDFLAGS} STREQUAL "")
+
+if(enable_model-checking AND enable_compile_optimizations)
+    message(FATAL_ERROR "Sorry for now GCC optimizations does not work with model checking.\nPlease turn off optimizations with command:\ncmake -Denable_compile_optimizations=off. ")
+endif(enable_model-checking AND enable_compile_optimizations)
