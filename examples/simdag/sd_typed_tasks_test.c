@@ -43,7 +43,7 @@ int main(int argc, char **argv)
  
   workstations = SD_workstation_get_list();
 
-  for (i=0;i<4;i++)
+  for (i=0;i<SD_workstation_get_number();i++)
     XBT_INFO("%s runs at %f flops", SD_workstation_get_name(workstations[i]),
 	     SD_workstation_get_power(workstations[i]));
 
@@ -53,9 +53,6 @@ int main(int argc, char **argv)
   taskC = SD_task_create_comp_seq("Task C", NULL, 1e9);
   taskD = SD_task_create_comp_par_amdahl("Task D", NULL, 1e9, 0.2);
   taskE = SD_task_create("Task E", NULL, 1e9);
-
-  double toto = (0.2 + (1 - 0.2)/4) * 1e9;
-  XBT_INFO("%f %f",toto ,toto/SD_workstation_get_power(workstations[0]));
 
   SD_task_dependency_add(NULL, NULL, taskA, taskB);
   SD_task_dependency_add(NULL, NULL, taskB, taskC);
@@ -68,8 +65,10 @@ int main(int argc, char **argv)
 
   for (i=0;i<4;i++){
     workstation_list[i]=workstations[i+4];
-    computation_amount[i]=toto;
+    /* Apply Amdahl's law manually assuming a 20% serial part */
+    computation_amount[i]=(0.2 + (1 - 0.2)/4) * SD_task_get_amount(taskE);
   }
+
   SD_task_schedule(taskE, 4, workstation_list,
                    computation_amount, communication_amount, -1);
 
