@@ -1,7 +1,5 @@
 %{
 
-  //#include "../../../include/xbt/automatonparse_promela.h"
-  //#include "../../../include/xbt/automaton.h"
 #include "automaton_parse.yy.c"
 #include <xbt/automaton.h>
 #include <xbt/automatonparse_promela.h>

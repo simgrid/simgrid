@@ -7,15 +7,15 @@ add_executable(centralized centralized_mutex.c)
 add_executable(bugged1     bugged1.c)
 add_executable(bugged1_stateful bugged1_stateful.c)
 add_executable(bugged2_stateful bugged2_stateful.c)
-add_executable(bugged2     bugged2.c)
+add_executable(bugged2      bugged2.c)
 add_executable(bugged3	   bugged3.c)
 add_executable(random_test random_test.c)
-add_executable(bugged1_for_liveness automaton.c automatonparse_promela.c bugged1_for_liveness.c)
-add_executable(bugged1_while_liveness automaton.c automatonparse_promela.c bugged1_while_liveness.c)
-add_executable(bugged2_liveness automaton.c automatonparse_promela.c bugged2_liveness.c)
-add_executable(centralized_liveness automaton.c automatonparse_promela.c centralized_liveness.c)
-add_executable(centralized_liveness_deadlock automaton.c automatonparse_promela.c centralized_liveness_deadlock.c)
-add_executable(test_snapshot automaton.c automatonparse_promela.c test_snapshot.c)
+add_executable(bugged1_for_liveness bugged1_for_liveness.c)
+add_executable(bugged1_while_liveness bugged1_while_liveness.c)
+add_executable(bugged2_liveness bugged2_liveness.c)
+add_executable(centralized_liveness centralized_liveness.c)
+add_executable(centralized_liveness_deadlock centralized_liveness_deadlock.c)
+add_executable(test_snapshot test_snapshot.c)
 
 target_link_libraries(centralized simgrid m )
 target_link_libraries(bugged1     simgrid m )
@@ -54,8 +54,6 @@ set(xml_files
 )
 set(examples_src
   ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/automaton.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/automatonparse_promela.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_for_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_stateful.c
@@ -67,15 +65,12 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness_deadlock.c
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/lex.yy.c
   ${CMAKE_CURRENT_SOURCE_DIR}/random_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/y.tab.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/y.tab.h
   PARENT_SCOPE
 )
 set(bin_files

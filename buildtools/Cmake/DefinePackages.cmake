@@ -31,6 +31,9 @@ set(EXTRA_DIST
 	src/xbt/mmalloc/test/mmalloc_test.c
 	src/xbt/datadesc/ddt_parse.yy.l
 	src/xbt/datadesc/ddt_parse.yy.h
+    src/xbt/automaton/y.tab.c
+    src/xbt/automaton/y.tab.h
+    src/xbt/automaton/automaton_parse.yy.c  
 	src/surf/maxmin_private.h
 	src/surf/trace_mgr_private.h
 	src/surf/surf_private.h
@@ -84,7 +87,6 @@ set(EXTRA_DIST
 	src/smpi/README
 	src/mk_supernovae.pl
 	
-
 	tools/gras/gras_stub_generator.h
 	tools/tesh/run_context.h  
 	tools/tesh/tesh.h
@@ -169,7 +171,6 @@ set(XBT_SRC
 	src/xbt/parmap.c
 	src/xbt/xbt_replay.c
 	src/xbt/lib.c
-	src/xbt/automaton/automaton.c
 	src/xbt/automaton/automatonparse_promela.c
 	src/xbt/automaton/automaton.c
 	src/xbt/automaton/automaton_create.c
@@ -872,6 +873,9 @@ examples/platforms/syscoord/median_p2psim.xml
 
 set(generated_src_files
 src/xbt/datadesc/ddt_parse.yy.c
+src/xbt/automaton/y.tab.c
+src/xbt/automaton/y.tab.h
+src/xbt/automaton/automaton_parse.yy.c
 )
 
 foreach(file ${generated_src_files})

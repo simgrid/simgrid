@@ -69,8 +69,6 @@
 #line 1 "parserPromela.yacc"
 
 
-  //#include "../../../include/xbt/automatonparse_promela.h"
-  //#include "../../../include/xbt/automaton.h"
 #include "automaton_parse.yy.c"
 #include <xbt/automaton.h>
 #include <xbt/automatonparse_promela.h>
@@ -80,7 +78,7 @@ void yyerror(const char *s);
 
 
 /* Line 268 of yacc.c  */
-#line 84 "y.tab.c"
+#line 82 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -159,7 +157,7 @@ typedef union YYSTYPE
 {
 
 /* Line 293 of yacc.c  */
-#line 13 "parserPromela.yacc"
+#line 11 "parserPromela.yacc"
 
   double real;
   int integer;
@@ -169,7 +167,7 @@ typedef union YYSTYPE
 
 
 /* Line 293 of yacc.c  */
-#line 173 "y.tab.c"
+#line 171 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -181,7 +179,7 @@ typedef union YYSTYPE
 
 
 /* Line 343 of yacc.c  */
-#line 185 "y.tab.c"
+#line 183 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -473,8 +471,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    50,    50,    53,    54,    54,    57,    58,    61,    62,
-      63,    64,    65,    66
+       0,    48,    48,    51,    52,    52,    55,    56,    59,    60,
+      61,    62,    63,    64
 };
 #endif
 
@@ -1418,63 +1416,63 @@ yyreduce:
         case 4:
 
 /* Line 1806 of yacc.c  */
-#line 54 "parserPromela.yacc"
+#line 52 "parserPromela.yacc"
     { new_state((yyvsp[(1) - (2)].string), 1);}
     break;
 
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 58 "parserPromela.yacc"
+#line 56 "parserPromela.yacc"
     { new_transition((yyvsp[(5) - (6)].string), (yyvsp[(2) - (6)].label));}
     break;
 
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 61 "parserPromela.yacc"
+#line 59 "parserPromela.yacc"
     { (yyval.label) = (yyvsp[(2) - (3)].label); }
     break;
 
   case 9:
 
 /* Line 1806 of yacc.c  */
-#line 62 "parserPromela.yacc"
+#line 60 "parserPromela.yacc"
     { (yyval.label) = new_label(0, (yyvsp[(1) - (3)].label), (yyvsp[(3) - (3)].label)); }
     break;
 
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 63 "parserPromela.yacc"
+#line 61 "parserPromela.yacc"
     { (yyval.label) = new_label(1, (yyvsp[(1) - (3)].label), (yyvsp[(3) - (3)].label)); }
     break;
 
   case 11:
 
 /* Line 1806 of yacc.c  */
-#line 64 "parserPromela.yacc"
+#line 62 "parserPromela.yacc"
     { (yyval.label) = new_label(2, (yyvsp[(2) - (2)].label)); }
     break;
 
   case 12:
 
 /* Line 1806 of yacc.c  */
-#line 65 "parserPromela.yacc"
+#line 63 "parserPromela.yacc"
     { (yyval.label) = new_label(4); }
     break;
 
   case 13:
 
 /* Line 1806 of yacc.c  */
-#line 66 "parserPromela.yacc"
+#line 64 "parserPromela.yacc"
     { (yyval.label) = new_label(3, (yyvsp[(1) - (1)].string)); }
     break;
 
 
 
 /* Line 1806 of yacc.c  */
-#line 1478 "y.tab.c"
+#line 1476 "y.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1705,7 +1703,7 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 69 "parserPromela.yacc"
+#line 67 "parserPromela.yacc"
 
 
 
