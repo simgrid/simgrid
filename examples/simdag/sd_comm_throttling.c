@@ -21,8 +21,6 @@ int main(int argc, char **argv)
   SD_task_t task, taskA, taskB, taskC, taskD, taskE;
   xbt_dynar_t changed_tasks;
 
-  SD_workstation_t workstation_list[4];
-  
   /* initialization of SD */
   SD_init(&argc, argv);
 
