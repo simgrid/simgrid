@@ -5,6 +5,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(ex_sd_test sd_test.c)
 add_executable(sd_test2 sd_test2.c)
 add_executable(sd_typed_tasks_test sd_typed_tasks_test.c)
+add_executable(sd_comm_throttling sd_comm_throttling.c)
 add_executable(sd_seq_access sd_seq_access.c)
 add_executable(sd_test_console sd_test_console.c)
 add_executable(simdag_tracing simdag_trace.c)
@@ -14,6 +15,7 @@ if(NOT WIN32)
   target_link_libraries(ex_sd_test simgrid pthread m )
   target_link_libraries(sd_test2 simgrid pthread m )
   target_link_libraries(sd_typed_tasks_test simgrid pthread m )
+  target_link_libraries(sd_comm_throttling simgrid pthread m )
   target_link_libraries(sd_seq_access simgrid pthread m )
   target_link_libraries(sd_test_console simgrid pthread m )
   target_link_libraries(simdag_tracing simgrid pthread m )
@@ -32,6 +34,7 @@ else(NOT WIN32)
   target_link_libraries(ex_sd_test simgrid)
   target_link_libraries(sd_test2 simgrid)
   target_link_libraries(sd_typed_tasks_test simgrid)
+  target_link_libraries(sd_comm_throttling simgrid)
   target_link_libraries(sd_seq_access simgrid)
   target_link_libraries(sd_test_console simgrid)
   target_link_libraries(simdag_tracing simgrid)
@@ -66,6 +69,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_test_console.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_typed_tasks_test.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/sd_comm_throttling.c
   ${CMAKE_CURRENT_SOURCE_DIR}/simdag_trace.c
   PARENT_SCOPE
 )
