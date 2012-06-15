@@ -8,9 +8,10 @@
 #define _SURF_SURFXML_PARSE_H
 
 #include <stdio.h>              /* to have FILE */
-#include "surf/simgrid_dtd.h"
+#include "xbt/misc.h"
 #include "xbt/function_types.h"
 #include "xbt/dict.h"
+#include "surf/simgrid_dtd.h"
 
 SG_BEGIN_DECL()
 
