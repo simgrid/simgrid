@@ -268,6 +268,7 @@ endforeach(file ${source_to_pack})
 add_custom_target(dist
   DEPENDS ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
 )
+
 add_custom_command(
 	OUTPUT ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}.tar.gz	
 	COMMENT "Compressing the archive from the distribution directory"
@@ -276,6 +277,15 @@ add_custom_command(
   	COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
 )
 add_dependencies(dist dist-dir)
+
+if(NOT enable_maintainer_mode)
+  add_custom_target(echo-dist
+    COMMAND ${CMAKE_COMMAND} -E echo "WARNING: ----------------------------------------------------"
+    COMMAND ${CMAKE_COMMAND} -E echo "WARNING: Distrib is generated without option maintainer mode "
+    COMMAND ${CMAKE_COMMAND} -E echo "WARNING: ----------------------------------------------------"
+  )
+   add_dependencies(dist echo-dist)
+endif(NOT enable_maintainer_mode)
 
 ###########################################
 ### Fill in the "make distcheck" target ###
