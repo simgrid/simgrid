@@ -233,7 +233,8 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
 
 ### Build the doc
 if(NOT WIN32)
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateUserGuide.cmake)
+include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateRefGuide.cmake)
 else(NOT WIN32)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDocWin.cmake)  
 endif(NOT WIN32)

@@ -1,33 +1,17 @@
-#### Generate the html documentation
-
-if(BIBTEX2HTML)
-	set(BIBTEX2HTML_PATH ${BIBTEX2HTML})
-else(BIBTEX2HTML)
-	find_path(BIBTEX2HTML_PATH	NAMES bibtex2html	PATHS NO_DEFAULT_PATHS)
-endif(BIBTEX2HTML)
+#### Generate the html documentation for the user guide.
 
 find_path(FIG2DEV_PATH	NAMES fig2dev	PATHS NO_DEFAULT_PATHS)
 find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
 
-### Check whether the bibtex2html that we found is the one that Arnaud requires
-exec_program("${BIBTEX2HTML_PATH}/bibtex2html -version" OUTPUT_VARIABLE OUTPUT_BIBTEX2HTML_VERSION)
-STRING(REPLACE "[-bibtex]" "" OUTPUT_BIBTEX2HTML_VERSION_2 ${OUTPUT_BIBTEX2HTML_VERSION})
 
 file(GLOB_RECURSE source_doxygen
-	"${CMAKE_HOME_DIRECTORY}/tools/gras/*.[chl]"
 	"${CMAKE_HOME_DIRECTORY}/src/*.[chl]"
 	"${CMAKE_HOME_DIRECTORY}/include/*.[chl]"
 )
 
-if(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION}) # wrong version
-	SET(GOOD_BIBTEX2HTML_VERSION 0)
-else(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION}) # good version
-	SET(GOOD_BIBTEX2HTML_VERSION 1)
-endif(${OUTPUT_BIBTEX2HTML_VERSION_2} STREQUAL ${OUTPUT_BIBTEX2HTML_VERSION})
 
-if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSION)
+if(DOXYGEN_PATH AND FIG2DEV_PATH)
 
-	#DOC_SOURCE=doc/*.doc, defined in DefinePackage
 	set(DOCSSOURCES "${source_doxygen}\n${DOC_SOURCE}")
 	string(REPLACE "\n" ";" DOCSSOURCES ${DOCSSOURCES})
 
@@ -42,48 +26,17 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSI
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_001.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_002.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_003.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_004.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_005.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_006.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_007.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_008.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_009.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_010.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_011.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_012.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_013.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_014.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_015.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_016.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_017.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_018.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_019.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_020.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_021.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_022.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_023.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_024.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_025.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_026.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_027.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_028.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_029.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_030.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101.pdf
 	)
 	
 	configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
 	configure_file(${CMAKE_HOME_DIRECTORY}/doc/footer.html.in ${CMAKE_HOME_DIRECTORY}/doc/footer.html @ONLY)		
 	
-	ADD_CUSTOM_TARGET(simgrid_documentation
-		COMMENT "Generating the SimGrid documentation..."
+	ADD_CUSTOM_TARGET(user_guide
+		COMMENT "Generating the SimGrid user guide..."
 		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
-	    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
-		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/userguide/html
+	    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/userguide/html
+		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
 	)
 		
@@ -98,18 +51,18 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSI
 	foreach(file ${DOC_FIGS})
 		string(REPLACE ".fig" ".png" tmp_file ${file})
 		string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/fig/" "${CMAKE_HOME_DIRECTORY}/doc/html/" tmp_file ${tmp_file})
-		ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
+		ADD_CUSTOM_COMMAND(TARGET user_guide
 			COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file}
 		)
 	endforeach(file ${DOC_FIGS})
 	
 	foreach(file ${DOC_PNGS})
-		ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
+		ADD_CUSTOM_COMMAND(TARGET user_guide
 			COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/
 		)
 	endforeach(file ${DOC_PNGS})
 
-	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
+	ADD_CUSTOM_COMMAND(TARGET user_guide
 		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg ${CMAKE_HOME_DIRECTORY}/doc/html/
 		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg     ${CMAKE_HOME_DIRECTORY}/doc/html/
 		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/triva-graph_configuration.png        ${CMAKE_HOME_DIRECTORY}/doc/html/
@@ -118,18 +71,15 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSI
 		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css                          ${CMAKE_HOME_DIRECTORY}/doc/html/
 	)
 	
-	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
+	ADD_CUSTOM_COMMAND(TARGET user_guide
 	    COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
 		COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/toc_create.pl pls.doc index.doc FAQ.doc gtut-introduction.doc install.doc bindings.doc options.doc tracing.doc platform.doc
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "XX Second Doxygen pass"
 		COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
 		
-		COMMAND ${CMAKE_COMMAND} -E echo "XX Post-processing Doxygen result"
 		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/html/dir*
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/doxygen_postprocesser.pl
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "XX Create shortcuts pages"
 		COMMAND ${CMAKE_COMMAND} -E echo \"<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>\" > ${CMAKE_HOME_DIRECTORY}/doc/html/gras.html
@@ -146,33 +96,22 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSI
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/
 	)
 	
-else(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSION)
+else(DOXYGEN_PATH AND FIG2DEV_PATH)
 
-	ADD_CUSTOM_TARGET(simgrid_documentation
-			COMMENT "Generating the SimGrid documentation..."
+	ADD_CUSTOM_TARGET(user_guide
+			COMMENT "Generating the SimGrid user guide..."
 			)
 
-	if(NOT GOOD_BIBTEX2HTML_VERSION) # wrong version
-		ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
-			COMMAND ${CMAKE_COMMAND} -E echo "This is not the good bibtex2html program !!!"
-			COMMAND ${CMAKE_COMMAND} -E echo  "You can download it from:"
-			COMMAND ${CMAKE_COMMAND} -E echo  "  ftp://ftp-sop.inria.fr/epidaure/Softs/bibtex2html/bibtex2html-1.02.tar.gz"
-			COMMAND ${CMAKE_COMMAND} -E echo  "There is also an unofficial Debian/Ubuntu package, see:"
-		        COMMAND ${CMAKE_COMMAND} -E echo  "  http://www.loria.fr/~lnussbau/bibtex2html/README"
-			)
-	endif(NOT GOOD_BIBTEX2HTML_VERSION)
-
-	ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
+	ADD_CUSTOM_COMMAND(TARGET user_guide
 			COMMAND ${CMAKE_COMMAND} -E echo "DOXYGEN_PATH 		= ${DOXYGEN_PATH}"
 			COMMAND ${CMAKE_COMMAND} -E echo "FIG2DEV_PATH 		= ${FIG2DEV_PATH}"
-			COMMAND ${CMAKE_COMMAND} -E echo "BIBTEX2HTML_PATH 	= ${BIBTEX2HTML_PATH}"
 			COMMAND ${CMAKE_COMMAND} -E echo "IN ORDER TO GENERATE THE DOCUMENTATION YOU NEED ALL TOOLS !!!"
 			COMMAND ${CMAKE_COMMAND} -E echo "FAIL TO MAKE SIMGRID DOCUMENTATION see previous messages for details ..."
 			COMMAND false
 			)
 
 		
-endif(DOXYGEN_PATH AND FIG2DEV_PATH AND BIBTEX2HTML_PATH AND GOOD_BIBTEX2HTML_VERSION)
+endif(DOXYGEN_PATH AND FIG2DEV_PATH)
 
 ##############################################################################"
 
@@ -303,4 +242,4 @@ ADD_CUSTOM_TARGET(pdf
   
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/latex/
 )
-add_dependencies(pdf simgrid_documentation)
+add_dependencies(pdf user_guide)

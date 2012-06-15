@@ -658,10 +658,8 @@ set(DOC_SOURCES
 	doc/Doxyfile.in
 	doc/footer.html.in
 	
-	tools/doxygen/doxygen_postprocesser.pl
 	tools/doxygen/index_create.pl
 	tools/doxygen/toc_create.pl
-	tools/doxygen/bibtex2html_wrapper.pl
 	tools/doxygen/fig2dev_postprocessor.pl
 	tools/doxygen/xbt_log_extract_hierarchy.pl
 )
@@ -799,7 +797,8 @@ buildtools/Cmake/Scripts/generate_memcheck_tests.pl
 buildtools/Cmake/MaintainerMode.cmake
 buildtools/Cmake/Supernovae.cmake
 buildtools/Cmake/Pipol.cmake
-buildtools/Cmake/GenerateDoc.cmake
+buildtools/Cmake/GenerateUserGuide.cmake
+buildtools/Cmake/GenerateRefGuide.cmake
 buildtools/Cmake/test_prog/prog_getline.c
 buildtools/Cmake/test_prog/prog_mutex_timedlock.c
 buildtools/Cmake/test_prog/prog_gtnets.cpp
