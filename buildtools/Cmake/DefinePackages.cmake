@@ -33,7 +33,9 @@ set(EXTRA_DIST
 	src/xbt/datadesc/ddt_parse.yy.h
     src/xbt/automaton/y.tab.c
     src/xbt/automaton/y.tab.h
-    src/xbt/automaton/automaton_parse.yy.c  
+    src/xbt/automaton/automaton_parse.yy.c
+    src/xbt/automaton/parserPromela.lex
+    src/xbt/automaton/parserPromela.yacc
 	src/surf/maxmin_private.h
 	src/surf/trace_mgr_private.h
 	src/surf/surf_private.h
@@ -174,6 +176,7 @@ set(XBT_SRC
 	src/xbt/automaton/automatonparse_promela.c
 	src/xbt/automaton/automaton.c
 	src/xbt/automaton/automaton_create.c
+	src/xbt/automaton/automaton_create.h
 	src/xbt/datadesc/ddt_create.c
 	src/xbt/datadesc/ddt_convert.c
 	src/xbt/datadesc/ddt_exchange.c
