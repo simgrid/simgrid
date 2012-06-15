@@ -833,3 +833,47 @@ buildtools/Cmake/src/gras_config.h.in
 buildtools/Cmake/src/simgrid.nsi.in
 CMakeLists.txt
 )
+
+set(PLATFORMS_EXAMPLES
+examples/platforms/bypassASroute.xml
+examples/platforms/bypassRoute.xml
+examples/platforms/cloud.xml
+examples/platforms/cluster_and_one_host.xml
+examples/platforms/cluster_no_backbone.xml
+examples/platforms/cluster_routing_rulebased.xml
+examples/platforms/clusters_routing_full.xml
+examples/platforms/cluster.xml
+examples/platforms/config.xml
+examples/platforms/data_center.xml
+examples/platforms/g5k.xml
+examples/platforms/griffon.xml
+examples/platforms/multicore_machine.xml
+examples/platforms/prop.xml
+examples/platforms/storage.xml
+examples/platforms/vivaldi.xml
+examples/platforms/conf/gridpp_grid_2004.conf
+examples/platforms/conf/gridpp_grid_2004.xml
+examples/platforms/conf/lcg_sept2004_grid.conf
+examples/platforms/conf/lcg_sept2004_grid.xml
+examples/platforms/conf/transform_optorsim_platform.pl
+examples/platforms/content/storage_content.txt
+examples/platforms/generation_scripts/create_hierarchical_clusters.pl
+examples/platforms/generation_scripts/enhancedDTDwithHierarchicalCluster.pl
+examples/platforms/generation_scripts/generate_g5k_platform_cabinets.pl
+examples/platforms/generation_scripts/generate_g5k_platform.pl
+examples/platforms/syscoord/generate_peer_platform.pl
+examples/platforms/syscoord/median_harvard.syscoord
+examples/platforms/syscoord/median_harvard.xml
+examples/platforms/syscoord/median_meridian.syscoord
+examples/platforms/syscoord/median_meridian.xml
+examples/platforms/syscoord/median_p2psim.syscoord
+examples/platforms/syscoord/median_p2psim.xml
+)
+
+set(generated_src_files
+src/xbt/datadesc/ddt_parse.yy.c
+)
+
+foreach(file ${generated_src_files})
+  set_source_files_properties(${file} PROPERTIES GENERATED true)
+endforeach(file ${generated_src_files})

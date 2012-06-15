@@ -214,6 +214,7 @@ set(source_to_pack
   ${teshsuite_src}
   ${tools_src}
   ${testsuite_src}
+  ${PLATFORMS_EXAMPLES}
 )
 
 ##########################################
