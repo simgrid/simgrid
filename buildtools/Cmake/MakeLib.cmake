@@ -151,3 +151,9 @@ if(enable_lib_static)
 		set_target_properties(smpi_static PROPERTIES OUTPUT_NAME smpi)
 	endif(enable_smpi)
 endif(enable_lib_static)
+
+# Dependencies from maintainer mode
+###################################
+if(enable_maintainer_mode AND YACC_EXE AND LEX_EXE)
+  add_dependencies(simgrid automaton_generated_src)
+endif(enable_maintainer_mode AND YACC_EXE AND LEX_EXE)

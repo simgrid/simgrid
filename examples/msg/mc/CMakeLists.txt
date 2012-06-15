@@ -71,8 +71,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/random_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.c
   ${CMAKE_CURRENT_SOURCE_DIR}/y.tab.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/automaton.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/automatonparse_promela.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.h
@@ -84,8 +82,6 @@ set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/dwarf
   ${CMAKE_CURRENT_SOURCE_DIR}/parse_dwarf
-  ${CMAKE_CURRENT_SOURCE_DIR}/parserPromela.lex
-  ${CMAKE_CURRENT_SOURCE_DIR}/parserPromela.yacc
   ${CMAKE_CURRENT_SOURCE_DIR}/promela1_bugged1_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/promela2_bugged1_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/promela2_bugged2_liveness
