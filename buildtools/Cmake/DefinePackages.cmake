@@ -172,7 +172,6 @@ set(XBT_SRC
 	src/xbt/automaton/automaton.c
 	src/xbt/automaton/automatonparse_promela.c
 	src/xbt/automaton/automaton.c
-	src/xbt/automaton/automatonparse_promela.c
 	src/xbt/automaton/automaton_create.c
 	src/xbt/datadesc/ddt_create.c
 	src/xbt/datadesc/ddt_convert.c
