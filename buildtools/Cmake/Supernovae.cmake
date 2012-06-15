@@ -4,17 +4,19 @@
 ### Add here every files that should not be supernovaed (generated files) ###
 #############################################################################
 set(simgrid_fragile_sources 
-	src/xbt/datadesc/ddt_parse.yy.c
-	src/surf/surfxml_parse.c
-	src/xbt/graphxml_parse.c
-	src/simdag/sd_daxloader.c
-	src/xbt/mmalloc/mm.c
-	${GTNETS_USED}
+  src/simdag/sd_daxloader.c
+  src/surf/surfxml_parse.c
+  src/xbt/automaton/automaton_create.c
+  src/xbt/datadesc/ddt_parse.yy.c
+  src/xbt/graphxml_parse.c
+  src/xbt/mmalloc/mm.c
+  ${GTNETS_USED}
 )
 set(gras_fragile_sources
-	src/xbt/datadesc/ddt_parse.yy.c
-	src/xbt/graphxml_parse.c
-    src/xbt/mmalloc/mm.c
+  src/xbt/automaton/automaton_create.c
+  src/xbt/datadesc/ddt_parse.yy.c
+  src/xbt/graphxml_parse.c
+  src/xbt/mmalloc/mm.c
 )
 
 #####################################################
