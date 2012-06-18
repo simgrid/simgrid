@@ -5,6 +5,9 @@ find_program(SED_EXE NAMES sed)
 find_program(YACC_EXE NAMES yacc)
 find_program(LEX_EXE NAMES lex)
 
+mark_as_advanced(YACC_EXE)
+mark_as_advanced(LEX_EXE)
+
 if(YACC_EXE AND LEX_EXE)
   add_custom_target(automaton_generated_src ALL
   DEPENDS ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.lex
