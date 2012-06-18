@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+
+<!-- this file is not really intended to start the code in simulation
+     mode, but mainly to allow the use of the gras_stub_generator.
+     In particular, don't trust the argument passed here -->
+
+<process host='suno-9.sophia.grid5000.fr'  function='server'>
+  <argument value="Ressource_A:2222:1"/>
+  <argument value="owner"/>
+</process>
+
+<process        host='suno-9.sophia.grid5000.fr'  function='client'/>
+
+</platform>

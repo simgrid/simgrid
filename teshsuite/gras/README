@@ -9,3 +9,7 @@ empty_main/ Once upon a time, GRAS was broken when processes did
 	    
 msg_handle/ Ensures the wanted semantic for gras_msg_handle(i) when
             i<0, i==0 and i>0.
+
+numerous_rpc/ Ensures that it is ok to have a very large amount of
+              very small RPC in real life (it used to be a race
+              condition in the socket mechanism stuff)
