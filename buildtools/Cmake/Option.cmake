@@ -31,7 +31,7 @@ option(enable_model-checking "Turn this on to experiment with our prototype of m
 option(enable_lib_static "" off)
 option(enable_jedule "Jedule output of SimDAG." off)
 option(enable_debug "Turn this off to remove all debug messages at compile time (faster, but no debug activable)" on)
-option(enable_supernovae "Whether Supernovae mode (helping compiler optimization) is activated." on)
+option(enable_supernovae "Whether Supernovae mode (helping compiler optimization) is activated." off)
 option(enable_msg_deprecated "This option enable the use of msg deprecated functions" off)
 
 #if(enable_supernovae AND enable_model-checking)
