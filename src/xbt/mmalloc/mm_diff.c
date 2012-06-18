@@ -311,9 +311,11 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 		  
 	      }
 	    }else{
+	      fprintf(stderr, "Pointers on blocks with different types \n");
 	      distance++;
 	    }
 	  }else{
+	    fprintf(stderr, "Pointed address not in std_heap");
 	    distance++;
 	  }
 	    
@@ -426,9 +428,11 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 		      }
 		    }
 		  }else{
+		    fprintf(stderr, "Pointers on blocks with different types \n");
 		    distance++;
 		  }
 		}else{
+		  fprintf(stderr, "Pointed address not in std_heap");
 		  distance++;
 		}
 	      }
