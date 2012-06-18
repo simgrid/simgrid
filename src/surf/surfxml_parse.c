@@ -128,6 +128,7 @@ void ETag_surfxml_storage(void)
 
   storage.id = A_surfxml_storage_id;
   storage.type_id = A_surfxml_storage_typeId;
+  storage.content = A_surfxml_storage_content;
   sg_platf_new_storage(&storage);
 }
 void STag_surfxml_storage_type(void)

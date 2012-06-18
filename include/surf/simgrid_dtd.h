@@ -149,6 +149,8 @@ typedef int AT_surfxml_peer_bw_out;
 #define AU_surfxml_peer_bw_out NULL
 typedef int AT_surfxml_cluster_availability_file;
 #define AU_surfxml_cluster_availability_file NULL
+typedef int AT_surfxml_storage_content;
+#define AU_surfxml_storage_content NULL
 typedef int AT_surfxml_process_kill_time;
 #define AU_surfxml_process_kill_time NULL
 typedef int AT_surfxml_cluster_bb_bw;
@@ -238,10 +240,10 @@ typedef int AT_surfxml_bypassRoute_dst;
 #define AU_surfxml_bypassRoute_dst NULL
 typedef int AT_surfxml_host_core;
 #define AU_surfxml_host_core NULL
-typedef int AT_surfxml_host_availability;
-#define AU_surfxml_host_availability NULL
 typedef int AT_surfxml_storage_type_model;
 #define AU_surfxml_storage_type_model NULL
+typedef int AT_surfxml_host_availability;
+#define AU_surfxml_host_availability NULL
 typedef int AT_surfxml_bypassRoute_src;
 #define AU_surfxml_bypassRoute_src NULL
 typedef int AT_surfxml_route_src;
@@ -363,6 +365,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_peer_bw_out_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_availability_file ) AX_surfxml_cluster_availability_file;
 #define A_surfxml_cluster_availability_file (surfxml_bufferstack + AX_surfxml_cluster_availability_file)
 XBT_PUBLIC_DATA(short ) int surfxml_cluster_availability_file_isset;
+XBT_PUBLIC_DATA(AT_surfxml_storage_content ) AX_surfxml_storage_content;
+#define A_surfxml_storage_content (surfxml_bufferstack + AX_surfxml_storage_content)
+XBT_PUBLIC_DATA(short ) int surfxml_storage_content_isset;
 XBT_PUBLIC_DATA(AT_surfxml_process_kill_time ) AX_surfxml_process_kill_time;
 #define A_surfxml_process_kill_time (surfxml_bufferstack + AX_surfxml_process_kill_time)
 XBT_PUBLIC_DATA(short ) int surfxml_process_kill_time_isset;
@@ -504,12 +509,12 @@ XBT_PUBLIC_DATA(short ) int surfxml_bypassRoute_dst_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_core ) AX_surfxml_host_core;
 #define A_surfxml_host_core (surfxml_bufferstack + AX_surfxml_host_core)
 XBT_PUBLIC_DATA(short ) int surfxml_host_core_isset;
-XBT_PUBLIC_DATA(AT_surfxml_host_availability ) AX_surfxml_host_availability;
-#define A_surfxml_host_availability (surfxml_bufferstack + AX_surfxml_host_availability)
-XBT_PUBLIC_DATA(short ) int surfxml_host_availability_isset;
 XBT_PUBLIC_DATA(AT_surfxml_storage_type_model ) AX_surfxml_storage_type_model;
 #define A_surfxml_storage_type_model (surfxml_bufferstack + AX_surfxml_storage_type_model)
 XBT_PUBLIC_DATA(short ) int surfxml_storage_type_model_isset;
+XBT_PUBLIC_DATA(AT_surfxml_host_availability ) AX_surfxml_host_availability;
+#define A_surfxml_host_availability (surfxml_bufferstack + AX_surfxml_host_availability)
+XBT_PUBLIC_DATA(short ) int surfxml_host_availability_isset;
 XBT_PUBLIC_DATA(AT_surfxml_bypassRoute_src ) AX_surfxml_bypassRoute_src;
 #define A_surfxml_bypassRoute_src (surfxml_bufferstack + AX_surfxml_bypassRoute_src)
 XBT_PUBLIC_DATA(short ) int surfxml_bypassRoute_src_isset;

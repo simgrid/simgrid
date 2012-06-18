@@ -128,6 +128,7 @@ typedef struct s_sg_platf_cluster_cbarg {
 typedef struct {
   const char* id;
   const char* type_id;
+  const char* content;
 } s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
 
 typedef struct {

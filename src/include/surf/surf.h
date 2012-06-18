@@ -223,7 +223,7 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*read) (void *storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*write) (void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *storage, surf_file_t stream);
-  void* (*create_resource) (const char* id, const char* model,const char* type_id);
+  void* (*create_resource) (const char* id, const char* model, const char* type_id, const char *content);
 } s_surf_model_extension_storage_t;
 
      /** \ingroup SURF_models

@@ -100,6 +100,11 @@ static surf_action_t storage_action_write(void *storage, const void* ptr, size_t
   surf_stat_t content = stream->content;
   XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,content->stat.size);
 
+  // update file size
+  content->stat.size += size;
+  // update disk space
+  ((storage_t)storage)->used_size =+ size;
+
   surf_action_t action = storage_action_execute(storage,size,WRITE);
   // if(used_size==size) {
   //   storage_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
@@ -146,7 +151,7 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
   return (surf_action_t) action;
 }
 
-static void* storage_create_resource(const char* id, const char* model,const char* type_id)
+static void* storage_create_resource(const char* id, const char* model,const char* type_id,const char* content_name)
 {
   storage_t storage = NULL;
 
@@ -157,6 +162,8 @@ static void* storage_create_resource(const char* id, const char* model,const cha
           surf_storage_model, id,NULL);
 
   storage->state_current = SURF_RESOURCE_ON;
+  storage->used_size = 0;
+  storage->size = 0;
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
   double Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
@@ -166,7 +173,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
-  storage->content = parse_storage_content(storage_type->content,&(storage->used_size));
+  storage->content = parse_storage_content((char*)content_name,&(storage->used_size));
   storage->size = storage_type->size;
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
@@ -247,9 +254,9 @@ static double storage_share_resources(double NOW)
       if(rate>0) {
         min_completion = MIN(min_completion, (size-used_size)/rate);
       }
-  }
+  }*/
+
   return min_completion;
-*/
 }
 
 static int storage_resource_used(void *resource_id)
@@ -331,16 +338,24 @@ static void parse_storage_init(sg_platf_storage_cbarg_t storage)
                                     storage->type_id,
                                     ROUTING_STORAGE_TYPE_LEVEL);
   if(!stype) xbt_die("No storage type '%s'",storage->type_id);
-//  XBT_INFO("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tproperties '%p'\n",
-//      storage->id,
-//      ((storage_type_t) stype)->model,
-//      ((storage_type_t) stype)->type_id,
-//      ((storage_type_t) stype)->content,
-//      ((storage_type_t) stype)->properties);
 
- storage_create_resource(storage->id,
+  // if storage content is not specified use the content of storage_type if exist
+  if(!strcmp(storage->content,"") && strcmp(((storage_type_t) stype)->content,"")){
+    storage->content = ((storage_type_t) stype)->content;
+    XBT_DEBUG("For disk '%s' content is empty, use the content of storage type '%s'",storage->id,((storage_type_t) stype)->type_id);
+  }
+
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' \n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tproperties '%p'\n",
+      storage->id,
+      ((storage_type_t) stype)->model,
+      ((storage_type_t) stype)->type_id,
+      storage->content,
+      ((storage_type_t) stype)->properties);
+
+  storage_create_resource(storage->id,
      ((storage_type_t) stype)->model,
-     ((storage_type_t) stype)->type_id);
+     ((storage_type_t) stype)->type_id,
+     storage->content);
 }
 
 static void parse_mstorage_init(sg_platf_mstorage_cbarg_t mstorage)
@@ -425,9 +440,10 @@ static void storage_parse_storage(sg_platf_storage_cbarg_t storage)
 #endif
   xbt_assert(storage_type,"Reading a storage, type id \"%s\" does not exists", storage->type_id);
 
-  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s'",
+  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'",
       storage->id,
-      storage->type_id);
+      storage->type_id,
+      storage->content);
 
   xbt_lib_set(storage_lib,
       storage->id,

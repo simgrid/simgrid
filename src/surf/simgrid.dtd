@@ -34,11 +34,12 @@
 <!ATTLIST storage_type id       CDATA #REQUIRED>
 <!ATTLIST storage_type model    CDATA #REQUIRED>
 <!ATTLIST storage_type size     CDATA #REQUIRED>
-<!ATTLIST storage_type content  CDATA "0">
+<!ATTLIST storage_type content  CDATA "">
 
 <!ELEMENT storage (prop*)>
 <!ATTLIST storage id CDATA #REQUIRED>
 <!ATTLIST storage typeId CDATA #REQUIRED>
+<!ATTLIST storage content  CDATA "">
 
 <!ELEMENT mount EMPTY>
 <!ATTLIST mount id CDATA #REQUIRED>
