@@ -159,8 +159,7 @@ ADD_TEST(memcheck-msg-masterslave-cpu-ti-thread-1 ${CMAKE_BINARY_DIR}/examples/m
 ADD_TEST(memcheck-msg-masterslave-cpu-ti-thread-2 ${CMAKE_BINARY_DIR}/examples/msg/masterslave/masterslave_failure --log=xbt_cfg.thres:critical --log=no_loc small_platform_with_failures.xml masterslave/deployment_masterslave.xml --cfg=path: --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 ADD_TEST(memcheck-msg-masterslave-cpu-ti-thread-3 ${CMAKE_BINARY_DIR}/examples/msg/masterslave/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 
-# tesh_file: /localhome/giersch/src/simgrid/simgrid-git/examples/msg/cloud/masterslave_virtual_machines.tesh does not exist!
-# ADD_TEST(msg-masterslave-virtual-machines ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/cloud     --cd ${CMAKE_HOME_DIRECTORY}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/cloud/masterslave_virtual_machines.tesh)
+ADD_TEST(memcheck-msg-masterslave-virtual-machines-0 ${CMAKE_BINARY_DIR}/examples/msg/cloud/masterslave_virtual_machines ./msg_platform.xml --log=root.fmt:"[%12.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/)
 
 if(CONTEXT_UCONTEXT)
 ADD_TEST(memcheck-msg-sendrecv-CLM03-ucontext-0 ${CMAKE_BINARY_DIR}/examples/msg/sendrecv/sendrecv ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/platform_sendrecv.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/deployment_sendrecv.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext  --cd ${CMAKE_BINARY_DIR}/examples/msg/)
