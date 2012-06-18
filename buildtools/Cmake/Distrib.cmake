@@ -223,8 +223,8 @@ set(source_to_pack
 
 add_custom_target(dist-dir
   COMMENT "Generating the distribution directory"
-  COMMAND test -e ${PROJECT_NAME}-${release_version}/ && chmod -R a+w ${PROJECT_NAME}-${release_version}/ || true
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
+  COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}-${release_version}.tar.gz
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/html/
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ ${PROJECT_NAME}-${release_version}/doc/html/
@@ -242,23 +242,23 @@ foreach(file ${source_to_pack})
   get_filename_component(file_location ${file} PATH)
   string(REGEX MATCH ";${file_location};" OPERATION "${dirs_in_tarball}")
   if(NOT OPERATION)
-       set(dirs_in_tarball "${dirs_in_tarball};${file_location};")
-       add_custom_command(
-         TARGET dist-dir
-         COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/${file_location}/
-       )       
-   endif(NOT OPERATION)
-   
-   # Actually copy the file
-   add_custom_command(
-     TARGET dist-dir
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${PROJECT_NAME}-${release_version}/${file_location}/
-   )
-   
-   add_custom_command(
-     TARGET dist-dir
-     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
-   )
+    set(dirs_in_tarball "${dirs_in_tarball};${file_location};")
+    add_custom_command(
+      TARGET dist-dir
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/${file_location}/
+    )
+  endif(NOT OPERATION)
+  
+  # Actually copy the file
+  add_custom_command(
+    TARGET dist-dir
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/${file} ${PROJECT_NAME}-${release_version}/${file_location}/
+  )
+  
+  add_custom_command(
+    TARGET dist-dir
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
+  )
 endforeach(file ${source_to_pack})
 
 ######################################
@@ -266,7 +266,9 @@ endforeach(file ${source_to_pack})
 ######################################
 
 add_custom_target(dist
+  COMMENT "Removing the distribution directory"
   DEPENDS ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
 )
 
 add_custom_command(
@@ -294,46 +296,39 @@ endif(NOT enable_maintainer_mode)
 # Allow to test the "make dist"
 add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E echo "XXX remove old copy"
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}.cpy 
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX copy again the source tree"
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_NAME}-${release_version}/ ${PROJECT_NAME}-${release_version}.cpy 
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version} 
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Untar distrib"
+  COMMAND ${CMAKE_COMMAND} -E tar  xf ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}.tar.gz ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}
   COMMAND ${CMAKE_COMMAND} -E echo "XXX create build and install subtrees"
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/_build
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/_inst
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_inst
  
   # This stupid cmake creates a directory in source, killing the purpose of the chmod
   # (tricking around)
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX change the modes of directories"
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/CMakeFiles 
-  COMMAND chmod -R a-w ${PROJECT_NAME}-${release_version}/ # FIXME: we should pass without commenting that line
-  COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/_build
-  COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/_inst
-  COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/CMakeFiles
+  #COMMAND ${CMAKE_COMMAND} -E echo "XXX change the modes of directories"
+  #COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/CMakeFiles 
+  #COMMAND chmod -R a-w ${PROJECT_NAME}-${release_version}/ # FIXME: we should pass without commenting that line
+  #COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/_build
+  #COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/_inst
+  #COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/CMakeFiles
   
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Configure"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build ${CMAKE_COMMAND} build ..  -DCMAKE_INSTALL_PREFIX=../_inst -Wno-dev -Denable_doc=OFF
-#  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build make dist-dir
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build 
+          ${CMAKE_COMMAND} 
+          -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_inst 
+          -Denable_lua=ON
+          -Denable_model-checking=ON
+          ..
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build make VERBOSE=1
-  
-  # This fails, unfortunately, because GRAS is broken for now
-  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build ctest -j5 --output-on-failure
-
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX Check that cleaning works"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build make clean
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX Display what is remaining after make clean"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_NAME}-${release_version}/_build ls -lR
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove _build and _inst directories"
-  COMMAND chmod a+w ${PROJECT_NAME}-${release_version}/
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/_build
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/_inst
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX The output of the diff follows"
-  COMMAND diff -ruN ${PROJECT_NAME}-${release_version}.cpy ${PROJECT_NAME}-${release_version}
-  COMMAND ${CMAKE_COMMAND} -E echo "XXX end of the diff, random cleanups now"
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}.cpy 
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} VERBOSE=1
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Test"
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build ctest
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Install"
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} install
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove temp directories"
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}
 )
-add_dependencies(distcheck dist-dir)
+#add_dependencies(distcheck dist)
 
 #######################################
 ### Fill in the "make check" target ###
