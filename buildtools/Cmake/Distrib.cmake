@@ -293,40 +293,41 @@ endif(NOT enable_maintainer_mode)
 ### Fill in the "make distcheck" target ###
 ###########################################
 
+set(CMAKE_BINARY_TEST_DIR ${CMAKE_BINARY_DIR})
+
 # Allow to test the "make dist"
 add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E echo "XXX remove old copy"
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version} 
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version} 
+
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Untar distrib"
-  COMMAND ${CMAKE_COMMAND} -E tar  xf ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}.tar.gz ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E tar  xf ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
+
   COMMAND ${CMAKE_COMMAND} -E echo "XXX create build and install subtrees"
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_inst
- 
-  # This stupid cmake creates a directory in source, killing the purpose of the chmod
-  # (tricking around)
-  #COMMAND ${CMAKE_COMMAND} -E echo "XXX change the modes of directories"
-  #COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/CMakeFiles 
-  #COMMAND chmod -R a-w ${PROJECT_NAME}-${release_version}/ # FIXME: we should pass without commenting that line
-  #COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/_build
-  #COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/_inst
-  #COMMAND chmod -R a+w ${PROJECT_NAME}-${release_version}/CMakeFiles
-  
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst
+   
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Configure"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build 
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build 
           ${CMAKE_COMMAND} 
-          -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_inst 
+          -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst 
           -Denable_lua=ON
           -Denable_model-checking=ON
           ..
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} VERBOSE=1
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM}
+
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Test"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build ctest
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ctest || true
+
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Install"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} install
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} install
+  COMMAND ${CMAKE_COMMAND} -E create_symlink 
+                            ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst/lib/libsimgrid.so
+                            ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst/lib/libsimgridtest.so
+
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove temp directories"
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 )
 #add_dependencies(distcheck dist)
 
