@@ -1613,7 +1613,6 @@ $ ${bindir:=.}/bugged2 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) [(3)client] Wait (comm=(verbose only) [(3)client -> (1)server])
 > [  0.000000] (1:server@HostA) [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
 > [  0.000000] (1:server@HostA) [(1)server] Wait (comm=(verbose only) [(3)client -> (1)server])
-> [  0.000000] (1:server@HostA) State space size ~= 1
 > [  0.000000] (1:server@HostA) Expanded states = 1387
 > [  0.000000] (1:server@HostA) Visited states = 4071
 > [  0.000000] (1:server@HostA) Executed transitions = 3799
