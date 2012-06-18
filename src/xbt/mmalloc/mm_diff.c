@@ -180,11 +180,6 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
     return 1;
   }
 
-  if(mdp1->heaplimit != mdp2->heaplimit){
-    fprintf(stderr,"Different limit of valid info table indices\n");
-    return 1;
-  }
-
   if(mdp1->fd != mdp2->fd){
     fprintf(stderr,"Different file descriptor for the file to which this malloc heap is mapped\n");
     return 1;
@@ -196,10 +191,18 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
     }*/
 
 
+  if(mdp1->heaplimit != mdp2->heaplimit){
+    fprintf(stderr,"Different limit of valid info table indices\n");
+    return 1;
+  }
+
   void* s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - getpagesize();
     
   void *heapbase1 = (char *)mdp1 + BLOCKSIZE;
   void *heapbase2 = (char *)mdp2 + BLOCKSIZE;
+
+  void * breakval1 = (char *)mdp1 + ((char *)mdp1->breakval - (char *)s_heap);
+  void * breakval2 = (char *)mdp2 + ((char *)mdp2->breakval - (char *)s_heap);
 
   size_t i, j;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
@@ -228,7 +231,10 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
     }
 
     addr_block1 = (char*)heapbase1 + ((i-1)*BLOCKSIZE);
+    xbt_assert(addr_block1 < breakval1, "Block address out of heap memory used");
+
     addr_block2 = (char*)heapbase2 + ((i-1)*BLOCKSIZE);
+    xbt_assert(addr_block2 < breakval2, "Block address out of heap memory used");
 
     if(mdp1->heapinfo[i].type == 0){ /* busy large block */
 
@@ -359,8 +365,10 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	  if(mdp1->heapinfo[i].busy_frag.frag_size[j] > 0){
 	    
 	    addr_frag1 = (char *)addr_block1 + (j * frag_size);
-	    addr_frag2 = (char *)addr_block2 + (j * frag_size);
+	    xbt_assert(addr_frag1 < breakval1, "Fragment address out of heap memory used");
 
+	    addr_frag2 = (char *)addr_block2 + (j * frag_size);
+	    xbt_assert(addr_frag1 < breakval1, "Fragment address out of heap memory used");
 
 	    /* Hamming distance on different blocks */
 	    distance = 0;
