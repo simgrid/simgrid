@@ -39,6 +39,7 @@ typedef struct surf_storage {
   const char* content; /*should be a dict */
 } s_surf_storage_t, *surf_storage_t;
 
+static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
 static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type);
 
@@ -58,7 +59,7 @@ static surf_action_t storage_action_open(void *storage, const char* mount, const
       ((storage_t)storage)->generic_resource.name,
       ROUTING_STORAGE_LEVEL);
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, storage_type_id,ROUTING_STORAGE_TYPE_LEVEL);
-  xbt_dict_t content_dict = storage_type->content;
+  xbt_dict_t content_dict = ((storage_t)storage)->content;
   surf_stat_t content = xbt_dict_get(content_dict,path);
 
   surf_file_t file = xbt_new0(s_surf_file_t,1);
@@ -100,7 +101,9 @@ static surf_action_t storage_action_write(void *storage, const void* ptr, size_t
   XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,content->stat.size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
-  content->stat.size += size;
+  // if(used_size==size) {
+  //   storage_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
+  // }
   return action;
 }
 
@@ -163,6 +166,8 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage->constraint       = lmm_constraint_new(storage_maxmin_system, storage, Bconnection);
   storage->constraint_read  = lmm_constraint_new(storage_maxmin_system, storage, Bread);
   storage->constraint_write = lmm_constraint_new(storage_maxmin_system, storage, Bwrite);
+  storage->content = parse_storage_content(storage_type->content,&(storage->used_size));
+  storage->size = storage_type->size;
 
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
@@ -195,11 +200,23 @@ static void storage_update_actions_state(double now, double delta)
   surf_action_storage_t next_action = NULL;
   xbt_swag_t running_actions = surf_storage_model->states.running_action_set;
 
+  // Update the disk usage
+//  foreach disk {
+//    rate = 0
+//    foreach write_action in disk {
+//      rate += value(variable(action))
+//     }
+//   used_size += delta * rate
+//  }
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     double_update(&(GENERIC_ACTION(action).remains),
                   lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * delta);
     if (GENERIC_LMM_ACTION(action).generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(GENERIC_ACTION(action).max_duration), delta);
+    // if(remains>0 and weight(variable(action))>0 && used_size == size) {
+    // GENERIC_ACTION(action).finish = surf_get_clock();
+    // storage_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
+    // } else
     if ((GENERIC_ACTION(action).remains <= 0) &&
         (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0)) {
       GENERIC_ACTION(action).finish = surf_get_clock();
@@ -218,9 +235,21 @@ static double storage_share_resources(double NOW)
 {
   XBT_DEBUG("storage_share_resources %f",NOW);
   s_surf_action_storage_t action;
-  return generic_maxmin_share_resources(surf_storage_model->states.running_action_set,
+  double min_completion = generic_maxmin_share_resources(surf_storage_model->states.running_action_set,
       xbt_swag_offset(action, generic_lmm_action.variable),
       storage_maxmin_system, lmm_solve);
+  /*
+   foreach(disk) {
+      rate = 0
+      foreach write_action in disk {
+          rate += value(variable(action));
+      }
+      if(rate>0) {
+        min_completion = MIN(min_completion, (size-used_size)/rate);
+      }
+  }
+  return min_completion;
+*/
 }
 
 static int storage_resource_used(void *resource_id)
@@ -417,7 +446,7 @@ static void free_storage_content(void *p)
   free(content);
 }
 
-static xbt_dict_t parse_storage_content(const char *filename, unsigned long *used_size)
+static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size)
 {
   *used_size = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
@@ -475,7 +504,7 @@ static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_typ
   storage_type_t stype = xbt_new0(s_storage_type_t, 1);
   stype->model = xbt_strdup(storage_type->model);
   stype->properties = storage_type->properties;
-  stype->content = parse_storage_content(storage_type->content,&(stype->used_size));
+  stype->content = xbt_strdup(storage_type->content);
   stype->type_id = xbt_strdup(storage_type->id);
   stype->size = storage_type->size * 1000000000; /* storage_type->size is in Gbytes and stype->sizeis in bytes */
 
@@ -539,9 +568,18 @@ static XBT_INLINE void routing_storage_type_free(void *r)
   storage_type_t stype = r;
   free(stype->model);
   free(stype->type_id);
+  free(stype->content);
   xbt_dict_free(&(stype->properties));
-  xbt_dict_free(&(stype->content));
   free(stype);
+}
+
+static XBT_INLINE void surf_storage_resource_free(void *r)
+{
+  // specific to storage
+  storage_t storage = r;
+  xbt_dict_free(&storage->content);
+  // generic resource
+  surf_resource_free(r);
 }
 
 static XBT_INLINE void routing_storage_host_free(void *r)
@@ -555,7 +593,7 @@ void storage_register_callbacks() {
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,xbt_free);
   ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib,routing_storage_host_free);
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib,routing_storage_type_free);
-  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_resource_free);
+  SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_resource_free);
 
   sg_platf_storage_add_cb(storage_parse_storage);
   sg_platf_mstorage_add_cb(storage_parse_mstorage);

@@ -10,11 +10,10 @@
 
 typedef struct s_storage_type {
   char *model;
-  xbt_dict_t content; /* char * -> s_surf_stat_t */
+  char *content;
   char *type_id;
   xbt_dict_t properties;
   unsigned long size;
-  unsigned long used_size;
 } s_storage_type_t, *storage_type_t;
 
 typedef struct s_mount {
@@ -39,6 +38,9 @@ typedef struct storage {
   lmm_constraint_t constraint;          /* Constraint for maximum bandwidth from connexion */
   lmm_constraint_t constraint_write;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t constraint_read;     /* Constraint for maximum write bandwidth*/
+  xbt_dict_t content; /* char * -> s_surf_stat_t */
+  unsigned long size;
+  unsigned long used_size;
 } s_storage_t, *storage_t;
 
 typedef enum {
