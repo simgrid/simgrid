@@ -431,7 +431,7 @@ public class Peer extends Process {
 			Connection peerChoosed = null;
 			do {
 				i = 0;
-				int idChosen = ((int)Msg.getClock() + j) % peers.size();
+				int idChosen = stream.randInt(0,peers.size() - 1);
 				for (Connection connection : peers.values()) {
 					if (i == idChosen) {
 						peerChoosed = connection;
