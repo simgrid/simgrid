@@ -1,13 +1,10 @@
 <doxygenlayout version="1.0">
   <!-- Navigation index tabs for HTML output -->
   <navindex>
-    <tab type="mainpage" visible="no" title="User Guide Home"/>
-    <tab type="pages" visible="yes" title="Table Of Content" intro="Complete pages list"/>
-    <tab type="user" url="https://gforge.inria.fr/projects/simgrid" title="Forge"/>
-    <tab type="user" url="http://simgrid.gforge.inria.fr/" title="Website"/>
-    <tab type="user" url="../../ref_guide/html/index.html" title="Reference Manual"/>	
-    <tab type="user" url="../../user_guide/html/index.html" title="User Guide"/>	
-    <tab type="user" url="http://simgrid.gforge.inria.fr/101/index.php" title="Tutorials"/>
+    <tab type="pages" visible="no" title="Table Of Content" intro="Complete pages list">
+      <tab type="pages" visible="yes" title="Table Of Content" intro="Complete pages list"/>
+    </tab>
+
     <tab type="namespaces" visible="no" title="">
       <tab type="namespaces" visible="yes" title="" intro=""/>
       <tab type="namespacemembers" visible="yes" title="" intro=""/>
@@ -18,10 +15,17 @@
       <tab type="hierarchy" visible="yes" title="" intro=""/>
       <tab type="classmembers" visible="yes" title="" intro=""/>
     </tab>
-    <tab type="files" visible="yes" title="">
+    <tab type="files" visible="no" title="">
       <tab type="files" visible="yes" title="" intro=""/>
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
+
+    <tab type="user" visible="yes" url="../../html/index.html" title="Home"/>
+    <tab type="user" url="../../ref_guide/html/index.html" title="Reference Manual"/>
+    <tab type="mainpage" visible="no" title="User Guide"/>
+    <tab type="user" url="http://simgrid.gforge.inria.fr/101/index.php" title="Tutorials"/>
+    <tab type="user" url="https://gforge.inria.fr/projects/simgrid" title="Forge"/>
+    <tab type="user" url="http://simgrid.gforge.inria.fr/" title="Website"/>
     <tab type="examples" visible="no" title="" intro=""/>  
   </navindex>
 
