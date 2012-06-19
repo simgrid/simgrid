@@ -96,6 +96,16 @@ struct list {
   struct list *prev;
 };
 
+/* Statistics available to the user. */
+struct mstats
+{
+  size_t bytes_total;		/* Total size of the heap. */
+  size_t chunks_used;		/* Chunks allocated by the user. */
+  size_t bytes_used;		/* Byte total of user-allocated chunks. */
+  size_t chunks_free;		/* Chunks in the free list. */
+  size_t bytes_free;		/* Byte total of chunks in the free list. */
+};
+
 /* Data structure giving per-block information.
  *
  * There is one such structure in the mdp->heapinfo array per block used in that heap,
@@ -221,6 +231,10 @@ struct mdesc {
      it may change each time the region is mapped and unmapped. */
 
   int fd;
+
+  /* Instrumentation.  */
+
+  struct mstats heapstats;
 
 };
 

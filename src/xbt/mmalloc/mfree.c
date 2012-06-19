@@ -44,6 +44,13 @@ void mfree(struct mdesc *mdp, void *ptr)
     break;
 
   case 0:
+     /* Get as many statistics as early as we can.  */
+      mdp -> heapstats.chunks_used--;
+      mdp -> heapstats.bytes_used -=
+	  mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
+      mdp -> heapstats.bytes_free +=
+	  mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
+
     /* Find the free cluster previous to this one in the free list.
        Start searching at the last block referenced; this may benefit
        programs with locality of allocation.  */
@@ -84,6 +91,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[block].free_block.prev = i;
       mdp->heapinfo[i].free_block.next = block;
       mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev = block;
+      mdp -> heapstats.chunks_free++;
       /* Mark all my ex-blocks as free */
       for (it=0; it<mdp->heapinfo[block].free_block.size; it++) {
     	  if (mdp->heapinfo[block+it].type <0) {
@@ -105,6 +113,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[block].free_block.next
           = mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.next;
       mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev = block;
+      mdp -> heapstats.chunks_free--;
     }
 
     /* Now see if we can return stuff to the system.  */
@@ -129,6 +138,13 @@ void mfree(struct mdesc *mdp, void *ptr)
     break;
 
   default:
+    /* Do some of the statistics.  */
+      mdp -> heapstats.chunks_used--;
+      mdp -> heapstats.bytes_used -= 1 << type;
+      mdp -> heapstats.chunks_free++;
+      mdp -> heapstats.bytes_free += 1 << type;
+
+    
     /* Get the address of the first free fragment in this block.  */
     prev = (struct list *)
         ((char *) ADDRESS(block) +
@@ -150,7 +166,13 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[block].type = 0;
       mdp->heapinfo[block].busy_block.size = 1;
       mdp->heapinfo[block].busy_block.busy_size = 0;
-
+      
+      /* Keep the statistics accurate.  */
+      mdp -> heapstats.chunks_used++;
+      mdp -> heapstats.bytes_used += BLOCKSIZE;
+      mdp -> heapstats.chunks_free -= BLOCKSIZE >> type;
+      mdp -> heapstats.bytes_free -= BLOCKSIZE;
+      
       mfree((void *) mdp, (void *) ADDRESS(block));
     } else if (mdp->heapinfo[block].busy_frag.nfree != 0) {
       /* If some fragments of this block are free, link this

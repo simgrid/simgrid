@@ -164,6 +164,12 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
 	  RESIDUAL(next->next, BLOCKSIZE) >> log;
       }
 
+      /* Update the statistics.  */
+      mdp -> heapstats.chunks_used++;
+      mdp -> heapstats.bytes_used += 1 << log;
+      mdp -> heapstats.chunks_free--;
+      mdp -> heapstats.bytes_free -= 1 << log;
+      
     } else {
       /* No free fragments of the desired size, so get a new block
          and break it into fragments, returning the first.  */
@@ -190,6 +196,10 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       mdp->heapinfo[block].type = log;
       mdp->heapinfo[block].busy_frag.nfree = i - 1;
       mdp->heapinfo[block].busy_frag.first = i - 1;
+
+      mdp -> heapstats.chunks_free += (BLOCKSIZE >> log) - 1;
+      mdp -> heapstats.bytes_free += BLOCKSIZE - (1 << log);
+      mdp -> heapstats.bytes_used -= BLOCKSIZE - (1 << log);
     }
   } else {
     /* Large allocation to receive one or more blocks.
@@ -231,7 +241,8 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
         mdp->heapinfo[block].busy_block.size = blocks;
         mdp->heapinfo[block].busy_block.busy_size = requested_size;
         mdp->heapinfo[block].busy_block.bt_size=xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
-
+	mdp -> heapstats.chunks_used++;
+	mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
         return result;
       }
       /* Need large block(s), but found some in the existing heap */
@@ -267,6 +278,10 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
     mdp->heapinfo[block].busy_block.busy_size = requested_size;
     //mdp->heapinfo[block].busy_block.bt_size = 0;
     mdp->heapinfo[block].busy_block.bt_size = xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
+
+    mdp -> heapstats.chunks_used++;
+    mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
+    mdp -> heapstats.bytes_free -= blocks * BLOCKSIZE;
   }
   //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
   return (result);
