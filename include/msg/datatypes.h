@@ -37,7 +37,7 @@ typedef struct m_host {
 #endif
 } s_m_host_t;
 
-/** @brief Host datatype  
+/** @brief Host datatype.
     @ingroup m_host_management
 
     A <em>location</em> (or <em>host</em>) is any possible place where
@@ -63,7 +63,7 @@ typedef struct m_task {
 #endif
 } s_m_task_t;
 
-/** @brief Task datatype  
+/** @brief Task datatype.
     @ingroup m_task_management 
 
     A <em>task</em> may then be defined by a <em>computing
@@ -104,7 +104,7 @@ typedef struct m_gpu_task {
 #endif
 } s_m_gpu_task_t;
 
-/** @brief GPU task datatype
+/** @brief GPU task datatype.
     @ingroup m_task_management
 
     A <em>task</em> may then be defined by a <em>computing
