@@ -10,7 +10,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg,
                                 "Cloud-oriented parts of the MSG API");
 
-/** @brief Create a new (empty) VMs
+/** @brief Create a new (empty) VMs.
  *  @ingroup msg_VMs
  *
  *  @bug it is expected that in the future, the coreAmount parameter will be used
@@ -31,7 +31,7 @@ msg_vm_t MSG_vm_start(m_host_t location, int coreAmount) {
 
   return res;
 }
-/** @brief Returns a newly constructed dynar containing all existing VMs in the system
+/** @brief Returns a newly constructed dynar containing all existing VMs in the system.
  *  @ingroup msg_VMs
  *
  * Don't forget to free the dynar after use.
@@ -62,7 +62,6 @@ int MSG_vm_is_running(msg_vm_t vm) {
  *
  * Afterward, when the VM is migrated or suspended or whatever, the process will have the corresponding handling, too.
  *
- * @bug for now, if a binded process terminates, every VM functions will segfault. Baaaad.
  */
 void MSG_vm_bind(msg_vm_t vm, m_process_t process) {
 	/* check if the process is already in a VM */
@@ -93,7 +92,7 @@ void MSG_vm_unbind(msg_vm_t vm, m_process_t process) {
   MSG_process_kill(process);
 }
 
-/** @brief Immediately change the host on which all processes are running
+/** @brief Immediately change the host on which all processes are running.
  *  @ingroup msg_VMs
  *
  * No migration cost occurs. If you want to simulate this too, you want to use a
@@ -111,7 +110,7 @@ void MSG_vm_migrate(msg_vm_t vm, m_host_t destination) {
   vm->location = destination;
 }
 
-/** @brief Immediately suspend the execution of all processes within the given VM
+/** @brief Immediately suspend the execution of all processes within the given VM.
  *  @ingroup msg_VMs
  *
  * No suspension cost occurs. If you want to simulate this too, you want to
@@ -127,7 +126,7 @@ void MSG_vm_suspend(msg_vm_t vm) {
   }
 }
 
-/** @brief Immediately resumes the execution of all processes within the given VM
+/** @brief Immediately resumes the execution of all processes within the given VM.
  *  @ingroup msg_VMs
  *
  * No resume cost occurs. If you want to simulate this too, you want to
