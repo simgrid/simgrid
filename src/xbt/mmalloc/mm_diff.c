@@ -130,67 +130,6 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   int errors = 0;
 
-  /*if(mdp1->headersize != mdp2->headersize){
-    fprintf(stderr, "Different size of the file header for the mapped files\n");
-    return 1;
-  }
-
-  if(mdp1->refcount != mdp2->refcount){
-    fprintf(stderr, "Different number of processes that attached the heap\n");
-    return 1;
-  }
-
-  if(strcmp(mdp1->magic, mdp2->magic) != 0){
-    fprintf(stderr,"Different magic number\n");
-    return 1;
-  }
-
-  if(mdp1->flags != mdp2->flags){
-    fprintf(stderr,"Different flags\n");  
-    return 1;
-  }
-
-  if(mdp1->heapsize != mdp2->heapsize){
-    fprintf(stderr,"Different number of info entries\n");
-    return 1;
-  }  
-
-  if(mdp1->heapbase != mdp2->heapbase){
-    fprintf(stderr,"Different first block of the heap\n");
-    return 1;
-  }
-
-  if(mdp1->heapindex != mdp2->heapindex){
-    fprintf(stderr,"Different index for the heap table : %zu - %zu\n", mdp1->heapindex, mdp2->heapindex);
-    return 1;
-  }
-
-  if(mdp1->base != mdp2->base){
-    fprintf(stderr,"Different base address of the memory region\n");
-    return 1;
-  }
-
-  if(mdp1->breakval != mdp2->breakval){
-    fprintf(stderr,"Different current location in the memory region\n");
-    return 1;
-  }
-
-  if(mdp1->top != mdp2->top){
-    fprintf(stderr,"Different end of the current location in the memory region\n");
-    return 1;
-  }
-
-  if(mdp1->fd != mdp2->fd){
-    fprintf(stderr,"Different file descriptor for the file to which this malloc heap is mapped\n");
-    return 1;
-  }
-
-  if(mdp1->version != mdp2->version){
-    fprintf(stderr,"Different version of the mmalloc package\n");
-    return 1;
-    }*/
-
-
   if(mdp1->heaplimit != mdp2->heaplimit){
     fprintf(stderr,"Different limit of valid info table indices\n");
     return 1;
@@ -315,7 +254,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	      distance++;
 	    }
 	  }else{
-	    fprintf(stderr, "Pointed address not in std_heap");
+	    fprintf(stderr, "Pointed addresses (%p - %p) not in std_heap\n", address_pointed1, address_pointed2);
 	    distance++;
 	  }
 	    
@@ -329,6 +268,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	fprintf(stderr, "Hamming distance between blocks : %d\n", distance);
 	mmalloc_backtrace_block_display(mdp1, i);
 	mmalloc_backtrace_block_display(mdp2, i);
+	fprintf(stderr, "\n");
 	errors++; 
 	total_distance += distance;
       }
@@ -432,7 +372,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 		    distance++;
 		  }
 		}else{
-		  fprintf(stderr, "Pointed address not in std_heap");
+		  fprintf(stderr, "Pointed addresses (%p - %p) not in std_heap\n", address_pointed1, address_pointed2);
 		  distance++;
 		}
 	      }
@@ -444,6 +384,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 	      fprintf(stderr, "Hamming distance between fragments : %d\n", distance);
 	      mmalloc_backtrace_fragment_display(mdp1, i, j);
 	      mmalloc_backtrace_fragment_display(mdp2, i, j);
+	      fprintf(stderr, "\n");
 	      errors++;
 	      total_distance += distance;
 	      
