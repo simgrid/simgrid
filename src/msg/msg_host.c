@@ -114,8 +114,7 @@ m_host_t MSG_host_self(void)
   return MSG_process_get_host(NULL);
 }
 
-/** \ingroup m_host_management
- *
+/*
  * \brief Destroys a host (internal call only)
  */
 void __MSG_host_destroy(m_host_t host) {
