@@ -17,10 +17,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
 static xbt_dict_t trace_list = NULL;
 
-// a unique RngStream structure for everyone
-// FIXME : has to be created by someone
-static RngStream common_rng_stream = NULL;
-
 XBT_INLINE tmgr_history_t tmgr_history_new(void)
 {
   tmgr_history_t h;
@@ -43,12 +39,9 @@ tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
                                           probabilist_event_generator_t generator2)
 {
   tmgr_trace_t trace = NULL;
-  unsigned int id_hash;
   RngStream rng_stream = NULL;
   
-  rng_stream = RngStream_CopyStream(common_rng_stream);
-  id_hash = xbt_str_hash(id);
-  RngStream_AdvanceState(rng_stream, 0, id_hash);
+  rng_stream = sg_platf_rng_stream_get(id);
   
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->type = e_trace_probabilist;
