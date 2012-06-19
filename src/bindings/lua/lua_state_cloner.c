@@ -421,7 +421,6 @@ static void sglua_copy_table(lua_State* src, lua_State* dst) {
  * @brief Copies the function on the top of src to the top of dst.
  *
  * It can be a Lua function or a C function.
- * Copying upvalues is not implemented yet.
  *
  * @param src source state
  * @param dst destination state
