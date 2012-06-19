@@ -145,7 +145,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   size_t i, j;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
-  size_t frag_size = 0;         /* FIXME: arbitrary initialization */
+  size_t frag_size;
 
   i = 1;
 
