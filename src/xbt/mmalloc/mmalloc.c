@@ -169,6 +169,8 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       mdp -> heapstats.bytes_used += 1 << log;
       mdp -> heapstats.chunks_free--;
       mdp -> heapstats.bytes_free -= 1 << log;
+
+      memset(result, 0, requested_size);
       
     } else {
       /* No free fragments of the desired size, so get a new block
@@ -176,6 +178,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       //printf("(%s) No free fragment...",xbt_thread_self_name());
 
       result = mmalloc(mdp, BLOCKSIZE); // does not return NULL
+      memset(result, 0, requested_size);
 
       /* Link all fragments but the first into the free list, and mark their requested size to 0.  */
       block = BLOCK(result);
@@ -234,6 +237,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
           continue;
         }
         result = register_morecore(mdp, blocks * BLOCKSIZE);
+	memset(result, 0, requested_size);
 
         block = BLOCK(result);
         for (it=0;it<blocks;it++)
