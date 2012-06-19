@@ -215,11 +215,13 @@ Java_org_simgrid_msg_Task_execute(JNIEnv * env,
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
+  xbt_ex_t e;
   MSG_error_t rv;
   TRY {
      rv = MSG_task_execute(task);
   }
-  CATCH_ANONYMOUS {
+  CATCH(e) {
+    xbt_ex_free(e);
   	return;
   }
   if (rv != MSG_OK) {
@@ -364,8 +366,13 @@ Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask,
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
   MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
-  rv = MSG_task_send_with_timeout(task, alias, (double) jtimeout);
-
+  xbt_ex_t e;
+  TRY {
+    rv = MSG_task_send_with_timeout(task, alias, (double) jtimeout);
+  }
+  CATCH(e) {
+    xbt_ex_free(e);
+  }
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
   if (rv != MSG_OK) {
@@ -391,16 +398,19 @@ Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env, jobject jtask,
 
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
   MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
-  rv = MSG_task_send_bounded(task, alias, (double) jmaxRate);
 
+  xbt_ex_t e;
+  TRY {
+    rv = MSG_task_send_bounded(task, alias, (double) jmaxRate);
+  }
+  CATCH(e) {
+    xbt_ex_free(e);
+  }
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
-  jxbt_check_res("MSG_task_send_bounded()", rv,
-                 MSG_HOST_FAILURE | MSG_TRANSFER_FAILURE | MSG_TIMEOUT,
-                 bprintf
-                 ("while sending task %s to mailbox %s with max rate %f",
-                  MSG_task_get_name(task), alias, (double) jmaxRate));
-
+  if (rv != MSG_OK) {
+    jmsg_throw_status(env, rv);
+  }
 }
 
 
@@ -427,10 +437,12 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
   }
 
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
+  xbt_ex_t e;
   TRY {
   	rv = MSG_task_receive_ext(task, alias, (double) jtimeout, host);
   }
-  CATCH_ANONYMOUS {
+  CATCH(e) {
+    xbt_ex_free(e);
   	return NULL;
   }
   if (rv != MSG_OK) {
@@ -447,10 +459,6 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
   xbt_free(task);
-
-  jxbt_check_res("MSG_task_receive_ext()", rv,
-                 MSG_HOST_FAILURE | MSG_TRANSFER_FAILURE | MSG_TIMEOUT,
-                 bprintf("while receiving from mailbox %s", alias));
 
   return (jobject) jtask_local;
 }
@@ -568,12 +576,14 @@ Java_org_simgrid_msg_Task_listen(JNIEnv * env, jclass cls,
 
   const char *alias;
   int rv;
+  xbt_ex_t e;
 
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
   TRY {
   	rv = MSG_task_listen(alias);
   }
-  CATCH_ANONYMOUS {
+  CATCH(e) {
+    xbt_ex_free(e);
   	return 0;
   }
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
@@ -595,10 +605,13 @@ Java_org_simgrid_msg_Task_listenFromHost(JNIEnv * env, jclass cls,
     return -1;
   }
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
+  xbt_ex_t e;
+
   TRY {
   	rv = MSG_task_listen_from_host(alias, host);
   }
-  CATCH_ANONYMOUS {
+  CATCH(e) {
+    xbt_ex_free(e);
   	return 0;
   }
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
@@ -613,10 +626,12 @@ Java_org_simgrid_msg_Task_listenFrom(JNIEnv * env, jclass cls,
 
   int rv;
   const char *alias = (*env)->GetStringUTFChars(env, jalias, 0);
+  xbt_ex_t e;
   TRY {
   	rv = MSG_task_listen_from(alias);
   }
-  CATCH_ANONYMOUS {
+  CATCH(e) {
+    xbt_ex_free(e);
   	return 0;
   }
   (*env)->ReleaseStringUTFChars(env, jalias, alias);

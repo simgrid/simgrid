@@ -31,6 +31,13 @@ public class VM {
 		this.coreAmount = coreAmount;
 		start(host,coreAmount);
 	}
+	protected void finalize() {
+		destroy();
+	}
+	/**
+	 * Destroy the VM
+	 */
+	protected native void destroy();
 	/**
 	 * Natively implemented method starting the VM.
 	 * @param coreAmount

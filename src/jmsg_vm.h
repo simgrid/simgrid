@@ -32,12 +32,12 @@ Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm, jobject jhost, jint jcoreamount);
 /**
- * Class			org_simgrid_msg_VM
- * Method			all
- * Signature	()[Lorg/simgrid/msg/VM;
+ * Class            org_simgrid_msg_VM
+ * Method           destroy
+ * Signature    ()V
  */
-JNIEXPORT jobjectArray JNICALL
-Java_org_simgrid_msg_VM_all(JNIEnv *env, jclass cls);
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_VM_destroy(JNIEnv *env, jobject jvm);
 /**
  * Class			org_simgrid_msg_VM
  * Method			isSuspended

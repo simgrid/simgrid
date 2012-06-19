@@ -31,7 +31,13 @@ Java_org_simgrid_msg_Mutex_acquire(JNIEnv * env, jobject obj) {
   xbt_mutex_t mutex;
 
   mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, jsyncro_field_Mutex_bind);
-  xbt_mutex_acquire(mutex);
+  xbt_ex_t e;
+  TRY {
+    xbt_mutex_acquire(mutex);
+  }
+  CATCH(e) {
+    xbt_ex_free(e);
+  }
 }
 
 JNIEXPORT void JNICALL

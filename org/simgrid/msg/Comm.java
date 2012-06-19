@@ -69,6 +69,7 @@ public class Comm {
 	 * @param timeout Time before giving up
 	 */
 	public native void waitCompletion(double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
+		
 	/**
 	 * Returns the task associated with the communication.
 	 * if the communication isn't finished yet, will return null.

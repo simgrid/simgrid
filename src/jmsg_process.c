@@ -265,10 +265,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep
 
 	double time =  jmillis / 1000 + jnanos / 1000;
 	MSG_error_t rv;
+	xbt_ex_t e;
 	TRY {
 		rv = MSG_process_sleep(time);
 	}
-	CATCH_ANONYMOUS {
+	CATCH(e) {
+	    xbt_ex_free(e);
 		return;
 	}
   if (rv != MSG_OK) {
@@ -280,10 +282,12 @@ Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
                                      jdouble jseconds)
 {
   MSG_error_t rv;
+  xbt_ex_t e;
   TRY {
    rv = MSG_process_sleep((double)jseconds);
   }
-  CATCH_ANONYMOUS {
+  CATCH(e) {
+    xbt_ex_free(e);
   	return;
   }
   if (rv != MSG_OK) {
@@ -325,8 +329,9 @@ Java_org_simgrid_msg_Process_migrate(JNIEnv * env,
 
   /* try to change the host of the process */
   MSG_error_t rv = MSG_process_migrate(process, host);
-  jxbt_check_res("MSG_process_migrate()", rv, MSG_OK,
-                 bprintf("unexpected error , please report this bug"));
+  if (rv != MSG_OK) {
+    jmsg_throw_status(env,rv);
+  }
   /* change the host java side */
   (*env)->SetObjectField(env, jprocess, jprocess_field_Process_host, jhost);
 }

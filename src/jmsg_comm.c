@@ -82,6 +82,7 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
     jxbt_throw_native(env,bprintf("comm is null"));
     return JNI_FALSE;
   }
+  xbt_ex_t e;
   TRY {
     if (MSG_comm_test(comm)) {
       MSG_error_t status = MSG_comm_get_status(comm);
@@ -99,9 +100,10 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
       return JNI_FALSE;
     }
   }
-  CATCH_ANONYMOUS {
-
+  CATCH(e) {
+    xbt_ex_free(e);
   }
+
   return JNI_FALSE;
 }
 JNIEXPORT void JNICALL
@@ -118,11 +120,12 @@ Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble tim
   }
 
   MSG_error_t status;
+  xbt_ex_t e;
   TRY {
     status = MSG_comm_wait(comm,(double)timeout);
   }
-  CATCH_ANONYMOUS {
-    return;
+  CATCH(e) {
+    xbt_ex_free(e);
   }
   (*env)->SetBooleanField(env, jcomm, jcomm_field_Comm_finished, JNI_TRUE);
   if (status == MSG_OK) {

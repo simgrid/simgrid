@@ -74,10 +74,8 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
   	jxbt_throw_null(env,bprintf("No host can have a null name"));
   	return NULL;
   }
-  XBT_DEBUG("Looking for host '%s'",name);
   /* get the host by name       (the hosts are created during the grid resolution) */
   host = MSG_get_host_by_name(name);
-  XBT_DEBUG("MSG gave %p as native host", host);
 
   if (!host) {                  /* invalid name */
     jxbt_throw_host_not_found(env, name);

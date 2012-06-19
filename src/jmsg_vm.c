@@ -8,7 +8,7 @@
 #include "jmsg_host.h"
 #include "jmsg_process.h"
 #include "jxbt_utilities.h"
-
+#include "msg/msg.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm) {
@@ -35,7 +35,11 @@ Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm, jobject jhost, jint jcor
 
   jvm_bind(env,jvm,vm);
 }
-
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_VM_destroy(JNIEnv *env, jobject jvm) {
+  /*msg_vm_t vm = jvm_get_native(env,jvm);
+  MSG_vm_destroy(vm);*/
+}
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_VM_isSuspended(JNIEnv *env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
@@ -75,18 +79,33 @@ Java_org_simgrid_msg_VM_migrate(JNIEnv *env, jobject jvm, jobject jhost) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_suspend(JNIEnv *env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
-
-  MSG_vm_suspend(vm);
+  xbt_ex_t e;
+  TRY {
+    MSG_vm_suspend(vm);
+  }
+  CATCH(e) {
+    xbt_ex_free(e);
+  }
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_resume(JNIEnv *env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
-
-  MSG_vm_resume(vm);
+  xbt_ex_t e;
+  TRY {
+    MSG_vm_resume(vm);
+  }
+  CATCH(e) {
+    xbt_ex_free(e);
+  }
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_shutdown(JNIEnv *env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
-
-  MSG_vm_shutdown(vm);
+  xbt_ex_t e;
+  TRY {
+    MSG_vm_shutdown(vm);
+  }
+  CATCH(e) {
+    xbt_ex_free(e);
+  }
 }
