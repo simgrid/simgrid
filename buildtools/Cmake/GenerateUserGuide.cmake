@@ -1,17 +1,12 @@
 #### Generate the html documentation for the user guide.
 
-find_path(FIG2DEV_PATH	NAMES fig2dev	PATHS NO_DEFAULT_PATHS)
-find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
-
-
 file(GLOB_RECURSE source_doxygen
 	"${CMAKE_HOME_DIRECTORY}/tools/gras/*.[chl]"
 	"${CMAKE_HOME_DIRECTORY}/src/*.[chl]"
 	"${CMAKE_HOME_DIRECTORY}/include/*.[chl]"
 )
 
-
-if(DOXYGEN_PATH AND FIG2DEV_PATH)
+if(FIG2DEV_PATH)
 
 	set(DOCSSOURCES "${source_doxygen}\n${USER_GUIDE_SOURCES}")
 	string(REPLACE "\n" ";" DOCSSOURCES ${DOCSSOURCES})
@@ -83,7 +78,7 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH)
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen
 	)
 	
-else(DOXYGEN_PATH AND FIG2DEV_PATH)
+else(FIG2DEV_PATH)
 
 	ADD_CUSTOM_TARGET(user_guide
 			COMMENT "Generating the SimGrid user guide..."
@@ -98,7 +93,7 @@ else(DOXYGEN_PATH AND FIG2DEV_PATH)
 			)
 
 		
-endif(DOXYGEN_PATH AND FIG2DEV_PATH)
+endif(FIG2DEV_PATH)
 
 ##############################################################################"
 
