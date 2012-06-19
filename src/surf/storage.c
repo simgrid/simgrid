@@ -54,11 +54,6 @@ static surf_action_t storage_action_stat(void *storage, surf_file_t stream)
 static surf_action_t storage_action_open(void *storage, const char* mount, const char* path, const char* mode)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
-  char *storage_type_id = xbt_lib_get_or_null(
-      storage_lib,
-      ((storage_t)storage)->generic_resource.name,
-      ROUTING_STORAGE_LEVEL);
-  storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, storage_type_id,ROUTING_STORAGE_TYPE_LEVEL);
   xbt_dict_t content_dict = ((storage_t)storage)->content;
   surf_stat_t content = xbt_dict_get(content_dict,path);
 
