@@ -1,7 +1,5 @@
 /*! \page pls Packet level simulation
 
-\htmlinclude .pls.doc.toc
-
 It is possible to use a packet-level network simulator
 instead of the default flow-based simulation. You may want to use such
 an approach if you have doubts about the validity of the default model

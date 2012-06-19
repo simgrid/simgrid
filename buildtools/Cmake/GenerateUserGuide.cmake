@@ -5,6 +5,7 @@ find_path(DOXYGEN_PATH	NAMES doxygen	PATHS NO_DEFAULT_PATHS)
 
 
 file(GLOB_RECURSE source_doxygen
+	"${CMAKE_HOME_DIRECTORY}/tools/gras/*.[chl]"
 	"${CMAKE_HOME_DIRECTORY}/src/*.[chl]"
 	"${CMAKE_HOME_DIRECTORY}/include/*.[chl]"
 )
@@ -12,13 +13,13 @@ file(GLOB_RECURSE source_doxygen
 
 if(DOXYGEN_PATH AND FIG2DEV_PATH)
 
-	set(DOCSSOURCES "${source_doxygen}\n${DOC_SOURCE}")
+	set(DOCSSOURCES "${source_doxygen}\n${USER_GUIDE_SOURCES}")
 	string(REPLACE "\n" ";" DOCSSOURCES ${DOCSSOURCES})
 
 
 	set(DOC_PNGS 
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
-		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_small.png
+		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png		
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
@@ -28,29 +29,26 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH)
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
 	)
 	
-	configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
-	configure_file(${CMAKE_HOME_DIRECTORY}/doc/footer.html.in ${CMAKE_HOME_DIRECTORY}/doc/footer.html @ONLY)		
+	configure_file(${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/UserGuideDoxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/UserGuideDoxyfile @ONLY)
 	
 	ADD_CUSTOM_TARGET(user_guide
 		COMMENT "Generating the SimGrid user guide..."
 		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/userguide/html
-	    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/userguide/html
-		COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
-		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html
+	    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html		
+		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen
 	)
 		
-	ADD_CUSTOM_COMMAND(
-		OUTPUT ${CMAKE_HOME_DIRECTORY}/doc/logcategories.doc
+	ADD_CUSTOM_COMMAND(TARGET user_guide
 		DEPENDS ${source_doxygen}
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/logcategories.doc
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${CMAKE_HOME_DIRECTORY}/doc/logcategories.doc
+		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/logcategories.doc
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
 	)
 
 	foreach(file ${DOC_FIGS})
 		string(REPLACE ".fig" ".png" tmp_file ${file})
-		string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/fig/" "${CMAKE_HOME_DIRECTORY}/doc/html/" tmp_file ${tmp_file})
+		string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/shared/fig/" "${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/" tmp_file ${tmp_file})		
 		ADD_CUSTOM_COMMAND(TARGET user_guide
 			COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file}
 		)
@@ -58,42 +56,31 @@ if(DOXYGEN_PATH AND FIG2DEV_PATH)
 	
 	foreach(file ${DOC_PNGS})
 		ADD_CUSTOM_COMMAND(TARGET user_guide
-			COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/
+			COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/
 		)
 	endforeach(file ${DOC_PNGS})
 
 	ADD_CUSTOM_COMMAND(TARGET user_guide
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg ${CMAKE_HOME_DIRECTORY}/doc/html/
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg     ${CMAKE_HOME_DIRECTORY}/doc/html/
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/triva-graph_configuration.png        ${CMAKE_HOME_DIRECTORY}/doc/html/
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/triva-graph_visualization.png        ${CMAKE_HOME_DIRECTORY}/doc/html/
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/AS_hierarchy.png        ${CMAKE_HOME_DIRECTORY}/doc/html/		
-		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css                          ${CMAKE_HOME_DIRECTORY}/doc/html/
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg     ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/triva-graph_configuration.png        ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/triva-graph_visualization.png        ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/AS_hierarchy.png        ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/		
+		COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css                          ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/
 	)
 	
 	ADD_CUSTOM_COMMAND(TARGET user_guide
+           COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/simgrid_modules.map
 	    COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
-		COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
-		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc
+		COMMAND ${DOXYGEN_PATH}/doxygen UserGuideDoxyfile
+		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgriduserguide.tag index-API.doc
 		
 		COMMAND ${CMAKE_COMMAND} -E echo "XX Second Doxygen pass"
-		COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
+		COMMAND ${DOXYGEN_PATH}/doxygen UserGuideDoxyfile
 		
-		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/html/dir*
-		
-		COMMAND ${CMAKE_COMMAND} -E echo "XX Create shortcuts pages"
-		COMMAND ${CMAKE_COMMAND} -E echo \"<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>\" > ${CMAKE_HOME_DIRECTORY}/doc/html/gras.html
-		COMMAND ${CMAKE_COMMAND} -E echo \"<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__GRAS__API.html'>Grid Reality And Simulation.</a></h2></center></html>\" >> ${CMAKE_HOME_DIRECTORY}/doc/html/gras.html
-		
-		COMMAND ${CMAKE_COMMAND} -E echo \"<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>\" > ${CMAKE_HOME_DIRECTORY}/doc/html/amok.html
-		COMMAND ${CMAKE_COMMAND} -E echo \"<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__AMOK__API.html'>Advanced Metacomputing Overlay Kit.</a></h2></center></html>\" >> ${CMAKE_HOME_DIRECTORY}/doc/html/amok.html
-	
-		COMMAND ${CMAKE_COMMAND} -E echo \"<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>\" > ${CMAKE_HOME_DIRECTORY}/doc/html/msg.html
-		COMMAND ${CMAKE_COMMAND} -E echo \"<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__MSG__API.html'>Meta SimGrid.</a></h2></center></html>\" >> ${CMAKE_HOME_DIRECTORY}/doc/html/msg.html
-	
-		COMMAND ${CMAKE_COMMAND} -E echo \"<html><META HTTP-EQUIV='Refresh' content='0;URL=http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>\" > ${CMAKE_HOME_DIRECTORY}/doc/html/simdag.html
-		COMMAND ${CMAKE_COMMAND} -E echo \"<center><h2><br><a href='http://simgrid.gforge.inria.fr/doc/group__SD__API.html'>DAG Simulator.</a></h2></center></html>\" >> ${CMAKE_HOME_DIRECTORY}/doc/html/simdag.html
-		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/
+		COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/dir*
+				
+		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen
 	)
 	
 else(DOXYGEN_PATH AND FIG2DEV_PATH)
@@ -117,36 +104,36 @@ endif(DOXYGEN_PATH AND FIG2DEV_PATH)
 
 message(STATUS "Check individual TOCs")
 set(LISTE_GTUT
-	doc/gtut-tour-00-install.doc
-	doc/gtut-tour-01-bones.doc
-	doc/gtut-tour-02-simple.doc
-	doc/gtut-tour-03-args.doc
-	doc/gtut-tour-04-callback.doc
-	doc/gtut-tour-05-globals.doc
-	doc/gtut-tour-06-logs.doc
-	doc/gtut-tour-07-timers.doc
-	doc/gtut-tour-08-exceptions.doc
-	doc/gtut-tour-09-simpledata.doc
-	doc/gtut-tour-10-rpc.doc
-	doc/gtut-tour-11-explicitwait.doc
-	doc/gtut-tour-recap-messages.doc
-	doc/gtut-tour-12-staticstruct.doc
-	doc/gtut-tour-13-pointers.doc
-	doc/gtut-tour-14-dynar.doc
-	doc/gtut-tour-15-manualdatadef.doc
-	doc/gtut-tour-16-exchangecb.doc
+	doc/user_guide/doxygen/gtut-tour-00-install.doc
+	doc/user_guide/doxygen/gtut-tour-01-bones.doc
+	doc/user_guide/doxygen/gtut-tour-02-simple.doc
+	doc/user_guide/doxygen/gtut-tour-03-args.doc
+	doc/user_guide/doxygen/gtut-tour-04-callback.doc
+	doc/user_guide/doxygen/gtut-tour-05-globals.doc
+	doc/user_guide/doxygen/gtut-tour-06-logs.doc
+	doc/user_guide/doxygen/gtut-tour-07-timers.doc
+	doc/user_guide/doxygen/gtut-tour-08-exceptions.doc
+	doc/user_guide/doxygen/gtut-tour-09-simpledata.doc
+	doc/user_guide/doxygen/gtut-tour-10-rpc.doc
+	doc/user_guide/doxygen/gtut-tour-11-explicitwait.doc
+	doc/user_guide/doxygen/gtut-tour-recap-messages.doc
+	doc/user_guide/doxygen/gtut-tour-12-staticstruct.doc
+	doc/user_guide/doxygen/gtut-tour-13-pointers.doc
+	doc/user_guide/doxygen/gtut-tour-14-dynar.doc
+	doc/user_guide/doxygen/gtut-tour-15-manualdatadef.doc
+	doc/user_guide/doxygen/gtut-tour-16-exchangecb.doc
 )
 
 foreach(file_name ${LISTE_GTUT})
-	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc)
-	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc)
+	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc)
+	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc)
 	
 	file(READ "${file_name}" file_content)
 	string(REGEX MATCH "Table of Contents.*<hr>" valeur_line "${file_content}")
 	string(REPLACE "\n" ";" valeur_line "${valeur_line}")
 	string(REPLACE "\n" ";" file_content "${file_content}")
 	       
-	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc "\n") # make sure it exists
+	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "\n") # make sure it exists
 	foreach(line ${file_content})
 		string(REGEX MATCH "[\\]s?u?b?s?u?b?section.*" line2 "${line}")
 		string(REGEX MATCH ".*_toc.*" line3 "${line}")
@@ -158,29 +145,29 @@ foreach(file_name ${LISTE_GTUT})
 			set(line2                               " - \\ref ${line2}")
 			string(REPLACE " - \\ref subsection"    "   - \\ref " line2 ${line2})
 			string(REPLACE " - \\ref subsubsection" "     - \\ref " line2 ${line2})
-			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc "${line2}\n")
+			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "${line2}\n")
 		endif(line2 AND NOT line3)
 	endforeach(line ${file_content})
 	
-	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc "\n") # make sure it exists
+	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc "\n") # make sure it exists
 	foreach(line ${valeur_line})
 		string(REGEX MATCH ".*ref.*" line_ok ${line})
 		if(line_ok)
-			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc "${line_ok}\n")
+			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc "${line_ok}\n")
 		endif(line_ok)
 	endforeach(line ${valeur_line})
 	
-	exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc" OUTPUT_VARIABLE compare_files)
+	exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc" OUTPUT_VARIABLE compare_files)
 	if(compare_files)
 		message(STATUS "Wrong toc for ${file_name}. Should be:")
-		file(READ "${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc" file_content)
+		file(READ "${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc" file_content)
 		message("${file_content}")
-		exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc")
+		exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc")
         endif(compare_files)
 endforeach(file_name ${LISTE_GTUT})
 
-file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc)
-file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc)
+file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc)
+file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc)
 
 message(STATUS "Check main TOC")
 
@@ -196,7 +183,7 @@ foreach(file_name ${LISTE_GTUT})
 			string(REPLACE "@page " "" line2 "${line2}")
 			string(REGEX REPLACE " .*" "" line2 "${line2}")
 			set(line2 " - \\ref ${line2}")
-			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc "${line2}\n")
+			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "${line2}\n")
 		endif(line2)
 	endforeach(line ${file_content})
 	
@@ -206,35 +193,35 @@ foreach(file_name ${LISTE_GTUT})
 		string(REGEX MATCH "^[ ]*$" line3 "${line}")
 		string(REGEX MATCH "Table of Contents" line4 "${line}")
 		if(NOT line1 AND NOT line2 AND NOT line3 AND NOT line4)
-			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc "   ${line}\n")
+			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "   ${line}\n")
 		endif(NOT line1 AND NOT line2 AND NOT line3 AND NOT line4)
 	endforeach(line ${valeur_line})
 endforeach(file_name ${LISTE_GTUT})	
 
-file(READ "${CMAKE_HOME_DIRECTORY}/doc/gtut-tour.doc" file_content)
+file(READ "${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/gtut-tour.doc" file_content)
 string(REPLACE "\n" ";" file_content "${file_content}")
 foreach(line ${file_content})
 	string(REGEX MATCH "^[ ]+.*\\ref" line1 "${line}")
 	if(line1)
-		file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc "${line}\n")
+		file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc "${line}\n")
 	endif(line1)
 endforeach(line ${file_content})
 	
-exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc" OUTPUT_VARIABLE compare_files)
+exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc" OUTPUT_VARIABLE compare_files)
 if(compare_files)
 	message(STATUS "Wrong toc for gtut-tour.doc Right one is in tmp.realtoc")
-	exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc")
+	exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc")
 else(compare_files)
-	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.realtoc)
+	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc)
 endif(compare_files)	
   
-file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/tmp.curtoc)
+file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc)
 
-ADD_CUSTOM_TARGET(pdf
-    COMMAND ${CMAKE_COMMAND} -E echo "XX First pass simgrid_documentation.pdf"
+ADD_CUSTOM_TARGET(user_guide_pdf
+    COMMAND ${CMAKE_COMMAND} -E echo "XX First pass simgrid_user_guide.pdf"
     COMMAND make clean
     COMMAND make pdf || true
-    COMMAND ${CMAKE_COMMAND} -E echo "XX Second pass simgrid_documentation.pdf"
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Second pass simgrid_user_guide.pdf"
     COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/latex/refman.pdf
     COMMAND make pdf || true
     COMMAND ${CMAKE_COMMAND} -E echo "XX Write Simgrid_documentation.pdf"
@@ -242,4 +229,4 @@ ADD_CUSTOM_TARGET(pdf
   
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/latex/
 )
-add_dependencies(pdf user_guide)
+add_dependencies(user_guide_pdf user_guide)

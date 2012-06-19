@@ -1,7 +1,5 @@
 /*! \page tracing Tracing Simulations for Visualization
 
-\htmlinclude .tracing.doc.toc
-
 \section tracing_tracing Tracing Simulations for Visualization
 
 The trace visualization is widely used to observe and understand the behavior

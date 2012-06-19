@@ -1,14 +1,18 @@
 <doxygenlayout version="1.0">
   <!-- Navigation index tabs for HTML output -->
   <navindex>
-    <tab type="mainpage" visible="yes" title=""/>
-    <tab type="pages" visible="yes" title="" intro=""/>
-    <tab type="modules" visible="yes" title="" intro=""/>
-    <tab type="namespaces" visible="yes" title="">
+    <tab type="mainpage" visible="no" title="User Guide Home"/>
+    <tab type="pages" visible="yes" title="Table Of Content" intro="Complete pages list"/>
+    <tab type="user" url="https://gforge.inria.fr/projects/simgrid" title="Forge"/>
+    <tab type="user" url="http://simgrid.gforge.inria.fr/" title="Website"/>
+    <tab type="user" url="../../ref_guide/html/index.html" title="Reference Manual"/>	
+    <tab type="user" url="../../user_guide/html/index.html" title="User Guide"/>	
+    <tab type="user" url="http://simgrid.gforge.inria.fr/101/index.php" title="Tutorials"/>
+    <tab type="namespaces" visible="no" title="">
       <tab type="namespaces" visible="yes" title="" intro=""/>
       <tab type="namespacemembers" visible="yes" title="" intro=""/>
     </tab>
-    <tab type="classes" visible="yes" title="">
+    <tab type="classes" visible="no" title="">
       <tab type="classes" visible="yes" title="" intro=""/>
       <tab type="classindex" visible="$ALPHABETICAL_INDEX" title=""/> 
       <tab type="hierarchy" visible="yes" title="" intro=""/>
@@ -18,7 +22,7 @@
       <tab type="files" visible="yes" title="" intro=""/>
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
-    <tab type="examples" visible="yes" title="" intro=""/>  
+    <tab type="examples" visible="no" title="" intro=""/>  
   </navindex>
 
   <!-- Layout definition for a class page -->

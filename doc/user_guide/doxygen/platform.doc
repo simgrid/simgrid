@@ -1,7 +1,5 @@
 /*! \page platform Platform Description
 
-\htmlinclude .platform.doc.toc
-
 In order to run any simulation, SimGrid needs 3 things: something to run
 (so, your code), a description of the platform on which you want to run your
 application, and finally it needs something to know where to deploy what.
