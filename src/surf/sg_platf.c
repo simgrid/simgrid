@@ -143,7 +143,7 @@ void sg_platf_end() {
 
 static int surf_parse_models_setup_already_called = 0;
 
-void sg_platf_new_AS_begin(const char *id, const char *routing) {
+void sg_platf_new_AS_begin(const char *id, int routing) {
   unsigned int iterator;
   sg_platf_AS_begin_cb_t fun;
 

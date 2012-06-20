@@ -152,7 +152,7 @@ typedef struct {
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform
 
-XBT_PUBLIC(void) sg_platf_new_AS_begin(const char *id, const char *mode); // Begin description of new AS
+XBT_PUBLIC(void) sg_platf_new_AS_begin(const char *id, int mode); // Begin description of new AS
 XBT_PUBLIC(void) sg_platf_new_AS_end(void);                            // That AS is fully described
 
 XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an host   to the currently described AS

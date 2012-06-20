@@ -373,7 +373,7 @@ static void routing_parse_E_bypassASroute(void)
  * @param AS_id name of this autonomous system. Must be unique in the platform
  * @param wanted_routing_type one of Full, Floyd, Dijkstra or similar. Full list in the variable routing_models, in src/surf/surf_routing.c
  */
-void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
+void routing_AS_begin(const char *AS_id, int wanted_routing_type)
 {
   AS_t new_as;
   routing_model_description_t model = NULL;
@@ -384,17 +384,15 @@ void routing_AS_begin(const char *AS_id, const char *wanted_routing_type)
              "The AS \"%s\" already exists", AS_id);
 
   /* search the routing model */
-  for (cpt = 0; routing_models[cpt].name; cpt++)
-    if (!strcmp(wanted_routing_type, routing_models[cpt].name))
-      model = &routing_models[cpt];
-  /* if its not exist, error */
-  if (model == NULL) {
-    fprintf(stderr, "Routing model %s not found. Existing models:\n",
-            wanted_routing_type);
-    for (cpt = 0; routing_models[cpt].name; cpt++)
-      fprintf(stderr, "   %s: %s\n", routing_models[cpt].name,
-              routing_models[cpt].desc);
-    xbt_die("dying");
+  switch(wanted_routing_type){
+    case A_surfxml_AS_routing_Cluster:       model = &routing_models[SURF_MODEL_CLUSTER];break;
+    case A_surfxml_AS_routing_Dijkstra:      model = &routing_models[SURF_MODEL_DIJKSTRA];break;
+    case A_surfxml_AS_routing_DijkstraCache: model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
+    case A_surfxml_AS_routing_Floyd:         model = &routing_models[SURF_MODEL_FLOYD];break;
+    case A_surfxml_AS_routing_Full:          model = &routing_models[SURF_MODEL_FULL];break;
+    case A_surfxml_AS_routing_None:          model = &routing_models[SURF_MODEL_NONE];break;
+    case A_surfxml_AS_routing_RuleBased:     model = &routing_models[SURF_MODEL_RULEBASED];break;
+    case A_surfxml_AS_routing_Vivaldi:       model = &routing_models[SURF_MODEL_VIVALDI];break;
   }
 
   /* make a new routing component */
@@ -767,7 +765,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   }
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
-  sg_platf_new_AS_begin(cluster->id, "Cluster");
+  sg_platf_new_AS_begin(cluster->id, A_surfxml_AS_routing_Cluster);
 
   current_routing->link_up_down_list
             = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
@@ -921,7 +919,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   surfxml_bufferstack_push(1);
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", peer->id);
-  sg_platf_new_AS_begin(peer->id, "Full");
+  sg_platf_new_AS_begin(peer->id, A_surfxml_AS_routing_Full);
 
   XBT_DEBUG(" ");
   host_id = HOST_PEER(peer->id);

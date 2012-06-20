@@ -28,7 +28,7 @@ static int surf_parse_bypass_platform(void)
 
   XBT_DEBUG("<AS>");
   SURFXML_BUFFER_SET(AS_id, "AS0");
-  SURFXML_BUFFER_SET(AS_routing, "Full");
+  A_surfxml_AS_routing = A_surfxml_AS_routing_Full;
   SURFXML_START_TAG(AS);
 
   XBT_DEBUG("<host id=\"host A\" power=\"100000000.00\"/>");
