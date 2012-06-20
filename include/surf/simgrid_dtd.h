@@ -160,8 +160,7 @@ typedef int AT_surfxml_argument_value;
 typedef enum { AU_surfxml_link_state, A_surfxml_link_state_ON,A_surfxml_link_state_OFF } AT_surfxml_link_state;
 typedef int AT_surfxml_ASroute_gw_src;
 #define AU_surfxml_ASroute_gw_src NULL
-typedef int AT_surfxml_AS_routing;
-#define AU_surfxml_AS_routing NULL
+typedef enum { AU_surfxml_AS_routing, A_surfxml_AS_routing_Full,A_surfxml_AS_routing_Floyd,A_surfxml_AS_routing_Dijkstra,A_surfxml_AS_routing_DijkstraCache,A_surfxml_AS_routing_None,A_surfxml_AS_routing_RuleBased,A_surfxml_AS_routing_Vivaldi,A_surfxml_AS_routing_Cluster } AT_surfxml_AS_routing;
 typedef int AT_surfxml_link_bandwidth;
 #define AU_surfxml_link_bandwidth NULL
 typedef int AT_surfxml_cluster_id;
@@ -384,7 +383,7 @@ XBT_PUBLIC_DATA(AT_surfxml_ASroute_gw_src ) AX_surfxml_ASroute_gw_src;
 #define A_surfxml_ASroute_gw_src (surfxml_bufferstack + AX_surfxml_ASroute_gw_src)
 XBT_PUBLIC_DATA(short ) int surfxml_ASroute_gw_src_isset;
 XBT_PUBLIC_DATA(AT_surfxml_AS_routing ) AX_surfxml_AS_routing;
-#define A_surfxml_AS_routing (surfxml_bufferstack + AX_surfxml_AS_routing)
+#define A_surfxml_AS_routing AX_surfxml_AS_routing
 XBT_PUBLIC_DATA(short ) int surfxml_AS_routing_isset;
 XBT_PUBLIC_DATA(AT_surfxml_link_bandwidth ) AX_surfxml_link_bandwidth;
 #define A_surfxml_link_bandwidth (surfxml_bufferstack + AX_surfxml_link_bandwidth)

@@ -38,7 +38,7 @@ extern xbt_lib_t storage_type_lib;
 extern int ROUTING_STORAGE_TYPE_LEVEL;   //Routing storage_type level
 
 /* The callbacks to register for the routing to work */
-void routing_AS_begin(const char *AS_id, const char *wanted_routing_type);
+void routing_AS_begin(const char *AS_id, int wanted_routing_type);
 void routing_AS_end(void);
 
 #endif                          /* _SURF_SURF_H */
