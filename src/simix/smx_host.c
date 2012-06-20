@@ -348,13 +348,7 @@ void SIMIX_execution_finish(smx_action_t action)
 
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->smx_host->name);
-        if (simcall->issuer->smx_host == action->execution.host) {
-          // add a reference to the action that will be destroyed when the killed process is cleaned up, and by the end of the current function
-          surf_action_ref(action->execution.surf_exec);
-          SIMIX_process_kill(simcall->issuer);
-        } else {
-          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
-        }
+        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
 
       case SIMIX_CANCELED:
