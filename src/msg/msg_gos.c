@@ -23,88 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
  */
 MSG_error_t MSG_task_execute(m_task_t task)
 {
-  xbt_ex_t e;
-  simdata_task_t simdata = NULL;
-  simdata_process_t p_simdata;
-  e_smx_state_t comp_state;
-
-  simdata = task->simdata;
-
-  xbt_assert(simdata->host_nb == 0,
-              "This is a parallel task. Go to hell.");
-
-#ifdef HAVE_TRACING
-  TRACE_msg_task_execute_start(task);
-#endif
-
-  xbt_assert((!simdata->compute) && (task->simdata->isused == 0),
-              "This task is executed somewhere else. Go fix your code! %d",
-              task->simdata->isused);
-
-  XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
-
-  if (simdata->computation_amount == 0) {
-#ifdef HAVE_TRACING
-    TRACE_msg_task_execute_end(task);
-#endif
-    return MSG_OK;
-  }
-
-  m_process_t self = SIMIX_process_self();
-  p_simdata = SIMIX_process_self_get_data(self);
-  simdata->isused=1;
-  simdata->compute =
-      simcall_host_execute(task->name, p_simdata->m_host->smx_host,
-                           simdata->computation_amount,
-                           simdata->priority);
-#ifdef HAVE_TRACING
-  simcall_set_category(simdata->compute, task->category);
-#endif
-  
-  p_simdata->waiting_action = simdata->compute;
-  TRY {
-    comp_state = simcall_host_execution_wait(simdata->compute);
-    p_simdata->waiting_action = NULL;
-
-    simdata->isused=0;
-
-    XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
-
-    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    simdata->computation_amount = 0.0;
-    simdata->comm = NULL;
-    simdata->compute = NULL;
-#ifdef HAVE_TRACING
-    TRACE_msg_task_execute_end(task);
-#endif
-    MSG_RETURN(MSG_OK);
-  }  
-  CATCH(e) {
-    switch (e.category) {
-      case host_error:
-        /* action ended, set comm and compute = NULL, the actions is already  destroyed in the main function */
-        simdata->comm = NULL;
-        simdata->compute = NULL;
-        #ifdef HAVE_TRACING
-          TRACE_msg_task_execute_end(task);
-        #endif
-        MSG_RETURN(MSG_HOST_FAILURE);
-        break;  
-      case cancel_error:
-        /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-        simdata->comm = NULL;
-        simdata->compute = NULL;
-    #ifdef HAVE_TRACING
-        TRACE_msg_task_execute_end(task);
-    #endif
-        MSG_RETURN(MSG_TASK_CANCELED);        
-      break;
-      default:
-        RETHROW;
-    }
-    xbt_ex_free(e);
-  }
-  MSG_RETURN(MSG_OK);
+  return MSG_parallel_task_execute(task);
 }
 
 /** \ingroup m_task_management
@@ -173,56 +92,97 @@ MSG_parallel_task_create(const char *name, int host_nb,
  */
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
+  xbt_ex_t e;
   simdata_task_t simdata = NULL;
-  e_smx_state_t comp_state;
   simdata_process_t p_simdata;
+  e_smx_state_t comp_state;
 
   simdata = task->simdata;
-  p_simdata = SIMIX_process_self_get_data(SIMIX_process_self());
 
-  xbt_assert((!simdata->compute)
-              && (task->simdata->isused == 0),
-              "This task is executed somewhere else. Go fix your code!");
+  #ifdef HAVE_TRACING
+    TRACE_msg_task_execute_start(task);
+  #endif
 
-  xbt_assert(simdata->host_nb,
-              "This is not a parallel task. Go to hell.");
+  xbt_assert((!simdata->compute) && (task->simdata->isused == 0),
+              "This task is executed somewhere else. Go fix your code! %d",
+              task->simdata->isused);
 
-  XBT_DEBUG("Parallel computing on %s", SIMIX_host_get_name(p_simdata->m_host->smx_host));
+  XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
-  simdata->isused=1;
+  if (simdata->computation_amount == 0) {
+    #ifdef HAVE_TRACING
+      TRACE_msg_task_execute_end(task);
+    #endif
+    return MSG_OK;
+  }
 
-  simdata->compute =
+  m_process_t self = SIMIX_process_self();
+  p_simdata = SIMIX_process_self_get_data(self);
+
+  p_simdata->waiting_action = simdata->compute;
+  TRY {
+    #ifdef HAVE_TRACING
+      simcall_set_category(simdata->compute, task->category);
+    #endif
+
+    simdata->isused=1;
+
+    if (simdata->host_nb) {
       simcall_host_parallel_execute(task->name, simdata->host_nb,
                                   simdata->host_list,
                                   simdata->comp_amount,
                                   simdata->comm_amount, 1.0, -1.0);
-  XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
+      comp_state = simcall_host_execution_wait(simdata->compute);
+    }
+    else {
+      simdata->compute =
+      simcall_host_execute(task->name, p_simdata->m_host->smx_host,
+                             simdata->computation_amount,
+                             simdata->priority);
 
-  p_simdata->waiting_action = simdata->compute;
-  comp_state = simcall_host_execution_wait(simdata->compute);
-  p_simdata->waiting_action = NULL;
+      comp_state = simcall_host_execution_wait(simdata->compute);
+    }
 
-  XBT_DEBUG("Finished waiting for execution of action %p, state = %d", simdata->compute, (int)comp_state);
+    p_simdata->waiting_action = NULL;
 
-  simdata->isused=0;
+    simdata->isused=0;
 
-  if (comp_state == SIMIX_DONE) {
-    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    simdata->computation_amount = 0.0;
-    simdata->comm = NULL;
-    simdata->compute = NULL;
-    MSG_RETURN(MSG_OK);
-  } else if (simcall_host_get_state(SIMIX_host_self()) == 0) {
-    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    simdata->comm = NULL;
-    simdata->compute = NULL;
-    MSG_RETURN(MSG_HOST_FAILURE);
-  } else {
-    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    simdata->comm = NULL;
-    simdata->compute = NULL;
-    MSG_RETURN(MSG_TASK_CANCELED);
+    XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
   }
+  CATCH(e) {
+    switch (e.category) {
+      case host_error:
+        /* action ended, set comm and compute = NULL, the actions is already  destroyed in the main function */
+        simdata->comm = NULL;
+        simdata->compute = NULL;
+        #ifdef HAVE_TRACING
+          TRACE_msg_task_execute_end(task);
+        #endif
+        MSG_RETURN(MSG_HOST_FAILURE);
+        break;
+      case cancel_error:
+        /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+        simdata->comm = NULL;
+        simdata->compute = NULL;
+    #ifdef HAVE_TRACING
+        TRACE_msg_task_execute_end(task);
+    #endif
+        MSG_RETURN(MSG_TASK_CANCELED);
+      break;
+      default:
+        RETHROW;
+    }
+    xbt_ex_free(e);
+  }
+  /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+  simdata->computation_amount = 0.0;
+  simdata->comm = NULL;
+  simdata->compute = NULL;
+  #ifdef HAVE_TRACING
+    TRACE_msg_task_execute_end(task);
+  #endif
+
+  MSG_RETURN(MSG_OK);
 }
 
 
