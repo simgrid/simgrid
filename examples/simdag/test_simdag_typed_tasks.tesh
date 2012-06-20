@@ -1,0 +1,13 @@
+#! ./tesh
+p Usage test of simdag's typed tasks
+
+$ $SG_TEST_EXENV ./sd_typed_tasks_test --cfg=network/TCP_gamma:4194304 ${srcdir:=.}/2clusters.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [2.080300] [sd_typed_tasks_test/INFO] Task 'Seq. comp. 1' start time: 0.000000, finish time: 1.000000
+> [2.080300] [sd_typed_tasks_test/INFO] Task 'Par. Comp. 1' start time: 0.000000, finish time: 0.080000
+> [2.080300] [sd_typed_tasks_test/INFO] Task 'Par. Comp. 3' start time: 0.000000, finish time: 0.400000
+> [2.080300] [sd_typed_tasks_test/INFO] Task 'MxN redist' start time: 0.080000, finish time: 0.480300
+> [2.080300] [sd_typed_tasks_test/INFO] Task 'Par. Comp. 2' start time: 0.480300, finish time: 0.520300
+> [2.080300] [sd_typed_tasks_test/INFO] Task 'E2E comm.' start time: 1.000000, finish time: 1.080300
+> [2.080300] [sd_typed_tasks_test/INFO] Task 'Seq. comp 2.' start time: 1.080300, finish time: 2.080300

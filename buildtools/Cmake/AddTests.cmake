@@ -349,9 +349,11 @@ ENDIF(${ARCH_32_BITS})
 # simdag examples
 ADD_TEST(simdag-test-simdag		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag.tesh)
 ADD_TEST(simdag-test-simdag2		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag2.tesh)
-ADD_TEST(simdag-test-simdag-seq-access		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_seq_access.tesh)
+ADD_TEST(simdag-test-seq-access		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_seq_access.tesh)
+ADD_TEST(simdag-test-typed-tasks		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_typed_tasks.tesh)
+ADD_TEST(simdag-test-comm-throttling		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_comm_throttling.tesh)
 ADD_TEST(simdag-test-prop		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/properties/test_prop.tesh)
-ADD_TEST(simdag-minmin-test		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling 	--cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
+ADD_TEST(simdag-test-minmin-scheduling		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling 	--cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
 
 ADD_TEST(msg-gtnets-crosstraffic-thread   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread       --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg    --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/gtnets/gtnets-crosstraffic.tesh)
 if(CONTEXT_UCONTEXT)

@@ -55,6 +55,8 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag2.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_seq_access.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_typed_tasks.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_comm_throttling.tesh
   PARENT_SCOPE
 )
 set(xml_files
