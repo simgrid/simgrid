@@ -44,10 +44,6 @@ int main(int argc, char **argv)
  
   workstations = SD_workstation_get_list();
 
-  for (i=0;i<SD_workstation_get_number();i++)
-    XBT_INFO("%s runs at %f flops", SD_workstation_get_name(workstations[i]),
-       SD_workstation_get_power(workstations[i]));
-
   /* creation of some typed tasks and their dependencies */
   seq_comp1 = SD_task_create_comp_seq("Seq. comp. 1", NULL, 1e9);
   e2e_comm = SD_task_create_comm_e2e("E2E comm.", NULL, 1e7);
