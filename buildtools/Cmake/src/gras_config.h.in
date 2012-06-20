@@ -232,8 +232,8 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@
 
-/* Define to 1 if you have the `usleep' function. */
-#cmakedefine HAVE_USLEEP @HAVE_USLEEP@
+/* Define to 1 if you have the `nanosleep' function. */
+#cmakedefine HAVE_NANOSLEEP @HAVE_NANOSLEEP@
 
 /* Define to 1 if you have the <valgrind/valgrind.h> header file. */
 #cmakedefine HAVE_VALGRIND_VALGRIND_H @HAVE_VALGRIND_VALGRIND_H@

@@ -13,6 +13,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <math.h>               /* floor */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(tesh);
 
@@ -133,7 +134,10 @@ static void rctx_armageddon_kill_one(rctx_t initiator, const char *filepos,
     if (!rctx->reader_done) {
       rctx->interrupted = 1;
       kill(rctx->pid, SIGTERM);
-      usleep(100);
+      struct timespec ts;
+      ts.tv_sec = 0;
+      ts.tv_nsec = (100e-6 - floor(100e-6)) * 1e9;
+      nanosleep (&ts, NULL);
       kill(rctx->pid, SIGKILL);
     }
     xbt_os_mutex_release(rctx->interruption);
@@ -169,7 +173,10 @@ void rctx_armageddon(rctx_t initiator, int exitcode)
   }
 
   /* Give runner threads a chance to acknowledge the processes deaths */
-  usleep(10000);
+  struct timespec ts;
+  ts.tv_sec = 0;
+  ts.tv_nsec = (10000e-6 - floor(10000e-6)) * 1e9;
+  nanosleep (&ts, NULL);
   /* Ensure that nobody is running rctx_wait on exit */
   if (fg_job)
     xbt_os_mutex_acquire(rctx->interruption);
@@ -410,8 +417,12 @@ static void *thread_writer(void *r)
     }
     XBT_DEBUG("written %d chars so far", posw);
 
-    if (got <= 0)
-      usleep(100);
+    if (got <= 0){
+      struct timespec ts;
+      ts.tv_sec = 0;
+      ts.tv_nsec = (100e-6 - floor(100e-6)) * 1e9;
+      nanosleep (&ts, NULL);
+    }
   }
   rctx->input->data[0] = '\0';
   rctx->input->used = 0;
@@ -438,7 +449,10 @@ static void *thread_reader(void *r)
       buffout[posr] = '\0';
       xbt_strbuff_append(rctx->output_got, buffout);
     } else {
-      usleep(100);
+      struct timespec ts;
+      ts.tv_sec = 0;
+      ts.tv_nsec = (100e-6 - floor(100e-6)) * 1e9;
+      nanosleep (&ts, NULL);
     }
   } while (!rctx->timeout && posr != 0);
   free(buffout);
@@ -697,7 +711,10 @@ void *rctx_wait(void *r)
   /* Wait for the child to die or the timeout to happen (or an armageddon to happen) */
   while (!rctx->reader_done
          && (rctx->end_time < 0 || rctx->end_time >= now)) {
-    usleep(100);
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = (100e-6 - floor(100e-6)) * 1e9;
+    nanosleep (&ts, NULL);
     now = time(NULL);
   }
 
@@ -706,7 +723,10 @@ void *rctx_wait(void *r)
     XBT_INFO("<%s> timeouted. Kill the process.", rctx->filepos);
     rctx->timeout = 1;
     kill(rctx->pid, SIGTERM);
-    usleep(100);
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = (100e-6 - floor(100e-6)) * 1e9;
+    nanosleep (&ts, NULL);
     kill(rctx->pid, SIGKILL);
   }
 

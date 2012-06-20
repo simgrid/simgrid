@@ -59,13 +59,13 @@ void xbt_os_sleep(double sec)
 #ifdef _XBT_WIN32
   Sleep((floor(sec) * 1000) + ((sec - floor(sec)) * 1000));
 
-#elif HAVE_USLEEP
-  sleep(sec);
-  (void) usleep((sec - floor(sec)) * 1000000);
-
-#else                           /* don't have usleep. Use select to sleep less than one second */
+#elif HAVE_NANOSLEEP
+  struct timespec ts;
+  ts.tv_sec = sec;
+  ts.tv_nsec = (sec - floor(sec)) * 1e9;
+  nanosleep (&ts, NULL);
+#else                           /* don't have nanosleep. Use select to sleep less than one second */
   struct timeval timeout;
-
 
   timeout.tv_sec = (unsigned long) (sec);
   timeout.tv_usec = (sec - floor(sec)) * 1000000;

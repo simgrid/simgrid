@@ -54,7 +54,7 @@ if(enable_print_message)
 
   message("")
   message("HAVE_GETTIMEOFDAY ...........: ${HAVE_GETTIMEOFDAY}")
-  message("HAVE_USLEEP .................: ${HAVE_USLEEP}")
+  message("HAVE_NANOSLEEP ..............: ${HAVE_NANOSLEEP}")
   message("HAVE_GETDTABLESIZE ..........: ${HAVE_GETDTABLESIZE}")
   message("HAVE_SYSCONF ................: ${HAVE_SYSCONF}")
   message("HAVE_READV ..................: ${HAVE_READV}")
