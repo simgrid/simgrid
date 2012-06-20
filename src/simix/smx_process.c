@@ -582,7 +582,7 @@ void SIMIX_post_process_sleep(smx_action_t action)
 
     switch(surf_workstation_model->action_state_get(action->sleep.surf_sleep)){
       case SURF_ACTION_FAILED:
-        state = SIMIX_SRC_HOST_FAILURE;
+	SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
 
       case SURF_ACTION_DONE:
