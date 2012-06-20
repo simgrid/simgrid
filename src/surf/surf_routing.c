@@ -377,7 +377,6 @@ void routing_AS_begin(const char *AS_id, int wanted_routing_type)
 {
   AS_t new_as;
   routing_model_description_t model = NULL;
-  int cpt;
 
   xbt_assert(!xbt_lib_get_or_null
              (as_router_lib, AS_id, ROUTING_ASR_LEVEL),
