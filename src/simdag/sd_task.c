@@ -1442,12 +1442,6 @@ void SD_task_schedulev(SD_task_t task, int count,
           task->communication_amount[2]);
 
   }
- if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
-   XBT_VERB("Schedule computation task %s on %d hosts. It costs %.f flops on each host",
-            SD_task_get_name(task),
-            task->workstation_nb,
-            task->computation_amount[0]);
- } 
 
   /* Iterate over all childs and parent being COMM_E2E to say where I am located (and start them if runnable) */
   if (task->kind == SD_TASK_COMP_SEQ) {
@@ -1472,55 +1466,6 @@ void SD_task_schedulev(SD_task_t task, int count,
                SD_workstation_get_name(before->workstation_list[1]),
                before->communication_amount[2]);
         }
-      } else if (before->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
-          if (!before->workstation_list){
-            before->workstation_list = xbt_new0(SD_workstation_t, count);
-            for (i=0;i<count;i++)
-              before->workstation_list[i] = task->workstation_list[i];
-          } else {
-            int src_nb, dst_nb, src_start, src_end, dst_start, dst_end;
-            src_nb = before->workstation_nb;
-            dst_nb = count;
-            before->workstation_list = (SD_workstation_t*) xbt_realloc(
-               before->workstation_list,
-              (before->workstation_nb+count)*sizeof(s_SD_workstation_t));
-            for(i=0; i<count; i++)
-              before->workstation_list[before->workstation_nb+i] =
-                task->workstation_list[i];
-
-            before->workstation_nb += count;
-
-            before->computation_amount = xbt_new0(double,
-                                                  before->workstation_nb);
-            before->communication_amount = xbt_new0(double,
-                                                    before->workstation_nb*
-                                                    before->workstation_nb);
-
-            for(i=0;i<src_nb;i++){
-              src_start = i*before->amount/src_nb;
-              src_end = src_start + before->amount/src_nb;
-              for(j=0; j<dst_nb; j++){
-                dst_start = j*before->amount/dst_nb;
-                dst_end = dst_start + before->amount/dst_nb;
-                if ((src_end <= dst_start) || (dst_end <= src_start)) {
-                  before->communication_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
-                } else {
-                  before->communication_amount[i*(src_nb+dst_nb)+src_nb+j] =
-                    MIN(src_end, dst_end)- MAX(src_start, dst_start);
-                }
-              }
-            }
-
-            if (__SD_task_is_schedulable(before) ||
-                __SD_task_is_not_scheduled(before)) {
-              SD_task_do_schedule(before);
-              XBT_VERB
-              ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",
-                  SD_task_get_name(before),
-                  before->amount,
-                  src_nb, dst_nb);
-            }
-          }
       }
     }
     xbt_dynar_foreach(task->tasks_after, cpt, dep) {
@@ -1539,53 +1484,132 @@ void SD_task_schedulev(SD_task_t task, int count,
                after->communication_amount[2]);
 
         }
-      } else if (after->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
-          if (!after->workstation_list){
-              after->workstation_list = xbt_new0(SD_workstation_t, count);
-            for (i=0;i<count;i++)
-              after->workstation_list[i] = task->workstation_list[i];
-          } else {
-            int src_nb, dst_nb, src_start, src_end, dst_start, dst_end;
-            src_nb = count;;
-            dst_nb = after->workstation_nb;
-            after->workstation_list = (SD_workstation_t*) xbt_realloc(
-              after->workstation_list,
-              (after->workstation_nb+count)*sizeof(s_SD_workstation_t));
-            for(i=after->workstation_nb - 1; i>=0; i--)
-              after->workstation_list[count+i] = after->workstation_list[i];
+      }
+    }
+  }
+  /* Iterate over all childs and parent being MXN_1D_BLOC to say where I am located (and start them if runnable) */
+  if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
+    XBT_VERB("Schedule computation task %s on %d workstations. %.f flops"
+             " will be distributed following Amdahl'Law",
+          SD_task_get_name(task), task->workstation_nb,
+          task->computation_amount[0]);
+    xbt_dynar_foreach(task->tasks_before, cpt, dep) {
+      SD_task_t before = dep->src;
+      if (before->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
+        if (!before->workstation_list){
+          XBT_VERB("Sender side of Task %s is not scheduled yet. Fill the workstation list with receiver side",
+             SD_task_get_name(before));
+          before->workstation_list = xbt_new0(SD_workstation_t, count);
+          before->workstation_nb = count;
+          for (i=0;i<count;i++)
+            before->workstation_list[i] = task->workstation_list[i];
+        } else {
+          int src_nb, dst_nb;
+          double src_start, src_end, dst_start, dst_end;
+          src_nb = before->workstation_nb;
+          dst_nb = count;
+          before->workstation_list = (SD_workstation_t*) xbt_realloc(
+             before->workstation_list,
+             (before->workstation_nb+count)*sizeof(s_SD_workstation_t));
+          for(i=0; i<count; i++)
+            before->workstation_list[before->workstation_nb+i] =
+               task->workstation_list[i];
 
-            for(i=0; i<count; i++)
-              after->workstation_list[i] = task->workstation_list[i];
+          before->workstation_nb += count;
 
-            after->workstation_nb += count;
+          before->computation_amount = xbt_new0(double,
+                                                before->workstation_nb);
+          before->communication_amount = xbt_new0(double,
+                                                  before->workstation_nb*
+                                                  before->workstation_nb);
 
-            after->computation_amount = xbt_new0(double, after->workstation_nb);
-            after->communication_amount = xbt_new0(double,
-                                                   after->workstation_nb*
-                                                   after->workstation_nb);
-
-            for(i=0;i<src_nb;i++){
-              src_start = i*after->amount/src_nb;
-              src_end = src_start + after->amount/src_nb;
-              for(j=0; j<dst_nb; j++){
-                dst_start = j*after->amount/dst_nb;
-                dst_end = dst_start + after->amount/dst_nb;
-                if ((src_end <= dst_start) || (dst_end <= src_start)) {
-                   after->communication_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
-                } else {
-                  after->communication_amount[i*(src_nb+dst_nb)+src_nb+j] =
-                     MIN(src_end, dst_end)- MAX(src_start, dst_start);
-                }
+          for(i=0;i<src_nb;i++){
+            src_start = i*before->amount/src_nb;
+            src_end = src_start + before->amount/src_nb;
+            for(j=0; j<dst_nb; j++){
+              dst_start = j*before->amount/dst_nb;
+              dst_end = dst_start + before->amount/dst_nb;
+              XBT_VERB("(%s->%s): (%.2f, %.2f)-> (%.2f, %.2f)",
+                  SD_workstation_get_name(before->workstation_list[i]),
+                  SD_workstation_get_name(before->workstation_list[src_nb+j]),
+                  src_start, src_end, dst_start, dst_end);
+              if ((src_end <= dst_start) || (dst_end <= src_start)) {
+                before->communication_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
+              } else {
+                before->communication_amount[i*(src_nb+dst_nb)+src_nb+j] =
+                  MIN(src_end, dst_end) - MAX(src_start, dst_start);
               }
+              XBT_VERB("==> %.2f",
+                 before->communication_amount[i*(src_nb+dst_nb)+src_nb+j]);
             }
+          }
 
-            if (__SD_task_is_schedulable(after) ||
-                __SD_task_is_not_scheduled(after)) {
-              SD_task_do_schedule(after);
-              XBT_VERB
+          if (__SD_task_is_schedulable(before) ||
+              __SD_task_is_not_scheduled(before)) {
+            SD_task_do_schedule(before);
+            XBT_VERB
               ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",
-                SD_task_get_name(after),after->amount, src_nb, dst_nb);
+                  SD_task_get_name(before),before->amount, src_nb, dst_nb);
             }
+        }
+      }
+    }
+    xbt_dynar_foreach(task->tasks_after, cpt, dep) {
+      SD_task_t after = dep->dst;
+      if (after->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
+        if (!after->workstation_list){
+          XBT_VERB("Receiver side of Task %s is not scheduled yet. Fill the workstation list with sender side",
+              SD_task_get_name(after));
+          after->workstation_list = xbt_new0(SD_workstation_t, count);
+          after->workstation_nb = count;
+          for (i=0;i<count;i++)
+            after->workstation_list[i] = task->workstation_list[i];
+        } else {
+          int src_nb, dst_nb;
+          double src_start, src_end, dst_start, dst_end;
+          src_nb = count;
+          dst_nb = after->workstation_nb;
+          after->workstation_list = (SD_workstation_t*) xbt_realloc(
+            after->workstation_list,
+            (after->workstation_nb+count)*sizeof(s_SD_workstation_t));
+          for(i=after->workstation_nb - 1; i>=0; i--)
+            after->workstation_list[count+i] = after->workstation_list[i];
+          for(i=0; i<count; i++)
+            after->workstation_list[i] = task->workstation_list[i];
+
+          after->workstation_nb += count;
+
+          after->computation_amount = xbt_new0(double, after->workstation_nb);
+          after->communication_amount = xbt_new0(double,
+                                                 after->workstation_nb*
+                                                 after->workstation_nb);
+
+          for(i=0;i<src_nb;i++){
+            src_start = i*after->amount/src_nb;
+            src_end = src_start + after->amount/src_nb;
+            for(j=0; j<dst_nb; j++){
+              dst_start = j*after->amount/dst_nb;
+              dst_end = dst_start + after->amount/dst_nb;
+              XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)",
+                  i, j, src_start, src_end, dst_start, dst_end);
+              if ((src_end <= dst_start) || (dst_end <= src_start)) {
+                after->communication_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
+              } else {
+                after->communication_amount[i*(src_nb+dst_nb)+src_nb+j] =
+                   MIN(src_end, dst_end)- MAX(src_start, dst_start);
+              }
+              XBT_VERB("==> %.2f",
+                 after->communication_amount[i*(src_nb+dst_nb)+src_nb+j]);
+            }
+          }
+
+          if (__SD_task_is_schedulable(after) ||
+              __SD_task_is_not_scheduled(after)) {
+            SD_task_do_schedule(after);
+            XBT_VERB
+            ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",
+              SD_task_get_name(after),after->amount, src_nb, dst_nb);
+          }
          }
       }
     }
