@@ -9,7 +9,7 @@ Here is the syntax of these files:
 The kind of each line is given by the first char (the second char should be
 blank and is ignored):
  
- `$' command to run in forground
+ `$' command to run in foreground
  `&' command to run in background
  `<' input to pass to the command
  `>' output expected from the command
@@ -29,7 +29,7 @@ Command line arguments
 ----------------------
 Tesh accepts several command line arguments:
   --cd some/directory: ask tesh to switch the working directory before
-                       lauching the tests
+                       launching the tests
   --setenv var=value: set a specific environment variable		       
 
 IO orders
@@ -58,7 +58,7 @@ errors such as the following:
  $ mkfile file
 
 TOTO will be passed to the cd command, where the user clearly want to pass it
-to the mkfile buildin command (see below).
+to the mkfile built-in command (see below).
 
 Stream redirection
 ------------------
@@ -109,7 +109,7 @@ OUTPUT
 ------
 
 By default, the commands output is matched against the one expected,
-and an error is raised on discrepency. Metacomands to change this:
+and an error is raised on discrepancy. Metacommands to change this:
  "output ignore"  -> output completely discarded 
  "output display" -> output displayed (but not verified)
  "output sort"    -> sorts the display before verifying it (see below)
@@ -125,7 +125,7 @@ to sort the output back before comparing it.
 We expect the simulators to run with that log formating argument:
    -log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
 Then, tesh sorts string on the 19 first chars only, and is stable when
-line beginings are equal. This should ensure that:
+line beginnings are equal. This should ensure that:
  (1) tesh is effective (no false positive, no false negative)
  (2) scheduling points are separated from each other 
  (3) at each scheduling point, processes are separated from each other 
