@@ -49,6 +49,10 @@ int main(int argc, char **argv)
       ("----------------------------- dump tasks again ------------------------------------");
   while ((task=dot_as_array[cursor++])){
     SD_task_dump(task);
+  }
+
+  cursor=0;
+  while ((task=dot_as_array[cursor++])){
     SD_task_destroy(task);
   }
 

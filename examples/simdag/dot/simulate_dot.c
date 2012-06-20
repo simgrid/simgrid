@@ -48,9 +48,9 @@ int main(int argc, char **argv)
 
   /* load the DOT file  and schedule tasks */
   dot = SD_dotload_with_sched(argv[2]);
-  if(dot == NULL){
-    XBT_INFO("The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose");
-    return -1;
+  if(!dot){
+    xbt_die("The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose");
+    //return 0;
   }
 
   /* Display all the tasks */
