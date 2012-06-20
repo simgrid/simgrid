@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2011. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2004-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -234,7 +234,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
  */
 MSG_error_t MSG_process_sleep(double nb_sec)
 {
-  e_smx_state_t state;
+  xbt_ex_t e;
   /*m_process_t proc = MSG_process_self();*/
 
 #ifdef HAVE_TRACING
@@ -242,25 +242,32 @@ MSG_error_t MSG_process_sleep(double nb_sec)
 #endif
 
   /* create action to sleep */
-  state = simcall_process_sleep(nb_sec);
 
   /*proc->simdata->waiting_action = act_sleep;
 
   FIXME: check if not setting the waiting_action breaks something on msg
   
   proc->simdata->waiting_action = NULL;*/
-  
-  if (state == SIMIX_DONE) {
-#ifdef HAVE_TRACING
-  TRACE_msg_process_sleep_out(MSG_process_self());
-#endif
-    MSG_RETURN(MSG_OK);
-  } else {
-#ifdef HAVE_TRACING
-    TRACE_msg_process_sleep_out(MSG_process_self());
-#endif
-    MSG_RETURN(MSG_HOST_FAILURE);
+
+  TRY {
+    simcall_process_sleep(nb_sec);  
   }
+  CATCH(e) {
+    switch (e.category) {
+      case host_error:
+        #ifdef HAVE_TRACING
+          TRACE_msg_process_sleep_out(MSG_process_self());
+        #endif
+        MSG_RETURN(MSG_HOST_FAILURE);
+        break;    
+      default:
+        RETHROW;
+    }
+  }
+  #ifdef HAVE_TRACING
+    TRACE_msg_process_sleep_out(MSG_process_self());
+  #endif
+  MSG_RETURN(MSG_OK);
 }
 
 /** \ingroup msg_task_usage
