@@ -42,15 +42,15 @@ void mfree(struct mdesc *mdp, void *ptr)
     fprintf(stderr,"Asked to free a fragment in a block that is already free. I'm puzzled\n");
     abort();
     break;
-
+    
   case 0:
-     /* Get as many statistics as early as we can.  */
-      mdp -> heapstats.chunks_used--;
-      mdp -> heapstats.bytes_used -=
-    mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
-      mdp -> heapstats.bytes_free +=
-    mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
-
+    /* Get as many statistics as early as we can.  */
+    mdp -> heapstats.chunks_used--;
+    mdp -> heapstats.bytes_used -=
+      mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
+    mdp -> heapstats.bytes_free +=
+      mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
+    
     /* Find the free cluster previous to this one in the free list.
        Start searching at the last block referenced; this may benefit
        programs with locality of allocation.  */
@@ -76,7 +76,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       for (it=0; it<mdp->heapinfo[block].busy_block.size; it++) {
         if (mdp->heapinfo[block+it].type <0) {
           fprintf(stderr,"Internal Error: Asked to free a block already marked as free (block=%lu it=%d type=%lu). Please report this bug.\n",
-              (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].type);
+                  (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].type);
           abort();
         }
         mdp->heapinfo[block+it].type = -1;
@@ -96,7 +96,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       for (it=0; it<mdp->heapinfo[block].free_block.size; it++) {
         if (mdp->heapinfo[block+it].type <0) {
           fprintf(stderr,"Internal error: Asked to free a block already marked as free (block=%lu it=%d/%lu type=%lu). Please report this bug.\n",
-              (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].free_block.size,(unsigned long)mdp->heapinfo[block].type);
+                  (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].free_block.size,(unsigned long)mdp->heapinfo[block].type);
           abort();
         }
         mdp->heapinfo[block+it].type = -1;
@@ -109,29 +109,29 @@ void mfree(struct mdesc *mdp, void *ptr)
     if (block + mdp->heapinfo[block].free_block.size ==
         mdp->heapinfo[block].free_block.next) {
       mdp->heapinfo[block].free_block.size
-          += mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.size;
+        += mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.size;
       mdp->heapinfo[block].free_block.next
-          = mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.next;
+        = mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.next;
       mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev = block;
       mdp -> heapstats.chunks_free--;
     }
 
     /* Now see if we can return stuff to the system.  */
     /*    blocks = mdp -> heapinfo[block].free.size;
-       if (blocks >= FINAL_FREE_BLOCKS && block + blocks == mdp -> heaplimit
-       && mdp -> morecore (mdp, 0) == ADDRESS (block + blocks))
-       {
-       register size_t bytes = blocks * BLOCKSIZE;
-       mdp -> heaplimit -= blocks;
-       mdp -> morecore (mdp, -bytes);
-       mdp -> heapinfo[mdp -> heapinfo[block].free.prev].free.next
-       = mdp -> heapinfo[block].free.next;
-       mdp -> heapinfo[mdp -> heapinfo[block].free.next].free.prev
-       = mdp -> heapinfo[block].free.prev;
-       block = mdp -> heapinfo[block].free.prev;
-       mdp -> heapstats.chunks_free--;
-       mdp -> heapstats.bytes_free -= bytes;
-       } */
+          if (blocks >= FINAL_FREE_BLOCKS && block + blocks == mdp -> heaplimit
+          && mdp -> morecore (mdp, 0) == ADDRESS (block + blocks))
+          {
+          register size_t bytes = blocks * BLOCKSIZE;
+          mdp -> heaplimit -= blocks;
+          mdp -> morecore (mdp, -bytes);
+          mdp -> heapinfo[mdp -> heapinfo[block].free.prev].free.next
+          = mdp -> heapinfo[block].free.next;
+          mdp -> heapinfo[mdp -> heapinfo[block].free.next].free.prev
+          = mdp -> heapinfo[block].free.prev;
+          block = mdp -> heapinfo[block].free.prev;
+          mdp -> heapstats.chunks_free--;
+          mdp -> heapstats.bytes_free -= bytes;
+          } */
 
     /* Set the next search to begin at this block.  */
     mdp->heapindex = block;
@@ -139,16 +139,16 @@ void mfree(struct mdesc *mdp, void *ptr)
 
   default:
     /* Do some of the statistics.  */
-      mdp -> heapstats.chunks_used--;
-      mdp -> heapstats.bytes_used -= 1 << type;
-      mdp -> heapstats.chunks_free++;
-      mdp -> heapstats.bytes_free += 1 << type;
+    mdp -> heapstats.chunks_used--;
+    mdp -> heapstats.bytes_used -= 1 << type;
+    mdp -> heapstats.chunks_free++;
+    mdp -> heapstats.bytes_free += 1 << type;
 
     
     /* Get the address of the first free fragment in this block.  */
     prev = (struct list *)
-        ((char *) ADDRESS(block) +
-         (mdp->heapinfo[block].busy_frag.first << type));
+      ((char *) ADDRESS(block) +
+       (mdp->heapinfo[block].busy_frag.first << type));
 
     if (mdp->heapinfo[block].busy_frag.nfree ==
         (BLOCKSIZE >> type) - 1) {
@@ -189,11 +189,11 @@ void mfree(struct mdesc *mdp, void *ptr)
     } else {
       /* No fragments of this block were free before the one we just released,
        * so link this fragment into the fragment list and announce that
-         it is the first free fragment of this block. */
+       it is the first free fragment of this block. */
       prev = (struct list *) ptr;
       mdp->heapinfo[block].busy_frag.nfree = 1;
       mdp->heapinfo[block].busy_frag.first =
-          RESIDUAL(ptr, BLOCKSIZE) >> type;
+        RESIDUAL(ptr, BLOCKSIZE) >> type;
       prev->next = mdp->fraghead[type].next;
       prev->prev = &mdp->fraghead[type];
       prev->prev->next = prev;
