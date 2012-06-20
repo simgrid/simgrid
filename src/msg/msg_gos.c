@@ -96,6 +96,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   simdata_task_t simdata = NULL;
   simdata_process_t p_simdata;
   e_smx_state_t comp_state;
+  MSG_error_t status = MSG_OK;
 
   simdata = task->simdata;
 
@@ -152,13 +153,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   CATCH(e) {
     switch (e.category) {
       case host_error:
-        /* action ended, set comm and compute = NULL, the actions is already  destroyed in the main function */
-        simdata->comm = NULL;
-        simdata->compute = NULL;
-        #ifdef HAVE_TRACING
-          TRACE_msg_task_execute_end(task);
-        #endif
-        MSG_RETURN(MSG_HOST_FAILURE);
+          status = MSG_HOST_FAILURE;
         break;
       case cancel_error:
         /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
@@ -167,7 +162,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
     #ifdef HAVE_TRACING
         TRACE_msg_task_execute_end(task);
     #endif
-        MSG_RETURN(MSG_TASK_CANCELED);
+        status = MSG_TASK_CANCELED;
       break;
       default:
         RETHROW;
@@ -182,7 +177,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
     TRACE_msg_task_execute_end(task);
   #endif
 
-  MSG_RETURN(MSG_OK);
+  MSG_RETURN(status);
 }
 
 
@@ -196,6 +191,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 MSG_error_t MSG_process_sleep(double nb_sec)
 {
   xbt_ex_t e;
+  MSG_error_t status = MSG_OK;
   /*m_process_t proc = MSG_process_self();*/
 
 #ifdef HAVE_TRACING
@@ -219,17 +215,18 @@ MSG_error_t MSG_process_sleep(double nb_sec)
         #ifdef HAVE_TRACING
           TRACE_msg_process_sleep_out(MSG_process_self());
         #endif
-        MSG_RETURN(MSG_HOST_FAILURE);
-        break;    
+          status = MSG_HOST_FAILURE;
+      break;
       default:
         RETHROW;
     }
     xbt_ex_free(e);
   }
+
   #ifdef HAVE_TRACING
     TRACE_msg_process_sleep_out(MSG_process_self());
   #endif
-  MSG_RETURN(MSG_OK);
+  MSG_RETURN(status);
 }
 
 /** \ingroup msg_task_usage
