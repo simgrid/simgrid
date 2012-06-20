@@ -809,43 +809,43 @@ XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
  * Return 0 if d1 and d2 are equal and 1 if not equal
  */
 XBT_INLINE int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
-					int(*compar)(const void *, const void *))
+          int(*compar)(const void *, const void *))
 {
-	int i ;
-	int size;
-	if((!d1) && (!d2)) return 0;
-	if((!d1) || (!d2))
-	{
-		XBT_DEBUG("NULL dynar d1=%p d2=%p",d1,d2);
-		xbt_dynar_free(&d2);
-		return 1;
-	}
-	if((d1->elmsize)!=(d2->elmsize))
-	{
-		XBT_DEBUG("Size of elmsize d1=%lu d2=%lu",d1->elmsize,d2->elmsize);
-		xbt_dynar_free(&d2);
-		return 1; // xbt_die
-	}
-	if(xbt_dynar_length(d1) != xbt_dynar_length(d2))
-	{
-		XBT_DEBUG("Size of dynar d1=%lu d2=%lu",xbt_dynar_length(d1),xbt_dynar_length(d2));
-		xbt_dynar_free(&d2);
-		return 1;
-	}
+  int i ;
+  int size;
+  if((!d1) && (!d2)) return 0;
+  if((!d1) || (!d2))
+  {
+    XBT_DEBUG("NULL dynar d1=%p d2=%p",d1,d2);
+    xbt_dynar_free(&d2);
+    return 1;
+  }
+  if((d1->elmsize)!=(d2->elmsize))
+  {
+    XBT_DEBUG("Size of elmsize d1=%lu d2=%lu",d1->elmsize,d2->elmsize);
+    xbt_dynar_free(&d2);
+    return 1; // xbt_die
+  }
+  if(xbt_dynar_length(d1) != xbt_dynar_length(d2))
+  {
+    XBT_DEBUG("Size of dynar d1=%lu d2=%lu",xbt_dynar_length(d1),xbt_dynar_length(d2));
+    xbt_dynar_free(&d2);
+    return 1;
+  }
 
-	size = xbt_dynar_length(d1);
-	for(i=0;i<size;i++)
-	{
-		void *data1 = xbt_dynar_get_as(d1, i, void *);
-		void *data2 = xbt_dynar_get_as(d2, i, void *);
-		XBT_DEBUG("link[%d] d1=%p d2=%p",i,data1,data2);
-		if(compar(data1,data2)){
-			xbt_dynar_free(&d2);
-			return 1;
-		}
-	}
-	xbt_dynar_free(&d2);
-	return 0;
+  size = xbt_dynar_length(d1);
+  for(i=0;i<size;i++)
+  {
+    void *data1 = xbt_dynar_get_as(d1, i, void *);
+    void *data2 = xbt_dynar_get_as(d2, i, void *);
+    XBT_DEBUG("link[%d] d1=%p d2=%p",i,data1,data2);
+    if(compar(data1,data2)){
+      xbt_dynar_free(&d2);
+      return 1;
+    }
+  }
+  xbt_dynar_free(&d2);
+  return 0;
 }
 
 #ifdef SIMGRID_TEST

@@ -149,8 +149,8 @@ static void smpi_execute(double duration)
                        xbt_cfg_get_double(_surf_cfg_set,
                                           "smpi/running_power"));
   } else {
-	  XBT_DEBUG("Real computation took %f while threshold is set to %f; ignore it",
-			  duration, xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold"));
+    XBT_DEBUG("Real computation took %f while threshold is set to %f; ignore it",
+        duration, xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold"));
   }
 }
 

@@ -31,15 +31,15 @@ typedef struct probabilist_event_generator {
   double next_value;
   union {
     struct {
-      double alpha;
-      double beta;
+      double min;
+      double max;
     } s_uniform_parameters;
     struct {
-      double lambda;
+      double rate;
     } s_exponential_parameters;
     struct {
-      double lambda;
-      double k;
+      double scale;
+      double shape;
     } s_weibull_parameters;
   };
 } s_probabilist_event_generator_t;

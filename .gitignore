@@ -93,11 +93,12 @@ doc/footer.html
 *.doc.toc
 doc/latex/
 doc/html
-doc/index-API.doc
+doc/user_guide/html
+doc/user_guide/latex
+doc/ref_guide/html
+doc/ref_guide/latex
 doc/index.php
-doc/logcategories.doc
 doc/simgrid.tag
-doc/simgrid_modules.map
 doc/publis_core.bib
 doc/publis_core_bib.html
 doc/publis_count.html
@@ -105,6 +106,19 @@ doc/publis_extern.bib
 doc/publis_extern_bib.html
 doc/publis_intra.bib
 doc/publis_intra_bib.html
+doc/ref_guide/doxygen/RefGuideDoxyfile
+doc/user_guide/doxygen/UserGuideDoxyfile
+doc/ref_guide/doxygen/logcategories.doc
+doc/user_guide/doxygen/logcategories.doc
+doc/ref_guide/doxygen/simgrid_modules.map
+doc/user_guide/doxygen/simgrid_modules.map
+doc/index-API.doc
+doc/ref_guide/doxygen/index-API.doc
+doc/user_guide/doxygen/index-API.doc
+doc/simgrid_modules.map
+doc/logcategories.doc
+doc/shared/doxygen/simgridrefguide.tag
+doc/shared/doxygen/simgriduserguide.tag
 
 ################################################
 ### Specific of project 

@@ -53,8 +53,8 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 
   // remove the process from its virtual machine
   if (msg_proc->vm) {
-  	int pos = xbt_dynar_search(msg_proc->vm->processes,&smx_proc);
-  	xbt_dynar_remove_at(msg_proc->vm->processes,pos, NULL);
+    int pos = xbt_dynar_search(msg_proc->vm->processes,&smx_proc);
+    xbt_dynar_remove_at(msg_proc->vm->processes,pos, NULL);
   }
 
   // free the MSG process
@@ -312,7 +312,7 @@ m_host_t MSG_process_get_host(m_process_t process)
  */
 m_process_t MSG_process_from_PID(int PID)
 {
-	return SIMIX_process_from_PID(PID);
+  return SIMIX_process_from_PID(PID);
 }
 
 /** @brief returns a list of all currently existing processes */

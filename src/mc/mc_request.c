@@ -196,12 +196,12 @@ char *MC_request_to_string(smx_simcall_t req, int value)
       act = req->comm_wait.comm;
       if(value == -1){
         type = xbt_strdup("WaitTimeout");
-	p = pointer_to_string(act);
-	args = bprintf("comm=%p", p);
+  p = pointer_to_string(act);
+  args = bprintf("comm=%p", p);
       }else{
         type = xbt_strdup("Wait");
-	p = pointer_to_string(act);
-	args  = bprintf("comm=%s [(%lu)%s -> (%lu)%s]", p,
+  p = pointer_to_string(act);
+  args  = bprintf("comm=%s [(%lu)%s -> (%lu)%s]", p,
                         act->comm.src_proc ? act->comm.src_proc->pid : 0,
                         act->comm.src_proc ? act->comm.src_proc->name : "",
                         act->comm.dst_proc ? act->comm.dst_proc->pid : 0,
@@ -212,11 +212,11 @@ char *MC_request_to_string(smx_simcall_t req, int value)
       act = req->comm_test.comm;
       if(act->comm.src_proc == NULL || act->comm.dst_proc == NULL){
         type = xbt_strdup("Test FALSE");
-	p = pointer_to_string(act);
+  p = pointer_to_string(act);
         args = bprintf("comm=%s", p);
       }else{
         type = xbt_strdup("Test TRUE");
-	p = pointer_to_string(act);
+  p = pointer_to_string(act);
         args  = bprintf("comm=%s [(%lu)%s -> (%lu)%s]", p,
                         act->comm.src_proc->pid, act->comm.src_proc->name,
                         act->comm.dst_proc->pid, act->comm.dst_proc->name);

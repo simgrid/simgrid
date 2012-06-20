@@ -13,16 +13,16 @@
 
 
 SG_BEGIN_DECL()
-#define MAX_ALIAS_NAME	((size_t)260)
+#define MAX_ALIAS_NAME  ((size_t)260)
 
 /*! \brief MSG_mailbox_new - create a new mailbox.
  *
  * The function MSG_mailbox_new creates a new mailbox identified by the key specified
  * by the parameter alias and add it in the global dictionary.
  *
- * \param alias		The alias of the mailbox to create.
+ * \param alias    The alias of the mailbox to create.
  *
- * \return		The newly created mailbox.
+ * \return    The newly created mailbox.
  */
 XBT_PUBLIC(msg_mailbox_t)
     MSG_mailbox_new(const char *alias);
@@ -34,9 +34,9 @@ void MSG_mailbox_free(void *mailbox);
  * The function MSG_mailbox_free release a mailbox from the memory but does
  * not remove it from the dictionary.
  *
- * \param mailbox	The mailbox to release.
+ * \param mailbox  The mailbox to release.
  *
- * \see			MSG_mailbox_destroy.
+ * \see      MSG_mailbox_destroy.
  */
 void MSG_mailbox_free(void *mailbox);
 
@@ -46,10 +46,10 @@ void MSG_mailbox_free(void *mailbox);
  * the key specified by the parameter alias. If the mailbox does not exists,
  * the function create it.
  *
- * \param alias		The alias of the mailbox to return.
+ * \param alias    The alias of the mailbox to return.
  *
- * \return	The mailbox associated with the alias specified as parameter
- *		or a new mailbox if the key does not match.
+ * \return  The mailbox associated with the alias specified as parameter
+ *    or a new mailbox if the key does not match.
  */
 XBT_PUBLIC(msg_mailbox_t)
     MSG_mailbox_get_by_alias(const char *alias);
@@ -59,10 +59,10 @@ XBT_PUBLIC(msg_mailbox_t)
  * The function MSG_mailbox_is_empty tests if a mailbox is empty
  * (contains no msg task).
  *
- * \param mailbox	The mailbox to get test.
+ * \param mailbox  The mailbox to get test.
  *
- * \return	The function returns 1 if the mailbox is empty. Otherwise the function
- *		returns 0.
+ * \return  The function returns 1 if the mailbox is empty. Otherwise the function
+ *    returns 0.
  */
 XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
 
@@ -72,9 +72,9 @@ XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
  * This function does not remove the task from the mailbox (contrary to
  * the function MSG_mailbox_pop_head).
  *
- * \param mailbox	The mailbox concerned by the operation.
+ * \param mailbox  The mailbox concerned by the operation.
  *
- * \return		The task at the head of the mailbox.
+ * \return    The task at the head of the mailbox.
  */
 XBT_PUBLIC(m_task_t)
     MSG_mailbox_get_head(msg_mailbox_t mailbox);
@@ -82,13 +82,13 @@ XBT_PUBLIC(m_task_t)
 /*! \brief MSG_mailbox_get_count_host_waiting_tasks - Return the number of tasks
    waiting to be received in a mailbox and sent by a host.
  *
- * \param mailbox	The mailbox concerned by the operation.
- * \param host		The msg host containing the processes that have sended the
- *			tasks.
+ * \param mailbox  The mailbox concerned by the operation.
+ * \param host    The msg host containing the processes that have sended the
+ *      tasks.
  *
- * \return		The number of tasks in the mailbox specified by the
- *			parameter mailbox and sended by all the processes located
- *			on the host specified by the parameter host.
+ * \return    The number of tasks in the mailbox specified by the
+ *      parameter mailbox and sended by all the processes located
+ *      on the host specified by the parameter host.
  */
 XBT_PUBLIC(int)
 MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,

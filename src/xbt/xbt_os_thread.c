@@ -138,7 +138,7 @@ int xbt_os_thread_atfork(void (*prepare)(void),
                          void (*parent)(void), void (*child)(void))
 {
 #ifdef WIN32
-	THROW_UNIMPLEMENTED; //pthread_atfork is not implemented in pthread.h on windows
+  THROW_UNIMPLEMENTED; //pthread_atfork is not implemented in pthread.h on windows
 #else
   return pthread_atfork(prepare, parent, child);
 #endif
@@ -642,7 +642,7 @@ typedef struct xbt_os_thread_ {
 #endif
 
 /* the default size of the stack of the threads (in bytes)*/
-#define XBT_DEFAULT_THREAD_STACK_SIZE	4096
+#define XBT_DEFAULT_THREAD_STACK_SIZE  4096
 
 /* key to the TLS containing the xbt_os_thread_t structure */
 static unsigned long xbt_self_thread_key;

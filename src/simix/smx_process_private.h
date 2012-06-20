@@ -64,9 +64,9 @@ void SIMIX_process_yield(smx_process_t self);
 xbt_running_ctx_t *SIMIX_process_get_running_context(void);
 void SIMIX_process_exception_terminate(xbt_ex_t * e);
 void SIMIX_pre_process_change_host(smx_process_t process,
-				   smx_host_t dest);
+           smx_host_t dest);
 void SIMIX_process_change_host(smx_process_t process,
-			       smx_host_t dest);
+             smx_host_t dest);
 void SIMIX_pre_process_change_host(smx_process_t process, smx_host_t host);
 void SIMIX_pre_process_suspend(smx_simcall_t simcall);
 smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);

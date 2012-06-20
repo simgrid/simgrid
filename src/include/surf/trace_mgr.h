@@ -23,7 +23,7 @@ XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
  * \brief Free a trace event structure
  *
  * This function frees a trace_event if it can be freed, ie, if it has the free_me flag set to 1. This flag indicates whether the structure is still used somewhere or not.
- * \param	trace_event		Trace event structure
+ * \param  trace_event    Trace event structure
  * \return 1 if the structure was freed, 0 otherwise
 */
 XBT_PUBLIC(int) tmgr_trace_event_free(tmgr_trace_event_t trace_event);

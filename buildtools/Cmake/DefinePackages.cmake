@@ -567,83 +567,57 @@ elseif(${HAVE_LUA})
 		${LUA_SRC}
 	)
 endif(${HAVE_LUA})
-    
+
 set(DOC_SOURCES
-	doc/install.doc
-	doc/bindings.doc
-	doc/options.doc
-	doc/use.doc
-	doc/tracing.doc
-	doc/pls.doc
-	doc/gtut-howto-design.doc
-	doc/gtut-howto.doc
-	doc/gtut-introduction.doc
-	doc/gtut-main.doc
-	doc/gtut-tour-00-install.doc
-	doc/gtut-tour-01-bones.doc
-	doc/gtut-tour-02-simple.doc
-	doc/gtut-tour-03-args.doc
-	doc/gtut-tour-04-callback.doc
-	doc/gtut-tour-05-globals.doc
-	doc/gtut-tour-06-logs.doc
-	doc/gtut-tour-07-timers.doc
-	doc/gtut-tour-08-exceptions.doc
-	doc/gtut-tour-09-simpledata.doc
-	doc/gtut-tour-10-rpc.doc
-	doc/gtut-tour-11-explicitwait.doc
-	doc/gtut-tour-12-staticstruct.doc
-	doc/gtut-tour-13-pointers.doc
-	doc/gtut-tour-14-dynar.doc
-	doc/gtut-tour-15-manualdatadef.doc
-	doc/gtut-tour-16-exchangecb.doc
-	doc/gtut-tour.doc
-	doc/gtut-tour-recap-messages.doc
-	
-	#doc/index-API.doc
 	doc/index.doc
-	${CMAKE_HOME_DIRECTORY}/doc/logcategories.doc
-	doc/module-amok.doc
-	doc/module-gras.doc
-	doc/module-msg.doc
-	doc/module-sd.doc
-	doc/modules.doc
-	doc/module-surf.doc
-	doc/module-xbt.doc
+	doc/Doxyfile.in
+)
+   
+set(USER_GUIDE_SOURCES
+	doc/user_guide/doxygen/install.doc
+	doc/user_guide/doxygen/bindings.doc
+	doc/user_guide/doxygen/options.doc
+	doc/user_guide/doxygen/use.doc
+	doc/user_guide/doxygen/tracing.doc
+	doc/user_guide/doxygen/pls.doc		
+	doc/user_guide/doxygen/index.doc
+	${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/logcategories.doc	
+	doc/user_guide/doxygen/modules.doc
 	
-	doc/gtut-files/01-bones.c
-	doc/gtut-files/01-bones.output
-	doc/gtut-files/02-simple.c
-	doc/gtut-files/02-simple.output
-	doc/gtut-files/03-args.c
-	doc/gtut-files/03-args.output
-	doc/gtut-files/03-args.xml
-	doc/gtut-files/04-callback.c
-	doc/gtut-files/04-callback.output
-	doc/gtut-files/05-globals.c
-	doc/gtut-files/05-globals.output
-	doc/gtut-files/06-logs.c
-	doc/gtut-files/06-logs.output
-	doc/gtut-files/06-logs.output.error
-	doc/gtut-files/06-logs.output.fmt
-	doc/gtut-files/06-logs.output.fmt-bt
-	doc/gtut-files/06-logs.output.verbose
-	doc/gtut-files/07-timers.c
-	doc/gtut-files/07-timers.output
-	doc/gtut-files/08-exceptions.c
-	doc/gtut-files/08-exceptions.output
-	doc/gtut-files/09-datatype-dump.c
-	doc/gtut-files/09-simpledata.c
-	doc/gtut-files/09-simpledata.output
-	doc/gtut-files/10-rpc.c
-	doc/gtut-files/10-rpc.output
-	doc/gtut-files/11-explicitwait.c
-	doc/gtut-files/11-explicitwait.output
-	doc/gtut-files/11-explicitwait.xml
-	doc/gtut-files/gtut-platform-3nodes.xml
-	doc/gtut-files/gtut-platform.xml
-	doc/gtut-files/Makefile
-	doc/gtut-files/README
-	doc/gtut-files/test.xml
+	doc/user_guide/doxygen/gtut-files/01-bones.c
+	doc/user_guide/doxygen/gtut-files/01-bones.output
+	doc/user_guide/doxygen/gtut-files/02-simple.c
+	doc/user_guide/doxygen/gtut-files/02-simple.output
+	doc/user_guide/doxygen/gtut-files/03-args.c
+	doc/user_guide/doxygen/gtut-files/03-args.output
+	doc/user_guide/doxygen/gtut-files/03-args.xml
+	doc/user_guide/doxygen/gtut-files/04-callback.c
+	doc/user_guide/doxygen/gtut-files/04-callback.output
+	doc/user_guide/doxygen/gtut-files/05-globals.c
+	doc/user_guide/doxygen/gtut-files/05-globals.output
+	doc/user_guide/doxygen/gtut-files/06-logs.c
+	doc/user_guide/doxygen/gtut-files/06-logs.output
+	doc/user_guide/doxygen/gtut-files/06-logs.output.error
+	doc/user_guide/doxygen/gtut-files/06-logs.output.fmt
+	doc/user_guide/doxygen/gtut-files/06-logs.output.fmt-bt
+	doc/user_guide/doxygen/gtut-files/06-logs.output.verbose
+	doc/user_guide/doxygen/gtut-files/07-timers.c
+	doc/user_guide/doxygen/gtut-files/07-timers.output
+	doc/user_guide/doxygen/gtut-files/08-exceptions.c
+	doc/user_guide/doxygen/gtut-files/08-exceptions.output
+	doc/user_guide/doxygen/gtut-files/09-datatype-dump.c
+	doc/user_guide/doxygen/gtut-files/09-simpledata.c
+	doc/user_guide/doxygen/gtut-files/09-simpledata.output
+	doc/user_guide/doxygen/gtut-files/10-rpc.c
+	doc/user_guide/doxygen/gtut-files/10-rpc.output
+	doc/user_guide/doxygen/gtut-files/11-explicitwait.c
+	doc/user_guide/doxygen/gtut-files/11-explicitwait.output
+	doc/user_guide/doxygen/gtut-files/11-explicitwait.xml
+	doc/user_guide/doxygen/gtut-files/gtut-platform-3nodes.xml
+	doc/user_guide/doxygen/gtut-files/gtut-platform.xml
+	doc/user_guide/doxygen/gtut-files/Makefile
+	doc/user_guide/doxygen/gtut-files/README
+	doc/user_guide/doxygen/gtut-files/test.xml
 	
 	doc/webcruft/awstats_logo3.png
 	doc/webcruft/Paje_MSG_screenshot.jpg
@@ -654,24 +628,56 @@ set(DOC_SOURCES
 	doc/triva-graph_configuration.png
 	doc/triva-graph_visualization.png
 	doc/simgrid.css
+
+	doc/shared/doxygen/gras-examples.doc
+	doc/shared/doxygen/msg-examples.doc
 	
-	doc/Doxyfile.in
-	doc/footer.html.in
+	doc/user_guide/doxygen/UserGuideDoxyfile.in	
 	
-	tools/doxygen/doxygen_postprocesser.pl
 	tools/doxygen/index_create.pl
 	tools/doxygen/toc_create.pl
-	tools/doxygen/bibtex2html_wrapper.pl
 	tools/doxygen/fig2dev_postprocessor.pl
 	tools/doxygen/xbt_log_extract_hierarchy.pl
 )
 
+set(REF_GUIDE_SOURCES
+	${CMAKE_HOME_DIRECTORY}/doc/ref_guide/doxygen/logcategories.doc
+	doc/ref_guide/doxygen/module-amok.doc
+	doc/ref_guide/doxygen/module-gras.doc
+	doc/ref_guide/doxygen/module-msg.doc
+	doc/ref_guide/doxygen/module-sd.doc
+	doc/ref_guide/doxygen/modules.doc
+	doc/ref_guide/doxygen/module-surf.doc
+	doc/ref_guide/doxygen/module-xbt.doc
+	doc/ref_guide/doxygen/module-simix.doc
+	doc/ref_guide/doxygen/index-API.doc
+	doc/ref_guide/doxygen/main.doc
+
+		
+	doc/webcruft/awstats_logo3.png
+	doc/webcruft/Paje_MSG_screenshot.jpg
+	doc/webcruft/Paje_MSG_screenshot_thn.jpg
+	doc/webcruft/poster_thumbnail.png
+	doc/webcruft/simgrid_logo_2011.png
+	doc/webcruft/simgrid_logo_small.png
+	doc/triva-graph_configuration.png
+	doc/triva-graph_visualization.png
+	doc/simgrid.css
+	
+	doc/ref_guide/doxygen/RefGuideDoxyfile.in
+	
+	tools/doxygen/index_create.pl
+	tools/doxygen/toc_create.pl
+	tools/doxygen/fig2dev_postprocessor.pl
+        tools/doxygen/xbt_log_extract_hierarchy.pl
+)
+
 set(DOC_FIGS
-	${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules.fig
-	${CMAKE_HOME_DIRECTORY}/doc/fig/simgrid_modules2.fig
-	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_test.fig
-	${CMAKE_HOME_DIRECTORY}/doc/fig/amok_bw_sat.fig
-	${CMAKE_HOME_DIRECTORY}/doc/fig/gras_comm.fig
+	${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
+	${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
+	${CMAKE_HOME_DIRECTORY}/doc/user_guide/fig/amok_bw_test.fig
+	${CMAKE_HOME_DIRECTORY}/doc/user_guide/fig/amok_bw_sat.fig
+	${CMAKE_HOME_DIRECTORY}/doc/user_guide/fig/gras_comm.fig
 )
 
 set(bin_files
@@ -799,10 +805,10 @@ buildtools/Cmake/Scripts/generate_memcheck_tests.pl
 buildtools/Cmake/MaintainerMode.cmake
 buildtools/Cmake/Supernovae.cmake
 buildtools/Cmake/Pipol.cmake
-buildtools/Cmake/GenerateDoc.cmake
+buildtools/Cmake/GenerateUserGuide.cmake
+buildtools/Cmake/GenerateRefGuide.cmake
 buildtools/Cmake/test_prog/prog_getline.c
 buildtools/Cmake/test_prog/prog_mutex_timedlock.c
-buildtools/Cmake/test_prog/prog_gtnets.cpp
 buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
 buildtools/Cmake/test_prog/prog_printf_null.c
 buildtools/Cmake/test_prog/prog_sem_timedwait.c

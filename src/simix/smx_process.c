@@ -206,7 +206,7 @@ void SIMIX_process_create(smx_process_t *process,
 
     XBT_VERB("Create context %s", (*process)->name);
     (*process)->context = SIMIX_context_new(code, argc, argv,
-    	simix_global->cleanup_process_function, *process);
+      simix_global->cleanup_process_function, *process);
 
     (*process)->running_ctx = xbt_new(xbt_running_ctx_t, 1);
     XBT_RUNNING_CTX_INITIALIZE((*process)->running_ctx);
@@ -286,13 +286,13 @@ void SIMIX_process_kill(smx_process_t process) {
         break;
 
       case SIMIX_ACTION_SLEEP:
-	SIMIX_process_sleep_destroy(process->waiting_action);
-	break;
+  SIMIX_process_sleep_destroy(process->waiting_action);
+  break;
 
       case SIMIX_ACTION_SYNCHRO:
-	SIMIX_synchro_stop_waiting(process, &process->simcall);
-	SIMIX_synchro_destroy(process->waiting_action);
-	break;
+  SIMIX_synchro_stop_waiting(process, &process->simcall);
+  SIMIX_synchro_destroy(process->waiting_action);
+  break;
 
       case SIMIX_ACTION_IO:
         SIMIX_io_destroy(process->waiting_action);
@@ -323,7 +323,7 @@ void SIMIX_process_killall(smx_process_t issuer)
 }
 
 void SIMIX_process_change_host(smx_process_t process,
-			       smx_host_t dest)
+             smx_host_t dest)
 {
   xbt_assert((process != NULL), "Invalid parameters");
   xbt_swag_remove(process, process->smx_host->process_list);
@@ -693,13 +693,13 @@ xbt_dynar_t SIMIX_process_get_runnable(void)
  */
 smx_process_t SIMIX_process_from_PID(int PID)
 {
-	smx_process_t proc;
-	xbt_swag_foreach(proc, simix_global->process_list)
-	{
-	 if(proc->pid == PID)
-	 return proc;
-	}
-	return NULL;
+  smx_process_t proc;
+  xbt_swag_foreach(proc, simix_global->process_list)
+  {
+   if(proc->pid == PID)
+   return proc;
+  }
+  return NULL;
 }
 
 /** @brief returns a dynar containg all currently existing processes */

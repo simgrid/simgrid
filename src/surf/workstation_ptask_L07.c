@@ -302,19 +302,19 @@ static void ptask_update_actions_state(double now, double delta)
                                     i++))) {
         constraint_id = lmm_constraint_id(cnst);
 
-/* 	if(((link_L07_t)constraint_id)->type== */
-/* 	   SURF_WORKSTATION_RESOURCE_LINK) { */
-/* 	  XBT_DEBUG("Checking for link %s (%p)", */
-/* 		 ((link_L07_t)constraint_id)->name, */
-/* 		 ((link_L07_t)constraint_id)); */
-/* 	} */
-/* 	if(((cpu_L07_t)constraint_id)->type== */
-/* 	   SURF_WORKSTATION_RESOURCE_CPU) { */
-/* 	  XBT_DEBUG("Checking for cpu %s (%p) : %s", */
-/* 		 ((cpu_L07_t)constraint_id)->name, */
-/* 		 ((cpu_L07_t)constraint_id), */
-/* 		 ((cpu_L07_t)constraint_id)->state_current==SURF_CPU_OFF?"Off":"On"); */
-/* 	} */
+/*   if(((link_L07_t)constraint_id)->type== */
+/*      SURF_WORKSTATION_RESOURCE_LINK) { */
+/*     XBT_DEBUG("Checking for link %s (%p)", */
+/*      ((link_L07_t)constraint_id)->name, */
+/*      ((link_L07_t)constraint_id)); */
+/*   } */
+/*   if(((cpu_L07_t)constraint_id)->type== */
+/*      SURF_WORKSTATION_RESOURCE_CPU) { */
+/*     XBT_DEBUG("Checking for cpu %s (%p) : %s", */
+/*      ((cpu_L07_t)constraint_id)->name, */
+/*      ((cpu_L07_t)constraint_id), */
+/*      ((cpu_L07_t)constraint_id)->state_current==SURF_CPU_OFF?"Off":"On"); */
+/*   } */
 
         if (((((link_L07_t) constraint_id)->type ==
               SURF_WORKSTATION_RESOURCE_LINK) &&
@@ -667,13 +667,13 @@ static void* ptask_cpu_create_resource(const char *name, double power_scale,
 static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
 {
   ptask_cpu_create_resource(
-		  host->id,
-		  host->power_peak,
-		  host->power_scale,
-		  host->power_trace,
-		  host->initial_state,
-		  host->state_trace,
-		  host->properties);
+      host->id,
+      host->power_peak,
+      host->power_scale,
+      host->power_trace,
+      host->initial_state,
+      host->state_trace,
+      host->properties);
 }
 
 static void* ptask_link_create_resource(const char *name,
@@ -798,7 +798,7 @@ static void ptask_add_traces(void)
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     link_L07_t link =
-    		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
+        xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -810,7 +810,7 @@ static void ptask_add_traces(void)
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     link_L07_t link =
-    		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
+        xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -821,7 +821,7 @@ static void ptask_add_traces(void)
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
     link_L07_t link =
-    		xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
+        xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL);
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);

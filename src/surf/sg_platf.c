@@ -8,6 +8,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/dict.h"
+#include "xbt/RngStream.h"
 #include "simgrid/platf_interface.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
@@ -27,6 +28,8 @@ xbt_dynar_t sg_platf_mount_cb_list = NULL; // of sg_platf_storage_cb_t
 
 static int surf_parse_models_setup_already_called;
 
+/* one RngStream for the platform, to respect some statistic rules */
+static RngStream sg_platf_rng_stream = NULL;
 
 /** Module management function: creates all internal data structures */
 void sg_platf_init(void) {
@@ -210,4 +213,21 @@ void sg_platf_mstorage_add_cb(sg_platf_mstorage_cb_t fct) {
 }
 void sg_platf_mount_add_cb(sg_platf_mount_cb_t fct) {
   xbt_dynar_push(sg_platf_mount_cb_list, &fct);
+}
+
+
+void sg_platf_rng_stream_init(unsigned long seed[6]) {
+  RngStream_SetPackageSeed(seed);
+  sg_platf_rng_stream = RngStream_CreateStream(NULL);
+}
+
+RngStream sg_platf_rng_stream_get(const char* id) {
+  RngStream stream = NULL;
+  unsigned int id_hash;
+  
+  stream = RngStream_CopyStream(sg_platf_rng_stream);
+  id_hash = xbt_str_hash(id);
+  RngStream_AdvanceState(stream, 0, (long)id_hash);
+  
+  return stream;
 }

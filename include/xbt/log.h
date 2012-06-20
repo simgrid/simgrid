@@ -185,7 +185,7 @@ typedef enum {
 # define XBT_LOG_DEFAULT_CATEGORY(cname)
 #else
 # define XBT_LOG_DEFAULT_CATEGORY(cname) \
-	 static xbt_log_category_t _XBT_LOGV(default) _XBT_GNUC_UNUSED = &_XBT_LOGV(cname)
+   static xbt_log_category_t _XBT_LOGV(default) _XBT_GNUC_UNUSED = &_XBT_LOGV(cname)
 #endif
 
 /**

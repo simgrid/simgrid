@@ -176,12 +176,12 @@ void SD_create_environment(const char *platform_file)
 
   /* now let's create the SD wrappers for workstations and links */
   xbt_lib_foreach(host_lib, cursor, name, surf_workstation){
-	  if(surf_workstation[SURF_WKS_LEVEL])
-		  __SD_workstation_create(surf_workstation[SURF_WKS_LEVEL], NULL);
+    if(surf_workstation[SURF_WKS_LEVEL])
+      __SD_workstation_create(surf_workstation[SURF_WKS_LEVEL], NULL);
   }
 
   xbt_lib_foreach(link_lib, cursor, name, surf_link) {
-	if(surf_link[SURF_LINK_LEVEL])
+  if(surf_link[SURF_LINK_LEVEL])
     __SD_link_create(surf_link[SURF_LINK_LEVEL], NULL);
   }
 
@@ -341,15 +341,15 @@ xbt_swag_t SD_simulate_swag(double how_long) {
     if (xbt_swag_size(sd_global->done_task_set) < sd_global->task_number){
         XBT_WARN("Simulation is finished but %d tasks are still not done",
             (sd_global->task_number - xbt_swag_size(sd_global->done_task_set)));
-      	xbt_swag_foreach_safe (task, task_safe,sd_global->not_scheduled_task_set){
+        xbt_swag_foreach_safe (task, task_safe,sd_global->not_scheduled_task_set){
                 XBT_WARN("%s is in SD_NOT_SCHEDULED state", SD_task_get_name(task));
-		}
-    	xbt_swag_foreach_safe (task, task_safe,sd_global->schedulable_task_set){
+    }
+      xbt_swag_foreach_safe (task, task_safe,sd_global->schedulable_task_set){
                 XBT_WARN("%s is in SD_SCHEDULABLE state", SD_task_get_name(task));
-	}
-      	xbt_swag_foreach_safe (task, task_safe,sd_global->scheduled_task_set){
+  }
+        xbt_swag_foreach_safe (task, task_safe,sd_global->scheduled_task_set){
                 XBT_WARN("%s is in SD_SCHEDULED state", SD_task_get_name(task));
-       	}
+         }
     }
   }
 

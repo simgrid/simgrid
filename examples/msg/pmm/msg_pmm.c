@@ -27,8 +27,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm,
 
 /* This example should always be executed using a deployment of
  * GRID_SIZE * GRID_SIZE nodes. */
-#define GRID_SIZE 3		/* Modify to adjust the grid's size */
-#define NODE_MATRIX_SIZE 300	/* Ammount of work done by each node*/
+#define GRID_SIZE 3    /* Modify to adjust the grid's size */
+#define NODE_MATRIX_SIZE 300  /* Ammount of work done by each node*/
 
 #define GRID_NUM_NODES GRID_SIZE * GRID_SIZE
 #define MATRIX_SIZE NODE_MATRIX_SIZE * GRID_SIZE

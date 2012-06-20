@@ -72,7 +72,7 @@ int gras_socket_im_the_server(xbt_socket_t sock)
       listener_thread = ((fake_gras_msg_listener_t)l)->listener;
       client_listener_process = ((fake_xbt_thread_t)listener_thread)->s_process;
       if (client_listener_process == SIMIX_process_self()) {
-	XBT_VERB("I am the listener of the client");
+  XBT_VERB("I am the listener of the client");
         return 0;
       }
     }

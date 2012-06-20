@@ -66,9 +66,9 @@ int main(int argc, char **argv)
     XBT_INFO("Simulation stopped after %.4f seconds", SD_get_clock());
     xbt_dynar_foreach(changed_tasks, ctr, task) {
       XBT_INFO("Task '%s' start time: %f, finish time: %f",
-	       SD_task_get_name(task),
-	       SD_task_get_start_time(task), 
-	       SD_task_get_finish_time(task));
+         SD_task_get_name(task),
+         SD_task_get_start_time(task), 
+         SD_task_get_finish_time(task));
  
     }
     /* let throttle the communication for taskD if its parent is SD_DONE */

@@ -12,9 +12,9 @@
 /* Attributes are only in recent versions of GCC */
 #if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4))
 # define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
-	   __attribute__((__format__ (__printf__, format_idx, arg_idx)))
+     __attribute__((__format__ (__printf__, format_idx, arg_idx)))
 # define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
-	       __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
+         __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
 # define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
 # define _XBT_GNUC_UNUSED  __attribute__((__unused__))
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
@@ -63,11 +63,11 @@
 #        define XBT_INLINE
 #    endif
 #  else
-#	   if defined (__VISUALC__)
-#		   define XBT_INLINE __inline
-#	   else
-#    	 define XBT_INLINE  inline
-#	   endif
+#     if defined (__VISUALC__)
+#       define XBT_INLINE __inline
+#     else
+#       define XBT_INLINE  inline
+#     endif
 #  endif /* __cplusplus */
 #endif
 
@@ -166,7 +166,7 @@
 #  define XBT_PUBLIC(type)            __declspec(dllexport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __declspec(dllexport) type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
-#  define XBT_PUBLIC_DATA(type)	      __declspec(dllexport) type
+#  define XBT_PUBLIC_DATA(type)        __declspec(dllexport) type
 
 /* Pack everything up statically */
 #elif defined(DLL_STATIC)
@@ -177,10 +177,10 @@
 
 /* Link against the DLL */
 #elif (defined(_XBT_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
-#  define XBT_PUBLIC(type)            	__declspec(dllimport) type
-#  define XBT_EXPORT_NO_IMPORT(type)  	type
-#  define XBT_IMPORT_NO_EXPORT(type)  	__declspec(dllimport) type
-#  define XBT_PUBLIC_DATA(type)		__declspec(dllimport) type
+#  define XBT_PUBLIC(type)              __declspec(dllimport) type
+#  define XBT_EXPORT_NO_IMPORT(type)    type
+#  define XBT_IMPORT_NO_EXPORT(type)    __declspec(dllimport) type
+#  define XBT_PUBLIC_DATA(type)    __declspec(dllimport) type
 
 /* UNIX build */
 #else
@@ -191,10 +191,10 @@
 #endif
 
 #if !defined (max) && !defined(__cplusplus)
-#  define max(a,b)	(((a) > (b)) ? (a) : (b))
+#  define max(a,b)  (((a) > (b)) ? (a) : (b))
 #endif
 #if !defined (min) && !defined(__cplusplus)
-#  define min(a,b)	(((a) < (b)) ? (a) : (b))
+#  define min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
 
 #define TRUE  1

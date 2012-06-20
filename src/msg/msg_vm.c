@@ -64,20 +64,20 @@ int MSG_vm_is_running(msg_vm_t vm) {
  *
  */
 void MSG_vm_bind(msg_vm_t vm, m_process_t process) {
-	/* check if the process is already in a VM */
-	simdata_process_t simdata = simcall_process_get_data(process);
-	if (simdata->vm) {
-		msg_vm_t old_vm = simdata->vm;
-		int pos = xbt_dynar_search(old_vm->processes,&process);
-		xbt_dynar_remove_at(old_vm->processes,pos, NULL);
-	}
-	/* check if the host is in the right host */
-	if (simdata->m_host != vm->location) {
-		MSG_process_migrate(process,vm->location);
-	}
-	simdata->vm = vm;
+  /* check if the process is already in a VM */
+  simdata_process_t simdata = simcall_process_get_data(process);
+  if (simdata->vm) {
+    msg_vm_t old_vm = simdata->vm;
+    int pos = xbt_dynar_search(old_vm->processes,&process);
+    xbt_dynar_remove_at(old_vm->processes,pos, NULL);
+  }
+  /* check if the host is in the right host */
+  if (simdata->m_host != vm->location) {
+    MSG_process_migrate(process,vm->location);
+  }
+  simdata->vm = vm;
 
-	XBT_DEBUG("binding Process %s to %p",MSG_process_get_name(process),vm);
+  XBT_DEBUG("binding Process %s to %p",MSG_process_get_name(process),vm);
 
   xbt_dynar_push_as(vm->processes,m_process_t,process);
 }
@@ -137,7 +137,7 @@ void MSG_vm_resume(msg_vm_t vm) {
   unsigned int cpt;
   m_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {
-  	XBT_DEBUG("resume process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
+    XBT_DEBUG("resume process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
     MSG_process_resume(process);
   }
 }
@@ -153,8 +153,8 @@ void MSG_vm_shutdown(msg_vm_t vm)
   m_process_t process;
   XBT_DEBUG("%lu processes in the VM", xbt_dynar_length(vm->processes));
   while (xbt_dynar_length(vm->processes) > 0) {
-  	process = xbt_dynar_get_as(vm->processes,0,m_process_t);
-  	MSG_process_kill(process);
+    process = xbt_dynar_get_as(vm->processes,0,m_process_t);
+    MSG_process_kill(process);
   }
 }
 
@@ -162,13 +162,13 @@ void MSG_vm_shutdown(msg_vm_t vm)
  *  @ingroup msg_VMs
  */
 void MSG_vm_destroy(msg_vm_t vm) {
-	unsigned int cpt;
-	m_process_t process;
-	xbt_dynar_foreach(vm->processes,cpt,process) {
-	  //FIXME: Slow ?
-	  simdata_process_t simdata = simcall_process_get_data(process);
-	  simdata->vm = NULL;
-	}
-	xbt_dynar_free(&vm->processes);
-	xbt_free(vm);
+  unsigned int cpt;
+  m_process_t process;
+  xbt_dynar_foreach(vm->processes,cpt,process) {
+    //FIXME: Slow ?
+    simdata_process_t simdata = simcall_process_get_data(process);
+    simdata->vm = NULL;
+  }
+  xbt_dynar_free(&vm->processes);
+  xbt_free(vm);
 }

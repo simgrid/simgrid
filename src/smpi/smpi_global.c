@@ -249,7 +249,7 @@ int MAIN__(void)
   srand(SMPI_RAND_SEED);
 
   if(getenv("SMPI_PRETEND_CC") != NULL) {
-	/* Hack to ensure that smpicc can pretend to be a simple compiler. Particularly handy to pass it to the configuration tools */
+  /* Hack to ensure that smpicc can pretend to be a simple compiler. Particularly handy to pass it to the configuration tools */
     return 0;
   }
 

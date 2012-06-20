@@ -1,6 +1,5 @@
 /*! \page bindings Bindings
 
-\htmlinclude .bindings.doc.toc
 
 \section bindings_binding_Java Java Binding
 <a href="http://simgrid.gforge.inria.fr/simgrid-java/1.2/doc/">Simgrid-Java documentation</a>.

@@ -18,25 +18,25 @@ int main(int argc, char **argv)
 {
   xbt_os_timer_t timer = xbt_os_timer_new();
 
-	/* initialization of SD */
-	SD_init(&argc, argv);
+  /* initialization of SD */
+  SD_init(&argc, argv);
 
-	/* creation of the environment, timed */
-	xbt_os_timer_start(timer);
-	SD_create_environment(argv[1]);
+  /* creation of the environment, timed */
+  xbt_os_timer_start(timer);
+  SD_create_environment(argv[1]);
   xbt_os_timer_stop(timer);
 
   /* Display the result and exit after cleanup */
-	printf( "%lf\n", xbt_os_timer_elapsed(timer) );
-	  printf("Workstation number: %d, link number: %d\n",
-	         SD_workstation_get_number(), SD_link_get_number());
-	if(argv[2]){
-		printf("Wait for %ss\n",argv[2]);
-		sleep(atoi(argv[2]));
-	}
+  printf( "%lf\n", xbt_os_timer_elapsed(timer) );
+    printf("Workstation number: %d, link number: %d\n",
+           SD_workstation_get_number(), SD_link_get_number());
+  if(argv[2]){
+    printf("Wait for %ss\n",argv[2]);
+    sleep(atoi(argv[2]));
+  }
 
-	SD_exit();
+  SD_exit();
 
-	free(timer);
-	return 0;
+  free(timer);
+  return 0;
 }

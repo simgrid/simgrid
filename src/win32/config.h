@@ -31,16 +31,16 @@ typedef unsigned int uint32_t;
 #endif
 
 typedef int socklen_t;
-#define tcp_read( s, buf, len )  	recv( s, buf, len, 0 )
-#define tcp_write( s, buf, len )	send( s, buf, len, 0 )
-#define ioctl( s, c, a )        	ioctlsocket( (s), (c), (a) )
-#define ioctl_t						u_long
-#define AC_SOCKET_INVALID        	((unsigned int) ~0)
+#define tcp_read( s, buf, len )    recv( s, buf, len, 0 )
+#define tcp_write( s, buf, len )  send( s, buf, len, 0 )
+#define ioctl( s, c, a )          ioctlsocket( (s), (c), (a) )
+#define ioctl_t            u_long
+#define AC_SOCKET_INVALID          ((unsigned int) ~0)
 
 #ifdef SD_BOTH
-#define tcp_close(s)	(shutdown( s, SD_BOTH ), closesocket(s))
+#define tcp_close(s)  (shutdown( s, SD_BOTH ), closesocket(s))
 #else
-#define tcp_close( s )	closesocket( s )
+#define tcp_close( s )  closesocket( s )
 #endif
 
 #ifndef _XBT_VISUALC_COMPILER

@@ -30,7 +30,7 @@
 static size_t pagesize;
 
 #define PAGE_ALIGN(addr) (void*) (((long)(addr) + pagesize - 1) & \
-				    ~(pagesize - 1))
+            ~(pagesize - 1))
 
 /* Return MAP_PRIVATE if MDP represents /dev/zero.  Otherwise, return
    MAP_SHARED.  */
@@ -46,7 +46,7 @@ static size_t pagesize;
 /* Return -1 if MDP uses anonymous mapping. Otherwise, return MDP->FD */
 #define MAP_ANON_OR_FD(MDP) (((MDP) -> flags & MMALLOC_ANONYMOUS) \
                               ? -1 \
-                  			      : (MDP) -> fd)
+                              : (MDP) -> fd)
 
 /*  Get core for the memory region specified by MDP, using SIZE as the
     amount to either add to or subtract from the existing region.  Works
@@ -84,15 +84,15 @@ void *mmorecore(struct mdesc *mdp, int size)
              (size_t) (((char *) mdp->top) - ((char *) moveto)) - 1);
       mdp->top = moveto;
     } else {
-    	fprintf(stderr,"Internal error: mmap was asked to deallocate more memory than it previously allocated. Bailling out now!\n");
-    	abort();
+      fprintf(stderr,"Internal error: mmap was asked to deallocate more memory than it previously allocated. Bailling out now!\n");
+      abort();
     }
   } else {
     /* We are allocating memory. Make sure we have an open file
        descriptor if not working with anonymous memory. */
     if (!(mdp->flags & MMALLOC_ANONYMOUS) && mdp->fd < 0) {
-    	fprintf(stderr,"Internal error: mmap file descriptor <0 (%d), without MMALLOC_ANONYMOUS being in the flags.\n",mdp->fd);
-    	abort();
+      fprintf(stderr,"Internal error: mmap file descriptor <0 (%d), without MMALLOC_ANONYMOUS being in the flags.\n",mdp->fd);
+      abort();
     } else if ((char *) mdp->breakval + size > (char *) mdp->top) {
       /* The request would move us past the end of the currently
          mapped memory, so map in enough more memory to satisfy
@@ -108,8 +108,8 @@ void *mmorecore(struct mdesc *mdp, int size)
         lseek(mdp->fd, foffset + mapbytes - 1, SEEK_SET);
         test = write(mdp->fd, &buf, 1);
         if (test == -1) {
-        	fprintf(stderr,"Internal error: write to mmap'ed fd failed! error: %s", strerror(errno));
-        	abort();
+          fprintf(stderr,"Internal error: write to mmap'ed fd failed! error: %s", strerror(errno));
+          abort();
         }
       }
 
@@ -120,12 +120,12 @@ void *mmorecore(struct mdesc *mdp, int size)
                    MAP_FIXED, MAP_ANON_OR_FD(mdp), foffset);
 
       if (mapto == (void *) -1/* That's MAP_FAILED */) {
-      	fprintf(stderr,"Internal error: mmap returned MAP_FAILED! error: %s",strerror(errno));
-      	abort();
+        fprintf(stderr,"Internal error: mmap returned MAP_FAILED! error: %s",strerror(errno));
+        abort();
       }
 
       if (mdp->top == 0)
-    	  mdp->base = mdp->breakval = mapto;
+        mdp->base = mdp->breakval = mapto;
 
       mdp->top = PAGE_ALIGN((char *) mdp->breakval + size);
       result = (void *) mdp->breakval;

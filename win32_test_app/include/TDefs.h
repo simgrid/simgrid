@@ -31,9 +31,9 @@ typedef int ssize_t;
 #endif                          /* #ifndef false */
 
 /* Asserts that a condition is true.*/
-#define ASSERT(c)						assert(c)
+#define ASSERT(c)            assert(c)
 /* Asserts that a pointer is not NULL.*/
-#define ASSERT_NOT_NULL(p)				assert(NULL != (p))
+#define ASSERT_NOT_NULL(p)        assert(NULL != (p))
 
 /* Error number type (int) */
 #ifndef __ERRNO_TYPE_DEFINED

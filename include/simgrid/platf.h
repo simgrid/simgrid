@@ -1,7 +1,6 @@
 /* platf.h - Public interface to the SimGrid platforms                      */
 
-/* Copyright (c) 2004, 2005, 2006, 2007, 2009, 2010, 2011. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,7 +19,7 @@ XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 
-/** opaque structure defining a event generator for avaibility based on a probability distribution */
+/** opaque structure defining a event generator for availability based on a probability distribution */
 typedef struct probabilist_event_generator *probabilist_event_generator_t;
 
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
@@ -31,11 +30,11 @@ XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_generator(const char *id,
                                                   probabilist_event_generator_t generator1,
                                                   probabilist_event_generator_t generator2);
                                           
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(double alpha,
-                                                                           double beta);
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(double lambda);
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(double lambda,
-                                                                           double k);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(double min,
+                                                                           double max);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(double rate);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(double scale,
+                                                                           double shape);
 
 /** Defines whether a given resource is working or not */
 typedef enum {

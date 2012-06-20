@@ -258,7 +258,7 @@ int server(int argc, char *argv[]) {
   (xbt_datadesc_by_name_or_null(#name) ?      \
    xbt_datadesc_by_name_or_null(#name) :      \
      xbt_datadesc_parse(#name,        \
-			 _xbt_this_type_symbol_does_not_exist__##name) \
+       _xbt_this_type_symbol_does_not_exist__##name) \
   )
 
 /** @def XBT_ANNOTE

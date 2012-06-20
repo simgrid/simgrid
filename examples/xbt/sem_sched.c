@@ -17,14 +17,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sem_sched,
                              "Messages specific for this sem example");
 
 #ifndef ENOBUFS
-#define ENOBUFS		1024
+#define ENOBUFS    1024
 #endif
 
-#define CTX_MAX			((unsigned int)1000)
+#define CTX_MAX      ((unsigned int)1000)
 
 
-#define MAX_ARG						30
-#define MAX_ARGS					10
+#define MAX_ARG            30
+#define MAX_ARGS          10
 
 typedef int (*pfn_func_t) (int, char **);
 

@@ -10,7 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "surf/surf_private.h"
-#include "surf/surf_routing.h"	/* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
+#include "surf/surf_routing.h"  /* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
 #include "simgrid/simix.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
@@ -592,7 +592,7 @@ void surf_config_init(int *argc, char **argv)
     //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
     //test is if( size >= thresholdN ) return valueN;
     //Values can be modified with command line --cfg=smpi/bw_factor:"threshold0:value0;threshold1:value1;...;thresholdN:valueN"
-    //	or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
+    //  or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
     xbt_cfg_register(&_surf_cfg_set, "smpi/bw_factor",
                      "Bandwidth factors for smpi.",
                      xbt_cfgelm_string, NULL, 1, 1, NULL,
@@ -655,14 +655,14 @@ void surf_config_models_setup()
    */
 
   if((!xbt_cfg_is_default_value(_surf_cfg_set, "network/model") ||
-	  !xbt_cfg_is_default_value(_surf_cfg_set, "cpu/model")) &&
-	  xbt_cfg_is_default_value(_surf_cfg_set, "workstation/model"))
+    !xbt_cfg_is_default_value(_surf_cfg_set, "cpu/model")) &&
+    xbt_cfg_is_default_value(_surf_cfg_set, "workstation/model"))
   {
-	    const char *val = "compound";
-	    XBT_INFO
-	        ("Switching workstation model to compound since you changed the network and/or cpu model(s)");
-	    xbt_cfg_set_string(_surf_cfg_set, "workstation/model", val);
-	    workstation_model_name = (char *) "compound";
+      const char *val = "compound";
+      XBT_INFO
+          ("Switching workstation model to compound since you changed the network and/or cpu model(s)");
+      xbt_cfg_set_string(_surf_cfg_set, "workstation/model", val);
+      workstation_model_name = (char *) "compound";
   }
 
   XBT_DEBUG("Workstation model: %s", workstation_model_name);

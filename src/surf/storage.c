@@ -101,9 +101,10 @@ static surf_action_t storage_action_write(void *storage, const void* ptr, size_t
   ((storage_t)storage)->used_size =+ size;
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
-  // if(used_size==size) {
-  //   storage_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
-  // }
+  // If the storage is full
+  if(((storage_t)storage)->used_size==((storage_t)storage)->size) {
+    storage_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
+  }
   return action;
 }
 
@@ -117,6 +118,8 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
       surf_action_new(sizeof(s_surf_action_storage_t), size, surf_storage_model,
           STORAGE->state_current != SURF_RESOURCE_ON);
 
+  // Save the storage on action
+  action->storage = storage;
   GENERIC_LMM_ACTION(action).suspended = 0;     /* Should be useless because of the
                                                    calloc but it seems to help valgrind... */
 
@@ -203,22 +206,26 @@ static void storage_update_actions_state(double now, double delta)
   xbt_swag_t running_actions = surf_storage_model->states.running_action_set;
 
   // Update the disk usage
-//  foreach disk {
-//    rate = 0
-//    foreach write_action in disk {
-//      rate += value(variable(action))
-//     }
-//   used_size += delta * rate
-//  }
+  // Foreach action of type write
+  xbt_swag_foreach_safe(action, next_action, running_actions) {
+    if(action->type == WRITE)
+    {
+      double rate = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
+      ((storage_t)action->storage)->used_size += delta * rate;
+    }
+  }
+
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     double_update(&(GENERIC_ACTION(action).remains),
                   lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * delta);
     if (GENERIC_LMM_ACTION(action).generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(GENERIC_ACTION(action).max_duration), delta);
-    // if(remains>0 and weight(variable(action))>0 && used_size == size) {
-    // GENERIC_ACTION(action).finish = surf_get_clock();
-    // storage_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
-    // } else
+    if(GENERIC_ACTION(action).remains > 0 &&
+        lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0 &&
+        ((storage_t)action->storage)->used_size == ((storage_t)action->storage)->size) {
+      GENERIC_ACTION(action).finish = surf_get_clock();
+      storage_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
+    } else
     if ((GENERIC_ACTION(action).remains <= 0) &&
         (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0)) {
       GENERIC_ACTION(action).finish = surf_get_clock();

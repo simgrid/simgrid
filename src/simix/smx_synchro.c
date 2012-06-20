@@ -175,8 +175,8 @@ int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer)
 {
   XBT_IN("(%p, %p)",mutex,issuer);
   if (mutex->locked){
-	  XBT_OUT();
-	  return 0;
+    XBT_OUT();
+    return 0;
   }
 
   mutex->locked = 1;
@@ -201,8 +201,8 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
 
   /* If the mutex is not owned by the issuer do nothing */
   if (issuer != mutex->owner){
-	  XBT_OUT();
-	  return;
+    XBT_OUT();
+    return;
   }
 
   if (xbt_swag_size(mutex->sleeping) > 0) {

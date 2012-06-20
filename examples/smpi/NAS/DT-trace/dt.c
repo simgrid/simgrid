@@ -2,7 +2,7 @@
  *                                                                       * 
  *        N  A  S     P A R A L L E L     B E N C H M A R K S  3.3       *
  *                                                                       * 
- *                                  D T					 * 
+ *                                  D T           * 
  *                                                                       * 
  ************************************************************************* 
  *                                                                       * 
@@ -33,7 +33,7 @@
  *                                                                       * 
  ************************************************************************* 
  *                                                                       * 
- *   Author: M. Frumkin							 *						 * 
+ *   Author: M. Frumkin               *             * 
  *                                                                       * 
  *************************************************************************/
 
@@ -64,7 +64,7 @@ void c_print_results( char   *name,
                       int    nprocs_total,
                       double t,
                       double mops,
-		      char   *optype,
+          char   *optype,
                       int    passed_verification,
                       char   *npbversion,
                       char   *compiletime,
@@ -74,7 +74,7 @@ void c_print_results( char   *name,
                       char   *cmpi_inc,
                       char   *cflags,
                       char   *clinkflags );
-		      
+          
 void    timer_clear( int n );
 void    timer_start( int n );
 void    timer_stop( int n );
@@ -100,55 +100,55 @@ int verify(char *bmname,double rnm2){
          verified = 0;
        }else if(cls=='W') {
          if(strstr(bmname,"BH")){
-  	   verify_value = 4102461.0;
+       verify_value = 4102461.0;
          }else if(strstr(bmname,"WH")){
-  	   verify_value = 204280762.0;
+       verify_value = 204280762.0;
          }else if(strstr(bmname,"SH")){
-  	   verify_value = 186944764.0;
+       verify_value = 186944764.0;
          }else{
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
          }
          verified = 0;
        }else if(cls=='A') {
          if(strstr(bmname,"BH")){
-  	   verify_value = 17809491.0;
+       verify_value = 17809491.0;
          }else if(strstr(bmname,"WH")){
-  	   verify_value = 1289925229.0;
+       verify_value = 1289925229.0;
          }else if(strstr(bmname,"SH")){
-  	   verify_value = 610856482.0;
+       verify_value = 610856482.0;
          }else{
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
          }
-  	 verified = 0;
+     verified = 0;
        }else if(cls=='B') {
          if(strstr(bmname,"BH")){
-  	   verify_value = 4317114.0;
+       verify_value = 4317114.0;
          }else if(strstr(bmname,"WH")){
-  	   verify_value = 7877279917.0;
+       verify_value = 7877279917.0;
          }else if(strstr(bmname,"SH")){
-  	   verify_value = 1836863082.0;
+       verify_value = 1836863082.0;
          }else{
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
-  	   verified = 0;
+       verified = 0;
          }
        }else if(cls=='C') {
          if(strstr(bmname,"BH")){
-  	   verify_value = 0.0;
+       verify_value = 0.0;
          }else if(strstr(bmname,"WH")){
-  	   verify_value = 0.0;
+       verify_value = 0.0;
          }else if(strstr(bmname,"SH")){
-  	   verify_value = 0.0;
+       verify_value = 0.0;
          }else{
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
-  	   verified = -1;
+       verified = -1;
          }
        }else if(cls=='D') {
          if(strstr(bmname,"BH")){
-  	   verify_value = 0.0;
+       verify_value = 0.0;
          }else if(strstr(bmname,"WH")){
-  	   verify_value = 0.0;
+       verify_value = 0.0;
          }else if(strstr(bmname,"SH")){
-  	   verify_value = 0.0;
+       verify_value = 0.0;
          }else{
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
          }
@@ -158,15 +158,15 @@ int verify(char *bmname,double rnm2){
        }
        fprintf(stderr," %s L2 Norm = %f\n",bmname,rnm2);
        if(verified==-1){
-  	 fprintf(stderr," No verification was performed.\n");
+     fprintf(stderr," No verification was performed.\n");
        }else if( rnm2 - verify_value < epsilon &&
                  rnm2 - verify_value > -epsilon) {  /* abs here does not work on ALTIX */
-  	  verified = 1;
-  	  fprintf(stderr," Deviation = %f\n",(rnm2 - verify_value));
+      verified = 1;
+      fprintf(stderr," Deviation = %f\n",(rnm2 - verify_value));
        }else{
-  	 verified = 0;
-  	 fprintf(stderr," The correct verification value = %f\n",verify_value);
-  	 fprintf(stderr," Got value = %f\n",rnm2);
+     verified = 0;
+     fprintf(stderr," The correct verification value = %f\n",verify_value);
+     fprintf(stderr," Got value = %f\n",rnm2);
        }
     }else{
        verified = -1;
@@ -299,7 +299,7 @@ DGraph *buildWH(char cls){
       id=AttachNode(dg,nd);
       for(j=0;j<maxInDeg;j++){
         sid=i*maxInDeg+j;
-	if(sid>=numPrevLayerNodes) break;
+  if(sid>=numPrevLayerNodes) break;
         snd=dg->node[firstLayerNode+sid];
         ar=newArc(dg->node[id],snd);
         AttachArc(dg,ar);
@@ -359,7 +359,7 @@ DGraph *buildBH(char cls){
       id=AttachNode(dg,nd);
       for(j=0;j<maxInDeg;j++){
         sid=i*maxInDeg+j;
-	if(sid>=numPrevLayerNodes) break;
+  if(sid>=numPrevLayerNodes) break;
         snd=dg->node[firstLayerNode+sid];
         ar=newArc(snd,dg->node[id]);
         AttachArc(dg,ar);
@@ -488,19 +488,19 @@ Arr* WindowFilter(Arr *a, Arr* b,int w){
   if(a->len>b->len) Resample(b,a->len);
   for(i=fielddim;i<a->len-fielddim;i+=fielddim){
     rms0=(a->val[i]-b->val[i])*(a->val[i]-b->val[i])
-	+(a->val[i+1]-b->val[i+1])*(a->val[i+1]-b->val[i+1])
-	+(a->val[i+2]-b->val[i+2])*(a->val[i+2]-b->val[i+2])
-	+(a->val[i+3]-b->val[i+3])*(a->val[i+3]-b->val[i+3]);
+  +(a->val[i+1]-b->val[i+1])*(a->val[i+1]-b->val[i+1])
+  +(a->val[i+2]-b->val[i+2])*(a->val[i+2]-b->val[i+2])
+  +(a->val[i+3]-b->val[i+3])*(a->val[i+3]-b->val[i+3]);
     j=i+fielddim;
     rms1=(a->val[j]-b->val[j])*(a->val[j]-b->val[j])
-    	+(a->val[j+1]-b->val[j+1])*(a->val[j+1]-b->val[j+1])
-    	+(a->val[j+2]-b->val[j+2])*(a->val[j+2]-b->val[j+2])
-    	+(a->val[j+3]-b->val[j+3])*(a->val[j+3]-b->val[j+3]);
+      +(a->val[j+1]-b->val[j+1])*(a->val[j+1]-b->val[j+1])
+      +(a->val[j+2]-b->val[j+2])*(a->val[j+2]-b->val[j+2])
+      +(a->val[j+3]-b->val[j+3])*(a->val[j+3]-b->val[j+3]);
     j=i-fielddim;
     rmsm1=(a->val[j]-b->val[j])*(a->val[j]-b->val[j])
-	 +(a->val[j+1]-b->val[j+1])*(a->val[j+1]-b->val[j+1])
-	 +(a->val[j+2]-b->val[j+2])*(a->val[j+2]-b->val[j+2])
-	 +(a->val[j+3]-b->val[j+3])*(a->val[j+3]-b->val[j+3]);
+   +(a->val[j+1]-b->val[j+1])*(a->val[j+1]-b->val[j+1])
+   +(a->val[j+2]-b->val[j+2])*(a->val[j+2]-b->val[j+2])
+   +(a->val[j+3]-b->val[j+3])*(a->val[j+3]-b->val[j+3]);
     k=0;
     if(rms1<rms0){
       k=1;
@@ -525,7 +525,7 @@ Arr* WindowFilter(Arr *a, Arr* b,int w){
       a->val[i+1]=weight*b->val[j+1];
       a->val[i+2]=weight*b->val[j+2];
       a->val[i+3]=weight*b->val[j+3];  
-    }	   
+    }     
   }
   if(timer_on){
     timer_stop(w);
@@ -752,25 +752,25 @@ int main(int argc,char **argv ){
       timer_stop(0);
       tot_time=timer_read(0);
       c_print_results( dg->name,
-        	       CLASS,
-        	       featnum,
-        	       0,
-        	       0,
-        	       dg->numNodes,
-        	       0,
-        	       comm_size,
-        	       tot_time,
-        	       bytes_sent/tot_time,
-        	       "bytes transmitted", 
-        	       verified,
-        	       NPBVERSION,
-        	       COMPILETIME,
-        	       MPICC,
-        	       CLINK,
-        	       CMPI_LIB,
-        	       CMPI_INC,
-        	       CFLAGS,
-        	       CLINKFLAGS );
+                 CLASS,
+                 featnum,
+                 0,
+                 0,
+                 dg->numNodes,
+                 0,
+                 comm_size,
+                 tot_time,
+                 bytes_sent/tot_time,
+                 "bytes transmitted", 
+                 verified,
+                 NPBVERSION,
+                 COMPILETIME,
+                 MPICC,
+                 CLINK,
+                 CMPI_LIB,
+                 CMPI_INC,
+                 CFLAGS,
+                 CLINKFLAGS );
     }          
     MPI_Finalize();
   return 1;

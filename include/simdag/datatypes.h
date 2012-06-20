@@ -67,7 +67,7 @@ typedef enum {
   SD_NOT_SCHEDULED = 0,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
   SD_SCHEDULABLE = 0x0001,               /**< @brief A task becomes SD_READY as soon as its dependencies are satisfied */
   SD_SCHEDULED = 0x0002,     /**< @brief A task becomes SD_SCHEDULED when you call function
-				SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
+                                  SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
   SD_RUNNABLE = 0x0004,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
   SD_IN_FIFO = 0x0008,       /**< @brief A runnable task can have to wait in a workstation fifo if the workstation is sequential */
   SD_RUNNING = 0x0010,       /**< @brief An SD_RUNNABLE or SD_IN_FIFO becomes SD_RUNNING when it is launched. */

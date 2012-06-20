@@ -4,7 +4,7 @@
  * Language:       ANSI C
  * Copyright:      Pierre L'Ecuyer, University of Montreal
  * Date:           14 August 2001
- * License: 	   GPL version 2 or later
+ * License:      GPL version 2 or later
  *
  * Notice:         Please contact P. L'Ecuyer at <lecuyer@iro.UMontreal.ca>
  *                 for commercial purposes.
@@ -269,30 +269,30 @@ static int CheckSeed (unsigned long seed[6])
 
    for (i = 0; i < 3; ++i) {
       if (seed[i] >= m1) {
-	 fprintf (stderr, "****************************************\n"
-		 "ERROR: Seed[%1d] >= m1, Seed is not set.\n"
-		 "****************************************\n\n", i);
-	 return (-1);
+   fprintf (stderr, "****************************************\n"
+     "ERROR: Seed[%1d] >= m1, Seed is not set.\n"
+     "****************************************\n\n", i);
+   return (-1);
        }
    }
    for (i = 3; i < 6; ++i) {
       if (seed[i] >= m2) {
-	 fprintf (stderr, "****************************************\n"
-		 "ERROR: Seed[%1d] >= m1, Seed is not set.\n"
-		 "****************************************\n\n", i);
-	 return (-1);
+   fprintf (stderr, "****************************************\n"
+     "ERROR: Seed[%1d] >= m1, Seed is not set.\n"
+     "****************************************\n\n", i);
+   return (-1);
        }
    }
    if (seed[0] == 0 && seed[1] == 0 && seed[2] == 0) {
       fprintf (stderr, "****************************\n"
-	      "ERROR: First 3 seeds = 0.\n"
-	      "****************************\n\n");
+        "ERROR: First 3 seeds = 0.\n"
+        "****************************\n\n");
       return (-1);
    }
    if (seed[3] == 0 && seed[4] == 0 && seed[5] == 0) {
       fprintf (stderr, "****************************\n"
-	      "ERROR: Last 3 seeds = 0.\n"
-	      "****************************\n\n");
+        "ERROR: Last 3 seeds = 0.\n"
+        "****************************\n\n");
       return (-1);
    }
 

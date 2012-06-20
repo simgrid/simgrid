@@ -130,67 +130,6 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   int errors = 0;
 
-  /*if(mdp1->headersize != mdp2->headersize){
-    fprintf(stderr, "Different size of the file header for the mapped files\n");
-    return 1;
-  }
-
-  if(mdp1->refcount != mdp2->refcount){
-    fprintf(stderr, "Different number of processes that attached the heap\n");
-    return 1;
-  }
-
-  if(strcmp(mdp1->magic, mdp2->magic) != 0){
-    fprintf(stderr,"Different magic number\n");
-    return 1;
-  }
-
-  if(mdp1->flags != mdp2->flags){
-    fprintf(stderr,"Different flags\n");  
-    return 1;
-  }
-
-  if(mdp1->heapsize != mdp2->heapsize){
-    fprintf(stderr,"Different number of info entries\n");
-    return 1;
-  }  
-
-  if(mdp1->heapbase != mdp2->heapbase){
-    fprintf(stderr,"Different first block of the heap\n");
-    return 1;
-  }
-
-  if(mdp1->heapindex != mdp2->heapindex){
-    fprintf(stderr,"Different index for the heap table : %zu - %zu\n", mdp1->heapindex, mdp2->heapindex);
-    return 1;
-  }
-
-  if(mdp1->base != mdp2->base){
-    fprintf(stderr,"Different base address of the memory region\n");
-    return 1;
-  }
-
-  if(mdp1->breakval != mdp2->breakval){
-    fprintf(stderr,"Different current location in the memory region\n");
-    return 1;
-  }
-
-  if(mdp1->top != mdp2->top){
-    fprintf(stderr,"Different end of the current location in the memory region\n");
-    return 1;
-  }
-
-  if(mdp1->fd != mdp2->fd){
-    fprintf(stderr,"Different file descriptor for the file to which this malloc heap is mapped\n");
-    return 1;
-  }
-
-  if(mdp1->version != mdp2->version){
-    fprintf(stderr,"Different version of the mmalloc package\n");
-    return 1;
-    }*/
-
-
   if(mdp1->heaplimit != mdp2->heaplimit){
     fprintf(stderr,"Different limit of valid info table indices\n");
     return 1;
@@ -206,7 +145,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   size_t i, j;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
-  size_t frag_size = 0;         /* FIXME: arbitrary initialization */
+  size_t frag_size;
 
   i = 1;
 
@@ -219,7 +158,6 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   int block_pointed1, block_pointed2;
   void *addr_block_pointed1, *addr_block_pointed2;
-  int frag_pointed1, frag_pointed2;
 
   /* Check busy blocks*/
 
@@ -239,15 +177,15 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
     if(mdp1->heapinfo[i].type == 0){ /* busy large block */
 
       if(mdp1->heapinfo[i].busy_block.size != mdp2->heapinfo[i].busy_block.size){
-	fprintf(stderr,"Different size of a large cluster : %zu - %zu\n", mdp1->heapinfo[i].busy_block.size, mdp2->heapinfo[i].busy_block.size); 
-	fflush(NULL);
-	errors++;
+  fprintf(stderr,"Different size of a large cluster : %zu - %zu\n", mdp1->heapinfo[i].busy_block.size, mdp2->heapinfo[i].busy_block.size); 
+  fflush(NULL);
+  errors++;
       } 
 
       if(mdp1->heapinfo[i].busy_block.busy_size != mdp2->heapinfo[i].busy_block.busy_size){
-	fprintf(stderr,"Different busy_size of a large cluster : %zu - %zu\n", mdp1->heapinfo[i].busy_block.busy_size, mdp2->heapinfo[i].busy_block.busy_size); 
-	fflush(NULL);
-	errors++;
+  fprintf(stderr,"Different busy_size of a large cluster : %zu - %zu\n", mdp1->heapinfo[i].busy_block.busy_size, mdp2->heapinfo[i].busy_block.busy_size); 
+  fflush(NULL);
+  errors++;
       } 
 
   
@@ -256,81 +194,76 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
       //for(k=0;k<mdp1->heapinfo[i].busy_block.size * BLOCKSIZE;k++){
       for(k=0;k<mdp1->heapinfo[i].busy_block.busy_size;k++){
-	if(memcmp(((char *)addr_block1) + k, ((char *)addr_block2) + k, 1) != 0){
-	  //fprintf(stderr, "Different byte (offset=%d) (%p - %p) in block %zu\n", k, (char *)addr_block1 + k, (char *)addr_block2 + k, i); fflush(NULL);
-	  pointer_align = (k / sizeof(void*)) * sizeof(void*); 
-	  address_pointed1 = *((void **)((char *)addr_block1 + pointer_align));
-	  address_pointed2 = *((void **)((char *)addr_block2 + pointer_align));				   
-	  if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < mdp1->breakval)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < mdp2->breakval))){
-	    block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
-	    block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
-	    //fprintf(stderr, "Blocks pointed : %d - %d\n", block_pointed1, block_pointed2);
-	    if(mdp1->heapinfo[block_pointed1].type == mdp2->heapinfo[block_pointed2].type){
-	      if(mdp1->heapinfo[block_pointed1].type == 0){ // Large block
-		while(mdp1->heapinfo[block_pointed1].busy_block.size == 0)
-		  block_pointed1--;
-		while(mdp2->heapinfo[block_pointed2].busy_block.size == 0)
-		  block_pointed2--;
-		if(mdp1->heapinfo[block_pointed1].busy_block.busy_size == mdp2->heapinfo[block_pointed2].busy_block.busy_size){
-		  addr_block_pointed1 = (char*)heapbase1 + ((block_pointed1 - 1)*BLOCKSIZE);
-		  addr_block_pointed2 = (char*)heapbase2 + ((block_pointed2 - 1)*BLOCKSIZE);
-		  
-		  fprintf(stderr, "Memcmp between blocks %d and %d (size = %zu)\n", block_pointed1, block_pointed2,  mdp1->heapinfo[block_pointed1].busy_block.busy_size); 
-		  if(memcmp(addr_block_pointed1, addr_block_pointed2, mdp1->heapinfo[block_pointed1].busy_block.busy_size) != 0){
-		    distance++;
-		  }else{
-		    fprintf(stderr, "False difference detected\n");
-		  }
-		}else{
-		  distance++;
-		}
-	      }else{ // Fragmented block
-		address_pointed1 = (char*)mdp1 + ((char*)address_pointed1 - (char*)s_heap);
-		address_pointed2 = (char*)mdp2 + ((char*)address_pointed2 - (char*)s_heap);
-		addr_block_pointed1 = (char*)heapbase1 + ((block_pointed1 - 1)*BLOCKSIZE);
-		addr_block_pointed2 = (char*)heapbase2 + ((block_pointed2 - 1)*BLOCKSIZE);
-		frag_pointed1 = 0;
-		while(address_pointed1 > (void*)((char*)addr_block_pointed1 + ((frag_pointed1 +1 ) * frag_size))){
-		  frag_pointed1++;
-		}
-		frag_pointed2 = 0;
-		while(address_pointed2 > (void*)((char*)addr_block_pointed2 + ((frag_pointed2 +1) * frag_size))){
-		  frag_pointed2++;
-		}
-		if(mdp1->heapinfo[block_pointed1].busy_frag.frag_size[frag_pointed1] == mdp2->heapinfo[block_pointed2].busy_frag.frag_size[frag_pointed2]){
-		  fprintf(stderr, "Memcmp between fragments %d (block %d) and %d (block %d) (size = %d)\n", frag_pointed1, block_pointed1, frag_pointed2, block_pointed2,  mdp1->heapinfo[block_pointed1].busy_frag.frag_size[frag_pointed1]); 
-		  if(memcmp((char*)addr_block_pointed1 + (frag_pointed1 * frag_size), (char*)addr_block_pointed2 + (frag_pointed2 * frag_size), mdp1->heapinfo[block_pointed1].busy_frag.frag_size[frag_pointed1]) != 0){
-		    distance++;
-		  }else{
-		    fprintf(stderr, "False difference detected\n");
-		  }
-		}else{
-		  distance ++;
-		}
-		  
-		  
-	      }
-	    }else{
-	      fprintf(stderr, "Pointers on blocks with different types \n");
-	      distance++;
-	    }
-	  }else{
-	    fprintf(stderr, "Pointed address not in std_heap");
-	    distance++;
-	  }
-	    
-	}
+  if((((char *)addr_block1) + k != 0) && (((char *)addr_block2) + k != 0)){
+    if(memcmp(((char *)addr_block1) + k, ((char *)addr_block2) + k, 1) != 0){
+      fprintf(stderr, "Different byte (offset=%d) (%p - %p) in block %zu\n", k, (char *)addr_block1 + k, (char *)addr_block2 + k, i); fflush(NULL);
+      pointer_align = (k / sizeof(void*)) * sizeof(void*);
+      address_pointed1 = *((void **)((char *)addr_block1 + pointer_align));
+      address_pointed2 = *((void **)((char *)addr_block2 + pointer_align));           
+      if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < mdp1->breakval)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < mdp2->breakval))){
+        block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) % BLOCKSIZE;
+        block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) % BLOCKSIZE;
+        //fprintf(stderr, "Blocks pointed : %d - %d\n", block_pointed1, block_pointed2);
+        if((block_pointed1 == 0) && (block_pointed2 == 0)){
+    block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1; 
+    block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1; 
+    if(mdp1->heapinfo[block_pointed1].type == mdp2->heapinfo[block_pointed2].type){
+      if(mdp1->heapinfo[block_pointed1].type == 0){ // Large block
+        if(mdp1->heapinfo[block_pointed1].busy_block.busy_size == mdp2->heapinfo[block_pointed2].busy_block.busy_size){
+          addr_block_pointed1 = (char*)heapbase1 + ((block_pointed1 - 1)*BLOCKSIZE);
+          addr_block_pointed2 = (char*)heapbase2 + ((block_pointed2 - 1)*BLOCKSIZE);
+          if(memcmp(addr_block_pointed1, addr_block_pointed2, mdp1->heapinfo[block_pointed1].busy_block.busy_size) != 0){
+      distance++;
+          }else{
+      fprintf(stderr, "False difference detected\n");
+          }
+        }else{
+          distance++;
+        }
+      }else{ // Fragmented block
+        addr_block_pointed1 = (char*)mdp1 + ((char *)address_pointed1 - (char *)s_heap);
+        addr_block_pointed2 = (char*)mdp2 + ((char *)address_pointed2 - (char *)s_heap);
+        if(mdp1->heapinfo[block_pointed1].busy_frag.frag_size[0] == mdp2->heapinfo[block_pointed2].busy_frag.frag_size[0]){
+          if(memcmp(addr_block_pointed1, addr_block_pointed2, mdp1->heapinfo[block_pointed1].busy_frag.frag_size[0]) != 0){
+      fprintf(stderr, "Pointed fragments are different \n");
+      distance++;
+          }else{
+      fprintf(stderr, "False difference detected\n");
+          }
+        }else{
+          fprintf(stderr, "Different size of pointed fragments\n");
+          distance ++;
+        }
+      }
+    }else{
+      fprintf(stderr, "Pointers on blocks with different types \n");
+      distance++;
+    }
+    
+        }else{
+    /* FIXME : peut pointer vers le début d'un fragment mais dans un bloc */
+    fprintf(stderr, "Pointed addresses (%p - %p) not valid\n", address_pointed1, address_pointed2);
+    distance++;
+        }
+      }else{
+        fprintf(stderr, "Pointed addresses (%p - %p) not in std_heap\n", address_pointed1, address_pointed2);
+        distance++;
+      }
+      
+    }
+  }
       }
 
 
       if(distance>0){
-	fprintf(stderr,"\nDifferent data in large block %zu (size = %zu (in blocks), busy_size = %zu (in bytes))\n", i, mdp1->heapinfo[i].busy_block.size, mdp1->heapinfo[i].busy_block.busy_size);
-	fflush(NULL);
-	fprintf(stderr, "Hamming distance between blocks : %d\n", distance);
-	mmalloc_backtrace_block_display(mdp1, i);
-	mmalloc_backtrace_block_display(mdp2, i);
-	errors++; 
-	total_distance += distance;
+  fprintf(stderr,"\nDifferent data in large block %zu (size = %zu (in blocks), busy_size = %zu (in bytes))\n", i, mdp1->heapinfo[i].busy_block.size, mdp1->heapinfo[i].busy_block.busy_size);
+  fflush(NULL);
+  fprintf(stderr, "Hamming distance between blocks : %d\n", distance);
+  mmalloc_backtrace_block_display(mdp1, i);
+  mmalloc_backtrace_block_display(mdp2, i);
+  fprintf(stderr, "\n");
+  errors++; 
+  total_distance += distance;
       }
     
       
@@ -340,123 +273,118 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
       
       if(mdp1->heapinfo[i].type > 0){ /* busy fragmented block */
 
-	if(mdp1->heapinfo[i].type != mdp2->heapinfo[i].type){
-	  fprintf(stderr,"Different size of fragments in fragmented block %zu : %d - %d\n", i, mdp1->heapinfo[i].type, mdp2->heapinfo[i].type); fflush(NULL);
-	  errors++;
-	}
+  if(mdp1->heapinfo[i].type != mdp2->heapinfo[i].type){
+    fprintf(stderr,"Different size of fragments in fragmented block %zu : %d - %d\n", i, mdp1->heapinfo[i].type, mdp2->heapinfo[i].type); fflush(NULL);
+    errors++;
+  }
 
-	if(mdp1->heapinfo[i].busy_frag.nfree != mdp2->heapinfo[i].busy_frag.nfree){
-	  fprintf(stderr,"Different free fragments in fragmented block %zu : %zu - %zu\n", i, mdp1->heapinfo[i].busy_frag.nfree, mdp2->heapinfo[i].busy_frag.nfree); fflush(NULL);
-	  errors++;
-	} 
-	
-	if(mdp1->heapinfo[i].busy_frag.first != mdp2->heapinfo[i].busy_frag.first){
-	  fprintf(stderr,"Different busy_size of a large cluster : %zu - %zu\n", mdp1->heapinfo[i].busy_block.busy_size, mdp2->heapinfo[i].busy_block.busy_size); fflush(NULL);
-	  errors++;
-	} 
+  if(mdp1->heapinfo[i].busy_frag.nfree != mdp2->heapinfo[i].busy_frag.nfree){
+    fprintf(stderr,"Different free fragments in fragmented block %zu : %zu - %zu\n", i, mdp1->heapinfo[i].busy_frag.nfree, mdp2->heapinfo[i].busy_frag.nfree); fflush(NULL);
+    errors++;
+  } 
+  
+  if(mdp1->heapinfo[i].busy_frag.first != mdp2->heapinfo[i].busy_frag.first){
+    fprintf(stderr,"Different busy_size of a large cluster : %zu - %zu\n", mdp1->heapinfo[i].busy_block.busy_size, mdp2->heapinfo[i].busy_block.busy_size); fflush(NULL);
+    errors++;
+  } 
 
-	frag_size = pow(2, mdp1->heapinfo[i].type);
+  frag_size = pow(2, mdp1->heapinfo[i].type);
 
-	for(j=0; j< (BLOCKSIZE/frag_size); j++){
+  for(j=0; j< (BLOCKSIZE/frag_size); j++){
 
-	  if(mdp1->heapinfo[i].busy_frag.frag_size[j] != mdp2->heapinfo[i].busy_frag.frag_size[j]){
-	    fprintf(stderr,"Different busy_size for fragment %zu in block %zu : %hu - %hu\n", j, i, mdp1->heapinfo[i].busy_frag.frag_size[j], mdp2->heapinfo[i].busy_frag.frag_size[j]); fflush(NULL);
-	    errors++;
-	  }
+    if(mdp1->heapinfo[i].busy_frag.frag_size[j] != mdp2->heapinfo[i].busy_frag.frag_size[j]){
+      fprintf(stderr,"Different busy_size for fragment %zu in block %zu : %hu - %hu\n", j, i, mdp1->heapinfo[i].busy_frag.frag_size[j], mdp2->heapinfo[i].busy_frag.frag_size[j]); fflush(NULL);
+      errors++;
+    }
 
-	  if(mdp1->heapinfo[i].busy_frag.frag_size[j] > 0){
-	    
-	    addr_frag1 = (char *)addr_block1 + (j * frag_size);
-	    xbt_assert(addr_frag1 < breakval1, "Fragment address out of heap memory used");
+    if(mdp1->heapinfo[i].busy_frag.frag_size[j] > 0){
+      
+      addr_frag1 = (char *)addr_block1 + (j * frag_size);
+      xbt_assert(addr_frag1 < breakval1, "Fragment address out of heap memory used");
 
-	    addr_frag2 = (char *)addr_block2 + (j * frag_size);
-	    xbt_assert(addr_frag1 < breakval1, "Fragment address out of heap memory used");
+      addr_frag2 = (char *)addr_block2 + (j * frag_size);
+      xbt_assert(addr_frag1 < breakval1, "Fragment address out of heap memory used");
 
-	    /* Hamming distance on different blocks */
-	    distance = 0;
-	    //for(k=0;k<frag_size;k++){
-	    for(k=0;k<mdp1->heapinfo[i].busy_frag.frag_size[j];k++){
-	      if(memcmp(((char *)addr_frag1) + k, ((char *)addr_frag2) + k, 1) != 0){
-		//fprintf(stderr, "Different byte (offset=%d) (%p - %p) in fragment %zu in block %zu\n", k, (char *)addr_frag1 + k, (char *)addr_frag2 + k, j, i); fflush(NULL);
-		pointer_align = (k / sizeof(void*)) * sizeof(void*);
-		address_pointed1 = *((void **)((char *)addr_frag1 + pointer_align));
-		address_pointed2 = *((void **)((char *)addr_frag2 + pointer_align));				   
-		if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < mdp1->breakval)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < mdp2->breakval))){
-		  block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
-		  block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1;
-		  //fprintf(stderr, "Blocks pointed : %d - %d\n", block_pointed1, block_pointed2);
-		  if(mdp1->heapinfo[block_pointed1].type == mdp2->heapinfo[block_pointed2].type){
-		    if(mdp1->heapinfo[block_pointed1].type == 0){ // Large block
-		      while(mdp1->heapinfo[block_pointed1].busy_block.size == 0)
-			block_pointed1--;
-		      while(mdp2->heapinfo[block_pointed2].busy_block.size == 0)
-			block_pointed2--;
-		      if(mdp1->heapinfo[block_pointed1].busy_block.busy_size == mdp2->heapinfo[block_pointed2].busy_block.busy_size){
-			addr_block_pointed1 = (char*)heapbase1 + ((block_pointed1 - 1)*BLOCKSIZE);
-			addr_block_pointed2 = (char*)heapbase2 + ((block_pointed2 - 1)*BLOCKSIZE);
-			fprintf(stderr, "Memcmp between blocks %d and %d (size = %zu)\n", block_pointed1, block_pointed2,  mdp1->heapinfo[block_pointed1].busy_block.busy_size); 
-			if(memcmp(addr_block_pointed1, addr_block_pointed2, mdp1->heapinfo[block_pointed1].busy_block.busy_size) != 0){
-			  distance++;
-			}else{
-			  fprintf(stderr, "False difference detected\n");
-			}
-		      }else{
-			distance++;
-		      }
-		    }else{ // Fragmented block
-		      address_pointed1 = (char*)mdp1 + ((char*)address_pointed1 - (char*)s_heap);
-		      address_pointed2 = (char*)mdp2 + ((char*)address_pointed2 - (char*)s_heap);
-		      addr_block_pointed1 = (char*)heapbase1 + ((block_pointed1 - 1)*BLOCKSIZE);
-		      addr_block_pointed2 = (char*)heapbase2 + ((block_pointed2 - 1)*BLOCKSIZE);
-		      frag_pointed1 = 0;
-		      while(address_pointed1 > (void*)((char*)addr_block_pointed1 + ((frag_pointed1 + 1) * frag_size))){
-			frag_pointed1++;
-		      }
-		      frag_pointed2 = 0;
-		      while(address_pointed2 > (void*)((char*)addr_block_pointed2 + ((frag_pointed2 + 1) * frag_size))){
-			frag_pointed2++;
-		      }
-		      if(mdp1->heapinfo[block_pointed1].busy_frag.frag_size[frag_pointed1] == mdp2->heapinfo[block_pointed2].busy_frag.frag_size[frag_pointed2]){
-			fprintf(stderr, "Memcmp between fragments %d (block %d) and %d (block %d) (size = %d)\n", frag_pointed1, block_pointed1, frag_pointed2, block_pointed2,  mdp1->heapinfo[block_pointed1].busy_frag.frag_size[frag_pointed1]); 
-			if(memcmp((char*)addr_block_pointed1 + (frag_pointed1 * frag_size), (char*)addr_block_pointed2 + (frag_pointed2 * frag_size), mdp1->heapinfo[block_pointed1].busy_frag.frag_size[frag_pointed1]) != 0){
-			  distance++;
-			}else{
-			  fprintf(stderr, "False difference detected\n");
-			}
-		      }else{
-			distance ++;
-		      }
-		    }
-		  }else{
-		    fprintf(stderr, "Pointers on blocks with different types \n");
-		    distance++;
-		  }
-		}else{
-		  fprintf(stderr, "Pointed address not in std_heap");
-		  distance++;
-		}
-	      }
+      /* Hamming distance on different blocks */
+      distance = 0;
+      //for(k=0;k<frag_size;k++){
+      for(k=0;k<mdp1->heapinfo[i].busy_frag.frag_size[j];k++){
+        if((((char *)addr_frag1) + k != 0) && (((char *)addr_frag2) + k != 0)){
+    if(memcmp(((char *)addr_frag1) + k, ((char *)addr_frag2) + k, 1) != 0){
+      fprintf(stderr, "Different byte (offset=%d) (%p - %p) in fragment %zu in block %zu\n", k, (char *)addr_frag1 + k, (char *)addr_frag2 + k, j, i); fflush(NULL);
+      pointer_align = (k / sizeof(void*)) * sizeof(void*);
+      address_pointed1 = *((void **)((char *)addr_frag1 + pointer_align));
+      address_pointed2 = *((void **)((char *)addr_frag2 + pointer_align));           
+      if(((address_pointed1 > (void *)s_heap) && (address_pointed1 < mdp1->breakval)) && ((address_pointed2 > (void *)s_heap) && (address_pointed2 < mdp2->breakval))){
+        block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) % BLOCKSIZE;
+        block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) % BLOCKSIZE;
+        if((block_pointed1 == 0) && (block_pointed2 == 0)){
+          block_pointed1 = ((char*)address_pointed1 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1; 
+          block_pointed2 = ((char*)address_pointed2 - (char*)((struct mdesc*)s_heap)->heapbase) / BLOCKSIZE + 1; 
+          if(mdp1->heapinfo[block_pointed1].type == mdp2->heapinfo[block_pointed2].type){
+      if(mdp1->heapinfo[block_pointed1].type == 0){ // Large block
+        if(mdp1->heapinfo[block_pointed1].busy_block.busy_size == mdp2->heapinfo[block_pointed2].busy_block.busy_size){
+          addr_block_pointed1 = (char*)heapbase1 + ((block_pointed1 - 1)*BLOCKSIZE);
+          addr_block_pointed2 = (char*)heapbase2 + ((block_pointed2 - 1)*BLOCKSIZE);
+          fprintf(stderr, "Memcmp between blocks %d and %d (size = %zu)\n", block_pointed1, block_pointed2,  mdp1->heapinfo[block_pointed1].busy_block.busy_size); 
+          if(memcmp(addr_block_pointed1, addr_block_pointed2, mdp1->heapinfo[block_pointed1].busy_block.busy_size) != 0){
+            distance++;
+          }else{
+            fprintf(stderr, "False difference detected\n");
+          }
+        }else{
+          distance++;
+        }
+      }else{ // Fragmented block
+        addr_block_pointed1 = (char*)mdp1 + ((char *)address_pointed1 - (char *)s_heap);
+        addr_block_pointed2 = (char*)mdp2 + ((char *)address_pointed2 - (char *)s_heap);
+        if(mdp1->heapinfo[block_pointed1].busy_frag.frag_size[0] == mdp2->heapinfo[block_pointed2].busy_frag.frag_size[0]){
+          if(memcmp(addr_block_pointed1, addr_block_pointed2, mdp1->heapinfo[block_pointed1].busy_frag.frag_size[0]) != 0){
+            distance++;
+          }else{
+            fprintf(stderr, "False difference detected\n");
+          }
+        }else{
+          distance ++;
+        }
+      }
+          }else{
+      fprintf(stderr, "Pointers on blocks with different types \n");
+      distance++;
+          }
+        }else{
+          /* FIXME : peut pointer vers le début d'un fragment mais dans un bloc */
+          fprintf(stderr, "Pointed addresses (%p - %p) not valid \n", address_pointed1, address_pointed2);
+          distance++;
+        }
+      }else{
+        fprintf(stderr, "Pointed addresses (%p - %p) not in std_heap\n", address_pointed1, address_pointed2);
+        distance++;
+      }
+    }
+        }
 
-	    }
-	    
-	    if(distance > 0){
-	      fprintf(stderr,"\nDifferent data in fragment %zu (size = %zu, size used = %hu) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
-	      fprintf(stderr, "Hamming distance between fragments : %d\n", distance);
-	      mmalloc_backtrace_fragment_display(mdp1, i, j);
-	      mmalloc_backtrace_fragment_display(mdp2, i, j);
-	      errors++;
-	      total_distance += distance;
-	      
-	    }
+      }
+      
+      if(distance > 0){
+        fprintf(stderr,"\nDifferent data in fragment %zu (size = %zu, size used = %hu) in block %zu \n", j, frag_size, mdp1->heapinfo[i].busy_frag.frag_size[j], i);
+        fprintf(stderr, "Hamming distance between fragments : %d\n", distance);
+        mmalloc_backtrace_fragment_display(mdp1, i, j);
+        mmalloc_backtrace_fragment_display(mdp2, i, j);
+        fprintf(stderr, "\n");
+        errors++;
+        total_distance += distance;
+        
+      }
 
-	  }
-	}
+    }
+  }
 
-	i++;
+  i++;
 
       }else{ /* free block */
 
-	i++;
+  i++;
 
       }
       

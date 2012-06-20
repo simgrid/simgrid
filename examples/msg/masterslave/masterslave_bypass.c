@@ -72,7 +72,7 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(route_dst, "host B");
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_YES;
   SURFXML_START_TAG(route);
-  XBT_DEBUG("	<link:ctn id=\"LinkA\"/>");
+  XBT_DEBUG("  <link:ctn id=\"LinkA\"/>");
   SURFXML_BUFFER_SET(link_ctn_id, "LinkA");
   A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
   SURFXML_START_TAG(link_ctn);
@@ -220,7 +220,7 @@ int master(int argc, char *argv[])
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++)
     MSG_task_send(MSG_task_create("finalize", 0, 0, FINALIZE),
-    		MSG_host_get_name(slaves[i]));
+        MSG_host_get_name(slaves[i]));
 
   XBT_INFO("Goodbye now!");
   free(slaves);

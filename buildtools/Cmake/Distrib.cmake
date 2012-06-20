@@ -3,11 +3,26 @@
 #########################################
 	  
 # doc
-if(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/doc/html/)
-	file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html/)
-endif(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/doc/html/)
-install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
-  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/"
+if(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/)
+	file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/)
+endif(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/)
+
+if(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/)
+	file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/)
+endif(NOT EXISTS ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/)
+
+
+install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/"
+  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/ref_guide/html/"
+  PATTERN ".svn" EXCLUDE 
+  PATTERN ".git" EXCLUDE 
+  PATTERN "*.o" EXCLUDE
+  PATTERN "*~" EXCLUDE
+)
+
+
+install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/"
+  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/user_guide/html/"
   PATTERN ".svn" EXCLUDE 
   PATTERN ".git" EXCLUDE 
   PATTERN "*.o" EXCLUDE
@@ -226,8 +241,10 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
   COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}-${release_version}.tar.gz
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/html/
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ ${PROJECT_NAME}-${release_version}/doc/html/
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/user_guide/html/
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/ref_guide/html/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/ ${PROJECT_NAME}-${release_version}/doc/user_guide/html/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/ ${PROJECT_NAME}-${release_version}/doc/ref_guide/html/
 )
 add_dependencies(dist-dir simgrid_documentation)
 add_dependencies(dist-dir maintainer_files)
@@ -375,23 +392,6 @@ WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 #############################################
 ### Fill in the "make sync-gforge" target ###
 #############################################
-
-add_custom_target(sync-gforge-doc
-COMMAND chmod g+rw -R doc/
-COMMAND chmod a+rX -R doc/
-COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ || true 
-COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
-doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
-COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png  doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
-WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-)
-add_dependencies(sync-gforge-doc simgrid_documentation)
-
-add_custom_target(sync-gforge-dtd
-COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
-COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
-WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-)
 
 #PIPOL
 add_custom_target(sync-pipol

@@ -20,8 +20,8 @@ static void SIMIX_comm_copy_data(smx_action_t comm);
 static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
 static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
 static smx_action_t SIMIX_rdv_get_comm(smx_rdv_t rdv, e_smx_comm_type_t type,
-					  int (*match_fun)(void *, void *,smx_action_t),
-					  void *user_data, smx_action_t my_action);
+            int (*match_fun)(void *, void *,smx_action_t),
+            void *user_data, smx_action_t my_action);
 static void SIMIX_rdv_free(void *data);
 
 void SIMIX_network_init(void)
@@ -518,7 +518,7 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
     /* If a link is failed, detect it immediately */
     if (surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
-	  SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
+    SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
       action->state = SIMIX_LINK_FAILURE;
       SIMIX_comm_destroy_internal_actions(action);
     }
@@ -671,7 +671,7 @@ void SIMIX_post_comm(smx_action_t action)
      action->state = SIMIX_DST_HOST_FAILURE;
   else if (action->comm.surf_comm &&
           surf_workstation_model->action_state_get(action->comm.surf_comm) == SURF_ACTION_FAILED) {
-	  XBT_DEBUG("Puta madre. Surf says that the link broke");
+    XBT_DEBUG("Puta madre. Surf says that the link broke");
      action->state = SIMIX_LINK_FAILURE;
   } else
     action->state = SIMIX_DONE;

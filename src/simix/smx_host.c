@@ -90,7 +90,7 @@ xbt_dict_t SIMIX_host_get_dict(void)
   void **host = NULL;
 
   xbt_lib_foreach(host_lib, cursor, name, host){
-	  if(host[SIMIX_HOST_LEVEL])
+    if(host[SIMIX_HOST_LEVEL])
             xbt_dict_set(host_dict,name,host[SIMIX_HOST_LEVEL], NULL);
   }
   return host_dict;
@@ -204,7 +204,7 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
   if (!MC_IS_ENABLED) {
     action->execution.surf_exec =
       surf_workstation_model->extension.workstation.execute(host->host,
-	  computation_amount);
+    computation_amount);
     surf_workstation_model->action_data_set(action->execution.surf_exec, action);
     surf_workstation_model->set_priority(action->execution.surf_exec, priority);
   }
@@ -243,7 +243,7 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
     action->execution.surf_exec =
       surf_workstation_model->extension.workstation.
       execute_parallel_task(host_nb, workstation_list, computation_amount,
-	                    communication_amount, rate);
+                      communication_amount, rate);
 
     surf_workstation_model->action_data_set(action->execution.surf_exec, action);
   }
@@ -343,7 +343,7 @@ void SIMIX_execution_finish(smx_action_t action)
 
       case SIMIX_DONE:
         /* do nothing, action done */
-	XBT_DEBUG("SIMIX_execution_finished: execution successful");
+  XBT_DEBUG("SIMIX_execution_finished: execution successful");
         break;
 
       case SIMIX_FAILED:

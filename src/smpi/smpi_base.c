@@ -96,26 +96,26 @@ void smpi_mpi_start(MPI_Request request)
   } else {
     print_request("New send", request);
     mailbox = smpi_process_remote_mailbox(
-			  smpi_group_index(smpi_comm_group(request->comm), request->dst));
+        smpi_group_index(smpi_comm_group(request->comm), request->dst));
     // FIXME: SIMIX does not yet support non-contiguous datatypes
 
     if (request->size < 64*1024 ) { // eager mode => detached send (FIXME: this limit should be configurable)
-    	void *oldbuf = request->buf;
-    	detached = 1;
-    	request->buf = malloc(request->size);
-    	memcpy(request->buf,oldbuf,request->size);
-    	XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
+      void *oldbuf = request->buf;
+      detached = 1;
+      request->buf = malloc(request->size);
+      memcpy(request->buf,oldbuf,request->size);
+      XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     } else {
-    	XBT_DEBUG("Send request %p is not detached (buf: %p)",request,request->buf);
+      XBT_DEBUG("Send request %p is not detached (buf: %p)",request,request->buf);
     }
     request->action = 
-		simcall_comm_isend(mailbox, request->size, -1.0,
-				    request->buf, request->size,
-				    &match_send,
-				    &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
-				    request,
-				    // detach if msg size < eager/rdv switch limit
-				    detached);
+    simcall_comm_isend(mailbox, request->size, -1.0,
+            request->buf, request->size,
+            &match_send,
+            &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
+            request,
+            // detach if msg size < eager/rdv switch limit
+            detached);
 
 #ifdef HAVE_TRACING
     /* FIXME: detached sends are not traceable (request->action == NULL) */
@@ -127,7 +127,7 @@ void smpi_mpi_start(MPI_Request request)
 
 void smpi_mpi_startall(int count, MPI_Request * requests)
 {
-	  int i;
+    int i;
 
   for(i = 0; i < count; i++) {
     smpi_mpi_start(requests[i]);
@@ -247,13 +247,13 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
 int flag;
 
    if ((*request)->action == NULL)
-	flag = 1;
+  flag = 1;
    else 
     flag = simcall_comm_test((*request)->action);
    if(flag) {
-		    smpi_mpi_wait(request, status);
-	  }
-	  return flag;
+        smpi_mpi_wait(request, status);
+    }
+    return flag;
 }
 
 int smpi_mpi_testany(int count, MPI_Request requests[], int *index,

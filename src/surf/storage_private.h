@@ -50,6 +50,7 @@ typedef enum {
 typedef struct surf_action_storage {
   s_surf_action_lmm_t generic_lmm_action;
   e_surf_action_storage_type_t type;
+  void *storage;
 } s_surf_action_storage_t, *surf_action_storage_t;
 
 #endif /* STORAGE_PRIVATE_H_ */

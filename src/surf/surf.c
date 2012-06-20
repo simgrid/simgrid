@@ -135,7 +135,7 @@ s_surf_model_description_t surf_network_model_description[] = {
 #ifdef HAVE_NS3
   {"NS3",
    "Network pseudo-model using the NS3 tcp model instead of an analytic model",
-	surf_network_model_init_NS3},
+  surf_network_model_init_NS3},
 #endif
   {"Reno",
    "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
@@ -570,8 +570,8 @@ double surf_solve(double max_date)
     }
 
     if (next_event_date == -1.0) {
-    	XBT_DEBUG("no next TRACE event. Stop searching for it");
-    	break;
+      XBT_DEBUG("no next TRACE event. Stop searching for it");
+      break;
     }
 
     if ((min != -1.0) && (next_event_date > NOW + min)) break;
@@ -601,7 +601,7 @@ double surf_solve(double max_date)
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
    * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
   if (min == -1.0) {
-	XBT_DEBUG("No next event at all. Bail out now.");
+  XBT_DEBUG("No next event at all. Bail out now.");
     return -1.0;
   }
 

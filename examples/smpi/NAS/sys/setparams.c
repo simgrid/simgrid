@@ -66,7 +66,7 @@ int fortran_rec_size = 4;
 #endif
 
 void get_info(int argc, char *argv[], int *typep, int *nprocsp, char *classp,
-	      int* subtypep);
+        int* subtypep);
 void check_info(int type, int nprocs, char class);
 void read_info(int type, int *nprocsp, char *classp, int *subtypep);
 void write_info(int type, int nprocs, char class, int subtype);
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
   if (class != 'U') {
 #ifdef VERBOSE
     printf("setparams: For benchmark %s: number of processors = %d class = %c\n", 
-	   argv[1], nprocs, class); 
+     argv[1], nprocs, class); 
 #endif
     check_info(type, nprocs, class);
   }
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
     if (class_old != 'X') {
 #ifdef VERBOSE
       printf("setparams:     old settings: number of processors = %d class = %c\n", 
-	     nprocs_old, class_old); 
+       nprocs_old, class_old); 
 #endif
     }
   } else {
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
     if (class_old != 'X') {
 #ifdef VERBOSE
       printf("setparams: Previous settings were CLASS=%c NPROCS=%d\n", 
-	     class_old, nprocs_old); 
+       class_old, nprocs_old); 
 #endif
     }
     exit(1); /* exit on class==U */
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
  */
 
 void get_info(int argc, char *argv[], int *typep, int *nprocsp, char *classp,
-	      int *subtypep) 
+        int *subtypep) 
 {
 
   if (argc < 4) {
@@ -307,29 +307,29 @@ void read_info(int type, int *nprocsp, char *classp, int *subtypep)
 
   switch(type) {
       case BT: {
-	  char subtype_str[100];
+    char subtype_str[100];
           nread = fscanf(fp, BT_DESC_LINE, nprocsp, classp, subtype_str);
           if (nread != 3) {
             if (nread != 2) {
               printf("setparams: Error parsing config file %s. Ignoring previous settings\n", FILENAME);
               goto abort;
-	    }
-	    *subtypep = 0;
-	    break;
+      }
+      *subtypep = 0;
+      break;
           }
           if (!strcmp(subtype_str, "full") || !strcmp(subtype_str, "FULL")) {
-		*subtypep = FULL;
+    *subtypep = FULL;
           } else if (!strcmp(subtype_str, "simple") ||
-		     !strcmp(subtype_str, "SIMPLE")) {
-		*subtypep = SIMPLE;
+         !strcmp(subtype_str, "SIMPLE")) {
+    *subtypep = SIMPLE;
           } else if (!strcmp(subtype_str, "epio") || !strcmp(subtype_str, "EPIO")) {
-		*subtypep = EPIO;
+    *subtypep = EPIO;
           } else if (!strcmp(subtype_str, "fortran") ||
-		     !strcmp(subtype_str, "FORTRAN")) {
-		*subtypep = FORTRAN;
+         !strcmp(subtype_str, "FORTRAN")) {
+    *subtypep = FORTRAN;
           } else {
-		*subtypep = -1;
-	  }
+    *subtypep = -1;
+    }
           break;
       }
 
@@ -395,11 +395,11 @@ void write_info(int type, int nprocs, char class, int subtype)
   switch(type) {
       case BT:
           /* Write out the header */
-	  if (subtype == -1 || subtype == 0) {
+    if (subtype == -1 || subtype == 0) {
             fprintf(fp, DESC_LINE, nprocs, class);
-	  } else {
+    } else {
             fprintf(fp, BT_DESC_LINE, nprocs, class, BT_TYPES[subtype]);
-	  }
+    }
           /* Print out a warning so bozos don't mess with the file */
           fprintf(fp, "\
 c  \n\
@@ -410,7 +410,7 @@ c  in this directory. Do not modify it by hand.\n\
 c  \n");
 
           break;
-	
+  
       case SP:
       case FT:
       case MG:
@@ -429,7 +429,7 @@ c  in this directory. Do not modify it by hand.\n\
 c  \n");
 
           break;
-	case EP:
+  case EP:
       case IS:
       case DT:
           fprintf(fp, DEF_CLASS_LINE, class);
@@ -510,7 +510,7 @@ void write_sp_info(FILE *fp, int nprocs, char class)
   }
   fprintf(fp, "%sinteger maxcells, problem_size, niter_default\n", FINDENT);
   fprintf(fp, "%sparameter (maxcells=%d, problem_size=%d, niter_default=%d)\n", 
-	       FINDENT, maxcells, problem_size, niter);
+         FINDENT, maxcells, problem_size, niter);
   fprintf(fp, "%sdouble precision dt_default\n", FINDENT);
   fprintf(fp, "%sparameter (dt_default = %s)\n", FINDENT, dt);
 }
@@ -538,7 +538,7 @@ void write_bt_info(FILE *fp, int nprocs, char class, int io)
   wr_interval = 5;
   fprintf(fp, "%sinteger maxcells, problem_size, niter_default\n", FINDENT);
   fprintf(fp, "%sparameter (maxcells=%d, problem_size=%d, niter_default=%d)\n", 
-	       FINDENT, maxcells, problem_size, niter);
+         FINDENT, maxcells, problem_size, niter);
   fprintf(fp, "%sdouble precision dt_default\n", FINDENT);
   fprintf(fp, "%sparameter (dt_default = %s)\n", FINDENT, dt);
   fprintf(fp, "%sinteger wr_default\n", FINDENT);
@@ -548,23 +548,23 @@ void write_bt_info(FILE *fp, int nprocs, char class, int io)
   if (io) {
     fprintf(fp, "%scharacter*(*) filenm\n", FINDENT);
     switch (io) {
-	case FULL:
-	    fprintf(fp, "%sparameter (filenm = 'btio.full.out')\n", FINDENT);
-	    break;
-	case SIMPLE:
-	    fprintf(fp, "%sparameter (filenm = 'btio.simple.out')\n", FINDENT);
-	    break;
-	case EPIO:
-	    fprintf(fp, "%sparameter (filenm = 'btio.epio.out')\n", FINDENT);
-	    break;
-	case FORTRAN:
-	    fprintf(fp, "%sparameter (filenm = 'btio.fortran.out')\n", FINDENT);
-	    fprintf(fp, "%sinteger fortran_rec_sz\n", FINDENT);
-	    fprintf(fp, "%sparameter (fortran_rec_sz = %d)\n",
-		    FINDENT, fortran_rec_size);
-	    break;
-	default:
-	    break;
+  case FULL:
+      fprintf(fp, "%sparameter (filenm = 'btio.full.out')\n", FINDENT);
+      break;
+  case SIMPLE:
+      fprintf(fp, "%sparameter (filenm = 'btio.simple.out')\n", FINDENT);
+      break;
+  case EPIO:
+      fprintf(fp, "%sparameter (filenm = 'btio.epio.out')\n", FINDENT);
+      break;
+  case FORTRAN:
+      fprintf(fp, "%sparameter (filenm = 'btio.fortran.out')\n", FINDENT);
+      fprintf(fp, "%sinteger fortran_rec_sz\n", FINDENT);
+      fprintf(fp, "%sparameter (fortran_rec_sz = %d)\n",
+        FINDENT, fortran_rec_size);
+      break;
+  default:
+      break;
     }
   }
 }
@@ -607,17 +607,17 @@ void write_lu_info(FILE *fp, int nprocs, char class)
   fprintf(fp, "\nc full problem size\n");
   fprintf(fp, "%sinteger isiz01, isiz02, isiz03\n", FINDENT);
   fprintf(fp, "%sparameter (isiz01=%d, isiz02=%d, isiz03=%d)\n", 
-	  FINDENT, problem_size, problem_size, problem_size);
+    FINDENT, problem_size, problem_size, problem_size);
 
   fprintf(fp, "\nc sub-domain array size\n");
   fprintf(fp, "%sinteger isiz1, isiz2, isiz3\n", FINDENT);
   fprintf(fp, "%sparameter (isiz1=%d, isiz2=%d, isiz3=isiz03)\n", 
-	       FINDENT, isiz1, isiz2);
+         FINDENT, isiz1, isiz2);
 
   fprintf(fp, "\nc number of iterations and how often to print the norm\n");
   fprintf(fp, "%sinteger itmax_default, inorm_default\n", FINDENT);
   fprintf(fp, "%sparameter (itmax_default=%d, inorm_default=%d)\n", 
-	  FINDENT, itmax, inorm);
+    FINDENT, itmax, inorm);
 
   fprintf(fp, "%sdouble precision dt_default\n", FINDENT);
   fprintf(fp, "%sparameter (dt_default = %s)\n", FINDENT, dt_default);
@@ -657,15 +657,15 @@ void write_mg_info(FILE *fp, int nprocs, char class)
   fprintf(fp, "%sparameter (nprocs_compiled = %d)\n", FINDENT, nprocs);
   fprintf(fp, "%sinteger nx_default, ny_default, nz_default\n", FINDENT);
   fprintf(fp, "%sparameter (nx_default=%d, ny_default=%d, nz_default=%d)\n", 
-	  FINDENT, problem_size, problem_size, problem_size);
+    FINDENT, problem_size, problem_size, problem_size);
   fprintf(fp, "%sinteger nit_default, lm, lt_default\n", FINDENT);
   fprintf(fp, "%sparameter (nit_default=%d, lm = %d, lt_default=%d)\n", 
-	  FINDENT, nit, lm, lt_default);
+    FINDENT, nit, lm, lt_default);
   fprintf(fp, "%sinteger debug_default\n", FINDENT);
   fprintf(fp, "%sparameter (debug_default=%d)\n", FINDENT, 0);
   fprintf(fp, "%sinteger ndim1, ndim2, ndim3\n", FINDENT);
   fprintf(fp, "%sparameter (ndim1 = %d, ndim2 = %d, ndim3 = %d)\n", 
-	  FINDENT, ndim1, ndim2, ndim3);
+    FINDENT, ndim1, ndim2, ndim3);
 }
 
 
@@ -966,7 +966,7 @@ setparams: File %s doesn't exist. To build the NAS benchmarks\n\
           put_string(fp, "cs4", fmpi_inc);
           put_string(fp, "cs5", fflags);
           put_string(fp, "cs6", flinkflags);
-	  put_string(fp, "cs7", randfile);
+    put_string(fp, "cs7", randfile);
           break;
       case IS:
       case EP:

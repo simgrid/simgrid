@@ -65,7 +65,7 @@ SG_BEGIN_DECL()
 #  define MAYDAY_CATCH(e)   printf("%d %s:%d Catched '%s'\n",           \
                                    xbt_getpid(), __FILE__, __LINE__,    \
                                    (e).msg                              \
-				  ),
+          ),
 #else
 #  define MAYDAY_SAVE(m)
 #  define MAYDAY_RESTORE(m)

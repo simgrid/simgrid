@@ -44,13 +44,13 @@ void SIMIX_context_mod_init(void)
 
     if (smx_context_factory_name == NULL) {
         /* use the default factory */
-	#ifdef HAVE_RAWCTX
-    	SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
-	#elif CONTEXT_UCONTEXT
-		SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
-	#else
-		SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
-	#endif
+  #ifdef HAVE_RAWCTX
+      SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
+  #elif CONTEXT_UCONTEXT
+    SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
+  #else
+    SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
+  #endif
     }
     else if (!strcmp(smx_context_factory_name, "ucontext")) {
         /* use ucontext */
@@ -61,12 +61,12 @@ void SIMIX_context_mod_init(void)
 #endif
       }
       else if (!strcmp(smx_context_factory_name, "thread")) {
-	/* use os threads (either pthreads or windows ones) */
+  /* use os threads (either pthreads or windows ones) */
         SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
       }
       else if (!strcmp(smx_context_factory_name, "raw")) {
-	/* use raw contexts */
-	SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
+  /* use raw contexts */
+  SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
       }
       else {
         XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
@@ -138,11 +138,11 @@ XBT_INLINE int SIMIX_context_get_nthreads(void) {
  */
 XBT_INLINE void SIMIX_context_set_nthreads(int nb_threads) {
 
-  if (nb_threads<=0) {	
+  if (nb_threads<=0) {  
      nb_threads = xbt_os_get_numcores();
      XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
   }   
-	
+  
   if (nb_threads > 1) {
 #ifndef CONTEXT_THREADS
     THROWF(arg_error, 0, "The thread factory cannot be run in parallel");

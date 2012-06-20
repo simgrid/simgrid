@@ -11,23 +11,23 @@
 
 extern xbt_lib_t host_lib;
 extern int ROUTING_HOST_LEVEL; //Routing level
-extern int	SURF_CPU_LEVEL;		//Surf cpu level
-extern int SURF_WKS_LEVEL;		//Surf workstation level
-extern int SIMIX_HOST_LEVEL;	//Simix level
-extern int	MSG_HOST_LEVEL;		//Msg level
-extern int	SD_HOST_LEVEL;		//Simdag level
-extern int	COORD_HOST_LEVEL;	//Coordinates level
-extern int NS3_HOST_LEVEL;		//host node for ns3
+extern int  SURF_CPU_LEVEL;    //Surf cpu level
+extern int SURF_WKS_LEVEL;    //Surf workstation level
+extern int SIMIX_HOST_LEVEL;  //Simix level
+extern int  MSG_HOST_LEVEL;    //Msg level
+extern int  SD_HOST_LEVEL;    //Simdag level
+extern int  COORD_HOST_LEVEL;  //Coordinates level
+extern int NS3_HOST_LEVEL;    //host node for ns3
 
 extern xbt_lib_t link_lib;
-extern int SD_LINK_LEVEL;		//Simdag level
-extern int SURF_LINK_LEVEL;	//Surf level
-extern int NS3_LINK_LEVEL;		//link for ns3
+extern int SD_LINK_LEVEL;    //Simdag level
+extern int SURF_LINK_LEVEL;  //Surf level
+extern int NS3_LINK_LEVEL;    //link for ns3
 
 extern xbt_lib_t as_router_lib;
-extern int ROUTING_ASR_LEVEL;	//Routing level
-extern int COORD_ASR_LEVEL;	//Coordinates level
-extern int NS3_ASR_LEVEL;		//host node for ns3
+extern int ROUTING_ASR_LEVEL;  //Routing level
+extern int COORD_ASR_LEVEL;  //Coordinates level
+extern int NS3_ASR_LEVEL;    //host node for ns3
 
 extern xbt_lib_t storage_lib;
 extern int ROUTING_STORAGE_LEVEL;        //Routing storage level

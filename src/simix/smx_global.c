@@ -317,12 +317,12 @@ void SIMIX_run(void)
 }
 
 /**
- * 	\brief Set the date to execute a function
+ *   \brief Set the date to execute a function
  *
  * Set the date to execute the function on the surf.
- * 	\param date Date to execute function
- * 	\param function Function to be executed
- * 	\param arg Parameters of the function
+ *   \param date Date to execute function
+ *   \param function Function to be executed
+ *   \param arg Parameters of the function
  *
  */
 XBT_INLINE void SIMIX_timer_set(double date, void *function, void *arg)

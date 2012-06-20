@@ -17,7 +17,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(gras_trp);
 xbt_socket_t _gras_lastly_selected_socket = NULL;
 
 #ifdef KILLME
-/**	
+/**  
  * gras_trp_select:
  *
  * Returns the next socket to service having a message awaiting.

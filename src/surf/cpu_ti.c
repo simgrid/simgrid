@@ -6,8 +6,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /*
-	commit: e2d6799c4182f00443b3013aadb1c2412372460f
-	This commit retrieves the old implementation of CPU_TI with multi-levels.
+  commit: e2d6799c4182f00443b3013aadb1c2412372460f
+  This commit retrieves the old implementation of CPU_TI with multi-levels.
 */
 
 #include "surf_private.h"
@@ -93,10 +93,10 @@ static surf_cpu_ti_trace_t surf_cpu_ti_trace_new(tmgr_trace_t power_trace)
 /**
 * \brief Creates a new integration trace from a tmgr_trace_t
 *
-* \param	power_trace		CPU availability trace
-* \param	value					Percentage of CPU power available (useful to fixed tracing)
-* \param	spacing				Initial spacing
-* \return	Integration trace structure
+* \param  power_trace    CPU availability trace
+* \param  value          Percentage of CPU power available (useful to fixed tracing)
+* \param  spacing        Initial spacing
+* \return  Integration trace structure
 */
 static surf_cpu_ti_tgmr_t cpu_ti_parse_trace(tmgr_trace_t power_trace,
                                              double value)
@@ -192,13 +192,13 @@ static void* cpu_ti_create_resource(const char *name, double power_peak,
 static void parse_cpu_ti_init(sg_platf_host_cbarg_t host)
 {
   cpu_ti_create_resource(host->id,
-			  host->power_peak,
-			  host->power_scale,
-			  host->power_trace,
-			  host->core_amount,
-			  host->initial_state,
-			  host->state_trace,
-			  host->properties);
+        host->power_peak,
+        host->power_scale,
+        host->power_trace,
+        host->core_amount,
+        host->initial_state,
+        host->state_trace,
+        host->properties);
 
 }
 
@@ -308,8 +308,8 @@ static void cpu_ti_action_state_set(surf_action_t action,
 /**
 * \brief Update the remaining amount of actions
 *
-* \param	cpu		Cpu on which the actions are running
-* \param	now		Current time
+* \param  cpu    Cpu on which the actions are running
+* \param  now    Current time
 */
 static void cpu_ti_update_remaining_amount(cpu_ti_t cpu, double now)
 {
@@ -365,8 +365,8 @@ static void cpu_ti_update_remaining_amount(cpu_ti_t cpu, double now)
 /**
 * \brief Update the finish date of action if necessary
 *
-* \param	cpu		Cpu on which the actions are running
-* \param	now		Current time
+* \param  cpu    Cpu on which the actions are running
+* \param  now    Current time
 */
 static void cpu_ti_update_action_finish_date(cpu_ti_t cpu, double now)
 {
@@ -698,9 +698,9 @@ static double cpu_ti_get_speed(void *cpu, double load)
 /**
 * \brief Auxiliary function to update the CPU power scale.
 *
-*	This function uses the trace structure to return the power scale at the determined time a.
-* \param trace		Trace structure to search the updated power scale
-* \param a				Time
+*  This function uses the trace structure to return the power scale at the determined time a.
+* \param trace    Trace structure to search the updated power scale
+* \param a        Time
 * \return CPU power scale
 */
 static double surf_cpu_ti_get_power_scale(surf_cpu_ti_tgmr_t trace,
@@ -734,12 +734,12 @@ static void cpu_ti_finalize(void)
   char *key;
 
   xbt_lib_foreach(host_lib, cursor, key, cpu){
-	  if(cpu[SURF_CPU_LEVEL])
-	  {
-		    cpu_ti_t CPU = cpu[SURF_CPU_LEVEL];
-		    xbt_swag_free(CPU->action_set);
-		    surf_cpu_ti_free_tmgr(CPU->avail_trace);
-	  }
+    if(cpu[SURF_CPU_LEVEL])
+    {
+        cpu_ti_t CPU = cpu[SURF_CPU_LEVEL];
+        xbt_swag_free(CPU->action_set);
+        surf_cpu_ti_free_tmgr(CPU->avail_trace);
+    }
   }
 
   surf_model_exit(surf_cpu_model);
@@ -818,8 +818,8 @@ void surf_cpu_model_init_ti()
 * the cyclic effect.
 *
 * \param trace Trace structure.
-* \param a			Begin of interval
-* \param b			End of interval
+* \param a      Begin of interval
+* \param b      End of interval
 * \return the integrate value. -1 if an error occurs.
 */
 static double surf_cpu_ti_integrate_trace(surf_cpu_ti_tgmr_t trace,
@@ -879,12 +879,12 @@ static double surf_cpu_ti_integrate_trace(surf_cpu_ti_tgmr_t trace,
 
 /**
  * \brief Auxiliary function to calculate the integral between a and b.
- * 		It simply calculates the integral at point a and b and returns the difference 
- * 	between them.
- * \param trace		Trace structure
- * \param a				Initial point
- * \param b	Final point
- * \return	Integral
+ *     It simply calculates the integral at point a and b and returns the difference 
+ *   between them.
+ * \param trace    Trace structure
+ * \param a        Initial point
+ * \param b  Final point
+ * \return  Integral
 */
 static double surf_cpu_ti_integrate_trace_simple(surf_cpu_ti_trace_t trace,
                                                  double a, double b)
@@ -896,9 +896,9 @@ static double surf_cpu_ti_integrate_trace_simple(surf_cpu_ti_trace_t trace,
 
 /**
  * \brief Auxiliary function to calculate the integral at point a.
- * \param trace		Trace structure
- * \param a				point
- * \return	Integral
+ * \param trace    Trace structure
+ * \param a        point
+ * \return  Integral
 */
 static double surf_cpu_ti_integrate_trace_simple_point(surf_cpu_ti_trace_t
                                                        trace, double a)
@@ -933,10 +933,10 @@ static double surf_cpu_ti_integrate_trace_simple_point(surf_cpu_ti_trace_t
 *
 * Here, amount can span multiple trace periods
 *
-* \param trace 	CPU trace structure
-* \param a				Initial time
-* \param amount	Amount to be executed
-* \return	End time
+* \param trace   CPU trace structure
+* \param a        Initial time
+* \param amount  Amount to be executed
+* \return  End time
 */
 static double surf_cpu_ti_solve_trace(surf_cpu_ti_tgmr_t trace, double a,
                                       double amount)
@@ -985,8 +985,8 @@ static double surf_cpu_ti_solve_trace(surf_cpu_ti_tgmr_t trace, double a,
 
 /* Now solve for new_amount which is <= trace_total */
 /*
-	 fprintf(stderr,"reduced_a = %.2f\n",reduced_a);
-	 fprintf(stderr,"reduced_amount = %.2f\n",reduced_amount);
+   fprintf(stderr,"reduced_a = %.2f\n",reduced_a);
+   fprintf(stderr,"reduced_amount = %.2f\n",reduced_amount);
  */
   reduced_b =
       surf_cpu_ti_solve_trace_somewhat_simple(trace, reduced_a,
@@ -1016,7 +1016,7 @@ static double surf_cpu_ti_solve_trace_somewhat_simple(surf_cpu_ti_tgmr_t
   amount_till_end =
       surf_cpu_ti_integrate_trace(trace, a, trace->last_time);
 /*
-	 fprintf(stderr,"amount_till_end=%.2f\n",amount_till_end);
+   fprintf(stderr,"amount_till_end=%.2f\n",amount_till_end);
  */
 
   if (amount_till_end > amount) {
@@ -1031,10 +1031,10 @@ static double surf_cpu_ti_solve_trace_somewhat_simple(surf_cpu_ti_tgmr_t
 
 /**
  * \brief Auxiliary function to solve integral.
- *	It returns the date when the requested amount of flops is available
- * \param trace		Trace structure
- * \param a				Initial point
- * \param amount	Amount of flops 
+ *  It returns the date when the requested amount of flops is available
+ * \param trace    Trace structure
+ * \param a        Initial point
+ * \param amount  Amount of flops 
  * \return The date when amount is available.
 */
 static double surf_cpu_ti_solve_trace_simple(surf_cpu_ti_trace_t trace,
@@ -1060,11 +1060,11 @@ static double surf_cpu_ti_solve_trace_simple(surf_cpu_ti_trace_t trace,
 
 /**
  * \brief Binary search in array.
- *	It returns the first point of the interval in which "a" is. 
- * \param array		Array
- * \param a				Value to search
- * \param low 		Low bound to search in array
- * \param high		Upper bound to search in array
+ *  It returns the first point of the interval in which "a" is. 
+ * \param array    Array
+ * \param a        Value to search
+ * \param low     Low bound to search in array
+ * \param high    Upper bound to search in array
  * \return Index of point
 */
 static int surf_cpu_ti_binary_search(double *array, double a, int low,

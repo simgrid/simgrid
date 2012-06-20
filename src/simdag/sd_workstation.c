@@ -75,7 +75,7 @@ const SD_workstation_t *SD_workstation_get_list(void)
     i = 0;
     xbt_lib_foreach(host_lib, cursor, key, data) {
       if(data[SD_HOST_LEVEL])
-    	  sd_global->workstation_list[i++] = (SD_workstation_t) data[SD_HOST_LEVEL];
+        sd_global->workstation_list[i++] = (SD_workstation_t) data[SD_HOST_LEVEL];
     }
   }
   return sd_global->workstation_list;
@@ -174,15 +174,15 @@ void SD_workstation_dump(SD_workstation_t ws)
       break;
   case SD_WORKSTATION_SEQUENTIAL_ACCESS:
       XBT_INFO("  - access mode: Exclusive");
-	  task = SD_workstation_get_current_task(ws);
-	  if(task)
-	    XBT_INFO("    current running task: %s",
-	  	         SD_task_get_name(task));
-	  else
-	    XBT_INFO("    no task running");
+    task = SD_workstation_get_current_task(ws);
+    if(task)
+      XBT_INFO("    current running task: %s",
+               SD_task_get_name(task));
+    else
+      XBT_INFO("    no task running");
       break;
   default:
-  	  XBT_INFO("  - (unknown access mode)");
+      XBT_INFO("  - (unknown access mode)");
   }
   props = SD_workstation_get_properties(ws);
   

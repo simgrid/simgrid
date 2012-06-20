@@ -28,9 +28,9 @@
 #  endif
 #endif
 
-#define MMALLOC_MAGIC		"mmalloc"       /* Mapped file magic number */
-#define MMALLOC_MAGIC_SIZE	8       /* Size of magic number buf */
-#define MMALLOC_VERSION		2       /* Current mmalloc version */
+#define MMALLOC_MAGIC    "mmalloc"       /* Mapped file magic number */
+#define MMALLOC_MAGIC_SIZE  8       /* Size of magic number buf */
+#define MMALLOC_VERSION    2       /* Current mmalloc version */
 
 /* The allocator divides the heap into blocks of fixed size; large
    requests receive one or more whole blocks, and small requests
@@ -40,10 +40,10 @@
 
    FIXME: we are not targeting 16bits machines anymore; update values */
 
-#define INT_BIT		(CHAR_BIT * sizeof(int))
-#define BLOCKLOG	(INT_BIT > 16 ? 12 : 9)
-#define BLOCKSIZE	((unsigned int) 1 << BLOCKLOG)
-#define BLOCKIFY(SIZE)	(((SIZE) + BLOCKSIZE - 1) / BLOCKSIZE)
+#define INT_BIT    (CHAR_BIT * sizeof(int))
+#define BLOCKLOG  (INT_BIT > 16 ? 12 : 9)
+#define BLOCKSIZE  ((unsigned int) 1 << BLOCKLOG)
+#define BLOCKIFY(SIZE)  (((SIZE) + BLOCKSIZE - 1) / BLOCKSIZE)
 
 /* We keep fragment-specific meta-data for introspection purposes, and these
  * information are kept in fixed lenght arrays. Here is the computation of
@@ -64,25 +64,25 @@
    sign of the result is machine dependent for negative values, so force
    it to be treated as an unsigned int. */
 
-#define ADDR2UINT(addr)	((uintptr_t) ((char*) (addr) - (char*) NULL))
+#define ADDR2UINT(addr)  ((uintptr_t) ((char*) (addr) - (char*) NULL))
 #define RESIDUAL(addr,bsize) ((uintptr_t) (ADDR2UINT (addr) % (bsize)))
 
 /* Determine the amount of memory spanned by the initial heap table
    (not an absolute limit).  */
 
-#define HEAP		(INT_BIT > 16 ? 4194304 : 65536)
+#define HEAP    (INT_BIT > 16 ? 4194304 : 65536)
 
 /* Number of contiguous free blocks allowed to build up at the end of
    memory before they will be returned to the system.
    FIXME: this is not used anymore: we never return memory to the system. */
-#define FINAL_FREE_BLOCKS	8
+#define FINAL_FREE_BLOCKS  8
 
 /* Where to start searching the free list when looking for new memory.
    The two possible values are 0 and heapindex.  Starting at 0 seems
    to reduce total memory usage, while starting at heapindex seems to
    run faster.  */
 
-#define MALLOC_SEARCH_START	mdp -> heapindex
+#define MALLOC_SEARCH_START  mdp -> heapindex
 
 /* Address to block number and vice versa.  */
 
@@ -94,6 +94,16 @@
 struct list {
   struct list *next;
   struct list *prev;
+};
+
+/* Statistics available to the user. */
+struct mstats
+{
+  size_t bytes_total;    /* Total size of the heap. */
+  size_t chunks_used;    /* Chunks allocated by the user. */
+  size_t bytes_used;    /* Byte total of user-allocated chunks. */
+  size_t chunks_free;    /* Chunks in the free list. */
+  size_t bytes_free;    /* Byte total of chunks in the free list. */
 };
 
 /* Data structure giving per-block information.
@@ -124,8 +134,8 @@ struct list {
  */
 typedef struct {
   int type; /*  0: busy large block
-		>0: busy fragmented (fragments of size 2^type bytes)
-		<0: free block */
+    >0: busy fragmented (fragments of size 2^type bytes)
+    <0: free block */
   union {
     /* Heap information for a busy block.  */
     struct {
@@ -222,6 +232,10 @@ struct mdesc {
 
   int fd;
 
+  /* Instrumentation.  */
+
+  struct mstats heapstats;
+
 };
 
 int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2);
@@ -232,9 +246,9 @@ void mmalloc_display_info(void *h);
 
 /* Bits to look at in the malloc descriptor flags word */
 
-#define MMALLOC_DEVZERO		(1 << 0)        /* Have mapped to /dev/zero */
+#define MMALLOC_DEVZERO    (1 << 0)        /* Have mapped to /dev/zero */
 #define MMALLOC_ANONYMOUS (1 << 1)      /* Use anonymous mapping */
-#define MMALLOC_INITIALIZED	(1 << 2)        /* Initialized mmalloc */
+#define MMALLOC_INITIALIZED  (1 << 2)        /* Initialized mmalloc */
 
 /* A default malloc descriptor for the single sbrk() managed region. */
 

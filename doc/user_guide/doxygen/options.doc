@@ -1,7 +1,5 @@
 /*! \page options Simgrid options and configurations
 
-\htmlinclude .options.doc.toc
-
 A number of options can be given at runtime to change the default
 SimGrid behavior. For a complete list of all configuration options
 accepted by the SimGrid version used in your simulator, simply pass

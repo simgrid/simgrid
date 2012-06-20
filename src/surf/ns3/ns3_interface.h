@@ -13,16 +13,16 @@
 #include "xbt/sysdep.h"
 
 typedef enum {
-	NS3_NETWORK_ELEMENT_NULL = 0,    /* NULL */
-	NS3_NETWORK_ELEMENT_HOST,    	/* host type */
-	NS3_NETWORK_ELEMENT_ROUTER,   	/* router type */
-	NS3_NETWORK_ELEMENT_AS,      	/* AS type */
+  NS3_NETWORK_ELEMENT_NULL = 0,    /* NULL */
+  NS3_NETWORK_ELEMENT_HOST,      /* host type */
+  NS3_NETWORK_ELEMENT_ROUTER,     /* router type */
+  NS3_NETWORK_ELEMENT_AS,        /* AS type */
 } e_ns3_network_element_type_t;
 
 typedef struct ns3_nodes{
-	int node_num;
-	e_ns3_network_element_type_t type;
-	void * data;
+  int node_num;
+  e_ns3_network_element_type_t type;
+  void * data;
 }s_ns3_nodes_t, *ns3_nodes_t;
 
 #ifdef __cplusplus
@@ -43,8 +43,8 @@ XBT_PUBLIC(void *) ns3_add_host_cluster(const char * id);
 XBT_PUBLIC(void *) ns3_add_router(const char * id);
 XBT_PUBLIC(void *) ns3_add_AS(const char * id);
 XBT_PUBLIC(void *) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
-								int dst, e_ns3_network_element_type_t type_dst,
-								char * bw,char * lat);
+                int dst, e_ns3_network_element_type_t type_dst,
+                char * bw,char * lat);
 XBT_PUBLIC(void *) ns3_end_platform(void);
 XBT_PUBLIC(void *) ns3_add_cluster(char * bw,char * lat,const char *id);
 #ifdef __cplusplus

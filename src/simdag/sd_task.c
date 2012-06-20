@@ -174,7 +174,7 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data,
 {
   xbt_assert(alpha < 1. && alpha >= 0.,
               "Invalid parameter: alpha must be in [0.;1.[");
-	
+  
   SD_task_t res = SD_task_create(name, data, amount);
   res->alpha = alpha;
   res->kind = SD_TASK_COMP_PAR_AMDAHL;
@@ -579,7 +579,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
       && !__SD_task_is_scheduled_or_runnable(src) && !__SD_task_is_running(src))
     THROWF(arg_error, 0,
            "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED or SD_RUNNABLE"
-	   " or SD_RUNNING",
+     " or SD_RUNNING",
            SD_task_get_name(src));
 
   if (!__SD_task_is_not_scheduled(dst) && !__SD_task_is_schedulable(dst)

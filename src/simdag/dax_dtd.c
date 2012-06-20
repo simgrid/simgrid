@@ -111,15 +111,15 @@ typedef unsigned int flex_uint32_t;
 /* The "const" storage-class-modifier is valid. */
 #define YY_USE_CONST
 
-#else	/* ! __cplusplus */
+#else  /* ! __cplusplus */
 
 /* C99 requires __STDC__ to be defined as 1. */
 #if defined (__STDC__)
 
 #define YY_USE_CONST
 
-#endif	/* defined (__STDC__) */
-#endif	/* ! __cplusplus */
+#endif  /* defined (__STDC__) */
+#endif  /* ! __cplusplus */
 
 #ifdef YY_USE_CONST
 #define yyconst const
@@ -205,17 +205,17 @@ extern FILE *dax_in, *dax_out;
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
-	do \
-		{ \
-		/* Undo effects of setting up dax_text. */ \
+  do \
+    { \
+    /* Undo effects of setting up dax_text. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
-		*yy_cp = (yy_hold_char); \
-		YY_RESTORE_YY_MORE_OFFSET \
-		(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
-		YY_DO_BEFORE_ACTION; /* set up dax_text again */ \
-		} \
-	while ( 0 )
+    *yy_cp = (yy_hold_char); \
+    YY_RESTORE_YY_MORE_OFFSET \
+    (yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
+    YY_DO_BEFORE_ACTION; /* set up dax_text again */ \
+    } \
+  while ( 0 )
 
 #define unput(c) yyunput( c, (yytext_ptr)  )
 
@@ -227,66 +227,66 @@ typedef size_t yy_size_t;
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
 struct yy_buffer_state
-	{
-	FILE *yy_input_file;
+  {
+  FILE *yy_input_file;
 
-	char *yy_ch_buf;		/* input buffer */
-	char *yy_buf_pos;		/* current position in input buffer */
+  char *yy_ch_buf;    /* input buffer */
+  char *yy_buf_pos;    /* current position in input buffer */
 
-	/* Size of input buffer in bytes, not including room for EOB
-	 * characters.
-	 */
-	yy_size_t yy_buf_size;
+  /* Size of input buffer in bytes, not including room for EOB
+   * characters.
+   */
+  yy_size_t yy_buf_size;
 
-	/* Number of characters read into yy_ch_buf, not including EOB
-	 * characters.
-	 */
-	int yy_n_chars;
+  /* Number of characters read into yy_ch_buf, not including EOB
+   * characters.
+   */
+  int yy_n_chars;
 
-	/* Whether we "own" the buffer - i.e., we know we created it,
-	 * and can realloc() it to grow it, and should free() it to
-	 * delete it.
-	 */
-	int yy_is_our_buffer;
+  /* Whether we "own" the buffer - i.e., we know we created it,
+   * and can realloc() it to grow it, and should free() it to
+   * delete it.
+   */
+  int yy_is_our_buffer;
 
-	/* Whether this is an "interactive" input source; if so, and
-	 * if we're using stdio for input, then we want to use getc()
-	 * instead of fread(), to make sure we stop fetching input after
-	 * each newline.
-	 */
-	int yy_is_interactive;
+  /* Whether this is an "interactive" input source; if so, and
+   * if we're using stdio for input, then we want to use getc()
+   * instead of fread(), to make sure we stop fetching input after
+   * each newline.
+   */
+  int yy_is_interactive;
 
-	/* Whether we're considered to be at the beginning of a line.
-	 * If so, '^' rules will be active on the next match, otherwise
-	 * not.
-	 */
-	int yy_at_bol;
+  /* Whether we're considered to be at the beginning of a line.
+   * If so, '^' rules will be active on the next match, otherwise
+   * not.
+   */
+  int yy_at_bol;
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
     
-	/* Whether to try to fill the input buffer when we reach the
-	 * end of it.
-	 */
-	int yy_fill_buffer;
+  /* Whether to try to fill the input buffer when we reach the
+   * end of it.
+   */
+  int yy_fill_buffer;
 
-	int yy_buffer_status;
+  int yy_buffer_status;
 
 #define YY_BUFFER_NEW 0
 #define YY_BUFFER_NORMAL 1
-	/* When an EOF's been seen but there's still some text to process
-	 * then we mark the buffer as YY_EOF_PENDING, to indicate that we
-	 * shouldn't try reading from the input source any more.  We might
-	 * still have a bunch of tokens to match, though, because of
-	 * possible backing-up.
-	 *
-	 * When we actually see the EOF, we change the status to "new"
-	 * (via dax_restart()), so that the user can continue scanning by
-	 * just pointing dax_in at a new input file.
-	 */
+  /* When an EOF's been seen but there's still some text to process
+   * then we mark the buffer as YY_EOF_PENDING, to indicate that we
+   * shouldn't try reading from the input source any more.  We might
+   * still have a bunch of tokens to match, though, because of
+   * possible backing-up.
+   *
+   * When we actually see the EOF, we change the status to "new"
+   * (via dax_restart()), so that the user can continue scanning by
+   * just pointing dax_in at a new input file.
+   */
 #define YY_BUFFER_EOF_PENDING 2
 
-	};
+  };
 #endif /* !YY_STRUCT_YY_BUFFER_STATE */
 
 /* Stack of input buffers. */
@@ -311,13 +311,13 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
 
 /* yy_hold_char holds the character lost when dax_text is formed. */
 static char yy_hold_char;
-static int yy_n_chars;		/* number of characters read into yy_ch_buf */
+static int yy_n_chars;    /* number of characters read into yy_ch_buf */
 int dax_leng;
 
 /* Points to current character in buffer. */
 static char *yy_c_buf_p = (char *) 0;
-static int yy_init = 0;		/* whether we need to initialize */
-static int yy_start = 0;	/* start state number */
+static int yy_init = 0;    /* whether we need to initialize */
+static int yy_start = 0;  /* start state number */
 
 /* Flag which is used to allow dax_wrap()'s to do buffer switches
  * instead of setting up a fresh dax_in.  A bit of a hack ...
@@ -349,24 +349,24 @@ void dax_free (void *  );
 #define yy_new_buffer dax__create_buffer
 
 #define yy_set_interactive(is_interactive) \
-	{ \
-	if ( ! YY_CURRENT_BUFFER ){ \
+  { \
+  if ( ! YY_CURRENT_BUFFER ){ \
         dax_ensure_buffer_stack (); \
-		YY_CURRENT_BUFFER_LVALUE =    \
+    YY_CURRENT_BUFFER_LVALUE =    \
             dax__create_buffer(dax_in,YY_BUF_SIZE ); \
-	} \
-	YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
-	}
+  } \
+  YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
+  }
 
 #define yy_set_bol(at_bol) \
-	{ \
-	if ( ! YY_CURRENT_BUFFER ){\
+  { \
+  if ( ! YY_CURRENT_BUFFER ){\
         dax_ensure_buffer_stack (); \
-		YY_CURRENT_BUFFER_LVALUE =    \
+    YY_CURRENT_BUFFER_LVALUE =    \
             dax__create_buffer(dax_in,YY_BUF_SIZE ); \
-	} \
-	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
-	}
+  } \
+  YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
+  }
 
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
@@ -397,21 +397,21 @@ static void yy_fatal_error (yyconst char msg[]  );
  * corresponding action - sets up dax_text.
  */
 #define YY_DO_BEFORE_ACTION \
-	(yytext_ptr) = yy_bp; \
-	dax_leng = (size_t) (yy_cp - yy_bp); \
-	(yy_hold_char) = *yy_cp; \
-	*yy_cp = '\0'; \
-	(yy_c_buf_p) = yy_cp;
+  (yytext_ptr) = yy_bp; \
+  dax_leng = (size_t) (yy_cp - yy_bp); \
+  (yy_hold_char) = *yy_cp; \
+  *yy_cp = '\0'; \
+  (yy_c_buf_p) = yy_cp;
 
 #define YY_NUM_RULES 140
 #define YY_END_OF_BUFFER 141
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
-	{
-	flex_int32_t yy_verify;
-	flex_int32_t yy_nxt;
-	};
+  {
+  flex_int32_t yy_verify;
+  flex_int32_t yy_nxt;
+  };
 static yyconst flex_int16_t yy_accept[775] =
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -1418,23 +1418,23 @@ short int dax__adag_fileCount_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
-# define ENTER(state)	debug_enter(state,#state)
-# define LEAVE		debug_leave()
-# define SET(state)	debug_set(state,#state)
+# define ENTER(state)  debug_enter(state,#state)
+# define LEAVE    debug_leave()
+# define SET(state)  debug_set(state,#state)
   static void debug_enter(int, const char*);
   static void debug_leave(void);
   static void debug_set(int, const char*);
 #else
-# define ENTER(state)	(yy_push_state(state))
-# define LEAVE		(yy_pop_state())
-# define SET(state)	BEGIN(state)
+# define ENTER(state)  (yy_push_state(state))
+# define LEAVE    (yy_pop_state())
+# define SET(state)  BEGIN(state)
 #endif
 
 /* Generic actions. */
-#define SKIP	/*skip*/
+#define SKIP  /*skip*/
 #define SUCCEED        CLEANUP; return 0
 
-#define FAIL	return fail
+#define FAIL  return fail
 static int fail(const char*, ...);
 
 enum {flexml_max_err_msg_size = 512};
@@ -1471,12 +1471,12 @@ static int inext = 1;
 static int ck_blimit()
 {
      if (bnext >= blimit) {
-	 blimit += FLEXML_BUFFERSTACKSIZE + 2;
-	 {
-	     char *temp = (char *) realloc(dax__bufferstack, blimit);
-	     assert(temp);
-	     dax__bufferstack = temp;
-	 }
+   blimit += FLEXML_BUFFERSTACKSIZE + 2;
+   {
+       char *temp = (char *) realloc(dax__bufferstack, blimit);
+       assert(temp);
+       dax__bufferstack = temp;
+   }
      }
      return 0;
 }
@@ -1485,12 +1485,12 @@ static int ck_blimit()
 static int ck_ilimit()
 {
      if (inext >= ilimit) {
-	 ilimit += FLEXML_INDEXSTACKSIZE + 2;
-	 {
-	     int *temp = (int *) realloc(indexstack, ilimit);
-	     assert(temp);
-	     indexstack = temp;
-	 }
+   ilimit += FLEXML_INDEXSTACKSIZE + 2;
+   {
+       int *temp = (int *) realloc(indexstack, ilimit);
+       assert(temp);
+       indexstack = temp;
+   }
      }
      return 0;
 }
@@ -1536,18 +1536,18 @@ static int popbuffer(void)
 /* Miscellaneous. */
 /* Parser states (flex `exclusive start conditions'):
  *
- * PROLOG	the XML prolog of the document before <?xml...>
- * DOCTYPE	the XML prolog of the document after <?xml...>
- * EPILOG	after the root element
- * INCOMMENT	inside an XML comment <!--....-->
- * INPI		inside an XML PI <?...?>
- * VALUE1	inside a '...'-delimited literal
- * VALUE2	inside a "..."-delimited literal
- * CDATA	inside a <![CDATA[...] ]> section.
- * ROOT_<tag>	expect root element <tag>
- * AL_<tag>	inside the attribute list for <tag>
- * IN_<tag>	inside a <tag> with element contents (ready for end tag)
- * IMPOSSIBLE	dummy to permit disabling rules; must be last
+ * PROLOG  the XML prolog of the document before <?xml...>
+ * DOCTYPE  the XML prolog of the document after <?xml...>
+ * EPILOG  after the root element
+ * INCOMMENT  inside an XML comment <!--....-->
+ * INPI    inside an XML PI <?...?>
+ * VALUE1  inside a '...'-delimited literal
+ * VALUE2  inside a "..."-delimited literal
+ * CDATA  inside a <![CDATA[...] ]> section.
+ * ROOT_<tag>  expect root element <tag>
+ * AL_<tag>  inside the attribute list for <tag>
+ * IN_<tag>  inside a <tag> with element contents (ready for end tag)
+ * IMPOSSIBLE  dummy to permit disabling rules; must be last
  */
 
 /* State names. */
@@ -1698,33 +1698,33 @@ static int input (void );
  */
 #ifndef YY_INPUT
 #define YY_INPUT(buf,result,max_size) \
-	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
-		{ \
-		int c = '*'; \
-		size_t n; \
-		for ( n = 0; n < max_size && \
-			     (c = getc( dax_in )) != EOF && c != '\n'; ++n ) \
-			buf[n] = (char) c; \
-		if ( c == '\n' ) \
-			buf[n++] = (char) c; \
-		if ( c == EOF && ferror( dax_in ) ) \
-			YY_FATAL_ERROR( "input in flex scanner failed" ); \
-		result = n; \
-		} \
-	else \
-		{ \
-		errno=0; \
-		while ( (result = fread(buf, 1, max_size, dax_in))==0 && ferror(dax_in)) \
-			{ \
-			if( errno != EINTR) \
-				{ \
-				YY_FATAL_ERROR( "input in flex scanner failed" ); \
-				break; \
-				} \
-			errno=0; \
-			clearerr(dax_in); \
-			} \
-		}\
+  if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
+    { \
+    int c = '*'; \
+    size_t n; \
+    for ( n = 0; n < max_size && \
+           (c = getc( dax_in )) != EOF && c != '\n'; ++n ) \
+      buf[n] = (char) c; \
+    if ( c == '\n' ) \
+      buf[n++] = (char) c; \
+    if ( c == EOF && ferror( dax_in ) ) \
+      YY_FATAL_ERROR( "input in flex scanner failed" ); \
+    result = n; \
+    } \
+  else \
+    { \
+    errno=0; \
+    while ( (result = fread(buf, 1, max_size, dax_in))==0 && ferror(dax_in)) \
+      { \
+      if( errno != EINTR) \
+        { \
+        YY_FATAL_ERROR( "input in flex scanner failed" ); \
+        break; \
+        } \
+      errno=0; \
+      clearerr(dax_in); \
+      } \
+    }\
 \
 
 #endif
@@ -1773,15 +1773,15 @@ extern int dax_lex (void);
 #endif
 
 #define YY_RULE_SETUP \
-	YY_USER_ACTION
+  YY_USER_ACTION
 
 /** The main scanner function which does all the work.
  */
 YY_DECL
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp, *yy_bp;
-	register int yy_act;
+  register yy_state_type yy_current_state;
+  register char *yy_cp, *yy_bp;
+  register int yy_act;
     
  /* Bypass Flex's default INITIAL state and begin by parsing the XML prolog. */
  SET(PROLOG);
@@ -1845,172 +1845,172 @@ YY_DECL
 
  /* COMMENTS and PIs: handled uniformly for efficiency. */
 
-	if ( !(yy_init) )
-		{
-		(yy_init) = 1;
+  if ( !(yy_init) )
+    {
+    (yy_init) = 1;
 
 #ifdef YY_USER_INIT
-		YY_USER_INIT;
+    YY_USER_INIT;
 #endif
 
-		if ( ! (yy_start) )
-			(yy_start) = 1;	/* first start state */
+    if ( ! (yy_start) )
+      (yy_start) = 1;  /* first start state */
 
-		if ( ! dax_in )
-			dax_in = stdin;
+    if ( ! dax_in )
+      dax_in = stdin;
 
-		if ( ! dax_out )
-			dax_out = stdout;
+    if ( ! dax_out )
+      dax_out = stdout;
 
-		if ( ! YY_CURRENT_BUFFER ) {
-			dax_ensure_buffer_stack ();
-			YY_CURRENT_BUFFER_LVALUE =
-				dax__create_buffer(dax_in,YY_BUF_SIZE );
-		}
+    if ( ! YY_CURRENT_BUFFER ) {
+      dax_ensure_buffer_stack ();
+      YY_CURRENT_BUFFER_LVALUE =
+        dax__create_buffer(dax_in,YY_BUF_SIZE );
+    }
 
-		dax__load_buffer_state( );
-		}
+    dax__load_buffer_state( );
+    }
 
-	while ( 1 )		/* loops until end-of-file is reached */
-		{
-		yy_cp = (yy_c_buf_p);
+  while ( 1 )    /* loops until end-of-file is reached */
+    {
+    yy_cp = (yy_c_buf_p);
 
-		/* Support of dax_text. */
-		*yy_cp = (yy_hold_char);
+    /* Support of dax_text. */
+    *yy_cp = (yy_hold_char);
 
-		/* yy_bp points to the position in yy_ch_buf of the start of
-		 * the current run.
-		 */
-		yy_bp = yy_cp;
+    /* yy_bp points to the position in yy_ch_buf of the start of
+     * the current run.
+     */
+    yy_bp = yy_cp;
 
-		yy_current_state = (yy_start);
+    yy_current_state = (yy_start);
 yy_match:
-		do
-			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
-			if ( yy_accept[yy_current_state] )
-				{
-				(yy_last_accepting_state) = yy_current_state;
-				(yy_last_accepting_cpos) = yy_cp;
-				}
-			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
-				{
-				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 775 )
-					yy_c = yy_meta[(unsigned int) yy_c];
-				}
-			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-			++yy_cp;
-			}
-		while ( yy_base[yy_current_state] != 2164 );
+    do
+      {
+      register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+      if ( yy_accept[yy_current_state] )
+        {
+        (yy_last_accepting_state) = yy_current_state;
+        (yy_last_accepting_cpos) = yy_cp;
+        }
+      while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
+        {
+        yy_current_state = (int) yy_def[yy_current_state];
+        if ( yy_current_state >= 775 )
+          yy_c = yy_meta[(unsigned int) yy_c];
+        }
+      yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+      ++yy_cp;
+      }
+    while ( yy_base[yy_current_state] != 2164 );
 
 yy_find_action:
-		yy_act = yy_accept[yy_current_state];
-		if ( yy_act == 0 )
-			{ /* have to back up */
-			yy_cp = (yy_last_accepting_cpos);
-			yy_current_state = (yy_last_accepting_state);
-			yy_act = yy_accept[yy_current_state];
-			}
+    yy_act = yy_accept[yy_current_state];
+    if ( yy_act == 0 )
+      { /* have to back up */
+      yy_cp = (yy_last_accepting_cpos);
+      yy_current_state = (yy_last_accepting_state);
+      yy_act = yy_accept[yy_current_state];
+      }
 
-		YY_DO_BEFORE_ACTION;
+    YY_DO_BEFORE_ACTION;
 
-		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
-			{
-			int yyl;
-			for ( yyl = 0; yyl < dax_leng; ++yyl )
-				if ( dax_text[yyl] == '\n' )
-					   
+    if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
+      {
+      int yyl;
+      for ( yyl = 0; yyl < dax_leng; ++yyl )
+        if ( dax_text[yyl] == '\n' )
+             
     dax_lineno++;
 ;
-			}
+      }
 
-do_action:	/* This label is used only to access EOF actions. */
+do_action:  /* This label is used only to access EOF actions. */
 
-		switch ( yy_act )
-	{ /* beginning of action switch */
-			case 0: /* must back up */
-			/* undo the effects of YY_DO_BEFORE_ACTION */
-			*yy_cp = (yy_hold_char);
-			yy_cp = (yy_last_accepting_cpos);
-			yy_current_state = (yy_last_accepting_state);
-			goto yy_find_action;
+    switch ( yy_act )
+  { /* beginning of action switch */
+      case 0: /* must back up */
+      /* undo the effects of YY_DO_BEFORE_ACTION */
+      *yy_cp = (yy_hold_char);
+      yy_cp = (yy_last_accepting_cpos);
+      yy_current_state = (yy_last_accepting_state);
+      goto yy_find_action;
 
 case 1:
 YY_RULE_SETUP
 ENTER(INCOMMENT);
-	YY_BREAK
+  YY_BREAK
 case 2:
 YY_RULE_SETUP
 ENTER(INPI);
-	YY_BREAK
+  YY_BREAK
 
 case 3:
 YY_RULE_SETUP
 LEAVE;
-	YY_BREAK
+  YY_BREAK
 case 4:
 case 5:
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
 SKIP;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(INCOMMENT):
 FAIL("EOF in comment.");
-	YY_BREAK
+  YY_BREAK
 
 case 7:
 YY_RULE_SETUP
 LEAVE;
-	YY_BREAK
+  YY_BREAK
 case 8:
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
 SKIP;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(INPI):
 FAIL("EOF in PI (processing instruction).");
-	YY_BREAK
+  YY_BREAK
 
 /* SPACES: skipped uniformly */
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
 SKIP;
-	YY_BREAK
+  YY_BREAK
 /* PROLOG: determine root element and process it. */
 
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
 SET(ROOT_dax__adag); 
-	YY_BREAK
+  YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
 FAIL("Bad declaration %s.",dax_text);
-	YY_BREAK
+  YY_BREAK
 
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
 SET(ROOT_dax__adag);
-	YY_BREAK
+  YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
 FAIL("Bad declaration %s.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case 15:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in prolog.", dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(PROLOG):
 case YY_STATE_EOF(DOCTYPE):
 FAIL("EOF in prolog.");
-	YY_BREAK
+  YY_BREAK
 
 /* RULES DERIVED FROM DTD. */
 /* <!-- Small DTD for DAX files. -->  */
@@ -2018,7 +2018,7 @@ case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <adag> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
@@ -2045,114 +2045,114 @@ YY_RULE_SETUP
   dax__adag_childCount_isset = 0;
   ENTER(AL_dax__adag); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
 if (dax__adag_xmlns_isset != 0) {FAIL("Multiple definition of attribute xmlns in <dax__adag>");} dax__adag_xmlns_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_xmlns);
-	YY_BREAK
+  YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
 if (dax__adag_xmlns_isset != 0) {FAIL("Multiple definition of attribute xmlns in <dax__adag>");}  dax__adag_xmlns_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_xmlns);
-	YY_BREAK
+  YY_BREAK
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
 if (dax__adag_xmlns_c_xsi_isset != 0) {FAIL("Multiple definition of attribute xmlns:xsi in <dax__adag>");} dax__adag_xmlns_c_xsi_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_xmlns_c_xsi);
-	YY_BREAK
+  YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
 if (dax__adag_xmlns_c_xsi_isset != 0) {FAIL("Multiple definition of attribute xmlns:xsi in <dax__adag>");}  dax__adag_xmlns_c_xsi_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_xmlns_c_xsi);
-	YY_BREAK
+  YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
 if (dax__adag_xsi_c_schemaLocation_isset != 0) {FAIL("Multiple definition of attribute xsi:schemaLocation in <dax__adag>");} dax__adag_xsi_c_schemaLocation_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_xsi_c_schemaLocation);
-	YY_BREAK
+  YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
 if (dax__adag_xsi_c_schemaLocation_isset != 0) {FAIL("Multiple definition of attribute xsi:schemaLocation in <dax__adag>");}  dax__adag_xsi_c_schemaLocation_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_xsi_c_schemaLocation);
-	YY_BREAK
+  YY_BREAK
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
 if (dax__adag_version_isset != 0) {FAIL("Multiple definition of attribute version in <dax__adag>");} dax__adag_version_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_version);
-	YY_BREAK
+  YY_BREAK
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
 if (dax__adag_version_isset != 0) {FAIL("Multiple definition of attribute version in <dax__adag>");}  dax__adag_version_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_version);
-	YY_BREAK
+  YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
 if (dax__adag_count_isset != 0) {FAIL("Multiple definition of attribute count in <dax__adag>");} dax__adag_count_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_count);
-	YY_BREAK
+  YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
 if (dax__adag_count_isset != 0) {FAIL("Multiple definition of attribute count in <dax__adag>");}  dax__adag_count_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_count);
-	YY_BREAK
+  YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
 if (dax__adag_index_isset != 0) {FAIL("Multiple definition of attribute index in <dax__adag>");} dax__adag_index_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_index);
-	YY_BREAK
+  YY_BREAK
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
 if (dax__adag_index_isset != 0) {FAIL("Multiple definition of attribute index in <dax__adag>");}  dax__adag_index_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_index);
-	YY_BREAK
+  YY_BREAK
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
 if (dax__adag_name_isset != 0) {FAIL("Multiple definition of attribute name in <dax__adag>");} dax__adag_name_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_name);
-	YY_BREAK
+  YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
 if (dax__adag_name_isset != 0) {FAIL("Multiple definition of attribute name in <dax__adag>");}  dax__adag_name_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_name);
-	YY_BREAK
+  YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
 if (dax__adag_jobCount_isset != 0) {FAIL("Multiple definition of attribute jobCount in <dax__adag>");} dax__adag_jobCount_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_jobCount);
-	YY_BREAK
+  YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
 if (dax__adag_jobCount_isset != 0) {FAIL("Multiple definition of attribute jobCount in <dax__adag>");}  dax__adag_jobCount_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_jobCount);
-	YY_BREAK
+  YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
 if (dax__adag_fileCount_isset != 0) {FAIL("Multiple definition of attribute fileCount in <dax__adag>");} dax__adag_fileCount_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_fileCount);
-	YY_BREAK
+  YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
 if (dax__adag_fileCount_isset != 0) {FAIL("Multiple definition of attribute fileCount in <dax__adag>");}  dax__adag_fileCount_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_fileCount);
-	YY_BREAK
+  YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
 if (dax__adag_childCount_isset != 0) {FAIL("Multiple definition of attribute childCount in <dax__adag>");} dax__adag_childCount_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__adag_childCount);
-	YY_BREAK
+  YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
 if (dax__adag_childCount_isset != 0) {FAIL("Multiple definition of attribute childCount in <dax__adag>");}  dax__adag_childCount_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__adag_childCount);
-	YY_BREAK
+  YY_BREAK
 case 38:
 YY_RULE_SETUP
 {
   LEAVE; STag_dax__adag();dax__pcdata_ix = 0; ENTER(S_dax__adag);
  }
-	YY_BREAK
+  YY_BREAK
 case 39:
 YY_RULE_SETUP
 {
@@ -2161,18 +2161,18 @@ YY_RULE_SETUP
    case ROOT_dax__adag: SET(EPILOG); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 40:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of adag element.", dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 41:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `adag' element start tag.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_dax__adag):
 FAIL("EOF in attribute list of `adag' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 42:
 /* rule 42 can match eol */
@@ -2185,29 +2185,29 @@ YY_RULE_SETUP
    case ROOT_dax__adag: SET(EPILOG); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</adag>' expected.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case 44:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</adag>' expected.",dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(S_dax__adag_1):
 case YY_STATE_EOF(S_dax__adag_5):
 case YY_STATE_EOF(E_dax__adag):
 case YY_STATE_EOF(S_dax__adag_3):
 case YY_STATE_EOF(S_dax__adag):
 FAIL("Premature EOF: `</adag>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <job> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 46:
 /* rule 46 can match eol */
 YY_RULE_SETUP
@@ -2226,68 +2226,68 @@ YY_RULE_SETUP
   dax__job_level_isset = 0;
   ENTER(AL_dax__job); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 47:
 /* rule 47 can match eol */
 YY_RULE_SETUP
 if (dax__job_id_isset != 0) {FAIL("Multiple definition of attribute id in <dax__job>");} dax__job_id_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_id);
-	YY_BREAK
+  YY_BREAK
 case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
 if (dax__job_id_isset != 0) {FAIL("Multiple definition of attribute id in <dax__job>");}  dax__job_id_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_id);
-	YY_BREAK
+  YY_BREAK
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
 if (dax__job_namespace_isset != 0) {FAIL("Multiple definition of attribute namespace in <dax__job>");} dax__job_namespace_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_namespace);
-	YY_BREAK
+  YY_BREAK
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
 if (dax__job_namespace_isset != 0) {FAIL("Multiple definition of attribute namespace in <dax__job>");}  dax__job_namespace_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_namespace);
-	YY_BREAK
+  YY_BREAK
 case 51:
 /* rule 51 can match eol */
 YY_RULE_SETUP
 if (dax__job_name_isset != 0) {FAIL("Multiple definition of attribute name in <dax__job>");} dax__job_name_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_name);
-	YY_BREAK
+  YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
 if (dax__job_name_isset != 0) {FAIL("Multiple definition of attribute name in <dax__job>");}  dax__job_name_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_name);
-	YY_BREAK
+  YY_BREAK
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
 if (dax__job_version_isset != 0) {FAIL("Multiple definition of attribute version in <dax__job>");} dax__job_version_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_version);
-	YY_BREAK
+  YY_BREAK
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
 if (dax__job_version_isset != 0) {FAIL("Multiple definition of attribute version in <dax__job>");}  dax__job_version_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_version);
-	YY_BREAK
+  YY_BREAK
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
 if (dax__job_runtime_isset != 0) {FAIL("Multiple definition of attribute runtime in <dax__job>");} dax__job_runtime_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_runtime);
-	YY_BREAK
+  YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
 if (dax__job_runtime_isset != 0) {FAIL("Multiple definition of attribute runtime in <dax__job>");}  dax__job_runtime_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_runtime);
-	YY_BREAK
+  YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
 if (dax__job_level_isset != 0) {FAIL("Multiple definition of attribute level in <dax__job>");} dax__job_level_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__job_level);
-	YY_BREAK
+  YY_BREAK
 case 58:
 /* rule 58 can match eol */
 YY_RULE_SETUP
 if (dax__job_level_isset != 0) {FAIL("Multiple definition of attribute level in <dax__job>");}  dax__job_level_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__job_level);
-	YY_BREAK
+  YY_BREAK
 case 59:
 YY_RULE_SETUP
 {
@@ -2296,7 +2296,7 @@ YY_RULE_SETUP
   if (!AX_dax__job_runtime) FAIL("Required attribute `runtime' not set for `job' element.");
   LEAVE; STag_dax__job();dax__pcdata_ix = 0; ENTER(S_dax__job);
  }
-	YY_BREAK
+  YY_BREAK
 case 60:
 YY_RULE_SETUP
 {
@@ -2308,18 +2308,18 @@ YY_RULE_SETUP
    case S_dax__adag_2: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_3); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 61:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of job element.", dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 62:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `job' element start tag.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_dax__job):
 FAIL("EOF in attribute list of `job' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 63:
 /* rule 63 can match eol */
@@ -2332,21 +2332,21 @@ YY_RULE_SETUP
    case S_dax__adag_2: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_3); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 64:
 /* rule 64 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</job>' expected.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case 65:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</job>' expected.",dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(S_dax__job):
 case YY_STATE_EOF(E_dax__job):
 case YY_STATE_EOF(S_dax__job_2):
 FAIL("Premature EOF: `</job>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 /* <!-- ignored -->
   * <!-- ignored -->  */
@@ -2354,7 +2354,7 @@ case 66:
 /* rule 66 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <uses> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 67:
 /* rule 67 can match eol */
 YY_RULE_SETUP
@@ -2375,94 +2375,94 @@ YY_RULE_SETUP
   dax__uses_size_isset = 0;
   ENTER(AL_dax__uses); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
 if (dax__uses_file_isset != 0) {FAIL("Multiple definition of attribute file in <dax__uses>");} dax__uses_file_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__uses_file);
-	YY_BREAK
+  YY_BREAK
 case 69:
 /* rule 69 can match eol */
 YY_RULE_SETUP
 if (dax__uses_file_isset != 0) {FAIL("Multiple definition of attribute file in <dax__uses>");}  dax__uses_file_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__uses_file);
-	YY_BREAK
+  YY_BREAK
 case 70:
 /* rule 70 can match eol */
 case 71:
 /* rule 71 can match eol */
 YY_RULE_SETUP
 A_dax__uses_link = A_dax__uses_link_input;
-	YY_BREAK
+  YY_BREAK
 case 72:
 /* rule 72 can match eol */
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
 A_dax__uses_link = A_dax__uses_link_output;
-	YY_BREAK
+  YY_BREAK
 case 74:
 /* rule 74 can match eol */
 case 75:
 /* rule 75 can match eol */
 YY_RULE_SETUP
 A_dax__uses_register = A_dax__uses_register_false;
-	YY_BREAK
+  YY_BREAK
 case 76:
 /* rule 76 can match eol */
 case 77:
 /* rule 77 can match eol */
 YY_RULE_SETUP
 A_dax__uses_register = A_dax__uses_register_true;
-	YY_BREAK
+  YY_BREAK
 case 78:
 /* rule 78 can match eol */
 case 79:
 /* rule 79 can match eol */
 YY_RULE_SETUP
 A_dax__uses_transfer = A_dax__uses_transfer_false;
-	YY_BREAK
+  YY_BREAK
 case 80:
 /* rule 80 can match eol */
 case 81:
 /* rule 81 can match eol */
 YY_RULE_SETUP
 A_dax__uses_transfer = A_dax__uses_transfer_true;
-	YY_BREAK
+  YY_BREAK
 case 82:
 /* rule 82 can match eol */
 case 83:
 /* rule 83 can match eol */
 YY_RULE_SETUP
 A_dax__uses_optional = A_dax__uses_optional_false;
-	YY_BREAK
+  YY_BREAK
 case 84:
 /* rule 84 can match eol */
 case 85:
 /* rule 85 can match eol */
 YY_RULE_SETUP
 A_dax__uses_optional = A_dax__uses_optional_true;
-	YY_BREAK
+  YY_BREAK
 case 86:
 /* rule 86 can match eol */
 YY_RULE_SETUP
 if (dax__uses_type_isset != 0) {FAIL("Multiple definition of attribute type in <dax__uses>");} dax__uses_type_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__uses_type);
-	YY_BREAK
+  YY_BREAK
 case 87:
 /* rule 87 can match eol */
 YY_RULE_SETUP
 if (dax__uses_type_isset != 0) {FAIL("Multiple definition of attribute type in <dax__uses>");}  dax__uses_type_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__uses_type);
-	YY_BREAK
+  YY_BREAK
 case 88:
 /* rule 88 can match eol */
 YY_RULE_SETUP
 if (dax__uses_size_isset != 0) {FAIL("Multiple definition of attribute size in <dax__uses>");} dax__uses_size_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__uses_size);
-	YY_BREAK
+  YY_BREAK
 case 89:
 /* rule 89 can match eol */
 YY_RULE_SETUP
 if (dax__uses_size_isset != 0) {FAIL("Multiple definition of attribute size in <dax__uses>");}  dax__uses_size_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__uses_size);
-	YY_BREAK
+  YY_BREAK
 case 90:
 YY_RULE_SETUP
 {
@@ -2470,7 +2470,7 @@ YY_RULE_SETUP
   if (!AX_dax__uses_size) FAIL("Required attribute `size' not set for `uses' element.");
   LEAVE; STag_dax__uses();dax__pcdata_ix = 0; ENTER(E_dax__uses);
  }
-	YY_BREAK
+  YY_BREAK
 case 91:
 YY_RULE_SETUP
 {
@@ -2481,18 +2481,18 @@ YY_RULE_SETUP
    case S_dax__job: case S_dax__job_2: case S_dax__job_1: SET(S_dax__job_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 92:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of uses element.", dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 93:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `uses' element start tag.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_dax__uses):
 FAIL("EOF in attribute list of `uses' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 94:
 /* rule 94 can match eol */
@@ -2505,25 +2505,25 @@ YY_RULE_SETUP
    case S_dax__job: case S_dax__job_2: case S_dax__job_1: SET(S_dax__job_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 95:
 /* rule 95 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</uses>' expected.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case 96:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</uses>' expected.",dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_dax__uses):
 FAIL("Premature EOF: `</uses>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 97:
 /* rule 97 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <child> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 98:
 /* rule 98 can match eol */
 YY_RULE_SETUP
@@ -2532,25 +2532,25 @@ YY_RULE_SETUP
   dax__child_ref_isset = 0;
   ENTER(AL_dax__child); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 99:
 /* rule 99 can match eol */
 YY_RULE_SETUP
 if (dax__child_ref_isset != 0) {FAIL("Multiple definition of attribute ref in <dax__child>");} dax__child_ref_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__child_ref);
-	YY_BREAK
+  YY_BREAK
 case 100:
 /* rule 100 can match eol */
 YY_RULE_SETUP
 if (dax__child_ref_isset != 0) {FAIL("Multiple definition of attribute ref in <dax__child>");}  dax__child_ref_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__child_ref);
-	YY_BREAK
+  YY_BREAK
 case 101:
 YY_RULE_SETUP
 {
   if (!AX_dax__child_ref) FAIL("Required attribute `ref' not set for `child' element.");
   LEAVE; STag_dax__child();dax__pcdata_ix = 0; ENTER(S_dax__child);
  }
-	YY_BREAK
+  YY_BREAK
 case 102:
 YY_RULE_SETUP
 {
@@ -2560,18 +2560,18 @@ YY_RULE_SETUP
    case S_dax__adag_1: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_5); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 103:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of child element.", dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 104:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `child' element start tag.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_dax__child):
 FAIL("EOF in attribute list of `child' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 105:
 /* rule 105 can match eol */
@@ -2584,27 +2584,27 @@ YY_RULE_SETUP
    case S_dax__adag_1: case S_dax__adag_4: case S_dax__adag_5: case S_dax__adag_3: case S_dax__adag: SET(S_dax__adag_5); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 106:
 /* rule 106 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</child>' expected.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case 107:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</child>' expected.",dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(S_dax__child_2):
 case YY_STATE_EOF(E_dax__child):
 case YY_STATE_EOF(S_dax__child):
 FAIL("Premature EOF: `</child>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 case 108:
 /* rule 108 can match eol */
 YY_RULE_SETUP
 FAIL("Starting tag <parent> is not allowed here.");
-	YY_BREAK
+  YY_BREAK
 case 109:
 /* rule 109 can match eol */
 YY_RULE_SETUP
@@ -2613,25 +2613,25 @@ YY_RULE_SETUP
   dax__parent_ref_isset = 0;
   ENTER(AL_dax__parent); pushbuffer(0);
   }
-	YY_BREAK
+  YY_BREAK
 
 case 110:
 /* rule 110 can match eol */
 YY_RULE_SETUP
 if (dax__parent_ref_isset != 0) {FAIL("Multiple definition of attribute ref in <dax__parent>");} dax__parent_ref_isset = 1; ENTER(VALUE1); BUFFERSET(AX_dax__parent_ref);
-	YY_BREAK
+  YY_BREAK
 case 111:
 /* rule 111 can match eol */
 YY_RULE_SETUP
 if (dax__parent_ref_isset != 0) {FAIL("Multiple definition of attribute ref in <dax__parent>");}  dax__parent_ref_isset = 1; ENTER(VALUE2); BUFFERSET(AX_dax__parent_ref);
-	YY_BREAK
+  YY_BREAK
 case 112:
 YY_RULE_SETUP
 {
   if (!AX_dax__parent_ref) FAIL("Required attribute `ref' not set for `parent' element.");
   LEAVE; STag_dax__parent();dax__pcdata_ix = 0; ENTER(E_dax__parent);
  }
-	YY_BREAK
+  YY_BREAK
 case 113:
 YY_RULE_SETUP
 {
@@ -2641,18 +2641,18 @@ YY_RULE_SETUP
    case S_dax__child_2: case S_dax__child: case S_dax__child_1: SET(S_dax__child_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 114:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c' in attribute list of parent element.", dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 115:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `parent' element start tag.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(AL_dax__parent):
 FAIL("EOF in attribute list of `parent' element.");
-	YY_BREAK
+  YY_BREAK
 
 case 116:
 /* rule 116 can match eol */
@@ -2665,29 +2665,29 @@ YY_RULE_SETUP
    case S_dax__child_2: case S_dax__child: case S_dax__child_1: SET(S_dax__child_2); break;
   }
  }
-	YY_BREAK
+  YY_BREAK
 case 117:
 /* rule 117 can match eol */
 YY_RULE_SETUP
 FAIL("Unexpected end-tag `%s': `</parent>' expected.",dax_text);
-	YY_BREAK
+  YY_BREAK
 case 118:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</parent>' expected.",dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(E_dax__parent):
 FAIL("Premature EOF: `</parent>' expected.");
-	YY_BREAK
+  YY_BREAK
 
 /* EPILOG: after the root element. */
 
 case 119:
 YY_RULE_SETUP
 {SET(PROLOG); yyless(0); CLEANUP; return -1;}
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(EPILOG):
 SUCCEED;
-	YY_BREAK
+  YY_BREAK
 
 /* CHARACTER DATA. */
 
@@ -2695,32 +2695,32 @@ SUCCEED;
 case 120:
 YY_RULE_SETUP
 BUFFERPUTC('&');
-	YY_BREAK
+  YY_BREAK
 case 121:
 YY_RULE_SETUP
 BUFFERPUTC('<');
-	YY_BREAK
+  YY_BREAK
 case 122:
 YY_RULE_SETUP
 BUFFERPUTC('>');
-	YY_BREAK
+  YY_BREAK
 case 123:
 YY_RULE_SETUP
 BUFFERPUTC('\'');
-	YY_BREAK
+  YY_BREAK
 case 124:
 YY_RULE_SETUP
 BUFFERPUTC('"');
-	YY_BREAK
+  YY_BREAK
 /* Character entities. */
 case 125:
 YY_RULE_SETUP
 BUFFERPUTC((unsigned char)atoi(dax_text+2));
-	YY_BREAK
+  YY_BREAK
 case 126:
 YY_RULE_SETUP
 BUFFERPUTC((unsigned char)strtol(dax_text+3,NULL,16));
-	YY_BREAK
+  YY_BREAK
 
 case 127:
 /* rule 127 can match eol */
@@ -2732,55 +2732,55 @@ case 130:
 /* rule 130 can match eol */
 YY_RULE_SETUP
 BUFFERPUTC('\n');
-	YY_BREAK
+  YY_BREAK
 
 case 131:
 YY_RULE_SETUP
 ENTER(CDATA);
-	YY_BREAK
+  YY_BREAK
 case 132:
 YY_RULE_SETUP
 FAIL("Unexpected `]""]>' in character data.");
-	YY_BREAK
+  YY_BREAK
 
 case 133:
 YY_RULE_SETUP
 BUFFERDONE; LEAVE;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(VALUE1):
 FAIL("EOF in literal (\"'\" expected).");
-	YY_BREAK
+  YY_BREAK
 
 case 134:
 YY_RULE_SETUP
 BUFFERDONE; LEAVE;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(VALUE2):
 FAIL("EOF in literal (`\"' expected).");
-	YY_BREAK
+  YY_BREAK
 
 case 135:
 /* rule 135 can match eol */
 YY_RULE_SETUP
 BUFFERPUTC(dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case 136:
 YY_RULE_SETUP
 FAIL("Spurious `%c' in character data.",dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 
 case 137:
 YY_RULE_SETUP
 LEAVE;
-	YY_BREAK
-/* "]""]"		BUFFERPUTC(dax_text[0]); BUFFERPUTC(dax_text[1]); */
+  YY_BREAK
+/* "]""]"    BUFFERPUTC(dax_text[0]); BUFFERPUTC(dax_text[1]); */
 case 138:
 YY_RULE_SETUP
 BUFFERPUTC(dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(CDATA):
 FAIL("EOF in CDATA section.");
-	YY_BREAK
+  YY_BREAK
 
 /* Impossible rules to avoid warnings from flex(1). */
 /* Ideally, this should be replaced by code in flexml.pl that
@@ -2790,12 +2790,12 @@ case 139:
 /* rule 139 can match eol */
 YY_RULE_SETUP
 FAIL("Syntax error on character `%c'.", dax_text[0]);
-	YY_BREAK
+  YY_BREAK
 
 case 140:
 YY_RULE_SETUP
 ECHO;
-	YY_BREAK
+  YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(ROOT_dax__adag):
 case YY_STATE_EOF(S_dax__adag_2):
@@ -2803,331 +2803,331 @@ case YY_STATE_EOF(S_dax__adag_4):
 case YY_STATE_EOF(S_dax__job_1):
 case YY_STATE_EOF(S_dax__child_1):
 case YY_STATE_EOF(IMPOSSIBLE):
-	yyterminate();
+  yyterminate();
 
-	case YY_END_OF_BUFFER:
-		{
-		/* Amount of text matched not including the EOB char. */
-		int yy_amount_of_matched_text = (int) (yy_cp - (yytext_ptr)) - 1;
+  case YY_END_OF_BUFFER:
+    {
+    /* Amount of text matched not including the EOB char. */
+    int yy_amount_of_matched_text = (int) (yy_cp - (yytext_ptr)) - 1;
 
-		/* Undo the effects of YY_DO_BEFORE_ACTION. */
-		*yy_cp = (yy_hold_char);
-		YY_RESTORE_YY_MORE_OFFSET
+    /* Undo the effects of YY_DO_BEFORE_ACTION. */
+    *yy_cp = (yy_hold_char);
+    YY_RESTORE_YY_MORE_OFFSET
 
-		if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW )
-			{
-			/* We're scanning a new file or input source.  It's
-			 * possible that this happened because the user
-			 * just pointed dax_in at a new source and called
-			 * dax_lex().  If so, then we have to assure
-			 * consistency between YY_CURRENT_BUFFER and our
-			 * globals.  Here is the right place to do so, because
-			 * this is the first action (other than possibly a
-			 * back-up) that will match for the new input source.
-			 */
-			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-			YY_CURRENT_BUFFER_LVALUE->yy_input_file = dax_in;
-			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
-			}
+    if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_NEW )
+      {
+      /* We're scanning a new file or input source.  It's
+       * possible that this happened because the user
+       * just pointed dax_in at a new source and called
+       * dax_lex().  If so, then we have to assure
+       * consistency between YY_CURRENT_BUFFER and our
+       * globals.  Here is the right place to do so, because
+       * this is the first action (other than possibly a
+       * back-up) that will match for the new input source.
+       */
+      (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+      YY_CURRENT_BUFFER_LVALUE->yy_input_file = dax_in;
+      YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
+      }
 
-		/* Note that here we test for yy_c_buf_p "<=" to the position
-		 * of the first EOB in the buffer, since yy_c_buf_p will
-		 * already have been incremented past the NUL character
-		 * (since all states make transitions on EOB to the
-		 * end-of-buffer state).  Contrast this with the test
-		 * in input().
-		 */
-		if ( (yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
-			{ /* This was really a NUL. */
-			yy_state_type yy_next_state;
+    /* Note that here we test for yy_c_buf_p "<=" to the position
+     * of the first EOB in the buffer, since yy_c_buf_p will
+     * already have been incremented past the NUL character
+     * (since all states make transitions on EOB to the
+     * end-of-buffer state).  Contrast this with the test
+     * in input().
+     */
+    if ( (yy_c_buf_p) <= &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
+      { /* This was really a NUL. */
+      yy_state_type yy_next_state;
 
-			(yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
+      (yy_c_buf_p) = (yytext_ptr) + yy_amount_of_matched_text;
 
-			yy_current_state = yy_get_previous_state(  );
+      yy_current_state = yy_get_previous_state(  );
 
-			/* Okay, we're now positioned to make the NUL
-			 * transition.  We couldn't have
-			 * yy_get_previous_state() go ahead and do it
-			 * for us because it doesn't know how to deal
-			 * with the possibility of jamming (and we don't
-			 * want to build jamming into it because then it
-			 * will run more slowly).
-			 */
+      /* Okay, we're now positioned to make the NUL
+       * transition.  We couldn't have
+       * yy_get_previous_state() go ahead and do it
+       * for us because it doesn't know how to deal
+       * with the possibility of jamming (and we don't
+       * want to build jamming into it because then it
+       * will run more slowly).
+       */
 
-			yy_next_state = yy_try_NUL_trans( yy_current_state );
+      yy_next_state = yy_try_NUL_trans( yy_current_state );
 
-			yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+      yy_bp = (yytext_ptr) + YY_MORE_ADJ;
 
-			if ( yy_next_state )
-				{
-				/* Consume the NUL. */
-				yy_cp = ++(yy_c_buf_p);
-				yy_current_state = yy_next_state;
-				goto yy_match;
-				}
+      if ( yy_next_state )
+        {
+        /* Consume the NUL. */
+        yy_cp = ++(yy_c_buf_p);
+        yy_current_state = yy_next_state;
+        goto yy_match;
+        }
 
-			else
-				{
-				yy_cp = (yy_c_buf_p);
-				goto yy_find_action;
-				}
-			}
+      else
+        {
+        yy_cp = (yy_c_buf_p);
+        goto yy_find_action;
+        }
+      }
 
-		else switch ( yy_get_next_buffer(  ) )
-			{
-			case EOB_ACT_END_OF_FILE:
-				{
-				(yy_did_buffer_switch_on_eof) = 0;
+    else switch ( yy_get_next_buffer(  ) )
+      {
+      case EOB_ACT_END_OF_FILE:
+        {
+        (yy_did_buffer_switch_on_eof) = 0;
 
-				if ( dax_wrap( ) )
-					{
-					/* Note: because we've taken care in
-					 * yy_get_next_buffer() to have set up
-					 * dax_text, we can now set up
-					 * yy_c_buf_p so that if some total
-					 * hoser (like flex itself) wants to
-					 * call the scanner after we return the
-					 * YY_NULL, it'll still work - another
-					 * YY_NULL will get returned.
-					 */
-					(yy_c_buf_p) = (yytext_ptr) + YY_MORE_ADJ;
+        if ( dax_wrap( ) )
+          {
+          /* Note: because we've taken care in
+           * yy_get_next_buffer() to have set up
+           * dax_text, we can now set up
+           * yy_c_buf_p so that if some total
+           * hoser (like flex itself) wants to
+           * call the scanner after we return the
+           * YY_NULL, it'll still work - another
+           * YY_NULL will get returned.
+           */
+          (yy_c_buf_p) = (yytext_ptr) + YY_MORE_ADJ;
 
-					yy_act = YY_STATE_EOF(YY_START);
-					goto do_action;
-					}
+          yy_act = YY_STATE_EOF(YY_START);
+          goto do_action;
+          }
 
-				else
-					{
-					if ( ! (yy_did_buffer_switch_on_eof) )
-						YY_NEW_FILE;
-					}
-				break;
-				}
+        else
+          {
+          if ( ! (yy_did_buffer_switch_on_eof) )
+            YY_NEW_FILE;
+          }
+        break;
+        }
 
-			case EOB_ACT_CONTINUE_SCAN:
-				(yy_c_buf_p) =
-					(yytext_ptr) + yy_amount_of_matched_text;
+      case EOB_ACT_CONTINUE_SCAN:
+        (yy_c_buf_p) =
+          (yytext_ptr) + yy_amount_of_matched_text;
 
-				yy_current_state = yy_get_previous_state(  );
+        yy_current_state = yy_get_previous_state(  );
 
-				yy_cp = (yy_c_buf_p);
-				yy_bp = (yytext_ptr) + YY_MORE_ADJ;
-				goto yy_match;
+        yy_cp = (yy_c_buf_p);
+        yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+        goto yy_match;
 
-			case EOB_ACT_LAST_MATCH:
-				(yy_c_buf_p) =
-				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
+      case EOB_ACT_LAST_MATCH:
+        (yy_c_buf_p) =
+        &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)];
 
-				yy_current_state = yy_get_previous_state(  );
+        yy_current_state = yy_get_previous_state(  );
 
-				yy_cp = (yy_c_buf_p);
-				yy_bp = (yytext_ptr) + YY_MORE_ADJ;
-				goto yy_find_action;
-			}
-		break;
-		}
+        yy_cp = (yy_c_buf_p);
+        yy_bp = (yytext_ptr) + YY_MORE_ADJ;
+        goto yy_find_action;
+      }
+    break;
+    }
 
-	default:
-		YY_FATAL_ERROR(
-			"fatal flex scanner internal error--no action found" );
-	} /* end of action switch */
-		} /* end of scanning one token */
+  default:
+    YY_FATAL_ERROR(
+      "fatal flex scanner internal error--no action found" );
+  } /* end of action switch */
+    } /* end of scanning one token */
 } /* end of dax_lex */
 
 /* yy_get_next_buffer - try to read in a new buffer
  *
  * Returns a code representing an action:
- *	EOB_ACT_LAST_MATCH -
- *	EOB_ACT_CONTINUE_SCAN - continue scanning from current position
- *	EOB_ACT_END_OF_FILE - end of file
+ *  EOB_ACT_LAST_MATCH -
+ *  EOB_ACT_CONTINUE_SCAN - continue scanning from current position
+ *  EOB_ACT_END_OF_FILE - end of file
  */
 static int yy_get_next_buffer (void)
 {
-    	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
-	register char *source = (yytext_ptr);
-	register int number_to_move, i;
-	int ret_val;
+      register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+  register char *source = (yytext_ptr);
+  register int number_to_move, i;
+  int ret_val;
 
-	if ( (yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] )
-		YY_FATAL_ERROR(
-		"fatal flex scanner internal error--end of buffer missed" );
+  if ( (yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] )
+    YY_FATAL_ERROR(
+    "fatal flex scanner internal error--end of buffer missed" );
 
-	if ( YY_CURRENT_BUFFER_LVALUE->yy_fill_buffer == 0 )
-		{ /* Don't try to fill the buffer, so this is an EOF. */
-		if ( (yy_c_buf_p) - (yytext_ptr) - YY_MORE_ADJ == 1 )
-			{
-			/* We matched a single character, the EOB, so
-			 * treat this as a final EOF.
-			 */
-			return EOB_ACT_END_OF_FILE;
-			}
+  if ( YY_CURRENT_BUFFER_LVALUE->yy_fill_buffer == 0 )
+    { /* Don't try to fill the buffer, so this is an EOF. */
+    if ( (yy_c_buf_p) - (yytext_ptr) - YY_MORE_ADJ == 1 )
+      {
+      /* We matched a single character, the EOB, so
+       * treat this as a final EOF.
+       */
+      return EOB_ACT_END_OF_FILE;
+      }
 
-		else
-			{
-			/* We matched some text prior to the EOB, first
-			 * process it.
-			 */
-			return EOB_ACT_LAST_MATCH;
-			}
-		}
+    else
+      {
+      /* We matched some text prior to the EOB, first
+       * process it.
+       */
+      return EOB_ACT_LAST_MATCH;
+      }
+    }
 
-	/* Try to read more data. */
+  /* Try to read more data. */
 
-	/* First move last chars to start of buffer. */
-	number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr)) - 1;
+  /* First move last chars to start of buffer. */
+  number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr)) - 1;
 
-	for ( i = 0; i < number_to_move; ++i )
-		*(dest++) = *(source++);
+  for ( i = 0; i < number_to_move; ++i )
+    *(dest++) = *(source++);
 
-	if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_EOF_PENDING )
-		/* don't do the read, it's not guaranteed to return an EOF,
-		 * just force an EOF
-		 */
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars) = 0;
+  if ( YY_CURRENT_BUFFER_LVALUE->yy_buffer_status == YY_BUFFER_EOF_PENDING )
+    /* don't do the read, it's not guaranteed to return an EOF,
+     * just force an EOF
+     */
+    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars) = 0;
 
-	else
-		{
-			int num_to_read =
-			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
+  else
+    {
+      int num_to_read =
+      YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
-		while ( num_to_read <= 0 )
-			{ /* Not enough room in the buffer - grow it. */
+    while ( num_to_read <= 0 )
+      { /* Not enough room in the buffer - grow it. */
 
-			/* just a shorter name for the current buffer */
-			YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
+      /* just a shorter name for the current buffer */
+      YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
 
-			int yy_c_buf_p_offset =
-				(int) ((yy_c_buf_p) - b->yy_ch_buf);
+      int yy_c_buf_p_offset =
+        (int) ((yy_c_buf_p) - b->yy_ch_buf);
 
-			if ( b->yy_is_our_buffer )
-				{
-				int new_size = b->yy_buf_size * 2;
+      if ( b->yy_is_our_buffer )
+        {
+        int new_size = b->yy_buf_size * 2;
 
-				if ( new_size <= 0 )
-					b->yy_buf_size += b->yy_buf_size / 8;
-				else
-					b->yy_buf_size *= 2;
+        if ( new_size <= 0 )
+          b->yy_buf_size += b->yy_buf_size / 8;
+        else
+          b->yy_buf_size *= 2;
 
-				b->yy_ch_buf = (char *)
-					/* Include room in for 2 EOB chars. */
-					dax_realloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
-				}
-			else
-				/* Can't grow it, we don't own it. */
-				b->yy_ch_buf = 0;
+        b->yy_ch_buf = (char *)
+          /* Include room in for 2 EOB chars. */
+          dax_realloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
+        }
+      else
+        /* Can't grow it, we don't own it. */
+        b->yy_ch_buf = 0;
 
-			if ( ! b->yy_ch_buf )
-				YY_FATAL_ERROR(
-				"fatal error - scanner input buffer overflow" );
+      if ( ! b->yy_ch_buf )
+        YY_FATAL_ERROR(
+        "fatal error - scanner input buffer overflow" );
 
-			(yy_c_buf_p) = &b->yy_ch_buf[yy_c_buf_p_offset];
+      (yy_c_buf_p) = &b->yy_ch_buf[yy_c_buf_p_offset];
 
-			num_to_read = YY_CURRENT_BUFFER_LVALUE->yy_buf_size -
-						number_to_move - 1;
+      num_to_read = YY_CURRENT_BUFFER_LVALUE->yy_buf_size -
+            number_to_move - 1;
 
-			}
+      }
 
-		if ( num_to_read > YY_READ_BUF_SIZE )
-			num_to_read = YY_READ_BUF_SIZE;
+    if ( num_to_read > YY_READ_BUF_SIZE )
+      num_to_read = YY_READ_BUF_SIZE;
 
-		/* Read in more data. */
-		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			(yy_n_chars), (size_t) num_to_read );
+    /* Read in more data. */
+    YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
+      (yy_n_chars), (size_t) num_to_read );
 
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-		}
+    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
+    }
 
-	if ( (yy_n_chars) == 0 )
-		{
-		if ( number_to_move == YY_MORE_ADJ )
-			{
-			ret_val = EOB_ACT_END_OF_FILE;
-			dax_restart(dax_in  );
-			}
+  if ( (yy_n_chars) == 0 )
+    {
+    if ( number_to_move == YY_MORE_ADJ )
+      {
+      ret_val = EOB_ACT_END_OF_FILE;
+      dax_restart(dax_in  );
+      }
 
-		else
-			{
-			ret_val = EOB_ACT_LAST_MATCH;
-			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status =
-				YY_BUFFER_EOF_PENDING;
-			}
-		}
+    else
+      {
+      ret_val = EOB_ACT_LAST_MATCH;
+      YY_CURRENT_BUFFER_LVALUE->yy_buffer_status =
+        YY_BUFFER_EOF_PENDING;
+      }
+    }
 
-	else
-		ret_val = EOB_ACT_CONTINUE_SCAN;
+  else
+    ret_val = EOB_ACT_CONTINUE_SCAN;
 
-	if ((yy_size_t) ((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
-		/* Extend the array by 50%, plus the number we really need. */
-		yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
-		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) dax_realloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
-		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
-			YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
-	}
+  if ((yy_size_t) ((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
+    /* Extend the array by 50%, plus the number we really need. */
+    yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
+    YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) dax_realloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
+    if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
+      YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
+  }
 
-	(yy_n_chars) += number_to_move;
-	YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] = YY_END_OF_BUFFER_CHAR;
-	YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] = YY_END_OF_BUFFER_CHAR;
+  (yy_n_chars) += number_to_move;
+  YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] = YY_END_OF_BUFFER_CHAR;
+  YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] = YY_END_OF_BUFFER_CHAR;
 
-	(yytext_ptr) = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[0];
+  (yytext_ptr) = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[0];
 
-	return ret_val;
+  return ret_val;
 }
 
 /* yy_get_previous_state - get the state just before the EOB char was reached */
 
     static yy_state_type yy_get_previous_state (void)
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp;
+  register yy_state_type yy_current_state;
+  register char *yy_cp;
     
-	yy_current_state = (yy_start);
+  yy_current_state = (yy_start);
 
-	for ( yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp )
-		{
-		register YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
-		if ( yy_accept[yy_current_state] )
-			{
-			(yy_last_accepting_state) = yy_current_state;
-			(yy_last_accepting_cpos) = yy_cp;
-			}
-		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
-			{
-			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 775 )
-				yy_c = yy_meta[(unsigned int) yy_c];
-			}
-		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-		}
+  for ( yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp )
+    {
+    register YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
+    if ( yy_accept[yy_current_state] )
+      {
+      (yy_last_accepting_state) = yy_current_state;
+      (yy_last_accepting_cpos) = yy_cp;
+      }
+    while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
+      {
+      yy_current_state = (int) yy_def[yy_current_state];
+      if ( yy_current_state >= 775 )
+        yy_c = yy_meta[(unsigned int) yy_c];
+      }
+    yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+    }
 
-	return yy_current_state;
+  return yy_current_state;
 }
 
 /* yy_try_NUL_trans - try to make a transition on the NUL character
  *
  * synopsis
- *	next_state = yy_try_NUL_trans( current_state );
+ *  next_state = yy_try_NUL_trans( current_state );
  */
     static yy_state_type yy_try_NUL_trans  (yy_state_type yy_current_state )
 {
-	register int yy_is_jam;
-    	register char *yy_cp = (yy_c_buf_p);
+  register int yy_is_jam;
+      register char *yy_cp = (yy_c_buf_p);
 
-	register YY_CHAR yy_c = 1;
-	if ( yy_accept[yy_current_state] )
-		{
-		(yy_last_accepting_state) = yy_current_state;
-		(yy_last_accepting_cpos) = yy_cp;
-		}
-	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
-		{
-		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 775 )
-			yy_c = yy_meta[(unsigned int) yy_c];
-		}
-	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 774);
+  register YY_CHAR yy_c = 1;
+  if ( yy_accept[yy_current_state] )
+    {
+    (yy_last_accepting_state) = yy_current_state;
+    (yy_last_accepting_cpos) = yy_cp;
+    }
+  while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
+    {
+    yy_current_state = (int) yy_def[yy_current_state];
+    if ( yy_current_state >= 775 )
+      yy_c = yy_meta[(unsigned int) yy_c];
+    }
+  yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+  yy_is_jam = (yy_current_state == 774);
 
-	return yy_is_jam ? 0 : yy_current_state;
+  return yy_is_jam ? 0 : yy_current_state;
 }
 
 #ifndef YY_NO_INPUT
@@ -3138,76 +3138,76 @@ static int yy_get_next_buffer (void)
 #endif
 
 {
-	int c;
+  int c;
     
-	*(yy_c_buf_p) = (yy_hold_char);
+  *(yy_c_buf_p) = (yy_hold_char);
 
-	if ( *(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR )
-		{
-		/* yy_c_buf_p now points to the character we want to return.
-		 * If this occurs *before* the EOB characters, then it's a
-		 * valid NUL; if not, then we've hit the end of the buffer.
-		 */
-		if ( (yy_c_buf_p) < &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
-			/* This was really a NUL. */
-			*(yy_c_buf_p) = '\0';
+  if ( *(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR )
+    {
+    /* yy_c_buf_p now points to the character we want to return.
+     * If this occurs *before* the EOB characters, then it's a
+     * valid NUL; if not, then we've hit the end of the buffer.
+     */
+    if ( (yy_c_buf_p) < &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars)] )
+      /* This was really a NUL. */
+      *(yy_c_buf_p) = '\0';
 
-		else
-			{ /* need more input */
-			int offset = (yy_c_buf_p) - (yytext_ptr);
-			++(yy_c_buf_p);
+    else
+      { /* need more input */
+      int offset = (yy_c_buf_p) - (yytext_ptr);
+      ++(yy_c_buf_p);
 
-			switch ( yy_get_next_buffer(  ) )
-				{
-				case EOB_ACT_LAST_MATCH:
-					/* This happens because yy_g_n_b()
-					 * sees that we've accumulated a
-					 * token and flags that we need to
-					 * try matching the token before
-					 * proceeding.  But for input(),
-					 * there's no matching to consider.
-					 * So convert the EOB_ACT_LAST_MATCH
-					 * to EOB_ACT_END_OF_FILE.
-					 */
+      switch ( yy_get_next_buffer(  ) )
+        {
+        case EOB_ACT_LAST_MATCH:
+          /* This happens because yy_g_n_b()
+           * sees that we've accumulated a
+           * token and flags that we need to
+           * try matching the token before
+           * proceeding.  But for input(),
+           * there's no matching to consider.
+           * So convert the EOB_ACT_LAST_MATCH
+           * to EOB_ACT_END_OF_FILE.
+           */
 
-					/* Reset buffer status. */
-					dax_restart(dax_in );
+          /* Reset buffer status. */
+          dax_restart(dax_in );
 
-					/*FALLTHROUGH*/
+          /*FALLTHROUGH*/
 
-				case EOB_ACT_END_OF_FILE:
-					{
-					if ( dax_wrap( ) )
-						return EOF;
+        case EOB_ACT_END_OF_FILE:
+          {
+          if ( dax_wrap( ) )
+            return EOF;
 
-					if ( ! (yy_did_buffer_switch_on_eof) )
-						YY_NEW_FILE;
+          if ( ! (yy_did_buffer_switch_on_eof) )
+            YY_NEW_FILE;
 #ifdef __cplusplus
-					return yyinput();
+          return yyinput();
 #else
-					return input();
+          return input();
 #endif
-					}
+          }
 
-				case EOB_ACT_CONTINUE_SCAN:
-					(yy_c_buf_p) = (yytext_ptr) + offset;
-					break;
-				}
-			}
-		}
+        case EOB_ACT_CONTINUE_SCAN:
+          (yy_c_buf_p) = (yytext_ptr) + offset;
+          break;
+        }
+      }
+    }
 
-	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
-	*(yy_c_buf_p) = '\0';	/* preserve dax_text */
-	(yy_hold_char) = *++(yy_c_buf_p);
+  c = *(unsigned char *) (yy_c_buf_p);  /* cast for 8-bit char's */
+  *(yy_c_buf_p) = '\0';  /* preserve dax_text */
+  (yy_hold_char) = *++(yy_c_buf_p);
 
-	if ( c == '\n' )
-		   
+  if ( c == '\n' )
+       
     dax_lineno++;
 ;
 
-	return c;
+  return c;
 }
-#endif	/* ifndef YY_NO_INPUT */
+#endif  /* ifndef YY_NO_INPUT */
 
 /** Immediately switch to a different input stream.
  * @param input_file A readable stream.
@@ -3217,14 +3217,14 @@ static int yy_get_next_buffer (void)
     void dax_restart  (FILE * input_file )
 {
     
-	if ( ! YY_CURRENT_BUFFER ){
+  if ( ! YY_CURRENT_BUFFER ){
         dax_ensure_buffer_stack ();
-		YY_CURRENT_BUFFER_LVALUE =
+    YY_CURRENT_BUFFER_LVALUE =
             dax__create_buffer(dax_in,YY_BUF_SIZE );
-	}
+  }
 
-	dax__init_buffer(YY_CURRENT_BUFFER,input_file );
-	dax__load_buffer_state( );
+  dax__init_buffer(YY_CURRENT_BUFFER,input_file );
+  dax__load_buffer_state( );
 }
 
 /** Switch to a different input buffer.
@@ -3234,40 +3234,40 @@ static int yy_get_next_buffer (void)
     void dax__switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
     
-	/* TODO. We should be able to replace this entire function body
-	 * with
-	 *		dax_pop_buffer_state();
-	 *		dax_push_buffer_state(new_buffer);
+  /* TODO. We should be able to replace this entire function body
+   * with
+   *    dax_pop_buffer_state();
+   *    dax_push_buffer_state(new_buffer);
      */
-	dax_ensure_buffer_stack ();
-	if ( YY_CURRENT_BUFFER == new_buffer )
-		return;
+  dax_ensure_buffer_stack ();
+  if ( YY_CURRENT_BUFFER == new_buffer )
+    return;
 
-	if ( YY_CURRENT_BUFFER )
-		{
-		/* Flush out information for old buffer. */
-		*(yy_c_buf_p) = (yy_hold_char);
-		YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-		}
+  if ( YY_CURRENT_BUFFER )
+    {
+    /* Flush out information for old buffer. */
+    *(yy_c_buf_p) = (yy_hold_char);
+    YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
+    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
+    }
 
-	YY_CURRENT_BUFFER_LVALUE = new_buffer;
-	dax__load_buffer_state( );
+  YY_CURRENT_BUFFER_LVALUE = new_buffer;
+  dax__load_buffer_state( );
 
-	/* We don't actually know whether we did this switch during
-	 * EOF (dax_wrap()) processing, but the only time this flag
-	 * is looked at is after dax_wrap() is called, so it's safe
-	 * to go ahead and always set it.
-	 */
-	(yy_did_buffer_switch_on_eof) = 1;
+  /* We don't actually know whether we did this switch during
+   * EOF (dax_wrap()) processing, but the only time this flag
+   * is looked at is after dax_wrap() is called, so it's safe
+   * to go ahead and always set it.
+   */
+  (yy_did_buffer_switch_on_eof) = 1;
 }
 
 static void dax__load_buffer_state  (void)
 {
-    	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-	(yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
-	dax_in = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
-	(yy_hold_char) = *(yy_c_buf_p);
+      (yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+  (yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
+  dax_in = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
+  (yy_hold_char) = *(yy_c_buf_p);
 }
 
 /** Allocate and initialize an input buffer state.
@@ -3278,26 +3278,26 @@ static void dax__load_buffer_state  (void)
  */
     YY_BUFFER_STATE dax__create_buffer  (FILE * file, int  size )
 {
-	YY_BUFFER_STATE b;
+  YY_BUFFER_STATE b;
     
-	b = (YY_BUFFER_STATE) dax_alloc(sizeof( struct yy_buffer_state )  );
-	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in dax__create_buffer()" );
+  b = (YY_BUFFER_STATE) dax_alloc(sizeof( struct yy_buffer_state )  );
+  if ( ! b )
+    YY_FATAL_ERROR( "out of dynamic memory in dax__create_buffer()" );
 
-	b->yy_buf_size = size;
+  b->yy_buf_size = size;
 
-	/* yy_ch_buf has to be 2 characters longer than the size given because
-	 * we need to put in 2 end-of-buffer characters.
-	 */
-	b->yy_ch_buf = (char *) dax_alloc(b->yy_buf_size + 2  );
-	if ( ! b->yy_ch_buf )
-		YY_FATAL_ERROR( "out of dynamic memory in dax__create_buffer()" );
+  /* yy_ch_buf has to be 2 characters longer than the size given because
+   * we need to put in 2 end-of-buffer characters.
+   */
+  b->yy_ch_buf = (char *) dax_alloc(b->yy_buf_size + 2  );
+  if ( ! b->yy_ch_buf )
+    YY_FATAL_ERROR( "out of dynamic memory in dax__create_buffer()" );
 
-	b->yy_is_our_buffer = 1;
+  b->yy_is_our_buffer = 1;
 
-	dax__init_buffer(b,file );
+  dax__init_buffer(b,file );
 
-	return b;
+  return b;
 }
 
 /** Destroy the buffer.
@@ -3307,16 +3307,16 @@ static void dax__load_buffer_state  (void)
     void dax__delete_buffer (YY_BUFFER_STATE  b )
 {
     
-	if ( ! b )
-		return;
+  if ( ! b )
+    return;
 
-	if ( b == YY_CURRENT_BUFFER ) /* Not sure if we should pop here. */
-		YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
+  if ( b == YY_CURRENT_BUFFER ) /* Not sure if we should pop here. */
+    YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
 
-	if ( b->yy_is_our_buffer )
-		dax_free((void *) b->yy_ch_buf  );
+  if ( b->yy_is_our_buffer )
+    dax_free((void *) b->yy_ch_buf  );
 
-	dax_free((void *) b  );
+  dax_free((void *) b  );
 }
 
 #ifndef __cplusplus
@@ -3330,12 +3330,12 @@ extern int isatty (int );
     static void dax__init_buffer  (YY_BUFFER_STATE  b, FILE * file )
 
 {
-	int oerrno = errno;
+  int oerrno = errno;
     
-	dax__flush_buffer(b );
+  dax__flush_buffer(b );
 
-	b->yy_input_file = file;
-	b->yy_fill_buffer = 1;
+  b->yy_input_file = file;
+  b->yy_fill_buffer = 1;
 
     /* If b is the current buffer, then dax__init_buffer was _probably_
      * called from dax_restart() or through yy_get_next_buffer.
@@ -3348,7 +3348,7 @@ extern int isatty (int );
 
         b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
     
-	errno = oerrno;
+  errno = oerrno;
 }
 
 /** Discard all buffered characters. On the next scan, YY_INPUT will be called.
@@ -3357,25 +3357,25 @@ extern int isatty (int );
  */
     void dax__flush_buffer (YY_BUFFER_STATE  b )
 {
-    	if ( ! b )
-		return;
+      if ( ! b )
+    return;
 
-	b->yy_n_chars = 0;
+  b->yy_n_chars = 0;
 
-	/* We always need two end-of-buffer characters.  The first causes
-	 * a transition to the end-of-buffer state.  The second causes
-	 * a jam in that state.
-	 */
-	b->yy_ch_buf[0] = YY_END_OF_BUFFER_CHAR;
-	b->yy_ch_buf[1] = YY_END_OF_BUFFER_CHAR;
+  /* We always need two end-of-buffer characters.  The first causes
+   * a transition to the end-of-buffer state.  The second causes
+   * a jam in that state.
+   */
+  b->yy_ch_buf[0] = YY_END_OF_BUFFER_CHAR;
+  b->yy_ch_buf[1] = YY_END_OF_BUFFER_CHAR;
 
-	b->yy_buf_pos = &b->yy_ch_buf[0];
+  b->yy_buf_pos = &b->yy_ch_buf[0];
 
-	b->yy_at_bol = 1;
-	b->yy_buffer_status = YY_BUFFER_NEW;
+  b->yy_at_bol = 1;
+  b->yy_buffer_status = YY_BUFFER_NEW;
 
-	if ( b == YY_CURRENT_BUFFER )
-		dax__load_buffer_state( );
+  if ( b == YY_CURRENT_BUFFER )
+    dax__load_buffer_state( );
 }
 
 /** Pushes the new state onto the stack. The new state becomes
@@ -3386,28 +3386,28 @@ extern int isatty (int );
  */
 void dax_push_buffer_state (YY_BUFFER_STATE new_buffer )
 {
-    	if (new_buffer == NULL)
-		return;
+      if (new_buffer == NULL)
+    return;
 
-	dax_ensure_buffer_stack();
+  dax_ensure_buffer_stack();
 
-	/* This block is copied from dax__switch_to_buffer. */
-	if ( YY_CURRENT_BUFFER )
-		{
-		/* Flush out information for old buffer. */
-		*(yy_c_buf_p) = (yy_hold_char);
-		YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
-		}
+  /* This block is copied from dax__switch_to_buffer. */
+  if ( YY_CURRENT_BUFFER )
+    {
+    /* Flush out information for old buffer. */
+    *(yy_c_buf_p) = (yy_hold_char);
+    YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
+    YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
+    }
 
-	/* Only push if top exists. Otherwise, replace top. */
-	if (YY_CURRENT_BUFFER)
-		(yy_buffer_stack_top)++;
-	YY_CURRENT_BUFFER_LVALUE = new_buffer;
+  /* Only push if top exists. Otherwise, replace top. */
+  if (YY_CURRENT_BUFFER)
+    (yy_buffer_stack_top)++;
+  YY_CURRENT_BUFFER_LVALUE = new_buffer;
 
-	/* copied from dax__switch_to_buffer. */
-	dax__load_buffer_state( );
-	(yy_did_buffer_switch_on_eof) = 1;
+  /* copied from dax__switch_to_buffer. */
+  dax__load_buffer_state( );
+  (yy_did_buffer_switch_on_eof) = 1;
 }
 
 /** Removes and deletes the top of the stack, if present.
@@ -3416,18 +3416,18 @@ void dax_push_buffer_state (YY_BUFFER_STATE new_buffer )
  */
 void dax_pop_buffer_state (void)
 {
-    	if (!YY_CURRENT_BUFFER)
-		return;
+      if (!YY_CURRENT_BUFFER)
+    return;
 
-	dax__delete_buffer(YY_CURRENT_BUFFER );
-	YY_CURRENT_BUFFER_LVALUE = NULL;
-	if ((yy_buffer_stack_top) > 0)
-		--(yy_buffer_stack_top);
+  dax__delete_buffer(YY_CURRENT_BUFFER );
+  YY_CURRENT_BUFFER_LVALUE = NULL;
+  if ((yy_buffer_stack_top) > 0)
+    --(yy_buffer_stack_top);
 
-	if (YY_CURRENT_BUFFER) {
-		dax__load_buffer_state( );
-		(yy_did_buffer_switch_on_eof) = 1;
-	}
+  if (YY_CURRENT_BUFFER) {
+    dax__load_buffer_state( );
+    (yy_did_buffer_switch_on_eof) = 1;
+  }
 }
 
 /* Allocates the stack if it does not exist.
@@ -3435,45 +3435,45 @@ void dax_pop_buffer_state (void)
  */
 static void dax_ensure_buffer_stack (void)
 {
-	int num_to_alloc;
+  int num_to_alloc;
     
-	if (!(yy_buffer_stack)) {
+  if (!(yy_buffer_stack)) {
 
-		/* First allocation is just for 2 elements, since we don't know if this
-		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
-		 * immediate realloc on the next call.
+    /* First allocation is just for 2 elements, since we don't know if this
+     * scanner will even need a stack. We use 2 instead of 1 to avoid an
+     * immediate realloc on the next call.
          */
-		num_to_alloc = 1;
-		(yy_buffer_stack) = (struct yy_buffer_state**)dax_alloc
-								(num_to_alloc * sizeof(struct yy_buffer_state*)
-								);
-		if ( ! (yy_buffer_stack) )
-			YY_FATAL_ERROR( "out of dynamic memory in dax_ensure_buffer_stack()" );
-								  
-		memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
-				
-		(yy_buffer_stack_max) = num_to_alloc;
-		(yy_buffer_stack_top) = 0;
-		return;
-	}
+    num_to_alloc = 1;
+    (yy_buffer_stack) = (struct yy_buffer_state**)dax_alloc
+                (num_to_alloc * sizeof(struct yy_buffer_state*)
+                );
+    if ( ! (yy_buffer_stack) )
+      YY_FATAL_ERROR( "out of dynamic memory in dax_ensure_buffer_stack()" );
+                  
+    memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
+        
+    (yy_buffer_stack_max) = num_to_alloc;
+    (yy_buffer_stack_top) = 0;
+    return;
+  }
 
-	if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1){
+  if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1){
 
-		/* Increase the buffer to prepare for a possible push. */
-		int grow_size = 8 /* arbitrary grow size */;
+    /* Increase the buffer to prepare for a possible push. */
+    int grow_size = 8 /* arbitrary grow size */;
 
-		num_to_alloc = (yy_buffer_stack_max) + grow_size;
-		(yy_buffer_stack) = (struct yy_buffer_state**)dax_realloc
-								((yy_buffer_stack),
-								num_to_alloc * sizeof(struct yy_buffer_state*)
-								);
-		if ( ! (yy_buffer_stack) )
-			YY_FATAL_ERROR( "out of dynamic memory in dax_ensure_buffer_stack()" );
+    num_to_alloc = (yy_buffer_stack_max) + grow_size;
+    (yy_buffer_stack) = (struct yy_buffer_state**)dax_realloc
+                ((yy_buffer_stack),
+                num_to_alloc * sizeof(struct yy_buffer_state*)
+                );
+    if ( ! (yy_buffer_stack) )
+      YY_FATAL_ERROR( "out of dynamic memory in dax_ensure_buffer_stack()" );
 
-		/* zero only the new slots.*/
-		memset((yy_buffer_stack) + (yy_buffer_stack_max), 0, grow_size * sizeof(struct yy_buffer_state*));
-		(yy_buffer_stack_max) = num_to_alloc;
-	}
+    /* zero only the new slots.*/
+    memset((yy_buffer_stack) + (yy_buffer_stack_max), 0, grow_size * sizeof(struct yy_buffer_state*));
+    (yy_buffer_stack_max) = num_to_alloc;
+  }
 }
 
 /** Setup the input buffer state to scan directly from a user-specified character buffer.
@@ -3484,31 +3484,31 @@ static void dax_ensure_buffer_stack (void)
  */
 YY_BUFFER_STATE dax__scan_buffer  (char * base, yy_size_t  size )
 {
-	YY_BUFFER_STATE b;
+  YY_BUFFER_STATE b;
     
-	if ( size < 2 ||
-	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
-	     base[size-1] != YY_END_OF_BUFFER_CHAR )
-		/* They forgot to leave room for the EOB's. */
-		return 0;
+  if ( size < 2 ||
+       base[size-2] != YY_END_OF_BUFFER_CHAR ||
+       base[size-1] != YY_END_OF_BUFFER_CHAR )
+    /* They forgot to leave room for the EOB's. */
+    return 0;
 
-	b = (YY_BUFFER_STATE) dax_alloc(sizeof( struct yy_buffer_state )  );
-	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in dax__scan_buffer()" );
+  b = (YY_BUFFER_STATE) dax_alloc(sizeof( struct yy_buffer_state )  );
+  if ( ! b )
+    YY_FATAL_ERROR( "out of dynamic memory in dax__scan_buffer()" );
 
-	b->yy_buf_size = size - 2;	/* "- 2" to take care of EOB's */
-	b->yy_buf_pos = b->yy_ch_buf = base;
-	b->yy_is_our_buffer = 0;
-	b->yy_input_file = 0;
-	b->yy_n_chars = b->yy_buf_size;
-	b->yy_is_interactive = 0;
-	b->yy_at_bol = 1;
-	b->yy_fill_buffer = 0;
-	b->yy_buffer_status = YY_BUFFER_NEW;
+  b->yy_buf_size = size - 2;  /* "- 2" to take care of EOB's */
+  b->yy_buf_pos = b->yy_ch_buf = base;
+  b->yy_is_our_buffer = 0;
+  b->yy_input_file = 0;
+  b->yy_n_chars = b->yy_buf_size;
+  b->yy_is_interactive = 0;
+  b->yy_at_bol = 1;
+  b->yy_fill_buffer = 0;
+  b->yy_buffer_status = YY_BUFFER_NEW;
 
-	dax__switch_to_buffer(b  );
+  dax__switch_to_buffer(b  );
 
-	return b;
+  return b;
 }
 
 /** Setup the input buffer state to scan a string. The next call to dax_lex() will
@@ -3522,7 +3522,7 @@ YY_BUFFER_STATE dax__scan_buffer  (char * base, yy_size_t  size )
 YY_BUFFER_STATE dax__scan_string (yyconst char * yystr )
 {
     
-	return dax__scan_bytes(yystr,strlen(yystr) );
+  return dax__scan_bytes(yystr,strlen(yystr) );
 }
 
 /** Setup the input buffer state to scan the given bytes. The next call to dax_lex() will
@@ -3534,64 +3534,64 @@ YY_BUFFER_STATE dax__scan_string (yyconst char * yystr )
  */
 YY_BUFFER_STATE dax__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 {
-	YY_BUFFER_STATE b;
-	char *buf;
-	yy_size_t n;
-	int i;
+  YY_BUFFER_STATE b;
+  char *buf;
+  yy_size_t n;
+  int i;
     
-	/* Get memory for full buffer, including space for trailing EOB's. */
-	n = _yybytes_len + 2;
-	buf = (char *) dax_alloc(n  );
-	if ( ! buf )
-		YY_FATAL_ERROR( "out of dynamic memory in dax__scan_bytes()" );
+  /* Get memory for full buffer, including space for trailing EOB's. */
+  n = _yybytes_len + 2;
+  buf = (char *) dax_alloc(n  );
+  if ( ! buf )
+    YY_FATAL_ERROR( "out of dynamic memory in dax__scan_bytes()" );
 
-	for ( i = 0; i < _yybytes_len; ++i )
-		buf[i] = yybytes[i];
+  for ( i = 0; i < _yybytes_len; ++i )
+    buf[i] = yybytes[i];
 
-	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
+  buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
 
-	b = dax__scan_buffer(buf,n );
-	if ( ! b )
-		YY_FATAL_ERROR( "bad buffer in dax__scan_bytes()" );
+  b = dax__scan_buffer(buf,n );
+  if ( ! b )
+    YY_FATAL_ERROR( "bad buffer in dax__scan_bytes()" );
 
-	/* It's okay to grow etc. this buffer, and we should throw it
-	 * away when we're done.
-	 */
-	b->yy_is_our_buffer = 1;
+  /* It's okay to grow etc. this buffer, and we should throw it
+   * away when we're done.
+   */
+  b->yy_is_our_buffer = 1;
 
-	return b;
+  return b;
 }
 
     static void yy_push_state (int  new_state )
 {
-    	if ( (yy_start_stack_ptr) >= (yy_start_stack_depth) )
-		{
-		yy_size_t new_size;
+      if ( (yy_start_stack_ptr) >= (yy_start_stack_depth) )
+    {
+    yy_size_t new_size;
 
-		(yy_start_stack_depth) += YY_START_STACK_INCR;
-		new_size = (yy_start_stack_depth) * sizeof( int );
+    (yy_start_stack_depth) += YY_START_STACK_INCR;
+    new_size = (yy_start_stack_depth) * sizeof( int );
 
-		if ( ! (yy_start_stack) )
-			(yy_start_stack) = (int *) dax_alloc(new_size  );
+    if ( ! (yy_start_stack) )
+      (yy_start_stack) = (int *) dax_alloc(new_size  );
 
-		else
-			(yy_start_stack) = (int *) dax_realloc((void *) (yy_start_stack),new_size  );
+    else
+      (yy_start_stack) = (int *) dax_realloc((void *) (yy_start_stack),new_size  );
 
-		if ( ! (yy_start_stack) )
-			YY_FATAL_ERROR( "out of memory expanding start-condition stack" );
-		}
+    if ( ! (yy_start_stack) )
+      YY_FATAL_ERROR( "out of memory expanding start-condition stack" );
+    }
 
-	(yy_start_stack)[(yy_start_stack_ptr)++] = YY_START;
+  (yy_start_stack)[(yy_start_stack_ptr)++] = YY_START;
 
-	BEGIN(new_state);
+  BEGIN(new_state);
 }
 
     static void yy_pop_state  (void)
 {
-    	if ( --(yy_start_stack_ptr) < 0 )
-		YY_FATAL_ERROR( "start-condition stack underflow" );
+      if ( --(yy_start_stack_ptr) < 0 )
+    YY_FATAL_ERROR( "start-condition stack underflow" );
 
-	BEGIN((yy_start_stack)[(yy_start_stack_ptr)]);
+  BEGIN((yy_start_stack)[(yy_start_stack_ptr)]);
 }
 
 #ifndef YY_EXIT_FAILURE
@@ -3600,26 +3600,26 @@ YY_BUFFER_STATE dax__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
 
 static void yy_fatal_error (yyconst char* msg )
 {
-    	(void) fprintf( stderr, "%s\n", msg );
-	exit( YY_EXIT_FAILURE );
+      (void) fprintf( stderr, "%s\n", msg );
+  exit( YY_EXIT_FAILURE );
 }
 
 /* Redefine yyless() so it works in section 3 code. */
 
 #undef yyless
 #define yyless(n) \
-	do \
-		{ \
-		/* Undo effects of setting up dax_text. */ \
+  do \
+    { \
+    /* Undo effects of setting up dax_text. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
-		dax_text[dax_leng] = (yy_hold_char); \
-		(yy_c_buf_p) = dax_text + yyless_macro_arg; \
-		(yy_hold_char) = *(yy_c_buf_p); \
-		*(yy_c_buf_p) = '\0'; \
-		dax_leng = yyless_macro_arg; \
-		} \
-	while ( 0 )
+    dax_text[dax_leng] = (yy_hold_char); \
+    (yy_c_buf_p) = dax_text + yyless_macro_arg; \
+    (yy_hold_char) = *(yy_c_buf_p); \
+    *(yy_c_buf_p) = '\0'; \
+    dax_leng = yyless_macro_arg; \
+    } \
+  while ( 0 )
 
 /* Accessor  methods (get/set functions) to struct members. */
 
@@ -3741,15 +3741,15 @@ int dax_lex_destroy  (void)
 {
     
     /* Pop the buffer stack, destroying each element. */
-	while(YY_CURRENT_BUFFER){
-		dax__delete_buffer(YY_CURRENT_BUFFER  );
-		YY_CURRENT_BUFFER_LVALUE = NULL;
-		dax_pop_buffer_state();
-	}
+  while(YY_CURRENT_BUFFER){
+    dax__delete_buffer(YY_CURRENT_BUFFER  );
+    YY_CURRENT_BUFFER_LVALUE = NULL;
+    dax_pop_buffer_state();
+  }
 
-	/* Destroy the stack itself. */
-	dax_free((yy_buffer_stack) );
-	(yy_buffer_stack) = NULL;
+  /* Destroy the stack itself. */
+  dax_free((yy_buffer_stack) );
+  (yy_buffer_stack) = NULL;
 
     /* Destroy the start condition stack. */
         dax_free((yy_start_stack)  );
@@ -3769,43 +3769,43 @@ int dax_lex_destroy  (void)
 #ifndef yytext_ptr
 static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
 {
-	register int i;
-	for ( i = 0; i < n; ++i )
-		s1[i] = s2[i];
+  register int i;
+  for ( i = 0; i < n; ++i )
+    s1[i] = s2[i];
 }
 #endif
 
 #ifdef YY_NEED_STRLEN
 static int yy_flex_strlen (yyconst char * s )
 {
-	register int n;
-	for ( n = 0; s[n]; ++n )
-		;
+  register int n;
+  for ( n = 0; s[n]; ++n )
+    ;
 
-	return n;
+  return n;
 }
 #endif
 
 void *dax_alloc (yy_size_t  size )
 {
-	return (void *) malloc( size );
+  return (void *) malloc( size );
 }
 
 void *dax_realloc  (void * ptr, yy_size_t  size )
 {
-	/* The cast to (char *) in the following accommodates both
-	 * implementations that use char* generic pointers, and those
-	 * that use void* generic pointers.  It works with the latter
-	 * because both ANSI C and C++ allow castless assignment from
-	 * any pointer type to void*, and deal with argument conversions
-	 * as though doing an assignment.
-	 */
-	return (void *) realloc( (char *) ptr, size );
+  /* The cast to (char *) in the following accommodates both
+   * implementations that use char* generic pointers, and those
+   * that use void* generic pointers.  It works with the latter
+   * because both ANSI C and C++ allow castless assignment from
+   * any pointer type to void*, and deal with argument conversions
+   * as though doing an assignment.
+   */
+  return (void *) realloc( (char *) ptr, size );
 }
 
 void dax_free (void * ptr )
 {
-	free( (char *) ptr );	/* see dax_realloc() for (char *) cast */
+  free( (char *) ptr );  /* see dax_realloc() for (char *) cast */
 }
 
 #define YYTABLES_NAME "yytables"
@@ -3814,8 +3814,8 @@ void dax_free (void * ptr )
 int dax__element_context(int i)
 {
   return (0<i && i<yy_start_stack_depth
-	  ? yy_start_stack[yy_start_stack_ptr - i]
-	  : 0);
+    ? yy_start_stack[yy_start_stack_ptr - i]
+    : 0);
 }
 
 #ifdef FLEX_DEBUG
@@ -3854,7 +3854,7 @@ static void debug_enter(int state, const char* statename) {
 static void debug_leave(void) {
     if (dax__flex_debug) {
         print_yy_stack("--LEAVE : ");
-	print_dax__bufferstack();
+  print_dax__bufferstack();
     }
   yy_pop_state();
 }
@@ -3869,7 +3869,7 @@ static void cleanup(void)
 {
     if (dax__statenames) {
         free(dax__statenames);
-	dax__statenames = NULL;
+  dax__statenames = NULL;
     }
     free(dax__bufferstack);
     dax__bufferstack = NULL;
@@ -3884,12 +3884,12 @@ static int fail(const char* fmt, ...)
     va_list ap; va_start(ap, fmt);
 #ifdef FLEXML_yylineno
     used = sprintf(flexml_err_msg,
-		   "Invalid XML (XML input line %d, state %d): ",
-		   dax_lineno, YY_START);
+       "Invalid XML (XML input line %d, state %d): ",
+       dax_lineno, YY_START);
 #else
     used = sprintf(flexml_err_msg,
-		   "Invalid XML (state %d): ",
-		   YY_START);
+       "Invalid XML (state %d): ",
+       YY_START);
 #endif
     chars_left = flexml_max_err_msg_size - used - 1;
     vsnprintf(flexml_err_msg + used, chars_left, fmt, ap);

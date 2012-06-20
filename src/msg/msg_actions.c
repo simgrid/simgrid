@@ -41,7 +41,7 @@ MSG_error_t MSG_action_trace_run(char *path)
   xbt_dynar_t todo;
   xbt_dict_cursor_t cursor;
 
-  action_fp=NULL;	
+  action_fp=NULL;  
   if (path) {
     action_fp = fopen(path, "r");
     xbt_assert(action_fp != NULL, "Cannot open %s: %s", path,
