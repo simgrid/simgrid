@@ -18,16 +18,19 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    survive the host they are running onto
 
  SimDag:
- * New type of typed tasks SD_TASK_COMP_PAR_AMDAHL that represents a
+ * New types of typed tasks. SD_TASK_COMP_PAR_AMDAHL represents a
    parallel task whose initial work is distributed among host according
    to the Amdahl's law. Such tasks are created with a parameter alpha
-   that corresponds to the non-parallelizable part of the computation.
+   that corresponds to the non-parallelizable part of the computation. 
+   SD_TASK_COMM_PAR_MXN_1D_BLOCK represents a complex data redistribution 
+   between two sets of workstations assuming a 1D block distribution (each 
+   workstation owns a similar share of data) on both sides. 
 
-   Before calling SD_task_schedulel or SD_task_schedulev, the
-   SD_task_distribute_comp_amdahl function has to be called with the
-   desired number of workstations. The filling of computation_amount and
-   communication_amount (actually empty) structures is then done
-   seamlessly.
+   These tasks can be scheduled with SD_task_schedulel or SD_task_schedulev. 
+   Data redistribution will be automatically scheduled once parent and child 
+   are both scheduled. The filling of computation_amount and
+   communication_amount structures is now done seamlessly thanks to the chosen
+   assumptions.
  * New function SD_workstation_dump to display various information
 
  XBT:
