@@ -25,7 +25,7 @@ void mfree(struct mdesc *mdp, void *ptr)
   int it;
 
   if (ptr == NULL)
-	  return;
+    return;
 
   block = BLOCK(ptr);
 
@@ -47,9 +47,9 @@ void mfree(struct mdesc *mdp, void *ptr)
      /* Get as many statistics as early as we can.  */
       mdp -> heapstats.chunks_used--;
       mdp -> heapstats.bytes_used -=
-	  mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
+    mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
       mdp -> heapstats.bytes_free +=
-	  mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
+    mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
 
     /* Find the free cluster previous to this one in the free list.
        Start searching at the last block referenced; this may benefit
@@ -74,12 +74,12 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[i].free_block.size += mdp->heapinfo[block].busy_block.size;
       /* Mark all my ex-blocks as free */
       for (it=0; it<mdp->heapinfo[block].busy_block.size; it++) {
-    	  if (mdp->heapinfo[block+it].type <0) {
-      		fprintf(stderr,"Internal Error: Asked to free a block already marked as free (block=%lu it=%d type=%lu). Please report this bug.\n",
-      				(unsigned long)block,it,(unsigned long)mdp->heapinfo[block].type);
-      		abort();
-    	  }
-    	  mdp->heapinfo[block+it].type = -1;
+        if (mdp->heapinfo[block+it].type <0) {
+          fprintf(stderr,"Internal Error: Asked to free a block already marked as free (block=%lu it=%d type=%lu). Please report this bug.\n",
+              (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].type);
+          abort();
+        }
+        mdp->heapinfo[block+it].type = -1;
       }
 
       block = i;
@@ -94,12 +94,12 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp -> heapstats.chunks_free++;
       /* Mark all my ex-blocks as free */
       for (it=0; it<mdp->heapinfo[block].free_block.size; it++) {
-    	  if (mdp->heapinfo[block+it].type <0) {
-      		fprintf(stderr,"Internal error: Asked to free a block already marked as free (block=%lu it=%d/%lu type=%lu). Please report this bug.\n",
-      				(unsigned long)block,it,(unsigned long)mdp->heapinfo[block].free_block.size,(unsigned long)mdp->heapinfo[block].type);
-      		abort();
-    	  }
-    	  mdp->heapinfo[block+it].type = -1;
+        if (mdp->heapinfo[block+it].type <0) {
+          fprintf(stderr,"Internal error: Asked to free a block already marked as free (block=%lu it=%d/%lu type=%lu). Please report this bug.\n",
+              (unsigned long)block,it,(unsigned long)mdp->heapinfo[block].free_block.size,(unsigned long)mdp->heapinfo[block].type);
+          abort();
+        }
+        mdp->heapinfo[block+it].type = -1;
       }
     }
 

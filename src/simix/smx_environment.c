@@ -45,8 +45,8 @@ void SIMIX_create_environment(const char *file)
   XBT_DEBUG("PARSE TIME: %lg", (end - start));
 
   xbt_lib_foreach(host_lib, cursor, name, workstation) {
-	  if(workstation[SURF_WKS_LEVEL])
-		  SIMIX_host_create(name, workstation[SURF_WKS_LEVEL], NULL);
+    if(workstation[SURF_WKS_LEVEL])
+      SIMIX_host_create(name, workstation[SURF_WKS_LEVEL], NULL);
   }
   surf_presolve();
 }

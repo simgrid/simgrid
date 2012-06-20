@@ -279,7 +279,7 @@ xbt_dynar_foreach (dyn,cpt,str) {
  */
 #define xbt_dynar_foreach(_dynar,_cursor,_data) \
        for (_xbt_dynar_cursor_first(_dynar,&(_cursor))      ; \
-	    _xbt_dynar_cursor_get(_dynar,_cursor,&_data) ; \
+      _xbt_dynar_cursor_get(_dynar,_cursor,&_data) ; \
             (_cursor)++         )
 
 /** @} */

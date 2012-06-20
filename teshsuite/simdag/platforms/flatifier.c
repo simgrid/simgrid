@@ -102,11 +102,11 @@ int main(int argc, char **argv)
 
   // Routers
   xbt_lib_foreach(as_router_lib, cursor_src, key, value1) {
-	  if(((sg_routing_edge_t)xbt_lib_get_or_null(as_router_lib, key,
-			  ROUTING_ASR_LEVEL))->rc_type == SURF_NETWORK_ELEMENT_ROUTER)
-	  {
-		  printf("  <router id=\"%s\"/>\n",key);
-	  }
+    if(((sg_routing_edge_t)xbt_lib_get_or_null(as_router_lib, key,
+        ROUTING_ASR_LEVEL))->rc_type == SURF_NETWORK_ELEMENT_ROUTER)
+    {
+      printf("  <router id=\"%s\"/>\n",key);
+    }
   }
 
   // Links
@@ -133,88 +133,88 @@ int main(int argc, char **argv)
   xbt_lib_foreach(host_lib, cursor_src, src, value1) // Routes from host
   {
           value1 = xbt_lib_get_or_null(host_lib,src,ROUTING_HOST_LEVEL);
-		  xbt_lib_foreach(host_lib, cursor_dst, dst, value2) //to host
-		  {
-				printf("  <route src=\"%s\" dst=\"%s\">\n  "
-					  ,src
-					  ,dst);
-				xbt_dynar_t route=NULL;
-				value2 = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
-				routing_get_route_and_latency(value1,value2,&route,NULL);
-				for(i=0;i<xbt_dynar_length(route) ;i++)
-				{
-					void *link = xbt_dynar_get_as(route,i,void *);
+      xbt_lib_foreach(host_lib, cursor_dst, dst, value2) //to host
+      {
+        printf("  <route src=\"%s\" dst=\"%s\">\n  "
+            ,src
+            ,dst);
+        xbt_dynar_t route=NULL;
+        value2 = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
+        routing_get_route_and_latency(value1,value2,&route,NULL);
+        for(i=0;i<xbt_dynar_length(route) ;i++)
+        {
+          void *link = xbt_dynar_get_as(route,i,void *);
 
-					char *link_name = xbt_strdup(((surf_resource_t)link)->name);
-					printf("<link_ctn id=\"%s\"/>",link_name);
-					free(link_name);
-				}
-				printf("\n  </route>\n");
-		  }
-		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2) //to router
-		  {
-			    if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
-				printf("  <route src=\"%s\" dst=\"%s\">\n  "
-					  ,src
-					  ,dst);
-				xbt_dynar_t route=NULL;
-				value2 = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-				routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route,NULL);
-				for(i=0;i<xbt_dynar_length(route) ;i++)
-				{
-					void *link = xbt_dynar_get_as(route,i,void *);
+          char *link_name = xbt_strdup(((surf_resource_t)link)->name);
+          printf("<link_ctn id=\"%s\"/>",link_name);
+          free(link_name);
+        }
+        printf("\n  </route>\n");
+      }
+      xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2) //to router
+      {
+          if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
+        printf("  <route src=\"%s\" dst=\"%s\">\n  "
+            ,src
+            ,dst);
+        xbt_dynar_t route=NULL;
+        value2 = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
+        routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route,NULL);
+        for(i=0;i<xbt_dynar_length(route) ;i++)
+        {
+          void *link = xbt_dynar_get_as(route,i,void *);
 
-					char *link_name = xbt_strdup(((surf_resource_t)link)->name);
-					printf("<link_ctn id=\"%s\"/>",link_name);
-					free(link_name);
-				}
-				printf("\n  </route>\n");
-			    }
-		  }
+          char *link_name = xbt_strdup(((surf_resource_t)link)->name);
+          printf("<link_ctn id=\"%s\"/>",link_name);
+          free(link_name);
+        }
+        printf("\n  </route>\n");
+          }
+      }
   }
 
   xbt_lib_foreach(as_router_lib, cursor_src, src, value1) // Routes from router
   {
       value1 = xbt_lib_get_or_null(as_router_lib,src,ROUTING_ASR_LEVEL);
-	  if(routing_get_network_element_type(src) == SURF_NETWORK_ELEMENT_ROUTER){
-		  xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2) //to router
-		  {
-				if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
-				printf("  <route src=\"%s\" dst=\"%s\">\n  "
-					  ,src
-					  ,dst);
-				xbt_dynar_t route=NULL;
-				value2 = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-				routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route,NULL);
-				for(i=0;i<xbt_dynar_length(route) ;i++)
-				{
-					void *link = xbt_dynar_get_as(route,i,void *);
+    if(routing_get_network_element_type(src) == SURF_NETWORK_ELEMENT_ROUTER){
+      xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2) //to router
+      {
+        if(routing_get_network_element_type(dst) == SURF_NETWORK_ELEMENT_ROUTER){
+        printf("  <route src=\"%s\" dst=\"%s\">\n  "
+            ,src
+            ,dst);
+        xbt_dynar_t route=NULL;
+        value2 = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
+        routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route,NULL);
+        for(i=0;i<xbt_dynar_length(route) ;i++)
+        {
+          void *link = xbt_dynar_get_as(route,i,void *);
 
-					char *link_name = xbt_strdup(((surf_resource_t)link)->name);
-					printf("<link_ctn id=\"%s\"/>",link_name);
-					free(link_name);
-				}
-				printf("\n  </route>\n");
-				}
-		  }
-		  xbt_lib_foreach(host_lib, cursor_dst, dst, value2) //to host
-		  {
-				printf("  <route src=\"%s\" dst=\"%s\">\n  "
-					  ,src, dst);
-				xbt_dynar_t route=NULL;
-				value2 = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
-				routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route, NULL);
-				for(i=0;i<xbt_dynar_length(route) ;i++)
-				{
-					void *link = xbt_dynar_get_as(route,i,void *);
+          char *link_name = xbt_strdup(((surf_resource_t)link)->name);
+          printf("<link_ctn id=\"%s\"/>",link_name);
+          free(link_name);
+        }
+        printf("\n  </route>\n");
+        }
+      }
+      xbt_lib_foreach(host_lib, cursor_dst, dst, value2) //to host
+      {
+        printf("  <route src=\"%s\" dst=\"%s\">\n  "
+            ,src, dst);
+        xbt_dynar_t route=NULL;
+        value2 = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
+        routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route, NULL);
+        for(i=0;i<xbt_dynar_length(route) ;i++)
+        {
+          void *link = xbt_dynar_get_as(route,i,void *);
 
-					char *link_name = xbt_strdup(((surf_resource_t)link)->name);
-					printf("<link_ctn id=\"%s\"/>",link_name);
-					free(link_name);
-				}
-				printf("\n  </route>\n");
-		  }
-	  }
+          char *link_name = xbt_strdup(((surf_resource_t)link)->name);
+          printf("<link_ctn id=\"%s\"/>",link_name);
+          free(link_name);
+        }
+        printf("\n  </route>\n");
+      }
+    }
   }
 
   printf("</AS>\n");

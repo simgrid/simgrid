@@ -354,7 +354,7 @@ static void insert_into_buffer (paje_event_t tbi)
     return;
   }
   XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%lu)",
-	    __FUNCTION__, (int)tbi->event_type, tbi->timestamp, xbt_dynar_length(buffer));
+      __FUNCTION__, (int)tbi->event_type, tbi->timestamp, xbt_dynar_length(buffer));
 
   unsigned int i;
   for (i = xbt_dynar_length(buffer); i > 0; i--) {

@@ -19,14 +19,14 @@
 #ifdef HAVE_JEDULE
 
 struct jed_event {
-	int event_id;
-	char *name;
-	double start_time;
-	double end_time;
-	char *type;
-	xbt_dynar_t resource_subsets;
-	xbt_dynar_t characteristics_list; /* just a list of names (strings) */
-	xbt_dict_t info_hash;     /* key/value pairs */
+  int event_id;
+  char *name;
+  double start_time;
+  double end_time;
+  char *type;
+  xbt_dynar_t resource_subsets;
+  xbt_dynar_t characteristics_list; /* just a list of names (strings) */
+  xbt_dict_t info_hash;     /* key/value pairs */
 };
 
 typedef struct jed_event s_jed_event_t, *jed_event_t;

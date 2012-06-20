@@ -10,8 +10,8 @@
 
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
 typedef struct s_surf_parsing_link_up_down {
-	void* link_up;
-	void* link_down;
+  void* link_up;
+  void* link_down;
 } s_surf_parsing_link_up_down_t;
 
 #endif /* SURFXML_PARSE_VALUES_H_ */

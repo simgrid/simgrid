@@ -296,105 +296,105 @@ static void action_barrier(const char *const *action)
 
 static void action_reduce(const char *const *action)
 {
-	int i;
-	char *reduce_identifier;
-	char mailbox[80];
-	double comm_size = parse_double(action[2]);
-	double comp_size = parse_double(action[3]);
-	m_task_t comp_task = NULL;
-	const char *process_name;
-	double clock = MSG_get_clock();
+  int i;
+  char *reduce_identifier;
+  char mailbox[80];
+  double comm_size = parse_double(action[2]);
+  double comp_size = parse_double(action[3]);
+  m_task_t comp_task = NULL;
+  const char *process_name;
+  double clock = MSG_get_clock();
 
-	process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
+  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-	xbt_assert(communicator_size, "Size of Communicator is not defined, "
-			"can't use collective operations");
+  xbt_assert(communicator_size, "Size of Communicator is not defined, "
+      "can't use collective operations");
 
-	process_name = MSG_process_get_name(MSG_process_self());
+  process_name = MSG_process_get_name(MSG_process_self());
 
-	reduce_identifier = bprintf("reduce_%d", counters->reduce_counter++);
+  reduce_identifier = bprintf("reduce_%d", counters->reduce_counter++);
 
-	if (!strcmp(process_name, "p0")) {
-		XBT_DEBUG("%s: %s is the Root", reduce_identifier, process_name);
+  if (!strcmp(process_name, "p0")) {
+    XBT_DEBUG("%s: %s is the Root", reduce_identifier, process_name);
 
-		msg_comm_t *comms = xbt_new0(msg_comm_t,communicator_size-1);
-	    m_task_t *tasks = xbt_new0(m_task_t,communicator_size-1);
-	    for (i = 1; i < communicator_size; i++) {
-	      sprintf(mailbox, "%s_p%d_p0", reduce_identifier, i);
-	      comms[i-1] = MSG_task_irecv(&(tasks[i-1]),mailbox);
-	    }
-	    MSG_comm_waitall(comms,communicator_size-1,-1);
-	    for (i = 1; i < communicator_size; i++) {
-	    	MSG_comm_destroy(comms[i-1]);
-	    	MSG_task_destroy(tasks[i-1]);
-	    }
-	    free(tasks);
+    msg_comm_t *comms = xbt_new0(msg_comm_t,communicator_size-1);
+      m_task_t *tasks = xbt_new0(m_task_t,communicator_size-1);
+      for (i = 1; i < communicator_size; i++) {
+        sprintf(mailbox, "%s_p%d_p0", reduce_identifier, i);
+        comms[i-1] = MSG_task_irecv(&(tasks[i-1]),mailbox);
+      }
+      MSG_comm_waitall(comms,communicator_size-1,-1);
+      for (i = 1; i < communicator_size; i++) {
+        MSG_comm_destroy(comms[i-1]);
+        MSG_task_destroy(tasks[i-1]);
+      }
+      free(tasks);
 
-	    comp_task = MSG_task_create("reduce_comp", comp_size, 0, NULL);
-	    XBT_DEBUG("%s: computing 'reduce_comp'", reduce_identifier);
-	    MSG_task_execute(comp_task);
-	    MSG_task_destroy(comp_task);
-	    XBT_DEBUG("%s: computed", reduce_identifier);
+      comp_task = MSG_task_create("reduce_comp", comp_size, 0, NULL);
+      XBT_DEBUG("%s: computing 'reduce_comp'", reduce_identifier);
+      MSG_task_execute(comp_task);
+      MSG_task_destroy(comp_task);
+      XBT_DEBUG("%s: computed", reduce_identifier);
 
-	} else {
-		XBT_DEBUG("%s: %s sends", reduce_identifier, process_name);
-		sprintf(mailbox, "%s_%s_p0", reduce_identifier, process_name);
-	    XBT_DEBUG("put on %s", mailbox);
-	    MSG_task_send(MSG_task_create(reduce_identifier, 0, comm_size, NULL),
-	                  mailbox);
-	}
+  } else {
+    XBT_DEBUG("%s: %s sends", reduce_identifier, process_name);
+    sprintf(mailbox, "%s_%s_p0", reduce_identifier, process_name);
+      XBT_DEBUG("put on %s", mailbox);
+      MSG_task_send(MSG_task_create(reduce_identifier, 0, comm_size, NULL),
+                    mailbox);
+  }
 
-	XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
-	free(reduce_identifier);
+  XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
+  free(reduce_identifier);
 }
 
 static void action_bcast(const char *const *action)
 {
-	int i;
-	char *bcast_identifier;
-	char mailbox[80];
-	double comm_size = parse_double(action[2]);
-	m_task_t task = NULL;
-	const char *process_name;
-	double clock = MSG_get_clock();
+  int i;
+  char *bcast_identifier;
+  char mailbox[80];
+  double comm_size = parse_double(action[2]);
+  m_task_t task = NULL;
+  const char *process_name;
+  double clock = MSG_get_clock();
 
-	process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
+  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-	xbt_assert(communicator_size, "Size of Communicator is not defined, "
-			"can't use collective operations");
+  xbt_assert(communicator_size, "Size of Communicator is not defined, "
+      "can't use collective operations");
 
-	process_name = MSG_process_get_name(MSG_process_self());
+  process_name = MSG_process_get_name(MSG_process_self());
 
-	bcast_identifier = bprintf("bcast_%d", counters->bcast_counter++);
+  bcast_identifier = bprintf("bcast_%d", counters->bcast_counter++);
 
-	if (!strcmp(process_name, "p0")) {
-		XBT_DEBUG("%s: %s is the Root", bcast_identifier, process_name);
+  if (!strcmp(process_name, "p0")) {
+    XBT_DEBUG("%s: %s is the Root", bcast_identifier, process_name);
 
-	    msg_comm_t *comms = xbt_new0(msg_comm_t,communicator_size-1);
+      msg_comm_t *comms = xbt_new0(msg_comm_t,communicator_size-1);
 
-	    for (i = 1; i < communicator_size; i++) {
-	      sprintf(mailbox, "%s_p0_p%d", bcast_identifier, i);
-	      comms[i-1] =
-	          MSG_task_isend(MSG_task_create(mailbox,0,comm_size,NULL),
-	              mailbox);
-	    }
-	    MSG_comm_waitall(comms,communicator_size-1,-1);
-		for (i = 1; i < communicator_size; i++)
-	       MSG_comm_destroy(comms[i-1]);
-	    free(comms);
+      for (i = 1; i < communicator_size; i++) {
+        sprintf(mailbox, "%s_p0_p%d", bcast_identifier, i);
+        comms[i-1] =
+            MSG_task_isend(MSG_task_create(mailbox,0,comm_size,NULL),
+                mailbox);
+      }
+      MSG_comm_waitall(comms,communicator_size-1,-1);
+    for (i = 1; i < communicator_size; i++)
+         MSG_comm_destroy(comms[i-1]);
+      free(comms);
 
-	    XBT_DEBUG("%s: all messages sent by %s have been received",
-	           bcast_identifier, process_name);
+      XBT_DEBUG("%s: all messages sent by %s have been received",
+             bcast_identifier, process_name);
 
-	} else {
-	    sprintf(mailbox, "%s_p0_%s", bcast_identifier, process_name);
-	    MSG_task_receive(&task, mailbox);
-	    MSG_task_destroy(task);
-	    XBT_DEBUG("%s: %s has received", bcast_identifier, process_name);
-	}
+  } else {
+      sprintf(mailbox, "%s_p0_%s", bcast_identifier, process_name);
+      MSG_task_receive(&task, mailbox);
+      MSG_task_destroy(task);
+      XBT_DEBUG("%s: %s has received", bcast_identifier, process_name);
+  }
 
-	XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
-	free(bcast_identifier);
+  XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
+  free(bcast_identifier);
 }
 
 

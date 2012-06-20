@@ -168,7 +168,7 @@ typedef enum {
 
 typedef struct s_as {
   xbt_dynar_t index_network_elm;
-  xbt_dict_t bypassRoutes;		/* store bypass routes */
+  xbt_dict_t bypassRoutes;    /* store bypass routes */
   routing_model_description_t model_desc;
   e_surf_routing_hierarchy_t hierarchy;
   char *name;

@@ -259,7 +259,7 @@ const INT_TYPE2
 /***********************/
 /* function prototypes */
 /***********************/
-double	randlc( double *X, double *A );
+double  randlc( double *X, double *A );
 
 void full_verify( global_data* gd );
 
@@ -273,7 +273,7 @@ void c_print_results( char   *name,
                       int    nprocs_total,
                       double t,
                       double mops,
-		      char   *optype,
+          char   *optype,
                       int    passed_verification,
                       char   *npbversion,
                       char   *compiletime,
@@ -345,17 +345,17 @@ double  timer_read(global_data* gd, int n ) {
 /*************    portable random number generator    ************/
 /*****************************************************************/
 
-double	randlc( double *X, double *A )
+double  randlc( double *X, double *A )
 {
       static int        KS=0;
-      static double	R23, R46, T23, T46;
-      double		T1, T2, T3, T4;
-      double		A1;
-      double		A2;
-      double		X1;
-      double		X2;
-      double		Z;
-      int     		i, j;
+      static double  R23, R46, T23, T46;
+      double    T1, T2, T3, T4;
+      double    A1;
+      double    A2;
+      double    X1;
+      double    X2;
+      double    Z;
+      int         i, j;
 
       if (KS == 0) 
       {
@@ -472,22 +472,22 @@ double   find_my_seed( int  kn,       /* my processor rank, 0<=kn<=num procs */
 /*************      C  R  E  A  T  E  _  S  E  Q      ************/
 /*****************************************************************/
 
-void	create_seq( global_data* gd, double seed, double a )
+void  create_seq( global_data* gd, double seed, double a )
 {
-	double x;
-	int    i, k;
+  double x;
+  int    i, k;
 
         k = MAX_KEY/4;
 
-	for (i=0; i<NUM_KEYS; i++)
-	{
-	    x = randlc(&seed, &a);
-	    x += randlc(&seed, &a);
-    	    x += randlc(&seed, &a);
-	    x += randlc(&seed, &a);  
+  for (i=0; i<NUM_KEYS; i++)
+  {
+      x = randlc(&seed, &a);
+      x += randlc(&seed, &a);
+          x += randlc(&seed, &a);
+      x += randlc(&seed, &a);  
 
             gd->key_array[i] = k*x;
-	}
+  }
 }
 
 
@@ -825,12 +825,12 @@ void rank( global_data* gd, int iteration )
                     break;
                 case 'A':
                     if( i <= 2 )
-        	    {
+              {
                         if( key_rank != gd->test_rank_array[i]+(iteration-1) )
                             failed = 1;
                         else
                           gd->passed_verification++;
-        	    }
+              }
                     else
                     {
                         if( key_rank !=  gd->test_rank_array[i]-(iteration-1) )
@@ -841,12 +841,12 @@ void rank( global_data* gd, int iteration )
                     break;
                 case 'B':
                     if( i == 1 || i == 2 || i == 4 )
-        	    {
+              {
                         if( key_rank != gd->test_rank_array[i]+iteration )
                             failed = 1;
                         else
                             gd->passed_verification++;
-        	    }
+              }
                     else
                     {
                         if( key_rank != gd->test_rank_array[i]-iteration )
@@ -857,12 +857,12 @@ void rank( global_data* gd, int iteration )
                     break;
                 case 'C':
                     if( i <= 2 )
-        	    {
+              {
                         if( key_rank != gd->test_rank_array[i]+iteration )
                             failed = 1;
                         else
                             gd->passed_verification++;
-        	    }
+              }
                     else
                     {
                         if( key_rank != gd->test_rank_array[i]-iteration )
@@ -873,12 +873,12 @@ void rank( global_data* gd, int iteration )
                     break;
                 case 'D':
                     if( i < 2 )
-        	    {
+              {
                         if( key_rank != gd->test_rank_array[i]+iteration )
                             failed = 1;
                         else
                             gd->passed_verification++;
-        	    }
+              }
                     else
                     {
                         if( key_rank != gd->test_rank_array[i]-iteration )

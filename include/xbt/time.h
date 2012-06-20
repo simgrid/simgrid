@@ -1,4 +1,4 @@
-/* xbt/time.h -- Time tools  								                                */
+/* xbt/time.h -- Time tools                                                  */
 /* Usable in simulator, (or in real life when mixing with GRAS)             */
 
 /* Copyright (c) 2007, 2009, 2010. The SimGrid Team.

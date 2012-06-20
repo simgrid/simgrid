@@ -13,10 +13,10 @@ typedef struct s_Buffer {
 } s_Buffer_t, *Buffer_t;
 
 /* Asserts that a s_Buffer is valid. */
-#define ASSERT_VALID_Buffer(p)	( ASSERT_NOT_NULL(p) /*&& ASSERT_NOT_NULL((p)->data)*/ )
+#define ASSERT_VALID_Buffer(p)  ( ASSERT_NOT_NULL(p) /*&& ASSERT_NOT_NULL((p)->data)*/ )
 
 /* The default buffer capacity (512 bytes). */
-#define DEFAULT_Buffer_CAPACITY	((size_t)512)
+#define DEFAULT_Buffer_CAPACITY  ((size_t)512)
 
 /* struct s_buffet connected functions. */
 

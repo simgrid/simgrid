@@ -43,7 +43,7 @@ static void link_new(const char *name, double bw, double lat, xbt_dict_t props)
            link_count, name, lat, bw);
 
   if (gtnets_add_link(link_count, bw, lat)) {
-	  xbt_die("Cannot create GTNetS link");
+    xbt_die("Cannot create GTNetS link");
   }
   gtnets_link->id = link_count;
 
@@ -97,8 +97,8 @@ static void parse_link_init(sg_platf_link_cbarg_t link)
 
   if (link->policy == SURF_LINK_FULLDUPLEX)
   {
-	  link_new(bprintf("%s_UP",link->id), link->bandwidth, link->latency, current_property_set);
-	  link_new(bprintf("%s_DOWN",link->id), link->bandwidth, link->latency, current_property_set);
+    link_new(bprintf("%s_UP",link->id), link->bandwidth, link->latency, current_property_set);
+    link_new(bprintf("%s_DOWN",link->id), link->bandwidth, link->latency, current_property_set);
 
   }
   else  link_new(link->id, link->bandwidth, link->latency, current_property_set);
@@ -132,7 +132,7 @@ static void create_gtnets_topology(void)
          onelink->dst->id);
      XBT_DEBUG("Calling one link route");
         if(onelink->src->rc_type == SURF_NETWORK_ELEMENT_ROUTER){
-        	gtnets_add_router(onelink->src->id);
+          gtnets_add_router(onelink->src->id);
         }
         if(onelink->dst->rc_type == SURF_NETWORK_ELEMENT_ROUTER){
          gtnets_add_router(onelink->dst->id);

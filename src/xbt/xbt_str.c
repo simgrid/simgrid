@@ -18,12 +18,12 @@
  * Strips the whitespaces from the end of s.
  * By default (when char_list=NULL), these characters get stripped:
  *
- *	- " "		(ASCII 32	(0x20))	space.
- *	- "\t"		(ASCII 9	(0x09))	tab.
- *	- "\n"		(ASCII 10	(0x0A))	line feed.
- *	- "\r"		(ASCII 13	(0x0D))	carriage return.
- *	- "\0"		(ASCII 0	(0x00))	NULL.
- *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab.
+ *  - " "    (ASCII 32  (0x20))  space.
+ *  - "\t"    (ASCII 9  (0x09))  tab.
+ *  - "\n"    (ASCII 10  (0x0A))  line feed.
+ *  - "\r"    (ASCII 13  (0x0D))  carriage return.
+ *  - "\0"    (ASCII 0  (0x00))  NULL.
+ *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
  *
  * @param s The string to strip. Modified in place.
  * @param char_list A string which contains the characters you want to strip.
@@ -62,12 +62,12 @@ void xbt_str_rtrim(char *s, const char *char_list)
  * Strips the whitespaces from the begining of s.
  * By default (when char_list=NULL), these characters get stripped:
  *
- *	- " "		(ASCII 32	(0x20))	space.
- *	- "\t"		(ASCII 9	(0x09))	tab.
- *	- "\n"		(ASCII 10	(0x0A))	line feed.
- *	- "\r"		(ASCII 13	(0x0D))	carriage return.
- *	- "\0"		(ASCII 0	(0x00))	NULL.
- *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab.
+ *  - " "    (ASCII 32  (0x20))  space.
+ *  - "\t"    (ASCII 9  (0x09))  tab.
+ *  - "\n"    (ASCII 10  (0x0A))  line feed.
+ *  - "\r"    (ASCII 13  (0x0D))  carriage return.
+ *  - "\0"    (ASCII 0  (0x00))  NULL.
+ *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
  *
  * @param s The string to strip. Modified in place.
  * @param char_list A string which contains the characters you want to strip.
@@ -103,12 +103,12 @@ void xbt_str_ltrim(char *s, const char *char_list)
  * Strips the whitespaces from both the beginning and the end of s.
  * By default (when char_list=NULL), these characters get stripped:
  *
- *	- " "		(ASCII 32	(0x20))	space.
- *	- "\t"		(ASCII 9	(0x09))	tab.
- *	- "\n"		(ASCII 10	(0x0A))	line feed.
- *	- "\r"		(ASCII 13	(0x0D))	carriage return.
- *	- "\0"		(ASCII 0	(0x00))	NULL.
- *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab.
+ *  - " "    (ASCII 32  (0x20))  space.
+ *  - "\t"    (ASCII 9  (0x09))  tab.
+ *  - "\n"    (ASCII 10  (0x0A))  line feed.
+ *  - "\r"    (ASCII 13  (0x0D))  carriage return.
+ *  - "\0"    (ASCII 0  (0x00))  NULL.
+ *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
  *
  * @param s The string to strip.
  * @param char_list A string which contains the characters you want to strip.
@@ -223,12 +223,12 @@ char *xbt_str_varsubst(const char *str, xbt_dict_t patterns)
  *
  * By default (with sep=NULL), these characters are used as separator:
  *
- *	- " "		(ASCII 32	(0x20))	space.
- *	- "\t"		(ASCII 9	(0x09))	tab.
- *	- "\n"		(ASCII 10	(0x0A))	line feed.
- *	- "\r"		(ASCII 13	(0x0D))	carriage return.
- *	- "\0"		(ASCII 0	(0x00))	NULL.
- *	- "\x0B"	(ASCII 11	(0x0B))	vertical tab.
+ *  - " "    (ASCII 32  (0x20))  space.
+ *  - "\t"    (ASCII 9  (0x09))  tab.
+ *  - "\n"    (ASCII 10  (0x0A))  line feed.
+ *  - "\r"    (ASCII 13  (0x0D))  carriage return.
+ *  - "\0"    (ASCII 0  (0x00))  NULL.
+ *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
  */
 
 xbt_dynar_t xbt_str_split(const char *s, const char *sep)

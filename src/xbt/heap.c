@@ -145,7 +145,7 @@ void *xbt_heap_pop(xbt_heap_t H)
 /**
  * @brief Extracts from the heap and returns the element at position i.
  * \param H the heap we're working on
- * \param i	element position
+ * \param i  element position
  * \return the element at position i if ok, NULL otherwise
  *
  * Extracts from the heap and returns the element at position i. The heap is automatically reorded.

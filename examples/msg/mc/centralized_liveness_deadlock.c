@@ -1,6 +1,6 @@
 /***************** Centralized Mutual Exclusion Algorithm *********************/
 /* This example implements a centralized mutual exclusion algorithm.          */
-/* LTL property checked : !(GFcs)																		        */
+/* LTL property checked : !(GFcs)                                            */
 /******************************************************************************/
 
 #include "msg/msg.h"

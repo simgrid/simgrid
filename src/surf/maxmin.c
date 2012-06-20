@@ -126,7 +126,7 @@ static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
                                      lmm_constraint_t cnst)
 {
 /*   xbt_assert(xbt_swag_size(&(cnst->element_set)), */
-/* 	      "This list should be empty!"); */
+/*         "This list should be empty!"); */
   make_constraint_inactive(sys, cnst);
   free(cnst);
 }
@@ -458,7 +458,7 @@ void lmm_print(lmm_system_t sys)
     sprintf(print_buf, "%s(",(cnst->shared)?"":"max");
     trace_buf =
       xbt_realloc(trace_buf,
-		  strlen(trace_buf) + strlen(print_buf) + 1);
+      strlen(trace_buf) + strlen(print_buf) + 1);
     strcat(trace_buf, print_buf);      
     xbt_swag_foreach(elem, elem_list) {
       sprintf(print_buf, "%f.'%d'(%f) %s ", elem->value,
@@ -468,9 +468,9 @@ void lmm_print(lmm_system_t sys)
                       strlen(trace_buf) + strlen(print_buf) + 1);
       strcat(trace_buf, print_buf);
       if(cnst->shared) 
-	sum += elem->value * elem->variable->value;
+  sum += elem->value * elem->variable->value;
       else 
-	sum = MAX(sum,elem->value * elem->variable->value);
+  sum = MAX(sum,elem->value * elem->variable->value);
     }
     sprintf(print_buf, "0) <= %f ('%d')", cnst->bound, cnst->id_int);
     trace_buf =

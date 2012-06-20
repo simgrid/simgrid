@@ -18,7 +18,7 @@ XBT_PUBLIC(void) new_transition(char* id, xbt_exp_label_t label);
 XBT_PUBLIC(xbt_exp_label_t) new_label(int type, ...);
 
 XBT_PUBLIC(xbt_automaton_t) get_automaton(void);
-			    
+          
 XBT_PUBLIC(void) display_automaton(void);
 
 SG_END_DECL()

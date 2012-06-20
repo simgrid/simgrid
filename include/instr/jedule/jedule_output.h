@@ -26,7 +26,7 @@ void jedule_cleanup_output(void);
 void jedule_store_event(jed_event_t event);
 
 void write_jedule_output(FILE *file, jedule_t jedule,
-		xbt_dynar_t event_list, xbt_dict_t meta_info_dict);
+    xbt_dynar_t event_list, xbt_dict_t meta_info_dict);
 
 #endif
 

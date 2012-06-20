@@ -160,7 +160,7 @@ int forwarder(int argc, char *argv[])
             ("All tasks have been dispatched. Let's tell everybody the computation is over.");
         for (i = 0; i < slaves_count; i++)
           MSG_task_send(MSG_task_create("finalize", 0, 0, FINALIZE),
-        		  MSG_host_get_name(slaves[i]));
+              MSG_host_get_name(slaves[i]));
         MSG_task_destroy(task);
         break;
       }

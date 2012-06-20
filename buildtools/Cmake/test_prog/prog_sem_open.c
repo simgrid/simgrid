@@ -16,9 +16,9 @@
 
 int main(void) {   
 #ifdef WIN32
-	int s;
+  int s;
 #else
-	sem_t * s;
+  sem_t * s;
 #endif
    s = sem_open("/0", O_CREAT, 0644, 10);
    if (s == SEM_FAILED){

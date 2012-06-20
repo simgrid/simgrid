@@ -320,7 +320,7 @@ XBT_PUBLIC(void) simcall_process_killall(void);
 /* Process handling */
 XBT_PUBLIC(void) simcall_process_cleanup(smx_process_t process);
 XBT_PUBLIC(void) simcall_process_change_host(smx_process_t process,
-					       smx_host_t dest);
+                 smx_host_t dest);
 XBT_PUBLIC(void) simcall_process_suspend(smx_process_t process);
 XBT_PUBLIC(void) simcall_process_resume(smx_process_t process);
 

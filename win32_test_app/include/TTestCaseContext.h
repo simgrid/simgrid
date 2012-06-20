@@ -39,16 +39,16 @@ typedef struct s_TestCaseContext {
 } s_TestCaseContext_t, *TestCaseContext_t;
 
 /* Output checking is disabled by default*/
-#define DEFAULT_OUTPUT_CHECKING_MODE		false
+#define DEFAULT_OUTPUT_CHECKING_MODE    false
 
 /* Post output checking mode is disabled by default*/
-#define DEFAULT_POST_OUTPUT_CHECKING_MODE	false
+#define DEFAULT_POST_OUTPUT_CHECKING_MODE  false
 
 /* The default timeout value is 5 seconds*/
-#define DEFAULT_TIMEOUT_VALUE				((int)120000)
+#define DEFAULT_TIMEOUT_VALUE        ((int)120000)
 
 /* Invalid exit code value (default value)*/
-#define INVALID_EXIT_CODE 					((int)0xFFFFFF)
+#define INVALID_EXIT_CODE           ((int)0xFFFFFF)
 
 /* 
  * s_TestCaseContext struct connected functions.

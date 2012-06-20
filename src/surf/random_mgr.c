@@ -54,7 +54,7 @@ union ieee754_double {
   } ieee_nan;
 };
 
-#define IEEE754_DOUBLE_BIAS	0x3ff   /* Added to exponent.  */
+#define IEEE754_DOUBLE_BIAS  0x3ff   /* Added to exponent.  */
 
 double drand48(void);
 
@@ -200,8 +200,8 @@ static double custom_random(e_random_generator_t generator, long int *seed)
   case RAND:
     return (double) rand_r((unsigned int *) seed) / RAND_MAX;
   case RNGSTREAM :
-	  XBT_INFO("Seen RNGSTREAM");
-	  return 0.0;
+    XBT_INFO("Seen RNGSTREAM");
+    return 0.0;
   default:
     return drand48();
   }

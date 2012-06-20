@@ -53,17 +53,17 @@ static void SD_workstation_set_available_at(SD_workstation_t workstation,
 }
 
 static SD_task_t SD_workstation_get_last_scheduled_task( SD_workstation_t workstation){
-	WorkstationAttribute attr =
-			(WorkstationAttribute) SD_workstation_get_data(workstation);
-	return attr->last_scheduled_task;
+  WorkstationAttribute attr =
+      (WorkstationAttribute) SD_workstation_get_data(workstation);
+  return attr->last_scheduled_task;
 }
 
 static void SD_workstation_set_last_scheduled_task(SD_workstation_t workstation,
-		SD_task_t task){
-	WorkstationAttribute attr =
-			(WorkstationAttribute) SD_workstation_get_data(workstation);
-	attr->last_scheduled_task=task;
-	SD_workstation_set_data(workstation, attr);
+    SD_task_t task){
+  WorkstationAttribute attr =
+      (WorkstationAttribute) SD_workstation_get_data(workstation);
+  attr->last_scheduled_task=task;
+  SD_workstation_set_data(workstation, attr);
 }
 
 static xbt_dynar_t get_ready_tasks(xbt_dynar_t dax)
@@ -347,13 +347,13 @@ int main(int argc, char **argv)
     last_scheduled_task = 
       SD_workstation_get_last_scheduled_task(selected_workstation);
     if (last_scheduled_task && 
-	(SD_task_get_state(last_scheduled_task) != SD_DONE) &&
-	(SD_task_get_state(last_scheduled_task) != SD_FAILED) &&
-	!SD_task_dependency_exists(
-	   SD_workstation_get_last_scheduled_task(selected_workstation),
-	   selected_task))
+  (SD_task_get_state(last_scheduled_task) != SD_DONE) &&
+  (SD_task_get_state(last_scheduled_task) != SD_FAILED) &&
+  !SD_task_dependency_exists(
+     SD_workstation_get_last_scheduled_task(selected_workstation),
+     selected_task))
       SD_task_dependency_add("resource", NULL,
-			     last_scheduled_task, selected_task);
+           last_scheduled_task, selected_task);
     
     SD_workstation_set_last_scheduled_task(selected_workstation, selected_task);
     

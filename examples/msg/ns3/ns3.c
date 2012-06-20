@@ -168,8 +168,8 @@ int slave(int argc, char *argv[])
   elapsed_time = MSG_get_clock() - start_time;
   
   XBT_INFO("FLOW[%d] : Receive %.0f bytes from %s to %s",
-		  id,
-		  MSG_task_get_data_size(task),
+      id,
+      MSG_task_get_data_size(task),
        masternames[id],
        slavenames[id]);
 //  MSG_task_execute(task);

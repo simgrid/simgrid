@@ -16,7 +16,7 @@
 SG_BEGIN_DECL()
 
 /** \addtogroup XBT_parmap
-  * \ingroup XBT_misc	
+  * \ingroup XBT_misc  
   * \brief Parallel map.
   *
   * A function is applied to all elements of a dynar in parallel with n worker

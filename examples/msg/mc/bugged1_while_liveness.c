@@ -37,26 +37,26 @@ int coordinator(int argc, char *argv[])
         XBT_INFO("CS already used. Queue the request of client %d", atoi(req) +1);
         xbt_dynar_push(requests, &req);
       } else {                  // can serve it immediatly
-	if(strcmp(req, "2") == 0){
-	  m_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
-	  MSG_task_send(answer, req);
-	  CS_used = 1;
-	  XBT_INFO("CS idle. Grant immediatly");
-	}
+  if(strcmp(req, "2") == 0){
+    m_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
+    MSG_task_send(answer, req);
+    CS_used = 1;
+    XBT_INFO("CS idle. Grant immediatly");
+  }
       }
     } else {                    // that's a release. Check if someone was waiting for the lock
       if (xbt_dynar_length(requests) > 0) {
         XBT_INFO("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
         char *req ;
-	xbt_dynar_get_cpy(requests, (xbt_dynar_length(requests) - 1), &req);
-	if(strcmp(req, "2") == 0){
-	  xbt_dynar_pop(requests, &req);
-	  MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
-	}else{
-	  xbt_dynar_pop(requests, &req);
-	  MSG_task_send(MSG_task_create("notgrant", 0, 1000, NULL), req);
-	  CS_used = 0;
-	}
+  xbt_dynar_get_cpy(requests, (xbt_dynar_length(requests) - 1), &req);
+  if(strcmp(req, "2") == 0){
+    xbt_dynar_pop(requests, &req);
+    MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
+  }else{
+    xbt_dynar_pop(requests, &req);
+    MSG_task_send(MSG_task_create("notgrant", 0, 1000, NULL), req);
+    CS_used = 0;
+  }
       } else {                  // nobody wants it
         XBT_INFO("CS release. resource now idle");
         CS_used = 0;

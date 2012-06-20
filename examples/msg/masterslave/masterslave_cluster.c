@@ -90,7 +90,7 @@ int master(int argc, char *argv[])
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++)
     MSG_task_send(MSG_task_create("finalize", 0, 0, FINALIZE),
-    		MSG_host_get_name(slaves[i]));
+        MSG_host_get_name(slaves[i]));
 
   XBT_INFO("Goodbye now!");
   free(slaves);
@@ -119,7 +119,7 @@ int slave(int argc, char *argv[])
     } else {
       XBT_INFO("Hey ?! What's up ? ");
       xbt_die("Unexpected behavior");
-				    }
+            }
   }
   XBT_INFO("I'm done. See you!");
   return 0;
@@ -129,101 +129,101 @@ int slave(int argc, char *argv[])
 /** Bypass deployment **/
 static int bypass_deployment(void)
 {
-	int nb_host,i;
-	static int AX_ptr;
-	static int surfxml_bufferstack_size = 2048;
-	static int surfxml_buffer_stack_stack_ptr = 0;
-	static int surfxml_buffer_stack_stack[1024];
-	xbt_dynar_t hosts = MSG_hosts_as_dynar();
-	/* allocating memory to the buffer, I think 2MB should be enough */
-	surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
+  int nb_host,i;
+  static int AX_ptr;
+  static int surfxml_bufferstack_size = 2048;
+  static int surfxml_buffer_stack_stack_ptr = 0;
+  static int surfxml_buffer_stack_stack[1024];
+  xbt_dynar_t hosts = MSG_hosts_as_dynar();
+  /* allocating memory to the buffer, I think 2MB should be enough */
+  surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
-	nb_host = xbt_dynar_length(hosts);
-	xbt_dynar_free(&hosts);
+  nb_host = xbt_dynar_length(hosts);
+  xbt_dynar_free(&hosts);
 
-	/* <platform> */
-	SURFXML_BUFFER_SET(platform_version, "3");
-	SURFXML_START_TAG(platform);
-	XBT_DEBUG("<platform version=\"3\">");
+  /* <platform> */
+  SURFXML_BUFFER_SET(platform_version, "3");
+  SURFXML_START_TAG(platform);
+  XBT_DEBUG("<platform version=\"3\">");
 
-	  XBT_DEBUG("	<process host=\"c-0.me\" function=\"master\">");
-	  SURFXML_BUFFER_SET(process_host, "c-0.me");
-	  SURFXML_BUFFER_SET(process_function, "master");
-	  SURFXML_BUFFER_SET(process_start_time, "-1.0");
-	  SURFXML_BUFFER_SET(process_kill_time, "-1.0");
-	  SURFXML_START_TAG(process);
+    XBT_DEBUG("  <process host=\"c-0.me\" function=\"master\">");
+    SURFXML_BUFFER_SET(process_host, "c-0.me");
+    SURFXML_BUFFER_SET(process_function, "master");
+    SURFXML_BUFFER_SET(process_start_time, "-1.0");
+    SURFXML_BUFFER_SET(process_kill_time, "-1.0");
+    SURFXML_START_TAG(process);
 
-	  XBT_DEBUG("		<argument value=\"%s\"/>",bprintf("%d",nb_host-1));
-	  SURFXML_BUFFER_SET(argument_value, bprintf("%d",nb_host-1));
-	  SURFXML_START_TAG(argument);
-	  SURFXML_END_TAG(argument);
+    XBT_DEBUG("    <argument value=\"%s\"/>",bprintf("%d",nb_host-1));
+    SURFXML_BUFFER_SET(argument_value, bprintf("%d",nb_host-1));
+    SURFXML_START_TAG(argument);
+    SURFXML_END_TAG(argument);
 
-	  XBT_DEBUG("		<argument value=\"5000000\"/>");
-	  SURFXML_BUFFER_SET(argument_value, "5000000");
-	  SURFXML_START_TAG(argument);
-	  SURFXML_END_TAG(argument);
+    XBT_DEBUG("    <argument value=\"5000000\"/>");
+    SURFXML_BUFFER_SET(argument_value, "5000000");
+    SURFXML_START_TAG(argument);
+    SURFXML_END_TAG(argument);
 
-	  XBT_DEBUG("		<argument value=\"100000\"/>");
-	  SURFXML_BUFFER_SET(argument_value, "100000");
-	  SURFXML_START_TAG(argument);
-	  SURFXML_END_TAG(argument);
+    XBT_DEBUG("    <argument value=\"100000\"/>");
+    SURFXML_BUFFER_SET(argument_value, "100000");
+    SURFXML_START_TAG(argument);
+    SURFXML_END_TAG(argument);
 
-	for(i=1 ; i<nb_host ; i++)
-	{
-	  XBT_DEBUG("		<argument value=\"%s.me\"/>",bprintf("c-%d",i));
-	  SURFXML_BUFFER_SET(argument_value, bprintf("c-%d.me",i));
-	  SURFXML_START_TAG(argument);
-	  SURFXML_END_TAG(argument);
-	}
-	XBT_DEBUG("	</process>");
-	SURFXML_END_TAG(process);
+  for(i=1 ; i<nb_host ; i++)
+  {
+    XBT_DEBUG("    <argument value=\"%s.me\"/>",bprintf("c-%d",i));
+    SURFXML_BUFFER_SET(argument_value, bprintf("c-%d.me",i));
+    SURFXML_START_TAG(argument);
+    SURFXML_END_TAG(argument);
+  }
+  XBT_DEBUG("  </process>");
+  SURFXML_END_TAG(process);
 
-	for(i=1 ; i<nb_host ; i++)
-	{
-	  XBT_DEBUG("	<process host=\"%s.me\" function=\"slave\"/>",bprintf("c-%d",i));
-	  SURFXML_BUFFER_SET(process_host, bprintf("c-%d.me",i));
-	  SURFXML_BUFFER_SET(process_function, "slave");
-	  SURFXML_BUFFER_SET(process_start_time, "-1.0");
-	  SURFXML_BUFFER_SET(process_kill_time, "-1.0");
-	  SURFXML_START_TAG(process);
-	  SURFXML_END_TAG(process);
-	}
+  for(i=1 ; i<nb_host ; i++)
+  {
+    XBT_DEBUG("  <process host=\"%s.me\" function=\"slave\"/>",bprintf("c-%d",i));
+    SURFXML_BUFFER_SET(process_host, bprintf("c-%d.me",i));
+    SURFXML_BUFFER_SET(process_function, "slave");
+    SURFXML_BUFFER_SET(process_start_time, "-1.0");
+    SURFXML_BUFFER_SET(process_kill_time, "-1.0");
+    SURFXML_START_TAG(process);
+    SURFXML_END_TAG(process);
+  }
 
-	XBT_DEBUG("</platform>");
-	SURFXML_END_TAG(platform);
+  XBT_DEBUG("</platform>");
+  SURFXML_END_TAG(platform);
 
-	free(surfxml_bufferstack);
-	return 0;
+  free(surfxml_bufferstack);
+  return 0;
 }
 
 /** Test function */
 MSG_error_t test_all(const char *platform_file)
 {
-	MSG_error_t res = MSG_OK;
-	MSG_create_environment(platform_file);
-	MSG_function_register("master", master);
-	MSG_function_register("slave", slave);
-	surf_parse = bypass_deployment;
-	MSG_launch_application(NULL);
+  MSG_error_t res = MSG_OK;
+  MSG_create_environment(platform_file);
+  MSG_function_register("master", master);
+  MSG_function_register("slave", slave);
+  surf_parse = bypass_deployment;
+  MSG_launch_application(NULL);
 
-	res = MSG_main();
+  res = MSG_main();
 
-	XBT_INFO("Simulation time %g", MSG_get_clock());
-	return res;
+  XBT_INFO("Simulation time %g", MSG_get_clock());
+  return res;
 }                               /* end_of_test_all */
 
 
 /** Main function */
 int main(int argc, char *argv[])
 {
-	MSG_error_t res = MSG_OK;
+  MSG_error_t res = MSG_OK;
 
-	MSG_global_init(&argc, argv);
-	res = test_all(argv[1]);
-	MSG_clean();
+  MSG_global_init(&argc, argv);
+  res = test_all(argv[1]);
+  MSG_clean();
 
-	if (res == MSG_OK)
-		return 0;
-	else
-		return 1;
+  if (res == MSG_OK)
+    return 0;
+  else
+    return 1;
 }                               /* end_of_main */

@@ -215,7 +215,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   replace_bdw_ns3(&bw);
   ns3_add_cluster(bw,lat,cluster->id);
   xbt_free(lat);
-  xbt_free(bw);	
+  xbt_free(bw);  
 }
 
 static double ns3_get_link_latency (const void *link)
@@ -272,7 +272,7 @@ static void create_ns3_topology(void)
       replace_bdw_ns3(&link_bdw);
       ((surf_ns3_link_t)link)->created = 0;
 
-      //	 XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
+      //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
       XBT_DEBUG("\tLink (%s) bdw:%s lat:%s",((surf_ns3_link_t)link)->data->id,
                 link_bdw,
                 link_lat
@@ -317,8 +317,8 @@ static void free_ns3_link(void * elmts)
 
 static void free_ns3_host(void * elmts)
 {
-	ns3_nodes_t host = elmts;
-	free(host);
+  ns3_nodes_t host = elmts;
+  free(host);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING

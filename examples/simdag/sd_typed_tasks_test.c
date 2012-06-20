@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 
   for (i=0;i<SD_workstation_get_number();i++)
     XBT_INFO("%s runs at %f flops", SD_workstation_get_name(workstations[i]),
-	     SD_workstation_get_power(workstations[i]));
+       SD_workstation_get_power(workstations[i]));
 
   /* creation of some typed tasks and their dependencies */
   taskA = SD_task_create_comp_seq("Task A", NULL, 1e9);

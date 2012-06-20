@@ -268,8 +268,8 @@ void lagrange_solve(lmm_system_t sys)
       if (var->bound >= 0) {
         XBT_DEBUG("Working on var (%p)", var);
         var->new_mu = new_mu(var);
-/* 	dual_updated += (fabs(var->new_mu-var->mu)>dichotomy_min_error); */
-/* 	XBT_DEBUG("dual_updated (%d) : %1.20f",dual_updated,fabs(var->new_mu-var->mu)); */
+/*   dual_updated += (fabs(var->new_mu-var->mu)>dichotomy_min_error); */
+/*   XBT_DEBUG("dual_updated (%d) : %1.20f",dual_updated,fabs(var->new_mu-var->mu)); */
         XBT_DEBUG("Updating mu : var->mu (%p) : %1.20f -> %1.20f", var,
                var->mu, var->new_mu);
         var->mu = var->new_mu;
@@ -438,16 +438,16 @@ static double dichotomy(double init, double diff(double, void *),
         min = middle;
         overall_error = max_diff - middle_diff;
         min_diff = middle_diff;
-/* 	SHOW_EXPR(overall_error); */
+/*   SHOW_EXPR(overall_error); */
       } else if (middle_diff > 0) {
         XBT_CDEBUG(surf_lagrange_dichotomy, "Decreasing max");
         max = middle;
         overall_error = max_diff - middle_diff;
         max_diff = middle_diff;
-/* 	SHOW_EXPR(overall_error); */
+/*   SHOW_EXPR(overall_error); */
       } else {
         overall_error = 0;
-/* 	SHOW_EXPR(overall_error); */
+/*   SHOW_EXPR(overall_error); */
       }
     } else if (min_diff == 0) {
       max = min;

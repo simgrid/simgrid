@@ -46,23 +46,23 @@ int coordinator(int argc, char *argv[])
     if (!strcmp(kind, "request")) {
       char *req = MSG_task_get_data(task);
       if (CS_used) {
-	XBT_INFO("CS already used. Queue the request");
-	xbt_dynar_push(requests, &req);
+  XBT_INFO("CS already used. Queue the request");
+  xbt_dynar_push(requests, &req);
       } else {
-	m_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
-	MSG_task_send(answer, req);
-	CS_used = 1;
-	XBT_INFO("CS idle. Grant immediatly");
+  m_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
+  MSG_task_send(answer, req);
+  CS_used = 1;
+  XBT_INFO("CS idle. Grant immediatly");
       }
     } else {
       if (xbt_dynar_length(requests) > 0) {
-	XBT_INFO("CS release. Grant to queued requests");
-	char *req;
-	xbt_dynar_pop(requests, &req);
-	MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
+  XBT_INFO("CS release. Grant to queued requests");
+  char *req;
+  xbt_dynar_pop(requests, &req);
+  MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
       } else {
-	XBT_INFO("CS_realase, ressource now idle");
-	CS_used = 0;
+  XBT_INFO("CS_realase, ressource now idle");
+  CS_used = 0;
       }
     }
 

@@ -38,17 +38,17 @@
 /*************    portable random number generator    ************/
 /*****************************************************************/
 
-double	randlc( double *X, double *A )
+double  randlc( double *X, double *A )
 {
       static int        KS=0;
-      static double	R23, R46, T23, T46;
-      double		T1, T2, T3, T4;
-      double		A1;
-      double		A2;
-      double		X1;
-      double		X2;
-      double		Z;
-      int     		i, j;
+      static double  R23, R46, T23, T46;
+      double    T1, T2, T3, T4;
+      double    A1;
+      double    A2;
+      double    X1;
+      double    X2;
+      double    Z;
+      int         i, j;
 
       if (KS == 0) 
       {

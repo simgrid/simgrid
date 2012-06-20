@@ -160,9 +160,9 @@ XBT_PUBLIC(void) SD_task_dotty(SD_task_t task, void *out_FILE);
 XBT_PUBLIC(SD_task_t) SD_task_create_comp_seq(const char *name, void *data,
                                               double amount);
 XBT_PUBLIC(SD_task_t) SD_task_create_comp_par_amdahl(const char *name, 
-													 void *data,
-                                              		 double amount,
-                                              		 double alpha);
+                           void *data,
+                                                   double amount,
+                                                   double alpha);
 XBT_PUBLIC(SD_task_t) SD_task_create_comm_e2e(const char *name, void *data,
                                               double amount);
 

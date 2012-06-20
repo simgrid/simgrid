@@ -98,8 +98,8 @@ void model_dijkstra_both_parse_route (AS_t rc, const char *src,
 /* *************************** FULL ROUTING ********************************* */
 AS_t model_full_create(void);   /* create structures for full routing model */
 void model_full_end(AS_t as);       /* finalize the creation of full routing model */
-void model_full_set_route(	/* Set the route and ASroute between src and dst */
-		AS_t rc, const char *src, const char *dst, route_t route);
+void model_full_set_route(  /* Set the route and ASroute between src and dst */
+    AS_t rc, const char *src, const char *dst, route_t route);
 
 
 #endif                          /* _SURF_SURF_ROUTING_PRIVATE_H */

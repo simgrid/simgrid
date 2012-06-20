@@ -32,7 +32,7 @@ SG_BEGIN_DECL()
 #define xbt_assert(...) ((void)0)
 #else
      /** @brief The condition which failed will be displayed.
-	 @hideinitializer  */
+   @hideinitializer  */
 #define xbt_assert(...) \
   _XBT_IF_ONE_ARG(_xbt_assert_ARG1, _xbt_assert_ARGN, __VA_ARGS__)(__VA_ARGS__)
 #define _xbt_assert_ARG1(cond) \

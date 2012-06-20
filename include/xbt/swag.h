@@ -168,7 +168,7 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
 #define xbt_swag_foreach_safe(obj,obj_next,swag)                  \
    for((obj)=xbt_swag_getFirst((swag)),                           \
        ((obj)?(obj_next=xbt_swag_getNext((obj),(swag)->offset)):  \
-	         (obj_next=NULL));                                \
+           (obj_next=NULL));                                \
        (obj)!=NULL;                                               \
        (obj)=obj_next,                                            \
        ((obj)?(obj_next=xbt_swag_getNext((obj),(swag)->offset)):  \

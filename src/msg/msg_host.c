@@ -140,22 +140,22 @@ int MSG_get_host_number(void)
 m_host_t *MSG_get_host_table(void)
 {
       void **array;
-	  int i = 0;
-	  xbt_lib_cursor_t cursor;
-	  char *key;
-	  void **data;
+    int i = 0;
+    xbt_lib_cursor_t cursor;
+    char *key;
+    void **data;
 
-	  if (xbt_lib_length(host_lib) == 0)
-		return NULL;
-	  else
-		array = xbt_new0(void *, xbt_lib_length(host_lib));
+    if (xbt_lib_length(host_lib) == 0)
+    return NULL;
+    else
+    array = xbt_new0(void *, xbt_lib_length(host_lib));
 
-	  xbt_lib_foreach(host_lib, cursor, key, data) {
-	    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
-	    	array[i++] = data[MSG_HOST_LEVEL];
-	  }
+    xbt_lib_foreach(host_lib, cursor, key, data) {
+      if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
+        array[i++] = data[MSG_HOST_LEVEL];
+    }
 
-	  return (m_host_t *)array;
+    return (m_host_t *)array;
 }
 #endif
 

@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 #ifdef _MSC_VER
-#define snprintf	_snprintf
+#define snprintf  _snprintf
 #endif
 
 #include "xbt/module.h"

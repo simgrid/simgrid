@@ -35,7 +35,7 @@
 
 /* Defined if the compiler has the <errno.h> header file. */
 #if !defined(HAVE_ERRNO_H)
-#define HAVE_ERRNO_H 		1
+#define HAVE_ERRNO_H     1
 #endif
 
 /* No <execinfo.h> header file. */
@@ -50,7 +50,7 @@
 
 /* Defined if compiler has the <memory.h> header file. */
 #if !defined(HAVE_MEMORY_H)
-#define HAVE_MEMORY_H 		1
+#define HAVE_MEMORY_H     1
 #endif
 
 /* No <pthread.h> header file. */
@@ -66,7 +66,7 @@
 
 /* The compiler has the <stdlib.h> header file. */
 #if !defined(HAVE_STDLIB_H)
-#define HAVE_STDLIB_H		1
+#define HAVE_STDLIB_H    1
 #endif
 
 /* No <strings.h> header file. */
@@ -76,7 +76,7 @@
 
 /* The compiler has the <string.h> header file. */
 #if !defined(HAVE_STRING_H)
-#define HAVE_STRING_H		1
+#define HAVE_STRING_H    1
 #endif
 
 /* No <sys/socket.h> header file. */
@@ -86,17 +86,17 @@
 
 /* The compiler has <sys/stat.h> header file. */
 #if !defined(HAVE_SYS_STAT_H)
-#define HAVE_SYS_STAT_H		1
+#define HAVE_SYS_STAT_H    1
 #endif
 
 /* No <sys/time.h> header file. */
 #if defined(HAVE_SYS_TIME_H)
-#undef HAVE_SYS_TIME_H		1
+#undef HAVE_SYS_TIME_H    1
 #endif
 
 /* The compiler has the <sys/types.h> header file. */
 #if !defined(HAVE_SYS_TYPES_H)
-#define HAVE_SYS_TYPES_H	1
+#define HAVE_SYS_TYPES_H  1
 #endif
 
 /* No <unistd.h> header file. */
@@ -106,7 +106,7 @@
 
 /* The compiler has the <signal.h> header file */
 #if !defined(HAVE_SIGNAL_H)
-#define HAVE_SIGNAL_H	1
+#define HAVE_SIGNAL_H  1
 #endif
 
 /* 
@@ -158,14 +158,14 @@
 
 
 #ifdef PREFER_PORTABLE_SNPRINTF
-# undef PREFER_PORTABLE_SNPRINTF	1
+# undef PREFER_PORTABLE_SNPRINTF  1
 #endif
 
 
 /* The compiler has `snprintf' function. */
 #if _MSC_VER >= 1400
 #  ifndef HAVE_SNPRINTF
-#    define HAVE_SNPRINTF	1
+#    define HAVE_SNPRINTF  1
 #    ifndef PREFER_PORTABLE_SNPRINTF
 #      define snprintf _snprintf
 #    endif
@@ -195,7 +195,7 @@
 
 /* The compiler has the `vsnprintf' function. */
 #ifndef HAVE_VSNPRINTF
-#define HAVE_VSNPRINTF	1
+#define HAVE_VSNPRINTF  1
 #endif
 
 

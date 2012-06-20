@@ -113,76 +113,76 @@
  *   http://www.ijs.si/software/snprintf/
  *
  * REVISION HISTORY
- * 1999-04	V0.9  Mark Martinec
- *		- initial version, some modifications after comparing printf
- *		  man pages for Digital Unix 4.0, Solaris 2.6 and HPUX 10,
- *		  and checking how Perl handles sprintf (differently!);
- * 1999-04-09	V1.0  Mark Martinec <mark.martinec@ijs.si>
- *		- added main test program, fixed remaining inconsistencies,
- *		  added optional (long long int) support;
- * 1999-04-12	V1.1  Mark Martinec <mark.martinec@ijs.si>
- *		- support the 'p' conversion (pointer to void);
- *		- if a string precision is specified
- *		  make sure the string beyond the specified precision
- *		  will not be referenced (e.g. by strlen);
- * 1999-04-13	V1.2  Mark Martinec <mark.martinec@ijs.si>
- *		- support synonyms %D=%ld, %U=%lu, %O=%lo;
- *		- speed up the case of long format string with few conversions;
- * 1999-06-30	V1.3  Mark Martinec <mark.martinec@ijs.si>
- *		- fixed runaway loop (eventually crashing when str_l wraps
- *		  beyond 2^31) while copying format string without
- *		  conversion specifiers to a buffer that is too short
- *		  (thanks to Edwin Young <edwiny@autonomy.com> for
- *		  spotting the problem);
- *		- added macros PORTABLE_SNPRINTF_VERSION_(MAJOR|MINOR)
- *		  to snprintf.h
- * 2000-02-14	V2.0 (never released) Mark Martinec <mark.martinec@ijs.si>
- *		- relaxed license terms: The Artistic License now applies.
- *		  You may still apply the GNU GENERAL PUBLIC LICENSE
- *		  as was distributed with previous versions, if you prefer;
- *		- changed REVISION HISTORY dates to use ISO 8601 date format;
- *		- added vsnprintf (patch also independently proposed by
- *		  Caolan McNamara 2000-05-04, and Keith M Willenson 2000-06-01)
- * 2000-06-27	V2.1  Mark Martinec <mark.martinec@ijs.si>
- *		- removed POSIX check for str_m<1; value 0 for str_m is
- *		  allowed by ISO C99 (and GNU C library 2.1) - (pointed out
- *		  on 2000-05-04 by Caolan McNamara, caolan@ csn dot ul dot ie).
- *		  Besides relaxed license this change in standards adherence
- *		  is the main reason to bump up the major version number;
- *		- added nonstandard routines asnprintf, vasnprintf, asprintf,
- *		  vasprintf that dynamically allocate storage for the
- *		  resulting string; these routines are not compiled by default,
- *		  see comments where NEED_V?ASN?PRINTF macros are defined;
- *		- autoconf contributed by Caolan McNamara
- * 2000-10-06	V2.2  Mark Martinec <mark.martinec@ijs.si>
- *		- BUG FIX: the %c conversion used a temporary variable
- *		  that was no longer in scope when referenced,
- *		  possibly causing incorrect resulting character;
- *		- BUG FIX: make precision and minimal field width unsigned
- *		  to handle huge values (2^31 <= n < 2^32) correctly;
- *		  also be more careful in the use of signed/unsigned/size_t
- *		  internal variables - probably more careful than many
- *		  vendor implementations, but there may still be a case
- *		  where huge values of str_m, precision or minimal field
- *		  could cause incorrect behaviour;
- *		- use separate variables for signed/unsigned arguments,
- *		  and for short/int, long, and long long argument lengths
- *		  to avoid possible incompatibilities on certain
- *		  computer architectures. Also use separate variable
- *		  arg_sign to hold sign of a numeric argument,
- *		  to make code more transparent;
- *		- some fiddling with zero padding and "0x" to make it
- *		  Linux compatible;
- *		- systematically use macros fast_memcpy and fast_memset
- *		  instead of case-by-case hand optimization; determine some
- *		  breakeven string lengths for different architectures;
- *		- terminology change: 'format' -> 'conversion specifier',
- *		  'C9x' -> 'ISO/IEC 9899:1999 ("ISO C99")',
- *		  'alternative form' -> 'alternate form',
- *		  'data type modifier' -> 'length modifier';
- *		- several comments rephrased and new ones added;
- *		- make compiler not complain about 'credits' defined but
- *		  not used;
+ * 1999-04  V0.9  Mark Martinec
+ *    - initial version, some modifications after comparing printf
+ *      man pages for Digital Unix 4.0, Solaris 2.6 and HPUX 10,
+ *      and checking how Perl handles sprintf (differently!);
+ * 1999-04-09  V1.0  Mark Martinec <mark.martinec@ijs.si>
+ *    - added main test program, fixed remaining inconsistencies,
+ *      added optional (long long int) support;
+ * 1999-04-12  V1.1  Mark Martinec <mark.martinec@ijs.si>
+ *    - support the 'p' conversion (pointer to void);
+ *    - if a string precision is specified
+ *      make sure the string beyond the specified precision
+ *      will not be referenced (e.g. by strlen);
+ * 1999-04-13  V1.2  Mark Martinec <mark.martinec@ijs.si>
+ *    - support synonyms %D=%ld, %U=%lu, %O=%lo;
+ *    - speed up the case of long format string with few conversions;
+ * 1999-06-30  V1.3  Mark Martinec <mark.martinec@ijs.si>
+ *    - fixed runaway loop (eventually crashing when str_l wraps
+ *      beyond 2^31) while copying format string without
+ *      conversion specifiers to a buffer that is too short
+ *      (thanks to Edwin Young <edwiny@autonomy.com> for
+ *      spotting the problem);
+ *    - added macros PORTABLE_SNPRINTF_VERSION_(MAJOR|MINOR)
+ *      to snprintf.h
+ * 2000-02-14  V2.0 (never released) Mark Martinec <mark.martinec@ijs.si>
+ *    - relaxed license terms: The Artistic License now applies.
+ *      You may still apply the GNU GENERAL PUBLIC LICENSE
+ *      as was distributed with previous versions, if you prefer;
+ *    - changed REVISION HISTORY dates to use ISO 8601 date format;
+ *    - added vsnprintf (patch also independently proposed by
+ *      Caolan McNamara 2000-05-04, and Keith M Willenson 2000-06-01)
+ * 2000-06-27  V2.1  Mark Martinec <mark.martinec@ijs.si>
+ *    - removed POSIX check for str_m<1; value 0 for str_m is
+ *      allowed by ISO C99 (and GNU C library 2.1) - (pointed out
+ *      on 2000-05-04 by Caolan McNamara, caolan@ csn dot ul dot ie).
+ *      Besides relaxed license this change in standards adherence
+ *      is the main reason to bump up the major version number;
+ *    - added nonstandard routines asnprintf, vasnprintf, asprintf,
+ *      vasprintf that dynamically allocate storage for the
+ *      resulting string; these routines are not compiled by default,
+ *      see comments where NEED_V?ASN?PRINTF macros are defined;
+ *    - autoconf contributed by Caolan McNamara
+ * 2000-10-06  V2.2  Mark Martinec <mark.martinec@ijs.si>
+ *    - BUG FIX: the %c conversion used a temporary variable
+ *      that was no longer in scope when referenced,
+ *      possibly causing incorrect resulting character;
+ *    - BUG FIX: make precision and minimal field width unsigned
+ *      to handle huge values (2^31 <= n < 2^32) correctly;
+ *      also be more careful in the use of signed/unsigned/size_t
+ *      internal variables - probably more careful than many
+ *      vendor implementations, but there may still be a case
+ *      where huge values of str_m, precision or minimal field
+ *      could cause incorrect behaviour;
+ *    - use separate variables for signed/unsigned arguments,
+ *      and for short/int, long, and long long argument lengths
+ *      to avoid possible incompatibilities on certain
+ *      computer architectures. Also use separate variable
+ *      arg_sign to hold sign of a numeric argument,
+ *      to make code more transparent;
+ *    - some fiddling with zero padding and "0x" to make it
+ *      Linux compatible;
+ *    - systematically use macros fast_memcpy and fast_memset
+ *      instead of case-by-case hand optimization; determine some
+ *      breakeven string lengths for different architectures;
+ *    - terminology change: 'format' -> 'conversion specifier',
+ *      'C9x' -> 'ISO/IEC 9899:1999 ("ISO C99")',
+ *      'alternative form' -> 'alternate form',
+ *      'data type modifier' -> 'length modifier';
+ *    - several comments rephrased and new ones added;
+ *    - make compiler not complain about 'credits' defined but
+ *      not used;
  */
 
 

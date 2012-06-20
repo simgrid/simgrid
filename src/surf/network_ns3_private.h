@@ -11,15 +11,15 @@
 #include "xbt/dict.h"
 
 typedef struct ns3_link{
-	char * id;
-	char * lat;
-	char * bdw;
+  char * id;
+  char * lat;
+  char * bdw;
 }s_ns3_link_t, *ns3_link_t;
 
 typedef struct surf_ns3_link{
-	s_surf_resource_t generic_resource;
-	ns3_link_t data;
-	int created;
+  s_surf_resource_t generic_resource;
+  ns3_link_t data;
+  int created;
 }s_surf_ns3_link_t, *surf_ns3_link_t;
 
 typedef struct surf_action_network_ns3 {

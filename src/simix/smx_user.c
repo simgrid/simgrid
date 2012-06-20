@@ -214,7 +214,7 @@ smx_action_t simcall_host_parallel_execute(const char *name,
      xbt_assert(isfinite(computation_amount[i]), "computation_amount[%d] is not finite!", i);
      for (j = 0 ; j < host_nb ; ++j) {
         xbt_assert(isfinite(communication_amount[i + host_nb * j]), 
-	           "communication_amount[%d+%d*%d] is not finite!", i, host_nb, j);
+             "communication_amount[%d+%d*%d] is not finite!", i, host_nb, j);
      }   
   }   
  
@@ -616,8 +616,8 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
  * to create the SIMIX action. It can raise a host_error exception if the
  * host crashed. The default SIMIX name of the action is "sleep".
  *
- * 	\param duration Time duration of the sleep.
- * 	\return A result telling whether the sleep was successful
+ *   \param duration Time duration of the sleep.
+ *   \return A result telling whether the sleep was successful
  */
 e_smx_state_t simcall_process_sleep(double duration)
 {

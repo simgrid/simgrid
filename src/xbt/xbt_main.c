@@ -62,12 +62,12 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
                     LPVOID lpvReserved)
 {
   if (fdwReason == DLL_PROCESS_ATTACH
-		  && xbt_dll_process_is_attached == 0) {
-	  xbt_dll_process_is_attached = 1;
-	  xbt_preinit();
+      && xbt_dll_process_is_attached == 0) {
+    xbt_dll_process_is_attached = 1;
+    xbt_preinit();
   } else if (fdwReason == DLL_PROCESS_DETACH
-		  && xbt_dll_process_is_attached == 1) {
-	  xbt_dll_process_is_attached = 0;
+      && xbt_dll_process_is_attached == 1) {
+    xbt_dll_process_is_attached = 0;
       xbt_postexit();
   }
   return 1;

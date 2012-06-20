@@ -79,16 +79,16 @@ typedef struct surf_action {
   double cost;                  /**< cost        */
   double priority;              /**< priority (1.0 by default) */
   double max_duration;          /**< max_duration (may fluctuate until
-				   the task is completed) */
+           the task is completed) */
   double remains;               /**< How much of that cost remains to
-				 * be done in the currently running task */
+         * be done in the currently running task */
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int latency_limited;               /**< Set to 1 if is limited by latency, 0 otherwise */
 #endif
 
   double start;                 /**< start time  */
   double finish;                /**< finish time : this is modified during the run
-				 * and fluctuates until the task is completed */
+         * and fluctuates until the task is completed */
   void *data;                   /**< for your convenience */
   int refcount;
   surf_model_t model_type;
@@ -233,7 +233,7 @@ typedef struct surf_storage_model_extension_public {
       */
 typedef struct surf_workstation_model_extension_public {
   surf_action_t(*execute) (void *workstation, double size);                                /**< Execute a computation amount on a workstation
-                    									and create the corresponding action */
+                                      and create the corresponding action */
   surf_action_t(*sleep) (void *workstation, double duration);                              /**< Make a workstation sleep during a given duration */
   e_surf_resource_state_t(*get_state) (void *workstation);                                      /**< Return the CPU state of a workstation */
   double (*get_speed) (void *workstation, double load);                                    /**< Return the speed of a workstation */
@@ -332,10 +332,10 @@ surf_model_t surf_model_init(void);
 void surf_model_exit(surf_model_t model);
 
 static inline void *surf_cpu_resource_by_name(const char *name) {
-	return xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL);
+  return xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL);
 }
 static inline void *surf_workstation_resource_by_name(const char *name){
-	return xbt_lib_get_or_null(host_lib, name, SURF_WKS_LEVEL);
+  return xbt_lib_get_or_null(host_lib, name, SURF_WKS_LEVEL);
 }
 static inline void *surf_storage_resource_by_name(const char *name){
     return xbt_lib_get_or_null(storage_lib, name, SURF_STORAGE_LEVEL);
