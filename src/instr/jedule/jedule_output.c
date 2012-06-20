@@ -223,19 +223,20 @@ void write_jedule_output(FILE *file, jedule_t jedule,
 //  xbt_assert( jed_file != NULL );
 
   jed_file = file;
+  if (!xbt_dynar_is_empty(jedule_event_list)){
 
-  fprintf(jed_file, "<jedule>\n");
+    fprintf(jed_file, "<jedule>\n");
 
-  fprintf(jed_file, "<jedule_meta>\n");
-  print_key_value_dict(jedule->jedule_meta_info);
-  fprintf(jed_file, "</jedule_meta>\n");
+    fprintf(jed_file, "<jedule_meta>\n");
+    print_key_value_dict(jedule->jedule_meta_info);
+    fprintf(jed_file, "</jedule_meta>\n");
 
-  print_platform(jedule->root_container);
+    print_platform(jedule->root_container);
 
-  print_events(event_list);
+    print_events(event_list);
 
-  fprintf(jed_file, "</jedule>\n");
-
+    fprintf(jed_file, "</jedule>\n");
+  }
 }
 
 void jedule_init_output() {
