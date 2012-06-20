@@ -138,6 +138,7 @@ XBT_PUBLIC(const char *) MSG_process_get_property_value(m_process_t
 XBT_PUBLIC(MSG_error_t) MSG_process_suspend(m_process_t process);
 XBT_PUBLIC(MSG_error_t) MSG_process_resume(m_process_t process);
 XBT_PUBLIC(int) MSG_process_is_suspended(m_process_t process);
+XBT_PUBLIC(void) MSG_process_on_exit_add(int_f_pvoid_t fun, void *data);
 
 /************************** Task handling ************************************/
 XBT_PUBLIC(m_task_t) MSG_task_create(const char *name,

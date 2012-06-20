@@ -488,3 +488,12 @@ int MSG_process_is_suspended(m_process_t process)
 smx_context_t MSG_process_get_smx_ctx(m_process_t process) {
   return SIMIX_process_get_context(process);
 }
+/**
+ * \ingroup m_process_management
+ * \brief Add a function to the list of "on_exit" functions for the current process.
+ * The on_exit functions are the functions executed when your process is killed.
+ * You should use them to free the data used by your process.
+ */
+void MSG_process_on_exit_add(int_f_pvoid_t fun, void *data) {
+  SIMIX_process_on_exit_add(fun,data);
+}
