@@ -80,7 +80,7 @@ void MC_init_safety_stateless(void)
 void MC_init_safety_stateful(void){
 
   
-   /* Check if MC is already initialized */
+  /* Check if MC is already initialized */
   if (initial_snapshot)
     return;
 
@@ -120,7 +120,7 @@ static void MC_init_liveness(xbt_automaton_t a){
 
   XBT_DEBUG("Creating stack");
 
- /* Create exploration stack */
+  /* Create exploration stack */
   mc_stack_liveness = xbt_fifo_new();
 
   MC_UNSET_RAW_MEM;
@@ -190,7 +190,7 @@ void MC_wait_for_requests(void)
     xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
       req = &process->simcall;
       if (req->call != SIMCALL_NONE && !MC_request_is_visible(req))
-          SIMIX_simcall_pre(req, 0);
+        SIMIX_simcall_pre(req, 0);
     }
   }
 }
@@ -216,7 +216,7 @@ int MC_deadlock_check()
  * \brief Re-executes from the initial state all the transitions indicated by
  *        a given model-checker stack.
  * \param stack The stack with the transitions to execute.
-*/
+ */
 void MC_replay(xbt_fifo_t stack)
 {
   int value;
@@ -293,26 +293,26 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
       if(pair->requests > 0){
    
-  saved_req = MC_state_get_executed_request(state, &value);
-  //XBT_DEBUG("SavedReq->call %u", saved_req->call);
+        saved_req = MC_state_get_executed_request(state, &value);
+        //XBT_DEBUG("SavedReq->call %u", saved_req->call);
       
-  if(saved_req != NULL){
-    /* because we got a copy of the executed request, we have to fetch the  
-       real one, pointed by the request field of the issuer process */
-    req = &saved_req->issuer->simcall;
-    //XBT_DEBUG("Req->call %u", req->call);
+        if(saved_req != NULL){
+          /* because we got a copy of the executed request, we have to fetch the  
+             real one, pointed by the request field of the issuer process */
+          req = &saved_req->issuer->simcall;
+          //XBT_DEBUG("Req->call %u", req->call);
   
-    /* Debug information */
-    if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
-      req_str = MC_request_to_string(req, value);
-      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
-      xbt_free(req_str);
-    }
+          /* Debug information */
+          if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+            req_str = MC_request_to_string(req, value);
+            XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
+            xbt_free(req_str);
+          }
   
-  }
+        }
  
-  SIMIX_simcall_pre(req, value);
-  MC_wait_for_requests();
+        SIMIX_simcall_pre(req, value);
+        MC_wait_for_requests();
       }
 
       depth++;
@@ -327,34 +327,34 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
     /* Traverse the stack from the initial state and re-execute the transitions */
     for (item = xbt_fifo_get_last_item(stack);
-   item != xbt_fifo_get_first_item(stack);
-   item = xbt_fifo_get_prev_item(item)) {
+         item != xbt_fifo_get_first_item(stack);
+         item = xbt_fifo_get_prev_item(item)) {
 
       pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
       state = (mc_state_t) pair->graph_state;
 
       if(pair->requests > 0){
    
-  saved_req = MC_state_get_executed_request(state, &value);
-  //XBT_DEBUG("SavedReq->call %u", saved_req->call);
+        saved_req = MC_state_get_executed_request(state, &value);
+        //XBT_DEBUG("SavedReq->call %u", saved_req->call);
       
-  if(saved_req != NULL){
-    /* because we got a copy of the executed request, we have to fetch the  
-       real one, pointed by the request field of the issuer process */
-    req = &saved_req->issuer->simcall;
-    //XBT_DEBUG("Req->call %u", req->call);
+        if(saved_req != NULL){
+          /* because we got a copy of the executed request, we have to fetch the  
+             real one, pointed by the request field of the issuer process */
+          req = &saved_req->issuer->simcall;
+          //XBT_DEBUG("Req->call %u", req->call);
   
-    /* Debug information */
-    if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
-      req_str = MC_request_to_string(req, value);
-      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
-      xbt_free(req_str);
-    }
+          /* Debug information */
+          if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)){
+            req_str = MC_request_to_string(req, value);
+            XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
+            xbt_free(req_str);
+          }
   
-  }
+        }
  
-  SIMIX_simcall_pre(req, value);
-  MC_wait_for_requests();
+        SIMIX_simcall_pre(req, value);
+        MC_wait_for_requests();
       }
 
       depth++;
@@ -372,7 +372,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
  * \brief Dumps the contents of a model-checker's stack and shows the actual
  *        execution trace
  * \param stack The stack to dump
-*/
+ */
 void MC_dump_stack_safety_stateless(xbt_fifo_t stack)
 {
   mc_state_t state;
@@ -414,8 +414,8 @@ void MC_show_deadlock(smx_simcall_t req)
   XBT_INFO("**************************");
   XBT_INFO("Locked request:");
   /*req_str = MC_request_to_string(req);
-  XBT_INFO("%s", req_str);
-  xbt_free(req_str);*/
+    XBT_INFO("%s", req_str);
+    xbt_free(req_str);*/
   XBT_INFO("Counter-example execution trace:");
   MC_dump_stack_safety_stateless(mc_stack_safety_stateless);
 }
@@ -428,8 +428,8 @@ void MC_show_deadlock_stateful(smx_simcall_t req)
   XBT_INFO("**************************");
   XBT_INFO("Locked request:");
   /*req_str = MC_request_to_string(req);
-  XBT_INFO("%s", req_str);
-  xbt_free(req_str);*/
+    XBT_INFO("%s", req_str);
+    xbt_free(req_str);*/
   XBT_INFO("Counter-example execution trace:");
   MC_show_stack_safety_stateful(mc_stack_safety_stateful);
 }
@@ -441,7 +441,7 @@ void MC_dump_stack_safety_stateful(xbt_fifo_t stack)
   MC_show_stack_safety_stateful(stack);
 
   /*MC_SET_RAW_MEM;
-  while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
+    while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
     MC_state_delete(state);
     MC_UNSET_RAW_MEM;*/
 }
@@ -481,11 +481,11 @@ void MC_show_stack_liveness(xbt_fifo_t stack){
     req = MC_state_get_executed_request(pair->graph_state, &value);
     if(req){
       if(pair->requests>0){
-  req_str = MC_request_to_string(req, value);
-  XBT_INFO("%s", req_str);
-  xbt_free(req_str);
+        req_str = MC_request_to_string(req, value);
+        XBT_INFO("%s", req_str);
+        xbt_free(req_str);
       }else{
-  XBT_INFO("End of system requests but evolution in Büchi automaton");
+        XBT_INFO("End of system requests but evolution in Büchi automaton");
       }
     }
   }
@@ -508,9 +508,9 @@ void MC_print_statistics(mc_stats_t stats)
   XBT_INFO("Visited states = %lu", stats->visited_states);
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
   XBT_INFO("Expanded / Visited = %lf",
-        (double) stats->visited_states / stats->expanded_states);
+           (double) stats->visited_states / stats->expanded_states);
   /*XBT_INFO("Exploration coverage = %lf",
-     (double)stats->expanded_states / stats->state_size); */
+    (double)stats->expanded_states / stats->state_size); */
 }
 
 void MC_print_statistics_pairs(mc_stats_pair_t stats)
@@ -519,9 +519,9 @@ void MC_print_statistics_pairs(mc_stats_pair_t stats)
   XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
   //XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
   XBT_INFO("Expanded / Visited = %lf",
-        (double) stats->visited_pairs / stats->expanded_pairs);
+           (double) stats->visited_pairs / stats->expanded_pairs);
   /*XBT_INFO("Exploration coverage = %lf",
-     (double)stats->expanded_states / stats->state_size); */
+    (double)stats->expanded_states / stats->state_size); */
 }
 
 void MC_assert(int prop)
@@ -610,5 +610,8 @@ void MC_diff(void){
 }
 
 xbt_automaton_t MC_create_automaton(const char *file){
-  return xbt_create_automaton(file);
+  MC_SET_RAW_MEM;
+  xbt_automaton_t a = xbt_create_automaton(file);
+  MC_UNSET_RAW_MEM;
+  return a;
 }

@@ -161,7 +161,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       }
       if (--mdp->heapinfo[block].busy_frag.nfree != 0) {
         mdp->heapinfo[block].busy_frag.first =
-    RESIDUAL(next->next, BLOCKSIZE) >> log;
+          RESIDUAL(next->next, BLOCKSIZE) >> log;
       }
 
       /* Update the statistics.  */
@@ -183,7 +183,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       /* Link all fragments but the first into the free list, and mark their requested size to 0.  */
       block = BLOCK(result);
       for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i) {
-      mdp->heapinfo[block].busy_frag.frag_size[i] = 0;
+        mdp->heapinfo[block].busy_frag.frag_size[i] = 0;
         next = (struct list *) ((char *) result + (i << log));
         next->next = mdp->fraghead[log].next;
         next->prev = &mdp->fraghead[log];
@@ -213,8 +213,8 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
     start = block = MALLOC_SEARCH_START;
     while (mdp->heapinfo[block].free_block.size < blocks) {
       if (mdp->heapinfo[block].type >=0) { // Don't trust xbt_die and friends in malloc-level library, you fool!
-  fprintf(stderr,"Internal error: found a free block not marked as such (block=%lu type=%lu). Please report this bug.\n",(unsigned long)block,(unsigned long)mdp->heapinfo[block].type);
-  abort();
+        fprintf(stderr,"Internal error: found a free block not marked as such (block=%lu type=%lu). Please report this bug.\n",(unsigned long)block,(unsigned long)mdp->heapinfo[block].type);
+        abort();
       }
 
       block = mdp->heapinfo[block].free_block.next;
@@ -237,16 +237,16 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
           continue;
         }
         result = register_morecore(mdp, blocks * BLOCKSIZE);
-  memset(result, 0, requested_size);
+        memset(result, 0, requested_size);
 
         block = BLOCK(result);
         for (it=0;it<blocks;it++)
-    mdp->heapinfo[block+it].type = 0;
+          mdp->heapinfo[block+it].type = 0;
         mdp->heapinfo[block].busy_block.size = blocks;
         mdp->heapinfo[block].busy_block.busy_size = requested_size;
         mdp->heapinfo[block].busy_block.bt_size=xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
-  mdp -> heapstats.chunks_used++;
-  mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
+        mdp -> heapstats.chunks_used++;
+        mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
         return result;
       }
       /* Need large block(s), but found some in the existing heap */
@@ -259,21 +259,21 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       /* The block we found has a bit left over,
          so relink the tail end back into the free list. */
       mdp->heapinfo[block + blocks].free_block.size
-  = mdp->heapinfo[block].free_block.size - blocks;
+        = mdp->heapinfo[block].free_block.size - blocks;
       mdp->heapinfo[block + blocks].free_block.next
-  = mdp->heapinfo[block].free_block.next;
+        = mdp->heapinfo[block].free_block.next;
       mdp->heapinfo[block + blocks].free_block.prev
-  = mdp->heapinfo[block].free_block.prev;
+        = mdp->heapinfo[block].free_block.prev;
       mdp->heapinfo[mdp->heapinfo[block].free_block.prev].free_block.next
-  = mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev
-  = mdp->heapindex = block + blocks;
+        = mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev
+        = mdp->heapindex = block + blocks;
     } else {
       /* The block exactly matches our requirements,
          so just remove it from the list. */
       mdp->heapinfo[mdp->heapinfo[block].free_block.next].free_block.prev
-  = mdp->heapinfo[block].free_block.prev;
+        = mdp->heapinfo[block].free_block.prev;
       mdp->heapinfo[mdp->heapinfo[block].free_block.prev].free_block.next
-  = mdp->heapindex = mdp->heapinfo[block].free_block.next;
+        = mdp->heapindex = mdp->heapinfo[block].free_block.next;
     }
 
     for (it=0;it<blocks;it++)

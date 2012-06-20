@@ -23,6 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
  */
 MSG_error_t MSG_task_execute(m_task_t task)
 {
+  xbt_ex_t e;
   simdata_task_t simdata = NULL;
   simdata_process_t p_simdata;
   e_smx_state_t comp_state;
@@ -59,15 +60,16 @@ MSG_error_t MSG_task_execute(m_task_t task)
 #ifdef HAVE_TRACING
   simcall_set_category(simdata->compute, task->category);
 #endif
-
+  
   p_simdata->waiting_action = simdata->compute;
-  comp_state = simcall_host_execution_wait(simdata->compute);
-  p_simdata->waiting_action = NULL;
+  TRY {
+    comp_state = simcall_host_execution_wait(simdata->compute);
+    p_simdata->waiting_action = NULL;
 
-  simdata->isused=0;
+    simdata->isused=0;
 
-  XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
-  if (comp_state == SIMIX_DONE) {
+    XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
+
     /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
     simdata->computation_amount = 0.0;
     simdata->comm = NULL;
@@ -76,23 +78,32 @@ MSG_error_t MSG_task_execute(m_task_t task)
     TRACE_msg_task_execute_end(task);
 #endif
     MSG_RETURN(MSG_OK);
-  } else if (simcall_host_get_state(SIMIX_host_self()) == 0) {
-    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    simdata->comm = NULL;
-    simdata->compute = NULL;
-#ifdef HAVE_TRACING
-    TRACE_msg_task_execute_end(task);
-#endif
-    MSG_RETURN(MSG_HOST_FAILURE);
-  } else {
-    /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
-    simdata->comm = NULL;
-    simdata->compute = NULL;
-#ifdef HAVE_TRACING
-    TRACE_msg_task_execute_end(task);
-#endif
-    MSG_RETURN(MSG_TASK_CANCELED);
+  }  
+  CATCH(e) {
+    switch (e.category) {
+      case host_error:
+        /* action ended, set comm and compute = NULL, the actions is already  destroyed in the main function */
+        simdata->comm = NULL;
+        simdata->compute = NULL;
+        #ifdef HAVE_TRACING
+          TRACE_msg_task_execute_end(task);
+        #endif
+        MSG_RETURN(MSG_HOST_FAILURE);
+        break;  
+      case cancel_error:
+        /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+        simdata->comm = NULL;
+        simdata->compute = NULL;
+    #ifdef HAVE_TRACING
+        TRACE_msg_task_execute_end(task);
+    #endif
+        MSG_RETURN(MSG_TASK_CANCELED);        
+      break;
+      default:
+        RETHROW;
+    }
   }
+  MSG_RETURN(MSG_OK);
 }
 
 /** \ingroup m_task_management

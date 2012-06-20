@@ -180,9 +180,9 @@
 #undef HAVE_SYSCONF
 #endif
 
-/* No `usleep' function. */
-#if defined(HAVE_USLEEP)
-#undef HAVE_USLEEP
+/* No `nanosleep' function. */
+#if defined(HAVE_NANOSLEEP)
+#undef HAVE_NANOSLEEP
 #endif
 
 /* The compiler has the `vsnprintf' function. */

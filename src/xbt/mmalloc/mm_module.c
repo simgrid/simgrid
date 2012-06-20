@@ -3,22 +3,22 @@
 
    Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com
 
-This file is part of the GNU C Library.
+   This file is part of the GNU C Library.
 
-The GNU C Library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public License as
-published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public License as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
 
-The GNU C Library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Library General Public License for more details.
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
 
-You should have received a copy of the GNU Library General Public
-License along with the GNU C Library; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
+   You should have received a copy of the GNU Library General Public
+   License along with the GNU C Library; see the file COPYING.LIB.  If
+   not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 #include <sys/types.h>
 #include <fcntl.h>              /* After sys/types.h, at least for dpx/2.  */
@@ -84,56 +84,56 @@ xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
 
     else if (sbuf.st_size > 0) {
       /* We were given an valid file descriptor on an open file, so try to remap
-   it into the current process at the same address to which it was previously
-   mapped. It naturally have to pass some sanity checks for that.
+         it into the current process at the same address to which it was previously
+         mapped. It naturally have to pass some sanity checks for that.
 
-   Note that we have to update the file descriptor number in the malloc-
-   descriptor read from the file to match the current valid one, before
-   trying to map the file in, and again after a successful mapping and
-   after we've switched over to using the mapped in malloc descriptor
-   rather than the temporary one on the stack.
+         Note that we have to update the file descriptor number in the malloc-
+         descriptor read from the file to match the current valid one, before
+         trying to map the file in, and again after a successful mapping and
+         after we've switched over to using the mapped in malloc descriptor
+         rather than the temporary one on the stack.
 
-   Once we've switched over to using the mapped in malloc descriptor, we
-   have to update the pointer to the morecore function, since it almost
-   certainly will be at a different address if the process reusing the
-   mapped region is from a different executable.
+         Once we've switched over to using the mapped in malloc descriptor, we
+         have to update the pointer to the morecore function, since it almost
+         certainly will be at a different address if the process reusing the
+         mapped region is from a different executable.
 
-   Also note that if the heap being remapped previously used the mmcheckf()
-   routines, we need to update the hooks since their target functions
-   will have certainly moved if the executable has changed in any way.
-   We do this by calling mmcheckf() internally.
+         Also note that if the heap being remapped previously used the mmcheckf()
+         routines, we need to update the hooks since their target functions
+         will have certainly moved if the executable has changed in any way.
+         We do this by calling mmcheckf() internally.
 
-   Returns a pointer to the malloc descriptor if successful, or NULL if
-   unsuccessful for some reason. */
+         Returns a pointer to the malloc descriptor if successful, or NULL if
+         unsuccessful for some reason. */
 
       struct mdesc newmd;
       struct mdesc *mdptr = NULL, *mdptemp = NULL;
 
       if (lseek(fd, 0L, SEEK_SET) != 0)
-  return NULL;
+        return NULL;
       if (read(fd, (char *) &newmd, sizeof(newmd)) != sizeof(newmd))
-  return NULL;
+        return NULL;
       if (newmd.headersize != sizeof(newmd))
-  return NULL;
+        return NULL;
       if (strcmp(newmd.magic, MMALLOC_MAGIC) != 0)
-  return NULL;
+        return NULL;
       if (newmd.version > MMALLOC_VERSION)
-  return NULL;
+        return NULL;
 
       newmd.fd = fd;
       if (__mmalloc_remap_core(&newmd) == newmd.base) {
-  mdptr = (struct mdesc *) newmd.base;
-  mdptr->fd = fd;
-  if(!mdptr->refcount){
-    sem_init(&mdptr->sem, 0, 1);
-    mdptr->refcount++;
-  }
+        mdptr = (struct mdesc *) newmd.base;
+        mdptr->fd = fd;
+        if(!mdptr->refcount){
+          sem_init(&mdptr->sem, 0, 1);
+          mdptr->refcount++;
+        }
       }
 
       /* Add the new heap to the linked list of heaps attached by mmalloc */
       mdptemp = __mmalloc_default_mdp;
       while(mdptemp->next_mdesc)
-  mdptemp = mdptemp->next_mdesc;
+        mdptemp = mdptemp->next_mdesc;
 
       LOCK(mdptemp);
       mdptemp->next_mdesc = mdptr;
@@ -193,7 +193,7 @@ xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
       mdp = mdp->next_mdesc;
 
     LOCK(mdp);
-      mdp->next_mdesc = (struct mdesc *)mbase;
+    mdp->next_mdesc = (struct mdesc *)mbase;
     UNLOCK(mdp);
   }
 
@@ -218,18 +218,18 @@ void xbt_mheap_destroy_no_free(xbt_mheap_t md)
 }
 
 /** Terminate access to a mmalloc managed region by unmapping all memory pages
-   associated with the region, and closing the file descriptor if it is one
-   that we opened.
+    associated with the region, and closing the file descriptor if it is one
+    that we opened.
 
-   Returns NULL on success.
+    Returns NULL on success.
 
-   Returns the malloc descriptor on failure, which can subsequently be used
-   for further action, such as obtaining more information about the nature of
-   the failure.
+    Returns the malloc descriptor on failure, which can subsequently be used
+    for further action, such as obtaining more information about the nature of
+    the failure.
 
-   Note that the malloc descriptor that we are using is currently located in
-   region we are about to unmap, so we first make a local copy of it on the
-   stack and use the copy. */
+    Note that the malloc descriptor that we are using is currently located in
+    region we are about to unmap, so we first make a local copy of it on the
+    stack and use the copy. */
 
 void *xbt_mheap_destroy(xbt_mheap_t mdp)
 {
@@ -324,7 +324,7 @@ void *mmalloc_preinit(void)
     __mmalloc_default_mdp = xbt_mheap_new(-1, addr);
     /* Fixme? only the default mdp in protected against forks */
     res = xbt_os_thread_atfork(mmalloc_fork_prepare,
-             mmalloc_fork_parent, mmalloc_fork_child);
+                               mmalloc_fork_parent, mmalloc_fork_child);
     if (res != 0)
       THROWF(system_error,0,"xbt_os_thread_atfork() failed: return value %d",res);
   }
