@@ -38,6 +38,9 @@ static void surf_config_cmd_line(int *argc, char **argv)
       xbt_cfg_help(_surf_cfg_set);
       printf(
 "\n"
+"Each of these configurations can be used by adding\n"
+"    --cfg=<option name>:<option value>\n"
+"to the command line.\n"
 "You can also use --help-models to see the details of all models known by this simulator.\n"
 #ifdef HAVE_TRACING
 "\n"
