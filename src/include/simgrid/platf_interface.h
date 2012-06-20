@@ -10,6 +10,7 @@
 #define SG_PLATF_INTERFACE_H
 
 #include "simgrid/platf.h" /* public interface */
+#include "xbt/RngStream.h"
 
 /* Module management functions */
 void sg_platf_init(void);
@@ -50,7 +51,6 @@ void sg_platf_mount_add_cb(sg_platf_mount_cb_t fct);
 void surf_config_models_setup(void);
 
 /* RngStream management functions */
-typedef struct RngStream_InfoState *RngStream; //Not to have to include RngStream.h
 void sg_platf_rng_stream_init(unsigned long seed[6]);
 RngStream sg_platf_rng_stream_get(const char* id);
 
