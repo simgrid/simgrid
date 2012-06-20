@@ -30,11 +30,11 @@ XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_generator(const char *id,
                                                   probabilist_event_generator_t generator1,
                                                   probabilist_event_generator_t generator2);
                                           
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(double alpha,
-                                                                           double beta);
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(double lambda);
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(double lambda,
-                                                                           double k);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(double min,
+                                                                           double max);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(double rate);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(double scale,
+                                                                           double shape);
 
 /** Defines whether a given resource is working or not */
 typedef enum {

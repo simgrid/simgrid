@@ -64,41 +64,41 @@ tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
   return trace;
 }
 
-probabilist_event_generator_t tmgr_event_generator_new_uniform(double alpha,
-                                                               double beta)
+probabilist_event_generator_t tmgr_event_generator_new_uniform(double min,
+                                                               double max)
 {  
   probabilist_event_generator_t event_generator = NULL;
   
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_uniform;
-  event_generator->s_uniform_parameters.alpha = alpha;
-  event_generator->s_uniform_parameters.beta = beta;
+  event_generator->s_uniform_parameters.min = min;
+  event_generator->s_uniform_parameters.max = max;
 
   tmgr_event_generator_next_value(event_generator);
   
   return event_generator;
 }
 
-probabilist_event_generator_t tmgr_event_generator_new_exponential(double lambda)
+probabilist_event_generator_t tmgr_event_generator_new_exponential(double rate)
 {  
   probabilist_event_generator_t event_generator = NULL;
   
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_exponential;
-  event_generator->s_exponential_parameters.lambda = lambda;
+  event_generator->s_exponential_parameters.rate = rate;
 
   return event_generator;
 }
 
-probabilist_event_generator_t tmgr_event_generator_new_weibull(double lambda,
-                                                               double k)
+probabilist_event_generator_t tmgr_event_generator_new_weibull(double scale,
+                                                               double shape)
 {  
   probabilist_event_generator_t event_generator = NULL;
   
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_weibull;
-  event_generator->s_weibull_parameters.lambda = lambda;
-  event_generator->s_weibull_parameters.k = k;
+  event_generator->s_weibull_parameters.scale = scale;
+  event_generator->s_weibull_parameters.shape = shape;
 
   tmgr_event_generator_next_value(event_generator);
   
@@ -111,17 +111,17 @@ double tmgr_event_generator_next_value(probabilist_event_generator_t generator)
   switch(generator->type) {
     case e_generator_uniform:
       generator->next_value = (RngStream_RandU01(generator->rng_stream)
-                  * (generator->s_uniform_parameters.beta - generator->s_uniform_parameters.alpha))
-                  + generator->s_uniform_parameters.alpha;
+                  * (generator->s_uniform_parameters.max - generator->s_uniform_parameters.min))
+                  + generator->s_uniform_parameters.min;
       break;
     case e_generator_exponential:
       generator->next_value = -log(RngStream_RandU01(generator->rng_stream))
-                              / generator->s_exponential_parameters.lambda;
+                              / generator->s_exponential_parameters.rate;
       break;
     case e_generator_weibull:
-      generator->next_value = - generator->s_weibull_parameters.lambda
+      generator->next_value = - generator->s_weibull_parameters.scale
                               * pow( log(RngStream_RandU01(generator->rng_stream)),
-                                    1.0 / generator->s_weibull_parameters.k );
+                                    1.0 / generator->s_weibull_parameters.shape );
   }
   
   return generator->next_value;
