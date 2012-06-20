@@ -12,6 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/ex.h"
 #include <string.h>
+#define HAVE_JEDULE 0
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,
                              "Logging specific to this SimDag example");
@@ -49,9 +50,6 @@ int main(int argc, char **argv)
       ("----------------------------- dump tasks again ------------------------------------");
   while ((task=dot_as_array[cursor++])){
     SD_task_dump(task);
-  }
-
-  xbt_dynar_foreach(dot, cursor, task) {
     SD_task_destroy(task);
   }
 
