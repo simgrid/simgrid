@@ -245,7 +245,7 @@ extern int _surf_do_mc_checkpoint;   /* this variable lives in xbt_main until I 
 static void _surf_cfg_cb_mc_checkpoint(const char *name, int pos)
 {
   _surf_do_mc_checkpoint = xbt_cfg_get_int(_surf_cfg_set, name);
-
+  xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
 }
 
 extern int _surf_do_verbose_exit;
