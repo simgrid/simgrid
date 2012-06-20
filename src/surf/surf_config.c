@@ -237,13 +237,6 @@ static void _surf_cfg_cb_model_check(const char *name, int pos)
   }
 }
 
-extern int _surf_do_mc_checkpoint;
-
-static void _surf_cfg_cb_mc_checkpoint(const char *name, int pos)
-{
-  _surf_do_mc_checkpoint = xbt_cfg_get_int(_surf_cfg_set, name);
-}
-
 extern int _surf_do_verbose_exit;
 
 static void _surf_cfg_cb_verbose_exit(const char *name, int pos)
@@ -490,14 +483,6 @@ void surf_config_init(int *argc, char **argv)
        internally it calls to variable->cb_set that in this case is the function 
        _surf_cfg_cb_model_check which sets it's value to 1 (instead of the default value 0)
        xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
-
-    /* do stateful model-check */
-    default_value_int = 0;
-    xbt_cfg_register(&_surf_cfg_set, "mc-checkpoint",
-                     "Activate the stateful model-checking of the \"simulated\" system (EXPERIMENTAL -- msg only for now), value corresponding to steps between each checkpoint",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
-                     _surf_cfg_cb_model_check, NULL);
-    
 
     /* do verbose-exit */
     default_value_int = 1;
