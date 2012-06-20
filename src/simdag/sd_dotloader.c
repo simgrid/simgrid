@@ -342,7 +342,7 @@ void dot_add_task(Agnode_t * dag_node)
     else {
       //one of necessary parameters are not given
       schedule = false;
-      XBT_VERB("The schedule is ignored, the task %s is not correctly schedule", current_job->name);
+      XBT_VERB("The schedule is ignored, the task %s is not correctly scheduled", current_job->name);
     }
   }
 }
