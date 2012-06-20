@@ -231,6 +231,9 @@ static void _surf_cfg_cb_model_check(const char *name, int pos)
   _surf_do_model_check = xbt_cfg_get_int(_surf_cfg_set, name);
 
   if (_surf_do_model_check) {
+#ifndef HAVE_MC
+    xbt_die("You tried to activate the model-checking from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
+#endif
     /* Tell modules using mallocators that they shouldn't. MC don't like them */
     xbt_fifo_preinit();
     xbt_dict_preinit();
