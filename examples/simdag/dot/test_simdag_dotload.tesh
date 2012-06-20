@@ -1,0 +1,587 @@
+#! ./tesh
+p Test the loader of DAG written in the DOT format
+
+$ $SG_TEST_EXENV ./dot_test ${srcdir:=..}/2clusters.xml ${srcdir:=.}/dag.dot
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
+> [0.000000] [sd_task/INFO] Displaying task root
+> [0.000000] [sd_task/INFO]   - state:  schedulable  not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO] Displaying task 0
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000129
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     0->1
+> [0.000000] [sd_task/INFO] Displaying task 1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000131
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     0->1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO] Displaying task 2
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000121
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO] Displaying task 3
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000231
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO] Displaying task 4
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO] Displaying task 5
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000046
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO] Displaying task 6
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000092
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO] Displaying task 7
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000041
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO] Displaying task 8
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000250
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO] Displaying task 9
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000079
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 2->3
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10002
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO] Displaying task 6->7
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO] Displaying task root->5
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 1->2
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10004
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO] Displaying task 7->end
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 0->1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10001
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO] Displaying task 4->5
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10029
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 7->8
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO] Displaying task end
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [test/INFO] ------------------- Schedule tasks ---------------------------
+> [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
+> [131.443480] [test/INFO] ------------------- Produce the trace file---------------------------
+> [131.443480] [test/INFO] Producing the trace of the run into ./dag.trace
+
+$ cat ${srcdir:=.}/dag.trace
+> [0.000000] C2-05 compute 0.000000 # root
+> [0.000000] C2-06 compute 10000000129.452715 # 0
+> [2.000600] C2-07 compute 10000000131.133657 # 1
+> [4.001200] C2-08 compute 10000000121.124870 # 2
+> [6.001800] C2-09 compute 10000000230.608025 # 3
+> [8.001800] C1-00 compute 10000000004.994019 # 4
+> [50.721440] C1-01 compute 10000000046.016401 # 5
+> [60.721440] C1-02 compute 10000000091.598791 # 6
+> [70.722040] C1-03 compute 10000000040.679438 # 7
+> [80.722640] C1-04 compute 10000000250.490017 # 8
+> [90.722641] C2-05 compute 10000000079.267649 # 9
+> [6.001200] C2-08 send C2-09 10001.781645 # 2->3
+> [6.001800] C2-09 recv C2-08 10001.781645 # 2->3
+> [70.721440] C1-02 send C1-03 10004.920415 # 6->7
+> [70.722040] C1-03 recv C1-02 10004.920415 # 6->7
+> [0.000000] C2-05 send C1-01 10014000.000000 # root->5
+> [50.721440] C1-01 recv C2-05 10014000.000000 # root->5
+> [4.000600] C2-07 send C2-08 10004.164631 # 1->2
+> [4.001200] C2-08 recv C2-07 10004.164631 # 1->2
+> [80.722040] C1-03 send C2-05 10014000.000000 # 7->end
+> [131.443480] C2-05 recv C1-03 10014000.000000 # 7->end
+> [2.000000] C2-06 send C2-07 10001.389601 # 0->1
+> [2.000600] C2-07 recv C2-06 10001.389601 # 0->1
+> [18.001800] C1-00 send C1-01 10029.262823 # 4->5
+> [18.002401] C1-01 recv C1-00 10029.262823 # 4->5
+> [80.722040] C1-03 send C1-04 10000.234049 # 7->8
+> [80.722640] C1-04 recv C1-03 10000.234049 # 7->8
+> [131.443480] C2-05 compute 0.000000 # end
+
+$ rm -f dag.trace
+
+$ $SG_TEST_EXENV ./dot_test2 ${srcdir:=.}/dag.dot
+> [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
+> [0.000000] [sd_task/INFO] Displaying task root
+> [0.000000] [sd_task/INFO]   - state:  schedulable  not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO] Displaying task 0
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000129
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     0->1
+> [0.000000] [sd_task/INFO] Displaying task 1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000131
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     0->1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO] Displaying task 2
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000121
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO] Displaying task 3
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000231
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO] Displaying task 4
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO] Displaying task 5
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000046
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO] Displaying task 6
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000092
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO] Displaying task 7
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000041
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO] Displaying task 8
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000250
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO] Displaying task 9
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000079
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 2->3
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10002
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO] Displaying task 6->7
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO] Displaying task root->5
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 1->2
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10004
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO] Displaying task 7->end
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 0->1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10001
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO] Displaying task 4->5
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10029
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 7->8
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO] Displaying task end
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [test/INFO] --------------------- Transform the dynar into an array ---------------------------
+> [0.000000] [test/INFO] ----------------------------- dump tasks again ------------------------------------
+> [0.000000] [sd_task/INFO] Displaying task root
+> [0.000000] [sd_task/INFO]   - state:  schedulable  not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO] Displaying task 0
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000129
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     0->1
+> [0.000000] [sd_task/INFO] Displaying task 1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000131
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     0->1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO] Displaying task 2
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000121
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO] Displaying task 3
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000231
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO] Displaying task 4
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO] Displaying task 5
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000046
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO] Displaying task 6
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000092
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO] Displaying task 7
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000041
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO] Displaying task 8
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000250
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO] Displaying task 9
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000079
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 2->3
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10002
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO] Displaying task 6->7
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO] Displaying task root->5
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 1->2
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10004
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO] Displaying task 7->end
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 0->1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10001
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO] Displaying task 4->5
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10029
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 7->8
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO] Displaying task end
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO]     7->end
