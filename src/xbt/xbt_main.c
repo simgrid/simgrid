@@ -27,6 +27,7 @@ char *xbt_binary_name = NULL;   /* Mandatory to retrieve neat backtraces */
 int xbt_initialized = 0;
 
 int _surf_do_model_check = 0;   /* this variable is used accros the libraries, and must be declared in XBT so that it's also defined in GRAS (not only in libsimgrid) */
+int _surf_do_mc_checkpoint = 0;   /* this variable is used accros the libraries, and must be declared in XBT so that it's also defined in GRAS (not only in libsimgrid) */
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.

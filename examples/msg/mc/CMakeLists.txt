@@ -16,6 +16,7 @@ add_executable(bugged2_liveness bugged2_liveness.c)
 add_executable(centralized_liveness centralized_liveness.c)
 add_executable(centralized_liveness_deadlock centralized_liveness_deadlock.c)
 add_executable(test_snapshot test_snapshot.c)
+add_executable(example example.c)
 
 target_link_libraries(centralized simgrid m )
 target_link_libraries(bugged1     simgrid m )
@@ -30,6 +31,7 @@ target_link_libraries(bugged2_liveness     simgrid m )
 target_link_libraries(centralized_liveness     simgrid m )
 target_link_libraries(centralized_liveness_deadlock     simgrid m )
 target_link_libraries(test_snapshot     simgrid m )
+target_link_libraries(example     simgrid m )
 endif(HAVE_MC)
 
 set(tesh_files
