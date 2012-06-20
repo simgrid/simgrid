@@ -67,7 +67,7 @@ typedef enum {
   SD_NOT_SCHEDULED = 0,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
   SD_SCHEDULABLE = 0x0001,               /**< @brief A task becomes SD_READY as soon as its dependencies are satisfied */
   SD_SCHEDULED = 0x0002,     /**< @brief A task becomes SD_SCHEDULED when you call function
-								  SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
+				SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
   SD_RUNNABLE = 0x0004,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
   SD_IN_FIFO = 0x0008,       /**< @brief A runnable task can have to wait in a workstation fifo if the workstation is sequential */
   SD_RUNNING = 0x0010,       /**< @brief An SD_RUNNABLE or SD_IN_FIFO becomes SD_RUNNING when it is launched. */
@@ -83,7 +83,8 @@ typedef enum {
   SD_TASK_NOT_TYPED = 0,      /**< @brief no specified type */
   SD_TASK_COMM_E2E = 1,       /**< @brief end to end communication */
   SD_TASK_COMP_SEQ = 2,        /**< @brief sequential computation */
-  SD_TASK_COMP_PAR_AMDAHL = 3 /**< @brief parallel computation (Amdahl's law) */
+  SD_TASK_COMP_PAR_AMDAHL = 3, /**< @brief parallel computation (Amdahl's law) */
+  SD_TASK_COMM_PAR_MXN_1D_BLOCK = 4 /**< @brief MxN data redistribution (1D Block distribution) */
 } e_SD_task_kind_t;
 
 
