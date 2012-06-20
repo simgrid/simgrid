@@ -393,27 +393,6 @@ WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
 ### Fill in the "make sync-gforge" target ###
 #############################################
 
-### TODO: LBO: CHECK IF CORRECT
-add_custom_target(sync-gforge-doc
-COMMAND chmod g+rw -R doc/
-COMMAND chmod a+rX -R doc/
-COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ || true 
-COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
-doc/user_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/user_guide || true
-COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
-doc/ref_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ref_guide || true
-COMMAND scp doc/user_guide/html/simgrid_modules2.png doc/user_guide/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png  doc/webcruft/simgrid_logo_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
-WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-)
-add_dependencies(sync-gforge-doc user_guide)
-add_dependencies(sync-gforge-doc ref_guide)
-
-add_custom_target(sync-gforge-dtd
-COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
-COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
-WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-)
-
 #PIPOL
 add_custom_target(sync-pipol
 COMMAND scp -r Experimental_bindings.sh Experimental.sh  MemCheck.sh pre-simgrid.sh navarro@pipol.inria.fr:~/

@@ -20,7 +20,7 @@
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
 
-    <tab type="user" visible="yes" url="../../html/index.html" title="Home"/>
+    <tab type="user" visible="yes" url="../../doc/index.html" title="Home"/>
     <tab type="user" url="../../ref_guide/html/index.html" title="Reference Manual"/>
     <tab type="mainpage" visible="no" title="User Guide"/>
     <tab type="user" url="http://simgrid.gforge.inria.fr/101/index.php" title="Tutorials"/>

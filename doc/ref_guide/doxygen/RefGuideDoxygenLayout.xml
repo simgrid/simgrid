@@ -11,7 +11,7 @@
       <tab type="classmembers" visible="yes" title="" intro=""/>
     </tab>
     
-    <tab type="user" visible="yes" url="../../html/index.html" title="Home"/>
+    <tab type="user" visible="yes" url="../../doc/index.html" title="Home"/>
     <tab type="mainpage" visible="no" title="Reference Manual"/>
     <tab type="user" url="../../user_guide/html/index.html" title="User Guide"/>  
     <tab type="user" url="http://simgrid.gforge.inria.fr/101/index.php" title="Tutorials"/>
