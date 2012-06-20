@@ -42,15 +42,15 @@ static void MC_region_restore(mc_mem_region_t reg)
     while(i < maps->mapsize){
       r = maps->regions[i];
       if (maps->regions[i].pathname != NULL){
-  if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
-    size_t diff = (char*)reg->start_addr - (char*)r.start_addr;
-    void *segment = malloc(reg->size + diff);
-    XBT_DEBUG("Size of segment : %zu", sizeof(segment));
-    memcpy((char *)segment + diff, reg->data, reg->size);
-    memcpy(r.start_addr, segment, sizeof(segment));
-    XBT_DEBUG("Memcpy region ok");
-    break;
-  }
+        if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
+          size_t diff = (char*)reg->start_addr - (char*)r.start_addr;
+          void *segment = malloc(reg->size + diff);
+          XBT_DEBUG("Size of segment : %zu", sizeof(segment));
+          memcpy((char *)segment + diff, reg->data, reg->size);
+          memcpy(r.start_addr, segment, sizeof(segment));
+          XBT_DEBUG("Memcpy region ok");
+          break;
+        }
       }
       i++;
     }
@@ -134,16 +134,16 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
     if ((reg.prot & PROT_WRITE)){
       if (maps->regions[i].pathname == NULL){
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
-    MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+          MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
         }
       } else {
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
         } else {
-    if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
-      MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-    } 
-  }
+          if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
+            MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+          } 
+        }
       }
     }
     i++;

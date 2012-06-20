@@ -30,23 +30,23 @@
 static size_t pagesize;
 
 #define PAGE_ALIGN(addr) (void*) (((long)(addr) + pagesize - 1) & \
-            ~(pagesize - 1))
+                                  ~(pagesize - 1))
 
 /* Return MAP_PRIVATE if MDP represents /dev/zero.  Otherwise, return
    MAP_SHARED.  */
 #define MAP_PRIVATE_OR_SHARED(MDP) (( MDP -> flags & MMALLOC_ANONYMOUS) \
-                                    ? MAP_PRIVATE \
+                                    ? MAP_PRIVATE                       \
                                     : MAP_SHARED)
 
 /* Return MAP_ANONYMOUS if MDP uses anonymous mapping. Otherwise, return 0 */
 #define MAP_IS_ANONYMOUS(MDP) (((MDP) -> flags & MMALLOC_ANONYMOUS) \
-                              ? MAP_ANONYMOUS \
-                              : 0)
+                               ? MAP_ANONYMOUS                      \
+                               : 0)
 
 /* Return -1 if MDP uses anonymous mapping. Otherwise, return MDP->FD */
 #define MAP_ANON_OR_FD(MDP) (((MDP) -> flags & MMALLOC_ANONYMOUS) \
-                              ? -1 \
-                              : (MDP) -> fd)
+                             ? -1                                 \
+                             : (MDP) -> fd)
 
 /*  Get core for the memory region specified by MDP, using SIZE as the
     amount to either add to or subtract from the existing region.  Works
