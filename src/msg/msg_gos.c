@@ -102,6 +102,7 @@ MSG_error_t MSG_task_execute(m_task_t task)
       default:
         RETHROW;
     }
+    xbt_ex_free(e);
   }
   MSG_RETURN(MSG_OK);
 }
@@ -263,6 +264,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
       default:
         RETHROW;
     }
+    xbt_ex_free(e);
   }
   #ifdef HAVE_TRACING
     TRACE_msg_process_sleep_out(MSG_process_self());
