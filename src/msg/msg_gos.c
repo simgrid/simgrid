@@ -99,8 +99,11 @@ MSG_error_t MSG_task_execute(m_task_t task)
     #endif
         MSG_RETURN(MSG_TASK_CANCELED);        
       break;
+      default:
+        RETHROW;
     }
   }
+  MSG_RETURN(MSG_OK);
 }
 
 /** \ingroup m_task_management
