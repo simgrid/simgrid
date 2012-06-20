@@ -219,6 +219,9 @@ void SIMIX_process_create(smx_process_t *process,
 
     XBT_DEBUG("Start context '%s'", (*process)->name);
 
+    /* Build the dynars for the on_exit functions */
+    (*process)->on_exit_fun = xbt_dynar_new(sizeof(int_f_pvoid_t),NULL);
+    (*process)->on_exit_args = xbt_dynar_new(sizeof(void*),NULL);
     /* Now insert it in the global process list and in the process to run list */
     xbt_swag_insert(*process, simix_global->process_list);
     XBT_DEBUG("Inserting %s(%s) in the to_run list", (*process)->name, host->name);
@@ -710,4 +713,21 @@ xbt_dynar_t SIMIX_processes_as_dynar(void) {
     xbt_dynar_push(res,&proc);
   }
   return res;
+}
+void SIMIX_process_on_exit(smx_process_t process) {
+  int length = xbt_dynar_length(process->on_exit_fun);
+  int cpt;
+  int_f_pvoid_t fun;
+  void *data;
+  for (cpt = 0; cpt < length; cpt++) {
+    fun = xbt_dynar_get_as(process->on_exit_fun,cpt,int_f_pvoid_t);
+    data = xbt_dynar_get_as(process->on_exit_args,cpt,void*);
+    (fun)(data);
+  }
+}
+void SIMIX_process_on_exit_add(int_f_pvoid_t fun, void *data) {
+  smx_process_t process = SIMIX_process_self();
+  xbt_assert(process, "current process not found: are you in maestro context ?");
+  xbt_dynar_push_as(process->on_exit_fun,int_f_pvoid_t,fun);
+  xbt_dynar_push_as(process->on_exit_args,void*,data);
 }

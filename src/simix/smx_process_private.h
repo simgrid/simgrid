@@ -10,6 +10,11 @@
 #include "simgrid/simix.h"
 #include "smx_smurf_private.h"
 
+typedef struct s_smx_process_exit_fun {
+  int_f_pvoid_t fun;
+  void *arg;
+} s_smx_process_exit_fun_t, *smx_process_exit_fun_t;
+
 /** @brief Process datatype */
 typedef struct s_smx_process {
   s_xbt_swag_hookup_t process_hookup;
@@ -20,7 +25,7 @@ typedef struct s_smx_process {
   unsigned long pid;
   char *name;                   /**< @brief process name if any */
   smx_host_t smx_host;          /* the host on which the process is running */
-  smx_context_t context;        /* the context (either uctx or thread) that executes the user function */
+  smx_context_t context;        /* the context (uctx/raw/thread) that executes the user function */
   xbt_running_ctx_t *running_ctx;
   unsigned doexception:1;
   unsigned blocked:1;
@@ -31,7 +36,8 @@ typedef struct s_smx_process {
   xbt_dict_t properties;
   s_smx_simcall_t simcall;
   void *data;                   /* kept for compatibility, it should be replaced with moddata */
-
+  xbt_dynar_t on_exit_fun;     /* list of functions executed when the process dies */
+  xbt_dynar_t on_exit_args;    /* arguments (void*) of the functions executed when the process dies */
 } s_smx_process_t;
 
 typedef struct s_smx_process_arg {
@@ -86,4 +92,6 @@ void SIMIX_process_sleep_suspend(smx_action_t action);
 void SIMIX_process_sleep_resume(smx_action_t action);
 void SIMIX_process_sleep_destroy(smx_action_t action);
 
+void SIMIX_process_on_exit(smx_process_t process);
+void SIMIX_process_on_exit_add(int_f_pvoid_t fun, void *data);
 #endif
