@@ -9,6 +9,7 @@
 #include "xbt/misc.h"
 #include "xbt/log.h"
 #include <stdbool.h>
+#include <string.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 
@@ -154,7 +155,7 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
 xbt_dynar_t SD_dotload_generic(const char * filename)
 {
   xbt_assert(filename, "Unable to use a null file descriptor\n");
-//dag_dot =  agopen((char*)filename,Agstrictdirected,0);
+  //dag_dot =  agopen((char*)filename,Agstrictdirected,0);
   FILE *in_file = fopen(filename, "r");
   dag_dot = agread(in_file, NIL(Agdisc_t *));
 
@@ -353,10 +354,10 @@ void dot_add_task(Agnode_t * dag_node)
  * edge. */
 void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
 {
-  SD_task_t file;
+  SD_task_t file = NULL;
   char *name_tail=agnameof(agtail(edge));
   char *name_head=agnameof(aghead(edge));
-  char *name = malloc((strlen(name_head)+strlen(name_tail)+3)*sizeof(char));
+  char *name = malloc((strlen(name_head)+strlen(name_tail)+6)*sizeof(char));
   sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
@@ -377,7 +378,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
     }
     SD_task_dependency_add(NULL, NULL, file, current_job);
   } else {
-    file = xbt_dict_get_or_null(jobs, agnameof(agtail(edge)));
+    file = xbt_dict_get_or_null(jobs, name_tail);
     if (file != NULL) {
       SD_task_dependency_add(NULL, NULL, file, current_job);
     }
@@ -394,7 +395,7 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
   SD_task_t file;
   char *name_tail=agnameof(agtail(edge));
   char *name_head=agnameof(aghead(edge));
-  char *name = malloc((strlen(name_head)+strlen(name_tail)+3)*sizeof(char));
+  char *name = malloc((strlen(name_head)+strlen(name_tail)+6)*sizeof(char));
   sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
@@ -418,7 +419,7 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
       XBT_WARN("File %s created at more than one location...", file->name);
     }
   } else {
-    file = xbt_dict_get_or_null(jobs, agnameof(aghead(edge)));
+    file = xbt_dict_get_or_null(jobs, name_head);
     if (file != NULL) {
       SD_task_dependency_add(NULL, NULL, current_job, file);
     }
