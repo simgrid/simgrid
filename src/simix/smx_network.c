@@ -642,6 +642,11 @@ void SIMIX_comm_finish(smx_action_t action)
       }
     }
 
+    if (surf_workstation_model->extension.
+        workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
+      simcall->issuer->context->iwannadie = 1;
+    }
+
     simcall->issuer->waiting_action = NULL;
     xbt_fifo_remove(simcall->issuer->comms, action);
     SIMIX_simcall_answer(simcall);
