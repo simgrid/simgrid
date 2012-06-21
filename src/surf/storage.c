@@ -211,6 +211,7 @@ static void storage_update_actions_state(double now, double delta)
     if(action->type == WRITE)
     {
       double rate = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
+      XBT_INFO("Update %f + %f = %f",((surf_action_t)action)->file->content->stat.size,delta * rate,((surf_action_t)action)->file->content->stat.size+delta * rate);
       ((storage_t)(action->storage))->used_size += delta * rate; // disk usage
       ((surf_action_t)action)->file->content->stat.size += delta * rate; // file size
     }
