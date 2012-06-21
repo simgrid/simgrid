@@ -59,7 +59,8 @@ typedef struct xbt_propositional_symbol{
 typedef struct xbt_propositional_symbol* xbt_propositional_symbol_t;
 
 
-XBT_PUBLIC(xbt_automaton_t) xbt_automaton_new_automaton(void);
+XBT_PUBLIC(xbt_automaton_t) xbt_automaton_new(void);
+XBT_PUBLIC(void) xbt_automaton_load(xbt_automaton_t automaton, const char *file);
 
 XBT_PUBLIC(xbt_state_t) xbt_automaton_new_state(xbt_automaton_t a, int type, char* id);
 

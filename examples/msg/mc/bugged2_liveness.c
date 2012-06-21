@@ -172,11 +172,11 @@ int main(int argc, char *argv[])
   buffer = malloc(8*sizeof(char));
   buffer[0]='\0';
 
-  xbt_automaton_t a = MC_create_automaton("promela2_bugged2_liveness");
-  xbt_new_propositional_symbol(a,"pready", &predPready); 
-  xbt_new_propositional_symbol(a,"cready", &predCready); 
-  xbt_new_propositional_symbol(a,"consume", &predConsume);
-  xbt_new_propositional_symbol(a,"produce", &predProduce); 
+  MC_automaton_load("promela2_bugged2_liveness");
+  MC_automaton_new_propositional_symbol("pready", &predPready);
+  MC_automaton_new_propositional_symbol("cready", &predCready);
+  MC_automaton_new_propositional_symbol("consume", &predConsume);
+  MC_automaton_new_propositional_symbol("produce", &predProduce);
   
   MSG_init(&argc, argv);
   MSG_create_environment("../msg_platform.xml");
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
   MSG_function_register("consumer", consumer);
   MSG_function_register("producer", producer);
   MSG_launch_application("deploy_bugged2_liveness.xml");
-  MSG_main_liveness(a);
+  MSG_main_liveness();
 
   return 0;
 

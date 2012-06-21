@@ -1,8 +1,7 @@
 %{
 
-#include "automaton_parse.yy.c"
+#include "automaton_lexer.yy.c"
 #include <xbt/automaton.h>
-#include <xbt/automatonparse_promela.h>
 
 void yyerror(const char *s);
 

@@ -8,7 +8,7 @@
 
 #include "xbt/automaton.h"
 
-xbt_automaton_t xbt_automaton_new_automaton(){
+xbt_automaton_t xbt_automaton_new(){
   xbt_automaton_t automaton = NULL;
   automaton = xbt_new0(struct xbt_automaton, 1);
   automaton->states = xbt_dynar_new(sizeof(xbt_state_t), NULL);

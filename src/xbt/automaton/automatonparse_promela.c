@@ -5,16 +5,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/automatonparse_promela.h"
+#include "xbt/automaton.h"
 
-xbt_automaton_t automaton;
+static xbt_automaton_t parsed_automaton;
 char* state_id_src;
 
-void init(){
-  automaton = xbt_automaton_new_automaton();
-}
-
-void new_state(char* id, int src){
+static void new_state(char* id, int src){
 
   char* id_state = strdup(id);
   char* first_part = strtok(id,"_");
@@ -30,33 +26,33 @@ void new_state(char* id, int src){
   }
 
   xbt_state_t state = NULL;
-  state = xbt_automaton_state_exists(automaton, id_state);
+  state = xbt_automaton_state_exists(parsed_automaton, id_state);
   if(state == NULL){
-    state = xbt_automaton_new_state(automaton, type, id_state);
+    state = xbt_automaton_new_state(parsed_automaton, type, id_state);
   }
 
   if(type==-1)
-    automaton->current_state = state;
+    parsed_automaton->current_state = state;
 
   if(src)
     state_id_src = strdup(id_state);
     
 }
 
-void new_transition(char* id, xbt_exp_label_t label){
+static void new_transition(char* id, xbt_exp_label_t label){
 
   char* id_state = strdup(id);
   xbt_state_t state_dst = NULL;
   new_state(id, 0);
-  state_dst = xbt_automaton_state_exists(automaton, id_state);
-  xbt_state_t state_src = xbt_automaton_state_exists(automaton, state_id_src); 
+  state_dst = xbt_automaton_state_exists(parsed_automaton, id_state);
+  xbt_state_t state_src = xbt_automaton_state_exists(parsed_automaton, state_id_src);
   
   //xbt_transition_t trans = NULL;
-  xbt_automaton_new_transition(automaton, state_src, state_dst, label);
+  xbt_automaton_new_transition(parsed_automaton, state_src, state_dst, label);
 
 }
 
-xbt_exp_label_t new_label(int type, ...){
+static xbt_exp_label_t new_label(int type, ...){
   xbt_exp_label_t label = NULL;
   va_list ap;
   va_start(ap,type);
@@ -92,9 +88,11 @@ xbt_exp_label_t new_label(int type, ...){
   return label;
 }
 
-xbt_automaton_t get_automaton(){
-  return automaton;
+
+#include "parserPromela.tab.cacc"
+
+void xbt_automaton_load(xbt_automaton_t a, const char *file){
+  parsed_automaton = a;
+  yyin = fopen(file, "r");
+  yyparse();
 }
-
-
-

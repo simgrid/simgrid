@@ -154,6 +154,6 @@ endif(enable_lib_static)
 
 # Dependencies from maintainer mode
 ###################################
-if(enable_maintainer_mode AND YACC_EXE AND LEX_EXE)
+if(enable_maintainer_mode AND BISON_EXE AND LEX_EXE)
   add_dependencies(simgrid automaton_generated_src)
-endif(enable_maintainer_mode AND YACC_EXE AND LEX_EXE)
+endif(enable_maintainer_mode AND BISON_EXE AND LEX_EXE)

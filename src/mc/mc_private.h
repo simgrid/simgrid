@@ -192,7 +192,7 @@ void MC_init_safety(void);
 /********************************** Double-DFS for liveness property**************************************/
 
 extern mc_snapshot_t initial_snapshot_liveness;
-extern xbt_automaton_t automaton;
+extern xbt_automaton_t _mc_property_automaton;
 
 typedef struct s_mc_pair{
   mc_snapshot_t system_state;

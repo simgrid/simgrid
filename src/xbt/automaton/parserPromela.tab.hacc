@@ -59,28 +59,6 @@
      ID = 277
    };
 #endif
-/* Tokens.  */
-#define NEVER 258
-#define IF 259
-#define FI 260
-#define IMPLIES 261
-#define GOTO 262
-#define AND 263
-#define OR 264
-#define NOT 265
-#define LEFT_PAR 266
-#define RIGHT_PAR 267
-#define CASE 268
-#define COLON 269
-#define SEMI_COLON 270
-#define CASE_TRUE 271
-#define LEFT_BRACE 272
-#define RIGHT_BRACE 273
-#define LITT_ENT 274
-#define LITT_CHAINE 275
-#define LITT_REEL 276
-#define ID 277
-
 
 
 
@@ -89,7 +67,7 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 11 "parserPromela.yacc"
+#line 10 "parserPromela.yacc"
 
   double real;
   int integer;
@@ -99,13 +77,13 @@ typedef union YYSTYPE
 
 
 /* Line 2068 of yacc.c  */
-#line 103 "y.tab.h"
+#line 81 "parserPromela.tab.hacc"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
-extern YYSTYPE yylval;
+extern YYSTYPE xbt_automaton_parser_lval;
 
 

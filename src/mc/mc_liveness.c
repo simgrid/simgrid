@@ -156,7 +156,7 @@ int reached(xbt_state_t st){
     /* Get values of propositional symbols */
     unsigned int cursor = 0;
     xbt_propositional_symbol_t ps = NULL;
-    xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+    xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
       f = (int_f_void_t)ps->function;
       res = (*f)();
       xbt_dynar_push_as(prop_ato, int, res);
@@ -384,7 +384,7 @@ void set_pair_reached(xbt_state_t st){
   int res;
   int_f_void_t f;
 
-  xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+  xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
     res = (*f)();
     xbt_dynar_push_as(pair->prop_ato, int, res);
@@ -449,7 +449,7 @@ int reached_hash(xbt_state_t st){
     int res;
     int_f_void_t f;
 
-    xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+    xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
       f = (int_f_void_t)ps->function;
       res = (*f)();
       xbt_dynar_push_as(prop_ato, int, res);
@@ -523,7 +523,7 @@ void set_pair_reached_hash(xbt_state_t st){
   int res;
   int_f_void_t f;
 
-  xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+  xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
     res = (*f)();
     xbt_dynar_push_as(pair->prop_ato, int, res);
@@ -560,7 +560,7 @@ int visited(xbt_state_t st, int sc){
     int res;
     int_f_void_t f;
 
-    xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+    xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
       f = (int_f_void_t)ps->function;
       res = (*f)();
       xbt_dynar_push_as(prop_ato, int, res);
@@ -635,7 +635,7 @@ int visited_hash(xbt_state_t st, int sc){
     int res;
     int_f_void_t f;
 
-    xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+    xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
       f = (int_f_void_t)ps->function;
       res = (*f)();
       xbt_dynar_push_as(prop_ato, int, res);
@@ -713,7 +713,7 @@ void set_pair_visited_hash(xbt_state_t st, int sc){
   int res;
   int_f_void_t f;
 
-  xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+  xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
     res = (*f)();
     xbt_dynar_push_as(pair->prop_ato, int, res);
@@ -747,7 +747,7 @@ void set_pair_visited(xbt_state_t st, int sc){
   int res;
   int_f_void_t f;
 
-  xbt_dynar_foreach(automaton->propositional_symbols, cursor, ps){
+  xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
     res = (*f)();
     xbt_dynar_push_as(pair->prop_ato, int, res);
@@ -789,7 +789,7 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
     unsigned int cursor = 0;
     xbt_propositional_symbol_t p = NULL;
     int_f_void_t f;
-    xbt_dynar_foreach(automaton->propositional_symbols, cursor, p){
+    xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, p){
       if(strcmp(p->pred, l->u.predicat) == 0){
         f = (int_f_void_t)p->function;
         return (*f)();
@@ -861,7 +861,7 @@ void MC_ddfs_init(void){
   unsigned int cursor = 0;
   xbt_state_t state;
 
-  xbt_dynar_foreach(automaton->states, cursor, state){
+  xbt_dynar_foreach(_mc_property_automaton->states, cursor, state){
     if(state->type == -1){
       
       MC_SET_RAW_MEM;
@@ -914,7 +914,7 @@ void MC_ddfs(int search_cycle){
   current_pair = (mc_pair_stateless_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack_liveness));
 
   /* Update current state in buchi automaton */
-  automaton->current_state = current_pair->automaton_state;
+  _mc_property_automaton->current_state = current_pair->automaton_state;
 
  
   XBT_INFO("********************* ( Depth = %d, search_cycle = %d )", xbt_fifo_size(mc_stack_liveness), search_cycle);

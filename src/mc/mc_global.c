@@ -12,7 +12,7 @@
 #include "../simix/smx_private.h"
 #include "xbt/fifo.h"
 #include "mc_private.h"
-#include "xbt/automaton/automaton_create.h"
+#include "xbt/automaton.h"
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
@@ -36,9 +36,8 @@ mc_stats_pair_t mc_stats_pair = NULL;
 xbt_fifo_t mc_stack_liveness = NULL;
 mc_snapshot_t initial_snapshot_liveness = NULL;
 
-xbt_automaton_t automaton;
+xbt_automaton_t _mc_property_automaton = NULL;
 
-static void MC_init_liveness(xbt_automaton_t a);
 static void MC_assert_pair(int prop);
 
 
@@ -78,8 +77,16 @@ void MC_init_safety(void)
 }
 
 
-static void MC_init_liveness(xbt_automaton_t a){
 
+void MC_modelcheck(void)
+{
+  MC_init_safety();
+  MC_dpor();
+  MC_exit();
+}
+
+void MC_modelcheck_liveness(){
+  /* init stuff */
   XBT_DEBUG("Start init mc");
   
   mc_time = xbt_new0(double, simix_process_maxpid);
@@ -99,30 +106,10 @@ static void MC_init_liveness(xbt_automaton_t a){
 
   MC_UNSET_RAW_MEM;
 
-  automaton = a;
 
   MC_ddfs_init();
 
-  
-}
-
-
-void MC_modelcheck(void)
-{
-  MC_init_safety();
-  MC_dpor();
-  MC_exit();
-}
-
-
-
-void MC_modelcheck_liveness(xbt_automaton_t a){
-  MC_init_liveness(a);
-  MC_exit_liveness();
-}
-
-void MC_exit_liveness(void)
-{
+  /* We're done */
   MC_print_statistics_pairs(mc_stats_pair);
   //xbt_free(mc_time);
   //MC_memory_exit();
@@ -531,9 +518,17 @@ void MC_diff(void){
 
 }
 
-xbt_automaton_t MC_create_automaton(const char *file){
+void MC_automaton_load(const char *file){
   MC_SET_RAW_MEM;
-  xbt_automaton_t a = xbt_create_automaton(file);
+  if (_mc_property_automaton == NULL)
+    _mc_property_automaton = xbt_automaton_new();
+  xbt_automaton_load(_mc_property_automaton,file);
   MC_UNSET_RAW_MEM;
-  return a;
+}
+void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
+  MC_SET_RAW_MEM;
+  if (_mc_property_automaton == NULL)
+    _mc_property_automaton = xbt_automaton_new();
+  xbt_new_propositional_symbol(_mc_property_automaton,id,fct);
+  MC_UNSET_RAW_MEM;
 }

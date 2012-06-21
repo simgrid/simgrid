@@ -2,27 +2,26 @@ if(enable_maintainer_mode AND NOT WIN32)
 find_program(FLEX_EXE NAMES flex)
 find_program(FLEXML_EXE NAMES flexml)
 find_program(SED_EXE NAMES sed)
-find_program(YACC_EXE NAMES yacc)
+find_program(BISON_EXE NAMES bison)
 find_program(LEX_EXE NAMES lex)
 
-mark_as_advanced(YACC_EXE)
+mark_as_advanced(BISON_EXE)
 mark_as_advanced(LEX_EXE)
 
-if(YACC_EXE AND LEX_EXE)
+if(BISON_EXE AND LEX_EXE)
   add_custom_target(automaton_generated_src ALL
   DEPENDS ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.lex
           ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.yacc
-  COMMENT "Generated automaton source files"
-  COMMAND ${YACC_EXE} -d parserPromela.yacc
-  COMMAND ${LEX_EXE} --prefix=xbt_automaton_parse_ --outfile=automaton_parse.yy.c parserPromela.lex
-  COMMAND ${CMAKE_COMMAND} -E remove y.output
+  COMMENT "Generating automaton source files"
+  COMMAND ${BISON_EXE} --name-prefix=xbt_automaton_parser_ -d parserPromela.yacc
+  COMMAND ${LEX_EXE} --prefix=xbt_automaton_parser_ --outfile=automaton_lexer.yy.c parserPromela.lex
   WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/
   )
 
   SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-  "${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/y.tab.c;${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/y.tab.h;${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/automaton_parse.yy.c"
+  "${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.cacc;${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.hacc;${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/automaton_parse.yy.c"
   )
-endif(YACC_EXE AND LEX_EXE)
+endif(BISON_EXE AND LEX_EXE)
 
 IF(FLEX_EXE)
 	set(HAVE_FLEX 1)

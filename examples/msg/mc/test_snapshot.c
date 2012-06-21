@@ -1,7 +1,6 @@
 #include "msg/msg.h"
 #include "mc/mc.h"
 #include "xbt/automaton.h"
-#include "xbt/automatonparse_promela.h"
 #include "test_snapshot.h"
 //#include "y.tab.c"
 #include <stdlib.h>
@@ -130,18 +129,16 @@ int main(int argc, char *argv[])
   xbt_dynar_push(d1, &c1);
   xbt_dynar_push(d1, &c1);
 
-  init();
-  yyparse();
-  automaton = get_automaton();
-  xbt_new_propositional_symbol(automaton,"r", &predR); 
-  xbt_new_propositional_symbol(automaton,"cs", &predCS); 
+  MC_automaton_load("promela_test_snapshot");
+  MC_automaton_new_propositional_symbol("r", &predR);
+  MC_automaton_new_propositional_symbol("cs", &predCS);
   
   MSG_init(&argc, argv);
   MSG_create_environment("../msg_platform.xml");
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
   MSG_launch_application("deploy_test_snapshot.xml");
-  MSG_main_liveness(automaton);
+  MSG_main_liveness();
 
   return 0;
 }

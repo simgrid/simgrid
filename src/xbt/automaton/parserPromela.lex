@@ -4,7 +4,7 @@
 
 
 #include <stdio.h>
-#include "y.tab.h"
+#include "parserPromela.tab.hacc"
   
   extern YYSTYPE yylval;
  
