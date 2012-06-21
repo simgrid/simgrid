@@ -93,54 +93,52 @@ MSG_parallel_task_create(const char *name, int host_nb,
 MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
   xbt_ex_t e;
-  simdata_task_t simdata = NULL;
-  simdata_process_t p_simdata;
+  simdata_task_t simdata = task->simdata;
+  m_process_t self = SIMIX_process_self();
+  simdata_process_t p_simdata = SIMIX_process_self_get_data(self);
   e_smx_state_t comp_state;
   MSG_error_t status = MSG_OK;
 
-  simdata = task->simdata;
-  m_process_t self = SIMIX_process_self();
-  p_simdata = SIMIX_process_self_get_data(self);
-
-  #ifdef HAVE_TRACING
-    TRACE_msg_task_execute_start(task);
-  #endif
+#ifdef HAVE_TRACING
+  TRACE_msg_task_execute_start(task);
+#endif
 
   xbt_assert((!simdata->compute) && (task->simdata->isused == 0),
-              "This task is executed somewhere else. Go fix your code! %d",
-              task->simdata->isused);
+             "This task is executed somewhere else. Go fix your code! %d",
+             task->simdata->isused);
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
   if (simdata->computation_amount == 0 && !simdata->host_nb) {
-    #ifdef HAVE_TRACING
-      TRACE_msg_task_execute_end(task);
-    #endif
+#ifdef HAVE_TRACING
+    TRACE_msg_task_execute_end(task);
+#endif
     return MSG_OK;
   }
 
 
   TRY {
-    #ifdef HAVE_TRACING
-      simcall_set_category(simdata->compute, task->category);
-    #endif
 
     simdata->isused=1;
 
     if (simdata->host_nb > 0) {
-      simdata->compute = simcall_host_parallel_execute(task->name, simdata->host_nb,
-                                  simdata->host_list,
-                                  simdata->comp_amount,
-                                  simdata->comm_amount, 1.0, -1.0);
+      simdata->compute = simcall_host_parallel_execute(task->name,
+                                                       simdata->host_nb,
+                                                       simdata->host_list,
+                                                       simdata->comp_amount,
+                                                       simdata->comm_amount,
+                                                       1.0, -1.0);
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
-    }
-    else {
-      simdata->compute =
-      simcall_host_execute(task->name, p_simdata->m_host->smx_host,
-                             simdata->computation_amount,
-                             simdata->priority);
+    } else {
+      simdata->compute = simcall_host_execute(task->name,
+                                              p_simdata->m_host->smx_host,
+                                              simdata->computation_amount,
+                                              simdata->priority);
 
     }
+#ifdef HAVE_TRACING
+    simcall_set_category(simdata->compute, task->category);
+#endif
     p_simdata->waiting_action = simdata->compute;
     comp_state = simcall_host_execution_wait(simdata->compute);
 
@@ -148,31 +146,30 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 
     simdata->isused=0;
 
-    XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
+    XBT_DEBUG("Execution task '%s' finished in state %d",
+              task->name, (int)comp_state);
   }
   CATCH(e) {
     switch (e.category) {
-      case host_error:
-          status = MSG_HOST_FAILURE;
-        break;
-      case cancel_error:
-        #ifdef HAVE_TRACING
-            TRACE_msg_task_execute_end(task);
-        #endif
-        status = MSG_TASK_CANCELED;
+    case host_error:
+      status = MSG_HOST_FAILURE;
       break;
-      default:
-        RETHROW;
+    case cancel_error:
+      status = MSG_TASK_CANCELED;
+      break;
+    default:
+      RETHROW;
     }
     xbt_ex_free(e);
   }
-  /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+  /* action ended, set comm and compute = NULL, the actions is already destroyed
+   * in the main function */
   simdata->computation_amount = 0.0;
   simdata->comm = NULL;
   simdata->compute = NULL;
-  #ifdef HAVE_TRACING
-    TRACE_msg_task_execute_end(task);
-  #endif
+#ifdef HAVE_TRACING
+  TRACE_msg_task_execute_end(task);
+#endif
 
   MSG_RETURN(status);
 }
