@@ -638,6 +638,11 @@ void SIMIX_process_yield(smx_process_t self)
   /* Ok, maestro returned control to us */
   XBT_DEBUG("Control returned to me: '%s'", self->name);
 
+  if (self->new_host) {
+    SIMIX_process_change_host(self, self->new_host);
+    self->new_host = NULL;
+  }
+
   if (self->context->iwannadie){
     XBT_DEBUG("I wanna die!");
     SIMIX_context_stop(self->context);
@@ -653,11 +658,6 @@ void SIMIX_process_yield(smx_process_t self)
     XBT_DEBUG("Wait, maestro left me an exception");
     self->doexception = 0;
     SMX_THROW();
-  }
-  
-  if (self->new_host) {
-    SIMIX_process_change_host(self, self->new_host);
-    self->new_host = NULL;
   }
 }
 
