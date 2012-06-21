@@ -36,8 +36,7 @@ typedef struct s_smx_process {
   xbt_dict_t properties;
   s_smx_simcall_t simcall;
   void *data;                   /* kept for compatibility, it should be replaced with moddata */
-  xbt_dynar_t on_exit_fun;     /* list of functions executed when the process dies */
-  xbt_dynar_t on_exit_args;    /* arguments (void*) of the functions executed when the process dies */
+  xbt_dynar_t on_exit;     /* list of functions executed when the process dies */
 } s_smx_process_t;
 
 typedef struct s_smx_process_arg {

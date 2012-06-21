@@ -494,6 +494,6 @@ smx_context_t MSG_process_get_smx_ctx(m_process_t process) {
  * The on_exit functions are the functions executed when your process is killed.
  * You should use them to free the data used by your process.
  */
-void MSG_process_on_exit_add(int_f_pvoid_t fun, void *data) {
-  SIMIX_process_on_exit_add(fun,data);
+void MSG_process_on_exit(int_f_pvoid_t fun, void *data) {
+  SIMIX_process_on_exit(fun,data);
 }

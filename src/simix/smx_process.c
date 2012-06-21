@@ -118,6 +118,8 @@ void SIMIX_process_empty_trash(void)
 
     xbt_fifo_free(process->comms);
 
+    xbt_dynar_free(&process->on_exit);
+
     free(process->name);
     free(process);
   }
@@ -219,9 +221,6 @@ void SIMIX_process_create(smx_process_t *process,
 
     XBT_DEBUG("Start context '%s'", (*process)->name);
 
-    /* Build the dynars for the on_exit functions */
-    (*process)->on_exit_fun = xbt_dynar_new(sizeof(int_f_pvoid_t),NULL);
-    (*process)->on_exit_args = xbt_dynar_new(sizeof(void*),NULL);
     /* Now insert it in the global process list and in the process to run list */
     xbt_swag_insert(*process, simix_global->process_list);
     XBT_DEBUG("Inserting %s(%s) in the to_run list", (*process)->name, host->name);
@@ -714,20 +713,28 @@ xbt_dynar_t SIMIX_processes_as_dynar(void) {
   }
   return res;
 }
-void SIMIX_process_on_exit(smx_process_t process) {
-  int length = xbt_dynar_length(process->on_exit_fun);
+void SIMIX_process_on_exit_runall(smx_process_t process) {
   int cpt;
-  int_f_pvoid_t fun;
-  void *data;
-  for (cpt = 0; cpt < length; cpt++) {
-    fun = xbt_dynar_get_as(process->on_exit_fun,cpt,int_f_pvoid_t);
-    data = xbt_dynar_get_as(process->on_exit_args,cpt,void*);
-    (fun)(data);
+  if (!process->on_exit) {
+    return;
+  }
+
+  smx_process_exit_fun_t exit_fun;
+
+  for (cpt = xbt_dynar_length(process->on_exit) - 1; cpt >= 0; cpt--) {
+    exit_fun = xbt_dynar_get_ptr(process->on_exit, cpt);
+    (exit_fun->fun)(exit_fun->arg);
   }
 }
-void SIMIX_process_on_exit_add(int_f_pvoid_t fun, void *data) {
+void SIMIX_process_on_exit(int_f_pvoid_t fun, void *data) {
   smx_process_t process = SIMIX_process_self();
   xbt_assert(process, "current process not found: are you in maestro context ?");
-  xbt_dynar_push_as(process->on_exit_fun,int_f_pvoid_t,fun);
-  xbt_dynar_push_as(process->on_exit_args,void*,data);
+
+  if (!process->on_exit) {
+    process->on_exit = xbt_dynar_new(sizeof(s_smx_process_exit_fun_t), NULL);
+  }
+
+  s_smx_process_exit_fun_t exit_fun = {fun, data};
+
+  xbt_dynar_push_as(process->on_exit,s_smx_process_exit_fun_t,exit_fun);
 }
