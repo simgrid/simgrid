@@ -194,7 +194,7 @@ void MC_dpor(void)
               }
               MC_restore_snapshot(restore_state->system_state);
               xbt_fifo_unshift(mc_stack_safety, state);
-              XBT_DEBUG("Back-tracking to depth %d", pos);
+              XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety));
               MC_UNSET_RAW_MEM;
               MC_replay(mc_stack_safety, pos);
             }
