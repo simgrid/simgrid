@@ -120,8 +120,9 @@ int client(int argc, char *argv[])
   return 0;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
+
+  MSG_init(&argc, argv);
 
   d1 = xbt_dynar_new(sizeof(char *), NULL);
   XBT_DEBUG("Dynar d1 : %p -> %p", &d1, d1);
@@ -129,16 +130,15 @@ int main(int argc, char *argv[])
   xbt_dynar_push(d1, &c1);
   xbt_dynar_push(d1, &c1);
 
-  MC_automaton_load("promela_test_snapshot");
+  MSG_config("model-check/property","promela_test_snapshot");
   MC_automaton_new_propositional_symbol("r", &predR);
   MC_automaton_new_propositional_symbol("cs", &predCS);
   
-  MSG_init(&argc, argv);
   MSG_create_environment("../msg_platform.xml");
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
   MSG_launch_application("deploy_test_snapshot.xml");
-  MSG_main_liveness();
+  MSG_main();
 
   return 0;
 }

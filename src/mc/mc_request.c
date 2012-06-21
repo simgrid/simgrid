@@ -11,11 +11,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
 static char* pointer_to_string(void* pointer);
 static char* buff_size_to_string(size_t size);
 
-int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
-{
-  if(_surf_do_model_check == 2)
+int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
+  if(mc_reduce_kind == e_mc_reduce_none)
     return TRUE;
-  
+
 
   if (r1->issuer == r2->issuer)
     return FALSE;

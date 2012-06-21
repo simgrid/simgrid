@@ -18,6 +18,31 @@ XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 
+/* Configuration support */
+e_mc_reduce_t mc_reduce_kind=e_mc_reduce_unset;
+
+void _mc_cfg_cb_reduce(const char *name, int pos) {
+  char *val= xbt_cfg_get_string(_surf_cfg_set, name);
+  if (!strcasecmp(val,"none")) {
+    mc_reduce_kind = e_mc_reduce_none;
+  } else if (!strcasecmp(val,"dpor")) {
+    mc_reduce_kind = e_mc_reduce_dpor;
+  } else {
+    xbt_die("configuration option %s can only take 'none' or 'dpor' as a value",name);
+  }
+  xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
+}
+
+void _mc_cfg_cb_checkpoint(const char *name, int pos) {
+  _surf_mc_checkpoint = xbt_cfg_get_int(_surf_cfg_set, name);
+  xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
+}
+void _mc_cfg_cb_property(const char *name, int pos) {
+  _surf_mc_property_file= xbt_cfg_get_string(_surf_cfg_set, name);
+  xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
+}
+
+
 /* MC global data structures */
 
 mc_state_t mc_current_state = NULL;
@@ -40,6 +65,24 @@ xbt_automaton_t _mc_property_automaton = NULL;
 
 static void MC_assert_pair(int prop);
 
+void MC_do_the_modelcheck_for_real() {
+  if (!_surf_mc_property_file || _surf_mc_property_file[0]=='\0') {
+    if (mc_reduce_kind==e_mc_reduce_unset)
+      mc_reduce_kind=e_mc_reduce_dpor;
+
+    XBT_INFO("Check a safety property");
+    MC_modelcheck();
+
+  } else  {
+
+    if (mc_reduce_kind==e_mc_reduce_unset)
+      mc_reduce_kind=e_mc_reduce_none;
+
+    XBT_INFO("Check the liveness property %s",_surf_mc_property_file);
+    MC_automaton_load(_surf_mc_property_file);
+    MC_modelcheck_liveness();
+  }
+}
 
 /**
  *  \brief Initialize the model-checker data structures
@@ -75,7 +118,6 @@ void MC_init_safety(void)
   MC_UNSET_RAW_MEM;
 
 }
-
 
 
 void MC_modelcheck(void)
@@ -343,7 +385,7 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
 
   MC_show_stack_safety(stack);
 
-  if(!_surf_do_mc_checkpoint){
+  if(!_surf_mc_checkpoint){
 
     mc_state_t state;
 
@@ -520,9 +562,11 @@ void MC_diff(void){
 
 void MC_automaton_load(const char *file){
   MC_SET_RAW_MEM;
+
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
   xbt_automaton_load(_mc_property_automaton,file);
+
   MC_UNSET_RAW_MEM;
 }
 void MC_automaton_new_propositional_symbol(const char* id, void* fct) {

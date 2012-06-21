@@ -12,6 +12,7 @@
 #include "surf/surf_private.h"
 #include "surf/surf_routing.h"  /* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
 #include "simgrid/simix.h"
+#include "mc/mc.h" /* configuration callbacks of model-checking */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of surf (and the rest of the simulation)");
@@ -240,14 +241,6 @@ static void _surf_cfg_cb_model_check(const char *name, int pos)
   }
 }
 
-extern int _surf_do_mc_checkpoint;   /* this variable lives in xbt_main until I find a right location for it */
-
-static void _surf_cfg_cb_mc_checkpoint(const char *name, int pos)
-{
-  _surf_do_mc_checkpoint = xbt_cfg_get_int(_surf_cfg_set, name);
-  xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
-}
-
 extern int _surf_do_verbose_exit;
 
 static void _surf_cfg_cb_verbose_exit(const char *name, int pos)
@@ -256,8 +249,7 @@ static void _surf_cfg_cb_verbose_exit(const char *name, int pos)
 }
 
 
-static void _surf_cfg_cb_context_factory(const char *name, int pos)
-{
+static void _surf_cfg_cb_context_factory(const char *name, int pos) {
   smx_context_factory_name = xbt_cfg_get_string(_surf_cfg_set, name);
 }
 
@@ -482,27 +474,35 @@ void surf_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      NULL, NULL);
 
-    /* do model-check */
+    /* do model-checking */
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check",
-                     "Activate the model-checking of the \"simulated\" system (EXPERIMENTAL -- msg only for now)",
+                     "Verify the system through model-checking instead of simulating it (EXPERIMENTAL)",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      _surf_cfg_cb_model_check, NULL);
-    
-    /*
-       FIXME: this function is not setting model-check to it's default value because
-       internally it calls to variable->cb_set that in this case is the function 
-       _surf_cfg_cb_model_check which sets it's value to 1 (instead of the default value 0)
-       xbt_cfg_set_int(_surf_cfg_set, "model-check", default_value_int); */
 
-
-    /* do stateful model-check */
+    /* do stateful model-checking */
     default_value_int = 0;
-    xbt_cfg_register(&_surf_cfg_set, "mc-checkpoint",
-                     "Activate the stateful model-checking of the \"simulated\" system (EXPERIMENTAL -- msg only for now), value corresponding to steps between each checkpoint",
+    xbt_cfg_register(&_surf_cfg_set, "model-check/checkpoint",
+                     "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
+                     "If value=1, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
                      xbt_cfgelm_int, &default_value_int, 0, 1,
-                     _surf_cfg_cb_mc_checkpoint, NULL);
+                     _mc_cfg_cb_checkpoint, NULL);
     
+    /* do liveness model-checking */
+    default_value = xbt_strdup("");
+    xbt_cfg_register(&_surf_cfg_set, "model-check/property",
+                     "Specify the name of the file containing the property. It must be the result of the ltl2ba program.",
+                     xbt_cfgelm_string, &default_value, 0, 1,
+                     _mc_cfg_cb_property, NULL);
+
+    /* Specify the kind of model-checking reduction */
+    default_value = xbt_strdup("unset");
+    xbt_cfg_register(&_surf_cfg_set, "model-check/reduction",
+                     "Specify the kind of exploration reduction (either none or DPOR)",
+                     xbt_cfgelm_string, &default_value, 0, 1,
+                     _mc_cfg_cb_reduce, NULL);
+
     /* do verbose-exit */
     default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "verbose-exit",

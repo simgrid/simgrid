@@ -108,26 +108,9 @@ MSG_error_t MSG_main(void)
   fflush(stdout);
   fflush(stderr);
 
-  if (MC_IS_ENABLED) {
-    MC_modelcheck();
-  }
-  else {
-    SIMIX_run();
-  }
-  return MSG_OK;
-}
-
-
-MSG_error_t MSG_main_liveness()
-{
-  /* Clean IO before the run */
-  fflush(stdout);
-  fflush(stderr);
-
-  if (MC_IS_ENABLED) {
-    MC_modelcheck_liveness();
-  }
-  else {
+  if (MC_IS_ENABLED && (_surf_do_model_check == 1)) {
+    MC_do_the_modelcheck_for_real();
+  } else {
     SIMIX_run();
   }
   return MSG_OK;

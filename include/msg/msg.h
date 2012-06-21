@@ -57,7 +57,6 @@ XBT_PUBLIC(void) MSG_config(const char *name, ...);
 
 XBT_PUBLIC(void) MSG_init_nocheck(int *argc, char **argv);
 XBT_PUBLIC(MSG_error_t) MSG_main(void);
-XBT_PUBLIC(MSG_error_t) MSG_main_liveness(void);
 XBT_PUBLIC(MSG_error_t) MSG_clean(void);
 XBT_PUBLIC(void) MSG_function_register(const char *name,
                                        xbt_main_func_t code);

@@ -111,7 +111,7 @@ void MC_dpor(void)
         }
       }
 
-      if(_surf_do_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _surf_do_mc_checkpoint == 0)){
+      if(_surf_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _surf_mc_checkpoint == 0)){
         next_state->system_state = xbt_new0(s_mc_snapshot_t, 1);
         MC_take_snapshot(next_state->system_state);
       }
@@ -174,7 +174,7 @@ void MC_dpor(void)
         }
         if (MC_state_interleave_size(state)) {
           /* We found a back-tracking point, let's loop */
-          if(_surf_do_mc_checkpoint){
+          if(_surf_mc_checkpoint){
             if(state->system_state != NULL){
               MC_restore_snapshot(state->system_state);
               xbt_fifo_unshift(mc_stack_safety, state);

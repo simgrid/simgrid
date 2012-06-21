@@ -182,6 +182,12 @@ memory_map_t get_memory_map(void);
 
 
 /********************************** DPOR for safety  **************************************/
+typedef enum {
+  e_mc_reduce_unset,
+  e_mc_reduce_none,
+  e_mc_reduce_dpor
+} e_mc_reduce_t;
+extern e_mc_reduce_t mc_reduce_kind;
 
 void MC_dpor_init(void);
 void MC_dpor(void);
@@ -268,9 +274,10 @@ void MC_dump_stack_liveness(xbt_fifo_t stack);
 void MC_pair_stateless_delete(mc_pair_stateless_t pair);
 
 /********************************** Configuration of MC **************************************/
-
-extern int _surf_do_mc_checkpoint;
 extern xbt_fifo_t mc_stack_safety;
+
+extern int _surf_mc_checkpoint;
+extern char* _surf_mc_property_file;
 
 
 #endif
