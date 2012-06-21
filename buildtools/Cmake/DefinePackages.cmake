@@ -593,8 +593,7 @@ set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/use.doc
   doc/user_guide/doxygen/tracing.doc
   doc/user_guide/doxygen/pls.doc    
-  doc/user_guide/doxygen/index.doc
-  doc/user_guide/doxygen/logcategories.doc  
+  doc/user_guide/doxygen/index.doc  
   doc/user_guide/doxygen/modules.doc
   doc/user_guide/doxygen/platform.doc
   doc/user_guide/doxygen/UserGuideDoxyfile.in
@@ -602,7 +601,6 @@ set(USER_GUIDE_SOURCES
 )
 
 set(REF_GUIDE_SOURCES
-  doc/ref_guide/doxygen/logcategories.doc
   doc/ref_guide/doxygen/module-amok.doc
   doc/ref_guide/doxygen/module-gras.doc
   doc/ref_guide/doxygen/module-msg.doc
@@ -836,8 +834,6 @@ set(generated_src_files
   src/xbt/automaton/y.tab.c
   src/xbt/automaton/y.tab.h
   src/xbt/automaton/automaton_parse.yy.c
-  doc/user_guide/doxygen/logcategories.doc
-  doc/ref_guide/doxygen/logcategories.doc
 )
 
 foreach(file ${generated_src_files})
