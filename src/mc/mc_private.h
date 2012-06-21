@@ -267,5 +267,10 @@ void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
 void MC_pair_stateless_delete(mc_pair_stateless_t pair);
 
+/********************************** Configuration of MC **************************************/
+
+extern int _surf_do_mc_checkpoint;
+extern xbt_fifo_t mc_stack_safety;
+
 
 #endif

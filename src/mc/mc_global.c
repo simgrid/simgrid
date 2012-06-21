@@ -336,7 +336,6 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   XBT_DEBUG("**** End Replay ****");
 }
 
-
 /**
  * \brief Dumps the contents of a model-checker's stack and shows the actual
  *        execution trace
