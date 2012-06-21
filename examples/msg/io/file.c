@@ -15,10 +15,10 @@
  * - <b>io/file.c</b> Example with the disk resource
  */
 
-#define FILENAME1 "/home/user/Install/simgrid/doc/simgrid/examples/platforms/g5k.xml"
-#define FILENAME2 "/home/user/Install/simgrid/doc/simgrid/examples/platforms/One_cluster_no_backbone.xml"
-#define FILENAME3 "/home/user/Install/simgrid/doc/simgrid/examples/platforms/g5k_cabinets.xml"
-#define FILENAME4 "/home/user/Install/simgrid/doc/simgrid/examples/platforms/nancy.xml"
+#define FILENAME1 "./doc/simgrid/examples/platforms/g5k.xml"
+#define FILENAME2 "./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml"
+#define FILENAME3 "./doc/simgrid/examples/platforms/g5k_cabinets.xml"
+#define FILENAME4 "./doc/simgrid/examples/platforms/nancy.xml"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,7 +60,7 @@ int host(int argc, char *argv[])
   XBT_INFO("\tHaving read  %zu \ton %s",read,file->name);
 
   MSG_file_stat(file,&stat);
-  XBT_INFO("\tFile %s Size %d",file->name,(int)stat.size);
+  XBT_INFO("\tFile stat %s Size %d",file->name,(int)stat.size);
 
   XBT_INFO("\tClose file '%s'",file->name);
   MSG_file_close(file);
