@@ -66,7 +66,7 @@ static surf_action_t storage_action_open(void *storage, const char* mount, const
 static surf_action_t storage_action_close(void *storage, surf_file_t fp)
 {
   char *filename = fp->name;
-  XBT_DEBUG("\tClose file '%s' size '%ld'",filename,fp->content->stat.size);
+  XBT_DEBUG("\tClose file '%s' size '%f'",filename,fp->content->stat.size);
   free(fp->name);
   fp->content = NULL;
   xbt_free(fp);
@@ -78,7 +78,7 @@ static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, 
 {
   char *filename = stream->name;
   surf_stat_t content = stream->content;
-  XBT_DEBUG("\tRead file '%s' size '%zu/%zu'",filename,size,content->stat.size);
+  XBT_DEBUG("\tRead file '%s' size '%f/%zu'",filename,content->stat.size,size);
   if(size > content->stat.size)
     size = content->stat.size;
   surf_action_t action = storage_action_execute(storage,size,READ);
@@ -89,7 +89,7 @@ static surf_action_t storage_action_write(void *storage, const void* ptr, size_t
 {
   char *filename = stream->name;
   surf_stat_t content = stream->content;
-  XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,content->stat.size);
+  XBT_DEBUG("\tWrite file '%s' size '%zu/%f'",filename,size,content->stat.size);
 
   surf_action_t action = storage_action_execute(storage,size,WRITE);
   action->file = stream;
@@ -217,22 +217,27 @@ static void storage_update_actions_state(double now, double delta)
   }
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
+
     double_update(&(GENERIC_ACTION(action).remains),
                   lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable) * delta);
+
     if (GENERIC_LMM_ACTION(action).generic_action.max_duration != NO_MAX_DURATION)
       double_update(&(GENERIC_ACTION(action).max_duration), delta);
+
     if(GENERIC_ACTION(action).remains > 0 &&
         lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0 &&
-        ((storage_t)action->storage)->used_size == ((storage_t)action->storage)->size) {
+        ((storage_t)action->storage)->used_size == ((storage_t)action->storage)->size)
+    {
       GENERIC_ACTION(action).finish = surf_get_clock();
       storage_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
-    } else
-    if ((GENERIC_ACTION(action).remains <= 0) &&
-        (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0)) {
+    } else if ((GENERIC_ACTION(action).remains <= 0) &&
+        (lmm_get_variable_weight(GENERIC_LMM_ACTION(action).variable) > 0))
+    {
       GENERIC_ACTION(action).finish = surf_get_clock();
       storage_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     } else if ((GENERIC_ACTION(action).max_duration != NO_MAX_DURATION) &&
-               (GENERIC_ACTION(action).max_duration <= 0)) {
+               (GENERIC_ACTION(action).max_duration <= 0))
+    {
       GENERIC_ACTION(action).finish = surf_get_clock();
       storage_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     }
@@ -496,7 +501,7 @@ static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size
   char time[12];
   char path[1024];
   int nb;
-  long size;
+  unsigned long size;
 
   surf_stat_t content;
 

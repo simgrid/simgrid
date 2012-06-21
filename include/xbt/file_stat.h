@@ -16,7 +16,7 @@ typedef struct file_stat {
   char *group;
   char *date; /* FIXME: update to time_t or double */
   char *time; /* FIXME: update to time_t or double */
-  size_t size;
+  double size;
 } s_file_stat_t, *file_stat_t;
 
 static XBT_INLINE void file_stat_copy(s_file_stat_t *src, s_file_stat_t *dst)
