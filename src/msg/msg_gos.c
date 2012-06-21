@@ -26,62 +26,6 @@ MSG_error_t MSG_task_execute(m_task_t task)
   return MSG_parallel_task_execute(task);
 }
 
-/** \ingroup m_task_management
- * \brief Creates a new #m_task_t (a parallel one....).
- *
- * A constructor for #m_task_t taking six arguments and returning the
- corresponding object.
- * \param name a name for the object. It is for user-level information
- and can be NULL.
- * \param host_nb the number of hosts implied in the parallel task.
- * \param host_list an array of \p host_nb m_host_t.
- * \param computation_amount an array of \p host_nb
- doubles. computation_amount[i] is the total number of operations
- that have to be performed on host_list[i].
- * \param communication_amount an array of \p host_nb* \p host_nb doubles.
- * \param data a pointer to any data may want to attach to the new
- object.  It is for user-level information and can be NULL. It can
- be retrieved with the function \ref MSG_task_get_data.
- * \see m_task_t
- * \return The new corresponding object.
- */
-m_task_t
-MSG_parallel_task_create(const char *name, int host_nb,
-                         const m_host_t * host_list,
-                         double *computation_amount,
-                         double *communication_amount, void *data)
-{
-  int i;
-  simdata_task_t simdata = xbt_new0(s_simdata_task_t, 1);
-  m_task_t task = xbt_new0(s_m_task_t, 1);
-  task->simdata = simdata;
-
-  /* Task structure */
-  task->name = xbt_strdup(name);
-  task->data = data;
-
-  /* Simulator Data */
-  simdata->computation_amount = 0;
-  simdata->message_size = 0;
-  simdata->compute = NULL;
-  simdata->comm = NULL;
-  simdata->rate = -1.0;
-  simdata->isused = 0;
-  simdata->sender = NULL;
-  simdata->receiver = NULL;
-  simdata->source = NULL;
-
-  simdata->host_nb = host_nb;
-  simdata->host_list = xbt_new0(smx_host_t, host_nb);
-  simdata->comp_amount = computation_amount;
-  simdata->comm_amount = communication_amount;
-
-  for (i = 0; i < host_nb; i++)
-    simdata->host_list[i] = host_list[i]->smx_host;
-
-  return task;
-}
-
 /** \ingroup msg_task_usage
  * \brief Executes a parallel task and waits for its termination.
  *

@@ -76,6 +76,47 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   return task;
 }
 
+/** \ingroup m_task_management
+ * \brief Creates a new #m_task_t (a parallel one....).
+ *
+ * A constructor for #m_task_t taking six arguments and returning the
+ corresponding object.
+ * \param name a name for the object. It is for user-level information
+ and can be NULL.
+ * \param host_nb the number of hosts implied in the parallel task.
+ * \param host_list an array of \p host_nb m_host_t.
+ * \param computation_amount an array of \p host_nb
+ doubles. computation_amount[i] is the total number of operations
+ that have to be performed on host_list[i].
+ * \param communication_amount an array of \p host_nb* \p host_nb doubles.
+ * \param data a pointer to any data may want to attach to the new
+ object.  It is for user-level information and can be NULL. It can
+ be retrieved with the function \ref MSG_task_get_data.
+ * \see m_task_t
+ * \return The new corresponding object.
+ */
+m_task_t
+MSG_parallel_task_create(const char *name, int host_nb,
+                         const m_host_t * host_list,
+                         double *computation_amount,
+                         double *communication_amount, void *data)
+{
+  m_task_t task = MSG_task_create(name, 0, 0, data);
+  simdata_task_t simdata = task->simdata;
+  int i;
+
+  /* Simulator Data specific to parallel tasks */
+  simdata->host_nb = host_nb;
+  simdata->host_list = xbt_new0(smx_host_t, host_nb);
+  simdata->comp_amount = computation_amount;
+  simdata->comm_amount = communication_amount;
+
+  for (i = 0; i < host_nb; i++)
+    simdata->host_list[i] = host_list[i]->smx_host;
+
+  return task;
+}
+
 /*************** Begin GPU ***************/
 /** \ingroup m_task_management
  * \brief Creates a new #m_gpu_task_t.
