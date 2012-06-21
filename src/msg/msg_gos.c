@@ -151,9 +151,6 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
   }
   CATCH(e) {
     switch (e.category) {
-    case host_error:
-      status = MSG_HOST_FAILURE;
-      break;
     case cancel_error:
       status = MSG_TASK_CANCELED;
       break;
@@ -184,7 +181,6 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
  */
 MSG_error_t MSG_process_sleep(double nb_sec)
 {
-  xbt_ex_t e;
   MSG_error_t status = MSG_OK;
   /*m_process_t proc = MSG_process_self();*/
 
@@ -200,22 +196,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
   
   proc->simdata->waiting_action = NULL;*/
 
-  TRY {
-    simcall_process_sleep(nb_sec);  
-  }
-  CATCH(e) {
-    switch (e.category) {
-      case host_error:
-        #ifdef HAVE_TRACING
-          TRACE_msg_process_sleep_out(MSG_process_self());
-        #endif
-          status = MSG_HOST_FAILURE;
-      break;
-      default:
-        RETHROW;
-    }
-    xbt_ex_free(e);
-  }
+  simcall_process_sleep(nb_sec);
 
   #ifdef HAVE_TRACING
     TRACE_msg_process_sleep_out(MSG_process_self());
@@ -494,12 +475,6 @@ int MSG_comm_test(msg_comm_t comm)
   }
   CATCH(e) {
     switch (e.category) {
-
-      case host_error:
-        comm->status = MSG_HOST_FAILURE;
-        finished = 1;
-        break;
-
       case network_error:
         comm->status = MSG_TRANSFER_FAILURE;
         finished = 1;
@@ -545,12 +520,6 @@ int MSG_comm_testany(xbt_dynar_t comms)
   }
   CATCH(e) {
     switch (e.category) {
-
-      case host_error:
-        finished_index = e.value;
-        status = MSG_HOST_FAILURE;
-        break;
-
       case network_error:
         finished_index = e.value;
         status = MSG_TRANSFER_FAILURE;
@@ -615,9 +584,6 @@ MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
   }
   CATCH(e) {
     switch (e.category) {
-    case host_error:
-      comm->status = MSG_HOST_FAILURE;
-      break;
     case network_error:
       comm->status = MSG_TRANSFER_FAILURE;
       break;
@@ -673,12 +639,6 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   }
   CATCH(e) {
     switch (e.category) {
-
-      case host_error:
-        finished_index = e.value;
-        status = MSG_HOST_FAILURE;
-        break;
-
       case network_error:
         finished_index = e.value;
         status = MSG_TRANSFER_FAILURE;
