@@ -182,13 +182,13 @@ void MC_dpor(void)
               MC_UNSET_RAW_MEM;
             }else{
               pos = xbt_fifo_size(mc_stack_safety);
-              item = xbt_fifo_get_last_item(mc_stack_safety);
+              item = xbt_fifo_get_first_item(mc_stack_safety);
               while(pos>0){
                 restore_state = (mc_state_t) xbt_fifo_get_item_content(item);
                 if(restore_state->system_state != NULL){
                   break;
                 }else{
-                  item = xbt_fifo_get_prev_item(item);
+                  item = xbt_fifo_get_next_item(item);
                   pos--;
                 }
               }
@@ -202,7 +202,7 @@ void MC_dpor(void)
             xbt_fifo_unshift(mc_stack_safety, state);
             XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety));
             MC_UNSET_RAW_MEM;
-            MC_replay(mc_stack_safety, 1);
+            MC_replay(mc_stack_safety, -1);
           }
           break;
         } else {

@@ -181,29 +181,39 @@ int MC_deadlock_check()
 }
 
 /**
- * \brief Re-executes from the start state all the transitions indicated by
+ * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
  * \param stack The stack with the transitions to execute.
  * \param start Start index to begin the re-execution.
  */
 void MC_replay(xbt_fifo_t stack, int start)
 {
-  int value;
+  int value, i = 1;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
-  xbt_fifo_item_t item;
+  xbt_fifo_item_t item, start_item;
   mc_state_t state;
 
   XBT_DEBUG("**** Begin Replay ****");
 
-  /* Restore the initial state */
-  MC_restore_snapshot(initial_snapshot);
-  /* At the moment of taking the snapshot the raw heap was set, so restoring
-   * it will set it back again, we have to unset it to continue  */
-  MC_UNSET_RAW_MEM;
+  if(start == -1){
+    /* Restore the initial state */
+    MC_restore_snapshot(initial_snapshot);
+    /* At the moment of taking the snapshot the raw heap was set, so restoring
+     * it will set it back again, we have to unset it to continue  */
+    MC_UNSET_RAW_MEM;
+  }
 
-  /* Traverse the stack from the initial state and re-execute the transitions */
-  for (item = xbt_fifo_get_last_item(stack);
+  start_item = xbt_fifo_get_last_item(stack);
+  if(start != -1){
+    while (i != start){
+      start_item = xbt_fifo_get_prev_item(start_item);
+      i++;
+    }
+  }
+
+  /* Traverse the stack from the state at position start and re-execute the transitions */
+  for (item = start_item;
        item != xbt_fifo_get_first_item(stack);
        item = xbt_fifo_get_prev_item(item)) {
 
