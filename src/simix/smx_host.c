@@ -361,6 +361,12 @@ void SIMIX_execution_finish(smx_action_t action)
         xbt_die("Internal error in SIMIX_execution_finish: unexpected action state %d",
             (int)action->state);
     }
+    /* check if the host is down */
+    if (surf_workstation_model->extension.
+        workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
+      simcall->issuer->context->iwannadie = 1;
+    }
+
     simcall->issuer->waiting_action =    NULL;
     simcall->host_execution_wait.result = action->state;
     SIMIX_simcall_answer(simcall);
