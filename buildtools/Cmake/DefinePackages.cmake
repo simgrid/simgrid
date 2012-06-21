@@ -401,7 +401,6 @@ set(headers_to_install
   include/xbt/function_types.h
   include/xbt/asserts.h 
   include/xbt/automaton.h
-  include/xbt/automatonparse_promela.h
   include/xbt/ex.h
   include/xbt/log.h
   include/xbt/module.h
