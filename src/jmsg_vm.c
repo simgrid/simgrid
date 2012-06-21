@@ -37,8 +37,8 @@ Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm, jobject jhost, jint jcor
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_destroy(JNIEnv *env, jobject jvm) {
-  /*msg_vm_t vm = jvm_get_native(env,jvm);
-  MSG_vm_destroy(vm);*/
+  msg_vm_t vm = jvm_get_native(env,jvm);
+  MSG_vm_destroy(vm);
 }
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_VM_isSuspended(JNIEnv *env, jobject jvm) {

@@ -118,7 +118,7 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   }
   argv[argc] = NULL;
 
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
 
   for (index = 0; index < argc; index++)
     free(argv[index]);
