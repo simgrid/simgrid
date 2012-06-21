@@ -71,8 +71,8 @@ int host(int argc, char *argv[])
 
 int main(int argc, char **argv)
 {
-    int i,res;
-  MSG_global_init(&argc, argv);
+  int i,res;
+  MSG_init(&argc, argv);
   MSG_create_environment(argv[1]);
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
   MSG_function_register("host", host);

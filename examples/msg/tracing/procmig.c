@@ -80,7 +80,7 @@ static int master(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
   /* Argument checking */
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
   if (argc < 3) {
     XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
     exit(1);

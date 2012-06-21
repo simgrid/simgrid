@@ -49,16 +49,13 @@ extern double *mc_time;
 #define MAX_DEPTH_LIVENESS 500
 
 int MC_deadlock_check(void);
-void MC_replay(xbt_fifo_t stack);
+void MC_replay(xbt_fifo_t stack, int start);
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack);
 void MC_wait_for_requests(void);
 void MC_get_enabled_processes();
 void MC_show_deadlock(smx_simcall_t req);
-void MC_show_deadlock_stateful(smx_simcall_t req);
-void MC_show_stack_safety_stateless(xbt_fifo_t stack);
-void MC_dump_stack_safety_stateless(xbt_fifo_t stack);
-void MC_show_stack_safety_stateful(xbt_fifo_t stack);
-void MC_dump_stack_safety_stateful(xbt_fifo_t stack);
+void MC_show_stack_safety(xbt_fifo_t stack);
+void MC_dump_stack_safety(xbt_fifo_t stack);
 
 /********************************* Requests ***********************************/
 int MC_request_depend(smx_simcall_t req1, smx_simcall_t req2);
@@ -95,6 +92,7 @@ typedef struct mc_state {
   s_smx_simcall_t executed_req;         /* The executed request of the state */
   int req_num;                      /* The request number (in the case of a
                                        multi-request like waitany ) */
+  mc_snapshot_t system_state;      /* Snapshot of system state */
 } s_mc_state_t, *mc_state_t;
 
 extern xbt_fifo_t mc_stack_safety_stateless;
@@ -183,26 +181,12 @@ typedef struct s_memory_map {
 memory_map_t get_memory_map(void);
 
 
-/********************************** DPOR for safety (stateless) **************************************/
+/********************************** DPOR for safety  **************************************/
+
 void MC_dpor_init(void);
 void MC_dpor(void);
 void MC_dpor_exit(void);
-
-/***** DPOR for safety (stateful) **** */
-
-typedef struct s_mc_state_with_snapshot{
-  mc_snapshot_t system_state;
-  mc_state_t graph_state;
-}s_mc_state_ws_t, *mc_state_ws_t;
-
-extern xbt_fifo_t mc_stack_safety_stateful;
-
-void MC_init_stateful(void);
-void MC_modelcheck_stateful(void);
-mc_state_ws_t new_state_ws(mc_snapshot_t s, mc_state_t gs);
-void MC_dpor_stateful_init(void);
-void MC_dpor_stateful(void);
-void MC_exit_stateful(void);
+void MC_init_safety(void);
 
 
 /********************************** Double-DFS for liveness property**************************************/
@@ -282,6 +266,11 @@ void MC_ddfs(int search_cycle);
 void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
 void MC_pair_stateless_delete(mc_pair_stateless_t pair);
+
+/********************************** Configuration of MC **************************************/
+
+extern int _surf_do_mc_checkpoint;
+extern xbt_fifo_t mc_stack_safety;
 
 
 #endif

@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   MSG_error_t res = MSG_OK;
 
   /* Verify if the platform xml file was passed by command line. */
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
   if (argc < 2) {
     printf("Usage: %s test_trace_integration_model.xml\n", argv[0]);
     exit(1);

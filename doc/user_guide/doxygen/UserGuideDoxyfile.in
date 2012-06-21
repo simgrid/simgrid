@@ -658,16 +658,15 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = index.doc \                                                  
-			 install.doc \
-			 use.doc \	                         
+INPUT                  = index.doc \
+                         install.doc \
+                         use.doc \
                          modules.doc \
-			 options.doc \
+                         options.doc \
                          platform.doc \
-                         tracing.doc \                       
+                         tracing.doc \
                          pls.doc \
-			 bindings.doc \                                                  
-			 FAQ.doc \
+                         bindings.doc \
                          @top_srcdir@/doc/user_guide/doxygen/logcategories.doc
 
 ###################################################

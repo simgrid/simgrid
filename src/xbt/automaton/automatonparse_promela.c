@@ -1,7 +1,6 @@
 /* methods for implementation of automaton from promela description */
 
-/* Copyright (c) 2011. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2011-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,7 +18,7 @@ void new_state(char* id, int src){
 
   char* id_state = strdup(id);
   char* first_part = strtok(id,"_");
-  int type = 0 ; // -1=état initial, 0=état intermédiaire, 1=état final
+  int type = 0 ; // -1=initial state; 0=intermediate state; 1=final state
 
   if(strcmp(first_part,"accept")==0){
     type = 1;

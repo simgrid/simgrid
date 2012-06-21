@@ -348,7 +348,8 @@ void SIMIX_execution_finish(smx_action_t action)
 
       case SIMIX_FAILED:
         XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->smx_host->name);
-        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        simcall->issuer->context->iwannadie = 1;
+        //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
 
       case SIMIX_CANCELED:
@@ -360,7 +361,7 @@ void SIMIX_execution_finish(smx_action_t action)
         xbt_die("Internal error in SIMIX_execution_finish: unexpected action state %d",
             (int)action->state);
     }
-    simcall->issuer->waiting_action = NULL;
+    simcall->issuer->waiting_action =    NULL;
     simcall->host_execution_wait.result = action->state;
     SIMIX_simcall_answer(simcall);
   }

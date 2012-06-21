@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
   if (argc < 2) {
     printf("Usage: %s platform_file\n", argv[0]);
     exit(1);

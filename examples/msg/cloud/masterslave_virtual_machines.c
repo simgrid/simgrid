@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
   int i;
 
   /* Get the arguments */
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
   if (argc < 2) {
     printf("Usage: %s platform_file\n", argv[0]);
     printf("example: %s msg_platform.xml\n", argv[0]);

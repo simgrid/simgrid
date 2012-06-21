@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
   xbt_os_timer_t timer = xbt_os_timer_new();
 #endif
 
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
 
   char **options = &argv[1];
   const char* platform_file = options[0];

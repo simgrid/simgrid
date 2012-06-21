@@ -12,6 +12,10 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    process groups with very few intrinsic semantic, but they should
    allow you to build the semantic you want easily.
  * New function: MSG_host_set_property_value()
+ * Deprecate functions MSG_global_init() / MSG_global_init_args()
+   Please use MSG_init() instead. (reducing the amount of entry 
+   points in the library helps us).
+ * Make it impossible to link against the wrong version of the lib
 
  Simix:
  * Bug fixes around the resource failures: don't let the processes

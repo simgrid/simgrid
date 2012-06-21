@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 {
   XBT_LOG_CONNECT(graphicator);
 #ifdef HAVE_TRACING
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
 
   if (argc < 3){
     XBT_INFO("Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);

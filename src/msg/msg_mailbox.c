@@ -86,9 +86,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
   }
   CATCH(e) {
     switch (e.category) {
-    case host_error:
-      ret = MSG_HOST_FAILURE;
-      break;
     case network_error:
       ret = MSG_TRANSFER_FAILURE;
       break;

@@ -219,6 +219,8 @@ set(source_to_pack
   ${TOOLS_CMAKEFILES_TXT}
   ${TESTSUITE_CMAKEFILES_TXT}
   ${DOC_SOURCES}
+  ${USER_GUIDE_SOURCES}
+  ${REF_GUIDE_SOURCES}
   ${DOC_FIGS}
   ${README_files}
   ${xml_files}

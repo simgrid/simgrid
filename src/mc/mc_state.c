@@ -10,14 +10,15 @@
 /**
  * \brief Creates a state data structure used by the exploration algorithm
  */
-mc_state_t MC_state_new(void)
+mc_state_t MC_state_new()
 {
   mc_state_t state = NULL;
   
   state = xbt_new0(s_mc_state_t, 1);
   state->max_pid = simix_process_maxpid;
   state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
-  
+  state->system_state = NULL;
+
   mc_stats->expanded_states++;
   return state;
 }

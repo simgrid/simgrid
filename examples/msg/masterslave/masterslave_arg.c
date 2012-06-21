@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   MSG_error_t res = MSG_OK;
   long i;
 
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
   if (argc < 4) {
     printf("Usage: %s platform_file number_of_jobs number_of_slaves\n", argv[0]);
     printf("example: %s msg_platform.xml 10 5\n", argv[0]);

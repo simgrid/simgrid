@@ -33,20 +33,6 @@ SG_BEGIN_DECL()
     SIMGRID_VERSION_MAJOR and friends give the version numbers of the used header files */
 XBT_PUBLIC(void) sg_version(int *major,int *minor,int *patch);
 
-/** Check that the link-time and compile-time versions of SimGrid do match.
-  * There is no need to call it yourself, it's done automatically during the SimGrid initialization */
-#define sg_check_version() {                      \
-  int ver_major,ver_minor,ver_patch;              \
-  sg_version(&ver_major,&ver_minor,&ver_patch);   \
-  if ((ver_major != SIMGRID_VERSION_MAJOR) ||     \
-      (ver_minor != SIMGRID_VERSION_MINOR) ||     \
-      (ver_patch != SIMGRID_VERSION_PATCH)) {     \
-    fprintf(stderr,"FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, and then linked against SimGrid %d.%d.%d. Please fix this.\n", \
-        SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,ver_major,ver_minor,ver_patch);                          \
-  }                                               \
-} 
-  
-
 /* take care of DLL usage madness */
 
 #ifdef _XBT_DLL_EXPORT

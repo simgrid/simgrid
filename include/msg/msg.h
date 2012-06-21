@@ -35,10 +35,29 @@ typedef enum {
 
 /************************** Global ******************************************/
 XBT_PUBLIC(void) MSG_config(const char *name, ...);
-XBT_PUBLIC(void) MSG_global_init(int *argc, char **argv);
-XBT_PUBLIC(void) MSG_global_init_args(int *argc, char **argv);
+/** \ingroup msg_simulation
+ *  \brief Initialize the MSG internal data.
+ *  \hideinitializer
+ *
+ *  It also check that the link-time and compile-time versions of SimGrid do
+ *  match, so you should use this version instead of the #MSG_init_nocheck
+ *  function that does the same initializations, but without this check.
+ *
+ *  We allow to link against compiled versions that differ in the patch level.
+ */
+#define MSG_init(argc,argv)  {                      \
+	  int ver_major,ver_minor,ver_patch;              \
+	  sg_version(&ver_major,&ver_minor,&ver_patch);   \
+	  if ((ver_major != SIMGRID_VERSION_MAJOR) ||     \
+	      (ver_minor != SIMGRID_VERSION_MINOR)) {     \
+	    fprintf(stderr,"FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, and then linked against SimGrid %d.%d.%d. Please fix this.\n", \
+	        SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,ver_major,ver_minor,ver_patch);                          \
+	  }                                               \
+	  MSG_init_nocheck(argc,argv);                    \
+	}
+
+XBT_PUBLIC(void) MSG_init_nocheck(int *argc, char **argv);
 XBT_PUBLIC(MSG_error_t) MSG_main(void);
-XBT_PUBLIC(MSG_error_t) MSG_main_stateful(void);
 XBT_PUBLIC(MSG_error_t) MSG_main_liveness(xbt_automaton_t a);
 XBT_PUBLIC(MSG_error_t) MSG_clean(void);
 XBT_PUBLIC(void) MSG_function_register(const char *name,
@@ -246,6 +265,9 @@ XBT_PUBLIC(MSG_error_t)
 MSG_error_t MSG_action_trace_run(char *path);
 
 #ifdef MSG_USE_DEPRECATED
+#define MSG_global_init(argc, argv)      MSG_init(argc,argv)
+#define MSG_global_init_args(argc, argv) MSG_init(argc,argv)
+
 /* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
 XBT_PUBLIC(int) MSG_get_host_number(void);
 XBT_PUBLIC(m_host_t *) MSG_get_host_table(void);

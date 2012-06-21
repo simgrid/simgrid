@@ -584,7 +584,8 @@ void SIMIX_post_process_sleep(smx_action_t action)
 
     switch(surf_workstation_model->action_state_get(action->sleep.surf_sleep)){
       case SURF_ACTION_FAILED:
-	SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        simcall->issuer->context->iwannadie = 1;
+        //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
 
       case SURF_ACTION_DONE:
@@ -595,9 +596,14 @@ void SIMIX_post_process_sleep(smx_action_t action)
         THROW_IMPOSSIBLE;
         break;
     }
+    if (surf_workstation_model->extension.
+        workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
+      simcall->issuer->context->iwannadie = 1;
+    }
     simcall->process_sleep.result = state;
     simcall->issuer->waiting_action = NULL;
     SIMIX_simcall_answer(simcall);
+
   }
   SIMIX_process_sleep_destroy(action);
 }

@@ -18,7 +18,6 @@ extern int _surf_do_model_check;
 #define MC_IS_ENABLED _surf_do_model_check
 
 XBT_PUBLIC(void) MC_assert(int);
-XBT_PUBLIC(void) MC_assert_stateful(int);
 XBT_PUBLIC(int) MC_random(int min, int max);
 XBT_PUBLIC(void) MC_diff(void);
 XBT_PUBLIC(xbt_automaton_t) MC_create_automaton(const char *file);
@@ -27,7 +26,6 @@ XBT_PUBLIC(xbt_automaton_t) MC_create_automaton(const char *file);
 
 #define MC_IS_ENABLED 0
 #define MC_assert(a) xbt_assert(a)
-#define MC_assert_stateful(a) xbt_assert(a)
 
 #endif
 

@@ -27,8 +27,7 @@ mc_snapshot_t initial_snapshot = NULL;
 
 /* Safety */
 
-xbt_fifo_t mc_stack_safety_stateful = NULL;
-xbt_fifo_t mc_stack_safety_stateless = NULL;
+xbt_fifo_t mc_stack_safety = NULL;
 mc_stats_t mc_stats = NULL;
 
 /* Liveness */
@@ -46,7 +45,7 @@ static void MC_assert_pair(int prop);
 /**
  *  \brief Initialize the model-checker data structures
  */
-void MC_init_safety_stateless(void)
+void MC_init_safety(void)
 {
 
   /* Check if MC is already initialized */
@@ -64,7 +63,7 @@ void MC_init_safety_stateless(void)
   mc_stats->state_size = 1;
 
   /* Create exploration stack */
-  mc_stack_safety_stateless = xbt_fifo_new();
+  mc_stack_safety = xbt_fifo_new();
 
   MC_UNSET_RAW_MEM;
 
@@ -75,34 +74,9 @@ void MC_init_safety_stateless(void)
   initial_snapshot = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot(initial_snapshot);
   MC_UNSET_RAW_MEM;
-}
-
-void MC_init_safety_stateful(void){
-
-  
-  /* Check if MC is already initialized */
-  if (initial_snapshot)
-    return;
-
-  mc_time = xbt_new0(double, simix_process_maxpid);
-
-  /* Initialize the data structures that must be persistent across every
-     iteration of the model-checker (in RAW memory) */
-  MC_SET_RAW_MEM;
-
-  /* Initialize statistics */
-  mc_stats = xbt_new0(s_mc_stats_t, 1);
-  mc_stats->state_size = 1;
-
-  /* Create exploration stack */
-  mc_stack_safety_stateful = xbt_fifo_new();
-
-  MC_UNSET_RAW_MEM;
-
-  MC_dpor_stateful_init();
-
 
 }
+
 
 static void MC_init_liveness(xbt_automaton_t a){
 
@@ -135,17 +109,11 @@ static void MC_init_liveness(xbt_automaton_t a){
 
 void MC_modelcheck(void)
 {
-  MC_init_safety_stateless();
+  MC_init_safety();
   MC_dpor();
   MC_exit();
 }
 
-void MC_modelcheck_stateful(void)
-{
-  MC_init_safety_stateful();
-  MC_dpor_stateful();
-  MC_exit();
-}
 
 
 void MC_modelcheck_liveness(xbt_automaton_t a){
@@ -213,28 +181,39 @@ int MC_deadlock_check()
 }
 
 /**
- * \brief Re-executes from the initial state all the transitions indicated by
+ * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
  * \param stack The stack with the transitions to execute.
+ * \param start Start index to begin the re-execution.
  */
-void MC_replay(xbt_fifo_t stack)
+void MC_replay(xbt_fifo_t stack, int start)
 {
-  int value;
+  int value, i = 1;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
-  xbt_fifo_item_t item;
+  xbt_fifo_item_t item, start_item;
   mc_state_t state;
 
   XBT_DEBUG("**** Begin Replay ****");
 
-  /* Restore the initial state */
-  MC_restore_snapshot(initial_snapshot);
-  /* At the moment of taking the snapshot the raw heap was set, so restoring
-   * it will set it back again, we have to unset it to continue  */
-  MC_UNSET_RAW_MEM;
+  if(start == -1){
+    /* Restore the initial state */
+    MC_restore_snapshot(initial_snapshot);
+    /* At the moment of taking the snapshot the raw heap was set, so restoring
+     * it will set it back again, we have to unset it to continue  */
+    MC_UNSET_RAW_MEM;
+  }
 
-  /* Traverse the stack from the initial state and re-execute the transitions */
-  for (item = xbt_fifo_get_last_item(stack);
+  start_item = xbt_fifo_get_last_item(stack);
+  if(start != -1){
+    while (i != start){
+      start_item = xbt_fifo_get_prev_item(start_item);
+      i++;
+    }
+  }
+
+  /* Traverse the stack from the state at position start and re-execute the transitions */
+  for (item = start_item;
        item != xbt_fifo_get_first_item(stack);
        item = xbt_fifo_get_prev_item(item)) {
 
@@ -367,26 +346,30 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   XBT_DEBUG("**** End Replay ****");
 }
 
-
 /**
  * \brief Dumps the contents of a model-checker's stack and shows the actual
  *        execution trace
  * \param stack The stack to dump
  */
-void MC_dump_stack_safety_stateless(xbt_fifo_t stack)
+void MC_dump_stack_safety(xbt_fifo_t stack)
 {
-  mc_state_t state;
 
-  MC_show_stack_safety_stateless(stack);
+  MC_show_stack_safety(stack);
 
-  MC_SET_RAW_MEM;
-  while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
-    MC_state_delete(state);
-  MC_UNSET_RAW_MEM;
+  if(!_surf_do_mc_checkpoint){
+
+    mc_state_t state;
+
+    MC_SET_RAW_MEM;
+    while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
+      MC_state_delete(state);
+    MC_UNSET_RAW_MEM;
+
+  }
 }
 
 
-void MC_show_stack_safety_stateless(xbt_fifo_t stack)
+void MC_show_stack_safety(xbt_fifo_t stack)
 {
   int value;
   mc_state_t state;
@@ -417,54 +400,7 @@ void MC_show_deadlock(smx_simcall_t req)
     XBT_INFO("%s", req_str);
     xbt_free(req_str);*/
   XBT_INFO("Counter-example execution trace:");
-  MC_dump_stack_safety_stateless(mc_stack_safety_stateless);
-}
-
-void MC_show_deadlock_stateful(smx_simcall_t req)
-{
-  /*char *req_str = NULL;*/
-  XBT_INFO("**************************");
-  XBT_INFO("*** DEAD-LOCK DETECTED ***");
-  XBT_INFO("**************************");
-  XBT_INFO("Locked request:");
-  /*req_str = MC_request_to_string(req);
-    XBT_INFO("%s", req_str);
-    xbt_free(req_str);*/
-  XBT_INFO("Counter-example execution trace:");
-  MC_show_stack_safety_stateful(mc_stack_safety_stateful);
-}
-
-void MC_dump_stack_safety_stateful(xbt_fifo_t stack)
-{
-  //mc_state_ws_t state;
-
-  MC_show_stack_safety_stateful(stack);
-
-  /*MC_SET_RAW_MEM;
-    while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
-    MC_state_delete(state);
-    MC_UNSET_RAW_MEM;*/
-}
-
-
-void MC_show_stack_safety_stateful(xbt_fifo_t stack)
-{
-  int value;
-  mc_state_ws_t state;
-  xbt_fifo_item_t item;
-  smx_simcall_t req;
-  char *req_str = NULL;
-  
-  for (item = xbt_fifo_get_last_item(stack);
-       (item ? (state = (mc_state_ws_t) (xbt_fifo_get_item_content(item)))
-        : (NULL)); item = xbt_fifo_get_prev_item(item)) {
-    req = MC_state_get_executed_request(state->graph_state, &value);
-    if(req){
-      req_str = MC_request_to_string(req, value);
-      XBT_INFO("%s", req_str);
-      xbt_free(req_str);
-    }
-  }
+  MC_dump_stack_safety(mc_stack_safety);
 }
 
 
@@ -531,25 +467,11 @@ void MC_assert(int prop)
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");
     XBT_INFO("Counter-example execution trace:");
-    MC_dump_stack_safety_stateless(mc_stack_safety_stateless);
+    MC_dump_stack_safety(mc_stack_safety);
     MC_print_statistics(mc_stats);
     xbt_abort();
   }
 }
-
-void MC_assert_stateful(int prop)
-{
-  if (MC_IS_ENABLED && !prop) {
-    XBT_INFO("**************************");
-    XBT_INFO("*** PROPERTY NOT VALID ***");
-    XBT_INFO("**************************");
-    XBT_INFO("Counter-example execution trace:");
-    MC_dump_stack_safety_stateful(mc_stack_safety_stateful);
-    MC_print_statistics(mc_stats);
-    xbt_abort();
-  }
-}
-
 
 static void MC_assert_pair(int prop){
   if (MC_IS_ENABLED && !prop) {

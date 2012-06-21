@@ -64,7 +64,7 @@ int client(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
 
   MSG_create_environment("platform.xml");
 

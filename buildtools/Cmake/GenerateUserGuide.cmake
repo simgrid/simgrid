@@ -7,11 +7,6 @@ file(GLOB_RECURSE source_doxygen
 )
 
 if(FIG2DEV_PATH)
-
-	set(DOCSSOURCES "${source_doxygen}\n${USER_GUIDE_SOURCES}")
-	string(REPLACE "\n" ";" DOCSSOURCES ${DOCSSOURCES})
-
-
 	set(DOC_PNGS 
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
 		${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png		
@@ -28,7 +23,7 @@ if(FIG2DEV_PATH)
 	
 	ADD_CUSTOM_TARGET(user_guide
 		COMMENT "Generating the SimGrid user guide..."
-		DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
+		DEPENDS ${USER_GUIDE_SOURCES} ${DOC_FIGS} ${source_doxygen}
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html
 	    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html		
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen
@@ -97,120 +92,120 @@ endif(FIG2DEV_PATH)
 
 ##############################################################################"
 
-message(STATUS "Check individual TOCs")
-set(LISTE_GTUT
-	doc/user_guide/doxygen/gtut-tour-00-install.doc
-	doc/user_guide/doxygen/gtut-tour-01-bones.doc
-	doc/user_guide/doxygen/gtut-tour-02-simple.doc
-	doc/user_guide/doxygen/gtut-tour-03-args.doc
-	doc/user_guide/doxygen/gtut-tour-04-callback.doc
-	doc/user_guide/doxygen/gtut-tour-05-globals.doc
-	doc/user_guide/doxygen/gtut-tour-06-logs.doc
-	doc/user_guide/doxygen/gtut-tour-07-timers.doc
-	doc/user_guide/doxygen/gtut-tour-08-exceptions.doc
-	doc/user_guide/doxygen/gtut-tour-09-simpledata.doc
-	doc/user_guide/doxygen/gtut-tour-10-rpc.doc
-	doc/user_guide/doxygen/gtut-tour-11-explicitwait.doc
-	doc/user_guide/doxygen/gtut-tour-recap-messages.doc
-	doc/user_guide/doxygen/gtut-tour-12-staticstruct.doc
-	doc/user_guide/doxygen/gtut-tour-13-pointers.doc
-	doc/user_guide/doxygen/gtut-tour-14-dynar.doc
-	doc/user_guide/doxygen/gtut-tour-15-manualdatadef.doc
-	doc/user_guide/doxygen/gtut-tour-16-exchangecb.doc
-)
-
-foreach(file_name ${LISTE_GTUT})
-	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc)
-	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc)
-	
-	file(READ "${file_name}" file_content)
-	string(REGEX MATCH "Table of Contents.*<hr>" valeur_line "${file_content}")
-	string(REPLACE "\n" ";" valeur_line "${valeur_line}")
-	string(REPLACE "\n" ";" file_content "${file_content}")
-	       
-	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "\n") # make sure it exists
-	foreach(line ${file_content})
-		string(REGEX MATCH "[\\]s?u?b?s?u?b?section.*" line2 "${line}")
-		string(REGEX MATCH ".*_toc.*" line3 "${line}")
-		if(line2 AND NOT line3)
-			string(REPLACE "\\section " "" line2 ${line2})
-			string(REPLACE "\\subsection " "subsection" line2 ${line2})
-			string(REPLACE "\\subsubsection " "subsubsection" line2 ${line2})
-			string(REGEX REPLACE " .*" "" line2 ${line2})
-			set(line2                               " - \\ref ${line2}")
-			string(REPLACE " - \\ref subsection"    "   - \\ref " line2 ${line2})
-			string(REPLACE " - \\ref subsubsection" "     - \\ref " line2 ${line2})
-			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "${line2}\n")
-		endif(line2 AND NOT line3)
-	endforeach(line ${file_content})
-	
-	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc "\n") # make sure it exists
-	foreach(line ${valeur_line})
-		string(REGEX MATCH ".*ref.*" line_ok ${line})
-		if(line_ok)
-			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc "${line_ok}\n")
-		endif(line_ok)
-	endforeach(line ${valeur_line})
-	
-	exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc" OUTPUT_VARIABLE compare_files)
-	if(compare_files)
-		message(STATUS "Wrong toc for ${file_name}. Should be:")
-		file(READ "${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc" file_content)
-		message("${file_content}")
-		exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc")
-        endif(compare_files)
-endforeach(file_name ${LISTE_GTUT})
-
-file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc)
-file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc)
-
-message(STATUS "Check main TOC")
-
-foreach(file_name ${LISTE_GTUT})
-	file(READ "${file_name}" file_content)	
-	string(REGEX MATCH "Table of Contents.*<hr>" valeur_line "${file_content}")
-	string(REPLACE "\n" ";" valeur_line "${valeur_line}")
-	string(REPLACE "\n" ";" file_content "${file_content}")
-	
-	foreach(line ${file_content})
-		string(REGEX MATCH ".*@page.*" line2 "${line}")
-		if(line2)
-			string(REPLACE "@page " "" line2 "${line2}")
-			string(REGEX REPLACE " .*" "" line2 "${line2}")
-			set(line2 " - \\ref ${line2}")
-			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "${line2}\n")
-		endif(line2)
-	endforeach(line ${file_content})
-	
-	foreach(line ${valeur_line})
-		string(REGEX MATCH ".*toc.*" line1 "${line}")
-		string(REGEX MATCH ".*<hr>.*" line2 "${line}")
-		string(REGEX MATCH "^[ ]*$" line3 "${line}")
-		string(REGEX MATCH "Table of Contents" line4 "${line}")
-		if(NOT line1 AND NOT line2 AND NOT line3 AND NOT line4)
-			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "   ${line}\n")
-		endif(NOT line1 AND NOT line2 AND NOT line3 AND NOT line4)
-	endforeach(line ${valeur_line})
-endforeach(file_name ${LISTE_GTUT})	
-
-file(READ "${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/gtut-tour.doc" file_content)
-string(REPLACE "\n" ";" file_content "${file_content}")
-foreach(line ${file_content})
-	string(REGEX MATCH "^[ ]+.*\\ref" line1 "${line}")
-	if(line1)
-		file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc "${line}\n")
-	endif(line1)
-endforeach(line ${file_content})
-	
-exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc" OUTPUT_VARIABLE compare_files)
-if(compare_files)
-	message(STATUS "Wrong toc for gtut-tour.doc Right one is in tmp.realtoc")
-	exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc")
-else(compare_files)
-	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc)
-endif(compare_files)	
-  
-file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc)
+#message(STATUS "Check individual TOCs")
+#set(LISTE_GTUT
+#	doc/user_guide/doxygen/gtut-tour-00-install.doc
+#	doc/user_guide/doxygen/gtut-tour-01-bones.doc
+#	doc/user_guide/doxygen/gtut-tour-02-simple.doc
+#	doc/user_guide/doxygen/gtut-tour-03-args.doc
+#	doc/user_guide/doxygen/gtut-tour-04-callback.doc
+#	doc/user_guide/doxygen/gtut-tour-05-globals.doc
+#	doc/user_guide/doxygen/gtut-tour-06-logs.doc
+#	doc/user_guide/doxygen/gtut-tour-07-timers.doc
+#	doc/user_guide/doxygen/gtut-tour-08-exceptions.doc
+#	doc/user_guide/doxygen/gtut-tour-09-simpledata.doc
+#	doc/user_guide/doxygen/gtut-tour-10-rpc.doc
+#	doc/user_guide/doxygen/gtut-tour-11-explicitwait.doc
+#	doc/user_guide/doxygen/gtut-tour-recap-messages.doc
+#	doc/user_guide/doxygen/gtut-tour-12-staticstruct.doc
+#	doc/user_guide/doxygen/gtut-tour-13-pointers.doc
+#	doc/user_guide/doxygen/gtut-tour-14-dynar.doc
+#	doc/user_guide/doxygen/gtut-tour-15-manualdatadef.doc
+#	doc/user_guide/doxygen/gtut-tour-16-exchangecb.doc
+#)
+#
+#foreach(file_name ${LISTE_GTUT})
+#	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc)
+#	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc)
+#	
+#	file(READ "${file_name}" file_content)
+#	string(REGEX MATCH "Table of Contents.*<hr>" valeur_line "${file_content}")
+#	string(REPLACE "\n" ";" valeur_line "${valeur_line}")
+#	string(REPLACE "\n" ";" file_content "${file_content}")
+#	       
+#	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "\n") # make sure it exists
+#	foreach(line ${file_content})
+#		string(REGEX MATCH "[\\]s?u?b?s?u?b?section.*" line2 "${line}")
+#		string(REGEX MATCH ".*_toc.*" line3 "${line}")
+#		if(line2 AND NOT line3)
+#			string(REPLACE "\\section " "" line2 ${line2})
+#			string(REPLACE "\\subsection " "subsection" line2 ${line2})
+#			string(REPLACE "\\subsubsection " "subsubsection" line2 ${line2})
+#			string(REGEX REPLACE " .*" "" line2 ${line2})
+#			set(line2                               " - \\ref ${line2}")
+#			string(REPLACE " - \\ref subsection"    "   - \\ref " line2 ${line2})
+#			string(REPLACE " - \\ref subsubsection" "     - \\ref " line2 ${line2})
+#			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "${line2}\n")
+#		endif(line2 AND NOT line3)
+#	endforeach(line ${file_content})
+#	
+#	file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc "\n") # make sure it exists
+#	foreach(line ${valeur_line})
+#		string(REGEX MATCH ".*ref.*" line_ok ${line})
+#		if(line_ok)
+#			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc "${line_ok}\n")
+#		endif(line_ok)
+#	endforeach(line ${valeur_line})
+#	
+#	exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc" OUTPUT_VARIABLE compare_files)
+#	if(compare_files)
+#		message(STATUS "Wrong toc for ${file_name}. Should be:")
+#		file(READ "${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc" file_content)
+#		message("${file_content}")
+#		exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc")
+#        endif(compare_files)
+#endforeach(file_name ${LISTE_GTUT})
+#
+#file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc)
+#file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc)
+#
+#message(STATUS "Check main TOC")
+#
+#foreach(file_name ${LISTE_GTUT})
+#	file(READ "${file_name}" file_content)	
+#	string(REGEX MATCH "Table of Contents.*<hr>" valeur_line "${file_content}")
+#	string(REPLACE "\n" ";" valeur_line "${valeur_line}")
+#	string(REPLACE "\n" ";" file_content "${file_content}")
+#	
+#	foreach(line ${file_content})
+#		string(REGEX MATCH ".*@page.*" line2 "${line}")
+#		if(line2)
+#			string(REPLACE "@page " "" line2 "${line2}")
+#			string(REGEX REPLACE " .*" "" line2 "${line2}")
+#			set(line2 " - \\ref ${line2}")
+#			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "${line2}\n")
+#		endif(line2)
+#	endforeach(line ${file_content})
+#	
+#	foreach(line ${valeur_line})
+#		string(REGEX MATCH ".*toc.*" line1 "${line}")
+#		string(REGEX MATCH ".*<hr>.*" line2 "${line}")
+#		string(REGEX MATCH "^[ ]*$" line3 "${line}")
+#		string(REGEX MATCH "Table of Contents" line4 "${line}")
+#		if(NOT line1 AND NOT line2 AND NOT line3 AND NOT line4)
+#			file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc "   ${line}\n")
+#		endif(NOT line1 AND NOT line2 AND NOT line3 AND NOT line4)
+#	endforeach(line ${valeur_line})
+#endforeach(file_name ${LISTE_GTUT})	
+#
+#file(READ "${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/gtut-tour.doc" file_content)
+#string(REPLACE "\n" ";" file_content "${file_content}")
+#foreach(line ${file_content})
+#	string(REGEX MATCH "^[ ]+.*\\ref" line1 "${line}")
+#	if(line1)
+#		file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc "${line}\n")
+#	endif(line1)
+#endforeach(line ${file_content})
+#	
+#exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc" OUTPUT_VARIABLE compare_files)
+#if(compare_files)
+#	message(STATUS "Wrong toc for gtut-tour.doc Right one is in tmp.realtoc")
+#	exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc")
+#else(compare_files)
+#	file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.realtoc)
+#endif(compare_files)	
+#  
+#file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/tmp.curtoc)
 
 ADD_CUSTOM_TARGET(user_guide_pdf
     COMMAND ${CMAKE_COMMAND} -E echo "XX First pass simgrid_user_guide.pdf"
