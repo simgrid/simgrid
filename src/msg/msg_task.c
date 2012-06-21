@@ -48,22 +48,24 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
   m_task_t task = xbt_new(s_m_task_t, 1);
   simdata_task_t simdata = xbt_new(s_simdata_task_t, 1);
   task->simdata = simdata;
+
   /* Task structure */
   task->name = xbt_strdup(name);
   task->data = data;
 
   /* Simulator Data */
-  simdata->host_nb = 0;
-  simdata->computation_amount = compute_duration;
-  simdata->message_size = message_size;
-  simdata->rate = -1.0;
-  simdata->priority = 1.0;
-  simdata->isused = 0;
-  simdata->sender = NULL;
-  simdata->receiver = NULL;
   simdata->compute = NULL;
   simdata->comm = NULL;
+  simdata->message_size = message_size;
+  simdata->computation_amount = compute_duration;
+  simdata->sender = NULL;
+  simdata->receiver = NULL;
+  simdata->source = NULL;
+  simdata->priority = 1.0;
+  simdata->rate = -1.0;
+  simdata->isused = 0;
 
+  simdata->host_nb = 0;
   simdata->host_list = NULL;
   simdata->comp_amount = NULL;
   simdata->comm_amount = NULL;
