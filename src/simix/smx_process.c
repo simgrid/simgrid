@@ -714,16 +714,11 @@ xbt_dynar_t SIMIX_processes_as_dynar(void) {
   return res;
 }
 void SIMIX_process_on_exit_runall(smx_process_t process) {
-  int cpt;
-  if (!process->on_exit) {
-    return;
-  }
+  s_smx_process_exit_fun_t exit_fun;
 
-  smx_process_exit_fun_t exit_fun;
-
-  for (cpt = xbt_dynar_length(process->on_exit) - 1; cpt >= 0; cpt--) {
-    exit_fun = xbt_dynar_get_ptr(process->on_exit, cpt);
-    (exit_fun->fun)(exit_fun->arg);
+  while (!xbt_dynar_is_empty(process->on_exit)) {
+    exit_fun = xbt_dynar_pop_as(process->on_exit,s_smx_process_exit_fun_t);
+    (exit_fun.fun)(exit_fun.arg);
   }
 }
 void SIMIX_process_on_exit(int_f_pvoid_t fun, void *data) {
