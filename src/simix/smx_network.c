@@ -589,14 +589,16 @@ void SIMIX_comm_finish(smx_action_t action)
 
       case SIMIX_SRC_HOST_FAILURE:
         if (simcall->issuer == action->comm.src_proc)
-          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+          simcall->issuer->context->iwannadie = 1;
+//          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         else
           SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
         break;
 
       case SIMIX_DST_HOST_FAILURE:
         if (simcall->issuer == action->comm.dst_proc)
-          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+          simcall->issuer->context->iwannadie = 1;
+//          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         else
           SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
         break;
