@@ -12,19 +12,40 @@
 SG_BEGIN_DECL()
 
 
-/* Version X.Y.Z will get version number XYZ: all digits concatenated without dots
- * (with Y and Z must be on two positions)*/
-
-#define MAKE_SIMGRID_VERSION(major, minor, patch)       \
-  (100UL * (100UL * (major) + (minor)) + (patch))
+/** Define the version numbers of the used header files. 
+    sg_version() can be used to retrieve the version of the dynamic library.
+    But actually, if these numbers don't match, SimGrid refuses to start (so you shouldn't have to care about sg_version() yourself) */
 
 #define SIMGRID_VERSION_MAJOR @SIMGRID_VERSION_MAJOR@
 #define SIMGRID_VERSION_MINOR @SIMGRID_VERSION_MINOR@
 #define SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
 
+/* Version X.Y.Z will get version number XYZ: all digits concatenated without dots
+ * (with Y and Z must be on two positions)*/
+
+#define MAKE_SIMGRID_VERSION(major, minor, patch)       \
+  (100UL * (100UL * (major) + (minor)) + (patch))
 #define SIMGRID_VERSION MAKE_SIMGRID_VERSION(SIMGRID_VERSION_MAJOR, \
                                              SIMGRID_VERSION_MINOR, \
                                              SIMGRID_VERSION_PATCH)
+
+/** Retrieves the version numbers of the used dynamic library (so, DLL or dynlib) , while
+    SIMGRID_VERSION_MAJOR and friends give the version numbers of the used header files */
+XBT_PUBLIC(void) sg_version(int *major,int *minor,int *patch);
+
+/** Check that the link-time and compile-time versions of SimGrid do match.
+  * There is no need to call it yourself, it's done automatically during the SimGrid initialization */
+#define sg_check_version() {                      \
+  int ver_major,ver_minor,ver_patch;              \
+  sg_version(&ver_major,&ver_minor,&ver_patch);   \
+  if ((ver_major != SIMGRID_VERSION_MAJOR) ||     \
+      (ver_minor != SIMGRID_VERSION_MINOR) ||     \
+      (ver_patch != SIMGRID_VERSION_PATCH)) {     \
+    fprintf(stderr,"FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, and then linked against SimGrid %d.%d.%d. Please fix this.\n", \
+        SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,ver_major,ver_minor,ver_patch);                          \
+  }                                               \
+} 
+  
 
 /* take care of DLL usage madness */
 
