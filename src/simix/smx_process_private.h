@@ -92,6 +92,4 @@ void SIMIX_process_sleep_suspend(smx_action_t action);
 void SIMIX_process_sleep_resume(smx_action_t action);
 void SIMIX_process_sleep_destroy(smx_action_t action);
 
-void SIMIX_process_on_exit(smx_process_t process);
-void SIMIX_process_on_exit_add(int_f_pvoid_t fun, void *data);
 #endif
