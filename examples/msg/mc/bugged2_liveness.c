@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
   xbt_new_propositional_symbol(a,"consume", &predConsume);
   xbt_new_propositional_symbol(a,"produce", &predProduce); 
   
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
   MSG_create_environment("../msg_platform.xml");
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("consumer", consumer);
