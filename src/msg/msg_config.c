@@ -11,15 +11,7 @@
 
 /** \brief set a configuration variable
  *
- * Currently existing configuation variable:
- *   - workstation/model (string): Model of workstation to use.
- *     Possible values (defaults to "KCCFLN05"):
- *     - "CLM03": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + support for parallel tasks
- *     - "KCCFLN05": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file.
- *     - "KCCFLN05": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file. Use maxmin for the network.
- *     - "KCCFLN05_proportional": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file. Uses the proportional approahc as described in the Corine Touati's PhD Thesis.
- *     - "KCCFLN05_Vegas": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file. Uses the fairness adapted to the TCP Vegas flow control.
- *     - "KCCFLN05_Reno": realistic TCP behavior + basic CPU model (see [CML03 at CCGrid03]) + failure handling + interference between communications and computations if precised in the platform file. Uses the fairness adapted to the TCP Reno flow control.
+ * Do --help on any simgrid binary to see the list of currently existing configuration variables
  *
  * Example:
  * MSG_config("workstation/model","KCCFLN05");
