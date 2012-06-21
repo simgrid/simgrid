@@ -60,7 +60,7 @@ int host(int argc, char *argv[])
   XBT_INFO("\tHaving read  %zu \ton %s",read,file->name);
 
   MSG_file_stat(file,&stat);
-  XBT_INFO("\tFile stat %s Size %d",file->name,(int)stat.size);
+  XBT_INFO("\tFile stat %s Size %f",file->name,stat.size);
 
   XBT_INFO("\tClose file '%s'",file->name);
   MSG_file_close(file);

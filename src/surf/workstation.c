@@ -324,7 +324,7 @@ static surf_action_t ws_action_read(void *workstation, void* ptr, size_t size, s
   storage_t st = find_storage_on_mount_list(workstation, stream->storage);
   XBT_DEBUG("READ on disk '%s'",st->generic_resource.name);
   surf_model_t model = st->generic_resource.model;
-  return model->extension.storage.read(st, ptr, size, nmemb, stream);
+  return model->extension.storage.read(st, ptr, (double)size, nmemb, stream);
 }
 
 static surf_action_t ws_action_write(void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream)

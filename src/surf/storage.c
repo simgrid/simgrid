@@ -37,7 +37,7 @@ static xbt_dynar_t storage_list;
 
 static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
-static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type);
+static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type);
 
 static surf_action_t storage_action_stat(void *storage, surf_file_t stream)
 {
@@ -74,13 +74,14 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fp)
   return action;
 }
 
-static surf_action_t storage_action_read(void *storage, void* ptr, size_t size, size_t nmemb, surf_file_t stream)
+static surf_action_t storage_action_read(void *storage, void* ptr, double size, size_t nmemb, surf_file_t stream)
 {
   char *filename = stream->name;
   surf_stat_t content = stream->content;
-  XBT_DEBUG("\tRead file '%s' size '%f/%zu'",filename,content->stat.size,size);
+  XBT_INFO("\tRead file '%s' size '%f/%f'",filename,content->stat.size,size);
   if(size > content->stat.size)
     size = content->stat.size;
+  XBT_INFO("Really read file '%s' for %f",filename,size);
   surf_action_t action = storage_action_execute(storage,size,READ);
   return action;
 }
@@ -101,12 +102,12 @@ static surf_action_t storage_action_write(void *storage, const void* ptr, size_t
   return action;
 }
 
-static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_action_storage_type_t type)
+static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type)
 {
   surf_action_storage_t action = NULL;
   storage_t STORAGE = storage;
 
-  XBT_IN("(%s,%zu)", surf_resource_name(STORAGE), size);
+  XBT_IN("(%s,%f)", surf_resource_name(STORAGE), size);
   action =
       surf_action_new(sizeof(s_surf_action_storage_t), size, surf_storage_model,
           STORAGE->state_current != SURF_RESOURCE_ON);
@@ -214,6 +215,7 @@ static void storage_update_actions_state(double now, double delta)
       XBT_INFO("Update %f + %f = %f",((surf_action_t)action)->file->content->stat.size,delta * rate,((surf_action_t)action)->file->content->stat.size+delta * rate);
       ((storage_t)(action->storage))->used_size += delta * rate; // disk usage
       ((surf_action_t)action)->file->content->stat.size += delta * rate; // file size
+      XBT_INFO("Have updating to %f",((surf_action_t)action)->file->content->stat.size);
     }
   }
 
