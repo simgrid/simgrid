@@ -754,6 +754,8 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/MaintainerMode.cmake
   buildtools/Cmake/Supernovae.cmake
   buildtools/Cmake/Pipol.cmake
+  buildtools/Cmake/GenerateDoc.cmake
+  buildtools/Cmake/GenerateDocWin.cmake
   buildtools/Cmake/GenerateUserGuide.cmake
   buildtools/Cmake/GenerateRefGuide.cmake
   buildtools/Cmake/test_prog/prog_getline.c
@@ -783,7 +785,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindGraphviz.cmake
   buildtools/Cmake/Modules/FindValgrind.cmake
   buildtools/Cmake/Modules/FindRngStream.cmake
-  buildtools/Cmake/GenerateDocWin.cmake
   buildtools/Cmake/MakeExe.cmake
   buildtools/Cmake/PrintArgs.cmake
   buildtools/Cmake/MakeLib.cmake
