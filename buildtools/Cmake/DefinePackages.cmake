@@ -832,9 +832,9 @@ set(PLATFORMS_EXAMPLES
 
 set(generated_src_files
   ${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
-  src/xbt/automaton/y.tab.c
-  src/xbt/automaton/y.tab.h
-  src/xbt/automaton/automaton_parse.yy.c
+  src/xbt/automaton/parserPromela.tab.cacc
+  src/xbt/automaton/parserPromela.tab.hacc
+  src/xbt/automaton/automaton_lexer.yy.c
 )
 
 foreach(file ${generated_src_files})
