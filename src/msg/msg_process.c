@@ -171,14 +171,16 @@ m_process_t MSG_process_create_with_environment(const char *name,
 
   if (SIMIX_process_self()) {
     simdata->PPID = MSG_process_get_PID(MSG_process_self());
+    #ifdef HAVE_TRACING
+      MSG_process_on_exit((int_f_pvoid_t)TRACE_msg_process_kill,MSG_process_self());
+    #endif
   } else {
     simdata->PPID = -1;
   }
 
 #ifdef HAVE_TRACING
   TRACE_msg_process_create(name, simdata->PID, simdata->m_host);
-#endif
-
+  #endif
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
   simcall_process_create(&process, name, code, simdata, SIMIX_host_get_name(host->smx_host), -1,
