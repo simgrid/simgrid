@@ -849,7 +849,7 @@ void MC_ddfs_init(void){
   reached_pairs = xbt_dynar_new(sizeof(mc_pair_reached_t), NULL);
   //reached_pairs_hash = xbt_dynar_new(sizeof(mc_pair_reached_hash_t), NULL);
   //visited_pairs = xbt_dynar_new(sizeof(mc_pair_visited_t), NULL);
-  visited_pairs_hash = xbt_dynar_new(sizeof(mc_pair_visited_hash_t), NULL);
+  //visited_pairs_hash = xbt_dynar_new(sizeof(mc_pair_visited_hash_t), NULL);
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
 
   /* Save the initial state */
@@ -939,10 +939,10 @@ void MC_ddfs(int search_cycle){
   if(xbt_fifo_size(mc_stack_liveness) < MAX_DEPTH_LIVENESS){
 
     //set_pair_visited(current_pair->automaton_state, search_cycle);
-    set_pair_visited_hash(current_pair->automaton_state, search_cycle);
+    //set_pair_visited_hash(current_pair->automaton_state, search_cycle);
 
     //XBT_INFO("Visited pairs : %lu", xbt_dynar_length(visited_pairs));
-    XBT_INFO("Visited pairs : %lu", xbt_dynar_length(visited_pairs_hash));
+    //XBT_INFO("Visited pairs : %lu", xbt_dynar_length(visited_pairs_hash));
 
     if(current_pair->requests > 0){
 
@@ -1051,7 +1051,7 @@ void MC_ddfs(int search_cycle){
 
             }else{
 
-              if(!visited_hash(pair_succ->automaton_state, search_cycle)){
+              //if(!visited_hash(pair_succ->automaton_state, search_cycle)){
                 //if(!visited(pair_succ->automaton_state, search_cycle)){
     
                 MC_SET_RAW_MEM;
@@ -1060,11 +1060,11 @@ void MC_ddfs(int search_cycle){
     
                 MC_ddfs(search_cycle);
     
-              }else{
+                /*}else{
 
                 XBT_INFO("Next pair already visited ! ");
 
-              }
+                }*/
         
             }
 
@@ -1084,7 +1084,7 @@ void MC_ddfs(int search_cycle){
 
             }
 
-            if(!visited_hash(pair_succ->automaton_state, search_cycle)){
+            //if(!visited_hash(pair_succ->automaton_state, search_cycle)){
               //if(!visited(pair_succ->automaton_state, search_cycle)){
         
               MC_SET_RAW_MEM;
@@ -1093,11 +1093,11 @@ void MC_ddfs(int search_cycle){
         
               MC_ddfs(search_cycle);
         
-            }else{
+              /*}else{
 
               XBT_INFO("Next pair already visited ! ");
 
-            }
+              }*/
 
           }
 
@@ -1199,7 +1199,7 @@ void MC_ddfs(int search_cycle){
 
           }else{
 
-            if(!visited_hash(pair_succ->automaton_state, search_cycle)){
+            //if(!visited_hash(pair_succ->automaton_state, search_cycle)){
               //if(!visited(pair_succ->automaton_state, search_cycle)){
 
               MC_SET_RAW_MEM;
@@ -1208,11 +1208,11 @@ void MC_ddfs(int search_cycle){
         
               MC_ddfs(search_cycle);
         
-            }else{
+              /*}else{
 
               XBT_INFO("Next pair already visited ! ");
 
-            }
+              }*/
           }
       
 
@@ -1230,7 +1230,7 @@ void MC_ddfs(int search_cycle){
 
           }
 
-          if(!visited_hash(pair_succ->automaton_state, search_cycle)){
+          //if(!visited_hash(pair_succ->automaton_state, search_cycle)){
             //if(!visited(pair_succ->automaton_state, search_cycle)){
 
             MC_SET_RAW_MEM;
@@ -1239,11 +1239,11 @@ void MC_ddfs(int search_cycle){
       
             MC_ddfs(search_cycle);
       
-          }else{
+            /*}else{
 
             XBT_INFO("Next pair already visited ! ");
 
-          }
+            }*/
 
         }
 
