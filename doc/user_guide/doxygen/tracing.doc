@@ -275,7 +275,7 @@ A simplified example using the tracing mandatory functions.
 \verbatim
 int main (int argc, char **argv)
 {
-  MSG_global_init (&argc, &argv);
+  MSG_init (&argc, &argv);
 
   //(... after deployment ...)
 

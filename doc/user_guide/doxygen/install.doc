@@ -439,7 +439,7 @@ feel free to organize it as you want).
           msg_task_usage.
 
       \li <tt>masterslave.c</tt>: a C file with the main function, i.e.
-          the MSG initialization (MSG_global_init()), the platform
+          the MSG initialization (MSG_init()), the platform
           creation (e.g. with MSG_create_environment()), the
           deployment phase (e.g. with MSG_function_register() and
           MSG_launch_application()) and the call to

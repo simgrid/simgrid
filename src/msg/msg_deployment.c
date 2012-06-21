@@ -27,7 +27,7 @@ void MSG_launch_application(const char *file)
 {
 
   xbt_assert(msg_global,
-              "MSG_global_init_args has to be called before MSG_launch_application.");
+              "MSG_init has to be called before MSG_launch_application.");
 
   SIMIX_launch_application(file);
 

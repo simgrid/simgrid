@@ -37,7 +37,7 @@
 The basic workflow is the following (check the \ref MSG_examples for
 details).
 
- -# Initialize the library with #MSG_global_init
+ -# Initialize the library with #MSG_init
  -# Create a platform (usually by parsing a file with
     #MSG_create_environment)
  -# Register the functions that your processes are supposed to run with

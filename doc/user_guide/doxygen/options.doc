@@ -46,7 +46,7 @@ currently used in SimGrid. \code
 extern xbt_cfg_t _surf_cfg_set;
 
 int main(int argc, char *argv[]) {
-     MSG_global_init(&argc, argv);
+     MSG_init(&argc, argv);
 
      xbt_cfg_set_parse(_surf_cfg_set,"Item:Value");
 
