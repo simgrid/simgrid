@@ -376,10 +376,6 @@ void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
 
 void surf_init(int *argc, char **argv)
 {
-
-  XBT_DEBUG("Check that compile time version matches link-time one");
-  sg_check_version();
-
   XBT_DEBUG("Create all Libs");
   host_lib = xbt_lib_new();
   link_lib = xbt_lib_new();
