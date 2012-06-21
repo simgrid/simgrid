@@ -836,6 +836,8 @@ set(generated_src_files
   src/xbt/automaton/y.tab.c
   src/xbt/automaton/y.tab.h
   src/xbt/automaton/automaton_parse.yy.c
+  doc/user_guide/doxygen/logcategories.doc
+  doc/ref_guide/doxygen/logcategories.doc
 )
 
 foreach(file ${generated_src_files})

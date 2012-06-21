@@ -31,7 +31,7 @@ if(FIG2DEV_PATH)
 		
 	ADD_CUSTOM_COMMAND(TARGET user_guide
 		DEPENDS ${source_doxygen}
-		COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/user_guide/logcategories.doc
+		COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/user_guide/logcategories.doc
 		COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/logcategories.doc
 		WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
 	)
