@@ -289,6 +289,12 @@ void SIMIX_io_finish(smx_action_t action)
         xbt_die("Internal error in SIMIX_io_finish: unexpected action state %d",
             (int)action->state);
     }
+
+    if (surf_workstation_model->extension.
+        workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
+      simcall->issuer->context->iwannadie = 1;
+    }
+
     simcall->issuer->waiting_action = NULL;
     SIMIX_simcall_answer(simcall);
   }
