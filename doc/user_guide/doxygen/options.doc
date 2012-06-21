@@ -262,10 +262,69 @@ be executed with the command line argument
 \verbatim
 --cfg=model-check:1
 \endverbatim
-Properties are expressed as assertions using the function
+Safety properties are expressed as assertions using the function
 \verbatim
 void MC_assert(int prop);
 \endverbatim
+
+\subsection options_modelchecking_liveness Specifying a liveness property
+
+If you want to specify liveness properties (beware, that's
+experimental), you have to pass them on the command line, specifying
+the name of the file containing the property, as formated by the
+ltl2ba program.
+
+\verbatim
+--cfg=model-check/property:<filename>
+\endverbatim
+
+Of course, specifying a liveness property enables the model-checking
+so that you don't have to give <tt>--cfg=model-check:1</tt> in
+addition.
+
+\subsection options_modelchecking_steps Going for stateful verification
+
+By default, the system is backtracked to its initial state to explore
+another path instead of backtracking to the exact step before the fork
+that we want to explore (this is called stateless verification). This
+is done this way because saving intermediate states can rapidly
+exhaust the available memory. If you want, you can change the value of
+the <tt>model-check/checkpoint</tt> variable. For example, the
+following configuration will ask to take a checkpoint every step.
+Beware, this will certainly explode your memory. Larger values are
+probably better, make sure to experiment a bit to find the right
+setting for your specific system.
+
+\verbatim
+--cfg=model-check/checkpoint:1
+\endverbatim
+
+Of course, specifying this option enables the model-checking so that
+you don't have to give <tt>--cfg=model-check:1</tt> in addition.
+
+\subsection options_modelchecking_reduction Specifying the kind of reduction
+
+The main issue when using the model-checking is the state space
+explosion. To counter that problem, several exploration reduction
+techniques can be used. There is unfortunately no silver bullet here,
+and the most efficient reduction techniques cannot be applied to any
+properties. In particular, the DPOR method cannot be applied on
+liveness properties since it may break some cycles in the exploration
+that are important to the property validity.
+
+\verbatim
+--cfg=model-check/reduce:<technique>
+\endverbatim
+
+For now, this configuration variable can take 2 values:
+ * none: Do not apply any kind of reduction (mandatory for now for
+   liveness properties)
+ * dpor: Apply Dynamic Partial Ordering Reduction. Only valid if you
+   verify local safety properties.
+
+Of course, specifying a reduction technique enables the model-checking
+so that you don't have to give <tt>--cfg=model-check:1</tt> in
+addition.
 
 \section options_virt Configuring the User Process Virtualization
 
@@ -463,6 +522,11 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 - \c gtnets/jitter_seed: \ref options_pls
 
 - \c maxmin/precision: \ref options_model_precision
+
+- \c model-check: \ref options_modelchecking
+- \c model-check/property: \ref options_modelchecking_liveness
+- \c model-check/checkpoint: \ref options_modelchecking_steps
+- \c model-check/reduce: \ref options_modelchecking_reduction
 
 - \c network/bandwidth_factor: \ref options_model_network_coefs
 - \c network/coordinates: \ref options_model_network_coord
