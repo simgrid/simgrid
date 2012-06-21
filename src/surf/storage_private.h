@@ -41,10 +41,11 @@ typedef struct storage {
   xbt_dict_t content; /* char * -> s_surf_stat_t */
   unsigned long size;
   unsigned long used_size;
+  xbt_dynar_t write_actions;
 } s_storage_t, *storage_t;
 
 typedef enum {
-  READ, WRITE, STAT, OPEN, CLOSE
+  READ=0, WRITE, STAT, OPEN, CLOSE
 } e_surf_action_storage_type_t;
 
 typedef struct surf_action_storage {

@@ -30,14 +30,10 @@ static int storage_selective_update = 0;
 static xbt_swag_t
     storage_running_action_set_that_does_not_need_being_checked = NULL;
 
+static xbt_dynar_t storage_list;
+
 #define GENERIC_LMM_ACTION(action) action->generic_lmm_action
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
-
-typedef struct surf_storage {
-  s_surf_resource_t generic_resource;
-  const char* type;
-  const char* content; /*should be a dict */
-} s_surf_storage_t, *surf_storage_t;
 
 static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
@@ -70,11 +66,11 @@ static surf_action_t storage_action_open(void *storage, const char* mount, const
 static surf_action_t storage_action_close(void *storage, surf_file_t fp)
 {
   char *filename = fp->name;
+  XBT_DEBUG("\tClose file '%s' size '%ld'",filename,fp->content->stat.size);
   free(fp->name);
   fp->content = NULL;
   xbt_free(fp);
   surf_action_t action = storage_action_execute(storage,0, CLOSE);
-  XBT_DEBUG("\tClose file '%s'",filename);
   return action;
 }
 
@@ -95,12 +91,9 @@ static surf_action_t storage_action_write(void *storage, const void* ptr, size_t
   surf_stat_t content = stream->content;
   XBT_DEBUG("\tWrite file '%s' size '%zu/%zu'",filename,size,content->stat.size);
 
-  // update file size
-  content->stat.size += size;
-  // update disk space
-  ((storage_t)storage)->used_size =+ size;
-
   surf_action_t action = storage_action_execute(storage,size,WRITE);
+  action->file = stream;
+
   // If the storage is full
   if(((storage_t)storage)->used_size==((storage_t)storage)->size) {
     storage_action_state_set((surf_action_t) action, SURF_ACTION_FAILED);
@@ -142,9 +135,11 @@ static surf_action_t storage_action_execute (void *storage, size_t size, e_surf_
   case WRITE:
     lmm_expand(storage_maxmin_system, STORAGE->constraint_write,
                GENERIC_LMM_ACTION(action).variable, 1.0);
+    xbt_dynar_push(((storage_t)storage)->write_actions,&action);
+
     break;
   }
-
+  action->type = type;
   XBT_OUT();
   return (surf_action_t) action;
 }
@@ -162,6 +157,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
   storage->state_current = SURF_RESOURCE_ON;
   storage->used_size = 0;
   storage->size = 0;
+  storage->write_actions = xbt_dynar_new(sizeof(char *),NULL);
 
   storage_type_t storage_type = xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
   double Bread  = atof(xbt_dict_get(storage_type->properties,"Bread"));
@@ -182,6 +178,9 @@ static void* storage_create_resource(const char* id, const char* model,const cha
       type_id,
       storage_type->properties,
       Bread);
+
+  if(!storage_list) storage_list=xbt_dynar_new(sizeof(char *),free);
+  xbt_dynar_push(storage_list,&storage);
 
   return storage;
 }
@@ -206,12 +205,14 @@ static void storage_update_actions_state(double now, double delta)
   xbt_swag_t running_actions = surf_storage_model->states.running_action_set;
 
   // Update the disk usage
+  // Update the file size
   // Foreach action of type write
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     if(action->type == WRITE)
     {
       double rate = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
-      ((storage_t)action->storage)->used_size += delta * rate;
+      ((storage_t)(action->storage))->used_size += delta * rate; // disk usage
+      ((surf_action_t)action)->file->content->stat.size += delta * rate; // file size
     }
   }
 
@@ -244,19 +245,27 @@ static double storage_share_resources(double NOW)
 {
   XBT_DEBUG("storage_share_resources %f",NOW);
   s_surf_action_storage_t action;
+  unsigned int i,j;
+  storage_t storage;
+  surf_action_storage_t write_action;
+
   double min_completion = generic_maxmin_share_resources(surf_storage_model->states.running_action_set,
       xbt_swag_offset(action, generic_lmm_action.variable),
       storage_maxmin_system, lmm_solve);
-  /*
-   foreach(disk) {
-      rate = 0
-      foreach write_action in disk {
-          rate += value(variable(action));
-      }
-      if(rate>0) {
-        min_completion = MIN(min_completion, (size-used_size)/rate);
-      }
-  }*/
+
+  double rate;
+  // Foreach disk
+  xbt_dynar_foreach(storage_list,i,storage)
+  {
+    rate = 0;
+    // Foreach write action on disk
+    xbt_dynar_foreach(storage->write_actions,j,write_action)
+    {
+      rate += lmm_variable_getvalue(write_action->generic_lmm_action.variable);
+    }
+    if(rate > 0)
+      min_completion = MIN(min_completion, (storage->size-storage->used_size)/rate);
+  }
 
   return min_completion;
 }
