@@ -61,7 +61,7 @@ void MC_dpor(void)
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restore_state=NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
-  int pos, i = 1;
+  int pos;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
