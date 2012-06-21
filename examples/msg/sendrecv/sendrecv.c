@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
       _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
 
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
 
 
   if (argc != 3) {

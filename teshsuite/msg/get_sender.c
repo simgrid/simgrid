@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
 
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
 
   /*   Application deployment */
   MSG_function_register("send", &send);

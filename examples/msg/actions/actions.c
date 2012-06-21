@@ -549,7 +549,7 @@ int main(int argc, char *argv[])
   MSG_error_t res = MSG_OK;
 
   /* Check the given arguments */
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
   if (argc < 3) {
     printf("Usage: %s platform_file deployment_file [action_files]\n",
            argv[0]);

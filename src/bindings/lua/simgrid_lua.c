@@ -318,7 +318,7 @@ int luaopen_simgrid(lua_State *L)
     argv[argc--] = NULL;
 
     /* Initialize the MSG core */
-    MSG_global_init(&argc, argv);
+    MSG_init(&argc, argv);
     MSG_process_set_data_cleanup((void_f_pvoid_t) lua_close);
     XBT_DEBUG("Still %d arguments on command line", argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
   }

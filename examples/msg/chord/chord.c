@@ -884,7 +884,7 @@ static void random_lookup(node_t node)
  */
 int main(int argc, char *argv[])
 {
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
   if (argc < 3) {
     printf("Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n", argv[0]);
     printf("example: %s ../msg_platform.xml chord.xml\n", argv[0]);
