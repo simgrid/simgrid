@@ -8,10 +8,6 @@ file(GLOB_RECURSE source_doxygen
 
 if(FIG2DEV_PATH)
 
-  set(REFDOCSSOURCES "${source_doxygen}\n${REF_GUIDE_SOURCES}")
-  string(REPLACE "\n" ";" REFDOCSSOURCES ${REFDOCSSOURCES})
-
-
   set(DOC_PNGS 
     ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
     ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
@@ -21,7 +17,7 @@ if(FIG2DEV_PATH)
   
   ADD_CUSTOM_TARGET(ref_guide
     COMMENT "Generating the SimGrid ref guide..."
-    DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
+    DEPENDS ${REF_GUIDE_SOURCES} ${DOC_FIGS} ${source_doxygen}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html    
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/
@@ -53,8 +49,8 @@ if(FIG2DEV_PATH)
   )
   
   ADD_CUSTOM_COMMAND(TARGET ref_guide
-           COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/doxygen/simgrid_modules.map
-      COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
+    COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/doxygen/simgrid_modules.map
+    COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
     COMMAND ${DOXYGEN_PATH}/doxygen RefGuideDoxyfile
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgridrefguide.tag index-API.doc
 
