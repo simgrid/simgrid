@@ -224,10 +224,10 @@ void sg_platf_rng_stream_init(unsigned long seed[6]) {
 RngStream sg_platf_rng_stream_get(const char* id) {
   RngStream stream = NULL;
   unsigned int id_hash;
-  
+
   stream = RngStream_CopyStream(sg_platf_rng_stream);
   id_hash = xbt_str_hash(id);
   RngStream_AdvanceState(stream, 0, (long)id_hash);
-  
+
   return stream;
 }

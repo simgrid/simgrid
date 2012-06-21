@@ -1,8 +1,8 @@
- 
+
 /* RngStream.h for ANSI C */
 #ifndef RNGSTREAM_H
 #define RNGSTREAM_H
- 
+
 #include "misc.h"
 
 typedef struct RngStream_InfoState * RngStream;
@@ -61,8 +61,8 @@ XBT_PUBLIC(double) RngStream_RandU01 (RngStream g);
 
 
 XBT_PUBLIC(int) RngStream_RandInt (RngStream g, int i, int j);
- 
+
 
 #endif
- 
+
 

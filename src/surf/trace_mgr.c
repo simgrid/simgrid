@@ -40,16 +40,16 @@ tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
                                           int is_state_trace)
 {
   tmgr_trace_t trace = NULL;
-  
+
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->type = e_trace_probabilist;
-  
+
   trace->s_probabilist.event_generator[0] = generator1;
-  
+
   //FIXME : may also be a parameter
   trace->s_probabilist.next_event = 0;
   trace->s_probabilist.is_state_trace = is_state_trace;
-  
+
   if(generator2 != NULL) {
     trace->s_probabilist.event_generator[1] = generator2;
   } else if(is_state_trace) {
@@ -57,71 +57,71 @@ tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
   } else {
     THROW_IMPOSSIBLE; //That case should have been checked before, anyway...
   }
-  
+
   return trace;
 }
 
 probabilist_event_generator_t tmgr_event_generator_new_uniform(const char* id,
                                                                double min,
                                                                double max)
-{ 
+{
   probabilist_event_generator_t event_generator = NULL;
   RngStream rng_stream = NULL;
-  
+
   rng_stream = sg_platf_rng_stream_get(id);
-  
+
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_uniform;
   event_generator->s_uniform_parameters.min = min;
   event_generator->s_uniform_parameters.max = max;
   event_generator->rng_stream = rng_stream;
-  
+
   tmgr_event_generator_next_value(event_generator);
-  
+
   return event_generator;
 }
 
 probabilist_event_generator_t tmgr_event_generator_new_exponential(const char* id,
                                                                    double rate)
-{  
+{
   probabilist_event_generator_t event_generator = NULL;
   RngStream rng_stream = NULL;
-  
+
   rng_stream = sg_platf_rng_stream_get(id);
-  
+
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_exponential;
   event_generator->s_exponential_parameters.rate = rate;
   event_generator->rng_stream = rng_stream;
-  
+
   tmgr_event_generator_next_value(event_generator);
-  
+
   return event_generator;
 }
 
 probabilist_event_generator_t tmgr_event_generator_new_weibull(const char* id,
                                                                double scale,
                                                                double shape)
-{  
+{
   probabilist_event_generator_t event_generator = NULL;
   RngStream rng_stream = NULL;
-  
+
   rng_stream = sg_platf_rng_stream_get(id);
-  
+
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_weibull;
   event_generator->s_weibull_parameters.scale = scale;
   event_generator->s_weibull_parameters.shape = shape;
   event_generator->rng_stream = rng_stream;
-  
+
   tmgr_event_generator_next_value(event_generator);
-  
+
   return event_generator;
 }
 
 double tmgr_event_generator_next_value(probabilist_event_generator_t generator)
 {
-  
+
   switch(generator->type) {
     case e_generator_uniform:
       generator->next_value = (RngStream_RandU01(generator->rng_stream)
@@ -137,7 +137,7 @@ double tmgr_event_generator_next_value(probabilist_event_generator_t generator)
                               * pow( log(RngStream_RandU01(generator->rng_stream)),
                                     1.0 / generator->s_weibull_parameters.shape );
   }
-  
+
   return generator->next_value;
 }
 
@@ -255,7 +255,7 @@ XBT_INLINE void tmgr_trace_free(tmgr_trace_t trace)
 {
   if (!trace)
     return;
-  
+
   switch(trace->type) {
     case e_trace_list:
       xbt_dynar_free(&(trace->s_list.event_list));
@@ -283,7 +283,7 @@ tmgr_trace_event_t tmgr_history_add_trace(tmgr_history_t h,
     xbt_assert((trace_event->idx < xbt_dynar_length(trace->s_list.event_list)),
               "You're referring to an event that does not exist!");
   }
-  
+
   xbt_heap_push(h->heap, trace_event, start_time);
 
   return trace_event;
@@ -316,10 +316,10 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
 
   trace = trace_event->trace;
   *model = trace_event->model;
-  
+
   switch(trace->type) {
     case e_trace_list:
-        
+
       event = xbt_dynar_get_ptr(trace->s_list.event_list, trace_event->idx);
 
       *value = event->value;
@@ -334,9 +334,9 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
         trace_event->free_me = 1;
       }
       break;
-      
+
     case e_trace_probabilist:
-      
+
       //FIXME : not tested yet
       if(trace->s_probabilist.is_state_trace) {
         *value = (double) trace->s_probabilist.next_event;
@@ -352,7 +352,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
         *value = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
       }
       xbt_heap_push(h->heap, trace_event, event_date + event_delta);
-      
+
       break;
   }
 
