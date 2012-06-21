@@ -52,6 +52,7 @@ typedef struct tmgr_trace {
     } s_list;
     struct {
       probabilist_event_generator_t event_generator[2];
+      int is_state_trace;
       int next_event;
     } s_probabilist;
   };

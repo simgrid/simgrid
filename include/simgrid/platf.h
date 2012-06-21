@@ -28,12 +28,16 @@ XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
                                                     double periodicity);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_generator(const char *id,
                                                   probabilist_event_generator_t generator1,
-                                                  probabilist_event_generator_t generator2);
+                                                  probabilist_event_generator_t generator2,
+                                                  int is_state_trace);
                                           
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(double min,
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(const char* id,
+                                                                           double min,
                                                                            double max);
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(double rate);
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(double scale,
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(const char* id,
+                                                                           double rate);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(const char* id,
+                                                                           double scale,
                                                                            double shape);
 
 /** Defines whether a given resource is working or not */

@@ -36,70 +36,84 @@ XBT_INLINE void tmgr_history_free(tmgr_history_t h)
 
 tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
                                           probabilist_event_generator_t generator1,
-                                          probabilist_event_generator_t generator2)
+                                          probabilist_event_generator_t generator2,
+                                          int is_state_trace)
 {
   tmgr_trace_t trace = NULL;
-  RngStream rng_stream = NULL;
-  
-  rng_stream = sg_platf_rng_stream_get(id);
   
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->type = e_trace_probabilist;
   
   trace->s_probabilist.event_generator[0] = generator1;
-  trace->s_probabilist.event_generator[0]->rng_stream = rng_stream;
-  tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
   
   //FIXME : may also be a parameter
   trace->s_probabilist.next_event = 0;
+  trace->s_probabilist.is_state_trace = is_state_trace;
   
-  if(generator2 == NULL) {
+  if(generator2 != NULL) {
+    trace->s_probabilist.event_generator[1] = generator2;
+  } else if(is_state_trace) {
     trace->s_probabilist.event_generator[1] = generator1;
   } else {
-    trace->s_probabilist.event_generator[1] = generator2;
-    trace->s_probabilist.event_generator[1]->rng_stream = rng_stream;
-    tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
+    THROW_IMPOSSIBLE; //That case should have been checked before, anyway...
   }
   
   return trace;
 }
 
-probabilist_event_generator_t tmgr_event_generator_new_uniform(double min,
+probabilist_event_generator_t tmgr_event_generator_new_uniform(const char* id,
+                                                               double min,
                                                                double max)
-{  
+{ 
   probabilist_event_generator_t event_generator = NULL;
+  RngStream rng_stream = NULL;
+  
+  rng_stream = sg_platf_rng_stream_get(id);
   
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_uniform;
   event_generator->s_uniform_parameters.min = min;
   event_generator->s_uniform_parameters.max = max;
-
+  event_generator->rng_stream = rng_stream;
+  
   tmgr_event_generator_next_value(event_generator);
   
   return event_generator;
 }
 
-probabilist_event_generator_t tmgr_event_generator_new_exponential(double rate)
+probabilist_event_generator_t tmgr_event_generator_new_exponential(const char* id,
+                                                                   double rate)
 {  
   probabilist_event_generator_t event_generator = NULL;
+  RngStream rng_stream = NULL;
+  
+  rng_stream = sg_platf_rng_stream_get(id);
   
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_exponential;
   event_generator->s_exponential_parameters.rate = rate;
-
+  event_generator->rng_stream = rng_stream;
+  
+  tmgr_event_generator_next_value(event_generator);
+  
   return event_generator;
 }
 
-probabilist_event_generator_t tmgr_event_generator_new_weibull(double scale,
+probabilist_event_generator_t tmgr_event_generator_new_weibull(const char* id,
+                                                               double scale,
                                                                double shape)
 {  
   probabilist_event_generator_t event_generator = NULL;
+  RngStream rng_stream = NULL;
+  
+  rng_stream = sg_platf_rng_stream_get(id);
   
   event_generator = xbt_new0(s_probabilist_event_generator_t, 1);
   event_generator->type = e_generator_weibull;
   event_generator->s_weibull_parameters.scale = scale;
   event_generator->s_weibull_parameters.shape = shape;
-
+  event_generator->rng_stream = rng_stream;
+  
   tmgr_event_generator_next_value(event_generator);
   
   return event_generator;
@@ -323,15 +337,19 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
       
     case e_trace_probabilist:
       
-      //FIXME : Simplist and not tested
-      //Would only work for failure events for now
-      *value = (double) trace->s_probabilist.next_event;
-      if(trace->s_probabilist.next_event == 0) {
-        event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
-        trace->s_probabilist.next_event = 0;
+      //FIXME : not tested yet
+      if(trace->s_probabilist.is_state_trace) {
+        *value = (double) trace->s_probabilist.next_event;
+        if(trace->s_probabilist.next_event == 0) {
+          event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
+          trace->s_probabilist.next_event = 0;
+        } else {
+          event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
+          trace->s_probabilist.next_event = 1;
+        }
       } else {
-        event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
-        trace->s_probabilist.next_event = 1;
+        event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
+        *value = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
       }
       xbt_heap_push(h->heap, trace_event, event_date + event_delta);
       
