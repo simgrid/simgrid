@@ -1,7 +1,7 @@
 #! ./tesh
 p Test the loader of DAG written in the DOT format
 
-$ $SG_TEST_EXENV ./dot_test ${srcdir:=..}/2clusters.xml ${srcdir:=.}/dag.dot
+$ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
@@ -187,7 +187,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=..}/2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [test/INFO] ------------------- Schedule tasks ---------------------------
 > [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
 > [131.443480] [test/INFO] ------------------- Produce the trace file---------------------------
-> [131.443480] [test/INFO] Producing the trace of the run into ./dag.trace
+> [131.443480] [test/INFO] Producing the trace of the run into dag.trace
 
 $ cat ${srcdir:=.}/dag.trace
 > [0.000000] C2-05 compute 0.000000 # root
@@ -222,7 +222,7 @@ $ cat ${srcdir:=.}/dag.trace
 $ rm -f dag.trace
 
 ! expect signal SIGABRT
-$ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" ${srcdir:=..}/2clusters.xml ${srcdir:=.}/dag_with_bad_schedule.dot 
+$ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag_with_bad_schedule.dot 
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, there are not enough computers
 > [0.000000] [sd_dotparse/WARNING]  is not an integer
@@ -236,7 +236,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" 
 > [0.000000] [sd_dotparse/WARNING] The scheduling is ignored
 > [0.000000] [xbt/CRITICAL] The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose
 
-$ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=..}/2clusters.xml ${srcdir:=.}/dag_with_good_schedule.dot 
+$ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag_with_good_schedule.dot 
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
@@ -437,7 +437,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=..}/2clusters.xml ${srcdi
 > [0.000000] [sd_task/INFO]     7
 > [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
 > [18.001306] [test/INFO] ------------------- Produce the trace file---------------------------
-> [18.001306] [test/INFO] Producing the trace of the run into ./dag_with_good_schedule.trace
+> [18.001306] [test/INFO] Producing the trace of the run into dag_with_good_schedule.trace
 
 $ cat ${srcdir:=.}/dag_with_good_schedule.trace
 > [0.000000] C2-05 compute 0.000000 # root

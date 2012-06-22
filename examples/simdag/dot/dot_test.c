@@ -88,7 +88,7 @@ int main(int argc, char **argv)
   xbt_dynar_free_container(&changed);
   XBT_INFO
       ("------------------- Produce the trace file---------------------------");
-  XBT_INFO("Producing the trace of the run into %s", tracefilename);
+  XBT_INFO("Producing the trace of the run into %s", basename(tracefilename));
   FILE *out = fopen(tracefilename, "w");
   xbt_assert(out, "Cannot write to %s", tracefilename);
   free(tracefilename);
