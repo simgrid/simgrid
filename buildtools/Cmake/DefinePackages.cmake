@@ -588,7 +588,6 @@ set(DOC_SOURCES
 set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/install.doc
   doc/user_guide/doxygen/bindings.doc
-  doc/user_guide/doxygen/index-API.doc
   doc/user_guide/doxygen/options.doc
   doc/user_guide/doxygen/use.doc
   doc/user_guide/doxygen/tracing.doc
@@ -610,7 +609,6 @@ set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/module-xbt.doc
   doc/ref_guide/doxygen/module-simix.doc
   doc/ref_guide/doxygen/module-trace.doc
-  doc/ref_guide/doxygen/index-API.doc
   doc/ref_guide/doxygen/main.doc
   doc/ref_guide/doxygen/RefGuideDoxyfile.in
   doc/ref_guide/doxygen/RefGuideDoxygenLayout.xml
