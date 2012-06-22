@@ -6,6 +6,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Remove option custom_flags. Now use environment variables CFLAGS
    and LDFLAGS.
  * Enable tracing by default. This modules rocks you should use it.
+ * Use default cmake things to detect lua instead of home grown ones.
 
  MSG:
  * Add an experimental interface to manipulate VMs. They are mainly
@@ -16,6 +17,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    Please use MSG_init() instead. (reducing the amount of entry 
    points in the library helps us).
  * Make it impossible to link against the wrong version of the lib
+ * Bug fixes that made the host (and link) failures unusable.
 
  Simix:
  * Bug fixes around the resource failures: don't let the processes
