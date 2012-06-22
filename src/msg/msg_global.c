@@ -53,7 +53,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
-    SIMIX_function_register_process_kill(MSG_process_kill_from_SIMIX);
+    SIMIX_function_register_process_kill(MSG_process_kill);
   }
 #ifdef HAVE_TRACING
   TRACE_start();

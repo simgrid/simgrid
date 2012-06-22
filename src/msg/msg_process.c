@@ -196,11 +196,6 @@ m_process_t MSG_process_create_with_environment(const char *name,
   return process;
 }
 
-void MSG_process_kill_from_SIMIX(smx_process_t p)
-{
-  MSG_process_kill(p);
-}
-
 /** \ingroup m_process_management
  * \param process poor victim
  *
