@@ -337,8 +337,6 @@ void surf_config_init(int *argc, char **argv)
 
   /* Create the configuration support */
   if (_surf_init_status == 0) { /* Only create stuff if not already inited */
-    _surf_init_status = 1;
-
     sprintf(description,
             "The model to use for the CPU. Possible values: ");
     p = description;
@@ -643,6 +641,8 @@ void surf_config_init(int *argc, char **argv)
 
 
     surf_config_cmd_line(argc, argv);
+
+    _surf_init_status = 1;
   } else {
     XBT_WARN("Call to surf_config_init() after initialization ignored");
   }

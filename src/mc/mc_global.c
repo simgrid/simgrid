@@ -21,7 +21,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
 /* Configuration support */
 e_mc_reduce_t mc_reduce_kind=e_mc_reduce_unset;
 
+extern int _surf_init_status;
 void _mc_cfg_cb_reduce(const char *name, int pos) {
+  if (_surf_init_status && !_surf_do_model_check) {
+    xbt_die("You are specifying a reduction strategy after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
   char *val= xbt_cfg_get_string(_surf_cfg_set, name);
   if (!strcasecmp(val,"none")) {
     mc_reduce_kind = e_mc_reduce_none;
@@ -34,10 +38,16 @@ void _mc_cfg_cb_reduce(const char *name, int pos) {
 }
 
 void _mc_cfg_cb_checkpoint(const char *name, int pos) {
+  if (_surf_init_status && !_surf_do_model_check) {
+    xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
   _surf_mc_checkpoint = xbt_cfg_get_int(_surf_cfg_set, name);
   xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
 }
 void _mc_cfg_cb_property(const char *name, int pos) {
+  if (_surf_init_status && !_surf_do_model_check) {
+    xbt_die("You are specifying a property after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
   _surf_mc_property_file= xbt_cfg_get_string(_surf_cfg_set, name);
   xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
 }
