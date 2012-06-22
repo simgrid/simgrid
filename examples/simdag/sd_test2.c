@@ -61,7 +61,14 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
 
   /* creation of the environment */
-  SD_create_environment(argv[1]);
+  if (strstr(argv[1],".xml"))
+    SD_create_environment(argv[1]);
+  else
+    if (strstr(argv[1],".lua"))
+      SD_load_environment_script(argv[1]);
+    else
+      xbt_die("Unsupported platform description styel (neither XML nor lua): %s",
+              argv[1]);
 
   /* getting platform infos */
   n_hosts = SD_workstation_get_number();
