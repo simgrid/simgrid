@@ -18,6 +18,7 @@ $ cd ${TESHSUITE_DIR:=.}
 ! include basic4.tesh
 ! include basic5.tesh
 ! include basic6.tesh
+! include incomplete.tesh
 
 
 # Network Tests
