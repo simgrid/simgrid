@@ -2,11 +2,14 @@ SimGrid (3.8) NOT RELEASED; urgency=low
 
  The "SimGrid makes psssshiiiit and jumps into the cloud" release.
 
- CMAKE:
+ Cmake:
  * Remove option custom_flags. Now use environment variables CFLAGS
    and LDFLAGS.
  * Enable tracing by default. This modules rocks you should use it.
  * Use default cmake things to detect lua instead of home grown ones.
+ 
+ Documentation:
+ * Split the doc into a user guide and a reference guide.
 
  MSG:
  * Add an experimental interface to manipulate VMs. They are mainly
@@ -41,7 +44,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
 
  XBT:
  * Functions xbt_dict_hash() and xbt_dict_hash_ext() are made public,
-  and renamed to xbt_str_hash() and xbt_str_ext()._
+   and renamed to xbt_str_hash() and xbt_str_hash_ext().
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
