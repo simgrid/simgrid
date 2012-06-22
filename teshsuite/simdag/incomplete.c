@@ -21,7 +21,6 @@ int main(int argc, char **argv)
   const SD_workstation_t *workstation;
 
   double communication_amount1 = 1000000000;
-  double communication_amount2 = 100000000;
   double no_cost = 0.0;
 
   /* initialization of SD */
