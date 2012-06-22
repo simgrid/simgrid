@@ -284,6 +284,8 @@ teshsuite/gras/msg_handle/msg_handle_server
 teshsuite/gras/small_sleep/log.txt
 teshsuite/gras/small_sleep/small_sleep_function
 teshsuite/gras/modelcheck/modelcheck_checker
+teshsuite/gras/numerous_rpc/numerous_rpc_client
+teshsuite/gras/numerous_rpc/numerous_rpc_server
 teshsuite/msg/get_sender
 teshsuite/msg/trace/test_trace_integration
 teshsuite/simdag/basic0
