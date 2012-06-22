@@ -222,7 +222,7 @@ $ cat ${srcdir:=.}/dag.trace
 $ rm -f dag.trace
 
 ! expect signal SIGABRT
-$$ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" ${srcdir:=..}/2clusters.xml ${srcdir:=.}/dag_with_bad_schedule.dot 
+$ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" ${srcdir:=..}/2clusters.xml ${srcdir:=.}/dag_with_bad_schedule.dot 
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, there are not enough computers
 > [0.000000] [sd_dotparse/WARNING]  is not an integer
@@ -235,3 +235,238 @@ $$ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose"
 > [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, the task root is not correctly scheduled
 > [0.000000] [sd_dotparse/WARNING] The scheduling is ignored
 > [0.000000] [xbt/CRITICAL] The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose
+
+$ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=..}/2clusters.xml ${srcdir:=.}/dag_with_good_schedule.dot 
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
+> [0.000000] [sd_task/INFO] Displaying task root
+> [0.000000] [sd_task/INFO]   - state:    runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO] Displaying task 0
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000129
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     0->2
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO] Displaying task 1
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000131
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO] Displaying task 2
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000121
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 3
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO]     0->2
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO] Displaying task 3
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000231
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO] Displaying task 4
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 5
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000046
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 3
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO] Displaying task 6
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000092
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO] Displaying task 7
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000041
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 8
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000250
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO] Displaying task 9
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000079
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 2->3
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10002
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO] Displaying task 6->7
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO] Displaying task root->5
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 1->2
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10004
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO] Displaying task 7->end
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 0->2
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10001
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO] Displaying task 4->5
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10029
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 7->8
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO] Displaying task end
+> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 3
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
+> [18.001306] [test/INFO] ------------------- Produce the trace file---------------------------
+> [18.001306] [test/INFO] Producing the trace of the run into ./dag_with_good_schedule.trace
+
+$ cat ${srcdir:=.}/dag_with_good_schedule.trace
+> [0.000000] C2-05 compute 0.000000 # root
+> [0.000000] C2-06 compute 10000000129.452715 # 0
+> [0.000000] C2-05 compute 10000000131.133657 # 1
+> [2.000600] C2-06 compute 10000000121.124870 # 2
+> [4.000635] C2-06 compute 10000000230.608025 # 3
+> [6.000635] C2-05 compute 10000000004.994019 # 4
+> [8.000670] C2-05 compute 10000000046.016401 # 5
+> [10.000670] C2-05 compute 10000000091.598791 # 6
+> [12.000706] C2-05 compute 10000000040.679438 # 7
+> [14.001306] C2-06 compute 10000000250.490017 # 8
+> [16.001306] C2-06 compute 10000000079.267649 # 9
+> [4.000600] C2-06 send C2-06 10001.781645 # 2->3
+> [4.000635] C2-06 recv C2-06 10001.781645 # 2->3
+> [12.000670] C2-05 send C2-05 10004.920415 # 6->7
+> [12.000706] C2-05 recv C2-05 10004.920415 # 6->7
+> [0.000000] C2-05 send C2-05 10014000.000000 # root->5
+> [0.020123] C2-05 recv C2-05 10014000.000000 # root->5
+> [2.000000] C2-05 send C2-06 10004.164631 # 1->2
+> [2.000600] C2-06 recv C2-05 10004.164631 # 1->2
+> [14.000706] C2-05 send C2-05 10014000.000000 # 7->end
+> [14.020829] C2-05 recv C2-05 10014000.000000 # 7->end
+> [2.000000] C2-06 send C2-06 10001.389601 # 0->2
+> [2.000035] C2-06 recv C2-06 10001.389601 # 0->2
+> [8.000635] C2-05 send C2-05 10029.262823 # 4->5
+> [8.000670] C2-05 recv C2-05 10029.262823 # 4->5
+> [14.000706] C2-05 send C2-06 10000.234049 # 7->8
+> [14.001306] C2-06 recv C2-05 10000.234049 # 7->8
+> [18.001306] C2-05 compute 0.000000 # end
+
+$ rm -f ${srcdir:=.}/dag_with_good_schedule.trace
