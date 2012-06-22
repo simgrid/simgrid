@@ -950,11 +950,9 @@ void MC_ddfs(int search_cycle){
    
         /* Debug information */
 
-        MC_SET_RAW_MEM;
         req_str = MC_request_to_string(req, value);
         XBT_INFO("Execute: %s", req_str);
         xbt_free(req_str);
-        MC_UNSET_RAW_MEM;
 
         MC_state_set_executed_request(current_pair->graph_state, req, value);   
 
