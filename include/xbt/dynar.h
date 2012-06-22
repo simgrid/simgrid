@@ -231,8 +231,8 @@ static XBT_INLINE void
 _xbt_dynar_cursor_first(const xbt_dynar_t dynar,
                         unsigned int *const cursor)
 {
-  /* don't test for dynar!=NULL. The segfault would tell us */
-  if (dynar->mutex)             /* ie _dynar_lock(dynar) but not public */
+  /* iterating over a NULL dynar is a no-op (but we don't want to have uninitialized counters) */
+  if (dynar && dynar->mutex)             /* ie _dynar_lock(dynar) but not public */
     xbt_mutex_acquire(dynar->mutex);
 
   //XBT_DEBUG("Set cursor on %p to the first position", (void *) dynar);
@@ -243,6 +243,8 @@ static XBT_INLINE int
 _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
                       unsigned int idx, void *const dst)
 {
+  if (!dynar) /* iterating over a NULL dynar is a no-op */
+    return FALSE;
 
   if (idx >= dynar->used) {
     //XBT_DEBUG("Cursor on %p already on last elem", (void *) dynar);
@@ -278,7 +280,6 @@ xbt_dynar_foreach (dyn,cpt,str) {
 \endcode
  */
 #define xbt_dynar_foreach(_dynar,_cursor,_data) \
-       if(_dynar) \
        for (_xbt_dynar_cursor_first(_dynar,&(_cursor))      ; \
       _xbt_dynar_cursor_get(_dynar,_cursor,&_data) ; \
             (_cursor)++         )
