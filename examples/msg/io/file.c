@@ -36,7 +36,7 @@ int host(int argc, char *argv[])
   s_msg_stat_t stat;
   void *ptr = NULL;
   char* mount = bprintf("/home");
-  size_t read,write;
+  double read,write;
 
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0"))
     file = MSG_file_open(mount,FILENAME1,"rw");
@@ -51,16 +51,16 @@ int host(int argc, char *argv[])
   XBT_INFO("\tOpen file '%s'",file->name);
 
   read = MSG_file_read(ptr,10000000,sizeof(char*),file);     // Read for 10Mo
-  XBT_INFO("\tHaving read  %zu \ton %s",read,file->name);
+  XBT_INFO("\tHaving read  %.1f \ton %s",read,file->name);
 
   write = MSG_file_write(ptr,100000,sizeof(char*),file);  // Write for 100Ko
-  XBT_INFO("\tHaving write %zu \ton %s",write,file->name);
+  XBT_INFO("\tHaving write %.1f \ton %s",write,file->name);
 
   read = MSG_file_read(ptr,10000000,sizeof(char*),file);     // Read for 10Mo
-  XBT_INFO("\tHaving read  %zu \ton %s",read,file->name);
+  XBT_INFO("\tHaving read  %.1f \ton %s",read,file->name);
 
   MSG_file_stat(file,&stat);
-  XBT_INFO("\tFile stat %s Size %f",file->name,stat.size);
+  XBT_INFO("\tFile stat %s Size %.1f",file->name,stat.size);
 
   XBT_INFO("\tClose file '%s'",file->name);
   MSG_file_close(file);
@@ -76,9 +76,9 @@ int main(int argc, char **argv)
   MSG_create_environment(argv[1]);
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
   MSG_function_register("host", host);
-
-  XBT_INFO("Number of host '%lu'",xbt_dynar_length(hosts));
-  for(i = 0 ; i<xbt_dynar_length(hosts); i++)
+  unsigned long nb_hosts = xbt_dynar_length(hosts);
+  XBT_INFO("Number of host '%lu'",nb_hosts);
+  for(i = 0 ; i<nb_hosts; i++)
   {
     char* name_host = bprintf("%d",i);
     MSG_process_create( name_host, host, NULL, xbt_dynar_get_as(hosts,i,m_host_t) );

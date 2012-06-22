@@ -73,7 +73,7 @@ XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
 
 
 /************************** File handling ***********************************/
-XBT_PUBLIC(size_t) MSG_file_read(void* ptr, size_t size, size_t nmemb, msg_file_t stream);
+XBT_PUBLIC(double) MSG_file_read(void* ptr, size_t size, size_t nmemb, msg_file_t stream);
 XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, size_t nmemb, msg_file_t stream);
 XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path, const char* mode);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fp);

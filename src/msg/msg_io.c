@@ -28,7 +28,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
  * \param stream to read
  * \return the number of items successfully read
  */
-size_t MSG_file_read(void* ptr, size_t size, size_t nmemb,  msg_file_t stream)
+double MSG_file_read(void* ptr, size_t size, size_t nmemb,  msg_file_t stream)
 {
   return simcall_file_read(ptr, size, nmemb, stream->simdata->smx_file);
 }

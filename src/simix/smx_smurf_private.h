@@ -513,7 +513,7 @@ typedef struct s_smx_simcall {
       size_t size;
       size_t nmemb;
       smx_file_t stream;
-      size_t result;
+      double result;
     } file_read;
 
     struct {

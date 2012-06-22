@@ -7,24 +7,24 @@ $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage.xml "--log=root.f
 > [  0.000000] (2:1@alice) 	Open file './doc/simgrid/examples/platforms/One_cluster_no_backbone.xml'
 > [  0.000000] (3:2@carl) 	Open file './doc/simgrid/examples/platforms/g5k_cabinets.xml'
 > [  0.000000] (4:3@bob) 	Open file './doc/simgrid/examples/platforms/nancy.xml'
-> [  0.000005] (2:1@alice) 	Having read  482 	on ./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml
-> [  0.000040] (4:3@bob) 	Having read  4028 	on ./doc/simgrid/examples/platforms/nancy.xml
-> [  0.000170] (1:0@denise) 	Having read  17028 	on ./doc/simgrid/examples/platforms/g5k.xml
-> [  0.000226] (3:2@carl) 	Having read  22645 	on ./doc/simgrid/examples/platforms/g5k_cabinets.xml
-> [  0.003338] (2:1@alice) 	Having write 100000 	on ./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml
-> [  0.003374] (4:3@bob) 	Having write 100000 	on ./doc/simgrid/examples/platforms/nancy.xml
-> [  0.003504] (1:0@denise) 	Having write 100000 	on ./doc/simgrid/examples/platforms/g5k.xml
-> [  0.003560] (3:2@carl) 	Having write 100000 	on ./doc/simgrid/examples/platforms/g5k_cabinets.xml
-> [  0.004343] (2:1@alice) 	Having read  100482 	on ./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml
-> [  0.004343] (2:1@alice) 	File stat ./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml Size 100482
+> [  0.000005] (2:1@alice) 	Having read  482.0 	on ./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml
+> [  0.000040] (4:3@bob) 	Having read  4028.0 	on ./doc/simgrid/examples/platforms/nancy.xml
+> [  0.000170] (1:0@denise) 	Having read  17028.0 	on ./doc/simgrid/examples/platforms/g5k.xml
+> [  0.000226] (3:2@carl) 	Having read  22645.0 	on ./doc/simgrid/examples/platforms/g5k_cabinets.xml
+> [  0.003338] (2:1@alice) 	Having write 100000.0 	on ./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml
+> [  0.003374] (4:3@bob) 	Having write 100000.0 	on ./doc/simgrid/examples/platforms/nancy.xml
+> [  0.003504] (1:0@denise) 	Having write 100000.0 	on ./doc/simgrid/examples/platforms/g5k.xml
+> [  0.003560] (3:2@carl) 	Having write 100000.0 	on ./doc/simgrid/examples/platforms/g5k_cabinets.xml
+> [  0.004343] (2:1@alice) 	Having read  100482.0 	on ./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml
+> [  0.004343] (2:1@alice) 	File stat ./doc/simgrid/examples/platforms/One_cluster_no_backbone.xml Size 100482.0
 > [  0.004343] (2:1@alice) 	Close file './doc/simgrid/examples/platforms/One_cluster_no_backbone.xml'
-> [  0.004414] (4:3@bob) 	Having read  104028 	on ./doc/simgrid/examples/platforms/nancy.xml
-> [  0.004414] (4:3@bob) 	File stat ./doc/simgrid/examples/platforms/nancy.xml Size 104028
+> [  0.004414] (4:3@bob) 	Having read  104028.0 	on ./doc/simgrid/examples/platforms/nancy.xml
+> [  0.004414] (4:3@bob) 	File stat ./doc/simgrid/examples/platforms/nancy.xml Size 104028.0
 > [  0.004414] (4:3@bob) 	Close file './doc/simgrid/examples/platforms/nancy.xml'
-> [  0.004674] (1:0@denise) 	Having read  117028 	on ./doc/simgrid/examples/platforms/g5k.xml
-> [  0.004674] (1:0@denise) 	File stat ./doc/simgrid/examples/platforms/g5k.xml Size 117028
+> [  0.004674] (1:0@denise) 	Having read  117028.0 	on ./doc/simgrid/examples/platforms/g5k.xml
+> [  0.004674] (1:0@denise) 	File stat ./doc/simgrid/examples/platforms/g5k.xml Size 117028.0
 > [  0.004674] (1:0@denise) 	Close file './doc/simgrid/examples/platforms/g5k.xml'
-> [  0.004786] (3:2@carl) 	Having read  122645 	on ./doc/simgrid/examples/platforms/g5k_cabinets.xml
-> [  0.004786] (3:2@carl) 	File stat ./doc/simgrid/examples/platforms/g5k_cabinets.xml Size 122645
+> [  0.004786] (3:2@carl) 	Having read  122645.0 	on ./doc/simgrid/examples/platforms/g5k_cabinets.xml
+> [  0.004786] (3:2@carl) 	File stat ./doc/simgrid/examples/platforms/g5k_cabinets.xml Size 122645.0
 > [  0.004786] (3:2@carl) 	Close file './doc/simgrid/examples/platforms/g5k_cabinets.xml'
 > [  0.004786] (0:@) Simulation time 0.00478623

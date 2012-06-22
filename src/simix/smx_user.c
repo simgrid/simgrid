@@ -1203,7 +1203,7 @@ int simcall_sem_get_capacity(smx_sem_t sem)
   return simcall->sem_get_capacity.result;
 }
 
-size_t simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream)
+double simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 

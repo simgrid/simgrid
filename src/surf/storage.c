@@ -76,12 +76,9 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fp)
 
 static surf_action_t storage_action_read(void *storage, void* ptr, double size, size_t nmemb, surf_file_t stream)
 {
-  char *filename = stream->name;
   surf_stat_t content = stream->content;
-  XBT_INFO("\tRead file '%s' size '%f/%f'",filename,content->stat.size,size);
   if(size > content->stat.size)
     size = content->stat.size;
-  XBT_INFO("Really read file '%s' for %f",filename,size);
   surf_action_t action = storage_action_execute(storage,size,READ);
   return action;
 }
@@ -212,10 +209,8 @@ static void storage_update_actions_state(double now, double delta)
     if(action->type == WRITE)
     {
       double rate = lmm_variable_getvalue(GENERIC_LMM_ACTION(action).variable);
-      XBT_INFO("Update %f + %f = %f",((surf_action_t)action)->file->content->stat.size,delta * rate,((surf_action_t)action)->file->content->stat.size+delta * rate);
       ((storage_t)(action->storage))->used_size += delta * rate; // disk usage
       ((surf_action_t)action)->file->content->stat.size += delta * rate; // file size
-      XBT_INFO("Have updating to %f",((surf_action_t)action)->file->content->stat.size);
     }
   }
 
