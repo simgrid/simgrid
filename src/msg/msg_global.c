@@ -108,7 +108,7 @@ MSG_error_t MSG_main(void)
   fflush(stdout);
   fflush(stderr);
 
-  if (MC_IS_ENABLED && (_surf_do_model_check == 1)) {
+  if (MC_IS_ENABLED) {
     MC_do_the_modelcheck_for_real();
   } else {
     SIMIX_run();

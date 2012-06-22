@@ -474,6 +474,7 @@ void surf_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      NULL, NULL);
 
+#if HAVE_MC
     /* do model-checking */
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check",
@@ -502,6 +503,7 @@ void surf_config_init(int *argc, char **argv)
                      "Specify the kind of exploration reduction (either none or DPOR)",
                      xbt_cfgelm_string, &default_value, 0, 1,
                      _mc_cfg_cb_reduce, NULL);
+#endif
 
     /* do verbose-exit */
     default_value_int = 1;
