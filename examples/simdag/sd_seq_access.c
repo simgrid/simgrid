@@ -18,10 +18,10 @@ int main(int argc, char **argv)
   int i;
   const char *platform_file;
   const SD_workstation_t *workstations;
-  SD_task_t taskA, taskB, taskC;
+  SD_task_t taskA, taskB, taskC, taskD;
   xbt_dynar_t changed_tasks;
 
-  /* initialisation of SD */
+  /* initialization of SD */
   SD_init(&argc, argv);
 
   /*  xbt_log_control_set("sd.thres=debug"); */
@@ -48,25 +48,36 @@ int main(int argc, char **argv)
           (SD_workstation_get_access_mode(workstations[i]) ==
            SD_WORKSTATION_SEQUENTIAL_ACCESS) ? "sequential" : "shared");
   }
+  /* Well I changed my mind, I want the second workstation to be shared */
+
+  SD_workstation_set_access_mode(workstations[1],
+                                     SD_WORKSTATION_SHARED_ACCESS);
+  XBT_INFO(" Change access mode of %s to %s",
+           SD_workstation_get_name(workstations[1]),
+           (SD_workstation_get_access_mode(workstations[1]) ==
+           SD_WORKSTATION_SEQUENTIAL_ACCESS) ? "sequential" : "shared");
 
   /* creation of the tasks and their dependencies */
   taskA = SD_task_create_comp_seq("Task A", NULL, 2e10);
   taskB = SD_task_create_comm_e2e("Task B", NULL, 2e8);
   taskC = SD_task_create_comp_seq("Task C", NULL, 1e10);
+  taskD = SD_task_create_comp_seq("Task D", NULL, 1e11);
 
-  /* if everything is ok, no exception is forwarded or rethrown by main() */
+  SD_task_dependency_add("B->C", NULL,taskB, taskC);
 
   /* watch points */
   SD_task_watch(taskA, SD_RUNNING);
   SD_task_watch(taskB, SD_RUNNING);
   SD_task_watch(taskC, SD_RUNNING);
   SD_task_watch(taskC, SD_DONE);
+  SD_task_watch(taskD, SD_DONE);
 
 
   /* scheduling parameters */
   SD_task_schedulel(taskA, 1, workstations[0]);
   SD_task_schedulel(taskB, 2, workstations[0], workstations[1]);
   SD_task_schedulel(taskC, 1, workstations[1]);
+  SD_task_schedulel(taskD, 1, workstations[1]);
 
   /* let's launch the simulation! */
   while (!xbt_dynar_is_empty(changed_tasks = SD_simulate(-1.0))) {
