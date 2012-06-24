@@ -101,6 +101,7 @@ ENDIF(enable_debug)
 
 ADD_TEST(tesh-simdag-bypass     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_bypass.tesh)
 ADD_TEST(tesh-simdag-flatifier	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms flatifier.tesh)
+ADD_TEST(tesh-simdag-link	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_link_test.tesh)
 
 ADD_TEST(tesh-simdag-reinit-costs	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite 	--cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/test_reinit_costs.tesh)
 ADD_TEST(tesh-simdag-parser	${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}		--setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms 	--cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test.tesh)

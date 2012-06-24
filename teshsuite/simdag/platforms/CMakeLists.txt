@@ -6,6 +6,7 @@ add_executable(basic_parsing_test basic_parsing_test.c)
 add_executable(is_router_test is_router_test.c)
 add_executable(flatifier flatifier.c)
 add_executable(basic_tracing basic_tracing.c)
+add_executable(basic_link_test basic_link_test.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -17,11 +18,13 @@ target_link_libraries(basic_parsing_test simgrid m)
 target_link_libraries(is_router_test simgrid m)
 target_link_libraries(flatifier simgrid m)
 target_link_libraries(basic_tracing simgrid m)
+target_link_libraries(basic_link_test simgrid m)
 else(NOT WIN32)
 target_link_libraries(basic_parsing_test simgrid)
 target_link_libraries(is_router_test simgrid)
 target_link_libraries(flatifier simgrid)
 target_link_libraries(basic_tracing simgrid)
+target_link_libraries(basic_link_test simgrid)
 endif(NOT WIN32)
 
 set(tesh_files
@@ -30,6 +33,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test_sym_full.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test_bypass.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic_link_test.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/get_full_link.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_asymetric.tesh
@@ -88,6 +92,7 @@ set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_tracing.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/basic_link_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Evaluate_get_route_time.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Evaluate_parse_time.c
   ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.c
