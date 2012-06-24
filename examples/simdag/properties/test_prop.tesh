@@ -14,6 +14,13 @@ $ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
 > [0.000000] [test/INFO] Modify an existing property
 > [0.000000] [test/INFO] 	Property: SG_TEST_Hdd old value: 120
 > [0.000000] [test/INFO] 	Property: SG_TEST_Hdd new value: 250
+> [0.000000] [sd_workstation/INFO] Displaying workstation host2
+> [0.000000] [sd_workstation/INFO]   - power: 1000000000
+> [0.000000] [sd_workstation/INFO]   - available power: 1.00
+> [0.000000] [sd_workstation/INFO]   - access mode: Exclusive
+> [0.000000] [sd_workstation/INFO]     no task running
+> [0.000000] [sd_workstation/INFO]   - properties:
+> [0.000000] [sd_workstation/INFO]     SG_TEST_Hdd->250
 
 
 

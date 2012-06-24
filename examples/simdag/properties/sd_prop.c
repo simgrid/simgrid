@@ -98,6 +98,9 @@ int main(int argc, char **argv)
   else
     XBT_INFO("\tProperty: %s new value: %s", exist, value);
 
+  /* Test if properties are displayed by SD_workstation_dump */
+  SD_workstation_dump(w2);
+
   SD_exit();
   return 0;
 }
