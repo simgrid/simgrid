@@ -965,8 +965,12 @@ void SD_task_unschedule(SD_task_t task)
            SD_task_get_name(task));
 
   if (__SD_task_is_scheduled_or_runnable(task)  /* if the task is scheduled or runnable */
-      &&task->kind == SD_TASK_NOT_TYPED)        /* Don't free scheduling data for typed tasks */
+      && ((task->kind == SD_TASK_COMP_PAR_AMDAHL) ||
+          (task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK))) { /* Don't free scheduling data for typed tasks */
     __SD_task_destroy_scheduling_data(task);
+    task->workstation_list=NULL;
+    task->workstation_nb = 0;
+  }
 
   if (__SD_task_is_running(task))       /* the task should become SD_FAILED */
     surf_workstation_model->action_cancel(task->surf_action);
