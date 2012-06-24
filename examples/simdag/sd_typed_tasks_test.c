@@ -66,6 +66,16 @@ int main(int argc, char **argv)
   SD_task_schedulev(par_comp1, 4, workstations);
   SD_task_schedulev(par_comp2, 3, workstations);
 
+  /* Let's unschedule these tasks and test the auto-scheduling in the
+   * opposite way.
+   */
+  SD_task_unschedule(par_comp1);
+  SD_task_unschedule(par_comp2);
+  SD_task_unschedule(redist); /* yes, it was scheduled too */
+
+  SD_task_schedulev(par_comp2, 3, workstations);
+  SD_task_schedulev(par_comp1, 4, workstations);
+
   for (i=0;i<4;i++){
     workstation_list[i]=workstations[i+4];
     /* Apply Amdahl's law manually assuming a 20% serial part */
