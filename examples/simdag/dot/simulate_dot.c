@@ -12,6 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/ex.h"
 #include <string.h>
+#include <libgen.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,
                              "Logging specific to this SimDag example");
