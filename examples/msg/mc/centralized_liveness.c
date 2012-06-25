@@ -32,7 +32,7 @@ int coordinator(int argc, char *argv[])
       char *req = MSG_task_get_data(task);
       if (CS_used) { 
         XBT_INFO("CS already used.");
-  m_task_t answer = MSG_task_create("not grant", 0, 1000, NULL);
+        m_task_t answer = MSG_task_create("not grant", 0, 1000, NULL);
         MSG_task_send(answer, req);
       } else {                  // can serve it immediatly
         XBT_INFO("CS idle. Grant immediatly");
@@ -72,15 +72,15 @@ int client(int argc, char *argv[])
       XBT_INFO("Client (%s) got the answer (grant). Sleep a bit and release it", my_mailbox);
 
       if(!strcmp(my_mailbox, "1"))
-  cs = 1;
+        cs = 1;
 
       /*MSG_process_sleep(my_pid);
-      MSG_task_send(MSG_task_create("release", 0, 1000, NULL),
+        MSG_task_send(MSG_task_create("release", 0, 1000, NULL),
         "coordinator");
         XBT_INFO("Client (%s) releases the CS", my_mailbox);
       
-      if(!strcmp(my_mailbox, "1"))
-  cs = 0;*/
+        if(!strcmp(my_mailbox, "1"))
+        cs = 0;*/
       
     }else{
       
