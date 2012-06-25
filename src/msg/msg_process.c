@@ -171,9 +171,6 @@ m_process_t MSG_process_create_with_environment(const char *name,
 
   if (SIMIX_process_self()) {
     simdata->PPID = MSG_process_get_PID(MSG_process_self());
-    #ifdef HAVE_TRACING
-      MSG_process_on_exit((int_f_pvoid_t)TRACE_msg_process_kill,MSG_process_self());
-    #endif
   } else {
     simdata->PPID = -1;
   }
@@ -192,7 +189,11 @@ m_process_t MSG_process_create_with_environment(const char *name,
     xbt_free(simdata);
     return NULL;
   }
-
+  else {
+    #ifdef HAVE_TRACING
+    SIMIX_process_on_exit(process,(int_f_pvoid_t)TRACE_msg_process_kill,MSG_process_self());
+    #endif
+  }
   return process;
 }
 
@@ -485,5 +486,5 @@ smx_context_t MSG_process_get_smx_ctx(m_process_t process) {
  * You should use them to free the data used by your process.
  */
 void MSG_process_on_exit(int_f_pvoid_t fun, void *data) {
-  SIMIX_process_on_exit(fun,data);
+  SIMIX_process_on_exit(MSG_process_self(),fun,data);
 }

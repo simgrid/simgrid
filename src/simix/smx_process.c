@@ -727,11 +727,11 @@ void SIMIX_process_on_exit_runall(smx_process_t process) {
     (exit_fun.fun)(exit_fun.arg);
   }
 }
-void SIMIX_process_on_exit(int_f_pvoid_t fun, void *data) {
-  smx_process_t process = SIMIX_process_self();
+void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data) {
   xbt_assert(process, "current process not found: are you in maestro context ?");
 
   if (!process->on_exit) {
+    XBT_INFO("NEW : %p",process);
     process->on_exit = xbt_dynar_new(sizeof(s_smx_process_exit_fun_t), NULL);
   }
 
