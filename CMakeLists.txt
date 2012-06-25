@@ -165,6 +165,18 @@ set(JAVA_EXAMPLES
   ${CMAKE_HOME_DIRECTORY}/examples/commTime/Master.java
   ${CMAKE_HOME_DIRECTORY}/examples/commTime/Slave.java
   ${CMAKE_HOME_DIRECTORY}/examples/commTime/CommTimeTest.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/Answer.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/Bucket.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/Common.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/Contact.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/Kademlia.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/Node.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/RoutingTable.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/FindNodeAnswerTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/FindNodeTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/KademliaTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/PingAnswerTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/PingTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/io/IO.java
   ${CMAKE_HOME_DIRECTORY}/examples/io/Node.java
   ${CMAKE_HOME_DIRECTORY}/examples/masterslave/FinalizeTask.java
@@ -239,7 +251,7 @@ set(XML_FILES
   ${CMAKE_HOME_DIRECTORY}/examples/chord/chord10000.xml
   ${CMAKE_HOME_DIRECTORY}/examples/chord/chord1000.xml
   ${CMAKE_HOME_DIRECTORY}/examples/chord/chord90.xml
-  ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspendDeployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/kademlia/kademlia.xml
   ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/platform.xml
   ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/centralized/mutex_centralized_deployment.xml
   ${CMAKE_HOME_DIRECTORY}/examples/mutualExclusion/ring3.xml
@@ -249,6 +261,7 @@ set(XML_FILES
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment_start.xml
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment_start_kill.xml
   ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/deployment.xml
+  ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspendDeployment.xml
   ${CMAKE_HOME_DIRECTORY}/examples/io/storage.xml
   ${CMAKE_HOME_DIRECTORY}/examples/tracing/tracingPingPongDeployment.xml
 )
@@ -398,6 +411,7 @@ add_custom_command(
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/chord/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/cloud/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/commTime/*.java
+  COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/kademlia/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/io/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/masterslave/*.java
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/examples -cp ${CMAKE_HOME_DIRECTORY}/simgrid.jar ${CMAKE_HOME_DIRECTORY}/examples/master_slave_bypass/*.java
@@ -447,6 +461,7 @@ ADD_TEST(bypass          ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(commTime        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/commTime/commtime.tesh)
 ADD_TEST(chord        	 ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/chord/chord.tesh)
 ADD_TEST(cloud        	 ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/cloud/cloud.tesh)
+ADD_TEST(kademlia       ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/kademlia/kademlia.tesh)
 ADD_TEST(kill            ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/master_slave_kill/kill.tesh)
 ADD_TEST(masterslave     ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/masterslave/masterslave.tesh)
 ADD_TEST(migration       ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/migration/migration.tesh)
@@ -456,7 +471,7 @@ ADD_TEST(priority        ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE
 ADD_TEST(startKillTime   ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/startKillTime/startKillTime.tesh)
 ADD_TEST(suspend         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/suspend/suspend.tesh)
 #Don't forget to put new test in this list!!!
-set(test_list async bittorrent bypass chord cloud commTime kill masterslave migration mutualExclusion pingPong priority startKillTime suspend)
+set(test_list async bittorrent bypass chord cloud commTime kademlia kill masterslave migration mutualExclusion pingPong priority startKillTime suspend)
 if(HAVE_TRACING)
   ADD_TEST(tracing         ${TESH_BIN_PATH} ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/examples/tracing/tracingPingPong.tesh)
   set(test_list ${test_list} tracing)
