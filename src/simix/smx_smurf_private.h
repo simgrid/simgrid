@@ -45,6 +45,7 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_PROCESS_GET_NAME),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_PROCESS_IS_SUSPENDED),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_PROCESS_GET_PROPERTIES),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_PROCESS_SLEEP),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_PROCESS_ON_EXIT),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_CREATE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_DESTROY),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_GEY_BY_NAME),\
@@ -288,6 +289,12 @@ typedef struct s_smx_simcall {
       double duration;
       e_smx_state_t result;
     } process_sleep;
+
+    struct {
+      smx_process_t process;
+      int_f_pvoid_t fun;
+      void *data;
+    } process_on_exit;
 
     struct {
       const char *name;

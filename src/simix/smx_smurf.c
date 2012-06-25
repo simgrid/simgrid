@@ -357,7 +357,12 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
         SIMIX_process_get_data(simcall->process_get_data.process);
       SIMIX_simcall_answer(simcall);
       break;
-
+    case SIMCALL_PROCESS_ON_EXIT:
+      SIMIX_process_on_exit(simcall->process_on_exit.process,
+                            simcall->process_on_exit.fun,
+                            simcall->process_on_exit.data);
+      SIMIX_simcall_answer(simcall);
+    break;
     case SIMCALL_PROCESS_SET_DATA:
       SIMIX_process_set_data(
     simcall->process_set_data.process,

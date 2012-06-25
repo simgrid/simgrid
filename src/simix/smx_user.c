@@ -609,7 +609,20 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->process_get_properties.result;
 }
+/** \ingroup m_process_management
+ * \brief Add an on_exit function
+ * Add an on_exit function which will be executed when the process exits/is killed.
+ */
+XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data) {
+  smx_simcall_t simcall = SIMIX_simcall_mine();
 
+  simcall->call = SIMCALL_PROCESS_ON_EXIT;
+  simcall->process_on_exit.process = process;
+  simcall->process_on_exit.fun = fun;
+  simcall->process_on_exit.data = data;
+
+  SIMIX_simcall_push(simcall->issuer);
+}
 /** \brief Creates a new sleep SIMIX action.
  *
  * This function creates a SURF action and allocates the data necessary
