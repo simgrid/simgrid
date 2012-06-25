@@ -157,4 +157,7 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir
 > [1023.430577] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
 > [1023.430577] (1:Master@Jacquelin) Master done.
 > [1023.430577] (21:Slave 19@Provost) Received "Task_19". Processing it.
+> [1023.430577] (21:Slave 19@Provost) "Task_19" done 
+> [1023.430577] (21:Slave 19@Provost) Receiving on slave_19
+
 
