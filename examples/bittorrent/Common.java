@@ -17,7 +17,7 @@ public class Common {
 	/**
 	 * Max number of pairs sent by the tracker to clients
 	 */
-	public static int MAXIMUM_PAIRS = 50;
+	public static int MAXIMUM_PEERS = 50;
 	/**
 	 * Interval of time where the peer should send a request to the tracker
 	 */

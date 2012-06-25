@@ -57,7 +57,7 @@ public class Tracker extends Process {
 						TrackerTask tTask = (TrackerTask)task;
 						//Sending peers to the peer
 						int nbPeers = 0;
-						while (nbPeers < Common.MAXIMUM_PAIRS && nbPeers < peersList.size()) {
+						while (nbPeers < Common.MAXIMUM_PEERS && nbPeers < peersList.size()) {
 							int nextPeer;
 							do {
 								nextPeer = stream.randInt(0, peersList.size() - 1);

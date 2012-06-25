@@ -328,7 +328,7 @@ public class Peer extends Process {
 						Msg.debug("My status is now " + getStatus());
 						//Sending the information to all the peers we are connected to
 						sendHave(message.index);
-						//sending UNINTERSTED to peers that doesn't have what we want.
+						//sending UNINTERESTED to peers that doesn't have what we want.
 						updateInterestedAfterReceive();
 					}
 					else {
@@ -443,7 +443,8 @@ public class Peer extends Process {
 					peerChoosed = null;
 				}
 				j++;
-			} while (peerChoosed == null && j < Common.MAXIMUM_PAIRS);
+			} while (peerChoosed == null && j < 
+Common.MAXIMUM_PEERS);
 			if (peerChoosed != null) {
 				activePeers.put(peerChoosed.id,peerChoosed);
 				peerChoosed.chokedUpload = false;
