@@ -579,7 +579,7 @@ void lmm_solve(lmm_system_t sys)
     }
     // On a deux dynars:
     //    - Celui de cnst_list avec les csnt_light
-    //    - saturated_constraint_set, celui des indexes de cnst_list qui sont saturées
+    //    - saturated_constraint_set, celui des indexes de cnst_list qui sont saturés
     // Si la cnst_light est un minimum_usage on la met dans saturated_constraint_set
     saturated_constraint_set_update(sys, cnst, &min_usage);
   }
@@ -638,6 +638,8 @@ void lmm_solve(lmm_system_t sys)
         if (cnst->shared) {
           double_update(&(cnst->remaining), elem->value * var->value);
           double_update(&(cnst->usage), elem->value / var->weight);
+          // mettre à jour le cnst_light->remaining_over_usage correspondant
+          // cnst_light->remaining_over_usage = cnst->remaining /  cnst->usage
           if(cnst->usage<=0 || cnst->remaining<=0) {
             xbt_swag_remove(cnst, cnst_list);
             xbt_swag_insert_at_tail(cnst, cnst_list);
@@ -655,6 +657,7 @@ void lmm_solve(lmm_system_t sys)
             if ((elem->value > 0)) {
               cnst->usage =
                   MAX(cnst->usage, elem->value / elem->variable->weight);
+              // mettre à jour le cnst_light->remaining_over_usage correspondant
               XBT_DEBUG("Constraint Usage %d : %f", cnst->id_int,
                      cnst->usage);
               make_elem_active(elem);

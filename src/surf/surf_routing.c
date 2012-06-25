@@ -582,6 +582,7 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
     route.link_list = *links;
     common_father->get_route_and_latency(common_father, src, dst, &route,latency);
+    // if vivaldi latency+=vivaldi(src,dst)
     return;
   }
 
@@ -605,12 +606,13 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != src_gateway_net_elm)
     _get_route_and_latency(src, src_gateway_net_elm, links, latency);
-
   xbt_dynar_merge(links, &route.link_list);
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   if (dst_gateway_net_elm != dst)
     _get_route_and_latency(dst_gateway_net_elm, dst, links, latency);
+
+  // if vivaldi latency+=vivaldi(src_gateway,dst_gateway)
 }
 
 /**
