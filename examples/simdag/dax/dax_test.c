@@ -58,7 +58,10 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /* load the DAX file */
-  dax = SD_daxload(argv[2]);
+  if (!(dax = SD_daxload(argv[2]))){
+    free(tracefilename);
+    xbt_die("A problem occurred during parsing. The simulation can't continue.");
+  }
 
   /* Display all the tasks */
   XBT_INFO
