@@ -15,6 +15,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/quicksort_platform.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/state_cloner/deployment_duplicated_globals.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/bittorrent.xml
   PARENT_SCOPE
 )
 set(examples_src
@@ -27,6 +28,9 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/platform.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/slave.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/bittorrent.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/peer.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/tracker.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/splaySim/master.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/splaySim/splay_deploy_masterslave.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/splaySim/splay_ctrl.lua
