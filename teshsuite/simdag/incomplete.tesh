@@ -1,0 +1,7 @@
+$ simdag/incomplete ${srcdir:=.}/simdag/basic_platform.xml --surf-path=${srcdir} "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [ 10.000100] (0:@) Simulation is finished but 3 tasks are still not done
+> [ 10.000100] (0:@) Task C is in SD_NOT_SCHEDULED state
+> [ 10.000100] (0:@) Task B is in SD_SCHEDULABLE state
+> [ 10.000100] (0:@) Task D is in SD_SCHEDULED state
+> [ 10.000100] (0:@) Simulation time: 10.000100
