@@ -1,42 +1,42 @@
-find_library(PATH_PCRE_LIB 
-	NAMES pcre
-    HINTS
-    $ENV{SIMGRID_PCRE_LIBRARY_PATH}
-    $ENV{LD_LIBRARY_PATH}
-    $ENV{PCRE_LIBRARY_PATH}
-    PATH_SUFFIXES lib/ GnuWin32/lib
-    PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr)  
+find_library(PATH_PCRE_LIB
+  NAMES pcre
+  HINTS
+  $ENV{SIMGRID_PCRE_LIBRARY_PATH}
+  $ENV{LD_LIBRARY_PATH}
+  $ENV{PCRE_LIBRARY_PATH}
+  PATH_SUFFIXES lib/ GnuWin32/lib
+  PATHS
+  /opt
+  /opt/local
+  /opt/csw
+  /sw
+  /usr)
 
 find_path(PATH_PCRE_H "pcre.h"
-    HINTS
-    $ENV{SIMGRID_PCRE_LIBRARY_PATH}
-    $ENV{LD_LIBRARY_PATH}
-    $ENV{PCRE_LIBRARY_PATH}
-    PATH_SUFFIXES include/ GnuWin32/include
-    PATHS
-    /opt
-    /opt/local
-    /opt/csw
-    /sw
-    /usr)
+  HINTS
+  $ENV{SIMGRID_PCRE_LIBRARY_PATH}
+  $ENV{LD_LIBRARY_PATH}
+  $ENV{PCRE_LIBRARY_PATH}
+  PATH_SUFFIXES include/ GnuWin32/include
+  PATHS
+  /opt
+  /opt/local
+  /opt/csw
+  /sw
+  /usr)
 
 message(STATUS "Looking for pcre.h")
 if(PATH_PCRE_H)
-message(STATUS "Looking for pcre.h - found")
+  message(STATUS "Looking for pcre.h - found")
 else(PATH_PCRE_H)
-message(STATUS "Looking for pcre.h - not found")
+  message(STATUS "Looking for pcre.h - not found")
 endif(PATH_PCRE_H)
 
 message(STATUS "Looking for lib pcre")
 if(PATH_PCRE_LIB)
-message(STATUS "Looking for lib pcre - found")
+  message(STATUS "Looking for lib pcre - found")
 else(PATH_PCRE_LIB)
-message(STATUS "Looking for lib pcre - not found")
+  message(STATUS "Looking for lib pcre - not found")
 endif(PATH_PCRE_LIB)
 
 if(PATH_PCRE_LIB AND PATH_PCRE_H)
@@ -45,7 +45,7 @@ if(PATH_PCRE_LIB AND PATH_PCRE_H)
   include_directories(${PATH_PCRE_H})
   link_directories(${PATH_PCRE_LIB})
 else(PATH_PCRE_LIB)
-	   message(FATAL_ERROR "Please install the libpcre3-dev package or equivalent before using SimGrid.")
+  message(FATAL_ERROR "Please install the libpcre3-dev package or equivalent before using SimGrid.")
 endif(PATH_PCRE_LIB AND PATH_PCRE_H)
 
 set(PCRE_LIBRARY_PATH $ENV{PCRE_LIBRARY_PATH})

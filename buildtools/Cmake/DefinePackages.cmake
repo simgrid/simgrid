@@ -1,6 +1,6 @@
 ### define source packages
 
-set(EXTRA_DIST 
+set(EXTRA_DIST
   src/portable.h
   src/xbt/mallocator_private.h
   src/xbt/dict_private.h
@@ -88,27 +88,27 @@ set(EXTRA_DIST
   src/smpi/smpi_mpi_dt_private.h
   src/smpi/README
   src/mk_supernovae.pl
-  
+
   tools/gras/gras_stub_generator.h
-  tools/tesh/run_context.h  
+  tools/tesh/run_context.h
   tools/tesh/tesh.h
-  
+
   src/surf/network_ns3_private.h
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
   src/surf/ns3/my-point-to-point-helper.h
   src/surf/ns3/red-queue.h
-)
+  )
 
-set(XBT_RL_SRC 
+set(XBT_RL_SRC
   src/xbt/xbt_rl_synchro.c
   src/xbt/xbt_rl_time.c
-)
+  )
 
-set(XBT_SG_SRC 
+set(XBT_SG_SRC
   src/xbt/xbt_sg_synchro.c
   src/xbt/xbt_sg_time.c
-)     
+  )
 
 set(SMPI_SRC
   src/smpi/smpi_base.c
@@ -122,8 +122,7 @@ set(SMPI_SRC
   src/smpi/smpi_group.c
   src/smpi/smpi_coll.c
   src/smpi/smpi_mpi_dt.c
-)
-
+  )
 
 set(GRAS_RL_SRC
   src/gras/rl_stubs.c
@@ -134,9 +133,9 @@ set(GRAS_RL_SRC
   src/gras/Virtu/rl_dns.c
   src/gras/Msg/rl_msg.c
   ${XBT_RL_SRC}
-)
+  )
 
-set(XBT_SRC 
+set(XBT_SRC
   src/xbt/snprintf.c
   src/xbt/xbt_str.c
   src/xbt/xbt_strbuff.c
@@ -188,21 +187,21 @@ set(XBT_SRC
   src/xbt/xbt_socket_private.h
   src/xbt/xbt_trp_plugin_tcp.c
   src/xbt/RngStream.c
-)
+  )
 
 if(HAVE_MMAP)
   set(XBT_SRC
     ${XBT_SRC}
-    src/xbt/mmalloc/mm.c  
-  )
+    src/xbt/mmalloc/mm.c
+    )
 endif(HAVE_MMAP)
 
-set(GTNETS_SRC 
+set(GTNETS_SRC
   src/surf/gtnets/gtnets_simulator.cc
   src/surf/gtnets/gtnets_topology.cc
   src/surf/gtnets/gtnets_interface.cc
   src/surf/network_gtnets.c
-)
+  )
 
 set(NS3_SRC
   src/surf/network_ns3.c
@@ -210,9 +209,9 @@ set(NS3_SRC
   src/surf/ns3/ns3_simulator.cc
   src/surf/ns3/red-queue.cc
   src/surf/ns3/my-point-to-point-helper.cc
-)
-  
-set(SURF_SRC 
+  )
+
+set(SURF_SRC
   src/surf/surf_model.c
   src/surf/surf_action.c
   src/surf/surf_routing.c
@@ -242,9 +241,9 @@ set(SURF_SRC
   src/surf/sg_platf.c
   src/surf/storage.c
   src/xbt/xbt_sg_stubs.c
-)
+  )
 
-set(SIMIX_SRC 
+set(SIMIX_SRC
   src/simix/smx_global.c
   src/simix/smx_deployment.c
   src/simix/smx_environment.c
@@ -258,7 +257,7 @@ set(SIMIX_SRC
   src/simix/smx_smurf.c
   src/simix/smx_context_raw.c
   src/simix/smx_io.c
-)
+  )
 
 set(MSG_SRC
   src/msg/msg_config.c
@@ -273,7 +272,7 @@ set(MSG_SRC
   src/msg/msg_mailbox.c
   src/msg/msg_actions.c
   src/msg/msg_vm.c
-)
+  )
 
 set(SIMDAG_SRC
   src/simdag/sd_global.c
@@ -281,15 +280,15 @@ set(SIMDAG_SRC
   src/simdag/sd_task.c
   src/simdag/sd_workstation.c
   src/simdag/sd_daxloader.c
-)
-if(HAVE_GRAPHVIZ)
-  set(SIMDAG_SRC 
-    ${SIMDAG_SRC} src/simdag/sd_dotloader.c
   )
+if(HAVE_GRAPHVIZ)
+  set(SIMDAG_SRC
+    ${SIMDAG_SRC} src/simdag/sd_dotloader.c
+    )
 else(HAVE_GRAPHVIZ)
   set(EXTRA_DIST
     ${EXTRA_DIST} src/simdag/sd_dotloader.c
-  )
+    )
 endif(HAVE_GRAPHVIZ)
 
 set(GRAS_COMMON_SRC
@@ -301,13 +300,13 @@ set(GRAS_COMMON_SRC
   src/gras/Msg/gras_msg_types.c
   src/gras/Msg/gras_msg_exchange.c
   src/gras/Msg/gras_msg_listener.c
-  src/gras/Msg/rpc.c 
+  src/gras/Msg/rpc.c
   src/gras/Msg/timer.c
   src/gras/Msg/msg_interface.h
   src/gras/Msg/msg_private.h
   src/gras/Virtu/process.c
   src/gras/Virtu/gras_module.c
-)
+  )
 
 set(GRAS_SG_SRC
   src/gras/Transport/sg_transport.c
@@ -317,18 +316,18 @@ set(GRAS_SG_SRC
   src/gras/Virtu/sg_dns.c
   src/gras/Msg/sg_msg.c
   ${XBT_SG_SRC}
-)
+  )
 
 set(AMOK_SRC
   src/amok/amok_base.c
   src/amok/Bandwidth/bandwidth.c
   src/amok/Bandwidth/saturate.c
   src/amok/PeerManagement/peermanagement.c
-)
+  )
 
 set(BINDINGS_SRC
   src/bindings/bindings_global.c
-)
+  )
 
 set(LUA_SRC
   src/bindings/lua/simgrid_lua.c
@@ -340,7 +339,7 @@ set(LUA_SRC
   src/bindings/lua/lua_utils.c
   src/bindings/lua/lua_state_cloner.c
   src/bindings/lua/lua_stub_generator.c
-)
+  )
 
 set(BINDINGS_FILES
   ${LUA_SRC}
@@ -349,7 +348,7 @@ set(BINDINGS_FILES
   src/bindings/lua/lua_state_cloner.h
   src/bindings/lua/lua_private.h
   src/bindings/bindings_global.c
-)
+  )
 
 set(TRACING_SRC
   src/instr/instr_routing.c
@@ -365,8 +364,7 @@ set(TRACING_SRC
   src/instr/instr_smpi.c
   src/instr/instr_resource_utilization.c
   src/instr/instr_private.h
-)
-
+  )
 
 set(JEDULE_SRC
   include/instr/jedule/jedule_events.h
@@ -377,7 +375,7 @@ set(JEDULE_SRC
   src/instr/jedule/jedule_output.c
   src/instr/jedule/jedule_platform.c
   src/instr/jedule/jedule_sd_binding.c
-)
+  )
 
 set(MC_SRC
   src/mc/mc_memory.c
@@ -389,7 +387,7 @@ set(MC_SRC
   src/mc/mc_request.c
   src/mc/mc_private.h
   src/mc/mc_liveness.c
-)
+  )
 
 set(headers_to_install
   include/xbt/misc.h
@@ -399,7 +397,7 @@ set(headers_to_install
   include/xbt/strbuff.h
   include/xbt/hash.h
   include/xbt/function_types.h
-  include/xbt/asserts.h 
+  include/xbt/asserts.h
   include/xbt/automaton.h
   include/xbt/ex.h
   include/xbt/log.h
@@ -456,9 +454,9 @@ set(headers_to_install
   include/amok/peermanagement.h
   include/amok/bandwidth.h
   include/instr/instr.h
-  include/gras.h 
+  include/gras.h
   include/xbt.h
-)
+  )
 set(source_of_generated_headers
   include/simgrid_config.h.in
   include/smpi/smpif.h.in
@@ -484,25 +482,25 @@ if(${CONTEXT_UCONTEXT}) #ucontext
   set(SURF_SRC
     ${SURF_SRC}
     src/simix/smx_context_sysv.c
-  )
+    )
 else(${CONTEXT_UCONTEXT}) # NOT ucontext
   set(EXTRA_DIST
     ${EXTRA_DIST}
     src/simix/smx_context_sysv.c
-  )
+    )
 endif(${CONTEXT_UCONTEXT})
 
 # -->HAVE_GTNETS
 if(HAVE_GTNETS)
-  set(GTNETS_USED 
+  set(GTNETS_USED
     ${GTNETS_SRC}
-  )
+    )
 else(HAVE_GTNETS)
   set(GTNETS_USED "")
   set(EXTRA_DIST
     ${EXTRA_DIST}
     ${GTNETS_SRC}
-  )
+    )
 endif(HAVE_GTNETS)
 
 ### Simgrid Lib sources
@@ -519,7 +517,7 @@ set(simgrid_sources
   ${AMOK_SRC}
   ${BINDINGS_SRC}
   ${JEDULE_SRC}
-)
+  )
 
 if(HAVE_MC)
   set(simgrid_sources
@@ -532,7 +530,7 @@ if(HAVE_NS3)
   set(simgrid_sources
     ${simgrid_sources}
     ${NS3_SRC}
-  )
+    )
 endif(HAVE_NS3)
 
 # WINDOWS
@@ -542,7 +540,7 @@ if(WIN32)
     src/xbt/win32_ucontext.c
     src/xbt/xbt_os_thread.c
     src/simix/smx_context_thread.c
-  )
+    )
 endif(WIN32)
 
 ### Gras Lib sources
@@ -551,18 +549,18 @@ set(gras_sources
   ${GRAS_COMMON_SRC}
   ${GRAS_RL_SRC}
   ${AMOK_SRC}
-)
+  )
 
 if(${HAVE_LUA})
   set(simgrid_sources
     ${simgrid_sources}
     ${LUA_SRC}
-  )
+    )
 else(${HAVE_LUA})
   set(EXTRA_DIST
     ${EXTRA_DIST}
     ${LUA_SRC}
-  )
+    )
 endif(${HAVE_LUA})
 
 set(DOC_SOURCES
@@ -583,7 +581,7 @@ set(DOC_SOURCES
   tools/doxygen/index_create.pl
   tools/doxygen/fig2dev_postprocessor.pl
   tools/doxygen/xbt_log_extract_hierarchy.pl
-)
+  )
 
 set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/install.doc
@@ -591,13 +589,13 @@ set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/options.doc
   doc/user_guide/doxygen/use.doc
   doc/user_guide/doxygen/tracing.doc
-  doc/user_guide/doxygen/pls.doc    
-  doc/user_guide/doxygen/index.doc  
+  doc/user_guide/doxygen/pls.doc
+  doc/user_guide/doxygen/index.doc
   doc/user_guide/doxygen/modules.doc
   doc/user_guide/doxygen/platform.doc
   doc/user_guide/doxygen/UserGuideDoxyfile.in
-  doc/user_guide/doxygen/UserGuideDoxygenLayout.xml  
-)
+  doc/user_guide/doxygen/UserGuideDoxygenLayout.xml
+  )
 
 set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/module-amok.doc
@@ -612,12 +610,12 @@ set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/main.doc
   doc/ref_guide/doxygen/RefGuideDoxyfile.in
   doc/ref_guide/doxygen/RefGuideDoxygenLayout.xml
-)
+  )
 
 set(SHARED_SOURCES
   doc/shared/doxygen/gras-examples.doc
   doc/shared/doxygen/msg-examples.doc
-)
+  )
 
 set(DOC_FIGS
   ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
@@ -625,7 +623,7 @@ set(DOC_FIGS
   ${CMAKE_HOME_DIRECTORY}/doc/user_guide/fig/amok_bw_test.fig
   ${CMAKE_HOME_DIRECTORY}/doc/user_guide/fig/amok_bw_sat.fig
   ${CMAKE_HOME_DIRECTORY}/doc/user_guide/fig/gras_comm.fig
-)
+  )
 
 set(bin_files
   ${bin_files}
@@ -633,7 +631,7 @@ set(bin_files
   src/smpi/smpif2c.in
   src/smpi/smpiff.in
   src/smpi/smpirun.in
-)
+  )
 
 set(txt_files
   ${txt_files}
@@ -648,7 +646,7 @@ set(txt_files
   TODO
   configure
   INSTALL
-)
+  )
 
 set(EXAMPLES_CMAKEFILES_TXT
   examples/smpi/CMakeLists.txt
@@ -696,7 +694,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/xbt/CMakeLists.txt
-)
+  )
 
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/xbt/CMakeLists.txt
@@ -714,19 +712,19 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/gras/datadesc/CMakeLists.txt
   teshsuite/CMakeLists.txt
   teshsuite/gras/CMakeLists.txt
-)
+  )
 
 set(TOOLS_CMAKEFILES_TXT
   tools/tesh/CMakeLists.txt
   tools/graphicator/CMakeLists.txt
   tools/CMakeLists.txt
   tools/gras/CMakeLists.txt
-)
+  )
 
 set(TESTSUITE_CMAKEFILES_TXT
   testsuite/surf/CMakeLists.txt
   testsuite/xbt/CMakeLists.txt
-)
+  )
 
 set(CMAKE_SOURCE_FILES
   buildtools/Cmake/CTestConfig.cmake
@@ -790,7 +788,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/src/gras_config.h.in
   buildtools/Cmake/src/simgrid.nsi.in
   CMakeLists.txt
-)
+  )
 
 set(PLATFORMS_EXAMPLES
   examples/platforms/bypassASroute.xml
@@ -826,14 +824,14 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_meridian.xml
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/syscoord/median_p2psim.xml
-)
+  )
 
 set(generated_src_files
   ${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
   src/xbt/automaton/parserPromela.tab.cacc
   src/xbt/automaton/parserPromela.tab.hacc
   src/xbt/automaton/automaton_lexer.yy.c
-)
+  )
 
 foreach(file ${generated_src_files})
   set_source_files_properties(${file} PROPERTIES GENERATED true)

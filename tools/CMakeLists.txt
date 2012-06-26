@@ -14,4 +14,4 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/MSG_visualization/colorize.pl
   ${CMAKE_CURRENT_SOURCE_DIR}/MSG_visualization/trace2fig.pl
   PARENT_SCOPE
-)
+  )

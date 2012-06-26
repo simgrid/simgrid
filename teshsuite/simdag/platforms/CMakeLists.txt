@@ -10,21 +10,21 @@ add_executable(basic_link_test basic_link_test.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
-add_executable(evaluate_parse_time Evaluate_parse_time.c)
-add_executable(evaluate_get_route_time Evaluate_get_route_time.c)
-target_link_libraries(evaluate_get_route_time simgrid m)
-target_link_libraries(evaluate_parse_time simgrid m)
-target_link_libraries(basic_parsing_test simgrid m)
-target_link_libraries(is_router_test simgrid m)
-target_link_libraries(flatifier simgrid m)
-target_link_libraries(basic_tracing simgrid m)
-target_link_libraries(basic_link_test simgrid m)
+  add_executable(evaluate_parse_time Evaluate_parse_time.c)
+  add_executable(evaluate_get_route_time Evaluate_get_route_time.c)
+  target_link_libraries(evaluate_get_route_time simgrid m)
+  target_link_libraries(evaluate_parse_time simgrid m)
+  target_link_libraries(basic_parsing_test simgrid m)
+  target_link_libraries(is_router_test simgrid m)
+  target_link_libraries(flatifier simgrid m)
+  target_link_libraries(basic_tracing simgrid m)
+  target_link_libraries(basic_link_test simgrid m)
 else(NOT WIN32)
-target_link_libraries(basic_parsing_test simgrid)
-target_link_libraries(is_router_test simgrid)
-target_link_libraries(flatifier simgrid)
-target_link_libraries(basic_tracing simgrid)
-target_link_libraries(basic_link_test simgrid)
+  target_link_libraries(basic_parsing_test simgrid)
+  target_link_libraries(is_router_test simgrid)
+  target_link_libraries(flatifier simgrid)
+  target_link_libraries(basic_tracing simgrid)
+  target_link_libraries(basic_link_test simgrid)
 endif(NOT WIN32)
 
 set(tesh_files
@@ -38,7 +38,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/get_full_link.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_asymetric.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_Dijkstra_ns3.xml
@@ -87,7 +87,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/clusterB.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/Dijkstra.xml
   PARENT_SCOPE
-)
+  )
 set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test.c
@@ -98,11 +98,11 @@ set(teshsuite_src
   ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.c
   ${CMAKE_CURRENT_SOURCE_DIR}/is_router_test.c
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   PARENT_SCOPE
-)
+  )
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/bob0_availability_file.trace
@@ -115,4 +115,4 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/link1.fail
   ${CMAKE_CURRENT_SOURCE_DIR}/link1.lat
   PARENT_SCOPE
-)
+  )

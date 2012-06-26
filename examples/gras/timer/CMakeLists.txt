@@ -11,12 +11,12 @@ add_executable(timer_client    ${CMAKE_CURRENT_BINARY_DIR}/_timer_client.c ${CMA
 
 add_custom_command(
   OUTPUT
-    ${CMAKE_CURRENT_BINARY_DIR}/_timer_simulator.c
-    ${CMAKE_CURRENT_BINARY_DIR}/_timer_client.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_timer_simulator.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_timer_client.c
   DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/timer.xml
   COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator timer ${CMAKE_CURRENT_SOURCE_DIR}/timer.xml
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
+  )
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -33,18 +33,18 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_32.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_64.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/timer.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/timer.c
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   PARENT_SCOPE
-)
+  )

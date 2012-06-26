@@ -24,7 +24,7 @@ if(NOT WIN32)
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/ex_sd_test ${CMAKE_CURRENT_BINARY_DIR}/sd_test
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
-  )
+    )
   get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
   set_directory_properties(
     PROPERTIES
@@ -43,7 +43,7 @@ else(NOT WIN32)
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/ex_sd_test.exe ${CMAKE_CURRENT_BINARY_DIR}/sd_test.exe
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
-  )
+    )
   get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
   set_directory_properties(
     PROPERTIES
@@ -58,12 +58,12 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_typed_tasks.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_comm_throttling.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/2clusters.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_seq_access.c
@@ -74,14 +74,14 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_comm_throttling.c
   ${CMAKE_CURRENT_SOURCE_DIR}/simdag_trace.c
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/platform_script.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag.in
   PARENT_SCOPE
-)
+  )
 set(txt_files
   ${txt_files}
   PARENT_SCOPE
-)
+  )

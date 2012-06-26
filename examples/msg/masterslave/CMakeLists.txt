@@ -50,7 +50,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_mailbox_crosstraffic.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_vivaldi.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_forwarder.xml
@@ -62,7 +62,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform_kill.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_arg.c
@@ -74,13 +74,13 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_kill.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_mailbox.c
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/platform_script.lua
   PARENT_SCOPE
-)
+  )
 set(txt_files
   ${txt_files}
   PARENT_SCOPE
-)
+  )

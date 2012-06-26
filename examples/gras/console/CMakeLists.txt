@@ -1,54 +1,54 @@
 if(HAVE_LUA)
-cmake_minimum_required(VERSION 2.6)
+  cmake_minimum_required(VERSION 2.6)
 
-set_source_files_properties(
-  ${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c
-  ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c 
-  ${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
-  PROPERTIES GENERATED true)
+  set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c
+    ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c
+    ${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
+    PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-add_executable(ping_simulator_console
-  ${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/ping_server.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/ping_client.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/ping_common.c)
+  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+  add_executable(ping_simulator_console
+    ${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ping_server.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ping_client.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ping_common.c)
 
-add_executable(ping_client_console
-  ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/ping_client.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/ping_common.c)
+  add_executable(ping_client_console
+    ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ping_client.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ping_common.c)
 
-add_executable(ping_server_console
-  ${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/ping_server.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/ping_common.c)
-  
-add_custom_command(
-  OUTPUT
-    ${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c 
-    ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c 
+  add_executable(ping_server_console
+    ${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ping_server.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/ping_common.c)
+
+  add_custom_command(
+    OUTPUT
+    ${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c
+    ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c
     ${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
     ${CMAKE_CURRENT_BINARY_DIR}/simgrid.${LIB_EXE}
-  COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_CURRENT_BINARY_DIR}/simgrid.${LIB_EXE}
-  COMMAND lua ${CMAKE_CURRENT_SOURCE_DIR}/ping_generator.lua
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} #needed to find simgrid.so. By default CMAKE_CURRENT_BINARY_DIR
-)
+    COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_CURRENT_BINARY_DIR}/simgrid.${LIB_EXE}
+    COMMAND lua ${CMAKE_CURRENT_SOURCE_DIR}/ping_generator.lua
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} #needed to find simgrid.so. By default CMAKE_CURRENT_BINARY_DIR
+    )
 
-### Add definitions for compile
-target_link_libraries(ping_simulator_console simgrid pthread m)
-target_link_libraries(ping_client_console gras simgrid pthread m)
-target_link_libraries(ping_server_console gras simgrid pthread m)
+  ### Add definitions for compile
+  target_link_libraries(ping_simulator_console simgrid pthread m)
+  target_link_libraries(ping_client_console gras simgrid pthread m)
+  target_link_libraries(ping_server_console gras simgrid pthread m)
 endif(HAVE_LUA)
 
 set(tesh_files
   ${tesh_files}
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/ping_client.c
@@ -56,10 +56,10 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/ping_server.c
   ${CMAKE_CURRENT_SOURCE_DIR}/ping.h
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/gras_platform_script.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/ping_generator.lua
   PARENT_SCOPE
-)
+  )

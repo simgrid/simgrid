@@ -1,29 +1,29 @@
 cmake_minimum_required(VERSION 2.6)
 
 if(HAVE_MC)
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-add_executable(centralized centralized_mutex.c)
-add_executable(bugged1     bugged1.c)
-add_executable(bugged2      bugged2.c)
-add_executable(bugged3	   bugged3.c)
-add_executable(random_test random_test.c)
-add_executable(bugged1_liveness bugged1_liveness.c)
-add_executable(bugged2_liveness bugged2_liveness.c)
-add_executable(centralized_liveness centralized_liveness.c)
-add_executable(centralized_liveness_deadlock centralized_liveness_deadlock.c)
-add_executable(test_snapshot test_snapshot.c)
+  add_executable(centralized centralized_mutex.c)
+  add_executable(bugged1     bugged1.c)
+  add_executable(bugged2      bugged2.c)
+  add_executable(bugged3	   bugged3.c)
+  add_executable(random_test random_test.c)
+  add_executable(bugged1_liveness bugged1_liveness.c)
+  add_executable(bugged2_liveness bugged2_liveness.c)
+  add_executable(centralized_liveness centralized_liveness.c)
+  add_executable(centralized_liveness_deadlock centralized_liveness_deadlock.c)
+  add_executable(test_snapshot test_snapshot.c)
 
-target_link_libraries(centralized simgrid m )
-target_link_libraries(bugged1     simgrid m )
-target_link_libraries(bugged2     simgrid m )
-target_link_libraries(bugged3     simgrid m )
-target_link_libraries(random_test     simgrid m )
-target_link_libraries(bugged1_liveness     simgrid m )
-target_link_libraries(bugged2_liveness     simgrid m )
-target_link_libraries(centralized_liveness     simgrid m )
-target_link_libraries(centralized_liveness_deadlock     simgrid m )
-target_link_libraries(test_snapshot     simgrid m )
+  target_link_libraries(centralized simgrid m )
+  target_link_libraries(bugged1     simgrid m )
+  target_link_libraries(bugged2     simgrid m )
+  target_link_libraries(bugged3     simgrid m )
+  target_link_libraries(random_test     simgrid m )
+  target_link_libraries(bugged1_liveness     simgrid m )
+  target_link_libraries(bugged2_liveness     simgrid m )
+  target_link_libraries(centralized_liveness     simgrid m )
+  target_link_libraries(centralized_liveness_deadlock     simgrid m )
+  target_link_libraries(test_snapshot     simgrid m )
 endif(HAVE_MC)
 
 set(tesh_files
@@ -32,7 +32,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1_liveness.xml
@@ -45,7 +45,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_random_test.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.c
@@ -63,7 +63,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.h
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/parse_dwarf
@@ -74,8 +74,8 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_centralized_liveness
   PARENT_SCOPE
-)
+  )
 set(txt_files
   ${txt_files}
   PARENT_SCOPE
-)
+  )

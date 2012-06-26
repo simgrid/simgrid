@@ -11,12 +11,12 @@ add_executable(synchro_philosopher ${CMAKE_CURRENT_BINARY_DIR}/_synchro_philosop
 
 add_custom_command(
   OUTPUT
-    ${CMAKE_CURRENT_BINARY_DIR}/_synchro_simulator.c
-    ${CMAKE_CURRENT_BINARY_DIR}/_synchro_philosopher.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_synchro_simulator.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_synchro_philosopher.c
   DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/synchro.xml
   COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator synchro ${CMAKE_CURRENT_SOURCE_DIR}/synchro.xml
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
+  )
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -33,18 +33,18 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_32.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_64.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/synchro.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/philosopher.c
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   PARENT_SCOPE
-)
+  )

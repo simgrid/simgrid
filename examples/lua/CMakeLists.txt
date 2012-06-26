@@ -8,7 +8,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/state_cloner/duplicated_globals.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/console/master_slave_bypass.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/quicksort_deployment.xml
@@ -17,7 +17,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/state_cloner/deployment_duplicated_globals.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/bittorrent.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/sender.lua
@@ -50,11 +50,11 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/console/master_slave_bypass.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/console/deploy.lua
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   PARENT_SCOPE
-)
+  )
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/SimSplay/TODO
@@ -62,4 +62,4 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/file.trace
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/simgrid.trace
   PARENT_SCOPE
-)
+  )

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 set_source_files_properties(
   ${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c
-  ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c 
+  ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c
   ${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
   PROPERTIES GENERATED true)
 
@@ -23,13 +23,13 @@ add_executable(ping_server
 
 add_custom_command(
   OUTPUT
-    ${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c 
-    ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c 
-    ${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_ping_simulator.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_ping_client.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_ping_server.c
   DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/ping.xml
   COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator ping ${CMAKE_CURRENT_SOURCE_DIR}/ping.xml
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
+  )
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -48,12 +48,12 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_32.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_64.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/ping.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/ping_client.c
@@ -61,8 +61,8 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/ping_server.c
   ${CMAKE_CURRENT_SOURCE_DIR}/ping.h
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   PARENT_SCOPE
-)
+  )

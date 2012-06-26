@@ -16,38 +16,38 @@ if(DOXYGEN_PATH)
   include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateUserGuide.cmake)
   include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateRefGuide.cmake)
 
-  set(DOC_PNGS 
+  set(DOC_PNGS
     ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
     ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
-  )
-  
+    )
+
   configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
-  
+
   ADD_CUSTOM_TARGET(simgrid_documentation
     COMMENT "Generating the SimGrid documentation..."
     DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
-      COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
+    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
-  )
+    )
 
   foreach(file ${DOC_PNGS})
     ADD_CUSTOM_COMMAND(
       TARGET simgrid_documentation
       COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/
-    )
+      )
   endforeach(file ${DOC_PNGS})
 
   ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css ${CMAKE_HOME_DIRECTORY}/doc/html/
-  )
-  
+    )
+
   ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
-      COMMAND ${CMAKE_COMMAND} -E echo "XX Doxygen pass"
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Doxygen pass"
     COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
-  WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
-  )
-  
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
+    )
+
   ADD_CUSTOM_TARGET(pdf
     COMMAND ${CMAKE_COMMAND} -E echo "XX First pass simgrid_documentation.pdf"
     COMMAND make clean
@@ -58,13 +58,13 @@ if(DOXYGEN_PATH)
     COMMAND ${CMAKE_COMMAND} -E echo "XX Write Simgrid_documentation.pdf"
     COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_HOME_DIRECTORY}/doc/latex/refman.pdf ${CMAKE_HOME_DIRECTORY}/doc/latex/simgrid_documentation.pdf
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/latex/
-  )
+    )
   add_dependencies(pdf simgrid_documentation)
 
   ADD_CUSTOM_TARGET(error_doxygen
     COMMAND ${CMAKE_COMMAND} -E echo "Doxygen must be at least version 1.8 to generate documentation"
     COMMAND false
-  )
+    )
 
   if(DOXYGEN_MAJOR_VERSION STRLESS "2" AND DOXYGEN_MINOR_VERSION STRLESS "8")
     add_dependencies(simgrid_documentation error_doxygen)
@@ -81,27 +81,27 @@ endif(DOXYGEN_PATH)
 
 ### TODO: LBO: CHECK IF CORRECT
 add_custom_target(sync-gforge-doc
-COMMAND chmod g+rw -R doc/
-COMMAND chmod a+rX -R doc/
-COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ || true
-COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/ || true
-COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/ || true
-COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/html/ || true
-COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/html/ || true
-COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
-doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
-COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
-doc/user_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/html/ || true
-COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times 
-doc/ref_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/html || true
-COMMAND scp doc/user_guide/html/simgrid_modules2.png doc/user_guide/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png  
-doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
-WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-)
+  COMMAND chmod g+rw -R doc/
+  COMMAND chmod a+rX -R doc/
+  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ || true
+  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/ || true
+  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/ || true
+  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/html/ || true
+  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/html/ || true
+  COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times
+  doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
+  COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times
+  doc/user_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/html/ || true
+  COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times
+  doc/ref_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/html || true
+  COMMAND scp doc/user_guide/html/simgrid_modules2.png doc/user_guide/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png
+  doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
+  WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
+  )
 add_dependencies(sync-gforge-doc simgrid_documentation)
 
 add_custom_target(sync-gforge-dtd
-COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
-COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
-WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-)
+  COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
+  COMMAND scp src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
+  WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
+  )

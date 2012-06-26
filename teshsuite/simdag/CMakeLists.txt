@@ -13,23 +13,23 @@ add_executable(incomplete incomplete.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
-target_link_libraries(basic0 simgrid m pthread )
-target_link_libraries(basic1 simgrid m pthread )
-target_link_libraries(basic2 simgrid m pthread )
-target_link_libraries(basic3 simgrid m pthread )
-target_link_libraries(basic4 simgrid m pthread )
-target_link_libraries(basic5 simgrid m pthread )
-target_link_libraries(basic6 simgrid m pthread )
-target_link_libraries(incomplete simgrid m pthread )
+  target_link_libraries(basic0 simgrid m pthread )
+  target_link_libraries(basic1 simgrid m pthread )
+  target_link_libraries(basic2 simgrid m pthread )
+  target_link_libraries(basic3 simgrid m pthread )
+  target_link_libraries(basic4 simgrid m pthread )
+  target_link_libraries(basic5 simgrid m pthread )
+  target_link_libraries(basic6 simgrid m pthread )
+  target_link_libraries(incomplete simgrid m pthread )
 else(NOT WIN32)
-target_link_libraries(basic0 simgrid)
-target_link_libraries(basic1 simgrid)
-target_link_libraries(basic2 simgrid)
-target_link_libraries(basic3 simgrid)
-target_link_libraries(basic4 simgrid)
-target_link_libraries(basic5 simgrid)
-target_link_libraries(basic6 simgrid)
-target_link_libraries(incomplete simgrid)
+  target_link_libraries(basic0 simgrid)
+  target_link_libraries(basic1 simgrid)
+  target_link_libraries(basic2 simgrid)
+  target_link_libraries(basic3 simgrid)
+  target_link_libraries(basic4 simgrid)
+  target_link_libraries(basic5 simgrid)
+  target_link_libraries(basic6 simgrid)
+  target_link_libraries(incomplete simgrid)
 endif(NOT WIN32)
 
 set(tesh_files
@@ -44,12 +44,12 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/incomplete.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/simdag.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_platform.xml
   PARENT_SCOPE
-)
+  )
 set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/basic0.c
@@ -61,12 +61,12 @@ set(teshsuite_src
   ${CMAKE_CURRENT_SOURCE_DIR}/basic6.c
   ${CMAKE_CURRENT_SOURCE_DIR}/incomplete.c
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   PARENT_SCOPE
-)
+  )
 set(txt_files
   ${txt_files}
   PARENT_SCOPE
-)
+  )

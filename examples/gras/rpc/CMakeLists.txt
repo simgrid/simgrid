@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 
 set_source_files_properties(
-  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_simulator.c 
-  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_client.c 
-  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_forwarder.c 
+  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_simulator.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_client.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_forwarder.c
   ${CMAKE_CURRENT_BINARY_DIR}/_rpc_server.c
   PROPERTIES GENERATED true)
 
@@ -14,15 +14,15 @@ add_executable(rpc_forwarder ${CMAKE_CURRENT_BINARY_DIR}/_rpc_forwarder.c rpc.c)
 add_executable(rpc_server    ${CMAKE_CURRENT_BINARY_DIR}/_rpc_server.c    rpc.c)
 
 add_custom_command(
-  OUTPUT 
-    ${CMAKE_CURRENT_BINARY_DIR}/_rpc_simulator.c
-    ${CMAKE_CURRENT_BINARY_DIR}/_rpc_client.c
-    ${CMAKE_CURRENT_BINARY_DIR}/_rpc_server.c
-    ${CMAKE_CURRENT_BINARY_DIR}/_rpc_forwarder.c
+  OUTPUT
+  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_simulator.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_client.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_server.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_rpc_forwarder.c
   DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/rpc.xml
   COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator rpc ${CMAKE_CURRENT_SOURCE_DIR}/rpc.xml
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
+  )
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -43,18 +43,18 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_32.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_64.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/rpc.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/rpc.c
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   PARENT_SCOPE
-)
+  )

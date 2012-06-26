@@ -15,7 +15,7 @@ add_custom_command(
   DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/chrono.xml
   COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator chrono ${CMAKE_CURRENT_SOURCE_DIR}/chrono.xml
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
+  )
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -32,19 +32,19 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_32.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_64.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/chrono.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/chrono.c
   ${CMAKE_CURRENT_SOURCE_DIR}/chrono2.c
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   PARENT_SCOPE
-)
+  )

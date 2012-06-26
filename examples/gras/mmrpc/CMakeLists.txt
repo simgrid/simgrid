@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 
 set_source_files_properties(
-  ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_simulator.c 
-  ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_client.c 
+  ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_simulator.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_client.c
   ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_server.c
   PROPERTIES GENERATED true)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(mmrpc_simulator
-  ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_simulator.c 
+  ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_simulator.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mmrpc_common.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mmrpc_client.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mmrpc_server.c)
@@ -23,13 +23,13 @@ add_executable(mmrpc_server
 
 add_custom_command(
   OUTPUT
-    ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_simulator.c 
-    ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_client.c 
-    ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_server.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_simulator.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_client.c
+  ${CMAKE_CURRENT_BINARY_DIR}/_mmrpc_server.c
   DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/mmrpc.xml
   COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator mmrpc ${CMAKE_CURRENT_SOURCE_DIR}/mmrpc.xml
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
+  )
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -48,12 +48,12 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_32.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_64.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/mmrpc.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/mmrpc_client.c
@@ -62,9 +62,8 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/mmrpc.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mmrpc.h
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   PARENT_SCOPE
-)
-
+  )

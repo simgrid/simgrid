@@ -19,7 +19,7 @@ add_custom_command(
   DEPENDS gras_stub_generator ${CMAKE_CURRENT_SOURCE_DIR}/all2all.xml
   COMMAND ${CMAKE_BINARY_DIR}/bin/gras_stub_generator all2all ${CMAKE_CURRENT_SOURCE_DIR}/all2all.xml
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
+  )
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -38,20 +38,20 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_32.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_sg_64.tesh
   PARENT_SCOPE
-)
+  )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/all2all.xml
   PARENT_SCOPE
-)
+  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/all2all.c
   PARENT_SCOPE
-)
+  )
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/make_deployment.pl
   ${CMAKE_CURRENT_SOURCE_DIR}/run.sh
   PARENT_SCOPE
-)
+  )
