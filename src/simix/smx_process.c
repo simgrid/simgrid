@@ -147,6 +147,7 @@ void SIMIX_create_maestro_process()
 
 /**
  * \brief Same as SIMIX_process_create() but with only one argument (used by timers).
+ * This function frees the argument.
  * \return the process created
  */
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
@@ -162,7 +163,7 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
       args->argc,
       args->argv,
       args->properties);
-
+  xbt_free(args);
   return process;
 }
 
