@@ -10,6 +10,7 @@
 #include "xbt/log.h"
 #include <stdbool.h>
 #include <string.h>
+#include <libgen.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 
@@ -240,7 +241,14 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
   fclose(in_file);
   if(acyclic_graph_detail(result))
     return result;
-  acyclic_graph_detail(result);
+  else {
+    unsigned int cpt;
+    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.",
+              basename((char*)filename));
+    xbt_dynar_foreach(result, cpt, file)
+      SD_task_destroy(file);
+     xbt_dynar_free_container(&result);
+  }
   free(dag_dot);
   return NULL;
 }
