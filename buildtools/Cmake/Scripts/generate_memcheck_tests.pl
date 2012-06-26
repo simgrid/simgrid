@@ -34,6 +34,7 @@ my ($bindir);
 my ($tesh_file);
 my ($config_var);
 my ($name_test);
+my ($indent);
 
 while ( defined( $line = <MAKETEST> ) ) {
     chomp $line;
@@ -46,6 +47,7 @@ while ( defined( $line = <MAKETEST> ) ) {
         last;
     }
     if ($dump) {
+        $line =~ s/^  //;
         if ( $line =~ /^\s*ADD_TEST\(\S+\s+\S*\/tesh\s/ ) {
             $srcdir     = "";
             $bindir     = "";
@@ -54,9 +56,11 @@ while ( defined( $line = <MAKETEST> ) ) {
             $nb_test++;
             $tesh_file = "";
             $name_test = "";
+            $indent = "";
 
-            if ( $line =~ /ADD_TEST\((\S+)/ ) {
-                $name_test = ($1);
+            if ( $line =~ /^(\s*)ADD_TEST\((\S+)/ ) {
+                $indent = ($1);
+                $name_test = ($2);
             }
             while ( $line =~ /--cfg\s+(\S+)/g ) {
                 $config_var = "--cfg=$1 $config_var";
@@ -119,7 +123,7 @@ while ( defined( $line = <MAKETEST> ) ) {
                     if ($config_var) {
                         $command = "$command $config_var";
                     }
-                    print "ADD_TEST(memcheck-$name_test-$count $command --cd $path\/)\n";
+                    print "${indent}ADD_TEST(memcheck-$name_test-$count $command --cd $path\/)\n";
 
                     #push @test_list, "memcheck-$name_test-$count";
                     $count++;
