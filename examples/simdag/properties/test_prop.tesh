@@ -21,6 +21,3 @@ $ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
 > [0.000000] [sd_workstation/INFO]     no task running
 > [0.000000] [sd_workstation/INFO]   - properties:
 > [0.000000] [sd_workstation/INFO]     SG_TEST_Hdd->250
-
-
-

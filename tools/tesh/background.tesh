@@ -38,7 +38,7 @@ $ mkfile delayed_cat.c
 
 $ gcc -Wall -o delayed_cat delayed_cat.c
 
-& ./delayed_cat 
+& ./delayed_cat
 > TOTO
 
 < TOTO
@@ -47,4 +47,3 @@ $ mkfile tmp_fich
 $ sleep 2
 $ cd ..
 $ rm -rf temp_testdir_background
-

@@ -14,4 +14,3 @@ $ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
 > - TOTO
 > + TUTU
 > Test suite `(stdin)': NOK (<(stdin):3> output mismatch)
-

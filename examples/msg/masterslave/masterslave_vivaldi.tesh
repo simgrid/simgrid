@@ -68,4 +68,3 @@ $ $SG_TEST_EXENV ./masterslave/masterslave_mailbox  ${srcdir:=.}/../platforms/vi
 > [100427449:slave:(39) 3.850431] [msg_test/INFO] I'm done. See you!
 > [100429957:slave:(40) 3.879075] [msg_test/INFO] I'm done. See you!
 > [3.879075] [msg_test/INFO] Simulation time 3.87907
-

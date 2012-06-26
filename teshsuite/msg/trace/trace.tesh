@@ -13,7 +13,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test1.
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
 > [ 40.000000] (1:test_trace@CPU1) Test finished
 
-p Testing trace integration using file.trace and test2.xml, a < max(time), max(time) < b < 2 max(time) 
+p Testing trace integration using file.trace and test2.xml, a < max(time), max(time) < b < 2 max(time)
 
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test2.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
@@ -26,8 +26,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test2.
 > [ 10.000000] (1:test_trace@CPU1) Task prio: 1.000000
 > [ 85.000000] (1:test_trace@CPU1) Test finished
 
-
-p Testing trace integration using file.trace and test3.xml, a < max(time), b > 2 max(time) 
+p Testing trace integration using file.trace and test3.xml, a < max(time), b > 2 max(time)
 
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/trace/test_trace_integration$EXEEXT ./trace/test3.xml --cfg=workstation/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"

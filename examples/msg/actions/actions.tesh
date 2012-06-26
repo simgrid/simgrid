@@ -1,6 +1,5 @@
 # A little tesh file testing most MPI-related actions
 
-
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment_split.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [500.006505] (1:p0@host0) p0 recv p1 500.006505

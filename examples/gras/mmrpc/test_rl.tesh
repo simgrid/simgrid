@@ -1,10 +1,10 @@
 ! setenv GRAS_NO_WARN_EXPERIMENTAL=1
-& $SG_TEST_EXENV ./mmrpc_server$EXEEXT 4502 --log=root.fmt:%m%n 
+& $SG_TEST_EXENV ./mmrpc_server$EXEEXT 4502 --log=root.fmt:%m%n
 > Launch server (port=4502)
 > Exiting GRAS
 
 ! setenv GRAS_NO_WARN_EXPERIMENTAL=1
-$ $SG_TEST_EXENV ./mmrpc_client$EXEEXT 127.0.0.1 4502 --log=root.fmt:%m%n 
+$ $SG_TEST_EXENV ./mmrpc_client$EXEEXT 127.0.0.1 4502 --log=root.fmt:%m%n
 > Launch client (server on 127.0.0.1:4502)
 > Connected to 127.0.0.1:4502.
 > >>>>>>>> Connected to server which is on 127.0.0.1:4502 <<<<<<<<

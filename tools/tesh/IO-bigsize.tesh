@@ -3,7 +3,7 @@
 #  The first one uses a very big input (150k) to check whether trucated input do work.
 #  The second one uses both a big input and a big output (150k each).
 #
-# This checks whether the non-blocking I/O mess is functionnal. 
+# This checks whether the non-blocking I/O mess is functionnal.
 #
 
 p First, a write test

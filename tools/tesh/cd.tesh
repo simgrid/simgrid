@@ -18,7 +18,7 @@ $ ls
 > Test suite `(stdin)': NOK (system error)
 $ ../tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
 
-# The next command checks that there is a testdir_temp-cd in the upper directory, 
+# The next command checks that there is a testdir_temp-cd in the upper directory,
 # ie that mkdir and cd both worked.
 $ test -e ../testdir_temp-cd
 

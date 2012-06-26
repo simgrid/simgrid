@@ -72,8 +72,6 @@ $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd.xml FULL_LINK
 >   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
 >   Route latency = 0.000015, route bandwidth = 498000000.000000
 
-
-
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd_bis.xml FULL_LINK
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > Workstation number: 5, link number: 7

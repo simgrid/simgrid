@@ -2,7 +2,7 @@
 # (since we want to pass it to the child, it has to be redefined before each command)
 # Go for the first test
 p Test instrumentation of SMPI
-$ ../../bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced 
+$ ../../bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'

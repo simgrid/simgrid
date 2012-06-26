@@ -20,7 +20,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 p Not tracing master/slave application
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 
-p Testing tracing by process 
+p Testing tracing by process
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/msg/process:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/ms.cat.plist --cfg=triva/uncategorized:tracing/ms.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to '1'

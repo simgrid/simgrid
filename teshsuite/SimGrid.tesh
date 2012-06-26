@@ -1,7 +1,6 @@
 D Tesh tests of SimGrid library.
 p Command line tesh --directory=%teshsuite_dir% --include-dir=simdag --include-dir=xbt --file=SimGrid.tesh --log="log.thresh:info tesh.fmt:%m%n"
 
-
 $ cd ${TESHSUITE_DIR:=.}
 
 # XBT
@@ -11,7 +10,7 @@ $ cd ${TESHSUITE_DIR:=.}
 # SimDag Tests
 
 # Basic Tests
-! include basic0.tesh 
+! include basic0.tesh
 ! include basic1.tesh
 ! include basic2.tesh
 ! include basic3.tesh
@@ -19,7 +18,6 @@ $ cd ${TESHSUITE_DIR:=.}
 ! include basic5.tesh
 ! include basic6.tesh
 ! include incomplete.tesh
-
 
 # Network Tests
 ! include network/test_reinit_costs.tesh
@@ -42,10 +40,3 @@ $ cd ${TESHSUITE_DIR:=.}
 # Platforms
 ! include platforms/basic_parsing_test.tesh
 ! include platforms/flatifier.tesh
-
-
-
-
-
-
-

@@ -18,4 +18,3 @@ $ $SG_TEST_ENV ./properties_bob --log=root.fmt=%P:%t%e%m%n
 > bob:main == Dump all the properties of host1 again to check the addition
 > bob:main   Host property: 'from bob' has value: 'hello'
 > bob:main Exiting GRAS
-

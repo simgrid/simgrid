@@ -1,7 +1,5 @@
 #! ./tesh
 
-
-
 p Test1 MSG_comm_test() with Sleep_sender > Sleep_receiver
 
 ! output sort
@@ -114,7 +112,7 @@ $ ./peer ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer04.xml "--l
 > [  6.581936] (2:receiver@Ruby) Received "finalize"
 > [  6.581936] (2:receiver@Ruby) I'm done. See you!
 
-p Test1 MSG_comm_waitall() for sender 
+p Test1 MSG_comm_waitall() for sender
 
 ! output sort
 $ ./peer2 ${srcdir:=.}/small_platform.xml ${srcdir:=.}/deployment_peer.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"

@@ -2,7 +2,6 @@
 
 p Testing the surf network Reno fairness model using lagrangian approach
 
-
 ! output sort
 $ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml "--cfg=workstation/model:compound cpu/model:Cas01 network/model:Reno" --log=surf_lagrange.thres=critical "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'workstation/model' to 'compound'

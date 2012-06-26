@@ -121,4 +121,3 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/small_pla
 > [  5.570175] (2:slave@Tremblay) I'm done. See you!
 > [  5.570175] (1:master@Tremblay) Goodbye now!
 > [  5.570175] (0:@) Simulation time 5.57017
-

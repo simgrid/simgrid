@@ -60,4 +60,3 @@ p Order: cmd, in, out
 > [(stdin):1] cat
 > Test suite from stdin OK
 $ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
-

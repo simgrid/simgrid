@@ -107,4 +107,3 @@ $ $SG_TEST_EXENV ./all2all_sender$EXEEXT 127.0.0.1:4400 127.0.0.1:4401 127.0.0.1
 >   Sent Data
 >   Sent Data
 > Exiting GRAS
-

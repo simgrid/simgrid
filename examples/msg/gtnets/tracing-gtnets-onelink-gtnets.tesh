@@ -10,4 +10,3 @@ $ gtnets/gtnets ${srcdir:=.}/gtnets/onelink-p.xml ${srcdir:=.}/gtnets/onelink-d.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'GTNets'
 > [0.000000] [surf_network_gtnets_interface/INFO] TCP window maximum size : 20000
 > [C1:slave:(2) 106.291000] [msg_test/INFO] ===> Estimated Bw of FLOW[1] : 9408.134273 ;  message from S1 to C1  with remaining : 0.000000
-

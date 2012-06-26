@@ -16,7 +16,6 @@ $ ns3/ns3 ${srcdir:=.}/examples/msg/ns3/3links-p.xml ${srcdir:=.}/examples/msg/n
 > [C2:slave:(4) 1.041346] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S2 to C2
 > [C3:slave:(6) 2.082380] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from S3 to C3
 
-
 $ ns3/ns3 ${srcdir:=.}/examples/msg/ns3/3links-p.xml ${srcdir:=.}/examples/msg/ns3/3links-d-timer.xml --cfg=network/model:NS3
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
@@ -24,7 +23,6 @@ $ ns3/ns3 ${srcdir:=.}/examples/msg/ns3/3links-p.xml ${srcdir:=.}/examples/msg/n
 > [C2:slave:(4) 1.041346] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S2 to C2
 > [C3:slave:(6) 2.082422] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from S3 to C3
 > [C3:slave:(7) 4.164594] [msg_test/INFO] FLOW[4] : Receive 2000000 bytes from S3 to C3
-
 
 p One cluster
 

@@ -149,4 +149,3 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/msg_platf
 > [ 66.771606] (2:forwarder@Jackson) I'm done. See you!
 > [ 66.771606] (9:slave@Stephen) Received "finalize"
 > [ 66.771606] (9:slave@Stephen) I'm done. See you!
-

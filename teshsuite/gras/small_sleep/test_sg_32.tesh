@@ -8,4 +8,3 @@ $ $SG_TEST_EXENV ${bindir:=.}/small_sleep_simulator${EXEEXT:=} ${srcdir:=.}/../e
 > [Tremblay:function:(1) 100.000030] [test/INFO] Let's go 1E-20
 > [Tremblay:function:(1) 100.000030] [test/INFO] done
 > [Tremblay:function:(1) 100.000030] [gras/INFO] Exiting GRAS
-

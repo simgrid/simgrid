@@ -503,4 +503,3 @@ $ $SG_TEST_EXENV masterslave/masterslave_bypass --log=no_loc --cfg=cpu_model:Cas
 > [host B:slave:(2) 84.680000] [msg_test/INFO] Received "finalize" 
 > [host B:slave:(2) 84.680000] [msg_test/INFO] I'm done. See you!
 > [84.680000] [msg_test/INFO] Simulation time 84.68
-

@@ -16,4 +16,3 @@ $ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrec
 > [Bellevue:receiver:(2) 10000.200100] [msg_test/INFO] Communic. time 1.000010e+04
 > [Bellevue:receiver:(2) 10000.200100] [msg_test/INFO] --- bw 99999.000010 ----
 > [10000.200100] [msg_test/INFO] Total simulation time: 1.000020e+04
-
