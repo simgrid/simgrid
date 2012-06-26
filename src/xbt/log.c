@@ -287,10 +287,6 @@ manually. A more conventional way is to use the --log command line
 argument. xbt_init() (called by MSG_init(), gras_init() and friends)
 checks and deals properly with such arguments.
 
-The following command line arguments exist, but are deprecated and
-may disappear in the future: --xbt-log, --gras-log, --msg-log and
---surf-log.
-
 \subsection log_use_conf_thres 3.1.1 Threshold configuration
 
 The most common setting is to control which logging event will get
