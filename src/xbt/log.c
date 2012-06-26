@@ -1330,6 +1330,10 @@ static void xbt_log_help(void)
 "         -> %%d: date (UNIX-like epoch)\n"
 "         -> %%r: application age (time elapsed since the beginning of the application)\n"
 "\n"
+"   Miscellaneous:\n"
+"      --help-log-categories    Display the current hierarchy of log categories.\n"
+"      --log=no_loc             Don't print file names in messages (for tesh tests).\n"
+"\n"
     );
 }
 
