@@ -137,6 +137,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
 int reached(xbt_state_t st){
 
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
 
   if(xbt_dynar_is_empty(reached_pairs)){
 
@@ -180,6 +182,12 @@ int reached(xbt_state_t st){
             xbt_dynar_reset(prop_ato);
             xbt_free(prop_ato);
             MC_UNSET_RAW_MEM;
+
+            if(raw_mem_set)
+              MC_SET_RAW_MEM;
+            else
+              MC_UNSET_RAW_MEM;
+            
             return 1;
           }
           /* }
@@ -198,6 +206,12 @@ int reached(xbt_state_t st){
     xbt_dynar_reset(prop_ato);
     xbt_free(prop_ato);
     MC_UNSET_RAW_MEM;
+
+    if(raw_mem_set)
+      MC_SET_RAW_MEM;
+    else
+      MC_UNSET_RAW_MEM;
+    
     return 0;
     
   }
@@ -366,6 +380,7 @@ int rdv_points_compare(xbt_dict_t d1, xbt_dict_t d2){ /* d1 = pair_test, d2 = cu
 
 void set_pair_reached(xbt_state_t st){
 
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
  
   MC_SET_RAW_MEM;
   
@@ -417,12 +432,18 @@ void set_pair_reached(xbt_state_t st){
   xbt_dynar_push(reached_pairs, &pair); 
 
   MC_UNSET_RAW_MEM;
-  
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+    
 }
 
 
 int reached_hash(xbt_state_t st){
 
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   if(xbt_dynar_is_empty(reached_pairs_hash)){
 
@@ -475,6 +496,12 @@ int reached_hash(xbt_state_t st){
             xbt_dynar_reset(prop_ato);
             xbt_free(prop_ato);
             MC_UNSET_RAW_MEM;
+
+            if(raw_mem_set)
+              MC_SET_RAW_MEM;
+            else
+              MC_UNSET_RAW_MEM;
+            
             return 1;
           }else{
             XBT_INFO("Different snapshot");
@@ -493,12 +520,20 @@ int reached_hash(xbt_state_t st){
     xbt_dynar_reset(prop_ato);
     xbt_free(prop_ato);
     MC_UNSET_RAW_MEM;
+
+    if(raw_mem_set)
+      MC_SET_RAW_MEM;
+    else
+      MC_UNSET_RAW_MEM;
+    
     return 0;
     
   }
 }
 
 void set_pair_reached_hash(xbt_state_t st){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
  
   MC_SET_RAW_MEM;
 
@@ -534,12 +569,18 @@ void set_pair_reached_hash(xbt_state_t st){
   MC_free_snapshot(sn);
   
   MC_UNSET_RAW_MEM;
-    
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+      
 }
 
 
 int visited(xbt_state_t st, int sc){
 
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   if(xbt_dynar_is_empty(visited_pairs)){
 
@@ -580,6 +621,11 @@ int visited(xbt_state_t st, int sc){
               xbt_free(prop_ato);
               MC_UNSET_RAW_MEM;
     
+              if(raw_mem_set)
+                MC_SET_RAW_MEM;
+              else
+                MC_UNSET_RAW_MEM;
+              
               return 1;
   
             }else{
@@ -601,6 +647,12 @@ int visited(xbt_state_t st, int sc){
     xbt_dynar_reset(prop_ato);
     xbt_free(prop_ato);
     MC_UNSET_RAW_MEM;
+
+    if(raw_mem_set)
+      MC_SET_RAW_MEM;
+    else
+      MC_UNSET_RAW_MEM;
+    
     return 0;
     
   }
@@ -609,6 +661,7 @@ int visited(xbt_state_t st, int sc){
 
 int visited_hash(xbt_state_t st, int sc){
 
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   if(xbt_dynar_is_empty(visited_pairs_hash)){
 
@@ -661,6 +714,12 @@ int visited_hash(xbt_state_t st, int sc){
               xbt_dynar_reset(prop_ato);
               xbt_free(prop_ato);
               MC_UNSET_RAW_MEM;
+              
+              if(raw_mem_set)
+                MC_SET_RAW_MEM;
+              else
+                MC_UNSET_RAW_MEM;
+  
               return 1;
             }else{
               //XBT_INFO("Different snapshot");
@@ -682,12 +741,20 @@ int visited_hash(xbt_state_t st, int sc){
     xbt_dynar_reset(prop_ato);
     xbt_free(prop_ato);
     MC_UNSET_RAW_MEM;
+  
+    if(raw_mem_set)
+      MC_SET_RAW_MEM;
+    else
+      MC_UNSET_RAW_MEM;
+  
     return 0;
     
   }
 }
 
 void set_pair_visited_hash(xbt_state_t st, int sc){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
  
   MC_SET_RAW_MEM;
 
@@ -725,10 +792,16 @@ void set_pair_visited_hash(xbt_state_t st, int sc){
   
   MC_UNSET_RAW_MEM;
     
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+  
 }
 
 void set_pair_visited(xbt_state_t st, int sc){
 
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
  
   MC_SET_RAW_MEM;
  
@@ -757,6 +830,10 @@ void set_pair_visited(xbt_state_t st, int sc){
   
   MC_UNSET_RAW_MEM;
   
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
   
 }
 
@@ -825,6 +902,8 @@ mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r){
 }
 
 void MC_ddfs_init(void){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   XBT_INFO("**************************************************");
   XBT_INFO("Double-DFS init");
@@ -896,12 +975,20 @@ void MC_ddfs_init(void){
   
       }
     }
-  } 
+  }
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+  
 
 }
 
 
 void MC_ddfs(int search_cycle){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   smx_process_t process;
   mc_pair_stateless_t current_pair = NULL;
@@ -1276,8 +1363,11 @@ void MC_ddfs(int search_cycle){
     //xbt_dynar_pop(reached_pairs_hash, NULL);
   }
   MC_UNSET_RAW_MEM;
-  
-  
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
 
 }
 

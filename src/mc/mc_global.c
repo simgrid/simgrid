@@ -100,6 +100,8 @@ void MC_do_the_modelcheck_for_real() {
 void MC_init_safety(void)
 {
 
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
   /* Check if MC is already initialized */
   if (initial_snapshot)
     return;
@@ -108,6 +110,7 @@ void MC_init_safety(void)
 
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
+  
   MC_SET_RAW_MEM;
 
   /* Initialize statistics */
@@ -127,6 +130,11 @@ void MC_init_safety(void)
   MC_take_snapshot(initial_snapshot);
   MC_UNSET_RAW_MEM;
 
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+  
 }
 
 
@@ -138,6 +146,9 @@ void MC_modelcheck(void)
 }
 
 void MC_modelcheck_liveness(){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
   /* init stuff */
   XBT_DEBUG("Start init mc");
   
@@ -163,8 +174,8 @@ void MC_modelcheck_liveness(){
 
   /* We're done */
   MC_print_statistics_pairs(mc_stats_pair);
-  //xbt_free(mc_time);
-  //MC_memory_exit();
+  xbt_free(mc_time);
+  MC_memory_exit();
   exit(0);
 }
 
@@ -227,6 +238,8 @@ int MC_deadlock_check()
  */
 void MC_replay(xbt_fifo_t stack, int start)
 {
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
   int value, i = 1;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
@@ -280,10 +293,20 @@ void MC_replay(xbt_fifo_t stack, int start)
     mc_stats->executed_transitions++;
   }
   XBT_DEBUG("**** End Replay ****");
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+  
+
 }
 
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 {
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
   int value;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
@@ -383,6 +406,12 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   }  
 
   XBT_DEBUG("**** End Replay ****");
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+  
 }
 
 /**
@@ -392,6 +421,8 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
  */
 void MC_dump_stack_safety(xbt_fifo_t stack)
 {
+  
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_show_stack_safety(stack);
 
@@ -405,6 +436,12 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
     MC_UNSET_RAW_MEM;
 
   }
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+  
 }
 
 
@@ -467,12 +504,21 @@ void MC_show_stack_liveness(xbt_fifo_t stack){
 }
 
 void MC_dump_stack_liveness(xbt_fifo_t stack){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
   mc_pair_stateless_t pair;
 
   MC_SET_RAW_MEM;
   while ((pair = (mc_pair_stateless_t) xbt_fifo_pop(stack)) != NULL)
     MC_pair_stateless_delete(pair);
   MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+
 }
 
 
@@ -571,18 +617,41 @@ void MC_diff(void){
 }
 
 void MC_automaton_load(const char *file){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
   MC_SET_RAW_MEM;
 
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
+  
   xbt_automaton_load(_mc_property_automaton,file);
 
   MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+
 }
+
 void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
   MC_SET_RAW_MEM;
+
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
+
   xbt_new_propositional_symbol(_mc_property_automaton,id,fct);
+
   MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+  else
+    MC_UNSET_RAW_MEM;
+  
 }
