@@ -147,12 +147,7 @@ container_t PJ_container_get (const char *name)
 
 container_t PJ_container_get_or_null (const char *name)
 {
-  if (name == NULL) return NULL;
-  container_t ret = xbt_dict_get_or_null (allContainers, name);
-  if (ret == NULL){
-    return NULL;
-  }
-  return ret;
+  return name ? xbt_dict_get_or_null(allContainers, name) : NULL;
 }
 
 container_t PJ_container_get_root ()
