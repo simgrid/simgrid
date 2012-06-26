@@ -8,8 +8,7 @@ add_executable(bugged1     bugged1.c)
 add_executable(bugged2      bugged2.c)
 add_executable(bugged3	   bugged3.c)
 add_executable(random_test random_test.c)
-add_executable(bugged1_for_liveness bugged1_for_liveness.c)
-add_executable(bugged1_while_liveness bugged1_while_liveness.c)
+add_executable(bugged1_liveness bugged1_liveness.c)
 add_executable(bugged2_liveness bugged2_liveness.c)
 add_executable(centralized_liveness centralized_liveness.c)
 add_executable(centralized_liveness_deadlock centralized_liveness_deadlock.c)
@@ -20,8 +19,7 @@ target_link_libraries(bugged1     simgrid m )
 target_link_libraries(bugged2     simgrid m )
 target_link_libraries(bugged3     simgrid m )
 target_link_libraries(random_test     simgrid m )
-target_link_libraries(bugged1_for_liveness     simgrid m )
-target_link_libraries(bugged1_while_liveness     simgrid m )
+target_link_libraries(bugged1_liveness     simgrid m )
 target_link_libraries(bugged2_liveness     simgrid m )
 target_link_libraries(centralized_liveness     simgrid m )
 target_link_libraries(centralized_liveness_deadlock     simgrid m )
@@ -51,8 +49,7 @@ set(xml_files
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_for_liveness.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_while_liveness.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged3.c
@@ -69,7 +66,6 @@ set(examples_src
 )
 set(bin_files
   ${bin_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/dwarf
   ${CMAKE_CURRENT_SOURCE_DIR}/parse_dwarf
   ${CMAKE_CURRENT_SOURCE_DIR}/promela1_bugged1_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/promela2_bugged1_liveness
