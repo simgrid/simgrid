@@ -355,6 +355,7 @@ ADD_TEST(simdag-test-simdag2		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--sete
 ADD_TEST(simdag-test-seq-access		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_seq_access.tesh)
 ADD_TEST(simdag-test-typed-tasks		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_typed_tasks.tesh)
 ADD_TEST(simdag-test-comm-throttling		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_comm_throttling.tesh)
+ADD_TEST(simdag-test-dax-cycle		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag/dax 	--cd ${CMAKE_BINARY_DIR}/examples/simdag/dax ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/simple_dax_with_cycle.tesh)
 ADD_TEST(simdag-test-prop		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag 	--cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/properties/test_prop.tesh)
 ADD_TEST(simdag-test-minmin-scheduling		${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION}	--setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling 	--cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
 
