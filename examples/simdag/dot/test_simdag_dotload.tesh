@@ -470,3 +470,17 @@ $ cat ${srcdir:=.}/dag_with_good_schedule.trace
 > [18.001306] C2-05 compute 0.000000 # end
 
 $ rm -f ${srcdir:=.}/dag_with_good_schedule.trace
+
+! expect signal SIGABRT
+$ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag_with_cycle.dot
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [sd_daxparse/WARNING] the task root is not marked
+> [0.000000] [sd_daxparse/WARNING] the task 0 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 1 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 2 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 3 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 4 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 5 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 6 is in a cycle
+> [0.000000] [sd_dotparse/ERROR] The DOT described in dag_with_cycle.dot is not a DAG. It contains a cycle.
+> [0.000000] [xbt/CRITICAL] No dot load may be you have a cycle in your graph

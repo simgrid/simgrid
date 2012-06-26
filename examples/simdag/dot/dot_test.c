@@ -50,8 +50,7 @@ int main(int argc, char **argv)
   /* load the DOT file */
   dot = SD_dotload(argv[2]);
   if(dot == NULL){
-    XBT_INFO("No dot load may be you have a cycle in your graph");
-    return -1;
+    xbt_die("No dot load may be you have a cycle in your graph");
   }
 
   /* Display all the tasks */
