@@ -19,6 +19,8 @@ static char *parse_host = NULL;
 static double start_time = 0.0;
 static double kill_time = -1.0;
 
+static int auto_restart = 0;
+
 extern int surf_parse_lineno;
 
 static void parse_process_init(void)
@@ -35,8 +37,8 @@ static void parse_process_init(void)
   parse_argc = 1;
   start_time = surf_parse_get_double(A_surfxml_process_start_time);
   kill_time  = surf_parse_get_double(A_surfxml_process_kill_time);
+  auto_restart = A_surfxml_process_on_failure == A_surfxml_process_on_failure_DIE ? 0 : 1;
 }
-
 static void parse_argument(void)
 {
   parse_argv = xbt_realloc(parse_argv, (parse_argc + 2) * sizeof(char *));
@@ -75,10 +77,11 @@ static void parse_process_finalize(void)
                                             kill_time,
                                             parse_argc,
                                             parse_argv,
-                                            current_property_set);
+                                            current_property_set,
+                                            auto_restart);
     else
       simcall_process_create(&process, parse_argv[0], parse_code, NULL, parse_host, kill_time, parse_argc, parse_argv,
-                               current_property_set);
+                               current_property_set,auto_restart);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process) {

@@ -312,7 +312,8 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
     simcall->process_create.kill_time,
     simcall->process_create.argc,
     simcall->process_create.argv,
-    simcall->process_create.properties);
+    simcall->process_create.properties,
+    simcall->process_create.auto_restart);
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -361,6 +362,10 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_process_on_exit(simcall->process_on_exit.process,
                             simcall->process_on_exit.fun,
                             simcall->process_on_exit.data);
+      SIMIX_simcall_answer(simcall);
+    break;
+    case SIMCALL_PROCESS_AUTO_RESTART_SET:
+      SIMIX_process_auto_restart_set(simcall->process_auto_restart.process,simcall->process_auto_restart.auto_restart);
       SIMIX_simcall_answer(simcall);
     break;
     case SIMCALL_PROCESS_SET_DATA:

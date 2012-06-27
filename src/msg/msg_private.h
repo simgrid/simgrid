@@ -147,7 +147,7 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
 void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,
                                    xbt_main_func_t code, void *data,
                                    const char *hostname, double kill_time,  int argc,
-                                   char **argv, xbt_dict_t properties);
+                                   char **argv, xbt_dict_t properties, int auto_restart);
 void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_size);
 
 void _MSG_action_init(void);

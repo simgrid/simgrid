@@ -65,13 +65,16 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 void MSG_process_create_from_SIMIX(smx_process_t* process, const char *name,
                                     xbt_main_func_t code, void *data,
                                     const char *hostname, double kill_time, int argc, char **argv,
-                                    xbt_dict_t properties)
+                                    xbt_dict_t properties, int auto_restart)
 {
   m_host_t host = MSG_get_host_by_name(hostname);
   m_process_t p = MSG_process_create_with_environment(name, code, data,
                                                       host, argc, argv,
                                                       properties);
-  MSG_process_set_kill_time(p,kill_time);
+  if (p) {
+    MSG_process_set_kill_time(p,kill_time);
+    MSG_process_auto_restart_set(p,auto_restart);
+  }
   *((m_process_t*) process) = p;
 }
 
@@ -181,7 +184,7 @@ m_process_t MSG_process_create_with_environment(const char *name,
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
   simcall_process_create(&process, name, code, simdata, SIMIX_host_get_name(host->smx_host), -1,
-                           argc, argv, properties);
+                           argc, argv, properties,0);
 
   if (!process) {
     /* Undo everything we have just changed */
@@ -487,4 +490,13 @@ smx_context_t MSG_process_get_smx_ctx(m_process_t process) {
  */
 void MSG_process_on_exit(int_f_pvoid_t fun, void *data) {
   simcall_process_on_exit(MSG_process_self(),fun,data);
+}
+/**
+ * \ingroup m_process_management
+ * \brief Sets the "auto-restart" flag of the process.
+ * If the flag is set to 1, the process will be automatically restarted when
+ * its host comes back up.
+ */
+XBT_PUBLIC(void) MSG_process_auto_restart_set(m_process_t process, int auto_restart) {
+  simcall_process_auto_restart_set(process,auto_restart);
 }

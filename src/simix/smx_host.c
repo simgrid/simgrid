@@ -67,7 +67,7 @@ void SIMIX_host_destroy(void *h)
     SIMIX_display_process_status();
     THROWF(arg_error, 0, "%s", msg);
   }
-
+  xbt_dynar_free(&host->auto_restart_processes);
   xbt_swag_free(host->process_list);
 
   /* Clean host structure */
@@ -176,6 +176,50 @@ void* SIMIX_host_get_data(smx_host_t host)
 
   return host->data;
 }
+void _SIMIX_host_free_process_arg(void *);
+void _SIMIX_host_free_process_arg(void *data) {
+  smx_process_arg_t arg = *(void**)data;
+  int i;
+  xbt_free(arg->name);
+  for (i = 0; i < arg->argc; i++) {
+    xbt_free(arg->argv[i]);
+  }
+  xbt_free(arg->argv);
+  xbt_free(arg);
+}
+void SIMIX_host_add_auto_restart_process(smx_host_t host,
+                                         const char *name,
+                                         xbt_main_func_t code,
+                                         void *data,
+                                         const char *hostname,
+                                         double kill_time,
+                                         int argc, char **argv,
+                                         xbt_dict_t properties,
+                                         int auto_restart) {
+  if (!host->auto_restart_processes) {
+    host->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
+  }
+  smx_process_arg_t arg = xbt_new(s_smx_process_arg_t,1);
+
+  arg->name = xbt_strdup(name);
+  arg->code = code;
+  arg->data = data;
+  arg->hostname = hostname;
+  arg->kill_time = kill_time;
+  arg->argc = argc;
+  arg->argv = xbt_new(char*,argc + 1);
+
+  int i;
+  for (i = 0; i < argc; i++) {
+    arg->argv[i] = xbt_strdup(argv[i]);
+  }
+
+  arg->properties = properties;
+  arg->auto_restart = auto_restart;
+
+  xbt_dynar_push_as(host->auto_restart_processes,smx_process_arg_t,arg);
+}
+
 
 void SIMIX_host_set_data(smx_host_t host, void *data)
 {

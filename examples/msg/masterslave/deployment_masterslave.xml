@@ -13,9 +13,9 @@
      <argument value="Tremblay"/> <!-- Me! I can work too! -->
   </process>
   <!-- The slave process (with no argument) -->
-  <process host="Tremblay" function="slave"/>
-  <process host="Jupiter" function="slave"/>
-  <process host="Fafard" function="slave"/>
-  <process host="Ginette" function="slave"/>
-  <process host="Bourassa" function="slave"/>
+  <process host="Tremblay" function="slave" on_failure="RESTART"/>
+  <process host="Jupiter" function="slave" on_failure="RESTART"/>
+  <process host="Fafard" function="slave" on_failure="RESTART"/>
+  <process host="Ginette" function="slave" on_failure="RESTART"/>
+  <process host="Bourassa" function="slave" on_failure="RESTART"/>
 </platform>

@@ -354,7 +354,8 @@ void simcall_process_create(smx_process_t *process, const char *name,
                               const char *hostname,
                               double kill_time,
                               int argc, char **argv,
-                              xbt_dict_t properties)
+                              xbt_dict_t properties,
+                              int auto_restart)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
@@ -368,6 +369,7 @@ void simcall_process_create(smx_process_t *process, const char *name,
   simcall->process_create.argc = argc;
   simcall->process_create.argv = argv;
   simcall->process_create.properties = properties;
+  simcall->process_create.auto_restart = auto_restart;
   SIMIX_simcall_push(simcall->issuer);
 }
 
@@ -523,7 +525,6 @@ void simcall_process_set_data(smx_process_t process, void *data)
 
 /**
  * \brief Set the kill time of a process.
- *
  * \param process a process
  * \param kill_time a double
  */
@@ -609,7 +610,7 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->process_get_properties.result;
 }
-/** \ingroup m_process_management
+/**
  * \brief Add an on_exit function
  * Add an on_exit function which will be executed when the process exits/is killed.
  */
@@ -620,6 +621,20 @@ XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fu
   simcall->process_on_exit.process = process;
   simcall->process_on_exit.fun = fun;
   simcall->process_on_exit.data = data;
+
+  SIMIX_simcall_push(simcall->issuer);
+}
+/**
+ * \brief Sets the process to be auto-restarted or not by SIMIX when its host comes back up.
+ * Will restart the process when the host comes back up if auto_restart is set to 1.
+ */
+
+XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int auto_restart) {
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_PROCESS_AUTO_RESTART_SET;
+  simcall->process_auto_restart.process = process;
+  simcall->process_auto_restart.auto_restart = auto_restart;
 
   SIMIX_simcall_push(simcall->issuer);
 }

@@ -15,6 +15,19 @@ typedef struct s_smx_process_exit_fun {
   void *arg;
 } s_smx_process_exit_fun_t, *smx_process_exit_fun_t;
 
+typedef struct s_smx_process_arg {
+  char *name;
+  xbt_main_func_t code;
+  void *data;
+  const char *hostname;
+  int argc;
+  char **argv;
+  double kill_time;
+  xbt_dict_t properties;
+  unsigned auto_restart:1;
+} s_smx_process_arg_t, *smx_process_arg_t;
+
+
 /** @brief Process datatype */
 typedef struct s_smx_process {
   s_xbt_swag_hookup_t process_hookup;
@@ -30,6 +43,8 @@ typedef struct s_smx_process {
   unsigned doexception:1;
   unsigned blocked:1;
   unsigned suspended:1;
+  unsigned auto_restart:1;
+
   smx_host_t new_host;          /* if not null, the host on which the process must migrate to */
   smx_action_t waiting_action;  /* the current blocking action if any */
   xbt_fifo_t comms;       /* the current non-blocking communication actions */
@@ -37,18 +52,14 @@ typedef struct s_smx_process {
   s_smx_simcall_t simcall;
   void *data;                   /* kept for compatibility, it should be replaced with moddata */
   xbt_dynar_t on_exit;     /* list of functions executed when the process dies */
-} s_smx_process_t;
 
-typedef struct s_smx_process_arg {
-  const char *name;
   xbt_main_func_t code;
-  void *data;
-  char *hostname;
   int argc;
   char **argv;
   double kill_time;
-  xbt_dict_t properties;
-} s_smx_process_arg_t, *smx_process_arg_t;
+
+} s_smx_process_t;
+
 
 void SIMIX_process_create(smx_process_t *process,
                           const char *name,
@@ -57,12 +68,14 @@ void SIMIX_process_create(smx_process_t *process,
                           const char *hostname,
                           double kill_time,
                           int argc, char **argv,
-                          xbt_dict_t properties);
+                          xbt_dict_t properties,
+                          int auto_restart);
 void SIMIX_process_runall(void);
 void SIMIX_process_kill(smx_process_t process);
 void SIMIX_process_killall(smx_process_t issuer);
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args);
 void SIMIX_create_maestro_process(void);
+void SIMIX_process_stop(smx_process_t arg);
 void SIMIX_process_cleanup(smx_process_t arg);
 void SIMIX_process_empty_trash(void);
 void SIMIX_process_yield(smx_process_t self);
@@ -90,5 +103,7 @@ void SIMIX_post_process_sleep(smx_action_t action);
 void SIMIX_process_sleep_suspend(smx_action_t action);
 void SIMIX_process_sleep_resume(smx_action_t action);
 void SIMIX_process_sleep_destroy(smx_action_t action);
+void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
+
 
 #endif

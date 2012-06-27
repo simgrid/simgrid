@@ -144,6 +144,27 @@ void SIMIX_create_maestro_process()
   simix_global->maestro_process = maestro;
   return;
 }
+/**
+ * \brief Stops a process.
+ * Stops the process, execute all the registered on_exit functions
+ * and stops its context.
+ */
+void SIMIX_process_stop(smx_process_t arg) {
+  /* execute the on_exit functions */
+  SIMIX_process_on_exit_runall(arg);
+  /* Add the process to the list of process to restart, only if
+   * the host is down
+   */
+  if (arg->auto_restart && !SIMIX_host_get_state(arg->smx_host)) {
+    SIMIX_host_add_auto_restart_process(arg->smx_host,arg->name,arg->code, arg->data,
+                                        arg->smx_host->name,
+                                        arg->kill_time,
+                                        arg->argc,arg->argv,arg->properties,
+                                        arg->auto_restart);
+  }
+  /* stop the context */
+  SIMIX_context_stop(arg->context);
+}
 
 /**
  * \brief Same as SIMIX_process_create() but with only one argument (used by timers).
@@ -162,7 +183,8 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
       args->kill_time,
       args->argc,
       args->argv,
-      args->properties);
+      args->properties,
+      args->auto_restart);
   xbt_free(args);
   return process;
 }
@@ -183,7 +205,8 @@ void SIMIX_process_create(smx_process_t *process,
                           const char *hostname,
                           double kill_time,
                           int argc, char **argv,
-                          xbt_dict_t properties) {
+                          xbt_dict_t properties,
+                          int auto_restart) {
 
   *process = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
@@ -206,6 +229,13 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->data = data;
     (*process)->comms = xbt_fifo_new();
     (*process)->simcall.issuer = *process;
+    /* Process data for auto-restart */
+    (*process)->auto_restart = auto_restart;
+    (*process)->code = code;
+    (*process)->argc = argc;
+    (*process)->argv = argv;
+    (*process)->kill_time = kill_time;
+
 
     XBT_VERB("Create context %s", (*process)->name);
     (*process)->context = SIMIX_context_new(code, argc, argv,
@@ -288,18 +318,18 @@ void SIMIX_process_kill(smx_process_t process) {
         SIMIX_comm_destroy(process->waiting_action);
         break;
 
-      case SIMIX_ACTION_SLEEP:
-  SIMIX_process_sleep_destroy(process->waiting_action);
-  break;
+        case SIMIX_ACTION_SLEEP:
+          SIMIX_process_sleep_destroy(process->waiting_action);
+          break;
 
-      case SIMIX_ACTION_SYNCHRO:
-  SIMIX_synchro_stop_waiting(process, &process->simcall);
-  SIMIX_synchro_destroy(process->waiting_action);
-  break;
+        case SIMIX_ACTION_SYNCHRO:
+          SIMIX_synchro_stop_waiting(process, &process->simcall);
+          SIMIX_synchro_destroy(process->waiting_action);
+          break;
 
-      case SIMIX_ACTION_IO:
-        SIMIX_io_destroy(process->waiting_action);
-        break;
+        case SIMIX_ACTION_IO:
+          SIMIX_io_destroy(process->waiting_action);
+          break;
     }
   }
   if(!xbt_dynar_member(simix_global->process_to_run, &(process)))
@@ -652,7 +682,7 @@ void SIMIX_process_yield(smx_process_t self)
 
   if (self->context->iwannadie){
     XBT_DEBUG("I wanna die!");
-    SIMIX_context_stop(self->context);
+    SIMIX_process_stop(self);
   }
 
   if(self->suspended) {
@@ -738,4 +768,12 @@ void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data)
   s_smx_process_exit_fun_t exit_fun = {fun, data};
 
   xbt_dynar_push_as(process->on_exit,s_smx_process_exit_fun_t,exit_fun);
+}
+/**
+ * \brief Sets the auto-restart status of the process.
+ * If set to 1, the process will be automatically restarted when its host
+ * comes back.
+ */
+void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart) {
+  process->auto_restart = auto_restart;
 }

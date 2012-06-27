@@ -15,6 +15,7 @@ typedef struct s_smx_host {
   char *name;              /**< @brief host name if any */
   void *host;                   /* SURF modeling */
   xbt_swag_t process_list;
+  xbt_dynar_t auto_restart_processes;
   void *data;              /**< @brief user data */
 } s_smx_host_t;
 
@@ -22,6 +23,17 @@ smx_host_t SIMIX_host_create(const char *name, void *workstation, void *data);
 void SIMIX_host_destroy(void *host);
 void SIMIX_host_set_data(smx_host_t host, void *data);
 void* SIMIX_host_get_data(smx_host_t host);
+
+void SIMIX_host_add_auto_restart_process(smx_host_t host,
+                                         const char *name,
+                                         xbt_main_func_t code,
+                                         void *data,
+                                         const char *hostname,
+                                         double kill_time,
+                                         int argc, char **argv,
+                                         xbt_dict_t properties,
+                                         int auto_restart);
+
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host);
 double SIMIX_host_get_speed(smx_host_t host);
 double SIMIX_host_get_available_speed(smx_host_t host);
