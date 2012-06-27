@@ -29,20 +29,20 @@ xbt_dynar_t SD_dotload_generic(const char * filename);
 
 static double dot_parse_double(const char *string)
 {
-    if (string == NULL)
-          return -1;
-      double value = -1;
-        char *err;
+  if (string == NULL)
+    return -1;
+  double value = -1;
+  char *err;
 
-          //ret = sscanf(string, "%lg", &value);
-          errno = 0;
-            value = strtod(string,&err);
-              if(errno)
-                  {
-                        XBT_WARN("Failed to convert string to double: %s\n",strerror(errno));
-                            return -1;
-                              }
-                return value;
+  //ret = sscanf(string, "%lg", &value);
+  errno = 0;
+  value = strtod(string,&err);
+  if(errno)
+  {
+    XBT_WARN("Failed to convert string to double: %s\n",strerror(errno));
+    return -1;
+  }
+  return value;
 }
 
 
