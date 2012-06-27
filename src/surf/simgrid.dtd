@@ -131,6 +131,7 @@
 <!ATTLIST process function CDATA #REQUIRED>
 <!ATTLIST process start_time CDATA "-1.0">
 <!ATTLIST process kill_time CDATA "-1.0">
+<!ATTLIST process on_failure (DIE|RESTART) "DIE">
 
 <!ELEMENT argument EMPTY>
 <!ATTLIST argument value CDATA #REQUIRED>
