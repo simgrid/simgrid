@@ -6,14 +6,12 @@
 set(simgrid_fragile_sources
   src/simdag/sd_daxloader.c
   src/surf/surfxml_parse.c
-  src/xbt/automaton/automaton_create.c
   src/xbt/datadesc/ddt_parse.yy.c
   src/xbt/graphxml_parse.c
   src/xbt/mmalloc/mm.c
   ${GTNETS_USED}
   )
 set(gras_fragile_sources
-  src/xbt/automaton/automaton_create.c
   src/xbt/datadesc/ddt_parse.yy.c
   src/xbt/graphxml_parse.c
   src/xbt/mmalloc/mm.c
