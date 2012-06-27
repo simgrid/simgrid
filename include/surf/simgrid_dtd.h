@@ -112,6 +112,7 @@ typedef int AT_surfxml_host_id;
 typedef enum { AU_surfxml_ASroute_symmetrical, A_surfxml_ASroute_symmetrical_YES,A_surfxml_ASroute_symmetrical_NO } AT_surfxml_ASroute_symmetrical;
 typedef int AT_surfxml_peer_lat;
 #define AU_surfxml_peer_lat NULL
+typedef enum { AU_surfxml_process_on_failure, A_surfxml_process_on_failure_DIE,A_surfxml_process_on_failure_RESTART } AT_surfxml_process_on_failure;
 typedef int AT_surfxml_link_latency_file;
 #define AU_surfxml_link_latency_file NULL
 typedef int AT_surfxml_peer_availability_file;
@@ -304,6 +305,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_ASroute_symmetrical_isset;
 XBT_PUBLIC_DATA(AT_surfxml_peer_lat ) AX_surfxml_peer_lat;
 #define A_surfxml_peer_lat (surfxml_bufferstack + AX_surfxml_peer_lat)
 XBT_PUBLIC_DATA(short ) int surfxml_peer_lat_isset;
+XBT_PUBLIC_DATA(AT_surfxml_process_on_failure ) AX_surfxml_process_on_failure;
+#define A_surfxml_process_on_failure AX_surfxml_process_on_failure
+XBT_PUBLIC_DATA(short ) int surfxml_process_on_failure_isset;
 XBT_PUBLIC_DATA(AT_surfxml_link_latency_file ) AX_surfxml_link_latency_file;
 #define A_surfxml_link_latency_file (surfxml_bufferstack + AX_surfxml_link_latency_file)
 XBT_PUBLIC_DATA(short ) int surfxml_link_latency_file_isset;
