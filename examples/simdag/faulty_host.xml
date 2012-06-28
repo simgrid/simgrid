@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+ <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+ <platform version="3">
+ <AS  id="AS0"  routing="Full">
+   <host id="Faulty Host" power="1E9"
+         state_file="faulty_host.trace"/>
+   <host id="Safe Host" power="5E8"/>
+ </AS>
+ </platform>
+ 
