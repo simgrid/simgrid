@@ -422,14 +422,18 @@ void SIMIX_execution_finish(smx_action_t action)
 
 void SIMIX_post_host_execute(smx_action_t action)
 {
-  if (surf_workstation_model->extension.workstation.get_state(action->execution.host->host)==SURF_RESOURCE_OFF) {
-    /* if the host running the action failed, notice it so that the asking process can be killed if it runs on that host itself */
+  if (action->type == SIMIX_ACTION_EXECUTE && /* FIMXE: handle resource failure
+                                               * for parallel tasks too */
+      surf_workstation_model->extension.workstation.get_state(action->execution.host->host) == SURF_RESOURCE_OFF) {
+    /* If the host running the action failed, notice it so that the asking
+     * process can be killed if it runs on that host itself */
     action->state = SIMIX_FAILED;
   } else if (surf_workstation_model->action_state_get(action->execution.surf_exec) == SURF_ACTION_FAILED) {
-    /* If the host running the action didn't fail, then the action was canceled */
-     action->state = SIMIX_CANCELED;
+    /* If the host running the action didn't fail, then the action was
+     * canceled */
+    action->state = SIMIX_CANCELED;
   } else {
-     action->state = SIMIX_DONE;
+    action->state = SIMIX_DONE;
   }
 
   if (action->execution.surf_exec) {
