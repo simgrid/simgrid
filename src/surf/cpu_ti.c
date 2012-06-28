@@ -494,6 +494,8 @@ static void cpu_ti_update_resource_state(void *id,
   cpu_ti_t cpu = id;
   surf_action_cpu_ti_t action;
 
+  surf_watched_hosts();
+
   if (event_type == cpu->power_event) {
     tmgr_trace_t power_trace;
     surf_cpu_ti_tgmr_t trace;

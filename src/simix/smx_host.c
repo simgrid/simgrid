@@ -13,6 +13,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
                                 "Logging specific to SIMIX (hosts)");
 
+xbt_dict_t watched_hosts_lib;
 
 static void SIMIX_execution_finish(smx_action_t action);
 
@@ -217,6 +218,11 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
+  if( SIMIX_host_get_state(host) == SURF_RESOURCE_OFF
+      && !xbt_dict_get_or_null(watched_hosts_lib,host->name)){
+    xbt_dict_set(watched_hosts_lib,host->name,host,NULL);
+    XBT_DEBUG("Have push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",host->name);
+  }
   xbt_dynar_push_as(host->auto_restart_processes,smx_process_arg_t,arg);
 }
 

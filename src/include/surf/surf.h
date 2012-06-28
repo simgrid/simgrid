@@ -732,5 +732,7 @@ XBT_PUBLIC(double) get_cpu_power(const char *power);
 int surf_get_nthreads(void);
 void surf_set_nthreads(int nthreads);
 
+void surf_watched_hosts(void);
+
 SG_END_DECL()
 #endif                          /* _SURF_SURF_H */

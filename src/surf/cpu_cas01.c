@@ -173,6 +173,8 @@ static void cpu_update_resource_state(void *id,
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
 
+  surf_watched_hosts();
+
   if (event_type == cpu->power_event) {
     cpu->power_scale = value;
     lmm_update_constraint_bound(surf_cpu_model->model_private->maxmin_system, cpu->constraint,

@@ -382,6 +382,7 @@ void surf_init(int *argc, char **argv)
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
+  watched_hosts_lib = xbt_dict_new();
 
   XBT_DEBUG("Add routing levels");
   ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
@@ -469,6 +470,8 @@ void surf_exit(void)
   xbt_lib_free(&as_router_lib);
   xbt_lib_free(&storage_lib);
   xbt_lib_free(&storage_type_lib);
+
+  xbt_dict_free(&watched_hosts_lib);
 
   tmgr_finalize();
   surf_parse_lex_destroy();
@@ -694,4 +697,25 @@ void surf_set_nthreads(int nthreads) {
   }
 
   surf_nthreads = nthreads;
+}
+
+void surf_watched_hosts(void)
+{
+  char *key;
+  void *host;
+  xbt_dict_cursor_t cursor;
+
+  XBT_DEBUG("Check for host SURF_RESOURCE_ON on watched_hosts_lib");
+  xbt_dict_foreach(watched_hosts_lib,cursor,key,host)
+  {
+    if(SIMIX_host_get_state(host) == SURF_RESOURCE_ON){
+      XBT_DEBUG("See SURF_RESOURCE_ON on host: %s",SIMIX_host_get_name(host));
+      // TODO need to restart all processes on host->auto_restart_processes
+      XBT_INFO("Should call SIMIX restart host here for '%s'",SIMIX_host_get_name(host));
+      // TODO be sure having remove the wake up host
+      //xbt_dict_remove(watched_hosts_lib,key);
+    }
+    else
+      XBT_DEBUG("See SURF_RESOURCE_OFF on host: %s",key);
+  }
 }
