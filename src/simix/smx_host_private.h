@@ -34,6 +34,7 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
                                          xbt_dict_t properties,
                                          int auto_restart);
 void SIMIX_host_restart_processes(smx_host_t host);
+void SIMIX_host_autorestart(smx_host_t host);
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host);
 double SIMIX_host_get_speed(smx_host_t host);
 double SIMIX_host_get_available_speed(smx_host_t host);

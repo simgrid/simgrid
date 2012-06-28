@@ -78,6 +78,7 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->action_mallocator = xbt_mallocator_new(65536,
         SIMIX_action_mallocator_new_f, SIMIX_action_mallocator_free_f,
         SIMIX_action_mallocator_reset_f);
+    simix_global->autorestart = SIMIX_host_restart_processes;
 
     surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();

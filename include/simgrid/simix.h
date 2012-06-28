@@ -110,6 +110,8 @@ typedef struct s_smx_context_factory *smx_context_factory_t;
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t) (smx_process_t);
 
+/* for function autorestart */
+typedef void (*void_pfn_smxhost_t) (smx_host_t);
 
 /* The following function pointer types describe the interface that any context
    factory should implement */

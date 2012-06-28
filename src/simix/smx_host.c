@@ -13,8 +13,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
                                 "Logging specific to SIMIX (hosts)");
 
-xbt_dict_t watched_hosts_lib;
-
 static void SIMIX_execution_finish(smx_action_t action);
 
 /**
@@ -273,6 +271,14 @@ void SIMIX_host_restart_processes(smx_host_t host)
     }
   }
   xbt_dynar_reset(host->auto_restart_processes);
+}
+
+void SIMIX_host_autorestart(smx_host_t host)
+{
+  if(simix_global->autorestart)
+    simix_global->autorestart(host);
+  else
+    xbt_die("No function for simix_global->autorestart");
 }
 
 void SIMIX_host_set_data(smx_host_t host, void *data)

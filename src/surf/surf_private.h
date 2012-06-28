@@ -30,7 +30,7 @@ extern double sg_gtnets_jitter;
 extern int sg_gtnets_jitter_seed;
 #endif
 
-extern xbt_dict_t watched_hosts_lib;
+xbt_dict_t watched_hosts_lib;
 
 extern const char *surf_action_state_names[6];
 

@@ -40,10 +40,13 @@ typedef struct s_smx_global {
   void_pfn_smxprocess_t kill_process_function;
   void_pfn_smxprocess_t cleanup_process_function;
   xbt_mallocator_t action_mallocator;
+  void_pfn_smxhost_t autorestart;
 } s_smx_global_t, *smx_global_t;
 
 extern smx_global_t simix_global;
 extern unsigned long simix_process_maxpid;
+
+extern xbt_dict_t watched_hosts_lib;
 
 /******************************** Exceptions *********************************/
 

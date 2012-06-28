@@ -709,11 +709,9 @@ void surf_watched_hosts(void)
   xbt_dict_foreach(watched_hosts_lib,cursor,key,host)
   {
     if(SIMIX_host_get_state(host) == SURF_RESOURCE_ON){
-      XBT_DEBUG("See SURF_RESOURCE_ON on host: %s",SIMIX_host_get_name(host));
-      // TODO need to restart all processes on host->auto_restart_processes
-      XBT_INFO("Should call SIMIX restart host here for '%s'",SIMIX_host_get_name(host));
-      // TODO be sure having remove the wake up host
-      //xbt_dict_remove(watched_hosts_lib,key);
+      XBT_INFO("Restart processes on host: %s",SIMIX_host_get_name(host));
+      SIMIX_host_autorestart(host);
+      xbt_dict_remove(watched_hosts_lib,key);
     }
     else
       XBT_DEBUG("See SURF_RESOURCE_OFF on host: %s",key);
