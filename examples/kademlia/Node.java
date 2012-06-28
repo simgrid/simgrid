@@ -182,7 +182,7 @@ public class Node extends Process {
 		int nodesAdded = 0;
 		boolean destinationFound = false;
 		int steps = 0;
-		double timeBeginReceive;
+		double timeBeginReceive = Msg.getClock();
 		double timeout, globalTimeout = Msg.getClock() + Common.FIND_NODE_GLOBAL_TIMEOUT;
 		//Build a list of the closest nodes we already know.
 		Answer nodeList = table.findClosest(destination);
@@ -196,11 +196,9 @@ public class Node extends Process {
 			steps++;
 			do {
 				try {
-					timeBeginReceive = Msg.getClock();
 					if (comm == null) {
 						comm = Task.irecv(Integer.toString(id));
 					}
-					comm.waitCompletion(10);
 					if (!comm.test()) {
 						waitFor(1);
 					}
@@ -222,11 +220,13 @@ public class Node extends Process {
 							}
 							else {
 								handleTask(task);
-								timeout += Msg.getClock() - timeBeginReceive;							
+								timeBeginReceive = Msg.getClock();
+								timeout += Msg.getClock() - timeBeginReceive;
 							}
 						}
 						else {
 							handleTask(task);
+							timeBeginReceive = Msg.getClock();
 							timeout += Msg.getClock() - timeBeginReceive;
 						}
 						comm = null;
@@ -289,7 +289,7 @@ public class Node extends Process {
 		} while (Msg.getClock() < timeout && !destinationFound);
 	}
 	/**
-	 * Sends a "FIND_NODE" request (task) to the node we know.
+	 * Sends a "FIND_NODE" request (task) to a node we know.
 	 * @brief id Id of the node we are querying
 	 * @brief destination id of the node we are trying to find.
 	 */

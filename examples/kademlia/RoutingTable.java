@@ -95,8 +95,8 @@ public class RoutingTable {
 		bucket.addToAnswer(answer,destinationId);
 		
 		for (int i = 1; answer.size() < Common.BUCKET_SIZE && 
-		(bucket.getId() - i) >= 0 && 
-		(bucket.getId() + i) <= Common.IDENTIFIER_SIZE; i++) {
+		((bucket.getId() - i) >= 0 ||
+		(bucket.getId() + i) <= Common.IDENTIFIER_SIZE); i++) {
 			//Check the previous buckets
 			if (bucket.getId() - i >= 0) {
 				Bucket bucketP = this.buckets.get(bucket.getId() - i);
