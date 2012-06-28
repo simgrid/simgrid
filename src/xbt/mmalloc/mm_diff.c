@@ -239,8 +239,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
               
             }else{ // Fragmented block
               
-              frag_pointed1 = ((char *)address_pointed1 - (char *)((void*) (((ADDR2UINT((size_t)block_pointed1)) - 1) * BLOCKSIZE + (char*)((struct mdesc*)s_heap)->heapbase))) / pow( 2, mdp1->heapinfo[block_pointed1].type);
-              frag_pointed2 = ((char *)address_pointed2 - (char *)((void*) (((ADDR2UINT((size_t)block_pointed2)) - 1) * BLOCKSIZE + (char*)((struct mdesc*)s_heap)->heapbase))) / pow( 2, mdp1->heapinfo[block_pointed1].type);
+              frag_pointed1 = ((uintptr_t) (ADDR2UINT (address_pointed1) % (BLOCKSIZE))) >> mdp1->heapinfo[i].type;
+              frag_pointed2 = ((uintptr_t) (ADDR2UINT (address_pointed2) % (BLOCKSIZE))) >> mdp1->heapinfo[i].type;
               
               fprintf(stderr, "Fragments pointed : %d - %d\n", frag_pointed1, frag_pointed2);
               
@@ -372,8 +372,8 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
                     
                   }else{ // Fragmented block
 
-                    frag_pointed1 = ((char *)address_pointed1 - (char *)((void*) (((ADDR2UINT((size_t)block_pointed1)) - 1) * BLOCKSIZE + (char*)((struct mdesc*)s_heap)->heapbase))) / pow( 2, mdp1->heapinfo[block_pointed1].type);
-                    frag_pointed2 = ((char *)address_pointed2 - (char *)((void*) (((ADDR2UINT((size_t)block_pointed2)) - 1) * BLOCKSIZE + (char*)((struct mdesc*)s_heap)->heapbase))) / pow( 2, mdp1->heapinfo[block_pointed1].type);
+                    frag_pointed1 = ((uintptr_t) (ADDR2UINT (address_pointed1) % (BLOCKSIZE))) >> mdp1->heapinfo[i].type;
+                    frag_pointed2 = ((uintptr_t) (ADDR2UINT (address_pointed2) % (BLOCKSIZE))) >> mdp1->heapinfo[i].type;
 
                     fprintf(stderr, "Fragments pointed : %d - %d\n", frag_pointed1, frag_pointed2);
                     
