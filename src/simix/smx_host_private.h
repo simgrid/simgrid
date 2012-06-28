@@ -21,8 +21,6 @@ typedef struct s_smx_host {
 
 smx_host_t SIMIX_host_create(const char *name, void *workstation, void *data);
 void SIMIX_host_destroy(void *host);
-void SIMIX_host_set_data(smx_host_t host, void *data);
-void* SIMIX_host_get_data(smx_host_t host);
 
 void SIMIX_host_add_auto_restart_process(smx_host_t host,
                                          const char *name,
