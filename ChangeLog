@@ -5,7 +5,11 @@ SimGrid-java (3.8) unstable; urgency=low
    Although all TRACE methods appear in the Trace class, please not that only
    few of thems are really implemented at the JNI level (see ./src/jtrace.c
    for further information). 
+ Extend the API:
+ * New module: org.simgrid.msg.File (SimGrid File management functions)
+ * New Module: org.simgrid.msg.VM (SimGrid interface to mimick IASS clouds)
 
+ * Introduce a new context factory based on Coroutines (read the doc to know how to use it): simulations are expected to run up to five times faster.
 SimGrid-java (3.7.1) stable; urgency=low
   
  The "Java aint got to be bloated and slow" release
