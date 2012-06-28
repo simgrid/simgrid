@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -178,7 +178,8 @@ void* SIMIX_host_get_data(smx_host_t host)
   return host->data;
 }
 void _SIMIX_host_free_process_arg(void *);
-void _SIMIX_host_free_process_arg(void *data) {
+void _SIMIX_host_free_process_arg(void *data)
+{
   smx_process_arg_t arg = *(void**)data;
   int i;
   xbt_free(arg->name);
@@ -188,6 +189,13 @@ void _SIMIX_host_free_process_arg(void *data) {
   xbt_free(arg->argv);
   xbt_free(arg);
 }
+/**
+ * \brief Add a process to the list of the processes that the host will restart when it comes back
+ * This function add a process to the list of the processes that will be restarted when the host comes
+ * back. It is expected that this function is called when the host is down.
+ * The processes will only be restarted once, meaning that you will have to register the process
+ * again to restart the process again.
+ */
 void SIMIX_host_add_auto_restart_process(smx_host_t host,
                                          const char *name,
                                          xbt_main_func_t code,
@@ -196,7 +204,8 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
                                          double kill_time,
                                          int argc, char **argv,
                                          xbt_dict_t properties,
-                                         int auto_restart) {
+                                         int auto_restart)
+{
   if (!host->auto_restart_processes) {
     host->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
   }
@@ -225,7 +234,46 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
   }
   xbt_dynar_push_as(host->auto_restart_processes,smx_process_arg_t,arg);
 }
+/**
+ * \brief Restart the list of processes that have been registered to the host
+ */
+void SIMIX_host_restart_processes(smx_host_t host)
+{
+  unsigned int cpt;
+  smx_process_arg_t arg;
+  xbt_dynar_foreach(host->auto_restart_processes,cpt,arg) {
 
+    smx_process_t process;
+
+    XBT_DEBUG("Restarting Process %s(%s) right now", arg->argv[0], arg->hostname);
+    if (simix_global->create_process_function) {
+      simix_global->create_process_function(&process,
+                                            arg->argv[0],
+                                            arg->code,
+                                            NULL,
+                                            arg->hostname,
+                                            arg->kill_time,
+                                            arg->argc,
+                                            arg->argv,
+                                            arg->properties,
+                                            arg->auto_restart);
+    }
+    else {
+      simcall_process_create(&process,
+                                            arg->argv[0],
+                                            arg->code,
+                                            NULL,
+                                            arg->hostname,
+                                            arg->kill_time,
+                                            arg->argc,
+                                            arg->argv,
+                                            arg->properties,
+                                            arg->auto_restart);
+
+    }
+  }
+  xbt_dynar_reset(host->auto_restart_processes);
+}
 
 void SIMIX_host_set_data(smx_host_t host, void *data)
 {

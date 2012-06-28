@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -146,7 +146,9 @@ void SIMIX_create_maestro_process()
 }
 /**
  * \brief Stops a process.
- * Stops the process, execute all the registered on_exit functions
+ *
+ * Stops the process, execute all the registered on_exit functions,
+ * register it to the list of the process to restart if needed
  * and stops its context.
  */
 void SIMIX_process_stop(smx_process_t arg) {
