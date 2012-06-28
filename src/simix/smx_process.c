@@ -164,6 +164,7 @@ void SIMIX_process_stop(smx_process_t arg) {
                                         arg->argc,arg->argv,arg->properties,
                                         arg->auto_restart);
   }
+  XBT_DEBUG("Process %s (%s) is dead",arg->name,arg->smx_host->name);
   /* stop the context */
   SIMIX_context_stop(arg->context);
 }

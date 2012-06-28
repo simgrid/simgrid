@@ -179,12 +179,7 @@ void _SIMIX_host_free_process_arg(void *);
 void _SIMIX_host_free_process_arg(void *data)
 {
   smx_process_arg_t arg = *(void**)data;
-  int i;
   xbt_free(arg->name);
-  for (i = 0; i < arg->argc; i++) {
-    xbt_free(arg->argv[i]);
-  }
-  xbt_free(arg->argv);
   xbt_free(arg);
 }
 /**
@@ -208,14 +203,14 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
     host->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
   }
   smx_process_arg_t arg = xbt_new(s_smx_process_arg_t,1);
-
   arg->name = xbt_strdup(name);
   arg->code = code;
   arg->data = data;
   arg->hostname = hostname;
   arg->kill_time = kill_time;
   arg->argc = argc;
-  arg->argv = xbt_new(char*,argc + 1);
+
+  arg->argv = xbt_new(char*,argc);
 
   int i;
   for (i = 0; i < argc; i++) {
