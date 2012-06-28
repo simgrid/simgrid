@@ -24,8 +24,9 @@ SimGrid (3.8) NOT RELEASED; urgency=low
 
  Simix:
  * Bug fixes around the resource failures: don't let the processes
-   survive the host they are running onto
- * Add an interface to execute cleanup functions when a process is killed, to avoid memory leaks
+   survive the host they are running onto.
+ * Add an interface to execute cleanup functions when a process is killed,
+   to avoid memory leaks.
 
  SimDag:
  * New types of typed tasks. SD_TASK_COMP_PAR_AMDAHL represents a
