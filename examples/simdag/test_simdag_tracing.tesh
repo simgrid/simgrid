@@ -1,0 +1,297 @@
+#! ./tesh
+
+p Simple test of simdag
+
+$ $SG_TEST_EXENV ./simdag_tracing --cfg=tracing:1 --cfg=tracing/categorized:1 ${srcdir:=.}/2clusters.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [sd_seq_access/INFO] Access mode of C2-05 is sequential
+> [0.000000] [sd_seq_access/INFO] Access mode of C2-06 is sequential
+> [0.000000] [sd_seq_access/INFO] Task A is currently running on C2-05 (SD_TASK_COMP_SEQ)
+> [0.000000] [sd_seq_access/INFO] There is no task running on C2-06
+> [0.400000] [sd_seq_access/INFO] Task B is currently running on C2-05 (SD_TASK_COMM_E2E)
+> [0.400000] [sd_seq_access/INFO] Task B is currently running on C2-06 (SD_TASK_COMM_E2E)
+> [30.400300] [sd_seq_access/INFO] Task C is currently running on C2-05 (SD_TASK_COMP_SEQ)
+> [30.400300] [sd_seq_access/INFO] There is no task running on C2-06
+> [30.800300] [sd_seq_access/INFO] There is no task running on C2-05
+> [30.800300] [sd_seq_access/INFO] There is no task running on C2-06
+
+$ cat ${srcdir:=.}/simgrid.trace 
+> %EventDef PajeDefineContainerType 0 
+> %       Alias string 
+> %       Type string 
+> %       Name string 
+> %EndEventDef 
+> %EventDef PajeDefineVariableType 1 
+> %       Alias string 
+> %       Type string 
+> %       Name string 
+> %       Color color 
+> %EndEventDef 
+> %EventDef PajeDefineStateType 2 
+> %       Alias string 
+> %       Type string 
+> %       Name string 
+> %EndEventDef 
+> %EventDef PajeDefineEventType 3 
+> %       Alias string 
+> %       Type string 
+> %       Name string 
+> %       Color color 
+> %EndEventDef 
+> %EventDef PajeDefineLinkType 4 
+> %       Alias string 
+> %       Type string 
+> %       StartContainerType string 
+> %       EndContainerType string 
+> %       Name string 
+> %EndEventDef 
+> %EventDef PajeDefineEntityValue 5 
+> %       Alias string 
+> %       Type string 
+> %       Name string 
+> %       Color color 
+> %EndEventDef 
+> %EventDef PajeCreateContainer 6 
+> %       Time date 
+> %       Alias string 
+> %       Type string 
+> %       Container string 
+> %       Name string 
+> %EndEventDef 
+> %EventDef PajeDestroyContainer 7 
+> %       Time date 
+> %       Type string 
+> %       Name string 
+> %EndEventDef 
+> %EventDef PajeSetVariable 8 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %       Value double 
+> %EndEventDef
+> %EventDef PajeAddVariable 9 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %       Value double 
+> %EndEventDef
+> %EventDef PajeSubVariable 10 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %       Value double 
+> %EndEventDef
+> %EventDef PajeSetState 11 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %       Value string 
+> %EndEventDef
+> %EventDef PajePushState 12 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %       Value string 
+> %EndEventDef
+> %EventDef PajePopState 13 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %EndEventDef
+> %EventDef PajeResetState 14 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %EndEventDef
+> %EventDef PajeStartLink 15 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %       Value string 
+> %       StartContainer string 
+> %       Key string 
+> %EndEventDef
+> %EventDef PajeEndLink 16 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %       Value string 
+> %       EndContainer string 
+> %       Key string 
+> %EndEventDef
+> %EventDef PajeNewEvent 17 
+> %       Time date 
+> %       Type string 
+> %       Container string 
+> %       Value string 
+> %EndEventDef
+> 0 1 0 HOST
+> 6 0 1 1 0 "C2-06"
+> 1 2 1 power "1 1 1"
+> 6 0 2 1 0 "C1-03"
+> 6 0 3 1 0 "C2-07"
+> 6 0 4 1 0 "C2-09"
+> 6 0 5 1 0 "C1-02"
+> 6 0 6 1 0 "C2-08"
+> 6 0 7 1 0 "C1-01"
+> 6 0 8 1 0 "C1-04"
+> 6 0 9 1 0 "C1-00"
+> 6 0 10 1 0 "C2-05"
+> 0 3 0 LINK
+> 6 0 11 3 0 "6"
+> 1 4 3 bandwidth "1 1 1"
+> 1 5 3 latency "1 1 1"
+> 6 0 12 3 0 "11"
+> 6 0 13 3 0 "3"
+> 6 0 14 3 0 "7"
+> 6 0 15 3 0 "9"
+> 6 0 16 3 0 "12"
+> 6 0 17 3 0 "2"
+> 6 0 18 3 0 "14"
+> 6 0 19 3 0 "8"
+> 6 0 20 3 0 "1"
+> 6 0 21 3 0 "4"
+> 6 0 22 3 0 "0"
+> 6 0 23 3 0 "13"
+> 6 0 24 3 0 "10"
+> 6 0 25 3 0 "5"
+> 4 6 0 1 3 0-HOST1-LINK3
+> 4 7 0 3 3 0-LINK3-LINK3
+> 4 8 0 3 1 0-LINK3-HOST1
+> 8 0 2 1 5000000000.000000
+> 8 0 2 2 1000000000.000000
+> 8 0 2 3 5000000000.000000
+> 8 0 2 4 5000000000.000000
+> 8 0 2 5 1000000000.000000
+> 8 0 2 6 5000000000.000000
+> 8 0 2 7 1000000000.000000
+> 8 0 2 8 1000000000.000000
+> 8 0 2 9 1000000000.000000
+> 8 0 2 10 5000000000.000000
+> 8 0 4 11 125000000.000000
+> 8 0 5 11 0.000100
+> 8 0 4 12 125000000.000000
+> 8 0 5 12 0.000100
+> 8 0 4 13 125000000.000000
+> 8 0 5 13 0.000100
+> 8 0 4 14 125000000.000000
+> 8 0 5 14 0.000100
+> 8 0 4 15 125000000.000000
+> 8 0 5 15 0.000100
+> 8 0 4 16 1250000000.000000
+> 8 0 5 16 0.000100
+> 8 0 4 17 125000000.000000
+> 8 0 5 17 0.000100
+> 8 0 4 18 1250000000.000000
+> 8 0 5 18 0.050000
+> 8 0 4 19 125000000.000000
+> 8 0 5 19 0.000100
+> 8 0 4 20 125000000.000000
+> 8 0 5 20 0.000100
+> 8 0 4 21 125000000.000000
+> 8 0 5 21 0.000100
+> 8 0 4 22 125000000.000000
+> 8 0 5 22 0.000100
+> 8 0 4 23 1250000000.000000
+> 8 0 5 23 0.000100
+> 8 0 4 24 125000000.000000
+> 8 0 5 24 0.000100
+> 8 0 4 25 125000000.000000
+> 8 0 5 25 0.000100
+> 15 0 6 0 G 10 0
+> 16 0 6 0 G 25 0
+> 15 0 7 0 G 25 1
+> 16 0 7 0 G 12 1
+> 15 0 7 0 G 12 2
+> 16 0 7 0 G 11 2
+> 15 0 8 0 G 11 3
+> 16 0 8 0 G 1 3
+> 15 0 7 0 G 12 4
+> 16 0 7 0 G 14 4
+> 15 0 8 0 G 14 5
+> 16 0 8 0 G 3 5
+> 15 0 7 0 G 12 6
+> 16 0 7 0 G 19 6
+> 15 0 8 0 G 19 7
+> 16 0 8 0 G 6 7
+> 15 0 7 0 G 12 8
+> 16 0 7 0 G 15 8
+> 15 0 8 0 G 15 9
+> 16 0 8 0 G 4 9
+> 15 0 7 0 G 12 10
+> 16 0 7 0 G 23 10
+> 15 0 7 0 G 23 11
+> 16 0 7 0 G 18 11
+> 15 0 7 0 G 18 12
+> 16 0 7 0 G 16 12
+> 15 0 7 0 G 16 13
+> 16 0 7 0 G 24 13
+> 15 0 7 0 G 24 14
+> 16 0 7 0 G 22 14
+> 15 0 8 0 G 22 15
+> 16 0 8 0 G 9 15
+> 15 0 7 0 G 24 16
+> 16 0 7 0 G 20 16
+> 15 0 8 0 G 20 17
+> 16 0 8 0 G 7 17
+> 15 0 7 0 G 24 18
+> 16 0 7 0 G 17 18
+> 15 0 8 0 G 17 19
+> 16 0 8 0 G 5 19
+> 15 0 7 0 G 24 20
+> 16 0 7 0 G 13 20
+> 15 0 8 0 G 13 21
+> 16 0 8 0 G 2 21
+> 15 0 7 0 G 24 22
+> 16 0 7 0 G 21 22
+> 15 0 8 0 G 21 23
+> 16 0 8 0 G 8 23
+> 1 9 3 btaskA "0.000000 0.000985 0.041631"
+> 1 10 1 ptaskA "0.000000 0.000985 0.041631"
+> 1 11 3 btaskB "0.176643 0.364602 0.091331"
+> 1 12 1 ptaskB "0.176643 0.364602 0.091331"
+> 1 13 3 btaskC "0.092298 0.487217 0.526750"
+> 1 14 1 ptaskC "0.092298 0.487217 0.526750"
+> 7 30.800300 1 10
+> 7 30.800300 1 1
+> 7 30.800300 1 3
+> 7 30.800300 1 6
+> 7 30.800300 1 4
+> 7 30.800300 1 9
+> 7 30.800300 3 24
+> 7 30.800300 1 7
+> 7 30.800300 3 12
+> 7 30.800300 1 5
+> 7 30.800300 3 16
+> 7 30.800300 1 2
+> 7 30.800300 3 23
+> 7 30.800300 1 8
+> 7 30.800300 3 18
+> 7 30.800300 3 22
+> 7 30.800300 3 20
+> 7 30.800300 3 17
+> 7 30.800300 3 13
+> 7 30.800300 3 21
+> 7 30.800300 3 25
+> 7 30.800300 3 11
+> 7 30.800300 3 14
+> 7 30.800300 3 19
+> 7 30.800300 3 15
+
+
+$ rm -f simgrid.trace
+
+
+
+
+
+
+
+
+
+
+
+
+
