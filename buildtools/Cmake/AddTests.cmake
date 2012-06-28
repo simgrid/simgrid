@@ -349,7 +349,9 @@ if(NOT enable_memcheck)
   ENDIF(${ARCH_32_BITS})
 
   # simdag examples
-  ADD_TEST(simdag-test-dotload                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag/dot --cd ${CMAKE_BINARY_DIR}/examples/simdag/dot ${CMAKE_HOME_DIRECTORY}/examples/simdag/dot/test_simdag_dotload.tesh)
+  if(HAVE_GRAPHVIZ)
+    ADD_TEST(simdag-test-dotload                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag/dot --cd ${CMAKE_BINARY_DIR}/examples/simdag/dot ${CMAKE_HOME_DIRECTORY}/examples/simdag/dot/test_simdag_dotload.tesh)
+  endif(HAVE_GRAPHVIZ)
   ADD_TEST(simdag-test-simdag                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag.tesh)
   ADD_TEST(simdag-test-simdag2                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag2.tesh)
   ADD_TEST(simdag-test-seq-access               ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_seq_access.tesh)
