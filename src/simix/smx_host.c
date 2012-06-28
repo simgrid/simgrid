@@ -210,12 +210,13 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
   arg->kill_time = kill_time;
   arg->argc = argc;
 
-  arg->argv = xbt_new(char*,argc);
+  arg->argv = xbt_new(char*,argc + 1);
 
   int i;
   for (i = 0; i < argc; i++) {
     arg->argv[i] = xbt_strdup(argv[i]);
   }
+  arg->argv[argc] = NULL;
 
   arg->properties = properties;
   arg->auto_restart = auto_restart;

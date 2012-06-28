@@ -145,7 +145,5 @@ typedef struct s_smx_process *m_process_t;
 typedef int m_channel_t;
 #endif
 
-
-
 SG_END_DECL()
 #endif
