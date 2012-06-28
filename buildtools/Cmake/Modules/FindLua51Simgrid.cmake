@@ -1,5 +1,6 @@
 include(FindLua51)
 find_program(HAVE_LUA_BIN NAMES lua)
+mark_as_advanced(HAVE_LUA_BIN)
 
 message(STATUS "Looking for lua.h")
 if(LUA_INCLUDE_DIR)
