@@ -68,20 +68,11 @@ static void smx_ctx_sysv_suspend_parallel(smx_context_t context);
 static void smx_ctx_sysv_resume_parallel(smx_process_t first_process);
 static void smx_ctx_sysv_runall_parallel(void);
 
-/* This is a bit paranoid about SIZEOF_VOIDP not being a multiple of SIZEOF_INT,
- * but it doesn't harm. */
-#define CTX_ADDR_LEN (SIZEOF_VOIDP / SIZEOF_INT + !!(SIZEOF_VOIDP % SIZEOF_INT))
-union u_ctx_addr {
-  void *addr;
-  int intv[CTX_ADDR_LEN];
-};
-#if (CTX_ADDR_LEN == 1)
-#  define CTX_ADDR_SPLIT(u) (u).intv[0]
-#elif (CTX_ADDR_LEN == 2)
-#  define CTX_ADDR_SPLIT(u) (u).intv[0], (u).intv[1]
-#else
-#  error Your architecture is not supported yet
-#endif
+/* This is a bit paranoid about sizeof(smx_ctx_sysv_t) not being a multiple of
+ * sizeof(int), but it doesn't harm. */
+#define CTX_ADDR_LEN                            \
+  (sizeof(smx_ctx_sysv_t) / sizeof(int) +       \
+   !!(sizeof(smx_ctx_sysv_t) % sizeof(int)))
 
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory)
 {
@@ -129,7 +120,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                   void_pfn_smxprocess_t cleanup_func,
                                   void *data)
 {
-  union u_ctx_addr ctx_addr;
+  int ctx_addr[CTX_ADDR_LEN];
   smx_ctx_sysv_t context =
       (smx_ctx_sysv_t) smx_ctx_base_factory_create_context_sized(size,
                                                                  code,
@@ -158,9 +149,20 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
                                 ((char *) context->uc.uc_stack.ss_sp) +
                                 context->uc.uc_stack.ss_size);
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
-    ctx_addr.addr = context;
-    makecontext(&context->uc, (void (*)())smx_ctx_sysv_wrapper,
-                CTX_ADDR_LEN, CTX_ADDR_SPLIT(ctx_addr));
+    memcpy(ctx_addr, &context, sizeof(smx_ctx_sysv_t));
+    switch (CTX_ADDR_LEN) {
+    case 1:
+      makecontext(&context->uc, (void (*)())smx_ctx_sysv_wrapper,
+                  1, ctx_addr[0]);
+      break;
+    case 2:
+      makecontext(&context->uc, (void (*)())smx_ctx_sysv_wrapper,
+                  2, ctx_addr[0], ctx_addr[1]);
+      break;
+    default:
+      xbt_die("Ucontexts are not supported on this arch yet (addr len = %zu/%zu = %zu)",
+              sizeof(smx_ctx_sysv_t), sizeof(int), CTX_ADDR_LEN);
+    }
   } else {
     sysv_maestro_context = context;
   }
@@ -196,19 +198,19 @@ static void smx_ctx_sysv_free(smx_context_t context)
 
 static void smx_ctx_sysv_wrapper(int first, ...)
 { 
-  union u_ctx_addr ctx_addr;
+  int ctx_addr[CTX_ADDR_LEN];
   smx_ctx_sysv_t context;
 
-  ctx_addr.intv[0] = first;
+  ctx_addr[0] = first;
   if (CTX_ADDR_LEN > 1) {
     va_list ap;
     int i;
     va_start(ap, first);
     for (i = 1; i < CTX_ADDR_LEN; i++)
-      ctx_addr.intv[i] = va_arg(ap, int);
+      ctx_addr[i] = va_arg(ap, int);
     va_end(ap);
   }
-  context = ctx_addr.addr;
+  memcpy(&context, ctx_addr, sizeof(smx_ctx_sysv_t));
   (context->super.code) (context->super.argc, context->super.argv);
 
   simix_global->context_factory->stop((smx_context_t) context);
