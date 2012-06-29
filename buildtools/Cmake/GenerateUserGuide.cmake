@@ -63,7 +63,6 @@ if(FIG2DEV_PATH)
     COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/simgrid_modules.map
     COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
     COMMAND ${DOXYGEN_PATH}/doxygen UserGuideDoxyfile
-    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgriduserguide.tag index-API.doc
 
     COMMAND ${CMAKE_COMMAND} -E echo "XX Second Doxygen pass"
     COMMAND ${DOXYGEN_PATH}/doxygen UserGuideDoxyfile

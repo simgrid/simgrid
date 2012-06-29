@@ -660,14 +660,14 @@ WARN_LOGFILE           =
 
 INPUT                  = index.doc \
                          install.doc \
-                         use.doc \
-                         modules.doc \
+                         use.doc \            
                          options.doc \
                          platform.doc \
                          tracing.doc \
                          pls.doc \
                          bindings.doc \
                          @top_srcdir@/doc/user_guide/doxygen/logcategories.doc
+			 
 
 ###################################################
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)

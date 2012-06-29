@@ -10,7 +10,7 @@ slides</a>, or to these
 <a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">"obsolete" slides</a>)
 may give you some insights on what SimGrid can help you to do and what
 are its limitations. Then you definitely should read the \ref
-MSG_examples. The \ref GRAS_tut can also help you.
+MSG_examples. 
 
 If you are stuck at any point and if this FAQ cannot help you, please drop us a
 mail to the user mailing list: <simgrid-user@lists.gforge.inria.fr>.

@@ -1,49 +1,595 @@
 /*! \page use Using SimGrid
 
-\section use_welcome Welcome to SimGrid!
+\section using_msg Using MSG
 
-If you don't know were to look to start with, you should probably have
-a look at the following presentation first to get the basic concepts.
-Afterward, you probably want to proceed to the \ref MSG_API. Of
-course, if you're curious or if you know what you want, you may prefer
-to go to \ref SMPI_API, or even \ref GRAS_API.
+Here are some examples on how to use MSG, the most used API.
 
-The scientific bases of the SimGrid project are presented in a 3 ou 4
-hours-long tutorial. It can be found at the following locations.
- - https://gforge.inria.fr/plugins/scmgit/cgi-bin/gitweb.cgi?p=simgrid/propaganda.git;a=blob_plain;f=tutorial/simgrid-tutorial.pdf;hb=HEAD
- - http://webloria.loria.fr/~quinson/blog/2010/0628/Tutorial_at_HPCS/
 
-\latexonly
-\includepdf[nup=2x4,pages=1-]{../webcruft/simgrid-101.pdf}
-\endlatexonly
+MSG comes with an extensive set of examples. It is sometimes difficult
+to find the one you need. This list aims at helping you finding the
+example from which you can learn what you want to.
 
-\htmlonly
-<script language="javascript">
-var base="simgrid-101",max=30,cur=1;
-function pad(){ return cur < 10 ? '00' + cur : cur < 100 ? '0' + cur : '' + cur; }
-function slidemove(dir) {
-        var nums=document.getElementById('nums'), display=document.getElementById('display');
-        if (cur+dir>0 && cur+dir<=max)  cur+=dir;
-	display.src=base+'_'+pad()+'.png';
-	nums.innerHTML=(cur)+'/'+max;
-}
-</script>
+\subsection MSG_ex_basics Basic examples and features
 
-<div id='blah' style='text-align:center;'>
-  <div id='practical-simgrid' >
-    <img src='simgrid-101_001.png' id="display" onclick='slidemove(1)'/>
-    <br/>
-    <form>
-      <input type='button' value='&laquo; Previous' onclick="slidemove(-1)"/>
-      &nbsp;&nbsp;
-      <span id="nums">1/30</span>&nbsp;&nbsp
-      <input type='button' value='Next &raquo;' onclick="slidemove(1)"/>
-      <br/>
-      <a href='simgrid-101.pdf'>Download PDF version</a>
-    </form>
-  </div>
-</div>
-\endhtmlonly
+\subsubsection MSG_ex_asynchronous_communications Asynchronous communications
+
+
+Simulation of asynchronous communications between a sender and a receiver using a realistic platform and
+an external description of the deployment.
+
+ - \ref MSG_ext_icomms_code
+   - \ref MSG_ext_icomms_preliminary
+   - \ref MSG_ext_icomms_Sender
+   - \ref MSG_ext_icomms_Receiver
+   - \ref MSG_ext_icomms_core
+   - \ref MSG_ext_icomms_Main
+ - \ref MSG_ext_icomms_fct_Waitall
+ - \ref MSG_ext_icomms_fct_Waitany
+
+<hr>
+
+\dontinclude msg/icomms/peer.c
+
+\paragraph MSG_ext_icomms_code Code of the application
+
+\paragraph MSG_ext_icomms_preliminary Preliminary declarations
+\skip include
+\until Sender function
+
+\paragraph MSG_ext_icomms_Sender Sender function
+
+The sender send to a receiver an asynchronous message with the function "MSG_task_isend()". Cause this function is non-blocking
+we have to make "MSG_comm_test()" to know   if the communication is finished for finally destroy it with function "MSG_comm_destroy()".
+It also available to "make MSG_comm_wait()" which make both of them.
+
+  C style arguments (argc/argv) are interpreted as:
+   - the number of tasks to distribute
+   - the computation size of each task
+   - the size of the files associated to each task
+   - a list of host that will accept those tasks.
+   - the time to sleep at the beginning of the function
+   - This time defined the process sleep time
+			if time = 0 use of MSG_comm_wait()
+			if time > 0 use of MSG_comm_test()
+
+
+\until Receiver function
+
+\paragraph MSG_ext_icomms_Receiver Receiver function
+
+This function executes tasks when it receives them. As the receiving is asynchronous we have to test the communication to know
+if it is completed or not with "MSG_comm_test()" or wait for the completion "MSG_comm_wait()".
+
+  C style arguments (argc/argv) are interpreted as:
+   - the id to use for received the communication.
+   - the time to sleep at the beginning of the function
+   - This time defined the process sleep time
+			if time = 0 use of MSG_comm_wait()
+			if time > 0 use of MSG_comm_test()
+
+\until Test function
+
+\paragraph MSG_ext_icomms_core Simulation core
+
+  This function is the core of the simulation and is divided only into 3 parts
+  thanks to MSG_create_environment() and MSG_launch_application().
+     -# Simulation settings : MSG_create_environment() creates a realistic
+        environment
+     -# Application deployment : create the processes on the right locations with
+        MSG_launch_application()
+     -# The simulation is run with #MSG_main()
+
+  Its arguments are:
+	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
+	- <i>application_file</i>: the name of a file containing a valid surfxml application description
+
+\until Main function
+
+\paragraph MSG_ext_icomms_Main Main function
+
+This initializes MSG, runs a simulation, and free all data-structures created by MSG.
+
+\until end_of_main
+
+\dontinclude msg/icomms/peer2.c
+
+\paragraph MSG_ext_icomms_fct_Waitall Waitall function for sender
+
+The use of this function permit to send all messages and wait for the completion of all in one time.
+
+\skipline Sender function
+\until end_of_sender
+
+\paragraph MSG_ext_icomms_fct_Waitany Waitany function
+
+The MSG_comm_waitany() function return the place of the first message send or receive from a xbt_dynar_t table.
+
+\paragraph MSG_ext_icomms_fct_Waitany_sender From a sender
+We can use this function to wait all sent messages.
+\dontinclude msg/icomms/peer3.c
+\skipline Sender function
+\until end_of_sender
+
+\paragraph MSG_ext_icomms_fct_Waitany_receiver From a receiver
+We can also wait for the arrival of all messages.
+\dontinclude msg/icomms/peer3.c
+\skipline Receiver function
+\until end_of_receiver
+
+\subsubsection MSG_ex_master_slave Basic Master/Slaves
+
+Simulation of a master-slave application using a realistic platform
+and an external description of the deployment.
+
+\paragraph MSG_ex_ms_TOC Table of contents:
+
+   - \ref MSG_ext_ms_preliminary
+   - \ref MSG_ext_ms_master
+   - \ref MSG_ext_ms_slave
+   - \ref MSG_ext_ms_forwarder
+   - \ref MSG_ext_ms_core
+   - \ref MSG_ext_ms_main
+   - \ref MSG_ext_ms_helping
+   - \ref MSG_ext_ms_application
+   - \ref MSG_ext_ms_platform
+
+<hr>
+
+\dontinclude msg/masterslave/masterslave_forwarder.c
+
+
+\paragraph MSG_ext_ms_preliminary Preliminary declarations
+
+\skip include
+\until printf
+\until }
+
+\paragraph MSG_ext_ms_master Master code
+
+This function has to be assigned to a m_process_t that will behave as
+the master. It should not be called directly but either given as a
+parameter to #MSG_process_create() or registered as a public function
+through #MSG_function_register() and then automatically assigned to a
+process through #MSG_launch_application().
+
+C style arguments (argc/argv) are interpreted as:
+   - the number of tasks to distribute
+   - the computation size of each task
+   - the size of the files associated to each task
+   - a list of host that will accept those tasks.
+
+Tasks are dumbly sent in a round-robin style.
+
+\until end_of_master
+
+\paragraph MSG_ext_ms_slave Slave code
+
+This function has to be assigned to a #msg_process_t that has to behave
+as a slave. Just like the master fuction (described in \ref
+MSG_ext_ms_master), it should not be called directly.
+
+This function keeps waiting for tasks and executes them as it receives them.
+
+\until end_of_slave
+
+\paragraph MSG_ext_ms_forwarder Forwarder code
+
+This function has to be assigned to a #msg_process_t that has to behave
+as a forwarder. Just like the master function (described in \ref
+MSG_ext_ms_master), it should not be called directly.
+
+C style arguments (argc/argv) are interpreted as a list of host that
+will accept those tasks.
+
+This function keeps waiting for tasks and dispathes them to its slaves.
+
+\until end_of_forwarder
+
+\paragraph MSG_ext_ms_core Simulation core
+
+This function is the core of the simulation and is divided only into 3 parts
+thanks to MSG_create_environment() and MSG_launch_application().
+   -# Simulation settings : MSG_create_environment() creates a realistic
+      environment
+   -# Application deployment : create the processes on the right locations with
+      MSG_launch_application()
+   -# The simulation is run with #MSG_main()
+
+Its arguments are:
+	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
+	- <i>application_file</i>: the name of a file containing a valid surfxml application description
+
+\until end_of_test_all
+
+\paragraph MSG_ext_ms_main Main() function
+
+This initializes MSG, runs a simulation, and free all data-structures created by MSG.
+
+\until end_of_main
+
+\subsubsection MSG_ext_ms_helping Helping files
+
+\paragraph MSG_ext_ms_application Example of application file
+
+\include msg/masterslave/deployment_masterslave.xml
+
+\paragraph MSG_ext_ms_platform Example of platform file
+
+\include msg/small_platform.xml
+
+
+
+\section using_gras Using GRAS
+
+Here are some examples on how to use GRAS.
+
+
+    There is for now rather few examples of GRAS, but it's better than
+    nothing, isn't it?
+
+       - \ref GRAS_ex_ping
+       - \ref GRAS_ex_mmrpc
+       - \ref GRAS_ex_token
+       - \ref GRAS_ex_timer
+
+
+\subsection GRAS_ex_ping Ping-Pong
+
+    This example implements the very classical ping-pong in GRAS. It
+    involves a client (initiating the ping-pong) and a server (answering to
+    client's requests).
+
+    It works the following way:
+     - Both the client and the server register all needed messages
+     - The server registers a callback to the ping message, which sends pong
+       to the expeditor
+     - The client sends the ping message to the server, and waits for the
+       pong message as an answer.
+
+    This example resides in the <b>examples/gras/ping/ping.c</b> file. Yes, both
+    the code of the client and of the server is placed in the same file. 
+
+    \subsubsection GRAS_ex_ping_toc Table of contents of the ping example
+      - \ref GRAS_ex_ping_common
+        - \ref GRAS_ex_ping_initial
+        - \ref GRAS_ex_ping_register
+      - \ref GRAS_ex_ping_server
+        - \ref GRAS_ex_ping_serdata
+	- \ref GRAS_ex_ping_sercb
+	- \ref GRAS_ex_ping_sermain
+      - \ref GRAS_ex_ping_client
+	- \ref GRAS_ex_ping_climain
+
+    <hr>
+
+    \dontinclude gras/ping/ping_common.c
+
+    \subsubsection GRAS_ex_ping_common 1) Common code to the client and the server
+
+    \paragraph GRAS_ex_ping_initial 1.a) Initial settings
+
+    Let's first load the module header and declare a logging category (see
+    \ref XBT_log for more info on logging).
+
+    \skip include
+    \until XBT_LOG
+
+    The module header <tt>ping.h</tt> reads:
+
+    \dontinclude gras/ping/ping.h
+    \skip include
+    \until argv
+    \until argv
+
+    \paragraph GRAS_ex_ping_register 1.b) Register the messages
+
+    This function, called by both the client and the server is in charge of
+    declaring the existing messages to GRAS. Since the payload does not
+    involve any newly created types but only int, this is quite easy.
+    (to exchange more complicated types, see \ref GRAS_dd or
+    \ref GRAS_ex_mmrpc for an example).
+
+    \dontinclude gras/ping/ping_common.c
+    \skip register_messages
+    \until }
+
+    [Back to \ref GRAS_ex_ping_toc]
+
+    \subsubsection GRAS_ex_ping_server 2) Server's code
+
+    \paragraph GRAS_ex_ping_serdata 2.a) The server's globals
+
+    In order to ensure the communication between the "main" and the callback
+    of the server, we need to declare some globals. We have to put them in a
+    struct definition so that they can be handled properly in GRAS.
+
+    \dontinclude gras/ping/ping_server.c
+    \skip typedef struct
+    \until }
+
+    \paragraph GRAS_ex_ping_sercb 2.b) The callback to the ping message
+
+    Here is the callback run when the server receives any ping message (this
+    will be registered later by the server).
+
+    \skip server_cb_ping_handler
+    \until end_of_server_cb_ping_handler
+
+    \paragraph GRAS_ex_ping_sermain 2.c) The "main" of the server
+
+    This is the "main" of the server. You must not write any main()
+    function yourself. Instead, you just have to write a regular function
+    like this one which will act as a main.
+
+    \skip server
+    \until end_of_server
+
+    [Back to \ref GRAS_ex_ping_toc]
+
+    \subsubsection GRAS_ex_ping_client 3) Client's code
+
+    \paragraph GRAS_ex_ping_climain 3.a) Client's "main" function
+
+    This function is quite straightforward, and the inlined comments should
+    be enough to understand it.
+
+    \dontinclude gras/ping/ping_client.c
+    \skip client
+    \until end_of_client
+
+    [Back to \ref GRAS_ex_ping_toc]
+
+\subsection GRAS_ex_token Token Ring example
+
+   This example implements the token ring algorithm. It involves several
+   nodes arranged in a ring (each of them have a left and a right neighbour)
+   and exchanging a "token". This algorithm is one of the solution to ensure
+   the mutual exclusion between distributed processes. There is only one
+   token at any time, so the process in its possession is ensured to be the
+   only one having it. So, if there is an action you want all processes to
+   do alternativly, but you cannot afford to have two processes doing it at
+   the same time, let the process having the token doing it.
+
+   Actually, there is a lot of different token ring algorithms in the
+   litterature, so this example implements one of them: the simplest one.
+   The ring is static (no new node can join it, and you'll get trouble if
+   one node dies or leaves), and nothing is done for the case in which the
+   token is lost.
+
+   - \ref GRAS_ex_stoken_deploy
+   - \ref GRAS_ex_stoken_global
+   - \ref GRAS_ex_stoken_callback
+   - \ref GRAS_ex_stoken_main
+
+   \subsection GRAS_ex_stoken_deploy 1) Deployment file
+
+   Here is the deployment file:
+   \include examples/gras/mutual_exclusion/simple_token/simple_token.xml
+
+   The neighbour of each node is given at startup as command line argument.
+   Moreover, one of the nodes is instructed by a specific argument (the one
+   on Tremblay here) to create the token at the begining of the algorithm.
+
+   \subsection GRAS_ex_stoken_global 2) Global definition
+
+   The token is incarned by a specific message, which circulates from node
+   to node (the payload is an integer incremented at each hop). So, the most
+   important part of the code is the message callback, which forwards the
+   message to the next node. That is why we have to store all variable in a
+   global, as explained in the \ref GRAS_globals section.
+
+   \dontinclude examples/gras/mutual_exclusion/simple_token/simple_token.c
+   \skip typedef
+   \until }
+
+   \subsection GRAS_ex_stoken_callback 3) The callback
+
+   Even if this is the core of this algorithm, this function is quite
+   straightforward.
+
+   \skip node_cb_stoken_handler
+   \until end_of_node_cb_stoken_handler
+
+   \subsection GRAS_ex_stoken_main 4) The main function
+
+   This function is splited in two parts: The first one performs all the
+   needed initialisations (points 1-7) while the end (point 8. below) calls
+   gras_msg_handle() as long as the planned amount of ring loops are not
+   performed.
+
+   \skip node
+   \until end_of_node
+
+\subsection GRAS_ex_mmrpc A simple RPC for matrix multiplication
+
+    This example implements a remote matrix multiplication. It involves a client
+    (creating the matrices and sending the multiplications requests) and a server
+    (computing the multiplication on client's behalf).
+
+    This example also constitutes a more advanced example of data description
+    mechanisms, since the message payload type is a bit more complicated than in
+    other examples such as the ping one (\ref GRAS_ex_ping).
+
+    It works the following way (not very different from the ping example):
+     - Both the client and the server register all needed messages and datatypes
+     - The server registers a callback to the "request" message, which computes
+       what needs to be and returns the result to the expeditor.
+     - The client creates two matrices, ask for their multiplication and check
+       the server's answer.
+
+    This example resides in the <b>examples/gras/mmrpc/mmrpc.c</b> file. 
+
+    \subsubsection GRAS_ex_mmrpc_toc Table of contents of the mmrpc example
+      - \ref GRAS_ex_mmrpc_common
+        - \ref GRAS_ex_mmrpc_header
+        - \ref GRAS_ex_mmrpc_dataregister
+        - \ref GRAS_ex_mmrpc_logdef
+        - \ref GRAS_ex_mmrpc_msgregister
+      - \ref GRAS_ex_mmrpc_server
+	- \ref GRAS_ex_mmrpc_serinc
+	- \ref GRAS_ex_mmrpc_sercb
+	- \ref GRAS_ex_mmrpc_sermain
+      - \ref GRAS_ex_mmrpc_client
+	- \ref GRAS_ex_mmrpc_cliinc
+	- \ref GRAS_ex_mmrpc_climain
+
+    <hr>
+
+
+    \subsubsection GRAS_ex_mmrpc_common 1) Common code to the client and the server (mmrpc_common.c and mmrpc.h)
+
+
+    \paragraph GRAS_ex_mmrpc_header 1.a) Module header (mmrpc.h)
+
+    This loads the gras header and declare the function's prototypes as well
+    as the matrix size.
+
+    \dontinclude gras/mmrpc/mmrpc.h
+    \skip include
+    \until argv
+    \until argv
+
+    \paragraph GRAS_ex_mmrpc_dataregister 1.b) Register the data types (mmrpc.h)
+
+    The messages involved in a matrix of double. This type is automatically
+    known by the GRAS mecanism, using the gras_datadesc_matrix() function of the
+    xbt/matrix module.
+
+    \paragraph GRAS_ex_mmrpc_logdef 1.c) Logging category definition (mmrpc_common.c)
+
+    Let's first load the module header and declare a logging category (see
+    \ref XBT_log for more info on logging). This logging category does live
+    in this file (ie the required symbols are defined here and declared as
+    "extern" in any other file using them). That is why we use
+    \ref XBT_LOG_NEW_DEFAULT_CATEGORY here and
+    \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY in mmrpc_client.c and mmrpc_server.c.
+
+    \dontinclude gras/mmrpc/mmrpc_common.c
+    \skip include
+    \until XBT_LOG
+
+    \paragraph GRAS_ex_mmrpc_msgregister 1.d) Register the messages (mmrpc_common.c)
+
+    This function, called by both the client and the server is in charge of
+    declaring the existing messages to GRAS.
+
+    The datatype description builded that way can then be used to build an array datatype or
+    to declare messages.
+
+    \skip register_messages
+    \until }
+
+    [Back to \ref GRAS_ex_mmrpc_toc]
+
+    \subsubsection GRAS_ex_mmrpc_server 2) Server's code (mmrpc_server.c)
+
+    \paragraph GRAS_ex_mmrpc_serinc 2.a) Server intial settings
+
+    All module symbols live in the mmrpc_common.c file. We thus have to
+    define \ref XBT_DEFINE_TYPE_EXTERN to the preprocessor so that the
+    \ref XBT_DEFINE_TYPE symbols don't get included here. Likewise, we use
+    \ref XBT_LOG_EXTERNAL_DEFAULT_CATEGORY to get the log category in here.
+
+    \dontinclude gras/mmrpc/mmrpc_server.c
+    \skip define
+    \until XBT_LOG
+
+    \paragraph GRAS_ex_mmrpc_sercb 2.b) The callback to the mmrpc message
+
+    Here is the callback run when the server receives any mmrpc message (this
+    will be registered later by the server). Note the way we get the message
+    payload. In the ping example, there was one additional level of pointer
+    indirection (see \ref GRAS_ex_ping_sercb). This is because the payload is
+    an array here (ie a pointer) whereas it is a scalar in the ping example.
+
+    \skip server_cb_request_handler
+    \until end_of_server_cb_request_handler
+
+    \paragraph GRAS_ex_mmrpc_sermain 2.c) The "main" of the server
+
+    This is the "main" of the server. You must not write any main()
+    function yourself. Instead, you just have to write a regular function
+    like this one which will act as a main.
+
+    \skip server
+    \until end_of_server
+
+    [Back to \ref GRAS_ex_mmrpc_toc]
+
+    \subsubsection GRAS_ex_mmrpc_client 3) Client's code (mmrpc_client.c)
+
+    \paragraph GRAS_ex_mmrpc_cliinc 2.a) Server intial settings
+
+    As for the server, some extra love is needed to make sure that automatic
+    datatype parsing and log categories do work even if we are using several
+    files.
+
+    \dontinclude gras/mmrpc/mmrpc_client.c
+    \skip define
+    \until XBT_LOG
+
+    \paragraph GRAS_ex_mmrpc_climain 3.b) Client's "main" function
+
+    This function is quite straightforward, and the inlined comments should
+    be enough to understand it.
+
+    \dontinclude gras/mmrpc/mmrpc_client.c
+    \skip argv
+    \until end_of_client
+
+    [Back to \ref GRAS_ex_mmrpc_toc]
+
+\subsection GRAS_ex_timer Some timer games
+
+    This example fools around with the GRAS timers (\ref GRAS_timer). It is
+    mainly a regression test, since it uses almost all timer features.
+
+    The main program registers a repetititive task and a delayed one, and
+    then loops until the <tt>still_to_do</tt> variables of its globals reach
+    0. The delayed task set it to 5, and the repetititive one decrease it
+    each time. Here is an example of output:
+\verbatim Initialize GRAS
+ Initialize XBT
+ [1108335471] Programming the repetitive_action with a frequency of 1.000000 sec
+ [1108335471] Programming the delayed_action for after 2.000000 sec
+ [1108335471] Have a rest
+ [1108335472] Canceling the delayed_action.
+ [1108335472] Re-programming the delayed_action for after 2.000000 sec
+ [1108335472] Repetitive_action has nothing to do yet
+ [1108335473] Repetitive_action has nothing to do yet
+ [1108335473] delayed_action setting globals->still_to_do to 5
+ [1108335474] repetitive_action decrementing globals->still_to_do. New value: 4
+ [1108335475] repetitive_action decrementing globals->still_to_do. New value: 3
+ [1108335476] repetitive_action decrementing globals->still_to_do. New value: 2
+ [1108335477] repetitive_action decrementing globals->still_to_do. New value: 1
+ [1108335478] repetitive_action decrementing globals->still_to_do. New value: 0
+ Exiting GRAS\endverbatim
+
+    Source code:
+     - \ref GRAS_ex_timer_decl
+     - \ref GRAS_ex_timer_delay
+     - \ref GRAS_ex_timer_repeat
+     - \ref GRAS_ex_timer_main
+
+    \dontinclude timer.c
+
+    \subsubsection GRAS_ex_timer_decl   1. Declarations and headers
+    \skip include
+    \until my_globals
+
+    \subsubsection GRAS_ex_timer_delay  2. Source code of the delayed action
+    \skip repetitive_action
+    \until end_of_repetitive_action
+
+    \subsubsection GRAS_ex_timer_repeat 3. Source code of the repetitive action
+    \skip delayed_action
+    \until end_of_delayed_action
+
+    \subsubsection GRAS_ex_timer_main   4. Source code of main function
+    \skip client
+    \until end_of_client
 
 
 */
+
+

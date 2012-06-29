@@ -779,7 +779,7 @@ int MSG_task_listen_from(const char *alias)
  * previously declared with the function #TRACE_category
  * (or with #TRACE_category_with_color).
  *
- * See \ref tracing_tracing for details on how to trace
+ * See \ref tracing for details on how to trace
  * the (categorized) resource utilization.
  *
  * \param task the task that is going to be categorized

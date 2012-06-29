@@ -1,6 +1,5 @@
 /*! \page tracing Tracing Simulations for Visualization
 
-\section tracing_tracing Tracing Simulations for Visualization
 
 The trace visualization is widely used to observe and understand the behavior
 of parallel applications and distributed algorithms. Usually, this is done in a
@@ -12,7 +11,7 @@ in order to let users trace their simulations and analyze them. This part of the
 user manual explains how the tracing-related features can be enabled and used
 during the development of simulators using the SimGrid library.
 
-\subsection tracing_tracing_howitworks How it works
+\section tracing_tracing_howitworks How it works
 
 For now, the SimGrid library is instrumented so users can trace the <b>platform
 utilization</b> using the MSG, SimDAG and SMPI interface. This means that the tracing will
@@ -30,7 +29,7 @@ classified according to a category are not traced</em>. Even if the user
 does not specify any category, the simulations can still be traced in terms
 of resource utilization by using a special parameter that is detailed below.
 
-\subsection tracing_tracing_enabling Enabling using CMake
+\section tracing_tracing_enabling Enabling using CMake
 
 With the sources of SimGrid, it is possible to enable the tracing
 using the parameter <b>-Denable_tracing=ON</b> when the cmake is
@@ -46,7 +45,7 @@ $ cmake -Denable_tracing=ON .
 $ make
 \endverbatim
 
-\subsection instr_category_functions Tracing categories functions
+\section instr_category_functions Tracing categories functions
 \li \c TRACE_category(const char *category)
 \li \c TRACE_category_with_color(const char *category, const char *color)
 \li \c MSG_task_set_category(m_task_t task, const char *category)
@@ -54,11 +53,11 @@ $ make
 \li \c SD_task_set_category(SD_task_t task, const char *category)
 \li \c SD_task_get_category(SD_task_t task)
 
-\subsection instr_mark_functions Tracing marks functions
+\section instr_mark_functions Tracing marks functions
 \li \c TRACE_declare_mark(const char *mark_type)
 \li \c TRACE_mark(const char *mark_type, const char *mark_value)
 
-\subsection instr_uservariables_functions Tracing user variables functions
+\section instr_uservariables_functions Tracing user variables functions
 
 For hosts:
 
@@ -91,7 +90,7 @@ For links, but use source and destination to get route:
 \li \c TRACE_link_srcdst_variable_add_with_time(double time, const char *src, const char *dst, const char *variable, double value)
 \li \c TRACE_link_srcdst_variable_sub_with_time(double time, const char *src, const char *dst, const char *variable, double value)
 
-\subsection tracing_tracing_options Tracing configuration Options
+\section tracing_tracing_options Tracing configuration Options
 
 To check which tracing options are available for your simulator, you
 can just run it with the option <b>--help-tracing</b>. These are the
@@ -234,7 +233,7 @@ triva/uncategorized
 --cfg=triva/uncategorized:graph_uncategorized.plist
 \endverbatim
 
-\subsection tracing_tracing_example_parameters Case studies
+\section tracing_tracing_example_parameters Case studies
 
 Some scenarios that might help you decide which tracing options
 you should use to analyze your simulator.
@@ -268,7 +267,7 @@ recompiling, run your simulator with the following parameters:
 \endverbatim
 
 
-\subsection tracing_tracing_example Example of Instrumentation
+\section tracing_tracing_example Example of Instrumentation
 
 A simplified example using the tracing mandatory functions.
 
@@ -306,7 +305,7 @@ int main (int argc, char **argv)
 }
 \endverbatim
 
-\subsection tracing_tracing_analyzing Analyzing the SimGrid Traces
+\section tracing_tracing_analyzing Analyzing the SimGrid Traces
 
 The SimGrid library, during an instrumented simulation, creates a trace file in
 the Paje file format that contains the platform utilization for the simulation

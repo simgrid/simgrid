@@ -36,7 +36,7 @@ Grids.
 
 <hr>
 
-\section overview Overview of the toolkit components
+\section ug_overview Overview of the toolkit components
 
 As depicted by the following diagram, the SimGrid toolkit is basically
 three-layered (click on the picture to jump to a specific component).
@@ -52,7 +52,7 @@ three-layered (click on the picture to jump to a specific component).
 \endhtmlonly
 
 
-\subsection overview_envs Programmation environments layer
+\subsection ug_overview_envs Programmation environments layer
 
 SimGrid provides several programmation environments built on top of a unique
 simulation kernel. Each environment targets a specific audiance and
@@ -95,7 +95,7 @@ consider adding it. You should contact us first on the
 <a href=http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel>SimGrid
 developers mailing list</a>, though.
 
-\subsection overview_kernel Simulation kernel layer
+\subsection ug_overview_kernel Simulation kernel layer
 
 The core functionnalities to simulate a virtual platform are provided by a
 module called <b>\ref SURF_API</b>.  It is
@@ -108,7 +108,7 @@ eases the comparison of the several models existing in the litterature.
 
 See the \ref SURF_API section for more details.
 
-\subsection overview_fondation Base layer
+\subsection ug_overview_fondation Base layer
 
 The base of the whole toolkit is constituted by the <b>\ref XBT_API
 (eXtended Bundle of Tools)</b>.
@@ -121,7 +121,7 @@ XBT_dict, \ref XBT_heap, \ref XBT_set and \ref XBT_swag.
 See the \ref XBT_API section for more details.
 
 
-\subsection lucas_layer Tracing simulation
+\subsection ug_lucas_layer Tracing simulation
 Finally, a transversal module allows you to trace your simulation. More documentation in the section \ref TRACE_doc
 
 
@@ -144,25 +144,5 @@ mailing list</a>.
 </center>
 \endhtmlonly
 
-/**
-@defgroup SimGrid_User_Guide SimGrid User Guide
-   @{ */
-       /** @defgroup SimGrid_install   Install          */
-       /** @defgroup SimGrid_options   Options and configuration */
-       /** @defgroup SimGrid_pls   Packet-level simulation */
-       /** @defgroup SimGrid_pf   Platform description */
-       /** @defgroup SimGrid_tracing   Tracing */
-       /** @defgroup MSG_User_Guide MSG User Guide      */
-       /** @defgroup SIMDAG_User_Guide SIMDAG User Guide      */
-       /** @defgroup GRAS_User_Guide GRAS User Guide      */
-       /** @defgroup SMPI_User_Guide SMPI User Guide      */
-       /** @defgroup AMOK_User_Guide AMOK User Guide      */
-       /** @defgroup XBT_User_Guide XBT User Guide      */
-       /** @defgroup Advanced_User_Guide Advanced User Guide      */
-/**  @{ */
-       /** @defgroup SIMIX_User_Guide SIMIX User Guide: writing your own model      */
-
-/** @} */
-/** @} */
 
 */

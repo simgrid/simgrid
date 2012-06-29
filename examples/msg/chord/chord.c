@@ -39,7 +39,7 @@ static int periodic_lookup_delay = 10;
 
 extern long int smx_total_comms;
 
-/**
+/*
  * Finger element.
  */
 typedef struct s_finger {
@@ -47,7 +47,7 @@ typedef struct s_finger {
   char mailbox[MAILBOX_NAME_SIZE]; // string representation of the id
 } s_finger_t, *finger_t;
 
-/**
+/*
  * Node data.
  */
 typedef struct s_node {
@@ -74,7 +74,7 @@ typedef enum {
   TASK_PREDECESSOR_LEAVING
 } e_task_type_t;
 
-/**
+/*
  * Data attached with the tasks sent and received
  */
 typedef struct s_task_data {

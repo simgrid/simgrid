@@ -3,7 +3,7 @@
 
 \section install_cmake Installing the SimGrid library
 
-\subsection install_intro Some generalitty
+\subsection install_intro Some generality
 
 \subsubsection install_intro1 What is Cmake?
 
@@ -496,12 +496,6 @@ More generally, if you have never written a Makefile by yourself, type
 in a terminal : <tt>info make</tt> and read the introduction. The
 previous example should be enough for a first try but you may want to
 perform some more complex compilations...
-
-\section install_setting_GRAS Setting up your own GRAS code
-
-If you use the GRAS interface instead of the MSG one, then previous section
-is not the better source of information. Instead, you should check the GRAS
-tutorial in general, and the \ref GRAS_tut_tour_setup in particular.
 
 
 

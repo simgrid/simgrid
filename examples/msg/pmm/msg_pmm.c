@@ -47,7 +47,7 @@ typedef struct s_node_job{
   xbt_matrix_t B;
 } s_node_job_t, *node_job_t;
 
-/**
+/*
  * Structure for recovering results
  */
 typedef struct s_result {

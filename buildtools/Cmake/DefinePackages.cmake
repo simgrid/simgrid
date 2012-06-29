@@ -577,8 +577,6 @@ set(DOC_SOURCES
   doc/triva-graph_configuration.png
   doc/triva-graph_visualization.png
   doc/simgrid.css
-  doc/shared/doxygen/gras-examples.doc
-  doc/shared/doxygen/msg-examples.doc
   tools/doxygen/index_create.pl
   tools/doxygen/fig2dev_postprocessor.pl
   tools/doxygen/xbt_log_extract_hierarchy.pl
@@ -592,7 +590,6 @@ set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/tracing.doc
   doc/user_guide/doxygen/pls.doc
   doc/user_guide/doxygen/index.doc
-  doc/user_guide/doxygen/modules.doc
   doc/user_guide/doxygen/platform.doc
   doc/user_guide/doxygen/UserGuideDoxyfile.in
   doc/user_guide/doxygen/UserGuideDoxygenLayout.xml
@@ -614,8 +611,6 @@ set(REF_GUIDE_SOURCES
   )
 
 set(SHARED_SOURCES
-  doc/shared/doxygen/gras-examples.doc
-  doc/shared/doxygen/msg-examples.doc
   )
 
 set(DOC_FIGS
