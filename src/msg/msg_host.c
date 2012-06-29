@@ -75,7 +75,7 @@ msg_host_t MSG_get_host_by_name(const char *name)
  * This functions checks whether some data has already been associated to \a host 
    or not and attach \a data to \a host if it is possible.
  */
-MSG_error_t MSG_host_set_data(msg_host_t host, void *data)
+msg_error_t MSG_host_set_data(msg_host_t host, void *data)
 {
   SIMIX_host_set_data(host->smx_host,data);
 

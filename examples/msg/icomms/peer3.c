@@ -22,7 +22,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 int sender(int argc, char *argv[]);
 int receiver(int argc, char *argv[]);
 
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 
 /** Sender function  */
@@ -69,7 +69,7 @@ int sender(int argc, char *argv[])
   sprintf(mailbox, "finalize");
 
   msg_comm_t res_irecv;
-  _XBT_GNUC_UNUSED MSG_error_t res_wait;
+  _XBT_GNUC_UNUSED msg_error_t res_wait;
   for (i = 0; i < receivers_count; i++) {
     task = NULL;
     res_irecv = MSG_task_irecv(&(task), mailbox);
@@ -109,7 +109,7 @@ int receiver(int argc, char *argv[])
   /* Here we are waiting for the receiving of all communications */
   msg_task_t task_com;
   while (!xbt_dynar_is_empty(comms)) {
-    _XBT_GNUC_UNUSED MSG_error_t err;
+    _XBT_GNUC_UNUSED msg_error_t err;
     xbt_dynar_remove_at(comms, MSG_comm_waitany(comms), &res_irecv);
     task_com = MSG_comm_get_task(res_irecv);
     MSG_comm_destroy(res_irecv);
@@ -132,10 +132,10 @@ int receiver(int argc, char *argv[])
 }                               /* end_of_receiver */
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */
@@ -156,7 +156,7 @@ MSG_error_t test_all(const char *platform_file,
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   if (argc < 3) {

@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
 #ifdef BENCH_THIS_CODE
   xbt_os_timer_start(timer);
 #endif
-  MSG_error_t res = MSG_main();
+  msg_error_t res = MSG_main();
 #ifdef BENCH_THIS_CODE
   xbt_os_timer_stop(timer);
 #endif

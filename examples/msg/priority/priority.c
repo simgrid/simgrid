@@ -45,10 +45,10 @@ static int test(int argc, char *argv[])
   return 0;
 }
 
-static MSG_error_t test_all(const char *platform_file,
+static msg_error_t test_all(const char *platform_file,
                             const char *application_file)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   {                             /*  Simulation setting */
     MSG_create_environment(platform_file);
@@ -65,7 +65,7 @@ static MSG_error_t test_all(const char *platform_file,
 
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
 #ifdef _MSC_VER
   unsigned int prev_exponent_format =

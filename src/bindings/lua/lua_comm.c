@@ -62,7 +62,7 @@ static int l_comm_wait(lua_State* L) {
     timeout = luaL_checknumber(L, 2);
   }
                                   /* comm ... */
-  MSG_error_t res = MSG_comm_wait(comm, timeout);
+  msg_error_t res = MSG_comm_wait(comm, timeout);
 
   if (res == MSG_OK) {
     msg_task_t task = MSG_comm_get_task(comm);
@@ -111,7 +111,7 @@ static int l_comm_test(lua_State* L) {
   }
   else {
     /* finished but may have failed */
-    MSG_error_t res = MSG_comm_get_status(comm);
+    msg_error_t res = MSG_comm_get_status(comm);
 
     if (res == MSG_OK) {
       msg_task_t task = MSG_comm_get_task(comm);

@@ -129,7 +129,7 @@ static int l_task_get_computation_duration(lua_State* L)
 static int l_task_execute(lua_State* L)
 {
   msg_task_t task = sglua_check_task(L, 1);
-  MSG_error_t res = MSG_task_execute(task);
+  msg_error_t res = MSG_task_execute(task);
 
   if (res == MSG_OK) {
     return 0;
@@ -247,7 +247,7 @@ static int l_task_send(lua_State* L)
                                   /* task */
   sglua_task_register(L);
                                   /* -- */
-  MSG_error_t res = MSG_task_send_with_timeout(task, mailbox, timeout);
+  msg_error_t res = MSG_task_send_with_timeout(task, mailbox, timeout);
 
   if (res == MSG_OK) {
     lua_pushboolean(L, 1);
@@ -349,7 +349,7 @@ static int l_task_recv(lua_State* L)
     /* no timeout by default */
   }
                                   /* mailbox ... */
-  MSG_error_t res = MSG_task_receive_with_timeout(&task, mailbox, timeout);
+  msg_error_t res = MSG_task_receive_with_timeout(&task, mailbox, timeout);
 
   if (res == MSG_OK) {
     sglua_task_unregister(L, task);

@@ -361,7 +361,7 @@ int node(int argc, char *argv[])
 
         // a transfer has occured
 
-        MSG_error_t status = MSG_comm_get_status(node.comm_receive);
+        msg_error_t status = MSG_comm_get_status(node.comm_receive);
 
         if (status != MSG_OK) {
           XBT_DEBUG("Failed to receive a task. Nevermind.");
@@ -613,7 +613,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   // send a "Find Successor" request to ask_to_id
   msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   XBT_DEBUG("Sending a 'Find Successor' request (task %p) to %d for id %d", task_sent, ask_to, id);
-  MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
+  msg_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
 
   if (res != MSG_OK) {
     XBT_DEBUG("Failed to send the 'Find Successor' request (task %p) to %d for id %d",
@@ -694,7 +694,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
   // send a "Get Predecessor" request to ask_to_id
   XBT_DEBUG("Sending a 'Get Predecessor' request to %d", ask_to);
   msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
-  MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
+  msg_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
 
   if (res != MSG_OK) {
     XBT_DEBUG("Failed to send the 'Get Predecessor' request (task %p) to %d",
@@ -923,7 +923,7 @@ int main(int argc, char *argv[])
   MSG_function_register("node", node);
   MSG_launch_application(application_file);
 
-  MSG_error_t res = MSG_main();
+  msg_error_t res = MSG_main();
   XBT_CRITICAL("Messages created: %ld", smx_total_comms);
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 

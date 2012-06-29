@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
-MSG_error_t test_all(const char *platform_file);
+msg_error_t test_all(const char *platform_file);
 
 
 int master(int argc, char *argv[]);
@@ -197,9 +197,9 @@ static int bypass_deployment(void)
 }
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file)
+msg_error_t test_all(const char *platform_file)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
   MSG_create_environment(platform_file);
   MSG_function_register("master", master);
   MSG_function_register("slave", slave);
@@ -216,7 +216,7 @@ MSG_error_t test_all(const char *platform_file)
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   res = test_all(argv[1]);

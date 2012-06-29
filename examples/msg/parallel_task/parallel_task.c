@@ -25,7 +25,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
  */
 
 int test(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file);
+msg_error_t test_all(const char *platform_file);
 
 /** Emitter function  */
 int test(int argc, char *argv[])
@@ -71,9 +71,9 @@ int test(int argc, char *argv[])
 }
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file)
+msg_error_t test_all(const char *platform_file)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
   xbt_dynar_t all_hosts;
   msg_host_t first_host;
 
@@ -92,7 +92,7 @@ MSG_error_t test_all(const char *platform_file)
 
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   if (argc < 2) {

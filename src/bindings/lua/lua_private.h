@@ -25,4 +25,4 @@ void sglua_register_process_functions(lua_State* L);
 
 void sglua_register_platf_functions(lua_State* L);
 
-const char* sglua_get_msg_error(MSG_error_t err);
+const char* sglua_get_msg_error(msg_error_t err);

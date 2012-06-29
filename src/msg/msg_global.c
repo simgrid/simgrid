@@ -72,7 +72,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
    parameter.
  * \param number the number of channel in the simulation. It has to be >0
  */
-MSG_error_t MSG_set_channel_number(int number)
+msg_error_t MSG_set_channel_number(int number)
 {
   XBT_WARN("DEPRECATED! Please use aliases instead");
   xbt_assert((msg_global)
@@ -102,7 +102,7 @@ int MSG_get_channel_number(void)
 /** \ingroup msg_simulation
  * \brief Launch the MSG simulation
  */
-MSG_error_t MSG_main(void)
+msg_error_t MSG_main(void)
 {
   /* Clean IO before the run */
   fflush(stdout);
@@ -139,7 +139,7 @@ int MSG_process_killall(int reset_PIDs)
 /** \ingroup msg_simulation
  * \brief Clean the MSG simulation
  */
-MSG_error_t MSG_clean(void)
+msg_error_t MSG_clean(void)
 {
   XBT_DEBUG("Closing MSG");
 

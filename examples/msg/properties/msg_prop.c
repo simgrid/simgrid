@@ -32,7 +32,7 @@ int alice(int argc, char *argv[]);
 int bob(int argc, char *argv[]);
 int carole(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 
 static void test_host(const char*hostname) 
@@ -109,7 +109,7 @@ int bob(int argc, char *argv[])
 }
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file)
 {
   MSG_function_register("alice", alice);
@@ -126,7 +126,7 @@ MSG_error_t test_all(const char *platform_file,
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   if (argc < 3) {

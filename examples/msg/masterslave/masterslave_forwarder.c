@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 int forwarder(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
@@ -180,10 +180,10 @@ int forwarder(int argc, char *argv[])
 }                               /* end_of_forwarder */
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */
@@ -205,7 +205,7 @@ MSG_error_t test_all(const char *platform_file,
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   if (argc < 3) {

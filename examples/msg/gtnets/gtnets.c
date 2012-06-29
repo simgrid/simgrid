@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 int timer(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 
 int timer_start = 1;
@@ -201,10 +201,10 @@ int slave(int argc, char *argv[])
 }                               /* end_of_slave */
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   /* MSG_config("workstation/model", "GTNETS"); */
   /* MSG_config("workstation/model","KCCFLN05"); */
@@ -228,7 +228,7 @@ MSG_error_t test_all(const char *platform_file,
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
   bool_printed = 0;
 
   MSG_init(&argc, argv);

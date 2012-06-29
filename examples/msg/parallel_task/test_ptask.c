@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 int execute(int argc, char *argv[]);
 int redistribute(int argc, char *argv[]);
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 
 
@@ -131,10 +131,10 @@ int redistribute(int argc, char *argv[])
 }
 
 
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
 
   MSG_config("workstation/model", "ptask_L07");
@@ -156,7 +156,7 @@ MSG_error_t test_all(const char *platform_file,
 
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   if (argc < 3) {

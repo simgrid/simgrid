@@ -34,9 +34,9 @@ void _MSG_action_exit()
  *  If path!=NULL, load a trace file containing actions, and execute them.
  *  Else, assume that each process gets the path in its deployment file
  */
-MSG_error_t MSG_action_trace_run(char *path)
+msg_error_t MSG_action_trace_run(char *path)
 {
-  MSG_error_t res;
+  msg_error_t res;
   char *name;
   xbt_dynar_t todo;
   xbt_dict_cursor_t cursor;

@@ -150,7 +150,7 @@ static int surf_parse_bypass_application(void)
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
-MSG_error_t test_all(void);
+msg_error_t test_all(void);
 
 /** Emitter function  */
 int master(int argc, char *argv[])
@@ -256,9 +256,9 @@ int slave(int argc, char *argv[])
 }                               /* end_of_slave */
 
 /** Test function */
-MSG_error_t test_all(void)
+msg_error_t test_all(void)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   /*  Simulation setting */
   surf_parse = surf_parse_bypass_platform;
@@ -279,7 +279,7 @@ MSG_error_t test_all(void)
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   res = test_all();

@@ -441,7 +441,7 @@ static int run_lua_code(int argc, char **argv)
  * \param err an MSG error code
  * \return a string describing this error
  */
-const char* sglua_get_msg_error(MSG_error_t err) {
+const char* sglua_get_msg_error(msg_error_t err) {
 
   static const char* msg_errors[] = {
       NULL,

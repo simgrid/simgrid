@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_process, bindings, "Lua Bindings (process mo
 static int l_process_sleep(lua_State* L)
 {
   double duration = luaL_checknumber(L, 1);
-  MSG_error_t res = MSG_process_sleep(duration);
+  msg_error_t res = MSG_process_sleep(duration);
 
   switch (res) {
 

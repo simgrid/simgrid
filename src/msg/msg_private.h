@@ -69,7 +69,7 @@ typedef struct simdata_process {
   msg_task_t waiting_task;
   char **argv;                  /* arguments table if any */
   int argc;                     /* arguments number if any */
-  MSG_error_t last_errno;       /* the last value returned by a MSG_function */
+  msg_error_t last_errno;       /* the last value returned by a MSG_function */
 
   msg_vm_t vm;                 /* virtual machine the process is in */
 
@@ -90,7 +90,7 @@ typedef struct msg_comm {
   smx_action_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
   msg_task_t task_sent;           /* task sent (NULL for the receiver) */
   msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
-  MSG_error_t status;           /* status of the communication once finished */
+  msg_error_t status;           /* status of the communication once finished */
 } s_msg_comm_t;
 
 typedef enum {

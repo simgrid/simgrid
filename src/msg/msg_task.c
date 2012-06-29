@@ -261,7 +261,7 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  * supposed to destroy it. The sender should not use it anymore.
  * If the task failed to be sent, the sender remains the owner of the task.
  */
-MSG_error_t MSG_task_destroy(msg_task_t task)
+msg_error_t MSG_task_destroy(msg_task_t task)
 {
   smx_action_t action = NULL;
   xbt_assert((task != NULL), "Invalid parameter");
@@ -296,7 +296,7 @@ MSG_error_t MSG_task_destroy(msg_task_t task)
  * \param task the task to cancel. If it was executed or transfered, it
           stops the process that were working on it.
  */
-MSG_error_t MSG_task_cancel(msg_task_t task)
+msg_error_t MSG_task_cancel(msg_task_t task)
 {
   xbt_assert((task != NULL), "Invalid parameter");
 

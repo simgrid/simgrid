@@ -43,10 +43,10 @@ static int master(int argc, char *argv[])
 }                               /* end_of_dram_master */
 
 /** Test function */
-static MSG_error_t test_all(const char *platform_file,
+static msg_error_t test_all(const char *platform_file,
                             const char *application_file)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_create_environment(platform_file);
   MSG_function_register("master", master);
@@ -63,7 +63,7 @@ static MSG_error_t test_all(const char *platform_file,
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   if (argc < 3) {

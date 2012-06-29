@@ -56,12 +56,12 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
   return mailbox;
 }
 
-MSG_error_t
+msg_error_t
 MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
                          msg_host_t host, double timeout)
 {
   xbt_ex_t e;
-  MSG_error_t ret = MSG_OK;
+  msg_error_t ret = MSG_OK;
   /* We no longer support getting a task from a specific host */
   if (host)
     THROW_UNIMPLEMENTED;
@@ -108,12 +108,12 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
   MSG_RETURN(ret);
 }
 
-MSG_error_t
+msg_error_t
 MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
                              double timeout)
 {
   xbt_ex_t e;
-  MSG_error_t ret = MSG_OK;
+  msg_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
   msg_process_t process = MSG_process_self();
   simdata_process_t p_simdata = SIMIX_process_self_get_data(process);

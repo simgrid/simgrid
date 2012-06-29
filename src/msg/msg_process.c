@@ -224,7 +224,7 @@ void MSG_process_kill(msg_process_t process)
  * This function checks whether \a process and \a host are valid pointers
    and change the value of the #msg_host_t on which \a process is running.
  */
-MSG_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
+msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
   simdata_process_t simdata = simcall_process_get_data(process);
   simdata->m_host = host;
@@ -257,7 +257,7 @@ void* MSG_process_get_data(msg_process_t process)
  * This function checks whether \a process is a valid pointer or not
    and sets the user data associated to this process.
  */
-MSG_error_t MSG_process_set_data(msg_process_t process, void *data)
+msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != NULL, "Invalid parameter");
 
@@ -320,7 +320,7 @@ xbt_dynar_t MSG_processes_as_dynar(void) {
  * \param process a process
  * \param kill_time the time when the process is killed.
  */
-MSG_error_t MSG_process_set_kill_time(msg_process_t process, double kill_time)
+msg_error_t MSG_process_set_kill_time(msg_process_t process, double kill_time)
 {
   simcall_process_set_kill_time(process,kill_time);
   return MSG_OK;
@@ -437,7 +437,7 @@ msg_process_t MSG_process_self(void)
  * This function suspends the process by suspending the task on which
  * it was waiting for the completion.
  */
-MSG_error_t MSG_process_suspend(msg_process_t process)
+msg_error_t MSG_process_suspend(msg_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
 
@@ -455,7 +455,7 @@ MSG_error_t MSG_process_suspend(msg_process_t process)
  * This function resumes a suspended process by resuming the task on
  * which it was waiting for the completion.
  */
-MSG_error_t MSG_process_resume(msg_process_t process)
+msg_error_t MSG_process_resume(msg_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
 

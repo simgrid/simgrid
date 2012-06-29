@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
-MSG_error_t test_all(const char *);
+msg_error_t test_all(const char *);
 
 /** Emitter function  */
 int master(int argc, char *argv[])
@@ -104,9 +104,9 @@ int slave(int argc, char *argv[])
 }                               /* end_of_slave */
 
 /** Test function */
-MSG_error_t test_all(const char *file)  //(void)
+msg_error_t test_all(const char *file)  //(void)
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   /*start by registering functions before loading script */
   MSG_function_register("master", master);
@@ -122,7 +122,7 @@ MSG_error_t test_all(const char *file)  //(void)
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   if (argc < 2) {

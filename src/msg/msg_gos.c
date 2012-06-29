@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
  * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
  * or #MSG_HOST_FAILURE otherwise
  */
-MSG_error_t MSG_task_execute(msg_task_t task)
+msg_error_t MSG_task_execute(msg_task_t task)
 {
   return MSG_parallel_task_execute(task);
 }
@@ -34,14 +34,14 @@ MSG_error_t MSG_task_execute(msg_task_t task)
  * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
  * or #MSG_HOST_FAILURE otherwise
  */
-MSG_error_t MSG_parallel_task_execute(msg_task_t task)
+msg_error_t MSG_parallel_task_execute(msg_task_t task)
 {
   xbt_ex_t e;
   simdata_task_t simdata = task->simdata;
   msg_process_t self = SIMIX_process_self();
   simdata_process_t p_simdata = SIMIX_process_self_get_data(self);
   e_smx_state_t comp_state;
-  MSG_error_t status = MSG_OK;
+  msg_error_t status = MSG_OK;
 
 #ifdef HAVE_TRACING
   TRACE_msg_task_execute_start(task);
@@ -123,9 +123,9 @@ MSG_error_t MSG_parallel_task_execute(msg_task_t task)
  *
  * \param nb_sec a number of second
  */
-MSG_error_t MSG_process_sleep(double nb_sec)
+msg_error_t MSG_process_sleep(double nb_sec)
 {
-  MSG_error_t status = MSG_OK;
+  msg_error_t status = MSG_OK;
   /*msg_process_t proc = MSG_process_self();*/
 
 #ifdef HAVE_TRACING
@@ -179,7 +179,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  * #MSG_OK if the task was successfully received,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
-MSG_error_t
+msg_error_t
 MSG_task_receive_from_host(msg_task_t * task, const char *alias,
                            msg_host_t host)
 {
@@ -200,7 +200,7 @@ MSG_task_receive_from_host(msg_task_t * task, const char *alias,
  * #MSG_OK if the task was successfully received,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
-MSG_error_t MSG_task_receive(msg_task_t * task, const char *alias)
+msg_error_t MSG_task_receive(msg_task_t * task, const char *alias)
 {
   return MSG_task_receive_with_timeout(task, alias, -1);
 }
@@ -221,7 +221,7 @@ MSG_error_t MSG_task_receive(msg_task_t * task, const char *alias)
  * #MSG_OK if the task was successfully received,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-MSG_error_t
+msg_error_t
 MSG_task_receive_with_timeout(msg_task_t * task, const char *alias,
                               double timeout)
 {
@@ -245,7 +245,7 @@ MSG_task_receive_with_timeout(msg_task_t * task, const char *alias,
  * #MSG_OK if the task was successfully received,
 * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-MSG_error_t
+msg_error_t
 MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
                      msg_host_t host)
 {
@@ -458,7 +458,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
     xbt_dynar_push(s_comms, &comm->s_comm);
   }
 
-  MSG_error_t status = MSG_OK;
+  msg_error_t status = MSG_OK;
   TRY {
     finished_index = simcall_comm_testany(s_comms);
   }
@@ -511,9 +511,9 @@ void MSG_comm_destroy(msg_comm_t comm)
  * \param comm the communication to wait.
  * \param timeout Wait until the communication terminates or the timeout 
  * occurs. You can provide a -1 timeout to obtain an infinite timeout.
- * \return MSG_error_t
+ * \return msg_error_t
  */
-MSG_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
+msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 {
   xbt_ex_t e;
   TRY {
@@ -577,7 +577,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
     xbt_dynar_push(s_comms, &comm->s_comm);
   }
 
-  MSG_error_t status = MSG_OK;
+  msg_error_t status = MSG_OK;
   TRY {
     finished_index = simcall_comm_waitany(s_comms);
   }
@@ -621,7 +621,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
  * \return the status of the communication, or #MSG_OK if no error occured
  * during the communication
  */
-MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
+msg_error_t MSG_comm_get_status(msg_comm_t comm) {
 
   return comm->status;
 }
@@ -671,7 +671,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
  * \return Returns #MSG_OK if the task was successfully sent,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
-MSG_error_t MSG_task_send(msg_task_t task, const char *alias)
+msg_error_t MSG_task_send(msg_task_t task, const char *alias)
 {
   XBT_DEBUG("MSG_task_send: Trying to send a message on mailbox '%s'", alias);
   return MSG_task_send_with_timeout(task, alias, -1);
@@ -691,7 +691,7 @@ MSG_error_t MSG_task_send(msg_task_t task, const char *alias)
  * \return Returns #MSG_OK if the task was successfully sent,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
-MSG_error_t
+msg_error_t
 MSG_task_send_bounded(msg_task_t task, const char *alias, double maxrate)
 {
   task->simdata->rate = maxrate;
@@ -711,7 +711,7 @@ MSG_task_send_bounded(msg_task_t task, const char *alias, double maxrate)
  * \return Returns #MSG_OK if the task was successfully sent,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-MSG_error_t
+msg_error_t
 MSG_task_send_with_timeout(msg_task_t task, const char *alias,
                            double timeout)
 {
@@ -819,7 +819,7 @@ const char *MSG_task_get_category (msg_task_t task)
  * \brief Return the last value returned by a MSG function (except
  * MSG_get_errno...).
  */
-MSG_error_t MSG_get_errno(void)
+msg_error_t MSG_get_errno(void)
 {
   return PROCESS_GET_ERRNO();
 }
@@ -849,7 +849,7 @@ MSG_error_t MSG_get_errno(void)
  * #MSG_TRANSFER_FAILURE if the transfer could not be properly done
  * (network failure, dest failure) or #MSG_OK if it succeeded.
  */
-MSG_error_t MSG_task_put(msg_task_t task, msg_host_t dest, m_channel_t channel)
+msg_error_t MSG_task_put(msg_task_t task, msg_host_t dest, m_channel_t channel)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_send");
   return MSG_task_put_with_timeout(task, dest, channel, -1.0);
@@ -861,7 +861,7 @@ MSG_error_t MSG_task_put(msg_task_t task, msg_host_t dest, m_channel_t channel)
  *
  * \sa MSG_task_put
  */
-MSG_error_t
+msg_error_t
 MSG_task_put_bounded(msg_task_t task, msg_host_t dest, m_channel_t channel,
                      double maxrate)
 {
@@ -900,7 +900,7 @@ this function was called was shut down,
 #MSG_TRANSFER_FAILURE if the transfer could not be properly done
 (network failure, dest failure, timeout...) or #MSG_OK if the communication succeeded.
  */
-MSG_error_t
+msg_error_t
 MSG_task_put_with_timeout(msg_task_t task, msg_host_t dest,
                           m_channel_t channel, double timeout)
 {
@@ -1002,9 +1002,9 @@ int MSG_task_probe_from_host(int channel, msg_host_t host)
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
  * \param host the host that is to be watched.
- * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
+ * \return a #msg_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
-MSG_error_t
+msg_error_t
 MSG_task_get_from_host(msg_task_t * task, m_channel_t channel, msg_host_t host)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_receive_from_host");
@@ -1022,9 +1022,9 @@ MSG_task_get_from_host(msg_task_t * task, m_channel_t channel, msg_host_t host)
  * \param channel the channel on which the process should be
  listening. This value has to be >=0 and < than the maximal
  number of channels fixed with MSG_set_channel_number().
- * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
+ * \return a #msg_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
-MSG_error_t MSG_task_get(msg_task_t * task, m_channel_t channel)
+msg_error_t MSG_task_get(msg_task_t * task, m_channel_t channel)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_receive");
   return MSG_task_get_with_timeout(task, channel, -1);
@@ -1045,9 +1045,9 @@ MSG_error_t MSG_task_get(msg_task_t * task, m_channel_t channel)
  up. In such a case, #MSG_TRANSFER_FAILURE will be returned, \a task
  will not be modified and will still be
  equal to \c NULL when returning.
- * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
+ * \return a #msg_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
-MSG_error_t
+msg_error_t
 MSG_task_get_with_timeout(msg_task_t * task, m_channel_t channel,
                           double max_duration)
 {
@@ -1055,7 +1055,7 @@ MSG_task_get_with_timeout(msg_task_t * task, m_channel_t channel,
   return MSG_task_get_ext(task, channel, max_duration, NULL);
 }
 
-MSG_error_t
+msg_error_t
 MSG_task_get_ext(msg_task_t * task, m_channel_t channel, double timeout,
                  msg_host_t host)
 {

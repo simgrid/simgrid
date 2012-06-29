@@ -165,7 +165,7 @@ static void action_recv(const char *const *action)
 #endif
 
   XBT_DEBUG("Receiving: %s", name);
-  MSG_error_t res = MSG_task_receive(&task, mailbox_name);
+  msg_error_t res = MSG_task_receive(&task, mailbox_name);
   //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
   XBT_VERB("%s %f", name, MSG_get_clock() - clock);
 
@@ -546,7 +546,7 @@ static void action_finalize(const char *const *action)
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
   /* Check the given arguments */
   MSG_init(&argc, argv);

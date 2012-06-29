@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 int sender(int argc, char *argv[]);
 int receiver(int argc, char *argv[]);
 
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 
 double task_comm_size_lat = 10e0;
@@ -130,11 +130,11 @@ int receiver(int argc, char *argv[])
 
 
 /** Test function */
-MSG_error_t test_all(const char *platform_file,
+msg_error_t test_all(const char *platform_file,
                      const char *application_file)
 {
 
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
 
 
@@ -158,7 +158,7 @@ MSG_error_t test_all(const char *platform_file,
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
 
 #ifdef _MSC_VER
   unsigned int prev_exponent_format =

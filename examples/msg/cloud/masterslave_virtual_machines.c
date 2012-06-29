@@ -168,7 +168,7 @@ int slave_fun(int argc, char *argv[])
 /** Main function */
 int main(int argc, char *argv[])
 {
-  MSG_error_t res = MSG_OK;
+  msg_error_t res = MSG_OK;
   xbt_dynar_t hosts_dynar;
   msg_host_t*hosts= xbt_new(msg_host_t,10);
   char**hostnames= xbt_new(char*,10);
