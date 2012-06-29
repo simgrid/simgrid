@@ -19,7 +19,7 @@ msg_comm_t sglua_check_comm(lua_State* L, int index);
 void sglua_push_comm(lua_State* L, msg_comm_t comm);
 
 void sglua_register_host_functions(lua_State* L);
-m_host_t sglua_check_host(lua_State* L, int index);
+msg_host_t sglua_check_host(lua_State* L, int index);
 
 void sglua_register_process_functions(lua_State* L);
 

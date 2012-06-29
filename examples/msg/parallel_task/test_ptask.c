@@ -25,7 +25,7 @@ int execute(int argc, char *argv[])
 {
   char buffer[32];
   int i, j;
-  m_host_t *m_host_list = NULL;
+  msg_host_t *m_host_list = NULL;
   m_task_t task = NULL;
   int host_list_size;
   double *computation_duration = NULL;
@@ -37,7 +37,7 @@ int execute(int argc, char *argv[])
 
   host_list_size = argc - 3;
   XBT_DEBUG("host_list_size=%d", host_list_size);
-  m_host_list = calloc(host_list_size, sizeof(m_host_t));
+  m_host_list = calloc(host_list_size, sizeof(msg_host_t));
   for (i = 1; i <= host_list_size; i++) {
     m_host_list[i - 1] = MSG_get_host_by_name(argv[i]);
     xbt_assert(m_host_list[i - 1] != NULL,
@@ -82,7 +82,7 @@ int redistribute(int argc, char *argv[])
 {
   char buffer[32];
   int i, j;
-  m_host_t *m_host_list = NULL;
+  msg_host_t *m_host_list = NULL;
   m_task_t task = NULL;
   int host_list_size;
   double *computation_duration = NULL;
@@ -93,7 +93,7 @@ int redistribute(int argc, char *argv[])
 
   host_list_size = argc - 2;
   XBT_DEBUG("host_list_size=%d", host_list_size);
-  m_host_list = calloc(host_list_size, sizeof(m_host_t));
+  m_host_list = calloc(host_list_size, sizeof(msg_host_t));
   for (i = 1; i <= host_list_size; i++) {
     m_host_list[i - 1] = MSG_get_host_by_name(argv[i]);
     xbt_assert(m_host_list[i - 1] != NULL,

@@ -39,7 +39,7 @@ m_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 
 int
 MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
-                                         m_host_t host)
+                                         msg_host_t host)
 {
   return simcall_rdv_comm_count_by_host(mailbox,
                                       host->smx_host);
@@ -58,7 +58,7 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 
 MSG_error_t
 MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
-                         m_host_t host, double timeout)
+                         msg_host_t host, double timeout)
 {
   xbt_ex_t e;
   MSG_error_t ret = MSG_OK;
@@ -178,7 +178,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
 }
 
 #ifdef MSG_USE_DEPRECATED
-msg_mailbox_t MSG_mailbox_get_by_channel(m_host_t host,
+msg_mailbox_t MSG_mailbox_get_by_channel(msg_host_t host,
                                          m_channel_t channel)
 {
   XBT_WARN("DEPRECATED! Now use MSG_mailbox_get_by_alias");

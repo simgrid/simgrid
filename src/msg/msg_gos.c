@@ -173,7 +173,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  *
  * \param task a memory location for storing a #m_task_t.
  * \param alias name of the mailbox to receive the task from
- * \param host a #m_host_t host from where the task was sent
+ * \param host a #msg_host_t host from where the task was sent
  *
  * \return Returns
  * #MSG_OK if the task was successfully received,
@@ -181,7 +181,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  */
 MSG_error_t
 MSG_task_receive_from_host(m_task_t * task, const char *alias,
-                           m_host_t host)
+                           msg_host_t host)
 {
   return MSG_task_receive_ext(task, alias, -1, host);
 }
@@ -239,7 +239,7 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
  * \param task a memory location for storing a #m_task_t.
  * \param alias name of the mailbox to receive the task from
  * \param timeout is the maximum wait time for completion (provide -1 for no timeout)
- * \param host a #m_host_t host from where the task was sent
+ * \param host a #msg_host_t host from where the task was sent
  *
  * \return Returns
  * #MSG_OK if the task was successfully received,
@@ -247,7 +247,7 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
  */
 MSG_error_t
 MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
-                     m_host_t host)
+                     msg_host_t host)
 {
   XBT_DEBUG
       ("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'",
@@ -741,7 +741,7 @@ int MSG_task_listen(const char *alias)
  * given mailbox, 0 if there is no pending communication actions.
  *
  */
-int MSG_task_listen_from_host(const char *alias, m_host_t host)
+int MSG_task_listen_from_host(const char *alias, msg_host_t host)
 {
   return
       MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias
@@ -849,7 +849,7 @@ MSG_error_t MSG_get_errno(void)
  * #MSG_TRANSFER_FAILURE if the transfer could not be properly done
  * (network failure, dest failure) or #MSG_OK if it succeeded.
  */
-MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, m_channel_t channel)
+MSG_error_t MSG_task_put(m_task_t task, msg_host_t dest, m_channel_t channel)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_send");
   return MSG_task_put_with_timeout(task, dest, channel, -1.0);
@@ -862,7 +862,7 @@ MSG_error_t MSG_task_put(m_task_t task, m_host_t dest, m_channel_t channel)
  * \sa MSG_task_put
  */
 MSG_error_t
-MSG_task_put_bounded(m_task_t task, m_host_t dest, m_channel_t channel,
+MSG_task_put_bounded(m_task_t task, msg_host_t dest, m_channel_t channel,
                      double maxrate)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_send_bounded");
@@ -901,7 +901,7 @@ this function was called was shut down,
 (network failure, dest failure, timeout...) or #MSG_OK if the communication succeeded.
  */
 MSG_error_t
-MSG_task_put_with_timeout(m_task_t task, m_host_t dest,
+MSG_task_put_with_timeout(m_task_t task, msg_host_t dest,
                           m_channel_t channel, double timeout)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_send_with_timeout");
@@ -976,7 +976,7 @@ int MSG_task_Iprobe(m_channel_t channel)
  * \return the number of tasks waiting to be received on \a channel
  and sent by \a host.
  */
-int MSG_task_probe_from_host(int channel, m_host_t host)
+int MSG_task_probe_from_host(int channel, msg_host_t host)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_listen_from_host");
   xbt_assert((channel >= 0)
@@ -1005,7 +1005,7 @@ int MSG_task_probe_from_host(int channel, m_host_t host)
  * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
 MSG_error_t
-MSG_task_get_from_host(m_task_t * task, m_channel_t channel, m_host_t host)
+MSG_task_get_from_host(m_task_t * task, m_channel_t channel, msg_host_t host)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_receive_from_host");
   return MSG_task_get_ext(task, channel, -1, host);
@@ -1057,7 +1057,7 @@ MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
 
 MSG_error_t
 MSG_task_get_ext(m_task_t * task, m_channel_t channel, double timeout,
-                 m_host_t host)
+                 msg_host_t host)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_receive_ext");
   xbt_assert((channel >= 0)

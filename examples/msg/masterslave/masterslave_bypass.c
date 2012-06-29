@@ -156,7 +156,7 @@ MSG_error_t test_all(void);
 int master(int argc, char *argv[])
 {
   int slaves_count = 0;
-  m_host_t *slaves = NULL;
+  msg_host_t *slaves = NULL;
   m_task_t *todo = NULL;
   int number_of_tasks = 0;
   double task_comp_size = 0;
@@ -186,7 +186,7 @@ int master(int argc, char *argv[])
 
   {                             /* Process organisation */
     slaves_count = argc - 4;
-    slaves = xbt_new0(m_host_t, slaves_count);
+    slaves = xbt_new0(msg_host_t, slaves_count);
 
     for (i = 4; i < argc; i++) {
       slaves[i - 4] = MSG_get_host_by_name(argv[i]);

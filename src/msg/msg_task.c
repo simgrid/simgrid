@@ -84,7 +84,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
  * \param name a name for the object. It is for user-level information
  and can be NULL.
  * \param host_nb the number of hosts implied in the parallel task.
- * \param host_list an array of \p host_nb m_host_t.
+ * \param host_list an array of \p host_nb msg_host_t.
  * \param computation_amount an array of \p host_nb
  doubles. computation_amount[i] is the total number of operations
  that have to be performed on host_list[i].
@@ -97,7 +97,7 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
  */
 m_task_t
 MSG_parallel_task_create(const char *name, int host_nb,
-                         const m_host_t * host_list,
+                         const msg_host_t * host_list,
                          double *computation_amount,
                          double *communication_amount, void *data)
 {
@@ -219,9 +219,9 @@ msg_process_t MSG_task_get_sender(m_task_t task)
 /** \ingroup m_task_management
  * \brief Return the source of a #m_task_t.
  *
- * This functions returns the #m_host_t from which this task was sent
+ * This functions returns the #msg_host_t from which this task was sent
  */
-m_host_t MSG_task_get_source(m_task_t task)
+msg_host_t MSG_task_get_source(m_task_t task)
 {
   xbt_assert(task, "Invalid parameters");
   return ((simdata_task_t) task->simdata)->source;

@@ -35,7 +35,7 @@ double task_comm_size_bw = 10e8;
 /** Emitter function  */
 int sender(int argc, char *argv[])
 {
-  m_host_t host = NULL;
+  msg_host_t host = NULL;
   double time;
   m_task_t task_la = NULL;
   m_task_t task_bw = NULL;
@@ -44,7 +44,7 @@ int sender(int argc, char *argv[])
 
   XBT_INFO("sender");
 
-  /*host = xbt_new0(m_host_t,1); */
+  /*host = xbt_new0(msg_host_t,1); */
 
   XBT_INFO("host = %s", argv[1]);
 

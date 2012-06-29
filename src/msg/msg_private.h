@@ -30,7 +30,7 @@ typedef struct simdata_task {
   double computation_amount;    /* Computation size */
   msg_process_t sender;
   msg_process_t receiver;
-  m_host_t source;
+  msg_host_t source;
   double priority;
   double rate;
   int isused;  /* Indicates whether the task is used in SIMIX currently */
@@ -58,10 +58,10 @@ typedef struct simdata_gpu_task {
 /******************************* Process *************************************/
 
 typedef struct simdata_process {
-  m_host_t m_host;              /* the host on which the process is running */
+  msg_host_t m_host;              /* the host on which the process is running */
   int PID;                      /* used for debugging purposes */
   int PPID;                     /* The parent PID */
-  m_host_t put_host;            /* used for debugging purposes */
+  msg_host_t put_host;            /* used for debugging purposes */
 #ifdef MSG_USE_DEPRECATED
   m_channel_t put_channel;      /* used for debugging purposes */
 #endif
@@ -80,7 +80,7 @@ typedef struct process_arg {
   const char *name;
   xbt_main_func_t code;
   void *data;
-  m_host_t m_host;
+  msg_host_t m_host;
   int argc;
   char **argv;
   double kill_time;
@@ -102,7 +102,7 @@ typedef struct msg_vm {
   s_xbt_swag_hookup_t host_vms_hookup;
   xbt_dynar_t processes;
   e_msg_vm_state_t state;
-  m_host_t location;
+  msg_host_t location;
   int coreAmount;
 } s_msg_vm_t;
 
@@ -138,8 +138,8 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #  define MSG_RETURN(val) return(val)
 #endif
 
-m_host_t __MSG_host_create(smx_host_t workstation);
-void __MSG_host_destroy(m_host_t host);
+msg_host_t __MSG_host_create(smx_host_t workstation);
+void __MSG_host_destroy(msg_host_t host);
 
 void __MSG_display_process_status(void);
 

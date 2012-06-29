@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg,
  *  to add extra constraints on the execution, but the argument is ignored for now.
  */
 
-msg_vm_t MSG_vm_start(m_host_t location, int coreAmount) {
+msg_vm_t MSG_vm_start(msg_host_t location, int coreAmount) {
   msg_vm_t res = xbt_new0(s_msg_vm_t,1);
   res->all_vms_hookup.prev = NULL;
   res->host_vms_hookup.prev = NULL;
@@ -99,7 +99,7 @@ void MSG_vm_unbind(msg_vm_t vm, msg_process_t process) {
  * MSG_task_send() before or after, depending on whether you want to do cold or hot
  * migration.
  */
-void MSG_vm_migrate(msg_vm_t vm, m_host_t destination) {
+void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination) {
   unsigned int cpt;
   msg_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {

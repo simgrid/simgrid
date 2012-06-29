@@ -24,7 +24,7 @@ char *instr_process_id_2 (const char *process_name, int process_pid, char *str, 
 /*
  * Instrumentation functions to trace MSG processes (msg_process_t)
  */
-void TRACE_msg_process_change_host(msg_process_t process, m_host_t old_host, m_host_t new_host)
+void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host, msg_host_t new_host)
 {
   if (TRACE_msg_process_is_enabled()){
     static long long int counter = 0;
@@ -54,7 +54,7 @@ void TRACE_msg_process_change_host(msg_process_t process, m_host_t old_host, m_h
   }
 }
 
-void TRACE_msg_process_create (const char *process_name, int process_pid, m_host_t host)
+void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host)
 {
   if (TRACE_msg_process_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;

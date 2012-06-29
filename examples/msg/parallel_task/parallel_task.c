@@ -32,7 +32,7 @@ int test(int argc, char *argv[])
 {
   xbt_dynar_t slaves_dynar;
   int slaves_count = 0;
-  m_host_t *slaves = NULL;
+  msg_host_t *slaves = NULL;
   double task_comp_size = 100000;
   double task_comm_size = 10000;
   double *computation_amount = NULL;
@@ -75,13 +75,13 @@ MSG_error_t test_all(const char *platform_file)
 {
   MSG_error_t res = MSG_OK;
   xbt_dynar_t all_hosts;
-  m_host_t first_host;
+  msg_host_t first_host;
 
   MSG_config("workstation/model", "ptask_L07");
   MSG_create_environment(platform_file);
 
   all_hosts = MSG_hosts_as_dynar();
-  first_host = xbt_dynar_getfirst_as(all_hosts,m_host_t);
+  first_host = xbt_dynar_getfirst_as(all_hosts,msg_host_t);
   MSG_process_create("test", test, NULL, first_host);
   res = MSG_main();
   xbt_dynar_free(&all_hosts);

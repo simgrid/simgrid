@@ -45,7 +45,7 @@ static int emigrant(int argc, char *argv[])
   xbt_cond_broadcast(cond);
   xbt_mutex_release(mutex);
   MSG_process_suspend(MSG_process_self());
-  m_host_t h = MSG_process_get_host(MSG_process_self());
+  msg_host_t h = MSG_process_get_host(MSG_process_self());
   XBT_INFO("I've been moved on this new host: %s", MSG_host_get_name(h));
   XBT_INFO("Uh, nothing to do here. Stopping now");
   return 0;

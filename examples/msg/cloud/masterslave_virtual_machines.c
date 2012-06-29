@@ -43,7 +43,7 @@ static void work_batch(int slaves_count) {
 
 int master(int argc, char *argv[]) {
   int slaves_count = 10;
-  m_host_t *slaves = xbt_new(m_host_t,10);
+  msg_host_t *slaves = xbt_new(msg_host_t,10);
 
   int i;
 
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 {
   MSG_error_t res = MSG_OK;
   xbt_dynar_t hosts_dynar;
-  m_host_t*hosts= xbt_new(m_host_t,10);
+  msg_host_t*hosts= xbt_new(msg_host_t,10);
   char**hostnames= xbt_new(char*,10);
   char**masterargv=xbt_new(char*,12);
   int i;
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
       "I need at least 10 hosts in the platform file, but %s contains only %ld hosts_dynar.",
       argv[1],xbt_dynar_length(hosts_dynar));
   for (i=0;i<10;i++) {
-    hosts[i] = xbt_dynar_get_as(hosts_dynar,i,m_host_t);
+    hosts[i] = xbt_dynar_get_as(hosts_dynar,i,msg_host_t);
     hostnames[i] = xbt_strdup(MSG_host_get_name(hosts[i]));
   }
   masterargv[0]=xbt_strdup("master");

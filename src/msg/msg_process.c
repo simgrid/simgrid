@@ -67,7 +67,7 @@ void MSG_process_create_from_SIMIX(smx_process_t* process, const char *name,
                                     const char *hostname, double kill_time, int argc, char **argv,
                                     xbt_dict_t properties, int auto_restart)
 {
-  m_host_t host = MSG_get_host_by_name(hostname);
+  msg_host_t host = MSG_get_host_by_name(hostname);
   msg_process_t p = MSG_process_create_with_environment(name, code, data,
                                                       host, argc, argv,
                                                       properties);
@@ -87,7 +87,7 @@ void MSG_process_create_from_SIMIX(smx_process_t* process, const char *name,
  */
 msg_process_t MSG_process_create(const char *name,
                                xbt_main_func_t code, void *data,
-                               m_host_t host)
+                               msg_host_t host)
 {
   return MSG_process_create_with_environment(name, code, data, host, -1,
                                              NULL, NULL);
@@ -120,7 +120,7 @@ msg_process_t MSG_process_create(const char *name,
 
 msg_process_t MSG_process_create_with_arguments(const char *name,
                                               xbt_main_func_t code,
-                                              void *data, m_host_t host,
+                                              void *data, msg_host_t host,
                                               int argc, char **argv)
 {
   return MSG_process_create_with_environment(name, code, data, host,
@@ -154,7 +154,7 @@ msg_process_t MSG_process_create_with_arguments(const char *name,
  */
 msg_process_t MSG_process_create_with_environment(const char *name,
                                                 xbt_main_func_t code,
-                                                void *data, m_host_t host,
+                                                void *data, msg_host_t host,
                                                 int argc, char **argv,
                                                 xbt_dict_t properties)
 {
@@ -222,14 +222,14 @@ void MSG_process_kill(msg_process_t process)
  * \brief Migrates a process to another location.
  *
  * This function checks whether \a process and \a host are valid pointers
-   and change the value of the #m_host_t on which \a process is running.
+   and change the value of the #msg_host_t on which \a process is running.
  */
-MSG_error_t MSG_process_migrate(msg_process_t process, m_host_t host)
+MSG_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
   simdata_process_t simdata = simcall_process_get_data(process);
   simdata->m_host = host;
 #ifdef HAVE_TRACING
-  m_host_t now = simdata->m_host;
+  msg_host_t now = simdata->m_host;
   TRACE_msg_process_change_host(process, now, host);
 #endif
   simcall_process_change_host(process, host->smx_host);
@@ -281,10 +281,10 @@ XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
 /** \ingroup m_process_management
  * \brief Return the location on which a process is running.
  * \param process a process (NULL means the current one)
- * \return the m_host_t corresponding to the location on which \a
+ * \return the msg_host_t corresponding to the location on which \a
  * process is running.
  */
-m_host_t MSG_process_get_host(msg_process_t process)
+msg_host_t MSG_process_get_host(msg_process_t process)
 {
   simdata_process_t simdata;
   if (process == NULL) {

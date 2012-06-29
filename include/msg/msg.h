@@ -81,21 +81,21 @@ XBT_PUBLIC(int) MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf);
 
 
 /************************** Host handling ***********************************/
-XBT_PUBLIC(MSG_error_t) MSG_host_set_data(m_host_t host, void *data);
-XBT_PUBLIC(void *) MSG_host_get_data(m_host_t host);
-XBT_PUBLIC(const char *) MSG_host_get_name(m_host_t host);
-XBT_PUBLIC(m_host_t) MSG_host_self(void);
-XBT_PUBLIC(int) MSG_get_host_msgload(m_host_t host);
+XBT_PUBLIC(MSG_error_t) MSG_host_set_data(msg_host_t host, void *data);
+XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
+XBT_PUBLIC(const char *) MSG_host_get_name(msg_host_t host);
+XBT_PUBLIC(msg_host_t) MSG_host_self(void);
+XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
 /* int MSG_get_msgload(void); This function lacks specification; discard it */
-XBT_PUBLIC(double) MSG_get_host_speed(m_host_t h);
-XBT_PUBLIC(int) MSG_host_is_avail(m_host_t h);
-XBT_PUBLIC(void) __MSG_host_destroy(m_host_t host);
+XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
+XBT_PUBLIC(int) MSG_host_is_avail(msg_host_t h);
+XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
 
 /*property handlers*/
-XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(m_host_t host);
-XBT_PUBLIC(const char *) MSG_host_get_property_value(m_host_t host,
+XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(msg_host_t host);
+XBT_PUBLIC(const char *) MSG_host_get_property_value(msg_host_t host,
                                                      const char *name);
-XBT_PUBLIC(void) MSG_host_set_property_value(m_host_t host,
+XBT_PUBLIC(void) MSG_host_set_property_value(msg_host_t host,
                                              const char *name, char *value,
                                              void_f_pvoid_t free_ctn);
 
@@ -103,17 +103,17 @@ XBT_PUBLIC(void) MSG_host_set_property_value(m_host_t host,
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
 XBT_PUBLIC(void) MSG_load_platform_script(const char *script_file);
 
-XBT_PUBLIC(m_host_t) MSG_get_host_by_name(const char *name);
+XBT_PUBLIC(msg_host_t) MSG_get_host_by_name(const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,
                                            xbt_main_func_t code,
-                                           void *data, m_host_t host);
+                                           void *data, msg_host_t host);
 XBT_PUBLIC(msg_process_t) MSG_process_create_with_arguments(const char *name,
                                                           xbt_main_func_t
                                                           code, void *data,
-                                                          m_host_t host,
+                                                          msg_host_t host,
                                                           int argc,
                                                           char **argv);
 XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
@@ -121,7 +121,7 @@ XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
                                                             xbt_main_func_t
                                                             code,
                                                             void *data,
-                                                            m_host_t host,
+                                                            msg_host_t host,
                                                             int argc,
                                                             char **argv,
                                                             xbt_dict_t
@@ -129,13 +129,13 @@ XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
 XBT_PUBLIC(void) MSG_process_kill(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
 
-XBT_PUBLIC(MSG_error_t) MSG_process_migrate(msg_process_t process, m_host_t host);
+XBT_PUBLIC(MSG_error_t) MSG_process_migrate(msg_process_t process, msg_host_t host);
 
 XBT_PUBLIC(void *) MSG_process_get_data(msg_process_t process);
 XBT_PUBLIC(MSG_error_t) MSG_process_set_data(msg_process_t process,
                                              void *data);
 XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup);
-XBT_PUBLIC(m_host_t) MSG_process_get_host(msg_process_t process);
+XBT_PUBLIC(msg_host_t) MSG_process_get_host(msg_process_t process);
 XBT_PUBLIC(msg_process_t) MSG_process_from_PID(int PID);
 XBT_PUBLIC(int) MSG_process_get_PID(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_get_PPID(msg_process_t process);
@@ -168,7 +168,7 @@ XBT_PUBLIC(m_gpu_task_t) MSG_gpu_task_create(const char *name,
                                      double collect_latency);
 XBT_PUBLIC(m_task_t) MSG_parallel_task_create(const char *name,
                                               int host_nb,
-                                              const m_host_t * host_list,
+                                              const msg_host_t * host_list,
                                               double *computation_amount,
                                               double *communication_amount,
                                               void *data);
@@ -177,14 +177,14 @@ XBT_PUBLIC(void) MSG_task_set_data(m_task_t task, void *data);
 XBT_PUBLIC(void) MSG_task_set_copy_callback(void (*callback) (
     m_task_t task, msg_process_t src, msg_process_t dst));
 XBT_PUBLIC(msg_process_t) MSG_task_get_sender(m_task_t task);
-XBT_PUBLIC(m_host_t) MSG_task_get_source(m_task_t task);
+XBT_PUBLIC(msg_host_t) MSG_task_get_source(m_task_t task);
 XBT_PUBLIC(const char *) MSG_task_get_name(m_task_t task);
 XBT_PUBLIC(void) MSG_task_set_name(m_task_t task, const char *name);
 XBT_PUBLIC(MSG_error_t) MSG_task_cancel(m_task_t task);
 XBT_PUBLIC(MSG_error_t) MSG_task_destroy(m_task_t task);
 
 XBT_PUBLIC(MSG_error_t) MSG_task_receive_from_host(m_task_t * task, const char *alias,
-                                       m_host_t host);
+                                       msg_host_t host);
 
 XBT_PUBLIC(MSG_error_t) MSG_task_execute(m_task_t task);
 XBT_PUBLIC(MSG_error_t) MSG_parallel_task_execute(m_task_t task);
@@ -203,7 +203,7 @@ XBT_PUBLIC(double) MSG_task_get_data_size(m_task_t task);
 
 XBT_PUBLIC(MSG_error_t)
     MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
-                     m_host_t host);
+                     msg_host_t host);
 
 XBT_PUBLIC(MSG_error_t)
     MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
@@ -234,7 +234,7 @@ XBT_PUBLIC(MSG_error_t) MSG_comm_get_status(msg_comm_t comm);
 XBT_PUBLIC(int) MSG_task_listen(const char *alias);
 
 XBT_PUBLIC(int) MSG_task_listen_from_host(const char *alias,
-                                          m_host_t host);
+                                          msg_host_t host);
 
 XBT_PUBLIC(MSG_error_t)
     MSG_task_send_with_timeout(m_task_t task, const char *alias,
@@ -254,7 +254,7 @@ XBT_PUBLIC(const char *) MSG_task_get_category (m_task_t task);
 /************************** Task handling ************************************/
 XBT_PUBLIC(MSG_error_t)
     MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
-                         m_host_t host, double timeout);
+                         msg_host_t host, double timeout);
 
 XBT_PUBLIC(MSG_error_t)
     MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
@@ -269,7 +269,7 @@ MSG_error_t MSG_action_trace_run(char *path);
 
 /* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
 XBT_PUBLIC(int) MSG_get_host_number(void);
-XBT_PUBLIC(m_host_t *) MSG_get_host_table(void);
+XBT_PUBLIC(msg_host_t *) MSG_get_host_table(void);
 
 #define MSG_TIMEOUT_FAILURE MSG_TIMEOUT
 #define MSG_TASK_CANCELLED MSG_TASK_CANCELED
@@ -284,23 +284,23 @@ XBT_PUBLIC(MSG_error_t) MSG_task_get_with_timeout(m_task_t * task,
                                                   m_channel_t channel,
                                                   double max_duration);
 XBT_PUBLIC(MSG_error_t) MSG_task_get_from_host(m_task_t * task,
-                                               int channel, m_host_t host);
+                                               int channel, msg_host_t host);
 XBT_PUBLIC(MSG_error_t) MSG_task_get_ext(m_task_t * task, int channel,
                                          double max_duration,
-                                         m_host_t host);
-XBT_PUBLIC(MSG_error_t) MSG_task_put(m_task_t task, m_host_t dest,
+                                         msg_host_t host);
+XBT_PUBLIC(MSG_error_t) MSG_task_put(m_task_t task, msg_host_t dest,
                                      m_channel_t channel);
 XBT_PUBLIC(MSG_error_t) MSG_task_put_bounded(m_task_t task,
-                                             m_host_t dest,
+                                             msg_host_t dest,
                                              m_channel_t channel,
                                              double max_rate);
 XBT_PUBLIC(MSG_error_t) MSG_task_put_with_timeout(m_task_t task,
-                                                  m_host_t dest,
+                                                  msg_host_t dest,
                                                   m_channel_t channel,
                                                   double max_duration);
 XBT_PUBLIC(int) MSG_task_Iprobe(m_channel_t channel);
 XBT_PUBLIC(int) MSG_task_probe_from(m_channel_t channel);
-XBT_PUBLIC(int) MSG_task_probe_from_host(int channel, m_host_t host);
+XBT_PUBLIC(int) MSG_task_probe_from_host(int channel, msg_host_t host);
 
 XBT_PUBLIC(MSG_error_t) MSG_set_channel_number(int number);
 XBT_PUBLIC(int) MSG_get_channel_number(void);
@@ -318,7 +318,7 @@ XBT_PUBLIC(int) MSG_get_channel_number(void);
  */
 typedef struct msg_vm *msg_vm_t;
 /* This function should not be called directly, but rather from MSG_vm_start_from_template that does not exist yet*/
-XBT_PUBLIC(msg_vm_t) MSG_vm_start(m_host_t location, int coreAmount);
+XBT_PUBLIC(msg_vm_t) MSG_vm_start(msg_host_t location, int coreAmount);
 
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t);
 XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
@@ -326,7 +326,7 @@ XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
 XBT_PUBLIC(void) MSG_vm_bind(msg_vm_t vm, msg_process_t process);
 XBT_PUBLIC(void) MSG_vm_unbind(msg_vm_t vm, msg_process_t process); // simple wrapper over process_kill
 
-XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, m_host_t destination);
+XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, msg_host_t destination);
 
 XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
   // \forall p in VM, MSG_process_suspend(p) // Freeze the processes

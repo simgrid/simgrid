@@ -14,7 +14,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
 /** @addtogroup m_host_management
  *     \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
- * (#m_host_t) and the functions for managing it.
+ * (#msg_host_t) and the functions for managing it.
  *  
  *  A <em>location</em> (or <em>host</em>) is any possible place where
  *  a process may run. Thus it may be represented as a
@@ -22,14 +22,14 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
  *  <em>mailboxes</em> to enable running process to communicate with
  *  remote ones, and some <em>private data</em> that can be only
  *  accessed by local process.
- *  \see m_host_t
+ *  \see msg_host_t
  */
 
 /********************************* Host **************************************/
-m_host_t __MSG_host_create(smx_host_t workstation)
+msg_host_t __MSG_host_create(smx_host_t workstation)
 {
   const char *name = SIMIX_host_get_name(workstation);
-  m_host_t host = xbt_new0(s_m_host_t, 1);
+  msg_host_t host = xbt_new0(s_msg_host_t, 1);
   s_msg_vm_t vm; // simply to compute the offset
 
   host->smx_host = workstation;
@@ -57,25 +57,25 @@ m_host_t __MSG_host_create(smx_host_t workstation)
 }
 
 /** \ingroup msg_host_management
- * \brief Finds a m_host_t using its name.
+ * \brief Finds a msg_host_t using its name.
  *
  * This is a name directory service
  * \param name the name of an host.
  * \return the corresponding host
  */
-m_host_t MSG_get_host_by_name(const char *name)
+msg_host_t MSG_get_host_by_name(const char *name)
 {
-  return (m_host_t) xbt_lib_get_or_null(host_lib,name,MSG_HOST_LEVEL);
+  return (msg_host_t) xbt_lib_get_or_null(host_lib,name,MSG_HOST_LEVEL);
 }
 
 /** \ingroup m_host_management
  *
- * \brief Set the user data of a #m_host_t.
+ * \brief Set the user data of a #msg_host_t.
  *
  * This functions checks whether some data has already been associated to \a host 
    or not and attach \a data to \a host if it is possible.
  */
-MSG_error_t MSG_host_set_data(m_host_t host, void *data)
+MSG_error_t MSG_host_set_data(msg_host_t host, void *data)
 {
   SIMIX_host_set_data(host->smx_host,data);
 
@@ -84,24 +84,24 @@ MSG_error_t MSG_host_set_data(m_host_t host, void *data)
 
 /** \ingroup m_host_management
  *
- * \brief Return the user data of a #m_host_t.
+ * \brief Return the user data of a #msg_host_t.
  *
  * This functions checks whether \a host is a valid pointer or not and return
    the user data associated to \a host if it is possible.
  */
-void *MSG_host_get_data(m_host_t host)
+void *MSG_host_get_data(msg_host_t host)
 {
   return SIMIX_host_get_data(host->smx_host);
 }
 
 /** \ingroup m_host_management
  *
- * \brief Return the name of the #m_host_t.
+ * \brief Return the name of the #msg_host_t.
  *
  * This functions checks whether \a host is a valid pointer or not and return
    its name.
  */
-const char *MSG_host_get_name(m_host_t host) {
+const char *MSG_host_get_name(msg_host_t host) {
   return SIMIX_host_get_name(host->smx_host);
 }
 
@@ -109,7 +109,7 @@ const char *MSG_host_get_name(m_host_t host) {
  *
  * \brief Return the location on which the current process is executed.
  */
-m_host_t MSG_host_self(void)
+msg_host_t MSG_host_self(void)
 {
   return MSG_process_get_host(NULL);
 }
@@ -117,7 +117,7 @@ m_host_t MSG_host_self(void)
 /*
  * \brief Destroys a host (internal call only)
  */
-void __MSG_host_destroy(m_host_t host) {
+void __MSG_host_destroy(msg_host_t host) {
 
 #ifdef MSG_USE_DEPRECATED
   if (msg_global->max_channel > 0)
@@ -137,7 +137,7 @@ int MSG_get_host_number(void)
   return xbt_lib_length(host_lib);
 }
 
-m_host_t *MSG_get_host_table(void)
+msg_host_t *MSG_get_host_table(void)
 {
       void **array;
     int i = 0;
@@ -155,7 +155,7 @@ m_host_t *MSG_get_host_table(void)
         array[i++] = data[MSG_HOST_LEVEL];
     }
 
-    return (m_host_t *)array;
+    return (msg_host_t *)array;
 }
 #endif
 
@@ -166,7 +166,7 @@ xbt_dynar_t MSG_hosts_as_dynar(void) {
   xbt_lib_cursor_t cursor;
   char *key;
   void **data;
-  xbt_dynar_t res = xbt_dynar_new(sizeof(m_host_t),NULL);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(msg_host_t),NULL);
 
   xbt_lib_foreach(host_lib, cursor, key, data) {
     if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
@@ -177,9 +177,9 @@ xbt_dynar_t MSG_hosts_as_dynar(void) {
 
 /** \ingroup m_host_management
  * \brief Return the number of MSG tasks currently running on a
- * #m_host_t. The external load is not taken in account.
+ * #msg_host_t. The external load is not taken in account.
  */
-int MSG_get_host_msgload(m_host_t h)
+int MSG_get_host_msgload(msg_host_t h)
 {
   xbt_assert((h != NULL), "Invalid parameters");
   xbt_die( "Not implemented yet");
@@ -191,7 +191,7 @@ int MSG_get_host_msgload(m_host_t h)
  * \brief Return the speed of the processor (in flop/s), regardless of 
     the current load on the machine.
  */
-double MSG_get_host_speed(m_host_t h)
+double MSG_get_host_speed(msg_host_t h)
 {
   xbt_assert((h != NULL), "Invalid parameters");
 
@@ -205,7 +205,7 @@ double MSG_get_host_speed(m_host_t h)
  * \param name a property name
  * \return value of a property (or NULL if property not set)
  */
-const char *MSG_host_get_property_value(m_host_t host, const char *name)
+const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 {
   return xbt_dict_get_or_null(MSG_host_get_properties(host), name);
 }
@@ -216,7 +216,7 @@ const char *MSG_host_get_property_value(m_host_t host, const char *name)
  * \param host a host
  * \return a dict containing the properties
  */
-xbt_dict_t MSG_host_get_properties(m_host_t host)
+xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 
@@ -231,7 +231,7 @@ xbt_dict_t MSG_host_get_properties(m_host_t host)
  * \param value what to change the property to
  * \param free_ctn the freeing function to use to kill the value on need
  */
-void MSG_host_set_property_value(m_host_t host, const char *name, char *value,void_f_pvoid_t free_ctn) {
+void MSG_host_set_property_value(msg_host_t host, const char *name, char *value,void_f_pvoid_t free_ctn) {
 
   xbt_dict_set(MSG_host_get_properties(host), name, value,free_ctn);
 }
@@ -243,7 +243,7 @@ void MSG_host_set_property_value(m_host_t host, const char *name, char *value,vo
  * \param host host to test
  * \return Returns 1 if host is available, 0 otherwise
  */
-int MSG_host_is_avail(m_host_t host)
+int MSG_host_is_avail(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
   return (simcall_host_get_state(host->smx_host));

@@ -37,7 +37,7 @@ MSG_error_t test_all(const char *platform_file,
 
 static void test_host(const char*hostname) 
 {
-  m_host_t thehost = MSG_get_host_by_name(hostname);
+  msg_host_t thehost = MSG_get_host_by_name(hostname);
   xbt_dict_t props = MSG_host_get_properties(thehost);
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;

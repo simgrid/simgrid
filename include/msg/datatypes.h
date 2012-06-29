@@ -29,13 +29,13 @@ typedef struct s_smx_rvpoint *msg_mailbox_t;
 
 /* ******************************** Host ************************************ */
 
-typedef struct m_host {
+typedef struct msg_host {
   xbt_swag_t vms;
   smx_host_t smx_host;          /**< SIMIX representation of this host   */
 #ifdef MSG_USE_DEPRECATED
   msg_mailbox_t *mailboxes;     /**< the channels  */
 #endif
-} s_m_host_t;
+} s_msg_host_t;
 
 /** @brief Host datatype.
     @ingroup m_host_management
@@ -47,7 +47,7 @@ typedef struct m_host {
     some <em>private data</em> that can be only accessed by local
     process.
  */
-typedef struct m_host *m_host_t;
+typedef struct msg_host *msg_host_t;
 
 /* ******************************** Task ************************************ */
 
@@ -143,6 +143,7 @@ typedef struct s_smx_process *msg_process_t;
 
 /* Compatibility typedefs */
 typedef msg_process_t m_process_t;
+typedef msg_host_t m_host_t;
 
 #ifdef MSG_USE_DEPRECATED
 typedef int m_channel_t;

@@ -92,7 +92,7 @@ XBT_PUBLIC(m_task_t)
  */
 XBT_PUBLIC(int)
 MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
-                                         m_host_t host);
+                                         msg_host_t host);
 
 #ifdef MSG_USE_DEPRECATED
 /* \brief MSG_mailbox_get_by_channel - get a mailbox of the specified host from its channel.
@@ -109,7 +109,7 @@ MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
  *
  */
 XBT_PUBLIC(msg_mailbox_t)
-    MSG_mailbox_get_by_channel(m_host_t host, m_channel_t channel);
+    MSG_mailbox_get_by_channel(msg_host_t host, m_channel_t channel);
 #endif
 
 SG_END_DECL()

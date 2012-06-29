@@ -73,7 +73,7 @@ int main(int argc, char **argv)
   for(i = 0 ; i<nb_hosts; i++)
   {
     char* name_host = bprintf("%d",i);
-    MSG_process_create( name_host, host, NULL, xbt_dynar_get_as(hosts,i,m_host_t) );
+    MSG_process_create( name_host, host, NULL, xbt_dynar_get_as(hosts,i,msg_host_t) );
     free(name_host);
   }
   xbt_dynar_free(&hosts);

@@ -24,12 +24,12 @@ int main(int argc, char **argv)
 {
   int res;
   xbt_dynar_t all_hosts;
-  m_host_t first_host;
+  msg_host_t first_host;
   MSG_init(&argc, argv);
   MSG_create_environment(argv[1]);
   MSG_function_register("host", host);
   all_hosts = MSG_hosts_as_dynar();
-  first_host = xbt_dynar_pop_as(all_hosts,m_host_t);
+  first_host = xbt_dynar_pop_as(all_hosts,msg_host_t);
   MSG_process_create( "host", host, NULL, first_host);
   xbt_dynar_free(&all_hosts);
 

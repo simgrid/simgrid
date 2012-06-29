@@ -23,12 +23,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_host, bindings, "Lua bindings (host module)"
  * \param index an index in the Lua stack
  * \return the C host corresponding to this Lua host
  */
-m_host_t sglua_check_host(lua_State * L, int index)
+msg_host_t sglua_check_host(lua_State * L, int index)
 {
-  m_host_t *pi, ht;
+  msg_host_t *pi, ht;
   luaL_checktype(L, index, LUA_TTABLE);
   lua_getfield(L, index, "__simgrid_host");
-  pi = (m_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
+  pi = (msg_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
   if (pi == NULL)
     luaL_typerror(L, index, HOST_MODULE_NAME);
   ht = *pi;
@@ -50,12 +50,12 @@ static int l_host_get_by_name(lua_State * L)
 {
   const char *name = luaL_checkstring(L, 1);
   XBT_DEBUG("Getting Host from name...");
-  m_host_t msg_host = MSG_get_host_by_name(name);
+  msg_host_t msg_host = MSG_get_host_by_name(name);
   if (!msg_host) {
     luaL_error(L, "null Host : MSG_get_host_by_name failed");
   }
   lua_newtable(L);              /* create a table, put the userdata on top of it */
-  m_host_t *lua_host = (m_host_t *) lua_newuserdata(L, sizeof(m_host_t));
+  msg_host_t *lua_host = (msg_host_t *) lua_newuserdata(L, sizeof(msg_host_t));
   *lua_host = msg_host;
   luaL_getmetatable(L, HOST_MODULE_NAME);
   lua_setmetatable(L, -2);
@@ -75,7 +75,7 @@ static int l_host_get_by_name(lua_State * L)
  */
 static int l_host_get_name(lua_State * L)
 {
-  m_host_t ht = sglua_check_host(L, 1);
+  msg_host_t ht = sglua_check_host(L, 1);
   lua_pushstring(L, MSG_host_get_name(ht));
   return 1;
 }
@@ -107,9 +107,9 @@ static int l_host_at(lua_State * L)
 {
   int index = luaL_checkinteger(L, 1);
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
-  m_host_t host = xbt_dynar_get_as(hosts,index - 1,m_host_t);// lua indexing start by 1 (lua[1] <=> C[0])
+  msg_host_t host = xbt_dynar_get_as(hosts,index - 1,msg_host_t);// lua indexing start by 1 (lua[1] <=> C[0])
   lua_newtable(L);              /* create a table, put the userdata on top of it */
-  m_host_t *lua_host = (m_host_t *) lua_newuserdata(L, sizeof(m_host_t));
+  msg_host_t *lua_host = (msg_host_t *) lua_newuserdata(L, sizeof(msg_host_t));
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME);
   lua_setmetatable(L, -2);
@@ -128,10 +128,10 @@ static int l_host_at(lua_State * L)
 static int l_host_self(lua_State * L)
 {
                                   /* -- */
-  m_host_t host = MSG_host_self();
+  msg_host_t host = MSG_host_self();
   lua_newtable(L);
                                   /* table */
-  m_host_t* lua_host = (m_host_t*) lua_newuserdata(L, sizeof(m_host_t));
+  msg_host_t* lua_host = (msg_host_t*) lua_newuserdata(L, sizeof(msg_host_t));
                                   /* table ud */
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME);
@@ -154,7 +154,7 @@ static int l_host_self(lua_State * L)
  */
 static int l_host_get_property_value(lua_State * L)
 {
-  m_host_t ht = sglua_check_host(L, 1);
+  msg_host_t ht = sglua_check_host(L, 1);
   const char *prop = luaL_checkstring(L, 2);
   lua_pushstring(L,MSG_host_get_property_value(ht,prop));
   return 1;
@@ -183,7 +183,7 @@ static int l_host_sleep(lua_State *L)
  */
 static int l_host_destroy(lua_State *L)
 {
-  m_host_t ht = sglua_check_host(L, 1);
+  msg_host_t ht = sglua_check_host(L, 1);
   __MSG_host_destroy(ht);
   return 0;
 }
