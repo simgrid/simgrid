@@ -1,5 +1,7 @@
 /*! \page use Using SimGrid
 
+SimGrid comes with many examples provided in the examples/ directory. Those examples are described in section \ref MSG_examples . Those examples are commented and should be easy to understand. for a first step into SimGird we also provide some more detailed examples in the sections below.
+
 \section using_msg Using MSG
 
 Here are some examples on how to use MSG, the most used API.

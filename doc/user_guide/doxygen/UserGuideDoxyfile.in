@@ -666,8 +666,7 @@ INPUT                  = index.doc \
                          platform.doc \
                          tracing.doc \
                          pls.doc \
-                         bindings.doc \
-                         @top_srcdir@/doc/user_guide/doxygen/logcategories.doc
+                         bindings.doc
 			 
 
 ###################################################

@@ -18,8 +18,8 @@
       <tab type="files" visible="yes" title="" intro=""/>
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
-    <tab type="modules" visible="no" title="Examples" intro="">
-      <tab type="modules" visible="yes" title="Examples" intro="Here you can find additional examples"/>
+    <tab type="modules" visible="no" title="" intro="">
+      <tab type="modules" visible="yes" title="Examples description" intro="In the example directory of SimGrid, you'll find usefull examples. Here's a description of the most important of them."/>
     </tab>	
     <tab type="user" visible="yes" url="../../doc/index.html" title="Home"/>
     <tab type="user" url="../../ref_guide/html/index.html" title="Reference Manual"/>
