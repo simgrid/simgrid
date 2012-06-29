@@ -139,10 +139,10 @@ MSG_parallel_task_create(const char *name, int host_nb,
  * \see m_gpu_task_t
  * \return The new corresponding object.
  */
-m_gpu_task_t MSG_gpu_task_create(const char *name, double compute_duration,
+msg_gpu_task_t MSG_gpu_task_create(const char *name, double compute_duration,
                          double dispatch_latency, double collect_latency)
 {
-  m_gpu_task_t task = xbt_new(s_m_gpu_task_t, 1);
+  msg_gpu_task_t task = xbt_new(s_msg_gpu_task_t, 1);
   simdata_gpu_task_t simdata = xbt_new(s_simdata_gpu_task_t, 1);
   task->simdata = simdata;
   /* Task structure */

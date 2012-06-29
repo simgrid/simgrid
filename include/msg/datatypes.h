@@ -95,14 +95,14 @@ typedef s_file_stat_t s_msg_stat_t, *msg_stat_t;
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task *simdata_gpu_task_t;
 
-typedef struct m_gpu_task {
+typedef struct msg_gpu_task {
   char *name;                   /**< @brief task name if any */
   simdata_gpu_task_t simdata;       /**< @brief simulator data */
 #ifdef HAVE_TRACING
   long long int counter;        /* task unique identifier for instrumentation */
   char *category;               /* task category for instrumentation */
 #endif
-} s_m_gpu_task_t;
+} s_msg_gpu_task_t;
 
 /** @brief GPU task datatype.
     @ingroup m_task_management
@@ -111,7 +111,7 @@ typedef struct m_gpu_task {
     amount</em>, a <em>dispatch latency</em> and a <em>collect latency</em>.
     \see m_task_management
 */
-typedef struct m_gpu_task *m_gpu_task_t;
+typedef struct msg_gpu_task *msg_gpu_task_t;
 /*************** End GPU ***************/
 
 /**
@@ -145,6 +145,7 @@ typedef struct s_smx_process *msg_process_t;
 typedef msg_process_t m_process_t;
 typedef msg_host_t m_host_t;
 typedef msg_task_t m_task_t;
+typedef msg_gpu_task_t m_gpu_task_t;
 
 #ifdef MSG_USE_DEPRECATED
 typedef int m_channel_t;

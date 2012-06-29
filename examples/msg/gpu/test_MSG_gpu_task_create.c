@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
-  m_gpu_task_t mytask = NULL;
+  msg_gpu_task_t mytask = NULL;
 
   mytask = MSG_gpu_task_create("testTask", 2000.0, 20.0, 20.0);
 

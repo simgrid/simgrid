@@ -162,7 +162,7 @@ XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_re
 XBT_PUBLIC(msg_task_t) MSG_task_create(const char *name,
                                      double compute_duration,
                                      double message_size, void *data);
-XBT_PUBLIC(m_gpu_task_t) MSG_gpu_task_create(const char *name,
+XBT_PUBLIC(msg_gpu_task_t) MSG_gpu_task_create(const char *name,
                                      double compute_duration,
                                      double dispatch_latency,
                                      double collect_latency);
