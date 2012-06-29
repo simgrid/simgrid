@@ -29,6 +29,8 @@ public class Peer extends Process {
 	protected String hostname;
 	protected int pieces = 0;
 	protected char[] bitfield = new char[Common.FILE_PIECES];
+	protected char[][] bitfield_blocks = new char[Common.FILE_PIECES][Common.PIECES_BLOCKS];
+	
 	protected short[] piecesCount = new short[Common.FILE_PIECES];
 	
 	protected int piecesRequested = 0;

@@ -8,6 +8,7 @@ public class Common {
 	public static int FILE_SIZE = 5120;
 	public static int FILE_PIECE_SIZE = 512;
 	public static int FILE_PIECES = 10;
+	public static int PIECES_BLOCKS = 5;
 	
 	public static int PIECE_COMM_SIZE = 1;
 	/**
