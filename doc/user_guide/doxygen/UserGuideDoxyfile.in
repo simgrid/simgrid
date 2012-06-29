@@ -664,6 +664,7 @@ INPUT                  = index.doc \
                          examples.doc \            
                          options.doc \
                          platform.doc \
+                         deployment.doc \
                          tracing.doc \
                          pls.doc \
                          bindings.doc

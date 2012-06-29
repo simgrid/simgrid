@@ -11,35 +11,9 @@ to its doc. (you can also  check the section  \ref pf_flexml_bypassing but this 
 \li You can use two XML files: a platform description file and a deployment
 description one.
 
-As the second one (deployment description) just consists of saying which
-process runs where and which arguments it should take as input, the easier way to
-understand how to write it is just to take a look at the examples. Here is an example of it:
+For the deployment stuff, please takea look at \ref deployment
 
-\verbatim
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
-  <!-- The master process (with some arguments) -->
-  <process host="Tremblay" function="master">
-     <argument value="20"/>       <!-- Number of tasks -->
-     <argument value="50000000"/>  <!-- Computation size of tasks -->
-     <argument value="1000000"/>   <!-- Communication size of tasks -->
-     <argument value="Jupiter"/>  <!-- First slave -->
-     <argument value="Fafard"/>   <!-- Second slave -->
-     <argument value="Ginette"/>  <!-- Third slave -->
-     <argument value="Bourassa"/> <!-- Last slave -->
-     <argument value="Tremblay"/> <!-- Me! I can work too! -->
-  </process>
-  <!-- The slave processes (with no argument) -->
-  <process host="Tremblay" function="slave"/>
-  <process host="Jupiter" function="slave"/>
-  <process host="Fafard" function="slave"/>
-  <process host="Ginette" function="slave"/>
-  <process host="Bourassa" function="slave"/>
-</platform>
-\endverbatim
-
-The platform description is slightly more complicated. This documentation is all about how to write this file: what are the basic concept it relies on, what possibilities are offered, and some hints and tips on how to write a good platform description.
+The platform description may be complicated. This documentation is all about how to write this file: what are the basic concept it relies on, what possibilities are offered, and some hints and tips on how to write a good platform description.
 
 \section pf_overview Some words about XML and DTD
 
@@ -158,10 +132,6 @@ An host can also contain the <b>prop</b> tag. the prop tag allows you to define 
 It is also possible to seamlessly declare a host whose
 availability changes over time using the availability_file
 attribute and a separate text file whose syntax is exemplified below.
-
-
-<b>IMPORTANT NOTE:</b> the numeric separator in both trace and availability depends on your system locale. Examples below holds for LC_NUMERIC=C.
-
 
 <b>Adding a trace file</b>
 \verbatim

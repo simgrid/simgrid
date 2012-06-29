@@ -1,0 +1,38 @@
+/*! \page deployment Deployment description
+
+Deployment just consists of saying which
+process runs where and which arguments it should take as input, the easier way to
+understand how to write it is just to take a look at the examples. Here is an example of it:
+
+\verbatim
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <!-- The master process (with some arguments) -->
+  <process host="Tremblay" function="master">
+     <argument value="20"/>       <!-- Number of tasks -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="1000000"/>   <!-- Communication size of tasks -->
+     <argument value="Jupiter"/>  <!-- First slave -->
+     <argument value="Fafard"/>   <!-- Second slave -->
+     <argument value="Ginette"/>  <!-- Third slave -->
+     <argument value="Bourassa"/> <!-- Last slave -->
+     <argument value="Tremblay"/> <!-- Me! I can work too! -->
+  </process>
+  <!-- The slave processes (with no argument) -->
+  <process host="Tremblay" function="slave"/>
+  <process host="Jupiter" function="slave"/>
+  <process host="Fafard" function="slave"/>
+  <process host="Ginette" function="slave"/>
+  <process host="Bourassa" function="slave"/>
+</platform>
+\endverbatim
+
+There are additional attributes to the process tag, here is a list of attributes of process: 
+
+\li <b>host CDATA (mandatory)</b>: the host on which the function will be executed.  
+\li <b>process CDATA (mandatory)</b>: the process function that will be executed on that host.
+\li <b>start_time</b>: the time when the function will start. Default is zero.
+\li <b>kill_time</b>: the time when the function will stop. Default is when it's actually finishing.
+
+*/

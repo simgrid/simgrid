@@ -592,6 +592,7 @@ set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/pls.doc
   doc/user_guide/doxygen/index.doc
   doc/user_guide/doxygen/platform.doc
+  doc/user_guide/doxygen/deployment.doc
   doc/user_guide/doxygen/UserGuideDoxyfile.in
   doc/user_guide/doxygen/UserGuideDoxygenLayout.xml
   )
