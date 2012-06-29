@@ -53,7 +53,7 @@ details).
 /** @defgroup m_process_management Process Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the process structure of MSG
- *         (#m_process_t) and the functions for managing it.
+ *         (#msg_process_t) and the functions for managing it.
  */
 
 /** @defgroup m_host_management Host Management Functions
@@ -64,7 +64,7 @@ details).
 /** @defgroup m_task_management Task Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the task structure of MSG
- *         (#m_task_t) and the functions for managing it. See
+ *         (#msg_task_t) and the functions for managing it. See
  *         \ref msg_task_usage to see how to put the tasks in action.
  *
  * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
@@ -72,7 +72,7 @@ details).
 
 /** @defgroup msg_task_usage Task Actions
  *  @ingroup MSG_API
- *  @brief This section describes the functions that can be used
+ *  @brief This secti on describes the functions that can be used
  *         by a process to execute, communicate or otherwise handle some task.
  */
 

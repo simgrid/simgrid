@@ -122,7 +122,7 @@ typedef struct msg_gpu_task *msg_gpu_task_t;
  */
 typedef struct msg_comm *msg_comm_t;
 
-/** \brief Default value for an uninitialized #m_task_t.
+/** \brief Default value for an uninitialized #msg_task_t.
     \ingroup m_task_management 
 */
 #define MSG_TASK_UNINITIALIZED NULL

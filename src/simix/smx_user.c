@@ -500,7 +500,7 @@ void* simcall_process_get_data(smx_process_t process)
 }
 
 /**
- * \brief Set the user data of a #m_process_t.
+ * \brief Set the user data of a #smx_process_t.
  *
  * This functions checks whether \a process is a valid pointer or not and set the user data associated to \a process if it is possible.
  * \param process SIMIX process
