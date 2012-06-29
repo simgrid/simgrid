@@ -9,6 +9,7 @@
 #include "surf_private.h"
 #include "xbt/module.h"
 #include "mc/mc.h"
+#include "simix/smx_host_private.h"
 #include "surf/surf_resource.h"
 #include "xbt/xbt_os_thread.h"
 
