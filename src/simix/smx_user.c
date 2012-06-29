@@ -633,7 +633,6 @@ int simcall_process_is_suspended(smx_process_t process)
 
 /**
  * \ingroup simix_process_management
- * \ingroup m_process_management
  * \brief Return the properties
  *
  * This functions returns the properties associated with this process
@@ -793,7 +792,6 @@ smx_action_t simcall_rdv_get_head(smx_rdv_t rdv)
 }
 /**
  * \ingroup simix_comm_management
- *
  */
 void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
@@ -1403,7 +1401,7 @@ size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t
 }
 /**
  * \ingroup simix_file_management
- *
+ * \brief
  */
 smx_file_t simcall_file_open(const char* mount, const char* path, const char* mode)
 {
