@@ -387,6 +387,7 @@ set(MC_SRC
   src/mc/mc_request.c
   src/mc/mc_private.h
   src/mc/mc_liveness.c
+  src/mc/test/compare_snapshot.c
   )
 
 set(headers_to_install

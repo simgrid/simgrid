@@ -13,6 +13,8 @@ if(HAVE_MC)
   add_executable(centralized_liveness centralized_liveness.c)
   add_executable(centralized_liveness_deadlock centralized_liveness_deadlock.c)
   add_executable(test_snapshot test_snapshot.c)
+  add_executable(test/compare_snapshot test/compare_snapshot.c)
+
 
   target_link_libraries(centralized simgrid m )
   target_link_libraries(bugged1     simgrid m )
@@ -24,6 +26,8 @@ if(HAVE_MC)
   target_link_libraries(centralized_liveness     simgrid m )
   target_link_libraries(centralized_liveness_deadlock     simgrid m )
   target_link_libraries(test_snapshot     simgrid m )
+  target_link_libraries(test/compare_snapshot     simgrid m )
+
 endif(HAVE_MC)
 
 set(tesh_files
@@ -62,6 +66,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/compare_snapshot.c
   PARENT_SCOPE
   )
 set(bin_files
