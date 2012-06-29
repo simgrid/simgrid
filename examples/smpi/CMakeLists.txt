@@ -4,10 +4,8 @@ if(enable_smpi)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  set(flags "-Dmain=smpi_simulated_main")
-  set(INCLUDES_bis "-I${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  add_definitions (${INCLUDES_bis} ${flags})
+  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   add_executable(alltoall2 alltoall2.c )
   add_executable(alltoall_basic alltoall_basic.c)
