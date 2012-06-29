@@ -20,7 +20,7 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
   jboolean jreceiving = (*env)->GetBooleanField(env, jcomm, jcomm_field_Comm_receiving);
   if (jreceiving == JNI_TRUE) {
     //bind the task object.
-    m_task_t task = MSG_comm_get_task(comm);
+    msg_task_t task = MSG_comm_get_task(comm);
     xbt_assert(task != NULL, "Task is NULL");
     jobject jtask_global = MSG_task_get_data(task);
     //case where the data has already been retrieved
@@ -59,9 +59,9 @@ Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_destroy(JNIEnv *env, jobject jcomm) {
   msg_comm_t comm;
-  m_task_t *task_received;
+  msg_task_t *task_received;
 
-  task_received = (m_task_t*)  (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_taskBind);
+  task_received = (msg_task_t*)  (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_taskBind);
   xbt_free(task_received);
 
   comm = (msg_comm_t) (long) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
@@ -85,7 +85,7 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
   xbt_ex_t e;
   TRY {
     if (MSG_comm_test(comm)) {
-      MSG_error_t status = MSG_comm_get_status(comm);
+      msg_error_t status = MSG_comm_get_status(comm);
       if (status == MSG_OK) {
         jcomm_bind_task(env,jcomm);
         return JNI_TRUE;
@@ -119,7 +119,7 @@ Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble tim
     return;
   }
 
-  MSG_error_t status;
+  msg_error_t status;
   xbt_ex_t e;
   TRY {
     status = MSG_comm_wait(comm,(double)timeout);

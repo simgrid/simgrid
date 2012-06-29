@@ -58,5 +58,14 @@ $ cd examples
 $ java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 \endverbatim
 
+\section bindings_binding_java_coroutines How to use the coroutines context factory
+
+First, remember that the coroutines context factory is still experimental work.
+
+To use the coroutines context factory, you need a Java virtual machine which supports it.
+
+Our implementation rely on a JVM patch made by Lukas Stadler, which you can find <a href="http://ssw.jku.at/General/Staff/LS/coro/">here</a>.
+
+
  
  */

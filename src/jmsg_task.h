@@ -44,7 +44,7 @@ void jtask_delete_global_ref(jobject jtask, JNIEnv * env);
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
  */
-void jtask_bind(jobject jtask, m_task_t task, JNIEnv * env);
+void jtask_bind(jobject jtask, msg_task_t task, JNIEnv * env);
 
 /**
  * This function returns a native task from a java task instance.
@@ -60,7 +60,7 @@ void jtask_bind(jobject jtask, m_task_t task, JNIEnv * env);
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
  */
-m_task_t jtask_to_native_task(jobject jtask, JNIEnv * env);
+msg_task_t jtask_to_native_task(jobject jtask, JNIEnv * env);
 
 /**
  * This function tests if a java task instance is valid.

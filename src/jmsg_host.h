@@ -57,7 +57,7 @@ void jhost_unref(JNIEnv * env, jobject jhost);
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
  */
-void jhost_bind(jobject jhost, m_host_t host, JNIEnv * env);
+void jhost_bind(jobject jhost, msg_host_t host, JNIEnv * env);
 
 /**
  * This function returns a native host from a java host instance.
@@ -73,7 +73,7 @@ void jhost_bind(jobject jhost, m_host_t host, JNIEnv * env);
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
  */
-m_host_t jhost_get_native(JNIEnv * env, jobject jhost);
+msg_host_t jhost_get_native(JNIEnv * env, jobject jhost);
 
 /**
  * This function returns the name of a MSG host.

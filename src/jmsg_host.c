@@ -31,16 +31,16 @@ void jhost_unref(JNIEnv * env, jobject jhost) {
   (*env)->DeleteGlobalRef(env, jhost);
 }
 
-void jhost_bind(jobject jhost, m_host_t host, JNIEnv * env) {
+void jhost_bind(jobject jhost, msg_host_t host, JNIEnv * env) {
   (*env)->SetLongField(env, jhost, jhost_field_Host_bind, (jlong) (long) (host));
 }
 
-m_host_t jhost_get_native(JNIEnv * env, jobject jhost) {
-  return (m_host_t) (long) (*env)->GetLongField(env, jhost, jhost_field_Host_bind);
+msg_host_t jhost_get_native(JNIEnv * env, jobject jhost) {
+  return (msg_host_t) (long) (*env)->GetLongField(env, jhost, jhost_field_Host_bind);
 }
 
 const char *jhost_get_name(jobject jhost, JNIEnv * env) {
-  m_host_t host = jhost_get_native(env, jhost);
+  msg_host_t host = jhost_get_native(env, jhost);
   return MSG_host_get_name(host);
 }
 
@@ -65,7 +65,7 @@ Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls) {
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
                                          jstring jname) {
-  m_host_t host;                /* native host                                          */
+  msg_host_t host;                /* native host                                          */
   jobject jhost;                /* global reference to the java host instance returned  */
 
   /* get the C string from the java string */
@@ -120,7 +120,7 @@ JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
   jobject jhost;
 
-  m_host_t host = MSG_host_self();
+  msg_host_t host = MSG_host_self();
 
   if (!MSG_host_get_data(host)) {
     /* the native host not yet associated with the java host instance */
@@ -164,7 +164,7 @@ Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
 JNIEXPORT jdouble JNICALL
 Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env,
                                         jobject jhost) {
-  m_host_t host = jhost_get_native(env, jhost);
+  msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
     jxbt_throw_notbound(env, "host", jhost);
@@ -175,7 +175,7 @@ Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env,
 }
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Host_getLoad(JNIEnv * env, jobject jhost) {
-  m_host_t host = jhost_get_native(env, jhost);
+  msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
     jxbt_throw_notbound(env, "host", jhost);
@@ -186,7 +186,7 @@ Java_org_simgrid_msg_Host_getLoad(JNIEnv * env, jobject jhost) {
 }
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Host_isAvail(JNIEnv * env, jobject jhost) {
-  m_host_t host = jhost_get_native(env, jhost);
+  msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
     jxbt_throw_notbound(env, "host", jhost);
@@ -203,7 +203,7 @@ Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
   jobjectArray jtable;
   jobject jhost;
   jstring jname;
-  m_host_t host;
+  msg_host_t host;
 
   xbt_dynar_t table =  MSG_hosts_as_dynar();
   int count = xbt_dynar_length(table);
@@ -222,7 +222,7 @@ Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
   }
 
   for (index = 0; index < count; index++) {
-    host = xbt_dynar_get_as(table,index,m_host_t);
+    host = xbt_dynar_get_as(table,index,msg_host_t);
     jhost = (jobject) (MSG_host_get_data(host));
 
     if (!jhost) {

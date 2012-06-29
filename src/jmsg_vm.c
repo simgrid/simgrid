@@ -29,7 +29,7 @@ Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cls) {
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm, jobject jhost, jint jcoreamount) {
-  m_host_t host = jhost_get_native(env, jhost);
+  msg_host_t host = jhost_get_native(env, jhost);
 
   msg_vm_t vm = MSG_vm_start(host, (int)jcoreamount);
 
@@ -55,7 +55,7 @@ Java_org_simgrid_msg_VM_isRunning(JNIEnv *env, jobject jvm) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_bind(JNIEnv *env, jobject jvm, jobject jprocess) {
   msg_vm_t vm = jvm_get_native(env,jvm);
-  m_process_t process = jprocess_to_native_process(jprocess,env);
+  msg_process_t process = jprocess_to_native_process(jprocess,env);
 
   xbt_assert((vm != NULL), "VM object is not binded");
   xbt_assert((process != NULL), "Process object is not binded.");
@@ -65,14 +65,14 @@ Java_org_simgrid_msg_VM_bind(JNIEnv *env, jobject jvm, jobject jprocess) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_unbind(JNIEnv *env, jobject jvm, jobject jprocess) {
   msg_vm_t vm = jvm_get_native(env,jvm);
-  m_process_t process = jprocess_to_native_process(jprocess,env);
+  msg_process_t process = jprocess_to_native_process(jprocess,env);
 
   MSG_vm_unbind(vm,process);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_migrate(JNIEnv *env, jobject jvm, jobject jhost) {
   msg_vm_t vm = jvm_get_native(env,jvm);
-  m_host_t host = jhost_get_native(env, jhost);
+  msg_host_t host = jhost_get_native(env, jhost);
 
   MSG_vm_migrate(vm,host);
 }

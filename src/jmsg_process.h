@@ -26,7 +26,7 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject);
 
 
-jobject native_to_java_process(m_process_t process);
+jobject native_to_java_process(msg_process_t process);
 
 /**
  * This function returns a global reference to the  java process instance 
@@ -78,7 +78,7 @@ void jprocess_join(jobject jprocess, JNIEnv * env);
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
  */
-void jprocess_bind(jobject jprocess, m_process_t process, JNIEnv * env);
+void jprocess_bind(jobject jprocess, msg_process_t process, JNIEnv * env);
 
 /**
  * This function returns a native process from a java process instance.
@@ -94,7 +94,7 @@ void jprocess_bind(jobject jprocess, m_process_t process, JNIEnv * env);
  *						this class is not found the function throws the exception 
  *						NotSuchFieldException.	
  */
-m_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env);
+msg_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env);
 
 /**
  * This function gets the id of the specified java process.

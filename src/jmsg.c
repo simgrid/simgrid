@@ -50,7 +50,7 @@ JNIEnv *get_current_thread_env(void)
   return env;
 }
 
-void jmsg_throw_status(JNIEnv *env, MSG_error_t status) {
+void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
   switch (status) {
     case MSG_TIMEOUT:
         jxbt_throw_time_out_failure(env,NULL);
@@ -129,7 +129,7 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 JNIEXPORT void JNICALL
     JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
 {
-  MSG_error_t rv;
+  msg_error_t rv;
   int index;
   xbt_dynar_t hosts;
   jobject jhost;
@@ -148,7 +148,7 @@ JNIEXPORT void JNICALL
   /* Cleanup java hosts */
   hosts = MSG_hosts_as_dynar();
   for (index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
-    jhost = (jobject) MSG_host_get_data(xbt_dynar_get_as(hosts,index,m_host_t));
+    jhost = (jobject) MSG_host_get_data(xbt_dynar_get_as(hosts,index,msg_host_t));
     if (jhost)
       jhost_unref(env, jhost);
 
@@ -160,7 +160,7 @@ JNIEXPORT void JNICALL
     JNICALL Java_org_simgrid_msg_Msg_clean(JNIEnv * env, jclass cls)
 {
   /* cleanup native stuff. Calling it is ... useless since leaking memory at the end of the simulation is a non-issue */
-  MSG_error_t rv = MSG_OK != MSG_clean();
+  msg_error_t rv = MSG_OK != MSG_clean();
   jxbt_check_res("MSG_clean()", rv, MSG_OK,
                  bprintf
                  ("unexpected error : MSG_clean() failed .. please report this bug "));
@@ -237,7 +237,7 @@ static int create_jprocess(int argc, char *argv[]) {
   xbt_assert((jprocess != NULL), "Process allocation failed.");
   jprocess = (*env)->NewGlobalRef(env, jprocess);
   //bind the process to the context
-  m_process_t process = MSG_process_self();
+  msg_process_t process = MSG_process_self();
   smx_ctx_java_t context = (smx_ctx_java_t)MSG_process_get_smx_ctx(process);
   context->jprocess = jprocess;
 /* sets the PID and the PPID of the process */
