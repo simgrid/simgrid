@@ -12,6 +12,7 @@ $ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_l
 > [  0.000000] (1:master@Tremblay) Bourassa
 > [  0.000000] (1:master@Tremblay) Tremblay
 > [  0.000000] (1:master@Tremblay) Got 20 task to process :
+> [  1.000000] (0:@) Restart processes on host: Jupiter
 > [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'Jupiter'. Nevermind. Let's keep going!
 > [ 11.000000] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
 > [ 12.030928] (1:master@Tremblay) Send completed
@@ -27,49 +28,72 @@ $ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_l
 > [ 13.072165] (2:slave@Tremblay) Communication time : "0.010309"
 > [ 13.072165] (2:slave@Tremblay) Processing "Task"
 > [ 14.030928] (4:slave@Ginette) "Task" done
+> [ 14.103093] (1:master@Tremblay) Send completed
+> [ 14.103093] (6:slave@Jupiter) Received "Task"
+> [ 14.103093] (6:slave@Jupiter) Communication time : "1.030928"
+> [ 14.103093] (6:slave@Jupiter) Processing "Task"
 > [ 15.061856] (5:slave@Bourassa) "Task" done
 > [ 15.072165] (2:slave@Tremblay) "Task" done
-> [ 23.072165] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Jupiter'. Nevermind. Let's keep going!
-> [ 33.072165] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
-> [ 34.103093] (1:master@Tremblay) Send completed
-> [ 34.103093] (4:slave@Ginette) Received "Task"
-> [ 34.103093] (4:slave@Ginette) Communication time : "1.030928"
-> [ 34.103093] (4:slave@Ginette) Processing "Task"
-> [ 35.000000] (1:master@Tremblay) Mmh. Something went wrong with 'Bourassa'. Nevermind. Let's keep going!
-> [ 35.000000] (5:slave@Bourassa) Mmh. Something went wrong. Nevermind. Let's keep going!
-> [ 35.010309] (1:master@Tremblay) Send completed
-> [ 35.010309] (2:slave@Tremblay) Received "Task"
-> [ 35.010309] (2:slave@Tremblay) Communication time : "0.010309"
-> [ 35.010309] (2:slave@Tremblay) Processing "Task"
-> [ 36.103093] (4:slave@Ginette) "Task" done
-> [ 37.010309] (2:slave@Tremblay) "Task" done
-> [ 45.010309] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Jupiter'. Nevermind. Let's keep going!
-> [ 55.010309] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
-> [ 65.010309] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Ginette'. Nevermind. Let's keep going!
-> [ 66.041237] (1:master@Tremblay) Send completed
-> [ 66.041237] (5:slave@Bourassa) Received "Task"
-> [ 66.041237] (5:slave@Bourassa) Communication time : "1.030928"
-> [ 66.041237] (5:slave@Bourassa) Processing "Task"
-> [ 66.051546] (1:master@Tremblay) Send completed
-> [ 66.051546] (2:slave@Tremblay) Received "Task"
-> [ 66.051546] (2:slave@Tremblay) Communication time : "0.010309"
-> [ 66.051546] (2:slave@Tremblay) Processing "Task"
-> [ 68.051546] (2:slave@Tremblay) "Task" done
-> [ 76.051546] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Jupiter'. Nevermind. Let's keep going!
-> [ 86.051546] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
-> [ 96.051546] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Ginette'. Nevermind. Let's keep going!
-> [106.051546] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Bourassa'. Nevermind. Let's keep going!
-> [106.061856] (1:master@Tremblay) Send completed
-> [106.061856] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
-> [106.061856] (2:slave@Tremblay) Received "Task"
-> [106.061856] (2:slave@Tremblay) Communication time : "0.010309"
-> [106.061856] (2:slave@Tremblay) Processing "Task"
-> [107.061856] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Jupiter'. Nevermind. Let's keep going!
-> [108.061856] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
-> [108.061856] (2:slave@Tremblay) "Task" done
-> [109.061856] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Ginette'. Nevermind. Let's keep going!
-> [110.061856] (0:@) Simulation time 110.062
-> [110.061856] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Bourassa'. Nevermind. Let's keep going!
-> [110.061856] (1:master@Tremblay) Goodbye now!
-> [110.061856] (2:slave@Tremblay) Received "finalize"
-> [110.061856] (2:slave@Tremblay) I'm done. See you!
+> [ 16.103093] (6:slave@Jupiter) "Task" done
+> [ 24.103093] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
+> [ 24.103093] (1:master@Tremblay) Mmh. Something went wrong with 'Ginette'. Nevermind. Let's keep going!
+> [ 24.103093] (4:slave@Ginette) Mmh. Something went wrong. Nevermind. Let's keep going!
+> [ 25.134021] (1:master@Tremblay) Send completed
+> [ 25.134021] (5:slave@Bourassa) Received "Task"
+> [ 25.134021] (5:slave@Bourassa) Communication time : "1.030928"
+> [ 25.134021] (5:slave@Bourassa) Processing "Task"
+> [ 25.144330] (1:master@Tremblay) Send completed
+> [ 25.144330] (2:slave@Tremblay) Received "Task"
+> [ 25.144330] (2:slave@Tremblay) Communication time : "0.010309"
+> [ 25.144330] (2:slave@Tremblay) Processing "Task"
+> [ 26.175258] (1:master@Tremblay) Send completed
+> [ 26.175258] (6:slave@Jupiter) Received "Task"
+> [ 26.175258] (6:slave@Jupiter) Communication time : "1.030928"
+> [ 26.175258] (6:slave@Jupiter) Processing "Task"
+> [ 27.134021] (5:slave@Bourassa) "Task" done
+> [ 27.144330] (2:slave@Tremblay) "Task" done
+> [ 28.175258] (6:slave@Jupiter) "Task" done
+> [ 36.175258] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
+> [ 37.206186] (1:master@Tremblay) Send completed
+> [ 37.206186] (1:master@Tremblay) Mmh. Something went wrong with 'Bourassa'. Nevermind. Let's keep going!
+> [ 37.206186] (4:slave@Ginette) Received "Task"
+> [ 37.206186] (4:slave@Ginette) Communication time : "1.030928"
+> [ 37.206186] (4:slave@Ginette) Processing "Task"
+> [ 37.206186] (5:slave@Bourassa) Mmh. Something went wrong. Nevermind. Let's keep going!
+> [ 37.216495] (1:master@Tremblay) Send completed
+> [ 37.216495] (2:slave@Tremblay) Received "Task"
+> [ 37.216495] (2:slave@Tremblay) Communication time : "0.010309"
+> [ 37.216495] (2:slave@Tremblay) Processing "Task"
+> [ 38.247423] (1:master@Tremblay) Send completed
+> [ 38.247423] (6:slave@Jupiter) Received "Task"
+> [ 38.247423] (6:slave@Jupiter) Communication time : "1.030928"
+> [ 38.247423] (6:slave@Jupiter) Processing "Task"
+> [ 39.206186] (4:slave@Ginette) "Task" done
+> [ 39.216495] (2:slave@Tremblay) "Task" done
+> [ 40.247423] (6:slave@Jupiter) "Task" done
+> [ 48.247423] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
+> [ 49.278351] (1:master@Tremblay) Send completed
+> [ 49.278351] (4:slave@Ginette) Received "Task"
+> [ 49.278351] (4:slave@Ginette) Communication time : "1.030928"
+> [ 49.278351] (4:slave@Ginette) Processing "Task"
+> [ 50.309278] (1:master@Tremblay) Send completed
+> [ 50.309278] (5:slave@Bourassa) Received "Task"
+> [ 50.309278] (5:slave@Bourassa) Communication time : "1.030928"
+> [ 50.309278] (5:slave@Bourassa) Processing "Task"
+> [ 50.319588] (1:master@Tremblay) Send completed
+> [ 50.319588] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
+> [ 50.319588] (2:slave@Tremblay) Received "Task"
+> [ 50.319588] (2:slave@Tremblay) Communication time : "0.010309"
+> [ 50.319588] (2:slave@Tremblay) Processing "Task"
+> [ 50.319588] (6:slave@Jupiter) Received "finalize"
+> [ 50.319588] (6:slave@Jupiter) I'm done. See you!
+> [ 51.319588] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
+> [ 52.309278] (5:slave@Bourassa) "Task" done
+> [ 52.319588] (0:@) Simulation time 52.3196
+> [ 52.319588] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Ginette'. Nevermind. Let's keep going!
+> [ 52.319588] (1:master@Tremblay) Goodbye now!
+> [ 52.319588] (2:slave@Tremblay) "Task" done
+> [ 52.319588] (2:slave@Tremblay) Received "finalize"
+> [ 52.319588] (2:slave@Tremblay) I'm done. See you!
+> [ 52.319588] (5:slave@Bourassa) Received "finalize"
+> [ 52.319588] (5:slave@Bourassa) I'm done. See you!
