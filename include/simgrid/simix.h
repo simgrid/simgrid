@@ -19,9 +19,8 @@ SG_BEGIN_DECL()
 
 
 /* ******************************** Host ************************************ */
-/** @defgroup m_datatypes_management_details Details on SIMIX datatypes */
 /** @brief Host datatype
-    @ingroup m_datatypes_management
+    @ingroup simix_host_management
 
     A <em>location</em> (or <em>host</em>) is any possible place where
     a process may run. Thus it is represented as a <em>physical
@@ -52,8 +51,17 @@ typedef enum {
 typedef struct s_smx_timer* smx_timer_t;
 
 /* ******************************** Synchro ************************************ */
+/**
+ * \ingroup simix_synchro_management
+ */
 typedef struct s_smx_mutex *smx_mutex_t;
+/**
+ * \ingroup simix_synchro_management
+ */
 typedef struct s_smx_cond *smx_cond_t;
+/**
+ * \ingroup simix_synchro_management
+ */
 typedef struct s_smx_sem *smx_sem_t;
 
 /********************************** File *************************************/
@@ -67,7 +75,7 @@ typedef struct s_smx_action *smx_action_t; /* FIXME: replace by specialized acti
 
 /* ****************************** Process *********************************** */
 /** @brief Process datatype
-    @ingroup m_datatypes_management
+    @ingroup simix_process_management
 
     A processt may be defined as a <em>code</em>, with some <em>private
     data</em>, executing in a <em>location</em>.
@@ -101,6 +109,9 @@ typedef void (*smx_creation_func_t) ( /* process */ smx_process_t*,
 
 
 /******************************* Networking ***********************************/
+/**
+ * \ingroup simix_rdv_management
+ */
 typedef struct s_smx_rvpoint *smx_rdv_t;
 
 /******************************** Context *************************************/

@@ -29,6 +29,7 @@ SIMCALL_LIST
 };
 
 /**
+ * \ingroup simix_host_management
  * \brief Returns a host given its name.
  *
  * \param name The name of the host to get
@@ -45,6 +46,7 @@ smx_host_t simcall_host_get_by_name(const char *name)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Returns the name of a host.
  *
  * \param host A SIMIX host
@@ -61,6 +63,7 @@ const char* simcall_host_get_name(smx_host_t host)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Returns a dict of the properties assigned to a host.
  *
  * \param host A host
@@ -77,6 +80,7 @@ xbt_dict_t simcall_host_get_properties(smx_host_t host)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Returns the speed of the processor.
  *
  * The speed returned does not take into account the current load on the machine.
@@ -94,6 +98,7 @@ double simcall_host_get_speed(smx_host_t host)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Returns the available speed of the processor.
  *
  * \return Speed currently available (in Mflop/s)
@@ -109,6 +114,7 @@ double simcall_host_get_available_speed(smx_host_t host)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Returns the state of a host.
  *
  * Two states are possible: 1 if the host is active or 0 if it has crashed.
@@ -126,6 +132,7 @@ int simcall_host_get_state(smx_host_t host)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Returns the user data associated to a host.
  *
  * \param host SIMIX host
@@ -142,6 +149,7 @@ void* simcall_host_get_data(smx_host_t host)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Sets the user data associated to a host.
  *
  * The host must not have previous user data associated to it.
@@ -158,7 +166,9 @@ void simcall_host_set_data(smx_host_t host, void *data)
   SIMIX_simcall_push(simcall->issuer);
 }
 
-/** \brief Creates an action that executes some computation of an host.
+/**
+ * \ingroup simix_host_management
+ * \brief Creates an action that executes some computation of an host.
  *
  * This function creates a SURF action and allocates the data necessary
  * to create the SIMIX action. It can raise a host_error exception if the host crashed.
@@ -187,7 +197,9 @@ smx_action_t simcall_host_execute(const char *name, smx_host_t host,
   return simcall->host_execute.result;
 }
 
-/** \brief Creates an action that may involve parallel computation on
+/**
+ * \ingroup simix_host_management
+ * \brief Creates an action that may involve parallel computation on
  * several hosts and communication between them.
  *
  * \param name Name of the execution action to create
@@ -236,6 +248,7 @@ smx_action_t simcall_host_parallel_execute(const char *name,
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Destroys an execution action.
  *
  * Destroys an action, freing its memory. This function cannot be called if there are a conditional waiting for it.
@@ -251,6 +264,7 @@ void simcall_host_execution_destroy(smx_action_t execution)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Cancels an execution action.
  *
  * This functions stops the execution. It calls a surf function.
@@ -266,6 +280,7 @@ void simcall_host_execution_cancel(smx_action_t execution)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Returns how much of an execution action remains to be done.
  *
  * \param Action The execution action
@@ -282,6 +297,7 @@ double simcall_host_execution_get_remains(smx_action_t execution)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Returns the state of an execution action.
  *
  * \param execution The execution action
@@ -298,6 +314,7 @@ e_smx_state_t simcall_host_execution_get_state(smx_action_t execution)
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Changes the priority of an execution action.
  *
  * This functions changes the priority only. It calls a surf function.
@@ -318,6 +335,7 @@ void simcall_host_execution_set_priority(smx_action_t execution, double priority
 }
 
 /**
+ * \ingroup simix_host_management
  * \brief Waits for the completion of an execution action and destroy it.
  *
  * \param execution The execution action
@@ -333,6 +351,7 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Creates and runs a new SIMIX process.
  *
  * The structure and the corresponding thread are created and put in the list of ready processes.
@@ -373,7 +392,9 @@ void simcall_process_create(smx_process_t *process, const char *name,
   SIMIX_simcall_push(simcall->issuer);
 }
 
-/** \brief Kills a SIMIX process.
+/**
+ * \ingroup simix_process_management
+ * \brief Kills a SIMIX process.
  *
  * This function simply kills a  process.
  *
@@ -388,7 +409,9 @@ void simcall_process_kill(smx_process_t process)
   SIMIX_simcall_push(simcall->issuer);
 }
 
-/** \brief Kills all SIMIX processes.
+/**
+ * \ingroup simix_process_management
+ * \brief Kills all SIMIX processes.
  */
 void simcall_process_killall(void)
 {
@@ -398,7 +421,9 @@ void simcall_process_killall(void)
   SIMIX_simcall_push(simcall->issuer);
 }
 
-/** \brief Cleans up a SIMIX process.
+/**
+ * \ingroup simix_process_management
+ * \brief Cleans up a SIMIX process.
  * \param process poor victim (must have already been killed)
  */
 void simcall_process_cleanup(smx_process_t process)
@@ -411,6 +436,7 @@ void simcall_process_cleanup(smx_process_t process)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Migrates an agent to another location.
  *
  * This function changes the value of the host on which \a process is running.
@@ -430,6 +456,7 @@ void simcall_process_change_host(smx_process_t process, smx_host_t dest)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Suspends a process.
  *
  * This function suspends the process by suspending the action
@@ -449,6 +476,7 @@ void simcall_process_suspend(smx_process_t process)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Resumes a suspended process.
  *
  * This function resumes a suspended process by resuming the action
@@ -466,6 +494,7 @@ void simcall_process_resume(smx_process_t process)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Returns the amount of SIMIX processes in the system
  *
  * Maestro internal process is not counted, only user code processes are
@@ -480,6 +509,7 @@ int simcall_process_count(void)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Return the user data of a #smx_process_t.
  * \param process a SIMIX process
  * \return the user data of this process
@@ -500,6 +530,7 @@ void* simcall_process_get_data(smx_process_t process)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Set the user data of a #smx_process_t.
  *
  * This functions checks whether \a process is a valid pointer or not and set the user data associated to \a process if it is possible.
@@ -524,6 +555,7 @@ void simcall_process_set_data(smx_process_t process, void *data)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Set the kill time of a process.
  * \param process a process
  * \param kill_time a double
@@ -541,6 +573,7 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Return the location on which an agent is running.
  *
  * This functions checks whether \a process is a valid pointer or not and return the m_host_t corresponding to the location on which \a process is running.
@@ -558,6 +591,7 @@ smx_host_t simcall_process_get_host(smx_process_t process)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Return the name of an agent.
  *
  * This functions checks whether \a process is a valid pointer or not and return its name.
@@ -580,6 +614,7 @@ const char* simcall_process_get_name(smx_process_t process)
 }
 
 /**
+ * \ingroup simix_process_management
  * \brief Returns true if the process is suspended .
  *
  * This checks whether a process is suspended or not by inspecting the task on which it was waiting for the completion.
@@ -596,7 +631,9 @@ int simcall_process_is_suspended(smx_process_t process)
   return simcall->process_is_suspended.result;
 }
 
-/** \ingroup m_process_management
+/**
+ * \ingroup simix_process_management
+ * \ingroup m_process_management
  * \brief Return the properties
  *
  * This functions returns the properties associated with this process
@@ -611,6 +648,7 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
   return simcall->process_get_properties.result;
 }
 /**
+ * \ingroup simix_process_management
  * \brief Add an on_exit function
  * Add an on_exit function which will be executed when the process exits/is killed.
  */
@@ -625,6 +663,7 @@ XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fu
   SIMIX_simcall_push(simcall->issuer);
 }
 /**
+ * \ingroup simix_process_management
  * \brief Sets the process to be auto-restarted or not by SIMIX when its host comes back up.
  * Will restart the process when the host comes back up if auto_restart is set to 1.
  */
@@ -638,7 +677,9 @@ XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int aut
 
   SIMIX_simcall_push(simcall->issuer);
 }
-/** \brief Creates a new sleep SIMIX action.
+/**
+ * \ingroup simix_process_management
+ * \brief Creates a new sleep SIMIX action.
  *
  * This function creates a SURF action and allocates the data necessary
  * to create the SIMIX action. It can raise a host_error exception if the
@@ -661,6 +702,7 @@ e_smx_state_t simcall_process_sleep(double duration)
 }
 
 /**
+ *  \ingroup simix_rdv_management
  *  \brief Creates a new rendez-vous point
  *  \param name The name of the rendez-vous point
  *  \return The created rendez-vous point
@@ -678,6 +720,7 @@ smx_rdv_t simcall_rdv_create(const char *name)
 
 
 /**
+ *  \ingroup simix_rdv_management
  *  \brief Destroy a rendez-vous point
  *  \param name The rendez-vous point to destroy
  */
@@ -690,7 +733,10 @@ void simcall_rdv_destroy(smx_rdv_t rdv)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ *  \ingroup simix_rdv_management
+ *  \brief Returns a rendez-vous point knowing its name
+ */
 smx_rdv_t simcall_rdv_get_by_name(const char *name)
 {
   xbt_assert(name != NULL, "Invalid parameter for simcall_rdv_get_by_name (name is NULL)");
@@ -710,6 +756,7 @@ smx_rdv_t simcall_rdv_get_by_name(const char *name)
 }
 
 /**
+ *  \ingroup simix_rdv_management
  *  \brief Counts the number of communication actions of a given host pending
  *         on a rendez-vous point.
  *  \param rdv The rendez-vous point
@@ -729,6 +776,7 @@ int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
 }
 
 /**
+ *  \ingroup simix_rdv_management
  *  \brief returns the communication at the head of the rendez-vous
  *  \param rdv The rendez-vous point
  *  \return The communication or NULL if empty
@@ -743,7 +791,10 @@ smx_action_t simcall_rdv_get_head(smx_rdv_t rdv)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->rdv_get_head.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ *
+ */
 void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
                          int (*match_fun)(void *, void *, smx_action_t), void *data,
@@ -778,7 +829,9 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
     SIMIX_simcall_push(simcall->issuer);
   }
 }
-
+/**
+ * \ingroup simix_comm_management
+ */
 smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
                               int (*match_fun)(void *, void *, smx_action_t),
@@ -808,7 +861,9 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_isend.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ */
 void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
                          int (*match_fun)(void *, void *, smx_action_t), void *data, double timeout)
 {
@@ -835,7 +890,9 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
     SIMIX_simcall_push(simcall->issuer);
   }
 }
-
+/**
+ * \ingroup simix_comm_management
+ */
 smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_action_t), void *data)
 {
@@ -853,7 +910,6 @@ smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_irecv.result;
 }
-
 void simcall_comm_destroy(smx_action_t comm)
 {
   xbt_assert(comm, "Invalid parameter");
@@ -869,7 +925,9 @@ void simcall_comm_destroy(smx_action_t comm)
   SIMIX_simcall_push(simcall->issuer);
   */
 }
-
+/**
+ * \ingroup simix_comm_management
+ */
 void simcall_comm_cancel(smx_action_t comm)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -879,7 +937,9 @@ void simcall_comm_cancel(smx_action_t comm)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_comm_management
+ */
 unsigned int simcall_comm_waitany(xbt_dynar_t comms)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -890,7 +950,9 @@ unsigned int simcall_comm_waitany(xbt_dynar_t comms)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_waitany.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ */
 int simcall_comm_testany(xbt_dynar_t comms)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -903,7 +965,9 @@ int simcall_comm_testany(xbt_dynar_t comms)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_testany.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ */
 void simcall_comm_wait(smx_action_t comm, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
@@ -940,7 +1004,10 @@ void simcall_set_category(smx_action_t action, const char *category)
   SIMIX_simcall_push(simcall->issuer);
 }
 #endif
-
+/**
+ * \ingroup simix_comm_management
+ *
+ */
 int simcall_comm_test(smx_action_t comm)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -951,7 +1018,10 @@ int simcall_comm_test(smx_action_t comm)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_test.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ *
+ */
 double simcall_comm_get_remains(smx_action_t comm)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -962,7 +1032,10 @@ double simcall_comm_get_remains(smx_action_t comm)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_get_remains.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ *
+ */
 e_smx_state_t simcall_comm_get_state(smx_action_t comm)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -973,7 +1046,10 @@ e_smx_state_t simcall_comm_get_state(smx_action_t comm)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_get_state.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ *
+ */
 void *simcall_comm_get_src_data(smx_action_t comm)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -984,7 +1060,10 @@ void *simcall_comm_get_src_data(smx_action_t comm)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_get_src_data.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ *
+ */
 void *simcall_comm_get_dst_data(smx_action_t comm)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -995,7 +1074,10 @@ void *simcall_comm_get_dst_data(smx_action_t comm)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_get_dst_data.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ *
+ */
 smx_process_t simcall_comm_get_src_proc(smx_action_t comm)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1006,7 +1088,10 @@ smx_process_t simcall_comm_get_src_proc(smx_action_t comm)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_get_src_proc.result;
 }
-
+/**
+ * \ingroup simix_comm_management
+ *
+ */
 smx_process_t simcall_comm_get_dst_proc(smx_action_t comm)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1030,7 +1115,10 @@ int simcall_comm_is_latency_bounded(smx_action_t comm)
   return simcall->comm_is_latency_bounded.result;
 }
 #endif
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 smx_mutex_t simcall_mutex_init(void)
 {
   if(!simix_global) {
@@ -1044,7 +1132,10 @@ smx_mutex_t simcall_mutex_init(void)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->mutex_init.result;
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_mutex_destroy(smx_mutex_t mutex)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1054,7 +1145,10 @@ void simcall_mutex_destroy(smx_mutex_t mutex)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_mutex_lock(smx_mutex_t mutex)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1064,7 +1158,10 @@ void simcall_mutex_lock(smx_mutex_t mutex)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 int simcall_mutex_trylock(smx_mutex_t mutex)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1075,7 +1172,10 @@ int simcall_mutex_trylock(smx_mutex_t mutex)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->mutex_trylock.result;
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_mutex_unlock(smx_mutex_t mutex)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1085,8 +1185,10 @@ void simcall_mutex_unlock(smx_mutex_t mutex)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 smx_cond_t simcall_cond_init(void)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1096,7 +1198,10 @@ smx_cond_t simcall_cond_init(void)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->cond_init.result;
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_cond_destroy(smx_cond_t cond)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1106,7 +1211,10 @@ void simcall_cond_destroy(smx_cond_t cond)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_cond_signal(smx_cond_t cond)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1116,7 +1224,10 @@ void simcall_cond_signal(smx_cond_t cond)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1127,7 +1238,10 @@ void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_cond_wait_timeout(smx_cond_t cond,
                                  smx_mutex_t mutex,
                                  double timeout)
@@ -1143,7 +1257,10 @@ void simcall_cond_wait_timeout(smx_cond_t cond,
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_cond_broadcast(smx_cond_t cond)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1153,8 +1270,10 @@ void simcall_cond_broadcast(smx_cond_t cond)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 smx_sem_t simcall_sem_init(int capacity)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1165,7 +1284,10 @@ smx_sem_t simcall_sem_init(int capacity)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->sem_init.result;
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_sem_destroy(smx_sem_t sem)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1175,7 +1297,10 @@ void simcall_sem_destroy(smx_sem_t sem)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_sem_release(smx_sem_t sem)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1185,7 +1310,10 @@ void simcall_sem_release(smx_sem_t sem)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 int simcall_sem_would_block(smx_sem_t sem)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1196,7 +1324,10 @@ int simcall_sem_would_block(smx_sem_t sem)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->sem_would_block.result;
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_sem_acquire(smx_sem_t sem)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1206,7 +1337,10 @@ void simcall_sem_acquire(smx_sem_t sem)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 void simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
@@ -1219,7 +1353,10 @@ void simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
 
   SIMIX_simcall_push(simcall->issuer);
 }
-
+/**
+ * \ingroup simix_synchro_management
+ *
+ */
 int simcall_sem_get_capacity(smx_sem_t sem)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1230,7 +1367,10 @@ int simcall_sem_get_capacity(smx_sem_t sem)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->sem_get_capacity.result;
 }
-
+/**
+ * \ingroup simix_file_management
+ *
+ */
 double simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1244,7 +1384,10 @@ double simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream
 
   return simcall->file_read.result;
 }
-
+/**
+ * \ingroup simix_file_management
+ *
+ */
 size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1258,7 +1401,10 @@ size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t
 
   return simcall->file_write.result;
 }
-
+/**
+ * \ingroup simix_file_management
+ *
+ */
 smx_file_t simcall_file_open(const char* mount, const char* path, const char* mode)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1271,7 +1417,10 @@ smx_file_t simcall_file_open(const char* mount, const char* path, const char* mo
 
   return simcall->file_open.result;
 }
-
+/**
+ * \ingroup simix_file_management
+ *
+ */
 int simcall_file_close(smx_file_t fp)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1282,7 +1431,10 @@ int simcall_file_close(smx_file_t fp)
 
   return simcall->file_close.result;
 }
-
+/**
+ * \ingroup simix_file_management
+ *
+ */
 int simcall_file_stat(smx_file_t fd, s_file_stat_t *buf)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();

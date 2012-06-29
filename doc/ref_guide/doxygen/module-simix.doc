@@ -5,4 +5,32 @@
      /** @defgroup m_datatypes_management_details SIMIX datatypes management details */
 /** @} */
 
+/**
+ * @defgroup simix_process_management Process Management Functions
+ * @ingroup SIMIX_API
+ */
 
+/**
+ * @defgroup simix_host_management Host Management Functions
+ * @ingroup SIMIX_API
+ */
+
+/**
+ * @defgroup simix_rdv_management RDV Management Functions
+ * @ingroup SIMIX_API
+ */
+
+/**
+  * @defgroup simix_comm_management Communication Management Functions
+  * @ingroup SIMIX_API
+  */
+
+/**
+  * @defgroup simix_synchro_management Synchronisation Management Functions
+  * @ingroup SIMIX_API
+  */
+  
+/**
+  * @defgroup simix_file_management File Management Functions
+  * @ingroup SIMIX_API
+  */
