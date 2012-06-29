@@ -72,7 +72,7 @@ details).
 
 /** @defgroup msg_task_usage Task Actions
  *  @ingroup MSG_API
- *  @brief This secti on describes the functions that can be used
+ *  @brief This section describes the functions that can be used
  *         by a process to execute, communicate or otherwise handle some task.
  */
 
