@@ -46,7 +46,7 @@ int master(int argc, char *argv[])
   TRACE_mark("msmark", "start_send_tasks");
   int i;
   for (i = 0; i < number_of_tasks; i++) {
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
     task = MSG_task_create("task", task_comp_size, task_comm_size, NULL);
 
     //setting the variable "task_creation" to value i
@@ -60,7 +60,7 @@ int master(int argc, char *argv[])
   TRACE_mark("msmark", "finish_send_tasks");
 
   for (i = 0; i < slaves_count; i++) {
-    m_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
+    msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_set_category(finalize, "finalize");
     MSG_task_send(finalize, "master_mailbox");
   }
@@ -71,7 +71,7 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
 
   TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "is_slave", 1);
   TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()),

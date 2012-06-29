@@ -23,7 +23,7 @@ int master(int argc, char *argv[]);
 //dump function to create and execute a task
 static void create_and_execute_task (void)
 {
-  m_task_t task = MSG_task_create("task", 1000000, 0, NULL);
+  msg_task_t task = MSG_task_create("task", 1000000, 0, NULL);
   MSG_task_execute (task);
   MSG_task_destroy (task);
 }

@@ -37,8 +37,8 @@ int sender(int argc, char *argv[])
 {
   msg_host_t host = NULL;
   double time;
-  m_task_t task_la = NULL;
-  m_task_t task_bw = NULL;
+  msg_task_t task_la = NULL;
+  msg_task_t task_bw = NULL;
   char sprintf_buffer_la[64];
   char sprintf_buffer_bw[64];
 
@@ -82,8 +82,8 @@ int sender(int argc, char *argv[])
 int receiver(int argc, char *argv[])
 {
   double time, time1, sender_time;
-  m_task_t task_la = NULL;
-  m_task_t task_bw = NULL;
+  msg_task_t task_la = NULL;
+  msg_task_t task_bw = NULL;
   int a;
   double communication_time = 0;
 

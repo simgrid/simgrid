@@ -40,7 +40,7 @@ int master(int argc, char *argv[])
 
   int i;
   for (i = 0; i < number_of_tasks; i++) {
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
 
     //creating task and setting its category
     if (i % 2) {
@@ -57,7 +57,7 @@ int master(int argc, char *argv[])
   }
 
   for (i = 0; i < slaves_count; i++) {
-    m_task_t finalize = MSG_task_create("finalize", 0, 1000, 0);
+    msg_task_t finalize = MSG_task_create("finalize", 0, 1000, 0);
     MSG_task_set_category(finalize, "finalize");
     MSG_task_send(finalize, "master_mailbox");
   }
@@ -68,7 +68,7 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
 
   while (1) {
     MSG_task_receive(&(task), "master_mailbox");

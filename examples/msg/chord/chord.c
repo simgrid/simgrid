@@ -101,7 +101,7 @@ static void set_predecessor(node_t node, int predecessor_id);
 
 // process functions
 static int node(int argc, char *argv[]);
-static void handle_task(node_t node, m_task_t task);
+static void handle_task(node_t node, msg_task_t task);
 
 // Chord core
 static void create(node_t node);
@@ -277,7 +277,7 @@ int node(int argc, char *argv[])
   }
 
   double init_time = MSG_get_clock();
-  m_task_t task_received = NULL;
+  msg_task_t task_received = NULL;
   int i;
   int join_success = 0;
   double deadline;
@@ -397,7 +397,7 @@ int node(int argc, char *argv[])
  * \param task the task to handle (don't touch it then:
  * it will be destroyed, reused or forwarded)
  */
-static void handle_task(node_t node, m_task_t task) {
+static void handle_task(node_t node, msg_task_t task) {
 
   XBT_DEBUG("Handling task %p", task);
   char mailbox[MAILBOX_NAME_SIZE];
@@ -566,7 +566,7 @@ static void quit_notify(node_t node, int to)
           node->pred_id, to_mailbox);
     req_data->type = TASK_SUCCESSOR_LEAVING;
   }
-  m_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+  msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   //char* mailbox = get_mailbox(to_mailbox);
   msg_comm_t comm = MSG_task_isend(task, to_mailbox);
   xbt_dynar_push(node->comms, &comm);
@@ -611,7 +611,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Find Successor" request to ask_to_id
-  m_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+  msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   XBT_DEBUG("Sending a 'Find Successor' request (task %p) to %d for id %d", task_sent, ask_to, id);
   MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
 
@@ -628,7 +628,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
 
     do {
       if (node->comm_receive == NULL) {
-        m_task_t task_received = NULL;
+        msg_task_t task_received = NULL;
         node->comm_receive = MSG_task_irecv(&task_received, node->mailbox);
       }
 
@@ -642,7 +642,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         node->comm_receive = NULL;
       }
       else {
-        m_task_t task_received = MSG_comm_get_task(node->comm_receive);
+        msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
         XBT_DEBUG("Received a task (%p)", task_received);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
@@ -693,7 +693,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
 
   // send a "Get Predecessor" request to ask_to_id
   XBT_DEBUG("Sending a 'Get Predecessor' request to %d", ask_to);
-  m_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+  msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
 
   if (res != MSG_OK) {
@@ -709,7 +709,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
 
     do {
       if (node->comm_receive == NULL) { // FIXME simplify this
-        m_task_t task_received = NULL;
+        msg_task_t task_received = NULL;
         node->comm_receive = MSG_task_irecv(&task_received, node->mailbox);
       }
 
@@ -723,7 +723,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
         node->comm_receive = NULL;
       }
       else {
-        m_task_t task_received = MSG_comm_get_task(node->comm_receive);
+        msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
         if (MC_IS_ENABLED) {
@@ -830,7 +830,7 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
   req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Notify" request to notify_id
-  m_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+  msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   XBT_DEBUG("Sending a 'Notify' request (task %p) to %d", task, notify_id);
   char mailbox[MAILBOX_NAME_SIZE];
   get_mailbox(notify_id, mailbox);

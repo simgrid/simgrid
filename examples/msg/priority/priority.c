@@ -26,7 +26,7 @@ static int test(int argc, char *argv[])
 {
   double computation_amount = 0.0;
   double priority = 1.0;
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
 
   _XBT_GNUC_UNUSED int res = sscanf(argv[1], "%lg", &computation_amount);
   xbt_assert(res, "Invalid argument %s\n", argv[1]);

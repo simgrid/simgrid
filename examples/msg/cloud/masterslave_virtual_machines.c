@@ -118,7 +118,7 @@ int master(int argc, char *argv[]) {
   for (i = 0; i < slaves_count; i++) {
     char mailbox_buffer[64];
     sprintf(mailbox_buffer,"Slave_%d",i);
-    m_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
+    msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_send(finalize, mailbox_buffer);
   }
 
@@ -138,7 +138,7 @@ int master(int argc, char *argv[]) {
 int slave_fun(int argc, char *argv[])
 {
   char *mailbox_name;
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   _XBT_GNUC_UNUSED int res;
 
   /* since the slaves will move around, use slave_%d as mailbox names instead of hostnames */

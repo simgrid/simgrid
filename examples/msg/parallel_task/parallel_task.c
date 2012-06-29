@@ -37,7 +37,7 @@ int test(int argc, char *argv[])
   double task_comm_size = 10000;
   double *computation_amount = NULL;
   double *communication_amount = NULL;
-  m_task_t ptask = NULL;
+  msg_task_t ptask = NULL;
   int i, j;
 
   slaves_dynar = MSG_hosts_as_dynar();

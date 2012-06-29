@@ -160,7 +160,7 @@ int node(int argc, char **argv)
 
   /* The rest: return the result to node 0 */
   }else{
-    m_task_t task;
+    msg_task_t task;
 
     XBT_VERB("Multiplication done. Send the sub-result.");
 
@@ -187,7 +187,7 @@ static void broadcast_jobs(node_job_t *jobs)
 {
   int node;
   char node_mbox[MAILBOX_NAME_SIZE];
-  m_task_t task;
+  msg_task_t task;
   msg_comm_t comms[GRID_NUM_NODES - 1] = {0};
 
   XBT_VERB("Broadcast Jobs");
@@ -202,7 +202,7 @@ static void broadcast_jobs(node_job_t *jobs)
 
 static node_job_t wait_job(int selfid)
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   char self_mbox[MAILBOX_NAME_SIZE];
   node_job_t job;
   snprintf(self_mbox, MAILBOX_NAME_SIZE - 1, "%d", selfid);
@@ -218,7 +218,7 @@ static void broadcast_matrix(xbt_matrix_t M, int num_nodes, int *nodes)
 {
   int node;
   char node_mbox[MAILBOX_NAME_SIZE];
-  m_task_t task;
+  msg_task_t task;
   xbt_matrix_t sM;
 
   for(node=0; node < num_nodes; node++){
@@ -233,7 +233,7 @@ static void broadcast_matrix(xbt_matrix_t M, int num_nodes, int *nodes)
 
 static void get_sub_matrix(xbt_matrix_t *sM, int selfid)
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   char node_mbox[MAILBOX_NAME_SIZE];
 
   XBT_VERB("Get sub-matrix");
@@ -245,7 +245,7 @@ static void get_sub_matrix(xbt_matrix_t *sM, int selfid)
 }
 
 static void task_cleanup(void *arg){
-  m_task_t task = (m_task_t)arg;
+  msg_task_t task = (msg_task_t)arg;
   xbt_matrix_t m = (xbt_matrix_t)MSG_task_get_data(task);
   xbt_matrix_free(m);
   MSG_task_destroy(task);
@@ -334,7 +334,7 @@ static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)
 static void receive_results(result_t *results){
   int node;
   msg_comm_t comms[GRID_NUM_NODES-1] = {0};
-  m_task_t tasks[GRID_NUM_NODES-1] = {0};
+  msg_task_t tasks[GRID_NUM_NODES-1] = {0};
 
   XBT_VERB("Receive Results.");
 

@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
 
-void TRACE_msg_set_task_category(m_task_t task, const char *category)
+void TRACE_msg_set_task_category(msg_task_t task, const char *category)
 {
   xbt_assert(task->category == NULL, "Task %p(%s) already has a category (%s).",
       task, task->name, task->category);
@@ -29,7 +29,7 @@ void TRACE_msg_set_task_category(m_task_t task, const char *category)
 }
 
 /* MSG_task_create related function*/
-void TRACE_msg_task_create(m_task_t task)
+void TRACE_msg_task_create(msg_task_t task)
 {
   static long long counter = 0;
   task->counter = counter++;
@@ -38,7 +38,7 @@ void TRACE_msg_task_create(m_task_t task)
 }
 
 /* MSG_task_execute related functions */
-void TRACE_msg_task_execute_start(m_task_t task)
+void TRACE_msg_task_execute_start(msg_task_t task)
 {
   XBT_DEBUG("EXEC,in %p, %lld, %s", task, task->counter, task->category);
 
@@ -53,7 +53,7 @@ void TRACE_msg_task_execute_start(m_task_t task)
   }
 }
 
-void TRACE_msg_task_execute_end(m_task_t task)
+void TRACE_msg_task_execute_end(msg_task_t task)
 {
   XBT_DEBUG("EXEC,out %p, %lld, %s", task, task->counter, task->category);
 
@@ -68,7 +68,7 @@ void TRACE_msg_task_execute_end(m_task_t task)
 }
 
 /* MSG_task_destroy related functions */
-void TRACE_msg_task_destroy(m_task_t task)
+void TRACE_msg_task_destroy(msg_task_t task)
 {
   XBT_DEBUG("DESTROY %p, %lld, %s", task, task->counter, task->category);
 
@@ -94,7 +94,7 @@ void TRACE_msg_task_get_start(void)
   }
 }
 
-void TRACE_msg_task_get_end(double start_time, m_task_t task)
+void TRACE_msg_task_get_end(double start_time, msg_task_t task)
 {
   XBT_DEBUG("GET,out %p, %lld, %s", task, task->counter, task->category);
 
@@ -114,7 +114,7 @@ void TRACE_msg_task_get_end(double start_time, m_task_t task)
 }
 
 /* MSG_task_put related functions */
-int TRACE_msg_task_put_start(m_task_t task)
+int TRACE_msg_task_put_start(msg_task_t task)
 {
   XBT_DEBUG("PUT,in %p, %lld, %s", task, task->counter, task->category);
 

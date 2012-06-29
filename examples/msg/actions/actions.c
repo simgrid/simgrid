@@ -54,7 +54,7 @@ typedef struct  {
   xbt_dynar_t isends; /* of msg_comm_t */
   /* Used to implement irecv+wait */
   xbt_dynar_t irecvs; /* of msg_comm_t */
-  xbt_dynar_t tasks; /* of m_task_t */
+  xbt_dynar_t tasks; /* of msg_task_t */
 } s_process_globals_t, *process_globals_t;
 
 /* Helper function */
@@ -149,7 +149,7 @@ static void action_recv(const char *const *action)
 {
   char *name = NULL;
   char mailbox_name[250];
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   double clock = MSG_get_clock();
 
   sprintf(mailbox_name, "%s_%s", action[2],
@@ -200,7 +200,7 @@ static void action_Irecv(const char *const *action)
 
   sprintf(mailbox, "%s_%s", action[2],
           MSG_process_get_name(MSG_process_self()));
-  m_task_t t=NULL;
+  msg_task_t t=NULL;
   xbt_dynar_push(globals->tasks,&t);
   msg_comm_t c =
       MSG_task_irecv(
@@ -221,7 +221,7 @@ static void action_Irecv(const char *const *action)
 static void action_wait(const char *const *action)
 {
   char *name = NULL;
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   msg_comm_t comm;
   double clock = MSG_get_clock();
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
@@ -241,7 +241,7 @@ static void action_wait(const char *const *action)
   XBT_DEBUG("Entering %s", name);
   comm = xbt_dynar_pop_as(globals->irecvs,msg_comm_t);
   MSG_comm_wait(comm,-1);
-  task = xbt_dynar_pop_as(globals->tasks,m_task_t);
+  task = xbt_dynar_pop_as(globals->tasks,msg_task_t);
   MSG_comm_destroy(comm);
   MSG_task_destroy(task);
 
@@ -301,7 +301,7 @@ static void action_reduce(const char *const *action)
   char mailbox[80];
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
-  m_task_t comp_task = NULL;
+  msg_task_t comp_task = NULL;
   const char *process_name;
   double clock = MSG_get_clock();
 
@@ -318,7 +318,7 @@ static void action_reduce(const char *const *action)
     XBT_DEBUG("%s: %s is the Root", reduce_identifier, process_name);
 
     msg_comm_t *comms = xbt_new0(msg_comm_t,communicator_size-1);
-      m_task_t *tasks = xbt_new0(m_task_t,communicator_size-1);
+      msg_task_t *tasks = xbt_new0(msg_task_t,communicator_size-1);
       for (i = 1; i < communicator_size; i++) {
         sprintf(mailbox, "%s_p%d_p0", reduce_identifier, i);
         comms[i-1] = MSG_task_irecv(&(tasks[i-1]),mailbox);
@@ -354,7 +354,7 @@ static void action_bcast(const char *const *action)
   char *bcast_identifier;
   char mailbox[80];
   double comm_size = parse_double(action[2]);
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   const char *process_name;
   double clock = MSG_get_clock();
 
@@ -420,7 +420,7 @@ static void action_allReduce(const char *const *action) {
   char mailbox[80];
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
-  m_task_t task = NULL, comp_task = NULL;
+  msg_task_t task = NULL, comp_task = NULL;
   const char *process_name;
   double clock = MSG_get_clock();
 
@@ -437,7 +437,7 @@ static void action_allReduce(const char *const *action) {
     XBT_DEBUG("%s: %s is the Root", allreduce_identifier, process_name);
 
     msg_comm_t *comms = xbt_new0(msg_comm_t,communicator_size-1);
-    m_task_t *tasks = xbt_new0(m_task_t,communicator_size-1);
+    msg_task_t *tasks = xbt_new0(msg_task_t,communicator_size-1);
     for (i = 1; i < communicator_size; i++) {
       sprintf(mailbox, "%s_p%d_p0", allreduce_identifier, i);
       comms[i-1] = MSG_task_irecv(&(tasks[i-1]),mailbox);
@@ -503,7 +503,7 @@ static void action_compute(const char *const *action)
 {
   char *name = NULL;
   const char *amout = action[2];
-  m_task_t task = MSG_task_create(name, parse_double(amout), 0, NULL);
+  msg_task_t task = MSG_task_create(name, parse_double(amout), 0, NULL);
   double clock = MSG_get_clock();
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
@@ -524,7 +524,7 @@ static void action_init(const char *const *action)
   process_globals_t globals = (process_globals_t) calloc(1, sizeof(s_process_globals_t));
   globals->isends = xbt_dynar_new(sizeof(msg_comm_t),NULL);
   globals->irecvs = xbt_dynar_new(sizeof(msg_comm_t),NULL);
-  globals->tasks  = xbt_dynar_new(sizeof(m_task_t),NULL);
+  globals->tasks  = xbt_dynar_new(sizeof(msg_task_t),NULL);
   MSG_process_set_data(MSG_process_self(),globals);
 
 }

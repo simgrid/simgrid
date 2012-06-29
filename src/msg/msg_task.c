@@ -24,9 +24,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg,
 
 /********************************* Task **************************************/
 /** \ingroup m_task_management
- * \brief Creates a new #m_task_t.
+ * \brief Creates a new #msg_task_t.
  *
- * A constructor for #m_task_t taking four arguments and returning the 
+ * A constructor for #msg_task_t taking four arguments and returning the
    corresponding object.
  * \param name a name for the object. It is for user-level information
    and can be NULL.
@@ -39,13 +39,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg,
  * \param data a pointer to any data may want to attach to the new
    object.  It is for user-level information and can be NULL. It can
    be retrieved with the function \ref MSG_task_get_data.
- * \see m_task_t
+ * \see msg_task_t
  * \return The new corresponding object.
  */
-m_task_t MSG_task_create(const char *name, double compute_duration,
+msg_task_t MSG_task_create(const char *name, double compute_duration,
                          double message_size, void *data)
 {
-  m_task_t task = xbt_new(s_m_task_t, 1);
+  msg_task_t task = xbt_new(s_msg_task_t, 1);
   simdata_task_t simdata = xbt_new(s_simdata_task_t, 1);
   task->simdata = simdata;
 
@@ -77,9 +77,9 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
 }
 
 /** \ingroup m_task_management
- * \brief Creates a new #m_task_t (a parallel one....).
+ * \brief Creates a new #msg_task_t (a parallel one....).
  *
- * A constructor for #m_task_t taking six arguments and returning the
+ * A constructor for #msg_task_t taking six arguments and returning the
  corresponding object.
  * \param name a name for the object. It is for user-level information
  and can be NULL.
@@ -92,16 +92,16 @@ m_task_t MSG_task_create(const char *name, double compute_duration,
  * \param data a pointer to any data may want to attach to the new
  object.  It is for user-level information and can be NULL. It can
  be retrieved with the function \ref MSG_task_get_data.
- * \see m_task_t
+ * \see msg_task_t
  * \return The new corresponding object.
  */
-m_task_t
+msg_task_t
 MSG_parallel_task_create(const char *name, int host_nb,
                          const msg_host_t * host_list,
                          double *computation_amount,
                          double *communication_amount, void *data)
 {
-  m_task_t task = MSG_task_create(name, 0, 0, data);
+  msg_task_t task = MSG_task_create(name, 0, 0, data);
   simdata_task_t simdata = task->simdata;
   int i;
 
@@ -163,12 +163,12 @@ m_gpu_task_t MSG_gpu_task_create(const char *name, double compute_duration,
 /*************** End GPU ***************/
 
 /** \ingroup m_task_management
- * \brief Return the user data of a #m_task_t.
+ * \brief Return the user data of a #msg_task_t.
  *
  * This function checks whether \a task is a valid pointer or not and return
    the user data associated to \a task if it is possible.
  */
-void *MSG_task_get_data(m_task_t task)
+void *MSG_task_get_data(msg_task_t task)
 {
   xbt_assert((task != NULL), "Invalid parameter");
 
@@ -176,12 +176,12 @@ void *MSG_task_get_data(m_task_t task)
 }
 
 /** \ingroup m_task_management
- * \brief Sets the user data of a #m_task_t.
+ * \brief Sets the user data of a #msg_task_t.
  *
  * This function allows to associate a new pointer to
    the user data associated of \a task.
  */
-void MSG_task_set_data(m_task_t task, void *data)
+void MSG_task_set_data(msg_task_t task, void *data)
 {
   xbt_assert((task != NULL), "Invalid parameter");
 
@@ -193,7 +193,7 @@ void MSG_task_set_data(m_task_t task, void *data)
  * \param callback a callback function
  */
 void MSG_task_set_copy_callback(void (*callback)
-    (m_task_t task, msg_process_t sender, msg_process_t receiver)) {
+    (msg_task_t task, msg_process_t sender, msg_process_t receiver)) {
 
   msg_global->task_copy_callback = callback;
 
@@ -206,53 +206,53 @@ void MSG_task_set_copy_callback(void (*callback)
 }
 
 /** \ingroup m_task_management
- * \brief Return the sender of a #m_task_t.
+ * \brief Return the sender of a #msg_task_t.
  *
  * This functions returns the #msg_process_t which sent this task
  */
-msg_process_t MSG_task_get_sender(m_task_t task)
+msg_process_t MSG_task_get_sender(msg_task_t task)
 {
   xbt_assert(task, "Invalid parameters");
   return ((simdata_task_t) task->simdata)->sender;
 }
 
 /** \ingroup m_task_management
- * \brief Return the source of a #m_task_t.
+ * \brief Return the source of a #msg_task_t.
  *
  * This functions returns the #msg_host_t from which this task was sent
  */
-msg_host_t MSG_task_get_source(m_task_t task)
+msg_host_t MSG_task_get_source(msg_task_t task)
 {
   xbt_assert(task, "Invalid parameters");
   return ((simdata_task_t) task->simdata)->source;
 }
 
 /** \ingroup m_task_management
- * \brief Return the name of a #m_task_t.
+ * \brief Return the name of a #msg_task_t.
  *
- * This functions returns the name of a #m_task_t as specified on creation
+ * This functions returns the name of a #msg_task_t as specified on creation
  */
-const char *MSG_task_get_name(m_task_t task)
+const char *MSG_task_get_name(msg_task_t task)
 {
   xbt_assert(task, "Invalid parameters");
   return task->name;
 }
 
 /** \ingroup m_task_management
- * \brief Sets the name of a #m_task_t.
+ * \brief Sets the name of a #msg_task_t.
  *
  * This functions allows to associate a name to a task
  */
-void MSG_task_set_name(m_task_t task, const char *name)
+void MSG_task_set_name(msg_task_t task, const char *name)
 {
   xbt_assert(task, "Invalid parameters");
   task->name = xbt_strdup(name);
 }
 
 /** \ingroup m_task_management
- * \brief Destroy a #m_task_t.
+ * \brief Destroy a #msg_task_t.
  *
- * Destructor for #m_task_t. Note that you should free user data, if any, \b 
+ * Destructor for #msg_task_t. Note that you should free user data, if any, \b
  * before calling this function.
  *
  * Only the process that owns the task can destroy it.
@@ -261,7 +261,7 @@ void MSG_task_set_name(m_task_t task, const char *name)
  * supposed to destroy it. The sender should not use it anymore.
  * If the task failed to be sent, the sender remains the owner of the task.
  */
-MSG_error_t MSG_task_destroy(m_task_t task)
+MSG_error_t MSG_task_destroy(msg_task_t task)
 {
   smx_action_t action = NULL;
   xbt_assert((task != NULL), "Invalid parameter");
@@ -292,11 +292,11 @@ MSG_error_t MSG_task_destroy(m_task_t task)
 
 
 /** \ingroup m_task_usage
- * \brief Cancel a #m_task_t.
+ * \brief Cancel a #msg_task_t.
  * \param task the task to cancel. If it was executed or transfered, it
           stops the process that were working on it.
  */
-MSG_error_t MSG_task_cancel(m_task_t task)
+MSG_error_t MSG_task_cancel(msg_task_t task)
 {
   xbt_assert((task != NULL), "Invalid parameter");
 
@@ -311,10 +311,10 @@ MSG_error_t MSG_task_cancel(m_task_t task)
 }
 
 /** \ingroup m_task_management
- * \brief Returns the computation amount needed to process a task #m_task_t.
+ * \brief Returns the computation amount needed to process a task #msg_task_t.
  *        Once a task has been processed, this amount is thus set to 0...
  */
-double MSG_task_get_compute_duration(m_task_t task)
+double MSG_task_get_compute_duration(msg_task_t task)
 {
   xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
@@ -324,10 +324,10 @@ double MSG_task_get_compute_duration(m_task_t task)
 
 
 /** \ingroup m_task_management
- * \brief set the computation amount needed to process a task #m_task_t.
+ * \brief set the computation amount needed to process a task #msg_task_t.
  */
 
-void MSG_task_set_compute_duration(m_task_t task,
+void MSG_task_set_compute_duration(msg_task_t task,
                                    double computation_amount)
 {
   xbt_assert(task, "Invalid parameter");
@@ -336,10 +336,10 @@ void MSG_task_set_compute_duration(m_task_t task,
 }
 
 /** \ingroup m_task_management
- * \brief Returns the remaining computation amount of a task #m_task_t.
+ * \brief Returns the remaining computation amount of a task #msg_task_t.
  *
  */
-double MSG_task_get_remaining_computation(m_task_t task)
+double MSG_task_get_remaining_computation(msg_task_t task)
 {
   xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
@@ -352,12 +352,12 @@ double MSG_task_get_remaining_computation(m_task_t task)
 }
 
 /** \ingroup m_task_management
- * \brief Returns the total amount received by a task #m_task_t.
+ * \brief Returns the total amount received by a task #msg_task_t.
  *        If the communication does not exist it will return 0.
  *        So, if the communication has FINISHED or FAILED it returns
  *        zero.
  */
-double MSG_task_get_remaining_communication(m_task_t task)
+double MSG_task_get_remaining_communication(msg_task_t task)
 {
   xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
@@ -371,7 +371,7 @@ double MSG_task_get_remaining_communication(m_task_t task)
  * \brief Return 1 if communication task is limited by latency, 0 otherwise
  *
  */
-int MSG_task_is_latency_bounded(m_task_t task)
+int MSG_task_is_latency_bounded(msg_task_t task)
 {
   xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
@@ -382,10 +382,10 @@ int MSG_task_is_latency_bounded(m_task_t task)
 #endif
 
 /** \ingroup m_task_management
- * \brief Returns the size of the data attached to a task #m_task_t.
+ * \brief Returns the size of the data attached to a task #msg_task_t.
  *
  */
-double MSG_task_get_data_size(m_task_t task)
+double MSG_task_get_data_size(msg_task_t task)
 {
   xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
@@ -401,7 +401,7 @@ double MSG_task_get_data_size(m_task_t task)
  *        cpu power than the other ones.
  *
  */
-void MSG_task_set_priority(m_task_t task, double priority)
+void MSG_task_set_priority(msg_task_t task, double priority)
 {
   xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");

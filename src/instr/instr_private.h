@@ -104,14 +104,14 @@ void new_pajeEndLink (double timestamp, container_t container, type_t type, cont
 void new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
 
 /* declaration of instrumentation functions from msg_task_instr.c */
-void TRACE_msg_set_task_category(m_task_t task, const char *category);
-void TRACE_msg_task_create(m_task_t task);
-void TRACE_msg_task_execute_start(m_task_t task);
-void TRACE_msg_task_execute_end(m_task_t task);
-void TRACE_msg_task_destroy(m_task_t task);
+void TRACE_msg_set_task_category(msg_task_t task, const char *category);
+void TRACE_msg_task_create(msg_task_t task);
+void TRACE_msg_task_execute_start(msg_task_t task);
+void TRACE_msg_task_execute_end(msg_task_t task);
+void TRACE_msg_task_destroy(msg_task_t task);
 void TRACE_msg_task_get_start(void);
-void TRACE_msg_task_get_end(double start_time, m_task_t task);
-int TRACE_msg_task_put_start(m_task_t task);    //returns TRUE if the task_put_end must be called
+void TRACE_msg_task_get_end(double start_time, msg_task_t task);
+int TRACE_msg_task_put_start(msg_task_t task);    //returns TRUE if the task_put_end must be called
 void TRACE_msg_task_put_end(void);
 
 /* declaration of instrumentation functions from msg_process_instr.c */

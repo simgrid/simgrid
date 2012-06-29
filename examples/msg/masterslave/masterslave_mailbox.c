@@ -36,7 +36,7 @@ int master(int argc, char *argv[])
   for (i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
     char sprintf_buffer[256];
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
 
     sprintf(mailbox, "slave-%ld", i % slaves_count);
     sprintf(sprintf_buffer, "Task_%d", i);
@@ -56,7 +56,7 @@ int master(int argc, char *argv[])
     char mailbox[80];
 
     sprintf(mailbox, "slave-%ld", i % slaves_count);
-    m_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
+    msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_send(finalize, mailbox);
   }
 
@@ -67,7 +67,7 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   _XBT_GNUC_UNUSED int res;
   int id = -1;
   char mailbox[80];

@@ -26,7 +26,7 @@ int execute(int argc, char *argv[])
   char buffer[32];
   int i, j;
   msg_host_t *m_host_list = NULL;
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   int host_list_size;
   double *computation_duration = NULL;
   double *communication_table = NULL;
@@ -83,7 +83,7 @@ int redistribute(int argc, char *argv[])
   char buffer[32];
   int i, j;
   msg_host_t *m_host_list = NULL;
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   int host_list_size;
   double *computation_duration = NULL;
   double *communication_table = NULL;

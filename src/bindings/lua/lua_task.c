@@ -23,14 +23,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_task, bindings, "Lua bindings (task module)"
  * \param index an index in the Lua stack
  * \return the C task corresponding to this Lua task
  */
-m_task_t sglua_check_task(lua_State* L, int index)
+msg_task_t sglua_check_task(lua_State* L, int index)
 {
   sglua_stack_dump("check task: ", L);
   luaL_checktype(L, index, LUA_TTABLE);
                                   /* ... task ... */
   lua_getfield(L, index, "__simgrid_task");
                                   /* ... task ... ctask */
-  m_task_t task = *((m_task_t*) luaL_checkudata(L, -1, TASK_MODULE_NAME));
+  msg_task_t task = *((msg_task_t*) luaL_checkudata(L, -1, TASK_MODULE_NAME));
   lua_pop(L, 1);
                                   /* ... task ... */
 
@@ -66,7 +66,7 @@ static int l_task_new(lua_State* L)
                                   /* name comp comm */
   lua_settop(L, 0);
                                   /* -- */
-  m_task_t msg_task = MSG_task_create(name, comp_size, msg_size, NULL);
+  msg_task_t msg_task = MSG_task_create(name, comp_size, msg_size, NULL);
 
   lua_newtable(L);
                                   /* task */
@@ -74,7 +74,7 @@ static int l_task_new(lua_State* L)
                                   /* task mt */
   lua_setmetatable(L, -2);
                                   /* task */
-  m_task_t* lua_task = (m_task_t*) lua_newuserdata(L, sizeof(m_task_t));
+  msg_task_t* lua_task = (msg_task_t*) lua_newuserdata(L, sizeof(msg_task_t));
                                   /* task ctask */
   *lua_task = msg_task;
   luaL_getmetatable(L, TASK_MODULE_NAME);
@@ -96,7 +96,7 @@ static int l_task_new(lua_State* L)
  */
 static int l_task_get_name(lua_State* L)
 {
-  m_task_t task = sglua_check_task(L, 1);
+  msg_task_t task = sglua_check_task(L, 1);
   lua_pushstring(L, MSG_task_get_name(task));
   return 1;
 }
@@ -111,7 +111,7 @@ static int l_task_get_name(lua_State* L)
  */
 static int l_task_get_computation_duration(lua_State* L)
 {
-  m_task_t task = sglua_check_task(L, 1);
+  msg_task_t task = sglua_check_task(L, 1);
   lua_pushnumber(L, MSG_task_get_compute_duration(task));
   return 1;
 }
@@ -128,7 +128,7 @@ static int l_task_get_computation_duration(lua_State* L)
  */
 static int l_task_execute(lua_State* L)
 {
-  m_task_t task = sglua_check_task(L, 1);
+  msg_task_t task = sglua_check_task(L, 1);
   MSG_error_t res = MSG_task_execute(task);
 
   if (res == MSG_OK) {
@@ -147,7 +147,7 @@ static int l_task_execute(lua_State* L)
  */
 void sglua_task_register(lua_State* L) {
 
-  m_task_t task = sglua_check_task(L, -1);
+  msg_task_t task = sglua_check_task(L, -1);
                                   /* ... task */
   /* put in the C task a ref to the lua task so that the receiver finds it */
   unsigned long ref = luaL_ref(L, LUA_REGISTRYINDEX);
@@ -164,7 +164,7 @@ void sglua_task_register(lua_State* L) {
  * \param L a lua state
  * \param task a C task
  */
-void sglua_task_unregister(lua_State* L, m_task_t task) {
+void sglua_task_unregister(lua_State* L, msg_task_t task) {
 
                                   /* ... */
   /* the task is in my registry, put it onto my stack */
@@ -192,7 +192,7 @@ void sglua_task_unregister(lua_State* L, m_task_t task) {
  * \param src_process the sender
  * \param dst_process the receiver
  */
-static void task_copy_callback(m_task_t task, msg_process_t src_process,
+static void task_copy_callback(msg_task_t task, msg_process_t src_process,
     msg_process_t dst_process) {
 
   lua_State* src = MSG_process_get_data(src_process);
@@ -212,7 +212,7 @@ static void task_copy_callback(m_task_t task, msg_process_t src_process,
    * make the sender forget the C task so that it doesn't garbage */
   lua_getfield(src, -1, "__simgrid_task");
                                   /* src: ... task ctask */
-  m_task_t* udata = (m_task_t*) luaL_checkudata(src, -1, TASK_MODULE_NAME);
+  msg_task_t* udata = (msg_task_t*) luaL_checkudata(src, -1, TASK_MODULE_NAME);
   *udata = NULL;
   lua_pop(src, 2);
                                   /* src: ... */
@@ -233,7 +233,7 @@ static void task_copy_callback(m_task_t task, msg_process_t src_process,
  */
 static int l_task_send(lua_State* L)
 {
-  m_task_t task = sglua_check_task(L, 1);
+  msg_task_t task = sglua_check_task(L, 1);
   const char* mailbox = luaL_checkstring(L, 2);
   double timeout;
   if (lua_gettop(L) >= 3) {
@@ -281,7 +281,7 @@ static int l_task_send(lua_State* L)
  */
 static int l_task_isend(lua_State* L)
 {
-  m_task_t task = sglua_check_task(L, 1);
+  msg_task_t task = sglua_check_task(L, 1);
   const char* mailbox = luaL_checkstring(L, 2);
                                   /* task mailbox ... */
   lua_settop(L, 1);
@@ -312,7 +312,7 @@ static int l_task_isend(lua_State* L)
  */
 static int l_task_dsend(lua_State* L)
 {
-  m_task_t task = sglua_check_task(L, 1);
+  msg_task_t task = sglua_check_task(L, 1);
   const char* mailbox = luaL_checkstring(L, 2);
                                   /* task mailbox ... */
   lua_settop(L, 1);
@@ -336,7 +336,7 @@ static int l_task_dsend(lua_State* L)
  */
 static int l_task_recv(lua_State* L)
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   const char* mailbox = luaL_checkstring(L, 1);
   double timeout;
   if (lua_gettop(L) >= 2) {
@@ -383,7 +383,7 @@ static int l_task_irecv(lua_State* L)
 {
   const char* mailbox = luaL_checkstring(L, 1);
                                   /* mailbox ... */
-  m_task_t* task = xbt_new0(m_task_t, 1); // FIXME fix this leak
+  msg_task_t* task = xbt_new0(msg_task_t, 1); // FIXME fix this leak
   msg_comm_t comm = MSG_task_irecv(task, mailbox);
   sglua_push_comm(L, comm);
                                   /* mailbox ... comm */
@@ -414,7 +414,7 @@ static const luaL_reg task_functions[] = {
 static int l_task_gc(lua_State* L)
 {
                                   /* ctask */
-  m_task_t task = *((m_task_t*) luaL_checkudata(L, 1, TASK_MODULE_NAME));
+  msg_task_t task = *((msg_task_t*) luaL_checkudata(L, 1, TASK_MODULE_NAME));
   /* the task is NULL if I sent it to someone else */
   if (task != NULL) {
     MSG_task_destroy(task);
@@ -432,7 +432,7 @@ static int l_task_gc(lua_State* L)
  */
 static int l_task_tostring(lua_State* L)
 {
-  m_task_t task = *((m_task_t*) luaL_checkudata(L, 1, TASK_MODULE_NAME));
+  msg_task_t task = *((msg_task_t*) luaL_checkudata(L, 1, TASK_MODULE_NAME));
   lua_pushfstring(L, "Task: %p", task);
   return 1;
 }

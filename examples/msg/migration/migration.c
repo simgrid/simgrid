@@ -26,7 +26,7 @@ static msg_process_t process_to_migrate = NULL;
 /** The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static int emigrant(int argc, char *argv[])
 {
-  m_task_t task;
+  msg_task_t task;
   XBT_INFO
       ("I'll look for a new job on another machine where the grass is greener.");
   MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name("Boivin"));

@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 /** The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static int emigrant(int argc, char *argv[])
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   char *destination = NULL;
 
   MSG_process_sleep(2);
@@ -46,7 +46,7 @@ static int emigrant(int argc, char *argv[])
 
 static int master(int argc, char *argv[])
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
 
   // I am the master of emigrant process,
   // I tell it where it must emigrate to.

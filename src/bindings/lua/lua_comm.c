@@ -65,7 +65,7 @@ static int l_comm_wait(lua_State* L) {
   MSG_error_t res = MSG_comm_wait(comm, timeout);
 
   if (res == MSG_OK) {
-    m_task_t task = MSG_comm_get_task(comm);
+    msg_task_t task = MSG_comm_get_task(comm);
     if (MSG_task_get_sender(task) == MSG_process_self()) {
       /* I'm the sender */
       return 0;
@@ -114,7 +114,7 @@ static int l_comm_test(lua_State* L) {
     MSG_error_t res = MSG_comm_get_status(comm);
 
     if (res == MSG_OK) {
-      m_task_t task = MSG_comm_get_task(comm);
+      msg_task_t task = MSG_comm_get_task(comm);
       if (MSG_task_get_sender(task) == MSG_process_self()) {
         /* I'm the sender */
         lua_pushboolean(L, 1);

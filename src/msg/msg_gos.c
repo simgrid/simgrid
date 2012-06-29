@@ -17,11 +17,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
  *
  * This function is used for describing the behavior of a process. It
  * takes only one parameter.
- * \param task a #m_task_t to execute on the location on which the process is running.
+ * \param task a #msg_task_t to execute on the location on which the process is running.
  * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
  * or #MSG_HOST_FAILURE otherwise
  */
-MSG_error_t MSG_task_execute(m_task_t task)
+MSG_error_t MSG_task_execute(msg_task_t task)
 {
   return MSG_parallel_task_execute(task);
 }
@@ -29,12 +29,12 @@ MSG_error_t MSG_task_execute(m_task_t task)
 /** \ingroup msg_task_usage
  * \brief Executes a parallel task and waits for its termination.
  *
- * \param task a #m_task_t to execute on the location on which the process is running.
+ * \param task a #msg_task_t to execute on the location on which the process is running.
  *
  * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
  * or #MSG_HOST_FAILURE otherwise
  */
-MSG_error_t MSG_parallel_task_execute(m_task_t task)
+MSG_error_t MSG_parallel_task_execute(msg_task_t task)
 {
   xbt_ex_t e;
   simdata_task_t simdata = task->simdata;
@@ -171,7 +171,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  *    simply compare the host names, for example. After sufficient testing, provide an example that
  *    we could add to the distribution, and your first contribution to SimGrid is ready. Thanks in advance.
  *
- * \param task a memory location for storing a #m_task_t.
+ * \param task a memory location for storing a #msg_task_t.
  * \param alias name of the mailbox to receive the task from
  * \param host a #msg_host_t host from where the task was sent
  *
@@ -180,7 +180,7 @@ MSG_error_t MSG_process_sleep(double nb_sec)
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t
-MSG_task_receive_from_host(m_task_t * task, const char *alias,
+MSG_task_receive_from_host(msg_task_t * task, const char *alias,
                            msg_host_t host)
 {
   return MSG_task_receive_ext(task, alias, -1, host);
@@ -193,14 +193,14 @@ MSG_task_receive_from_host(m_task_t * task, const char *alias,
  * until the task is received. See #MSG_task_irecv
  * for receiving tasks asynchronously.
  *
- * \param task a memory location for storing a #m_task_t.
+ * \param task a memory location for storing a #msg_task_t.
  * \param alias name of the mailbox to receive the task from
  *
  * \return Returns
  * #MSG_OK if the task was successfully received,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
-MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
+MSG_error_t MSG_task_receive(msg_task_t * task, const char *alias)
 {
   return MSG_task_receive_with_timeout(task, alias, -1);
 }
@@ -213,7 +213,7 @@ MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
  * for receiving tasks asynchronously.  You can provide a -1 timeout
  * to obtain an infinite timeout.
  *
- * \param task a memory location for storing a #m_task_t.
+ * \param task a memory location for storing a #msg_task_t.
  * \param alias name of the mailbox to receive the task from
  * \param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_receive)
  *
@@ -222,7 +222,7 @@ MSG_error_t MSG_task_receive(m_task_t * task, const char *alias)
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 MSG_error_t
-MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
+MSG_task_receive_with_timeout(msg_task_t * task, const char *alias,
                               double timeout)
 {
   return MSG_task_receive_ext(task, alias, timeout, NULL);
@@ -236,7 +236,7 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
  * for receiving tasks asynchronously. You can provide a -1 timeout
  * to obtain an infinite timeout.
  *
- * \param task a memory location for storing a #m_task_t.
+ * \param task a memory location for storing a #msg_task_t.
  * \param alias name of the mailbox to receive the task from
  * \param timeout is the maximum wait time for completion (provide -1 for no timeout)
  * \param host a #msg_host_t host from where the task was sent
@@ -246,7 +246,7 @@ MSG_task_receive_with_timeout(m_task_t * task, const char *alias,
 * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 MSG_error_t
-MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
+MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
                      msg_host_t host)
 {
   XBT_DEBUG
@@ -262,11 +262,11 @@ MSG_task_receive_ext(m_task_t * task, const char *alias, double timeout,
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
  * to end the communication.
  *
- * \param task a #m_task_t to send on another location.
+ * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  * \return the msg_comm_t communication created
  */
-msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
+msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
 {
   return MSG_task_isend_with_matching(task,alias,NULL,NULL);
 }
@@ -277,7 +277,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
  * to end the communication.
  *
- * \param task a #m_task_t to send on another location.
+ * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  * \param match_fun boolean function which parameters are:
  *        - match_data_provided_here
@@ -286,7 +286,7 @@ msg_comm_t MSG_task_isend(m_task_t task, const char *alias)
  * \param match_data user provided data passed to match_fun
  * \return the msg_comm_t communication created
  */
-XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *alias,
+XBT_INLINE msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
     int (*match_fun)(void*,void*, smx_action_t),
     void *match_data)
 {
@@ -332,13 +332,13 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
  * <a href="http://lists.gforge.inria.fr/pipermail/simgrid-user/2011-November/002649.html">this thread</a>
  * in the SimGrid-user mailing list archive.
  *
- * \param task a #m_task_t to send on another location.
+ * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  * \param cleanup a function to destroy the task if the
  * communication fails, e.g. MSG_task_destroy
  * (if NULL, no function will be called)
  */
-void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
+void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
   simdata_task_t t_simdata = NULL;
   msg_process_t process = MSG_process_self();
@@ -370,11 +370,11 @@ void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
  * to end the communication.
  * 
- * \param task a memory location for storing a #m_task_t. has to be valid until the end of the communication.
+ * \param task a memory location for storing a #msg_task_t. has to be valid until the end of the communication.
  * \param name of the mailbox to receive the task on
  * \return the msg_comm_t communication created
  */
-msg_comm_t MSG_task_irecv(m_task_t *task, const char *name)
+msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
 {
   smx_rdv_t rdv = MSG_mailbox_get_by_alias(name);
 
@@ -627,12 +627,12 @@ MSG_error_t MSG_comm_get_status(msg_comm_t comm) {
 }
 
 /** \ingroup msg_task_usage
- * \brief Get a task (#m_task_t) from a communication
+ * \brief Get a task (#msg_task_t) from a communication
  *
  * \param comm the communication where to get the task
  * \return the task from the communication
  */
-m_task_t MSG_comm_get_task(msg_comm_t comm)
+msg_task_t MSG_comm_get_task(msg_comm_t comm)
 {
   xbt_assert(comm, "Invalid parameter");
 
@@ -652,7 +652,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
 
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
-    m_task_t task = buff;
+    msg_task_t task = buff;
     msg_global->task_copy_callback(task,
         simcall_comm_get_src_proc(comm), simcall_comm_get_dst_proc(comm));
   }
@@ -671,7 +671,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
  * \return Returns #MSG_OK if the task was successfully sent,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
-MSG_error_t MSG_task_send(m_task_t task, const char *alias)
+MSG_error_t MSG_task_send(msg_task_t task, const char *alias)
 {
   XBT_DEBUG("MSG_task_send: Trying to send a message on mailbox '%s'", alias);
   return MSG_task_send_with_timeout(task, alias, -1);
@@ -692,7 +692,7 @@ MSG_error_t MSG_task_send(m_task_t task, const char *alias)
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
 MSG_error_t
-MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
+MSG_task_send_bounded(msg_task_t task, const char *alias, double maxrate)
 {
   task->simdata->rate = maxrate;
   return MSG_task_send(task, alias);
@@ -712,7 +712,7 @@ MSG_task_send_bounded(m_task_t task, const char *alias, double maxrate)
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 MSG_error_t
-MSG_task_send_with_timeout(m_task_t task, const char *alias,
+MSG_task_send_with_timeout(msg_task_t task, const char *alias,
                            double timeout)
 {
   return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias),
@@ -759,7 +759,7 @@ int MSG_task_listen_from_host(const char *alias, msg_host_t host)
  */
 int MSG_task_listen_from(const char *alias)
 {
-  m_task_t task;
+  msg_task_t task;
 
   if (NULL ==
       (task = MSG_mailbox_get_head(MSG_mailbox_get_by_alias(alias))))
@@ -787,7 +787,7 @@ int MSG_task_listen_from(const char *alias)
  *
  * \see MSG_task_get_category, TRACE_category, TRACE_category_with_color
  */
-void MSG_task_set_category (m_task_t task, const char *category)
+void MSG_task_set_category (msg_task_t task, const char *category)
 {
 #ifdef HAVE_TRACING
   TRACE_msg_set_task_category (task, category);
@@ -804,7 +804,7 @@ void MSG_task_set_category (m_task_t task, const char *category)
  *
  * \return Returns the name of the tracing category of the given task, NULL otherwise
  */
-const char *MSG_task_get_category (m_task_t task)
+const char *MSG_task_get_category (msg_task_t task)
 {
 #ifdef HAVE_TRACING
   return task->category;
@@ -830,7 +830,7 @@ MSG_error_t MSG_get_errno(void)
  *
  * This function is used for describing the behavior of a process. It
  * takes three parameter.
- * \param task a #m_task_t to send on another location. This task
+ * \param task a #msg_task_t to send on another location. This task
  will not be usable anymore when the function will return. There is
  no automatic task duplication and you have to save your parameters
  before calling this function. Tasks are unique and once it has been
@@ -849,7 +849,7 @@ MSG_error_t MSG_get_errno(void)
  * #MSG_TRANSFER_FAILURE if the transfer could not be properly done
  * (network failure, dest failure) or #MSG_OK if it succeeded.
  */
-MSG_error_t MSG_task_put(m_task_t task, msg_host_t dest, m_channel_t channel)
+MSG_error_t MSG_task_put(msg_task_t task, msg_host_t dest, m_channel_t channel)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_send");
   return MSG_task_put_with_timeout(task, dest, channel, -1.0);
@@ -862,7 +862,7 @@ MSG_error_t MSG_task_put(m_task_t task, msg_host_t dest, m_channel_t channel)
  * \sa MSG_task_put
  */
 MSG_error_t
-MSG_task_put_bounded(m_task_t task, msg_host_t dest, m_channel_t channel,
+MSG_task_put_bounded(msg_task_t task, msg_host_t dest, m_channel_t channel,
                      double maxrate)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_send_bounded");
@@ -878,7 +878,7 @@ MSG_task_put_bounded(m_task_t task, msg_host_t dest, m_channel_t channel,
  *
  * This function is used for describing the behavior of a process. It
  * takes four parameter.
- * \param task a #m_task_t to send on another location. This task
+ * \param task a #msg_task_t to send on another location. This task
  will not be usable anymore when the function will return. There is
  no automatic task duplication and you have to save your parameters
  before calling this function. Tasks are unique and once it has been
@@ -901,7 +901,7 @@ this function was called was shut down,
 (network failure, dest failure, timeout...) or #MSG_OK if the communication succeeded.
  */
 MSG_error_t
-MSG_task_put_with_timeout(m_task_t task, msg_host_t dest,
+MSG_task_put_with_timeout(msg_task_t task, msg_host_t dest,
                           m_channel_t channel, double timeout)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_send_with_timeout");
@@ -927,7 +927,7 @@ MSG_task_put_with_timeout(m_task_t task, msg_host_t dest,
 int MSG_task_probe_from(m_channel_t channel)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_listen_from");
-  m_task_t task;
+  msg_task_t task;
 
   xbt_assert((channel >= 0)
               && (channel < msg_global->max_channel), "Invalid channel %d",
@@ -994,7 +994,7 @@ int MSG_task_probe_from_host(int channel, msg_host_t host)
  * \brief Listen on \a channel and waits for receiving a task from \a host.
  *
  * It takes three parameters.
- * \param task a memory location for storing a #m_task_t. It will
+ * \param task a memory location for storing a #msg_task_t. It will
  hold a task when this function will return. Thus \a task should not
  be equal to \c NULL and \a *task should be equal to \c NULL. If one of
  those two condition does not hold, there will be a warning message.
@@ -1005,7 +1005,7 @@ int MSG_task_probe_from_host(int channel, msg_host_t host)
  * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
 MSG_error_t
-MSG_task_get_from_host(m_task_t * task, m_channel_t channel, msg_host_t host)
+MSG_task_get_from_host(msg_task_t * task, m_channel_t channel, msg_host_t host)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_receive_from_host");
   return MSG_task_get_ext(task, channel, -1, host);
@@ -1015,7 +1015,7 @@ MSG_task_get_from_host(m_task_t * task, m_channel_t channel, msg_host_t host)
  * \brief Listen on a channel and wait for receiving a task.
  *
  * It takes two parameters.
- * \param task a memory location for storing a #m_task_t. It will
+ * \param task a memory location for storing a #msg_task_t. It will
  hold a task when this function will return. Thus \a task should not
  be equal to \c NULL and \a *task should be equal to \c NULL. If one of
  those two condition does not hold, there will be a warning message.
@@ -1024,7 +1024,7 @@ MSG_task_get_from_host(m_task_t * task, m_channel_t channel, msg_host_t host)
  number of channels fixed with MSG_set_channel_number().
  * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
-MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
+MSG_error_t MSG_task_get(msg_task_t * task, m_channel_t channel)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_receive");
   return MSG_task_get_with_timeout(task, channel, -1);
@@ -1034,7 +1034,7 @@ MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
  * \brief Listen on a channel and wait for receiving a task with a timeout.
  *
  * It takes three parameters.
- * \param task a memory location for storing a #m_task_t. It will
+ * \param task a memory location for storing a #msg_task_t. It will
  hold a task when this function will return. Thus \a task should not
  be equal to \c NULL and \a *task should be equal to \c NULL. If one of
  those two condition does not hold, there will be a warning message.
@@ -1048,7 +1048,7 @@ MSG_error_t MSG_task_get(m_task_t * task, m_channel_t channel)
  * \return a #MSG_error_t indicating whether the operation was successful (#MSG_OK), or why it failed otherwise.
  */
 MSG_error_t
-MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
+MSG_task_get_with_timeout(msg_task_t * task, m_channel_t channel,
                           double max_duration)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_receive_with_timeout");
@@ -1056,7 +1056,7 @@ MSG_task_get_with_timeout(m_task_t * task, m_channel_t channel,
 }
 
 MSG_error_t
-MSG_task_get_ext(m_task_t * task, m_channel_t channel, double timeout,
+MSG_task_get_ext(msg_task_t * task, m_channel_t channel, double timeout,
                  msg_host_t host)
 {
   XBT_WARN("DEPRECATED! Now use MSG_task_receive_ext");

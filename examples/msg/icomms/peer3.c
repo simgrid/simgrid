@@ -36,7 +36,7 @@ int sender(int argc, char *argv[])
   double coef = 0;
   xbt_dynar_t d = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   int i;
-  m_task_t task;
+  msg_task_t task;
   char mailbox[256];
   char sprintf_buffer[256];
   msg_comm_t comm;
@@ -91,7 +91,7 @@ int receiver(int argc, char *argv[])
   char mailbox[80];
   xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   int tasks = atof(argv[2]);
-  m_task_t *task = xbt_new(m_task_t, tasks);
+  msg_task_t *task = xbt_new(msg_task_t, tasks);
 
   _XBT_GNUC_UNUSED int read;
   read = sscanf(argv[1], "%d", &id);
@@ -107,7 +107,7 @@ int receiver(int argc, char *argv[])
   }
 
   /* Here we are waiting for the receiving of all communications */
-  m_task_t task_com;
+  msg_task_t task_com;
   while (!xbt_dynar_is_empty(comms)) {
     _XBT_GNUC_UNUSED MSG_error_t err;
     xbt_dynar_remove_at(comms, MSG_comm_waitany(comms), &res_irecv);

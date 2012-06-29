@@ -36,7 +36,7 @@ int master(int argc, char *argv[])
 {
   int slaves_count = 0;
   msg_host_t *slaves = NULL;
-  m_task_t *todo = NULL;
+  msg_task_t *todo = NULL;
   int number_of_tasks = 0;
   double task_comp_size = 0;
   double task_comm_size = 0;
@@ -53,7 +53,7 @@ int master(int argc, char *argv[])
   {                             /*  Task creation */
     char sprintf_buffer[64];
 
-    todo = xbt_new0(m_task_t, number_of_tasks);
+    todo = xbt_new0(msg_task_t, number_of_tasks);
 
     for (i = 0; i < number_of_tasks; i++) {
       sprintf(sprintf_buffer, "Task_%d", i);
@@ -93,7 +93,7 @@ int master(int argc, char *argv[])
   XBT_INFO
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
-    m_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
+    msg_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
     MSG_task_send(finalize, MSG_host_get_name(slaves[i]));
   }
 
@@ -106,7 +106,7 @@ int master(int argc, char *argv[])
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   _XBT_GNUC_UNUSED int res;
   while (1) {
     res = MSG_task_receive(&(task),MSG_host_get_name(MSG_host_self()));
@@ -150,7 +150,7 @@ int forwarder(int argc, char *argv[])
 
   i = 0;
   while (1) {
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
     int a;
     a = MSG_task_receive(&(task),MSG_host_get_name(MSG_host_self()));
     if (a == MSG_OK) {

@@ -36,7 +36,7 @@ int master(int argc, char *argv[])
 
   for (i = 0; i < 10; i++) {
     //create and execute a task just to make the simulated time advance
-    m_task_t task = MSG_task_create("task", 10000, 0, NULL);
+    msg_task_t task = MSG_task_create("task", 10000, 0, NULL);
     MSG_task_execute (task);
     MSG_task_destroy (task);
 
@@ -46,7 +46,7 @@ int master(int argc, char *argv[])
 
   for (i = 0; i < 10; i++) {
     //create and execute a task just to make the simulated time advance
-    m_task_t task = MSG_task_create("task", 10000, 0, NULL);
+    msg_task_t task = MSG_task_create("task", 10000, 0, NULL);
     MSG_task_execute (task);
     MSG_task_destroy (task);
 

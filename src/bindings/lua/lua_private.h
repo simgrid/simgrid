@@ -10,9 +10,9 @@
 #include "msg/msg.h"
 
 void sglua_register_task_functions(lua_State* L);
-m_task_t sglua_check_task(lua_State* L, int index);
+msg_task_t sglua_check_task(lua_State* L, int index);
 void sglua_task_register(lua_State* L);
-void sglua_task_unregister(lua_State* L, m_task_t task);
+void sglua_task_unregister(lua_State* L, msg_task_t task);
 
 void sglua_register_comm_functions(lua_State* L);
 msg_comm_t sglua_check_comm(lua_State* L, int index);

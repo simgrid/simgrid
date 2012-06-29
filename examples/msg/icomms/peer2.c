@@ -35,7 +35,7 @@ int sender(int argc, char *argv[])
 
   msg_comm_t *comm = xbt_new(msg_comm_t, number_of_tasks + receivers_count);
   int i;
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   for (i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
     char sprintf_buffer[256];
@@ -66,7 +66,7 @@ int sender(int argc, char *argv[])
 /** Receiver function  */
 int receiver(int argc, char *argv[])
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   _XBT_GNUC_UNUSED MSG_error_t res;
   int id = -1;
   char mailbox[80];

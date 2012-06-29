@@ -76,7 +76,7 @@ XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
  *
  * \return    The task at the head of the mailbox.
  */
-XBT_PUBLIC(m_task_t)
+XBT_PUBLIC(msg_task_t)
     MSG_mailbox_get_head(msg_mailbox_t mailbox);
 
 /*! \brief MSG_mailbox_get_count_host_waiting_tasks - Return the number of tasks

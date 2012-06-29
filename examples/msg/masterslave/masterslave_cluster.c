@@ -27,7 +27,7 @@ int master(int argc, char *argv[])
 {
   int slaves_count = 0;
   msg_host_t *slaves = NULL;
-  m_task_t *todo = NULL;
+  msg_task_t *todo = NULL;
   int number_of_tasks = 0;
   double task_comp_size = 0;
   double task_comm_size = 0;
@@ -44,7 +44,7 @@ int master(int argc, char *argv[])
   {                             /*  Task creation */
     char sprintf_buffer[64];
 
-    todo = xbt_new0(m_task_t, number_of_tasks);
+    todo = xbt_new0(msg_task_t, number_of_tasks);
 
     for (i = 0; i < number_of_tasks; i++) {
       sprintf(sprintf_buffer, "Task_%d", i);
@@ -103,7 +103,7 @@ int slave(int argc, char *argv[])
 {
   XBT_INFO("I'm a slave");
   while (1) {
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
     int a;
     a = MSG_task_receive(&(task), MSG_host_get_name(MSG_host_self()));
     if (a == MSG_OK) {

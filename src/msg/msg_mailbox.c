@@ -27,14 +27,14 @@ int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
   return (NULL == simcall_rdv_get_head(mailbox));
 }
 
-m_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
+msg_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 {
   smx_action_t comm = simcall_rdv_get_head(mailbox);
 
   if (!comm)
     return NULL;
 
-  return (m_task_t) simcall_comm_get_src_data(comm);
+  return (msg_task_t) simcall_comm_get_src_data(comm);
 }
 
 int
@@ -57,7 +57,7 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 }
 
 MSG_error_t
-MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
+MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
                          msg_host_t host, double timeout)
 {
   xbt_ex_t e;
@@ -109,7 +109,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, m_task_t * task,
 }
 
 MSG_error_t
-MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
+MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
                              double timeout)
 {
   xbt_ex_t e;

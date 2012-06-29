@@ -66,7 +66,7 @@ typedef struct simdata_process {
   m_channel_t put_channel;      /* used for debugging purposes */
 #endif
   smx_action_t waiting_action;
-  m_task_t waiting_task;
+  msg_task_t waiting_task;
   char **argv;                  /* arguments table if any */
   int argc;                     /* arguments number if any */
   MSG_error_t last_errno;       /* the last value returned by a MSG_function */
@@ -88,8 +88,8 @@ typedef struct process_arg {
 
 typedef struct msg_comm {
   smx_action_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
-  m_task_t task_sent;           /* task sent (NULL for the receiver) */
-  m_task_t *task_received;      /* where the task will be received (NULL for the sender) */
+  msg_task_t task_sent;           /* task sent (NULL for the receiver) */
+  msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
   MSG_error_t status;           /* status of the communication once finished */
 } s_msg_comm_t;
 
@@ -115,7 +115,7 @@ typedef struct MSG_Global {
   int PID;
   int session;
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
-  void (*task_copy_callback) (m_task_t task, msg_process_t src, msg_process_t dst);
+  void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
   xbt_swag_t vms;
 } s_MSG_Global_t, *MSG_Global_t;

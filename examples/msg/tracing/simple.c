@@ -29,7 +29,7 @@ int simple_func(int argc, char *argv[]);
 /** Emitter function  */
 int simple_func(int argc, char *argv[])
 {
-  m_task_t task = MSG_task_create("task", 100, 0, NULL);
+  msg_task_t task = MSG_task_create("task", 100, 0, NULL);
   MSG_task_execute (task);
   MSG_task_destroy (task);
   return 0;

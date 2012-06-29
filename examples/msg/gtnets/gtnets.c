@@ -31,7 +31,7 @@ int timer_start = 1;
 int bool_printed = 0;
 double start_time, end_time, elapsed_time;
 double gl_data_size[NTASKS];
-m_task_t gl_task_array[NTASKS];
+msg_task_t gl_task_array[NTASKS];
 const char *slavenames[NTASKS];
 const char *masternames[NTASKS];
 int gl_task_array_id = 0;
@@ -44,7 +44,7 @@ int master(int argc, char *argv[])
 {
   char *slavename = NULL;
   double task_comm_size = 0;
-  m_task_t todo;
+  msg_task_t todo;
   char id_alias[10];
   //unique id to control statistics
   int id = -1;
@@ -117,7 +117,7 @@ int timer(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
 
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   int a;
   int id = 0;
 #ifdef HAVE_LATENCY_BOUND_TRACKING

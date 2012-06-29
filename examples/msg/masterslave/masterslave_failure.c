@@ -60,7 +60,7 @@ int master(int argc, char *argv[])
   XBT_INFO("Got %d task to process :", number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++) {
-    m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
+    msg_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
                                     xbt_new0(double, 1));
     int a;
     *((double *) task->data) = MSG_get_clock();
@@ -97,7 +97,7 @@ int master(int argc, char *argv[])
   XBT_INFO
       ("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
-    m_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
+    msg_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
     int a = MSG_task_send_with_timeout(task,MSG_host_get_name(slaves[i]),1.0);
     if (a == MSG_OK)
       continue;
@@ -131,7 +131,7 @@ int master(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   while (1) {
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
     int a;
     double time1, time2;
 

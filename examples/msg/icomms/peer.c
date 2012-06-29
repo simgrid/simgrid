@@ -46,7 +46,7 @@ int sender(int argc, char *argv[])
 
   msg_comm_t comm = NULL;
   int i;
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   MSG_process_sleep(sleep_start_time);
   for (i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
@@ -96,7 +96,7 @@ int sender(int argc, char *argv[])
 /** Receiver function  */
 int receiver(int argc, char *argv[])
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   _XBT_GNUC_UNUSED MSG_error_t res;
   int id = -1;
   char mailbox[80];

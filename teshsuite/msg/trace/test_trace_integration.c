@@ -18,7 +18,7 @@ int test_trace(int argc, char *argv[]);
 /** test the trace integration cpu model */
 int test_trace(int argc, char *argv[])
 {
-  m_task_t task;
+  msg_task_t task;
   double task_comp_size = 2800;
   double task_prio = 1.0;
 

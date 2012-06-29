@@ -53,7 +53,7 @@ typedef struct msg_host *msg_host_t;
 
 typedef struct simdata_task *simdata_task_t;
 
-typedef struct m_task {
+typedef struct msg_task {
   char *name;                   /**< @brief task name if any */
   simdata_task_t simdata;       /**< @brief simulator data */
   void *data;                   /**< @brief user data */
@@ -61,7 +61,7 @@ typedef struct m_task {
   long long int counter;        /* task unique identifier for instrumentation */
   char *category;               /* task category for instrumentation */
 #endif
-} s_m_task_t;
+} s_msg_task_t;
 
 /** @brief Task datatype.
     @ingroup m_task_management 
@@ -70,7 +70,7 @@ typedef struct m_task {
     amount</em>, a <em>message size</em> and some <em>private
     data</em>.
  */
-typedef struct m_task *m_task_t;
+typedef struct msg_task *msg_task_t;
 
 
 /* ******************************** File ************************************ */
@@ -144,6 +144,7 @@ typedef struct s_smx_process *msg_process_t;
 /* Compatibility typedefs */
 typedef msg_process_t m_process_t;
 typedef msg_host_t m_host_t;
+typedef msg_task_t m_task_t;
 
 #ifdef MSG_USE_DEPRECATED
 typedef int m_channel_t;
