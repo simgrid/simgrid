@@ -28,8 +28,8 @@ typedef struct simdata_task {
   smx_action_t comm;            /* SIMIX modeling of communication */
   double message_size;          /* Data size */
   double computation_amount;    /* Computation size */
-  m_process_t sender;
-  m_process_t receiver;
+  msg_process_t sender;
+  msg_process_t receiver;
   m_host_t source;
   double priority;
   double rate;
@@ -115,7 +115,7 @@ typedef struct MSG_Global {
   int PID;
   int session;
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
-  void (*task_copy_callback) (m_task_t task, m_process_t src, m_process_t dst);
+  void (*task_copy_callback) (m_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
   xbt_swag_t vms;
 } s_MSG_Global_t, *MSG_Global_t;

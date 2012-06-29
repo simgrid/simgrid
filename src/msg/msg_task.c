@@ -193,7 +193,7 @@ void MSG_task_set_data(m_task_t task, void *data)
  * \param callback a callback function
  */
 void MSG_task_set_copy_callback(void (*callback)
-    (m_task_t task, m_process_t sender, m_process_t receiver)) {
+    (m_task_t task, msg_process_t sender, msg_process_t receiver)) {
 
   msg_global->task_copy_callback = callback;
 
@@ -208,9 +208,9 @@ void MSG_task_set_copy_callback(void (*callback)
 /** \ingroup m_task_management
  * \brief Return the sender of a #m_task_t.
  *
- * This functions returns the #m_process_t which sent this task
+ * This functions returns the #msg_process_t which sent this task
  */
-m_process_t MSG_task_get_sender(m_task_t task)
+msg_process_t MSG_task_get_sender(m_task_t task)
 {
   xbt_assert(task, "Invalid parameters");
   return ((simdata_task_t) task->simdata)->sender;

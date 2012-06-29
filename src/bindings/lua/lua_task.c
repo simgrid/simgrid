@@ -192,8 +192,8 @@ void sglua_task_unregister(lua_State* L, m_task_t task) {
  * \param src_process the sender
  * \param dst_process the receiver
  */
-static void task_copy_callback(m_task_t task, m_process_t src_process,
-    m_process_t dst_process) {
+static void task_copy_callback(m_task_t task, msg_process_t src_process,
+    msg_process_t dst_process) {
 
   lua_State* src = MSG_process_get_data(src_process);
   lua_State* dst = MSG_process_get_data(dst_process);

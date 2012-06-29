@@ -31,7 +31,7 @@ static int lazy_guy(int argc, char *argv[])
     resumes it 10 seconds later. */
 static int dream_master(int argc, char *argv[])
 {
-  m_process_t lazy = NULL;
+  msg_process_t lazy = NULL;
 
   XBT_INFO("Let's create a lazy guy.");
   lazy = MSG_process_create("Lazy", lazy_guy, NULL, MSG_host_self());

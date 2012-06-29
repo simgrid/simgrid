@@ -26,7 +26,7 @@ static int slave(int argc, char *argv[])
 
 static int master(int argc, char *argv[])
 {
-  m_process_t bob = NULL;
+  msg_process_t bob = NULL;
 
   XBT_INFO("Hello!");
   bob = MSG_process_create("slave", slave, NULL, MSG_get_host_by_name("bob"));

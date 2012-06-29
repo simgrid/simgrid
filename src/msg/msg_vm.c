@@ -24,7 +24,7 @@ msg_vm_t MSG_vm_start(m_host_t location, int coreAmount) {
   res->state = msg_vm_state_running;
   res->location = location;
   res->coreAmount = coreAmount;
-  res->processes = xbt_dynar_new(sizeof(m_process_t),NULL);
+  res->processes = xbt_dynar_new(sizeof(msg_process_t),NULL);
 
   xbt_swag_insert(res,msg_global->vms);
   xbt_swag_insert(res,location->vms);
@@ -63,7 +63,7 @@ int MSG_vm_is_running(msg_vm_t vm) {
  * Afterward, when the VM is migrated or suspended or whatever, the process will have the corresponding handling, too.
  *
  */
-void MSG_vm_bind(msg_vm_t vm, m_process_t process) {
+void MSG_vm_bind(msg_vm_t vm, msg_process_t process) {
   /* check if the process is already in a VM */
   simdata_process_t simdata = simcall_process_get_data(process);
   if (simdata->vm) {
@@ -79,14 +79,14 @@ void MSG_vm_bind(msg_vm_t vm, m_process_t process) {
 
   XBT_DEBUG("binding Process %s to %p",MSG_process_get_name(process),vm);
 
-  xbt_dynar_push_as(vm->processes,m_process_t,process);
+  xbt_dynar_push_as(vm->processes,msg_process_t,process);
 }
 /** @brief Removes the given process from the given VM, and kill it
  *  @ingroup msg_VMs
  *
  *  Will raise a not_found exception if the process were not binded to that VM
  */
-void MSG_vm_unbind(msg_vm_t vm, m_process_t process) {
+void MSG_vm_unbind(msg_vm_t vm, msg_process_t process) {
   int pos = xbt_dynar_search(vm->processes,process);
   xbt_dynar_remove_at(vm->processes,pos, NULL);
   MSG_process_kill(process);
@@ -101,7 +101,7 @@ void MSG_vm_unbind(msg_vm_t vm, m_process_t process) {
  */
 void MSG_vm_migrate(msg_vm_t vm, m_host_t destination) {
   unsigned int cpt;
-  m_process_t process;
+  msg_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {
     MSG_process_migrate(process,destination);
   }
@@ -119,7 +119,7 @@ void MSG_vm_migrate(msg_vm_t vm, m_host_t destination) {
  */
 void MSG_vm_suspend(msg_vm_t vm) {
   unsigned int cpt;
-  m_process_t process;
+  msg_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {
     XBT_DEBUG("suspend process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
     MSG_process_suspend(process);
@@ -135,7 +135,7 @@ void MSG_vm_suspend(msg_vm_t vm) {
  */
 void MSG_vm_resume(msg_vm_t vm) {
   unsigned int cpt;
-  m_process_t process;
+  msg_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {
     XBT_DEBUG("resume process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
     MSG_process_resume(process);
@@ -150,10 +150,10 @@ void MSG_vm_resume(msg_vm_t vm) {
  */
 void MSG_vm_shutdown(msg_vm_t vm)
 {
-  m_process_t process;
+  msg_process_t process;
   XBT_DEBUG("%lu processes in the VM", xbt_dynar_length(vm->processes));
   while (xbt_dynar_length(vm->processes) > 0) {
-    process = xbt_dynar_get_as(vm->processes,0,m_process_t);
+    process = xbt_dynar_get_as(vm->processes,0,msg_process_t);
     MSG_process_kill(process);
   }
 }
@@ -163,7 +163,7 @@ void MSG_vm_shutdown(msg_vm_t vm)
  */
 void MSG_vm_destroy(msg_vm_t vm) {
   unsigned int cpt;
-  m_process_t process;
+  msg_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {
     //FIXME: Slow ?
     simdata_process_t simdata = simcall_process_get_data(process);

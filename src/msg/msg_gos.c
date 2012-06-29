@@ -38,7 +38,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 {
   xbt_ex_t e;
   simdata_task_t simdata = task->simdata;
-  m_process_t self = SIMIX_process_self();
+  msg_process_t self = SIMIX_process_self();
   simdata_process_t p_simdata = SIMIX_process_self_get_data(self);
   e_smx_state_t comp_state;
   MSG_error_t status = MSG_OK;
@@ -126,7 +126,7 @@ MSG_error_t MSG_parallel_task_execute(m_task_t task)
 MSG_error_t MSG_process_sleep(double nb_sec)
 {
   MSG_error_t status = MSG_OK;
-  /*m_process_t proc = MSG_process_self();*/
+  /*msg_process_t proc = MSG_process_self();*/
 
 #ifdef HAVE_TRACING
   TRACE_msg_process_sleep_in(MSG_process_self());
@@ -291,7 +291,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
     void *match_data)
 {
   simdata_task_t t_simdata = NULL;
-  m_process_t process = MSG_process_self();
+  msg_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
   /* FIXME: these functions are not traceable */
@@ -341,7 +341,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(m_task_t task, const char *al
 void MSG_task_dsend(m_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
   simdata_task_t t_simdata = NULL;
-  m_process_t process = MSG_process_self();
+  msg_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
   /* FIXME: these functions are not traceable */

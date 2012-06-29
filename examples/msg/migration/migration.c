@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 xbt_mutex_t mutex = NULL;
 xbt_cond_t cond = NULL;
-static m_process_t process_to_migrate = NULL;
+static msg_process_t process_to_migrate = NULL;
 
 /** The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static int emigrant(int argc, char *argv[])

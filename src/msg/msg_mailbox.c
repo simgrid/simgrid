@@ -115,7 +115,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, m_task_t task,
   xbt_ex_t e;
   MSG_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
-  m_process_t process = MSG_process_self();
+  msg_process_t process = MSG_process_self();
   simdata_process_t p_simdata = SIMIX_process_self_get_data(process);
 
 #ifdef HAVE_TRACING

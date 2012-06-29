@@ -139,7 +139,10 @@ typedef struct msg_comm *msg_comm_t;
     structure, but always use the provided API to interact with
     processes.
  */
-typedef struct s_smx_process *m_process_t;
+typedef struct s_smx_process *msg_process_t;
+
+/* Compatibility typedefs */
+typedef msg_process_t m_process_t;
 
 #ifdef MSG_USE_DEPRECATED
 typedef int m_channel_t;

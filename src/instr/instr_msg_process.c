@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
-char *instr_process_id (m_process_t proc, char *str, int len)
+char *instr_process_id (msg_process_t proc, char *str, int len)
 {
   return instr_process_id_2 (proc->name, proc->pid, str, len);//MSG_process_get_name(proc), MSG_process_get_PID(proc), str, len);
 }
@@ -22,9 +22,9 @@ char *instr_process_id_2 (const char *process_name, int process_pid, char *str, 
 }
 
 /*
- * Instrumentation functions to trace MSG processes (m_process_t)
+ * Instrumentation functions to trace MSG processes (msg_process_t)
  */
-void TRACE_msg_process_change_host(m_process_t process, m_host_t old_host, m_host_t new_host)
+void TRACE_msg_process_change_host(msg_process_t process, m_host_t old_host, m_host_t new_host)
 {
   if (TRACE_msg_process_is_enabled()){
     static long long int counter = 0;
@@ -65,7 +65,7 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, m_host
   }
 }
 
-void TRACE_msg_process_kill(m_process_t process)
+void TRACE_msg_process_kill(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
@@ -76,7 +76,7 @@ void TRACE_msg_process_kill(m_process_t process)
   }
 }
 
-void TRACE_msg_process_suspend(m_process_t process)
+void TRACE_msg_process_suspend(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
@@ -89,7 +89,7 @@ void TRACE_msg_process_suspend(m_process_t process)
   }
 }
 
-void TRACE_msg_process_resume(m_process_t process)
+void TRACE_msg_process_resume(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
@@ -101,7 +101,7 @@ void TRACE_msg_process_resume(m_process_t process)
   }
 }
 
-void TRACE_msg_process_sleep_in(m_process_t process)
+void TRACE_msg_process_sleep_in(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
@@ -114,7 +114,7 @@ void TRACE_msg_process_sleep_in(m_process_t process)
   }
 }
 
-void TRACE_msg_process_sleep_out(m_process_t process)
+void TRACE_msg_process_sleep_out(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
@@ -126,7 +126,7 @@ void TRACE_msg_process_sleep_out(m_process_t process)
   }
 }
 
-void TRACE_msg_process_end(m_process_t process)
+void TRACE_msg_process_end(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()) {
     int len = INSTR_DEFAULT_STR_SIZE;
