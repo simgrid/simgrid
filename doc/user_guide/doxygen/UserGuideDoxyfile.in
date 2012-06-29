@@ -660,7 +660,8 @@ WARN_LOGFILE           =
 
 INPUT                  = index.doc \
                          install.doc \
-                         use.doc \            
+                         use.doc \   
+                         examples.doc \            
                          options.doc \
                          platform.doc \
                          tracing.doc \

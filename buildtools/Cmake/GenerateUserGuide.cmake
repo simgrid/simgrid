@@ -29,13 +29,6 @@ if(FIG2DEV_PATH)
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen
     )
 
-  ADD_CUSTOM_COMMAND(TARGET user_guide
-    DEPENDS ${source_doxygen}
-    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/user_guide/logcategories.doc
-    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen/logcategories.doc
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
-    )
-
   foreach(file ${DOC_FIGS})
     string(REPLACE ".fig" ".png" tmp_file ${file})
     string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/shared/fig/" "${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/" tmp_file ${tmp_file})

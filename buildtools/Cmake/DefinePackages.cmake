@@ -587,6 +587,7 @@ set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/bindings.doc
   doc/user_guide/doxygen/options.doc
   doc/user_guide/doxygen/use.doc
+  doc/user_guide/doxygen/examples.doc
   doc/user_guide/doxygen/tracing.doc
   doc/user_guide/doxygen/pls.doc
   doc/user_guide/doxygen/index.doc

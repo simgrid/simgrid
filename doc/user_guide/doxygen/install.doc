@@ -1,4 +1,4 @@
-/*! \addtogroup SimGrid_install
+/*! 
 \page install Installing Simgrid
 
 \section install_cmake Installing the SimGrid library

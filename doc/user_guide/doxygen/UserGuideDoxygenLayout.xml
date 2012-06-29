@@ -4,7 +4,6 @@
     <tab type="pages" visible="no" title="Table Of Content" intro="Complete pages list">
       <tab type="pages" visible="yes" title="Table Of Content" intro="Complete pages list"/>
     </tab>
-
     <tab type="namespaces" visible="no" title="">
       <tab type="namespaces" visible="yes" title="" intro=""/>
       <tab type="namespacemembers" visible="yes" title="" intro=""/>
@@ -19,7 +18,9 @@
       <tab type="files" visible="yes" title="" intro=""/>
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
-
+    <tab type="modules" visible="no" title="Examples" intro="">
+      <tab type="modules" visible="yes" title="Examples" intro="Here you can find additional examples"/>
+    </tab>	
     <tab type="user" visible="yes" url="../../doc/index.html" title="Home"/>
     <tab type="user" url="../../ref_guide/html/index.html" title="Reference Manual"/>
     <tab type="mainpage" visible="no" title="User Guide"/>
