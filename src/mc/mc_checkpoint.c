@@ -182,4 +182,108 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
   xbt_free(snapshot);
 }
 
+static int data_program_region_compare(void *d1, void *d2, size_t size);
+static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size);
+
+static int data_program_region_compare(void *d1, void *d2, size_t size){
+  int distance = 0;
+  int i;
+  
+  for(i=0; i<size; i++){
+    if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
+      fprintf(stderr,"Different byte (offset=%d) (%p - %p) in data program region\n", i, (char *)d1 + i, (char *)d2 + i);
+      distance++;
+    }
+  }
+  
+  fprintf(stderr, "Hamming distance between data program regions : %d\n", distance);
+
+  return distance;
+}
+
+int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
+  int distance = 0;
+  int i;
+  
+  for(i=0; i<size; i++){
+    if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
+      fprintf(stderr, "Different byte (offset=%d) (%p - %p) in data libsimgrid region\n", i, (char *)d1 + i, (char *)d2 + i);
+      distance++;
+    }
+  }
+  
+  fprintf(stderr, "Hamming distance between data libsimgrid regions : %d\n", distance);
+  
+  return distance;
+}
+
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
+
+  
+  if(s1->num_reg != s2->num_reg){
+    XBT_INFO("Different num_reg (s1 = %u, s2 = %u)", s1->num_reg, s2->num_reg);
+    return 1;
+  }
+
+  int i;
+  int errors = 0;
+
+  for(i=0 ; i< s1->num_reg ; i++){
+
+    if(s1->regions[i]->type != s2->regions[i]->type){
+      XBT_INFO("Different type of region");
+      errors++;
+    }
+
+    switch(s1->regions[i]->type){
+    case 0:
+      if(s1->regions[i]->size != s2->regions[i]->size){
+        XBT_INFO("Different size of heap (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
+        errors++;
+      }
+      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
+        XBT_INFO("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+        errors++;
+      }
+      if(mmalloc_compare_heap(s1->regions[i]->data, s2->regions[i]->data)){
+        XBT_INFO("Different heap (mmalloc_compare)");
+        errors++; 
+      }
+      break;
+    case 1 :
+      if(s1->regions[i]->size != s2->regions[i]->size){
+        XBT_INFO("Different size of libsimgrid (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
+        errors++;
+      }
+      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
+        XBT_INFO("Different start addr of libsimgrid (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+        errors++;
+      }
+      if(data_libsimgrid_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+        XBT_INFO("Different memcmp for data in libsimgrid");
+        errors++;
+      }
+      break;
+    case 2 :
+      if(s1->regions[i]->size != s2->regions[i]->size){
+        XBT_INFO("Different size of data program (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
+        errors++;
+      }
+      if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
+        XBT_INFO("Different start addr of data program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+        errors++;
+      }
+      if(data_program_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+        XBT_INFO("Different memcmp for data in program");
+        errors++;
+      }
+      break;
+    default:
+      break;
+    }
+  }
+
+  return (errors > 0);
+  
+}
 
