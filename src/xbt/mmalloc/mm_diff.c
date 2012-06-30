@@ -140,9 +140,6 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   void *heapbase1 = (char *)mdp1 + BLOCKSIZE;
   void *heapbase2 = (char *)mdp2 + BLOCKSIZE;
 
-  void * breakval1 = (char *)mdp1 + ((char *)mdp1->breakval - (char *)s_heap);
-  void * breakval2 = (char *)mdp2 + ((char *)mdp2->breakval - (char *)s_heap);
-
   size_t i, j;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
   size_t frag_size;
@@ -170,10 +167,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
     /* Get address of block i in each heap */
     addr_block1 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)heapbase1));
-    xbt_assert(addr_block1 < breakval1, "Block address out of heap memory used");
-
     addr_block2 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)heapbase2));
-    xbt_assert(addr_block2 < breakval2, "Block address out of heap memory used");
 
     if(mdp1->heapinfo[i].type == 0){ /* busy large block */
 
@@ -319,10 +313,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
           if(mdp1->heapinfo[i].busy_frag.frag_size[j] > 0){
 
             addr_frag1 = (char *)addr_block1 + (j * frag_size);
-            xbt_assert(addr_frag1 < breakval1, "Fragment address out of heap memory used");
-
             addr_frag2 = (char *)addr_block2 + (j * frag_size);
-            xbt_assert(addr_frag1 < breakval1, "Fragment address out of heap memory used");
 
             /* Hamming distance on different blocks */
             distance = 0;
