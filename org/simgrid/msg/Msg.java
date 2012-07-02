@@ -29,14 +29,35 @@ public final class Msg {
      */
 	public final static native double getClock();
 	/**
-	 * Issue an "debug" logging message.
+	 * Issue a debug logging message.
 	 * @param s message to log.
 	 */
 	public final static native void debug(String s);
-    /** Issue an information logging message
+	/**
+	 * Issue an verbose logging message.
+	 * @param s message to log.
+	 */
+	public final static native void verb(String s);
+
+	/** Issue an information logging message
      * @param s
      */
 	public final static native void info(String s);
+	/**
+	 * Issue an warning logging message.
+	 * @param s message to log.
+	 */
+	public final static native void warn(String s);
+	/**
+	 * Issue an error logging message.
+	 * @param s message to log.
+	 */
+	public final static native void error(String s);
+	/**
+	 * Issue an critical logging message.
+	 * @param s message to log.
+	 */
+	public final static native void critical(String s);
 
 	/*********************************************************************************
 	 * Deployment and initialization related functions                               *

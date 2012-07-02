@@ -186,13 +186,40 @@ Java_org_simgrid_msg_Msg_debug(JNIEnv * env, jclass cls, jstring js)
   (*env)->ReleaseStringUTFChars(env, js, s);
 }
 JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Msg_verb(JNIEnv * env, jclass cls, jstring js)
+{
+  const char *s = (*env)->GetStringUTFChars(env, js, 0);
+  XBT_VERB("%s", s);
+  (*env)->ReleaseStringUTFChars(env, js, s);
+}
+JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = (*env)->GetStringUTFChars(env, js, 0);
   XBT_INFO("%s", s);
   (*env)->ReleaseStringUTFChars(env, js, s);
 }
-
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Msg_warn(JNIEnv * env, jclass cls, jstring js)
+{
+  const char *s = (*env)->GetStringUTFChars(env, js, 0);
+  XBT_WARN("%s", s);
+  (*env)->ReleaseStringUTFChars(env, js, s);
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Msg_error(JNIEnv * env, jclass cls, jstring js)
+{
+  const char *s = (*env)->GetStringUTFChars(env, js, 0);
+  XBT_ERROR("%s", s);
+  (*env)->ReleaseStringUTFChars(env, js, s);
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Msg_critical(JNIEnv * env, jclass cls, jstring js)
+{
+  const char *s = (*env)->GetStringUTFChars(env, js, 0);
+  XBT_CRITICAL("%s", s);
+  (*env)->ReleaseStringUTFChars(env, js, s);
+}
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
                                        jstring jdeploymentFile)
