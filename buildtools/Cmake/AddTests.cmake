@@ -435,6 +435,8 @@ if(NOT enable_memcheck)
     set_tests_properties(lua-masterslave-bypass         PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
     set_tests_properties(lua-msg-masterslave-console    PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
     set_tests_properties(lua-chord                      PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
+    set_tests_properties(lua-bittorrent                 PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
+    set_tests_properties(lua-kademlia                   PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
     set_tests_properties(simdag-test-lua                PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
   endif(HAVE_LUA)
 
