@@ -10,6 +10,8 @@ public class Common {
 	public static int FILE_PIECES = 10;
 	public static int PIECES_BLOCKS = 5;
 	
+	public static int BLOCKS_REQUESTED = 2;
+	
 	public static int PIECE_COMM_SIZE = 1;
 	/**
 	 * Information message size
