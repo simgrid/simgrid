@@ -1,0 +1,27 @@
+$ lua kademlia.lua
+> [Boivin:node:(2) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 1 !
+> [Jean_Yves:node:(3) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 11 !
+> [TeX:node:(4) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 111 !
+> [Geoff:node:(5) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 1111 !
+> [Disney:node:(6) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 11111 !
+> [iRMX:node:(7) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 111111 !
+> [McGee:node:(8) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 1111111 !
+> [Gatien:node:(9) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 11111111 !
+> [Laroche:node:(10) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 111111111 !
+> [Tanguay:node:(11) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 1111111111 !
+> [Morin:node:(12) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 11111111111 !
+> [Ethernet:node:(13) 0.000000] [lua/INFO] Hi, I'm going to join the network with the id 11111111111 !
+> [Morin:node:(12) 900.000000] [lua/INFO] 7/7 FIND_NODE have succedded
+> [Tanguay:node:(11) 900.000000] [lua/INFO] 7/7 FIND_NODE have succedded
+> [iRMX:node:(7) 900.000000] [lua/INFO] 7/7 FIND_NODE have succedded
+> [Gatien:node:(9) 900.000000] [lua/INFO] 7/7 FIND_NODE have succedded
+> [TeX:node:(4) 900.000000] [lua/INFO] 7/7 FIND_NODE have succedded
+> [Laroche:node:(10) 900.000000] [lua/INFO] 7/7 FIND_NODE have succedded
+> [Disney:node:(6) 900.000000] [lua/INFO] 7/7 FIND_NODE have succedded
+> [Geoff:node:(5) 900.000000] [lua/INFO] 7/7 FIND_NODE have succedded
+> [McGee:node:(8) 900.000000] [lua/INFO] 7/7 FIND_NODE have succedded
+> [Jean_Yves:node:(3) 900.000000] [lua/INFO] 8/8 FIND_NODE have succedded
+> [Jacquelin:node:(1) 900.000000] [lua/INFO] 0/8 FIND_NODE have succedded
+> [Boivin:node:(2) 900.000000] [lua/INFO] 8/8 FIND_NODE have succedded
+> [Ethernet:node:(13) 900.000000] [lua/INFO] 8/8 FIND_NODE have succedded
+
