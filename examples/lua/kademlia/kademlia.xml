@@ -1,0 +1,72 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+
+  <process host="Jacquelin" function="node">
+    <argument value="0"/>        <!-- my id -->
+    <argument value ="900"/>		<!-- deadline -->
+  </process>
+
+  <process host="Boivin" function="node">
+    <argument value="1"/>        <!-- my id -->
+    <argument value="0"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->
+  </process>
+
+  <process host="Jean_Yves" function="node">
+    <argument value="11"/>        <!-- my id -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->
+  </process>
+
+  <process host="TeX" function="node">
+    <argument value="111"/>        <!-- my id -->
+    <argument value="11"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>
+  <process host="Geoff" function="node">
+    <argument value="1111"/>        <!-- my id -->
+    <argument value="111"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>
+  <process host="Disney" function="node">
+    <argument value="11111"/>        <!-- my id -->
+    <argument value="1111"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>
+  <process host="iRMX" function="node">
+    <argument value="111111"/>        <!-- my id -->
+    <argument value="11111"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>
+  <process host="McGee" function="node">
+    <argument value="1111111"/>        <!-- my id -->
+    <argument value="111111"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>
+  <process host="Gatien" function="node">
+    <argument value="11111111"/>        <!-- my id -->
+    <argument value="1111111"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>
+  <process host="Laroche" function="node">
+    <argument value="111111111"/>        <!-- my id -->
+    <argument value="11111111"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>
+  <process host="Tanguay" function="node">
+    <argument value="1111111111"/>        <!-- my id -->
+    <argument value="111111111"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>
+   <process host="Morin" function="node">
+    <argument value="11111111111"/>        <!-- my id -->
+    <argument value="1111111111"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>    
+   <process host="Ethernet" function="node">
+    <argument value="11111111111"/>        <!-- my id -->
+    <argument value="0"/>         <!-- known id -->
+    <argument value ="900"/>		<!-- deadline -->  
+  </process>
+</platform>
