@@ -274,9 +274,6 @@ int main() {
 }
 \endverbatim
 
-Another example can be found in the relevant part of the GRAS tutorial:
-\ref GRAS_tut_tour_logs.
-
 \section log_user 3. User interface
 
 \section log_use_conf 3.1 Configuration

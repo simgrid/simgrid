@@ -119,9 +119,9 @@ MSG_parallel_task_create(const char *name, int host_nb,
 
 /*************** Begin GPU ***************/
 /** \ingroup m_task_management
- * \brief Creates a new #m_gpu_task_t.
+ * \brief Creates a new #msg_gpu_task_t.
 
- * A constructor for #m_gpu_task_t taking four arguments and returning
+ * A constructor for #msg_gpu_task_t taking four arguments and returning
    a pointer to the new created GPU task.
 
  * \param name a name for the object. It is for user-level information
@@ -136,7 +136,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
  * \param collect_latency time in seconds to transfer result from the GPU
    back to the CPU (host) when done
 
- * \see m_gpu_task_t
+ * \see msg_gpu_task_t
  * \return The new corresponding object.
  */
 msg_gpu_task_t MSG_gpu_task_create(const char *name, double compute_duration,

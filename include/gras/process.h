@@ -40,8 +40,7 @@ void gras_agent_spawn(const char *name, xbt_main_func_t code,
  * retrieve a reference to it.
  * 
  * 
- * For more info on this, you may want to check the relevant lesson of the GRAS tutorial:
- * \ref GRAS_tut_tour_globals
+ * For more info on this, you may want to check the relevant lesson of the GRAS tutorial online
  */
 /* @{ */
 
@@ -64,7 +63,7 @@ XBT_PUBLIC(void *) gras_userdata_set(void *ud);
  * the only solution since this macro has to compute the size to
  * malloc and should thus know the pointed type. 
  *
- * You'll find an example in the tutorial:  \ref GRAS_tut_tour_globals
+ * You'll find an example in the tutorial
  */
 #define gras_userdata_new(type) ((type*)gras_userdata_set(xbt_new0(type,1)))
 /* @} */

@@ -153,7 +153,7 @@ void* simcall_host_get_data(smx_host_t host)
  * \brief Sets the user data associated to a host.
  *
  * The host must not have previous user data associated to it.
- * \param A host SIMIX host
+ * \param host A SIMIX host
  * \param data The user data to set
  */
 void simcall_host_set_data(smx_host_t host, void *data)
@@ -175,7 +175,8 @@ void simcall_host_set_data(smx_host_t host, void *data)
  *
  * \param name Name of the execution action to create
  * \param host SIMIX host where the action will be executed
- * \param amount Computation amount (in bytes)
+ * \param computation_amount amount Computation amount (in bytes)
+ * \param priority computation priority
  * \return A new SIMIX execution action
  */
 smx_action_t simcall_host_execute(const char *name, smx_host_t host,
@@ -252,7 +253,7 @@ smx_action_t simcall_host_parallel_execute(const char *name,
  * \brief Destroys an execution action.
  *
  * Destroys an action, freing its memory. This function cannot be called if there are a conditional waiting for it.
- * \param action The execution action to destroy
+ * \param execution The execution action to destroy
  */
 void simcall_host_execution_destroy(smx_action_t execution)
 {
@@ -268,7 +269,7 @@ void simcall_host_execution_destroy(smx_action_t execution)
  * \brief Cancels an execution action.
  *
  * This functions stops the execution. It calls a surf function.
- * \param action The execution action to cancel
+ * \param execution The execution action to cancel
  */
 void simcall_host_execution_cancel(smx_action_t execution)
 {
@@ -283,7 +284,7 @@ void simcall_host_execution_cancel(smx_action_t execution)
  * \ingroup simix_host_management
  * \brief Returns how much of an execution action remains to be done.
  *
- * \param Action The execution action
+ * \param execution The execution action
  * \return The remaining amount
  */
 double simcall_host_execution_get_remains(smx_action_t execution)
@@ -366,6 +367,7 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
  * \param properties the properties of the process
+ * \param auto_restart either it is autorestarting or not.
  */
 void simcall_process_create(smx_process_t *process, const char *name,
                               xbt_main_func_t code,
@@ -442,7 +444,6 @@ void simcall_process_cleanup(smx_process_t process)
  * This function changes the value of the host on which \a process is running.
  *
  * \param process the process to migrate
- * \param source name of the previous host
  * \param dest name of the new host
  */
 void simcall_process_change_host(smx_process_t process, smx_host_t dest)
@@ -721,7 +722,7 @@ smx_rdv_t simcall_rdv_create(const char *name)
 /**
  *  \ingroup simix_rdv_management
  *  \brief Destroy a rendez-vous point
- *  \param name The rendez-vous point to destroy
+ *  \param rdv The rendez-vous point to destroy
  */
 void simcall_rdv_destroy(smx_rdv_t rdv)
 {

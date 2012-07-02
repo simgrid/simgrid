@@ -1,6 +1,12 @@
-/*! \page deployment Deployment description
+/*! \page deployment Deployment Description
 
-Deployment just consists of saying which
+\section dep_over Overview
+
+When using SimGrid, you basically need your user code, a platform description, and something allowing to map your (simulated) process on  your (simulated) platform. This is what deployment file is all about. Note that you can bypass the file stuff and code it directly in your user code, if you want to.
+
+
+\section dep_ex An example
+So deployment file just consists of saying which
 process runs where and which arguments it should take as input, the easier way to
 understand how to write it is just to take a look at the examples. Here is an example of it:
 
@@ -28,11 +34,12 @@ understand how to write it is just to take a look at the examples. Here is an ex
 </platform>
 \endverbatim
 
-There are additional attributes to the process tag, here is a list of attributes of process: 
+\section process_tag Process
+There are optional attributes to the process tag, here is a list of all attributes of process: 
 
-\li <b>host CDATA (mandatory)</b>: the host on which the function will be executed.  
-\li <b>process CDATA (mandatory)</b>: the process function that will be executed on that host.
-\li <b>start_time</b>: the time when the function will start. Default is zero.
-\li <b>kill_time</b>: the time when the function will stop. Default is when it's actually finishing.
+\li <b>host (mandatory)</b>: the host on which the function will be executed.  
+\li <b>process (mandatory)</b>: the process function that will be executed on that host. You can deploy as many process as you want on the same host. 
+\li <b>start_time</b>: the (simulated) time when the function will start. Default is zero.
+\li <b>kill_time</b>: the  (simulated) time when the function will stop. Default is when it's actually finishing.
 
 */
