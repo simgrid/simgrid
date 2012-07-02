@@ -40,29 +40,29 @@ int coordinator(int argc, char *argv[])
   int CS_used = 0;
 
   while(1) {
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task);
     if (!strcmp(kind, "request")) {
       char *req = MSG_task_get_data(task);
       if (CS_used) {
-  XBT_INFO("CS already used. Queue the request");
-  xbt_dynar_push(requests, &req);
+        XBT_INFO("CS already used. Queue the request");
+        xbt_dynar_push(requests, &req);
       } else {
-  m_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
-  MSG_task_send(answer, req);
-  CS_used = 1;
-  XBT_INFO("CS idle. Grant immediatly");
+        msg_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
+        MSG_task_send(answer, req);
+        CS_used = 1;
+        XBT_INFO("CS idle. Grant immediatly");
       }
     } else {
       if (xbt_dynar_length(requests) > 0) {
-  XBT_INFO("CS release. Grant to queued requests");
-  char *req;
-  xbt_dynar_pop(requests, &req);
-  MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
+        XBT_INFO("CS release. Grant to queued requests");
+        char *req;
+        xbt_dynar_pop(requests, &req);
+        MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
       } else {
-  XBT_INFO("CS_realase, ressource now idle");
-  CS_used = 0;
+        XBT_INFO("CS_realase, ressource now idle");
+        CS_used = 0;
       }
     }
 
@@ -92,7 +92,7 @@ int producer(int argc, char *argv[])
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
 
     /* Wait the answer */
-    m_task_t grant = NULL;
+    msg_task_t grant = NULL;
     MSG_task_receive(&grant, my_mailbox);
     MSG_task_destroy(grant);
 
@@ -133,7 +133,7 @@ int consumer(int argc, char *argv[])
     XBT_INFO("cready = 1");
 
     /* Wait the answer */
-    m_task_t grant = NULL;
+    msg_task_t grant = NULL;
     MSG_task_receive(&grant, my_mailbox);
     MSG_task_destroy(grant);
 

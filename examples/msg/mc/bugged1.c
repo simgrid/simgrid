@@ -5,6 +5,7 @@
 
 #include <msg/msg.h>
 #include <simgrid/modelchecker.h>
+
 #define N 3
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
@@ -14,7 +15,7 @@ int client(int argc, char *argv[]);
 
 int server(int argc, char *argv[])
 {
-  m_task_t task = NULL;
+  msg_task_t task = NULL;
   int count = 0;
   while (count < N) {
     if (task) {
@@ -33,7 +34,7 @@ int server(int argc, char *argv[])
 int client(int argc, char *argv[])
 {
 
-  m_task_t task =
+  msg_task_t task =
       MSG_task_create(argv[1], 0 /*comp cost */ , 10000 /*comm size */ ,
                       NULL /*arbitrary data */ );
 

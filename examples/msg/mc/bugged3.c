@@ -17,7 +17,7 @@ int client(int argc, char *argv[]);
 
 int server(int argc, char *argv[])
 {
-  m_task_t task1;
+  msg_task_t task1;
   long val1;
   msg_comm_t comm1, comm2;
 
@@ -39,7 +39,7 @@ int client(int argc, char *argv[])
 {
   msg_comm_t comm;
   char *mbox;
-  m_task_t task1 =
+  msg_task_t task1 =
       MSG_task_create("task", 0, 10000, (void *) atol(argv[1]));
 
   mbox = bprintf("mymailbox%s", argv[1]);

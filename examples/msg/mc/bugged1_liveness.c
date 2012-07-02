@@ -29,7 +29,7 @@ int coordinator(int argc, char *argv[])
   int CS_used = 0;           
 
   while (1) {
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task); 
     if (!strcmp(kind, "request")) {    
@@ -39,7 +39,7 @@ int coordinator(int argc, char *argv[])
       } else {               
         if(strcmp(req, "2") == 0){
           XBT_INFO("CS idle. Grant immediatly");
-          m_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
+          msg_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
           MSG_task_send(answer, req);
           CS_used = 1;
         }
@@ -73,7 +73,7 @@ int client(int argc, char *argv[])
     }
 
 
-    m_task_t grant = NULL;
+    msg_task_t grant = NULL;
     MSG_task_receive(&grant, my_mailbox);
     const char *kind = MSG_task_get_name(grant);
 

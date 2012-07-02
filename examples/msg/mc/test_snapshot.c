@@ -53,7 +53,7 @@ int coordinator(int argc, char *argv[])
 
   while(i>0){
 
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task);
 
@@ -61,7 +61,7 @@ int coordinator(int argc, char *argv[])
 
     if (!strcmp(kind, "request")) { 
       char *req = MSG_task_get_data(task);
-      m_task_t answer = MSG_task_create("received", 0, 1000, NULL);
+      msg_task_t answer = MSG_task_create("received", 0, 1000, NULL);
       MSG_task_send(answer, req); 
     }else{
       XBT_INFO("End of coordinator");
@@ -88,7 +88,7 @@ int client(int argc, char *argv[])
     check();
 
     // wait the answer
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
     MSG_task_receive(&task, my_mailbox);
     MSG_task_destroy(task);
 

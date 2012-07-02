@@ -26,7 +26,7 @@ int coordinator(int argc, char *argv[])
   int CS_used = 0;              // initially the CS is idle
   
   while (1) {
-    m_task_t task = NULL;
+    msg_task_t task = NULL;
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task); //is it a request or a release?
     if (!strcmp(kind, "request")) {     // that's a request
@@ -36,7 +36,7 @@ int coordinator(int argc, char *argv[])
         xbt_dynar_push(requests, &req);
       } else {                  // can serve it immediatly
         XBT_INFO("CS idle. Grant immediatly");
-        m_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
+        msg_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
         MSG_task_send(answer, req);
         CS_used = 1;
       }
@@ -69,7 +69,7 @@ int client(int argc, char *argv[])
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox),
                   "coordinator");
     // wait the answer
-    m_task_t grant = NULL;
+    msg_task_t grant = NULL;
     MSG_task_receive(&grant, my_mailbox);
 
     MSG_task_destroy(grant);

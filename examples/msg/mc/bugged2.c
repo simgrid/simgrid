@@ -14,8 +14,8 @@ int client(int argc, char *argv[]);
 
 int server(int argc, char *argv[])
 {
-  m_task_t task1 = NULL;
-  m_task_t task2 = NULL;
+  msg_task_t task1 = NULL;
+  msg_task_t task2 = NULL;
   long val1, val2;
 
   MSG_task_receive(&task1, "mymailbox");
@@ -48,9 +48,9 @@ int server(int argc, char *argv[])
 
 int client(int argc, char *argv[])
 {
-  m_task_t task1 =
+  msg_task_t task1 =
       MSG_task_create("task", 0, 10000, (void *) atol(argv[1]));
-  m_task_t task2 =
+  msg_task_t task2 =
       MSG_task_create("task", 0, 10000, (void *) atol(argv[1]));
 
   XBT_INFO("Send %d!", atoi(argv[1]));
