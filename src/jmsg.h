@@ -17,7 +17,7 @@ JNIEnv *get_current_thread_env(void);
  * This function throws the correct exception according to the status
  * provided.
  */
-void jmsg_throw_status(JNIEnv *env, MSG_error_t status);
+void jmsg_throw_status(JNIEnv *env, msg_error_t status);
 
 /*
  * Class		org_simgrid_msg_Msg
