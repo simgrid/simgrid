@@ -158,7 +158,7 @@ and an external description of the deployment.
 
 \paragraph MSG_ext_ms_master Master code
 
-This function has to be assigned to a m_process_t that will behave as
+This function has to be assigned to a msg_process_t that will behave as
 the master. It should not be called directly but either given as a
 parameter to #MSG_process_create() or registered as a public function
 through #MSG_function_register() and then automatically assigned to a

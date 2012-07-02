@@ -169,7 +169,7 @@ the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
       \subsubsection MSG_ext_ms_master_lua Master code
 
-            as described ine the C native master/Slave exmaple , this function has to be assigned to a m_process_t that will behave as the master.
+            as described in the C native master/Slave example, this function has to be assigned to a msg_process_t that will behave as the master.
 
       Lua style arguments (...) in for the master are interpreted as:
        - the number of tasks to distribute
@@ -184,7 +184,7 @@ the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
       \subsubsection MSG_ext_ms_slave_lua Slave code
 
-      This function has to be assigned to a #m_process_t that has to behave as a slave.
+      This function has to be assigned to a #msg_process_t that has to behave as a slave.
       This function keeps waiting for tasks and executes them as it receives them.
 
       \until end_of_slave
@@ -219,7 +219,7 @@ the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
       \subsubsection MSG_ext_ms_bp_master_lua Master code
 
-            as described ine the C native master/Slave exmaple , this function has to be assigned to a m_process_t that will behave as the master.
+            as described in the C native master/Slave example, this function has to be assigned to a msg_process_t that will behave as the master.
 
       Lua style arguments (...) in for the master are interpreted as:
        - the number of tasks to distribute
@@ -234,7 +234,7 @@ the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
       \subsubsection MSG_ext_ms_bp_slave_lua Slave code
 
-      This function has to be assigned to a #m_process_t that has to behave as a slave.
+      This function has to be assigned to a #msg_process_t that has to behave as a slave.
       This function keeps waiting for tasks and executes them as it receives them.
 
       \until end_of_slave

@@ -534,7 +534,7 @@ void* simcall_process_get_data(smx_process_t process)
  * \ingroup simix_process_management
  * \brief Set the user data of a #smx_process_t.
  *
- * This functions checks whether \a process is a valid pointer or not and set the user data associated to \a process if it is possible.
+ * This functions sets the user data associated to \a process.
  * \param process SIMIX process
  * \param data User data
  */
@@ -577,7 +577,8 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
  * \ingroup simix_process_management
  * \brief Return the location on which an agent is running.
  *
- * This functions checks whether \a process is a valid pointer or not and return the m_host_t corresponding to the location on which \a process is running.
+ * This functions returns the smx_host_t corresponding to the location on which
+ * \a process is running.
  * \param process SIMIX process
  * \return SIMIX host
  */

@@ -48,8 +48,8 @@ $ make
 \section instr_category_functions Tracing categories functions
 \li \c TRACE_category(const char *category)
 \li \c TRACE_category_with_color(const char *category, const char *color)
-\li \c MSG_task_set_category(m_task_t task, const char *category)
-\li \c MSG_task_get_category(m_task_t task)
+\li \c MSG_task_set_category(msg_task_t task, const char *category)
+\li \c MSG_task_get_category(msg_task_t task)
 \li \c SD_task_set_category(SD_task_t task, const char *category)
 \li \c SD_task_get_category(SD_task_t task)
 
@@ -283,19 +283,19 @@ int main (int argc, char **argv)
   TRACE_category_with_color ("computation", "0.3 1 0.4");
   TRACE_category ("finalize");
 
-  m_task_t req1 = MSG_task_create("1st_request_task", 10, 10, NULL);
-  m_task_t req2 = MSG_task_create("2nd_request_task", 10, 10, NULL);
-  m_task_t req3 = MSG_task_create("3rd_request_task", 10, 10, NULL);
-  m_task_t req4 = MSG_task_create("4th_request_task", 10, 10, NULL);
+  msg_task_t req1 = MSG_task_create("1st_request_task", 10, 10, NULL);
+  msg_task_t req2 = MSG_task_create("2nd_request_task", 10, 10, NULL);
+  msg_task_t req3 = MSG_task_create("3rd_request_task", 10, 10, NULL);
+  msg_task_t req4 = MSG_task_create("4th_request_task", 10, 10, NULL);
   MSG_task_set_category (req1, "request");
   MSG_task_set_category (req2, "request");
   MSG_task_set_category (req3, "request");
   MSG_task_set_category (req4, "request");
 
-  m_task_t comp = MSG_task_create ("comp_task", 100, 100, NULL);
+  msg_task_t comp = MSG_task_create ("comp_task", 100, 100, NULL);
   MSG_task_set_category (comp, "computation");
 
-  m_task_t finalize = MSG_task_create ("finalize", 0, 0, NULL);
+  msg_task_t finalize = MSG_task_create ("finalize", 0, 0, NULL);
   MSG_task_set_category (finalize, "finalize");
 
   //(...)
