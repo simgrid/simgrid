@@ -2,6 +2,7 @@ package bittorrent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -13,12 +14,15 @@ import org.simgrid.msg.RngStream;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Task;
 
+import bittorrent.Connection;
+
 /**
  * Main class for peers execution
  */
 public class Peer extends Process {
 	protected int round = 0;
 	
+	protected double beginReceiveTime;
 	protected double deadline;
 	
 	protected static RngStream stream = new RngStream();
@@ -70,6 +74,7 @@ public class Peer extends Process {
 		if (getPeersData()) {
 			Msg.debug("Got " + peers.size() + " peers from the tracker");
 			Msg.debug("Here is my current status: " + getStatus());
+			beginReceiveTime = Msg.getClock();			
 			if (hasFinished()) {
 				pieces = Common.FILE_PIECES;
 				sendHandshakeAll();
@@ -351,6 +356,10 @@ public class Peer extends Process {
 				}
 			break;
 		}
+		if (remotePeer != null) {
+			remotePeer.addSpeedValue(1 / (Msg.getClock() - beginReceiveTime));
+		}
+		beginReceiveTime = Msg.getClock();
 	}
 	/**
 	 * Wait for the node to receive interesting bitfield messages (ie: non empty)
@@ -439,33 +448,57 @@ public class Peer extends Process {
 			peerChoked.chokedUpload = true;
 			activePeers.remove(e.getKey());
 		}
-		//Random optimistic unchoking
-		if (round == 0 || true) {
-			int j = 0, i;
-			Connection peerChoosed = null;
-			do {
-				i = 0;
-				int idChosen = stream.randInt(0,peers.size() - 1);
-				for (Connection connection : peers.values()) {
-					if (i == idChosen) {
-						peerChoosed = connection;
-						break;
-					}
-					i++;
-				} //TODO: Not really the best way ever
-				if (!peerChoosed.interested) {
-					peerChoosed = null;
+		Connection peerChoosed = null;
+		//Separate the case from when the peer is seeding.
+		if (pieces == Common.FILE_PIECES) {
+			//Find the last unchoked peer.
+			double unchokeTime = deadline + 1;
+			for (Connection connection : peers.values()) {
+				if (connection.lastUnchoke < unchokeTime && connection.chokedUpload && connection.interested) {
+					peerChoosed = connection;
+					unchokeTime = connection.lastUnchoke;
 				}
-				j++;
-			} while (peerChoosed == null && j < 
-Common.MAXIMUM_PEERS);
-			if (peerChoosed != null) {
-				activePeers.put(peerChoosed.id,peerChoosed);
-				peerChoosed.chokedUpload = false;
-				sendUnchoked(peerChoosed.mailbox);
 			}
 		}
-		//TODO: Use the leecher choke algorithm.
+		else {
+			//Random optimistic unchoking
+			if (round == 0) {
+				int j = 0, i;
+				do {
+					i = 0;
+					int idChosen = stream.randInt(0,peers.size() - 1);
+					for (Connection connection : peers.values()) {
+						if (i == idChosen) {
+							peerChoosed = connection;
+							break;
+						}
+						i++;
+					} //TODO: Not really the best way ever
+					if (!peerChoosed.interested) {
+						peerChoosed = null;
+					}
+					j++;
+				} while (peerChoosed == null && j < 
+	Common.MAXIMUM_PEERS);
+			}
+			else {
+				Connection fastest = null;
+				double fastestSpeed = 0;
+				for (Connection c : peers.values()) {
+					if (c.peerSpeed > fastestSpeed && c.chokedUpload && c.interested) {
+						fastest = c;
+						fastestSpeed = c.peerSpeed;
+					}
+				}
+				peerChoosed = fastest;
+			}
+		}
+		if (peerChoosed != null) {
+			activePeers.put(peerChoosed.id,peerChoosed);
+			peerChoosed.chokedUpload = false;
+			peerChoosed.lastUnchoke = Msg.getClock();
+			sendUnchoked(peerChoosed.mailbox);
+		}
 	}
 	/**	
 	 * Updates our "interested" state about peers: send "not interested" to peers

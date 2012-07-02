@@ -257,7 +257,7 @@ public class Node extends Process {
 		return destinationFound;
 	}
 	/**
-	 * Sends a "PING" request to a node
+	 * Sends a "PING" reque ast to a node
 	 * @param destination Ping destination id.
 	 */
 	public void ping(int destination) {

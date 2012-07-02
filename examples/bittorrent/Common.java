@@ -3,6 +3,7 @@ package bittorrent;
  * Common constants for use in the simulation
  */
 public class Common {	
+		
 	public static String TRACKER_MAILBOX = "tracker_mailbox";
 	
 	public static int FILE_SIZE = 5120;
@@ -48,7 +49,7 @@ public class Common {
 	/**
 	 * Interval between each update of the choked peers
 	 */
-	public static int UPDATE_CHOKED_INTERVAL = 50;
+	public static int UPDATE_CHOKED_INTERVAL = 30;
 	/**
 	 * Number of pieces the peer asks for simultaneously
 	 */

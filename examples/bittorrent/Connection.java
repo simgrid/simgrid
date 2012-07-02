@@ -1,7 +1,7 @@
 package bittorrent;
 
 import java.util.Arrays;
-
+import org.simgrid.msg.Msg;
 public class Connection {
 	/**
 	 * Remote peer id
@@ -31,7 +31,18 @@ public class Connection {
 	 * Indicates if the peer has choked the current peer
 	 */
 	public boolean chokedDownload = true;
-	
+	/**
+	 * Number of messages we have received from the peer
+	 */
+	public int messagesCount = 0;
+	/**
+	 * Peer speed.
+	 */
+	public double peerSpeed = 0;
+	/**
+	 * Last time the peer was unchoked
+	 */
+	public double lastUnchoke = 0;
 	/**
 	 * Constructor
 	 */
@@ -39,7 +50,14 @@ public class Connection {
 		this.id = id;
 		this.mailbox = Integer.toString(id);
 	}
-
+	/**
+	 * Add a new value to the peer speed average
+	 */
+	public void addSpeedValue(double speed) {
+		peerSpeed = peerSpeed * 0.55 + speed * 0.45;
+		//		peerSpeed = (peerSpeed * messagesCount + speed) / (++messagesCount);		
+	}
+		
 	@Override
 	public String toString() {
 		return "Connection [id=" + id + ", bitfield="
