@@ -149,6 +149,9 @@ typedef msg_gpu_task_t          m_gpu_task_t;
 typedef msg_host_t              m_host_t;
 typedef msg_process_t           m_process_t;
 typedef msg_task_t              m_task_t;
+typedef s_msg_gpu_task_t        s_m_gpu_task_t;
+typedef s_msg_host_t            s_m_host_t;
+typedef s_msg_task_t            s_m_task_t;
 #endif
 
 SG_END_DECL()
