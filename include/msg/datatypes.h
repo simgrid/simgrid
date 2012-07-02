@@ -141,14 +141,14 @@ typedef struct msg_comm *msg_comm_t;
  */
 typedef struct s_smx_process *msg_process_t;
 
-/* Compatibility typedefs */
-typedef msg_process_t m_process_t;
-typedef msg_host_t m_host_t;
-typedef msg_task_t m_task_t;
-typedef msg_gpu_task_t m_gpu_task_t;
-
 #ifdef MSG_USE_DEPRECATED
-typedef int m_channel_t;
+
+/* Compatibility typedefs */
+typedef int                     m_channel_t;
+typedef msg_gpu_task_t          m_gpu_task_t;
+typedef msg_host_t              m_host_t;
+typedef msg_process_t           m_process_t;
+typedef msg_task_t              m_task_t;
 #endif
 
 SG_END_DECL()

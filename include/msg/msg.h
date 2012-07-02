@@ -31,8 +31,6 @@ typedef enum {
 } msg_error_t;
 /** @} */
 
-typedef msg_error_t MSG_error_t;
-
 /************************** Global ******************************************/
 XBT_PUBLIC(void) MSG_config(const char *name, ...);
 /** \ingroup msg_simulation
@@ -265,6 +263,9 @@ XBT_PUBLIC(msg_error_t)
 msg_error_t MSG_action_trace_run(char *path);
 
 #ifdef MSG_USE_DEPRECATED
+
+typedef msg_error_t MSG_error_t;
+
 #define MSG_global_init(argc, argv)      MSG_init(argc,argv)
 #define MSG_global_init_args(argc, argv) MSG_init(argc,argv)
 
