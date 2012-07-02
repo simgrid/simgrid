@@ -182,12 +182,13 @@ public class Node extends Process {
 		int nodesAdded = 0;
 		boolean destinationFound = false;
 		int steps = 0;
-		double timeBeginReceive = Msg.getClock();
+		double timeBeginReceive;
 		double timeout, globalTimeout = Msg.getClock() + Common.FIND_NODE_GLOBAL_TIMEOUT;
 		//Build a list of the closest nodes we already know.
 		Answer nodeList = table.findClosest(destination);
 		Msg.debug("Doing a FIND_NODE on " + destination);
 		do {
+			timeBeginReceive = Msg.getClock();
 			answers = 0;
 			queries = this.sendFindNodeToBest(nodeList);
 			totalQueries += queries;
@@ -220,14 +221,14 @@ public class Node extends Process {
 							}
 							else {
 								handleTask(task);
-								timeBeginReceive = Msg.getClock();
 								timeout += Msg.getClock() - timeBeginReceive;
+								timeBeginReceive = Msg.getClock();
 							}
 						}
 						else {
 							handleTask(task);
-							timeBeginReceive = Msg.getClock();
 							timeout += Msg.getClock() - timeBeginReceive;
+							timeBeginReceive = Msg.getClock();
 						}
 						comm = null;
 					}
