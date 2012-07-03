@@ -48,7 +48,7 @@ int create_dump(int pair)
   switch(fork()){
   case 0:
     // We are the child process -- run the actual program
-    *(int *)1 = 2;  // segfault
+    abort();
     break;
     
   case -1:
