@@ -24,7 +24,9 @@ SG_BEGIN_DECL()
  *  functionality than an hash table.
  *
  *  Here is a little example of use:
- *  \verbatim xbt_dict_t mydict = xbt_dict_new();
+
+\verbatim
+ xbt_dict_t mydict = xbt_dict_new();
  char buff[512];
 
  sprintf(buff,"some very precious data");

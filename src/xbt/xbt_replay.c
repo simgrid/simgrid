@@ -83,11 +83,12 @@ void xbt_replay_reader_free(xbt_replay_reader_t *reader)
   *reader=NULL;
 }
 
-/** \ingroup xbt_replay
+/**
+ * \ingroup XBT_replay
  * \brief Registers a function to handle a kind of action
  *
  * Registers a function to handle a kind of action
- * This table is then used by #xbt_replay_action_run
+ * This table is then used by #xbt_replay_action_runner
  *
  * The argument of the function is the line describing the action, splitted on spaces with xbt_str_split_quoted()
  *
@@ -99,7 +100,7 @@ void xbt_replay_action_register(const char *action_name, action_fun function)
   xbt_dict_set(action_funs, action_name, function, NULL);
 }
 
-/** \ingroup xbt_replay
+/** \ingroup XBT_replay
  * \brief Unregisters a function, which handled a kind of action
  *
  * \param action_name the reference name of the action.

@@ -86,6 +86,7 @@
      /** @defgroup XBT_synchro Synchro stuff */	
      /** @defgroup XBT_thread Thread stuff */	
      /** @defgroup XBT_context Portable context implementation */		
+     /** @defgroup XBT_replay Replay */
 /** @} */ 
 
 /* ************************* *

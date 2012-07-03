@@ -20,21 +20,26 @@ SG_BEGIN_DECL()
  *  The elements stored in such a data structure can be retrieve both by
  *  name and by ID. For this to work, the first fields of the structures
  *  stored must begin with the following fields:
- *  \verbatim struct {
- unsigned int ID;
- char        *name;
- unsigned int name_len;
- // my other fields, constituting the payload
-} my_element_type_t; \endverbatim
+\verbatim
+ struct {
+   unsigned int ID;
+   char        *name;
+   unsigned int name_len;
+   // my other fields, constituting the payload
+ } my_element_type_t;
+\endverbatim
  *
  *  Since we are casting elements around, no protection is ensured by the
  * compiler. It is thus safer to define the headers using the macro
  * defined to that extend:
- *  \verbatim struct {
+ *
+\verbatim
+struct {
  XBT_SET_HEADERS;
 
  // my other fields, constituting the payload
-} my_element_type_t; \endverbatim
+} my_element_type_t;
+\endverbatim
  *
  *  It is now possible to remove an element from such a data structure.
  *

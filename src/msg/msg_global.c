@@ -21,8 +21,9 @@ MSG_Global_t msg_global = NULL;
 
 /********************************* MSG **************************************/
 
-/* @brief Initialize MSG with less verifications
- *
+/**
+ * \ingroup msg_simulation
+ * \brief Initialize MSG with less verifications
  * You should use the MSG_init() function instead. Failing to do so may turn into PEBKAC some day. You've been warned.
  */
 void MSG_init_nocheck(int *argc, char **argv) {
