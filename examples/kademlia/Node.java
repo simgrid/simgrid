@@ -178,7 +178,7 @@ public class Node extends Process {
 	 * Send a request to find a node in the node's routing table.
 	 */
 	public boolean findNode(int destination, boolean counts) {
-		int queries, answers, totalQueries = 0, totalAnswers = 0;
+		int queries, answers;
 		int nodesAdded = 0;
 		boolean destinationFound = false;
 		int steps = 0;
@@ -186,12 +186,11 @@ public class Node extends Process {
 		double timeout, globalTimeout = Msg.getClock() + Common.FIND_NODE_GLOBAL_TIMEOUT;
 		//Build a list of the closest nodes we already know.
 		Answer nodeList = table.findClosest(destination);
-		Msg.debug("Doing a FIND_NODE on " + destination);
+		Msg.verb("Doing a FIND_NODE on " + destination);
 		do {
 			timeBeginReceive = Msg.getClock();
 			answers = 0;
 			queries = this.sendFindNodeToBest(nodeList);
-			totalQueries += queries;
 			nodesAdded = 0;
 			timeout = Msg.getClock() + Common.FIND_NODE_TIMEOUT;
 			steps++;
@@ -215,12 +214,15 @@ public class Node extends Process {
 									table.update(c.getId());
 								}
 								answers++;
-								totalAnswers++;
 								
 								nodesAdded = nodeList.merge(answerTask.getAnswer());							
 							}
+							/* If it's not our answer, we answer to the node that
+							 * has queried us anyway
+							 */
 							else {
 								handleTask(task);
+								//Update the timeout if it's not our answer.
 								timeout += Msg.getClock() - timeBeginReceive;
 								timeBeginReceive = Msg.getClock();
 							}
@@ -244,11 +246,11 @@ public class Node extends Process {
 			if (counts) {
 				findNodeSuccedded++;
 			}
-			Msg.debug("Find node on " + destination + " succedded with " + totalQueries + " queries and " + totalAnswers + " answers");
+			Msg.debug("Find node on " + destination + " succedded");
 		}
 		else {
 			Msg.debug("Find node on " + destination + " failed");
-			Msg.debug("Queried " + queries + " nodes to find "  + destination + ", got " + totalAnswers + " answers");
+			Msg.debug("Queried " + queries + " nodes to find "  + destination);
 			Msg.debug(nodeList.toString());
 			if (counts) {
 				findNodeFailed++;
@@ -257,7 +259,7 @@ public class Node extends Process {
 		return destinationFound;
 	}
 	/**
-	 * Sends a "PING" reque ast to a node
+	 * Sends a "PING" request to a node
 	 * @param destination Ping destination id.
 	 */
 	public void ping(int destination) {
@@ -346,6 +348,4 @@ public class Node extends Process {
 		PingAnswerTask taskToSend = new PingAnswerTask(this.id);
 		taskToSend.dsend(Integer.toString(task.getSenderId()));
 	}
-	
-
 }
