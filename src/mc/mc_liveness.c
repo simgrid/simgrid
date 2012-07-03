@@ -5,6 +5,7 @@
 
 #include "mc_private.h"
 #include <unistd.h>
+#include <sys/wait.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");
@@ -31,6 +32,45 @@ unsigned int hash_region(char *str, int str_len){
 
   return hash;
 
+}
+
+int create_dump(int pair)
+{
+   // Try to enable core dumps
+  struct rlimit core_limit;
+  core_limit.rlim_cur = RLIM_INFINITY;
+  core_limit.rlim_max = RLIM_INFINITY;
+  
+  if(setrlimit(RLIMIT_CORE, &core_limit) < 0)
+    fprintf(stderr, "setrlimit: %s\nWarning: core dumps may be truncated or non-existant\n", strerror(errno));
+  
+  int status;
+  switch(fork()){
+  case 0:
+    // We are the child process -- run the actual program
+    *(int *)1 = 2;  // segfault
+    break;
+    
+  case -1:
+    // An error occurred, shouldn't happen
+    perror("fork");
+    return -1;
+    
+  default:
+    // We are the parent process -- wait for the child process to exit
+    if(wait(&status) < 0)
+      perror("wait");
+    printf("child exited with status %d\n", status);
+    if(WIFSIGNALED(status) && WCOREDUMP(status)){
+      printf("got a core dump\n");
+      char *core_name = malloc(20);;
+      sprintf(core_name,"mv core core_%d", pair); 
+      system((char *)core_name);
+      free(core_name);
+    }
+  }
+
+  return 0;
 }
 
 int reached(xbt_state_t st){
@@ -335,6 +375,8 @@ void set_pair_reached(xbt_state_t st){
     MC_SET_RAW_MEM;
   else
     MC_UNSET_RAW_MEM;
+
+  create_dump(xbt_dynar_length(reached_pairs));
     
 }
 
