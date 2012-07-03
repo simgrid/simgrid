@@ -247,7 +247,6 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
       SD_task_destroy(file);
      xbt_dynar_free_container(&result);
   }
-  free(dag_dot);
   return NULL;
 }
 
