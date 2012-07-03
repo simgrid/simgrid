@@ -789,8 +789,8 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
   xbt_free(tmp);
 }
 
-/** @brief Transform a dynar into a NULL terminated array
- *
+/** @brief Transform a dynar into a NULL terminated array. 
+ *  The dynar won't be usable afterwards.
  * \param dynar the dynar to transform
  */
 XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
