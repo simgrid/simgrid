@@ -354,19 +354,14 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
 
 void SIMIX_host_execution_destroy(smx_action_t action)
 {
-  int destroyed=0;
   XBT_DEBUG("Destroy action %p", action);
 
-
   if (action->execution.surf_exec) {
-    destroyed = surf_workstation_model->action_unref(action->execution.surf_exec);
+    surf_workstation_model->action_unref(action->execution.surf_exec);
     action->execution.surf_exec = NULL;
   }
-
-  if (destroyed) {
-    xbt_free(action->name);
-    xbt_mallocator_release(simix_global->action_mallocator, action);
-  }
+  xbt_free(action->name);
+  xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
 void SIMIX_host_execution_cancel(smx_action_t action)
