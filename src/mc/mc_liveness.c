@@ -63,7 +63,7 @@ int create_dump(int pair)
     printf("child exited with status %d\n", status);
     if(WIFSIGNALED(status) && WCOREDUMP(status)){
       printf("got a core dump\n");
-      char *core_name = malloc(20);;
+      char *core_name = malloc(20);
       sprintf(core_name,"mv core core_%d", pair); 
       system((char *)core_name);
       free(core_name);
