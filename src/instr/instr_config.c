@@ -108,8 +108,11 @@ int TRACE_end()
   PJ_type_free_all();
   PJ_container_release();
   PJ_type_release();
-  TRACE_surf_release();
   TRACE_smpi_release();
+  TRACE_surf_release();
+  xbt_dict_free(&user_link_variables);
+  xbt_dict_free(&user_host_variables);
+  xbt_dict_free(&declared_marks);
   xbt_dict_free(&created_categories);
 
   /* close the trace file */
