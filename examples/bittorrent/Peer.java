@@ -444,8 +444,8 @@ public class Peer extends Process {
 		if (it.hasNext()) {
 			Entry<Integer,Connection> e = it.next();
 			Connection peerChoked = e.getValue();
-			sendChoked(peerChoked.mailbox);
 			peerChoked.chokedUpload = true;
+			sendChoked(peerChoked.mailbox);
 			activePeers.remove(e.getKey());
 		}
 		Connection peerChoosed = null;
@@ -454,7 +454,7 @@ public class Peer extends Process {
 			//Find the last unchoked peer.
 			double unchokeTime = deadline + 1;
 			for (Connection connection : peers.values()) {
-				if (connection.lastUnchoke < unchokeTime && connection.chokedUpload && connection.interested) {
+				if (connection.lastUnchoke < unchokeTime && connection.interested) {
 					peerChoosed = connection;
 					unchokeTime = connection.lastUnchoke;
 				}
@@ -485,7 +485,7 @@ public class Peer extends Process {
 				Connection fastest = null;
 				double fastestSpeed = 0;
 				for (Connection c : peers.values()) {
-					if (c.peerSpeed > fastestSpeed && c.chokedUpload && c.interested) {
+					if (c.peerSpeed > fastestSpeed && c.interested && c.chokedUpload) {
 						fastest = c;
 						fastestSpeed = c.peerSpeed;
 					}
