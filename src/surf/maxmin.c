@@ -8,12 +8,19 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
+#include "xbt/dynar.h"
 #include "maxmin_private.h"
 #include <stdlib.h>
 #include <stdio.h>              /* sprintf */
 #include <math.h>
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf,
                                 "Logging specific to SURF (maxmin)");
+
+typedef struct s_dyn_light {
+  int *data;
+  int pos;
+  int size;
+} s_dyn_light_t, *dyn_light_t;
 
 double sg_maxmin_precision = 0.00001;
 
@@ -364,53 +371,46 @@ XBT_INLINE void *lmm_variable_id(lmm_variable_t var)
   return var->id;
 }
 
-static XBT_INLINE int saturated_constraint_set_update(lmm_system_t sys,
-                                                      lmm_constraint_t
-                                                      cnst,
+static XBT_INLINE void saturated_constraint_set_update(double usage,
+                                                      int cnst_light_num,
+                                                      dyn_light_t saturated_constraint_set,
                                                       double *min_usage)
 {
-  volatile double usage;
+  xbt_assert(usage > 0,"Impossible");
 
-  XBT_IN("sys=%p, cnst=%p, min_usage=%f", sys, cnst, *min_usage);
-  if (cnst->usage <= 0) {
-    XBT_OUT();
-    return 1;
-  }
-  if (cnst->remaining <= 0) {
-    XBT_OUT();
-    return 1;
-  }
-  usage = cnst->remaining / cnst->usage;
   if (*min_usage < 0 || *min_usage > usage) {
     *min_usage = usage;
-    XBT_HERE(" min_usage=%f (cnst->remaining=%f, cnst->usage=%f)",
-             *min_usage, cnst->remaining, cnst->usage);
-    xbt_swag_reset(&sys->saturated_constraint_set);
-    xbt_swag_insert(cnst, &sys->saturated_constraint_set);
+    // XBT_HERE(" min_usage=%f (cnst->remaining / cnst->usage =%f)", *min_usage, usage);
+    saturated_constraint_set->data[0] = cnst_light_num;
+    saturated_constraint_set->pos = 1;
   } else if (*min_usage == usage) {
-    xbt_swag_insert(cnst, &sys->saturated_constraint_set);
+    if(saturated_constraint_set->pos == saturated_constraint_set->size) { // realloc the size
+      saturated_constraint_set->size *= 2;
+      saturated_constraint_set->data = realloc(saturated_constraint_set->data, (saturated_constraint_set->size) * sizeof(int));
+    }
+    saturated_constraint_set->data[saturated_constraint_set->pos] = cnst_light_num;
+    saturated_constraint_set->pos++;
   }
-  XBT_OUT();
-  return 0;
 }
 
-static XBT_INLINE void saturated_variable_set_update(lmm_system_t sys)
+static XBT_INLINE void saturated_variable_set_update(
+    s_lmm_constraint_light_t *cnst_light_tab,
+    dyn_light_t saturated_constraint_set,
+    lmm_system_t sys)
 {
-  lmm_constraint_t cnst = NULL;
-  xbt_swag_t cnst_list = NULL;
+  lmm_constraint_light_t cnst = NULL;
   lmm_element_t elem = NULL;
   xbt_swag_t elem_list = NULL;
-
-  cnst_list = &(sys->saturated_constraint_set);
-  while ((cnst = xbt_swag_getFirst(cnst_list))) {
-    elem_list = &(cnst->active_element_set);
+  int i;
+  for(i = 0; i< saturated_constraint_set->pos; i++){
+    cnst = &cnst_light_tab[saturated_constraint_set->data[i]];
+    elem_list = &(cnst->cnst->active_element_set);
     xbt_swag_foreach(elem, elem_list) {
       if (elem->variable->weight <= 0)
         break;
       if ((elem->value > 0))
         xbt_swag_insert(elem->variable, &(sys->saturated_variable_set));
     }
-    xbt_swag_remove(cnst, cnst_list);
   }
 }
 
@@ -546,6 +546,12 @@ void lmm_solve(lmm_system_t sys)
     }
   }
 
+  s_lmm_constraint_light_t *cnst_light_tab = (s_lmm_constraint_light_t *)xbt_malloc0(xbt_swag_size(cnst_list)*sizeof(s_lmm_constraint_light_t));
+  int cnst_light_num = 0;
+  dyn_light_t saturated_constraint_set = xbt_new0(s_dyn_light_t,1);
+  saturated_constraint_set->size = 5;
+  saturated_constraint_set->data = xbt_new0(int, saturated_constraint_set->size);
+
   xbt_swag_foreach_safe(cnst, cnst_next, cnst_list) {
     /* INIT */
     cnst->remaining = cnst->bound;
@@ -570,23 +576,20 @@ void lmm_solve(lmm_system_t sys)
     }
     XBT_DEBUG("Constraint Usage '%d' : %f", cnst->id_int, cnst->usage);
     /* Saturated constraints update */
-    if(cnst->usage>0) {
-      // TODO Créer une contrainte light
-      // À partir de maintenant, usage et remaining sont dans cnst_light uniquement.
-      // En fait, usage et remaining doivent disparaitre complètement de cnst pour n'être que dans cnst_light.
-      xbt_swag_remove(cnst, cnst_list);
-      xbt_swag_insert_at_head(cnst, cnst_list);
+
+    if(cnst->usage > 0) {
+      cnst_light_tab[cnst_light_num].cnst = cnst;
+      cnst->cnst_light = &(cnst_light_tab[cnst_light_num]);
+      cnst_light_tab[cnst_light_num].remaining_over_usage = cnst->remaining / cnst->usage;
+      saturated_constraint_set_update(cnst_light_tab[cnst_light_num].remaining_over_usage,
+        cnst_light_num, saturated_constraint_set, &min_usage);
+      cnst_light_num++;
     }
-    // On a deux dynars:
-    //    - Celui de cnst_list avec les csnt_light
-    //    - saturated_constraint_set, celui des indexes de cnst_list qui sont saturés
-    // Si la cnst_light est un minimum_usage on la met dans saturated_constraint_set
-    saturated_constraint_set_update(sys, cnst, &min_usage);
   }
-  // On parcours saturated_constraint_set (le tableau d'index) dans le sens décroissant
-  //   - on accède aux contraintes correspondantes pour mettre les variables dans saturated_variable_set
-  //   - on se permutte si besoin avec le dernier élément; on enlève le dernier élément de cnst_list
-  saturated_variable_set_update(sys);
+
+  saturated_variable_set_update(  cnst_light_tab,
+                                  saturated_constraint_set,
+                                  sys);
 
   /* Saturated variables update */
 
@@ -638,8 +641,7 @@ void lmm_solve(lmm_system_t sys)
         if (cnst->shared) {
           double_update(&(cnst->remaining), elem->value * var->value);
           double_update(&(cnst->usage), elem->value / var->weight);
-          // mettre à jour le cnst_light->remaining_over_usage correspondant
-          // cnst_light->remaining_over_usage = cnst->remaining /  cnst->usage
+          cnst->cnst_light->remaining_over_usage = cnst->remaining /  cnst->usage;
           if(cnst->usage<=0 || cnst->remaining<=0) {
             xbt_swag_remove(cnst, cnst_list);
             xbt_swag_insert_at_tail(cnst, cnst_list);
@@ -657,7 +659,7 @@ void lmm_solve(lmm_system_t sys)
             if ((elem->value > 0)) {
               cnst->usage =
                   MAX(cnst->usage, elem->value / elem->variable->weight);
-              // mettre à jour le cnst_light->remaining_over_usage correspondant
+              cnst->cnst_light->remaining_over_usage = cnst->remaining /  cnst->usage;
               XBT_DEBUG("Constraint Usage %d : %f", cnst->id_int,
                      cnst->usage);
               make_elem_active(elem);
@@ -671,11 +673,19 @@ void lmm_solve(lmm_system_t sys)
     /* Find out which variables reach the maximum */
     min_usage = -1;
     min_bound = -1;
-
-    xbt_swag_foreach(cnst, cnst_list) {
-      if(saturated_constraint_set_update(sys, cnst, &min_usage)) break;
+    saturated_constraint_set->pos = 0;
+    int pos;
+    for(pos=0; pos<cnst_light_num; pos++){
+      if(cnst_light_tab[pos].remaining_over_usage > 0)
+        saturated_constraint_set_update(
+          cnst_light_tab[pos].remaining_over_usage,
+          pos,
+          saturated_constraint_set,
+          &min_usage);
     }
-    saturated_variable_set_update(sys);
+    saturated_variable_set_update(  cnst_light_tab,
+                                    saturated_constraint_set,
+                                    sys);
 
   } while (xbt_swag_size(&(sys->saturated_variable_set)));
 
@@ -686,6 +696,10 @@ void lmm_solve(lmm_system_t sys)
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     lmm_print(sys);
   }
+
+  xbt_free(saturated_constraint_set->data);
+  xbt_free(saturated_constraint_set);
+  xbt_free(cnst_light_tab);
   XBT_OUT();
 }
 

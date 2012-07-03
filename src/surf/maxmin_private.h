@@ -23,10 +23,10 @@ typedef struct lmm_element {
 #define make_elem_active(elem) xbt_swag_insert_at_head(elem,&(elem->constraint->active_element_set))
 #define make_elem_inactive(elem) xbt_swag_remove(elem,&(elem->constraint->active_element_set))
 
-//typedef struct lmm_constraint_light {
-//  double remaining_over_usage;
-//  lmm_constraint_t cnst;
-//} s_lmm_constraint_light_t;
+typedef struct lmm_constraint_light {
+  double remaining_over_usage;
+  lmm_constraint_t cnst;
+} s_lmm_constraint_light_t;
 
 typedef struct lmm_constraint {
   /* hookup to system */
@@ -45,6 +45,7 @@ typedef struct lmm_constraint {
   int id_int;
   double lambda;
   double new_lambda;
+  lmm_constraint_light_t cnst_light;
 } s_lmm_constraint_t;
 
 typedef struct lmm_variable {
