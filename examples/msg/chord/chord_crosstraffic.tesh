@@ -434,8 +434,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT -nb_bits=6 ${srcdir:=.}/../msg_platfo
 > [577.875047] (4:node@Geoff)   48  |  32 
 > [577.875047] (4:node@Geoff)    0  |  32 
 > [577.875047] (4:node@Geoff) Predecessor: 21
-> [652.548539] (0:@) Messages created: 753
-> [652.548539] (0:@) Simulated time: 652.549
+> [806.870745] (0:@) Messages created: 768
+> [806.870745] (0:@) Simulated time: 806.871
 
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/../../platforms/cluster.xml ${srcdir:=.}/chord10.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant
@@ -3015,5 +3015,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/../../platforms/cluster.
 > [ 984.000000] (1:node@c-0.me)  4194346  |  42 
 > [ 984.000000] (1:node@c-0.me)  8388650  |  42 
 > [ 984.000000] (1:node@c-0.me) Predecessor: 16728096
-> [1053.000000] (0:@) Messages created: 1972
-> [1053.000000] (0:@) Simulated time: 1053
+> [1209.000000] (0:@) Messages created: 1995
+> [1209.000000] (0:@) Simulated time: 1209
+
