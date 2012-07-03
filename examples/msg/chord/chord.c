@@ -117,7 +117,7 @@ static void remote_notify(node_t node, int notify_to, int predecessor_candidate_
 static void fix_fingers(node_t node);
 static void check_predecessor(node_t node);
 static void random_lookup(node_t);
-static void quit_notify(node_t node, int to);
+static void quit_notify(node_t node);
 
 /**
  * \brief Global initialization of the Chord simulation.
@@ -526,51 +526,41 @@ static int join(node_t node, int known_id)
 static void leave(node_t node)
 {
   XBT_DEBUG("Well Guys! I Think it's time for me to quit ;)");
-  quit_notify(node, 1);  // notify to my successor ( >>> 1 );
-  quit_notify(node, -1); // notify my predecessor  ( >>> -1);
-  // TODO ...
+  quit_notify(node);
 }
 
 /*
- * \brief Notifies the successor or the predecessor of the current node
+ * \brief Notifies the successor and the predecessor of the current node
  * of the departure
  * \param node the current node
- * \param to 1 to notify the successor, -1 to notify the predecessor
- * FIXME: notify both nodes with only one call
  */
-static void quit_notify(node_t node, int to)
+static void quit_notify(node_t node)
 {
-  /* TODO
-  task_data_t req_data = xbt_new0(s_task_data_t, 1);
-  req_data->request_id = node->id;
-  req_data->successor_id = node->fingers[0].id;
-  req_data->pred_id = node->pred_id;
+  char mailbox[MAILBOX_NAME_SIZE];
+  //send the PREDECESSOR_LEAVING to our successor
+  task_data_t req_data = xbt_new0(s_task_data_t,1);
+  req_data->type = TASK_PREDECESSOR_LEAVING;
+  req_data->request_id = node->pred_id;
+  get_mailbox(node->id, req_data->answer_to);
   req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
-  req_data->answer_to = NULL;
-  const char* task_name = NULL;
-  const char* to_mailbox = NULL;
-  if (to == 1) {    // notify my successor
-    to_mailbox = node->fingers[0].mailbox;
-    XBT_INFO("Telling my Successor %d about my departure via mailbox %s",
-          node->fingers[0].id, to_mailbox);
-    req_data->type = TASK_PREDECESSOR_LEAVING;
-  }
-  else if (to == -1) {    // notify my predecessor
 
-    if (node->pred_id == -1) {
-      return;
-    }
+  msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+  XBT_DEBUG("Sending a 'PREDECESSOR_LEAVING' to my successor %d",node->fingers[0].id);
+  MSG_task_send_with_timeout(task_sent, node->fingers[0].mailbox, timeout);
 
-    to_mailbox = node->pred_mailbox;
-    XBT_INFO("Telling my Predecessor %d about my departure via mailbox %s",
-          node->pred_id, to_mailbox);
-    req_data->type = TASK_SUCCESSOR_LEAVING;
-  }
-  msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
-  //char* mailbox = get_mailbox(to_mailbox);
-  msg_comm_t comm = MSG_task_isend(task, to_mailbox);
-  xbt_dynar_push(node->comms, &comm);
-  */
+  //send the SUCCESSOR_LEAVING to our predecessor
+  get_mailbox(node->pred_id, mailbox);
+  task_data_t req_data_s = xbt_new0(s_task_data_t,1);
+  req_data_s->type = TASK_SUCCESSOR_LEAVING;
+  req_data_s->request_id = node->fingers[0].id;
+  req_data_s->request_id = node->pred_id;
+  get_mailbox(node->id, req_data_s->answer_to);
+  req_data_s->issuer_host_name = MSG_host_get_name(MSG_host_self());
+
+  msg_task_t task_sent_s = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data_s);
+  XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d",node->pred_id);
+  MSG_task_send_with_timeout(task_sent_s, mailbox, timeout);
+
 }
 
 /**
@@ -824,18 +814,18 @@ static void notify(node_t node, int predecessor_candidate_id) {
  */
 static void remote_notify(node_t node, int notify_id, int predecessor_candidate_id) {
 
-  task_data_t req_data = xbt_new0(s_task_data_t, 1);
-  req_data->type = TASK_NOTIFY;
-  req_data->request_id = predecessor_candidate_id;
-  req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
+      task_data_t req_data = xbt_new0(s_task_data_t, 1);
+      req_data->type = TASK_NOTIFY;
+      req_data->request_id = predecessor_candidate_id;
+      req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 
-  // send a "Notify" request to notify_id
-  msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
-  XBT_DEBUG("Sending a 'Notify' request (task %p) to %d", task, notify_id);
-  char mailbox[MAILBOX_NAME_SIZE];
-  get_mailbox(notify_id, mailbox);
-  MSG_task_dsend(task, mailbox, task_free);
-}
+      // send a "Notify" request to notify_id
+      msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+      XBT_DEBUG("Sending a 'Notify' request (task %p) to %d", task, notify_id);
+      char mailbox[MAILBOX_NAME_SIZE];
+      get_mailbox(notify_id, mailbox);
+      MSG_task_dsend(task, mailbox, task_free);
+    }
 
 /**
  * \brief This function is called periodically.
