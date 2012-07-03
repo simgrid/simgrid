@@ -89,6 +89,12 @@ static void dot_task_free(void *task)
   SD_task_destroy(t);
 }
 
+static void dot_task_p_free(void *task)
+{
+  SD_task_t *t = task;
+  SD_task_destroy(*t);
+}
+
 static void TRACE_sd_dotloader (SD_task_t task, const char *category)
 {
   if (category){
@@ -165,7 +171,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
   FILE *in_file = fopen(filename, "r");
   dag_dot = agread(in_file, NIL(Agdisc_t *));
 
-  result = xbt_dynar_new(sizeof(SD_task_t), dot_task_free);
+  result = xbt_dynar_new(sizeof(SD_task_t), dot_task_p_free);
   files = xbt_dict_new_homogeneous(&dot_task_free);
   jobs = xbt_dict_new_homogeneous(NULL);
   computers = xbt_dict_new_homogeneous(NULL);
@@ -237,17 +243,13 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
   /* Free previous copy of the files */
   xbt_dict_free(&files);
   fclose(in_file);
-  if(acyclic_graph_detail(result))
-    return result;
-  else {
-    unsigned int cpt;
+  if (!acyclic_graph_detail(result)) {
     XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.",
               basename((char*)filename));
-    xbt_dynar_foreach(result, cpt, file)
-      SD_task_destroy(file);
-     xbt_dynar_free_container(&result);
+    xbt_dynar_free(&result);
+    /* (result == NULL) here */
   }
-  return NULL;
+  return result;
 }
 
 /* dot_add_task create a sd_task and all transfers required for this
