@@ -121,6 +121,7 @@ int main(int argc, char **argv)
     }
     SD_task_destroy(task);
   }
+  xbt_dynar_free_container(&dot);
   fclose(out);
 
   /* exit */
