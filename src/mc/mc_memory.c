@@ -8,9 +8,6 @@
 #include "mc/mc.h"
 #include "mc_private.h"
 #include "xbt/log.h"
-#define _GNU_SOURCE
-
-
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
                                 "Logging specific to MC (memory)");
