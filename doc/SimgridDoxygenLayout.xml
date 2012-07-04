@@ -4,7 +4,7 @@
     <tab type="mainpage" visible="yes" title="Home"/>
     <tab type="user" url="../ref_guide/html/index.html" title="Reference Manual"/>
     <tab type="user" url="../user_guide/html/index.html" title="User Guide"/>
-    <tab type="user" url="http://simgrid.gforge.inria.fr/101/index.php" title="Tutorials"/>
+    <tab type="user" url="http://simgrid.gforge.inria.fr/tutorials" title="Tutorials"/>
     <tab type="user" url="https://gforge.inria.fr/projects/simgrid" title="Forge"/>
     <tab type="user" url="http://simgrid.gforge.inria.fr/" title="Website"/>
     <tab type="examples" visible="no" title="" intro=""/>  
