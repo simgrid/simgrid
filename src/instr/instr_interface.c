@@ -172,22 +172,25 @@ void TRACE_declare_mark(const char *mark_type)
   xbt_dict_set (declared_marks, mark_type, xbt_strdup("1"), NULL);
 }
 
-
 /** \ingroup TRACE_mark
- * \brief Declare a new value for a previously declared mark type.
+ * \brief Declare a new colored value for a previously declared mark type.
  *
- * This function declares a new value for a Paje event
+ * This function declares a new colored value for a Paje event
  * type in the trace file that can be used by
  * simulators to declare application-level
  * marks. This function is independent of
- * which API is used in SimGrid.
+ * which API is used in SimGrid. The color needs to be
+ * a string with three numbers separated by spaces in the range [0,1].
+ * A light-gray color can be specified using "0.7 0.7 0.7" as color.
+ * If a NULL color is provided, the color used will be white ("1 1 1").
  *
  * \param mark_type The name of the new type.
  * \param mark_value The name of the new value for this type.
+ * \param mark_color The color of the new value for this type.
  *
  * \see TRACE_mark
  */
-void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
+void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mark_value, const char *mark_color)
 {
   /* safe switch */
   if (!TRACE_is_enabled()) return;
@@ -203,8 +206,31 @@ void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
     THROWF (tracing_error, 1, "mark_type with name (%s) is not declared", mark_type);
   }
 
-  XBT_DEBUG("MARK,declare_value %s %s", mark_type, mark_value);
-  PJ_value_new (mark_value, NULL, type);
+  char white[INSTR_DEFAULT_STR_SIZE] = "1.0 1.0 1.0";
+  if (!mark_color) mark_color = white;
+
+  XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
+  PJ_value_new (mark_value, mark_color, type);
+}
+
+/** \ingroup TRACE_mark
+ * \brief Declare a new value for a previously declared mark type.
+ *
+ * This function declares a new value for a Paje event
+ * type in the trace file that can be used by
+ * simulators to declare application-level
+ * marks. This function is independent of
+ * which API is used in SimGrid. Calling this function is the same
+ * as calling \ref TRACE_declare_mark_value_with_color with a NULL color.
+ *
+ * \param mark_type The name of the new type.
+ * \param mark_value The name of the new value for this type.
+ *
+ * \see TRACE_mark
+ */
+void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
+{
+  TRACE_declare_mark_value_with_color (mark_type, mark_value, NULL);
 }
 
 /**
