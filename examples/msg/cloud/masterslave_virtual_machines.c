@@ -45,7 +45,8 @@ int master(int argc, char *argv[]) {
   int slaves_count = 10;
   msg_host_t *slaves = xbt_new(msg_host_t,10);
 
-  int i;
+  msg_vm_t vm;
+  unsigned int i;
 
   /* Retrive the hostnames constituting our playground today */
   for (i = 1; i < argc; i++) {
@@ -75,21 +76,23 @@ int master(int argc, char *argv[]) {
   work_batch(slaves_count);
 
   XBT_INFO("Now suspend all VMs, just for fun");
-  for (i=0;i<xbt_dynar_length(vms);i++)
-    MSG_vm_suspend(xbt_dynar_get_as(vms,i,msg_vm_t));
+
+  xbt_dynar_foreach(vms,i,vm) {
+    MSG_vm_suspend(vm);
+  }
 
   XBT_INFO("Wait a while");
   MSG_process_sleep(2);
 
   XBT_INFO("Enough. Let's resume everybody.");
-  for (i=0;i<xbt_dynar_length(vms);i++)
-    MSG_vm_resume(xbt_dynar_get_as(vms,i,msg_vm_t));
-
+  xbt_dynar_foreach(vms,i,vm) {
+    MSG_vm_resume(vm);
+  }
   XBT_INFO("Sleep long enough for everyone to be done with previous batch of work");
   MSG_process_sleep(1000-MSG_get_clock());
 
   XBT_INFO("Add one more process per VM");
-  for (i=0;i<xbt_dynar_length(vms);i++) {
+  xbt_dynar_foreach(vms,i,vm) {
     msg_vm_t vm = xbt_dynar_get_as(vms,i,msg_vm_t);
     char slavename[64];
     sprintf(slavename,"Slave %ld",i+xbt_dynar_length(vms));
@@ -101,18 +104,18 @@ int master(int argc, char *argv[]) {
   }
 
   XBT_INFO("Reboot all the VMs");
-  for (i=0;i<xbt_dynar_length(vms);i++)
-    MSG_vm_reboot(xbt_dynar_get_as(vms,i,msg_vm_t));
+  xbt_dynar_foreach(vms,i,vm) {
+    MSG_vm_reboot(vm);
+  }
 
   work_batch(slaves_count*2);
 
   XBT_INFO("Migrate everyone to the second host.");
-  for (i=0;i<xbt_dynar_length(vms);i++)
-    MSG_vm_migrate(xbt_dynar_get_as(vms,i,msg_vm_t),slaves[1]);
-
+  xbt_dynar_foreach(vms,i,vm) {
+    MSG_vm_migrate(vm,slaves[1]);
+  }
   XBT_INFO("Suspend everyone, move them to the third host, and resume them.");
-  for (i=0;i<xbt_dynar_length(vms);i++) {
-    msg_vm_t vm = xbt_dynar_get_as(vms,i,msg_vm_t);
+  xbt_dynar_foreach(vms,i,vm) {
     MSG_vm_suspend(vm);
     MSG_vm_migrate(vm,slaves[2]);
     MSG_vm_resume(vm);
@@ -127,8 +130,7 @@ int master(int argc, char *argv[]) {
     MSG_task_send(finalize, mailbox_buffer);
   }
 
-  for (i=0;i<xbt_dynar_length(vms);i++) {
-    msg_vm_t vm = xbt_dynar_get_as(vms,i,msg_vm_t);
+  xbt_dynar_foreach(vms,i,vm) {
     MSG_vm_shutdown(vm);
     MSG_vm_destroy(vm);
   }
