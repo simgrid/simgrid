@@ -6,6 +6,7 @@
 #ifndef MC_PRIVATE_H
 #define MC_PRIVATE_H
 
+#include "simgrid_config.h"
 #include <stdio.h>
 #include <sys/mman.h>
 #include "mc/mc.h"
