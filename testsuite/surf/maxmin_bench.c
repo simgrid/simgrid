@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "surf/maxmin.h"
+#include "xbt/module.h"
 #include "xbt/xbt_os_time.h"
 #include "xbt/sysdep.h"         /* time manipulation for benchmarking */
 
@@ -84,6 +85,7 @@ int main(int argc, char **argv)
   int nb_cnst = 2000;
   int nb_var = 2000;
   int nb_elem = 80;
+  xbt_init(&argc, argv);
   date = xbt_os_time() * 1000000;
   test(nb_cnst, nb_var, nb_elem);
   printf("One shot execution time for a total of %d constraints, "
