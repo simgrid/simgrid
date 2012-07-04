@@ -236,7 +236,6 @@ void TRACE_paje_create_header(void)
 %%       Alias string \n\
 %%       Type string \n\
 %%       Name string \n\
-%%       Color color \n\
 %%EndEventDef \n\
 %%EventDef PajeDefineLinkType %d \n\
 %%       Alias string \n\
@@ -404,12 +403,11 @@ static void print_pajeDefineStateType(paje_event_t event)
 static void print_pajeDefineEventType(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
-  fprintf(tracing_file, "%d %s %s %s \"%s\"\n",
+  fprintf(tracing_file, "%d %s %s %s\n",
       (int)event->event_type,
       ((defineEventType_t)event->data)->type->id,
       ((defineEventType_t)event->data)->type->father->id,
-      ((defineEventType_t)event->data)->type->name,
-      ((defineEventType_t)event->data)->type->color);
+      ((defineEventType_t)event->data)->type->name);
 }
 
 static void print_pajeDefineLinkType(paje_event_t event)
