@@ -59,6 +59,7 @@ mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
 mc_snapshot_t initial_snapshot = NULL;
+int raw_mem_set;
 
 /* Safety */
 

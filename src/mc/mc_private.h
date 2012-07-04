@@ -153,7 +153,7 @@ struct mstats {
 #define MC_SET_RAW_MEM    mmalloc_set_current_heap(raw_heap)
 #define MC_UNSET_RAW_MEM  mmalloc_set_current_heap(std_heap)
 
-int raw_mem_set;
+extern int raw_mem_set;
 
 /******************************* MEMORY MAPPINGS ***************************/
 /* These functions and data structures implements a binary interface for   */
