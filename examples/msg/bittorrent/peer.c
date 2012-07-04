@@ -12,7 +12,15 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peers, "Messages specific for the peers");
 
+//TODO: Let users change this
+/*
+ * File transfered data
+ */
+static int FILE_SIZE = 5120;
+static int FILE_PIECES = 10;
 
+static int PIECES_BLOCKS = 5;
+static int BLOCKS_REQUESTED = 2;
 
 /**
  * Peer main function
@@ -171,7 +179,8 @@ int get_peers_data(peer_t peer)
     msg_error_t status = MSG_comm_wait(comm_received, GET_PEERS_TIMEOUT);
     if (status == MSG_OK) {
       tracker_task_data_t data = MSG_task_get_data(task_received);
-      int i, peer_id;
+      unsigned i;
+      int peer_id;
       //Add the peers the tracker gave us to our peer list.
       xbt_dynar_foreach(data->peers, i, peer_id) {
         if (peer_id != peer->id)
@@ -392,7 +401,8 @@ void handle_message(peer_t peer, msg_task_t task)
         if (piece_complete(peer, message->index)) {
           peer->pieces_requested--;
           //Removing the piece from our piece list
-          int piece_index = -1, i, piece;
+          unsigned i;
+          int piece_index = -1, piece;
           xbt_dynar_foreach(peer->current_pieces, i, piece) {
             if (piece == message->index) {
               piece_index = i;
@@ -446,7 +456,7 @@ void wait_for_pieces(peer_t peer, double deadline)
     MSG_comm_destroy(peer->comm_received);
     peer->comm_received = NULL;
     if (status == MSG_OK) {
-      message_t message = MSG_task_get_data(peer->task_received);
+      MSG_task_get_data(peer->task_received);
       handle_message(peer, peer->task_received);
       if (peer->current_piece != -1) {
         finished = 1;
@@ -513,9 +523,8 @@ void update_current_piece(peer_t peer)
   }
   xbt_dynar_push_as(peer->current_pieces, int, peer->current_piece);
   XBT_DEBUG("New interested piece: %d", peer->current_piece);
-  xbt_assert((peer->current_piece >= 0
-              && peer->current_piece < FILE_PIECES,
-              "Peer want to retrieve a piece that doesn't exist."));
+  xbt_assert((peer->current_piece >= 0 && peer->current_piece < FILE_PIECES),
+             "Peer want to retrieve a piece that doesn't exist.");
 }
 
 /**
@@ -527,7 +536,6 @@ void update_choked_peers(peer_t peer)
 {
   //update the current round
   peer->round = (peer->round + 1) % 3;
-  int i;
   char *key;
   connection_t peer_choosed = NULL;
   //remove a peer from the list
@@ -616,7 +624,8 @@ void update_interested_after_receive(peer_t peer)
   char *key;
   xbt_dict_cursor_t cursor;
   connection_t connection;
-  int interested, cpt, piece;
+  unsigned cpt;
+  int interested, piece;
   xbt_dict_foreach(peer->peers, cursor, key, connection) {
     interested = 0;
     if (connection->am_interested) {
@@ -684,7 +693,8 @@ int get_first_block(peer_t peer, int piece)
  */
 void send_requests_to_peer(peer_t peer, connection_t remote_peer)
 {
-  int i, piece, block_index, block_length;
+  unsigned i;
+  int piece, block_index, block_length;
   xbt_dynar_foreach(peer->current_pieces, i, piece) {
     if (remote_peer->bitfield && remote_peer->bitfield[piece] == '1') {
       block_index = get_first_block(peer, piece);
@@ -873,7 +883,8 @@ void send_piece(peer_t peer, const char *mailbox, int piece, int stalled,
 
 int in_current_pieces(peer_t peer, int piece)
 {
-  int is_in = 0, i, peer_piece;
+  unsigned i;
+  int is_in = 0, peer_piece;
   xbt_dynar_foreach(peer->current_pieces, i, peer_piece) {
     if (peer_piece == piece) {
       is_in = 1;

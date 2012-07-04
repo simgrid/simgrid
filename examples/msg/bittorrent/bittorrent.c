@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
   MSG_launch_application(deployment_file);
 
-  msg_error_t res = MSG_main();
+  MSG_main();
 
   MSG_clean();
 

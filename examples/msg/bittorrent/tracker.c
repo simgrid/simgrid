@@ -17,9 +17,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_tracker, "Messages specific for the tracker");
  */
 int tracker(int argc, char *argv[])
 {
-  int i, key_elm;
-  char *key;
-  void *data_p;
+  int i;
 
   RngStream stream = RngStream_CreateStream("tracker");
 
@@ -50,7 +48,7 @@ int tracker(int argc, char *argv[])
           xbt_dynar_push_as(peers_list, int, data->peer_id);
         }
         //Sending peers to the peer
-        int nb_peers = 0, next_peer;
+        int next_peer;
         int peers_length = xbt_dynar_length(peers_list);
         for (i = 0; i < MAXIMUM_PAIRS && i < peers_length; i++) {
           do {
@@ -140,7 +138,8 @@ void tracker_task_data_free(tracker_task_data_t task)
  */
 int is_in_list(xbt_dynar_t peers, int id)
 {
-  int i, elm;
+  unsigned i;
+  int elm;
   xbt_dynar_foreach(peers, i, elm) {
     if (elm == id) {
       return 1;

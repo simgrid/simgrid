@@ -6,25 +6,15 @@
 
 #ifndef BITTORRENT_BITTORRENT_H_
 #define BITTORRENT_BITTORRENT_H_
-//TODO: Let users change this
-/*
- * File transfered data
- */
-static int FILE_SIZE = 5120;
-static int FILE_PIECE_SIZE = 512;
-static int FILE_PIECES = 10;
 
-static int PIECES_BLOCKS = 5;
-static int BLOCKS_REQUESTED = 2;
-
-static int PIECE_COMM_SIZE = 1;
 /**
  * Information message size
  */
 #define MESSAGE_SIZE 1
-
-
-#define MAILBOX_SIZE 40         /* Size of mailboxes */
+/**
+ * Size of mailboxes
+ */
+#define MAILBOX_SIZE 40
 /**
  * Mailbox used to communicate with the tracker.
  */
