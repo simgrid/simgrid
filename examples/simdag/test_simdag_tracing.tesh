@@ -38,7 +38,6 @@ $ cat ./simgrid.trace
 > %       Alias string 
 > %       Type string 
 > %       Name string 
-> %       Color color 
 > %EndEventDef 
 > %EventDef PajeDefineLinkType 4 
 > %       Alias string 
