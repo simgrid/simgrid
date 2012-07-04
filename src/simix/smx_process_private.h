@@ -71,7 +71,7 @@ void SIMIX_process_create(smx_process_t *process,
                           xbt_dict_t properties,
                           int auto_restart);
 void SIMIX_process_runall(void);
-void SIMIX_process_kill(smx_process_t process);
+void SIMIX_process_kill(smx_process_t process, smx_process_t issuer);
 void SIMIX_process_killall(smx_process_t issuer);
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args);
 void SIMIX_create_maestro_process(void);
@@ -104,6 +104,6 @@ void SIMIX_process_sleep_suspend(smx_action_t action);
 void SIMIX_process_sleep_resume(smx_action_t action);
 void SIMIX_process_sleep_destroy(smx_action_t action);
 void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
-
+void SIMIX_process_restart(smx_process_t process, smx_process_t issuer);
 
 #endif

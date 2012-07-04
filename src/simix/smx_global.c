@@ -358,7 +358,7 @@ XBT_INLINE void SIMIX_function_register_process_create(smx_creation_func_t
  *
  * \param function Kill process function
  */
-XBT_INLINE void SIMIX_function_register_process_kill(void_pfn_smxprocess_t
+XBT_INLINE void SIMIX_function_register_process_kill(void_pfn_smxprocess_t_smxprocess_t
                                                      function)
 {
   simix_global->kill_process_function = function;

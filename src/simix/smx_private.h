@@ -37,7 +37,7 @@ typedef struct s_smx_global {
   smx_process_t maestro_process;
   xbt_dict_t registered_functions;
   smx_creation_func_t create_process_function;
-  void_pfn_smxprocess_t kill_process_function;
+  void_pfn_smxprocess_t_smxprocess_t kill_process_function;
   void_pfn_smxprocess_t cleanup_process_function;
   xbt_mallocator_t action_mallocator;
   void_pfn_smxhost_t autorestart;

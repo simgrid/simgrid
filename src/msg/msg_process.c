@@ -45,7 +45,6 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 #ifdef HAVE_TRACING
   TRACE_msg_process_end(smx_proc);
 #endif
-
   // free the data if a function was provided
   if (msg_proc->data && msg_global->process_data_cleanup) {
     msg_global->process_data_cleanup(msg_proc->data);
@@ -499,4 +498,11 @@ void MSG_process_on_exit(int_f_pvoid_t fun, void *data) {
  */
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart) {
   simcall_process_auto_restart_set(process,auto_restart);
+}
+/*
+ * \ingroup m_process_management
+ * \brief Restarts a process from the beginning.
+ */
+XBT_PUBLIC(void) MSG_process_restart(msg_process_t process) {
+  simcall_process_restart(process);
 }

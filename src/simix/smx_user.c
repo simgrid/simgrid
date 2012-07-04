@@ -653,7 +653,8 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
  * \brief Add an on_exit function
  * Add an on_exit function which will be executed when the process exits/is killed.
  */
-XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data) {
+XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data)
+{
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_PROCESS_ON_EXIT;
@@ -669,12 +670,26 @@ XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fu
  * Will restart the process when the host comes back up if auto_restart is set to 1.
  */
 
-XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int auto_restart) {
+XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int auto_restart)
+{
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_PROCESS_AUTO_RESTART_SET;
   simcall->process_auto_restart.process = process;
   simcall->process_auto_restart.auto_restart = auto_restart;
+
+  SIMIX_simcall_push(simcall->issuer);
+}
+/**
+ * \ingroup simix_process_management
+ * \brief Restarts the process, killing it and starting it again from scratch.
+ */
+XBT_PUBLIC(void) simcall_process_restart(smx_process_t process)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_PROCESS_RESTART;
+  simcall->process_restart.process = process;
 
   SIMIX_simcall_push(simcall->issuer);
 }

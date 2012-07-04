@@ -65,7 +65,6 @@ smx_ctx_base_factory_create_context_sized(size_t size,
 void smx_ctx_base_free(smx_context_t context)
 {
   int i;
-
   if (context) {
 
     /* free argv */

@@ -224,7 +224,6 @@ void SIMIX_process_create(smx_process_t *process,
     *process = xbt_new0(s_smx_process_t, 1);
 
     xbt_assert(((code != NULL) && (host != NULL)), "Invalid parameters");
-
     /* Process data */
     (*process)->pid = simix_process_maxpid++;
     (*process)->name = xbt_strdup(name);
@@ -296,8 +295,9 @@ void SIMIX_process_runall(void)
  * or directly for SIMIX internal purposes.
  *
  * \param process poor victim
+ * \param issuer the process which has sent the PROCESS_KILL. Important to not schedule twice the same process.
  */
-void SIMIX_process_kill(smx_process_t process) {
+void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
   XBT_DEBUG("Killing process %s on %s", process->name, process->smx_host->name);
 
@@ -335,8 +335,10 @@ void SIMIX_process_kill(smx_process_t process) {
           break;
     }
   }
-  if(!xbt_dynar_member(simix_global->process_to_run, &(process)))
+  if(!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != issuer) {
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
+  }
+
 }
 
 /**
@@ -349,7 +351,7 @@ void SIMIX_process_killall(smx_process_t issuer)
 
   while ((p = xbt_swag_extract(simix_global->process_list))) {
     if (p != issuer) {
-      SIMIX_process_kill(p);
+      SIMIX_process_kill(p,issuer);
     }
   }
 
@@ -779,4 +781,57 @@ void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data)
  */
 void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart) {
   process->auto_restart = auto_restart;
+}
+/**
+ * \brief Restart a process.
+ * Restart a process, starting it again from the beginning.
+ */
+void SIMIX_process_restart(smx_process_t process, smx_process_t issuer) {
+  XBT_DEBUG("Restarting process %s on %s", process->name, process->smx_host->name);
+  //retrieve the arguments of the old process
+  //FIXME: Factorise this with SIMIX_host_add_auto_restart_process ?
+  s_smx_process_arg_t arg;
+  arg.code = process->code;
+  arg.hostname = process->smx_host->name;
+  arg.kill_time = process->kill_time;
+  arg.argc = process->argc;
+  arg.data = process->data;
+  int i;
+  arg.argv = xbt_new(char*,process->argc + 1);
+  for (i = 0; i < arg.argc; i++) {
+    arg.argv[i] = xbt_strdup(process->argv[i]);
+  }
+  arg.argv[process->argc] = NULL;
+  arg.properties = NULL;
+  arg.auto_restart = process->auto_restart;
+  //kill the old process
+  SIMIX_process_kill(process,issuer);
+  //start the new process
+  smx_process_t new_process;
+  if (simix_global->create_process_function) {
+    simix_global->create_process_function(&new_process,
+                                          arg.argv[0],
+                                          arg.code,
+                                          arg.data,
+                                          arg.hostname,
+                                          arg.kill_time,
+                                          arg.argc,
+                                          arg.argv,
+                                          arg.properties,
+                                          arg.auto_restart);
+  }
+  else {
+    simcall_process_create(&new_process,
+                                          arg.argv[0],
+                                          arg.code,
+                                          arg.data,
+                                          arg.hostname,
+                                          arg.kill_time,
+                                          arg.argc,
+                                          arg.argv,
+                                          arg.properties,
+                                          arg.auto_restart);
+
+  }
+
 }

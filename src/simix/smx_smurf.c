@@ -318,7 +318,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       break;
 
     case SIMCALL_PROCESS_KILL:
-      SIMIX_process_kill(simcall->process_kill.process);
+      SIMIX_process_kill(simcall->process_kill.process,simcall->issuer);
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -334,8 +334,8 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
 
     case SIMCALL_PROCESS_CHANGE_HOST:
       SIMIX_pre_process_change_host(
-    simcall->process_change_host.process,
-    simcall->process_change_host.dest);
+          simcall->process_change_host.process,
+          simcall->process_change_host.dest);
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -362,6 +362,10 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_process_on_exit(simcall->process_on_exit.process,
                             simcall->process_on_exit.fun,
                             simcall->process_on_exit.data);
+      SIMIX_simcall_answer(simcall);
+    break;
+    case SIMCALL_PROCESS_RESTART:
+      SIMIX_process_restart(simcall->process_restart.process, simcall->issuer);
       SIMIX_simcall_answer(simcall);
     break;
     case SIMCALL_PROCESS_AUTO_RESTART_SET:

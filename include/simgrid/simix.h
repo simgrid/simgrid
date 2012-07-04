@@ -120,8 +120,9 @@ typedef struct s_smx_context_factory *smx_context_factory_t;
 
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t) (smx_process_t);
-
-/* for function autorestart */
+/* Process kill */
+typedef void (*void_pfn_smxprocess_t_smxprocess_t) (smx_process_t, smx_process_t);
+/* for auto-restart function */
 typedef void (*void_pfn_smxhost_t) (smx_host_t);
 
 /* The following function pointer types describe the interface that any context
@@ -219,7 +220,7 @@ XBT_PUBLIC(void) SIMIX_clean(void);
 
 XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function);
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
-XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_pfn_smxprocess_t function);
+XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_pfn_smxprocess_t_smxprocess_t function);
 
 /* Simulation execution */
 XBT_PUBLIC(void) SIMIX_run(void);    
@@ -352,6 +353,7 @@ XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_process_t host);
 XBT_PUBLIC(void) simcall_process_set_kill_time(smx_process_t process, double kill_time);
 XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data);
 XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int auto_restart);
+XBT_PUBLIC(void) simcall_process_restart(smx_process_t process);
 /* Sleep control */
 XBT_PUBLIC(e_smx_state_t) simcall_process_sleep(double duration);
 
