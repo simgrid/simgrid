@@ -168,7 +168,7 @@ void TRACE_declare_mark(const char *mark_type)
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
-  PJ_type_event_new(mark_type, NULL, PJ_type_get_root());
+  PJ_type_event_new(mark_type, PJ_type_get_root());
   xbt_dict_set (declared_marks, mark_type, xbt_strdup("1"), NULL);
 }
 

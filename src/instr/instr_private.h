@@ -213,7 +213,7 @@ void PJ_type_alloc (void);
 void PJ_type_release (void);
 type_t PJ_type_get_root (void);
 type_t PJ_type_container_new (const char *name, type_t father);
-type_t PJ_type_event_new (const char *name, const char *color, type_t father);
+type_t PJ_type_event_new (const char *name, type_t father);
 type_t PJ_type_variable_new (const char *name, const char *color, type_t father);
 type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t dest);
 type_t PJ_type_state_new (const char *name, type_t father);

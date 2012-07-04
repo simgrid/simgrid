@@ -135,20 +135,13 @@ type_t PJ_type_container_new (const char *name, type_t father)
   return ret;
 }
 
-type_t PJ_type_event_new (const char *name, const char *color, type_t father)
+type_t PJ_type_event_new (const char *name, type_t father)
 {
   if (name == NULL){
     THROWF (tracing_error, 0, "can't create an event type with a NULL name");
   }
 
-  type_t ret = NULL;
-
-  char white[INSTR_DEFAULT_STR_SIZE] = "1 1 1";
-  if (!color){
-    ret = newType (name, name, white, TYPE_EVENT, father);
-  }else{
-    ret = newType (name, name, color, TYPE_EVENT, father);
-  }
+  type_t ret = newType (name, name, NULL, TYPE_EVENT, father);
   XBT_DEBUG("EventType %s(%s), child of %s(%s)", ret->name, ret->id, father->name, father->id);
   new_pajeDefineEventType(ret);
   return ret;
