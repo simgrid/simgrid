@@ -39,13 +39,13 @@ typedef struct s_message {
 /**
  * Builds a new value-less message
  */
-XBT_INLINE msg_task_t task_message_new(e_message_type type,
+msg_task_t task_message_new(e_message_type type,
                                        const char *issuer_host_name,
                                        const char *mailbox, int peer_id);
 /**
  * Builds a new "have/piece" message
  */
-XBT_INLINE msg_task_t task_message_index_new(e_message_type type,
+msg_task_t task_message_index_new(e_message_type type,
                                              const char *issuer_host_name,
                                              const char *mailbox, int peer_id,
                                              int index);
