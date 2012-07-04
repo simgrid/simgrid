@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.6)
 if(HAVE_MC)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test/")
+
   add_executable(centralized centralized_mutex.c)
   add_executable(bugged1     bugged1.c)
   add_executable(bugged2      bugged2.c)
@@ -14,7 +16,6 @@ if(HAVE_MC)
   add_executable(centralized_liveness_deadlock centralized_liveness_deadlock.c)
   add_executable(test_snapshot test_snapshot.c)
   add_executable(test/compare_snapshot test/compare_snapshot.c)
-
 
   target_link_libraries(centralized simgrid m )
   target_link_libraries(bugged1     simgrid m )
