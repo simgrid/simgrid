@@ -116,3 +116,4 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud/masterslave_virtual_machines$EXEEXT ${srcdir
 > [ 2835.981646] (0:@) Simulation time 2835.98
 > [ 2835.981646] (11:Slave 9@Provost) Received "finalize" from mailbox Slave_9
 > [ 2835.981646] (1:master@Jacquelin) Goodbye now!
+

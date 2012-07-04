@@ -66,6 +66,7 @@ int master(int argc, char *argv[]) {
     MSG_vm_bind(vm, MSG_process_create_with_arguments(slavename,slave_fun,NULL,slaves[i],2,argv));
   }
 
+
   xbt_dynar_t vms = MSG_vms_as_dynar();
   XBT_INFO("Launched %ld VMs", xbt_dynar_length(vms));
 
@@ -98,6 +99,10 @@ int master(int argc, char *argv[]) {
     argv[2] = NULL;
     MSG_vm_bind(vm, MSG_process_create_with_arguments(slavename,slave_fun,NULL,slaves[i],2,argv));
   }
+
+  XBT_INFO("Reboot all the VMs");
+  for (i=0;i<xbt_dynar_length(vms);i++)
+    MSG_vm_reboot(xbt_dynar_get_as(vms,i,msg_vm_t));
 
   work_batch(slaves_count*2);
 
@@ -140,11 +145,10 @@ int slave_fun(int argc, char *argv[])
   char *mailbox_name;
   msg_task_t task = NULL;
   _XBT_GNUC_UNUSED int res;
-
   /* since the slaves will move around, use slave_%d as mailbox names instead of hostnames */
   xbt_assert(argc>=2, "slave processes need to be given their rank as parameter");
   mailbox_name=bprintf("Slave_%s",argv[1]);
-
+  XBT_INFO("Slave listenning on %s",argv[1]);
   while (1) {
     res = MSG_task_receive(&(task),mailbox_name);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
