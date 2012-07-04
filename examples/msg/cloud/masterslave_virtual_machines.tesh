@@ -4,9 +4,19 @@ p Testing the Cloud API with a simple masterslave
 
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/cloud/masterslave_virtual_machines$EXEEXT ${srcdir:=.}/msg_platform.xml --log=root.fmt:"[%12.6r]%e(%i:%P@%h)%e%m%n"
+> [    0.000000] (10:Slave 8@Jean_Yves) Slave listenning on 8
+> [    0.000000] (11:Slave 9@Fafard) Slave listenning on 9
 > [    0.000000] (1:master@Jacquelin) Launched 10 VMs
 > [    0.000000] (1:master@Jacquelin) Send a first batch of work to every one
 > [    0.000000] (1:master@Jacquelin) Sending "Task_0" to "Slave_0"
+> [    0.000000] (2:Slave 0@Jacquelin) Slave listenning on 0
+> [    0.000000] (3:Slave 1@Intel) Slave listenning on 1
+> [    0.000000] (4:Slave 2@Provost) Slave listenning on 2
+> [    0.000000] (5:Slave 3@Fernand) Slave listenning on 3
+> [    0.000000] (6:Slave 4@Bescherelle) Slave listenning on 4
+> [    0.000000] (7:Slave 5@Ethernet) Slave listenning on 5
+> [    0.000000] (8:Slave 6@Kuenning) Slave listenning on 6
+> [    0.000000] (9:Slave 7@Dodge) Slave listenning on 7
 > [    0.020275] (1:master@Jacquelin) Sending "Task_1" to "Slave_1"
 > [    0.020275] (2:Slave 0@Jacquelin) Received "Task_0" from mailbox Slave_0
 > [    0.093091] (2:Slave 0@Jacquelin) "Task_0" done
@@ -40,40 +50,61 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud/masterslave_virtual_machines$EXEEXT ${srcdir
 > [  914.133629] (1:master@Jacquelin) Enough. Let's resume everybody.
 > [  914.133629] (1:master@Jacquelin) Sleep long enough for everyone to be done with previous batch of work
 > [  914.206445] (11:Slave 9@Fafard) "Task_9" done
+> [ 1000.000000] (12:Slave 10@Jacquelin) Slave listenning on 10
+> [ 1000.000000] (13:Slave 11@Intel) Slave listenning on 11
+> [ 1000.000000] (14:Slave 12@Provost) Slave listenning on 12
+> [ 1000.000000] (15:Slave 13@Fernand) Slave listenning on 13
+> [ 1000.000000] (16:Slave 14@Bescherelle) Slave listenning on 14
+> [ 1000.000000] (17:Slave 15@Ethernet) Slave listenning on 15
+> [ 1000.000000] (18:Slave 16@Kuenning) Slave listenning on 16
+> [ 1000.000000] (19:Slave 17@Dodge) Slave listenning on 17
 > [ 1000.000000] (1:master@Jacquelin) Add one more process per VM
+> [ 1000.000000] (1:master@Jacquelin) Reboot all the VMs
 > [ 1000.000000] (1:master@Jacquelin) Sending "Task_0" to "Slave_0"
+> [ 1000.000000] (20:Slave 18@Jean_Yves) Slave listenning on 18
+> [ 1000.000000] (21:Slave 19@Fafard) Slave listenning on 19
+> [ 1000.000000] (22:Slave 0@Jacquelin) Slave listenning on 0
+> [ 1000.000000] (23:Slave 1@Intel) Slave listenning on 1
+> [ 1000.000000] (24:Slave 2@Provost) Slave listenning on 2
+> [ 1000.000000] (25:Slave 3@Fernand) Slave listenning on 3
+> [ 1000.000000] (26:Slave 4@Bescherelle) Slave listenning on 4
+> [ 1000.000000] (27:Slave 5@Ethernet) Slave listenning on 5
+> [ 1000.000000] (28:Slave 6@Kuenning) Slave listenning on 6
+> [ 1000.000000] (29:Slave 7@Dodge) Slave listenning on 7
+> [ 1000.000000] (30:Slave 8@Jean_Yves) Slave listenning on 8
+> [ 1000.000000] (31:Slave 9@Fafard) Slave listenning on 9
 > [ 1000.020275] (1:master@Jacquelin) Sending "Task_1" to "Slave_1"
-> [ 1000.020275] (2:Slave 0@Jacquelin) Received "Task_0" from mailbox Slave_0
-> [ 1000.093091] (2:Slave 0@Jacquelin) "Task_0" done
+> [ 1000.020275] (22:Slave 0@Jacquelin) Received "Task_0" from mailbox Slave_0
+> [ 1000.093091] (22:Slave 0@Jacquelin) "Task_0" done
 > [ 1071.553756] (1:master@Jacquelin) Sending "Task_2" to "Slave_2"
-> [ 1071.553756] (3:Slave 1@Intel) Received "Task_1" from mailbox Slave_1
-> [ 1071.626572] (3:Slave 1@Intel) "Task_1" done
+> [ 1071.553756] (23:Slave 1@Intel) Received "Task_1" from mailbox Slave_1
+> [ 1071.626572] (23:Slave 1@Intel) "Task_1" done
 > [ 1217.911039] (1:master@Jacquelin) Sending "Task_3" to "Slave_3"
-> [ 1217.911039] (4:Slave 2@Provost) Received "Task_2" from mailbox Slave_2
-> [ 1217.983855] (4:Slave 2@Provost) "Task_2" done
+> [ 1217.911039] (24:Slave 2@Provost) Received "Task_2" from mailbox Slave_2
+> [ 1217.983855] (24:Slave 2@Provost) "Task_2" done
 > [ 1360.063805] (1:master@Jacquelin) Sending "Task_4" to "Slave_4"
-> [ 1360.063805] (5:Slave 3@Fernand) Received "Task_3" from mailbox Slave_3
-> [ 1360.515251] (5:Slave 3@Fernand) "Task_3" done
+> [ 1360.063805] (25:Slave 3@Fernand) Received "Task_3" from mailbox Slave_3
+> [ 1360.515251] (25:Slave 3@Fernand) "Task_3" done
 > [ 1427.243795] (1:master@Jacquelin) Sending "Task_5" to "Slave_5"
-> [ 1427.243795] (6:Slave 4@Bescherelle) Received "Task_4" from mailbox Slave_4
-> [ 1427.316611] (6:Slave 4@Bescherelle) "Task_4" done
+> [ 1427.243795] (26:Slave 4@Bescherelle) Received "Task_4" from mailbox Slave_4
+> [ 1427.316611] (26:Slave 4@Bescherelle) "Task_4" done
 > [ 1509.794890] (1:master@Jacquelin) Sending "Task_6" to "Slave_6"
-> [ 1509.794890] (7:Slave 5@Ethernet) Received "Task_5" from mailbox Slave_5
-> [ 1509.896832] (7:Slave 5@Ethernet) "Task_5" done
+> [ 1509.794890] (27:Slave 5@Ethernet) Received "Task_5" from mailbox Slave_5
+> [ 1509.896832] (27:Slave 5@Ethernet) "Task_5" done
 > [ 1576.548296] (1:master@Jacquelin) Sending "Task_7" to "Slave_7"
-> [ 1576.548296] (8:Slave 6@Kuenning) Received "Task_6" from mailbox Slave_6
-> [ 1576.664802] (8:Slave 6@Kuenning) "Task_6" done
+> [ 1576.548296] (28:Slave 6@Kuenning) Received "Task_6" from mailbox Slave_6
+> [ 1576.664802] (28:Slave 6@Kuenning) "Task_6" done
 > [ 1685.569407] (1:master@Jacquelin) Sending "Task_8" to "Slave_8"
-> [ 1685.569407] (9:Slave 7@Dodge) Received "Task_7" from mailbox Slave_7
-> [ 1685.656786] (9:Slave 7@Dodge) "Task_7" done
-> [ 1757.600403] (10:Slave 8@Jean_Yves) Received "Task_8" from mailbox Slave_8
+> [ 1685.569407] (29:Slave 7@Dodge) Received "Task_7" from mailbox Slave_7
+> [ 1685.656786] (29:Slave 7@Dodge) "Task_7" done
 > [ 1757.600403] (1:master@Jacquelin) Sending "Task_9" to "Slave_9"
-> [ 1757.702345] (10:Slave 8@Jean_Yves) "Task_8" done
-> [ 1912.133629] (11:Slave 9@Fafard) Received "Task_9" from mailbox Slave_9
+> [ 1757.600403] (30:Slave 8@Jean_Yves) Received "Task_8" from mailbox Slave_8
+> [ 1757.702345] (30:Slave 8@Jean_Yves) "Task_8" done
 > [ 1912.133629] (1:master@Jacquelin) Sending "Task_10" to "Slave_10"
+> [ 1912.133629] (31:Slave 9@Fafard) Received "Task_9" from mailbox Slave_9
 > [ 1912.153904] (12:Slave 10@Jacquelin) Received "Task_10" from mailbox Slave_10
 > [ 1912.153904] (1:master@Jacquelin) Sending "Task_11" to "Slave_11"
-> [ 1912.206445] (11:Slave 9@Fafard) "Task_9" done
+> [ 1912.206445] (31:Slave 9@Fafard) "Task_9" done
 > [ 1912.226720] (12:Slave 10@Jacquelin) "Task_10" done
 > [ 1983.687385] (13:Slave 11@Intel) Received "Task_11" from mailbox Slave_11
 > [ 1983.687385] (1:master@Jacquelin) Sending "Task_12" to "Slave_12"
@@ -103,17 +134,17 @@ $ $SG_TEST_EXENV ${bindir:=.}/cloud/masterslave_virtual_machines$EXEEXT ${srcdir
 > [ 2824.267258] (1:master@Jacquelin) Suspend everyone, move them to the third host, and resume them.
 > [ 2824.267258] (1:master@Jacquelin) Let's shut down the simulation. 10 first processes will be shut down cleanly while the second half will forcefully get killed
 > [ 2824.267258] (21:Slave 19@Fafard) Received "Task_19" from mailbox Slave_19
-> [ 2824.267453] (2:Slave 0@Provost) Received "finalize" from mailbox Slave_0
+> [ 2824.267453] (22:Slave 0@Provost) Received "finalize" from mailbox Slave_0
 > [ 2824.340073] (21:Slave 19@Provost) "Task_19" done
-> [ 2825.186151] (3:Slave 1@Provost) Received "finalize" from mailbox Slave_1
-> [ 2827.065805] (4:Slave 2@Provost) Received "finalize" from mailbox Slave_2
-> [ 2828.891461] (5:Slave 3@Provost) Received "finalize" from mailbox Slave_3
-> [ 2829.754248] (6:Slave 4@Provost) Received "finalize" from mailbox Slave_4
-> [ 2830.814444] (7:Slave 5@Provost) Received "finalize" from mailbox Slave_5
-> [ 2831.671752] (8:Slave 6@Provost) Received "finalize" from mailbox Slave_6
-> [ 2833.071901] (9:Slave 7@Provost) Received "finalize" from mailbox Slave_7
-> [ 2833.996989] (10:Slave 8@Provost) Received "finalize" from mailbox Slave_8
+> [ 2825.186151] (23:Slave 1@Provost) Received "finalize" from mailbox Slave_1
+> [ 2827.065805] (24:Slave 2@Provost) Received "finalize" from mailbox Slave_2
+> [ 2828.891461] (25:Slave 3@Provost) Received "finalize" from mailbox Slave_3
+> [ 2829.754248] (26:Slave 4@Provost) Received "finalize" from mailbox Slave_4
+> [ 2830.814444] (27:Slave 5@Provost) Received "finalize" from mailbox Slave_5
+> [ 2831.671752] (28:Slave 6@Provost) Received "finalize" from mailbox Slave_6
+> [ 2833.071901] (29:Slave 7@Provost) Received "finalize" from mailbox Slave_7
+> [ 2833.996989] (30:Slave 8@Provost) Received "finalize" from mailbox Slave_8
 > [ 2835.981646] (0:@) Simulation time 2835.98
-> [ 2835.981646] (11:Slave 9@Provost) Received "finalize" from mailbox Slave_9
 > [ 2835.981646] (1:master@Jacquelin) Goodbye now!
+> [ 2835.981646] (31:Slave 9@Provost) Received "finalize" from mailbox Slave_9
 
