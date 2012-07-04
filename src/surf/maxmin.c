@@ -8,7 +8,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
-#include "xbt/dynar.h"
 #include "maxmin_private.h"
 #include <stdlib.h>
 #include <stdio.h>              /* sprintf */
@@ -641,29 +640,41 @@ void lmm_solve(lmm_system_t sys)
         if (cnst->shared) {
           double_update(&(cnst->remaining), elem->value * var->value);
           double_update(&(cnst->usage), elem->value / var->weight);
-          cnst->cnst_light->remaining_over_usage = cnst->remaining /  cnst->usage;
           if(cnst->usage<=0 || cnst->remaining<=0) {
-            xbt_swag_remove(cnst, cnst_list);
-            xbt_swag_insert_at_tail(cnst, cnst_list);
+            int index = (cnst->cnst_light-cnst_light_tab);
+            XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p ",
+                index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab);
+            cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
+            cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
+            cnst_light_num--;
+            cnst->cnst_light = NULL;
+          } else {
+            cnst->cnst_light->remaining_over_usage = cnst->remaining / cnst->usage;
           }
           make_elem_inactive(elem);
-        } else {                /* FIXME one day: We recompute usage.... :( */
+        } else {
           cnst->usage = 0.0;
           make_elem_inactive(elem);
           elem_list = &(cnst->element_set);
           xbt_swag_foreach(elem, elem_list) {
-            if (elem->variable->weight <= 0)
-              break;
-            if (elem->variable->value > 0)
-              break;
-            if ((elem->value > 0)) {
-              cnst->usage =
-                  MAX(cnst->usage, elem->value / elem->variable->weight);
-              cnst->cnst_light->remaining_over_usage = cnst->remaining /  cnst->usage;
-              XBT_DEBUG("Constraint Usage %d : %f", cnst->id_int,
-                     cnst->usage);
               make_elem_active(elem);
+            if (elem->variable->weight <= 0 || elem->variable->value > 0)
+              continue;
+            if (elem->value > 0)
+              cnst->usage = MAX(cnst->usage, elem->value / elem->variable->weight);
+          }
+          if (cnst->usage<=0 || cnst->remaining<=0) {
+            if(cnst->cnst_light) {
+              int index = (cnst->cnst_light-cnst_light_tab);
+              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p ",
+                  index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab);
+              cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
+              cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
+              cnst_light_num--;
+              cnst->cnst_light = NULL;
             }
+          } else {
+            cnst->cnst_light->remaining_over_usage = cnst->remaining / cnst->usage;
           }
         }
       }
@@ -675,19 +686,18 @@ void lmm_solve(lmm_system_t sys)
     min_bound = -1;
     saturated_constraint_set->pos = 0;
     int pos;
-    for(pos=0; pos<cnst_light_num; pos++){
-      if(cnst_light_tab[pos].remaining_over_usage > 0)
-        saturated_constraint_set_update(
+    for(pos=0; pos<cnst_light_num; pos++)
+      saturated_constraint_set_update(
           cnst_light_tab[pos].remaining_over_usage,
           pos,
           saturated_constraint_set,
           &min_usage);
-    }
+
     saturated_variable_set_update(  cnst_light_tab,
                                     saturated_constraint_set,
                                     sys);
 
-  } while (xbt_swag_size(&(sys->saturated_variable_set)));
+  } while (cnst_light_num > 0);
 
   sys->modified = 0;
   if (sys->selective_update_active)
