@@ -24,7 +24,7 @@ static int PIECE_COMM_SIZE = 1;
 #define MESSAGE_SIZE 1
 
 
-#define MAILBOX_SIZE 40 /* Size of mailboxes */
+#define MAILBOX_SIZE 40         /* Size of mailboxes */
 /**
  * Mailbox used to communicate with the tracker.
  */
@@ -67,4 +67,4 @@ static int PIECE_COMM_SIZE = 1;
  * Number of pieces the peer asks for simultaneously
  */
 #define MAX_PIECES 1
-#endif /* BITTORRENT_BITTORRENT_H_ */
+#endif                          /* BITTORRENT_BITTORRENT_H_ */

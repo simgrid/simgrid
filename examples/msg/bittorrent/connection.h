@@ -9,16 +9,16 @@
  * Contains the connection data of a peer.
  */
 typedef struct s_connection {
-	int id; //Peer id
-	char *bitfield; //Fields
-	char *mailbox;
-	int messages_count;
-	double peer_speed;
-	double last_unchoke;
-	int am_interested:1; //Indicates if we are interested in something the peer has
-	int interested:1; //Indicates if the peer is interested in one of our pieces
-	int choked_upload:1; //Indicates if the peer is choked for the current peer
-	int choked_download:1; //Indicates if the peer has choked the current peer
+  int id;                       //Peer id
+  char *bitfield;               //Fields
+  char *mailbox;
+  int messages_count;
+  double peer_speed;
+  double last_unchoke;
+  int am_interested:1;          //Indicates if we are interested in something the peer has
+  int interested:1;             //Indicates if the peer is interested in one of our pieces
+  int choked_upload:1;          //Indicates if the peer is choked for the current peer
+  int choked_download:1;        //Indicates if the peer has choked the current peer
 } s_connection_t, *connection_t;
 /**
  * Build a new connection object from the peer id.
@@ -35,4 +35,4 @@ void connection_add_speed_value(connection_t connection, double speed);
  * Frees a connection object
  */
 void connection_free(void *data);
-#endif /* BITTORRENT_CONNECTION_H_ */
+#endif                          /* BITTORRENT_CONNECTION_H_ */

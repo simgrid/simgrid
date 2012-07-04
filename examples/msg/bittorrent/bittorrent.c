@@ -10,12 +10,13 @@
 /**
  * Bittorrent example launcher
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   MSG_init(&argc, argv);
 
   /* Check the arguments */
   if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file \n",argv[0]);
+    printf("Usage: %s platform_file deployment_file \n", argv[0]);
     return -1;
   }
 
@@ -24,8 +25,8 @@ int main(int argc, char *argv[]) {
 
   MSG_create_environment(platform_file);
 
-  MSG_function_register("tracker",tracker);
-  MSG_function_register("peer",peer);
+  MSG_function_register("tracker", tracker);
+  MSG_function_register("peer", peer);
 
   MSG_launch_application(deployment_file);
 
