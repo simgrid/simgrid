@@ -177,6 +177,8 @@ void MSG_vm_reboot(msg_vm_t vm)
   xbt_dynar_foreach(new_processes, cpt, process) {
     MSG_vm_bind(vm,process);
   }
+
+  xbt_dynar_free(&new_processes);
 }
 /** @brief Destroy a msg_vm_t.
  *  @ingroup msg_VMs
