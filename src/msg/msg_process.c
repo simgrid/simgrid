@@ -503,6 +503,6 @@ XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_re
  * \ingroup m_process_management
  * \brief Restarts a process from the beginning.
  */
-XBT_PUBLIC(void) MSG_process_restart(msg_process_t process) {
-  simcall_process_restart(process);
+XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process) {
+  return simcall_process_restart(process);
 }

@@ -786,7 +786,7 @@ void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart) {
  * \brief Restart a process.
  * Restart a process, starting it again from the beginning.
  */
-void SIMIX_process_restart(smx_process_t process, smx_process_t issuer) {
+smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer) {
   XBT_DEBUG("Restarting process %s on %s", process->name, process->smx_host->name);
   //retrieve the arguments of the old process
   //FIXME: Factorise this with SIMIX_host_add_auto_restart_process ?
@@ -833,5 +833,5 @@ void SIMIX_process_restart(smx_process_t process, smx_process_t issuer) {
                                           arg.auto_restart);
 
   }
-
+  return new_process;
 }

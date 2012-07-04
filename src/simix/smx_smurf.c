@@ -365,7 +365,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_simcall_answer(simcall);
     break;
     case SIMCALL_PROCESS_RESTART:
-      SIMIX_process_restart(simcall->process_restart.process, simcall->issuer);
+      simcall->process_restart.result = SIMIX_process_restart(simcall->process_restart.process, simcall->issuer);
       SIMIX_simcall_answer(simcall);
     break;
     case SIMCALL_PROCESS_AUTO_RESTART_SET:

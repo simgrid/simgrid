@@ -157,7 +157,7 @@ XBT_PUBLIC(int) MSG_process_is_suspended(msg_process_t process);
 XBT_PUBLIC(void) MSG_process_on_exit(int_f_pvoid_t fun, void *data);
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart);
 
-XBT_PUBLIC(void) MSG_process_restart(msg_process_t process);
+XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process);
 
 /************************** Task handling ************************************/
 XBT_PUBLIC(msg_task_t) MSG_task_create(const char *name,

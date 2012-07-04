@@ -306,6 +306,7 @@ typedef struct s_smx_simcall {
 
     struct {
       smx_process_t process;
+      smx_process_t result;
     } process_restart;
 
     struct {

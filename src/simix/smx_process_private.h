@@ -104,6 +104,6 @@ void SIMIX_process_sleep_suspend(smx_action_t action);
 void SIMIX_process_sleep_resume(smx_action_t action);
 void SIMIX_process_sleep_destroy(smx_action_t action);
 void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
-void SIMIX_process_restart(smx_process_t process, smx_process_t issuer);
+smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer);
 
 #endif
