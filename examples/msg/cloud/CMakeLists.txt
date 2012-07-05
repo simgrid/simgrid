@@ -13,6 +13,7 @@ endif(WIN32)
 
 set(tesh_files
   ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_virtual_machines.tesh
   PARENT_SCOPE
   )
 set(xml_files

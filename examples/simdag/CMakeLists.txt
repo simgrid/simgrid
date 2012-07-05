@@ -55,26 +55,30 @@ endif(NOT WIN32)
 
 set(tesh_files
   ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag2.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_seq_access.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_typed_tasks.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag2.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag2_lua.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_comm_throttling.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_seq_access.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_tracing.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_typed_tasks.tesh
   PARENT_SCOPE
   )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/2clusters.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/faulty_host.xml
   PARENT_SCOPE
   )
 set(examples_src
   ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/sd_comm_throttling.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/sd_fail.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_seq_access.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/sd_test2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_test.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/sd_test2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_test_console.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_typed_tasks_test.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/sd_comm_throttling.c
   ${CMAKE_CURRENT_SOURCE_DIR}/simdag_trace.c
   PARENT_SCOPE
   )
@@ -86,5 +90,6 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/faulty_host.trace
   PARENT_SCOPE
   )

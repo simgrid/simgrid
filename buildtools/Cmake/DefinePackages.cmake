@@ -656,12 +656,14 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
+  examples/msg/bittorrent/CMakeLists.txt
   examples/msg/chord/CMakeLists.txt
   examples/msg/cloud/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
   examples/msg/gtnets/CMakeLists.txt
   examples/msg/icomms/CMakeLists.txt
   examples/msg/io/CMakeLists.txt
+  examples/msg/kademlia/CMakeLists.txt
   examples/msg/masterslave/CMakeLists.txt
   examples/msg/mc/CMakeLists.txt
   examples/msg/migration/CMakeLists.txt

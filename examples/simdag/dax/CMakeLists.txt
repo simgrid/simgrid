@@ -13,11 +13,13 @@ endif(NOT WIN32)
 
 set(tesh_files
   ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/simple_dax_with_cycle.tesh
   PARENT_SCOPE
   )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/Montage_50.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/simple_dax_with_cycle.xml
   PARENT_SCOPE
   )
 set(examples_src

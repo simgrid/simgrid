@@ -30,6 +30,7 @@ endif(HAVE_GRAPHVIZ)
 
 set(tesh_files
   ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_dotload.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -52,6 +53,7 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/dag_with_bad_schedule.dot
   ${CMAKE_CURRENT_SOURCE_DIR}/dag_with_cycle.dot
   ${CMAKE_CURRENT_SOURCE_DIR}/dag_with_good_schedule.dot
-  ${CMAKE_CURRENT_SOURCE_DIR}/simulate_dot.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/dag.dot
+  ${CMAKE_CURRENT_SOURCE_DIR}/dag.trace
   PARENT_SCOPE
   )
