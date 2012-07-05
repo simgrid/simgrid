@@ -245,6 +245,24 @@ Java_org_simgrid_msg_Process_resume(JNIEnv * env,
   jxbt_check_res("MSG_process_resume()", rv, MSG_OK,
                  bprintf("unexpected error , please report this bug"));
 }
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart
+    (JNIEnv *env, jobject jprocess) {
+  msg_process_t process = jprocess_to_native_process(jprocess, env);
+  xbt_ex_t e;
+
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return;
+  }
+
+  TRY {
+    MSG_process_restart(process);
+  }
+  CATCH (e) {
+    xbt_ex_free(e);
+  }
+
+}
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env,
                                          jobject jprocess)

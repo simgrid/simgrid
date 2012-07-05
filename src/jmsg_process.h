@@ -196,6 +196,14 @@ Java_org_simgrid_msg_Process_suspend(JNIEnv * env,
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume
     (JNIEnv *, jobject);
 /*
+ * Class        org_simgrid_msg_Process
+ * Method       restart
+ * Signature    (Lorg/simgrid/msg/Process;)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart
+    (JNIEnv *, jobject);
+
+/*
  * Class		org_simgrid_msg_Process
  * Method		isSuspended
  * Signature	(Lorg/simgrid/msg/Process;)Z

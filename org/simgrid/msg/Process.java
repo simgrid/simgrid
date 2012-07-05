@@ -240,6 +240,10 @@ public abstract class Process implements Runnable {
 		suspend();
 	}
 	/**
+	 * Restarts the process from the beginning
+	 */
+	public native void restart();
+	/**
 	 * Resumes a suspended process by resuming the task on which it was
 	 * waiting for the completion.
 	 */
