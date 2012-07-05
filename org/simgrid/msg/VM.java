@@ -84,5 +84,9 @@ public class VM {
 	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep() or something
 	 */
 	public native void shutdown();
+	/**
+	 * @brief Reboot the VM, restarting all the processes in it.
+	 */
+	public native void reboot();
 		
 }

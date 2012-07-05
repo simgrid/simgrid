@@ -109,3 +109,14 @@ Java_org_simgrid_msg_VM_shutdown(JNIEnv *env, jobject jvm) {
     xbt_ex_free(e);
   }
 }
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_VM_reboot(JNIEnv *env, jobject jvm) {
+  msg_vm_t vm = jvm_get_native(env,jvm);
+  xbt_ex_t e;
+  TRY {
+    MSG_vm_reboot(vm);
+  }
+  CATCH(e) {
+    xbt_ex_free(e);
+  }
+}
