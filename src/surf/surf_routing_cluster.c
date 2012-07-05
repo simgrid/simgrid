@@ -49,7 +49,6 @@ static void cluster_get_route_and_latency(AS_t as,
 }
 
 static void model_cluster_finalize(AS_t as) {
-  xbt_dynar_free(&(as->link_up_down_list));
   model_none_finalize(as);
 }
 
