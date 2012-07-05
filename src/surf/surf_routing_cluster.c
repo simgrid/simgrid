@@ -13,11 +13,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
  * Note that a router is created, easing the interconnexion with the rest of the world.
  */
 
-typedef struct {
-  s_as_t generic_routing;
-  void *backbone;
-} s_as_cluster_t, *as_cluster_t;
-
 /* Business methods */
 static void cluster_get_route_and_latency(AS_t as,
     sg_routing_edge_t src, sg_routing_edge_t dst,
@@ -80,8 +75,4 @@ AS_t model_cluster_create(void)
   result->parse_PU = cluster_parse_PU;
 
   return (AS_t) result;
-}
-
-void surf_routing_cluster_add_backbone(AS_t as, void* bb) {
-  ((as_cluster_t)as)->backbone = bb;
 }

@@ -72,10 +72,12 @@ AS_t model_rulebased_create(void);      /* create structures for rulebased routi
 
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
-AS_t model_cluster_create(void);      /* create structures for cluster routing model */
+typedef struct {
+  s_as_t generic_routing;
+  void *backbone;
+} s_as_cluster_t, *as_cluster_t;
 
-/* Pass info from the cluster parser to the cluster routing */
-void surf_routing_cluster_add_backbone(AS_t as, void* bb);
+AS_t model_cluster_create(void);      /* create structures for cluster routing model */
 
 /* ************************************************** */
 /* **************  Vivaldi ROUTING   **************** */

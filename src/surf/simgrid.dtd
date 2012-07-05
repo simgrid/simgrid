@@ -25,7 +25,7 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|include|storage_type|storage|link|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect|bypassASroute)*,(trace|trace_connect)*)|((include|storage_type|storage|host|router|link|trace|trace_connect)*,(route|trace|trace_connect|bypassRoute)*))>
+<!ELEMENT AS (((AS|include|storage_type|storage|link|backbone|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect|bypassASroute)*,(trace|trace_connect)*)|((include|storage_type|storage|host|router|link|backbone|trace|trace_connect|host_link)*,(route|trace|trace_connect|bypassRoute)*))>
 
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|RuleBased|Vivaldi|Cluster) "None">
@@ -59,6 +59,11 @@
 <!ATTLIST host state_file CDATA "">
 <!ATTLIST host coordinates  CDATA "">
 
+<!ELEMENT host_link EMPTY>
+<!ATTLIST host_link id CDATA #REQUIRED>
+<!ATTLIST host_link up CDATA #REQUIRED>
+<!ATTLIST host_link down CDATA #REQUIRED>
+
 <!ELEMENT cluster EMPTY>
 <!ATTLIST cluster id CDATA #REQUIRED>
 <!ATTLIST cluster prefix CDATA #REQUIRED>
@@ -89,6 +94,11 @@
 <!ELEMENT router EMPTY>
 <!ATTLIST router id CDATA #REQUIRED>
 <!ATTLIST router coordinates  CDATA "">
+
+<!ELEMENT backbone EMPTY>
+<!ATTLIST backbone id CDATA #REQUIRED>
+<!ATTLIST backbone bandwidth CDATA  #REQUIRED>
+<!ATTLIST backbone latency CDATA #REQUIRED>
 
 <!ELEMENT link (prop*)>
 <!ATTLIST link id CDATA #REQUIRED>

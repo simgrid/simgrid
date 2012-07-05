@@ -41,4 +41,6 @@ extern int ROUTING_STORAGE_TYPE_LEVEL;   //Routing storage_type level
 void routing_AS_begin(const char *AS_id, int wanted_routing_type);
 void routing_AS_end(void);
 
+void routing_cluster_add_backbone(void* bb);
+
 #endif                          /* _SURF_SURF_H */

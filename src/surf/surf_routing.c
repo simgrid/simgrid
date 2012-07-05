@@ -112,6 +112,36 @@ struct s_model_type routing_models[] = {
 };
 
 /**
+ * \brief Add a "host_link" to the network element list
+ */
+static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
+{
+  sg_routing_edge_t info = NULL;
+  info = xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL);
+  xbt_assert(info, "Host '%s' not found!",host->id);
+  xbt_assert(current_routing->model_desc == &routing_models[SURF_MODEL_CLUSTER],
+      "You have to be in model Cluster to use tag host_link!");
+
+  s_surf_parsing_link_up_down_t link_up_down;
+  link_up_down.link_up = xbt_lib_get_or_null(link_lib, host->link_up, SURF_LINK_LEVEL);
+  link_up_down.link_down = xbt_lib_get_or_null(link_lib, host->link_down, SURF_LINK_LEVEL);
+
+  xbt_assert(link_up_down.link_up, "Link '%s' not found!",host->link_up);
+  xbt_assert(link_up_down.link_down, "Link '%s' not found!",host->link_down);
+
+  if(!current_routing->link_up_down_list)
+    current_routing->link_up_down_list = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
+
+  // If dynar is is greater than edge id and if the host_link is already defined
+  if(xbt_dynar_length(current_routing->link_up_down_list) > info->id &&
+      xbt_dynar_get_as(current_routing->link_up_down_list,info->id,void*))
+    xbt_die("Host_link for '%s' is already defined!",host->id);
+
+  XBT_INFO("Push Host_link for host '%s' to position %d",info->name,info->id);
+  xbt_dynar_set_as(current_routing->link_up_down_list,info->id,s_surf_parsing_link_up_down_t,link_up_down);
+}
+
+/**
  * \brief Add a "host" to the network element list
  */
 static void parse_S_host(sg_platf_host_cbarg_t host)
@@ -746,6 +776,14 @@ void routing_model_create( void *loopback)
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
 
+void routing_cluster_add_backbone(void* bb) {
+  xbt_assert(current_routing->model_desc == &routing_models[SURF_MODEL_CLUSTER],
+        "You have to be in model Cluster to use tag backbone!");
+  xbt_assert(!((as_cluster_t)current_routing)->backbone,"The backbone link is already defined!");
+  ((as_cluster_t)current_routing)->backbone = bb;
+  XBT_DEBUG("Add a backbone to AS '%s'",current_routing->name);
+}
+
 static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   char *host_id, *groups, *link_id = NULL;
@@ -893,7 +931,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
     sg_platf_new_link(&link);
 
-    surf_routing_cluster_add_backbone(current_routing, xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL));
+    routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL));
 
     free(link_backbone);
   }
@@ -1146,6 +1184,7 @@ void routing_register_callbacks()
 {
   sg_platf_host_add_cb(parse_S_host);
   sg_platf_router_add_cb(parse_S_router);
+  sg_platf_host_link_add_cb(parse_S_host_link);
 
   surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 

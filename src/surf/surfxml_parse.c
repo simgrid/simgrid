@@ -405,6 +405,21 @@ void ETag_surfxml_host(void)    {
   current_property_set = NULL;
 }
 
+void STag_surfxml_host_link(void){
+  XBT_INFO("Create a Host_link for %s",A_surfxml_host_link_id);
+  s_sg_platf_host_link_cbarg_t host_link;
+  memset(&host_link,0,sizeof(host_link));
+
+  host_link.id = A_surfxml_host_link_id;
+  host_link.link_up = A_surfxml_host_link_up;
+  host_link.link_down = A_surfxml_host_link_down;
+  sg_platf_new_host_link(&host_link);
+}
+
+void ETag_surfxml_host_link(void){
+  XBT_INFO("End create a Host_link for %s",A_surfxml_host_link_id);
+}
+
 void STag_surfxml_router(void){
   s_sg_platf_router_cbarg_t router;
   memset(&router, 0, sizeof(router));
@@ -489,6 +504,11 @@ void ETag_surfxml_peer(void){
 void STag_surfxml_link(void){
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
+
+void STag_surfxml_backbone(void){
+  /* nothing to do here */
+}
+
 void ETag_surfxml_link(void){
   s_sg_platf_link_cbarg_t link;
   memset(&link,0,sizeof(link));
@@ -531,6 +551,23 @@ void ETag_surfxml_link(void){
 
   sg_platf_new_link(&link);
 
+  current_property_set = NULL;
+}
+
+void ETag_surfxml_backbone(void){
+  s_sg_platf_link_cbarg_t link;
+  memset(&link,0,sizeof(link));
+
+  link.properties = NULL;
+
+  link.id = A_surfxml_backbone_id;
+  link.bandwidth = surf_parse_get_double(A_surfxml_backbone_bandwidth);
+  link.latency = surf_parse_get_double(A_surfxml_backbone_latency);
+  link.state = SURF_RESOURCE_ON;
+  link.policy = SURF_LINK_SHARED;
+
+  sg_platf_new_link(&link);
+  routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, A_surfxml_backbone_id, SURF_LINK_LEVEL));
   current_property_set = NULL;
 }
 
