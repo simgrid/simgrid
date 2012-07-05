@@ -16,11 +16,5 @@
 		bw_in="2250000000"
 		bw_out="2250000000"
 		lat="5E-4" />
-
-     <ASroute src="(.*)" dst="(.*)" 
-	 gw_src="router_$1src" 
-	 gw_dst="router_$1dst">
-     </ASroute> 			
-			
 </AS>
 </platform>

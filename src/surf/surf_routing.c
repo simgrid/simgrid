@@ -119,7 +119,8 @@ static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
   sg_routing_edge_t info = NULL;
   info = xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL);
   xbt_assert(info, "Host '%s' not found!",host->id);
-  xbt_assert(current_routing->model_desc == &routing_models[SURF_MODEL_CLUSTER],
+  xbt_assert(current_routing->model_desc == &routing_models[SURF_MODEL_CLUSTER] ||
+      current_routing->model_desc == &routing_models[SURF_MODEL_VIVALDI],
       "You have to be in model Cluster to use tag host_link!");
 
   s_surf_parsing_link_up_down_t link_up_down;
@@ -137,7 +138,7 @@ static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
       xbt_dynar_get_as(current_routing->link_up_down_list,info->id,void*))
     xbt_die("Host_link for '%s' is already defined!",host->id);
 
-  XBT_INFO("Push Host_link for host '%s' to position %d",info->name,info->id);
+  XBT_DEBUG("Push Host_link for host '%s' to position %d",info->name,info->id);
   xbt_dynar_set_as(current_routing->link_up_down_list,info->id,s_surf_parsing_link_up_down_t,link_up_down);
 }
 
@@ -950,7 +951,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
 {
   static int AX_ptr = 0;
   char *host_id = NULL;
-  char *router_id, *link_router, *link_backbone, *link_id_up, *link_id_down;
+  char *link_id;
 
   static unsigned int surfxml_buffer_stack_stack_ptr = 1;
   static unsigned int surfxml_buffer_stack_stack[1024];
@@ -959,17 +960,9 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
 
   surfxml_bufferstack_push(1);
 
-  XBT_DEBUG("<AS id=\"%s\"\trouting=\"Full\">", peer->id);
-  sg_platf_new_AS_begin(peer->id, A_surfxml_AS_routing_Full);
-
   XBT_DEBUG(" ");
   host_id = HOST_PEER(peer->id);
-  router_id = ROUTER_PEER(peer->id);
-  link_id_up = LINK_UP_PEER(peer->id);
-  link_id_down = LINK_DOWN_PEER(peer->id);
-
-  link_router = bprintf("%s_link_router", peer->id);
-  link_backbone = bprintf("%s_backbone", peer->id);
+  link_id = LINK_PEER(peer->id);
 
   XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->power);
   s_sg_platf_host_cbarg_t host;
@@ -984,79 +977,33 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   host.coord = peer->coord;
   sg_platf_new_host(&host);
 
-
-  XBT_DEBUG("<router id=\"%s\"\tcoordinates=\"%s\"/>", router_id, peer->coord);
-  s_sg_platf_router_cbarg_t router;
-  memset(&router, 0, sizeof(router));
-  router.id = router_id;
-  router.coord = peer->coord;
-  sg_platf_new_router(&router);
-
-  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id_up,
+  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,
             peer->bw_in, peer->lat);
   s_sg_platf_link_cbarg_t link;
   memset(&link, 0, sizeof(link));
   link.state = SURF_RESOURCE_ON;
-  link.policy = SURF_LINK_SHARED;
-  link.id = link_id_up;
+  link.policy = SURF_LINK_FULLDUPLEX;
+  link.id = link_id;
   link.bandwidth = peer->bw_in;
   link.latency = peer->lat;
   sg_platf_new_link(&link);
 
-  // FIXME: dealing with full duplex is not the role of this piece of code, I'd say [Mt]
-  // Instead, it should be created fullduplex, and the models will do what's needed in this case
-  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id_down,
-            peer->bw_out, peer->lat);
-  link.id = link_id_down;
-  sg_platf_new_link(&link);
+  char* link_up = bprintf("%s_UP",link_id);
+  char* link_down = bprintf("%s_DOWN",link_id);
+  XBT_DEBUG("<host_link\tid=\"%s\"\tup=\"%s\"\tdown=\"%s\" />", host_id,link_up,link_down);
+  SURFXML_BUFFER_SET(host_link_id, host_id);
+  SURFXML_BUFFER_SET(host_link_up,   link_up);
+  SURFXML_BUFFER_SET(host_link_down, link_down);
+  SURFXML_START_TAG(host_link);
+  SURFXML_END_TAG(host_link);
+  free(link_up);
+  free(link_down);
 
-  XBT_DEBUG(" ");
-
-  // begin here
-  XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", host_id, router_id);
-  XBT_DEBUG("symmetrical=\"NO\">");
-  SURFXML_BUFFER_SET(route_src, host_id);
-  SURFXML_BUFFER_SET(route_dst, router_id);
-  A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
-  SURFXML_START_TAG(route);
-
-  XBT_DEBUG("<link_ctn\tid=\"%s\"/>", link_id_up);
-  SURFXML_BUFFER_SET(link_ctn_id, link_id_up);
-  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
-  SURFXML_START_TAG(link_ctn);
-  SURFXML_END_TAG(link_ctn);
-
-  XBT_DEBUG("</route>");
-  SURFXML_END_TAG(route);
-
-  //Opposite Route
-  XBT_DEBUG("<route\tsrc=\"%s\"\tdst=\"%s\"", router_id, host_id);
-  XBT_DEBUG("symmetrical=\"NO\">");
-  SURFXML_BUFFER_SET(route_src, router_id);
-  SURFXML_BUFFER_SET(route_dst, host_id);
-  A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
-  SURFXML_START_TAG(route);
-
-  XBT_DEBUG("<link_ctn\tid=\"%s\"/>", link_id_down);
-  SURFXML_BUFFER_SET(link_ctn_id, link_id_down);
-  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
-  SURFXML_START_TAG(link_ctn);
-  SURFXML_END_TAG(link_ctn);
-
-  XBT_DEBUG("</route>");
-  SURFXML_END_TAG(route);
-
-  XBT_DEBUG("</AS>");
-  sg_platf_new_AS_end();
   XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);
   free(host_id);
-  free(router_id);
-  free(link_router);
-  free(link_backbone);
-  free(link_id_up);
-  free(link_id_down);
+  free(link_id);
   surfxml_bufferstack_pop(1);
 }
 

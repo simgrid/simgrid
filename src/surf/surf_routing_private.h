@@ -84,8 +84,7 @@ AS_t model_cluster_create(void);      /* create structures for cluster routing m
 AS_t model_vivaldi_create(void);      /* create structures for vivaldi routing model */
 #define HOST_PEER(peername) bprintf("peer_%s", peername)
 #define ROUTER_PEER(peername) bprintf("router_%s", peername)
-#define LINK_UP_PEER(peername) bprintf("link_%s_up", peername)
-#define LINK_DOWN_PEER(peername) bprintf("link_%s_down", peername)
+#define LINK_PEER(peername) bprintf("link_%s", peername)
 
 /* ************************************************************************** */
 /* ********** Dijkstra & Dijkstra Cached ROUTING **************************** */

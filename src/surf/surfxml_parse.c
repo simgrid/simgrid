@@ -406,7 +406,7 @@ void ETag_surfxml_host(void)    {
 }
 
 void STag_surfxml_host_link(void){
-  XBT_INFO("Create a Host_link for %s",A_surfxml_host_link_id);
+  XBT_DEBUG("Create a Host_link for %s",A_surfxml_host_link_id);
   s_sg_platf_host_link_cbarg_t host_link;
   memset(&host_link,0,sizeof(host_link));
 
@@ -417,7 +417,7 @@ void STag_surfxml_host_link(void){
 }
 
 void ETag_surfxml_host_link(void){
-  XBT_INFO("End create a Host_link for %s",A_surfxml_host_link_id);
+  XBT_DEBUG("End create a Host_link for %s",A_surfxml_host_link_id);
 }
 
 void STag_surfxml_router(void){
