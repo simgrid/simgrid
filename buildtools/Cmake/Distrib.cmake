@@ -188,7 +188,7 @@ set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
   ${AMOK_SRC}
-  ${BINDINGS_FILES}
+  ${BINDINGS_SRC}
   ${GRAS_COMMON_SRC}
   ${GRAS_RL_SRC}
   ${GRAS_SG_SRC}

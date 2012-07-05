@@ -324,6 +324,10 @@ set(AMOK_SRC
 
 set(BINDINGS_SRC
   src/bindings/bindings_global.c
+  src/bindings/lua/lua_private.h
+  src/bindings/lua/lua_state_cloner.h
+  src/bindings/lua/lua_utils.h
+  src/bindings/lua/simgrid_lua.h
   )
 
 set(LUA_SRC
@@ -336,15 +340,6 @@ set(LUA_SRC
   src/bindings/lua/lua_task.c
   src/bindings/lua/lua_utils.c
   src/bindings/lua/simgrid_lua.c
-  )
-
-set(BINDINGS_FILES
-  ${LUA_SRC}
-  src/bindings/bindings_global.c
-  src/bindings/lua/lua_private.h
-  src/bindings/lua/lua_state_cloner.h
-  src/bindings/lua/lua_utils.h
-  src/bindings/lua/simgrid_lua.h
   )
 
 set(TRACING_SRC
