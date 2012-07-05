@@ -637,7 +637,13 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         task_data_t ans_data = MSG_task_get_data(task_received);
 
         if (MC_IS_ENABLED) {
-          // the model-checker is expected to find a counter-example here
+          // the model-checker is expected to find a counter-example here. 
+	  // 
+	  // As you can see in the test right below, task_received is not always equal to task_sent 
+	  // (as messages from differing round can interleave). But the previous version of this code 
+	  // wrongly assumed that, leading to problems. But this only occured on large platforms,
+	  // leading to hardly usable traces. So we used the model-checker to track down the issue, 
+	  // and we came down to this test, that explained the bug in a snap.
           MC_assert(task_received == task_sent);
         }
 
