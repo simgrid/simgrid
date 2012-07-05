@@ -641,13 +641,15 @@ void lmm_solve(lmm_system_t sys)
           double_update(&(cnst->remaining), elem->value * var->value);
           double_update(&(cnst->usage), elem->value / var->weight);
           if(cnst->usage<=0 || cnst->remaining<=0) {
-            int index = (cnst->cnst_light-cnst_light_tab);
-            XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p ",
-                index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab);
-            cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
-            cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
-            cnst_light_num--;
-            cnst->cnst_light = NULL;
+            if (cnst->cnst_light) {
+              int index = (cnst->cnst_light-cnst_light_tab);
+              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p ",
+                  index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab);
+              cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
+              cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
+              cnst_light_num--;
+              cnst->cnst_light = NULL;
+            }
           } else {
             cnst->cnst_light->remaining_over_usage = cnst->remaining / cnst->usage;
           }
