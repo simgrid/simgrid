@@ -637,6 +637,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         task_data_t ans_data = MSG_task_get_data(task_received);
 
         if (MC_IS_ENABLED) {
+          // the model-checker is expected to find a counter-example here
           MC_assert(task_received == task_sent);
         }
 
