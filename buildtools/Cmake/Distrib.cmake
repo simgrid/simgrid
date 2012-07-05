@@ -187,45 +187,45 @@ endif(HAVE_LUA)
 set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
-  ${XBT_RL_SRC}
-  ${EXTRA_DIST}
-  ${SMPI_SRC}
-  ${GRAS_RL_SRC}
-  ${XBT_SRC}
-  ${GTNETS_SRC}
-  ${NS3_SRC}
-  ${SURF_SRC}
-  ${SIMIX_SRC}
-  ${TRACING_SRC}
-  ${MSG_SRC}
-  ${SIMDAG_SRC}
-  ${GRAS_COMMON_SRC}
-  ${GRAS_SG_SRC}
   ${AMOK_SRC}
+  ${BINDINGS_FILES}
+  ${GRAS_COMMON_SRC}
+  ${GRAS_RL_SRC}
+  ${GRAS_SG_SRC}
+  ${GTNETS_SRC}
+  ${JEDULE_SRC}
   ${LUA_SRC}
   ${MC_SRC}
-  ${JEDULE_SRC}
+  ${MSG_SRC}
+  ${NS3_SRC}
   ${RNGSTREAM_SRC}
-  ${BINDINGS_FILES}
+  ${SIMDAG_SRC}
+  ${SIMIX_SRC}
+  ${SMPI_SRC}
+  ${SURF_SRC}
+  ${TRACING_SRC}
+  ${XBT_RL_SRC}
+  ${XBT_SRC}
+  ${EXTRA_DIST}
   ${CMAKE_SOURCE_FILES}
   ${EXAMPLES_CMAKEFILES_TXT}
   ${TESHSUITE_CMAKEFILES_TXT}
-  ${TOOLS_CMAKEFILES_TXT}
   ${TESTSUITE_CMAKEFILES_TXT}
-  ${DOC_SOURCES}
-  ${USER_GUIDE_SOURCES}
-  ${REF_GUIDE_SOURCES}
+  ${TOOLS_CMAKEFILES_TXT}
   ${DOC_FIGS}
+  ${DOC_SOURCES}
+  ${REF_GUIDE_SOURCES}
+  ${USER_GUIDE_SOURCES}
+  ${PLATFORMS_EXAMPLES}
   ${README_files}
-  ${xml_files}
-  ${tesh_files}
-  ${txt_files}
   ${bin_files}
   ${examples_src}
+  ${tesh_files}
   ${teshsuite_src}
-  ${tools_src}
   ${testsuite_src}
-  ${PLATFORMS_EXAMPLES}
+  ${tools_src}
+  ${txt_files}
+  ${xml_files}
   )
 
 ##########################################
