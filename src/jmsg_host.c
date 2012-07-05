@@ -7,6 +7,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/str.h"
+#include "msg/msg.h"
 #include "jmsg.h"
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
@@ -183,6 +184,45 @@ Java_org_simgrid_msg_Host_getLoad(JNIEnv * env, jobject jhost) {
   }
 
   return (jint) MSG_get_host_msgload(host);
+}
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, jobject jhost, jobject jname) {
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return NULL;
+  }
+  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+
+  const char *property = MSG_host_get_property_value(host, name);
+  if (!property) {
+    return NULL;
+  }
+
+  jobject jproperty = (*env)->NewStringUTF(env, property);
+
+  (*env)->ReleaseStringUTFChars(env, jname, name);
+
+  return jproperty;
+}
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname, jobject jvalue) {
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return;
+  }
+  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+  const char *value_java = (*env)->GetStringUTFChars(env, jvalue, 0);
+  char *value = strdup(value_java);
+
+  MSG_host_set_property_value(host,name,value,xbt_free);
+
+  (*env)->ReleaseStringUTFChars(env, jvalue, value);
+  (*env)->ReleaseStringUTFChars(env, jname, name);
+
 }
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Host_isAvail(JNIEnv * env, jobject jhost) {

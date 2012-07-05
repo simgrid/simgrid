@@ -78,9 +78,7 @@ public abstract class Process implements Runnable {
 	 * Kill time of the process
 	 */
 	public double killTime = -1;
-
-    public Hashtable<String,String> properties;
-
+	
 	/**
 	 * The name of the process.							
 	 */
@@ -110,7 +108,6 @@ public abstract class Process implements Runnable {
 		this.name = null;
 		this.bind = 0;
 		this.args = new Vector<String>();
-		this.properties = null;
 	}
 
 
@@ -173,8 +170,6 @@ public abstract class Process implements Runnable {
 		this.args = new Vector<String>();
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
-		
-		this.properties = new Hashtable<String,String>();
 	}	
 	/**
 	 * Constructs a new process from a host and his name, the arguments of here method function are
@@ -197,9 +192,7 @@ public abstract class Process implements Runnable {
 		this.args = new Vector<String>();
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
-		
-		this.properties = new Hashtable<String,String>();
-		
+				
 		this.startTime = startTime;
 		this.killTime = killTime;		
 	}
@@ -300,6 +293,11 @@ public abstract class Process implements Runnable {
 	public int getPPID()  {
 		return ppid;
 	}
+	/**
+	 * @brief Returns the value of a given process property. 
+	 */
+	public native String getProperty(String name);
+	
 	/**
 	 * Set the kill time of the process
 	 * @param killTime the time when the process is killed

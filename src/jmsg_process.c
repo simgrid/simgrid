@@ -184,13 +184,33 @@ Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jclass cls,
   jobject jprocess = native_to_java_process(process);
 
   if (!jprocess) {
-    jxbt_throw_jni(env, "SIMIX_process_get_jprocess() failed");
+    jxbt_throw_jni(env, "get process failed");
     return NULL;
   }
 
   return jprocess;
 }
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, jobject jprocess, jobject jname) {
+  msg_process_t process = jprocess_to_native_process(jprocess, env);
 
+  if (!process) {
+    jxbt_throw_notbound(env, "process", jprocess);
+    return NULL;
+  }
+  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+
+  const char *property = MSG_process_get_property_value(process, name);
+  if (!property) {
+    return NULL;
+  }
+
+  jobject jproperty = (*env)->NewStringUTF(env, property);
+
+  (*env)->ReleaseStringUTFChars(env, jname, name);
+
+  return jproperty;
+}
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Process_currentProcess(JNIEnv * env, jclass cls)
 {

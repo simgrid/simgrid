@@ -11,7 +11,8 @@ SimGrid-java (3.8) unstable; urgency=low
 clouds)
  * Change the meaning of Process.restart: now restart the process from the start, like MSG_process_restart in C.
  * Add Process.setAutoRestart: handling of process restart when failed host comes back.
-
+ * Add Process.getProperty, Host.getProperty, Host.getProperty: allows you to retrieve the properties of the processes/hosts
+ 
  * Introduce a new context factory based on Coroutines (read the doc to know how to use it): simulations are expected to run up to five times faster.
 SimGrid-java (3.7.1) stable; urgency=low
   

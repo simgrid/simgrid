@@ -172,7 +172,13 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_killAll
  */
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID
     (JNIEnv *, jclass, jint);
-
+/*
+ * Class        org_simgrid_msg_Process
+ * Method       waitFor
+ * Signature    (D)V
+ */
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, jobject jprocess, jobject jname);
 /*
  * Class		org_simgrid_msg_Process
  * Method		currentProcess

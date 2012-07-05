@@ -151,7 +151,14 @@ public class Host {
 	 *
 	 */ 
 	public native double getSpeed();
-
+	/**
+	 * @brief Returns the value of a given host property. 
+	 */
+	public native String getProperty(String name);
+	/**
+	 * @brief Change the value of a given host property. 
+	 */
+	public native void setProperty(String name, String value);
     /** This method tests if a host is avail.
      * @return
      */
