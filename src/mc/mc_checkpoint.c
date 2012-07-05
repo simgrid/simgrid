@@ -34,31 +34,10 @@ static void MC_region_restore(mc_mem_region_t reg)
 {
   /*FIXME: check if start_addr is still mapped, if it is not, then map it
     before copying the data */
-  if(reg->type == 3){
-    memory_map_t maps = get_memory_map();
-    MC_UNSET_RAW_MEM;
-    unsigned int i=0;
-    s_map_region_t r;
-    while(i < maps->mapsize){
-      r = maps->regions[i];
-      if (maps->regions[i].pathname != NULL){
-        if (!memcmp(maps->regions[i].pathname, "[stack]", 7)){
-          size_t diff = (char*)reg->start_addr - (char*)r.start_addr;
-          void *segment = malloc(reg->size + diff);
-          XBT_DEBUG("Size of segment : %zu", sizeof(segment));
-          memcpy((char *)segment + diff, reg->data, reg->size);
-          memcpy(r.start_addr, segment, sizeof(segment));
-          XBT_DEBUG("Memcpy region ok");
-          break;
-        }
-      }
-      i++;
-    }
-  }else{
-    XBT_DEBUG("Memcpy : dest %p, src %p, size %zu", reg->start_addr, reg->data, reg->size);
-    memcpy(reg->start_addr, reg->data, reg->size);
-  }
-  
+ 
+  XBT_DEBUG("Memcpy : dest %p, src %p, size %zu", reg->start_addr, reg->data, reg->size);
+  memcpy(reg->start_addr, reg->data, reg->size);
+ 
   return;
 }
 
@@ -119,14 +98,6 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
   unsigned int i = 0;
   s_map_region_t reg;
   memory_map_t maps = get_memory_map();
-
-  for(i=0; i< snapshot->num_reg; i++){
-    MC_region_destroy(snapshot->regions[i]);
-  }
-
-  snapshot->num_reg = 0;
-
-  i = 0;
 
   /* Save the std heap and the writable mapped pages of libsimgrid */
   while (i < maps->mapsize) {
