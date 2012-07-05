@@ -313,7 +313,7 @@ liveness properties since it may break some cycles in the exploration
 that are important to the property validity.
 
 \verbatim
---cfg=model-check/reduce:<technique>
+--cfg=model-check/reduction:<technique>
 \endverbatim
 
 For now, this configuration variable can take 2 values:
