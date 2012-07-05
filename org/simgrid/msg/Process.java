@@ -242,15 +242,6 @@ public abstract class Process implements Runnable {
 	/**
 	 * Resumes a suspended process by resuming the task on which it was
 	 * waiting for the completion.
-	 * DEPRECATED: use resume instead.
-	 */ 
-	@Deprecated
-	public void restart() {
-		resume();
-	}
-	/**
-	 * Resumes a suspended process by resuming the task on which it was
-	 * waiting for the completion.
 	 */
 	public native void resume();	
 	/**
