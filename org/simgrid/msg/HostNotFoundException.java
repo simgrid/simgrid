@@ -1,7 +1,7 @@
 /*
  * This exception is raised when looking for a non-existing host.
  *
- * Copyright 2006,2007,2010 The SimGrid Team           
+ * Copyright 2006-2012 The SimGrid Team           
  * All right reserved. 
  *
  * This program is free software; you can redistribute 

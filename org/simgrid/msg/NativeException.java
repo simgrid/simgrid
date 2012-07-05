@@ -1,7 +1,7 @@
 /*
  * This exception is raised when there is an error within the C world of SimGrid.
  *
- * Copyright 2006,2007,2010 The SimGrid team
+ * Copyright 2006-2012 The SimGrid team
  * All right reserved. 
  *
  * This program is free software; you can redistribute 

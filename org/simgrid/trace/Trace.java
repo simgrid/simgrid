@@ -1,15 +1,14 @@
-package org.simgrid.trace;
-
 /*
  * JNI interface to C code for the TRACES part of SimGrid.
  * 
- * Copyright 2006,2007,2010,2011, 2012 The SimGrid Team.           
+ * Copyright 2012 The SimGrid Team.           
  * All right reserved. 
  *
  * This program is free software; you can redistribute 
  * it and/or modify it under the terms of the license 
  * (GNU LGPL) which comes with this package.
  */
+package org.simgrid.trace;
 
 public final class Trace {
 	/* Statically load the library which contains all native functions used in here */

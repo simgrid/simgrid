@@ -1,3 +1,11 @@
+/*
+ * Copyright 2006-2012 The SimGrid team
+ * All right reserved. 
+ *
+ * This program is free software; you can redistribute 
+ * it and/or modify it under the terms of the license 
+ * (GNU LGPL) which comes with this package.
+ */
 package org.simgrid.msg;
 
 /** This error class is only used to interrupt the java user code 
