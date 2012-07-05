@@ -260,6 +260,8 @@ ADD_TEST(memcheck-msg-chord-thread-parallel-0 ${CMAKE_BINARY_DIR}/examples/msg/c
 ADD_TEST(memcheck-msg-chord-thread-parallel-1 ${CMAKE_BINARY_DIR}/examples/msg/chord/chord ./../../platforms/cluster.xml ./chord10.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant --cfg=contexts/nthreads:4 --cfg=contexts/factory:thread  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord/)
 ADD_TEST(memcheck-msg-bittorrent-thread-0 ${CMAKE_BINARY_DIR}/examples/msg/bittorrent/bittorrent ./../msg_platform.xml ./bittorrent.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent/)
 ADD_TEST(memcheck-msg-bittorrent-thread-parallel-0 ${CMAKE_BINARY_DIR}/examples/msg/bittorrent/bittorrent ./../msg_platform.xml ./bittorrent.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread --cfg=contexts/nthreads:4  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent/)
+ADD_TEST(memcheck-msg-kademlia-thread-0 ${CMAKE_BINARY_DIR}/examples/msg/kademlia/kademlia ./../msg_platform.xml ./kademlia.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia/)
+ADD_TEST(memcheck-msg-kademlia-thread-parallel-0 ${CMAKE_BINARY_DIR}/examples/msg/kademlia/kademlia ./../msg_platform.xml ./kademlia.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:thread --cfg=contexts/nthreads:4  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia/)
 
 if(CONTEXT_UCONTEXT)
   ADD_TEST(memcheck-msg-migration-ucontext-0 ${CMAKE_BINARY_DIR}/examples/msg/migration/migration ${CMAKE_HOME_DIRECTORY}/examples/msg/msg_platform.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/migration/migration.deploy  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext  --cd ${CMAKE_BINARY_DIR}/examples/msg/)
@@ -299,6 +301,8 @@ if(CONTEXT_UCONTEXT)
   ADD_TEST(memcheck-msg-chord-ucontext-parallel-1 ${CMAKE_BINARY_DIR}/examples/msg/chord/chord ./../../platforms/cluster.xml ./chord10.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant --cfg=contexts/nthreads:4 --cfg=contexts/factory:ucontext  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord/)
   ADD_TEST(memcheck-msg-bittorrent-ucontext-0 ${CMAKE_BINARY_DIR}/examples/msg/bittorrent/bittorrent ./../msg_platform.xml ./bittorrent.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent/)
   ADD_TEST(memcheck-msg-bittorrent-ucontext-parallel-0 ${CMAKE_BINARY_DIR}/examples/msg/bittorrent/bittorrent ./../msg_platform.xml ./bittorrent.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=contexts/nthreads:4  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent/)
+  ADD_TEST(memcheck-msg-kademlia-ucontext-0 ${CMAKE_BINARY_DIR}/examples/msg/kademlia/kademlia ./../msg_platform.xml ./kademlia.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia/)
+  ADD_TEST(memcheck-msg-kademlia-ucontext-parallel-0 ${CMAKE_BINARY_DIR}/examples/msg/kademlia/kademlia ./../msg_platform.xml ./kademlia.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=contexts/nthreads:4  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia/)
 
 endif(CONTEXT_UCONTEXT)
 if(HAVE_RAWCTX)
@@ -339,7 +343,8 @@ if(HAVE_RAWCTX)
   ADD_TEST(memcheck-msg-chord-raw-parallel-1 ${CMAKE_BINARY_DIR}/examples/msg/chord/chord ./../../platforms/cluster.xml ./chord10.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant --cfg=contexts/nthreads:4 --cfg=contexts/factory:raw  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord/)
   ADD_TEST(memcheck-msg-bittorrent-raw-0 ${CMAKE_BINARY_DIR}/examples/msg/bittorrent/bittorrent ./../msg_platform.xml ./bittorrent.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:raw  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent/)
   ADD_TEST(memcheck-msg-bittorrent-raw-parallel-0 ${CMAKE_BINARY_DIR}/examples/msg/bittorrent/bittorrent ./../msg_platform.xml ./bittorrent.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:raw --cfg=contexts/nthreads:4  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent/)
-
+  ADD_TEST(memcheck-msg-kademlia-raw-0 ${CMAKE_BINARY_DIR}/examples/msg/kademlia/kademlia ./../msg_platform.xml ./kademlia.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:raw  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia/)
+  ADD_TEST(memcheck-msg-kademlia-raw-parallel-0 ${CMAKE_BINARY_DIR}/examples/msg/kademlia/kademlia ./../msg_platform.xml ./kademlia.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:raw --cfg=contexts/nthreads:4  --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia/)
 endif(HAVE_RAWCTX)
 
 IF(${ARCH_32_BITS})
