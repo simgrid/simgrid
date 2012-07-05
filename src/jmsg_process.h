@@ -197,6 +197,13 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_resume
     (JNIEnv *, jobject);
 /*
  * Class        org_simgrid_msg_Process
+ * Method       setAutoRestart
+ * Signature    (Lorg/simgrid/msg/Process;Z)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setAutoRestart
+    (JNIEnv *, jobject, jboolean);
+/*
+ * Class        org_simgrid_msg_Process
  * Method       restart
  * Signature    (Lorg/simgrid/msg/Process;)V
  */

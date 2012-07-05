@@ -240,6 +240,10 @@ public abstract class Process implements Runnable {
 		suspend();
 	}
 	/**
+	 * Sets the "auto-restart" flag of the process.
+	 */
+	public native void setAutoRestart(boolean autoRestart);
+	/**
 	 * Restarts the process from the beginning
 	 */
 	public native void restart();
