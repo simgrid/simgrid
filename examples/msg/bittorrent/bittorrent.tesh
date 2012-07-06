@@ -2,6 +2,7 @@
 
 p Testing the Bittorrent implementation with MSG
 
+! timeout 10
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/bittorrent ${srcdir:=.}/../msg_platform.xml ${srcdir:=.}/bittorrent.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:tracker@Jacquelin) Tracker launched.
