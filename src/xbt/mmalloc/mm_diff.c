@@ -146,7 +146,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
 
   i = 1;
 
-  int k;
+  int k = 0;
   int distance = 0;
   int total_distance = 0;
 
@@ -154,7 +154,7 @@ int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2){
   void *address_pointed1, *address_pointed2;
 
   int block_pointed1, block_pointed2, frag_pointed1, frag_pointed2;
-  void *addr_block_pointed1, *addr_block_pointed2, *addr_frag_pointed1, *addr_frag_pointed2;
+  void *addr_block_pointed1 = NULL, *addr_block_pointed2 = NULL, *addr_frag_pointed1 = NULL, *addr_frag_pointed2 = NULL;
 
   /* Check busy blocks*/
 
