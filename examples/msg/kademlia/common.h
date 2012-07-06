@@ -10,7 +10,7 @@
 #define RECEIVE_TIMEOUT 1
 
 #define ping_timeout 55
-#define find_node_timeout 10;
+#define find_node_timeout 10
 #define find_node_global_timeout 50
 
 #define kademlia_alpha 3
@@ -21,8 +21,7 @@
 
 #define random_lookup_interval 100
 
-#define MAILBOX_NAME_SIZE identifier_size / 4 + 1
-#define IDENTIFIER_HEX_SIZE identifier_size / 4 + 1
+#define MAILBOX_NAME_SIZE (identifier_size / 4) /* hex encoded */
 
 #define COMM_SIZE 1
 #define COMP_SIZE 0
@@ -34,4 +33,4 @@
 #define RANDOM_LOOKUP_NODE 0
 
 
-#endif /* _KADEMLIA_EXAMPLES_COMMON */
+#endif                          /* _KADEMLIA_EXAMPLES_COMMON */

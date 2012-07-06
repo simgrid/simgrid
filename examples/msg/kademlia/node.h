@@ -18,22 +18,22 @@
   * Information about a foreign node
   */
 typedef struct s_node_contact {
-  unsigned int id; //The node identifier
-  unsigned int distance; //The distance from the node
+  unsigned int id;              //The node identifier
+  unsigned int distance;        //The distance from the node
 } s_node_contact_t, *node_contact_t;
 
-/* 
+/*
  * Node data
  */
 typedef struct s_node {
-  unsigned int id; //node id - 160 bits
-  routing_table_t table; //node routing table
-  msg_comm_t receive_comm; //current receiving communication.
-  msg_task_t task_received; //current task being received
-  
-  char mailbox[MAILBOX_NAME_SIZE]; //node mailbox
-  unsigned int find_node_success; //Number of find_node which have succeeded.
-  unsigned int find_node_failed; //Number of find_node which have failed.
+  unsigned int id;              //node id - 160 bits
+  routing_table_t table;        //node routing table
+  msg_comm_t receive_comm;      //current receiving communication.
+  msg_task_t task_received;     //current task being received
+
+  char mailbox[MAILBOX_NAME_SIZE];      //node mailbox
+  unsigned int find_node_success;       //Number of find_node which have succeeded.
+  unsigned int find_node_failed;        //Number of find_node which have failed.
 
 } s_node_t, *node_t;
 
@@ -54,4 +54,4 @@ void get_node_mailbox(unsigned int id, char *mailbox);
 node_contact_t node_contact_new(unsigned int id, unsigned int distance);
 node_contact_t node_contact_copy(node_contact_t node_contact);
 void node_contact_free(node_contact_t contact);
-#endif /* _MSG_EXAMPLES_ROUTING_H */
+#endif                          /* _MSG_EXAMPLES_ROUTING_H */

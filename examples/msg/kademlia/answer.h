@@ -12,8 +12,8 @@
  * to the id given.
  */
 typedef struct s_node_answer {
-    unsigned int destination_id;
-  xbt_dynar_t nodes; //Dynar of node_contact_t
+  unsigned int destination_id;
+  xbt_dynar_t nodes;            //Dynar of node_contact_t
   unsigned int size;
 } s_answer_t, *answer_t;
 
@@ -29,4 +29,4 @@ void answer_add_bucket(bucket_t bucket, answer_t answer);
 unsigned int answer_contains(answer_t answer, unsigned int id);
 unsigned int answer_destination_found(answer_t answer);
 
-#endif /* _KADEMLIA_EXAMPLES_ANSWER_H_ */
+#endif                          /* _KADEMLIA_EXAMPLES_ANSWER_H_ */

@@ -3,70 +3,70 @@
 <platform version="3">
 
   <process host="Jacquelin" function="node">
-    <argument value="0"/>        <!-- my id -->
-    <argument value ="900"/>		<!-- deadline -->
+    <argument value="0x0000"/>          <!-- my id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
 
   <process host="Boivin" function="node">
-    <argument value="1"/>        <!-- my id -->
-    <argument value="0"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->
+    <argument value="0x0001"/>          <!-- my id -->
+    <argument value="0"/>               <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
 
   <process host="Jean_Yves" function="node">
-    <argument value="11"/>        <!-- my id -->
-    <argument value="1"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->
+    <argument value="0x0003"/>          <!-- my id -->
+    <argument value="0x0001"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
 
   <process host="TeX" function="node">
-    <argument value="111"/>        <!-- my id -->
-    <argument value="11"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
+    <argument value="0x0007"/>          <!-- my id -->
+    <argument value="0x0003"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
   <process host="Geoff" function="node">
-    <argument value="1111"/>        <!-- my id -->
-    <argument value="111"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
+    <argument value="0x000f"/>          <!-- my id -->
+    <argument value="0x0007"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
   <process host="Disney" function="node">
-    <argument value="11111"/>        <!-- my id -->
-    <argument value="1111"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
+    <argument value="0x001f"/>          <!-- my id -->
+    <argument value="0x000f"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
   <process host="iRMX" function="node">
-    <argument value="111111"/>        <!-- my id -->
-    <argument value="11111"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
+    <argument value="0x003f"/>          <!-- my id -->
+    <argument value="0x001f"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
   <process host="McGee" function="node">
-    <argument value="1111111"/>        <!-- my id -->
-    <argument value="111111"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
+    <argument value="0x007f"/>          <!-- my id -->
+    <argument value="0x003f"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
   <process host="Gatien" function="node">
-    <argument value="11111111"/>        <!-- my id -->
-    <argument value="1111111"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
+    <argument value="0x00ff"/>          <!-- my id -->
+    <argument value="0x007f"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
   <process host="Laroche" function="node">
-    <argument value="111111111"/>        <!-- my id -->
-    <argument value="11111111"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
+    <argument value="0x01ff"/>          <!-- my id -->
+    <argument value="0x00ff"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
   <process host="Tanguay" function="node">
-    <argument value="1111111111"/>        <!-- my id -->
-    <argument value="111111111"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
+    <argument value="0x03ff"/>          <!-- my id -->
+    <argument value="0x01ff"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
    <process host="Morin" function="node">
-    <argument value="11111111111"/>        <!-- my id -->
-    <argument value="1111111111"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
-  </process>    
+    <argument value="0x07ff"/>          <!-- my id -->
+    <argument value="0x03ff"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
+  </process>
    <process host="Ethernet" function="node">
-    <argument value="11111111111"/>        <!-- my id -->
-    <argument value="0"/>         <!-- known id -->
-    <argument value ="900"/>		<!-- deadline -->  
+    <argument value="0x0fff"/>          <!-- my id -->
+    <argument value="0x0000"/>          <!-- known id -->
+    <argument value ="900"/>            <!-- deadline -->
   </process>
 </platform>

@@ -25,20 +25,27 @@ typedef enum {
   */
 typedef struct s_task_data {
   e_task_type_t type;
-  unsigned int sender_id; //Id of the guy who sent the task
-  unsigned int destination_id; //Id we are trying to find, if needed.
-  answer_t answer; //Answer to the request made, if needed.
-  char *answer_to; // mailbox to send the answer to (if not an answer).  
+  unsigned int sender_id;       //Id of the guy who sent the task
+  unsigned int destination_id;  //Id we are trying to find, if needed.
+  answer_t answer;              //Answer to the request made, if needed.
+  char *answer_to;              // mailbox to send the answer to (if not an answer).
   const char *issuer_host_name; // used for logging
 } s_task_data_t, *task_data_t;
 
 //Task handling functions
-msg_task_t task_new_find_node(unsigned int sender_id, unsigned int destination_id, char *mailbox, const char *hostname);
+msg_task_t task_new_find_node(unsigned int sender_id,
+                              unsigned int destination_id, char *mailbox,
+                              const char *hostname);
 
-msg_task_t task_new_find_node_answer(unsigned int sender_id, unsigned int destination_id, answer_t answer, char *mailbox, const char *hostname);
+msg_task_t task_new_find_node_answer(unsigned int sender_id,
+                                     unsigned int destination_id,
+                                     answer_t answer, char *mailbox,
+                                     const char *hostname);
 
-msg_task_t task_new_ping(unsigned int sender_id, char *mailbox, const char *hostname);
-msg_task_t task_new_ping_answer(unsigned int sender_id, char *mailbox, const char *hostname);
+msg_task_t task_new_ping(unsigned int sender_id, char *mailbox,
+                         const char *hostname);
+msg_task_t task_new_ping_answer(unsigned int sender_id, char *mailbox,
+                                const char *hostname);
 void task_free(msg_task_t task);
 void task_free_v(void *task);
- #endif /* _MSG_KADEMLIA_EXAMPLES_TASK */
+#endif                          /* _MSG_KADEMLIA_EXAMPLES_TASK */

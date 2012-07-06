@@ -10,10 +10,11 @@
 #include "task.h"
 //process functions
 static int node(int argc, char *argv[]);
-static void main_loop(node_t node, unsigned int deadline);
+static void main_loop(node_t node, double deadline);
 //core kademlia functions
 unsigned int join(node_t node, unsigned int id_known);
-unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_in_stats);
+unsigned int find_node(node_t node, unsigned int id_to_find,
+                       unsigned int count_in_stats);
 unsigned int ping(node_t node, unsigned int id_to_ping);
 void random_lookup(node_t node);
 
@@ -22,7 +23,7 @@ unsigned int send_find_node_to_best(node_t node, answer_t node_list);
 
 void handle_task(node_t node, msg_task_t task);
 void handle_find_node(node_t node, task_data_t data);
-void handle_ping(node_t node, task_data_t data); 
+void handle_ping(node_t node, task_data_t data);
 
 
-#endif /* _MSG_EXAMPLES_KADEMLIA_H */
+#endif                          /* _MSG_EXAMPLES_KADEMLIA_H */
