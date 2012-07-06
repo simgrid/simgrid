@@ -39,9 +39,6 @@ void MC_dpor_init()
     }
   }
 
-  initial_state->system_state = xbt_new0(s_mc_snapshot_t, 1);
-  MC_take_snapshot(initial_state->system_state);
-
   xbt_fifo_unshift(mc_stack_safety, initial_state);
 
   MC_UNSET_RAW_MEM;
