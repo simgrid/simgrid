@@ -131,6 +131,7 @@ void MC_init_safety(void)
   MC_take_snapshot(initial_snapshot);
   MC_UNSET_RAW_MEM;
 
+
   if(raw_mem_set)
     MC_SET_RAW_MEM;
   else
@@ -599,7 +600,6 @@ void MC_diff(void){
     switch(sn->regions[i]->type){
     case 0: /* heap */
       XBT_INFO("Size of heap : %zu", sn->regions[i]->size);
-      mmalloc_display_info_heap(sn->regions[i]->data);
       break;
     case 1 : /* libsimgrid */
       XBT_INFO("Size of libsimgrid : %zu", sn->regions[i]->size);

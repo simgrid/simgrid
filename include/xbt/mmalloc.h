@@ -52,15 +52,11 @@ extern void *xbt_mheap_destroy(xbt_mheap_t md);
 /* return the heap used when NULL is passed as first argument to any mm* function */
 extern xbt_mheap_t mmalloc_get_default_md(void);
 
-extern void mmalloc_display_info_heap(xbt_mheap_t h);
-
 /* To change the heap used when using the legacy version malloc/free/realloc and such */
 void mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
 int mmalloc_compare_heap(xbt_mheap_t mdp1, xbt_mheap_t mdp2);
-
-void mmalloc_backtrace_display(xbt_mheap_t mdp, void *addr);
 
 void mmalloc_backtrace_block_display(xbt_mheap_t mdp, size_t block);
 
