@@ -58,6 +58,11 @@ backtrace_helper (struct _Unwind_Context *ctx, void *a)
  * */
 
 int xbt_backtrace_no_malloc(void **array, int size) {
+
+  int i = 0;
+  for(i=0; i < size; i++)
+    array[i] = NULL;
+
   struct trace_arg arg = { .array = array, .size = size, .cnt = -1 };
 
   if (size >= 1)

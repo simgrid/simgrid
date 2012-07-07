@@ -16,15 +16,8 @@ extern char *xbt_binary_name;
 
 void mmalloc_backtrace_block_display(xbt_mheap_t heap, size_t block){
 
-  int type;
   xbt_ex_t e;
 
-  type = heap->heapinfo[block].type;
-
-  if (type != 0) {
-    fprintf(stderr,"Only full blocks are backtraced for now. Ignoring your request.\n");
-    return;
-  }
   if (heap->heapinfo[block].busy_block.bt_size == 0) {
     fprintf(stderr,"No backtrace available for that block, sorry.\n");
     return;
