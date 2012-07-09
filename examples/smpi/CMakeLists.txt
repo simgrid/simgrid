@@ -28,6 +28,7 @@ if(enable_smpi)
   add_executable(ttest01 ttest01.c)
   add_executable(mc_bugged1 mc_bugged1.c)
   add_executable(mc_bugged2 mc_bugged2.c)
+  add_executable(replay replay.c)
 
   target_link_libraries(alltoall2 m simgrid smpi )
   target_link_libraries(alltoall_basic m simgrid smpi )
@@ -50,6 +51,7 @@ if(enable_smpi)
   target_link_libraries(ttest01 m simgrid smpi )
   target_link_libraries(mc_bugged1 m simgrid smpi )
   target_link_libraries(mc_bugged2 m simgrid smpi )
+  target_link_libraries(replay m simgrid smpi )
 
   set_target_properties(smpi_sendrecv PROPERTIES RENAME sendrecv)
 endif(enable_smpi)
@@ -76,6 +78,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_basic.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc_bugged1.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay.c
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mvmul.c
   ${CMAKE_CURRENT_SOURCE_DIR}/compute2.c
