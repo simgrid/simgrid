@@ -335,7 +335,7 @@ Here are the existing format directives:
  - %%p: Priority name (LOG4J compatible)
 
  - %%h: Hostname (SimGrid extension)
- - %%P: Process name (SimGrid extension)
+ - %%P: Process name (SimGrid extension -- note that with SMPI this is the integer value of the process rank)
  - %%t: Thread "name" (LOG4J compatible -- actually the address of the thread in memory)
  - %%i: Process PID (SimGrid extension -- this is a 'i' as in 'i'dea)
 
