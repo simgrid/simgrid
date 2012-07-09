@@ -60,9 +60,7 @@ int create_dump(int pair)
     // We are the parent process -- wait for the child process to exit
     if(wait(&status) < 0)
       perror("wait");
-    printf("child exited with status %d\n", status);
     if(WIFSIGNALED(status) && WCOREDUMP(status)){
-      printf("got a core dump\n");
       char *core_name = malloc(20);
       sprintf(core_name,"core_%d", pair); 
       rename("core", core_name);
@@ -76,7 +74,6 @@ int create_dump(int pair)
 int reached(xbt_state_t st){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
 
   if(xbt_dynar_is_empty(reached_pairs)){
 
@@ -104,16 +101,11 @@ int reached(xbt_state_t st){
 
     cursor = 0;
     mc_pair_reached_t pair_test = NULL;
-
-    //xbt_dict_t current_rdv_points = SIMIX_get_rdv_points();
      
     xbt_dynar_foreach(reached_pairs, cursor, pair_test){
       XBT_INFO("Pair reached #%d", pair_test->nb);
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
         if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
-          //XBT_INFO("Rdv points size %d - %d", xbt_dict_length(pair_test->rdv_points), xbt_dict_length(current_rdv_points));
-          //if(xbt_dict_length(pair_test->rdv_points) == xbt_dict_length(current_rdv_points)){
-          //if(rdv_points_compare(pair_test->rdv_points, current_rdv_points) == 0){
           if(snapshot_compare(pair_test->system_state, sn) == 0){
      
             MC_free_snapshot(sn);
@@ -127,11 +119,7 @@ int reached(xbt_state_t st){
               MC_UNSET_RAW_MEM;
             
             return 1;
-          }
-          /* }
-             }else{
-             XBT_INFO("Different size of rdv points (%d - %d)",xbt_dict_length(pair_test->rdv_points), xbt_dict_length(current_rdv_points) );
-             }*/
+          }       
         }else{
           XBT_INFO("Different values of propositional symbols");
         }
@@ -155,173 +143,13 @@ int reached(xbt_state_t st){
   }
 }
 
-int rdv_points_compare(xbt_dict_t d1, xbt_dict_t d2){ /* d1 = pair_test, d2 = current_pair */ 
-  
-  xbt_dict_cursor_t cursor_dict = NULL;
-  char *key;
-  char *data;
-  smx_rdv_t rdv1, rdv2;
-  xbt_fifo_item_t item1, item2;
-  smx_action_t action1, action2;
-  xbt_fifo_item_t item_req1, item_req2;
-  smx_simcall_t req1, req2;
-  int i=0;
-  int j=0;
-
-  xbt_dict_foreach(d1, cursor_dict, key, data){
-    rdv1 = (smx_rdv_t)data;
-    rdv2 = xbt_dict_get_or_null(d2, rdv1->name);
-    if(rdv2 == NULL){
-      XBT_INFO("Rdv point unknown");
-      return 1;
-    }else{
-      if(xbt_fifo_size(rdv1->comm_fifo) != xbt_fifo_size(rdv2->comm_fifo)){
-        XBT_INFO("Different total of actions in mailbox \"%s\" (%d - %d)", rdv1->name, xbt_fifo_size(rdv1->comm_fifo),xbt_fifo_size(rdv2->comm_fifo) );
-        return 1;
-      }else{
-   
-        XBT_INFO("Total of actions in mailbox \"%s\" : %d", rdv1->name, xbt_fifo_size(rdv1->comm_fifo)); 
-   
-        item1 = xbt_fifo_get_first_item(rdv1->comm_fifo);  
-        item2 = xbt_fifo_get_first_item(rdv2->comm_fifo);
-
-        while(i<xbt_fifo_size(rdv1->comm_fifo)){
-          action1 = (smx_action_t) xbt_fifo_get_item_content(item1);
-          action2 = (smx_action_t) xbt_fifo_get_item_content(item2);
-
-          if(action1->type != action2->type){
-            XBT_INFO("Different type of action");
-            return 1;
-          }
-
-          if(action1->state != action2->state){
-            XBT_INFO("Different state of action");
-            return 1;
-          }
-
-          if(xbt_fifo_size(action1->simcalls) != xbt_fifo_size(action2->simcalls)){
-            XBT_INFO("Different size of simcall list (%d - %d", xbt_fifo_size(action1->simcalls), xbt_fifo_size(action2->simcalls));
-            return 1;
-          }else{
-
-            item_req1 = xbt_fifo_get_first_item(action1->simcalls);  
-            item_req2 = xbt_fifo_get_first_item(action2->simcalls);
-
-            while(j<xbt_fifo_size(action1->simcalls)){
-
-              req1 = (smx_simcall_t) xbt_fifo_get_item_content(item_req1);
-              req2 = (smx_simcall_t) xbt_fifo_get_item_content(item_req2);
-         
-              if(req1->call != req2->call){
-                XBT_INFO("Different simcall call in simcalls of action (%d - %d)", (int)req1->call, (int)req2->call);
-                return 1;
-              }
-              if(req1->issuer->pid != req2->issuer->pid){
-                XBT_INFO("Different simcall issuer in simcalls of action (%lu- %lu)", req1->issuer->pid, req2->issuer->pid);
-                return 1;
-              }
-
-              item_req1 = xbt_fifo_get_next_item(item_req1);  
-              item_req2 = xbt_fifo_get_next_item(item_req2);
-              j++;
-         
-            }
-          }
-
-          switch(action1->type){
-          case 0: /* execution */
-          case 1: /* parallel execution */
-            if(strcmp(action1->execution.host->name, action2->execution.host->name) != 0)
-              return 1;
-            break;
-          case 2: /* comm */
-            if(action1->comm.type != action2->comm.type)
-              return 1;
-            //XBT_INFO("Type of comm : %d", action1->comm.type);
-       
-            switch(action1->comm.type){
-            case 0: /* SEND */
-              if(action1->comm.src_proc->pid != action2->comm.src_proc->pid)
-                return 1;
-              if(strcmp(action1->comm.src_proc->smx_host->name, action2->comm.src_proc->smx_host->name) != 0)
-                return 1;
-              break;
-            case 1: /* RECEIVE */
-              if(action1->comm.dst_proc->pid != action2->comm.dst_proc->pid)
-                return 1;
-              if(strcmp(action1->comm.dst_proc->smx_host->name, action2->comm.dst_proc->smx_host->name) != 0)
-                return 1;
-              break;
-            case 2: /* READY */
-              if(action1->comm.src_proc->pid != action2->comm.src_proc->pid)
-                return 1;
-              if(strcmp(action1->comm.src_proc->smx_host->name, action2->comm.src_proc->smx_host->name) != 0)
-                return 1;
-              if(action1->comm.dst_proc->pid != action2->comm.dst_proc->pid)
-                return 1;
-              if(strcmp(action1->comm.dst_proc->smx_host->name, action2->comm.dst_proc->smx_host->name) != 0)
-                return 1;
-              break;
-            case 3: /* DONE */
-              if(action1->comm.src_proc->pid != action2->comm.src_proc->pid)
-                return 1;
-              if(strcmp(action1->comm.src_proc->smx_host->name, action2->comm.src_proc->smx_host->name) != 0)
-                return 1;
-              if(action1->comm.dst_proc->pid != action2->comm.dst_proc->pid)
-                return 1;
-              if(strcmp(action1->comm.dst_proc->smx_host->name, action2->comm.dst_proc->smx_host->name) != 0)
-                return 1;
-              break;
-         
-            } /* end of switch on type of comm */
-       
-            if(action1->comm.refcount != action2->comm.refcount)
-              return 1;
-            if(action1->comm.detached != action2->comm.detached)
-              return 1;
-            if(action1->comm.rate != action2->comm.rate)
-              return 1;
-            if(action1->comm.task_size != action2->comm.task_size)
-              return 1;
-            if(action1->comm.src_buff != action2->comm.src_buff)
-              return 1;
-            if(action1->comm.dst_buff != action2->comm.dst_buff)
-              return 1;
-            if(action1->comm.src_data != action2->comm.src_data)
-              return 1;
-            if(action1->comm.dst_data != action2->comm.dst_data)
-              return 1;
-       
-            break;
-          case 3: /* sleep */
-            if(strcmp(action1->sleep.host->name, action2->sleep.host->name) != 0)
-              return 1;
-            break;
-          case 4: /* synchro */
-       
-            break;
-          default:
-            break;
-          }
-
-          item1 = xbt_fifo_get_next_item(item1);  
-          item2 = xbt_fifo_get_next_item(item2);
-          i++;
-        }
-      }
-    }
-  }
-
-  return 0;
-   
-}
 
 void set_pair_reached(xbt_state_t st){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
  
   MC_SET_RAW_MEM;
-  
+
   mc_pair_reached_t pair = NULL;
   pair = xbt_new0(s_mc_pair_reached_t, 1);
   pair->nb = xbt_dynar_length(reached_pairs) + 1;
@@ -343,40 +171,16 @@ void set_pair_reached(xbt_state_t st){
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
 
-  /*xbt_dict_t rdv_points = SIMIX_get_rdv_points();
-
-    xbt_dict_cursor_t cursor_dict = NULL;
-    char *key;
-    char *data;
-    xbt_fifo_item_t item;
-    smx_action_t action;
-
-    xbt_dict_foreach(rdv_points, cursor_dict, key, data){
-    smx_rdv_t new_rdv = xbt_new0(s_smx_rvpoint_t, 1);
-    new_rdv->name = strdup(((smx_rdv_t)data)->name);
-    new_rdv->comm_fifo = xbt_fifo_new();
-    xbt_fifo_foreach(((smx_rdv_t)data)->comm_fifo, item, action, smx_action_t) {
-    smx_action_t a = xbt_new0(s_smx_action_t, 1);
-    memcpy(a, action, sizeof(s_smx_action_t));
-    xbt_fifo_push(new_rdv->comm_fifo, a);
-    XBT_INFO("New action (type = %d, state = %d) in mailbox \"%s\"", action->type, action->state, key);
-    if(action->type==2)
-    XBT_INFO("Type of communication : %d, Ref count = %d", action->comm.type, action->comm.refcount);
-    }
-    //new_rdv->comm_fifo = xbt_fifo_copy(((smx_rdv_t)data)->comm_fifo);
-    xbt_dict_set(pair->rdv_points, new_rdv->name, new_rdv, NULL);
-    }*/
- 
   xbt_dynar_push(reached_pairs, &pair); 
 
+  create_dump(xbt_dynar_length(reached_pairs));
+  
   MC_UNSET_RAW_MEM;
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
   else
     MC_UNSET_RAW_MEM;
-
-  create_dump(xbt_dynar_length(reached_pairs));
     
 }
 
@@ -945,7 +749,6 @@ void MC_ddfs(int search_cycle){
 
  
   XBT_INFO("********************* ( Depth = %d, search_cycle = %d )", xbt_fifo_size(mc_stack_liveness), search_cycle);
-  XBT_INFO("Pair : graph=%p, automaton=%p(%s), %u interleave", current_pair->graph_state, current_pair->automaton_state, current_pair->automaton_state->id, MC_state_interleave_size(current_pair->graph_state));
  
   mc_stats_pair->visited_pairs++;
 
@@ -976,7 +779,7 @@ void MC_ddfs(int search_cycle){
       while((req = MC_state_get_request(current_pair->graph_state, &value)) != NULL){
    
         /* Debug information */
-
+       
         req_str = MC_request_to_string(req, value);
         XBT_INFO("Execute: %s", req_str);
         xbt_free(req_str);
