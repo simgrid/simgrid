@@ -73,7 +73,7 @@ int main(int argc, char **argv)
     }
     /* let throttle the communication for taskD if its parent is SD_DONE */
     if (SD_task_get_state(taskC) == SD_DONE)
-      SD_task_set_rate(taskD, 0.5);
+      SD_task_set_rate(taskD, 50);
   }
 
   XBT_DEBUG("Destroying tasks...");

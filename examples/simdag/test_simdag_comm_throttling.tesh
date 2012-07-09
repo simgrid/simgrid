@@ -8,6 +8,6 @@ $ $SG_TEST_EXENV ./sd_comm_throttling ${srcdir:=.}/2clusters.xml
 > [2.300300] [sd_comm_throttling/INFO] Simulation stopped after 2.3003 seconds
 > [2.300300] [sd_comm_throttling/INFO] Task 'Task B' start time: 1.000000, finish time: 1.300300
 > [2.300300] [sd_comm_throttling/INFO] Task 'Task C' start time: 1.300300, finish time: 2.300300
-> [5.300600] [sd_comm_throttling/INFO] Simulation stopped after 5.3006 seconds
-> [5.300600] [sd_comm_throttling/INFO] Task 'Task D' start time: 2.300300, finish time: 4.300600
-> [5.300600] [sd_comm_throttling/INFO] Task 'Task E' start time: 4.300600, finish time: 5.300600
+> [3.600600] [sd_comm_throttling/INFO] Simulation stopped after 3.6006 seconds
+> [3.600600] [sd_comm_throttling/INFO] Task 'Task D' start time: 2.300300, finish time: 2.600600
+> [3.600600] [sd_comm_throttling/INFO] Task 'Task E' start time: 2.600600, finish time: 3.600600

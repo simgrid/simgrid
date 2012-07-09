@@ -283,7 +283,7 @@ void SD_task_set_data(SD_task_t task, void *data)
  * a task can use.
  *
  * \param task a task
- * \param rate the new rate you want to associate with this task
+ * \param rate the new rate (in percent) you want to associate with this task
  */
 void SD_task_set_rate(SD_task_t task, double rate)
 {
