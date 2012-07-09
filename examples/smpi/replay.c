@@ -61,7 +61,7 @@ static void action_recv(const char *const *action)
 {
   int from = atoi(action[2]);
   XBT_DEBUG("receive from rank%d (%s)",from, action[2]);
-  char *buffer = (char*) malloc (1e10);
+  char *buffer = (char*) malloc (1e9);
 
   MPI_Status status;
 
