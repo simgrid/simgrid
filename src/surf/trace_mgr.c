@@ -133,8 +133,8 @@ double tmgr_event_generator_next_value(probabilist_event_generator_t generator)
                               / generator->s_exponential_parameters.rate;
       break;
     case e_generator_weibull:
-      generator->next_value = - generator->s_weibull_parameters.scale
-                              * pow( log(RngStream_RandU01(generator->rng_stream)),
+      generator->next_value = generator->s_weibull_parameters.scale
+                              * pow( -log(RngStream_RandU01(generator->rng_stream)),
                                     1.0 / generator->s_weibull_parameters.shape );
   }
 
