@@ -248,7 +248,7 @@ do
   else
 	host="${hostnames[$j]}"
   fi
-  echo "  <process host=\"${host}\" function=\"rank$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
+  echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
   echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
   for ARG in $*; do
     echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
