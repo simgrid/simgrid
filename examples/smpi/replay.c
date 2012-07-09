@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <xbt.h>
-#include <simix/simix.h>
 #include <xbt/replay.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(smpi_replay,"Trace Replay with SMPI");
