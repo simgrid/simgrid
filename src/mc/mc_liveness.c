@@ -83,20 +83,23 @@ int reached(xbt_state_t st){
 
     MC_SET_RAW_MEM;
 
-    mc_snapshot_t sn = xbt_new0(s_mc_snapshot_t, 1);
-    MC_take_snapshot_liveness(sn);    
+    mc_pair_reached_t new_pair = NULL;
+    new_pair = xbt_new0(s_mc_pair_reached_t, 1);
+    new_pair->nb = xbt_dynar_length(reached_pairs) + 1;
+    new_pair->automaton_state = st;
+    new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
+    new_pair->system_state = xbt_new0(s_mc_snapshot_t, 1); 
+    MC_take_snapshot_liveness(new_pair->system_state);  
     
-    xbt_dynar_t prop_ato = xbt_dynar_new(sizeof(int), NULL);
+    /* Get values of propositional symbols */
     int res;
     int_f_void_t f;
-
-    /* Get values of propositional symbols */
     unsigned int cursor = 0;
     xbt_propositional_symbol_t ps = NULL;
     xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
       f = (int_f_void_t)ps->function;
       res = (*f)();
-      xbt_dynar_push_as(prop_ato, int, res);
+      xbt_dynar_push_as(new_pair->prop_ato, int, res);
     }
 
     cursor = 0;
@@ -105,14 +108,9 @@ int reached(xbt_state_t st){
     xbt_dynar_foreach(reached_pairs, cursor, pair_test){
       XBT_INFO("Pair reached #%d", pair_test->nb);
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
-        if(propositional_symbols_compare_value(pair_test->prop_ato, prop_ato) == 0){
-          if(snapshot_compare(pair_test->system_state, sn) == 0){
-     
-            MC_free_snapshot(sn);
-            xbt_dynar_reset(prop_ato);
-            xbt_free(prop_ato);
-            MC_UNSET_RAW_MEM;
-
+        if(propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
+          if(snapshot_compare(pair_test->system_state, new_pair->system_state) == 0){
+            
             if(raw_mem_set)
               MC_SET_RAW_MEM;
             else
@@ -128,9 +126,11 @@ int reached(xbt_state_t st){
       }
     }
 
-    MC_free_snapshot(sn);
-    xbt_dynar_reset(prop_ato);
-    xbt_free(prop_ato);
+    /* New pair reached */
+    xbt_dynar_push(reached_pairs, &new_pair); 
+
+    create_dump(xbt_dynar_length(reached_pairs));
+
     MC_UNSET_RAW_MEM;
 
     if(raw_mem_set)
@@ -155,8 +155,7 @@ void set_pair_reached(xbt_state_t st){
   pair->nb = xbt_dynar_length(reached_pairs) + 1;
   pair->automaton_state = st;
   pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  pair->system_state = xbt_new0(s_mc_snapshot_t, 1);
-  //pair->rdv_points = xbt_dict_new();  
+  pair->system_state = xbt_new0(s_mc_snapshot_t, 1); 
   MC_take_snapshot_liveness(pair->system_state);
 
   /* Get values of propositional symbols */
@@ -172,8 +171,6 @@ void set_pair_reached(xbt_state_t st){
   }
 
   xbt_dynar_push(reached_pairs, &pair); 
-
-  create_dump(xbt_dynar_length(reached_pairs));
   
   MC_UNSET_RAW_MEM;
 
@@ -864,9 +861,6 @@ void MC_ddfs(int search_cycle){
               }else{
 
                 XBT_INFO("Next pair (depth =%d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
-        
-                set_pair_reached(pair_succ->automaton_state);
-                //set_pair_reached_hash(pair_succ->automaton_state);
 
                 XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
                 //XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
@@ -1013,9 +1007,6 @@ void MC_ddfs(int search_cycle){
 
               XBT_INFO("Next pair (depth = %d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
         
-              set_pair_reached(pair_succ->automaton_state);
-              //set_pair_reached_hash(pair_succ->automaton_state);
-    
               XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
               //XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs_hash));
 
