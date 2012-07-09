@@ -50,6 +50,8 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
     mdp -> heapstats.bytes_free +=
       mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
+
+    memset(ptr, 0, mdp -> heapinfo[block].busy_block.size * BLOCKSIZE);
     
     /* Find the free cluster previous to this one in the free list.
        Start searching at the last block referenced; this may benefit
@@ -143,6 +145,8 @@ void mfree(struct mdesc *mdp, void *ptr)
     mdp -> heapstats.bytes_used -= 1 << type;
     mdp -> heapstats.chunks_free++;
     mdp -> heapstats.bytes_free += 1 << type;
+
+    memset(ptr, 0, 1 << type);
 
     
     /* Get the address of the first free fragment in this block.  */
