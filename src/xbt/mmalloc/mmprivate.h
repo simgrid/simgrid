@@ -240,6 +240,8 @@ struct mdesc {
 
 int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2);
 
+int compare_area(void *area1, void *area2, size_t size);
+
 //void *get_end_addr_heap(void *s_heap);
 
 /* Bits to look at in the malloc descriptor flags word */
