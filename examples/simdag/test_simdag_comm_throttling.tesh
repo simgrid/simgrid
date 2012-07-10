@@ -1,13 +1,14 @@
 #! ./tesh
 p Modify the rate of communication tasks even when they are auto-scheduled
 
-$ $SG_TEST_EXENV ./sd_comm_throttling ${srcdir:=.}/2clusters.xml
+$ $SG_TEST_EXENV ./sd_comm_throttling --cfg=network/TCP_gamma:4194304 ${srcdir:=.}/2clusters.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [1.000000] [sd_comm_throttling/INFO] Simulation stopped after 1.0000 seconds
 > [1.000000] [sd_comm_throttling/INFO] Task 'Task A' start time: 0.000000, finish time: 1.000000
-> [2.300300] [sd_comm_throttling/INFO] Simulation stopped after 2.3003 seconds
-> [2.300300] [sd_comm_throttling/INFO] Task 'Task B' start time: 1.000000, finish time: 1.300300
-> [2.300300] [sd_comm_throttling/INFO] Task 'Task C' start time: 1.300300, finish time: 2.300300
-> [3.600600] [sd_comm_throttling/INFO] Simulation stopped after 3.6006 seconds
-> [3.600600] [sd_comm_throttling/INFO] Task 'Task D' start time: 2.300300, finish time: 2.600600
-> [3.600600] [sd_comm_throttling/INFO] Task 'Task E' start time: 2.600600, finish time: 3.600600
+> [2.080300] [sd_comm_throttling/INFO] Simulation stopped after 2.0803 seconds
+> [2.080300] [sd_comm_throttling/INFO] Task 'Task B' start time: 1.000000, finish time: 1.080300
+> [2.080300] [sd_comm_throttling/INFO] Task 'Task C' start time: 1.080300, finish time: 2.080300
+> [3.240600] [sd_comm_throttling/INFO] Simulation stopped after 3.2406 seconds
+> [3.240600] [sd_comm_throttling/INFO] Task 'Task D' start time: 2.080300, finish time: 2.240600
+> [3.240600] [sd_comm_throttling/INFO] Task 'Task E' start time: 2.240600, finish time: 3.240600
