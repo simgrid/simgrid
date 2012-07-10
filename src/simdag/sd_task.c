@@ -279,14 +279,22 @@ void SD_task_set_data(SD_task_t task, void *data)
 /**
  * \brief Sets the rate of a task
  *
- * This will change the percentage of the available power or network bandwidth
- * a task can use.
+ * This will change the network bandwidth a task can use. This rate
+ * depends on both the nominal bandwidth on the route onto which the task is
+ * scheduled (\see SD_task_get_current_bandwidth) and the amount of data to
+ * transfer.
  *
- * \param task a task
- * \param rate the new rate (in percent) you want to associate with this task
+ * To divide the nominal bandwidth by 2, the rate then has to be :
+ *    rate = bandwidth/(2*amount)
+ *
+ * \param task a \see SD_TASK_COMM_E2E task (end-to-end communication)
+ * \param rate the new rate you want to associate with this task.
  */
 void SD_task_set_rate(SD_task_t task, double rate)
 {
+  xbt_assert(task->kind == SD_TASK_COMM_E2E,
+             "The rate can be modified for end-to-end communications only.");
+
   task->rate = rate;
 }
 
