@@ -26,10 +26,10 @@ int predCS(){
 int coordinator(int argc, char *argv[])
 {
 
-  int CS_used = 0;           
+  int CS_used = 0;   
+  msg_task_t task = NULL, answer = NULL;        
 
   while (1) {
-    msg_task_t task = NULL;
     MSG_task_receive(&task, "coordinator");
     const char *kind = MSG_task_get_name(task); 
     if (!strcmp(kind, "request")) {    
@@ -39,9 +39,10 @@ int coordinator(int argc, char *argv[])
       } else {               
         if(strcmp(req, "2") == 0){
           XBT_INFO("CS idle. Grant immediatly");
-          msg_task_t answer = MSG_task_create("grant", 0, 1000, NULL);
+          answer = MSG_task_create("grant", 0, 1000, NULL);
           MSG_task_send(answer, req);
           CS_used = 1;
+          answer = NULL;
         }
       }
     } else {         
@@ -49,6 +50,7 @@ int coordinator(int argc, char *argv[])
       CS_used = 0;
     }
     MSG_task_destroy(task);
+    task = NULL;
   }
  
   return 0;
@@ -59,6 +61,7 @@ int client(int argc, char *argv[])
   int my_pid = MSG_process_get_PID(MSG_process_self());
 
   char *my_mailbox = bprintf("%s", argv[1]);
+  msg_task_t grant = NULL, release = NULL;
 
 
   while(1) {
@@ -72,8 +75,6 @@ int client(int argc, char *argv[])
       XBT_INFO("Propositions changed : r=1, cs=0");
     }
 
-
-    msg_task_t grant = NULL;
     MSG_task_receive(&grant, my_mailbox);
     const char *kind = MSG_task_get_name(grant);
 
@@ -83,11 +84,17 @@ int client(int argc, char *argv[])
       XBT_INFO("Propositions changed : r=0, cs=1");
     }
 
-
     MSG_task_destroy(grant);
+    grant = NULL;
+
     XBT_INFO("%s got the answer. Sleep a bit and release it", argv[1]);
+
     MSG_process_sleep(1);
-    MSG_task_send(MSG_task_create("release", 0, 1000, NULL), "coordinator");
+
+    release = MSG_task_create("release", 0, 1000, NULL);
+    MSG_task_send(release, "coordinator");
+
+    release = NULL;
 
     MSG_process_sleep(my_pid);
     
