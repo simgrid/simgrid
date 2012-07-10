@@ -14,17 +14,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mm_diff, xbt,
 
 extern char *xbt_binary_name;
 
-void mmalloc_backtrace_block_display(xbt_mheap_t heap, size_t block){
+void mmalloc_backtrace_block_display(void* heapinfo, size_t block){
 
   xbt_ex_t e;
 
-  if (heap->heapinfo[block].busy_block.bt_size == 0) {
+  if (((malloc_info *)heapinfo)[block].busy_block.bt_size == 0) {
     fprintf(stderr,"No backtrace available for that block, sorry.\n");
     return;
   }
 
-  memcpy(&e.bt,&(heap->heapinfo[block].busy_block.bt),sizeof(void*)*XBT_BACKTRACE_SIZE);
-  e.used = heap->heapinfo[block].busy_block.bt_size;
+  memcpy(&e.bt,&(((malloc_info *)heapinfo)[block].busy_block.bt),sizeof(void*)*XBT_BACKTRACE_SIZE);
+e.used = ((malloc_info *)heapinfo)[block].busy_block.bt_size;
 
   xbt_ex_setup_backtrace(&e);
   if (e.used == 0) {
@@ -42,11 +42,11 @@ void mmalloc_backtrace_block_display(xbt_mheap_t heap, size_t block){
   }
 }
 
-void mmalloc_backtrace_fragment_display(xbt_mheap_t mdp, size_t block, size_t frag){
+void mmalloc_backtrace_fragment_display(void* heapinfo, size_t block, size_t frag){
 
   xbt_ex_t e;
 
-  memcpy(&e.bt,&(mdp->heapinfo[block].busy_frag.bt[frag]),sizeof(void*)*XBT_BACKTRACE_SIZE);
+  memcpy(&e.bt,&(((malloc_info *)heapinfo)[block].busy_frag.bt[frag]),sizeof(void*)*XBT_BACKTRACE_SIZE);
   e.used = XBT_BACKTRACE_SIZE;
 
   xbt_ex_setup_backtrace(&e);
