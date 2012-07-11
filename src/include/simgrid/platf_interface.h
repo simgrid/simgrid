@@ -24,6 +24,7 @@ typedef void (*sg_platf_router_cb_t)(sg_platf_router_cbarg_t);
 typedef void (*sg_platf_link_cb_t)(sg_platf_link_cbarg_t);
 typedef void (*sg_platf_peer_cb_t)(sg_platf_peer_cbarg_t);
 typedef void (*sg_platf_cluster_cb_t)(sg_platf_cluster_cbarg_t);
+typedef void (*sg_platf_cabinet_cb_t)(sg_platf_cabinet_cbarg_t);
 typedef void (*sg_platf_AS_begin_cb_t)(const char*id, int routing);
 
 typedef void (*sg_platf_storage_cb_t)(sg_platf_storage_cbarg_t);
@@ -37,6 +38,7 @@ void sg_platf_router_add_cb(sg_platf_router_cb_t);
 void sg_platf_link_add_cb(sg_platf_link_cb_t);
 void sg_platf_peer_add_cb(sg_platf_peer_cb_t fct);
 void sg_platf_cluster_add_cb(sg_platf_cluster_cb_t fct);
+void sg_platf_cabinet_add_cb(sg_platf_cabinet_cb_t fct);
 void sg_platf_postparse_add_cb(void_f_void_t fct);
 void sg_platf_AS_begin_add_cb(sg_platf_AS_begin_cb_t fct);
 void sg_platf_AS_end_add_cb(void_f_void_t fct);

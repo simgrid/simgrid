@@ -483,6 +483,23 @@ void ETag_surfxml_cluster(void){
   /* nothing I can think of */
 }
 
+void STag_surfxml_cabinet(void){
+  s_sg_platf_cabinet_cbarg_t cabinet;
+  memset(&cabinet,0,sizeof(cabinet));
+  cabinet.id = A_surfxml_cabinet_id;
+  cabinet.prefix = A_surfxml_cabinet_prefix;
+  cabinet.suffix = A_surfxml_cabinet_suffix;
+  cabinet.power = surf_parse_get_double(A_surfxml_cabinet_power);
+  cabinet.bw = surf_parse_get_double(A_surfxml_cabinet_bw);
+  cabinet.lat = surf_parse_get_double(A_surfxml_cabinet_lat);
+  cabinet.radical = A_surfxml_cabinet_radical;
+
+  sg_platf_new_cabinet(&cabinet);
+}
+void ETag_surfxml_cabinet(void){
+  /* nothing I can think of */
+}
+
 void STag_surfxml_peer(void){
   s_sg_platf_peer_cbarg_t peer;
   memset(&peer,0,sizeof(peer));
@@ -495,7 +512,6 @@ void STag_surfxml_peer(void){
   peer.availability_trace = tmgr_trace_new_from_file(A_surfxml_peer_availability_file);
   peer.state_trace = tmgr_trace_new_from_file(A_surfxml_peer_state_file);
 
-  surfxml_call_cb_functions(STag_surfxml_peer_cb_list);
   sg_platf_new_peer(&peer);
 }
 void ETag_surfxml_peer(void){

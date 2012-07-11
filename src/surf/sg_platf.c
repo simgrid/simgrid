@@ -18,6 +18,7 @@ xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
 xbt_dynar_t sg_platf_router_cb_list = NULL; // of sg_platf_router_cb_t
 xbt_dynar_t sg_platf_peer_cb_list = NULL; // of sg_platf_peer_cb_t
 xbt_dynar_t sg_platf_cluster_cb_list = NULL; // of sg_platf_cluster_cb_t
+xbt_dynar_t sg_platf_cabinet_cb_list = NULL; // of sg_platf_cluster_cb_t
 xbt_dynar_t sg_platf_AS_begin_cb_list = NULL; //of sg_platf_AS_begin_cb_t
 xbt_dynar_t sg_platf_AS_end_cb_list = NULL; //of void_f_void_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
@@ -40,6 +41,7 @@ void sg_platf_init(void) {
   sg_platf_link_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
   sg_platf_peer_cb_list = xbt_dynar_new(sizeof(sg_platf_peer_cb_t), NULL);
   sg_platf_cluster_cb_list = xbt_dynar_new(sizeof(sg_platf_cluster_cb_t), NULL);
+  sg_platf_cabinet_cb_list = xbt_dynar_new(sizeof(sg_platf_cabinet_cb_t), NULL);
   sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t),NULL);
   sg_platf_AS_begin_cb_list = xbt_dynar_new(sizeof(sg_platf_AS_begin_cb_t),NULL);
   sg_platf_AS_end_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
@@ -58,6 +60,7 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_postparse_cb_list);
   xbt_dynar_free(&sg_platf_peer_cb_list);
   xbt_dynar_free(&sg_platf_cluster_cb_list);
+  xbt_dynar_free(&sg_platf_cabinet_cb_list);
   xbt_dynar_free(&sg_platf_AS_begin_cb_list);
   xbt_dynar_free(&sg_platf_AS_end_cb_list);
 
@@ -110,6 +113,13 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster){
   sg_platf_cluster_cb_t fun;
   xbt_dynar_foreach(sg_platf_cluster_cb_list, iterator, fun) {
     fun(cluster);
+  }
+}
+void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet){
+  unsigned int iterator;
+  sg_platf_cabinet_cb_t fun;
+  xbt_dynar_foreach(sg_platf_cabinet_cb_list, iterator, fun) {
+    fun(cabinet);
   }
 }
 void sg_platf_new_storage(sg_platf_storage_cbarg_t storage){
@@ -205,6 +215,9 @@ void sg_platf_peer_add_cb(sg_platf_peer_cb_t fct) {
 }
 void sg_platf_cluster_add_cb(sg_platf_cluster_cb_t fct) {
   xbt_dynar_push(sg_platf_cluster_cb_list, &fct);
+}
+void sg_platf_cabinet_add_cb(sg_platf_cabinet_cb_t fct) {
+  xbt_dynar_push(sg_platf_cabinet_cb_list, &fct);
 }
 void sg_platf_postparse_add_cb(void_f_void_t fct) {
   xbt_dynar_push(sg_platf_postparse_cb_list, &fct);

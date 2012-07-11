@@ -785,6 +785,76 @@ void routing_cluster_add_backbone(void* bb) {
   XBT_DEBUG("Add a backbone to AS '%s'",current_routing->name);
 }
 
+static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
+{
+  int start, end, i;
+  char *groups , *host_id , *link_id = NULL;
+  unsigned int iter;
+  xbt_dynar_t radical_elements;
+  xbt_dynar_t radical_ends;
+
+  XBT_INFO("See cabinet: %s",cabinet->id);
+  //Make all hosts
+  radical_elements = xbt_str_split(cabinet->radical, ",");
+  xbt_dynar_foreach(radical_elements, iter, groups) {
+
+    radical_ends = xbt_str_split(groups, "-");
+    start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+
+    switch (xbt_dynar_length(radical_ends)) {
+    case 1:
+      end = start;
+      break;
+    case 2:
+      end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
+      break;
+    default:
+      surf_parse_error("Malformed radical");
+      break;
+    }
+    s_sg_platf_host_cbarg_t host;
+    memset(&host, 0, sizeof(host));
+    host.initial_state = SURF_RESOURCE_ON;
+    host.power_peak = cabinet->power;
+    host.power_scale = 1.0;
+    host.core_amount = 1;
+
+    s_sg_platf_link_cbarg_t link;
+    memset(&link, 0, sizeof(link));
+    link.state = SURF_RESOURCE_ON;
+    link.policy = SURF_LINK_FULLDUPLEX;
+    link.latency = cabinet->lat;
+    link.bandwidth = cabinet->bw;
+
+    s_sg_platf_host_link_cbarg_t host_link;
+    memset(&host_link, 0, sizeof(host_link));
+
+    for (i = start; i <= end; i++) {
+      host_id = bprintf("%s%d%s",cabinet->prefix,i,cabinet->suffix);
+      link_id = bprintf("link_%s%d%s",cabinet->prefix,i,cabinet->suffix);
+      host.id = host_id;
+      link.id = link_id;
+      sg_platf_new_host(&host);
+      sg_platf_new_link(&link);
+
+      char* link_up = bprintf("%s_UP",link_id);
+      char* link_down = bprintf("%s_DOWN",link_id);
+      host_link.id = host_id;
+      host_link.link_up = link_up;
+      host_link.link_down= link_down;
+      sg_platf_new_host_link(&host_link);
+
+      free(host_id);
+      free(link_id);
+      free(link_up);
+      free(link_down);
+    }
+
+    xbt_dynar_free(&radical_ends);
+  }
+  xbt_dynar_free(&radical_elements);
+}
+
 static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   char *host_id, *groups, *link_id = NULL;
@@ -949,16 +1019,8 @@ static void routing_parse_postparse(void) {
 
 static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
 {
-  static int AX_ptr = 0;
   char *host_id = NULL;
   char *link_id;
-
-  static unsigned int surfxml_buffer_stack_stack_ptr = 1;
-  static unsigned int surfxml_buffer_stack_stack[1024];
-
-  surfxml_buffer_stack_stack[0] = 0;
-
-  surfxml_bufferstack_push(1);
 
   XBT_DEBUG(" ");
   host_id = HOST_PEER(peer->id);
@@ -977,34 +1039,41 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   host.coord = peer->coord;
   sg_platf_new_host(&host);
 
-  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,
-            peer->bw_in, peer->lat);
   s_sg_platf_link_cbarg_t link;
   memset(&link, 0, sizeof(link));
   link.state = SURF_RESOURCE_ON;
-  link.policy = SURF_LINK_FULLDUPLEX;
-  link.id = link_id;
-  link.bandwidth = peer->bw_in;
+  link.policy = SURF_LINK_SHARED;
   link.latency = peer->lat;
-  sg_platf_new_link(&link);
 
   char* link_up = bprintf("%s_UP",link_id);
+  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_up,
+            peer->bw_out, peer->lat);
+  link.id = link_up;
+  link.bandwidth = peer->bw_out;
+  sg_platf_new_link(&link);
+
   char* link_down = bprintf("%s_DOWN",link_id);
+  XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_down,
+            peer->bw_in, peer->lat);
+  link.id = link_down;
+  link.bandwidth = peer->bw_in;
+  sg_platf_new_link(&link);
+
   XBT_DEBUG("<host_link\tid=\"%s\"\tup=\"%s\"\tdown=\"%s\" />", host_id,link_up,link_down);
-  SURFXML_BUFFER_SET(host_link_id, host_id);
-  SURFXML_BUFFER_SET(host_link_up,   link_up);
-  SURFXML_BUFFER_SET(host_link_down, link_down);
-  SURFXML_START_TAG(host_link);
-  SURFXML_END_TAG(host_link);
-  free(link_up);
-  free(link_down);
+  s_sg_platf_host_link_cbarg_t host_link;
+  memset(&host_link, 0, sizeof(host_link));
+  host_link.id = host_id;
+  host_link.link_up = link_up;
+  host_link.link_down= link_down;
+  sg_platf_new_host_link(&host_link);
 
   XBT_DEBUG(" ");
 
   //xbt_dynar_free(&tab_elements_num);
   free(host_id);
   free(link_id);
-  surfxml_bufferstack_pop(1);
+  free(link_up);
+  free(link_down);
 }
 
 static void routing_parse_Srandom(void)
@@ -1152,6 +1221,7 @@ void routing_register_callbacks()
                        &routing_parse_E_bypassASroute);
 
   sg_platf_cluster_add_cb(routing_parse_cluster);
+  sg_platf_cabinet_add_cb(routing_parse_cabinet);
 
   sg_platf_peer_add_cb(routing_parse_peer);
   sg_platf_postparse_add_cb(routing_parse_postparse);

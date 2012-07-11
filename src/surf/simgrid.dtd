@@ -1,8 +1,8 @@
 <!-- Small DTD for SURF based tools. -->
-<!ELEMENT platform ((config|random)*,(include|cluster|peer|AS|trace|trace_connect)*,(process)*)>
+<!ELEMENT platform ((config|random)*,(include|cluster|cabinet|peer|AS|trace|trace_connect)*,(process)*)>
 <!ATTLIST platform version CDATA "0.0">
 
-<!ELEMENT include (include|cluster|peer|AS|trace|trace_connect)*>
+<!ELEMENT include (include|cluster|cabinet|peer|AS|trace|trace_connect)*>
 <!ATTLIST include file CDATA #REQUIRED>
 
 <!ELEMENT trace (#PCDATA)>
@@ -25,7 +25,7 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|include|storage_type|storage|link|backbone|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect|bypassASroute)*,(trace|trace_connect)*)|((include|storage_type|storage|host|router|link|backbone|trace|trace_connect|host_link)*,(route|trace|trace_connect|bypassRoute)*))>
+<!ELEMENT AS (((AS|include|storage_type|storage|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect|bypassASroute)*,(trace|trace_connect)*)|((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,(route|trace|trace_connect|bypassRoute)*))>
 
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|RuleBased|Vivaldi|Cluster) "None">
@@ -80,6 +80,15 @@
 <!ATTLIST cluster availability_file CDATA "">
 <!ATTLIST cluster state_file CDATA "">
 <!ATTLIST cluster router_id CDATA "">
+
+<!ELEMENT cabinet EMPTY>
+<!ATTLIST cabinet id CDATA #REQUIRED>
+<!ATTLIST cabinet prefix CDATA #REQUIRED>
+<!ATTLIST cabinet suffix CDATA #REQUIRED>
+<!ATTLIST cabinet radical CDATA #REQUIRED>
+<!ATTLIST cabinet power CDATA #REQUIRED>
+<!ATTLIST cabinet bw CDATA #REQUIRED>
+<!ATTLIST cabinet lat CDATA #REQUIRED>
 
 <!ELEMENT peer EMPTY>
 <!ATTLIST peer id CDATA #REQUIRED>
