@@ -70,6 +70,29 @@ static void action_recv(const char *const *action)
   free(buffer);
 }
 
+static void action_Irecv(const char *const *action)
+{
+  int from = atoi(action[2]);
+  char *buffer = (char*) malloc (1e9);
+  MPI_Request request;
+
+  XBT_DEBUG("Asynchronous receive from rank%d (%s)",from, action[2]);
+
+  MPI_Irecv(buffer, 1e9, MPI_BYTE, from, 0, MPI_COMM_WORLD, &request);
+
+  free(buffer);
+}
+
+static void action_wait(const char *const *action)
+{
+  MPI_Request request;
+  MPI_Status status;
+
+  MPI_Wait(&request, &status);
+}
+
+
+
 int main(int argc, char *argv[])
 {
   int i;
@@ -84,8 +107,8 @@ int main(int argc, char *argv[])
   xbt_replay_action_register("send",     action_send);
   xbt_replay_action_register("Isend",    action_Isend);
   xbt_replay_action_register("recv",     action_recv);
-//  xbt_replay_action_register("Irecv",    action_Irecv);
-//  xbt_replay_action_register("wait",     action_wait);
+  xbt_replay_action_register("Irecv",    action_Irecv);
+  xbt_replay_action_register("wait",     action_wait);
 //  xbt_replay_action_register("barrier",  action_barrier);
 //  xbt_replay_action_register("bcast",    action_bcast);
 //  xbt_replay_action_register("reduce",   action_reduce);
