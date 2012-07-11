@@ -75,7 +75,7 @@ int reached(xbt_state_t st){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
-  if(xbt_dynar_is_empty(reached_pairs)){
+  if(xbt_dynar_is_empty(reached_pairs) || !compare){
 
     return 0;
 
@@ -137,6 +137,8 @@ int reached(xbt_state_t st){
       MC_SET_RAW_MEM;
     else
       MC_UNSET_RAW_MEM;
+
+    compare = 0;
     
     return 0;
     

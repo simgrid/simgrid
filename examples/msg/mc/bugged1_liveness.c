@@ -39,6 +39,7 @@ int coordinator(int argc, char *argv[])
       } else {               
         if(strcmp(req, "2") == 0){
           XBT_INFO("CS idle. Grant immediatly");
+          MC_compare();
           answer = MSG_task_create("grant", 0, 1000, NULL);
           MSG_task_send(answer, req);
           CS_used = 1;

@@ -44,6 +44,8 @@ XBT_PUBLIC(void) MC_memory_exit(void);
 /********************************* Snapshot comparison test *************************************/
 void MC_test_snapshot_comparison(void);
 
+void MC_compare(void);
+
 SG_END_DECL()
 
 #endif                          /* _MC_MC_H */

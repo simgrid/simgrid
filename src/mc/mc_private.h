@@ -203,6 +203,7 @@ void MC_init_safety(void);
 
 extern mc_snapshot_t initial_snapshot_liveness;
 extern xbt_automaton_t _mc_property_automaton;
+extern int compare;
 
 typedef struct s_mc_pair{
   mc_snapshot_t system_state;

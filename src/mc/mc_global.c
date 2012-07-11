@@ -71,6 +71,7 @@ mc_stats_t mc_stats = NULL;
 mc_stats_pair_t mc_stats_pair = NULL;
 xbt_fifo_t mc_stack_liveness = NULL;
 mc_snapshot_t initial_snapshot_liveness = NULL;
+int compare;
 
 xbt_automaton_t _mc_property_automaton = NULL;
 
@@ -139,6 +140,10 @@ void MC_init_safety(void)
   
 }
 
+void MC_compare(void){
+  compare = 1;
+}
+
 
 void MC_modelcheck(void)
 {
@@ -155,6 +160,8 @@ void MC_modelcheck_liveness(){
   XBT_DEBUG("Start init mc");
   
   mc_time = xbt_new0(double, simix_process_maxpid);
+
+  compare = 0;
 
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
