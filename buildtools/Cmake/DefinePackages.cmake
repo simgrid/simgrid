@@ -816,6 +816,9 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/syscoord/median_p2psim.xml
   examples/platforms/vivaldi.xml
+  examples/platforms/routing_cluster.xml
+  examples/platforms/meta_cluster.xml
+  examples/platforms/two_peers.xml
   )
 
 set(generated_src_files
