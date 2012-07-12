@@ -463,7 +463,9 @@ XBT_PUBLIC(int) MAIN__(void);
 XBT_PUBLIC(int) smpi_process_index(void);
 
 /* Trace replay specific stuff */
+XBT_PUBLIC(void) smpi_replay_init(int *argc, char***argv);
 XBT_PUBLIC(void) smpi_action_trace_run(char *);
+XBT_PUBLIC(int) smpi_replay_finalize(void);
 
 SG_END_DECL()
 #endif

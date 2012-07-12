@@ -119,6 +119,7 @@ set(SMPI_SRC
   src/smpi/smpi_mpi.c
   src/smpi/smpi_mpi_dt.c
   src/smpi/smpi_pmpi.c
+  src/smpi/smpi_replay.c
   )
 
 set(GRAS_RL_SRC
