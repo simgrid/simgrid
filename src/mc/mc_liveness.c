@@ -75,33 +75,40 @@ int reached(xbt_state_t st){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
+  MC_SET_RAW_MEM;
+
+  mc_pair_reached_t new_pair = NULL;
+  new_pair = xbt_new0(s_mc_pair_reached_t, 1);
+  new_pair->nb = xbt_dynar_length(reached_pairs) + 1;
+  new_pair->automaton_state = st;
+  new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
+  new_pair->system_state = xbt_new0(s_mc_snapshot_t, 1); 
+  MC_take_snapshot_liveness(new_pair->system_state);  
+  
+  /* Get values of propositional symbols */
+  int res;
+  int_f_void_t f;
+  unsigned int cursor = 0;
+  xbt_propositional_symbol_t ps = NULL;
+  xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
+    f = (int_f_void_t)ps->function;
+    res = (*f)();
+    xbt_dynar_push_as(new_pair->prop_ato, int, res);
+  }
+  
+  MC_UNSET_RAW_MEM;
+  
   if(xbt_dynar_is_empty(reached_pairs) || !compare){
 
+    /* New pair reached */
+    xbt_dynar_push(reached_pairs, &new_pair); 
+    
     return 0;
 
   }else{
 
     MC_SET_RAW_MEM;
-
-    mc_pair_reached_t new_pair = NULL;
-    new_pair = xbt_new0(s_mc_pair_reached_t, 1);
-    new_pair->nb = xbt_dynar_length(reached_pairs) + 1;
-    new_pair->automaton_state = st;
-    new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-    new_pair->system_state = xbt_new0(s_mc_snapshot_t, 1); 
-    MC_take_snapshot_liveness(new_pair->system_state);  
     
-    /* Get values of propositional symbols */
-    int res;
-    int_f_void_t f;
-    unsigned int cursor = 0;
-    xbt_propositional_symbol_t ps = NULL;
-    xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
-      f = (int_f_void_t)ps->function;
-      res = (*f)();
-      xbt_dynar_push_as(new_pair->prop_ato, int, res);
-    }
-
     cursor = 0;
     mc_pair_reached_t pair_test = NULL;
      
@@ -126,11 +133,11 @@ int reached(xbt_state_t st){
       }
     }
 
-    /* New pair reached */
-    xbt_dynar_push(reached_pairs, &new_pair); 
-
     create_dump(xbt_dynar_length(reached_pairs));
 
+    /* New pair reached */
+    xbt_dynar_push(reached_pairs, &new_pair); 
+    
     MC_UNSET_RAW_MEM;
 
     if(raw_mem_set)
