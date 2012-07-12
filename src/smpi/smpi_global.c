@@ -27,6 +27,7 @@ typedef struct s_smpi_process_data {
   xbt_os_timer_t timer;
   double simulated;
   MPI_Comm comm_self;
+  void *data; /* user data */
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
@@ -132,6 +133,13 @@ smpi_process_data_t smpi_process_remote_data(int index)
 {
   return process_data[index];
 }
+
+void smpi_process_set_user_data(void *data)
+{
+  smpi_process_data_t process_data = smpi_process_data();
+  process_data->data = data;
+}
+
 
 int smpi_process_count(void)
 {
