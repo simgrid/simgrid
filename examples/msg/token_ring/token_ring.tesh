@@ -26,12 +26,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/token_ring ${srcdir:=.}/examples/platforms/two_pee
 > [   10.690456] (0:@) Simulation time 10.6905
 
 $ $SG_TEST_EXENV ${bindir:=.}/token_ring ${srcdir:=.}/examples/platforms/meta_cluster.xml --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
-> [  0.000000] (0:@) See cabinet: cabinet1
-> [  0.000000] (0:@) See cabinet: cabinet2
-> [  0.000000] (0:@) See cabinet: cabinet3
-> [  0.000000] (0:@) See cabinet: cabinet1
-> [  0.000000] (0:@) See cabinet: cabinet2
-> [  0.000000] (0:@) See cabinet: cabinet3
 > [  0.000000] (0:@) Number of host '60'
 > [  0.000000] (1:0@host-2.cluster1) Host "0" send 'Token' to Host "1"
 > [  0.192117] (2:1@host-2.cluster2) Host "1" received "Token"

@@ -793,7 +793,6 @@ static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
   xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
 
-  XBT_INFO("See cabinet: %s",cabinet->id);
   //Make all hosts
   radical_elements = xbt_str_split(cabinet->radical, ",");
   xbt_dynar_foreach(radical_elements, iter, groups) {
