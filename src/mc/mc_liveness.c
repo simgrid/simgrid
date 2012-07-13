@@ -100,8 +100,11 @@ int reached(xbt_state_t st){
   
   if(xbt_dynar_is_empty(reached_pairs) || !compare){
 
+    MC_SET_RAW_MEM;
     /* New pair reached */
     xbt_dynar_push(reached_pairs, &new_pair); 
+    MC_UNSET_RAW_MEM;
+    
     
     return 0;
 
@@ -116,7 +119,7 @@ int reached(xbt_state_t st){
       XBT_INFO("Pair reached #%d", pair_test->nb);
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
         if(propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
-          if(snapshot_compare(pair_test->system_state, new_pair->system_state) == 0){
+          if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
             
             if(raw_mem_set)
               MC_SET_RAW_MEM;
@@ -133,7 +136,7 @@ int reached(xbt_state_t st){
       }
     }
 
-    create_dump(xbt_dynar_length(reached_pairs));
+    //create_dump(xbt_dynar_length(reached_pairs));
 
     /* New pair reached */
     xbt_dynar_push(reached_pairs, &new_pair); 
