@@ -472,7 +472,7 @@ void surf_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, &default_value_int, 0, 1,
                      NULL, NULL);
 
-#if HAVE_MC
+#ifdef HAVE_MC
     /* do model-checking */
     default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check",
