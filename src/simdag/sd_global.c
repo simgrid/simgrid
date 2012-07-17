@@ -258,7 +258,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
 
     XBT_DEBUG("Total time: %f", total_time);
 
-    elapsed_time = surf_solve(how_long > 0 ? surf_get_clock() + how_long : -1.0);
+    elapsed_time = surf_solve(how_long > 0 ? surf_get_clock() + how_long - total_time: -1.0);
     XBT_DEBUG("surf_solve() returns %f", elapsed_time);
     if (elapsed_time > 0.0)
       total_time += elapsed_time;
