@@ -157,7 +157,7 @@ complicated pattern aiming at following the actual dependencies.
 
 The analytical models handle a lot of floating point values. It is
 possible to change the epsilon used to update and compare them through
-the \b maxmin/precision item (default value: 1e-9). Changing it
+the \b maxmin/precision item (default value: 0.00001). Changing it
 may speedup the simulation by discarding very small actions, at the
 price of a reduced numerical precision.
 
