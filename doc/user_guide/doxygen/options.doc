@@ -506,6 +506,12 @@ code, but it can reveal troublesome in some cases (such as when the
 amount of processes becomes really big). This behavior is disabled
 when \b verbose-exit is set to 0 (it is to 1 by default).
 
+
+\section options_log Logging Configuration
+
+It can be done by using XBT. Go to \ref XBT_log for more details.
+
+
 \section options_index Index of all existing configuration items
 
 - \c contexts/factory: \ref options_virt_factory
