@@ -14,6 +14,7 @@
 #include "xbt/dict.h"
 #include "xbt/mallocator.h"
 #include "xbt/config.h"
+#include "xbt/xbt_os_time.h"
 #include "xbt/function_types.h"
 #include "xbt/ex_interface.h"
 #include "instr/instr_private.h"
@@ -25,7 +26,8 @@
 #include "smx_synchro_private.h"
 
 /* Define only for SimGrid benchmarking purposes */
-#undef TIME_BENCH
+//#define TIME_BENCH_PER_SR /* this aims at measuring the time spent in each scheduling round per each thread. The code is thus run in sequential to bench separately each SSR */
+//#define TIME_BENCH_AMDAHL /* this aims at measuring the porting of time that could be parallelized at maximum (to get the optimal speedup by applying the amdahl law). */
 
 /********************************** Simix Global ******************************/
 typedef struct s_smx_global {
@@ -41,6 +43,11 @@ typedef struct s_smx_global {
   void_pfn_smxprocess_t cleanup_process_function;
   xbt_mallocator_t action_mallocator;
   void_pfn_smxhost_t autorestart;
+
+#ifdef TIME_BENCH_AMDAHL
+  xbt_os_timer_t timer_seq; /* used to bench the sequential and parallel parts of the simulation, if requested to */
+  xbt_os_timer_t timer_par;
+#endif
 } s_smx_global_t, *smx_global_t;
 
 extern smx_global_t simix_global;

@@ -23,7 +23,7 @@ typedef struct s_smx_ctx_raw {
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id; /* the valgrind stack id */
 #endif
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
   unsigned int thread;            /* Just for measuring purposes */
 #endif
 } s_smx_ctx_raw_t, *smx_ctx_raw_t;
@@ -192,7 +192,7 @@ void raw_swapcontext(raw_stack_t* old, raw_stack_t new) {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
 #include "xbt/xbt_os_time.h"
 #define NUM_THREADS 4
 static xbt_os_timer_t timer;
@@ -259,7 +259,7 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
     (*factory)->runall = smx_ctx_raw_runall_serial;
     (*factory)->suspend = smx_ctx_raw_suspend_serial;
   }
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
   timer = xbt_os_timer_new();
 #endif
 }
@@ -270,7 +270,7 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
  */
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 {
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
   XBT_CRITICAL("Total wasted time in %u SR: %lf", sr_count, time_wasted_sr);
   XBT_CRITICAL("Total wasted time in %u SSR: %lf", ssr_count, time_wasted_ssr);
 #endif
@@ -410,7 +410,7 @@ static void smx_ctx_raw_resume_serial(smx_process_t first_process)
       ((smx_ctx_raw_t) context)->stack_top);
 }
 
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
 static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
 {
   smx_process_t process;
