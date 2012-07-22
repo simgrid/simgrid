@@ -60,6 +60,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  XBT:
  * Functions xbt_dict_hash() and xbt_dict_hash_ext() are made public,
    and renamed to xbt_str_hash() and xbt_str_hash_ext().
+ * New function: xbt_os_timer_resume() to restart a timer w/o resetting it.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

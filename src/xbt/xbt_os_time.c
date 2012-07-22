@@ -86,11 +86,11 @@ void xbt_os_sleep(double sec)
 
 struct s_xbt_os_timer {
 #ifdef HAVE_POSIX_GETTIME
-  struct timespec start, stop;
+  struct timespec start, stop, elapse;
 #elif defined(HAVE_GETTIMEOFDAY)
-  struct timeval start, stop;
+  struct timeval start, stop, elapse;
 #else
-  unsigned long int start, stop;
+  unsigned long int start, stop, elapse;
 #endif
 };
 
@@ -104,13 +104,36 @@ void xbt_os_timer_free(xbt_os_timer_t timer)
   free(timer);
 }
 
+void xbt_os_timer_resume(xbt_os_timer_t timer)
+{
+#ifdef HAVE_POSIX_GETTIME
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+
+   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
+  clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
+#elif defined(HAVE_GETTIMEOFDAY)
+  timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
+
+   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
+  gettimeofday(&(timer->start), NULL);
+#else
+  timer->elapse = timer->stop - timer->start;
+  timer->start = (unsigned long int) (time(NULL));
+#endif
+}
+
 void xbt_os_timer_start(xbt_os_timer_t timer)
 {
 #ifdef HAVE_POSIX_GETTIME
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
 #elif defined(HAVE_GETTIMEOFDAY)
+  timer->elapse.tv_sec = 0;
+  timer->elapse.tv_usec = 0;
   gettimeofday(&(timer->start), NULL);
 #else
+  timer->elapse = 0;
   timer->start = (unsigned long int) (time(NULL));
 #endif
 }
@@ -130,13 +153,16 @@ double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 {
 #ifdef HAVE_POSIX_GETTIME
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) +
+                                          ((double) timer->elapse.tv_sec ) +
       ((((double) timer->stop.tv_nsec) -
-        ((double) timer->start.tv_nsec)) / 1e9);
+        ((double) timer->start.tv_nsec) + ((double) timer->elapse.tv_nsec )) / 1e9);
 #elif defined(HAVE_GETTIMEOFDAY)
-  return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) +
+  return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec)
+    + ((double) timer->elapse.tv_sec ) +
       ((((double) timer->stop.tv_usec) -
-        ((double) timer->start.tv_usec)) / 1000000.0);
+        ((double) timer->start.tv_usec) + ((double) timer->elapse.tv_usec )) / 1000000.0);
 #else
-  return (double) timer->stop - (double) timer->start;
+  return (double) timer->stop - (double) timer->start + (double)
+    timer->elapse;
 #endif
 }
