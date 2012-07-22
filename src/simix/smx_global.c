@@ -1,5 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,8 +21,6 @@ static xbt_heap_t simix_timers = NULL;
 static void* SIMIX_action_mallocator_new_f(void);
 static void SIMIX_action_mallocator_free_f(void* action);
 static void SIMIX_action_mallocator_reset_f(void* action);
-
-extern void smx_ctx_raw_new_sr(void);
 
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
