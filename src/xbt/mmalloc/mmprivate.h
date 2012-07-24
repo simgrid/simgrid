@@ -17,6 +17,7 @@
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
 #include "xbt/ex.h"
+#include "xbt/dynar.h"
 #include <semaphore.h>
 #include <stdint.h>
 
@@ -106,6 +107,13 @@ struct mstats
   size_t bytes_free;    /* Byte total of chunks in the free list. */
 };
 
+typedef struct s_heap_area_pair{
+  int block1;
+  int fragment1;
+  int block2;
+  int fragment2;
+}s_heap_area_pair_t, *heap_area_pair_t;
+
 /* Data structure giving per-block information.
  *
  * There is one such structure in the mdp->heapinfo array per block used in that heap,
@@ -129,13 +137,12 @@ struct mstats
  * The type field is consistently updated for every blocks, even within clusters of blocks.
  * You can crawl the array and rely on that value.
  *
- * TODO:
- *  - make room to store the backtrace of where the blocks and fragment were malloced, too.
  */
 typedef struct {
   int type; /*  0: busy large block
                 >0: busy fragmented (fragments of size 2^type bytes)
                 <0: free block */
+  
   union {
     /* Heap information for a busy block.  */
     struct {
@@ -143,12 +150,14 @@ typedef struct {
       size_t first;           /* First free fragment of the block.  */
       unsigned short frag_size[MAX_FRAGMENT_PER_BLOCK];
       void *bt[MAX_FRAGMENT_PER_BLOCK][XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
+      int equal_to[MAX_FRAGMENT_PER_BLOCK];
     } busy_frag;
     struct {
       size_t size; /* Size (in blocks) of a large cluster.  */
       size_t busy_size; /* Actually used space, in bytes */
       void *bt[XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
       int bt_size;
+      int equal_to;
     } busy_block;
     /* Heap information for a free block (that may be the first of a free cluster).  */
     struct {
@@ -237,12 +246,6 @@ struct mdesc {
   struct mstats heapstats;
 
 };
-
-int mmalloc_compare_mdesc(struct mdesc *mdp1, struct mdesc *mdp2);
-
-int compare_area(void *area1, void *area2, size_t size);
-
-//void *get_end_addr_heap(void *s_heap);
 
 /* Bits to look at in the malloc descriptor flags word */
 

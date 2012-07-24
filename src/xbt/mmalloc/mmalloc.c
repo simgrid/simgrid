@@ -153,6 +153,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
 
       frag_nb = RESIDUAL(result, BLOCKSIZE) >> log;
       mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = requested_size;
+      mdp->heapinfo[block].busy_frag.equal_to[frag_nb] = -1;
       xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_frag.bt[frag_nb],XBT_BACKTRACE_SIZE);
 
       next->prev->next = next->next;
@@ -184,6 +185,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       block = BLOCK(result);
       for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i) {
         mdp->heapinfo[block].busy_frag.frag_size[i] = 0;
+        mdp->heapinfo[block].busy_frag.equal_to[i] = -1;
         next = (struct list *) ((char *) result + (i << log));
         next->next = mdp->fraghead[log].next;
         next->prev = &mdp->fraghead[log];
@@ -193,6 +195,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
         }
       }
       mdp->heapinfo[block].busy_frag.frag_size[0] = requested_size;
+      mdp->heapinfo[block].busy_frag.equal_to[0] = -1;
       xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_frag.bt[0],XBT_BACKTRACE_SIZE);
       
       /* Initialize the nfree and first counters for this block.  */
@@ -240,8 +243,10 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
         memset(result, 0, requested_size);
 
         block = BLOCK(result);
-        for (it=0;it<blocks;it++)
+        for (it=0;it<blocks;it++){
           mdp->heapinfo[block+it].type = 0;
+          mdp->heapinfo[block+it].busy_block.equal_to = -1;
+        }
         mdp->heapinfo[block].busy_block.size = blocks;
         mdp->heapinfo[block].busy_block.busy_size = requested_size;
         mdp->heapinfo[block].busy_block.bt_size=xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
@@ -276,8 +281,10 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
         = mdp->heapindex = mdp->heapinfo[block].free_block.next;
     }
 
-    for (it=0;it<blocks;it++)
+    for (it=0;it<blocks;it++){
       mdp->heapinfo[block+it].type = 0;
+      mdp->heapinfo[block+it].busy_block.equal_to = -1;
+    }
     mdp->heapinfo[block].busy_block.size = blocks;
     mdp->heapinfo[block].busy_block.busy_size = requested_size;
     //mdp->heapinfo[block].busy_block.bt_size = 0;
