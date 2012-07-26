@@ -9,19 +9,16 @@
 #ifndef SG_PLATF_GEN_H
 #define SG_PLATF_GEN_H
 
+#include <xbt.h>
+
 typedef enum {
   ROUTER,
   HOST,
   CLUSTER
 } e_platf_node_kind;
 
-typedef enum {
-  UNIFORM,
-  HEAVY_TAILED
-} e_platf_placement;
+XBT_PUBLIC(void) platf_random_seed(unsigned long seed[6]);
 
-void platf_random_seed(unsigned long seed[6]);
+XBT_PUBLIC(void) platf_graph_uniform(int node_count);
 
-void platf_graph_init(int node_count, e_platf_placement placement);
-
-#endif
+#endif              /* SG_PLATF_GEN_H */

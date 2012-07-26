@@ -275,6 +275,7 @@ set(MSG_SRC
 set(PLATFGEN_SRC
   include/simgrid/platf_generator.h
   src/surf/platf_generator.c
+  src/surf/platf_generator_private.h
   )
 
 set(SIMDAG_SRC
