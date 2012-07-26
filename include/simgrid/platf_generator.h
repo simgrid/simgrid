@@ -21,4 +21,6 @@ XBT_PUBLIC(void) platf_random_seed(unsigned long seed[6]);
 
 XBT_PUBLIC(void) platf_graph_uniform(int node_count);
 
+XBT_PUBLIC(void) platf_graph_interconnect_star(void);
+
 #endif              /* SG_PLATF_GEN_H */
