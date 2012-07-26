@@ -272,6 +272,11 @@ set(MSG_SRC
   src/msg/msg_vm.c
   )
 
+set(PLATFGEN_SRC
+  include/simgrid/platf_generator.h
+  src/surf/platf_generator.c
+  )
+
 set(SIMDAG_SRC
   src/simdag/sd_daxloader.c
   src/simdag/sd_global.c
@@ -401,6 +406,7 @@ set(headers_to_install
   include/simdag/simdag.h
   include/simgrid/modelchecker.h
   include/simgrid/platf.h
+  include/simgrid/platf_generator.h
   include/simgrid/simix.h
   include/smpi/mpi.h
   include/smpi/mpif.h
@@ -509,6 +515,7 @@ set(simgrid_sources
   ${SIMDAG_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
+  ${PLATFGEN_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   )
