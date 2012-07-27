@@ -128,6 +128,29 @@ void platf_graph_interconnect_line(void) {
   }
 }
 
+void platf_graph_interconnect_ring(void) {
+  /* Create a simple topology where all nodes are connected along a ring */
+  xbt_dynar_t dynar_nodes = NULL;
+  xbt_node_t graph_node = NULL;
+  xbt_node_t old_node = NULL;
+  xbt_node_t first_node = NULL;
+  unsigned int i;
+
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, graph_node) {
+    if(i == 0) {
+      // this is the first node, let's keep it somewhere
+      first_node = graph_node;
+    } else {
+      //connect each node to the previous one
+      platf_node_connect(graph_node, old_node);
+    }
+    old_node = graph_node;
+  }
+  //we still have to connect the first and the last node together
+  platf_node_connect(first_node, graph_node);
+}
+
 
 
 /* Functions used to generate interesting random values */
