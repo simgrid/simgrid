@@ -10,8 +10,10 @@ typedef struct {
   e_platf_node_kind kind;
 } s_context_node_t, *context_node_t;
 
-void platf_graph_init(int node_count);
+void platf_graph_init(unsigned long node_count);
 
 void platf_node_connect(xbt_node_t node1, xbt_node_t node2);
+
+double random_pareto(double min, double max, double K, double P, double ALPHA);
 
 #endif      /* SG_PLATF_GEN_PRIVATE_H */

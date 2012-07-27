@@ -1,9 +1,10 @@
 
 
-#include <simgrid/platf_generator.h>
+#include "simgrid/platf_generator.h"
 #include "platf_generator_private.h"
-#include <xbt.h>
-#include <xbt/RngStream.h>
+#include "xbt.h"
+#include "xbt/RngStream.h"
+#include <math.h>
 
 static xbt_graph_t platform_graph = NULL;
 
@@ -78,8 +79,22 @@ void platf_graph_uniform(unsigned long node_count) {
   }
 }
 
-void platf_graph_interconnect_star(void) {
+void platf_graph_heavytailed(unsigned long node_count) {
+  xbt_dynar_t dynar_nodes = NULL;
+  xbt_node_t graph_node = NULL;
+  context_node_t node_data = NULL;
+  unsigned int i;
+  platf_graph_init(node_count);
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, graph_node) {
+    node_data = (context_node_t) xbt_graph_node_get_data(graph_node);
+    node_data->x = random_pareto(0, 1, 1.0/*K*/, 10e9/*P*/, 1.0/*alpha*/);
+    node_data->y = random_pareto(0, 1, 1.0/*K*/, 10e9/*P*/, 1.0/*alpha*/);
+  }
+}
 
+void platf_graph_interconnect_star(void) {
+  /* All the nodes are connected to the first one */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t graph_node = NULL;
   xbt_node_t first_node = NULL;
@@ -95,4 +110,35 @@ void platf_graph_interconnect_star(void) {
       platf_node_connect(graph_node, first_node);
     }
   }
+}
+
+void platf_graph_interconnect_line(void) {
+  /* Node are connected to the previous and the next node, in a line */
+  xbt_dynar_t dynar_nodes = NULL;
+  xbt_node_t graph_node = NULL;
+  xbt_node_t old_node = NULL;
+  unsigned int i;
+
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, graph_node) {
+    if(old_node != NULL) {
+      platf_node_connect(graph_node, old_node);
+    }
+    old_node = graph_node;
+  }
+}
+
+
+
+/* Functions used to generate interesting random values */
+
+double random_pareto(double min, double max, double K, double P, double ALPHA) {
+  double x = RngStream_RandU01(rng_stream);
+  double den = pow(1.0 - x + x*pow(K/P, ALPHA), 1.0/ALPHA);
+  double res = (1/den);
+  res += min - 1; // pareto is on [1, infinity) by default
+  if (res>max) {
+    return max;
+  }
+  return res;
 }
