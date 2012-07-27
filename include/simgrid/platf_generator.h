@@ -26,6 +26,7 @@ XBT_PUBLIC(void) platf_graph_heavytailed(unsigned long node_count);
 XBT_PUBLIC(void) platf_graph_interconnect_star(void);
 XBT_PUBLIC(void) platf_graph_interconnect_line(void);
 XBT_PUBLIC(void) platf_graph_interconnect_ring(void);
+XBT_PUBLIC(void) platf_graph_interconnect_clique(void);
 
 // WARNING : Only for debbugging ; should be removed when platform
 // generation works correctly

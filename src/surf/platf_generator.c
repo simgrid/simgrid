@@ -151,6 +151,21 @@ void platf_graph_interconnect_ring(void) {
   platf_node_connect(first_node, graph_node);
 }
 
+void platf_graph_interconnect_clique(void) {
+  /* Create a simple topology where all nodes are connected to each other, in a clique manner */
+  xbt_dynar_t dynar_nodes = NULL;
+  xbt_node_t first_node = NULL;
+  xbt_node_t second_node = NULL;
+  unsigned int i,j;
+
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, first_node) {
+    xbt_dynar_foreach(dynar_nodes, j, second_node) {
+      platf_node_connect(first_node, second_node);
+    }
+  }
+}
+
 
 
 /* Functions used to generate interesting random values */
