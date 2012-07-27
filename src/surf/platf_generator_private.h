@@ -4,6 +4,7 @@
 #include <xbt/graph.h>
 
 typedef struct {
+  unsigned long id;
   double x, y;
   int degree;
   e_platf_node_kind kind;
