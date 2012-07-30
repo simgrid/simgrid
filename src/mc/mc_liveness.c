@@ -266,6 +266,9 @@ void MC_ddfs_init(void){
 
   MC_UNSET_RAW_MEM; 
 
+  /* Get .plt section (start and end addresses) for data libsimgrid comparison */
+  get_plt_section();
+
   unsigned int cursor = 0;
   xbt_state_t state;
 

@@ -10,6 +10,10 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
 
+void *start_text_libsimgrid;
+void *start_plt, *end_plt;
+char *libsimgrid_path;
+
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size);
 static void MC_region_restore(mc_mem_region_t reg);
 static void MC_region_destroy(mc_mem_region_t reg);
@@ -111,6 +115,13 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
           }
         }
       }
+    }else if ((reg.prot & PROT_READ)){
+      if (maps->regions[i].pathname != NULL){
+        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
+          start_text_libsimgrid = reg.start_addr;
+          libsimgrid_path = strdup(maps->regions[i].pathname);
+        }
+      }
     }
     i++;
   }
@@ -161,12 +172,15 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
 
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
-      XBT_DEBUG("Different byte (offset=%zu) (%p - %p) in data libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);
       pointer_align = (i / sizeof(void*)) * sizeof(void*);
       addr_pointed1 = *((void **)((char *)d1 + pointer_align));
       addr_pointed2 = *((void **)((char *)d2 + pointer_align));
-      XBT_DEBUG("Addresses pointed : %p - %p", addr_pointed1, addr_pointed2);
-      distance++;
+      if((addr_pointed1 > start_plt && addr_pointed1 < end_plt) || (addr_pointed2 > start_plt && addr_pointed2 < end_plt)){
+        continue;
+      }else{
+        XBT_DEBUG("Different byte (offset=%zu) (%p - %p) in data libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);
+        distance++;
+      }
     }
   }
   
@@ -249,5 +263,63 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   return errors > 0;
   
+}
+
+void get_plt_section(){
+
+  FILE *fp;
+  char *line = NULL;            /* Temporal storage for each line that is readed */
+  ssize_t read;                 /* Number of bytes readed */
+  size_t n = 0;                 /* Amount of bytes to read by getline */
+
+  char *lfields[7];
+  int i, plt_not_found = 1;
+  unsigned long int size, offset;
+  
+  char command[512];
+  sprintf(command, "objdump --section-headers %s", libsimgrid_path); 
+
+  fp = popen(command, "r");
+
+  if(fp == NULL)
+    perror("popen failed");
+
+  while ((read = getline(&line, &n, fp)) != -1 && plt_not_found) {
+
+    if(n == 0)
+      continue;
+
+     /* Wipeout the new line character */
+    line[read - 1] = '\0';
+
+    lfields[0] = strtok(line, " ");
+
+    if(lfields[0] == NULL)
+      continue;
+
+    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strcmp(lfields[0], "libsimgrid.so:") == 0)
+      continue;
+
+    for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
+      lfields[i] = strtok(NULL, " ");
+    }
+
+    if(i>=5){
+      if(strcmp(lfields[1], ".plt") == 0){
+        size = strtoul(lfields[2], NULL, 16);
+        offset = strtoul(lfields[4], NULL, 16);
+        start_plt = (char *)start_text_libsimgrid + offset;
+        end_plt = (char *)start_plt + size;
+        fprintf(stderr, ".plt section : %p - %p \n", start_plt, end_plt); 
+        plt_not_found = 0;
+      }
+    }
+    
+    
+  }
+
+  free(line);
+  pclose(fp);
+
 }
 
