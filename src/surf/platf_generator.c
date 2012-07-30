@@ -65,6 +65,20 @@ void platf_node_connect(xbt_node_t node1, xbt_node_t node2) {
   xbt_graph_new_edge(platform_graph, node1, node2, (void*)link_id);
 }
 
+double platf_node_distance(xbt_node_t node1, xbt_node_t node2) {
+  context_node_t node1_data;
+  context_node_t node2_data;
+  double delta_x;
+  double delta_y;
+  double distance;
+  node1_data = (context_node_t) xbt_graph_node_get_data(node1);
+  node2_data = (context_node_t) xbt_graph_node_get_data(node2);
+  delta_x = node1_data->x - node2_data->x;
+  delta_y = node1_data->y - node2_data->y;
+  distance = sqrt(delta_x*delta_x + delta_y*delta_y);
+  return distance;
+}
+
 void platf_graph_uniform(unsigned long node_count) {
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t graph_node = NULL;
