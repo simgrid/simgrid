@@ -166,7 +166,25 @@ void platf_graph_interconnect_clique(void) {
   }
 }
 
+void platf_graph_interconnect_uniform(double alpha) {
+  /* Creates a topology where the probability to connect two nodes is uniform (unrealistic, but simple)
+     alpha : Probability for two nodes to get connected */
+  xbt_dynar_t dynar_nodes = NULL;
+  xbt_node_t first_node = NULL;
+  xbt_node_t second_node = NULL;
+  unsigned int i,j;
 
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, first_node) {
+    xbt_dynar_foreach(dynar_nodes, j, second_node) {
+      if(j>=i)
+        break;
+      if(RngStream_RandU01(rng_stream) < alpha) {
+        platf_node_connect(first_node, second_node);
+      }
+    }
+  }
+}
 
 /* Functions used to generate interesting random values */
 
