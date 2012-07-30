@@ -152,3 +152,12 @@ memory_map_t get_memory_map(void)
 
   return ret;
 }
+
+void free_memory_map(memory_map_t map){
+
+  int i;
+  for(i=0; i< map->mapsize; i++){
+    xbt_free(map->regions[i].pathname);
+  }
+  xbt_free(map);
+}
