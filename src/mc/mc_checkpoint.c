@@ -283,7 +283,7 @@ void get_plt_section(){
   if(fp == NULL)
     perror("popen failed");
 
-  while ((read = getline(&line, &n, fp)) != -1 && plt_not_found) {
+  while ((read = getline(&line, &n, fp)) != -1 && plt_not_found == 1) {
 
     if(n == 0)
       continue;
@@ -317,6 +317,7 @@ void get_plt_section(){
     
   }
 
+  free(command);
   free(line);
   pclose(fp);
 
