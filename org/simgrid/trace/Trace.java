@@ -26,13 +26,7 @@ public final class Trace {
 
 	// TODO complete the binding of the tracing API 
 	
-	/**
-	 * Declare a new user variable associated to hosts. 
-	 * 
-	 * @param variable
-	 */
-	public final static native	void hostVariableDeclare (String variable);
- 
+
 	/**
 	 * Declare a new user variable associated to hosts with a color. 
 	 *  
@@ -41,15 +35,7 @@ public final class Trace {
 	 */
 	public final static native	void hostVariableDeclareWithColor (String variable, String color);
 	
-	/**
-	 * Set the value of a variable of a host. 
-	 * 
-	 * @param host
-	 * @param variable
-	 * @param value
-	 */
-	public final static native	void hostVariableSet (String host, String variable, double value);
- 
+	
 	/**
 	 *  Add a value to a variable of a host. 
 	 *  
@@ -296,5 +282,20 @@ public final class Trace {
  	 */
  	public final static native void hostPopState (String host, String state);
 
-	
+	/**
+	 * Declare a new user variable associated to hosts. 
+	 * 
+	 * @param variable
+	 */
+	public final static native	void hostVariableDeclare (String variable);
+ 
+
+	/**
+	 * Set the value of a variable of a host. 
+	 * 
+	 * @param host
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void hostVariableSet (String host, String variable, double value);
 }

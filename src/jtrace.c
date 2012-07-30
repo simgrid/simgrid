@@ -90,3 +90,25 @@ Java_org_simgrid_trace_Trace_hostPopState
   (*env)->ReleaseStringUTFChars(env, js_host, host);
   (*env)->ReleaseStringUTFChars(env, js_state, state);
 }
+
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare
+  (JNIEnv *env, jclass cls, jstring js_state)
+{
+  const char *state = (*env)->GetStringUTFChars(env, js_state, 0);
+
+  TRACE_host_variable_declare(state);
+
+  (*env)->ReleaseStringUTFChars(env, js_state, state);
+}
+
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSet
+  (JNIEnv *env, jclass cls, jstring js_host, jstring js_state, jdouble value)
+{
+  const char *host = (*env)->GetStringUTFChars(env, js_host, 0);
+  const char *state = (*env)->GetStringUTFChars(env, js_state, 0);
+
+  TRACE_host_variable_set(host, state, value);
+
+  (*env)->ReleaseStringUTFChars(env, js_host, host);
+  (*env)->ReleaseStringUTFChars(env, js_state, state);
+}
