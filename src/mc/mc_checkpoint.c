@@ -179,6 +179,7 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
         continue;
       }else{
         XBT_DEBUG("Different byte (offset=%zu) (%p - %p) in data libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);
+        XBT_DEBUG("Addresses pointed : %p - %p\n", addr_pointed1, addr_pointed2);
         distance++;
       }
     }
@@ -309,7 +310,6 @@ void get_plt_section(){
         offset = strtoul(lfields[4], NULL, 16);
         start_plt = (char *)start_text_libsimgrid + offset;
         end_plt = (char *)start_plt + size;
-        fprintf(stderr, ".plt section : %p - %p \n", start_plt, end_plt); 
         plt_not_found = 0;
       }
     }
