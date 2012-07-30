@@ -28,6 +28,7 @@ XBT_PUBLIC(void) platf_graph_interconnect_line(void);
 XBT_PUBLIC(void) platf_graph_interconnect_ring(void);
 XBT_PUBLIC(void) platf_graph_interconnect_clique(void);
 XBT_PUBLIC(void) platf_graph_interconnect_uniform(double alpha);
+XBT_PUBLIC(void) platf_graph_interconnect_exponential(double alpha);
 
 // WARNING : Only for debbugging ; should be removed when platform
 // generation works correctly
