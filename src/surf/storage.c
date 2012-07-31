@@ -189,7 +189,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
       storage_type->properties,
       Bread);
 
-  if(!storage_list) storage_list=xbt_dynar_new(sizeof(char *),free);
+  if(!storage_list) storage_list=xbt_dynar_new(sizeof(char *),NULL);
   xbt_dynar_push(storage_list,&storage);
 
   return storage;
@@ -202,6 +202,9 @@ static void storage_finalize(void)
 
   surf_model_exit(surf_storage_model);
   surf_storage_model = NULL;
+
+  if(storage_list)
+    xbt_dynar_free(&storage_list);
 
   xbt_swag_free
       (storage_running_action_set_that_does_not_need_being_checked);
@@ -620,6 +623,7 @@ static XBT_INLINE void surf_storage_resource_free(void *r)
   // specific to storage
   storage_t storage = r;
   xbt_dict_free(&storage->content);
+  xbt_dynar_free(&storage->write_actions);
   // generic resource
   surf_resource_free(r);
 }

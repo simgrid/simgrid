@@ -219,7 +219,8 @@ void SIMIX_post_io(smx_action_t action)
       simcall->file_open.result->surf_file = (action->io.surf_io)->file;
       break;
     case SIMCALL_FILE_CLOSE:
-      simcall->file_read.result = 0;
+      xbt_free(simcall->file_close.fp);
+      simcall->file_close.result = 0;
       break;
     case SIMCALL_FILE_WRITE:
       simcall->file_write.result = (action->io.surf_io)->cost;

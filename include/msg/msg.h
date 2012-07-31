@@ -77,6 +77,7 @@ XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, size_t nmemb, ms
 XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path, const char* mode);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fp);
 XBT_PUBLIC(int) MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf);
+XBT_PUBLIC(void) MSG_file_free_stat(s_msg_stat_t *stat);
 
 
 /************************** Host handling ***********************************/

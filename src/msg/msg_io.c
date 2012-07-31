@@ -81,7 +81,11 @@ msg_file_t MSG_file_open(const char* mount, const char* path, const char* mode)
  */
 int MSG_file_close(msg_file_t fp)
 {
-  return simcall_file_close(fp->simdata->smx_file);
+  int res = simcall_file_close(fp->simdata->smx_file);
+  free(fp->name);
+  xbt_free(fp->simdata);
+  xbt_free(fp);
+  return res;
 }
 
 /** \ingroup msg_file_management
@@ -96,4 +100,18 @@ int MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf)
   int res;
   res = simcall_file_stat(fd->simdata->smx_file, buf);
   return res;
+}
+
+/** \ingroup msg_file_management
+ * \brief Free the stat structure
+ *
+ * \param stat the #s_msg_stat_t to free
+ */
+void MSG_file_free_stat(s_msg_stat_t *stat)
+{
+  free(stat->date);
+  free(stat->group);
+  free(stat->time);
+  free(stat->user);
+  free(stat->user_rights);
 }
