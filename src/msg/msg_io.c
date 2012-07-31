@@ -115,3 +115,18 @@ void MSG_file_free_stat(s_msg_stat_t *stat)
   free(stat->user);
   free(stat->user_rights);
 }
+
+/** \ingroup msg_file_management
+ * \brief Unlink the file pointed by fd
+ *
+ * \param fd is the file descriptor (#msg_file_t)
+ * \return 0 on success or 1 on error
+ */
+int MSG_file_unlink(msg_file_t fd)
+{
+  int res = simcall_file_unlink(fd->simdata->smx_file);
+  free(fd->name);
+  xbt_free(fd->simdata);
+  xbt_free(fd);
+  return res;
+}

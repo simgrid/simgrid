@@ -454,6 +454,7 @@ XBT_PUBLIC(size_t) simcall_file_write(const void* ptr, size_t size, size_t nmemb
 XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path, const char* mode);
 XBT_PUBLIC(int) simcall_file_close(smx_file_t fp);
 XBT_PUBLIC(int) simcall_file_stat(smx_file_t fd, s_file_stat_t *buf);
+XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
 
 SG_END_DECL()
 #endif                          /* _SIMIX_SIMIX_H */

@@ -1465,6 +1465,21 @@ int simcall_file_stat(smx_file_t fd, s_file_stat_t *buf)
   return simcall->file_stat.result;
 }
 
+/**
+ * \ingroup simix_file_management
+ *
+ */
+int simcall_file_unlink(smx_file_t fd)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+  simcall->call = SIMCALL_FILE_UNLINK;
+  simcall->file_unlink.fd = fd;
+
+  SIMIX_simcall_push(simcall->issuer);
+
+  return simcall->file_unlink.result;
+}
+
 /* ************************************************************************** */
 
 /** @brief returns a printable string representing a simcall */

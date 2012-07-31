@@ -522,6 +522,10 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_pre_file_stat(simcall);
       break;
 
+    case SIMCALL_FILE_UNLINK:
+      SIMIX_pre_file_unlink(simcall);
+      break;
+
     case SIMCALL_NONE:
       THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
           SIMIX_process_get_name(simcall->issuer),

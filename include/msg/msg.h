@@ -79,6 +79,7 @@ XBT_PUBLIC(int) MSG_file_close(msg_file_t fp);
 XBT_PUBLIC(int) MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf);
 XBT_PUBLIC(void) MSG_file_free_stat(s_msg_stat_t *stat);
 
+XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 
 /************************** Host handling ***********************************/
 XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);

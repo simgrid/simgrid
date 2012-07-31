@@ -207,6 +207,42 @@ smx_action_t SIMIX_file_stat(smx_process_t process, smx_file_t fd, s_file_stat_t
   return action;
 }
 
+//SIMIX FILE UNLINK
+void SIMIX_pre_file_unlink(smx_simcall_t simcall)
+{
+  smx_action_t action = SIMIX_file_unlink(simcall->issuer,
+      simcall->file_unlink.fd);
+  xbt_fifo_push(action->simcalls, simcall);
+  simcall->issuer->waiting_action = action;
+}
+
+smx_action_t SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
+{
+  smx_action_t action;
+  smx_host_t host = process->smx_host;
+  /* check if the host is active */
+  if (surf_workstation_model->extension.
+      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
+           host->name);
+  }
+
+  action = xbt_mallocator_get(simix_global->action_mallocator);
+  action->type = SIMIX_ACTION_IO;
+  action->name = NULL;
+#ifdef HAVE_TRACING
+  action->category = NULL;
+#endif
+
+  action->io.host = host;
+  action->io.surf_io = surf_workstation_model->extension.workstation.unlink(host->host, fd->surf_file);
+
+  surf_workstation_model->action_data_set(action->io.surf_io, action);
+  XBT_DEBUG("Create io action %p", action);
+
+  return action;
+}
+
 void SIMIX_post_io(smx_action_t action)
 {
   xbt_fifo_item_t i;
@@ -233,6 +269,10 @@ void SIMIX_post_io(smx_action_t action)
       s_file_stat_t *dst = &(simcall->file_stat.buf);
       s_file_stat_t *src = &((action->io.surf_io)->stat);
       file_stat_copy(src,dst);
+      break;
+    case SIMCALL_FILE_UNLINK:
+      xbt_free(simcall->file_unlink.fd);
+      simcall->file_unlink.result = 0;
       break;
     default:
       break;

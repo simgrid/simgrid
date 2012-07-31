@@ -47,6 +47,24 @@ static surf_action_t storage_action_stat(void *storage, surf_file_t stream)
   return action;
 }
 
+static surf_action_t storage_action_unlink(void *storage, surf_file_t stream)
+{
+  surf_action_t action = storage_action_execute(storage,0, UNLINK);
+
+  // Add memory to storage
+  ((storage_t)storage)->used_size -= stream->content->stat.size;
+
+  // Remove the file from storage
+  xbt_dict_t content_dict = ((storage_t)storage)->content;
+  xbt_dict_remove(content_dict,stream->name);
+
+  free(stream->name);
+  stream->content = NULL;
+  xbt_free(stream);
+
+  return action;
+}
+
 static surf_action_t storage_action_open(void *storage, const char* mount, const char* path, const char* mode)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
@@ -137,6 +155,7 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
   case OPEN:
   case CLOSE:
   case STAT:
+  case UNLINK:
     break;
   case READ:
     lmm_expand(storage_maxmin_system, STORAGE->constraint_read,
@@ -146,7 +165,6 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
     lmm_expand(storage_maxmin_system, STORAGE->constraint_write,
                GENERIC_LMM_ACTION(action).variable, 1.0);
     xbt_dynar_push(((storage_t)storage)->write_actions,&action);
-
     break;
   }
   action->type = type;
@@ -442,6 +460,7 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.read = storage_action_read;
   surf_storage_model->extension.storage.write = storage_action_write;
   surf_storage_model->extension.storage.stat = storage_action_stat;
+  surf_storage_model->extension.storage.unlink = storage_action_unlink;
   surf_storage_model->extension.storage.create_resource = storage_create_resource;
 
   if (!storage_maxmin_system) {

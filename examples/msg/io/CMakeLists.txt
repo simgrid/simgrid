@@ -3,12 +3,15 @@ cmake_minimum_required(VERSION 2.6)
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(file file.c)
+add_executable(file_unlink file_unlink.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
   target_link_libraries(file simgrid m pthread)
+  target_link_libraries(file_unlink simgrid m pthread)
 else(NOT WIN32)
   target_link_libraries(file simgrid)
+  target_link_libraries(file_unlink simgrid)
 endif(NOT WIN32)
 
 set(tesh_files
@@ -23,6 +26,7 @@ set(xml_files
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/file.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/file_unlink.c
   PARENT_SCOPE
   )
 set(bin_files
