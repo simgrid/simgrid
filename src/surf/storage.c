@@ -51,8 +51,20 @@ static surf_action_t storage_action_open(void *storage, const char* mount, const
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   xbt_dict_t content_dict = ((storage_t)storage)->content;
-  surf_stat_t content = xbt_dict_get(content_dict,path);
+  surf_stat_t content = xbt_dict_get_or_null(content_dict,path);
 
+  // if file does not exist create an empty file
+  if(!content){
+    content = xbt_new0(s_surf_stat_t,1);
+    content->stat.date = xbt_strdup("");
+    content->stat.group = xbt_strdup("");
+    content->stat.size = 0;
+    content->stat.time = xbt_strdup("");
+    content->stat.user = xbt_strdup("");
+    content->stat.user_rights = xbt_strdup("");
+    xbt_dict_set(content_dict,path,content,NULL);
+    XBT_DEBUG("File '%s' was not found, file created.",path);
+  }
   surf_file_t file = xbt_new0(s_surf_file_t,1);
   file->name = xbt_strdup(path);
   file->content = content;
