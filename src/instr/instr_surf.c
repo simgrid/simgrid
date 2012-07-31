@@ -42,17 +42,6 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
   new_pajeSetVariable(date, container, type, bandwidth);
 }
 
-//FIXME: this function is not used (latency availability traces support exists in surf network models?)
-void TRACE_surf_link_set_latency(double date, const char *resource, double latency)
-{
-  if (!TRACE_is_enabled())
-    return;
-
-  container_t container = PJ_container_get(resource);
-  type_t type = PJ_type_get ("latency", container->type);
-  new_pajeSetVariable(date, container, type, latency);
-}
-
 /* to trace gtnets */
 void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst)
 {
