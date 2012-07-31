@@ -38,7 +38,7 @@ void platf_graph_init(unsigned long node_count) {
 
   for(i=0 ; i<node_count ; i++) {
     context_node_t node_data = NULL;
-    node_data = xbt_new(s_context_node_t, 1);
+    node_data = xbt_new0(s_context_node_t, 1);
     node_data->id = i+1;
     node_data->x = 0;
     node_data->y = 0;
@@ -59,10 +59,10 @@ void platf_node_connect(xbt_node_t node1, xbt_node_t node2) {
   node1_data->degree++;
   node2_data->degree++;
 
-  unsigned long *link_id = xbt_new(unsigned long, 1);
-  *link_id = ++last_link_id;
-
-  xbt_graph_new_edge(platform_graph, node1, node2, (void*)link_id);
+  context_edge_t edge_data = NULL;
+  edge_data = xbt_new0(s_context_edge_t, 1);
+  edge_data->id = ++last_link_id;
+  xbt_graph_new_edge(platform_graph, node1, node2, (void*)edge_data);
 }
 
 double platf_node_distance(xbt_node_t node1, xbt_node_t node2) {
@@ -233,6 +233,10 @@ void platf_graph_promote_to_cluster(xbt_node_t node, sg_platf_cluster_cbarg_t pa
   memcpy(&(node_data->cluster_parameters), parameters, sizeof(s_sg_platf_cluster_cbarg_t));
 }
 
+void platf_graph_link_label(xbt_edge_t edge, sg_platf_link_cbarg_t parameters) {
+  context_edge_t edge_data = (context_edge_t) xbt_graph_edge_get_data(edge);
+  memcpy(&(edge_data->link_parameters), parameters, sizeof(s_sg_platf_link_cbarg_t));
+}
 
 /* Functions used to generate interesting random values */
 

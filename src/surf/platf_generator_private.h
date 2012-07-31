@@ -15,6 +15,11 @@ typedef struct s_context_node_t {
   };
 } s_context_node_t, *context_node_t;
 
+typedef struct s_context_edge_t {
+  unsigned long id;
+  s_sg_platf_link_cbarg_t link_parameters;
+} s_context_edge_t, *context_edge_t;
+
 void platf_graph_init(unsigned long node_count);
 
 void platf_node_connect(xbt_node_t node1, xbt_node_t node2);
