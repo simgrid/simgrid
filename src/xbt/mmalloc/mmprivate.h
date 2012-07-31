@@ -107,13 +107,6 @@ struct mstats
   size_t bytes_free;    /* Byte total of chunks in the free list. */
 };
 
-typedef struct s_heap_area_pair{
-  int block1;
-  int fragment1;
-  int block2;
-  int fragment2;
-}s_heap_area_pair_t, *heap_area_pair_t;
-
 /* Data structure giving per-block information.
  *
  * There is one such structure in the mdp->heapinfo array per block used in that heap,

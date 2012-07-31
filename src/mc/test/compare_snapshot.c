@@ -21,10 +21,10 @@ static void test1()
   mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(snapshot2);
 
-  MC_UNSET_RAW_MEM;
-
   int res = snapshot_compare(snapshot1, snapshot2);
   xbt_assert(res == 0);
+
+  MC_UNSET_RAW_MEM;
 
   fprintf(stderr, "\n**************** END TEST 1 ****************\n");
 
@@ -49,7 +49,7 @@ static void test2()
 
   MC_UNSET_RAW_MEM;
 
-  char* t = strdup("toto");
+  char* t = malloc(5);
 
   MC_SET_RAW_MEM;
 
@@ -87,7 +87,7 @@ static void test3()
 
   MC_UNSET_RAW_MEM;
 
-  char *t = strdup("toto");;
+  char *t = malloc(5);
   free(t);
 
   MC_SET_RAW_MEM;
@@ -116,7 +116,7 @@ static void test4()
 
   fprintf(stderr, "\n**************** TEST 4 ****************\n\n");
 
-  char *t = strdup("toto");
+  char *t = malloc(5);
 
   MC_SET_RAW_MEM;
 
@@ -238,6 +238,9 @@ void MC_test_snapshot_comparison(){
   MC_UNSET_RAW_MEM;
 
   test1();
+
+  MC_restore_snapshot(initial);
+  MC_UNSET_RAW_MEM;
   
   test2();
   
@@ -260,4 +263,7 @@ void MC_test_snapshot_comparison(){
   MC_UNSET_RAW_MEM;
   
   test6();
+
+  MC_restore_snapshot(initial);
+  MC_UNSET_RAW_MEM;
 }

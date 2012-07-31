@@ -183,6 +183,8 @@ typedef struct s_memory_map {
 } s_memory_map_t, *memory_map_t;
 
 memory_map_t get_memory_map(void);
+void free_memory_map(memory_map_t map);
+void get_plt_section(void);
 
 
 /********************************** DPOR for safety  **************************************/

@@ -83,9 +83,7 @@ int reached(xbt_state_t st){
     /* New pair reached */
     xbt_dynar_push(reached_pairs, &new_pair); 
     MC_UNSET_RAW_MEM;
-    
-    create_dump(xbt_dynar_length(reached_pairs));
-
+ 
     return 0;
 
   }else{
@@ -115,8 +113,6 @@ int reached(xbt_state_t st){
         XBT_INFO("Different automaton state");
       }
     }
-
-    create_dump(xbt_dynar_length(reached_pairs));
 
     /* New pair reached */
     xbt_dynar_push(reached_pairs, &new_pair); 
@@ -165,8 +161,6 @@ void set_pair_reached(xbt_state_t st){
   xbt_dynar_push(reached_pairs, &pair); 
   
   MC_UNSET_RAW_MEM;
-
-  create_dump(xbt_dynar_length(reached_pairs));
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
@@ -271,6 +265,9 @@ void MC_ddfs_init(void){
   MC_take_snapshot_liveness(initial_snapshot_liveness);
 
   MC_UNSET_RAW_MEM; 
+
+  /* Get .plt section (start and end addresses) for data libsimgrid comparison */
+  get_plt_section();
 
   unsigned int cursor = 0;
   xbt_state_t state;
