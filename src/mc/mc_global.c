@@ -593,37 +593,6 @@ double MC_process_clock_get(smx_process_t process)
     return 0;
 }
 
-void MC_diff(void){
-
-  mc_snapshot_t sn = xbt_new0(s_mc_snapshot_t, 1);
-  MC_take_snapshot_liveness(sn);
-
-  int i;
-
-  XBT_INFO("Number of regions : %u", sn->num_reg);
-
-  for(i=0; i<sn->num_reg; i++){
-    
-    switch(sn->regions[i]->type){
-    case 0: /* heap */
-      XBT_INFO("Size of heap : %zu", sn->regions[i]->size);
-      break;
-    case 1 : /* libsimgrid */
-      XBT_INFO("Size of libsimgrid : %zu", sn->regions[i]->size);
-      break;
-    case 2 : /* data program */
-      XBT_INFO("Size of data program : %zu", sn->regions[i]->size);
-      break;
-    case 3 : /* stack */
-      XBT_INFO("Size of stack : %zu", sn->regions[i]->size);
-      XBT_INFO("Start addr of stack : %p", sn->regions[i]->start_addr);
-      break;
-    }
-
-  }
-
-}
-
 void MC_automaton_load(const char *file){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
