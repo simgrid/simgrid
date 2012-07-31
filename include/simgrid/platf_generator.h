@@ -22,6 +22,9 @@ typedef enum {
 typedef struct s_context_node_t *context_node_t;
 typedef struct s_context_edge_t *context_edge_t;
 
+typedef void (*platf_promoter_cb_t) (context_node_t);
+typedef void (*platf_labeler_cb_t) (context_edge_t);
+
 XBT_PUBLIC(void) platf_random_seed(unsigned long seed[6]);
 
 XBT_PUBLIC(void) platf_graph_uniform(unsigned long node_count);
@@ -38,6 +41,12 @@ XBT_PUBLIC(void) platf_graph_promote_to_host(context_node_t node, sg_platf_host_
 XBT_PUBLIC(void) platf_graph_promote_to_cluster(context_node_t node, sg_platf_cluster_cbarg_t parameters);
 
 XBT_PUBLIC(void) platf_graph_link_label(context_edge_t edge, sg_platf_link_cbarg_t parameters);
+
+XBT_PUBLIC(void) platf_graph_promoter(platf_promoter_cb_t promoter_callback);
+XBT_PUBLIC(void) platf_graph_labeler(platf_labeler_cb_t labeler_callback);
+
+XBT_PUBLIC(void) platf_do_promote(void);
+XBT_PUBLIC(void) platf_do_label(void);
 
 // WARNING : Only for debbugging ; should be removed when platform
 // generation works correctly

@@ -17,6 +17,7 @@ typedef struct s_context_node_t {
 
 typedef struct s_context_edge_t {
   unsigned long id;
+  int labeled;
   s_sg_platf_link_cbarg_t link_parameters;
 } s_context_edge_t;
 

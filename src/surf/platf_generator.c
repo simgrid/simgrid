@@ -7,6 +7,8 @@
 #include <math.h>
 
 static xbt_graph_t platform_graph = NULL;
+static xbt_dynar_t promoter_dynar = NULL;
+static xbt_dynar_t labeler_dynar = NULL;
 
 static RngStream rng_stream = NULL;
 
@@ -62,6 +64,7 @@ void platf_node_connect(xbt_node_t node1, xbt_node_t node2) {
   context_edge_t edge_data = NULL;
   edge_data = xbt_new0(s_context_edge_t, 1);
   edge_data->id = ++last_link_id;
+  edge_data->labeled = FALSE;
   xbt_graph_new_edge(platform_graph, node1, node2, (void*)edge_data);
 }
 
@@ -233,6 +236,54 @@ void platf_graph_promote_to_cluster(context_node_t node, sg_platf_cluster_cbarg_
 
 void platf_graph_link_label(context_edge_t edge, sg_platf_link_cbarg_t parameters) {
   memcpy(&(edge->link_parameters), parameters, sizeof(s_sg_platf_link_cbarg_t));
+}
+
+void platf_graph_promoter(platf_promoter_cb_t promoter_callback) {
+  if(promoter_dynar == NULL) {
+    promoter_dynar = xbt_dynar_new(sizeof(platf_promoter_cb_t), NULL);
+  }
+  xbt_dynar_push(promoter_dynar, &promoter_callback);
+}
+
+void platf_graph_labeler(platf_labeler_cb_t labeler_callback) {
+  if(labeler_dynar == NULL) {
+    labeler_dynar = xbt_dynar_new(sizeof(void*), NULL);
+  }
+  xbt_dynar_push(labeler_dynar, &labeler_callback);
+}
+
+void platf_do_promote(void) {
+  platf_promoter_cb_t promoter_callback;
+  xbt_node_t graph_node = NULL;
+  xbt_dynar_t dynar_nodes = NULL;
+  context_node_t node = NULL;
+  unsigned int i, j;
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, graph_node) {
+    node = (context_node_t) xbt_graph_node_get_data(graph_node);
+    xbt_dynar_foreach(promoter_dynar, j, promoter_callback) {
+      if(node->kind != ROUTER)
+        break;
+      promoter_callback(node);
+    }
+  }
+}
+
+void platf_do_label(void) {
+  platf_labeler_cb_t labeler_callback;
+  xbt_edge_t graph_edge = NULL;
+  xbt_dynar_t dynar_edges = NULL;
+  context_edge_t edge = NULL;
+  unsigned int i, j;
+  dynar_edges = xbt_graph_get_edges(platform_graph);
+  xbt_dynar_foreach(dynar_edges, i, graph_edge) {
+    edge = (context_edge_t) xbt_graph_edge_get_data(graph_edge);
+    xbt_dynar_foreach(promoter_dynar, j, labeler_callback) {
+      if(edge->labeled == TRUE)
+        break;
+      labeler_callback(edge);
+    }
+  }
 }
 
 /* Functions used to generate interesting random values */
