@@ -19,6 +19,9 @@ typedef enum {
   CLUSTER
 } e_platf_node_kind;
 
+typedef struct s_context_node_t *context_node_t;
+typedef struct s_context_edge_t *context_edge_t;
+
 XBT_PUBLIC(void) platf_random_seed(unsigned long seed[6]);
 
 XBT_PUBLIC(void) platf_graph_uniform(unsigned long node_count);
@@ -31,13 +34,14 @@ XBT_PUBLIC(void) platf_graph_interconnect_clique(void);
 XBT_PUBLIC(void) platf_graph_interconnect_uniform(double alpha);
 XBT_PUBLIC(void) platf_graph_interconnect_exponential(double alpha);
 
-XBT_PUBLIC(void) platf_graph_promote_to_host(xbt_node_t node, sg_platf_host_cbarg_t parameters);
-XBT_PUBLIC(void) platf_graph_promote_to_cluster(xbt_node_t node, sg_platf_cluster_cbarg_t parameters);
+XBT_PUBLIC(void) platf_graph_promote_to_host(context_node_t node, sg_platf_host_cbarg_t parameters);
+XBT_PUBLIC(void) platf_graph_promote_to_cluster(context_node_t node, sg_platf_cluster_cbarg_t parameters);
 
-XBT_PUBLIC(void) platf_graph_link_label(xbt_edge_t edge, sg_platf_link_cbarg_t parameters);
+XBT_PUBLIC(void) platf_graph_link_label(context_edge_t edge, sg_platf_link_cbarg_t parameters);
 
 // WARNING : Only for debbugging ; should be removed when platform
 // generation works correctly
 XBT_PUBLIC(xbt_graph_t) platf_graph_get(void);
 
 #endif              /* SG_PLATF_GEN_H */
+

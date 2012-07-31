@@ -221,21 +221,18 @@ void platf_graph_interconnect_exponential(double alpha) {
   }
 }
 
-void platf_graph_promote_to_host(xbt_node_t node, sg_platf_host_cbarg_t parameters) {
-  context_node_t node_data = (context_node_t) xbt_graph_node_get_data(node);
-  node_data->kind = HOST;
-  memcpy(&(node_data->host_parameters), parameters, sizeof(s_sg_platf_host_cbarg_t));
+void platf_graph_promote_to_host(context_node_t node, sg_platf_host_cbarg_t parameters) {
+  node->kind = HOST;
+  memcpy(&(node->host_parameters), parameters, sizeof(s_sg_platf_host_cbarg_t));
 }
 
-void platf_graph_promote_to_cluster(xbt_node_t node, sg_platf_cluster_cbarg_t parameters) {
-  context_node_t node_data = (context_node_t) xbt_graph_node_get_data(node);
-  node_data->kind = CLUSTER;
-  memcpy(&(node_data->cluster_parameters), parameters, sizeof(s_sg_platf_cluster_cbarg_t));
+void platf_graph_promote_to_cluster(context_node_t node, sg_platf_cluster_cbarg_t parameters) {
+  node->kind = CLUSTER;
+  memcpy(&(node->cluster_parameters), parameters, sizeof(s_sg_platf_cluster_cbarg_t));
 }
 
-void platf_graph_link_label(xbt_edge_t edge, sg_platf_link_cbarg_t parameters) {
-  context_edge_t edge_data = (context_edge_t) xbt_graph_edge_get_data(edge);
-  memcpy(&(edge_data->link_parameters), parameters, sizeof(s_sg_platf_link_cbarg_t));
+void platf_graph_link_label(context_edge_t edge, sg_platf_link_cbarg_t parameters) {
+  memcpy(&(edge->link_parameters), parameters, sizeof(s_sg_platf_link_cbarg_t));
 }
 
 /* Functions used to generate interesting random values */

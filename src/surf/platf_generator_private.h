@@ -13,12 +13,12 @@ typedef struct s_context_node_t {
     s_sg_platf_host_cbarg_t host_parameters;
     s_sg_platf_cluster_cbarg_t cluster_parameters;
   };
-} s_context_node_t, *context_node_t;
+} s_context_node_t;
 
 typedef struct s_context_edge_t {
   unsigned long id;
   s_sg_platf_link_cbarg_t link_parameters;
-} s_context_edge_t, *context_edge_t;
+} s_context_edge_t;
 
 void platf_graph_init(unsigned long node_count);
 
