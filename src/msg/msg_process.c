@@ -179,7 +179,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
 
 #ifdef HAVE_TRACING
   TRACE_msg_process_create(name, simdata->PID, simdata->m_host);
-  #endif
+#endif
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
   simcall_process_create(&process, name, code, simdata, SIMIX_host_get_name(host->smx_host), -1,
