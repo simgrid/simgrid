@@ -43,7 +43,7 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host, m
     TRACE_msg_process_destroy (MSG_process_get_name (process), MSG_process_get_PID (process), old_host);
 
     //create new container on the new_host location
-    msg = PJ_container_new(instr_process_id(process, str, len), INSTR_MSG_PROCESS, PJ_container_get(SIMIX_host_get_name(new_host->smx_host)));
+    TRACE_msg_process_create (MSG_process_get_name (process), MSG_process_get_PID (process), new_host);
 
     //end link
     msg = PJ_container_get(instr_process_id(process, str, len));
