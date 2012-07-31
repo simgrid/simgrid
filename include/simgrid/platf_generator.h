@@ -9,8 +9,9 @@
 #ifndef SG_PLATF_GEN_H
 #define SG_PLATF_GEN_H
 
-#include <xbt.h>
-#include <xbt/graph.h> //Only for platf_graph_get()
+#include "xbt.h"
+#include "xbt/graph.h" //Only for platf_graph_get()
+#include "platf.h"
 
 typedef enum {
   ROUTER,
@@ -29,6 +30,9 @@ XBT_PUBLIC(void) platf_graph_interconnect_ring(void);
 XBT_PUBLIC(void) platf_graph_interconnect_clique(void);
 XBT_PUBLIC(void) platf_graph_interconnect_uniform(double alpha);
 XBT_PUBLIC(void) platf_graph_interconnect_exponential(double alpha);
+
+XBT_PUBLIC(void) platf_graph_promote_to_host(xbt_node_t node, sg_platf_host_cbarg_t parameters);
+XBT_PUBLIC(void) platf_graph_promote_to_cluster(xbt_node_t node, sg_platf_cluster_cbarg_t parameters);
 
 // WARNING : Only for debbugging ; should be removed when platform
 // generation works correctly
