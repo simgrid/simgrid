@@ -65,6 +65,16 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, msg_ho
   }
 }
 
+void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_host_t host)
+{
+  int len = INSTR_DEFAULT_STR_SIZE;
+  char str[INSTR_DEFAULT_STR_SIZE];
+
+  container_t process = PJ_container_get (instr_process_id_2 (process_name, process_pid, str, len));
+  PJ_container_remove_from_parent (process);
+  PJ_container_free (process);
+}
+
 void TRACE_msg_process_kill(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
