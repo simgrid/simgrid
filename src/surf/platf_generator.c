@@ -224,6 +224,33 @@ void platf_graph_interconnect_exponential(double alpha) {
   }
 }
 
+void platf_graph_interconnect_zegura(double alpha, double beta, double r) {
+  /* Create a topology where the probability follows the model of Zegura
+   * (see Zegura, Calvert, Donahoo, A quantitative comparison of graph-based models
+   * for Internet topology, IEEE/ACM Transactions on Networking, 1997.)
+   *
+   * alpha : Probability of connexion for short edges
+   * beta : Probability of connexion for long edges
+   * r : Limit between long and short edges (between 0 and sqrt(2) since nodes are placed on the unit square)
+   */
+  xbt_dynar_t dynar_nodes = NULL;
+  xbt_node_t first_node = NULL;
+  xbt_node_t second_node = NULL;
+  unsigned int i,j;
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, first_node) {
+    xbt_dynar_foreach(dynar_nodes, j, second_node) {
+      if(j>=i)
+        break;
+      double d = platf_node_distance(first_node, second_node);
+      double proba = d < r ? alpha : beta;
+      if(RngStream_RandU01(rng_stream) < proba) {
+        platf_node_connect(first_node, second_node);
+      }
+    }
+  }
+}
+
 void platf_graph_interconnect_barabasi(void) {
   /* Create a topology constructed according to the Barabasi-Albert algorithm (follows power laws)
      (see Barabasi and Albert, Emergence of scaling in random networks, Science 1999, num 59, p509­-512.) */

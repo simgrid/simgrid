@@ -36,6 +36,7 @@ XBT_PUBLIC(void) platf_graph_interconnect_ring(void);
 XBT_PUBLIC(void) platf_graph_interconnect_clique(void);
 XBT_PUBLIC(void) platf_graph_interconnect_uniform(double alpha);
 XBT_PUBLIC(void) platf_graph_interconnect_exponential(double alpha);
+XBT_PUBLIC(void) platf_graph_interconnect_zegura(double alpha, double beta, double r);
 XBT_PUBLIC(void) platf_graph_interconnect_barabasi(void);
 
 XBT_PUBLIC(void) platf_graph_promote_to_host(context_node_t node, sg_platf_host_cbarg_t parameters);
