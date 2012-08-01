@@ -14,6 +14,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mm_diff, xbt,
 
 extern char *xbt_binary_name;
 
+xbt_dynar_t mmalloc_ignore;
+
 typedef struct s_heap_area_pair{
   int block1;
   int fragment1;
@@ -28,6 +30,8 @@ static int is_new_heap_area_pair(xbt_dynar_t list, int block1, int fragment1, in
 
 static int compare_area(void *area1, void* area2, size_t size, xbt_dynar_t previous);
 static void match_equals(xbt_dynar_t list);
+
+static size_t heap_comparison_ignore(void *address);
 
 void mmalloc_backtrace_block_display(void* heapinfo, int block){
 
@@ -350,17 +354,37 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
 }
 
+static size_t heap_comparison_ignore(void *address){
+  unsigned int cursor = 0;
+  mc_ignore_region_t region;
+  xbt_dynar_foreach(mmalloc_ignore, cursor, region){
+    if(region->address == address)
+      return region->size;
+  }
+  return 0;
+}
+
 
 static int compare_area(void *area1, void* area2, size_t size, xbt_dynar_t previous){
 
-  size_t i = 0, pointer_align = 0;
+  size_t i = 0, pointer_align = 0, ignore1 = 0, ignore2 = 0;
   void *address_pointed1, *address_pointed2, *addr_block_pointed1, *addr_block_pointed2, *addr_frag_pointed1, *addr_frag_pointed2;
   size_t block_pointed1, block_pointed2, frag_pointed1, frag_pointed2;
   size_t frag_size;
   int res_compare;
-  
+  void *current_area1, *current_area2;
+ 
   while(i<size){
 
+    current_area1 = (char*)((xbt_mheap_t)s_heap)->heapbase + ((((char *)area1) + i) - (char *)heapbase1);
+    if((ignore1 = heap_comparison_ignore(current_area1)) > 0){
+      current_area2 = (char*)((xbt_mheap_t)s_heap)->heapbase + ((((char *)area2) + i) - (char *)heapbase2);
+      if((ignore2 = heap_comparison_ignore(current_area2))  == ignore1){
+        i = i + ignore2;
+        continue;
+      }
+    }
+   
     if(memcmp(((char *)area1) + i, ((char *)area2) + i, 1) != 0){
 
       /* Check pointer difference */

@@ -37,6 +37,9 @@ XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);
 XBT_PUBLIC(double) MC_process_clock_get(smx_process_t);
 void MC_automaton_load(const char *file);
 
+void MC_ignore_init(void);
+XBT_PUBLIC(void) MC_ignore(void *address, size_t size);
+
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */
 XBT_PUBLIC(void) MC_memory_exit(void);

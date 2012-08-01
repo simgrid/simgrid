@@ -72,6 +72,7 @@ mc_stats_pair_t mc_stats_pair = NULL;
 xbt_fifo_t mc_stack_liveness = NULL;
 mc_snapshot_t initial_snapshot_liveness = NULL;
 int compare;
+extern xbt_dynar_t mmalloc_ignore;
 
 xbt_automaton_t _mc_property_automaton = NULL;
 
@@ -161,6 +162,11 @@ void MC_modelcheck_liveness(){
   
   mc_time = xbt_new0(double, simix_process_maxpid);
 
+  /* mc_time refers to clock for each process -> ignore it for heap comparison */
+  int i;
+  for(i = 0; i<simix_process_maxpid; i++)
+    MC_ignore(&(mc_time[i]), sizeof(double));
+  
   compare = 0;
 
   /* Initialize the data structures that must be persistent across every
@@ -631,4 +637,20 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
   else
     MC_UNSET_RAW_MEM;
   
+}
+
+void MC_ignore_init(){
+  MC_SET_RAW_MEM;
+  mmalloc_ignore = xbt_dynar_new(sizeof(mc_ignore_region_t), NULL);
+  MC_UNSET_RAW_MEM;
+}
+
+void MC_ignore(void *address, size_t size){
+  MC_SET_RAW_MEM;
+  mc_ignore_region_t region = NULL;
+  region = xbt_new0(s_mc_ignore_region_t, 1);
+  region->address = address;
+  region->size = size;
+  xbt_dynar_push(mmalloc_ignore, &region);
+  MC_UNSET_RAW_MEM;
 }

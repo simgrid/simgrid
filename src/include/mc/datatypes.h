@@ -14,5 +14,10 @@ SG_BEGIN_DECL()
 /******************************* Transitions **********************************/
 typedef struct s_mc_transition *mc_transition_t;
 
+typedef struct s_mc_ignore_region{
+  void *address;
+  size_t size;
+}s_mc_ignore_region_t, *mc_ignore_region_t;
+
 SG_END_DECL()
 #endif                          /* _MC_MC_H */
