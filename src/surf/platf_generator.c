@@ -224,6 +224,31 @@ void platf_graph_interconnect_exponential(double alpha) {
   }
 }
 
+void platf_graph_interconnect_waxman(double alpha, double beta) {
+  /* Create a topology where the probability follows the model of Waxman
+   * (see Waxman, Routing of Multipoint Connections, IEEE J. on Selected Areas in Comm., 1988)
+   *
+   * Number of edges increases with alpha
+   * edge length heterogeneity increases with beta
+   */
+  xbt_dynar_t dynar_nodes = NULL;
+  xbt_node_t first_node = NULL;
+  xbt_node_t second_node = NULL;
+  unsigned int i,j;
+  double L = sqrt(2.0); /*  L = c*sqrt(2); c=side of placement square */
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, first_node) {
+    xbt_dynar_foreach(dynar_nodes, j, second_node) {
+      if(j>=i)
+        break;
+      double d = platf_node_distance(first_node, second_node);
+      if(RngStream_RandU01(rng_stream) < alpha*exp(-d/(L*beta))) {
+        platf_node_connect(first_node, second_node);
+      }
+    }
+  }
+}
+
 void platf_graph_interconnect_zegura(double alpha, double beta, double r) {
   /* Create a topology where the probability follows the model of Zegura
    * (see Zegura, Calvert, Donahoo, A quantitative comparison of graph-based models
