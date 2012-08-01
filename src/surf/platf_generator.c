@@ -224,6 +224,29 @@ void platf_graph_interconnect_exponential(double alpha) {
   }
 }
 
+void platf_graph_interconnect_barabasi(void) {
+  /* Create a topology constructed according to the Barabasi-Albert algorithm (follows power laws)
+     (see Barabasi and Albert, Emergence of scaling in random networks, Science 1999, num 59, p509­-512.) */
+  xbt_dynar_t dynar_nodes = NULL;
+  xbt_node_t first_node = NULL;
+  xbt_node_t second_node = NULL;
+  context_node_t node_data = NULL;
+  unsigned int i,j;
+  unsigned long sum = 0;
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, first_node) {
+    xbt_dynar_foreach(dynar_nodes, j, second_node) {
+      if(j>=i)
+        break;
+      node_data = xbt_graph_node_get_data(second_node);
+      if(sum==0 || RngStream_RandU01(rng_stream) < ((double)(node_data->degree)/ (double)sum)) {
+        platf_node_connect(first_node, second_node);
+        sum += 2;
+      }
+    }
+  }
+}
+
 void platf_graph_promote_to_host(context_node_t node, sg_platf_host_cbarg_t parameters) {
   node->kind = HOST;
   memcpy(&(node->host_parameters), parameters, sizeof(s_sg_platf_host_cbarg_t));
