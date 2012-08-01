@@ -88,6 +88,8 @@ void *s_heap, *heapbase1, *heapbase2;
 malloc_info *heapinfo1, *heapinfo2;
 size_t heaplimit, heapsize1, heapsize2;
 
+int ignore_done;
+
 int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
   if(heap1 == NULL && heap1 == NULL){
@@ -122,6 +124,8 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
   xbt_dynar_t previous = xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
 
   int equal;
+
+  ignore_done = 0;
 
   /* Check busy blocks*/
 
@@ -386,13 +390,18 @@ static int compare_area(void *area1, void* area2, size_t size, xbt_dynar_t previ
  
   while(i<size){
 
-    current_area1 = (char*)((xbt_mheap_t)s_heap)->heapbase + ((((char *)area1) + i) - (char *)heapbase1);
-    if((ignore1 = heap_comparison_ignore(current_area1)) > 0){
-      current_area2 = (char*)((xbt_mheap_t)s_heap)->heapbase + ((((char *)area2) + i) - (char *)heapbase2);
-      if((ignore2 = heap_comparison_ignore(current_area2))  == ignore1){
-        i = i + ignore2;
-        continue;
+    if(ignore_done < xbt_dynar_length(mmalloc_ignore)){
+
+      current_area1 = (char*)((xbt_mheap_t)s_heap)->heapbase + ((((char *)area1) + i) - (char *)heapbase1);
+      if((ignore1 = heap_comparison_ignore(current_area1)) > 0){
+        current_area2 = (char*)((xbt_mheap_t)s_heap)->heapbase + ((((char *)area2) + i) - (char *)heapbase2);
+        if((ignore2 = heap_comparison_ignore(current_area2))  == ignore1){
+          i = i + ignore2;
+          ignore_done++;
+          continue;
+        }
       }
+
     }
    
     if(memcmp(((char *)area1) + i, ((char *)area2) + i, 1) != 0){
