@@ -370,7 +370,7 @@ static int compare_area(void *area1, void* area2, size_t size, xbt_dynar_t previ
   size_t i = 0, pointer_align = 0, ignore1 = 0, ignore2 = 0;
   void *address_pointed1, *address_pointed2, *addr_block_pointed1, *addr_block_pointed2, *addr_frag_pointed1, *addr_frag_pointed2;
   size_t block_pointed1, block_pointed2, frag_pointed1, frag_pointed2;
-  size_t frag_size;
+  size_t frag_size, frag_size1, frag_size2;
   int res_compare;
   void *current_area1, *current_area2;
  
@@ -449,6 +449,38 @@ static int compare_area(void *area1, void* area2, size_t size, xbt_dynar_t previ
           
         }
           
+      }else{
+
+        if((heapinfo1[block_pointed1].type > 0) && (heapinfo2[block_pointed2].type > 0)){
+          
+          addr_block_pointed1 = ((void*) (((ADDR2UINT(block_pointed1)) - 1) * BLOCKSIZE + (char*)heapbase1));
+          addr_block_pointed2 = ((void*) (((ADDR2UINT(block_pointed2)) - 1) * BLOCKSIZE + (char*)heapbase2));
+       
+          frag_pointed1 = ((uintptr_t) (ADDR2UINT (address_pointed1) % (BLOCKSIZE))) >> heapinfo1[block_pointed1].type;
+          frag_pointed2 = ((uintptr_t) (ADDR2UINT (address_pointed2) % (BLOCKSIZE))) >> heapinfo2[block_pointed2].type;
+
+          if(heapinfo1[block_pointed1].busy_frag.frag_size[frag_pointed1] != heapinfo2[block_pointed2].busy_frag.frag_size[frag_pointed2]) /* Different size_used */    
+            return 1;
+          
+          frag_size1 = 1 << heapinfo1[block_pointed1].type;
+          frag_size2 = 1 << heapinfo1[block_pointed2].type;
+
+          addr_frag_pointed1 = (void*) ((char *)addr_block_pointed1 + (frag_pointed1 * frag_size1));
+          addr_frag_pointed2 = (void*) ((char *)addr_block_pointed2 + (frag_pointed2 * frag_size2));
+
+          if(add_heap_area_pair(previous, block_pointed1, frag_pointed1, block_pointed2, frag_pointed2)){
+
+            res_compare = compare_area(addr_frag_pointed1, addr_frag_pointed2, heapinfo1[block_pointed1].busy_frag.frag_size[frag_pointed1], previous);
+            
+            if(res_compare)
+              return 1;
+           
+          }
+
+        }else{
+          return 1;
+        }
+
       }
 
       i = pointer_align + sizeof(void *);
