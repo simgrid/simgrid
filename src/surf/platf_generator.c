@@ -64,6 +64,7 @@ void platf_node_connect(xbt_node_t node1, xbt_node_t node2) {
   context_edge_t edge_data = NULL;
   edge_data = xbt_new0(s_context_edge_t, 1);
   edge_data->id = ++last_link_id;
+  edge_data->length = platf_node_distance(node1, node2);
   edge_data->labeled = FALSE;
   xbt_graph_new_edge(platform_graph, node1, node2, (void*)edge_data);
 }
