@@ -356,11 +356,21 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
 static size_t heap_comparison_ignore(void *address){
   unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(mmalloc_ignore) - 1;
   mc_ignore_region_t region;
-  xbt_dynar_foreach(mmalloc_ignore, cursor, region){
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    region = (mc_ignore_region_t)xbt_dynar_get_as(mmalloc_ignore, cursor, mc_ignore_region_t);
     if(region->address == address)
       return region->size;
+    if(region->address < address)
+      start = cursor + 1;
+    if(region->address > address)
+      end = cursor - 1;   
   }
+
   return 0;
 }
 

@@ -646,11 +646,22 @@ void MC_ignore_init(){
 }
 
 void MC_ignore(void *address, size_t size){
+
   MC_SET_RAW_MEM;
+
   mc_ignore_region_t region = NULL;
   region = xbt_new0(s_mc_ignore_region_t, 1);
   region->address = address;
   region->size = size;
-  xbt_dynar_push(mmalloc_ignore, &region);
+
+  unsigned int cursor = 0;
+  mc_ignore_region_t current_region;
+  xbt_dynar_foreach(mmalloc_ignore, cursor, current_region){
+    if(current_region->address > address)
+      break;
+  }
+
+  xbt_dynar_insert_at(mmalloc_ignore, cursor, &region);
+
   MC_UNSET_RAW_MEM;
 }
