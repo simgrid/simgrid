@@ -50,11 +50,8 @@ void MSG_init_nocheck(int *argc, char **argv) {
     msg_global->vms = xbt_swag_new(xbt_swag_offset(vm,all_vms_hookup));
 
     if(MC_IS_ENABLED){
-      /* Create list of elements to ignore for heap comparison algorithm */
-      MC_ignore_init();
       /* Ignore total amount of messages sent during the simulation for heap comparison */
       MC_ignore(&(msg_global->sent_msg), sizeof(msg_global->sent_msg));
-   
     }
 
     /* initialization of the action module */

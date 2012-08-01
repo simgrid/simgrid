@@ -14,12 +14,15 @@
 #include "simgrid/simix.h"
 #include "simgrid/modelchecker.h" /* our public interface (and definition of HAVE_MC) */
 #include "xbt/automaton.h"
+#include "xbt/dynar.h"
 
 #define STD_HEAP_SIZE   20480000        /* Maximum size of the system's heap */
 
 SG_BEGIN_DECL()
 
 extern char*_surf_mc_property_file; /* fixme: better location? */
+
+extern xbt_dynar_t mmalloc_ignore;
 
 /********************************* Global *************************************/
 void _mc_cfg_cb_reduce(const char *name, int pos);

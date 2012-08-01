@@ -8,6 +8,7 @@
 
 #include "smx_private.h"
 #include "xbt/parmap.h"
+#include "mc/mc.h"
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
@@ -226,6 +227,12 @@ static void smx_ctx_raw_runall(void);
  */
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 {
+
+  if(MC_IS_ENABLED && mmalloc_ignore == NULL){
+    /* Create list of elements to ignore for heap comparison algorithm */
+    MC_ignore_init();
+  }
+
   XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
   smx_ctx_base_factory_init(factory);
 
