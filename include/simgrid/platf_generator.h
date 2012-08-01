@@ -19,8 +19,22 @@ typedef enum {
   CLUSTER
 } e_platf_node_kind;
 
-typedef struct s_context_node_t *context_node_t;
-typedef struct s_context_edge_t *context_edge_t;
+typedef struct s_context_node_t {
+  unsigned long id;
+  double x, y;
+  int degree;
+  e_platf_node_kind kind;
+  union {
+    s_sg_platf_host_cbarg_t host_parameters;
+    s_sg_platf_cluster_cbarg_t cluster_parameters;
+  };
+} s_context_node_t, *context_node_t;
+
+typedef struct s_context_edge_t {
+  unsigned long id;
+  int labeled;
+  s_sg_platf_link_cbarg_t link_parameters;
+} s_context_edge_t, *context_edge_t;
 
 typedef void (*platf_promoter_cb_t) (context_node_t);
 typedef void (*platf_labeler_cb_t) (context_edge_t);
