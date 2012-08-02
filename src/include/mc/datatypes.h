@@ -15,6 +15,8 @@ SG_BEGIN_DECL()
 typedef struct s_mc_transition *mc_transition_t;
 
 typedef struct s_mc_ignore_region{
+  int block;
+  int fragment;
   void *address;
   size_t size;
 }s_mc_ignore_region_t, *mc_ignore_region_t;

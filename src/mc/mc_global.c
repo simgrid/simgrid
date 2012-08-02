@@ -10,6 +10,7 @@
 
 #include "../surf/surf_private.h"
 #include "../simix/smx_private.h"
+#include "../xbt/mmalloc/mmprivate.h"
 #include "xbt/fifo.h"
 #include "mc_private.h"
 #include "xbt/automaton.h"
@@ -653,6 +654,13 @@ void MC_ignore(void *address, size_t size){
   region = xbt_new0(s_mc_ignore_region_t, 1);
   region->address = address;
   region->size = size;
+  region->block = ((char*)address - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
+
+  if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
+    region->fragment = -1;
+  }else{
+    region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
+  }
 
   unsigned int cursor = 0;
   mc_ignore_region_t current_region;

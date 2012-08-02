@@ -143,13 +143,13 @@ extern void *raw_heap;
 /* an API to query about the status of a heap, we simply call mmstats and */
 /* because I now how does structure looks like, then I redefine it here */
 
-struct mstats {
-  size_t bytes_total;           /* Total size of the heap. */
-  size_t chunks_used;           /* Chunks allocated by the user. */
-  size_t bytes_used;            /* Byte total of user-allocated chunks. */
-  size_t chunks_free;           /* Chunks in the free list. */
-  size_t bytes_free;            /* Byte total of chunks in the free list. */
-};
+/* struct mstats { */
+/*   size_t bytes_total;           /\* Total size of the heap. *\/ */
+/*   size_t chunks_used;           /\* Chunks allocated by the user. *\/ */
+/*   size_t bytes_used;            /\* Byte total of user-allocated chunks. *\/ */
+/*   size_t chunks_free;           /\* Chunks in the free list. *\/ */
+/*   size_t bytes_free;            /\* Byte total of chunks in the free list. *\/ */
+/* }; */
 
 #define MC_SET_RAW_MEM    mmalloc_set_current_heap(raw_heap)
 #define MC_UNSET_RAW_MEM  mmalloc_set_current_heap(std_heap)
