@@ -187,9 +187,6 @@ msg_process_t MSG_process_create_with_environment(const char *name,
 
   if (!process) {
     /* Undo everything we have just changed */
-#ifdef HAVE_TRACING
-    TRACE_msg_process_destroy (name, simdata->PID, simdata->m_host);
-#endif
     msg_global->PID--;
     xbt_free(simdata);
     return NULL;
