@@ -202,7 +202,7 @@ void model_full_set_route(AS_t rc, const char *src,
     if (!route->dst_gateway && !route->src_gateway)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
     else {
-      // FIXME We can call a gw wich is down the current AS (cf g5k.xml) but not upper.
+      // FIXME We can call a gw which is down the current AS (cf g5k.xml) but not upper.
       //      AS_t subas = xbt_dict_get_or_null(rc->routing_sons, src);
       //      if (subas == NULL)
       //        surf_parse_error("The source of an ASroute must be a sub-AS "
