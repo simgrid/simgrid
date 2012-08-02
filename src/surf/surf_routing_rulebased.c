@@ -20,11 +20,10 @@ typedef struct {
 } s_AS_rulebased_t, *AS_rulebased_t;
 
 typedef struct s_rule_route s_rule_route_t, *rule_route_t;
-typedef struct s_rule_route_extended s_rule_route_extended_t,
-*rule_route_extended_t;
+typedef struct s_rule_route_extended s_rule_route_extended_t, *rule_route_extended_t;
 
 struct s_rule_route {
-  xbt_dynar_t re_str_link;      // dynar of char*
+  xbt_dynar_t re_str_link;  // dynar of char*
   pcre *re_src;
   pcre *re_dst;
 };
@@ -237,27 +236,26 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 
   sg_routing_edge_t host = NULL;
   xbt_lib_foreach(as_router_lib, cursor, k1, host){
+    void *link_ptr;
     route_t route = xbt_new0(s_route_t,1);
     route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
     rulebased_get_route_and_latency (rc, router, host, route,NULL);
 
-    int number_of_links = xbt_dynar_length(route->link_list);
-
-    if(number_of_links == 1) {
+    switch (xbt_dynar_length(route->link_list)) {
+    case 1:
       //loopback
-    }
-    else{
-      if (number_of_links != 2) {
-        xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
-      }
-
-      void *link_ptr;
+      break;
+    case 2:
       xbt_dynar_get_cpy (route->link_list, 1, &link_ptr);
       onelink_t onelink = xbt_new0 (s_onelink_t, 1);
       onelink->src = host;
       onelink->dst = router;
       onelink->link_ptr = link_ptr;
       xbt_dynar_push (ret, &onelink);
+      break;
+    default:
+      xbt_die("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
+      break;
     }
   }
   return ret;
