@@ -206,7 +206,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'",router->id,info->id);
 
-  if (strcmp(router->coord, "")) {
+  if (router->coord && strcmp(router->coord, "")) {
     unsigned int cursor;
     char*str;
 
