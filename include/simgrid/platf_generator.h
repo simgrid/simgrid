@@ -66,6 +66,8 @@ XBT_PUBLIC(void) platf_graph_labeler(platf_labeler_cb_t labeler_callback);
 XBT_PUBLIC(void) platf_do_promote(void);
 XBT_PUBLIC(void) platf_do_label(void);
 
+XBT_PUBLIC(void) platf_generate(void);
+
 // WARNING : Only for debbugging ; should be removed when platform
 // generation works correctly
 XBT_PUBLIC(xbt_graph_t) platf_graph_get(void);

@@ -4,6 +4,8 @@
 #include "platf_generator_private.h"
 #include "xbt.h"
 #include "xbt/RngStream.h"
+#include "surf/simgrid_dtd.h"
+#include "surf_private.h"
 #include <math.h>
 
 static xbt_graph_t platform_graph = NULL;
@@ -360,6 +362,59 @@ void platf_do_label(void) {
       labeler_callback(edge);
     }
   }
+}
+
+void platf_generate(void) {
+
+  xbt_dynar_t nodes = NULL;
+  xbt_node_t graph_node = NULL;
+  context_node_t node_data = NULL;
+  unsigned int i;
+
+  unsigned int last_host = 0;
+  unsigned int last_router = 0;
+  //unsigned int last_cluster = 0;
+
+  sg_platf_host_cbarg_t host_parameters;
+  s_sg_platf_router_cbarg_t router_parameters; /* This one is not a pointer! */
+  sg_platf_cluster_cbarg_t cluster_parameters;
+
+  router_parameters.coord = NULL;
+
+  nodes = xbt_graph_get_nodes(platform_graph);
+
+  sg_platf_init();
+  sg_platf_begin();
+  surf_parse_init_callbacks();
+  routing_register_callbacks();
+
+
+  sg_platf_new_AS_begin("random platform", A_surfxml_AS_routing_Floyd);
+
+  xbt_dynar_foreach(nodes, i, graph_node) {
+    node_data = xbt_graph_node_get_data(graph_node);
+    switch(node_data->kind) {
+      case HOST:
+        host_parameters = &node_data->host_parameters;
+        if(host_parameters->id == NULL) {
+          host_parameters->id = bprintf("host-%d", ++last_host);
+        }
+        sg_platf_new_host(host_parameters);
+        break;
+      case CLUSTER:
+        cluster_parameters = &node_data->cluster_parameters;
+        //TODO: handle NULL IDs for clusters
+        sg_platf_new_cluster(cluster_parameters);
+        break;
+      case ROUTER:
+        router_parameters.id = bprintf("router-%d", ++last_router);
+        sg_platf_new_router(&router_parameters);
+    }
+  }
+
+
+  sg_platf_new_AS_end();
+  sg_platf_end();
 }
 
 /* Functions used to generate interesting random values */
