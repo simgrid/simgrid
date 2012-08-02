@@ -127,8 +127,9 @@ void SIMIX_launch_application(const char *file)
     surf_parse_close();
     xbt_assert(!parse_status, "Parse error at %s:%d", file,surf_parse_lineno);
   } CATCH(e) {
-    xbt_die("Unrecoverable error at %s:%d: %s",
-                  file, surf_parse_lineno, e.msg);
+    XBT_ERROR("Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
+        file, surf_parse_lineno);
+    RETHROW;
   }
 }
 
