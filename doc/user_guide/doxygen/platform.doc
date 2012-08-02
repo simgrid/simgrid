@@ -253,7 +253,7 @@ The principle is the same, except we don't have the backbone. The way to obtain 
 \li <b>availability_file</b>: Allow you to use a file as input for availability. Similar to <b>hosts</b> attribute.
 \li <b>state_file</b>: Allow you to use a file as input for states. Similar to <b>hosts</b> attribute.
 
-the router name is defined as the resulting String in the following java line of code: router_name = prefix + "router_ + suffix ;
+the router name is defined as the resulting String in the following java line of code: router_name = prefix + clusterId + router_ + suffix ;
 
 
 <b>cluster example</b>
