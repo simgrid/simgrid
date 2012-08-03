@@ -95,6 +95,11 @@ void SIMIX_global_init(int *argc, char **argv)
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
+
+    /* register a function to be called by SURF after the environment creation */
+    sg_platf_init();
+    sg_platf_postparse_add_cb(SIMIX_post_create_environment);
+
   }
   if (!simix_timers) {
     simix_timers = xbt_heap_new(8, &free);

@@ -134,7 +134,7 @@ void parse_platform_file(const char *file)
 {
   int parse_status;
 
-  surf_parse_reset_callbacks();
+  surf_parse_init_callbacks();
 
   /* Register classical callbacks */
   surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);

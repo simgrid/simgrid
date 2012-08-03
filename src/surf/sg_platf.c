@@ -35,6 +35,11 @@ static RngStream sg_platf_rng_stream = NULL;
 
 /** Module management function: creates all internal data structures */
 void sg_platf_init(void) {
+
+  //FIXME : Ugly, but useful...
+  if(sg_platf_host_cb_list)
+    return; //Already initialized, so do nothing...
+
   sg_platf_host_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
   sg_platf_host_link_cb_list = xbt_dynar_new(sizeof(sg_platf_host_link_cb_t), NULL);
   sg_platf_router_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);

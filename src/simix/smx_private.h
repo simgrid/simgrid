@@ -309,4 +309,7 @@ static XBT_INLINE void* SIMIX_context_get_data(smx_context_t context)
 }
 
 XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
+
+void SIMIX_post_create_environment(void);
+
 #endif

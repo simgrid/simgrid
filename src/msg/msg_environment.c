@@ -34,11 +34,13 @@
  */
 void MSG_create_environment(const char *file)
 {
+  SIMIX_create_environment(file);
+}
+
+void MSG_post_create_environment(void) {
   xbt_lib_cursor_t cursor;
   void **data;
   char *name;
-
-  SIMIX_create_environment(file);
 
   /* Initialize MSG hosts */
   xbt_lib_foreach(host_lib, cursor, name, data) {

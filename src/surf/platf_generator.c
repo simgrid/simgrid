@@ -383,7 +383,6 @@ void platf_generate(void) {
 
   nodes = xbt_graph_get_nodes(platform_graph);
 
-  sg_platf_init();
   sg_platf_begin();
   surf_parse_init_callbacks();
   routing_register_callbacks();
