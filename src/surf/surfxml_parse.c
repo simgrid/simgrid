@@ -66,7 +66,6 @@ int surf_parse_get_int(const char *string) {
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 xbt_dynar_t STag_surfxml_route_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_route_cb_list = NULL;
-xbt_dynar_t STag_surfxml_link_ctn_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_link_ctn_cb_list = NULL;
 xbt_dynar_t STag_surfxml_process_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_process_cb_list = NULL;
@@ -245,10 +244,6 @@ void surf_parse_init_callbacks(void)
 
     STag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
     ETag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_link_ctn_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_link_ctn_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
     STag_surfxml_process_cb_list =
         xbt_dynar_new(sizeof(void_f_void_t), NULL);
     ETag_surfxml_process_cb_list =
@@ -310,8 +305,6 @@ void surf_parse_free_callbacks(void)
 
   xbt_dynar_free(&STag_surfxml_route_cb_list);
   xbt_dynar_free(&ETag_surfxml_route_cb_list);
-  xbt_dynar_free(&STag_surfxml_link_ctn_cb_list);
-  xbt_dynar_free(&ETag_surfxml_link_ctn_cb_list);
   xbt_dynar_free(&STag_surfxml_process_cb_list);
   xbt_dynar_free(&ETag_surfxml_process_cb_list);
   xbt_dynar_free(&STag_surfxml_argument_cb_list);
@@ -570,6 +563,31 @@ void ETag_surfxml_link(void){
   current_property_set = NULL;
 }
 
+void STag_surfxml_link_ctn(void){
+  s_sg_platf_linkctn_cbarg_t linkctn;
+  memset(&linkctn,0,sizeof(linkctn));
+
+  linkctn.id = A_surfxml_link_ctn_id;
+
+  switch (A_surfxml_link_ctn_direction) {
+  case AU_surfxml_link_ctn_direction:
+  case A_surfxml_link_ctn_direction_NONE:
+    linkctn.direction = SURF_LINK_DIRECTION_NONE;
+    break;
+  case A_surfxml_link_ctn_direction_UP:
+    linkctn.direction = SURF_LINK_DIRECTION_UP;
+    break;
+  case A_surfxml_link_ctn_direction_DOWN:
+    linkctn.direction = SURF_LINK_DIRECTION_DOWN;
+    break;
+  }
+  sg_platf_new_linkctn(&linkctn);
+
+}
+
+void ETag_surfxml_link_ctn(void){
+ // NOTHING TO DO
+}
 void ETag_surfxml_backbone(void){
   s_sg_platf_link_cbarg_t link;
   memset(&link,0,sizeof(link));
@@ -589,9 +607,6 @@ void ETag_surfxml_backbone(void){
 
 void STag_surfxml_route(void){
   surfxml_call_cb_functions(STag_surfxml_route_cb_list);
-}
-void STag_surfxml_link_ctn(void){
-  surfxml_call_cb_functions(STag_surfxml_link_ctn_cb_list);
 }
 void STag_surfxml_process(void){
   surfxml_call_cb_functions(STag_surfxml_process_cb_list);
@@ -653,7 +668,6 @@ void STag_surfxml_random(void){
   void type##Tag_surfxml_##name(void)
 
 parse_method(E, route);
-parse_method(E, link_ctn);
 parse_method(E, process);
 parse_method(E, argument);
 parse_method(E, prop);

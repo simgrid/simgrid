@@ -284,27 +284,6 @@ static void routing_parse_S_bypassASroute(void)
              src, dst,gw_src,gw_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
-/**
- * \brief Set a new link on the actual list of link for a route or ASroute from XML
- */
-
-static void routing_parse_link_ctn(void)
-{
-  char *link_id;
-  switch (A_surfxml_link_ctn_direction) {
-  case AU_surfxml_link_ctn_direction:
-  case A_surfxml_link_ctn_direction_NONE:
-    link_id = xbt_strdup(A_surfxml_link_ctn_id);
-    break;
-  case A_surfxml_link_ctn_direction_UP:
-    link_id = bprintf("%s_UP", A_surfxml_link_ctn_id);
-    break;
-  case A_surfxml_link_ctn_direction_DOWN:
-    link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
-    break;
-  }
-  xbt_dynar_push(parsed_link_list, &link_id);
-}
 
 /**
  * \brief Store the route by calling the set_route function of the current routing component
@@ -373,6 +352,28 @@ static void routing_parse_E_bypassRoute(void)
   gw_src = NULL;
   gw_dst = NULL;
 }
+
+/**
+ * \brief Set a new link on the actual list of link for a route or ASroute from XML
+ */
+
+static void routing_parse_link_ctn(sg_platf_linkctn_cbarg_t linkctn)
+{
+  char *link_id;
+  switch (linkctn->direction) {
+  case SURF_LINK_DIRECTION_NONE:
+    link_id = xbt_strdup(linkctn->id);
+    break;
+  case SURF_LINK_DIRECTION_UP:
+    link_id = bprintf("%s_UP", linkctn->id);
+    break;
+  case SURF_LINK_DIRECTION_DOWN:
+    link_id = bprintf("%s_DOWN", linkctn->id);
+    break;
+  }
+  xbt_dynar_push(parsed_link_list, &link_id);
+}
+
 /**
  * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
  */
@@ -1210,8 +1211,6 @@ void routing_register_callbacks()
   surfxml_add_callback(STag_surfxml_bypassASroute_cb_list,
                        &routing_parse_S_bypassASroute);
 
-  surfxml_add_callback(ETag_surfxml_link_ctn_cb_list, &routing_parse_link_ctn);
-
   surfxml_add_callback(ETag_surfxml_route_cb_list, &routing_parse_E_route);
   surfxml_add_callback(ETag_surfxml_ASroute_cb_list, &routing_parse_E_ASroute);
   surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
@@ -1224,6 +1223,8 @@ void routing_register_callbacks()
 
   sg_platf_peer_add_cb(routing_parse_peer);
   sg_platf_postparse_add_cb(routing_parse_postparse);
+
+  sg_platf_linkctn_add_cb(routing_parse_link_ctn);
 
   /* we care about the ASes while parsing the platf. Incredible, isnt it? */
   sg_platf_AS_end_add_cb(routing_AS_end);

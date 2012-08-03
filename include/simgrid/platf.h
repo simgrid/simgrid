@@ -52,6 +52,12 @@ typedef enum {
   SURF_LINK_FATPIPE = 0
 } e_surf_link_sharing_policy_t;
 
+typedef enum {
+  SURF_LINK_DIRECTION_NONE = 2,
+  SURF_LINK_DIRECTION_UP = 1,
+  SURF_LINK_DIRECTION_DOWN = 0
+} e_surf_link_ctn_direction_t;
+
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
  * (one for each possible XML attribute), we pass structures containing them all. It removes the
@@ -113,7 +119,7 @@ typedef struct s_sg_platf_peer_cbarg {
 typedef struct s_sg_platf_linkctn_cbarg *sg_platf_linkctn_cbarg_t;
 typedef struct s_sg_platf_linkctn_cbarg {
   const char *id;
-  const char *direction;
+  e_surf_link_ctn_direction_t direction;
 } s_sg_platf_linkctn_cbarg_t;
 
 typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;
@@ -181,6 +187,7 @@ XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an
 XBT_PUBLIC(void) sg_platf_new_host_link(sg_platf_host_link_cbarg_t h); // Add an host_link to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_router (sg_platf_router_cbarg_t router); // Add a router  to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_link   (sg_platf_link_cbarg_t link);     // Add a link    to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_linkctn   (sg_platf_linkctn_cbarg_t linkctn);     // Add a linkctn
 XBT_PUBLIC(void) sg_platf_new_peer   (sg_platf_peer_cbarg_t peer);     // Add a peer    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet); // Add a cabinet to the currently described AS
