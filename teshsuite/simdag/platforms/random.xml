@@ -2,48 +2,64 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 
-<random id="CustomBandwidth" generator="DRAND48"
-  min="1000000000" max="2000000000" mean="1600000000"
-  std_deviation="12" seed="2147483647" radical="0-1"/>
-  
-<random id="CustomPower" generator="DRAND48"
-  min="0900000000.00" max="1100000000.00" mean="1000000000.00"
-  std_deviation="12" seed="2147483647" radical="0-1"/>
-  
-<random id="RandomVALUE" generator="RNGSTREAM"
-  min="1000000000" max="2000000000" mean="1600000000"
-  std_deviation="12" seed="2147483647"/>
+<config id="General">
+  <prop id="rngstream/seed" value="12345;12345;12345;12345;12345;12345"></prop>
+</config>
+
+<random_law_type id="Core2010" type="discrete_explicite" value="1:0.1;2:0.4;23=0.00001"/>
+<random_law_type id="Core2012" type="discrete_explicite" value="1:0.01;2:0.8;23=0.00001"/>
+
+<random_law_type id="CustomBandwidth" type="uniform" min="1000" max="10000"/>
+<random_law_type id="CustomLatency" type="uniform" min="0.0001" max="0.0002"/>
+<random_law_type id="CustomAvail" type="uniform" min="0" max="1"/>
+
+<random_law_type id="expo01" type="exponential" rate="0.1"/>
+<random_law_type id="wei01" type="weibull" shape="1" scale=".4"/>
+
+<random_state_trace_type id="mystate" availa="expo01" unavail="wei01"/>
+<random_availability_trace_type id="mypow_avail" duration="expo01" value="CustomAvail"/>
+<random_availability_trace_type id="mybw" duration="expo01" value="CustomBandwidth"/>
+<random_availability_trace_type id="mylat" duration="expo01" value="CustomLatency"/>
+
+<random_law_type id="CustomPower" type="uniform" min="10000" max="400000"/>
+<random_law_type id="CustomBWval" type="uniform" min="1000" max="10000"/>
+
+<!--  tentative de description de variables linéairement corrélées. À revoir et confirmer... -->
+<random_law_type id="white" type="Gaussion" mean="1000" max="10000"/>
+<random_core_and_power_type 
+id_core="foo" 
+id_power="Core2010" 
+mode="linear" base="NBcore" linear_a="0.5" linear_b="1000" noise="white"/>
 
 <AS  id="AS0"  routing="Full">
-	
-	<cluster 	id="bob_cluster"
-				prefix="bob"
-				suffix=".hamburger.edu"
-				radical="0-1"
-				power="CustomPower${radical}"
-				bw="CustomBandwidth${radical}"
-				lat="5e-5"
-				bb_bw="2250000000.00"
-				bb_lat="5e-4"
-				/>
-	
-	<cluster 	id="alice_cluster"
-				prefix="alice"
-				suffix=".crepe.fr"
-				radical="0-1"
-				power="1000000000.00"
-				bw="1600000000"
-				lat="5e-5"
-				bb_bw="2250000000.00"
-				bb_lat="5e-4"/>
-				
-	<link id="backbone" bandwidth="1250000000" latency="5E-4"/>  
-	 	
-	<ASroute src="bob_cluster" dst="alice_cluster" 
-	 gw_src="bobbob_cluster_router.hamburger.edu" 
-	 gw_dst="alicealice_cluster_router.crepe.fr"
-	 symmetrical="YES">
-			<link_ctn id="backbone"/>
-	</ASroute>   
+  <!-- Horizontal streams -->
+  <host id="foo" power="123121" state_trace="mystate" availability_trace="mypow_avail"/> 
+  <link id="bar" bandwidth=""   bandwidth_trace="mybw" latency_trace="mylat"/>
+  <cluster  id="bob_cluster"
+        prefix="bob"
+        suffix=".hamburger.edu"
+        radical="0-1"
+        power="100000"
+        bw=""
+        lat="5e-5"
+        bb_bw="2250000000.00"
+        bb_lat="5e-4"
+        bw_trace="mybw"
+        availability_trace="mywpow_avail"
+        state_trace="mystate"
+        />
+        
+  <!-- Vertical stream ? -->
+  <peer_set id="peer_home"
+        prefix="home"
+        suffix=".edu"
+        radical="1-10000"
+        power="CustomPower"
+        bw_in_trace="mybw"
+        bw_out="CustomBWval"
+        lat="5e-5"
+        />
+   <peer_set 
+     />
 </AS>	
 </platform>
