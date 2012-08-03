@@ -373,7 +373,7 @@ void platf_generate(void) {
 
   unsigned int last_host = 0;
   unsigned int last_router = 0;
-  //unsigned int last_cluster = 0;
+  unsigned int last_cluster = 0;
 
   sg_platf_host_cbarg_t host_parameters;
   s_sg_platf_router_cbarg_t router_parameters; /* This one is not a pointer! */
@@ -395,14 +395,24 @@ void platf_generate(void) {
     switch(node_data->kind) {
       case HOST:
         host_parameters = &node_data->host_parameters;
+        last_host++;
         if(host_parameters->id == NULL) {
-          host_parameters->id = bprintf("host-%d", ++last_host);
+          host_parameters->id = bprintf("host-%d", last_host);
         }
         sg_platf_new_host(host_parameters);
         break;
       case CLUSTER:
         cluster_parameters = &node_data->cluster_parameters;
-        //TODO: handle NULL IDs for clusters
+        last_cluster++;
+        if(cluster_parameters->prefix == NULL) {
+          cluster_parameters->prefix = "host-";
+        }
+        if(cluster_parameters->suffix == NULL) {
+          cluster_parameters->suffix = bprintf(".cluster-%d", last_cluster);
+        }
+        if(cluster_parameters->id == NULL) {
+          cluster_parameters->id = bprintf("cluster-%d", last_cluster);
+        }
         sg_platf_new_cluster(cluster_parameters);
         break;
       case ROUTER:
