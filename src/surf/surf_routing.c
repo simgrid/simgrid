@@ -867,8 +867,8 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
 
-  if (strcmp(cluster->availability_trace, "")
-      || strcmp(cluster->state_trace, "")) {
+  if ((cluster->availability_trace && strcmp(cluster->availability_trace, ""))
+      || (cluster->state_trace && strcmp(cluster->state_trace, ""))) {
     patterns = xbt_dict_new_homogeneous(xbt_free_f);
     xbt_dict_set(patterns, "id", xbt_strdup(cluster->id), NULL);
     xbt_dict_set(patterns, "prefix", xbt_strdup(cluster->prefix), NULL);
@@ -908,7 +908,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
       memset(&host, 0, sizeof(host));
       host.id = host_id;
-      if (strcmp(cluster->availability_trace, "")) {
+      if (cluster->availability_trace && strcmp(cluster->availability_trace, "")) {
         xbt_dict_set(patterns, "radical", bprintf("%d", i), NULL);
         char *avail_file = xbt_str_varsubst(cluster->availability_trace, patterns);
         XBT_DEBUG("\tavailability_file=\"%s\"", avail_file);
@@ -918,7 +918,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         XBT_DEBUG("\tavailability_file=\"\"");
       }
 
-      if (strcmp(cluster->state_trace, "")) {
+      if (cluster->state_trace && strcmp(cluster->state_trace, "")) {
         char *avail_file = xbt_str_varsubst(cluster->state_trace, patterns);
         XBT_DEBUG("\tstate_file=\"%s\"", avail_file);
         host.state_trace = tmgr_trace_new_from_file(avail_file);
