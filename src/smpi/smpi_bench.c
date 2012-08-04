@@ -217,8 +217,13 @@ static char *sample_location(int global, const char *file, int line) {
   }
 }
 static int sample_enough_benchs(local_data_t *data) {
-  int res = (data->iters > 0 && data->count >= data->iters)
-      || (data->count > 2 && data->threshold > 0.0 && data->relstderr <= data->threshold);
+  int res = data->count >= data->iters;
+  if (data->threshold>0.0) {
+    if (data->count <2)
+      res = 0; // not enough data
+    if (data->relstderr > data->threshold)
+      res = 0; // stderr too high yet
+  }
   XBT_DEBUG("%s (count:%d iter:%d stderr:%f thres:%f mean:%fs)",
       (res?"enough benchs":"need more data"),
       data->count, data->iters, data->relstderr, data->threshold, data->mean);
@@ -236,6 +241,8 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
 
   data = xbt_dict_get_or_null(samples, loc);
   if (!data) {
+    xbt_assert(threshold>0 || iters>0,
+        "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
     data = (local_data_t *) xbt_new(local_data_t, 1);
     data->count = 0;
     data->sum = 0.0;
