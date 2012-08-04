@@ -150,36 +150,31 @@ smx_rdv_t smpi_process_remote_mailbox(int index) {
   return data->mailbox;
 }
 
-xbt_os_timer_t smpi_process_timer(void)
-{
+xbt_os_timer_t smpi_process_timer(void) {
   smpi_process_data_t data = smpi_process_data();
 
   return data->timer;
 }
 
-void smpi_process_simulated_start(void)
-{
+void smpi_process_simulated_start(void) {
   smpi_process_data_t data = smpi_process_data();
 
   data->simulated = SIMIX_get_clock();
 }
 
-double smpi_process_simulated_elapsed(void)
-{
+double smpi_process_simulated_elapsed(void) {
   smpi_process_data_t data = smpi_process_data();
 
   return SIMIX_get_clock() - data->simulated;
 }
 
-MPI_Comm smpi_process_comm_self(void)
-{
+MPI_Comm smpi_process_comm_self(void) {
   smpi_process_data_t data = smpi_process_data();
 
   return data->comm_self;
 }
 
-void print_request(const char *message, MPI_Request request)
-{
+void print_request(const char *message, MPI_Request request) {
   XBT_DEBUG("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
          message, request, request->buf, request->size,
          request->src, request->dst, request->tag, request->flags);
