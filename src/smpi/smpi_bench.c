@@ -249,10 +249,8 @@ int smpi_sample_2(int global, const char *file, int line)
   local_data_t *data;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  data = xbt_dict_get_or_null(samples, loc);
-  if (!data) {
-    xbt_assert(data, "Please, do thing in order");
-  }
+  data = xbt_dict_get(samples, loc);
+
   if (!data->running) {
     if ((data->iters > 0 && data->count >= data->iters)
         || (data->count > 1 && data->threshold > 0.0 && data->relstderr <= data->threshold)) {
@@ -278,9 +276,9 @@ void smpi_sample_3(int global, const char *file, int line)
   double sample, n;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  data = xbt_dict_get_or_null(samples, loc);
+  data = xbt_dict_get(samples, loc);
   smpi_bench_end();
-  if(data && data->running && data->count < data->iters) {
+  if(data->running && data->count < data->iters) {
     sample = smpi_process_simulated_elapsed();
     data->sum += sample;
     data->sum_pow2 += sample * sample;
