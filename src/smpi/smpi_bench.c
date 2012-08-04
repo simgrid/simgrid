@@ -116,7 +116,7 @@ typedef struct {
   double relstderr;
   int iters;
   double threshold;
-  int started;
+  int running;
 } local_data_t;
 
 void smpi_bench_destroy(void)
@@ -235,7 +235,7 @@ int smpi_sample_1(int global, const char *file, int line, int iters, double thre
     data->sum_pow2 = 0.0;
     data->iters = iters;
     data->threshold = threshold;
-    data->started = 0;
+    data->running = 0;
     xbt_dict_set(samples, loc, data, NULL);
     return 0;
   }
@@ -253,22 +253,22 @@ int smpi_sample_2(int global, const char *file, int line)
   if (!data) {
     xbt_assert(data, "Please, do thing in order");
   }
-  if (!data->started) {
+  if (!data->running) {
     if ((data->iters > 0 && data->count >= data->iters)
         || (data->count > 1 && data->threshold > 0.0 && data->relstderr <= data->threshold)) {
       XBT_DEBUG("Perform some wait of %f", data->mean);
       smpi_execute(data->mean);
     } else {
-      data->started = 1;
+      data->running = 1;
       data->count++;
     }
   } else {
-    data->started = 0;
+    data->running = 0;
   }
   free(loc);
   smpi_bench_begin();
   smpi_process_simulated_start();
-  return data->started;
+  return data->running;
 }
 
 void smpi_sample_3(int global, const char *file, int line)
@@ -280,7 +280,7 @@ void smpi_sample_3(int global, const char *file, int line)
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   data = xbt_dict_get_or_null(samples, loc);
   smpi_bench_end();
-  if(data && data->started && data->count < data->iters) {
+  if(data && data->running && data->count < data->iters) {
     sample = smpi_process_simulated_elapsed();
     data->sum += sample;
     data->sum_pow2 += sample * sample;
