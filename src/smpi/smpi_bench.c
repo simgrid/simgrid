@@ -115,8 +115,7 @@ void smpi_bench_destroy(void)
   xbt_dict_free(&calls);
 }
 
-static void smpi_execute_flops(double flops)
-{
+void smpi_execute_flops(double flops) {
   smx_action_t action;
   smx_host_t host;
   host = SIMIX_host_self();
@@ -323,11 +322,6 @@ void smpi_sample_3(int global, const char *file, int line)
 
   // That's enough for now, prevent sample_2 to run the same code over and over
   data->benching = 0;
-}
-
-void smpi_sample_flops(double flops)
-{
-  smpi_execute_flops(flops);
 }
 
 void *smpi_shared_malloc(size_t size, const char *file, int line)

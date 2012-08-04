@@ -180,6 +180,7 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
 void smpi_bench_destroy(void);
 void smpi_bench_begin(void);
 void smpi_bench_end(void);
+void smpi_execute_flops(double flops);
 
 // f77 wrappers
 void mpi_init__(int*);

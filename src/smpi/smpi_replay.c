@@ -26,7 +26,7 @@ static double parse_double(const char *string)
 static void action_compute(const char *const *action)
 {
   XBT_DEBUG("Start to compute %.0f flops", parse_double(action[2]));
-  smpi_sample_flops(parse_double(action[2]));
+  smpi_execute_flops(parse_double(action[2]));
 }
 
 static void action_send(const char *const *action)

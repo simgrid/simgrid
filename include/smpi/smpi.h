@@ -431,7 +431,6 @@ XBT_PUBLIC(void) smpi_sample_1(int global, const char *file, int line,
                               int iters, double threshold);
 XBT_PUBLIC(int) smpi_sample_2(int global, const char *file, int line);
 XBT_PUBLIC(void) smpi_sample_3(int global, const char *file, int line);
-XBT_PUBLIC(void) smpi_sample_flops(double flops);
 
 #define SMPI_SAMPLE_LOCAL(iters,thres) for(smpi_sample_1(0, __FILE__, __LINE__, iters, thres); \
                                            smpi_sample_2(0, __FILE__, __LINE__);      \
@@ -441,7 +440,8 @@ XBT_PUBLIC(void) smpi_sample_flops(double flops);
                                             smpi_sample_2(1, __FILE__, __LINE__);      \
                                             smpi_sample_3(1, __FILE__, __LINE__))
 
-#define SMPI_SAMPLE_DELAY(flops) for(smpi_sample_flops(flops); 0; )
+#define SMPI_SAMPLE_DELAY(duration) for(smpi_execute(duration); 0; )
+#define SMPI_SAMPLE_FLOPS(flops) for(smpi_execute_flops(flops); 0; )
 
 XBT_PUBLIC(void *) smpi_shared_malloc(size_t size, const char *file,
                                       int line);
