@@ -248,7 +248,7 @@ int smpi_sample_2(int global, const char *file, int line)
   char *loc = sample_location(global, file, line);
   local_data_t *data;
 
-  xbt_assert(samples, "You did something very inconsistent, didn't you?");
+  xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   data = xbt_dict_get_or_null(samples, loc);
   if (!data) {
     xbt_assert(data, "Please, do thing in order");
@@ -277,7 +277,7 @@ void smpi_sample_3(int global, const char *file, int line)
   local_data_t *data;
   double sample, n;
 
-  xbt_assert(samples, "You did something very inconsistent, didn't you?");
+  xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   data = xbt_dict_get_or_null(samples, loc);
   smpi_bench_end();
   if(data && data->started && data->count < data->iters) {
