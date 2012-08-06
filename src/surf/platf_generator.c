@@ -302,6 +302,21 @@ void platf_graph_interconnect_barabasi(void) {
   }
 }
 
+int platf_graph_is_connected(void) {
+  xbt_dynar_t dynar_nodes = NULL;
+  xbt_node_t graph_node = NULL;
+  context_node_t node_data = NULL;
+  unsigned int i;
+  dynar_nodes = xbt_graph_get_nodes(platform_graph);
+  xbt_dynar_foreach(dynar_nodes, i, graph_node) {
+    node_data = xbt_graph_node_get_data(graph_node);
+    if(node_data->degree==0) {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
 void platf_graph_promote_to_host(context_node_t node, sg_platf_host_cbarg_t parameters) {
   node->kind = HOST;
   memcpy(&(node->host_parameters), parameters, sizeof(s_sg_platf_host_cbarg_t));
