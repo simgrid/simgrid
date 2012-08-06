@@ -20,12 +20,6 @@ XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_process_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_process_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_argument_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_argument_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_prop_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_prop_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_trace_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_trace_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_trace_connect_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_trace_connect_cb_list;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);

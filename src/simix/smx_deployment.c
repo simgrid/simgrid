@@ -117,7 +117,6 @@ void SIMIX_launch_application(const char *file)
 
   surfxml_add_callback(STag_surfxml_process_cb_list, parse_process_init);
   surfxml_add_callback(ETag_surfxml_argument_cb_list, parse_argument);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
   surfxml_add_callback(ETag_surfxml_process_cb_list,
                        parse_process_finalize);
 

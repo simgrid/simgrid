@@ -68,12 +68,6 @@ xbt_dynar_t STag_surfxml_process_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_process_cb_list = NULL;
 xbt_dynar_t STag_surfxml_argument_cb_list = NULL;
 xbt_dynar_t ETag_surfxml_argument_cb_list = NULL;
-xbt_dynar_t STag_surfxml_prop_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_prop_cb_list = NULL;
-xbt_dynar_t STag_surfxml_trace_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_trace_cb_list = NULL;
-xbt_dynar_t STag_surfxml_trace_connect_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_trace_connect_cb_list = NULL;
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = NULL;
@@ -225,14 +219,6 @@ void surf_parse_init_callbacks(void)
         xbt_dynar_new(sizeof(void_f_void_t), NULL);
     ETag_surfxml_argument_cb_list =
         xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_trace_connect_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_trace_connect_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
 }
 
 void surf_parse_reset_callbacks(void)
@@ -249,16 +235,9 @@ void surf_parse_free_callbacks(void)
   xbt_dynar_free(&ETag_surfxml_process_cb_list);
   xbt_dynar_free(&STag_surfxml_argument_cb_list);
   xbt_dynar_free(&ETag_surfxml_argument_cb_list);
-  xbt_dynar_free(&STag_surfxml_prop_cb_list);
-  xbt_dynar_free(&ETag_surfxml_prop_cb_list);
-  xbt_dynar_free(&STag_surfxml_trace_cb_list);
-  xbt_dynar_free(&ETag_surfxml_trace_cb_list);
-  xbt_dynar_free(&STag_surfxml_trace_connect_cb_list);
-  xbt_dynar_free(&ETag_surfxml_trace_connect_cb_list);
 }
 
 /* Stag and Etag parse functions */
-void ETag_surfxml_router(void)  { /* ignored -- do not add content here */ }
 
 void STag_surfxml_platform(void) {
   _XBT_GNUC_UNUSED double version = surf_parse_get_double(A_surfxml_platform_version);
@@ -291,6 +270,14 @@ void ETag_surfxml_platform(void){
 
 void STag_surfxml_host(void){
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+}
+
+void STag_surfxml_prop(void)
+{
+  if (!current_property_set)
+    current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
+
+  xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
 }
 
 void ETag_surfxml_host(void)    {
@@ -326,10 +313,6 @@ void STag_surfxml_host_link(void){
   host_link.link_up = A_surfxml_host_link_up;
   host_link.link_down = A_surfxml_host_link_down;
   sg_platf_new_host_link(&host_link);
-}
-
-void ETag_surfxml_host_link(void){
-  XBT_DEBUG("End create a Host_link for %s",A_surfxml_host_link_id);
 }
 
 void STag_surfxml_router(void){
@@ -391,9 +374,6 @@ void STag_surfxml_cluster(void){
   cluster.state_trace = A_surfxml_cluster_state_file;
   sg_platf_new_cluster(&cluster);
 }
-void ETag_surfxml_cluster(void){
-  /* nothing I can think of */
-}
 
 void STag_surfxml_cabinet(void){
   s_sg_platf_cabinet_cbarg_t cabinet;
@@ -407,9 +387,6 @@ void STag_surfxml_cabinet(void){
   cabinet.radical = A_surfxml_cabinet_radical;
 
   sg_platf_new_cabinet(&cabinet);
-}
-void ETag_surfxml_cabinet(void){
-  /* nothing I can think of */
 }
 
 void STag_surfxml_peer(void){
@@ -426,15 +403,9 @@ void STag_surfxml_peer(void){
 
   sg_platf_new_peer(&peer);
 }
-void ETag_surfxml_peer(void){
-  /* nothing to do here */
-}
+
 void STag_surfxml_link(void){
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
-}
-
-void STag_surfxml_backbone(void){
-  /* nothing to do here */
 }
 
 void ETag_surfxml_link(void){
@@ -504,9 +475,6 @@ void STag_surfxml_link_ctn(void){
 
 }
 
-void ETag_surfxml_link_ctn(void){
- // NOTHING TO DO
-}
 void ETag_surfxml_backbone(void){
   s_sg_platf_link_cbarg_t link;
   memset(&link,0,sizeof(link));
@@ -613,21 +581,46 @@ void ETag_surfxml_bypassASroute(void){
   sg_platf_new_bypassASroute(&ASroute);
 }
 
-void STag_surfxml_process(void){
-  surfxml_call_cb_functions(STag_surfxml_process_cb_list);
+void ETag_surfxml_trace(void){
+  s_sg_platf_trace_cbarg_t trace;
+  memset(&trace,0,sizeof(trace));
+
+  trace.id = A_surfxml_trace_id;
+  trace.file = A_surfxml_trace_file;
+  trace.periodicity = surf_parse_get_double(A_surfxml_trace_periodicity);
+  trace.pc_data = surfxml_pcdata;
+
+  sg_platf_new_trace(&trace);
 }
-void STag_surfxml_argument(void){
-  surfxml_call_cb_functions(STag_surfxml_argument_cb_list);
-}
-void STag_surfxml_prop(void){
-  surfxml_call_cb_functions(STag_surfxml_prop_cb_list);
-}
-void STag_surfxml_trace(void){
-  surfxml_call_cb_functions(STag_surfxml_trace_cb_list);
-}
+
 void STag_surfxml_trace_connect(void){
-  surfxml_call_cb_functions(STag_surfxml_trace_connect_cb_list);
+  s_sg_platf_trace_connect_cbarg_t trace_connect;
+  memset(&trace_connect,0,sizeof(trace_connect));
+
+  trace_connect.element = A_surfxml_trace_connect_element;
+  trace_connect.trace = A_surfxml_trace_connect_trace;
+
+  switch (A_surfxml_trace_connect_kind) {
+  case AU_surfxml_trace_connect_kind:
+  case A_surfxml_trace_connect_kind_POWER:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_POWER;
+    break;
+  case A_surfxml_trace_connect_kind_BANDWIDTH:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_BANDWIDTH;
+    break;
+  case A_surfxml_trace_connect_kind_HOST_AVAIL:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_HOST_AVAIL;
+    break;
+  case A_surfxml_trace_connect_kind_LATENCY:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LATENCY;
+    break;
+  case A_surfxml_trace_connect_kind_LINK_AVAIL:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LINK_AVAIL;
+    break;
+  }
+  sg_platf_new_trace_connect(&trace_connect);
 }
+
 void STag_surfxml_AS(void){
   sg_platf_new_AS_begin(A_surfxml_AS_id, (int)A_surfxml_AS_routing);
 }
@@ -655,11 +648,27 @@ void ETag_surfxml_config(void){
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
   xbt_dict_free(&current_property_set);
 }
-void STag_surfxml_random(void){
-//TODO
+
+/* nothing to do in those functions */
+void ETag_surfxml_prop(void){}
+void STag_surfxml_random(void){}
+void ETag_surfxml_random(void){}
+void ETag_surfxml_trace_connect(void){}
+void STag_surfxml_trace(void){}
+void ETag_surfxml_router(void){}
+void ETag_surfxml_host_link(void){}
+void ETag_surfxml_cluster(void){}
+void ETag_surfxml_cabinet(void){}
+void ETag_surfxml_peer(void){}
+void STag_surfxml_backbone(void){}
+void ETag_surfxml_link_ctn(void){}
+
+// FIXME should not call surfxml_call_cb_functions
+void STag_surfxml_process(void){
+  surfxml_call_cb_functions(STag_surfxml_process_cb_list);
 }
-void ETag_surfxml_random(void){
-//TODO
+void STag_surfxml_argument(void){
+  surfxml_call_cb_functions(STag_surfxml_argument_cb_list);
 }
 
 #define parse_method(type,name)                                         \
@@ -669,9 +678,6 @@ void ETag_surfxml_random(void){
 
 parse_method(E, process);
 parse_method(E, argument);
-parse_method(E, prop);
-parse_method(E, trace);
-parse_method(E, trace_connect);
 
 /* Open and Close parse file */
 
@@ -769,14 +775,6 @@ static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
 /**
  * With XML parser
  */
-void parse_properties(void)
-{
-  if (!current_property_set)
-    current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
-
-  xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
-}
-
 
 /* Random tag functions */
 

@@ -58,6 +58,13 @@ typedef enum {
   SURF_LINK_DIRECTION_DOWN = 0
 } e_surf_link_ctn_direction_t;
 
+typedef enum {
+  SURF_TRACE_CONNECT_KIND_HOST_AVAIL = 4,
+  SURF_TRACE_CONNECT_KIND_POWER = 3,
+  SURF_TRACE_CONNECT_KIND_LINK_AVAIL = 2,
+  SURF_TRACE_CONNECT_KIND_BANDWIDTH = 1,
+  SURF_TRACE_CONNECT_KIND_LATENCY = 0
+} e_surf_trace_connect_kin_t;
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
  * (one for each possible XML attribute), we pass structures containing them all. It removes the
@@ -206,6 +213,26 @@ typedef struct {
   const char* name;
 } s_sg_platf_mount_cbarg_t, *sg_platf_mount_cbarg_t;
 
+typedef struct s_sg_platf_prop_cbarg *sg_platf_prop_cbarg_t;
+typedef struct s_sg_platf_prop_cbarg {
+  const char *id;
+  const char *value;
+} s_sg_platf_prop_cbarg_t;
+
+typedef struct s_sg_platf_trace_cbarg *sg_platf_trace_cbarg_t;
+typedef struct s_sg_platf_trace_cbarg {
+  const char *id;
+  const char *file;
+  double periodicity;
+  const char *pc_data;
+} s_sg_platf_trace_cbarg_t;
+
+typedef struct s_sg_platf_trace_connect_cbarg *sg_platf_trace_connect_cbarg_t;
+typedef struct s_sg_platf_trace_connect_cbarg {
+  e_surf_trace_connect_kin_t kind;
+  const char *trace;
+  const char *element;
+} s_sg_platf_trace_connect_cbarg_t;
 
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform
@@ -226,6 +253,10 @@ XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a rou
 XBT_PUBLIC(void) sg_platf_new_ASroute (sg_platf_ASroute_cbarg_t ASroute); // Add an ASroute
 XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_bypassRoute_cbarg_t bypassroute); // Add a bypassRoute
 XBT_PUBLIC(void) sg_platf_new_bypassASroute (sg_platf_bypassASroute_cbarg_t bypassASroute); // Add an bypassASroute
+XBT_PUBLIC(void) sg_platf_new_prop (sg_platf_prop_cbarg_t prop); // Add a prop
+
+XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
+XBT_PUBLIC(void) sg_platf_new_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
 
 XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS

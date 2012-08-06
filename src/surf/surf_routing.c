@@ -323,6 +323,60 @@ static void routing_parse_link_ctn(sg_platf_linkctn_cbarg_t linkctn)
   xbt_dynar_push(parsed_link_list, &link_id);
 }
 
+static void routing_parse_trace(sg_platf_trace_cbarg_t trace)
+{
+  tmgr_trace_t tmgr_trace;
+  if (!trace->file || strcmp(trace->file, "") != 0) {
+    tmgr_trace = tmgr_trace_new_from_file(trace->file);
+  } else if (strcmp(trace->pc_data, "") == 0) {
+    tmgr_trace = NULL;
+  } else {
+    tmgr_trace =
+          tmgr_trace_new_from_string(trace->id, trace->pc_data,
+                                     trace->periodicity);
+  }
+  xbt_dict_set(traces_set_list, trace->id, (void *) tmgr_trace, NULL);
+}
+
+static void routing_parse_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
+{
+  xbt_assert(xbt_dict_get_or_null
+              (traces_set_list, trace_connect->trace),
+              "Cannot connect trace %s to %s: trace unknown",
+              trace_connect->trace,
+              trace_connect->element);
+
+  switch (trace_connect->kind) {
+  case SURF_TRACE_CONNECT_KIND_HOST_AVAIL:
+    xbt_dict_set(trace_connect_list_host_avail,
+        trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_POWER:
+    xbt_dict_set(trace_connect_list_power, trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_LINK_AVAIL:
+    xbt_dict_set(trace_connect_list_link_avail,
+        trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_BANDWIDTH:
+    xbt_dict_set(trace_connect_list_bandwidth,
+        trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_LATENCY:
+    xbt_dict_set(trace_connect_list_latency, trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  default:
+    xbt_die("Cannot connect trace %s to %s: kind of trace unknown",
+        trace_connect->trace, trace_connect->element);
+    break;
+  }
+}
+
 /**
  * \brief Make a new routing component to the platform
  *
@@ -1147,7 +1201,8 @@ void routing_register_callbacks()
   sg_platf_AS_end_add_cb(routing_AS_end);
   sg_platf_AS_begin_add_cb(routing_AS_begin);
 
-
+  sg_platf_trace_add_cb(routing_parse_trace);
+  sg_platf_trace_connect_add_cb(routing_parse_trace_connect);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();
