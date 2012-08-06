@@ -122,6 +122,36 @@ typedef struct s_sg_platf_linkctn_cbarg {
   e_surf_link_ctn_direction_t direction;
 } s_sg_platf_linkctn_cbarg_t;
 
+typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
+typedef struct s_sg_platf_route_cbarg {
+  int symmetrical;
+  const char *src;
+  const char *dst;
+} s_sg_platf_route_cbarg_t;
+
+typedef struct s_sg_platf_ASroute_cbarg *sg_platf_ASroute_cbarg_t;
+typedef struct s_sg_platf_ASroute_cbarg {
+  int symmetrical;
+  const char *src;
+  const char *dst;
+  const char *gw_src;
+  const char *gw_dst;
+} s_sg_platf_ASroute_cbarg_t;
+
+typedef struct s_sg_platf_bypassRoute_cbarg *sg_platf_bypassRoute_cbarg_t;
+typedef struct s_sg_platf_bypassRoute_cbarg {
+  const char *src;
+  const char *dst;
+} s_sg_platf_bypassRoute_cbarg_t;
+
+typedef struct s_sg_platf_bypassASroute_cbarg *sg_platf_bypassASroute_cbarg_t;
+typedef struct s_sg_platf_bypassASroute_cbarg {
+  const char *src;
+  const char *dst;
+  const char *gw_src;
+  const char *gw_dst;
+} s_sg_platf_bypassASroute_cbarg_t;
+
 typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;
 typedef struct s_sg_platf_cluster_cbarg {
   const char* id;
@@ -191,6 +221,12 @@ XBT_PUBLIC(void) sg_platf_new_linkctn   (sg_platf_linkctn_cbarg_t linkctn);     
 XBT_PUBLIC(void) sg_platf_new_peer   (sg_platf_peer_cbarg_t peer);     // Add a peer    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a cluster to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet); // Add a cabinet to the currently described AS
+
+XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a route
+XBT_PUBLIC(void) sg_platf_new_ASroute (sg_platf_ASroute_cbarg_t ASroute); // Add an ASroute
+XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_bypassRoute_cbarg_t bypassroute); // Add a bypassRoute
+XBT_PUBLIC(void) sg_platf_new_bypassASroute (sg_platf_bypassASroute_cbarg_t bypassASroute); // Add an bypassASroute
+
 XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage);

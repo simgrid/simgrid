@@ -24,6 +24,11 @@ xbt_dynar_t sg_platf_AS_begin_cb_list = NULL; //of sg_platf_AS_begin_cb_t
 xbt_dynar_t sg_platf_AS_end_cb_list = NULL; //of void_f_void_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
 
+xbt_dynar_t sg_platf_route_cb_list = NULL; // of sg_platf_route_cb_t
+xbt_dynar_t sg_platf_ASroute_cb_list = NULL; // of sg_platf_ASroute_cb_t
+xbt_dynar_t sg_platf_bypassRoute_cb_list = NULL; // of sg_platf_bypassRoute_cb_t
+xbt_dynar_t sg_platf_bypassASroute_cb_list = NULL; // of sg_platf_bypassASroute_cb_t
+
 xbt_dynar_t sg_platf_storage_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_storage_type_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_mstorage_cb_list = NULL; // of sg_platf_storage_cb_t
@@ -53,6 +58,11 @@ void sg_platf_init(void) {
   sg_platf_AS_begin_cb_list = xbt_dynar_new(sizeof(sg_platf_AS_begin_cb_t),NULL);
   sg_platf_AS_end_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
 
+  sg_platf_route_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
+  sg_platf_ASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_ASroute_cb_t), NULL);
+  sg_platf_bypassRoute_cb_list = xbt_dynar_new(sizeof(sg_platf_bypassRoute_cb_t), NULL);
+  sg_platf_bypassASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_bypassASroute_cb_t), NULL);
+
   sg_platf_storage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_storage_type_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_mstorage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
@@ -71,6 +81,11 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_cabinet_cb_list);
   xbt_dynar_free(&sg_platf_AS_begin_cb_list);
   xbt_dynar_free(&sg_platf_AS_end_cb_list);
+
+  xbt_dynar_free(&sg_platf_route_cb_list);
+  xbt_dynar_free(&sg_platf_ASroute_cb_list);
+  xbt_dynar_free(&sg_platf_bypassRoute_cb_list);
+  xbt_dynar_free(&sg_platf_bypassASroute_cb_list);
 
   xbt_dynar_free(&sg_platf_storage_cb_list);
   xbt_dynar_free(&sg_platf_storage_type_cb_list);
@@ -166,7 +181,32 @@ void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
     fun(mount);
   }
 }
-
+void sg_platf_new_route(sg_platf_route_cbarg_t route) {
+  unsigned int iterator;
+  sg_platf_route_cb_t fun;
+  xbt_dynar_foreach(sg_platf_route_cb_list, iterator, fun) {
+    fun(route);
+  }
+}void sg_platf_new_ASroute(sg_platf_ASroute_cbarg_t ASroute) {
+  unsigned int iterator;
+  sg_platf_ASroute_cb_t fun;
+  xbt_dynar_foreach(sg_platf_ASroute_cb_list, iterator, fun) {
+    fun(ASroute);
+  }
+}
+void sg_platf_new_bypassRoute(sg_platf_bypassRoute_cbarg_t bypassRoute) {
+  unsigned int iterator;
+  sg_platf_bypassRoute_cb_t fun;
+  xbt_dynar_foreach(sg_platf_bypassRoute_cb_list, iterator, fun) {
+    fun(bypassRoute);
+  }
+}void sg_platf_new_bypassASroute(sg_platf_bypassASroute_cbarg_t bypassASroute) {
+  unsigned int iterator;
+  sg_platf_bypassASroute_cb_t fun;
+  xbt_dynar_foreach(sg_platf_bypassASroute_cb_list, iterator, fun) {
+    fun(bypassASroute);
+  }
+}
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
 
 void sg_platf_end() {
@@ -259,7 +299,18 @@ void sg_platf_mstorage_add_cb(sg_platf_mstorage_cb_t fct) {
 void sg_platf_mount_add_cb(sg_platf_mount_cb_t fct) {
   xbt_dynar_push(sg_platf_mount_cb_list, &fct);
 }
-
+void sg_platf_route_add_cb(sg_platf_route_cb_t fct) {
+  xbt_dynar_push(sg_platf_route_cb_list, &fct);
+}
+void sg_platf_ASroute_add_cb(sg_platf_ASroute_cb_t fct) {
+  xbt_dynar_push(sg_platf_ASroute_cb_list, &fct);
+}
+void sg_platf_bypassRoute_add_cb(sg_platf_bypassRoute_cb_t fct) {
+  xbt_dynar_push(sg_platf_bypassRoute_cb_list, &fct);
+}
+void sg_platf_bypassASroute_add_cb(sg_platf_bypassASroute_cb_t fct) {
+  xbt_dynar_push(sg_platf_bypassASroute_cb_list, &fct);
+}
 
 void sg_platf_rng_stream_init(unsigned long seed[6]) {
   RngStream_SetPackageSeed(seed);

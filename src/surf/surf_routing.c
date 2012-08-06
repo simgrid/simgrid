@@ -63,11 +63,6 @@ AS_t current_routing = NULL;
 xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
 extern xbt_dynar_t mount_list;
 
-static const char *src = NULL;  /* temporary store the source name of a route */
-static const char *dst = NULL;  /* temporary store the destination name of a route */
-static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
-static char *gw_dst = NULL;     /* temporary store the gateway destination name of a route */
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
 static void routing_parse_peer(sg_platf_peer_cbarg_t peer);     /* peer bypass */
@@ -226,86 +221,28 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   }
 }
 
-
-/**
- * \brief Set the end points for a route
- */
-static void routing_parse_S_route(void)
-{
-  src = A_surfxml_route_src;
-  dst = A_surfxml_route_dst;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\"",
-             src, dst);
-  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-
-/**
- * \brief Set the end points and gateways for a ASroute
- */
-static void routing_parse_S_ASroute(void)
-{
-  src = A_surfxml_ASroute_src;
-  dst = A_surfxml_ASroute_dst;
-  gw_src = A_surfxml_ASroute_gw_src;
-  gw_dst = A_surfxml_ASroute_gw_dst;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0 || strlen(gw_dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-             src, dst,gw_src,gw_dst);
-  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-
-/**
- * \brief Set the end points for a bypassRoute
- */
-static void routing_parse_S_bypassRoute(void)
-{
-  src = A_surfxml_bypassRoute_src;
-  dst = A_surfxml_bypassRoute_dst;
-  gw_src = NULL;
-  gw_dst = NULL;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0 || strlen(gw_dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-             src, dst,gw_src,gw_dst);
-  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-
-/**
- * \brief Set the end points for a bypassASroute
- */
-static void routing_parse_S_bypassASroute(void)
-{
-  src = A_surfxml_bypassASroute_src;
-  dst = A_surfxml_bypassASroute_dst;
-  gw_src = A_surfxml_bypassASroute_gw_src;
-  gw_dst = A_surfxml_bypassASroute_gw_dst;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0 || strlen(gw_dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-             src, dst,gw_src,gw_dst);
-  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-
 /**
  * \brief Store the route by calling the set_route function of the current routing component
  */
-static void routing_parse_E_route(void)
+static void parse_E_route(sg_platf_route_cbarg_t route)
 {
-  route_t route = xbt_new0(s_route_t, 1);
-  route->link_list = parsed_link_list;
+  route_t created_route = xbt_new0(s_route_t, 1);
+  created_route->link_list = parsed_link_list;
+
   xbt_assert(current_routing->parse_route,
              "no defined method \"set_route\" in \"%s\"",
              current_routing->name);
-  current_routing->parse_route(current_routing, src, dst, route);
-  generic_free_route(route);
+
+  current_routing->parse_route(current_routing,
+      route->src, route->dst, created_route);
+  generic_free_route(created_route);
   parsed_link_list = NULL;
-  src = NULL;
-  dst = NULL;
 }
 
 /**
  * \brief Store the ASroute by calling the set_ASroute function of the current routing component
  */
-static void routing_parse_E_ASroute(void)
+static void parse_E_ASroute(sg_platf_ASroute_cbarg_t ASroute)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = parsed_link_list;
@@ -315,28 +252,24 @@ static void routing_parse_E_ASroute(void)
     // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
     //
     // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-    e_route->src_gateway = (sg_routing_edge_t) gw_src;
-    e_route->dst_gateway = (sg_routing_edge_t) gw_dst;
+    e_route->src_gateway = (sg_routing_edge_t) ASroute->gw_src;
+    e_route->dst_gateway = (sg_routing_edge_t) ASroute->gw_dst;
   } else {
-    e_route->src_gateway = sg_routing_edge_by_name_or_null(gw_src);
-    e_route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst);
+    e_route->src_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_src);
+    e_route->dst_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_dst);
   }
   xbt_assert(current_routing->parse_ASroute,
              "no defined method \"set_ASroute\" in \"%s\"",
              current_routing->name);
-  current_routing->parse_ASroute(current_routing, src, dst, e_route);
+  current_routing->parse_ASroute(current_routing, ASroute->src, ASroute->dst, e_route);
   generic_free_route(e_route);
   parsed_link_list = NULL;
-  src = NULL;
-  dst = NULL;
-  gw_src = NULL;
-  gw_dst = NULL;
 }
 
 /**
  * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
  */
-static void routing_parse_E_bypassRoute(void)
+static void parse_E_bypassRoute(sg_platf_bypassRoute_cbarg_t route)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = parsed_link_list;
@@ -345,12 +278,24 @@ static void routing_parse_E_bypassRoute(void)
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
 
-  current_routing->parse_bypassroute(current_routing, src, dst, e_route);
+  current_routing->parse_bypassroute(current_routing, route->src, route->dst, e_route);
   parsed_link_list = NULL;
-  src = NULL;
-  dst = NULL;
-  gw_src = NULL;
-  gw_dst = NULL;
+}
+
+/**
+ * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
+ */
+static void parse_E_bypassASroute(sg_platf_bypassASroute_cbarg_t ASroute)
+{
+  route_t e_route = xbt_new0(s_route_t, 1);
+  e_route->link_list = parsed_link_list;
+  e_route->src_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_src);
+  e_route->dst_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_dst);
+  xbt_assert(current_routing->parse_bypassroute,
+             "Bypassing mechanism not implemented by routing '%s'",
+             current_routing->name);
+  current_routing->parse_bypassroute(current_routing, ASroute->src, ASroute->dst, e_route);
+  parsed_link_list = NULL;
 }
 
 /**
@@ -371,27 +316,11 @@ static void routing_parse_link_ctn(sg_platf_linkctn_cbarg_t linkctn)
     link_id = bprintf("%s_DOWN", linkctn->id);
     break;
   }
-  xbt_dynar_push(parsed_link_list, &link_id);
-}
 
-/**
- * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
- */
-static void routing_parse_E_bypassASroute(void)
-{
-  route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = parsed_link_list;
-  e_route->src_gateway = sg_routing_edge_by_name_or_null(gw_src);
-  e_route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst);
-  xbt_assert(current_routing->parse_bypassroute,
-             "Bypassing mechanism not implemented by routing '%s'",
-             current_routing->name);
-  current_routing->parse_bypassroute(current_routing, src, dst, e_route);
-  parsed_link_list = NULL;
-  src = NULL;
-  dst = NULL;
-  gw_src = NULL;
-  gw_dst = NULL;
+  if(parsed_link_list == NULL)
+    parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+
+  xbt_dynar_push(parsed_link_list, &link_id);
 }
 
 /**
@@ -1201,22 +1130,10 @@ void routing_register_callbacks()
   sg_platf_host_add_cb(parse_S_host);
   sg_platf_router_add_cb(parse_S_router);
   sg_platf_host_link_add_cb(parse_S_host_link);
-
-  surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
-
-  surfxml_add_callback(STag_surfxml_route_cb_list, &routing_parse_S_route);
-  surfxml_add_callback(STag_surfxml_ASroute_cb_list, &routing_parse_S_ASroute);
-  surfxml_add_callback(STag_surfxml_bypassRoute_cb_list,
-                       &routing_parse_S_bypassRoute);
-  surfxml_add_callback(STag_surfxml_bypassASroute_cb_list,
-                       &routing_parse_S_bypassASroute);
-
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &routing_parse_E_route);
-  surfxml_add_callback(ETag_surfxml_ASroute_cb_list, &routing_parse_E_ASroute);
-  surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
-                       &routing_parse_E_bypassRoute);
-  surfxml_add_callback(ETag_surfxml_bypassASroute_cb_list,
-                       &routing_parse_E_bypassASroute);
+  sg_platf_route_add_cb(parse_E_route);
+  sg_platf_ASroute_add_cb(parse_E_ASroute);
+  sg_platf_bypassRoute_add_cb(parse_E_bypassRoute);
+  sg_platf_bypassASroute_add_cb(parse_E_bypassASroute);
 
   sg_platf_cluster_add_cb(routing_parse_cluster);
   sg_platf_cabinet_add_cb(routing_parse_cabinet);
@@ -1229,6 +1146,9 @@ void routing_register_callbacks()
   /* we care about the ASes while parsing the platf. Incredible, isnt it? */
   sg_platf_AS_end_add_cb(routing_AS_end);
   sg_platf_AS_begin_add_cb(routing_AS_begin);
+
+  surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
+
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();

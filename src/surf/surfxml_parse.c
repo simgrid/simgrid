@@ -606,8 +606,94 @@ void ETag_surfxml_backbone(void){
 }
 
 void STag_surfxml_route(void){
-  surfxml_call_cb_functions(STag_surfxml_route_cb_list);
+  xbt_assert(strlen(A_surfxml_route_src) > 0 || strlen(A_surfxml_route_dst) > 0,
+      "Missing end-points while defining route \"%s\"->\"%s\"",
+      A_surfxml_route_src, A_surfxml_route_dst);
 }
+void STag_surfxml_ASroute(void){
+  xbt_assert(strlen(A_surfxml_ASroute_src) > 0 || strlen(A_surfxml_ASroute_dst) > 0
+      || strlen(A_surfxml_ASroute_gw_src) > 0 || strlen(A_surfxml_ASroute_gw_dst) > 0,
+      "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
+      A_surfxml_ASroute_src, A_surfxml_ASroute_dst,
+      A_surfxml_ASroute_gw_src,A_surfxml_ASroute_gw_dst);
+}
+void STag_surfxml_bypassRoute(void){
+  xbt_assert(strlen(A_surfxml_bypassRoute_src) > 0 || strlen(A_surfxml_bypassRoute_dst) > 0,
+      "Missing end-points while defining bupass route \"%s\"->\"%s\"",
+      A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
+}
+void STag_surfxml_bypassASroute(void){
+  xbt_assert(strlen(A_surfxml_bypassASroute_src) > 0 || strlen(A_surfxml_bypassASroute_dst) > 0
+      || strlen(A_surfxml_bypassASroute_gw_src) > 0 || strlen(A_surfxml_bypassASroute_gw_dst) > 0,
+      "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
+      A_surfxml_bypassASroute_src, A_surfxml_bypassASroute_dst,
+      A_surfxml_bypassASroute_gw_src,A_surfxml_bypassASroute_gw_dst);
+}
+
+void ETag_surfxml_route(void){
+  s_sg_platf_route_cbarg_t route;
+  memset(&route,0,sizeof(route));
+
+  route.src = A_surfxml_route_src;
+  route.dst = A_surfxml_route_dst;
+
+  switch (A_surfxml_route_symmetrical) {
+  case AU_surfxml_route_symmetrical:
+  case A_surfxml_route_symmetrical_YES:
+    route.symmetrical = TRUE;
+    break;
+  case A_surfxml_route_symmetrical_NO:
+    route.symmetrical = FALSE;;
+    break;
+  }
+
+  sg_platf_new_route(&route);
+}
+
+void ETag_surfxml_ASroute(void){
+  s_sg_platf_ASroute_cbarg_t ASroute;
+  memset(&ASroute,0,sizeof(ASroute));
+
+  ASroute.src = A_surfxml_ASroute_src;
+  ASroute.dst = A_surfxml_ASroute_dst;
+  ASroute.gw_src = A_surfxml_ASroute_gw_src;
+  ASroute.gw_dst = A_surfxml_ASroute_gw_dst;
+
+  switch (A_surfxml_ASroute_symmetrical) {
+  case AU_surfxml_ASroute_symmetrical:
+  case A_surfxml_ASroute_symmetrical_YES:
+    ASroute.symmetrical = TRUE;
+    break;
+  case A_surfxml_ASroute_symmetrical_NO:
+    ASroute.symmetrical = FALSE;;
+    break;
+  }
+
+  sg_platf_new_ASroute(&ASroute);
+}
+
+void ETag_surfxml_bypassRoute(void){
+  s_sg_platf_bypassRoute_cbarg_t route;
+  memset(&route,0,sizeof(route));
+
+  route.src = A_surfxml_bypassRoute_src;
+  route.dst = A_surfxml_bypassRoute_dst;
+
+  sg_platf_new_bypassRoute(&route);
+}
+
+void ETag_surfxml_bypassASroute(void){
+  s_sg_platf_bypassASroute_cbarg_t ASroute;
+  memset(&ASroute,0,sizeof(ASroute));
+
+  ASroute.src = A_surfxml_bypassASroute_src;
+  ASroute.dst = A_surfxml_bypassASroute_dst;
+  ASroute.gw_src = A_surfxml_bypassASroute_gw_src;
+  ASroute.gw_dst = A_surfxml_bypassASroute_gw_dst;
+
+  sg_platf_new_bypassASroute(&ASroute);
+}
+
 void STag_surfxml_process(void){
   surfxml_call_cb_functions(STag_surfxml_process_cb_list);
 }
@@ -629,15 +715,7 @@ void STag_surfxml_AS(void){
 void ETag_surfxml_AS(void){
   sg_platf_new_AS_end();
 }
-void STag_surfxml_ASroute(void){
-  surfxml_call_cb_functions(STag_surfxml_ASroute_cb_list);
-}
-void STag_surfxml_bypassRoute(void){
-  surfxml_call_cb_functions(STag_surfxml_bypassRoute_cb_list);
-}
-void STag_surfxml_bypassASroute(void){
-  surfxml_call_cb_functions(STag_surfxml_bypassASroute_cb_list);
-}
+
 void STag_surfxml_config(void){
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
@@ -667,16 +745,12 @@ void STag_surfxml_random(void){
   { surfxml_call_cb_functions(type##Tag_surfxml_##name##_cb_list); }    \
   void type##Tag_surfxml_##name(void)
 
-parse_method(E, route);
 parse_method(E, process);
 parse_method(E, argument);
 parse_method(E, prop);
 parse_method(E, trace);
 parse_method(E, trace_connect);
 parse_method(E, random);
-parse_method(E, ASroute);
-parse_method(E, bypassRoute);
-parse_method(E, bypassASroute);
 
 /* Open and Close parse file */
 
