@@ -1147,7 +1147,6 @@ void routing_register_callbacks()
   sg_platf_AS_end_add_cb(routing_AS_end);
   sg_platf_AS_begin_add_cb(routing_AS_begin);
 
-  surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
 
 
 #ifdef HAVE_TRACING

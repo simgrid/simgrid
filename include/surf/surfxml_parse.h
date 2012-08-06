@@ -16,10 +16,6 @@
 SG_BEGIN_DECL()
 
 /* Hook for the different tags. All the functions which pointer to are push into here are run when the tag is encountered */
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_route_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_route_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_link_ctn_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_link_ctn_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_process_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_process_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_argument_cb_list;
@@ -30,20 +26,6 @@ XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_trace_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_trace_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_trace_connect_cb_list;
 XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_trace_connect_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_random_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_random_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_ASroute_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_ASroute_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_bypassRoute_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_bypassRoute_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_bypassASroute_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_bypassASroute_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_peer_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_peer_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_include_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_include_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) STag_surfxml_storage_cb_list;
-XBT_PUBLIC_DATA(xbt_dynar_t) ETag_surfxml_storage_cb_list;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);
