@@ -342,16 +342,18 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
         *value = (double) trace->s_probabilist.next_event;
         if(trace->s_probabilist.next_event == 0) {
           event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
-          trace->s_probabilist.next_event = 0;
+          trace->s_probabilist.next_event = 1;
         } else {
           event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
-          trace->s_probabilist.next_event = 1;
+          trace->s_probabilist.next_event = 0;
         }
       } else {
         event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
         *value = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
       }
       xbt_heap_push(h->heap, trace_event, event_date + event_delta);
+      XBT_DEBUG("Generating a new event, with value %f", *value);
+      XBT_DEBUG("Event date: %f", event_date + event_delta);
 
       break;
   }
