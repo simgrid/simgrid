@@ -57,6 +57,8 @@ XBT_PUBLIC(void) platf_graph_interconnect_barabasi(void);
 
 XBT_PUBLIC(int) platf_graph_is_connected(void);
 
+XBT_PUBLIC(void) platf_graph_clear_links(void);
+
 XBT_PUBLIC(void) platf_graph_promote_to_host(context_node_t node, sg_platf_host_cbarg_t parameters);
 XBT_PUBLIC(void) platf_graph_promote_to_cluster(context_node_t node, sg_platf_cluster_cbarg_t parameters);
 
