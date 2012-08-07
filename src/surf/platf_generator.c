@@ -304,17 +304,40 @@ void platf_graph_interconnect_barabasi(void) {
 
 int platf_graph_is_connected(void) {
   xbt_dynar_t dynar_nodes = NULL;
+  xbt_dynar_t connected_nodes = NULL;
+  xbt_dynar_t outgoing_edges = NULL;
   xbt_node_t graph_node = NULL;
-  context_node_t node_data = NULL;
+  xbt_edge_t outedge = NULL;
+  unsigned long iterator;
   unsigned int i;
   dynar_nodes = xbt_graph_get_nodes(platform_graph);
-  xbt_dynar_foreach(dynar_nodes, i, graph_node) {
-    node_data = xbt_graph_node_get_data(graph_node);
-    if(node_data->degree==0) {
-      return FALSE;
+  connected_nodes = xbt_dynar_new(sizeof(xbt_node_t), NULL);
+
+  //Initialize the connected node array with the first node
+  xbt_dynar_get_cpy(dynar_nodes, 0, &graph_node);
+  xbt_dynar_push(connected_nodes, &graph_node);
+  iterator = 0;
+  do {
+    //Get the next node
+    xbt_dynar_get_cpy(connected_nodes, iterator, &graph_node);
+
+    //add all the linked nodes to the connected node array
+    outgoing_edges = xbt_graph_node_get_outedges(graph_node);
+    xbt_dynar_foreach(outgoing_edges, i, outedge) {
+      xbt_node_t src = xbt_graph_edge_get_source(outedge);
+      xbt_node_t dst = xbt_graph_edge_get_target(outedge);
+      if(!xbt_dynar_member(connected_nodes, &src)) {
+        xbt_dynar_push(connected_nodes, &src);
+      }
+      if(!xbt_dynar_member(connected_nodes, &dst)) {
+        xbt_dynar_push(connected_nodes, &dst);
+      }
     }
-  }
-  return TRUE;
+  } while(++iterator < xbt_dynar_length(connected_nodes));
+
+  // The graph is connected if the connected node array has the same length
+  // as the graph node array
+  return xbt_dynar_length(connected_nodes) == xbt_dynar_length(dynar_nodes);
 }
 
 void platf_graph_clear_links(void) {
