@@ -38,6 +38,8 @@ xbt_dynar_t sg_platf_storage_type_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_mstorage_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_mount_cb_list = NULL; // of sg_platf_storage_cb_t
 
+xbt_dynar_t sg_platf_process_cb_list = NULL;
+
 static int surf_parse_models_setup_already_called;
 
 /* one RngStream for the platform, to respect some statistic rules */
@@ -75,6 +77,8 @@ void sg_platf_init(void) {
   sg_platf_storage_type_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_mstorage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_mount_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
+
+  sg_platf_process_cb_list = xbt_dynar_new(sizeof(sg_platf_process_cb_t), NULL);
 }
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
@@ -103,6 +107,8 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_storage_type_cb_list);
   xbt_dynar_free(&sg_platf_mstorage_cb_list);
   xbt_dynar_free(&sg_platf_mount_cb_list);
+
+  xbt_dynar_free(&sg_platf_process_cb_list);
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
@@ -240,6 +246,14 @@ void sg_platf_new_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect) {
     fun(trace_connect);
   }
 }
+void sg_platf_new_process(sg_platf_process_cbarg_t process){
+  unsigned int iterator;
+  sg_platf_process_cb_t fun;
+  xbt_dynar_foreach(sg_platf_process_cb_list, iterator, fun) {
+    fun(process);
+  }
+}
+
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
 
 void sg_platf_end() {
@@ -356,6 +370,9 @@ void sg_platf_trace_connect_add_cb(sg_platf_trace_connect_cb_t fct) {
 void sg_platf_rng_stream_init(unsigned long seed[6]) {
   RngStream_SetPackageSeed(seed);
   sg_platf_rng_stream = RngStream_CreateStream(NULL);
+}
+void sg_platf_process_add_cb(sg_platf_process_cb_t fct) {
+  xbt_dynar_push(sg_platf_process_cb_list, &fct);
 }
 
 RngStream sg_platf_rng_stream_get(const char* id) {

@@ -64,10 +64,6 @@ int surf_parse_get_int(const char *string) {
  */
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
-xbt_dynar_t STag_surfxml_process_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_process_cb_list = NULL;
-xbt_dynar_t STag_surfxml_argument_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_argument_cb_list = NULL;
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = NULL;
@@ -210,15 +206,7 @@ int ETag_surfxml_include_state(void)
 
 void surf_parse_init_callbacks(void)
 {
-    sg_platf_init(); // FIXME: move to a proper place?
-    STag_surfxml_process_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_process_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_argument_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_argument_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
+    sg_platf_init();
 }
 
 void surf_parse_reset_callbacks(void)
@@ -229,12 +217,7 @@ void surf_parse_reset_callbacks(void)
 
 void surf_parse_free_callbacks(void)
 {
-  sg_platf_exit(); // FIXME: better place?
-
-  xbt_dynar_free(&STag_surfxml_process_cb_list);
-  xbt_dynar_free(&ETag_surfxml_process_cb_list);
-  xbt_dynar_free(&STag_surfxml_argument_cb_list);
-  xbt_dynar_free(&ETag_surfxml_argument_cb_list);
+  sg_platf_exit();
 }
 
 /* Stag and Etag parse functions */
@@ -649,6 +632,47 @@ void ETag_surfxml_config(void){
   xbt_dict_free(&current_property_set);
 }
 
+static int argc;
+static char **argv;
+
+void STag_surfxml_process(void){
+  argc = 1;
+  argv = xbt_new(char *, 1);
+  argv[0] = xbt_strdup(A_surfxml_process_function);
+}
+
+void ETag_surfxml_process(void){
+  s_sg_platf_process_cbarg_t process;
+  memset(&process,0,sizeof(process));
+
+  process.argc = argc;
+  process.argv = (const char **)argv;
+  process.properties = current_property_set;
+  process.host = A_surfxml_process_host;
+  process.function = A_surfxml_process_function;
+  process.start_time = surf_parse_get_double(A_surfxml_process_start_time);
+  process.kill_time = surf_parse_get_double(A_surfxml_process_kill_time);
+
+  switch (A_surfxml_process_on_failure) {
+  case AU_surfxml_process_on_failure:
+  case A_surfxml_process_on_failure_DIE:
+    process.on_failure =  SURF_PROCESS_ON_FAILURE_DIE;
+    break;
+  case A_surfxml_process_on_failure_RESTART:
+    process.on_failure =  SURF_PROCESS_ON_FAILURE_RESTART;
+    break;
+  }
+
+  sg_platf_new_process(&process);
+  current_property_set = NULL;
+}
+
+void STag_surfxml_argument(void){
+  argc++;
+  argv = xbt_realloc(argv, (argc) * sizeof(char *));
+  argv[(argc) - 1] = xbt_strdup(A_surfxml_argument_value);
+}
+
 /* nothing to do in those functions */
 void ETag_surfxml_prop(void){}
 void STag_surfxml_random(void){}
@@ -662,22 +686,7 @@ void ETag_surfxml_cabinet(void){}
 void ETag_surfxml_peer(void){}
 void STag_surfxml_backbone(void){}
 void ETag_surfxml_link_ctn(void){}
-
-// FIXME should not call surfxml_call_cb_functions
-void STag_surfxml_process(void){
-  surfxml_call_cb_functions(STag_surfxml_process_cb_list);
-}
-void STag_surfxml_argument(void){
-  surfxml_call_cb_functions(STag_surfxml_argument_cb_list);
-}
-
-#define parse_method(type,name)                                         \
-  void type##Tag_surfxml_##name(void)                                   \
-  { surfxml_call_cb_functions(type##Tag_surfxml_##name##_cb_list); }    \
-  void type##Tag_surfxml_##name(void)
-
-parse_method(E, process);
-parse_method(E, argument);
+void ETag_surfxml_argument(void){}
 
 /* Open and Close parse file */
 
@@ -731,43 +740,6 @@ static int _surf_parse(void) {
   return surf_parse_lex();
 }
 int_f_void_t surf_parse = _surf_parse;
-
-
-/* Aux parse functions */
-
-void surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function)
-{
-  xbt_dynar_push(cb_list, &function);
-}
-
-void surfxml_del_callback(xbt_dynar_t cb_list, void_f_void_t function)
-{
-  xbt_ex_t e;
-  unsigned int it=0;
-  void_f_void_t null_f=NULL;
-
-  TRY {
-    it = xbt_dynar_search(cb_list,&function);
-  }
-  CATCH(e) {
-    if (e.category == not_found_error) {
-      xbt_ex_free(e);
-      xbt_die("Trying to remove a callback that is not here! This should not happen");
-    }
-    RETHROW;
-  }
-
-  xbt_dynar_replace(cb_list, it,&null_f);
-}
-
-static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
-{
-  unsigned int iterator;
-  void_f_void_t fun;
-  xbt_dynar_foreach(cb_list, iterator, fun) {
-    if (fun) fun();
-  }
-}
 
 
 /* Prop tag functions */

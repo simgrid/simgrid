@@ -46,48 +46,21 @@ char *warning = NULL;
 void s_process_free(void *process)
 {
   s_process_t *p = (s_process_t *) process;
-  int i;
-  for (i = 0; i < p->argc; i++)
-    free(p->argv[i]);
-  free(p->argv);
   free(p->host);
 }
 
 static s_process_t process;
 
-static void parse_process_init(void)
+static void parse_process(sg_platf_process_cbarg_t process_arg)
 {
-  xbt_dict_set(process_function_set, A_surfxml_process_function, NULL, NULL);
-  xbt_dict_set(machine_set, A_surfxml_process_host, NULL, NULL);
-  process.argc = 1;
-  process.argv = xbt_new(char *, 1);
-  process.argv[0] = xbt_strdup(A_surfxml_process_function);
-  process.host = strdup(A_surfxml_process_host);
+  xbt_dict_set(process_function_set, process_arg->function, NULL, NULL);
+  xbt_dict_set(machine_set, process_arg->host, NULL, NULL);
+  process.argc = process_arg->argc;
+  process.argv = (char**)(process_arg->argv);
+  process.host = strdup(process_arg->host);
   /*XBT_VERB("Function: %s",A_surfxml_process_function); */
-}
-
-static void parse_argument(void)
-{
-  process.argc++;
-  process.argv =
-      xbt_realloc(process.argv, (process.argc) * sizeof(char *));
-  process.argv[(process.argc) - 1] = xbt_strdup(A_surfxml_argument_value);
-}
-
-static void parse_process_finalize(void)
-{
   xbt_dynar_push(process_list, &process);
-  /*XBT_VERB("Function: %s",process.argv[0]); */
 }
-
-/*FIXME Defined in surfxml_parse.c*/
-#ifndef WIN32
-void surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function)
-{
-  xbt_dynar_push(cb_list, &function);
-}
-#endif
-
 
 int main(int argc, char *argv[])
 {
@@ -131,11 +104,7 @@ int main(int argc, char *argv[])
   project_name = argv[1];
 
   surf_parse_reset_callbacks();
-  XBT_DEBUG("%p %p", parse_process_init, &parse_process_init);
-  surfxml_add_callback(STag_surfxml_process_cb_list, &parse_process_init);
-  surfxml_add_callback(ETag_surfxml_argument_cb_list, &parse_argument);
-  surfxml_add_callback(ETag_surfxml_process_cb_list,
-                       &parse_process_finalize);
+  sg_platf_process_add_cb(parse_process);
 
   for (i = 2; i < argc; i++) {
     deployment_file = argv[i];
@@ -177,6 +146,9 @@ int main(int argc, char *argv[])
 #endif
 
   free(warning);
+
+
+  xbt_free(process.argv);
 
   xbt_dict_free(&process_function_set);
   xbt_dynar_free(&process_list);

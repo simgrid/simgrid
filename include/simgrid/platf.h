@@ -65,6 +65,12 @@ typedef enum {
   SURF_TRACE_CONNECT_KIND_BANDWIDTH = 1,
   SURF_TRACE_CONNECT_KIND_LATENCY = 0
 } e_surf_trace_connect_kin_t;
+
+typedef enum {
+  SURF_PROCESS_ON_FAILURE_DIE = 1,
+  SURF_PROCESS_ON_FAILURE_RESTART = 0
+} e_surf_process_on_failure_t;
+
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
  * (one for each possible XML attribute), we pass structures containing them all. It removes the
@@ -234,6 +240,23 @@ typedef struct s_sg_platf_trace_connect_cbarg {
   const char *element;
 } s_sg_platf_trace_connect_cbarg_t;
 
+typedef struct s_sg_platf_arg_cbarg *sg_platf_arg_cbarg_t;
+typedef struct s_sg_platf_arg_cbarg {
+  const char *value;
+} s_sg_platf_arg_cbarg_t;
+
+typedef struct s_sg_platf_process_cbarg *sg_platf_process_cbarg_t;
+typedef struct s_sg_platf_process_cbarg {
+  const char **argv;
+  int argc;
+  xbt_dict_t properties;
+  const char *host;
+  const char *function;
+  double start_time;
+  double kill_time;
+  e_surf_process_on_failure_t on_failure;
+} s_sg_platf_process_cbarg_t;
+
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform
 
@@ -263,5 +286,8 @@ XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add 
 XBT_PUBLIC(void) sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage);
 XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type);
 XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
+
+XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
+XBT_PUBLIC(void) sg_platf_new_arg(sg_platf_arg_cbarg_t arg);
 
 #endif                          /* SG_PLATF_H */
