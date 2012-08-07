@@ -12,6 +12,8 @@
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
 #include "surf/surf.h"
+#include "simix/smx_private.h"
+
 
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories");
 
@@ -23,6 +25,7 @@ typedef struct s_smpi_process_data {
   int* argc;
   char*** argv;
   smx_rdv_t mailbox;
+  smx_rdv_t mailbox_small;
   xbt_os_timer_t timer;
   double simulated;
   MPI_Comm comm_self;
@@ -37,6 +40,11 @@ MPI_Comm MPI_COMM_WORLD = MPI_COMM_NULL;
 
 static char* get_mailbox_name(char* str, int index) {
   snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", (int)(sizeof(int) * 2), index);
+  return str;
+}
+
+static char* get_mailbox_name_small(char* str, int index) {
+  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", (int)(sizeof(int) * 2), index);
   return str;
 }
 
@@ -59,6 +67,7 @@ void smpi_process_init(int *argc, char ***argv)
     (*argc)--;
     data->argc = argc;
     data->argv = argv;
+    data->mailbox_small->permanent_receiver=proc;// set the process attached to the mailbox
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
 }
@@ -77,7 +86,7 @@ void smpi_process_finalize(void)
 {
   // wait for all pending asynchronous comms to finish
   while (SIMIX_process_has_pending_comms(SIMIX_process_self())) {
-    simcall_process_sleep(1);
+    simcall_process_sleep(0.01);
   }
 }
 
@@ -144,13 +153,27 @@ smx_rdv_t smpi_process_mailbox(void) {
   return data->mailbox;
 }
 
+smx_rdv_t smpi_process_mailbox_small(void) {
+  smpi_process_data_t data = smpi_process_data();
+
+  return data->mailbox_small;
+}
+
 smx_rdv_t smpi_process_remote_mailbox(int index) {
   smpi_process_data_t data = smpi_process_remote_data(index);
 
   return data->mailbox;
 }
 
-xbt_os_timer_t smpi_process_timer(void) {
+
+smx_rdv_t smpi_process_remote_mailbox_small(int index) {
+  smpi_process_data_t data = smpi_process_remote_data(index);
+
+  return data->mailbox_small;
+}
+
+xbt_os_timer_t smpi_process_timer(void)
+{
   smpi_process_data_t data = smpi_process_data();
 
   return data->timer;
@@ -195,6 +218,7 @@ void smpi_global_init(void)
     process_data[i]->argc = NULL;
     process_data[i]->argv = NULL;
     process_data[i]->mailbox = simcall_rdv_create(get_mailbox_name(name, i));
+    process_data[i]->mailbox_small = simcall_rdv_create(get_mailbox_name_small(name, i));
     process_data[i]->timer = xbt_os_timer_new();
     group = smpi_group_new(1);
     process_data[i]->comm_self = smpi_comm_new(group);
@@ -219,6 +243,7 @@ void smpi_global_destroy(void)
     smpi_comm_destroy(process_data[i]->comm_self);
     xbt_os_timer_free(process_data[i]->timer);
     simcall_rdv_destroy(process_data[i]->mailbox);
+    simcall_rdv_destroy(process_data[i]->mailbox_small);
     xbt_free(process_data[i]);
   }
   xbt_free(process_data);

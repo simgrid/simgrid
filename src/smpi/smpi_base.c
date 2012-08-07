@@ -121,39 +121,53 @@ void smpi_mpi_start(MPI_Request request)
               "Cannot (re)start a non-finished communication");
   if(request->flags & RECV) {
     print_request("New recv", request);
+    if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres"))
+    mailbox = smpi_process_mailbox_small();
+    else
     mailbox = smpi_process_mailbox();
+
     // FIXME: SIMIX does not yet support non-contiguous datatypes
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
   } else {
     print_request("New send", request);
-    mailbox = smpi_process_remote_mailbox(
-        smpi_group_index(smpi_comm_group(request->comm), request->dst));
-    // FIXME: SIMIX does not yet support non-contiguous datatypes
 
-    if (request->size < 64*1024 ) { // eager mode => detached send (FIXME: this limit should be configurable)
+    if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")) { // eager mode => detached send (FIXME: this limit should be configurable)
+      mailbox = smpi_process_remote_mailbox_small(
+            smpi_group_index(smpi_comm_group(request->comm), request->dst));
+    }else{
+      XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
+      mailbox = smpi_process_remote_mailbox(
+                  smpi_group_index(smpi_comm_group(request->comm), request->dst));
+    }
+    if (request->size < 64*1024 ) { //(FIXME: this limit should be configurable)
       void *oldbuf = request->buf;
       detached = 1;
       request->buf = malloc(request->size);
       memcpy(request->buf,oldbuf,request->size);
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
-    } else {
+    }else{
       XBT_DEBUG("Send request %p is not detached (buf: %p)",request,request->buf);
+      mailbox = smpi_process_remote_mailbox(
+                  smpi_group_index(smpi_comm_group(request->comm), request->dst));
     }
-    request->action = 
-    simcall_comm_isend(mailbox, request->size, -1.0,
-            request->buf, request->size,
-            &match_send,
-            &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
-            request,
-            // detach if msg size < eager/rdv switch limit
-            detached);
 
-#ifdef HAVE_TRACING
-    /* FIXME: detached sends are not traceable (request->action == NULL) */
-    if (request->action)
-      simcall_set_category(request->action, TRACE_internal_smpi_get_category());
-#endif
-  }
+      request->action =
+      simcall_comm_isend(mailbox, request->size, -1.0,
+              request->buf, request->size,
+              &match_send,
+              &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
+              request,
+              // detach if msg size < eager/rdv switch limit
+              detached);
+
+  #ifdef HAVE_TRACING
+      /* FIXME: detached sends are not traceable (request->action == NULL) */
+      if (request->action)
+        simcall_set_category(request->action, TRACE_internal_smpi_get_category());
+  #endif
+
+    }
+
 }
 
 void smpi_mpi_startall(int count, MPI_Request * requests)
@@ -220,13 +234,15 @@ void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
   smpi_mpi_wait(&request, status);
 }
 
+
+
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm)
 {
-  MPI_Request request;
+	  MPI_Request request;
 
-  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
-  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+	  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
+	  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -348,7 +364,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     XBT_DEBUG("Wait for one of");
     for(i = 0; i < count; i++) {
       if((requests[i] != MPI_REQUEST_NULL) && (requests[i]->action != NULL)) {
-        print_request("   ", requests[i]);
+        print_request("Waiting any ", requests[i]);
         xbt_dynar_push(comms, &requests[i]->action);
         map[size] = i;
         size++;
@@ -356,10 +372,12 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     }
     if(size > 0) {
       i = simcall_comm_waitany(comms);
+
       // FIXME: MPI_UNDEFINED or does SIMIX have a return code?
       if (i != MPI_UNDEFINED) {
         index = map[i];
         finish_wait(&requests[index], status);
+
       }
     }
     xbt_free(map);
@@ -692,6 +710,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
     smpi_mpi_startall(size - 1, requests);
     for(src = 0; src < size - 1; src++) {
       index = smpi_mpi_waitany(size - 1, requests, MPI_STATUS_IGNORE);
+      XBT_VERB("finished waiting any request with index %d", index);
       if(index == MPI_UNDEFINED) {
         break;
       }
