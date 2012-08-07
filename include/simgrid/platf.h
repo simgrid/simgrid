@@ -240,11 +240,6 @@ typedef struct s_sg_platf_trace_connect_cbarg {
   const char *element;
 } s_sg_platf_trace_connect_cbarg_t;
 
-typedef struct s_sg_platf_arg_cbarg *sg_platf_arg_cbarg_t;
-typedef struct s_sg_platf_arg_cbarg {
-  const char *value;
-} s_sg_platf_arg_cbarg_t;
-
 typedef struct s_sg_platf_process_cbarg *sg_platf_process_cbarg_t;
 typedef struct s_sg_platf_process_cbarg {
   const char **argv;
@@ -288,6 +283,5 @@ XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage
 XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
-XBT_PUBLIC(void) sg_platf_new_arg(sg_platf_arg_cbarg_t arg);
 
 #endif                          /* SG_PLATF_H */
