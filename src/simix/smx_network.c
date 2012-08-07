@@ -19,7 +19,7 @@ static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_action_t comm);
 static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
 static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
-static smx_action_t SIMIX_rdv_get_comm(smx_rdv_t rdv, e_smx_comm_type_t type,
+static smx_action_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
             int (*match_fun)(void *, void *,smx_action_t),
             void *user_data, smx_action_t my_action);
 static void SIMIX_rdv_free(void *data);
@@ -47,6 +47,10 @@ smx_rdv_t SIMIX_rdv_create(const char *name)
     rdv = xbt_new0(s_smx_rvpoint_t, 1);
     rdv->name = name ? xbt_strdup(name) : NULL;
     rdv->comm_fifo = xbt_fifo_new();
+    rdv->done_comm_fifo = xbt_fifo_new();
+    rdv->permanent_receiver=NULL;
+
+	XBT_DEBUG("Creating a mailbox at %p with name %s\n", rdv, name);
 
     if (rdv->name)
       xbt_dict_set(rdv_points, rdv->name, rdv, NULL);
@@ -62,9 +66,12 @@ void SIMIX_rdv_destroy(smx_rdv_t rdv)
 
 void SIMIX_rdv_free(void *data)
 {
+  XBT_DEBUG("rdv free %p", data);
   smx_rdv_t rdv = (smx_rdv_t) data;
   xbt_free(rdv->name);
   xbt_fifo_free(rdv->comm_fifo);
+  xbt_fifo_free(rdv->done_comm_fifo);
+
   xbt_free(rdv);  
 }
 
@@ -120,11 +127,11 @@ XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm)
 }
 
 /**
- *  \brief Checks if there is a communication action queued in a rendez-vous matching our needs
+ *  \brief Checks if there is a communication action queued in a fifo matching our needs
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
  *  \return The communication action if found, NULL otherwise
  */
-smx_action_t SIMIX_rdv_get_comm(smx_rdv_t rdv, e_smx_comm_type_t type,
+smx_action_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
                                    int (*match_fun)(void *, void *,smx_action_t),
                                    void *this_user_data, smx_action_t my_action)
 {
@@ -132,7 +139,7 @@ smx_action_t SIMIX_rdv_get_comm(smx_rdv_t rdv, e_smx_comm_type_t type,
   xbt_fifo_item_t item;
   void* other_user_data = NULL;
 
-  xbt_fifo_foreach(rdv->comm_fifo, item, action, smx_action_t) {
+  xbt_fifo_foreach(fifo, item, action, smx_action_t) {
     if (action->comm.type == SIMIX_COMM_SEND) {
       other_user_data = action->comm.src_data;
     } else if (action->comm.type == SIMIX_COMM_RECEIVE) {
@@ -142,7 +149,7 @@ smx_action_t SIMIX_rdv_get_comm(smx_rdv_t rdv, e_smx_comm_type_t type,
         (!match_fun              ||              match_fun(this_user_data,  other_user_data, action)) &&
         (!action->comm.match_fun || action->comm.match_fun(other_user_data, this_user_data,  my_action))) {
       XBT_DEBUG("Found a matching communication action %p", action);
-      xbt_fifo_remove_item(rdv->comm_fifo, item);
+      xbt_fifo_remove_item(fifo, item);
       xbt_fifo_free_item(item);
       action->comm.refcount++;
       action->comm.rdv = NULL;
@@ -263,6 +270,8 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               void *data,
                               int detached)
 {
+  XBT_DEBUG("send from %p\n", rdv);
+
   /* Prepare an action describing us, so that it gets passed to the user-provided filter of other side */
   smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_SEND);
 
@@ -270,17 +279,33 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
    *
    * If it is not found then push our communication into the rendez-vous point */
-  smx_action_t other_action = SIMIX_rdv_get_comm(rdv, SIMIX_COMM_RECEIVE, match_fun, data, this_action);
+  smx_action_t other_action = SIMIX_fifo_get_comm(rdv->comm_fifo, SIMIX_COMM_RECEIVE, match_fun, data, this_action);
 
   if (!other_action) {
     other_action = this_action;
-    SIMIX_rdv_push(rdv, this_action);
+
+    if (rdv->permanent_receiver!=NULL){
+  	  //this mailbox is for small messages, which have to be sent right now
+  	  other_action->state = SIMIX_READY;
+  	  other_action->comm.dst_proc=rdv->permanent_receiver;
+  	  other_action->comm.refcount++;
+  	  other_action->comm.rdv = rdv;
+  	  xbt_fifo_push(rdv->done_comm_fifo,other_action);
+      other_action->comm.rdv=rdv;
+  	  XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p \n", rdv, &(other_action->comm));
+
+    }else{
+      SIMIX_rdv_push(rdv, this_action);
+	}
   } else {
+	XBT_DEBUG("Receive already pushed\n");
+
     SIMIX_comm_destroy(this_action);
     --smx_total_comms; // this creation was a pure waste
 
     other_action->state = SIMIX_READY;
     other_action->comm.type = SIMIX_COMM_READY;
+
   }
   xbt_fifo_push(src_proc->comms, other_action);
 
@@ -317,41 +342,85 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                       void *dst_buff, size_t *dst_buff_size,
                       int (*match_fun)(void *, void *, smx_action_t), void *data)
 {
-  /* Prepare an action describing us, so that it gets passed to the user-provided filter of other side */
-  smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
+	XBT_DEBUG("recv from %p %p\n", rdv, rdv->comm_fifo);
+	smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
 
-  /* Look for communication action matching our needs. We also provide a description of
-   * ourself so that the other side also gets a chance of choosing if it wants to match with us.
-   *
-   * If it is not found then push our communication into the rendez-vous point */
-  smx_action_t other_action = SIMIX_rdv_get_comm(rdv, SIMIX_COMM_SEND, match_fun, data, this_action);
+	smx_action_t other_action;
+  //communication already done, get it inside the fifo of completed comms
+  //permanent receive v1
+  //int already_received=0;
+  if(rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0){
 
-  if (!other_action) {
-    other_action = this_action;
-    SIMIX_rdv_push(rdv, this_action);
-  } else {
-    SIMIX_comm_destroy(this_action);
-    --smx_total_comms; // this creation was a pure waste
+	  XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication\n");
+	  //find a match in the already received fifo
+	  other_action = SIMIX_fifo_get_comm(rdv->done_comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
+	  //if not found, assume the receiver came first, register it to the mailbox in the classical way
+	  if (!other_action)  {
+		XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo\n");
+		other_action = this_action;
+		SIMIX_rdv_push(rdv, this_action);
+	  }else{
+		if(other_action->comm.surf_comm && 	SIMIX_comm_get_remains(other_action)==0.0)
+		{
+		  XBT_DEBUG("comm %p has been already sent, and is finished, destroy it\n",&(other_action->comm));
+		  other_action->state = SIMIX_DONE;
+		  other_action->comm.type = SIMIX_COMM_DONE;
+		  other_action->comm.rdv = NULL;
+		  SIMIX_comm_destroy(this_action);
+		  --smx_total_comms; // this creation was a pure waste
+		  //already_received=1;
+		  other_action->comm.refcount--;
+		}/*else{
+		  XBT_DEBUG("Not yet finished, we have to wait %d\n", xbt_fifo_size(rdv->comm_fifo));
+		}*/
+		other_action->comm.refcount--;
+		SIMIX_comm_destroy(this_action);
+		--smx_total_comms; // this creation was a pure waste
+	  }
+  }else{
+	  /* Prepare an action describing us, so that it gets passed to the user-provided filter of other side */
 
-    other_action->state = SIMIX_READY;
-    other_action->comm.type = SIMIX_COMM_READY;
+	  /* Look for communication action matching our needs. We also provide a description of
+	   * ourself so that the other side also gets a chance of choosing if it wants to match with us.
+	   *
+	   * If it is not found then push our communication into the rendez-vous point */
+	  other_action = SIMIX_fifo_get_comm(rdv->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
+
+	  if (!other_action) {
+		XBT_DEBUG("Receive pushed first %d\n", xbt_fifo_size(rdv->comm_fifo));
+		other_action = this_action;
+		SIMIX_rdv_push(rdv, this_action);
+	  } else {
+		SIMIX_comm_destroy(this_action);
+		--smx_total_comms; // this creation was a pure waste
+		other_action->state = SIMIX_READY;
+		other_action->comm.type = SIMIX_COMM_READY;
+		xbt_fifo_push(dst_proc->comms, other_action);
+
+	  }
   }
-  xbt_fifo_push(dst_proc->comms, other_action);
 
-  /* Setup communication action */
-  other_action->comm.dst_proc = dst_proc;
-  other_action->comm.dst_buff = dst_buff;
-  other_action->comm.dst_buff_size = dst_buff_size;
-  other_action->comm.dst_data = data;
 
-  other_action->comm.match_fun = match_fun;
+	  /* Setup communication action */
+	  other_action->comm.dst_proc = dst_proc;
+	  other_action->comm.dst_buff = dst_buff;
+	  other_action->comm.dst_buff_size = dst_buff_size;
+	  other_action->comm.dst_data = data;
 
-  if (MC_IS_ENABLED) {
-    other_action->state = SIMIX_RUNNING;
-    return other_action;
-  }
+	  other_action->comm.match_fun = match_fun;
 
-  SIMIX_comm_start(other_action);
+
+	  /*if(already_received)//do the actual copy, because the first one after the comm didn't have all the info
+	  SIMIX_comm_copy_data(other_action);*/
+
+
+	  if (MC_IS_ENABLED) {
+		other_action->state = SIMIX_RUNNING;
+		return other_action;
+	  }
+
+	  SIMIX_comm_start(other_action);
+ // }
   return other_action;
 }
 
@@ -362,6 +431,8 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
   surf_action_t sleep;
 
   /* Associate this simcall to the wait action */
+  XBT_DEBUG("SIMIX_pre_comm_wait, %p", action);
+
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 
