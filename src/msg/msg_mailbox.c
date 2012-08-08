@@ -59,7 +59,7 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 void MSG_mailbox_set_async(const char *alias){
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
-  mailbox->permanent_receiver=SIMIX_process_self();
+  SIMIX_rdv_set_receiver(mailbox, SIMIX_process_self());
   XBT_VERB("%s mailbox set to receive eagerly for process %p\n",alias, SIMIX_process_self());
 
 }
