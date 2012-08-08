@@ -66,6 +66,19 @@ XBT_PUBLIC(msg_mailbox_t)
  */
 XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
 
+/* \brief MSG_mailbox_set_async - set a mailbox as eager
+ *
+ * The function MSG_mailbox_set_async sets the mailbox to a permanent receiver mode
+ * Messages sent to this mailbox will then be sent just after the send is issued,
+ * without waiting for the corresponding receive.
+ *
+ * This call should be done before issuing any receive, and on the receiver's side only
+ *
+ * \param alias    The alias of the mailbox to modify.
+ *
+ */
+void MSG_mailbox_set_async(const char *alias);
+
 /*! \brief MSG_mailbox_get_head - get the task at the head of a mailbox.
  *
  * The MSG_mailbox_get_head returns the task at the head of the mailbox.
