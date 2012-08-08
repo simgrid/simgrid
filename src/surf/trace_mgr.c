@@ -34,6 +34,25 @@ XBT_INLINE void tmgr_history_free(tmgr_history_t h)
   free(h);
 }
 
+
+/**
+ * \brief Create a #tmgr_trace_t from probabilist generators
+ *
+ * This trace will generate an infinite set of events.
+ * It needs two #probabilist_event_generator_t. For regular events, the first one is
+ * used as a date generator, the second as a value generator. For a state trace, the
+ * event values are 0 or 1. The first generator rules the time between state changes.
+ * If the second generator is set, it is used to set the duration of unavailability,
+ * while the first one set the duration of availability.
+ *
+ * \param id The name of the trace
+ * \param generator1 The #probabilist_event_generator_t which generates the time
+ *        between two events, or which rules the duration of availability for state trace
+ * \param generator2 The #probabilist_event_generator_t which generates the value
+ *        of each events, or the duration of unavailability for state trace.
+ * \param is_state_trace Is the trace will be used as a state trace
+ * \return The new #tmgr_trace_t
+ */
 tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
                                           probabilist_event_generator_t generator1,
                                           probabilist_event_generator_t generator2,
@@ -61,6 +80,19 @@ tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
   return trace;
 }
 
+
+/**
+ * \brief Create a new #probabilist_event_generator_t following the uniform distribution
+ *
+ * This generator will generate uniformly distributed random values between min and max
+ * The id is important : it controls the seed of the generator. So, generators with the
+ * same id and the same parameters will generate the same values.
+ *
+ * \param id The name of the generator
+ * \param min The minimal generated value
+ * \param max The maximal generated value
+ * \return a new #probabilist_event_generator_t
+ */
 probabilist_event_generator_t tmgr_event_generator_new_uniform(const char* id,
                                                                double min,
                                                                double max)
@@ -81,6 +113,19 @@ probabilist_event_generator_t tmgr_event_generator_new_uniform(const char* id,
   return event_generator;
 }
 
+
+/**
+ * \brief Create a new #probabilist_event_generator_t following the exponential distribution
+ *
+ * This generator will generate random values following the exponential distribution.
+ * The mean value is 1/rate .
+ * The id is important : it controls the seed of the generator. So, generators with the
+ * same id and the same parameters will generate the same values.
+ *
+ * \param id The name of the generator
+ * \param rate The rate parameter
+ * \return a new #probabilist_event_generator_t
+ */
 probabilist_event_generator_t tmgr_event_generator_new_exponential(const char* id,
                                                                    double rate)
 {
@@ -99,6 +144,18 @@ probabilist_event_generator_t tmgr_event_generator_new_exponential(const char* i
   return event_generator;
 }
 
+/**
+ * \brief Create a new #probabilist_event_generator_t following the weibull distribution
+ *
+ * This generator will generate random values following the weibull distribution.
+ * The id is important : it controls the seed of the generator. So, generators with the
+ * same id and the same parameters will generate the same values.
+ *
+ * \param id The name of the generator
+ * \param scale The scale parameter
+ * \param shape The shape parameter
+ * \return a new #probabilist_event_generator_t
+ */
 probabilist_event_generator_t tmgr_event_generator_new_weibull(const char* id,
                                                                double scale,
                                                                double shape)
@@ -118,7 +175,11 @@ probabilist_event_generator_t tmgr_event_generator_new_weibull(const char* id,
 
   return event_generator;
 }
-
+/**
+ * \brief Get the next random value of a #probabilist_event_generator_t
+ * \param generator The #probabilist_event_generator_t
+ * \return the next random value
+ */
 double tmgr_event_generator_next_value(probabilist_event_generator_t generator)
 {
 
