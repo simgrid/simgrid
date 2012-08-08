@@ -18,10 +18,18 @@ static unsigned long last_link_id = 0;
 
 xbt_graph_t platf_graph_get(void) {
   // We need some debug, so let's add this function
-  // WARNING : shold be removed when it becomes useless
+  // WARNING : should be removed when it becomes useless
   return platform_graph;
 }
 
+/**
+ * \brief Set the seed of the platform generator RngStream
+ *
+ * This RngStream is used to generate all the random values needed to
+ * generate the platform
+ *
+ * \param seed A array of six integer; if NULL, the default seed will be used.
+ */
 void platf_random_seed(unsigned long seed[6]) {
 
   if(rng_stream == NULL) {
@@ -33,6 +41,12 @@ void platf_random_seed(unsigned long seed[6]) {
   }
 }
 
+/**
+ * \brief Initialize the platform generator
+ *
+ * This function create the graph and add node_count nodes to it
+ * \param node_count The number of nodes of the platform
+ */
 void platf_graph_init(unsigned long node_count) {
   unsigned long i;
   platform_graph = xbt_graph_new_graph(FALSE, NULL);
@@ -55,6 +69,11 @@ void platf_graph_init(unsigned long node_count) {
 
 }
 
+/**
+ * \brief Connect two nodes
+ * \param node1 The first node to connect
+ * \param node2 The second node to connect
+ */
 void platf_node_connect(xbt_node_t node1, xbt_node_t node2) {
   context_node_t node1_data;
   context_node_t node2_data;
@@ -71,6 +90,12 @@ void platf_node_connect(xbt_node_t node1, xbt_node_t node2) {
   xbt_graph_new_edge(platform_graph, node1, node2, (void*)edge_data);
 }
 
+/**
+ * \brief Compute the distance between two nodes
+ * \param node1 The first node
+ * \param node2 The second node
+ * \return The distance between node1 and node2
+ */
 double platf_node_distance(xbt_node_t node1, xbt_node_t node2) {
   context_node_t node1_data;
   context_node_t node2_data;
@@ -85,6 +110,10 @@ double platf_node_distance(xbt_node_t node1, xbt_node_t node2) {
   return distance;
 }
 
+/**
+ * \brief Initialize the platform, placing nodes uniformly on the unit square
+ * \param node_count The number of node
+ */
 void platf_graph_uniform(unsigned long node_count) {
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t graph_node = NULL;
@@ -99,6 +128,10 @@ void platf_graph_uniform(unsigned long node_count) {
   }
 }
 
+/**
+ * \brief Initialize the platform, placing nodes in little clusters on the unit square
+ * \param node_count The number of node
+ */
 void platf_graph_heavytailed(unsigned long node_count) {
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t graph_node = NULL;
@@ -113,8 +146,10 @@ void platf_graph_heavytailed(unsigned long node_count) {
   }
 }
 
+/**
+ * \brief Creates a simple topology where all nodes are connected to the first one in a star fashion
+ */
 void platf_graph_interconnect_star(void) {
-  /* All the nodes are connected to the first one */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t graph_node = NULL;
   xbt_node_t first_node = NULL;
@@ -132,8 +167,10 @@ void platf_graph_interconnect_star(void) {
   }
 }
 
+/**
+ * \brief Creates a simple topology where all nodes are connected in line
+ */
 void platf_graph_interconnect_line(void) {
-  /* Node are connected to the previous and the next node, in a line */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t graph_node = NULL;
   xbt_node_t old_node = NULL;
@@ -148,8 +185,10 @@ void platf_graph_interconnect_line(void) {
   }
 }
 
+/**
+ * \brief Create a simple topology where all nodes are connected along a ring
+ */
 void platf_graph_interconnect_ring(void) {
-  /* Create a simple topology where all nodes are connected along a ring */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t graph_node = NULL;
   xbt_node_t old_node = NULL;
@@ -171,8 +210,10 @@ void platf_graph_interconnect_ring(void) {
   platf_node_connect(first_node, graph_node);
 }
 
+/**
+ * \brief Create a simple topology where all nodes are connected to each other, in a clique manner
+ */
 void platf_graph_interconnect_clique(void) {
-  /* Create a simple topology where all nodes are connected to each other, in a clique manner */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t first_node = NULL;
   xbt_node_t second_node = NULL;
@@ -186,9 +227,11 @@ void platf_graph_interconnect_clique(void) {
   }
 }
 
+/**
+ * \brief Creates a topology where the probability to connect two nodes is uniform (unrealistic, but simple)
+ * \param alpha Probability for two nodes to get connected
+ */
 void platf_graph_interconnect_uniform(double alpha) {
-  /* Creates a topology where the probability to connect two nodes is uniform (unrealistic, but simple)
-     alpha : Probability for two nodes to get connected */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t first_node = NULL;
   xbt_node_t second_node = NULL;
@@ -206,9 +249,11 @@ void platf_graph_interconnect_uniform(double alpha) {
   }
 }
 
+/**
+ * \brief Create a topology where the probability follows an exponential law
+ * \param alpha Number of edges increases with alpha
+ */
 void platf_graph_interconnect_exponential(double alpha) {
-  /* Create a topology where the probability follows an exponential law
-     Number of edges increases with alpha */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t first_node = NULL;
   xbt_node_t second_node = NULL;
@@ -227,13 +272,15 @@ void platf_graph_interconnect_exponential(double alpha) {
   }
 }
 
+/**
+ * \brief Create a topology where the probability follows the model of Waxman
+ *
+ * see Waxman, Routing of Multipoint Connections, IEEE J. on Selected Areas in Comm., 1988
+ *
+ * \param alpha Number of edges increases with alpha
+ * \param beta Edge length heterogeneity increases with beta
+ */
 void platf_graph_interconnect_waxman(double alpha, double beta) {
-  /* Create a topology where the probability follows the model of Waxman
-   * (see Waxman, Routing of Multipoint Connections, IEEE J. on Selected Areas in Comm., 1988)
-   *
-   * Number of edges increases with alpha
-   * edge length heterogeneity increases with beta
-   */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t first_node = NULL;
   xbt_node_t second_node = NULL;
@@ -252,15 +299,16 @@ void platf_graph_interconnect_waxman(double alpha, double beta) {
   }
 }
 
+/**
+ * \brief Create a topology where the probability follows the model of Zegura
+ * see Zegura, Calvert, Donahoo, A quantitative comparison of graph-based models
+ * for Internet topology, IEEE/ACM Transactions on Networking, 1997.
+ *
+ * \param alpha Probability of connexion for short edges
+ * \param beta Probability of connexion for long edges
+ * \param r Limit between long and short edges (between 0 and sqrt(2) since nodes are placed on the unit square)
+ */
 void platf_graph_interconnect_zegura(double alpha, double beta, double r) {
-  /* Create a topology where the probability follows the model of Zegura
-   * (see Zegura, Calvert, Donahoo, A quantitative comparison of graph-based models
-   * for Internet topology, IEEE/ACM Transactions on Networking, 1997.)
-   *
-   * alpha : Probability of connexion for short edges
-   * beta : Probability of connexion for long edges
-   * r : Limit between long and short edges (between 0 and sqrt(2) since nodes are placed on the unit square)
-   */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t first_node = NULL;
   xbt_node_t second_node = NULL;
@@ -279,9 +327,11 @@ void platf_graph_interconnect_zegura(double alpha, double beta, double r) {
   }
 }
 
+/**
+ * \brief Create a topology constructed according to the Barabasi-Albert algorithm (follows power laws)
+ * see Barabasi and Albert, Emergence of scaling in random networks, Science 1999, num 59, p509­-512.
+ */
 void platf_graph_interconnect_barabasi(void) {
-  /* Create a topology constructed according to the Barabasi-Albert algorithm (follows power laws)
-     (see Barabasi and Albert, Emergence of scaling in random networks, Science 1999, num 59, p509­-512.) */
   xbt_dynar_t dynar_nodes = NULL;
   xbt_node_t first_node = NULL;
   xbt_node_t second_node = NULL;
@@ -302,6 +352,14 @@ void platf_graph_interconnect_barabasi(void) {
   }
 }
 
+/**
+ * \brief Check if the produced graph is connected
+ *
+ * You should check if the produced graph is connected before doing anything
+ * on it. You probably don't want any isolated node or group of nodes...
+ *
+ * \return TRUE if the graph is connected, FALSE otherwise
+ */
 int platf_graph_is_connected(void) {
   xbt_dynar_t dynar_nodes = NULL;
   xbt_dynar_t connected_nodes = NULL;
@@ -340,6 +398,13 @@ int platf_graph_is_connected(void) {
   return xbt_dynar_length(connected_nodes) == xbt_dynar_length(dynar_nodes);
 }
 
+
+/**
+ * \brief Remove the links in the created topology
+ *
+ * This is useful when the created topology is not connected, and you want
+ * to generate a new one.
+ */
 void platf_graph_clear_links(void) {
   xbt_dynar_t dynar_nodes = NULL;
   xbt_dynar_t dynar_edges = NULL;
@@ -362,20 +427,60 @@ void platf_graph_clear_links(void) {
   }
 }
 
+/**
+ * \brief Promote a node to a host
+ *
+ * This function should be called in callbacks registered with the
+ * platf_graph_promoter function.
+ *
+ * \param node The node to promote
+ * \param parameters The parameters needed to build the host
+ */
 void platf_graph_promote_to_host(context_node_t node, sg_platf_host_cbarg_t parameters) {
   node->kind = HOST;
   memcpy(&(node->host_parameters), parameters, sizeof(s_sg_platf_host_cbarg_t));
 }
 
+/**
+ * \brief Promote a node to a cluster
+ *
+ * This function should be called in callbacks registered with the
+ * platf_graph_promoter function.
+ *
+ * \param node The node to promote
+ * \param parameters The parameters needed to build the cluster
+ */
 void platf_graph_promote_to_cluster(context_node_t node, sg_platf_cluster_cbarg_t parameters) {
   node->kind = CLUSTER;
   memcpy(&(node->cluster_parameters), parameters, sizeof(s_sg_platf_cluster_cbarg_t));
 }
 
+/**
+ * \brief Set the parameters of a network link.
+ *
+ * This function should be called in callbacks registered with the
+ * platf_graph_labeler function.
+ *
+ * \param edge The edge to modify
+ * \param parameters The parameters of the network link
+ */
 void platf_graph_link_label(context_edge_t edge, sg_platf_link_cbarg_t parameters) {
   memcpy(&(edge->link_parameters), parameters, sizeof(s_sg_platf_link_cbarg_t));
 }
 
+/**
+ * \brief Register a callback to promote nodes
+ *
+ * The best way to promote nodes into host or cluster is to write a function
+ * which takes one parameter, a #context_node_t, make every needed test on
+ * it, and call platf_graph_promote_to_host or platf_graph_promote_to_cluster
+ * if needed. Then, register the function with this one.
+ * You can register several callbacks: the first registered function will be
+ * called first. If the node have not been promoted yet, the second function
+ * will be called, and so on...
+ *
+ * \param promoter_callback The callback function
+ */
 void platf_graph_promoter(platf_promoter_cb_t promoter_callback) {
   if(promoter_dynar == NULL) {
     promoter_dynar = xbt_dynar_new(sizeof(platf_promoter_cb_t), NULL);
@@ -383,6 +488,18 @@ void platf_graph_promoter(platf_promoter_cb_t promoter_callback) {
   xbt_dynar_push(promoter_dynar, &promoter_callback);
 }
 
+/**
+ * \brief Register a callback to label links
+ *
+ * Like the node promotion, it is better, to set links, to write a function
+ * which take one parameter, a #context_edge_t, make every needed test on
+ * it, and call platf_graph_link_label if needed.
+ * You can register several callbacks: the first registered function will be
+ * called first. If the link have not been labeled yet, the second function
+ * will be called, and so on...
+ *
+ * \param labeler_callback The callback function
+ */
 void platf_graph_labeler(platf_labeler_cb_t labeler_callback) {
   if(labeler_dynar == NULL) {
     labeler_dynar = xbt_dynar_new(sizeof(void*), NULL);
@@ -390,6 +507,12 @@ void platf_graph_labeler(platf_labeler_cb_t labeler_callback) {
   xbt_dynar_push(labeler_dynar, &labeler_callback);
 }
 
+/**
+ * \brief Call the registered promoters on all nodes
+ *
+ * The promoters are called on all nodes, in the order of their registration
+ * If some nodes are not promoted, they will be routers
+ */
 void platf_do_promote(void) {
   platf_promoter_cb_t promoter_callback;
   xbt_node_t graph_node = NULL;
@@ -407,6 +530,9 @@ void platf_do_promote(void) {
   }
 }
 
+/**
+ * \brief Call the registered labelers on all links
+ */
 void platf_do_label(void) {
   platf_labeler_cb_t labeler_callback;
   xbt_edge_t graph_edge = NULL;
@@ -424,6 +550,15 @@ void platf_do_label(void) {
   }
 }
 
+/**
+ * \brief putting into SURF the generated platform
+ *
+ * This function should be called when the generation is over and the platform
+ * is ready to be put in place in SURF. All the init function, like MSG_init,
+ * must have been called before, or this function will not do anything.
+ * After that function, it should be possible to list all the available hosts
+ * with the provided functions.
+ */
 void platf_generate(void) {
 
   xbt_dynar_t nodes = NULL;
