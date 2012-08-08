@@ -29,9 +29,6 @@ typedef void (*sg_platf_AS_begin_cb_t)(const char*id, int routing);
 typedef void (*sg_platf_prop_cb_t)(sg_platf_prop_cbarg_t);
 
 typedef void (*sg_platf_route_cb_t)(sg_platf_route_cbarg_t);
-typedef void (*sg_platf_ASroute_cb_t)(sg_platf_ASroute_cbarg_t);
-typedef void (*sg_platf_bypassRoute_cb_t)(sg_platf_bypassRoute_cbarg_t);
-typedef void (*sg_platf_bypassASroute_cb_t)(sg_platf_bypassASroute_cbarg_t);
 
 typedef void (*sg_platf_trace_cb_t)(sg_platf_trace_cbarg_t);
 typedef void (*sg_platf_trace_connect_cb_t)(sg_platf_trace_connect_cbarg_t);
@@ -56,9 +53,9 @@ void sg_platf_AS_end_add_cb(void_f_void_t fct);
 void sg_platf_prop_add_cb(sg_platf_prop_cb_t fct);
 
 void sg_platf_route_add_cb(sg_platf_route_cb_t);
-void sg_platf_ASroute_add_cb(sg_platf_ASroute_cb_t);
-void sg_platf_bypassRoute_add_cb(sg_platf_bypassRoute_cb_t);
-void sg_platf_bypassASroute_add_cb(sg_platf_bypassASroute_cb_t);
+void sg_platf_ASroute_add_cb(sg_platf_route_cb_t);
+void sg_platf_bypassRoute_add_cb(sg_platf_route_cb_t);
+void sg_platf_bypassASroute_add_cb(sg_platf_route_cb_t);
 
 void sg_platf_trace_add_cb(sg_platf_trace_cb_t);
 void sg_platf_trace_connect_add_cb(sg_platf_trace_connect_cb_t);

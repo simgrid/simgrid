@@ -23,7 +23,7 @@ int ETag_surfxml_include_state(void);
 char* surf_parsed_filename = NULL; // to locate parse error messages
 
 xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
-
+extern AS_t current_routing;
 /*
  * Helping functions
  */
@@ -511,6 +511,8 @@ void ETag_surfxml_route(void){
 
   route.src = A_surfxml_route_src;
   route.dst = A_surfxml_route_dst;
+  route.gw_src = NULL;
+  route.gw_dst = NULL;
   route.link_list = parsed_link_list;
 
   switch (A_surfxml_route_symmetrical) {
@@ -528,13 +530,24 @@ void ETag_surfxml_route(void){
 }
 
 void ETag_surfxml_ASroute(void){
-  s_sg_platf_ASroute_cbarg_t ASroute;
+  s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
   ASroute.src = A_surfxml_ASroute_src;
   ASroute.dst = A_surfxml_ASroute_dst;
-  ASroute.gw_src = A_surfxml_ASroute_gw_src;
-  ASroute.gw_dst = A_surfxml_ASroute_gw_dst;
+
+  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
+    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
+    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
+    //
+    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
+    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_ASroute_gw_src;
+    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_ASroute_gw_dst;
+  } else {
+    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw_src);
+    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw_dst);
+  }
+
   ASroute.link_list = parsed_link_list;
 
   switch (A_surfxml_ASroute_symmetrical) {
@@ -552,26 +565,40 @@ void ETag_surfxml_ASroute(void){
 }
 
 void ETag_surfxml_bypassRoute(void){
-  s_sg_platf_bypassRoute_cbarg_t route;
+  s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
   route.src = A_surfxml_bypassRoute_src;
   route.dst = A_surfxml_bypassRoute_dst;
+  route.gw_src = NULL;
+  route.gw_dst = NULL;
   route.link_list = parsed_link_list;
+  route.symmetrical = FALSE;
 
   sg_platf_new_bypassRoute(&route);
   parsed_link_list = NULL;
 }
 
 void ETag_surfxml_bypassASroute(void){
-  s_sg_platf_bypassASroute_cbarg_t ASroute;
+  s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
   ASroute.src = A_surfxml_bypassASroute_src;
   ASroute.dst = A_surfxml_bypassASroute_dst;
-  ASroute.gw_src = A_surfxml_bypassASroute_gw_src;
-  ASroute.gw_dst = A_surfxml_bypassASroute_gw_dst;
   ASroute.link_list = parsed_link_list;
+  ASroute.symmetrical = FALSE;
+
+  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
+    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
+    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
+    //
+    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
+    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_bypassASroute_gw_src;
+    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_bypassASroute_gw_dst;
+  } else {
+    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw_src);
+    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw_dst);
+  }
 
   sg_platf_new_bypassASroute(&ASroute);
   parsed_link_list = NULL;

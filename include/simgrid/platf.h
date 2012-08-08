@@ -128,34 +128,10 @@ typedef struct s_sg_platf_route_cbarg {
   int symmetrical;
   const char *src;
   const char *dst;
+  sg_routing_edge_t gw_src;
+  sg_routing_edge_t gw_dst;
   xbt_dynar_t link_list;
 } s_sg_platf_route_cbarg_t;
-
-typedef struct s_sg_platf_ASroute_cbarg *sg_platf_ASroute_cbarg_t;
-typedef struct s_sg_platf_ASroute_cbarg {
-  int symmetrical;
-  const char *src;
-  const char *dst;
-  const char *gw_src;
-  const char *gw_dst;
-  xbt_dynar_t link_list;
-} s_sg_platf_ASroute_cbarg_t;
-
-typedef struct s_sg_platf_bypassRoute_cbarg *sg_platf_bypassRoute_cbarg_t;
-typedef struct s_sg_platf_bypassRoute_cbarg {
-  const char *src;
-  const char *dst;
-  xbt_dynar_t link_list;
-} s_sg_platf_bypassRoute_cbarg_t;
-
-typedef struct s_sg_platf_bypassASroute_cbarg *sg_platf_bypassASroute_cbarg_t;
-typedef struct s_sg_platf_bypassASroute_cbarg {
-  const char *src;
-  const char *dst;
-  const char *gw_src;
-  const char *gw_dst;
-  xbt_dynar_t link_list;
-} s_sg_platf_bypassASroute_cbarg_t;
 
 typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;
 typedef struct s_sg_platf_cluster_cbarg {
@@ -259,9 +235,9 @@ XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a 
 XBT_PUBLIC(void) sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet); // Add a cabinet to the currently described AS
 
 XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a route
-XBT_PUBLIC(void) sg_platf_new_ASroute (sg_platf_ASroute_cbarg_t ASroute); // Add an ASroute
-XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_bypassRoute_cbarg_t bypassroute); // Add a bypassRoute
-XBT_PUBLIC(void) sg_platf_new_bypassASroute (sg_platf_bypassASroute_cbarg_t bypassASroute); // Add an bypassASroute
+XBT_PUBLIC(void) sg_platf_new_ASroute (sg_platf_route_cbarg_t ASroute); // Add an ASroute
+XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); // Add a bypassRoute
+XBT_PUBLIC(void) sg_platf_new_bypassASroute (sg_platf_route_cbarg_t bypassASroute); // Add an bypassASroute
 XBT_PUBLIC(void) sg_platf_new_prop (sg_platf_prop_cbarg_t prop); // Add a prop
 
 XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
@@ -279,10 +255,10 @@ XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
 XBT_PUBLIC(void) sg_platf_route_begin (sg_platf_route_cbarg_t route); // Initialize route
 XBT_PUBLIC(void) sg_platf_route_end (sg_platf_route_cbarg_t route); // Finalize and add a route
 
-XBT_PUBLIC(void) sg_platf_ASroute_begin (sg_platf_ASroute_cbarg_t ASroute); // Initialize ASroute
-XBT_PUBLIC(void) sg_platf_ASroute_end (sg_platf_ASroute_cbarg_t ASroute); // Finalize and add a ASroute
+XBT_PUBLIC(void) sg_platf_ASroute_begin (sg_platf_route_cbarg_t ASroute); // Initialize ASroute
+XBT_PUBLIC(void) sg_platf_ASroute_end (sg_platf_route_cbarg_t ASroute); // Finalize and add a ASroute
 
 XBT_PUBLIC(void) sg_platf_route_add_link (const char* link_id, sg_platf_route_cbarg_t route); // Add a link to link list
-XBT_PUBLIC(void) sg_platf_ASroute_add_link (const char* link_id, sg_platf_ASroute_cbarg_t ASroute); // Add a link to link list
+XBT_PUBLIC(void) sg_platf_ASroute_add_link (const char* link_id, sg_platf_route_cbarg_t ASroute); // Add a link to link list
 
 #endif                          /* SG_PLATF_H */

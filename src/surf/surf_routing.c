@@ -240,22 +240,13 @@ static void parse_E_route(sg_platf_route_cbarg_t route)
 /**
  * \brief Store the ASroute by calling the set_ASroute function of the current routing component
  */
-static void parse_E_ASroute(sg_platf_ASroute_cbarg_t ASroute)
+static void parse_E_ASroute(sg_platf_route_cbarg_t ASroute)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = ASroute->link_list;
+  e_route->src_gateway = ASroute->gw_src;
+  e_route->dst_gateway = ASroute->gw_dst;
 
-  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
-    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
-    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
-    //
-    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-    e_route->src_gateway = (sg_routing_edge_t) ASroute->gw_src;
-    e_route->dst_gateway = (sg_routing_edge_t) ASroute->gw_dst;
-  } else {
-    e_route->src_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_src);
-    e_route->dst_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_dst);
-  }
   xbt_assert(current_routing->parse_ASroute,
              "no defined method \"set_ASroute\" in \"%s\"",
              current_routing->name);
@@ -266,7 +257,7 @@ static void parse_E_ASroute(sg_platf_ASroute_cbarg_t ASroute)
 /**
  * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
  */
-static void parse_E_bypassRoute(sg_platf_bypassRoute_cbarg_t route)
+static void parse_E_bypassRoute(sg_platf_route_cbarg_t route)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = route->link_list;
@@ -281,12 +272,12 @@ static void parse_E_bypassRoute(sg_platf_bypassRoute_cbarg_t route)
 /**
  * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
  */
-static void parse_E_bypassASroute(sg_platf_bypassASroute_cbarg_t ASroute)
+static void parse_E_bypassASroute(sg_platf_route_cbarg_t ASroute)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
   e_route->link_list = ASroute->link_list;
-  e_route->src_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_src);
-  e_route->dst_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_dst);
+  e_route->src_gateway = ASroute->gw_src;
+  e_route->dst_gateway = ASroute->gw_dst;
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);

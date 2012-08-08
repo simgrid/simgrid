@@ -64,9 +64,9 @@ void sg_platf_init(void) {
   sg_platf_prop_cb_list = xbt_dynar_new(sizeof(sg_platf_prop_cb_t),NULL);
 
   sg_platf_route_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
-  sg_platf_ASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_ASroute_cb_t), NULL);
-  sg_platf_bypassRoute_cb_list = xbt_dynar_new(sizeof(sg_platf_bypassRoute_cb_t), NULL);
-  sg_platf_bypassASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_bypassASroute_cb_t), NULL);
+  sg_platf_ASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
+  sg_platf_bypassRoute_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
+  sg_platf_bypassASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
 
   sg_platf_trace_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_cb_t), NULL);
   sg_platf_trace_connect_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_connect_cb_t), NULL);
@@ -195,22 +195,22 @@ void sg_platf_new_route(sg_platf_route_cbarg_t route) {
   xbt_dynar_foreach(sg_platf_route_cb_list, iterator, fun) {
     fun(route);
   }
-}void sg_platf_new_ASroute(sg_platf_ASroute_cbarg_t ASroute) {
+}void sg_platf_new_ASroute(sg_platf_route_cbarg_t ASroute) {
   unsigned int iterator;
-  sg_platf_ASroute_cb_t fun;
+  sg_platf_route_cb_t fun;
   xbt_dynar_foreach(sg_platf_ASroute_cb_list, iterator, fun) {
     fun(ASroute);
   }
 }
-void sg_platf_new_bypassRoute(sg_platf_bypassRoute_cbarg_t bypassRoute) {
+void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute) {
   unsigned int iterator;
-  sg_platf_bypassRoute_cb_t fun;
+  sg_platf_route_cb_t fun;
   xbt_dynar_foreach(sg_platf_bypassRoute_cb_list, iterator, fun) {
     fun(bypassRoute);
   }
-}void sg_platf_new_bypassASroute(sg_platf_bypassASroute_cbarg_t bypassASroute) {
+}void sg_platf_new_bypassASroute(sg_platf_route_cbarg_t bypassASroute) {
   unsigned int iterator;
-  sg_platf_bypassASroute_cb_t fun;
+  sg_platf_route_cb_t fun;
   xbt_dynar_foreach(sg_platf_bypassASroute_cb_list, iterator, fun) {
     fun(bypassASroute);
   }
@@ -247,14 +247,14 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process){
 void sg_platf_route_begin (sg_platf_route_cbarg_t route){
   route->link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
-void sg_platf_ASroute_begin (sg_platf_ASroute_cbarg_t ASroute){
+void sg_platf_ASroute_begin (sg_platf_route_cbarg_t ASroute){
   ASroute->link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 void sg_platf_route_end (sg_platf_route_cbarg_t route){
   sg_platf_new_route(route);
 }
-void sg_platf_ASroute_end (sg_platf_ASroute_cbarg_t ASroute){
+void sg_platf_ASroute_end (sg_platf_route_cbarg_t ASroute){
   sg_platf_new_ASroute(ASroute);
 }
 
@@ -262,7 +262,7 @@ void sg_platf_route_add_link (const char* link_id, sg_platf_route_cbarg_t route)
   char *link_name = xbt_strdup(link_id);
   xbt_dynar_push(route->link_list, &link_name);
 }
-void sg_platf_ASroute_add_link (const char* link_id, sg_platf_ASroute_cbarg_t ASroute){
+void sg_platf_ASroute_add_link (const char* link_id, sg_platf_route_cbarg_t ASroute){
   char *link_name = xbt_strdup(link_id);
   xbt_dynar_push(ASroute->link_list, &link_name);
 }
@@ -359,13 +359,13 @@ void sg_platf_mount_add_cb(sg_platf_mount_cb_t fct) {
 void sg_platf_route_add_cb(sg_platf_route_cb_t fct) {
   xbt_dynar_push(sg_platf_route_cb_list, &fct);
 }
-void sg_platf_ASroute_add_cb(sg_platf_ASroute_cb_t fct) {
+void sg_platf_ASroute_add_cb(sg_platf_route_cb_t fct) {
   xbt_dynar_push(sg_platf_ASroute_cb_list, &fct);
 }
-void sg_platf_bypassRoute_add_cb(sg_platf_bypassRoute_cb_t fct) {
+void sg_platf_bypassRoute_add_cb(sg_platf_route_cb_t fct) {
   xbt_dynar_push(sg_platf_bypassRoute_cb_list, &fct);
 }
-void sg_platf_bypassASroute_add_cb(sg_platf_bypassASroute_cb_t fct) {
+void sg_platf_bypassASroute_add_cb(sg_platf_route_cb_t fct) {
   xbt_dynar_push(sg_platf_bypassASroute_cb_list, &fct);
 }
 void sg_platf_prop_add_cb(sg_platf_prop_cb_t fct) {
