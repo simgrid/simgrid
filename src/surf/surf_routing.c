@@ -362,6 +362,7 @@ static void routing_parse_trace_connect(sg_platf_trace_connect_cbarg_t trace_con
  */
 void routing_AS_begin(const char *AS_id, int wanted_routing_type)
 {
+  XBT_DEBUG("routing_AS_begin");
   AS_t new_as;
   routing_model_description_t model = NULL;
 
@@ -379,6 +380,8 @@ void routing_AS_begin(const char *AS_id, int wanted_routing_type)
     case A_surfxml_AS_routing_None:          model = &routing_models[SURF_MODEL_NONE];break;
     case A_surfxml_AS_routing_RuleBased:     model = &routing_models[SURF_MODEL_RULEBASED];break;
     case A_surfxml_AS_routing_Vivaldi:       model = &routing_models[SURF_MODEL_VIVALDI];break;
+    default: xbt_die("Not a valid model!!!");
+    break;
   }
 
   /* make a new routing component */

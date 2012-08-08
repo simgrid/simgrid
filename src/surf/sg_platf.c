@@ -244,6 +244,29 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process){
   }
 }
 
+void sg_platf_route_begin (sg_platf_route_cbarg_t route){
+  route->link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+}
+void sg_platf_ASroute_begin (sg_platf_ASroute_cbarg_t ASroute){
+  ASroute->link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+}
+
+void sg_platf_route_end (sg_platf_route_cbarg_t route){
+  sg_platf_new_route(route);
+}
+void sg_platf_ASroute_end (sg_platf_ASroute_cbarg_t ASroute){
+  sg_platf_new_ASroute(ASroute);
+}
+
+void sg_platf_route_add_link (const char* link_id, sg_platf_route_cbarg_t route){
+  char *link_name = xbt_strdup(link_id);
+  xbt_dynar_push(route->link_list, &link_name);
+}
+void sg_platf_ASroute_add_link (const char* link_id, sg_platf_ASroute_cbarg_t ASroute){
+  char *link_name = xbt_strdup(link_id);
+  xbt_dynar_push(ASroute->link_list, &link_name);
+}
+
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
 
 void sg_platf_end() {

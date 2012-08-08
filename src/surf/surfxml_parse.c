@@ -543,7 +543,7 @@ void ETag_surfxml_ASroute(void){
     ASroute.symmetrical = TRUE;
     break;
   case A_surfxml_ASroute_symmetrical_NO:
-    ASroute.symmetrical = FALSE;;
+    ASroute.symmetrical = FALSE;
     break;
   }
 

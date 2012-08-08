@@ -275,4 +275,14 @@ XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
 
+// Add route and Asroute without xml file with those functions
+XBT_PUBLIC(void) sg_platf_route_begin (sg_platf_route_cbarg_t route); // Initialize route
+XBT_PUBLIC(void) sg_platf_route_end (sg_platf_route_cbarg_t route); // Finalize and add a route
+
+XBT_PUBLIC(void) sg_platf_ASroute_begin (sg_platf_ASroute_cbarg_t ASroute); // Initialize ASroute
+XBT_PUBLIC(void) sg_platf_ASroute_end (sg_platf_ASroute_cbarg_t ASroute); // Finalize and add a ASroute
+
+XBT_PUBLIC(void) sg_platf_route_add_link (const char* link_id, sg_platf_route_cbarg_t route); // Add a link to link list
+XBT_PUBLIC(void) sg_platf_ASroute_add_link (const char* link_id, sg_platf_ASroute_cbarg_t ASroute); // Add a link to link list
+
 #endif                          /* SG_PLATF_H */
