@@ -60,7 +60,6 @@ routing_platf_t routing_platf = NULL;
 AS_t current_routing = NULL;
 
 /* global parse functions */
-xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
 extern xbt_dynar_t mount_list;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
@@ -227,7 +226,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
 static void parse_E_route(sg_platf_route_cbarg_t route)
 {
   route_t created_route = xbt_new0(s_route_t, 1);
-  created_route->link_list = parsed_link_list;
+  created_route->link_list = route->link_list;
 
   xbt_assert(current_routing->parse_route,
              "no defined method \"set_route\" in \"%s\"",
@@ -236,7 +235,6 @@ static void parse_E_route(sg_platf_route_cbarg_t route)
   current_routing->parse_route(current_routing,
       route->src, route->dst, created_route);
   generic_free_route(created_route);
-  parsed_link_list = NULL;
 }
 
 /**
@@ -245,7 +243,7 @@ static void parse_E_route(sg_platf_route_cbarg_t route)
 static void parse_E_ASroute(sg_platf_ASroute_cbarg_t ASroute)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = parsed_link_list;
+  e_route->link_list = ASroute->link_list;
 
   if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
     // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
@@ -263,7 +261,6 @@ static void parse_E_ASroute(sg_platf_ASroute_cbarg_t ASroute)
              current_routing->name);
   current_routing->parse_ASroute(current_routing, ASroute->src, ASroute->dst, e_route);
   generic_free_route(e_route);
-  parsed_link_list = NULL;
 }
 
 /**
@@ -272,14 +269,13 @@ static void parse_E_ASroute(sg_platf_ASroute_cbarg_t ASroute)
 static void parse_E_bypassRoute(sg_platf_bypassRoute_cbarg_t route)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = parsed_link_list;
+  e_route->link_list = route->link_list;
 
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
 
   current_routing->parse_bypassroute(current_routing, route->src, route->dst, e_route);
-  parsed_link_list = NULL;
 }
 
 /**
@@ -288,39 +284,13 @@ static void parse_E_bypassRoute(sg_platf_bypassRoute_cbarg_t route)
 static void parse_E_bypassASroute(sg_platf_bypassASroute_cbarg_t ASroute)
 {
   route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = parsed_link_list;
+  e_route->link_list = ASroute->link_list;
   e_route->src_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_src);
   e_route->dst_gateway = sg_routing_edge_by_name_or_null(ASroute->gw_dst);
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
   current_routing->parse_bypassroute(current_routing, ASroute->src, ASroute->dst, e_route);
-  parsed_link_list = NULL;
-}
-
-/**
- * \brief Set a new link on the actual list of link for a route or ASroute from XML
- */
-
-static void routing_parse_link_ctn(sg_platf_linkctn_cbarg_t linkctn)
-{
-  char *link_id;
-  switch (linkctn->direction) {
-  case SURF_LINK_DIRECTION_NONE:
-    link_id = xbt_strdup(linkctn->id);
-    break;
-  case SURF_LINK_DIRECTION_UP:
-    link_id = bprintf("%s_UP", linkctn->id);
-    break;
-  case SURF_LINK_DIRECTION_DOWN:
-    link_id = bprintf("%s_DOWN", linkctn->id);
-    break;
-  }
-
-  if(parsed_link_list == NULL)
-    parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-
-  xbt_dynar_push(parsed_link_list, &link_id);
 }
 
 static void routing_parse_trace(sg_platf_trace_cbarg_t trace)
@@ -1194,8 +1164,6 @@ void routing_register_callbacks()
 
   sg_platf_peer_add_cb(routing_parse_peer);
   sg_platf_postparse_add_cb(routing_parse_postparse);
-
-  sg_platf_linkctn_add_cb(routing_parse_link_ctn);
 
   /* we care about the ASes while parsing the platf. Incredible, isnt it? */
   sg_platf_AS_end_add_cb(routing_AS_end);

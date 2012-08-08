@@ -22,6 +22,8 @@ int ETag_surfxml_include_state(void);
 
 char* surf_parsed_filename = NULL; // to locate parse error messages
 
+xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
+
 /*
  * Helping functions
  */
@@ -437,25 +439,24 @@ void ETag_surfxml_link(void){
 }
 
 void STag_surfxml_link_ctn(void){
-  s_sg_platf_linkctn_cbarg_t linkctn;
-  memset(&linkctn,0,sizeof(linkctn));
 
-  linkctn.id = A_surfxml_link_ctn_id;
-
+  char *link_id;
   switch (A_surfxml_link_ctn_direction) {
   case AU_surfxml_link_ctn_direction:
   case A_surfxml_link_ctn_direction_NONE:
-    linkctn.direction = SURF_LINK_DIRECTION_NONE;
+    link_id = xbt_strdup(A_surfxml_link_ctn_id);
     break;
   case A_surfxml_link_ctn_direction_UP:
-    linkctn.direction = SURF_LINK_DIRECTION_UP;
+    link_id = bprintf("%s_UP", A_surfxml_link_ctn_id);
     break;
   case A_surfxml_link_ctn_direction_DOWN:
-    linkctn.direction = SURF_LINK_DIRECTION_DOWN;
+    link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
     break;
   }
-  sg_platf_new_linkctn(&linkctn);
 
+  // FIXME we should push the surf link object but it don't
+  // work because of model rulebased
+  xbt_dynar_push(parsed_link_list, &link_id);
 }
 
 void ETag_surfxml_backbone(void){
@@ -479,6 +480,7 @@ void STag_surfxml_route(void){
   xbt_assert(strlen(A_surfxml_route_src) > 0 || strlen(A_surfxml_route_dst) > 0,
       "Missing end-points while defining route \"%s\"->\"%s\"",
       A_surfxml_route_src, A_surfxml_route_dst);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 void STag_surfxml_ASroute(void){
   xbt_assert(strlen(A_surfxml_ASroute_src) > 0 || strlen(A_surfxml_ASroute_dst) > 0
@@ -486,11 +488,13 @@ void STag_surfxml_ASroute(void){
       "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
       A_surfxml_ASroute_src, A_surfxml_ASroute_dst,
       A_surfxml_ASroute_gw_src,A_surfxml_ASroute_gw_dst);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 void STag_surfxml_bypassRoute(void){
   xbt_assert(strlen(A_surfxml_bypassRoute_src) > 0 || strlen(A_surfxml_bypassRoute_dst) > 0,
       "Missing end-points while defining bupass route \"%s\"->\"%s\"",
       A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 void STag_surfxml_bypassASroute(void){
   xbt_assert(strlen(A_surfxml_bypassASroute_src) > 0 || strlen(A_surfxml_bypassASroute_dst) > 0
@@ -498,6 +502,7 @@ void STag_surfxml_bypassASroute(void){
       "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
       A_surfxml_bypassASroute_src, A_surfxml_bypassASroute_dst,
       A_surfxml_bypassASroute_gw_src,A_surfxml_bypassASroute_gw_dst);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 void ETag_surfxml_route(void){
@@ -506,6 +511,7 @@ void ETag_surfxml_route(void){
 
   route.src = A_surfxml_route_src;
   route.dst = A_surfxml_route_dst;
+  route.link_list = parsed_link_list;
 
   switch (A_surfxml_route_symmetrical) {
   case AU_surfxml_route_symmetrical:
@@ -518,6 +524,7 @@ void ETag_surfxml_route(void){
   }
 
   sg_platf_new_route(&route);
+  parsed_link_list = NULL;
 }
 
 void ETag_surfxml_ASroute(void){
@@ -528,6 +535,7 @@ void ETag_surfxml_ASroute(void){
   ASroute.dst = A_surfxml_ASroute_dst;
   ASroute.gw_src = A_surfxml_ASroute_gw_src;
   ASroute.gw_dst = A_surfxml_ASroute_gw_dst;
+  ASroute.link_list = parsed_link_list;
 
   switch (A_surfxml_ASroute_symmetrical) {
   case AU_surfxml_ASroute_symmetrical:
@@ -540,6 +548,7 @@ void ETag_surfxml_ASroute(void){
   }
 
   sg_platf_new_ASroute(&ASroute);
+  parsed_link_list = NULL;
 }
 
 void ETag_surfxml_bypassRoute(void){
@@ -548,8 +557,10 @@ void ETag_surfxml_bypassRoute(void){
 
   route.src = A_surfxml_bypassRoute_src;
   route.dst = A_surfxml_bypassRoute_dst;
+  route.link_list = parsed_link_list;
 
   sg_platf_new_bypassRoute(&route);
+  parsed_link_list = NULL;
 }
 
 void ETag_surfxml_bypassASroute(void){
@@ -560,8 +571,10 @@ void ETag_surfxml_bypassASroute(void){
   ASroute.dst = A_surfxml_bypassASroute_dst;
   ASroute.gw_src = A_surfxml_bypassASroute_gw_src;
   ASroute.gw_dst = A_surfxml_bypassASroute_gw_dst;
+  ASroute.link_list = parsed_link_list;
 
   sg_platf_new_bypassASroute(&ASroute);
+  parsed_link_list = NULL;
 }
 
 void ETag_surfxml_trace(void){
