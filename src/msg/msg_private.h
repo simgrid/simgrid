@@ -16,7 +16,7 @@
 #include "xbt/dict.h"
 #include "xbt/config.h"
 #include "instr/instr_private.h"
-
+#include "simix/smx_private.h"
 SG_BEGIN_DECL()
 
 /**************** datatypes **********************************/
