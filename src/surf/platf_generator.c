@@ -8,6 +8,8 @@
 #include "surf_private.h"
 #include <math.h>
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(platf_generator, surf, "Platform Generator");
+
 static xbt_graph_t platform_graph = NULL;
 static xbt_dynar_t promoter_dynar = NULL;
 static xbt_dynar_t labeler_dynar = NULL;
@@ -466,6 +468,7 @@ void platf_graph_promote_to_cluster(context_node_t node, sg_platf_cluster_cbarg_
  */
 void platf_graph_link_label(context_edge_t edge, sg_platf_link_cbarg_t parameters) {
   memcpy(&(edge->link_parameters), parameters, sizeof(s_sg_platf_link_cbarg_t));
+  edge->labeled = TRUE;
 }
 
 /**
@@ -496,7 +499,8 @@ void platf_graph_promoter(platf_promoter_cb_t promoter_callback) {
  * it, and call platf_graph_link_label if needed.
  * You can register several callbacks: the first registered function will be
  * called first. If the link have not been labeled yet, the second function
- * will be called, and so on...
+ * will be called, and so on... All the links must have been labeled after
+ * all the calls.
  *
  * \param labeler_callback The callback function
  */
@@ -542,10 +546,14 @@ void platf_do_label(void) {
   dynar_edges = xbt_graph_get_edges(platform_graph);
   xbt_dynar_foreach(dynar_edges, i, graph_edge) {
     edge = (context_edge_t) xbt_graph_edge_get_data(graph_edge);
-    xbt_dynar_foreach(promoter_dynar, j, labeler_callback) {
-      if(edge->labeled == TRUE)
+    xbt_dynar_foreach(labeler_dynar, j, labeler_callback) {
+      if(edge->labeled)
         break;
       labeler_callback(edge);
+    }
+    if(!edge->labeled) {
+      XBT_ERROR("All links of the generated platform are not labeled.");
+      xbt_die("Please check your generation parameters.");
     }
   }
 }
