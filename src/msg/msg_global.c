@@ -38,6 +38,9 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     SIMIX_global_init(argc, argv);
 
+    if(MC_IS_ENABLED && mmalloc_ignore == NULL)
+      MC_ignore_init();
+    
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
 #ifdef MSG_USE_DEPRECATED
@@ -49,11 +52,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     msg_global->process_data_cleanup = NULL;
     msg_global->vms = xbt_swag_new(xbt_swag_offset(vm,all_vms_hookup));
 
-    if(MC_IS_ENABLED){
-      /* Ignore total amount of messages sent during the simulation for heap comparison */
-      MC_ignore(&(msg_global->sent_msg), sizeof(msg_global->sent_msg));
-    }
-
     /* initialization of the action module */
     _MSG_action_init();
 
@@ -62,6 +60,12 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     sg_platf_postparse_add_cb(MSG_post_create_environment);
   }
+  
+  if(MC_IS_ENABLED){
+    /* Ignore total amount of messages sent during the simulation for heap comparison */
+    MC_ignore(&(msg_global->sent_msg), sizeof(msg_global->sent_msg));
+  }
+
 #ifdef HAVE_TRACING
   TRACE_start();
 #endif
