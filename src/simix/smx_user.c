@@ -809,6 +809,29 @@ smx_action_t simcall_rdv_get_head(smx_rdv_t rdv)
   SIMIX_simcall_push(simcall->issuer);
   return simcall->rdv_get_head.result;
 }
+
+void simcall_rdv_set_receiver(smx_rdv_t rdv , smx_process_t process)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_RDV_SET_RECV;
+  simcall->rdv_set_rcv_proc.rdv = rdv;
+  simcall->rdv_set_rcv_proc.receiver = process;
+
+  SIMIX_simcall_push(simcall->issuer);
+}
+
+smx_process_t simcall_rdv_get_receiver(smx_rdv_t rdv)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_RDV_GET_RECV;
+  simcall->rdv_get_rcv_proc.rdv = rdv;
+
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->rdv_get_rcv_proc.result;
+}
+
 /**
  * \ingroup simix_comm_management
  */

@@ -53,6 +53,8 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_DESTROY),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_GEY_BY_NAME),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_COMM_COUNT_BY_HOST),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_GET_HEAD),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_SET_RECV),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_GET_RECV),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_SEND),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_ISEND),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_RECV),\
@@ -334,6 +336,16 @@ typedef struct s_smx_simcall {
       smx_rdv_t rdv;
       smx_action_t result;
     } rdv_get_head;
+
+    struct {
+      smx_rdv_t rdv;
+      smx_process_t receiver;
+    } rdv_set_rcv_proc;
+
+    struct {
+      smx_rdv_t rdv;
+      smx_process_t result;
+    } rdv_get_rcv_proc;
 
     struct {
       smx_rdv_t rdv;

@@ -203,6 +203,16 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_simcall_answer(simcall);
       break;
 
+    case SIMCALL_RDV_SET_RECV:
+      SIMIX_rdv_set_receiver(simcall->rdv_set_rcv_proc.rdv, simcall->rdv_set_rcv_proc.receiver);
+      SIMIX_simcall_answer(simcall);
+      break;
+
+    case SIMCALL_RDV_GET_RECV:
+      simcall->rdv_get_rcv_proc.result = SIMIX_rdv_get_receiver(simcall->rdv_set_rcv_proc.rdv);
+      SIMIX_simcall_answer(simcall);
+      break;
+
     case SIMCALL_HOST_GET_BY_NAME:
       simcall->host_get_by_name.result =
         SIMIX_host_get_by_name(simcall->host_get_by_name.name);
