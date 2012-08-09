@@ -64,6 +64,7 @@ void platf_graph_init(unsigned long node_count) {
     node_data->y = 0;
     node_data->degree = 0;
     node_data->kind = ROUTER;
+    node_data->connect_checked = FALSE;
     xbt_graph_new_node(platform_graph, (void*) node_data);
   }
 
@@ -369,30 +370,47 @@ int platf_graph_is_connected(void) {
   xbt_dynar_t connected_nodes = NULL;
   xbt_dynar_t outgoing_edges = NULL;
   xbt_node_t graph_node = NULL;
+  context_node_t node_data = NULL;
   xbt_edge_t outedge = NULL;
   unsigned long iterator;
   unsigned int i;
   dynar_nodes = xbt_graph_get_nodes(platform_graph);
   connected_nodes = xbt_dynar_new(sizeof(xbt_node_t), NULL);
 
+  //Let's just check if every nodes are connected to something
+  xbt_dynar_foreach(dynar_nodes, i, graph_node) {
+    node_data = xbt_graph_node_get_data(graph_node);
+    if(node_data->degree==0) {
+      return FALSE;
+    }
+  }
+
+  //We still need a real check
   //Initialize the connected node array with the first node
   xbt_dynar_get_cpy(dynar_nodes, 0, &graph_node);
+  node_data = xbt_graph_node_get_data(graph_node);
+  node_data->connect_checked = TRUE;
   xbt_dynar_push(connected_nodes, &graph_node);
   iterator = 0;
   do {
     //Get the next node
     xbt_dynar_get_cpy(connected_nodes, iterator, &graph_node);
+    node_data = xbt_graph_node_get_data(graph_node);
 
     //add all the linked nodes to the connected node array
     outgoing_edges = xbt_graph_node_get_outedges(graph_node);
     xbt_dynar_foreach(outgoing_edges, i, outedge) {
       xbt_node_t src = xbt_graph_edge_get_source(outedge);
       xbt_node_t dst = xbt_graph_edge_get_target(outedge);
-      if(!xbt_dynar_member(connected_nodes, &src)) {
+      node_data = xbt_graph_node_get_data(src);
+      if(!node_data->connect_checked) {
         xbt_dynar_push(connected_nodes, &src);
+        node_data->connect_checked = TRUE;
       }
-      if(!xbt_dynar_member(connected_nodes, &dst)) {
+      node_data = xbt_graph_node_get_data(dst);
+      if(!node_data->connect_checked) {
         xbt_dynar_push(connected_nodes, &dst);
+        node_data->connect_checked = TRUE;
       }
     }
   } while(++iterator < xbt_dynar_length(connected_nodes));
@@ -423,11 +441,12 @@ void platf_graph_clear_links(void) {
     xbt_graph_free_edge(platform_graph, graph_edge, xbt_free);
   }
 
-  //All the nodes will be of degree 0
+  //All the nodes will be of degree 0, unchecked from connectedness
   dynar_nodes = xbt_graph_get_nodes(platform_graph);
   xbt_dynar_foreach(dynar_nodes, i, graph_node) {
     node_data = xbt_graph_node_get_data(graph_node);
     node_data->degree = 0;
+    node_data->connect_checked = FALSE;
   }
 }
 
