@@ -298,4 +298,21 @@ public final class Trace {
 	 * @param value
 	 */
 	public final static native	void hostVariableSet (String host, String variable, double value);
+
+	/**
+	 * Declare a new user variable associated to VMs. 
+	 * 
+	 * @param variable
+	 */
+	public final static native	void vmVariableDeclare (String variable);
+ 
+
+	/**
+	 * Set the value of a variable of a VM. 
+	 * 
+	 * @param host
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void vmVariableSet (String vm, String variable, double value);
 }
