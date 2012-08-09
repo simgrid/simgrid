@@ -224,6 +224,8 @@ void platf_graph_interconnect_clique(void) {
   dynar_nodes = xbt_graph_get_nodes(platform_graph);
   xbt_dynar_foreach(dynar_nodes, i, first_node) {
     xbt_dynar_foreach(dynar_nodes, j, second_node) {
+      if(j>=i)
+        break;
       platf_node_connect(first_node, second_node);
     }
   }
