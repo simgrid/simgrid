@@ -10,6 +10,7 @@ add_executable(masterslave_console "masterslave_console.c")
 add_executable(masterslave_cluster "masterslave_cluster.c")
 add_executable(masterslave_kill "masterslave_kill.c")
 add_executable(masterslave_arg "masterslave_arg.c")
+add_executable(masterslave_platfgen "masterslave_platfgen.c")
 
 ### Add definitions for compile
 if(WIN32)
@@ -20,6 +21,7 @@ if(WIN32)
   target_link_libraries(masterslave_console simgrid )
   target_link_libraries(masterslave_kill simgrid )
   target_link_libraries(masterslave_arg simgrid )
+  target_link_libraries(masterslave_platfgen simgrid )
 else(WIN32)
   target_link_libraries(masterslave_forwarder simgrid m )
   target_link_libraries(masterslave_failure simgrid m )
@@ -28,6 +30,7 @@ else(WIN32)
   target_link_libraries(masterslave_console simgrid m )
   target_link_libraries(masterslave_kill simgrid m )
   target_link_libraries(masterslave_arg simgrid m )
+  target_link_libraries(masterslave_platfgen simgrid m )
 endif(WIN32)
 target_link_libraries(masterslave_cluster simgrid)
 
@@ -73,6 +76,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_forwarder.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_kill.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_mailbox.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_platfgen.c
   PARENT_SCOPE
   )
 set(bin_files
