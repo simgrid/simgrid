@@ -376,7 +376,7 @@ static void recursiveNewVariableType (const char *new_typename, const char *colo
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
     PJ_type_variable_new (tnstr, color, root);
   }
-  if (!strcmp (root->name, "VM")){
+  if (!strcmp (root->name, "MSG_VM")){
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
     PJ_type_variable_new (tnstr, color, root);

@@ -107,6 +107,16 @@ XBT_PUBLIC(xbt_dynar_t) TRACE_get_edge_types (void);
 
 #define TRACE_platform_graph_export_graphviz(filename)
 
+#define TRACE_vm_variable_declare(var)
+#define TRACE_vm_variable_declare_with_color(var,color)
+#define TRACE_vm_variable_set(vm,var,value)
+#define TRACE_vm_variable_add(vm,var,value)
+#define TRACE_vm_variable_sub(vm,var,value)
+#define TRACE_vm_variable_set_with_time(time,vm,var,value)
+#define TRACE_vm_variable_add_with_time(time,vm,var,value)
+#define TRACE_vm_variable_sub_with_time(time,vm,var,value)
+#define TRACE_get_vm_variables()
+
 #define TRACE_host_variable_declare(var)
 #define TRACE_host_variable_declare_with_color(var,color)
 #define TRACE_host_variable_set(host,var,value)

@@ -423,7 +423,7 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  */
 void TRACE_vm_variable_declare (const char *variable)
 {
-  instr_user_variable(0, NULL, variable, "VM", 0, INSTR_US_DECLARE, NULL, user_vm_variables);
+  instr_user_variable(0, NULL, variable, "MSG_VM", 0, INSTR_US_DECLARE, NULL, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -440,7 +440,7 @@ void TRACE_vm_variable_declare (const char *variable)
  */
 void TRACE_vm_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, color, user_vm_variables);
+   instr_user_variable(0, NULL, variable, "MSG_VM", 0, INSTR_US_DECLARE, color, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -454,6 +454,7 @@ void TRACE_vm_variable_declare_with_color (const char *variable, const char *col
  */
 void TRACE_vm_variable_set (const char *vm, const char *variable, double value)
 {
+
   TRACE_vm_variable_set_with_time (MSG_get_clock(), vm, variable, value);
 }
 
@@ -504,7 +505,7 @@ void TRACE_vm_variable_sub (const char *vm, const char *variable, double value)
  */
 void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "VM", value, INSTR_US_SET, NULL, user_vm_variables);
+  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SET, NULL, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -526,7 +527,7 @@ void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "VM", value, INSTR_US_ADD, NULL, user_vm_variables);
+  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_ADD, NULL, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -548,7 +549,7 @@ void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "VM", value, INSTR_US_SUB, NULL, user_vm_variables);
+  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SUB, NULL, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
