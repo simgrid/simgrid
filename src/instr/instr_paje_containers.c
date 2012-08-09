@@ -104,6 +104,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
       case INSTR_ROUTER:      snprintf (typename, INSTR_DEFAULT_STR_SIZE, "ROUTER");      break;
       case INSTR_SMPI:        snprintf (typename, INSTR_DEFAULT_STR_SIZE, "MPI");         break;
       case INSTR_MSG_PROCESS: snprintf (typename, INSTR_DEFAULT_STR_SIZE, "MSG_PROCESS"); break;
+      case INSTR_MSG_VM: snprintf (typename, INSTR_DEFAULT_STR_SIZE, "MSG_VM"); break;
       case INSTR_MSG_TASK:    snprintf (typename, INSTR_DEFAULT_STR_SIZE, "MSG_TASK");    break;
       default: THROWF (tracing_error, 0, "new container kind is unknown."); break;
     }
