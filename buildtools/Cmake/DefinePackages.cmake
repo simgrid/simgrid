@@ -347,6 +347,7 @@ set(TRACING_SRC
   src/instr/instr_config.c
   src/instr/instr_interface.c
   src/instr/instr_msg_process.c
+  src/instr/instr_msg_vm.c
   src/instr/instr_msg_task.c
   src/instr/instr_paje_containers.c
   src/instr/instr_paje_trace.c

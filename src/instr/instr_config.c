@@ -19,6 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
+#define OPT_TRACING_MSG_VM        "tracing/msg/vm"
 #define OPT_TRACING_FILENAME      "tracing/filename"
 #define OPT_TRACING_BUFFER        "tracing/buffer"
 #define OPT_TRACING_ONELINK_ONLY  "tracing/onelink_only"
@@ -35,6 +36,7 @@ static int trace_smpi_grouped;
 static int trace_categorized;
 static int trace_uncategorized;
 static int trace_msg_process_enabled;
+static int trace_msg_vm_enabled;
 static int trace_buffer;
 static int trace_onelink_only;
 static int trace_disable_destroy;
@@ -51,6 +53,7 @@ static void TRACE_getopts(void)
   trace_categorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
   trace_uncategorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
   trace_msg_process_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
+  trace_msg_vm_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VM);
   trace_buffer = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER);
   trace_onelink_only = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY);
   trace_disable_destroy = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_DISABLE_DESTROY);
@@ -83,6 +86,7 @@ int TRACE_start()
   created_categories = xbt_dict_new_homogeneous(xbt_free);
   declared_marks = xbt_dict_new_homogeneous (xbt_free);
   user_host_variables = xbt_dict_new_homogeneous (xbt_free);
+  user_vm_variables = xbt_dict_new_homogeneous (xbt_free);
   user_link_variables = xbt_dict_new_homogeneous (xbt_free);
   TRACE_surf_alloc();
   TRACE_smpi_alloc();
@@ -112,6 +116,8 @@ int TRACE_end()
   TRACE_surf_release();
   xbt_dict_free(&user_link_variables);
   xbt_dict_free(&user_host_variables);
+  xbt_dict_free(&user_vm_variables);
+
   xbt_dict_free(&declared_marks);
   xbt_dict_free(&created_categories);
 
@@ -128,6 +134,7 @@ int TRACE_end()
 int TRACE_needs_platform (void)
 {
   return TRACE_msg_process_is_enabled() ||
+         TRACE_msg_vm_is_enabled() ||
          TRACE_categorized() ||
          TRACE_uncategorized() ||
          TRACE_platform () ||
@@ -174,6 +181,12 @@ int TRACE_msg_process_is_enabled(void)
 {
   return trace_msg_process_enabled && TRACE_is_enabled();
 }
+
+int TRACE_msg_vm_is_enabled(void)
+{
+  return trace_msg_vm_enabled && TRACE_is_enabled();
+}
+
 
 int TRACE_buffer (void)
 {
@@ -272,6 +285,13 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_MSG_PROCESS,
                    "Tracing of MSG process behavior.",
                    xbt_cfgelm_int, &default_tracing_msg_process, 0, 1,
+                   NULL, NULL);
+
+  /* msg process */
+  int default_tracing_msg_vm = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_MSG_VM,
+                   "Tracing of MSG process behavior.",
+                   xbt_cfgelm_int, &default_tracing_msg_vm, 0, 1,
                    NULL, NULL);
 
   /* tracing buffer */

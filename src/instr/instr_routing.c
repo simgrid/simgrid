@@ -133,12 +133,12 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
   container_t child1, child2;
   const char *child1_name, *child2_name;
   xbt_dict_foreach(container->children, cursor1, child1_name, child1) {
-    //if child1 is not a link, a smpi node, a msg process or a msg task
-    if (child1->kind == INSTR_LINK || child1->kind == INSTR_SMPI || child1->kind == INSTR_MSG_PROCESS || child1->kind == INSTR_MSG_TASK) continue;
+    //if child1 is not a link, a smpi node, a msg process, a msg vm or a msg task
+    if (child1->kind == INSTR_LINK || child1->kind == INSTR_SMPI || child1->kind == INSTR_MSG_PROCESS || child1->kind == INSTR_MSG_VM || child1->kind == INSTR_MSG_TASK) continue;
 
     xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
-      //if child2 is not a link, a smpi node, a msg process or a msg task
-      if (child2->kind == INSTR_LINK || child2->kind == INSTR_SMPI || child2->kind == INSTR_MSG_PROCESS || child2->kind == INSTR_MSG_TASK) continue;
+      //if child2 is not a link, a smpi node, a msg process, a msg vm or a msg task
+      if (child2->kind == INSTR_LINK || child2->kind == INSTR_SMPI || child2->kind == INSTR_MSG_PROCESS || child2->kind == INSTR_MSG_VM || child2->kind == INSTR_MSG_TASK) continue;
 
       //if child1 is not child2
       if (strcmp (child1_name, child2_name) == 0) continue;
@@ -316,6 +316,22 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
       PJ_type_link_new ("MSG_PROCESS_TASK_LINK", PJ_type_get_root(), msg_process, msg_process);
     }
   }
+
+  if (TRACE_msg_vm_is_enabled()) {
+    type_t msg_vm = PJ_type_get_or_null ("MSG_VM", new->type);
+    if (msg_vm == NULL){
+      msg_vm = PJ_type_container_new("MSG_VM", new->type);
+      type_t state = PJ_type_state_new ("MSG_VM_STATE", msg_vm);
+      PJ_value_new ("suspend", "1 0 1", state);
+      PJ_value_new ("sleep", "1 1 0", state);
+      PJ_value_new ("receive", "1 0 0", state);
+      PJ_value_new ("send", "0 0 1", state);
+      PJ_value_new ("task_execute", "0 1 1", state);
+      PJ_type_link_new ("MSG_VM_LINK", PJ_type_get_root(), msg_vm, msg_vm);
+      PJ_type_link_new ("MSG_VM_PROCESS_LINK", PJ_type_get_root(), msg_vm, msg_vm);
+    }
+  }
+
 }
 
 static void instr_routing_parse_start_router (sg_platf_router_cbarg_t router)
@@ -360,7 +376,12 @@ static void recursiveNewVariableType (const char *new_typename, const char *colo
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
     PJ_type_variable_new (tnstr, color, root);
   }
-  if (!strcmp (root->name, "LINK")){
+  if (!strcmp (root->name, "VM")){
+    char tnstr[INSTR_DEFAULT_STR_SIZE];
+    snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "p%s", new_typename);
+    PJ_type_variable_new (tnstr, color, root);
+  }
+ if (!strcmp (root->name, "LINK")){
     char tnstr[INSTR_DEFAULT_STR_SIZE];
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
     PJ_type_variable_new (tnstr, color, root);
@@ -494,12 +515,12 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
   container_t child1, child2;
   const char *child1_name, *child2_name;
   xbt_dict_foreach(container->children, cursor1, child1_name, child1) {
-    //if child1 is not a link, a smpi node, a msg process or a msg task
-    if (child1->kind == INSTR_LINK || child1->kind == INSTR_SMPI || child1->kind == INSTR_MSG_PROCESS || child1->kind == INSTR_MSG_TASK) continue;
+    //if child1 is not a link, a smpi node, a msg process, a msg vm or a msg task
+    if (child1->kind == INSTR_LINK || child1->kind == INSTR_SMPI || child1->kind == INSTR_MSG_PROCESS || child1->kind == INSTR_MSG_VM || child1->kind == INSTR_MSG_TASK) continue;
 
     xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
       //if child2 is not a link, a smpi node, a msg process or a msg task
-      if (child2->kind == INSTR_LINK || child2->kind == INSTR_SMPI || child2->kind == INSTR_MSG_PROCESS || child2->kind == INSTR_MSG_TASK) continue;
+      if (child2->kind == INSTR_LINK || child2->kind == INSTR_SMPI || child2->kind == INSTR_MSG_PROCESS || child2->kind == INSTR_MSG_VM || child2->kind == INSTR_MSG_TASK) continue;
 
       //if child1 is not child2
       if (strcmp (child1_name, child2_name) == 0) continue;

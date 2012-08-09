@@ -22,6 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 xbt_dict_t created_categories = NULL;
 xbt_dict_t declared_marks = NULL;
 xbt_dict_t user_host_variables = NULL;
+xbt_dict_t user_vm_variables = NULL;
 xbt_dict_t user_link_variables = NULL;
 extern xbt_dict_t trivaNodeTypes;
 extern xbt_dict_t trivaEdgeTypes;
@@ -405,6 +406,165 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  * They were previously defined as pre-processors directives, but were transformed
  * into functions so the user can track them using gdb.
  */
+
+/* for VM variables */
+/** \ingroup TRACE_user_variables
+ *  \brief Declare a new user variable associated to VMs.
+ *
+ *  Declare a user variable that will be associated to VMs.
+ *  A user vm variable can be used to trace user variables
+ *  such as the number of tasks in a VM, the number of
+ *  clients in an application (for VMs), and so on. The color
+ *  associated to this new variable will be random.
+ *
+ *  \param variable The name of the new variable to be declared.
+ *
+ *  \see TRACE_vm_variable_declare_with_color
+ */
+void TRACE_vm_variable_declare (const char *variable)
+{
+  instr_user_variable(0, NULL, variable, "VM", 0, INSTR_US_DECLARE, NULL, user_vm_variables);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Declare a new user variable associated to VMs with a color.
+ *
+ *  Same as #TRACE_vm_variable_declare, but associated a color
+ *  to the newly created user host variable. The color needs to be
+ *  a string with three numbers separated by spaces in the range [0,1].
+ *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
+ *
+ *  \param variable The name of the new variable to be declared.
+ *  \param color The color for the new variable.
+ *
+ */
+void TRACE_vm_variable_declare_with_color (const char *variable, const char *color)
+{
+  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, color, user_vm_variables);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Set the value of a variable of a host.
+ *
+ *  \param vm The name of the VM to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The new value of the variable.
+ *
+ *  \see TRACE_vm_variable_declare, TRACE_vm_variable_add, TRACE_vm_variable_sub
+ */
+void TRACE_vm_variable_set (const char *vm, const char *variable, double value)
+{
+  TRACE_vm_variable_set_with_time (MSG_get_clock(), vm, variable, value);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Add a value to a variable of a VM.
+ *
+ *  \param vm The name of the VM to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be added to the variable.
+ *
+ *  \see TRACE_vm_variable_declare, TRACE_vm_variable_set, TRACE_vm_variable_sub
+ */
+void TRACE_vm_variable_add (const char *vm, const char *variable, double value)
+{
+  TRACE_vm_variable_add_with_time (MSG_get_clock(), vm, variable, value);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Subtract a value from a variable of a VM.
+ *
+ *  \param vm The name of the vm to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be subtracted from the variable.
+ *
+ *  \see TRACE_vm_variable_declare, TRACE_vm_variable_set, TRACE_vm_variable_add
+ */
+void TRACE_vm_variable_sub (const char *vm, const char *variable, double value)
+{
+  TRACE_vm_variable_sub_with_time (MSG_get_clock(), vm, variable, value);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Set the value of a variable of a VM at a given timestamp.
+ *
+ *  Same as #TRACE_vm_variable_set, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param vm The name of the VM to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The new value of the variable.
+ *
+ *  \see TRACE_vm_variable_declare, TRACE_vm_variable_add_with_time, TRACE_vm_variable_sub_with_time
+ */
+void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *variable, double value)
+{
+  instr_user_variable(time, vm, variable, "VM", value, INSTR_US_SET, NULL, user_vm_variables);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Add a value to a variable of a VM at a given timestamp.
+ *
+ *  Same as #TRACE_vm_variable_add, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param vm The name of the VM to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be added to the variable.
+ *
+ *  \see TRACE_vm_variable_declare, TRACE_vm_variable_set_with_time, TRACE_vm_variable_sub_with_time
+ */
+void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *variable, double value)
+{
+  instr_user_variable(time, vm, variable, "VM", value, INSTR_US_ADD, NULL, user_vm_variables);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Subtract a value from a variable of a VM at a given timestamp.
+ *
+ *  Same as #TRACE_vm_variable_sub, but let user specify
+ *  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core
+ *  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace
+ *  can be inconsistent if resource utilization traces are also traced.
+ *
+ *  \param time The timestamp to be used to tag this change of value.
+ *  \param vm The name of the VM to be considered.
+ *  \param variable The name of the variable to be considered.
+ *  \param value The value to be subtracted from the variable.
+ *
+ *  \see TRACE_vm_variable_declare, TRACE_vm_variable_set_with_time, TRACE_vm_variable_add_with_time
+ */
+void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *variable, double value)
+{
+  instr_user_variable(time, vm, variable, "VM", value, INSTR_US_SUB, NULL, user_vm_variables);
+}
+
+/** \ingroup TRACE_user_variables
+ *  \brief Get declared user vm variables
+ *
+ * This function should be used to get VM variables that were already
+ * declared with #TRACE_vm_variable_declare or with #TRACE_vm_variable_declare_with_color.
+ *
+ * \return A dynar with the declared host variables, must be freed with xbt_dynar_free.
+ */
+xbt_dynar_t TRACE_get_vm_variables (void)
+{
+  return instr_dict_to_dynar (user_vm_variables);
+}
+
+
 
 /* for host variables */
 /** \ingroup TRACE_user_variables

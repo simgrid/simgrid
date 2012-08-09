@@ -63,7 +63,11 @@ int master(int argc, char *argv[]) {
     argv[0] = xbt_strdup(slavename);
     argv[1] = bprintf("%d",i);
     argv[2] = NULL;
-    msg_vm_t vm = MSG_vm_start(slaves[i],2);
+
+    char vmName[64];
+    snprintf(vmName, 64, "vm_%d", i);
+
+    msg_vm_t vm = MSG_vm_start(slaves[i],vmName,2);
     MSG_vm_bind(vm, MSG_process_create_with_arguments(slavename,slave_fun,NULL,slaves[i],2,argv));
   }
 

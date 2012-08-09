@@ -17,17 +17,23 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg,
  *  to add extra constraints on the execution, but the argument is ignored for now.
  */
 
-msg_vm_t MSG_vm_start(msg_host_t location, int coreAmount) {
+msg_vm_t MSG_vm_start(msg_host_t location, const char *name, int coreAmount) {
   msg_vm_t res = xbt_new0(s_msg_vm_t,1);
   res->all_vms_hookup.prev = NULL;
   res->host_vms_hookup.prev = NULL;
   res->state = msg_vm_state_running;
   res->location = location;
   res->coreAmount = coreAmount;
+  res->name = xbt_strdup(name);
   res->processes = xbt_dynar_new(sizeof(msg_process_t),NULL);
 
   xbt_swag_insert(res,msg_global->vms);
   xbt_swag_insert(res,location->vms);
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_create(name, location);
+  #endif
+
 
   return res;
 }
@@ -107,6 +113,11 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination) {
   }
   xbt_swag_remove(vm,vm->location->vms);
   xbt_swag_insert_at_tail(vm,destination->vms);
+  
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_change_host(vm,vm->location,destination);
+  #endif
+
   vm->location = destination;
 }
 
@@ -124,6 +135,10 @@ void MSG_vm_suspend(msg_vm_t vm) {
     XBT_DEBUG("suspend process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
     MSG_process_suspend(process);
   }
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_suspend(vm);
+  #endif
 }
 
 /** @brief Immediately resumes the execution of all processes within the given VM.
@@ -140,6 +155,10 @@ void MSG_vm_resume(msg_vm_t vm) {
     XBT_DEBUG("resume process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
     MSG_process_resume(process);
   }
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_resume(vm);
+  #endif
 }
 
 /** @brief Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
@@ -156,6 +175,11 @@ void MSG_vm_shutdown(msg_vm_t vm)
     process = xbt_dynar_get_as(vm->processes,0,msg_process_t);
     MSG_process_kill(process);
   }
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_kill(vm);
+  #endif
+
 }
 /**
  * \ingroup msg_VMs
@@ -191,6 +215,12 @@ void MSG_vm_destroy(msg_vm_t vm) {
     simdata_process_t simdata = simcall_process_get_data(process);
     simdata->vm = NULL;
   }
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_end(vm);
+  #endif
+
+
   xbt_dynar_free(&vm->processes);
   xbt_free(vm);
 }

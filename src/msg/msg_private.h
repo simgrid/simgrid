@@ -92,12 +92,13 @@ typedef struct msg_comm {
   msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
   msg_error_t status;           /* status of the communication once finished */
 } s_msg_comm_t;
-
+/*
 typedef enum {
   msg_vm_state_suspended, msg_vm_state_running, msg_vm_state_migrating
 } e_msg_vm_state_t;
 
 typedef struct msg_vm {
+  const char *name;
   s_xbt_swag_hookup_t all_vms_hookup;
   s_xbt_swag_hookup_t host_vms_hookup;
   xbt_dynar_t processes;
@@ -105,7 +106,7 @@ typedef struct msg_vm {
   msg_host_t location;
   int coreAmount;
 } s_msg_vm_t;
-
+*/
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
   xbt_fifo_t host;

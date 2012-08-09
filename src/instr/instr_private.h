@@ -57,6 +57,7 @@ typedef enum {
   INSTR_ROUTER,
   INSTR_AS,
   INSTR_SMPI,
+  INSTR_MSG_VM,
   INSTR_MSG_PROCESS,
   INSTR_MSG_TASK
 } e_container_types;
@@ -76,6 +77,7 @@ typedef struct s_container {
 extern xbt_dict_t created_categories;
 extern xbt_dict_t declared_marks;
 extern xbt_dict_t user_host_variables;
+extern xbt_dict_t user_vm_variables;
 extern xbt_dict_t user_link_variables;
 extern double TRACE_last_timestamp_to_dump;
 
@@ -126,6 +128,19 @@ void TRACE_msg_process_resume(msg_process_t process);
 void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c
 void TRACE_msg_process_sleep_out(msg_process_t process);
 void TRACE_msg_process_end(msg_process_t process);
+
+/* declaration of instrumentation functions from instr_msg_vm.c */
+char *instr_vm_id (msg_vm_t vm, char *str, int len);
+char *instr_vm_id_2 (const char *vm_name, char *str, int len);
+void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host,
+                                   msg_host_t new_host);
+void TRACE_msg_vm_create (const char *vm_name, msg_host_t host);
+void TRACE_msg_vm_kill(msg_vm_t process);
+void TRACE_msg_vm_suspend(msg_vm_t vm);
+void TRACE_msg_vm_resume(msg_vm_t vm);
+void TRACE_msg_vm_sleep_in(msg_vm_t vm); 
+void TRACE_msg_vm_sleep_out(msg_vm_t vm);
+void TRACE_msg_vm_end(msg_vm_t vm);
 
 /* from surf_instr.c */
 void TRACE_surf_alloc(void);
