@@ -365,6 +365,8 @@ XBT_PUBLIC(void) simcall_rdv_destroy(smx_rdv_t rvp);
 XBT_PUBLIC(smx_rdv_t) simcall_rdv_get_by_name(const char *name);
 XBT_PUBLIC(int) simcall_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host);
 XBT_PUBLIC(smx_action_t) simcall_rdv_get_head(smx_rdv_t rdv);
+XBT_PUBLIC(smx_process_t) SIMIX_rdv_get_receiver(smx_rdv_t rdv);
+XBT_PUBLIC(void) SIMIX_rdv_set_receiver(smx_rdv_t rdv , smx_process_t process);
 
 XBT_PUBLIC(xbt_dict_t) SIMIX_get_rdv_points(void);
 

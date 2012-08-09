@@ -23,6 +23,9 @@
 XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
 
+XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's a bit odd to solve linking issues: this is used in xbt_log_file_appender to detect whether SMPI is used (and thus whether we should unbench the writing to disk) */
+
+
 char *xbt_binary_name = NULL;   /* Mandatory to retrieve neat backtraces */
 int xbt_initialized = 0;
 

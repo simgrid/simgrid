@@ -105,6 +105,26 @@ smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv)
 }
 
 /**
+ *  \brief get the receiver (process associated to the mailbox)
+ *  \param rdv The rendez-vous point
+ *  \return process The receiving process (NULL if not set)
+ */
+smx_process_t SIMIX_rdv_get_receiver(smx_rdv_t rdv)
+{
+  return rdv->permanent_receiver;
+}
+
+/**
+ *  \brief set the receiver of the rendez vous point to allow eager sends
+ *  \param rdv The rendez-vous point
+ *  \param process The receiving process
+ */
+void SIMIX_rdv_set_receiver(smx_rdv_t rdv , smx_process_t process)
+{
+   rdv->permanent_receiver=process;
+}
+
+/**
  *  \brief Pushes a communication action into a rendez-vous point
  *  \param rdv The rendez-vous point
  *  \param comm The communication action

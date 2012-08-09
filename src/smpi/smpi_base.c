@@ -9,6 +9,7 @@
 #include "mc/mc.h"
 #include "xbt/replay.h"
 #include <errno.h>
+#include "surf/surf.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi,
                                 "Logging specific to SMPI (base)");
