@@ -572,6 +572,9 @@ void platf_generate(void) {
   xbt_dynar_t nodes = NULL;
   xbt_node_t graph_node = NULL;
   context_node_t node_data = NULL;
+  xbt_dynar_t edges = NULL;
+  xbt_edge_t graph_edge = NULL;
+  context_edge_t edge_data = NULL;
   unsigned int i;
 
   unsigned int last_host = 0;
@@ -579,12 +582,21 @@ void platf_generate(void) {
   unsigned int last_cluster = 0;
 
   sg_platf_host_cbarg_t host_parameters;
-  s_sg_platf_router_cbarg_t router_parameters; /* This one is not a pointer! */
   sg_platf_cluster_cbarg_t cluster_parameters;
+  sg_platf_link_cbarg_t link_parameters;
+  s_sg_platf_router_cbarg_t router_parameters; /* This one is not a pointer! */
+  s_sg_platf_route_cbarg_t route_parameters; /* neither this one! */
 
   router_parameters.coord = NULL;
+  route_parameters.symmetrical = FALSE;
+  route_parameters.src = NULL;
+  route_parameters.dst = NULL;
+  route_parameters.gw_dst = NULL;
+  route_parameters.gw_src = NULL;
+  route_parameters.link_list = NULL;
 
   nodes = xbt_graph_get_nodes(platform_graph);
+  edges = xbt_graph_get_edges(platform_graph);
 
   sg_platf_begin();
   surf_parse_init_callbacks();
@@ -593,6 +605,7 @@ void platf_generate(void) {
 
   sg_platf_new_AS_begin("random platform", A_surfxml_AS_routing_Floyd);
 
+  //Generate hosts, clusters and routers
   xbt_dynar_foreach(nodes, i, graph_node) {
     node_data = xbt_graph_node_get_data(graph_node);
     switch(node_data->kind) {
@@ -624,6 +637,55 @@ void platf_generate(void) {
     }
   }
 
+  //Generate links and routes
+  xbt_dynar_foreach(edges, i, graph_edge) {
+    xbt_node_t src = xbt_graph_edge_get_source(graph_edge);
+    xbt_node_t dst = xbt_graph_edge_get_target(graph_edge);
+    context_node_t src_data = xbt_graph_node_get_data(src);
+    context_node_t dst_data = xbt_graph_node_get_data(dst);
+    edge_data = xbt_graph_edge_get_data(graph_edge);
+    const char* temp = NULL;
+
+    //Add a link to the platform
+    link_parameters = &edge_data->link_parameters;
+    if(link_parameters->id == NULL) {
+      link_parameters->id = bprintf("link-%ld", edge_data->id);
+    }
+    sg_platf_new_link(link_parameters);
+
+    //Add a route matching this link
+    switch(src_data->kind) {
+      case ROUTER:
+        route_parameters.src = src_data->router_id;
+        break;
+      case CLUSTER:
+        route_parameters.src = src_data->cluster_parameters.id;
+        break;
+      case HOST:
+        route_parameters.src = src_data->host_parameters.id;
+    }
+    switch(dst_data->kind) {
+      case ROUTER:
+        route_parameters.dst = dst_data->router_id;
+        break;
+      case CLUSTER:
+        route_parameters.dst = dst_data->cluster_parameters.id;
+        break;
+      case HOST:
+        route_parameters.dst = dst_data->host_parameters.id;
+    }
+    sg_platf_route_begin(&route_parameters);
+    sg_platf_route_add_link(link_parameters->id, &route_parameters);
+    sg_platf_route_end(&route_parameters);
+
+    //Create the symmertical route
+    temp = route_parameters.dst;
+    route_parameters.dst = route_parameters.src;
+    route_parameters.src = temp;
+    sg_platf_route_begin(&route_parameters);
+    sg_platf_route_add_link(link_parameters->id, &route_parameters);
+    sg_platf_route_end(&route_parameters);
+  }
 
   sg_platf_new_AS_end();
   sg_platf_end();
