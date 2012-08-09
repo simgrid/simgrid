@@ -15,8 +15,6 @@
 #include "simix/smx_private.h"
 
 
-XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories");
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi,
                                 "Logging specific to SMPI (kernel)");
 
@@ -274,7 +272,8 @@ int MAIN__(void)
   }
 
   /* Connect log categories.  See xbt/log.c */
-  XBT_LOG_CONNECT(smpi);
+  XBT_LOG_CONNECT(smpi);  /* Keep this line as soon as possible in this function: xbt_log_appender_file.c depends on it
+                             DO NOT connect this in XBT or so, or it will be useless to xbt_log_appender_file.c */
   XBT_LOG_CONNECT(smpi_base);
   XBT_LOG_CONNECT(smpi_bench);
   XBT_LOG_CONNECT(smpi_coll);
