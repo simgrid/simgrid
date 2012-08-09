@@ -15,7 +15,6 @@ void labeler_1(context_edge_t edge);
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 
-
 /** Promoter function
  * Just promote each node into a host, with fixed power
  */
