@@ -129,7 +129,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableSet
   const char *vm = (*env)->GetStringUTFChars(env, js_vm, 0);
   const char *state = (*env)->GetStringUTFChars(env, js_state, 0);
 
-  TRACE_host_variable_set(vm, state, value);
+  TRACE_vm_variable_set(vm, state, value);
 
   (*env)->ReleaseStringUTFChars(env, js_vm, vm);
   (*env)->ReleaseStringUTFChars(env, js_state, state);
