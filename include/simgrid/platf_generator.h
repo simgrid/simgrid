@@ -27,6 +27,7 @@ typedef struct s_context_node_t {
   union {
     s_sg_platf_host_cbarg_t host_parameters;
     s_sg_platf_cluster_cbarg_t cluster_parameters;
+    char* router_id;
   };
 } s_context_node_t, *context_node_t;
 
