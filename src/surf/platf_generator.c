@@ -653,7 +653,8 @@ void platf_generate(void) {
         sg_platf_new_cluster(cluster_parameters);
         break;
       case ROUTER:
-        router_parameters.id = bprintf("router-%d", ++last_router);
+        node_data->router_id = bprintf("router-%d", ++last_router);
+        router_parameters.id = node_data->router_id;
         sg_platf_new_router(&router_parameters);
     }
   }
