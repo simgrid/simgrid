@@ -430,16 +430,24 @@ int platf_graph_is_connected(void) {
 void platf_graph_clear_links(void) {
   xbt_dynar_t dynar_nodes = NULL;
   xbt_dynar_t dynar_edges = NULL;
+  xbt_dynar_t dynar_edges_cpy = NULL;
   xbt_node_t graph_node = NULL;
   xbt_edge_t graph_edge = NULL;
   context_node_t node_data = NULL;
   unsigned int i;
 
-  //Delete edges from the graph
+  //The graph edge dynar will be modified directly, so we work on a copy of it
   dynar_edges = xbt_graph_get_edges(platform_graph);
+  dynar_edges_cpy = xbt_dynar_new(sizeof(xbt_edge_t), NULL);
   xbt_dynar_foreach(dynar_edges, i, graph_edge) {
+    xbt_dynar_push_as(dynar_edges_cpy, xbt_edge_t, graph_edge);
+  }
+  //Delete edges from the graph
+  xbt_dynar_foreach(dynar_edges_cpy, i, graph_edge) {
     xbt_graph_free_edge(platform_graph, graph_edge, xbt_free);
   }
+  //remove the dynar copy
+  xbt_dynar_free(&dynar_edges_cpy);
 
   //All the nodes will be of degree 0, unchecked from connectedness
   dynar_nodes = xbt_graph_get_nodes(platform_graph);
