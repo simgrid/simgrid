@@ -65,7 +65,7 @@ void smpi_process_init(int *argc, char ***argv)
     (*argc)--;
     data->argc = argc;
     data->argv = argv;
-    SIMIX_rdv_set_receiver(data->mailbox_small, proc);// set the process attached to the mailbox
+    simcall_rdv_set_receiver(data->mailbox_small, proc);// set the process attached to the mailbox
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
 }
