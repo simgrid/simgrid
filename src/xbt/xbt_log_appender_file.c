@@ -15,9 +15,7 @@ static void append_file(xbt_log_appender_t this_, char *str) {
 }
 
 static void smpi_append_file(xbt_log_appender_t this_, char *str) {
-  smpi_bench_end();
   fputs(str, (FILE *) this_->data);
-  smpi_bench_begin();
 }
 
 static void free_(xbt_log_appender_t this_) {
