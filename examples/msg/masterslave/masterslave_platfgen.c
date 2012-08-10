@@ -182,8 +182,8 @@ int main(int argc, char **argv) {
     max_tries--;
     XBT_INFO("creating links...");
     platf_graph_clear_links();
-    platf_graph_interconnect_uniform(0.15); //Unrealistic, but simple
-    XBT_INFO("done. Check connectivity...");
+    platf_graph_interconnect_uniform(0.07); //Unrealistic, but simple
+    XBT_INFO("done. Check connectedness...");
     connected = platf_graph_is_connected();
     XBT_INFO("Is it connected : %s", connected ? "yes" : (max_tries ? "no, retrying" : "no"));
   } while(!connected && max_tries);
