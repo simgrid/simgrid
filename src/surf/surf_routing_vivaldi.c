@@ -54,7 +54,7 @@ static void vivaldi_get_route_and_latency(
     src_ctn = xbt_lib_get_or_null(as_router_lib, tmp_src_name, COORD_ASR_LEVEL);
   }
   else{
-    xbt_die(" ");
+    THROW_IMPOSSIBLE;
   }
 
   if(dst_p->rc_type == SURF_NETWORK_ELEMENT_HOST){
@@ -76,7 +76,7 @@ static void vivaldi_get_route_and_latency(
     dst_ctn = xbt_lib_get_or_null(as_router_lib, tmp_dst_name, COORD_ASR_LEVEL);
   }
   else{
-    xbt_die(" ");
+    THROW_IMPOSSIBLE;
   }
 
   xbt_assert(src_ctn,"No coordinate found for element '%s'",tmp_src_name);
