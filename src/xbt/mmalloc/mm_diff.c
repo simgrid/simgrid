@@ -212,13 +212,14 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
         }
         
         if(!res_compare){
-          for(k=0; k < heapinfo2[i2].busy_block.size; k++)
+          for(k=1; k < heapinfo2[i2].busy_block.size; k++)
             heapinfo2[i2+k].busy_block.equal_to = 1;
-          for(k=0; k < heapinfo1[i1].busy_block.size; k++)
+          for(k=1; k < heapinfo1[i1].busy_block.size; k++)
             heapinfo1[i1+k].busy_block.equal_to = 1;
           equal = 1;
           match_equals(previous);
         }
+
         xbt_dynar_reset(previous);
 
         i2++;
@@ -274,8 +275,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
             }
 
             if(!res_compare){
-              heapinfo2[i2].busy_frag.equal_to[j2] = 1;
-              heapinfo1[i1].busy_frag.equal_to[j1] = 1;
               equal = 1;
               match_equals(previous);
               xbt_dynar_reset(previous);
