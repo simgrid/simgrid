@@ -120,7 +120,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
   /* Start comparison */
   size_t i1, i2, j1, j2, k;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
-  size_t frag_size1, frag_size2;
 
   xbt_dynar_t previous = xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
 
@@ -228,14 +227,12 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
     }else{ /* Fragmented block */
 
-      frag_size1 = 1 << heapinfo1[i1].type;
-
       for(j1=0; j1 < (size_t) (BLOCKSIZE >> heapinfo1[i1].type); j1++){
 
         if(heapinfo1[i1].busy_frag.frag_size[j1] == 0) /* Free fragment */
           continue;
         
-        addr_frag1 = (void*) ((char *)addr_block1 + (j1 * frag_size1));
+        addr_frag1 = (void*) ((char *)addr_block1 + (j1 << heapinfo1[i1].type));
         
         i2 = 1;
         equal = 0;
@@ -246,8 +243,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
             i2++;
             continue;
           }
-          
-          frag_size2 = 1 << heapinfo2[i2].type;
 
           for(j2=0; j2 < (size_t) (BLOCKSIZE >> heapinfo2[i2].type); j2++){
 
@@ -260,7 +255,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
             }
              
             addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)heapbase2));
-            addr_frag2 = (void*) ((char *)addr_block2 + (j2 * frag_size2));
+            addr_frag2 = (void*) ((char *)addr_block2 + (j2 << heapinfo2[i2].type));
              
             /* Comparison */
             add_heap_area_pair(previous, i1, j1, i2, j2);
@@ -300,7 +295,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
   /* All blocks/fragments are equal to another block/fragment ? */
   size_t i = 1, j = 0;
   int nb_diff1 = 0, nb_diff2 = 0;
-  size_t frag_size = 0;
  
   while(i<heaplimit){
     if(heapinfo1[i].type == 0){
@@ -316,13 +310,12 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
       }
     }
     if(heapinfo1[i].type > 0){
-      frag_size = 1 << heapinfo1[i].type;
       for(j=0; j < (size_t) (BLOCKSIZE >> heapinfo1[i].type); j++){
         if(heapinfo1[i].busy_frag.frag_size[j] > 0){
           if(heapinfo1[i].busy_frag.equal_to[j] == -1){
             if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
               addr_block1 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)heapbase1));
-              addr_frag1 = (void*) ((char *)addr_block1 + (j * frag_size));
+              addr_frag1 = (void*) ((char *)addr_block1 + (j << heapinfo1[i].type));
               XBT_DEBUG("Block %zu, Fragment %zu (%p) not found (size used = %d)", i, j, addr_frag1, heapinfo1[i].busy_frag.frag_size[j]);
               mmalloc_backtrace_fragment_display((void*)heapinfo1, i, j);
             }
@@ -353,13 +346,12 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
       }
     }
     if(heapinfo2[i].type > 0){
-      frag_size = 1 << heapinfo2[i].type;
       for(j=0; j < (size_t) (BLOCKSIZE >> heapinfo2[i].type); j++){
         if(heapinfo2[i].busy_frag.frag_size[j] > 0){
           if(heapinfo2[i].busy_frag.equal_to[j] == -1){
             if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
               addr_block2 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)heapbase2));
-              addr_frag2 = (void*) ((char *)addr_block2 + (j * frag_size));
+              addr_frag2 = (void*) ((char *)addr_block2 + (j << heapinfo2[i].type));
               XBT_DEBUG( "Block %zu, Fragment %zu (%p) not found (size used = %d)", i, j, addr_frag2, heapinfo2[i].busy_frag.frag_size[j]);
               mmalloc_backtrace_fragment_display((void*)heapinfo2, i, j);
             }
@@ -432,7 +424,6 @@ static int compare_area(void *area1, void* area2, size_t size, xbt_dynar_t previ
   size_t i = 0, pointer_align = 0, ignore1 = 0, ignore2 = 0;
   void *address_pointed1, *address_pointed2, *addr_block_pointed1, *addr_block_pointed2, *addr_frag_pointed1, *addr_frag_pointed2;
   size_t block_pointed1, block_pointed2, frag_pointed1, frag_pointed2;
-  size_t frag_size, frag_size1, frag_size2;
   int res_compare;
   void *current_area1, *current_area2;
  
@@ -506,11 +497,9 @@ static int compare_area(void *area1, void* area2, size_t size, xbt_dynar_t previ
          
           if(heapinfo1[block_pointed1].busy_frag.frag_size[frag_pointed1] != heapinfo2[block_pointed2].busy_frag.frag_size[frag_pointed2]) /* Different size_used */    
             return 1;
-
-          frag_size = 1 << heapinfo1[block_pointed1].type;
             
-          addr_frag_pointed1 = (void*) ((char *)addr_block_pointed1 + (frag_pointed1 * frag_size));
-          addr_frag_pointed2 = (void*) ((char *)addr_block_pointed2 + (frag_pointed2 * frag_size));
+          addr_frag_pointed1 = (void*) ((char *)addr_block_pointed1 + (frag_pointed1 << heapinfo1[block_pointed1].type));
+          addr_frag_pointed2 = (void*) ((char *)addr_block_pointed2 + (frag_pointed2 << heapinfo2[block_pointed2].type));
 
           if(add_heap_area_pair(previous, block_pointed1, frag_pointed1, block_pointed2, frag_pointed2)){
 
@@ -542,12 +531,9 @@ static int compare_area(void *area1, void* area2, size_t size, xbt_dynar_t previ
 
           if(heapinfo1[block_pointed1].busy_frag.frag_size[frag_pointed1] != heapinfo2[block_pointed2].busy_frag.frag_size[frag_pointed2]) /* Different size_used */    
             return 1;
-          
-          frag_size1 = 1 << heapinfo1[block_pointed1].type;
-          frag_size2 = 1 << heapinfo1[block_pointed2].type;
 
-          addr_frag_pointed1 = (void*) ((char *)addr_block_pointed1 + (frag_pointed1 * frag_size1));
-          addr_frag_pointed2 = (void*) ((char *)addr_block_pointed2 + (frag_pointed2 * frag_size2));
+          addr_frag_pointed1 = (void*) ((char *)addr_block_pointed1 + (frag_pointed1 << heapinfo1[block_pointed1].type));
+          addr_frag_pointed2 = (void*) ((char *)addr_block_pointed2 + (frag_pointed2 << heapinfo2[block_pointed2].type));
 
           if(add_heap_area_pair(previous, block_pointed1, frag_pointed1, block_pointed2, frag_pointed2)){
 
