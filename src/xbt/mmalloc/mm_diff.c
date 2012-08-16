@@ -424,7 +424,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
               }
 
             }
-
         }
 
         while(i2 <= heaplimit && !equal){
