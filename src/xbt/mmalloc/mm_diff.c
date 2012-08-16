@@ -57,7 +57,6 @@ void mmalloc_backtrace_block_display(void* heapinfo, int block){
       fprintf(stderr, "%d ---> %s\n",i, e.bt_strings[i] + 4);
     }
   }
-
 }
 
 void mmalloc_backtrace_fragment_display(void* heapinfo, int block, int frag){
