@@ -278,8 +278,10 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
               heapinfo1[i1].busy_frag.equal_to[j1] = 1;
               equal = 1;
               match_equals(previous);
+              xbt_dynar_reset(previous);
               break;
             }
+
             xbt_dynar_reset(previous);
 
           }
