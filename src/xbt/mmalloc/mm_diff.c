@@ -128,6 +128,35 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
   ignore_done = 0;
 
+  /* Init equal information */
+  i1 = 1;
+
+  while(i1<=heaplimit){
+    if(heapinfo1[i1].type == 0){
+      heapinfo1[i1].busy_block.equal_to = -1;
+    }
+    if(heapinfo1[i1].type > 0){
+      for(j1=0; j1 < MAX_FRAGMENT_PER_BLOCK; j1++){
+        heapinfo1[i1].busy_frag.equal_to[j1] = -1;
+      }
+    }
+    i1++; 
+  }
+
+  i2 = 1;
+
+  while(i2<=heaplimit){
+    if(heapinfo2[i2].type == 0){
+      heapinfo2[i2].busy_block.equal_to = -1;
+    }
+    if(heapinfo2[i2].type > 0){
+      for(j2=0; j2 < MAX_FRAGMENT_PER_BLOCK; j2++){
+        heapinfo2[i2].busy_frag.equal_to[j2] = -1;
+      }
+    }
+    i2++; 
+  }
+
   /* Check busy blocks*/
 
   i1 = 1;
@@ -342,36 +371,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
   }
 
   XBT_DEBUG("Different blocks or fragments in heap2 : %d\n", nb_diff2);
-  
-  
-  /* Reset equal information */
-  i = 1;
-
-  while(i<heaplimit){
-    if(heapinfo1[i].type == 0){
-      heapinfo1[i].busy_block.equal_to = -1;
-    }
-    if(heapinfo1[i].type > 0){
-      for(j=0; j < MAX_FRAGMENT_PER_BLOCK; j++){
-        heapinfo1[i].busy_frag.equal_to[j] = -1;
-      }
-    }
-    i++; 
-  }
-
-  i = 1;
-
-  while(i<heaplimit){
-    if(heapinfo2[i].type == 0){
-      heapinfo2[i].busy_block.equal_to = -1;
-    }
-    if(heapinfo2[i].type > 0){
-      for(j=0; j < MAX_FRAGMENT_PER_BLOCK; j++){
-        heapinfo2[i].busy_frag.equal_to[j] = -1;
-      }
-    }
-    i++; 
-  }
 
   xbt_dynar_free(&previous);
  
