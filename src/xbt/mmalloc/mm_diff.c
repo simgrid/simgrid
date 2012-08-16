@@ -186,6 +186,35 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
     i2++; 
   }
 
+  /* Init equal information */
+  i1 = 1;
+
+  while(i1<=heaplimit){
+    if(heapinfo1[i1].type == 0){
+      heapinfo1[i1].busy_block.equal_to = -1;
+    }
+    if(heapinfo1[i1].type > 0){
+      for(j1=0; j1 < MAX_FRAGMENT_PER_BLOCK; j1++){
+        heapinfo1[i1].busy_frag.equal_to[j1] = -1;
+      }
+    }
+    i1++; 
+  }
+
+  i2 = 1;
+
+  while(i2<=heaplimit){
+    if(heapinfo2[i2].type == 0){
+      heapinfo2[i2].busy_block.equal_to = -1;
+    }
+    if(heapinfo2[i2].type > 0){
+      for(j2=0; j2 < MAX_FRAGMENT_PER_BLOCK; j2++){
+        heapinfo2[i2].busy_frag.equal_to[j2] = -1;
+      }
+    }
+    i2++; 
+  }
+
   /* Check busy blocks*/
 
   i1 = 1;
@@ -544,7 +573,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
   heaplimit = 0, heapsize1 = 0, heapsize2 = 0;
 
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
-
 }
 
 static heap_area_t new_heap_area(int block, int fragment){
