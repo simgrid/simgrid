@@ -1,3 +1,14 @@
+<!-- This platform was automatically converted from the OptorSim platform.
+
+  As such, it only contains information of the cluster interconnexion,
+  not on the caracteristics of each cluster. In a sense, it describes
+  the network of a National Research and Education Network (NREN), but
+  not of a computational platform.
+  
+  We hope that you find it useful anyway. I you know how to complete
+  this information with data on the cluster configurations, please
+  drop us a mail so that we can add this information. -->
+
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
