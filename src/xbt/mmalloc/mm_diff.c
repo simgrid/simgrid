@@ -111,7 +111,6 @@ void mmalloc_backtrace_display(void *addr){
     mmalloc_backtrace_fragment_display(heap->heapinfo, block, frag_nb);
     break;
   }
-
 }
 
 
