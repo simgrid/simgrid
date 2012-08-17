@@ -118,7 +118,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
   heapsize2 = heap2->heapsize;
 
   /* Start comparison */
-  size_t i1, i2, j1, j2, k;
+  size_t i1, i2, j1, j2, k, current_block, current_fragment;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
 
   xbt_dynar_t previous = xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
@@ -160,10 +160,9 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
   i1 = 1;
 
-  while(i1 < heaplimit){
+  while(i1 <= heaplimit){
 
-    i2 = 1;
-    equal = 0;
+    current_block = i1;
 
     if(heapinfo1[i1].type == -1){ /* Free block */
       i1++;
@@ -174,7 +173,54 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
     if(heapinfo1[i1].type == 0){  /* Large block */
 
+      if(heapinfo1[i1].busy_block.busy_size == 0){
+        i1++;
+        continue;
+      }
+      
+      i2 = 1;
+      equal = 0;
+      
+      /* Try first to associate to same block in the other heap */
+      if(heapinfo2[current_block].type == heapinfo1[current_block].type){
+        
+        if(heapinfo1[current_block].busy_block.busy_size == heapinfo2[current_block].busy_block.busy_size){
+
+          addr_block2 = ((void*) (((ADDR2UINT(current_block)) - 1) * BLOCKSIZE + (char*)heapbase2));
+          
+          add_heap_area_pair(previous, current_block, -1, current_block, -1);
+          
+          if(ignore_done < xbt_dynar_length(mmalloc_ignore)){
+            if(in_mmalloc_ignore((int)current_block, -1))
+              res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 1);
+            else
+              res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 0);
+          }else{
+            res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 0);
+          }
+          
+          if(res_compare == 0){
+            for(k=1; k < heapinfo2[current_block].busy_block.size; k++)
+              heapinfo2[current_block+k].busy_block.equal_to = 1 ;
+            for(k=1; k < heapinfo1[current_block].busy_block.size; k++)
+              heapinfo1[current_block+k].busy_block.equal_to = 1 ;
+            equal = 1;
+            match_equals(previous);
+            i1 = i1 + heapinfo1[i1].busy_block.size;
+          }
+
+          xbt_dynar_reset(previous);
+          
+        }
+
+      }
+
       while(i2 <= heaplimit && !equal){
+
+        if(i2 == current_block){
+          i2++;
+          continue;
+        }
 
         if(heapinfo2[i2].type != 0){
           i2++;
@@ -225,18 +271,54 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
       }
 
+      if(!equal)
+        i1++;
+      
     }else{ /* Fragmented block */
 
       for(j1=0; j1 < (size_t) (BLOCKSIZE >> heapinfo1[i1].type); j1++){
+
+        current_fragment = j1;
 
         if(heapinfo1[i1].busy_frag.frag_size[j1] == 0) /* Free fragment */
           continue;
         
         addr_frag1 = (void*) ((char *)addr_block1 + (j1 << heapinfo1[i1].type));
-        
+
         i2 = 1;
         equal = 0;
         
+        /* Try first to associate to same fragment in the other heap */
+        if(heapinfo2[current_block].type == heapinfo1[current_block].type){
+          
+          if(heapinfo1[current_block].busy_frag.frag_size[current_fragment] == heapinfo2[current_block].busy_frag.frag_size[current_fragment]){
+
+            addr_block2 = ((void*) (((ADDR2UINT(current_block)) - 1) * BLOCKSIZE + (char*)heapbase2));
+            addr_frag2 = (void*) ((char *)addr_block2 + (current_fragment << heapinfo2[current_block].type));
+
+            add_heap_area_pair(previous, current_block, current_fragment, current_block, current_fragment);
+            
+            if(ignore_done < xbt_dynar_length(mmalloc_ignore)){
+              if(in_mmalloc_ignore((int)current_block, (int)current_fragment))
+                res_compare = compare_area(addr_frag1, addr_frag2, heapinfo1[current_block].busy_frag.frag_size[current_fragment], previous, 1);
+              else
+                res_compare = compare_area(addr_frag1, addr_frag2, heapinfo1[current_block].busy_frag.frag_size[current_fragment], previous, 0);
+            }else{
+              res_compare = compare_area(addr_frag1, addr_frag2, heapinfo1[current_block].busy_frag.frag_size[current_fragment], previous, 0);
+            }
+
+            if(res_compare == 0){
+              equal = 1;
+              match_equals(previous);
+            }
+            
+            xbt_dynar_reset(previous);
+            
+          }
+
+        }
+
+
         while(i2 <= heaplimit && !equal){
           
           if(heapinfo2[i2].type <= 0){
@@ -246,13 +328,14 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
           for(j2=0; j2 < (size_t) (BLOCKSIZE >> heapinfo2[i2].type); j2++){
 
-            if(heapinfo2[i2].busy_frag.equal_to[j2] == 1){                 
-              continue;              
-            }
-             
-            if(heapinfo1[i1].busy_frag.frag_size[j1] != heapinfo2[i2].busy_frag.frag_size[j2]){ /* Different size_used */    
+            if(heapinfo2[i2].type == heapinfo1[i1].type && i2 == current_block && j2 == current_fragment)
               continue;
-            }
+
+            if(heapinfo2[i2].busy_frag.equal_to[j2] == 1)                
+              continue;              
+             
+            if(heapinfo1[i1].busy_frag.frag_size[j1] != heapinfo2[i2].busy_frag.frag_size[j2]) /* Different size_used */    
+              continue;
              
             addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)heapbase2));
             addr_frag2 = (void*) ((char *)addr_block2 + (j2 << heapinfo2[i2].type));
@@ -286,9 +369,9 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
       }
 
+      i1++;
+      
     }
-
-    i1++;
 
   }
 
@@ -491,7 +574,7 @@ static int compare_area(void *area1, void* area2, size_t size, xbt_dynar_t previ
           
         }else{ /* Fragmented block */
 
-           /* Get pointed fragments number */ 
+          /* Get pointed fragments number */ 
           frag_pointed1 = ((uintptr_t) (ADDR2UINT (address_pointed1) % (BLOCKSIZE))) >> heapinfo1[block_pointed1].type;
           frag_pointed2 = ((uintptr_t) (ADDR2UINT (address_pointed2) % (BLOCKSIZE))) >> heapinfo2[block_pointed2].type;
          
