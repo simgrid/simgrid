@@ -726,6 +726,7 @@ XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int aut
 
   SIMIX_simcall_push(simcall->issuer);
 }
+
 /**
  * \ingroup simix_process_management
  * \brief Restarts the process, killing it and starting it again from scratch.
