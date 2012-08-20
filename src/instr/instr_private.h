@@ -25,6 +25,27 @@
 #include "xbt/graph_private.h"
 
 typedef enum {
+  PAJE_DefineContainerType,
+  PAJE_DefineVariableType,
+  PAJE_DefineStateType,
+  PAJE_DefineEventType,
+  PAJE_DefineLinkType,
+  PAJE_DefineEntityValue,
+  PAJE_CreateContainer,
+  PAJE_DestroyContainer,
+  PAJE_SetVariable,
+  PAJE_AddVariable,
+  PAJE_SubVariable,
+  PAJE_SetState,
+  PAJE_PushState,
+  PAJE_PopState,
+  PAJE_ResetState,
+  PAJE_StartLink,
+  PAJE_EndLink,
+  PAJE_NewEvent
+} e_event_type;
+
+typedef enum {
   TYPE_VARIABLE,
   TYPE_LINK,
   TYPE_CONTAINER,
@@ -79,8 +100,10 @@ extern xbt_dict_t user_host_variables;
 extern xbt_dict_t user_link_variables;
 extern double TRACE_last_timestamp_to_dump;
 
+/* instr_paje_header.c */
+void TRACE_header(int basic);
+
 /* from paje.c */
-void TRACE_paje_create_header(void);
 void TRACE_paje_start(void);
 void TRACE_paje_end(void);
 void TRACE_paje_dump_buffer (int force);
