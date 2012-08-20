@@ -1,5 +1,6 @@
 #! ./tesh
 
+
 p Simple test of simdag
 
 $ $SG_TEST_EXENV ./simdag_tracing --cfg=tracing:1 --cfg=tracing/categorized:1 ${srcdir:=.}/2clusters.xml
