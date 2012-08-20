@@ -41,7 +41,6 @@ static const char *smpi_colors[] ={
     "scatterv",      "0.52 0 0.52",
     "scatter",       "1 0.74 0.54",
     "computing",     "0 1 1",
-
     NULL, NULL,
 };
 
