@@ -23,6 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_BUFFER        "tracing/buffer"
 #define OPT_TRACING_ONELINK_ONLY  "tracing/onelink_only"
 #define OPT_TRACING_DISABLE_DESTROY "tracing/disable_destroy"
+#define OPT_TRACING_BASIC         "tracing/basic"
 #define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 #define OPT_VIVA_UNCAT_CONF      "viva/uncategorized"
@@ -38,6 +39,7 @@ static int trace_msg_process_enabled;
 static int trace_buffer;
 static int trace_onelink_only;
 static int trace_disable_destroy;
+static int trace_basic;
 
 static int trace_configured = 0;
 static int trace_active = 0;
@@ -54,6 +56,7 @@ static void TRACE_getopts(void)
   trace_buffer = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER);
   trace_onelink_only = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY);
   trace_disable_destroy = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_DISABLE_DESTROY);
+  trace_basic = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BASIC);
 }
 
 int TRACE_start()
@@ -190,6 +193,12 @@ int TRACE_disable_destroy (void)
   return trace_disable_destroy && TRACE_is_enabled();
 }
 
+int TRACE_basic (void)
+{
+  return trace_basic && TRACE_is_enabled();
+}
+
+
 char *TRACE_get_filename(void)
 {
   return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_FILENAME);
@@ -295,6 +304,13 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_disable_destroy, 0, 1,
                    NULL, NULL);
 
+  /* basic -- Avoid extended events (impoverished trace file) */
+  int default_basic = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_BASIC,
+                   "Avoid extended events (impoverished trace file).",
+                   xbt_cfgelm_int, &default_basic, 0, 1,
+                   NULL, NULL);
+
   /* Triva graph configuration for uncategorized tracing */
   char *default_triva_uncat_conf_file = xbt_strdup ("");
   xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_UNCAT_CONF,
@@ -396,6 +412,12 @@ void TRACE_help (int detailed)
       "  Disable the destruction of containers at the end of simulation. This can be\n"
       "  used with simulators that have a different notion of time (different from\n"
       "  the simulated time).",
+      detailed);
+  print_line (OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
+      "  Some visualization tools are not able to parse correctly the Paje file format.\n"
+      "  Use this option if you are using one of these tools to visualize the simulation\n"
+      "  trace. Keep in mind that the trace might be incomplete, without all the\n"
+      "  information that would be registered otherwise.",
       detailed);
   print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
       "  This option can be used in all types of simulators build with SimGrid\n"
