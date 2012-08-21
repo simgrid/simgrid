@@ -200,6 +200,45 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation)
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
+void TRACE_smpi_computing_init(int rank)
+{
+ //first use, initialize the color in the trace
+ //TODO : check with lucas and Pierre how to generalize this approach
+  //to avoid unnecessary access to the color array
+  if (!TRACE_smpi_is_enabled() || !TRACE_smpi_is_computing()) return;
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  const char *color = instr_find_color ("computing");
+  val_t value = PJ_value_get_or_new ("computing", color, type);
+  new_pajePushState (SIMIX_get_clock(), container, type, value);
+}
+
+void TRACE_smpi_computing_in(int rank)
+{
+  //do not forget to set the color first, otherwise this will explode
+  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) return;
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  val_t value = PJ_value_get_or_new ("computing", NULL, type);
+  new_pajePushState (SIMIX_get_clock(), container, type, value);
+}
+
+void TRACE_smpi_computing_out(int rank)
+{
+  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) return;
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  new_pajePopState (SIMIX_get_clock(), container, type);
+}
+
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
 {
   if (!TRACE_smpi_is_enabled()) return;

@@ -16,6 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_PLATFORM      "tracing/platform"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
+#define OPT_TRACING_SMPI_COMPUTING "tracing/smpi/computing"
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
@@ -33,6 +34,7 @@ static int trace_enabled;
 static int trace_platform;
 static int trace_smpi_enabled;
 static int trace_smpi_grouped;
+static int trace_smpi_computing;
 static int trace_categorized;
 static int trace_uncategorized;
 static int trace_msg_process_enabled;
@@ -50,6 +52,7 @@ static void TRACE_getopts(void)
   trace_platform = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
   trace_smpi_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
   trace_smpi_grouped = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
+  trace_smpi_computing = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_COMPUTING);
   trace_categorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
   trace_uncategorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
   trace_msg_process_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
@@ -163,6 +166,12 @@ int TRACE_smpi_is_grouped(void)
   return trace_smpi_grouped;
 }
 
+int TRACE_smpi_is_computing(void)
+{
+  return trace_smpi_computing;
+}
+
+
 int TRACE_categorized (void)
 {
   return trace_categorized;
@@ -261,6 +270,12 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_tracing_smpi_grouped, 0, 1,
                    NULL, NULL);
 
+  /* smpi computing */
+  int default_tracing_smpi_computing = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_SMPI_COMPUTING,
+                   "Generate states for timing out of SMPI parts of the application",
+                   xbt_cfgelm_int, &default_tracing_smpi_computing, 0, 1,
+                   NULL, NULL);
 
   /* tracing categorized resource utilization traces */
   int default_tracing_categorized = 0;
@@ -388,6 +403,10 @@ void TRACE_help (int detailed)
   print_line (OPT_TRACING_SMPI_GROUP, "Group MPI processes by host (SMPI)",
       "  This option only has effect if this simulator is SMPI-based. The processes\n"
       "  are grouped by the hosts where they were executed.",
+      detailed);
+  print_line (OPT_TRACING_SMPI_COMPUTING, "Generates a \" Computing \" State",
+	  "  This option aims at tracing computations in the application, outside SMPI\n"
+      "  to allow further study of simulated or real computation time",
       detailed);
   print_line (OPT_TRACING_MSG_PROCESS, "Trace processes behavior (MSG)",
       "  This option only has effect if this simulator is MSG-based. It traces the\n"
