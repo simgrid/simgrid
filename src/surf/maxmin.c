@@ -659,7 +659,6 @@ void lmm_solve(lmm_system_t sys)
           make_elem_inactive(elem);
           elem_list = &(cnst->element_set);
           xbt_swag_foreach(elem, elem_list) {
-//              make_elem_active(elem);
             if (elem->variable->weight <= 0 || elem->variable->value > 0)
               break;
             if (elem->value > 0)

@@ -15,31 +15,6 @@ typedef struct s_routing_edge *sg_routing_edge_t;
 
 XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
 
-
-
-typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
-
-/** opaque structure defining a event generator for availability based on a probability distribution */
-typedef struct probabilist_event_generator *probabilist_event_generator_t;
-
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
-                                                    const char *input,
-                                                    double periodicity);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_generator(const char *id,
-                                                  probabilist_event_generator_t generator1,
-                                                  probabilist_event_generator_t generator2,
-                                                  int is_state_trace);
-
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(const char* id,
-                                                                           double min,
-                                                                           double max);
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(const char* id,
-                                                                           double rate);
-XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(const char* id,
-                                                                           double scale,
-                                                                           double shape);
-
 /** Defines whether a given resource is working or not */
 typedef enum {
   SURF_RESOURCE_ON = 1,                   /**< Up & ready        */
@@ -64,6 +39,37 @@ typedef enum {
   SURF_PROCESS_ON_FAILURE_DIE = 1,
   SURF_PROCESS_ON_FAILURE_RESTART = 0
 } e_surf_process_on_failure_t;
+
+
+typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
+
+/** opaque structure defining a event generator for availability based on a probability distribution */
+typedef struct probabilist_event_generator *probabilist_event_generator_t;
+
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
+                                                    const char *input,
+                                                    double periodicity);
+
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_generator_value(const char *id,
+                                              probabilist_event_generator_t date_generator,
+                                              probabilist_event_generator_t value_generator);
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_generator_state(const char *id,
+                                              probabilist_event_generator_t date_generator,
+                                              e_surf_resource_state_t first_event_value);
+XBT_PUBLIC(tmgr_trace_t) tmgr_trace_generator_avail_unavail(const char *id,
+                                              probabilist_event_generator_t avail_duration_generator,
+                                              probabilist_event_generator_t unavail_duration_generator,
+                                              e_surf_resource_state_t first_event_value);
+
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(const char* id,
+                                                                           double min,
+                                                                           double max);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_exponential(const char* id,
+                                                                           double rate);
+XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(const char* id,
+                                                                           double scale,
+                                                                           double shape);
 
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions

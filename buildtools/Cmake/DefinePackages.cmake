@@ -356,6 +356,7 @@ set(TRACING_SRC
   src/instr/instr_msg_task.c
   src/instr/instr_paje_containers.c
   src/instr/instr_paje_trace.c
+  src/instr/instr_paje_header.c
   src/instr/instr_paje_types.c
   src/instr/instr_paje_values.c
   src/instr/instr_private.h

@@ -39,47 +39,94 @@ XBT_INLINE void tmgr_history_free(tmgr_history_t h)
  * \brief Create a #tmgr_trace_t from probabilist generators
  *
  * This trace will generate an infinite set of events.
- * It needs two #probabilist_event_generator_t. For regular events, the first one is
- * used as a date generator, the second as a value generator. For a state trace, the
- * event values are 0 or 1. The first generator rules the time between state changes.
- * If the second generator is set, it is used to set the duration of unavailability,
- * while the first one set the duration of availability.
+ * It needs two #probabilist_event_generator_t. The date when the event are
+ * triggered is directed by date_generator, and will be interpreted as seconds.
+ * The value of the event is set by value_generator. The value should be between
+ * 0 and 1.
  *
  * \param id The name of the trace
- * \param generator1 The #probabilist_event_generator_t which generates the time
- *        between two events, or which rules the duration of availability for state trace
+ * \param date_generator The #probabilist_event_generator_t which generates the time
+ *        between two events
  * \param generator2 The #probabilist_event_generator_t which generates the value
- *        of each events, or the duration of unavailability for state trace.
- * \param is_state_trace Is the trace will be used as a state trace
+ *        of each events.
  * \return The new #tmgr_trace_t
  */
-tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
-                                          probabilist_event_generator_t generator1,
-                                          probabilist_event_generator_t generator2,
-                                          int is_state_trace)
+tmgr_trace_t tmgr_trace_generator_value(const char *id,
+                                  probabilist_event_generator_t date_generator,
+                                  probabilist_event_generator_t value_generator)
 {
   tmgr_trace_t trace = NULL;
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->type = e_trace_probabilist;
 
-  trace->s_probabilist.event_generator[0] = generator1;
-
-  //FIXME : may also be a parameter
-  trace->s_probabilist.next_event = 0;
-  trace->s_probabilist.is_state_trace = is_state_trace;
-
-  if(generator2 != NULL) {
-    trace->s_probabilist.event_generator[1] = generator2;
-  } else if(is_state_trace) {
-    trace->s_probabilist.event_generator[1] = generator1;
-  } else {
-    THROW_IMPOSSIBLE; //That case should have been checked before, anyway...
-  }
+  trace->s_probabilist.event_generator[0] = date_generator;
+  trace->s_probabilist.event_generator[1] = value_generator;
+  trace->s_probabilist.is_state_trace = 0;
 
   return trace;
 }
 
+/**
+ * \brief Create a #tmgr_trace_t from probabilist generators
+ *
+ * This trace will generate an infinite set of events. Value of the events
+ * will be alternatively 0 and 1, so this should be used as a state trace.
+ *
+ * \param id The name of the trace
+ * \param date_generator The #probabilist_event_generator_t which generates the time
+ *        between two events
+ * \param first_event_value Set the first event value
+ * \return The new #tmgr_trace_t
+ */
+tmgr_trace_t tmgr_trace_generator_state(const char *id,
+                                  probabilist_event_generator_t date_generator,
+                                  e_surf_resource_state_t first_event_value)
+{
+  tmgr_trace_t trace = NULL;
+
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_probabilist;
+
+  trace->s_probabilist.event_generator[0] = date_generator;
+  trace->s_probabilist.event_generator[1] = date_generator;
+  trace->s_probabilist.is_state_trace = 1;
+  trace->s_probabilist.next_event = (first_event_value==SURF_RESOURCE_ON ? 1 : 0);
+
+  return trace;
+}
+
+/**
+ * \brief Create a #tmgr_trace_t from probabilist generators
+ *
+ * This trace will generate an infinite set of events. Value of the events
+ * will be alternatively 0 and 1, so this should be used as a state trace.
+ *
+ * \param id The name of the trace
+ * \param avail_duration_generator The #probabilist_event_generator_t which
+ *        set the duration of the available state, (ie 1 value)
+ * \param unavail_duration_generator The #probabilist_event_generator_t which
+ *        set the duration of the unavailable state, (ie 0 value)
+ * \param first_event_value Set the first event value
+ * \return The new #tmgr_trace_t
+ */
+tmgr_trace_t tmgr_trace_generator_avail_unavail(const char *id,
+                                probabilist_event_generator_t avail_duration_generator,
+                                probabilist_event_generator_t unavail_duration_generator,
+                                e_surf_resource_state_t first_event_value)
+{
+  tmgr_trace_t trace = NULL;
+
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_probabilist;
+
+  trace->s_probabilist.event_generator[0] = unavail_duration_generator;
+  trace->s_probabilist.event_generator[1] = avail_duration_generator;
+  trace->s_probabilist.is_state_trace = 1;
+  trace->s_probabilist.next_event = (first_event_value==SURF_RESOURCE_ON ? 1 : 0);
+
+  return trace;
+}
 
 /**
  * \brief Create a new #probabilist_event_generator_t following the uniform distribution
