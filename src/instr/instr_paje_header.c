@@ -35,7 +35,7 @@ static void TRACE_header_PajeDefineVariableType (int basic)
     fprintf(tracing_file, "%%       Type string\n");
   }
   fprintf(tracing_file, "%%       Name string\n");
-  fprintf(tracing_file, "%%       Color string\n");
+  fprintf(tracing_file, "%%       Color color\n");
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
@@ -92,7 +92,7 @@ static void TRACE_header_PajeDefineEntityValue (int basic)
     fprintf(tracing_file, "%%       Type string\n");
   }
   fprintf(tracing_file, "%%       Name string\n");
-  fprintf(tracing_file, "%%       Color string\n");
+  fprintf(tracing_file, "%%       Color color\n");
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
