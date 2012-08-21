@@ -936,17 +936,12 @@ void SIMIX_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_
 {
   XBT_DEBUG("Copy the data over");
   memcpy(comm->comm.dst_buff, buff, buff_size);
-}
-
-void smpi_comm_copy_data_callback(smx_action_t comm, void* buff, size_t buff_size)
-{
-  XBT_DEBUG("Copy the data over");
-  memcpy(comm->comm.dst_buff, buff, buff_size);
   if (comm->comm.detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
     xbt_free(buff);
     comm->comm.src_buff = NULL;
   }
 }
+
 
 /**
  *  \brief Copy the communication data from the sender's buffer to the receiver's one
