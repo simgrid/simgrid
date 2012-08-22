@@ -87,7 +87,7 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
   }
   //generate the key
   static unsigned long long counter = 0;
-  snprintf(key, n, "%d%d%llu", src, dst, counter++);
+  snprintf(key, n, "%d_%d_%llu", src, dst, counter++);
 
   //push it
   char *a = (char*)xbt_strdup(key);
