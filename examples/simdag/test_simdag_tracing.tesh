@@ -27,7 +27,7 @@ $ cat ./simgrid.trace
 > %       Alias string
 > %       Type string
 > %       Name string
-> %       Color string
+> %       Color color
 > %EndEventDef
 > %EventDef PajeDefineStateType 2
 > %       Alias string
@@ -50,7 +50,7 @@ $ cat ./simgrid.trace
 > %       Alias string
 > %       Type string
 > %       Name string
-> %       Color string
+> %       Color color
 > %EndEventDef
 > %EventDef PajeCreateContainer 6
 > %       Time date
