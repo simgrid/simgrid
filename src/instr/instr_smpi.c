@@ -9,6 +9,7 @@
 #include <ctype.h>
 #include <wchar.h>
 
+
 #ifdef HAVE_TRACING
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
