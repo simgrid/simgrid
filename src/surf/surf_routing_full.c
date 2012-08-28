@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
 typedef struct s_routing_component_full {
   s_as_t generic_routing;
-  route_t *routing_table;
+  sg_platf_route_cbarg_t *routing_table;
 } s_routing_component_full_t, *routing_component_full_t;
 
 /* Business methods */
@@ -32,7 +32,7 @@ static xbt_dynar_t full_get_onelink_routes(AS_t rc)
 
   for(src=0; src < table_size; src++) {
     for(dst=0; dst< table_size; dst++) {
-      route_t route = TO_ROUTE_FULL(src, dst);
+      sg_platf_route_cbarg_t route = TO_ROUTE_FULL(src, dst);
       if (route) {
         if (xbt_dynar_length(route->link_list) == 1) {
           void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
@@ -44,8 +44,8 @@ static xbt_dynar_t full_get_onelink_routes(AS_t rc)
             onelink->dst = xbt_dynar_get_as(rc->index_network_elm,dst,sg_routing_edge_t);
             onelink->dst->id = dst;
           } else if (rc->hierarchy == SURF_ROUTING_RECURSIVE) {
-            onelink->src = route->src_gateway;
-            onelink->dst = route->dst_gateway;
+            onelink->src = route->gw_src;
+            onelink->dst = route->gw_dst;
           }
           xbt_dynar_push(ret, &onelink);
           XBT_DEBUG("Push route from '%d' to '%d'",
@@ -60,7 +60,7 @@ static xbt_dynar_t full_get_onelink_routes(AS_t rc)
 
 static void full_get_route_and_latency(AS_t rc,
     sg_routing_edge_t src, sg_routing_edge_t dst,
-    route_t res, double *lat)
+    sg_platf_route_cbarg_t res, double *lat)
 {
   XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]",
       src->name,
@@ -72,15 +72,15 @@ static void full_get_route_and_latency(AS_t rc,
   routing_component_full_t routing = (routing_component_full_t) rc;
   size_t table_size = xbt_dynar_length(routing->generic_routing.index_network_elm);
 
-  route_t e_route = NULL;
+  sg_platf_route_cbarg_t e_route = NULL;
   void *link;
   unsigned int cpt = 0;
 
   e_route = TO_ROUTE_FULL(src->id, dst->id);
 
   if (e_route) {
-    res->src_gateway = e_route->src_gateway;
-    res->dst_gateway = e_route->dst_gateway;
+    res->gw_src = e_route->gw_src;
+    res->gw_dst = e_route->gw_dst;
     xbt_dynar_foreach(e_route->link_list, cpt, link) {
       xbt_dynar_push(res->link_list, &link);
       if (lat)
@@ -124,7 +124,7 @@ AS_t model_full_create(void)
 void model_full_end(AS_t current_routing)
 {
   unsigned int i;
-  route_t e_route;
+  sg_platf_route_cbarg_t e_route;
 
   /* set utils vars */
   routing_component_full_t routing =
@@ -133,16 +133,16 @@ void model_full_end(AS_t current_routing)
 
   /* Create table if necessary */
   if (!routing->routing_table)
-    routing->routing_table = xbt_new0(route_t, table_size * table_size);
+    routing->routing_table = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Add the loopback if needed */
   if (routing_platf->loopback && current_routing->hierarchy == SURF_ROUTING_BASE) {
     for (i = 0; i < table_size; i++) {
       e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {
-        e_route = xbt_new0(s_route_t, 1);
-        e_route->src_gateway = NULL;
-        e_route->dst_gateway = NULL;
+        e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+        e_route->gw_src = NULL;
+        e_route->gw_dst = NULL;
         e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
         xbt_dynar_push(e_route->link_list, &routing_platf->loopback);
         TO_ROUTE_FULL(i, i) = e_route;
@@ -156,11 +156,12 @@ static int full_pointer_resource_cmp(const void *a, const void *b)
   return a != b;
 }
 
-void model_full_set_route(AS_t rc, const char *src,
-    const char *dst, route_t route)
+void model_full_set_route(AS_t rc, sg_platf_route_cbarg_t route)
 {
-  sg_routing_edge_t src_net_elm, dst_net_elm;
   int as_route = 0;
+  char *src = (char*)(route->src);
+  char *dst = (char*)(route->dst);
+  sg_routing_edge_t src_net_elm, dst_net_elm;
   src_net_elm = sg_routing_edge_by_name_or_null(src);
   dst_net_elm = sg_routing_edge_by_name_or_null(dst);
 
@@ -175,7 +176,7 @@ void model_full_set_route(AS_t rc, const char *src,
       src, dst);
 
   if (!routing->routing_table)
-    routing->routing_table = xbt_new0(route_t, table_size * table_size);
+    routing->routing_table = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   if (TO_ROUTE_FULL(src_net_elm->id, dst_net_elm->id)) {
     char *link_name;
@@ -199,7 +200,7 @@ void model_full_set_route(AS_t rc, const char *src,
           "between \"%s\" and \"%s\"", src, dst);
     }
   } else {
-    if (!route->dst_gateway && !route->src_gateway)
+    if (!route->gw_dst && !route->gw_dst)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
     else {
       // FIXME We can call a gw which is down the current AS (cf g5k.xml) but not upper.
@@ -230,11 +231,11 @@ void model_full_set_route(AS_t rc, const char *src,
       //                         route->dst_gateway, subas->name);
       as_route = 1;
       XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
-          src, route->src_gateway->name, dst, route->dst_gateway->name);
-      if (route->dst_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
-        xbt_die("The dst_gateway '%s' does not exist!", route->dst_gateway->name);
-      if (route->src_gateway->rc_type == SURF_NETWORK_ELEMENT_NULL)
-        xbt_die("The src_gateway '%s' does not exist!", route->src_gateway->name);
+          src, route->gw_src->name, dst, route->gw_dst->name);
+      if (route->gw_dst->rc_type == SURF_NETWORK_ELEMENT_NULL)
+        xbt_die("The dst_gateway '%s' does not exist!", route->gw_dst->name);
+      if (route->gw_src->rc_type == SURF_NETWORK_ELEMENT_NULL)
+        xbt_die("The src_gateway '%s' does not exist!", route->gw_src->name);
     }
     TO_ROUTE_FULL(src_net_elm->id, dst_net_elm->id) =
         generic_new_extended_route(rc->hierarchy, route, 1);
@@ -244,11 +245,11 @@ void model_full_set_route(AS_t rc, const char *src,
   if ( (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES && as_route == 0)
       || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
   ) {
-    if (route->dst_gateway && route->src_gateway) {
+    if (route->gw_dst && route->gw_src) {
       sg_routing_edge_t gw_tmp;
-      gw_tmp = route->src_gateway;
-      route->src_gateway = route->dst_gateway;
-      route->dst_gateway = gw_tmp;
+      gw_tmp = route->gw_src;
+      route->gw_src = route->gw_dst;
+      route->gw_dst = gw_tmp;
     }
     if (TO_ROUTE_FULL(dst_net_elm->id, src_net_elm->id)) {
       char *link_name;
@@ -267,14 +268,15 @@ void model_full_set_route(AS_t rc, const char *src,
           "The route between \"%s\" and \"%s\" already exists", src,
           dst);
     } else {
-      if (!route->dst_gateway && !route->src_gateway)
+      if (!route->gw_dst && !route->gw_src)
         XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
       else
         XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
-            dst, route->src_gateway->name, src, route->dst_gateway->name);
+            dst, route->gw_src->name, src, route->gw_dst->name);
       TO_ROUTE_FULL(dst_net_elm->id, src_net_elm->id) =
           generic_new_extended_route(rc->hierarchy, route, 0);
       xbt_dynar_shrink(TO_ROUTE_FULL(dst_net_elm->id, src_net_elm->id)->link_list, 0);
     }
   }
+  xbt_dynar_free(&route->link_list);
 }

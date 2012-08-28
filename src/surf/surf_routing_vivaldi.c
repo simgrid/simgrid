@@ -18,7 +18,7 @@ static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dyn
 
 static void vivaldi_get_route_and_latency(
     AS_t rc, sg_routing_edge_t src_p, sg_routing_edge_t dst_p,
-    route_t route, double *lat)
+    sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
 
@@ -27,8 +27,8 @@ static void vivaldi_get_route_and_latency(
   char *dst = (char*)dst_p->name;
 
   if(src_p->rc_type == SURF_NETWORK_ELEMENT_AS) {
-    route->src_gateway = xbt_lib_get_or_null(as_router_lib,ROUTER_PEER(src),ROUTING_ASR_LEVEL);
-    route->dst_gateway = xbt_lib_get_or_null(as_router_lib,ROUTER_PEER(dst),ROUTING_ASR_LEVEL);
+    route->gw_src = xbt_lib_get_or_null(as_router_lib,ROUTER_PEER(src),ROUTING_ASR_LEVEL);
+    route->gw_dst = xbt_lib_get_or_null(as_router_lib,ROUTER_PEER(dst),ROUTING_ASR_LEVEL);
   }
 
   double euclidean_dist;

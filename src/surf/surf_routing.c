@@ -225,16 +225,11 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
  */
 static void parse_E_route(sg_platf_route_cbarg_t route)
 {
-  route_t created_route = xbt_new0(s_route_t, 1);
-  created_route->link_list = route->link_list;
-
   xbt_assert(current_routing->parse_route,
              "no defined method \"set_route\" in \"%s\"",
              current_routing->name);
 
-  current_routing->parse_route(current_routing,
-      route->src, route->dst, created_route);
-  generic_free_route(created_route);
+  current_routing->parse_route(current_routing, route);
 }
 
 /**
@@ -242,16 +237,10 @@ static void parse_E_route(sg_platf_route_cbarg_t route)
  */
 static void parse_E_ASroute(sg_platf_route_cbarg_t ASroute)
 {
-  route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = ASroute->link_list;
-  e_route->src_gateway = ASroute->gw_src;
-  e_route->dst_gateway = ASroute->gw_dst;
-
   xbt_assert(current_routing->parse_ASroute,
              "no defined method \"set_ASroute\" in \"%s\"",
              current_routing->name);
-  current_routing->parse_ASroute(current_routing, ASroute->src, ASroute->dst, e_route);
-  generic_free_route(e_route);
+  current_routing->parse_ASroute(current_routing, ASroute);
 }
 
 /**
@@ -259,14 +248,11 @@ static void parse_E_ASroute(sg_platf_route_cbarg_t ASroute)
  */
 static void parse_E_bypassRoute(sg_platf_route_cbarg_t route)
 {
-  route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = route->link_list;
-
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
 
-  current_routing->parse_bypassroute(current_routing, route->src, route->dst, e_route);
+  current_routing->parse_bypassroute(current_routing, route);
 }
 
 /**
@@ -274,14 +260,10 @@ static void parse_E_bypassRoute(sg_platf_route_cbarg_t route)
  */
 static void parse_E_bypassASroute(sg_platf_route_cbarg_t ASroute)
 {
-  route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = ASroute->link_list;
-  e_route->src_gateway = ASroute->gw_src;
-  e_route->dst_gateway = ASroute->gw_dst;
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
-  current_routing->parse_bypassroute(current_routing, ASroute->src, ASroute->dst, e_route);
+  current_routing->parse_bypassroute(current_routing, ASroute);
 }
 
 static void routing_parse_trace(sg_platf_trace_cbarg_t trace)
@@ -535,7 +517,7 @@ static void elements_father(sg_routing_edge_t src, sg_routing_edge_t dst,
 static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
                                    xbt_dynar_t * links, double *latency)
 {
-  s_route_t route;
+  s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
   XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src->name, dst->name);
@@ -548,7 +530,7 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
       common_father->name,src_father->name,dst_father->name);
 
   /* Check whether a direct bypass is defined */
-  route_t e_route_bypass = NULL;
+  sg_platf_route_cbarg_t e_route_bypass = NULL;
   if (common_father->get_bypass_route)
     e_route_bypass = common_father->get_bypass_route(common_father, src, dst, latency);
 
@@ -578,11 +560,11 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
                                        src_father_net_elm, dst_father_net_elm,
                                        &route, latency);
 
-  xbt_assert((route.src_gateway != NULL) && (route.dst_gateway != NULL),
+  xbt_assert((route.gw_src != NULL) && (route.gw_dst != NULL),
       "bad gateways for route from \"%s\" to \"%s\"", src->name, dst->name);
 
-  sg_routing_edge_t src_gateway_net_elm = route.src_gateway;
-  sg_routing_edge_t dst_gateway_net_elm = route.dst_gateway;
+  sg_routing_edge_t src_gateway_net_elm = route.gw_src;
+  sg_routing_edge_t dst_gateway_net_elm = route.gw_dst;
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != src_gateway_net_elm)

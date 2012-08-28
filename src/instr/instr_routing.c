@@ -144,7 +144,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
       if (strcmp (child1_name, child2_name) == 0) continue;
 
       //get the route
-      route_t route = xbt_new0(s_route_t,1);
+      sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
       route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
       rc->get_route_and_latency(rc, child1->net_elm, child2->net_elm,
                                 route, NULL);
@@ -160,8 +160,8 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
       unsigned int cpt;
       void *link;
       container_t current, previous;
-      if (route->src_gateway){
-        previous = PJ_container_get(route->src_gateway->name);
+      if (route->gw_src){
+        previous = PJ_container_get(route->gw_src->name);
       }else{
         previous = child1;
       }
@@ -172,8 +172,8 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
         linkContainers(previous, current, filter);
         previous = current;
       }
-      if (route->dst_gateway){
-        current = PJ_container_get(route->dst_gateway->name);
+      if (route->gw_dst){
+        current = PJ_container_get(route->gw_dst->name);
       }else{
         current = child2;
       }
@@ -505,7 +505,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
       if (strcmp (child1_name, child2_name) == 0) continue;
 
       //get the route
-      route_t route = xbt_new0(s_route_t,1);
+      sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
       route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
       rc->get_route_and_latency(rc, child1->net_elm, child2->net_elm,
                                 route, NULL);
@@ -518,8 +518,8 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
       unsigned int cpt;
       void *link;
       xbt_node_t current, previous;
-      if (route->src_gateway){
-        previous = new_xbt_graph_node(graph, route->src_gateway->name, nodes);
+      if (route->gw_src){
+        previous = new_xbt_graph_node(graph, route->gw_src->name, nodes);
       }else{
         previous = new_xbt_graph_node(graph, child1_name, nodes);
       }
@@ -531,8 +531,8 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
         //previous -> current
         previous = current;
       }
-      if (route->dst_gateway){
-        current = new_xbt_graph_node(graph, route->dst_gateway->name, nodes);
+      if (route->gw_dst){
+        current = new_xbt_graph_node(graph, route->gw_dst->name, nodes);
       }else{
         current = new_xbt_graph_node(graph, child2_name, nodes);
       }

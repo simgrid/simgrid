@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 /* Business methods */
 static void cluster_get_route_and_latency(AS_t as,
     sg_routing_edge_t src, sg_routing_edge_t dst,
-                                          route_t route, double *lat) {
+    sg_platf_route_cbarg_t route, double *lat) {
 
       s_surf_parsing_link_up_down_t info;
     XBT_DEBUG("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]",

@@ -154,12 +154,6 @@ typedef struct s_model_type {
   void (*end) (AS_t as);
 } s_routing_model_description_t, *routing_model_description_t;
 
-typedef struct s_route {
-  xbt_dynar_t link_list;
-  sg_routing_edge_t src_gateway;
-  sg_routing_edge_t dst_gateway;
-} s_route_t, *route_t;
-
 /* This enum used in the routing structure helps knowing in which situation we are. */
 typedef enum {
   SURF_ROUTING_NULL = 0,   /**< Undefined type                                   */
@@ -178,10 +172,10 @@ typedef struct s_as {
   sg_routing_edge_t net_elem;
   xbt_dynar_t link_up_down_list;
 
-  void (*get_route_and_latency) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, route_t into, double *latency);
+  void (*get_route_and_latency) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, sg_platf_route_cbarg_t into, double *latency);
 
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
-  route_t(*get_bypass_route) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat);
+  sg_platf_route_cbarg_t(*get_bypass_route) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat);
   void (*finalize) (AS_t as);
 
 
@@ -191,12 +185,9 @@ typedef struct s_as {
    * Of course, only the routing model of this AS is informed, not every ones */
   int (*parse_PU) (AS_t as, sg_routing_edge_t elm); /* A host or a router, whatever */
   int (*parse_AS) (AS_t as, sg_routing_edge_t elm);
-  void (*parse_route) (AS_t as, const char *src,
-                     const char *dst, route_t route);
-  void (*parse_ASroute) (AS_t as, const char *src,
-                       const char *dst, route_t route);
-  void (*parse_bypassroute) (AS_t as, const char *src,
-                           const char *dst, route_t e_route);
+  void (*parse_route) (AS_t as, sg_platf_route_cbarg_t route);
+  void (*parse_ASroute) (AS_t as, sg_platf_route_cbarg_t route);
+  void (*parse_bypassroute) (AS_t as, sg_platf_route_cbarg_t e_route);
 } s_as_t;
 
 struct s_routing_platf {
@@ -210,7 +201,7 @@ XBT_PUBLIC(void) routing_model_create(void *loopback);
 XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) storage_register_callbacks(void);
 XBT_PUBLIC(void) routing_register_callbacks(void);
-XBT_PUBLIC(void) generic_free_route(route_t route); // FIXME rename to routing_route_free
+XBT_PUBLIC(void) generic_free_route(sg_platf_route_cbarg_t route); // FIXME rename to routing_route_free
  // FIXME: make previous function private to routing again?
 
 
