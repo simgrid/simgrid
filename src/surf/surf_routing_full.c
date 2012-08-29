@@ -242,8 +242,8 @@ void model_full_set_route(AS_t rc, sg_platf_route_cbarg_t route)
     xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->id, dst_net_elm->id)->link_list, 0);
   }
 
-  if ( (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES && as_route == 0)
-      || (A_surfxml_ASroute_symmetrical == A_surfxml_ASroute_symmetrical_YES && as_route == 1)
+  if ( (route->symmetrical == TRUE && as_route == 0)
+      || (route->symmetrical == TRUE && as_route == 1)
   ) {
     if (route->gw_dst && route->gw_src) {
       sg_routing_edge_t gw_tmp;
