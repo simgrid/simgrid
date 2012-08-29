@@ -22,9 +22,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(ring,
  * 
  *  @section MSG_ex_apps Examples of full applications
  * 
- * - <b>token_ring/ring_call.c</b>: Classical token ring
- *   communication, where a token is exchanged along a ring to reach
- *   every participant.
+ * - <b>token_ring/token_bypass.c</b>: Classical token ring with a bypass deployment.
+ *   A token is exchanged along a ring to reach every participant.
  * 
  */
 
@@ -65,53 +64,25 @@ static int surf_parse_bypass_platform(void)
   sg_platf_begin();
   sg_platf_new_AS_begin("AS0", A_surfxml_AS_routing_Full);
 
-  s_sg_platf_host_cbarg_t bob;
-  memset(&bob,0,sizeof(bob));
+  s_sg_platf_host_cbarg_t bob = SG_PLATF_HOST_INITIALIZER;
   bob.id = "bob";
   bob.power_peak = 98095000;
-  bob.power_scale = 1.0;
-  bob.core_amount = 1;
-  bob.initial_state = A_surfxml_host_state_ON;
-  bob.power_trace = NULL;
-  bob.state_trace = NULL;
-  bob.coord = NULL;
-  bob.properties = NULL;
+  sg_platf_new_host(&bob);
 
-  s_sg_platf_host_cbarg_t alice;
-  memset(&alice,0,sizeof(alice));
+  s_sg_platf_host_cbarg_t alice = SG_PLATF_HOST_INITIALIZER;
   alice.id = "alice";
   alice.power_peak = 98095000;
-  alice.power_scale = 1.0;
-  alice.core_amount = 1;
-  alice.initial_state = A_surfxml_host_state_ON;
-  alice.power_trace = NULL;
-  alice.state_trace = NULL;
-  alice.coord = NULL;
-  alice.properties = NULL;
-
-  sg_platf_new_host(&bob);
   sg_platf_new_host(&alice);
 
-  s_sg_platf_link_cbarg_t link;
-  memset(&link, 0, sizeof(link));
+  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   link.id = "link1";
-  link.state = A_surfxml_link_state_ON;
-  link.policy = A_surfxml_link_sharing_policy_SHARED;
   link.latency = 0.000278066;
   link.bandwidth = 27946250;
   sg_platf_new_link(&link);
 
-  s_sg_platf_route_cbarg_t route;
-  memset(&route,0,sizeof(route));
+  s_sg_platf_route_cbarg_t route= SG_PLATF_ROUTE_INITIALIZER;
   route.src = "bob";
   route.dst = "alice";
-  route.symmetrical = FALSE;
-  sg_platf_route_begin(&route);
-  sg_platf_route_add_link("link1", &route);
-  sg_platf_route_end(&route);
-
-  route.src = "alice";
-  route.dst = "bob";
   sg_platf_route_begin(&route);
   sg_platf_route_add_link("link1", &route);
   sg_platf_route_end(&route);
