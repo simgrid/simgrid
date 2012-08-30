@@ -30,7 +30,7 @@ public class Master extends Process {
 		for (int i = 0; i < slavesCount; i++) {
 			Slave slave = new Slave(hosts[i],i);
 			slave.start();
-			VM vm = new VM(hosts[i],1);
+			VM vm = new VM(hosts[i],hosts[i]+"_"+i,1);
 			vm.bind(slave);
 			vms.add(vm);
 		}
