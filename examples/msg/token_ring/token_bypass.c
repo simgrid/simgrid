@@ -62,7 +62,10 @@ int host(int argc, char *argv[])
 static int surf_parse_bypass_platform(void)
 {
   sg_platf_begin();
-  sg_platf_new_AS_begin("AS0", A_surfxml_AS_routing_Full);
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = "AS0";
+  AS.routing = A_surfxml_AS_routing_Full;
+  sg_platf_new_AS_begin(&AS);
 
   s_sg_platf_host_cbarg_t bob = SG_PLATF_HOST_INITIALIZER;
   bob.id = "bob";

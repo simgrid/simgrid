@@ -186,8 +186,10 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
 /*
  * Callbacks
  */
-static void instr_routing_parse_start_AS (const char*id,int routing)
+static void instr_routing_parse_start_AS (sg_platf_AS_cbarg_t AS)
 {
+  const char*id = AS->id;
+
   if (PJ_container_get_root() == NULL){
     PJ_container_alloc ();
     PJ_type_alloc();

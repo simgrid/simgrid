@@ -1257,24 +1257,13 @@ static int ck_ilimit()
 #ifdef FLEXML_NEED_BUFFERLIT
 static void graphxml_bufferliteral(char c, int* pp, const char* text)
 {
-   BUFFERSET(*pp);
-   if (c) {
-      const char *s = strchr(text, c), *e = strrchr(text, c);
-      assert(s && e && s <= e);
-      ++s;
-      while (s < e) {
-	 if (isspace(*s)) {
-	    BUFFERPUTC(' ');
-	    do ++s; while (s < e && isspace(*s));
-	 } else
-	   BUFFERPUTC(*s++);
-      }
-   } else {
-      const char *s = text;
-      while (*s)
-	BUFFERPUTC(*s++);
-   }
-   BUFFERDONE;
+  const char *s = (c ? strchr(text,c) : text-1), *e = strrchr(text,c);
+  assert(s <= e); BUFFERSET(*pp);
+  while (++s<e) {
+    if (isspace(*s) && c) { BUFFERPUTC(' '); while (isspace(*s)) ++s; }
+    else BUFFERPUTC(*s);
+  }
+  BUFFERDONE;
 }
 #endif
 

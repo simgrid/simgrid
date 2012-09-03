@@ -72,9 +72,6 @@ xbt_dict_t current_property_set = NULL;
 /* dictionary of random generator data */
 xbt_dict_t random_data_list = NULL;
 
-/* Call all the callbacks of a specific SAX event */
-static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t);
-
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = NULL;
 
@@ -648,7 +645,12 @@ void STag_surfxml_trace_connect(void){
 }
 
 void STag_surfxml_AS(void){
-  sg_platf_new_AS_begin(A_surfxml_AS_id, (int)A_surfxml_AS_routing);
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = A_surfxml_AS_id;
+  AS.routing = (int)A_surfxml_AS_routing;
+
+  sg_platf_new_AS_begin(&AS);
 }
 void ETag_surfxml_AS(void){
   sg_platf_new_AS_end();

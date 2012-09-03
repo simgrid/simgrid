@@ -13,6 +13,10 @@
  
  <platform version="3">
  <AS  id="AS0"  routing="Full">
+   <prop id="filename" value="prop.xml"/>
+   <prop id="date" value="31-08-12"/>
+   <prop id="author" value="pnavarro"/>
+   
    <host id="host1" power="1000000000">
      <prop id="SG_TEST_Hdd" value="180"/>
      <prop id="SG_TEST_mem" value="4"/>

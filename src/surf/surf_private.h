@@ -188,6 +188,8 @@ typedef struct s_as {
   void (*parse_route) (AS_t as, sg_platf_route_cbarg_t route);
   void (*parse_ASroute) (AS_t as, sg_platf_route_cbarg_t route);
   void (*parse_bypassroute) (AS_t as, sg_platf_route_cbarg_t e_route);
+
+  xbt_dict_t properties;
 } s_as_t;
 
 struct s_routing_platf {

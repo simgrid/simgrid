@@ -8,6 +8,7 @@
 #define _SURF_SURF_ROUTING_H
 
 #include "xbt/lib.h"
+#include "simgrid/platf_interface.h"
 
 extern xbt_lib_t host_lib;
 extern int ROUTING_HOST_LEVEL; //Routing level
@@ -38,8 +39,8 @@ extern xbt_lib_t storage_type_lib;
 extern int ROUTING_STORAGE_TYPE_LEVEL;   //Routing storage_type level
 
 /* The callbacks to register for the routing to work */
-void routing_AS_begin(const char *AS_id, int wanted_routing_type);
-void routing_AS_end(void);
+void routing_AS_begin(sg_platf_AS_cbarg_t AS);
+void routing_AS_end(sg_platf_AS_cbarg_t AS);
 
 void routing_cluster_add_backbone(void* bb);
 

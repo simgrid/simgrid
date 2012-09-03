@@ -333,18 +333,18 @@ static void routing_parse_trace_connect(sg_platf_trace_connect_cbarg_t trace_con
  * @param AS_id name of this autonomous system. Must be unique in the platform
  * @param wanted_routing_type one of Full, Floyd, Dijkstra or similar. Full list in the variable routing_models, in src/surf/surf_routing.c
  */
-void routing_AS_begin(const char *AS_id, int wanted_routing_type)
+void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 {
   XBT_DEBUG("routing_AS_begin");
   AS_t new_as;
   routing_model_description_t model = NULL;
 
   xbt_assert(!xbt_lib_get_or_null
-             (as_router_lib, AS_id, ROUTING_ASR_LEVEL),
-             "The AS \"%s\" already exists", AS_id);
+             (as_router_lib, AS->id, ROUTING_ASR_LEVEL),
+             "The AS \"%s\" already exists", AS->id);
 
   /* search the routing model */
-  switch(wanted_routing_type){
+  switch(AS->routing){
     case A_surfxml_AS_routing_Cluster:       model = &routing_models[SURF_MODEL_CLUSTER];break;
     case A_surfxml_AS_routing_Dijkstra:      model = &routing_models[SURF_MODEL_DIJKSTRA];break;
     case A_surfxml_AS_routing_DijkstraCache: model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
@@ -361,7 +361,7 @@ void routing_AS_begin(const char *AS_id, int wanted_routing_type)
   new_as = (AS_t) model->create();
   new_as->model_desc = model;
   new_as->hierarchy = SURF_ROUTING_NULL;
-  new_as->name = xbt_strdup(AS_id);
+  new_as->name = xbt_strdup(AS->id);
 
   sg_routing_edge_t info = NULL;
   info = xbt_new0(s_network_element_t, 1);
@@ -375,15 +375,15 @@ void routing_AS_begin(const char *AS_id, int wanted_routing_type)
   } else if (current_routing != NULL && routing_platf->root != NULL) {
 
     xbt_assert(!xbt_dict_get_or_null
-               (current_routing->routing_sons, AS_id),
-               "The AS \"%s\" already exists", AS_id);
+               (current_routing->routing_sons, AS->id),
+               "The AS \"%s\" already exists", AS->id);
     /* it is a part of the tree */
     new_as->routing_father = current_routing;
     /* set the father behavior */
     if (current_routing->hierarchy == SURF_ROUTING_NULL)
       current_routing->hierarchy = SURF_ROUTING_RECURSIVE;
     /* add to the sons dictionary */
-    xbt_dict_set(current_routing->routing_sons, AS_id,
+    xbt_dict_set(current_routing->routing_sons, AS->id,
                  (void *) new_as, NULL);
     /* add to the father element list */
     info->id = current_routing->parse_AS(current_routing, (void *) info);
@@ -416,7 +416,7 @@ void routing_AS_begin(const char *AS_id, int wanted_routing_type)
  * even if you add stuff to a closed AS
  *
  */
-void routing_AS_end()
+void routing_AS_end(sg_platf_AS_cbarg_t AS)
 {
 
   if (current_routing == NULL) {
@@ -806,7 +806,10 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   }
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
-  sg_platf_new_AS_begin(cluster->id, A_surfxml_AS_routing_Cluster);
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = cluster->id;
+  AS.routing = A_surfxml_AS_routing_Cluster;
+  sg_platf_new_AS_begin(&AS);
 
   current_routing->link_up_down_list
             = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);

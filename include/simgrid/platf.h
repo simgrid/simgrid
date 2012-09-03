@@ -278,10 +278,19 @@ typedef struct s_sg_platf_process_cbarg {
 
 #define SG_PLATF_PROCESS_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL}
 
+typedef struct s_sg_platf_AS_cbarg *sg_platf_AS_cbarg_t;
+typedef struct s_sg_platf_AS_cbarg {
+  const char *id;
+  int routing;
+  xbt_dict_t properties;
+} s_sg_platf_AS_cbarg_t;
+
+#define SG_PLATF_AS_INITIALIZER {NULL,0,NULL}
+
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform
 
-XBT_PUBLIC(void) sg_platf_new_AS_begin(const char *id, int mode); // Begin description of new AS
+XBT_PUBLIC(void) sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS); // Begin description of new AS
 XBT_PUBLIC(void) sg_platf_new_AS_end(void);                            // That AS is fully described
 
 XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an host   to the currently described AS
