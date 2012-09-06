@@ -813,6 +813,43 @@ const char *MSG_task_get_category (msg_task_t task)
 #endif
 }
 
+/**
+ * \brief Returns the value of a given AS or router property
+ *
+ * \param asr the name of a router or AS
+ * \param name a property name
+ * \return value of a property (or NULL if property not set)
+ */
+const char *MSG_as_router_get_property_value(const char* asr, const char *name)
+{
+  return xbt_dict_get_or_null(MSG_as_router_get_properties(asr), name);
+}
+
+/**
+ * \brief Returns a xbt_dict_t consisting of the list of properties assigned to
+ * a the AS or router
+ *
+ * \param asr the name of a router or AS
+ * \return a dict containing the properties
+ */
+xbt_dict_t MSG_as_router_get_properties(const char* asr)
+{
+  // FIXME do this function with a simcall
+  return xbt_lib_get_or_null(as_router_lib, asr, ROUTING_PROP_ASR_LEVEL);
+}
+
+/**
+ * \brief Change the value of a given AS or router
+ *
+ * \param asr the name of a router or AS
+ * \param name a property name
+ * \param value what to change the property to
+ * \param free_ctn the freeing function to use to kill the value on need
+ */
+void MSG_as_router_set_property_value(const char* asr, const char *name, char *value,void_f_pvoid_t free_ctn) {
+  xbt_dict_set(MSG_as_router_get_properties(asr), name, value,free_ctn);
+}
+
 #ifdef MSG_USE_DEPRECATED
 /** \ingroup msg_deprecated_functions
  *

@@ -81,6 +81,11 @@ XBT_PUBLIC(void) MSG_file_free_stat(s_msg_stat_t *stat);
 
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
 
+/************************** AS Router handling ************************************/
+XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
+XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);
+XBT_PUBLIC(void) MSG_as_router_set_property_value(const char* asr, const char *name, char *value,void_f_pvoid_t free_ctn);
+
 /************************** Host handling ***********************************/
 XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);
 XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);

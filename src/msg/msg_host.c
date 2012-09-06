@@ -211,7 +211,7 @@ const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 }
 
 /** \ingroup m_host_management
- * \brief Returns a xbt_dynar_t consisting of the list of properties assigned to this host
+ * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this host
  *
  * \param host a host
  * \return a dict containing the properties
