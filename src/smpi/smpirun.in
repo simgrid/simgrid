@@ -212,6 +212,14 @@ if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
       NUMHOSTS=`cat ${HOSTFILE} | wc -l`
 fi
 
+if [ ${EXEC} = "./replay" ]; then 
+  APP_TRACES=$1;
+  if [ -n "${APP_TRACES}" ] && [ -f ${APP_TRACES} ]; then
+     hosttraces=(`cat ${APP_TRACES} | tr \\\n " "`)
+     NUMTRACES=`cat ${APP_TRACES} | wc -l`
+  fi
+fi
+
 ##----------------------------------------------------------
 ##  generate application.xml with hostnames from hostfile:
 ##  the name of host_i (1<=i<=p, where -np p) is the line i
@@ -250,9 +258,17 @@ do
   fi
   echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
   echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
-  for ARG in $*; do
-    echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
-  done
+  if [ ${EXEC} = "./replay" ]; then
+    if  [ ${NUMTRACES} -gt 1 ]; then
+      echo "    <argument value=\"${hosttraces[$j]}\"/>" >> ${APPLICATIONTMP}
+    else
+      echo "    <argument value=\"${hosttraces[0]}\"/>" >> ${APPLICATIONTMP}
+    fi
+  else 
+    for ARG in $*; do
+       echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
+    done
+  fi
   echo "  </process>" >> ${APPLICATIONTMP}
 done
 
