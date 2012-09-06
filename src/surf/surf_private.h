@@ -132,8 +132,7 @@ typedef struct s_routing_edge {
   e_surf_network_element_type_t rc_type;
   int id;
   char *name;
-  xbt_dict_t properties;
-} s_network_element_t;
+} s_routing_edge_t;
 
 /*
  * Link of lenght 1, alongside with its source and destination. This is mainly usefull in the bindings to gtnets and ns3

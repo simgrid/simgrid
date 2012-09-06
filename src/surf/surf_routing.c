@@ -148,7 +148,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
   xbt_assert(!xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL),
              "Reading a host, processing unit \"%s\" already exists", host->id);
 
-  info = xbt_new0(s_network_element_t, 1);
+  info = xbt_new0(s_routing_edge_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   info->name = xbt_strdup(host->id);
@@ -193,7 +193,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
 
-  info = xbt_new0(s_network_element_t, 1);
+  info = xbt_new0(s_routing_edge_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
   info->name = xbt_strdup(router->id);
@@ -365,7 +365,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   new_as->name = xbt_strdup(AS->id);
 
   sg_routing_edge_t info = NULL;
-  info = xbt_new0(s_network_element_t, 1);
+  info = xbt_new0(s_routing_edge_t, 1);
 
   if (current_routing == NULL && routing_platf->root == NULL) {
 
