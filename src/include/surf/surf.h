@@ -569,11 +569,6 @@ XBT_PUBLIC(void) surf_network_model_init_Vegas(void);
 XBT_PUBLIC_DATA(s_surf_model_description_t)
     surf_network_model_description[];
 
-
-
-
-
-
 /** \ingroup SURF_models
  *  \brief The storage model
  */
@@ -584,12 +579,6 @@ XBT_PUBLIC(void) surf_storage_model_init_default(void);
  *  This storage mode can be set using --cfg=storage/model:...
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
-
-
-
-
-
-
 
 /** \ingroup SURF_models
  *  \brief The workstation model
@@ -730,6 +719,8 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 
 XBT_PUBLIC(double) get_cpu_power(const char *power);
+
+XBT_PUBLIC(xbt_dict_t) get_as_router_properties(const char* name);
 
 int surf_get_nthreads(void);
 void surf_set_nthreads(int nthreads);

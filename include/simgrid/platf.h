@@ -209,9 +209,10 @@ typedef struct {
   const char* id;
   const char* type_id;
   const char* content;
+  xbt_dict_t properties;
 } s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
 
-#define SG_PLATF_STORAGE_INITIALIZER {NULL,NULL,NULL}
+#define SG_PLATF_STORAGE_INITIALIZER {NULL,NULL,NULL,NULL}
 
 typedef struct {
   const char* id;
@@ -282,10 +283,9 @@ typedef struct s_sg_platf_AS_cbarg *sg_platf_AS_cbarg_t;
 typedef struct s_sg_platf_AS_cbarg {
   const char *id;
   int routing;
-  xbt_dict_t properties;
 } s_sg_platf_AS_cbarg_t;
 
-#define SG_PLATF_AS_INITIALIZER {NULL,0,NULL}
+#define SG_PLATF_AS_INITIALIZER {NULL,0}
 
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform

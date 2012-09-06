@@ -42,6 +42,7 @@ xbt_lib_t as_router_lib;
 int ROUTING_ASR_LEVEL;          //Routing level
 int COORD_ASR_LEVEL;            //Coordinates level
 int NS3_ASR_LEVEL;              //host node for ns3
+int ROUTING_PROP_ASR_LEVEL;     //Where the properties are stored
 
 static xbt_dict_t random_value = NULL;
 
@@ -395,7 +396,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   info->rc_type = SURF_NETWORK_ELEMENT_AS;
   info->name = new_as->name;
 
-  xbt_lib_set(as_router_lib, new_as->name, ROUTING_ASR_LEVEL,
+  xbt_lib_set(as_router_lib, info->name, ROUTING_ASR_LEVEL,
               (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'",new_as->name,info->id);
 

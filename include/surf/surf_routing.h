@@ -29,6 +29,7 @@ extern xbt_lib_t as_router_lib;
 extern int ROUTING_ASR_LEVEL;  //Routing level
 extern int COORD_ASR_LEVEL;  //Coordinates level
 extern int NS3_ASR_LEVEL;    //host node for ns3
+extern int ROUTING_PROP_ASR_LEVEL; //Properties for AS and router
 
 extern xbt_lib_t storage_lib;
 extern int ROUTING_STORAGE_LEVEL;        //Routing storage level
