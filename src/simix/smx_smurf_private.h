@@ -103,7 +103,6 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES), \
 /* ****************************************************************************************** */ \
 SIMCALL_ENUM_ELEMENT(SIMCALL_NEW_API_INIT)
 
-
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated
  * because they are not always present */
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -645,6 +644,92 @@ void SIMIX_simcall_pre(smx_simcall_t, int);
 void SIMIX_simcall_post(smx_action_t);
 smx_simcall_t SIMIX_simcall_mine(void);
 const char *SIMIX_simcall_name(e_smx_simcall_t kind);
+
+/*************************** New simcall interface ****************************/
+
+/* Pack all possible scalar types in an union */
+typedef union {
+  char            c;
+  short           s;
+  int             i;
+  long            l;
+  unsigned char   uc;
+  unsigned short  us;
+  unsigned int    ui;
+  unsigned long   ul;
+  float           f;
+  double          d;
+  void            *p;
+} u_smx_scalar_t;
+
+/*
+ * Define scalar type wrappers to ease the use of simcalls.
+ * These are used to wrap the arguments in SIMIX_simcall macro.
+ */
+#define CHAR(x) (c,x)
+#define SHORT(x) (s,x)
+#define INT(x) (i,x)
+#define LONG(x) (l,x)
+#define UCHAR(x) (uc,x)
+#define USHORT(x) (us,x)
+#define UINT(x) (ui,x)
+#define ULONG(x) (ul,x)
+#define FLOAT(x) (f,x)
+#define DOUBLE(x) (d,x)
+#define PTR(x)  (p,x)
+
+/*
+ * Some macro machinery to get a MAP over the arguments of a variadic macro.
+ * It uses a FOLD to apply a macro to every argument, and because there is
+ * no recursion in the C preprocessor we must create a new macro for every
+ * depth of FOLD's recursion.
+ */
+
+/* FOLD macro */
+#define FE_1(WHAT, X) WHAT(X)
+#define FE_2(WHAT, X, ...) WHAT(X), FE_1(WHAT, __VA_ARGS__)
+#define FE_3(WHAT, X, ...) WHAT(X), FE_2(WHAT, __VA_ARGS__)
+#define FE_4(WHAT, X, ...) WHAT(X), FE_3(WHAT, __VA_ARGS__)
+#define FE_5(WHAT, X, ...) WHAT(X), FE_4(WHAT, __VA_ARGS__)
+/* NOTE: add as many FE_n as needed (maximum number of simcall arguments )*/
+
+/* Make a MAP macro usgin FOLD (will apply 'action' to the arguments.
+ * GET_MACRO is a smart hack that counts the number of arguments passed to
+ * the variadic macro, and it is used to invoke the right FOLD depth.
+ */
+#define GET_MACRO(_1,_2,_3,_4,_5,NAME,...) NAME
+#define MAP(action,...) \
+  GET_MACRO(__VA_ARGS__,FE_5,FE_4,FE_3,FE_2,FE_1) (action, __VA_ARGS__)
+
+
+/* Generate code to initialize the field 'x' with value 'y' of an structure or union */
+#define INIT_FIELD_(x,y) {.x = y}
+#define INIT_FIELD(t) INIT_FIELD t
+
+/* Project the second element of a tuple */
+#define SECOND_(x, y) y
+#define SECOND(t) SECOND_ t
+
+/*
+ * \brief Simcall invocation macro
+ * It calls a dummy function that uses the format attribute to ensure typesafety (see
+ * gcc format attribute), then it invokes the real simcall function packing the
+ * user provided arguments in an array.
+ * \param id a simcall id (from the simcall enumeration ids)
+ *
+ */
+#define SIMIX_simcall(id, ...) \
+  SIMIX_simcall_typecheck(simcall_types[id], MAP(SECOND, __VA_ARGS__)); \
+  __SIMIX_simcall(id, (mytype_t[]){MAP(INIT_FIELD, __VA_ARGS__)})
+
+void __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args);
+
+/*
+ * \biref Dummy variadic function used to typecheck the arguments of a simcall
+ * \param fmt A format string following printf style
+ */
+void SIMIX_simcall_typecheck(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
+
 
 #endif
 

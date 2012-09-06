@@ -621,3 +621,14 @@ void SIMIX_simcall_post(smx_action_t action)
       break;
   }
 }
+
+/* New Simcal interface */
+
+/* FIXME: add types for every simcall */
+const char *simcall_types[NUM_SIMCALLS] = {"%d", "%d%f", "%l"};
+
+void SIMIX_simcall_typecheck(const char *fmt, ...)
+{
+  return;
+}
+
