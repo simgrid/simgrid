@@ -87,6 +87,26 @@ xbt_dict_t simcall_host_get_properties(smx_host_t host)
 
 /**
  * \ingroup simix_host_management
+ * \brief Returns a dict of the properties assigned to a router or AS.
+ *
+ * \param asr name of the router or AS
+ * \return The properties
+ */
+xbt_dict_t simcall_asr_get_properties(const char *name)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_ASR_GET_PROPERTIES;
+  simcall->asr_get_properties.name = name;
+  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+    simcall->asr_get_properties.result = NULL;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->asr_get_properties.result;
+}
+
+
+/**
+ * \ingroup simix_host_management
  * \brief Returns the speed of the processor.
  *
  * The speed returned does not take into account the current load on the machine.

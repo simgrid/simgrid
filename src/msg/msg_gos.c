@@ -834,8 +834,7 @@ const char *MSG_as_router_get_property_value(const char* asr, const char *name)
  */
 xbt_dict_t MSG_as_router_get_properties(const char* asr)
 {
-  // FIXME do this function with a simcall
-  return xbt_lib_get_or_null(as_router_lib, asr, ROUTING_PROP_ASR_LEVEL);
+  return (simcall_asr_get_properties(asr));
 }
 
 /**

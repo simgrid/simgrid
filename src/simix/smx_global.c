@@ -477,3 +477,9 @@ static void SIMIX_action_mallocator_reset_f(void* action) {
   memset(action, 0, sizeof(s_smx_action_t));
   ((smx_action_t) action)->simcalls = fifo;
 }
+
+xbt_dict_t SIMIX_asr_get_properties(const char *name)
+{
+  return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
+}
+

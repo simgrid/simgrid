@@ -458,5 +458,10 @@ XBT_PUBLIC(int) simcall_file_close(smx_file_t fp);
 XBT_PUBLIC(int) simcall_file_stat(smx_file_t fd, s_file_stat_t *buf);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
 
+/************************** AS router   **********************************/
+XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
+/************************** AS router simcalls ***************************/
+XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
+
 SG_END_DECL()
 #endif                          /* _SIMIX_SIMIX_H */

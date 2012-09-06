@@ -94,7 +94,8 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_WRITE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_OPEN),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_CLOSE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_STAT), \
-SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_UNLINK)
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_UNLINK),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES)
 
 
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated
@@ -579,6 +580,11 @@ typedef struct s_smx_simcall {
       smx_file_t fd;
       int result;
     } file_unlink;
+
+    struct {
+      const char* name;
+      xbt_dict_t result;
+    } asr_get_properties;
 
   };
 } s_smx_simcall_t, *smx_simcall_t;
