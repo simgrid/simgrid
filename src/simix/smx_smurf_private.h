@@ -658,6 +658,7 @@ const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 /* Pack all possible scalar types in an union */
 typedef union u_smx_scalar {
   char            c;
+  const char*     cc;
   short           s;
   int             i;
   long            l;
@@ -667,7 +668,7 @@ typedef union u_smx_scalar {
   unsigned long   ul;
   float           f;
   double          d;
-  void            *p;
+  void*           p;
 } u_smx_scalar_t;
 
 /*
@@ -675,6 +676,7 @@ typedef union u_smx_scalar {
  * These are used to wrap the arguments in SIMIX_simcall macro.
  */
 #define CHAR(x) (c,x)
+#define STRING(x) (cc,x)
 #define SHORT(x) (s,x)
 #define INT(x) (i,x)
 #define LONG(x) (l,x)
