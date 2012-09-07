@@ -198,7 +198,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_simcall_answer(simcall);
       break;
 
-    case SIMCALL_RDV_GEY_BY_NAME:
+    case SIMCALL_RDV_GET_BY_NAME:
       simcall->rdv_get_by_name.result =
         SIMIX_rdv_get_by_name(simcall->rdv_get_by_name.name);
       SIMIX_simcall_answer(simcall);
@@ -623,7 +623,13 @@ void SIMIX_simcall_post(smx_action_t action)
 /* FIXME: add types for every simcall */
 const char *simcall_types[NUM_SIMCALLS] = { [SIMCALL_HOST_EXECUTE] = "%s%p%f%f%p" };
 
-simcall_handler_t simcall_table[NUM_SIMCALLS] = {[SIMCALL_HOST_EXECUTE] = &SIMIX_host_execute};
+simcall_handler_t simcall_table[NUM_SIMCALLS] = {
+#undef SIMCALL_ENUM_ELEMENT
+#define SIMCALL_ENUM_ELEMENT(x,y) &y /* generate strings from the enumeration values */
+SIMCALL_LIST
+#undef SIMCALL_ENUM_ELEMENT
+};
+
 
 void SIMIX_simcall_typecheck(const char *fmt, ...)
 {

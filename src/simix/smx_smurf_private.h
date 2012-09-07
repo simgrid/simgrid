@@ -9,8 +9,14 @@
 
 /********************************* Simcalls *********************************/
 
-/* we want to build the e_smx_simcall_t enumeration and the table of the
- * corresponding strings automatically, using macros */
+/* we want to build the e_smx_simcall_t enumeration, the table of the
+ * corresponding simcalls string names, and the simcall handlers table
+ * automatically, using macros.
+ * To add a new simcall follow the following syntax:
+ *
+ * SIMCALL_ENUM_ELEMENT(<simcall_enumeration_id>, <simcall_handler_function>)
+ *
+ * */
 
 #define SIMCALL_LIST1 \
 SIMCALL_ENUM_ELEMENT(SIMCALL_NONE),\
@@ -107,14 +113,14 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_NEW_API_INIT)
  * because they are not always present */
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 #define SIMCALL_LIST2 \
-,SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_IS_LATENCY_BOUNDED)
+,SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_IS_LATENCY_BOUNDED, SIMIX_comm_is_latency_bounded)
 #else
 #define SIMCALL_LIST2
 #endif
 
 #ifdef HAVE_TRACING
 #define SIMCALL_LIST3 \
-,SIMCALL_ENUM_ELEMENT(SIMCALL_SET_CATEGORY)
+,SIMCALL_ENUM_ELEMENT(SIMCALL_SET_CATEGORY, SIMIX_set_category)
 #else
 #define SIMCALL_LIST3
 #endif
@@ -132,7 +138,7 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_NEW_API_INIT)
 
 /* you can redefine the following macro differently to generate something else
  * with the list of enumeration values (e.g. a table of strings or a table of function pointers) */
-#define SIMCALL_ENUM_ELEMENT(x) x
+#define SIMCALL_ENUM_ELEMENT(x, y) x
 
 /**
  * \brief All possible simcalls.
