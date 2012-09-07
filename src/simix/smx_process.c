@@ -444,7 +444,8 @@ smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
       return NULL;
     }
   } else {
-    return SIMIX_host_execute("suspend", process->smx_host, 0.0, 1.0);
+    SIMIX_simcall(SIMCALL_HOST_EXECUTE, PTR("suspend"), PTR(process->smx_host), DOUBLE(0.0), DOUBLE(1.0));
+    return process->simcall.host_execute.result;
   }
 }
 

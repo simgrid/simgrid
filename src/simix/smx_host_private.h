@@ -37,8 +37,7 @@ xbt_dict_t SIMIX_host_get_properties(smx_host_t host);
 double SIMIX_host_get_speed(smx_host_t host);
 double SIMIX_host_get_available_speed(smx_host_t host);
 int SIMIX_host_get_state(smx_host_t host);
-smx_action_t SIMIX_host_execute(const char *name,
-    smx_host_t host, double computation_amount, double priority);
+smx_action_t SIMIX_host_execute(u_smx_scalar_t args[]);
 smx_action_t SIMIX_host_parallel_execute(const char *name,
     int host_nb, smx_host_t *host_list,
     double *computation_amount, double *communication_amount,

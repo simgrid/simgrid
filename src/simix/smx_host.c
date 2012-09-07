@@ -285,10 +285,13 @@ void SIMIX_host_set_data(smx_host_t host, void *data)
   host->data = data;
 }
 
-smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
-                                double computation_amount,
-                                double priority)
+smx_action_t SIMIX_host_execute(u_smx_scalar_t args[])
 {
+  const char *name = args[0].p;
+  smx_host_t host = args[1].p;
+  double computation_amount = args[2].d;
+  double priority = args[3].d;
+
   /* alloc structures and initialize */
   smx_action_t action = xbt_mallocator_get(simix_global->action_mallocator);
   action->type = SIMIX_ACTION_EXECUTE;

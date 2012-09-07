@@ -147,6 +147,8 @@ SIMCALL_LIST
 typedef struct s_smx_simcall {
   e_smx_simcall_t call;
   smx_process_t issuer;
+  union u_smx_scalar *args;
+  //FIXME: union u_smx_scalar retval;
 
   union {
 
@@ -648,7 +650,7 @@ const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 /*************************** New simcall interface ****************************/
 
 /* Pack all possible scalar types in an union */
-typedef union {
+typedef union u_smx_scalar {
   char            c;
   short           s;
   int             i;
@@ -678,6 +680,8 @@ typedef union {
 #define DOUBLE(x) (d,x)
 #define PTR(x)  (p,x)
 
+#define MYMACRO(...)
+
 /*
  * Some macro machinery to get a MAP over the arguments of a variadic macro.
  * It uses a FOLD to apply a macro to every argument, and because there is
@@ -704,7 +708,7 @@ typedef union {
 
 /* Generate code to initialize the field 'x' with value 'y' of an structure or union */
 #define INIT_FIELD_(x,y) {.x = y}
-#define INIT_FIELD(t) INIT_FIELD t
+#define INIT_FIELD(t) INIT_FIELD_ t
 
 /* Project the second element of a tuple */
 #define SECOND_(x, y) y
@@ -720,7 +724,7 @@ typedef union {
  */
 #define SIMIX_simcall(id, ...) \
   SIMIX_simcall_typecheck(simcall_types[id], MAP(SECOND, __VA_ARGS__)); \
-  __SIMIX_simcall(id, (mytype_t[]){MAP(INIT_FIELD, __VA_ARGS__)})
+  __SIMIX_simcall(id, (u_smx_scalar_t[]){MAP(INIT_FIELD, __VA_ARGS__)})
 
 void __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args);
 
@@ -730,6 +734,10 @@ void __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args);
  */
 void SIMIX_simcall_typecheck(const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
 
+typedef smx_action_t (*simcall_handler_t)(u_smx_scalar_t *);
+
+extern const char *simcall_types[];
+extern simcall_handler_t simcall_table[];
 
 #endif
 

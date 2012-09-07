@@ -272,11 +272,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       break;
 
     case SIMCALL_HOST_EXECUTE:
-      simcall->host_execute.result = SIMIX_host_execute(
-    simcall->host_execute.name,
-    simcall->host_execute.host,
-    simcall->host_execute.computation_amount,
-    simcall->host_execute.priority);
+      simcall->host_execute.result = simcall_table[simcall->call](simcall->args);
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -625,10 +621,28 @@ void SIMIX_simcall_post(smx_action_t action)
 /* New Simcal interface */
 
 /* FIXME: add types for every simcall */
-const char *simcall_types[NUM_SIMCALLS] = {"%d", "%d%f", "%l"};
+const char *simcall_types[NUM_SIMCALLS] = { [SIMCALL_HOST_EXECUTE] = "%s%p%f%f%p" };
+
+simcall_handler_t simcall_table[NUM_SIMCALLS] = {[SIMCALL_HOST_EXECUTE] = &SIMIX_host_execute};
 
 void SIMIX_simcall_typecheck(const char *fmt, ...)
 {
   return;
 }
 
+void __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args)
+{
+  smx_process_t self = SIMIX_process_self();
+  self->simcall.call = simcall_id;
+  self->simcall.args = args;
+
+  if (self != simix_global->maestro_process) {
+    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+              SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+
+    SIMIX_process_yield(self);
+  } else {
+
+    SIMIX_simcall_pre(&self->simcall, 0);
+  }
+}

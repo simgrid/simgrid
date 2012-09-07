@@ -204,6 +204,7 @@ void simcall_host_set_data(smx_host_t host, void *data)
  * \param priority computation priority
  * \return A new SIMIX execution action
  */
+
 smx_action_t simcall_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
                                     double priority)
@@ -219,9 +220,12 @@ smx_action_t simcall_host_execute(const char *name, smx_host_t host,
   simcall->host_execute.host = host;
   simcall->host_execute.computation_amount = computation_amount;
   simcall->host_execute.priority = priority;
+
   if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->host_execute.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
+
+  SIMIX_simcall(SIMCALL_HOST_EXECUTE, PTR(name), PTR(host), DOUBLE(computation_amount), DOUBLE(priority));
+
   return simcall->host_execute.result;
 }
 
