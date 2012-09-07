@@ -658,7 +658,13 @@ void __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args)
 /* FIXME: add types for every simcall */
 const char *simcall_types[NUM_SIMCALLS] = { [SIMCALL_HOST_EXECUTE] = "%s%p%f%f%p" };
 
-simcall_handler_t simcall_table[NUM_SIMCALLS] = {[SIMCALL_HOST_EXECUTE] = &SIMIX_host_execute};
+simcall_handler_t simcall_table[NUM_SIMCALLS] = {
+#undef SIMCALL_ENUM_ELEMENT
+#define SIMCALL_ENUM_ELEMENT(x,y) &y /* generate strings from the enumeration values */
+SIMCALL_LIST
+#undef SIMCALL_ENUM_ELEMENT
+};
+
 
 void SIMIX_simcall_typecheck(const char *fmt, ...)
 {
