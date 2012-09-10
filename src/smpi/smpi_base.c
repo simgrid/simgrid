@@ -144,7 +144,8 @@ void smpi_mpi_start(MPI_Request request)
       void *oldbuf = request->buf;
       detached = 1;
       request->buf = malloc(request->size);
-      memcpy(request->buf,oldbuf,request->size);
+      if (oldbuf)
+        memcpy(request->buf,oldbuf,request->size);
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     }else{
       XBT_DEBUG("Send request %p is not detached (buf: %p)",request,request->buf);
@@ -690,7 +691,8 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
     // FIXME: check for errors
     smpi_datatype_extent(datatype, &lb, &dataext);
     // Local copy from root
-    smpi_datatype_copy(sendbuf, count, datatype, recvbuf, count, datatype);
+    if (sendbuf && recvbuf)
+      smpi_datatype_copy(sendbuf, count, datatype, recvbuf, count, datatype);
     // Receive buffers from senders
     //TODO: make a MPI_barrier here ?
     requests = xbt_new(MPI_Request, size - 1);
@@ -715,7 +717,8 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
       if(index == MPI_UNDEFINED) {
         break;
       }
-      smpi_op_apply(op, tmpbufs[index], recvbuf, &count, &datatype);
+      if(op) /* op can be MPI_OP_NULL that does nothing */
+        smpi_op_apply(op, tmpbufs[index], recvbuf, &count, &datatype);
     }
     for(index = 0; index < size - 1; index++) {
       xbt_free(tmpbufs[index]);
