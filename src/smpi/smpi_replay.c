@@ -39,8 +39,6 @@ static void action_init(const char *const *action)
 
   smpi_process_set_user_data((void*) globals);
 
-  /* be sure that everyone has initiated the counters before proceeding */
-  smpi_mpi_barrier(MPI_COMM_WORLD);
   /* start a simulated timer */
   smpi_process_simulated_start();
 }
