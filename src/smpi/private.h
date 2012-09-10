@@ -44,7 +44,8 @@ void smpi_process_finalize(void);
 
 smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);
-void smpi_process_set_user_data(void *data);
+void smpi_process_set_user_data(void *);
+void* smpi_process_get_user_data(void);
 int smpi_process_count(void);
 smx_rdv_t smpi_process_mailbox(void);
 smx_rdv_t smpi_process_remote_mailbox(int index);
