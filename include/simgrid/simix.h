@@ -17,6 +17,9 @@
 
 SG_BEGIN_DECL()
 
+/**************************** Scalar Values **********************************/
+
+typedef union u_smx_scalar u_smx_scalar_t;
 
 /* ******************************** Host ************************************ */
 /** @brief Host datatype
@@ -251,15 +254,15 @@ XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
                                             double process_kill_time);
 
 /*********************************** Host *************************************/
-XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_dict(void);
-XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(const char *name);
+//XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_dict(u_smx_scalar_t *args);
+XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(u_smx_scalar_t *args);
 XBT_PUBLIC(smx_host_t) SIMIX_host_self(void);
 XBT_PUBLIC(const char*) SIMIX_host_self_get_name(void);
-XBT_PUBLIC(const char*) SIMIX_host_get_name(smx_host_t host); /* FIXME: make private: only the name of SIMIX_host_self() should be public without request */
+XBT_PUBLIC(const char*) SIMIX_host_get_name(u_smx_scalar_t *args); /* FIXME: make private: only the name of SIMIX_host_self() should be public without request */
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
-XBT_PUBLIC(void*) SIMIX_host_get_data(smx_host_t host);
-XBT_PUBLIC(void) SIMIX_host_set_data(smx_host_t host, void *data);
+XBT_PUBLIC(void*) SIMIX_host_get_data(u_smx_scalar_t *args);
+XBT_PUBLIC(void) SIMIX_host_set_data(u_smx_scalar_t *args);
 
 /********************************* Process ************************************/
 XBT_PUBLIC(int) SIMIX_process_count(void);

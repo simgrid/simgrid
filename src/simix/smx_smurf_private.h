@@ -656,7 +656,7 @@ const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 /*************************** New simcall interface ****************************/
 
 /* Pack all possible scalar types in an union */
-typedef union u_smx_scalar {
+union u_smx_scalar {
   char            c;
   const char*     cc;
   short           s;
@@ -669,7 +669,7 @@ typedef union u_smx_scalar {
   float           f;
   double          d;
   void*           p;
-} u_smx_scalar_t;
+};
 
 /*
  * Define scalar type wrappers to ease the use of simcalls.

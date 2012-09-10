@@ -33,21 +33,18 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
                                          int auto_restart);
 void SIMIX_host_restart_processes(smx_host_t host);
 void SIMIX_host_autorestart(smx_host_t host);
-xbt_dict_t SIMIX_host_get_properties(smx_host_t host);
-double SIMIX_host_get_speed(smx_host_t host);
-double SIMIX_host_get_available_speed(smx_host_t host);
-int SIMIX_host_get_state(smx_host_t host);
-smx_action_t SIMIX_host_execute(u_smx_scalar_t args[]);
-smx_action_t SIMIX_host_parallel_execute(const char *name,
-    int host_nb, smx_host_t *host_list,
-    double *computation_amount, double *communication_amount,
-    double amount, double rate);
-void SIMIX_host_execution_destroy(smx_action_t action);
-void SIMIX_host_execution_cancel(smx_action_t action);
-double SIMIX_host_execution_get_remains(smx_action_t action);
-e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action);
-void SIMIX_host_execution_set_priority(smx_action_t action, double priority);
-void SIMIX_pre_host_execution_wait(smx_simcall_t simcall);
+xbt_dict_t SIMIX_host_get_properties(u_smx_scalar_t *args);
+double SIMIX_host_get_speed(u_smx_scalar_t *args);
+double SIMIX_host_get_available_speed(u_smx_scalar_t *args);
+int SIMIX_host_get_state(u_smx_scalar_t *args);
+smx_action_t SIMIX_host_execute(u_smx_scalar_t *args);
+smx_action_t SIMIX_host_parallel_execute(u_smx_scalar_t *args);
+void SIMIX_host_execution_destroy(u_smx_scalar_t *args);
+void SIMIX_host_execution_cancel(u_smx_scalar_t *args);
+double SIMIX_host_execution_get_remains(u_smx_scalar_t *args);
+e_smx_state_t SIMIX_host_execution_get_state(u_smx_scalar_t *args);
+void SIMIX_host_execution_set_priority(u_smx_scalar_t *args);
+void SIMIX_pre_host_execution_wait(u_smx_scalar_t *args);
 
 void SIMIX_host_execution_suspend(smx_action_t action);
 void SIMIX_host_execution_resume(smx_action_t action);

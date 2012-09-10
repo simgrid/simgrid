@@ -76,27 +76,28 @@ void SIMIX_host_destroy(void *h)
   return;
 }
 
-/**
- * \brief Returns a dict of all hosts.
- *
- * \return List of all hosts (as a #xbt_dict_t)
- */
-xbt_dict_t SIMIX_host_get_dict(void)
-{
-  xbt_dict_t host_dict = xbt_dict_new_homogeneous(NULL);
-  xbt_lib_cursor_t cursor = NULL;
-  char *name = NULL;
-  void **host = NULL;
+///**
+// * \brief Returns a dict of all hosts.
+// *
+// * \return List of all hosts (as a #xbt_dict_t)
+// */
+//xbt_dict_t SIMIX_host_get_dict(void)
+//{
+//  xbt_dict_t host_dict = xbt_dict_new_homogeneous(NULL);
+//  xbt_lib_cursor_t cursor = NULL;
+//  char *name = NULL;
+//  void **host = NULL;
+//
+//  xbt_lib_foreach(host_lib, cursor, name, host){
+//    if(host[SIMIX_HOST_LEVEL])
+//            xbt_dict_set(host_dict,name,host[SIMIX_HOST_LEVEL], NULL);
+//  }
+//  return host_dict;
+//}
 
-  xbt_lib_foreach(host_lib, cursor, name, host){
-    if(host[SIMIX_HOST_LEVEL])
-            xbt_dict_set(host_dict,name,host[SIMIX_HOST_LEVEL], NULL);
-  }
-  return host_dict;
-}
-
-smx_host_t SIMIX_host_get_by_name(const char *name)
+smx_host_t SIMIX_host_get_by_name(u_smx_scalar_t *args)
 {
+  const char *name = args[0].cc;
   xbt_assert(((simix_global != NULL)
                && (host_lib != NULL)),
               "Environment not set yet");
@@ -121,38 +122,43 @@ const char* SIMIX_host_self_get_name(void)
   return SIMIX_host_get_name(host);
 }
 
-const char* SIMIX_host_get_name(smx_host_t host)
+const char* SIMIX_host_get_name(u_smx_scalar_t *args)
 {
+  smx_host_t host = args[0].p;
   xbt_assert((host != NULL), "Invalid parameters");
 
   return host->name;
 }
 
-xbt_dict_t SIMIX_host_get_properties(smx_host_t host)
+xbt_dict_t SIMIX_host_get_properties(u_smx_scalar_t *args)
 {
+  smx_host_t host = args[0].p;
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.get_properties(host->host);
 }
 
-double SIMIX_host_get_speed(smx_host_t host)
+double SIMIX_host_get_speed(u_smx_scalar_t *args)
 {
+  smx_host_t host = args[0].p;
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.
       get_speed(host->host, 1.0);
 }
 
-double SIMIX_host_get_available_speed(smx_host_t host)
+double SIMIX_host_get_available_speed(u_smx_scalar_t *args)
 {
+  smx_host_t host = args[0].p;
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.
       get_available_speed(host->host);
 }
 
-int SIMIX_host_get_state(smx_host_t host)
+int SIMIX_host_get_state(u_smx_scalar_t *args)
 {
+  smx_host_t host = args[0].p;
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.
@@ -169,8 +175,9 @@ void SIMIX_host_self_set_data(void *data)
   SIMIX_host_set_data(SIMIX_host_self(), data);
 }
 
-void* SIMIX_host_get_data(smx_host_t host)
+void* SIMIX_host_get_data(u_smx_scalar_t *args)
 {
+  smx_host_t host = args[0].p;
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return host->data;
@@ -277,8 +284,10 @@ void SIMIX_host_autorestart(smx_host_t host)
     xbt_die("No function for simix_global->autorestart");
 }
 
-void SIMIX_host_set_data(smx_host_t host, void *data)
+void SIMIX_host_set_data(u_smx_scalar_t *args)
 {
+  smx_host_t host = args[0].p;
+  void *data = args[1].p;
   xbt_assert((host != NULL), "Invalid parameters");
   xbt_assert((host->data == NULL), "Data already set");
 
@@ -317,11 +326,15 @@ smx_action_t SIMIX_host_execute(u_smx_scalar_t args[])
   return action;
 }
 
-smx_action_t SIMIX_host_parallel_execute( const char *name,
-    int host_nb, smx_host_t *host_list,
-    double *computation_amount, double *communication_amount,
-    double amount, double rate)
+smx_action_t SIMIX_host_parallel_execute(u_smx_scalar_t *args)
 {
+  const char *name = args[0].cc;
+  int host_nb = args[1].i;
+  smx_host_t *host_list = args[2].p;
+  double *computation_amount = args[3].p;
+  double *communication_amount = args[4].p;
+  double amount = args[5].d;
+  double rate = args[6].d;
   void **workstation_list = NULL;
   int i;
 
@@ -355,8 +368,9 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
   return action;
 }
 
-void SIMIX_host_execution_destroy(smx_action_t action)
+void SIMIX_host_execution_destroy(u_smx_scalar_t *args)
 {
+  smx_action_t action = args[0].p;
   XBT_DEBUG("Destroy action %p", action);
 
   if (action->execution.surf_exec) {
@@ -367,16 +381,18 @@ void SIMIX_host_execution_destroy(smx_action_t action)
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
-void SIMIX_host_execution_cancel(smx_action_t action)
+void SIMIX_host_execution_cancel(u_smx_scalar_t *args)
 {
+  smx_action_t action = args[0].p;
   XBT_DEBUG("Cancel action %p", action);
 
   if (action->execution.surf_exec)
     surf_workstation_model->action_cancel(action->execution.surf_exec);
 }
 
-double SIMIX_host_execution_get_remains(smx_action_t action)
+double SIMIX_host_execution_get_remains(u_smx_scalar_t *args)
 {
+  smx_action_t action = args[0].p;
   double result = 0.0;
 
   if (action->state == SIMIX_RUNNING)
@@ -385,19 +401,23 @@ double SIMIX_host_execution_get_remains(smx_action_t action)
   return result;
 }
 
-e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action)
+e_smx_state_t SIMIX_host_execution_get_state(u_smx_scalar_t *args)
 {
+  smx_action_t action = args[0].p;
   return action->state;
 }
 
-void SIMIX_host_execution_set_priority(smx_action_t action, double priority)
+void SIMIX_host_execution_set_priority(u_smx_scalar_t *args)
 {
+  smx_action_t action = args[0].p;
+  double priority = args[1].d;
   if(action->execution.surf_exec)
     surf_workstation_model->set_priority(action->execution.surf_exec, priority);
 }
 
-void SIMIX_pre_host_execution_wait(smx_simcall_t simcall)
+void SIMIX_pre_host_execution_wait(u_smx_scalar_t *args)
 {
+  smx_simcall_t simcall = args[0].p;
   smx_action_t action = simcall->host_execution_wait.execution;
 
   XBT_DEBUG("Wait for execution of action %p, state %d", action, (int)action->state);
