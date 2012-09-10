@@ -140,6 +140,10 @@ void smpi_process_set_user_data(void *data)
   process_data->data = data;
 }
 
+void* smpi_process_get_user_data(){
+  smpi_process_data_t process_data = smpi_process_data();
+  return process_data->data;
+}
 
 int smpi_process_count(void)
 {
