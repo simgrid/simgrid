@@ -688,8 +688,6 @@ union u_smx_scalar {
 #define DOUBLE(x) (d,x)
 #define PTR(x)  (p,x)
 
-#define MYMACRO(...)
-
 /*
  * Some macro machinery to get a MAP over the arguments of a variadic macro.
  * It uses a FOLD to apply a macro to every argument, and because there is
