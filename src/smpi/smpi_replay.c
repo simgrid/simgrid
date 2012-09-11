@@ -60,7 +60,8 @@ static void action_finalize(const char *const *action)
   sim_time = smpi_process_simulated_elapsed();
   if (!smpi_process_index())
     XBT_INFO("Simulation time %g", sim_time);
-
+  smpi_process_finalize();
+  smpi_process_destroy();
 }
 
 static void action_comm_size(const char *const *action)
@@ -88,10 +89,22 @@ static void action_send(const char *const *action)
   int to = atoi(action[2]);
   double size=parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
+#ifdef HAVE_TRACING
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  TRACE_smpi_computing_out(rank);
+  int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
+  TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__);
+  TRACE_smpi_send(rank, rank, dst_traced);
+#endif
 
   smpi_mpi_send(NULL, size, MPI_BYTE, to , 0, MPI_COMM_WORLD);
   XBT_VERB("%s %f", xbt_str_join_array(action, " "),
            smpi_process_simulated_elapsed()-clock);
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
+  TRACE_smpi_computing_in(rank);
+#endif
+
 }
 
 static void action_Isend(const char *const *action)
@@ -101,9 +114,21 @@ static void action_Isend(const char *const *action)
   double clock = smpi_process_simulated_elapsed();
   smpi_replay_globals_t globals =
      (smpi_replay_globals_t) smpi_process_get_user_data();
+#ifdef HAVE_TRACING
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  TRACE_smpi_computing_out(rank);
+  int dst_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), to);
+  TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__);
+  TRACE_smpi_send(rank, rank, dst_traced);
+#endif
 
   MPI_Request request = smpi_mpi_isend(NULL, size, MPI_BYTE, to, 0,
                                        MPI_COMM_WORLD);
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
+  request->send = 1;
+  TRACE_smpi_computing_in(rank);
+#endif
 
   xbt_dynar_push(globals->isends,&request);
 
@@ -117,8 +142,22 @@ static void action_recv(const char *const *action) {
   double size=parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
   MPI_Status status;
+#ifdef HAVE_TRACING
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
+  TRACE_smpi_computing_out(rank);
+
+  TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__);
+#endif
 
   smpi_mpi_recv(NULL, size, MPI_BYTE, from, 0, MPI_COMM_WORLD, &status);
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
+  TRACE_smpi_recv(rank, src_traced, rank);
+  TRACE_smpi_computing_in(rank);
+#endif
+
   XBT_VERB("%s %f", xbt_str_join_array(action, " "),
            smpi_process_simulated_elapsed()-clock);
 }
@@ -132,10 +171,17 @@ static void action_Irecv(const char *const *action)
   smpi_replay_globals_t globals =
      (smpi_replay_globals_t) smpi_process_get_user_data();
 
-  XBT_DEBUG("Asynchronous receive of %.0f from rank%d (%s)",size, from,
-            action[2]);
+#ifdef HAVE_TRACING
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  int src_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), from);
+  TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__);
+#endif
 
   request = smpi_mpi_irecv(NULL, size, MPI_BYTE, from, 0, MPI_COMM_WORLD);
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
+  request->recv = 1;
+#endif
   xbt_dynar_push(globals->irecvs,&request);
 
   //TODO do the asynchronous cleanup
@@ -154,16 +200,44 @@ static void action_wait(const char *const *action){
       "action wait not preceded by any irecv: %s",
       xbt_str_join_array(action," "));
   request = xbt_dynar_pop_as(globals->irecvs,MPI_Request);
+#ifdef HAVE_TRACING
+  int rank = request && request->comm != MPI_COMM_NULL
+      ? smpi_comm_rank(request->comm)
+      : -1;
+  TRACE_smpi_computing_out(rank);
+
+  MPI_Group group = smpi_comm_group(request->comm);
+  int src_traced = smpi_group_rank(group, request->src);
+  int dst_traced = smpi_group_rank(group, request->dst);
+  int is_wait_for_receive = request->recv;
+  TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__);
+#endif
   smpi_mpi_wait(&request, &status);
-  XBT_DEBUG("MPI_Wait Status is : (source=%d tag=%d error=%d count=%d)",
-            status.MPI_SOURCE, status.MPI_TAG, status.MPI_ERROR, status.count);
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, src_traced, dst_traced, __FUNCTION__);
+  if (is_wait_for_receive) {
+    TRACE_smpi_recv(rank, src_traced, dst_traced);
+  }
+  TRACE_smpi_computing_in(rank);
+#endif
+
   XBT_VERB("%s %f", xbt_str_join_array(action, " "),
            smpi_process_simulated_elapsed()-clock);
 }
 
 static void action_barrier(const char *const *action){
   double clock = smpi_process_simulated_elapsed();
+#ifdef HAVE_TRACING
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  TRACE_smpi_computing_out(rank);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+#endif
   smpi_mpi_barrier(MPI_COMM_WORLD);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_computing_in(rank);
+#endif
+
   XBT_VERB("%s %f", xbt_str_join_array(action, " "),
            smpi_process_simulated_elapsed()-clock);
 }
@@ -193,9 +267,18 @@ static void action_allReduce(const char *const *action) {
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
   double clock = smpi_process_simulated_elapsed();
+#ifdef HAVE_TRACING
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  TRACE_smpi_computing_out(rank);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+#endif
   smpi_mpi_reduce(NULL, NULL, comm_size, MPI_BYTE, MPI_OP_NULL, 0, MPI_COMM_WORLD);
   smpi_execute_flops(comp_size);
   smpi_mpi_bcast(NULL, comm_size, MPI_BYTE, 0, MPI_COMM_WORLD);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_computing_in(rank);
+#endif
   XBT_VERB("%s %f", xbt_str_join_array(action, " "),
            smpi_process_simulated_elapsed()-clock);
 }
