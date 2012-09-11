@@ -1618,6 +1618,24 @@ int simcall_file_unlink(smx_file_t fd)
   return simcall->file_unlink.result;
 }
 
+/**
+ * \ingroup simix_file_management
+ *
+ */
+xbt_dict_t simcall_file_ls(const char* mount, const char* path)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+  simcall->call = SIMCALL_FILE_LS;
+  simcall->file_ls.mount = mount;
+  simcall->file_ls.path = path;
+  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+    simcall->file_ls.result = NULL;
+
+  SIMIX_simcall_push(simcall->issuer);
+
+  return simcall->file_ls.result;
+}
+
 /* ************************************************************************** */
 
 /** @brief returns a printable string representing a simcall */

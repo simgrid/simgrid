@@ -80,6 +80,7 @@ XBT_PUBLIC(int) MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf);
 XBT_PUBLIC(void) MSG_file_free_stat(s_msg_stat_t *stat);
 
 XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
+XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
 
 /************************** AS Router handling ************************************/
 XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);

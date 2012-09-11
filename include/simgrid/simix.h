@@ -457,6 +457,7 @@ XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path, 
 XBT_PUBLIC(int) simcall_file_close(smx_file_t fp);
 XBT_PUBLIC(int) simcall_file_stat(smx_file_t fd, s_file_stat_t *buf);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
+XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
 
 /************************** AS router   **********************************/
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);

@@ -38,12 +38,55 @@ static xbt_dynar_t storage_list;
 static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
 static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type);
+static void free_storage_content(void *p);
 
 static surf_action_t storage_action_stat(void *storage, surf_file_t stream)
 {
   surf_action_t action = storage_action_execute(storage,0, STAT);
   action->file = stream;
   action->stat = stream->content->stat;
+  return action;
+}
+
+static surf_action_t storage_action_ls(void *storage, const char* path)
+{
+  surf_action_t action = storage_action_execute(storage,0, LS);
+  action->ls_dict = NULL;
+  xbt_dict_t ls_dict = xbt_dict_new();
+
+  char* key;
+  surf_stat_t data = NULL;
+  xbt_dict_cursor_t cursor = NULL;
+
+  xbt_dynar_t dyn = NULL;
+  char* file = NULL;
+
+  // foreach file int the storage
+  xbt_dict_foreach(((storage_t)storage)->content,cursor,key,data){
+    // Search if file start with the prefix 'path'
+    if(xbt_str_start_with(key,path)){
+      file = &key[strlen(path)];
+
+      // Split file with '/'
+      dyn = xbt_str_split(file,"/");
+      file = xbt_dynar_get_as(dyn,0,char*);
+
+      // file
+      if(xbt_dynar_length(dyn) == 1){
+        xbt_dict_set(ls_dict,file,&(data->stat),NULL);
+      }
+      // Directory
+      else
+      {
+        // if directory does not exist yet in dict
+        if(!xbt_dict_get_or_null(ls_dict,file));
+          xbt_dict_set(ls_dict,file,NULL,NULL);
+      }
+      xbt_dynar_free(&dyn);
+    }
+  }
+
+  action->ls_dict = ls_dict;
   return action;
 }
 
@@ -156,6 +199,7 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
   case CLOSE:
   case STAT:
   case UNLINK:
+  case LS:
     break;
   case READ:
     lmm_expand(storage_maxmin_system, STORAGE->constraint_read,
@@ -461,6 +505,7 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.write = storage_action_write;
   surf_storage_model->extension.storage.stat = storage_action_stat;
   surf_storage_model->extension.storage.unlink = storage_action_unlink;
+  surf_storage_model->extension.storage.ls = storage_action_ls;
   surf_storage_model->extension.storage.create_resource = storage_create_resource;
 
   if (!storage_maxmin_system) {

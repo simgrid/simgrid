@@ -536,6 +536,10 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_pre_file_unlink(simcall);
       break;
 
+    case SIMCALL_FILE_LS:
+      SIMIX_pre_file_ls(simcall);
+      break;
+
     case SIMCALL_ASR_GET_PROPERTIES:
       simcall->asr_get_properties.result =
         SIMIX_asr_get_properties(simcall->asr_get_properties.name);
