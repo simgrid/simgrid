@@ -294,7 +294,9 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *
   msg_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
-  /* FIXME: these functions are not traceable */
+#ifdef HAVE_TRACING
+  int call_end = TRACE_msg_task_put_start(task);
+#endif
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
@@ -317,6 +319,16 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *
     simcall_comm_isend(mailbox, t_simdata->message_size,
                          t_simdata->rate, task, sizeof(void *), match_fun, NULL, match_data, 0);
   t_simdata->comm = comm->s_comm; /* FIXME: is the field t_simdata->comm still useful? */
+#ifdef HAVE_TRACING
+    if (TRACE_is_enabled()) {
+      simcall_set_category(comm, task->category);
+    }
+#endif
+
+#ifdef HAVE_TRACING
+  if (call_end)
+    TRACE_msg_task_put_end();
+#endif
 
   return comm;
 }
