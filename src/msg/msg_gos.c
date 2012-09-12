@@ -344,8 +344,6 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
   msg_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
-  /* FIXME: these functions are not traceable */
-
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
@@ -358,10 +356,24 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
   t_simdata->comm = NULL;
   msg_global->sent_msg++;
 
+#ifdef HAVE_TRACING
+  int call_end = TRACE_msg_task_put_start(task);
+#endif
+
   /* Send it by calling SIMIX network layer */
   smx_action_t comm = simcall_comm_isend(mailbox, t_simdata->message_size,
                        t_simdata->rate, task, sizeof(void *), NULL, cleanup, NULL, 1);
   t_simdata->comm = comm;
+#ifdef HAVE_TRACING
+    if (TRACE_is_enabled()) {
+      simcall_set_category(comm, task->category);
+    }
+#endif
+
+#ifdef HAVE_TRACING
+  if (call_end)
+    TRACE_msg_task_put_end();
+#endif
 }
 
 /** \ingroup msg_task_usage
