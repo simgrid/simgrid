@@ -35,8 +35,6 @@ typedef struct s_mc_snapshot{
   mc_mem_region_t *regions;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
-extern char *prog_name;
-
 void MC_take_snapshot(mc_snapshot_t);
 void MC_take_snapshot_liveness(mc_snapshot_t s);
 void MC_restore_snapshot(mc_snapshot_t);
