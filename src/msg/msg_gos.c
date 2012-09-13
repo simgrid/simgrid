@@ -321,7 +321,7 @@ XBT_INLINE msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *
   t_simdata->comm = comm->s_comm; /* FIXME: is the field t_simdata->comm still useful? */
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
-      simcall_set_category(comm, task->category);
+      simcall_set_category(comm->s_comm, task->category);
     }
 #endif
 
