@@ -27,6 +27,8 @@ function usage () {
     echo "      [-np <numprocs>]          # use that amount of processes from the hostfile."
     echo "                                # By default, all processes of the hostfile are used."
     echo "      [-trace]                  # activate tracing"
+    echo "      [-trace-comment <comment>]# put a comment on the top of the trace file"
+    echo "      [-trace-comment-file <file>]   # put file contents on the top of the trace file as comment"
     echo "      [-trace-grouped]          # group MPI processes by location"
     echo "      [-trace-resource]         # trace resource utilization"
     echo "      [-trace-triva]            # generate configuration for Triva's GraphView"
@@ -83,6 +85,15 @@ while true; do
       TRACE_ACTIVE="true"
       shift 1
    ;;
+
+   "-trace-comment")
+      TRACE_COMMENT="$2"
+      shift 2
+   ;;
+
+   "-trace-comment-file")
+      TRACE_COMMENT_FILE="$2"
+      shift 2
    ;;
 
    "-trace-file")
@@ -285,6 +296,14 @@ if [ -n "${TRACE_ACTIVE}" ]; then
     TRACE_FILENAME="smpi_simgrid.trace"
   fi
   TRACEOPTIONS="--cfg=tracing:1 --cfg=tracing/filename:${TRACE_FILENAME} --cfg=tracing/smpi:1"
+
+  if [ -n "${TRACE_COMMENT}" ]; then
+    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment:${TRACE_COMMENT}"
+  fi
+
+  if [ -n "${TRACE_COMMENT_FILE}" ]; then
+    TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment_file:${TRACE_COMMENT_FILE}"
+  fi
 
   if [ -n "${TRACE_GROUPED}" ]; then
     TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/smpi/group:1"
