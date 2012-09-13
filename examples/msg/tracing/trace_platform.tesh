@@ -6,6 +6,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cf
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 
 $ cat simgrid.trace
+> #SimGrid generates this trace file.
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
@@ -217,6 +218,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cf
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 
 $ cat simgrid.trace
+> #SimGrid generates this trace file.
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string

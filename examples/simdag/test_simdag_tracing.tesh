@@ -18,6 +18,7 @@ $ $SG_TEST_EXENV ./simdag_tracing --cfg=tracing:1 --cfg=tracing/categorized:1 ${
 > [30.800300] [sd_seq_access/INFO] There is no task running on C2-06
 
 $ cat ./simgrid.trace
+> #SimGrid generates this trace file.
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
