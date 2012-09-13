@@ -137,6 +137,35 @@ FILE *tracing_file = NULL;
 
 static xbt_dynar_t buffer = NULL;
 
+static void dump_comment (const char *comment)
+{
+  if (!strlen(comment)) return;
+  fprintf (tracing_file, "# %s\n", comment);
+}
+
+static void dump_comment_file (const char *filename)
+{
+  if (!strlen(filename)) return;
+  FILE *file = fopen (filename, "r");
+  if (!file){
+    THROWF (system_error, 1, "Comment file %s could not be opened for reading.", filename);
+  }
+  while (!feof(file)){
+    char c;
+    c = fgetc(file);
+    if (feof(file)) break;
+    fprintf (tracing_file, "# ");
+    while (c != '\n'){
+      fprintf (tracing_file, "%c", c);
+      c = fgetc(file);
+      if (feof(file)) break;
+    }
+    fprintf (tracing_file, "\n");
+  }
+  fclose(file);
+}
+
+
 void TRACE_paje_start(void)
 {
   char *filename = TRACE_get_filename();
@@ -146,6 +175,15 @@ void TRACE_paje_start(void)
   }
 
   XBT_DEBUG("Filename %s is open for writing", filename);
+
+  /* output generator version */
+  fprintf (tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n", SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);
+
+  /* output one line comment */
+  dump_comment (TRACE_get_comment());
+
+  /* output comment file */
+  dump_comment_file (TRACE_get_comment_file());
 
   /* output header */
   TRACE_header(TRACE_basic());
