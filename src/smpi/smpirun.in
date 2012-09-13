@@ -80,8 +80,9 @@ while true; do
    ;;
 
    "-trace")
-   	TRACE_ACTIVE="true"
-   	  shift 1
+      TRACE_ACTIVE="true"
+      shift 1
+   ;;
    ;;
 
    "-trace-file")
