@@ -430,7 +430,7 @@ void TRACE_help (int detailed)
       "  are grouped by the hosts where they were executed.",
       detailed);
   print_line (OPT_TRACING_SMPI_COMPUTING, "Generates a \" Computing \" State",
-	  "  This option aims at tracing computations in the application, outside SMPI\n"
+      "  This option aims at tracing computations in the application, outside SMPI\n"
       "  to allow further study of simulated or real computation time",
       detailed);
   print_line (OPT_TRACING_MSG_PROCESS, "Trace processes behavior (MSG)",
