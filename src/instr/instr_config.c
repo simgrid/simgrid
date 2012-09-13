@@ -25,6 +25,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_ONELINK_ONLY  "tracing/onelink_only"
 #define OPT_TRACING_DISABLE_DESTROY "tracing/disable_destroy"
 #define OPT_TRACING_BASIC         "tracing/basic"
+#define OPT_TRACING_COMMENT       "tracing/comment"
+#define OPT_TRACING_COMMENT_FILE  "tracing/comment_file"
 #define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 #define OPT_VIVA_UNCAT_CONF      "viva/uncategorized"
@@ -207,6 +209,15 @@ int TRACE_basic (void)
   return trace_basic && TRACE_is_enabled();
 }
 
+char *TRACE_get_comment (void)
+{
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_COMMENT);
+}
+
+char *TRACE_get_comment_file (void)
+{
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_COMMENT_FILE);
+}
 
 char *TRACE_get_filename(void)
 {
@@ -326,6 +337,20 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_basic, 0, 1,
                    NULL, NULL);
 
+  /* comment */
+  char *default_tracing_comment = xbt_strdup ("");
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_COMMENT,
+                   "Comment to be added on the top of the trace file.",
+                   xbt_cfgelm_string, &default_tracing_comment, 1, 1,
+                   NULL, NULL);
+
+  /* comment_file */
+  char *default_tracing_comment_file = xbt_strdup ("");
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_COMMENT_FILE,
+                   "The contents of the file are added to the top of the trace file as comment.",
+                   xbt_cfgelm_string, &default_tracing_comment_file, 1, 1,
+                   NULL, NULL);
+
   /* Triva graph configuration for uncategorized tracing */
   char *default_triva_uncat_conf_file = xbt_strdup ("");
   xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_UNCAT_CONF,
@@ -437,6 +462,12 @@ void TRACE_help (int detailed)
       "  Use this option if you are using one of these tools to visualize the simulation\n"
       "  trace. Keep in mind that the trace might be incomplete, without all the\n"
       "  information that would be registered otherwise.",
+      detailed);
+  print_line (OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
+      "  Use this to add a comment line to the top of the trace file.",
+      detailed);
+  print_line (OPT_TRACING_COMMENT_FILE, "File contents added to trace file as comment.",
+      "  Use this to add the contents of a file to the top of the trace file as comment.",
       detailed);
   print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
       "  This option can be used in all types of simulators build with SimGrid\n"
@@ -615,6 +646,8 @@ void TRACE_generate_viva_cat_conf (void)
 #undef OPT_TRACING_ONELINK_ONLY
 #undef OPT_TRACING_DISABLE_DESTROY
 #undef OPT_TRACING_BASIC
+#undef OPT_TRACING_COMMENT
+#undef OPT_TRACING_COMMENT_FILE
 #undef OPT_TRIVA_UNCAT_CONF
 #undef OPT_TRIVA_CAT_CONF
 #undef OPT_VIVA_UNCAT_CONF
