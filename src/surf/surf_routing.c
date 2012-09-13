@@ -521,8 +521,8 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
   s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
-  XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src->name, dst->name);
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
+  XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src->name, dst->name);
 
   /* Find how src and dst are interconnected */
   AS_t common_father, src_father, dst_father;
