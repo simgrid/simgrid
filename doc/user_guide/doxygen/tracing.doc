@@ -216,6 +216,17 @@ can be used with simulators that have a different notion of time
 \endverbatim
 
 \li <b>\c
+tracing/basic
+</b>:
+Some visualization tools are not able to parse correctly the Paje file format.
+Use this option if you are using one of these tools to visualize the simulation
+trace. Keep in mind that the trace might be incomplete, without all the
+information that would be registered otherwise.
+\verbatim
+--cfg=tracing/basic:1
+\endverbatim
+
+\li <b>\c
 triva/categorized
 </b>:
   This option generates a graph configuration file for Triva considering
