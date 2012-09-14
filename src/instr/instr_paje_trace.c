@@ -177,7 +177,7 @@ void TRACE_paje_start(void)
   XBT_DEBUG("Filename %s is open for writing", filename);
 
   /* output generator version */
-  fprintf (tracing_file, "#SimGrid generates this trace file.\n");
+  fprintf (tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n", SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);
 
   /* output one line comment */
   dump_comment (TRACE_get_comment());
