@@ -93,16 +93,16 @@ typedef struct {
   xbt_dict_t properties;
 } s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 
-#define SG_PLATF_HOST_INITIALIZER {\
-    .id = NULL, \
-    .power_peak = 0, \
-    .core_amount = 1., \
-    .power_scale = 1, \
-    .initial_state = A_surfxml_host_state_ON, \
-    .power_trace = NULL, \
-    .state_trace = NULL, \
-    .coord = NULL, \
-    .properties = NULL \
+#define SG_PLATF_HOST_INITIALIZER { \
+    .id = NULL,\
+    .power_peak = 0,\
+    .core_amount = 1.,\
+    .power_scale = 1,\
+    .initial_state = SURF_RESOURCE_ON,\
+    .power_trace = NULL,\
+    .state_trace = NULL,\
+    .coord = NULL,\
+    .properties = NULL\
     }
 
 typedef struct {
@@ -138,9 +138,9 @@ typedef struct {
   .bandwidth_trace = NULL,\
   .latency = 0.,\
   .latency_trace = NULL,\
-  .state = A_surfxml_link_state_ON,\
+  .state = SURF_RESOURCE_ON,\
   .state_trace = NULL,\
-  .policy = A_surfxml_link_sharing_policy_SHARED,\
+  .policy = SURF_LINK_SHARED,\
   .properties = NULL\
 }
 
