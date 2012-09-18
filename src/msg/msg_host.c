@@ -131,12 +131,12 @@ void __MSG_host_destroy(msg_host_t host) {
   free(host);
 }
 
-#ifdef MSG_USE_DEPRECATED
 int MSG_get_host_number(void)
 {
   return xbt_lib_length(host_lib);
 }
 
+#ifdef MSG_USE_DEPRECATED
 msg_host_t *MSG_get_host_table(void)
 {
       void **array;

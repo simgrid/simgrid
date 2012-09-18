@@ -112,6 +112,7 @@ XBT_PUBLIC(void) MSG_load_platform_script(const char *script_file);
 
 XBT_PUBLIC(msg_host_t) MSG_get_host_by_name(const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
+XBT_PUBLIC(int) MSG_get_host_number(void);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,
@@ -283,7 +284,6 @@ typedef msg_error_t MSG_error_t;
 #define MSG_global_init_args(argc, argv) MSG_init(argc,argv)
 
 /* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
-XBT_PUBLIC(int) MSG_get_host_number(void);
 XBT_PUBLIC(msg_host_t *) MSG_get_host_table(void);
 
 #define MSG_TIMEOUT_FAILURE MSG_TIMEOUT
