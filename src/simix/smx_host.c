@@ -119,7 +119,7 @@ const char* SIMIX_host_self_get_name(void)
   if (host == NULL || SIMIX_process_self() == simix_global->maestro_process)
     return "";
 
-  return SIMIX_host_get_name(host);
+  return SIMIX_host_get_name(SIMIX_pack_args(PTR(host)));
 }
 
 const char* SIMIX_host_get_name(u_smx_scalar_t *args)
@@ -167,12 +167,14 @@ int SIMIX_host_get_state(u_smx_scalar_t *args)
 
 void* SIMIX_host_self_get_data(void)
 {
-  return SIMIX_host_get_data(SIMIX_host_self());
+  smx_host_t self = SIMIX_host_self();
+  return SIMIX_host_get_data(SIMIX_pack_args(PTR(self)));
 }
 
 void SIMIX_host_self_set_data(void *data)
 {
-  SIMIX_host_set_data(SIMIX_host_self(), data);
+  smx_host_t self = SIMIX_host_self();
+  SIMIX_host_set_data(SIMIX_pack_args(PTR(self), PTR(data)));
 }
 
 void* SIMIX_host_get_data(u_smx_scalar_t *args)
@@ -228,7 +230,7 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
-  if( SIMIX_host_get_state(host) == SURF_RESOURCE_OFF
+  if( SIMIX_host_get_state(SIMIX_pack_args(PTR(host))) == SURF_RESOURCE_OFF
       && !xbt_dict_get_or_null(watched_hosts_lib,host->name)){
     xbt_dict_set(watched_hosts_lib,host->name,host,NULL);
     XBT_DEBUG("Have push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",host->name);
@@ -417,8 +419,7 @@ void SIMIX_host_execution_set_priority(u_smx_scalar_t *args)
 
 void SIMIX_pre_host_execution_wait(u_smx_scalar_t *args)
 {
-  smx_simcall_t simcall = args[0].p;
-  smx_action_t action = simcall->host_execution_wait.execution;
+  smx_action_t action = args[0].p;
 
   XBT_DEBUG("Wait for execution of action %p, state %d", action, (int)action->state);
 
@@ -491,7 +492,7 @@ void SIMIX_execution_finish(smx_action_t action)
   }
 
   /* We no longer need it */
-  SIMIX_host_execution_destroy(action);
+  SIMIX_host_execution_destroy(SIMIX_pack_args(PTR(action)));
 }
 
 void SIMIX_post_host_execute(smx_action_t action)

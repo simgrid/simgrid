@@ -671,6 +671,9 @@ union u_smx_scalar {
   void*           p;
 };
 
+#define SIMIX_pack_args(...) (u_smx_scalar_t[]){MAP(INIT_FIELD, __VA_ARGS__)}
+
+
 /*
  * Define scalar type wrappers to ease the use of simcalls.
  * These are used to wrap the arguments in SIMIX_simcall macro.
