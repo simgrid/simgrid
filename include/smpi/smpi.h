@@ -162,7 +162,7 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Query_thread, (int *provided));
 MPI_CALL(XBT_PUBLIC(int), MPI_Is_thread_main, (int *flag));
 MPI_CALL(XBT_PUBLIC(int), MPI_Abort, (MPI_Comm comm, int errorcode));
 MPI_CALL(XBT_PUBLIC(double), MPI_Wtime, (void));
-
+MPI_CALL(XBT_PUBLIC(double), MPI_Wtick,(void));
 MPI_CALL(XBT_PUBLIC(int), MPI_Address, (void *location, MPI_Aint * address));
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Type_free, (MPI_Datatype * datatype));

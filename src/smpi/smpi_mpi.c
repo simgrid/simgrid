@@ -46,6 +46,11 @@ double MPI_Wtime(void)
   return PMPI_Wtime();
 }
 
+double MPI_Wtick(void)
+{
+  return PMPI_Wtick();
+}
+
 int MPI_Address(void *location, MPI_Aint * address)
 {
   return PMPI_Address(location, address);

@@ -110,6 +110,11 @@ double PMPI_Wtime(void)
   smpi_bench_begin();
   return time;
 }
+extern double sg_maxmin_precision;
+double PMPI_Wtick(void)
+{
+  return sg_maxmin_precision;
+}
 
 int PMPI_Address(void *location, MPI_Aint * address)
 {
