@@ -71,8 +71,10 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
 static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 {
   //ignore loopback
-  if (strcmp (src->name, "__loopback__") == 0 || strcmp (dst->name, "__loopback__") == 0)
+  if (strcmp (src->name, "__loopback__") == 0 || strcmp (dst->name, "__loopback__") == 0){
+    XBT_DEBUG ("  linkContainers: ignoring loopback link");
     return;
+  }
 
   //find common father
   container_t father = lowestCommonAncestor (src, dst);
@@ -85,8 +87,14 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
     char aux1[INSTR_DEFAULT_STR_SIZE], aux2[INSTR_DEFAULT_STR_SIZE];
     snprintf (aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", src->name, dst->name);
     snprintf (aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", dst->name, src->name);
-    if (xbt_dict_get_or_null (filter, aux1)) return;
-    if (xbt_dict_get_or_null (filter, aux2)) return;
+    if (xbt_dict_get_or_null (filter, aux1)){
+      XBT_DEBUG ("  linkContainers: already registered %s <-> %s (1)", src->name, dst->name);
+      return;
+    }
+    if (xbt_dict_get_or_null (filter, aux2)){
+      XBT_DEBUG ("  linkContainers: already registered %s <-> %s (2)", dst->name, src->name);
+      return;
+    }
 
     //ok, not found, register it
     xbt_dict_set (filter, aux1, xbt_strdup ("1"), NULL);
@@ -113,10 +121,25 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
   new_pajeStartLink(SIMIX_get_clock(), father, link_type, src, "G", key);
   new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "G", key);
+
+  XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
+}
+
+static int graph_extraction_filter_out (container_t c1, container_t c2)
+{
+  if (c1->kind == INSTR_LINK ||
+      c1->kind == INSTR_SMPI ||
+      c1->kind == INSTR_MSG_PROCESS ||
+      c1->kind == INSTR_MSG_TASK ||
+      (c2 && strcmp (c1->name, c2->name) == 0))
+    return 1;
+  else
+    return 0;
 }
 
 static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
 {
+  XBT_DEBUG ("Graph extraction for routing_component = %s", rc->name);
   if (!xbt_dict_is_empty(rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
     AS_t rc_son;
@@ -133,15 +156,10 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
   container_t child1, child2;
   const char *child1_name, *child2_name;
   xbt_dict_foreach(container->children, cursor1, child1_name, child1) {
-    //if child1 is not a link, a smpi node, a msg process or a msg task
-    if (child1->kind == INSTR_LINK || child1->kind == INSTR_SMPI || child1->kind == INSTR_MSG_PROCESS || child1->kind == INSTR_MSG_TASK) continue;
-
+    if (graph_extraction_filter_out (child1, NULL)) continue;
     xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
-      //if child2 is not a link, a smpi node, a msg process or a msg task
-      if (child2->kind == INSTR_LINK || child2->kind == INSTR_SMPI || child2->kind == INSTR_MSG_PROCESS || child2->kind == INSTR_MSG_TASK) continue;
-
-      //if child1 is not child2
-      if (strcmp (child1_name, child2_name) == 0) continue;
+      if (graph_extraction_filter_out (child2, child1)) continue;
+      XBT_DEBUG ("get_route from %s to %s", child1_name, child2_name);
 
       //get the route
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
@@ -167,6 +185,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
       }
 
       xbt_dynar_foreach (route->link_list, cpt, link) {
+        //FIXME (TODO): Should have a cleaner way to get the link name
         char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
         current = PJ_container_get(link_name);
         linkContainers(previous, current, filter);
@@ -331,7 +350,9 @@ static void instr_routing_parse_end_platform ()
   xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free);
+  XBT_DEBUG ("Starting graph extraction.");
   recursiveGraphExtraction (routing_platf->root, PJ_container_get_root(), filter);
+  XBT_DEBUG ("Graph extraction finished.");
   xbt_dict_free(&filter);
   platform_created = 1;
   TRACE_paje_dump_buffer(1);
