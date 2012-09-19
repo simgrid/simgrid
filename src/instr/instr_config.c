@@ -634,6 +634,18 @@ void TRACE_generate_viva_cat_conf (void)
   generate_cat_configuration (TRACE_get_viva_cat_conf(), "viva", 0);
 }
 
+void instr_pause_tracing (void)
+{
+  trace_enabled = 0;
+  XBT_DEBUG ("Tracing is paused.");
+}
+
+void instr_resume_tracing (void)
+{
+  trace_enabled = 1;
+  XBT_DEBUG ("Tracing is resumed.");
+}
+
 #undef OPT_TRACING
 #undef OPT_TRACING_PLATFORM
 #undef OPT_TRACING_SMPI

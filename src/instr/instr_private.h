@@ -209,6 +209,8 @@ void TRACE_generate_triva_uncat_conf (void);
 void TRACE_generate_triva_cat_conf (void);
 void TRACE_generate_viva_uncat_conf (void);
 void TRACE_generate_viva_cat_conf (void);
+void instr_pause_tracing (void);
+void instr_resume_tracing (void);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *resource,
