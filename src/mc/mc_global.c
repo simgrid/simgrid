@@ -921,7 +921,8 @@ void MC_get_binary_local_variables(){
 
   }
 
-  print_local_variables(mc_binary_local_variables);
+  if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug))
+    print_local_variables(mc_binary_local_variables);
 
   free(line); free(tmp_line); free(tmp_location); free(frame_name);
   free(node_type); free(location_type); free(variable_name); free(lowpc); free(highpc);
