@@ -972,6 +972,8 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
+  //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
+  if(status!=MPI_STATUS_IGNORE)src_traced = smpi_group_rank(smpi_comm_group(comm), status->MPI_SOURCE);
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   TRACE_smpi_recv(rank, src_traced, rank);
   TRACE_smpi_computing_in(rank);
