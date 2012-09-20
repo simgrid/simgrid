@@ -123,6 +123,17 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_simcall_answer(simcall);
       break;
 
+    case SIMCALL_COMM_IPROBE:
+      simcall->comm_iprobe.result = SIMIX_comm_iprobe(
+          simcall->issuer,
+          simcall->comm_iprobe.rdv,
+          simcall->comm_iprobe.src,
+          simcall->comm_iprobe.tag,
+          simcall->comm_iprobe.match_fun,
+          simcall->comm_iprobe.data);
+      SIMIX_simcall_answer(simcall);
+      break;
+
     case SIMCALL_COMM_DESTROY:
       SIMIX_comm_destroy(simcall->comm_destroy.comm);
       SIMIX_simcall_answer(simcall);

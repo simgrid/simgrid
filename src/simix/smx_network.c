@@ -184,6 +184,40 @@ smx_action_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
 }
 
 
+/**
+ *  \brief Checks if there is a communication action queued in a fifo matching our needs, but leave it there
+ *  \param type The type of communication we are looking for (comm_send, comm_recv)
+ *  \return The communication action if found, NULL otherwise
+ */
+smx_action_t SIMIX_fifo_probe_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
+                                 int (*match_fun)(void *, void *,smx_action_t),
+                                 void *this_user_data, smx_action_t my_action)
+{
+  smx_action_t action;
+  xbt_fifo_item_t item;
+  void* other_user_data = NULL;
+
+  xbt_fifo_foreach(fifo, item, action, smx_action_t) {
+    if (action->comm.type == SIMIX_COMM_SEND) {
+      other_user_data = action->comm.src_data;
+    } else if (action->comm.type == SIMIX_COMM_RECEIVE) {
+      other_user_data = action->comm.dst_data;
+    }
+    if (action->comm.type == type &&
+        (!match_fun              ||              match_fun(this_user_data,  other_user_data, action)) &&
+        (!action->comm.match_fun || action->comm.match_fun(other_user_data, this_user_data,  my_action))) {
+      XBT_DEBUG("Found a matching communication action %p", action);
+      action->comm.refcount++;
+
+      return action;
+    }
+    XBT_DEBUG("Sorry, communication action %p does not match our needs:"
+              " its type is %d but we are looking for a comm of type %d (or maybe the filtering didn't match)",
+              action, (int)action->comm.type, (int)type);
+  }
+  XBT_DEBUG("No matching communication action found");
+  return NULL;
+}
 /******************************************************************************/
 /*                            Communication Actions                            */
 /******************************************************************************/
@@ -386,14 +420,14 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
         other_action->state = SIMIX_DONE;
         other_action->comm.type = SIMIX_COMM_DONE;
         other_action->comm.rdv = NULL;
-        SIMIX_comm_destroy(this_action);
-        --smx_total_comms; // this creation was a pure waste
+        //SIMIX_comm_destroy(this_action);
+        //--smx_total_comms; // this creation was a pure waste
         //already_received=1;
-        other_action->comm.refcount--;
+        //other_action->comm.refcount--;
       }/*else{
          XBT_DEBUG("Not yet finished, we have to wait %d\n", xbt_fifo_size(rdv->comm_fifo));
          }*/
-      other_action->comm.refcount--;
+     // other_action->comm.refcount--;
       SIMIX_comm_destroy(this_action);
       --smx_total_comms; // this creation was a pure waste
     }
@@ -415,6 +449,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
       --smx_total_comms; // this creation was a pure waste
       other_action->state = SIMIX_READY;
       other_action->comm.type = SIMIX_COMM_READY;
+   //   other_action->comm.refcount--;
     }
     xbt_fifo_push(dst_proc->comms, other_action);
   }
@@ -439,6 +474,27 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
 
   SIMIX_comm_start(other_action);
   // }
+  return other_action;
+}
+
+
+smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
+                              int tag, int (*match_fun)(void *, void *, smx_action_t), void *data)
+{
+  XBT_DEBUG("iprobe from %p %p\n", rdv, rdv->comm_fifo);
+  smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
+
+  smx_action_t other_action;
+  if(rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0){
+    //find a match in the already received fifo
+    other_action = SIMIX_fifo_probe_comm(rdv->done_comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
+  }else{
+    other_action = SIMIX_fifo_probe_comm(rdv->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
+  }
+  if(other_action)other_action->comm.refcount--;
+
+  SIMIX_comm_destroy(this_action);
+  --smx_total_comms;
   return other_action;
 }
 

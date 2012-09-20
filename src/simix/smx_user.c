@@ -1021,6 +1021,30 @@ smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_irecv.result;
 }
+
+
+/**
+ * \ingroup simix_comm_management
+ */
+smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
+                                int (*match_fun)(void *, void *, smx_action_t), void *data)
+{
+  xbt_assert(rdv, "No rendez-vous point defined for iprobe");
+
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+
+  simcall->call = SIMCALL_COMM_IPROBE;
+  simcall->comm_iprobe.rdv = rdv;
+  simcall->comm_iprobe.src = src;
+  simcall->comm_iprobe.match_fun = match_fun;
+  simcall->comm_iprobe.data = data;
+  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+    simcall->comm_iprobe.result = NULL;
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->comm_iprobe.result;
+}
+
+
 void simcall_comm_destroy(smx_action_t comm)
 {
   xbt_assert(comm, "Invalid parameter");

@@ -1096,6 +1096,43 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag,
   return retval;
 }
 
+
+
+int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
+  int retval;
+  smpi_bench_end();
+
+  if (status == NULL) {
+     retval = MPI_ERR_ARG;
+  }else if (comm == MPI_COMM_NULL) {
+	retval = MPI_ERR_COMM;
+  } else {
+	smpi_mpi_probe(source, tag, comm, status);
+	retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status) {
+  int retval;
+  smpi_bench_end();
+
+  if (flag == NULL) {
+       retval = MPI_ERR_ARG;
+    }else if (status == NULL) {
+     retval = MPI_ERR_ARG;
+  }else if (comm == MPI_COMM_NULL) {
+	retval = MPI_ERR_COMM;
+  } else {
+	smpi_mpi_iprobe(source, tag, comm, flag, status);
+	retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
 int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 {
   int retval;
@@ -1942,9 +1979,7 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, 
    return not_yet_implemented();
 }
 
-int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
-   return not_yet_implemented();
-}
+
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
    return not_yet_implemented();
@@ -1995,10 +2030,6 @@ int PMPI_Get_elements(MPI_Status* status, MPI_Datatype datatype, int* elements) 
 }
 
 int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
-   return not_yet_implemented();
-}
-
-int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status) {
    return not_yet_implemented();
 }
 

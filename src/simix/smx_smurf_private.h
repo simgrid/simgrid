@@ -65,6 +65,7 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_WAITANY),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_WAIT),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_TEST),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_TESTANY),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_IPROBE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_GET_REMAINS),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_GET_STATE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_GET_SRC_DATA),\
@@ -390,6 +391,15 @@ typedef struct s_smx_simcall {
       void *data;
       smx_action_t result;
     } comm_irecv;
+
+    struct {
+      smx_rdv_t rdv;
+      int src;
+      int tag;
+      int (*match_fun)(void *, void *, smx_action_t);
+      void *data;
+      smx_action_t result;
+    } comm_iprobe;
 
     struct {
       smx_action_t comm;
