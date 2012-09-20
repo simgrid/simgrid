@@ -19,6 +19,9 @@ static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_action_t comm);
 static smx_action_t SIMIX_comm_new(e_smx_comm_type_t type);
 static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_action_t comm);
+static smx_action_t SIMIX_fifo_probe_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
+                                        int (*match_fun)(void *, void *,smx_action_t),
+                                        void *user_data, smx_action_t my_action);
 static smx_action_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
                                         int (*match_fun)(void *, void *,smx_action_t),
                                         void *user_data, smx_action_t my_action);
