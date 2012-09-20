@@ -289,6 +289,8 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
     mdp -> heapstats.chunks_used++;
     mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
     mdp -> heapstats.bytes_free -= blocks * BLOCKSIZE;
+
+    memset(result, 0, requested_size);
   }
   //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
   return (result);
