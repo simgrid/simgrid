@@ -190,9 +190,30 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
   return distance;
 }
 
+static int heap_region_compare(void *d1, void *d2, size_t size);
+
+static int heap_region_compare(void *d1, void *d2, size_t size){
+  
+  int distance = 0;
+  size_t i = 0;
+  
+  for(i=0; i<size; i++){
+    if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
+      //XBT_DEBUG("Different byte (offset=%zu) (%p - %p) in heap region", i, (char *)d1 + i, (char *)d2 + i);
+      distance++;
+    }
+  }
+  
+  XBT_DEBUG("Hamming distance between heap regions : %d (total size : %zu)", distance, size);
+
+  return distance;
+}
+
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   int errors = 0, i;
+  //int dist = 0;
+
   
   if(s1->num_reg != s2->num_reg){
     XBT_DEBUG("Different num_reg (s1 = %u, s2 = %u)", s1->num_reg, s2->num_reg);
@@ -221,6 +242,14 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         XBT_DEBUG("Different heap (mmalloc_compare)");
         errors++; 
       }
+      /*if(heap_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+        XBT_DEBUG("Different memcmp for heap");
+        errors++;
+        }*/
+      /*if((dist = mmalloc_linear_compare_heap((xbt_mheap_t)s1->regions[i]->data, (xbt_mheap_t)s2->regions[i]->data)) > 0){
+        XBT_DEBUG("Different heap (mmalloc_linear_compare) : %d", dist);
+        errors++; 
+        }*/
       break;
     case 1 :
       /* Compare data libsimgrid region */

@@ -57,6 +57,7 @@ void mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
 int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
+int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 
 void mmalloc_backtrace_block_display(void* heapinfo, int block);
 void mmalloc_backtrace_fragment_display(void* heapinfo, int block, int frag);

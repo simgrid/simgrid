@@ -714,3 +714,131 @@ static void match_equals(xbt_dynar_t list){
 
 }
 
+#ifndef max
+	#define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
+#endif
+
+int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
+
+  if(heap1 == NULL && heap1 == NULL){
+    XBT_DEBUG("Malloc descriptors null");
+    return 0;
+  }
+
+  if(heap1->heaplimit != heap2->heaplimit){
+    XBT_DEBUG("Different limit of valid info table indices");
+    return 1;
+  }
+
+  /* Heap information */
+  heaplimit = ((struct mdesc *)heap1)->heaplimit;
+
+  s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - getpagesize();
+
+  heapbase1 = (char *)heap1 + BLOCKSIZE;
+  heapbase2 = (char *)heap2 + BLOCKSIZE;
+
+  heapinfo1 = (malloc_info *)((char *)heap1 + ((uintptr_t)((char *)heap1->heapinfo - (char *)s_heap)));
+  heapinfo2 = (malloc_info *)((char *)heap2 + ((uintptr_t)((char *)heap2->heapinfo - (char *)s_heap)));
+
+  heapsize1 = heap1->heapsize;
+  heapsize2 = heap2->heapsize;
+
+  /* Start comparison */
+  size_t i, j, k;
+  void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
+
+  int distance = 0;
+
+  /* Check busy blocks*/
+
+  i = 1;
+
+  while(i <= heaplimit){
+
+    addr_block1 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)heapbase1));
+    addr_block2 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)heapbase2));
+
+    if(heapinfo1[i].type != heapinfo2[i].type){
+  
+      distance += BLOCKSIZE;
+      XBT_DEBUG("Different type of blocks (%zu) : %d - %d -> distance = %d", i, heapinfo1[i].type, heapinfo2[i].type, distance);
+      i++;
+    
+    }else{
+
+      if(heapinfo1[i].type == -1){ /* Free block */
+        i++;
+        continue;
+      }
+
+      if(heapinfo1[i].type == 0){ /* Large block */
+       
+        if(heapinfo1[i].busy_block.size != heapinfo2[i].busy_block.size){
+          distance += BLOCKSIZE * max(heapinfo1[i].busy_block.size, heapinfo2[i].busy_block.size);
+          i += max(heapinfo1[i].busy_block.size, heapinfo2[i].busy_block.size);
+          XBT_DEBUG("Different larger of cluster at block %zu : %zu - %zu -> distance = %d", i, heapinfo1[i].busy_block.size, heapinfo2[i].busy_block.size, distance);
+          continue;
+        }
+
+        /*if(heapinfo1[i].busy_block.busy_size != heapinfo2[i].busy_block.busy_size){
+          distance += max(heapinfo1[i].busy_block.busy_size, heapinfo2[i].busy_block.busy_size);
+          i += max(heapinfo1[i].busy_block.size, heapinfo2[i].busy_block.size);
+          XBT_DEBUG("Different size used oin large cluster at block %zu : %zu - %zu -> distance = %d", i, heapinfo1[i].busy_block.busy_size, heapinfo2[i].busy_block.busy_size, distance);
+          continue;
+          }*/
+
+        k = 0;
+
+        //while(k < (heapinfo1[i].busy_block.busy_size)){
+        while(k < heapinfo1[i].busy_block.size * BLOCKSIZE){
+          if(memcmp((char *)addr_block1 + k, (char *)addr_block2 + k, 1) != 0){
+            distance ++;
+          }
+          k++;
+        } 
+
+        i++;
+
+      }else { /* Fragmented block */
+
+        for(j=0; j < (size_t) (BLOCKSIZE >> heapinfo1[i].type); j++){
+
+          addr_frag1 = (void*) ((char *)addr_block1 + (j << heapinfo1[i].type));
+          addr_frag2 = (void*) ((char *)addr_block2 + (j << heapinfo2[i].type));
+
+          if(heapinfo1[i].busy_frag.frag_size[j] == 0 && heapinfo2[i].busy_frag.frag_size[j] == 0){
+            continue;
+          }
+          
+          
+          /*if(heapinfo1[i].busy_frag.frag_size[j] != heapinfo2[i].busy_frag.frag_size[j]){
+            distance += max(heapinfo1[i].busy_frag.frag_size[j], heapinfo2[i].busy_frag.frag_size[j]);
+            XBT_DEBUG("Different size used in fragment %zu in block %zu : %d - %d -> distance = %d", j, i, heapinfo1[i].busy_frag.frag_size[j], heapinfo2[i].busy_frag.frag_size[j], distance); 
+            continue;
+            }*/
+   
+          k=0;
+
+          //while(k < max(heapinfo1[i].busy_frag.frag_size[j], heapinfo2[i].busy_frag.frag_size[j])){
+          while(k < (BLOCKSIZE / (BLOCKSIZE >> heapinfo1[i].type))){
+            if(memcmp((char *)addr_frag1 + k, (char *)addr_frag2 + k, 1) != 0){
+              distance ++;
+            }
+            k++;
+          }
+
+        }
+
+        i++;
+
+      }
+      
+    }
+
+  }
+
+  return distance;
+  
+}
+
