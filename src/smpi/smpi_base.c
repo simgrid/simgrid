@@ -342,6 +342,43 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
   return flag;
 }
 
+
+int smpi_mpi_testall(int count, MPI_Request requests[],
+                     MPI_Status status[])
+{
+  xbt_dynar_t comms;
+  int i, flag, size;
+  int* map;
+
+  flag = 0;
+  if(count > 0) {
+    comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
+    map = xbt_new(int, count);
+    size = 0;
+    for(i = 0; i < count; i++) {
+      if(requests[i]->action) {
+         xbt_dynar_push(comms, &requests[i]->action);
+         map[size] = i;
+         size++;
+      }
+    }
+
+    int n_finished=0;
+    while(n_finished<size) {
+      i = simcall_comm_testany(comms);
+      if(i != MPI_UNDEFINED) {
+        smpi_mpi_wait(&requests[i], &status[i]);
+      }
+      n_finished++;
+      XBT_DEBUG("TestAll, n finished %d on %d to test", n_finished, size);
+    }
+    flag = 1;
+    xbt_free(map);
+    xbt_dynar_free(&comms);
+  }
+  return flag;
+}
+
 void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
   int flag=0;
   //FIXME find another wait to avoid busy waiting ?

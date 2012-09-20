@@ -118,6 +118,8 @@ void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int smpi_mpi_test(MPI_Request * request, MPI_Status * status);
 int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
                      MPI_Status * status);
+int smpi_mpi_testall(int count, MPI_Request requests[],
+                     MPI_Status status[]);
 void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status);
 MPI_Request smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag,
                     MPI_Status* status);

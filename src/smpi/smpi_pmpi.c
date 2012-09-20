@@ -1098,7 +1098,20 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag,
   return retval;
 }
 
+int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* statuses)
+{
+  int retval;
 
+  smpi_bench_end();
+  if (flag == NULL) {
+    retval = MPI_ERR_ARG;
+  } else {
+    *flag = smpi_mpi_testall(count, requests, statuses);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
 
 int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
   int retval;
@@ -2020,10 +2033,6 @@ int PMPI_Test_cancelled(MPI_Status* status, int* flag) {
 }
 
 int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
-   return not_yet_implemented();
-}
-
-int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* statuses) {
    return not_yet_implemented();
 }
 
