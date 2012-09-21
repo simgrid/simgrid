@@ -991,12 +991,7 @@ xbt_dynar_t TRACE_get_edge_types (void)
  */
 void TRACE_pause (void)
 {
-  if (!TRACE_is_enabled()){
-    XBT_DEBUG ("Tracing is already paused, therefore do nothing.");
-  }else{
-    XBT_DEBUG ("Tracing is being paused.");
-    instr_pause_tracing();
-  }
+  instr_pause_tracing();
 }
 
 /** \ingroup TRACE_API
@@ -1005,12 +1000,7 @@ void TRACE_pause (void)
  */
 void TRACE_resume (void)
 {
-  if (TRACE_is_enabled()){
-    XBT_DEBUG ("Tracing is already running while trying to resume, therefore do nothing.");
-  }else{
-    XBT_DEBUG ("Tracing is being resumed.");
-    instr_resume_tracing();
-  }
+  instr_resume_tracing();
 }
 
 #endif /* HAVE_TRACING */

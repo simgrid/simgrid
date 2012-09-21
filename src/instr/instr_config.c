@@ -634,16 +634,35 @@ void TRACE_generate_viva_cat_conf (void)
   generate_cat_configuration (TRACE_get_viva_cat_conf(), "viva", 0);
 }
 
+static int previous_trace_state = -1;
+
 void instr_pause_tracing (void)
 {
+  previous_trace_state = trace_enabled;
+  if (!TRACE_is_enabled()){
+    XBT_DEBUG ("Tracing is already paused, therefore do nothing.");
+  }else{
+    XBT_DEBUG ("Tracing is being paused.");
+  }
   trace_enabled = 0;
   XBT_DEBUG ("Tracing is paused.");
 }
 
 void instr_resume_tracing (void)
 {
-  trace_enabled = 1;
+  if (TRACE_is_enabled()){
+    XBT_DEBUG ("Tracing is already running while trying to resume, therefore do nothing.");
+  }else{
+    XBT_DEBUG ("Tracing is being resumed.");
+  }
+
+  if (previous_trace_state != -1){
+    trace_enabled = previous_trace_state;
+  }else{
+    trace_enabled = 1;
+  }
   XBT_DEBUG ("Tracing is resumed.");
+  previous_trace_state = -1;
 }
 
 #undef OPT_TRACING
