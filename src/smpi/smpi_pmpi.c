@@ -138,8 +138,8 @@ int PMPI_Type_free(MPI_Datatype * datatype)
   if (!datatype) {
     retval = MPI_ERR_ARG;
   } else {
-    // FIXME: always fail for now
-    retval = MPI_ERR_TYPE;
+    smpi_datatype_free(datatype);
+    retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;
@@ -922,6 +922,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
   return retval;
 }
 
+
 int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
               int tag, MPI_Comm comm, MPI_Request * request)
 {
@@ -951,6 +952,8 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
   smpi_bench_begin();
   return retval;
 }
+
+
 
 int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
              MPI_Comm comm, MPI_Status * status)
@@ -1806,12 +1809,117 @@ int PMPI_Get_count(MPI_Status * status, MPI_Datatype datatype, int *count)
   return retval;
 }
 
+int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  int retval;
+
+  smpi_bench_end();
+  if (old_type == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (count<=0){
+    retval = MPI_ERR_COUNT;
+  } else {
+    retval = smpi_datatype_contiguous(count, old_type, new_type);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Type_commit(MPI_Datatype* datatype) {
+  int retval;
+
+  smpi_bench_end();
+  if (datatype == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else {
+    smpi_datatype_commit(datatype);
+    retval = MPI_SUCCESS;
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  int retval;
+
+  smpi_bench_end();
+  if (old_type == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (count<=0 || blocklen<=0){
+    retval = MPI_ERR_COUNT;
+  } else {
+    retval = smpi_datatype_vector(count, blocklen, stride, old_type, new_type);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  int retval;
+
+  smpi_bench_end();
+  if (old_type == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (count<=0 || blocklen<=0){
+    retval = MPI_ERR_COUNT;
+  } else {
+    retval = smpi_datatype_hvector(count, blocklen, stride, old_type, new_type);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  int retval;
+
+  smpi_bench_end();
+  if (old_type == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (count<=0){
+    retval = MPI_ERR_COUNT;
+  } else {
+    retval = smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+  int retval;
+
+  smpi_bench_end();
+  if (old_type == MPI_DATATYPE_NULL) {
+    retval = MPI_ERR_TYPE;
+  } else if (count<=0){
+    retval = MPI_ERR_COUNT;
+  } else {
+    retval = smpi_datatype_hindexed(count, blocklens, indices, old_type, new_type);
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type) {
+  int retval;
+
+  smpi_bench_end();
+  if (count<=0){
+    retval = MPI_ERR_COUNT;
+  } else {
+    retval = smpi_datatype_struct(count, blocklens, indices, old_types, new_type);
+  }
+  smpi_bench_begin();
+  return retval;}
+
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
 static int not_yet_implemented(void) {
-   xbt_die("Not yet implemented");
-   return MPI_ERR_OTHER;
+	  XBT_WARN("Not yet implemented");
+   return MPI_SUCCESS;
 }
 
 int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
@@ -1902,9 +2010,6 @@ int PMPI_Errhandler_set(MPI_Comm comm, MPI_Errhandler errhandler) {
    return not_yet_implemented();
 }
 
-int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* newtype) {
-   return not_yet_implemented();
-}
 
 int PMPI_Cancel(MPI_Request* request) {
    return not_yet_implemented();
@@ -1927,30 +2032,6 @@ int PMPI_Comm_test_inter(MPI_Comm comm, int* flag) {
 }
 
 int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
-   return not_yet_implemented();
-}
-
-int PMPI_Type_commit(MPI_Datatype* datatype) {
-   return not_yet_implemented();
-}
-
-int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* newtype) {
-   return not_yet_implemented();
-}
-
-int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* newtype) {
-   return not_yet_implemented();
-}
-
-int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* newtype) {
-   return not_yet_implemented();
-}
-
-int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* newtype) {
-   return not_yet_implemented();
-}
-
-int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* newtype) {
    return not_yet_implemented();
 }
 
@@ -1993,7 +2074,6 @@ int PMPI_Comm_remote_size(MPI_Comm comm, int* size) {
 int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
    return not_yet_implemented();
 }
-
 
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {

@@ -68,6 +68,24 @@ int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount,
                        MPI_Datatype recvtype);
+int smpi_datatype_contiguous(int count, MPI_Datatype old_type,
+                       MPI_Datatype* new_type);
+int smpi_datatype_vector(int count, int blocklen, int stride,
+                      MPI_Datatype old_type, MPI_Datatype* new_type);
+
+int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride,
+                      MPI_Datatype old_type, MPI_Datatype* new_type);
+int smpi_datatype_indexed(int count, int* blocklens, int* indices,
+                     MPI_Datatype old_type, MPI_Datatype* new_type);
+int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices,
+                     MPI_Datatype old_type, MPI_Datatype* new_type);
+int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices,
+                    MPI_Datatype* old_types, MPI_Datatype* new_type);
+void smpi_datatype_create(MPI_Datatype* new_type, int size, int flags);
+void smpi_datatype_free(MPI_Datatype* type);
+void smpi_datatype_commit(MPI_Datatype* datatype);
+
+
 
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);
 void smpi_op_destroy(MPI_Op op);
