@@ -672,8 +672,7 @@ static void smpi_gap_append(double size, const link_CM02_t link,
           xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));
       bw = net_get_link_bandwidth(link);
       action->sender.gap =
-          /*last_action->sender.gap +*/ max(sg_sender_gap,
-                                        last_action->sender.size / bw);
+          max(sg_sender_gap,last_action->sender.size / bw);
       action->latency += action->sender.gap;
     }
     /* Append action as last send */
