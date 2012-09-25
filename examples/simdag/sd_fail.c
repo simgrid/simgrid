@@ -29,6 +29,8 @@ int main(int argc, char **argv)
    * will stop */
   XBT_INFO("First test: COMP_SEQ task");
   task = SD_task_create_comp_seq("Poor task", NULL, 2e10);
+  SD_task_watch(task, SD_FAILED);
+  SD_task_watch(task, SD_DONE);
 
   XBT_INFO("Schedule task '%s' on workstation 'Faulty Host'",
            SD_task_get_name(task));
@@ -63,6 +65,9 @@ int main(int argc, char **argv)
   XBT_INFO("Second test: NON TYPED task");
 
   task = SD_task_create("Poor parallel task", NULL, 2e10);
+  SD_task_watch(task, SD_FAILED);
+  SD_task_watch(task, SD_DONE);
+
   computation_amount[0] = 2e10;
 
   XBT_INFO("Schedule task '%s' on workstation 'Faulty Host'",
