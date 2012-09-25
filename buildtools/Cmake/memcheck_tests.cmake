@@ -473,6 +473,7 @@ ADD_TEST(memcheck-simdag-test-simdag-0 ${CMAKE_BINARY_DIR}/examples/simdag/sd_te
 ADD_TEST(memcheck-simdag-test-simdag2-0 ${CMAKE_BINARY_DIR}/examples/simdag/sd_test2 ${CMAKE_HOME_DIRECTORY}/examples/simdag/2clusters.xml --cd ${CMAKE_BINARY_DIR}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test-seq-access-0 ${CMAKE_BINARY_DIR}/examples/simdag/sd_seq_access ${CMAKE_HOME_DIRECTORY}/examples/simdag/2clusters.xml --cd ${CMAKE_BINARY_DIR}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test-typed-tasks-0 ${CMAKE_BINARY_DIR}/examples/simdag/sd_typed_tasks_test --cfg=network/TCP_gamma:4194304 ${CMAKE_HOME_DIRECTORY}/examples/simdag/2clusters.xml --cd ${CMAKE_BINARY_DIR}/examples/simdag/)
+ADD_TEST(memcheck-simdag-test-fail-0 ${CMAKE_BINARY_DIR}/examples/simdag/sd_fail --cd ${CMAKE_BINARY_DIR}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test-comm-throttling-0 ${CMAKE_BINARY_DIR}/examples/simdag/sd_comm_throttling --cfg=network/TCP_gamma:4194304 ${CMAKE_HOME_DIRECTORY}/examples/simdag/2clusters.xml --cd ${CMAKE_BINARY_DIR}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test-dax-cycle-0 ${CMAKE_BINARY_DIR}/examples/simdag/dax/dax_test --log=no_loc ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/../2clusters.xml ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/simple_dax_with_cycle.xml --cd ${CMAKE_BINARY_DIR}/examples/simdag/dax/)
 ADD_TEST(memcheck-simdag-test-prop-0 ${CMAKE_BINARY_DIR}/examples/simdag/properties/sd_prop ${CMAKE_HOME_DIRECTORY}/examples/simdag/../platforms/prop.xml --cd ${CMAKE_BINARY_DIR}/examples/simdag/)
