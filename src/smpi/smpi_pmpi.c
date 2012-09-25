@@ -125,6 +125,7 @@ int PMPI_Address(void *location, MPI_Aint * address)
     retval = MPI_ERR_ARG;
   } else {
     *address = (MPI_Aint) location;
+    retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;
