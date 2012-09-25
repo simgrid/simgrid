@@ -328,4 +328,8 @@ XBT_PUBLIC(void) sg_platf_ASroute_end (sg_platf_route_cbarg_t ASroute); // Final
 XBT_PUBLIC(void) sg_platf_route_add_link (const char* link_id, sg_platf_route_cbarg_t route); // Add a link to link list
 XBT_PUBLIC(void) sg_platf_ASroute_add_link (const char* link_id, sg_platf_route_cbarg_t ASroute); // Add a link to link list
 
+typedef void (*sg_platf_process_cb_t)(sg_platf_process_cbarg_t);
+XBT_PUBLIC(void) sg_platf_process_add_cb(sg_platf_process_cb_t fct);
+
+
 #endif                          /* SG_PLATF_H */

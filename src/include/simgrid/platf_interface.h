@@ -38,8 +38,6 @@ typedef void (*sg_platf_storage_type_cb_t)(sg_platf_storage_type_cbarg_t);
 typedef void (*sg_platf_mount_cb_t)(sg_platf_mount_cbarg_t);
 typedef void (*sg_platf_mstorage_cb_t)(sg_platf_mstorage_cbarg_t);
 
-typedef void (*sg_platf_process_cb_t)(sg_platf_process_cbarg_t);
-
 void sg_platf_host_add_cb(sg_platf_host_cb_t);
 void sg_platf_host_link_add_cb(sg_platf_host_link_cb_t);
 void sg_platf_router_add_cb(sg_platf_router_cb_t);
@@ -64,8 +62,6 @@ void sg_platf_storage_add_cb(sg_platf_storage_cb_t fct);
 void sg_platf_mstorage_add_cb(sg_platf_mstorage_cb_t fct);
 void sg_platf_storage_type_add_cb(sg_platf_storage_type_cb_t fct);
 void sg_platf_mount_add_cb(sg_platf_mount_cb_t fct);
-
-void sg_platf_process_add_cb(sg_platf_process_cb_t fct);
 
 /** \brief Pick the right models for CPU, net and workstation, and call their model_init_preparse
  *
