@@ -35,6 +35,7 @@ SG_BEGIN_DECL()
 #define MPI_MAX_PORT_NAME      100
 #define SMPI_RAND_SEED 5
 #define MPI_ANY_SOURCE -1
+#define MPI_BOTTOM (void *)0
 #define MPI_PROC_NULL -2
 #define MPI_ANY_TAG -1
 #define MPI_UNDEFINED -1
