@@ -1440,6 +1440,11 @@ void SD_task_schedulev(SD_task_t task, int count,
     xbt_assert(task->workstation_nb == count,"Got %d locations, but were expecting %d locations",count,task->workstation_nb);
     for (i = 0; i < count; i++)
       task->workstation_list[i] = list[i];
+    if (SD_task_get_kind(task)== SD_TASK_COMP_SEQ && !task->computation_amount){
+      /*This task has failed and is rescheduled. Reset the computation amount*/
+      task->computation_amount = xbt_new0(double, 1);
+      task->computation_amount[0] = task->remains;
+    }
     SD_task_do_schedule(task);
     break;
   default:
