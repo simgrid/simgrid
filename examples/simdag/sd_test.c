@@ -95,6 +95,10 @@ int main(int argc, char **argv)
   taskC = SD_task_create("Task C", NULL, 30.0);
   taskD = SD_task_create("Task D", NULL, 60.0);
 
+  /* try to attach and retrieve user data to a task */
+  SD_task_set_data(taskA, (void*) &computation_amount1);
+  if (computation_amount1 != (*((double*) SD_task_get_data(taskA))))
+      XBT_ERROR("User data was corrupted by a simple set/get");
 
   SD_task_dependency_add(NULL, NULL, taskB, taskA);
   SD_task_dependency_add(NULL, NULL, taskC, taskA);
