@@ -246,8 +246,18 @@ static void action_bcast(const char *const *action)
 {
   double size = parse_double(action[2]);
   double clock = smpi_process_simulated_elapsed();
+#ifdef HAVE_TRACING
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  TRACE_smpi_computing_out(rank);
+  int root_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), 0);
+  TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__);
+#endif
 
   smpi_mpi_bcast(NULL, size, MPI_BYTE, 0, MPI_COMM_WORLD);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
+  TRACE_smpi_computing_in(rank);
+#endif
 
   XBT_VERB("%s %f", xbt_str_join_array(action, " "),
            smpi_process_simulated_elapsed()-clock);
@@ -257,7 +267,17 @@ static void action_reduce(const char *const *action)
 {
   double size = parse_double(action[2]);
   double clock = smpi_process_simulated_elapsed();
-  smpi_mpi_reduce(NULL, NULL, size, MPI_BYTE, MPI_OP_NULL, 0, MPI_COMM_WORLD);
+#ifdef HAVE_TRACING
+  int rank = smpi_comm_rank(MPI_COMM_WORLD);
+  TRACE_smpi_computing_out(rank);
+  int root_traced = smpi_group_rank(smpi_comm_group(MPI_COMM_WORLD), 0);
+  TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__);
+#endif
+   smpi_mpi_reduce(NULL, NULL, size, MPI_BYTE, MPI_OP_NULL, 0, MPI_COMM_WORLD);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
+  TRACE_smpi_computing_in(rank);
+#endif
 
   XBT_VERB("%s %f", xbt_str_join_array(action, " "),
            smpi_process_simulated_elapsed()-clock);
