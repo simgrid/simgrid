@@ -28,7 +28,7 @@ if(enable_smpi)
   add_executable(ttest01 ttest01.c)
   add_executable(mc_bugged1 mc_bugged1.c)
   add_executable(mc_bugged2 mc_bugged2.c)
-  add_executable(replay replay.c)
+  add_executable(replay replay/replay.c)
 
   target_link_libraries(alltoall2 m simgrid smpi )
   target_link_libraries(alltoall_basic m simgrid smpi )
@@ -78,7 +78,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_basic.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc_bugged1.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/replay.c
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mvmul.c
   ${CMAKE_CURRENT_SOURCE_DIR}/compute2.c
@@ -92,6 +91,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/sendtest.c
   ${CMAKE_CURRENT_SOURCE_DIR}/barrier.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bcbench.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.c
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced.c
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced_simple.c
   PARENT_SCOPE
