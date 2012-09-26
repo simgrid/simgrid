@@ -224,7 +224,7 @@ if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
       NUMHOSTS=`cat ${HOSTFILE} | wc -l`
 fi
 
-if [ ${EXEC} = "./replay" ]; then 
+if [ ${EXEC} = "./smpi_replay" ]; then 
   APP_TRACES=$1;
   if [ -n "${APP_TRACES}" ] && [ -f ${APP_TRACES} ]; then
      hosttraces=(`cat ${APP_TRACES} | tr \\\n " "`)
@@ -270,7 +270,7 @@ do
   fi
   echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
   echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
-  if [ ${EXEC} = "./replay" ]; then
+  if [ ${EXEC} = "./smpi_replay" ]; then
     if  [ ${NUMTRACES} -gt 1 ]; then
       echo "    <argument value=\"${hosttraces[$j]}\"/>" >> ${APPLICATIONTMP}
     else
