@@ -60,20 +60,29 @@ $ java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.x
 
 \section bindings_binding_java_coroutines How to use the coroutines context factory
 
-You may want to use the coroutines context factory, if speed maters to you (since it's about 5 times faster than the default thread-based context factory).
+You may want to use the coroutines context factory, if speed maters to
+you (since it's about 5 times faster than the default thread-based
+context factory).
 
-First, remember that the coroutines context factory is still experimental work.
+First, remember that the coroutines context factory is still
+experimental work.
 
-To use the coroutines context factory, you need a Java virtual machine which supports it.
+To use the coroutines context factory, you need a Java virtual machine
+which supports it.
 
-Our implementation rely on a JVM patch made by Lukas Stadler, which you can find <a href="http://ssw.jku.at/General/Staff/LS/coro/">here</a>. You can either recompile the JVM yourself or use the pre-built binaries offered.
+Our implementation rely on a JVM patch made by Lukas Stadler, which
+you can find <a href="http://ssw.jku.at/General/Staff/LS/coro/">here</a>. You 
+can either recompile the JVM yourself or use the offered pre-built
+binaries.
 
-SimGrid Java will automatically switch to the coroutine context factory if your JVM support it, so you will just need to execute your simulation with the correct JVM:
+SimGrid Java will automatically switch to the coroutine context
+factory if your JVM support it, so you will just need to execute your
+simulation with the correct JVM:
 \verbatim
 $ $PATH_TO_COROUTINE_JVM/java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 \endverbatim
 
-Notice that you may have to adjust the "coro.stacksPerThread" configuration option to run large simulations:
+Note that you may have to adjust the "coro.stacksPerThread" configuration option to run large simulations:
 \verbatim
 $ $PATH_TO_COROUTINE_JVM/java -Dcoro.stacksPerThread=$STACKS_NUMBER -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 \endverbatim 
