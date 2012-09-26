@@ -55,8 +55,17 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    bandwidth on the route onto which the task is  scheduled and the amount of 
    data to transfer.
    To divide the nominal bandwidth by 2, the rate then has to be :
-                     rate = bandwidth/(2*amount) 
-                     
+                     rate = bandwidth/(2*amount)
+ * Compute tasks that have failed can now be rescheduled and executed again
+   (from their beginning)
+ * Increasing source code coverage (src/simdag is now covered at 91.5%
+   on average)
+   
+ SMPI:
+ * Re-implement time-independent trace replay using SMPI (at the
+   smpi_smp_* level) instead of MSG. This should replace
+   examples/msg/actions/actions.c
+   
  XBT:
  * Functions xbt_dict_hash() and xbt_dict_hash_ext() are made public,
    and renamed to xbt_str_hash() and xbt_str_hash_ext().
