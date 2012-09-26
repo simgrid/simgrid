@@ -1,5 +1,0 @@
-0 send 1 1e6
-1 recv 0
-1 compute 1e9
-1 Isend 0 1e6
-0 recv 1
