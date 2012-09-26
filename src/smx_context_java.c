@@ -80,7 +80,8 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
     TRY {	  
        context->thread = xbt_os_thread_create(NULL,smx_ctx_java_thread_run,context,NULL);
     } CATCH(e) {
-    	RETHROWF("Impossible to create context #%d. You may want to switch to Java continuations to increase your limits (error: %s)",
+    	RETHROWF("Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
+		 "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
     			thread_amount);
     }
   }
