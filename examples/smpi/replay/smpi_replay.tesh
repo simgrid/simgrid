@@ -1,0 +1,221 @@
+# use the tested library, not the installed one
+# (since we want to pass it to the child, it has to be redefined before each command)
+# Go for the first test
+p Test of trace replay with SMPI (one trace for all processes)
+$ ../../bin/smpirun --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/one_trace
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [Tremblay:0:(0) 0.000000] [smpi_replay/VERBOSE] 0 comm_size 3 0.000000
+> [Fafard:2:(0) 65.176535] [smpi_replay/VERBOSE] 2 bcast 5e8 65.176535
+> [Fafard:2:(0) 71.729958] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
+> [Jupiter:1:(0) 73.739750] [smpi_replay/VERBOSE] 1 bcast 5e8 73.739750
+> [Tremblay:0:(0) 73.739750] [smpi_replay/VERBOSE] 0 bcast 5e8 73.739750
+> [Jupiter:1:(0) 76.361119] [smpi_replay/VERBOSE] 1 compute 2e8 2.621369
+> [Tremblay:0:(0) 78.836850] [smpi_replay/VERBOSE] 0 compute 5e8 5.097100
+> [Fafard:2:(0) 144.013395] [smpi_replay/VERBOSE] 2 bcast 5e8 72.283436
+> [Fafard:2:(0) 150.566818] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
+> [Jupiter:1:(0) 152.576610] [smpi_replay/VERBOSE] 1 bcast 5e8 76.215490
+> [Tremblay:0:(0) 152.576610] [smpi_replay/VERBOSE] 0 bcast 5e8 73.739760
+> [Jupiter:1:(0) 155.197979] [smpi_replay/VERBOSE] 1 compute 2e8 2.621369
+> [Tremblay:0:(0) 157.673709] [smpi_replay/VERBOSE] 0 compute 5e8 5.097100
+> [Fafard:2:(0) 222.850244] [smpi_replay/VERBOSE] 2 reduce 5e8 5e8 72.283426
+> [Jupiter:1:(0) 231.413469] [smpi_replay/VERBOSE] 1 reduce 5e8 5e8 76.215490
+> [Tremblay:0:(0) 231.413469] [smpi_replay/VERBOSE] 0 reduce 5e8 5e8 73.739760
+> [Tremblay:0:(0) 231.413469] [smpi_replay/INFO] Simulation time 231.413
+
+p The same with tracing activated
+$ ../../bin/smpirun --log=replay.thresh:critical --log=no_loc  --cfg=tracing:1 --cfg=tracing/smpi:1 --cfg=tracing/smpi/computing:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/one_trace
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to '1'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [Tremblay:0:(0) 231.413469] [smpi_replay/INFO] Simulation time 231.413
+
+$ cat ./simgrid.trace
+> #This file was generated using SimGrid-3.8.0
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> 0 1 0 MPI
+> 2 2 1 MPI_STATE
+> 4 3 0 1 1 MPI_LINK
+> 6 0 1 1 0 "rank-0"
+> 5 4 2 computing "0 1 1"
+> 5 5 2 action_bcast "0 0.78 0.39"
+> 6 0 2 1 0 "rank-1"
+> 6 0 3 1 0 "rank-2"
+> 12 0 2 1 4
+> 13 0 2 1
+> 12 0 2 1 5
+> 12 0 2 2 4
+> 13 0 2 2
+> 12 0 2 2 5
+> 12 0 2 3 4
+> 13 0 2 3
+> 12 0 2 3 5
+> 13 65.176535 2 3
+> 12 65.176535 2 3 4
+> 13 71.729958 2 3
+> 12 71.729958 2 3 5
+> 13 73.739750 2 2
+> 12 73.739750 2 2 4
+> 13 73.739750 2 1
+> 12 73.739750 2 1 4
+> 5 6 2 action_reduce "0 1 0"
+> 13 76.361119 2 2
+> 12 76.361119 2 2 5
+> 13 78.836850 2 1
+> 12 78.836850 2 1 5
+> 13 144.013395 2 3
+> 12 144.013395 2 3 4
+> 13 150.566818 2 3
+> 12 150.566818 2 3 6
+> 13 152.576610 2 2
+> 12 152.576610 2 2 4
+> 13 152.576610 2 1
+> 12 152.576610 2 1 4
+> 13 155.197979 2 2
+> 12 155.197979 2 2 6
+> 13 157.673709 2 1
+> 12 157.673709 2 1 6
+> 13 222.850244 2 3
+> 12 222.850244 2 3 4
+> 13 222.850245 2 3
+> 7 222.850245 1 3
+> 13 231.413469 2 2
+> 12 231.413469 2 2 4
+> 13 231.413469 2 1
+> 12 231.413469 2 1 4
+> 13 231.413470 2 1
+> 7 231.413470 1 1
+> 13 231.413470 2 2
+> 7 231.413470 1 2
+
+$ rm -f ./simgrid.trace
+
+p Another test of trace replay with SMPI (one trace per process)
+$ ../../bin/smpirun --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc -np 2 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/split_traces
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [Tremblay:0:(0) 0.164463] [smpi_replay/VERBOSE] 0 send 1 1e6 0.164463
+> [Jupiter:1:(0) 0.164463] [smpi_replay/VERBOSE] 1 recv 0 1e6 0.164463
+> [Jupiter:1:(0) 13.271310] [smpi_replay/VERBOSE] 1 compute 1e9 13.106847
+> [Jupiter:1:(0) 13.271310] [smpi_replay/VERBOSE] 1 Isend 0 1e6 0.000000
+> [Jupiter:1:(0) 13.271310] [smpi_replay/VERBOSE] 1 Irecv 0 1e6 0.000000
+> [Tremblay:0:(0) 13.574474] [smpi_replay/VERBOSE] 0 recv 1 1e6 13.410011
+> [Jupiter:1:(0) 13.877637] [smpi_replay/VERBOSE] 1 wait 0.606328
+> [Tremblay:0:(0) 13.877637] [smpi_replay/VERBOSE] 0 send 1 1e6 0.303164
+> [Tremblay:0:(0) 13.877637] [smpi_replay/INFO] Simulation time 13.8776
+
