@@ -1,0 +1,7 @@
+1 init
+1 recv 0 1e6
+1 compute 1e9
+1 Isend 0 1e6
+1 Irecv 0 1e6
+1 wait
+1 finalize
