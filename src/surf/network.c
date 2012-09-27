@@ -130,8 +130,9 @@ static double smpi_bandwidth_factor(double size)
     }else
       current=fact.value;
   }
+  XBT_DEBUG("%lf > %ld return %f", size, fact.factor, current);
 
-  return 1.0;
+  return current;
 }
 
 static double smpi_latency_factor(double size)
@@ -150,8 +151,9 @@ static double smpi_latency_factor(double size)
     }else
       current=fact.value;
   }
+  XBT_DEBUG("%lf > %ld return %f", size, fact.factor, current);
 
-  return 1.0;
+  return current;
 }
 
 /**--------- <copy/paste C code snippet in surf/network.c> -----------*/
