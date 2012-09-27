@@ -903,6 +903,28 @@ char *xbt_str_from_file(FILE * file)
   return res;
 }
 
+/* @brief Retrun 1 if string 'str' starts with string 'start'
+ *
+ * \param str a string
+ * \param start the string to search in str
+ *
+ * \return 1 if 'str' starts with 'start'
+ */
+int xbt_str_start_with(const char* str, const char* start)
+{
+  int i;
+  size_t l_str = strlen(str);
+  size_t l_start = strlen(start);
+
+  if(l_start > l_str) return 0;
+
+  for(i = 0; i< l_start; i++){
+    if(str[i] != start[i]) return 0;
+  }
+
+  return 1;
+}
+
 #ifdef SIMGRID_TEST
 #include "xbt/str.h"
 

@@ -49,6 +49,8 @@ XBT_PUBLIC(char *) xbt_str_diff(const char *a, const char *b);
 
 XBT_PUBLIC(char *) xbt_str_from_file(FILE * file);
 
+XBT_PUBLIC(int) xbt_str_start_with(const char* str, const char* start);
+
 #define DJB2_HASH_FUNCTION
 //#define FNV_HASH_FUNCTION
 

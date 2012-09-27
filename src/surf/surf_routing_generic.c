@@ -52,11 +52,12 @@ int generic_parse_AS(AS_t as, sg_routing_edge_t elm)
   return xbt_dynar_length(as->index_network_elm)-1;
 }
 
-void generic_parse_bypassroute(AS_t rc,
-    const char *src, const char *dst,
-    route_t e_route)
+void generic_parse_bypassroute(AS_t rc, sg_platf_route_cbarg_t e_route)
 {
-  if(e_route->dst_gateway)
+  char *src = (char*)(e_route->src);
+  char *dst = (char*)(e_route->dst);
+
+  if(e_route->gw_dst)
     XBT_DEBUG("Load bypassASroute from \"%s\" to \"%s\"", src, dst);
   else
     XBT_DEBUG("Load bypassRoute from \"%s\" to \"%s\"", src, dst);
@@ -69,16 +70,15 @@ void generic_parse_bypassroute(AS_t rc,
       src, dst);
   xbt_assert(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),
       "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
-      src, e_route->src_gateway->name, dst, e_route->dst_gateway->name);
+      src, e_route->gw_src->name, dst, e_route->gw_dst->name);
 
-  route_t new_e_route = NULL;
-  if(e_route->dst_gateway)
+  sg_platf_route_cbarg_t new_e_route = NULL;
+  if(e_route->gw_dst)
     new_e_route =  generic_new_extended_route(SURF_ROUTING_RECURSIVE, e_route, 1);
   else
     new_e_route =  generic_new_extended_route(SURF_ROUTING_BASE, e_route, 1);
 
   xbt_dynar_free(&(e_route->link_list));
-  xbt_free(e_route);
 
   xbt_dict_set(dict_bypassRoutes, route_name, new_e_route, NULL);
   no_bypassroute_declared = 0;
@@ -93,14 +93,14 @@ xbt_dynar_t generic_get_onelink_routes(AS_t rc) { // FIXME: kill that stub
   return NULL;
 }
 
-route_t generic_get_bypassroute(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat)
+sg_platf_route_cbarg_t generic_get_bypassroute(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat)
 {
   // If never set a bypass route return NULL without any further computations
   XBT_DEBUG("generic_get_bypassroute from %s to %s",src->name,dst->name);
   if(no_bypassroute_declared)
     return NULL;
 
-  route_t e_route_bypass = NULL;
+  sg_platf_route_cbarg_t e_route_bypass = NULL;
   xbt_dict_t dict_bypassRoutes = rc->bypassRoutes;
 
   if(dst->rc_component == rc && src->rc_component == rc ){
@@ -206,13 +206,13 @@ route_t generic_get_bypassroute(AS_t rc, sg_routing_edge_t src, sg_routing_edge_
     xbt_dynar_free(&path_dst);
   }
 
-  route_t new_e_route = NULL;
+  sg_platf_route_cbarg_t new_e_route = NULL;
   if (e_route_bypass) {
     void *link;
     unsigned int cpt = 0;
-    new_e_route = xbt_new0(s_route_t, 1);
-    new_e_route->src_gateway = e_route_bypass->src_gateway;
-    new_e_route->dst_gateway = e_route_bypass->dst_gateway;
+    new_e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+    new_e_route->gw_src = e_route_bypass->gw_src;
+    new_e_route->gw_dst = e_route_bypass->gw_dst;
     new_e_route->link_list =
         xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
     xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
@@ -228,15 +228,15 @@ route_t generic_get_bypassroute(AS_t rc, sg_routing_edge_t src, sg_routing_edge_
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-route_t
+sg_platf_route_cbarg_t
 generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
-    route_t routearg, int change_order) {
+    sg_platf_route_cbarg_t routearg, int change_order) {
 
-  route_t result;
+  sg_platf_route_cbarg_t result;
   char *link_name;
   unsigned int cpt;
 
-  result = xbt_new0(s_route_t, 1);
+  result = xbt_new0(s_sg_platf_route_cbarg_t, 1);
   result->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
   xbt_assert(hierarchy == SURF_ROUTING_BASE
@@ -245,12 +245,12 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
 
   if (hierarchy == SURF_ROUTING_RECURSIVE) {
 
-    xbt_assert(routearg->src_gateway && routearg->dst_gateway,
+    xbt_assert(routearg->gw_src && routearg->gw_dst,
         "NULL is obviously a bad gateway");
 
     /* remeber not erase the gateway names */
-    result->src_gateway = routearg->src_gateway;
-    result->dst_gateway = routearg->dst_gateway;
+    result->gw_src = routearg->gw_src;
+    result->gw_dst = routearg->gw_dst;
   }
 
   xbt_dynar_foreach(routearg->link_list, cpt, link_name) {
@@ -268,7 +268,7 @@ generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
   return result;
 }
 
-void generic_free_route(route_t route)
+void generic_free_route(sg_platf_route_cbarg_t route)
 {
   if (route) {
     xbt_dynar_free(&route->link_list);

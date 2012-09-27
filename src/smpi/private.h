@@ -44,6 +44,8 @@ void smpi_process_finalize(void);
 
 smpi_process_data_t smpi_process_data(void);
 smpi_process_data_t smpi_process_remote_data(int index);
+void smpi_process_set_user_data(void *);
+void* smpi_process_get_user_data(void);
 int smpi_process_count(void);
 smx_rdv_t smpi_process_mailbox(void);
 smx_rdv_t smpi_process_remote_mailbox(int index);
@@ -66,6 +68,24 @@ int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount,
                        MPI_Datatype recvtype);
+int smpi_datatype_contiguous(int count, MPI_Datatype old_type,
+                       MPI_Datatype* new_type);
+int smpi_datatype_vector(int count, int blocklen, int stride,
+                      MPI_Datatype old_type, MPI_Datatype* new_type);
+
+int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride,
+                      MPI_Datatype old_type, MPI_Datatype* new_type);
+int smpi_datatype_indexed(int count, int* blocklens, int* indices,
+                     MPI_Datatype old_type, MPI_Datatype* new_type);
+int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices,
+                     MPI_Datatype old_type, MPI_Datatype* new_type);
+int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices,
+                    MPI_Datatype* old_types, MPI_Datatype* new_type);
+void smpi_datatype_create(MPI_Datatype* new_type, int size, int flags);
+void smpi_datatype_free(MPI_Datatype* type);
+void smpi_datatype_commit(MPI_Datatype* datatype);
+
+
 
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);
 void smpi_op_destroy(MPI_Op op);
@@ -116,6 +136,11 @@ void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int smpi_mpi_test(MPI_Request * request, MPI_Status * status);
 int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
                      MPI_Status * status);
+int smpi_mpi_testall(int count, MPI_Request requests[],
+                     MPI_Status status[]);
+void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status);
+MPI_Request smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag,
+                    MPI_Status* status);
 int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status);
 int smpi_mpi_waitany(int count, MPI_Request requests[],

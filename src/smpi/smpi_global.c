@@ -27,6 +27,7 @@ typedef struct s_smpi_process_data {
   xbt_os_timer_t timer;
   double simulated;
   MPI_Comm comm_self;
+  void *data; /* user data */
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
@@ -133,6 +134,17 @@ smpi_process_data_t smpi_process_remote_data(int index)
   return process_data[index];
 }
 
+void smpi_process_set_user_data(void *data)
+{
+  smpi_process_data_t process_data = smpi_process_data();
+  process_data->data = data;
+}
+
+void* smpi_process_get_user_data(){
+  smpi_process_data_t process_data = smpi_process_data();
+  return process_data->data;
+}
+
 int smpi_process_count(void)
 {
   return process_count;
@@ -207,7 +219,7 @@ void smpi_global_init(void)
   MPI_Group group;
   char name[MAILBOX_NAME_MAXLEN];
 
-  SIMIX_comm_set_copy_data_callback(&smpi_comm_copy_data_callback);
+  SIMIX_comm_set_copy_data_callback(&SIMIX_comm_copy_buffer_callback);
   process_count = SIMIX_process_count();
   process_data = xbt_new(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {

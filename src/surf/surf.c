@@ -369,6 +369,12 @@ static XBT_INLINE void routing_asr_host_free(void *p)
   xbt_free(elm);
 }
 
+static XBT_INLINE void routing_asr_prop_free(void *p)
+{
+  xbt_dict_t elm = p;
+  xbt_dict_free(&elm);
+}
+
 void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
   *ver_major = SIMGRID_VERSION_MAJOR;
   *ver_minor = SIMGRID_VERSION_MINOR;
@@ -388,6 +394,7 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("Add routing levels");
   ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
   ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,routing_asr_host_free);
+  ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");
   SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);

@@ -81,6 +81,9 @@ XBT_PUBLIC(void) TRACE_host_reset_state (const char *host, const char *state);
 /* for creating graph configuration files for Triva by hand */
 XBT_PUBLIC(xbt_dynar_t) TRACE_get_node_types (void);
 XBT_PUBLIC(xbt_dynar_t) TRACE_get_edge_types (void);
+XBT_PUBLIC(void) TRACE_pause (void);
+XBT_PUBLIC(void) TRACE_resume (void);
+
 
 #else                           /* HAVE_TRACING */
 

@@ -216,6 +216,33 @@ can be used with simulators that have a different notion of time
 \endverbatim
 
 \li <b>\c
+tracing/basic
+</b>:
+Some visualization tools are not able to parse correctly the Paje file format.
+Use this option if you are using one of these tools to visualize the simulation
+trace. Keep in mind that the trace might be incomplete, without all the
+information that would be registered otherwise.
+\verbatim
+--cfg=tracing/basic:1
+\endverbatim
+
+\li <b>\c
+tracing/comment
+</b>:
+Use this to add a comment line to the top of the trace file.
+\verbatim
+--cfg=tracing/comment:my_string
+\endverbatim
+
+\li <b>\c
+tracing/comment_file
+</b>:
+Use this to add the contents of a file to the top of the trace file as comment.
+\verbatim
+--cfg=tracing/comment_file:textual_file.txt
+\endverbatim
+
+\li <b>\c
 triva/categorized
 </b>:
   This option generates a graph configuration file for Triva considering

@@ -131,12 +131,12 @@ void __MSG_host_destroy(msg_host_t host) {
   free(host);
 }
 
-#ifdef MSG_USE_DEPRECATED
 int MSG_get_host_number(void)
 {
   return xbt_lib_length(host_lib);
 }
 
+#ifdef MSG_USE_DEPRECATED
 msg_host_t *MSG_get_host_table(void)
 {
       void **array;
@@ -211,7 +211,7 @@ const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 }
 
 /** \ingroup m_host_management
- * \brief Returns a xbt_dynar_t consisting of the list of properties assigned to this host
+ * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this host
  *
  * \param host a host
  * \return a dict containing the properties

@@ -69,11 +69,15 @@ int surf_parse_get_int(const char *string) {
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = NULL;
+xbt_dict_t as_current_property_set = NULL;
+int AS_TAG = 0;
+char* as_name_tab[1024];
+void* as_dict_tab[1024];
+int as_prop_nb = 0;
+
+
 /* dictionary of random generator data */
 xbt_dict_t random_data_list = NULL;
-
-/* Call all the callbacks of a specific SAX event */
-static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t);
 
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = NULL;
@@ -86,7 +90,9 @@ static void add_randomness(void);
  */
 void STag_surfxml_storage(void)
 {
+  AS_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage");
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
 void ETag_surfxml_storage(void)
 {
@@ -96,10 +102,13 @@ void ETag_surfxml_storage(void)
   storage.id = A_surfxml_storage_id;
   storage.type_id = A_surfxml_storage_typeId;
   storage.content = A_surfxml_storage_content;
+  storage.properties = current_property_set;
   sg_platf_new_storage(&storage);
+  current_property_set = NULL;
 }
 void STag_surfxml_storage_type(void)
 {
+  AS_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage_type");
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
@@ -254,15 +263,28 @@ void ETag_surfxml_platform(void){
 }
 
 void STag_surfxml_host(void){
+  AS_TAG = 0;
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
 
 void STag_surfxml_prop(void)
 {
-  if (!current_property_set)
-    current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
-
-  xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
+  if(AS_TAG){
+    if (!as_current_property_set){
+      xbt_assert(as_prop_nb < 1024, "Number of AS property reach the limit!!!");
+      as_current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
+      as_name_tab[as_prop_nb] = xbt_strdup(A_surfxml_AS_id);
+      as_dict_tab[as_prop_nb] = as_current_property_set;
+      XBT_DEBUG("PUSH prop %p for AS '%s'",as_dict_tab[as_prop_nb],as_name_tab[as_prop_nb]);
+      as_prop_nb++;
+    }
+    xbt_dict_set(as_current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
+  }
+  else{
+    if (!current_property_set)
+      current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
+    xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
+  }
 }
 
 void ETag_surfxml_host(void)    {
@@ -390,6 +412,7 @@ void STag_surfxml_peer(void){
 }
 
 void STag_surfxml_link(void){
+  AS_TAG = 0;
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
 
@@ -473,7 +496,6 @@ void ETag_surfxml_backbone(void){
 
   sg_platf_new_link(&link);
   routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, A_surfxml_backbone_id, SURF_LINK_LEVEL));
-  current_property_set = NULL;
 }
 
 void STag_surfxml_route(void){
@@ -482,6 +504,7 @@ void STag_surfxml_route(void){
       A_surfxml_route_src, A_surfxml_route_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
+
 void STag_surfxml_ASroute(void){
   xbt_assert(strlen(A_surfxml_ASroute_src) > 0 || strlen(A_surfxml_ASroute_dst) > 0
       || strlen(A_surfxml_ASroute_gw_src) > 0 || strlen(A_surfxml_ASroute_gw_dst) > 0,
@@ -490,12 +513,14 @@ void STag_surfxml_ASroute(void){
       A_surfxml_ASroute_gw_src,A_surfxml_ASroute_gw_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
+
 void STag_surfxml_bypassRoute(void){
   xbt_assert(strlen(A_surfxml_bypassRoute_src) > 0 || strlen(A_surfxml_bypassRoute_dst) > 0,
       "Missing end-points while defining bupass route \"%s\"->\"%s\"",
       A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
+
 void STag_surfxml_bypassASroute(void){
   xbt_assert(strlen(A_surfxml_bypassASroute_src) > 0 || strlen(A_surfxml_bypassASroute_dst) > 0
       || strlen(A_surfxml_bypassASroute_gw_src) > 0 || strlen(A_surfxml_bypassASroute_gw_dst) > 0,
@@ -645,15 +670,34 @@ void STag_surfxml_trace_connect(void){
 }
 
 void STag_surfxml_AS(void){
-  sg_platf_new_AS_begin(A_surfxml_AS_id, (int)A_surfxml_AS_routing);
+  AS_TAG = 1;
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = A_surfxml_AS_id;
+  AS.routing = (int)A_surfxml_AS_routing;
+
+  as_current_property_set = NULL;
+
+  sg_platf_new_AS_begin(&AS);
 }
 void ETag_surfxml_AS(void){
+  if(as_prop_nb){
+    char *name = as_name_tab[as_prop_nb-1];
+    xbt_dict_t dict = as_dict_tab[as_prop_nb-1];
+    as_prop_nb--;
+    XBT_DEBUG("POP prop %p for AS '%s'",dict,name);
+    xbt_lib_set(as_router_lib,
+        name,
+      ROUTING_PROP_ASR_LEVEL,
+      dict);
+    xbt_free(name);
+  }
   sg_platf_new_AS_end();
 }
 
 void STag_surfxml_config(void){
-  XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
+  AS_TAG = 0;
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
 }
 void ETag_surfxml_config(void){
   xbt_dict_cursor_t cursor = NULL;
@@ -670,15 +714,18 @@ void ETag_surfxml_config(void){
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
   xbt_dict_free(&current_property_set);
+  current_property_set = NULL;
 }
 
 static int argc;
 static char **argv;
 
 void STag_surfxml_process(void){
+  AS_TAG = 0;
   argc = 1;
   argv = xbt_new(char *, 1);
   argv[0] = xbt_strdup(A_surfxml_process_function);
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
 
 void ETag_surfxml_process(void){
@@ -852,5 +899,11 @@ static void add_randomness(void)
                  random_std_deviation);
   xbt_dict_set(random_data_list, random_id, (void *) random,
                &xbt_free_ref);
+}
+
+
+xbt_dict_t get_as_router_properties(const char* name)
+{
+  return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
 }
 

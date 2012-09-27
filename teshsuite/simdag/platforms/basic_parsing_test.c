@@ -79,6 +79,15 @@ int main(int argc, char **argv)
       }
       }
     }
+    if (!strcmp(argv[2], "PROP")) {
+      printf("SG_TEST_mem: %s\n",
+          SD_workstation_get_property_value(SD_workstation_get_by_name("host1"),
+          "SG_TEST_mem")
+          );
+      printf("Author: %s\n", SD_as_router_get_property_value("AS0", "author"));
+      printf("AS1: %s\n", SD_as_router_get_property_value("AS1", "name"));
+      printf("AS2: %s\n", SD_as_router_get_property_value("AS2", "name"));
+    }
   }
 
   SD_exit();

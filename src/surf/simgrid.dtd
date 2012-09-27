@@ -10,7 +10,7 @@
 <!ATTLIST trace file CDATA "">
 <!ATTLIST trace periodicity CDATA #REQUIRED>
 
-<!ELEMENT random (prop*)>
+<!ELEMENT random EMPTY>
 <!ATTLIST random id CDATA #REQUIRED>
 <!ATTLIST random min CDATA #REQUIRED>
 <!ATTLIST random max CDATA #REQUIRED>
@@ -25,8 +25,7 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS (((AS|include|storage_type|storage|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect|bypassASroute)*,(trace|trace_connect)*)|((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,(route|trace|trace_connect|bypassRoute)*))>
-
+<!ELEMENT AS ((prop*),(((AS|include|storage_type|storage|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect|bypassASroute)*,(trace|trace_connect)*)|((include|storage_type|storage|host|cabinet|router|link|backbone|trace|trace_connect|host_link)*,(route|trace|trace_connect|bypassRoute)*)))>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|RuleBased|Vivaldi|Cluster) "None">
 

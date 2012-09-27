@@ -7,6 +7,7 @@
 #include "private.h"
 #include "simdag/simdag.h"
 #include "xbt/dict.h"
+#include "xbt/lib.h"
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
 #include "surf/surf_resource.h"
@@ -156,6 +157,7 @@ xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
       workstation.get_properties(workstation->surf_workstation);
 
 }
+
 
 /** @brief Displays debugging informations about a workstation */
 void SD_workstation_dump(SD_workstation_t ws)
@@ -511,4 +513,30 @@ SD_task_t SD_workstation_get_current_task(SD_workstation_t workstation)
               " to use this function");
 
   return (workstation->current_task);
+}
+
+/**
+ * \brief Returns a #xbt_dict_t consisting of the list of properties assigned to the AS
+ * or router
+ *
+ * \param AS, router name
+ * \return the xbt_dict_t properties of the AS
+ */
+xbt_dict_t SD_as_router_get_properties(const char *asr)
+{
+  return get_as_router_properties(asr);
+}
+/**
+ * \brief Returns a #xbt_dict_t consisting of the list of properties assigned to the AS
+ * or router
+ *
+ * \param AS, router name
+ * \param The name of a properties
+ * \return value of the properties
+ */
+const char* SD_as_router_get_property_value(const char *asr, const char *name)
+{
+  xbt_dict_t dict = get_as_router_properties(asr);
+  if(!dict) return NULL;
+  return xbt_dict_get_or_null(dict,name);
 }

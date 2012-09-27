@@ -77,6 +77,13 @@ static double constant_bandwidth_constraint(double rate, double bound,
 /**********************/
 /*   SMPI callbacks   */
 /**********************/
+
+static int factor_cmp(const void *pa, const void *pb)
+{
+  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor);
+}
+
+
 static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 {
   char *value = NULL;
@@ -98,6 +105,12 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
     xbt_dynar_free(&radical_elements2);
   }
   xbt_dynar_free(&radical_elements);
+  iter=0;
+  xbt_dynar_sort(smpi_factor, &factor_cmp);
+  xbt_dynar_foreach(smpi_factor, iter, fact) {
+    XBT_DEBUG("ordered smpi_factor:\t%ld : %f", fact.factor, fact.value);
+
+  }
   return smpi_factor;
 }
 
@@ -109,14 +122,17 @@ static double smpi_bandwidth_factor(double size)
 
   unsigned int iter = 0;
   s_smpi_factor_t fact;
+  double current=1.0;
   xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
-    if (size >= fact.factor) {
-      XBT_DEBUG("%lf >= %ld return %f", size, fact.factor, fact.value);
-      return fact.value;
-    }
+    if (size <= fact.factor) {
+      XBT_DEBUG("%lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else
+      current=fact.value;
   }
+  XBT_DEBUG("%lf > %ld return %f", size, fact.factor, current);
 
-  return 1.0;
+  return current;
 }
 
 static double smpi_latency_factor(double size)
@@ -127,14 +143,17 @@ static double smpi_latency_factor(double size)
 
   unsigned int iter = 0;
   s_smpi_factor_t fact;
+  double current=1.0;
   xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
-    if (size >= fact.factor) {
-      XBT_DEBUG("%lf >= %ld return %f", size, fact.factor, fact.value);
-      return fact.value;
-    }
+    if (size <= fact.factor) {
+      XBT_DEBUG("%lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else
+      current=fact.value;
   }
+  XBT_DEBUG("%lf > %ld return %f", size, fact.factor, current);
 
-  return 1.0;
+  return current;
 }
 
 /**--------- <copy/paste C code snippet in surf/network.c> -----------*/
@@ -672,8 +691,7 @@ static void smpi_gap_append(double size, const link_CM02_t link,
           xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));
       bw = net_get_link_bandwidth(link);
       action->sender.gap =
-          last_action->sender.gap + max(sg_sender_gap,
-                                        last_action->sender.size / bw);
+          max(sg_sender_gap,last_action->sender.size / bw);
       action->latency += action->sender.gap;
     }
     /* Append action as last send */

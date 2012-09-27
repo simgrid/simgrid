@@ -16,6 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_PLATFORM      "tracing/platform"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
+#define OPT_TRACING_SMPI_COMPUTING "tracing/smpi/computing"
 #define OPT_TRACING_CATEGORIZED   "tracing/categorized"
 #define OPT_TRACING_UNCATEGORIZED "tracing/uncategorized"
 #define OPT_TRACING_MSG_PROCESS   "tracing/msg/process"
@@ -23,6 +24,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_BUFFER        "tracing/buffer"
 #define OPT_TRACING_ONELINK_ONLY  "tracing/onelink_only"
 #define OPT_TRACING_DISABLE_DESTROY "tracing/disable_destroy"
+#define OPT_TRACING_BASIC         "tracing/basic"
+#define OPT_TRACING_COMMENT       "tracing/comment"
+#define OPT_TRACING_COMMENT_FILE  "tracing/comment_file"
 #define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
 #define OPT_TRIVA_CAT_CONF        "triva/categorized"
 #define OPT_VIVA_UNCAT_CONF      "viva/uncategorized"
@@ -32,12 +36,14 @@ static int trace_enabled;
 static int trace_platform;
 static int trace_smpi_enabled;
 static int trace_smpi_grouped;
+static int trace_smpi_computing;
 static int trace_categorized;
 static int trace_uncategorized;
 static int trace_msg_process_enabled;
 static int trace_buffer;
 static int trace_onelink_only;
 static int trace_disable_destroy;
+static int trace_basic;
 
 static int trace_configured = 0;
 static int trace_active = 0;
@@ -48,12 +54,14 @@ static void TRACE_getopts(void)
   trace_platform = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
   trace_smpi_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
   trace_smpi_grouped = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
+  trace_smpi_computing = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_COMPUTING);
   trace_categorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
   trace_uncategorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
   trace_msg_process_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
   trace_buffer = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER);
   trace_onelink_only = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY);
   trace_disable_destroy = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_DISABLE_DESTROY);
+  trace_basic = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BASIC);
 }
 
 int TRACE_start()
@@ -160,6 +168,12 @@ int TRACE_smpi_is_grouped(void)
   return trace_smpi_grouped;
 }
 
+int TRACE_smpi_is_computing(void)
+{
+  return trace_smpi_computing;
+}
+
+
 int TRACE_categorized (void)
 {
   return trace_categorized;
@@ -188,6 +202,21 @@ int TRACE_onelink_only (void)
 int TRACE_disable_destroy (void)
 {
   return trace_disable_destroy && TRACE_is_enabled();
+}
+
+int TRACE_basic (void)
+{
+  return trace_basic && TRACE_is_enabled();
+}
+
+char *TRACE_get_comment (void)
+{
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_COMMENT);
+}
+
+char *TRACE_get_comment_file (void)
+{
+  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_COMMENT_FILE);
 }
 
 char *TRACE_get_filename(void)
@@ -252,6 +281,12 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_int, &default_tracing_smpi_grouped, 0, 1,
                    NULL, NULL);
 
+  /* smpi computing */
+  int default_tracing_smpi_computing = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_SMPI_COMPUTING,
+                   "Generate states for timing out of SMPI parts of the application",
+                   xbt_cfgelm_int, &default_tracing_smpi_computing, 0, 1,
+                   NULL, NULL);
 
   /* tracing categorized resource utilization traces */
   int default_tracing_categorized = 0;
@@ -293,6 +328,27 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_DISABLE_DESTROY,
                    "Disable platform containers destruction.",
                    xbt_cfgelm_int, &default_disable_destroy, 0, 1,
+                   NULL, NULL);
+
+  /* basic -- Avoid extended events (impoverished trace file) */
+  int default_basic = 0;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_BASIC,
+                   "Avoid extended events (impoverished trace file).",
+                   xbt_cfgelm_int, &default_basic, 0, 1,
+                   NULL, NULL);
+
+  /* comment */
+  char *default_tracing_comment = xbt_strdup ("");
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_COMMENT,
+                   "Comment to be added on the top of the trace file.",
+                   xbt_cfgelm_string, &default_tracing_comment, 1, 1,
+                   NULL, NULL);
+
+  /* comment_file */
+  char *default_tracing_comment_file = xbt_strdup ("");
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_COMMENT_FILE,
+                   "The contents of the file are added to the top of the trace file as comment.",
+                   xbt_cfgelm_string, &default_tracing_comment_file, 1, 1,
                    NULL, NULL);
 
   /* Triva graph configuration for uncategorized tracing */
@@ -373,6 +429,10 @@ void TRACE_help (int detailed)
       "  This option only has effect if this simulator is SMPI-based. The processes\n"
       "  are grouped by the hosts where they were executed.",
       detailed);
+  print_line (OPT_TRACING_SMPI_COMPUTING, "Generates a \" Computing \" State",
+      "  This option aims at tracing computations in the application, outside SMPI\n"
+      "  to allow further study of simulated or real computation time",
+      detailed);
   print_line (OPT_TRACING_MSG_PROCESS, "Trace processes behavior (MSG)",
       "  This option only has effect if this simulator is MSG-based. It traces the\n"
       "  behavior of all categorized MSG processes, grouping them by hosts. This option\n"
@@ -396,6 +456,18 @@ void TRACE_help (int detailed)
       "  Disable the destruction of containers at the end of simulation. This can be\n"
       "  used with simulators that have a different notion of time (different from\n"
       "  the simulated time).",
+      detailed);
+  print_line (OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
+      "  Some visualization tools are not able to parse correctly the Paje file format.\n"
+      "  Use this option if you are using one of these tools to visualize the simulation\n"
+      "  trace. Keep in mind that the trace might be incomplete, without all the\n"
+      "  information that would be registered otherwise.",
+      detailed);
+  print_line (OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
+      "  Use this to add a comment line to the top of the trace file.",
+      detailed);
+  print_line (OPT_TRACING_COMMENT_FILE, "File contents added to trace file as comment.",
+      "  Use this to add the contents of a file to the top of the trace file as comment.",
       detailed);
   print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
       "  This option can be used in all types of simulators build with SimGrid\n"
@@ -562,6 +634,37 @@ void TRACE_generate_viva_cat_conf (void)
   generate_cat_configuration (TRACE_get_viva_cat_conf(), "viva", 0);
 }
 
+static int previous_trace_state = -1;
+
+void instr_pause_tracing (void)
+{
+  previous_trace_state = trace_enabled;
+  if (!TRACE_is_enabled()){
+    XBT_DEBUG ("Tracing is already paused, therefore do nothing.");
+  }else{
+    XBT_DEBUG ("Tracing is being paused.");
+  }
+  trace_enabled = 0;
+  XBT_DEBUG ("Tracing is paused.");
+}
+
+void instr_resume_tracing (void)
+{
+  if (TRACE_is_enabled()){
+    XBT_DEBUG ("Tracing is already running while trying to resume, therefore do nothing.");
+  }else{
+    XBT_DEBUG ("Tracing is being resumed.");
+  }
+
+  if (previous_trace_state != -1){
+    trace_enabled = previous_trace_state;
+  }else{
+    trace_enabled = 1;
+  }
+  XBT_DEBUG ("Tracing is resumed.");
+  previous_trace_state = -1;
+}
+
 #undef OPT_TRACING
 #undef OPT_TRACING_PLATFORM
 #undef OPT_TRACING_SMPI
@@ -573,6 +676,9 @@ void TRACE_generate_viva_cat_conf (void)
 #undef OPT_TRACING_BUFFER
 #undef OPT_TRACING_ONELINK_ONLY
 #undef OPT_TRACING_DISABLE_DESTROY
+#undef OPT_TRACING_BASIC
+#undef OPT_TRACING_COMMENT
+#undef OPT_TRACING_COMMENT_FILE
 #undef OPT_TRIVA_UNCAT_CONF
 #undef OPT_TRIVA_CAT_CONF
 #undef OPT_VIVA_UNCAT_CONF

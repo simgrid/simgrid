@@ -31,14 +31,13 @@ void model_generic_finalize(AS_t as);
 
 int generic_parse_PU(AS_t rc, sg_routing_edge_t elm);
 int generic_parse_AS(AS_t rc, sg_routing_edge_t elm);
-void generic_parse_bypassroute(AS_t rc, const char *src, const char *dst,
-                               route_t e_route);
+void generic_parse_bypassroute(AS_t rc, sg_platf_route_cbarg_t e_route);
 
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
 xbt_dynar_t generic_get_onelink_routes(AS_t rc);
-route_t generic_get_bypassroute(AS_t rc,
+sg_platf_route_cbarg_t generic_get_bypassroute(AS_t rc,
     sg_routing_edge_t src,
     sg_routing_edge_t dst,
     double *lat);
@@ -49,8 +48,8 @@ route_t generic_get_bypassroute(AS_t rc,
 /* change a route containing link names into a route containing link entities.
  * If change_order is true, the links are put in reverse order in the
  * produced route */
-route_t generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
-                                   route_t data, int preserve_order);
+sg_platf_route_cbarg_t generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
+                                   sg_platf_route_cbarg_t data, int preserve_order);
 AS_t
 generic_autonomous_system_exist(AS_t rc, char *element);
 AS_t
@@ -63,8 +62,7 @@ void generic_src_dst_check(AS_t rc, sg_routing_edge_t src,
 /* *************************** FLOYD ROUTING ******************************** */
 AS_t model_floyd_create(void);  /* create structures for floyd routing model */
 void model_floyd_end(AS_t as);      /* finalize the creation of floyd routing model */
-void model_floyd_parse_route(AS_t rc, const char *src,
-        const char *dst, route_t route);
+void model_floyd_parse_route(AS_t rc, sg_platf_route_cbarg_t route);
 
 /* ************************************************** */
 /* ************** RULE-BASED ROUTING **************** */
@@ -92,15 +90,14 @@ AS_t model_dijkstra_both_create(int cached);    /* create by calling dijkstra or
 AS_t model_dijkstra_create(void);       /* create structures for dijkstra routing model */
 AS_t model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
 void model_dijkstra_both_end(AS_t as);      /* finalize the creation of dijkstra routing model */
-void model_dijkstra_both_parse_route (AS_t rc, const char *src,
-                     const char *dst, route_t route);
+void model_dijkstra_both_parse_route (AS_t rc, sg_platf_route_cbarg_t route);
 
 /* ************************************************************************** */
 /* *************************** FULL ROUTING ********************************* */
 AS_t model_full_create(void);   /* create structures for full routing model */
 void model_full_end(AS_t as);       /* finalize the creation of full routing model */
 void model_full_set_route(  /* Set the route and ASroute between src and dst */
-    AS_t rc, const char *src, const char *dst, route_t route);
+    AS_t rc, sg_platf_route_cbarg_t route);
 
 
 #endif                          /* _SURF_SURF_ROUTING_PRIVATE_H */

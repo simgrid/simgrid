@@ -1,0 +1,28 @@
+0 init
+1 init
+2 init
+
+0 comm_size 3
+0 bcast 5e8
+1 bcast 5e8
+2 bcast 5e8
+
+0 compute 5e8
+1 compute 2e8
+2 compute 5e8
+
+0 bcast 5e8
+1 bcast 5e8
+2 bcast 5e8
+
+0 compute 5e8
+1 compute 2e8
+2 compute 5e8
+
+0 reduce 5e8 5e8
+1 reduce 5e8 5e8
+2 reduce 5e8 5e8
+
+0 finalize
+1 finalize
+2 finalize

@@ -130,3 +130,27 @@ int MSG_file_unlink(msg_file_t fd)
   xbt_free(fd);
   return res;
 }
+
+/** \ingroup msg_file_management
+ * \brief Search for file
+ *
+ * \param mount is the mount point where find the file is located
+ * \param path the file regex to find
+ * \return a xbt_dict_t of file where key is the name of file and the
+ * value the msg_stat_t corresponding to the key
+ */
+xbt_dict_t MSG_file_ls(const char *mount, const char *path)
+{
+  xbt_assert(path,"You must set path");
+  int size = strlen(path);
+  if(size && path[size-1] != '/')
+  {
+    char *new_path = bprintf("%s/",path);
+    XBT_DEBUG("Change '%s' for '%s'",path,new_path);
+    xbt_dict_t dict = simcall_file_ls(mount, new_path);
+    xbt_free(new_path);
+    return dict;
+  }
+
+  return simcall_file_ls(mount, path);
+}

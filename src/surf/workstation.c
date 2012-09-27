@@ -351,6 +351,14 @@ static surf_action_t ws_action_unlink(void *workstation, surf_file_t stream)
   return model->extension.storage.unlink(st,  stream);
 }
 
+static surf_action_t ws_action_ls(void *workstation, const char* mount, const char *path)
+{
+  XBT_DEBUG("LS on mount '%s' and file '%s'",mount, path);
+  storage_t st = find_storage_on_mount_list(workstation, mount);
+  surf_model_t model = st->generic_resource.model;
+  return model->extension.storage.ls(st, path);
+}
+
 static void surf_workstation_model_init_internal(void)
 {
   surf_workstation_model = surf_model_init();
@@ -409,6 +417,7 @@ static void surf_workstation_model_init_internal(void)
   surf_workstation_model->extension.workstation.write = ws_action_write;
   surf_workstation_model->extension.workstation.stat = ws_action_stat;
   surf_workstation_model->extension.workstation.unlink = ws_action_unlink;
+  surf_workstation_model->extension.workstation.ls = ws_action_ls;
 }
 
 void surf_workstation_model_init_current_default(void)

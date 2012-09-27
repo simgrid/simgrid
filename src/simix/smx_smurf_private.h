@@ -65,6 +65,7 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_WAITANY),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_WAIT),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_TEST),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_TESTANY),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_IPROBE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_GET_REMAINS),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_GET_STATE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_GET_SRC_DATA),\
@@ -94,7 +95,9 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_WRITE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_OPEN),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_CLOSE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_STAT), \
-SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_UNLINK)
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_UNLINK),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_LS),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES)
 
 
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated
@@ -390,6 +393,15 @@ typedef struct s_smx_simcall {
     } comm_irecv;
 
     struct {
+      smx_rdv_t rdv;
+      int src;
+      int tag;
+      int (*match_fun)(void *, void *, smx_action_t);
+      void *data;
+      smx_action_t result;
+    } comm_iprobe;
+
+    struct {
       smx_action_t comm;
     } comm_destroy;
 
@@ -579,6 +591,17 @@ typedef struct s_smx_simcall {
       smx_file_t fd;
       int result;
     } file_unlink;
+
+    struct {
+      const char *mount;
+      const char *path;
+      xbt_dict_t result;
+    } file_ls;
+
+    struct {
+      const char* name;
+      xbt_dict_t result;
+    } asr_get_properties;
 
   };
 } s_smx_simcall_t, *smx_simcall_t;

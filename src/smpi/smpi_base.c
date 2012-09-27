@@ -144,12 +144,9 @@ void smpi_mpi_start(MPI_Request request)
       void *oldbuf = request->buf;
       detached = 1;
       request->buf = malloc(request->size);
-      memcpy(request->buf,oldbuf,request->size);
+      if (oldbuf)
+        memcpy(request->buf,oldbuf,request->size);
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
-    }else{
-      XBT_DEBUG("Send request %p is not detached (buf: %p)",request,request->buf);
-      mailbox = smpi_process_remote_mailbox(
-                  smpi_group_index(smpi_comm_group(request->comm), request->dst));
     }
 
       request->action =
@@ -274,6 +271,10 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
+  // if we have a sender, we should use its data, and not the data from the receive
+  if((req->action)&&
+      (req->src==MPI_ANY_SOURCE || req->tag== MPI_ANY_TAG))
+    req = (MPI_Request)SIMIX_comm_get_src_data((*request)->action);
 
   if(status != MPI_STATUS_IGNORE) {
     status->MPI_SOURCE = req->src;
@@ -283,6 +284,8 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     // right?
     status->count = req->size;
   }
+  req = *request;
+
   print_request("Finishing", req);
   if(req->flags & NON_PERSISTENT) {
     smpi_mpi_request_free(request);
@@ -299,7 +302,7 @@ int flag;
    else 
     flag = simcall_comm_test((*request)->action);
    if(flag) {
-        smpi_mpi_wait(request, status);
+       finish_wait(request, status);
     }
     return flag;
 }
@@ -337,6 +340,67 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
     xbt_dynar_free(&comms);
   }
   return flag;
+}
+
+
+int smpi_mpi_testall(int count, MPI_Request requests[],
+                     MPI_Status status[])
+{
+  int flag=1;
+  int i;
+  for(i=0; i<count; i++)
+   if (smpi_mpi_test(&requests[i], &status[i])!=1)
+       flag=0;
+
+  return flag;
+}
+
+void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
+  int flag=0;
+  //FIXME find another wait to avoid busy waiting ?
+  // the issue here is that we have to wait on a nonexistent comm
+  MPI_Request request;
+  while(flag==0){
+        request = smpi_mpi_iprobe(source, tag, comm, &flag, status);
+        XBT_DEBUG("Busy Waiting on probing : %d", flag);
+        if(!flag) {
+            smpi_mpi_request_free(&request);
+            simcall_process_sleep(0.0001);
+        }
+  }
+}
+
+MPI_Request smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){
+  MPI_Request request =build_request(NULL, 0, MPI_CHAR, source, smpi_comm_rank(comm), tag,
+            comm, NON_PERSISTENT | RECV);
+  // behave like a receive, but don't do it
+  smx_rdv_t mailbox;
+
+  print_request("New iprobe", request);
+  // We have to test both mailboxes as we don't know if we will receive one one or another
+    if (xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")>0){
+        mailbox = smpi_process_mailbox_small();
+        request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
+
+    }
+    if (request->action==NULL){
+	mailbox = smpi_process_mailbox();
+        request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
+    }
+
+  if(request->action){
+    MPI_Request req = (MPI_Request)SIMIX_comm_get_src_data(request->action);
+    *flag=true;
+    if(status != MPI_STATUS_IGNORE) {
+      status->MPI_SOURCE = req->src;
+      status->MPI_TAG = req->tag;
+      status->MPI_ERROR = MPI_SUCCESS;
+      status->count = req->size;
+    }
+  }
+  else *flag=false;
+
+  return request;
 }
 
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
@@ -690,7 +754,8 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
     // FIXME: check for errors
     smpi_datatype_extent(datatype, &lb, &dataext);
     // Local copy from root
-    smpi_datatype_copy(sendbuf, count, datatype, recvbuf, count, datatype);
+    if (sendbuf && recvbuf)
+      smpi_datatype_copy(sendbuf, count, datatype, recvbuf, count, datatype);
     // Receive buffers from senders
     //TODO: make a MPI_barrier here ?
     requests = xbt_new(MPI_Request, size - 1);
@@ -715,7 +780,8 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
       if(index == MPI_UNDEFINED) {
         break;
       }
-      smpi_op_apply(op, tmpbufs[index], recvbuf, &count, &datatype);
+      if(op) /* op can be MPI_OP_NULL that does nothing */
+        smpi_op_apply(op, tmpbufs[index], recvbuf, &count, &datatype);
     }
     for(index = 0; index < size - 1; index++) {
       xbt_free(tmpbufs[index]);

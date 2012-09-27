@@ -70,6 +70,35 @@ int host(int argc, char *argv[])
   XBT_INFO("\tClose file '%s'",file->name);
   MSG_file_close(file);
 
+  xbt_dict_t dict_ls;
+  char* key;
+  surf_stat_t data = NULL;
+  xbt_dict_cursor_t cursor = NULL;
+
+  dict_ls = MSG_file_ls(mount,"./");
+  XBT_INFO(" ");XBT_INFO("ls ./");
+  xbt_dict_foreach(dict_ls,cursor,key,data){
+    if(data) XBT_INFO("FILE : %s",key);
+    else     XBT_INFO("DIR  : %s",key);
+  }
+  xbt_dict_free(&dict_ls);
+
+  dict_ls = MSG_file_ls(mount,"./doc/simgrid/examples/platforms/");
+  XBT_INFO(" ");XBT_INFO("ls ./doc/simgrid/examples/platforms/");
+  xbt_dict_foreach(dict_ls,cursor,key,data){
+    if(data) XBT_INFO("FILE : %s",key);
+    else     XBT_INFO("DIR  : %s",key);
+  }
+  xbt_dict_free(&dict_ls);
+
+  dict_ls = MSG_file_ls(mount,"./doc/simgrid/examples/msg/");
+  XBT_INFO(" ");XBT_INFO("ls ./doc/simgrid/examples/msg/");
+  xbt_dict_foreach(dict_ls,cursor,key,data){
+    if(data) XBT_INFO("FILE : %s",key);
+    else     XBT_INFO("DIR  : %s",key);
+  }
+  xbt_dict_free(&dict_ls);
+
   free(mount);
 
   return 0;

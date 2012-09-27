@@ -247,8 +247,8 @@ The principle is the same, except we don't have the backbone. The way to obtain 
 \li <b>bw (mandatory)</b>: bandwidth for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
 \li <b>lat (mandatory)</b>: latency for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
 \li <b>sharing_policy</b>: sharing policy for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
-\li <b>bb_bw </b>: bandwidth for backbone (if any). See <b>link</b> section for syntax/details. If both bb_* attributes are ommited, no backbone is create (alternative cluster architecture described before).
-\li <b>bb_lat </b>: latency for backbone (if any). See <b>link</b> section for syntax/details. If both bb_* attributes are ommited, no backbone is create (alternative cluster architecture described before).
+\li <b>bb_bw </b>: bandwidth for backbone (if any). See <b>link</b> section for syntax/details. If both bb_* attributes are ommited, no backbone is created (alternative cluster architecture described before).
+\li <b>bb_lat </b>: latency for backbone (if any). See <b>link</b> section for syntax/details. If both bb_* attributes are ommited, no backbone is created (alternative cluster architecture described before).
 \li <b>bb_sharing_policy</b>: sharing policy for the backbone (if any). See <b>link</b> section for syntax/details.
 \li <b>availability_file</b>: Allow you to use a file as input for availability. Similar to <b>hosts</b> attribute.
 \li <b>state_file</b>: Allow you to use a file as input for states. Similar to <b>hosts</b> attribute.

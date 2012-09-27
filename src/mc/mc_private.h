@@ -35,8 +35,6 @@ typedef struct s_mc_snapshot{
   mc_mem_region_t *regions;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
-extern char *prog_name;
-
 void MC_take_snapshot(mc_snapshot_t);
 void MC_take_snapshot_liveness(mc_snapshot_t s);
 void MC_restore_snapshot(mc_snapshot_t);
@@ -193,6 +191,7 @@ typedef enum {
   e_mc_reduce_none,
   e_mc_reduce_dpor
 } e_mc_reduce_t;
+
 extern e_mc_reduce_t mc_reduce_kind;
 
 void MC_dpor_init(void);
@@ -203,6 +202,7 @@ void MC_init_safety(void);
 
 /********************************** Double-DFS for liveness property**************************************/
 
+extern xbt_fifo_t mc_stack_liveness;
 extern mc_snapshot_t initial_snapshot_liveness;
 extern xbt_automaton_t _mc_property_automaton;
 extern int compare;
@@ -238,8 +238,6 @@ typedef struct s_mc_pair_stateless{
   int requests;
 }s_mc_pair_stateless_t, *mc_pair_stateless_t;
 
-extern xbt_fifo_t mc_stack_liveness;
-
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r);
 void MC_ddfs_init(void);
 void MC_ddfs(int search_cycle);
@@ -257,5 +255,78 @@ extern char* _surf_mc_property_file;
 
 int create_dump(int pair);
 
+/****** Local variables with DWARF ******/
+
+typedef enum {
+  e_dw_loclist,
+  e_dw_register,
+  e_dw_bregister_op,
+  e_dw_lit,
+  e_dw_fbregister_op,
+  e_dw_piece,
+  e_dw_arithmetic,
+  e_dw_compose,
+  e_dw_deref,
+  e_dw_constant,
+  e_dw_unsupported
+} e_dw_location_type;
+
+typedef struct s_dw_location{
+  e_dw_location_type type;
+  union{
+    
+    xbt_dynar_t loclist;
+    
+    int reg;
+    
+    struct{
+      int reg;
+      int offset;
+    }breg_op;
+
+    unsigned lit;
+
+    int fbreg_op;
+
+    int piece;
+
+    int deref_size;
+
+    xbt_dynar_t compose;
+
+    char *arithmetic;
+
+    struct{
+      int is_signed;
+      int bytes;
+      int value;
+    }constant;
+
+  }location;
+}s_dw_location_t, *dw_location_t;
+
+typedef struct s_dw_location_entry{
+  void *lowpc;
+  void *highpc;
+  dw_location_t location;
+}s_dw_location_entry_t, *dw_location_entry_t;
+
+typedef struct s_dw_local_variable{
+  char *name;
+  dw_location_t location;
+}s_dw_local_variable_t, *dw_local_variable_t;
+
+typedef struct s_dw_frame{
+  char *name;
+  dw_location_t location;
+  xbt_dynar_t variables;
+}s_dw_frame_t, *dw_frame_t;
+
+/* FIXME : implement free functions for each strcuture */
+
+extern xbt_dynar_t mc_binary_local_variables;
+
+void MC_get_binary_local_variables(void);
+void print_local_variables(xbt_dynar_t list);
 
 #endif

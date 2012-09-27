@@ -396,7 +396,8 @@ XBT_PUBLIC(smx_action_t) simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff,
                                               void *data);
 
 XBT_PUBLIC(void) simcall_comm_destroy(smx_action_t comm);
-
+XBT_PUBLIC(smx_action_t) simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
+                                int (*match_fun)(void *, void *, smx_action_t), void *data);
 XBT_PUBLIC(void) simcall_comm_cancel(smx_action_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */
@@ -457,6 +458,12 @@ XBT_PUBLIC(smx_file_t) simcall_file_open(const char* storage, const char* path, 
 XBT_PUBLIC(int) simcall_file_close(smx_file_t fp);
 XBT_PUBLIC(int) simcall_file_stat(smx_file_t fd, s_file_stat_t *buf);
 XBT_PUBLIC(int) simcall_file_unlink(smx_file_t fd);
+XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
+
+/************************** AS router   **********************************/
+XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
+/************************** AS router simcalls ***************************/
+XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
 
 SG_END_DECL()
 #endif                          /* _SIMIX_SIMIX_H */

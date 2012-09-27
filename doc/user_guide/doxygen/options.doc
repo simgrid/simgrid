@@ -448,6 +448,25 @@ smpirun -trace ...
 simulation with --cfg=tracing:1 and --cfg=tracing/smpi:1. Check the
 smpirun's <i>-help</i> parameter for additional tracing options.
 
+Sometimes you might want to put additional information on the trace to
+correctly identify them later, or to provide data that can be used to
+reproduce an experiment. You have two ways to do that:
+
+- Add a string on top of the trace file as comment:
+\verbatim
+--cfg=tracing/comment:my_simulation_identifier
+\endverbatim
+
+- Add the contents of a textual file on top of the trace file as comment:
+\verbatim
+--cfg=tracing/comment_file:my_file_with_additional_information.txt
+\endverbatim
+
+Please, use these two parameters (for comments) to make reproducible
+simulations. For additional details about this and all tracing
+options, check See the \ref tracing_tracing_options "Tracing
+Configuration Options subsection".
+
 \section options_smpi Configuring SMPI
 
 The SMPI interface provides several specific configuration items.

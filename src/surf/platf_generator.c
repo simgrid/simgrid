@@ -631,8 +631,10 @@ void platf_generate(void) {
   surf_parse_init_callbacks();
   routing_register_callbacks();
 
-
-  sg_platf_new_AS_begin("random platform", A_surfxml_AS_routing_Floyd);
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = "random platform";
+  AS.routing = A_surfxml_AS_routing_Floyd;
+  sg_platf_new_AS_begin(&AS);
 
   //Generate hosts, clusters and routers
   xbt_dynar_foreach(nodes, i, graph_node) {
