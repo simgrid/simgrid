@@ -16,7 +16,6 @@
 #include "xbt/dict.h"
 #include "xbt/config.h"
 #include "instr/instr_private.h"
-
 SG_BEGIN_DECL()
 
 /**************** datatypes **********************************/
@@ -153,6 +152,8 @@ void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_si
 
 void _MSG_action_init(void);
 void _MSG_action_exit(void);
+
+void MSG_post_create_environment(void);
 
 SG_END_DECL()
 #endif

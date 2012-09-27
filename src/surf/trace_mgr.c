@@ -34,33 +34,112 @@ XBT_INLINE void tmgr_history_free(tmgr_history_t h)
   free(h);
 }
 
-tmgr_trace_t tmgr_trace_new_from_generator(const char *id,
-                                          probabilist_event_generator_t generator1,
-                                          probabilist_event_generator_t generator2,
-                                          int is_state_trace)
+
+/**
+ * \brief Create a #tmgr_trace_t from probabilist generators
+ *
+ * This trace will generate an infinite set of events.
+ * It needs two #probabilist_event_generator_t. The date when the event are
+ * triggered is directed by date_generator, and will be interpreted as seconds.
+ * The value of the event is set by value_generator. The value should be between
+ * 0 and 1.
+ *
+ * \param id The name of the trace
+ * \param date_generator The #probabilist_event_generator_t which generates the time
+ *        between two events
+ * \param generator2 The #probabilist_event_generator_t which generates the value
+ *        of each events.
+ * \return The new #tmgr_trace_t
+ */
+tmgr_trace_t tmgr_trace_generator_value(const char *id,
+                                  probabilist_event_generator_t date_generator,
+                                  probabilist_event_generator_t value_generator)
 {
   tmgr_trace_t trace = NULL;
 
   trace = xbt_new0(s_tmgr_trace_t, 1);
   trace->type = e_trace_probabilist;
 
-  trace->s_probabilist.event_generator[0] = generator1;
-
-  //FIXME : may also be a parameter
-  trace->s_probabilist.next_event = 0;
-  trace->s_probabilist.is_state_trace = is_state_trace;
-
-  if(generator2 != NULL) {
-    trace->s_probabilist.event_generator[1] = generator2;
-  } else if(is_state_trace) {
-    trace->s_probabilist.event_generator[1] = generator1;
-  } else {
-    THROW_IMPOSSIBLE; //That case should have been checked before, anyway...
-  }
+  trace->s_probabilist.event_generator[0] = date_generator;
+  trace->s_probabilist.event_generator[1] = value_generator;
+  trace->s_probabilist.is_state_trace = 0;
 
   return trace;
 }
 
+/**
+ * \brief Create a #tmgr_trace_t from probabilist generators
+ *
+ * This trace will generate an infinite set of events. Value of the events
+ * will be alternatively 0 and 1, so this should be used as a state trace.
+ *
+ * \param id The name of the trace
+ * \param date_generator The #probabilist_event_generator_t which generates the time
+ *        between two events
+ * \param first_event_value Set the first event value
+ * \return The new #tmgr_trace_t
+ */
+tmgr_trace_t tmgr_trace_generator_state(const char *id,
+                                  probabilist_event_generator_t date_generator,
+                                  e_surf_resource_state_t first_event_value)
+{
+  tmgr_trace_t trace = NULL;
+
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_probabilist;
+
+  trace->s_probabilist.event_generator[0] = date_generator;
+  trace->s_probabilist.event_generator[1] = date_generator;
+  trace->s_probabilist.is_state_trace = 1;
+  trace->s_probabilist.next_event = (first_event_value==SURF_RESOURCE_ON ? 1 : 0);
+
+  return trace;
+}
+
+/**
+ * \brief Create a #tmgr_trace_t from probabilist generators
+ *
+ * This trace will generate an infinite set of events. Value of the events
+ * will be alternatively 0 and 1, so this should be used as a state trace.
+ *
+ * \param id The name of the trace
+ * \param avail_duration_generator The #probabilist_event_generator_t which
+ *        set the duration of the available state, (ie 1 value)
+ * \param unavail_duration_generator The #probabilist_event_generator_t which
+ *        set the duration of the unavailable state, (ie 0 value)
+ * \param first_event_value Set the first event value
+ * \return The new #tmgr_trace_t
+ */
+tmgr_trace_t tmgr_trace_generator_avail_unavail(const char *id,
+                                probabilist_event_generator_t avail_duration_generator,
+                                probabilist_event_generator_t unavail_duration_generator,
+                                e_surf_resource_state_t first_event_value)
+{
+  tmgr_trace_t trace = NULL;
+
+  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace->type = e_trace_probabilist;
+
+  trace->s_probabilist.event_generator[0] = unavail_duration_generator;
+  trace->s_probabilist.event_generator[1] = avail_duration_generator;
+  trace->s_probabilist.is_state_trace = 1;
+  trace->s_probabilist.next_event = (first_event_value==SURF_RESOURCE_ON ? 1 : 0);
+
+  return trace;
+}
+
+/**
+ * \brief Create a new #probabilist_event_generator_t following the uniform distribution
+ *
+ * This generator will generate uniformly distributed random values between min and max
+ * The id is important : it controls the seed of the generator. So, generators with the
+ * same id and the same parameters will generate the same values.
+ *
+ * \param id The name of the generator
+ * \param min The minimal generated value
+ * \param max The maximal generated value
+ * \return a new #probabilist_event_generator_t
+ */
 probabilist_event_generator_t tmgr_event_generator_new_uniform(const char* id,
                                                                double min,
                                                                double max)
@@ -81,6 +160,19 @@ probabilist_event_generator_t tmgr_event_generator_new_uniform(const char* id,
   return event_generator;
 }
 
+
+/**
+ * \brief Create a new #probabilist_event_generator_t following the exponential distribution
+ *
+ * This generator will generate random values following the exponential distribution.
+ * The mean value is 1/rate .
+ * The id is important : it controls the seed of the generator. So, generators with the
+ * same id and the same parameters will generate the same values.
+ *
+ * \param id The name of the generator
+ * \param rate The rate parameter
+ * \return a new #probabilist_event_generator_t
+ */
 probabilist_event_generator_t tmgr_event_generator_new_exponential(const char* id,
                                                                    double rate)
 {
@@ -99,6 +191,18 @@ probabilist_event_generator_t tmgr_event_generator_new_exponential(const char* i
   return event_generator;
 }
 
+/**
+ * \brief Create a new #probabilist_event_generator_t following the weibull distribution
+ *
+ * This generator will generate random values following the weibull distribution.
+ * The id is important : it controls the seed of the generator. So, generators with the
+ * same id and the same parameters will generate the same values.
+ *
+ * \param id The name of the generator
+ * \param scale The scale parameter
+ * \param shape The shape parameter
+ * \return a new #probabilist_event_generator_t
+ */
 probabilist_event_generator_t tmgr_event_generator_new_weibull(const char* id,
                                                                double scale,
                                                                double shape)
@@ -118,7 +222,11 @@ probabilist_event_generator_t tmgr_event_generator_new_weibull(const char* id,
 
   return event_generator;
 }
-
+/**
+ * \brief Get the next random value of a #probabilist_event_generator_t
+ * \param generator The #probabilist_event_generator_t
+ * \return the next random value
+ */
 double tmgr_event_generator_next_value(probabilist_event_generator_t generator)
 {
 
@@ -342,16 +450,17 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
         *value = (double) trace->s_probabilist.next_event;
         if(trace->s_probabilist.next_event == 0) {
           event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
-          trace->s_probabilist.next_event = 0;
+          trace->s_probabilist.next_event = 1;
         } else {
           event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
-          trace->s_probabilist.next_event = 1;
+          trace->s_probabilist.next_event = 0;
         }
       } else {
         event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
         *value = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
       }
       xbt_heap_push(h->heap, trace_event, event_date + event_delta);
+      XBT_DEBUG("Generating a new event at date %f, with value %f", event_date + event_delta, *value);
 
       break;
   }

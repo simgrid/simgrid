@@ -16,7 +16,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_fail,
 int main(int argc, char **argv)
 {
   SD_task_t task;
-
+  double computation_amount[1];
+  double communication_amount[2] = { 0 };
+  SD_workstation_t workstation_list[1];
   /* initialization of SD */
   SD_init(&argc, argv);
 
@@ -25,8 +27,10 @@ int main(int argc, char **argv)
  
   /* creation of a single task that will poorly fail when the workstation
    * will stop */
-
+  XBT_INFO("First test: COMP_SEQ task");
   task = SD_task_create_comp_seq("Poor task", NULL, 2e10);
+  SD_task_watch(task, SD_FAILED);
+  SD_task_watch(task, SD_DONE);
 
   XBT_INFO("Schedule task '%s' on workstation 'Faulty Host'",
            SD_task_get_name(task));
@@ -37,11 +41,11 @@ int main(int argc, char **argv)
 
   SD_task_dump(task);
 
-  XBT_INFO("Task %s has failed. %.f flops remain to be done",
+  XBT_INFO("Task '%s' has failed. %.f flops remain to be done",
            SD_task_get_name(task),
            SD_task_get_remaining_amount(task));
 
-  XBT_INFO("let's unschedule taks %s and reschedule it on the 'Safe Host'",
+  XBT_INFO("let's unschedule task '%s' and reschedule it on the 'Safe Host'",
            SD_task_get_name(task));
   SD_task_unschedule(task);
   SD_task_schedulel(task, 1, SD_workstation_get_by_name("Safe Host"));
@@ -56,7 +60,50 @@ int main(int argc, char **argv)
       SD_task_get_finish_time(task));
 
   SD_task_destroy(task);
+  task=NULL;
 
+  XBT_INFO("Second test: NON TYPED task");
+
+  task = SD_task_create("Poor parallel task", NULL, 2e10);
+  SD_task_watch(task, SD_FAILED);
+  SD_task_watch(task, SD_DONE);
+
+  computation_amount[0] = 2e10;
+
+  XBT_INFO("Schedule task '%s' on workstation 'Faulty Host'",
+             SD_task_get_name(task));
+
+  workstation_list[0] = SD_workstation_get_by_name("Faulty Host");
+  SD_task_schedule(task, 1, workstation_list,
+          computation_amount, communication_amount,-1);
+
+  SD_simulate(-1.0);
+
+  SD_task_dump(task);
+
+  XBT_INFO("Task '%s' has failed. %.f flops remain to be done",
+            SD_task_get_name(task),
+            SD_task_get_remaining_amount(task));
+
+  XBT_INFO("let's unschedule task '%s' and reschedule it on the 'Safe Host'",
+           SD_task_get_name(task));
+  SD_task_unschedule(task);
+
+  workstation_list[0] = SD_workstation_get_by_name("Safe Host");
+
+  SD_task_schedule(task, 1, workstation_list,
+                   computation_amount, communication_amount,-1);
+
+  XBT_INFO("Run the simulation again");
+  SD_simulate(-1.0);
+
+  SD_task_dump(task);
+  XBT_INFO("Task '%s' start time: %f, finish time: %f",
+           SD_task_get_name(task),
+           SD_task_get_start_time(task),
+           SD_task_get_finish_time(task));
+
+  SD_task_destroy(task);
   SD_exit();
   return 0;
 }

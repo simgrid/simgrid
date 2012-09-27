@@ -13,12 +13,12 @@ static xbt_dynar_t none_get_onelink_routes(AS_t rc) {
 }
 
 static void none_get_route_and_latency(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst,
-                                       route_t res,double *lat)
+    sg_platf_route_cbarg_t res,double *lat)
 {
   *lat = 0.0;
 }
 
-static route_t none_get_bypass_route(AS_t rc,
+static sg_platf_route_cbarg_t none_get_bypass_route(AS_t rc,
     sg_routing_edge_t src,
     sg_routing_edge_t dst, double *lat) {
   return NULL;

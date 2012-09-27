@@ -81,7 +81,11 @@ msg_file_t MSG_file_open(const char* mount, const char* path, const char* mode)
  */
 int MSG_file_close(msg_file_t fp)
 {
-  return simcall_file_close(fp->simdata->smx_file);
+  int res = simcall_file_close(fp->simdata->smx_file);
+  free(fp->name);
+  xbt_free(fp->simdata);
+  xbt_free(fp);
+  return res;
 }
 
 /** \ingroup msg_file_management
@@ -96,4 +100,57 @@ int MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf)
   int res;
   res = simcall_file_stat(fd->simdata->smx_file, buf);
   return res;
+}
+
+/** \ingroup msg_file_management
+ * \brief Free the stat structure
+ *
+ * \param stat the #s_msg_stat_t to free
+ */
+void MSG_file_free_stat(s_msg_stat_t *stat)
+{
+  free(stat->date);
+  free(stat->group);
+  free(stat->time);
+  free(stat->user);
+  free(stat->user_rights);
+}
+
+/** \ingroup msg_file_management
+ * \brief Unlink the file pointed by fd
+ *
+ * \param fd is the file descriptor (#msg_file_t)
+ * \return 0 on success or 1 on error
+ */
+int MSG_file_unlink(msg_file_t fd)
+{
+  int res = simcall_file_unlink(fd->simdata->smx_file);
+  free(fd->name);
+  xbt_free(fd->simdata);
+  xbt_free(fd);
+  return res;
+}
+
+/** \ingroup msg_file_management
+ * \brief Search for file
+ *
+ * \param mount is the mount point where find the file is located
+ * \param path the file regex to find
+ * \return a xbt_dict_t of file where key is the name of file and the
+ * value the msg_stat_t corresponding to the key
+ */
+xbt_dict_t MSG_file_ls(const char *mount, const char *path)
+{
+  xbt_assert(path,"You must set path");
+  int size = strlen(path);
+  if(size && path[size-1] != '/')
+  {
+    char *new_path = bprintf("%s/",path);
+    XBT_DEBUG("Change '%s' for '%s'",path,new_path);
+    xbt_dict_t dict = simcall_file_ls(mount, new_path);
+    xbt_free(new_path);
+    return dict;
+  }
+
+  return simcall_file_ls(mount, path);
 }

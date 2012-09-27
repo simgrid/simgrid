@@ -38,6 +38,7 @@ static xbt_dynar_t storage_list;
 static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
 static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type);
+static void free_storage_content(void *p);
 
 static surf_action_t storage_action_stat(void *storage, surf_file_t stream)
 {
@@ -47,12 +48,84 @@ static surf_action_t storage_action_stat(void *storage, surf_file_t stream)
   return action;
 }
 
+static surf_action_t storage_action_ls(void *storage, const char* path)
+{
+  surf_action_t action = storage_action_execute(storage,0, LS);
+  action->ls_dict = NULL;
+  xbt_dict_t ls_dict = xbt_dict_new();
+
+  char* key;
+  surf_stat_t data = NULL;
+  xbt_dict_cursor_t cursor = NULL;
+
+  xbt_dynar_t dyn = NULL;
+  char* file = NULL;
+
+  // foreach file int the storage
+  xbt_dict_foreach(((storage_t)storage)->content,cursor,key,data){
+    // Search if file start with the prefix 'path'
+    if(xbt_str_start_with(key,path)){
+      file = &key[strlen(path)];
+
+      // Split file with '/'
+      dyn = xbt_str_split(file,"/");
+      file = xbt_dynar_get_as(dyn,0,char*);
+
+      // file
+      if(xbt_dynar_length(dyn) == 1){
+        xbt_dict_set(ls_dict,file,&(data->stat),NULL);
+      }
+      // Directory
+      else
+      {
+        // if directory does not exist yet in dict
+        if(!xbt_dict_get_or_null(ls_dict,file));
+          xbt_dict_set(ls_dict,file,NULL,NULL);
+      }
+      xbt_dynar_free(&dyn);
+    }
+  }
+
+  action->ls_dict = ls_dict;
+  return action;
+}
+
+static surf_action_t storage_action_unlink(void *storage, surf_file_t stream)
+{
+  surf_action_t action = storage_action_execute(storage,0, UNLINK);
+
+  // Add memory to storage
+  ((storage_t)storage)->used_size -= stream->content->stat.size;
+
+  // Remove the file from storage
+  xbt_dict_t content_dict = ((storage_t)storage)->content;
+  xbt_dict_remove(content_dict,stream->name);
+
+  free(stream->name);
+  stream->content = NULL;
+  xbt_free(stream);
+
+  return action;
+}
+
 static surf_action_t storage_action_open(void *storage, const char* mount, const char* path, const char* mode)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
   xbt_dict_t content_dict = ((storage_t)storage)->content;
-  surf_stat_t content = xbt_dict_get(content_dict,path);
+  surf_stat_t content = xbt_dict_get_or_null(content_dict,path);
 
+  // if file does not exist create an empty file
+  if(!content){
+    content = xbt_new0(s_surf_stat_t,1);
+    content->stat.date = xbt_strdup("");
+    content->stat.group = xbt_strdup("");
+    content->stat.size = 0;
+    content->stat.time = xbt_strdup("");
+    content->stat.user = xbt_strdup("");
+    content->stat.user_rights = xbt_strdup("");
+    xbt_dict_set(content_dict,path,content,NULL);
+    XBT_DEBUG("File '%s' was not found, file created.",path);
+  }
   surf_file_t file = xbt_new0(s_surf_file_t,1);
   file->name = xbt_strdup(path);
   file->content = content;
@@ -125,6 +198,8 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
   case OPEN:
   case CLOSE:
   case STAT:
+  case UNLINK:
+  case LS:
     break;
   case READ:
     lmm_expand(storage_maxmin_system, STORAGE->constraint_read,
@@ -134,7 +209,6 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
     lmm_expand(storage_maxmin_system, STORAGE->constraint_write,
                GENERIC_LMM_ACTION(action).variable, 1.0);
     xbt_dynar_push(((storage_t)storage)->write_actions,&action);
-
     break;
   }
   action->type = type;
@@ -177,7 +251,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
       storage_type->properties,
       Bread);
 
-  if(!storage_list) storage_list=xbt_dynar_new(sizeof(char *),free);
+  if(!storage_list) storage_list=xbt_dynar_new(sizeof(char *),NULL);
   xbt_dynar_push(storage_list,&storage);
 
   return storage;
@@ -190,6 +264,9 @@ static void storage_finalize(void)
 
   surf_model_exit(surf_storage_model);
   surf_storage_model = NULL;
+
+  if(storage_list)
+    xbt_dynar_free(&storage_list);
 
   xbt_swag_free
       (storage_running_action_set_that_does_not_need_being_checked);
@@ -427,6 +504,8 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.read = storage_action_read;
   surf_storage_model->extension.storage.write = storage_action_write;
   surf_storage_model->extension.storage.stat = storage_action_stat;
+  surf_storage_model->extension.storage.unlink = storage_action_unlink;
+  surf_storage_model->extension.storage.ls = storage_action_ls;
   surf_storage_model->extension.storage.create_resource = storage_create_resource;
 
   if (!storage_maxmin_system) {
@@ -608,6 +687,7 @@ static XBT_INLINE void surf_storage_resource_free(void *r)
   // specific to storage
   storage_t storage = r;
   xbt_dict_free(&storage->content);
+  xbt_dynar_free(&storage->write_actions);
   // generic resource
   surf_resource_free(r);
 }

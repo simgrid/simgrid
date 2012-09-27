@@ -71,8 +71,10 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
 static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 {
   //ignore loopback
-  if (strcmp (src->name, "__loopback__") == 0 || strcmp (dst->name, "__loopback__") == 0)
+  if (strcmp (src->name, "__loopback__") == 0 || strcmp (dst->name, "__loopback__") == 0){
+    XBT_DEBUG ("  linkContainers: ignoring loopback link");
     return;
+  }
 
   //find common father
   container_t father = lowestCommonAncestor (src, dst);
@@ -85,8 +87,14 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
     char aux1[INSTR_DEFAULT_STR_SIZE], aux2[INSTR_DEFAULT_STR_SIZE];
     snprintf (aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", src->name, dst->name);
     snprintf (aux2, INSTR_DEFAULT_STR_SIZE, "%s%s", dst->name, src->name);
-    if (xbt_dict_get_or_null (filter, aux1)) return;
-    if (xbt_dict_get_or_null (filter, aux2)) return;
+    if (xbt_dict_get_or_null (filter, aux1)){
+      XBT_DEBUG ("  linkContainers: already registered %s <-> %s (1)", src->name, dst->name);
+      return;
+    }
+    if (xbt_dict_get_or_null (filter, aux2)){
+      XBT_DEBUG ("  linkContainers: already registered %s <-> %s (2)", dst->name, src->name);
+      return;
+    }
 
     //ok, not found, register it
     xbt_dict_set (filter, aux1, xbt_strdup ("1"), NULL);
@@ -113,10 +121,25 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
   new_pajeStartLink(SIMIX_get_clock(), father, link_type, src, "G", key);
   new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "G", key);
+
+  XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
+}
+
+static int graph_extraction_filter_out (container_t c1, container_t c2)
+{
+  if (c1->kind == INSTR_LINK ||
+      c1->kind == INSTR_SMPI ||
+      c1->kind == INSTR_MSG_PROCESS ||
+      c1->kind == INSTR_MSG_TASK ||
+      (c2 && strcmp (c1->name, c2->name) == 0))
+    return 1;
+  else
+    return 0;
 }
 
 static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
 {
+  XBT_DEBUG ("Graph extraction for routing_component = %s", rc->name);
   if (!xbt_dict_is_empty(rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
     AS_t rc_son;
@@ -143,8 +166,13 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
       //if child1 is not child2
       if (strcmp (child1_name, child2_name) == 0) continue;
 
+      if (graph_extraction_filter_out (child1, NULL)) continue;
+    xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
+      if (graph_extraction_filter_out (child2, child1)) continue;
+      XBT_DEBUG ("get_route from %s to %s", child1_name, child2_name);
+
       //get the route
-      route_t route = xbt_new0(s_route_t,1);
+      sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
       route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
       rc->get_route_and_latency(rc, child1->net_elm, child2->net_elm,
                                 route, NULL);
@@ -160,20 +188,21 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
       unsigned int cpt;
       void *link;
       container_t current, previous;
-      if (route->src_gateway){
-        previous = PJ_container_get(route->src_gateway->name);
+      if (route->gw_src){
+        previous = PJ_container_get(route->gw_src->name);
       }else{
         previous = child1;
       }
 
       xbt_dynar_foreach (route->link_list, cpt, link) {
+        //FIXME (TODO): Should have a cleaner way to get the link name
         char *link_name = ((link_CM02_t)link)->lmm_resource.generic_resource.name;
         current = PJ_container_get(link_name);
         linkContainers(previous, current, filter);
         previous = current;
       }
-      if (route->dst_gateway){
-        current = PJ_container_get(route->dst_gateway->name);
+      if (route->gw_dst){
+        current = PJ_container_get(route->gw_dst->name);
       }else{
         current = child2;
       }
@@ -186,8 +215,10 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
 /*
  * Callbacks
  */
-static void instr_routing_parse_start_AS (const char*id,int routing)
+static void instr_routing_parse_start_AS (sg_platf_AS_cbarg_t AS)
 {
+  const char*id = AS->id;
+
   if (PJ_container_get_root() == NULL){
     PJ_container_alloc ();
     PJ_type_alloc();
@@ -345,7 +376,9 @@ static void instr_routing_parse_end_platform ()
   xbt_dynar_free(&currentContainer);
   currentContainer = NULL;
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free);
+  XBT_DEBUG ("Starting graph extraction.");
   recursiveGraphExtraction (routing_platf->root, PJ_container_get_root(), filter);
+  XBT_DEBUG ("Graph extraction finished.");
   xbt_dict_free(&filter);
   platform_created = 1;
   TRACE_paje_dump_buffer(1);
@@ -526,7 +559,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
       if (strcmp (child1_name, child2_name) == 0) continue;
 
       //get the route
-      route_t route = xbt_new0(s_route_t,1);
+      sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
       route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
       rc->get_route_and_latency(rc, child1->net_elm, child2->net_elm,
                                 route, NULL);
@@ -539,8 +572,8 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
       unsigned int cpt;
       void *link;
       xbt_node_t current, previous;
-      if (route->src_gateway){
-        previous = new_xbt_graph_node(graph, route->src_gateway->name, nodes);
+      if (route->gw_src){
+        previous = new_xbt_graph_node(graph, route->gw_src->name, nodes);
       }else{
         previous = new_xbt_graph_node(graph, child1_name, nodes);
       }
@@ -552,8 +585,8 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
         //previous -> current
         previous = current;
       }
-      if (route->dst_gateway){
-        current = new_xbt_graph_node(graph, route->dst_gateway->name, nodes);
+      if (route->gw_dst){
+        current = new_xbt_graph_node(graph, route->gw_dst->name, nodes);
       }else{
         current = new_xbt_graph_node(graph, child2_name, nodes);
       }

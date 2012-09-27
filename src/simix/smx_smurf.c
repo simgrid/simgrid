@@ -123,6 +123,17 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_simcall_answer(simcall);
       break;
 
+    case SIMCALL_COMM_IPROBE:
+      simcall->comm_iprobe.result = SIMIX_comm_iprobe(
+          simcall->issuer,
+          simcall->comm_iprobe.rdv,
+          simcall->comm_iprobe.src,
+          simcall->comm_iprobe.tag,
+          simcall->comm_iprobe.match_fun,
+          simcall->comm_iprobe.data);
+      SIMIX_simcall_answer(simcall);
+      break;
+
     case SIMCALL_COMM_DESTROY:
       SIMIX_comm_destroy(simcall->comm_destroy.comm);
       SIMIX_simcall_answer(simcall);
@@ -200,6 +211,16 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
 
     case SIMCALL_RDV_GET_HEAD:
       simcall->rdv_get_head.result = SIMIX_rdv_get_head(simcall->rdv_get_head.rdv);
+      SIMIX_simcall_answer(simcall);
+      break;
+
+    case SIMCALL_RDV_SET_RECV:
+      SIMIX_rdv_set_receiver(simcall->rdv_set_rcv_proc.rdv, simcall->rdv_set_rcv_proc.receiver);
+      SIMIX_simcall_answer(simcall);
+      break;
+
+    case SIMCALL_RDV_GET_RECV:
+      simcall->rdv_get_rcv_proc.result = SIMIX_rdv_get_receiver(simcall->rdv_set_rcv_proc.rdv);
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -520,6 +541,20 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
 
     case SIMCALL_FILE_STAT:
       SIMIX_pre_file_stat(simcall);
+      break;
+
+    case SIMCALL_FILE_UNLINK:
+      SIMIX_pre_file_unlink(simcall);
+      break;
+
+    case SIMCALL_FILE_LS:
+      SIMIX_pre_file_ls(simcall);
+      break;
+
+    case SIMCALL_ASR_GET_PROPERTIES:
+      simcall->asr_get_properties.result =
+        SIMIX_asr_get_properties(simcall->asr_get_properties.name);
+      SIMIX_simcall_answer(simcall);
       break;
 
     case SIMCALL_NONE:

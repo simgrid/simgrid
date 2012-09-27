@@ -10,27 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "Paje tracing event system");
 
-typedef enum {
-  PAJE_DefineContainerType,
-  PAJE_DefineVariableType,
-  PAJE_DefineStateType,
-  PAJE_DefineEventType,
-  PAJE_DefineLinkType,
-  PAJE_DefineEntityValue,
-  PAJE_CreateContainer,
-  PAJE_DestroyContainer,
-  PAJE_SetVariable,
-  PAJE_AddVariable,
-  PAJE_SubVariable,
-  PAJE_SetState,
-  PAJE_PushState,
-  PAJE_PopState,
-  PAJE_ResetState,
-  PAJE_StartLink,
-  PAJE_EndLink,
-  PAJE_NewEvent
-} e_event_type;
-
 typedef struct paje_event *paje_event_t;
 typedef struct paje_event {
   double timestamp;
@@ -154,9 +133,38 @@ typedef struct s_newEvent {
   val_t value;
 }s_newEvent_t;
 
-static FILE *tracing_file = NULL;
+FILE *tracing_file = NULL;
 
 static xbt_dynar_t buffer = NULL;
+
+static void dump_comment (const char *comment)
+{
+  if (!strlen(comment)) return;
+  fprintf (tracing_file, "# %s\n", comment);
+}
+
+static void dump_comment_file (const char *filename)
+{
+  if (!strlen(filename)) return;
+  FILE *file = fopen (filename, "r");
+  if (!file){
+    THROWF (system_error, 1, "Comment file %s could not be opened for reading.", filename);
+  }
+  while (!feof(file)){
+    char c;
+    c = fgetc(file);
+    if (feof(file)) break;
+    fprintf (tracing_file, "# ");
+    while (c != '\n'){
+      fprintf (tracing_file, "%c", c);
+      c = fgetc(file);
+      if (feof(file)) break;
+    }
+    fprintf (tracing_file, "\n");
+  }
+  fclose(file);
+}
+
 
 void TRACE_paje_start(void)
 {
@@ -168,8 +176,17 @@ void TRACE_paje_start(void)
 
   XBT_DEBUG("Filename %s is open for writing", filename);
 
+  /* output generator version */
+  fprintf (tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n", SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);
+
+  /* output one line comment */
+  dump_comment (TRACE_get_comment());
+
+  /* output comment file */
+  dump_comment_file (TRACE_get_comment_file());
+
   /* output header */
-  TRACE_paje_create_header();
+  TRACE_header(TRACE_basic());
 
   buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
 }
@@ -210,138 +227,6 @@ void TRACE_paje_dump_buffer (int force)
     }
   }
   XBT_DEBUG("%s: ends", __FUNCTION__);
-}
-
-void TRACE_paje_create_header(void)
-{
-  XBT_DEBUG ("Define paje header");
-  fprintf(tracing_file, "\
-%%EventDef PajeDefineContainerType %d \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       Name string \n\
-%%EndEventDef \n\
-%%EventDef PajeDefineVariableType %d \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       Name string \n\
-%%       Color color \n\
-%%EndEventDef \n\
-%%EventDef PajeDefineStateType %d \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       Name string \n\
-%%EndEventDef \n\
-%%EventDef PajeDefineEventType %d \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       Name string \n\
-%%EndEventDef \n\
-%%EventDef PajeDefineLinkType %d \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       StartContainerType string \n\
-%%       EndContainerType string \n\
-%%       Name string \n\
-%%EndEventDef \n\
-%%EventDef PajeDefineEntityValue %d \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       Name string \n\
-%%       Color color \n\
-%%EndEventDef \n\
-%%EventDef PajeCreateContainer %d \n\
-%%       Time date \n\
-%%       Alias string \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Name string \n\
-%%EndEventDef \n\
-%%EventDef PajeDestroyContainer %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Name string \n\
-%%EndEventDef \n\
-%%EventDef PajeSetVariable %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Value double \n\
-%%EndEventDef\n\
-%%EventDef PajeAddVariable %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Value double \n\
-%%EndEventDef\n\
-%%EventDef PajeSubVariable %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Value double \n\
-%%EndEventDef\n\
-%%EventDef PajeSetState %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%EndEventDef\n\
-%%EventDef PajePushState %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%EndEventDef\n\
-%%EventDef PajePopState %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%EndEventDef\n\
-%%EventDef PajeResetState %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%EndEventDef\n\
-%%EventDef PajeStartLink %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%       StartContainer string \n\
-%%       Key string \n\
-%%EndEventDef\n\
-%%EventDef PajeEndLink %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%       EndContainer string \n\
-%%       Key string \n\
-%%EndEventDef\n\
-%%EventDef PajeNewEvent %d \n\
-%%       Time date \n\
-%%       Type string \n\
-%%       Container string \n\
-%%       Value string \n\
-%%EndEventDef\n",
-  PAJE_DefineContainerType,
-  PAJE_DefineVariableType,
-  PAJE_DefineStateType,
-  PAJE_DefineEventType,
-  PAJE_DefineLinkType,
-  PAJE_DefineEntityValue,
-  PAJE_CreateContainer,
-  PAJE_DestroyContainer,
-  PAJE_SetVariable,
-  PAJE_AddVariable,
-  PAJE_SubVariable,
-  PAJE_SetState,
-  PAJE_PushState,
-  PAJE_PopState,
-  PAJE_ResetState,
-  PAJE_StartLink,
-  PAJE_EndLink,
-  PAJE_NewEvent);
 }
 
 /* internal do the instrumentation module */

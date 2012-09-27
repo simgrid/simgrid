@@ -15,6 +15,8 @@ typedef struct s_smx_rvpoint {
   char *name;
   xbt_fifo_t comm_fifo;
   void *data;
+  smx_process_t permanent_receiver; //process which the mailbox is attached to
+  xbt_fifo_t done_comm_fifo;//messages already received in the permanent receive mode
 } s_smx_rvpoint_t;
 
 void SIMIX_network_init(void);
@@ -30,6 +32,8 @@ smx_rdv_t SIMIX_rdv_get_by_name(const char *name);
 void SIMIX_rdv_remove(smx_rdv_t rdv, smx_action_t comm);
 int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host);
 smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv);
+void SIMIX_rdv_set_receiver(smx_rdv_t rdv, smx_process_t proc);
+smx_process_t SIMIX_rdv_get_receiver(smx_rdv_t rdv);
 void SIMIX_comm_start(smx_action_t action);
 void SIMIX_comm_send(smx_process_t src_proc, smx_rdv_t rdv,
                      double task_size, double rate,
@@ -53,6 +57,8 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
 void SIMIX_comm_destroy(smx_action_t action);
 void SIMIX_comm_destroy_internal_actions(smx_action_t action);
 void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout, int idx);
+smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
+                              int tag, int (*match_fun)(void *, void *, smx_action_t), void *data);
 void SIMIX_pre_comm_waitany(smx_simcall_t simcall, int idx);
 void SIMIX_post_comm(smx_action_t action);
 void SIMIX_pre_comm_test(smx_simcall_t simcall);

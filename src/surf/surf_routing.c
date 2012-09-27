@@ -42,6 +42,7 @@ xbt_lib_t as_router_lib;
 int ROUTING_ASR_LEVEL;          //Routing level
 int COORD_ASR_LEVEL;            //Coordinates level
 int NS3_ASR_LEVEL;              //host node for ns3
+int ROUTING_PROP_ASR_LEVEL;     //Where the properties are stored
 
 static xbt_dict_t random_value = NULL;
 
@@ -60,13 +61,7 @@ routing_platf_t routing_platf = NULL;
 AS_t current_routing = NULL;
 
 /* global parse functions */
-xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
 extern xbt_dynar_t mount_list;
-
-static const char *src = NULL;  /* temporary store the source name of a route */
-static const char *dst = NULL;  /* temporary store the destination name of a route */
-static char *gw_src = NULL;     /* temporary store the gateway source name of a route */
-static char *gw_dst = NULL;     /* temporary store the gateway destination name of a route */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
@@ -153,7 +148,7 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
   xbt_assert(!xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL),
              "Reading a host, processing unit \"%s\" already exists", host->id);
 
-  info = xbt_new0(s_network_element_t, 1);
+  info = xbt_new0(s_routing_edge_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_HOST;
   info->name = xbt_strdup(host->id);
@@ -198,7 +193,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
 
-  info = xbt_new0(s_network_element_t, 1);
+  info = xbt_new0(s_routing_edge_t, 1);
   info->rc_component = current_routing;
   info->rc_type = SURF_NETWORK_ELEMENT_ROUTER;
   info->name = xbt_strdup(router->id);
@@ -206,7 +201,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'",router->id,info->id);
 
-  if (strcmp(router->coord, "")) {
+  if (router->coord && strcmp(router->coord, "")) {
     unsigned int cursor;
     char*str;
 
@@ -226,171 +221,104 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   }
 }
 
-
-/**
- * \brief Set the end points for a route
- */
-static void routing_parse_S_route(void)
-{
-  src = A_surfxml_route_src;
-  dst = A_surfxml_route_dst;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\"",
-             src, dst);
-  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-
-/**
- * \brief Set the end points and gateways for a ASroute
- */
-static void routing_parse_S_ASroute(void)
-{
-  src = A_surfxml_ASroute_src;
-  dst = A_surfxml_ASroute_dst;
-  gw_src = A_surfxml_ASroute_gw_src;
-  gw_dst = A_surfxml_ASroute_gw_dst;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0 || strlen(gw_dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-             src, dst,gw_src,gw_dst);
-  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-
-/**
- * \brief Set the end points for a bypassRoute
- */
-static void routing_parse_S_bypassRoute(void)
-{
-  src = A_surfxml_bypassRoute_src;
-  dst = A_surfxml_bypassRoute_dst;
-  gw_src = NULL;
-  gw_dst = NULL;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0 || strlen(gw_dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-             src, dst,gw_src,gw_dst);
-  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-
-/**
- * \brief Set the end points for a bypassASroute
- */
-static void routing_parse_S_bypassASroute(void)
-{
-  src = A_surfxml_bypassASroute_src;
-  dst = A_surfxml_bypassASroute_dst;
-  gw_src = A_surfxml_bypassASroute_gw_src;
-  gw_dst = A_surfxml_bypassASroute_gw_dst;
-  xbt_assert(strlen(src) > 0 || strlen(dst) > 0 || strlen(gw_src) > 0 || strlen(gw_dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-             src, dst,gw_src,gw_dst);
-  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-/**
- * \brief Set a new link on the actual list of link for a route or ASroute from XML
- */
-
-static void routing_parse_link_ctn(void)
-{
-  char *link_id;
-  switch (A_surfxml_link_ctn_direction) {
-  case AU_surfxml_link_ctn_direction:
-  case A_surfxml_link_ctn_direction_NONE:
-    link_id = xbt_strdup(A_surfxml_link_ctn_id);
-    break;
-  case A_surfxml_link_ctn_direction_UP:
-    link_id = bprintf("%s_UP", A_surfxml_link_ctn_id);
-    break;
-  case A_surfxml_link_ctn_direction_DOWN:
-    link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
-    break;
-  }
-  xbt_dynar_push(parsed_link_list, &link_id);
-}
-
 /**
  * \brief Store the route by calling the set_route function of the current routing component
  */
-static void routing_parse_E_route(void)
+static void parse_E_route(sg_platf_route_cbarg_t route)
 {
-  route_t route = xbt_new0(s_route_t, 1);
-  route->link_list = parsed_link_list;
   xbt_assert(current_routing->parse_route,
              "no defined method \"set_route\" in \"%s\"",
              current_routing->name);
-  current_routing->parse_route(current_routing, src, dst, route);
-  generic_free_route(route);
-  parsed_link_list = NULL;
-  src = NULL;
-  dst = NULL;
+
+  current_routing->parse_route(current_routing, route);
 }
 
 /**
  * \brief Store the ASroute by calling the set_ASroute function of the current routing component
  */
-static void routing_parse_E_ASroute(void)
+static void parse_E_ASroute(sg_platf_route_cbarg_t ASroute)
 {
-  route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = parsed_link_list;
-
-  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
-    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
-    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
-    //
-    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-    e_route->src_gateway = (sg_routing_edge_t) gw_src;
-    e_route->dst_gateway = (sg_routing_edge_t) gw_dst;
-  } else {
-    e_route->src_gateway = sg_routing_edge_by_name_or_null(gw_src);
-    e_route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst);
-  }
   xbt_assert(current_routing->parse_ASroute,
              "no defined method \"set_ASroute\" in \"%s\"",
              current_routing->name);
-  current_routing->parse_ASroute(current_routing, src, dst, e_route);
-  generic_free_route(e_route);
-  parsed_link_list = NULL;
-  src = NULL;
-  dst = NULL;
-  gw_src = NULL;
-  gw_dst = NULL;
+  current_routing->parse_ASroute(current_routing, ASroute);
 }
 
 /**
  * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
  */
-static void routing_parse_E_bypassRoute(void)
+static void parse_E_bypassRoute(sg_platf_route_cbarg_t route)
 {
-  route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = parsed_link_list;
-
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
 
-  current_routing->parse_bypassroute(current_routing, src, dst, e_route);
-  parsed_link_list = NULL;
-  src = NULL;
-  dst = NULL;
-  gw_src = NULL;
-  gw_dst = NULL;
+  current_routing->parse_bypassroute(current_routing, route);
 }
+
 /**
  * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
  */
-static void routing_parse_E_bypassASroute(void)
+static void parse_E_bypassASroute(sg_platf_route_cbarg_t ASroute)
 {
-  route_t e_route = xbt_new0(s_route_t, 1);
-  e_route->link_list = parsed_link_list;
-  e_route->src_gateway = sg_routing_edge_by_name_or_null(gw_src);
-  e_route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst);
   xbt_assert(current_routing->parse_bypassroute,
              "Bypassing mechanism not implemented by routing '%s'",
              current_routing->name);
-  current_routing->parse_bypassroute(current_routing, src, dst, e_route);
-  parsed_link_list = NULL;
-  src = NULL;
-  dst = NULL;
-  gw_src = NULL;
-  gw_dst = NULL;
+  current_routing->parse_bypassroute(current_routing, ASroute);
+}
+
+static void routing_parse_trace(sg_platf_trace_cbarg_t trace)
+{
+  tmgr_trace_t tmgr_trace;
+  if (!trace->file || strcmp(trace->file, "") != 0) {
+    tmgr_trace = tmgr_trace_new_from_file(trace->file);
+  } else if (strcmp(trace->pc_data, "") == 0) {
+    tmgr_trace = NULL;
+  } else {
+    tmgr_trace =
+          tmgr_trace_new_from_string(trace->id, trace->pc_data,
+                                     trace->periodicity);
+  }
+  xbt_dict_set(traces_set_list, trace->id, (void *) tmgr_trace, NULL);
+}
+
+static void routing_parse_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
+{
+  xbt_assert(xbt_dict_get_or_null
+              (traces_set_list, trace_connect->trace),
+              "Cannot connect trace %s to %s: trace unknown",
+              trace_connect->trace,
+              trace_connect->element);
+
+  switch (trace_connect->kind) {
+  case SURF_TRACE_CONNECT_KIND_HOST_AVAIL:
+    xbt_dict_set(trace_connect_list_host_avail,
+        trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_POWER:
+    xbt_dict_set(trace_connect_list_power, trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_LINK_AVAIL:
+    xbt_dict_set(trace_connect_list_link_avail,
+        trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_BANDWIDTH:
+    xbt_dict_set(trace_connect_list_bandwidth,
+        trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_LATENCY:
+    xbt_dict_set(trace_connect_list_latency, trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  default:
+    xbt_die("Cannot connect trace %s to %s: kind of trace unknown",
+        trace_connect->trace, trace_connect->element);
+    break;
+  }
 }
 
 /**
@@ -406,17 +334,18 @@ static void routing_parse_E_bypassASroute(void)
  * @param AS_id name of this autonomous system. Must be unique in the platform
  * @param wanted_routing_type one of Full, Floyd, Dijkstra or similar. Full list in the variable routing_models, in src/surf/surf_routing.c
  */
-void routing_AS_begin(const char *AS_id, int wanted_routing_type)
+void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 {
+  XBT_DEBUG("routing_AS_begin");
   AS_t new_as;
   routing_model_description_t model = NULL;
 
   xbt_assert(!xbt_lib_get_or_null
-             (as_router_lib, AS_id, ROUTING_ASR_LEVEL),
-             "The AS \"%s\" already exists", AS_id);
+             (as_router_lib, AS->id, ROUTING_ASR_LEVEL),
+             "The AS \"%s\" already exists", AS->id);
 
   /* search the routing model */
-  switch(wanted_routing_type){
+  switch(AS->routing){
     case A_surfxml_AS_routing_Cluster:       model = &routing_models[SURF_MODEL_CLUSTER];break;
     case A_surfxml_AS_routing_Dijkstra:      model = &routing_models[SURF_MODEL_DIJKSTRA];break;
     case A_surfxml_AS_routing_DijkstraCache: model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
@@ -425,16 +354,18 @@ void routing_AS_begin(const char *AS_id, int wanted_routing_type)
     case A_surfxml_AS_routing_None:          model = &routing_models[SURF_MODEL_NONE];break;
     case A_surfxml_AS_routing_RuleBased:     model = &routing_models[SURF_MODEL_RULEBASED];break;
     case A_surfxml_AS_routing_Vivaldi:       model = &routing_models[SURF_MODEL_VIVALDI];break;
+    default: xbt_die("Not a valid model!!!");
+    break;
   }
 
   /* make a new routing component */
   new_as = (AS_t) model->create();
   new_as->model_desc = model;
   new_as->hierarchy = SURF_ROUTING_NULL;
-  new_as->name = xbt_strdup(AS_id);
+  new_as->name = xbt_strdup(AS->id);
 
   sg_routing_edge_t info = NULL;
-  info = xbt_new0(s_network_element_t, 1);
+  info = xbt_new0(s_routing_edge_t, 1);
 
   if (current_routing == NULL && routing_platf->root == NULL) {
 
@@ -445,15 +376,15 @@ void routing_AS_begin(const char *AS_id, int wanted_routing_type)
   } else if (current_routing != NULL && routing_platf->root != NULL) {
 
     xbt_assert(!xbt_dict_get_or_null
-               (current_routing->routing_sons, AS_id),
-               "The AS \"%s\" already exists", AS_id);
+               (current_routing->routing_sons, AS->id),
+               "The AS \"%s\" already exists", AS->id);
     /* it is a part of the tree */
     new_as->routing_father = current_routing;
     /* set the father behavior */
     if (current_routing->hierarchy == SURF_ROUTING_NULL)
       current_routing->hierarchy = SURF_ROUTING_RECURSIVE;
     /* add to the sons dictionary */
-    xbt_dict_set(current_routing->routing_sons, AS_id,
+    xbt_dict_set(current_routing->routing_sons, AS->id,
                  (void *) new_as, NULL);
     /* add to the father element list */
     info->id = current_routing->parse_AS(current_routing, (void *) info);
@@ -465,7 +396,7 @@ void routing_AS_begin(const char *AS_id, int wanted_routing_type)
   info->rc_type = SURF_NETWORK_ELEMENT_AS;
   info->name = new_as->name;
 
-  xbt_lib_set(as_router_lib, new_as->name, ROUTING_ASR_LEVEL,
+  xbt_lib_set(as_router_lib, info->name, ROUTING_ASR_LEVEL,
               (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'",new_as->name,info->id);
 
@@ -486,7 +417,7 @@ void routing_AS_begin(const char *AS_id, int wanted_routing_type)
  * even if you add stuff to a closed AS
  *
  */
-void routing_AS_end()
+void routing_AS_end(sg_platf_AS_cbarg_t AS)
 {
 
   if (current_routing == NULL) {
@@ -587,11 +518,11 @@ static void elements_father(sg_routing_edge_t src, sg_routing_edge_t dst,
 static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
                                    xbt_dynar_t * links, double *latency)
 {
-  s_route_t route;
+  s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
-  XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src->name, dst->name);
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
+  XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src->name, dst->name);
 
   /* Find how src and dst are interconnected */
   AS_t common_father, src_father, dst_father;
@@ -600,7 +531,7 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
       common_father->name,src_father->name,dst_father->name);
 
   /* Check whether a direct bypass is defined */
-  route_t e_route_bypass = NULL;
+  sg_platf_route_cbarg_t e_route_bypass = NULL;
   if (common_father->get_bypass_route)
     e_route_bypass = common_father->get_bypass_route(common_father, src, dst, latency);
 
@@ -630,11 +561,11 @@ static void _get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
                                        src_father_net_elm, dst_father_net_elm,
                                        &route, latency);
 
-  xbt_assert((route.src_gateway != NULL) && (route.dst_gateway != NULL),
+  xbt_assert((route.gw_src != NULL) && (route.gw_dst != NULL),
       "bad gateways for route from \"%s\" to \"%s\"", src->name, dst->name);
 
-  sg_routing_edge_t src_gateway_net_elm = route.src_gateway;
-  sg_routing_edge_t dst_gateway_net_elm = route.dst_gateway;
+  sg_routing_edge_t src_gateway_net_elm = route.gw_src;
+  sg_routing_edge_t dst_gateway_net_elm = route.gw_dst;
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != src_gateway_net_elm)
@@ -867,8 +798,8 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   xbt_dynar_t radical_elements;
   xbt_dynar_t radical_ends;
 
-  if (strcmp(cluster->availability_trace, "")
-      || strcmp(cluster->state_trace, "")) {
+  if ((cluster->availability_trace && strcmp(cluster->availability_trace, ""))
+      || (cluster->state_trace && strcmp(cluster->state_trace, ""))) {
     patterns = xbt_dict_new_homogeneous(xbt_free_f);
     xbt_dict_set(patterns, "id", xbt_strdup(cluster->id), NULL);
     xbt_dict_set(patterns, "prefix", xbt_strdup(cluster->prefix), NULL);
@@ -876,7 +807,10 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   }
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
-  sg_platf_new_AS_begin(cluster->id, A_surfxml_AS_routing_Cluster);
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = cluster->id;
+  AS.routing = A_surfxml_AS_routing_Cluster;
+  sg_platf_new_AS_begin(&AS);
 
   current_routing->link_up_down_list
             = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
@@ -908,7 +842,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
       memset(&host, 0, sizeof(host));
       host.id = host_id;
-      if (strcmp(cluster->availability_trace, "")) {
+      if (cluster->availability_trace && strcmp(cluster->availability_trace, "")) {
         xbt_dict_set(patterns, "radical", bprintf("%d", i), NULL);
         char *avail_file = xbt_str_varsubst(cluster->availability_trace, patterns);
         XBT_DEBUG("\tavailability_file=\"%s\"", avail_file);
@@ -918,7 +852,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         XBT_DEBUG("\tavailability_file=\"\"");
       }
 
-      if (strcmp(cluster->state_trace, "")) {
+      if (cluster->state_trace && strcmp(cluster->state_trace, "")) {
         char *avail_file = xbt_str_varsubst(cluster->state_trace, patterns);
         XBT_DEBUG("\tstate_file=\"%s\"", avail_file);
         host.state_trace = tmgr_trace_new_from_file(avail_file);
@@ -1200,24 +1134,10 @@ void routing_register_callbacks()
   sg_platf_host_add_cb(parse_S_host);
   sg_platf_router_add_cb(parse_S_router);
   sg_platf_host_link_add_cb(parse_S_host_link);
-
-  surfxml_add_callback(STag_surfxml_random_cb_list, &routing_parse_Srandom);
-
-  surfxml_add_callback(STag_surfxml_route_cb_list, &routing_parse_S_route);
-  surfxml_add_callback(STag_surfxml_ASroute_cb_list, &routing_parse_S_ASroute);
-  surfxml_add_callback(STag_surfxml_bypassRoute_cb_list,
-                       &routing_parse_S_bypassRoute);
-  surfxml_add_callback(STag_surfxml_bypassASroute_cb_list,
-                       &routing_parse_S_bypassASroute);
-
-  surfxml_add_callback(ETag_surfxml_link_ctn_cb_list, &routing_parse_link_ctn);
-
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &routing_parse_E_route);
-  surfxml_add_callback(ETag_surfxml_ASroute_cb_list, &routing_parse_E_ASroute);
-  surfxml_add_callback(ETag_surfxml_bypassRoute_cb_list,
-                       &routing_parse_E_bypassRoute);
-  surfxml_add_callback(ETag_surfxml_bypassASroute_cb_list,
-                       &routing_parse_E_bypassASroute);
+  sg_platf_route_add_cb(parse_E_route);
+  sg_platf_ASroute_add_cb(parse_E_ASroute);
+  sg_platf_bypassRoute_add_cb(parse_E_bypassRoute);
+  sg_platf_bypassASroute_add_cb(parse_E_bypassASroute);
 
   sg_platf_cluster_add_cb(routing_parse_cluster);
   sg_platf_cabinet_add_cb(routing_parse_cabinet);
@@ -1228,6 +1148,9 @@ void routing_register_callbacks()
   /* we care about the ASes while parsing the platf. Incredible, isnt it? */
   sg_platf_AS_end_add_cb(routing_AS_end);
   sg_platf_AS_begin_add_cb(routing_AS_begin);
+
+  sg_platf_trace_add_cb(routing_parse_trace);
+  sg_platf_trace_connect_add_cb(routing_parse_trace_connect);
 
 #ifdef HAVE_TRACING
   instr_routing_define_callbacks();

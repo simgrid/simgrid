@@ -18,113 +18,114 @@ $ $SG_TEST_EXENV ./simdag_tracing --cfg=tracing:1 --cfg=tracing/categorized:1 ${
 > [30.800300] [sd_seq_access/INFO] There is no task running on C2-06
 
 $ cat ./simgrid.trace
-> %EventDef PajeDefineContainerType 0 
-> %       Alias string 
-> %       Type string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeDefineVariableType 1 
-> %       Alias string 
-> %       Type string 
-> %       Name string 
-> %       Color color 
-> %EndEventDef 
-> %EventDef PajeDefineStateType 2 
-> %       Alias string 
-> %       Type string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeDefineEventType 3 
-> %       Alias string 
-> %       Type string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeDefineLinkType 4 
-> %       Alias string 
-> %       Type string 
-> %       StartContainerType string 
-> %       EndContainerType string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeDefineEntityValue 5 
-> %       Alias string 
-> %       Type string 
-> %       Name string 
-> %       Color color 
-> %EndEventDef 
-> %EventDef PajeCreateContainer 6 
-> %       Time date 
-> %       Alias string 
-> %       Type string 
-> %       Container string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeDestroyContainer 7 
-> %       Time date 
-> %       Type string 
-> %       Name string 
-> %EndEventDef 
-> %EventDef PajeSetVariable 8 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value double 
+> #This file was generated using SimGrid-3.8.0
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
 > %EndEventDef
-> %EventDef PajeAddVariable 9 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value double 
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
 > %EndEventDef
-> %EventDef PajeSubVariable 10 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value double 
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
 > %EndEventDef
-> %EventDef PajeSetState 11 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
 > %EndEventDef
-> %EventDef PajePushState 12 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
 > %EndEventDef
-> %EventDef PajePopState 13 
-> %       Time date 
-> %       Type string 
-> %       Container string 
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
 > %EndEventDef
-> %EventDef PajeResetState 14 
-> %       Time date 
-> %       Type string 
-> %       Container string 
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
 > %EndEventDef
-> %EventDef PajeStartLink 15 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
-> %       StartContainer string 
-> %       Key string 
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
 > %EndEventDef
-> %EventDef PajeEndLink 16 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
-> %       EndContainer string 
-> %       Key string 
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
 > %EndEventDef
-> %EventDef PajeNewEvent 17 
-> %       Time date 
-> %       Type string 
-> %       Container string 
-> %       Value string 
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
 > %EndEventDef
 > 0 1 0 HOST
 > 6 0 1 1 0 "C2-06"

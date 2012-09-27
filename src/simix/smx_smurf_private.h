@@ -53,6 +53,8 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_DESTROY),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_GEY_BY_NAME),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_COMM_COUNT_BY_HOST),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_GET_HEAD),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_SET_RECV),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_RDV_GET_RECV),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_SEND),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_ISEND),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_RECV),\
@@ -63,6 +65,7 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_WAITANY),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_WAIT),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_TEST),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_TESTANY),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_IPROBE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_GET_REMAINS),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_GET_STATE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_COMM_GET_SRC_DATA),\
@@ -91,7 +94,10 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_READ),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_WRITE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_OPEN),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_CLOSE),\
-SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_STAT)
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_STAT), \
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_UNLINK),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_LS),\
+SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES)
 
 
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated
@@ -336,6 +342,16 @@ typedef struct s_smx_simcall {
 
     struct {
       smx_rdv_t rdv;
+      smx_process_t receiver;
+    } rdv_set_rcv_proc;
+
+    struct {
+      smx_rdv_t rdv;
+      smx_process_t result;
+    } rdv_get_rcv_proc;
+
+    struct {
+      smx_rdv_t rdv;
       double task_size;
       double rate;
       void *src_buff;
@@ -375,6 +391,15 @@ typedef struct s_smx_simcall {
       void *data;
       smx_action_t result;
     } comm_irecv;
+
+    struct {
+      smx_rdv_t rdv;
+      int src;
+      int tag;
+      int (*match_fun)(void *, void *, smx_action_t);
+      void *data;
+      smx_action_t result;
+    } comm_iprobe;
 
     struct {
       smx_action_t comm;
@@ -561,6 +586,22 @@ typedef struct s_smx_simcall {
       s_file_stat_t buf;
       int result;
     } file_stat;
+
+    struct {
+      smx_file_t fd;
+      int result;
+    } file_unlink;
+
+    struct {
+      const char *mount;
+      const char *path;
+      xbt_dict_t result;
+    } file_ls;
+
+    struct {
+      const char* name;
+      xbt_dict_t result;
+    } asr_get_properties;
 
   };
 } s_smx_simcall_t, *smx_simcall_t;

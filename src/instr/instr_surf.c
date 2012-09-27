@@ -24,33 +24,20 @@ void TRACE_surf_release(void)
 
 void TRACE_surf_host_set_power(double date, const char *resource, double power)
 {
-  if (!TRACE_is_enabled())
-    return;
-
-  container_t container = PJ_container_get(resource);
-  type_t type = PJ_type_get ("power", container->type);
-  new_pajeSetVariable(date, container, type, power);
+  if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
+    container_t container = PJ_container_get(resource);
+    type_t type = PJ_type_get ("power", container->type);
+    new_pajeSetVariable(date, container, type, power);
+  }
 }
 
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth)
 {
-  if (!TRACE_is_enabled())
-    return;
-
-  container_t container = PJ_container_get(resource);
-  type_t type = PJ_type_get ("bandwidth", container->type);
-  new_pajeSetVariable(date, container, type, bandwidth);
-}
-
-//FIXME: this function is not used (latency availability traces support exists in surf network models?)
-void TRACE_surf_link_set_latency(double date, const char *resource, double latency)
-{
-  if (!TRACE_is_enabled())
-    return;
-
-  container_t container = PJ_container_get(resource);
-  type_t type = PJ_type_get ("latency", container->type);
-  new_pajeSetVariable(date, container, type, latency);
+  if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
+    container_t container = PJ_container_get(resource);
+    type_t type = PJ_type_get ("bandwidth", container->type);
+    new_pajeSetVariable(date, container, type, bandwidth);
+  }
 }
 
 /* to trace gtnets */

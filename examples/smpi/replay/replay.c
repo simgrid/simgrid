@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
   smpi_replay_init(&argc, &argv);
 
   /* Actually do the simulation using smpi_action_trace_run */
-  smpi_action_trace_run(argv[1]);  // it's ok to pass a NULL argument here
-
+  smpi_action_trace_run(NULL);
   smpi_replay_finalize();
+
   return 0;
 }

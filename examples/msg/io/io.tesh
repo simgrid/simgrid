@@ -28,3 +28,64 @@ $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage.xml "--log=root.f
 > [  0.004786] (3:2@carl) 	File stat ./doc/simgrid/examples/platforms/g5k_cabinets.xml Size 122645.0
 > [  0.004786] (3:2@carl) 	Close file './doc/simgrid/examples/platforms/g5k_cabinets.xml'
 > [  0.004786] (0:@) Simulation time 0.00478623
+
+$ ${bindir:=.}/io/file_unlink ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:@) Configuration change: Set 'path' to '../examples/platforms/'
+> [  0.000000] (0:@) Number of host '4'
+> [  0.000000] (1:0@denise) 	Open file './doc/simgrid/examples/platforms/g5k.xml'
+> [  0.000000] (1:0@denise) 	File stat ./doc/simgrid/examples/platforms/g5k.xml Size 17028.0
+> [  0.000000] (1:0@denise) 	Unlink file './doc/simgrid/examples/platforms/g5k.xml'
+> [  0.000000] (1:0@denise) 	Open file './doc/simgrid/examples/platforms/g5k.xml'
+> [  0.000000] (1:0@denise) 	File stat ./doc/simgrid/examples/platforms/g5k.xml Size 0.0
+> [  0.003333] (1:0@denise) 	Having write 100000.0 	on ./doc/simgrid/examples/platforms/g5k.xml
+> [  0.003333] (1:0@denise) 	File stat ./doc/simgrid/examples/platforms/g5k.xml Size 100000.0
+> [  0.003333] (1:0@denise) 	Close file './doc/simgrid/examples/platforms/g5k.xml'
+> [  0.003333] (1:0@denise)  
+> [  0.003333] (1:0@denise) ls ./
+> [  0.003333] (1:0@denise) DIR  : include
+> [  0.003333] (1:0@denise) DIR  : lib
+> [  0.003333] (1:0@denise) DIR  : bin
+> [  0.003333] (1:0@denise) DIR  : doc
+> [  0.003333] (1:0@denise)  
+> [  0.003333] (1:0@denise) ls ./doc/simgrid/examples/platforms/
+> [  0.003333] (1:0@denise) FILE : lcg_sept2004_grid.xml
+> [  0.003333] (1:0@denise) FILE : prop.xml
+> [  0.003333] (1:0@denise) FILE : multicore_machine.xml
+> [  0.003333] (1:0@denise) FILE : g5k.xml
+> [  0.003333] (1:0@denise) FILE : vivaldi.xml
+> [  0.003333] (1:0@denise) FILE : gdx.xml
+> [  0.003333] (1:0@denise) FILE : griffon.xml
+> [  0.003333] (1:0@denise) FILE : Two_clusters.xml
+> [  0.003333] (1:0@denise) FILE : One_cluster_no_backbone.xml
+> [  0.003333] (1:0@denise) FILE : median_harvard.xml
+> [  0.003333] (1:0@denise) FILE : nancy.xml
+> [  0.003333] (1:0@denise) FILE : One_cluster.xml
+> [  0.003333] (1:0@denise) FILE : g5k_cabinets.xml
+> [  0.003333] (1:0@denise) FILE : gridpp_grid_2004.xml
+> [  0.003333] (1:0@denise)  
+> [  0.003333] (1:0@denise) ls ./doc/simgrid/examples/msg/
+> [  0.003333] (1:0@denise) DIR  : parallel_contexts
+> [  0.003333] (1:0@denise) DIR  : alias
+> [  0.003333] (1:0@denise) DIR  : trace
+> [  0.003333] (1:0@denise) FILE : small_platform.xml
+> [  0.003333] (1:0@denise) DIR  : priority
+> [  0.003333] (1:0@denise) DIR  : tracing
+> [  0.003333] (1:0@denise) DIR  : properties
+> [  0.003333] (1:0@denise) FILE : README
+> [  0.003333] (1:0@denise) DIR  : chord
+> [  0.003333] (1:0@denise) DIR  : mc
+> [  0.003333] (1:0@denise) DIR  : gtnets
+> [  0.003333] (1:0@denise) DIR  : suspend
+> [  0.003333] (1:0@denise) FILE : small_platform_with_routers.xml
+> [  0.003333] (1:0@denise) DIR  : pmm
+> [  0.003333] (1:0@denise) FILE : msg_platform.xml
+> [  0.003333] (1:0@denise) DIR  : token_ring
+> [  0.003333] (1:0@denise) DIR  : actions
+> [  0.003333] (1:0@denise) FILE : small_platform_with_failures.xml
+> [  0.003333] (1:0@denise) DIR  : ns3
+> [  0.003333] (1:0@denise) DIR  : sendrecv
+> [  0.003333] (1:0@denise) DIR  : parallel_task
+> [  0.003333] (1:0@denise) DIR  : masterslave
+> [  0.003333] (1:0@denise) DIR  : icomms
+> [  0.003333] (1:0@denise) DIR  : migration
+> [  0.003333] (0:@) Simulation time 0.00333333

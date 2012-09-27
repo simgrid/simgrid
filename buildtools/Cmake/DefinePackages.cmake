@@ -272,6 +272,12 @@ set(MSG_SRC
   src/msg/msg_vm.c
   )
 
+set(PLATFGEN_SRC
+  include/simgrid/platf_generator.h
+  src/surf/platf_generator.c
+  src/surf/platf_generator_private.h
+  )
+
 set(SIMDAG_SRC
   src/simdag/sd_daxloader.c
   src/simdag/sd_global.c
@@ -351,6 +357,7 @@ set(TRACING_SRC
   src/instr/instr_msg_task.c
   src/instr/instr_paje_containers.c
   src/instr/instr_paje_trace.c
+  src/instr/instr_paje_header.c
   src/instr/instr_paje_types.c
   src/instr/instr_paje_values.c
   src/instr/instr_private.h
@@ -402,6 +409,7 @@ set(headers_to_install
   include/simdag/simdag.h
   include/simgrid/modelchecker.h
   include/simgrid/platf.h
+  include/simgrid/platf_generator.h
   include/simgrid/simix.h
   include/smpi/mpi.h
   include/smpi/mpif.h
@@ -510,6 +518,7 @@ set(simgrid_sources
   ${SIMDAG_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
+  ${PLATFGEN_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   )

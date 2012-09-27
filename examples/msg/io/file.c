@@ -61,6 +61,7 @@ int host(int argc, char *argv[])
 
   MSG_file_stat(file,&stat);
   XBT_INFO("\tFile stat %s Size %.1f",file->name,stat.size);
+  MSG_file_free_stat(&stat);
 
   XBT_INFO("\tClose file '%s'",file->name);
   MSG_file_close(file);

@@ -12,10 +12,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
                                 "Logging specific to SIMIX (deployment)");
-static int parse_argc = -1;
-static char **parse_argv = NULL;
+
 static xbt_main_func_t parse_code = NULL;
-static char *parse_host = NULL;
 static double start_time = 0.0;
 static double kill_time = -1.0;
 
@@ -23,42 +21,29 @@ static int auto_restart = 0;
 
 extern int surf_parse_lineno;
 
-static void parse_process_init(void)
+static void parse_process(sg_platf_process_cbarg_t process)
 {
-  smx_host_t host = SIMIX_host_get_by_name(A_surfxml_process_host);
+  smx_host_t host = SIMIX_host_get_by_name(process->host);
   if (!host)
-    THROWF(arg_error, 0, "Host '%s' unknown", A_surfxml_process_host);
-  parse_host = host->name;
-  parse_code = SIMIX_get_registered_function(A_surfxml_process_function);
-  xbt_assert(parse_code, "Function '%s' unknown",
-              A_surfxml_process_function);
-  parse_argv = xbt_new(char *, 2);
-  parse_argv[0] = xbt_strdup(A_surfxml_process_function);
-  parse_argc = 1;
-  start_time = surf_parse_get_double(A_surfxml_process_start_time);
-  kill_time  = surf_parse_get_double(A_surfxml_process_kill_time);
-  auto_restart = A_surfxml_process_on_failure == A_surfxml_process_on_failure_DIE ? 0 : 1;
-}
-static void parse_argument(void)
-{
-  parse_argv = xbt_realloc(parse_argv, (parse_argc + 2) * sizeof(char *));
-  parse_argv[parse_argc++] = xbt_strdup(A_surfxml_argument_value);
-}
+    THROWF(arg_error, 0, "Host '%s' unknown", process->host);
+  parse_code = SIMIX_get_registered_function(process->function);
+  xbt_assert(parse_code, "Function '%s' unknown", process->function);
 
-static void parse_process_finalize(void)
-{
+  start_time = process->start_time;
+  kill_time  = process->kill_time;
+  auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
+
   smx_process_arg_t arg = NULL;
-  smx_process_t process = NULL;
-  parse_argv[parse_argc] = NULL;
+  smx_process_t process_created = NULL;
 
   if (start_time > SIMIX_get_clock()) {
     arg = xbt_new0(s_smx_process_arg_t, 1);
-    arg->name = parse_argv[0];
+    arg->name = (char*)(process->argv)[0];
     arg->code = parse_code;
     arg->data = NULL;
-    arg->hostname = parse_host;
-    arg->argc = parse_argc;
-    arg->argv = parse_argv;
+    arg->hostname = host->name;
+    arg->argc = process->argc;
+    arg->argv = (char**)(process->argv);
     arg->kill_time = kill_time;
     arg->properties = current_property_set;
 
@@ -66,25 +51,25 @@ static void parse_process_finalize(void)
            arg->hostname, start_time);
     SIMIX_timer_set(start_time, &SIMIX_process_create_from_wrapper, arg);
   } else {                      // start_time <= SIMIX_get_clock()
-    XBT_DEBUG("Starting Process %s(%s) right now", parse_argv[0], parse_host);
+    XBT_DEBUG("Starting Process %s(%s) right now", process->argv[0], host->name);
 
     if (simix_global->create_process_function)
-      simix_global->create_process_function(&process,
-                                            parse_argv[0],
+      simix_global->create_process_function(&process_created,
+                                            (char*)(process->argv)[0],
                                             parse_code,
                                             NULL,
-                                            parse_host,
+                                            host->name,
                                             kill_time,
-                                            parse_argc,
-                                            parse_argv,
+                                            process->argc,
+                                            (char**)(process->argv),
                                             current_property_set,
                                             auto_restart);
     else
-      simcall_process_create(&process, parse_argv[0], parse_code, NULL, parse_host, kill_time, parse_argc, parse_argv,
-                               current_property_set,auto_restart);
+      simcall_process_create(&process_created, (char*)(process->argv)[0], parse_code, NULL, host->name, kill_time, process->argc,
+          (char**)process->argv, current_property_set,auto_restart);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
-    if (!process) {
+    if (!process_created) {
       return;
     }
   }
@@ -115,11 +100,7 @@ void SIMIX_launch_application(const char *file)
 
   surf_parse_reset_callbacks();
 
-  surfxml_add_callback(STag_surfxml_process_cb_list, parse_process_init);
-  surfxml_add_callback(ETag_surfxml_argument_cb_list, parse_argument);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, parse_properties);
-  surfxml_add_callback(ETag_surfxml_process_cb_list,
-                       parse_process_finalize);
+  sg_platf_process_add_cb(parse_process);
 
   surf_parse_open(file);
   TRY {
@@ -127,8 +108,9 @@ void SIMIX_launch_application(const char *file)
     surf_parse_close();
     xbt_assert(!parse_status, "Parse error at %s:%d", file,surf_parse_lineno);
   } CATCH(e) {
-    xbt_die("Unrecoverable error at %s:%d: %s",
-                  file, surf_parse_lineno, e.msg);
+    XBT_ERROR("Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
+        file, surf_parse_lineno);
+    RETHROW;
   }
 }
 
@@ -193,30 +175,34 @@ void SIMIX_process_set_function(const char *process_host,
                                 double process_start_time,
                                 double process_kill_time)
 {
-  unsigned int i;
-  char *arg;
+  s_sg_platf_process_cbarg_t process;
+  memset(&process,0,sizeof(process));
 
-  /* init process */
   smx_host_t host = SIMIX_host_get_by_name(process_host);
   if (!host)
     THROWF(arg_error, 0, "Host '%s' unknown", process_host);
-  parse_host = host->name;
+  process.host = host->name;
+
+  process.argc = 1 + xbt_dynar_length(arguments);
+  process.argv = (const char**)xbt_new(char *, process.argc + 1);
+  process.argv[0] = xbt_strdup(process_function);
+  /* add arguments */
+  unsigned int i;
+  char *arg;
+  xbt_dynar_foreach(arguments, i, arg) {
+    process.argv[i + 1] = xbt_strdup(arg);
+  }
+  process.argv[process.argc] = NULL;
+
   parse_code = SIMIX_get_registered_function(process_function);
   xbt_assert(parse_code, "Function '%s' unknown", process_function);
+  process.function = process_function;
 
-  parse_argc = 1 + xbt_dynar_length(arguments);
-  parse_argv = xbt_new(char *, parse_argc + 1);
-  parse_argv[0] = xbt_strdup(process_function);
+  process.host = process_host;
+  process.kill_time = process_kill_time;
+  process.start_time = process_start_time;
+  process.on_failure = SURF_PROCESS_ON_FAILURE_DIE;
+  process.properties = NULL;
 
-  /* add arguments */
-  xbt_dynar_foreach(arguments, i, arg) {
-    parse_argv[i + 1] = xbt_strdup(arg);
-  }
-  parse_argv[parse_argc] = NULL;
-
-  start_time = process_start_time;
-  kill_time = process_kill_time;
-
-  /* finalize */
-  parse_process_finalize();
+  sg_platf_new_process(&process);
 }

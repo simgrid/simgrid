@@ -20,11 +20,10 @@ typedef struct {
 } s_AS_rulebased_t, *AS_rulebased_t;
 
 typedef struct s_rule_route s_rule_route_t, *rule_route_t;
-typedef struct s_rule_route_extended s_rule_route_extended_t,
-*rule_route_extended_t;
+typedef struct s_rule_route_extended s_rule_route_extended_t, *rule_route_extended_t;
 
 struct s_rule_route {
-  xbt_dynar_t re_str_link;      // dynar of char*
+  xbt_dynar_t re_str_link;  // dynar of char*
   pcre *re_src;
   pcre *re_dst;
 };
@@ -76,10 +75,11 @@ static int model_rulebased_parse_AS(AS_t rc, sg_routing_edge_t elm)
   return -1;
 }
 
-static void model_rulebased_parse_route(AS_t rc,
-    const char *src, const char *dst,
-    route_t route)
+static void model_rulebased_parse_route(AS_t rc, sg_platf_route_cbarg_t route)
 {
+  char *src = (char*)(route->src);
+  char *dst = (char*)(route->dst);
+
   AS_rulebased_t routing = (AS_rulebased_t) rc;
   rule_route_t ruleroute = xbt_new0(s_rule_route_t, 1);
   const char *error;
@@ -105,10 +105,11 @@ static void model_rulebased_parse_route(AS_t rc,
   xbt_dynar_push(routing->list_route, &ruleroute);
 }
 
-static void model_rulebased_parse_ASroute(AS_t rc,
-    const char *src, const char *dst,
-    route_t route)
+static void model_rulebased_parse_ASroute(AS_t rc, sg_platf_route_cbarg_t route)
 {
+  char *src = (char*)(route->src);
+  char *dst = (char*)(route->dst);
+
   AS_rulebased_t routing = (AS_rulebased_t) rc;
   rule_route_extended_t ruleroute_e = xbt_new0(s_rule_route_extended_t, 1);
   const char *error;
@@ -126,29 +127,26 @@ static void model_rulebased_parse_ASroute(AS_t rc,
       erroffset, src, error);
   ruleroute_e->generic_rule_route.re_dst =
       pcre_compile(dst, 0, &error, &erroffset, NULL);
-  xbt_assert(ruleroute_e->generic_rule_route.re_src,
+  xbt_assert(ruleroute_e->generic_rule_route.re_dst,
       "PCRE compilation failed at offset %d (\"%s\"): %s\n",
       erroffset, dst, error);
-  ruleroute_e->generic_rule_route.re_str_link =
-      route->link_list;
+
+  ruleroute_e->generic_rule_route.re_str_link = route->link_list;
 
   // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
   // store the provided name instead of the entity directly (routing_parse_E_ASroute knows)
   //
   // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-  ruleroute_e->re_src_gateway = xbt_strdup((char *)route->src_gateway);
-  ruleroute_e->re_dst_gateway = xbt_strdup((char *)route->dst_gateway);
+  ruleroute_e->re_src_gateway = xbt_strdup((char *)route->gw_src);
+  ruleroute_e->re_dst_gateway = xbt_strdup((char *)route->gw_dst);
   xbt_dynar_push(routing->list_ASroute, &ruleroute_e);
 
   /* make sure that they don't get freed */
   route->link_list = NULL;
-  route->src_gateway = route->dst_gateway = NULL;
+  route->gw_src = route->gw_dst = NULL;
 }
 
-static void model_rulebased_parse_bypassroute(AS_t rc,
-    const char *src,
-    const char *dst,
-    route_t e_route)
+static void model_rulebased_parse_bypassroute(AS_t rc,  sg_platf_route_cbarg_t e_route)
 {
   xbt_die("bypass routing not supported for Route-Based model");
 }
@@ -213,7 +211,7 @@ static char *remplace(char *value, const char **src_list, int src_size,
 
 static void rulebased_get_route_and_latency(AS_t rc,
     sg_routing_edge_t src, sg_routing_edge_t dst,
-    route_t res,double*lat);
+    sg_platf_route_cbarg_t res,double*lat);
 static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 {
   xbt_dynar_t ret = xbt_dynar_new (sizeof(onelink_t), xbt_free);
@@ -237,27 +235,26 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 
   sg_routing_edge_t host = NULL;
   xbt_lib_foreach(as_router_lib, cursor, k1, host){
-    route_t route = xbt_new0(s_route_t,1);
+    void *link_ptr;
+    sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
     route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
     rulebased_get_route_and_latency (rc, router, host, route,NULL);
 
-    int number_of_links = xbt_dynar_length(route->link_list);
-
-    if(number_of_links == 1) {
+    switch (xbt_dynar_length(route->link_list)) {
+    case 1:
       //loopback
-    }
-    else{
-      if (number_of_links != 2) {
-        xbt_die ("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
-      }
-
-      void *link_ptr;
+      break;
+    case 2:
       xbt_dynar_get_cpy (route->link_list, 1, &link_ptr);
       onelink_t onelink = xbt_new0 (s_onelink_t, 1);
       onelink->src = host;
       onelink->dst = router;
       onelink->link_ptr = link_ptr;
       xbt_dynar_push (ret, &onelink);
+      break;
+    default:
+      xbt_die("rulebased_get_onelink_routes works only if the AS is a cluster, sorry.");
+      break;
     }
   }
   return ret;
@@ -266,7 +263,7 @@ static xbt_dynar_t rulebased_get_onelink_routes(AS_t rc)
 /* Business methods */
 static void rulebased_get_route_and_latency(AS_t rc,
     sg_routing_edge_t src, sg_routing_edge_t dst,
-    route_t route, double *lat)
+    sg_platf_route_cbarg_t route, double *lat)
 {
   XBT_DEBUG("rulebased_get_route_and_latency from '%s' to '%s'",src->name,dst->name);
   xbt_assert(rc && src
@@ -353,12 +350,12 @@ static void rulebased_get_route_and_latency(AS_t rc,
         (rule_route_extended_t) ruleroute;
     char *gw_src_name = remplace(ruleroute_extended->re_src_gateway, list_src, rc_src,
         list_dst, rc_dst);
-    route->src_gateway = sg_routing_edge_by_name_or_null(gw_src_name);
+    route->gw_src = sg_routing_edge_by_name_or_null(gw_src_name);
     xbt_free(gw_src_name);
 
     char *gw_dst_name = remplace(ruleroute_extended->re_dst_gateway, list_src, rc_src,
         list_dst, rc_dst);
-    route->dst_gateway = sg_routing_edge_by_name_or_null(gw_dst_name);
+    route->gw_dst = sg_routing_edge_by_name_or_null(gw_dst_name);
     xbt_free(gw_dst_name);
   }
 
@@ -368,7 +365,7 @@ static void rulebased_get_route_and_latency(AS_t rc,
     pcre_free_substring_list(list_dst);
 }
 
-static route_t rulebased_get_bypass_route(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat) {
+static sg_platf_route_cbarg_t rulebased_get_bypass_route(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat) {
   return NULL;
 }
 

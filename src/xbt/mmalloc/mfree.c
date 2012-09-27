@@ -19,7 +19,7 @@
 void mfree(struct mdesc *mdp, void *ptr)
 {
   int type;
-  size_t block;
+  size_t block, frag_nb;
   register size_t i;
   struct list *prev, *next;
   int it;
@@ -149,6 +149,10 @@ void mfree(struct mdesc *mdp, void *ptr)
       ((char *) ADDRESS(block) +
        (mdp->heapinfo[block].busy_frag.first << type));
 
+    /* Set size used in the fragment to 0 */
+    frag_nb = RESIDUAL(ptr, BLOCKSIZE) >> type;
+    mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = 0;
+
     if (mdp->heapinfo[block].busy_frag.nfree ==
         (BLOCKSIZE >> type) - 1) {
       /* If all fragments of this block are free, remove them
@@ -191,8 +195,7 @@ void mfree(struct mdesc *mdp, void *ptr)
        it is the first free fragment of this block. */
       prev = (struct list *) ptr;
       mdp->heapinfo[block].busy_frag.nfree = 1;
-      mdp->heapinfo[block].busy_frag.first =
-        RESIDUAL(ptr, BLOCKSIZE) >> type;
+      mdp->heapinfo[block].busy_frag.first = frag_nb;
       prev->next = mdp->fraghead[type].next;
       prev->prev = &mdp->fraghead[type];
       prev->prev->next = prev;

@@ -33,16 +33,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
  */
 void SIMIX_create_environment(const char *file)
 {
-  xbt_lib_cursor_t cursor = NULL;
-  char *name = NULL;
-  void **workstation = NULL;
-
   double start, end;
 
   start = xbt_os_time();
   parse_platform_file(file);
   end = xbt_os_time();
   XBT_DEBUG("PARSE TIME: %lg", (end - start));
+
+}
+
+void SIMIX_post_create_environment(void) {
+
+  void **workstation = NULL;
+  xbt_lib_cursor_t cursor = NULL;
+  char *name = NULL;
 
   xbt_lib_foreach(host_lib, cursor, name, workstation) {
     if(workstation[SURF_WKS_LEVEL])

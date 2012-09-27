@@ -40,12 +40,10 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host, m
     new_pajeStartLink (MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
     //destroy existing container of this process
-    container_t existing_container = PJ_container_get(instr_process_id(process, str, len));
-    PJ_container_remove_from_parent (existing_container);
-    PJ_container_free(existing_container);
+    TRACE_msg_process_destroy (MSG_process_get_name (process), MSG_process_get_PID (process), old_host);
 
     //create new container on the new_host location
-    msg = PJ_container_new(instr_process_id(process, str, len), INSTR_MSG_PROCESS, PJ_container_get(SIMIX_host_get_name(new_host->smx_host)));
+    TRACE_msg_process_create (MSG_process_get_name (process), MSG_process_get_PID (process), new_host);
 
     //end link
     msg = PJ_container_get(instr_process_id(process, str, len));
@@ -65,14 +63,21 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, msg_ho
   }
 }
 
+void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_host_t host)
+{
+  int len = INSTR_DEFAULT_STR_SIZE;
+  char str[INSTR_DEFAULT_STR_SIZE];
+
+  container_t process = PJ_container_get (instr_process_id_2 (process_name, process_pid, str, len));
+  PJ_container_remove_from_parent (process);
+  PJ_container_free (process);
+}
+
 void TRACE_msg_process_kill(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
     //kill means that this process no longer exists, let's destroy it
-    PJ_container_free (PJ_container_get (instr_process_id(process, str, len)));
+    TRACE_msg_process_destroy (MSG_process_get_name (process), MSG_process_get_PID (process), MSG_process_get_host (process));
   }
 }
 

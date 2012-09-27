@@ -60,84 +60,14 @@ xbt_dict_t trace_connect_list_link_avail = NULL;
 xbt_dict_t trace_connect_list_bandwidth = NULL;
 xbt_dict_t trace_connect_list_latency = NULL;
 
-static double trace_periodicity = -1.0;
-static char *trace_file = NULL;
-static char *trace_id = NULL;
-
-static void parse_Stag_trace(void)
-{
-  trace_id = xbt_strdup(A_surfxml_trace_id);
-  trace_file = xbt_strdup(A_surfxml_trace_file);
-  trace_periodicity = surf_parse_get_double(A_surfxml_trace_periodicity);
-}
-
-static void parse_Etag_trace(void)
-{
-  tmgr_trace_t trace;
-  if (!trace_file || strcmp(trace_file, "") != 0) {
-    trace = tmgr_trace_new_from_file(trace_file);
-  } else if (strcmp(surfxml_pcdata, "") == 0) {
-      trace = NULL;
-  } else {
-      trace =
-          tmgr_trace_new_from_string(trace_id, surfxml_pcdata,
-                                     trace_periodicity);
-  }
-  xbt_dict_set(traces_set_list, trace_id, (void *) trace, NULL);
-  xbt_free(trace_file);
-  trace_file = NULL;
-  xbt_free(trace_id);
-  trace_id = NULL;
-}
-
-static void parse_Stag_trace_connect(void)
-{
-  xbt_assert(xbt_dict_get_or_null
-              (traces_set_list, A_surfxml_trace_connect_trace),
-              "Cannot connect trace %s to %s: trace unknown",
-              A_surfxml_trace_connect_trace,
-              A_surfxml_trace_connect_element);
-
-  switch (A_surfxml_trace_connect_kind) {
-  case A_surfxml_trace_connect_kind_HOST_AVAIL:
-    xbt_dict_set(trace_connect_list_host_avail,
-                 A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
-    break;
-  case A_surfxml_trace_connect_kind_POWER:
-    xbt_dict_set(trace_connect_list_power, A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
-    break;
-  case A_surfxml_trace_connect_kind_LINK_AVAIL:
-    xbt_dict_set(trace_connect_list_link_avail,
-                 A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
-    break;
-  case A_surfxml_trace_connect_kind_BANDWIDTH:
-    xbt_dict_set(trace_connect_list_bandwidth,
-                 A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
-    break;
-  case A_surfxml_trace_connect_kind_LATENCY:
-    xbt_dict_set(trace_connect_list_latency, A_surfxml_trace_connect_trace,
-                 xbt_strdup(A_surfxml_trace_connect_element), NULL);
-    break;
-  default:
-    xbt_die("Cannot connect trace %s to %s: kind of trace unknown",
-            A_surfxml_trace_connect_trace, A_surfxml_trace_connect_element);
-    break;
-  }
-}
-
 /* This function acts as a main in the parsing area. */
 void parse_platform_file(const char *file)
 {
   int parse_status;
 
-  surf_parse_reset_callbacks();
+  surf_parse_init_callbacks();
 
   /* Register classical callbacks */
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
   storage_register_callbacks();
   routing_register_callbacks();
 
@@ -157,11 +87,6 @@ void parse_platform_file(const char *file)
   trace_connect_list_link_avail = xbt_dict_new_homogeneous(free);
   trace_connect_list_bandwidth = xbt_dict_new_homogeneous(free);
   trace_connect_list_latency = xbt_dict_new_homogeneous(free);
-
-  surfxml_add_callback(STag_surfxml_trace_cb_list, &parse_Stag_trace);
-  surfxml_add_callback(ETag_surfxml_trace_cb_list, &parse_Etag_trace);
-  surfxml_add_callback(STag_surfxml_trace_connect_cb_list,
-             &parse_Stag_trace_connect);
 
   /* Do the actual parsing */
   parse_status = surf_parse();

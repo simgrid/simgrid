@@ -22,11 +22,22 @@ xbt_dynar_t sg_platf_cabinet_cb_list = NULL; // of sg_platf_cluster_cb_t
 xbt_dynar_t sg_platf_AS_begin_cb_list = NULL; //of sg_platf_AS_begin_cb_t
 xbt_dynar_t sg_platf_AS_end_cb_list = NULL; //of void_f_void_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
+xbt_dynar_t sg_platf_prop_cb_list = NULL; // of sg_platf_prop_cb_t
+
+xbt_dynar_t sg_platf_route_cb_list = NULL; // of sg_platf_route_cb_t
+xbt_dynar_t sg_platf_ASroute_cb_list = NULL; // of sg_platf_ASroute_cb_t
+xbt_dynar_t sg_platf_bypassRoute_cb_list = NULL; // of sg_platf_bypassRoute_cb_t
+xbt_dynar_t sg_platf_bypassASroute_cb_list = NULL; // of sg_platf_bypassASroute_cb_t
+
+xbt_dynar_t sg_platf_trace_cb_list = NULL;
+xbt_dynar_t sg_platf_trace_connect_cb_list = NULL;
 
 xbt_dynar_t sg_platf_storage_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_storage_type_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_mstorage_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_mount_cb_list = NULL; // of sg_platf_storage_cb_t
+
+xbt_dynar_t sg_platf_process_cb_list = NULL;
 
 static int surf_parse_models_setup_already_called;
 
@@ -35,21 +46,37 @@ static RngStream sg_platf_rng_stream = NULL;
 
 /** Module management function: creates all internal data structures */
 void sg_platf_init(void) {
+
+  //FIXME : Ugly, but useful...
+  if(sg_platf_host_cb_list)
+    return; //Already initialized, so do nothing...
+
   sg_platf_host_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
   sg_platf_host_link_cb_list = xbt_dynar_new(sizeof(sg_platf_host_link_cb_t), NULL);
-  sg_platf_router_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
-  sg_platf_link_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
+  sg_platf_router_cb_list = xbt_dynar_new(sizeof(sg_platf_router_cb_t), NULL);
+  sg_platf_link_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t), NULL);
   sg_platf_peer_cb_list = xbt_dynar_new(sizeof(sg_platf_peer_cb_t), NULL);
   sg_platf_cluster_cb_list = xbt_dynar_new(sizeof(sg_platf_cluster_cb_t), NULL);
   sg_platf_cabinet_cb_list = xbt_dynar_new(sizeof(sg_platf_cabinet_cb_t), NULL);
   sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t),NULL);
-  sg_platf_AS_begin_cb_list = xbt_dynar_new(sizeof(sg_platf_AS_begin_cb_t),NULL);
-  sg_platf_AS_end_cb_list = xbt_dynar_new(sizeof(void_f_void_t),NULL);
+  sg_platf_AS_begin_cb_list = xbt_dynar_new(sizeof(sg_platf_AS_cb_t),NULL);
+  sg_platf_AS_end_cb_list = xbt_dynar_new(sizeof(sg_platf_AS_cb_t),NULL);
+  sg_platf_prop_cb_list = xbt_dynar_new(sizeof(sg_platf_prop_cb_t),NULL);
+
+  sg_platf_route_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
+  sg_platf_ASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
+  sg_platf_bypassRoute_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
+  sg_platf_bypassASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
+
+  sg_platf_trace_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_cb_t), NULL);
+  sg_platf_trace_connect_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_connect_cb_t), NULL);
 
   sg_platf_storage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_storage_type_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_mstorage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_mount_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
+
+  sg_platf_process_cb_list = xbt_dynar_new(sizeof(sg_platf_process_cb_t), NULL);
 }
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
@@ -63,11 +90,22 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_cabinet_cb_list);
   xbt_dynar_free(&sg_platf_AS_begin_cb_list);
   xbt_dynar_free(&sg_platf_AS_end_cb_list);
+  xbt_dynar_free(&sg_platf_prop_cb_list);
+
+  xbt_dynar_free(&sg_platf_trace_cb_list);
+  xbt_dynar_free(&sg_platf_trace_connect_cb_list);
+
+  xbt_dynar_free(&sg_platf_route_cb_list);
+  xbt_dynar_free(&sg_platf_ASroute_cb_list);
+  xbt_dynar_free(&sg_platf_bypassRoute_cb_list);
+  xbt_dynar_free(&sg_platf_bypassASroute_cb_list);
 
   xbt_dynar_free(&sg_platf_storage_cb_list);
   xbt_dynar_free(&sg_platf_storage_type_cb_list);
   xbt_dynar_free(&sg_platf_mstorage_cb_list);
   xbt_dynar_free(&sg_platf_mount_cb_list);
+
+  xbt_dynar_free(&sg_platf_process_cb_list);
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
@@ -101,6 +139,7 @@ void sg_platf_new_link(sg_platf_link_cbarg_t link){
     fun(link);
   }
 }
+
 void sg_platf_new_peer(sg_platf_peer_cbarg_t peer){
   unsigned int iterator;
   sg_platf_peer_cb_t fun;
@@ -150,6 +189,83 @@ void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
     fun(mount);
   }
 }
+void sg_platf_new_route(sg_platf_route_cbarg_t route) {
+  unsigned int iterator;
+  sg_platf_route_cb_t fun;
+  xbt_dynar_foreach(sg_platf_route_cb_list, iterator, fun) {
+    fun(route);
+  }
+}void sg_platf_new_ASroute(sg_platf_route_cbarg_t ASroute) {
+  unsigned int iterator;
+  sg_platf_route_cb_t fun;
+  xbt_dynar_foreach(sg_platf_ASroute_cb_list, iterator, fun) {
+    fun(ASroute);
+  }
+}
+void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute) {
+  unsigned int iterator;
+  sg_platf_route_cb_t fun;
+  xbt_dynar_foreach(sg_platf_bypassRoute_cb_list, iterator, fun) {
+    fun(bypassRoute);
+  }
+}void sg_platf_new_bypassASroute(sg_platf_route_cbarg_t bypassASroute) {
+  unsigned int iterator;
+  sg_platf_route_cb_t fun;
+  xbt_dynar_foreach(sg_platf_bypassASroute_cb_list, iterator, fun) {
+    fun(bypassASroute);
+  }
+}
+void sg_platf_new_prop(sg_platf_prop_cbarg_t prop) {
+  unsigned int iterator;
+  sg_platf_prop_cb_t fun;
+  xbt_dynar_foreach(sg_platf_prop_cb_list, iterator, fun) {
+    fun(prop);
+  }
+}
+void sg_platf_new_trace(sg_platf_trace_cbarg_t trace) {
+  unsigned int iterator;
+  sg_platf_trace_cb_t fun;
+  xbt_dynar_foreach(sg_platf_trace_cb_list, iterator, fun) {
+    fun(trace);
+  }
+}
+void sg_platf_new_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect) {
+  unsigned int iterator;
+  sg_platf_trace_connect_cb_t fun;
+  xbt_dynar_foreach(sg_platf_trace_connect_cb_list, iterator, fun) {
+    fun(trace_connect);
+  }
+}
+void sg_platf_new_process(sg_platf_process_cbarg_t process){
+  unsigned int iterator;
+  sg_platf_process_cb_t fun;
+  xbt_dynar_foreach(sg_platf_process_cb_list, iterator, fun) {
+    fun(process);
+  }
+}
+
+void sg_platf_route_begin (sg_platf_route_cbarg_t route){
+  route->link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+}
+void sg_platf_ASroute_begin (sg_platf_route_cbarg_t ASroute){
+  ASroute->link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+}
+
+void sg_platf_route_end (sg_platf_route_cbarg_t route){
+  sg_platf_new_route(route);
+}
+void sg_platf_ASroute_end (sg_platf_route_cbarg_t ASroute){
+  sg_platf_new_ASroute(ASroute);
+}
+
+void sg_platf_route_add_link (const char* link_id, sg_platf_route_cbarg_t route){
+  char *link_name = xbt_strdup(link_id);
+  xbt_dynar_push(route->link_list, &link_name);
+}
+void sg_platf_ASroute_add_link (const char* link_id, sg_platf_route_cbarg_t ASroute){
+  char *link_name = xbt_strdup(link_id);
+  xbt_dynar_push(ASroute->link_list, &link_name);
+}
 
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
 
@@ -163,9 +279,9 @@ void sg_platf_end() {
 
 static int surf_parse_models_setup_already_called = 0;
 
-void sg_platf_new_AS_begin(const char *id, int routing) {
+void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS) {
   unsigned int iterator;
-  sg_platf_AS_begin_cb_t fun;
+  sg_platf_AS_cb_t fun;
 
   if (!surf_parse_models_setup_already_called && !xbt_dynar_is_empty(sg_platf_AS_begin_cb_list)) {
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
@@ -185,7 +301,7 @@ void sg_platf_new_AS_begin(const char *id, int routing) {
   }
 
   xbt_dynar_foreach(sg_platf_AS_begin_cb_list, iterator, fun) {
-    fun(id, routing);
+    fun(AS);
   }
 }
 
@@ -222,10 +338,10 @@ void sg_platf_cabinet_add_cb(sg_platf_cabinet_cb_t fct) {
 void sg_platf_postparse_add_cb(void_f_void_t fct) {
   xbt_dynar_push(sg_platf_postparse_cb_list, &fct);
 }
-void sg_platf_AS_begin_add_cb(sg_platf_AS_begin_cb_t fct) {
+void sg_platf_AS_begin_add_cb(sg_platf_AS_cb_t fct) {
   xbt_dynar_push(sg_platf_AS_begin_cb_list, &fct);
 }
-void sg_platf_AS_end_add_cb(void_f_void_t fct) {
+void sg_platf_AS_end_add_cb(sg_platf_AS_cb_t fct) {
   xbt_dynar_push(sg_platf_AS_end_cb_list, &fct);
 }
 void sg_platf_storage_add_cb(sg_platf_storage_cb_t fct) {
@@ -240,11 +356,33 @@ void sg_platf_mstorage_add_cb(sg_platf_mstorage_cb_t fct) {
 void sg_platf_mount_add_cb(sg_platf_mount_cb_t fct) {
   xbt_dynar_push(sg_platf_mount_cb_list, &fct);
 }
-
-
+void sg_platf_route_add_cb(sg_platf_route_cb_t fct) {
+  xbt_dynar_push(sg_platf_route_cb_list, &fct);
+}
+void sg_platf_ASroute_add_cb(sg_platf_route_cb_t fct) {
+  xbt_dynar_push(sg_platf_ASroute_cb_list, &fct);
+}
+void sg_platf_bypassRoute_add_cb(sg_platf_route_cb_t fct) {
+  xbt_dynar_push(sg_platf_bypassRoute_cb_list, &fct);
+}
+void sg_platf_bypassASroute_add_cb(sg_platf_route_cb_t fct) {
+  xbt_dynar_push(sg_platf_bypassASroute_cb_list, &fct);
+}
+void sg_platf_prop_add_cb(sg_platf_prop_cb_t fct) {
+  xbt_dynar_push(sg_platf_prop_cb_list, &fct);
+}
+void sg_platf_trace_add_cb(sg_platf_trace_cb_t fct) {
+  xbt_dynar_push(sg_platf_trace_cb_list, &fct);
+}
+void sg_platf_trace_connect_add_cb(sg_platf_trace_connect_cb_t fct) {
+  xbt_dynar_push(sg_platf_trace_connect_cb_list, &fct);
+}
 void sg_platf_rng_stream_init(unsigned long seed[6]) {
   RngStream_SetPackageSeed(seed);
   sg_platf_rng_stream = RngStream_CreateStream(NULL);
+}
+void sg_platf_process_add_cb(sg_platf_process_cb_t fct) {
+  xbt_dynar_push(sg_platf_process_cb_list, &fct);
 }
 
 RngStream sg_platf_rng_stream_get(const char* id) {

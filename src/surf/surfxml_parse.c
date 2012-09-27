@@ -22,6 +22,8 @@ int ETag_surfxml_include_state(void);
 
 char* surf_parsed_filename = NULL; // to locate parse error messages
 
+xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
+extern AS_t current_routing;
 /*
  * Helping functions
  */
@@ -64,49 +66,18 @@ int surf_parse_get_int(const char *string) {
  */
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
-xbt_dynar_t STag_surfxml_route_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_route_cb_list = NULL;
-xbt_dynar_t STag_surfxml_link_ctn_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_link_ctn_cb_list = NULL;
-xbt_dynar_t STag_surfxml_process_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_process_cb_list = NULL;
-xbt_dynar_t STag_surfxml_argument_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_argument_cb_list = NULL;
-xbt_dynar_t STag_surfxml_prop_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_prop_cb_list = NULL;
-xbt_dynar_t STag_surfxml_peer_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_peer_cb_list = NULL;
-xbt_dynar_t STag_surfxml_trace_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_trace_cb_list = NULL;
-xbt_dynar_t STag_surfxml_trace_connect_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_trace_connect_cb_list = NULL;
-xbt_dynar_t STag_surfxml_random_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_random_cb_list = NULL;
-xbt_dynar_t STag_surfxml_ASroute_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_ASroute_cb_list = NULL;
-xbt_dynar_t STag_surfxml_bypassRoute_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_bypassRoute_cb_list = NULL;
-xbt_dynar_t STag_surfxml_bypassASroute_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_bypassASroute_cb_list = NULL;
-xbt_dynar_t STag_surfxml_include_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_include_cb_list = NULL;
-
-xbt_dynar_t STag_surfxml_storage_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_storage_cb_list = NULL;
-xbt_dynar_t STag_surfxml_storage_type_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_storage_type_cb_list = NULL;
-xbt_dynar_t STag_surfxml_mount_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_mount_cb_list = NULL;
-xbt_dynar_t STag_surfxml_mstorage_cb_list = NULL;
-xbt_dynar_t ETag_surfxml_mstorage_cb_list = NULL;
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
 xbt_dict_t current_property_set = NULL;
+xbt_dict_t as_current_property_set = NULL;
+int AS_TAG = 0;
+char* as_name_tab[1024];
+void* as_dict_tab[1024];
+int as_prop_nb = 0;
+
+
 /* dictionary of random generator data */
 xbt_dict_t random_data_list = NULL;
-
-/* Call all the callbacks of a specific SAX event */
-static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t);
 
 YY_BUFFER_STATE surf_input_buffer;
 FILE *surf_file_to_parse = NULL;
@@ -119,7 +90,9 @@ static void add_randomness(void);
  */
 void STag_surfxml_storage(void)
 {
+  AS_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage");
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
 void ETag_surfxml_storage(void)
 {
@@ -129,10 +102,13 @@ void ETag_surfxml_storage(void)
   storage.id = A_surfxml_storage_id;
   storage.type_id = A_surfxml_storage_typeId;
   storage.content = A_surfxml_storage_content;
+  storage.properties = current_property_set;
   sg_platf_new_storage(&storage);
+  current_property_set = NULL;
 }
 void STag_surfxml_storage_type(void)
 {
+  AS_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage_type");
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
@@ -241,61 +217,7 @@ int ETag_surfxml_include_state(void)
 
 void surf_parse_init_callbacks(void)
 {
-    sg_platf_init(); // FIXME: move to a proper place?
-
-    STag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_route_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_link_ctn_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_link_ctn_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_process_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_process_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_argument_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_argument_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_prop_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_trace_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_trace_connect_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_trace_connect_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_random_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_random_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_ASroute_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_ASroute_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_bypassRoute_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_bypassRoute_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-      STag_surfxml_bypassASroute_cb_list =
-          xbt_dynar_new(sizeof(void_f_void_t), NULL);
-      ETag_surfxml_bypassASroute_cb_list =
-          xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_peer_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_peer_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    STag_surfxml_include_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_include_cb_list =
-        xbt_dynar_new(sizeof(void_f_void_t), NULL);
-
-    STag_surfxml_storage_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-    ETag_surfxml_storage_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-      STag_surfxml_storage_type_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-      ETag_surfxml_storage_type_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-      STag_surfxml_mount_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-      ETag_surfxml_mount_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-      STag_surfxml_mstorage_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
-      ETag_surfxml_mstorage_cb_list = xbt_dynar_new(sizeof(void_f_void_t), NULL);
+    sg_platf_init();
 }
 
 void surf_parse_reset_callbacks(void)
@@ -306,47 +228,10 @@ void surf_parse_reset_callbacks(void)
 
 void surf_parse_free_callbacks(void)
 {
-  sg_platf_exit(); // FIXME: better place?
-
-  xbt_dynar_free(&STag_surfxml_route_cb_list);
-  xbt_dynar_free(&ETag_surfxml_route_cb_list);
-  xbt_dynar_free(&STag_surfxml_link_ctn_cb_list);
-  xbt_dynar_free(&ETag_surfxml_link_ctn_cb_list);
-  xbt_dynar_free(&STag_surfxml_process_cb_list);
-  xbt_dynar_free(&ETag_surfxml_process_cb_list);
-  xbt_dynar_free(&STag_surfxml_argument_cb_list);
-  xbt_dynar_free(&ETag_surfxml_argument_cb_list);
-  xbt_dynar_free(&STag_surfxml_prop_cb_list);
-  xbt_dynar_free(&ETag_surfxml_prop_cb_list);
-  xbt_dynar_free(&STag_surfxml_trace_cb_list);
-  xbt_dynar_free(&ETag_surfxml_trace_cb_list);
-  xbt_dynar_free(&STag_surfxml_trace_connect_cb_list);
-  xbt_dynar_free(&ETag_surfxml_trace_connect_cb_list);
-  xbt_dynar_free(&STag_surfxml_random_cb_list);
-  xbt_dynar_free(&ETag_surfxml_random_cb_list);
-  xbt_dynar_free(&STag_surfxml_ASroute_cb_list);
-  xbt_dynar_free(&ETag_surfxml_ASroute_cb_list);
-  xbt_dynar_free(&STag_surfxml_bypassRoute_cb_list);
-  xbt_dynar_free(&ETag_surfxml_bypassRoute_cb_list);
-  xbt_dynar_free(&STag_surfxml_bypassASroute_cb_list);
-  xbt_dynar_free(&ETag_surfxml_bypassASroute_cb_list);
-  xbt_dynar_free(&STag_surfxml_peer_cb_list);
-  xbt_dynar_free(&ETag_surfxml_peer_cb_list);
-  xbt_dynar_free(&STag_surfxml_include_cb_list);
-  xbt_dynar_free(&ETag_surfxml_include_cb_list);
-
-  xbt_dynar_free(&STag_surfxml_storage_cb_list);
-  xbt_dynar_free(&ETag_surfxml_storage_cb_list);
-  xbt_dynar_free(&STag_surfxml_mstorage_cb_list);
-  xbt_dynar_free(&ETag_surfxml_mstorage_cb_list);
-  xbt_dynar_free(&STag_surfxml_mount_cb_list);
-  xbt_dynar_free(&ETag_surfxml_mount_cb_list);
-  xbt_dynar_free(&STag_surfxml_storage_type_cb_list);
-  xbt_dynar_free(&ETag_surfxml_storage_type_cb_list);
+  sg_platf_exit();
 }
 
 /* Stag and Etag parse functions */
-void ETag_surfxml_router(void)  { /* ignored -- do not add content here */ }
 
 void STag_surfxml_platform(void) {
   _XBT_GNUC_UNUSED double version = surf_parse_get_double(A_surfxml_platform_version);
@@ -378,7 +263,28 @@ void ETag_surfxml_platform(void){
 }
 
 void STag_surfxml_host(void){
+  AS_TAG = 0;
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+}
+
+void STag_surfxml_prop(void)
+{
+  if(AS_TAG){
+    if (!as_current_property_set){
+      xbt_assert(as_prop_nb < 1024, "Number of AS property reach the limit!!!");
+      as_current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
+      as_name_tab[as_prop_nb] = xbt_strdup(A_surfxml_AS_id);
+      as_dict_tab[as_prop_nb] = as_current_property_set;
+      XBT_DEBUG("PUSH prop %p for AS '%s'",as_dict_tab[as_prop_nb],as_name_tab[as_prop_nb]);
+      as_prop_nb++;
+    }
+    xbt_dict_set(as_current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
+  }
+  else{
+    if (!current_property_set)
+      current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
+    xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
+  }
 }
 
 void ETag_surfxml_host(void)    {
@@ -414,10 +320,6 @@ void STag_surfxml_host_link(void){
   host_link.link_up = A_surfxml_host_link_up;
   host_link.link_down = A_surfxml_host_link_down;
   sg_platf_new_host_link(&host_link);
-}
-
-void ETag_surfxml_host_link(void){
-  XBT_DEBUG("End create a Host_link for %s",A_surfxml_host_link_id);
 }
 
 void STag_surfxml_router(void){
@@ -479,9 +381,6 @@ void STag_surfxml_cluster(void){
   cluster.state_trace = A_surfxml_cluster_state_file;
   sg_platf_new_cluster(&cluster);
 }
-void ETag_surfxml_cluster(void){
-  /* nothing I can think of */
-}
 
 void STag_surfxml_cabinet(void){
   s_sg_platf_cabinet_cbarg_t cabinet;
@@ -495,9 +394,6 @@ void STag_surfxml_cabinet(void){
   cabinet.radical = A_surfxml_cabinet_radical;
 
   sg_platf_new_cabinet(&cabinet);
-}
-void ETag_surfxml_cabinet(void){
-  /* nothing I can think of */
 }
 
 void STag_surfxml_peer(void){
@@ -514,15 +410,10 @@ void STag_surfxml_peer(void){
 
   sg_platf_new_peer(&peer);
 }
-void ETag_surfxml_peer(void){
-  /* nothing to do here */
-}
-void STag_surfxml_link(void){
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
-}
 
-void STag_surfxml_backbone(void){
-  /* nothing to do here */
+void STag_surfxml_link(void){
+  AS_TAG = 0;
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
 
 void ETag_surfxml_link(void){
@@ -570,6 +461,27 @@ void ETag_surfxml_link(void){
   current_property_set = NULL;
 }
 
+void STag_surfxml_link_ctn(void){
+
+  char *link_id;
+  switch (A_surfxml_link_ctn_direction) {
+  case AU_surfxml_link_ctn_direction:
+  case A_surfxml_link_ctn_direction_NONE:
+    link_id = xbt_strdup(A_surfxml_link_ctn_id);
+    break;
+  case A_surfxml_link_ctn_direction_UP:
+    link_id = bprintf("%s_UP", A_surfxml_link_ctn_id);
+    break;
+  case A_surfxml_link_ctn_direction_DOWN:
+    link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
+    break;
+  }
+
+  // FIXME we should push the surf link object but it don't
+  // work because of model rulebased
+  xbt_dynar_push(parsed_link_list, &link_id);
+}
+
 void ETag_surfxml_backbone(void){
   s_sg_platf_link_cbarg_t link;
   memset(&link,0,sizeof(link));
@@ -584,48 +496,208 @@ void ETag_surfxml_backbone(void){
 
   sg_platf_new_link(&link);
   routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, A_surfxml_backbone_id, SURF_LINK_LEVEL));
-  current_property_set = NULL;
 }
 
 void STag_surfxml_route(void){
-  surfxml_call_cb_functions(STag_surfxml_route_cb_list);
+  xbt_assert(strlen(A_surfxml_route_src) > 0 || strlen(A_surfxml_route_dst) > 0,
+      "Missing end-points while defining route \"%s\"->\"%s\"",
+      A_surfxml_route_src, A_surfxml_route_dst);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
-void STag_surfxml_link_ctn(void){
-  surfxml_call_cb_functions(STag_surfxml_link_ctn_cb_list);
+
+void STag_surfxml_ASroute(void){
+  xbt_assert(strlen(A_surfxml_ASroute_src) > 0 || strlen(A_surfxml_ASroute_dst) > 0
+      || strlen(A_surfxml_ASroute_gw_src) > 0 || strlen(A_surfxml_ASroute_gw_dst) > 0,
+      "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
+      A_surfxml_ASroute_src, A_surfxml_ASroute_dst,
+      A_surfxml_ASroute_gw_src,A_surfxml_ASroute_gw_dst);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
-void STag_surfxml_process(void){
-  surfxml_call_cb_functions(STag_surfxml_process_cb_list);
+
+void STag_surfxml_bypassRoute(void){
+  xbt_assert(strlen(A_surfxml_bypassRoute_src) > 0 || strlen(A_surfxml_bypassRoute_dst) > 0,
+      "Missing end-points while defining bupass route \"%s\"->\"%s\"",
+      A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
-void STag_surfxml_argument(void){
-  surfxml_call_cb_functions(STag_surfxml_argument_cb_list);
+
+void STag_surfxml_bypassASroute(void){
+  xbt_assert(strlen(A_surfxml_bypassASroute_src) > 0 || strlen(A_surfxml_bypassASroute_dst) > 0
+      || strlen(A_surfxml_bypassASroute_gw_src) > 0 || strlen(A_surfxml_bypassASroute_gw_dst) > 0,
+      "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
+      A_surfxml_bypassASroute_src, A_surfxml_bypassASroute_dst,
+      A_surfxml_bypassASroute_gw_src,A_surfxml_bypassASroute_gw_dst);
+  parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
-void STag_surfxml_prop(void){
-  surfxml_call_cb_functions(STag_surfxml_prop_cb_list);
+
+void ETag_surfxml_route(void){
+  s_sg_platf_route_cbarg_t route;
+  memset(&route,0,sizeof(route));
+
+  route.src = A_surfxml_route_src;
+  route.dst = A_surfxml_route_dst;
+  route.gw_src = NULL;
+  route.gw_dst = NULL;
+  route.link_list = parsed_link_list;
+
+  switch (A_surfxml_route_symmetrical) {
+  case AU_surfxml_route_symmetrical:
+  case A_surfxml_route_symmetrical_YES:
+    route.symmetrical = TRUE;
+    break;
+  case A_surfxml_route_symmetrical_NO:
+    route.symmetrical = FALSE;;
+    break;
+  }
+
+  sg_platf_new_route(&route);
+  parsed_link_list = NULL;
 }
-void STag_surfxml_trace(void){
-  surfxml_call_cb_functions(STag_surfxml_trace_cb_list);
+
+void ETag_surfxml_ASroute(void){
+  s_sg_platf_route_cbarg_t ASroute;
+  memset(&ASroute,0,sizeof(ASroute));
+
+  ASroute.src = A_surfxml_ASroute_src;
+  ASroute.dst = A_surfxml_ASroute_dst;
+
+  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
+    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
+    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
+    //
+    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
+    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_ASroute_gw_src;
+    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_ASroute_gw_dst;
+  } else {
+    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw_src);
+    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw_dst);
+  }
+
+  ASroute.link_list = parsed_link_list;
+
+  switch (A_surfxml_ASroute_symmetrical) {
+  case AU_surfxml_ASroute_symmetrical:
+  case A_surfxml_ASroute_symmetrical_YES:
+    ASroute.symmetrical = TRUE;
+    break;
+  case A_surfxml_ASroute_symmetrical_NO:
+    ASroute.symmetrical = FALSE;
+    break;
+  }
+
+  sg_platf_new_ASroute(&ASroute);
+  parsed_link_list = NULL;
 }
+
+void ETag_surfxml_bypassRoute(void){
+  s_sg_platf_route_cbarg_t route;
+  memset(&route,0,sizeof(route));
+
+  route.src = A_surfxml_bypassRoute_src;
+  route.dst = A_surfxml_bypassRoute_dst;
+  route.gw_src = NULL;
+  route.gw_dst = NULL;
+  route.link_list = parsed_link_list;
+  route.symmetrical = FALSE;
+
+  sg_platf_new_bypassRoute(&route);
+  parsed_link_list = NULL;
+}
+
+void ETag_surfxml_bypassASroute(void){
+  s_sg_platf_route_cbarg_t ASroute;
+  memset(&ASroute,0,sizeof(ASroute));
+
+  ASroute.src = A_surfxml_bypassASroute_src;
+  ASroute.dst = A_surfxml_bypassASroute_dst;
+  ASroute.link_list = parsed_link_list;
+  ASroute.symmetrical = FALSE;
+
+  if (!strcmp(current_routing->model_desc->name,"RuleBased")) {
+    // DIRTY PERL HACK AHEAD: with the rulebased routing, the {src,dst}_gateway fields
+    // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
+    //
+    // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
+    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_bypassASroute_gw_src;
+    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_bypassASroute_gw_dst;
+  } else {
+    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw_src);
+    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw_dst);
+  }
+
+  sg_platf_new_bypassASroute(&ASroute);
+  parsed_link_list = NULL;
+}
+
+void ETag_surfxml_trace(void){
+  s_sg_platf_trace_cbarg_t trace;
+  memset(&trace,0,sizeof(trace));
+
+  trace.id = A_surfxml_trace_id;
+  trace.file = A_surfxml_trace_file;
+  trace.periodicity = surf_parse_get_double(A_surfxml_trace_periodicity);
+  trace.pc_data = surfxml_pcdata;
+
+  sg_platf_new_trace(&trace);
+}
+
 void STag_surfxml_trace_connect(void){
-  surfxml_call_cb_functions(STag_surfxml_trace_connect_cb_list);
+  s_sg_platf_trace_connect_cbarg_t trace_connect;
+  memset(&trace_connect,0,sizeof(trace_connect));
+
+  trace_connect.element = A_surfxml_trace_connect_element;
+  trace_connect.trace = A_surfxml_trace_connect_trace;
+
+  switch (A_surfxml_trace_connect_kind) {
+  case AU_surfxml_trace_connect_kind:
+  case A_surfxml_trace_connect_kind_POWER:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_POWER;
+    break;
+  case A_surfxml_trace_connect_kind_BANDWIDTH:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_BANDWIDTH;
+    break;
+  case A_surfxml_trace_connect_kind_HOST_AVAIL:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_HOST_AVAIL;
+    break;
+  case A_surfxml_trace_connect_kind_LATENCY:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LATENCY;
+    break;
+  case A_surfxml_trace_connect_kind_LINK_AVAIL:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LINK_AVAIL;
+    break;
+  }
+  sg_platf_new_trace_connect(&trace_connect);
 }
+
 void STag_surfxml_AS(void){
-  sg_platf_new_AS_begin(A_surfxml_AS_id, (int)A_surfxml_AS_routing);
+  AS_TAG = 1;
+  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+  AS.id = A_surfxml_AS_id;
+  AS.routing = (int)A_surfxml_AS_routing;
+
+  as_current_property_set = NULL;
+
+  sg_platf_new_AS_begin(&AS);
 }
 void ETag_surfxml_AS(void){
+  if(as_prop_nb){
+    char *name = as_name_tab[as_prop_nb-1];
+    xbt_dict_t dict = as_dict_tab[as_prop_nb-1];
+    as_prop_nb--;
+    XBT_DEBUG("POP prop %p for AS '%s'",dict,name);
+    xbt_lib_set(as_router_lib,
+        name,
+      ROUTING_PROP_ASR_LEVEL,
+      dict);
+    xbt_free(name);
+  }
   sg_platf_new_AS_end();
 }
-void STag_surfxml_ASroute(void){
-  surfxml_call_cb_functions(STag_surfxml_ASroute_cb_list);
-}
-void STag_surfxml_bypassRoute(void){
-  surfxml_call_cb_functions(STag_surfxml_bypassRoute_cb_list);
-}
-void STag_surfxml_bypassASroute(void){
-  surfxml_call_cb_functions(STag_surfxml_bypassASroute_cb_list);
-}
+
 void STag_surfxml_config(void){
-  XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
+  AS_TAG = 0;
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
 }
 void ETag_surfxml_config(void){
   xbt_dict_cursor_t cursor = NULL;
@@ -642,27 +714,66 @@ void ETag_surfxml_config(void){
   }
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
   xbt_dict_free(&current_property_set);
-}
-void STag_surfxml_random(void){
-  surfxml_call_cb_functions(STag_surfxml_random_cb_list);
+  current_property_set = NULL;
 }
 
-#define parse_method(type,name)                                         \
-  void type##Tag_surfxml_##name(void)                                   \
-  { surfxml_call_cb_functions(type##Tag_surfxml_##name##_cb_list); }    \
-  void type##Tag_surfxml_##name(void)
+static int argc;
+static char **argv;
 
-parse_method(E, route);
-parse_method(E, link_ctn);
-parse_method(E, process);
-parse_method(E, argument);
-parse_method(E, prop);
-parse_method(E, trace);
-parse_method(E, trace_connect);
-parse_method(E, random);
-parse_method(E, ASroute);
-parse_method(E, bypassRoute);
-parse_method(E, bypassASroute);
+void STag_surfxml_process(void){
+  AS_TAG = 0;
+  argc = 1;
+  argv = xbt_new(char *, 1);
+  argv[0] = xbt_strdup(A_surfxml_process_function);
+  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+}
+
+void ETag_surfxml_process(void){
+  s_sg_platf_process_cbarg_t process;
+  memset(&process,0,sizeof(process));
+
+  process.argc = argc;
+  process.argv = (const char **)argv;
+  process.properties = current_property_set;
+  process.host = A_surfxml_process_host;
+  process.function = A_surfxml_process_function;
+  process.start_time = surf_parse_get_double(A_surfxml_process_start_time);
+  process.kill_time = surf_parse_get_double(A_surfxml_process_kill_time);
+
+  switch (A_surfxml_process_on_failure) {
+  case AU_surfxml_process_on_failure:
+  case A_surfxml_process_on_failure_DIE:
+    process.on_failure =  SURF_PROCESS_ON_FAILURE_DIE;
+    break;
+  case A_surfxml_process_on_failure_RESTART:
+    process.on_failure =  SURF_PROCESS_ON_FAILURE_RESTART;
+    break;
+  }
+
+  sg_platf_new_process(&process);
+  current_property_set = NULL;
+}
+
+void STag_surfxml_argument(void){
+  argc++;
+  argv = xbt_realloc(argv, (argc) * sizeof(char *));
+  argv[(argc) - 1] = xbt_strdup(A_surfxml_argument_value);
+}
+
+/* nothing to do in those functions */
+void ETag_surfxml_prop(void){}
+void STag_surfxml_random(void){}
+void ETag_surfxml_random(void){}
+void ETag_surfxml_trace_connect(void){}
+void STag_surfxml_trace(void){}
+void ETag_surfxml_router(void){}
+void ETag_surfxml_host_link(void){}
+void ETag_surfxml_cluster(void){}
+void ETag_surfxml_cabinet(void){}
+void ETag_surfxml_peer(void){}
+void STag_surfxml_backbone(void){}
+void ETag_surfxml_link_ctn(void){}
+void ETag_surfxml_argument(void){}
 
 /* Open and Close parse file */
 
@@ -718,56 +829,11 @@ static int _surf_parse(void) {
 int_f_void_t surf_parse = _surf_parse;
 
 
-/* Aux parse functions */
-
-void surfxml_add_callback(xbt_dynar_t cb_list, void_f_void_t function)
-{
-  xbt_dynar_push(cb_list, &function);
-}
-
-void surfxml_del_callback(xbt_dynar_t cb_list, void_f_void_t function)
-{
-  xbt_ex_t e;
-  unsigned int it=0;
-  void_f_void_t null_f=NULL;
-
-  TRY {
-    it = xbt_dynar_search(cb_list,&function);
-  }
-  CATCH(e) {
-    if (e.category == not_found_error) {
-      xbt_ex_free(e);
-      xbt_die("Trying to remove a callback that is not here! This should not happen");
-    }
-    RETHROW;
-  }
-
-  xbt_dynar_replace(cb_list, it,&null_f);
-}
-
-static XBT_INLINE void surfxml_call_cb_functions(xbt_dynar_t cb_list)
-{
-  unsigned int iterator;
-  void_f_void_t fun;
-  xbt_dynar_foreach(cb_list, iterator, fun) {
-    if (fun) fun();
-  }
-}
-
-
 /* Prop tag functions */
 
 /**
  * With XML parser
  */
-void parse_properties(void)
-{
-  if (!current_property_set)
-    current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
-
-  xbt_dict_set(current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
-}
-
 
 /* Random tag functions */
 
@@ -833,5 +899,11 @@ static void add_randomness(void)
                  random_std_deviation);
   xbt_dict_set(random_data_list, random_id, (void *) random,
                &xbt_free_ref);
+}
+
+
+xbt_dict_t get_as_router_properties(const char* name)
+{
+  return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
 }
 

@@ -1,0 +1,5 @@
+0 init
+0 send 1 1e6
+0 recv 1 1e6
+0 send 1 1e6
+0 finalize

@@ -16,29 +16,30 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 static xbt_dict_t keys;
 
 static const char *smpi_colors[] ={
-    "recv",     "255 000 000",
-    "irecv",    "255 135 135",
-    "send",     "000 000 255",
-    "isend",    "135 135 255",
-    "sendrecv", "000 255 255",
-    "wait",     "255 255 000",
-    "waitall",  "200 200 000",
-    "waitany",  "200 200 150",
+    "recv",     "1 0 0",
+    "irecv",    "1 0.52 0.52",
+    "send",     "0 0 1",
+    "isend",    "0.52 0.52 1",
+    "sendrecv", "0 1 1",
+    "wait",     "1 1 0",
+    "waitall",  "0.78 0.78 0",
+    "waitany",  "0.78 0.78 0.58",
 
-    "allgather",     "255 000 000",
-    "allgatherv",    "255 135 135",
-    "allreduce",     "255 000 255",
-    "alltoall",      "135 000 255",
-    "alltoallv",     "200 135 255",
-    "barrier",       "000 200 200",
-    "bcast",         "000 200 100",
-    "gather",        "255 255 000",
-    "gatherv",       "255 255 135",
-    "reduce",        "000 255 000",
-    "reducescatter", "135 255 135",
-    "scan",          "255 150 060",
-    "scatterv",      "135 000 135",
-    "scatter",       "255 190 140",
+    "allgather",     "1 0 0",
+    "allgatherv",    "1 0.52 0.52",
+    "allreduce",     "1 0 1",
+    "alltoall",      "0.52 0 1",
+    "alltoallv",     "0.78 0.52 1",
+    "barrier",       "0 0.78 0.78",
+    "bcast",         "0 0.78 0.39",
+    "gather",        "1 1 0",
+    "gatherv",       "1 1 0.52",
+    "reduce",        "0 1 0",
+    "reducescatter", "0.52 1 0.52",
+    "scan",          "1 0.58 0.23",
+    "scatterv",      "0.52 0 0.52",
+    "scatter",       "1 0.74 0.54",
+    "computing",     "0 1 1",
 
     NULL, NULL,
 };
@@ -86,7 +87,7 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
   }
   //generate the key
   static unsigned long long counter = 0;
-  snprintf(key, n, "%d%d%llu", src, dst, counter++);
+  snprintf(key, n, "%d_%d_%llu", src, dst, counter++);
 
   //push it
   char *a = (char*)xbt_strdup(key);
@@ -200,6 +201,45 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation)
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
+void TRACE_smpi_computing_init(int rank)
+{
+ //first use, initialize the color in the trace
+ //TODO : check with lucas and Pierre how to generalize this approach
+  //to avoid unnecessary access to the color array
+  if (!TRACE_smpi_is_enabled() || !TRACE_smpi_is_computing()) return;
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  const char *color = instr_find_color ("computing");
+  val_t value = PJ_value_get_or_new ("computing", color, type);
+  new_pajePushState (SIMIX_get_clock(), container, type, value);
+}
+
+void TRACE_smpi_computing_in(int rank)
+{
+  //do not forget to set the color first, otherwise this will explode
+  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) return;
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  val_t value = PJ_value_get_or_new ("computing", NULL, type);
+  new_pajePushState (SIMIX_get_clock(), container, type, value);
+}
+
+void TRACE_smpi_computing_out(int rank)
+{
+  if (!TRACE_smpi_is_enabled()|| !TRACE_smpi_is_computing()) return;
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  new_pajePopState (SIMIX_get_clock(), container, type);
+}
+
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation)
 {
   if (!TRACE_smpi_is_enabled()) return;
@@ -231,6 +271,7 @@ void TRACE_smpi_send(int rank, int src, int dst)
   if (!TRACE_smpi_is_enabled()) return;
 
   char key[INSTR_DEFAULT_STR_SIZE];
+  bzero (key, INSTR_DEFAULT_STR_SIZE);
   TRACE_smpi_put_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
 
   char str[INSTR_DEFAULT_STR_SIZE];
@@ -246,6 +287,7 @@ void TRACE_smpi_recv(int rank, int src, int dst)
   if (!TRACE_smpi_is_enabled()) return;
 
   char key[INSTR_DEFAULT_STR_SIZE];
+  bzero (key, INSTR_DEFAULT_STR_SIZE);
   TRACE_smpi_get_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
 
   char str[INSTR_DEFAULT_STR_SIZE];

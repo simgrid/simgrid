@@ -25,6 +25,27 @@
 #include "xbt/graph_private.h"
 
 typedef enum {
+  PAJE_DefineContainerType,
+  PAJE_DefineVariableType,
+  PAJE_DefineStateType,
+  PAJE_DefineEventType,
+  PAJE_DefineLinkType,
+  PAJE_DefineEntityValue,
+  PAJE_CreateContainer,
+  PAJE_DestroyContainer,
+  PAJE_SetVariable,
+  PAJE_AddVariable,
+  PAJE_SubVariable,
+  PAJE_SetState,
+  PAJE_PushState,
+  PAJE_PopState,
+  PAJE_ResetState,
+  PAJE_StartLink,
+  PAJE_EndLink,
+  PAJE_NewEvent
+} e_event_type;
+
+typedef enum {
   TYPE_VARIABLE,
   TYPE_LINK,
   TYPE_CONTAINER,
@@ -81,8 +102,10 @@ extern xbt_dict_t user_vm_variables;
 extern xbt_dict_t user_link_variables;
 extern double TRACE_last_timestamp_to_dump;
 
+/* instr_paje_header.c */
+void TRACE_header(int basic);
+
 /* from paje.c */
-void TRACE_paje_create_header(void);
 void TRACE_paje_start(void);
 void TRACE_paje_end(void);
 void TRACE_paje_dump_buffer (int force);
@@ -122,6 +145,7 @@ char *instr_process_id_2 (const char *process_name, int process_pid, char *str, 
 void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host,
                                    msg_host_t new_host);
 void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host);
+void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_host_t host);
 void TRACE_msg_process_kill(msg_process_t process);
 void TRACE_msg_process_suspend(msg_process_t process);
 void TRACE_msg_process_resume(msg_process_t process);
@@ -162,6 +186,9 @@ void TRACE_smpi_init(int rank);
 void TRACE_smpi_finalize(int rank);
 void TRACE_smpi_collective_in(int rank, int root, const char *operation);
 void TRACE_smpi_collective_out(int rank, int root, const char *operation);
+void TRACE_smpi_computing_init(int rank);
+void TRACE_smpi_computing_out(int rank);
+void TRACE_smpi_computing_in(int rank);
 void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation);
 void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation);
 void TRACE_smpi_send(int rank, int src, int dst);
@@ -176,12 +203,16 @@ int TRACE_platform(void);
 int TRACE_is_configured(void);
 int TRACE_smpi_is_enabled(void);
 int TRACE_smpi_is_grouped(void);
+int TRACE_smpi_is_computing(void);
 int TRACE_categorized (void);
 int TRACE_uncategorized (void);
 int TRACE_msg_process_is_enabled(void);
 int TRACE_buffer (void);
 int TRACE_onelink_only (void);
 int TRACE_disable_destroy (void);
+int TRACE_basic (void);
+char *TRACE_get_comment (void);
+char *TRACE_get_comment_file (void);
 char *TRACE_get_filename(void);
 char *TRACE_get_triva_uncat_conf (void);
 char *TRACE_get_triva_cat_conf (void);
@@ -193,6 +224,8 @@ void TRACE_generate_triva_uncat_conf (void);
 void TRACE_generate_triva_cat_conf (void);
 void TRACE_generate_viva_uncat_conf (void);
 void TRACE_generate_viva_cat_conf (void);
+void instr_pause_tracing (void);
+void instr_resume_tracing (void);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *resource,

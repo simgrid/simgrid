@@ -157,7 +157,7 @@ complicated pattern aiming at following the actual dependencies.
 
 The analytical models handle a lot of floating point values. It is
 possible to change the epsilon used to update and compare them through
-the \b maxmin/precision item (default value: 1e-9). Changing it
+the \b maxmin/precision item (default value: 0.00001). Changing it
 may speedup the simulation by discarding very small actions, at the
 price of a reduced numerical precision.
 
@@ -448,6 +448,25 @@ smpirun -trace ...
 simulation with --cfg=tracing:1 and --cfg=tracing/smpi:1. Check the
 smpirun's <i>-help</i> parameter for additional tracing options.
 
+Sometimes you might want to put additional information on the trace to
+correctly identify them later, or to provide data that can be used to
+reproduce an experiment. You have two ways to do that:
+
+- Add a string on top of the trace file as comment:
+\verbatim
+--cfg=tracing/comment:my_simulation_identifier
+\endverbatim
+
+- Add the contents of a textual file on top of the trace file as comment:
+\verbatim
+--cfg=tracing/comment_file:my_file_with_additional_information.txt
+\endverbatim
+
+Please, use these two parameters (for comments) to make reproducible
+simulations. For additional details about this and all tracing
+options, check See the \ref tracing_tracing_options "Tracing
+Configuration Options subsection".
+
 \section options_smpi Configuring SMPI
 
 The SMPI interface provides several specific configuration items.
@@ -505,6 +524,12 @@ simulated processes is displayed. This is very useful to debug your
 code, but it can reveal troublesome in some cases (such as when the
 amount of processes becomes really big). This behavior is disabled
 when \b verbose-exit is set to 0 (it is to 1 by default).
+
+
+\section options_log Logging Configuration
+
+It can be done by using XBT. Go to \ref XBT_log for more details.
+
 
 \section options_index Index of all existing configuration items
 

@@ -77,7 +77,15 @@ XBT_PUBLIC(size_t) MSG_file_write(const void* ptr, size_t size, size_t nmemb, ms
 XBT_PUBLIC(msg_file_t) MSG_file_open(const char* mount, const char* path, const char* mode);
 XBT_PUBLIC(int) MSG_file_close(msg_file_t fp);
 XBT_PUBLIC(int) MSG_file_stat(msg_file_t fd, s_msg_stat_t *buf);
+XBT_PUBLIC(void) MSG_file_free_stat(s_msg_stat_t *stat);
 
+XBT_PUBLIC(int) MSG_file_unlink(msg_file_t fd);
+XBT_PUBLIC(xbt_dict_t) MSG_file_ls(const char *mount, const char *path);
+
+/************************** AS Router handling ************************************/
+XBT_PUBLIC(const char *) MSG_as_router_get_property_value(const char* asr, const char *name);
+XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);
+XBT_PUBLIC(void) MSG_as_router_set_property_value(const char* asr, const char *name, char *value,void_f_pvoid_t free_ctn);
 
 /************************** Host handling ***********************************/
 XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);
@@ -104,6 +112,7 @@ XBT_PUBLIC(void) MSG_load_platform_script(const char *script_file);
 
 XBT_PUBLIC(msg_host_t) MSG_get_host_by_name(const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
+XBT_PUBLIC(int) MSG_get_host_number(void);
 
 /************************** Process handling *********************************/
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,
@@ -261,6 +270,9 @@ XBT_PUBLIC(msg_error_t)
     MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
                              double timeout);
 
+void MSG_mailbox_set_async(const char *alias);
+
+
 /************************** Action handling **********************************/
 msg_error_t MSG_action_trace_run(char *path);
 
@@ -272,7 +284,6 @@ typedef msg_error_t MSG_error_t;
 #define MSG_global_init_args(argc, argv) MSG_init(argc,argv)
 
 /* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
-XBT_PUBLIC(int) MSG_get_host_number(void);
 XBT_PUBLIC(msg_host_t *) MSG_get_host_table(void);
 
 #define MSG_TIMEOUT_FAILURE MSG_TIMEOUT

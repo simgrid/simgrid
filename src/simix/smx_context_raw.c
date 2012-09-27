@@ -8,6 +8,7 @@
 
 #include "smx_private.h"
 #include "xbt/parmap.h"
+#include "mc/mc.h"
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
@@ -23,7 +24,7 @@ typedef struct s_smx_ctx_raw {
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id; /* the valgrind stack id */
 #endif
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
   unsigned int thread;            /* Just for measuring purposes */
 #endif
 } s_smx_ctx_raw_t, *smx_ctx_raw_t;
@@ -192,7 +193,7 @@ void raw_swapcontext(raw_stack_t* old, raw_stack_t new) {
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
 #include "xbt/xbt_os_time.h"
 #define NUM_THREADS 4
 static xbt_os_timer_t timer;
@@ -226,6 +227,12 @@ static void smx_ctx_raw_runall(void);
  */
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 {
+
+  if(MC_IS_ENABLED && mmalloc_ignore == NULL){
+    /* Create list of elements to ignore for heap comparison algorithm */
+    MC_ignore_init();
+  }
+
   XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
   smx_ctx_base_factory_init(factory);
 
@@ -259,7 +266,7 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
     (*factory)->runall = smx_ctx_raw_runall_serial;
     (*factory)->suspend = smx_ctx_raw_suspend_serial;
   }
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
   timer = xbt_os_timer_new();
 #endif
 }
@@ -270,7 +277,7 @@ void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
  */
 static int smx_ctx_raw_factory_finalize(smx_context_factory_t *factory)
 {
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
   XBT_CRITICAL("Total wasted time in %u SR: %lf", sr_count, time_wasted_sr);
   XBT_CRITICAL("Total wasted time in %u SSR: %lf", ssr_count, time_wasted_ssr);
 #endif
@@ -324,6 +331,10 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
 
      } else {
        raw_maestro_context = context;
+
+       if(MC_IS_ENABLED)
+         MC_ignore(&(raw_maestro_context->stack_top), sizeof(raw_maestro_context->stack_top));
+
      }
 
      return (smx_context_t) context;
@@ -410,7 +421,7 @@ static void smx_ctx_raw_resume_serial(smx_process_t first_process)
       ((smx_ctx_raw_t) context)->stack_top);
 }
 
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
 static void smx_ctx_raw_runall_serial(xbt_dynar_t processes)
 {
   smx_process_t process;

@@ -97,6 +97,7 @@ typedef struct surf_action {
 #endif
   surf_file_t file;        /**< surf_file_t for storage model */
   s_file_stat_t stat;        /**< surf_file_t for storage model */
+  xbt_dict_t ls_dict;
 } s_surf_action_t;
 
 typedef struct surf_action_lmm {
@@ -223,6 +224,8 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*read) (void *storage, void* ptr, double size, size_t nmemb, surf_file_t stream);
   surf_action_t(*write) (void *storage, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *storage, surf_file_t stream);
+  surf_action_t(*unlink) (void *storage, surf_file_t stream);
+  surf_action_t(*ls) (void *storage, const char *path);
   void* (*create_resource) (const char* id, const char* model, const char* type_id, const char *content);
 } s_surf_model_extension_storage_t;
 
@@ -256,6 +259,9 @@ typedef struct surf_workstation_model_extension_public {
   surf_action_t(*read) (void *workstation, void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*write) (void *workstation, const void* ptr, size_t size, size_t nmemb, surf_file_t stream);
   surf_action_t(*stat) (void *workstation, surf_file_t stream);
+  surf_action_t(*unlink) (void *workstation, surf_file_t stream);
+  surf_action_t(*ls) (void *workstation, const char* mount, const char *path);
+
   int (*link_shared) (const void *link);
    xbt_dict_t(*get_properties) (const void *resource);
   void* (*link_create_resource) (const char *name,
@@ -567,11 +573,6 @@ XBT_PUBLIC(void) surf_network_model_init_Vegas(void);
 XBT_PUBLIC_DATA(s_surf_model_description_t)
     surf_network_model_description[];
 
-
-
-
-
-
 /** \ingroup SURF_models
  *  \brief The storage model
  */
@@ -582,12 +583,6 @@ XBT_PUBLIC(void) surf_storage_model_init_default(void);
  *  This storage mode can be set using --cfg=storage/model:...
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
-
-
-
-
-
-
 
 /** \ingroup SURF_models
  *  \brief The workstation model
@@ -728,6 +723,8 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 
 XBT_PUBLIC(double) get_cpu_power(const char *power);
+
+XBT_PUBLIC(xbt_dict_t) get_as_router_properties(const char* name);
 
 int surf_get_nthreads(void);
 void surf_set_nthreads(int nthreads);

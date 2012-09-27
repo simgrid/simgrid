@@ -35,8 +35,6 @@ typedef struct s_mc_snapshot{
   mc_mem_region_t *regions;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
-extern char *prog_name;
-
 void MC_take_snapshot(mc_snapshot_t);
 void MC_take_snapshot_liveness(mc_snapshot_t s);
 void MC_restore_snapshot(mc_snapshot_t);
@@ -143,13 +141,13 @@ extern void *raw_heap;
 /* an API to query about the status of a heap, we simply call mmstats and */
 /* because I now how does structure looks like, then I redefine it here */
 
-struct mstats {
-  size_t bytes_total;           /* Total size of the heap. */
-  size_t chunks_used;           /* Chunks allocated by the user. */
-  size_t bytes_used;            /* Byte total of user-allocated chunks. */
-  size_t chunks_free;           /* Chunks in the free list. */
-  size_t bytes_free;            /* Byte total of chunks in the free list. */
-};
+/* struct mstats { */
+/*   size_t bytes_total;           /\* Total size of the heap. *\/ */
+/*   size_t chunks_used;           /\* Chunks allocated by the user. *\/ */
+/*   size_t bytes_used;            /\* Byte total of user-allocated chunks. *\/ */
+/*   size_t chunks_free;           /\* Chunks in the free list. *\/ */
+/*   size_t bytes_free;            /\* Byte total of chunks in the free list. *\/ */
+/* }; */
 
 #define MC_SET_RAW_MEM    mmalloc_set_current_heap(raw_heap)
 #define MC_UNSET_RAW_MEM  mmalloc_set_current_heap(std_heap)
@@ -183,6 +181,8 @@ typedef struct s_memory_map {
 } s_memory_map_t, *memory_map_t;
 
 memory_map_t get_memory_map(void);
+void free_memory_map(memory_map_t map);
+void get_plt_section(void);
 
 
 /********************************** DPOR for safety  **************************************/
@@ -191,6 +191,7 @@ typedef enum {
   e_mc_reduce_none,
   e_mc_reduce_dpor
 } e_mc_reduce_t;
+
 extern e_mc_reduce_t mc_reduce_kind;
 
 void MC_dpor_init(void);
@@ -201,6 +202,7 @@ void MC_init_safety(void);
 
 /********************************** Double-DFS for liveness property**************************************/
 
+extern xbt_fifo_t mc_stack_liveness;
 extern mc_snapshot_t initial_snapshot_liveness;
 extern xbt_automaton_t _mc_property_automaton;
 extern int compare;
@@ -216,47 +218,17 @@ typedef struct s_mc_pair_reached{
   xbt_state_t automaton_state;
   xbt_dynar_t prop_ato;
   mc_snapshot_t system_state;
-  //xbt_dict_t rdv_points;
 }s_mc_pair_reached_t, *mc_pair_reached_t;
-
-typedef struct s_mc_pair_visited{
-  xbt_state_t automaton_state;
-  xbt_dynar_t prop_ato;
-  mc_snapshot_t system_state;
-  int search_cycle;
-}s_mc_pair_visited_t, *mc_pair_visited_t;
-
-typedef struct s_mc_pair_visited_hash{
-  xbt_state_t automaton_state;
-  xbt_dynar_t prop_ato;
-  unsigned int *hash_regions;
-  int search_cycle;
-}s_mc_pair_visited_hash_t, *mc_pair_visited_hash_t;
-
-typedef struct s_mc_pair_reached_hash{
-  xbt_state_t automaton_state;
-  xbt_dynar_t prop_ato;
-  unsigned int *hash_regions;
-}s_mc_pair_reached_hash_t, *mc_pair_reached_hash_t;
-
-
 
 int MC_automaton_evaluate_label(xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
 int reached(xbt_state_t st);
 void set_pair_reached(xbt_state_t st);
-int reached_hash(xbt_state_t st);
-void set_pair_reached_hash(xbt_state_t st);
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
 void MC_pair_delete(mc_pair_t pair);
 void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
-int visited(xbt_state_t st, int search_cycle);
-void set_pair_visited(xbt_state_t st, int search_cycle);
-int visited_hash(xbt_state_t st, int search_cycle);
-void set_pair_visited_hash(xbt_state_t st, int search_cycle);
-unsigned int hash_region(char *str, int str_len);
 
 /* **** Double-DFS stateless **** */
 
@@ -265,8 +237,6 @@ typedef struct s_mc_pair_stateless{
   xbt_state_t automaton_state;
   int requests;
 }s_mc_pair_stateless_t, *mc_pair_stateless_t;
-
-extern xbt_fifo_t mc_stack_liveness;
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r);
 void MC_ddfs_init(void);
@@ -285,5 +255,78 @@ extern char* _surf_mc_property_file;
 
 int create_dump(int pair);
 
+/****** Local variables with DWARF ******/
+
+typedef enum {
+  e_dw_loclist,
+  e_dw_register,
+  e_dw_bregister_op,
+  e_dw_lit,
+  e_dw_fbregister_op,
+  e_dw_piece,
+  e_dw_arithmetic,
+  e_dw_compose,
+  e_dw_deref,
+  e_dw_constant,
+  e_dw_unsupported
+} e_dw_location_type;
+
+typedef struct s_dw_location{
+  e_dw_location_type type;
+  union{
+    
+    xbt_dynar_t loclist;
+    
+    int reg;
+    
+    struct{
+      int reg;
+      int offset;
+    }breg_op;
+
+    unsigned lit;
+
+    int fbreg_op;
+
+    int piece;
+
+    int deref_size;
+
+    xbt_dynar_t compose;
+
+    char *arithmetic;
+
+    struct{
+      int is_signed;
+      int bytes;
+      int value;
+    }constant;
+
+  }location;
+}s_dw_location_t, *dw_location_t;
+
+typedef struct s_dw_location_entry{
+  void *lowpc;
+  void *highpc;
+  dw_location_t location;
+}s_dw_location_entry_t, *dw_location_entry_t;
+
+typedef struct s_dw_local_variable{
+  char *name;
+  dw_location_t location;
+}s_dw_local_variable_t, *dw_local_variable_t;
+
+typedef struct s_dw_frame{
+  char *name;
+  dw_location_t location;
+  xbt_dynar_t variables;
+}s_dw_frame_t, *dw_frame_t;
+
+/* FIXME : implement free functions for each strcuture */
+
+extern xbt_dynar_t mc_binary_local_variables;
+
+void MC_get_binary_local_variables(void);
+void print_local_variables(xbt_dynar_t list);
 
 #endif

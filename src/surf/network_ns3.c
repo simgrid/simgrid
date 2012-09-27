@@ -109,13 +109,13 @@ static void parse_ns3_add_router(sg_platf_router_cbarg_t router)
     );
 }
 
-static void parse_ns3_add_AS(const char*id, int routing)
+static void parse_ns3_add_AS(sg_platf_AS_cbarg_t AS)
 {
-  XBT_DEBUG("NS3_ADD_AS '%s'",id);
+  XBT_DEBUG("NS3_ADD_AS '%s'",AS->id);
   xbt_lib_set(as_router_lib,
-              id,
+              AS->id,
               NS3_ASR_LEVEL,
-              ns3_add_AS(id)
+              ns3_add_AS(AS->id)
     );
 }
 

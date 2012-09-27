@@ -151,6 +151,110 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   return retval;
 }
 
+void smpi_datatype_create(MPI_Datatype* new_type, int size, int flags){
+  MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
+  new_t->size=size;
+  new_t->lb=0;
+  new_t->ub=size;
+  new_t->flags=flags;
+  *new_type = new_t;
+}
+
+void smpi_datatype_free(MPI_Datatype* type){
+  xbt_free(*type);
+}
+
+int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_type)
+{
+  int retval;
+  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
+     retval = MPI_ERR_TYPE;
+  } else {
+    smpi_datatype_create(new_type, count * smpi_datatype_size(old_type), DT_FLAG_CONTIGUOUS);
+    retval=MPI_SUCCESS;
+  }
+  return retval;
+}
+
+int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type)
+{
+  int retval;
+  if (blocklen<=0)return MPI_ERR_ARG;
+  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
+     retval = MPI_ERR_TYPE;
+  } else {
+    smpi_datatype_create(new_type, count * (blocklen+stride) * smpi_datatype_size(old_type), DT_FLAG_VECTOR);
+    retval=MPI_SUCCESS;
+  }
+  return retval;
+}
+
+int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
+{
+  int retval;
+  if (blocklen<=0)return MPI_ERR_ARG;
+  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
+     retval = MPI_ERR_TYPE;
+  } else {
+    smpi_datatype_create(new_type, count * ((blocklen * smpi_datatype_size(old_type))+stride), DT_FLAG_VECTOR);
+    retval=MPI_SUCCESS;
+  }
+  return retval;
+}
+
+
+int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_type, MPI_Datatype* new_type)
+{
+  int i;
+  int retval;
+  for(i=0; i< count; i++){
+    if   (blocklens[i]<=0)
+      return MPI_ERR_ARG;
+  }
+  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
+     retval = MPI_ERR_TYPE;
+  } else {
+    smpi_datatype_create(new_type,  (blocklens[count-1] + indices[count-1]) * smpi_datatype_size(old_type), DT_FLAG_DATA);
+    retval=MPI_SUCCESS;
+  }
+  return retval;
+}
+
+int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type)
+{
+  int i;
+  int retval;
+  for(i=0; i< count; i++){
+    if   (blocklens[i]<=0)
+      return MPI_ERR_ARG;
+  }
+  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
+     retval = MPI_ERR_TYPE;
+  } else {
+    smpi_datatype_create(new_type,indices[count-1] + (blocklens[count-1]  * smpi_datatype_size(old_type)), DT_FLAG_DATA);
+    retval=MPI_SUCCESS;
+  }
+  return retval;
+}
+
+int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type)
+{
+  int i;
+  for(i=0; i< count; i++){
+    if (blocklens[i]<=0)
+      return MPI_ERR_ARG;
+    if ((old_types[i]->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED)
+      return MPI_ERR_TYPE;
+  }
+  smpi_datatype_create(new_type,indices[count-1] + (blocklens[count-1]  * smpi_datatype_size(old_types[count-1])), DT_FLAG_DATA);
+  return MPI_SUCCESS;
+}
+
+void smpi_datatype_commit(MPI_Datatype* datatype)
+{
+  (*datatype)->flags= ( (*datatype)->flags | DT_FLAG_COMMITED);
+}
+
 typedef struct s_smpi_mpi_op {
   MPI_User_function *func;
 } s_smpi_mpi_op_t;

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,8 +21,6 @@ static xbt_heap_t simix_timers = NULL;
 static void* SIMIX_action_mallocator_new_f(void);
 static void SIMIX_action_mallocator_free_f(void* action);
 static void SIMIX_action_mallocator_reset_f(void* action);
-
-extern void smx_ctx_raw_new_sr(void);
 
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
@@ -62,6 +59,11 @@ void SIMIX_global_init(int *argc, char **argv)
   if (!simix_global) {
     simix_global = xbt_new0(s_smx_global_t, 1);
 
+#ifdef TIME_BENCH_AMDAHL
+    simix_global->timer_seq = xbt_os_timer_new();
+    simix_global->timer_par = xbt_os_timer_new();
+    xbt_os_timer_start(simix_global->timer_seq);
+#endif
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), NULL);
     simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), NULL);
     simix_global->process_list =
@@ -93,6 +95,11 @@ void SIMIX_global_init(int *argc, char **argv)
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
+
+    /* register a function to be called by SURF after the environment creation */
+    sg_platf_init();
+    sg_platf_postparse_add_cb(SIMIX_post_create_environment);
+
   }
   if (!simix_timers) {
     simix_timers = xbt_heap_new(8, &free);
@@ -110,7 +117,7 @@ void SIMIX_global_init(int *argc, char **argv)
  */
 void SIMIX_clean(void)
 {
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
   smx_ctx_raw_new_sr();
 #endif
 
@@ -145,6 +152,15 @@ void SIMIX_clean(void)
   SIMIX_context_mod_exit();
 
   surf_exit();
+
+#ifdef TIME_BENCH_AMDAHL
+  xbt_os_timer_stop(simix_global->timer_seq);
+  XBT_INFO("Amdhal timing informations. Sequential time: %lf; Parallel time: %lf",
+           xbt_os_timer_elapsed(simix_global->timer_seq),
+           xbt_os_timer_elapsed(simix_global->timer_par));
+  xbt_os_timer_free(simix_global->timer_seq);
+  xbt_os_timer_free(simix_global->timer_par);
+#endif
 
   xbt_mallocator_free(simix_global->action_mallocator);
   xbt_free(simix_global);
@@ -199,7 +215,7 @@ void SIMIX_run(void)
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%lu",
         xbt_dynar_length(simix_global->process_to_run));
-#ifdef TIME_BENCH
+#ifdef TIME_BENCH_PER_SR
     smx_ctx_raw_new_sr();
 #endif
     while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
@@ -207,7 +223,15 @@ void SIMIX_run(void)
               xbt_dynar_length(simix_global->process_to_run));
 
       /* Run all processes that are ready to run, possibly in parallel */
+#ifdef TIME_BENCH_AMDAHL
+      xbt_os_timer_stop(simix_global->timer_seq);
+      xbt_os_timer_resume(simix_global->timer_par);
+#endif
       SIMIX_process_runall();
+#ifdef TIME_BENCH_AMDAHL
+      xbt_os_timer_stop(simix_global->timer_par);
+      xbt_os_timer_resume(simix_global->timer_seq);
+#endif
 
       /* Move all killing processes to the end of the list, because killing a process that have an ongoing simcall is a bad idea */
       xbt_dynar_three_way_partition(simix_global->process_that_ran, process_syscall_color);
@@ -453,3 +477,9 @@ static void SIMIX_action_mallocator_reset_f(void* action) {
   memset(action, 0, sizeof(s_smx_action_t));
   ((smx_action_t) action)->simcalls = fifo;
 }
+
+xbt_dict_t SIMIX_asr_get_properties(const char *name)
+{
+  return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
+}
+

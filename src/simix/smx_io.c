@@ -207,10 +207,94 @@ smx_action_t SIMIX_file_stat(smx_process_t process, smx_file_t fd, s_file_stat_t
   return action;
 }
 
+//SIMIX FILE UNLINK
+void SIMIX_pre_file_unlink(smx_simcall_t simcall)
+{
+  smx_action_t action = SIMIX_file_unlink(simcall->issuer,
+      simcall->file_unlink.fd);
+  xbt_fifo_push(action->simcalls, simcall);
+  simcall->issuer->waiting_action = action;
+}
+
+smx_action_t SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
+{
+  smx_action_t action;
+  smx_host_t host = process->smx_host;
+  /* check if the host is active */
+  if (surf_workstation_model->extension.
+      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
+           host->name);
+  }
+
+  action = xbt_mallocator_get(simix_global->action_mallocator);
+  action->type = SIMIX_ACTION_IO;
+  action->name = NULL;
+#ifdef HAVE_TRACING
+  action->category = NULL;
+#endif
+
+  action->io.host = host;
+  action->io.surf_io = surf_workstation_model->extension.workstation.unlink(host->host, fd->surf_file);
+
+  surf_workstation_model->action_data_set(action->io.surf_io, action);
+  XBT_DEBUG("Create io action %p", action);
+
+  return action;
+}
+
+//SIMIX FILE LS
+void SIMIX_pre_file_ls(smx_simcall_t simcall)
+{
+  smx_action_t action = SIMIX_file_ls(simcall->issuer,
+      simcall->file_ls.mount, simcall->file_ls.path);
+  xbt_fifo_push(action->simcalls, simcall);
+  simcall->issuer->waiting_action = action;
+}
+smx_action_t SIMIX_file_ls(smx_process_t process, const char* mount, const char *path)
+{
+  smx_action_t action;
+  smx_host_t host = process->smx_host;
+  /* check if the host is active */
+  if (surf_workstation_model->extension.workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
+           host->name);
+  }
+
+  action = xbt_mallocator_get(simix_global->action_mallocator);
+  action->type = SIMIX_ACTION_IO;
+  action->name = NULL;
+#ifdef HAVE_TRACING
+  action->category = NULL;
+#endif
+
+  action->io.host = host;
+  action->io.surf_io = surf_workstation_model->extension.workstation.ls(host->host,mount,path);
+
+  surf_workstation_model->action_data_set(action->io.surf_io, action);
+  XBT_DEBUG("Create io action %p", action);
+  return action;
+}
+
+static void free_file_stat(void *p)
+{
+  file_stat_t fs = p;
+  xbt_free(fs->date);
+  xbt_free(fs->group);
+  xbt_free(fs->time);
+  xbt_free(fs->user);
+  xbt_free(fs->user_rights);
+  xbt_free(fs);
+}
+
 void SIMIX_post_io(smx_action_t action)
 {
   xbt_fifo_item_t i;
   smx_simcall_t simcall;
+  char* key;
+  xbt_dict_cursor_t cursor = NULL;
+  s_file_stat_t *dst = NULL;
+  s_file_stat_t *src = NULL;
 
   xbt_fifo_foreach(action->simcalls,i,simcall,smx_simcall_t) {
     switch (simcall->call) {
@@ -218,21 +302,44 @@ void SIMIX_post_io(smx_action_t action)
       simcall->file_open.result = xbt_new(s_smx_file_t,1);
       simcall->file_open.result->surf_file = (action->io.surf_io)->file;
       break;
+
     case SIMCALL_FILE_CLOSE:
-      simcall->file_read.result = 0;
+      xbt_free(simcall->file_close.fp);
+      simcall->file_close.result = 0;
       break;
+
     case SIMCALL_FILE_WRITE:
       simcall->file_write.result = (action->io.surf_io)->cost;
       break;
+
     case SIMCALL_FILE_READ:
       simcall->file_read.result = (action->io.surf_io)->cost;
       break;
+
     case SIMCALL_FILE_STAT:
       simcall->file_stat.result = 0;
-      s_file_stat_t *dst = &(simcall->file_stat.buf);
-      s_file_stat_t *src = &((action->io.surf_io)->stat);
+      dst = &(simcall->file_stat.buf);
+      src = &((action->io.surf_io)->stat);
       file_stat_copy(src,dst);
       break;
+
+    case SIMCALL_FILE_UNLINK:
+      xbt_free(simcall->file_unlink.fd);
+      simcall->file_unlink.result = 0;
+      break;
+
+    case SIMCALL_FILE_LS:
+      xbt_dict_foreach((action->io.surf_io)->ls_dict,cursor,key, src){
+        // if there is a stat we have to duplicate it
+        if(src){
+          dst = xbt_new0(s_file_stat_t,1);
+          file_stat_copy(src, dst);
+          xbt_dict_set((action->io.surf_io)->ls_dict,key,dst,free_file_stat);
+        }
+      }
+      simcall->file_ls.result = (action->io.surf_io)->ls_dict;
+      break;
+
     default:
       break;
     }
