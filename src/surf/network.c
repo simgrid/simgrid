@@ -122,12 +122,13 @@ static double smpi_bandwidth_factor(double size)
 
   unsigned int iter = 0;
   s_smpi_factor_t fact;
-
+  double current=1.0;
   xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
-    if (size < fact.factor) {
-      XBT_DEBUG("%lf < %ld return %f", size, fact.factor, fact.value);
-      return fact.value;
-    }
+    if (size <= fact.factor) {
+      XBT_DEBUG("%lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else
+      current=fact.value;
   }
 
   return 1.0;
@@ -141,13 +142,13 @@ static double smpi_latency_factor(double size)
 
   unsigned int iter = 0;
   s_smpi_factor_t fact;
-
+  double current=1.0;
   xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
-    if (size < fact.factor) {
-      XBT_DEBUG("%lf < %ld return %f", size, fact.factor, fact.value);
-      return fact.value;
-    }
-
+    if (size <= fact.factor) {
+      XBT_DEBUG("%lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else
+      current=fact.value;
   }
 
   return 1.0;
