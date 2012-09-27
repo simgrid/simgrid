@@ -94,11 +94,19 @@ sudo apt-get install mercurial ksh libfreetype6-dev libcups2-dev libasound2-dev 
 # Grab the forest extension: we need to source-install it
 hg clone https://bitbucket.org/gxti/hgforest hgforest \endverbatim
 \endverbatim
- -# Configure the Forest extension: Edit ~/.hgrc and paste the
-    following lines (beware of changing the /path/to/forest.py):
+ -# Configure the mercurial extensions: Edit ~/.hgrc and paste the
+    following lines. Don't forget to change the /path/to/forest.py to
+    point to where you just downloaded the source. 
+    
+    Forest extension is needed to download the openjdk source code and
+    patches while the mq line is needed to apply the patches. The
+    username is needed at the step "preparing the sources", not sure why.
 \verbatim
+[ui]
+username = YouUserameWithoutSpaces
 [extensions]
 forest=/path/to/forest.py
+mq=
 \endverbatim
  -# Prepare the source code
 \verbatim 
@@ -111,22 +119,29 @@ hg fclone http://hg.openjdk.java.net/hsx/hotspot-comp sources
 hg fclone http://hg.openjdk.java.net/mlvm/mlvm patches
 
 # Link the patch directories into the sources
-patches/make/link-patch-dirs.sh sources patches
-# Check that it worked
-ls -il patches/hotspot/series sources/hotspot/.hg/patches/series
+bash patches/make/link-patch-dirs.sh sources patches
+# Test wether the previous command worked with
+ls -i patches/hotspot/series sources/hotspot/.hg/patches/series
+# It should display something like the following. Note that both file
+# share the same inode number.
+#  9707849 patches/hotspot/series  
+#  9707849 sources/hotspot/.hg/patches/series
 
-# Fetches the guards (patches) to apply: 
+
+# Specify what to compile. If this does not work, edit patches/make/Makefile and add coro-simple to GLOBAL_GUARSD
 export davinci=$(pwd) guards="buildable testable coro-simple"
-# (if a1 does not work) edit patches/make/Makefile and add coro-simple to GLOBAL_GUARDS
+# Apply the patches
 sh patches/make/each-patch-repo.sh hg qselect --reapply $guards '$(sh $davinci/patches/make/current-release.sh)'
 \endverbatim	       
  -# Compile it all
 \verbatim
 # Prepare the sources
-(cd patches/make; make setup && make force && make && make FORCE_VERSIONS=1)
+(cd patches/make; make setup && make force && make && make FORCE_VERSIONS=1 && echo "Sources are properly setup")
+# If the previous command failed, check your mercurial config within ~/.hgrc (see above)
 
 unset LD_LIBRARY_PATH
 export ALT_BOOTDIR=/usr/lib/jvm/java-7-openjdk-amd64/
+cd source
 # Check that everything is fine
 make sanity
 # Go for it
