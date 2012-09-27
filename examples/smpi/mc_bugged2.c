@@ -13,7 +13,7 @@
 
 int main(int argc, char **argv)
 {
-  int recv_buff, err, size, rank;
+  int x,y, err, size, rank;
   MPI_Status status;
 
   /* Initialize MPI */
@@ -32,10 +32,10 @@ int main(int argc, char **argv)
   }
 
   if (rank % 3 == 0) {
-    MPI_Recv(&recv_buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-    printf("(%d) receive %d\n", rank, recv_buff);
-    MPI_Recv(&recv_buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-    printf("(%d) receive %d\n", rank, recv_buff);
+    MPI_Recv(&x, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+    printf("(%d) x <- %d\n", rank, x);
+    MPI_Recv(&y, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+    printf("(%d) y <- %d\n", rank, y);
   }else{
     MPI_Send(&rank, 1, MPI_INT, (rank / 3) * 3, 42, MPI_COMM_WORLD);
     printf("Sent %d to rank %d\n", rank, (rank / 3) * 3);
