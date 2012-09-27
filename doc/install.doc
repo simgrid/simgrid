@@ -122,30 +122,42 @@ hg fclone http://hg.openjdk.java.net/mlvm/mlvm patches
 bash patches/make/link-patch-dirs.sh sources patches
 # Test wether the previous command worked with
 ls -i patches/hotspot/series sources/hotspot/.hg/patches/series
-# It should display something like the following. Note that both file
-# share the same inode number.
+# It should display something like the following.
+# (note that both file share the same inode number)
 #  9707849 patches/hotspot/series  
 #  9707849 sources/hotspot/.hg/patches/series
 
 
-# Specify what to compile. If this does not work, edit patches/make/Makefile and add coro-simple to GLOBAL_GUARSD
+# Specify what to compile. 
 export davinci=$(pwd) guards="buildable testable coro-simple"
 # Apply the patches
 sh patches/make/each-patch-repo.sh hg qselect --reapply $guards '$(sh $davinci/patches/make/current-release.sh)'
+# Check that it understood that you want the patch applied:
+grep GLOBAL_GUARDS patches/make/* -r
+# this should display something like the following (maybe amonst other unrelated lines)
+# GLOBAL_GUARDS=buildable testable coro-simple
+# If this does not work, edit patches/make/Makefile,
+#   manually coro-simple to GLOBAL_GUARDS and then 
+#   rerun the patches/make/each-patch-repo.sh script as earlier
+
+
+# Finish the setup
+(cd patches/make; make setup && make force && make && make FORCE_VERSIONS=1 && echo "Sources are properly setup")
+# If this last command failed, check your mercurial config within ~/.hgrc (see above)
 \endverbatim	       
  -# Compile it all
 \verbatim
-# Prepare the sources
-(cd patches/make; make setup && make force && make && make FORCE_VERSIONS=1 && echo "Sources are properly setup")
-# If the previous command failed, check your mercurial config within ~/.hgrc (see above)
-
 unset LD_LIBRARY_PATH
 export ALT_BOOTDIR=/usr/lib/jvm/java-7-openjdk-amd64/
-cd source
+cd sources
 # Check that everything is fine
 make sanity
-# Go for it
+# Go for it (it takes about half an hour on my machine)
 make all
+
+# Check that the coroutine library got compiled in
+ls sources/build/linux-amd64/classes/java/dyn/
+# This should display a bunch of class files. If not, something went wrong, you need to investigate further
 \endverbatim
 
 \subsection  bindings_java_coro_use Using coroutine contexts
@@ -153,10 +165,11 @@ make all
 SimGrid Java will automatically switch to the coroutine context
 factory if your JVM support it, so you will just need to execute your
 simulation with the correct JVM. The selected context factory gets
-displayed when enabling the verbose logs of jmsg
-(--log=jmsg.thres:verbose in the following).
+displayed automatically.
 \verbatim
-$ $PATH_TO_COROUTINE_JVM/java -cp .:../simgrid.jar --log=jmsg.thres:verbose basic/BasicTest platform.xml basic/basicDeployment.xml
+export LD_LIBRARY_PATH=/path/to/simgrid.so:/path/to/libSG_java.so
+cd examples
+$PATH_TO_COROUTINE_JVM/java -cp .:../simgrid.jar masterslave.Masterslave masterslave/ masterslaveDeployment.xml platform.xml
 \endverbatim
 
 Note that you may have to adjust the "coro.stacksPerThread"

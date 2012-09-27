@@ -89,11 +89,11 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   (*env)->GetJavaVM(env, &__java_vm);
 
   if ((*env)->FindClass(env, "java/dyn/Coroutine")) {
-  	XBT_VERB("Using Coroutines");
+  	XBT_INFO("Using Coroutines. Your simulation is on steroid.");
   	smx_factory_initializer_to_use = SIMIX_ctx_cojava_factory_init;
   }
   else {
-  	XBT_VERB("Using java threads");
+  	XBT_INFO("Using regular java threads. Coroutines could speed your simulation up.");
   	smx_factory_initializer_to_use = SIMIX_ctx_java_factory_init;
   }
   jthrowable exc = (*env)->ExceptionOccurred(env);
