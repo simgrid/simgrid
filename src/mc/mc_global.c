@@ -714,6 +714,10 @@ void MC_get_binary_local_variables(){
   char *node_type = NULL, *location_type = NULL, *variable_name = NULL, *lowpc = NULL, *highpc = NULL;
   xbt_dynar_t split = NULL;
 
+  void *low_pc = NULL, *old_low_pc = NULL;
+
+  int compile_unit_found = 0; /* Detect if the program has been compiled with -g */
+
   read = getline(&line, &n, fp);
 
   while (read != -1) {
@@ -725,6 +729,9 @@ void MC_get_binary_local_variables(){
     line[read - 1] = '\0';
     
     if(line[0] == '<'){
+
+      /* If the program hasn't been compiled with -g, no symbol (line starting with '<' ) found */
+      compile_unit_found = 1;
 
       /* Get node type */
       strtok(line, " ");
@@ -745,6 +752,8 @@ void MC_get_binary_local_variables(){
           if(node_type != NULL && strcmp(node_type, "DW_AT_name") == 0){
 
             frame_name = strdup(strtok(NULL, " "));
+            xbt_str_trim(frame_name, NULL);
+            xbt_str_trim(frame_name, "\"");
             read = getline(&line, &n, fp);
 
           }else if(node_type != NULL && strcmp(node_type, "DW_AT_frame_base") == 0){
@@ -776,10 +785,18 @@ void MC_get_binary_local_variables(){
              
                   dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
                 
-                  strtok(lowpc, "=");
-                  new_entry->lowpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
-                  strtok(highpc, "=");
-                  new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
+                  if(low_pc == NULL){
+                    strtok(lowpc, "=");
+                    new_entry->lowpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
+                    strtok(highpc, "=");
+                    new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);             
+                  }else{
+                    strtok(lowpc, "=");
+                    old_low_pc = (void *)strtoul(strtok(NULL, "="), NULL, 16);
+                    new_entry->lowpc = (char *)low_pc + (long)old_low_pc;
+                    strtok(highpc, "=");
+                    new_entry->highpc = (char*)low_pc + ((char *)((void *)strtoul(strtok(NULL, "="), NULL, 16)) - (char*)old_low_pc);
+                  }
 
                   new_entry->location = xbt_new0(s_dw_location_t, 1);
                 
@@ -839,6 +856,8 @@ void MC_get_binary_local_variables(){
           if(node_type != NULL && strcmp(node_type, "DW_AT_name") == 0){
 
             variable_name = strdup(strtok(NULL, " "));
+            xbt_str_trim(variable_name, NULL);
+            xbt_str_trim(variable_name, "\"");
             read = getline(&line, &n, fp);
             
           }else if(node_type != NULL && strcmp(node_type, "DW_AT_location") == 0){
@@ -869,10 +888,18 @@ void MC_get_binary_local_variables(){
 
                   dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
 
-                  strtok(lowpc, "=");
-                  new_entry->lowpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
-                  strtok(highpc, "=");
-                  new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
+                  if(low_pc == NULL){
+                    strtok(lowpc, "=");
+                    new_entry->lowpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
+                    strtok(highpc, "=");
+                    new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);             
+                  }else{
+                    strtok(lowpc, "=");
+                    old_low_pc = (void *)strtoul(strtok(NULL, "="), NULL, 16);
+                    new_entry->lowpc = (char *)low_pc + (long)old_low_pc;
+                    strtok(highpc, "=");
+                    new_entry->highpc = (char*)low_pc + ((char *)((void *)strtoul(strtok(NULL, "="), NULL, 16)) - (char*)old_low_pc);
+                  }
 
                   new_entry->location = xbt_new0(s_dw_location_t, 1);
                 
@@ -919,6 +946,25 @@ void MC_get_binary_local_variables(){
 
         valid_variable = 1;
 
+      }else if(strcmp(node_type, "DW_TAG_compile_unit") == 0){
+
+        read = getline(&line, &n, fp);
+        
+        while(read != -1 && line[0] != '<'){
+          
+          if(n == 0)
+            continue;
+          
+          node_type = strtok(line, " ");
+          
+          if(node_type != NULL && strcmp(node_type, "DW_AT_low_pc") == 0){
+            low_pc = (void *) strtoul(strtok(NULL, " "), NULL, 16);
+          }
+
+          read = getline(&line, &n, fp);
+
+        }
+
       }else{
 
         read = getline(&line, &n, fp);
@@ -931,6 +977,11 @@ void MC_get_binary_local_variables(){
 
     }
 
+  }
+
+  if(compile_unit_found == 0){
+    XBT_INFO("Your program must be compiled with -g");
+    xbt_abort();
   }
 
   if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug))
