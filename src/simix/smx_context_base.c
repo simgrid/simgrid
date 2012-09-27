@@ -10,6 +10,7 @@
 #include "xbt/function_types.h"
 #include "simgrid/simix.h"
 #include "smx_private.h"
+#include "mc/mc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
 
@@ -46,6 +47,16 @@ smx_ctx_base_factory_create_context_sized(size_t size,
 {
   smx_context_t context = xbt_malloc0(size);
 
+  /* Store the address of the stack in heap to compare it apart of heap comparison */
+  if(MC_IS_ENABLED){
+
+    if(mmalloc_ignore == NULL)
+      MC_ignore_init(); 
+    
+    MC_ignore(context, size);
+
+  }
+
   /* If the user provided a function for the process then use it.
      Otherwise, it is the context for maestro and we should set it as the
      current context */
@@ -58,6 +69,9 @@ smx_ctx_base_factory_create_context_sized(size_t size,
     SIMIX_context_set_current(context);
   }
   context->data = data;
+
+  if(MC_IS_ENABLED)
+    MC_new_stack_area(context, ((smx_process_t)context->data)->name);
 
   return context;
 }

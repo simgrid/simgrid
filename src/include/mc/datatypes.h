@@ -21,5 +21,10 @@ typedef struct s_mc_ignore_region{
   size_t size;
 }s_mc_ignore_region_t, *mc_ignore_region_t;
 
+typedef struct s_stack_region{
+  void *address;
+  char *process_name;
+}s_stack_region_t, *stack_region_t;
+
 SG_END_DECL()
 #endif                          /* _MC_MC_H */

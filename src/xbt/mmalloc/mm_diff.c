@@ -8,6 +8,7 @@
 #include "xbt/ex_interface.h" /* internals of backtrace setup */
 #include "xbt/str.h"
 #include "mc/mc.h"
+#include "xbt/mmalloc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mm_diff, xbt,
                                 "Logging specific to mm_diff in mmalloc");
@@ -15,6 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mm_diff, xbt,
 extern char *xbt_binary_name;
 
 xbt_dynar_t mmalloc_ignore;
+xbt_dynar_t stacks_areas;
 
 typedef struct s_heap_area_pair{
   int block1;
@@ -33,6 +35,8 @@ static void match_equals(xbt_dynar_t list);
 
 static int in_mmalloc_ignore(int block, int fragment);
 static size_t heap_comparison_ignore(void *address);
+
+static char* is_stack(void *address);
 
 void mmalloc_backtrace_block_display(void* heapinfo, int block){
 
@@ -91,7 +95,7 @@ size_t heaplimit, heapsize1, heapsize2;
 
 int ignore_done;
 
-int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
+int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stack1, xbt_dynar_t *stack2){
 
   if(heap1 == NULL && heap1 == NULL){
     XBT_DEBUG("Malloc descriptors null");
@@ -120,6 +124,8 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
   /* Start comparison */
   size_t i1, i2, j1, j2, k, current_block, current_fragment;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
+  void *real_addr_block1, *real_addr_block2;
+  char *stack_name;
 
   xbt_dynar_t previous = xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
 
@@ -172,6 +178,15 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
     addr_block1 = ((void*) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)heapbase1));
 
     if(heapinfo1[i1].type == 0){  /* Large block */
+      
+      real_addr_block1 = (char*)((xbt_mheap_t)s_heap)->heapbase + (((char *)addr_block1) - (char *)heapbase1);
+
+      if((stack_name = is_stack(real_addr_block1)) != NULL){
+        stack_region_t stack = xbt_new0(s_stack_region_t, 1);
+        stack->address = addr_block1;
+        stack->process_name = strdup(stack_name);
+        xbt_dynar_push(*stack1, &stack);
+      }
 
       if(heapinfo1[i1].busy_block.busy_size == 0){
         i1++;
@@ -187,7 +202,17 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
         if(heapinfo1[current_block].busy_block.busy_size == heapinfo2[current_block].busy_block.busy_size){
 
           addr_block2 = ((void*) (((ADDR2UINT(current_block)) - 1) * BLOCKSIZE + (char*)heapbase2));
+
+          real_addr_block2 = (char*)((xbt_mheap_t)s_heap)->heapbase + (((char *)addr_block2) - (char *)heapbase2);
           
+          if((stack_name = is_stack(real_addr_block2)) != NULL){
+            stack_region_t stack = xbt_new0(s_stack_region_t, 1);
+            stack->address = addr_block2;
+            stack->process_name = strdup(stack_name);
+            xbt_dynar_push(*stack2, &stack);
+          }
+
+        
           add_heap_area_pair(previous, current_block, -1, current_block, -1);
           
           if(ignore_done < xbt_dynar_length(mmalloc_ignore)){
@@ -217,6 +242,17 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
       while(i2 <= heaplimit && !equal){
 
+        addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)heapbase2));
+        
+        real_addr_block2 = (char*)((xbt_mheap_t)s_heap)->heapbase + (((char *)addr_block2) - (char *)heapbase2);
+        
+        if((stack_name = is_stack(real_addr_block2)) != NULL){
+          stack_region_t stack = xbt_new0(s_stack_region_t, 1);
+          stack->address = addr_block2;
+          stack->process_name = strdup(stack_name);
+          xbt_dynar_push(*stack2, &stack);
+        }
+           
         if(i2 == current_block){
           i2++;
           continue;
@@ -241,8 +277,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
           i2++;
           continue;
         }
-
-        addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)heapbase2));
 
         /* Comparison */
         add_heap_area_pair(previous, i1, -1, i2, -1);
@@ -842,3 +876,14 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
   
 }
 
+static char * is_stack(void *address){
+  unsigned int cursor = 0;
+  stack_region_t stack;
+
+  xbt_dynar_foreach(stacks_areas, cursor, stack){
+    if(address == stack->address)
+      return stack->process_name;
+  }
+
+  return NULL;
+}

@@ -23,6 +23,7 @@ SG_BEGIN_DECL()
 extern char*_surf_mc_property_file; /* fixme: better location? */
 
 extern xbt_dynar_t mmalloc_ignore;
+extern xbt_dynar_t stacks_areas;
 
 /********************************* Global *************************************/
 void _mc_cfg_cb_reduce(const char *name, int pos);
@@ -42,6 +43,7 @@ void MC_automaton_load(const char *file);
 
 void MC_ignore_init(void);
 XBT_PUBLIC(void) MC_ignore(void *address, size_t size);
+void MC_new_stack_area(void *stack, char *name);
 
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */

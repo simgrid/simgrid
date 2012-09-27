@@ -76,6 +76,7 @@ int compare;
 xbt_dynar_t mc_binary_local_variables = NULL;
 
 extern xbt_dynar_t mmalloc_ignore;
+extern xbt_dynar_t stacks_areas;
 
 xbt_automaton_t _mc_property_automaton = NULL;
 
@@ -651,6 +652,7 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 void MC_ignore_init(){
   MC_SET_RAW_MEM;
   mmalloc_ignore = xbt_dynar_new(sizeof(mc_ignore_region_t), NULL);
+  stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
   MC_UNSET_RAW_MEM;
 }
 
@@ -679,6 +681,16 @@ void MC_ignore(void *address, size_t size){
 
   xbt_dynar_insert_at(mmalloc_ignore, cursor, &region);
 
+  MC_UNSET_RAW_MEM;
+}
+
+void MC_new_stack_area(void *stack, char *name){
+  MC_SET_RAW_MEM;
+  stack_region_t region = NULL;
+  region = xbt_new0(s_stack_region_t, 1);
+  region->address = stack;
+  region->process_name = strdup(name);
+  xbt_dynar_push(stacks_areas, &region);
   MC_UNSET_RAW_MEM;
 }
 

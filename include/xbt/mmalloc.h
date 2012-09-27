@@ -18,6 +18,8 @@
 #  include <stdio.h>            /* for NULL */
 #endif
 
+#include "xbt/dynar.h"
+
 /* Datatype representing a separate heap. The whole point of the mmalloc module
  * is to allow several such heaps in the process. It thus works by redefining
  * all the classical memory management functions (malloc and friends) with an
@@ -56,7 +58,7 @@ extern xbt_mheap_t mmalloc_get_default_md(void);
 void mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
-int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
+int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stacks1, xbt_dynar_t *stacks2);
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 
 void mmalloc_backtrace_block_display(void* heapinfo, int block);
