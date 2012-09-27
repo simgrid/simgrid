@@ -44,6 +44,12 @@ static MPI_Request build_request(void *buf, int count,
   request->buf = buf;
   // FIXME: this will have to be changed to support non-contiguous datatypes
   request->size = smpi_datatype_size(datatype) * count;
+  request->contiguous=smpi_datatype_contiguous(datatype);
+  if(request->contiguous != 1){
+    request->block_stride = smpi_datatype_block_stride(datatype);
+    request->block_length = smpi_datatype_block_length(datatype);
+    request->block_count = smpi_datatype_block_count(datatype)*count;
+  }
   request->src = src;
   request->dst = dst;
   request->tag = tag;

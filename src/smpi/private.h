@@ -26,6 +26,10 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 typedef struct s_smpi_mpi_request {
   void *buf;
   size_t size;
+  size_t contiguous;
+  size_t block_stride;
+  size_t block_length;
+  size_t block_count:
   int src;
   int dst;
   int tag;
@@ -61,6 +65,10 @@ void smpi_global_init(void);
 void smpi_global_destroy(void);
 
 size_t smpi_datatype_size(MPI_Datatype datatype);
+size_t smpi_datatype_contiguous(MPI_Datatype datatype);
+size_t smpi_datatype_block_stride(MPI_Datatype datatype);
+size_t smpi_datatype_block_length(MPI_Datatype datatype);
+size_t smpi_datatype_block_count(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_lb(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_ub(MPI_Datatype datatype);
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,

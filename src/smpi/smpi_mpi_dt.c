@@ -19,6 +19,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
 
 typedef struct s_smpi_mpi_datatype {
   size_t size;
+  size_t contiguous;
+  size_t block_stride;
+  size_t block_length;
+  size_t block_count:
   MPI_Aint lb;
   MPI_Aint ub;
   int flags;
@@ -27,6 +31,10 @@ typedef struct s_smpi_mpi_datatype {
 #define CREATE_MPI_DATATYPE(name, type)       \
   static s_smpi_mpi_datatype_t mpi_##name = { \
     sizeof(type),  /* size */                 \
+    1,             /*contiguous*/             \
+    0,             /*block_stride*/           \
+    0,             /*block_length*/           \
+    0,             /*block_count*/            \
     0,             /* lb */                   \
     sizeof(type),  /* ub = lb + size */       \
     DT_FLAG_BASIC  /* flags */                \
@@ -105,6 +113,24 @@ CREATE_MPI_DATATYPE(MPI_PTR, void*);
 size_t smpi_datatype_size(MPI_Datatype datatype)
 {
   return datatype->size;
+}
+
+size_t smpi_datatype_contiguous(MPI_Datatype datatype)
+{
+  return datatype->contiguous;
+}
+
+size_t smpi_datatype_block_stride(MPI_Datatype datatype)
+{
+  return datatype->block_stride;
+}
+size_t smpi_datatype_block_length(MPI_Datatype datatype)
+{
+  return datatype->block_length;
+}
+size_t smpi_datatype_block_count(MPI_Datatype datatype)
+{
+  return datatype->block_count;
 }
 
 MPI_Aint smpi_datatype_lb(MPI_Datatype datatype)
