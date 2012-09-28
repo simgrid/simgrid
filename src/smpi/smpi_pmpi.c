@@ -2032,6 +2032,11 @@ int PMPI_Comm_test_inter(MPI_Comm comm, int* flag) {
    return not_yet_implemented();
 }
 
+int PMPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
+{
+   return not_yet_implemented();
+}
+
 int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
    return not_yet_implemented();
 }
