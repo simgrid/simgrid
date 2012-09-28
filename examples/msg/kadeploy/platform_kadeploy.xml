@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+ <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+ <platform version="3">
+ <AS  id="AS0"  routing="Full">
+   <!-- For using with ping_pong example, very simple platform -->
+   <host id="Inmos" power="98095000"/>
+   <host id="Bellevue" power="76296000"/>
+   <host id="Test" power="96296000"/>
+   <link id="link1" bandwidth="1000000" latency="0.1"/>
+   <link id="link2" bandwidth="1000000" latency="0.2"/>
+   <route src="Inmos" dst="Bellevue">
+     <link_ctn id="link1"/>
+   </route>
+   <route src="Test" dst="Bellevue">
+     <link_ctn id="link2"/>
+   </route>
+ </AS>
+ </platform>

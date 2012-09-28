@@ -1,0 +1,22 @@
+#! ./tesh
+
+p Testing the deprecated CM02 network model
+
+! output sort
+$ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrecv.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+>  [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'Cas01'
+> [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (0:@) test_all
+> [  0.000000] (0:@) Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [  0.000000] (1:sender@Inmos) sender
+> [  0.000000] (1:sender@Inmos) host = Bellevue
+> [  0.000000] (1:sender@Inmos) task_la->data = 0.000000e+00
+> [  0.000000] (2:receiver@Bellevue) receiver
+> [  0.100100] (1:sender@Inmos) task_bw->data = 1.001000e-01
+> [  0.100100] (2:receiver@Bellevue) Task received : latency task
+> [  0.100100] (2:receiver@Bellevue) Communic. time 1.001000e-01
+> [  0.100100] (2:receiver@Bellevue) --- la 0.100100 ----
+> [10000.200100] (0:@) Total simulation time: 1.000020e+04
+> [10000.200100] (2:receiver@Bellevue) Task received : bandwidth task
+> [10000.200100] (2:receiver@Bellevue) Communic. time 1.000010e+04
+> [10000.200100] (2:receiver@Bellevue) --- bw 99999.000010 ----

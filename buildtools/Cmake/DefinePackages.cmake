@@ -671,6 +671,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/priority/CMakeLists.txt
   examples/msg/properties/CMakeLists.txt
   examples/msg/sendrecv/CMakeLists.txt
+  examples/msg/kadeploy/CMakeLists.txt
   examples/msg/start_kill_time/CMakeLists.txt
   examples/msg/suspend/CMakeLists.txt
   examples/msg/token_ring/CMakeLists.txt
