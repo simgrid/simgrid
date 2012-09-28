@@ -17,6 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi,
 static int match_recv(void* a, void* b, smx_action_t ignored) {
    MPI_Request ref = (MPI_Request)a;
    MPI_Request req = (MPI_Request)b;
+   XBT_DEBUG("Trying to match a recv of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
 
    xbt_assert(ref, "Cannot match recv against null reference");
    xbt_assert(req, "Cannot match recv against null request");
@@ -27,7 +28,7 @@ static int match_recv(void* a, void* b, smx_action_t ignored) {
 static int match_send(void* a, void* b,smx_action_t ignored) {
    MPI_Request ref = (MPI_Request)a;
    MPI_Request req = (MPI_Request)b;
-
+   XBT_DEBUG("Trying to match a send of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
    xbt_assert(ref, "Cannot match send against null reference");
    xbt_assert(req, "Cannot match send against null request");
    return (req->src == MPI_ANY_SOURCE || req->src == ref->src)
@@ -238,7 +239,6 @@ void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm)
 {
 	  MPI_Request request;
-
 	  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
 	  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 }
@@ -295,16 +295,15 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
 }
 
 int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
-int flag;
-
-   if ((*request)->action == NULL)
-  flag = 1;
-   else 
+  int flag;
+  if ((*request)->action == NULL)
+    flag = 1;
+  else
     flag = simcall_comm_test((*request)->action);
-   if(flag) {
-       finish_wait(request, status);
-    }
-    return flag;
+  if(flag) {
+    finish_wait(request, status);
+  }
+  return flag;
 }
 
 int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
@@ -349,7 +348,8 @@ int smpi_mpi_testall(int count, MPI_Request requests[],
   int flag=1;
   int i;
   for(i=0; i<count; i++)
-   if (smpi_mpi_test(&requests[i], &status[i])!=1)
+    if(requests[i]!= MPI_REQUEST_NULL)
+      if (smpi_mpi_test(&requests[i], &status[i])!=1)
        flag=0;
 
   return flag;
@@ -359,18 +359,16 @@ void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
   int flag=0;
   //FIXME find another wait to avoid busy waiting ?
   // the issue here is that we have to wait on a nonexistent comm
-  MPI_Request request;
   while(flag==0){
-        request = smpi_mpi_iprobe(source, tag, comm, &flag, status);
+        smpi_mpi_iprobe(source, tag, comm, &flag, status);
         XBT_DEBUG("Busy Waiting on probing : %d", flag);
         if(!flag) {
-            smpi_mpi_request_free(&request);
             simcall_process_sleep(0.0001);
         }
   }
 }
 
-MPI_Request smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){
+void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){
   MPI_Request request =build_request(NULL, 0, MPI_CHAR, source, smpi_comm_rank(comm), tag,
             comm, NON_PERSISTENT | RECV);
   // behave like a receive, but don't do it
@@ -380,11 +378,12 @@ MPI_Request smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_S
   // We have to test both mailboxes as we don't know if we will receive one one or another
     if (xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")>0){
         mailbox = smpi_process_mailbox_small();
+        XBT_DEBUG("trying to probe the perm recv mailbox");
         request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
-
     }
     if (request->action==NULL){
 	mailbox = smpi_process_mailbox();
+        XBT_DEBUG("trying to probe the other mailbox");
         request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
     }
 
@@ -399,8 +398,9 @@ MPI_Request smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_S
     }
   }
   else *flag=false;
+  smpi_mpi_request_free(&request);
 
-  return request;
+  return;
 }
 
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
@@ -776,7 +776,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
     smpi_mpi_startall(size - 1, requests);
     for(src = 0; src < size - 1; src++) {
       index = smpi_mpi_waitany(size - 1, requests, MPI_STATUS_IGNORE);
-      XBT_VERB("finished waiting any request with index %d", index);
+      XBT_DEBUG("finished waiting any request with index %d", index);
       if(index == MPI_UNDEFINED) {
         break;
       }
