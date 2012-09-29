@@ -12,7 +12,11 @@
 SG_BEGIN_DECL()
 
 /******************************* Transitions **********************************/
+
 typedef struct s_mc_transition *mc_transition_t;
+
+
+/*********** Structures for snapshot comparison **************************/
 
 typedef struct s_mc_ignore_region{
   int block;
@@ -24,7 +28,13 @@ typedef struct s_mc_ignore_region{
 typedef struct s_stack_region{
   void *address;
   char *process_name;
+  size_t size;
 }s_stack_region_t, *stack_region_t;
+
+typedef struct s_heap_equality{
+  void *address1;
+  void *address2;
+}s_heap_equality_t, *heap_equality_t;
 
 SG_END_DECL()
 #endif                          /* _MC_MC_H */

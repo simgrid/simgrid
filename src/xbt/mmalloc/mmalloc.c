@@ -184,7 +184,6 @@ void *mmalloc(xbt_mheap_t mdp, size_t size)
       block = BLOCK(result);
       for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i) {
         mdp->heapinfo[block].busy_frag.frag_size[i] = 0;
-        mdp->heapinfo[block].busy_frag.equal_to[i] = -1;
         next = (struct list *) ((char *) result + (i << log));
         next->next = mdp->fraghead[log].next;
         next->prev = &mdp->fraghead[log];
