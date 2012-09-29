@@ -213,6 +213,8 @@ extern xbt_fifo_t mc_stack_liveness;
 extern mc_snapshot_t initial_snapshot_liveness;
 extern xbt_automaton_t _mc_property_automaton;
 extern int compare;
+extern void *start_plt;
+extern void *end_plt;
 
 typedef struct s_mc_pair{
   mc_snapshot_t system_state;

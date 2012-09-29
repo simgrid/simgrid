@@ -49,8 +49,9 @@ static void test2()
 
   MC_UNSET_RAW_MEM;
 
-  char* t = malloc(5);
-
+  char* t = malloc(50);
+  t = strdup("toto");
+ 
   MC_SET_RAW_MEM;
 
   /* Save second snapshot */
@@ -88,6 +89,7 @@ static void test3()
   MC_UNSET_RAW_MEM;
 
   char *t = malloc(5);
+  t = strdup("toto");
   free(t);
 
   MC_SET_RAW_MEM;
@@ -117,6 +119,7 @@ static void test4()
   fprintf(stderr, "\n**************** TEST 4 ****************\n\n");
 
   char *t = malloc(5);
+  t = strdup("toto");
 
   MC_SET_RAW_MEM;
 
@@ -236,6 +239,9 @@ void MC_test_snapshot_comparison(){
   mc_snapshot_t initial = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(initial); 
   MC_UNSET_RAW_MEM;
+
+  /* Get .plt section (start and end addresses) for data libsimgrid comparison */
+  get_plt_section();
 
   test1();
 
