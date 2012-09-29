@@ -182,7 +182,7 @@ void get_plt_section(){
     if(n == 0)
       continue;
 
-     /* Wipeout the new line character */
+    /* Wipeout the new line character */
     line[read - 1] = '\0';
 
     lfields[0] = strtok(line, " ");
