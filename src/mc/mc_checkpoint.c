@@ -7,6 +7,10 @@
 #include "mc_private.h"
 #include "xbt/module.h"
 
+#include "../simix/smx_private.h"
+
+#include <libunwind.h>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
 
@@ -20,8 +24,10 @@ static void MC_region_destroy(mc_mem_region_t reg);
 
 static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start_addr, size_t size);
 
-static int data_program_region_compare(void *d1, void *d2, size_t size);
-static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size);
+static void add_value(xbt_dynar_t *list, const char *type, unsigned long int val);
+static xbt_dynar_t take_snapshot_stacks(void *heap);
+static void get_local_variables_values(xbt_dynar_t *all_variables, stack_region_t stack, void *heap);
+static void print_local_variables_values(xbt_dynar_t all_variables);
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
@@ -94,6 +100,7 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
   s_map_region_t reg;
   memory_map_t maps = get_memory_map();
   int nb_reg = 0;
+  void *heap = NULL;
 
   /* Save the std heap and the writable mapped pages of libsimgrid */
   while (i < maps->mapsize && nb_reg < 3) {
@@ -102,6 +109,7 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
       if (maps->regions[i].pathname == NULL){
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+          heap = snapshot->regions[nb_reg]->data;
           nb_reg++;
         }
       } else {
@@ -125,6 +133,8 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
     }
     i++;
   }
+
+  snapshot->stacks = take_snapshot_stacks(heap);
   
   free_memory_map(maps);
 

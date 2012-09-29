@@ -20,6 +20,7 @@
 #include "xbt/hash.h"
 #include "msg/msg.h"
 #include "msg/datatypes.h"
+#include "xbt/strbuff.h"
 
 /****************************** Snapshots ***********************************/
 
@@ -33,7 +34,13 @@ typedef struct s_mc_mem_region{
 typedef struct s_mc_snapshot{
   unsigned int num_reg;
   mc_mem_region_t *regions;
+  xbt_dynar_t stacks;
 } s_mc_snapshot_t, *mc_snapshot_t;
+
+typedef struct s_mc_snapshot_stack{
+  xbt_strbuff_t local_variables;
+  void *stack_pointer;
+}s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 void MC_take_snapshot(mc_snapshot_t);
 void MC_take_snapshot_liveness(mc_snapshot_t s);
