@@ -25,15 +25,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
-typedef struct s_smx_ctx_sysv {
-  s_smx_ctx_base_t super;       /* Fields of super implementation */
-  ucontext_t uc;                /* the ucontext that executes the code */
-#ifdef HAVE_VALGRIND_VALGRIND_H
-  unsigned int valgrind_stack_id;       /* the valgrind stack id */
-#endif
-  char stack[0];                /* the thread stack (must remain the last element of the structure) */
-} s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
-
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t sysv_parmap;
 static ucontext_t* sysv_workers_stacks;        /* space to save the worker's stack in each thread */
