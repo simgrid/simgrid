@@ -979,6 +979,11 @@ void MC_get_binary_local_variables(){
 
   }
 
+  free(line); free(tmp_line); free(tmp_location); free(frame_name);
+  free(location_type); free(variable_name); free(lowpc); free(highpc);
+  free(command);
+  pclose(fp);
+
   if(compile_unit_found == 0){
     XBT_INFO("Your program must be compiled with -g");
     xbt_abort();
@@ -987,10 +992,7 @@ void MC_get_binary_local_variables(){
   if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug))
     print_local_variables(mc_binary_local_variables);
 
-  free(line); free(tmp_line); free(tmp_location); free(frame_name);
-  free(node_type); free(location_type); free(variable_name); free(lowpc); free(highpc);
-  free(command);
-  pclose(fp);
+  
 }
 
 void print_local_variables(xbt_dynar_t list){
@@ -1251,9 +1253,7 @@ static e_dw_location_type get_location(char *expr, dw_location_t entry){
       
     }
 
-    free(tok);
-    free(tmp_tok);
-    /*xbt_dynar_free(&tokens);*/
+    xbt_dynar_free(&tokens);
 
     return e_dw_compose;
 
@@ -1273,6 +1273,7 @@ static e_dw_location_type get_location(char *expr, dw_location_t entry){
 
     free(tok);
     free(tmp_tok);
+    xbt_dynar_free(&tokens);
 
     return entry->type;
 
