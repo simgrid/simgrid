@@ -736,18 +736,19 @@ void MC_get_binary_local_variables(){
       /* Get node type */
       strtok(line, " ");
       strtok(NULL, " ");
-      node_type = strtok(NULL, " ");
+      node_type = strdup(strtok(NULL, " "));
 
       if(strcmp(node_type, "DW_TAG_subprogram") == 0){ /* New frame */
 
         read = getline(&line, &n, fp);
+        free(node_type);
 
         while(read != -1 && line[0] != '<'){
 
           if(n == 0)
             continue;
 
-          node_type = strtok(line, " ");
+          node_type = strdup(strtok(line, " "));
 
           if(node_type != NULL && strcmp(node_type, "DW_AT_name") == 0){
 
@@ -764,6 +765,7 @@ void MC_get_binary_local_variables(){
               frame->name = strdup(frame_name);
               frame->variables = xbt_dynar_new(sizeof(dw_local_variable_t), NULL);
               frame->location = xbt_new0(s_dw_location_t, 1);
+              free(frame_name);
             
               location_type = strtok(NULL, " ");
 
@@ -778,9 +780,9 @@ void MC_get_binary_local_variables(){
                 while(read != -1 && line[0] == '['){
 
                   strtok(line, "<");
-                  lowpc = strdup(strtok(NULL, "<"));
-                  highpc = strdup(strtok(NULL, ">"));
-                  tmp_location = strdup(strtok(NULL, ">"));
+                  lowpc = strtok(NULL, "<");
+                  highpc = strtok(NULL, ">");
+                  tmp_location = strtok(NULL, ">");
                   lowpc[strlen(lowpc) - 1] = '\0'; /* Remove last character '>' */
              
                   dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
@@ -806,6 +808,7 @@ void MC_get_binary_local_variables(){
 
                   read = getline(&line, &n, fp);
                   xbt_str_ltrim(line, NULL);
+
                 }
 
               }else{
@@ -831,7 +834,9 @@ void MC_get_binary_local_variables(){
 
             read = getline(&line, &n, fp);
 
-          }         
+          }  
+
+          free(node_type);
 
         }
         
@@ -839,10 +844,8 @@ void MC_get_binary_local_variables(){
 
       }else if(strcmp(node_type, "DW_TAG_variable") == 0){ /* New variable */
         
-        variable_name = NULL;
-        location_type = NULL;
-        
         read = getline(&line, &n, fp);
+        free(node_type);
 
         while(read != -1 && line[0] != '<'){
 
@@ -851,7 +854,7 @@ void MC_get_binary_local_variables(){
 
           tmp_line = strdup(line);
           
-          node_type = strtok(line, " ");
+          node_type = strdup(strtok(line, " "));
 
           if(node_type != NULL && strcmp(node_type, "DW_AT_name") == 0){
 
@@ -864,11 +867,12 @@ void MC_get_binary_local_variables(){
 
             if(valid_variable == 1){
 
-              location_type = strdup(strtok(NULL, " "));
+              location_type = strtok(NULL, " ");
 
               dw_local_variable_t variable = xbt_new0(s_dw_local_variable_t, 1);
               variable->name = strdup(variable_name);
               variable->location = xbt_new0(s_dw_location_t, 1);
+              free(variable_name);
             
               if(strcmp(location_type, "<loclist") == 0){
 
@@ -881,9 +885,9 @@ void MC_get_binary_local_variables(){
                 while(read != -1 && line[0] == '['){
 
                   strtok(line, "<");
-                  lowpc = strdup(strtok(NULL, "<"));
-                  highpc = strdup(strtok(NULL, ">"));
-                  tmp_location = strdup(strtok(NULL, ">"));
+                  lowpc = strtok(NULL, "<");
+                  highpc = strtok(NULL, ">");
+                  tmp_location = strtok(NULL, ">");
                   lowpc[strlen(lowpc) - 1] = '\0'; /* Remove last character '>' */
 
                   dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
@@ -909,6 +913,7 @@ void MC_get_binary_local_variables(){
 
                   read = getline(&line, &n, fp);
                   xbt_str_ltrim(line, NULL);
+
                 }
               
               }else{
@@ -941,6 +946,9 @@ void MC_get_binary_local_variables(){
             read = getline(&line, &n, fp);
 
           }
+
+          free(node_type);
+          free(tmp_line);
       
         }
 
@@ -948,6 +956,7 @@ void MC_get_binary_local_variables(){
 
       }else if(strcmp(node_type, "DW_TAG_compile_unit") == 0){
 
+        free(node_type);
         read = getline(&line, &n, fp);
         
         while(read != -1 && line[0] != '<'){
@@ -955,7 +964,7 @@ void MC_get_binary_local_variables(){
           if(n == 0)
             continue;
           
-          node_type = strtok(line, " ");
+          node_type = strdup(strtok(line, " "));
           
           if(node_type != NULL && strcmp(node_type, "DW_AT_low_pc") == 0){
             low_pc = (void *) strtoul(strtok(NULL, " "), NULL, 16);
@@ -963,24 +972,28 @@ void MC_get_binary_local_variables(){
 
           read = getline(&line, &n, fp);
 
+          free(node_type);
+
         }
 
       }else{
 
         read = getline(&line, &n, fp);
+        free(node_type);
 
       }
+
  
     }else{
 
       read = getline(&line, &n, fp);
 
     }
+    
 
   }
 
-  free(line); free(tmp_line); free(tmp_location); free(frame_name);
-  free(location_type); free(variable_name); free(lowpc); free(highpc);
+  free(line); 
   free(command);
   pclose(fp);
 
@@ -1271,8 +1284,6 @@ static e_dw_location_type get_location(char *expr, dw_location_t entry){
       entry->type = e_dw_unsupported;
     }
 
-    free(tok);
-    free(tmp_tok);
     xbt_dynar_free(&tokens);
 
     return entry->type;
