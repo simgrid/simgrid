@@ -177,8 +177,9 @@ void MC_modelcheck_liveness(){
      iteration of the model-checker (in RAW memory) */
 
   MC_SET_RAW_MEM;
-
-  mc_binary_local_variables = xbt_dynar_new(sizeof(dw_frame_t), NULL);
+    
+  /* Get local variables in binary for state equality detection */
+  MC_get_binary_local_variables();
 
   /* Initialize statistics */
   mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
@@ -189,9 +190,6 @@ void MC_modelcheck_liveness(){
   mc_stack_liveness = xbt_fifo_new();
 
   MC_UNSET_RAW_MEM;
-
-  /* Get local variables in binary for state equality detection */
-  MC_get_binary_local_variables();
 
   MC_ddfs_init();
 
