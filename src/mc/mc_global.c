@@ -81,6 +81,10 @@ extern xbt_dynar_t stacks_areas;
 xbt_automaton_t _mc_property_automaton = NULL;
 
 static void MC_assert_pair(int prop);
+static e_dw_location_type get_location(char *expr, dw_location_t entry);
+
+static void MC_get_binary_local_variables(void);
+static void print_local_variables(xbt_dynar_t list);
 
 void MC_do_the_modelcheck_for_real() {
   if (!_surf_mc_property_file || _surf_mc_property_file[0]=='\0') {
@@ -694,22 +698,22 @@ void MC_new_stack_area(void *stack, char *name){
 
 /************ DWARF ***********/
 
-static e_dw_location_type get_location(char *expr, dw_location_t entry);
+static void MC_get_binary_local_variables(){
 
-void MC_get_binary_local_variables(){
+  mc_binary_local_variables = xbt_dynar_new(sizeof(dw_frame_t), NULL);
 
-  char *command = bprintf("dwarfdump -i %s", xbt_binary_name); 
+  char *command = bprintf("dwarfdump -i %s", xbt_binary_name);
   
   FILE* fp = popen(command, "r");
 
   if(fp == NULL)
     perror("popen failed");
 
-  char *line = NULL, *tmp_line = NULL, *tmp_location = NULL, *frame_name = NULL;
+  char *line = NULL, *tmp_line = NULL, *tmp_location, *frame_name = NULL;
   ssize_t read;
   size_t n = 0;
   int valid_variable = 1, valid_frame = 1;
-  char *node_type = NULL, *location_type = NULL, *variable_name = NULL, *lowpc = NULL, *highpc = NULL;
+  char *node_type, *location_type, *variable_name = NULL, *lowpc, *highpc;
   xbt_dynar_t split = NULL;
 
   void *low_pc = NULL, *old_low_pc = NULL;
@@ -734,19 +738,18 @@ void MC_get_binary_local_variables(){
       /* Get node type */
       strtok(line, " ");
       strtok(NULL, " ");
-      node_type = strdup(strtok(NULL, " "));
+      node_type = strtok(NULL, " ");
 
       if(strcmp(node_type, "DW_TAG_subprogram") == 0){ /* New frame */
 
         read = getline(&line, &n, fp);
-        free(node_type);
 
         while(read != -1 && line[0] != '<'){
 
           if(n == 0)
             continue;
 
-          node_type = strdup(strtok(line, " "));
+          node_type = strtok(line, " ");
 
           if(node_type != NULL && strcmp(node_type, "DW_AT_name") == 0){
 
@@ -789,7 +792,7 @@ void MC_get_binary_local_variables(){
                     strtok(lowpc, "=");
                     new_entry->lowpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
                     strtok(highpc, "=");
-                    new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);             
+                    new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
                   }else{
                     strtok(lowpc, "=");
                     old_low_pc = (void *)strtoul(strtok(NULL, "="), NULL, 16);
@@ -832,9 +835,7 @@ void MC_get_binary_local_variables(){
 
             read = getline(&line, &n, fp);
 
-          }  
-
-          free(node_type);
+          }
 
         }
         
@@ -843,7 +844,6 @@ void MC_get_binary_local_variables(){
       }else if(strcmp(node_type, "DW_TAG_variable") == 0){ /* New variable */
         
         read = getline(&line, &n, fp);
-        free(node_type);
 
         while(read != -1 && line[0] != '<'){
 
@@ -852,7 +852,7 @@ void MC_get_binary_local_variables(){
 
           tmp_line = strdup(line);
           
-          node_type = strdup(strtok(line, " "));
+          node_type = strtok(line, " ");
 
           if(node_type != NULL && strcmp(node_type, "DW_AT_name") == 0){
 
@@ -894,7 +894,7 @@ void MC_get_binary_local_variables(){
                     strtok(lowpc, "=");
                     new_entry->lowpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
                     strtok(highpc, "=");
-                    new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);             
+                    new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
                   }else{
                     strtok(lowpc, "=");
                     old_low_pc = (void *)strtoul(strtok(NULL, "="), NULL, 16);
@@ -924,6 +924,9 @@ void MC_get_binary_local_variables(){
                 variable->location->type = get_location(location_type, variable->location);
                 read = getline(&line, &n, fp);
 
+                xbt_dynar_free(&split);
+                free(location_type);
+
               }
 
               xbt_dynar_push(((dw_frame_t)xbt_dynar_get_as(mc_binary_local_variables, xbt_dynar_length(mc_binary_local_variables) - 1, dw_frame_t))->variables, &variable);
@@ -945,8 +948,7 @@ void MC_get_binary_local_variables(){
 
           }
 
-          free(node_type);
-          free(tmp_line);
+          //free(tmp_line);
       
         }
 
@@ -954,7 +956,6 @@ void MC_get_binary_local_variables(){
 
       }else if(strcmp(node_type, "DW_TAG_compile_unit") == 0){
 
-        free(node_type);
         read = getline(&line, &n, fp);
         
         while(read != -1 && line[0] != '<'){
@@ -962,7 +963,7 @@ void MC_get_binary_local_variables(){
           if(n == 0)
             continue;
           
-          node_type = strdup(strtok(line, " "));
+          node_type = strtok(line, " ");
           
           if(node_type != NULL && strcmp(node_type, "DW_AT_low_pc") == 0){
             low_pc = (void *) strtoul(strtok(NULL, " "), NULL, 16);
@@ -970,14 +971,11 @@ void MC_get_binary_local_variables(){
 
           read = getline(&line, &n, fp);
 
-          free(node_type);
-
         }
 
       }else{
 
         read = getline(&line, &n, fp);
-        free(node_type);
 
       }
 
@@ -991,7 +989,7 @@ void MC_get_binary_local_variables(){
 
   }
 
-  free(line); 
+  free(line);
   free(command);
   pclose(fp);
 
