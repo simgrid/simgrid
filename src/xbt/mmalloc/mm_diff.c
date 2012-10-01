@@ -204,11 +204,11 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
         continue;
       }
 
-      if(heapinfo1[i1].busy_block.equal_to != NULL){         
+      if(heapinfo1[i1].busy_block.equal_to != NULL){
         i1++;
         continue;
       }
-      
+    
       i2 = 1;
       equal = 0;
   
@@ -220,7 +220,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
           if(heapinfo1[current_block].busy_block.busy_size == heapinfo2[current_block].busy_block.busy_size){
 
             addr_block2 = ((void*) (((ADDR2UINT(current_block)) - 1) * BLOCKSIZE + (char*)heapbase2));
-
             real_addr_block2 = (char*)((xbt_mheap_t)s_heap)->heapbase + (((char *)addr_block2) - (char *)heapbase2);
           
             if((stack_name = is_stack(real_addr_block2)) != NULL){
@@ -262,8 +261,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
 
       while(i2 <= heaplimit && !equal){
 
-        addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)heapbase2));
-        
+        addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)heapbase2));        
         real_addr_block2 = (char*)((xbt_mheap_t)s_heap)->heapbase + (((char *)addr_block2) - (char *)heapbase2);
         
         if((stack_name = is_stack(real_addr_block2)) != NULL){
@@ -338,8 +336,8 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
 
         if(heapinfo1[i1].busy_frag.frag_size[j1] == 0) /* Free fragment */
           continue;
-        
-        if(heapinfo1[i1].busy_frag.equal_to[j1] != NULL)                
+
+        if(heapinfo1[i1].busy_frag.equal_to[j1] != NULL)
           continue;
 
         addr_frag1 = (void*) ((char *)addr_block1 + (j1 << heapinfo1[i1].type));
