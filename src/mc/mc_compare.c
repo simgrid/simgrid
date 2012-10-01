@@ -15,7 +15,7 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size);
 static int heap_region_compare(void *d1, void *d2, size_t size);
 
 static int compare_local_variables(xbt_strbuff_t s1, xbt_strbuff_t s2);
-static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *sp2, xbt_dynar_t equals);
+static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *sp2, void *heap1, void *heap2, xbt_dynar_t equals);
 static int is_heap_equality(xbt_dynar_t equals, void *a1, void *a2);
 
 static int data_program_region_compare(void *d1, void *d2, size_t size){
@@ -83,6 +83,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   xbt_dynar_t stacks1 = xbt_dynar_new(sizeof(stack_region_t), NULL);
   xbt_dynar_t stacks2 = xbt_dynar_new(sizeof(stack_region_t), NULL);
   xbt_dynar_t equals = xbt_dynar_new(sizeof(heap_equality_t), NULL);
+
+  void *heap1 = NULL, *heap2 = NULL;
   
   if(s1->num_reg != s2->num_reg){
     XBT_DEBUG("Different num_reg (s1 = %u, s2 = %u)", s1->num_reg, s2->num_reg);
@@ -111,6 +113,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         XBT_DEBUG("Different heap (mmalloc_compare)");
         return 1; 
       }
+      heap1 = s1->regions[i]->data;
+      heap2 = s2->regions[i]->data;
       break;
     case 1 :
       /* Compare data libsimgrid region */
@@ -151,17 +155,22 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   /* Stacks comparison */
   unsigned int cursor = 1;
   stack_region_t stack_region1, stack_region2;
-  void *stack_pointer1, *stack_pointer2;
+  void *sp1, *sp2;
+  int diff = 0;
 
   while(cursor < xbt_dynar_length(stacks1)){
+    XBT_DEBUG("Stack %d", cursor + 1); 
     stack_region1 = (stack_region_t)(xbt_dynar_get_as(stacks1, cursor, stack_region_t));
     stack_region2 = (stack_region_t)(xbt_dynar_get_as(stacks2, cursor, stack_region_t));
-    stack_pointer1 = ((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->stack_pointer;
-    stack_pointer2 = ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->stack_pointer;
-    if(compare_stack(stack_region1, stack_region2, stack_pointer1, stack_pointer2, equals) > 0)
-      return 1;
+    sp1 = ((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->stack_pointer;
+    sp2 = ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->stack_pointer;
+    diff += compare_stack(stack_region1, stack_region2, sp1, sp2, heap1, heap2, equals);
     cursor++;
   }
+
+  XBT_DEBUG("Hamming distance between stacks : %d", diff);
+  if(diff>0)
+    return 1;
 
   return 0;
   
@@ -196,25 +205,32 @@ static int is_heap_equality(xbt_dynar_t equals, void *a1, void *a2){
 }
 
 
-static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *sp2, xbt_dynar_t equals){
+static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *sp2, void *heap1, void *heap2, xbt_dynar_t equals){
   
   int k = 0, nb_diff = 0;
   long size_used1 = (long)s1->size - (long)((char*)sp1 - (char*)s1->address);
   long size_used2 = (long)s2->size - (long)((char*)sp2 - (char*)s2->address);
 
   int pointer_align;
-  void *addr_pointed1 = NULL, *addr_pointed2 = NULL;
+  void *addr_pointed1 = NULL, *addr_pointed2 = NULL;  
 
   if(size_used1 == size_used2){
-
+ 
     while(k < size_used1){
       if(memcmp((char *)s1->address + s1->size - k, (char *)s2->address + s2->size - k, 1) != 0){
         pointer_align = ((size_used1 - k) / sizeof(void*)) * sizeof(void*);
         addr_pointed1 = *((void **)(((char*)s1->address + (s1->size - size_used1)) + pointer_align));
         addr_pointed2 = *((void **)(((char*)s2->address + (s2->size - size_used2)) + pointer_align));
         if(is_heap_equality(equals, addr_pointed1, addr_pointed2) == 0){
-          XBT_DEBUG("Difference at offset %d (%p - %p)", k, (char *)s1->address + s1->size - k, (char *)s2->address + s2->size - k);
-          nb_diff++;
+          if((addr_pointed1 > std_heap) && (addr_pointed1 < (void *)((char *)std_heap + STD_HEAP_SIZE)) && (addr_pointed2 > std_heap) && (addr_pointed2 < (void *)((char *)std_heap + STD_HEAP_SIZE))){
+            if(is_free_area(addr_pointed1, (xbt_mheap_t)heap1) == 0 || is_free_area(addr_pointed2, (xbt_mheap_t)heap2) == 0){
+              XBT_DEBUG("Difference at offset %d (%p - %p)", k, (char *)s1->address + s1->size - k, (char *)s2->address + s2->size - k);
+              nb_diff++;
+            }
+          }else{
+            XBT_DEBUG("Difference at offset %d (%p - %p)", k, (char *)s1->address + s1->size - k, (char *)s2->address + s2->size - k);
+            nb_diff++;
+          } 
         }
       } 
       k++;

@@ -1062,3 +1062,35 @@ static void remove_heap_equality(xbt_dynar_t *equals, int address, void *a){
 
   
 }
+
+int is_free_area(void *area, xbt_mheap_t heap){
+
+  void *sheap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - getpagesize();
+  malloc_info *heapinfo = (malloc_info *)((char *)heap + ((uintptr_t)((char *)heap->heapinfo - (char *)sheap)));
+  size_t heapsize = heap->heapsize;
+
+  /* Get block number */ 
+  size_t block = ((char*)area - (char*)((xbt_mheap_t)sheap)->heapbase) / BLOCKSIZE + 1;
+  size_t fragment;
+
+  /* Check if valid block number */
+  if((char *)area < (char*)((xbt_mheap_t)sheap)->heapbase || block > heapsize || block < 1)
+    return 0;
+
+  if(heapinfo[block].type < 0)
+    return 1;
+
+  if(heapinfo[block].type == 0)
+    return 0;
+
+  if(heapinfo[block].type > 0){
+    fragment = ((uintptr_t) (ADDR2UINT(area) % (BLOCKSIZE))) >> heapinfo[block].type;
+    if(heapinfo[block].busy_frag.frag_size[fragment] == 0)
+      return 1;  
+  }
+
+  return 0;
+  
+
+
+}
