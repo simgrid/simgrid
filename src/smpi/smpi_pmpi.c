@@ -1159,7 +1159,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   smpi_bench_end();
 #ifdef HAVE_TRACING
   int rank = request && (*request)->comm != MPI_COMM_NULL
-      ? smpi_process_argc()
+      ? smpi_process_index()
       : -1;
   TRACE_smpi_computing_out(rank);
 
