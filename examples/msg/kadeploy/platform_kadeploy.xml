@@ -2,17 +2,22 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
  <AS  id="AS0"  routing="Full">
-   <!-- For using with ping_pong example, very simple platform -->
-   <host id="Inmos" power="98095000"/>
-   <host id="Bellevue" power="76296000"/>
-   <host id="Test" power="96296000"/>
+   <!-- For using with kadeploy, very simple 3-node platform -->
+   <host id="host0" power="98095000"/>
+   <host id="host1" power="76296000"/>
+   <host id="host2" power="96296000"/>
+   <host id="host3" power="97296000"/>
    <link id="link1" bandwidth="1000000" latency="0.1"/>
    <link id="link2" bandwidth="1000000" latency="0.2"/>
-   <route src="Inmos" dst="Bellevue">
+   <link id="link3" bandwidth="1000000" latency="0.2"/>
+   <route src="host0" dst="host1">
      <link_ctn id="link1"/>
    </route>
-   <route src="Test" dst="Bellevue">
+   <route src="host0" dst="host2">
      <link_ctn id="link2"/>
+   </route>
+   <route src="host0" dst="host3">
+     <link_ctn id="link3"/>
    </route>
  </AS>
  </platform>
