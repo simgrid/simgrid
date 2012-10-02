@@ -150,21 +150,13 @@ int MSG_process_killall(int reset_PIDs)
 
 }
 
-/** \ingroup msg_simulation
- * \brief Clean the MSG simulation.
- *
- * This function is called automatically when the system process stops, so I guess that calling it manually is useless nowadays.
- */
 static void MSG_exit(void) {
   if (msg_global==NULL)
     return;
-  XBT_DEBUG("Closing MSG");
 
 #ifdef HAVE_TRACING
   TRACE_surf_release();
 #endif
-
-  MSG_process_killall(0);
 
   /* initialization of the action module */
   _MSG_action_exit();
