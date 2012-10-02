@@ -33,3 +33,4 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar masterslave/Mastersl
 > [ 17.252217] (0:@) Clean native world
 > [ 17.252217] (1:masterslave.Master@Jacquelin) Goodbye now!
 > [ 17.252217] (8:masterslave.Slave@Browne) Received Finalize. I'm done. See you!
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.

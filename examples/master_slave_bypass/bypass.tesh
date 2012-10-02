@@ -3,6 +3,7 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar master_slave_bypass/MsBypass ${srcdir:=.}/examples/master_slave_bypass/platform.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
 > [0.013010] [jmsg/INFO] Done running MSG_MAIN
 > [0.013010] [jmsg/INFO] MSG_main finished

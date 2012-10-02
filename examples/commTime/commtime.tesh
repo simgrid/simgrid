@@ -3,6 +3,7 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar commTime/CommTimeTest ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/commTime/commTimeDeployment.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
 > [7016.935689] [jmsg/INFO] Done running MSG_MAIN
 > [7016.935689] [jmsg/INFO] MSG_main finished
