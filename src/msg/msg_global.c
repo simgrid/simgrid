@@ -167,8 +167,6 @@ msg_error_t MSG_clean(void)
   TRACE_end();
 #endif
 
-  SIMIX_clean();
-
   xbt_swag_free(msg_global->vms);
   free(msg_global);
   msg_global = NULL;

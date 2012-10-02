@@ -332,6 +332,5 @@ int MAIN__(void)
   TRACE_end();
 #endif
 
-  SIMIX_clean();
   return 0;
 }

@@ -263,7 +263,5 @@ void gras_load_environment_script(const char *script_file)
   return;
 }
 
-void gras_clean()
-{
-  SIMIX_clean();
+void gras_clean(){ /* this function is not needed anymore and could be removed, but I feel so lazy */
 }
