@@ -84,18 +84,9 @@ public final class Msg {
 	 */
 	public final static native void run() ;
 	
-	/**
-	 * Cleanup the MSG simulation.
-	 * 
-	 * This function is only useful if you want to chain the simulations within 
-	 * the same environment. But actually, it's not sure at all that cleaning the 
-	 * JVM is faster than restarting a new one, so it's probable that using this 
-	 * function is not a brilliant idea. Do so at own risk.
-	 *	
-	 * @see                    MSG_clean
-	 */
-	public final static native void clean();
-	
+	/** This function is useless nowadays, just stop calling it. */
+	@Deprecated
+	public final static void clean(){}
 
 	/**
 	 * The native implemented method to create the environment of the simulation.

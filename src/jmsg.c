@@ -156,15 +156,6 @@ JNIEXPORT void JNICALL
   xbt_dynar_free(&hosts);
   XBT_INFO("Clean native world");
 }
-JNIEXPORT void JNICALL
-    JNICALL Java_org_simgrid_msg_Msg_clean(JNIEnv * env, jclass cls)
-{
-  /* cleanup native stuff. Calling it is ... useless since leaking memory at the end of the simulation is a non-issue */
-  msg_error_t rv = MSG_OK != MSG_clean();
-  jxbt_check_res("MSG_clean()", rv, MSG_OK,
-                 bprintf
-                 ("unexpected error : MSG_clean() failed .. please report this bug "));
-}
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
