@@ -293,8 +293,8 @@ int amok_bw_cb_bw_handshake(gras_msg_cb_ctx_t ctx, void *payload)
   volatile bw_request_t request = *(bw_request_t *) payload;
   bw_request_t answer;
   xbt_ex_t e;
-  int port;
-  int tooshort = 1;
+  volatile int port;
+  volatile int tooshort = 1;
   gras_msg_cb_ctx_t ctx_reask;
   static xbt_dynar_t msgtwaited = NULL;
 
