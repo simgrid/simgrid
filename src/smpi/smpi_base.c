@@ -59,7 +59,7 @@ static MPI_Request build_request(void *buf, int count,
 }
 
 
-static void smpi_empty_status(MPI_Status * status) {
+void smpi_empty_status(MPI_Status * status) {
   if(status != MPI_STATUS_IGNORE) {
       status->MPI_SOURCE=MPI_ANY_SOURCE;
       status->MPI_TAG=MPI_ANY_TAG;
@@ -483,22 +483,35 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
 void smpi_mpi_waitall(int count, MPI_Request requests[],
                       MPI_Status status[])
 {
-  int index, c;
+  int  index, c;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
-
+  //tag invalid requests in the set
   for(c = 0; c < count; c++) {
-    if(MC_IS_ENABLED) {
-      smpi_mpi_wait(&requests[c], pstat);
-      index = c;
-    } else {
-      index = smpi_mpi_waitany(count, requests, pstat);
-      if(index == MPI_UNDEFINED) {
-        break;
+    if(requests[c]==MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL ){
+      if(status != MPI_STATUSES_IGNORE)
+        smpi_empty_status(&status[c]);
+    }else if(requests[c]->src == MPI_PROC_NULL ){
+      if(status != MPI_STATUSES_IGNORE) {
+        smpi_empty_status(&status[c]);
+        status[c].MPI_SOURCE=MPI_PROC_NULL;
       }
     }
-    if(status != MPI_STATUSES_IGNORE) {
-      memcpy(&status[index], pstat, sizeof(*pstat));
+  }
+
+  for(c = 0; c < count; c++) {
+      if(MC_IS_ENABLED) {
+        smpi_mpi_wait(&requests[c], pstat);
+        index = c;
+      } else {
+        index = smpi_mpi_waitany(count, requests, pstat);
+        if(index == MPI_UNDEFINED) {
+          break;
+       }
+      if(status != MPI_STATUSES_IGNORE) {
+        memcpy(&status[index], pstat, sizeof(*pstat));
+
+      }
     }
   }
 }
@@ -511,17 +524,17 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
   count = 0;
-  for(i = 0; i < incount; i++) {
-    if(smpi_mpi_testany(incount, requests, &index, pstat)) {
-      if(index!=MPI_UNDEFINED){
-        indices[count] = index;
-        count++;
-        if(status != MPI_STATUSES_IGNORE) {
-          memcpy(&status[index], pstat, sizeof(*pstat));
-        }
-      }else{
-        return MPI_UNDEFINED;
+  for(i = 0; i < incount; i++)
+  {
+    index=smpi_mpi_waitany(incount, requests, pstat);
+    if(index!=MPI_UNDEFINED){
+      indices[count] = index;
+      count++;
+      if(status != MPI_STATUSES_IGNORE) {
+        memcpy(&status[index], pstat, sizeof(*pstat));
       }
+    }else{
+      return MPI_UNDEFINED;
     }
   }
   return count;
