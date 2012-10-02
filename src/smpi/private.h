@@ -149,6 +149,8 @@ void smpi_mpi_waitall(int count, MPI_Request requests[],
                       MPI_Status status[]);
 int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
                       MPI_Status status[]);
+int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
+                      MPI_Status status[]);
 void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                     MPI_Comm comm);
 void smpi_mpi_barrier(MPI_Comm comm);

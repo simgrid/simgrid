@@ -1077,6 +1077,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
   if (request == MPI_REQUEST_NULL || flag == NULL) {
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
+    *flag=TRUE;
     retval = MPI_ERR_REQUEST;
   } else {
     *flag = smpi_mpi_test(request, status);
@@ -1322,6 +1323,23 @@ int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount,
   smpi_bench_begin();
   return retval;
 }
+
+int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount,
+                 int* indices, MPI_Status status[])
+{
+  int retval;
+
+   smpi_bench_end();
+   if (outcount == NULL || indices == NULL) {
+     retval = MPI_ERR_ARG;
+   } else {
+     *outcount = smpi_mpi_testsome(incount, requests, indices, status);
+     retval = MPI_SUCCESS;
+   }
+   smpi_bench_begin();
+   return retval;
+}
+
 
 int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
 {
@@ -2022,10 +2040,6 @@ int PMPI_Buffer_attach(void* buffer, int size) {
 }
 
 int PMPI_Buffer_detach(void* buffer, int* size) {
-   return not_yet_implemented();
-}
-
-int PMPI_Testsome(int incount, MPI_Request* requests, int* outcount, int* indices, MPI_Status* statuses) {
    return not_yet_implemented();
 }
 
