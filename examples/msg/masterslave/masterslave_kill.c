@@ -73,7 +73,6 @@ int main(int argc, char *argv[])
     exit(1);
   }
   test_all(argv[1], argv[2]);
-  res = MSG_clean();
 
   if (res == MSG_OK)
     return 0;

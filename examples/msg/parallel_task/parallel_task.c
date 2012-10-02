@@ -101,7 +101,6 @@ int main(int argc, char *argv[])
     exit(1);
   }
   res = test_all(argv[1]);
-  MSG_clean();
 
   if (res == MSG_OK)
     return 0;

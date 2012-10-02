@@ -212,7 +212,6 @@ int main(int argc, char *argv[])
   res = MSG_main();
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
-  MSG_clean();
   free(hosts);
   free(hostnames);
   xbt_dynar_free(&hosts_dynar);

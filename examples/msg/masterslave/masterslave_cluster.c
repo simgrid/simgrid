@@ -220,7 +220,6 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
   res = test_all(argv[1]);
-  MSG_clean();
 
   if (res == MSG_OK)
     return 0;

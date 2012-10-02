@@ -32,8 +32,6 @@ int main(int argc, char *argv[])
 
   XBT_INFO("GPU task %p was created", mytask);
 
-  MSG_clean();
-
   if (res == MSG_OK)
     return 0;
   else

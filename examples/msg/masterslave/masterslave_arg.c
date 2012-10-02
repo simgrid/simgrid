@@ -138,8 +138,6 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
-  MSG_clean();
-
   if (res == MSG_OK)
     return 0;
   else

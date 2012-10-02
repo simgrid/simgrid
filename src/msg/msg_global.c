@@ -18,6 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
                                 "Logging specific to MSG (kernel)");
 
 MSG_Global_t msg_global = NULL;
+static void MSG_exit(void);
 
 /********************************* MSG **************************************/
 
@@ -72,6 +73,8 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_destroy);
+
+  atexit(MSG_exit);
 }
 
 #ifdef MSG_USE_DEPRECATED
@@ -148,10 +151,13 @@ int MSG_process_killall(int reset_PIDs)
 }
 
 /** \ingroup msg_simulation
- * \brief Clean the MSG simulation
+ * \brief Clean the MSG simulation.
+ *
+ * This function is called automatically when the system process stops, so I guess that calling it manually is useless nowadays.
  */
-msg_error_t MSG_clean(void)
-{
+static void MSG_exit(void) {
+  if (msg_global==NULL)
+    return;
   XBT_DEBUG("Closing MSG");
 
 #ifdef HAVE_TRACING
@@ -170,8 +176,6 @@ msg_error_t MSG_clean(void)
   xbt_swag_free(msg_global->vms);
   free(msg_global);
   msg_global = NULL;
-
-  return MSG_OK;
 }
 
 
@@ -187,3 +191,9 @@ unsigned long int MSG_get_sent_msg()
 {
   return msg_global->sent_msg;
 }
+
+#ifdef MSG_USE_DEPRECATED
+msg_error_t MSG_clean(void) {
+  return MSG_OK;
+}
+#endif
