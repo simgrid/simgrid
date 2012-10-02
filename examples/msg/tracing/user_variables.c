@@ -104,7 +104,6 @@ int main(int argc, char *argv[])
   FILE *fp;
   fp = fopen ("triva_graph.plist", "w");
   if (!fp){
-    MSG_clean();
     return 1;
   }
   fprintf (fp, "{\n node = (");
@@ -135,6 +134,5 @@ int main(int argc, char *argv[])
   fprintf (fp, "}\n");
   fclose (fp);
 
-  MSG_clean();
   return 0;
 }

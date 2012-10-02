@@ -215,7 +215,6 @@ XBT_PUBLIC(void) SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
 /********************************** Global ************************************/
 /* Initialization and exit */
 XBT_PUBLIC(void) SIMIX_global_init(int *argc, char **argv);
-XBT_PUBLIC(void) SIMIX_clean(void);
 
 
 XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function);

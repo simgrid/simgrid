@@ -155,6 +155,5 @@ int main(int argc, char *argv[])
     xbt_dynar_free (&marks);
   }
 
-  MSG_clean();
   return 0;
 }                               /* end_of_main */

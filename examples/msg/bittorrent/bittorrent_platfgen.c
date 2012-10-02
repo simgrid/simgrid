@@ -138,7 +138,5 @@ int main(int argc, char *argv[])
 
   MSG_main();
 
-  MSG_clean();
-
   return 0;
 }

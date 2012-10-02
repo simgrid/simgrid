@@ -185,9 +185,11 @@ static int get_clock(lua_State* L) {
  */
 static int simgrid_gc(lua_State * L)
 {
-  if (sglua_is_maestro(L)) {
-    MSG_clean();
-  }
+  // There is no need to cleanup the C world anymore, as it gets cleaned at system process closing automatically
+  // Maybe at some point we'll want to reintroduce this, for example when encapsulating the simulation properly
+  //if (sglua_is_maestro(L)) {
+  //  MSG_clean();
+  //}
   return 0;
 }
 

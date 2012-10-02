@@ -56,7 +56,6 @@ XBT_PUBLIC(void) MSG_config(const char *name, ...);
 
 XBT_PUBLIC(void) MSG_init_nocheck(int *argc, char **argv);
 XBT_PUBLIC(msg_error_t) MSG_main(void);
-XBT_PUBLIC(msg_error_t) MSG_clean(void);
 XBT_PUBLIC(void) MSG_function_register(const char *name,
                                        xbt_main_func_t code);
 XBT_PUBLIC(void) MSG_function_register_default(xbt_main_func_t code);
@@ -293,6 +292,8 @@ XBT_PUBLIC(msg_host_t *) MSG_get_host_table(void);
 
 #define MSG_process_change_host(h) MSG_process_migrate(MSG_process_self(),h);
 XBT_PUBLIC(msg_error_t) MSG_get_errno(void);
+
+XBT_PUBLIC(msg_error_t) MSG_clean(void);
 
 XBT_PUBLIC(msg_error_t) MSG_task_get(msg_task_t * task, m_channel_t channel);
 XBT_PUBLIC(msg_error_t) MSG_task_get_with_timeout(msg_task_t * task,

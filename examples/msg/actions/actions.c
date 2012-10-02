@@ -589,7 +589,6 @@ int main(int argc, char *argv[])
   res = MSG_action_trace_run(argv[3]);  // it's ok to pass a NULL argument here
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
-  MSG_clean();
 
   if (res == MSG_OK)
     return 0;

@@ -2,7 +2,7 @@
 
 p Test of the management of failed tasks simdag
 
-$ $SG_TEST_EXENV ./sd_fail
+$ $SG_TEST_EXENV ${bindir:=.}/sd_fail
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [sd_fail/INFO] First test: COMP_SEQ task
 > [0.000000] [sd_fail/INFO] Schedule task 'Poor task' on workstation 'Faulty Host'

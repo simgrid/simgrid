@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 
   res = MSG_main();
   XBT_INFO("Simulation time %g", MSG_get_clock());
-  MSG_clean();
+
   if (res == MSG_OK)
     return 0;
   else

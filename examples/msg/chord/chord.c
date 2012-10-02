@@ -924,7 +924,6 @@ int main(int argc, char *argv[])
   XBT_CRITICAL("Messages created: %ld", smx_total_comms);
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
-  MSG_clean();
   chord_exit();
 
   if (res == MSG_OK)
