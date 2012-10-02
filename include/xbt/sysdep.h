@@ -31,7 +31,17 @@ SG_BEGIN_DECL()
  * @{
  */
 /** @brief Kill the program in silence */
+#ifdef COVERAGE
+/* Call __gcov_flush on abort when compiling with coverage options. */
+#define xbt_abort()                             \
+  do {                                          \
+    extern void __gcov_flush(void);             \
+    __gcov_flush();                             \
+    abort();                                    \
+  } while (0)
+#else
 #define xbt_abort() abort()
+#endif
 
 /**
  * @brief Kill the program with an error message
