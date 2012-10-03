@@ -190,12 +190,13 @@ void serialize_vector( const void *noncontiguous_vector,
 {
   s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)type;
   int i;
-  for (i = 0; i < type_c->block_count * count; i++) {
-    memcpy(contiguous_vector,
-           noncontiguous_vector, type_c->block_length * type_c->size_oldtype);
+  char* contiguous_vector_char = (char*)contiguous_vector;
+  char* noncontiguous_vector_char = (char*)noncontiguous_vector;
 
-    char* contiguous_vector_char = (char*)contiguous_vector;
-    char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+  for (i = 0; i < type_c->block_count * count; i++) {
+    memcpy(contiguous_vector_char,
+           noncontiguous_vector_char, type_c->block_length * type_c->size_oldtype);
+
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
     noncontiguous_vector_char += type_c->block_stride*type_c->size_oldtype;
   }
@@ -216,12 +217,13 @@ void unserialize_vector( const void *contiguous_vector,
 {
   s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)type;
   int i;
-  for (i = 0; i < type_c->block_count * count; i++) {
-    memcpy(noncontiguous_vector,
-           contiguous_vector, type_c->block_length * type_c->size_oldtype);
 
-    char* contiguous_vector_char = (char*)contiguous_vector;
-    char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+  char* contiguous_vector_char = (char*)contiguous_vector;
+  char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+
+  for (i = 0; i < type_c->block_count * count; i++) {
+    memcpy(noncontiguous_vector_char,
+           contiguous_vector_char, type_c->block_length * type_c->size_oldtype);
 
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
     noncontiguous_vector_char += type_c->block_stride*type_c->size_oldtype;
