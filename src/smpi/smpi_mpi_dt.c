@@ -193,8 +193,11 @@ void serialize_vector( const void *noncontiguous_vector,
   for (i = 0; i < type_c->block_count * count; i++) {
     memcpy(contiguous_vector,
            noncontiguous_vector, type_c->block_length * type_c->size_oldtype);
-    contiguous_vector += type_c->block_length*type_c->size_oldtype;
-    noncontiguous_vector += type_c->block_stride*type_c->size_oldtype;
+
+    char* contiguous_vector_char = (char*)contiguous_vector;
+    char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+    contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    noncontiguous_vector_char += type_c->block_stride*type_c->size_oldtype;
   }
 }
 /*
@@ -216,8 +219,12 @@ void unserialize_vector( const void *contiguous_vector,
   for (i = 0; i < type_c->block_count * count; i++) {
     memcpy(noncontiguous_vector,
            contiguous_vector, type_c->block_length * type_c->size_oldtype);
-    contiguous_vector += type_c->block_length*type_c->size_oldtype;
-    noncontiguous_vector += type_c->block_stride*type_c->size_oldtype;
+
+    char* contiguous_vector_char = (char*)contiguous_vector;
+    char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+
+    contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    noncontiguous_vector_char += type_c->block_stride*type_c->size_oldtype;
   }
 }
 

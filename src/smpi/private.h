@@ -129,6 +129,22 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size, int has_subtype, voi
 void smpi_datatype_free(MPI_Datatype* type);
 void smpi_datatype_commit(MPI_Datatype* datatype);
 
+void unserialize_vector( const void *contiguous_vector,
+                         void *noncontiguous_vector,
+                         size_t count,
+                         void *type);
+
+void serialize_vector( const void *noncontiguous_vector,
+                       void *contiguous_vector,
+                       size_t count,
+                       void *type);
+
+s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
+                                                  int block_length,
+                                                  int block_count,
+                                                  MPI_Datatype old_type,
+                                                  int size_oldtype);
+
 
 void smpi_empty_status(MPI_Status * status);
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);

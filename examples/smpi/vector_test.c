@@ -4,10 +4,9 @@
 
 int main(int argc, char **argv) {
 
-  int rank, tag=1, i, j;
+  int rank, i, j;
   double a[SIZE][SIZE];
 
-  MPI_Status stat;
   MPI_Datatype columntype;
 
   MPI_Init(&argc,&argv);
@@ -38,5 +37,6 @@ int main(int argc, char **argv) {
 
 
   MPI_Finalize();
+  return 0;
 }
 
