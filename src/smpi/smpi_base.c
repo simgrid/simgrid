@@ -159,14 +159,18 @@ void smpi_mpi_start(MPI_Request request)
     // FIXME: SIMIX does not yet support non-contiguous datatypes
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
   } else {
+
+    int receiver = smpi_group_index(smpi_comm_group(request->comm), request->dst);
+    if(receiver == MPI_UNDEFINED) {
+      XBT_WARN("Trying to send a message to a wrong rank");
+      return;
+    }
     print_request("New send", request);
     if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")) { // eager mode
-      mailbox = smpi_process_remote_mailbox_small(
-                                                  smpi_group_index(smpi_comm_group(request->comm), request->dst));
+      mailbox = smpi_process_remote_mailbox_small(receiver);
     }else{
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
-      mailbox = smpi_process_remote_mailbox(
-                                            smpi_group_index(smpi_comm_group(request->comm), request->dst));
+      mailbox = smpi_process_remote_mailbox(receiver);
     }
     if (request->size < 64*1024 ) { //(FIXME: this limit should be configurable)
       void *oldbuf = request->buf;

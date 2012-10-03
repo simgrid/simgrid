@@ -440,6 +440,8 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Pack, (void* inbuf, int incount, MPI_Datatype type
 MPI_CALL(XBT_PUBLIC(int), MPI_Get_elements, (MPI_Status* status, MPI_Datatype datatype, int* elements));
 MPI_CALL(XBT_PUBLIC(int), MPI_Dims_create, (int nnodes, int ndims, int* dims));
 MPI_CALL(XBT_PUBLIC(int), MPI_Initialized, (int* flag));
+MPI_CALL(XBT_PUBLIC(int), MPI_Pcontrol, (const int level ));
+
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions
