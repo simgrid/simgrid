@@ -37,7 +37,7 @@ char* _surf_mc_property_file=NULL;
  * This is crude and rather compiler-specific, unfortunately.
  */
 static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR(200);
-static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR(200);
+static void xbt_postexit(void);
 
 #ifdef _XBT_WIN32
 # undef _XBT_NEED_INIT_PRAGMA
@@ -45,7 +45,6 @@ static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR(200);
 
 #ifdef _XBT_NEED_INIT_PRAGMA
 #pragma init (xbt_preinit)
-#pragma fini (xbt_postexit)
 #endif
 
 #ifdef _XBT_WIN32
@@ -73,7 +72,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
   } else if (fdwReason == DLL_PROCESS_DETACH
       && xbt_dll_process_is_attached == 1) {
     xbt_dll_process_is_attached = 0;
-      xbt_postexit();
   }
   return 1;
 }
@@ -94,6 +92,8 @@ static void xbt_preinit(void)
   xbt_dict_preinit();
   xbt_datadesc_preinit();
   xbt_trp_preinit();
+
+  atexit(xbt_postexit);
 }
 
 static void xbt_postexit(void)

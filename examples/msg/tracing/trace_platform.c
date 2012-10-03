@@ -35,6 +35,5 @@ int main(int argc, char *argv[])
   char *platform_file = argv[1];
   MSG_create_environment(platform_file);
   MSG_main();
-  MSG_clean();
   return 0;
 }

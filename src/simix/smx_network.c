@@ -487,13 +487,19 @@ smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
   XBT_DEBUG("iprobe from %p %p\n", rdv, rdv->comm_fifo);
   smx_action_t this_action = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
 
-  smx_action_t other_action;
+  smx_action_t other_action=NULL;
   if(rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0){
     //find a match in the already received fifo
+      XBT_DEBUG("first try in the perm recv mailbox \n");
+
     other_action = SIMIX_fifo_probe_comm(rdv->done_comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
-  }else{
-    other_action = SIMIX_fifo_probe_comm(rdv->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
   }
+ // }else{
+    if(!other_action){
+        XBT_DEBUG("second try in the other mailbox");
+        other_action = SIMIX_fifo_probe_comm(rdv->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_action);
+    }
+//  }
   if(other_action)other_action->comm.refcount--;
 
   SIMIX_comm_destroy(this_action);

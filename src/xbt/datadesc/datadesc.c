@@ -170,10 +170,8 @@ void xbt_datadesc_preinit(void)
  **/
 void xbt_datadesc_postexit(void)
 {
-  XBT_VERB("Exiting DataDesc");
   xbt_set_free(&xbt_datadesc_set_local);
   xbt_dict_free(&xbt_dd_constants);
-  XBT_DEBUG("Exited DataDesc");
 }
 
 /** This is mainly to debug */

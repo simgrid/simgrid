@@ -218,8 +218,6 @@ int main(int argc, char *argv[])
 
   res = test_all(argv[1], argv[2]);
 
-  MSG_clean();
-
   if (res == MSG_OK)
     return 0;
   else

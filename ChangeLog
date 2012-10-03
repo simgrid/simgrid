@@ -25,7 +25,8 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    executing comes back (ON_FAILURE="RESTART" on deployment file, 
    MSG_process_auto_restart_set).
  * Use the "msg_" prefix for all datatypes (instead of m_, msg_ and MSG_),
-  please stop using the old ones.
+   please stop using the old ones, they are DEPRECATED.
+ * Deprecate MSG_clean(). No need to call it anymore.
 
  Simix:
  * Bug fixes around the resource failures: don't let the processes
@@ -34,6 +35,8 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    to avoid memory leaks.
  * Add an interface to auto-restart processes when the host in which they are
    executing comes back.
+ * Ensures that SIMIX_clean is called automatically. It's not part of
+   the public interface anymore (bindings should be updated).
 
  SimDag:
  * New types of typed tasks. SD_TASK_COMP_PAR_AMDAHL represents a

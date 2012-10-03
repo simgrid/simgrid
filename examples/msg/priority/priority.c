@@ -80,7 +80,6 @@ int main(int argc, char *argv[])
     exit(1);
   }
   res = test_all(argv[1], argv[2]);
-  MSG_clean();
 
 #ifdef _MSC_VER
   _set_output_format(prev_exponent_format);

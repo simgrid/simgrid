@@ -33,7 +33,6 @@ int main(int argc, char **argv)
   if (status == 0){
     XBT_INFO ("%s expects --cfg=tracing:1 --cfg=tracing/platform:1", argv[0]);
   }
-  MSG_clean();
 #else
   XBT_INFO ("works only if simgrid was compiled with tracing enabled.");
 #endif

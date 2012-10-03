@@ -67,8 +67,6 @@ int main(int argc, char *argv[])
   /* Run the example. */
   res = MSG_main();
 
-  MSG_clean();
-
   if (res == MSG_OK)
     return 0;
   else

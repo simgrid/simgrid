@@ -99,9 +99,6 @@ int main(int argc, char *argv[])
   xbt_mutex_destroy(mutex);
 
   if (res == MSG_OK)
-    res = MSG_clean();
-
-  if (res == MSG_OK)
     return 0;
   else
     return 1;

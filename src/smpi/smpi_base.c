@@ -16,8 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base
 
 
 static int match_recv(void* a, void* b, smx_action_t ignored) {
-  MPI_Request ref = (MPI_Request)a;
-  MPI_Request req = (MPI_Request)b;
+   MPI_Request ref = (MPI_Request)a;
+   MPI_Request req = (MPI_Request)b;
+   XBT_DEBUG("Trying to match a recv of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
 
   xbt_assert(ref, "Cannot match recv against null reference");
   xbt_assert(req, "Cannot match recv against null request");
@@ -26,13 +27,13 @@ static int match_recv(void* a, void* b, smx_action_t ignored) {
 }
 
 static int match_send(void* a, void* b,smx_action_t ignored) {
-  MPI_Request ref = (MPI_Request)a;
-  MPI_Request req = (MPI_Request)b;
-
-  xbt_assert(ref, "Cannot match send against null reference");
-  xbt_assert(req, "Cannot match send against null request");
-  return (req->src == MPI_ANY_SOURCE || req->src == ref->src)
-    && (req->tag == MPI_ANY_TAG || req->tag == ref->tag);
+   MPI_Request ref = (MPI_Request)a;
+   MPI_Request req = (MPI_Request)b;
+   XBT_DEBUG("Trying to match a send of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
+   xbt_assert(ref, "Cannot match send against null reference");
+   xbt_assert(req, "Cannot match send against null request");
+   return (req->src == MPI_ANY_SOURCE || req->src == ref->src)
+          && (req->tag == MPI_ANY_TAG || req->tag == ref->tag);
 }
 
 static MPI_Request build_request(void *buf, int count,
@@ -74,6 +75,15 @@ static MPI_Request build_request(void *buf, int count,
   request->recv = 0;
 #endif
   return request;
+}
+
+
+void smpi_empty_status(MPI_Status * status) {
+  if(status != MPI_STATUS_IGNORE) {
+      status->MPI_SOURCE=MPI_ANY_SOURCE;
+      status->MPI_TAG=MPI_ANY_TAG;
+      status->count=0;
+  }
 }
 
 void smpi_action_trace_run(char *path)
@@ -150,8 +160,7 @@ void smpi_mpi_start(MPI_Request request)
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
   } else {
     print_request("New send", request);
-
-    if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")) { // eager mode => detached send (FIXME: this limit should be configurable)
+    if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")) { // eager mode
       mailbox = smpi_process_remote_mailbox_small(
                                                   smpi_group_index(smpi_comm_group(request->comm), request->dst));
     }else{
@@ -327,12 +336,15 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
 int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
   int flag;
 
+  //assume that request is not MPI_REQUEST_NULL (filtered in PMPI_Test or smpi_mpi_testall before)
   if ((*request)->action == NULL)
     flag = 1;
   else
     flag = simcall_comm_test((*request)->action);
   if(flag) {
     finish_wait(request, status);
+  }else{
+    smpi_empty_status(status);
   }
   return flag;
 }
@@ -351,24 +363,29 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
     map = xbt_new(int, count);
     size = 0;
     for(i = 0; i < count; i++) {
-      if(requests[i]->action) {
-        xbt_dynar_push(comms, &requests[i]->action);
-        map[size] = i;
-        size++;
+      if((requests[i]!=MPI_REQUEST_NULL) && requests[i]->action) {
+         xbt_dynar_push(comms, &requests[i]->action);
+         map[size] = i;
+         size++;
       }
     }
     if(size > 0) {
       i = simcall_comm_testany(comms);
-      // FIXME: MPI_UNDEFINED or does SIMIX have a return code?
-      if(i != MPI_UNDEFINED) {
+      // not MPI_UNDEFINED, as this is a simix return code
+      if(i != -1) {
         *index = map[i];
-        smpi_mpi_wait(&requests[*index], status);
+        finish_wait(&requests[*index], status);
         flag = 1;
       }
+    }else{
+        //all requests are null or inactive, return true
+        flag=1;
+        smpi_empty_status(status);
     }
     xbt_free(map);
     xbt_dynar_free(&comms);
   }
+
   return flag;
 }
 
@@ -376,12 +393,22 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
 int smpi_mpi_testall(int count, MPI_Request requests[],
                      MPI_Status status[])
 {
+  MPI_Status stat;
+  MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
   int flag=1;
   int i;
-  for(i=0; i<count; i++)
-    if (smpi_mpi_test(&requests[i], &status[i])!=1)
-      flag=0;
-
+  for(i=0; i<count; i++){
+    if(requests[i]!= MPI_REQUEST_NULL){
+      if (smpi_mpi_test(&requests[i], pstat)!=1){
+        flag=0;
+      }
+    }else{
+      smpi_empty_status(pstat);
+    }
+    if(status != MPI_STATUSES_IGNORE) {
+      memcpy(&status[i], pstat, sizeof(*pstat));
+    }
+  }
   return flag;
 }
 
@@ -389,34 +416,34 @@ void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
   int flag=0;
   //FIXME find another wait to avoid busy waiting ?
   // the issue here is that we have to wait on a nonexistent comm
-  MPI_Request request;
   while(flag==0){
-    request = smpi_mpi_iprobe(source, tag, comm, &flag, status);
+    smpi_mpi_iprobe(source, tag, comm, &flag, status);
     XBT_DEBUG("Busy Waiting on probing : %d", flag);
     if(!flag) {
-      smpi_mpi_request_free(&request);
       simcall_process_sleep(0.0001);
     }
   }
 }
 
-MPI_Request smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){
-  MPI_Request request = build_request(NULL, 0, MPI_CHAR, source, smpi_comm_rank(comm), tag,
-                                     comm, NON_PERSISTENT | RECV);
+void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){
+  MPI_Request request =build_request(NULL, 0, MPI_CHAR, source, smpi_comm_rank(comm), tag,
+            comm, NON_PERSISTENT | RECV);
+
   // behave like a receive, but don't do it
   smx_rdv_t mailbox;
 
   print_request("New iprobe", request);
   // We have to test both mailboxes as we don't know if we will receive one one or another
-  if (xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")>0){
-    mailbox = smpi_process_mailbox_small();
-    request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
-
-  }
-  if (request->action==NULL){
-    mailbox = smpi_process_mailbox();
-    request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
-  }
+    if (xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")>0){
+        mailbox = smpi_process_mailbox_small();
+        XBT_DEBUG("trying to probe the perm recv mailbox");
+        request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
+    }
+    if (request->action==NULL){
+	mailbox = smpi_process_mailbox();
+        XBT_DEBUG("trying to probe the other mailbox");
+        request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
+    }
 
   if(request->action){
     MPI_Request req = (MPI_Request)SIMIX_comm_get_src_data(request->action);
@@ -429,8 +456,9 @@ MPI_Request smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_S
     }
   }
   else *flag=false;
+  smpi_mpi_request_free(&request);
 
-  return request;
+  return;
 }
 
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
@@ -468,38 +496,54 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     if(size > 0) {
       i = simcall_comm_waitany(comms);
 
-      // FIXME: MPI_UNDEFINED or does SIMIX have a return code?
-      if (i != MPI_UNDEFINED) {
+      // not MPI_UNDEFINED, as this is a simix return code
+      if (i != -1) {
         index = map[i];
         finish_wait(&requests[index], status);
-
       }
     }
     xbt_free(map);
     xbt_dynar_free(&comms);
   }
+
+  if (index==MPI_UNDEFINED)
+    smpi_empty_status(status);
+
   return index;
 }
 
 void smpi_mpi_waitall(int count, MPI_Request requests[],
                       MPI_Status status[])
 {
-  int index, c;
+  int  index, c;
   MPI_Status stat;
-  MPI_Status *pstat = status == MPI_STATUS_IGNORE ? MPI_STATUS_IGNORE : &stat;
-
+  MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
+  //tag invalid requests in the set
   for(c = 0; c < count; c++) {
-    if(MC_IS_ENABLED) {
-      smpi_mpi_wait(&requests[c], pstat);
-      index = c;
-    } else {
-      index = smpi_mpi_waitany(count, requests, pstat);
-      if(index == MPI_UNDEFINED) {
-        break;
+    if(requests[c]==MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL ){
+      if(status != MPI_STATUSES_IGNORE)
+        smpi_empty_status(&status[c]);
+    }else if(requests[c]->src == MPI_PROC_NULL ){
+      if(status != MPI_STATUSES_IGNORE) {
+        smpi_empty_status(&status[c]);
+        status[c].MPI_SOURCE=MPI_PROC_NULL;
       }
     }
-    if(status != MPI_STATUS_IGNORE) {
-      memcpy(&status[index], pstat, sizeof(*pstat));
+  }
+
+  for(c = 0; c < count; c++) {
+      if(MC_IS_ENABLED) {
+        smpi_mpi_wait(&requests[c], pstat);
+        index = c;
+      } else {
+        index = smpi_mpi_waitany(count, requests, pstat);
+        if(index == MPI_UNDEFINED) {
+          break;
+       }
+      if(status != MPI_STATUSES_IGNORE) {
+        memcpy(&status[index], pstat, sizeof(*pstat));
+
+      }
     }
   }
 }
@@ -508,15 +552,49 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
                       MPI_Status status[])
 {
   int i, count, index;
+  MPI_Status stat;
+  MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
   count = 0;
-  for(i = 0; i < incount; i++) {
-    if(smpi_mpi_testany(incount, requests, &index, status)) {
+  for(i = 0; i < incount; i++)
+  {
+    index=smpi_mpi_waitany(incount, requests, pstat);
+    if(index!=MPI_UNDEFINED){
       indices[count] = index;
       count++;
+      if(status != MPI_STATUSES_IGNORE) {
+        memcpy(&status[index], pstat, sizeof(*pstat));
+      }
+    }else{
+      return MPI_UNDEFINED;
     }
   }
   return count;
+}
+
+int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
+                      MPI_Status status[])
+{
+  int i, count, count_dead;
+  MPI_Status stat;
+  MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
+
+  count = 0;
+  for(i = 0; i < incount; i++) {
+    if((requests[i] != MPI_REQUEST_NULL)) {
+      if(smpi_mpi_test(&requests[i], pstat)) {
+         indices[count] = i;
+         count++;
+         if(status != MPI_STATUSES_IGNORE) {
+            memcpy(&status[i], pstat, sizeof(*pstat));
+         }
+      }
+    }else{
+      count_dead++;
+    }
+  }
+  if(count_dead==incount)return MPI_UNDEFINED;
+  else return count;
 }
 
 void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root,
@@ -806,7 +884,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
     smpi_mpi_startall(size - 1, requests);
     for(src = 0; src < size - 1; src++) {
       index = smpi_mpi_waitany(size - 1, requests, MPI_STATUS_IGNORE);
-      XBT_VERB("finished waiting any request with index %d", index);
+      XBT_DEBUG("finished waiting any request with index %d", index);
       if(index == MPI_UNDEFINED) {
         break;
       }

@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   MSG_create_environment(argv[1]);
   MSG_launch_application(argv[1]);
   res = MSG_main();
-  MSG_clean();
+
   if (res == MSG_OK)
     return 0;
   else

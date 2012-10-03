@@ -22,6 +22,8 @@ static void* SIMIX_action_mallocator_new_f(void);
 static void SIMIX_action_mallocator_free_f(void* action);
 static void SIMIX_action_mallocator_reset_f(void* action);
 
+static void SIMIX_clean(void);
+
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
@@ -107,6 +109,8 @@ void SIMIX_global_init(int *argc, char **argv)
 
   XBT_DEBUG("ADD SIMIX LEVELS");
   SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
+
+  atexit(SIMIX_clean);
 }
 
 /**
@@ -115,7 +119,7 @@ void SIMIX_global_init(int *argc, char **argv)
  *
  * This functions remove the memory used by SIMIX
  */
-void SIMIX_clean(void)
+static void SIMIX_clean(void)
 {
 #ifdef TIME_BENCH_PER_SR
   smx_ctx_raw_new_sr();

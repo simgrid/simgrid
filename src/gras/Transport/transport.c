@@ -85,8 +85,7 @@ xbt_socket_t
 gras_socket_server_range(unsigned short minport, unsigned short maxport,
                          unsigned long int buf_size, int measurement)
 {
-
-  int port;
+  volatile int port;
   xbt_socket_t res = NULL;
   xbt_ex_t e;
 

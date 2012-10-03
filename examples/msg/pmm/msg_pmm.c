@@ -280,8 +280,6 @@ int main(int argc, char *argv[])
 #endif
   XBT_CRITICAL("Simulated time: %g", MSG_get_clock());
 
-  MSG_clean();
-
   if (res == MSG_OK)
     return 0;
   else

@@ -130,7 +130,7 @@ void smpi_datatype_free(MPI_Datatype* type);
 void smpi_datatype_commit(MPI_Datatype* datatype);
 
 
-
+void smpi_empty_status(MPI_Status * status);
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);
 void smpi_op_destroy(MPI_Op op);
 void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
@@ -183,7 +183,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
 int smpi_mpi_testall(int count, MPI_Request requests[],
                      MPI_Status status[]);
 void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status);
-MPI_Request smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag,
+void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag,
                     MPI_Status* status);
 int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status);
@@ -192,6 +192,8 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
 void smpi_mpi_waitall(int count, MPI_Request requests[],
                       MPI_Status status[]);
 int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
+                      MPI_Status status[]);
+int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
                       MPI_Status status[]);
 void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                     MPI_Comm comm);

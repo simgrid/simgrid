@@ -169,6 +169,11 @@ int MPI_Comm_size(MPI_Comm comm, int *size)
   return PMPI_Comm_size(comm, size);
 }
 
+int MPI_Comm_get_attr (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag)
+{
+  return PMPI_Comm_get_attr (comm, comm_keyval, attribute_val, flag);
+}
+
 int MPI_Comm_get_name (MPI_Comm comm, char* name, int* len)
 {
   return PMPI_Comm_get_name(comm, name, len);

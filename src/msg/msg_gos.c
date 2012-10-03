@@ -664,7 +664,7 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
 }
 
 /**
- * \brief This function is called by SIMIX to copy the data of a comm.
+ * \brief This function is called by SIMIX in kernel mode to copy the data of a comm.
  * \param comm the comm
  * \param buff the data copied
  * \param buff_size size of the buffer
