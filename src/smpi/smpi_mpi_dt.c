@@ -386,6 +386,7 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
   int i;
   size_t size; //Khalid added this
 
+  size = 0;
   for(i=0; i< count; i++){
     if (blocklens[i]<=0)
       return MPI_ERR_ARG;

@@ -42,7 +42,7 @@ static MPI_Request build_request(void *buf, int count,
 {
   MPI_Request request;
 
-  void *old_buf;
+  void *old_buf = NULL;
 
   request = xbt_new(s_smpi_mpi_request_t, 1);
 
@@ -584,6 +584,7 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
   count = 0;
+  count_dead = 0;
   for(i = 0; i < incount; i++) {
     if((requests[i] != MPI_REQUEST_NULL)) {
       if(smpi_mpi_test(&requests[i], pstat)) {
