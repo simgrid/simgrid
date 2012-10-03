@@ -460,12 +460,12 @@ static double dichotomy(double init, double diff(double, void *),
     } else if (min_diff > 0 && max_diff < 0) {
       XBT_CWARN(surf_lagrange_dichotomy,
              "The impossible happened, partial_diff(min) > 0 && partial_diff(max) < 0");
-      abort();
+      xbt_abort();
     } else {
       XBT_CWARN(surf_lagrange_dichotomy,
              "diffmin (%1.20f) or diffmax (%1.20f) are something I don't know, taking no action.",
              min_diff, max_diff);
-      abort();
+      xbt_abort();
     }
   }
 

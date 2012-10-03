@@ -196,8 +196,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   XBT_VERB("Fire a first command: '%s'", cmd);
   pipe = popen(cmd, "r");
   if (!pipe) {
-    XBT_CRITICAL("Cannot fork addr2line to display the backtrace");
-    abort();
+    xbt_die("Cannot fork addr2line to display the backtrace");
   }
 
   for (i = 0; i < e->used; i++) {
@@ -306,8 +305,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
         XBT_VERB("Fire a new command: '%s'", subcmd);
         subpipe = popen(subcmd, "r");
         if (!subpipe) {
-          XBT_CRITICAL("Cannot fork addr2line to display the backtrace");
-          abort();
+          xbt_die("Cannot fork addr2line to display the backtrace");
         }
         fgets_res = fgets(line_func, 1024, subpipe);
         if (fgets_res == NULL)

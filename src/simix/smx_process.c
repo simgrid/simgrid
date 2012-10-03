@@ -713,7 +713,7 @@ xbt_running_ctx_t *SIMIX_process_get_running_context(void)
 void SIMIX_process_exception_terminate(xbt_ex_t * e)
 {
   xbt_ex_display(e);
-  abort();
+  xbt_abort();
 }
 
 smx_context_t SIMIX_process_get_context(smx_process_t p) {
