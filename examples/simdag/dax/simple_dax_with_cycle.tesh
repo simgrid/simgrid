@@ -1,7 +1,6 @@
 #! ./tesh
 p Test the DAX loader with a DAX comprising a cycle.
 
-! expect signal SIGABRT
 $ $SG_TEST_EXENV ./dax_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/simple_dax_with_cycle.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [sd_daxparse/WARNING] the task root is not marked
@@ -9,4 +8,4 @@ $ $SG_TEST_EXENV ./dax_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_daxparse/WARNING] the task 2@task2 is in a cycle
 > [0.000000] [sd_daxparse/WARNING] the task 3@task3 is in a cycle
 > [0.000000] [sd_daxparse/ERROR] The DAX described in simple_dax_with_cycle.xml is not a DAG. It contains a cycle.
-> [0.000000] [xbt/CRITICAL] A problem occurred during parsing. The simulation can't continue.
+> [0.000000] [test/ERROR] A problem occurred during DAX parsing (cycle or syntax). Do not continue this test
