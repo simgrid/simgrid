@@ -68,6 +68,8 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Re-implement time-independent trace replay using SMPI (at the
    smpi_smp_* level) instead of MSG. This should replace
    examples/msg/actions/actions.c
+ * Implement the exchange of non-contiguous data.
+   [Khalid Hasanov & Jean-Noel Quintin] Thanks for the patch, guys.
    
  XBT:
  * Functions xbt_dict_hash() and xbt_dict_hash_ext() are made public,
