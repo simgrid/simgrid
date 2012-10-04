@@ -1,0 +1,123 @@
+#! ./tesh
+p Test the DAX loader on a small DAX instance
+
+$ $SG_TEST_EXENV ./dax_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/smalldax.xml
+> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [sd_daxparse/WARNING] Ignoring file o1 size redefinition from 1000000 to 304
+> [0.000000] [sd_daxparse/WARNING] Ignoring file o2 size redefinition from 1000000 to 304
+> [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
+> [0.000000] [sd_task/INFO] Displaying task root
+> [0.000000] [sd_task/INFO]   - state:  schedulable  not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     root_i2_2@task2
+> [0.000000] [sd_task/INFO]     root_i1_1@task1
+> [0.000000] [sd_task/INFO] Displaying task 1@task1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 42000000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root_i1_1@task1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3@task1
+> [0.000000] [sd_task/INFO]     1@task1_o1_3@task1
+> [0.000000] [sd_task/INFO] Displaying task 2@task2
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 42000000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root_i2_2@task2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3@task1
+> [0.000000] [sd_task/INFO]     2@task2_o2_3@task1
+> [0.000000] [sd_task/INFO] Displaying task 3@task1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 42000000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 4
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1@task1
+> [0.000000] [sd_task/INFO]     2@task2
+> [0.000000] [sd_task/INFO]     1@task1_o1_3@task1
+> [0.000000] [sd_task/INFO]     2@task2_o2_3@task1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3@task1_o3_end
+> [0.000000] [sd_task/INFO] Displaying task root_i2_2@task2
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 1000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2@task2
+> [0.000000] [sd_task/INFO] Displaying task 1@task1_o1_3@task1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 1000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1@task1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3@task1
+> [0.000000] [sd_task/INFO] Displaying task 2@task2_o2_3@task1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 1000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2@task2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3@task1
+> [0.000000] [sd_task/INFO] Displaying task 3@task1_o3_end
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 4167312
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     3@task1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task root_i1_1@task1
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 1000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1@task1
+> [0.000000] [sd_task/INFO] Displaying task end
+> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     3@task1_o3_end
+> [0.000000] [test/INFO] ------------------- Schedule tasks ---------------------------
+> [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
+> [84.185919] [test/INFO] ------------------- Produce the trace file---------------------------
+> [84.185919] [test/INFO] Producing the trace of the run into ./smalldax.trace
+
+$ cat ./smalldax.trace
+> [0.000000] C1-00 compute 0.000000 # root
+> [0.030300] C1-01 compute 42000000000.000000 # 1@task1
+> [0.030300] C1-02 compute 42000000000.000000 # 2@task2
+> [42.060600] C1-03 compute 42000000000.000000 # 3@task1
+> [0.000000] C1-00 send C1-02 1000000.000000 # root_i2_2@task2
+> [0.030300] C1-02 recv C1-00 1000000.000000 # root_i2_2@task2
+> [42.030300] C1-01 send C1-03 1000000.000000 # 1@task1_o1_3@task1
+> [42.060600] C1-03 recv C1-01 1000000.000000 # 1@task1_o1_3@task1
+> [42.030300] C1-02 send C1-03 1000000.000000 # 2@task2_o2_3@task1
+> [42.060600] C1-03 recv C1-02 1000000.000000 # 2@task2_o2_3@task1
+> [84.060600] C1-03 send C1-00 4167312.000000 # 3@task1_o3_end
+> [84.185919] C1-00 recv C1-03 4167312.000000 # 3@task1_o3_end
+> [0.000000] C1-00 send C1-01 1000000.000000 # root_i1_1@task1
+> [0.030300] C1-01 recv C1-00 1000000.000000 # root_i1_1@task1
+> [84.185919] C1-00 compute 0.000000 # end
+
+$ rm ./smalldax.trace
