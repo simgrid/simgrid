@@ -118,8 +118,8 @@ int smpi_global_size(void) {
    char* value = getenv("SMPI_GLOBAL_SIZE");
 
    if(!value) {
-      fprintf(stderr, "Please set env var SMPI_GLOBAL_SIZE to expected number of processes.\n");
-      abort();
+     fprintf(stderr, "Please set env var SMPI_GLOBAL_SIZE to expected number of processes.\n");
+     xbt_abort();
    }
    return atoi(value);
 }

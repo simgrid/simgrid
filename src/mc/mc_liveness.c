@@ -27,7 +27,7 @@ int create_dump(int pair)
   switch(fork()){
   case 0:
     // We are the child process -- run the actual program
-    abort();
+    xbt_abort();
     break;
     
   case -1:

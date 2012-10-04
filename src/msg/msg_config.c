@@ -23,7 +23,7 @@ void MSG_config(const char *name, ...)
   if (!msg_global) {
     fprintf(stderr,
             "ERROR: Please call MSG_init() before using MSG_config()\n");
-    abort();
+    xbt_abort();
   }
   va_start(pa, name);
   xbt_cfg_set_vargs(_surf_cfg_set, name, pa);

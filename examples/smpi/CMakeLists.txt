@@ -26,6 +26,7 @@ if(enable_smpi)
   add_executable(smpi_traced tracing/smpi_traced.c)
   add_executable(smpi_traced_simple tracing/smpi_traced_simple.c)
   add_executable(ttest01 ttest01.c)
+  add_executable(vector_test vector_test.c)
   add_executable(mc_bugged1 mc_bugged1.c)
   add_executable(mc_bugged2 mc_bugged2.c)
   add_executable(smpi_replay replay/replay.c)
@@ -49,6 +50,7 @@ if(enable_smpi)
   target_link_libraries(smpi_traced m simgrid smpi )
   target_link_libraries(smpi_traced_simple m simgrid smpi )
   target_link_libraries(ttest01 m simgrid smpi )
+  target_link_libraries(vector_test m simgrid smpi )
   target_link_libraries(mc_bugged1 m simgrid smpi )
   target_link_libraries(mc_bugged2 m simgrid smpi )
   target_link_libraries(smpi_replay m simgrid smpi )
@@ -91,6 +93,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/sendtest.c
   ${CMAKE_CURRENT_SOURCE_DIR}/barrier.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bcbench.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/vector_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.c
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced.c
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced_simple.c

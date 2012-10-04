@@ -5,7 +5,7 @@
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,21 +17,16 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
                                 "Logging specific to SMPI (datatype)");
 
-typedef struct s_smpi_mpi_datatype {
-  size_t size;
-  MPI_Aint lb;
-  MPI_Aint ub;
-  int flags;
-} s_smpi_mpi_datatype_t;
-
 #define CREATE_MPI_DATATYPE(name, type)       \
   static s_smpi_mpi_datatype_t mpi_##name = { \
     sizeof(type),  /* size */                 \
+    0,             /*was 1 has_subtype*/             \
     0,             /* lb */                   \
     sizeof(type),  /* ub = lb + size */       \
-    DT_FLAG_BASIC  /* flags */                \
+    DT_FLAG_BASIC,  /* flags */              \
+    NULL           /* pointer on extended struct*/ \
   };                                          \
-  MPI_Datatype name = &mpi_##name;
+MPI_Datatype name = &mpi_##name;
 
 
 //The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
@@ -107,6 +102,8 @@ size_t smpi_datatype_size(MPI_Datatype datatype)
   return datatype->size;
 }
 
+
+
 MPI_Aint smpi_datatype_lb(MPI_Datatype datatype)
 {
   return datatype->lb;
@@ -145,18 +142,125 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     sendcount *= smpi_datatype_size(sendtype);
     recvcount *= smpi_datatype_size(recvtype);
     count = sendcount < recvcount ? sendcount : recvcount;
-    memcpy(recvbuf, sendbuf, count);
+
+    if(sendtype->has_subtype == 0 && recvtype->has_subtype == 0) {
+      memcpy(recvbuf, sendbuf, count);
+    }
+    else if (sendtype->has_subtype == 0)
+    {
+      s_smpi_subtype_t *subtype =  recvtype->substruct;
+      subtype->unserialize( sendbuf, recvbuf,1, subtype);
+    }
+    else if (recvtype->has_subtype == 0)
+    {
+      s_smpi_subtype_t *subtype =  sendtype->substruct;
+      subtype->serialize(sendbuf, recvbuf,1, subtype);
+    }else{
+      s_smpi_subtype_t *subtype =  sendtype->substruct;
+
+      s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)sendtype;
+
+      void * buf_tmp = malloc(count * type_c->size_oldtype);
+
+      subtype->serialize( sendbuf, buf_tmp,1, subtype);
+      subtype =  recvtype->substruct;
+      subtype->unserialize(recvbuf, buf_tmp,1, subtype);
+
+      free(buf_tmp);
+    }
     retval = sendcount > recvcount ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
   }
+
   return retval;
 }
 
-void smpi_datatype_create(MPI_Datatype* new_type, int size, int flags){
+/*
+ *  Copies noncontiguous data into contiguous memory.
+ *  @param contiguous_vector - output vector
+ *  @param noncontiguous_vector - input vector
+ *  @param type - pointer contening :
+ *      - stride - stride of between noncontiguous data
+ *      - block_length - the width or height of blocked matrix
+ *      - count - the number of rows of matrix
+ */
+void serialize_vector( const void *noncontiguous_vector,
+                       void *contiguous_vector,
+                       size_t count,
+                       void *type)
+{
+  s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)type;
+  int i;
+  char* contiguous_vector_char = (char*)contiguous_vector;
+  char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+
+  for (i = 0; i < type_c->block_count * count; i++) {
+    memcpy(contiguous_vector_char,
+           noncontiguous_vector_char, type_c->block_length * type_c->size_oldtype);
+
+    contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    noncontiguous_vector_char += type_c->block_stride*type_c->size_oldtype;
+  }
+}
+/*
+ *  Copies contiguous data into noncontiguous memory.
+ *  @param noncontiguous_vector - output vector
+ *  @param contiguous_vector - input vector
+ *  @param type - pointer contening :
+ *      - stride - stride of between noncontiguous data
+ *      - block_length - the width or height of blocked matrix
+ *      - count - the number of rows of matrix
+ */
+void unserialize_vector( const void *contiguous_vector,
+                         void *noncontiguous_vector,
+                         size_t count,
+                         void *type)
+{
+  s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)type;
+  int i;
+
+  char* contiguous_vector_char = (char*)contiguous_vector;
+  char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+
+  for (i = 0; i < type_c->block_count * count; i++) {
+    memcpy(noncontiguous_vector_char,
+           contiguous_vector_char, type_c->block_length * type_c->size_oldtype);
+
+    contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
+    noncontiguous_vector_char += type_c->block_stride*type_c->size_oldtype;
+  }
+}
+
+/*
+ * Create a Sub type vector to be able to serialize and unserialize it
+ * the structre s_smpi_mpi_vector_t is derived from s_smpi_subtype which
+ * required the functions unserialize and serialize
+ *
+ */
+s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
+                                                  int block_length,
+                                                  int block_count,
+                                                  MPI_Datatype old_type,
+                                                  int size_oldtype){
+  s_smpi_mpi_vector_t *new_t= xbt_new(s_smpi_mpi_vector_t,1);
+  new_t->base.serialize = &serialize_vector;
+  new_t->base.unserialize = &unserialize_vector;
+  new_t->block_stride = block_stride;
+  new_t->block_length = block_length;
+  new_t->block_count = block_count;
+  new_t->old_type = old_type;
+  new_t->size_oldtype = size_oldtype;
+  return new_t;
+}
+
+void smpi_datatype_create(MPI_Datatype* new_type, int size, int has_subtype,
+                          void *struct_type, int flags){
   MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
   new_t->size=size;
+  new_t->has_subtype=has_subtype;
   new_t->lb=0;
   new_t->ub=size;
   new_t->flags=flags;
+  new_t->substruct=struct_type;
   *new_type = new_t;
 }
 
@@ -168,9 +272,10 @@ int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new
 {
   int retval;
   if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-     retval = MPI_ERR_TYPE;
+    retval = MPI_ERR_TYPE;
   } else {
-    smpi_datatype_create(new_type, count * smpi_datatype_size(old_type), DT_FLAG_CONTIGUOUS);
+    smpi_datatype_create(new_type, count *
+                         smpi_datatype_size(old_type),1,NULL, DT_FLAG_CONTIGUOUS);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -179,12 +284,33 @@ int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new
 int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (blocklen<=0)return MPI_ERR_ARG;
+  if (blocklen<=0) return MPI_ERR_ARG;
   if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-     retval = MPI_ERR_TYPE;
+    retval = MPI_ERR_TYPE;
   } else {
-    smpi_datatype_create(new_type, count * (blocklen+stride) * smpi_datatype_size(old_type), DT_FLAG_VECTOR);
-    retval=MPI_SUCCESS;
+    if(stride != blocklen){
+      s_smpi_mpi_vector_t* subtype = smpi_datatype_vector_create( stride,
+                                                                  blocklen,
+                                                                  count,
+                                                                  old_type,
+                                                                  smpi_datatype_size(old_type));
+
+      smpi_datatype_create(new_type, count * (blocklen) *
+                           smpi_datatype_size(old_type),
+                           1,
+                           subtype,
+                           DT_FLAG_VECTOR);
+      retval=MPI_SUCCESS;
+    }else{
+      /* in this situation the data are contignous thus it's not
+       * required to serialize and unserialize it*/
+      smpi_datatype_create(new_type, count * (blocklen) *
+                           smpi_datatype_size(old_type),
+                           0,
+                           NULL,
+                           DT_FLAG_VECTOR);
+      retval=MPI_SUCCESS;
+    }
   }
   return retval;
 }
@@ -192,11 +318,18 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
 int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (blocklen<=0)return MPI_ERR_ARG;
+  if (blocklen<=0) return MPI_ERR_ARG;
   if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-     retval = MPI_ERR_TYPE;
+    retval = MPI_ERR_TYPE;
   } else {
-    smpi_datatype_create(new_type, count * ((blocklen * smpi_datatype_size(old_type))+stride), DT_FLAG_VECTOR);
+    /*FIXME: as for the vector the data should be serialized and
+     * unserialized moreover a structure derived from s_smpi_subtype should
+     * be created*/
+    smpi_datatype_create(new_type, count * ((blocklen *
+                                             smpi_datatype_size(old_type))+stride),
+                         0,
+                         NULL,
+                         DT_FLAG_VECTOR);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -207,14 +340,20 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
 {
   int i;
   int retval;
+  int size = 0;
   for(i=0; i< count; i++){
     if   (blocklens[i]<=0)
       return MPI_ERR_ARG;
+    size += blocklens[i];
   }
   if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-     retval = MPI_ERR_TYPE;
+    retval = MPI_ERR_TYPE;
   } else {
-    smpi_datatype_create(new_type,  (blocklens[count-1] + indices[count-1]) * smpi_datatype_size(old_type), DT_FLAG_DATA);
+    /*FIXME: as for the vector the data should be serialized and
+     * unserialized moreover a structure derived from s_smpi_subtype should
+     * be created*/
+    smpi_datatype_create(new_type,  (size) *
+                         smpi_datatype_size(old_type),0, NULL, DT_FLAG_DATA);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -224,14 +363,19 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
 {
   int i;
   int retval;
+  int size = 0;
   for(i=0; i< count; i++){
     if   (blocklens[i]<=0)
       return MPI_ERR_ARG;
+    size += blocklens[i];
   }
   if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-     retval = MPI_ERR_TYPE;
+    retval = MPI_ERR_TYPE;
   } else {
-    smpi_datatype_create(new_type,indices[count-1] + (blocklens[count-1]  * smpi_datatype_size(old_type)), DT_FLAG_DATA);
+    /*FIXME: as for the vector the data should be serialized and
+     * unserialized moreover a structure derived from s_smpi_subtype should
+     * be created*/
+    smpi_datatype_create(new_type,(size * smpi_datatype_size(old_type)), 0,NULL, DT_FLAG_DATA);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -240,19 +384,28 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
 int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type)
 {
   int i;
+  size_t size; //Khalid added this
+
+  size = 0;
   for(i=0; i< count; i++){
     if (blocklens[i]<=0)
       return MPI_ERR_ARG;
     if ((old_types[i]->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED)
       return MPI_ERR_TYPE;
+    size += blocklens[i]*smpi_datatype_size(old_types[i]);
   }
-  smpi_datatype_create(new_type,indices[count-1] + (blocklens[count-1]  * smpi_datatype_size(old_types[count-1])), DT_FLAG_DATA);
+  /*FIXME: as for the vector the data should be serialized and
+   * unserialized moreover a structure derived from s_smpi_subtype should
+   * be created*/
+  smpi_datatype_create(new_type, size,
+                       0, NULL,
+                       DT_FLAG_DATA);
   return MPI_SUCCESS;
 }
 
-void smpi_datatype_commit(MPI_Datatype* datatype)
+void smpi_datatype_commit(MPI_Datatype *datatype)
 {
-  (*datatype)->flags= ( (*datatype)->flags | DT_FLAG_COMMITED);
+  (*datatype)->flags=  ((*datatype)->flags | DT_FLAG_COMMITED);
 }
 
 typedef struct s_smpi_mpi_op {
@@ -274,14 +427,14 @@ typedef struct s_smpi_mpi_op {
 //TODO : MINLOC & MAXLOC
 
 #define APPLY_FUNC(a, b, length, type, func) \
-  {                                          \
-    int i;                                   \
-    type* x = (type*)(a);                    \
-    type* y = (type*)(b);                    \
-    for(i = 0; i < *(length); i++) {         \
-      func(x[i], y[i]);                      \
-    }                                        \
-  }
+{                                          \
+  int i;                                   \
+  type* x = (type*)(a);                    \
+  type* y = (type*)(b);                    \
+  for(i = 0; i < *(length); i++) {         \
+    func(x[i], y[i]);                      \
+  }                                        \
+}
 
 static void max_func(void *a, void *b, int *length,
                      MPI_Datatype * datatype)
@@ -571,7 +724,7 @@ static void maxloc_func(void *a, void *b, int *length,
 
 #define CREATE_MPI_OP(name, func)                             \
   static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */ }; \
-  MPI_Op name = &mpi_##name;
+MPI_Op name = &mpi_##name;
 
 CREATE_MPI_OP(MPI_MAX, max_func);
 CREATE_MPI_OP(MPI_MIN, min_func);

@@ -309,7 +309,10 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Waitsome,
                             (int incount, MPI_Request requests[],
                              int *outcount, int *indices,
                              MPI_Status status[]));
-
+MPI_CALL(XBT_PUBLIC(int), MPI_Testsome,
+                            (int incount, MPI_Request requests[],
+                             int *outcount, int *indices,
+                             MPI_Status status[]));
 MPI_CALL(XBT_PUBLIC(int), MPI_Bcast,
                             (void *buf, int count, MPI_Datatype datatype,
                              int root, MPI_Comm comm));
@@ -411,7 +414,6 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Errhandler_set, (MPI_Comm comm, MPI_Errhandler err
 MPI_CALL(XBT_PUBLIC(int), MPI_Cancel, (MPI_Request* request));
 MPI_CALL(XBT_PUBLIC(int), MPI_Buffer_attach, (void* buffer, int size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Buffer_detach, (void* buffer, int* size));
-MPI_CALL(XBT_PUBLIC(int), MPI_Testsome, (int incount, MPI_Request* requests, int* outcount, int* indices, MPI_Status* statuses));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_test_inter, (MPI_Comm comm, int* flag));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_attr, (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag));
 MPI_CALL(XBT_PUBLIC(int), MPI_Unpack, (void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm));
@@ -438,6 +440,8 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Pack, (void* inbuf, int incount, MPI_Datatype type
 MPI_CALL(XBT_PUBLIC(int), MPI_Get_elements, (MPI_Status* status, MPI_Datatype datatype, int* elements));
 MPI_CALL(XBT_PUBLIC(int), MPI_Dims_create, (int nnodes, int ndims, int* dims));
 MPI_CALL(XBT_PUBLIC(int), MPI_Initialized, (int* flag));
+MPI_CALL(XBT_PUBLIC(int), MPI_Pcontrol, (const int level ));
+
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions

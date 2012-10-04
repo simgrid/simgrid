@@ -1176,7 +1176,7 @@ char *bvprintf(const char *fmt, va_list ap)
     /* Do not want to use xbt_die() here, as it uses the logging
      * infrastucture and may fail to allocate memory too. */
     fprintf(stderr, "bprintf: vasprintf failed. Aborting.\n");
-    abort();
+    xbt_abort();
   }
   return res;
 }

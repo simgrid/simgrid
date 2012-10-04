@@ -2,7 +2,7 @@
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
 #include "xbt/time.h"
@@ -11,18 +11,19 @@
 #include <errno.h>
 #include "surf/surf.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi,
-                                "Logging specific to SMPI (base)");
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
+
 
 static int match_recv(void* a, void* b, smx_action_t ignored) {
    MPI_Request ref = (MPI_Request)a;
    MPI_Request req = (MPI_Request)b;
    XBT_DEBUG("Trying to match a recv of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
 
-   xbt_assert(ref, "Cannot match recv against null reference");
-   xbt_assert(req, "Cannot match recv against null request");
-   return (ref->src == MPI_ANY_SOURCE || req->src == ref->src)
-          && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag);
+  xbt_assert(ref, "Cannot match recv against null reference");
+  xbt_assert(req, "Cannot match recv against null request");
+  return (ref->src == MPI_ANY_SOURCE || req->src == ref->src)
+    && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag);
 }
 
 static int match_send(void* a, void* b,smx_action_t ignored) {
@@ -41,9 +42,27 @@ static MPI_Request build_request(void *buf, int count,
 {
   MPI_Request request;
 
+  void *old_buf = NULL;
+
   request = xbt_new(s_smpi_mpi_request_t, 1);
+
+  s_smpi_subtype_t *subtype = datatype->substruct;
+
+  if(datatype->has_subtype == 1){
+    // This part handles the problem of non-contignous memory
+    old_buf = buf;
+    buf = malloc(count*smpi_datatype_size(datatype));
+    if (flags & SEND) {
+      subtype->serialize(old_buf, buf, count, datatype->substruct);
+    }
+  }
+
   request->buf = buf;
-  // FIXME: this will have to be changed to support non-contiguous datatypes
+  // This part handles the problem of non-contignous memory (for the
+  // unserialisation at the reception)
+  request->old_buf = old_buf;
+  request->old_type = datatype;
+
   request->size = smpi_datatype_size(datatype) * count;
   request->src = src;
   request->dst = dst;
@@ -58,6 +77,15 @@ static MPI_Request build_request(void *buf, int count,
   return request;
 }
 
+
+void smpi_empty_status(MPI_Status * status) {
+  if(status != MPI_STATUS_IGNORE) {
+      status->MPI_SOURCE=MPI_ANY_SOURCE;
+      status->MPI_TAG=MPI_ANY_TAG;
+      status->count=0;
+  }
+}
+
 void smpi_action_trace_run(char *path)
 {
   char *name;
@@ -68,12 +96,12 @@ void smpi_action_trace_run(char *path)
   if (path) {
     action_fp = fopen(path, "r");
     xbt_assert(action_fp != NULL, "Cannot open %s: %s", path,
-                strerror(errno));
+               strerror(errno));
   }
 
   if (!xbt_dict_is_empty(action_queues)) {
     XBT_WARN
-        ("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
+      ("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
 
 
     xbt_dict_foreach(action_queues, cursor, name, todo) {
@@ -98,8 +126,8 @@ MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
-                    comm, PERSISTENT | SEND);
+    build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                  comm, PERSISTENT | SEND);
 
   return request;
 }
@@ -108,8 +136,8 @@ MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
                                int src, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-      build_request(buf, count, datatype, src, smpi_comm_rank(comm), tag,
-                    comm, PERSISTENT | RECV);
+    build_request(buf, count, datatype, src, smpi_comm_rank(comm), tag,
+                  comm, PERSISTENT | RECV);
 
   return request;
 }
@@ -120,26 +148,29 @@ void smpi_mpi_start(MPI_Request request)
   int detached = 0;
 
   xbt_assert(!request->action,
-              "Cannot (re)start a non-finished communication");
+             "Cannot (re)start a non-finished communication");
   if(request->flags & RECV) {
     print_request("New recv", request);
     if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres"))
-    mailbox = smpi_process_mailbox_small();
+      mailbox = smpi_process_mailbox_small();
     else
-    mailbox = smpi_process_mailbox();
+      mailbox = smpi_process_mailbox();
 
     // FIXME: SIMIX does not yet support non-contiguous datatypes
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
   } else {
-    print_request("New send", request);
 
-    if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")) { // eager mode => detached send (FIXME: this limit should be configurable)
-      mailbox = smpi_process_remote_mailbox_small(
-            smpi_group_index(smpi_comm_group(request->comm), request->dst));
+    int receiver = smpi_group_index(smpi_comm_group(request->comm), request->dst);
+    if(receiver == MPI_UNDEFINED) {
+      XBT_WARN("Trying to send a message to a wrong rank");
+      return;
+    }
+    print_request("New send", request);
+    if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")) { // eager mode
+      mailbox = smpi_process_remote_mailbox_small(receiver);
     }else{
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
-      mailbox = smpi_process_remote_mailbox(
-                  smpi_group_index(smpi_comm_group(request->comm), request->dst));
+      mailbox = smpi_process_remote_mailbox(receiver);
     }
     if (request->size < 64*1024 ) { //(FIXME: this limit should be configurable)
       void *oldbuf = request->buf;
@@ -150,28 +181,28 @@ void smpi_mpi_start(MPI_Request request)
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     }
 
-      request->action =
+    request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
-              request->buf, request->size,
-              &match_send,
-              &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
-              request,
-              // detach if msg size < eager/rdv switch limit
-              detached);
+                         request->buf, request->size,
+                         &match_send,
+                         &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
+                         request,
+                         // detach if msg size < eager/rdv switch limit
+                         detached);
 
-  #ifdef HAVE_TRACING
-      /* FIXME: detached sends are not traceable (request->action == NULL) */
-      if (request->action)
-        simcall_set_category(request->action, TRACE_internal_smpi_get_category());
-  #endif
+#ifdef HAVE_TRACING
+    /* FIXME: detached sends are not traceable (request->action == NULL) */
+    if (request->action)
+      simcall_set_category(request->action, TRACE_internal_smpi_get_category());
+#endif
 
-    }
+  }
 
 }
 
 void smpi_mpi_startall(int count, MPI_Request * requests)
 {
-    int i;
+  int i;
 
   for(i = 0; i < count; i++) {
     smpi_mpi_start(requests[i]);
@@ -188,8 +219,8 @@ MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype,
                             int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
-                    comm, NON_PERSISTENT | SEND);
+    build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                  comm, NON_PERSISTENT | SEND);
 
   return request;
 }
@@ -198,7 +229,7 @@ MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-      smpi_isend_init(buf, count, datatype, dst, tag, comm);
+    smpi_isend_init(buf, count, datatype, dst, tag, comm);
 
   smpi_mpi_start(request);
   return request;
@@ -208,9 +239,8 @@ MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
                             int src, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-      build_request(buf, count, datatype, src, smpi_comm_rank(comm), tag,
-                    comm, NON_PERSISTENT | RECV);
-
+    build_request(buf, count, datatype, src, smpi_comm_rank(comm), tag,
+                  comm, NON_PERSISTENT | RECV);
   return request;
 }
 
@@ -218,7 +248,7 @@ MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
                            int src, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-      smpi_irecv_init(buf, count, datatype, src, tag, comm);
+    smpi_irecv_init(buf, count, datatype, src, tag, comm);
 
   smpi_mpi_start(request);
   return request;
@@ -228,7 +258,6 @@ void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
                    int tag, MPI_Comm comm, MPI_Status * status)
 {
   MPI_Request request;
-
   request = smpi_mpi_irecv(buf, count, datatype, src, tag, comm);
   smpi_mpi_wait(&request, status);
 }
@@ -238,9 +267,10 @@ void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm)
 {
-	  MPI_Request request;
-	  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
-	  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+  MPI_Request request;
+
+  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
+  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -252,9 +282,9 @@ void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   MPI_Status stats[2];
 
   requests[0] =
-      smpi_isend_init(sendbuf, sendcount, sendtype, dst, sendtag, comm);
+    smpi_isend_init(sendbuf, sendcount, sendtype, dst, sendtag, comm);
   requests[1] =
-      smpi_irecv_init(recvbuf, recvcount, recvtype, src, recvtag, comm);
+    smpi_irecv_init(recvbuf, recvcount, recvtype, src, recvtag, comm);
   smpi_mpi_startall(2, requests);
   smpi_mpi_waitall(2, requests, stats);
   if(status != MPI_STATUS_IGNORE) {
@@ -273,7 +303,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   MPI_Request req = *request;
   // if we have a sender, we should use its data, and not the data from the receive
   if((req->action)&&
-      (req->src==MPI_ANY_SOURCE || req->tag== MPI_ANY_TAG))
+     (req->src==MPI_ANY_SOURCE || req->tag== MPI_ANY_TAG))
     req = (MPI_Request)SIMIX_comm_get_src_data((*request)->action);
 
   if(status != MPI_STATUS_IGNORE) {
@@ -287,6 +317,19 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   req = *request;
 
   print_request("Finishing", req);
+  MPI_Datatype datatype = req->old_type;
+  if(datatype->has_subtype == 1){
+      // This part handles the problem of non-contignous memory
+      // the unserialization at the reception
+    s_smpi_subtype_t *subtype = datatype->substruct;
+    if(req->flags & RECV) {
+      subtype->unserialize(req->buf, req->old_buf, req->size/smpi_datatype_size(datatype) , datatype->substruct);
+    }
+    //FIXME: I am not sure that if the send is detached we have to free
+    //the sender buffer thus I do it only for the reciever
+    if(req->flags & RECV) free(req->buf);
+  }
+
   if(req->flags & NON_PERSISTENT) {
     smpi_mpi_request_free(request);
   } else {
@@ -296,12 +339,16 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
 
 int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
   int flag;
+
+  //assume that request is not MPI_REQUEST_NULL (filtered in PMPI_Test or smpi_mpi_testall before)
   if ((*request)->action == NULL)
     flag = 1;
   else
     flag = simcall_comm_test((*request)->action);
   if(flag) {
     finish_wait(request, status);
+  }else{
+    smpi_empty_status(status);
   }
   return flag;
 }
@@ -320,7 +367,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
     map = xbt_new(int, count);
     size = 0;
     for(i = 0; i < count; i++) {
-      if(requests[i]->action) {
+      if((requests[i]!=MPI_REQUEST_NULL) && requests[i]->action) {
          xbt_dynar_push(comms, &requests[i]->action);
          map[size] = i;
          size++;
@@ -328,16 +375,21 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
     }
     if(size > 0) {
       i = simcall_comm_testany(comms);
-      // FIXME: MPI_UNDEFINED or does SIMIX have a return code?
-      if(i != MPI_UNDEFINED) {
+      // not MPI_UNDEFINED, as this is a simix return code
+      if(i != -1) {
         *index = map[i];
-        smpi_mpi_wait(&requests[*index], status);
+        finish_wait(&requests[*index], status);
         flag = 1;
       }
+    }else{
+        //all requests are null or inactive, return true
+        flag=1;
+        smpi_empty_status(status);
     }
     xbt_free(map);
     xbt_dynar_free(&comms);
   }
+
   return flag;
 }
 
@@ -345,13 +397,22 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
 int smpi_mpi_testall(int count, MPI_Request requests[],
                      MPI_Status status[])
 {
+  MPI_Status stat;
+  MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
   int flag=1;
   int i;
-  for(i=0; i<count; i++)
-    if(requests[i]!= MPI_REQUEST_NULL)
-      if (smpi_mpi_test(&requests[i], &status[i])!=1)
-       flag=0;
-
+  for(i=0; i<count; i++){
+    if(requests[i]!= MPI_REQUEST_NULL){
+      if (smpi_mpi_test(&requests[i], pstat)!=1){
+        flag=0;
+      }
+    }else{
+      smpi_empty_status(pstat);
+    }
+    if(status != MPI_STATUSES_IGNORE) {
+      memcpy(&status[i], pstat, sizeof(*pstat));
+    }
+  }
   return flag;
 }
 
@@ -360,17 +421,18 @@ void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
   //FIXME find another wait to avoid busy waiting ?
   // the issue here is that we have to wait on a nonexistent comm
   while(flag==0){
-        smpi_mpi_iprobe(source, tag, comm, &flag, status);
-        XBT_DEBUG("Busy Waiting on probing : %d", flag);
-        if(!flag) {
-            simcall_process_sleep(0.0001);
-        }
+    smpi_mpi_iprobe(source, tag, comm, &flag, status);
+    XBT_DEBUG("Busy Waiting on probing : %d", flag);
+    if(!flag) {
+      simcall_process_sleep(0.0001);
+    }
   }
 }
 
 void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){
   MPI_Request request =build_request(NULL, 0, MPI_CHAR, source, smpi_comm_rank(comm), tag,
             comm, NON_PERSISTENT | RECV);
+
   // behave like a receive, but don't do it
   smx_rdv_t mailbox;
 
@@ -438,38 +500,54 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     if(size > 0) {
       i = simcall_comm_waitany(comms);
 
-      // FIXME: MPI_UNDEFINED or does SIMIX have a return code?
-      if (i != MPI_UNDEFINED) {
+      // not MPI_UNDEFINED, as this is a simix return code
+      if (i != -1) {
         index = map[i];
         finish_wait(&requests[index], status);
-
       }
     }
     xbt_free(map);
     xbt_dynar_free(&comms);
   }
+
+  if (index==MPI_UNDEFINED)
+    smpi_empty_status(status);
+
   return index;
 }
 
 void smpi_mpi_waitall(int count, MPI_Request requests[],
                       MPI_Status status[])
 {
-  int index, c;
+  int  index, c;
   MPI_Status stat;
-  MPI_Status *pstat = status == MPI_STATUS_IGNORE ? MPI_STATUS_IGNORE : &stat;
-
+  MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
+  //tag invalid requests in the set
   for(c = 0; c < count; c++) {
-    if(MC_IS_ENABLED) {
-      smpi_mpi_wait(&requests[c], pstat);
-      index = c;
-    } else {
-      index = smpi_mpi_waitany(count, requests, pstat);
-      if(index == MPI_UNDEFINED) {
-        break;
+    if(requests[c]==MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL ){
+      if(status != MPI_STATUSES_IGNORE)
+        smpi_empty_status(&status[c]);
+    }else if(requests[c]->src == MPI_PROC_NULL ){
+      if(status != MPI_STATUSES_IGNORE) {
+        smpi_empty_status(&status[c]);
+        status[c].MPI_SOURCE=MPI_PROC_NULL;
       }
     }
-    if(status != MPI_STATUS_IGNORE) {
-      memcpy(&status[index], pstat, sizeof(*pstat));
+  }
+
+  for(c = 0; c < count; c++) {
+      if(MC_IS_ENABLED) {
+        smpi_mpi_wait(&requests[c], pstat);
+        index = c;
+      } else {
+        index = smpi_mpi_waitany(count, requests, pstat);
+        if(index == MPI_UNDEFINED) {
+          break;
+       }
+      if(status != MPI_STATUSES_IGNORE) {
+        memcpy(&status[index], pstat, sizeof(*pstat));
+
+      }
     }
   }
 }
@@ -478,15 +556,50 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
                       MPI_Status status[])
 {
   int i, count, index;
+  MPI_Status stat;
+  MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
 
   count = 0;
-  for(i = 0; i < incount; i++) {
-     if(smpi_mpi_testany(incount, requests, &index, status)) {
-       indices[count] = index;
-       count++;
-     }
+  for(i = 0; i < incount; i++)
+  {
+    index=smpi_mpi_waitany(incount, requests, pstat);
+    if(index!=MPI_UNDEFINED){
+      indices[count] = index;
+      count++;
+      if(status != MPI_STATUSES_IGNORE) {
+        memcpy(&status[index], pstat, sizeof(*pstat));
+      }
+    }else{
+      return MPI_UNDEFINED;
+    }
   }
   return count;
+}
+
+int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
+                      MPI_Status status[])
+{
+  int i, count, count_dead;
+  MPI_Status stat;
+  MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
+
+  count = 0;
+  count_dead = 0;
+  for(i = 0; i < incount; i++) {
+    if((requests[i] != MPI_REQUEST_NULL)) {
+      if(smpi_mpi_test(&requests[i], pstat)) {
+         indices[count] = i;
+         count++;
+         if(status != MPI_STATUSES_IGNORE) {
+            memcpy(&status[i], pstat, sizeof(*pstat));
+         }
+      }
+    }else{
+      count_dead++;
+    }
+  }
+  if(count_dead==incount)return MPI_UNDEFINED;
+  else return count;
 }
 
 void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root,
@@ -520,15 +633,15 @@ void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // FIXME: check for errors
     smpi_datatype_extent(recvtype, &lb, &recvext);
     // Local copy from root
-    smpi_datatype_copy(sendbuf, sendcount, sendtype, 
-        (char *)recvbuf + root * recvcount * recvext, recvcount, recvtype);
+    smpi_datatype_copy(sendbuf, sendcount, sendtype,
+                       (char *)recvbuf + root * recvcount * recvext, recvcount, recvtype);
     // Receive buffers from senders
     requests = xbt_new(MPI_Request, size - 1);
     index = 0;
     for(src = 0; src < size; src++) {
       if(src != root) {
-        requests[index] = smpi_irecv_init((char *)recvbuf + src * recvcount * recvext, 
-                                          recvcount, recvtype, 
+        requests[index] = smpi_irecv_init((char *)recvbuf + src * recvcount * recvext,
+                                          recvcount, recvtype,
                                           src, system_tag, comm);
         index++;
       }
@@ -558,8 +671,8 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // FIXME: check for errors
     smpi_datatype_extent(recvtype, &lb, &recvext);
     // Local copy from root
-    smpi_datatype_copy(sendbuf, sendcount, sendtype, 
-                       (char *)recvbuf + displs[root] * recvext, 
+    smpi_datatype_copy(sendbuf, sendcount, sendtype,
+                       (char *)recvbuf + displs[root] * recvext,
                        recvcounts[root], recvtype);
     // Receive buffers from senders
     requests = xbt_new(MPI_Request, size - 1);
@@ -567,8 +680,8 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     for(src = 0; src < size; src++) {
       if(src != root) {
         requests[index] =
-            smpi_irecv_init((char *)recvbuf + displs[src] * recvext, 
-                            recvcounts[src], recvtype, src, system_tag, comm);
+          smpi_irecv_init((char *)recvbuf + displs[src] * recvext,
+                          recvcounts[src], recvtype, src, system_tag, comm);
         index++;
       }
     }
@@ -594,8 +707,8 @@ void smpi_mpi_allgather(void *sendbuf, int sendcount,
   // FIXME: check for errors
   smpi_datatype_extent(recvtype, &lb, &recvext);
   // Local copy from self
-  smpi_datatype_copy(sendbuf, sendcount, sendtype, 
-                     (char *)recvbuf + rank * recvcount * recvext, recvcount, 
+  smpi_datatype_copy(sendbuf, sendcount, sendtype,
+                     (char *)recvbuf + rank * recvcount * recvext, recvcount,
                      recvtype);
   // Send/Recv buffers to/from others;
   requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -603,11 +716,11 @@ void smpi_mpi_allgather(void *sendbuf, int sendcount,
   for(other = 0; other < size; other++) {
     if(other != rank) {
       requests[index] =
-          smpi_isend_init(sendbuf, sendcount, sendtype, other, system_tag,
-                          comm);
+        smpi_isend_init(sendbuf, sendcount, sendtype, other, system_tag,
+                        comm);
       index++;
-      requests[index] = smpi_irecv_init((char *)recvbuf + other * recvcount * recvext, 
-                                        recvcount, recvtype, other, 
+      requests[index] = smpi_irecv_init((char *)recvbuf + other * recvcount * recvext,
+                                        recvcount, recvtype, other,
                                         system_tag, comm);
       index++;
     }
@@ -633,8 +746,8 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount,
   // FIXME: check for errors
   smpi_datatype_extent(recvtype, &lb, &recvext);
   // Local copy from self
-  smpi_datatype_copy(sendbuf, sendcount, sendtype, 
-                     (char *)recvbuf + displs[rank] * recvext, 
+  smpi_datatype_copy(sendbuf, sendcount, sendtype,
+                     (char *)recvbuf + displs[rank] * recvext,
                      recvcounts[rank], recvtype);
   // Send buffers to others;
   requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -642,12 +755,12 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount,
   for(other = 0; other < size; other++) {
     if(other != rank) {
       requests[index] =
-          smpi_isend_init(sendbuf, sendcount, sendtype, other, system_tag,
-                          comm);
+        smpi_isend_init(sendbuf, sendcount, sendtype, other, system_tag,
+                        comm);
       index++;
       requests[index] =
-          smpi_irecv_init((char *)recvbuf + displs[other] * recvext, recvcounts[other],
-                          recvtype, other, system_tag, comm);
+        smpi_irecv_init((char *)recvbuf + displs[other] * recvext, recvcounts[other],
+                        recvtype, other, system_tag, comm);
       index++;
     }
   }
@@ -677,13 +790,13 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     smpi_datatype_extent(sendtype, &lb, &sendext);
     // Local copy from root
     smpi_datatype_copy((char *)sendbuf + root * sendcount * sendext,
-      sendcount, sendtype, recvbuf, recvcount, recvtype);
+                       sendcount, sendtype, recvbuf, recvcount, recvtype);
     // Send buffers to receivers
     requests = xbt_new(MPI_Request, size - 1);
     index = 0;
     for(dst = 0; dst < size; dst++) {
       if(dst != root) {
-        requests[index] = smpi_isend_init((char *)sendbuf + dst * sendcount * sendext, 
+        requests[index] = smpi_isend_init((char *)sendbuf + dst * sendcount * sendext,
                                           sendcount, sendtype, dst,
                                           system_tag, comm);
         index++;
@@ -715,7 +828,7 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs,
     // FIXME: check for errors
     smpi_datatype_extent(sendtype, &lb, &sendext);
     // Local copy from root
-    smpi_datatype_copy((char *)sendbuf + displs[root] * sendext, sendcounts[root], 
+    smpi_datatype_copy((char *)sendbuf + displs[root] * sendext, sendcounts[root],
                        sendtype, recvbuf, recvcount, recvtype);
     // Send buffers to receivers
     requests = xbt_new(MPI_Request, size - 1);
@@ -723,8 +836,8 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs,
     for(dst = 0; dst < size; dst++) {
       if(dst != root) {
         requests[index] =
-            smpi_isend_init((char *)sendbuf + displs[dst] * sendext, sendcounts[dst], 
-                            sendtype, dst, system_tag, comm);
+          smpi_isend_init((char *)sendbuf + displs[dst] * sendext, sendcounts[dst],
+                          sendtype, dst, system_tag, comm);
         index++;
       }
     }
@@ -767,8 +880,8 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
         //  mapping...
         tmpbufs[index] = xbt_malloc(count * dataext);
         requests[index] =
-            smpi_irecv_init(tmpbufs[index], count, datatype, src,
-                            system_tag, comm);
+          smpi_irecv_init(tmpbufs[index], count, datatype, src,
+                          system_tag, comm);
         index++;
       }
     }
@@ -821,17 +934,17 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count,
   tmpbufs = xbt_new(void *, rank);
   index = 0;
   for(other = 0; other < rank; other++) {
-    // FIXME: possibly overkill we we have contiguous/noncontiguous data 
+    // FIXME: possibly overkill we we have contiguous/noncontiguous data
     // mapping...
     tmpbufs[index] = xbt_malloc(count * dataext);
     requests[index] =
-        smpi_irecv_init(tmpbufs[index], count, datatype, other, system_tag,
-                        comm);
+      smpi_irecv_init(tmpbufs[index], count, datatype, other, system_tag,
+                      comm);
     index++;
   }
   for(other = rank + 1; other < size; other++) {
     requests[index] =
-        smpi_isend_init(sendbuf, count, datatype, other, system_tag, comm);
+      smpi_isend_init(sendbuf, count, datatype, other, system_tag, comm);
     index++;
   }
   // Wait for completion of all comms.
