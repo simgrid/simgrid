@@ -70,6 +70,7 @@ static MPI_Request build_request(void *buf, int count,
   request->comm = comm;
   request->action = NULL;
   request->flags = flags;
+  request->detached = 0;
 #ifdef HAVE_TRACING
   request->send = 0;
   request->recv = 0;
@@ -145,7 +146,6 @@ MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
 void smpi_mpi_start(MPI_Request request)
 {
   smx_rdv_t mailbox;
-  int detached = 0;
 
   xbt_assert(!request->action,
              "Cannot (re)start a non-finished communication");
@@ -173,11 +173,14 @@ void smpi_mpi_start(MPI_Request request)
       mailbox = smpi_process_remote_mailbox(receiver);
     }
     if (request->size < 64*1024 ) { //(FIXME: this limit should be configurable)
-      void *oldbuf = request->buf;
-      detached = 1;
-      request->buf = malloc(request->size);
-      if (oldbuf)
-        memcpy(request->buf,oldbuf,request->size);
+      void *oldbuf = NULL;
+      if(request->old_type->has_subtype == 0){
+        oldbuf = request->buf;
+        request->detached = 1;
+        request->buf = malloc(request->size);
+        if (oldbuf)
+          memcpy(request->buf,oldbuf,request->size);
+      }
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     }
 
@@ -188,7 +191,7 @@ void smpi_mpi_start(MPI_Request request)
                          &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
                          request,
                          // detach if msg size < eager/rdv switch limit
-                         detached);
+                         request->detached);
 
 #ifdef HAVE_TRACING
     /* FIXME: detached sends are not traceable (request->action == NULL) */
@@ -325,9 +328,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     if(req->flags & RECV) {
       subtype->unserialize(req->buf, req->old_buf, req->size/smpi_datatype_size(datatype) , datatype->substruct);
     }
-    //FIXME: I am not sure that if the send is detached we have to free
-    //the sender buffer thus I do it only for the reciever
-    if(req->flags & RECV) free(req->buf);
+    if(req->detached == 0) free(req->buf);
   }
 
   if(req->flags & NON_PERSISTENT) {

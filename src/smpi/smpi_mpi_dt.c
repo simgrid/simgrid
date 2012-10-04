@@ -201,6 +201,7 @@ void serialize_vector( const void *noncontiguous_vector,
     noncontiguous_vector_char += type_c->block_stride*type_c->size_oldtype;
   }
 }
+
 /*
  *  Copies contiguous data into noncontiguous memory.
  *  @param noncontiguous_vector - output vector
@@ -255,12 +256,12 @@ s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
 void smpi_datatype_create(MPI_Datatype* new_type, int size, int has_subtype,
                           void *struct_type, int flags){
   MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
-  new_t->size=size;
-  new_t->has_subtype=has_subtype;
-  new_t->lb=0;
-  new_t->ub=size;
-  new_t->flags=flags;
-  new_t->substruct=struct_type;
+  new_t->size = size;
+  new_t->has_subtype = has_subtype;
+  new_t->lb = 0;
+  new_t->ub = size;
+  new_t->flags = flags;
+  new_t->substruct = struct_type;
   *new_type = new_t;
 }
 
@@ -384,9 +385,7 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
 int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* new_type)
 {
   int i;
-  size_t size; //Khalid added this
-
-  size = 0;
+  size_t size = 0;
   for(i=0; i< count; i++){
     if (blocklens[i]<=0)
       return MPI_ERR_ARG;

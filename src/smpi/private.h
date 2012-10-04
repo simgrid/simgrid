@@ -73,6 +73,7 @@ typedef struct s_smpi_mpi_request {
   MPI_Comm comm;
   smx_action_t action;
   unsigned flags;
+  int detached;
 #ifdef HAVE_TRACING
   int send;
   int recv;
