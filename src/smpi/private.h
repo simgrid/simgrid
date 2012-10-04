@@ -24,8 +24,6 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 #define RECV           0x8
 
 
-//*****************************************************************************************
-
 // this struct is here to handle the problem of non-contignous data
 // for each such structure these function should be implemented (vector
 // index hvector hindex struct)
@@ -33,16 +31,6 @@ typedef struct s_smpi_subtype{
   void (*serialize)(const void * input, void *output, size_t count, void* subtype);
   void (*unserialize)(const void * input, void *output, size_t count, void* subtype);
 } s_smpi_subtype_t;
-
-/*one exemple of implementation for the vector is already here*/
-typedef struct s_smpi_mpi_vector{
-  s_smpi_subtype_t base;
-  size_t block_stride;
-  size_t block_length;
-  size_t block_count;
-  MPI_Datatype old_type;
-  size_t size_oldtype;
-} s_smpi_mpi_vector_t;
 
 typedef struct s_smpi_mpi_datatype{
   size_t size;
@@ -54,7 +42,6 @@ typedef struct s_smpi_mpi_datatype{
   /* this let us know how to serialize and unserialize*/
   void *substruct;
 } s_smpi_mpi_datatype_t;
-
 
 //*****************************************************************************************
 
@@ -129,23 +116,6 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size, int has_subtype, voi
 
 void smpi_datatype_free(MPI_Datatype* type);
 void smpi_datatype_commit(MPI_Datatype* datatype);
-
-void unserialize_vector( const void *contiguous_vector,
-                         void *noncontiguous_vector,
-                         size_t count,
-                         void *type);
-
-void serialize_vector( const void *noncontiguous_vector,
-                       void *contiguous_vector,
-                       size_t count,
-                       void *type);
-
-s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
-                                                  int block_length,
-                                                  int block_count,
-                                                  MPI_Datatype old_type,
-                                                  int size_oldtype);
-
 
 void smpi_empty_status(MPI_Status * status);
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);
