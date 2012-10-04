@@ -1,6 +1,7 @@
 #! ./tesh
 p Test the DAX loader with a DAX comprising a cycle.
 
+! expect return 255
 $ $SG_TEST_EXENV ./dax_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/simple_dax_with_cycle.xml
 > [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
 > [0.000000] [sd_daxparse/WARNING] the task root is not marked
