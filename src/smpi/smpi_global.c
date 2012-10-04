@@ -213,13 +213,25 @@ void print_request(const char *message, MPI_Request request) {
          request->src, request->dst, request->tag, request->flags);
 }
 
+void SMPI_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_size)
+{
+  XBT_DEBUG("Copy the data over");
+  memcpy(comm->comm.dst_buff, buff, buff_size);
+  if (comm->comm.detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
+    xbt_free(buff);
+    xbt_free(comm->comm.src_data);// inside SMPI the request is keep
+    //inside the user data and should be free 
+    comm->comm.src_buff = NULL;
+  }
+}
+
 void smpi_global_init(void)
 {
   int i;
   MPI_Group group;
   char name[MAILBOX_NAME_MAXLEN];
 
-  SIMIX_comm_set_copy_data_callback(&SIMIX_comm_copy_buffer_callback);
+  SIMIX_comm_set_copy_data_callback(&SMPI_comm_copy_buffer_callback);
   process_count = SIMIX_process_count();
   process_data = xbt_new(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {
