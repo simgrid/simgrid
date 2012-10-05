@@ -14,6 +14,7 @@
 #include "xbt/fifo.h"
 #include "mc_private.h"
 #include "xbt/automaton.h"
+#include "xbt/dict.h"
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
@@ -169,7 +170,7 @@ void MC_modelcheck_liveness(){
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   /* init stuff */
-  XBT_DEBUG("Start init mc");
+  XBT_INFO("Start init mc");
   
   mc_time = xbt_new0(double, simix_process_maxpid);
 
@@ -184,10 +185,19 @@ void MC_modelcheck_liveness(){
      iteration of the model-checker (in RAW memory) */
 
   MC_SET_RAW_MEM;
-    
-  /* Get local variables in binary for state equality detection */
-  MC_get_binary_local_variables();
 
+  char *ls_path = get_libsimgrid_path(); 
+  
+  mc_local_variables = xbt_dict_new_homogeneous(NULL);
+
+  /* Get local variables in binary for state equality detection */
+  xbt_dict_t binary_location_list = MC_get_location_list(xbt_binary_name);
+  MC_get_local_variables(xbt_binary_name, binary_location_list, &mc_local_variables);
+
+  /* Get local variables in libsimgrid for state equality detection */
+  xbt_dict_t libsimgrid_location_list = MC_get_location_list(ls_path);
+  MC_get_local_variables(ls_path, libsimgrid_location_list, &mc_local_variables);
+  
   /* Initialize statistics */
   mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
 
@@ -706,294 +716,97 @@ void MC_new_stack_area(void *stack, char *name){
 
 /************ DWARF ***********/
 
-static void MC_get_binary_local_variables(){
+xbt_dict_t MC_get_location_list(const char *elf_file){
 
-  mc_binary_local_variables = xbt_dynar_new(sizeof(dw_frame_t), NULL);
+  char *command = bprintf("objdump -Wo %s", elf_file);
 
-  char *command = bprintf("dwarfdump -i %s", xbt_binary_name);
-  
-  FILE* fp = popen(command, "r");
+  FILE *fp = popen(command, "r");
 
   if(fp == NULL)
-    perror("popen failed");
+    perror("popen for objdump failed");
 
-  char *line = NULL, *tmp_line = NULL, *tmp_location, *frame_name = NULL;
+  int debug = 0; /*Detect if the program has been compiled with -g */
+
+  xbt_dict_t location_list = xbt_dict_new_homogeneous(NULL);
+  char *line = NULL, *loc_expr = NULL;
   ssize_t read;
   size_t n = 0;
-  int valid_variable = 1, valid_frame = 1;
-  char *node_type, *location_type, *variable_name = NULL, *lowpc, *highpc;
+  int cursor_remove;
   xbt_dynar_t split = NULL;
 
-  void *low_pc = NULL, *old_low_pc = NULL;
-
-  int compile_unit_found = 0; /* Detect if the program has been compiled with -g */
-
-  read = getline(&line, &n, fp);
-
-  while (read != -1) {
-
-    if(n == 0)
-      continue;
+  while ((read = getline(&line, &n, fp)) != -1) {
 
     /* Wipeout the new line character */
     line[read - 1] = '\0';
+
+    xbt_str_trim(line, NULL);
     
-    if(line[0] == '<'){
+    if(n == 0)
+      continue;
 
-      /* If the program hasn't been compiled with -g, no symbol (line starting with '<' ) found */
-      compile_unit_found = 1;
+    if(strlen(line) == 0)
+      continue;
 
-      /* Get node type */
-      strtok(line, " ");
-      strtok(NULL, " ");
-      node_type = strtok(NULL, " ");
+    if(debug == 0){
 
-      if(strcmp(node_type, "DW_TAG_subprogram") == 0){ /* New frame */
-
-        read = getline(&line, &n, fp);
-
-        while(read != -1 && line[0] != '<'){
-
-          if(n == 0)
-            continue;
-
-          node_type = strtok(line, " ");
-
-          if(node_type != NULL && strcmp(node_type, "DW_AT_name") == 0){
-
-            frame_name = strdup(strtok(NULL, " "));
-            xbt_str_trim(frame_name, NULL);
-            xbt_str_trim(frame_name, "\"");
-            read = getline(&line, &n, fp);
-
-          }else if(node_type != NULL && strcmp(node_type, "DW_AT_frame_base") == 0){
-
-            if(valid_frame == 1){
-
-              dw_frame_t frame = xbt_new0(s_dw_frame_t, 1);
-              frame->name = strdup(frame_name);
-              frame->variables = xbt_dynar_new(sizeof(dw_local_variable_t), NULL);
-              frame->location = xbt_new0(s_dw_location_t, 1);
-              free(frame_name);
-            
-              location_type = strtok(NULL, " ");
-
-              if(strcmp(location_type, "<loclist") == 0){
-
-                frame->location->type = e_dw_loclist;
-                frame->location->location.loclist = xbt_dynar_new(sizeof(dw_location_entry_t), NULL);
-             
-                read = getline(&line, &n, fp);
-                xbt_str_ltrim(line, NULL);
-                
-                while(read != -1 && line[0] == '['){
-
-                  strtok(line, "<");
-                  lowpc = strtok(NULL, "<");
-                  highpc = strtok(NULL, ">");
-                  tmp_location = strtok(NULL, ">");
-                  lowpc[strlen(lowpc) - 1] = '\0'; /* Remove last character '>' */
-             
-                  dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
-                
-                  if(low_pc == NULL){
-                    strtok(lowpc, "=");
-                    new_entry->lowpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
-                    strtok(highpc, "=");
-                    new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
-                  }else{
-                    strtok(lowpc, "=");
-                    old_low_pc = (void *)strtoul(strtok(NULL, "="), NULL, 16);
-                    new_entry->lowpc = (char *)low_pc + (long)old_low_pc;
-                    strtok(highpc, "=");
-                    new_entry->highpc = (char*)low_pc + ((char *)((void *)strtoul(strtok(NULL, "="), NULL, 16)) - (char*)old_low_pc);
-                  }
-
-                  new_entry->location = xbt_new0(s_dw_location_t, 1);
-                
-                  get_location(tmp_location, new_entry->location);
-                
-                  xbt_dynar_push(frame->location->location.loclist, &new_entry);
-
-                  read = getline(&line, &n, fp);
-                  xbt_str_ltrim(line, NULL);
-
-                }
-
-              }else{
-                read = getline(&line, &n, fp);
-                frame->location->type = get_location(location_type, frame->location);
-
-              }
-
-              xbt_dynar_push(mc_binary_local_variables, &frame);
-
-            }else{
-
-               read = getline(&line, &n, fp);
-
-            }
- 
-          }else if(node_type != NULL && (strcmp(node_type, "DW_AT_declaration") == 0 || strcmp(node_type, "DW_AT_abstract_origin") == 0 || strcmp(node_type, "DW_AT_artificial") == 0)){
-
-            read = getline(&line, &n, fp);
-            valid_frame = 0;
-          
-          }else{
-
-            read = getline(&line, &n, fp);
-
-          }
-
-        }
-        
-        valid_frame = 1;
-
-      }else if(strcmp(node_type, "DW_TAG_variable") == 0){ /* New variable */
-        
-        read = getline(&line, &n, fp);
-
-        while(read != -1 && line[0] != '<'){
-
-          if(n == 0)
-            continue;
-
-          tmp_line = strdup(line);
-          
-          node_type = strtok(line, " ");
-
-          if(node_type != NULL && strcmp(node_type, "DW_AT_name") == 0){
-
-            variable_name = strdup(strtok(NULL, " "));
-            xbt_str_trim(variable_name, NULL);
-            xbt_str_trim(variable_name, "\"");
-            read = getline(&line, &n, fp);
-            
-          }else if(node_type != NULL && strcmp(node_type, "DW_AT_location") == 0){
-
-            if(valid_variable == 1){
-
-              location_type = strtok(NULL, " ");
-
-              dw_local_variable_t variable = xbt_new0(s_dw_local_variable_t, 1);
-              variable->name = strdup(variable_name);
-              variable->location = xbt_new0(s_dw_location_t, 1);
-              free(variable_name);
-            
-              if(strcmp(location_type, "<loclist") == 0){
-
-                variable->location->type = e_dw_loclist;
-                variable->location->location.loclist = xbt_dynar_new(sizeof(dw_location_entry_t), NULL);
-
-                read = getline(&line, &n, fp);
-                xbt_str_ltrim(line, NULL);
-                
-                while(read != -1 && line[0] == '['){
-
-                  strtok(line, "<");
-                  lowpc = strtok(NULL, "<");
-                  highpc = strtok(NULL, ">");
-                  tmp_location = strtok(NULL, ">");
-                  lowpc[strlen(lowpc) - 1] = '\0'; /* Remove last character '>' */
-
-                  dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
-
-                  if(low_pc == NULL){
-                    strtok(lowpc, "=");
-                    new_entry->lowpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
-                    strtok(highpc, "=");
-                    new_entry->highpc = (void *) strtoul(strtok(NULL, "="), NULL, 16);
-                  }else{
-                    strtok(lowpc, "=");
-                    old_low_pc = (void *)strtoul(strtok(NULL, "="), NULL, 16);
-                    new_entry->lowpc = (char *)low_pc + (long)old_low_pc;
-                    strtok(highpc, "=");
-                    new_entry->highpc = (char*)low_pc + ((char *)((void *)strtoul(strtok(NULL, "="), NULL, 16)) - (char*)old_low_pc);
-                  }
-
-                  new_entry->location = xbt_new0(s_dw_location_t, 1);
-                
-                  get_location(tmp_location, new_entry->location);
-                  
-                  xbt_dynar_push(variable->location->location.loclist, &new_entry);
-
-                  read = getline(&line, &n, fp);
-                  xbt_str_ltrim(line, NULL);
-
-                }
-              
-              }else{
-                
-                xbt_str_strip_spaces(tmp_line);
-                split = xbt_str_split(tmp_line, " ");
-                xbt_dynar_remove_at(split, 0, NULL);
-                location_type = xbt_str_join(split, " ");
-                
-                variable->location->type = get_location(location_type, variable->location);
-                read = getline(&line, &n, fp);
-
-                xbt_dynar_free(&split);
-                free(location_type);
-
-              }
-
-              xbt_dynar_push(((dw_frame_t)xbt_dynar_get_as(mc_binary_local_variables, xbt_dynar_length(mc_binary_local_variables) - 1, dw_frame_t))->variables, &variable);
-
-            }else{
-
-              read = getline(&line, &n, fp);
-
-            }
-           
-          }else if(node_type != NULL && (strcmp(node_type, "DW_AT_artificial") == 0 || strcmp(node_type, "DW_AT_external") == 0)){
-
-            valid_variable = 0;
-            read = getline(&line, &n, fp);
-
-          }else{
-
-            read = getline(&line, &n, fp);
-
-          }
-
-          //free(tmp_line);
+      if(strncmp(line, elf_file, strlen(elf_file)) == 0)
+        continue;
       
-        }
+      if(strncmp(line, "Contents", 8) == 0)
+        continue;
 
-        valid_variable = 1;
+      if(strncmp(line, "Offset", 6) == 0){
+        debug = 1;
+        continue;
+      }
+    }
 
-      }else if(strcmp(node_type, "DW_TAG_compile_unit") == 0){
+    if(debug == 0){
+      XBT_INFO("Your program must be compiled with -g");
+      xbt_abort();
+    }
 
-        read = getline(&line, &n, fp);
-        
-        while(read != -1 && line[0] != '<'){
-          
-          if(n == 0)
-            continue;
-          
-          node_type = strtok(line, " ");
-          
-          if(node_type != NULL && strcmp(node_type, "DW_AT_low_pc") == 0){
-            low_pc = (void *) strtoul(strtok(NULL, " "), NULL, 16);
-          }
+    xbt_dynar_t loclist = xbt_dynar_new(sizeof(dw_location_entry_t), NULL);
 
-          read = getline(&line, &n, fp);
+    xbt_str_strip_spaces(line);
+    split = xbt_str_split(line, " ");
 
-        }
-
-      }else{
-
-        read = getline(&line, &n, fp);
-
+    while(read != -1 && strcmp("<End", (char *)xbt_dynar_get_as(split, 1, char *)) != 0){
+      
+      dw_location_entry_t new_entry = xbt_new0(s_dw_location_entry_t, 1);
+      new_entry->lowpc = strtoul((char *)xbt_dynar_get_as(split, 1, char *), NULL, 16);
+      new_entry->highpc = strtoul((char *)xbt_dynar_get_as(split, 2, char *), NULL, 16);
+      
+      cursor_remove =0;
+      while(cursor_remove < 3){
+        xbt_dynar_remove_at(split, 0, NULL);
+        cursor_remove++;
       }
 
- 
-    }else{
+      loc_expr = xbt_str_join(split, " ");
+      xbt_str_ltrim(loc_expr, "(");
+      xbt_str_rtrim(loc_expr, ")");
+      new_entry->location = get_location(NULL, loc_expr);
+
+      xbt_dynar_push(loclist, &new_entry);
+
+      xbt_dynar_free(&split);
+      free(loc_expr);
 
       read = getline(&line, &n, fp);
+      if(read != -1){
+        line[read - 1] = '\0';
+        xbt_str_strip_spaces(line);
+        split = xbt_str_split(line, " ");
+      }
 
     }
+
+
+    char *key = bprintf("%d", (int)strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
+    xbt_dict_set(location_list, key, loclist, NULL);
     
+    xbt_dynar_free(&split);
 
   }
 
@@ -1001,36 +814,585 @@ static void MC_get_binary_local_variables(){
   free(command);
   pclose(fp);
 
-  if(compile_unit_found == 0){
-    XBT_INFO("Your program must be compiled with -g");
-    xbt_abort();
+  return location_list;
+}
+
+char *get_libsimgrid_path(){
+
+  char *command = bprintf("ldd %s", xbt_binary_name);
+  
+  FILE *fp = popen(command, "r");
+  if(fp == NULL)
+    perror("popen for ldd failed");
+
+  char *line;
+  ssize_t read;
+  size_t n = 0;
+  xbt_dynar_t split;
+  
+  while((read = getline(&line, &n, fp)) != -1){
+  
+    if(n == 0)
+      continue;
+
+    /* Wipeout the new line character */
+    line[read - 1] = '\0';
+
+    xbt_str_strip_spaces(line);
+    xbt_str_ltrim(line, NULL);
+    split = xbt_str_split(line, " ");
+
+    if(strncmp((char *)xbt_dynar_get_as(split, 0, char *), "libsimgrid.so", 13) == 0){
+      free(line);
+      free(command);
+      pclose(fp);
+      return ((char *)xbt_dynar_get_as(split, 2, char *));
+    }
+
+    xbt_dynar_free(&split);
+    
   }
 
-  if(XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug))
-    print_local_variables(mc_binary_local_variables);
+  free(line);
+  free(command);
+  pclose(fp);
 
+  return NULL;
   
 }
 
-void print_local_variables(xbt_dynar_t list){
+static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset){
+
+  xbt_dict_cursor_t cursor = NULL;
+  char *name;
+  dw_frame_t res;
+
+  xbt_dict_foreach(all_variables, cursor, name, res) {
+    if(offset >= res->start && offset < res->end)
+      return res;
+  }
+
+  return NULL;
   
-  dw_frame_t frame;
-  dw_local_variable_t variable;
+}
+
+void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *all_variables){
+
+  char *command = bprintf("objdump -Wi %s", elf_file);
+  
+  FILE *fp = popen(command, "r");
+
+  if(fp == NULL)
+    perror("popen for objdump failed");
+
+  char *line = NULL, *origin, *abstract_origin, *current_frame = NULL;
+  ssize_t read =0;
+  size_t n = 0;
+  int valid_variable = 1;
+  char *node_type = NULL, *location_type = NULL, *variable_name = NULL, *loc_expr = NULL;
+  xbt_dynar_t split = NULL, split2 = NULL;
+
+  xbt_dict_t variables_origin = xbt_dict_new_homogeneous(NULL);
+  xbt_dict_t subprograms_origin = xbt_dict_new_homogeneous(NULL);
+  char *subprogram_name = NULL, *subprogram_start = NULL, *subprogram_end = NULL;
+  int new_frame = 0, new_variable = 0;
+  dw_frame_t variable_frame, subroutine_frame = NULL;
+
+  read = getline(&line, &n, fp);
+
+  while (read != -1) {
+
+    if(n == 0){
+      read = getline(&line, &n, fp);
+      continue;
+    }
+ 
+    /* Wipeout the new line character */
+    line[read - 1] = '\0';
+   
+    if(strlen(line) == 0){
+      read = getline(&line, &n, fp);
+      continue;
+    }
+
+    xbt_str_ltrim(line, NULL);
+    xbt_str_strip_spaces(line);
+    
+    if(line[0] != '<'){
+      read = getline(&line, &n, fp);
+      continue;
+    }
+    
+    xbt_dynar_free(&split);
+    split = xbt_str_split(line, " ");
+
+    /* Get node type */
+    node_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
+
+    if(strcmp(node_type, "(DW_TAG_subprogram)") == 0){ /* New frame */
+
+      dw_frame_t frame = NULL;
+
+      strtok(xbt_dynar_get_as(split, 0, char *), "<");
+      subprogram_start = strdup(strtok(NULL, "<"));
+      xbt_str_rtrim(subprogram_start, ">:");
+
+      read = getline(&line, &n, fp);
+   
+      while(read != -1){
+
+        if(n == 0){
+          read = getline(&line, &n, fp);
+          continue;
+        }
+
+        /* Wipeout the new line character */
+        line[read - 1] = '\0';
+        
+        if(strlen(line) == 0){
+          read = getline(&line, &n, fp);
+          continue;
+        }
+      
+        xbt_dynar_free(&split);
+        xbt_str_rtrim(line, NULL);
+        xbt_str_strip_spaces(line);
+        split = xbt_str_split(line, " ");
+          
+        node_type = xbt_dynar_get_as(split, 1, char *);
+
+        if(strncmp(node_type, "DW_AT_", 6) != 0)
+          break;
+
+        if(strcmp(node_type, "DW_AT_sibling") == 0){
+
+          subprogram_end = strdup(xbt_dynar_get_as(split, 3, char*));
+          xbt_str_ltrim(subprogram_end, "<0x");
+          xbt_str_rtrim(subprogram_end, ">");
+          
+        }else if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){ /* Frame already in dict */
+          
+          new_frame = 0;
+          abstract_origin = strdup(xbt_dynar_get_as(split, 2, char*));
+          xbt_str_ltrim(abstract_origin, "<0x");
+          xbt_str_rtrim(abstract_origin, ">");
+          subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, abstract_origin);
+          frame = xbt_dict_get_or_null(*all_variables, subprogram_name); 
+
+        }else if(strcmp(node_type, "DW_AT_name") == 0){
+
+          new_frame = 1;
+          free(current_frame);
+          frame = xbt_new0(s_dw_frame_t, 1);
+          frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *)); 
+          frame->variables = xbt_dict_new_homogeneous(NULL);
+          frame->frame_base = xbt_new0(s_dw_location_t, 1); 
+          current_frame = strdup(frame->name);
+
+          xbt_dict_set(subprograms_origin, subprogram_start, frame->name, NULL);
+        
+        }else if(strcmp(node_type, "DW_AT_frame_base") == 0){
+
+          location_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
+
+          if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
+
+            frame->frame_base = get_location(location_list, xbt_dynar_get_as(split, 3, char *));
+             
+          }else{
+                
+            xbt_str_strip_spaces(line);
+            split2 = xbt_str_split(line, "(");
+            xbt_dynar_remove_at(split2, 0, NULL);
+            loc_expr = xbt_str_join(split2, " ");
+            xbt_str_rtrim(loc_expr, ")");
+            frame->frame_base = get_location(NULL, loc_expr);
+            xbt_dynar_free(&split2);
+
+          }
+ 
+        }else if(strcmp(node_type, "DW_AT_low_pc") == 0){
+          
+          if(frame != NULL)
+            frame->low_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
+
+        }else if(strcmp(node_type, "DW_AT_high_pc") == 0){
+
+          if(frame != NULL)
+            frame->high_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
+
+        }else if(strcmp(node_type, "DW_AT_MIPS_linkage_name:") == 0){
+
+          free(frame->name);
+          free(current_frame);
+          frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));   
+          current_frame = strdup(frame->name);
+          xbt_dict_set(subprograms_origin, subprogram_start, frame->name, NULL);
+
+        }
+
+        read = getline(&line, &n, fp);
+
+      }
+ 
+      if(new_frame == 1){
+        frame->start = strtoul(subprogram_start, NULL, 16);
+        if(subprogram_end != NULL)
+          frame->end = strtoul(subprogram_end, NULL, 16);
+        xbt_dict_set(*all_variables, frame->name, frame, NULL);
+      }
+
+      free(subprogram_start);
+      if(subprogram_end != NULL){
+        free(subprogram_end);
+        subprogram_end = NULL;
+      }
+        
+
+    }else if(strcmp(node_type, "(DW_TAG_variable)") == 0){ /* New variable */
+
+      dw_local_variable_t var = NULL;
+      
+      strtok(xbt_dynar_get_as(split, 0, char *), "<");
+      origin = strdup(strtok(NULL, "<"));
+      xbt_str_rtrim(origin, ">:");
+      
+      read = getline(&line, &n, fp);
+      
+      while(read != -1){
+
+        if(n == 0){
+          read = getline(&line, &n, fp);
+          continue;
+        }
+
+        /* Wipeout the new line character */
+        line[read - 1] = '\0'; 
+
+        if(strlen(line) == 0){
+          read = getline(&line, &n, fp);
+          continue;
+        }
+       
+        xbt_dynar_free(&split);
+        xbt_str_rtrim(line, NULL);
+        xbt_str_strip_spaces(line);
+        split = xbt_str_split(line, " ");
+  
+        node_type = xbt_dynar_get_as(split, 1, char *);
+
+        if(strncmp(node_type, "DW_AT_", 6) != 0)
+          break;
+
+        if(strcmp(node_type, "DW_AT_name") == 0){
+
+          new_variable = 1;
+          var = xbt_new0(s_dw_local_variable_t, 1);
+          var->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));
+
+          xbt_dict_set(variables_origin, origin, var->name, NULL);
+         
+        }else if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){
+
+          new_variable = 0;
+          abstract_origin = xbt_dynar_get_as(split, 2, char *);
+          xbt_str_ltrim(abstract_origin, "<0x");
+          xbt_str_rtrim(abstract_origin, ">");
+          
+          variable_name = (char *)xbt_dict_get_or_null(variables_origin, abstract_origin);
+          variable_frame = get_frame_by_offset(*all_variables, strtoul(abstract_origin, NULL, 16));
+          var = xbt_dict_get_or_null(variable_frame->variables, variable_name);   
+
+        }else if(strcmp(node_type, "DW_AT_location") == 0){
+
+          if(valid_variable == 1 && var != NULL){
+
+            var->location = xbt_new0(s_dw_location_t, 1);
+
+            location_type = xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *);
+
+            if(strcmp(location_type, "list)") == 0){ /* Search location in location list */
+
+              var->location = get_location(location_list, xbt_dynar_get_as(split, 3, char *));
+             
+            }else{
+                
+              xbt_str_strip_spaces(line);
+              split2 = xbt_str_split(line, "(");
+              xbt_dynar_remove_at(split2, 0, NULL);
+              loc_expr = xbt_str_join(split2, " ");
+              xbt_str_rtrim(loc_expr, ")");
+              var->location = get_location(NULL, loc_expr);
+              xbt_dynar_free(&split2);
+
+            }
+
+          }
+           
+        }else if(strcmp(node_type, "DW_AT_external") == 0){
+
+          valid_variable = 0;
+        
+        }
+
+        read = getline(&line, &n, fp);
+ 
+      }
+
+      if(new_variable == 1 && valid_variable == 1){
+        
+        variable_frame = xbt_dict_get_or_null(*all_variables, current_frame);
+        xbt_dict_set(variable_frame->variables, var->name, var, NULL);
+      }
+
+      valid_variable = 1;
+      new_variable = 0;
+
+    }else if(strcmp(node_type, "(DW_TAG_inlined_subroutine)") == 0){
+
+      strtok(xbt_dynar_get_as(split, 0, char *), "<");
+      origin = strdup(strtok(NULL, "<"));
+      xbt_str_rtrim(origin, ">:");
+
+      read = getline(&line, &n, fp);
+
+      while(read != -1){
+
+        /* Wipeout the new line character */
+        line[read - 1] = '\0'; 
+
+        if(n == 0){
+          read = getline(&line, &n, fp);
+          continue;
+        }
+
+        if(strlen(line) == 0){
+          read = getline(&line, &n, fp);
+          continue;
+        }
+
+        xbt_dynar_free(&split);
+        xbt_str_rtrim(line, NULL);
+        xbt_str_strip_spaces(line);
+        split = xbt_str_split(line, " ");
+        
+        if(strncmp(xbt_dynar_get_as(split, 1, char *), "DW_AT_", 6) != 0)
+          break;
+          
+        node_type = xbt_dynar_get_as(split, 1, char *);
+
+        if(strcmp(node_type, "DW_AT_abstract_origin:") == 0){
+
+          origin = xbt_dynar_get_as(split, 2, char *);
+          xbt_str_ltrim(origin, "<0x");
+          xbt_str_rtrim(origin, ">");
+          
+          subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, origin);
+          subroutine_frame = xbt_dict_get_or_null(*all_variables, subprogram_name);
+        
+        }else if(strcmp(node_type, "DW_AT_low_pc") == 0){
+
+          subroutine_frame->low_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
+
+        }else if(strcmp(node_type, "DW_AT_high_pc") == 0){
+
+          subroutine_frame->high_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
+        }
+
+        read = getline(&line, &n, fp);
+      
+      }
+
+    }else{
+
+      read = getline(&line, &n, fp);
+
+    }
+
+  }
+  
+  xbt_dynar_free(&split);
+  free(line);
+  free(command);
+  pclose(fp);
+  
+}
+
+static dw_location_t get_location(xbt_dict_t location_list, char *expr){
+
+  dw_location_t loc = xbt_new0(s_dw_location_t, 1);
+
+  if(location_list != NULL){
+    
+    char *key = bprintf("%d", (int)strtoul(expr, NULL, 16));
+    loc->type = e_dw_loclist;
+    loc->location.loclist =  (xbt_dynar_t)xbt_dict_get_or_null(location_list, key);
+    if(loc == NULL)
+      XBT_INFO("Key not found in loclist");
+    return loc;
+
+  }else{
+
+    int cursor = 0;
+    char *tok = NULL, *tok2 = NULL; 
+    
+    xbt_dynar_t tokens1 = xbt_str_split(expr, ";");
+    xbt_dynar_t tokens2;
+
+    loc->type = e_dw_compose;
+    loc->location.compose = xbt_dynar_new(sizeof(dw_location_t), NULL);
+
+    while(cursor < xbt_dynar_length(tokens1)){
+
+      tok = xbt_dynar_get_as(tokens1, cursor, char*);
+      tokens2 = xbt_str_split(tok, " ");
+      tok2 = xbt_dynar_get_as(tokens2, 0, char*);
+      
+      if(strncmp(tok2, "DW_OP_reg", 9) == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_register;
+        new_element->location.reg = atoi(strtok(tok2, "DW_OP_reg"));
+        xbt_dynar_push(loc->location.compose, &new_element);     
+      }else if(strcmp(tok2, "DW_OP_fbreg:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_fbregister_op;
+        new_element->location.fbreg_op = atoi(xbt_dynar_get_as(tokens2, 1, char*));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strncmp(tok2, "DW_OP_breg", 10) == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_bregister_op;
+        new_element->location.breg_op.reg = atoi(strtok(tok2, "DW_OP_breg"));
+        new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens2, 2, char*));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strncmp(tok2, "DW_OP_lit", 9) == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_lit;
+        new_element->location.lit = atoi(strtok(tok2, "DW_OP_lit"));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_piece:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_piece;
+        new_element->location.piece = atoi(xbt_dynar_get_as(tokens2, 1, char*));
+        /*if(strlen(xbt_dynar_get_as(tokens2, 1, char*)) > 1)
+          new_element->location.piece = atoi(xbt_dynar_get_as(tokens2, 1, char*));
+        else
+        new_element->location.piece = xbt_dynar_get_as(tokens2, 1, char*)[0] - '0';*/
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_plus_uconst:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_plus_uconst;
+        new_element->location.plus_uconst = atoi(xbt_dynar_get_as(tokens2, 1, char *));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok, "DW_OP_abs") == 0 || 
+               strcmp(tok, "DW_OP_and") == 0 ||
+               strcmp(tok, "DW_OP_div") == 0 ||
+               strcmp(tok, "DW_OP_minus") == 0 ||
+               strcmp(tok, "DW_OP_mod") == 0 ||
+               strcmp(tok, "DW_OP_mul") == 0 ||
+               strcmp(tok, "DW_OP_neg") == 0 ||
+               strcmp(tok, "DW_OP_not") == 0 ||
+               strcmp(tok, "DW_OP_or") == 0 ||
+               strcmp(tok, "DW_OP_plus") == 0){               
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_arithmetic;
+        new_element->location.arithmetic = strdup(strtok(tok2, "DW_OP_"));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok, "DW_OP_stack_value") == 0){
+      }else if(strcmp(tok2, "DW_OP_deref_size:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_deref;
+        new_element->location.deref_size = (unsigned int short) atoi(xbt_dynar_get_as(tokens2, 1, char*));
+        /*if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
+          new_element->location.deref_size = atoi(xbt_dynar_get_as(tokens, cursor, char*));
+        else
+        new_element->location.deref_size = xbt_dynar_get_as(tokens, cursor, char*)[0] - '0';*/
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok, "DW_OP_deref") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_deref;
+        new_element->location.deref_size = sizeof(void *);
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_constu:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_uconstant;
+        new_element->location.uconstant.bytes = 1;
+        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, 1, char*)));
+        /*if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
+          new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens, cursor, char*)));
+        else
+        new_element->location.uconstant.value = (unsigned long int)(xbt_dynar_get_as(tokens, cursor, char*)[0] - '0');*/
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_consts:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_sconstant;
+        new_element->location.sconstant.bytes = 1;
+        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, 1, char*)));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok2, "DW_OP_const1u:") == 0 ||
+               strcmp(tok2, "DW_OP_const2u:") == 0 ||
+               strcmp(tok2, "DW_OP_const4u:") == 0 ||
+               strcmp(tok2, "DW_OP_const8u:") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_uconstant;
+        new_element->location.uconstant.bytes = tok2[11] - '0';
+        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, 1, char*)));
+        /*if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
+          new_element->location.constant.value = atoi(xbt_dynar_get_as(tokens, cursor, char*));
+        else
+        new_element->location.constant.value = xbt_dynar_get_as(tokens, cursor, char*)[0] - '0';*/
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else if(strcmp(tok, "DW_OP_const1s") == 0 ||
+               strcmp(tok, "DW_OP_const2s") == 0 ||
+               strcmp(tok, "DW_OP_const4s") == 0 ||
+               strcmp(tok, "DW_OP_const8s") == 0){
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_sconstant;
+        new_element->location.sconstant.bytes = tok2[11] - '0';
+        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, 1, char*)));
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }else{
+        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
+        new_element->type = e_dw_unsupported;
+        xbt_dynar_push(loc->location.compose, &new_element);
+      }
+
+      cursor++;
+      xbt_dynar_free(&tokens2);
+
+    }
+    
+    xbt_dynar_free(&tokens1);
+
+    return loc;
+    
+  }
+
+}
+
+
+void print_local_variables(xbt_dict_t list){
+  
   dw_location_entry_t entry;
   dw_location_t location_entry;
-  unsigned int cursor = 0, cursor2 = 0, cursor3 = 0, cursor4 = 0;
+  unsigned int cursor3 = 0, cursor4 = 0;
+  xbt_dict_cursor_t cursor = 0, cursor2 = 0;
 
-  xbt_dynar_foreach(list, cursor, frame){
-    fprintf(stderr, "Frame name : %s", frame->name);
-    fprintf(stderr, "Location type : %d\n", frame->location->type); 
-    fprintf(stderr, "Variables : (%lu)\n", xbt_dynar_length(frame->variables));
-    xbt_dynar_foreach(frame->variables, cursor2, variable){
-      fprintf(stderr, "Name : %s", variable->name);
-      fprintf(stderr, "Location type : %d\n", variable->location->type);
-      switch(variable->location->type){
+  char *frame_name, *variable_name;
+  dw_frame_t current_frame;
+  dw_local_variable_t current_variable;
+
+  xbt_dict_foreach(list, cursor, frame_name, current_frame){ 
+    fprintf(stderr, "Frame name : %s\n", current_frame->name);
+    fprintf(stderr, "Location type : %d\n", current_frame->frame_base->type);
+    xbt_dict_foreach((xbt_dict_t)current_frame->variables, cursor2, variable_name, current_variable){
+      fprintf(stderr, "Name : %s\n", current_variable->name);
+      if(current_variable->location == NULL)
+        continue;
+      fprintf(stderr, "Location type : %d\n", current_variable->location->type);
+      switch(current_variable->location->type){
       case e_dw_loclist :
-        xbt_dynar_foreach(variable->location->location.loclist, cursor3, entry){
-          fprintf(stderr, "Lowpc : %p, Highpc : %p,", entry->lowpc, entry->highpc);
+        xbt_dynar_foreach(current_variable->location->location.loclist, cursor3, entry){
+          fprintf(stderr, "Lowpc : %lx, Highpc : %lx,", entry->lowpc, entry->highpc);
           switch(entry->location->type){
           case e_dw_register :
             fprintf(stderr, " Location : in register %d\n", entry->location->location.reg);
@@ -1061,18 +1423,21 @@ void print_local_variables(xbt_dynar_t list){
                 fprintf(stderr, " %d) %d bytes from logical frame pointer\n", cursor4 + 1, location_entry->location.fbreg_op);
                 break;
               case e_dw_deref:
-                fprintf(stderr, " %d) Pop the stack entry and treats it as an address (size of data %d)\n", cursor4 + 1, location_entry->location.deref_size);      
+                fprintf(stderr, " %d) Pop the stack entry and treats it as an address (size of data %d)\n", cursor4 + 1, location_entry->location.deref_size);
                 break;
-              case e_dw_arithmetic : 
+              case e_dw_arithmetic :
                 fprintf(stderr, "%d) arithmetic operation : %s\n", cursor4 + 1, location_entry->location.arithmetic);
                 break;
               case e_dw_piece:
                 fprintf(stderr, "%d) The %d byte(s) previous value\n", cursor4 + 1, location_entry->location.piece);
                 break;
-              case e_dw_constant :
-                fprintf(stderr, "%d) Constant %d\n", cursor4 + 1, location_entry->location.constant.value);
+              case e_dw_uconstant :
+                fprintf(stderr, "%d) Unsigned constant %lu\n", cursor4 + 1, location_entry->location.uconstant.value);
                 break;
-              default : 
+              case e_dw_sconstant :
+                fprintf(stderr, "%d) Signed constant %lu\n", cursor4 + 1, location_entry->location.sconstant.value);
+                break;
+              default :
                 fprintf(stderr, "%d) Location type not supported\n", cursor4 + 1);
                 break;
               }
@@ -1087,10 +1452,10 @@ void print_local_variables(xbt_dynar_t list){
       case e_dw_compose:
         cursor4 = 0;
         fprintf(stderr, "Location :\n");
-        xbt_dynar_foreach(variable->location->location.compose, cursor4, location_entry){
+        xbt_dynar_foreach(current_variable->location->location.compose, cursor4, location_entry){
           switch(location_entry->type){
           case e_dw_register :
-             fprintf(stderr, " %d) in register %d\n", cursor4 + 1, location_entry->location.reg);
+            fprintf(stderr, " %d) in register %d\n", cursor4 + 1, location_entry->location.reg);
             break;
           case e_dw_bregister_op:
             fprintf(stderr, " %d) add %d to the value in register %d\n", cursor4 + 1, location_entry->location.breg_op.offset, location_entry->location.breg_op.reg);
@@ -1102,18 +1467,21 @@ void print_local_variables(xbt_dynar_t list){
             fprintf(stderr, " %d) %d bytes from logical frame pointer\n", cursor4 + 1, location_entry->location.fbreg_op);
             break;
           case e_dw_deref:
-            fprintf(stderr, " %d) Pop the stack entry and treats it as an address (size of data %d)\n", cursor4 + 1, location_entry->location.deref_size);      
+            fprintf(stderr, " %d) Pop the stack entry and treats it as an address (size of data %d)\n", cursor4 + 1, location_entry->location.deref_size);
             break;
-          case e_dw_arithmetic : 
+          case e_dw_arithmetic :
             fprintf(stderr, "%d) arithmetic operation : %s\n", cursor4 + 1, location_entry->location.arithmetic);
             break;
           case e_dw_piece:
             fprintf(stderr, "%d) The %d byte(s) previous value\n", cursor4 + 1, location_entry->location.piece);
             break;
-          case e_dw_constant :
-            fprintf(stderr, "%d) Constant %d\n", cursor4 + 1, location_entry->location.constant.value);
+          case e_dw_uconstant :
+            fprintf(stderr, "%d) Unsigned constant %lu\n", cursor4 + 1, location_entry->location.uconstant.value);
             break;
-          default : 
+          case e_dw_sconstant :
+            fprintf(stderr, "%d) Signed constant %lu\n", cursor4 + 1, location_entry->location.sconstant.value);
+            break;
+          default :
             fprintf(stderr, "%d) Location type not supported\n", cursor4 + 1);
             break;
           }
@@ -1124,174 +1492,6 @@ void print_local_variables(xbt_dynar_t list){
         break;
       }
     }
-  }
-
-}
-
-static e_dw_location_type get_location(char *expr, dw_location_t entry){
-
-  int cursor = 0;
-  char *tok = NULL, *tmp_tok = NULL; 
-
-  xbt_dynar_t tokens = xbt_str_split(expr, NULL);
-  xbt_dynar_remove_at(tokens, xbt_dynar_length(tokens) - 1, NULL);
-
-  if(xbt_dynar_length(tokens) > 1){
-
-    entry->type = e_dw_compose;
-    entry->location.compose = xbt_dynar_new(sizeof(dw_location_t), NULL);
-
-    while(cursor < xbt_dynar_length(tokens)){
-
-      tok = xbt_dynar_get_as(tokens, cursor, char*);
-      
-      if(strncmp(tok, "DW_OP_reg", 9) == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_register;
-        if(tok[9] == 'x'){
-          new_element->location.reg = atoi(xbt_dynar_get_as(tokens, ++cursor, char*));
-        }else{
-          new_element->location.reg = atoi(strtok(tok, "DW_OP_reg"));
-        }
-        xbt_dynar_push(entry->location.compose, &new_element);     
-      }else if(strcmp(tok, "DW_OP_fbreg") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_fbregister_op;
-        new_element->location.fbreg_op = atoi(xbt_dynar_get_as(tokens, ++cursor, char*));
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else if(strncmp(tok, "DW_OP_breg", 10) == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_bregister_op;
-        if(tok[10] == 'x'){
-          new_element->location.breg_op.reg = atoi(xbt_dynar_get_as(tokens, ++cursor, char*));
-          new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens, ++cursor, char*));
-        }else{
-          if(strchr(tok,'+') != NULL){
-            tmp_tok = strtok(tok,"DW_OP_breg"); 
-            new_element->location.breg_op.reg = atoi(strtok(tmp_tok,"+"));
-            new_element->location.breg_op.offset = atoi(strtok(NULL,"+"));
-          }else{
-            new_element->location.breg_op.reg = atoi(strtok(tok, "DW_OP_breg"));
-            new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens, ++cursor, char*));
-          }
-        }
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else if(strncmp(tok, "DW_OP_lit", 9) == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_lit;
-        new_element->location.lit = atoi(strtok(tok, "DW_OP_lit"));
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_piece") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_piece;
-        if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
-          new_element->location.piece = atoi(xbt_dynar_get_as(tokens, cursor, char*));
-        else
-          new_element->location.piece = xbt_dynar_get_as(tokens, cursor, char*)[0] - '0';
-        xbt_dynar_push(entry->location.compose, &new_element);
-
-      }else if(strcmp(tok, "DW_OP_abs") == 0 || 
-               strcmp(tok, "DW_OP_and") == 0 ||
-               strcmp(tok, "DW_OP_div") == 0 ||
-               strcmp(tok, "DW_OP_minus") == 0 ||
-               strcmp(tok, "DW_OP_mod") == 0 ||
-               strcmp(tok, "DW_OP_mul") == 0 ||
-               strcmp(tok, "DW_OP_neg") == 0 ||
-               strcmp(tok, "DW_OP_not") == 0 ||
-               strcmp(tok, "DW_OP_or") == 0 ||
-               strcmp(tok, "DW_OP_plus") == 0 ||
-               strcmp(tok, "DW_OP_plus_uconst") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_arithmetic;
-        new_element->location.arithmetic = strdup(strtok(tok, "DW_OP_"));
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_stack_value") == 0){
-        cursor++;
-      }else if(strcmp(tok, "DW_OP_deref_size") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_deref;
-        if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
-          new_element->location.deref_size = atoi(xbt_dynar_get_as(tokens, cursor, char*));
-        else
-          new_element->location.deref_size = xbt_dynar_get_as(tokens, cursor, char*)[0] - '0';
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_deref") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_deref;
-        new_element->location.deref_size = sizeof(void *);
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_constu") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_constant;
-        new_element->location.constant.is_signed = 0;
-        new_element->location.constant.bytes = 1;
-        if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
-          new_element->location.constant.value = atoi(xbt_dynar_get_as(tokens, cursor, char*));
-        else
-          new_element->location.constant.value = xbt_dynar_get_as(tokens, cursor, char*)[0] - '0';
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_consts") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_constant;
-        new_element->location.constant.is_signed = 1;
-        new_element->location.constant.bytes = 1;
-        new_element->location.constant.value = atoi(xbt_dynar_get_as(tokens, ++cursor, char*));
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_const1u") == 0 ||
-               strcmp(tok, "DW_OP_const2u") == 0 ||
-               strcmp(tok, "DW_OP_const4u") == 0 ||
-               strcmp(tok, "DW_OP_const8u") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_constant;
-        new_element->location.constant.is_signed = 0;
-        new_element->location.constant.bytes = tok[11] - '0';
-        if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
-          new_element->location.constant.value = atoi(xbt_dynar_get_as(tokens, cursor, char*));
-        else
-          new_element->location.constant.value = xbt_dynar_get_as(tokens, cursor, char*)[0] - '0';
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else if(strcmp(tok, "DW_OP_const1s") == 0 ||
-               strcmp(tok, "DW_OP_const2s") == 0 ||
-               strcmp(tok, "DW_OP_const4s") == 0 ||
-               strcmp(tok, "DW_OP_const8s") == 0){
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_constant;
-        new_element->location.constant.is_signed = 1;
-        new_element->location.constant.bytes = tok[11] - '0';
-        new_element->location.constant.value = atoi(xbt_dynar_get_as(tokens, ++cursor, char*));
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }else{
-        dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
-        new_element->type = e_dw_unsupported;
-        xbt_dynar_push(entry->location.compose, &new_element);
-      }
-
-      cursor++;
-      
-    }
-
-    xbt_dynar_free(&tokens);
-
-    return e_dw_compose;
-
-  }else{
-
-    if(strncmp(expr, "DW_OP_reg", 9) == 0){
-      entry->type = e_dw_register;
-      entry->location.reg = atoi(strtok(expr,"DW_OP_reg"));
-    }else if(strncmp(expr, "DW_OP_breg", 10) == 0){
-      entry->type = e_dw_bregister_op;
-      tok = strtok(expr, "+");
-      entry->location.breg_op.offset = atoi(strtok(NULL, "+"));
-      entry->location.breg_op.reg = atoi(strtok(tok, "DW_OP_breg"));
-    }else{
-      entry->type = e_dw_unsupported;
-    }
-
-    xbt_dynar_free(&tokens);
-
-    return entry->type;
-
   }
 
 }
