@@ -179,11 +179,10 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
 
   /* Stacks comparison */
-  unsigned int cursor = 1, cursor2 = 0;
+  unsigned int cursor = 1;
   stack_region_t stack_region1, stack_region2;
   void *sp1, *sp2;
   int diff = 0, diff_local = 0;
-  heap_equality_t equality;
 
   while(cursor < xbt_dynar_length(stacks1)){
     XBT_INFO("Stack %d", cursor + 1); 
