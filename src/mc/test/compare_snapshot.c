@@ -21,8 +21,7 @@ static void test1()
   mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(snapshot2);
 
-  int res = snapshot_compare(snapshot1, snapshot2);
-  xbt_assert(res == 0);
+  xbt_assert(snapshot_compare(snapshot1, snapshot2) == 0);
 
   MC_UNSET_RAW_MEM;
 
@@ -58,8 +57,7 @@ static void test2()
   mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(snapshot2);
 
-  int res = snapshot_compare(snapshot1, snapshot2);
-  xbt_assert(res != 0);
+  xbt_assert(snapshot_compare(snapshot1, snapshot2) != 0);
 
   MC_UNSET_RAW_MEM;
   
@@ -98,8 +96,7 @@ static void test3()
   mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(snapshot2);
 
-  int res = snapshot_compare(snapshot1, snapshot2);
-  xbt_assert(res == 0);
+  xbt_assert(snapshot_compare(snapshot1, snapshot2) == 0);
   
   MC_UNSET_RAW_MEM;
   
@@ -137,8 +134,7 @@ static void test4()
   mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(snapshot2);
 
-  int res = snapshot_compare(snapshot1, snapshot2);
-  xbt_assert(res != 0);
+  xbt_assert(snapshot_compare(snapshot1, snapshot2) != 0);
   
   MC_UNSET_RAW_MEM;
   
@@ -176,8 +172,7 @@ static void test5()
   mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(snapshot2);
 
-  int res = snapshot_compare(snapshot1, snapshot2);
-  xbt_assert(res != 0);
+  xbt_assert(snapshot_compare(snapshot1, snapshot2) != 0);
   
   MC_UNSET_RAW_MEM;
   
@@ -215,8 +210,7 @@ static void test6()
   mc_snapshot_t snapshot2 = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(snapshot2);
 
-  int res = snapshot_compare(snapshot1, snapshot2);
-  xbt_assert(res == 0);
+  xbt_assert(snapshot_compare(snapshot1, snapshot2) == 0);
   
   MC_UNSET_RAW_MEM;
   
