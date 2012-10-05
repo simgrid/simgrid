@@ -276,7 +276,7 @@ int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new
     retval = MPI_ERR_TYPE;
   } else {
     smpi_datatype_create(new_type, count *
-                         smpi_datatype_size(old_type),1,NULL, DT_FLAG_CONTIGUOUS);
+                         smpi_datatype_size(old_type),0,NULL, DT_FLAG_CONTIGUOUS);
     retval=MPI_SUCCESS;
   }
   return retval;
