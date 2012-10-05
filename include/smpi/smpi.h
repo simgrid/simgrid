@@ -111,7 +111,8 @@ extern MPI_Datatype MPI_C_DOUBLE_COMPLEX;
 extern MPI_Datatype MPI_C_LONG_DOUBLE_COMPLEX;
 extern MPI_Datatype MPI_AINT;
 extern MPI_Datatype MPI_OFFSET;
-
+extern MPI_Datatype MPI_LB;
+extern MPI_Datatype MPI_UB;
 //The following are datatypes for the MPI functions MPI_MAXLOC  and MPI_MINLOC.
 extern MPI_Datatype MPI_FLOAT_INT;
 extern MPI_Datatype MPI_LONG_INT;
@@ -383,8 +384,6 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Probe,
 
 
 //FIXME: these are not yet implemented
-
-#define MPI_UB MPI_CHAR
 
 typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
 typedef void* MPI_Errhandler;

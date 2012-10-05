@@ -28,6 +28,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
   };                                          \
 MPI_Datatype name = &mpi_##name;
 
+#define CREATE_MPI_DATATYPE_NULL(name)       \
+  static s_smpi_mpi_datatype_t mpi_##name = { \
+    0,  /* size */                 \
+    0,             /*was 1 has_subtype*/             \
+    0,             /* lb */                   \
+    0,  /* ub = lb + size */       \
+    DT_FLAG_BASIC,  /* flags */              \
+    NULL           /* pointer on extended struct*/ \
+  };                                          \
+MPI_Datatype name = &mpi_##name;
 
 //The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
 typedef struct {
@@ -93,6 +103,8 @@ CREATE_MPI_DATATYPE(MPI_SHORT_INT, short_int);
 CREATE_MPI_DATATYPE(MPI_2INT, int_int);
 CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE_INT, long_double_int);
 
+CREATE_MPI_DATATYPE_NULL(MPI_UB);
+CREATE_MPI_DATATYPE_NULL(MPI_LB);
 // Internal use only
 CREATE_MPI_DATATYPE(MPI_PTR, void*);
 
@@ -233,7 +245,7 @@ void unserialize_vector( const void *contiguous_vector,
 
 /*
  * Create a Sub type vector to be able to serialize and unserialize it
- * the structre s_smpi_mpi_vector_t is derived from s_smpi_subtype which
+ * the structure s_smpi_mpi_vector_t is derived from s_smpi_subtype which
  * required the functions unserialize and serialize
  *
  */
@@ -383,7 +395,7 @@ void unserialize_hvector( const void *contiguous_vector,
 
 /*
  * Create a Sub type vector to be able to serialize and unserialize it
- * the structre s_smpi_mpi_vector_t is derived from s_smpi_subtype which
+ * the structure s_smpi_mpi_vector_t is derived from s_smpi_subtype which
  * required the functions unserialize and serialize
  *
  */
@@ -457,16 +469,19 @@ void serialize_indexed( const void *noncontiguous_indexed,
                        void *type)
 {
   s_smpi_mpi_indexed_t* type_c = (s_smpi_mpi_indexed_t*)type;
-  int i;
+  int i,j;
   char* contiguous_indexed_char = (char*)contiguous_indexed;
   char* noncontiguous_indexed_char = (char*)noncontiguous_indexed;
+  for(j=0; j<count;j++){
+    for (i = 0; i < type_c->block_count; i++) {
+      memcpy(contiguous_indexed_char,
+             noncontiguous_indexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
 
-  for (i = 0; i < type_c->block_count * count; i++) {
-    memcpy(contiguous_indexed_char,
-           noncontiguous_indexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
-
-    contiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
-    noncontiguous_indexed_char = (char*)noncontiguous_indexed + type_c->block_indices[i+1]*type_c->size_oldtype;
+      contiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
+      if (i<type_c->block_count-1)noncontiguous_indexed_char = (char*)noncontiguous_indexed + type_c->block_indices[i+1]*type_c->size_oldtype;
+      else noncontiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
+    }
+    noncontiguous_indexed=(void*)noncontiguous_indexed_char;
   }
 }
 /*
@@ -484,23 +499,26 @@ void unserialize_indexed( const void *contiguous_indexed,
                          void *type)
 {
   s_smpi_mpi_indexed_t* type_c = (s_smpi_mpi_indexed_t*)type;
-  int i;
+  int i,j;
 
   char* contiguous_indexed_char = (char*)contiguous_indexed;
   char* noncontiguous_indexed_char = (char*)noncontiguous_indexed;
+  for(j=0; j<count;j++){
+    for (i = 0; i < type_c->block_count; i++) {
+      memcpy(noncontiguous_indexed_char,
+             contiguous_indexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
 
-  for (i = 0; i < type_c->block_count * count; i++) {
-    memcpy(noncontiguous_indexed_char,
-           contiguous_indexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
-
-    contiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
-    noncontiguous_indexed_char = (char*)noncontiguous_indexed + type_c->block_indices[i+1]*type_c->size_oldtype;
+      contiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
+      if (i<type_c->block_count-1)noncontiguous_indexed_char = (char*)noncontiguous_indexed + type_c->block_indices[i+1]*type_c->size_oldtype;
+      else noncontiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
+    }
+    noncontiguous_indexed=(void*)noncontiguous_indexed_char;
   }
 }
 
 /*
  * Create a Sub type indexed to be able to serialize and unserialize it
- * the structre s_smpi_mpi_indexed_t is derived from s_smpi_subtype which
+ * the structure s_smpi_mpi_indexed_t is derived from s_smpi_subtype which
  * required the functions unserialize and serialize
  */
 s_smpi_mpi_indexed_t* smpi_datatype_indexed_create( int* block_lengths,
@@ -511,9 +529,14 @@ s_smpi_mpi_indexed_t* smpi_datatype_indexed_create( int* block_lengths,
   s_smpi_mpi_indexed_t *new_t= xbt_new(s_smpi_mpi_indexed_t,1);
   new_t->base.serialize = &serialize_indexed;
   new_t->base.unserialize = &unserialize_indexed;
- //FIXME : copy those or assume they won't be freed ? 
-  new_t->block_lengths = block_lengths;
-  new_t->block_indices = block_indices;
+ //TODO : add a custom function for each time to clean these 
+  new_t->block_lengths= xbt_new(int, block_count);
+  new_t->block_indices= xbt_new(int, block_count);
+  int i;
+  for(i=0;i<block_count;i++){
+    new_t->block_lengths[i]=block_lengths[i];
+    new_t->block_indices[i]=block_indices[i];
+  }
   new_t->block_count = block_count;
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
@@ -579,16 +602,19 @@ void serialize_hindexed( const void *noncontiguous_hindexed,
                        void *type)
 {
   s_smpi_mpi_hindexed_t* type_c = (s_smpi_mpi_hindexed_t*)type;
-  int i;
+  int i,j;
   char* contiguous_hindexed_char = (char*)contiguous_hindexed;
   char* noncontiguous_hindexed_char = (char*)noncontiguous_hindexed;
+  for(j=0; j<count;j++){
+    for (i = 0; i < type_c->block_count; i++) {
+      memcpy(contiguous_hindexed_char,
+             noncontiguous_hindexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
 
-  for (i = 0; i < type_c->block_count * count; i++) {
-    memcpy(contiguous_hindexed_char,
-           noncontiguous_hindexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
-
-    contiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
-    noncontiguous_hindexed_char = (char*)noncontiguous_hindexed + type_c->block_indices[i+1];
+      contiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
+      if (i<type_c->block_count-1)noncontiguous_hindexed_char = (char*)noncontiguous_hindexed + type_c->block_indices[i+1];
+      else noncontiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
+    }
+    noncontiguous_hindexed=(void*)noncontiguous_hindexed_char;
   }
 }
 /*
@@ -606,23 +632,26 @@ void unserialize_hindexed( const void *contiguous_hindexed,
                          void *type)
 {
   s_smpi_mpi_hindexed_t* type_c = (s_smpi_mpi_hindexed_t*)type;
-  int i;
+  int i,j;
 
   char* contiguous_hindexed_char = (char*)contiguous_hindexed;
   char* noncontiguous_hindexed_char = (char*)noncontiguous_hindexed;
+  for(j=0; j<count;j++){
+    for (i = 0; i < type_c->block_count; i++) {
+      memcpy(noncontiguous_hindexed_char,
+             contiguous_hindexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
 
-  for (i = 0; i < type_c->block_count * count; i++) {
-    memcpy(noncontiguous_hindexed_char,
-           contiguous_hindexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
-
-    contiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
-    noncontiguous_hindexed_char = (char*)noncontiguous_hindexed + type_c->block_indices[i+1];
+      contiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
+      if (i<type_c->block_count-1)noncontiguous_hindexed_char = (char*)noncontiguous_hindexed + type_c->block_indices[i+1];
+      else noncontiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
+    }
+    noncontiguous_hindexed=(void*)noncontiguous_hindexed_char;
   }
 }
 
 /*
  * Create a Sub type hindexed to be able to serialize and unserialize it
- * the structre s_smpi_mpi_hindexed_t is derived from s_smpi_subtype which
+ * the structure s_smpi_mpi_hindexed_t is derived from s_smpi_subtype which
  * required the functions unserialize and serialize
  */
 s_smpi_mpi_hindexed_t* smpi_datatype_hindexed_create( int* block_lengths,
@@ -633,9 +662,14 @@ s_smpi_mpi_hindexed_t* smpi_datatype_hindexed_create( int* block_lengths,
   s_smpi_mpi_hindexed_t *new_t= xbt_new(s_smpi_mpi_hindexed_t,1);
   new_t->base.serialize = &serialize_hindexed;
   new_t->base.unserialize = &unserialize_hindexed;
- //FIXME : copy those or assume they won't be freed ? 
-  new_t->block_lengths = block_lengths;
-  new_t->block_indices = block_indices;
+ //TODO : add a custom function for each time to clean these 
+  new_t->block_lengths= xbt_new(int, block_count);
+  new_t->block_indices= xbt_new(MPI_Aint, block_count);
+  int i;
+  for(i=0;i<block_count;i++){
+    new_t->block_lengths[i]=block_lengths[i];
+    new_t->block_indices[i]=block_indices[i];
+  }
   new_t->block_count = block_count;
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
@@ -701,15 +735,18 @@ void serialize_struct( const void *noncontiguous_struct,
                        void *type)
 {
   s_smpi_mpi_struct_t* type_c = (s_smpi_mpi_struct_t*)type;
-  int i;
+  int i,j;
   char* contiguous_struct_char = (char*)contiguous_struct;
   char* noncontiguous_struct_char = (char*)noncontiguous_struct;
-
-  for (i = 0; i < type_c->block_count * count; i++) {
-    memcpy(contiguous_struct_char,
-           noncontiguous_struct_char, type_c->block_lengths[i] * smpi_datatype_size(type_c->old_types[i]));
-    contiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);
-    noncontiguous_struct_char = (char*)noncontiguous_struct + type_c->block_indices[i+1];
+  for(j=0; j<count;j++){
+    for (i = 0; i < type_c->block_count; i++) {
+      memcpy(contiguous_struct_char,
+             noncontiguous_struct_char, type_c->block_lengths[i] * smpi_datatype_size(type_c->old_types[i]));
+      contiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);
+      if (i<type_c->block_count-1)noncontiguous_struct_char = (char*)noncontiguous_struct + type_c->block_indices[i+1];
+      else noncontiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);//let's hope this is MPI_UB ?
+    }
+    noncontiguous_struct=(void*)noncontiguous_struct_char;
   }
 }
 /*
@@ -727,22 +764,26 @@ void unserialize_struct( const void *contiguous_struct,
                          void *type)
 {
   s_smpi_mpi_struct_t* type_c = (s_smpi_mpi_struct_t*)type;
-  int i;
+  int i,j;
 
   char* contiguous_struct_char = (char*)contiguous_struct;
   char* noncontiguous_struct_char = (char*)noncontiguous_struct;
-
-  for (i = 0; i < type_c->block_count * count; i++) {
-    memcpy(noncontiguous_struct_char,
-           contiguous_struct_char, type_c->block_lengths[i] * smpi_datatype_size(type_c->old_types[i]));
-    contiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);
-    noncontiguous_struct_char = (char*)noncontiguous_struct + type_c->block_indices[i+1];
+  for(j=0; j<count;j++){
+    for (i = 0; i < type_c->block_count; i++) {
+      memcpy(noncontiguous_struct_char,
+             contiguous_struct_char, type_c->block_lengths[i] * smpi_datatype_size(type_c->old_types[i]));
+      contiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);
+      if (i<type_c->block_count-1)noncontiguous_struct_char =  (char*)noncontiguous_struct + type_c->block_indices[i+1];
+      else noncontiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);
+    }
+    noncontiguous_struct=(void*)noncontiguous_struct_char;
+    
   }
 }
 
 /*
  * Create a Sub type struct to be able to serialize and unserialize it
- * the structre s_smpi_mpi_struct_t is derived from s_smpi_subtype which
+ * the structure s_smpi_mpi_struct_t is derived from s_smpi_subtype which
  * required the functions unserialize and serialize
  */
 s_smpi_mpi_struct_t* smpi_datatype_struct_create( int* block_lengths,
@@ -752,11 +793,20 @@ s_smpi_mpi_struct_t* smpi_datatype_struct_create( int* block_lengths,
   s_smpi_mpi_struct_t *new_t= xbt_new(s_smpi_mpi_struct_t,1);
   new_t->base.serialize = &serialize_struct;
   new_t->base.unserialize = &unserialize_struct;
- //FIXME : copy those or assume they won't be freed ? 
-  new_t->block_lengths = block_lengths;
-  new_t->block_indices = block_indices;
+ //TODO : add a custom function for each time to clean these 
+  new_t->block_lengths= xbt_new(int, block_count);
+  new_t->block_indices= xbt_new(MPI_Aint, block_count);
+  new_t->old_types=  xbt_new(MPI_Datatype, block_count);
+  int i;
+  for(i=0;i<block_count;i++){
+    new_t->block_lengths[i]=block_lengths[i];
+    new_t->block_indices[i]=block_indices[i];
+    new_t->old_types[i]=old_types[i];
+  }
+  //new_t->block_lengths = block_lengths;
+  //new_t->block_indices = block_indices;
   new_t->block_count = block_count;
-  new_t->old_types = old_types;
+  //new_t->old_types = old_types;
   return new_t;
 }
 
