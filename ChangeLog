@@ -61,7 +61,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
                      rate = bandwidth/(2*amount)
  * Compute tasks that have failed can now be rescheduled and executed again
    (from their beginning)
- * Increasing source code coverage (src/simdag is now covered at 91.5%
+ * Increasing source code coverage (src/simdag is now covered at 95.8%
    on average)
    
  SMPI:
