@@ -38,9 +38,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
     s_msg_vm_t vm; // to compute the offset
 
     SIMIX_global_init(argc, argv);
-
-    if(MC_IS_ENABLED && mmalloc_ignore == NULL)
-      MC_ignore_init();
     
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 

@@ -30,6 +30,8 @@ static void SIMIX_rdv_free(void *data);
 void SIMIX_network_init(void)
 {
   rdv_points = xbt_dict_new_homogeneous(SIMIX_rdv_free);
+  if(MC_IS_ENABLED)
+    MC_ignore(&smx_total_comms, sizeof(smx_total_comms));
 }
 
 void SIMIX_network_exit(void)

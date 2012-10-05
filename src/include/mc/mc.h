@@ -22,7 +22,7 @@ SG_BEGIN_DECL()
 
 extern char*_surf_mc_property_file; /* fixme: better location? */
 
-extern xbt_dynar_t mmalloc_ignore;
+extern xbt_dynar_t mc_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
 /********************************* Global *************************************/
@@ -41,7 +41,6 @@ XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);
 XBT_PUBLIC(double) MC_process_clock_get(smx_process_t);
 void MC_automaton_load(const char *file);
 
-void MC_ignore_init(void);
 XBT_PUBLIC(void) MC_ignore(void *address, size_t size);
 void MC_new_stack_area(void *stack, char *name);
 

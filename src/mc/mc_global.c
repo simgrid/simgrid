@@ -73,18 +73,21 @@ mc_stats_pair_t mc_stats_pair = NULL;
 xbt_fifo_t mc_stack_liveness = NULL;
 mc_snapshot_t initial_snapshot_liveness = NULL;
 int compare;
-xbt_dynar_t mc_binary_local_variables = NULL;
 
-extern xbt_dynar_t mmalloc_ignore;
+/* Local */
+xbt_dict_t mc_local_variables = NULL;
+
+/* Ignore mechanism */
+extern xbt_dynar_t mc_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
 xbt_automaton_t _mc_property_automaton = NULL;
 
-static void MC_assert_pair(int prop);
-static e_dw_location_type get_location(char *expr, dw_location_t entry);
+/* Static functions */
 
-static void MC_get_binary_local_variables(void);
-static void print_local_variables(xbt_dynar_t list);
+static void MC_assert_pair(int prop);
+static dw_location_t get_location(xbt_dict_t location_list, char *expr);
+static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset);
 
 void MC_do_the_modelcheck_for_real() {
   if (!_surf_mc_property_file || _surf_mc_property_file[0]=='\0') {
@@ -651,42 +654,47 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
 /************ MC_ignore ***********/ 
 
-void MC_ignore_init(){
-  MC_SET_RAW_MEM;
-  mmalloc_ignore = xbt_dynar_new(sizeof(mc_ignore_region_t), NULL);
-  stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
-  MC_UNSET_RAW_MEM;
-}
-
 void MC_ignore(void *address, size_t size){
 
   MC_SET_RAW_MEM;
+  
+  if(mc_comparison_ignore == NULL)
+    mc_comparison_ignore = xbt_dynar_new(sizeof(mc_ignore_region_t), NULL);
 
   mc_ignore_region_t region = NULL;
   region = xbt_new0(s_mc_ignore_region_t, 1);
   region->address = address;
   region->size = size;
-  region->block = ((char*)address - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
 
-  if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
-    region->fragment = -1;
-  }else{
-    region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
+  if((address >= std_heap) && (address <= (void*)((char *)std_heap + STD_HEAP_SIZE))){
+
+    region->block = ((char*)address - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
+    
+    if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
+      region->fragment = -1;
+    }else{
+      region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
+    }
+    
   }
 
   unsigned int cursor = 0;
   mc_ignore_region_t current_region;
-  xbt_dynar_foreach(mmalloc_ignore, cursor, current_region){
+  xbt_dynar_foreach(mc_comparison_ignore, cursor, current_region){
     if(current_region->address > address)
       break;
   }
 
-  xbt_dynar_insert_at(mmalloc_ignore, cursor, &region);
+  xbt_dynar_insert_at(mc_comparison_ignore, cursor, &region);
 
   MC_UNSET_RAW_MEM;
 }
 
 void MC_new_stack_area(void *stack, char *name){
+
+  if(stacks_areas == NULL)
+    stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
+
   MC_SET_RAW_MEM;
   stack_region_t region = NULL;
   region = xbt_new0(s_stack_region_t, 1);

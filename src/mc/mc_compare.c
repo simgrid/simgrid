@@ -17,6 +17,27 @@ static int heap_region_compare(void *d1, void *d2, size_t size);
 static int compare_local_variables(xbt_strbuff_t s1, xbt_strbuff_t s2);
 static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *sp2, void *heap1, void *heap2, xbt_dynar_t equals);
 static int is_heap_equality(xbt_dynar_t equals, void *a1, void *a2);
+static size_t ignore(void *address);
+
+static size_t ignore(void *address){
+  unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(mc_comparison_ignore) - 1;
+  mc_ignore_region_t region;
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    region = (mc_ignore_region_t)xbt_dynar_get_as(mc_comparison_ignore, cursor, mc_ignore_region_t);
+    if(region->address == address)
+      return region->size;
+    if(region->address < address)
+      start = cursor + 1;
+    if(region->address > address)
+      end = cursor - 1;   
+  }
+
+  return 0;
+}
 
 static int data_program_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
@@ -36,12 +57,16 @@ static int data_program_region_compare(void *d1, void *d2, size_t size){
 
 static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
-  size_t i = 0;
+  size_t i = 0, ignore_size = 0;
   int pointer_align;
   void *addr_pointed1 = NULL, *addr_pointed2 = NULL;
 
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
+      if((ignore_size = ignore((char *)start_data_libsimgrid+i)) > 0){
+        i = i + ignore_size;
+        continue;
+      }
       pointer_align = (i / sizeof(void*)) * sizeof(void*);
       addr_pointed1 = *((void **)((char *)d1 + pointer_align));
       addr_pointed2 = *((void **)((char *)d2 + pointer_align));

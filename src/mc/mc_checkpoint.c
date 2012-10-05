@@ -17,6 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 void *start_text_libsimgrid;
 void *start_plt, *end_plt;
 char *libsimgrid_path;
+void *start_data_libsimgrid;
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size);
 static void MC_region_restore(mc_mem_region_t reg);
@@ -116,6 +117,7 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
           nb_reg++;
+          start_data_libsimgrid = reg.start_addr;
         } else {
           if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
             MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
