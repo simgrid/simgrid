@@ -914,10 +914,16 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
   } else if (src == MPI_PROC_NULL) {
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
+  } else if (src >= smpi_group_size(smpi_comm_group(comm)) || src <0){
+    retval = MPI_ERR_COMM;
   } else if (count < 0) {
+    retval = MPI_ERR_COUNT;
+  } else if (buf==NULL && count > 0) {
     retval = MPI_ERR_COUNT;
   } else if (datatype == MPI_DATATYPE_NULL){
     retval = MPI_ERR_TYPE;
+  } else if(tag<0 && tag !=  MPI_ANY_TAG){
+    retval = MPI_ERR_TAG;
   } else {
 
 #ifdef HAVE_TRACING
@@ -953,10 +959,16 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
   } else if (dst == MPI_PROC_NULL) {
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
+  } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
+    retval = MPI_ERR_COMM;
   } else if (count < 0) {
+    retval = MPI_ERR_COUNT;
+  } else if (buf==NULL && count > 0) {
     retval = MPI_ERR_COUNT;
   } else if (datatype == MPI_DATATYPE_NULL){
     retval = MPI_ERR_TYPE;
+  } else if(tag<0 && tag !=  MPI_ANY_TAG){
+    retval = MPI_ERR_TAG;
   } else {
 
 #ifdef HAVE_TRACING
@@ -996,10 +1008,16 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
     smpi_empty_status(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
+  }else if(src >= smpi_group_size(smpi_comm_group(comm)) || src <0){
+    retval = MPI_ERR_COMM;
   } else if (count < 0) {
+    retval = MPI_ERR_COUNT;
+  } else if (buf==NULL && count > 0) {
     retval = MPI_ERR_COUNT;
   } else if (datatype == MPI_DATATYPE_NULL){
     retval = MPI_ERR_TYPE;
+  } else if(tag<0 && tag !=  MPI_ANY_TAG){
+    retval = MPI_ERR_TAG;
   } else {
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
@@ -1036,10 +1054,16 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
     retval = MPI_ERR_COMM;
   } else if (dst == MPI_PROC_NULL) {
     retval = MPI_SUCCESS;
+  } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
+    retval = MPI_ERR_COMM;
   } else if (count < 0) {
+    retval = MPI_ERR_COUNT;
+  } else if (buf==NULL && count > 0) {
     retval = MPI_ERR_COUNT;
   } else if (datatype == MPI_DATATYPE_NULL){
     retval = MPI_ERR_TYPE;
+  } else if(tag<0 && tag !=  MPI_ANY_TAG){
+    retval = MPI_ERR_TAG;
   } else {
 
 #ifdef HAVE_TRACING
@@ -1081,8 +1105,14 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       smpi_empty_status(status);
       status->MPI_SOURCE = MPI_PROC_NULL;
       retval = MPI_SUCCESS;
+  }else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0 || src >= smpi_group_size(smpi_comm_group(comm)) || src <0){
+    retval = MPI_ERR_COMM;
   } else if (sendcount < 0 || recvcount<0) {
       retval = MPI_ERR_COUNT;
+  } else if ((sendbuf==NULL && sendcount > 0)||(recvbuf==NULL && recvcount>0)) {
+    retval = MPI_ERR_COUNT;
+  } else if((sendtag<0 && sendtag !=  MPI_ANY_TAG)||(recvtag<0 && recvtag != MPI_ANY_TAG)){
+    retval = MPI_ERR_TAG;
   } else {
 
 #ifdef HAVE_TRACING

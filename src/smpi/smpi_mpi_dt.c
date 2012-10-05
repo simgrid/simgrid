@@ -290,6 +290,8 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
     retval = MPI_ERR_TYPE;
   } else {
     if(stride != blocklen){
+if (old_type->has_subtype == 1)
+      XBT_WARN("vector contains a complex type - not yet handled");
       s_smpi_mpi_vector_t* subtype = smpi_datatype_vector_create( stride,
                                                                   blocklen,
                                                                   count,
@@ -309,7 +311,7 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
                            smpi_datatype_size(old_type),
                            0,
                            NULL,
-                           DT_FLAG_VECTOR);
+                           DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
       retval=MPI_SUCCESS;
     }
   }
@@ -408,6 +410,8 @@ int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype
   if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
     retval = MPI_ERR_TYPE;
   } else {
+if (old_type->has_subtype == 1)
+      XBT_WARN("hvector contains a complex type - not yet handled");
     if(stride != blocklen*smpi_datatype_size(old_type)){
       s_smpi_mpi_hvector_t* subtype = smpi_datatype_hvector_create( stride,
                                                                     blocklen,
@@ -426,7 +430,7 @@ int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype
                                                smpi_datatype_size(old_type),
                                               0,
                                               NULL,
-                                              DT_FLAG_VECTOR);
+                                              DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
       retval=MPI_SUCCESS;
     }
   }
@@ -443,8 +447,8 @@ Indexed Implementation
  *  @param contiguous_indexed - output indexed
  *  @param noncontiguous_indexed - input indexed
  *  @param type - pointer contening :
- *      - stride - stride of between noncontiguous data
- *      - block_length - the width or height of blocked matrix
+ *      - block_lengths - the width or height of blocked matrix
+ *      - block_indices - indices of each data, in element
  *      - count - the number of rows of matrix
  */
 void serialize_indexed( const void *noncontiguous_indexed,
@@ -470,8 +474,8 @@ void serialize_indexed( const void *noncontiguous_indexed,
  *  @param noncontiguous_indexed - output indexed
  *  @param contiguous_indexed - input indexed
  *  @param type - pointer contening :
- *      - stride - stride of between noncontiguous data
- *      - block_length - the width or height of blocked matrix
+ *      - block_lengths - the width or height of blocked matrix
+ *      - block_indices - indices of each data, in element
  *      - count - the number of rows of matrix
  */
 void unserialize_indexed( const void *contiguous_indexed,
@@ -522,22 +526,34 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
   int i;
   int retval;
   int size = 0;
+  int contiguous=1;
   for(i=0; i< count; i++){
     if   (blocklens[i]<=0)
       return MPI_ERR_ARG;
     size += blocklens[i];
+
+    if ( (i< count -1) && (indices[i]+blocklens[i] != indices[i+1]) )contiguous=0;
   }
   if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
     retval = MPI_ERR_TYPE;
   } else {
-    s_smpi_mpi_indexed_t* subtype = smpi_datatype_indexed_create( blocklens,
-                                                                  indices,
-                                                                  count,
-                                                                  old_type,
-                                                                  smpi_datatype_size(old_type));
 
-    smpi_datatype_create(new_type,  size *
-                         smpi_datatype_size(old_type),1, subtype, DT_FLAG_DATA);
+    if (old_type->has_subtype == 1)
+      XBT_WARN("indexed contains a complex type - not yet handled");
+
+    if(!contiguous){
+      s_smpi_mpi_indexed_t* subtype = smpi_datatype_indexed_create( blocklens,
+                                                                    indices,
+                                                                    count,
+                                                                    old_type,
+                                                                    smpi_datatype_size(old_type));
+
+      smpi_datatype_create(new_type,  size *
+                           smpi_datatype_size(old_type),1, subtype, DT_FLAG_DATA);
+}else{
+      smpi_datatype_create(new_type,  size *
+                           smpi_datatype_size(old_type),0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
+}
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -553,8 +569,8 @@ Hindexed Implementation - Indexed with indices in bytes
  *  @param contiguous_hindexed - output hindexed
  *  @param noncontiguous_hindexed - input hindexed
  *  @param type - pointer contening :
- *      - stride - stride of between noncontiguous data
- *      - block_length - the width or height of blocked matrix
+ *      - block_lengths - the width or height of blocked matrix
+ *      - block_indices - indices of each data, in bytes
  *      - count - the number of rows of matrix
  */
 void serialize_hindexed( const void *noncontiguous_hindexed,
@@ -580,8 +596,8 @@ void serialize_hindexed( const void *noncontiguous_hindexed,
  *  @param noncontiguous_hindexed - output hindexed
  *  @param contiguous_hindexed - input hindexed
  *  @param type - pointer contening :
- *      - stride - stride of between noncontiguous data
- *      - block_length - the width or height of blocked matrix
+ *      - block_lengths - the width or height of blocked matrix
+ *      - block_indices - indices of each data, in bytes
  *      - count - the number of rows of matrix
  */
 void unserialize_hindexed( const void *contiguous_hindexed,
@@ -632,22 +648,34 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
   int i;
   int retval;
   int size = 0;
+  int contiguous=1;
   for(i=0; i< count; i++){
     if   (blocklens[i]<=0)
       return MPI_ERR_ARG;
     size += blocklens[i];
+
+
+    if ( (i< count -1) && (indices[i]+blocklens[i]*smpi_datatype_size(old_type) != indices[i+1]) )contiguous=0;
   }
   if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
     retval = MPI_ERR_TYPE;
   } else {
-    s_smpi_mpi_hindexed_t* subtype = smpi_datatype_hindexed_create( blocklens,
-                                                                  indices,
-                                                                  count,
-                                                                  old_type,
-                                                                  smpi_datatype_size(old_type));
+    if (old_type->has_subtype == 1)
+      XBT_WARN("hindexed contains a complex type - not yet handled");
 
-    smpi_datatype_create(new_type,  size *
-                         smpi_datatype_size(old_type),1, subtype, DT_FLAG_DATA);
+    if(!contiguous){
+      s_smpi_mpi_hindexed_t* subtype = smpi_datatype_hindexed_create( blocklens,
+                                                                    indices,
+                                                                    count,
+                                                                    old_type,
+                                                                    smpi_datatype_size(old_type));
+
+      smpi_datatype_create(new_type,  size *
+                           smpi_datatype_size(old_type),1, subtype, DT_FLAG_DATA);
+    }else{
+      smpi_datatype_create(new_type,  size *
+                           smpi_datatype_size(old_type),0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
+    }
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -737,22 +765,30 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
 {
   int i;
   size_t size = 0;
+  int contiguous=1;
+  size = 0;
   for(i=0; i< count; i++){
     if (blocklens[i]<=0)
       return MPI_ERR_ARG;
     if ((old_types[i]->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED)
       return MPI_ERR_TYPE;
+    if (old_types[i]->has_subtype == 1)
+      XBT_WARN("Struct contains a complex type - not yet handled");
     size += blocklens[i]*smpi_datatype_size(old_types[i]);
+
+    if ( (i< count -1) && (indices[i]+blocklens[i]*smpi_datatype_size(old_types[i]) != indices[i+1]) )contiguous=0;
   }
 
-
-  s_smpi_mpi_struct_t* subtype = smpi_datatype_struct_create( blocklens,
+  if(!contiguous){
+    s_smpi_mpi_struct_t* subtype = smpi_datatype_struct_create( blocklens,
                                                               indices,
                                                               count,
                                                               old_types);
 
-  smpi_datatype_create(new_type,  size ,1, subtype, DT_FLAG_DATA);
-
+    smpi_datatype_create(new_type,  size ,1, subtype, DT_FLAG_DATA);
+  }else{
+    smpi_datatype_create(new_type,  size,0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
+  }
   return MPI_SUCCESS;
 }
 

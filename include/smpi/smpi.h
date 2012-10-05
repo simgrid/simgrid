@@ -383,6 +383,9 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Probe,
 
 
 //FIXME: these are not yet implemented
+
+#define MPI_UB MPI_CHAR
+
 typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
 typedef void* MPI_Errhandler;
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
