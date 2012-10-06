@@ -43,11 +43,20 @@ static size_t ignore(void *address){
 static int data_program_region_compare(void *d1, void *d2, size_t size){
   int distance = 0;
   size_t i = 0;
+  int pointer_align;
+  void *addr_pointed1 = NULL, *addr_pointed2 = NULL;
   
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
-      XBT_DEBUG("Different byte (offset=%zu) (%p - %p) in data program region", i, (char *)d1 + i, (char *)d2 + i);
-      distance++;
+      pointer_align = (i / sizeof(void*)) * sizeof(void*);
+      addr_pointed1 = *((void **)((char *)d1 + pointer_align));
+      addr_pointed2 = *((void **)((char *)d2 + pointer_align));
+      if((addr_pointed1 > start_plt_binary && addr_pointed1 < end_plt_binary) || (addr_pointed2 > start_plt_binary && addr_pointed2 < end_plt_binary)){
+        continue;
+      }else{
+        XBT_DEBUG("Different byte (offset=%zu) (%p - %p) in data program region", i, (char *)d1 + i, (char *)d2 + i);
+        distance++;
+      }
     }
   }
   
@@ -71,7 +80,7 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
       pointer_align = (i / sizeof(void*)) * sizeof(void*);
       addr_pointed1 = *((void **)((char *)d1 + pointer_align));
       addr_pointed2 = *((void **)((char *)d2 + pointer_align));
-      if((addr_pointed1 > start_plt && addr_pointed1 < end_plt) || (addr_pointed2 > start_plt && addr_pointed2 < end_plt)){
+      if((addr_pointed1 > start_plt_libsimgrid && addr_pointed1 < end_plt_libsimgrid) || (addr_pointed2 > start_plt_libsimgrid && addr_pointed2 < end_plt_libsimgrid)){
         continue;
       }else{
         XBT_DEBUG("Different byte (offset=%zu) (%p - %p) in data libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);

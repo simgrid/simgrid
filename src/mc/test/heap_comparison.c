@@ -236,8 +236,9 @@ void MC_test_heap_comparison(){
 
   MC_UNSET_RAW_MEM;
 
-  /* Get .plt section (start and end addresses) for data libsimgrid comparison */
-  get_plt_section();
+  /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
+  get_libsimgrid_plt_section();
+  get_binary_plt_section();
 
   test1();
 

@@ -15,7 +15,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
 
 void *start_text_libsimgrid;
-void *start_plt, *end_plt;
+void *start_plt_libsimgrid, *end_plt_libsimgrid;
+void *start_plt_binary, *end_plt_binary;
 char *libsimgrid_path;
 void *start_data_libsimgrid;
 void *start_text_binary;
@@ -168,7 +169,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
 }
 
 
-void get_plt_section(){
+void get_libsimgrid_plt_section(){
 
   FILE *fp;
   char *line = NULL;            /* Temporal storage for each line that is readed */
@@ -209,9 +210,66 @@ void get_plt_section(){
     if(i>=5){
       if(strcmp(lfields[1], ".plt") == 0){
         size = strtoul(lfields[2], NULL, 16);
-        offset = strtoul(lfields[4], NULL, 16);
-        start_plt = (char *)start_text_libsimgrid + offset;
-        end_plt = (char *)start_plt + size;
+        offset = strtoul(lfields[5], NULL, 16);
+        start_plt_libsimgrid = (char *)start_text_libsimgrid + offset;
+        end_plt_libsimgrid = (char *)start_plt_libsimgrid + size;
+        plt_not_found = 0;
+      }
+    }
+    
+    
+  }
+
+  free(command);
+  free(line);
+  pclose(fp);
+
+}
+
+void get_binary_plt_section(){
+
+  FILE *fp;
+  char *line = NULL;            /* Temporal storage for each line that is readed */
+  ssize_t read;                 /* Number of bytes readed */
+  size_t n = 0;                 /* Amount of bytes to read by getline */
+
+  char *lfields[7];
+  int i, plt_not_found = 1;
+  unsigned long int size, offset;
+
+  char *command = bprintf( "objdump --section-headers %s", xbt_binary_name);
+
+  fp = popen(command, "r");
+
+  if(fp == NULL)
+    perror("popen failed");
+
+  while ((read = getline(&line, &n, fp)) != -1 && plt_not_found == 1) {
+
+    if(n == 0)
+      continue;
+
+    /* Wipeout the new line character */
+    line[read - 1] = '\0';
+
+    lfields[0] = strtok(line, " ");
+
+    if(lfields[0] == NULL)
+      continue;
+
+    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strcmp(lfields[0], basename(xbt_binary_name)) == 0)
+      continue;
+
+    for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
+      lfields[i] = strtok(NULL, " ");
+    }
+
+    if(i>=5){
+      if(strcmp(lfields[1], ".plt") == 0){
+        size = strtoul(lfields[2], NULL, 16);
+        offset = strtoul(lfields[5], NULL, 16);
+        start_plt_binary = (char *)start_text_binary + offset;
+        end_plt_binary = (char *)start_plt_binary + size;
         plt_not_found = 0;
       }
     }
