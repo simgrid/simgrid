@@ -179,7 +179,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
 
   /* Stacks comparison */
-  unsigned int cursor = 1;
+  unsigned int cursor = 0;
   stack_region_t stack_region1, stack_region2;
   void *sp1, *sp2;
   int diff = 0, diff_local = 0;
