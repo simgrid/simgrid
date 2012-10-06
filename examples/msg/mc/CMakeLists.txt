@@ -12,10 +12,7 @@ if(HAVE_MC)
   add_executable(random_test random_test.c)
   add_executable(bugged1_liveness bugged1_liveness.c)
   add_executable(bugged2_liveness bugged2_liveness.c)
-  add_executable(centralized_liveness centralized_liveness.c)
-  add_executable(centralized_liveness_deadlock centralized_liveness_deadlock.c)
-  add_executable(test_snapshot test_snapshot.c)
-  add_executable(test/compare_snapshot test/compare_snapshot.c)
+  add_executable(test/test_heap_comparison test/test_heap_comparison.c)
 
   target_link_libraries(centralized simgrid m )
   target_link_libraries(bugged1     simgrid m )
@@ -24,10 +21,7 @@ if(HAVE_MC)
   target_link_libraries(random_test     simgrid m )
   target_link_libraries(bugged1_liveness     simgrid m )
   target_link_libraries(bugged2_liveness     simgrid m )
-  target_link_libraries(centralized_liveness     simgrid m )
-  target_link_libraries(centralized_liveness_deadlock     simgrid m )
-  target_link_libraries(test_snapshot     simgrid m )
-  target_link_libraries(test/compare_snapshot     simgrid m )
+  target_link_libraries(test/test_heap_comparison     simgrid m )
 
 endif(HAVE_MC)
 
@@ -45,7 +39,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2_liveness.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged3.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_centralized_liveness.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_mutex.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_random_test.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
@@ -57,28 +50,18 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/bugged3.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness_deadlock.c
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.c
   ${CMAKE_CURRENT_SOURCE_DIR}/random_test.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/centralized_liveness.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_snapshot.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/compare_snapshot.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/test_heap_comparison.c
   PARENT_SCOPE
   )
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/parse_dwarf
-  ${CMAKE_CURRENT_SOURCE_DIR}/promela1_bugged1_liveness
-  ${CMAKE_CURRENT_SOURCE_DIR}/promela2_bugged1_liveness
-  ${CMAKE_CURRENT_SOURCE_DIR}/promela2_bugged2_liveness
-  ${CMAKE_CURRENT_SOURCE_DIR}/promela2_centralized_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged1_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_liveness
-  ${CMAKE_CURRENT_SOURCE_DIR}/promela_centralized_liveness
   PARENT_SCOPE
   )
 set(txt_files

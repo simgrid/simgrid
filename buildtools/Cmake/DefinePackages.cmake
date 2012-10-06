@@ -388,7 +388,7 @@ set(MC_SRC
   src/mc/mc_request.c
   src/mc/mc_state.c
   src/mc/memory_map.c
-  src/mc/test/compare_snapshot.c
+  src/mc/test/heap_comparison.c
   )
 
 set(headers_to_install

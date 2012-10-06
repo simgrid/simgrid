@@ -10,7 +10,7 @@ static void test6(void);
 static void test1()
 {
 
-  fprintf(stderr, "\n**************** TEST 1 ****************\n\n");
+  fprintf(stderr, "\n**************** TEST 1 ****************\nNo modification (successive snapshot)\n");
   MC_SET_RAW_MEM;
 
   /* Save first snapshot */
@@ -38,7 +38,7 @@ static void test1()
 static void test2()
 {
 
-  fprintf(stderr, "\n**************** TEST 2 ****************\n\n");
+  fprintf(stderr, "\n**************** TEST 2 ****************\nMalloc after first snapshot\n");
 
   MC_SET_RAW_MEM;
 
@@ -76,7 +76,7 @@ static void test2()
 static void test3()
 {
 
-  fprintf(stderr, "\n**************** TEST 3 ****************\n\n");
+  fprintf(stderr, "\n**************** TEST 3 ****************\nMalloc and free after first snapshot\n");
 
   MC_SET_RAW_MEM;
 
@@ -113,7 +113,7 @@ static void test3()
 static void test4()
 {
 
-  fprintf(stderr, "\n**************** TEST 4 ****************\n\n");
+  fprintf(stderr, "\n**************** TEST 4 ****************\nMalloc before first snapshot and free after first snapshot\n");
 
   char *t = malloc(5);
   t = strdup("toto");
@@ -152,7 +152,7 @@ static void test4()
 static void test5()
 {
 
-  fprintf(stderr, "\n**************** TEST 5 ****************\n\n");
+  fprintf(stderr, "\n**************** TEST 5 ****************\nMalloc before first snapshot and increment pointer after first snapshot\n");
 
   char *ptr1 = malloc(sizeof(char *));
 
@@ -189,7 +189,7 @@ static void test5()
 static void test6()
 {
 
-  fprintf(stderr, "\n**************** TEST 6 ****************\n\n");
+  fprintf(stderr, "\n**************** TEST 6 ****************\nMalloc before first snapshot and increment then decrement pointer after first snapshot\n");
 
   char *ptr1 = malloc(sizeof(char *));
 
@@ -225,13 +225,15 @@ static void test6()
 }
 
 
-void MC_test_snapshot_comparison(){
+void MC_test_heap_comparison(){
 
   MC_memory_init();
 
   MC_SET_RAW_MEM;
+
   mc_snapshot_t initial = xbt_new0(s_mc_snapshot_t, 1);
   MC_take_snapshot_liveness(initial); 
+
   MC_UNSET_RAW_MEM;
 
   /* Get .plt section (start and end addresses) for data libsimgrid comparison */

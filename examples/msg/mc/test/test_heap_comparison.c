@@ -3,6 +3,6 @@
 
 int main (int argc, char **argv){
   MSG_init(&argc, argv);
-  MC_test_snapshot_comparison();
+  MC_test_heap_comparison();
   return 0;
 }
