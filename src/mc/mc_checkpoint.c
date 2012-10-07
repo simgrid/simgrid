@@ -207,7 +207,7 @@ void get_libsimgrid_plt_section(){
       lfields[i] = strtok(NULL, " ");
     }
 
-    if(i>=5){
+    if(i>=6){
       if(strcmp(lfields[1], ".plt") == 0){
         size = strtoul(lfields[2], NULL, 16);
         offset = strtoul(lfields[5], NULL, 16);
@@ -264,7 +264,7 @@ void get_binary_plt_section(){
       lfields[i] = strtok(NULL, " ");
     }
 
-    if(i>=5){
+    if(i>=6){
       if(strcmp(lfields[1], ".plt") == 0){
         size = strtoul(lfields[2], NULL, 16);
         offset = strtoul(lfields[5], NULL, 16);
