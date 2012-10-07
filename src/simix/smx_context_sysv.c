@@ -13,12 +13,6 @@
 #include "gras_config.h"
 #include "context_sysv_config.h"        /* loads context system definitions */
 
-#ifdef _XBT_WIN32
-#  include <win32_ucontext.h>     /* context relative declarations */
-#else
-#  include <ucontext.h>           /* context relative declarations */
-#endif
-
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */

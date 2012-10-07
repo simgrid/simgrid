@@ -25,6 +25,12 @@
 #include "smx_smurf_private.h"
 #include "smx_synchro_private.h"
 
+#ifdef _XBT_WIN32
+#  include <win32_ucontext.h>     /* context relative declarations */
+#else
+#  include <ucontext.h>           /* context relative declarations */
+#endif
+
 /* Define only for SimGrid benchmarking purposes */
 //#define TIME_BENCH_PER_SR /* this aims at measuring the time spent in each scheduling round per each thread. The code is thus run in sequential to bench separately each SSR */
 //#define TIME_BENCH_AMDAHL /* this aims at measuring the porting of time that could be parallelized at maximum (to get the optimal speedup by applying the amdahl law). */
