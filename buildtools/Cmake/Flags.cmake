@@ -10,11 +10,9 @@ else(NOT __VISUALC__ AND NOT __BORLANDC__)
 endif(NOT __VISUALC__ AND NOT __BORLANDC__)
 
 if(enable_compile_warnings)
-  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wclobbered -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
+  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wclobbered -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror -Wno-error=clobbered ")
   if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
     set(warnCFLAGS "${warnCFLAGS}-Wno-error=unused-but-set-variable ")
-  else(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
-    set(warnCFLAGS "${warnCFLAGS}-Wno-error=clobbered ")
   endif(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
 endif(enable_compile_warnings)
 
