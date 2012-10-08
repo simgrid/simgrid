@@ -334,7 +334,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
 
         current_fragment = j1;
 
-        if(heapinfo1[i1].busy_frag.frag_size[j1] == 0) /* Free fragment */
+        if(heapinfo1[i1].busy_frag.frag_size[j1] == -1) /* Free fragment */
           continue;
 
         if(heapinfo1[i1].busy_frag.equal_to[j1] != NULL)
