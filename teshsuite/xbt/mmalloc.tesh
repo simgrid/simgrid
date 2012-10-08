@@ -1,4 +1,4 @@
-$ ./mmalloc_test --log=root.fmt:%m%n
+$ ./xbt/mmalloc_test --log=root.fmt:%m%n
 > Allocating a new heap
 > HeapA allocated
 > 100 bytes allocated with offset 1503232
