@@ -37,7 +37,18 @@ int main(int argc, char**argv)
   }
 
   for (i = 0; i < TESTSIZE; i++) {
+    xbt_ex_t e;
+    int gotit = 1;
+
     mfree(heapA, pointers[i]);
+    TRY {
+      mfree(heapA, pointers[i]);
+      gotit = 0;
+    } CATCH(e) {
+      xbt_ex_free(e);
+    }
+    if (!gotit)
+      xbt_die("FAIL: A double-free went undetected (for size:%d)",((i%10)+1)*100);
   }
 
   XBT_INFO("Done; bye bye");
