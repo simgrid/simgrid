@@ -86,7 +86,6 @@ void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
 
 void print_request(const char *message, MPI_Request request);
-void SMPI_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_size);
 
 void smpi_global_init(void);
 void smpi_global_destroy(void);

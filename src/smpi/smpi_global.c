@@ -213,7 +213,7 @@ void print_request(const char *message, MPI_Request request) {
          request->src, request->dst, request->tag, request->flags);
 }
 
-void SMPI_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_size)
+static void SMPI_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
   memcpy(comm->comm.dst_buff, buff, buff_size);
