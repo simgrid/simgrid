@@ -12,6 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 
 #define BUFFSIZE 204800
 #define TESTSIZE 100
+#define size_of_block(i) (((i % 50)+1)* 100)
 
 int main(int argc, char**argv)
 {
@@ -31,11 +32,22 @@ int main(int argc, char**argv)
 
   int i, size;
   for (i = 0; i < TESTSIZE; i++) {
-    size = ((i % 10)+1)* 100;
+    size = size_of_block(i);
     pointers[i] = mmalloc(heapA, size);
     XBT_INFO("%d bytes allocated with offset %lu", size, ((char*)pointers[i])-((char*)heapA));
   }
+  XBT_INFO("All blocks were correctly allocated. Free every second block");
+  for (i = 0; i < TESTSIZE; i+=2) {
+    size = size_of_block(i);
+    mfree(heapA,pointers[i]);
+  }
+  XBT_INFO("Re-allocate every second block");
+  for (i = 0; i < TESTSIZE; i+=2) {
+    size = size_of_block(i);
+    pointers[i] = mmalloc(heapA, size);
+  }
 
+  XBT_INFO("free all blocks (each one twice, to check that double free are correctly catched)");
   for (i = 0; i < TESTSIZE; i++) {
     xbt_ex_t e;
     int gotit = 1;
@@ -48,9 +60,25 @@ int main(int argc, char**argv)
       xbt_ex_free(e);
     }
     if (!gotit)
-      xbt_die("FAIL: A double-free went undetected (for size:%d)",((i%10)+1)*100);
+      xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
   }
 
-  XBT_INFO("Done; bye bye");
+  XBT_INFO("free again all blocks (to really check that double free are correctly catched)");
+  for (i = 0; i < TESTSIZE; i++) {
+    xbt_ex_t e;
+    int gotit = 1;
+
+    TRY {
+      mfree(heapA, pointers[i]);
+      gotit = 0;
+    } CATCH(e) {
+      xbt_ex_free(e);
+    }
+    if (!gotit)
+      xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
+  }
+
+
+  XBT_INFO("Damnit, I cannot break mmalloc this time. That's SO disappointing.");
   return 0;
 }
