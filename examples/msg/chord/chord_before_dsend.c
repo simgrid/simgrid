@@ -9,8 +9,8 @@
 #include "msg/msg.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-#include "mc/modelchecker.h"
-#include "mc/mc.h"
+#include "simgrid/modelchecker.h"
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
                              "Messages specific for this msg example");
 
@@ -89,7 +89,7 @@ static void set_predecessor(node_t node, int predecessor_id);
 
 // process functions
 static int node(int argc, char *argv[]);
-static void handle_task(node_t node, m_task_t task);
+static void handle_task(node_t node, msg_task_t task);
 
 // Chord core
 static void create(node_t node);
@@ -121,7 +121,7 @@ static void chord_initialize(void)
     pow = pow << 1;
   }
   nb_keys = pow;
-  DEBUG1("Sets nb_keys to %d", nb_keys);
+  XBT_DEBUG("Sets nb_keys to %d", nb_keys);
 }
 
 /**
@@ -197,12 +197,12 @@ static void print_finger_table(node_t node)
 {
   if (XBT_LOG_ISENABLED(msg_chord, xbt_log_priority_verbose)) {
     int i;
-    VERB0("My finger table:");
-    VERB0("Start | Succ ");
+    XBT_VERB("My finger table:");
+    XBT_VERB("Start | Succ ");
     for (i = 0; i < nb_bits; i++) {
-      VERB2(" %3d  | %3d ", (node->id + powers2[i]) % nb_keys, node->fingers[i].id);
+      XBT_VERB(" %3d  | %3d ", (node->id + powers2[i]) % nb_keys, node->fingers[i].id);
     }
-    VERB1("Predecessor: %d", node->pred_id);
+    XBT_VERB("Predecessor: %d", node->pred_id);
   }
 }
 
@@ -218,7 +218,7 @@ static void set_finger(node_t node, int finger_index, int id)
     node->fingers[finger_index].id = id;
     get_mailbox(id, node->fingers[finger_index].mailbox);
     node->last_change_date = MSG_get_clock();
-    DEBUG2("My new finger #%d is %d", finger_index, id);
+    XBT_DEBUG("My new finger #%d is %d", finger_index, id);
   }
 }
 
@@ -237,7 +237,7 @@ static void set_predecessor(node_t node, int predecessor_id)
     }
     node->last_change_date = MSG_get_clock();
 
-    DEBUG1("My new predecessor is %d", predecessor_id);
+    XBT_DEBUG("My new predecessor is %d", predecessor_id);
   }
 }
 
@@ -258,7 +258,7 @@ int node(int argc, char *argv[])
   }
 
   double init_time = MSG_get_clock();
-  m_task_t task_received = NULL;
+  msg_task_t task_received = NULL;
   msg_comm_t comm_send = NULL;
   int i;
   int index;
@@ -269,7 +269,7 @@ int node(int argc, char *argv[])
   double next_check_predecessor_date = init_time + periodic_check_predecessor_delay;
   double next_lookup_date = init_time + periodic_lookup_delay;
 
-  xbt_assert0(argc == 3 || argc == 5, "Wrong number of arguments for this node");
+  xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
 
   // initialize my node
   s_node_t node = {0};
@@ -297,10 +297,10 @@ int node(int argc, char *argv[])
 
     /*
     // sleep before starting
-    DEBUG1("Let's sleep during %f", sleep_time);
+    XBT_DEBUG("Let's sleep during %f", sleep_time);
     MSG_process_sleep(sleep_time);
     */
-    DEBUG0("Hey! Let's join the system.");
+    XBT_DEBUG("Hey! Let's join the system.");
 
     join_success = join(&node, known_id);
   }
@@ -343,10 +343,10 @@ int node(int argc, char *argv[])
       else {
         // a transfer has occured
 
-        MSG_error_t status = MSG_comm_get_status(node.comm_receive);
+        msg_error_t status = MSG_comm_get_status(node.comm_receive);
 
         if (status != MSG_OK) {
-          DEBUG0("Failed to receive a task. Nevermind.");
+          XBT_DEBUG("Failed to receive a task. Nevermind.");
           node.comm_receive = NULL;
         }
         else {
@@ -360,11 +360,11 @@ int node(int argc, char *argv[])
       // see if some communications are finished
       while ((index = MSG_comm_testany(node.comms)) != -1) {
         comm_send = xbt_dynar_get_as(node.comms, index, msg_comm_t);
-        MSG_error_t status = MSG_comm_get_status(comm_send);
+        msg_error_t status = MSG_comm_get_status(comm_send);
         xbt_dynar_remove_at(node.comms, index, &comm_send);
-        DEBUG3("Communication %p is finished with status %d, dynar size is now %lu",
+        XBT_DEBUG("Communication %p is finished with status %d, dynar size is now %lu",
             comm_send, status, xbt_dynar_length(node.comms));
-	m_task_t task = MSG_comm_get_task(comm_send);
+	msg_task_t task = MSG_comm_get_task(comm_send);
         MSG_comm_destroy(comm_send);
 	if (status != MSG_OK) {
 	  task_data_destroy(MSG_task_get_data(task));
@@ -376,7 +376,7 @@ int node(int argc, char *argv[])
     // clean unfinished comms sent
    /* unsigned int cursor;
     xbt_dynar_foreach(node.comms, cursor, comm_send) {
-      m_task_t task = MSG_comm_get_task(comm_send);
+      msg_task_t task = MSG_comm_get_task(comm_send);
       MSG_task_cancel(task);
       task_data_destroy(MSG_task_get_data(task));
       MSG_task_destroy(task);
@@ -400,9 +400,9 @@ int node(int argc, char *argv[])
  * \param task the task to handle (don't touch it then:
  * it will be destroyed, reused or forwarded)
  */
-static void handle_task(node_t node, m_task_t task) {
+static void handle_task(node_t node, msg_task_t task) {
 
-  DEBUG1("Handling task %p", task);
+  XBT_DEBUG("Handling task %p", task);
   msg_comm_t comm = NULL;
   char mailbox[MAILBOX_NAME_SIZE];
   task_data_t task_data = (task_data_t) MSG_task_get_data(task);
@@ -411,13 +411,13 @@ static void handle_task(node_t node, m_task_t task) {
   switch (type) {
 
     case TASK_FIND_SUCCESSOR:
-      DEBUG2("Receiving a 'Find Successor' request from %s for id %d",
+      XBT_DEBUG("Receiving a 'Find Successor' request from %s for id %d",
           task_data->issuer_host_name, task_data->request_id);
       // is my successor the successor?
       if (is_in_interval(task_data->request_id, node->id + 1, node->fingers[0].id)) {
         task_data->type = TASK_FIND_SUCCESSOR_ANSWER;
         task_data->answer_id = node->fingers[0].id;
-        DEBUG4("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
+        XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
             task_data->issuer_host_name,
 	    task_data->answer_to,
             task_data->request_id, task_data->answer_id);
@@ -427,7 +427,7 @@ static void handle_task(node_t node, m_task_t task) {
       else {
         // otherwise, forward the request to the closest preceding finger in my table
         int closest = closest_preceding_node(node, task_data->request_id);
-        DEBUG2("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
+        XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
             task_data->request_id, closest);
         get_mailbox(closest, mailbox);
         comm = MSG_task_isend(task, mailbox);
@@ -436,10 +436,10 @@ static void handle_task(node_t node, m_task_t task) {
       break;
 
     case TASK_GET_PREDECESSOR:
-      DEBUG1("Receiving a 'Get Predecessor' request from %s", task_data->issuer_host_name);
+      XBT_DEBUG("Receiving a 'Get Predecessor' request from %s", task_data->issuer_host_name);
       task_data->type = TASK_GET_PREDECESSOR_ANSWER;
       task_data->answer_id = node->pred_id;
-      DEBUG3("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
+      XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
           task_data->issuer_host_name,
           task_data->answer_to, task_data->answer_id);
       comm = MSG_task_isend(task, task_data->answer_to);
@@ -448,7 +448,7 @@ static void handle_task(node_t node, m_task_t task) {
 
     case TASK_NOTIFY:
       // someone is telling me that he may be my new predecessor
-      DEBUG1("Receiving a 'Notify' request from %s", task_data->issuer_host_name);
+      XBT_DEBUG("Receiving a 'Notify' request from %s", task_data->issuer_host_name);
       notify(node, task_data->request_id);
       task_data_destroy(task_data);
       MSG_task_destroy(task);
@@ -456,7 +456,7 @@ static void handle_task(node_t node, m_task_t task) {
 
     case TASK_PREDECESSOR_LEAVING:
       // my predecessor is about to quit
-      DEBUG1("Receiving a 'Predecessor Leaving' message from %s", task_data->issuer_host_name);
+      XBT_DEBUG("Receiving a 'Predecessor Leaving' message from %s", task_data->issuer_host_name);
       // modify my predecessor
       set_predecessor(node, task_data->request_id);
       task_data_destroy(task_data);
@@ -469,7 +469,7 @@ static void handle_task(node_t node, m_task_t task) {
 
     case TASK_SUCCESSOR_LEAVING:
       // my successor is about to quit
-      DEBUG1("Receiving a 'Successor Leaving' message from %s", task_data->issuer_host_name);
+      XBT_DEBUG("Receiving a 'Successor Leaving' message from %s", task_data->issuer_host_name);
       // modify my successor FIXME : this should be implicit ?
       set_finger(node, 0, task_data->request_id);
       task_data_destroy(task_data);
@@ -481,7 +481,7 @@ static void handle_task(node_t node, m_task_t task) {
 
     case TASK_FIND_SUCCESSOR_ANSWER:
     case TASK_GET_PREDECESSOR_ANSWER:
-      DEBUG2("Ignoring unexpected task of type %d (%p)", type, task);
+      XBT_DEBUG("Ignoring unexpected task of type %d (%p)", type, task);
       task_data_destroy(task_data);
       MSG_task_destroy(task);
       break;
@@ -494,7 +494,7 @@ static void handle_task(node_t node, m_task_t task) {
  */
 static void create(node_t node)
 {
-  DEBUG0("Create a new Chord ring...");
+  XBT_DEBUG("Create a new Chord ring...");
   set_predecessor(node, -1); // -1 means that I have no predecessor
   print_finger_table(node);
 }
@@ -508,12 +508,12 @@ static void create(node_t node)
  */
 static int join(node_t node, int known_id)
 {
-  INFO2("Joining the ring with id %d, knowing node %d", node->id, known_id);
+  XBT_INFO("Joining the ring with id %d, knowing node %d", node->id, known_id);
   set_predecessor(node, -1); // no predecessor (yet)
 
   int successor_id = remote_find_successor(node, known_id, node->id);
   if (successor_id == -1) {
-    INFO0("Cannot join the ring.");
+    XBT_INFO("Cannot join the ring.");
   }
   else {
     set_finger(node, 0, successor_id);
@@ -529,7 +529,7 @@ static int join(node_t node, int known_id)
  */
 static void leave(node_t node)
 {
-  DEBUG0("Well Guys! I Think it's time for me to quit ;)");
+  XBT_DEBUG("Well Guys! I Think it's time for me to quit ;)");
   quit_notify(node, 1);  // notify to my successor ( >>> 1 );
   quit_notify(node, -1); // notify my predecessor  ( >>> -1);
   // TODO ...
@@ -570,7 +570,7 @@ static void quit_notify(node_t node, int to)
 	  node->pred_id, to_mailbox);
     req_data->type = TASK_SUCCESSOR_LEAVING;
   }
-  m_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+  msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   //char* mailbox = get_mailbox(to_mailbox);
   msg_comm_t comm = MSG_task_isend(task, to_mailbox);
   xbt_dynar_push(node->comms, &comm);
@@ -615,12 +615,12 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Find Successor" request to ask_to_id
-  m_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
-  DEBUG3("Sending a 'Find Successor' request (task %p) to %d for id %d", task_sent, ask_to, id);
-  MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
+  msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+  XBT_DEBUG("Sending a 'Find Successor' request (task %p) to %d for id %d", task_sent, ask_to, id);
+  msg_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
 
   if (res != MSG_OK) {
-    DEBUG3("Failed to send the 'Find Successor' request (task %p) to %d for id %d",
+    XBT_DEBUG("Failed to send the 'Find Successor' request (task %p) to %d for id %d",
         task_sent, ask_to, id);
     MSG_task_destroy(task_sent);
     task_data_destroy(req_data);
@@ -628,27 +628,27 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   else {
 
     // receive the answer
-    DEBUG3("Sent a 'Find Successor' request (task %p) to %d for key %d, waiting for the answer",
+    XBT_DEBUG("Sent a 'Find Successor' request (task %p) to %d for key %d, waiting for the answer",
         task_sent, ask_to, id);
 
     do {
       if (node->comm_receive == NULL) {
-        m_task_t task_received = NULL;
+        msg_task_t task_received = NULL;
         node->comm_receive = MSG_task_irecv(&task_received, node->mailbox);
       }
 
       res = MSG_comm_wait(node->comm_receive, timeout);
 
       if (res != MSG_OK) {
-        DEBUG2("Failed to receive the answer to my 'Find Successor' request (task %p): %d",
+        XBT_DEBUG("Failed to receive the answer to my 'Find Successor' request (task %p): %d",
             task_sent, res);
         stop = 1;
 	MSG_comm_destroy(node->comm_receive);
 	node->comm_receive = NULL;
       }
       else {
-        m_task_t task_received = MSG_comm_get_task(node->comm_receive);
-        DEBUG1("Received a task (%p)", task_received);
+        msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
+        XBT_DEBUG("Received a task (%p)", task_received);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
 	if (MC_IS_ENABLED) {
@@ -663,7 +663,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         }
         else {
           // this is our answer
-          DEBUG4("Received the answer to my 'Find Successor' request for id %d (task %p): the successor of key %d is %d",
+          XBT_DEBUG("Received the answer to my 'Find Successor' request for id %d (task %p): the successor of key %d is %d",
               ans_data->request_id, task_received, id, ans_data->answer_id);
           successor = ans_data->answer_id;
           stop = 1;
@@ -698,12 +698,12 @@ static int remote_get_predecessor(node_t node, int ask_to)
   req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Get Predecessor" request to ask_to_id
-  DEBUG1("Sending a 'Get Predecessor' request to %d", ask_to);
-  m_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
-  MSG_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
+  XBT_DEBUG("Sending a 'Get Predecessor' request to %d", ask_to);
+  msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+  msg_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
 
   if (res != MSG_OK) {
-    DEBUG2("Failed to send the 'Get Predecessor' request (task %p) to %d",
+    XBT_DEBUG("Failed to send the 'Get Predecessor' request (task %p) to %d",
         task_sent, ask_to);
     MSG_task_destroy(task_sent);
     task_data_destroy(req_data);
@@ -711,26 +711,26 @@ static int remote_get_predecessor(node_t node, int ask_to)
   else {
 
     // receive the answer
-    DEBUG3("Sent 'Get Predecessor' request (task %p) to %d, waiting for the answer on my mailbox '%s'",
+    XBT_DEBUG("Sent 'Get Predecessor' request (task %p) to %d, waiting for the answer on my mailbox '%s'",
         task_sent, ask_to, req_data->answer_to);
 
     do {
       if (node->comm_receive == NULL) { // FIXME simplify this
-        m_task_t task_received = NULL;
+        msg_task_t task_received = NULL;
         node->comm_receive = MSG_task_irecv(&task_received, node->mailbox);
       }
 
       res = MSG_comm_wait(node->comm_receive, timeout);
 
       if (res != MSG_OK) {
-        DEBUG2("Failed to receive the answer to my 'Get Predecessor' request (task %p): %d",
+        XBT_DEBUG("Failed to receive the answer to my 'Get Predecessor' request (task %p): %d",
             task_sent, res);
         stop = 1;
 	MSG_comm_destroy(node->comm_receive);
 	node->comm_receive = NULL;
       }
       else {
-        m_task_t task_received = MSG_comm_get_task(node->comm_receive);
+        msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
 	if (MC_IS_ENABLED) {
@@ -743,7 +743,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
           handle_task(node, task_received);
         }
         else {
-          DEBUG3("Received the answer to my 'Get Predecessor' request (task %p): the predecessor of node %d is %d",
+          XBT_DEBUG("Received the answer to my 'Get Predecessor' request (task %p): the predecessor of node %d is %d",
               task_received, ask_to, ans_data->answer_id);
           predecessor_id = ans_data->answer_id;
           stop = 1;
@@ -784,7 +784,7 @@ int closest_preceding_node(node_t node, int id)
  */
 static void stabilize(node_t node)
 {
-  DEBUG0("Stabilizing node");
+  XBT_DEBUG("Stabilizing node");
 
   // get the predecessor of my immediate successor
   int candidate_id;
@@ -820,7 +820,7 @@ static void notify(node_t node, int predecessor_candidate_id) {
     print_finger_table(node);
   }
   else {
-    DEBUG1("I don't have to change my predecessor to %d", predecessor_candidate_id);
+    XBT_DEBUG("I don't have to change my predecessor to %d", predecessor_candidate_id);
   }
 }
 
@@ -838,8 +838,8 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
   req_data->issuer_host_name = MSG_host_get_name(MSG_host_self());
 
   // send a "Notify" request to notify_id
-  m_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
-  DEBUG2("Sending a 'Notify' request (task %p) to %d", task, notify_id);
+  msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
+  XBT_DEBUG("Sending a 'Notify' request (task %p) to %d", task, notify_id);
   char mailbox[MAILBOX_NAME_SIZE];
   get_mailbox(notify_id, mailbox);
   msg_comm_t comm = MSG_task_isend(task, mailbox);
@@ -853,7 +853,7 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
  */
 static void fix_fingers(node_t node) {
 
-  DEBUG0("Fixing fingers");
+  XBT_DEBUG("Fixing fingers");
   int i = node->next_finger_to_fix;
   int id = find_successor(node, node->id + powers2[i]);
   if (id != -1) {
@@ -873,7 +873,7 @@ static void fix_fingers(node_t node) {
  */
 static void check_predecessor(node_t node)
 {
-  DEBUG0("Checking whether my predecessor is alive");
+  XBT_DEBUG("Checking whether my predecessor is alive");
   // TODO
 }
 
@@ -884,7 +884,7 @@ static void check_predecessor(node_t node)
 static void random_lookup(node_t node)
 {
   int id = 1337; // TODO pick a pseudorandom id
-  DEBUG1("Making a lookup request for id %d", id);
+  XBT_DEBUG("Making a lookup request for id %d", id);
   find_successor(node, id);
 }
 
@@ -899,7 +899,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  MSG_global_init(&argc, argv);
+  MSG_init(&argc, argv);
 
   char **options = &argv[1];
   while (!strncmp(options[0], "-", 1)) {
@@ -907,17 +907,17 @@ int main(int argc, char *argv[])
     int length = strlen("-nb_bits=");
     if (!strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
       nb_bits = atoi(options[0] + length);
-      DEBUG1("Set nb_bits to %d", nb_bits);
+      XBT_DEBUG("Set nb_bits to %d", nb_bits);
     }
     else {
 
       length = strlen("-timeout=");
       if (!strncmp(options[0], "-timeout=", length) && strlen(options[0]) > length) {
 	timeout = atoi(options[0] + length);
-	DEBUG1("Set timeout to %d", timeout);
+	XBT_DEBUG("Set timeout to %d", timeout);
       }
       else {
-	xbt_assert1(0, "Invalid chord option '%s'", options[0]);
+	xbt_assert(0, "Invalid chord option '%s'", options[0]);
       }
     }
     options++;
@@ -928,16 +928,14 @@ int main(int argc, char *argv[])
 
   chord_initialize();
 
-  MSG_set_channel_number(0);
   MSG_create_environment(platform_file);
 
   MSG_function_register("node", node);
   MSG_launch_application(application_file);
 
-  MSG_error_t res = MSG_main();
-  INFO1("Simulation time: %g", MSG_get_clock());
+  msg_error_t res = MSG_main();
+  XBT_INFO("Simulation time: %g", MSG_get_clock());
 
-  MSG_clean();
 
   if (res == MSG_OK)
     return 0;
