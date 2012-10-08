@@ -1,4 +1,4 @@
-#include "../mmalloc.h"
+#include "xbt/mmalloc.h"
 #include <stdio.h>
 #include <assert.h>
 #include <fcntl.h>
@@ -13,20 +13,11 @@
 
 int main()
 {
-  void *A, *B;
-  int fd1, fd2;
-  void *heapA, *heapB;
+  void *heapA;
   void *pointers[TESTSIZE];
-/*
-  unlink("heap1");
-  fd1=open("heap1",O_CREAT|O_RDWR,S_IRWXU|S_IRWXG|S_IRWXO);
-  assert(fd1>0);
-    close(fd1);
-    fd1=open("heap1",O_RDWR);
-    assert(fd1>0);
-  */
+  srand(0); // we need the test to be reproducible
 
-  heapA = xbt_mheap_new(-1, sbrk(0) + BUFFSIZE);
+  heapA = xbt_mheap_new(-1, ((char*)sbrk(0)) + BUFFSIZE);
   if (heapA == NULL) {
     perror("attach 1 failed");
     fprintf(stderr, "bye\n");
@@ -34,15 +25,13 @@ int main()
   }
 
   fprintf(stderr, "HeapA=%p\n", heapA);
-
+   fflush(stderr);
   int i, size;
   for (i = 0; i < TESTSIZE; i++) {
     size = rand() % 1000;
     pointers[i] = mmalloc(heapA, size);
-    fprintf(stderr, "%d bytes allocated at %p\n", size, pointers[i]);
+    fprintf(stderr, "%d bytes allocated with offset %li\n", size, ((char*)pointers[i])-((char*)heapA));
   }
-  char c;
-  scanf("%c", &c);
 
   for (i = 0; i < TESTSIZE; i++) {
     mfree(heapA, pointers[i]);
