@@ -29,8 +29,11 @@
  */
 typedef struct mdesc *xbt_mheap_t;
 
-/* Allocate SIZE bytes of memory.  */
+/* Allocate SIZE bytes of memory (and memset it to 0).  */
 extern void *mmalloc(xbt_mheap_t md, size_t size);
+
+/* Allocate SIZE bytes of memory (and don't mess with it) */
+void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size);
 
 /* Re-allocate the previously allocated block in void*, making the new block
    SIZE bytes long.  */

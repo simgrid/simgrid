@@ -101,8 +101,9 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
 
     } else {
       /* Won't fit, so allocate a new region that will.
-         Free the old region first in case there is sufficient
-         adjacent free space to grow without moving. */
+         Free the old region first in case there is sufficient adjacent free space to grow without moving.
+         This trick mandates using a specific version of mmalloc that does not memset the memory to 0 after
+           action for obvious reasons. */
       blocks = mdp->heapinfo[block].busy_block.size;
       /* Prevent free from actually returning memory to the system.  */
       oldlimit = mdp->heaplimit;
@@ -110,9 +111,10 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       mfree(mdp, ptr);
       mdp->heaplimit = oldlimit;
 
-      result = mmalloc(mdp, requested_size);
+      result = mmalloc_no_memset(mdp, requested_size);
       if (ptr != result)
         memmove(result, ptr, blocks * BLOCKSIZE);
+      /* FIXME: we should memset the end of the recently area */
     }
     break;
 
