@@ -257,6 +257,7 @@ s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
   s_smpi_mpi_vector_t *new_t= xbt_new(s_smpi_mpi_vector_t,1);
   new_t->base.serialize = &serialize_vector;
   new_t->base.unserialize = &unserialize_vector;
+  new_t->base.subtype_free = &free_vector;
   new_t->block_stride = block_stride;
   new_t->block_length = block_length;
   new_t->block_count = block_count;
@@ -278,6 +279,9 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size, int has_subtype,
 }
 
 void smpi_datatype_free(MPI_Datatype* type){
+  if ((*type)->has_subtype == 1){
+    ((s_smpi_subtype_t *)(*type)->substruct)->subtype_free(type);  
+  }
   xbt_free(*type);
 }
 
@@ -330,7 +334,8 @@ if (old_type->has_subtype == 1)
   return retval;
 }
 
-
+void free_vector(MPI_Datatype* d){
+}
 
 /*
 Hvector Implementation - Vector with stride in bytes
@@ -407,12 +412,17 @@ s_smpi_mpi_hvector_t* smpi_datatype_hvector_create( MPI_Aint block_stride,
   s_smpi_mpi_hvector_t *new_t= xbt_new(s_smpi_mpi_hvector_t,1);
   new_t->base.serialize = &serialize_hvector;
   new_t->base.unserialize = &unserialize_hvector;
+  new_t->base.subtype_free = &free_hvector;
   new_t->block_stride = block_stride;
   new_t->block_length = block_length;
   new_t->block_count = block_count;
   new_t->old_type = old_type;
   new_t->size_oldtype = size_oldtype;
   return new_t;
+}
+
+//do nothing for vector types
+void free_hvector(MPI_Datatype* d){
 }
 
 int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
@@ -516,6 +526,11 @@ void unserialize_indexed( const void *contiguous_indexed,
   }
 }
 
+void free_indexed(MPI_Datatype* type){
+  xbt_free(((s_smpi_mpi_indexed_t *)(*type)->substruct)->block_lengths);
+  xbt_free(((s_smpi_mpi_indexed_t *)(*type)->substruct)->block_indices);
+}
+
 /*
  * Create a Sub type indexed to be able to serialize and unserialize it
  * the structure s_smpi_mpi_indexed_t is derived from s_smpi_subtype which
@@ -529,6 +544,7 @@ s_smpi_mpi_indexed_t* smpi_datatype_indexed_create( int* block_lengths,
   s_smpi_mpi_indexed_t *new_t= xbt_new(s_smpi_mpi_indexed_t,1);
   new_t->base.serialize = &serialize_indexed;
   new_t->base.unserialize = &unserialize_indexed;
+  new_t->base.subtype_free = &free_indexed;
  //TODO : add a custom function for each time to clean these 
   new_t->block_lengths= xbt_new(int, block_count);
   new_t->block_indices= xbt_new(int, block_count);
@@ -649,6 +665,11 @@ void unserialize_hindexed( const void *contiguous_hindexed,
   }
 }
 
+void free_hindexed(MPI_Datatype* type){
+  xbt_free(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->block_lengths);
+  xbt_free(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->block_indices);
+}
+
 /*
  * Create a Sub type hindexed to be able to serialize and unserialize it
  * the structure s_smpi_mpi_hindexed_t is derived from s_smpi_subtype which
@@ -662,6 +683,7 @@ s_smpi_mpi_hindexed_t* smpi_datatype_hindexed_create( int* block_lengths,
   s_smpi_mpi_hindexed_t *new_t= xbt_new(s_smpi_mpi_hindexed_t,1);
   new_t->base.serialize = &serialize_hindexed;
   new_t->base.unserialize = &unserialize_hindexed;
+  new_t->base.subtype_free = &free_hindexed;
  //TODO : add a custom function for each time to clean these 
   new_t->block_lengths= xbt_new(int, block_count);
   new_t->block_indices= xbt_new(MPI_Aint, block_count);
@@ -781,6 +803,12 @@ void unserialize_struct( const void *contiguous_struct,
   }
 }
 
+void free_struct(MPI_Datatype* type){
+  xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->block_lengths);
+  xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->block_indices);
+  xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->old_types);
+}
+
 /*
  * Create a Sub type struct to be able to serialize and unserialize it
  * the structure s_smpi_mpi_struct_t is derived from s_smpi_subtype which
@@ -793,6 +821,7 @@ s_smpi_mpi_struct_t* smpi_datatype_struct_create( int* block_lengths,
   s_smpi_mpi_struct_t *new_t= xbt_new(s_smpi_mpi_struct_t,1);
   new_t->base.serialize = &serialize_struct;
   new_t->base.unserialize = &unserialize_struct;
+  new_t->base.subtype_free = &free_struct;
  //TODO : add a custom function for each time to clean these 
   new_t->block_lengths= xbt_new(int, block_count);
   new_t->block_indices= xbt_new(MPI_Aint, block_count);

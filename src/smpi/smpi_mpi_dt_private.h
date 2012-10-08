@@ -99,6 +99,8 @@ void serialize_vector( const void *noncontiguous_vector,
                        size_t count,
                        void *type);
 
+void free_vector(MPI_Datatype* type);
+
 s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
                                                   int block_length,
                                                   int block_count,
@@ -114,6 +116,8 @@ void serialize_hvector( const void *noncontiguous_vector,
                        void *contiguous_vector,
                        size_t count,
                        void *type);
+
+void free_hvector(MPI_Datatype* type);
 
 s_smpi_mpi_hvector_t* smpi_datatype_hvector_create( MPI_Aint block_stride,
                                                   int block_length,
@@ -132,6 +136,8 @@ void serialize_indexed( const void *noncontiguous_vector,
                        size_t count,
                        void *type);
 
+void free_indexed(MPI_Datatype* type);
+
 s_smpi_mpi_indexed_t* smpi_datatype_indexed_create(int* block_lengths,
                                                   int* block_indices,
                                                   int block_count,
@@ -148,6 +154,8 @@ void serialize_hindexed( const void *noncontiguous_vector,
                        size_t count,
                        void *type);
 
+void free_hindexed(MPI_Datatype* type);
+
 s_smpi_mpi_hindexed_t* smpi_datatype_hindexed_create(int* block_lengths,
                                                   MPI_Aint* block_indices,
                                                   int block_count,
@@ -163,6 +171,8 @@ void serialize_struct( const void *noncontiguous_vector,
                        void *contiguous_vector,
                        size_t count,
                        void *type);
+
+void free_struct(MPI_Datatype* type);
 
 s_smpi_mpi_struct_t* smpi_datatype_struct_create(int* block_lengths,
                                                   MPI_Aint* block_indices,

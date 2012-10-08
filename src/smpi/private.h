@@ -30,6 +30,7 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 typedef struct s_smpi_subtype{
   void (*serialize)(const void * input, void *output, size_t count, void* subtype);
   void (*unserialize)(const void * input, void *output, size_t count, void* subtype);
+  void (*subtype_free)(MPI_Datatype* type);
 } s_smpi_subtype_t;
 
 typedef struct s_smpi_mpi_datatype{
