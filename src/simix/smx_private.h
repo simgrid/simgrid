@@ -25,12 +25,6 @@
 #include "smx_smurf_private.h"
 #include "smx_synchro_private.h"
 
-#ifdef _XBT_WIN32
-#  include <win32_ucontext.h>     /* context relative declarations */
-#else
-#  include <ucontext.h>           /* context relative declarations */
-#endif
-
 /* Define only for SimGrid benchmarking purposes */
 //#define TIME_BENCH_PER_SR /* this aims at measuring the time spent in each scheduling round per each thread. The code is thus run in sequential to bench separately each SSR */
 //#define TIME_BENCH_AMDAHL /* this aims at measuring the porting of time that could be parallelized at maximum (to get the optimal speedup by applying the amdahl law). */
@@ -210,15 +204,6 @@ void SIMIX_context_set_current(smx_context_t context);
 smx_context_t SIMIX_context_get_current(void);
 
 /* All factories init */
-
-typedef struct s_smx_ctx_sysv {
-  s_smx_ctx_base_t super;       /* Fields of super implementation */
-  ucontext_t uc;                /* the ucontext that executes the code */
-#ifdef HAVE_VALGRIND_VALGRIND_H
-  unsigned int valgrind_stack_id;       /* the valgrind stack id */
-#endif
-  char stack[0];                /* the thread stack (must remain the last element of the structure) */
-} s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
 
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);

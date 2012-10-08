@@ -42,7 +42,7 @@ XBT_PUBLIC(double) MC_process_clock_get(smx_process_t);
 void MC_automaton_load(const char *file);
 
 XBT_PUBLIC(void) MC_ignore(void *address, size_t size);
-void MC_new_stack_area(void *stack, char *name);
+void MC_new_stack_area(void *stack, char *name, void *context);
 
 /********************************* Memory *************************************/
 XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */

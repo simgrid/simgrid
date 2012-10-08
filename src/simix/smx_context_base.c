@@ -64,9 +64,6 @@ smx_ctx_base_factory_create_context_sized(size_t size,
   }
   context->data = data;
 
-  if(MC_IS_ENABLED && code)
-    MC_new_stack_area(context, ((smx_process_t)context->data)->name);
-
   return context;
 }
 

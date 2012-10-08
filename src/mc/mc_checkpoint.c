@@ -29,9 +29,9 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
 
 static void add_value(xbt_dynar_t *list, const char *type, unsigned long int val);
 static xbt_dynar_t take_snapshot_stacks(void *heap);
-static xbt_strbuff_t get_local_variables_values(stack_region_t stack, void *heap);
+static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap);
 static void print_local_variables_values(xbt_dynar_t all_variables);
-static void *get_stack_pointer(stack_region_t stack, void *heap);
+static void *get_stack_pointer(void *stack_context, void *heap);
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
@@ -303,7 +303,7 @@ static xbt_dynar_t take_snapshot_stacks(void *heap){
   
   xbt_dynar_foreach(stacks_areas, cursor1, current_stack){
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
-    st->local_variables = get_local_variables_values(current_stack, heap);
+    st->local_variables = get_local_variables_values(current_stack->context, heap);
     st->stack_pointer = get_stack_pointer(current_stack, heap);
     xbt_dynar_push(res, &st);
   }
@@ -312,13 +312,13 @@ static xbt_dynar_t take_snapshot_stacks(void *heap){
 
 }
 
-static void *get_stack_pointer(stack_region_t stack, void *heap){
+static void *get_stack_pointer(void *stack_context, void *heap){
 
   unw_cursor_t c;
   int ret;
   unw_word_t sp;
 
-  ret = unw_init_local(&c, (unw_context_t *)&(((smx_ctx_sysv_t)(stack->address))->uc));
+  ret = unw_init_local(&c, (unw_context_t *)stack_context);
   if(ret < 0){
     XBT_INFO("unw_init_local failed");
     xbt_abort();
@@ -330,21 +330,21 @@ static void *get_stack_pointer(stack_region_t stack, void *heap){
 
 }
 
-static xbt_strbuff_t get_local_variables_values(stack_region_t stack, void *heap){
+static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap){
   
   unw_cursor_t c;
   int ret;
-  char *stack_name;
+  //char *stack_name;
 
   char buf[512], frame_name[256];
   
-  ret = unw_init_local(&c, (unw_context_t *)&(((smx_ctx_sysv_t)(stack->address))->uc));
+  ret = unw_init_local(&c, (unw_context_t *)stack_context);
   if(ret < 0){
     XBT_INFO("unw_init_local failed");
     xbt_abort();
   }
 
-  stack_name = strdup(((smx_process_t)((smx_ctx_sysv_t)(stack->address))->super.data)->name);
+  //stack_name = strdup(((smx_process_t)((smx_ctx_sysv_t)(stack->address))->super.data)->name);
 
   unw_word_t ip, sp, off;
   dw_frame_t frame;
@@ -503,7 +503,7 @@ static xbt_strbuff_t get_local_variables_values(stack_region_t stack, void *heap
      
   }
 
-  free(stack_name);
+  //free(stack_name);
 
   return variables;
 

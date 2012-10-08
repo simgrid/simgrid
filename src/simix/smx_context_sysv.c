@@ -12,12 +12,28 @@
 #include "smx_private.h"
 #include "gras_config.h"
 #include "context_sysv_config.h"        /* loads context system definitions */
+#include "mc/mc.h"
+
+#ifdef _XBT_WIN32
+#  include <win32_ucontext.h>     /* context relative declarations */
+#else
+#  include <ucontext.h>           /* context relative declarations */
+#endif
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 #  include <valgrind/valgrind.h>
 #endif                          /* HAVE_VALGRIND_VALGRIND_H */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+
+typedef struct s_smx_ctx_sysv {
+  s_smx_ctx_base_t super;       /* Fields of super implementation */
+  ucontext_t uc;                /* the ucontext that executes the code */
+#ifdef HAVE_VALGRIND_VALGRIND_H
+  unsigned int valgrind_stack_id;       /* the valgrind stack id */
+#endif
+  char stack[0];                /* the thread stack (must remain the last element of the structure) */
+} s_smx_ctx_sysv_t, *smx_ctx_sysv_t;
 
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t sysv_parmap;
@@ -151,6 +167,9 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
   } else {
     sysv_maestro_context = context;
   }
+
+  if(MC_IS_ENABLED && code)
+    MC_new_stack_area(context, ((smx_process_t)((smx_context_t)context)->data)->name, &(context->uc));
 
   return (smx_context_t) context;
 }

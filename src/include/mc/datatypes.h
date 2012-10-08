@@ -28,6 +28,7 @@ typedef struct s_mc_ignore_region{
 typedef struct s_stack_region{
   void *address;
   char *process_name;
+  void *context;
   size_t size;
 }s_stack_region_t, *stack_region_t;
 
