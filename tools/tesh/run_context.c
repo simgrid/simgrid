@@ -325,6 +325,7 @@ void rctx_pushline(const char *filepos, char kind, char *line)
     rctx->is_empty = 0;
     xbt_strbuff_append(rctx->output_wanted, line);
     xbt_strbuff_append(rctx->output_wanted, "\n");
+    XBT_DEBUG("wanted:%s",rctx->output_wanted->data);
     break;
 
   case '!':
