@@ -11,6 +11,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mmprivate.h"
+#include "xbt/ex.h"
 
 /* Return memory to the heap.
    Like `mfree' but don't call a mfree_hook if there is one.  */
@@ -39,8 +40,8 @@ void mfree(struct mdesc *mdp, void *ptr)
 
   switch (type) {
   case -1: /* Already free */
-    fprintf(stderr,"Asked to free a fragment in a block that is already free. I'm puzzled\n");
-    abort();
+    UNLOCK(mdp);
+    THROWF(system_error, 0, "Asked to free a fragment in a block that is already free. I'm puzzled\n");
     break;
     
   case 0:
@@ -151,6 +152,12 @@ void mfree(struct mdesc *mdp, void *ptr)
 
     /* Set size used in the fragment to 0 */
     frag_nb = RESIDUAL(ptr, BLOCKSIZE) >> type;
+
+    if( mdp->heapinfo[block].busy_frag.frag_size[frag_nb] == 0){
+      UNLOCK(mdp);
+      THROWF(system_error, 0, "Asked to free a fragment that is already free. I'm puzzled\n");
+    }
+
     mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = 0;
 
     if (mdp->heapinfo[block].busy_frag.nfree ==
