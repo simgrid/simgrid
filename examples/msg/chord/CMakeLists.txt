@@ -7,6 +7,7 @@ add_executable(chord_before_dsend chord_before_dsend.c)
 
 ### Add definitions for compile
 target_link_libraries(chord simgrid )
+target_link_libraries(chord_before_dsend simgrid )
 
 set(tesh_files
   ${tesh_files}
