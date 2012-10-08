@@ -1,4 +1,5 @@
 #include "xbt/mmalloc.h"
+#include "xbt.h"
 #include <stdio.h>
 #include <assert.h>
 #include <fcntl.h>
@@ -7,16 +8,18 @@
 #include <string.h>
 #include <unistd.h>
 
+XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 
 #define BUFFSIZE 204800
 #define TESTSIZE 100
 
-int main()
+int main(int argc, char**argv)
 {
   void *heapA;
   void *pointers[TESTSIZE];
-  srand(0); // we need the test to be reproducible
+  xbt_init(&argc,argv);
 
+  XBT_INFO("Allocating a new heap");
   heapA = xbt_mheap_new(-1, ((char*)sbrk(0)) + BUFFSIZE);
   if (heapA == NULL) {
     perror("attach 1 failed");
@@ -24,19 +27,19 @@ int main()
     exit(1);
   }
 
-  fprintf(stderr, "HeapA=%p\n", heapA);
-   fflush(stderr);
+  XBT_INFO("HeapA allocated");
+
   int i, size;
   for (i = 0; i < TESTSIZE; i++) {
-    size = rand() % 1000;
+    size = ((i % 10)+1)* 100;
     pointers[i] = mmalloc(heapA, size);
-    fprintf(stderr, "%d bytes allocated with offset %li\n", size, ((char*)pointers[i])-((char*)heapA));
+    XBT_INFO("%d bytes allocated with offset %lu", size, ((char*)pointers[i])-((char*)heapA));
   }
 
   for (i = 0; i < TESTSIZE; i++) {
     mfree(heapA, pointers[i]);
   }
 
-  fprintf(stderr, "Ok bye bye\n");
+  XBT_INFO("Done; bye bye");
   return 0;
 }
