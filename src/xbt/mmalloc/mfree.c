@@ -134,7 +134,9 @@ void mfree(struct mdesc *mdp, void *ptr)
           mdp -> heapstats.bytes_free -= bytes;
           } */
 
-    /* Set the next search to begin at this block.  */
+    /* Set the next search to begin at this block.  
+       This is probably important to the trick where realloc returns the block to 
+       the system before reasking for the same block with a bigger size.  */
     mdp->heapindex = block;
     break;
 
