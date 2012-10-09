@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
       err = MPI_Send(&msg, 1, MPI_INT, dst, tag1, MPI_COMM_WORLD);
 
       err = MPI_Recv(&msg, 1, MPI_INT, dst, tag2, MPI_COMM_WORLD, &status);     /* Receive a message */
-      printf("[%d] Received relpy message '%d' from process [%d] \n", rank,
+      printf("[%d] Received reply message '%d' from process [%d] \n", rank,
              msg, dst);
 
     }
