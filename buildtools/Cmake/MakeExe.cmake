@@ -80,3 +80,4 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/properties)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/MM)

@@ -1,0 +1,1 @@
+../../../bin/smpirun --cfg=smpi/running_power:2.1175E9 -np 2 -platform ../../platforms/cluster.xml  -hostfile host ./MM_mpi

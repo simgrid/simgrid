@@ -1,0 +1,9 @@
+node1 0 node1_arg01 node1_arg02 node1_arg03
+node1 1 node1_arg11 node1_arg12 node1_arg13
+node1 2 node1_arg21 node1_arg22 node1_arg23
+node1 3 node1_arg31 node1_arg32 node1_arg33
+node2 0 node2_arg01 node2_arg02 node2_arg03
+node2 1 node2_arg11 node2_arg12 node2_arg13
+node3 0 node3_arg01 node3_arg02 node3_arg03
+node3 1 node3_arg11 node3_arg12 node3_arg13
+node3 2 node3_arg21 node3_arg22 node3_arg23
