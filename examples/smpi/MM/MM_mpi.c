@@ -171,7 +171,6 @@ int main(int argc, char ** argv)
                size_row, size_col,  NB_groups);
 
   // close properly the pragram
-end:
   MPI_Barrier(MPI_COMM_WORLD);
   MPI_Finalize();
   return 0;

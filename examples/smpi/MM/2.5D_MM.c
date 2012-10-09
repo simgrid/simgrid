@@ -6,6 +6,7 @@
 
 #include "Matrix_init.h"
 #include "Summa.h"
+#include "2.5D_MM.h"
 #include "timer.h"
 #include <stdlib.h>
 #include "xbt/log.h"

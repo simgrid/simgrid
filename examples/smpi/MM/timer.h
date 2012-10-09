@@ -6,6 +6,7 @@
  */
 # include <sys/time.h>
 
+inline double get_second(struct timespec *res);
 inline double get_microsecond(struct timespec *res);
 inline double get_nanosecond(struct timespec *res);
 

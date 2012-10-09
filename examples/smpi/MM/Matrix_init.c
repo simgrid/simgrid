@@ -1,5 +1,6 @@
 #include "Matrix_init.h"
 #include <math.h>
+#include <stdio.h>
 #include "xbt/log.h"
  XBT_LOG_NEW_DEFAULT_CATEGORY(MM_init,
                              "Messages specific for this msg example");

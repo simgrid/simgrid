@@ -23,7 +23,7 @@
  */
 
 /*! reads a file and returns the specific parameters for the process */
-char** get_conf(MPI_Comm comm, char * filename, int mynoderank);
+char** get_conf(MPI_Comm comm, const char * filename, int mynoderank);
 
 /*! reads a file and returns the parameters of every processes */
 char*** get_conf_all(char * filename, int * nb_process);

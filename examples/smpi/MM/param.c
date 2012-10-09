@@ -15,6 +15,8 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(MM_param,
                              "Messages specific for this msg example");
 
+int match(const char *s, char p);
+char** get_list_param(const char* input);
 int match(const char *s, char p)
 {
   int c = 0;
@@ -43,7 +45,7 @@ char** get_list_param(const char* input){
   return list_param;
 }
 
-char** get_conf(MPI_Comm comm, char * filename, int mynoderank)
+char** get_conf(MPI_Comm comm, const char * filename, int mynoderank)
 {
   if(filename == NULL) return NULL;
   if(mynoderank == -1){
@@ -170,7 +172,6 @@ void print_conf(MPI_Comm comm, int rank, FILE* file, char * default_options){
   int len;
   MPI_Get_processor_name(name, &len);
   if(file == NULL) file = stdout;
-  if(default_options == NULL) default_options = "";
 
   MPI_Comm comm_node;
   split_comm_intra_node(comm, &comm_node, 0);
@@ -184,7 +185,10 @@ void print_conf(MPI_Comm comm, int rank, FILE* file, char * default_options){
   if(rank == 0){
     fprintf(file, "#processor_name index USER ARGS (like the cpu binding ...)\n");
     for(i = 0; i < size; i++){
-      fprintf(file, "%s %d %s\n", names[i],index[i],default_options);
+      if(default_options != NULL)
+        fprintf(file, "%s %d %s\n", names[i],index[i],default_options);
+      else
+        fprintf(file, "%s %d\n", names[i],index[i]);
     }
   }
   free(names);

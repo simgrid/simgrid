@@ -23,7 +23,7 @@ inline double Summa(
 {
   double *B_a     , *B_b     ; //matrix blocks
   size_t err;
-  double alpha = 1, beta = 1;  //C := alpha * a * b + beta * c
+  //double alpha = 1, beta = 1;  //C := alpha * a * b + beta * c
   size_t B_proc_col, B_proc_row; // Number of bloc(row or col) on one processor
   B_proc_col =  k_b / Block_size;  // Number of block on one processor
   B_proc_row = k_a / Block_size; // Number of block on one processor
@@ -137,7 +137,7 @@ inline double Summa(
     for(i = 0; i < m; i++)
       for(j = 0; j < n; j++)
         for(k = 0; k < Block_size; k++)
-          c[i*ldc+j] += B_a[j*lda_local+k]*B_b[k*ldb_local+j];
+          c[i*ldc+j] += B_a[i*lda_local+k]*B_b[k*ldb_local+j];
 
     get_time(&end_time_intern);
     computation_time += get_timediff(&start_time_intern,&end_time_intern);

@@ -28,6 +28,7 @@ inline int get_time(struct timespec *tp){
   time = time * 1000000000;
   tp->tv_nsec = (long) time;
   tp->tv_sec = value ;
+  return 0;
 }
 
 double get_timediff(struct timespec *start, struct timespec *end){
