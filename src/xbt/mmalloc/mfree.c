@@ -150,15 +150,15 @@ void mfree(struct mdesc *mdp, void *ptr)
       ((char *) ADDRESS(block) +
        (mdp->heapinfo[block].busy_frag.first << type));
 
-    /* Set size used in the fragment to 0 */
     frag_nb = RESIDUAL(ptr, BLOCKSIZE) >> type;
 
-    if( mdp->heapinfo[block].busy_frag.frag_size[frag_nb] == 0){
+    if( mdp->heapinfo[block].busy_frag.frag_size[frag_nb] == -1){
       UNLOCK(mdp);
       THROWF(system_error, 0, "Asked to free a fragment that is already free. I'm puzzled\n");
     }
 
-    mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = 0;
+    /* Set size used in the fragment to -1 */
+    mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = -1;
 
     if (mdp->heapinfo[block].busy_frag.nfree ==
         (BLOCKSIZE >> type) - 1) {
