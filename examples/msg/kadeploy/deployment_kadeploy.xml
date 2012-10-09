@@ -4,7 +4,7 @@
 
   <!-- Broadcaster -->
   <process host="host0" function="broadcaster">
-	<argument value="3"/> <!-- number of peers -->
+	<argument value="8"/> <!-- number of peers -->
   </process>
 
   <!-- Peers -->
@@ -17,7 +17,7 @@
   <process host="host3" function="peer">
   	<argument value="3"/>
   </process>
-  <!--<process host="host4" function="peer">
+  <process host="host4" function="peer">
   	<argument value="4"/>
   </process>
   <process host="host5" function="peer">
@@ -32,7 +32,7 @@
   <process host="host8" function="peer">
   	<argument value="8"/>
   </process>
-  <process host="host9" function="peer">
+  <!--<process host="host9" function="peer">
   	<argument value="9"/>
   </process>-->
 </platform>

@@ -7,9 +7,19 @@
    <host id="host1" power="76296000"/>
    <host id="host2" power="96296000"/>
    <host id="host3" power="97296000"/>
+   <host id="host4" power="97296000"/>
+   <host id="host5" power="97296000"/>
+   <host id="host6" power="97296000"/>
+   <host id="host7" power="97296000"/>
+   <host id="host8" power="97296000"/>
    <link id="link1" bandwidth="1000000" latency="0.1"/>
    <link id="link2" bandwidth="1000000" latency="0.2"/>
    <link id="link3" bandwidth="1000000" latency="0.2"/>
+   <link id="link4" bandwidth="1000000" latency="0.15"/>
+   <link id="link5" bandwidth="1000000" latency="0.4"/>
+   <link id="link6" bandwidth="1000000" latency="0.01"/>
+   <link id="link7" bandwidth="1000000" latency="0.15"/>
+   <link id="link8" bandwidth="1000000" latency="0.003"/>
    <route src="host0" dst="host1">
      <link_ctn id="link1"/>
    </route>
@@ -18,6 +28,21 @@
    </route>
    <route src="host0" dst="host3">
      <link_ctn id="link3"/>
+   </route>
+   <route src="host0" dst="host4">
+     <link_ctn id="link4"/>
+   </route>
+   <route src="host4" dst="host5">
+     <link_ctn id="link5"/>
+   </route>
+   <route src="host4" dst="host6">
+     <link_ctn id="link6"/>
+   </route>
+   <route src="host4" dst="host7">
+     <link_ctn id="link7"/>
+   </route>
+   <route src="host0" dst="host8">
+     <link_ctn id="link8"/>
    </route>
  </AS>
  </platform>
