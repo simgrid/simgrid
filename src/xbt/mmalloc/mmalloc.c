@@ -184,10 +184,10 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 
       result = mmalloc(mdp, BLOCKSIZE); // does not return NULL
 
-      /* Link all fragments but the first into the free list, and mark their requested size to 0.  */
+      /* Link all fragments but the first into the free list, and mark their requested size to -1.  */
       block = BLOCK(result);
       for (i = 1; i < (size_t) (BLOCKSIZE >> log); ++i) {
-        mdp->heapinfo[block].busy_frag.frag_size[i] = 0;
+        mdp->heapinfo[block].busy_frag.frag_size[i] = -1;
         next = (struct list *) ((char *) result + (i << log));
         next->next = mdp->fraghead[log].next;
         next->prev = &mdp->fraghead[log];
