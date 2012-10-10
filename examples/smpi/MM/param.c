@@ -129,41 +129,6 @@ char** get_conf(MPI_Comm comm, const char * filename, int mynoderank)
 }
 
 
-char*** get_conf_all(char * filename, int * nb_process){
-  if(filename == NULL) return NULL;
-
-  char *** all_conf = NULL;
-  FILE* conf;
-  int nb_line = 0;
-  char *line = NULL;
-  size_t linecap = 0;
-  ssize_t linelen;
-
-  conf = fopen(filename, "r");
-  if (conf == NULL) {
-    XBT_DEBUG(
-              "Try to open the configuration file %s\n", filename);
-    perror("fopen");
-    return NULL;
-  }
-
-  while ((linelen = getline(&line, &linecap, conf)) > 0)
-    nb_line++;
-  fclose(conf);
-  conf = fopen(filename, "r");
-
-  all_conf = malloc(sizeof(char**) * nb_line);
-  /* Try to find the line correponding to this processor */
-  nb_line = 0;
-  while ((linelen = getline(&line, &linecap, conf)) > 0){
-    if (strcmp(line,"") == 0) continue; //Skip blank line
-    if (line[0] == '#') continue; //Skip comment line
-    all_conf[nb_line] = get_list_param(line);
-    nb_line++;
-  }
-  if(nb_process != NULL) *nb_process = nb_line;
-  return all_conf;
-}
 
 
 void print_conf(MPI_Comm comm, int rank, FILE* file, char * default_options){
