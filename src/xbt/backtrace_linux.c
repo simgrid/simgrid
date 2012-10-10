@@ -200,22 +200,21 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   }
 
   for (i = 0; i < e->used; i++) {
-    char *fgets_res;
     XBT_DEBUG("Looking for symbol %d, addr = '%s'", i, addrs[i]);
-    fgets_res = fgets(line_func, 1024, pipe);
-    if (fgets_res == NULL)
-      THROWF(system_error, 0,
-             "Cannot run fgets to look for symbol %d, addr %s", i,
-             addrs[i]);
-    line_func[strlen(line_func) - 1] = '\0';
-    fgets_res = fgets(line_pos, 1024, pipe);
-    if (fgets_res == NULL)
-      THROWF(system_error, 0,
-             "Cannot run fgets to look for symbol %d, addr %s", i,
-             addrs[i]);
-    line_pos[strlen(line_pos) - 1] = '\0';
+    if (fgets(line_func, 1024, pipe)) {
+      line_func[strlen(line_func) - 1] = '\0';
+    } else {
+      XBT_VERB("Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
+      strcpy(line_func, "???");
+    }
+    if (fgets(line_pos, 1024, pipe)) {
+      line_pos[strlen(line_pos) - 1] = '\0';
+    } else {
+      XBT_VERB("Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
+      strcpy(line_pos, backtrace_syms[i]);
+    }
 
-    if (strcmp("??", line_func)) {
+    if (strcmp("??", line_func) != 0) {
       XBT_DEBUG("Found static symbol %s() at %s", line_func, line_pos);
       e->bt_strings[i] =
           bprintf("**   In %s() at %s", line_func, line_pos);
@@ -307,16 +306,18 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
         if (!subpipe) {
           xbt_die("Cannot fork addr2line to display the backtrace");
         }
-        fgets_res = fgets(line_func, 1024, subpipe);
-        if (fgets_res == NULL)
-          THROWF(system_error, 0, "Cannot read result of subcommand %s",
-                 subcmd);
-        line_func[strlen(line_func) - 1] = '\0';
-        fgets_res = fgets(line_pos, 1024, subpipe);
-        if (fgets_res == NULL)
-          THROWF(system_error, 0, "Cannot read result of subcommand %s",
-                 subcmd);
-        line_pos[strlen(line_pos) - 1] = '\0';
+        if (fgets(line_func, 1024, subpipe)) {
+          line_func[strlen(line_func) - 1] = '\0';
+        } else {
+          XBT_VERB("Cannot read result of subcommand %s", subcmd);
+          strcpy(line_func, "???");
+        }
+        if (fgets(line_pos, 1024, subpipe)) {
+          line_pos[strlen(line_pos) - 1] = '\0';
+        } else {
+          XBT_VERB("Cannot read result of subcommand %s", subcmd);
+          strcpy(line_pos, backtrace_syms[i]);
+        }
         pclose(subpipe);
         free(subcmd);
       }
