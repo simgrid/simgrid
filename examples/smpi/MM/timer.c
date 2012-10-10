@@ -11,17 +11,7 @@
 #define CLOCK_TIMER CLOCK_MONOTONIC_RAW
  */
 
-inline double get_microsecond(struct timespec *res){
-  return (res->tv_sec*1000000 + res->tv_nsec/1000);
-}
-inline double get_nanosecond(struct timespec *res){
-  return (res->tv_sec*1000000000 + res->tv_nsec);
-}
-inline double get_second(struct timespec *res){
-  return (res->tv_sec + res->tv_nsec/1000000000);
-}
-
-inline int get_time(struct timespec *tp){
+int get_time(struct timespec *tp){
   double time = MPI_Wtime();
   time_t value = (time_t)floor(time);
   time -= (double) value;
