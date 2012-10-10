@@ -4,6 +4,11 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include "smx_private.h"
+#include "mc/mc.h"
+#include "xbt/ex.h"
+
 #ifndef _SVID_SOURCE
 #  define _SVID_SOURCE    /* strdup() */
 #endif
@@ -14,10 +19,6 @@
 #  define _ISO_C99_SOURCE /* isfinite() */
 #endif
 #include <math.h>         /* isfinite() */
-
-#include "smx_private.h"
-#include "mc/mc.h"
-#include "xbt/ex.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 

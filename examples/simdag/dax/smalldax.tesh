@@ -120,4 +120,4 @@ $ cat ./smalldax.trace
 > [0.030300] C1-01 recv C1-00 1000000.000000 # root_i1_1@task1
 > [84.185919] C1-00 compute 0.000000 # end
 
-$ cmake -E remove -f ./smalldax.trace
+$ cmake -E remove -f ./dax.dot ./smalldax.trace

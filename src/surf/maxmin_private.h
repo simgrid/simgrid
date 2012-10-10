@@ -101,10 +101,6 @@ typedef struct lmm_system {
   do { xbt_swag_remove(cnst, &sys->active_constraint_set);              \
     xbt_swag_remove(cnst, &sys->modified_constraint_set); } while (0)
 
-static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
-static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
-                                     lmm_constraint_t cnst);
-
 void lmm_print(lmm_system_t sys);
 
 extern double (*func_f_def) (lmm_variable_t, double);

@@ -79,7 +79,7 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
       else
       {
         // if directory does not exist yet in dict
-        if(!xbt_dict_get_or_null(ls_dict,file));
+        if(!xbt_dict_get_or_null(ls_dict,file))
           xbt_dict_set(ls_dict,file,NULL,NULL);
       }
       xbt_dynar_free(&dyn);

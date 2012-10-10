@@ -32,6 +32,7 @@ src/bindings/ruby/libsimgrid.so
 examples/gras/console/simgrid.so
 examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
+examples/lua/console/simgrid.so
 
 ################################################
 ### Units and supernovae files
@@ -163,13 +164,19 @@ examples/msg/io/file
 examples/msg/io/file_unlink
 examples/msg/mc/bugged3
 examples/msg/mc/random_test
+examples/msg/mc/bugged1_for_liveness
+examples/msg/mc/bugged1_while_liveness
+examples/msg/mc/centralized_liveness_deadlock
+examples/msg/mc/test/test_heap_comparison
 examples/msg/chord/chord
 examples/msg/chord/chord_stateful
 examples/msg/chord/deployments
 examples/msg/chord/exp_*
 examples/msg/token_ring/token_ring
+examples/msg/token_ring/token_bypass
 examples/msg/icomms/peer
 examples/msg/icomms/peer2
+examples/msg/start_kill_time/sk_time
 examples/gras/console/ping_client_console
 examples/gras/console/ping_server_console
 examples/gras/console/ping_simulator_console
@@ -229,6 +236,7 @@ examples/gras/replay/replay_master
 examples/gras/replay/replay_worker
 examples/msg/actions/actions
 examples/msg/bittorrent/bittorrent
+examples/msg/bittorrent/bittorrent_platfgen
 examples/msg/kademlia/kademlia
 examples/msg/gtnets/gtnets
 examples/msg/masterslave/masterslave_bypass
@@ -237,6 +245,8 @@ examples/msg/masterslave/masterslave_forwarder
 examples/msg/masterslave/masterslave_mailbox
 examples/msg/masterslave/masterslave_kill
 examples/msg/masterslave/masterslave_arg
+examples/msg/masterslave/masterslave_failure_platfgen
+examples/msg/masterslave/masterslave_platfgen
 examples/msg/migration/migration
 examples/msg/parallel_task/parallel_task
 examples/msg/parallel_task/test_ptask
@@ -323,6 +333,7 @@ teshsuite/simdag/partask/test_comp_only_seq
 teshsuite/xbt/log_large_test
 teshsuite/xbt/parallel_log_crashtest
 testsuite/xbt/parmap_bench
+teshsuite/xbt/mmalloc_test
 testsuite/run_tests
 testsuite/simdag/sd_test
 testsuite/surf/lmm_usage

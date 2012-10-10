@@ -20,50 +20,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia,
 extern long unsigned int smx_total_comms;
 
 /**
-  * \brief Node function
-  * Arguments :
-  * - my node ID
-  * - the ID of the person I know in the system (or not)
-  * - Time before I leave the system because I'm bored
-  */
-int node(int argc, char *argv[])
-{
-  unsigned int join_sucess = 1;
-  double deadline;
-  xbt_assert(argc == 3 || argc == 4, "Wrong number of arguments");
-  /* Node initialization */
-  unsigned int id = strtoul(argv[1], NULL, 0);
-  node_t node = node_init(id);
-
-  if (argc == 4) {
-    XBT_INFO("Hi, I'm going to join the network with id %s", node->mailbox);
-    unsigned int id_known = strtoul(argv[2], NULL, 0);
-    join_sucess = join(node, id_known);
-    deadline = strtod(argv[3], NULL);
-  } else {
-    deadline = strtod(argv[2], NULL);
-    XBT_INFO("Hi, I'm going to create the network with id %s", node->mailbox);
-    node_routing_table_update(node, node->id);
-  }
-  if (join_sucess) {
-    XBT_VERB("Ok, I'm joining the network with id %s", node->mailbox);
-    //We start the main loop
-    main_loop(node, deadline);
-  } else {
-    XBT_INFO("I couldn't join the network :(");
-  }
-  XBT_DEBUG("I'm leaving the network");
-  XBT_INFO("%d/%d FIND_NODE have succeeded", node->find_node_success,
-           node->find_node_success + node->find_node_failed);
-  node_free(node);
-
-  return 0;
-}
-
-/**
   * Main loop for the process
   */
-void main_loop(node_t node, double deadline)
+static void main_loop(node_t node, double deadline)
 {
   double next_lookup_time = MSG_get_clock() + random_lookup_interval;
   XBT_VERB("Main loop start");
@@ -112,6 +71,47 @@ void main_loop(node_t node, double deadline)
     }
     MSG_comm_destroy(node->receive_comm);
   }
+}
+
+/**
+  * \brief Node function
+  * Arguments :
+  * - my node ID
+  * - the ID of the person I know in the system (or not)
+  * - Time before I leave the system because I'm bored
+  */
+static int node(int argc, char *argv[])
+{
+  unsigned int join_sucess = 1;
+  double deadline;
+  xbt_assert(argc == 3 || argc == 4, "Wrong number of arguments");
+  /* Node initialization */
+  unsigned int id = strtoul(argv[1], NULL, 0);
+  node_t node = node_init(id);
+
+  if (argc == 4) {
+    XBT_INFO("Hi, I'm going to join the network with id %s", node->mailbox);
+    unsigned int id_known = strtoul(argv[2], NULL, 0);
+    join_sucess = join(node, id_known);
+    deadline = strtod(argv[3], NULL);
+  } else {
+    deadline = strtod(argv[2], NULL);
+    XBT_INFO("Hi, I'm going to create the network with id %s", node->mailbox);
+    node_routing_table_update(node, node->id);
+  }
+  if (join_sucess) {
+    XBT_VERB("Ok, I'm joining the network with id %s", node->mailbox);
+    //We start the main loop
+    main_loop(node, deadline);
+  } else {
+    XBT_INFO("I couldn't join the network :(");
+  }
+  XBT_DEBUG("I'm leaving the network");
+  XBT_INFO("%d/%d FIND_NODE have succeeded", node->find_node_success,
+           node->find_node_success + node->find_node_failed);
+  node_free(node);
+
+  return 0;
 }
 
 /**

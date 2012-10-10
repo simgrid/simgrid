@@ -914,7 +914,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
   } else if (src == MPI_PROC_NULL) {
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
-  } else if (src >= smpi_group_size(smpi_comm_group(comm)) || src <0){
+  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_group_size(smpi_comm_group(comm)) || src <0)){
     retval = MPI_ERR_COMM;
   } else if (count < 0) {
     retval = MPI_ERR_COUNT;
@@ -1008,7 +1008,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
     smpi_empty_status(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
-  }else if(src >= smpi_group_size(smpi_comm_group(comm)) || src <0){
+  } else if (src!=MPI_ANY_SOURCE && (src >= smpi_group_size(smpi_comm_group(comm)) || src <0)){
     retval = MPI_ERR_COMM;
   } else if (count < 0) {
     retval = MPI_ERR_COUNT;
@@ -1105,7 +1105,8 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       smpi_empty_status(status);
       status->MPI_SOURCE = MPI_PROC_NULL;
       retval = MPI_SUCCESS;
-  }else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0 || src >= smpi_group_size(smpi_comm_group(comm)) || src <0){
+  }else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0 ||
+      (src!=MPI_ANY_SOURCE && (src >= smpi_group_size(smpi_comm_group(comm)) || src <0))){
     retval = MPI_ERR_COMM;
   } else if (sendcount < 0 || recvcount<0) {
       retval = MPI_ERR_COUNT;

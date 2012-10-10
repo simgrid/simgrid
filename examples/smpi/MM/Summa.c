@@ -23,8 +23,11 @@ inline double Summa(
   double *B_a     , *B_b     ; //matrix blocks
   size_t err;
   //double alpha = 1, beta = 1;  //C := alpha * a * b + beta * c
-  size_t B_proc_col, B_proc_row; // Number of bloc(row or col) on one processor
+  size_t B_proc_row; // Number of bloc(row or col) on one processor
+#ifndef CYCLIC
+  size_t B_proc_col;
   B_proc_col =  k_b / Block_size;  // Number of block on one processor
+#endif
   B_proc_row = k_a / Block_size; // Number of block on one processor
 
   //size_t lda = k_a, ldb = n, ldc = n;

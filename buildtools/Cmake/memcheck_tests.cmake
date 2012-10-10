@@ -4,9 +4,10 @@ ADD_TEST(help                                 ${CMAKE_BINARY_DIR}/teshsuite/simd
 ADD_TEST(help-models                          ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test --help-models)
 
 # teshsuite/xbt
-ADD_TEST(memcheck-tesh-log-large-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/log_large_test "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
-ADD_TEST(memcheck-tesh-log-large-1 ${CMAKE_BINARY_DIR}/teshsuite/xbt/log_large_test "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
-ADD_TEST(memcheck-tesh-log-parallel-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/parallel_log_crashtest "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
+ADD_TEST(memcheck-xbt-log-large-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/log_large_test "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
+ADD_TEST(memcheck-xbt-log-large-1 ${CMAKE_BINARY_DIR}/teshsuite/xbt/log_large_test "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
+ADD_TEST(memcheck-xbt-log-parallel-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/parallel_log_crashtest "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
+ADD_TEST(memcheck-xbt-mmalloc-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc_test --log=root.fmt:%m%n --cd ${CMAKE_BINARY_DIR}/teshsuite/)
 
 # teshsuite/gras/datadesc directory
 ADD_TEST(memcheck-tesh-gras-dd-mem-0 ${CMAKE_BINARY_DIR}/teshsuite/gras/datadesc/datadesc_usage --copy "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
@@ -477,7 +478,7 @@ ADD_TEST(memcheck-simdag-test-fail-0 ${CMAKE_BINARY_DIR}/examples/simdag/sd_fail
 ADD_TEST(memcheck-simdag-test-comm-throttling-0 ${CMAKE_BINARY_DIR}/examples/simdag/sd_comm_throttling --cfg=network/TCP_gamma:4194304 ${CMAKE_HOME_DIRECTORY}/examples/simdag/2clusters.xml --cd ${CMAKE_BINARY_DIR}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test-dax-0 ${CMAKE_BINARY_DIR}/examples/simdag/dax/dax_test --log=no_loc ../2clusters.xml ./smalldax.xml --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/)
 ADD_TEST(memcheck-simdag-test-dax-1 cat ./smalldax.trace --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/)
-ADD_TEST(memcheck-simdag-test-dax-2 cmake -E remove -f ./smalldax.trace --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/)
+ADD_TEST(memcheck-simdag-test-dax-2 cmake -E remove -f ./dax.dot ./smalldax.trace --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/)
 ADD_TEST(memcheck-simdag-test-dax-cycle-0 ${CMAKE_BINARY_DIR}/examples/simdag/dax/dax_test --log=no_loc ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/../2clusters.xml ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/simple_dax_with_cycle.xml --cd ${CMAKE_BINARY_DIR}/examples/simdag/dax/)
 ADD_TEST(memcheck-simdag-test-prop-0 ${CMAKE_BINARY_DIR}/examples/simdag/properties/sd_prop ${CMAKE_HOME_DIRECTORY}/examples/simdag/../platforms/prop.xml --cd ${CMAKE_BINARY_DIR}/examples/simdag/)
 ADD_TEST(memcheck-simdag-test-minmin-scheduling-0 ${CMAKE_BINARY_DIR}/examples/simdag/scheduling/minmin_test --log=sd_daxparse.thresh:critical ./simulacrum_7_hosts.xml ./Montage_25.xml --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling/)

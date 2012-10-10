@@ -103,7 +103,8 @@ char** get_conf(MPI_Comm comm, const char * filename, int mynoderank)
          * we rebuild the line to get every information*/
         char* line = NULL;
         number = 0;
-        getline(&line,&number,conf);
+        if (getline(&line,&number,conf) == -1)
+          xbt_die("Cannot get line");
         char* line1 = NULL;
         asprintf(&line1,"%s %s %s",name,char_index,line);
         return get_list_param(line1);

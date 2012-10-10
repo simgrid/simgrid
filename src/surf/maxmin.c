@@ -32,6 +32,10 @@ static void lmm_remove_all_modified_set(lmm_system_t sys);
 static int Global_debug_id = 1;
 static int Global_const_debug_id = 1;
 
+static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
+static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
+                                     lmm_constraint_t cnst);
+
 lmm_system_t lmm_system_new(int selective_update)
 {
   lmm_system_t l = NULL;

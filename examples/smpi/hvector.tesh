@@ -1,0 +1,4 @@
+p Test indexed
+! setenv LD_LIBRARY_PATH=../../lib
+! output sort
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 2 ./indexed_test -q
