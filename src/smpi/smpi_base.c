@@ -9,6 +9,7 @@
 #include "mc/mc.h"
 #include "xbt/replay.h"
 #include <errno.h>
+#include "simix/smx_private.h"
 #include "surf/surf.h"
 
 
