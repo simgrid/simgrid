@@ -205,8 +205,11 @@ static node_job_t wait_job(int selfid)
   msg_task_t task = NULL;
   char self_mbox[MAILBOX_NAME_SIZE];
   node_job_t job;
+  msg_error_t err;
   snprintf(self_mbox, MAILBOX_NAME_SIZE - 1, "%d", selfid);
-  MSG_task_receive(&task, self_mbox);
+  err = MSG_task_receive(&task, self_mbox);
+  if (err != MSG_OK)
+    xbt_die("Error while receiving from %s (%d)", self_mbox, (int)err);
   job = (node_job_t)MSG_task_get_data(task);
   MSG_task_destroy(task);
   XBT_VERB("Got Job (%d,%d)", job->row, job->col);
@@ -235,11 +238,14 @@ static void get_sub_matrix(xbt_matrix_t *sM, int selfid)
 {
   msg_task_t task = NULL;
   char node_mbox[MAILBOX_NAME_SIZE];
+  msg_error_t err;
 
   XBT_VERB("Get sub-matrix");
 
   snprintf(node_mbox, MAILBOX_NAME_SIZE - 1, "%d", selfid);
-  MSG_task_receive(&task, node_mbox);
+  err = MSG_task_receive(&task, node_mbox);
+  if (err != MSG_OK)
+    xbt_die("Error while receiving from %s (%d)", node_mbox, (int)err);
   *sM = (xbt_matrix_t)MSG_task_get_data(task);
   MSG_task_destroy(task);
 }
