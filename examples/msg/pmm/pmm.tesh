@@ -1,0 +1,6 @@
+#! ./tesh
+
+p Testing the Parallel Matrix Multiplication 
+
+! output sort
+$ ./msg_pmm ../../platforms/cluster.xml pmm_9_deploy.xml
