@@ -154,7 +154,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
           e->bt_strings = xbt_new(char *, 1);
 
           e->bt_strings[0] =
-              bprintf("(binary '%s' not found the path)", xbt_binary_name);
+              bprintf("(binary '%s' not found in the PATH)", xbt_binary_name);
           free(backtrace_syms);
           return;
         }
