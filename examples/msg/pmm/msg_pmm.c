@@ -70,7 +70,7 @@ int node(int argc, char **argv)
   int k, myid;
   char my_mbox[MAILBOX_NAME_SIZE];
   node_job_t myjob, jobs[GRID_NUM_NODES];
-  xbt_matrix_t A, B, C = NULL, sA, sB, sC;
+  xbt_matrix_t A, B, C, sA, sB, sC;
   result_t result;
 
   xbt_assert(argc != 1, "Wrong number of arguments for this node");
@@ -96,6 +96,7 @@ int node(int argc, char **argv)
     broadcast_jobs(jobs + 1);
 
   }else{
+    A = B = C = NULL;           /* Avoid warning at compilation */
     myjob = wait_job(myid);
   }
 
@@ -158,6 +159,10 @@ int node(int argc, char **argv)
 
     //xbt_matrix_dump(C, "C:res", 0, xbt_matrix_dump_display_double);
 
+    xbt_matrix_free(A);
+    xbt_matrix_free(B);
+    xbt_matrix_free(C);
+
   /* The rest: return the result to node 0 */
   }else{
     msg_task_t task;
@@ -174,6 +179,7 @@ int node(int argc, char **argv)
   }
 
   /* Clean up and finish*/
+  xbt_matrix_free(sC);
   xbt_matrix_free(myjob->A);
   xbt_matrix_free(myjob->B);
   xbt_free(myjob);
@@ -198,6 +204,8 @@ static void broadcast_jobs(node_job_t *jobs)
   }
 
   MSG_comm_waitall(comms, GRID_NUM_NODES-1, -1);
+  for (node = 1; node < GRID_NUM_NODES; node++)
+    MSG_comm_destroy(comms[node - 1]);
 }
 
 static node_job_t wait_job(int selfid)
@@ -348,6 +356,8 @@ static void receive_results(result_t *results){
   }
 
   MSG_comm_waitall(comms, GRID_NUM_NODES - 1, -1);
+  for (node = 1; node < GRID_NUM_NODES; node++)
+    MSG_comm_destroy(comms[node - 1]);
 
   /* Reconstruct the result matrix */
   for (node = 1; node < GRID_NUM_NODES; node++){
