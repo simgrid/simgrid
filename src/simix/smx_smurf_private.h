@@ -242,7 +242,9 @@ typedef struct s_smx_simcall {
 
     struct {
       smx_action_t execution;
+      struct s_smx_simcall *simcall;
       e_smx_state_t result;
+
     } host_execution_wait;
 
     struct {

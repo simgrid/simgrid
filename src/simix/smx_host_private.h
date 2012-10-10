@@ -38,7 +38,7 @@ xbt_dict_t SIMIX_host_get_properties(u_smx_scalar_t *args);
 double SIMIX_host_get_speed(u_smx_scalar_t *args);
 double SIMIX_host_get_available_speed(u_smx_scalar_t *args);
 int SIMIX_host_get_state(u_smx_scalar_t *args);
-smx_action_t SIMIX_host_execute(smx_process_t issuer, u_smx_scalar_t *args);
+smx_action_t SIMIX_host_execute(u_smx_scalar_t *args);
 smx_action_t SIMIX_host_parallel_execute(u_smx_scalar_t *args);
 void SIMIX_host_execution_destroy(u_smx_scalar_t *args);
 void SIMIX_host_execution_cancel(u_smx_scalar_t *args);

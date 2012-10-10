@@ -419,7 +419,8 @@ void SIMIX_host_execution_set_priority(u_smx_scalar_t *args)
 
 void SIMIX_pre_host_execution_wait(u_smx_scalar_t *args)
 {
-  smx_action_t action = args[0].p;
+  smx_simcall_t simcall = args[0].p;
+  smx_action_t action = args[1].p;
 
   XBT_DEBUG("Wait for execution of action %p, state %d", action, (int)action->state);
 

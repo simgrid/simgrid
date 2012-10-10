@@ -267,7 +267,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       break;
 
     case SIMCALL_HOST_SET_DATA:
-      SIMIX_host_set_data(simcall->host_set_data.host, simcall->host_set_data.data);
+      SIMIX_host_set_data(SIMIX_pack_args(PTR(simcall->host_set_data.host), PTR(simcall->host_set_data.data)));
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -647,7 +647,8 @@ void __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args)
 /* New Simcal interface */
 
 /* FIXME: add types for every simcall */
-const char *simcall_types[NUM_SIMCALLS] = { [SIMCALL_HOST_EXECUTE] = "%s%p%f%f%p" };
+const char *simcall_types[NUM_SIMCALLS] = { [SIMCALL_HOST_EXECUTE] = "%s%p%f%f%p", [SIMCALL_HOST_EXECUTION_WAIT] = "%p%p" };
+
 
 simcall_handler_t simcall_table[NUM_SIMCALLS] = {
 #undef SIMCALL_ENUM_ELEMENT

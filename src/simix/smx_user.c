@@ -383,9 +383,13 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
 
   simcall->call = SIMCALL_HOST_EXECUTION_WAIT;
   simcall->host_execution_wait.execution = execution;
+  simcall->host_execution_wait.simcall = simcall;
+
+  SIMIX_simcall(SIMCALL_HOST_EXECUTION_WAIT, PTR(simcall), PTR(execution));
+
   if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->host_execution_wait.result = -1;
-  SIMIX_simcall_push(simcall->issuer);
+
   return simcall->host_execution_wait.result;
 }
 
