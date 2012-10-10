@@ -1,8 +1,6 @@
 /*!
  * get the information of which thread are on the same node
  *
- *
- * Authors: Quintin Jean-Noël
  */
 
 #include <stdlib.h>

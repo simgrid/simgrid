@@ -1,11 +1,10 @@
 /*!
  * Classical Block Matrix Multiplication example
  *
- * Authors: Quintin Jean-Noël
  */
+
 #include "Matrix_init.h"
 #include "Summa.h"
-#include "timer.h"
 #include "xbt/log.h"
  XBT_LOG_NEW_DEFAULT_CATEGORY(MM_Summa,
                              "Messages specific for this msg example");
@@ -34,13 +33,13 @@ inline double Summa(
 
 
   double time, computation_time = 0, communication_time = 0;
-  struct timespec start_time, end_time; //time mesure
-  struct timespec start_time_intern, end_time_intern; //time mesure
+  double start_time, end_time; //time mesure
+  double start_time_intern, end_time_intern; //time mesure
 
 
 
 
-  get_time(&start_time);
+  start_time = MPI_Wtime();
 
   /*-------------Distributed Matrix Multiplication algorithm-----------------*/
   size_t iter;
@@ -77,7 +76,7 @@ inline double Summa(
     MPI_Barrier(row_comm);
     MPI_Barrier(col_comm);
 
-    get_time(&start_time_intern);
+    start_time_intern = MPI_Wtime();
     //Broadcast the row
     if(size_row > 1){
       MPI_Datatype * Block;
@@ -122,12 +121,12 @@ inline double Summa(
       B_b = b + pos_b;
       XBT_DEBUG("position of B_b: %zu \n", pos_b);
     }
-    get_time(&end_time_intern);
-    communication_time += get_timediff(&start_time_intern,&end_time_intern);
+    end_time_intern = MPI_Wtime();
+    communication_time += start_time_intern - end_time_intern;
 
     MPI_Barrier(row_comm);
     MPI_Barrier(col_comm);
-    get_time(&start_time_intern);
+    start_time_intern = MPI_Wtime();
     XBT_DEBUG("execute Gemm number: %zu\n", iter);
     //We have recieved a line of block and a colomn
    //              cblas_dgemm( CblasRowMajor, CblasNoTrans, CblasNoTrans,
@@ -139,15 +138,15 @@ inline double Summa(
         for(k = 0; k < Block_size; k++)
           c[i*ldc+j] += B_a[i*lda_local+k]*B_b[k*ldb_local+j];
 
-    get_time(&end_time_intern);
-    computation_time += get_timediff(&start_time_intern,&end_time_intern);
+    end_time_intern = MPI_Wtime();
+    computation_time += start_time_intern - end_time_intern;
 
   }
   MPI_Barrier(row_comm);
   MPI_Barrier(col_comm);
 
-  get_time(&end_time);
-  time = get_timediff(&start_time,&end_time);
+  end_time = MPI_Wtime();
+  time = start_time - end_time;
   printf("communication time: %le nanoseconds, "
          "computation time: %le nanoseconds\n",
          communication_time, computation_time);

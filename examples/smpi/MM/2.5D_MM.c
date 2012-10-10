@@ -1,13 +1,11 @@
 /*!
  * 2.5D Block Matrix Multiplication example
  *
- * Authors: Quintin Jean-Noël
  */
 
 #include "Matrix_init.h"
 #include "Summa.h"
 #include "2.5D_MM.h"
-#include "timer.h"
 #include <stdlib.h>
 #include "xbt/log.h"
 #define CHECK_25D 1
@@ -30,9 +28,9 @@ double two_dot_five(
 
 
   double time, communication_time = 0;
-  struct timespec start_time, end_time; //time mesure
-  struct timespec end_time_intern; //time mesure
-  struct timespec start_time_reduce, end_time_reduce; //time mesure
+  double start_time, end_time; //time mesure
+  double end_time_intern; //time mesure
+  double start_time_reduce, end_time_reduce; //time mesure
 
   MPI_Comm my_world;
 
@@ -181,7 +179,7 @@ double two_dot_five(
 
 
   MPI_Barrier(my_world);
-  get_time(&start_time);
+  start_time = MPI_Wtime();
   if( NB_groups > 1 ) {
     err = MPI_Bcast(a, m*k_a, MPI_DOUBLE, 0, group_line);
     if (err != MPI_SUCCESS) {
@@ -195,8 +193,8 @@ double two_dot_five(
     }
     MPI_Barrier(my_world);
   }
-  get_time(&end_time_intern);
-  communication_time += get_timediff(&start_time,&end_time_intern);
+  end_time_intern = MPI_Wtime();
+  communication_time += start_time - end_time_intern;
 
   XBT_INFO( "group %zu NB_block: %zu, NB_groups %zu\n"
               ,group,NB_Block, NB_groups);
@@ -220,7 +218,7 @@ double two_dot_five(
   MPI_Comm_rank(group_line, &myrank);
 
   MPI_Barrier(my_world);
-  get_time(&start_time_reduce);
+  start_time_reduce = MPI_Wtime();
   if( NB_groups > 1 ) {
     // a gather is better?
     err = MPI_Reduce(c, res, m*n, MPI_DOUBLE, MPI_SUM, 0, group_line);
@@ -234,12 +232,12 @@ double two_dot_five(
     res=swap;
   }
   MPI_Barrier(my_world);
-  get_time(&end_time_reduce);
+  end_time_reduce = MPI_Wtime();
 
   MPI_Barrier(my_world);
-  get_time(&end_time);
-  time = get_timediff(&start_time,&end_time);
-  double reduce_time = get_timediff(&start_time_reduce,&end_time_reduce);
+  end_time = MPI_Wtime();
+  time = start_time - end_time;
+  double reduce_time = start_time_reduce - end_time_reduce;
   printf("communication time: %le reduce time: %le nanoseconds, "
          "total time: %le nanoseconds\n",communication_time,reduce_time,time);
   MPI_Barrier(my_world);

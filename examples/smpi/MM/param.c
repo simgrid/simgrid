@@ -1,8 +1,6 @@
 /*!
  * get the parameter specific to the process from a file
  *
- *
- * Authors: Quintin Jean-Noël
  */
 
 #include "topo.h"

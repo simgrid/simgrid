@@ -1,7 +1,6 @@
 /*
  * Block Matrix Multiplication example
  *
- * Authors: Quintin Jean-Noël
  */
 
 
