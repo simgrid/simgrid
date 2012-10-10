@@ -125,6 +125,8 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 
   size_t requested_size = size; // The amount of memory requested by user, for real
 
+  check_fraghead(mdp);
+
   /* Work even if the user was stupid enough to ask a ridicullously small block (even 0-length),
    *    ie return a valid block that can be realloced and freed.
    * glibc malloc does not use this trick but return a constant pointer, but we need to enlist the free fragments later on.
@@ -251,6 +253,9 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
         mdp->heapinfo[block].busy_block.bt_size=xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
         mdp -> heapstats.chunks_used++;
         mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
+
+        check_fraghead(mdp);
+
         return result;
       }
       /* Need large block(s), but found some in the existing heap */
@@ -294,5 +299,6 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 
   }
   //printf("(%s) Done mallocing. Result is %p\n",xbt_thread_self_name(),result);fflush(stdout);
+  check_fraghead(mdp);
   return (result);
 }

@@ -35,6 +35,7 @@ void mfree(struct mdesc *mdp, void *ptr)
     abort();
   }
 
+  check_fraghead(mdp);
 
   type = mdp->heapinfo[block].type;
 
@@ -214,4 +215,6 @@ void mfree(struct mdesc *mdp, void *ptr)
     }
     break;
   }
+
+  check_fraghead(mdp);
 }

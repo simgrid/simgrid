@@ -339,3 +339,22 @@ void mmalloc_postexit(void)
   //  mmalloc_detach(__mmalloc_default_mdp);
   xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
 }
+
+void check_fraghead(struct mdesc *mdp){
+
+  struct list* next;
+  int j;
+
+  for (j=8; j<12; j++){
+    next = mdp->fraghead[j].next;
+    if(next != NULL){
+      while(next->next != NULL){
+        if(next->next->prev == NULL);
+        next = next->next;
+      }
+    }
+  }
+
+  fprintf(stderr, "check fraghead ok\n");
+
+}

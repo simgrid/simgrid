@@ -280,4 +280,6 @@ extern void *mmorecore(struct mdesc *mdp, int size);
 #define LOCK(mdp) sem_wait(&mdp->sem)
 #define UNLOCK(mdp) sem_post(&mdp->sem)
 
+void check_fraghead(struct mdesc *mdp);
+
 #endif                          /* __MMPRIVATE_H */
