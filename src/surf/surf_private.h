@@ -212,8 +212,6 @@ XBT_PUBLIC(void) routing_get_route_and_latency(sg_routing_edge_t src, sg_routing
 /**
  * Resource protected methods
  */
-static XBT_INLINE xbt_dict_t surf_resource_properties(const void *resource);
-
 XBT_PUBLIC(void) surfxml_bufferstack_push(int new);
 XBT_PUBLIC(void) surfxml_bufferstack_pop(int new);
 
