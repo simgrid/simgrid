@@ -453,7 +453,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   if(request->action){
     MPI_Request req = (MPI_Request)SIMIX_comm_get_src_data(request->action);
-    *flag=true;
+    *flag = 1;
     if(status != MPI_STATUS_IGNORE) {
       status->MPI_SOURCE = req->src;
       status->MPI_TAG = req->tag;
@@ -461,7 +461,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
       status->count = req->size;
     }
   }
-  else *flag=false;
+  else *flag = 0;
   smpi_mpi_request_free(&request);
 
   return;
