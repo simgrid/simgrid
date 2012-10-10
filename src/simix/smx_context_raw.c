@@ -502,19 +502,6 @@ static void smx_ctx_raw_runall_serial(void)
 #endif
 
 /**
- * \brief Stops a raw context.
- *
- * This function is called when the main function of the context if finished.
- *
- * \param context the context of the current worker thread
- */
-static void smx_ctx_raw_stop_parallel(smx_context_t context)
-{
-  smx_ctx_base_stop(context);
-  smx_ctx_raw_suspend_parallel(context);
-}
-
-/**
  * \brief Suspends a running context and resumes another one or returns to
  * the main function of the current worker thread.
  * \param context the context of the current worker thread
