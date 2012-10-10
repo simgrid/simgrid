@@ -195,7 +195,7 @@ double two_dot_five(
     MPI_Barrier(my_world);
   }
   end_time_intern = MPI_Wtime();
-  communication_time += start_time - end_time_intern;
+  communication_time += end_time_intern - start_time;
 
   XBT_INFO( "group %zu NB_block: %zu, NB_groups %zu\n"
               ,group,NB_Block, NB_groups);
@@ -237,10 +237,10 @@ double two_dot_five(
 
   MPI_Barrier(my_world);
   end_time = MPI_Wtime();
-  time = start_time - end_time;
-  double reduce_time = start_time_reduce - end_time_reduce;
-  printf("communication time: %le reduce time: %le nanoseconds, "
-         "total time: %le nanoseconds\n",communication_time,reduce_time,time);
+  time = end_time - start_time;
+  double reduce_time = end_time_reduce - start_time_reduce;
+  printf("communication time: %le reduce time: %le seconds, "
+         "total time: %le seconds\n",communication_time,reduce_time,time);
   MPI_Barrier(my_world);
 
 #if CHECK_25D

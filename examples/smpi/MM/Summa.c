@@ -125,7 +125,7 @@ inline double Summa(
       XBT_DEBUG("position of B_b: %zu \n", pos_b);
     }
     end_time_intern = MPI_Wtime();
-    communication_time += start_time_intern - end_time_intern;
+    communication_time += end_time_intern - start_time_intern;
 
     MPI_Barrier(row_comm);
     MPI_Barrier(col_comm);
@@ -142,16 +142,16 @@ inline double Summa(
           c[i*ldc+j] += B_a[i*lda_local+k]*B_b[k*ldb_local+j];
 
     end_time_intern = MPI_Wtime();
-    computation_time += start_time_intern - end_time_intern;
+    computation_time += end_time_intern - start_time_intern;
 
   }
   MPI_Barrier(row_comm);
   MPI_Barrier(col_comm);
 
   end_time = MPI_Wtime();
-  time = start_time - end_time;
-  printf("communication time: %le nanoseconds, "
-         "computation time: %le nanoseconds\n",
+  time = end_time - start_time ;
+  printf("communication time: %le seconds, "
+         "computation time: %le seconds\n",
          communication_time, computation_time);
 
 
