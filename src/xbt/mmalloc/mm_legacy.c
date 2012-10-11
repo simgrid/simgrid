@@ -69,11 +69,13 @@ void *realloc(void *p, size_t s)
 
 void free(void *p)
 {
-  xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
+  if (p != NULL) {
+    xbt_mheap_t mdp = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
 
-  LOCK(mdp);
-  mfree(mdp, p);
-  UNLOCK(mdp);
+    LOCK(mdp);
+    mfree(mdp, p);
+    UNLOCK(mdp);
+  }
 }
 #endif
 
