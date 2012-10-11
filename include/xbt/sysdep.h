@@ -11,15 +11,15 @@
 #ifndef _XBT_SYSDEP_H
 #define _XBT_SYSDEP_H
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>             /* va_list */
-
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
 
 #include "simgrid_config.h"
+
+#include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>             /* va_list */
 
 SG_BEGIN_DECL()
 

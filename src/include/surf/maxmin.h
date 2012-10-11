@@ -7,10 +7,10 @@
 #ifndef _SURF_MAXMIN_H
 #define _SURF_MAXMIN_H
 
-#include <math.h>
 #include "portable.h"
 #include "xbt/misc.h"
 #include "surf/datatypes.h"
+#include <math.h>
 
 extern double sg_maxmin_precision;
 #define MAXMIN_PRECISION sg_maxmin_precision
