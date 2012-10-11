@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-add_executable(kadeploy kadeploy.c)
+add_executable(kadeploy kadeploy.c iterator.c common.c messages.c broadcaster.c peer.c)
 
 ### Add definitions for compile
 target_link_libraries(kadeploy simgrid m )
@@ -23,6 +23,11 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/iterator.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/common.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/messages.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/broadcaster.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/peer.c
   ${CMAKE_CURRENT_SOURCE_DIR}/kadeploy.c
   PARENT_SCOPE
   )

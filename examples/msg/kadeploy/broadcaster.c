@@ -1,0 +1,160 @@
+#include "broadcaster.h"
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_broadcaster,
+                             "Messages specific for kadeploy");
+
+xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
+{
+  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), NULL);
+  char *hostname = NULL;
+  msg_host_t h = NULL;
+  int i = 1;
+  
+  for (; i < hostcount+1; i++) {
+    hostname = xbt_new(char, HOSTNAME_LENGTH);
+    snprintf(hostname, HOSTNAME_LENGTH, "host%d", i);
+    //XBT_INFO("%s", hostname);
+    h = MSG_get_host_by_name(hostname);
+    if (h == NULL) {
+      XBT_INFO("Unknown host %s. Stopping Now! ", hostname);
+      abort();
+    } else {
+      xbt_dynar_push(host_list, &hostname);
+    }
+  }
+  return host_list;
+}
+
+/*xbt_dynar_t build_hostlist_from_argv(int argc, char *argv[])
+{
+  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), NULL);
+  msg_host_t h = NULL;
+  int i = 1;
+  
+  for (; i < argc; i++) {
+    XBT_INFO("host%d = %s", i, argv[i]);
+    h = MSG_get_host_by_name(argv[i]);
+    if (h == NULL) {
+      XBT_INFO("Unknown host %s. Stopping Now! ", argv[i]);
+      abort();
+    } else {
+      xbt_dynar_push(host_list, &(argv[i]));
+    }
+  }
+  return host_list;
+}*/
+
+void delete_hostlist(xbt_dynar_t h)
+{
+  xbt_dynar_free(&h);
+}
+
+int broadcaster_build_chain(const char **first, xbt_dynar_t host_list)
+{
+  xbt_dynar_iterator_t it = xbt_dynar_iterator_new(host_list, forward_indices_list);
+  msg_task_t task = NULL;
+  char **cur = (char**)xbt_dynar_iterator_next(it);
+  const char *me = MSG_host_get_name(MSG_host_self());
+  const char *current_host = NULL;
+  const char *prev = NULL;
+  const char *next = NULL;
+  const char *last = NULL;
+
+  /* Build the chain if there's at least one peer */
+  if (cur != NULL) {
+    /* init: prev=NULL, host=current cur, next=next cur */
+    next = *cur;
+    *first = next;
+
+    /* This iterator iterates one step ahead: cur is current iterated element, 
+       but it's actually the next one in the chain */
+    do {
+      /* following steps: prev=last, host=next, next=cur */
+      cur = (char**)xbt_dynar_iterator_next(it);
+      prev = last;
+      current_host = next;
+      if (cur != NULL)
+        next = *cur;
+      else
+        next = NULL;
+      //XBT_INFO("Building chain -- broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"", me, current_host, prev, next);
+    
+      /* Send message to current peer */
+      task = task_message_chain_new(me, current_host, prev, next);
+      //MSG_task_set_category(task, current_host);
+      MSG_task_send(task, current_host);
+
+      last = current_host;
+    } while (cur != NULL);
+  }
+  xbt_dynar_iterator_delete(it);
+
+  return MSG_OK;
+}
+
+int broadcaster_send_file(const char *first)
+{
+  const char *me = MSG_host_get_name(MSG_host_self());
+  msg_task_t task = NULL;
+  msg_comm_t comm = NULL;
+  int status;
+
+  int piece_count = PIECE_COUNT;
+  int cur = 0;
+
+  for (; cur < piece_count; cur++) {
+    task = task_message_data_new(me, first, NULL, 0);
+    XBT_INFO("Sending (send) from %s into mailbox %s", me, first);
+    status = MSG_task_send(task, first);
+   
+    xbt_assert(status == MSG_OK, __FILE__ ": broadcaster_send_file() failed");
+  }
+
+  return MSG_OK;
+}
+
+/* FIXME: I should iterate nodes in the same order as the one used to build the chain */
+int broadcaster_finish(xbt_dynar_t host_list)
+{
+  xbt_dynar_iterator_t it = xbt_dynar_iterator_new(host_list, forward_indices_list);
+  msg_task_t task = NULL;
+  const char *me = MSG_host_get_name(MSG_host_self());
+  const char *current_host = NULL;
+  char **cur = NULL;
+
+  /* Send goodbye message to every peer */
+  for (cur = (char**)xbt_dynar_iterator_next(it); cur != NULL; cur = (char**)xbt_dynar_iterator_next(it)) {
+    /* Send message to current peer */
+    current_host = *cur;
+    task = task_message_end_data_new(me, current_host);
+    //MSG_task_set_category(task, current_host);
+    MSG_task_send(task, current_host);
+  }
+
+  return MSG_OK;
+}
+
+
+/** Emitter function  */
+int broadcaster(int argc, char *argv[])
+{
+  xbt_dynar_t host_list = NULL;
+  const char *first = NULL;
+  int status = !MSG_OK;
+
+  XBT_INFO("broadcaster");
+
+  /* Check that every host given by the hostcount in argv[1] exists and add it
+     to a dynamic array */
+  host_list = build_hostlist_from_hostcount(atoi(argv[1]));
+  /*host_list = build_hostlist_from_argv(argc, argv);*/
+  
+  /* TODO: Error checking */
+  status = broadcaster_build_chain(&first, host_list);
+  status = broadcaster_send_file(first);
+  status = broadcaster_finish(host_list);
+
+  delete_hostlist(host_list);
+
+  return status;
+}
