@@ -197,6 +197,12 @@ else(enable_latency_bound_tracking)
   endif(enable_gtnets)
 endif(enable_latency_bound_tracking)
 
+if(enable_mallocators)
+  SET(MALLOCATOR_IS_WANTED 1)
+else(enable_mallocators)
+  SET(MALLOCATOR_IS_WANTED 0)
+endif(enable_mallocators)
+
 if(enable_model-checking AND HAVE_MMAP)
   SET(HAVE_MC 1)
   SET(MMALLOC_WANT_OVERRIDE_LEGACY 1)

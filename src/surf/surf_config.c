@@ -6,6 +6,7 @@
 
 /* surf_config: configuration infrastructure for the simulation world       */
 
+#include "xbt/misc.h"
 #include "xbt/config.h"
 #include "xbt/log.h"
 #include "xbt/str.h"

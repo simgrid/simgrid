@@ -4,8 +4,6 @@
  */
 
 
-#include "topo.h"
-#include "param.h"
 #include "Matrix_init.h"
 #include "2.5D_MM.h"
 #include "xbt/log.h"
@@ -68,12 +66,11 @@ int main(int argc, char ** argv)
   while(loop==1);
 #endif
 
-  int opt, display = 0;
-  char *conf_file = NULL;
+  int opt = 0;
   optind = 1;
 
   //get the parameter from command line
-  while ((opt = getopt(argc, argv, "hdf:r:c:M:N:K:B:G:g:k:P:")) != -1) {
+  while ((opt = getopt(argc, argv, "hr:c:M:N:K:B:G:g:k:P:")) != -1) {
     switch(opt) {
       case 'h':
         XBT_INFO(
@@ -87,8 +84,6 @@ int main(int argc, char ** argv)
                     "	-k I	group rank(default: %zu)\n"
                     "	-r I	processor row size (default: %zu)\n"
                     "	-c I	processor col size (default: %zu)\n"
-                    " -f {Filename} provide the file with the configuration\n"
-                    "	-d  display the configuration file on the stderr\n"
                     "	-h	help\n",
                     m, n, k, Block_size, NB_groups, group, key, row, col);
         return 0;
@@ -122,40 +117,9 @@ int main(int argc, char ** argv)
         /*case 'P':
           str_mask = strdup(optarg);
           break;*/
-      case 'f':
-        conf_file = strdup(optarg);
-        break;
-      case 'd':
-        display = 1;
-        break;
     }
   }
-  if( display == 1 ){
-    print_conf(MPI_COMM_WORLD, myrank,NULL,NULL);
-    MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Finalize();
-    exit(0);
-  }
 
-  char **conf;
-  //char ***conf_all;
-  if(conf_file == NULL){
-    conf = get_conf(MPI_COMM_WORLD, "default_conf", -1);
-  }else{
-    conf = get_conf(MPI_COMM_WORLD, conf_file, -1);
-    //conf_all = get_conf_all(conf_file);
-  }
-  if(conf == NULL){
-        XBT_INFO(
-                "No configuration for me inside the file\n");
-  }else{
-
-
-    if(NB_groups !=1){
-      /* Get my group number from the config file */
-      group = (size_t)atoi(conf[4]);
-    }
-  }
 
 
 

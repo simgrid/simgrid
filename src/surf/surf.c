@@ -4,14 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <ctype.h>
-
 #include "surf_private.h"
 #include "xbt/module.h"
 #include "mc/mc.h"
 #include "simix/smx_host_private.h"
 #include "surf/surf_resource.h"
 #include "xbt/xbt_os_thread.h"
+
+#include <ctype.h>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
