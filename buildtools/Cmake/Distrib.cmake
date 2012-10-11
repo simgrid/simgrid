@@ -34,7 +34,7 @@ if(NOT WIN32)
     COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
     COMMENT "Generating manpages"
     )
-  install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1
+  install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1 ${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.1
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)
 
 endif(NOT WIN32)
