@@ -262,6 +262,12 @@ examples/msg/parallel_contexts/pcontexts
 examples/msg/parallel_contexts/pcontexts2
 examples/msg/pmm/msg_pmm
 examples/smpi/toto.txt
+examples/smpi/MM/MM_mpi
+examples/smpi/hvector_test
+examples/smpi/indexed_test
+examples/smpi/smpi_replay
+examples/smpi/struct_test
+examples/smpi/vector_test
 examples/smpi/replay
 examples/smpi/reduce
 examples/smpi/bcast
