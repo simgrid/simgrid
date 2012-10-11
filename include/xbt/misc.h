@@ -9,6 +9,11 @@
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
 
+/* Define _GNU_SOURCE for getline, isfinite, etc. */
+#ifndef _GNU_SOURCE
+	#define _GNU_SOURCE
+#endif
+
 /* Attributes are only in recent versions of GCC */
 #if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4))
 # define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \

@@ -8,16 +8,6 @@
 #include "smx_private.h"
 #include "mc/mc.h"
 #include "xbt/ex.h"
-
-#ifndef _SVID_SOURCE
-#  define _SVID_SOURCE    /* strdup() */
-#endif
-#ifndef _ISOC99_SOURCE
-#  define _ISOC99_SOURCE  /* isfinite() */
-#endif
-#ifndef _ISO_C99_SOURCE
-#  define _ISO_C99_SOURCE /* isfinite() */
-#endif
 #include <math.h>         /* isfinite() */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);

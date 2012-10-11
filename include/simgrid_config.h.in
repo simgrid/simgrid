@@ -74,17 +74,14 @@ XBT_PUBLIC(void) sg_version(int *major,int *minor,int *patch);
 @simgrid_need_asprintf@
 @simgrid_need_vasprintf@
 
+#include <stdio.h>  /* FILE, getline if it exists  */
+
 /* Use that config to declare missing elements */
 #ifdef SIMGRID_NEED_GETLINE
 #include <stdlib.h> /* size_t */
-#include <stdio.h>  /* FILE*  */
 XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
-#else
-#ifndef _GNU_SOURCE
-	#define _GNU_SOURCE
 #endif
-#include <stdio.h>
-#endif
+
 #include <stdarg.h>
 
 /* snprintf related functions */
