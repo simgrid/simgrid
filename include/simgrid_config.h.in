@@ -121,6 +121,9 @@ XBT_PUBLIC(char *) bvprintf(const char *fmt, va_list ap);
 XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /** @} */
 
+/* Whether mallocators should be enabled or not. */
+#define MALLOCATOR_IS_WANTED @MALLOCATOR_IS_WANTED@
+
 /* Define if xbt contexts are based on our threads implementation or not */
 #cmakedefine CONTEXT_THREADS @CONTEXT_THREADS@
 

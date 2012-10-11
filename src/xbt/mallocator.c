@@ -14,10 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
 
-
-/* Change to 0 to completely disable mallocators. */
-#define MALLOCATOR_IS_WANTED 1
-
 /* Mallocators and memory mess introduced by model-checking do not mix well
  * together: the mallocator will give standard memory when we are using raw
  * memory (so these blocks are killed on restore) and the contrary (so these
@@ -53,7 +49,8 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   xbt_assert(new_f != NULL && free_f != NULL, "invalid parameter");
 
   m = xbt_new0(s_xbt_mallocator_t, 1);
-  XBT_VERB("Create mallocator %p", m);
+  XBT_VERB("Create mallocator %p (%s)",
+           m, MALLOCATOR_IS_ENABLED ? "enabled" : "disabled");
   m->current_size = 0;
   m->new_f = new_f;
   m->free_f = free_f;
@@ -64,8 +61,6 @@ xbt_mallocator_t xbt_mallocator_new(int size,
     m->max_size = size;
     m->mutex = xbt_os_mutex_init();
   } else {
-    if (!MALLOCATOR_IS_WANTED) /* Warn to avoid to commit debugging settings */
-      XBT_WARN("Mallocator is disabled!");
     m->objects = NULL;
     m->max_size = 0;
     m->mutex = NULL;
