@@ -355,6 +355,6 @@ void check_fraghead(struct mdesc *mdp){
     }
   }
 
-  fprintf(stderr, "check fraghead ok\n");
+  //fprintf(stderr, "check fraghead ok\n");
 
 }
