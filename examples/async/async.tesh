@@ -57,3 +57,4 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar async/AsyncTest ${sr
 > [ 29.000728] (0:@) MSG_main finished
 > [ 29.000728] (0:@) Clean java world
 > [ 29.000728] (0:@) Clean native world
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.

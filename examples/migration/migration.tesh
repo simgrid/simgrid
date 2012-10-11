@@ -15,4 +15,5 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar migration/Migration 
 > [  7.000000] (1:migration.Emigrant@Jacquelin) I've been moved on this new host:Jacquelin
 > [  7.000000] (1:migration.Emigrant@Jacquelin) Uh, nothing to do here. Stopping now
 > [  7.000000] (2:migration.Policeman@Boivin) I moved the emigrant
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 

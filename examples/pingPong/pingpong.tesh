@@ -3,6 +3,7 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar pingPong/PingPongTest ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/pingPong/pingPongDeployment.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
 > [1.048890] [jmsg/INFO] Done running MSG_MAIN
 > [1.048890] [jmsg/INFO] MSG_main finished

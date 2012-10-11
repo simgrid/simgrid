@@ -12,4 +12,4 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar priority/Priority ${
 > [  1.111109] (0:@) Clean java world
 > [  1.111109] (0:@) Clean native world
 > [  1.111109] (1:priority.Test@Fafard) Goodbye now!
-
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.

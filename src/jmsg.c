@@ -89,11 +89,11 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   (*env)->GetJavaVM(env, &__java_vm);
 
   if ((*env)->FindClass(env, "java/dyn/Coroutine")) {
-  	XBT_VERB("Using Coroutines");
+  	XBT_INFO("Using Coroutines. Your simulation is on steroid.");
   	smx_factory_initializer_to_use = SIMIX_ctx_cojava_factory_init;
   }
   else {
-  	XBT_VERB("Using java threads");
+  	XBT_INFO("Using regular java threads. Coroutines could speed your simulation up.");
   	smx_factory_initializer_to_use = SIMIX_ctx_java_factory_init;
   }
   jthrowable exc = (*env)->ExceptionOccurred(env);
@@ -155,15 +155,6 @@ JNIEXPORT void JNICALL
   }
   xbt_dynar_free(&hosts);
   XBT_INFO("Clean native world");
-}
-JNIEXPORT void JNICALL
-    JNICALL Java_org_simgrid_msg_Msg_clean(JNIEnv * env, jclass cls)
-{
-  /* cleanup native stuff. Calling it is ... useless since leaking memory at the end of the simulation is a non-issue */
-  msg_error_t rv = MSG_OK != MSG_clean();
-  jxbt_check_res("MSG_clean()", rv, MSG_OK,
-                 bprintf
-                 ("unexpected error : MSG_clean() failed .. please report this bug "));
 }
 
 JNIEXPORT void JNICALL

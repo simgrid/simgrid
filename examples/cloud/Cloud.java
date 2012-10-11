@@ -37,6 +37,5 @@ public class Cloud {
 		/* Execute the simulation */
 		Msg.run();
 		
-		Msg.clean();
     }
 }

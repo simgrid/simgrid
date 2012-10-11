@@ -1,19 +1,23 @@
 SimGrid-java (3.8) unstable; urgency=low
 
- * Introduce org.simgrid.trace.Trace (partial implementation of JAVA bindings
-   for the TRACE API). 
-   Although all TRACE methods appear in the Trace class, please not that only
-   few of thems are really implemented at the JNI level (see ./src/jtrace.c
-   for further information). 
- Extend the API:
+ * New module: org.simgrid.trace.Trace (SimGrid trace bindings)
+   Warning: all methods are visible, but only some of them are 
+   implemented so far. Check the source (src/jtrace.c)
+   for further information.
  * New module: org.simgrid.msg.File (SimGrid File management functions)
- * New Module: org.simgrid.msg.VM (SimGrid interface to mimick IAAS 
-clouds)
- * Change the meaning of Process.restart: now restart the process from the start, like MSG_process_restart in C.
- * Add Process.setAutoRestart: handling of process restart when failed host comes back.
- * Add Process.getProperty, Host.getProperty, Host.getProperty: allows you to retrieve the properties of the processes/hosts
+ * New Module: org.simgrid.msg.VM (SimGrid interface to mimick IAAS clouds)
+ * Change the meaning of Process.restart: now restart the process from
+   the begining, like MSG_process_restart in C.
+ * Add Process.setAutoRestart: handling of process restart when failed
+   host comes back. 
+ * Add Process.getProperty, Host.getProperty, Host.getProperty: allows
+   you to retrieve the properties of the processes/hosts
+ * Deprecate Msg.clean(): you can just forget about it now.
  
- * Introduce a new context factory based on Coroutines (read the doc to know how to use it): simulations are expected to run up to five times faster.
+ * New context factory based on Coroutines. It mandates a modified JVM
+   but then, the simulations run about five times faster, and there is
+   no limit to the amount of processes (beside of the available memory).
+ 
 SimGrid-java (3.7.1) stable; urgency=low
   
  The "Java aint got to be bloated and slow" release

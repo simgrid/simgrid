@@ -1,7 +1,6 @@
 #! ./tesh
 
 ! output sort
-
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar suspend/Suspend ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/suspend/suspendDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Ready to run MSG_MAIN
 > [  0.000000] (1:suspend.DreamMaster@Jacquelin) Let's create a lazy guy.
@@ -15,4 +14,5 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar suspend/Suspend ${sr
 > [ 10.000000] (1:suspend.DreamMaster@Jacquelin) OK, goodbye now.
 > [ 10.000000] (2:Lazy@Jacquelin) Uuuh ? Did somebody call me ?
 > [ 10.000000] (2:Lazy@Jacquelin) Mmmh, goodbye now.
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 
