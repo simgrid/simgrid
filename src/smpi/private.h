@@ -112,7 +112,7 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices,
 int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices,
                     MPI_Datatype* old_types, MPI_Datatype* new_type);
 
-void smpi_datatype_create(MPI_Datatype* new_type, int size, int has_subtype, void *struct_type, int flags);
+void smpi_datatype_create(MPI_Datatype* new_type, int size,int realsize, int has_subtype, void *struct_type, int flags);
 
 
 void smpi_datatype_free(MPI_Datatype* type);
