@@ -83,6 +83,7 @@ void SIMIX_ctx_cojava_factory_init(smx_context_factory_t * factory)
 
   jclass class_thread = (*global_env)->FindClass(global_env, "java/lang/Thread");
   xbt_assert((class_thread != NULL), "Can't find java.lang.Thread class");
+  
   jclass class_coroutine_support = (*global_env)->FindClass(global_env, "java/dyn/CoroutineSupport");
   xbt_assert((class_coroutine_support != NULL), "Can't find java.dyn.CoroutineSupport class");
   jmethodID thread_get_current = (*global_env)->GetStaticMethodID(global_env, class_thread, "currentThread", "()Ljava/lang/Thread;");
@@ -244,10 +245,12 @@ static void smx_ctx_cojava_runall(void)
 {
   cojava_processes = SIMIX_process_get_runnable();
   smx_process_t process;
-  process = xbt_dynar_get_as(cojava_processes, 0, smx_process_t);
-  cojava_process_index = 1;
-  /* Execute the first process */
-  smx_ctx_cojava_resume(SIMIX_process_get_context(process));
+  if (xbt_dynar_length(cojava_processes) > 0) {
+    process = xbt_dynar_get_as(cojava_processes, 0, smx_process_t);
+    cojava_process_index = 1;
+    /* Execute the first process */
+    smx_ctx_cojava_resume(SIMIX_process_get_context(process));
+  }
 }
 
 static void smx_ctx_cojava_create_coroutine(smx_ctx_cojava_t context) {
