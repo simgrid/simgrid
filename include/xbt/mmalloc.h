@@ -66,6 +66,7 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 
 void mmalloc_backtrace_block_display(void* heapinfo, int block);
 void mmalloc_backtrace_fragment_display(void* heapinfo, int block, int frag);
+void mmalloc_backtrace_display(void *addr);
 
 int is_free_area(void *area, xbt_mheap_t heap);
 
