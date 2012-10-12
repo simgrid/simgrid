@@ -66,14 +66,15 @@ void TRACE_msg_vm_create (const char *vm_name, msg_host_t host)
   }
 }
 
-void TRACE_msg_vm_kill(msg_vm_t vm)
-{
-  if (TRACE_msg_vm_is_enabled()){
+void TRACE_msg_vm_kill(msg_vm_t vm) {
+  if (TRACE_msg_vm_is_enabled()) {
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
     //kill means that this vm no longer exists, let's destroy it
-    PJ_container_free (PJ_container_get (instr_vm_id(vm, str, len)));
+    container_t process = PJ_container_get (instr_vm_id(vm, str, len));
+    PJ_container_remove_from_parent (process);
+    PJ_container_free (process);
   }
 }
 

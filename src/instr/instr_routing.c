@@ -166,11 +166,6 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
       //if child1 is not child2
       if (strcmp (child1_name, child2_name) == 0) continue;
 
-      if (graph_extraction_filter_out (child1, NULL)) continue;
-    xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
-      if (graph_extraction_filter_out (child2, child1)) continue;
-      XBT_DEBUG ("get_route from %s to %s", child1_name, child2_name);
-
       //get the route
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
       route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
