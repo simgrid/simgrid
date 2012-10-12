@@ -272,6 +272,23 @@ set(MSG_SRC
   src/msg/msg_vm.c
   )
 
+#* ****************************************************************************************** *#
+#* TUTORIAL: New API                                                                        *#
+
+set(MSG_SRC
+  ${MSG_SRC}
+  src/msg/msg_new_api.c
+  )
+set(EXTRA_DIST
+  ${EXTRA_DIST}
+  src/simix/smx_new_api_private.h
+  )
+set(SIMIX_SRC
+  ${SIMIX_SRC}
+  src/simix/smx_new_api.c
+)
+#* ****************************************************************************************** *#
+
 set(PLATFGEN_SRC
   include/simgrid/platf_generator.h
   src/surf/platf_generator.c

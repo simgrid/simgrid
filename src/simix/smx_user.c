@@ -1651,6 +1651,20 @@ xbt_dict_t simcall_file_ls(const char* mount, const char* path)
   return simcall->file_ls.result;
 }
 
+/* ****************************************************************************************** */
+/* TUTORIAL: New API                                                                          */
+/* All functions for simcall                                                                  */
+/* ****************************************************************************************** */
+int simcall_new_api_fct(const char* param1, double param2){
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+  simcall->call = SIMCALL_NEW_API_INIT;
+  simcall->new_api.param1 = param1;
+  simcall->new_api.param2 = param2;
+
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->new_api.result;
+}
+
 /* ************************************************************************** */
 
 /** @brief returns a printable string representing a simcall */
