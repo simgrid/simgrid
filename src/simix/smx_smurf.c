@@ -602,7 +602,7 @@ void SIMIX_simcall_post(smx_action_t action)
     /* TUTORIAL: New API                                                                        */
     /* ****************************************************************************************** */
     case SIMIX_ACTION_NEW_API:
-      SIMIX_post_new_model(action);
+      SIMIX_post_new_api(action);
       break;
   }
 }
