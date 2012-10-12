@@ -80,7 +80,8 @@ smx_action_t SIMIX_new_api_fct(smx_process_t process, const char* param1, double
   action->category = NULL;
 #endif
 
-  action->new_api.surf_new_api = NULL;
+  // Called the function from the new model
+  action->new_api.surf_new_api = surf_workstation_model->extension.new_model.fct();
 
   surf_workstation_model->action_data_set(action->new_api.surf_new_api, action);
   XBT_DEBUG("Create NEW MODEL action %p", action);
