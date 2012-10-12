@@ -39,7 +39,7 @@ void mmalloc_backtrace_block_display(void* heapinfo, int block){
   xbt_ex_t e;
 
   if (((malloc_info *)heapinfo)[block].busy_block.bt_size == 0) {
-    XBT_DEBUG("No backtrace available for that block, sorry.");
+    fprintf(stderr, "No backtrace available for that block, sorry.\n");
     return;
   }
 
@@ -48,15 +48,15 @@ void mmalloc_backtrace_block_display(void* heapinfo, int block){
 
   xbt_ex_setup_backtrace(&e);
   if (e.used == 0) {
-    XBT_DEBUG("(backtrace not set)");
+    fprintf(stderr, "(backtrace not set)\n");
   } else if (e.bt_strings == NULL) {
-    XBT_DEBUG("(backtrace not ready to be computed. %s)",xbt_binary_name?"Dunno why":"xbt_binary_name not setup yet");
+    fprintf(stderr, "(backtrace not ready to be computed. %s)\n",xbt_binary_name?"Dunno why":"xbt_binary_name not setup yet");
   } else {
     int i;
 
-    XBT_DEBUG("Backtrace of where the block %d was malloced (%d frames):", block ,e.used);
+    fprintf(stderr, "Backtrace of where the block %d was malloced (%d frames):\n", block ,e.used);
     for (i = 0; i < e.used; i++)       /* no need to display "xbt_backtrace_display" */{
-      XBT_DEBUG("%d ---> %s",i, e.bt_strings[i] + 4);
+      fprintf(stderr, "%d ---> %s\n",i, e.bt_strings[i] + 4);
     }
   }
 
@@ -71,16 +71,47 @@ void mmalloc_backtrace_fragment_display(void* heapinfo, int block, int frag){
 
   xbt_ex_setup_backtrace(&e);
   if (e.used == 0) {
-    XBT_DEBUG("(backtrace not set)");
+    fprintf(stderr, "(backtrace not set)\n");
   } else if (e.bt_strings == NULL) {
-    XBT_DEBUG("(backtrace not ready to be computed. %s)",xbt_binary_name?"Dunno why":"xbt_binary_name not setup yet");
+    fprintf(stderr, "(backtrace not ready to be computed. %s)\n",xbt_binary_name?"Dunno why":"xbt_binary_name not setup yet");
   } else {
     int i;
 
-    XBT_DEBUG("Backtrace of where the fragment %d in block %d was malloced (%d frames):", frag, block ,e.used);
+    fprintf(stderr, "Backtrace of where the fragment %d in block %d was malloced (%d frames):\n", frag, block ,e.used);
     for (i = 0; i < e.used; i++)       /* no need to display "xbt_backtrace_display" */{
-      XBT_DEBUG("%d ---> %s",i, e.bt_strings[i] + 4);
+      fprintf(stderr, "%d ---> %s\n",i, e.bt_strings[i] + 4);
     }
+  }
+
+}
+
+void mmalloc_backtrace_display(void *addr){
+
+  size_t block, frag_nb;
+  int type;
+  
+  xbt_mheap_t heap = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit();
+
+  block = (((char*) (addr) - (char*) heap -> heapbase) / BLOCKSIZE + 1);
+
+  type = heap->heapinfo[block].type;
+
+  switch(type){
+  case -1 : /* Free block */
+    fprintf(stderr, "Asked to display the backtrace of a block that is free. I'm puzzled\n");
+    xbt_abort();
+    break; 
+  case 0: /* Large block */
+    mmalloc_backtrace_block_display(heap->heapinfo, block);
+    break;
+  default: /* Fragmented block */
+    frag_nb = RESIDUAL(addr, BLOCKSIZE) >> type;
+    if(heap->heapinfo[block].busy_frag.frag_size[frag_nb] == -1){
+      fprintf(stderr , "Asked to display the backtrace of a fragment that is free. I'm puzzled\n");
+      xbt_abort();
+    }
+    mmalloc_backtrace_fragment_display(heap->heapinfo, block, frag_nb);
+    break;
   }
 
 }
