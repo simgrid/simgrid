@@ -378,6 +378,23 @@ void surf_config_init(int *argc, char **argv)
                      &default_value, 1, 1, &_surf_cfg_cb__storage_mode,
                      NULL);
 
+    /* ********************************************************************* */
+    /* TUTORIAL: New model                                                   */
+    sprintf(description,
+            "The model to use for the New model. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_new_model_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_new_model_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each model)");
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_surf_cfg_set, "new_model/model", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__storage_mode,
+                     NULL);
+    /* ********************************************************************* */
+
     sprintf(description,
             "The model to use for the network. Possible values: ");
     p = description;
@@ -726,4 +743,14 @@ void surf_config_models_setup()
   XBT_DEBUG("Call storage_model_init");
   storage_id = find_model_description(surf_storage_model_description, storage_model_name);
   surf_storage_model_description[storage_id].model_init_preparse();
+
+  /* ********************************************************************* */
+  /* TUTORIAL: New model                                                   */
+  int new_model_id = -1;
+  char *new_model_name = NULL;
+  new_model_name = xbt_cfg_get_string(_surf_cfg_set, "new_model/model");
+  XBT_DEBUG("Call new model_init");
+  new_model_id = find_model_description(surf_new_model_description, new_model_name);
+  surf_new_model_description[new_model_id].model_init_preparse();
+  /* ********************************************************************* */
 }

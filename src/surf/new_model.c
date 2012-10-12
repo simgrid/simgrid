@@ -51,18 +51,25 @@ static void* new_model_create_resource(const char* id, const char* model,const c
 
 static void new_model_finalize(void)
 {
-  THROW_UNIMPLEMENTED;
+  lmm_system_free(new_model_maxmin_system);
+  new_model_maxmin_system = NULL;
+
+  surf_model_exit(surf_new_model);
+  surf_new_model = NULL;
+
+  xbt_swag_free
+      (new_model_running_action_set_that_does_not_need_being_checked);
+  new_model_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
 static void new_model_update_actions_state(double now, double delta)
 {
-  THROW_UNIMPLEMENTED;
+  return;
 }
 
 static double new_model_share_resources(double NOW)
 {
-  THROW_UNIMPLEMENTED;
-  return 0;
+  return -1;
 }
 
 static int new_model_resource_used(void *resource_id)
@@ -131,7 +138,7 @@ static void new_model_define_callbacks()
 {
 }
 
-static void surf_new_model_model_init_internal(void)
+static void surf_new_model_init_internal(void)
 {
   s_surf_action_t action;
 
@@ -141,7 +148,7 @@ static void surf_new_model_model_init_internal(void)
   new_model_running_action_set_that_does_not_need_being_checked =
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
-  surf_new_model->name = "Storage";
+  surf_new_model->name = "New Model";
   surf_new_model->action_unref = new_model_action_unref;
   surf_new_model->action_cancel = new_model_action_cancel;
   surf_new_model->action_state_set = new_model_action_state_set;
@@ -167,9 +174,9 @@ static void surf_new_model_model_init_internal(void)
 
 }
 
-void surf_new_model_model_init_default(void)
+void surf_new_model_init_default(void)
 {
-  surf_new_model_model_init_internal();
+  surf_new_model_init_internal();
   new_model_define_callbacks();
 
   xbt_dynar_push(model_list, &surf_new_model);
