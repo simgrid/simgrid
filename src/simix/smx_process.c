@@ -333,6 +333,14 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
         case SIMIX_ACTION_IO:
           SIMIX_io_destroy(process->waiting_action);
           break;
+
+        /* **************************************/
+        /* TUTORIAL: New API                    */
+        case SIMIX_ACTION_NEW_API:
+          SIMIX_new_api_destroy(process->waiting_action);
+          break;
+        /* **************************************/
+
     }
   }
   if(!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != issuer) {

@@ -29,18 +29,17 @@ static xbt_swag_t
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
 static void new_model_action_state_set(surf_action_t action, e_surf_action_state_t state);
-static surf_action_t new_model_action_execute ();
-
-static surf_action_t new_model_action_fct()
-{
-  surf_action_t action = new_model_action_execute();
-  return action;
-}
 
 static surf_action_t new_model_action_execute ()
 {
   THROW_UNIMPLEMENTED;
   return NULL;
+}
+
+static surf_action_t new_model_action_fct()
+{
+  surf_action_t action = new_model_action_execute();
+  return action;
 }
 
 static void* new_model_create_resource(const char* id, const char* model,const char* type_id,const char* content_name)
