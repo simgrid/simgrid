@@ -258,14 +258,12 @@ static void smx_ctx_sysv_resume_serial(smx_process_t first_process)
 
 static void smx_ctx_sysv_runall_serial(void)
 {
-  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
-    smx_process_t first_process =
-        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
-    sysv_process_index = 1;
+  smx_process_t first_process =
+      xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+  sysv_process_index = 1;
 
-    /* execute the first process */
-    smx_ctx_sysv_resume_serial(first_process);
-  }
+  /* execute the first process */
+  smx_ctx_sysv_resume_serial(first_process);
 }
 
 static void smx_ctx_sysv_stop_parallel(smx_context_t context)

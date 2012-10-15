@@ -490,14 +490,12 @@ void smx_ctx_raw_new_sr(void)
  */
 static void smx_ctx_raw_runall_serial(void)
 {
-  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
-    smx_process_t first_process =
-        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
-    raw_process_index = 1;
+  smx_process_t first_process =
+      xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+  raw_process_index = 1;
 
-    /* execute the first process */
-    smx_ctx_raw_resume_serial(first_process);
-  }
+  /* execute the first process */
+  smx_ctx_raw_resume_serial(first_process);
 }
 #endif
 
@@ -564,6 +562,8 @@ static void smx_ctx_raw_runall_parallel(void)
   raw_threads_working = 0;
   xbt_parmap_apply(raw_parmap, (void_f_pvoid_t) smx_ctx_raw_resume_parallel,
       simix_global->process_to_run);
+#else
+  xbt_die("You asked for a parallel execution, but you don't have any threads.")
 #endif
 }
 

@@ -299,7 +299,9 @@ static XBT_INLINE void SIMIX_context_suspend(smx_context_t context)
  */
 static XBT_INLINE void SIMIX_context_runall(void)
 {
-  simix_global->context_factory->runall();
+  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
+    simix_global->context_factory->runall();
+  }
 }
 
 /**
