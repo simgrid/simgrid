@@ -786,6 +786,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindRubySimgrid.cmake
   buildtools/Cmake/Modules/FindSimGrid.cmake
   buildtools/Cmake/Modules/FindValgrind.cmake
+  buildtools/Cmake/Modules/FindLibunwind.cmake
   buildtools/Cmake/Option.cmake
   buildtools/Cmake/Pipol.cmake
   buildtools/Cmake/PrintArgs.cmake

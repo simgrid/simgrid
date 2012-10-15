@@ -115,6 +115,8 @@ if(HAVE_GTNETS)
 endif(HAVE_GTNETS)
 
 if(HAVE_MC)
+  # The availability of libunwind was checked in CompleteInFiles.cmake
+  #   (that includes FindLibunwind.cmake), so simply load it now.
   if(PROCESSOR_x86_64)
     SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86_64")
   else(PROCESSOR_x86_64)
