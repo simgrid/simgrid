@@ -58,7 +58,10 @@ msg_error_t test_all(const char *platform_file,
   TRACE_category_with_color("host2", "0 1 1");
   TRACE_category_with_color("host3", "1 0 0");
   TRACE_category_with_color("host4", "1 0 1");
-  TRACE_category_with_color("host5", "1 1 0");
+  TRACE_category_with_color("host5", "0 0 0");
+  TRACE_category_with_color("host6", "1 1 0");
+  TRACE_category_with_color("host7", "1 1 1");
+  TRACE_category_with_color("host8", "0 1 0");
 
   /*   Application deployment */
   MSG_function_register("broadcaster", broadcaster);

@@ -60,13 +60,13 @@ msg_error_t peer_wait_for_message(peer_t peer)
   int done = 0;
 
   while (!done) {
-    if (comm == NULL)
+    if (comm == NULL) // FIXME I should have a recv queue
       comm = MSG_task_irecv(&task, peer->me);
 
     if (MSG_comm_test(comm)) {
       status = MSG_comm_get_status(comm);
       //XBT_INFO("peer_wait_for_message: error code = %d", status);
-      xbt_assert(status == MSG_OK, __FILE__ ": peer_wait_for_message() failed");
+      xbt_assert(status == MSG_OK, "peer_wait_for_message() failed");
       MSG_comm_destroy(comm);
       comm = NULL;
       done = peer_execute_task(peer, task);
@@ -81,7 +81,7 @@ msg_error_t peer_wait_for_message(peer_t peer)
   return status;
 }
 
-void peer_init(peer_t p)
+void peer_init(peer_t p, int argc, char *argv[])
 {
   p->init = 0;
   p->prev = NULL;
@@ -89,7 +89,13 @@ void peer_init(peer_t p)
   p->pieces = 0;
   p->close_asap = 0;
   p->pending_sends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  p->me = MSG_host_get_name(MSG_host_self());
+  p->me = xbt_new(char, HOSTNAME_LENGTH);
+  /* Set mailbox name: use host number from argv or hostname if no argument given */
+  if (argc > 1) {
+    snprintf(p->me, HOSTNAME_LENGTH, "host%s", argv[1]);
+  } else {
+    strncpy(p->me, MSG_host_get_name(MSG_host_self()), HOSTNAME_LENGTH);
+  }
 }
 
 void peer_shutdown(peer_t p)
@@ -105,6 +111,7 @@ void peer_shutdown(peer_t p)
 
   xbt_assert(xbt_dynar_length(p->pending_sends) == 0, "Shutdown failed, sends still pending after deadline");
   xbt_dynar_free(&p->pending_sends);
+  xbt_free(p->me);
 
   xbt_free(p);
 }
@@ -117,7 +124,7 @@ int peer(int argc, char *argv[])
 
   XBT_INFO("peer");
 
-  peer_init(p);
+  peer_init(p, argc, argv);
   status = peer_wait_for_message(p);
   peer_shutdown(p);
 

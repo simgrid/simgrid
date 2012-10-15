@@ -5,7 +5,6 @@
 #include "xbt/sysdep.h"
 
 #define MESSAGE_SIZE 1
-
-
+#define HOSTNAME_LENGTH 20
 
 #endif /* KADEPLOY_COMMON_H */

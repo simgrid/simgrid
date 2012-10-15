@@ -10,17 +10,17 @@
 
 #include "messages.h"
 #include "iterator.h"
+#include "common.h"
 
-#define HOSTNAME_LENGTH 20
-#define PIECE_COUNT 1000
+#define PIECE_COUNT 50
 
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount); 
 /*xbt_dynar_t build_hostlist_from_argv(int argc, char *argv[]);*/
 
 /* Broadcaster: helper functions */
-int broadcaster_build_chain(const char **first, xbt_dynar_t host_list);
+int broadcaster_build_chain(const char **first, xbt_dynar_t host_list, xbt_dynar_iterator_t it);
 int broadcaster_send_file(const char *first);
-int broadcaster_finish(xbt_dynar_t host_list);
+int broadcaster_finish(xbt_dynar_iterator_t it);
 
 /* Tasks */
 int broadcaster(int argc, char *argv[]);

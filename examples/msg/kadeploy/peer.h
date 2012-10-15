@@ -5,6 +5,7 @@
 #include "xbt/sysdep.h"
 
 #include "messages.h"
+#include "common.h"
 
 #define PEER_SHUTDOWN_DEADLINE 6000
 
@@ -13,7 +14,7 @@ typedef struct s_peer {
   int init;
   const char *prev;
   const char *next;
-  const char *me;
+  char *me;
   int pieces;
   xbt_dynar_t pending_sends;
   int close_asap; /* TODO: unused */
@@ -24,7 +25,7 @@ msg_error_t peer_wait_for_message(peer_t peer);
 int peer_execute_task(peer_t peer, msg_task_t task);
 void peer_init_chain(peer_t peer, message_t msg);
 void peer_shutdown(peer_t p);
-void peer_init(peer_t p);
+void peer_init(peer_t p, int argc, char *argv[]);
 
 int peer(int argc, char *argv[]);
 
