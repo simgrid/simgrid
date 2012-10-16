@@ -332,7 +332,7 @@ int MAIN__(void)
   fflush(stdout);
   fflush(stderr);
 
-  if (MC_IS_ENABLED)
+  if (MC_is_active())
     MC_modelcheck();
   else
     SIMIX_run();

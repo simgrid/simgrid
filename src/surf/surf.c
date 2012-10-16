@@ -426,7 +426,7 @@ void surf_init(int *argc, char **argv)
 
   surf_config_init(argc, argv);
   surf_action_init();
-  if (MC_IS_ENABLED)
+  if (MC_is_active())
     MC_memory_init();
 }
 

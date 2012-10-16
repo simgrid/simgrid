@@ -182,7 +182,7 @@ static void SIMIX_clean(void)
  */
 XBT_INLINE double SIMIX_get_clock(void)
 {
-  if(MC_IS_ENABLED){
+  if(MC_is_active()){
     return MC_process_clock_get(SIMIX_process_self());
   }else{
     return surf_get_clock();

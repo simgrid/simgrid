@@ -579,7 +579,7 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 
 void SIMIX_pre_process_sleep(smx_simcall_t simcall)
 {
-  if (MC_IS_ENABLED) {
+  if (MC_is_active()) {
     MC_process_clock_add(simcall->issuer, simcall->process_sleep.duration);
     simcall->process_sleep.result = SIMIX_DONE;
     SIMIX_simcall_answer(simcall);

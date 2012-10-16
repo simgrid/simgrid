@@ -327,7 +327,7 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
      } else {
        raw_maestro_context = context;
 
-       if(MC_IS_ENABLED)
+       if(MC_is_active())
          MC_ignore(&(raw_maestro_context->stack_top), sizeof(raw_maestro_context->stack_top));
 
      }

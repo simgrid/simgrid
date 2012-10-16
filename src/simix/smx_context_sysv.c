@@ -168,7 +168,7 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
     sysv_maestro_context = context;
   }
 
-  if(MC_IS_ENABLED && code)
+  if(MC_is_active() && code)
     MC_new_stack_area(context, ((smx_process_t)((smx_context_t)context)->data)->name, &(context->uc));
 
   return (smx_context_t) context;

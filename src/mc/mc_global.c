@@ -23,6 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
 /* Configuration support */
 e_mc_reduce_t mc_reduce_kind=e_mc_reduce_unset;
 
+
 extern int _surf_init_status;
 void _mc_cfg_cb_reduce(const char *name, int pos) {
   if (_surf_init_status && !_surf_do_model_check) {
@@ -585,7 +586,7 @@ void MC_print_statistics_pairs(mc_stats_pair_t stats)
 
 void MC_assert(int prop)
 {
-  if (MC_IS_ENABLED && !prop){
+  if (MC_is_active() && !prop){
     XBT_INFO("**************************");
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");
@@ -597,7 +598,7 @@ void MC_assert(int prop)
 }
 
 static void MC_assert_pair(int prop){
-  if (MC_IS_ENABLED && !prop) {
+  if (MC_is_active() && !prop) {
     XBT_INFO("**************************");
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");

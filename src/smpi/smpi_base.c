@@ -538,7 +538,7 @@ void smpi_mpi_waitall(int count, MPI_Request requests[],
   }
 
   for(c = 0; c < count; c++) {
-      if(MC_IS_ENABLED) {
+      if(MC_is_active()) {
         smpi_mpi_wait(&requests[c], pstat);
         index = c;
       } else {

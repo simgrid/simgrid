@@ -48,7 +48,7 @@ smx_ctx_base_factory_create_context_sized(size_t size,
   smx_context_t context = xbt_malloc0(size);
 
   /* Store the address of the stack in heap to compare it apart of heap comparison */
-  if(MC_IS_ENABLED)   
+  if(MC_is_active())
     MC_ignore(context, size);
 
   /* If the user provided a function for the process then use it.

@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
  * memory (so these blocks are killed on restore) and the contrary (so these
  * blocks will leak accross restores).
  */
-#define MALLOCATOR_IS_ENABLED (MALLOCATOR_IS_WANTED && !MC_IS_ENABLED)
+#define MALLOCATOR_IS_ENABLED (MALLOCATOR_IS_WANTED && !MC_is_active())
 
 /**
  * \brief Constructor
