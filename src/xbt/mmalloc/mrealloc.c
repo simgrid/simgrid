@@ -112,6 +112,8 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       mdp->heaplimit = oldlimit;
 
       result = mmalloc_no_memset(mdp, requested_size);
+      //fprintf(stderr,"remalloc(%zu)~>%p\n",requested_size,result);
+
       if (ptr != result)
         memmove(result, ptr, blocks * BLOCKSIZE);
       /* FIXME: we should memset the end of the recently area */

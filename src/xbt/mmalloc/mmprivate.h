@@ -18,6 +18,7 @@
 #include "xbt/mmalloc.h"
 #include "xbt/ex.h"
 #include "xbt/dynar.h"
+#include "xbt/swag.h"
 #include <semaphore.h>
 #include <stdint.h>
 
@@ -144,6 +145,7 @@ typedef struct s_heap_area_pair{
  *
  */
 typedef struct {
+  s_xbt_swag_hookup_t freehook; /* to register this block as having empty frags when needed */
   int type; /*  0: busy large block
                 >0: busy fragmented (fragments of size 2^type bytes)
                 <0: free block */
@@ -151,8 +153,7 @@ typedef struct {
   union {
     /* Heap information for a busy block.  */
     struct {
-      size_t nfree;           /* Free fragments in a fragmented block.  */
-      size_t first;           /* First free fragment of the block.  */
+      size_t nfree;               /* Free fragments in a fragmented block.  */
       short frag_size[MAX_FRAGMENT_PER_BLOCK];
       void *bt[MAX_FRAGMENT_PER_BLOCK][XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
       heap_area_t equal_to[MAX_FRAGMENT_PER_BLOCK];
@@ -220,8 +221,10 @@ struct mdesc {
   /* Table indexed by block number giving per-block information.  */
   malloc_info *heapinfo;
 
-  /* List of all blocks containing free fragments of this size. The array indice is the log2 of requested size */
-  struct list fraghead[BLOCKLOG];
+  /* List of all blocks containing free fragments of this size.
+   * The array indice is the log2 of requested size.
+   * Actually only the sizes 8->11 seem to be used, but who cares? */
+  s_xbt_swag_t fraghead[BLOCKLOG];
 
   /* The base address of the memory region for this malloc heap.  This
      is the location where the bookkeeping data for mmap and for malloc
@@ -280,6 +283,10 @@ extern void *mmorecore(struct mdesc *mdp, int size);
 #define LOCK(mdp) sem_wait(&mdp->sem)
 #define UNLOCK(mdp) sem_post(&mdp->sem)
 
-void check_fraghead(struct mdesc *mdp);
+static XBT_INLINE void  mmalloc_paranoia(struct mdesc *mdp){
+
+  /* nothing to fear for no */
+
+}
 
 #endif                          /* __MMPRIVATE_H */
