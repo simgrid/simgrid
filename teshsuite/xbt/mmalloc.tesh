@@ -102,6 +102,7 @@ $ ./xbt/mmalloc_test --log=root.fmt:%m%n
 > 4900 bytes allocated with offset 1cc000
 > 5000 bytes allocated with offset 1ce000
 > All blocks were correctly allocated. Free every second block
+> Memset every second block to zero (yeah, they are not currently allocated :)
 > Re-allocate every second block
 > free all blocks (each one twice, to check that double free are correctly catched)
 > free again all blocks (to really check that double free are correctly catched)
