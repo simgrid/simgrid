@@ -2,17 +2,6 @@ SimGrid (3.8) NOT RELEASED; urgency=low
 
  The "SimGrid makes psssshiiiit and jumps into the cloud" release.
 
- Cmake:
- * Remove option custom_flags. Now use environment variables CFLAGS
-   and LDFLAGS.
- * Enable tracing by default. This modules rocks you should use it.
- * Use default cmake things to detect lua instead of home grown ones.
- * New option "enable_mallocators" to disable mallocators, for debugging
-   purpose ("on" by default).
-
- Documentation:
- * Split the doc into a user guide and a reference guide.
-
  MSG:
  * Add an experimental interface to manipulate VMs. They are mainly
    process groups with very few intrinsic semantic, but they should
@@ -29,6 +18,17 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Use the "msg_" prefix for all datatypes (instead of m_, msg_ and MSG_),
    please stop using the old ones, they are DEPRECATED.
  * Deprecate MSG_clean(). No need to call it anymore.
+
+ Documentation:
+ * Split the doc into a user guide and a reference guide.
+
+ Cmake:
+ * Remove option custom_flags. Now use environment variables CFLAGS
+   and LDFLAGS.
+ * Enable tracing by default. This modules rocks you should use it.
+ * Use default cmake things to detect lua instead of home grown ones.
+ * New option "enable_mallocators" to disable mallocators, for debugging
+   purpose ("on" by default).
 
  Simix:
  * Bug fixes around the resource failures: don't let the processes
@@ -84,6 +84,8 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Functions xbt_dict_hash() and xbt_dict_hash_ext() are made public,
    and renamed to xbt_str_hash() and xbt_str_hash_ext().
  * New function: xbt_os_timer_resume() to restart a timer w/o resetting it.
+ * Greatly improve the robustness of mmalloc to user errors (such as
+   using an area after freeing it, or freeing it twice)
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
