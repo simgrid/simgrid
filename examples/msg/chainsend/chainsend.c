@@ -22,12 +22,12 @@
 
 /** @addtogroup MSG_examples
  * 
- *  - <b>kadeploy/kadeploy.c: Kadeploy implementation</b>.
+ *  - <b>chainsend/chainsend.c: Chainsend implementation</b>.
  */
 
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kadeploy,
-                             "Messages specific for kadeploy");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chainsend,
+                             "Messages specific for chainsend");
 
 /*
  Data structures

@@ -2,7 +2,7 @@
  <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
  <platform version="3">
  <AS  id="AS0"  routing="Floyd">
-   <!-- For using with kadeploy, very simple 3-node platform -->
+   <!-- For using with chainsend, very simple 8-node platform -->
    <host id="host0" power="98095000"/>
    <host id="host1" power="76296000"/>
    <host id="host2" power="96296000"/>

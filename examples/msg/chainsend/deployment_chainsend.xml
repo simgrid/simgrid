@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3"><!-- For using with kadeploy, platform_kadeploy.xml -->
+<platform version="3"><!-- For using with chainsend, platform_chainsend.xml -->
 
   <!-- Broadcaster -->
   <process host="host0" function="broadcaster">

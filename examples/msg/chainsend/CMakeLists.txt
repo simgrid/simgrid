@@ -2,23 +2,23 @@ cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-add_executable(kadeploy kadeploy.c iterator.c common.c messages.c broadcaster.c peer.c)
+add_executable(chainsend chainsend.c iterator.c common.c messages.c broadcaster.c peer.c)
 
 ### Add definitions for compile
-target_link_libraries(kadeploy simgrid m )
+target_link_libraries(chainsend simgrid m )
 
 set(tesh_files
   ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/kadeploy_CLM03.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/kadeploy_KCCFLN05.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/kadeploy_Reno.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/kadeploy_Vegas.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend_CLM03.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend_KCCFLN05.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend_Reno.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend_Vegas.tesh
   PARENT_SCOPE
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/deployment_kadeploy.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/platform_kadeploy.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deployment_chainsend.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform_chainsend.xml
   PARENT_SCOPE
   )
 set(examples_src

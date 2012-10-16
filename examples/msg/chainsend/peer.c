@@ -1,7 +1,7 @@
 #include "peer.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peer,
-                             "Messages specific for kadeploy");
+                             "Messages specific for the peer");
 
 /*******************************************************
  *                     Peer                            *

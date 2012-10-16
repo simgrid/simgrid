@@ -1,7 +1,7 @@
 #include "broadcaster.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_broadcaster,
-                             "Messages specific for kadeploy");
+                             "Messages specific for the broadcaster");
 
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
 {
