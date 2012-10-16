@@ -321,7 +321,9 @@ void *mmalloc_preinit(void)
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = xbt_mheap_new(-1, addr);
     /* Fixme? only the default mdp in protected against forks */
-    res = xbt_os_thread_atfork(mmalloc_fork_prepare,  //FIXME: KILLME when things settle a bit
+    // This is mandated to protect the mmalloced areas through forks. Think of tesh.
+    // Nah, removing the mutex isn't a good idea either for tesh
+    res = xbt_os_thread_atfork(mmalloc_fork_prepare,  
                                mmalloc_fork_parent, mmalloc_fork_child);
     if (res != 0)
       THROWF(system_error,0,"xbt_os_thread_atfork() failed: return value %d",res);

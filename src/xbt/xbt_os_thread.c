@@ -133,6 +133,7 @@ void xbt_os_thread_mod_postexit(void)
   __xbt_ex_terminate = &__xbt_ex_terminate_default;
 }
 
+/* this function is critical to tesh+mmalloc, don't mess with it */
 int xbt_os_thread_atfork(void (*prepare)(void),
                          void (*parent)(void), void (*child)(void))
 {
