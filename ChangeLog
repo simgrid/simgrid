@@ -76,6 +76,10 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Implement the exchange of non-contiguous data.
    [Khalid Hasanov & Jean-Noel Quintin] Thanks for the patch, guys.
 
+ SimGrid:
+ * Export a sg_cmdline dynar containing all the arguments we got from
+   the command line.
+
  XBT:
  * Functions xbt_dict_hash() and xbt_dict_hash_ext() are made public,
    and renamed to xbt_str_hash() and xbt_str_hash_ext().

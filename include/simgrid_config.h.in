@@ -1,11 +1,12 @@
 /* simgrid_config.h - Results of the configure made visible to user code    */
 
-/* Copyright (c) 2009, 2010, 2011. Da SimGrid team. All rights reserved.    */
+/* Copyright (c) 2009-2012. Da SimGrid team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"           /* XBT_PUBLIC */
+#include "xbt/dynar.h"          /* sg_commandline */
 
 #ifndef SIMGRID_PUBLIC_CONFIG_H
 #define SIMGRID_PUBLIC_CONFIG_H
@@ -32,6 +33,9 @@ SG_BEGIN_DECL()
 /** Retrieves the version numbers of the used dynamic library (so, DLL or dynlib) , while
     SIMGRID_VERSION_MAJOR and friends give the version numbers of the used header files */
 XBT_PUBLIC(void) sg_version(int *major,int *minor,int *patch);
+
+/** Contains all the parameters we got from the command line */
+XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
 
 /* take care of DLL usage madness */
 
