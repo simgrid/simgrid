@@ -8,5 +8,5 @@ Author    : Maximiliano Geier
 
 
 This directory contains an implementation of a
-file broadcasting system, similar to Kastafoir, 
+file broadcasting system, similar to Kastafior, 
 the one found in Kadeploy, using MSG. 
