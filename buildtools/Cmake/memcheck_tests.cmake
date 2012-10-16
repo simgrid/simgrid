@@ -7,7 +7,11 @@ ADD_TEST(help-models                          ${CMAKE_BINARY_DIR}/teshsuite/simd
 ADD_TEST(memcheck-xbt-log-large-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/log_large_test "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
 ADD_TEST(memcheck-xbt-log-large-1 ${CMAKE_BINARY_DIR}/teshsuite/xbt/log_large_test "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
 ADD_TEST(memcheck-xbt-log-parallel-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/parallel_log_crashtest "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
-ADD_TEST(memcheck-xbt-mmalloc-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc_test --log=root.fmt:%m%n --cd ${CMAKE_BINARY_DIR}/teshsuite/)
+IF(${ARCH_32_BITS})
+  ADD_TEST(memcheck-xbt-mmalloc-32-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc_test --log=root.fmt:%m%n --cd ${CMAKE_BINARY_DIR}/teshsuite/)
+ELSE(${ARCH_32_BITS})
+  ADD_TEST(memcheck-xbt-mmalloc-64-0 ${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc_test --log=root.fmt:%m%n --cd ${CMAKE_BINARY_DIR}/teshsuite/)
+ENDIF(${ARCH_32_BITS})
 
 # teshsuite/gras/datadesc directory
 ADD_TEST(memcheck-tesh-gras-dd-mem-0 ${CMAKE_BINARY_DIR}/teshsuite/gras/datadesc/datadesc_usage --copy "--log=root.fmt:%m%n" --cd ${CMAKE_BINARY_DIR}/teshsuite/)
