@@ -16,9 +16,7 @@
 
 extern int _surf_do_model_check; /* please don't use directly: we inline MC_is_active, but that's what you should use */
 
-static int MC_is_active(void) {
-  return _surf_do_model_check;
-}
+#define MC_is_active() _surf_do_model_check
 
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(int) MC_random(int min, int max);
@@ -27,10 +25,7 @@ XBT_PUBLIC(void) MC_automaton_new_propositional_symbol(const char* id, void* fct
 #else
 
 #define MC_assert(a) xbt_assert(a)
-
-static int MC_is_active(void) {
-  return 0;
-}
+#define MC_is_active() 0
 
 #endif
 
