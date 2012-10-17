@@ -318,7 +318,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
       case SIMIX_ACTION_COMMUNICATE:
         xbt_fifo_remove(process->comms, process->waiting_action);
-        SIMIX_comm_destroy(process->waiting_action);
+        SIMIX_comm_cancel(process->waiting_action);
         break;
 
         case SIMIX_ACTION_SLEEP:
