@@ -86,16 +86,17 @@ static void surf_config_cmd_line(int *argc, char **argv)
 }
 
 
-int _surf_init_status = 0;      /* 0: beginning of time;
-                                   1: pre-inited (cfg_set created);
-                                   2: inited (running) */
+int _surf_init_status = 0;      /* 0: beginning of time (config cannot be changed yet);
+                                   1: initialized: cfg_set created (config can now be changed);
+                                   2: configured: command line parsed and config part of platform file was integrated also, platform construction ongoing or done.
+                                      (Config cannot be changed anymore!) */
 
 /* callback of the workstation/model variable */
 static void _surf_cfg_cb__workstation_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -114,7 +115,7 @@ static void _surf_cfg_cb__cpu_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -133,7 +134,7 @@ static void _surf_cfg_cb__optimization_mode(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -152,7 +153,7 @@ static void _surf_cfg_cb__storage_mode(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -171,7 +172,7 @@ static void _surf_cfg_cb__network_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -232,14 +233,11 @@ static void _surf_cfg_cb_model_check(const char *name, int pos)
 {
   _surf_do_model_check = xbt_cfg_get_int(_surf_cfg_set, name);
 
-  if (_surf_do_model_check) {
 #ifndef HAVE_MC
+  if (_surf_do_model_check) {
     xbt_die("You tried to activate the model-checking from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
-#endif
-    /* Tell modules using mallocators that they shouldn't. MC don't like them */
-    xbt_fifo_preinit();
-    xbt_dict_preinit();
   }
+#endif
 }
 
 extern int _surf_do_verbose_exit;
@@ -663,10 +661,10 @@ void surf_config_init(int *argc, char **argv)
       xbt_cfg_setdefault_string(_surf_cfg_set, "path", initial_path);
     }
 
+    _surf_init_status = 1;
 
     surf_config_cmd_line(argc, argv);
 
-    _surf_init_status = 1;
   } else {
     XBT_WARN("Call to surf_config_init() after initialization ignored");
   }
