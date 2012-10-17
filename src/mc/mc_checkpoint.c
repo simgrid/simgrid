@@ -330,7 +330,7 @@ static xbt_dynar_t take_snapshot_stacks(void *heap){
   xbt_dynar_foreach(stacks_areas, cursor1, current_stack){
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
     st->local_variables = get_local_variables_values(current_stack->context, heap);
-    st->stack_pointer = get_stack_pointer(current_stack, heap);
+    st->stack_pointer = get_stack_pointer(current_stack->context, heap);
     xbt_dynar_push(res, &st);
   }
 
