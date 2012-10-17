@@ -38,8 +38,7 @@ $ ../../bin/smpirun --log=replay.thresh:critical --log=no_loc  --cfg=tracing:1 -
 > [Tremblay:0:(0) 231.413469] [smpi_replay/INFO] Simulation time 231.413
 
 
-$ cat ./simgrid.trace
-> #This file was generated using SimGrid-3.8.0
+$ tail -n +3 ./simgrid.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
