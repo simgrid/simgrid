@@ -193,6 +193,7 @@ void get_libsimgrid_plt_section(void);
 void get_binary_plt_section(void);
 
 extern void *start_data_libsimgrid;
+extern void *end_raw_heap;
 
 /********************************** DPOR for safety  **************************************/
 typedef enum {

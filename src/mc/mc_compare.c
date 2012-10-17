@@ -82,6 +82,8 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
       addr_pointed2 = *((void **)((char *)d2 + pointer_align));
       if((addr_pointed1 > start_plt_libsimgrid && addr_pointed1 < end_plt_libsimgrid) || (addr_pointed2 > start_plt_libsimgrid && addr_pointed2 < end_plt_libsimgrid)){
         continue;
+      }else if(addr_pointed1 >= raw_heap && addr_pointed1 <= end_raw_heap && addr_pointed2 >= raw_heap && addr_pointed2 <= end_raw_heap){
+        continue;
       }else{
         XBT_DEBUG("Different byte (offset=%zu) (%p - %p) in data libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);
         XBT_DEBUG("Addresses pointed : %p - %p\n", addr_pointed1, addr_pointed2);

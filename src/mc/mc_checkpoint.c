@@ -20,6 +20,7 @@ void *start_plt_binary, *end_plt_binary;
 char *libsimgrid_path;
 void *start_data_libsimgrid;
 void *start_text_binary;
+void *end_raw_heap;
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size);
 static void MC_region_restore(mc_mem_region_t reg);
@@ -127,6 +128,8 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
           heap = snapshot->regions[nb_reg]->data;
           nb_reg++;
+        }else if(reg.start_addr == raw_heap){
+          end_raw_heap = reg.end_addr;
         }
         i++;
       } else {
