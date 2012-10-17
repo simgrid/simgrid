@@ -226,7 +226,7 @@ void get_libsimgrid_plt_section(){
     if(lfields[0] == NULL)
       continue;
 
-    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strcmp(lfields[0], "libsimgrid.so:") == 0)
+    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strncmp(lfields[0], libsimgrid_path, strlen(libsimgrid_path)) == 0)
       continue;
 
     for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
@@ -283,7 +283,7 @@ void get_binary_plt_section(){
     if(lfields[0] == NULL)
       continue;
 
-    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strcmp(lfields[0], basename(xbt_binary_name)) == 0)
+    if(strcmp(lfields[0], "Sections:") == 0 || strcmp(lfields[0], "Idx") == 0 || strncmp(lfields[0], basename(xbt_binary_name), strlen(xbt_binary_name)) == 0)
       continue;
 
     for (i = 1; i < 7 && lfields[i - 1] != NULL; i++) {
