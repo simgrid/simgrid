@@ -152,14 +152,14 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   void *heap1 = NULL, *heap2 = NULL;
   
   if(s1->num_reg != s2->num_reg){
-    XBT_INFO("Different num_reg (s1 = %u, s2 = %u)", s1->num_reg, s2->num_reg);
+    XBT_DEBUG("Different num_reg (s1 = %u, s2 = %u)", s1->num_reg, s2->num_reg);
     return 1;
   }
 
   for(i=0 ; i< s1->num_reg ; i++){
     
     if(s1->regions[i]->type != s2->regions[i]->type){
-      XBT_INFO("Different type of region");
+      XBT_DEBUG("Different type of region");
       errors++;
     }
     
@@ -167,7 +167,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     case 0 :
       /* Compare heapregion */
       if(s1->regions[i]->size != s2->regions[i]->size){
-        XBT_INFO("Different size of heap (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
+        XBT_DEBUG("Different size of heap (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
@@ -176,7 +176,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-        XBT_INFO("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+        XBT_DEBUG("Different start addr of heap (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
@@ -185,7 +185,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         return 1;
       }
       if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[i]->data, (xbt_mheap_t)s2->regions[i]->data, &stacks1, &stacks2, &equals)){
-        XBT_INFO("Different heap (mmalloc_compare)");
+        XBT_DEBUG("Different heap (mmalloc_compare)");
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
@@ -199,7 +199,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     case 1 :
       /* Compare data libsimgrid region */
       if(s1->regions[i]->size != s2->regions[i]->size){
-        XBT_INFO("Different size of libsimgrid (data) (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
+        XBT_DEBUG("Different size of libsimgrid (data) (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
@@ -208,7 +208,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-        XBT_INFO("Different start addr of libsimgrid (data) (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+        XBT_DEBUG("Different start addr of libsimgrid (data) (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
@@ -230,7 +230,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     case 2 :
       /* Compare data program region */
       if(s1->regions[i]->size != s2->regions[i]->size){
-        XBT_INFO("Different size of data program (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
+        XBT_DEBUG("Different size of data program (s1 = %zu, s2 = %zu)", s1->regions[i]->size, s2->regions[i]->size);
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
@@ -239,7 +239,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
-        XBT_INFO("Different start addr of data program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
+        XBT_DEBUG("Different start addr of data program (s1 = %p, s2 = %p)", s1->regions[i]->start_addr, s2->regions[i]->start_addr);
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
@@ -248,7 +248,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         return 1;
       }
       if(data_program_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
-        XBT_INFO("Different memcmp for data in program");
+        XBT_DEBUG("Different memcmp for data in program");
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
@@ -269,7 +269,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   int diff = 0, diff_local = 0;
 
   while(cursor < xbt_dynar_length(stacks1)){
-    XBT_INFO("Stack %d", cursor + 1); 
+    XBT_DEBUG("Stack %d", cursor + 1); 
     stack_region1 = (stack_region_t)(xbt_dynar_get_as(stacks1, cursor, stack_region_t));
     stack_region2 = (stack_region_t)(xbt_dynar_get_as(stacks2, cursor, stack_region_t));
     sp1 = ((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->stack_pointer;
@@ -279,7 +279,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     if(diff >0){  
       diff_local = compare_local_variables(((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, equals);
       if(diff_local > 0){
-        XBT_INFO("Hamming distance between stacks : %d", diff);
+        XBT_DEBUG("Hamming distance between stacks : %d", diff);
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
@@ -287,10 +287,10 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
           MC_UNSET_RAW_MEM;
         return 1;
       }else{
-        XBT_INFO("Local variables are equals in stack %d", cursor + 1);
+        XBT_DEBUG("Local variables are equals in stack %d", cursor + 1);
       }
     }else{
-      XBT_INFO("Same stacks");
+      XBT_DEBUG("Same stacks");
     }
     cursor++;
   }
@@ -323,7 +323,7 @@ static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
         addr1 = (void *) strtoul(xbt_dynar_get_as(s_tokens1, 1, char *), NULL, 16);
         addr2 = (void *) strtoul(xbt_dynar_get_as(s_tokens2, 1, char *), NULL, 16);
         if(is_heap_equality(heap_equals, addr1, addr2) == 0){
-          XBT_INFO("Variable %s is different between stacks : %s - %s", xbt_dynar_get_as(s_tokens1, 0, char *), xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
+          XBT_DEBUG("Variable %s is different between stacks : %s - %s", xbt_dynar_get_as(s_tokens1, 0, char *), xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
           diff++;
         }
       }
@@ -400,9 +400,10 @@ static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *
     }
 
   }else{
-    XBT_INFO("Different size used between stacks");
+    XBT_DEBUG("Different size used between stacks");
     return 1;
   }
 
   return nb_diff;
 }
+
