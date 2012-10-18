@@ -365,7 +365,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
   int ret;
   //char *stack_name;
 
-  char buf[512], frame_name[256];
+  char frame_name[256];
   
   ret = unw_init_local(&c, (unw_context_t *)stack_context);
   if(ret < 0){
@@ -397,16 +397,9 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
     unw_get_reg(&c, UNW_REG_IP, &ip);
     unw_get_reg(&c, UNW_REG_SP, &sp);
 
-    buf[0] = '\0';
-    if (unw_get_proc_name (&c, frame_name, sizeof (frame_name), &off) == 0){
-      if (off)
-        snprintf (buf, sizeof (buf), "<%s+0x%lx>", frame_name, (long) off);
-      else
-        snprintf (buf, sizeof (buf), "<%s>", frame_name);
+    unw_get_proc_name (&c, frame_name, sizeof (frame_name), &off);
 
-    }
-
-    xbt_strbuff_append(variables, bprintf("ip=%-32s\n", buf));
+    xbt_strbuff_append(variables, bprintf("ip=%s\n", frame_name));
 
     frame = xbt_dict_get_or_null(mc_local_variables, frame_name);
 
