@@ -703,16 +703,18 @@ void MC_ignore(void *address, size_t size){
 
 void MC_new_stack_area(void *stack, char *name, void* context){
 
+  MC_SET_RAW_MEM;
+
   if(stacks_areas == NULL)
     stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
-
-  MC_SET_RAW_MEM;
+  
   stack_region_t region = NULL;
   region = xbt_new0(s_stack_region_t, 1);
   region->address = stack;
   region->process_name = strdup(name);
   region->context = context;
   xbt_dynar_push(stacks_areas, &region);
+  
   MC_UNSET_RAW_MEM;
 }
 
