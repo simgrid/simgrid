@@ -245,6 +245,8 @@ void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
 void pair_reached_free(mc_pair_reached_t pair);
 void pair_reached_free_voidp(void *p);
+void MC_init_liveness(void);
+void MC_init_memory_map_info(void);
 
 /* **** Double-DFS stateless **** */
 

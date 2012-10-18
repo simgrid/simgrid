@@ -146,7 +146,6 @@ void MC_init_safety(void)
   MC_take_snapshot(initial_snapshot);
   MC_UNSET_RAW_MEM;
 
-
   if(raw_mem_set)
     MC_SET_RAW_MEM;
   else
@@ -166,12 +165,7 @@ void MC_modelcheck(void)
   MC_exit();
 }
 
-void MC_modelcheck_liveness(){
-
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  /* init stuff */
-  XBT_INFO("Start init mc");
+void MC_init_liveness(){
   
   mc_time = xbt_new0(double, simix_process_maxpid);
 
@@ -198,6 +192,24 @@ void MC_modelcheck_liveness(){
   /* Get local variables in libsimgrid for state equality detection */
   xbt_dict_t libsimgrid_location_list = MC_get_location_list(ls_path);
   MC_get_local_variables(ls_path, libsimgrid_location_list, &mc_local_variables);
+
+  MC_UNSET_RAW_MEM;
+
+  MC_init_memory_map_info();
+
+  /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
+  get_libsimgrid_plt_section();
+  get_binary_plt_section();
+
+}
+
+void MC_modelcheck_liveness(){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_init_liveness();
+ 
+  MC_SET_RAW_MEM;
   
   /* Initialize statistics */
   mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
