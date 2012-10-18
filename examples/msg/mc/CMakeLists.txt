@@ -12,7 +12,6 @@ if(HAVE_MC)
   add_executable(random_test random_test.c)
   add_executable(bugged1_liveness bugged1_liveness.c)
   add_executable(bugged2_liveness bugged2_liveness.c)
-  add_executable(test/test_heap_comparison test/test_heap_comparison.c)
 
   target_link_libraries(centralized simgrid m )
   target_link_libraries(bugged1     simgrid m )
@@ -21,7 +20,6 @@ if(HAVE_MC)
   target_link_libraries(random_test     simgrid m )
   target_link_libraries(bugged1_liveness     simgrid m )
   target_link_libraries(bugged2_liveness     simgrid m )
-  target_link_libraries(test/test_heap_comparison     simgrid m )
 
 endif()
 
@@ -55,7 +53,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/random_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/test_heap_comparison.c
   PARENT_SCOPE
   )
 set(bin_files
