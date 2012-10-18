@@ -804,7 +804,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/update_tesh.pl
   buildtools/Cmake/Supernovae.cmake
   buildtools/Cmake/UnitTesting.cmake
-  buildtools/Cmake/memcheck_tests.cmake
   buildtools/Cmake/src/gras_config.h.in
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
