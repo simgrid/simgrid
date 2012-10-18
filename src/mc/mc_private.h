@@ -43,7 +43,7 @@ typedef struct s_mc_snapshot_stack{
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 void MC_take_snapshot(mc_snapshot_t);
-void MC_take_snapshot_liveness(mc_snapshot_t s);
+mc_snapshot_t MC_take_snapshot_liveness(void);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 void snapshot_stack_free_voidp(void *s);

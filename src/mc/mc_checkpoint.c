@@ -112,8 +112,14 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
   free_memory_map(maps);
 }
 
-void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
+mc_snapshot_t MC_take_snapshot_liveness()
 {
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
+  mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
 
   unsigned int i = 0;
   s_map_region_t reg;
@@ -175,6 +181,13 @@ void MC_take_snapshot_liveness(mc_snapshot_t snapshot)
   snapshot->stacks = take_snapshot_stacks(heap);
   
   free_memory_map(maps);
+
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+
+  return snapshot;
 
 }
 

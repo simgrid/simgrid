@@ -61,8 +61,7 @@ int reached(xbt_state_t st){
   new_pair->nb = xbt_dynar_length(reached_pairs) + 1;
   new_pair->automaton_state = st;
   new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  new_pair->system_state = xbt_new0(s_mc_snapshot_t, 1); 
-  MC_take_snapshot_liveness(new_pair->system_state);  
+  new_pair->system_state = MC_take_snapshot_liveness();  
   
   /* Get values of propositional symbols */
   int res;
@@ -143,8 +142,7 @@ void set_pair_reached(xbt_state_t st){
   pair->nb = xbt_dynar_length(reached_pairs) + 1;
   pair->automaton_state = st;
   pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  pair->system_state = xbt_new0(s_mc_snapshot_t, 1); 
-  MC_take_snapshot_liveness(pair->system_state);
+  pair->system_state = MC_take_snapshot_liveness();
 
   /* Get values of propositional symbols */
   unsigned int cursor = 0;
@@ -276,15 +274,10 @@ void MC_ddfs_init(void){
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
 
   /* Save the initial state */
-  initial_snapshot_liveness = xbt_new0(s_mc_snapshot_t, 1);
-  MC_take_snapshot_liveness(initial_snapshot_liveness);
+  initial_snapshot_liveness = MC_take_snapshot_liveness();
 
   MC_UNSET_RAW_MEM; 
-
-  /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
-  get_libsimgrid_plt_section();
-  get_binary_plt_section();
-
+  
   unsigned int cursor = 0;
   xbt_state_t state;
 

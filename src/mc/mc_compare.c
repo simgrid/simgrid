@@ -140,6 +140,10 @@ void heap_equality_free_voidp(void *e){
 
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  
+  MC_SET_RAW_MEM;
+
   int errors = 0, i;
   xbt_dynar_t stacks1 = xbt_dynar_new(sizeof(stack_region_t), stack_region_free_voidp);
   xbt_dynar_t stacks2 = xbt_dynar_new(sizeof(stack_region_t), stack_region_free_voidp);
@@ -167,6 +171,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;
         return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
@@ -174,6 +180,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;
         return 1;
       }
       if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[i]->data, (xbt_mheap_t)s2->regions[i]->data, &stacks1, &stacks2, &equals)){
@@ -181,6 +189,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;  
         return 1; 
       }
       heap1 = s1->regions[i]->data;
@@ -193,6 +203,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;
         return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
@@ -200,6 +212,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;
         return 1;
       }
       if(data_libsimgrid_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
@@ -207,6 +221,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;
         return 1;
       }
       break;
@@ -218,6 +234,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;
         return 1;
       }
       if(s1->regions[i]->start_addr != s2->regions[i]->start_addr){
@@ -225,6 +243,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;
         return 1;
       }
       if(data_program_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
@@ -232,6 +252,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;
         return 1;
       }
       break;
@@ -261,6 +283,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         xbt_dynar_free(&stacks1);
         xbt_dynar_free(&stacks2);
         xbt_dynar_free(&equals);
+        if(!raw_mem_set)
+          MC_UNSET_RAW_MEM;
         return 1;
       }else{
         XBT_INFO("Local variables are equals in stack %d", cursor + 1);
@@ -274,6 +298,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   xbt_dynar_free(&stacks1);
   xbt_dynar_free(&stacks2);
   xbt_dynar_free(&equals);
+  if(!raw_mem_set)
+    MC_UNSET_RAW_MEM;
   return 0;
   
 }
