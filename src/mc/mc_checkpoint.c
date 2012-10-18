@@ -222,7 +222,10 @@ void get_libsimgrid_plt_section(){
   int i, plt_not_found = 1;
   unsigned long int size, offset;
 
-  char *command = bprintf( "objdump --section-headers %s", libsimgrid_path);
+  if(libsimgrid_path == NULL)
+    libsimgrid_path = get_libsimgrid_path();
+
+  char *command = bprintf("objdump --section-headers %s", libsimgrid_path);
 
   fp = popen(command, "r");
 
@@ -258,7 +261,6 @@ void get_libsimgrid_plt_section(){
         plt_not_found = 0;
       }
     }
-    
     
   }
 
