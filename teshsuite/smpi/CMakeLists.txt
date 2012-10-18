@@ -53,7 +53,12 @@ endif(enable_smpi)
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/hvector.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/indexed.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/struct.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/vector.tesh  
   PARENT_SCOPE
   )
 set(xml_files

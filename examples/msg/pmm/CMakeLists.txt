@@ -8,6 +8,7 @@ target_link_libraries(msg_pmm simgrid m )
 
 set(tesh_files
   ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/pmm.tesh
   PARENT_SCOPE
   )
 set(xml_files

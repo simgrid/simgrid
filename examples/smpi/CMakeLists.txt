@@ -29,10 +29,12 @@ endif(enable_smpi)
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/smpi_replay.tesh
   PARENT_SCOPE
   )
 set(xml_files
   ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay_platform.xml
   PARENT_SCOPE
   )
 set(examples_src
@@ -53,5 +55,10 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_bcast.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions1.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/one_trace
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces
   PARENT_SCOPE
-  )
+  )  

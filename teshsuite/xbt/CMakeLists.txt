@@ -22,6 +22,8 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/log_large_test.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/parallel_log_crashtest.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/xbt.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc_64.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc_32.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -32,6 +34,7 @@ set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/log_large_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/parallel_log_crashtest.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc_test.c
   PARENT_SCOPE
   )
 set(bin_files
