@@ -458,7 +458,7 @@ void MC_ddfs(int search_cycle){
 
               }else{
 
-                XBT_INFO("Next pair (depth =%d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
+                XBT_INFO("Next pair (depth =%d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
 
                 XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
 
@@ -484,7 +484,7 @@ void MC_ddfs(int search_cycle){
     
             if(((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
 
-              XBT_INFO("Next pair (depth =%d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
+              XBT_INFO("Next pair (depth =%d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
       
               set_pair_reached(pair_succ->automaton_state); 
 
@@ -581,7 +581,7 @@ void MC_ddfs(int search_cycle){
 
             }else{
 
-              XBT_INFO("Next pair (depth = %d) -> Acceptance pair : graph=%p, automaton=%p(%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->graph_state, pair_succ->automaton_state, pair_succ->automaton_state->id);
+              XBT_INFO("Next pair (depth = %d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
         
               XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
 
@@ -640,9 +640,9 @@ void MC_ddfs(int search_cycle){
   }
 
   if(xbt_fifo_size(mc_stack_liveness) == MAX_DEPTH_LIVENESS ){
-    XBT_INFO("Pair (graph=%p, automaton =%p, search_cycle = %d, depth = %d) shifted in stack, maximum depth reached", current_pair->graph_state, current_pair->automaton_state, search_cycle, xbt_fifo_size(mc_stack_liveness) );
+    XBT_INFO("Pair (depth = %d) shifted in stack, maximum depth reached", xbt_fifo_size(mc_stack_liveness) );
   }else{
-    XBT_INFO("Pair (graph=%p, automaton =%p, search_cycle = %d, depth = %d) shifted in stack", current_pair->graph_state, current_pair->automaton_state, search_cycle, xbt_fifo_size(mc_stack_liveness) );
+    XBT_INFO("Pair (depth = %d) shifted in stack", xbt_fifo_size(mc_stack_liveness) );
   }
 
   
