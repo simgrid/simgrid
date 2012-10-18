@@ -629,10 +629,14 @@ void MC_process_clock_add(smx_process_t process, double amount)
 
 double MC_process_clock_get(smx_process_t process)
 {
-  if(mc_time)
-    return mc_time[process->pid];
-  else
+  if(mc_time){
+    if(process != NULL)
+      return mc_time[process->pid];
+    else 
+      return -1;
+  }else{
     return 0;
+  }
 }
 
 void MC_automaton_load(const char *file){
