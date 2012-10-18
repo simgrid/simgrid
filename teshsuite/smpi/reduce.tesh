@@ -2,7 +2,7 @@
 # (since we want to pass it to the child, it has to be redefined before each command)
 # Go for the first test
 p Test Reduce with 3 processes
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 3 ./reduce -q
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 3 ./reduce -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -22,7 +22,7 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 # second test
 ! setenv LD_LIBRARY_PATH=../../lib
 p Test Reduce with 5 processes
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 5 ./reduce -q
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 5 ./reduce -q
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -46,7 +46,7 @@ $ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/
 # third test
 ! setenv LD_LIBRARY_PATH=../../lib
 p Test Reduce with 12 processes
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 12 ./reduce -q
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 12 ./reduce -q
 > You requested to use 12 processes, but there is only 5 processes in your hostfile...
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter

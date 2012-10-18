@@ -745,6 +745,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
+  teshsuite/smpi/CMakeLists.txt
   )
 
 set(TOOLS_CMAKEFILES_TXT
