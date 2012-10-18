@@ -34,6 +34,8 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
 static void print_local_variables_values(xbt_dynar_t all_variables);
 static void *get_stack_pointer(void *stack_context, void *heap);
 
+static void snapshot_stack_free(mc_snapshot_stack_t s);
+
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
   mc_mem_region_t new_reg = xbt_new0(s_mc_mem_region_t, 1);
@@ -191,6 +193,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
   for(i=0; i < snapshot->num_reg; i++)
     MC_region_destroy(snapshot->regions[i]);
 
+  xbt_dynar_free(&(snapshot->stacks));
   xbt_free(snapshot);
 }
 
@@ -545,3 +548,15 @@ static void print_local_variables_values(xbt_dynar_t all_variables){
   }
 }
 
+
+static void snapshot_stack_free(mc_snapshot_stack_t s){
+  if(s){
+    xbt_free(s->local_variables->data);
+    xbt_free(s->local_variables);
+    xbt_free(s);
+  }
+}
+
+void snapshot_stack_free_voidp(void *s){
+  snapshot_stack_free((mc_snapshot_stack_t) * (void **) s);
+}

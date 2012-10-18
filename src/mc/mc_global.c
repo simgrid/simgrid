@@ -550,7 +550,7 @@ void MC_dump_stack_liveness(xbt_fifo_t stack){
 
   MC_SET_RAW_MEM;
   while ((pair = (mc_pair_stateless_t) xbt_fifo_pop(stack)) != NULL)
-    MC_pair_stateless_delete(pair);
+    pair_stateless_free(pair);
   MC_UNSET_RAW_MEM;
 
   if(raw_mem_set)

@@ -37,5 +37,8 @@ typedef struct s_heap_equality{
   void *address2;
 }s_heap_equality_t, *heap_equality_t;
 
+void heap_equality_free_voidp(void *e);
+void stack_region_free_voidp(void *s);
+
 SG_END_DECL()
 #endif                          /* _MC_MC_H */

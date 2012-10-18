@@ -46,7 +46,7 @@ void MC_take_snapshot(mc_snapshot_t);
 void MC_take_snapshot_liveness(mc_snapshot_t s);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
-
+void snapshot_stack_free_voidp(void *s);
 
 /********************************* MC Global **********************************/
 extern double *mc_time;
@@ -243,6 +243,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
 void MC_pair_delete(mc_pair_t pair);
 void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
+void pair_reached_free(mc_pair_reached_t pair);
+void pair_reached_free_voidp(void *p);
 
 /* **** Double-DFS stateless **** */
 
@@ -257,7 +259,8 @@ void MC_ddfs_init(void);
 void MC_ddfs(int search_cycle);
 void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
-void MC_pair_stateless_delete(mc_pair_stateless_t pair);
+void pair_stateless_free(mc_pair_stateless_t pair);
+void pair_stateless_free_voidp(void *p);
 
 /********************************** Configuration of MC **************************************/
 extern xbt_fifo_t mc_stack_safety;

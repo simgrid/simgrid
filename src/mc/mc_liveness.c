@@ -217,10 +217,12 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
 
 /********************* Double-DFS stateless *******************/
 
-void MC_pair_stateless_delete(mc_pair_stateless_t pair){
-  xbt_free(pair->graph_state->proc_status);
-  xbt_free(pair->graph_state);
+void pair_stateless_free(mc_pair_stateless_t pair){
   xbt_free(pair);
+}
+
+void pair_stateless_free_voidp(void *p){
+  pair_stateless_free((mc_pair_stateless_t) * (void **) p);
 }
 
 mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r){
@@ -231,6 +233,19 @@ mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r){
   p->requests = r;
   mc_stats_pair->expanded_pairs++;
   return p;
+}
+
+void pair_reached_free(mc_pair_reached_t pair){
+  if(pair){
+    pair->automaton_state = NULL;
+    xbt_dynar_free(&(pair->prop_ato));
+    MC_free_snapshot(pair->system_state);
+    xbt_free(pair);
+  }
+}
+
+void pair_reached_free_voidp(void *p){
+  pair_reached_free((mc_pair_reached_t) * (void **) p);
 }
 
 void MC_ddfs_init(void){
@@ -257,7 +272,7 @@ void MC_ddfs_init(void){
     }
   }
 
-  reached_pairs = xbt_dynar_new(sizeof(mc_pair_reached_t), NULL);
+  reached_pairs = xbt_dynar_new(sizeof(mc_pair_reached_t), pair_reached_free_voidp);
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
 
   /* Save the initial state */
