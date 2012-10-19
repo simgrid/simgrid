@@ -290,7 +290,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         XBT_INFO("Local variables are equals in stack %d", cursor + 1);
       }
     }else{
-      XBT_INFO("Hamming distance between stacks : %d", diff);
+      XBT_INFO("Hamming distance between stacks %d : %d", cursor + 1, diff);
     }
     cursor++;
   }
@@ -323,7 +323,10 @@ static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
         addr1 = (void *) strtoul(xbt_dynar_get_as(s_tokens1, 1, char *), NULL, 16);
         addr2 = (void *) strtoul(xbt_dynar_get_as(s_tokens2, 1, char *), NULL, 16);
         if(is_heap_equality(heap_equals, addr1, addr2) == 0){
-          XBT_INFO("Variable %s is different between stacks : %s - %s", xbt_dynar_get_as(s_tokens1, 0, char *), xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
+          if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug))
+            XBT_DEBUG("Variable %s is different between stacks : %s - %s", xbt_dynar_get_as(s_tokens1, 0, char *), xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
+          else
+            XBT_INFO("Variable %s is different between stacks", xbt_dynar_get_as(s_tokens1, 0, char *));
           diff++;
         }
       }

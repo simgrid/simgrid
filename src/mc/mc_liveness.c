@@ -344,7 +344,7 @@ void MC_ddfs(int search_cycle){
   _mc_property_automaton->current_state = current_pair->automaton_state;
 
  
-  XBT_INFO("********************* ( Depth = %d, search_cycle = %d )", xbt_fifo_size(mc_stack_liveness), search_cycle);
+  XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d )", xbt_fifo_size(mc_stack_liveness), search_cycle);
  
   mc_stats_pair->visited_pairs++;
 
@@ -371,7 +371,7 @@ void MC_ddfs(int search_cycle){
         /* Debug information */
        
         req_str = MC_request_to_string(req, value);
-        XBT_INFO("Execute: %s", req_str);
+        XBT_DEBUG("Execute: %s", req_str);
         xbt_free(req_str);
 
         MC_state_set_executed_request(current_pair->graph_state, req, value);   
@@ -451,9 +451,9 @@ void MC_ddfs(int search_cycle){
 
               }else{
 
-                XBT_INFO("Next pair (depth =%d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
+                XBT_DEBUG("Next pair (depth =%d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
 
-                XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+                XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
 
                 MC_SET_RAW_MEM;
                 xbt_fifo_unshift(mc_stack_liveness, pair_succ);
@@ -477,13 +477,13 @@ void MC_ddfs(int search_cycle){
     
             if(((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
 
-              XBT_INFO("Next pair (depth =%d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
+              XBT_DEBUG("Next pair (depth =%d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
       
               set_pair_reached(pair_succ->automaton_state); 
 
               search_cycle = 1;
 
-              XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+              XBT_DEBUG("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
 
             }
 
@@ -504,7 +504,7 @@ void MC_ddfs(int search_cycle){
         }
 
         if(MC_state_interleave_size(current_pair->graph_state) > 0){
-          XBT_INFO("Backtracking to depth %d", xbt_fifo_size(mc_stack_liveness));
+          XBT_DEBUG("Backtracking to depth %d", xbt_fifo_size(mc_stack_liveness));
           MC_replay_liveness(mc_stack_liveness, 0);
         }
       }
@@ -514,14 +514,14 @@ void MC_ddfs(int search_cycle){
     
   }else{
     
-    XBT_INFO("Max depth reached");
+    XBT_DEBUG("Max depth reached");
 
   }
 
   if(xbt_fifo_size(mc_stack_liveness) == MAX_DEPTH_LIVENESS ){
-    XBT_INFO("Pair (depth = %d) shifted in stack, maximum depth reached", xbt_fifo_size(mc_stack_liveness) );
+    XBT_DEBUG("Pair (depth = %d) shifted in stack, maximum depth reached", xbt_fifo_size(mc_stack_liveness) );
   }else{
-    XBT_INFO("Pair (depth = %d) shifted in stack", xbt_fifo_size(mc_stack_liveness) );
+    XBT_DEBUG("Pair (depth = %d) shifted in stack", xbt_fifo_size(mc_stack_liveness) );
   }
 
   
