@@ -98,6 +98,8 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_STAT), \
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_UNLINK),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_LS),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES), \
+SIMCALL_ENUM_ELEMENT(SIMCALL_MC_SNAPSHOT), \
+SIMCALL_ENUM_ELEMENT(SIMCALL_MC_COMPARE_SNAPSHOTS), \
 /* ****************************************************************************************** */ \
 /* TUTORIAL: New API                                                                        */ \
 /* ****************************************************************************************** */ \
@@ -606,6 +608,16 @@ typedef struct s_smx_simcall {
       const char* name;
       xbt_dict_t result;
     } asr_get_properties;
+
+    struct{
+      void *s;
+    } mc_snapshot;
+
+    struct{
+      void *snapshot1;
+      void *snapshot2;
+      int result;
+    } mc_compare_snapshots;
 
     /* ****************************************************************************************** */
     /* TUTORIAL: New API                                                                        */

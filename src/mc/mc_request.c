@@ -239,6 +239,16 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     }
     break;
 
+  case SIMCALL_MC_SNAPSHOT:
+    type = xbt_strdup("MC_SNAPSHOT");
+    args = '\0';
+    break;
+
+  case SIMCALL_MC_COMPARE_SNAPSHOTS:
+    type = xbt_strdup("MC_COMPARE_SNAPSHOTS");
+    args = '\0';
+    break;
+
   default:
     THROW_UNIMPLEMENTED;
   }
@@ -271,7 +281,9 @@ int MC_request_is_visible(smx_simcall_t req)
     || req->call == SIMCALL_COMM_WAIT
     || req->call == SIMCALL_COMM_WAITANY
     || req->call == SIMCALL_COMM_TEST
-    || req->call == SIMCALL_COMM_TESTANY;
+    || req->call == SIMCALL_COMM_TESTANY
+    || req->call == SIMCALL_MC_SNAPSHOT
+    || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS;
 }
 
 int MC_request_is_enabled(smx_simcall_t req)

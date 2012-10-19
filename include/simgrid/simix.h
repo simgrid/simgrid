@@ -467,6 +467,10 @@ XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
 /************************** AS router simcalls ***************************/
 XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
 
+/************************** MC simcalls   **********************************/
+XBT_PUBLIC(void *) simcall_mc_snapshot(void);
+XBT_PUBLIC(int) simcall_mc_compare_snapshots(void *s1, void *s2);
+
 /************************** New API simcalls **********************************/
 /* TUTORIAL: New API                                                          */
 /******************************************************************************/

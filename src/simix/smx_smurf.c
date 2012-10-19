@@ -1,6 +1,7 @@
 #include "smx_private.h"
 #include "xbt/fifo.h"
 #include "xbt/xbt_os_thread.h"
+#include "../mc/mc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");
@@ -557,6 +558,17 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_simcall_answer(simcall);
       break;
 
+    case SIMCALL_MC_SNAPSHOT:
+      simcall->mc_snapshot.s = MC_take_snapshot_liveness();
+      SIMIX_simcall_answer(simcall);
+      break;
+
+    case SIMCALL_MC_COMPARE_SNAPSHOTS:
+      simcall->mc_compare_snapshots.result =
+        snapshot_compare(simcall->mc_compare_snapshots.snapshot1, simcall->mc_compare_snapshots.snapshot2);
+      SIMIX_simcall_answer(simcall);
+      break;
+   
     case SIMCALL_NONE:
       THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
           SIMIX_process_get_name(simcall->issuer),

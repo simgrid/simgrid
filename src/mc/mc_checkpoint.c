@@ -614,3 +614,9 @@ static void snapshot_stack_free(mc_snapshot_stack_t s){
 void snapshot_stack_free_voidp(void *s){
   snapshot_stack_free((mc_snapshot_stack_t) * (void **) s);
 }
+
+void *MC_snapshot(void){
+
+  return simcall_mc_snapshot();
+  
+}

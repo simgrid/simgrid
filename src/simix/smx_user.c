@@ -1651,6 +1651,32 @@ xbt_dict_t simcall_file_ls(const char* mount, const char* path)
   return simcall->file_ls.result;
 }
 
+void *simcall_mc_snapshot(void)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+  simcall->call = SIMCALL_MC_SNAPSHOT;
+  
+  SIMIX_simcall_push(simcall->issuer);
+
+  return simcall->mc_snapshot.s;
+}
+
+int simcall_mc_compare_snapshots(void *s1, void *s2){
+  
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+  simcall->call = SIMCALL_MC_COMPARE_SNAPSHOTS;
+  simcall->mc_compare_snapshots.snapshot1 = s1;
+  simcall->mc_compare_snapshots.snapshot2 = s2;
+  
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
+    simcall->mc_compare_snapshots.result = -1;
+  
+  SIMIX_simcall_push(simcall->issuer);
+  
+  return simcall->mc_compare_snapshots.result;
+}
+
+
 /* ****************************************************************************************** */
 /* TUTORIAL: New API                                                                          */
 /* All functions for simcall                                                                  */

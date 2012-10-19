@@ -407,3 +407,8 @@ static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *
   return nb_diff;
 }
 
+int MC_compare_snapshots(void *s1, void *s2){
+
+  return simcall_mc_compare_snapshots(s1, s2);
+
+}
