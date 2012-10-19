@@ -148,8 +148,6 @@ void MC_init_safety(void)
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
-  else
-    MC_UNSET_RAW_MEM;
   
 }
 
@@ -166,6 +164,8 @@ void MC_modelcheck(void)
 }
 
 void MC_init_liveness(){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
   
   mc_time = xbt_new0(double, simix_process_maxpid);
 
@@ -200,6 +200,9 @@ void MC_init_liveness(){
   /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
   get_libsimgrid_plt_section();
   get_binary_plt_section();
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
 
 }
 
@@ -567,8 +570,6 @@ void MC_dump_stack_liveness(xbt_fifo_t stack){
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
-  else
-    MC_UNSET_RAW_MEM;
 
 }
 
@@ -654,8 +655,6 @@ void MC_automaton_load(const char *file){
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
-  else
-    MC_UNSET_RAW_MEM;
 
 }
 
@@ -674,14 +673,14 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
-  else
-    MC_UNSET_RAW_MEM;
   
 }
 
 /************ MC_ignore ***********/ 
 
 void MC_ignore(void *address, size_t size){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
   
@@ -715,9 +714,14 @@ void MC_ignore(void *address, size_t size){
   xbt_dynar_insert_at(mc_comparison_ignore, cursor, &region);
 
   MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
 }
 
 void MC_new_stack_area(void *stack, char *name, void* context){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
 
@@ -732,6 +736,9 @@ void MC_new_stack_area(void *stack, char *name, void* context){
   xbt_dynar_push(stacks_areas, &region);
   
   MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
 }
 
 /************ DWARF ***********/

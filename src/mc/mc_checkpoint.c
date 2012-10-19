@@ -113,12 +113,16 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
 }
 
 void MC_init_memory_map_info(){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
   
   unsigned int i = 0;
   s_map_region_t reg;
   memory_map_t maps = get_memory_map();
 
-   while (i < maps->mapsize) {
+  while (i < maps->mapsize) {
     reg = maps->regions[i];
     if ((reg.prot & PROT_WRITE)){
       if (maps->regions[i].pathname == NULL){
@@ -144,6 +148,13 @@ void MC_init_memory_map_info(){
     }
     i++;
   }
+  
+  free_memory_map(maps);
+
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
 
 }
 
