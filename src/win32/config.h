@@ -13,21 +13,14 @@
 /* 
  * config selection. 
 */
-#include <win32/compiler/select_compiler_features.h>
-
-
-#if defined(_XBT_BORLAND_COMPILER)
-# include <win32/compiler/borland.h>
-#elif defined(__GNUC__)
+#if defined(__GNUC__)
         /* data comes from autoconf when using gnuc (cross-compiling?) */
-# include "gras_config.h"
-#ifndef _XBT_WIN32
-typedef unsigned int uint32_t;
-#endif
-#elif defined(_XBT_VISUALC_COMPILER)
-# include <win32/compiler/visualc.h>
+  # include "gras_config.h"
+  #ifndef _XBT_WIN32
+    typedef unsigned int uint32_t;
+  #endif
 # else
-# error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
+  # error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
 #endif
 
 typedef int socklen_t;
@@ -44,27 +37,29 @@ typedef int socklen_t;
 #endif
 
 #ifndef _XBT_VISUALC_COMPILER
-#ifndef EWOULDBLOCK
-#define EWOULDBLOCK WSAEWOULDBLOCK
-#endif
-#ifndef EINPROGRESS
-#define EINPROGRESS WSAEINPROGRESS
-#endif
-#ifndef ETIMEDOUT
-#define ETIMEDOUT   WSAETIMEDOUT
-#endif
+  #ifndef EWOULDBLOCK
+  #define EWOULDBLOCK WSAEWOULDBLOCK
+  #endif
+
+  #ifndef EINPROGRESS
+  #define EINPROGRESS WSAEINPROGRESS
+  #endif
+
+  #ifndef ETIMEDOUT
+  #define ETIMEDOUT   WSAETIMEDOUT
+  #endif
 #endif
 
 
 
 #ifdef sock_errno
-#undef  sock_errno
+  #undef  sock_errno
 #endif
 
 #define sock_errno         WSAGetLastError()
 
 #ifdef sock_errstr
-#undef  sock_errstr
+  #undef  sock_errstr
 #endif
 
 #define sock_errstr(err)   xbt_wsa_err2string(err)
@@ -72,17 +67,15 @@ typedef int socklen_t;
 const char *xbt_wsa_err2string(int errcode);
 
 #ifdef S_IRGRP
-#undef S_IRGRP
+  #undef S_IRGRP
 #endif
 
 #define S_IRGRP 0
 
 #ifdef S_IWGRP
-#undef S_IWGRP
+  #undef S_IWGRP
 #endif
 
 #define S_IWGRP 0
-
-
 
 #endif                          /* #ifndef __XBT_WIN32_CONFIG_H__ */
