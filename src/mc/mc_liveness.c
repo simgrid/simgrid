@@ -274,7 +274,8 @@ void MC_ddfs_init(void){
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
 
   /* Save the initial state */
-  initial_snapshot_liveness = MC_take_snapshot_liveness();
+  initial_state_liveness = xbt_new0(s_mc_global_t, 1);
+  initial_state_liveness->initial_snapshot = MC_take_snapshot_liveness();
 
   MC_UNSET_RAW_MEM; 
   
@@ -290,7 +291,7 @@ void MC_ddfs_init(void){
       MC_UNSET_RAW_MEM;
       
       if(cursor != 0){
-        MC_restore_snapshot(initial_snapshot_liveness);
+        MC_restore_snapshot(initial_state_liveness->initial_snapshot);
         MC_UNSET_RAW_MEM;
       }
 
@@ -307,7 +308,7 @@ void MC_ddfs_init(void){
         set_pair_reached(state);
 
         if(cursor != 0){
-          MC_restore_snapshot(initial_snapshot_liveness);
+          MC_restore_snapshot(initial_state_liveness->initial_snapshot);
           MC_UNSET_RAW_MEM;
         }
   

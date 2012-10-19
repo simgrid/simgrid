@@ -42,6 +42,10 @@ typedef struct s_mc_snapshot_stack{
   void *stack_pointer;
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
+typedef struct s_mc_global_t{
+  mc_snapshot_t initial_snapshot;
+}s_mc_global_t, *mc_global_t;
+
 void MC_take_snapshot(mc_snapshot_t);
 mc_snapshot_t MC_take_snapshot_liveness(void);
 void MC_restore_snapshot(mc_snapshot_t);
@@ -213,7 +217,7 @@ void MC_init_safety(void);
 /********************************** Double-DFS for liveness property**************************************/
 
 extern xbt_fifo_t mc_stack_liveness;
-extern mc_snapshot_t initial_snapshot_liveness;
+extern mc_global_t initial_state_liveness;
 extern xbt_automaton_t _mc_property_automaton;
 extern int compare;
 extern void *start_plt_libsimgrid;
