@@ -40,6 +40,7 @@ set(EXTRA_DIST
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_ti_private.h
+  src/surf/platf_generator_private.h
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
@@ -90,7 +91,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmprivate.h
   src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
-  src/xbt/mmalloc/test/mmalloc_test.c
   src/xbt/setset_private.h
   tools/gras/gras_stub_generator.h
   tools/tesh/run_context.h
@@ -217,6 +217,7 @@ set(SURF_SRC
   src/surf/maxmin.c
   src/surf/network.c
   src/surf/network_constant.c
+  src/surf/platf_generator.c
   src/surf/random_mgr.c
   src/surf/sg_platf.c
   src/surf/storage.c
@@ -298,7 +299,7 @@ set(SURF_SRC
   )
 set(EXTRA_DIST
   ${EXTRA_DIST}
-  src/surf/new_model_private.c
+  src/surf/new_model_private.h
   )
 #* ****************************************************************************************** *#
 
@@ -726,6 +727,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/simdag/properties/CMakeLists.txt
   examples/simdag/scheduling/CMakeLists.txt
   examples/smpi/CMakeLists.txt
+  examples/smpi/MM/CMakeLists.txt
   examples/xbt/CMakeLists.txt
   )
 
@@ -745,6 +747,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
+  teshsuite/smpi/CMakeLists.txt
   )
 
 set(TOOLS_CMAKEFILES_TXT
@@ -803,7 +806,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/update_tesh.pl
   buildtools/Cmake/Supernovae.cmake
   buildtools/Cmake/UnitTesting.cmake
-  buildtools/Cmake/memcheck_tests.cmake
   buildtools/Cmake/src/gras_config.h.in
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c

@@ -1,7 +1,7 @@
 p Test struct
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/small_platform.xml -np 2 ./struct_test -q
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 2 ./struct_test -q
 > Process 0 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0 
 > Process 1 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0 
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)

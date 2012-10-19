@@ -123,7 +123,9 @@ void *mmorecore(struct mdesc *mdp, int size)
         char buff[1024];
         fprintf(stderr,"Internal error: mmap returned MAP_FAILED! error: %s\n",strerror(errno));
         sprintf(buff,"cat /proc/%d/maps",getpid());
-        system(buff);
+        int status = system(buff);
+        if (status == -1 || !(WIFEXITED(status) && WEXITSTATUS(status) == 0))
+          fprintf(stderr, "Something went wrong when trying to %s\n", buff);
         sleep(1);
         abort();
       }
