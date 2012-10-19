@@ -89,13 +89,13 @@ void smpi_process_finalize(void)
   }
 }
 
+#ifdef SMPI_F2C
 int smpi_process_argc(void) {
   smpi_process_data_t data = smpi_process_data();
 
   return data->argc ? *(data->argc) - 1 : 0;
 }
 
-#ifdef SMPI_F2C
 int smpi_process_getarg(integer* index, char* dst, ftnlen len) {
   smpi_process_data_t data = smpi_process_data();
   char* arg;
@@ -114,7 +114,6 @@ int smpi_process_getarg(integer* index, char* dst, ftnlen len) {
   }
   return 0;
 }
-#endif
 
 int smpi_global_size(void) {
    char* value = getenv("SMPI_GLOBAL_SIZE");
@@ -125,6 +124,7 @@ int smpi_global_size(void) {
    }
    return atoi(value);
 }
+#endif
 
 smpi_process_data_t smpi_process_data(void)
 {
