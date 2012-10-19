@@ -52,8 +52,11 @@ else(HAVE_F2C_LIB)
   message(STATUS "Looking for lib f2c - not found")
 endif(HAVE_F2C_LIB)
 
+message(STATUS "Looking for bin f2c")
 if(F2C_EXE)
   message(STATUS "Found F2C: ${F2C_EXE}")
+else(F2C_EXE)
+  message(STATUS "Looking for bin f2c - not found")
 endif(F2C_EXE)
 
 mark_as_advanced(HAVE_F2C_H)
