@@ -480,6 +480,8 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
             mmalloc_backtrace_block_display((void*)heapinfo1, i);
           }
           nb_diff1++;
+        }else{
+          xbt_free(heapinfo1[i].busy_block.equal_to);
         }
       }
     }
@@ -494,6 +496,8 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
               mmalloc_backtrace_fragment_display((void*)heapinfo1, i, j);
             }
             nb_diff1++;
+          }else{
+            xbt_free(heapinfo1[i].busy_frag.equal_to[j]);
           }
         }
       }
@@ -516,6 +520,8 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
             mmalloc_backtrace_block_display((void*)heapinfo2, i);
           }
           nb_diff2++;
+        }else{
+          xbt_free(heapinfo2[i].busy_block.equal_to);
         }
       }
     }
@@ -530,6 +536,8 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
               mmalloc_backtrace_fragment_display((void*)heapinfo2, i, j);
             }
             nb_diff2++;
+          }else{
+            xbt_free(heapinfo2[i].busy_frag.equal_to[j]);
           }
         }
       }
@@ -540,7 +548,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
   XBT_DEBUG("Different blocks or fragments in heap2 : %d", nb_diff2);
 
   xbt_dynar_free(&previous);
- 
+
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
 
 }
