@@ -30,5 +30,5 @@ function Master(...)
     finalize:send(alias)
   end
   simgrid.info("Everything's done.")
-end -- Master
+end -- end_of_master
 
