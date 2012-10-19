@@ -525,11 +525,6 @@ xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
  */
 void xbt_fifo_preinit(void)
 {
-  if (item_mallocator != NULL) {
-    /* Already created. I guess we want to switch to MC mode, so kill the previously created mallocator */
-    xbt_mallocator_free(item_mallocator);
-  }
-
   item_mallocator = xbt_mallocator_new(65536,
                                        fifo_item_mallocator_new_f,
                                        fifo_item_mallocator_free_f,

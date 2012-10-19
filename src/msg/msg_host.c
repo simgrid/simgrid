@@ -131,6 +131,9 @@ void __MSG_host_destroy(msg_host_t host) {
   free(host);
 }
 
+/** \ingroup m_host_management
+ * \brief Return the current number MSG hosts.
+ */
 int MSG_get_host_number(void)
 {
   return xbt_lib_length(host_lib);

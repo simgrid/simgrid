@@ -17,8 +17,7 @@ $ $SG_TEST_EXENV ./simdag_tracing --cfg=tracing:1 --cfg=tracing/categorized:1 ${
 > [30.800300] [sd_seq_access/INFO] There is no task running on C2-05
 > [30.800300] [sd_seq_access/INFO] There is no task running on C2-06
 
-$ cat ./simgrid.trace
-> #This file was generated using SimGrid-3.8.0
+$ tail -n +3 ./simgrid.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string

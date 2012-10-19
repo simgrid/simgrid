@@ -18,6 +18,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Use the "msg_" prefix for all datatypes (instead of m_, msg_ and MSG_),
    please stop using the old ones, they are DEPRECATED.
  * Deprecate MSG_clean(). No need to call it anymore.
+ * Function MSG_get_host_number() is not deprecated anymore.
 
  Documentation:
  * Split the doc into a user guide and a reference guide.
@@ -41,9 +42,9 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    the public interface anymore (bindings should be updated).
 
  SimDag:
- * Bug fix for when SD_Simulate is called with a positive value: be careful 
-   when comparing doubles. Sometimes they are different for non significant 
-   digits only. 
+ * Bug fix for when SD_Simulate is called with a positive value: be careful
+   when comparing doubles. Sometimes they are different for non significant
+   digits only.
  * New types of typed tasks. SD_TASK_COMP_PAR_AMDAHL represents a
    parallel task whose initial work is distributed among host according
    to the Amdahl's law. Such tasks are created with a parameter alpha

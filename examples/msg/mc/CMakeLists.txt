@@ -50,6 +50,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged3.c
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.c
   ${CMAKE_CURRENT_SOURCE_DIR}/random_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
