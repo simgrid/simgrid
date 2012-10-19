@@ -11,7 +11,9 @@
 #include "xbt/xbt_os_time.h"
 #include "simgrid/simix.h"
 #include "smpi/smpi.h"
+#ifdef SMPI_F2C
 #include "smpi/smpif.h"
+#endif
 #include "smpi/smpi_cocci.h"
 #include "instr/instr_private.h"
 

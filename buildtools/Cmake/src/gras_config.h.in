@@ -156,6 +156,9 @@
 /* Indicates that we have SMPI support */
 #cmakedefine HAVE_SMPI @HAVE_SMPI@
 
+/* Indicates that we have SMPI F2C support */
+#cmakedefine  SMPI_F2C @SMPI_F2C@
+
 /* Indicates that we have NS3 support */
 #cmakedefine HAVE_NS3 @HAVE_NS3@
 

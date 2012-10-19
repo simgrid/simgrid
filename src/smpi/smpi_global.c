@@ -95,6 +95,7 @@ int smpi_process_argc(void) {
   return data->argc ? *(data->argc) - 1 : 0;
 }
 
+#ifdef SMPI_F2C
 int smpi_process_getarg(integer* index, char* dst, ftnlen len) {
   smpi_process_data_t data = smpi_process_data();
   char* arg;
@@ -113,6 +114,7 @@ int smpi_process_getarg(integer* index, char* dst, ftnlen len) {
   }
   return 0;
 }
+#endif
 
 int smpi_global_size(void) {
    char* value = getenv("SMPI_GLOBAL_SIZE");
@@ -287,6 +289,23 @@ int __attribute__((weak)) main(int argc, char** argv) {
    xargv = argv;
    return MAIN__();
 }
+
+#ifdef WIN32
+#include <windows.h>
+
+int __attribute__((weak)) smpi_simulated_main(int argc, char** argv) {
+  xbt_die("Should not be in this smpi_simulated_main");
+  return 1;
+}
+
+/* TODO FOR WIN32 */
+/* Dummy prototype to make gcc happy */
+int APIENTRY WinMain(HINSTANCE hInst,HINSTANCE hInst2,LPSTR lpstr01,int nCmdShow)
+{
+	return MAIN__();
+}
+
+#endif
 
 int MAIN__(void)
 {

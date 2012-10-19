@@ -113,7 +113,6 @@ set(SMPI_SRC
   src/smpi/smpi_c99.c
   src/smpi/smpi_coll.c
   src/smpi/smpi_comm.c
-  src/smpi/smpi_f77.c
   src/smpi/smpi_global.c
   src/smpi/smpi_group.c
   src/smpi/smpi_mpi.c
@@ -121,6 +120,13 @@ set(SMPI_SRC
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
   )
+  
+if(SMPI_F2C)
+  set(SMPI_SRC
+    ${SMPI_SRC}
+    src/smpi/smpi_f77.c
+    )
+endif(SMPI_F2C)
 
 set(GRAS_RL_SRC
   ${XBT_RL_SRC}
