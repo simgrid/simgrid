@@ -27,51 +27,46 @@ commentaire  "/*"([^\*\/]*{nouv_ligne}*[^\*\/]*)*"*/"
 
 %%
 
-"never"      { printf("%s", yytext); return (NEVER); }
-"if"         { printf("%s", yytext); return (IF); }
-"fi"         { printf("%s", yytext); 
-               return (FI); }
-"->"         { printf("%s", yytext); return (IMPLIES); }
-"goto"       { printf("%s", yytext); return (GOTO); }
-"&&"         { printf("%s", yytext); return (AND); }
-"||"         { printf("%s", yytext); return (OR); }
-"!"          { printf("%s", yytext); return (NOT); }
-"("          { printf("%s", yytext); return (LEFT_PAR); }
-")"          { printf("%s", yytext); return (RIGHT_PAR); }
-"::"         { printf("%s", yytext); return (CASE); }
-":"          { printf("%s", yytext); return (COLON); }
-";"          { printf("%s", yytext); return (SEMI_COLON); }
-"1"          { printf("%s", yytext); return (CASE_TRUE); }
-"{"          { printf("%s", yytext); return (LEFT_BRACE); }
-"}"          { printf("%s", yytext); return (RIGHT_BRACE); }
+"never"      { return (NEVER); }
+"if"         { return (IF); }
+"fi"         { return (FI); }
+"->"         { return (IMPLIES); }
+"goto"       { return (GOTO); }
+"&&"         { return (AND); }
+"||"         { return (OR); }
+"!"          { return (NOT); }
+"("          { return (LEFT_PAR); }
+")"          { return (RIGHT_PAR); }
+"::"         { return (CASE); }
+":"          { return (COLON); }
+";"          { return (SEMI_COLON); }
+"1"          { return (CASE_TRUE); }
+"{"          { return (LEFT_BRACE); }
+"}"          { return (RIGHT_BRACE); }
 
 
-{commentaire}             { printf(" ");}
+{commentaire}             { }
 
-{blancs}                  { printf("%s",yytext); }
+{blancs}                  { }
 
 
-{reel}                    { printf("%s",yytext); 
-                            sscanf(yytext,"%lf",&yylval.real); 
+{reel}                    { sscanf(yytext,"%lf",&yylval.real); 
                             return (LITT_REEL); }
 
-{entier}                  { printf("%s",yytext); 
-                            sscanf(yytext,"%d",&yylval.integer); 
+{entier}                  { sscanf(yytext,"%d",&yylval.integer); 
                             return (LITT_ENT); }
 
-{chaine}                  { printf("%s",yytext);  
-                            yylval.string=(char *)malloc(strlen(yytext)+1);
+{chaine}                  { yylval.string=(char *)malloc(strlen(yytext)+1);
                             sscanf(yytext,"%s",yylval.string); 
                             return (LITT_CHAINE); }
 
-[a-zA-Z]{caractere}*      { printf("%s",yytext); 
-			    yylval.string=(char *)malloc(strlen(yytext)+1);
-			    sscanf(yytext,"%s",yylval.string);
-			    return (ID); }
+[a-zA-Z]{caractere}*      { yylval.string=(char *)malloc(strlen(yytext)+1);
+                            sscanf(yytext,"%s",yylval.string);
+			                      return (ID); }
 		   
-{numl}                    { printf("\n"); }
+{numl}                    { }
 
-.                         { printf("caractère inconnu\n"); }
+.                         { }
 
 %%
 
