@@ -328,6 +328,7 @@ int MAIN__(void)
   XBT_LOG_CONNECT(smpi_mpi);
   XBT_LOG_CONNECT(smpi_mpi_dt);
   XBT_LOG_CONNECT(smpi_pmpi);
+  XBT_LOG_CONNECT(smpi_replay);
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&xargc, xargv);
