@@ -35,6 +35,10 @@ static int process_count = 0;
 
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_NULL;
 
+MPI_Errhandler* MPI_ERRORS_RETURN = NULL;
+MPI_Errhandler* MPI_ERRORS_ARE_FATAL = NULL;
+MPI_Errhandler* MPI_ERRHANDLER_NULL = NULL;
+
 #define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
 
 static char* get_mailbox_name(char* str, int index) {

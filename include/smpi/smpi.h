@@ -59,6 +59,8 @@ SG_BEGIN_DECL()
 #define MPI_ERR_GROUP    10
 #define MPI_ERR_OP       11
 #define MPI_ERR_OTHER    12
+#define MPI_ERR_IN_STATUS 13
+#define MPI_ERR_PENDING   14
 #define MPI_IDENT     0
 #define MPI_SIMILAR   1
 #define MPI_UNEQUAL   2
@@ -67,6 +69,13 @@ SG_BEGIN_DECL()
 #define MPI_TAG_UB           1000000
 #define MPI_HOST             0
 #define MPI_IO               0
+#define MPI_BSEND_OVERHEAD   0
+
+typedef enum MPIR_Topo_type {
+  MPI_GRAPH=1,
+  MPI_CART=2,
+  MPI_DIST_GRAPH=3
+} MPIR_Topo_type;
 
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
@@ -398,6 +407,11 @@ typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, v
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
 
 XBT_PUBLIC(MPI_Datatype)  MPI_PACKED;
+XBT_PUBLIC(MPI_Errhandler*)  MPI_ERRORS_RETURN;
+XBT_PUBLIC(MPI_Errhandler*)  MPI_ERRORS_ARE_FATAL;
+XBT_PUBLIC(MPI_Errhandler*)  MPI_ERRHANDLER_NULL;
+
+
 MPI_CALL(XBT_PUBLIC(int), MPI_Pack_size, (int incount, MPI_Datatype datatype, MPI_Comm comm, int* size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Cart_coords, (MPI_Comm comm, int rank, int maxdims, int* coords));
 MPI_CALL(XBT_PUBLIC(int), MPI_Cart_create, (MPI_Comm comm_old, int ndims, int* dims, int* periods, int reorder, MPI_Comm* comm_cart));

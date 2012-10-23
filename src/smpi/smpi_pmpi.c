@@ -2055,6 +2055,11 @@ int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype*
   smpi_bench_begin();
   return retval;}
 
+int PMPI_Error_class(int errorcode, int* errorclass) {
+  // assume smpi uses only standard mpi error codes
+  *errorclass=errorcode;
+  return MPI_SUCCESS;
+}
 
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
@@ -2125,10 +2130,6 @@ int PMPI_Graphdims_get(MPI_Comm comm, int* nnodes, int* nedges) {
 }
 
 int PMPI_Topo_test(MPI_Comm comm, int* top_type) {
-   return not_yet_implemented();
-}
-
-int PMPI_Error_class(int errorcode, int* errorclass) {
    return not_yet_implemented();
 }
 
