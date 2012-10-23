@@ -1953,7 +1953,7 @@ int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_typ
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
-  } else if (count<=0){
+  } else if (count<0){
     retval = MPI_ERR_COUNT;
   } else {
     retval = smpi_datatype_contiguous(count, old_type, new_type);
@@ -1983,7 +1983,7 @@ int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type,
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
-  } else if (count<=0 || blocklen<=0){
+  } else if (count<0 || blocklen<0){
     retval = MPI_ERR_COUNT;
   } else {
     retval = smpi_datatype_vector(count, blocklen, stride, old_type, new_type);
@@ -1998,7 +1998,7 @@ int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
-  } else if (count<=0 || blocklen<=0){
+  } else if (count<0 || blocklen<0){
     retval = MPI_ERR_COUNT;
   } else {
     retval = smpi_datatype_hvector(count, blocklen, stride, old_type, new_type);
@@ -2014,7 +2014,7 @@ int PMPI_Type_indexed(int count, int* blocklens, int* indices, MPI_Datatype old_
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
-  } else if (count<=0){
+  } else if (count<0){
     retval = MPI_ERR_COUNT;
   } else {
     retval = smpi_datatype_indexed(count, blocklens, indices, old_type, new_type);
@@ -2029,7 +2029,7 @@ int PMPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatyp
   smpi_bench_end();
   if (old_type == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
-  } else if (count<=0){
+  } else if (count<0){
     retval = MPI_ERR_COUNT;
   } else {
     retval = smpi_datatype_hindexed(count, blocklens, indices, old_type, new_type);
@@ -2043,7 +2043,7 @@ int PMPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype*
   int retval;
 
   smpi_bench_end();
-  if (count<=0){
+  if (count<0){
     retval = MPI_ERR_COUNT;
   } else {
     retval = smpi_datatype_struct(count, blocklens, indices, old_types, new_type);
