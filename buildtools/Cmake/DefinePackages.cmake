@@ -309,12 +309,6 @@ set(EXTRA_DIST
   )
 #* ****************************************************************************************** *#
 
-set(PLATFGEN_SRC
-  include/simgrid/platf_generator.h
-  src/surf/platf_generator.c
-  src/surf/platf_generator_private.h
-  )
-
 set(SIMDAG_SRC
   src/simdag/sd_daxloader.c
   src/simdag/sd_global.c
@@ -555,7 +549,6 @@ set(simgrid_sources
   ${SIMDAG_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
-  ${PLATFGEN_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   )
