@@ -48,7 +48,6 @@ MPI_Comm smpi_comm_new(MPI_Group group)
 
 void smpi_comm_destroy(MPI_Comm comm)
 {
-  smpi_group_destroy(comm->group);
   xbt_free(comm);
 }
 
