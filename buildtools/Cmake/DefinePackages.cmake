@@ -645,6 +645,15 @@ set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/modules.doc
   )
 
+set(DEV_GUIDE_SOURCES
+  doc/dev_guide/doxygen/index.doc
+  doc/dev_guide/doxygen/cmake.doc
+  doc/dev_guide/doxygen/simgrid.doc
+  doc/dev_guide/doxygen/xps.doc
+  doc/dev_guide/doxygen/DevGuideDoxyfile.in
+  doc/dev_guide/doxygen/DevGuideDoxygenLayout.xml
+  )
+
 set(SHARED_SOURCES
   )
 
