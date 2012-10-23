@@ -271,6 +271,7 @@ int PMPI_Group_free(MPI_Group * group)
   if (group == NULL) {
     retval = MPI_ERR_ARG;
   } else {
+    if(*group!= smpi_comm_group(MPI_COMM_WORLD))// do not free the group of the comm_world
     smpi_group_destroy(*group);
     *group = MPI_GROUP_NULL;
     retval = MPI_SUCCESS;
