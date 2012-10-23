@@ -336,7 +336,7 @@ void sg_platf_new_AS_end() {
 /* ***************************************** */
 /* TUTORIAL: New TAG                         */
 
-void sg_platf_new_gpu_end() {
+void sg_platf_new_gpu(sg_platf_gpu_cbarg_t gpu) {
   unsigned int iterator;
   void_f_void_t fun;
   xbt_dynar_foreach(sg_platf_gpu_cb_list, iterator, fun) {
