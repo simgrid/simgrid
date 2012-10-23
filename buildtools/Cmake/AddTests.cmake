@@ -477,6 +477,7 @@ if(NOT enable_memcheck)
     ADD_TEST(smpi-struct-thread                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct.tesh)
     ADD_TEST(smpi-pt2pt-thread                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt.tesh)
 
+
     if(HAVE_RAWCTX)
       ADD_TEST(smpi-bcast-raw                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast.tesh)
       ADD_TEST(smpi-reduce-raw                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce.tesh)
@@ -484,8 +485,17 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-indexed-raw                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/indexed.tesh)
       ADD_TEST(smpi-struct-raw                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct.tesh)
       ADD_TEST(smpi-pt2pt-raw                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt.tesh)
-
-    endif()
+      ADD_TEST(NAME smpi-mpich-env-raw        COMMAND ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/env/runtests 
+      -srcdir=${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/env -basedir=${CMAKE_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/env)
+      ADD_TEST(NAME smpi-mpich-pt2pt-raw      COMMAND ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/pt2pt/runtests 
+      -srcdir=${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/pt2pt -basedir=${CMAKE_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/pt2pt)
+      ADD_TEST(NAME smpi-mpich-context-raw      COMMAND ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/context/runtests 
+      -srcdir=${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/context -basedir=${CMAKE_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/context)
+      ADD_TEST(NAME smpi-mpich-profile-raw        COMMAND ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/profile/runtests 
+      -srcdir=${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/profile -basedir=${CMAKE_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/profile)
+      ADD_TEST(NAME smpi-mpich-coll-raw        COMMAND ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll/runtests 
+       -srcdir=${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll -basedir=${CMAKE_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll)       
+    endif(HAVE_RAWCTX)
     if(CONTEXT_UCONTEXT)
       ADD_TEST(smpi-bcast-ucontext              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast.tesh)
       ADD_TEST(smpi-reduce-ucontext             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce.tesh)

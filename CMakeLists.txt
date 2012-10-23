@@ -2,14 +2,15 @@ cmake_minimum_required(VERSION 2.6)
 ### Need to set rc ccompiler before enable language
 if(WIN32)
   SET(CMAKE_RC_COMPILER "windres")
-endif()
-project(SimGrid CXX C)
+endif(WIN32)
+project(SimGrid CXX C Fortran)
 
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_C_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
-
+set(CMAKE_Fortran_FLAGS "" CACHE TYPE INTERNAL FORCE)
+set(CMAKE_Fortran_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
 ## Mapping version number -> version name
 # 3.5.99 -> alpha1 (oops)
 # 3.5.9{1,2} -> beta{1,2}
