@@ -765,6 +765,23 @@ void STag_surfxml_argument(void){
   argv[(argc) - 1] = xbt_strdup(A_surfxml_argument_value);
 }
 
+/* ***************************************** */
+/* TUTORIAL: New TAG                         */
+void STag_surfxml_gpu(void)
+{
+  XBT_DEBUG("STag_surfxml_gpu");
+}
+void ETag_surfxml_gpu(void)
+{
+  s_sg_platf_gpu_cbarg_t gpu;
+  memset(&gpu,0,sizeof(gpu));
+
+  gpu.name = A_surfxml_gpu_name;
+
+  sg_platf_new_gpu(&gpu);
+}
+/* ***************************************** */
+
 /* nothing to do in those functions */
 void ETag_surfxml_prop(void){}
 void STag_surfxml_random(void){}

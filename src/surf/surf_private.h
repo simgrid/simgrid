@@ -201,6 +201,11 @@ struct s_routing_platf {
 XBT_PUBLIC(void) routing_model_create(void *loopback);
 XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) storage_register_callbacks(void);
+/* ***************************************** */
+/* TUTORIAL: New TAG                         */
+XBT_PUBLIC(void) gpu_register_callbacks(void);
+/* ***************************************** */
+
 XBT_PUBLIC(void) routing_register_callbacks(void);
 XBT_PUBLIC(void) generic_free_route(sg_platf_route_cbarg_t route); // FIXME rename to routing_route_free
  // FIXME: make previous function private to routing again?

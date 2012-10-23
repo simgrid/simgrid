@@ -287,6 +287,20 @@ typedef struct s_sg_platf_AS_cbarg {
 
 #define SG_PLATF_AS_INITIALIZER {NULL,0}
 
+/* ***************************************** */
+/* TUTORIAL: New TAG                         */
+
+typedef struct s_sg_platf_gpu_cbarg *sg_platf_gpu_cbarg_t;
+typedef struct s_sg_platf_gpu_cbarg {
+  const char *name;
+} s_sg_platf_gpu_cbarg_t;
+
+#define SG_PLATF_GPU_INITIALIZER {NULL}
+
+XBT_PUBLIC(void) sg_platf_new_gpu   (sg_platf_gpu_cbarg_t   gpu);   // Add an gpu
+
+/* ***************************************** */
+
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform
 
