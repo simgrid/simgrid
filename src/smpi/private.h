@@ -177,7 +177,7 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype);
 void smpi_mpi_wait(MPI_Request * request, MPI_Status * status);
 int smpi_mpi_waitany(int count, MPI_Request requests[],
                      MPI_Status * status);
-void smpi_mpi_waitall(int count, MPI_Request requests[],
+int smpi_mpi_waitall(int count, MPI_Request requests[],
                       MPI_Status status[]);
 int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
                       MPI_Status status[]);

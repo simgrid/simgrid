@@ -306,6 +306,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
   // if we have a sender, we should use its data, and not the data from the receive
+  //FIXME : mail fail if req->action has already been freed, the pointer being invalid
   if((req->action)&&
      (req->src==MPI_ANY_SOURCE || req->tag== MPI_ANY_TAG))
     req = (MPI_Request)SIMIX_comm_get_src_data((*request)->action);
@@ -313,7 +314,10 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   if(status != MPI_STATUS_IGNORE) {
     status->MPI_SOURCE = req->src;
     status->MPI_TAG = req->tag;
+    //if((*request)->action && ((MPI_Request)SIMIX_comm_get_src_data((*request)->action))->size == (*request)->size)
     status->MPI_ERROR = MPI_SUCCESS;
+    //else status->MPI_ERROR = MPI_ERR_TRUNCATE;
+    // this handles the case were size in receive differs from size in send
     // FIXME: really this should just contain the count of receive-type blocks,
     // right?
     status->count = req->size;
@@ -457,8 +461,10 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
     if(status != MPI_STATUS_IGNORE) {
       status->MPI_SOURCE = req->src;
       status->MPI_TAG = req->tag;
-      status->MPI_ERROR = MPI_SUCCESS;
-      status->count = req->size;
+      if(req->size == request->size)
+        status->MPI_ERROR = MPI_SUCCESS;
+      else status->MPI_ERROR = MPI_ERR_TRUNCATE;
+      status->count = request->size;
     }
   }
   else *flag = 0;
@@ -518,12 +524,13 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
   return index;
 }
 
-void smpi_mpi_waitall(int count, MPI_Request requests[],
+int smpi_mpi_waitall(int count, MPI_Request requests[],
                       MPI_Status status[])
 {
   int  index, c;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
+  int retvalue=MPI_SUCCESS;
   //tag invalid requests in the set
   for(c = 0; c < count; c++) {
     if(requests[c]==MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL ){
@@ -548,10 +555,12 @@ void smpi_mpi_waitall(int count, MPI_Request requests[],
        }
       if(status != MPI_STATUSES_IGNORE) {
         memcpy(&status[index], pstat, sizeof(*pstat));
+        if(status[index].MPI_ERROR==MPI_ERR_TRUNCATE)retvalue=MPI_ERR_IN_STATUS;
 
       }
     }
   }
+  return retvalue;
 }
 
 int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,

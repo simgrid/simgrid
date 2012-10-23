@@ -523,8 +523,9 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
         if (i >= n) {
           index = smpi_group_index(group, rank);
           smpi_group_set_mapping(*newgroup, index, rank);
-          rank++;
+          
         }
+        rank++;
       }
     }
     smpi_group_use(*newgroup);
@@ -622,6 +623,7 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
               smpi_group_set_mapping(*newgroup, index, newrank);
             }
           }
+          newrank++; //added to avoid looping, need to be checked ..
         }
       }
     }
@@ -1150,16 +1152,16 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
                          MPI_Comm comm, MPI_Status * status)
 {
   //TODO: suboptimal implementation
-  void *recvbuf;
-  int retval, size;
+ // void *recvbuf;
+  int retval;
 
-  size = smpi_datatype_size(datatype) * count;
-  recvbuf = xbt_new(char, size);
+//  size = smpi_datatype_size(datatype) * count;
+//  recvbuf = xbt_new(char, size);
   retval =
-      MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count,
+      MPI_Sendrecv(buf, count, datatype, dst, sendtag, buf, count,
                    datatype, src, recvtag, comm, status);
-  memcpy(buf, recvbuf, size * sizeof(char));
-  xbt_free(recvbuf);
+/*memcpy(buf, recvbuf, size * sizeof(char));
+  xbt_free(recvbuf);*/
   return retval;
 }
 
@@ -1404,7 +1406,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 
   TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__);
 #endif
-  smpi_mpi_waitall(count, requests, status);
+  int retval = smpi_mpi_waitall(count, requests, status);
 #ifdef HAVE_TRACING
   for (i = 0; i < count; i++) {
     int src_traced, dst_traced, is_wait_for_receive;
@@ -1423,7 +1425,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   TRACE_smpi_computing_in(rank_traced);
 #endif
   smpi_bench_begin();
-  return MPI_SUCCESS;
+  return retval;
 }
 
 int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount,
@@ -1914,7 +1916,9 @@ int PMPI_Get_processor_name(char *name, int *resultlen)
 
   smpi_bench_end();
   strncpy(name, SIMIX_host_get_name(SIMIX_host_self()),
-          MPI_MAX_PROCESSOR_NAME - 1);
+          strlen(SIMIX_host_get_name(SIMIX_host_self())) < MPI_MAX_PROCESSOR_NAME - 1 ?
+          strlen(SIMIX_host_get_name(SIMIX_host_self())) +1 :
+          MPI_MAX_PROCESSOR_NAME - 1 );
   *resultlen =
       strlen(name) >
       MPI_MAX_PROCESSOR_NAME ? MPI_MAX_PROCESSOR_NAME : strlen(name);
