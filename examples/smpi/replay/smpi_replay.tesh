@@ -2,7 +2,7 @@
 # (since we want to pass it to the child, it has to be redefined before each command)
 # Go for the first test
 p Test of trace replay with SMPI (one trace for all processes)
-$ ../../bin/smpirun --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/one_trace
+$ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/one_trace
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -27,7 +27,7 @@ $ ../../bin/smpirun --log=replay.thresh:critical --log=smpi_replay.thresh:verbos
 
 
 p The same with tracing activated
-$ ../../bin/smpirun --log=replay.thresh:critical --log=no_loc  --cfg=tracing:1 --cfg=tracing/smpi:1 --cfg=tracing/smpi/computing:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/one_trace
+$ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=no_loc  --cfg=tracing:1 --cfg=tracing/smpi:1 --cfg=tracing/smpi/computing:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/one_trace
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
@@ -205,7 +205,7 @@ $ tail -n +3 ./simgrid.trace
 $ rm -f ./simgrid.trace
 
 p Another test of trace replay with SMPI (one trace per process)
-$ ../../bin/smpirun --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc -np 2 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/split_traces
+$ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc -np 2 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/split_traces
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
