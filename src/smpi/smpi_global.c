@@ -263,6 +263,7 @@ void smpi_global_destroy(void)
   int i;
 
   smpi_bench_destroy();
+  smpi_group_destroy(smpi_comm_group(MPI_COMM_WORLD));
   smpi_comm_destroy(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {

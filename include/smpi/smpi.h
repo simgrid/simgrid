@@ -391,6 +391,7 @@ typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, v
                               void* attribute_val_out, int* flag);
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
 
+XBT_PUBLIC(MPI_Datatype)  MPI_PACKED;
 MPI_CALL(XBT_PUBLIC(int), MPI_Pack_size, (int incount, MPI_Datatype datatype, MPI_Comm comm, int* size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Cart_coords, (MPI_Comm comm, int rank, int maxdims, int* coords));
 MPI_CALL(XBT_PUBLIC(int), MPI_Cart_create, (MPI_Comm comm_old, int ndims, int* dims, int* periods, int reorder, MPI_Comm* comm_cart));
