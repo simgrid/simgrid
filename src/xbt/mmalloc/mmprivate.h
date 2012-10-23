@@ -272,7 +272,7 @@ XBT_PUBLIC( void *)__mmalloc_remap_core(xbt_mheap_t mdp);
 /*  Get core for the memory region specified by MDP, using SIZE as the
     amount to either add to or subtract from the existing region.  Works
     like sbrk(), but using mmap(). */
-XBT_PUBLIC( void *)mmorecore(struct mdesc *mdp, int size);
+XBT_PUBLIC( void *)mmorecore(struct mdesc *mdp, size_t size);
 
 /* Thread-safety (if the sem is already created)
  *
