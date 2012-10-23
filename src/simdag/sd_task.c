@@ -239,12 +239,12 @@ void SD_task_destroy(SD_task_t task)
   xbt_free(task->communication_amount);
   xbt_free(task->computation_amount);
 
-  xbt_mallocator_release(sd_global->task_mallocator,task);
-  sd_global->task_number--;
-
 #ifdef HAVE_TRACING
   if (task->category) xbt_free(task->category);
 #endif
+
+  xbt_mallocator_release(sd_global->task_mallocator,task);
+  sd_global->task_number--;
 
   XBT_DEBUG("Task destroyed.");
 }
