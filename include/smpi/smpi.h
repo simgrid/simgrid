@@ -15,9 +15,15 @@
 #define sleep(x) smpi_sleep(x)
 #define gettimeofday(x, y) smpi_gettimeofday(x, y)
 
+#ifdef _WIN32
+#define MPI_CALL(type,name,args) \
+  type name args; \
+  type P##name args
+#else
 #define MPI_CALL(type,name,args) \
   type name args __attribute__((weak)); \
   type P##name args
+#endif
 
 SG_BEGIN_DECL()
 #define MPI_THREAD_SINGLE     0
