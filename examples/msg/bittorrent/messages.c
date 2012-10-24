@@ -27,7 +27,7 @@ msg_task_t task_message_new(e_message_type type, const char *issuer_host_name,
   message->mailbox = mailbox;
   message->type = type;
   msg_task_t task = MSG_task_create(NULL, 0, size, message);
-  XBT_DEBUG("type: %d size: %.20Lg (%d)", type, size, size);
+  XBT_DEBUG("type: %d size: %d", (int)type, size);
   return task;
 }
 
