@@ -118,7 +118,7 @@ static double smpi_bandwidth_factor(double size)
 {
   if (!smpi_bw_factor)
     smpi_bw_factor =
-        parse_factor(xbt_cfg_get_string(_surf_cfg_set, "smpi/bw_factor"));
+        parse_factor(surf_cfg_get_string("smpi/bw_factor"));
 
   unsigned int iter = 0;
   s_smpi_factor_t fact;
@@ -139,7 +139,7 @@ static double smpi_latency_factor(double size)
 {
   if (!smpi_lat_factor)
     smpi_lat_factor =
-        parse_factor(xbt_cfg_get_string(_surf_cfg_set, "smpi/lat_factor"));
+        parse_factor(surf_cfg_get_string("smpi/lat_factor"));
 
   unsigned int iter = 0;
   s_smpi_factor_t fact;

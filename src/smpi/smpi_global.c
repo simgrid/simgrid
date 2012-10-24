@@ -358,7 +358,7 @@ int MAIN__(void)
   else
     SIMIX_run();
 
-  if (xbt_cfg_get_int(_surf_cfg_set, "smpi/display_timing"))
+  if (surf_cfg_get_int("smpi/display_timing"))
     XBT_INFO("Simulation time: %g seconds.", SIMIX_get_clock());
 
   smpi_global_destroy();

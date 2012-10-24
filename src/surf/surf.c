@@ -55,6 +55,26 @@ static const char *disk_drives_letter_table[MAX_DRIVE] = {
 };
 #endif                          /* #ifdef _XBT_WIN32 */
 
+int surf_cfg_get_int(char* name)
+{
+	return xbt_cfg_get_int(_surf_cfg_set,name);
+}
+double surf_cfg_get_double(char* name)
+{
+	return xbt_cfg_get_double(_surf_cfg_set,name);
+}
+char* surf_cfg_get_string(char* name)
+{
+	return xbt_cfg_get_string(_surf_cfg_set,name);
+}
+void surf_cfg_get_peer(const char *name, char **peer, int *port)
+{
+	xbt_cfg_get_peer(_surf_cfg_set,name, peer, port);
+}
+xbt_dynar_t surf_cfg_get_dynar(char* name)
+{
+	return xbt_cfg_get_dynar(_surf_cfg_set,name);
+}
 /*
  * Returns the initial path. On Windows the initial path is
  * the current directory for the current process in the other
@@ -425,6 +445,7 @@ void surf_init(int *argc, char **argv)
     history = tmgr_history_new();
 
   surf_config_init(argc, argv);
+
   surf_action_init();
   if (MC_is_active())
     MC_memory_init();
