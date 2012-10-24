@@ -21,7 +21,7 @@ typedef struct s_dyn_light {
   int size;
 } s_dyn_light_t, *dyn_light_t;
 
-double sg_maxmin_precision = 0.00001;
+XBT_EXPORT_NO_IMPORT(double) sg_maxmin_precision = 0.00001;
 
 static void *lmm_variable_mallocator_new_f(void);
 static void lmm_variable_mallocator_free_f(void *var);
@@ -31,6 +31,10 @@ static void lmm_update_modified_set(lmm_system_t sys,
 static void lmm_remove_all_modified_set(lmm_system_t sys);
 static int Global_debug_id = 1;
 static int Global_const_debug_id = 1;
+
+static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
+static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
+                                     lmm_constraint_t cnst);
 
 lmm_system_t lmm_system_new(int selective_update)
 {

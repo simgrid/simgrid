@@ -4,13 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <pcre.h>               /* regular expression library */
-
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 
 #include "surf_routing_private.h"
 #include "surf/surf_routing.h"
 #include "surf/surfxml_parse_values.h"
+
+#include <pcre.h>               /* regular expression library */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 

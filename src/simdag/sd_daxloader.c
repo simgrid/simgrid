@@ -23,7 +23,7 @@ bool parents_are_marked(SD_task_t task);
 static void dax_parse_error(char *msg)
 {
   fprintf(stderr, "Parse error on line %d: %s\n", dax_lineno, msg);
-  abort();
+  xbt_abort();
 }
 
 static double dax_parse_double(const char *string)

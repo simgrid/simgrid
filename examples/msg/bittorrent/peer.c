@@ -15,11 +15,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peers, "Messages specific for the peers");
 //TODO: Let users change this
 /*
  * File transfered data
+ *
+ * File size: 10 pieces * 5 blocks/piece * 16384 bytes/block = 819200 bytes
  */
-static int FILE_SIZE = 5120;
+static int FILE_SIZE = 10 * 5 * 16384;
 static int FILE_PIECES = 10;
 
 static int PIECES_BLOCKS = 5;
+static int BLOCK_SIZE = 16384;
 static int BLOCKS_REQUESTED = 2;
 
 /**
@@ -726,7 +729,7 @@ void send_interested_to_peers(peer_t peer)
       connection->am_interested = 1;
       msg_task_t task =
           task_message_new(MESSAGE_INTERESTED, peer->hostname, peer->mailbox,
-                           peer->id);
+                           peer->id, task_message_size(MESSAGE_INTERESTED));
       MSG_task_dsend(task, connection->mailbox, task_message_free);
       XBT_DEBUG("Send INTERESTED to %s", connection->mailbox);
     }
@@ -744,7 +747,7 @@ void send_interested(peer_t peer, const char *mailbox)
 {
   msg_task_t task =
       task_message_new(MESSAGE_INTERESTED, peer->hostname, peer->mailbox,
-                       peer->id);
+                       peer->id, task_message_size(MESSAGE_INTERESTED));
   MSG_task_dsend(task, mailbox, task_message_free);
   XBT_DEBUG("Sending INTERESTED to %s", mailbox);
 
@@ -759,7 +762,7 @@ void send_notinterested(peer_t peer, const char *mailbox)
 {
   msg_task_t task =
       task_message_new(MESSAGE_NOTINTERESTED, peer->hostname, peer->mailbox,
-                       peer->id);
+                       peer->id, task_message_size(MESSAGE_NOTINTERESTED));
   MSG_task_dsend(task, mailbox, task_message_free);
   XBT_DEBUG("Sending NOTINTERESTED to %s", mailbox);
 
@@ -777,7 +780,7 @@ void send_handshake_all(peer_t peer)
   xbt_dict_foreach(peer->peers, cursor, key, remote_peer) {
     msg_task_t task =
         task_message_new(MESSAGE_HANDSHAKE, peer->hostname, peer->mailbox,
-                         peer->id);
+                         peer->id, task_message_size(MESSAGE_HANDSHAKE));
     MSG_task_dsend(task, remote_peer->mailbox, task_message_free);
     XBT_DEBUG("Sending a HANDSHAKE to %s", remote_peer->mailbox);
   }
@@ -792,7 +795,7 @@ void send_handshake(peer_t peer, const char *mailbox)
 {
   msg_task_t task =
       task_message_new(MESSAGE_HANDSHAKE, peer->hostname, peer->mailbox,
-                       peer->id);
+                       peer->id, task_message_size(MESSAGE_HANDSHAKE));
   MSG_task_dsend(task, mailbox, task_message_free);
   XBT_DEBUG("Sending a HANDSHAKE to %s", mailbox);
 }
@@ -804,7 +807,8 @@ void send_choked(peer_t peer, const char *mailbox)
 {
   XBT_DEBUG("Sending a CHOKE to %s", mailbox);
   msg_task_t task =
-      task_message_new(MESSAGE_CHOKE, peer->hostname, peer->mailbox, peer->id);
+      task_message_new(MESSAGE_CHOKE, peer->hostname, peer->mailbox, 
+                       peer->id, task_message_size(MESSAGE_CHOKE));
   MSG_task_dsend(task, mailbox, task_message_free);
 }
 
@@ -816,7 +820,7 @@ void send_unchoked(peer_t peer, const char *mailbox)
   XBT_DEBUG("Sending a UNCHOKE to %s", mailbox);
   msg_task_t task =
       task_message_new(MESSAGE_UNCHOKE, peer->hostname, peer->mailbox,
-                       peer->id);
+                       peer->id, task_message_size(MESSAGE_UNCHOKE));
   MSG_task_dsend(task, mailbox, task_message_free);
 }
 
@@ -832,7 +836,7 @@ void send_have(peer_t peer, int piece)
   xbt_dict_foreach(peer->peers, cursor, key, remote_peer) {
     msg_task_t task =
         task_message_index_new(MESSAGE_HAVE, peer->hostname, peer->mailbox,
-                               peer->id, piece);
+                               peer->id, piece, task_message_size(MESSAGE_HAVE));
     MSG_task_dsend(task, remote_peer->mailbox, task_message_free);
   }
 }
@@ -846,7 +850,7 @@ void send_bitfield(peer_t peer, const char *mailbox)
   XBT_DEBUG("Sending a BITFIELD to %s", mailbox);
   msg_task_t task =
       task_message_bitfield_new(peer->hostname, peer->mailbox, peer->id,
-                                peer->bitfield);
+                                peer->bitfield, FILE_PIECES);
   MSG_task_dsend(task, mailbox, task_message_free);
 }
 
@@ -877,7 +881,7 @@ void send_piece(peer_t peer, const char *mailbox, int piece, int stalled,
              "Tried to send a piece that we doesn't have.");
   msg_task_t task =
       task_message_piece_new(peer->hostname, peer->mailbox, peer->id, piece,
-                             stalled, block_index, block_length);
+                             stalled, block_index, block_length, BLOCK_SIZE);
   MSG_task_dsend(task, mailbox, task_message_free);
 }
 

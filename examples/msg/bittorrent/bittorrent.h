@@ -8,10 +8,6 @@
 #define BITTORRENT_BITTORRENT_H_
 
 /**
- * Information message size
- */
-#define MESSAGE_SIZE 1
-/**
  * Size of mailboxes
  */
 #define MAILBOX_SIZE 40

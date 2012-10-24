@@ -32,4 +32,151 @@
 
 extern MPI_Datatype MPI_PTR;
 
+
+//*****************************************************************************************
+
+/* 
+  These are the structures that handle complex data type information, 
+  used for serialization/unserialization of messages
+*/
+
+typedef struct s_smpi_mpi_vector{
+  s_smpi_subtype_t base;
+  size_t block_stride;
+  size_t block_length;
+  size_t block_count;
+  MPI_Datatype old_type;
+  size_t size_oldtype;
+} s_smpi_mpi_vector_t;
+
+typedef struct s_smpi_mpi_hvector{
+  s_smpi_subtype_t base;
+  MPI_Aint block_stride;
+  size_t block_length;
+  size_t block_count;
+  MPI_Datatype old_type;
+  size_t size_oldtype;
+} s_smpi_mpi_hvector_t;
+
+typedef struct s_smpi_mpi_indexed{
+  s_smpi_subtype_t base;
+  int* block_lengths;
+  int* block_indices;
+  size_t block_count;
+  MPI_Datatype old_type;
+  size_t size_oldtype;
+} s_smpi_mpi_indexed_t;
+
+typedef struct s_smpi_mpi_hindexed{
+  s_smpi_subtype_t base;
+  int* block_lengths;
+  MPI_Aint* block_indices;
+  size_t block_count;
+  MPI_Datatype old_type;
+  size_t size_oldtype;
+} s_smpi_mpi_hindexed_t;
+
+typedef struct s_smpi_mpi_struct{
+  s_smpi_subtype_t base;
+  int* block_lengths;
+  MPI_Aint* block_indices;
+  size_t block_count;
+  MPI_Datatype* old_types;
+} s_smpi_mpi_struct_t;
+
+/*
+  Functions to handle serialization/unserialization of messages, 3 for each type of MPI_Type
+  One for creating the substructure to handle, one for serialization, one for unserialization
+*/
+
+void unserialize_vector( const void *contiguous_vector,
+                         void *noncontiguous_vector,
+                         size_t count,
+                         void *type);
+
+void serialize_vector( const void *noncontiguous_vector,
+                       void *contiguous_vector,
+                       size_t count,
+                       void *type);
+
+void free_vector(MPI_Datatype* type);
+
+s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
+                                                  int block_length,
+                                                  int block_count,
+                                                  MPI_Datatype old_type,
+                                                  int size_oldtype);
+
+void unserialize_hvector( const void *contiguous_vector,
+                         void *noncontiguous_vector,
+                         size_t count,
+                         void *type);
+
+void serialize_hvector( const void *noncontiguous_vector,
+                       void *contiguous_vector,
+                       size_t count,
+                       void *type);
+
+void free_hvector(MPI_Datatype* type);
+
+s_smpi_mpi_hvector_t* smpi_datatype_hvector_create( MPI_Aint block_stride,
+                                                  int block_length,
+                                                  int block_count,
+                                                  MPI_Datatype old_type,
+                                                  int size_oldtype);
+
+
+void unserialize_indexed( const void *contiguous_indexed,
+                         void *noncontiguous_indexed,
+                         size_t count,
+                         void *type);
+
+void serialize_indexed( const void *noncontiguous_vector,
+                       void *contiguous_vector,
+                       size_t count,
+                       void *type);
+
+void free_indexed(MPI_Datatype* type);
+
+s_smpi_mpi_indexed_t* smpi_datatype_indexed_create(int* block_lengths,
+                                                  int* block_indices,
+                                                  int block_count,
+                                                  MPI_Datatype old_type,
+                                                  int size_oldtype);
+
+void unserialize_hindexed( const void *contiguous_indexed,
+                         void *noncontiguous_indexed,
+                         size_t count,
+                         void *type);
+
+void serialize_hindexed( const void *noncontiguous_vector,
+                       void *contiguous_vector,
+                       size_t count,
+                       void *type);
+
+void free_hindexed(MPI_Datatype* type);
+
+s_smpi_mpi_hindexed_t* smpi_datatype_hindexed_create(int* block_lengths,
+                                                  MPI_Aint* block_indices,
+                                                  int block_count,
+                                                  MPI_Datatype old_type,
+                                                  int size_oldtype);
+
+void unserialize_struct( const void *contiguous_indexed,
+                         void *noncontiguous_indexed,
+                         size_t count,
+                         void *type);
+
+void serialize_struct( const void *noncontiguous_vector,
+                       void *contiguous_vector,
+                       size_t count,
+                       void *type);
+
+void free_struct(MPI_Datatype* type);
+
+s_smpi_mpi_struct_t* smpi_datatype_struct_create(int* block_lengths,
+                                                  MPI_Aint* block_indices,
+                                                  int block_count,
+                                                  MPI_Datatype* old_types);
+
 #endif

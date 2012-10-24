@@ -1,0 +1,41 @@
+/*!
+@mainpage SimGrid Developer Guide - Welcome
+<center>
+\htmlonly
+<table width="100%">
+	<tr>
+		<td valign="middle" align="left">
+				<img src="simgrid_logo_2011.png" alt="SimGrid - Scalable simulation of distributed systems, ranging from grids to peer-to-peer systems" />
+		</td>
+		<td valign="middle" align="left">
+\endhtmlonly
+\htmlonly
+		</td>
+	</tr>
+</table>
+\endhtmlonly
+</center>
+
+Welcome to the SimGrid developer guide.
+
+<br>
+The SimGrid software package can be downloaded from
+<a href="http://simgrid.gforge.inria.fr/download.php">here</a>.<br>
+
+If you are interested in the history of SimGrid and in current and planned development,
+you can find out more <a href="http://simgrid.gforge.inria.fr/history.html">here</a>.
+
+Any question, remark or suggestion are welcome on the
+<a href="http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user">SimGrid users
+mailing list</a>.
+
+
+<hr>
+\htmlonly
+<center>
+<a href="http://creativecommons.org/licenses/LGPL/2.1/"><img alt="CC-GNU LGPL" border="0" src="http://creativecommons.org/images/public/cc-LGPL-a.png" /></a>
+</center>
+\endhtmlonly
+
+
+*/

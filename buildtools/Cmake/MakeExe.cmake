@@ -29,6 +29,7 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/mxn)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/partask)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/trace)
 
@@ -80,3 +81,4 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/properties)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/MM)

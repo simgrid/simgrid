@@ -32,6 +32,7 @@ src/bindings/ruby/libsimgrid.so
 examples/gras/console/simgrid.so
 examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
+examples/lua/console/simgrid.so
 
 ################################################
 ### Units and supernovae files
@@ -73,6 +74,7 @@ lib/
 manpages/
 build_dir/
 build/
+buildtools/Cmake/memcheck_tests.cmake
 buildtools/Cmake/test_prog/prog_va_copy.c
 
 
@@ -97,6 +99,8 @@ doc/user_guide/html
 doc/user_guide/latex
 doc/ref_guide/html
 doc/ref_guide/latex
+doc/dev_guide/html
+doc/dev_guide/latex
 doc/index.php
 doc/simgrid.tag
 doc/publis_core.bib
@@ -108,17 +112,22 @@ doc/publis_intra.bib
 doc/publis_intra_bib.html
 doc/ref_guide/doxygen/RefGuideDoxyfile
 doc/user_guide/doxygen/UserGuideDoxyfile
+doc/dev_guide/doxygen/DevGuideDoxyfile
 doc/ref_guide/doxygen/logcategories.doc
 doc/user_guide/doxygen/logcategories.doc
+doc/dev_guide/doxygen/logcategories.doc
 doc/ref_guide/doxygen/simgrid_modules.map
 doc/user_guide/doxygen/simgrid_modules.map
+doc/dev_guide/doxygen/simgrid_modules.map
 doc/index-API.doc
 doc/ref_guide/doxygen/index-API.doc
 doc/user_guide/doxygen/index-API.doc
+doc/dev_guide/doxygen/index-API.doc
 doc/simgrid_modules.map
 doc/logcategories.doc
 doc/shared/doxygen/simgridrefguide.tag
 doc/shared/doxygen/simgriduserguide.tag
+doc/shared/doxygen/simgriddevguide.tag
 
 ################################################
 ### Specific of project 
@@ -163,13 +172,19 @@ examples/msg/io/file
 examples/msg/io/file_unlink
 examples/msg/mc/bugged3
 examples/msg/mc/random_test
+examples/msg/mc/bugged1_for_liveness
+examples/msg/mc/bugged1_while_liveness
+examples/msg/mc/centralized_liveness_deadlock
+examples/msg/mc/test/test_heap_comparison
 examples/msg/chord/chord
 examples/msg/chord/chord_stateful
 examples/msg/chord/deployments
 examples/msg/chord/exp_*
 examples/msg/token_ring/token_ring
+examples/msg/token_ring/token_bypass
 examples/msg/icomms/peer
 examples/msg/icomms/peer2
+examples/msg/start_kill_time/sk_time
 examples/gras/console/ping_client_console
 examples/gras/console/ping_server_console
 examples/gras/console/ping_simulator_console
@@ -229,6 +244,7 @@ examples/gras/replay/replay_master
 examples/gras/replay/replay_worker
 examples/msg/actions/actions
 examples/msg/bittorrent/bittorrent
+examples/msg/bittorrent/bittorrent_platfgen
 examples/msg/kademlia/kademlia
 examples/msg/gtnets/gtnets
 examples/msg/masterslave/masterslave_bypass
@@ -237,6 +253,8 @@ examples/msg/masterslave/masterslave_forwarder
 examples/msg/masterslave/masterslave_mailbox
 examples/msg/masterslave/masterslave_kill
 examples/msg/masterslave/masterslave_arg
+examples/msg/masterslave/masterslave_failure_platfgen
+examples/msg/masterslave/masterslave_platfgen
 examples/msg/migration/migration
 examples/msg/parallel_task/parallel_task
 examples/msg/parallel_task/test_ptask
@@ -252,6 +270,12 @@ examples/msg/parallel_contexts/pcontexts
 examples/msg/parallel_contexts/pcontexts2
 examples/msg/pmm/msg_pmm
 examples/smpi/toto.txt
+examples/smpi/MM/MM_mpi
+examples/smpi/hvector_test
+examples/smpi/indexed_test
+examples/smpi/smpi_replay
+examples/smpi/struct_test
+examples/smpi/vector_test
 examples/smpi/replay
 examples/smpi/reduce
 examples/smpi/bcast
@@ -323,6 +347,7 @@ teshsuite/simdag/partask/test_comp_only_seq
 teshsuite/xbt/log_large_test
 teshsuite/xbt/parallel_log_crashtest
 testsuite/xbt/parmap_bench
+teshsuite/xbt/mmalloc_test
 testsuite/run_tests
 testsuite/simdag/sd_test
 testsuite/surf/lmm_usage

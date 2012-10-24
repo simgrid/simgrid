@@ -204,11 +204,11 @@ ADD_CUSTOM_TARGET(user_guide_pdf
     COMMAND make clean
     COMMAND make pdf || true
     COMMAND ${CMAKE_COMMAND} -E echo "XX Second pass simgrid_user_guide.pdf"
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/latex/refman.pdf
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/user_guide/latex/refman.pdf
     COMMAND make pdf || true
     COMMAND ${CMAKE_COMMAND} -E echo "XX Write Simgrid_documentation.pdf"
-    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_HOME_DIRECTORY}/doc/latex/refman.pdf ${CMAKE_HOME_DIRECTORY}/doc/latex/simgrid_documentation.pdf
+    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_HOME_DIRECTORY}/doc/user_guide/latex/refman.pdf ${CMAKE_HOME_DIRECTORY}/doc/latex/simgrid_documentation.pdf
 
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/latex/
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/latex/
 )
 add_dependencies(user_guide_pdf user_guide)

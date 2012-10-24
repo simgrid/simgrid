@@ -7,6 +7,8 @@
 #include "surf/random_mgr.h"
 #include "xbt/sysdep.h"
 #include "gras_config.h" /*_XBT_WIN32*/
+#include <math.h>
+#include <stdlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(random, surf, "Random part of surf");
 

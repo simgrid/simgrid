@@ -89,6 +89,7 @@ void smpi_process_finalize(void)
   }
 }
 
+#ifdef SMPI_F2C
 int smpi_process_argc(void) {
   smpi_process_data_t data = smpi_process_data();
 
@@ -118,11 +119,12 @@ int smpi_global_size(void) {
    char* value = getenv("SMPI_GLOBAL_SIZE");
 
    if(!value) {
-      fprintf(stderr, "Please set env var SMPI_GLOBAL_SIZE to expected number of processes.\n");
-      abort();
+     fprintf(stderr, "Please set env var SMPI_GLOBAL_SIZE to expected number of processes.\n");
+     xbt_abort();
    }
    return atoi(value);
 }
+#endif
 
 smpi_process_data_t smpi_process_data(void)
 {
@@ -213,13 +215,27 @@ void print_request(const char *message, MPI_Request request) {
          request->src, request->dst, request->tag, request->flags);
 }
 
+static void SMPI_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_size)
+{
+  XBT_DEBUG("Copy the data over");
+  memcpy(comm->comm.dst_buff, buff, buff_size);
+  if (comm->comm.detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
+    xbt_free(buff);
+    //It seems that the request is used after the call there this should
+    //be free somewhereelse  but where???
+    //xbt_free(comm->comm.src_data);// inside SMPI the request is keep
+    //inside the user data and should be free 
+    comm->comm.src_buff = NULL;
+  }
+}
+
 void smpi_global_init(void)
 {
   int i;
   MPI_Group group;
   char name[MAILBOX_NAME_MAXLEN];
 
-  SIMIX_comm_set_copy_data_callback(&SIMIX_comm_copy_buffer_callback);
+  SIMIX_comm_set_copy_data_callback(&SMPI_comm_copy_buffer_callback);
   process_count = SIMIX_process_count();
   process_data = xbt_new(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {
@@ -247,6 +263,7 @@ void smpi_global_destroy(void)
   int i;
 
   smpi_bench_destroy();
+  smpi_group_destroy(smpi_comm_group(MPI_COMM_WORLD));
   smpi_comm_destroy(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {
@@ -274,6 +291,23 @@ int __attribute__((weak)) main(int argc, char** argv) {
    return MAIN__();
 }
 
+#ifdef WIN32
+#include <windows.h>
+
+int __attribute__((weak)) smpi_simulated_main(int argc, char** argv) {
+  xbt_die("Should not be in this smpi_simulated_main");
+  return 1;
+}
+
+/* TODO FOR WIN32 */
+/* Dummy prototype to make gcc happy */
+int APIENTRY WinMain(HINSTANCE hInst,HINSTANCE hInst2,LPSTR lpstr01,int nCmdShow)
+{
+	return MAIN__();
+}
+
+#endif
+
 int MAIN__(void)
 {
   srand(SMPI_RAND_SEED);
@@ -295,6 +329,7 @@ int MAIN__(void)
   XBT_LOG_CONNECT(smpi_mpi);
   XBT_LOG_CONNECT(smpi_mpi_dt);
   XBT_LOG_CONNECT(smpi_pmpi);
+  XBT_LOG_CONNECT(smpi_replay);
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&xargc, xargv);
@@ -318,7 +353,7 @@ int MAIN__(void)
   fflush(stdout);
   fflush(stderr);
 
-  if (MC_IS_ENABLED)
+  if (MC_is_active())
     MC_modelcheck();
   else
     SIMIX_run();

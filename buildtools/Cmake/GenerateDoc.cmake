@@ -15,6 +15,7 @@ if(DOXYGEN_PATH)
 
   include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateUserGuide.cmake)
   include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateRefGuide.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDevGuide.cmake)
 
   set(DOC_PNGS
     ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
@@ -71,6 +72,7 @@ if(DOXYGEN_PATH)
   else(DOXYGEN_MAJOR_VERSION STRLESS "2" AND DOXYGEN_MINOR_VERSION STRLESS "8")
     add_dependencies(simgrid_documentation ref_guide)
     add_dependencies(simgrid_documentation user_guide)
+    add_dependencies(simgrid_documentation dev_guide)
   endif(DOXYGEN_MAJOR_VERSION STRLESS "2" AND DOXYGEN_MINOR_VERSION STRLESS "8")
 
 endif(DOXYGEN_PATH)

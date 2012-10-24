@@ -148,12 +148,12 @@ int master(int argc, char *argv[]) {
 /** Receiver function  */
 int slave_fun(int argc, char *argv[])
 {
-  char *mailbox_name;
+  char mailbox_name[128];
   msg_task_t task = NULL;
   _XBT_GNUC_UNUSED int res;
   /* since the slaves will move around, use slave_%d as mailbox names instead of hostnames */
   xbt_assert(argc>=2, "slave processes need to be given their rank as parameter");
-  mailbox_name=bprintf("Slave_%s",argv[1]);
+  sprintf(mailbox_name,"Slave_%s",argv[1]);
   XBT_INFO("Slave listenning on %s",argv[1]);
   while (1) {
     res = MSG_task_receive(&(task),mailbox_name);
@@ -171,7 +171,6 @@ int slave_fun(int argc, char *argv[])
     task = NULL;
   }
 
-  free(mailbox_name);
   return 0;
 }                               /* end_of_slave */
 
@@ -217,6 +216,8 @@ int main(int argc, char *argv[])
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
   free(hosts);
+  for (i=0;i<10;i++) 
+     free(hostnames[i]);
   free(hostnames);
   xbt_dynar_free(&hosts_dynar);
 

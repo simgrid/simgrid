@@ -178,6 +178,13 @@ void TRACE_paje_start(void)
 
   /* output generator version */
   fprintf (tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n", SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);
+  fprintf (tracing_file, "#[");
+  unsigned int cpt;
+  char *str;
+  xbt_dynar_foreach (sg_cmdline, cpt, str){
+    fprintf(tracing_file, "%s ",str);
+  }
+  fprintf (tracing_file, "]\n");
 
   /* output one line comment */
   dump_comment (TRACE_get_comment());

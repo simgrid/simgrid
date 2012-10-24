@@ -270,7 +270,7 @@ static void set_predecessor(node_t node, int predecessor_id)
 int node(int argc, char *argv[])
 {
   /* Reduce the run size for the MC */
-  if(MC_IS_ENABLED){
+  if(MC_is_active()){
     periodic_stabilize_delay = 8;
     periodic_fix_fingers_delay = 8;
     periodic_check_predecessor_delay = 8;
@@ -355,10 +355,7 @@ int node(int argc, char *argv[])
           // nothing to do: sleep for a while
           MSG_process_sleep(5);
         }
-      }
-
-      if (node.comm_receive && MSG_comm_test(node.comm_receive)) {
-
+      } else {
         // a transfer has occured
 
         msg_error_t status = MSG_comm_get_status(node.comm_receive);
@@ -636,7 +633,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         XBT_DEBUG("Received a task (%p)", task_received);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
-        if (MC_IS_ENABLED) {
+        if (MC_is_active()) {
           // the model-checker is expected to find a counter-example here. 
 	  // 
 	  // As you can see in the test right below, task_received is not always equal to task_sent 
@@ -723,7 +720,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
         msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
-        if (MC_IS_ENABLED) {
+        if (MC_is_active()) {
           MC_assert(task_received == task_sent);
         }
 

@@ -62,6 +62,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_seq_access.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_tracing.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_typed_tasks.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_fail.tesh
   PARENT_SCOPE
   )
 set(xml_files

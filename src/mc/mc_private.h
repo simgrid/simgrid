@@ -20,6 +20,7 @@
 #include "xbt/hash.h"
 #include "msg/msg.h"
 #include "msg/datatypes.h"
+#include "xbt/strbuff.h"
 
 /****************************** Snapshots ***********************************/
 
@@ -33,7 +34,13 @@ typedef struct s_mc_mem_region{
 typedef struct s_mc_snapshot{
   unsigned int num_reg;
   mc_mem_region_t *regions;
+  xbt_dynar_t stacks;
 } s_mc_snapshot_t, *mc_snapshot_t;
+
+typedef struct s_mc_snapshot_stack{
+  xbt_strbuff_t local_variables;
+  void *stack_pointer;
+}s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 void MC_take_snapshot(mc_snapshot_t);
 void MC_take_snapshot_liveness(mc_snapshot_t s);
@@ -182,8 +189,10 @@ typedef struct s_memory_map {
 
 memory_map_t get_memory_map(void);
 void free_memory_map(memory_map_t map);
-void get_plt_section(void);
+void get_libsimgrid_plt_section(void);
+void get_binary_plt_section(void);
 
+extern void *start_data_libsimgrid;
 
 /********************************** DPOR for safety  **************************************/
 typedef enum {
@@ -206,6 +215,10 @@ extern xbt_fifo_t mc_stack_liveness;
 extern mc_snapshot_t initial_snapshot_liveness;
 extern xbt_automaton_t _mc_property_automaton;
 extern int compare;
+extern void *start_plt_libsimgrid;
+extern void *end_plt_libsimgrid;
+extern void *start_plt_binary;
+extern void *end_plt_binary;
 
 typedef struct s_mc_pair{
   mc_snapshot_t system_state;
@@ -265,9 +278,11 @@ typedef enum {
   e_dw_fbregister_op,
   e_dw_piece,
   e_dw_arithmetic,
+  e_dw_plus_uconst,
   e_dw_compose,
   e_dw_deref,
-  e_dw_constant,
+  e_dw_uconstant,
+  e_dw_sconstant,
   e_dw_unsupported
 } e_dw_location_type;
 
@@ -280,34 +295,40 @@ typedef struct s_dw_location{
     int reg;
     
     struct{
-      int reg;
+      unsigned int reg;
       int offset;
     }breg_op;
 
-    unsigned lit;
+    unsigned int lit;
 
     int fbreg_op;
 
     int piece;
 
-    int deref_size;
+    unsigned short int deref_size;
 
     xbt_dynar_t compose;
 
     char *arithmetic;
 
     struct{
-      int is_signed;
       int bytes;
-      int value;
-    }constant;
+      long unsigned int value;
+    }uconstant;
+
+    struct{
+      int bytes;
+      long signed int value;
+    }sconstant;
+
+    unsigned int plus_uconst;
 
   }location;
 }s_dw_location_t, *dw_location_t;
 
 typedef struct s_dw_location_entry{
-  void *lowpc;
-  void *highpc;
+  long lowpc;
+  long highpc;
   dw_location_t location;
 }s_dw_location_entry_t, *dw_location_entry_t;
 
@@ -318,15 +339,30 @@ typedef struct s_dw_local_variable{
 
 typedef struct s_dw_frame{
   char *name;
-  dw_location_t location;
-  xbt_dynar_t variables;
+  void *low_pc;
+  void *high_pc;
+  dw_location_t frame_base;
+  xbt_dict_t variables;
+  unsigned long int start;
+  unsigned long int end;
 }s_dw_frame_t, *dw_frame_t;
 
-/* FIXME : implement free functions for each strcuture */
+/* FIXME : implement free functions for each structure */
 
-extern xbt_dynar_t mc_binary_local_variables;
+extern xbt_dict_t mc_local_variables;
 
-void MC_get_binary_local_variables(void);
-void print_local_variables(xbt_dynar_t list);
+typedef struct s_variable_value{
+  char *type;
+  
+  union{
+    void *address;
+    long int res;
+  }value;
+}s_variable_value_t, *variable_value_t;
+
+void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *variables);
+void print_local_variables(xbt_dict_t list);
+char *get_libsimgrid_path(void);
+xbt_dict_t MC_get_location_list(const char *elf_file);
 
 #endif

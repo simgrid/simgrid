@@ -27,7 +27,7 @@ int create_dump(int pair)
   switch(fork()){
   case 0:
     // We are the child process -- run the actual program
-    abort();
+    xbt_abort();
     break;
     
   case -1:
@@ -266,8 +266,9 @@ void MC_ddfs_init(void){
 
   MC_UNSET_RAW_MEM; 
 
-  /* Get .plt section (start and end addresses) for data libsimgrid comparison */
-  get_plt_section();
+  /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
+  get_libsimgrid_plt_section();
+  get_binary_plt_section();
 
   unsigned int cursor = 0;
   xbt_state_t state;

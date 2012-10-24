@@ -11,6 +11,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mmprivate.h"
+#include "xbt/ex.h"
 
 /* Return memory to the heap.
    Like `mfree' but don't call a mfree_hook if there is one.  */
@@ -21,8 +22,10 @@ void mfree(struct mdesc *mdp, void *ptr)
   int type;
   size_t block, frag_nb;
   register size_t i;
-  struct list *prev, *next;
   int it;
+
+  mmalloc_paranoia(mdp);
+//  fprintf(stderr,"free(%p)\n",ptr);
 
   if (ptr == NULL)
     return;
@@ -34,13 +37,12 @@ void mfree(struct mdesc *mdp, void *ptr)
     abort();
   }
 
-
   type = mdp->heapinfo[block].type;
 
   switch (type) {
   case -1: /* Already free */
-    fprintf(stderr,"Asked to free a fragment in a block that is already free. I'm puzzled\n");
-    abort();
+    UNLOCK(mdp);
+    THROWF(system_error, 0, "Asked to free a fragment in a block that is already free. I'm puzzled\n");
     break;
     
   case 0:
@@ -133,7 +135,9 @@ void mfree(struct mdesc *mdp, void *ptr)
           mdp -> heapstats.bytes_free -= bytes;
           } */
 
-    /* Set the next search to begin at this block.  */
+    /* Set the next search to begin at this block.  
+       This is probably important to the trick where realloc returns the block to 
+       the system before reasking for the same block with a bigger size.  */
     mdp->heapindex = block;
     break;
 
@@ -144,27 +148,22 @@ void mfree(struct mdesc *mdp, void *ptr)
     mdp -> heapstats.chunks_free++;
     mdp -> heapstats.bytes_free += 1 << type;
 
-    /* Get the address of the first free fragment in this block.  */
-    prev = (struct list *)
-      ((char *) ADDRESS(block) +
-       (mdp->heapinfo[block].busy_frag.first << type));
-
-    /* Set size used in the fragment to 0 */
     frag_nb = RESIDUAL(ptr, BLOCKSIZE) >> type;
-    mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = 0;
 
+    if( mdp->heapinfo[block].busy_frag.frag_size[frag_nb] == -1){
+      UNLOCK(mdp);
+      THROWF(system_error, 0, "Asked to free a fragment that is already free. I'm puzzled\n");
+    }
+
+    /* Set size used in the fragment to -1 */
+    mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = -1;
+
+//    fprintf(stderr,"nfree:%zu capa:%d\n", mdp->heapinfo[block].busy_frag.nfree,(BLOCKSIZE >> type));
     if (mdp->heapinfo[block].busy_frag.nfree ==
         (BLOCKSIZE >> type) - 1) {
-      /* If all fragments of this block are free, remove them
-         from the fragment list and free the whole block.  */
-      next = prev;
-      for (i = 1; i < (size_t) (BLOCKSIZE >> type); ++i) {
-        next = next->next;
-      }
-      prev->prev->next = next;
-      if (next != NULL) {
-        next->prev = prev->prev;
-      }
+      /* If all fragments of this block are free, remove this block from its swag and free the whole block.  */
+      xbt_swag_remove(&mdp->heapinfo[block],&mdp->fraghead[type]);
+
       /* pretend that this block is used and free it so that it gets properly coalesced with adjacent free blocks */
       mdp->heapinfo[block].type = 0;
       mdp->heapinfo[block].busy_block.size = 1;
@@ -178,30 +177,17 @@ void mfree(struct mdesc *mdp, void *ptr)
       
       mfree((void *) mdp, (void *) ADDRESS(block));
     } else if (mdp->heapinfo[block].busy_frag.nfree != 0) {
-      /* If some fragments of this block are free, link this
-         fragment into the fragment list after the first free
-         fragment of this block. */
-      next = (struct list *) ptr;
-      next->next = prev->next;
-      next->prev = prev;
-      prev->next = next;
-      if (next->next != NULL) {
-        next->next->prev = next;
-      }
+      /* If some fragments of this block are free, you know what? I'm already happy. */
       ++mdp->heapinfo[block].busy_frag.nfree;
     } else {
       /* No fragments of this block were free before the one we just released,
-       * so link this fragment into the fragment list and announce that
+       * so add this block to the swag and announce that
        it is the first free fragment of this block. */
-      prev = (struct list *) ptr;
       mdp->heapinfo[block].busy_frag.nfree = 1;
-      mdp->heapinfo[block].busy_frag.first = frag_nb;
-      prev->next = mdp->fraghead[type].next;
-      prev->prev = &mdp->fraghead[type];
-      prev->prev->next = prev;
-      if (prev->next != NULL) {
-        prev->next->prev = prev;
-      }
+      mdp->heapinfo[block].freehook.prev = NULL;
+      mdp->heapinfo[block].freehook.next = NULL;
+
+      xbt_swag_insert(&mdp->heapinfo[block],&mdp->fraghead[type]);
     }
     break;
   }

@@ -11,15 +11,15 @@
 #ifndef _XBT_SYSDEP_H
 #define _XBT_SYSDEP_H
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>             /* va_list */
-
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
 
 #include "simgrid_config.h"
+
+#include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>             /* va_list */
 
 SG_BEGIN_DECL()
 
@@ -31,7 +31,17 @@ SG_BEGIN_DECL()
  * @{
  */
 /** @brief Kill the program in silence */
+#ifdef COVERAGE
+/* Call __gcov_flush on abort when compiling with coverage options. */
+#define xbt_abort()                             \
+  do {                                          \
+    extern void __gcov_flush(void);             \
+    __gcov_flush();                             \
+    abort();                                    \
+  } while (0)
+#else
 #define xbt_abort() abort()
+#endif
 
 /**
  * @brief Kill the program with an error message

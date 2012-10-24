@@ -21,5 +21,5 @@ function Slave(...)
   end
 
   simgrid.info("I'm done. See you!")
-end -- Slave
+end -- end_of_slave
 

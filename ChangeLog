@@ -2,15 +2,6 @@ SimGrid (3.8) NOT RELEASED; urgency=low
 
  The "SimGrid makes psssshiiiit and jumps into the cloud" release.
 
- Cmake:
- * Remove option custom_flags. Now use environment variables CFLAGS
-   and LDFLAGS.
- * Enable tracing by default. This modules rocks you should use it.
- * Use default cmake things to detect lua instead of home grown ones.
-
- Documentation:
- * Split the doc into a user guide and a reference guide.
-
  MSG:
  * Add an experimental interface to manipulate VMs. They are mainly
    process groups with very few intrinsic semantic, but they should
@@ -22,11 +13,23 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Make it impossible to link against the wrong version of the lib
  * Bug fixes that made the host (and link) failures unusable.
  * Add a way to auto-restart process when the host in which they are
-   executing comes back (ON_FAILURE="RESTART" on deployment file, 
+   executing comes back (ON_FAILURE="RESTART" on deployment file,
    MSG_process_auto_restart_set).
  * Use the "msg_" prefix for all datatypes (instead of m_, msg_ and MSG_),
    please stop using the old ones, they are DEPRECATED.
  * Deprecate MSG_clean(). No need to call it anymore.
+ * Function MSG_get_host_number() is not deprecated anymore.
+
+ Documentation:
+ * Split the doc into a user guide and a reference guide.
+
+ Cmake:
+ * Remove option custom_flags. Now use environment variables CFLAGS
+   and LDFLAGS.
+ * Enable tracing by default. This modules rocks you should use it.
+ * Use default cmake things to detect lua instead of home grown ones.
+ * New option "enable_mallocators" to disable mallocators, for debugging
+   purpose ("on" by default).
 
  Simix:
  * Bug fixes around the resource failures: don't let the processes
@@ -39,6 +42,9 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    the public interface anymore (bindings should be updated).
 
  SimDag:
+ * Bug fix for when SD_Simulate is called with a positive value: be careful
+   when comparing doubles. Sometimes they are different for non significant
+   digits only.
  * New types of typed tasks. SD_TASK_COMP_PAR_AMDAHL represents a
    parallel task whose initial work is distributed among host according
    to the Amdahl's law. Such tasks are created with a parameter alpha
@@ -53,26 +59,34 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    communication_amount structures is now done seamlessly thanks to the chosen
    assumptions.
  * New function SD_workstation_dump to display various information
- * New function SD_task_set_rate to throttle the bandwidth allowed to be used 
-   by a SD_TASK_COMM_E2E typed task. This rate depends on both the nominal 
-   bandwidth on the route onto which the task is  scheduled and the amount of 
+ * New function SD_task_set_rate to throttle the bandwidth allowed to be used
+   by a SD_TASK_COMM_E2E typed task. This rate depends on both the nominal
+   bandwidth on the route onto which the task is  scheduled and the amount of
    data to transfer.
    To divide the nominal bandwidth by 2, the rate then has to be :
                      rate = bandwidth/(2*amount)
  * Compute tasks that have failed can now be rescheduled and executed again
    (from their beginning)
- * Increasing source code coverage (src/simdag is now covered at 91.5%
+ * Increasing source code coverage (src/simdag is now covered at 95.8%
    on average)
-   
+
  SMPI:
  * Re-implement time-independent trace replay using SMPI (at the
    smpi_smp_* level) instead of MSG. This should replace
    examples/msg/actions/actions.c
-   
+ * Implement the exchange of non-contiguous data.
+   [Khalid Hasanov & Jean-Noel Quintin] Thanks for the patch, guys.
+
+ SimGrid:
+ * Export a sg_cmdline dynar containing all the arguments we got from
+   the command line.
+
  XBT:
  * Functions xbt_dict_hash() and xbt_dict_hash_ext() are made public,
    and renamed to xbt_str_hash() and xbt_str_hash_ext().
  * New function: xbt_os_timer_resume() to restart a timer w/o resetting it.
+ * Greatly improve the robustness of mmalloc to user errors (such as
+   using an area after freeing it, or freeing it twice)
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

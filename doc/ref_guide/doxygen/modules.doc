@@ -1,15 +1,11 @@
-/**
-  \defgroup SimGrid_API  SimGrid modules */
 
 /** \defgroup XBT_API      XBT
-    \ingroup SimGrid_API
     \brief The core toolbox of SimGrid, containing usefull datatypes,
            portability support and so on.
 
 */
 
 /** \defgroup MSG_API      MSG
-    \ingroup SimGrid_API
     \brief Simple programming environment
 
       MSG was the first distributed programming environment provided within
@@ -31,7 +27,6 @@
 
 
 /** \defgroup SIMIX_API      SIMIX
-    \ingroup SimGrid_API
     \brief POSIX-like interface for building simulation
 
     This is a developer-level interface that should be useful only if you
@@ -40,7 +35,6 @@
 
 
 /** \defgroup GRAS_API      GRAS
-    \ingroup SimGrid_API
     \brief Realistic programming environment (Grid Reality And Simulation)
 
     GRAS provides a complete API to implement distributed application on top
@@ -74,7 +68,6 @@
 */
 
 /** \defgroup AMOK_API AMOK
-    \ingroup SimGrid_API
     \brief Distributed toolkit built over \ref GRAS_API (Advanced Metacomputing Overlay Kit)
 
     AMOK provides several tools useful to most applications built on top of GRAS,
@@ -85,7 +78,6 @@
 */
 
 /** \defgroup SMPI_API      SMPI
-    \ingroup SimGrid_API
     \brief Programming environment for the simulation of MPI applications
 
 This programming environment permits to study existing MPI application
@@ -188,7 +180,6 @@ smpirun -help
 
 
 /** \defgroup SD_API      SimDag
-    \ingroup SimGrid_API
     \brief Programming environment for DAG applications
 
     SimDag provides some functionnalities to simulate parallel task scheduling
@@ -216,7 +207,6 @@ smpirun -help
 
 /**
 @defgroup SURF_API SURF
-@ingroup SimGrid_API
 @brief Internal kernel of all the simulators used in SimGrid, and associated models.
 
 SURF provides the core functionnalities to simulate a virtual
@@ -235,7 +225,6 @@ module is only partially documented.
 
 /**
 @defgroup TRACE_API TRACE
-@ingroup SimGrid_API
 @brief Tracing mechanism and its functions.
 
 SimGrid can trace the resource (of hosts and links) utilization using

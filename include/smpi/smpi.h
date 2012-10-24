@@ -38,7 +38,7 @@ SG_BEGIN_DECL()
 #define MPI_BOTTOM (void *)0
 #define MPI_PROC_NULL -2
 #define MPI_ANY_TAG -1
-#define MPI_UNDEFINED -1
+#define MPI_UNDEFINED -3
 // errorcodes
 #define MPI_SUCCESS       0
 #define MPI_ERR_COMM      1
@@ -111,7 +111,8 @@ extern MPI_Datatype MPI_C_DOUBLE_COMPLEX;
 extern MPI_Datatype MPI_C_LONG_DOUBLE_COMPLEX;
 extern MPI_Datatype MPI_AINT;
 extern MPI_Datatype MPI_OFFSET;
-
+extern MPI_Datatype MPI_LB;
+extern MPI_Datatype MPI_UB;
 //The following are datatypes for the MPI functions MPI_MAXLOC  and MPI_MINLOC.
 extern MPI_Datatype MPI_FLOAT_INT;
 extern MPI_Datatype MPI_LONG_INT;
@@ -309,7 +310,10 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Waitsome,
                             (int incount, MPI_Request requests[],
                              int *outcount, int *indices,
                              MPI_Status status[]));
-
+MPI_CALL(XBT_PUBLIC(int), MPI_Testsome,
+                            (int incount, MPI_Request requests[],
+                             int *outcount, int *indices,
+                             MPI_Status status[]));
 MPI_CALL(XBT_PUBLIC(int), MPI_Bcast,
                             (void *buf, int count, MPI_Datatype datatype,
                              int root, MPI_Comm comm));
@@ -380,12 +384,14 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Probe,
 
 
 //FIXME: these are not yet implemented
+
 typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
 typedef void* MPI_Errhandler;
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
 
+XBT_PUBLIC(MPI_Datatype)  MPI_PACKED;
 MPI_CALL(XBT_PUBLIC(int), MPI_Pack_size, (int incount, MPI_Datatype datatype, MPI_Comm comm, int* size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Cart_coords, (MPI_Comm comm, int rank, int maxdims, int* coords));
 MPI_CALL(XBT_PUBLIC(int), MPI_Cart_create, (MPI_Comm comm_old, int ndims, int* dims, int* periods, int reorder, MPI_Comm* comm_cart));
@@ -411,7 +417,6 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Errhandler_set, (MPI_Comm comm, MPI_Errhandler err
 MPI_CALL(XBT_PUBLIC(int), MPI_Cancel, (MPI_Request* request));
 MPI_CALL(XBT_PUBLIC(int), MPI_Buffer_attach, (void* buffer, int size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Buffer_detach, (void* buffer, int* size));
-MPI_CALL(XBT_PUBLIC(int), MPI_Testsome, (int incount, MPI_Request* requests, int* outcount, int* indices, MPI_Status* statuses));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_test_inter, (MPI_Comm comm, int* flag));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_attr, (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag));
 MPI_CALL(XBT_PUBLIC(int), MPI_Unpack, (void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm));
@@ -438,6 +443,8 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Pack, (void* inbuf, int incount, MPI_Datatype type
 MPI_CALL(XBT_PUBLIC(int), MPI_Get_elements, (MPI_Status* status, MPI_Datatype datatype, int* elements));
 MPI_CALL(XBT_PUBLIC(int), MPI_Dims_create, (int nnodes, int ndims, int* dims));
 MPI_CALL(XBT_PUBLIC(int), MPI_Initialized, (int* flag));
+MPI_CALL(XBT_PUBLIC(int), MPI_Pcontrol, (const int level ));
+
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions

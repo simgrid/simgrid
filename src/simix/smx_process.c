@@ -318,7 +318,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
       case SIMIX_ACTION_COMMUNICATE:
         xbt_fifo_remove(process->comms, process->waiting_action);
-        SIMIX_comm_destroy(process->waiting_action);
+        SIMIX_comm_cancel(process->waiting_action);
         break;
 
         case SIMIX_ACTION_SLEEP:
@@ -333,6 +333,14 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
         case SIMIX_ACTION_IO:
           SIMIX_io_destroy(process->waiting_action);
           break;
+
+        /* **************************************/
+        /* TUTORIAL: New API                    */
+        case SIMIX_ACTION_NEW_API:
+          SIMIX_new_api_destroy(process->waiting_action);
+          break;
+        /* **************************************/
+
     }
   }
   if(!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != issuer) {
@@ -571,7 +579,7 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 
 void SIMIX_pre_process_sleep(smx_simcall_t simcall)
 {
-  if (MC_IS_ENABLED) {
+  if (MC_is_active()) {
     MC_process_clock_add(simcall->issuer, simcall->process_sleep.duration);
     simcall->process_sleep.result = SIMIX_DONE;
     SIMIX_simcall_answer(simcall);
@@ -713,7 +721,7 @@ xbt_running_ctx_t *SIMIX_process_get_running_context(void)
 void SIMIX_process_exception_terminate(xbt_ex_t * e)
 {
   xbt_ex_display(e);
-  abort();
+  xbt_abort();
 }
 
 smx_context_t SIMIX_process_get_context(smx_process_t p) {

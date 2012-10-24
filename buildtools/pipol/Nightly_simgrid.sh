@@ -80,6 +80,10 @@ ctest -D NightlyTest
 ctest -D NightlySubmit
 make clean
 
+# really clean the working directory
+git reset --hard master
+git clean -dfx
+
 #MC
 cmake \
 -Denable_coverage=on \

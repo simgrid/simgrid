@@ -182,7 +182,7 @@ static void SIMIX_clean(void)
  */
 XBT_INLINE double SIMIX_get_clock(void)
 {
-  if(MC_IS_ENABLED){
+  if(MC_is_active()){
     return MC_process_clock_get(SIMIX_process_self());
   }else{
     return surf_get_clock();
@@ -449,6 +449,13 @@ void SIMIX_display_process_status(void)
 
       case SIMIX_ACTION_IO:
         action_description = "I/O";
+        break;
+      /* **************************************/
+      /* TUTORIAL: New API                    */
+      case SIMIX_ACTION_NEW_API:
+        action_description = "NEW API";
+      /* **************************************/
+
         break;
       }
       XBT_INFO("Process %lu (%s@%s): waiting for %s action %p (%s) in state %d to finish",

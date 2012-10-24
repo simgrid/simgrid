@@ -74,8 +74,7 @@ static xbt_running_ctx_t *_os_thread_get_running_ctx(void)
 static void _os_thread_ex_terminate(xbt_ex_t * e)
 {
   xbt_ex_display(e);
-
-  abort();
+  xbt_abort();
   /* FIXME: there should be a configuration variable to choose to kill everyone or only this one */
 }
 
@@ -134,6 +133,7 @@ void xbt_os_thread_mod_postexit(void)
   __xbt_ex_terminate = &__xbt_ex_terminate_default;
 }
 
+/* this function is critical to tesh+mmalloc, don't mess with it */
 int xbt_os_thread_atfork(void (*prepare)(void),
                          void (*parent)(void), void (*child)(void))
 {

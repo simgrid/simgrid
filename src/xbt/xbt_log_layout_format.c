@@ -88,7 +88,8 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
     handle_modifier:
       switch (*q) {
       case '\0':
-        xbt_die("Layout format (%s) ending with %%\n", (char *)l->data);
+        fprintf(stderr, "Layout format (%s) ending with %%\n", (char *)l->data);
+        xbt_abort();
       case '%':
         *p = '%';
         check_overflow(1);
@@ -196,7 +197,8 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
         break;
       }
       default:
-        xbt_die(ERRMSG, *q, (char *)l->data);
+        fprintf(stderr, ERRMSG, *q, (char *)l->data);
+        xbt_abort();
       }
     } else {
       *p = *q;

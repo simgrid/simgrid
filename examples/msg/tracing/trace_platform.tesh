@@ -5,8 +5,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cf
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 
-$ cat simgrid.trace
-> #This file was generated using SimGrid-3.8.0
+$ tail -n +3 simgrid.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
@@ -217,8 +216,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:1 --cf
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 
-$ cat simgrid.trace
-> #This file was generated using SimGrid-3.8.0
+$ tail -n +3 simgrid.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string

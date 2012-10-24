@@ -16,6 +16,7 @@ sudo apt-get -y -qq install libpcre3-dev
 sudo apt-get -y -qq install f2c
 sudo apt-get -y -qq install valgrind
 sudo apt-get -y -qq install git-core
+sudo apt-get -y -qq install libunwind7-dev
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary

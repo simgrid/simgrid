@@ -59,7 +59,7 @@ int host(int argc, char *argv[])
 
   // Write into the new file
   write = MSG_file_write(ptr,100000,sizeof(char*),file);  // Write for 100Ko
-  XBT_INFO("\tHaving write %.1f \ton %s",write,file->name);
+  XBT_INFO("\tHave written %8.1f on %s",write,file->name);
 
   // Print the stat
   MSG_file_stat(file,&stat);

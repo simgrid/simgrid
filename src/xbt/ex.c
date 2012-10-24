@@ -176,8 +176,7 @@ void xbt_ex_display(xbt_ex_t * e)
 void __xbt_ex_terminate_default(xbt_ex_t * e)
 {
   xbt_ex_display(e);
-
-  abort();
+  xbt_abort();
 }
 
 /* the externally visible API */

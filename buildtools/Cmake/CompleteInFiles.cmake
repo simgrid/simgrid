@@ -80,9 +80,7 @@ if(enable_gtnets)
 endif(enable_gtnets)
 if(enable_smpi)
   include(FindF2c)
-  if(HAVE_F2C_H)
-    SET(HAVE_SMPI 1)
-  endif(HAVE_F2C_H)
+  SET(HAVE_SMPI 1)
 endif(enable_smpi)
 if(enable_lua)
   include(FindLua51Simgrid)
@@ -197,9 +195,16 @@ else(enable_latency_bound_tracking)
   endif(enable_gtnets)
 endif(enable_latency_bound_tracking)
 
+if(enable_mallocators)
+  SET(MALLOCATOR_IS_WANTED 1)
+else(enable_mallocators)
+  SET(MALLOCATOR_IS_WANTED 0)
+endif(enable_mallocators)
+
 if(enable_model-checking AND HAVE_MMAP)
   SET(HAVE_MC 1)
   SET(MMALLOC_WANT_OVERRIDE_LEGACY 1)
+  include(FindLibunwind)
 else(enable_model-checking AND HAVE_MMAP)
   SET(HAVE_MC 0)
   SET(MMALLOC_WANT_OVERRIDE_LEGACY 0)
@@ -891,6 +896,7 @@ else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions0.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions1.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions1.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_bcast.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_bcast.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile COPYONLY)
 
   set(generated_files_to_clean
     ${generated_files_to_clean}
@@ -901,6 +907,7 @@ else("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions1.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_bcast.txt
+    ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile
     )
 endif("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 

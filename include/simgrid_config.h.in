@@ -1,11 +1,12 @@
 /* simgrid_config.h - Results of the configure made visible to user code    */
 
-/* Copyright (c) 2009, 2010, 2011. Da SimGrid team. All rights reserved.    */
+/* Copyright (c) 2009-2012. Da SimGrid team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"           /* XBT_PUBLIC */
+#include "xbt/dynar.h"          /* sg_commandline */
 
 #ifndef SIMGRID_PUBLIC_CONFIG_H
 #define SIMGRID_PUBLIC_CONFIG_H
@@ -32,6 +33,9 @@ SG_BEGIN_DECL()
 /** Retrieves the version numbers of the used dynamic library (so, DLL or dynlib) , while
     SIMGRID_VERSION_MAJOR and friends give the version numbers of the used header files */
 XBT_PUBLIC(void) sg_version(int *major,int *minor,int *patch);
+
+/** Contains all the parameters we got from the command line */
+XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
 
 /* take care of DLL usage madness */
 
@@ -74,17 +78,14 @@ XBT_PUBLIC(void) sg_version(int *major,int *minor,int *patch);
 @simgrid_need_asprintf@
 @simgrid_need_vasprintf@
 
+#include <stdio.h>  /* FILE, getline if it exists  */
+
 /* Use that config to declare missing elements */
 #ifdef SIMGRID_NEED_GETLINE
 #include <stdlib.h> /* size_t */
-#include <stdio.h>  /* FILE*  */
 XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
-#else
-#ifndef _GNU_SOURCE
-	#define _GNU_SOURCE
 #endif
-#include <stdio.h>
-#endif
+
 #include <stdarg.h>
 
 /* snprintf related functions */
@@ -123,6 +124,9 @@ XBT_PUBLIC(char *) bvprintf(const char *fmt, va_list ap);
  */
 XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /** @} */
+
+/* Whether mallocators were enabled in ccmake or not. */
+#define MALLOCATOR_COMPILED_IN @MALLOCATOR_IS_WANTED@
 
 /* Define if xbt contexts are based on our threads implementation or not */
 #cmakedefine CONTEXT_THREADS @CONTEXT_THREADS@

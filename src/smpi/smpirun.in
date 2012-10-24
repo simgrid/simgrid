@@ -19,23 +19,26 @@ SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_
 
 #usage to print the way this script should be called
 function usage () {
-    echo "usage:"
-    echo "$0 [-keep-temps]"
-    echo "      [-np <numprocs>] -platform <xmldesc> -hostfile <hostfile> [-map] program [program-options]"
-    echo "      [-keep-temps]             # don't remove the generated files after execution"
-    echo "      [-map]                    # display the machine on which each process rank is mapped"
-    echo "      [-np <numprocs>]          # use that amount of processes from the hostfile."
-    echo "                                # By default, all processes of the hostfile are used."
-    echo "      [-trace]                  # activate tracing"
-    echo "      [-trace-comment <comment>]# put a comment on the top of the trace file"
-    echo "      [-trace-comment-file <file>]   # put file contents on the top of the trace file as comment"
-    echo "      [-trace-grouped]          # group MPI processes by location"
-    echo "      [-trace-resource]         # trace resource utilization"
-    echo "      [-trace-triva]            # generate configuration for Triva's GraphView"
-    echo "      [-trace-file <tracefile>] # name of the tracefile (simgrid_smpi.trace)"
-    echo "or (deprecated usage):"
-    echo "$0 [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]"
-    echo
+cat <<EOF
+Usage: $0 [OPTIONS] -platform <xmldesc> -hostfile <hostfile> program [program-options]
+Options:
+  -keep-temps                # don't remove the generated files after execution
+  -map                       # display the machine on which each process rank is mapped
+  -np <numprocs>             # use that amount of processes from the hostfile.
+                             # By default, all processes of the hostfile are used.
+  -trace                     # activate tracing
+  -trace-comment <comment>   # put a comment on the top of the trace file
+  -trace-comment-file <file> # put file contents on the top of the trace file as comment
+  -trace-grouped             # group MPI processes by location
+  -trace-resource            # trace resource utilization
+  -trace-triva               # generate configuration for Triva's GraphView
+  -trace-file <tracefile>    # name of the tracefile (simgrid_smpi.trace)
+  -ext <value>               # additional parameter (reserved)
+
+or (deprecated usage):
+  $0 [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]
+
+EOF
 }
 
 #check if we have at least one parameter
@@ -44,6 +47,8 @@ then
     usage
     exit
 fi
+
+EXTOPT=""
 
 while true; do
   case "$1" in
@@ -75,6 +80,11 @@ while true; do
       fi
 	shift 2
     ;;
+
+   "-ext")
+      EXTOPT="$2"
+      shift 2
+   ;;
 
    "-map")
 	MAPOPT="true"
@@ -224,7 +234,7 @@ if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
       NUMHOSTS=`cat ${HOSTFILE} | wc -l`
 fi
 
-if [ ${EXEC} = "./smpi_replay" ]; then 
+if [ "${EXTOPT}" = "smpi_replay" ]; then
   APP_TRACES=$1;
   if [ -n "${APP_TRACES}" ] && [ -f ${APP_TRACES} ]; then
      hosttraces=(`cat ${APP_TRACES} | tr \\\n " "`)
@@ -270,7 +280,7 @@ do
   fi
   echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
   echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
-  if [ ${EXEC} = "./smpi_replay" ]; then
+  if [ "${EXTOPT}" = "smpi_replay" ]; then
     if  [ ${NUMTRACES} -gt 1 ]; then
       echo "    <argument value=\"${hosttraces[$j]}\"/>" >> ${APPLICATIONTMP}
     else

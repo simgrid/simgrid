@@ -114,6 +114,19 @@ if(HAVE_GTNETS)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
 endif(HAVE_GTNETS)
 
+if(HAVE_MC)
+  # The availability of libunwind was checked in CompleteInFiles.cmake
+  #   (that includes FindLibunwind.cmake), so simply load it now.
+  
+  # This supposes that the host machine is either an AMD or a X86.
+  # This is deeply wrong, and should be fixed by manually loading -lunwind-PLAT (FIXME)
+  if(PROCESSOR_x86_64)
+    SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86_64")
+  else(PROCESSOR_x86_64)    
+    SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86")
+  endif(PROCESSOR_x86_64)
+endif(HAVE_MC)
+
 if(HAVE_NS3)
   if(${NS3_VERSION} EQUAL 310)
     SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3")

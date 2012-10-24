@@ -23,8 +23,37 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 #define SEND           0x4
 #define RECV           0x8
 
+
+// this struct is here to handle the problem of non-contignous data
+// for each such structure these function should be implemented (vector
+// index hvector hindex struct)
+typedef struct s_smpi_subtype{
+  void (*serialize)(const void * input, void *output, size_t count, void* subtype);
+  void (*unserialize)(const void * input, void *output, size_t count, void* subtype);
+  void (*subtype_free)(MPI_Datatype* type);
+} s_smpi_subtype_t;
+
+typedef struct s_smpi_mpi_datatype{
+  size_t size;
+  /* this let us know if a serialization is required*/
+  size_t has_subtype;
+  MPI_Aint lb;
+  MPI_Aint ub;
+  int flags;
+  /* this let us know how to serialize and unserialize*/
+  void *substruct;
+} s_smpi_mpi_datatype_t;
+
+//*****************************************************************************************
+
 typedef struct s_smpi_mpi_request {
   void *buf;
+  /* in the case of non-contignous memory the user address shoud be keep
+   * to unserialize the data inside the user memory*/
+  void *old_buf;
+  /* this let us know how tounserialize at the end of
+   * the communication*/
+  MPI_Datatype old_type;
   size_t size;
   int src;
   int dst;
@@ -32,6 +61,7 @@ typedef struct s_smpi_mpi_request {
   MPI_Comm comm;
   smx_action_t action;
   unsigned flags;
+  int detached;
 #ifdef HAVE_TRACING
   int send;
   int recv;
@@ -81,12 +111,14 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices,
                      MPI_Datatype old_type, MPI_Datatype* new_type);
 int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices,
                     MPI_Datatype* old_types, MPI_Datatype* new_type);
-void smpi_datatype_create(MPI_Datatype* new_type, int size, int flags);
+
+void smpi_datatype_create(MPI_Datatype* new_type, int size,int realsize, int has_subtype, void *struct_type, int flags);
+
+
 void smpi_datatype_free(MPI_Datatype* type);
 void smpi_datatype_commit(MPI_Datatype* datatype);
 
-
-
+void smpi_empty_status(MPI_Status * status);
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);
 void smpi_op_destroy(MPI_Op op);
 void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
@@ -148,6 +180,8 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
 void smpi_mpi_waitall(int count, MPI_Request requests[],
                       MPI_Status status[]);
 int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
+                      MPI_Status status[]);
+int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
                       MPI_Status status[]);
 void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                     MPI_Comm comm);
@@ -245,7 +279,7 @@ void mpi_reduce__(void* sendbuf, void* recvbuf, int* count,
 void mpi_allreduce__(void* sendbuf, void* recvbuf, int* count, int* datatype,
                      int* op, int* comm, int* ierr);
 void mpi_scatter__(void* sendbuf, int* sendcount, int* sendtype,
-                   void* recvbuf, int* recvcount, int* recvtype, 
+                   void* recvbuf, int* recvcount, int* recvtype,
                    int* root, int* comm, int* ierr);
 void mpi_gather__(void* sendbuf, int* sendcount, int* sendtype,
                   void* recvbuf, int* recvcount, int* recvtype,

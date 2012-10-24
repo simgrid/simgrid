@@ -18,6 +18,8 @@
 #  include <stdio.h>            /* for NULL */
 #endif
 
+#include "xbt/dynar.h"
+
 /* Datatype representing a separate heap. The whole point of the mmalloc module
  * is to allow several such heaps in the process. It thus works by redefining
  * all the classical memory management functions (malloc and friends) with an
@@ -27,8 +29,11 @@
  */
 typedef struct mdesc *xbt_mheap_t;
 
-/* Allocate SIZE bytes of memory.  */
+/* Allocate SIZE bytes of memory (and memset it to 0).  */
 extern void *mmalloc(xbt_mheap_t md, size_t size);
+
+/* Allocate SIZE bytes of memory (and don't mess with it) */
+void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size);
 
 /* Re-allocate the previously allocated block in void*, making the new block
    SIZE bytes long.  */
@@ -56,10 +61,14 @@ extern xbt_mheap_t mmalloc_get_default_md(void);
 void mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
-int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
+int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stacks1, xbt_dynar_t *stacks2, xbt_dynar_t *equals);
+int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 
 void mmalloc_backtrace_block_display(void* heapinfo, int block);
 void mmalloc_backtrace_fragment_display(void* heapinfo, int block, int frag);
+void mmalloc_backtrace_display(void *addr);
+
+int is_free_area(void *area, xbt_mheap_t heap);
 
 
 

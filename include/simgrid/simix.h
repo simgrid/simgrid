@@ -114,6 +114,9 @@ typedef void (*smx_creation_func_t) ( /* process */ smx_process_t*,
  */
 typedef struct s_smx_rvpoint *smx_rdv_t;
 
+XBT_PUBLIC(void*) SIMIX_comm_get_src_data(smx_action_t action);
+XBT_PUBLIC(void*) SIMIX_comm_get_dst_data(smx_action_t action);
+
 /******************************** Context *************************************/
 typedef struct s_smx_context *smx_context_t;
 typedef struct s_smx_context_factory *smx_context_factory_t;
@@ -463,6 +466,11 @@ XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
 /************************** AS router simcalls ***************************/
 XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
+
+/************************** New API simcalls **********************************/
+/* TUTORIAL: New API                                                          */
+/******************************************************************************/
+XBT_PUBLIC(int) simcall_new_api_fct(const char* param1, double param2);
 
 SG_END_DECL()
 #endif                          /* _SIMIX_SIMIX_H */

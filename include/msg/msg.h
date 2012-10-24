@@ -382,5 +382,11 @@ xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
 
+/* ****************************************************************************************** */
+/* TUTORIAL: New API                                                                        */
+/* Declare all functions for the API                                                          */
+/* ****************************************************************************************** */
+XBT_PUBLIC(int) MSG_new_API_fct(const char* param1, double param2);
+
 SG_END_DECL()
 #endif

@@ -40,6 +40,7 @@ set(EXTRA_DIST
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_ti_private.h
+  src/surf/platf_generator_private.h
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
@@ -90,7 +91,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmprivate.h
   src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
-  src/xbt/mmalloc/test/mmalloc_test.c
   src/xbt/setset_private.h
   tools/gras/gras_stub_generator.h
   tools/tesh/run_context.h
@@ -113,7 +113,6 @@ set(SMPI_SRC
   src/smpi/smpi_c99.c
   src/smpi/smpi_coll.c
   src/smpi/smpi_comm.c
-  src/smpi/smpi_f77.c
   src/smpi/smpi_global.c
   src/smpi/smpi_group.c
   src/smpi/smpi_mpi.c
@@ -121,6 +120,13 @@ set(SMPI_SRC
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
   )
+  
+if(SMPI_F2C)
+  set(SMPI_SRC
+    ${SMPI_SRC}
+    src/smpi/smpi_f77.c
+    )
+endif(SMPI_F2C)
 
 set(GRAS_RL_SRC
   ${XBT_RL_SRC}
@@ -217,6 +223,7 @@ set(SURF_SRC
   src/surf/maxmin.c
   src/surf/network.c
   src/surf/network_constant.c
+  src/surf/platf_generator.c
   src/surf/random_mgr.c
   src/surf/sg_platf.c
   src/surf/storage.c
@@ -272,11 +279,35 @@ set(MSG_SRC
   src/msg/msg_vm.c
   )
 
-set(PLATFGEN_SRC
-  include/simgrid/platf_generator.h
-  src/surf/platf_generator.c
-  src/surf/platf_generator_private.h
+#* ****************************************************************************************** *#
+#* TUTORIAL: New API                                                                          *#
+
+set(MSG_SRC
+  ${MSG_SRC}
+  src/msg/msg_new_api.c
   )
+set(EXTRA_DIST
+  ${EXTRA_DIST}
+  src/simix/smx_new_api_private.h
+  )
+set(SIMIX_SRC
+  ${SIMIX_SRC}
+  src/simix/smx_new_api.c
+)
+#* ****************************************************************************************** *#
+
+#* ****************************************************************************************** *#
+#* TUTORIAL: New Model                                                                        *#
+
+set(SURF_SRC
+  ${SURF_SRC}
+  src/surf/new_model.c
+  )
+set(EXTRA_DIST
+  ${EXTRA_DIST}
+  src/surf/new_model_private.h
+  )
+#* ****************************************************************************************** *#
 
 set(SIMDAG_SRC
   src/simdag/sd_daxloader.c
@@ -380,6 +411,7 @@ set(JEDULE_SRC
 
 set(MC_SRC
   src/mc/mc_checkpoint.c
+  src/mc/mc_compare.c
   src/mc/mc_dpor.c
   src/mc/mc_global.c
   src/mc/mc_liveness.c
@@ -388,7 +420,7 @@ set(MC_SRC
   src/mc/mc_request.c
   src/mc/mc_state.c
   src/mc/memory_map.c
-  src/mc/test/compare_snapshot.c
+  src/mc/test/heap_comparison.c
   )
 
 set(headers_to_install
@@ -518,7 +550,6 @@ set(simgrid_sources
   ${SIMDAG_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
-  ${PLATFGEN_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   )
@@ -615,6 +646,15 @@ set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/modules.doc
   )
 
+set(DEV_GUIDE_SOURCES
+  doc/dev_guide/doxygen/index.doc
+  doc/dev_guide/doxygen/cmake.doc
+  doc/dev_guide/doxygen/simgrid.doc
+  doc/dev_guide/doxygen/xps.doc
+  doc/dev_guide/doxygen/DevGuideDoxyfile.in
+  doc/dev_guide/doxygen/DevGuideDoxygenLayout.xml
+  )
+
 set(SHARED_SOURCES
   )
 
@@ -696,6 +736,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/simdag/properties/CMakeLists.txt
   examples/simdag/scheduling/CMakeLists.txt
   examples/smpi/CMakeLists.txt
+  examples/smpi/MM/CMakeLists.txt
   examples/xbt/CMakeLists.txt
   )
 
@@ -715,6 +756,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
+  teshsuite/smpi/CMakeLists.txt
   )
 
 set(TOOLS_CMAKEFILES_TXT
@@ -756,6 +798,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindRubySimgrid.cmake
   buildtools/Cmake/Modules/FindSimGrid.cmake
   buildtools/Cmake/Modules/FindValgrind.cmake
+  buildtools/Cmake/Modules/FindLibunwind.cmake
   buildtools/Cmake/Option.cmake
   buildtools/Cmake/Pipol.cmake
   buildtools/Cmake/PrintArgs.cmake
@@ -772,7 +815,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/update_tesh.pl
   buildtools/Cmake/Supernovae.cmake
   buildtools/Cmake/UnitTesting.cmake
-  buildtools/Cmake/memcheck_tests.cmake
   buildtools/Cmake/src/gras_config.h.in
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c

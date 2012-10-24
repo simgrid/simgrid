@@ -4,14 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <ctype.h>
-
 #include "surf_private.h"
 #include "xbt/module.h"
 #include "mc/mc.h"
 #include "simix/smx_host_private.h"
 #include "surf/surf_resource.h"
 #include "xbt/xbt_os_thread.h"
+
+#include <ctype.h>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
@@ -188,6 +188,16 @@ s_surf_model_description_t surf_storage_model_description[] = {
    surf_storage_model_init_default},
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
+
+/* ********************************************************************* */
+/* TUTORIAL: New model                                                   */
+s_surf_model_description_t surf_new_model_description[] = {
+  {"default",
+   "Tutorial model.",
+   surf_new_model_init_default},
+  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+};
+/* ********************************************************************* */
 
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
@@ -381,6 +391,8 @@ void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
   *ver_patch = SIMGRID_VERSION_PATCH;
 }
 
+xbt_dynar_t sg_cmdline = NULL;
+
 void surf_init(int *argc, char **argv)
 {
   XBT_DEBUG("Create all Libs");
@@ -401,6 +413,11 @@ void surf_init(int *argc, char **argv)
   SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
   SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
 
+  sg_cmdline = xbt_dynar_new(sizeof(char*),NULL);
+  int i;
+  for (i=0;i<*argc;i++) {
+    xbt_dynar_push(sg_cmdline,&(argv[i]));
+  }
   xbt_init(argc, argv);
   if (!model_list)
     model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
@@ -409,7 +426,7 @@ void surf_init(int *argc, char **argv)
 
   surf_config_init(argc, argv);
   surf_action_init();
-  if (MC_IS_ENABLED)
+  if (MC_is_active())
     MC_memory_init();
 }
 
@@ -472,6 +489,7 @@ void surf_exit(void)
 #endif
 
   xbt_dynar_free(&surf_path);
+  xbt_dynar_free(&sg_cmdline);
 
   xbt_lib_free(&host_lib);
   xbt_lib_free(&link_lib);

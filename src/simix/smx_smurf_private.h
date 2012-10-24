@@ -97,7 +97,11 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_CLOSE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_STAT), \
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_UNLINK),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_LS),\
-SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES)
+SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES), \
+/* ****************************************************************************************** */ \
+/* TUTORIAL: New API                                                                        */ \
+/* ****************************************************************************************** */ \
+SIMCALL_ENUM_ELEMENT(SIMCALL_NEW_API_INIT)
 
 
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated
@@ -602,6 +606,15 @@ typedef struct s_smx_simcall {
       const char* name;
       xbt_dict_t result;
     } asr_get_properties;
+
+    /* ****************************************************************************************** */
+    /* TUTORIAL: New API                                                                        */
+    /* ****************************************************************************************** */
+    struct {
+      const char* param1;
+      double param2;
+      int result;
+    } new_api;
 
   };
 } s_smx_simcall_t, *smx_simcall_t;

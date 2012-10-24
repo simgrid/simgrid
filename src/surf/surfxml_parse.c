@@ -694,10 +694,15 @@ void ETag_surfxml_AS(void){
   sg_platf_new_AS_end();
 }
 
+extern int _surf_init_status; /* FIXME: find a proper way to export this at some point */
+
 void STag_surfxml_config(void){
   AS_TAG = 0;
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
+  if (_surf_init_status == 2) {
+    surf_parse_error("All <config> tags must be given before any platform elements (such as <AS>, <host>, <cluster>, <link>, etc).");
+  }
 }
 void ETag_surfxml_config(void){
   xbt_dict_cursor_t cursor = NULL;
@@ -759,6 +764,23 @@ void STag_surfxml_argument(void){
   argv = xbt_realloc(argv, (argc) * sizeof(char *));
   argv[(argc) - 1] = xbt_strdup(A_surfxml_argument_value);
 }
+
+/* ***************************************** */
+/* TUTORIAL: New TAG                         */
+void STag_surfxml_gpu(void)
+{
+  XBT_DEBUG("STag_surfxml_gpu");
+}
+void ETag_surfxml_gpu(void)
+{
+  s_sg_platf_gpu_cbarg_t gpu;
+  memset(&gpu,0,sizeof(gpu));
+
+  gpu.name = A_surfxml_gpu_name;
+
+  sg_platf_new_gpu(&gpu);
+}
+/* ***************************************** */
 
 /* nothing to do in those functions */
 void ETag_surfxml_prop(void){}
