@@ -22,6 +22,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
 
  Documentation:
  * Split the doc into a user guide and a reference guide.
+ * Start a developper guide to help people hacking on SimGrid.
 
  Cmake:
  * Remove option custom_flags. Now use environment variables CFLAGS
