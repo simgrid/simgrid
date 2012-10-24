@@ -25,7 +25,8 @@ export CC=gcc
 export CXX=g++
 fi
 
-cmake -Drelease=on .
+#DEFAULT CONF
+cmake .
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure
 ctest -D ExperimentalBuild
