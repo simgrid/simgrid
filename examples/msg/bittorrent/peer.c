@@ -428,6 +428,8 @@ void handle_message(peer_t peer, msg_task_t task)
       }
     }
     break;
+  case MESSAGE_CANCEL:
+    break;
   }
   //Update the peer speed.
   if (remote_peer) {

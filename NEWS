@@ -4,7 +4,15 @@ __   _____ _ __ ___(_) ___  _ __   |___ / ( _ )
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | (_) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)___/
 
-(to complete)
+The Psssshiiiit release: SimGrid jumps into the Cloud.
+
+ * Experimental interface to manipulate VMs, EC2-style.
+ * Fixes around process restart and stochastic workloads
+ * platf: New C interface to create fixed or random platforms
+ * SimDag: Many fixes and improvements of typed tasks
+ * SMPI now covers more of the MPI interface.
+   More datatypes, more functions, more robust.
+ * Model-checking: mmalloc is more robust to user errors.
                     _               _____ _____ _
 __   _____ _ __ ___(_) ___  _ __   |___ /|___  / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   / /| |
