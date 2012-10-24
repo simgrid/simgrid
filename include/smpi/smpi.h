@@ -454,7 +454,6 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Pcontrol, (const int level ));
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions
-XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
 XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 /*
 XBT_PUBLIC(void) smpi_exit(int);
@@ -495,7 +494,7 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
                                          : smpi_shared_set_call(#func, input, func(__VA_ARGS__)))
 
 /* Fortran specific stuff */
-XBT_PUBLIC(int) MAIN__(void);
+XBT_PUBLIC(int) MAIN__(int (*realmain) (int argc, char *argv[]),int *argc, char *argv[]);
 
 XBT_PUBLIC(int) smpi_process_index(void);
 
