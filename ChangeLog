@@ -81,13 +81,17 @@ SimGrid (3.8) NOT RELEASED; urgency=low
    [Khalid Hasanov & Jean-Noel Quintin] Thanks for the patch, guys.
  * Correct behavior of smpi/sender_gap and set its default value to 0
  * Add option to asynchronously send small messages to allow better 
-  simulation of pt2pt communications. --cfg=smpi/async_small_threshold:value 
-  specifies the size in bytes under which messages will be asynchronously sent.
+   simulation of pt2pt communications. --cfg=smpi/async_small_threshold:value 
+   specifies the size in bytes under which messages will be asynchronously sent.
  * Add support of MPI_Iprobe, MPI_Probe, MPI_Testall, MPI_Wtick functions
  * SMPI now handles more MPI specific values in input. Closes [#14389] and [#14388] 
- 
-   
+
  SimGrid:
+ * New C interface to define a platform: XML is now optional. 
+   For more info, please check include/simgrid/platf.h.
+ * New interface to define random platforms from the C:
+   For more info, please check include/simgrid/platf_generator.h and
+   examples/msg/masterslave/masterslave_platfgen.c
  * Export a sg_cmdline dynar containing all the arguments we got from
    the command line.
 

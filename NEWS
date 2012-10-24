@@ -6,8 +6,9 @@ __   _____ _ __ ___(_) ___  _ __   |___ / ( _ )
 
 The Psssshiiiit release: SimGrid jumps into the Cloud.
 
- * Experimental interface to manipulate VMs.
+ * Experimental interface to manipulate VMs, EC2-style.
  * Fixes around process restart and stochastic workloads
+ * platf: New C interface to create fixed or random platforms
  * SimDag: Many fixes and improvements of typed tasks
  * SMPI now covers more of the MPI interface.
    More datatypes, more functions, more robust.
