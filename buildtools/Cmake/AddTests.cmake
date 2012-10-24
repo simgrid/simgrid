@@ -50,11 +50,13 @@ if(NOT enable_memcheck)
   # teshsuite/xbt
   ADD_TEST(xbt-log-large                       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large_test.tesh)
   ADD_TEST(xbt-log-parallel                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parallel_log_crashtest.tesh)
-  IF(${ARCH_32_BITS})
-    ADD_TEST(xbt-mmalloc-32                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_32.tesh)
-  ELSE(${ARCH_32_BITS})
-    ADD_TEST(xbt-mmalloc-64                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_64.tesh)
-  ENDIF(${ARCH_32_BITS})
+  IF(HAVE_MMAP)
+    IF(${ARCH_32_BITS})
+      ADD_TEST(xbt-mmalloc-32                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_32.tesh)
+    ELSE(${ARCH_32_BITS})
+      ADD_TEST(xbt-mmalloc-64                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc_64.tesh)
+    ENDIF(${ARCH_32_BITS})
+  ENDIF(HAVE_MMAP)
 
   # teshsuite/gras/datadesc directory
   ADD_TEST(tesh-gras-dd-mem                     ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/gras/datadesc/datadesc_mem.tesh)
