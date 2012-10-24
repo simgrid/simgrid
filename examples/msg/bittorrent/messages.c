@@ -8,7 +8,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages, "Messages specific for the message factory");
 
-#define BYTES_TO_MB(x) ((long double)x/1048576.0)
 #define BITS_TO_BYTES(x) ((x / 8) + (x % 8) ? 1 : 0)
 
 /**
@@ -22,14 +21,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_messages, "Messages specific for the message fa
 msg_task_t task_message_new(e_message_type type, const char *issuer_host_name,
                             const char *mailbox, int peer_id, int size)
 {
-  long double size_mb = BYTES_TO_MB(size);
   message_t message = xbt_new(s_message_t, 1);
   message->issuer_host_name = issuer_host_name;
   message->peer_id = peer_id;
   message->mailbox = mailbox;
   message->type = type;
-  msg_task_t task = MSG_task_create(NULL, 0, size_mb, message);
-  XBT_DEBUG("type: %d size: %.20Lg (%d)", type, size_mb, size);
+  msg_task_t task = MSG_task_create(NULL, 0, size, message);
+  XBT_DEBUG("type: %d size: %.20Lg (%d)", type, size, size);
   return task;
 }
 
@@ -110,6 +108,7 @@ int task_message_size(e_message_type type)
     case MESSAGE_BITFIELD: size = MESSAGE_BITFIELD_SIZE; break;
     case MESSAGE_REQUEST: size = MESSAGE_REQUEST_SIZE; break;
     case MESSAGE_PIECE: size = MESSAGE_PIECE_SIZE; break;
+    case MESSAGE_CANCEL: size = MESSAGE_CANCEL_SIZE; break;
   }
   return size;
 }

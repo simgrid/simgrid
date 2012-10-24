@@ -34,7 +34,8 @@ typedef enum {
   MESSAGE_HAVE,
   MESSAGE_BITFIELD,
   MESSAGE_REQUEST,
-  MESSAGE_PIECE
+  MESSAGE_PIECE,
+  MESSAGE_CANCEL
 } e_message_type;
 
 /**
