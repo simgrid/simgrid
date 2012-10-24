@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
+if(NOT WIN32)
 add_executable(log_large_test log_large_test.c)
 add_executable(parallel_log_crashtest parallel_log_crashtest.c)
 if(HAVE_MMAP)
@@ -14,12 +14,6 @@ if(NOT WIN32)
   target_link_libraries(parallel_log_crashtest gras m pthread )
   if(HAVE_MMAP)
     target_link_libraries(mmalloc_test gras m pthread )
-  endif()
-else()
-  target_link_libraries(log_large_test gras)
-  target_link_libraries(parallel_log_crashtest gras)
-  if(HAVE_MMAP)
-    target_link_libraries(mmalloc_test gras)
   endif()
 endif()
 
