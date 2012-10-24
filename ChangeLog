@@ -74,9 +74,18 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Re-implement time-independent trace replay using SMPI (at the
    smpi_smp_* level) instead of MSG. This should replace
    examples/msg/actions/actions.c
+ * Implement support of MPI Datatypes (vectors, hvectors, indexed, 
+   hindexed and structs)
  * Implement the exchange of non-contiguous data.
    [Khalid Hasanov & Jean-Noel Quintin] Thanks for the patch, guys.
-
+ * Correct behavior of smpi/sender_gap and set its default value to 0
+ * Add option to asynchronously send small messages to allow better 
+  simulation of pt2pt communications. --cfg=smpi/async_small_threshold:value 
+  specifies the size in bytes under which messages will be asynchronously sent.
+ * Add support of MPI_Iprobe, MPI_Probe, MPI_Testall, MPI_Wtick functions
+ * SMPI now handles more MPI specific values in input. Closes [#14389] and [#14388] 
+ 
+   
  SimGrid:
  * Export a sg_cmdline dynar containing all the arguments we got from
    the command line.
