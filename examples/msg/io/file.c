@@ -51,13 +51,13 @@ int host(int argc, char *argv[])
   XBT_INFO("\tOpen file '%s'",file->name);
 
   read = MSG_file_read(ptr,10000000,sizeof(char*),file);     // Read for 10Mo
-  XBT_INFO("\tHaving read  %.1f \ton %s",read,file->name);
+  XBT_INFO("\tHave read    %8.1f on %s",read,file->name);
 
   write = MSG_file_write(ptr,100000,sizeof(char*),file);  // Write for 100Ko
-  XBT_INFO("\tHaving write %.1f \ton %s",write,file->name);
+  XBT_INFO("\tHave written %8.1f on %s",write,file->name);
 
   read = MSG_file_read(ptr,10000000,sizeof(char*),file);     // Read for 10Mo
-  XBT_INFO("\tHaving read  %.1f \ton %s",read,file->name);
+  XBT_INFO("\tHave read    %8.1f on %s",read,file->name);
 
   MSG_file_stat(file,&stat);
   XBT_INFO("\tFile stat %s Size %.1f",file->name,stat.size);

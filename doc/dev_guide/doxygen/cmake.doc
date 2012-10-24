@@ -1,0 +1,8 @@
+/*! 
+\page cmake SimGrid Developer Guide - Cmake
+
+\section cmake_dev_guide_src How to add sources?
+\section cmake_dev_guide_ex How to add examples?
+\section cmake_dev_guide_test How to add tests?
+
+*/

@@ -48,7 +48,7 @@ this function return directly the task recevied.
 
 \dontinclude lua/masterslave/master_slave.lua
 \li Set Environmenet and run application
-\until simgrid.clean()
+\until end-of-master-slave
 
 \subsection bindings_binding_lua_example_data Exchanging Data
 You can also exchange data between Process using lua. for that, you have to deal with lua task as a table,
@@ -154,105 +154,105 @@ the full example is distributed in the file examples/lua/master_slave_bypass.lua
 
 \subsection MSG_ex_master_slave_lua Master/slave Lua application
 
-    Simulation of a master-slave application using lua bindings    
-       - \ref MSG_ext_ms_master_lua
-       - \ref MSG_ext_ms_slave_lua
-       - \ref MSG_ext_ms_core_lua
+Simulation of a master-slave application using lua bindings    
+- \ref MSG_ext_ms_master_lua
+- \ref MSG_ext_ms_slave_lua
+- \ref MSG_ext_ms_core_lua
+- \ref MSG_ext_ms_helping
+- \ref MSG_ext_ms_application
+- \ref MSG_ext_ms_platform
 
-     - \ref MSG_ext_ms_helping
-       - \ref MSG_ext_ms_application
-       - \ref MSG_ext_ms_platform
 
-
-      \dontinclude lua/masterslave/master_slave.lua
      
+\subsubsection MSG_ext_ms_master_lua Master code
 
-      \subsubsection MSG_ext_ms_master_lua Master code
+as described in the C native master/Slave example, this function has to be assigned to a msg_process_t that will behave as the master.
 
-            as described in the C native master/Slave example, this function has to be assigned to a msg_process_t that will behave as the master.
+Lua style arguments (...) in for the master are interpreted as:
+- the number of tasks to distribute
+- the computation size of each task
+- the size of the files associated to each task
+- a list of host that will accept those tasks.
 
-      Lua style arguments (...) in for the master are interpreted as:
-       - the number of tasks to distribute
-       - the computation size of each task
-       - the size of the files associated to each task
-       - a list of host that will accept those tasks.
-
-      Tasks are dumbly sent in a round-robin style.
-
-      \until end_of_master
-
-
-      \subsubsection MSG_ext_ms_slave_lua Slave code
-
-      This function has to be assigned to a #msg_process_t that has to behave as a slave.
-      This function keeps waiting for tasks and executes them as it receives them.
-
-      \until end_of_slave
-         \subsubsection MSG_ext_ms_core_lua Simulation core
-
-      in this section the core of the simulation which start by including the simgrid lib for bindings
-      : <i>require "simgrid" </i>
-
-         -# Simulation settings : <i>simgrid.platform</i> creates a realistic
-            environment
-         -# Application deployment : create the processes on the right locations with
-            <i>simgrid.application</i>
-         -# The simulation is run with <i>simgrid.run</i>
-
-      Its arguments are:
-	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.( first command line argument)
-	- <i>application_file</i>: the name of a file containing a valid surfxml application description ( second commande line argument )
-
-      \until simgrid.clean()
+Tasks are dumbly sent in a round-robin style.
+\dontinclude lua/masterslave/master.lua
+\skip Dispatch the tasks
+\until Done sending
+\until end
 
 
- \subsection MSG_ex_master_slave_lua_bypass Master/slave Bypass Lua application
+\subsubsection MSG_ext_ms_slave_lua Slave code
 
-    Simulation of a master-slave application using lua bindings, Bypassing the XML parser
-       - \ref MSG_ext_ms_bp_master_lua
-       - \ref MSG_ext_ms_bp_slave_lua
-       - \ref MSG_ext_ms_bp_core_lua
+This function has to be assigned to a #msg_process_t that has to behave as a slave.
+This function keeps waiting for tasks and executes them as it receives them.
+\dontinclude lua/masterslave/slave.lua
+\until end_of_slave
+\subsubsection MSG_ext_ms_core_lua Simulation core
+
+in this section the core of the simulation which start by including the simgrid lib for bindings
+: <i>require "simgrid" </i>
+
+-# Simulation settings : <i>simgrid.platform</i> creates a realistic
+   environment
+-# Application deployment : create the processes on the right locations with
+    <i>simgrid.application</i>
+-# The simulation is run with <i>simgrid.run</i>
+
+Its arguments are:
+- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.( first command line argument)
+- <i>application_file</i>: the name of a file containing a valid surfxml application description ( second commande line argument )
+\dontinclude lua/masterslave/master_slave.lua
+\skip platform
+\until run
 
 
-      \dontinclude lua/console/master_slave_bypass.lua
+\subsection MSG_ex_master_slave_lua_bypass Master/slave Bypass Lua application
+
+Simulation of a master-slave application using lua bindings, Bypassing the XML parser
+- \ref MSG_ext_ms_bp_master_lua
+- \ref MSG_ext_ms_bp_slave_lua
+- \ref MSG_ext_ms_bp_core_lua
+
       
 
-      \subsubsection MSG_ext_ms_bp_master_lua Master code
+\subsubsection MSG_ext_ms_bp_master_lua Master code
 
-            as described in the C native master/Slave example, this function has to be assigned to a msg_process_t that will behave as the master.
+as described in the C native master/Slave example, this function has to be assigned to a msg_process_t that will behave as the master.
 
-      Lua style arguments (...) in for the master are interpreted as:
-       - the number of tasks to distribute
-       - the computation size of each task
-       - the size of the files associated to each task
-       - a list of host that will accept those tasks.
+Lua style arguments (...) in for the master are interpreted as:
+- the number of tasks to distribute
+- the computation size of each task
+- the size of the files associated to each task
+- a list of host that will accept those tasks.
 
-      Tasks are dumbly sent in a round-robin style.
+Tasks are dumbly sent in a round-robin style.
 
-      \until end_of_master
+\dontinclude lua/console/master.lua
+\until end_of_master
 
+\subsubsection MSG_ext_ms_bp_slave_lua Slave code
 
-      \subsubsection MSG_ext_ms_bp_slave_lua Slave code
+This function has to be assigned to a #msg_process_t that has to behave as a slave.
+This function keeps waiting for tasks and executes them as it receives them.
 
-      This function has to be assigned to a #msg_process_t that has to behave as a slave.
-      This function keeps waiting for tasks and executes them as it receives them.
+\dontinclude lua/console/slave.lua
+\until end_of_slave
 
-      \until end_of_slave
-         \subsubsection MSG_ext_ms_bp_core_lua Simulation core
+\subsubsection MSG_ext_ms_bp_core_lua Simulation core
 
-      in this section the core of the simulation which start by including the simgrid lib for bindings, then create the resources we need to set up our environment bypassing the XML parser.
-      : <i>require "simgrid" </i>
+in this section the core of the simulation which start by including the simgrid lib for bindings, then create the resources we need to set up our environment bypassing the XML parser.
+: <i>require "simgrid" </i>
 
-	 -# Hosts : <i>simgrid.Host.new</i> instanciate a new host with an id, and power.
-	 -# Links : <i>simgrid.Link.new</i> instanictae a new link that will require an id, bandwith and latency values.
-	 -# Route : <i>simgrid.Route.new</i> define a route between two hosts specifying the links to use.
-         -# Simulation settings : <i>simgrid.register_platform();</i> register own platform without using the XML SURF parser.
+-# Hosts : <i>simgrid.Host.new</i> instanciate a new host with an id, and power.
+-# Links : <i>simgrid.Link.new</i> instanictae a new link that will require an id, bandwith and latency values.
+-# Route : <i>simgrid.Route.new</i> define a route between two hosts specifying the links to use.
+-# Simulation settings : <i>simgrid.register_platform();</i> register own platform without using the XML SURF parser.
 
-	 we can also bypass the XML deployment file, and associate functions for each of defined hosts.
-	- <i>simgrid.Host.setFunction</i>: associate a function to a host, specifying arguments if needed.
-	- <i>simgrid.register_application()</i>: saving the deployment settings before running the simualtion.
+we can also bypass the XML deployment file, and associate functions for each of defined hosts.
+- <i>simgrid.Host.setFunction</i>: associate a function to a host, specifying arguments if needed.
+- <i>simgrid.register_application()</i>: saving the deployment settings before running the simualtion.
 
-      \until simgrid.clean()
+\include lua/console/master_slave_bypass.lua
 
 
  */

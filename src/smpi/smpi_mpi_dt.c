@@ -105,6 +105,7 @@ CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE_INT, long_double_int);
 
 CREATE_MPI_DATATYPE_NULL(MPI_UB);
 CREATE_MPI_DATATYPE_NULL(MPI_LB);
+CREATE_MPI_DATATYPE_NULL(MPI_PACKED);
 // Internal use only
 CREATE_MPI_DATATYPE(MPI_PTR, void*);
 
@@ -288,14 +289,10 @@ void smpi_datatype_free(MPI_Datatype* type){
 int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-    retval = MPI_ERR_TYPE;
-  } else {
-    smpi_datatype_create(new_type, count *
-                         smpi_datatype_size(old_type),count *
-                         smpi_datatype_size(old_type),0,NULL, DT_FLAG_CONTIGUOUS);
-    retval=MPI_SUCCESS;
-  }
+  smpi_datatype_create(new_type, count *
+                       smpi_datatype_size(old_type),count *
+                       smpi_datatype_size(old_type),0,NULL, DT_FLAG_CONTIGUOUS);
+  retval=MPI_SUCCESS;
   return retval;
 }
 
@@ -303,36 +300,31 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
 {
   int retval;
   if (blocklen<=0) return MPI_ERR_ARG;
-  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-    retval = MPI_ERR_TYPE;
-  } else {
-    if(stride != blocklen){
-if (old_type->has_subtype == 1)
-      XBT_WARN("vector contains a complex type - not yet handled");
-      s_smpi_mpi_vector_t* subtype = smpi_datatype_vector_create( stride,
-                                                                  blocklen,
-                                                                  count,
-                                                                  old_type,
-                                                                  smpi_datatype_size(old_type));
-
-      smpi_datatype_create(new_type, count * (blocklen) *
-                           smpi_datatype_size(old_type),
-                          ((count -1) * stride + blocklen) * smpi_datatype_size(old_type),
-                           1,
-                           subtype,
-                           DT_FLAG_VECTOR);
-      retval=MPI_SUCCESS;
-    }else{
-      /* in this situation the data are contignous thus it's not
-       * required to serialize and unserialize it*/
-      smpi_datatype_create(new_type, count * blocklen *
-                           smpi_datatype_size(old_type), ((count -1) * stride + blocklen)*
-                           smpi_datatype_size(old_type),
-                           0,
-                           NULL,
-                           DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
-      retval=MPI_SUCCESS;
-    }
+  if(stride != blocklen){
+  if (old_type->has_subtype == 1)
+    XBT_WARN("vector contains a complex type - not yet handled");
+    s_smpi_mpi_vector_t* subtype = smpi_datatype_vector_create( stride,
+                                                                blocklen,
+                                                                count,
+                                                                old_type,
+                                                                smpi_datatype_size(old_type));
+    smpi_datatype_create(new_type, count * (blocklen) *
+                         smpi_datatype_size(old_type),
+                        ((count -1) * stride + blocklen) * smpi_datatype_size(old_type),
+                         1,
+                         subtype,
+                         DT_FLAG_VECTOR);
+    retval=MPI_SUCCESS;
+  }else{
+    /* in this situation the data are contignous thus it's not
+     * required to serialize and unserialize it*/
+    smpi_datatype_create(new_type, count * blocklen *
+                         smpi_datatype_size(old_type), ((count -1) * stride + blocklen)*
+                         smpi_datatype_size(old_type),
+                         0,
+                         NULL,
+                         DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
+    retval=MPI_SUCCESS;
   }
   return retval;
 }
@@ -432,34 +424,30 @@ int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype
 {
   int retval;
   if (blocklen<=0) return MPI_ERR_ARG;
-  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-    retval = MPI_ERR_TYPE;
-  } else {
-if (old_type->has_subtype == 1)
+  if (old_type->has_subtype == 1)
       XBT_WARN("hvector contains a complex type - not yet handled");
-    if(stride != blocklen*smpi_datatype_size(old_type)){
-      s_smpi_mpi_hvector_t* subtype = smpi_datatype_hvector_create( stride,
-                                                                    blocklen,
-                                                                    count,
-                                                                    old_type,
-                                                                    smpi_datatype_size(old_type));
+  if(stride != blocklen*smpi_datatype_size(old_type)){
+    s_smpi_mpi_hvector_t* subtype = smpi_datatype_hvector_create( stride,
+                                                                  blocklen,
+                                                                  count,
+                                                                  old_type,
+                                                                  smpi_datatype_size(old_type));
 
-      smpi_datatype_create(new_type, count * blocklen *
-                           smpi_datatype_size(old_type), (count-1) * stride + blocklen *
-                           smpi_datatype_size(old_type),
-                           1,
-                           subtype,
-                           DT_FLAG_VECTOR);
-      retval=MPI_SUCCESS;
-    }else{
-      smpi_datatype_create(new_type, count * blocklen *
-                                               smpi_datatype_size(old_type),count * blocklen *
-                                               smpi_datatype_size(old_type),
-                                              0,
-                                              NULL,
-                                              DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
-      retval=MPI_SUCCESS;
-    }
+    smpi_datatype_create(new_type, count * blocklen *
+                         smpi_datatype_size(old_type), (count-1) * stride + blocklen *
+                         smpi_datatype_size(old_type),
+                         1,
+                         subtype,
+                         DT_FLAG_VECTOR);
+    retval=MPI_SUCCESS;
+  }else{
+    smpi_datatype_create(new_type, count * blocklen *
+                                             smpi_datatype_size(old_type),count * blocklen *
+                                             smpi_datatype_size(old_type),
+                                            0,
+                                            NULL,
+                                            DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
+    retval=MPI_SUCCESS;
   }
   return retval;
 }
@@ -578,29 +566,23 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
 
     if ( (i< count -1) && (indices[i]+blocklens[i] != indices[i+1]) )contiguous=0;
   }
-  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-    retval = MPI_ERR_TYPE;
-  } else {
+  if (old_type->has_subtype == 1)
+    XBT_WARN("indexed contains a complex type - not yet handled");
 
-    if (old_type->has_subtype == 1)
-      XBT_WARN("indexed contains a complex type - not yet handled");
-
-    if(!contiguous){
-      s_smpi_mpi_indexed_t* subtype = smpi_datatype_indexed_create( blocklens,
-                                                                    indices,
-                                                                    count,
-                                                                    old_type,
-                                                                    smpi_datatype_size(old_type));
-
-      smpi_datatype_create(new_type,  size *
-                           smpi_datatype_size(old_type),(indices[count-1]+blocklens[count-1])*smpi_datatype_size(old_type),1, subtype, DT_FLAG_DATA);
-}else{
-      smpi_datatype_create(new_type,  size *
-                           smpi_datatype_size(old_type),size *
-                           smpi_datatype_size(old_type),0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
-}
-    retval=MPI_SUCCESS;
+  if(!contiguous){
+    s_smpi_mpi_indexed_t* subtype = smpi_datatype_indexed_create( blocklens,
+                                                                  indices,
+                                                                  count,
+                                                                  old_type,
+                                                                  smpi_datatype_size(old_type));
+     smpi_datatype_create(new_type,  size *
+                         smpi_datatype_size(old_type),(indices[count-1]+blocklens[count-1])*smpi_datatype_size(old_type),1, subtype, DT_FLAG_DATA);
+  }else{
+    smpi_datatype_create(new_type,  size *
+                         smpi_datatype_size(old_type),size *
+                         smpi_datatype_size(old_type),0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
   }
+  retval=MPI_SUCCESS;
   return retval;
 }
 
@@ -715,33 +697,25 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
     if   (blocklens[i]<=0)
       return MPI_ERR_ARG;
     size += blocklens[i];
-
-
     if ( (i< count -1) && (indices[i]+blocklens[i]*smpi_datatype_size(old_type) != indices[i+1]) )contiguous=0;
   }
-  if ((old_type->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-    retval = MPI_ERR_TYPE;
-  } else {
-    if (old_type->has_subtype == 1)
-      XBT_WARN("hindexed contains a complex type - not yet handled");
-
-    if(!contiguous){
-      s_smpi_mpi_hindexed_t* subtype = smpi_datatype_hindexed_create( blocklens,
-                                                                    indices,
-                                                                    count,
-                                                                    old_type,
-                                                                    smpi_datatype_size(old_type));
-
-      smpi_datatype_create(new_type,  size *
-                           smpi_datatype_size(old_type),indices[count-1]+blocklens[count-1]*smpi_datatype_size(old_type)
-                           ,1, subtype, DT_FLAG_DATA);
-    }else{
-      smpi_datatype_create(new_type,  size *
-                           smpi_datatype_size(old_type),size *
-                           smpi_datatype_size(old_type),0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
-    }
-    retval=MPI_SUCCESS;
+  if (old_type->has_subtype == 1)
+    XBT_WARN("hindexed contains a complex type - not yet handled");
+  if(!contiguous){
+    s_smpi_mpi_hindexed_t* subtype = smpi_datatype_hindexed_create( blocklens,
+                                                                  indices,
+                                                                  count,
+                                                                  old_type,
+                                                                  smpi_datatype_size(old_type));
+    smpi_datatype_create(new_type,  size *
+                         smpi_datatype_size(old_type),indices[count-1]+blocklens[count-1]*smpi_datatype_size(old_type)
+                         ,1, subtype, DT_FLAG_DATA);
+  }else{
+    smpi_datatype_create(new_type,  size *
+                         smpi_datatype_size(old_type),size *
+                         smpi_datatype_size(old_type),0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
   }
+  retval=MPI_SUCCESS;
   return retval;
 }
 
@@ -857,8 +831,6 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
   for(i=0; i< count; i++){
     if (blocklens[i]<=0)
       return MPI_ERR_ARG;
-    if ((old_types[i]->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED)
-      return MPI_ERR_TYPE;
     if (old_types[i]->has_subtype == 1)
       XBT_WARN("Struct contains a complex type - not yet handled");
     size += blocklens[i]*smpi_datatype_size(old_types[i]);

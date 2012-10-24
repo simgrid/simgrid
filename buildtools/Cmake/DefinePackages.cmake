@@ -113,7 +113,6 @@ set(SMPI_SRC
   src/smpi/smpi_c99.c
   src/smpi/smpi_coll.c
   src/smpi/smpi_comm.c
-  src/smpi/smpi_f77.c
   src/smpi/smpi_global.c
   src/smpi/smpi_group.c
   src/smpi/smpi_mpi.c
@@ -121,6 +120,13 @@ set(SMPI_SRC
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
   )
+  
+if(SMPI_F2C)
+  set(SMPI_SRC
+    ${SMPI_SRC}
+    src/smpi/smpi_f77.c
+    )
+endif(SMPI_F2C)
 
 set(GRAS_RL_SRC
   ${XBT_RL_SRC}
@@ -302,12 +308,6 @@ set(EXTRA_DIST
   src/surf/new_model_private.h
   )
 #* ****************************************************************************************** *#
-
-set(PLATFGEN_SRC
-  include/simgrid/platf_generator.h
-  src/surf/platf_generator.c
-  src/surf/platf_generator_private.h
-  )
 
 set(SIMDAG_SRC
   src/simdag/sd_daxloader.c
@@ -549,7 +549,6 @@ set(simgrid_sources
   ${SIMDAG_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
-  ${PLATFGEN_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   )
@@ -644,6 +643,15 @@ set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/module-trace.doc
   doc/ref_guide/doxygen/module-xbt.doc
   doc/ref_guide/doxygen/modules.doc
+  )
+
+set(DEV_GUIDE_SOURCES
+  doc/dev_guide/doxygen/index.doc
+  doc/dev_guide/doxygen/cmake.doc
+  doc/dev_guide/doxygen/simgrid.doc
+  doc/dev_guide/doxygen/xps.doc
+  doc/dev_guide/doxygen/DevGuideDoxyfile.in
+  doc/dev_guide/doxygen/DevGuideDoxygenLayout.xml
   )
 
 set(SHARED_SOURCES

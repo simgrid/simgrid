@@ -609,7 +609,17 @@ static void xbt_log_connect_categories(void)
   /* instr */
 #ifdef HAVE_TRACING
   XBT_LOG_CONNECT(instr);
+  XBT_LOG_CONNECT(instr_api);
+  XBT_LOG_CONNECT(instr_config);
+  XBT_LOG_CONNECT(instr_msg);
+  XBT_LOG_CONNECT(instr_msg_process);
+  XBT_LOG_CONNECT(instr_paje_containers);
+  XBT_LOG_CONNECT(instr_paje_header);
   XBT_LOG_CONNECT(instr_paje_trace);
+  XBT_LOG_CONNECT(instr_paje_types);
+  XBT_LOG_CONNECT(instr_paje_values);
+  XBT_LOG_CONNECT(instr_resource);
+  XBT_LOG_CONNECT(instr_routing);
   XBT_LOG_CONNECT(instr_smpi);
   XBT_LOG_CONNECT(instr_surf);
 #endif
@@ -625,6 +635,7 @@ static void xbt_log_connect_categories(void)
 #ifdef HAVE_MC
   XBT_LOG_CONNECT(mc);
   XBT_LOG_CONNECT(mc_checkpoint);
+  XBT_LOG_CONNECT(mc_compare);
   XBT_LOG_CONNECT(mc_dpor);
   XBT_LOG_CONNECT(mc_global);
   XBT_LOG_CONNECT(mc_liveness);
@@ -640,6 +651,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_io);
   XBT_LOG_CONNECT(msg_kernel);
   XBT_LOG_CONNECT(msg_mailbox);
+  XBT_LOG_CONNECT(msg_new_API);
   XBT_LOG_CONNECT(msg_process);
   XBT_LOG_CONNECT(msg_task);
   XBT_LOG_CONNECT(msg_vm);
@@ -663,6 +675,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_io);
   XBT_LOG_CONNECT(simix_kernel);
   XBT_LOG_CONNECT(simix_network);
+  XBT_LOG_CONNECT(simix_new_api);
   XBT_LOG_CONNECT(simix_process);
   XBT_LOG_CONNECT(simix_smurf);
   XBT_LOG_CONNECT(simix_synchro);
@@ -672,6 +685,7 @@ static void xbt_log_connect_categories(void)
 
   /* surf */
   XBT_LOG_CONNECT(surf);
+  XBT_LOG_CONNECT(platf_generator);
   XBT_LOG_CONNECT(random);
   XBT_LOG_CONNECT(surf_config);
   XBT_LOG_CONNECT(surf_cpu);
@@ -681,11 +695,17 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
   XBT_LOG_CONNECT(surf_maxmin);
   XBT_LOG_CONNECT(surf_network);
+  XBT_LOG_CONNECT(surf_new_model);
 #ifdef HAVE_GTNETS
   XBT_LOG_CONNECT(surf_network_gtnets);
+  XBT_LOG_CONNECT(surf_network_gtnets_interface);
+  XBT_LOG_CONNECT(surf_network_gtnets_simulator);
+  XBT_LOG_CONNECT(surf_network_gtnets_topology);
 #endif
 #ifdef HAVE_NS3
   XBT_LOG_CONNECT(surf_network_ns3);
+  XBT_LOG_CONNECT(interface_ns3);
+  XBT_LOG_CONNECT(simulator_ns3);
 #endif
   XBT_LOG_CONNECT(surf_parse);
   XBT_LOG_CONNECT(surf_route);

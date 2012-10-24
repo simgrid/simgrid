@@ -29,7 +29,7 @@ DOXYFILE_ENCODING      = UTF-8
 # identify the project. Note that if you do not use Doxywizard you need
 # to put quotes around the project name if it contains spaces.
 
-PROJECT_NAME           = SimGrid
+PROJECT_NAME           = "SimGrid Developer Guide"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number.
 # This could be handy for archiving the generated documentation or
@@ -41,7 +41,7 @@ PROJECT_NUMBER         = @release_version@
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "Scalable Simulation of Distributed Systems - User Guide"
+PROJECT_BRIEF          = "Scalable Simulation of Distributed Systems - Developer Guide"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is
 # included in the documentation. The maximum height of the logo should not
@@ -586,7 +586,7 @@ FILE_VERSION_FILTER    =
 # You can optionally specify a file name after the option, if omitted
 # DoxygenLayout.xml will be used as the name of the layout file.
 
-LAYOUT_FILE            = UserGuideDoxygenLayout.xml
+LAYOUT_FILE            = DevGuideDoxygenLayout.xml
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files
 # containing the references data. This must be a list of .bib files. The
@@ -659,48 +659,15 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = index.doc \
-                         install.doc \
-                         use.doc \   
-                         examples.doc \            
-                         options.doc \
-                         platform.doc \
-                         deployment.doc \
-                         tracing.doc \
-                         pls.doc \
-                         bindings.doc
-			 
+                         simgrid.doc \
+                         xps.doc \
+                         cmake.doc			 
 
 ###################################################
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
 ###################################################
 
-INPUT +=                 @top_srcdir@/examples/msg/sendrecv/sendrecv.c \
-                         @top_srcdir@/examples/msg/masterslave/masterslave_forwarder.c \
-                         @top_srcdir@/examples/msg/masterslave/masterslave_console.c \
-                         @top_srcdir@/examples/msg/migration \
-                         @top_srcdir@/examples/msg/suspend \
-                         @top_srcdir@/examples/msg/properties \
-                         @top_srcdir@/examples/msg/parallel_task \
-                         @top_srcdir@/examples/msg/priority \
-                         @top_srcdir@/examples/msg/icomms/peer.c \
-                         @top_srcdir@/examples/msg/icomms/peer2.c \
-                         @top_srcdir@/examples/msg/icomms/peer3.c \
-                         @top_srcdir@/examples/msg/tracing/simple.c \
-                         @top_srcdir@/examples/msg/tracing/ms.c \
-                         @top_srcdir@/examples/msg/tracing/categories.c \
-                         @top_srcdir@/examples/msg/tracing/procmig.c \
-                         @top_srcdir@/examples/msg/tracing/trace_platform.c \
-                         @top_srcdir@/examples/msg/tracing/user_variables.c \
-                         @top_srcdir@/examples/msg/tracing/link_user_variables.c \
-                         @top_srcdir@/examples/msg/tracing/link_srcdst_user_variables.c \
-                         @top_srcdir@/examples/msg/ns3 \
-                         @top_srcdir@/examples/msg/gtnets \
-                         @top_srcdir@/examples/msg/io \
-                         @top_srcdir@/examples/msg/gpu \
-                         @top_srcdir@/examples/msg/actions \
-                         @top_srcdir@/examples/msg/token_ring \
-                         @top_srcdir@/examples/msg/pmm \
-                         @top_srcdir@/examples/msg/chord
+INPUT += 
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -1598,12 +1565,12 @@ SKIP_FUNCTION_MACROS   = YES
 # NOT include the path). If a tag file is not located in the directory in which
 # doxygen is run, you must also specify the path to the tagfile here.
 
-TAGFILES               = ../../shared/doxygen/simgridrefguide.tag=../../ref_guide/html/
+TAGFILES               = ../../shared/doxygen/simgriddevguide.tag=../../dev_guide/html/
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = ../../shared/doxygen/simgriduserguide.tag
+GENERATE_TAGFILE       = ../../shared/doxygen/simgriddevguide.tag
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes

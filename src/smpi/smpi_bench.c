@@ -10,7 +10,9 @@
 #include "xbt/ex.h"
 #include "surf/surf.h"
 
+#ifndef WIN32
 #include <sys/mman.h>
+#endif
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
@@ -82,6 +84,7 @@ static size_t shm_size(int fd) {
   return (size_t)st.st_size;
 }
 
+#ifndef WIN32
 static void* shm_map(int fd, size_t size, shared_data_t* data) {
   void* mem;
   char loc[PTR_STRLEN];
@@ -92,6 +95,7 @@ static void* shm_map(int fd, size_t size, shared_data_t* data) {
       xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
     }
   }
+
   mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
     xbt_die("Could not map fd %d: %s", fd, strerror(errno));
@@ -107,6 +111,7 @@ static void* shm_map(int fd, size_t size, shared_data_t* data) {
   XBT_DEBUG("MMAP %zu to %p", size, mem);
   return mem;
 }
+#endif
 
 void smpi_bench_destroy(void)
 {
@@ -171,7 +176,11 @@ int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
   now = SIMIX_get_clock();
   if (tv) {
     tv->tv_sec = (time_t)now;
+#ifdef WIN32
+    tv->tv_usec = (useconds_t)((now - tv->tv_sec) * 1e6);
+#else
     tv->tv_usec = (suseconds_t)((now - tv->tv_sec) * 1e6);
+#endif
   }
   smpi_bench_begin();
   return 0;
@@ -331,6 +340,7 @@ void smpi_sample_3(int global, const char *file, int line)
   data->benching = 0;
 }
 
+#ifndef WIN32
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
   char *loc = bprintf("%zu_%s_%d", (size_t)getpid(), file, line);
@@ -377,7 +387,6 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
   XBT_DEBUG("Malloc %zu in %p (metadata at %p)", size, mem, data);
   return mem;
 }
-
 void smpi_shared_free(void *ptr)
 {
   char loc[PTR_STRLEN];
@@ -412,6 +421,7 @@ void smpi_shared_free(void *ptr)
     free(data->loc);
   }
 }
+#endif
 
 int smpi_shared_known_call(const char* func, const char* input) {
    char* loc = bprintf("%s:%s", func, input);

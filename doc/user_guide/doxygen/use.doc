@@ -236,34 +236,32 @@ Here are some examples on how to use GRAS.
 You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
 \endhtmlonly
 
+There is for now rather few examples of GRAS, but it's better than
+nothing, isn't it?
 
-
-    There is for now rather few examples of GRAS, but it's better than
-    nothing, isn't it?
-
-       - \ref GRAS_ex_ping
-       - \ref GRAS_ex_mmrpc
-       - \ref GRAS_ex_token
-       - \ref GRAS_ex_timer
+- \ref GRAS_ex_ping
+- \ref GRAS_ex_mmrpc
+- \ref GRAS_ex_token
+- \ref GRAS_ex_timer
 
 
 \subsection GRAS_ex_ping Ping-Pong
 
-    This example implements the very classical ping-pong in GRAS. It
-    involves a client (initiating the ping-pong) and a server (answering to
-    client's requests).
+This example implements the very classical ping-pong in GRAS. It
+involves a client (initiating the ping-pong) and a server (answering to
+client's requests).
 
-    It works the following way:
-     - Both the client and the server register all needed messages
-     - The server registers a callback to the ping message, which sends pong
-       to the expeditor
-     - The client sends the ping message to the server, and waits for the
-       pong message as an answer.
+It works the following way:
+- Both the client and the server register all needed messages
+- The server registers a callback to the ping message, which sends pong
+  to the expeditor
+- The client sends the ping message to the server, and waits for the
+  pong message as an answer.
 
-    This example resides in the <b>examples/gras/ping/ping.c</b> file. Yes, both
-    the code of the client and of the server is placed in the same file. 
+This example resides in the <b>examples/gras/ping/ping.c</b> file. Yes, both
+the code of the client and of the server is placed in the same file. 
 
-    \subsubsection GRAS_ex_ping_toc Table of contents of the ping example
+\subsubsection GRAS_ex_ping_toc Table of contents of the ping example
       - \ref GRAS_ex_ping_common
         - \ref GRAS_ex_ping_initial
         - \ref GRAS_ex_ping_register
@@ -416,24 +414,24 @@ You should also check our online <a href="http://simgrid.gforge.inria.fr/tutoria
 
 \subsection GRAS_ex_mmrpc A simple RPC for matrix multiplication
 
-    This example implements a remote matrix multiplication. It involves a client
-    (creating the matrices and sending the multiplications requests) and a server
-    (computing the multiplication on client's behalf).
+This example implements a remote matrix multiplication. It involves a client
+(creating the matrices and sending the multiplications requests) and a server
+(computing the multiplication on client's behalf).
 
-    This example also constitutes a more advanced example of data description
-    mechanisms, since the message payload type is a bit more complicated than in
-    other examples such as the ping one (\ref GRAS_ex_ping).
+This example also constitutes a more advanced example of data description
+mechanisms, since the message payload type is a bit more complicated than in
+other examples such as the ping one (\ref GRAS_ex_ping).
 
-    It works the following way (not very different from the ping example):
-     - Both the client and the server register all needed messages and datatypes
-     - The server registers a callback to the "request" message, which computes
-       what needs to be and returns the result to the expeditor.
-     - The client creates two matrices, ask for their multiplication and check
-       the server's answer.
+It works the following way (not very different from the ping example):
+- Both the client and the server register all needed messages and datatypes
+- The server registers a callback to the "request" message, which computes
+  what needs to be and returns the result to the expeditor.
+- The client creates two matrices, ask for their multiplication and check
+  the server's answer.
 
-    This example resides in the <b>examples/gras/mmrpc/mmrpc.c</b> file. 
+This example resides in the <b>examples/gras/mmrpc/mmrpc.c</b> file. 
 
-    \subsubsection GRAS_ex_mmrpc_toc Table of contents of the mmrpc example
+\subsubsection GRAS_ex_mmrpc_toc Table of contents of the mmrpc example
       - \ref GRAS_ex_mmrpc_common
         - \ref GRAS_ex_mmrpc_header
         - \ref GRAS_ex_mmrpc_dataregister
@@ -555,13 +553,13 @@ You should also check our online <a href="http://simgrid.gforge.inria.fr/tutoria
 
 \subsection GRAS_ex_timer Some timer games
 
-    This example fools around with the GRAS timers (\ref GRAS_timer). It is
-    mainly a regression test, since it uses almost all timer features.
+This example fools around with the GRAS timers (\ref GRAS_timer). It is
+mainly a regression test, since it uses almost all timer features.
 
-    The main program registers a repetititive task and a delayed one, and
-    then loops until the <tt>still_to_do</tt> variables of its globals reach
-    0. The delayed task set it to 5, and the repetititive one decrease it
-    each time. Here is an example of output:
+The main program registers a repetititive task and a delayed one, and
+then loops until the <tt>still_to_do</tt> variables of its globals reach
+0. The delayed task set it to 5, and the repetititive one decrease it
+each time. Here is an example of output:
 \verbatim Initialize GRAS
  Initialize XBT
  [1108335471] Programming the repetitive_action with a frequency of 1.000000 sec
@@ -604,31 +602,21 @@ You should also check our online <a href="http://simgrid.gforge.inria.fr/tutoria
     \until end_of_client
 
 \section using_smpi Using SMPI
-\htmlonly
 You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
-\endhtmlonly
 
 \section using_MC Using Model Checking
-\htmlonly
 You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
-\endhtmlonly
 
 \section using_trace Using Trace
 Check out the \ref tracing section.
-\htmlonly
+
 You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
-\endhtmlonly
 
 \section using_simdag Using SimDag
-\htmlonly
 You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
-\endhtmlonly
 
 \section using_simix Using SIMIX
-\htmlonly
 You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
-\endhtmlonly
-
 
 */
 

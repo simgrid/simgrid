@@ -89,6 +89,7 @@ void smpi_process_finalize(void)
   }
 }
 
+#ifdef SMPI_F2C
 int smpi_process_argc(void) {
   smpi_process_data_t data = smpi_process_data();
 
@@ -123,6 +124,7 @@ int smpi_global_size(void) {
    }
    return atoi(value);
 }
+#endif
 
 smpi_process_data_t smpi_process_data(void)
 {
@@ -261,6 +263,7 @@ void smpi_global_destroy(void)
   int i;
 
   smpi_bench_destroy();
+  smpi_group_destroy(smpi_comm_group(MPI_COMM_WORLD));
   smpi_comm_destroy(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {
@@ -288,6 +291,23 @@ int __attribute__((weak)) main(int argc, char** argv) {
    return MAIN__();
 }
 
+#ifdef WIN32
+#include <windows.h>
+
+int __attribute__((weak)) smpi_simulated_main(int argc, char** argv) {
+  xbt_die("Should not be in this smpi_simulated_main");
+  return 1;
+}
+
+/* TODO FOR WIN32 */
+/* Dummy prototype to make gcc happy */
+int APIENTRY WinMain(HINSTANCE hInst,HINSTANCE hInst2,LPSTR lpstr01,int nCmdShow)
+{
+	return MAIN__();
+}
+
+#endif
+
 int MAIN__(void)
 {
   srand(SMPI_RAND_SEED);
@@ -309,6 +329,7 @@ int MAIN__(void)
   XBT_LOG_CONNECT(smpi_mpi);
   XBT_LOG_CONNECT(smpi_mpi_dt);
   XBT_LOG_CONNECT(smpi_pmpi);
+  XBT_LOG_CONNECT(smpi_replay);
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&xargc, xargv);
