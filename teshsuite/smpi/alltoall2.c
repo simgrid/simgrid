@@ -34,12 +34,11 @@
 
 ****************************************************************************
 */
-#include "mpi.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-
+#include "mpi.h"
 
 #define MAXLEN 10000
 

@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mpi.h"
 #include <stdio.h>
+#include "mpi.h"
 
 static int test(int myid, int numprocs)
 {

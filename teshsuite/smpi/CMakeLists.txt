@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 
 if(enable_smpi)
-  set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
-
+  if(WIN32)
+    set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
+  else(WIN32)
+    set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
+  endif(WIN32)
+  
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
+  
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   add_executable(alltoall2 alltoall2.c )
@@ -19,7 +23,6 @@ if(enable_smpi)
   add_executable(scatter scatter.c)
   add_executable(reduce reduce.c)
   add_executable(split split.c)
-  add_executable(dsend dsend.c)
   add_executable(smpi_sendrecv sendrecv.c)
   add_executable(ttest01 ttest01.c)
   add_executable(vector_test vector_test.c)
@@ -39,7 +42,6 @@ if(enable_smpi)
   target_link_libraries(scatter m simgrid smpi )
   target_link_libraries(reduce m simgrid smpi )
   target_link_libraries(split m simgrid smpi )
-  target_link_libraries(dsend m simgrid smpi )
   target_link_libraries(smpi_sendrecv m simgrid smpi )
   target_link_libraries(ttest01 m simgrid smpi )
   target_link_libraries(vector_test m simgrid smpi )
@@ -48,7 +50,14 @@ if(enable_smpi)
   target_link_libraries(struct_test m simgrid smpi )
 
   set_target_properties(smpi_sendrecv PROPERTIES RENAME sendrecv)
+
+  if(NOT WIN32)
+    add_executable(dsend dsend.c)
+    target_link_libraries(dsend m simgrid smpi )
+  endif()
+
 endif()
+
 
 set(tesh_files
   ${tesh_files}

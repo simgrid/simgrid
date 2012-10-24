@@ -8,6 +8,11 @@
 #include <stdlib.h>
 #include <mpi.h>
 
+#ifdef _WIN32
+  #define srandom srand
+  #define random rand
+#endif
+
 #define GETTIMEOFDAY_ERROR 1
 
 #define N_START 1
