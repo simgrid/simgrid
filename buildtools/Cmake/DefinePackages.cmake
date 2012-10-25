@@ -598,22 +598,76 @@ else(${HAVE_LUA})
 endif(${HAVE_LUA})
 
 set(DOC_SOURCES
+  doc/amok_bw_sat.png
+  doc/amok_bw_test.png
+  doc/AS_hierarchy.png
+  doc/gras_comm.png
+  doc/sg_thread_model.fig
+  doc/simix.fig
+  doc/surf_nutshell.fig
   doc/Doxyfile.in
   doc/FAQ.doc
   doc/index.doc
   doc/simgrid.css
+  doc/SimgridDoxygenLayout.xml
   doc/triva-graph_configuration.png
   doc/triva-graph_visualization.png
-  doc/webcruft/Paje_MSG_screenshot.jpg
-  doc/webcruft/Paje_MSG_screenshot_thn.jpg
-  doc/webcruft/awstats_logo3.png
-  doc/webcruft/poster_thumbnail.png
-  doc/webcruft/simgrid_logo_2011.png
-  doc/webcruft/simgrid_logo_2011_small.png
+  doc/triva-time_interval.png
+  )
+
+set(DOC_FIGS
+  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
+  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
+  )
+  
+set(DOC_SHARED_TAG
+  doc/shared/doxygen/simgriddevguide.tag
+  doc/shared/doxygen/simgridrefguide.tag
+  doc/shared/doxygen/simgriduserguide.tag
+  )
+  
+set(DOC_TOOLS
   tools/doxygen/fig2dev_postprocessor.pl
   tools/doxygen/index_create.pl
   tools/doxygen/xbt_log_extract_hierarchy.pl
   )
+
+set(DOC_GTUT_SRC
+  doc/gtut-files/01-bones.c
+  doc/gtut-files/01-bones.output
+  doc/gtut-files/02-simple.c
+  doc/gtut-files/02-simple.output
+  doc/gtut-files/03-args.c
+  doc/gtut-files/03-args.output
+  doc/gtut-files/03-args.xml
+  doc/gtut-files/04-callback.c
+  doc/gtut-files/04-callback.output
+  doc/gtut-files/05-globals.c
+  doc/gtut-files/05-globals.output
+  doc/gtut-files/06-logs.c
+  doc/gtut-files/06-logs.output
+  doc/gtut-files/06-logs.output.error
+  doc/gtut-files/06-logs.output.fmt
+  doc/gtut-files/06-logs.output.fmt-bt
+  doc/gtut-files/06-logs.output.verbose
+  doc/gtut-files/07-timers.c
+  doc/gtut-files/07-timers.output
+  doc/gtut-files/08-exceptions.c
+  doc/gtut-files/08-exceptions.output
+  doc/gtut-files/09-datatype-dump.c
+  doc/gtut-files/09-simpledata.c
+  doc/gtut-files/09-simpledata.output
+  doc/gtut-files/10-rpc.c
+  doc/gtut-files/10-rpc.output
+  doc/gtut-files/11-explicitwait.c
+  doc/gtut-files/11-explicitwait.output
+  doc/gtut-files/11-explicitwait.xml
+  doc/gtut-files/gtut-platform-3nodes.xml
+  doc/gtut-files/gtut-platform.xml
+  doc/gtut-files/Makefile
+  doc/gtut-files/README
+  doc/gtut-files/test.xml
+)
 
 set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/footer.html
@@ -634,6 +688,7 @@ set(USER_GUIDE_SOURCES
   )
 
 set(REF_GUIDE_SOURCES
+  doc/ref_guide/index-API.doc
   doc/ref_guide/doxygen/footer.html
   doc/ref_guide/doxygen/header.html
   doc/ref_guide/doxygen/main.doc
@@ -663,16 +718,58 @@ set(DEV_GUIDE_SOURCES
   doc/dev_guide/doxygen/stylesheet.css
   )
 
-set(SHARED_SOURCES
-  )
-
-set(DOC_FIGS
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
-  ${CMAKE_HOME_DIRECTORY}/doc/user_guide/fig/amok_bw_sat.fig
-  ${CMAKE_HOME_DIRECTORY}/doc/user_guide/fig/amok_bw_test.fig
-  ${CMAKE_HOME_DIRECTORY}/doc/user_guide/fig/gras_comm.fig
-  )
+set(DOC_IMG
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/README
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_001.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_002.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_003.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_004.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_005.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_006.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_007.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_008.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_009.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_010.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_011.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_012.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_013.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_014.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_015.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_016.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_017.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_018.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_019.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_020.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_021.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_022.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_023.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_024.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_025.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_026.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_027.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_028.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_029.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_030.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101.pdf
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
+)
 
 set(bin_files
   ${bin_files}
