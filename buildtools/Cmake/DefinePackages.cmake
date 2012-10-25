@@ -616,6 +616,8 @@ set(DOC_SOURCES
   )
 
 set(USER_GUIDE_SOURCES
+  doc/user_guide/doxygen/footer.html
+  doc/user_guide/doxygen/header.html
   doc/user_guide/doxygen/UserGuideDoxyfile.in
   doc/user_guide/doxygen/UserGuideDoxygenLayout.xml
   doc/user_guide/doxygen/bindings.doc
@@ -628,11 +630,12 @@ set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/pls.doc
   doc/user_guide/doxygen/tracing.doc
   doc/user_guide/doxygen/use.doc
+  doc/user_guide/doxygen/stylesheet.css
   )
 
 set(REF_GUIDE_SOURCES
-  doc/ref_guide/doxygen/RefGuideDoxyfile.in
-  doc/ref_guide/doxygen/RefGuideDoxygenLayout.xml
+  doc/ref_guide/doxygen/footer.html
+  doc/ref_guide/doxygen/header.html
   doc/ref_guide/doxygen/main.doc
   doc/ref_guide/doxygen/module-amok.doc
   doc/ref_guide/doxygen/module-gras.doc
@@ -643,15 +646,21 @@ set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/module-trace.doc
   doc/ref_guide/doxygen/module-xbt.doc
   doc/ref_guide/doxygen/modules.doc
+  doc/ref_guide/doxygen/RefGuideDoxyfile.in
+  doc/ref_guide/doxygen/RefGuideDoxygenLayout.xml
+  doc/ref_guide/doxygen/stylesheet.css
   )
 
 set(DEV_GUIDE_SOURCES
+  doc/dev_guide/doxygen/footer.html
+  doc/dev_guide/doxygen/header.html
   doc/dev_guide/doxygen/index.doc
   doc/dev_guide/doxygen/cmake.doc
   doc/dev_guide/doxygen/simgrid.doc
   doc/dev_guide/doxygen/xps.doc
   doc/dev_guide/doxygen/DevGuideDoxyfile.in
   doc/dev_guide/doxygen/DevGuideDoxygenLayout.xml
+  doc/dev_guide/doxygen/stylesheet.css
   )
 
 set(SHARED_SOURCES
