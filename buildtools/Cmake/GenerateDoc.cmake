@@ -88,14 +88,23 @@ add_custom_target(sync-gforge-doc
   COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ || true
   COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/ || true
   COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/ || true
+  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/dev_guide/ || true
   COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/html/ || true
   COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/html/ || true
+  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/dev_guide/html/ || true
+
   COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times
   doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
+
   COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times
   doc/user_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/html/ || true
+
   COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times
   doc/ref_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/html || true
+
+  COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times
+  doc/dev_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/dev_guide/html || true
+
   COMMAND scp doc/user_guide/html/simgrid_modules2.png doc/user_guide/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png
   doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
