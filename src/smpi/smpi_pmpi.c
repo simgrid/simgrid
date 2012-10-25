@@ -1152,16 +1152,24 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
                          MPI_Comm comm, MPI_Status * status)
 {
   //TODO: suboptimal implementation
- // void *recvbuf;
+  void *recvbuf;
   int retval;
+  if ((datatype == MPI_DATATYPE_NULL)||(datatype->has_subtype==1)) {
+      retval = MPI_ERR_TYPE;
+  } else if (count < 0) {
+      retval = MPI_ERR_COUNT;
+  } else {
+    int size = smpi_datatype_size(datatype) * count;
+    recvbuf = xbt_new(char, size);
+    retval =
+        MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count,
+                     datatype, src, recvtag, comm, status);
+    if(retval==MPI_SUCCESS){
+        memcpy(buf, recvbuf, size * sizeof(char));
+    }
+    xbt_free(recvbuf);
 
-//  size = smpi_datatype_size(datatype) * count;
-//  recvbuf = xbt_new(char, size);
-  retval =
-      MPI_Sendrecv(buf, count, datatype, dst, sendtag, buf, count,
-                   datatype, src, recvtag, comm, status);
-/*memcpy(buf, recvbuf, size * sizeof(char));
-  xbt_free(recvbuf);*/
+  }
   return retval;
 }
 
