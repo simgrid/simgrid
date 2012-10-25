@@ -95,6 +95,15 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Export a sg_cmdline dynar containing all the arguments we got from
    the command line.
 
+ TRACE:
+ * Two new tracing options for adding comments to trace file so you
+   can track your experiments (see --help-tracing for details).
+ * New option to generate a impoverished trace file (--cfg=tracing/basic:1)
+ * Adding the SimGrid version that generated the trace file as a comment.
+ * Instrumenting other MSG functions (MSG_task_isend_with_matching and MSG_task_dsend)
+ * Fix to avoid key clashes on Paje links
+ * Other minor fixes related to the Paje specification
+
  XBT:
  * Functions xbt_dict_hash() and xbt_dict_hash_ext() are made public,
    and renamed to xbt_str_hash() and xbt_str_hash_ext().
