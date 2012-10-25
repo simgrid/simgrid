@@ -135,16 +135,14 @@ JNIEXPORT void JNICALL
   jobject jhost;
 
   /* Run everything */
-  XBT_INFO("Ready to run MSG_MAIN");
+  XBT_DEBUG("Ready to run MSG_MAIN");
   rv = MSG_main();
-  XBT_INFO("Done running MSG_MAIN");
+  XBT_DEBUG("Done running MSG_MAIN");
   jxbt_check_res("MSG_main()", rv, MSG_OK,
                  bprintf
                  ("unexpected error : MSG_main() failed .. please report this bug "));
 
-  XBT_INFO("MSG_main finished");
-
-  XBT_INFO("Clean java world");
+  XBT_INFO("MSG_main finished; Cleaning up the simulation...");
   /* Cleanup java hosts */
   hosts = MSG_hosts_as_dynar();
   for (index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
@@ -154,7 +152,6 @@ JNIEXPORT void JNICALL
 
   }
   xbt_dynar_free(&hosts);
-  XBT_INFO("Clean native world");
 }
 
 JNIEXPORT void JNICALL
