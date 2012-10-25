@@ -48,7 +48,7 @@ if(enable_smpi)
   target_link_libraries(struct_test m simgrid smpi )
 
   set_target_properties(smpi_sendrecv PROPERTIES RENAME sendrecv)
-endif(enable_smpi)
+endif()
 
 set(tesh_files
   ${tesh_files}

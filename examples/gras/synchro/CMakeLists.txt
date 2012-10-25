@@ -22,10 +22,10 @@ add_custom_command(
 if(NOT WIN32)
   target_link_libraries(synchro_simulator simgrid pthread m )
   target_link_libraries(synchro_philosopher gras pthread m )
-else(NOT WIN32)
+else()
   target_link_libraries(synchro_simulator simgrid)
   target_link_libraries(synchro_philosopher gras)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

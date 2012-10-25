@@ -7,9 +7,9 @@ add_executable(graphicator graphicator.c)
 ### Add definitions for compile
 if(NOT WIN32)
   target_link_libraries(graphicator simgrid m pthread )
-else(NOT WIN32)
+else()
   target_link_libraries(graphicator simgrid )
-endif(NOT WIN32)
+endif()
 
 ## Clean generated files
 get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)

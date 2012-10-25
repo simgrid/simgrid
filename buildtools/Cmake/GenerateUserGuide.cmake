@@ -66,7 +66,7 @@ if(FIG2DEV_PATH)
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/doxygen
     )
 
-else(FIG2DEV_PATH)
+else()
 
   ADD_CUSTOM_TARGET(user_guide
     COMMENT "Generating the SimGrid user guide..."
@@ -80,7 +80,7 @@ else(FIG2DEV_PATH)
     COMMAND false
     )
 
-endif(FIG2DEV_PATH)
+endif()
 
 ADD_CUSTOM_TARGET(user_guide_pdf
     COMMAND ${CMAKE_COMMAND} -E echo "XX First pass simgrid_user_guide.pdf"

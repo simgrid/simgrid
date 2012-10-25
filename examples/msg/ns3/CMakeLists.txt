@@ -7,7 +7,7 @@ if(HAVE_NS3)
 
   ### Add definitions for compile
   target_link_libraries(ns3 simgrid m )
-endif(HAVE_NS3)
+endif()
 
 set(tesh_files
   ${tesh_files}

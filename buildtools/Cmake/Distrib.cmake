@@ -27,7 +27,7 @@ install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/"
 if(NOT WIN32)
   if( NOT MANPAGE_DIR)
     set( MANPAGE_DIR ${CMAKE_BINARY_DIR}/manpages )
-  endif( NOT MANPAGE_DIR)
+  endif()
 
   add_custom_target(manpages ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${MANPAGE_DIR}
@@ -37,7 +37,7 @@ if(NOT WIN32)
   install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1 ${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.1
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)
 
-endif(NOT WIN32)
+endif()
 
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
@@ -80,7 +80,7 @@ install(TARGETS simgrid gras
 if(enable_smpi)
   install(TARGETS smpi
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-endif(enable_smpi)
+endif()
 
 if(enable_lib_static AND NOT WIN32)
   install(TARGETS simgrid_static
@@ -88,8 +88,8 @@ if(enable_lib_static AND NOT WIN32)
   if(enable_smpi)
     install(TARGETS smpi_static
       DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-  endif(enable_smpi)
-endif(enable_lib_static AND NOT WIN32)
+  endif()
+endif()
 
 # include files
 set(HEADERS
@@ -126,7 +126,7 @@ if(HAVE_LUA)
   install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lua/5.1
     )
-endif(HAVE_LUA)
+endif()
 
 ###########################################
 ### Fill in the "make uninstall" target ###
@@ -175,7 +175,7 @@ if(HAVE_LUA)
     COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid.${LIB_EXE}
     WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/"
     )
-endif(HAVE_LUA)
+endif()
 
 ################################################################
 ## Build a sain "make dist" target to build a source package ###
@@ -267,7 +267,7 @@ foreach(file ${source_to_pack})
       TARGET dist-dir
       COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/${file_location}/
       )
-  endif(NOT OPERATION)
+  endif()
 
   # Actually copy the file
   add_custom_command(
@@ -307,7 +307,7 @@ if(NOT enable_maintainer_mode)
     COMMAND ${CMAKE_COMMAND} -E echo "WARNING: ----------------------------------------------------"
     )
   add_dependencies(dist echo-dist)
-endif(NOT enable_maintainer_mode)
+endif()
 
 ###########################################
 ### Fill in the "make distcheck" target ###
@@ -359,11 +359,11 @@ if(enable_memcheck)
   add_custom_target(check
     COMMAND ctest -D ExperimentalMemCheck
     )
-else(enable_memcheck)
+else()
   add_custom_target(check
     COMMAND make test
     )
-endif(enable_memcheck)
+endif()
 
 #######################################
 ### Fill in the "make xxx-clean" target ###

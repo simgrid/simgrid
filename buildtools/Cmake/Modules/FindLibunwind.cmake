@@ -12,7 +12,7 @@ if(PROCESSOR_x86_64)
     /opt/csw
     /sw
     /usr)
-else(PROCESSOR_x86_64)
+else()
   find_library(PATH_LIBUNWIND_LIB
     NAMES unwind
     HINTS
@@ -26,7 +26,7 @@ else(PROCESSOR_x86_64)
     /opt/csw
     /sw
     /usr)
-endif(PROCESSOR_x86_64)
+endif()
 
 find_path(PATH_LIBUNWIND_H "libunwind.h"
   HINTS
@@ -44,16 +44,16 @@ find_path(PATH_LIBUNWIND_H "libunwind.h"
 message(STATUS "Looking for libunwind.h")
 if(PATH_LIBUNWIND_H)
   message(STATUS "Looking for libunwind.h - found")
-else(PATH_LIBUNWIND_H)
+else()
   message(STATUS "Looking for libunwind.h - not found")
-endif(PATH_LIBUNWIND_H)
+endif()
 
 message(STATUS "Looking for libunwind")
 if(PATH_LIBUNWIND_LIB)
   message(STATUS "Looking for libunwind - found")
-else(PATH_LIBUNWIND_LIB)
+else()
   message(STATUS "Looking for libunwind - not found")
-endif(PATH_LIBUNWIND_LIB)
+endif()
 
 if(PATH_LIBUNWIND_LIB AND PATH_LIBUNWIND_H)
   string(REGEX REPLACE "/libunwind.*[.]${LIB_EXE}$" "" PATH_LIBUNWIND_LIB "${PATH_LIBUNWIND_LIB}")
@@ -62,9 +62,9 @@ if(PATH_LIBUNWIND_LIB AND PATH_LIBUNWIND_H)
   include_directories(${PATH_LIBUNWIND_H})
   link_directories(${PATH_LIBUNWIND_LIB})
   
-else(PATH_LIBUNWIND_LIB AND PATH_LIBUNWIND_H)
+else()
   message(FATAL_ERROR "Please either install the libunwind7-dev package (or equivalent) or turn off the model-checking option of SimGrid.")
-endif(PATH_LIBUNWIND_LIB AND PATH_LIBUNWIND_H)
+endif()
 
 mark_as_advanced(PATH_LIBUNWIND_H)
 mark_as_advanced(PATH_LIBUNWIND_LIB)

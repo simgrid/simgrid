@@ -7,9 +7,9 @@ add_executable(dax_test dax_test.c)
 ### Add definitions for compile
 if(NOT WIN32)
   target_link_libraries(dax_test simgrid pthread m )
-else(NOT WIN32)
+else()
   target_link_libraries(dax_test simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

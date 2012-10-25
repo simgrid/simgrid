@@ -7,9 +7,9 @@ add_executable(goal_test goal_test.c)
 ### Add definitions for compile
 if(NOT WIN32)
   target_link_libraries(goal_test simgrid pthread m )
-else(NOT WIN32)
+else()
   target_link_libraries(goal_test simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

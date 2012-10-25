@@ -7,9 +7,9 @@ set(ns3_path ${ns3_path} CACHE PATH "Path to ns3 lib and include")
 
 if(NOT CMAKE_INSTALL_PREFIX)
   set(CMAKE_INSTALL_PREFIX "/usr/local/simgrid/" CACHE PATH "Path where to install project")
-else(NOT CMAKE_INSTALL_PREFIX)
+else()
   set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE PATH "Path where to install project")
-endif(NOT CMAKE_INSTALL_PREFIX)
+endif()
 
 set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
 
@@ -37,9 +37,9 @@ option(enable_msg_deprecated "This option enable the use of msg deprecated funct
 
 if(WIN32)
   option(enable_smpi "Whether the smpi library is compiled." off)
-else(WIN32)
+else()
   option(enable_smpi "Whether the smpi library is compiled." on)
-endif(WIN32)
+endif()
 
 mark_as_advanced(HAVE_SSH)
 mark_as_advanced(HAVE_RSYNC)

@@ -6,7 +6,7 @@ add_executable(log_large_test log_large_test.c)
 add_executable(parallel_log_crashtest parallel_log_crashtest.c)
 if(HAVE_MMAP)
   add_executable(mmalloc_test mmalloc_test.c)
-endif(HAVE_MMAP)
+endif()
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -14,14 +14,14 @@ if(NOT WIN32)
   target_link_libraries(parallel_log_crashtest gras m pthread )
   if(HAVE_MMAP)
     target_link_libraries(mmalloc_test gras m pthread )
-  endif(HAVE_MMAP)
-else(NOT WIN32)
+  endif()
+else()
   target_link_libraries(log_large_test gras)
   target_link_libraries(parallel_log_crashtest gras)
   if(HAVE_MMAP)
     target_link_libraries(mmalloc_test gras)
-  endif(HAVE_MMAP)
-endif(NOT WIN32)
+  endif()
+endif()
 
 set(tesh_files
   ${tesh_files}

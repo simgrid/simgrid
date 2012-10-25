@@ -126,12 +126,12 @@ if(SMPI_F2C)
     ${SMPI_SRC}
     src/smpi/smpi_f77.c
     )
-else(SMPI_F2C)
+else()
   set(EXTRA_DIST
     ${EXTRA_DIST}
     src/smpi/smpi_f77.c
   )
-endif(SMPI_F2C)
+endif()
 
 set(GRAS_RL_SRC
   ${XBT_RL_SRC}
@@ -203,7 +203,7 @@ if(HAVE_MMAP)
     ${XBT_SRC}
     src/xbt/mmalloc/mm.c
     )
-endif(HAVE_MMAP)
+endif()
 
 set(GTNETS_SRC
   src/surf/gtnets/gtnets_interface.cc
@@ -325,11 +325,11 @@ if(HAVE_GRAPHVIZ)
   set(SIMDAG_SRC
     ${SIMDAG_SRC} src/simdag/sd_dotloader.c
     )
-else(HAVE_GRAPHVIZ)
+else()
   set(EXTRA_DIST
     ${EXTRA_DIST} src/simdag/sd_dotloader.c
     )
-endif(HAVE_GRAPHVIZ)
+endif()
 
 set(GRAS_COMMON_SRC
   src/gras/Msg/gras_msg_exchange.c
@@ -509,38 +509,38 @@ if(${CONTEXT_THREADS}) #pthread
     src/simix/smx_context_thread.c
     src/xbt/xbt_os_thread.c
     )
-else(${CONTEXT_THREADS}) # NOT pthread
+else() # NOT pthread
   set(EXTRA_DIST
     ${EXTRA_DIST}
     src/simix/smx_context_thread.c
     src/xbt/xbt_os_thread.c
     )
-endif(${CONTEXT_THREADS})
+endif()
 
 if(${CONTEXT_UCONTEXT}) #ucontext
   set(SURF_SRC
     ${SURF_SRC}
     src/simix/smx_context_sysv.c
     )
-else(${CONTEXT_UCONTEXT}) # NOT ucontext
+else() # NOT ucontext
   set(EXTRA_DIST
     ${EXTRA_DIST}
     src/simix/smx_context_sysv.c
     )
-endif(${CONTEXT_UCONTEXT})
+endif()
 
 # -->HAVE_GTNETS
 if(HAVE_GTNETS)
   set(GTNETS_USED
     ${GTNETS_SRC}
     )
-else(HAVE_GTNETS)
+else()
   set(GTNETS_USED "")
   set(EXTRA_DIST
     ${EXTRA_DIST}
     ${GTNETS_SRC}
     )
-endif(HAVE_GTNETS)
+endif()
 
 ### Simgrid Lib sources
 set(simgrid_sources
@@ -563,14 +563,14 @@ if(HAVE_MC)
     ${simgrid_sources}
     ${MC_SRC}
     )
-endif(HAVE_MC)
+endif()
 
 if(HAVE_NS3)
   set(simgrid_sources
     ${simgrid_sources}
     ${NS3_SRC}
     )
-endif(HAVE_NS3)
+endif()
 
 # WINDOWS
 if(WIN32)
@@ -580,7 +580,7 @@ if(WIN32)
     src/xbt/win32_ucontext.c
     src/xbt/xbt_os_thread.c
     )
-endif(WIN32)
+endif()
 
 ### Gras Lib sources
 set(gras_sources
@@ -595,12 +595,12 @@ if(${HAVE_LUA})
     ${simgrid_sources}
     ${LUA_SRC}
     )
-else(${HAVE_LUA})
+else()
   set(EXTRA_DIST
     ${EXTRA_DIST}
     ${LUA_SRC}
     )
-endif(${HAVE_LUA})
+endif()
 
 set(DOC_SOURCES
   doc/amok_bw_sat.png

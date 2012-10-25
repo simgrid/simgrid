@@ -12,10 +12,10 @@ add_executable(MM_mpi MM_mpi.c 2.5D_MM.c Summa.c Matrix_init.c)
 ### Add definitions for compile
 if(NOT WIN32)
   target_link_libraries(MM_mpi simgrid pthread m smpi)
-else(NOT WIN32)
+else()
   target_link_libraries(MM_mpi simgrid smpi)
-endif(NOT WIN32)
-endif(enable_smpi)
+endif()
+endif()
 
 set(tesh_files
   ${tesh_files}

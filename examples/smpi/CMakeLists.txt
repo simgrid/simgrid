@@ -24,7 +24,7 @@ if(enable_smpi)
   target_link_libraries(mc_bugged2 m simgrid smpi )
   target_link_libraries(smpi_replay m simgrid smpi )
 
-endif(enable_smpi)
+endif()
 
 set(tesh_files
   ${tesh_files}

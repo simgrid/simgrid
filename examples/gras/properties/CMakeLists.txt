@@ -26,11 +26,11 @@ if(NOT WIN32)
   target_link_libraries(properties_simulator simgrid pthread m )
   target_link_libraries(properties_alice gras pthread m )
   target_link_libraries(properties_bob gras pthread m )
-else(NOT WIN32)
+else()
   target_link_libraries(properties_simulator simgrid)
   target_link_libraries(properties_alice gras)
   target_link_libraries(properties_bob gras)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

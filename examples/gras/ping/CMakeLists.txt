@@ -36,11 +36,11 @@ if(NOT WIN32)
   target_link_libraries(ping_simulator simgrid pthread m )
   target_link_libraries(ping_client gras pthread m )
   target_link_libraries(ping_server gras pthread m )
-else(NOT WIN32)
+else()
   target_link_libraries(ping_simulator simgrid)
   target_link_libraries(ping_client gras)
   target_link_libraries(ping_server gras)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

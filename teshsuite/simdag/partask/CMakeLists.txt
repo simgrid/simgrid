@@ -9,10 +9,10 @@ add_executable(test_comp_only_par test_comp_only_par.c)
 if(NOT WIN32)
   target_link_libraries(test_comp_only_seq simgrid m pthread )
   target_link_libraries(test_comp_only_par simgrid m pthread )
-else(NOT WIN32)
+else()
   target_link_libraries(test_comp_only_seq simgrid)
   target_link_libraries(test_comp_only_par simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}
