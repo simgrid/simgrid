@@ -45,6 +45,14 @@ typedef struct {
   int index;
 } float_int;
 typedef struct {
+  float value;
+  float index;
+} float_float;
+typedef struct {
+  double value;
+  double index;
+} double_double;
+typedef struct {
   long value;
   int index;
 } long_int;
@@ -101,6 +109,9 @@ CREATE_MPI_DATATYPE(MPI_LONG_INT, long_int);
 CREATE_MPI_DATATYPE(MPI_DOUBLE_INT, double_int);
 CREATE_MPI_DATATYPE(MPI_SHORT_INT, short_int);
 CREATE_MPI_DATATYPE(MPI_2INT, int_int);
+CREATE_MPI_DATATYPE(MPI_2FLOAT, float_float);
+CREATE_MPI_DATATYPE(MPI_2DOUBLE, double_double);
+
 CREATE_MPI_DATATYPE(MPI_LONG_DOUBLE_INT, long_double_int);
 
 CREATE_MPI_DATATYPE_NULL(MPI_UB);
@@ -1148,6 +1159,10 @@ static void minloc_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, int_int, MINLOC_OP);
   } else if (*datatype == MPI_LONG_DOUBLE_INT) {
     APPLY_FUNC(a, b, length, long_double_int, MINLOC_OP);
+  } else if (*datatype == MPI_2FLOAT) {
+    APPLY_FUNC(a, b, length, float_float, MINLOC_OP);
+  } else if (*datatype == MPI_2DOUBLE) {
+    APPLY_FUNC(a, b, length, double_double, MINLOC_OP);
   }
 }
 
@@ -1166,6 +1181,10 @@ static void maxloc_func(void *a, void *b, int *length,
     APPLY_FUNC(a, b, length, int_int, MAXLOC_OP);
   } else if (*datatype == MPI_LONG_DOUBLE_INT) {
     APPLY_FUNC(a, b, length, long_double_int, MAXLOC_OP);
+  } else if (*datatype == MPI_2FLOAT) {
+    APPLY_FUNC(a, b, length, float_float, MAXLOC_OP);
+  } else if (*datatype == MPI_2DOUBLE) {
+    APPLY_FUNC(a, b, length, double_double, MAXLOC_OP);
   }
 }
 

@@ -129,12 +129,14 @@ XBT_PUBLIC( MPI_Datatype ) MPI_OFFSET;
 XBT_PUBLIC( MPI_Datatype ) MPI_LB;
 XBT_PUBLIC( MPI_Datatype ) MPI_UB;
 //The following are datatypes for the MPI functions MPI_MAXLOC  and MPI_MINLOC.
-XBT_PUBLIC( MPI_Datatype ) MPI_FLOAT_INT;
-XBT_PUBLIC( MPI_Datatype ) MPI_LONG_INT;
-XBT_PUBLIC( MPI_Datatype ) MPI_DOUBLE_INT;
-XBT_PUBLIC( MPI_Datatype ) MPI_SHORT_INT;
-XBT_PUBLIC( MPI_Datatype ) MPI_2INT;
-XBT_PUBLIC( MPI_Datatype ) MPI_LONG_DOUBLE_INT;
+extern MPI_Datatype MPI_FLOAT_INT;
+extern MPI_Datatype MPI_LONG_INT;
+extern MPI_Datatype MPI_DOUBLE_INT;
+extern MPI_Datatype MPI_SHORT_INT;
+extern MPI_Datatype MPI_2INT;
+extern MPI_Datatype MPI_LONG_DOUBLE_INT;
+XBT_PUBLIC(MPI_Datatype) MPI_2FLOAT;
+XBT_PUBLIC(MPI_Datatype) MPI_2DOUBLE;
 
 typedef void MPI_User_function(void *invec, void *inoutvec, int *len,
                                MPI_Datatype * datatype);
