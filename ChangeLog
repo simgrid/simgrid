@@ -111,7 +111,7 @@ SimGrid (3.8) NOT RELEASED; urgency=low
  * Greatly improve the robustness of mmalloc to user errors (such as
    using an area after freeing it, or freeing it twice)
 
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Thu Oct 25 17:30:06 CEST 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.7.1) stable; urgency=low
 
