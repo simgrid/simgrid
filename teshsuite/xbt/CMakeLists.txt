@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 if(NOT WIN32)
-add_executable(log_large_test log_large_test.c)
-add_executable(parallel_log_crashtest parallel_log_crashtest.c)
-if(HAVE_MMAP)
-  add_executable(mmalloc_test mmalloc_test.c)
+  add_executable(log_large_test log_large_test.c)
+  add_executable(parallel_log_crashtest parallel_log_crashtest.c)
+  if(HAVE_MMAP)
+    add_executable(mmalloc_test mmalloc_test.c)
+  endif()
 endif()
 
 ### Add definitions for compile
