@@ -312,7 +312,9 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 
 /** \ingroup m_task_management
  * \brief Returns the computation amount needed to process a task #msg_task_t.
- *        Once a task has been processed, this amount is thus set to 0...
+ *
+ * Once a task has been processed, this amount is set to 0. If you want, you
+ * can reset this value with #MSG_task_set_compute_duration before restarting the task.
  */
 double MSG_task_get_compute_duration(msg_task_t task)
 {
@@ -325,6 +327,11 @@ double MSG_task_get_compute_duration(msg_task_t task)
 
 /** \ingroup m_task_management
  * \brief set the computation amount needed to process a task #msg_task_t.
+ *
+ * \warning If the computation is ongoing (already started and not finished),
+ * it is not modified by this call. And the termination of the ongoing task with
+ * set the computation_amount to zero, overriding any value set during the
+ * execution.
  */
 
 void MSG_task_set_compute_duration(msg_task_t task,
@@ -338,6 +345,9 @@ void MSG_task_set_compute_duration(msg_task_t task,
 /** \ingroup m_task_management
  * \brief Returns the remaining computation amount of a task #msg_task_t.
  *
+ * If the task is ongoing, this call retrieves the remaining amount of work.
+ * If it is not ongoing, it returns the total amount of work that will be
+ * executed when the task starts.
  */
 double MSG_task_get_remaining_computation(msg_task_t task)
 {
