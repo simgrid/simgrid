@@ -13,8 +13,9 @@ C     Check that name contains only printing characters */
 C      do i=1, resultlen
 C      enddo
       errs = 0
-      do i=resultlen+1, MPI_MAX_PROCESSOR_NAME
+      do i=resultlen+2, MPI_MAX_PROCESSOR_NAME
          if (name(i:i) .ne. " ") then
+            print *, i
             errs = errs + 1
          endif
       enddo

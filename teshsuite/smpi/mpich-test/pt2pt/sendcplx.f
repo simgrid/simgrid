@@ -28,6 +28,4 @@
          PRINT *,'A(2,1) = ',A(2,1),' A(2,2) = ',A(2,2)
       ENDIF
       CALL MPI_FINALIZE(IERR) 
-
-      STOP
       END

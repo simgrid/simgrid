@@ -15,7 +15,7 @@ int main( int argc, char *argv[] )
     int b;
     MPI_Request request;
     MPI_Status  status;
-    double t1, t0;
+    double t0;
     
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -56,7 +56,7 @@ for this test.\n" );
     }
     else
     {
-	t1 = MPI_Wtime();
+	MPI_Wtime();
 	smpi_sleep(easy);
   //while (MPI_Wtime() - t1 < easy) ;
 	a = 1;

@@ -81,19 +81,19 @@ int my_rank;
   MPI_Datatype messtyp, messtyp2;
   int root=0;
   int count=1;
-  int i, big_offset;
+  int big_offset;
   int intlen;
 #define DL 32
   
   int dar[DL];
      
-  i=iinit(dar, my_rank, DL);
+  iinit(dar, my_rank, DL);
   Build_vect(&messtyp);
   MPI_Bcast(dar, count, messtyp, root, MPI_COMM_WORLD);
   if (my_rank==1)
     printf("  0 = Sent, 1 = Not Sent \n%s",
 	   "  Vector Type with Gap : \n");
-  i=ilist1(dar, my_rank, 1, DL);
+  ilist1(dar, my_rank, 1, DL);
 
   intlen = sizeof(int);
   for (big_offset = -intlen; big_offset<=2*intlen; 
@@ -101,12 +101,12 @@ int my_rank;
     if (my_rank==1)
      printf("\n Three of above vector types combined, with offset = %i ints\n",
 	     big_offset/(int)sizeof(int));
-    i=iinit(dar, my_rank, DL);
+    iinit(dar, my_rank, DL);
     Build_ctg(big_offset, &messtyp, &messtyp2);
     MPI_Bcast(dar, count, messtyp2, root, MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Type_free(&messtyp2);
-    i=ilist1(dar, my_rank, 1, DL);
+    ilist1(dar, my_rank, 1, DL);
   }
   MPI_Type_free( &messtyp );
 }

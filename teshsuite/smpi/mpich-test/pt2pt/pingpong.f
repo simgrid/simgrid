@@ -270,5 +270,5 @@ c =========================== end program ===========================
 c
 
       call MPI_FINALIZE(ierr)
-      stop
+      
       end

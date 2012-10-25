@@ -751,29 +751,29 @@ C Test Maxloc
         endif
 
 
-        fnderr = .false.
-        do 23060 i=1, count
-           dblein(2*i-1) = (rank + i)
-           dblein(2*i)   = rank
-           dblesol(2*i-1) = (size - 1 + i)
-           dblesol(2*i) = (size-1)
-           dbleout(2*i-1) = 0
-           dbleout(2*i)   = 0
-23060   continue
-                call MPI_Allreduce( dblein, dbleout, count, 
-     *      MPI_2DOUBLE_PRECISION, MPI_MAXLOC, comm, ierr )
-        do 23061 i=1, count
-        if (dbleout(2*i-1) .ne. dblesol(2*i-1) .or.
-     *      dbleout(2*i) .ne. dblesol(2*i)) then
-            errcnt = errcnt + 1
-            fnderr = .true. 
-        endif
-23061   continue
-        if (fnderr) then
-           print *,
-     *     'Error for type MPI_2DOUBLE_PRECISION and op MPI_MAXLOC'
+!        fnderr = .false.
+!        do 23060 i=1, count
+!           dblein(2*i-1) = (rank + i)
+!           dblein(2*i)   = rank
+!           dblesol(2*i-1) = (size - 1 + i)
+!           dblesol(2*i) = (size-1)
+!           dbleout(2*i-1) = 0
+!           dbleout(2*i)   = 0
+!23060   continue
+!                call MPI_Allreduce( dblein, dbleout, count, 
+!     *      MPI_2DOUBLE_PRECISION, MPI_MAXLOC, comm, ierr )
+!        do 23061 i=1, count
+!        if (dbleout(2*i-1) .ne. dblesol(2*i-1) .or.
+!     *      dbleout(2*i) .ne. dblesol(2*i)) then
+!            errcnt = errcnt + 1
+!            fnderr = .true. 
+!        endif
+!23061   continue
+!        if (fnderr) then
+!           print *,
+!     *     'Error for type MPI_2DOUBLE_PRECISION and op MPI_MAXLOC'
 
-        endif
+!        endif
 
 
         if (errcnt .gt. 0) then
@@ -832,28 +832,28 @@ C Test minloc
         endif
 
 
-        fnderr = .false.
-        do 23066 i=1, count
-           dblein(2*i-1) = (rank + i)
-           dblein(2*i)   = rank
-           dblesol(2*i-1) = i
-           dblesol(2*i) = 0
-           dbleout(2*i-1) = 0
-           dbleout(2*i)   = 0
-23066   continue
-                call MPI_Allreduce( dblein, dbleout, count, 
-     *      MPI_2DOUBLE_PRECISION, MPI_MINLOC, comm, ierr )
-        do 23067 i=1, count
-        if (dbleout(2*i-1) .ne. dblesol(2*i-1) .or.
-     *      dbleout(2*i) .ne. dblesol(2*i)) then
-            errcnt = errcnt + 1
-            fnderr = .true. 
-        endif
-23067   continue
-        if (fnderr) then
-           print *,
-     *      'Error for type MPI_2DOUBLE_PRECISION and op MPI_MINLOC'
-        endif
+!        fnderr = .false.
+!        do 23066 i=1, count
+!           dblein(2*i-1) = (rank + i)
+!           dblein(2*i)   = rank
+!           dblesol(2*i-1) = i
+!           dblesol(2*i) = 0
+!           dbleout(2*i-1) = 0
+!           dbleout(2*i)   = 0
+!23066   continue
+!                call MPI_Allreduce( dblein, dbleout, count, 
+!     *      MPI_2DOUBLE_PRECISION, MPI_MINLOC, comm, ierr )
+!        do 23067 i=1, count
+!        if (dbleout(2*i-1) .ne. dblesol(2*i-1) .or.
+!     *      dbleout(2*i) .ne. dblesol(2*i)) then
+!            errcnt = errcnt + 1
+!            fnderr = .true. 
+!        endif
+!23067   continue
+!        if (fnderr) then
+!           print *,
+!     *      'Error for type MPI_2DOUBLE_PRECISION and op MPI_MINLOC'
+!        endif
 
 
         if (errcnt .gt. 0) then

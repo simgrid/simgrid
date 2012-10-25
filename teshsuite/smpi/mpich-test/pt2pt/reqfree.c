@@ -10,7 +10,7 @@
 #define MAX_REQ 10000
 
 #define DEFAULT_REQ 100
-#define DEFAULT_LEN 10000
+#define DEFAULT_LEN 20000
 #define DEFAULT_LOOP 10
 
 int main( int argc, char **argv )

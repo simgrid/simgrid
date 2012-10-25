@@ -1,4 +1,5 @@
 *** Testing Send (many procs) ***
+You requested to use 8 processes, but there is only 5 processes in your hostfile...
 length = 1 ints
 length = 2 ints
 length = 4 ints

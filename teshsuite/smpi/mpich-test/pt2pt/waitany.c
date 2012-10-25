@@ -4,7 +4,7 @@
  */
 /* #define i_ntotin 256  */ /* ok    */
 /* #define i_ntotin 257  */ /* fails */
-#define i_ntotin 256  /* fails */
+#define i_ntotin 25600  
 
 #include <stdio.h>
 #include "mpi.h"
@@ -61,7 +61,7 @@ int main( int argc, char **argv )
     MPI_Waitany(2, events, &eventId, status) ;
 
     /*_begin_trace_code  */
-    printf("done.  eventId = %x\n", eventId) ;
+    printf("done.  eventId = %d\n", eventId) ;
     /*_end_trace_code  */
   }
 

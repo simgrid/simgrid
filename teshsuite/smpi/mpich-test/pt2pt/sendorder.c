@@ -21,8 +21,8 @@ void CheckStatus( MPI_Status *, int, int, int, int * );
 */
 void delay( int ms )
 {
-  double t, deltat = ms * 0.001;
-  t = MPI_Wtime();
+  double  deltat = ms * 0.001;
+  MPI_Wtime();
   //while (MPI_Wtime() - t < deltat) ;
   smpi_sleep(deltat);
 }

@@ -34,5 +34,6 @@ C
          endif
       endif
       call MPI_FINALIZE(rc)
-      stop
+C     stop
+C do not use stop with smpi, it causes errors, as does exit
       end

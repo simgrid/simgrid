@@ -31,7 +31,6 @@ C
       enddo
       write(6,*) 'Rank=3D',comm_rank,' finished calculations'
       call mpi_finalize(ierror)
-      stop
-      en
+      end
 C 
 C Run with mpirun -np 16 test

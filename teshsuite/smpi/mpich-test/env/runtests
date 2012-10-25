@@ -17,6 +17,7 @@ MAKE="make --no-print-directory"
 quiet=0
 runtests=1
 makeeach=0
+have_fortran=0
 writesummaryfile=no
 MAKE="make --no-print-directory"
 for arg in "$@" ; do
@@ -27,6 +28,9 @@ for arg in "$@" ; do
     -srcdir=* )
 	srcdir=`echo $arg | sed 's/-srcdir=//'`
 	;; 
+	-fort=* )
+	have_fortran=`echo $arg | sed 's/-fort=//'`
+	;;
 	-checkonly )
 	runtests=0
 	;;
@@ -207,13 +211,13 @@ CleanExe aborttest
 
 #
 # Run Fortran tests ONLY if Fortran available
-if [ 0 = 1 ] ; then 
+if [ $have_fortran -eq "1" ] ; then 
 
-    RunTest errstringsf 1 "*** Tests of Fortran error strings ***"
+#    RunTest errstringsf 1 "*** Tests of Fortran error strings ***"
 
     RunTest getprocf 1 "*** Test MPI_Get_processor_name in Fortran ***"
 
-    RunTest errhandf 1 "*** Tests of error handling in Fortran ***"
+#    RunTest errhandf 1 "*** Tests of error handling in Fortran ***"
 fi
 
 else

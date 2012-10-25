@@ -18,6 +18,7 @@ MPIRUNMVBACK=''
 runtests=1
 makeeach=0
 writesummaryfile=no
+have_fortran=0
 quiet=0
 MAKE="make --no-print-directory"
 for arg in "$@" ; do
@@ -28,6 +29,9 @@ for arg in "$@" ; do
     -srcdir=* )
 	srcdir=`echo $arg | sed 's/-srcdir=//'`
 	;; 
+	-fort=* )
+	have_fortran=`echo $arg | sed 's/-fort=//'`
+	;;
 	-checkonly )
 	runtests=0
 	;;
@@ -144,7 +148,7 @@ rm -f longuser1
 
 RunTest grouptest 4
 #uses MPI_Dims_create, MPI_Cart_create ... removed
-#RunTest allred 4 "*** Allred ***"
+RunTest allred 4 "*** Allred ***"
 
 RunTest allred2 4 "*** Allred2 ***"
 #uses MPI_Dims_create, MPI_Cart_create ... removed
@@ -156,10 +160,10 @@ RunTest scattern 4 "*** Scattern ***"
 #RunTest redscat 4 "*** Reduce_scatter ***"
 
 RunTest alltoallv_mpich 4 "*** Alltoallv ***"
-
+echo "runtests: fortran ($have_fortran)"
 #
 # Run Fortran tests ONLY if Fortran available
-if [ 0 = 1 ] ; then 
+if [ $have_fortran -eq "1" ] ; then 
     echo "FORTRAN TESTS"
 
     RunTest allredf 4 "*** Testing allreduce from Fortran ***"
@@ -167,6 +171,8 @@ if [ 0 = 1 ] ; then
     RunTest assocf 4 "*** Testing allreduce from Fortran (2) ***"
 
     RunTest bcastlog 4 "*** Testing logical datatype in BCAST ***"
+    #buggy test, not available in original test, removed
+    #RunTest allgatherf 2 "*** Testing allgather from Fortran ***"
     echo "END OF FORTRAN TESTS"
 fi
 

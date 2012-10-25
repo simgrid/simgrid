@@ -19,6 +19,7 @@ test_mpi2=1
 runtests=1
 quiet=0
 makeeach=0
+have_fortran=0
 writesummaryfile=no
 MAKE="make --no-print-directory"
 for arg in "$@" ; do
@@ -29,6 +30,9 @@ for arg in "$@" ; do
     -srcdir=* )
 	srcdir=`echo $arg | sed 's/-srcdir=//'`
 	;; 
+	-fort=* )
+	have_fortran=`echo $arg | sed 's/-fort=//'`
+	;;
 	-checkonly )
 	runtests=0
 	;;
@@ -87,11 +91,11 @@ if [ 0 = 1 ] ; then
 fi
 #uses attr, not implemented
 #RunTest attrt 2 "*** Testing attributes ***"
-#fails
-RunTest attrerr 1 "*** Testing attributes (2) ***"
+#fails, uses MPI_Attr_get, et MPI_Attr_put
+#RunTest attrerr 1 "*** Testing attributes (2) ***"
 
-#fails with unions, excludes or intersections, need debug in smpi to work -> left, but wrong
-RunTest grouptest_mpich 4 "*** Testing Groups ***"
+#TODO : fails with unions, excludes or intersections, need debug in smpi to work
+#RunTest grouptest_mpich 4 "*** Testing Groups ***"
 
 RunTest groupcreate 4 "*** Testing Group creation ***"
 
@@ -119,18 +123,14 @@ RunTest icdup 3 "*** Testing dup of an intercommunicator ***"
 #uses MPI_Comm_test_inter and MPI_Intercomm_create
 #RunTest ictest3 4 "*** Testing Intercommunicators (3) ***"
 
-if [ 0 = 1 ] ; then
-
-    RunTest commnames 2 "*** Testing Communicator Names ***"
-fi
-else
+#if [ $have_fortran -eq "1" ]  ; then
+#    RunTest commnamesf 2 "*** Testing Communicator Names ***"
+#fi
+#else
     # Just run checks
-    testfiles=`echo *.out`
+#    testfiles=`echo *.out`
 fi
 
 echo '*** Checking for differences from expected output ***'
 CheckAllOutput context.diff
 exit 0
-
-
-

@@ -12,17 +12,15 @@ int main( int argc, char **argv )
 int count, errcnt = 0, gerr = 0, toterr, size, rank;
 MPI_Comm comm;
 
-MPI_Comm comms[10];
-int      ncomm, ii, world_rank;
+int       world_rank;
 
 MPI_Init( &argc, &argv );
 MPI_Comm_rank( MPI_COMM_WORLD, &world_rank );
 
 /* First tests */
-MakeComms( comms, 10, &ncomm, 0 );
-for (ii=0; ii<ncomm; ii++) {
-if (world_rank == 0 && verbose) printf( "Testing with communicator %d\n", ii );
-comm = comms[ii];
+//MakeComms( comms, 10, &ncomm, 0 );
+//for (ii=0; ii<ncomm; ii++) {
+comm = MPI_COMM_WORLD;
 
 
 MPI_Comm_size( comm, &size );
@@ -2438,7 +2436,7 @@ if (fnderr) fprintf( stderr,
 free( in );
 free( out );
 free( sol );
-}
+//}
 
 
 gerr += errcnt;
@@ -2460,7 +2458,7 @@ MPI_Allreduce( &gerr, &toterr, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
 	 printf (" Found %d errors\n", toterr );
      }
  }
-FreeComms( comms, ncomm );
+//FreeComms( comms, ncomm );
 MPI_Finalize( );
 return 0;
 }

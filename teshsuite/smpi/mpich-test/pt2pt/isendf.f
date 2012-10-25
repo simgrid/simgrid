@@ -50,5 +50,4 @@ C
          endif
       endif
       call MPI_Finalize( ierr )
-      stop
       end
