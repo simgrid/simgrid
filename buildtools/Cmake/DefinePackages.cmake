@@ -126,6 +126,11 @@ if(SMPI_F2C)
     ${SMPI_SRC}
     src/smpi/smpi_f77.c
     )
+else(SMPI_F2C)
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
+    src/smpi/smpi_f77.c
+  )
 endif(SMPI_F2C)
 
 set(GRAS_RL_SRC
