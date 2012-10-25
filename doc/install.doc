@@ -87,6 +87,10 @@ migrate stacks in SimGrid. You should be able to follow the README.txt
 that you'll get in the repository, but here is how we did it, just in
 case. The instructions are given for a debian or Ubuntu box, but I
 think you should manage to convert it to your system quite easily.
+Finally, if you're really stuck, you can get the version compiled by
+Jonathan Rouzaud-Cornabas from his web page. This version is known to
+work with SimGrid for sure!
+http://graal.ens-lyon.fr/~jrouzaud/files/corosimple-linux-amd64-20120914.tgz
  
  -# Install mercurial and some dependencies
 \verbatim 
