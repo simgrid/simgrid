@@ -54,6 +54,5 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/dag_with_cycle.dot
   ${CMAKE_CURRENT_SOURCE_DIR}/dag_with_good_schedule.dot
   ${CMAKE_CURRENT_SOURCE_DIR}/dag.dot
-  ${CMAKE_CURRENT_SOURCE_DIR}/dag.trace
   PARENT_SCOPE
   )

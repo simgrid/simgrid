@@ -738,7 +738,6 @@ set(EXTRA_LISTE_GTUT
     )
   
 set(REF_GUIDE_SOURCES
-  doc/ref_guide/doxygen/index-API.doc
   doc/ref_guide/doxygen/footer.html
   doc/ref_guide/doxygen/header.html
   doc/ref_guide/doxygen/main.doc
