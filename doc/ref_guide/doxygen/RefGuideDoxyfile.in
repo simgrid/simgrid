@@ -668,7 +668,7 @@ INPUT                  = main.doc \
                          module-surf.doc \
                          module-simix.doc \
                          module-trace.doc \
-			 index-API.doc \
+                         index-API.doc \
                          @top_srcdir@/doc/ref_guide/doxygen/logcategories.doc \
                          @top_srcdir@/src/instr/ \
                          @top_srcdir@/include/ \

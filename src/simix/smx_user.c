@@ -80,7 +80,7 @@ xbt_dict_t simcall_host_get_properties(smx_host_t host)
  * \ingroup simix_host_management
  * \brief Returns a dict of the properties assigned to a router or AS.
  *
- * \param asr name of the router or AS
+ * \param name The name of the router or AS
  * \return The properties
  */
 xbt_dict_t simcall_asr_get_properties(const char *name)

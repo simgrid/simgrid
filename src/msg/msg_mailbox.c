@@ -9,6 +9,10 @@
 #include "msg_mailbox.h"
 #include "msg_private.h"
 
+/** @addtogroup m_mailbox_management
+ *  \brief functions to manage mailbox
+ */
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg,
                                 "Logging specific to MSG (mailbox)");
 
@@ -64,6 +68,18 @@ void MSG_mailbox_set_async(const char *alias){
 
 }
 
+/* \ingroup m_mailbox_management
+ * \brief Get a task from a mailbox on a given host
+ *
+ * \param mailbox The mailbox where the task was sent
+ * \param task a memory location for storing a #msg_task_t.
+ * \param host a #msg_host_t host from where the task was sent
+ * \param timeout a timeout
+
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
+ */
 msg_error_t
 MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
                          msg_host_t host, double timeout)

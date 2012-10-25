@@ -88,7 +88,7 @@ void xbt_replay_reader_free(xbt_replay_reader_t *reader)
  * \brief Registers a function to handle a kind of action
  *
  * Registers a function to handle a kind of action
- * This table is then used by #xbt_replay_action_runner
+ * This table is then used by \ref xbt_replay_action_runner
  *
  * The argument of the function is the line describing the action, splitted on spaces with xbt_str_split_quoted()
  *
@@ -123,6 +123,13 @@ void _xbt_replay_action_exit(void)
   free(action_line);
 }
 
+/**
+ * \ingroup XBT_replay
+ * \brief TODO
+
+ * \param argc argc .
+ * \param argv argv
+ */
 int xbt_replay_action_runner(int argc, char *argv[])
 {
   const char **evt;
