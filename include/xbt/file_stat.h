@@ -10,9 +10,8 @@
 
 #include "xbt/sysdep.h"
 
-/* \ingroup msg_file_management
- * \brief Structure containing information of a file
- *
+/** \ingroup msg_file_management
+  \brief Strucure containing information on file like stat on POSIX
  */
 typedef struct file_stat {
   char *user_rights;

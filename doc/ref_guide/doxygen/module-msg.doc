@@ -17,7 +17,7 @@
    - \ref m_process_management
    - \ref m_host_management
    - \ref m_task_management
-   - \ref m_mailbox_management
+   - \ref msg_mailbox_management
    - \ref msg_file_management
    - \ref msg_task_usage
    - \ref msg_VMs
@@ -69,12 +69,12 @@ details).
  * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
  */
 
-/** @defgroup m_mailbox_management Mailbox Management Functions
+/** @defgroup msg_mailbox_management Mailbox Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the mailbox structure of MSG
  *         (#msg_mailbox_t) and the functions for managing it.
  *
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Mailbox" --> \endhtmlonly
  */
 
 /** @defgroup msg_task_usage Task Actions

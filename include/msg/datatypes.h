@@ -89,6 +89,12 @@ typedef struct msg_file {
  */
 typedef struct msg_file *msg_file_t;
 
+
+/** @brief File datatype.
+    @ingroup msg_file_management
+
+    You should consider this as an opaque object.
+ */
 typedef s_file_stat_t s_msg_stat_t, *msg_stat_t;
 
 

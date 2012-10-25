@@ -9,10 +9,6 @@
 #include "msg_mailbox.h"
 #include "msg_private.h"
 
-/** @addtogroup m_mailbox_management
- *  \brief functions to manage mailbox
- */
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg,
                                 "Logging specific to MSG (mailbox)");
 
@@ -68,7 +64,7 @@ void MSG_mailbox_set_async(const char *alias){
 
 }
 
-/* \ingroup m_mailbox_management
+/** \ingroup msg_mailbox_management
  * \brief Get a task from a mailbox on a given host
  *
  * \param mailbox The mailbox where the task was sent
