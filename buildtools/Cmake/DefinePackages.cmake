@@ -686,9 +686,59 @@ set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/use.doc
   doc/user_guide/doxygen/stylesheet.css
   )
+  
+set(LISTE_GTUT
+    doc/gtut-files/gtut-tour-00-install.doc
+    doc/gtut-files/gtut-tour-01-bones.doc
+    doc/gtut-files/gtut-tour-02-simple.doc
+    doc/gtut-files/gtut-tour-03-args.doc
+    doc/gtut-files/gtut-tour-04-callback.doc
+    doc/gtut-files/gtut-tour-05-globals.doc
+    doc/gtut-files/gtut-tour-06-logs.doc
+    doc/gtut-files/gtut-tour-07-timers.doc
+    doc/gtut-files/gtut-tour-08-exceptions.doc
+    doc/gtut-files/gtut-tour-09-simpledata.doc
+    doc/gtut-files/gtut-tour-10-rpc.doc
+    doc/gtut-files/gtut-tour-11-explicitwait.doc
+    doc/gtut-files/gtut-tour-12-staticstruct.doc
+    doc/gtut-files/gtut-tour-13-pointers.doc
+    doc/gtut-files/gtut-tour-14-dynar.doc
+    doc/gtut-files/gtut-tour-15-manualdatadef.doc
+    doc/gtut-files/gtut-tour-16-exchangecb.doc
+    doc/gtut-files/gtut-tour.doc
+    doc/gtut-files/gtut-tour-recap-messages.doc
+  )
 
+set(EXTRA_LISTE_GTUT
+    doc/gtut-files/01-bones.output
+    doc/gtut-files/02-simple.output
+    doc/gtut-files/03-args.output
+    doc/gtut-files/03-args.xml
+    doc/gtut-files/04-callback.output
+    doc/gtut-files/05-globals.output
+    doc/gtut-files/06-logs.output
+    doc/gtut-files/06-logs.output.error
+    doc/gtut-files/06-logs.output.fmt
+    doc/gtut-files/06-logs.output.fmt-bt
+    doc/gtut-files/06-logs.output.verbose
+    doc/gtut-files/07-timers.output
+    doc/gtut-files/08-exceptions.output
+    doc/gtut-files/09-simpledata.output
+    doc/gtut-files/10-rpc.output
+    doc/gtut-files/11-explicitwait.output
+    doc/gtut-files/11-explicitwait.xml
+    doc/gtut-files/gtut-howto-design.doc
+    doc/gtut-files/gtut-howto.doc
+    doc/gtut-files/gtut-introduction.doc
+    doc/gtut-files/gtut-main.doc
+    doc/gtut-files/gtut-platform-3nodes.xml
+    doc/gtut-files/gtut-platform.xml
+    doc/gtut-files/README
+    doc/gtut-files/test.xml
+    )
+  
 set(REF_GUIDE_SOURCES
-  doc/ref_guide/index-API.doc
+  doc/ref_guide/doxygen/index-API.doc
   doc/ref_guide/doxygen/footer.html
   doc/ref_guide/doxygen/header.html
   doc/ref_guide/doxygen/main.doc
