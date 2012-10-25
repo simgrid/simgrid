@@ -2,7 +2,51 @@
 \page cmake SimGrid Developer Guide - Cmake
 
 \section cmake_dev_guide_src How to add sources?
+
+If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake
+
+\verbatim
+set(JMSG_JAVA_SRC
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/MsgException.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/JniException.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/NativeException.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/HostNotFoundException.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/ProcessNotFoundException.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Msg.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Process.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Host.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Task.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/MsgNative.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/ApplicationHandler.java
+  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Sem.java
+)
+\endverbatim
+
 \section cmake_dev_guide_ex How to add examples?
+
+If you want make an example you have to create a CMakeList.txt to the src directory.
+You must specified where to create the executable, source list, dependencies and the name of the binary.
+
+\verbatim
+cmake_minimum_required(VERSION 2.6)
+
+set(EXECUTABLE_OUTPUT_PATH "./")
+set(LIBRARY_OUTPUT_PATH "${CMAKE_HOME_DIRECTORY}/lib")
+
+#add_executable(<name_of_target> <src list>)
+add_executable(get_sender get_sender.c)
+
+### Add definitions for compile
+#target_link_libraries(<name_of_targe> <dependencies>)
+target_link_libraries(get_sender simgrid m pthread) 
+\endverbatim
+
+Then you have to modified <project/directory>/buildtools/Cmake/MakeExeLib.cmake and add
+this line :
+\verbatim
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
+\endverbatim
+
 \section cmake_dev_guide_test How to add tests?
 
 */

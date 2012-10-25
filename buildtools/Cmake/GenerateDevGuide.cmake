@@ -9,16 +9,15 @@ if(DOXYGEN_PATH)
     DEPENDS ${DEV_GUIDE_SOURCES}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html/
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/
     )
     
   ADD_CUSTOM_COMMAND(TARGET dev_guide
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html/
-    )
-
-  ADD_CUSTOM_COMMAND(TARGET dev_guide
     COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
     COMMAND ${DOXYGEN_PATH}/doxygen DevGuideDoxyfile
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl ../../shared/doxygen/simgriddevguide.tag index-API.doc
+
     COMMAND ${CMAKE_COMMAND} -E echo "XX Second Doxygen pass"
     COMMAND ${DOXYGEN_PATH}/doxygen DevGuideDoxyfile
 
