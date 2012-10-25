@@ -25,8 +25,8 @@ int surfxml_bufferstack_size = 2048;
 
 static char *old_buff = NULL;
 
-unsigned int surfxml_buffer_stack_stack_ptr;
-unsigned int surfxml_buffer_stack_stack[1024];
+XBT_PUBLIC(unsigned int) surfxml_buffer_stack_stack_ptr;
+XBT_PUBLIC(unsigned int) surfxml_buffer_stack_stack[1024];
 
 
 void surfxml_bufferstack_push(int new)

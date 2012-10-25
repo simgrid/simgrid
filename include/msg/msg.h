@@ -273,7 +273,7 @@ void MSG_mailbox_set_async(const char *alias);
 
 
 /************************** Action handling **********************************/
-msg_error_t MSG_action_trace_run(char *path);
+XBT_PUBLIC(msg_error_t) MSG_action_trace_run(char *path);
 
 #ifdef MSG_USE_DEPRECATED
 

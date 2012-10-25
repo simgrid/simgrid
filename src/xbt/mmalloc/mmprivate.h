@@ -263,16 +263,16 @@ struct mdesc {
 
 /* A default malloc descriptor for the single sbrk() managed region. */
 
-extern struct mdesc *__mmalloc_default_mdp;
+XBT_PUBLIC( struct mdesc ) *__mmalloc_default_mdp;
 
 /* Remap a mmalloc region that was previously mapped. */
 
-extern void *__mmalloc_remap_core(xbt_mheap_t mdp);
+XBT_PUBLIC( void *)__mmalloc_remap_core(xbt_mheap_t mdp);
 
 /*  Get core for the memory region specified by MDP, using SIZE as the
     amount to either add to or subtract from the existing region.  Works
     like sbrk(), but using mmap(). */
-extern void *mmorecore(struct mdesc *mdp, int size);
+XBT_PUBLIC( void *)mmorecore(struct mdesc *mdp, int size);
 
 /* Thread-safety (if the sem is already created)
  *
