@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 2.6)
 
 if(enable_smpi)
-  set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
+  if(WIN32)
+    set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
+  else(WIN32)
+    set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
+  endif(WIN32)
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
@@ -24,7 +28,7 @@ if(enable_smpi)
   target_link_libraries(mc_bugged2 m simgrid smpi )
   target_link_libraries(smpi_replay m simgrid smpi )
 
-endif(enable_smpi)
+endif()
 
 set(tesh_files
   ${tesh_files}

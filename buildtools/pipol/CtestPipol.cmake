@@ -31,11 +31,11 @@ set(CTEST_MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --
 
 if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
   SET(CTEST_UPDATE_COMMAND "/usr/bin/svn")
-endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.svn)
+endif()
 
 if(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
   SET(CTEST_UPDATE_COMMAND "/usr/bin/git")
-endif(IS_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git)
+endif()
 
 SET(CTEST_DROP_METHOD "http")
 SET(CTEST_DROP_SITE "cdash.inria.fr/CDash")
@@ -174,7 +174,7 @@ IF(${ARCH_32_BITS})
     amok-bandwidth-sg-32
     amok-saturate-sg-32
     )
-ELSE(${ARCH_32_BITS})
+ELSE()
   SET(CTEST_CUSTOM_MEMCHECK_IGNORE
     ${CTEST_CUSTOM_MEMCHECK_IGNORE}
     tesh-gras-msg_handle-sg-64
@@ -192,7 +192,7 @@ ELSE(${ARCH_32_BITS})
     amok-bandwidth-sg-64
     amok-saturate-sg-64
     )
-ENDIF(${ARCH_32_BITS})
+ENDIF()
 
 if(HAVE_GTNETS)
   SET(CTEST_CUSTOM_MEMCHECK_IGNORE
@@ -203,7 +203,7 @@ if(HAVE_GTNETS)
     msg-gtnets4
     msg-gtnets5
     )
-endif(HAVE_GTNETS)
+endif()
 
 if(HAVE_JAVA)
   SET(CTEST_CUSTOM_MEMCHECK_IGNORE
@@ -213,7 +213,7 @@ if(HAVE_JAVA)
     java-comm_time
     java-suspend
     )
-endif(HAVE_JAVA)
+endif()
 
 ctest_start(Experimental)
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}")

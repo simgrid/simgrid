@@ -152,7 +152,7 @@ void smpi_mpi_start(MPI_Request request)
              "Cannot (re)start a non-finished communication");
   if(request->flags & RECV) {
     print_request("New recv", request);
-    if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres"))
+    if (request->size < surf_cfg_get_int("smpi/async_small_thres"))
       mailbox = smpi_process_mailbox_small();
     else
       mailbox = smpi_process_mailbox();
@@ -167,7 +167,7 @@ void smpi_mpi_start(MPI_Request request)
 /*      return;*/
 /*    }*/
     print_request("New send", request);
-    if (request->size < xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")) { // eager mode
+    if (request->size < surf_cfg_get_int("smpi/async_small_thres")) { // eager mode
       mailbox = smpi_process_remote_mailbox_small(receiver);
     }else{
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
@@ -440,7 +440,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   print_request("New iprobe", request);
   // We have to test both mailboxes as we don't know if we will receive one one or another
-    if (xbt_cfg_get_int(_surf_cfg_set, "smpi/async_small_thres")>0){
+    if (surf_cfg_get_int("smpi/async_small_thres")>0){
         mailbox = smpi_process_mailbox_small();
         XBT_DEBUG("trying to probe the perm recv mailbox");
         request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);

@@ -3,36 +3,36 @@
 
 if(APPLE)
   SET(BUILDNAME "APPLE" CACHE TYPE INTERNAL FORCE)
-else(APPLE)
+else()
   SET(BUILDNAME "UNIX" CACHE TYPE INTERNAL FORCE)
   if(WIN32)
     SET(BUILDNAME "WINDOWS" CACHE TYPE INTERNAL FORCE)
-  endif(WIN32)
-endif(APPLE)
+  endif()
+endif()
 
 if(enable_memcheck)
   set(CTEST_TIMEOUT "300") #TIMEOUT FOR EACH TEST
-endif(enable_memcheck)
+endif()
 
 if(enable_compile_warnings AND enable_compile_optimizations)
   SET(BUILDNAME "FULL_FLAGS" CACHE TYPE INTERNAL FORCE)
-endif(enable_compile_warnings AND enable_compile_optimizations)
+endif()
 
 if(enable_supernovae)
   SET(BUILDNAME "SUPERNOVAE" CACHE TYPE INTERNAL FORCE)
-endif(enable_supernovae)
+endif()
 
 if(HAVE_GTNETS)
   SET(BUILDNAME "GTNETS" CACHE TYPE INTERNAL FORCE)
-endif(HAVE_GTNETS)
+endif()
 
 if(HAVE_MC)
   SET(BUILDNAME "MODEL-CHECKING" CACHE TYPE INTERNAL FORCE)
-endif(HAVE_MC)
+endif()
 
 if(enable_memcheck)
   SET(BUILDNAME "MEMCHECK" CACHE TYPE INTERNAL FORCE)
-endif(enable_memcheck)
+endif()
 
 set(osname ${CMAKE_SYSTEM_NAME})
 set(cpu ${CMAKE_SYSTEM_PROCESSOR})
@@ -47,4 +47,4 @@ SET(CTEST_CUSTOM_MAXIMUM_PASSED_TEST_OUTPUT_SIZE "3000000")
 set(PIPOL_IMAGE $ENV{PIPOL_IMAGE})
 if(NOT ${PIPOL_IMAGE} MATCHES "\n")
   set(SITE ${PIPOL_IMAGE})
-endif(NOT ${PIPOL_IMAGE} MATCHES "\n")
+endif()

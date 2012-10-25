@@ -39,7 +39,7 @@ if(HAVE_LUA)
   target_link_libraries(ping_simulator_console simgrid pthread m)
   target_link_libraries(ping_client_console gras simgrid pthread m)
   target_link_libraries(ping_server_console gras simgrid pthread m)
-endif(HAVE_LUA)
+endif()
 
 set(tesh_files
   ${tesh_files}

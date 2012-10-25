@@ -23,10 +23,10 @@ add_custom_command(OUTPUT            ${CMAKE_CURRENT_BINARY_DIR}/_numerous_rpc_s
 if(NOT WIN32)
   target_link_libraries(numerous_rpc_client gras m pthread )
   target_link_libraries(numerous_rpc_server gras m pthread )
-else(NOT WIN32)
+else()
   target_link_libraries(numerous_rpc_client gras)
   target_link_libraries(numerous_rpc_server gras)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

@@ -119,8 +119,8 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   static long long counter = 0;
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
-  new_pajeStartLink(SIMIX_get_clock(), father, link_type, src, "G", key);
-  new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "G", key);
+  new_pajeStartLink(SIMIX_get_clock(), father, link_type, src, "topology", key);
+  new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "topology", key);
 
   XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
 }

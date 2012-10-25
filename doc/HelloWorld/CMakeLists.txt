@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 2.8)
 if(WIN32)
   SET(CMAKE_RC_COMPILER "windres")
   set(LIBRARIES_DEP simgrid pcre ws2_32 pthread)
-else(WIN32)
+else()
   set(LIBRARIES_DEP simgrid pcre pthread)
-endif(WIN32)
+endif()
 
 project(MY_SIMGRID_PROJECT C)
 
@@ -22,13 +22,13 @@ message(STATUS "Looking for lib Simgrid")
 if("$ENV{SIMGRID_ROOT}" STREQUAL "")
   message(STATUS "Looking for lib Simgrid - Not found")
   message(FATAL_ERROR "Simgrid not found, reinstall it or set SIMGRID_ROOT")
-else("$ENV{SIMGRID_ROOT}" STREQUAL "")
+else()
   link_directories($ENV{SIMGRID_ROOT}/lib)
   include_directories($ENV{SIMGRID_ROOT}/include)
   include_directories($ENV{SIMGRID_ROOT}/src)
   include_directories($ENV{SIMGRID_ROOT}/src/include)
   message(STATUS "Looking for lib Simgrid - found")
-endif("$ENV{SIMGRID_ROOT}" STREQUAL "")
+endif()
 
 ################
 # FIND TARGETS #

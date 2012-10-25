@@ -28,11 +28,11 @@ if(NOT WIN32)
   target_link_libraries(msg_handle_simulator simgrid m pthread )
   target_link_libraries(msg_handle_client gras m pthread )
   target_link_libraries(msg_handle_server gras m pthread )
-else(NOT WIN32)
+else()
   target_link_libraries(msg_handle_simulator simgrid)
   target_link_libraries(msg_handle_client gras)
   target_link_libraries(msg_handle_server gras)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

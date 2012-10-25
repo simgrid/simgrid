@@ -68,4 +68,4 @@ if (enable_supernovae) # I need supernovae
   set(SMPI_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
 
-endif(enable_supernovae) # I need supernovae
+endif() # I need supernovae

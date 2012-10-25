@@ -59,8 +59,8 @@ add_executable(testall ${TEST_UNITS})
 ### Add definitions for compile
 if(NOT WIN32)
   target_link_libraries(testall gras m)
-else(NOT WIN32)
+else()
   target_link_libraries(testall gras)
-endif(NOT WIN32)
+endif()
 
 add_dependencies(testall ${TEST_UNITS})

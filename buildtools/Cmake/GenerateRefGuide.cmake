@@ -62,7 +62,7 @@ if(FIG2DEV_PATH)
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/doxygen
     )
 
-else(DOXYGEN_PATH AND FIG2DEV_PATH)
+else()
 
   ADD_CUSTOM_TARGET(ref_guide
     COMMENT "Generating the SimGrid documentation..."
@@ -76,7 +76,7 @@ else(DOXYGEN_PATH AND FIG2DEV_PATH)
     COMMAND false
     )
 
-endif(FIG2DEV_PATH)
+endif()
 
 ##############################################################################"
 

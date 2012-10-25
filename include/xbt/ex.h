@@ -313,12 +313,12 @@ XBT_PUBLIC_DATA(const xbt_running_ctx_t) __xbt_ex_ctx_initializer;
 /* the exception context */
 typedef xbt_running_ctx_t *(*xbt_running_ctx_fetcher_t) (void);
 XBT_PUBLIC_DATA(xbt_running_ctx_fetcher_t) __xbt_running_ctx_fetch;
-extern xbt_running_ctx_t *__xbt_ex_ctx_default(void);
+XBT_PUBLIC( xbt_running_ctx_t *)__xbt_ex_ctx_default(void);
 
 /* the termination handler */
 typedef void (*ex_term_cb_t) (xbt_ex_t *);
 XBT_PUBLIC_DATA(ex_term_cb_t) __xbt_ex_terminate;
-extern void __xbt_ex_terminate_default(xbt_ex_t * e);
+XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
 
 /** @brief Introduce a block where exception may be dealed with 
  *  @hideinitializer

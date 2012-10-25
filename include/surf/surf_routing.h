@@ -10,34 +10,34 @@
 #include "xbt/lib.h"
 #include "simgrid/platf_interface.h"
 
-extern xbt_lib_t host_lib;
-extern int ROUTING_HOST_LEVEL; //Routing level
-extern int  SURF_CPU_LEVEL;    //Surf cpu level
-extern int SURF_WKS_LEVEL;    //Surf workstation level
-extern int SIMIX_HOST_LEVEL;  //Simix level
-extern int  MSG_HOST_LEVEL;    //Msg level
-extern int  SD_HOST_LEVEL;    //Simdag level
-extern int  COORD_HOST_LEVEL;  //Coordinates level
-extern int NS3_HOST_LEVEL;    //host node for ns3
+XBT_PUBLIC(xbt_lib_t) host_lib;
+XBT_PUBLIC(int) ROUTING_HOST_LEVEL; //Routing level
+XBT_PUBLIC(int)  SURF_CPU_LEVEL;    //Surf cpu level
+XBT_PUBLIC(int) SURF_WKS_LEVEL;    //Surf workstation level
+XBT_PUBLIC(int) SIMIX_HOST_LEVEL;  //Simix level
+XBT_PUBLIC(int)  MSG_HOST_LEVEL;    //Msg level
+XBT_PUBLIC(int)  SD_HOST_LEVEL;    //Simdag level
+XBT_PUBLIC(int)  COORD_HOST_LEVEL;  //Coordinates level
+XBT_PUBLIC(int) NS3_HOST_LEVEL;    //host node for ns3
 
-extern xbt_lib_t link_lib;
-extern int SD_LINK_LEVEL;    //Simdag level
-extern int SURF_LINK_LEVEL;  //Surf level
-extern int NS3_LINK_LEVEL;    //link for ns3
+XBT_PUBLIC(xbt_lib_t) link_lib;
+XBT_PUBLIC(int) SD_LINK_LEVEL;    //Simdag level
+XBT_PUBLIC(int) SURF_LINK_LEVEL;  //Surf level
+XBT_PUBLIC(int) NS3_LINK_LEVEL;    //link for ns3
 
-extern xbt_lib_t as_router_lib;
-extern int ROUTING_ASR_LEVEL;  //Routing level
-extern int COORD_ASR_LEVEL;  //Coordinates level
-extern int NS3_ASR_LEVEL;    //host node for ns3
-extern int ROUTING_PROP_ASR_LEVEL; //Properties for AS and router
+XBT_PUBLIC(xbt_lib_t) as_router_lib;
+XBT_PUBLIC(int) ROUTING_ASR_LEVEL;  //Routing level
+XBT_PUBLIC(int) COORD_ASR_LEVEL;  //Coordinates level
+XBT_PUBLIC(int) NS3_ASR_LEVEL;    //host node for ns3
+XBT_PUBLIC(int) ROUTING_PROP_ASR_LEVEL; //Properties for AS and router
 
-extern xbt_lib_t storage_lib;
-extern int ROUTING_STORAGE_LEVEL;        //Routing storage level
-extern int ROUTING_STORAGE_HOST_LEVEL;
-extern int SURF_STORAGE_LEVEL;
+XBT_PUBLIC(xbt_lib_t) storage_lib;
+XBT_PUBLIC(int) ROUTING_STORAGE_LEVEL;        //Routing storage level
+XBT_PUBLIC(int) ROUTING_STORAGE_HOST_LEVEL;
+XBT_PUBLIC(int) SURF_STORAGE_LEVEL;
 
-extern xbt_lib_t storage_type_lib;
-extern int ROUTING_STORAGE_TYPE_LEVEL;   //Routing storage_type level
+XBT_PUBLIC(xbt_lib_t) storage_type_lib;
+XBT_PUBLIC(int) ROUTING_STORAGE_TYPE_LEVEL;   //Routing storage_type level
 
 /* The callbacks to register for the routing to work */
 void routing_AS_begin(sg_platf_AS_cbarg_t AS);

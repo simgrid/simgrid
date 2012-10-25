@@ -17,14 +17,14 @@ SG_BEGIN_DECL()
 
 /* Initialization of the simulation world. Do not call them in RL. 
    Indeed, do not call them at all. Let gras_stub_generator do it for you. */
-void gras_global_init(int *argc, char **argv);
-void gras_create_environment(const char *file);
-void gras_function_register(const char *name, xbt_main_func_t code);
-void gras_function_register_default(xbt_main_func_t code);
-void gras_launch_application(const char *file);
-void gras_load_environment_script(const char *file);
-void gras_clean(void);
-void gras_main(void);
+XBT_PUBLIC(void) gras_global_init(int *argc, char **argv);
+XBT_PUBLIC(void) gras_create_environment(const char *file);
+XBT_PUBLIC(void) gras_function_register(const char *name, xbt_main_func_t code);
+XBT_PUBLIC(void) gras_function_register_default(xbt_main_func_t code);
+XBT_PUBLIC(void) gras_launch_application(const char *file);
+XBT_PUBLIC(void) gras_load_environment_script(const char *file);
+XBT_PUBLIC(void) gras_clean(void);
+XBT_PUBLIC(void) gras_main(void);
 
 
 /** @addtogroup GRAS_virtu  

@@ -32,7 +32,7 @@ if(NOT WIN32)
     PROPERTIES
     ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/sd_test")
 
-else(NOT WIN32)
+else()
   target_link_libraries(ex_sd_test simgrid)
   target_link_libraries(sd_test2 simgrid)
   target_link_libraries(sd_fail simgrid)
@@ -51,7 +51,7 @@ else(NOT WIN32)
   set_directory_properties(
     PROPERTIES
     ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/sd_test.exe")
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

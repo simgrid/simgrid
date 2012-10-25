@@ -7,9 +7,9 @@ add_executable(get_sender ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender.c)
 ### Add definitions for compile
 if(NOT WIN32)
   target_link_libraries(get_sender simgrid m pthread )
-else(NOT WIN32)
+else()
   target_link_libraries(get_sender simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

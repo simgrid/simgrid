@@ -21,7 +21,7 @@
 
 #include "gras_stub_generator.h"
 #include <stdarg.h>
-extern char *xbt_binary_name;
+XBT_PUBLIC(char*)xbt_binary_name;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(stubgen, gras, "Stub generator");
 

@@ -26,11 +26,11 @@ if(NOT WIN32)
   target_link_libraries(pmm_simulator simgrid pthread m )
   target_link_libraries(pmm_slave gras pthread m )
   target_link_libraries(pmm_master gras pthread m )
-else(NOT WIN32)
+else()
   target_link_libraries(pmm_simulator simgrid)
   target_link_libraries(pmm_slave gras)
   target_link_libraries(pmm_master gras)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

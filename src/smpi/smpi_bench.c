@@ -136,14 +136,13 @@ void smpi_execute_flops(double flops) {
 static void smpi_execute(double duration)
 {
   /* FIXME: a global variable would be less expensive to consult than a call to xbt_cfg_get_double() right on the critical path */
-  if (duration >= xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold")) {
+  if (duration >= surf_cfg_get_double("smpi/cpu_threshold")) {
     XBT_DEBUG("Sleep for %f to handle real computation time", duration);
     smpi_execute_flops(duration *
-                       xbt_cfg_get_double(_surf_cfg_set,
-                                          "smpi/running_power"));
+    		surf_cfg_get_double("smpi/running_power"));
   } else {
     XBT_DEBUG("Real computation took %f while option smpi/cpu_threshold is set to %f => ignore it",
-        duration, xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold"));
+        duration, surf_cfg_get_double("smpi/cpu_threshold"));
   }
 }
 

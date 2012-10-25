@@ -7,7 +7,7 @@ if(NOT WIN32)
 
   ### Add definitions for compile
   target_link_libraries(datadesc_usage gras m pthread)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

@@ -69,13 +69,13 @@ if(DOXYGEN_PATH)
 
   if(DOXYGEN_MAJOR_VERSION STRLESS "2" AND DOXYGEN_MINOR_VERSION STRLESS "8")
     add_dependencies(simgrid_documentation error_doxygen)
-  else(DOXYGEN_MAJOR_VERSION STRLESS "2" AND DOXYGEN_MINOR_VERSION STRLESS "8")
+  else()
     add_dependencies(simgrid_documentation ref_guide)
     add_dependencies(simgrid_documentation user_guide)
     add_dependencies(simgrid_documentation dev_guide)
-  endif(DOXYGEN_MAJOR_VERSION STRLESS "2" AND DOXYGEN_MINOR_VERSION STRLESS "8")
+  endif()
 
-endif(DOXYGEN_PATH)
+endif()
 
 #############################################
 ### Fill in the "make sync-gforge" target ###
@@ -144,7 +144,7 @@ add_custom_target(sync-gforge-dtd
 #           string(REPLACE " - \\ref subsection"    "   - \\ref " line2 ${line2})
 #           string(REPLACE " - \\ref subsubsection" "     - \\ref " line2 ${line2})
 #           file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.realtoc "${line2}\n")
-#       endif(line2 AND NOT line3)
+#       endif()
 #   endforeach(line ${file_content})
 #
 #   file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.curtoc "\n") # make sure it exists
@@ -152,7 +152,7 @@ add_custom_target(sync-gforge-dtd
 #       string(REGEX MATCH ".*ref.*" line_ok ${line})
 #       if(line_ok)
 #           file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.curtoc "${line_ok}\n")
-#       endif(line_ok)
+#       endif()
 #   endforeach(line ${valeur_line})
 #
 #   exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.realtoc" OUTPUT_VARIABLE compare_files)
@@ -161,7 +161,7 @@ add_custom_target(sync-gforge-dtd
 #       file(READ "${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.realtoc" file_content)
 #       message("${file_content}")
 #       exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.realtoc")
-#        endif(compare_files)
+#        endif()
 #endforeach(file_name ${LISTE_GTUT})
 #
 #file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.curtoc)
@@ -182,7 +182,7 @@ add_custom_target(sync-gforge-dtd
 #           string(REGEX REPLACE " .*" "" line2 "${line2}")
 #           set(line2 " - \\ref ${line2}")
 #           file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.realtoc "${line2}\n")
-#       endif(line2)
+#       endif()
 #   endforeach(line ${file_content})
 #
 #   foreach(line ${valeur_line})
@@ -192,7 +192,7 @@ add_custom_target(sync-gforge-dtd
 #       string(REGEX MATCH "Table of Contents" line4 "${line}")
 #       if(NOT line1 AND NOT line2 AND NOT line3 AND NOT line4)
 #           file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.realtoc "   ${line}\n")
-#       endif(NOT line1 AND NOT line2 AND NOT line3 AND NOT line4)
+#       endif()
 #   endforeach(line ${valeur_line})
 #endforeach(file_name ${LISTE_GTUT})
 #
@@ -202,15 +202,15 @@ add_custom_target(sync-gforge-dtd
 #   string(REGEX MATCH "^[ ]+.*\\ref" line1 "${line}")
 #   if(line1)
 #       file(APPEND ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.curtoc "${line}\n")
-#   endif(line1)
+#   endif()
 #endforeach(line ${file_content})
 #
 #exec_program("${CMAKE_COMMAND} -E compare_files ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.realtoc" OUTPUT_VARIABLE compare_files)
 #if(compare_files)
 #   message(STATUS "Wrong toc for gtut-tour.doc Right one is in tmp.realtoc")
 #   exec_program("diff -u ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.curtoc ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.realtoc")
-#else(compare_files)
+#else()
 #   file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.realtoc)
-#endif(compare_files)
+#endif()
 #
 #file(REMOVE ${CMAKE_HOME_DIRECTORY}/doc/doxygen/tmp.curtoc)

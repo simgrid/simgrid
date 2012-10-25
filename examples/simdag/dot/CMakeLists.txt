@@ -18,15 +18,15 @@ if(HAVE_GRAPHVIZ)
       PROPERTIES
       ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/dot_test; ${CMAKE_CURRENT_BINARY_DIR}/simulate_dot;")
 
-  else(NOT WIN32)
+  else()
     target_link_libraries(dot_test simgrid) 	#target_link_libraries(<name_of_targe> <dependencies>)
     target_link_libraries(simulate_dot simgrid) 	#target_link_libraries(<name_of_targe> <dependencies>)
     target_link_libraries(dot_test2 simgrid) 	#target_link_libraries(<name_of_targe> <dependencies>)
     set_directory_properties(
       PROPERTIES
       ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/dot_test; ${CMAKE_CURRENT_BINARY_DIR}/simulate_dot;")
-  endif(NOT WIN32)
-endif(HAVE_GRAPHVIZ)
+  endif()
+endif()
 
 set(tesh_files
   ${tesh_files}

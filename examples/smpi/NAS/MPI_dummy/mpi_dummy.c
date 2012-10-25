@@ -1,8 +1,6 @@
+#include <stdlib.h>
 #include "mpi.h"
 #include "wtime.h"
-#include <stdlib.h>
-
-
 
 void  mpi_error( void )
 {

@@ -23,10 +23,10 @@ add_custom_command(
 if(NOT WIN32)
   target_link_libraries(small_sleep_simulator simgrid m pthread)
   target_link_libraries(small_sleep_function gras m pthread)
-else(NOT WIN32)
+else()
   target_link_libraries(small_sleep_simulator simgrid)
   target_link_libraries(small_sleep_function gras)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

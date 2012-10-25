@@ -9,10 +9,10 @@ add_executable(struct_diff struct_diff.c)
 if(NOT WIN32)
   target_link_libraries(gras_stub_generator simgrid pthread m)
   target_link_libraries(struct_diff         simgrid pthread m)
-else(NOT WIN32)
+else()
   target_link_libraries(gras_stub_generator simgrid)
   target_link_libraries(struct_diff         simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

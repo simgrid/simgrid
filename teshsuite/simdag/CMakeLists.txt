@@ -21,7 +21,7 @@ if(NOT WIN32)
   target_link_libraries(basic5 simgrid m pthread )
   target_link_libraries(basic6 simgrid m pthread )
   target_link_libraries(incomplete simgrid m pthread )
-else(NOT WIN32)
+else()
   target_link_libraries(basic0 simgrid)
   target_link_libraries(basic1 simgrid)
   target_link_libraries(basic2 simgrid)
@@ -30,7 +30,7 @@ else(NOT WIN32)
   target_link_libraries(basic5 simgrid)
   target_link_libraries(basic6 simgrid)
   target_link_libraries(incomplete simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

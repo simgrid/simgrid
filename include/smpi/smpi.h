@@ -15,9 +15,15 @@
 #define sleep(x) smpi_sleep(x)
 #define gettimeofday(x, y) smpi_gettimeofday(x, y)
 
+#ifdef _WIN32
+#define MPI_CALL(type,name,args) \
+  type name args; \
+  type P##name args
+#else
 #define MPI_CALL(type,name,args) \
   type name args __attribute__((weak)); \
   type P##name args
+#endif
 
 SG_BEGIN_DECL()
 #define MPI_THREAD_SINGLE     0
@@ -79,47 +85,47 @@ typedef struct {
 #define MPI_STATUSES_IGNORE NULL
 
 #define MPI_DATATYPE_NULL NULL
-extern MPI_Datatype MPI_CHAR;
-extern MPI_Datatype MPI_SHORT;
-extern MPI_Datatype MPI_INT;
-extern MPI_Datatype MPI_LONG;
-extern MPI_Datatype MPI_LONG_LONG;
+XBT_PUBLIC( MPI_Datatype ) MPI_CHAR;
+XBT_PUBLIC( MPI_Datatype ) MPI_SHORT;
+XBT_PUBLIC( MPI_Datatype ) MPI_INT;
+XBT_PUBLIC( MPI_Datatype ) MPI_LONG;
+XBT_PUBLIC( MPI_Datatype ) MPI_LONG_LONG;
 #define MPI_LONG_LONG_INT MPI_LONG_LONG
-extern MPI_Datatype MPI_SIGNED_CHAR;
-extern MPI_Datatype MPI_UNSIGNED_CHAR;
-extern MPI_Datatype MPI_UNSIGNED_SHORT;
-extern MPI_Datatype MPI_UNSIGNED;
-extern MPI_Datatype MPI_UNSIGNED_LONG;
-extern MPI_Datatype MPI_UNSIGNED_LONG_LONG;
-extern MPI_Datatype MPI_FLOAT;
-extern MPI_Datatype MPI_DOUBLE;
-extern MPI_Datatype MPI_LONG_DOUBLE;
-extern MPI_Datatype MPI_WCHAR;
-extern MPI_Datatype MPI_C_BOOL;
-extern MPI_Datatype MPI_INT8_T;
-extern MPI_Datatype MPI_INT16_T;
-extern MPI_Datatype MPI_INT32_T;
-extern MPI_Datatype MPI_INT64_T;
-extern MPI_Datatype MPI_UINT8_T;
+XBT_PUBLIC( MPI_Datatype ) MPI_SIGNED_CHAR;
+XBT_PUBLIC( MPI_Datatype ) MPI_UNSIGNED_CHAR;
+XBT_PUBLIC( MPI_Datatype ) MPI_UNSIGNED_SHORT;
+XBT_PUBLIC( MPI_Datatype ) MPI_UNSIGNED;
+XBT_PUBLIC( MPI_Datatype ) MPI_UNSIGNED_LONG;
+XBT_PUBLIC( MPI_Datatype ) MPI_UNSIGNED_LONG_LONG;
+XBT_PUBLIC( MPI_Datatype ) MPI_FLOAT;
+XBT_PUBLIC( MPI_Datatype ) MPI_DOUBLE;
+XBT_PUBLIC( MPI_Datatype ) MPI_LONG_DOUBLE;
+XBT_PUBLIC( MPI_Datatype ) MPI_WCHAR;
+XBT_PUBLIC( MPI_Datatype ) MPI_C_BOOL;
+XBT_PUBLIC( MPI_Datatype ) MPI_INT8_T;
+XBT_PUBLIC( MPI_Datatype ) MPI_INT16_T;
+XBT_PUBLIC( MPI_Datatype ) MPI_INT32_T;
+XBT_PUBLIC( MPI_Datatype ) MPI_INT64_T;
+XBT_PUBLIC( MPI_Datatype ) MPI_UINT8_T;
 #define MPI_BYTE MPI_UINT8_T
-extern MPI_Datatype MPI_UINT16_T;
-extern MPI_Datatype MPI_UINT32_T;
-extern MPI_Datatype MPI_UINT64_T;
-extern MPI_Datatype MPI_C_FLOAT_COMPLEX;
+XBT_PUBLIC( MPI_Datatype ) MPI_UINT16_T;
+XBT_PUBLIC( MPI_Datatype ) MPI_UINT32_T;
+XBT_PUBLIC( MPI_Datatype ) MPI_UINT64_T;
+XBT_PUBLIC( MPI_Datatype ) MPI_C_FLOAT_COMPLEX;
 #define MPI_C_COMPLEX MPI_C_FLOAT_COMPLEX
-extern MPI_Datatype MPI_C_DOUBLE_COMPLEX;
-extern MPI_Datatype MPI_C_LONG_DOUBLE_COMPLEX;
-extern MPI_Datatype MPI_AINT;
-extern MPI_Datatype MPI_OFFSET;
-extern MPI_Datatype MPI_LB;
-extern MPI_Datatype MPI_UB;
+XBT_PUBLIC( MPI_Datatype ) MPI_C_DOUBLE_COMPLEX;
+XBT_PUBLIC( MPI_Datatype ) MPI_C_LONG_DOUBLE_COMPLEX;
+XBT_PUBLIC( MPI_Datatype ) MPI_AINT;
+XBT_PUBLIC( MPI_Datatype ) MPI_OFFSET;
+XBT_PUBLIC( MPI_Datatype ) MPI_LB;
+XBT_PUBLIC( MPI_Datatype ) MPI_UB;
 //The following are datatypes for the MPI functions MPI_MAXLOC  and MPI_MINLOC.
-extern MPI_Datatype MPI_FLOAT_INT;
-extern MPI_Datatype MPI_LONG_INT;
-extern MPI_Datatype MPI_DOUBLE_INT;
-extern MPI_Datatype MPI_SHORT_INT;
-extern MPI_Datatype MPI_2INT;
-extern MPI_Datatype MPI_LONG_DOUBLE_INT;
+XBT_PUBLIC( MPI_Datatype ) MPI_FLOAT_INT;
+XBT_PUBLIC( MPI_Datatype ) MPI_LONG_INT;
+XBT_PUBLIC( MPI_Datatype ) MPI_DOUBLE_INT;
+XBT_PUBLIC( MPI_Datatype ) MPI_SHORT_INT;
+XBT_PUBLIC( MPI_Datatype ) MPI_2INT;
+XBT_PUBLIC( MPI_Datatype ) MPI_LONG_DOUBLE_INT;
 
 typedef void MPI_User_function(void *invec, void *inoutvec, int *len,
                                MPI_Datatype * datatype);
@@ -127,31 +133,31 @@ struct s_smpi_mpi_op;
 typedef struct s_smpi_mpi_op *MPI_Op;
 
 #define MPI_OP_NULL NULL
-extern MPI_Op MPI_MAX;
-extern MPI_Op MPI_MIN;
-extern MPI_Op MPI_MAXLOC;
-extern MPI_Op MPI_MINLOC;
-extern MPI_Op MPI_SUM;
-extern MPI_Op MPI_PROD;
-extern MPI_Op MPI_LAND;
-extern MPI_Op MPI_LOR;
-extern MPI_Op MPI_LXOR;
-extern MPI_Op MPI_BAND;
-extern MPI_Op MPI_BOR;
-extern MPI_Op MPI_BXOR;
+XBT_PUBLIC( MPI_Op ) MPI_MAX;
+XBT_PUBLIC( MPI_Op ) MPI_MIN;
+XBT_PUBLIC( MPI_Op ) MPI_MAXLOC;
+XBT_PUBLIC( MPI_Op ) MPI_MINLOC;
+XBT_PUBLIC( MPI_Op ) MPI_SUM;
+XBT_PUBLIC( MPI_Op ) MPI_PROD;
+XBT_PUBLIC( MPI_Op ) MPI_LAND;
+XBT_PUBLIC( MPI_Op ) MPI_LOR;
+XBT_PUBLIC( MPI_Op ) MPI_LXOR;
+XBT_PUBLIC( MPI_Op ) MPI_BAND;
+XBT_PUBLIC( MPI_Op ) MPI_BOR;
+XBT_PUBLIC( MPI_Op ) MPI_BXOR;
 
 struct s_smpi_mpi_group;
 typedef struct s_smpi_mpi_group *MPI_Group;
 
 #define MPI_GROUP_NULL NULL
 
-extern MPI_Group MPI_GROUP_EMPTY;
+XBT_PUBLIC( MPI_Group ) MPI_GROUP_EMPTY;
 
 struct s_smpi_mpi_communicator;
 typedef struct s_smpi_mpi_communicator *MPI_Comm;
 
 #define MPI_COMM_NULL NULL
-extern MPI_Comm MPI_COMM_WORLD;
+XBT_PUBLIC( MPI_Comm ) MPI_COMM_WORLD;
 #define MPI_COMM_SELF smpi_process_comm_self()
 
 struct s_smpi_mpi_request;
@@ -448,7 +454,6 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Pcontrol, (const int level ));
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions
-XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
 XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 /*
 XBT_PUBLIC(void) smpi_exit(int);
@@ -489,7 +494,7 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
                                          : smpi_shared_set_call(#func, input, func(__VA_ARGS__)))
 
 /* Fortran specific stuff */
-XBT_PUBLIC(int) MAIN__(void);
+XBT_PUBLIC(int) MAIN__(int (*realmain) (int argc, char *argv[]),int *argc, char *argv[]);
 
 XBT_PUBLIC(int) smpi_process_index(void);
 

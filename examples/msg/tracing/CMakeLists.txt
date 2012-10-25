@@ -29,7 +29,7 @@ if(HAVE_TRACING)
     PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
     "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/ms.cat.plist;${CMAKE_CURRENT_BINARY_DIR}/ms.trace;${CMAKE_CURRENT_BINARY_DIR}/ms.uncat.plist;"
     )
-endif(HAVE_TRACING)
+endif()
 
 set(tesh_files
   ${tesh_files}

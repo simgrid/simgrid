@@ -9,10 +9,10 @@ add_executable(token_bypass token_bypass.c)
 if(NOT WIN32)
   target_link_libraries(token_ring simgrid m pthread )
   target_link_libraries(token_bypass simgrid m pthread )
-else(NOT WIN32)
+else()
   target_link_libraries(token_ring simgrid)
   target_link_libraries(token_bypass simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

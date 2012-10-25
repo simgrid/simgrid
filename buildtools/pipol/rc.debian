@@ -9,6 +9,8 @@ sudo aptitude -y install valgrind
 sudo aptitude -y install f2c
 sudo aptitude -y install gcc-4.6
 sudo aptitude -y install g++-4.6
+sudo aptitude -y install graphviz-dev graphviz
+sudo aptitude -y install liblua5.1-dev lua5.1
 sudo aptitude -y install libpcre3-dev
 sudo aptitude -y install cmake
 sudo aptitude -y install libunwind7-dev

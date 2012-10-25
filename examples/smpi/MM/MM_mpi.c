@@ -11,11 +11,11 @@
 /*int sched_setaffinity(pid_t pid, size_t cpusetsize, cpu_set_t *mask);
   int sched_getaffinity(pid_t pid, size_t cpusetsize, cpu_set_t *mask);
  */
+#include <stdio.h>
+#include <string.h>
 #include <mpi.h>
 #include <math.h>
 #include <getopt.h>
-#include <stdio.h>
-#include <string.h>
 
  XBT_LOG_NEW_DEFAULT_CATEGORY(MM_mpi,
                              "Messages specific for this msg example");

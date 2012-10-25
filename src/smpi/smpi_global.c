@@ -282,33 +282,16 @@ void smpi_global_destroy(void)
 /* Fortran specific stuff */
 /* With smpicc, the following weak symbols are used */
 /* With smpiff, the following weak symbols are replaced by those in libf2c */
-int __attribute__((weak)) xargc;
-char** __attribute__((weak)) xargv;
-
-int __attribute__((weak)) main(int argc, char** argv) {
-   xargc = argc;
-   xargv = argv;
-   return MAIN__();
-}
-
-#ifdef WIN32
-#include <windows.h>
-
 int __attribute__((weak)) smpi_simulated_main(int argc, char** argv) {
   xbt_die("Should not be in this smpi_simulated_main");
   return 1;
 }
 
-/* TODO FOR WIN32 */
-/* Dummy prototype to make gcc happy */
-int APIENTRY WinMain(HINSTANCE hInst,HINSTANCE hInst2,LPSTR lpstr01,int nCmdShow)
-{
-	return MAIN__();
+int __attribute__((weak)) main(int argc, char** argv) {
+   return MAIN__(&smpi_simulated_main,argc,argv);
 }
 
-#endif
-
-int MAIN__(void)
+int MAIN__(int (*realmain) (int argc, char *argv[]),int *argc, char *argv[])
 {
   srand(SMPI_RAND_SEED);
 
@@ -332,20 +315,20 @@ int MAIN__(void)
   XBT_LOG_CONNECT(smpi_replay);
 
 #ifdef HAVE_TRACING
-  TRACE_global_init(&xargc, xargv);
+  TRACE_global_init(argc, argv);
 #endif
 
-  SIMIX_global_init(&xargc, xargv);
+  SIMIX_global_init(argc, argv);
 
 #ifdef HAVE_TRACING
   TRACE_start();
 #endif
 
   // parse the platform file: get the host list
-  SIMIX_create_environment(xargv[1]);
+  SIMIX_create_environment(argv[1]);
 
-  SIMIX_function_register_default(smpi_simulated_main);
-  SIMIX_launch_application(xargv[2]);
+  SIMIX_function_register_default(realmain);
+  SIMIX_launch_application(argv[2]);
 
   smpi_global_init();
 
@@ -358,7 +341,7 @@ int MAIN__(void)
   else
     SIMIX_run();
 
-  if (xbt_cfg_get_int(_surf_cfg_set, "smpi/display_timing"))
+  if (surf_cfg_get_int("smpi/display_timing"))
     XBT_INFO("Simulation time: %g seconds.", SIMIX_get_clock());
 
   smpi_global_destroy();

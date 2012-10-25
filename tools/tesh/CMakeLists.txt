@@ -6,14 +6,14 @@ if(WIN32)
     COMMENT "Install ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl"
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
     )
-else(WIN32)
+else()
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 
   add_executable(tesh tesh.c run_context.c signal.c)
 
   ### Add definitions for compile
   target_link_libraries(tesh gras m pthread)
-endif(WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

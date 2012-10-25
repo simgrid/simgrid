@@ -23,7 +23,7 @@ if(HAVE_MC)
   target_link_libraries(bugged2_liveness     simgrid m )
   target_link_libraries(test/test_heap_comparison     simgrid m )
 
-endif(HAVE_MC)
+endif()
 
 set(tesh_files
   ${tesh_files}

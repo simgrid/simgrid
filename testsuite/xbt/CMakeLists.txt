@@ -13,12 +13,12 @@ if(NOT WIN32)
   target_link_libraries(graphxml_usage simgrid m )
   target_link_libraries(heap_bench gras m )
   target_link_libraries(parmap_bench simgrid m )
-else(NOT WIN32)
+else()
   target_link_libraries(log_usage gras )
   target_link_libraries(graphxml_usage simgrid )
   target_link_libraries(heap_bench gras )
   target_link_libraries(parmap_bench simgrid )
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}
