@@ -288,10 +288,10 @@ int __attribute__((weak)) smpi_simulated_main(int argc, char** argv) {
 }
 
 int __attribute__((weak)) main(int argc, char** argv) {
-   return MAIN__(&smpi_simulated_main,argc,argv);
+   return MAIN__(smpi_simulated_main,argc,argv);
 }
 
-int MAIN__(int (*realmain) (int argc, char *argv[]),int *argc, char *argv[])
+int MAIN__(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 {
   srand(SMPI_RAND_SEED);
 
@@ -315,10 +315,10 @@ int MAIN__(int (*realmain) (int argc, char *argv[]),int *argc, char *argv[])
   XBT_LOG_CONNECT(smpi_replay);
 
 #ifdef HAVE_TRACING
-  TRACE_global_init(argc, argv);
+  TRACE_global_init(&argc, argv);
 #endif
 
-  SIMIX_global_init(argc, argv);
+  SIMIX_global_init(&argc, argv);
 
 #ifdef HAVE_TRACING
   TRACE_start();
