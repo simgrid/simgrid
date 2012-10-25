@@ -216,6 +216,7 @@ set(source_to_pack
   ${DOC_SOURCES}
   ${REF_GUIDE_SOURCES}
   ${USER_GUIDE_SOURCES}
+  ${DEV_GUIDE_SOURCES}
   ${PLATFORMS_EXAMPLES}
   ${README_files}
   ${bin_files}

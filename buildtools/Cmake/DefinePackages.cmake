@@ -782,6 +782,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/GenerateDocWin.cmake
   buildtools/Cmake/GenerateRefGuide.cmake
   buildtools/Cmake/GenerateUserGuide.cmake
+  buildtools/Cmake/GenerateDevGuide.cmake
   buildtools/Cmake/MaintainerMode.cmake
   buildtools/Cmake/MakeExe.cmake
   buildtools/Cmake/MakeLib.cmake
