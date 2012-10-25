@@ -1,3 +1,9 @@
+SimGrid (3.8.1) NOT RELEASED; urgency=low
+
+ (to complete)
+
+ -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 SimGrid (3.8) stable; urgency=low
 
  The Psssshiiiit release: SimGrid jumps into the Cloud.
@@ -11,10 +17,10 @@ SimGrid (3.8) stable; urgency=low
  * Bug fixes that made the host (and link) failures unusable.
  * Add a way to auto-restart process when the host in which they are
    executing comes back (ON_FAILURE="RESTART" on deployment file,
-   MSG_process_auto_restart_set).   
+   MSG_process_auto_restart_set).
  * Use the "msg_" prefix for all datatypes (instead of m_, msg_ and MSG_),
    please stop using the old ones, they are DEPRECATED.
-   
+
  * Deprecate functions MSG_global_init() / MSG_global_init_args()
    Please use MSG_init() instead. (reducing the amount of entry
    points in the library helps us).
@@ -75,19 +81,19 @@ SimGrid (3.8) stable; urgency=low
  * Re-implement time-independent trace replay using SMPI (at the
    smpi_smp_* level) instead of MSG. This should replace
    examples/msg/actions/actions.c
- * Implement support of MPI Datatypes (vectors, hvectors, indexed, 
+ * Implement support of MPI Datatypes (vectors, hvectors, indexed,
    hindexed and structs)
  * Implement the exchange of non-contiguous data.
    [Khalid Hasanov & Jean-Noel Quintin] Thanks for the patch, guys.
  * Correct behavior of smpi/sender_gap and set its default value to 0
- * Add option to asynchronously send small messages to allow better 
-   simulation of pt2pt communications. --cfg=smpi/async_small_threshold:value 
+ * Add option to asynchronously send small messages to allow better
+   simulation of pt2pt communications. --cfg=smpi/async_small_threshold:value
    specifies the size in bytes under which messages will be asynchronously sent.
  * Add support of MPI_Iprobe, MPI_Probe, MPI_Testall, MPI_Wtick functions
- * SMPI now handles more MPI specific values in input. Closes [#14389] and [#14388] 
+ * SMPI now handles more MPI specific values in input. Closes [#14389] and [#14388]
 
  SimGrid:
- * New C interface to define a platform: XML is now optional. 
+ * New C interface to define a platform: XML is now optional.
    For more info, please check include/simgrid/platf.h.
  * New interface to define random platforms from the C:
    For more info, please check include/simgrid/platf_generator.h and
