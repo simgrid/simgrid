@@ -2,6 +2,37 @@
 \page xps SimGrid Developer Guide - XPs
 
 \section xps_dev_guide_pipol How to run test in pipol?
+
+In order to use PIPOL you have to create your account here: http://pipol.inria.fr/
+
+\subsection xps_dev_guide_pipol_general What is PIPOL?
+
+The PIPOL platform is a porting, testing and compilation cluster. It hosts several hardware and software
+architectures to perform its work. An user can reserve a resource (a specific hardware, an operating system...)
+to be used interactively or automatically (with a "Nightly Builds" system) for software testing.
+
+\subsection xps_dev_guide_pipol_frontend From PIPOL frontend
+
+You first need to be connected into pipol ssh.
+\verbatim
+user@caraja:~$ ssh pipol.inria.fr
+Linux pipol-server 2.6.26-2-amd64 #1 SMP Thu Nov 5 02:23:12 UTC 2009 x86_64
+***************************************************************************
+*           You are just logged-on the PIPOL platform server              *
+*   You can find some documentation about porting works on the platform   *
+*         on the PIPOL's web site: http://pipol.inria.fr/docs/            *
+*   To report bugs you can write to: pipol-sysadm@lists.gforge.inria.fr   *
+***************************************************************************
+
+
+user@pipol:~$
+\endverbatim
+Then you can see pipol images availables for deployment
+
+\subsection xps_dev_guide_pipol_home From a computer
+
+\section xps_dev_guide_cdash How to report tests in cdash?
+
 \section xps_dev_guide_g5k How to run simgrid scalability xps?
 
 */

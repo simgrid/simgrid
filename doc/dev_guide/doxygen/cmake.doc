@@ -49,4 +49,19 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
 
 \section cmake_dev_guide_test How to add tests?
 
+\section cmake_dev_guide_dist How to make a clean dist?
+
+\subsection cmake_dev_guide_dist_sim Simgrid
+
+\subsubsection cmake_dev_guide_dist_sim_unix Under UNIX
+
+\subsubsection cmake_dev_guide_dist_sim_win Under Win32
+
+\subsection cmake_dev_guide_dist_bindings Bindings
+
+\subsubsection cmake_dev_guide_dist_bindings_java Java
+
+\subsubsection cmake_dev_guide_dist_bindings_lua LUA
+
+\subsubsection cmake_dev_guide_dist_bindings_ruby Ruby
 */
