@@ -4,7 +4,7 @@ if(enable_smpi)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
   else(WIN32)
-    set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/bin/smpicc")
+    set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif(WIN32)
   
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
@@ -107,5 +107,6 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
+  
   PARENT_SCOPE
   )

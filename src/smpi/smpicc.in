@@ -2,15 +2,15 @@
 
 CC=@CMAKE_C_COMPILER@
 
-INCLUDEARGS="-I@includedir@ -I@includedir@/smpi -I@CMAKE_BINARY_DIR@/include"
-CMAKE_LINKARGS="-L@CMAKE_LINKARGS@"
+INCLUDEARGS="@includeflag@"
+CMAKE_LINKARGS="-L@libdir@"
 
 if [ "@WIN32@" != "1" ]; then
   LINKARGS="-lsimgrid -lsmpi -lm"
   CFLAGS="-O2 -Dmain=smpi_simulated_main"
 else
   CFLAGS="-O2 -include @includedir@/smpi/smpi_main.h"
-  LINKARGS="@CMAKE_BINARY_DIR@\lib\libsimgrid.dll @CMAKE_BINARY_DIR@\lib\libsmpi.dll"
+  LINKARGS="@libdir@\libsimgrid.dll @libdir@\libsmpi.dll"
 fi
 
 CMDLINE=""

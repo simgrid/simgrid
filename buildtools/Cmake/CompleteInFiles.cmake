@@ -842,12 +842,12 @@ configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_
 set(top_srcdir "${CMAKE_HOME_DIRECTORY}")
 set(srcdir "${CMAKE_HOME_DIRECTORY}/src")
 
+### Script used when simgrid is installed
 set(exec_prefix ${CMAKE_INSTALL_PREFIX})
-set(includedir ${CMAKE_INSTALL_PREFIX}/include)
-set(top_builddir ${CMAKE_HOME_DIRECTORY})
+set(includeflag "-I${CMAKE_INSTALL_PREFIX}/include -I${CMAKE_INSTALL_PREFIX}/include/smpi")
+set(includedir "${CMAKE_INSTALL_PREFIX}/include")
 set(libdir ${exec_prefix}/lib)
-set(CMAKE_LINKARGS "${CMAKE_BINARY_DIR}/lib")
-set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:${GTNETS_LIB_PATH}:${HAVE_NS3_LIB}:$LD_LIBRARY_PATH")
+set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${GTNETS_LIB_PATH}:${HAVE_NS3_LIB}:$LD_LIBRARY_PATH")
 
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/smpif.h @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/bin/smpicc @ONLY)
@@ -855,11 +855,30 @@ configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/b
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/bin/smpiff @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_BINARY_DIR}/bin/smpirun @ONLY)
 
+### Script used when simgrid is compiling
+set(includeflag "-I${CMAKE_HOME_DIRECTORY}/include -I${CMAKE_HOME_DIRECTORY}/include/smpi")
+set(includeflag "${includeflag} -I${CMAKE_BINARY_DIR}/include -I${CMAKE_BINARY_DIR}/include/smpi")
+set(includedir "${CMAKE_HOME_DIRECTORY}/include")
+set(exec_prefix "${CMAKE_BINARY_DIR}/smpi_script/")
+set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:${GTNETS_LIB_PATH}:${HAVE_NS3_LIB}:$LD_LIBRARY_PATH")
+set(libdir "${CMAKE_BINARY_DIR}/lib")
+
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif2c @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun @ONLY)
+
+set(top_builddir ${CMAKE_HOME_DIRECTORY})
+
 if(NOT WIN32)
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE OKITOKI)
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE OKITOKI)
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
+  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
+  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif2c" OUTPUT_VARIABLE OKITOKI)
+  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff" OUTPUT_VARIABLE OKITOKI)
+  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
 endif()
 
 set(generated_headers_to_install
