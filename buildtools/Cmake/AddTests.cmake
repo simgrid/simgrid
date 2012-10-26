@@ -500,7 +500,7 @@ if(NOT enable_memcheck)
       set_tests_properties(smpi-mpich-env-raw smpi-mpich-context-raw  smpi-mpich-pt2pt-raw smpi-mpich-coll-raw smpi-mpich-profile-raw PROPERTIES PASS_REGULAR_EXPRESSION "-- No differences found; test successful")
     
     
-    endif(HAVE_RAWCTX)
+    endif()
     if(CONTEXT_UCONTEXT)
       ADD_TEST(smpi-bcast-ucontext              ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast.tesh)
       ADD_TEST(smpi-reduce-ucontext             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce.tesh)

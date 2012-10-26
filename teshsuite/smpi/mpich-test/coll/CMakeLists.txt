@@ -44,7 +44,7 @@ if(enable_smpi)
   add_executable(assocf assocf.f)
   add_executable(allgatherf allgatherf.f)
   add_executable(bcastlog bcastlog.f)
-  endif(SMPI_F2C)
+  endif()
 
   target_link_libraries(coll1  m simgrid smpi )
   target_link_libraries(coll2 m simgrid smpi )
@@ -80,7 +80,7 @@ if(enable_smpi)
   target_link_libraries(assocf m simgrid smpi )
   target_link_libraries(allgatherf m simgrid smpi )
   target_link_libraries(bcastlog m simgrid smpi )
-  endif(SMPI_F2C)
+  endif()
 
   set_target_properties(coll1 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   set_target_properties(coll2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -116,9 +116,9 @@ if(enable_smpi)
   set_target_properties(assocf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   set_target_properties(allgatherf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   set_target_properties(bcastlog PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  endif(SMPI_F2C)
+  endif()
 
-endif(enable_smpi)
+endif()
 
 set(tesh_files
   ${tesh_files}

@@ -9,7 +9,7 @@ set_target_properties(simgrid  PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL
 if(enable_smpi)
   add_library(smpi SHARED ${SMPI_SRC})
   set_target_properties(smpi PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" VERSION ${libsmpi_version} OUTPUT_NAME "smpi")
-endif(enable_smpi)
+endif()
 
 # libpthreadGC2.dll
 if(ARCH_32_BITS)
@@ -44,7 +44,7 @@ target_link_libraries(simgrid 	${SIMGRID_DEP})
 if(enable_smpi)
 add_dependencies(smpi simgrid)
 target_link_libraries(smpi 	${SMPI_DEP})
-endif(enable_smpi)
+endif()
 
 find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
 message(STATUS "pexports: ${PEXPORTS_PATH}")

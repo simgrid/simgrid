@@ -99,7 +99,7 @@ if(enable_smpi)
 #  add_executable(structf structf.f)
   add_executable(typebasef typebasef.f)
   add_executable(sendcplx sendcplx.f)
-  endif(SMPI_F2C)
+  endif()
 
   target_link_libraries(overtake m simgrid smpi )
   target_link_libraries(bsendtest m simgrid smpi )
@@ -192,7 +192,7 @@ if(enable_smpi)
   target_link_libraries(sendfort m simgrid smpi f2c)
 #  target_link_libraries(structf m simgrid smpi f2c)
   target_link_libraries(typebasef m simgrid smpi f2c)
-  endif(SMPI_F2C)
+  endif()
 
   set_target_properties(overtake PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   set_target_properties(bsendtest PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -285,8 +285,8 @@ if(enable_smpi)
   set_target_properties(sendfort PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 #  set_target_properties(structf PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   set_target_properties(typebasef PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-  endif(SMPI_F2C)
-endif(enable_smpi)
+  endif()
+endif()
 
 set(tesh_files
   ${tesh_files}

@@ -22,7 +22,7 @@ if(enable_smpi)
   if(SMPI_F2C)
   #add_executable(attrtest_f attrtest.f)
   #add_executable(commnames_f commnamesf.f)
-  endif(SMPI_F2C)
+  endif()
 
   target_link_libraries(attrerr m simgrid smpi )
  # target_link_libraries(attrt m simgrid smpi )
@@ -37,7 +37,7 @@ if(enable_smpi)
   if(SMPI_F2C)
   #target_link_libraries(attrtest_f m simgrid smpi f2c)
   #target_link_libraries(commnames_f m simgrid smpi f2c)
-  endif(SMPI_F2C)
+  endif()
   
   set_target_properties(attrerr PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  # set_target_properties(attrt PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -53,9 +53,9 @@ if(enable_smpi)
    if(SMPI_F2C)
   #set_target_properties(commnames_f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}" )
   #set_target_properties(attrtest_f PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}"  )
-  endif(SMPI_F2C)
+  endif()
 
-endif(enable_smpi)
+endif()
 
 set(tesh_files
   ${tesh_files}

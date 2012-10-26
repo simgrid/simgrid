@@ -17,7 +17,7 @@ if(enable_smpi)
   set_target_properties(ptest PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   set_target_properties(colluses PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  
-endif(enable_smpi)
+endif()
 
 set(tesh_files
   ${tesh_files}
