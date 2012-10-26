@@ -497,7 +497,7 @@ if(NOT enable_memcheck)
       -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/profile)
       ADD_TEST(NAME smpi-mpich-coll-raw        COMMAND ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll/runtests 
        -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll)       
-      set_tests_properties(smpi-mpich-env-raw smpi-mpich-pt2pt-raw smpi-mpich-coll-raw smpi-mpich-profile-raw PROPERTIES PASS_REGULAR_EXPRESSION "-- No differences found; test successful")
+      set_tests_properties(smpi-mpich-env-raw smpi-mpich-context-raw  smpi-mpich-pt2pt-raw smpi-mpich-coll-raw smpi-mpich-profile-raw PROPERTIES PASS_REGULAR_EXPRESSION "-- No differences found; test successful")
     
     
     endif(HAVE_RAWCTX)
