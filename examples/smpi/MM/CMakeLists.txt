@@ -9,8 +9,6 @@ if(enable_smpi)
     add_executable(MM_mpi MM_mpi.c 2.5D_MM.c Summa.c Matrix_init.c)
     ### Add definitions for compile
     target_link_libraries(MM_mpi simgrid pthread m smpi)
-  else()
-    target_link_libraries(MM_mpi simgrid smpi)
   endif()
 endif()
 
