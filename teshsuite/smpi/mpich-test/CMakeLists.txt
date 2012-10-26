@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(tesh_files
   ${tesh_files}
   PARENT_SCOPE
