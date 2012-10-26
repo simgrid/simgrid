@@ -834,9 +834,6 @@ set(bin_files
   )
 
 set(txt_files
-  "testsuite/surf/trace_A.txt"
-  "testsuite/surf/trace_A_failure.txt"
-  "testsuite/surf/trace_B.txt"
   ${txt_files}
   AUTHORS
   COPYING
