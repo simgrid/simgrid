@@ -191,7 +191,7 @@ RunTest() {
     else
         mname=$3
         if [ -z "$mname" ] ; then mname="*** $1 ***" ; fi
-        echo "$mname" >> $pgm.out
+        #echo "$mname" >> $pgm.out
         echo "$mname"
         mvarg=""
         if [ -n "$5" ] ; then rm -f $5 ; 
@@ -209,13 +209,11 @@ RunTest() {
                 fi
             done
         fi
-        echo "$mname" >> $pgm.out
+        #echo "$mname" >> $pgm.out
         if [ ! -s $srcdir/$pgm.std -a ! -s $pgm.stdo ] ; then
             # We don't need a special file if the output is just "No Errors"
             cat >>$pgm.stdo <<EOF
-$mname
  No Errors
-$mname
 EOF
         fi
         if [ "$CheckOutputWhileRunning" = "yes" -o "$check_at_once" = 1 ] ; then

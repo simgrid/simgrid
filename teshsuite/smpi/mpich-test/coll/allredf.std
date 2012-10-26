@@ -10,4 +10,3 @@
  MPI_BXOR
  MPI_MAXLOC
  MPI_MINLOC
-*** Testing allreduce from Fortran ***

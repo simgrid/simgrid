@@ -50,6 +50,7 @@ set(stdo_std_smpi
   ${CMAKE_CURRENT_SOURCE_DIR}/mpich-test/env/env.std
   ${CMAKE_CURRENT_SOURCE_DIR}/mpich-test/profile/ptest.std
   ${CMAKE_CURRENT_SOURCE_DIR}/mpich-test/coll/allredmany.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/mpich-test/coll/allred.std
   ${CMAKE_CURRENT_SOURCE_DIR}/mpich-test/coll/allredf.std
   ${CMAKE_CURRENT_SOURCE_DIR}/mpich-test/coll/scatterv.std
 )

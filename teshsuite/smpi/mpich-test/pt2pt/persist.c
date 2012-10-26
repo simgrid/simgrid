@@ -48,7 +48,7 @@ int main( int argc, char **argv )
 	MPI_Request_free( &r[i] );
 	}
 
-    if (rank == 0) printf( "No errors\n" );
+    if (rank == 0) printf( " No Errors\n" );
     MPI_Finalize();
     return 0;
 }

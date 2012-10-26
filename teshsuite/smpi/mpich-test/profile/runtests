@@ -10,7 +10,7 @@ top_srcdir=/home/degomme/Downloads/mpich-test
 srcdir=/home/degomme/Downloads/mpich-test/profile
 MPICH_VERSION=
 STOPFILE=${MPITEST_STOPTEST:-"$HOME/.stopmpichtests"}
-mpirun="smpirun -hostfile /home/degomme/Documents/hostfile_griffon -platform /home/degomme/Documents/griffon.xml  --log=root.thres:critical"
+
 MAKE="make --no-print-directory"
 MPIRUNMVBACK=""
 #
@@ -19,20 +19,30 @@ MPIRUNMVBACK=""
 #
 # Set mpirun to the name/path of the mpirun program
 #FindMPIRUN
-if [ -z "$mpirun" ] ; then
-    echo "No mpirun in path.  Testing cannot proceed."
-    exit 1
-fi
+#if [ -z "$mpirun" ] ; then
+#    echo "No mpirun in path.  Testing cannot proceed."
+#    exit 1
+#fi
 #
 # If the programs are not available, run make.
 runtests=1
 makeeach=0
 writesummaryfile=no
 quiet=0
+have_fortran=0
 check_at_once=1
 MAKE="make --no-print-directory"
 for arg in "$@" ; do
     case $arg in 
+    -basedir=* )
+	basedir=`echo $arg | sed 's/-basedir=//'`
+	;; 
+    -srcdir=* )
+	srcdir=`echo $arg | sed 's/-srcdir=//'`
+	;; 
+	-fort=* )
+	have_fortran=`echo $arg | sed 's/-fort=//'`
+	;;
 	-checkonly)
 	runtests=0
 	;;
@@ -75,7 +85,7 @@ for arg in "$@" ; do
 	;;
     esac
 done
-
+mpirun=" ${basedir}/bin/smpirun -platform ${srcdir}/../../../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile  --log=root.thres:critical"
 # If the programs are not available, run make.
 if [ ! -x sendrecv -a $makeeach = 0 -a $runtests = 1 ] ; then
     $MAKE default
