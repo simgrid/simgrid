@@ -58,5 +58,6 @@ set(bin_files
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/README
+  ${CMAKE_CURRENT_SOURCE_DIR}/tesh.1
   PARENT_SCOPE
   )
