@@ -305,11 +305,11 @@ RunTest persist 4 "*** Testing MPI_Startall/Request_free ***"
 RunTest waitall 4 "*** Testing MPI_Waitall ***"
 
 #uses issend, replaced by isend, and ssend replaced by send
-RunTest waitall2 2 "*** Testing MPI_Waitall (order) ***"
+#RunTest waitall2 2 "*** Testing MPI_Waitall (order) ***"
 
-RunTest waitall3 4 "*** Testing MPI_Waitall (order-irecv) ***"
+#RunTest waitall3 4 "*** Testing MPI_Waitall (order-irecv) ***"
 
-RunTest waitall4 4 "*** Testing MPI_Waitall (order-isend) ***"
+#RunTest waitall4 4 "*** Testing MPI_Waitall (order-isend) ***"
 #put a big value for the message size, because it failed as a detached send (isend was used instead of issend)
 RunTest waitany 4 "*** Testing MPI_Waitany ***"
 

@@ -10,8 +10,8 @@
 #include "protofix.h"
 #endif
 
-#define MAXPES 32
-#define MYBUFSIZE 16*1024
+#define MAXPES 16
+#define MYBUFSIZE 8*1024
 static int buffer[MAXPES][MYBUFSIZE];
 
 #define NUM_RUNS 10

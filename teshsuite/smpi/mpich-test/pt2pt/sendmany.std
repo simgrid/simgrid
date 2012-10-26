@@ -14,5 +14,4 @@ length = 1024 ints
 length = 2048 ints
 length = 4096 ints
 length = 8192 ints
-length = 16384 ints
 *** Testing Send (many procs) ***
