@@ -168,7 +168,7 @@ if [ -z "${HOSTFILE}" ] ; then
 fi
 
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
-hostfile_procs=`grep -c [a-zA-Z0-9] $HOSTFILE`
+hostfile_procs=`grep -c "[a-zA-Z0-9]" $HOSTFILE`
 
 if [ -z "${NUMPROCS}" ] ; then
     # Use the amount of processes in the hostfile as default value for the -np parameter
