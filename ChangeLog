@@ -2,6 +2,7 @@ SimGrid (3.9) NOT RELEASED; urgency=low
 
  SMPI:
  * Now works on Windows too!
+ * Much more extensive test suite, from MPICH
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
