@@ -129,12 +129,12 @@ XBT_PUBLIC( MPI_Datatype ) MPI_OFFSET;
 XBT_PUBLIC( MPI_Datatype ) MPI_LB;
 XBT_PUBLIC( MPI_Datatype ) MPI_UB;
 //The following are datatypes for the MPI functions MPI_MAXLOC  and MPI_MINLOC.
-extern MPI_Datatype MPI_FLOAT_INT;
-extern MPI_Datatype MPI_LONG_INT;
-extern MPI_Datatype MPI_DOUBLE_INT;
-extern MPI_Datatype MPI_SHORT_INT;
-extern MPI_Datatype MPI_2INT;
-extern MPI_Datatype MPI_LONG_DOUBLE_INT;
+XBT_PUBLIC(MPI_Datatype) MPI_FLOAT_INT;
+XBT_PUBLIC(MPI_Datatype) MPI_LONG_INT;
+XBT_PUBLIC(MPI_Datatype) MPI_DOUBLE_INT;
+XBT_PUBLIC(MPI_Datatype) MPI_SHORT_INT;
+XBT_PUBLIC(MPI_Datatype) MPI_2INT;
+XBT_PUBLIC(MPI_Datatype) MPI_LONG_DOUBLE_INT;
 XBT_PUBLIC(MPI_Datatype) MPI_2FLOAT;
 XBT_PUBLIC(MPI_Datatype) MPI_2DOUBLE;
 
@@ -511,7 +511,8 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
 
 /* Fortran specific stuff */
 XBT_PUBLIC(int) __attribute__((weak)) smpi_simulated_main(int argc, char** argv);
-XBT_PUBLIC(int) MAIN__(int (*realmain) (int argc, char *argv[]),int argc, char *argv[]);
+XBT_PUBLIC(int) __attribute__((weak)) MAIN__(void);
+XBT_PUBLIC(int) smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[]);
 
 XBT_PUBLIC(int) smpi_process_index(void);
 

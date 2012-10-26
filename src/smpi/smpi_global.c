@@ -286,16 +286,24 @@ void smpi_global_destroy(void)
 /* Fortran specific stuff */
 /* With smpicc, the following weak symbols are used */
 /* With smpiff, the following weak symbols are replaced by those in libf2c */
+
+int __attribute__((weak)) xargc;
+char** __attribute__((weak)) xargv;
+
 int __attribute__((weak)) smpi_simulated_main(int argc, char** argv) {
   xbt_die("Should not be in this smpi_simulated_main");
   return 1;
 }
 
 int __attribute__((weak)) main(int argc, char** argv) {
-   return MAIN__(smpi_simulated_main,argc,argv);
+   return smpi_main(smpi_simulated_main,argc,argv);
 }
 
-int MAIN__(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
+int __attribute__((weak)) MAIN__(){
+  return smpi_main(smpi_simulated_main,xargc, xargv);
+};
+
+int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 {
   srand(SMPI_RAND_SEED);
 
