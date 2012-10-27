@@ -7,6 +7,13 @@ project(SimGrid C)
 if (enable_gtnets OR enable_ns3)
   enable_language(CXX)
 endif()
+# Workaround for a bug in cmake where enable_language does not work
+# well with OPTIONAL.
+# See http://www.cmake.org/Bug/print_bug_page.php?bug_id=9220
+if(DEFINED CMAKE_Fortran_COMPILER AND CMAKE_Fortran_COMPILER MATCHES "^$")
+  set(CMAKE_Fortran_COMPILER CMAKE_Fortran_COMPILER-NOTFOUND)
+endif()
+enable_language(Fortran OPTIONAL)
 
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
