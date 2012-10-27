@@ -8,6 +8,9 @@ SimGrid (3.9) NOT RELEASED; urgency=low
 
 SimGrid (3.8.1) stable; urgency=low
 
+ The "we are told that some people want to also *install* the simgrid
+ framework" release.
+
  * Add missing file "tesh.1" to the archive.
 
  -- Sat Oct 27 16:12:11 CEST 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
