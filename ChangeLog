@@ -1,6 +1,6 @@
 SimGrid (3.8.1) NOT RELEASED; urgency=low
 
- (to complete)
+ * Add missing file "tesh.1" to the archive.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
