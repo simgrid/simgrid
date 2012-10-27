@@ -1289,7 +1289,7 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_bregister_op;
         new_element->location.breg_op.reg = atoi(strtok(tok2, "DW_OP_breg"));
-        new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens2, 2, char*));
+        new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens2, 1, char*));
         xbt_dynar_push(loc->location.compose, &new_element);
       }else if(strncmp(tok2, "DW_OP_lit", 9) == 0){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
