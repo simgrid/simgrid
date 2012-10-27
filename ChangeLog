@@ -1,8 +1,8 @@
-SimGrid (3.8.1) NOT RELEASED; urgency=low
+SimGrid (3.8.1) stable; urgency=low
 
  * Add missing file "tesh.1" to the archive.
 
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Sat Oct 27 16:12:11 CEST 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.8) stable; urgency=low
 
