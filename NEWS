@@ -10,8 +10,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / ( _ ) / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ / _ \ | |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | (_) || |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)___(_)_|
+                Oct 27 2012
 
-(to complete)
+The "we are told that some people want to also *install* the simgrid
+framework" release.
+
+ * Add missing manpage to the archive.
                     _               _____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / ( _ )
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ / _ \
