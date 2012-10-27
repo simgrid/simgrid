@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 if(WIN32)
   SET(CMAKE_RC_COMPILER "windres")
 endif()
-project(SimGrid CXX C Fortran)
+project(SimGrid C)
 
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
