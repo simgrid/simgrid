@@ -558,6 +558,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_simcall_answer(simcall);
       break;
 
+#ifdef HAVE_MC
     case SIMCALL_MC_SNAPSHOT:
       simcall->mc_snapshot.s = MC_take_snapshot_liveness();
       SIMIX_simcall_answer(simcall);
@@ -568,7 +569,8 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
         snapshot_compare(simcall->mc_compare_snapshots.snapshot1, simcall->mc_compare_snapshots.snapshot2);
       SIMIX_simcall_answer(simcall);
       break;
-   
+#endif /* HAVE_MC */
+
     case SIMCALL_NONE:
       THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
           SIMIX_process_get_name(simcall->issuer),

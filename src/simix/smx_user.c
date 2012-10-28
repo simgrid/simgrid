@@ -1651,6 +1651,8 @@ xbt_dict_t simcall_file_ls(const char* mount, const char* path)
   return simcall->file_ls.result;
 }
 
+#ifdef HAVE_MC
+
 void *simcall_mc_snapshot(void)
 {
   smx_simcall_t simcall = SIMIX_simcall_mine();
@@ -1676,6 +1678,7 @@ int simcall_mc_compare_snapshots(void *s1, void *s2){
   return simcall->mc_compare_snapshots.result;
 }
 
+#endif /* HAVE_MC */
 
 /* ****************************************************************************************** */
 /* TUTORIAL: New API                                                                          */
