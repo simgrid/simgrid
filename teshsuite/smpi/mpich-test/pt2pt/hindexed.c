@@ -59,7 +59,7 @@ int main( int argc, char **argv )
     mat_displs[0] = 0;
     MPI_Type_hindexed( mat_n, mat_blens, mat_displs, rowtype, &mattype );
     MPI_Type_commit( &mattype );
-    MPI_Type_free( &rowtype );
+   // MPI_Type_free( &rowtype );
 
     /* Load up the data */
     for (i=0; i<mat_n * mat_n; i++) {
