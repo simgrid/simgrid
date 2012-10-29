@@ -153,7 +153,7 @@ int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
   return retval;
 }
 
-MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype){
+static MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype){
   MPI_Aint lb;
   MPI_Aint extent;
   smpi_datatype_extent(datatype, &lb, &extent);
