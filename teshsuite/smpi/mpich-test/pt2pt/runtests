@@ -134,9 +134,9 @@ EOF
 fi
 
 # If the programs are not available, run make.
-if [ ! -x sendrecv_mpich -a $makeeach = 0 -a $runtests = 1 ] ; then
-    $MAKE
-fi
+#if [ ! -x sendrecv_mpich -a $makeeach = 0 -a $runtests = 1 ] ; then
+#    $MAKE
+#fi
 
 testfiles=""
 if [ $runtests = 1 ] ; then
