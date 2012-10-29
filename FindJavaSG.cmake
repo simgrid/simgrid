@@ -1,6 +1,9 @@
+set(JAVA_INCLUDE_PATH "$ENV{JAVA_INCLUDE_PATH}")
+set(JAVA_INCLUDE_PATH2 "$ENV{JAVA_INCLUDE_PATH}")
+
 include(FindJava)
 include(FindJNI)
-	
+
 message(STATUS "Looking for jni.h")
 if(JAVA_INCLUDE_PATH)
  message(STATUS "Looking for jni.h - found")
