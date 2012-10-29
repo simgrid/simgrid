@@ -13,12 +13,13 @@ if(DOXYGEN_PATH)
     COMMENT "Generating the SimGrid dev guide..."
     DEPENDS ${DEV_GUIDE_SOURCES}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html
-    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/latex
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/shared/doxygen/simgriddevguide.tag
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html/
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/
     )
-    
- foreach(file ${DOC_FIGS})
+       
+  foreach(file ${DOC_FIGS})
     string(REPLACE ".fig" ".png" tmp_file ${file})
     string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/shared/fig/" "${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html/" tmp_file ${tmp_file})
     ADD_CUSTOM_COMMAND(TARGET dev_guide
@@ -34,14 +35,10 @@ if(DOXYGEN_PATH)
     
   ADD_CUSTOM_COMMAND(TARGET dev_guide
     COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
-    COMMAND ${DOXYGEN_PATH}/doxygen DevGuideDoxyfile
+    COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/doxygen/ doxygen ./DevGuideDoxyfile
 
     COMMAND ${CMAKE_COMMAND} -E echo "XX Second Doxygen pass"
-    COMMAND ${DOXYGEN_PATH}/doxygen DevGuideDoxyfile
-
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html/dir*
-
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/doxygen
+    COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/doxygen/ doxygen ./DevGuideDoxyfile
     )
 
 else()
