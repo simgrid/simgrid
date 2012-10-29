@@ -3,23 +3,40 @@
 
 \section cmake_dev_guide_src How to add sources?
 
-If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake
+If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake.
+Chose the section you are interested in and modifie it.
 
 \verbatim
-set(JMSG_JAVA_SRC
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/MsgException.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/JniException.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/NativeException.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/HostNotFoundException.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/ProcessNotFoundException.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Msg.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Process.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Host.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Task.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/MsgNative.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/ApplicationHandler.java
-  ${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Sem.java
-)
+set(SMPI_SRC
+  src/smpi/smpi_base.c
+  src/smpi/smpi_bench.c
+  src/smpi/smpi_c99.c
+  src/smpi/smpi_coll.c
+  src/smpi/smpi_comm.c
+  src/smpi/smpi_global.c
+  src/smpi/smpi_group.c
+  src/smpi/smpi_mpi.c
+  src/smpi/smpi_mpi_dt.c
+  src/smpi/smpi_pmpi.c
+  src/smpi/smpi_replay.c
+  )
+\endverbatim
+
+If source file are a part of an option library (like fortran smpi source) you have to had it in the compiled sources 
+or in the EXTRA_DIST files package which is only copy in the dist. 
+\verbatim
+### If f2c is installed compiled source other-whise source is only copy in the dist 
+if(SMPI_F2C)
+  set(SMPI_SRC
+    ${SMPI_SRC}
+    src/smpi/smpi_f77.c
+    )
+else()
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
+    src/smpi/smpi_f77.c
+  )
+endif()
 \endverbatim
 
 \section cmake_dev_guide_ex How to add examples?
@@ -30,38 +47,143 @@ You must specified where to create the executable, source list, dependencies and
 \verbatim
 cmake_minimum_required(VERSION 2.6)
 
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${CMAKE_HOME_DIRECTORY}/lib")
+set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-#add_executable(<name_of_target> <src list>)
-add_executable(get_sender get_sender.c)
+add_executable(Hello Hello.c)
 
 ### Add definitions for compile
-#target_link_libraries(<name_of_targe> <dependencies>)
-target_link_libraries(get_sender simgrid m pthread) 
+target_link_libraries(Hello simgrid)
+
+### You have to put all new files in the apropriated section 
+### If they are not there, they can't be on the dist package. 
+set(tesh_files
+  ${tesh_files}
+  PARENT_SCOPE
+  )
+set(xml_files
+  ${xml_files}
+  PARENT_SCOPE
+  )
+set(examples_src
+  ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/Hello.c
+  PARENT_SCOPE
+  )
+set(bin_files
+  ${bin_files}
+  PARENT_SCOPE
+  )
+set(txt_files
+  ${txt_files}
+  PARENT_SCOPE
+  )
 \endverbatim
 
-Then you have to modified <project/directory>/buildtools/Cmake/MakeExeLib.cmake and add
-this line :
+Then you have to modified :
+\li<project/directory>/buildtools/Cmake/MakeExeLib.cmake and add line:
 \verbatim
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
 \endverbatim
 
-\section cmake_dev_guide_test How to add tests?
+\li <project/directory>/buildtools/Cmake/DefinePackages.cmake to add your CMakeLists to CMAKE_SOURCE_FILES:
+\verbatim
+set(CMAKE_SOURCE_FILES
+  CMakeLists.txt
+  ....
+  <path_where_is_CMakeList.txt>
+  )
+\endverbatim
 
+\section cmake_dev_guide_test How to add tests?
+To add a test in simgrid you have to modify source <project/directory>/buildtools/Cmake/AddTests.cmake. Create a new test with adding this line:
+\li With tesh
+\verbatim
+#  ADD_TEST(test-name ${CMAKE_BINARY_DIR}/bin/tesh <options> <tesh-file>)
+#  option --setenv bindir set the directory containing the binary
+#         --setenv srcdir set the directory containing the source file
+#         --cd set the working directory
+ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh 
+         --setenv bindir=${CMAKE_BINARY_DIR}/examples/my-test/
+         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/my-test/
+         --cd ${CMAKE_HOME_DIRECTORY}/examples/my-test/
+         ${CMAKE_HOME_DIRECTORY}/examples/msg/io/io.tesh
+)
+\endverbatim             
+
+\li Without tesh
+\verbatim
+# ADD_TEST(NAME <name>]
+#          [WORKING_DIRECTORY dir]
+#          COMMAND <command> [arg1 [arg2 ...]])
+ADD_TEST(NAME my-test-name 
+         WORKING_DIRECTORY  ${CMAKE_BINARY_DIR}/examples/my-test/
+         COMMAND Hello
+)
+\endverbatim 
 \section cmake_dev_guide_dist How to make a clean dist?
 
 \subsection cmake_dev_guide_dist_sim Simgrid
 
 \subsubsection cmake_dev_guide_dist_sim_unix Under UNIX
+You need to be in a clean repository.
+\verbatim
+$ cd simgrid
+$ git stash
+$ git stash clear
+$ git clean -dfx
+$ mkdir build
+$ cd build
+$ make dist
+\endverbatim
+
+After that you have your distrib in the build dir: 'SimGrid-${release_version}.tar.gz'.
+
+You finally have to compile the new distrib to test the "make install" target.
 
 \subsubsection cmake_dev_guide_dist_sim_win Under Win32
+
+You have to install nsis tool first. Download it 
+<a href="http://nsis.sourceforge.net/Download">here</a>.
+
+Then be sure having wget.exe in your path to get the online documentation. You can download it 
+<a href="http://users.ugent.be/~bpuype/wget/">here</a>.
+
+You can finally make the win installer.
+\verbatim
+$ cd simgrid
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make nsis
+\endverbatim
 
 \subsection cmake_dev_guide_dist_bindings Bindings
 
 \subsubsection cmake_dev_guide_dist_bindings_java Java
+You need to be in a clean repository.
+\verbatim
+$ cd simgrid
+$ git stash
+$ git stash clear
+$ git clean -dfx
+$ mkdir build
+$ cd build
+$ make dist
+\endverbatim
 
-\subsubsection cmake_dev_guide_dist_bindings_lua LUA
+After that you have your distrib in the build dir: 'SimGrid-Java-${release_version}.tar.gz'.
 
 \subsubsection cmake_dev_guide_dist_bindings_ruby Ruby
+You need to be in a clean repository.
+\verbatim
+$ cd simgrid-ruby
+$ git stash
+$ git stash clear
+$ git clean -dfx
+$ mkdir build
+$ cd build
+$ make dist
+\endverbatim
+
+After that you have your distrib in the build dir: 'SimGrid-Ruby-${release_version}.tar.gz'.
 */

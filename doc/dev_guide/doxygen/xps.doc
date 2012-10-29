@@ -29,10 +29,227 @@ user@pipol:~$
 \endverbatim
 Then you can see pipol images availables for deployment
 
+\verbatim
+user@pipol:~$ pipol-sub si
+    amd64_2010-linux-centos-5.dd.gz
+    amd64_2010-linux-debian-squeeze.dd.gz
+    amd64_2010-linux-debian-testing.dd.gz
+    amd64_2010-linux-fedora-core13.dd.gz
+    amd64_2010-linux-fedora-core14.dd.gz
+    amd64_2010-linux-fedora-core16.dd.gz
+    amd64_2010-linux-ubuntu-lucid.dd.gz
+    amd64_2010-linux-ubuntu-maverick.dd.gz
+    amd64_2010-linux-ubuntu-natty.dd.gz
+    amd64_kvm-linux-debian-lenny
+    amd64_kvm-linux-debian-testing
+    amd64_kvm-windows-7
+    amd64-linux-centos-5.dd.gz
+    amd64-linux-debian-etch.dd.gz
+    amd64-linux-debian-lenny.dd.gz
+....
+    i386-linux-ubuntu-lucid.dd.gz
+    i386-linux-ubuntu-maverick.dd.gz
+    i386-linux-ubuntu-natty.dd.gz
+    i386-linux-ubuntu-precise.dd.gz
+    i386_mac-mac-osx-server-leopard.dd.gz
+    i386-unix-freebsd-7.dd.gz
+    i386-unix-opensolaris-10.dd.gz
+    i386-unix-opensolaris-11.dd.gz
+    i386-unix-solaris-10.dd.gz
+    ia64-linux-debian-lenny.dd
+    ia64-linux-debian-squeeze.dd
+    ia64-linux-fedora-core9.dd
+    ia64-linux-redhatEL-5.0.dd
+    x86_64_mac-mac-osx-server-snow-leopard.dd.gz
+    x86_mac-mac-osx-server-snow-leopard.dd.gz
+\endverbatim
+
+You can also see available architectures on host name:
+\verbatim
+navarro@pipol:~$ pipol-sub sa    
+=================================================================
+                    Availables architectures:         
+=================================================================
+
+pipol18
+:i386_2010:amd64_2010:
+pipol19
+:i386_2010:amd64_2010:
+pipol20
+:i386_2010:amd64_2010:
+pipol1
+:i386:amd64:
+pipol2
+:i386:amd64:
+pipol3
+:i386:amd64:
+pipol4
+:i386:amd64:
+pipol5
+:i386:amd64:
+pipol6
+:i386:amd64:
+pipol7
+:i386:amd64:
+pipol8
+:i386:amd64:
+pipol14
+:i386_kvm:amd64_kvm:
+pipol15
+:i386_kvm:amd64_kvm:
+pipol16
+:i386_kvm:amd64_kvm:
+pipol17
+:i386_kvm:amd64_kvm:
+pipol11
+:i386_mac:x86_mac:
+pipol10
+:ia64:
+pipol9
+:ia64:
+pipol12
+:x86_64_mac:
+\endverbatim
+
+When you have choose your image and host (not necessary) you deploy with command line:
+
+pipol-sub esn \<image name\> \<host-name\> \<deployment-time\>
+\verbatim
+user@pipol:~$pipol-sub esn amd64_2010-linux-ubuntu-maverick.dd.gz pipol20 02:00
+user@pipol:~$ssh pipol20
+\endverbatim
+
+You can now make all your tests.
+
 \subsection xps_dev_guide_pipol_home From a computer
+
+You have to renseign to simgrid configuration your pipol login.
+\verbatim
+$ cmake -Dpipol_user=user .
+\endverbatim
+
+Then you have two kind of command:
+\li make \<image-name\>
+\verbatim
+$ make amd64_2010-linux-ubuntu-maverick
+\endverbatim
+This command copy your local simgrid directory to pipol and execute a configure, make and ctest.
+
+\li make \<image_name\>_experimental
+\verbatim
+$ make amd64_2010-linux-ubuntu-maverick_experimental
+\endverbatim
+Same as previous but report into cdash
+
+You can also see all available images from pipol
+\verbatim
+$ make pipol_test_list_images
+\endverbatim
+
 
 \section xps_dev_guide_cdash How to report tests in cdash?
 
+Reporting experiment in cdash is very easy because it is done by ctest.
+
+The easier way is to execute command line "ctest -D Experiemntal" in build directory. More option is available by ctest:
+\verbatim
+  ctest -D Continuous
+  ctest -D Continuous(Start|Update|Configure|Build)
+  ctest -D Continuous(Test|Coverage|MemCheck|Submit)
+  ctest -D Experimental
+  ctest -D Experimental(Start|Update|Configure|Build)
+  ctest -D Experimental(Test|Coverage|MemCheck|Submit)
+  ctest -D Nightly
+  ctest -D Nightly(Start|Update|Configure|Build)
+  ctest -D Nightly(Test|Coverage|MemCheck|Submit)
+  ctest -D NightlyMemoryCheck
+\endverbatim
+
+If you want to have a code coverage, please add option on simgrid.
+\verbatim
+$ cmake -Denable_coverage=ON .
+$ ctest -D ExperimentalStart
+$ ctest -D ExperimentalConfigure
+$ ctest -D ExperimentalBuild
+$ ctest -D ExperimentalTest
+$ ctest -D ExperimentalCoverage
+$ ctest -D ExperimentalSubmit
+\endverbatim
+
 \section xps_dev_guide_g5k How to run simgrid scalability xps?
+
+\subsection xps_dev_guide_g5k_campaign How to execute g5k campaign?
+
+Quick steps deployment:
+
+\li 1/ Create a G5K account
+
+\li 2/ SSH to a frontend (must be rennes, nancy or toulouse for git protocol)
+
+\li 3/ Install g5k-campaign
+\verbatim
+$ gem install g5k-campaign --source http://g5k-campaign.gforge.inria.fr/pkg -p http://proxy:3128 --no-ri --no-rdoc --user-install
+\endverbatim  
+  
+\li 4/ Configure the API
+\verbatim
+$  mkdir ~/.restfully
+$  echo 'base_uri: https://api.grid5000.fr/stable/grid5000' > ~/.restfully/api.grid5000.fr.yml
+$  chmod 0600 ~/.restfully/api.grid5000.fr.yml
+\endverbatim
+
+\li 5/ Git clone the SimGrid Scalability project
+\verbatim
+$  git clone git://scm.gforge.inria.fr/simgrid/simgrid-scalability-XPs.git
+\endverbatim
+
+\li 6/ Copy the run script into your home
+\verbatim
+$  cp simgrid-scalability-XPs/script-sh/run-g5k-scalab.sh ~/
+\endverbatim
+
+\li 7/ Create the result log directory (must be ~/log/)
+\verbatim
+$  mkdir ~/log
+\endverbatim
+
+\li 8/ Execute the g5k campaign on a revision "rev"
+\verbatim
+$  sh run-g5k-scalab.sh "rev"
+\endverbatim
+
+You can also have more parameters
+
+\li 1/ -> 5/ Same as before
+
+\li 6/ Open simgrid-scalability-XPs
+
+\li 7/ Execute SGXP.pl to see parameters
+\verbatim
+$  perl SGXP.pl --help
+\endverbatim
+
+\li 8/ Execute SGXP.pl with your parameters like
+\verbatim
+$  ./SGXP.pl --site=nancy --cluster=graphene,griffon --test=chord,goal --rev="09bbc8de,3ca7b9a13"
+\endverbatim
+
+\subsection xps_dev_guide_g5k_log How to analyze logs?
+
+To analyze log from g5k-campaign you must install R tool.
+
+\li 0/ You can copy logs from g5k to your computer (recommanded)
+
+\li 1/ Open ~/log/
+
+\li 2/ Execute the perl analyzer for goal log
+\verbatim
+$  ~/simgrid-scalability-XPs/libperl/analyzer.pl goal.log.* > goal.csv
+\endverbatim
+
+\li 3/ Execute the R analyer for goal log
+\verbatim
+$  ~/simgrid-scalability-XPs/script-R/chord.R goal.csv output.chord.pdf
+\endverbatim
 
 */
