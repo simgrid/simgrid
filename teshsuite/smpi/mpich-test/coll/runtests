@@ -3,8 +3,6 @@
 # -mvhome is needed for the ANL SP, and is ignored by others
 args=
 device=
-#top_srcdir=/home/degomme/Downloads/mpich-test
-#srcdir=/home/degomme/Downloads/mpich-test/coll
 MPICH_VERSION=
 STOPFILE=${MPITEST_STOPTEST:-"$HOME/.stopmpichtests"}
 

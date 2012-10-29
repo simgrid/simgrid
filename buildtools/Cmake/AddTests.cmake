@@ -487,16 +487,16 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-indexed-raw                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/indexed.tesh)
       ADD_TEST(smpi-struct-raw                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct.tesh)
       ADD_TEST(smpi-pt2pt-raw                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt.tesh)
-      ADD_TEST(NAME smpi-mpich-env-raw        COMMAND ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env/runtests 
-      -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/env)
-      ADD_TEST(NAME smpi-mpich-pt2pt-raw      COMMAND ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt/runtests 
-      -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/pt2pt)
-      ADD_TEST(NAME smpi-mpich-context-raw      COMMAND ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/context/runtests 
-      -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/context -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/context)
-      ADD_TEST(NAME smpi-mpich-profile-raw        COMMAND ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile/runtests 
-      -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/profile)
-      ADD_TEST(NAME smpi-mpich-coll-raw        COMMAND ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll/runtests 
-       -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll)       
+      ADD_TEST(NAME smpi-mpich-env-raw        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/env ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env/runtests 
+      -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
+      ADD_TEST(NAME smpi-mpich-pt2pt-raw      COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/pt2pt ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt/runtests 
+      -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
+      ADD_TEST(NAME smpi-mpich-context-raw      COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/context ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/context/runtests 
+      -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/context -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
+      ADD_TEST(NAME smpi-mpich-profile-raw      COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/profile  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile/runtests 
+      -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} )
+      ADD_TEST(NAME smpi-mpich-coll-raw        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll/runtests 
+       -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})       
       set_tests_properties(smpi-mpich-env-raw smpi-mpich-context-raw  smpi-mpich-pt2pt-raw smpi-mpich-coll-raw smpi-mpich-profile-raw PROPERTIES PASS_REGULAR_EXPRESSION "-- No differences found; test successful")
     
     
