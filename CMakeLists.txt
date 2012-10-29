@@ -7,13 +7,15 @@ project(SimGrid C)
 if (enable_gtnets OR enable_ns3)
   enable_language(CXX)
 endif()
-# Workaround for a bug in cmake where enable_language does not work
-# well with OPTIONAL.
-# See http://www.cmake.org/Bug/print_bug_page.php?bug_id=9220
-if(DEFINED CMAKE_Fortran_COMPILER AND CMAKE_Fortran_COMPILER MATCHES "^$")
-  set(CMAKE_Fortran_COMPILER CMAKE_Fortran_COMPILER-NOTFOUND)
+if (NOT DEFINED enable_smpi OR enable_smpi) # smpi is enabled by default
+  # Call enable_language(Fortran) in order to load the build rules for
+  # this language, needed by teshsuite/smpi/mpich-test/.  Use
+  # CMAKE_FORCE_Fortran_COMPILER to bypass checks for a working
+  # compiler (smpiff don't exist at configure time).
+  include(CMakeForceCompiler)
+  CMAKE_FORCE_Fortran_COMPILER(smpiff smpiff)
+  enable_language(Fortran OPTIONAL)
 endif()
-enable_language(Fortran OPTIONAL)
 
 set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
 set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
