@@ -661,7 +661,7 @@ WARN_LOGFILE           =
 INPUT                  = index.doc \
                          simgrid.doc \
                          xps.doc \
-                         cmake.doc			 
+                         cmake.doc
 
 ###################################################
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
@@ -727,12 +727,7 @@ EXCLUDE_SYMBOLS        =
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH           = ./ \
-                         @top_srcdir@/doc/gtut-files \
-                         @top_srcdir@/src/surf/ \
-                         @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/examples \
-                         @top_srcdir@/testsuite
+EXAMPLE_PATH           = ./
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -1565,12 +1560,12 @@ SKIP_FUNCTION_MACROS   = YES
 # NOT include the path). If a tag file is not located in the directory in which
 # doxygen is run, you must also specify the path to the tagfile here.
 
-TAGFILES               = ../../shared/doxygen/simgriddevguide.tag=../../dev_guide/html/
+TAGFILES               = @CMAKE_HOME_DIRECTORY@/doc/shared/doxygen/simgriddevguide.tag
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = ../../shared/doxygen/simgriddevguide.tag
+GENERATE_TAGFILE       = @CMAKE_HOME_DIRECTORY@/doc/shared/doxygen/simgriddevguide.tag
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes

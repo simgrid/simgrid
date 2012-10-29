@@ -35,7 +35,6 @@ if(DOXYGEN_PATH)
   ADD_CUSTOM_COMMAND(TARGET dev_guide
     COMMAND ${CMAKE_COMMAND} -E echo "XX First Doxygen pass"
     COMMAND ${DOXYGEN_PATH}/doxygen DevGuideDoxyfile
-    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl ../../shared/doxygen/simgriddevguide.tag index-API.doc
 
     COMMAND ${CMAKE_COMMAND} -E echo "XX Second Doxygen pass"
     COMMAND ${DOXYGEN_PATH}/doxygen DevGuideDoxyfile

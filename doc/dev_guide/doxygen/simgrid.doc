@@ -1,4 +1,5 @@
-/*! \page simgrid SimGrid Developer Guide - SimGrid
+/*! 
+\page simgrid SimGrid Developer Guide - SimGrid
 
 \section simgrid_dev_guide_api How to add a new MSG function?
 \section simgrid_dev_guide_model How to add a new model in surf?
