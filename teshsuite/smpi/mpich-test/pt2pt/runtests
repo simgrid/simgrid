@@ -225,7 +225,7 @@ RunTest typeub 2 "**** Checking the type routines: MPI_UB ****"
 #todo : handle lb correctly !
 #RunTest typeub2 1 "**** Checking the type routines: MPI_UB(2) ****"
 
-#types too complex for smpi (structs of vectors)
+#Uses lb
 #RunTest typeub3 1 "**** Checking the type routines: MPI_UB(3) ****"
 
 #TODO: handle LB
@@ -282,9 +282,9 @@ RunTest hvectest 2 "*** Testing Vector type ***"
 RunTest hvectest2 2 "*** Testing struct type for vectors (MPI_UB) ***"
 
 #too complex for now
-#RunTest hvec 2 "*** Testing Type_Hvector ***"
+RunTest hvec 2 "*** Testing Type_Hvector ***"
 #fails
-#RunTest hindexed 1 "*** Testing Type_Hindexed ***"
+RunTest hindexed 1 "*** Testing Type_Hindexed ***"
 
 RunTest probe 2 "*** Testing Probe and Get_count ***"
 
