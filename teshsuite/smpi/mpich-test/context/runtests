@@ -95,7 +95,7 @@ fi
 #RunTest attrerr 1 "*** Testing attributes (2) ***"
 
 #TODO : fails with unions, excludes or intersections, need debug in smpi to work
-#RunTest grouptest_mpich 4 "*** Testing Groups ***"
+RunTest grouptest_mpich 4 "*** Testing Groups ***"
 
 RunTest groupcreate 4 "*** Testing Group creation ***"
 

@@ -394,7 +394,7 @@ int PMPI_Group_union(MPI_Group group1, MPI_Group group2,
 int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2,
                            MPI_Group * newgroup)
 {
-  int retval, i, proc1, proc2, size, size2;
+  int retval, i, proc1, proc2, size;
 
   smpi_bench_end();
   if (group1 == MPI_GROUP_NULL || group2 == MPI_GROUP_NULL) {
@@ -402,9 +402,8 @@ int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2,
   } else if (newgroup == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    size = smpi_group_size(group1);
-    size2 = smpi_group_size(group2);
-    for (i = 0; i < size2; i++) {
+    size = smpi_group_size(group2);
+    for (i = 0; i < size; i++) {
       proc2 = smpi_group_index(group2, i);
       proc1 = smpi_group_rank(group1, proc2);
       if (proc1 == MPI_UNDEFINED) {
@@ -415,12 +414,13 @@ int PMPI_Group_intersection(MPI_Group group1, MPI_Group group2,
       *newgroup = MPI_GROUP_EMPTY;
     } else {
       *newgroup = smpi_group_new(size);
-      size2 = smpi_group_size(group1);
-      for (i = 0; i < size2; i++) {
-        proc1 = smpi_group_index(group1, i);
-        proc2 = smpi_group_rank(group2, proc1);
-        if (proc2 != MPI_UNDEFINED) {
-          smpi_group_set_mapping(*newgroup, proc1, i);
+      int j=0;
+      for (i = 0; i < smpi_group_size(group2); i++) {
+        proc2 = smpi_group_index(group2, i);
+        proc1 = smpi_group_rank(group1, proc2);
+        if (proc1 != MPI_UNDEFINED) {
+          smpi_group_set_mapping(*newgroup, proc2, j);
+          j++;
         }
       }
     }
@@ -498,7 +498,7 @@ int PMPI_Group_incl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
 
 int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
 {
-  int retval, i, size, rank, index;
+  int retval, i, j, newsize, oldsize, index;
 
   smpi_bench_end();
   if (group == MPI_GROUP_NULL) {
@@ -511,22 +511,26 @@ int PMPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
     } else if (n == smpi_group_size(group)) {
       *newgroup = MPI_GROUP_EMPTY;
     } else {
-      size = smpi_group_size(group) - n;
-      *newgroup = smpi_group_new(size);
-      rank = 0;
-      while (rank < size) {
-        for (i = 0; i < n; i++) {
-          if (ranks[i] == rank) {
-            break;
-          }
+      oldsize=smpi_group_size(group);
+      newsize = oldsize - n;
+      *newgroup = smpi_group_new(newsize);
+
+      int* to_exclude=xbt_new(int, smpi_group_size(group));
+      for(i=0; i<oldsize; i++)
+        to_exclude[i]=0;
+      for(i=0; i<n; i++)
+        to_exclude[ranks[i]]=1;
+
+      j=0;
+      for(i=0; i<oldsize; i++){
+        if(to_exclude[i]==0){
+          index = smpi_group_index(group, i);
+          smpi_group_set_mapping(*newgroup, index, j);
+          j++;
         }
-        if (i >= n) {
-          index = smpi_group_index(group, rank);
-          smpi_group_set_mapping(*newgroup, index, rank);
-          
-        }
-        rank++;
       }
+
+      xbt_free(to_exclude);
     }
     smpi_group_use(*newgroup);
     retval = MPI_SUCCESS;

@@ -126,11 +126,25 @@ MPI_Barrier(MPI_COMM_WORLD);
 	fprintf( stdout, "Group range excl did not give ident groups\n" );
     }
 
-    MPI_Group_intersection( basegroup, g4, &g9 );
+    MPI_Group_intersection(g4, basegroup, &g9 );
     MPI_Group_compare( g9, g4, &result );
     if (result != MPI_IDENT) {
 	errs++;
 	fprintf( stdout, "Group intersection did not give ident groups\n" );
+    }
+    
+    MPI_Group_intersection(basegroup, g4 , &g9 );
+    MPI_Group_compare( g9, g4, &result );
+    if (result != MPI_IDENT) {
+	errs++;
+	fprintf( stdout, "Group intersection 2 did not give ident groups\n" );
+    }
+    
+        MPI_Group_intersection(basegroup, basegroup, &g9 );
+    MPI_Group_compare( g9, basegroup, &result );
+    if (result != MPI_IDENT) {
+	errs++;
+	fprintf( stdout, "Group intersection 3 did not give ident groups\n" );
     }
 
 /* Exclude EVERYTHING and check against MPI_GROUP_EMPTY */
