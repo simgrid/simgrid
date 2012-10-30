@@ -61,16 +61,6 @@ SET(CTEST_TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-Testin
 #CTEST_CUSTOM_POST_MEMCHECK                     Command to execute after any tests are run during MemCheck stage
 #CTEST_CUSTOM_COVERAGE_EXCLUDE                  Regular expression for excluding files from coverage testing
 
-SET(CTEST_CUSTOM_COVERAGE_EXCLUDE
-  "${CMAKE_HOME_DIRECTORY}/tools/"
-  "${CMAKE_HOME_DIRECTORY}/buildtools/"
-  "${CMAKE_HOME_DIRECTORY}/include/"
-  "${CMAKE_HOME_DIRECTORY}/examples/"
-  "${CMAKE_HOME_DIRECTORY}/testsuite/"
-  "${CMAKE_HOME_DIRECTORY}/teshsuite/"
-  "${CMAKE_HOME_DIRECTORY}/src/bindings/"
-  )
-
 ctest_start(Experimental)
 ctest_update(SOURCE "${CTEST_SOURCE_DIRECTORY}")
 ctest_configure(BUILD "${CTEST_SOURCE_DIRECTORY}")

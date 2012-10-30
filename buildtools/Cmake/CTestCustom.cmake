@@ -3,7 +3,6 @@ SET(CTEST_CUSTOM_COVERAGE_EXCLUDE
   "/tools/"
   "/buildtools/"
   "/include/"
-  "/examples/"
   "/testsuite/"
   "/teshsuite/"
   "/src/bindings/"
