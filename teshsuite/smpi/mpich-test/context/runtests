@@ -82,13 +82,14 @@ if [ $runtests = 1 ] ; then
 
 #
 # Run Fortran tests ONLY if Fortran available
-if [ 0 = 1 ] ; then 
-    RunTest attrtest 2 "*** Testing attributes from Fortran ***"
+#no fortran tests compile with smpi at this time
+#if [ $have_fortran -eq "1" ] ; then 
+#    #RunTest attrtest 2 "*** Testing attributes from Fortran ***"
 
-    if [ $test_mpi2 = 1 ] ; then
-       RunTest commnamesf 1 "*** Testing Communicator Names from Fortran ***"
-    fi
-fi
+#    if [ $test_mpi2 = 1 ] ; then
+#       RunTest commnamesf 1 "*** Testing Communicator Names from Fortran ***"
+#    fi
+#fi
 #uses attr, not implemented
 #RunTest attrt 2 "*** Testing attributes ***"
 #fails, uses MPI_Attr_get, et MPI_Attr_put
