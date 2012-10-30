@@ -48,3 +48,23 @@ set(PIPOL_IMAGE $ENV{PIPOL_IMAGE})
 if(NOT ${PIPOL_IMAGE} MATCHES "\n")
   set(SITE ${PIPOL_IMAGE})
 endif()
+
+set(PATTERN_CTEST_IGNORED "")
+if(enable_coverage)
+    set(PATTERN_CTEST_IGNORED 
+      "/tools/"
+      "/buildtools/"
+      "/include/"
+      "/testsuite/"
+      "/teshsuite/"
+      "/src/bindings/"
+    )
+    if(release)
+       set(PATTERN_CTEST_IGNORED 
+        ${PATTERN_CTEST_IGNORED}
+        "/examples/"
+        )
+    endif()
+endif()
+
+CONFIGURE_FILE(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)

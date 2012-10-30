@@ -211,7 +211,7 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExe.cmake)
 ### Make tests
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
-CONFIGURE_FILE(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
+
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
 

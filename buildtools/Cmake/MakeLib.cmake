@@ -145,12 +145,12 @@ target_link_libraries(simgrid 	${SIMGRID_DEP})
 
 # Compute the dependencies of SMPI
 ##################################
-set(SMPI_LDEP "")
+set(SMPI_DEP "")
 if(APPLE)
-  set(SMPI_LDEP "-Wl,-U -Wl,_smpi_simulated_main")
+  set(SMPI_DEP "-Wl,-U -Wl,_smpi_simulated_main")
 endif()
 if(enable_smpi)
-  target_link_libraries(smpi 	simgrid ${SMPI_LDEP})
+  target_link_libraries(smpi 	simgrid ${SMPI_DEP})
 endif()
 
 # Pass dependencies to static libs
@@ -160,7 +160,7 @@ if(enable_lib_static)
   add_dependencies(simgrid_static maintainer_files)
   set_target_properties(simgrid_static PROPERTIES OUTPUT_NAME simgrid)
   if(enable_smpi)
-    target_link_libraries(smpi_static 	simgrid ${SMPI_LDEP})
+    target_link_libraries(smpi_static 	simgrid ${SMPI_DEP})
     set_target_properties(smpi_static PROPERTIES OUTPUT_NAME smpi)
   endif()
 endif()
