@@ -148,8 +148,8 @@ $ make pipol_test_list_images
 
 \section xps_dev_guide_pipol_nightly How to use nightly builds?
 
-All the pipol scrpts are located in \"<project/directory>/buildtools/pipol/\".
-If you modified them you have to update the pipol home directory by using this command: make sync-pipl.
+All the pipol scripts are located in \"<project/directory>/buildtools/pipol/\".
+If you modifie them you have to update the pipol home directory by using this command: make sync-pipl.
 
 It will copy those files:
 \verbatim
@@ -162,7 +162,7 @@ rc.ubuntu                                       100% 1875     1.8KB/s   00:00
 rc.windows                                      100%  494     0.5KB/s   00:00    
 Nightly_simgrid.sh                              100% 4004     3.9KB/s   00:00    
 Experimental_bindings.sh                        100% 1794     1.8KB/s   00:00
-\endverabtim 
+\endverbatim 
 
 \section xps_dev_guide_cdash How to report tests in cdash?
 
@@ -197,7 +197,7 @@ $ ctest -D ExperimentalSubmit
 
 \subsection xps_dev_guide_g5k_campaign How to execute g5k campaign?
 
-Quick steps deployment:
+Quick steps deployment for rennes:
 
 \li 1/ Create a G5K account
 
@@ -248,7 +248,7 @@ $  perl SGXP.pl --help
 
 \li 8/ Execute SGXP.pl with your parameters like
 \verbatim
-$  ./SGXP.pl --site=nancy --cluster=graphene,griffon --test=chord,goal --rev="09bbc8de,3ca7b9a13"
+$  ./SGXP.pl --site=nancy --cluster=graphene --test=chord,goal --rev="09bbc8de,3ca7b9a13"
 \endverbatim
 
 \subsection xps_dev_guide_g5k_log How to analyze logs?
