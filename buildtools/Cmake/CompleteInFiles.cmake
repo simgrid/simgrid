@@ -228,12 +228,10 @@ if(pthread)
   ### Test that we have a way to create semaphores
 
   if(HAVE_SEM_OPEN_LIB)
-
-    exec_program(
-      "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -lpthread -o testprog"
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      OUTPUT_VARIABLE HAVE_SEM_OPEN_compil
-      )
+    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -lpthread -o sem_open
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    OUTPUT_VARIABLE HAVE_SEM_OPEN_compil
+    )
 
     if(HAVE_SEM_OPEN_compil)
       set(HAVE_SEM_OPEN 0)
@@ -244,15 +242,25 @@ if(pthread)
       message(STATUS "sem_open is compilable")
     endif()
 
-    exec_program("${CMAKE_BINARY_DIR}/testprog" RETURN_VALUE HAVE_SEM_OPEN_run OUTPUT_VARIABLE var_compil)
-    file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
+    execute_process(COMMAND ./sem_open
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
+    RESULT_VARIABLE HAVE_SEM_OPEN_run 
+    OUTPUT_VARIABLE var_compil
+    )
 
     if(NOT HAVE_SEM_OPEN_run)
       set(HAVE_SEM_OPEN 1)
       message(STATUS "sem_open is executable")
     else()
       set(HAVE_SEM_OPEN 0)
+      if(EXISTS "${CMAKE_BINARY_DIR}/sem_open")
+        message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_open exists!")
+      else()
+        message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_open not exists!")
+      endif()
       message(STATUS "Warning: sem_open not executable")
+      message(STATUS "Compilation output: '${var_compil}'")
+      message(STATUS "Exit result of sem_open: ${HAVE_SEM_OPEN_run}")
     endif()
 
   else()
@@ -260,11 +268,9 @@ if(pthread)
   endif()
 
   if(HAVE_SEM_INIT_LIB)
-    exec_program(
-      "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -lpthread -o testprog"
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      OUTPUT_VARIABLE HAVE_SEM_INIT_compil
-      )
+    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -lpthread -o sem_init
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
+    RESULT_VARIABLE HAVE_SEM_INIT_run OUTPUT_VARIABLE HAVE_SEM_INIT_compil)
 
     if(HAVE_SEM_INIT_compil)
       set(HAVE_SEM_INIT 0)
@@ -274,16 +280,25 @@ if(pthread)
       set(HAVE_SEM_INIT 1)
       message(STATUS "sem_init is compilable")
     endif()
-
-    exec_program("${CMAKE_BINARY_DIR}/testprog" RETURN_VALUE HAVE_SEM_INIT_run OUTPUT_VARIABLE var_compil)
-    file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
+    execute_process(COMMAND ./sem_init 
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
+    RESULT_VARIABLE HAVE_SEM_INIT_run 
+    OUTPUT_VARIABLE var_compil
+    )
 
     if(NOT HAVE_SEM_INIT_run)
       set(HAVE_SEM_INIT 1)
       message(STATUS "sem_init is executable")
     else()
       set(HAVE_SEM_INIT 0)
+      if(EXISTS "${CMAKE_BINARY_DIR}/sem_init")
+        message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_init exists!")
+      else()
+        message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_init not exists!")
+      endif()
       message(STATUS "Warning: sem_init not executable")
+      message(STATUS "Compilation output: '${var_compil}'")
+      message(STATUS "Exit result of sem_init: ${HAVE_SEM_INIT_run}")
     endif()
   endif()
 
@@ -352,14 +367,15 @@ IF(CMAKE_CROSSCOMPILING)
 ELSE()
   file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
-  exec_program(
-    "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog"
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-    OUTPUT_VARIABLE COMPILE_mcsc_VAR)
+  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+  OUTPUT_VARIABLE COMPILE_mcsc_VAR)
 
   if(NOT COMPILE_mcsc_VAR)
     message(STATUS "prog_AC_CHECK_MCSC.c is compilable")
-    exec_program("${CMAKE_BINARY_DIR}/testprog" OUTPUT_VARIABLE var_compil)
+    execute_process(COMMAND ./testprog
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
+    OUTPUT_VARIABLE var_compil)
   else()
     message(STATUS "prog_AC_CHECK_MCSC.c is not compilable")
   endif()
@@ -416,13 +432,34 @@ endif()
 ## GIT version check
 ##
 if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
-  exec_program("git remote | head -n 1" OUTPUT_VARIABLE remote RETURN_VALUE ret)
-  exec_program("git config --get remote.${remote}.url" OUTPUT_VARIABLE url RETURN_VALUE ret)
-
+  execute_process(COMMAND git remote
+  WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+  OUTPUT_VARIABLE remote
+  RESULT_VARIABLE ret
+  )
+  string(REPLACE "\n" "" remote "${remote}")
+  #message(STATUS "Git remote: ${remote}")
+  execute_process(COMMAND git config --get remote.${remote}.url
+  WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+  OUTPUT_VARIABLE url
+  RESULT_VARIABLE ret
+  )
+  string(REPLACE "\n" "" url "${url}")
+  #message(STATUS "Git url: ${url}")
   if(url)
-    exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1" OUTPUT_VARIABLE "GIT_VERSION")
+    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+    OUTPUT_VARIABLE GIT_VERSION
+    RESULT_VARIABLE ret
+    )
+    string(REPLACE "\n" "" GIT_VERSION "${GIT_VERSION}")
     message(STATUS "Git version: ${GIT_VERSION}")
-    exec_program("git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai ." OUTPUT_VARIABLE "GIT_DATE")
+    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai .
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+    OUTPUT_VARIABLE GIT_DATE
+    RESULT_VARIABLE ret
+    )
+    string(REPLACE "\n" "" GIT_DATE "${GIT_DATE}")
     message(STATUS "Git date: ${GIT_DATE}")
     string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
     STRING(REPLACE " +0000" "" GIT_DATE ${GIT_DATE})
@@ -871,14 +908,14 @@ configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_BINARY_DIR}/s
 set(top_builddir ${CMAKE_HOME_DIRECTORY})
 
 if(NOT WIN32)
-  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
-  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE OKITOKI)
-  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE OKITOKI)
-  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
-  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc" OUTPUT_VARIABLE OKITOKI)
-  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif2c" OUTPUT_VARIABLE OKITOKI)
-  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff" OUTPUT_VARIABLE OKITOKI)
-  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun" OUTPUT_VARIABLE OKITOKI)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif2c)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun)
 endif()
 
 set(generated_headers_to_install
