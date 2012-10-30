@@ -1,0 +1,155 @@
+
+SET(CTEST_CUSTOM_COVERAGE_EXCLUDE
+  "/tools/"
+  "/buildtools/"
+  "/include/"
+  "/examples/"
+  "/testsuite/"
+  "/teshsuite/"
+  "/src/bindings/"
+  )
+  
+#ignore some memcheck tests
+set(CTEST_CUSTOM_MEMCHECK_IGNORE
+  tesh-self-basic
+  tesh-self-cd
+  tesh-self-IO-broken-pipe
+  tesh-self-IO-orders
+  tesh-self-IO-bigsize
+  tesh-self-set-return
+  tesh-self-set-signal
+  tesh-self-set-timeout
+  tesh-self-set-ignore-output
+  tesh-self-catch-return
+  tesh-self-catch-signal
+  tesh-self-catch-timeout
+  tesh-self-catch-wrong-output
+  tesh-self-bg-basic
+  tesh-self-bg-set-signal
+  tesh-self-background
+  tesh-log-large
+  tesh-log-parallel
+  tesh-gras-dd-mem
+  tesh-gras-dd-rw
+  tesh-gras-dd-r_little32_4
+  tesh-gras-dd-r_little64
+  tesh-gras-dd-r_big32_8_4
+  tesh-gras-dd-r_big32_8
+  tesh-gras-dd-r_big32_2
+  tesh-gras-empty_main-rl
+  tesh-gras-empty_main-sg
+  tesh-simdag-reinit_costs
+  tesh-simdag-parser
+  tesh-simdag-flatifier
+  tesh-simdag-basic0
+  tesh-simdag-basic1
+  tesh-simdag-basic2
+  tesh-simdag-basic3
+  tesh-simdag-basic4
+  tesh-simdag-basic5
+  tesh-simdag-basic6
+  tesh-simdag-p2p-1
+  tesh-simdag-p2p-2
+  tesh-simdag-p2p-3
+  tesh-simdag-p2p-3
+  tesh-simdag-mxn-1
+  tesh-simdag-mxn-2
+  tesh-simdag-mxn-3
+  tesh-simdag-par-1
+  tesh-simdag-par-2
+  tesh-msg-get_sender
+  gras-ping-rl
+  gras-rpc-rl
+  gras-spawn-rl
+  gras-timer-rl
+  gras-chrono-rl
+  gras-simple_token-rl
+  gras-mmrpc-rl
+  gras-all2all-rl
+  gras-pmm-rl
+  gras-synchro-rl
+  gras-properties-rl
+  msg-sendrecv_CLM03
+  msg-sendrecv_Vegas
+  msg-sendrecv_Reno
+  msg-suspend
+  msg-masterslave
+  msg-masterslave-forwarder
+  msg-masterslave-failure
+  msg-masterslave-bypass
+  msg-migration
+  msg-ptask
+  msg-priority
+  msg-properties
+  msg-trace
+  msg-masterslave_cpu_ti
+  gras-properties-sg
+  amok-bandwidth-rl
+  amok-saturate-rl
+  simdag-test_simdag
+  simdag-test_simdag2
+  simdag-test_prop
+  simdag-metaxml_test
+  smpi-bcast
+  smpi-reduce
+  )
+
+IF(${ARCH_32_BITS})
+  SET(CTEST_CUSTOM_MEMCHECK_IGNORE
+    ${CTEST_CUSTOM_MEMCHECK_IGNORE}
+    tesh-gras-msg_handle-sg-32
+    tesh-gras-small_sleep-sg-32
+    gras-ping-sg-32
+    gras-rpc-sg-32
+    gras-spawn-sg-32
+    gras-timer-sg-32
+    gras-chrono-sg-32
+    gras-simple_token-sg-32
+    gras-mmrpc-sg-32
+    gras-all2all-sg-32
+    gras-pmm-sg-32
+    gras-synchro-sg-32
+    amok-bandwidth-sg-32
+    amok-saturate-sg-32
+    )
+ELSE()
+  SET(CTEST_CUSTOM_MEMCHECK_IGNORE
+    ${CTEST_CUSTOM_MEMCHECK_IGNORE}
+    tesh-gras-msg_handle-sg-64
+    tesh-gras-small_sleep-sg-64
+    gras-ping-sg-64
+    gras-rpc-sg-64
+    gras-spawn-sg-64
+    gras-timer-sg-64
+    gras-chrono-sg-64
+    gras-simple_token-sg-64
+    gras-mmrpc-sg-64
+    gras-all2all-sg-64
+    gras-pmm-sg-64
+    gras-synchro-sg-64
+    amok-bandwidth-sg-64
+    amok-saturate-sg-64
+    )
+ENDIF()
+
+if(HAVE_GTNETS)
+  SET(CTEST_CUSTOM_MEMCHECK_IGNORE
+    ${CTEST_CUSTOM_MEMCHECK_IGNORE}
+    msg-gtnets1
+    msg-gtnets2
+    msg-gtnets3
+    msg-gtnets4
+    msg-gtnets5
+    )
+endif()
+
+if(HAVE_JAVA)
+  SET(CTEST_CUSTOM_MEMCHECK_IGNORE
+    ${CTEST_CUSTOM_MEMCHECK_IGNORE}
+    java-basic
+    java-pingpong
+    java-comm_time
+    java-suspend
+    )
+endif()
+
