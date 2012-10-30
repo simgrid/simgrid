@@ -116,7 +116,7 @@ RunTest coll11 4
 RunTest coll12 4
 
 # coll13 is very picky about arguments
-RunTest coll13 4
+RunTest coll13 14
 
 RunTest longuser 4
 
