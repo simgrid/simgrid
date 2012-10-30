@@ -51,7 +51,7 @@ IF(pipol_user)
   FIND_PROGRAM(HAVE_SSH ssh)
   FIND_PROGRAM(HAVE_RSYNC rsync)
 
-  MESSAGE(STATUS "Pipol user is ${pipol_user}")
+  MESSAGE(STATUS "Pipol user is '${pipol_user}'")
   IF(HAVE_SSH)
     message(STATUS "Found ssh: ${HAVE_SSH}")
     # get pipol systems
@@ -145,7 +145,7 @@ IF(pipol_user)
 
   # add a target for each pipol system
   IF(PIPOL_SYSTEMS)
-    MESSAGE(STATUS "Adding Pipol targets")
+    #MESSAGE(STATUS "Adding Pipol targets")
     FOREACH(SYSTEM ${PIPOL_SYSTEMS})
       PIPOL_TARGET(${SYSTEM})
     ENDFOREACH(SYSTEM ${PIPOL_SYSTEMS})
@@ -156,7 +156,7 @@ IF(pipol_user)
     COMMAND ./pipol-sub --pipol-user=${pipol_user} deleteallmyjobs
     )
 
-  message(STATUS "Pipol options: ${CMAKE_OPTIONS}")
+  #message(STATUS "Pipol options: ${CMAKE_OPTIONS}")
 
   add_custom_target(sync-pipol
   COMMENT "Update pipol script for user: ${pipol_user}"
