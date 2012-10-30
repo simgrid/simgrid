@@ -136,7 +136,7 @@ IF(pipol_user)
       ADD_CUSTOM_COMMAND(TARGET pipol_test_list_images
 	COMMAND echo ${SYSTEM_TARGET}
 	)
-      ADD_CUSTOM_COMMAND(TARGET pipol_experimental_list_images
+    ADD_CUSTOM_COMMAND(TARGET pipol_experimental_list_images
 	COMMAND echo "${SYSTEM_TARGET}_experimental"
 	)
     ENDMACRO(PIPOL_TARGET)
@@ -158,4 +158,10 @@ IF(pipol_user)
 
   message(STATUS "Pipol options: ${CMAKE_OPTIONS}")
 
+  add_custom_target(sync-pipol
+  COMMENT "Update pipol script for user: ${pipol_user}"
+  COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/rc.* ${pipol_user}@pipol.inria.fr:~/.pipol/
+  COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/Nightly_simgrid.sh ${pipol_user}@pipol.inria.fr:~/.pipol/nightly/
+  COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/Experimental_bindings.sh ${pipol_user}@pipol.inria.fr:~/
+  )
 ENDIF()
