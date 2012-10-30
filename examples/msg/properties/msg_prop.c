@@ -114,7 +114,6 @@ msg_error_t test_all(const char *platform_file,
 {
   int host_number;
   unsigned int i;
-  double speed;
   xbt_dynar_t hosts;
   msg_host_t host;
   MSG_function_register("alice", alice);
