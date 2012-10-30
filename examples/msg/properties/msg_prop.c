@@ -63,7 +63,7 @@ static void test_host(const char*hostname)
   XBT_INFO("   Property: %s old value: %s", exist, value);
 
   XBT_INFO("== Trying to modify a host property");
-  xbt_dict_set(props, exist, xbt_strdup("250"), NULL);
+  MSG_host_set_property_value(thehost, exist, xbt_strdup("250"), NULL);
 
   /* Test if we have changed the value */
   value = MSG_host_get_property_value(thehost, exist);
@@ -112,11 +112,27 @@ int bob(int argc, char *argv[])
 msg_error_t test_all(const char *platform_file,
                      const char *application_file)
 {
+  int host_number;
+  unsigned int i;
+  double speed;
+  xbt_dynar_t hosts;
+  msg_host_t host;
   MSG_function_register("alice", alice);
   MSG_function_register("bob", bob);
   MSG_function_register("carole", carole);
 
   MSG_create_environment(platform_file);
+
+  host_number = MSG_get_host_number();
+  XBT_INFO("There are %d hosts in the environment", host_number);
+
+  hosts = MSG_hosts_as_dynar();
+
+  xbt_dynar_foreach(hosts, i, host){
+    XBT_INFO("Host '%s' runs at %.0f flops/s",MSG_host_get_name(host),
+       MSG_get_host_speed(host));
+  }
+
   MSG_launch_application(application_file);
 
   return MSG_main();
