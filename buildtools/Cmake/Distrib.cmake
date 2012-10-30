@@ -394,17 +394,5 @@ add_custom_target(supernovae-clean
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
 
-#############################################
-### Fill in the "make sync-gforge" target ###
-#############################################
-
-#PIPOL
-add_custom_target(sync-pipol
-  COMMAND scp -r Experimental_bindings.sh Experimental.sh  MemCheck.sh pre-simgrid.sh navarro@pipol.inria.fr:~/
-  COMMAND scp -r rc.* navarro@pipol.inria.fr:~/.pipol/
-  COMMAND scp -r Nightly* navarro@pipol.inria.fr:~/.pipol/nightly
-  COMMAND ssh navarro@pipol.inria.fr "chmod a=rwx ~/* ~/.pipol/rc.* ~/.pipol/nightly/*"
-  WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/buildtools/pipol/"
-  )
 
 include(CPack)

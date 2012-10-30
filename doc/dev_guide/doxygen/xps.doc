@@ -146,6 +146,23 @@ You can also see all available images from pipol
 $ make pipol_test_list_images
 \endverbatim
 
+\section xps_dev_guide_pipol_nightly How to use nightly builds?
+
+All the pipol scrpts are located in \"<project/directory>/buildtools/pipol/\".
+If you modified them you have to update the pipol home directory by using this command: make sync-pipl.
+
+It will copy those files:
+\verbatim
+simgrid@caraja:~/workspace/simgrid/build$ make sync-pipol 
+Update pipol script for user: simgrid
+rc.debian                                       100% 1338     1.3KB/s   00:00    
+rc.fedora                                       100% 1433     1.4KB/s   00:00    
+rc.mac                                          100% 1129     1.1KB/s   00:00    
+rc.ubuntu                                       100% 1875     1.8KB/s   00:00    
+rc.windows                                      100%  494     0.5KB/s   00:00    
+Nightly_simgrid.sh                              100% 4004     3.9KB/s   00:00    
+Experimental_bindings.sh                        100% 1794     1.8KB/s   00:00
+\endverabtim 
 
 \section xps_dev_guide_cdash How to report tests in cdash?
 
