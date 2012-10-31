@@ -12,8 +12,6 @@
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
 
-#define sleep(x) smpi_sleep(x)
-#define gettimeofday(x, y) smpi_gettimeofday(x, y)
 
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
