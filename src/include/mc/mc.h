@@ -48,9 +48,6 @@ void MC_new_stack_area(void *stack, char *name, void *context);
 XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */
 XBT_PUBLIC(void) MC_memory_exit(void);
 
-/********************************* Snapshot comparison test *************************************/
-void MC_test_heap_comparison(void);
-
 /* Trigger for state equality detection (check potential cycle in application) */
 void MC_compare(void);
 
