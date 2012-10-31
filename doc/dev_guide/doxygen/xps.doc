@@ -266,7 +266,7 @@ $  ~/simgrid-scalability-XPs/libperl/analyzer.pl goal.log.* > goal.csv
 
 \li 3/ Execute the R analyer for goal log
 \verbatim
-$  ~/simgrid-scalability-XPs/script-R/chord.R goal.csv output.chord.pdf
+$  ~/simgrid-scalability-XPs/script-R/goal.R goal.csv output.goal.pdf
 \endverbatim
 
 */
