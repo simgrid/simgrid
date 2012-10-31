@@ -168,7 +168,7 @@ unsigned int smpi_sleep(unsigned int secs)
   return secs;
 }
 
-int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
+int smpi_gettimeofday(struct timeval *tv)
 {
   double now;
   smpi_bench_end();

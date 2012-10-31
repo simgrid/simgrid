@@ -10,7 +10,7 @@
 #define SEED 221238
 
 #define sleep(x) smpi_sleep(x)
-#define gettimeofday(x, y) smpi_gettimeofday(x, y)
+#define gettimeofday(x, y) smpi_gettimeofday(x)
 
 #include <smpi/smpi.h>
 #include <xbt/sysdep.h>
