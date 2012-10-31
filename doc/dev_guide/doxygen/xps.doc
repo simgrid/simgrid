@@ -269,4 +269,6 @@ $  ~/simgrid-scalability-XPs/libperl/analyzer.pl goal.log.* > goal.csv
 $  ~/simgrid-scalability-XPs/script-R/goal.R goal.csv output.goal.pdf
 \endverbatim
 
+Example of generated pdf <a href="./output.goal.pdf">here</a>.
+
 */

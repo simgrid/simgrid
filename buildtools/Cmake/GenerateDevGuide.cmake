@@ -17,6 +17,7 @@ if(DOXYGEN_PATH)
     COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/shared/doxygen/simgriddevguide.tag
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html/
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/doxygen/output.goal.pdf ${CMAKE_HOME_DIRECTORY}/doc/dev_guide/html/
     )
        
   foreach(file ${DOC_FIGS})
