@@ -215,6 +215,9 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
 /********************* Double-DFS stateless *******************/
 
 void pair_stateless_free(mc_pair_stateless_t pair){
+  xbt_free(pair->graph_state->system_state);
+  xbt_free(pair->graph_state->proc_status);
+  xbt_free(pair->graph_state);
   xbt_free(pair);
 }
 
@@ -361,6 +364,9 @@ void MC_ddfs(int search_cycle){
 
   mc_pair_stateless_t next_pair = NULL;
   mc_pair_stateless_t pair_succ;
+
+  mc_pair_stateless_t remove_pair;
+  mc_pair_reached_t remove_pair_reached;
   
   if(xbt_fifo_size(mc_stack_liveness) < MAX_DEPTH_LIVENESS){
 
@@ -526,15 +532,17 @@ void MC_ddfs(int search_cycle){
 
   
   MC_SET_RAW_MEM;
-  xbt_fifo_shift(mc_stack_liveness);
+  remove_pair = xbt_fifo_shift(mc_stack_liveness);
+  xbt_fifo_remove(mc_stack_liveness, remove_pair);
+  remove_pair = NULL;
   if((current_pair->automaton_state->type == 1) || (current_pair->automaton_state->type == 2)){
-    xbt_dynar_pop(reached_pairs, NULL);
+    remove_pair_reached = xbt_dynar_pop_as(reached_pairs, mc_pair_reached_t);
+    pair_reached_free(remove_pair_reached);
+    remove_pair_reached = NULL;
   }
   MC_UNSET_RAW_MEM;
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
-  else
-    MC_UNSET_RAW_MEM;
 
 }
