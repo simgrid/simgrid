@@ -32,17 +32,8 @@ ssh pipol pipol-sub esn amd64-linux-debian-lenny.dd.gz none 02:00 "~/Experimenta
 
 #Debian Lenny 6.0
 ssh pipol pipol-sub esn amd64_2010-linux-debian-squeeze.dd.gz none 02:00 "~/Experimental_bindings.sh"
-#ssh pipol pipol-sub esn i386_2010-linux-debian-squeeze.dd.gz none 02:00 "~/Experimental_bindings.sh"
-ssh pipol pipol-sub esn i386_2010-linux-debian-squeeze-navarro-2011-10-03-171100.dd.gz none 02:00 "~/Experimental_bindings.sh"
+ssh pipol pipol-sub esn i386_2010-linux-debian-squeeze.dd.gz none 02:00 "~/Experimental_bindings.sh"
 
 #Debian Testing
 ssh pipol pipol-sub esn i386-linux-debian-testing none 02:00 "~/Experimental_bindings.sh"
 ssh pipol pipol-sub esn amd64-linux-debian-testing none 02:00 "~/Experimental_bindings.sh"
-
-#___________________________________________________________________________________________________
-#MacOS Snow Leopard 10.6____________________________________________________________________________
-ssh pipol pipol-sub esn x86_mac-mac-osx-server-snow-leopard-navarro-2011-09-22-113726.dd.gz none 02:00 "~/Experimental_bindings.sh"
-
-#___________________________________________________________________________________________________
-#windows-server-2008-64bits_________________________________________________________________________
-#ssh pipol pipol-sub esn amd64-windows-server-2008-64bits.dd.gz none 02:00 "~/Experimental_bindings.sh"

@@ -162,6 +162,7 @@ IF(pipol_user)
   COMMENT "Update pipol script for user: ${pipol_user}"
   COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/rc.* ${pipol_user}@pipol.inria.fr:~/.pipol/
   COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/Nightly_simgrid.sh ${pipol_user}@pipol.inria.fr:~/.pipol/nightly/
+  COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/Nightly_memCheck.sh ${pipol_user}@pipol.inria.fr:~/.pipol/nightly/
   COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/Experimental_bindings.sh ${pipol_user}@pipol.inria.fr:~/
   COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/pre-simgrid.sh ${pipol_user}@pipol.inria.fr:~/
   COMMAND ssh ${pipol_user}@pipol.inria.fr "chmod a=rwx ~/* ~/.pipol/rc.* ~/.pipol/nightly/*"
