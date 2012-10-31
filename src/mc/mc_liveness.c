@@ -82,6 +82,9 @@ int reached(xbt_state_t st){
     /* New pair reached */
     xbt_dynar_push(reached_pairs, &new_pair); 
     MC_UNSET_RAW_MEM;
+
+    if(raw_mem_set)
+      MC_SET_RAW_MEM;
  
     return 0;
 
@@ -120,9 +123,7 @@ int reached(xbt_state_t st){
 
     if(raw_mem_set)
       MC_SET_RAW_MEM;
-    else
-      MC_UNSET_RAW_MEM;
-
+ 
     compare = 0;
     
     return 0;
@@ -162,8 +163,6 @@ void set_pair_reached(xbt_state_t st){
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
-  else
-    MC_UNSET_RAW_MEM;
     
 }
 

@@ -292,7 +292,7 @@ int MC_deadlock_check()
  */
 void MC_replay(xbt_fifo_t stack, int start)
 {
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
 
   int value, i = 1;
   char *req_str;
@@ -348,7 +348,7 @@ void MC_replay(xbt_fifo_t stack, int start)
   }
   XBT_DEBUG("**** End Replay ****");
 
-  if(raw_mem_set)
+  if(raw_mem)
     MC_SET_RAW_MEM;
   else
     MC_UNSET_RAW_MEM;
@@ -359,7 +359,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 {
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
 
   int value;
   char *req_str;
@@ -462,7 +462,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
   XBT_DEBUG("**** End Replay ****");
 
-  if(raw_mem_set)
+  if(raw_mem)
     MC_SET_RAW_MEM;
   else
     MC_UNSET_RAW_MEM;
