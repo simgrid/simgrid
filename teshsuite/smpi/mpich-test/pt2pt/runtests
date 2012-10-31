@@ -259,7 +259,6 @@ RunTest nblock 4 "*** Testing Isend/Irecv (large numbers) ***"
 
 RunTest sendmany 8 "*** Testing Send (many procs) ***"
 
-# ... replaced by smpi_sleep calls
 RunTest order 2 "*** Testing Recv ordering ***"
 
 RunTest sendorder 2 "**** Checking Message Ordering ****"

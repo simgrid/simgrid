@@ -79,7 +79,7 @@ fi
 #
 testfiles=""
 if [ $runtests = 1 ] ; then
-#replaced sleep by smpi_sleep to avoid problems with real/simulation powers
+
 #RunTest timers 1 "*** Timer tests ***"
 
 RunTest init 2 "*** MPI_Initialized tests ***"

@@ -18,7 +18,7 @@ void Pause( double );
 void Pause( double sec )
 {
   /*double t1 =*/ MPI_Wtime();
-  smpi_sleep(sec);
+  sleep(sec);
 //while (MPI_Wtime() - t1 < sec) ;
 }
 

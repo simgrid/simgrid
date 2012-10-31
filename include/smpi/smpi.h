@@ -12,8 +12,6 @@
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
 
-#define sleep(x) smpi_sleep(x)
-#define gettimeofday(x, y) smpi_gettimeofday(x, y)
 
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
@@ -476,7 +474,7 @@ XBT_PUBLIC(void) smpi_exit(int);
 */
 
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
-XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
+XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv);
 XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);
 XBT_PUBLIC(unsigned long long) smpi_rastro_timestamp (void);
 XBT_PUBLIC(void) smpi_sample_1(int global, const char *file, int line,

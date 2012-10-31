@@ -57,7 +57,7 @@ for this test.\n" );
     else
     {
 	MPI_Wtime();
-	smpi_sleep(easy);
+	sleep(easy);
   //while (MPI_Wtime() - t1 < easy) ;
 	a = 1;
 	b = 2;

@@ -95,7 +95,6 @@ if [ $runtests = 1 ] ; then
 #fails, uses MPI_Attr_get, et MPI_Attr_put
 #RunTest attrerr 1 "*** Testing attributes (2) ***"
 
-#TODO : fails with unions, excludes or intersections, need debug in smpi to work
 RunTest grouptest_mpich 4 "*** Testing Groups ***"
 
 RunTest groupcreate 4 "*** Testing Group creation ***"

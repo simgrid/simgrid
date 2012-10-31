@@ -22,7 +22,7 @@ int main( int argc, char **argv )
     for (i = 0; i < 5; i++)
     {
 	t1 = MPI_Wtime();
-	smpi_sleep(1);
+	sleep(1);
 	t2 = MPI_Wtime();
 	fprintf( stdout, "%f seconds\n", t2 - t1 );
     } 
