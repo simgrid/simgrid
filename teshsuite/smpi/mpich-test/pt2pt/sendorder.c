@@ -24,7 +24,7 @@ void delay( int ms )
   double  deltat = ms * 0.001;
   MPI_Wtime();
   //while (MPI_Wtime() - t < deltat) ;
-  smpi_sleep(deltat);
+  sleep(deltat);
 }
 
 void CheckStatus( MPI_Status *status, int tag, int src, int cnt, int *err )
