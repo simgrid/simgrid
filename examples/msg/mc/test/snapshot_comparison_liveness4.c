@@ -20,21 +20,23 @@ int test(int argc, char **argv){
   XBT_INFO("Free after first snapshot");
   
   char *toto = xbt_malloc(5);
-  XBT_INFO("Toto value %s", toto);
+  XBT_INFO("Toto allocated");
 
   void *snap1 = MC_snapshot();
 
   MSG_process_sleep(1);
 
   xbt_free(toto);
+  XBT_INFO("Toto free");
 
   void *snap2 = MC_snapshot();
 
   MSG_process_sleep(1);
+  
+  MC_ignore_stack("snap2", "test");   
+  MC_ignore_stack("snap1", "test");
 
-  int res = MC_compare_snapshots(snap1, snap2);
-
-  XBT_INFO("Test result : %d (0 = state equality, 1 = different states)", res);
+  XBT_INFO("Test result : %d (0 = state equality, 1 = different states)", MC_compare_snapshots(snap1, snap2));
   
   XBT_INFO("**** End test ****");
 

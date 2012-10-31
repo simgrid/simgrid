@@ -33,9 +33,10 @@ int test(int argc, char **argv){
 
   MSG_process_sleep(1);
 
-  int res = MC_compare_snapshots(snap1, snap2);
+  MC_ignore_stack("snap2", "test");   
+  MC_ignore_stack("snap1", "test");
 
-  XBT_INFO("Test result : %d (0 = state equality, 1 = different states)", res);
+  XBT_INFO("Test result : %d (0 = state equality, 1 = different states)", MC_compare_snapshots(snap1, snap2));
   
   XBT_INFO("**** End test ****");
 
