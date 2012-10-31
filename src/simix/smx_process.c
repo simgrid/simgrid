@@ -709,6 +709,9 @@ void SIMIX_process_yield(smx_process_t self)
     self->doexception = 0;
     SMX_THROW();
   }
+
+  if(MC_is_active())
+    MC_ignore_stack("ctx", "SIMIX_process_yield");
 }
 
 /* callback: context fetching */

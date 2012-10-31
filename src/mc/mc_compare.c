@@ -16,22 +16,23 @@ static int heap_region_compare(void *d1, void *d2, size_t size);
 
 static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *sp2, void *heap1, void *heap2, xbt_dynar_t equals);
 static int is_heap_equality(xbt_dynar_t equals, void *a1, void *a2);
-static size_t ignore(void *address);
+static size_t heap_ignore_size(void *address);
 
 static void stack_region_free(stack_region_t s);
 static void heap_equality_free(heap_equality_t e);
 
+static int is_stack_ignore_variable(char *frame, char *var_name);
 static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals);
 
-static size_t ignore(void *address){
+static size_t heap_ignore_size(void *address){
   unsigned int cursor = 0;
   int start = 0;
-  int end = xbt_dynar_length(mc_comparison_ignore) - 1;
-  mc_ignore_region_t region;
+  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
+  mc_heap_ignore_region_t region;
 
   while(start <= end){
     cursor = (start + end) / 2;
-    region = (mc_ignore_region_t)xbt_dynar_get_as(mc_comparison_ignore, cursor, mc_ignore_region_t);
+    region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
     if(region->address == address)
       return region->size;
     if(region->address < address)
@@ -76,7 +77,7 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
 
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
-      if((ignore_size = ignore((char *)start_data_libsimgrid+i)) > 0){
+      if((ignore_size = heap_ignore_size((char *)start_data_libsimgrid+i)) > 0){
         i = i + ignore_size;
         continue;
       }
@@ -304,6 +305,33 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   
 }
 
+static int is_stack_ignore_variable(char *frame, char *var_name){
+
+  unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(mc_stack_comparison_ignore) - 1;
+  mc_stack_ignore_variable_t current_var;
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
+    if(strcmp(current_var->frame, frame) == 0){
+      if(strcmp(current_var->var_name, var_name) == 0)
+        return 1;
+      if(strcmp(current_var->var_name, var_name) < 0)
+        start = cursor + 1;
+      if(strcmp(current_var->var_name, var_name) > 0)
+        end = cursor - 1;
+    }
+  if(strcmp(current_var->frame, frame) < 0)
+      start = cursor + 1;
+  if(strcmp(current_var->frame, frame) > 0)
+      end = cursor - 1; 
+  }
+
+  return 0;
+}
+
 static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
   
   xbt_dynar_t tokens1 = xbt_str_split(s1, NULL);
@@ -312,6 +340,7 @@ static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
   xbt_dynar_t s_tokens1, s_tokens2;
   unsigned int cursor = 0;
   void *addr1, *addr2;
+  char *ip1, *ip2;
 
   int diff = 0;
   
@@ -319,7 +348,18 @@ static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
     s_tokens1 = xbt_str_split(xbt_dynar_get_as(tokens1, cursor, char *), "=");
     s_tokens2 = xbt_str_split(xbt_dynar_get_as(tokens2, cursor, char *), "=");
     if(xbt_dynar_length(s_tokens1) > 1 && xbt_dynar_length(s_tokens2) > 1){
-      if(strcmp(xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *)) != 0){
+      if((strcmp(xbt_dynar_get_as(s_tokens1, 0, char *), "ip") == 0) && (strcmp(xbt_dynar_get_as(s_tokens2, 0, char *), "ip") == 0)){
+        ip1 = strdup(xbt_dynar_get_as(s_tokens1, 1, char *));
+        ip2 = strdup(xbt_dynar_get_as(s_tokens2, 1, char *));
+      }
+      if(strcmp(xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *)) != 0){   
+        /* Ignore this variable ?  */
+        if(is_stack_ignore_variable(ip1, xbt_dynar_get_as(s_tokens1, 0, char *)) && is_stack_ignore_variable(ip2, xbt_dynar_get_as(s_tokens2, 0, char *))){
+          xbt_dynar_free(&s_tokens1);
+          xbt_dynar_free(&s_tokens2);
+          cursor++;
+          continue;
+        }
         addr1 = (void *) strtoul(xbt_dynar_get_as(s_tokens1, 1, char *), NULL, 16);
         addr2 = (void *) strtoul(xbt_dynar_get_as(s_tokens2, 1, char *), NULL, 16);
         if(is_heap_equality(heap_equals, addr1, addr2) == 0){

@@ -224,6 +224,7 @@ extern void *start_plt_libsimgrid;
 extern void *end_plt_libsimgrid;
 extern void *start_plt_binary;
 extern void *end_plt_binary;
+extern xbt_dynar_t mc_stack_comparison_ignore;
 
 typedef struct s_mc_pair{
   mc_snapshot_t system_state;

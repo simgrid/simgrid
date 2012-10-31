@@ -31,7 +31,7 @@ void SIMIX_network_init(void)
 {
   rdv_points = xbt_dict_new_homogeneous(SIMIX_rdv_free);
   if(MC_is_active())
-    MC_ignore(&smx_total_comms, sizeof(smx_total_comms));
+    MC_ignore_heap(&smx_total_comms, sizeof(smx_total_comms));
 }
 
 void SIMIX_network_exit(void)

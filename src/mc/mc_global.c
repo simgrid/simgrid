@@ -80,7 +80,8 @@ int compare;
 xbt_dict_t mc_local_variables = NULL;
 
 /* Ignore mechanism */
-extern xbt_dynar_t mc_comparison_ignore;
+xbt_dynar_t mc_stack_comparison_ignore;
+extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
 xbt_automaton_t _mc_property_automaton = NULL;
@@ -172,7 +173,7 @@ void MC_init_liveness(){
   /* mc_time refers to clock for each process -> ignore it for heap comparison */
   int i;
   for(i = 0; i<simix_process_maxpid; i++)
-    MC_ignore(&(mc_time[i]), sizeof(double));
+    MC_ignore_heap(&(mc_time[i]), sizeof(double));
   
   compare = 0;
 
@@ -678,17 +679,17 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
 /************ MC_ignore ***********/ 
 
-void MC_ignore(void *address, size_t size){
+void MC_ignore_heap(void *address, size_t size){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
   
-  if(mc_comparison_ignore == NULL)
-    mc_comparison_ignore = xbt_dynar_new(sizeof(mc_ignore_region_t), NULL);
+  if(mc_heap_comparison_ignore == NULL)
+    mc_heap_comparison_ignore = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), NULL);
 
-  mc_ignore_region_t region = NULL;
-  region = xbt_new0(s_mc_ignore_region_t, 1);
+  mc_heap_ignore_region_t region = NULL;
+  region = xbt_new0(s_mc_heap_ignore_region_t, 1);
   region->address = address;
   region->size = size;
 
@@ -705,13 +706,13 @@ void MC_ignore(void *address, size_t size){
   }
 
   unsigned int cursor = 0;
-  mc_ignore_region_t current_region;
-  xbt_dynar_foreach(mc_comparison_ignore, cursor, current_region){
+  mc_heap_ignore_region_t current_region;
+  xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region){
     if(current_region->address > address)
       break;
   }
 
-  xbt_dynar_insert_at(mc_comparison_ignore, cursor, &region);
+  xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
 
   MC_UNSET_RAW_MEM;
 
@@ -719,12 +720,76 @@ void MC_ignore(void *address, size_t size){
     MC_SET_RAW_MEM;
 }
 
+void MC_ignore_stack(const char *var_name, const char *frame){
+  
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
+  if(mc_stack_comparison_ignore == NULL)
+    mc_stack_comparison_ignore = xbt_dynar_new(sizeof(mc_stack_ignore_variable_t), NULL);
+
+  if(xbt_dynar_is_empty(mc_stack_comparison_ignore)){
+
+    mc_stack_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
+    var->var_name = strdup(var_name);
+    var->frame = strdup(frame);
+
+    xbt_dynar_insert_at(mc_stack_comparison_ignore, 0, &var);
+
+  }else{
+    
+    unsigned int cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(mc_stack_comparison_ignore) - 1;
+    mc_stack_ignore_variable_t current_var = NULL;
+
+    while(start <= end){
+      cursor = (start + end) / 2;
+      current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
+      if(strcmp(current_var->frame, frame) == 0){
+        if(strcmp(current_var->var_name, var_name) == 0){
+          MC_UNSET_RAW_MEM;
+          if(raw_mem_set)
+            MC_SET_RAW_MEM;
+          return;
+        }
+        if(strcmp(current_var->var_name, var_name) < 0)
+          start = cursor + 1;
+        if(strcmp(current_var->var_name, var_name) > 0)
+          end = cursor - 1;
+      }
+      if(strcmp(current_var->frame, frame) < 0)
+        start = cursor + 1;
+      if(strcmp(current_var->frame, frame) > 0)
+        end = cursor - 1;
+    }
+
+    mc_stack_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
+    var->var_name = strdup(var_name);
+    var->frame = strdup(frame);
+
+    if(strcmp(current_var->frame, frame) < 0)
+      xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
+    else
+      xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
+
+  }
+
+  MC_UNSET_RAW_MEM;
+  
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+
+}
+
 void MC_new_stack_area(void *stack, char *name, void* context){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
-
   if(stacks_areas == NULL)
     stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
   
