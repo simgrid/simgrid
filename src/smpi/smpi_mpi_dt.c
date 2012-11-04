@@ -141,23 +141,13 @@ MPI_Aint smpi_datatype_ub(MPI_Datatype datatype)
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
                          MPI_Aint * extent)
 {
-  int retval;
-
-//  if ((datatype->flags & DT_FLAG_COMMITED) != DT_FLAG_COMMITED) {
-//    retval = MPI_ERR_TYPE;
-//  } else {
-    *lb = datatype->lb;
-    *extent = datatype->ub - datatype->lb;
-    retval = MPI_SUCCESS;
-//  }
-  return retval;
+  *lb = datatype->lb;
+  *extent = datatype->ub - datatype->lb;
+  return MPI_SUCCESS;
 }
 
-static MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype){
-  MPI_Aint lb;
-  MPI_Aint extent;
-  smpi_datatype_extent(datatype, &lb, &extent);
-  return extent;
+MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype){
+  return datatype->ub - datatype->lb;
 }
 
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -296,13 +286,13 @@ s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
   return new_t;
 }
 
-void smpi_datatype_create(MPI_Datatype* new_type, int size,int extent, int has_subtype,
+void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int has_subtype,
                           void *struct_type, int flags){
   MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
   new_t->size = size;
   new_t->has_subtype = has_subtype;
-  new_t->lb = 0;
-  new_t->ub = extent;
+  new_t->lb = lb;
+  new_t->ub = ub;
   new_t->flags = flags;
   new_t->substruct = struct_type;
   *new_type = new_t;
@@ -318,9 +308,14 @@ void smpi_datatype_free(MPI_Datatype* type){
 int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  smpi_datatype_create(new_type, count *
-                       smpi_datatype_size(old_type),count *
-                       smpi_datatype_size(old_type),0,NULL, DT_FLAG_CONTIGUOUS);
+  if(old_type->has_subtype){
+	  //handle this case as a hvector with stride equals to the extent of the datatype
+	  return smpi_datatype_hvector(count, 1, smpi_datatype_get_extent(old_type), old_type, new_type);
+  }
+  smpi_datatype_create(new_type,
+					  count * smpi_datatype_size(old_type),
+					  0,count * smpi_datatype_size(old_type),
+					  0,NULL, DT_FLAG_CONTIGUOUS);
   retval=MPI_SUCCESS;
   return retval;
 }
@@ -329,15 +324,23 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
 {
   int retval;
   if (blocklen<=0) return MPI_ERR_ARG;
+  MPI_Aint lb = 0;
+  MPI_Aint ub = 0;
+  if(count>0){
+    lb=smpi_datatype_lb(old_type);
+    ub=((count-1)*stride+blocklen-1)*smpi_datatype_get_extent(old_type)+smpi_datatype_ub(old_type);
+  }
   if(old_type->has_subtype || stride != blocklen){
+
+
     s_smpi_mpi_vector_t* subtype = smpi_datatype_vector_create( stride,
                                                                 blocklen,
                                                                 count,
                                                                 old_type,
                                                                 smpi_datatype_size(old_type));
     smpi_datatype_create(new_type,
-                         count * (blocklen) * smpi_datatype_size(old_type),
-                         ((count -1) * stride + blocklen) * smpi_datatype_get_extent(old_type),
+                         count * (blocklen) * smpi_datatype_size(old_type), lb,
+                         ub,
                          1,
                          subtype,
                          DT_FLAG_VECTOR);
@@ -346,7 +349,7 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
     /* in this situation the data are contignous thus it's not
      * required to serialize and unserialize it*/
     smpi_datatype_create(new_type, count * blocklen *
-                         smpi_datatype_size(old_type), ((count -1) * stride + blocklen)*
+                         smpi_datatype_size(old_type), 0, ((count -1) * stride + blocklen)*
                          smpi_datatype_size(old_type),
                          0,
                          NULL,
@@ -462,6 +465,12 @@ int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype
 {
   int retval;
   if (blocklen<=0) return MPI_ERR_ARG;
+  MPI_Aint lb = 0;
+  MPI_Aint ub = 0;
+  if(count>0){
+    lb=smpi_datatype_lb(old_type);
+    ub=((count-1)*stride)+(blocklen-1)*smpi_datatype_get_extent(old_type)+smpi_datatype_ub(old_type);
+  }
   if(old_type->has_subtype || stride != blocklen*smpi_datatype_get_extent(old_type)){
     s_smpi_mpi_hvector_t* subtype = smpi_datatype_hvector_create( stride,
                                                                   blocklen,
@@ -469,16 +478,15 @@ int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype
                                                                   old_type,
                                                                   smpi_datatype_size(old_type));
 
-    smpi_datatype_create(new_type, count * blocklen *
-                         smpi_datatype_size(old_type), (count-1) * stride + blocklen *
-                         smpi_datatype_size(old_type),
+    smpi_datatype_create(new_type, count * blocklen * smpi_datatype_size(old_type),
+						 lb,ub,
                          1,
                          subtype,
                          DT_FLAG_VECTOR);
     retval=MPI_SUCCESS;
   }else{
     smpi_datatype_create(new_type, count * blocklen *
-                                             smpi_datatype_size(old_type),count * blocklen *
+                                             smpi_datatype_size(old_type),0,count * blocklen *
                                              smpi_datatype_size(old_type),
                                             0,
                                             NULL,
@@ -609,10 +617,22 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
   int retval;
   int size = 0;
   int contiguous=1;
+  MPI_Aint lb = 0;
+  MPI_Aint ub = 0;
+  if(count>0){
+    lb=indices[0]*smpi_datatype_get_extent(old_type);
+    ub=indices[0]*smpi_datatype_get_extent(old_type) + blocklens[0]*smpi_datatype_ub(old_type);
+  }
+
   for(i=0; i< count; i++){
     if   (blocklens[i]<=0)
       return MPI_ERR_ARG;
     size += blocklens[i];
+
+    if(indices[i]*smpi_datatype_get_extent(old_type)+smpi_datatype_lb(old_type)<lb)
+    	lb = indices[i]*smpi_datatype_get_extent(old_type)+smpi_datatype_lb(old_type);
+    if(indices[i]*smpi_datatype_get_extent(old_type)+blocklens[i]*smpi_datatype_ub(old_type)>ub)
+    	ub = indices[i]*smpi_datatype_get_extent(old_type)+blocklens[i]*smpi_datatype_ub(old_type);
 
     if ( (i< count -1) && (indices[i]+blocklens[i] != indices[i+1]) )contiguous=0;
   }
@@ -626,10 +646,10 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
                                                                   old_type,
                                                                   smpi_datatype_size(old_type));
      smpi_datatype_create(new_type,  size *
-                         smpi_datatype_size(old_type),(indices[count-1]+blocklens[count-1])*smpi_datatype_size(old_type),1, subtype, DT_FLAG_DATA);
+                         smpi_datatype_size(old_type),lb,ub,1, subtype, DT_FLAG_DATA);
   }else{
     smpi_datatype_create(new_type,  size *
-                         smpi_datatype_size(old_type),size *
+                         smpi_datatype_size(old_type),0,size *
                          smpi_datatype_size(old_type),0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
   }
   retval=MPI_SUCCESS;
@@ -755,27 +775,39 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
   int retval;
   int size = 0;
   int contiguous=1;
+  MPI_Aint lb = 0;
+  MPI_Aint ub = 0;
+  if(count>0){
+    lb=indices[0] + smpi_datatype_lb(old_type);
+    ub=indices[0] + blocklens[0]*smpi_datatype_ub(old_type);
+  }
   for(i=0; i< count; i++){
     if   (blocklens[i]<=0)
       return MPI_ERR_ARG;
     size += blocklens[i];
+
+    if(indices[i]+smpi_datatype_lb(old_type)<lb) lb = indices[i]+smpi_datatype_lb(old_type);
+    if(indices[i]+blocklens[i]*smpi_datatype_ub(old_type)>ub) ub = indices[i]+blocklens[i]*smpi_datatype_ub(old_type);
+
     if ( (i< count -1) && (indices[i]+blocklens[i]*smpi_datatype_size(old_type) != indices[i+1]) )contiguous=0;
   }
-  if (old_type->has_subtype == 1)
+  if (old_type->has_subtype == 1 || lb!=0)
     contiguous=0;
+
   if(!contiguous){
     s_smpi_mpi_hindexed_t* subtype = smpi_datatype_hindexed_create( blocklens,
                                                                   indices,
                                                                   count,
                                                                   old_type,
                                                                   smpi_datatype_size(old_type));
-    smpi_datatype_create(new_type,  size *
-                         smpi_datatype_size(old_type),indices[count-1]+blocklens[count-1]*smpi_datatype_size(old_type)
+    smpi_datatype_create(new_type,  size * smpi_datatype_size(old_type),
+						 lb,
+                         ub
                          ,1, subtype, DT_FLAG_DATA);
   }else{
-    smpi_datatype_create(new_type,  size *
-                         smpi_datatype_size(old_type),size *
-                         smpi_datatype_size(old_type),0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
+    smpi_datatype_create(new_type,  size * smpi_datatype_size(old_type),
+					     0,size * smpi_datatype_size(old_type),
+					     0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
   }
   retval=MPI_SUCCESS;
   return retval;
@@ -905,12 +937,32 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
   size_t size = 0;
   int contiguous=1;
   size = 0;
+  MPI_Aint lb = 0;
+  MPI_Aint ub = 0;
+  if(count>0){
+    lb=indices[0] + smpi_datatype_lb(old_types[0]);
+    ub=indices[0] + blocklens[0]*smpi_datatype_ub(old_types[0]);
+  }
+  int forced_lb=0;
+  int forced_ub=0;
   for(i=0; i< count; i++){
     if (blocklens[i]<=0)
       return MPI_ERR_ARG;
     if (old_types[i]->has_subtype == 1)
       contiguous=0;
+
     size += blocklens[i]*smpi_datatype_size(old_types[i]);
+    if (old_types[i]==MPI_LB){
+      lb=indices[i];
+      forced_lb=1;
+    }
+    if (old_types[i]==MPI_UB){
+      ub=indices[i];
+      forced_ub=1;
+    }
+
+    if(!forced_lb && indices[i]+smpi_datatype_lb(old_types[i])<lb) lb = indices[i];
+    if(!forced_ub && indices[i]+blocklens[i]*smpi_datatype_ub(old_types[i])>ub) ub = indices[i]+blocklens[i]*smpi_datatype_ub(old_types[i]);
 
     if ( (i< count -1) && (indices[i]+blocklens[i]*smpi_datatype_size(old_types[i]) != indices[i+1]) )contiguous=0;
   }
@@ -921,9 +973,9 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
                                                               count,
                                                               old_types);
 
-    smpi_datatype_create(new_type,  size, indices[count-1] + blocklens[count-1]*smpi_datatype_size(old_types[count-1]),1, subtype, DT_FLAG_DATA);
+    smpi_datatype_create(new_type,  size, lb, ub,1, subtype, DT_FLAG_DATA);
   }else{
-    smpi_datatype_create(new_type,  size, indices[count-1] + blocklens[count-1]*smpi_datatype_size(old_types[count-1]),0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
+    smpi_datatype_create(new_type,  size, lb, ub,0, NULL, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
   }
   return MPI_SUCCESS;
 }

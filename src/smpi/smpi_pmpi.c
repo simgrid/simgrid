@@ -182,7 +182,6 @@ int PMPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint * lb, MPI_Aint * extent
 int PMPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
 {
   int retval;
-  MPI_Aint dummy;
 
   smpi_bench_end();
   if (datatype == MPI_DATATYPE_NULL) {
@@ -190,7 +189,8 @@ int PMPI_Type_extent(MPI_Datatype datatype, MPI_Aint * extent)
   } else if (extent == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    retval = smpi_datatype_extent(datatype, &dummy, extent);
+    *extent = smpi_datatype_get_extent(datatype);
+    retval = MPI_SUCCESS;
   }
   smpi_bench_begin();
   return retval;

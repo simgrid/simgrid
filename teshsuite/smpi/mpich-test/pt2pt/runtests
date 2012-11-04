@@ -149,8 +149,8 @@ RunTest sendrecv2 2 "**** Testing MPI_Send and MPI_Recv (2) ****"
 
 #Uses MPI_Pack and Unpack
 #RunTest sendrecv3 2 "**** Testing MPI_Send and MPI_Recv (3) ****"
-
-RunTest sendrecv4 2 "**** Testing MPI_Send and MPI_Recv (4) ****"
+#Uses MPI_BOTTOM
+#RunTest sendrecv4 2 "**** Testing MPI_Send and MPI_Recv (4) ****"
 
 #not supported
 #RunTest bsendtest 2 "**** Testing MPI_Bsend and MPI_Recv (4) ****" "" "bsendtest-0.out bsendtest-1.out"
@@ -222,16 +222,13 @@ RunTest typetest 2 "**** Checking the type routines ****" "" "typetest-0.out typ
 #weird error, because comment says smpi returned value is same as expected from mpich .. modified to handle this value as correct
 RunTest typeub 2 "**** Checking the type routines: MPI_UB ****"
 
-#todo : handle lb correctly !
-#RunTest typeub2 1 "**** Checking the type routines: MPI_UB(2) ****"
+RunTest typeub2 1 "**** Checking the type routines: MPI_UB(2) ****"
 
-#Uses lb
-#RunTest typeub3 1 "**** Checking the type routines: MPI_UB(3) ****"
+RunTest typeub3 1 "**** Checking the type routines: MPI_UB(3) ****"
 
-#TODO: handle LB
-#RunTest typelb 1 "**** Checking the type routines: MPI_LB ****"
+RunTest typelb 1 "**** Checking the type routines: MPI_LB ****"
 
-#RunTest structlb 1 "**** Checking Type_struct routines: MPI_LB ****"
+RunTest structlb 1 "**** Checking Type_struct routines: MPI_LB ****"
 
 #ssend, replaced by send
 RunTest dtypelife 2 "**** Checking the type routines: MPI_Type_free ****"
@@ -280,9 +277,8 @@ RunTest hvectest 2 "*** Testing Vector type ***"
 
 RunTest hvectest2 2 "*** Testing struct type for vectors (MPI_UB) ***"
 
-#too complex for now
 RunTest hvec 2 "*** Testing Type_Hvector ***"
-#fails
+
 RunTest hindexed 1 "*** Testing Type_Hindexed ***"
 
 RunTest probe 2 "*** Testing Probe and Get_count ***"

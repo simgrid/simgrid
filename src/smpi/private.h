@@ -95,6 +95,7 @@ MPI_Aint smpi_datatype_lb(MPI_Datatype datatype);
 MPI_Aint smpi_datatype_ub(MPI_Datatype datatype);
 int smpi_datatype_extent(MPI_Datatype datatype, MPI_Aint * lb,
                          MPI_Aint * extent);
+MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype);
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount,
                        MPI_Datatype recvtype);
@@ -112,7 +113,7 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices,
 int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices,
                     MPI_Datatype* old_types, MPI_Datatype* new_type);
 
-void smpi_datatype_create(MPI_Datatype* new_type, int size,int realsize, int has_subtype, void *struct_type, int flags);
+void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int has_subtype, void *struct_type, int flags);
 
 
 void smpi_datatype_free(MPI_Datatype* type);
