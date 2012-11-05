@@ -461,10 +461,8 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
     if(status != MPI_STATUS_IGNORE) {
       status->MPI_SOURCE = req->src;
       status->MPI_TAG = req->tag;
-      if(req->size == request->size)
-        status->MPI_ERROR = MPI_SUCCESS;
-      else status->MPI_ERROR = MPI_ERR_TRUNCATE;
-      status->count = request->size;
+      status->MPI_ERROR = MPI_SUCCESS;
+      status->count = req->size;
     }
   }
   else *flag = 0;
