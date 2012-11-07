@@ -340,7 +340,7 @@ static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
   xbt_dynar_t s_tokens1, s_tokens2;
   unsigned int cursor = 0;
   void *addr1, *addr2;
-  char *ip1, *ip2;
+  char *ip1 = NULL, *ip2 = NULL;
 
   int diff = 0;
   
