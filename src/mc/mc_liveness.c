@@ -516,6 +516,121 @@ void MC_ddfs(int search_cycle){
       }
 
  
+    }else{
+      
+      XBT_DEBUG("No more request to execute in this state, search evolution in Büchi Automaton.");
+
+      MC_SET_RAW_MEM;
+
+      /* Create the new expanded graph_state */
+      next_graph_state = MC_state_pair_new();
+
+      xbt_dynar_reset(successors);
+
+      MC_UNSET_RAW_MEM;
+
+
+      cursor= 0;
+      xbt_dynar_foreach(current_pair->automaton_state->out, cursor, transition_succ){
+
+        res = MC_automaton_evaluate_label(transition_succ->label);
+
+        if(res == 1){ // enabled transition in automaton
+          MC_SET_RAW_MEM;
+          next_pair = new_pair_stateless(next_graph_state, transition_succ->dst, MC_state_interleave_size(next_graph_state));
+          xbt_dynar_push(successors, &next_pair);
+          MC_UNSET_RAW_MEM;
+        }
+
+      }
+
+      cursor = 0;
+   
+      xbt_dynar_foreach(current_pair->automaton_state->out, cursor, transition_succ){
+      
+        res = MC_automaton_evaluate_label(transition_succ->label);
+  
+        if(res == 2){ // true transition in automaton
+          MC_SET_RAW_MEM;
+          next_pair = new_pair_stateless(next_graph_state, transition_succ->dst, MC_state_interleave_size(next_graph_state));
+          xbt_dynar_push(successors, &next_pair);
+          MC_UNSET_RAW_MEM;
+        }
+
+      }
+
+      cursor = 0; 
+     
+      xbt_dynar_foreach(successors, cursor, pair_succ){
+
+        if(search_cycle == 1){
+
+          if((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)){ 
+
+            if(reached(pair_succ->automaton_state)){
+           
+              XBT_INFO("Next pair (depth = %d) already reached !", xbt_fifo_size(mc_stack_liveness) + 1);
+        
+              XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+              XBT_INFO("|             ACCEPTANCE CYCLE            |");
+              XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+              XBT_INFO("Counter-example that violates formula :");
+              MC_show_stack_liveness(mc_stack_liveness);
+              MC_dump_stack_liveness(mc_stack_liveness);
+              MC_print_statistics_pairs(mc_stats_pair);
+              exit(0);
+
+            }else{
+
+              XBT_INFO("Next pair (depth = %d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
+        
+              XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+
+              MC_SET_RAW_MEM;
+              xbt_fifo_unshift(mc_stack_liveness, pair_succ);
+              MC_UNSET_RAW_MEM;
+        
+              MC_ddfs(search_cycle);
+
+            }
+
+          }else{
+
+            MC_SET_RAW_MEM;
+            xbt_fifo_unshift(mc_stack_liveness, pair_succ);
+            MC_UNSET_RAW_MEM;
+            
+            MC_ddfs(search_cycle);
+            
+          }
+      
+
+        }else{
+      
+          if(((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
+
+            set_pair_reached(pair_succ->automaton_state);
+         
+            search_cycle = 1;
+
+            XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+
+          }
+
+          MC_SET_RAW_MEM;
+          xbt_fifo_unshift(mc_stack_liveness, pair_succ);
+          MC_UNSET_RAW_MEM;
+          
+          MC_ddfs(search_cycle);
+          
+        }
+
+        /* Restore system before checking others successors */
+        if(cursor != xbt_dynar_length(successors) - 1)
+          MC_replay_liveness(mc_stack_liveness, 1);
+
+      }           
+
     }
     
   }else{
