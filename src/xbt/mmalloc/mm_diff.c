@@ -121,7 +121,7 @@ void *s_heap, *heapbase1, *heapbase2;
 malloc_info *heapinfo1, *heapinfo2;
 size_t heaplimit, heapsize1, heapsize2;
 
-int ignore_done;
+int ignore_done = 0;
 
 int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stack1, xbt_dynar_t *stack2, xbt_dynar_t *equals){
 
@@ -159,8 +159,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
   xbt_dynar_t previous = xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
 
   int equal, res_compare;
-
-  ignore_done = 0;
 
   /* Init equal information */
   i1 = 1;
@@ -548,6 +546,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
   XBT_DEBUG("Different blocks or fragments in heap2 : %d", nb_diff2);
 
   xbt_dynar_free(&previous);
+  ignore_done = 0;
 
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
 
