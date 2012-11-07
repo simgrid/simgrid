@@ -394,6 +394,13 @@ void MC_ddfs(int search_cycle){
         next_graph_state = MC_state_pair_new();
 
         /* Get enabled process and insert it in the interleave set of the next graph_state */
+
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(MC_process_is_enabled(process)){
+            XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
+          }
+        }
+
         xbt_swag_foreach(process, simix_global->process_list){
           if(MC_process_is_enabled(process)){
             MC_state_interleave_process(next_graph_state, process);
