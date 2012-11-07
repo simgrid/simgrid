@@ -76,7 +76,7 @@ int reached(xbt_state_t st){
   
   MC_UNSET_RAW_MEM;
   
-  if(xbt_dynar_is_empty(reached_pairs) || !compare){
+  if(xbt_dynar_is_empty(reached_pairs)/* || !compare*/){
 
     MC_SET_RAW_MEM;
     /* New pair reached */
