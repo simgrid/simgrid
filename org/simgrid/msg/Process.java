@@ -406,4 +406,11 @@ public abstract class Process implements Runnable {
 	static {
 		nativeInit();
 	}
+	/**
+	 * This static method returns the current amount of processes running
+	 *
+	 * @return			The count of the running processes
+	 */ 
+	public native static int getCount();
+
 }

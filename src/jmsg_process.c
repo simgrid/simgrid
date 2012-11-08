@@ -266,7 +266,8 @@ Java_org_simgrid_msg_Process_resume(JNIEnv * env,
   jxbt_check_res("MSG_process_resume()", rv, MSG_OK,
                  bprintf("unexpected error , please report this bug"));
 }
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setAutoRestart
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_setAutoRestart
     (JNIEnv *env, jobject jprocess, jboolean jauto_restart) {
   msg_process_t process = jprocess_to_native_process(jprocess, env);
   xbt_ex_t e;
@@ -285,7 +286,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setAutoRestart
     xbt_ex_free(e);
   }
 }
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_restart
     (JNIEnv *env, jobject jprocess) {
   msg_process_t process = jprocess_to_native_process(jprocess, env);
   xbt_ex_t e;
@@ -318,7 +320,8 @@ Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env,
   return (jboolean) MSG_process_is_suspended(process);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Process_sleep
 	(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos) {
 
 	double time =  jmillis / 1000 + jnanos / 1000;
@@ -397,4 +400,16 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , jobject jprocess, jdouble jkilltime) {
 	msg_process_t process = jprocess_to_native_process(jprocess, env);
 	MSG_process_set_kill_time(process, (double)jkilltime);
+}
+
+JNIEXPORT jint JNICALL
+Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls) {
+	/* FIXME: the next test on SimGrid version is to ensure that this still compiles with SG 3.8 while the C function were added in SG 3.9 only.
+	 * This kind of pimple becomes mandatory when you get so slow to release the java version that it begins evolving further after the C release date.
+	 */
+#if SIMGRID_VERSION >= 30900
+  return (jint) MSG_process_get_number();
+#else
+  return (jint) -1;
+#endif
 }

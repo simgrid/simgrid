@@ -13,6 +13,8 @@ SimGrid-java (3.8) unstable; urgency=low
  * Add Process.getProperty, Host.getProperty, Host.getProperty: allows
    you to retrieve the properties of the processes/hosts
  * Deprecate Msg.clean(): you can just forget about it now.
+ * New function Process.getCount(), that only works when compiling
+   with the not yet released version 3.9 of the C library.
  
  * New context factory based on Coroutines. It mandates a modified JVM
    but then, the simulations run about five times faster, and there is
