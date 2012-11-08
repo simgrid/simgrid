@@ -38,6 +38,9 @@ int SIMIX_process_has_pending_comms(smx_process_t process) {
   return xbt_fifo_size(process->comms) > 0;
 }
 
+void SIMIX_pre_process_cleanup(smx_simcall_t simcall, smx_process_t process) {
+  SIMIX_process_cleanup(process);
+}
 /**
  * \brief Moves a process to the list of processes to destroy.
  */
@@ -192,6 +195,20 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
   return process;
 }
 
+
+void SIMIX_pre_process_create(smx_simcall_t simcall,
+		          smx_process_t *process,
+                          const char *name,
+                          xbt_main_func_t code,
+                          void *data,
+                          const char *hostname,
+                          double kill_time,
+                          int argc, char **argv,
+                          xbt_dict_t properties,
+                          int auto_restart){
+  return SIMIX_process_create(process, name, code, data, hostname,
+                              kill_time, argc, argv, properties, auto_restart);
+}
 /**
  * \brief Internal function to create a process.
  *
@@ -288,6 +305,9 @@ void SIMIX_process_runall(void)
   xbt_dynar_reset(simix_global->process_to_run);
 }
 
+void SIMIX_pre_process_kill(smx_simcall_t simcall, smx_process_t process) {
+  SIMIX_process_kill(process, simcall->issuer);
+}
 /**
  * \brief Internal function to kill a SIMIX process.
  *
@@ -349,6 +369,9 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
 }
 
+void SIMIX_pre_process_killall(smx_simcall_t simcall) {
+  SIMIX_process_killall(simcall->issuer);
+}
 /**
  * \brief Kills all running processes.
  * \param issuer this one will not be killed
@@ -368,6 +391,11 @@ void SIMIX_process_killall(smx_process_t issuer)
   SIMIX_process_empty_trash();
 }
 
+void SIMIX_pre_process_change_host(smx_simcall_t simcall, smx_process_t process,
+		                   smx_host_t dest)
+{
+  process->new_host = dest;
+}
 void SIMIX_process_change_host(smx_process_t process,
              smx_host_t dest)
 {
@@ -377,14 +405,9 @@ void SIMIX_process_change_host(smx_process_t process,
   xbt_swag_insert(process, dest->process_list);
 }
 
-void SIMIX_pre_process_change_host(smx_process_t process, smx_host_t dest)
-{
-  process->new_host = dest;
-}
 
-void SIMIX_pre_process_suspend(smx_simcall_t simcall)
+void SIMIX_pre_process_suspend(smx_simcall_t simcall, smx_process_t process)
 {
-  smx_process_t process = simcall->process_suspend.process;
   smx_action_t action_suspend =
       SIMIX_process_suspend(process, simcall->issuer);
 
@@ -444,8 +467,12 @@ smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
       return NULL;
     }
   } else {
-    return SIMIX_host_execute(SIMIX_pack_args(PTR("suspend"), PTR(process->smx_host), DOUBLE(0.0), DOUBLE(1.0)));
+    return SIMIX_host_execute("suspend", process->smx_host, 0.0, 1.0);
   }
+}
+
+void SIMIX_pre_process_resume(smx_simcall_t simcall, smx_process_t process){
+  SIMIX_process_resume(process, simcall->issuer);
 }
 
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
@@ -502,9 +529,16 @@ int SIMIX_process_get_maxpid(void) {
   return simix_process_maxpid;
 }
 
+int SIMIX_pre_process_count(smx_simcall_t simcall){
+  return SIMIX_process_count();
+}
 int SIMIX_process_count(void)
 {
   return xbt_swag_size(simix_global->process_list);
+}
+
+void* SIMIX_pre_process_self_get_data(smx_simcall_t simcall, smx_process_t self){
+  return SIMIX_process_self_get_data(self);	
 }
 
 void* SIMIX_process_self_get_data(smx_process_t self)
@@ -517,6 +551,10 @@ void* SIMIX_process_self_get_data(smx_process_t self)
   return SIMIX_process_get_data(self);
 }
 
+void SIMIX_pre_process_set_data(smx_simcall_t simcall, smx_process_t process,
+                                void *data){
+  SIMIX_process_set_data(process, data);
+}
 void SIMIX_process_self_set_data(smx_process_t self, void *data)
 {
   xbt_assert(self == SIMIX_process_self(), "This is not the current process");
@@ -524,6 +562,9 @@ void SIMIX_process_self_set_data(smx_process_t self, void *data)
   SIMIX_process_set_data(self, data);
 }
 
+void* SIMIX_pre_process_get_data(smx_simcall_t simcall, smx_process_t process){
+  return SIMIX_process_get_data(process);
+}
 void* SIMIX_process_get_data(smx_process_t process)
 {
   return process->data;
@@ -534,6 +575,9 @@ void SIMIX_process_set_data(smx_process_t process, void *data)
   process->data = data;
 }
 
+smx_host_t SIMIX_pre_process_get_host(smx_simcall_t simcall, smx_process_t process){
+  return SIMIX_process_get_host(process);
+}
 smx_host_t SIMIX_process_get_host(smx_process_t process)
 {
   return process->smx_host;
@@ -550,6 +594,9 @@ const char* SIMIX_process_self_get_name(void) {
   return SIMIX_process_get_name(process);
 }
 
+const char* SIMIX_pre_process_get_name(smx_simcall_t simcall, smx_process_t process) {
+  return SIMIX_process_get_name(process);
+}
 const char* SIMIX_process_get_name(smx_process_t process)
 {
   return process->name;
@@ -567,25 +614,31 @@ smx_process_t SIMIX_process_get_by_name(const char* name)
   return NULL;
 }
 
+int SIMIX_pre_process_is_suspended(smx_simcall_t simcall, smx_process_t process){
+  return SIMIX_process_is_suspended(process);
+}
 int SIMIX_process_is_suspended(smx_process_t process)
 {
   return process->suspended;
 }
 
+xbt_dict_t SIMIX_pre_process_get_properties(smx_simcall_t simcall, smx_process_t process){
+  return SIMIX_process_get_properties(process);
+}
 xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 {
   return process->properties;
 }
 
-void SIMIX_pre_process_sleep(smx_simcall_t simcall)
+void SIMIX_pre_process_sleep(smx_simcall_t simcall, double duration)
 {
   if (MC_is_active()) {
-    MC_process_clock_add(simcall->issuer, simcall->process_sleep.duration);
+    MC_process_clock_add(simcall->issuer, duration);
     simcall->process_sleep.result = SIMIX_DONE;
     SIMIX_simcall_answer(simcall);
     return;
   }
-  smx_action_t action = SIMIX_process_sleep(simcall->issuer, simcall->process_sleep.duration);
+  smx_action_t action = SIMIX_process_sleep(simcall->issuer, duration);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
@@ -764,6 +817,8 @@ xbt_dynar_t SIMIX_processes_as_dynar(void) {
   }
   return res;
 }
+
+
 void SIMIX_process_on_exit_runall(smx_process_t process) {
   s_smx_process_exit_fun_t exit_fun;
 
@@ -772,6 +827,12 @@ void SIMIX_process_on_exit_runall(smx_process_t process) {
     (exit_fun.fun)(exit_fun.arg);
   }
 }
+
+void SIMIX_pre_process_on_exit(smx_simcall_t simcall, smx_process_t process,
+	                       int_f_pvoid_t fun, void *data) {
+  SIMIX_process_on_exit(process, fun, data);
+}
+
 void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data) {
   xbt_assert(process, "current process not found: are you in maestro context ?");
 
@@ -783,6 +844,11 @@ void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data)
 
   xbt_dynar_push_as(process->on_exit,s_smx_process_exit_fun_t,exit_fun);
 }
+
+void SIMIX_pre_process_auto_restart_set(smx_simcall_t simcall, smx_process_t process,
+		                        int auto_restart) {
+  SIMIX_process_auto_restart_set(process, auto_restart);	
+}
 /**
  * \brief Sets the auto-restart status of the process.
  * If set to 1, the process will be automatically restarted when its host
@@ -790,6 +856,10 @@ void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data)
  */
 void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart) {
   process->auto_restart = auto_restart;
+}
+
+smx_process_t SIMIX_pre_process_restart(smx_simcall_t simcall, smx_process_t process) {
+  return SIMIX_process_restart(process, simcall->issuer);	
 }
 /**
  * \brief Restart a process.

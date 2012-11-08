@@ -12,11 +12,10 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
+/* generate strings from the enumeration values */
 static const char* simcall_names[] = {
-#undef SIMCALL_ENUM_ELEMENT
-#define SIMCALL_ENUM_ELEMENT(x,y) #x /* generate strings from the enumeration values */
-SIMCALL_LIST
-#undef SIMCALL_ENUM_ELEMENT
+SIMCALL_LIST(SIMCALL_TYPE, SIMCALL_SEP_COMMA)
+[SIMCALL_NONE] = "NONE"
 };
 
 /**
@@ -224,8 +223,7 @@ smx_action_t simcall_host_execute(const char *name, smx_host_t host,
   if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->host_execute.result = NULL;
 
-  SIMIX_simcall(SIMCALL_HOST_EXECUTE, PTR(name), PTR(host), DOUBLE(computation_amount), DOUBLE(priority));
-
+  simcall_BODY_host_execute(name, host, computation_amount, priority);
   return simcall->host_execute.result;
 }
 
@@ -385,7 +383,7 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
   simcall->host_execution_wait.execution = execution;
   simcall->host_execution_wait.simcall = simcall;
 
-  SIMIX_simcall(SIMCALL_HOST_EXECUTION_WAIT, PTR(simcall), PTR(execution));
+  simcall_BODY_host_execution_wait(execution);
 
   if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->host_execution_wait.result = -1;

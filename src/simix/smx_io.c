@@ -15,13 +15,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
 
 
 //SIMIX FILE READ
-void SIMIX_pre_file_read(smx_simcall_t simcall)
+void SIMIX_pre_file_read(smx_simcall_t simcall, void *ptr, size_t size,
+		         size_t nmemb, smx_file_t stream)
 {
-  smx_action_t action = SIMIX_file_read(simcall->issuer,
-      simcall->file_read.ptr,
-      simcall->file_read.size,
-      simcall->file_read.nmemb,
-      simcall->file_read.stream);
+  smx_action_t action = SIMIX_file_read(simcall->issuer, ptr, size, nmemb, stream);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
@@ -55,13 +52,10 @@ smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size, size
 }
 
 //SIMIX FILE WRITE
-void SIMIX_pre_file_write(smx_simcall_t simcall)
+void SIMIX_pre_file_write(smx_simcall_t simcall, const void *ptr, size_t size,
+	                  size_t nmemb, smx_file_t stream)
 {
-  smx_action_t action = SIMIX_file_write(simcall->issuer,
-      simcall->file_write.ptr,
-      simcall->file_write.size,
-      simcall->file_write.nmemb,
-      simcall->file_write.stream);
+  smx_action_t action = SIMIX_file_write(simcall->issuer, ptr, size, nmemb, stream);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
@@ -95,12 +89,10 @@ smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr, size_t siz
 }
 
 //SIMIX FILE OPEN
-void SIMIX_pre_file_open(smx_simcall_t simcall)
+void SIMIX_pre_file_open(smx_simcall_t simcall, const char* mount,
+		         const char* path, const char* mode)
 {
-  smx_action_t action = SIMIX_file_open(simcall->issuer,
-      simcall->file_open.mount,
-      simcall->file_open.path,
-      simcall->file_open.mode);
+  smx_action_t action = SIMIX_file_open(simcall->issuer, mount, path, mode);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
@@ -134,10 +126,9 @@ smx_action_t SIMIX_file_open(smx_process_t process ,const char* mount, const cha
 }
 
 //SIMIX FILE CLOSE
-void SIMIX_pre_file_close(smx_simcall_t simcall)
+void SIMIX_pre_file_close(smx_simcall_t simcall, smx_file_t fp)
 {
-  smx_action_t action = SIMIX_file_close(simcall->issuer,
-      simcall->file_close.fp);
+  smx_action_t action = SIMIX_file_close(simcall->issuer, fp);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
@@ -171,11 +162,9 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
 }
 
 //SIMIX FILE STAT
-void SIMIX_pre_file_stat(smx_simcall_t simcall)
+void SIMIX_pre_file_stat(smx_simcall_t simcall, smx_file_t fd, s_file_stat_t buf)
 {
-  smx_action_t action = SIMIX_file_stat(simcall->issuer,
-      simcall->file_stat.fd,
-      simcall->file_stat.buf);
+  smx_action_t action = SIMIX_file_stat(simcall->issuer, fd, buf);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
@@ -208,10 +197,9 @@ smx_action_t SIMIX_file_stat(smx_process_t process, smx_file_t fd, s_file_stat_t
 }
 
 //SIMIX FILE UNLINK
-void SIMIX_pre_file_unlink(smx_simcall_t simcall)
+void SIMIX_pre_file_unlink(smx_simcall_t simcall, smx_file_t fd)
 {
-  smx_action_t action = SIMIX_file_unlink(simcall->issuer,
-      simcall->file_unlink.fd);
+  smx_action_t action = SIMIX_file_unlink(simcall->issuer, fd);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
@@ -244,7 +232,8 @@ smx_action_t SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
 }
 
 //SIMIX FILE LS
-void SIMIX_pre_file_ls(smx_simcall_t simcall)
+void SIMIX_pre_file_ls(smx_simcall_t simcall,
+                       const char* mount, const char* path)
 {
   smx_action_t action = SIMIX_file_ls(simcall->issuer,
       simcall->file_ls.mount, simcall->file_ls.path);

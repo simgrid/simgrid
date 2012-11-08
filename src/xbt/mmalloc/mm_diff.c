@@ -184,35 +184,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
     i2++; 
   }
 
-  /* Init equal information */
-  i1 = 1;
-
-  while(i1<=heaplimit){
-    if(heapinfo1[i1].type == 0){
-      heapinfo1[i1].busy_block.equal_to = -1;
-    }
-    if(heapinfo1[i1].type > 0){
-      for(j1=0; j1 < MAX_FRAGMENT_PER_BLOCK; j1++){
-        heapinfo1[i1].busy_frag.equal_to[j1] = -1;
-      }
-    }
-    i1++; 
-  }
-
-  i2 = 1;
-
-  while(i2<=heaplimit){
-    if(heapinfo2[i2].type == 0){
-      heapinfo2[i2].busy_block.equal_to = -1;
-    }
-    if(heapinfo2[i2].type > 0){
-      for(j2=0; j2 < MAX_FRAGMENT_PER_BLOCK; j2++){
-        heapinfo2[i2].busy_frag.equal_to[j2] = -1;
-      }
-    }
-    i2++; 
-  }
-
   /* Check busy blocks*/
 
   i1 = 1;
@@ -302,48 +273,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
 
         }
         
-      }
-
-      if(heapinfo1[i1].busy_block.busy_size == 0){
-        i1++;
-        continue;
-      }
-      
-      i2 = 1;
-      equal = 0;
-      
-      /* Try first to associate to same block in the other heap */
-      if(heapinfo2[current_block].type == heapinfo1[current_block].type){
-        
-        if(heapinfo1[current_block].busy_block.busy_size == heapinfo2[current_block].busy_block.busy_size){
-
-          addr_block2 = ((void*) (((ADDR2UINT(current_block)) - 1) * BLOCKSIZE + (char*)heapbase2));
-          
-          add_heap_area_pair(previous, current_block, -1, current_block, -1);
-          
-          if(ignore_done < xbt_dynar_length(mmalloc_ignore)){
-            if(in_mmalloc_ignore((int)current_block, -1))
-              res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 1);
-            else
-              res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 0);
-          }else{
-            res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 0);
-          }
-          
-          if(res_compare == 0){
-            for(k=1; k < heapinfo2[current_block].busy_block.size; k++)
-              heapinfo2[current_block+k].busy_block.equal_to = 1 ;
-            for(k=1; k < heapinfo1[current_block].busy_block.size; k++)
-              heapinfo1[current_block+k].busy_block.equal_to = 1 ;
-            equal = 1;
-            match_equals(previous);
-            i1 = i1 + heapinfo1[i1].busy_block.size;
-          }
-
-          xbt_dynar_reset(previous);
-          
-        }
-
       }
 
       while(i2 <= heaplimit && !equal){
