@@ -274,6 +274,7 @@ extern xbt_fifo_t mc_stack_safety;
 
 extern int _surf_mc_checkpoint;
 extern char* _surf_mc_property_file;
+extern int _surf_mc_timeout;
 
 /****** Core dump ******/
 

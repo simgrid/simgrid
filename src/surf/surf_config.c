@@ -517,6 +517,13 @@ void surf_config_init(int *argc, char **argv)
                      "Specify the kind of exploration reduction (either none or DPOR)",
                      xbt_cfgelm_string, &default_value, 0, 1,
                      _mc_cfg_cb_reduce, NULL);
+
+    /* Enable/disable timeout for wait requests with model-checking */
+    default_value_int = 1;
+    xbt_cfg_register(&_surf_cfg_set, "model-check/timeout",
+                     "Enable/Disable timeout for wait requests",
+                     xbt_cfgelm_int, &default_value, 0, 1,
+                     _mc_cfg_cb_timeout, NULL);
 #endif
 
     /* do verbose-exit */

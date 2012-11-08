@@ -29,6 +29,7 @@ extern xbt_dynar_t stacks_areas;
 void _mc_cfg_cb_reduce(const char *name, int pos);
 void _mc_cfg_cb_checkpoint(const char *name, int pos);
 void _mc_cfg_cb_property(const char *name, int pos);
+void _mc_cfg_cb_timeout(const char *name, int pos);
 
 XBT_PUBLIC(void) MC_do_the_modelcheck_for_real(void);
 
