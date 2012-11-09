@@ -53,6 +53,11 @@ static xbt_os_thread_t main_thread = NULL;
 static pthread_key_t xbt_self_thread_key;
 static int thread_mod_inited = 0;
 
+/* attribute structure to handle pthread stack size changing */
+//FIXME: find where to put this
+static pthread_attr_t attr;
+static int thread_attr_inited = 0;
+
 /* frees the xbt_os_thread_t corresponding to the current thread */
 static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
 {
@@ -159,6 +164,7 @@ static void *wrapper_start_routine(void *s)
   return res;
 }
 
+
 xbt_os_thread_t xbt_os_thread_create(const char *name,
                                      pvoid_f_pvoid_t start_routine,
                                      void *param,
@@ -175,12 +181,22 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   XBT_RUNNING_CTX_INITIALIZE(res_thread->running_ctx);
   res_thread->extra_data = extra_data;
   
-  if ((errcode = pthread_create(&(res_thread->t), NULL,
+  if ((errcode = pthread_create(&(res_thread->t), thread_attr_inited!=0? &attr: NULL,
                                 wrapper_start_routine, res_thread)))
     THROWF(system_error, errcode,
            "pthread_create failed: %s", strerror(errcode));
 
+
+
   return res_thread;
+}
+
+
+void xbt_os_thread_setstacksize(int stack_size)
+{
+  pthread_attr_init(&attr);
+  pthread_attr_setstacksize (&attr, stack_size);
+  thread_attr_inited=1;
 }
 
 const char *xbt_os_thread_name(xbt_os_thread_t t)
@@ -643,7 +659,7 @@ typedef struct xbt_os_thread_ {
 
 /* the default size of the stack of the threads (in bytes)*/
 #define XBT_DEFAULT_THREAD_STACK_SIZE  4096
-
+static int stack_size=0;
 /* key to the TLS containing the xbt_os_thread_t structure */
 static unsigned long xbt_self_thread_key;
 
@@ -694,7 +710,7 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   t->start_routine = start_routine;
   t->param = param;
   t->extra_data = extra_data;
-  t->handle = CreateThread(NULL, XBT_DEFAULT_THREAD_STACK_SIZE,
+  t->handle = CreateThread(NULL, stack_size==0 ? XBT_DEFAULT_THREAD_STACK_SIZE : stack_size,
                            (LPTHREAD_START_ROUTINE) wrapper_start_routine,
                            t, STACK_SIZE_PARAM_IS_A_RESERVATION, &(t->id));
 
@@ -704,6 +720,11 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   }
 
   return t;
+}
+
+void xbt_os_thread_setstacksize(int stack_size)
+{
+  stack_size=stack_size;
 }
 
 const char *xbt_os_thread_name(xbt_os_thread_t t)

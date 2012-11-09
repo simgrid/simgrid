@@ -92,11 +92,14 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc,
   if (code) {
     context->begin = xbt_os_sem_init(0);
     context->end = xbt_os_sem_init(0);
+    xbt_os_thread_setstacksize(smx_context_stack_size);
+
     /* create and start the process */
     /* NOTE: The first argument to xbt_os_thread_create used to be the process *
     * name, but now the name is stored at SIMIX level, so we pass a null  */
     context->thread =
       xbt_os_thread_create(NULL, smx_ctx_thread_wrapper, context, context);
+
 
     /* wait the starting of the newly created process */
     xbt_os_sem_acquire(context->end);
