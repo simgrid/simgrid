@@ -604,8 +604,6 @@ void MC_print_statistics_pairs(mc_stats_pair_t stats)
   //XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
   XBT_INFO("Expanded / Visited = %lf",
            (double) stats->visited_pairs / stats->expanded_pairs);
-  /*XBT_INFO("Exploration coverage = %lf",
-    (double)stats->expanded_states / stats->state_size); */
 }
 
 void MC_assert(int prop)
