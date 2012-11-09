@@ -117,9 +117,9 @@ void mmalloc_backtrace_display(void *addr){
 }
 
 
-void *s_heap, *heapbase1, *heapbase2;
-malloc_info *heapinfo1, *heapinfo2;
-size_t heaplimit, heapsize1, heapsize2;
+void *s_heap = NULL, *heapbase1 = NULL, *heapbase2 = NULL;
+malloc_info *heapinfo1 = NULL, *heapinfo2 = NULL;
+size_t heaplimit = 0, heapsize1 = 0, heapsize2 = 0;
 
 int ignore_done = 0;
 
@@ -547,6 +547,9 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
 
   xbt_dynar_free(&previous);
   ignore_done = 0;
+  s_heap = NULL, heapbase1 = NULL, heapbase2 = NULL;
+  heapinfo1 = NULL, heapinfo2 = NULL;
+  heaplimit = 0, heapsize1 = 0, heapsize2 = 0;
 
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
 
