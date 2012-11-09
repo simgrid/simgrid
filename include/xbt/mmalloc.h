@@ -70,6 +70,8 @@ void mmalloc_backtrace_display(void *addr);
 
 int is_free_area(void *area, xbt_mheap_t heap);
 
+size_t mmalloc_get_chunks_used(xbt_mheap_t);
+
 
 
 #endif                          /* MMALLOC_H */
