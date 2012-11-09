@@ -793,7 +793,7 @@ void MC_ignore_stack(const char *var_name, const char *frame){
 
 }
 
-void MC_new_stack_area(void *stack, char *name, void* context){
+void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
@@ -806,6 +806,7 @@ void MC_new_stack_area(void *stack, char *name, void* context){
   region->address = stack;
   region->process_name = strdup(name);
   region->context = context;
+  region->size = size;
   xbt_dynar_push(stacks_areas, &region);
   
   MC_UNSET_RAW_MEM;
