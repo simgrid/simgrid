@@ -276,7 +276,6 @@ void MC_ddfs_init(void){
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
 
   /* Save the initial state */
-  initial_state_liveness = xbt_new0(s_mc_global_t, 1);
   initial_state_liveness->initial_snapshot = MC_take_snapshot_liveness();
 
   MC_UNSET_RAW_MEM; 

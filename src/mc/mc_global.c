@@ -202,6 +202,8 @@ void MC_init_liveness(){
   xbt_dict_t libsimgrid_location_list = MC_get_location_list(ls_path);
   MC_get_local_variables(ls_path, libsimgrid_location_list, &mc_local_variables);
 
+  initial_state_liveness = xbt_new0(s_mc_global_t, 1);
+
   MC_UNSET_RAW_MEM;
 
   MC_init_memory_map_info();
