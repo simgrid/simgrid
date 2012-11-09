@@ -135,6 +135,11 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
     return 1;
   }
 
+  if(heap1->heapstats.chunks_used != heap2->heapstats.chunks_used){
+    XBT_DEBUG("Different number of chunks used in heap : %zu - %zu", heap1->heapstats.chunks_used, heap2->heapstats.chunks_used);
+    return 1;
+  }
+
   /* Heap information */
   heaplimit = ((struct mdesc *)heap1)->heaplimit;
 
@@ -154,7 +159,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
   void *real_addr_block1, *real_addr_block2;
   char *stack_name;
-  int nb_block1=0, nb_frag1=0, nb_block2=0, nb_frag2=0;
 
   xbt_dynar_t previous = xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
 
@@ -165,14 +169,10 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
 
   while(i1<=heaplimit){
     if(heapinfo1[i1].type == 0){
-      if(heapinfo1[i1].busy_block.busy_size > 0)
-        nb_block1++;
       heapinfo1[i1].busy_block.equal_to = NULL;
     }
     if(heapinfo1[i1].type > 0){
       for(j1=0; j1 < (size_t) (BLOCKSIZE >> heapinfo1[i1].type); j1++){
-        if(heapinfo1[i1].busy_frag.frag_size[j1] > 0)
-          nb_frag1++;
         heapinfo1[i1].busy_frag.equal_to[j1] = NULL;
       }
     }
@@ -183,23 +183,14 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
 
   while(i2<=heaplimit){
     if(heapinfo2[i2].type == 0){
-      if(heapinfo2[i2].busy_block.busy_size > 0)
-        nb_block2++;
       heapinfo2[i2].busy_block.equal_to = NULL;
     }
     if(heapinfo2[i2].type > 0){
       for(j2=0; j2 < (size_t) (BLOCKSIZE >> heapinfo2[i2].type); j2++){
-        if(heapinfo2[i2].busy_frag.frag_size[j2] > 0)
-          nb_frag2++;
         heapinfo2[i2].busy_frag.equal_to[j2] = NULL;
       }
     }
     i2++; 
-  }
-
-  if(nb_block1 != nb_block2 || nb_frag1 != nb_frag2){
-    XBT_DEBUG("Different number of busy blocks (%d - %d) or busy fragments (%d - %d)", nb_block1, nb_block2, nb_frag1, nb_frag2);
-    return 1;
   }
 
   /* Check busy blocks*/
