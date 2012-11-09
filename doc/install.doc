@@ -183,9 +183,23 @@ you want to increase it to run more processes.
 $ $PATH_TO_COROUTINE_JVM/java -Dcoro.stacksPerThread=$STACKS_NUMBER -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 \endverbatim
 
-If you feel limited in the amount of processes you can run, give a try
-to this command:
+If you reach the point where the creation of new simulated processes
+fail with the message "Can't create coroutine object", you may need to
+increase the relevant system limit with the following command.
 \verbatim 
 sysctl -w vm.max_map_count = 131072
 \endverbatim
+
+The full story is that each coroutine requires two memory maps, and
+that Linux puts a limit on the total amount of memory maps that each
+process can manage (by default, this limit is often at 65535). Since
+the JVM needs a few dozen of such maps on its own (three maps per
+dynamic library -- check /proc/the_pid/maps if you don't believe it),
+this is enough to create over 30,000 simulated processes. But to go
+futher, that limit must be modified. 
+
+If you want to make this change permanent on your machine, edit your
+/etc/sysctl.conf file. Otherwise, you have to redo it by calling
+sysctl after each reboot.
+
  */
