@@ -81,6 +81,9 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
       if((ignore_size = heap_ignore_size((char *)start_data_libsimgrid+i)) > 0){
         i = i + ignore_size;
         continue;
+      }else if((ignore_size = heap_ignore_size((char *)start_bss_libsimgrid+i)) > 0){
+        i = i + ignore_size;
+        continue;
       }
       pointer_align = (i / sizeof(void*)) * sizeof(void*);
       addr_pointed1 = *((void **)((char *)d1 + pointer_align));

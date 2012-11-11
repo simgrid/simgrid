@@ -18,7 +18,7 @@ void *start_text_libsimgrid;
 void *start_plt_libsimgrid, *end_plt_libsimgrid;
 void *start_plt_binary, *end_plt_binary;
 char *libsimgrid_path;
-void *start_data_libsimgrid;
+void *start_data_libsimgrid, *start_bss_libsimgrid;
 void *start_text_binary;
 void *end_raw_heap;
 
@@ -132,6 +132,10 @@ void MC_init_memory_map_info(){
       } else {
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           start_data_libsimgrid = reg.start_addr;
+          i++;
+          reg = maps->regions[i];
+          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize)
+            start_bss_libsimgrid = reg.start_addr;
         }
       }
     }else if ((reg.prot & PROT_READ)){
