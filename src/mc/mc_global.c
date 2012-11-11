@@ -89,6 +89,7 @@ xbt_dict_t mc_local_variables = NULL;
 
 /* Ignore mechanism */
 xbt_dynar_t mc_stack_comparison_ignore;
+xbt_dynar_t mc_data_bss_comparison_ignore;
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
@@ -721,6 +722,64 @@ void MC_ignore_heap(void *address, size_t size){
   }
 
   xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
+
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+}
+
+void MC_ignore_data_bss(void *address, size_t size){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+  
+  if(mc_data_bss_comparison_ignore == NULL)
+    mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), NULL);
+
+  if(xbt_dynar_is_empty(mc_data_bss_comparison_ignore)){
+
+    mc_data_bss_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
+    var->address = address;
+    var->size = size;
+
+    xbt_dynar_insert_at(mc_data_bss_comparison_ignore, 0, &var);
+
+  }else{
+    
+    unsigned int cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
+    mc_data_bss_ignore_variable_t current_var = NULL;
+
+    while(start <= end){
+      cursor = (start + end) / 2;
+      current_var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
+      if(current_var->address == address){
+        MC_UNSET_RAW_MEM;
+        if(raw_mem_set)
+          MC_SET_RAW_MEM;
+        return;
+      }
+      if(current_var->address < address)
+        start = cursor + 1;
+      if(current_var->address > address)
+        end = cursor - 1;
+    }
+ 
+    mc_data_bss_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
+    var->address = address;
+    var->size = size;
+
+    if(current_var->address > address)
+      xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor + 1, &var);
+    else
+      xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor, &var);
+
+  }
 
   MC_UNSET_RAW_MEM;
 

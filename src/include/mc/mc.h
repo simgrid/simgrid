@@ -45,6 +45,7 @@ void MC_automaton_load(const char *file);
 /****************************** MC ignore **********************************/
 XBT_PUBLIC(void) MC_ignore_heap(void *address, size_t size);
 XBT_PUBLIC(void) MC_ignore_stack(const char *var_name, const char *frame);
+XBT_PUBLIC(void) MC_ignore_data_bss(void *address, size_t size);
 void MC_new_stack_area(void *stack, char *name, void *context, size_t size);
 
 /********************************* Memory *************************************/

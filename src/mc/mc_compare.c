@@ -10,13 +10,14 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, mc,
                                 "Logging specific to mc_compare");
 
-static int data_program_region_compare(void *d1, void *d2, size_t size);
-static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size);
+static int data_bss_program_region_compare(void *d1, void *d2, size_t size);
+static int data_bss_libsimgrid_region_compare(void *d1, void *d2, size_t size);
 static int heap_region_compare(void *d1, void *d2, size_t size);
 
 static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *sp2, void *heap1, void *heap2, xbt_dynar_t equals);
 static int is_heap_equality(xbt_dynar_t equals, void *a1, void *a2);
 static size_t heap_ignore_size(void *address);
+static size_t data_bss_ignore_size(void *address);
 
 static void stack_region_free(stack_region_t s);
 static void heap_equality_free(heap_equality_t e);
@@ -44,7 +45,27 @@ static size_t heap_ignore_size(void *address){
   return 0;
 }
 
-static int data_program_region_compare(void *d1, void *d2, size_t size){
+static size_t data_bss_ignore_size(void *address){
+  unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
+  mc_data_bss_ignore_variable_t var;
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
+    if(var->address == address)
+      return var->size;
+    if(var->address < address)
+      start = cursor + 1;
+    if(var->address > address)
+      end = cursor - 1;   
+  }
+
+  return 0;
+}
+
+static int data_bss_program_region_compare(void *d1, void *d2, size_t size){
 
   size_t i = 0;
   int pointer_align;
@@ -70,7 +91,7 @@ static int data_program_region_compare(void *d1, void *d2, size_t size){
   return 0;
 }
 
-static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
+static int data_bss_libsimgrid_region_compare(void *d1, void *d2, size_t size){
 
   size_t i = 0, ignore_size = 0;
   int pointer_align;
@@ -78,10 +99,10 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
 
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
-      if((ignore_size = heap_ignore_size((char *)start_data_libsimgrid+i)) > 0){
+      if((ignore_size = data_bss_ignore_size((char *)start_data_libsimgrid+i)) > 0){
         i = i + ignore_size;
         continue;
-      }else if((ignore_size = heap_ignore_size((char *)start_bss_libsimgrid+i)) > 0){
+      }else if((ignore_size = data_bss_ignore_size((char *)start_bss_libsimgrid+i)) > 0){
         i = i + ignore_size;
         continue;
       }
@@ -94,7 +115,7 @@ static int data_libsimgrid_region_compare(void *d1, void *d2, size_t size){
         continue;
       }else{
         if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose)){
-          XBT_VERB("Different byte (offset=%zu) (%p - %p) in data libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);
+          XBT_VERB("Different byte (offset=%zu) (%p - %p) in libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);
           XBT_VERB("Addresses pointed : %p - %p\n", addr_pointed1, addr_pointed2);
         }
         return 1;
@@ -175,6 +196,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     case 2:
       data_program_index = i;
       i++;
+      while( i < s1->num_reg && s1->regions[i]->type == 2)
+        i++;
       break;
     }
   }
@@ -222,16 +245,17 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     cursor++;
   }
 
+
   /* Compare program data segment(s) */
   i = data_program_index;
   while(i < s1->num_reg && s1->regions[i]->type == 2){
-    if(data_program_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+    if(data_bss_program_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
       if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
         XBT_DEBUG("Different memcmp for data in program");
         errors++;
       }else{
         if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose))
-          XBT_VERB("Different memcmp for data in program");
+          XBT_VERB("Different memcmp for data in program"); 
         if(!raw_mem_set)
           MC_UNSET_RAW_MEM;
         return 1;
@@ -243,7 +267,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   /* Compare libsimgrid data segment(s) */
   i = data_libsimgrid_index;
   while(i < s1->num_reg && s1->regions[i]->type == 1){
-    if(data_libsimgrid_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
+    if(data_bss_libsimgrid_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
       if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
         XBT_DEBUG("Different memcmp for data in libsimgrid");
         errors++;

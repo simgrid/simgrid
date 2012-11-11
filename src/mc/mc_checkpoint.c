@@ -19,6 +19,7 @@ void *start_plt_libsimgrid, *end_plt_libsimgrid;
 void *start_plt_binary, *end_plt_binary;
 char *libsimgrid_path;
 void *start_data_libsimgrid, *start_bss_libsimgrid;
+void *start_data_binary, *start_bss_binary;
 void *start_text_binary;
 void *end_raw_heap;
 
@@ -136,6 +137,14 @@ void MC_init_memory_map_info(){
           reg = maps->regions[i];
           if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize)
             start_bss_libsimgrid = reg.start_addr;
+        }else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
+          start_data_binary = reg.start_addr;
+          i++;
+          reg = maps->regions[i];
+          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && reg.start_addr != std_heap && reg.start_addr != raw_heap && i < maps->mapsize){
+            start_bss_binary = reg.start_addr;
+            i++;
+          }
         }
       }
     }else if ((reg.prot & PROT_READ)){
@@ -197,18 +206,26 @@ mc_snapshot_t MC_take_snapshot_liveness()
           nb_reg++;
           i++;
           reg = maps->regions[i];
-          while(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize){
+          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize){
             MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-            i++;
             reg = maps->regions[i];
+            i++;
             nb_reg++;
           }
         } else {
           if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
             MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
             nb_reg++;
+            i++;
+            reg = maps->regions[i];
+            if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && reg.start_addr != std_heap && reg.start_addr != raw_heap && i < maps->mapsize){
+              MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+              reg = maps->regions[i];
+              nb_reg++;
+            }
+          }else{
+            i++;
           }
-          i++;
         }
       }
     }else if ((reg.prot & PROT_READ)){

@@ -30,6 +30,11 @@ typedef struct s_mc_stack_ignore_variable{
   char *frame;
 }s_mc_stack_ignore_variable_t, *mc_stack_ignore_variable_t;
 
+typedef struct s_mc_data_bss_ignore_variable{
+  void *address;
+  size_t size;
+}s_mc_data_bss_ignore_variable_t, *mc_data_bss_ignore_variable_t;
+
 typedef struct s_stack_region{
   void *address;
   char *process_name;
