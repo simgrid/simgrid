@@ -44,6 +44,13 @@ typedef struct s_mc_snapshot_stack{
 
 typedef struct s_mc_global_t{
   mc_snapshot_t initial_snapshot;
+  xbt_dynar_t snapshot_comparison_times;
+  xbt_dynar_t chunks_used_comparison_times;
+  xbt_dynar_t stacks_sizes_comparison_times;
+  xbt_dynar_t program_data_segment_comparison_times;
+  xbt_dynar_t libsimgrid_data_segment_comparison_times;
+  xbt_dynar_t heap_comparison_times;
+  xbt_dynar_t stacks_comparison_times;
 }s_mc_global_t, *mc_global_t;
 
 void MC_take_snapshot(mc_snapshot_t);
