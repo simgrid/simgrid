@@ -612,6 +612,9 @@ void MC_print_statistics_pairs(mc_stats_pair_t stats)
   //XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
   XBT_INFO("Expanded / Visited = %lf",
            (double) stats->visited_pairs / stats->expanded_pairs);
+
+  if(mmalloc_get_current_heap() == raw_heap)
+    MC_UNSET_RAW_MEM;
 }
 
 void MC_assert(int prop)
