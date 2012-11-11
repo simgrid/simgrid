@@ -135,11 +135,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
     return 1;
   }
 
-  if(heap1->heapstats.chunks_used != heap2->heapstats.chunks_used){
-    XBT_DEBUG("Different number of chunks used in heap : %zu - %zu", heap1->heapstats.chunks_used, heap2->heapstats.chunks_used);
-    return 1;
-  }
-
   /* Heap information */
   heaplimit = ((struct mdesc *)heap1)->heaplimit;
 
