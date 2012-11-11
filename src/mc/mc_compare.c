@@ -176,7 +176,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     }
   }
 
-  /* Compare number of blocks/fragments uses in each heap */
+  /* Compare number of blocks/fragments used in each heap */
   size_t chunks_used1 = mmalloc_get_chunks_used((xbt_mheap_t)s1->regions[heap_index]->data);
   size_t chunks_used2 = mmalloc_get_chunks_used((xbt_mheap_t)s2->regions[heap_index]->data);
   if(chunks_used1 != chunks_used2){
