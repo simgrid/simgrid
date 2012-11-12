@@ -161,6 +161,7 @@ typedef void (*smx_ctx_factory_initializer_t)(smx_context_factory_t*);
 XBT_PUBLIC(smx_ctx_factory_initializer_t) smx_factory_initializer_to_use;
 extern char* smx_context_factory_name;
 extern int smx_context_stack_size;
+extern int smx_context_stack_size_was_set;
 
 #ifdef HAVE_THREAD_LOCAL_STORAGE
 extern __thread smx_context_t smx_current_context;
