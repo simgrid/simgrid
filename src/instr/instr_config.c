@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 #define OPT_TRACING               "tracing"
 #define OPT_TRACING_PLATFORM      "tracing/platform"
+#define OPT_TRACING_TOPOLOGY      "tracing/platform/topology"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_SMPI_COMPUTING "tracing/smpi/computing"
@@ -34,6 +35,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 static int trace_enabled;
 static int trace_platform;
+static int trace_platform_topology;
 static int trace_smpi_enabled;
 static int trace_smpi_grouped;
 static int trace_smpi_computing;
@@ -52,6 +54,7 @@ static void TRACE_getopts(void)
 {
   trace_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);
   trace_platform = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
+  trace_platform_topology = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_TOPOLOGY);
   trace_smpi_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
   trace_smpi_grouped = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
   trace_smpi_computing = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_COMPUTING);
@@ -150,6 +153,11 @@ int TRACE_is_enabled(void)
 int TRACE_platform(void)
 {
   return trace_platform;
+}
+
+int TRACE_platform_topology(void)
+{
+  return trace_platform_topology;
 }
 
 int TRACE_is_configured(void)
@@ -265,6 +273,13 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
                    "Register the platform in the trace as a hierarchy.",
                    xbt_cfgelm_int, &default_tracing_platform, 0, 1,
+                   NULL, NULL);
+
+  /* register platform in the trace */
+  int default_tracing_platform_topology = 1;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_TOPOLOGY,
+                   "Register the platform topology in the trace as a graph.",
+                   xbt_cfgelm_int, &default_tracing_platform_topology, 0, 1,
                    NULL, NULL);
 
   /* smpi */
@@ -497,6 +512,12 @@ void TRACE_help (int detailed)
       "  file for the Viva visualization tool that can be used to analyze a categorized\n"
       "  resource utilization.",
       detailed);
+  print_line (OPT_TRACING_TOPOLOGY, "Register the platform topology as a graph",
+        "  This option (enabled by default) can be used to disable the tracing of\n"
+        "  the platform topology in the trace file. Sometimes, such task is really\n"
+        "  time consuming, since it must get the route from each host ot other hosts\n"
+        "  within the same Autonomous System (AS).",
+        detailed);
 }
 
 static void output_types (const char *name, xbt_dynar_t types, FILE *file)
@@ -667,6 +688,7 @@ void instr_resume_tracing (void)
 
 #undef OPT_TRACING
 #undef OPT_TRACING_PLATFORM
+#undef OPT_TRACING_TOPOLOGY
 #undef OPT_TRACING_SMPI
 #undef OPT_TRACING_SMPI_GROUP
 #undef OPT_TRACING_CATEGORIZED
