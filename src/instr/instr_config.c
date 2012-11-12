@@ -263,7 +263,7 @@ void TRACE_global_init(int *argc, char **argv)
   /* register platform in the trace */
   int default_tracing_platform = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
-                   "Register the platform in the trace as a graph.",
+                   "Register the platform in the trace as a hierarchy.",
                    xbt_cfgelm_int, &default_tracing_platform, 0, 1,
                    NULL, NULL);
 
