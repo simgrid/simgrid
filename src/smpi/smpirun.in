@@ -31,7 +31,7 @@ Options:
   -trace-comment-file <file> # put file contents on the top of the trace file as comment
   -trace-grouped             # group MPI processes by location
   -trace-resource            # trace resource utilization
-  -trace-triva               # generate configuration for Triva's GraphView
+  -trace-viva               # generate configuration for Viva's GraphView
   -trace-file <tracefile>    # name of the tracefile (simgrid_smpi.trace)
   -ext <value>               # additional parameter (reserved)
 
@@ -121,8 +121,8 @@ while true; do
       shift 1
    ;;
 
-   "-trace-triva")
-   	TRACE_TRIVA="true"
+   "-trace-viva")
+   	TRACE_VIVA="true"
    	  shift 1
    ;;
 
@@ -323,8 +323,8 @@ if [ -n "${TRACE_ACTIVE}" ]; then
     TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1"
   fi
 
-  if [ -n "${TRACE_TRIVA}" ]; then
-    TRACEOPTIONS="${TRACEOPTIONS} --cfg=triva/categorized:smpi_cat.plist --cfg=triva/uncategorized:smpi_uncat.plist"
+  if [ -n "${TRACE_VIVA}" ]; then
+    TRACEOPTIONS="${TRACEOPTIONS} --cfg=viva/categorized:smpi_cat.plist --cfg=viva/uncategorized:smpi_uncat.plist"
   fi
 fi
 ##---------------------- end SMPI TRACING OPTIONS ---------------------------------

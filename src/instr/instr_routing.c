@@ -139,6 +139,10 @@ static int graph_extraction_filter_out (container_t c1, container_t c2)
 
 static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
 {
+  if (!TRACE_platform_topology()){
+    XBT_DEBUG("Graph extracing disable by user.");
+    return;
+  }
   XBT_DEBUG ("Graph extraction for routing_component = %s", rc->name);
   if (!xbt_dict_is_empty(rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;
