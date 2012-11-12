@@ -81,7 +81,7 @@ static int data_bss_program_region_compare(void *d1, void *d2, size_t size){
       }else{
         if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose)){
           XBT_VERB("Different byte (offset=%zu) (%p - %p) in data program region", i, (char *)d1 + i, (char *)d2 + i);
-          XBT_VERB("Addresses pointed : %p - %p\n", addr_pointed1, addr_pointed2);
+          XBT_VERB("Addresses pointed : %p - %p", addr_pointed1, addr_pointed2);
         }
         return 1;
       }
@@ -116,7 +116,7 @@ static int data_bss_libsimgrid_region_compare(void *d1, void *d2, size_t size){
       }else{
         if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose)){
           XBT_VERB("Different byte (offset=%zu) (%p - %p) in libsimgrid region", i, (char *)d1 + i, (char *)d2 + i);
-          XBT_VERB("Addresses pointed : %p - %p\n", addr_pointed1, addr_pointed2);
+          XBT_VERB("Addresses pointed : %p - %p", addr_pointed1, addr_pointed2);
         }
         return 1;
       }
