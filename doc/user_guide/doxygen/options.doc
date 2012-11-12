@@ -345,20 +345,18 @@ should be the most effcient one (please report bugs if the
 auto-detection fails for you). They are sorted here from the slowest
 to the most effient:
  - \b thread: very slow factory using full featured threads (either
-   ptheads or windows native threads)
+   pthreads or windows native threads)
  - \b ucontext: fast factory using System V contexts (or a portability
    layer of our own on top of Windows fibers)
  - \b raw: amazingly fast factory using a context switching mecanism
    of our own, directly implemented in assembly (only available for x86
    and amd64 platforms for now)
 
-The only reason to change this setting is when the debuging tools get
+The only reason to change this setting is when the debugging tools get
 fooled by the optimized context factories. Threads are the most
 debugging-friendly contextes.
 
 \subsection options_virt_stacksize Adapting the used stack size
-
-(this only works if you use ucontexts or raw context factories)
 
 Each virtualized used process is executed using a specific system
 stack. The size of this stack has a huge impact on the simulation
@@ -370,7 +368,9 @@ stacks), leading to segfaults with corrupted stack traces.
 If you want to push the scalability limits of your code, you really
 want to reduce the \b contexts/stack_size item. Its default value
 is 128 (in Kib), while our Chord simulation works with stacks as small
-as 16 Kib, for example.
+as 16 Kib, for example. For the thread factory, the default value 
+is the one of the system, if it is too large/small, it has to be set 
+with this parameter.
 
 \subsection options_virt_parallel Running user code in parallel
 
