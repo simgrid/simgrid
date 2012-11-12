@@ -13,6 +13,20 @@ if (NOT DEFINED enable_smpi OR enable_smpi) # smpi is enabled by default
   # CMAKE_FORCE_Fortran_COMPILER to bypass checks for a working
   # compiler (smpiff don't exist at configure time).
   include(CMakeForceCompiler)
+  if(NOT COMMAND CMAKE_FORCE_Fortran_COMPILER)
+    MACRO(CMAKE_FORCE_Fortran_COMPILER compiler id)
+      SET(CMAKE_Fortran_COMPILER "${compiler}")
+      SET(CMAKE_Fortran_COMPILER_ID_RUN TRUE)
+      SET(CMAKE_Fortran_COMPILER_ID ${id})
+      SET(CMAKE_Fortran_COMPILER_WORKS TRUE)
+      SET(CMAKE_Fortran_COMPILER_FORCED TRUE)
+
+      # Set old compiler id variables.
+      IF("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
+        SET(CMAKE_COMPILER_IS_GNUG77 1)
+      ENDIF("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
+    ENDMACRO(CMAKE_FORCE_Fortran_COMPILER)
+  endif()
   CMAKE_FORCE_Fortran_COMPILER(smpiff smpiff)
   enable_language(Fortran OPTIONAL)
 endif()
