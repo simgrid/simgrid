@@ -28,8 +28,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_BASIC         "tracing/basic"
 #define OPT_TRACING_COMMENT       "tracing/comment"
 #define OPT_TRACING_COMMENT_FILE  "tracing/comment_file"
-#define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
-#define OPT_TRIVA_CAT_CONF        "triva/categorized"
 #define OPT_VIVA_UNCAT_CONF      "viva/uncategorized"
 #define OPT_VIVA_CAT_CONF        "viva/categorized"
 
@@ -105,8 +103,6 @@ int TRACE_end()
   if (!trace_active)
     return 1;
 
-  TRACE_generate_triva_uncat_conf();
-  TRACE_generate_triva_cat_conf();
   TRACE_generate_viva_uncat_conf();
   TRACE_generate_viva_cat_conf();
 
@@ -230,16 +226,6 @@ char *TRACE_get_comment_file (void)
 char *TRACE_get_filename(void)
 {
   return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_FILENAME);
-}
-
-char *TRACE_get_triva_uncat_conf (void)
-{
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRIVA_UNCAT_CONF);
-}
-
-char *TRACE_get_triva_cat_conf (void)
-{
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRIVA_CAT_CONF);
 }
 
 char *TRACE_get_viva_uncat_conf (void)
@@ -366,20 +352,6 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_string, &default_tracing_comment_file, 1, 1,
                    NULL, NULL);
 
-  /* Triva graph configuration for uncategorized tracing */
-  char *default_triva_uncat_conf_file = xbt_strdup ("");
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_UNCAT_CONF,
-                   "Triva Graph configuration file for uncategorized resource utilization traces.",
-                   xbt_cfgelm_string, &default_triva_uncat_conf_file, 1, 1,
-                   NULL, NULL);
-
-  /* Triva graph configuration for uncategorized tracing */
-  char *default_triva_cat_conf_file = xbt_strdup ("");
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_CAT_CONF,
-                   "Triva Graph configuration file for categorized resource utilization traces.",
-                   xbt_cfgelm_string, &default_triva_cat_conf_file, 1, 1,
-                   NULL, NULL);
-
   /* Viva graph configuration for uncategorized tracing */
   char *default_viva_uncat_conf_file = xbt_strdup ("");
   xbt_cfg_register(&_surf_cfg_set, OPT_VIVA_UNCAT_CONF,
@@ -429,9 +401,10 @@ void TRACE_help (int detailed)
       detailed);
   print_line (OPT_TRACING_FILENAME, "Filename to register traces",
       "  A file with this name will be created to register the simulation. The file\n"
-      "  is in the Paje format and can be analyzed using Triva or Paje visualization\n"
+      "  is in the Paje format and can be analyzed using Viva, Paje, and PajeNG visualization\n"
       "  tools. More information can be found in these webpages:\n"
-      "     http://triva.gforge.inria.fr/\n"
+      "     http://github.com/schnorr/viva/\n"
+      "     http://github.com/schnorr/pajeng/\n"
       "     http://paje.sourceforge.net/",
       detailed);
   print_line (OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
@@ -483,20 +456,6 @@ void TRACE_help (int detailed)
       detailed);
   print_line (OPT_TRACING_COMMENT_FILE, "File contents added to trace file as comment.",
       "  Use this to add the contents of a file to the top of the trace file as comment.",
-      detailed);
-  print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
-      "  This option can be used in all types of simulators build with SimGrid\n"
-      "  to generate a uncategorized resource utilization graph to be used as\n"
-      "  configuration for the Triva visualization analysis. This option\n"
-      "  can be used with tracing/categorized:1 and tracing:1 options to\n"
-      "  analyze an unmodified simulator before changing it to contain\n"
-      "  categories.",
-      detailed);
-  print_line (OPT_TRIVA_CAT_CONF, "generate uncategorized graph configuration for Triva",
-      "  This option can be used if this simulator uses tracing categories\n"
-      "  in its code. The file specified by this option holds a graph configuration\n"
-      "  file for the Triva visualization tool that can be used to analyze a categorized\n"
-      "  resource utilization.",
       detailed);
   print_line (OPT_VIVA_UNCAT_CONF, "Generate a graph configuration for Viva",
       "  This option can be used in all types of simulators build with SimGrid\n"
@@ -635,16 +594,6 @@ static void generate_cat_configuration (const char *output, const char *name, in
   }
 }
 
-void TRACE_generate_triva_uncat_conf (void)
-{
-  generate_uncat_configuration (TRACE_get_triva_uncat_conf (), "triva", 1);
-}
-
-void TRACE_generate_triva_cat_conf (void)
-{
-  generate_cat_configuration (TRACE_get_triva_cat_conf(), "triva", 1);
-}
-
 void TRACE_generate_viva_uncat_conf (void)
 {
   generate_uncat_configuration (TRACE_get_viva_uncat_conf (), "viva", 0);
@@ -701,8 +650,6 @@ void instr_resume_tracing (void)
 #undef OPT_TRACING_BASIC
 #undef OPT_TRACING_COMMENT
 #undef OPT_TRACING_COMMENT_FILE
-#undef OPT_TRIVA_UNCAT_CONF
-#undef OPT_TRIVA_CAT_CONF
 #undef OPT_VIVA_UNCAT_CONF
 #undef OPT_VIVA_CAT_CONF
 

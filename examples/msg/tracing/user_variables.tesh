@@ -16,7 +16,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/user_variables$EXEEXT --cfg=tracing:1 --cf
 > [0.004078] [msg_test/INFO] 0-HOST1-LINK3
 > [0.004078] [msg_test/INFO] 0-LINK3-HOST1
 
-$ rm triva_graph.plist
+$ rm viva_graph.plist
 
 p Not tracing user variables
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/user_variables$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml

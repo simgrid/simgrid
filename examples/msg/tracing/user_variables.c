@@ -100,9 +100,9 @@ int main(int argc, char *argv[])
     xbt_dynar_free (&link_variables);
   }
 
-  //create a customized triva graph configuration file
+  //create a customized viva graph configuration file
   FILE *fp;
-  fp = fopen ("triva_graph.plist", "w");
+  fp = fopen ("viva_graph.plist", "w");
   if (!fp){
     return 1;
   }

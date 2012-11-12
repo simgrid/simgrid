@@ -1,14 +1,14 @@
 #! ./tesh
 
 p Tracing master/slave application
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/ms.cat.plist --cfg=triva/uncategorized:tracing/ms.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=viva/categorized:tracing/ms.cat.plist --cfg=viva/uncategorized:tracing/ms.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/ms.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/categorized' to 'tracing/ms.cat.plist'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/uncategorized' to 'tracing/ms.uncat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'tracing/ms.cat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'tracing/ms.uncat.plist'
 > [4.485137] [msg_test/INFO] Declared tracing categories:
 > [4.485137] [msg_test/INFO] request
 > [4.485137] [msg_test/INFO] finalize
@@ -21,15 +21,15 @@ p Not tracing master/slave application
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 
 p Testing tracing by process
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/msg/process:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=triva/categorized:tracing/ms.cat.plist --cfg=triva/uncategorized:tracing/ms.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/msg/process:1 --cfg=tracing/buffer:1 --cfg=tracing/filename:tracing/ms.trace --cfg=tracing/categorized:1 --cfg=tracing/uncategorized:1 --cfg=viva/categorized:tracing/ms.cat.plist --cfg=viva/uncategorized:tracing/ms.uncat.plist ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/ms.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/categorized' to 'tracing/ms.cat.plist'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'triva/uncategorized' to 'tracing/ms.uncat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'tracing/ms.cat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'tracing/ms.uncat.plist'
 > [4.485137] [msg_test/INFO] Declared tracing categories:
 > [4.485137] [msg_test/INFO] request
 > [4.485137] [msg_test/INFO] finalize
@@ -39,7 +39,6 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/ms
 > [4.485137] [msg_test/INFO] msmark
 
 $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
-> {
 >   node = ("HOST","LINK");
 >   edge = ("0-LINK13-LINK13","0-LINK13-HOST1","0-HOST1-LINK13");
 > 
@@ -53,10 +52,8 @@ $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 >     size = "bandwidth";
 >     values = ("bandwidth_used");
 >   };
-> }
 
 $ $SG_TEST_EXENV cat tracing/ms.cat.plist
-> {
 >   node = ("HOST","LINK");
 >   edge = ("0-LINK13-LINK13","0-LINK13-HOST1","0-HOST1-LINK13");
 > 
@@ -70,6 +67,5 @@ $ $SG_TEST_EXENV cat tracing/ms.cat.plist
 >     size = "bandwidth";
 >     values = ("bcompute","breport","bfinalize","brequest");
 >   };
-> }
 
 $ rm -rf tracing/ms.trace tracing/ms.cat.plist tracing/ms.uncat.plist
