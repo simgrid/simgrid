@@ -56,6 +56,17 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
   return mailbox;
 }
 
+/** \ingroup msg_mailbox_management
+ * \brief Set the mailbox to receive in asynchronous mode
+ *
+ * All messages sent to this mailbox will be transferred to 
+ * the receiver without waiting for the receive call. 
+ * The receive call will still be necessary to use the received data.
+ * If there is a need to receive some messages asynchronously, and some not, 
+ * two different mailboxes should be used.
+ *
+ * \param alias The name of the mailbox 
+ */
 void MSG_mailbox_set_async(const char *alias){
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
