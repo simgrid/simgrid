@@ -433,6 +433,7 @@ endif()
 ##
 if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
   execute_process(COMMAND git remote
+  COMMAND head -n 1
   WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
   OUTPUT_VARIABLE remote
   RESULT_VARIABLE ret
