@@ -722,9 +722,9 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   return t;
 }
 
-void xbt_os_thread_setstacksize(int stack_size)
+void xbt_os_thread_setstacksize(int size)
 {
-  stack_size=stack_size;
+  stack_size = size;
 }
 
 const char *xbt_os_thread_name(xbt_os_thread_t t)

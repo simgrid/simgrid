@@ -92,7 +92,8 @@ smx_ctx_thread_factory_create_context(xbt_main_func_t code, int argc,
   if (code) {
     context->begin = xbt_os_sem_init(0);
     context->end = xbt_os_sem_init(0);
-    if(smx_context_stack_size_was_set)xbt_os_thread_setstacksize(smx_context_stack_size);
+    if (smx_context_stack_size_was_set)
+      xbt_os_thread_setstacksize(smx_context_stack_size);
 
     /* create and start the process */
     /* NOTE: The first argument to xbt_os_thread_create used to be the process *
