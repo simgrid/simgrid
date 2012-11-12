@@ -204,13 +204,6 @@ void MC_init_liveness(){
   MC_get_local_variables(ls_path, libsimgrid_location_list, &mc_local_variables);
 
   initial_state_liveness = xbt_new0(s_mc_global_t, 1);
-  initial_state_liveness->snapshot_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  initial_state_liveness->chunks_used_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  initial_state_liveness->stacks_sizes_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  initial_state_liveness->program_data_segment_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  initial_state_liveness->libsimgrid_data_segment_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  initial_state_liveness->heap_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  initial_state_liveness->stacks_comparison_times = xbt_dynar_new(sizeof(double), NULL);
 
   MC_UNSET_RAW_MEM;
 

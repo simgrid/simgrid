@@ -163,7 +163,7 @@ void heap_equality_free_voidp(void *e){
   heap_equality_free((heap_equality_t) * (void **) e);
 }
 
-int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t ct1, mc_comparison_times_t ct2){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
   
@@ -202,6 +202,9 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     }
   }
 
+  ct1->nb_comparisons++;
+  ct2->nb_comparisons++;
+
   xbt_os_timer_t global_timer = xbt_os_timer_new();
   xbt_os_timer_t timer = xbt_os_timer_new();
 
@@ -215,6 +218,9 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   size_t chunks_used2 = mmalloc_get_chunks_used((xbt_mheap_t)s2->regions[heap_index]->data);
   if(chunks_used1 != chunks_used2){
     if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
+      xbt_os_timer_stop(timer);
+      xbt_dynar_push_as(ct1->chunks_used_comparison_times, double, xbt_os_timer_elapsed(timer));
+      xbt_dynar_push_as(ct2->chunks_used_comparison_times, double, xbt_os_timer_elapsed(timer));
       XBT_DEBUG("Different number of chunks used in each heap : %zu - %zu", chunks_used1, chunks_used2);
       errors++;
     }else{
@@ -223,7 +229,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
      
       xbt_os_timer_free(timer);
       xbt_os_timer_stop(global_timer);
-      xbt_dynar_push_as(initial_state_liveness->snapshot_comparison_times, double, xbt_os_timer_elapsed(timer));
+      xbt_dynar_push_as(ct1->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+      xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
       xbt_os_timer_free(global_timer);
 
       if(!raw_mem_set)
@@ -231,22 +238,20 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
       return 1;
     }
+  }else{
+    if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug))
+      xbt_os_timer_stop(timer);
   }
-
-  if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
-    xbt_os_timer_stop(timer);
-    xbt_dynar_push_as(initial_state_liveness->chunks_used_comparison_times, double, xbt_os_timer_elapsed(timer));
-
-    XBT_DEBUG("Chunks used comparison : %f", xbt_os_timer_elapsed(timer));
-    
+  
+  if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug))
     xbt_os_timer_start(timer);
-  }
 
   /* Compare size of stacks */
   unsigned int cursor = 0;
   void *addr_stack1, *addr_stack2;
   void *sp1, *sp2;
   size_t size_used1, size_used2;
+  int is_diff = 0;
   while(cursor < xbt_dynar_length(stacks_areas)){
     addr_stack1 = (char *)s1->regions[heap_index]->data + ((char *)((stack_region_t)xbt_dynar_get_as(stacks_areas, cursor, stack_region_t))->address - (char *)std_heap);
     addr_stack2 = (char *)s2->regions[heap_index]->data + ((char *)((stack_region_t)xbt_dynar_get_as(stacks_areas, cursor, stack_region_t))->address - (char *)std_heap);
@@ -256,15 +261,22 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     size_used2 = ((stack_region_t)xbt_dynar_get_as(stacks_areas, cursor, stack_region_t))->size - ((char*)sp2 - (char*)addr_stack2);
     if(size_used1 != size_used2){
       if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
+        if(is_diff == 0){
+          xbt_os_timer_stop(timer);
+          xbt_dynar_push_as(ct1->stacks_sizes_comparison_times, double, xbt_os_timer_elapsed(timer));
+          xbt_dynar_push_as(ct2->stacks_sizes_comparison_times, double, xbt_os_timer_elapsed(timer));
+        }
         XBT_DEBUG("Different size used in stacks : %zu - %zu", size_used1, size_used2);
         errors++;
+        is_diff = 1;
       }else{
         if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose))
           XBT_VERB("Different size used in stacks : %zu - %zu", size_used1, size_used2);
  
         xbt_os_timer_free(timer);
         xbt_os_timer_stop(global_timer);
-        xbt_dynar_push_as(initial_state_liveness->snapshot_comparison_times, double, xbt_os_timer_elapsed(timer));
+        xbt_dynar_push_as(ct1->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+        xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
         xbt_os_timer_free(global_timer);
 
         if(!raw_mem_set)
@@ -276,28 +288,33 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
 
   if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
-    xbt_os_timer_stop(timer);
-    xbt_dynar_push_as(initial_state_liveness->stacks_sizes_comparison_times, double, xbt_os_timer_elapsed(timer));
-
-    XBT_DEBUG("Stacks sizes comparison : %f", xbt_os_timer_elapsed(timer));
-    
+    if(is_diff == 0)
+      xbt_os_timer_stop(timer);
     xbt_os_timer_start(timer);
   }
-
+  
   /* Compare program data segment(s) */
+  is_diff = 0;
   i = data_program_index;
   while(i < s1->num_reg && s1->regions[i]->type == 2){
     if(data_bss_program_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
       if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
+        if(is_diff == 0){
+          xbt_os_timer_stop(timer);
+          xbt_dynar_push_as(ct1->program_data_segment_comparison_times, double, xbt_os_timer_elapsed(timer));
+          xbt_dynar_push_as(ct2->program_data_segment_comparison_times, double, xbt_os_timer_elapsed(timer));
+        }
         XBT_DEBUG("Different memcmp for data in program");
         errors++;
+        is_diff = 1;
       }else{
         if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose))
           XBT_VERB("Different memcmp for data in program"); 
 
         xbt_os_timer_free(timer);
         xbt_os_timer_stop(global_timer);
-        xbt_dynar_push_as(initial_state_liveness->snapshot_comparison_times, double, xbt_os_timer_elapsed(timer));
+        xbt_dynar_push_as(ct1->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+        xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
         xbt_os_timer_free(global_timer);
 
         if(!raw_mem_set)
@@ -309,28 +326,33 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
 
   if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
-    xbt_os_timer_stop(timer);
-    xbt_dynar_push_as(initial_state_liveness->program_data_segment_comparison_times, double, xbt_os_timer_elapsed(timer));
-
-    XBT_DEBUG("Program data segment comparison : %f", xbt_os_timer_elapsed(timer));
-    
+    if(is_diff == 0)
+      xbt_os_timer_stop(timer);
     xbt_os_timer_start(timer);
   }
 
   /* Compare libsimgrid data segment(s) */
+  is_diff = 0;
   i = data_libsimgrid_index;
   while(i < s1->num_reg && s1->regions[i]->type == 1){
     if(data_bss_libsimgrid_region_compare(s1->regions[i]->data, s2->regions[i]->data, s1->regions[i]->size) != 0){
       if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
+        if(is_diff == 0){
+          xbt_os_timer_stop(timer);
+          xbt_dynar_push_as(ct1->libsimgrid_data_segment_comparison_times, double, xbt_os_timer_elapsed(timer));
+          xbt_dynar_push_as(ct2->libsimgrid_data_segment_comparison_times, double, xbt_os_timer_elapsed(timer));
+        }
         XBT_DEBUG("Different memcmp for data in libsimgrid");
         errors++;
+        is_diff = 1;
       }else{
         if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose))
           XBT_VERB("Different memcmp for data in libsimgrid");
          
         xbt_os_timer_free(timer);
         xbt_os_timer_stop(global_timer);
-        xbt_dynar_push_as(initial_state_liveness->snapshot_comparison_times, double, xbt_os_timer_elapsed(timer));
+        xbt_dynar_push_as(ct1->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+        xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
         xbt_os_timer_free(global_timer);
         
         if(!raw_mem_set)
@@ -342,11 +364,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
 
   if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
-    xbt_os_timer_stop(timer);
-    xbt_dynar_push_as(initial_state_liveness->libsimgrid_data_segment_comparison_times, double, xbt_os_timer_elapsed(timer));
-
-    XBT_DEBUG("Libsimgrid data segment comparison : %f", xbt_os_timer_elapsed(timer));
-    
+    if(is_diff == 0)
+      xbt_os_timer_stop(timer);
     xbt_os_timer_start(timer);
   }
 
@@ -360,6 +379,9 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data, &stacks1, &stacks2, &equals)){
 
     if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
+      xbt_os_timer_stop(timer);
+      xbt_dynar_push_as(ct1->heap_comparison_times, double, xbt_os_timer_elapsed(timer));
+      xbt_dynar_push_as(ct2->heap_comparison_times, double, xbt_os_timer_elapsed(timer));
       XBT_DEBUG("Different heap (mmalloc_compare)");
       errors++;
     }else{
@@ -373,28 +395,27 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         XBT_VERB("Different heap (mmalloc_compare)");
        
       xbt_os_timer_stop(global_timer);
-      xbt_dynar_push_as(initial_state_liveness->snapshot_comparison_times, double, xbt_os_timer_elapsed(timer));
+      xbt_dynar_push_as(ct1->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+      xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
       xbt_os_timer_free(global_timer);
 
       if(!raw_mem_set)
         MC_UNSET_RAW_MEM;
       return 1;
     } 
+  }else{
+    if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug))
+      xbt_os_timer_stop(timer);
   }
 
-  if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
-    xbt_os_timer_stop(timer);
-    xbt_dynar_push_as(initial_state_liveness->heap_comparison_times, double, xbt_os_timer_elapsed(timer));
-
-    XBT_DEBUG("Heap comparison : %f", xbt_os_timer_elapsed(timer));
-    
+  if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug))
     xbt_os_timer_start(timer);
-  }
 
   /* Stacks comparison */
   cursor = 0;
   stack_region_t stack_region1, stack_region2;
   int diff = 0, diff_local = 0;
+  is_diff = 0;
 
   while(cursor < xbt_dynar_length(stacks1)){
     stack_region1 = (stack_region_t)(xbt_dynar_get_as(stacks1, cursor, stack_region_t));
@@ -407,8 +428,14 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       diff_local = compare_local_variables(((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, equals);
       if(diff_local > 0){
         if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
+          if(is_diff == 0){
+            xbt_os_timer_stop(timer);
+            xbt_dynar_push_as(ct1->stacks_comparison_times, double, xbt_os_timer_elapsed(timer));
+            xbt_dynar_push_as(ct2->stacks_comparison_times, double, xbt_os_timer_elapsed(timer));
+          }
           XBT_DEBUG("Different local variables between stacks %d", cursor + 1);
           errors++;
+          is_diff = 1;
         }else{
           xbt_dynar_free(&stacks1);
           xbt_dynar_free(&stacks2);
@@ -419,7 +446,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
           
           xbt_os_timer_free(timer);
           xbt_os_timer_stop(global_timer);
-          xbt_dynar_push_as(initial_state_liveness->snapshot_comparison_times, double, xbt_os_timer_elapsed(timer));
+          xbt_dynar_push_as(ct1->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+          xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
           xbt_os_timer_free(global_timer);
           
           if(!raw_mem_set)
@@ -436,17 +464,14 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   xbt_dynar_free(&stacks2);
   xbt_dynar_free(&equals);
 
-  if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
-    xbt_os_timer_stop(timer);
-    xbt_dynar_push_as(initial_state_liveness->stacks_comparison_times, double, xbt_os_timer_elapsed(timer));
-
-    XBT_DEBUG("Stacks comparison : %f", xbt_os_timer_elapsed(timer));
-    
+  if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug))    
     xbt_os_timer_free(timer);
-  }
 
-  xbt_os_timer_stop(global_timer);
-  xbt_dynar_push_as(initial_state_liveness->snapshot_comparison_times, double, xbt_os_timer_elapsed(timer));
+  if(!XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
+    xbt_os_timer_stop(global_timer);
+    xbt_dynar_push_as(ct1->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+    xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+  }
   xbt_os_timer_free(global_timer);
 
   if(!raw_mem_set)

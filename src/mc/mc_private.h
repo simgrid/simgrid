@@ -44,13 +44,6 @@ typedef struct s_mc_snapshot_stack{
 
 typedef struct s_mc_global_t{
   mc_snapshot_t initial_snapshot;
-  xbt_dynar_t snapshot_comparison_times;
-  xbt_dynar_t chunks_used_comparison_times;
-  xbt_dynar_t stacks_sizes_comparison_times;
-  xbt_dynar_t program_data_segment_comparison_times;
-  xbt_dynar_t libsimgrid_data_segment_comparison_times;
-  xbt_dynar_t heap_comparison_times;
-  xbt_dynar_t stacks_comparison_times;
 }s_mc_global_t, *mc_global_t;
 
 void MC_take_snapshot(mc_snapshot_t);
@@ -241,19 +234,32 @@ typedef struct s_mc_pair{
   xbt_state_t automaton_state;
 }s_mc_pair_t, *mc_pair_t;
 
+typedef struct s_mc_comparison_times{
+  int nb_comparisons;
+  xbt_dynar_t snapshot_comparison_times;
+  xbt_dynar_t chunks_used_comparison_times;
+  xbt_dynar_t stacks_sizes_comparison_times;
+  xbt_dynar_t program_data_segment_comparison_times;
+  xbt_dynar_t libsimgrid_data_segment_comparison_times;
+  xbt_dynar_t heap_comparison_times;
+  xbt_dynar_t stacks_comparison_times;
+}s_mc_comparison_times_t, *mc_comparison_times_t;
+
 typedef struct s_mc_pair_reached{
   int nb;
   xbt_state_t automaton_state;
   xbt_dynar_t prop_ato;
   mc_snapshot_t system_state;
+  mc_comparison_times_t comparison_times;
 }s_mc_pair_reached_t, *mc_pair_reached_t;
 
 int MC_automaton_evaluate_label(xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
+mc_comparison_times_t new_comparison_times(void);
 
 int reached(xbt_state_t st);
 void set_pair_reached(xbt_state_t st);
-int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t ct1, mc_comparison_times_t ct2);
 void MC_pair_delete(mc_pair_t pair);
 void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
@@ -261,6 +267,7 @@ void pair_reached_free(mc_pair_reached_t pair);
 void pair_reached_free_voidp(void *p);
 void MC_init_liveness(void);
 void MC_init_memory_map_info(void);
+void MC_print_comparison_times_statistics(mc_comparison_times_t ct);
 
 /* **** Double-DFS stateless **** */
 

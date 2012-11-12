@@ -566,7 +566,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
 
     case SIMCALL_MC_COMPARE_SNAPSHOTS:
       simcall->mc_compare_snapshots.result =
-        snapshot_compare(simcall->mc_compare_snapshots.snapshot1, simcall->mc_compare_snapshots.snapshot2);
+        snapshot_compare(simcall->mc_compare_snapshots.snapshot1, simcall->mc_compare_snapshots.snapshot2, NULL, NULL);
       SIMIX_simcall_answer(simcall);
       break;
 #endif /* HAVE_MC */
