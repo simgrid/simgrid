@@ -339,3 +339,7 @@ void mmalloc_postexit(void)
   //  mmalloc_detach(__mmalloc_default_mdp);
   xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
 }
+
+size_t mmalloc_get_chunks_used(xbt_mheap_t heap){
+  return ((struct mdesc *)heap)->heapstats.chunks_used;
+}

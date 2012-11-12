@@ -12,6 +12,7 @@ if(HAVE_MC)
   add_executable(random_test random_test.c)
   add_executable(bugged1_liveness bugged1_liveness.c)
   add_executable(bugged2_liveness bugged2_liveness.c)
+  add_executable(chord_liveness chord_liveness.c)
   add_executable(test/snapshot_comparison_liveness1 test/snapshot_comparison_liveness1.c)
   add_executable(test/snapshot_comparison_liveness2 test/snapshot_comparison_liveness2.c)
   add_executable(test/snapshot_comparison_liveness3 test/snapshot_comparison_liveness3.c)
@@ -25,6 +26,7 @@ if(HAVE_MC)
   target_link_libraries(random_test     simgrid m )
   target_link_libraries(bugged1_liveness     simgrid m )
   target_link_libraries(bugged2_liveness     simgrid m )
+  target_link_libraries(chord_liveness     simgrid m )
   target_link_libraries(test/snapshot_comparison_liveness1     simgrid m )
   target_link_libraries(test/snapshot_comparison_liveness2     simgrid m )
   target_link_libraries(test/snapshot_comparison_liveness3     simgrid m )
@@ -50,6 +52,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_mutex.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_random_test.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deploy_chord_liveness.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test/deploy_snapshot_comparison.xml
   PARENT_SCOPE
   )
@@ -64,6 +67,8 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/random_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/chord_liveness.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/chord_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_liveness1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_liveness2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_liveness3.c
@@ -76,6 +81,7 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/parse_dwarf
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged1_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/promela_chord_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/test/promela
   PARENT_SCOPE
   )

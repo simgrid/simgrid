@@ -49,7 +49,7 @@ smx_ctx_base_factory_create_context_sized(size_t size,
 
   /* Store the address of the stack in heap to compare it apart of heap comparison */
   if(MC_is_active())
-    MC_ignore(context, size);
+    MC_ignore_heap(context, size);
 
   /* If the user provided a function for the process then use it.
      Otherwise, it is the context for maestro and we should set it as the

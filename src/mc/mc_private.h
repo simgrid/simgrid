@@ -44,6 +44,13 @@ typedef struct s_mc_snapshot_stack{
 
 typedef struct s_mc_global_t{
   mc_snapshot_t initial_snapshot;
+  xbt_dynar_t snapshot_comparison_times;
+  xbt_dynar_t chunks_used_comparison_times;
+  xbt_dynar_t stacks_sizes_comparison_times;
+  xbt_dynar_t program_data_segment_comparison_times;
+  xbt_dynar_t libsimgrid_data_segment_comparison_times;
+  xbt_dynar_t heap_comparison_times;
+  xbt_dynar_t stacks_comparison_times;
 }s_mc_global_t, *mc_global_t;
 
 void MC_take_snapshot(mc_snapshot_t);
@@ -224,6 +231,9 @@ extern void *start_plt_libsimgrid;
 extern void *end_plt_libsimgrid;
 extern void *start_plt_binary;
 extern void *end_plt_binary;
+extern xbt_dynar_t mc_stack_comparison_ignore;
+extern xbt_dynar_t mc_data_bss_comparison_ignore;
+extern void *start_bss_libsimgrid;
 
 typedef struct s_mc_pair{
   mc_snapshot_t system_state;
@@ -273,6 +283,7 @@ extern xbt_fifo_t mc_stack_safety;
 
 extern int _surf_mc_checkpoint;
 extern char* _surf_mc_property_file;
+extern int _surf_mc_timeout;
 
 /****** Core dump ******/
 

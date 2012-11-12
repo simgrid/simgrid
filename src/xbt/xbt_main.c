@@ -32,6 +32,7 @@ int xbt_initialized = 0;
 int _surf_do_model_check = 0;
 int _surf_mc_checkpoint=0;
 char* _surf_mc_property_file=NULL;
+int _surf_mc_timeout=0;
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.

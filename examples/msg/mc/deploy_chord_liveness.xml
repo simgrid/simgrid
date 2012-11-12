@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+ 
+  <process host="Jean_Yves" function="node">
+    <argument value="14"/>        <!-- my id -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="400"/>        <!-- time to sleep before it starts-->
+    <argument value ="600"/>		<!-- deadline -->
+  </process>
+  
+  <process host="Boivin" function="node">
+    <argument value="8"/>         <!-- my id -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="300"/>         <!-- time to sleep before it starts-->
+    <argument value ="600"/>		<!-- deadline -->
+  </process>
+
+  <process host="Jacquelin" function="node">
+    <argument value="1"/>         <!-- my id -->
+    <argument value ="600"/>             <!-- deadline -->
+  </process>
+
+</platform>

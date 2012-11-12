@@ -300,7 +300,12 @@ int MC_request_is_enabled(smx_simcall_t req)
      * communication is not ready, it can timeout and won't block.
      * On the other hand if it hasn't a timeout, check if the comm is ready.*/
     if(req->comm_wait.timeout >= 0){
-      return TRUE;
+      if(_surf_mc_timeout == 1){
+        return TRUE;
+      }else{
+        act = req->comm_wait.comm;
+        return (act->comm.src_proc && act->comm.dst_proc);
+      }
     }else{
       act = req->comm_wait.comm;
       return (act->comm.src_proc && act->comm.dst_proc);

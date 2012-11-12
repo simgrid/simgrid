@@ -55,6 +55,14 @@ void _mc_cfg_cb_property(const char *name, int pos) {
   xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
 }
 
+void _mc_cfg_cb_timeout(const char *name, int pos) {
+  if (_surf_init_status && !_surf_do_model_check) {
+    xbt_die("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _surf_mc_timeout= xbt_cfg_get_int(_surf_cfg_set, name);
+  xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
+}
+
 
 /* MC global data structures */
 
@@ -80,7 +88,9 @@ int compare;
 xbt_dict_t mc_local_variables = NULL;
 
 /* Ignore mechanism */
-extern xbt_dynar_t mc_comparison_ignore;
+xbt_dynar_t mc_stack_comparison_ignore;
+xbt_dynar_t mc_data_bss_comparison_ignore;
+extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
 xbt_automaton_t _mc_property_automaton = NULL;
@@ -172,7 +182,7 @@ void MC_init_liveness(){
   /* mc_time refers to clock for each process -> ignore it for heap comparison */
   int i;
   for(i = 0; i<simix_process_maxpid; i++)
-    MC_ignore(&(mc_time[i]), sizeof(double));
+    MC_ignore_heap(&(mc_time[i]), sizeof(double));
   
   compare = 0;
 
@@ -192,6 +202,15 @@ void MC_init_liveness(){
   /* Get local variables in libsimgrid for state equality detection */
   xbt_dict_t libsimgrid_location_list = MC_get_location_list(ls_path);
   MC_get_local_variables(ls_path, libsimgrid_location_list, &mc_local_variables);
+
+  initial_state_liveness = xbt_new0(s_mc_global_t, 1);
+  initial_state_liveness->snapshot_comparison_times = xbt_dynar_new(sizeof(double), NULL);
+  initial_state_liveness->chunks_used_comparison_times = xbt_dynar_new(sizeof(double), NULL);
+  initial_state_liveness->stacks_sizes_comparison_times = xbt_dynar_new(sizeof(double), NULL);
+  initial_state_liveness->program_data_segment_comparison_times = xbt_dynar_new(sizeof(double), NULL);
+  initial_state_liveness->libsimgrid_data_segment_comparison_times = xbt_dynar_new(sizeof(double), NULL);
+  initial_state_liveness->heap_comparison_times = xbt_dynar_new(sizeof(double), NULL);
+  initial_state_liveness->stacks_comparison_times = xbt_dynar_new(sizeof(double), NULL);
 
   MC_UNSET_RAW_MEM;
 
@@ -291,7 +310,7 @@ int MC_deadlock_check()
  */
 void MC_replay(xbt_fifo_t stack, int start)
 {
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
 
   int value, i = 1;
   char *req_str;
@@ -347,7 +366,7 @@ void MC_replay(xbt_fifo_t stack, int start)
   }
   XBT_DEBUG("**** End Replay ****");
 
-  if(raw_mem_set)
+  if(raw_mem)
     MC_SET_RAW_MEM;
   else
     MC_UNSET_RAW_MEM;
@@ -358,7 +377,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 {
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
 
   int value;
   char *req_str;
@@ -461,7 +480,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
   XBT_DEBUG("**** End Replay ****");
 
-  if(raw_mem_set)
+  if(raw_mem)
     MC_SET_RAW_MEM;
   else
     MC_UNSET_RAW_MEM;
@@ -593,8 +612,9 @@ void MC_print_statistics_pairs(mc_stats_pair_t stats)
   //XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
   XBT_INFO("Expanded / Visited = %lf",
            (double) stats->visited_pairs / stats->expanded_pairs);
-  /*XBT_INFO("Exploration coverage = %lf",
-    (double)stats->expanded_states / stats->state_size); */
+
+  if(mmalloc_get_current_heap() == raw_heap)
+    MC_UNSET_RAW_MEM;
 }
 
 void MC_assert(int prop)
@@ -678,17 +698,17 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
 /************ MC_ignore ***********/ 
 
-void MC_ignore(void *address, size_t size){
+void MC_ignore_heap(void *address, size_t size){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
   
-  if(mc_comparison_ignore == NULL)
-    mc_comparison_ignore = xbt_dynar_new(sizeof(mc_ignore_region_t), NULL);
+  if(mc_heap_comparison_ignore == NULL)
+    mc_heap_comparison_ignore = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), NULL);
 
-  mc_ignore_region_t region = NULL;
-  region = xbt_new0(s_mc_ignore_region_t, 1);
+  mc_heap_ignore_region_t region = NULL;
+  region = xbt_new0(s_mc_heap_ignore_region_t, 1);
   region->address = address;
   region->size = size;
 
@@ -705,13 +725,13 @@ void MC_ignore(void *address, size_t size){
   }
 
   unsigned int cursor = 0;
-  mc_ignore_region_t current_region;
-  xbt_dynar_foreach(mc_comparison_ignore, cursor, current_region){
+  mc_heap_ignore_region_t current_region;
+  xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region){
     if(current_region->address > address)
       break;
   }
 
-  xbt_dynar_insert_at(mc_comparison_ignore, cursor, &region);
+  xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
 
   MC_UNSET_RAW_MEM;
 
@@ -719,12 +739,134 @@ void MC_ignore(void *address, size_t size){
     MC_SET_RAW_MEM;
 }
 
-void MC_new_stack_area(void *stack, char *name, void* context){
+void MC_ignore_data_bss(void *address, size_t size){
 
   raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
+  
+  if(mc_data_bss_comparison_ignore == NULL)
+    mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), NULL);
 
+  if(xbt_dynar_is_empty(mc_data_bss_comparison_ignore)){
+
+    mc_data_bss_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
+    var->address = address;
+    var->size = size;
+
+    xbt_dynar_insert_at(mc_data_bss_comparison_ignore, 0, &var);
+
+  }else{
+    
+    unsigned int cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
+    mc_data_bss_ignore_variable_t current_var = NULL;
+
+    while(start <= end){
+      cursor = (start + end) / 2;
+      current_var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
+      if(current_var->address == address){
+        MC_UNSET_RAW_MEM;
+        if(raw_mem_set)
+          MC_SET_RAW_MEM;
+        return;
+      }
+      if(current_var->address < address)
+        start = cursor + 1;
+      if(current_var->address > address)
+        end = cursor - 1;
+    }
+ 
+    mc_data_bss_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
+    var->address = address;
+    var->size = size;
+
+    if(current_var->address > address)
+      xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor + 1, &var);
+    else
+      xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor, &var);
+
+  }
+
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+}
+
+void MC_ignore_stack(const char *var_name, const char *frame){
+  
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
+  if(mc_stack_comparison_ignore == NULL)
+    mc_stack_comparison_ignore = xbt_dynar_new(sizeof(mc_stack_ignore_variable_t), NULL);
+
+  if(xbt_dynar_is_empty(mc_stack_comparison_ignore)){
+
+    mc_stack_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
+    var->var_name = strdup(var_name);
+    var->frame = strdup(frame);
+
+    xbt_dynar_insert_at(mc_stack_comparison_ignore, 0, &var);
+
+  }else{
+    
+    unsigned int cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(mc_stack_comparison_ignore) - 1;
+    mc_stack_ignore_variable_t current_var = NULL;
+
+    while(start <= end){
+      cursor = (start + end) / 2;
+      current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
+      if(strcmp(current_var->frame, frame) == 0){
+        if(strcmp(current_var->var_name, var_name) == 0){
+          MC_UNSET_RAW_MEM;
+          if(raw_mem_set)
+            MC_SET_RAW_MEM;
+          return;
+        }
+        if(strcmp(current_var->var_name, var_name) < 0)
+          start = cursor + 1;
+        if(strcmp(current_var->var_name, var_name) > 0)
+          end = cursor - 1;
+      }
+      if(strcmp(current_var->frame, frame) < 0)
+        start = cursor + 1;
+      if(strcmp(current_var->frame, frame) > 0)
+        end = cursor - 1;
+    }
+
+    mc_stack_ignore_variable_t var = NULL;
+    var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
+    var->var_name = strdup(var_name);
+    var->frame = strdup(frame);
+
+    if(strcmp(current_var->frame, frame) < 0)
+      xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
+    else
+      xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
+
+  }
+
+  MC_UNSET_RAW_MEM;
+  
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+
+}
+
+void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
+
+  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
   if(stacks_areas == NULL)
     stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
   
@@ -733,6 +875,7 @@ void MC_new_stack_area(void *stack, char *name, void* context){
   region->address = stack;
   region->process_name = strdup(name);
   region->context = context;
+  region->size = size;
   xbt_dynar_push(stacks_areas, &region);
   
   MC_UNSET_RAW_MEM;
@@ -1289,7 +1432,7 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_bregister_op;
         new_element->location.breg_op.reg = atoi(strtok(tok2, "DW_OP_breg"));
-        new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens2, 2, char*));
+        new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens2, 1, char*));
         xbt_dynar_push(loc->location.compose, &new_element);
       }else if(strncmp(tok2, "DW_OP_lit", 9) == 0){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);

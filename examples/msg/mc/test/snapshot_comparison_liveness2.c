@@ -24,7 +24,7 @@ int test(int argc, char **argv){
   MSG_process_sleep(1);
 
   char *toto = xbt_malloc(5);
-  XBT_INFO("Toto value %s", toto);
+  XBT_INFO("Toto allocated");
 
   void *snap2 = MC_snapshot();
 
@@ -35,6 +35,8 @@ int test(int argc, char **argv){
   XBT_INFO("Test result : %d (0 = state equality, 1 = different states)", res);
   
   XBT_INFO("**** End test ****");
+
+  xbt_free(toto);
 
   return 0;
 }
