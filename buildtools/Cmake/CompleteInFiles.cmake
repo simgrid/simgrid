@@ -448,14 +448,14 @@ if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
   string(REPLACE "\n" "" url "${url}")
   #message(STATUS "Git url: ${url}")
   if(url)
-    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --oneline -1
+    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --pretty=oneline --abbrev-commit -1
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
     OUTPUT_VARIABLE GIT_VERSION
     RESULT_VARIABLE ret
     )
     string(REPLACE "\n" "" GIT_VERSION "${GIT_VERSION}")
     message(STATUS "Git version: ${GIT_VERSION}")
-    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --format=%ai .
+    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --pretty=format:%ai .
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
     OUTPUT_VARIABLE GIT_DATE
     RESULT_VARIABLE ret
