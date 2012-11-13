@@ -63,6 +63,14 @@ void _mc_cfg_cb_timeout(const char *name, int pos) {
   xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
 }
 
+void _mc_cfg_cb_max_depth(const char *name, int pos) {
+  if (_surf_init_status && !_surf_do_model_check) {
+    xbt_die("You are specifying a max depth value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _surf_mc_max_depth= xbt_cfg_get_int(_surf_cfg_set, name);
+  xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
+}
+
 
 /* MC global data structures */
 

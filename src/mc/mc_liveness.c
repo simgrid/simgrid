@@ -509,7 +509,7 @@ void MC_ddfs(int search_cycle){
   mc_pair_stateless_t remove_pair;
   mc_pair_reached_t remove_pair_reached;
   
-  if(xbt_fifo_size(mc_stack_liveness) < MAX_DEPTH_LIVENESS){
+  if(xbt_fifo_size(mc_stack_liveness) < _surf_mc_max_depth){
 
     if(current_pair->requests > 0){
 
@@ -787,7 +787,7 @@ void MC_ddfs(int search_cycle){
 
   }
 
-  if(xbt_fifo_size(mc_stack_liveness) == MAX_DEPTH_LIVENESS ){
+  if(xbt_fifo_size(mc_stack_liveness) == _surf_mc_max_depth ){
     XBT_DEBUG("Pair (depth = %d) shifted in stack, maximum depth reached", xbt_fifo_size(mc_stack_liveness) );
   }else{
     XBT_DEBUG("Pair (depth = %d) shifted in stack", xbt_fifo_size(mc_stack_liveness) );

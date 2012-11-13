@@ -88,7 +88,7 @@ void MC_dpor(void)
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_fifo_size(mc_stack_safety) < MAX_DEPTH &&
+    if (xbt_fifo_size(mc_stack_safety) < _surf_mc_max_depth &&
         (req = MC_state_get_request(state, &value))) {
 
       /* Debug information */

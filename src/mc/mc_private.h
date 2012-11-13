@@ -55,10 +55,6 @@ void snapshot_stack_free_voidp(void *s);
 /********************************* MC Global **********************************/
 extern double *mc_time;
 
-/* Bound of the MC depth-first search algorithm */
-#define MAX_DEPTH 1000
-#define MAX_DEPTH_LIVENESS 500
-
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack, int start);
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack);
@@ -291,6 +287,7 @@ extern xbt_fifo_t mc_stack_safety;
 extern int _surf_mc_checkpoint;
 extern char* _surf_mc_property_file;
 extern int _surf_mc_timeout;
+extern int _surf_mc_max_depth;
 
 /****** Core dump ******/
 

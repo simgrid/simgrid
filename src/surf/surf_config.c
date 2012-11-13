@@ -524,6 +524,13 @@ void surf_config_init(int *argc, char **argv)
                      "Enable/Disable timeout for wait requests",
                      xbt_cfgelm_int, &default_value, 0, 1,
                      _mc_cfg_cb_timeout, NULL);
+
+    /* Set max depth exploration */
+    default_value_int = 1000;
+    xbt_cfg_register(&_surf_cfg_set, "model-check/max_depth",
+                     "Specify the max depth of exploration",
+                     xbt_cfgelm_int, &default_value, 0, 1,
+                     _mc_cfg_cb_max_depth, NULL);
 #endif
 
     /* do verbose-exit */
