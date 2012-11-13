@@ -7,7 +7,6 @@ We start to put TAGS in simgrid source code for having tutorials to see where is
 \li new tags in xml files
 
 \section simgrid_dev_guide_api How to add a new MSG function?
-
 Search for expression \"TUTORIAL: New API\".
 \verbatim
 user@caraja:~/workspace/simgrid/src$ cg "TUTORIAL: New API"

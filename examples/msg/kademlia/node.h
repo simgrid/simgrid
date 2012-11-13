@@ -31,7 +31,7 @@ typedef struct s_node {
   msg_comm_t receive_comm;      //current receiving communication.
   msg_task_t task_received;     //current task being received
 
-  char mailbox[MAILBOX_NAME_SIZE];      //node mailbox
+  char mailbox[MAILBOX_NAME_SIZE+1];      //node mailbox
   unsigned int find_node_success;       //Number of find_node which have succeeded.
   unsigned int find_node_failed;        //Number of find_node which have failed.
 
