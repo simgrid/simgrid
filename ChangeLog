@@ -5,7 +5,7 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  * Much more extensive test suite, from MPICH
 
  MSG:
- * New function: MSG_get_process_number()
+ * New function: MSG_process_get_number()
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
