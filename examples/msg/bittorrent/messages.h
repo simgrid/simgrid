@@ -10,6 +10,8 @@
 
 /**
  * Message sizes
+ * Sizes based on report by A. Legout et al, Understanding BitTorrent: An Experimental Perspective
+ * http://hal.inria.fr/inria-00000156/en
  */
 #define MESSAGE_HANDSHAKE_SIZE 68
 #define MESSAGE_CHOKE_SIZE 5
