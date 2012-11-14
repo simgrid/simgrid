@@ -3,3 +3,5 @@
 echo "THIS COMMAND IS NOT AVAILABLE!"
 echo "Since v3.4 we use cmake. Now use:"
 echo -e "\tcmake -DCMAKE_INSTALL_PREFIX=<where_you_want> .\n\tmake\n\tmake install"
+
+exit 1
