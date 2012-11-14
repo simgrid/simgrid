@@ -15,10 +15,10 @@ Please apply the following checklist before releasing.
   - The" make distcheck" target works (testing that every files needed
     to build and install are included in the archive)
 - Tests
-  - All tests pass on a reasonnable amount of platforms (typically,
+  - All tests pass on a reasonable amount of platforms (typically,
     everything on cdash)
   - You also tested to build and install the content of the source
-    archive on a reasonnable amount of platforms (typically, 2 or 3).
+    archive on a reasonable amount of platforms (typically, 2 or 3).
 - ChangeLog file
   - Every changes are documented
   - The release date is indicated below the changes
@@ -36,8 +36,7 @@ globbing, you must ensure that your tree contains no cruft. You can
 either checkout a new tree or remove anything from your current tree:
 \verbatim
 $ cd simgrid
-$ git stash
-$ git stash clear
+$ git reset --hard master
 $ git clean -dfx
 \endverbatim
 
@@ -77,7 +76,7 @@ $ make nsis
 - Announce the release
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
-    - the ChangeLog chunk as attachement
+    - the ChangeLog chunk as attachment
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section
 
