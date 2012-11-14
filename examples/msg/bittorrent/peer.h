@@ -42,6 +42,8 @@ typedef struct s_peer {
   RngStream stream;             //RngStream for
 
   double begin_receive_time;    //time when the receiving communication has begun, useful for calculating host speed.
+
+  xbt_dynar_t pending_sends;    // list of sends being delivered
 } s_peer_t, *peer_t;
 
 /**
@@ -58,6 +60,7 @@ void peer_free(peer_t peer);
 
 int has_finished(char *bitfield);
 
+void handle_pending_sends(peer_t peer);
 void handle_message(peer_t peer, msg_task_t task);
 
 void wait_for_pieces(peer_t peer, double deadline);
