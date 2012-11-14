@@ -356,7 +356,7 @@ int node(int argc, char *argv[])
           MSG_process_sleep(5);
         }
       } else {
-        // a transfer has occured
+        // a transfer has occurred
 
         msg_error_t status = MSG_comm_get_status(node.comm_receive);
 
