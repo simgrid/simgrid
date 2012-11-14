@@ -661,7 +661,8 @@ WARN_LOGFILE           =
 INPUT                  = index.doc \
                          simgrid.doc \
                          xps.doc \
-                         cmake.doc 
+                         cmake.doc \
+			 release.doc
                          
 ###################################################
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
