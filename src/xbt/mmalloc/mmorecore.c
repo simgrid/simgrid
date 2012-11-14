@@ -53,7 +53,7 @@ static size_t pagesize;
 
     It never returns NULL. Instead, it dies verbosely on errors. */
 
-void *mmorecore(struct mdesc *mdp, size_t size)
+void *mmorecore(struct mdesc *mdp, ssize_t size)
 {
   ssize_t test = 0;
   void *result; // please keep it uninitialized to track issues
