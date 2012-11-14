@@ -24,6 +24,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / ( _ )
                 Oct 25 2012
 
 The Psssshiiiit release: SimGrid jumps into the Cloud.
+Major changes:
 
  * Experimental interface to manipulate VMs, EC2-style.
  * Fixes around process restart and stochastic workloads
