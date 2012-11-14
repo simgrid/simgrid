@@ -151,6 +151,8 @@ XBT_PUBLIC(int) MSG_process_self_PID(void);
 XBT_PUBLIC(int) MSG_process_self_PPID(void);
 XBT_PUBLIC(msg_process_t) MSG_process_self(void);
 XBT_PUBLIC(xbt_dynar_t) MSG_processes_as_dynar(void);
+XBT_PUBLIC(int) MSG_process_get_number(void);
+
 XBT_PUBLIC(msg_error_t) MSG_process_set_kill_time(msg_process_t process, double kill_time);
 
 /*property handlers*/

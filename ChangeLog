@@ -4,6 +4,9 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  * Now works on Windows too!
  * Much more extensive test suite, from MPICH
 
+ MSG:
+ * New function: MSG_get_process_number()
+
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.8.1) stable; urgency=low

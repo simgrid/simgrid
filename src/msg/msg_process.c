@@ -312,6 +312,12 @@ msg_process_t MSG_process_from_PID(int PID)
 xbt_dynar_t MSG_processes_as_dynar(void) {
   return SIMIX_processes_as_dynar();
 }
+/** @brief Return the current number MSG processes.
+ */
+int MSG_process_get_number(void)
+{
+  return SIMIX_process_count();
+}
 
 /** \ingroup m_process_management
  * \brief Set the kill time of a process.
