@@ -6,8 +6,8 @@ INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
 
 if [ "@WIN32@" != "1" ]; then
-  LINKARGS="-lsimgrid -lsmpi -lm"
   CFLAGS="-O2 -Dmain=smpi_simulated_main"
+  LINKARGS="-lsimgrid -lsmpi -lm"
 else
   CFLAGS="-O2 -include @includedir@/smpi/smpi_main.h"
   LINKARGS="@libdir@\libsimgrid.dll @libdir@\libsmpi.dll"
@@ -19,6 +19,7 @@ while [ -n "$1" ]; do
   shift
   case "${ARG}" in
    -c)
+      CMAKE_LINKARGS=""
       LINKARGS=""
       CMDLINE="${CMDLINE} -c "
       ;;
