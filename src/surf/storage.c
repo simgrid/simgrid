@@ -36,6 +36,7 @@ static xbt_dynar_t storage_list;
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
 static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
+static int storage_action_unref(surf_action_t action);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
 static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type);
 static void free_storage_content(void *p);
