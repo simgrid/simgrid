@@ -70,6 +70,19 @@ static int parse_cmdline(int *timings, int *downgrade, char **platformFile, int 
   return wrong_option;
 }
 
+static void create_environment(xbt_os_timer_t parse_time, const char *platformFile)
+{
+  xbt_ex_t e;
+  TRY {
+    xbt_os_timer_start(parse_time);
+    SD_create_environment(platformFile);
+    xbt_os_timer_stop(parse_time);
+  }
+  CATCH(e) {
+    xbt_die("Error while loading %s: %s", platformFile, e.msg);
+  }
+}
+
 int main(int argc, char **argv)
 {
   char *platformFile = NULL;
@@ -86,7 +99,6 @@ int main(int argc, char **argv)
   char *src,*dst,*key,*data;
   sg_routing_edge_t value1;
   sg_routing_edge_t value2;
-  xbt_ex_t e;
 
   const SD_workstation_t *hosts;
   const SD_link_t *links;
@@ -107,14 +119,7 @@ int main(int argc, char **argv)
     link_ctn = link_ctn_v2;
   }
 
-  TRY {
-    xbt_os_timer_start(parse_time);
-    SD_create_environment(platformFile);
-    xbt_os_timer_stop(parse_time);
-  }
-  CATCH(e) {
-    xbt_die("Error while loading %s: %s",platformFile,e.msg);
-  }
+  create_environment(parse_time, platformFile);
 
   if (timings) {
     XBT_INFO("Parsing time: %fs (%d hosts, %d links)",
