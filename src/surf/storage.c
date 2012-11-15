@@ -140,6 +140,16 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fp)
 {
   char *filename = fp->name;
   XBT_DEBUG("\tClose file '%s' size '%f'",filename,fp->content->stat.size);
+  // unref write actions from storage
+  surf_action_storage_t write_action;
+  unsigned int i;
+  xbt_dynar_foreach(((storage_t)storage)->write_actions,i,write_action) {
+    if ((write_action->generic_lmm_action.generic_action.file) == fp) {
+      xbt_dynar_cursor_rm(((storage_t)storage)->write_actions, &i);
+      storage_action_unref((surf_action_t) write_action);
+    }
+  }
+
   free(fp->name);
   fp->content = NULL;
   xbt_free(fp);
@@ -209,6 +219,7 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
     lmm_expand(storage_maxmin_system, STORAGE->constraint_write,
                GENERIC_LMM_ACTION(action).variable, 1.0);
     xbt_dynar_push(((storage_t)storage)->write_actions,&action);
+    surf_action_ref((surf_action_t) action);
     break;
   }
   action->type = type;

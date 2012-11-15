@@ -54,4 +54,6 @@ typedef struct surf_action_storage {
   void *storage;
 } s_surf_action_storage_t, *surf_action_storage_t;
 
+static int storage_action_unref(surf_action_t action);
+
 #endif /* STORAGE_PRIVATE_H_ */
