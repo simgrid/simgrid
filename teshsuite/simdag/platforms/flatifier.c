@@ -22,6 +22,9 @@
 #include "surf/surf.h"
 #include "surf/surf_private.h"
 
+static const char link_ctn_v2[] =  "link:ctn";
+static const char link_ctn_v3[] = "link_ctn";
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier,
                              "Logging specific to this platform parsing tool");
 
@@ -43,11 +46,37 @@ static int name_compare_links(const void *n1, const void *n2)
   return strcmp(name1, name2);
 }
 
+int parse_cmdline(int *timings, int *downgrade, char **platformFile, int argc, char **argv)
+{
+  int wrong_option = 0;
+  int i;
+  for (i = 1; i < argc; i++) {
+    if (strlen(argv[i]) > 1 && argv[i][0] == '-' && argv[i][1] == '-') {
+      if (!strcmp(argv[i], "--timings")) {
+        *timings = 1;
+      } else {
+        if (!strcmp(argv[i], "--downgrade")) {
+          *downgrade = 1;
+        } else {
+          wrong_option = 1;
+          break;
+        }
+      }
+    } else {
+      *platformFile = argv[i];
+    }
+  }
+  return wrong_option;
+}
+
 int main(int argc, char **argv)
 {
   char *platformFile = NULL;
   int totalHosts, totalLinks;
   int timings=0;
+  int downgrade = 0;
+  int version = 3;
+  const char *link_ctn = link_ctn_v3;
   unsigned int i;
   xbt_dict_t props = NULL;
   xbt_dict_cursor_t cursor = NULL;
@@ -66,13 +95,17 @@ int main(int argc, char **argv)
 
   SD_init(&argc, argv);
 
-  platformFile = argv[1];
-  if (!strcmp(platformFile,"--timings")) {
-     platformFile=argv[2];
-     timings=1;
+  if (parse_cmdline(&timings, &downgrade, &platformFile, argc, argv) || !platformFile) {
+    xbt_die("Invalid command line arguments: expected [--timings|--downgrade] platformFile");
   }
-      
-  XBT_DEBUG("%s", platformFile);
+ 
+  XBT_DEBUG("%d,%d,%s", timings, downgrade, platformFile);
+
+  if (downgrade) {
+    version = 2;
+    link_ctn = link_ctn_v2;
+  }
+
   TRY {
     xbt_os_timer_start(parse_time);
     SD_create_environment(platformFile);
@@ -88,8 +121,9 @@ int main(int argc, char **argv)
   } else {
     printf("<?xml version='1.0'?>\n");
     printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n");
-    printf("<platform version=\"3\">\n");
-    printf("<AS id=\"AS0\" routing=\"Full\">\n");
+    printf("<platform version=\"%d\">\n", version);
+    if (!downgrade)
+      printf("<AS id=\"AS0\" routing=\"Full\">\n");
 
     // Hosts
     totalHosts = SD_workstation_get_number();
@@ -159,7 +193,7 @@ int main(int argc, char **argv)
           void *link = xbt_dynar_get_as(route,i,void *);
 
           char *link_name = xbt_strdup(((surf_resource_t)link)->name);
-          printf("<link_ctn id=\"%s\"/>",link_name);
+          printf("<%s id=\"%s\"/>",link_ctn,link_name);
           free(link_name);
         }
         printf("\n  </route>\n");
@@ -178,7 +212,7 @@ int main(int argc, char **argv)
             void *link = xbt_dynar_get_as(route,i,void *);
 
             char *link_name = xbt_strdup(((surf_resource_t)link)->name);
-            printf("<link_ctn id=\"%s\"/>",link_name);
+            printf("<%s id=\"%s\"/>",link_ctn,link_name);
             free(link_name);
           }
           printf("\n  </route>\n");
@@ -204,7 +238,7 @@ int main(int argc, char **argv)
               void *link = xbt_dynar_get_as(route,i,void *);
 
               char *link_name = xbt_strdup(((surf_resource_t)link)->name);
-              printf("<link_ctn id=\"%s\"/>",link_name);
+              printf("<%s id=\"%s\"/>",link_ctn,link_name);
               free(link_name);
             }
             printf("\n  </route>\n");
@@ -222,7 +256,7 @@ int main(int argc, char **argv)
             void *link = xbt_dynar_get_as(route,i,void *);
 
             char *link_name = xbt_strdup(((surf_resource_t)link)->name);
-            printf("<link_ctn id=\"%s\"/>",link_name);
+            printf("<%s id=\"%s\"/>",link_ctn,link_name);
             free(link_name);
           }
           printf("\n  </route>\n");
@@ -230,7 +264,8 @@ int main(int argc, char **argv)
       }
     }
 
-    printf("</AS>\n");
+    if (!downgrade)
+      printf("</AS>\n");
     printf("</platform>\n");
   }
   SD_exit();
