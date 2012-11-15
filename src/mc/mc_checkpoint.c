@@ -572,11 +572,12 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
           }
           
           if(xbt_dynar_length(compose) > 0){
+            //XBT_INFO("Variable : %s", current_variable->name);
             if(strcmp(xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->type, "value") == 0){
               //XBT_INFO("Variable : %s - value : %lx", current_variable->name, xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.res);
               xbt_strbuff_append(variables, bprintf("%s=%lx\n", current_variable->name, xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.res));
             }else{
-              if(*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) == NULL){
+              if((long)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address < 0 || *((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) == NULL){
                 //XBT_INFO("Variable : %s - address : NULL", current_variable->name);
                 xbt_strbuff_append(variables, bprintf("%s=NULL\n", current_variable->name));
               }else if(((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) > 0xffffffff) || ((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) < (long)start_text_binary)){
