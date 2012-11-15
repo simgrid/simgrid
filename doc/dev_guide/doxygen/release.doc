@@ -91,8 +91,7 @@ you an archive file in the build dir:
 
 \verbatim
 $ cd simgrid-java (or simgrid-ruby)
-$ git stash
-$ git stash clear
+$ git reset --hard master
 $ git clean -dfx
 $ mkdir build
 $ cd build
