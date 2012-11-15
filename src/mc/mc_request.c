@@ -15,7 +15,6 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
   if(mc_reduce_kind == e_mc_reduce_none)
     return TRUE;
 
-
   if (r1->issuer == r2->issuer)
     return FALSE;
 
@@ -64,16 +63,16 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
    * test call. */
-  if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
+  /*if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
         &&  r2->call == SIMCALL_COMM_TEST)
-    return FALSE;
+        return FALSE;*/
 
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
    * test call.*/
-  if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
+  /*if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
         && r1->call == SIMCALL_COMM_TEST)
-    return FALSE;
+        return FALSE;*/
 
   if(r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_ISEND
      && r1->comm_isend.rdv != r2->comm_isend.rdv)
