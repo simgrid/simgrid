@@ -198,7 +198,7 @@ int reached(xbt_state_t st){
   new_pair->automaton_state = st;
   new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
   new_pair->comparison_times = new_comparison_times();
-  new_pair->system_state = MC_take_snapshot_liveness();  
+  new_pair->system_state = MC_take_snapshot();  
   
   /* Get values of propositional symbols */
   int res;
@@ -286,7 +286,7 @@ void set_pair_reached(xbt_state_t st){
   pair->automaton_state = st;
   pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
   pair->comparison_times = new_comparison_times();
-  pair->system_state = MC_take_snapshot_liveness();
+  pair->system_state = MC_take_snapshot();
 
   /* Get values of propositional symbols */
   unsigned int cursor = 0;
@@ -322,7 +322,7 @@ int visited(xbt_state_t st){
   new_pair = xbt_new0(s_mc_pair_visited_t, 1);
   new_pair->automaton_state = st;
   new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  new_pair->system_state = MC_take_snapshot_liveness();  
+  new_pair->system_state = MC_take_snapshot();  
   
   /* Get values of propositional symbols */
   int res;
@@ -527,7 +527,7 @@ void MC_ddfs_init(void){
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
 
   /* Save the initial state */
-  initial_state_liveness->snapshot = MC_take_snapshot_liveness();
+  initial_state_liveness->snapshot = MC_take_snapshot();
 
   MC_UNSET_RAW_MEM; 
   

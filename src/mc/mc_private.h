@@ -47,8 +47,8 @@ typedef struct s_mc_global_t{
   int raw_mem_set;
 }s_mc_global_t, *mc_global_t;
 
-void MC_take_snapshot(mc_snapshot_t);
-mc_snapshot_t MC_take_snapshot_liveness(void);
+//void MC_take_snapshot(mc_snapshot_t);
+mc_snapshot_t MC_take_snapshot(void);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 void snapshot_stack_free_voidp(void *s);
@@ -202,11 +202,12 @@ typedef enum {
 } e_mc_reduce_t;
 
 extern e_mc_reduce_t mc_reduce_kind;
+extern mc_global_t initial_state_safety;
 
 void MC_dpor_init(void);
 void MC_dpor(void);
 void MC_dpor_exit(void);
-void MC_init_safety(void);
+void MC_init(void);
 
 
 /********************************** Double-DFS for liveness property**************************************/

@@ -35,10 +35,10 @@ void _mc_cfg_cb_stateful(const char *name, int pos);
 
 XBT_PUBLIC(void) MC_do_the_modelcheck_for_real(void);
 
-XBT_PUBLIC(void) MC_init_safety(void);
+XBT_PUBLIC(void) MC_init(void);
 XBT_PUBLIC(void) MC_exit(void);
 XBT_PUBLIC(void) MC_exit_liveness(void);
-XBT_PUBLIC(void) MC_modelcheck(void);
+XBT_PUBLIC(void) MC_modelcheck_safety(void);
 XBT_PUBLIC(void) MC_modelcheck_liveness(void);
 XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);
 XBT_PUBLIC(double) MC_process_clock_get(smx_process_t);

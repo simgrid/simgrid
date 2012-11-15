@@ -85,12 +85,12 @@ void _mc_cfg_cb_stateful(const char *name, int pos) {
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
-mc_snapshot_t initial_snapshot = NULL;
 
 /* Safety */
 
 xbt_fifo_t mc_stack_safety = NULL;
 mc_stats_t mc_stats = NULL;
+mc_global_t initial_state_safety = NULL;
 
 /* Liveness */
 
@@ -122,7 +122,7 @@ void MC_do_the_modelcheck_for_real() {
       mc_reduce_kind=e_mc_reduce_dpor;
 
     XBT_INFO("Check a safety property");
-    MC_modelcheck();
+    MC_modelcheck_safety();
 
   } else  {
 
@@ -135,60 +135,12 @@ void MC_do_the_modelcheck_for_real() {
   }
 }
 
-/**
- *  \brief Initialize the model-checker data structures
- */
-void MC_init_safety(void)
-{
-
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  /* Check if MC is already initialized */
-  if (initial_snapshot)
-    return;
-
-  mc_time = xbt_new0(double, simix_process_maxpid);
-
-  /* Initialize the data structures that must be persistent across every
-     iteration of the model-checker (in RAW memory) */
-  
-  MC_SET_RAW_MEM;
-
-  /* Initialize statistics */
-  mc_stats = xbt_new0(s_mc_stats_t, 1);
-  mc_stats->state_size = 1;
-
-  /* Create exploration stack */
-  mc_stack_safety = xbt_fifo_new();
-
-  MC_UNSET_RAW_MEM;
-
-  MC_dpor_init();
-
-  MC_SET_RAW_MEM;
-  /* Save the initial state */
-  initial_snapshot = xbt_new0(s_mc_snapshot_t, 1);
-  MC_take_snapshot(initial_snapshot);
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
-  
-}
 
 void MC_compare(void){
   compare = 1;
 }
 
-
-void MC_modelcheck(void)
-{
-  MC_init_safety();
-  MC_dpor();
-  MC_exit();
-}
-
-void MC_init_liveness(){
+void MC_init(){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
   
@@ -218,8 +170,6 @@ void MC_init_liveness(){
   xbt_dict_t libsimgrid_location_list = MC_get_location_list(ls_path);
   MC_get_local_variables(ls_path, libsimgrid_location_list, &mc_local_variables);
 
-  initial_state_liveness = xbt_new0(s_mc_global_t, 1);
-
   MC_UNSET_RAW_MEM;
 
   MC_init_memory_map_info();
@@ -233,21 +183,65 @@ void MC_init_liveness(){
 
 }
 
+void MC_modelcheck_safety(void)
+{
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  /* Check if MC is already initialized */
+  if (initial_state_safety)
+    return;
+
+  mc_time = xbt_new0(double, simix_process_maxpid);
+
+  /* Initialize the data structures that must be persistent across every
+     iteration of the model-checker (in RAW memory) */
+  
+  MC_SET_RAW_MEM;
+
+  /* Initialize statistics */
+  mc_stats = xbt_new0(s_mc_stats_t, 1);
+  mc_stats->state_size = 1;
+
+  /* Create exploration stack */
+  mc_stack_safety = xbt_fifo_new();
+
+  MC_UNSET_RAW_MEM;
+
+  if(_surf_mc_stateful > 0)
+    MC_init();
+
+  MC_dpor_init();
+
+  MC_SET_RAW_MEM;
+  /* Save the initial state */
+  initial_state_safety = xbt_new0(s_mc_global_t, 1);
+  initial_state_safety->snapshot = MC_take_snapshot();
+  //MC_take_snapshot(initial_snapshot);
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+
+  MC_dpor();
+
+  MC_exit();
+}
+
 void MC_modelcheck_liveness(){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
-  MC_init_liveness();
+  MC_init();
  
   MC_SET_RAW_MEM;
   
   /* Initialize statistics */
   mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
 
-  XBT_DEBUG("Creating stack");
-
   /* Create exploration stack */
   mc_stack_liveness = xbt_fifo_new();
+
+  initial_state_liveness = xbt_new0(s_mc_global_t, 1);
 
   MC_UNSET_RAW_MEM;
 
@@ -333,7 +327,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 
   if(start == -1){
     /* Restore the initial state */
-    MC_restore_snapshot(initial_snapshot);
+    MC_restore_snapshot(initial_state_safety->snapshot);
     /* At the moment of taking the snapshot the raw heap was set, so restoring
      * it will set it back again, we have to unset it to continue  */
     MC_UNSET_RAW_MEM;

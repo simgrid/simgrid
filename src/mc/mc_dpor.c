@@ -8,6 +8,73 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
                                 "Logging specific to MC DPOR exploration");
 
+xbt_dynar_t visited_states;
+
+static int is_visited_state(void);
+
+static int is_visited_state(){
+
+  if(_surf_mc_stateful == 0)
+    return 0;
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
+  mc_snapshot_t new_state = NULL;
+  new_state = MC_take_snapshot();  
+
+  MC_UNSET_RAW_MEM;
+  
+  if(xbt_dynar_is_empty(visited_states)){
+
+    MC_SET_RAW_MEM;
+    xbt_dynar_push(visited_states, &new_state); 
+    MC_UNSET_RAW_MEM;
+
+    if(raw_mem_set)
+      MC_SET_RAW_MEM;
+ 
+    return 0;
+
+  }else{
+
+    MC_SET_RAW_MEM;
+    
+    unsigned int cursor = 0;
+    mc_snapshot_t state_test = NULL;
+     
+    xbt_dynar_foreach(visited_states, cursor, state_test){
+      if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug))
+        XBT_DEBUG("****** Pair visited #%d ******", cursor + 1);
+      if(snapshot_compare(new_state, state_test, NULL, NULL) == 0){
+        if(raw_mem_set)
+          MC_SET_RAW_MEM;
+        else
+          MC_UNSET_RAW_MEM;
+        
+        return 1;
+      }   
+    }
+
+    if(xbt_dynar_length(visited_states) == _surf_mc_stateful){
+      mc_snapshot_t state_to_remove = NULL;
+      xbt_dynar_shift(visited_states, &state_to_remove);
+      MC_free_snapshot(state_to_remove);
+    }
+
+    xbt_dynar_push(visited_states, &new_state); 
+    
+    MC_UNSET_RAW_MEM;
+
+    if(raw_mem_set)
+      MC_SET_RAW_MEM;
+    
+    return 0;
+    
+  }
+}
+
 /**
  *  \brief Initialize the DPOR exploration algorithm
  */
@@ -21,7 +88,10 @@ void MC_dpor_init()
   
   /* Create the initial state and push it into the exploration stack */
   MC_SET_RAW_MEM;
+
   initial_state = MC_state_new();
+  visited_states = xbt_dynar_new(sizeof(mc_snapshot_t), NULL);
+
   MC_UNSET_RAW_MEM;
 
   XBT_DEBUG("**************************************************");
@@ -117,23 +187,26 @@ void MC_dpor(void)
 
       next_state = MC_state_new();
 
-      xbt_swag_foreach(process, simix_global->process_list){
-        if(MC_process_is_enabled(process)){
-          XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
-        }
-      }
-      
-      /* Get an enabled process and insert it in the interleave set of the next state */
-      xbt_swag_foreach(process, simix_global->process_list){
-        if(MC_process_is_enabled(process)){
-          MC_state_interleave_process(next_state, process);
-          break;
-        }
-      }
+      if(!is_visited_state()){
 
-      if(_surf_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _surf_mc_checkpoint == 0)){
-        next_state->system_state = xbt_new0(s_mc_snapshot_t, 1);
-        MC_take_snapshot(next_state->system_state);
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(MC_process_is_enabled(process)){
+            XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
+          }
+        }
+        
+        /* Get an enabled process and insert it in the interleave set of the next state */
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(MC_process_is_enabled(process)){
+            MC_state_interleave_process(next_state, process);
+            break;
+          }
+        }
+
+        if(_surf_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _surf_mc_checkpoint == 0)){
+          next_state->system_state = MC_take_snapshot();
+        }
+
       }
 
       xbt_fifo_unshift(mc_stack_safety, next_state);

@@ -560,7 +560,7 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
 
 #ifdef HAVE_MC
     case SIMCALL_MC_SNAPSHOT:
-      simcall->mc_snapshot.s = MC_take_snapshot_liveness();
+      simcall->mc_snapshot.s = MC_take_snapshot();
       SIMIX_simcall_answer(simcall);
       break;
 
