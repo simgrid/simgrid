@@ -39,6 +39,7 @@ cmake \
 -Denable_latency_bound_tracking=off \
 -Denable_gtnets=off \
 -Denable_jedule=off \
+-Denable_mallocators=off \
 -Denable_memcheck=on ./
 ctest -D NightlyStart
 ctest -D NightlyConfigure
