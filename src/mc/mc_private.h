@@ -249,18 +249,27 @@ typedef struct s_mc_pair_reached{
   mc_comparison_times_t comparison_times;
 }s_mc_pair_reached_t, *mc_pair_reached_t;
 
+typedef struct s_mc_pair_visited{
+  xbt_state_t automaton_state;
+  xbt_dynar_t prop_ato;
+  mc_snapshot_t system_state;
+}s_mc_pair_visited_t, *mc_pair_visited_t;
+
 int MC_automaton_evaluate_label(xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 mc_comparison_times_t new_comparison_times(void);
 
 int reached(xbt_state_t st);
 void set_pair_reached(xbt_state_t st);
+int visited(xbt_state_t st);
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t ct1, mc_comparison_times_t ct2);
 void MC_pair_delete(mc_pair_t pair);
 void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
 void pair_reached_free(mc_pair_reached_t pair);
 void pair_reached_free_voidp(void *p);
+void pair_visited_free(mc_pair_visited_t pair);
+void pair_visited_free_voidp(void *p);
 void MC_init_liveness(void);
 void MC_init_memory_map_info(void);
 void MC_print_comparison_times_statistics(mc_comparison_times_t ct);
@@ -288,6 +297,7 @@ extern int _surf_mc_checkpoint;
 extern char* _surf_mc_property_file;
 extern int _surf_mc_timeout;
 extern int _surf_mc_max_depth;
+extern int _surf_mc_stateful;
 
 /****** Core dump ******/
 
