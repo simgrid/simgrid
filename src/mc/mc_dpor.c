@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
 void MC_dpor_init()
 {
   
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   mc_state_t initial_state = NULL;
   smx_process_t process;
@@ -61,8 +61,6 @@ void MC_dpor_init()
  */
 void MC_dpor(void)
 {
-
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   char *req_str;
   int value;
@@ -222,13 +220,7 @@ void MC_dpor(void)
     }
   }
   MC_print_statistics(mc_stats);
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
-  else
-    MC_UNSET_RAW_MEM;
-  
+  MC_UNSET_RAW_MEM;  
 
   return;
 }

@@ -115,7 +115,7 @@ void MC_take_snapshot(mc_snapshot_t snapshot)
 
 void MC_init_memory_map_info(){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
   
@@ -174,8 +174,8 @@ void MC_init_memory_map_info(){
 mc_snapshot_t MC_take_snapshot_liveness()
 {
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
+  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
+  
   MC_SET_RAW_MEM;
 
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
@@ -251,7 +251,7 @@ mc_snapshot_t MC_take_snapshot_liveness()
 
   MC_UNSET_RAW_MEM;
 
-  if(raw_mem_set)
+  if(raw_mem)
     MC_SET_RAW_MEM;
 
   return snapshot;

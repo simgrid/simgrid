@@ -86,7 +86,6 @@ mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
 mc_snapshot_t initial_snapshot = NULL;
-int raw_mem_set;
 
 /* Safety */
 
@@ -142,7 +141,7 @@ void MC_do_the_modelcheck_for_real() {
 void MC_init_safety(void)
 {
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   /* Check if MC is already initialized */
   if (initial_snapshot)
@@ -191,7 +190,7 @@ void MC_modelcheck(void)
 
 void MC_init_liveness(){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
   
   mc_time = xbt_new0(double, simix_process_maxpid);
 
@@ -236,7 +235,7 @@ void MC_init_liveness(){
 
 void MC_modelcheck_liveness(){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_init_liveness();
  
@@ -257,6 +256,9 @@ void MC_modelcheck_liveness(){
   /* We're done */
   MC_print_statistics_pairs(mc_stats_pair);
   xbt_free(mc_time);
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
 
 }
 
@@ -386,7 +388,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 {
 
-  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
+  initial_state_liveness->raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   int value;
   char *req_str;
@@ -399,11 +401,12 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Restore the initial state */
-  MC_restore_snapshot(initial_state_liveness->initial_snapshot);
+  MC_restore_snapshot(initial_state_liveness->snapshot);
+
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
-  
-  MC_UNSET_RAW_MEM;
+  if(!initial_state_liveness->raw_mem_set)
+    MC_UNSET_RAW_MEM;
 
   if(all_stack){
 
@@ -489,7 +492,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
   XBT_DEBUG("**** End Replay ****");
 
-  if(raw_mem)
+  if(initial_state_liveness->raw_mem_set)
     MC_SET_RAW_MEM;
   else
     MC_UNSET_RAW_MEM;
@@ -504,7 +507,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 void MC_dump_stack_safety(xbt_fifo_t stack)
 {
   
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_show_stack_safety(stack);
 
@@ -587,7 +590,7 @@ void MC_show_stack_liveness(xbt_fifo_t stack){
 
 void MC_dump_stack_liveness(xbt_fifo_t stack){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   mc_pair_stateless_t pair;
 
@@ -671,7 +674,7 @@ double MC_process_clock_get(smx_process_t process)
 
 void MC_automaton_load(const char *file){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
 
@@ -689,7 +692,7 @@ void MC_automaton_load(const char *file){
 
 void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
 
@@ -709,7 +712,7 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
 void MC_ignore_heap(void *address, size_t size){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
   
@@ -750,7 +753,7 @@ void MC_ignore_heap(void *address, size_t size){
 
 void MC_ignore_data_bss(void *address, size_t size){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
   
@@ -808,7 +811,7 @@ void MC_ignore_data_bss(void *address, size_t size){
 
 void MC_ignore_stack(const char *var_name, const char *frame){
   
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
 
@@ -873,7 +876,7 @@ void MC_ignore_stack(const char *var_name, const char *frame){
 
 void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
   if(stacks_areas == NULL)

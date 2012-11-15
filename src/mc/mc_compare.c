@@ -165,16 +165,18 @@ void heap_equality_free_voidp(void *e){
 
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t ct1, mc_comparison_times_t ct2){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem = (mmalloc_get_current_heap() == raw_heap);
   
   MC_SET_RAW_MEM;
-
+      
   int errors = 0, i = 0;
 
   if(s1->num_reg != s2->num_reg){
     if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose)){
       XBT_VERB("Different num_reg (s1 = %u, s2 = %u)", s1->num_reg, s2->num_reg);
     }
+    if(!raw_mem)
+      MC_UNSET_RAW_MEM;
     return 1;
   }
 
@@ -239,7 +241,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
         xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
       xbt_os_timer_free(global_timer);
 
-      if(!raw_mem_set)
+      if(!raw_mem)
         MC_UNSET_RAW_MEM;
 
       return 1;
@@ -289,7 +291,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
           xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
         xbt_os_timer_free(global_timer);
 
-        if(!raw_mem_set)
+        if(!raw_mem)
           MC_UNSET_RAW_MEM;
 
         return 1;
@@ -332,7 +334,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
           xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
         xbt_os_timer_free(global_timer);
 
-        if(!raw_mem_set)
+        if(!raw_mem)
           MC_UNSET_RAW_MEM;
         return 1;
       }
@@ -374,7 +376,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
           xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
         xbt_os_timer_free(global_timer);
         
-        if(!raw_mem_set)
+        if(!raw_mem)
           MC_UNSET_RAW_MEM;
         return 1;
       }
@@ -422,7 +424,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
         xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
       xbt_os_timer_free(global_timer);
 
-      if(!raw_mem_set)
+      if(!raw_mem)
         MC_UNSET_RAW_MEM;
       return 1;
     } 
@@ -477,7 +479,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
             xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
           xbt_os_timer_free(global_timer);
           
-          if(!raw_mem_set)
+          if(!raw_mem)
             MC_UNSET_RAW_MEM;
 
           return 1;
@@ -503,7 +505,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
   }
   xbt_os_timer_free(global_timer);
 
-  if(!raw_mem_set)
+  if(!raw_mem)
     MC_UNSET_RAW_MEM;
 
   return errors > 0;

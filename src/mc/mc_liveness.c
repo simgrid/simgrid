@@ -188,7 +188,7 @@ mc_comparison_times_t new_comparison_times(){
 
 int reached(xbt_state_t st){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
 
@@ -276,7 +276,7 @@ int reached(xbt_state_t st){
 
 void set_pair_reached(xbt_state_t st){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
  
   MC_SET_RAW_MEM;
 
@@ -491,7 +491,7 @@ void pair_reached_free_voidp(void *p){
 
 void MC_ddfs_init(void){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  initial_state_liveness->raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   XBT_INFO("**************************************************");
   XBT_INFO("Double-DFS init");
@@ -518,7 +518,7 @@ void MC_ddfs_init(void){
   successors = xbt_dynar_new(sizeof(mc_pair_stateless_t), NULL);
 
   /* Save the initial state */
-  initial_state_liveness->initial_snapshot = MC_take_snapshot_liveness();
+  initial_state_liveness->snapshot = MC_take_snapshot_liveness();
 
   MC_UNSET_RAW_MEM; 
   
@@ -534,7 +534,7 @@ void MC_ddfs_init(void){
       MC_UNSET_RAW_MEM;
       
       if(cursor != 0){
-        MC_restore_snapshot(initial_state_liveness->initial_snapshot);
+        MC_restore_snapshot(initial_state_liveness->snapshot);
         MC_UNSET_RAW_MEM;
       }
 
@@ -551,7 +551,7 @@ void MC_ddfs_init(void){
         set_pair_reached(state);
 
         if(cursor != 0){
-          MC_restore_snapshot(initial_state_liveness->initial_snapshot);
+          MC_restore_snapshot(initial_state_liveness->snapshot);
           MC_UNSET_RAW_MEM;
         }
   
@@ -561,7 +561,7 @@ void MC_ddfs_init(void){
     }
   }
 
-  if(raw_mem_set)
+  if(initial_state_liveness->raw_mem_set)
     MC_SET_RAW_MEM;
   else
     MC_UNSET_RAW_MEM;
@@ -572,7 +572,7 @@ void MC_ddfs_init(void){
 
 void MC_ddfs(int search_cycle){
 
-  raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+  //initial_state_liveness->raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   smx_process_t process;
   mc_pair_stateless_t current_pair = NULL;
@@ -929,7 +929,7 @@ void MC_ddfs(int search_cycle){
   }
   MC_UNSET_RAW_MEM;
 
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
+  /*if(initial_state_liveness->raw_mem_set)
+    MC_SET_RAW_MEM;*/
 
 }

@@ -43,7 +43,8 @@ typedef struct s_mc_snapshot_stack{
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t{
-  mc_snapshot_t initial_snapshot;
+  mc_snapshot_t snapshot;
+  int raw_mem_set;
 }s_mc_global_t, *mc_global_t;
 
 void MC_take_snapshot(mc_snapshot_t);
@@ -158,8 +159,6 @@ extern void *raw_heap;
 
 #define MC_SET_RAW_MEM    mmalloc_set_current_heap(raw_heap)
 #define MC_UNSET_RAW_MEM  mmalloc_set_current_heap(std_heap)
-
-extern int raw_mem_set;
 
 /******************************* MEMORY MAPPINGS ***************************/
 /* These functions and data structures implements a binary interface for   */
