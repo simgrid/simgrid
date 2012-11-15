@@ -31,6 +31,13 @@ void MC_dpor_init()
   MC_wait_for_requests();
 
   MC_SET_RAW_MEM;
+
+  xbt_swag_foreach(process, simix_global->process_list){
+    if(MC_process_is_enabled(process)){
+      XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
+    }
+  }
+  
   /* Get an enabled process and insert it in the interleave set of the initial state */
   xbt_swag_foreach(process, simix_global->process_list){
     if(MC_process_is_enabled(process)){
@@ -109,6 +116,12 @@ void MC_dpor(void)
       MC_SET_RAW_MEM;
 
       next_state = MC_state_new();
+
+      xbt_swag_foreach(process, simix_global->process_list){
+        if(MC_process_is_enabled(process)){
+          XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
+        }
+      }
       
       /* Get an enabled process and insert it in the interleave set of the next state */
       xbt_swag_foreach(process, simix_global->process_list){
@@ -134,7 +147,20 @@ void MC_dpor(void)
 
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
-      XBT_DEBUG("There are no more processes to interleave.");
+
+      if(xbt_fifo_size(mc_stack_safety) == _surf_mc_max_depth){
+        
+        XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+        if(req != NULL){
+          XBT_WARN("/!\\ But, there are still processes to interleave. Model-checker will not be able to ensure the soundness of the verification from now. /!\\ "); 
+          XBT_WARN("Notice : the default value of max depth is 1000 but you can change it with cfg=model-check/max_depth:value.");
+        }
+
+      }else{
+
+        XBT_DEBUG("There are no more processes to interleave.");
+
+      }
 
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;

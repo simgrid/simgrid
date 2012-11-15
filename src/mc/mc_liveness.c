@@ -644,7 +644,6 @@ void MC_ddfs(int search_cycle){
         next_graph_state = MC_state_pair_new();
 
         /* Get enabled process and insert it in the interleave set of the next graph_state */
-
         xbt_swag_foreach(process, simix_global->process_list){
           if(MC_process_is_enabled(process)){
             XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
@@ -916,8 +915,12 @@ void MC_ddfs(int search_cycle){
     
   }else{
     
-    XBT_DEBUG("Max depth reached");
-
+    XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+    if(current_pair->requests > 0){
+      XBT_WARN("/!\\ But, there are still processes to interleave. Model-checker will not be able to ensure the soundness of the verification from now. /!\\ "); 
+      XBT_WARN("Notice : the default value of max depth is 1000 but you can change it with cfg=model-check/max_depth:value.");
+    }
+    
   }
 
   if(xbt_fifo_size(mc_stack_liveness) == _surf_mc_max_depth ){
