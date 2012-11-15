@@ -19,6 +19,7 @@
 #include "xbt/log.h"
 #include "xbt/dict.h"
 #include "xbt/ex.h"
+#include "xbt/xbt_os_time.h"
 #include "surf/surf.h"
 #include "surf/surf_private.h"
 
