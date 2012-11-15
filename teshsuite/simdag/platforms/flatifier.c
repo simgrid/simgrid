@@ -46,7 +46,7 @@ static int name_compare_links(const void *n1, const void *n2)
   return strcmp(name1, name2);
 }
 
-int parse_cmdline(int *timings, int *downgrade, char **platformFile, int argc, char **argv)
+static int parse_cmdline(int *timings, int *downgrade, char **platformFile, int argc, char **argv)
 {
   int wrong_option = 0;
   int i;
