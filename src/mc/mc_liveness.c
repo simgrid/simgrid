@@ -480,6 +480,15 @@ void pair_reached_free(mc_pair_reached_t pair){
   if(pair){
     pair->automaton_state = NULL;
     xbt_dynar_free(&(pair->prop_ato));
+    if(pair->comparison_times != NULL){
+      xbt_dynar_free(&(pair->comparison_times->snapshot_comparison_times));
+      xbt_dynar_free(&(pair->comparison_times->chunks_used_comparison_times));
+      xbt_dynar_free(&(pair->comparison_times->stacks_sizes_comparison_times));
+      xbt_dynar_free(&(pair->comparison_times->program_data_segment_comparison_times));
+      xbt_dynar_free(&(pair->comparison_times->libsimgrid_data_segment_comparison_times));
+      xbt_dynar_free(&(pair->comparison_times->heap_comparison_times));
+      xbt_dynar_free(&(pair->comparison_times->stacks_comparison_times));
+    }
     MC_free_snapshot(pair->system_state);
     xbt_free(pair);
   }
