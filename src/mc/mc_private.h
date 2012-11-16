@@ -114,6 +114,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int valu
 smx_simcall_t MC_state_get_executed_request(mc_state_t state, int *value);
 smx_simcall_t MC_state_get_internal_request(mc_state_t state);
 smx_simcall_t MC_state_get_request(mc_state_t state, int *value);
+void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process);
 
 /****************************** Statistics ************************************/
 typedef struct mc_stats {

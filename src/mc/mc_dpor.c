@@ -188,18 +188,13 @@ void MC_dpor(void)
       next_state = MC_state_new();
 
       if(!is_visited_state()){
-
-        xbt_swag_foreach(process, simix_global->process_list){
-          if(MC_process_is_enabled(process)){
-            XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
-          }
-        }
-        
+     
         /* Get an enabled process and insert it in the interleave set of the next state */
         xbt_swag_foreach(process, simix_global->process_list){
           if(MC_process_is_enabled(process)){
             MC_state_interleave_process(next_state, process);
-            break;
+            XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
+            //break;
           }
         }
 
@@ -207,6 +202,10 @@ void MC_dpor(void)
           next_state->system_state = MC_take_snapshot();
         }
 
+      }else{
+
+        XBT_DEBUG("State already visited !");
+        
       }
 
       xbt_fifo_unshift(mc_stack_safety, next_state);
@@ -254,28 +253,38 @@ void MC_dpor(void)
          (from it's predecesor state), depends on any other previous request 
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous request. */
+      
       while ((state = xbt_fifo_shift(mc_stack_safety)) != NULL) {
-        req = MC_state_get_internal_request(state);
-        xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
-          if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
-            if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
-              XBT_DEBUG("Dependent Transitions:");
-              prev_req = MC_state_get_executed_request(prev_state, &value);
-              req_str = MC_request_to_string(prev_req, value);
-              XBT_DEBUG("%s (state=%p)", req_str, prev_state);
-              xbt_free(req_str);
-              prev_req = MC_state_get_executed_request(state, &value);
-              req_str = MC_request_to_string(prev_req, value);
-              XBT_DEBUG("%s (state=%p)", req_str, state);
-              xbt_free(req_str);              
+        if(MC_state_interleave_size(state) == 0){
+          req = MC_state_get_internal_request(state);
+          xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
+            if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
+              if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+                XBT_DEBUG("Dependent Transitions:");
+                prev_req = MC_state_get_executed_request(prev_state, &value);
+                req_str = MC_request_to_string(prev_req, value);
+                XBT_DEBUG("%s (state=%p)", req_str, prev_state);
+                xbt_free(req_str);
+                prev_req = MC_state_get_executed_request(state, &value);
+                req_str = MC_request_to_string(prev_req, value);
+                XBT_DEBUG("%s (state=%p)", req_str, state);
+                xbt_free(req_str);              
+              }
+
+              /*if(!MC_state_process_is_done(prev_state, req->issuer))
+                MC_state_interleave_process(prev_state, req->issuer);
+              else
+              XBT_DEBUG("Process %p is in done set", req->issuer);*/
+              
+
+              break;
+
+            }else{
+              
+              //XBT_DEBUG("Independant transitions : (%lu) %d - (%lu) %d", req->issuer->pid, req->call, MC_state_get_internal_request(prev_state)->issuer->pid, MC_state_get_internal_request(prev_state)->call);
+              MC_state_remove_interleave_process(prev_state, req->issuer);
+
             }
-
-            if(!MC_state_process_is_done(prev_state, req->issuer))
-              MC_state_interleave_process(prev_state, req->issuer);
-            else
-              XBT_DEBUG("Process %p is in done set", req->issuer);
-
-            break;
           }
         }
         if (MC_state_interleave_size(state)) {
