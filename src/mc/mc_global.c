@@ -207,8 +207,7 @@ void MC_modelcheck_safety(void)
 
   MC_UNSET_RAW_MEM;
 
-  if(_surf_mc_stateful > 0)
-    MC_init();
+  MC_init();
 
   MC_dpor_init();
 
