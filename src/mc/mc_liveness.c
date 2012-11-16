@@ -247,10 +247,10 @@ int reached(xbt_state_t st){
             return 1;
           }       
         }else{
-          XBT_INFO("Different values of propositional symbols");
+          XBT_DEBUG("Different values of propositional symbols");
         }
       }else{
-        XBT_INFO("Different automaton state");
+        XBT_DEBUG("Different automaton state");
       }
       if(pair_test->comparison_times != NULL && XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
         XBT_DEBUG("*** Comparison times statistics ***");
@@ -370,10 +370,10 @@ int visited(xbt_state_t st){
             return 1;
           }   
         }else{
-          XBT_INFO("Different values of propositional symbols");
+          XBT_DEBUG("Different values of propositional symbols");
         }
       }else{
-        XBT_INFO("Different automaton state");
+        XBT_DEBUG("Different automaton state");
       }
     }
 
