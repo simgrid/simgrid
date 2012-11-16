@@ -438,6 +438,7 @@ int MSG_comm_test(msg_comm_t comm)
   if (MC_is_active()){
     MC_ignore_stack("e", "MSG_comm_test");
     MC_ignore_stack("__ex_cleanup", "MSG_comm_test");
+    MC_ignore_stack("__ex_mctx_me", "MSG_comm_test");
   }
 
   TRY {
