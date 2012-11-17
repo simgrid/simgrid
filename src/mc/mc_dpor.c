@@ -194,7 +194,6 @@ void MC_dpor(void)
           if(MC_process_is_enabled(process)){
             MC_state_interleave_process(next_state, process);
             XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
-            //break;
           }
         }
 
@@ -271,17 +270,14 @@ void MC_dpor(void)
                 xbt_free(req_str);              
               }
 
-              /*if(!MC_state_process_is_done(prev_state, req->issuer))
-                MC_state_interleave_process(prev_state, req->issuer);
-              else
-              XBT_DEBUG("Process %p is in done set", req->issuer);*/
-              
+              break;
+
+            }else if(req->issuer == MC_state_get_executed_request(prev_state, &value)->issuer){
 
               break;
 
             }else{
               
-              //XBT_DEBUG("Independant transitions : (%lu) %d - (%lu) %d", req->issuer->pid, req->call, MC_state_get_internal_request(prev_state)->issuer->pid, MC_state_get_internal_request(prev_state)->call);
               MC_state_remove_interleave_process(prev_state, req->issuer);
 
             }
