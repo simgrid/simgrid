@@ -212,6 +212,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
         stack->process_name = strdup(stack_name);
         stack->size = heapinfo1[i1].busy_block.busy_size;
         xbt_dynar_push(*stack1, &stack);
+        res_compare = -1;
       }
 
       if(heapinfo1[i1].busy_block.busy_size == 0){
@@ -243,20 +244,23 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
               stack->process_name = strdup(stack_name);
               stack->size = heapinfo2[current_block].busy_block.busy_size;
               xbt_dynar_push(*stack2, &stack);
+              res_compare = -1;
             }
         
             add_heap_area_pair(previous, current_block, -1, current_block, -1);
         
-            if(ignore_done < xbt_dynar_length(mc_heap_comparison_ignore)){
-              if(in_mc_comparison_ignore((int)current_block, -1))
-                res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 1);
-              else
+            if(res_compare != -1){
+              if(ignore_done < xbt_dynar_length(mc_heap_comparison_ignore)){
+                if(in_mc_comparison_ignore((int)current_block, -1))
+                  res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 1);
+                else
+                  res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 0);
+              }else{
                 res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 0);
-            }else{
-              res_compare = compare_area(addr_block1, addr_block2, heapinfo1[current_block].busy_block.busy_size, previous, 0);
+              }
             }
         
-            if(res_compare == 0){
+            if(res_compare == 0 || res_compare == -1){
               for(k=1; k < heapinfo2[current_block].busy_block.size; k++)
                 heapinfo2[current_block+k].busy_block.equal_to = new_heap_area(i1, -1);
               for(k=1; k < heapinfo1[current_block].busy_block.size; k++)
@@ -285,6 +289,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
           stack->process_name = strdup(stack_name);
           stack->size = heapinfo2[i2].busy_block.busy_size;
           xbt_dynar_push(*stack2, &stack);
+          res_compare = -1;
         }
            
         if(i2 == current_block){
@@ -315,16 +320,18 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
         /* Comparison */
         add_heap_area_pair(previous, i1, -1, i2, -1);
         
-        if(ignore_done < xbt_dynar_length(mc_heap_comparison_ignore)){
-          if(in_mc_comparison_ignore((int)i1, -1))
-            res_compare = compare_area(addr_block1, addr_block2, heapinfo1[i1].busy_block.busy_size, previous, 1);
-          else
+        if(res_compare != -1){
+          if(ignore_done < xbt_dynar_length(mc_heap_comparison_ignore)){
+            if(in_mc_comparison_ignore((int)i1, -1))
+              res_compare = compare_area(addr_block1, addr_block2, heapinfo1[i1].busy_block.busy_size, previous, 1);
+            else
+              res_compare = compare_area(addr_block1, addr_block2, heapinfo1[i1].busy_block.busy_size, previous, 0);
+          }else{
             res_compare = compare_area(addr_block1, addr_block2, heapinfo1[i1].busy_block.busy_size, previous, 0);
-        }else{
-          res_compare = compare_area(addr_block1, addr_block2, heapinfo1[i1].busy_block.busy_size, previous, 0);
+          }
         }
         
-        if(res_compare == 0){
+        if(res_compare == 0 || res_compare == -1){
           for(k=1; k < heapinfo2[i2].busy_block.size; k++)
             heapinfo2[i2+k].busy_block.equal_to = new_heap_area(i1, -1);
           for(k=1; k < heapinfo1[i1].busy_block.size; k++)
