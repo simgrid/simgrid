@@ -502,9 +502,9 @@ void MC_ddfs_init(void){
 
   initial_state_liveness->raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
-  XBT_INFO("**************************************************");
-  XBT_INFO("Double-DFS init");
-  XBT_INFO("**************************************************");
+  XBT_DEBUG("**************************************************");
+  XBT_DEBUG("Double-DFS init");
+  XBT_DEBUG("**************************************************");
 
   mc_pair_stateless_t mc_initial_pair = NULL;
   mc_state_t initial_graph_state = NULL;
