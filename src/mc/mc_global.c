@@ -805,7 +805,7 @@ void MC_ignore_data_bss(void *address, size_t size){
     var->address = address;
     var->size = size;
 
-    if(current_var->address > address)
+    if(current_var->address < address)
       xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor + 1, &var);
     else
       xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor, &var);
