@@ -533,9 +533,9 @@ void surf_config_init(int *argc, char **argv)
                      _mc_cfg_cb_max_depth, NULL);
 
     /* Set number of visited state stored in stateful mode */
-    default_value_int = 10;
+    default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check/stateful",
-                     "Specify the number of visited state stored in stateful mode. The default value is 10 which means that we only keep in memory the last 10 visited states",
+                     "Specify the number of visited state stored in stateful mode. If value=5, the last 5 visited states are stored",
                      xbt_cfgelm_int, &default_value, 0, 1,
                      _mc_cfg_cb_stateful, NULL);
 #endif

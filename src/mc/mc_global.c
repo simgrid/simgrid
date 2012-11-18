@@ -207,7 +207,13 @@ void MC_modelcheck_safety(void)
 
   MC_UNSET_RAW_MEM;
 
-  MC_init();
+  if(_surf_mc_stateful > 0){
+    MC_init();
+  }else{
+    MC_init_memory_map_info();
+    get_libsimgrid_plt_section();
+    get_binary_plt_section();
+  }
 
   MC_dpor_init();
 
