@@ -710,12 +710,6 @@ void SIMIX_process_yield(smx_process_t self)
     SMX_THROW();
   }
 
-  /* Ignore some local variables from xbt/ex.c for stacks comparison */
-  if(MC_is_active()){
-    MC_ignore_stack("ctx", "SIMIX_process_yield");
-    MC_ignore_stack("_throw_ctx", "SIMIX_process_yield");
-    MC_ignore_stack("_log_ev", "SIMIX_process_yield");
-  }
 }
 
 /* callback: context fetching */

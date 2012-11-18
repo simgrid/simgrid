@@ -5,6 +5,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_private.h"
+#include "mc/mc.h"
 
 #ifdef HAVE_TRACING
 
@@ -28,6 +29,10 @@ void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host, m
 {
   if (TRACE_msg_process_is_enabled()){
     static long long int counter = 0;
+
+    if(MC_is_active())
+      MC_ignore_data_bss(&counter, sizeof(counter));
+
     char key[INSTR_DEFAULT_STR_SIZE];
     snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
 

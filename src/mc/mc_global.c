@@ -178,6 +178,16 @@ void MC_init(){
   get_libsimgrid_plt_section();
   get_binary_plt_section();
 
+   /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
+  MC_ignore_stack("e", "*");
+  MC_ignore_stack("__ex_cleanup", "*");
+  MC_ignore_stack("__ex_mctx_en", "*");
+  MC_ignore_stack("__ex_mctx_me", "*");
+  MC_ignore_stack("_log_ev", "*");
+  MC_ignore_stack("_throw_ctx", "*");
+  MC_ignore_stack("ctx", "*");
+
+
   if(raw_mem_set)
     MC_SET_RAW_MEM;
 

@@ -522,18 +522,18 @@ static int is_stack_ignore_variable(char *frame, char *var_name){
   while(start <= end){
     cursor = (start + end) / 2;
     current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
-    if(strcmp(current_var->frame, frame) == 0){
+    if(strcmp(current_var->frame, frame) == 0 || strcmp(current_var->frame, "*") == 0){
       if(strcmp(current_var->var_name, var_name) == 0)
         return 1;
       if(strcmp(current_var->var_name, var_name) < 0)
         start = cursor + 1;
       if(strcmp(current_var->var_name, var_name) > 0)
         end = cursor - 1;
-    }
-  if(strcmp(current_var->frame, frame) < 0)
+    }else if(strcmp(current_var->frame, frame) < 0){
       start = cursor + 1;
-  if(strcmp(current_var->frame, frame) > 0)
+    }else if(strcmp(current_var->frame, frame) > 0){
       end = cursor - 1; 
+    }
   }
 
   return 0;

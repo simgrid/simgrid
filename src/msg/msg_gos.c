@@ -434,13 +434,6 @@ int MSG_comm_test(msg_comm_t comm)
   xbt_ex_t e;
   int finished = 0;
 
-  /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
-  if (MC_is_active()){
-    MC_ignore_stack("e", "MSG_comm_test");
-    MC_ignore_stack("__ex_cleanup", "MSG_comm_test");
-    MC_ignore_stack("__ex_mctx_me", "MSG_comm_test");
-  }
-
   TRY {
     finished = simcall_comm_test(comm->s_comm);
 
