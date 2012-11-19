@@ -20,6 +20,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
 
 xbt_cfg_t _surf_cfg_set = NULL;
 
+int _surf_init_status = 0;      /* 0: beginning of time (config cannot be changed yet);
+                                   1: initialized: cfg_set created (config can now be changed);
+                                   2: configured: command line parsed and config part of platform file was integrated also, platform construction ongoing or done.
+                                      (Config cannot be changed anymore!) */
+
+
 /* Parse the command line, looking for options */
 static void surf_config_cmd_line(int *argc, char **argv)
 {
@@ -81,15 +87,12 @@ static void surf_config_cmd_line(int *argc, char **argv)
     argv[j] = NULL;
     *argc = j;
   }
-  if (shall_exit)
+  if (shall_exit) {
+    _surf_init_status=1; // get everything cleanly cleaned on exit
     exit(0);
+  }
 }
 
-
-int _surf_init_status = 0;      /* 0: beginning of time (config cannot be changed yet);
-                                   1: initialized: cfg_set created (config can now be changed);
-                                   2: configured: command line parsed and config part of platform file was integrated also, platform construction ongoing or done.
-                                      (Config cannot be changed anymore!) */
 
 /* callback of the workstation/model variable */
 static void _surf_cfg_cb__workstation_model(const char *name, int pos)
