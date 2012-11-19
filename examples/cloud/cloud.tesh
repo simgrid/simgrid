@@ -3,7 +3,6 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir:=.}/examples/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Ready to run MSG_MAIN
 > [  0.000000] (10:Slave 8@Jean_Yves) Receiving on slave_8
 > [  0.000000] (11:Slave 9@Fafard) Receiving on slave_9
 > [  0.000000] (1:Master@Jacquelin) Launched 10 VMs
@@ -151,10 +150,7 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir
 > [1021.445768] (20:Slave 18@Provost) Received "Task_18". Processing it.
 > [1021.445768] (20:Slave 18@Provost) "Task_18" done 
 > [1021.445768] (20:Slave 18@Provost) Receiving on slave_18
-> [1023.430577] (0:@) Done running MSG_MAIN
-> [1023.430577] (0:@) MSG_main finished
-> [1023.430577] (0:@) Clean java world
-> [1023.430577] (0:@) Clean native world
+> [1023.430577] (0:@) MSG_main finished; Cleaning up the simulation...
 > [1023.430577] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
 > [1023.430577] (1:Master@Jacquelin) Master done.
 > [1023.430577] (21:Slave 19@Provost) Received "Task_19". Processing it.

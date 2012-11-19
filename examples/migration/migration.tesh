@@ -3,15 +3,11 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar migration/Migration ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/migration/migrationDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Ready to run MSG_MAIN
 > [  0.000000] (1:migration.Emigrant@Jacquelin) I'll look for a new job on another machine where the grass is greener.
 > [  0.000000] (1:migration.Emigrant@Boivin) Yeah, found something to do
 > [  1.000000] (2:migration.Policeman@Boivin) Wait a bit before migrating the emigrant.
 > [  3.000000] (1:migration.Emigrant@Boivin) Moving back to home after work
-> [  7.000000] (0:@) Done running MSG_MAIN
-> [  7.000000] (0:@) MSG_main finished
-> [  7.000000] (0:@) Clean java world
-> [  7.000000] (0:@) Clean native world
+> [  7.000000] (0:@) MSG_main finished; Cleaning up the simulation...
 > [  7.000000] (1:migration.Emigrant@Jacquelin) I've been moved on this new host:Jacquelin
 > [  7.000000] (1:migration.Emigrant@Jacquelin) Uh, nothing to do here. Stopping now
 > [  7.000000] (2:migration.Policeman@Boivin) I moved the emigrant

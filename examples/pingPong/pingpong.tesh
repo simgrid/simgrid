@@ -4,11 +4,7 @@
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar pingPong/PingPongTest ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/pingPong/pingPongDeployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
-> [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
-> [1.048890] [jmsg/INFO] Done running MSG_MAIN
-> [1.048890] [jmsg/INFO] MSG_main finished
-> [1.048890] [jmsg/INFO] Clean java world
-> [1.048890] [jmsg/INFO] Clean native world
+> [1.048890] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:pingPong.Receiver:(2) 0.000000] [jmsg/INFO] hello!
 > [Boivin:pingPong.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
 > [Boivin:pingPong.Receiver:(2) 1.048890] [jmsg/INFO] Got at time 1.0488895059341703

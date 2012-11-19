@@ -4,14 +4,10 @@
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar tracing/TracingTest ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/tracing/tracingPingPongDeployment.xml --cfg=tracing:1  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:1
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
-> [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'simulation.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
-> [4.474433] [jmsg/INFO] Done running MSG_MAIN
-> [4.474433] [jmsg/INFO] MSG_main finished
-> [4.474433] [jmsg/INFO] Clean java world
-> [4.474433] [jmsg/INFO] Clean native world
+> [4.474433] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:tracing.Receiver:(2) 0.000000] [jmsg/INFO] hello!
 > [Boivin:tracing.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
 > [Boivin:tracing.Receiver:(2) 1.048890] [jmsg/INFO] Got at time 1.0488895059341703
