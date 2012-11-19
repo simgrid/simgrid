@@ -157,7 +157,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
 
   xbt_dynar_t previous = xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
 
-  int equal, res_compare;
+  int equal, res_compare = 0;
 
   /* Init equal information */
   i1 = 1;
@@ -227,6 +227,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
     
       i2 = 1;
       equal = 0;
+      res_compare = 0;
   
       /* Try first to associate to same block in the other heap */
       if(heapinfo2[current_block].type == heapinfo1[current_block].type){
