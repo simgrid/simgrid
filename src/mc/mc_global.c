@@ -115,6 +115,7 @@ xbt_automaton_t _mc_property_automaton = NULL;
 static void MC_assert_pair(int prop);
 static dw_location_t get_location(xbt_dict_t location_list, char *expr);
 static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset);
+static void ignore_coverage_variables(char *executable, int region_type);
 
 void MC_do_the_modelcheck_for_real() {
   if (!_surf_mc_property_file || _surf_mc_property_file[0]=='\0') {
@@ -170,13 +171,16 @@ void MC_init(){
   xbt_dict_t libsimgrid_location_list = MC_get_location_list(ls_path);
   MC_get_local_variables(ls_path, libsimgrid_location_list, &mc_local_variables);
 
-  MC_UNSET_RAW_MEM;
-
   MC_init_memory_map_info();
 
   /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
   get_libsimgrid_plt_section();
   get_binary_plt_section();
+
+  ignore_coverage_variables(libsimgrid_path, 1);
+  ignore_coverage_variables(xbt_binary_name, 2);
+
+  MC_UNSET_RAW_MEM;
 
    /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
   MC_ignore_stack("e", "*");
@@ -718,6 +722,70 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 }
 
 /************ MC_ignore ***********/ 
+
+static void ignore_coverage_variables(char *executable, int region_type){
+
+  FILE *fp;
+
+  char *command = bprintf("objdump --syms %s", executable);
+
+  fp = popen(command, "r");
+
+  if(fp == NULL){
+    perror("popen failed");
+    xbt_abort();
+  }
+
+  char *line = NULL;
+  ssize_t read;
+  size_t n = 0;
+
+  xbt_dynar_t line_tokens = NULL;
+  unsigned long int size, offset;
+  void *address;
+
+  while ((read = getline(&line, &n, fp)) != -1){
+
+    if(n == 0)
+      continue;
+
+     /* Wipeout the new line character */
+    line[read - 1] = '\0';
+
+    xbt_str_strip_spaces(line);
+    xbt_str_ltrim(line, NULL);
+
+    line_tokens = xbt_str_split(line, NULL);
+
+    if(xbt_dynar_length(line_tokens) < 3 || strcmp(xbt_dynar_get_as(line_tokens, 0, char *), "SYMBOL") == 0)
+      continue;
+
+    if(((strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char *), "gcov", 4) == 0)
+        || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char *), "__gcov", 6) == 0))
+       && (((strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 3, char *), ".bss") == 0) 
+            || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 3, char *), ".data") == 0)))){
+      if(region_type == 1){ /* libsimgrid */
+        offset = strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
+        size = strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char *), NULL, 16);
+        //XBT_DEBUG("Add ignore at address %p (size %lu)", (char *)start_text_libsimgrid+offset, size);
+        MC_ignore_data_bss((char *)start_text_libsimgrid+offset, size);
+      }else{ /* binary */
+        address = (void *)strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
+        size = strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char *), NULL, 16);
+        //XBT_DEBUG("Add ignore at address %p (size %lu)", address, size);
+        MC_ignore_data_bss(address, size);
+      }
+    }
+
+    xbt_dynar_free(&line_tokens);
+
+  }
+
+  free(command);
+  free(line);
+  pclose(fp);
+
+}
 
 void MC_ignore_heap(void *address, size_t size){
 

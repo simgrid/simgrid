@@ -194,6 +194,16 @@ void get_binary_plt_section(void);
 
 extern void *start_data_libsimgrid;
 extern void *end_raw_heap;
+extern void *start_data_binary;
+extern void *start_bss_binary;
+extern char *libsimgrid_path;
+extern void *start_text_libsimgrid;
+extern void *start_bss_libsimgrid;
+extern void *start_plt_libsimgrid;
+extern void *end_plt_libsimgrid;
+extern void *start_plt_binary;
+extern void *end_plt_binary;
+
 
 /********************************** DPOR for safety  **************************************/
 typedef enum {
@@ -217,13 +227,9 @@ extern xbt_fifo_t mc_stack_liveness;
 extern mc_global_t initial_state_liveness;
 extern xbt_automaton_t _mc_property_automaton;
 extern int compare;
-extern void *start_plt_libsimgrid;
-extern void *end_plt_libsimgrid;
-extern void *start_plt_binary;
-extern void *end_plt_binary;
 extern xbt_dynar_t mc_stack_comparison_ignore;
 extern xbt_dynar_t mc_data_bss_comparison_ignore;
-extern void *start_bss_libsimgrid;
+
 
 typedef struct s_mc_pair{
   mc_snapshot_t system_state;

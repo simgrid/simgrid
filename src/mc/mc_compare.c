@@ -56,8 +56,12 @@ static size_t data_bss_ignore_size(void *address){
     var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
     if(var->address == address)
       return var->size;
-    if(var->address < address)
-      start = cursor + 1;
+    if(var->address < address){
+      if((void *)((char *)var->address + var->size) > address)
+        return (char *)var->address + var->size - (char*)address;
+      else
+        start = cursor + 1;
+    }
     if(var->address > address)
       end = cursor - 1;   
   }
@@ -67,12 +71,19 @@ static size_t data_bss_ignore_size(void *address){
 
 static int data_bss_program_region_compare(void *d1, void *d2, size_t size){
 
-  size_t i = 0;
+  size_t i = 0, ignore_size = 0;
   int pointer_align;
   void *addr_pointed1 = NULL, *addr_pointed2 = NULL;
   
   for(i=0; i<size; i++){
     if(memcmp(((char *)d1) + i, ((char *)d2) + i, 1) != 0){
+      if((ignore_size = data_bss_ignore_size((char *)start_data_binary+i)) > 0){
+        i = i + ignore_size;
+        continue;
+      }else if((ignore_size = data_bss_ignore_size((char *)start_bss_binary+i)) > 0){
+        i = i + ignore_size;
+        continue;
+      }
       pointer_align = (i / sizeof(void*)) * sizeof(void*);
       addr_pointed1 = *((void **)((char *)d1 + pointer_align));
       addr_pointed2 = *((void **)((char *)d2 + pointer_align));
