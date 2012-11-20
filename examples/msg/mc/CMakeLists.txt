@@ -14,11 +14,11 @@ if(HAVE_MC)
   add_executable(bugged1_liveness bugged1_liveness.c)
   add_executable(bugged2_liveness bugged2_liveness.c)
   add_executable(chord/chord_liveness chord/chord_liveness.c)
-  add_executable(test/snapshot_comparison_liveness1 test/snapshot_comparison_liveness1.c)
-  add_executable(test/snapshot_comparison_liveness2 test/snapshot_comparison_liveness2.c)
-  add_executable(test/snapshot_comparison_liveness3 test/snapshot_comparison_liveness3.c)
-  add_executable(test/snapshot_comparison_liveness4 test/snapshot_comparison_liveness4.c)
-  add_executable(test/snapshot_comparison_liveness5 test/snapshot_comparison_liveness5.c)
+  add_executable(test/snapshot_comparison1 test/snapshot_comparison1.c)
+  add_executable(test/snapshot_comparison2 test/snapshot_comparison2.c)
+  add_executable(test/snapshot_comparison3 test/snapshot_comparison3.c)
+  add_executable(test/snapshot_comparison4 test/snapshot_comparison4.c)
+  add_executable(test/snapshot_comparison5 test/snapshot_comparison5.c)
 
   target_link_libraries(centralized simgrid m )
   target_link_libraries(bugged1     simgrid m )
@@ -28,11 +28,11 @@ if(HAVE_MC)
   target_link_libraries(bugged1_liveness     simgrid m )
   target_link_libraries(bugged2_liveness     simgrid m )
   target_link_libraries(chord/chord_liveness     simgrid m )
-  target_link_libraries(test/snapshot_comparison_liveness1     simgrid m )
-  target_link_libraries(test/snapshot_comparison_liveness2     simgrid m )
-  target_link_libraries(test/snapshot_comparison_liveness3     simgrid m )
-  target_link_libraries(test/snapshot_comparison_liveness4     simgrid m )
-  target_link_libraries(test/snapshot_comparison_liveness5     simgrid m )
+  target_link_libraries(test/snapshot_comparison1     simgrid m )
+  target_link_libraries(test/snapshot_comparison2     simgrid m )
+  target_link_libraries(test/snapshot_comparison3     simgrid m )
+  target_link_libraries(test/snapshot_comparison4     simgrid m )
+  target_link_libraries(test/snapshot_comparison5     simgrid m )
 
 endif()
 
@@ -70,11 +70,11 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord_liveness.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_liveness1.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_liveness2.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_liveness3.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_liveness4.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_liveness5.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison1.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison3.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison4.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison5.c
   PARENT_SCOPE
   )
 set(bin_files

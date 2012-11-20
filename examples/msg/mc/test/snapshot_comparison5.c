@@ -8,7 +8,7 @@
 #include <simgrid/modelchecker.h>
 #include "mc/mc.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(snapshot_comparison_liveness2, "Debug information for snasphot comparison liveness1 test example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(snapshot_comparison_liveness5, "Debug information for snasphot comparison liveness5 test example");
 
 int test(int argc, char **argv);
 
@@ -17,26 +17,32 @@ int test(int argc, char **argv){
   MSG_process_sleep(1);
 
   XBT_INFO("**** Start test ****");
-  XBT_INFO("Malloc after first snapshot");
+  XBT_INFO("Increment local variable");
+
+  int j = 0;
+  XBT_INFO("j = %d", j);
 
   void *snap1 = MC_snapshot();
 
   MSG_process_sleep(1);
 
-  char *toto = xbt_malloc(5);
-  XBT_INFO("Toto allocated");
+  XBT_INFO("First snapshot");
 
+  j = 1;
+  XBT_INFO("j = %d", j);
+ 
   void *snap2 = MC_snapshot();
 
   MSG_process_sleep(1);
 
-  int res = MC_compare_snapshots(snap1, snap2);
+  XBT_INFO("Second snapshot");
 
-  XBT_INFO("Test result : %d (0 = state equality, 1 = different states)", res);
+  MC_ignore_stack("snap2", "test");   
+  MC_ignore_stack("snap1", "test");
+
+  XBT_INFO("Test result : %d (0 = state equality, 1 = different states)", MC_compare_snapshots(snap1, snap2));
   
   XBT_INFO("**** End test ****");
-
-  xbt_free(toto);
 
   return 0;
 }

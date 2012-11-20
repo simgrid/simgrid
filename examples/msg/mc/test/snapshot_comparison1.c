@@ -21,15 +21,17 @@ int test(int argc, char **argv){
 
   void *snap1 = MC_snapshot();
 
+  XBT_INFO("First snapshot");
+
   MSG_process_sleep(1);
   
   void *snap2 = MC_snapshot();
 
   MSG_process_sleep(1);
-  
-  int res = MC_compare_snapshots(snap1, snap2);
 
-  XBT_INFO("Test result : %d (0 = state equality, 1 = different states)", res);
+  XBT_INFO("Second snapshot");
+
+  XBT_INFO("Test result : %d (0 = state equality, 1 = different states)", MC_compare_snapshots(snap1, snap2));
   
   XBT_INFO("**** End test ****");
 
