@@ -311,7 +311,7 @@ void set_pair_reached(xbt_state_t st){
 
 int visited(xbt_state_t st){
 
-  if(_surf_mc_stateful == 0)
+  if(_surf_mc_visited == 0)
     return 0;
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -377,7 +377,7 @@ int visited(xbt_state_t st){
       }
     }
 
-    if(xbt_dynar_length(visited_pairs) == _surf_mc_stateful){
+    if(xbt_dynar_length(visited_pairs) == _surf_mc_visited){
       xbt_dynar_remove_at(visited_pairs, 0, NULL);
     }
 

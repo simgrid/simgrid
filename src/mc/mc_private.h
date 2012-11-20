@@ -304,7 +304,7 @@ extern int _surf_mc_checkpoint;
 extern char* _surf_mc_property_file;
 extern int _surf_mc_timeout;
 extern int _surf_mc_max_depth;
-extern int _surf_mc_stateful;
+extern int _surf_mc_visited;
 
 /****** Core dump ******/
 

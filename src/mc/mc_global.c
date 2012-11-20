@@ -71,11 +71,11 @@ void _mc_cfg_cb_max_depth(const char *name, int pos) {
   xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
 }
 
-void _mc_cfg_cb_stateful(const char *name, int pos) {
+void _mc_cfg_cb_visited(const char *name, int pos) {
   if (_surf_init_status && !_surf_do_model_check) {
-    xbt_die("You are trying to change stateful mode after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+    xbt_die("You are specifying a number of stored visited states after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_stateful= xbt_cfg_get_int(_surf_cfg_set, name);
+  _surf_mc_visited= xbt_cfg_get_int(_surf_cfg_set, name);
   xbt_cfg_set_int(_surf_cfg_set,"model-check",1);
 }
 
@@ -221,7 +221,7 @@ void MC_modelcheck_safety(void)
 
   MC_UNSET_RAW_MEM;
 
-  if(_surf_mc_stateful > 0){
+  if(_surf_mc_visited > 0){
     MC_init();
   }else{
     MC_init_memory_map_info();

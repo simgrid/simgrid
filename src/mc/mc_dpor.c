@@ -14,7 +14,7 @@ static int is_visited_state(void);
 
 static int is_visited_state(){
 
-  if(_surf_mc_stateful == 0)
+  if(_surf_mc_visited == 0)
     return 0;
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -57,7 +57,7 @@ static int is_visited_state(){
       }   
     }
 
-    if(xbt_dynar_length(visited_states) == _surf_mc_stateful){
+    if(xbt_dynar_length(visited_states) == _surf_mc_visited){
       mc_snapshot_t state_to_remove = NULL;
       xbt_dynar_shift(visited_states, &state_to_remove);
       MC_free_snapshot(state_to_remove);

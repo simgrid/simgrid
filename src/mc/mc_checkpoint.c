@@ -245,7 +245,7 @@ mc_snapshot_t MC_take_snapshot()
     }
   }
 
-  if(_surf_mc_stateful > 0 || _surf_mc_property_file)
+  if(_surf_mc_visited > 0 || _surf_mc_property_file)
     snapshot->stacks = take_snapshot_stacks(heap);
   
   free_memory_map(maps);

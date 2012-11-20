@@ -535,12 +535,12 @@ void surf_config_init(int *argc, char **argv)
                      _mc_cfg_cb_max_depth, NULL);
     xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/max_depth", 1000);
 
-    /* Set number of visited state stored in stateful mode */
-    xbt_cfg_register(&_surf_cfg_set, "model-check/stateful",
-                     "Specify the number of visited state stored in stateful mode. If value=5, the last 5 visited states are stored",
+    /* Set number of visited state stored for state comparison reduction*/
+    xbt_cfg_register(&_surf_cfg_set, "model-check/visited",
+                     "Specify the number of visited state stored for state comparison reduction. If value=5, the last 5 visited states are stored",
                      xbt_cfgelm_int, NULL, 0, 1,
-                     _mc_cfg_cb_stateful, NULL);
-    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/stateful", 0);
+                     _mc_cfg_cb_visited, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/visited", 0);
 #endif
 
     /* do verbose-exit */
