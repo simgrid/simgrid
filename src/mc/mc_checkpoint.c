@@ -297,8 +297,10 @@ void get_libsimgrid_plt_section(){
 
   fp = popen(command, "r");
 
-  if(fp == NULL)
+  if(fp == NULL){
     perror("popen failed");
+    xbt_abort();
+  }
 
   while ((read = getline(&line, &n, fp)) != -1 && plt_not_found == 1) {
 
@@ -353,8 +355,10 @@ void get_binary_plt_section(){
 
   fp = popen(command, "r");
 
-  if(fp == NULL)
+  if(fp == NULL){
     perror("popen failed");
+    xbt_abort();
+  }
 
   while ((read = getline(&line, &n, fp)) != -1 && plt_not_found == 1) {
 

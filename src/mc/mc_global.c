@@ -913,8 +913,10 @@ xbt_dict_t MC_get_location_list(const char *elf_file){
 
   FILE *fp = popen(command, "r");
 
-  if(fp == NULL)
+  if(fp == NULL){
     perror("popen for objdump failed");
+    xbt_abort();
+  }
 
   int debug = 0; /*Detect if the program has been compiled with -g */
 
@@ -1013,8 +1015,11 @@ char *get_libsimgrid_path(){
   char *command = bprintf("ldd %s", xbt_binary_name);
   
   FILE *fp = popen(command, "r");
-  if(fp == NULL)
+
+  if(fp == NULL){
     perror("popen for ldd failed");
+    xbt_abort();
+  }
 
   char *line;
   ssize_t read;
