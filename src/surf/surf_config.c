@@ -493,54 +493,54 @@ void surf_config_init(int *argc, char **argv)
 
 #ifdef HAVE_MC
     /* do model-checking */
-    default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check",
                      "Verify the system through model-checking instead of simulating it (EXPERIMENTAL)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     xbt_cfgelm_int, NULL, 0, 1,
                      _surf_cfg_cb_model_check, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check", 0);
 
     /* do stateful model-checking */
-    default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check/checkpoint",
                      "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
                      "If value=1, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     xbt_cfgelm_int, NULL, 0, 1,
                      _mc_cfg_cb_checkpoint, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/checkpoint", 0);
     
     /* do liveness model-checking */
-    default_value = xbt_strdup("");
     xbt_cfg_register(&_surf_cfg_set, "model-check/property",
                      "Specify the name of the file containing the property. It must be the result of the ltl2ba program.",
-                     xbt_cfgelm_string, &default_value, 0, 1,
+                     xbt_cfgelm_string, NULL, 0, 1,
                      _mc_cfg_cb_property, NULL);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "model-check/property", "");
 
     /* Specify the kind of model-checking reduction */
-    default_value = xbt_strdup("unset");
     xbt_cfg_register(&_surf_cfg_set, "model-check/reduction",
                      "Specify the kind of exploration reduction (either none or DPOR)",
-                     xbt_cfgelm_string, &default_value, 0, 1,
+                     xbt_cfgelm_string, NULL, 0, 1,
                      _mc_cfg_cb_reduce, NULL);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "model-check/reduction", "dpor");
 
     /* Enable/disable timeout for wait requests with model-checking */
-    default_value_int = 1;
     xbt_cfg_register(&_surf_cfg_set, "model-check/timeout",
                      "Enable/Disable timeout for wait requests",
-                     xbt_cfgelm_int, &default_value, 0, 1,
+                     xbt_cfgelm_int, NULL, 0, 1,
                      _mc_cfg_cb_timeout, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/timeout", 0);
 
     /* Set max depth exploration */
-    default_value_int = 1000;
     xbt_cfg_register(&_surf_cfg_set, "model-check/max_depth",
                      "Specify the max depth of exploration (default : 1000)",
-                     xbt_cfgelm_int, &default_value, 0, 1,
+                     xbt_cfgelm_int, NULL, 0, 1,
                      _mc_cfg_cb_max_depth, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/max_depth", 1000);
 
     /* Set number of visited state stored in stateful mode */
-    default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check/stateful",
                      "Specify the number of visited state stored in stateful mode. If value=5, the last 5 visited states are stored",
-                     xbt_cfgelm_int, &default_value, 0, 1,
+                     xbt_cfgelm_int, NULL, 0, 1,
                      _mc_cfg_cb_stateful, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/stateful", 0);
 #endif
 
     /* do verbose-exit */
