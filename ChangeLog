@@ -2424,7 +2424,7 @@ SimGrid (2.90) unstable; urgency=low
  [Tests]
    - use gras_exit in example to track memleaks
    - get rid of gs_example now that GS is properly integrated into gras
-   - update run_test to integrate the lastest tests (datadesc)
+   - update run_test to integrate the latest tests (datadesc)
  [Logging]
    - rename WARNINGn macros to WARNn since it prooved error-prone
 

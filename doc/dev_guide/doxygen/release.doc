@@ -72,7 +72,7 @@ $ make nsis
 - Tag the git repository (don't forget to push the tags to the main
   repo)
 - Push the archive files on gforge
-- Update the link ff-scm-v4-prod:/home/groups/simgrid/htdocs/simgrid/lastest
+- Update the link ff-scm-v4-prod:/home/groups/simgrid/htdocs/simgrid/latest
 - Announce the release
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
