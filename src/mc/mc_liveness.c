@@ -858,7 +858,7 @@ void MC_ddfs(int search_cycle){
               MC_show_stack_liveness(mc_stack_liveness);
               MC_dump_stack_liveness(mc_stack_liveness);
               MC_print_statistics_pairs(mc_stats_pair);
-              exit(0);
+              xbt_abort();
 
             }else{
 
