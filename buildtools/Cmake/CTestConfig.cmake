@@ -59,7 +59,7 @@ if(enable_coverage)
       "/teshsuite/"
       "/src/bindings/"
     )
-    if(release)
+    if(NOT release)
        set(PATTERN_CTEST_IGNORED 
         ${PATTERN_CTEST_IGNORED}
         "/examples/"

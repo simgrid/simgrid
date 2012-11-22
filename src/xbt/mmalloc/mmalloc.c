@@ -32,7 +32,7 @@ static void *align(struct mdesc *mdp, size_t size)
   result = mmorecore(mdp, size);
 
   /* if this reservation does not fill up the last block of our resa,
-   * complete the reservation by also asking for the full lastest block.
+   * complete the reservation by also asking for the full latest block.
    *
    * Also, the returned block is aligned to the end of block (but I've
    * no fucking idea of why, actually -- http://abstrusegoose.com/432 --

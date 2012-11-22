@@ -257,6 +257,7 @@ static void _surf_cfg_cb_context_factory(const char *name, int pos) {
 
 static void _surf_cfg_cb_context_stack_size(const char *name, int pos)
 {
+  smx_context_stack_size_was_set = 1;
   smx_context_stack_size = xbt_cfg_get_int(_surf_cfg_set, name) * 1024;
 }
 

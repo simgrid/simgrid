@@ -15,7 +15,7 @@ eval 'exec perl -S $0 ${1+"$@"}'
 
 =head1 NAME
 
-simgrid_update_xml - updates simgrid XML files to lastest version
+simgrid_update_xml - updates simgrid XML files to latest version
   
 =head1 SYNOPSIS
 

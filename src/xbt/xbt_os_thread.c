@@ -194,8 +194,17 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
 
 void xbt_os_thread_setstacksize(int stack_size)
 {
+  size_t def=0;
+  if(stack_size<0)xbt_die("stack size is negative, maybe it exceeds MAX_INT?\n");
   pthread_attr_init(&attr);
-  pthread_attr_setstacksize (&attr, stack_size);
+  pthread_attr_getstacksize (&attr, &def);
+  int res = pthread_attr_setstacksize (&attr, stack_size);
+  if ( res!=0 ) {
+    if(res==EINVAL)XBT_WARN("Thread stack size is either < PTHREAD_STACK_MIN, > the max limit of the system, or perhaps not a multiple of PTHREAD_STACK_MIN - The parameter was ignored");
+    else XBT_WARN("unknown error in pthread stacksize setting");
+
+    pthread_attr_setstacksize (&attr, def);
+  }
   thread_attr_inited=1;
 }
 
