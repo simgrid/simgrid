@@ -224,7 +224,6 @@ typedef struct xbt_dynar_s {
   unsigned long elmsize;
   void *data;
   void_f_pvoid_t free_f;
-  xbt_mutex_t mutex;
 } s_xbt_dynar_t;
 
 static XBT_INLINE void
@@ -232,8 +231,6 @@ _xbt_dynar_cursor_first(const xbt_dynar_t dynar,
                         unsigned int *const cursor)
 {
   /* iterating over a NULL dynar is a no-op (but we don't want to have uninitialized counters) */
-  if (dynar && dynar->mutex)             /* ie _dynar_lock(dynar) but not public */
-    xbt_mutex_acquire(dynar->mutex);
 
   //XBT_DEBUG("Set cursor on %p to the first position", (void *) dynar);
   *cursor = 0;
@@ -248,8 +245,6 @@ _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
 
   if (idx >= dynar->used) {
     //XBT_DEBUG("Cursor on %p already on last elem", (void *) dynar);
-    if (dynar->mutex)           /* unlock */
-      xbt_mutex_release(dynar->mutex);
     return FALSE;
   }
   //  XBT_DEBUG("Cash out cursor on %p at %u", (void *) dynar, *idx);
