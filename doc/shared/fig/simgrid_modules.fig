@@ -24,10 +24,10 @@ Single
 4 1 0 50 -1 4 12 0.0000 2 150 1245 5377 2835 Framework for\001
 4 1 0 50 -1 4 12 0.0000 2 195 1965 5377 3105 DAGs of parallel tasks\001
 -6
-# href="group__SMPI__API.html" ALT="SMPI"
+# href="../../ref_guide/html/group__SMPI__API.html" ALT="SMPI"
 2 2 0 1 0 36 60 -1 20 0.000 0 0 -1 0 0 5
 	 1755 2205 4095 2205 4095 3375 1755 3375 1755 2205
-# href="group__SD__API.html" ALT="SimDag"
+# href="../../ref_guide/html/group__SD__API.html" ALT="SimDag"
 2 2 0 1 0 23 60 -1 30 0.000 0 0 -1 0 0 5
 	 4230 2205 6570 2205 6570 3375 4230 3375 4230 2205
 4 1 0 50 -1 4 12 0.0000 2 195 1860 2925 2955 applications on top of\001
@@ -50,19 +50,19 @@ Single
 4 1 0 50 -1 4 14 0.0000 2 180 480 3014 4740 XBT\001
 -6
 6 6840 2115 7380 5220
-# href="group__TRACE__API.html" ALT="TRACE"
+# href="../../ref_guide/html/group__TRACE__API.html" ALT="TRACE"
 2 2 0 1 0 3 50 -1 30 0.000 0 0 -1 0 0 5
 	 6840 2115 7380 2115 7380 5220 6840 5220 6840 2115
 4 0 0 50 -1 4 15 1.5708 2 180 840 7200 5083 TRACE\001
 4 0 0 50 -1 4 12 1.5708 2 195 1590 7155 4033 Tracing simulation\001
 -6
-# href="group__XBT__API.html" ALT="XBT"
+# href="../../ref_guide/html/group__XBT__API.html" ALT="XBT"
 2 3 0 1 0 33 80 -1 20 0.000 0 0 -1 0 0 5
 	 -810 2115 -810 5220 6705 5220 6705 2115 -810 2115
-# href="group__SURF__API.html" ALT="SMPI"
+# href="../../ref_guide/html/group__SURF__API.html" ALT="SMPI"
 2 2 0 1 0 34 60 -1 20 0.000 0 0 -1 0 0 5
 	 -675 3510 6570 3510 6570 4365 -675 4365 -675 3510
-# href="group__MSG__API.html" ALT="MSG"
+# href="../../ref_guide/html/group__MSG__API.html" ALT="MSG"
 2 2 0 1 0 32 60 -1 20 0.000 0 0 -1 0 0 5
 	 -675 2205 1620 2205 1620 3375 -675 3375 -675 2205
 2 2 0 1 0 31 70 -1 20 0.000 0 0 -1 0 0 5
