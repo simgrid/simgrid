@@ -561,9 +561,6 @@ static void xbt_log_connect_categories(void)
 #ifdef simgrid_EXPORTS
   /* The following categories are only defined in libsimgrid */
 
-  /* gras (sg) */
-  XBT_LOG_CONNECT(gras_trp_sg);
-
   /* bindings */
 #ifdef HAVE_LUA
   XBT_LOG_CONNECT(bindings);
