@@ -128,7 +128,8 @@ void xbt_init(int *argc, char **argv)
   xbt_log_init(argc, argv);
 }
 
-/** @brief Finalize the xbt mechanisms. */
+/** @brief Finalize the xbt mechanisms.
+ *  @warning this function is deprecated. Just don't call it, there is nothing more to do to finalize xbt*/
 void xbt_exit()
 {
   XBT_WARN("This function is deprecated, you shouldn't use it");
