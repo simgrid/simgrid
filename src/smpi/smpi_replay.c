@@ -70,8 +70,11 @@ static void action_comm_size(const char *const *action)
 
   communicator_size = parse_double(action[2]);
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 
@@ -80,8 +83,11 @@ static void action_compute(const char *const *action)
   double clock = smpi_process_simulated_elapsed();
   smpi_execute_flops(parse_double(action[2]));
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 static void action_send(const char *const *action)
@@ -98,9 +104,14 @@ static void action_send(const char *const *action)
 #endif
 
   smpi_mpi_send(NULL, size, MPI_BYTE, to , 0, MPI_COMM_WORLD);
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
-#ifdef HAVE_TRACING
+
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
+
+  #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
   TRACE_smpi_computing_in(rank);
 #endif
@@ -133,8 +144,11 @@ static void action_Isend(const char *const *action)
   xbt_dynar_push(globals->isends,&request);
 
   //TODO do the asynchronous cleanup
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 static void action_recv(const char *const *action) {
@@ -158,8 +172,11 @@ static void action_recv(const char *const *action) {
   TRACE_smpi_computing_in(rank);
 #endif
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 static void action_Irecv(const char *const *action)
@@ -185,8 +202,11 @@ static void action_Irecv(const char *const *action)
   xbt_dynar_push(globals->irecvs,&request);
 
   //TODO do the asynchronous cleanup
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 static void action_wait(const char *const *action){
@@ -221,8 +241,11 @@ static void action_wait(const char *const *action){
   TRACE_smpi_computing_in(rank);
 #endif
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 static void action_barrier(const char *const *action){
@@ -238,8 +261,11 @@ static void action_barrier(const char *const *action){
   TRACE_smpi_computing_in(rank);
 #endif
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 static void action_bcast(const char *const *action)
@@ -259,8 +285,11 @@ static void action_bcast(const char *const *action)
   TRACE_smpi_computing_in(rank);
 #endif
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 static void action_reduce(const char *const *action)
@@ -279,8 +308,11 @@ static void action_reduce(const char *const *action)
   TRACE_smpi_computing_in(rank);
 #endif
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 static void action_allReduce(const char *const *action) {
@@ -299,8 +331,12 @@ static void action_allReduce(const char *const *action) {
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
   TRACE_smpi_computing_in(rank);
 #endif
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "),
-           smpi_process_simulated_elapsed()-clock);
+
+  if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
+    free(name);
+  }
 }
 
 void smpi_replay_init(int *argc, char***argv){
