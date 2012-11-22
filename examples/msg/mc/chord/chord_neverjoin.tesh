@@ -1,8 +1,8 @@
 #! ./tesh
 
 ! expect signal SIGABRT
-! timeout 60
-$ ${bindir:=.}/chord_liveness --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+! timeout 120
+$ ${bindir:=.}/chord_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontext "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
 > [  0.000000] (0:@) type in variable = 2
 > [  0.000000] (0:@) Check the liveness property promela_chord_liveness
