@@ -341,25 +341,28 @@ static void action_allReduce(const char *const *action) {
 
 void smpi_replay_init(int *argc, char***argv){
   PMPI_Init(argc, argv);
-  _xbt_replay_action_init();
-
-  xbt_replay_action_register("init",     action_init);
-  xbt_replay_action_register("finalize", action_finalize);
-  xbt_replay_action_register("comm_size",action_comm_size);
-  xbt_replay_action_register("send",     action_send);
-  xbt_replay_action_register("Isend",    action_Isend);
-  xbt_replay_action_register("recv",     action_recv);
-  xbt_replay_action_register("Irecv",    action_Irecv);
-  xbt_replay_action_register("wait",     action_wait);
-  xbt_replay_action_register("barrier",  action_barrier);
-  xbt_replay_action_register("bcast",    action_bcast);
-  xbt_replay_action_register("reduce",   action_reduce);
-  xbt_replay_action_register("allReduce",action_allReduce);
-  xbt_replay_action_register("compute",  action_compute);
+  if (!smpi_process_index()){
+    _xbt_replay_action_init();
+    xbt_replay_action_register("init",     action_init);
+    xbt_replay_action_register("finalize", action_finalize);
+    xbt_replay_action_register("comm_size",action_comm_size);
+    xbt_replay_action_register("send",     action_send);
+    xbt_replay_action_register("Isend",    action_Isend);
+    xbt_replay_action_register("recv",     action_recv);
+    xbt_replay_action_register("Irecv",    action_Irecv);
+    xbt_replay_action_register("wait",     action_wait);
+    xbt_replay_action_register("barrier",  action_barrier);
+    xbt_replay_action_register("bcast",    action_bcast);
+    xbt_replay_action_register("reduce",   action_reduce);
+    xbt_replay_action_register("allReduce",action_allReduce);
+    xbt_replay_action_register("compute",  action_compute);
+  }
 
   xbt_replay_action_runner(*argc, *argv);
 }
 
 int smpi_replay_finalize(){
+  if(!smpi_process_index())
+     _xbt_replay_action_exit();
   return PMPI_Finalize();
 }
