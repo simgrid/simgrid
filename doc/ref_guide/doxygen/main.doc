@@ -36,7 +36,7 @@ Grids.
   - The Frequently Asked Questions are <a href="http://simgrid.gforge.inria.fr/faq.html">here</a>.
   - The development webpage is <a href="https://gforge.inria.fr/projects/simgrid//">gforge.inria.fr/projects/simgrid</a>.
   - The user mailing list is <simgrid-user@lists.gforge.inria.fr>
-  - The SimGrid software package can be downloaded from <a href="http://simgrid.gforge.inria.fr/download.php">here</a>.
+  - The SimGrid software package can be downloaded from <a href="http://simgrid.gforge.inria.fr/download.html">here</a>.
 <br>
 
 <hr>
@@ -132,7 +132,7 @@ Finally, a transversal module allows you to trace your simulation. More document
 \htmlonly
 <br>
 The SimGrid software package can be downloaded from
-<a href="http://simgrid.gforge.inria.fr/download.php">here</a>.<br>
+<a href="http://simgrid.gforge.inria.fr/download.html">here</a>.<br>
 
 If you are interested in the history of SimGrid and in current and planned development,
 you can find out more <a href="http://simgrid.gforge.inria.fr/history.html">here</a>.

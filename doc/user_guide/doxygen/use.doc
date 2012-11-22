@@ -3,13 +3,13 @@
 SimGrid comes with many examples provided in the examples/ directory. Those examples are described in section \ref MSG_examples . Those examples are commented and should be easy to understand. for a first step into SimGrid we also provide some more detailed examples in the sections below. 
 
 \htmlonly
-You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a generic tutorial about using SimGrid. 
+You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a generic tutorial about using SimGrid. 
 \endhtmlonly
 
 
 \section using_msg Using MSG
 \htmlonly
-You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
+You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
 \endhtmlonly
 
 
@@ -233,7 +233,7 @@ This initializes MSG, runs a simulation, and free all data-structures created by
 
 Here are some examples on how to use GRAS.
 \htmlonly
-You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
+You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
 \endhtmlonly
 
 There is for now rather few examples of GRAS, but it's better than
@@ -602,21 +602,21 @@ each time. Here is an example of output:
     \until end_of_client
 
 \section using_smpi Using SMPI
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
+You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
 
 \section using_MC Using Model Checking
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
+You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
 
 \section using_trace Using Trace
 Check out the \ref tracing section.
 
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
+You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
 
 \section using_simdag Using SimDag
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
+You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
 
 \section using_simix Using SIMIX
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials/"> tutorial section</a> that contains a dedicated tutorial. 
+You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
 
 */
 
