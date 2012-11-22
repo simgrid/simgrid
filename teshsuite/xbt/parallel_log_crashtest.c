@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras.h"
+#include "xbt.h"
 #include "xbt/synchro.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
@@ -39,7 +39,7 @@ int crasher(int argc, char *argv[])
   int i;
   xbt_thread_t *crashers;
 
-  gras_init(&argc, argv);
+  xbt_init(&argc, argv);
 
   /* initializations of the philosopher mecanisms */
   id = xbt_new0(int, crasher_amount);
@@ -63,7 +63,6 @@ int crasher(int argc, char *argv[])
   xbt_free(crashers);
   xbt_free(id);
 
-  gras_exit();
   return 0;
 }
 
