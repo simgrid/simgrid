@@ -12,6 +12,7 @@
 #include "xbt/strbuff.h"
 #include "xbt/log_private.h"
 #include "xbt/synchro.h"        /* xbt_thread_self_name */
+#include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
 
@@ -126,7 +127,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
         show_string(xbt_log_priority_names[ev->priority]);
         break;
       case 'h':                 /* host name; SimGrid extension */
-        show_string(xbt_os_procname());
+        show_string(SIMIX_host_self_get_name());
         break;
       case 't':                 /* thread name; LOG4J compliant */
         show_string(xbt_thread_self_name());

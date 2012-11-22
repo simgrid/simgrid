@@ -11,6 +11,7 @@
 #include "xbt/log_private.h"
 #include "xbt/synchro.h"        /* xbt_thread_name */
 
+#include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
 #include "portable.h"
@@ -42,12 +43,12 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t l,
   procname = xbt_procname();
   if (procname && *procname) {
     len = snprintf(p, rem_size, "%s:%s:(%d) ",
-                   xbt_os_procname(), procname, xbt_getpid());
+                   SIMIX_host_self_get_name(), procname, xbt_getpid());
     check_overflow(len);
   }
   else if (!procname)  {
   len = snprintf(p, rem_size, "%s::(%d) ",
-           xbt_os_procname(), xbt_getpid());
+                 SIMIX_host_self_get_name(), xbt_getpid());
   check_overflow(len);
   }
 
