@@ -134,12 +134,6 @@ static XBT_INLINE unsigned int xbt_str_hash(const char *str)
   return hash;
 }
                                                       
-/** @brief Classical alias to (char*)
- *
- * This of almost no use, beside cosmetics and the XBT datadesc parsing macro (see \ref XBT_dd_auto).
- */
-typedef char *xbt_string_t;
-
 /**@}*/
 
 SG_END_DECL()

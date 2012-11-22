@@ -28,7 +28,6 @@
 #include <xbt/parmap.h>
 
 #include <xbt/peer.h>
-#include <xbt/datadesc.h>
 #include <xbt/config.h>
 #include <xbt/cunit.h>
 
