@@ -145,7 +145,6 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid_update_xml
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/graphicator
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall bin ok"
-  COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/amok
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/instr
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/msg
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/simdag
@@ -182,7 +181,6 @@ endif()
 set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
-  ${AMOK_SRC}
   ${BINDINGS_SRC}
   ${GTNETS_SRC}
   ${JEDULE_SRC}

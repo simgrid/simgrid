@@ -1,8 +1,6 @@
 ### define source packages
 
 set(EXTRA_DIST
-  src/amok/Bandwidth/bandwidth_private.h
-  src/amok/amok_modinter.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/platf_interface.h
@@ -360,8 +358,6 @@ set(MC_SRC
   )
 
 set(headers_to_install
-  include/amok/bandwidth.h
-  include/amok/peermanagement.h
   include/instr/instr.h
   include/msg/datatypes.h
   include/msg/msg.h
@@ -515,8 +511,6 @@ else()
 endif()
 
 set(DOC_SOURCES
-  doc/amok_bw_sat.png
-  doc/amok_bw_test.png
   doc/AS_hierarchy.png
   doc/sg_thread_model.fig
   doc/simix.fig
@@ -657,7 +651,6 @@ set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/footer.html
   doc/ref_guide/doxygen/header.html
   doc/ref_guide/doxygen/main.doc
-  doc/ref_guide/doxygen/module-amok.doc
   doc/ref_guide/doxygen/module-msg.doc
   doc/ref_guide/doxygen/module-sd.doc
   doc/ref_guide/doxygen/module-simix.doc
@@ -756,8 +749,6 @@ set(txt_files
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
-  examples/amok/bandwidth/CMakeLists.txt
-  examples/amok/saturate/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
