@@ -73,22 +73,6 @@ your work.
    MPI) programming environment. Unfortunately, this work is still underway.
    Check the \ref SMPI_API section for more information.
 
- - If you want to develop a real distributed application, then you may find
-   <b>\ref GRAS_API</b> (Grid Reality And Simulation) useful. This is an API
-   for the realization of distributed applications.
-   \n\n
-   Moreover, there is two implementations of this API: one on top of the
-   SURF (allowing to develop and test your application within the comfort of
-   the simulator) and another suited for deployment on real platforms
-   (allowing the resulting application to be highly portable and extremely
-   efficient).
-   \n\n
-   Even if you do not plan to run your code for real, you may want to switch
-   to GRAS if you intend to use MSG in a very intensive way (e.g. for
-   simulating a peer-to-peer environment).
-   \n\n
-   See the \ref GRAS_API section for more details.
-
 If your favorite programming environment/model is not there (BSP,
 components, OpenMP, etc.) is not represented in the SimGrid toolkit yet, you may
 consider adding it. You should contact us first on the
