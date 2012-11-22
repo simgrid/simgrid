@@ -1,4 +1,0 @@
-
-! output display
-! setenv GRAS_NO_WARN_EXPERIMENTAL=1
-$ $SG_TEST_ENV ./synchro_philosopher${EXEEXT:=} 4 --log=root.fmt=%m%n

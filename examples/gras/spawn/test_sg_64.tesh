@@ -1,4 +1,0 @@
-p Runs the 'spawn' test within the simulator (simulation times valid for 64bits architectures)
-
-! output ignore
-$ $SG_TEST_EXENV ./spawn_simulator${EXEEXT:=} ${srcdir:=.}/../../msg/small_platform.xml ${srcdir:=.}/spawn.xml

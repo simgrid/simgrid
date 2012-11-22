@@ -47,14 +47,12 @@ Section "Libraries and Headers" LibSection
 	# install lib
 	CreateDirectory $INSTDIR\lib
 	setOutPath $INSTDIR\lib
-	file lib\libgras.dll
 	file lib\libsimgrid.dll
 	file lib\libsimgrid.def
 	
 	#install headers
 	CreateDirectory  $INSTDIR\include
 	setOutPath $INSTDIR\include
-	file @CMAKE_HOME_DIRECTORY@\include\gras.h 
 	file @CMAKE_HOME_DIRECTORY@\include\xbt.h
 	file include\simgrid_config.h
 	
@@ -95,7 +93,6 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\parmap.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automaton.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automatonparse_promela.h
-	file @CMAKE_HOME_DIRECTORY@\include\xbt\datadesc.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\socket.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\file_stat.h
     file @CMAKE_HOME_DIRECTORY@\include\xbt\xbt_os_thread.h
@@ -130,21 +127,6 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\surf\surfxml_parse.h
 	file @CMAKE_HOME_DIRECTORY@\include\surf\simgrid_dtd.h
 	file @CMAKE_HOME_DIRECTORY@\include\surf\surf_routing.h
-	
-	CreateDirectory  $INSTDIR\include\gras
-	setOutPath $INSTDIR\include\gras
-	file @CMAKE_HOME_DIRECTORY@\include\gras\transport.h
-	file @CMAKE_HOME_DIRECTORY@\include\gras\virtu.h
-	file @CMAKE_HOME_DIRECTORY@\include\gras\emul.h
-	file @CMAKE_HOME_DIRECTORY@\include\gras\process.h
-	file @CMAKE_HOME_DIRECTORY@\include\gras\module.h
-	file @CMAKE_HOME_DIRECTORY@\include\gras\messages.h
-	file @CMAKE_HOME_DIRECTORY@\include\gras\timer.h
-	
-	CreateDirectory  $INSTDIR\include\amok
-	setOutPath $INSTDIR\include\amok
-	file @CMAKE_HOME_DIRECTORY@\include\amok\peermanagement.h
-	file @CMAKE_HOME_DIRECTORY@\include\amok\bandwidth.h
 	
 	CreateDirectory  $INSTDIR\include\instr
 	setOutPath $INSTDIR\include\instr
@@ -256,14 +238,14 @@ section
 # default section end
 sectionEnd
 
-LangString DESC_LibSection 		${LANG_ENGLISH} "Install Simgrid and gras libraries with associated headers."
+LangString DESC_LibSection 		${LANG_ENGLISH} "Install Simgrid libraries with associated headers."
 LangString DESC_BinSection 		${LANG_ENGLISH} "Install some useful tools for Simgrid."
 LangString DESC_DocSection 		${LANG_ENGLISH} "Generated (doxygen) documentation."
 LangString DESC_ExamplesSection ${LANG_ENGLISH} "Simgrid's HelloWorld example and some classical platforms."
 LangString DESC_PCRESection 	${LANG_ENGLISH} "Install the PCRE and PCREPOSIX libraries for SimGrid."
 LangString DESC_JAVASection 	${LANG_ENGLISH} "Install the Java binding and examples."
 
-LangString DESC_LibSection 		${LANG_FRENCH} 	"Installer les librairies Simgrid et Gras et leurs Entêtes."
+LangString DESC_LibSection 		${LANG_FRENCH} 	"Installer les librairies Simgrid et leurs Entêtes."
 LangString DESC_BinSection 		${LANG_FRENCH} 	"Installer les outils optionnels."
 LangString DESC_DocSection 		${LANG_FRENCH} 	"Installer la documentation."
 LangString DESC_ExamplesSection ${LANG_FRENCH} 	"Installer un exemple 'HelloWorld' et des fichiers de plate-formes types."
@@ -287,7 +269,6 @@ section "Uninstall"
 	delete $INSTDIR\uninstaller@BIN_EXE@
 
 	# delete installed libs
-	delete $INSTDIR\lib\libgras.dll
 	delete $INSTDIR\lib\libsimgrid.dll
 	delete $INSTDIR\lib\libsimgrid.def
 
@@ -302,7 +283,6 @@ section "Uninstall"
 	delete $INSTDIR\bin\tesh
 	
 	# delete installed headers
-	delete $INSTDIR\include\gras.h 
 	delete $INSTDIR\include\xbt.h
 	delete $INSTDIR\include\simgrid_config.h
 	delete $INSTDIR\include\xbt\misc.h
@@ -358,16 +338,6 @@ section "Uninstall"
 	delete $INSTDIR\include\surf\surfxml_parse.h
 	delete $INSTDIR\include\surf\simgrid_dtd.h
 	delete $INSTDIR\include\surf\surf_routing.h
-	delete $INSTDIR\include\gras\datadesc.h
-	delete $INSTDIR\include\gras\transport.h
-	delete $INSTDIR\include\gras\virtu.h
-	delete $INSTDIR\include\gras\emul.h
-	delete $INSTDIR\include\gras\process.h
-	delete $INSTDIR\include\gras\module.h
-	delete $INSTDIR\include\gras\messages.h
-	delete $INSTDIR\include\gras\timer.h
-	delete $INSTDIR\include\amok\peermanagement.h
-	delete $INSTDIR\include\amok\bandwidth.h
 	delete $INSTDIR\include\instr\instr.h
 		
 	# delete EXTRA FILES
@@ -382,8 +352,6 @@ section "Uninstall"
 	RMDir  "$INSTDIR\lib"
 	RMDir  "$INSTDIR\include\simix"
 	RMDir  "$INSTDIR\include\instr"
-	RMDir  "$INSTDIR\include\amok"
-	RMDir  "$INSTDIR\include\gras"
 	RMDir  "$INSTDIR\include\surf"
 	RMDir  "$INSTDIR\include\smpi"
 	RMDir  "$INSTDIR\include\simdag"

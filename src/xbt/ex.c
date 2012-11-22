@@ -50,7 +50,6 @@
 #include "xbt_modinter.h"       /* backtrace initialization headers */
 #include "xbt/synchro.h"        /* xbt_thread_self */
 
-#include "gras/Virtu/virtu_interface.h" /* gras_os_myname */
 #include "xbt/ex_interface.h"
 
 #undef HAVE_BACKTRACE
@@ -142,7 +141,7 @@ void xbt_ex_display(xbt_ex_t * e)
           "** SimGrid: UNCAUGHT EXCEPTION received on %s(%d): category: %s; value: %d\n"
           "** %s\n"
           "** Thrown by %s()%s\n",
-          gras_os_myname(), xbt_getpid(),
+          xbt_os_procname(), xbt_getpid(),
           xbt_ex_catname(e->category), e->value, e->msg,
           e->procname, thrower ? thrower : " in this process");
   XBT_CRITICAL("%s", e->msg);

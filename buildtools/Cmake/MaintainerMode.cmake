@@ -86,12 +86,10 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
       ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.c
       ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
 
       DEPENDS	${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
       ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.dtd
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.l
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
 
       #${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
@@ -151,10 +149,6 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${SED_EXE} -i ${string11} src/xbt/graphxml.c
       COMMAND ${CMAKE_COMMAND} -E echo "xbt/graphxml.c"
 
-      # src/xbt/datadesc/ddt_parse.yy.c: src/xbt/datadesc/ddt_parse.yy.l
-      COMMAND ${FLEX_EXE} -o src/xbt/datadesc/ddt_parse.yy.c -Pxbt_ddt_parse_ --noline src/xbt/datadesc/ddt_parse.yy.l
-      COMMAND ${CMAKE_COMMAND} -E echo "xbt/datadesc/ddt_parse.yy.c"
-
       #simdag/dax_dtd.c: simdag/dax_dtd.l
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
       COMMAND ${SED_EXE} -i ${string12} src/simdag/dax_dtd.l
@@ -173,7 +167,6 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
       ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.c
       ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
       )
 

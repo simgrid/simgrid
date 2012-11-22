@@ -11,9 +11,6 @@ include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Supernovae.cmake)
 add_library(simgrid SHARED ${simgrid_sources})
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 
-add_library(gras SHARED ${gras_sources})
-set_target_properties(gras PROPERTIES VERSION ${libgras_version})
-
 if(enable_lib_static)
   add_library(simgrid_static STATIC ${simgrid_sources})
 endif()
@@ -26,7 +23,6 @@ if(enable_smpi)
   endif()
 endif()
 
-add_dependencies(gras maintainer_files)
 add_dependencies(simgrid maintainer_files)
 
 # if supernovaeing, we need some depends to make sure that the source gets generated
@@ -35,7 +31,6 @@ if (enable_supernovae)
   if(enable_lib_static)
     add_dependencies(simgrid_static ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c)
   endif()
-  add_dependencies(gras ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c)
 
   if(enable_smpi)
     add_dependencies(smpi ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
@@ -44,25 +39,6 @@ if (enable_supernovae)
     endif()
   endif()
 endif()
-
-# Compute the dependencies of GRAS
-##################################
-set(GRAS_DEP "-lm -pthread")
-
-if(HAVE_POSIX_GETTIME)
-  SET(GRAS_DEP "${GRAS_DEP} -lrt")
-endif()
-
-# the following is probably unneed since it kills the previous
-# GRAS_DEP (and is thus probably invalid).
-# My guess is that pthread is never true [Mt]
-# FIXME: KILLME if we get a working windows with that?
-if(with_context MATCHES windows)
-  if(pthread)
-    SET(GRAS_DEP "msg")
-  endif()
-endif()
-target_link_libraries(gras 	${GRAS_DEP})
 
 # Compute the dependencies of SimGrid
 #####################################

@@ -58,9 +58,9 @@ add_executable(testall ${TEST_UNITS})
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(testall gras m)
+  target_link_libraries(testall simgrid m)
 else()
-  target_link_libraries(testall gras)
+  target_link_libraries(testall simgrid)
 endif()
 
 add_dependencies(testall ${TEST_UNITS})

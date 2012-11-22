@@ -70,11 +70,8 @@ add_custom_target(simgrid_update_xml ALL
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
   )
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/gras_stub_generator
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
-
 # libraries
-install(TARGETS simgrid gras
+install(TARGETS simgrid 
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 
 if(enable_smpi)
@@ -135,7 +132,6 @@ endif()
 add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/doc/simgrid
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall doc ok"
-  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libgras*
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libsimgrid*
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libsmpi*
   COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid*
@@ -147,11 +143,9 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/tesh
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid-colorizer
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid_update_xml
-  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/gras_stub_generator
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/graphicator
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall bin ok"
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/amok
-  COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/gras
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/instr
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/msg
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/simdag
@@ -162,7 +156,6 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/mc
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/simgrid
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/simgrid_config.h
-  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/gras.h
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/xbt.h
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall include ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/simgrid_update_xml.1
@@ -191,9 +184,6 @@ set(source_to_pack
   ${source_of_generated_headers}
   ${AMOK_SRC}
   ${BINDINGS_SRC}
-  ${GRAS_COMMON_SRC}
-  ${GRAS_RL_SRC}
-  ${GRAS_SG_SRC}
   ${GTNETS_SRC}
   ${JEDULE_SRC}
   ${LUA_SRC}
@@ -388,7 +378,6 @@ add_custom_target(maintainer-clean
   )
 
 add_custom_target(supernovae-clean
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_gras.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_sg.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_smpi.c
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
