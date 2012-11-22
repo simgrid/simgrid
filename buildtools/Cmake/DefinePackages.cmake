@@ -96,7 +96,6 @@ set(XBT_RL_SRC
 
 set(XBT_SG_SRC
   src/xbt/xbt_sg_synchro.c
-  src/xbt/xbt_sg_time.c
   )
 
 set(SMPI_SRC
@@ -476,6 +475,7 @@ set(simgrid_sources
   ${SIMIX_SRC}
   ${SURF_SRC}
   ${TRACING_SRC}
+  ${XBT_SG_SRC}
   ${XBT_SRC}
   )
 
