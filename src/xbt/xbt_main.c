@@ -93,17 +93,12 @@ static void xbt_preinit(void)
   xbt_os_thread_mod_preinit();
   xbt_fifo_preinit();
   xbt_dict_preinit();
-  xbt_datadesc_preinit();
-  xbt_trp_preinit();
 
   atexit(xbt_postexit);
 }
 
 static void xbt_postexit(void)
 {
-  xbt_trp_postexit();
-  xbt_datadesc_postexit();
-
   xbt_backtrace_postexit();
 
   xbt_fifo_postexit();
