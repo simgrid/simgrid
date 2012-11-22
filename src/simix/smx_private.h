@@ -313,6 +313,7 @@ static XBT_INLINE smx_context_t SIMIX_context_self(void)
     return simix_global->context_factory->self();
   }
 
+  xbt_die("simix is not initialized, please call MSG_init first");
   return NULL;
 }
 

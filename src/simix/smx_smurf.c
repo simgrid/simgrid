@@ -25,6 +25,7 @@ void SIMIX_simcall_push(smx_process_t self)
               SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
     SIMIX_process_yield(self);
   } else {
+    XBT_DEBUG("I'm the maestro, execute the simcall directly");
     SIMIX_simcall_pre(&self->simcall, 0);
   }
 }
