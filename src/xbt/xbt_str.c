@@ -345,7 +345,7 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
 
   beg = s;
 
-  /* do not trim leading spaces: caller responsability to clean his cruft */
+  /* do not trim leading spaces: caller responsibility to clean his cruft */
   end = beg;
 
   while (!done) {
