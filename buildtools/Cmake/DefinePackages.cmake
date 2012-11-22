@@ -127,7 +127,6 @@ endif()
 
 
 set(XBT_SRC
-  src/gras_modinter.h
   src/xbt/RngStream.c
   src/xbt/automaton/automaton.c
   src/xbt/automaton/automatonparse_promela.c
