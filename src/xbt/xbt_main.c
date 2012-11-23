@@ -116,11 +116,10 @@ static void xbt_postexit(void)
 /** @brief Initialize the xbt mechanisms. */
 void xbt_init(int *argc, char **argv)
 {
-  // FIXME it would be nice to assert that this function is called only once. But each gras process do call it...
-  xbt_initialized++;
-
-  if (xbt_initialized > 1)
+  if (xbt_initialized++) {
+    XBT_DEBUG("XBT was initialized %d times.", xbt_initialized);
     return;
+  }
 
   xbt_binary_name = xbt_strdup(argv[0]);
   srand((unsigned int) time(NULL));
