@@ -120,7 +120,6 @@ sub process_one($) {
 	open OUT,">${outdir}simgrid_units_main.c" || die "$progname: Cannot open main file '${outdir}simgrid_units_main.c': $!\n";
 	print OUT $GENERATED;
 	print OUT "#include <stdio.h>\n\n";
-	print OUT "#include \"msg/msg.h\" /* MSG_init, xbt_init is not enough when using synchronized dynars */\n";
 	print OUT "#include \"xbt.h\"\n\n";
 	print OUT "extern xbt_test_unit_t _xbt_current_unit;\n\n";
 	print OUT "/* SGU: BEGIN PROTOTYPES */\n";
@@ -138,7 +137,7 @@ int main(int argc, char *argv[]) {
   /* SGU: BEGIN SUITES DECLARATION */
   /* SGU: END SUITES DECLARATION */
       
-  MSG_init(&argc,argv);
+  xbt_init(&argc,argv);
     
   /* Search for the tests to do */
     selection[0]='\\0';
