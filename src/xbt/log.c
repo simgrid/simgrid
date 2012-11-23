@@ -187,7 +187,7 @@ format. This is usually a good idea.
 Here is an example of the most basic type of macro. This is a logging
 request with priority <i>warning</i>.
 
-<code>XBT_CLOG(MyCat, gras_log_priority_warning, "Values are: %d and '%s'", 5,
+<code>XBT_CLOG(MyCat, xbt_log_priority_warning, "Values are: %d and '%s'", 5,
 "oops");</code>
 
 A logging request is said to be enabled if its priority is higher than or
@@ -422,10 +422,10 @@ requires an a single comparison of a static variable to a constant.
 
 There is also compile time constant, \ref XBT_LOG_STATIC_THRESHOLD, which
 causes all logging requests with a lower priority to be optimized to 0 cost
-by the compiler. By setting it to gras_log_priority_infinite, all logging
+by the compiler. By setting it to xbt_log_priority_infinite, all logging
 requests are statically disabled at compile time and cost nothing. Released executables
 <i>might</i>  be compiled with (note that it will prevent users to debug their problems)
-\verbatim-DXBT_LOG_STATIC_THRESHOLD=gras_log_priority_infinite\endverbatim
+\verbatim-DXBT_LOG_STATIC_THRESHOLD=xbt_log_priority_infinite\endverbatim
 
 Compiling with the \verbatim-DNLOG\endverbatim option disables all logging
 requests at compilation time while the \verbatim-DNDEBUG\endverbatim disables
