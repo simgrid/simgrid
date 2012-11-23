@@ -1,5 +1,8 @@
 SimGrid (3.9) NOT RELEASED; urgency=low
 
+ GRAS:
+ * GRAS is definitely dead now.
+
  SMPI:
  * Now works on Windows too!
  * Much more extensive test suite, from MPICH
