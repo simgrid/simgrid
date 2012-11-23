@@ -17,8 +17,7 @@
       given problem you don't really want to implement.
       If you want to use DAGs, have a look at the \ref SD_API programming
       environment.
-      If you want to get a real (but experimental) implementation of your solution, have a look
-      at the \ref GRAS_API one. If you want to study an existing MPI program,
+      If you want to study an existing MPI program,
       have a look at the \ref SMPI_API one. If none of those programming
       environments fits your needs, you may consider implementing your own
       directly on top of \ref SURF_API (but you probably want to contact us
@@ -34,49 +33,6 @@
 */
 
 
-/** \defgroup GRAS_API      GRAS
-    \brief Realistic programming environment (Grid Reality And Simulation)
-
-    GRAS provides a complete API to implement distributed application on top
-    of heterogeneous plateforms. In addition to the SimGrid implementation
-    of this interface (allowing you to work on your application within the
-    comfort of the simulator), an implementation suited to real platforms is
-    also provided (allowing you to really use your application once you're
-    done with developing it). It may still contain rought corners as
-    GRAS is not the most used part of SimGrid, however.
-
-    GRAS thus constitute a complete grid application developement framework,
-    encompassing both developer helping tools (the simulator and associated
-    tools) and an efficient while portable execution runtime.
-
-    \section GRAS_who Who should use this (and who shouldn't)
-
-    You should use this programming environment if you want to develop real
-    applications, ie if the final result of your work is a program which
-    may eventually be distributed. Rember however that GRAS is
-    considered as experimental at this point. Help would be welcomed
-    to improve this sorry situation...
-
-    If you just want to study some heuristics for a given problem you don't
-    want to implement really (ie, if your result would be a theorem), have a
-    look at the \ref MSG_API one, or the \ref SD_API one if you need to use DAGs.
-    If you want to study an existing MPI program, have a look at the
-    \ref SMPI_API one.
-    If none of those programming environments fits your needs, you may
-    consider implementing your own directly on top of \ref SURF_API (but you
-    probably want to contact us before).
-*/
-
-/** \defgroup AMOK_API AMOK
-    \brief Distributed toolkit built over \ref GRAS_API (Advanced Metacomputing Overlay Kit)
-
-    AMOK provides several tools useful to most applications built on top of GRAS,
-    but yet not belonging to GRAS itself. It is planned that those modules will be
-    changed to real plugins one day, allowing users to load only the needed parts at
-    run time. For now, they live in another library against which you should link your
-    programs explicitly.
-*/
-
 /** \defgroup SMPI_API      SMPI
     \brief Programming environment for the simulation of MPI applications
 
@@ -89,15 +45,13 @@ detailed below.
 \section SMPI_who Who should use SMPI (and who shouldn't)
 
 You should use this programming environment of the SimGrid suite if
-you want to study existing MPI applications. If you want to create a
-distributed application, you may be interested in the \ref GRAS_API
-environment instead (but note that GRAS is not very actively
-maintained nowadays). If you want to study some heuristics for a given
-problem (and if your goal is to produce theorems and publications, not
-code), have a look at the \ref MSG_API environment, or the \ref SD_API
-one if you need to use DAGs. If none of those programming environments
-fits your needs, you may consider implementing your own directly on
-top of \ref SURF_API (but you probably want to contact us before).
+you want to study existing MPI applications.  If you want to study
+some heuristics for a given problem (and if your goal is to produce
+theorems and publications, not code), have a look at the \ref MSG_API
+environment, or the \ref SD_API one if you need to use DAGs. If none
+of those programming environments fits your needs, you may consider
+implementing your own directly on top of \ref SURF_API (but you
+probably want to contact us before).
 
 \section SMPI_what What can run within SMPI?
 
@@ -195,8 +149,6 @@ smpirun -help
     to study algorithms and heuristics with DAGs of parallel tasks.
     If you don't need to use DAGs for your simulation, have a look at the
     \ref MSG_API programming environment.
-    If you want to implement a real distributed application, have a look at the
-    \ref GRAS_API programming environment.
     If you want to study an existing MPI program, have a look at the
     \ref SMPI_API one.
     If none of those programming environments fits your needs, you may
