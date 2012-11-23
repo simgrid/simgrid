@@ -43,7 +43,7 @@ static void test_host(const char*hostname)
   char *key, *data;
   const char *noexist = "Unknown";
   const char *value;
-  char exist[] = "SG_TEST_Hdd";
+  char exist[] = "Hdd";
 
   XBT_INFO("== Print the properties of the host");
   xbt_dict_foreach(props, cursor, key, data)

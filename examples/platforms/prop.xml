@@ -5,12 +5,6 @@
       to define some properties on hosts, processes and links. 
       It is used in several regression cases on properties -->
  
- <!-- Some properties' name is prefixed by SG_TEST_ only to simplify
-      the test of GRAS on real life: we don't want to display the whole
-      user's environment here, only the ones related to the test.
-      
-      Of course, this restriction is not needed in your own platforms. -->
- 
  <platform version="3">
  <AS  id="AS0"  routing="Full">
    <prop id="filename" value="prop.xml"/>
@@ -29,12 +23,12 @@
    
    <AS  id="AS4"  routing="Full">
 	   <host id="host1" power="1000000000">
-	     <prop id="SG_TEST_Hdd" value="180"/>
-	     <prop id="SG_TEST_mem" value="4"/>
+	     <prop id="Hdd" value="180"/>
+	     <prop id="mem" value="4"/>
 	   </host>
 	   
 	   <host id="host2" power="1000000000">
-	     <prop id="SG_TEST_Hdd" value="120"/>
+	     <prop id="Hdd" value="120"/>
 	   </host>
 	   
 	   <link id="l1" bandwidth="125000000" latency="0.000100">

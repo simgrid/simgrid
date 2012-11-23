@@ -8,21 +8,21 @@ $ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml $
 > [  0.000000] (0:@) Host 'host1' runs at 1000000000 flops/s
 > [  0.000000] (0:@) Host 'host2' runs at 1000000000 flops/s
 > [  0.000000] (1:alice@host1) == Print the properties of the host
-> [  0.000000] (1:alice@host1)   Host property: 'SG_TEST_Hdd' -> '180'
-> [  0.000000] (1:alice@host1)   Host property: 'SG_TEST_mem' -> '4'
+> [  0.000000] (1:alice@host1)   Host property: 'mem' -> '4'
+> [  0.000000] (1:alice@host1)   Host property: 'Hdd' -> '180'
 > [  0.000000] (1:alice@host1) == Try to get a host property that does not exist
 > [  0.000000] (1:alice@host1) == Try to get a host property that does exist
-> [  0.000000] (1:alice@host1)    Property: SG_TEST_Hdd old value: 180
+> [  0.000000] (1:alice@host1)    Property: Hdd old value: 180
 > [  0.000000] (1:alice@host1) == Trying to modify a host property
-> [  0.000000] (1:alice@host1)    Property: SG_TEST_Hdd old value: 250
+> [  0.000000] (1:alice@host1)    Property: Hdd old value: 250
 > [  0.000000] (2:bob@host1) == Print the properties of the process
 > [  0.000000] (2:bob@host1)    Process property: SomeProp -> SomeValue
 > [  0.000000] (2:bob@host1) == Try to get a process property that does not exist
 > [  1.000000] (3:carole@host2) == Print the properties of the host
-> [  1.000000] (3:carole@host2)   Host property: 'SG_TEST_Hdd' -> '180'
-> [  1.000000] (3:carole@host2)   Host property: 'SG_TEST_mem' -> '4'
+> [  1.000000] (3:carole@host2)   Host property: 'mem' -> '4'
+> [  1.000000] (3:carole@host2)   Host property: 'Hdd' -> '180'
 > [  1.000000] (3:carole@host2) == Try to get a host property that does not exist
 > [  1.000000] (3:carole@host2) == Try to get a host property that does exist
-> [  1.000000] (3:carole@host2)    Property: SG_TEST_Hdd old value: 180
+> [  1.000000] (3:carole@host2)    Property: Hdd old value: 180
 > [  1.000000] (3:carole@host2) == Trying to modify a host property
-> [  1.000000] (3:carole@host2)    Property: SG_TEST_Hdd old value: 250
+> [  1.000000] (3:carole@host2)    Property: Hdd old value: 250
