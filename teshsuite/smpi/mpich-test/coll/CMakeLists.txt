@@ -121,7 +121,6 @@ endif()
 
 set(tesh_files
   ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/coll.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -130,7 +129,7 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/coll1 .c
+  ${CMAKE_CURRENT_SOURCE_DIR}/coll1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/coll2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/coll3.c
   ${CMAKE_CURRENT_SOURCE_DIR}/coll4.c
@@ -141,7 +140,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/coll9.c
   ${CMAKE_CURRENT_SOURCE_DIR}/coll10.c
   ${CMAKE_CURRENT_SOURCE_DIR}/coll11.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/coll12 .c
+  ${CMAKE_CURRENT_SOURCE_DIR}/coll12.c
   ${CMAKE_CURRENT_SOURCE_DIR}/coll13.c
   ${CMAKE_CURRENT_SOURCE_DIR}/allredmany.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bcastbug.c
@@ -171,7 +170,6 @@ set(examples_src
   )
 set(bin_files
   ${bin_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../hostfile
   PARENT_SCOPE
   )
 set(txt_files

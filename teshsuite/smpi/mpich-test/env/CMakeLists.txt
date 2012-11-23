@@ -61,7 +61,6 @@ endif()
 
 set(tesh_files
   ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/env.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -85,7 +84,6 @@ set(examples_src
   )
 set(bin_files
   ${bin_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../hostfile
   PARENT_SCOPE
   )
 set(txt_files

@@ -289,7 +289,6 @@ endif()
 
 set(tesh_files
   ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/coll.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -356,7 +355,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/order.c
   ${CMAKE_CURRENT_SOURCE_DIR}/pack.c
   ${CMAKE_CURRENT_SOURCE_DIR}/probe1.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/testtest1 .c
+  ${CMAKE_CURRENT_SOURCE_DIR}/testtest1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/hvectest.c
   ${CMAKE_CURRENT_SOURCE_DIR}/hvectest2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/hvec.c
@@ -394,7 +393,6 @@ set(examples_src
   )
 set(bin_files
   ${bin_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../hostfile
   PARENT_SCOPE
   )
 set(txt_files
