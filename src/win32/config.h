@@ -15,7 +15,7 @@
 */
 #if defined(__GNUC__)
         /* data comes from autoconf when using gnuc (cross-compiling?) */
-  # include "gras_config.h"
+  # include "internal_config.h"
   #ifndef _XBT_WIN32
     typedef unsigned int uint32_t;
   #endif

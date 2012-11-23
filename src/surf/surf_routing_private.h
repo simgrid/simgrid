@@ -8,7 +8,7 @@
 #define _SURF_SURF_ROUTING_PRIVATE_H
 
 #include <float.h>
-#include "gras_config.h"
+#include "internal_config.h"
 
 #include "surf_private.h"
 #include "xbt/dynar.h"

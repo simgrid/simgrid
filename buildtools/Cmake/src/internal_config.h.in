@@ -1,5 +1,5 @@
-// <root>/buildtools/Cmake/gras_config.h.in is user-written.
-// With Cmake it creates <root>/src/gras_config.h
+// <root>/buildtools/Cmake/internal_config.h.in is user-written.
+// With Cmake it creates <root>/src/internal_config.h
 
 /* Set somes variables for Windows compilation */
 

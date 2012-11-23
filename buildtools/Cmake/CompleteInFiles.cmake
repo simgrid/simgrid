@@ -736,8 +736,8 @@ endif()
 configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in" 			"${CMAKE_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/gras_config.h.in" 	"${CMAKE_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
-configure_file("${CMAKE_BINARY_DIR}/src/gras_config.h" 			"${CMAKE_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/internal_config.h.in" 	"${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_BINARY_DIR}/src/internal_config.h" 			"${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
 configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
 
 set(top_srcdir "${CMAKE_HOME_DIRECTORY}")
@@ -789,7 +789,7 @@ set(generated_headers_to_install
 
 set(generated_headers
   ${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h
-  ${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h
   )
 
 set(generated_files_to_clean

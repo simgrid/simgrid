@@ -10,7 +10,7 @@
 
 #include "xbt/parmap.h"
 #include "smx_private.h"
-#include "gras_config.h"
+#include "internal_config.h"
 #include "context_sysv_config.h"        /* loads context system definitions */
 #include "mc/mc.h"
 

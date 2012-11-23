@@ -11,7 +11,7 @@
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
 #include "smx_private.h"
-#include "gras_config.h"
+#include "internal_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mechanism");

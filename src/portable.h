@@ -10,7 +10,7 @@
 #ifndef GRAS_PORTABLE_H
 #define GRAS_PORTABLE_H
 
-#include "gras_config.h"
+#include "internal_config.h"
 #include "xbt/misc.h"
 /* 
  * win32 or win64 (__XBT_WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).

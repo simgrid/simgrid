@@ -8,7 +8,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras_config.h"
+#include "internal_config.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
 #include "xbt/ex_interface.h"   /* We play crude games with exceptions */

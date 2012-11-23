@@ -8,7 +8,7 @@
 
 #include "xbt/misc.h"
 #include "simgrid_config.h"     /*HAVE_MMAP _XBT_WIN32 */
-#include "gras_config.h"        /* MMALLOC_WANT_OVERRIDE_LEGACY */
+#include "internal_config.h"        /* MMALLOC_WANT_OVERRIDE_LEGACY */
 #include "time.h"               /* to seed the random generator */
 
 #include "xbt/sysdep.h"
