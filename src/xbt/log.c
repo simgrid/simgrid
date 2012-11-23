@@ -281,7 +281,7 @@ int main() {
 Although rarely done, it is possible to configure the logs during
 program initialization by invoking the xbt_log_control_set() method
 manually. A more conventional way is to use the --log command line
-argument. xbt_init() (called by MSG_init(), gras_init() and friends)
+argument. xbt_init() (called by MSG_init() and friends)
 checks and deals properly with such arguments.
 
 \subsection log_use_conf_thres 3.1.1 Threshold configuration

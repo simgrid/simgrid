@@ -3,18 +3,13 @@
 **
 ******************************************************
 
-There is at least 5 sub-projects in the tree:
+There is at least 4 sub-projects in the tree:
 
  - XBT: eXtended Bundle of Tools (low-level toolbox: logging, datatypes).
  - SURF: a SimUlation aRtiFact. This is the simulation kernel.
  - MSG:  originally MetaSimGrid, MSG is a simple distributed application
          simulator.
- - GRAS: Grid Reality And Simulation (message passing API with two
-         implementations allowing to compile programs on top of the
-         simulator or for the real life without code modification)
- - AMOK: Advanced Metacomputing Overlay Kit (high level toolbox; Grid
-         application elements such as distributed database, topology
-         discovery service, and so on)
+ - SMPI: Simulated MPI, to run MPI application using emulation technics.
 
 They are all in the same tree because they are complementary tools and
 having all of them in the same package makes the installation easier
@@ -24,24 +19,6 @@ eases the development.
 The tree is not splited on projects, but on file finality:
  include/            -> all *public* headers
  include/xbt/*.h     -> one file per module
- include/gras.h      -> file including all modules headers
-  (same for xbt instead of gras)
-  
- src/Makefile.am     -> main makefile. All projects should fit in only one
-                        library (I mean 2, RL+SG), which is compiled here.
-			
-			Since all object.o files are placed here, you should
-                        choose the name of c files carfully to avoid
-                        conflict. 
-			
- src/gras/DataDesc                      -> typical project module
- src/gras/DataDesc/datadesc_interface.h -> visible to any GRAS modules;
-                                           masked to the user and GROS/AMOK/SURF
- src/gras/DataDesc/datadesc_private.h   -> visible only from this module					   
-  
-   So, the modules have 3 levels of publicity for their interface. 
-   Private, internal to GRAS, public. Of course, I try to keep as much stuff
-   private as possible.
 
  src/include -> another location for protected headers. Used by SURF, and
                 other should be converted, since this is the Right Thing.
@@ -50,10 +27,7 @@ The tree is not splited on projects, but on file finality:
                Same organization than src/ and include/
                Tests are allowed to load some headers of the module they test.
 	       All tests should be listed in run_test.in so that they get
-                  run on 'make check'. 
-	       They are not listed directly in the check_PROGRAMS part of
-                  the makefile because run_test knows about the gras logging
-                  features and relaunch with full details the failed tests.
+               run on 'make check'. 
 		  
  examples/ -> Supposed to be copy/pastable by the user, so keep it clear and
                 avoid any kind of trick. In particular, do only include the
@@ -78,7 +52,7 @@ FIXME: this list of arguments is still to be discussed, maybe
 *****************************************************
 
 It may sound strange, but the type naming convention was source of intense
-discution between da GRAS posse members. The convention we came to may not
+discution between da SimGrid posse members. The convention we came to may not
 be the best solution, but it has the merit to exist and leave everyone work.
 So please stick to it.
 
@@ -128,7 +102,7 @@ PRINTF pointer difference
 
 The global structure of the documentation is in doc/modules.doc 
 
-The structure of each module (xbt, gras, etc) is in doc/module-<module>.doc
+The structure of each module (xbt, msg, etc) is in doc/module-<module>.doc
 
 The structure of a module is in its public header. This way, you're sure to
 see all the public interface (and only it). The different parts of the
@@ -144,7 +118,7 @@ The documentation of each function must be in the C file were it lives.
 Any public element (function, type and macro) must have a @brief part.
 
 **
-** XBT virtualization mecanism
+** XBT virtualization mecanism (FIXME:this section is deprecated)
 **
 ****************************************************
 

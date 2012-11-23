@@ -14,16 +14,11 @@
 ### Ongoing stuff
 ###
 
-Document the fact that gras processes display the backtrace on sigusr and sigint
 Document host module
 
 /* FIXME: better place? */
 int vasprintf  (char **ptr, const char *fmt, va_list ap);
 char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
-
-
-gras_socket_close should be blocking until all the data sent have been
-received by the other side (implemented with an ACK mechanism).
 
 ###
 ### Planned
@@ -66,92 +61,3 @@ received by the other side (implemented with an ACK mechanism).
   * Some of the datacontainer modules seem to overlap. Kill some of them?
     - replace fifo with dynars
     - replace set with SWAG
-
-*
-* GRAS
-******
-
-[doc]
-  * implement the P2P protocols that macedon does. They constitute great
-    examples, too
-
-[transport]  
-  * use poll(2) instead of select(2) when available. (first need to check
-    the advantage of doing so ;)
-
-    Another idea we spoke about was to simulate this feature with a bunch of
-    threads blocked in a read(1) on each incoming socket. The latency is
-    reduced by the cost of a syscall, but the more I think about it, the
-    less I find the idea adapted to our context.
-
-  * timeout the send/recv too (hard to do in RL)
-  * Adaptative timeout
-  * multiplex on incoming SOAP over HTTP (once datadesc can deal with it)
-
-  * The module syntax/API is too complex. 
-    - Everybody opens a server socket (or almost), and nobody open two of
-      them. This should be done automatically without user intervention.
-    - I'd like to offer the possibility to speak to someone, not to speak on
-      a socket. Users shouldn't care about such technical details. 
-    - the idea of host_cookie in NWS seem to match my needs, but we still
-      need a proper name ;)
-    - this would allow to exchange a "socket" between peer :)
-    - the creation needs to identify the peer actor within the process
-
-  * when a send failed because the socket was closed on the other side, 
-    try to reopen it seamlessly. Needs exceptions or another way to
-    differentiate between the several system_error.
-  * cache accepted sockets and close the old ones after a while. 
-    Depends on the previous item; difficult to achieve with firewalls
-
-[datadesc]
-  * Add a XML wire protocol alongside to the binary one (for SOAP/HTTP)
-  * cbps:
-    - Error handling
-    - Regression tests
-  * Inter-arch conversions
-    - Port to ARM
-    - Convert in the same buffer when size increase
-    - Exchange (on net) structures in one shoot when possible.
-  * datadesc_set_cste: give the value by default when receiving. 
-    - It's not transfered anymore, which is good for functions pointer.
-  * Parsing macro
-    - Cleanup the code (bison?)
-    - Factorize code in union/struct field adding
-    - Handle typedefs (gras_datatype_copy can be usefull, but only if
-      main type is already defined)
-    - Handle unions with annotate
-    - Handle enum
-    - Handle long long and long double
-    - Forbid "char", allow "signed char" and "unsigned char", or user code won't be 
-      portable to ARM, at least.
-    - Handle struct/union/enum embeeded within another container 
-      (needs modifications in DataDesc, too)
- 
-    - Check short a, b;
-    - Check short ***
-    - Check struct { struct { int a } b; } 
-
-[Messaging]
-  * Other message types than oneway & RPC are possible:
-     - forwarding request, group communication
-  * Message priority
-  * Message forwarding
-  * Group communication
-  * Message declarations in a tree manner (such as log channels)?
-  
-[Other, more general issues]
-  * watchdog in RL (ie, while (1) { fork; exec the child, wait in father })
-  * Allow [homogeneous] dico to be sent
-  * Make GRAS thread safe by mutexing what needs to be
-
-*
-* AMOK
-******
-
-[bandwidth]
-  * add a version guessing the appropriate datasizes automatically
-[other modules]
-  * log control, management, dynamic token ring
-  * a way using SSH to ask a remote host to open a socket back on me
- 
