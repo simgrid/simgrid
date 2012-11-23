@@ -10,26 +10,28 @@
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 #include "xbt/synchro.h"
+#include "xbt/xbt_os_thread.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_sync);
 
 typedef struct {
   xbt_dynar_t data;
   int rank;
   void_f_int_pvoid_t function;
-  xbt_thread_t worker;
+  xbt_os_thread_t worker;
 } s_worker_data_t, *worker_data_t;
 
 static void worker_wait_n_free(void *w)
 {
   worker_data_t worker = *(worker_data_t *) w;
-  xbt_thread_join(worker->worker);
+  xbt_os_thread_join(worker->worker, NULL);
   xbt_free(worker);
 }
 
-static void worker_wrapper(void *w)
+static void *worker_wrapper(void *w)
 {
   worker_data_t me = (worker_data_t) w;
   me->function(me->rank, xbt_dynar_get_ptr(me->data, me->rank));
+  return NULL;
 }
 
 void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function)
@@ -54,8 +56,7 @@ void xbt_dynar_dopar(xbt_dynar_t datas, void_f_int_pvoid_t function)
     w->rank = cursor;
     xbt_dynar_push(workers, &w);
     w->worker =
-        xbt_thread_create("dopar worker", worker_wrapper, w,
-                          1 /*joinable */ );
+        xbt_os_thread_create("dopar worker", worker_wrapper, w, NULL);
   }
   /* wait them all */
   xbt_dynar_free(&workers);
