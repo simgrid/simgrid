@@ -87,11 +87,6 @@ set(EXTRA_DIST
   tools/tesh/tesh.h
   )
 
-set(XBT_RL_SRC
-  src/xbt/xbt_rl_synchro.c
-  src/xbt/xbt_rl_time.c
-  )
-
 set(XBT_SG_SRC
   src/xbt/xbt_sg_synchro.c
   )
@@ -410,7 +405,6 @@ set(headers_to_install
   include/xbt/synchro.h
   include/xbt/synchro_core.h
   include/xbt/sysdep.h
-  include/xbt/time.h
   include/xbt/virtu.h
   include/xbt/xbt_os_thread.h
   )
@@ -542,42 +536,6 @@ set(DOC_TOOLS
   tools/doxygen/xbt_log_extract_hierarchy.pl
   )
 
-set(DOC_GTUT_SRC
-  doc/gtut-files/01-bones.c
-  doc/gtut-files/01-bones.output
-  doc/gtut-files/02-simple.c
-  doc/gtut-files/02-simple.output
-  doc/gtut-files/03-args.c
-  doc/gtut-files/03-args.output
-  doc/gtut-files/03-args.xml
-  doc/gtut-files/04-callback.c
-  doc/gtut-files/04-callback.output
-  doc/gtut-files/05-globals.c
-  doc/gtut-files/05-globals.output
-  doc/gtut-files/06-logs.c
-  doc/gtut-files/06-logs.output
-  doc/gtut-files/06-logs.output.error
-  doc/gtut-files/06-logs.output.fmt
-  doc/gtut-files/06-logs.output.fmt-bt
-  doc/gtut-files/06-logs.output.verbose
-  doc/gtut-files/07-timers.c
-  doc/gtut-files/07-timers.output
-  doc/gtut-files/08-exceptions.c
-  doc/gtut-files/08-exceptions.output
-  doc/gtut-files/09-datatype-dump.c
-  doc/gtut-files/09-simpledata.c
-  doc/gtut-files/09-simpledata.output
-  doc/gtut-files/10-rpc.c
-  doc/gtut-files/10-rpc.output
-  doc/gtut-files/11-explicitwait.c
-  doc/gtut-files/11-explicitwait.output
-  doc/gtut-files/11-explicitwait.xml
-  doc/gtut-files/gtut-platform-3nodes.xml
-  doc/gtut-files/gtut-platform.xml
-  doc/gtut-files/Makefile
-  doc/gtut-files/README
-  doc/gtut-files/test.xml
-)
 
 set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/footer.html
@@ -596,57 +554,7 @@ set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/use.doc
   doc/user_guide/doxygen/stylesheet.css
   )
-  
-set(LISTE_GTUT
-    doc/gtut-files/gtut-tour-00-install.doc
-    doc/gtut-files/gtut-tour-01-bones.doc
-    doc/gtut-files/gtut-tour-02-simple.doc
-    doc/gtut-files/gtut-tour-03-args.doc
-    doc/gtut-files/gtut-tour-04-callback.doc
-    doc/gtut-files/gtut-tour-05-globals.doc
-    doc/gtut-files/gtut-tour-06-logs.doc
-    doc/gtut-files/gtut-tour-07-timers.doc
-    doc/gtut-files/gtut-tour-08-exceptions.doc
-    doc/gtut-files/gtut-tour-09-simpledata.doc
-    doc/gtut-files/gtut-tour-10-rpc.doc
-    doc/gtut-files/gtut-tour-11-explicitwait.doc
-    doc/gtut-files/gtut-tour-12-staticstruct.doc
-    doc/gtut-files/gtut-tour-13-pointers.doc
-    doc/gtut-files/gtut-tour-14-dynar.doc
-    doc/gtut-files/gtut-tour-15-manualdatadef.doc
-    doc/gtut-files/gtut-tour-16-exchangecb.doc
-    doc/gtut-files/gtut-tour.doc
-    doc/gtut-files/gtut-tour-recap-messages.doc
-  )
-
-set(EXTRA_LISTE_GTUT
-    doc/gtut-files/01-bones.output
-    doc/gtut-files/02-simple.output
-    doc/gtut-files/03-args.output
-    doc/gtut-files/03-args.xml
-    doc/gtut-files/04-callback.output
-    doc/gtut-files/05-globals.output
-    doc/gtut-files/06-logs.output
-    doc/gtut-files/06-logs.output.error
-    doc/gtut-files/06-logs.output.fmt
-    doc/gtut-files/06-logs.output.fmt-bt
-    doc/gtut-files/06-logs.output.verbose
-    doc/gtut-files/07-timers.output
-    doc/gtut-files/08-exceptions.output
-    doc/gtut-files/09-simpledata.output
-    doc/gtut-files/10-rpc.output
-    doc/gtut-files/11-explicitwait.output
-    doc/gtut-files/11-explicitwait.xml
-    doc/gtut-files/gtut-howto-design.doc
-    doc/gtut-files/gtut-howto.doc
-    doc/gtut-files/gtut-introduction.doc
-    doc/gtut-files/gtut-main.doc
-    doc/gtut-files/gtut-platform-3nodes.xml
-    doc/gtut-files/gtut-platform.xml
-    doc/gtut-files/README
-    doc/gtut-files/test.xml
-    )
-  
+    
 set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/footer.html
   doc/ref_guide/doxygen/header.html

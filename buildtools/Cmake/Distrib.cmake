@@ -205,9 +205,6 @@ set(source_to_pack
   ${DOC_FIGS}
   ${DOC_IMG}
   ${DOC_SOURCES}
-  ${DOC_GTUT_SRC}
-  ${LISTE_GTUT}
-  ${EXTRA_LISTE_GTUT}
   ${DOC_TOOLS}
   ${DOC_SHARED_TAG}
   ${REF_GUIDE_SOURCES}
