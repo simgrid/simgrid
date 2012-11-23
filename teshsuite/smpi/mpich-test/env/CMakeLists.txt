@@ -72,6 +72,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/init.c
   ${CMAKE_CURRENT_SOURCE_DIR}/timers.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/timertest.c
   ${CMAKE_CURRENT_SOURCE_DIR}/baseattr.c
   ${CMAKE_CURRENT_SOURCE_DIR}/gtime.c
   ${CMAKE_CURRENT_SOURCE_DIR}/errhand.c
@@ -80,6 +81,10 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/testerr.c
   ${CMAKE_CURRENT_SOURCE_DIR}/getproc.c
   ${CMAKE_CURRENT_SOURCE_DIR}/test.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/baseattrf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/errhandf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/errstringsf.f
+  ${CMAKE_CURRENT_SOURCE_DIR}/getprocf.f
   PARENT_SCOPE
   )
 set(bin_files

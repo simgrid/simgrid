@@ -297,6 +297,10 @@ set(xml_files
   )
 set(examples_src
   ${examples_src}
+  ${CMAKE_CURRENT_SOURCE_DIR}/gcomm.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/gcomm.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/dtypes.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/dtypes.h
   ${CMAKE_CURRENT_SOURCE_DIR}/overtake.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bsendtest.c
   ${CMAKE_CURRENT_SOURCE_DIR}/relrank.c

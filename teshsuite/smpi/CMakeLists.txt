@@ -10,7 +10,6 @@ if(enable_smpi)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
   
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
-  include("${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/CMakeLists.txt")
 
   add_executable(alltoall2 alltoall2.c )
   add_executable(alltoall_basic alltoall_basic.c)

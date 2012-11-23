@@ -725,6 +725,7 @@ set(CMAKE_SOURCE_FILES
   CMakeLists.txt
   buildtools/Cmake/AddTests.cmake
   buildtools/Cmake/CTestConfig.cmake
+  buildtools/Cmake/CTestCustom.cmake
   buildtools/Cmake/CompleteInFiles.cmake
   buildtools/Cmake/DefinePackages.cmake
   buildtools/Cmake/Distrib.cmake
