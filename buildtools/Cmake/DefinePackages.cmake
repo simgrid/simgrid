@@ -87,10 +87,6 @@ set(EXTRA_DIST
   tools/tesh/tesh.h
   )
 
-set(XBT_SG_SRC
-  src/xbt/xbt_sg_synchro.c
-  )
-
 set(SMPI_SRC
   src/smpi/smpi_base.c
   src/smpi/smpi_bench.c
@@ -151,6 +147,7 @@ set(XBT_SRC
   src/xbt/xbt_peer.c
   src/xbt/xbt_queue.c
   src/xbt/xbt_replay.c
+  src/xbt/xbt_sg_synchro.c
   src/xbt/xbt_sha.c
   src/xbt/xbt_str.c
   src/xbt/xbt_strbuff.c
@@ -462,7 +459,6 @@ set(simgrid_sources
   ${SIMIX_SRC}
   ${SURF_SRC}
   ${TRACING_SRC}
-  ${XBT_SG_SRC}
   ${XBT_SRC}
   )
 
