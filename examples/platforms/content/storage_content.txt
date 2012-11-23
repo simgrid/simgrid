@@ -546,7 +546,6 @@
 -rw-r--r-- 1 user user 648 2011-10-05 16:04 ./include/xbt/module.h
 -rw-r--r-- 1 user user 5523 2011-10-05 16:04 ./include/xbt/cunit.h
 -rw-r--r-- 1 user user 1166 2011-10-05 16:04 ./include/xbt/parmap.h
--rw-r--r-- 1 user user 845 2011-10-05 16:04 ./include/xbt/synchro.h
 -rw-r--r-- 1 user user 2296 2011-10-05 16:04 ./include/xbt/mallocator.h
 -rw-r--r-- 1 user user 9553 2011-10-05 16:04 ./include/xbt/dynar.h
 -rw-r--r-- 1 user user 1444 2011-10-05 16:04 ./include/xbt/heap.h

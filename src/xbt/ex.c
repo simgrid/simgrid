@@ -48,7 +48,6 @@
 #include "xbt/str.h"
 #include "xbt/module.h"         /* xbt_binary_name */
 #include "xbt_modinter.h"       /* backtrace initialization headers */
-#include "xbt/synchro.h"        /* xbt_thread_self */
 
 #include "xbt/ex_interface.h"
 

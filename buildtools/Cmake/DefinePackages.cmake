@@ -154,7 +154,6 @@ set(XBT_SRC
   src/xbt/xbt_sha.c
   src/xbt/xbt_str.c
   src/xbt/xbt_strbuff.c
-  src/xbt/xbt_synchro.c
   src/xbt/xbt_virtu.c
   src/xbt_modinter.h
   )
@@ -402,7 +401,6 @@ set(headers_to_install
   include/xbt/str.h
   include/xbt/strbuff.h
   include/xbt/swag.h
-  include/xbt/synchro.h
   include/xbt/synchro_core.h
   include/xbt/sysdep.h
   include/xbt/virtu.h

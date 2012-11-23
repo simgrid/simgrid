@@ -7,7 +7,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt.h"
-#include "xbt/synchro.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logs of this example");
 

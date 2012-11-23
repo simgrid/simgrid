@@ -9,7 +9,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/strbuff.h"        /* For dynamic version when the static one fails */
 #include "xbt/log_private.h"
-#include "xbt/synchro.h"        /* xbt_thread_name */
 
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"

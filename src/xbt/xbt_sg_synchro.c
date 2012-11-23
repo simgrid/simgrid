@@ -11,8 +11,6 @@
 
 #include "xbt/ex.h"
 
-#include "xbt/synchro.h"        /* This module */
-
 #include "simgrid/simix.h"        /* used implementation */
 #include "../simix/smx_private.h" /* FIXME */
 

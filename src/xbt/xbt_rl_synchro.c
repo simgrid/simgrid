@@ -14,7 +14,6 @@
 #include "xbt/ex.h"
 #include "portable.h"
 
-#include "xbt/synchro.h"        /* This module */
 #include "xbt/xbt_os_thread.h"  /* The implementation we use */
 
 /* the implementation would be cleaner (and faster) with ELF symbol aliasing */
