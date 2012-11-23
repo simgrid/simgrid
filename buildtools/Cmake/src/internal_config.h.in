@@ -109,26 +109,6 @@
 #cmakedefine CMAKE_SYSTEM_PROCESSOR @CMAKE_SYSTEM_PROCESSOR@
 #cmakedefine HAVE_RAWCTX @HAVE_RAWCTX@
 
-/* Defined if arrays in struct can straddle struct alignment boundaries. This
-   is like than the structure compaction above, but this time, the argument to
-   be compacted is an array whom each element would be normally compacted.
-   Exemple: struct s { double d; int i; char c[6]; }; Arrays can straddle if c
-   is allowed to come just after i. Note that GRAS only support architecture
-   presenting this caracteristic so far. */
-#cmakedefine GRAS_ARRAY_STRADDLE_STRUCT @GRAS_ARRAY_STRADDLE_STRUCT@
-
-/* define if big endian */
-#define GRAS_BIGENDIAN @GRAS_BIGENDIAN@
-
-/* Defined if structures are compacted when possible. Consider this structure:
-   struct s {double d; int i; char c;}; If it is allowed, the char is placed
-   just after the int. If not, it has to be on the 8 bytes boundary imposed by
-   the double. For now, GRAS requires the structures to be compacted. */
-#cmakedefine GRAS_STRUCT_COMPACT @GRAS_STRUCT_COMPACT@
-
-/* defines the GRAS architecture signature of this machine */
-#define GRAS_THISARCH @GRAS_THISARCH@
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #cmakedefine HAVE_DLFCN_H @HAVE_DLFCN_H@
 

@@ -100,7 +100,7 @@ controlled by the <i>priority</i> concept (which should maybe be renamed to
 <i>severity</i>).
 
 Empirically, the user can specify that he wants to see every debugging message
-of GRAS while only being interested into the messages at level "error" or
+of MSG while only being interested into the messages at level "error" or
 higher about the XBT internals.
 
 \subsection log_app 1.3 Message appenders
