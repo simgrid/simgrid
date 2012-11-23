@@ -1,7 +1,6 @@
-/* xbt.h - Public interface to the xbt (gras's toolbox)                   */
+/* xbt.h - Public interface to the xbt (SimGrid's toolbox)                  */
 
-/* Copyright (c) 2004, 2005, 2006, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -29,8 +28,9 @@
 #include <xbt/parmap.h>
 
 #include <xbt/peer.h>
-#include <xbt/datadesc.h>
 #include <xbt/config.h>
 #include <xbt/cunit.h>
+
+#include <xbt/xbt_os_thread.h>
 
 #endif                          /* xbt_H */

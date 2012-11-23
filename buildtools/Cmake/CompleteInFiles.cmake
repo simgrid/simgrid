@@ -469,143 +469,6 @@ if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/ AND NOT WIN32)
   endif()
 endif()
 
-###################################
-## SimGrid and GRAS specific checks
-##
-
-IF(NOT CMAKE_CROSSCOMPILING)
-  # Check architecture signature begin
-  try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
-    RUN_OUTPUT_VARIABLE var1
-    )
-  if(BIGENDIAN)
-    set(val_big "B${var1}")
-    set(GRAS_BIGENDIAN 1)
-  else()
-    set(val_big "l${var1}")
-    set(GRAS_BIGENDIAN 0)
-  endif()
-
-  # The syntax of this magic string is given in src/xbt/datadesc/ddt_convert.c
-  # It kinda matches the values that the xbt_arch_desc_t structure can take
-
-  # Basically, the syntax is one char l or B for endianness (little or Big)
-  #   then there is a bunch of blocks separated by _.
-  # C block is for char, I block for integers, P block for pointers and
-  #   D block for floating points
-  # For each block there is an amount of chuncks separated by :, each of
-  #   them describing a data size. For example there is only one chunk
-  #   in the char block, because no architecture provide several sizes
-  #   of chars. In integer block, there is 4 chunks: "short int", "int",
-  #   "long int", "long long int". There is 2 pointer chunks for data
-  #   pointers and pointers on functions (thanks to the AMD64 madness).
-  #   Thee two floating points chuncks are for "float" and "double".
-  # Each chunk is of the form datasize/minimal_alignment_size
-
-  # These informations are used to convert a data stream from one
-  #    formalism to another. Only the GRAS_ARCH is transfered in the
-  #    stream, and it it of cruxial importance to keep these detection
-  #    information here synchronized with the data hardcoded in the
-  #    source in src/xbt/datadesc/ddt_convert.c
-
-  # If you add something here (like a previously unknown architecture),
-  #    please add it to the source code too.
-  # Please do not modify stuff here since it'd break the GRAS protocol.
-  #     If you really need to change stuff, please also bump
-  #    GRAS_PROTOCOL_VERSION in src/gras/Msg/msg_interface.h
-
-  SET(GRAS_THISARCH "none")
-
-  if(val_big MATCHES "l_C:1/1:_I:2/1:4/1:4/1:8/1:_P:4/1:4/1:_D:4/1:8/1:")
-    #gras_arch=0; gras_size=32; gras_arch_name=little32_1;
-    SET(GRAS_ARCH_32_BITS 1)
-    SET(GRAS_THISARCH 0)
-  endif()
-  if(val_big MATCHES "l_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:")
-    #gras_arch=1; gras_size=32; gras_arch_name=little32_2;
-    SET(GRAS_ARCH_32_BITS 1)
-    SET(GRAS_THISARCH 1)
-  endif()
-  if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
-    #gras_arch=2; gras_size=32; gras_arch_name=little32_4;
-    SET(GRAS_ARCH_32_BITS 1)
-    SET(GRAS_THISARCH 2)
-  endif()
-  if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:")
-    #gras_arch=3; gras_size=32; gras_arch_name=little32_8;
-    SET(GRAS_ARCH_32_BITS 1)
-    SET(GRAS_THISARCH 3)
-  endif()
-  if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
-    #gras_arch=4; gras_size=64; gras_arch_name=little64;
-    SET(GRAS_ARCH_32_BITS 0)
-    SET(GRAS_THISARCH 4)
-  endif()
-  if(val_big MATCHES "l_C:1/1:_I:2/2:4/4:4/4:8/8:_P:8/8:8/8:_D:4/4:8/8:")
-    #gras_arch=5; gras_size=64; gras_arch_name=little64_2;
-    SET(GRAS_ARCH_32_BITS 0)
-    SET(GRAS_THISARCH 5)
-  endif()
-
-  if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/8:")
-    #gras_arch=6; gras_size=32; gras_arch_name=big32_8;
-    SET(GRAS_ARCH_32_BITS 1)
-    SET(GRAS_THISARCH 6)
-  endif()
-  if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/8:_P:4/4:4/4:_D:4/4:8/4:")
-    #gras_arch=7; gras_size=32; gras_arch_name=big32_8_4;
-    SET(GRAS_ARCH_32_BITS 1)
-    SET(GRAS_THISARCH 7)
-  endif()
-  if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:4/4:8/4:_P:4/4:4/4:_D:4/4:8/4:")
-    #gras_arch=8; gras_size=32; gras_arch_name=big32_4;
-    SET(GRAS_ARCH_32_BITS 1)
-    SET(GRAS_THISARCH 8)
-  endif()
-  if(val_big MATCHES "B_C:1/1:_I:2/2:4/2:4/2:8/2:_P:4/2:4/2:_D:4/2:8/2:")
-    #gras_arch=9; gras_size=32; gras_arch_name=big32_2;
-    SET(GRAS_ARCH_32_BITS 1)
-    SET(GRAS_THISARCH 9)
-  endif()
-  if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/8:")
-    #gras_arch=10; gras_size=64; gras_arch_name=big64;
-    SET(GRAS_ARCH_32_BITS 0)
-    SET(GRAS_THISARCH 10)
-  endif()
-  if(val_big MATCHES "B_C:1/1:_I:2/2:4/4:8/8:8/8:_P:8/8:8/8:_D:4/4:8/4:")
-    #gras_arch=11; gras_size=64; gras_arch_name=big64_8_4;
-    SET(GRAS_ARCH_32_BITS 0)
-    SET(GRAS_THISARCH 11)
-  endif()
-
-  if(GRAS_THISARCH MATCHES "none")
-    message(STATUS "architecture: ${val_big}")
-    message(FATAL_ERROR "GRAS_THISARCH is empty: '${GRAS_THISARCH}'")
-  endif()
-
-  # Check architecture signature end
-  try_run(RUN_GRAS_VAR COMPILE_GRAS_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
-    RUN_OUTPUT_VARIABLE var2
-    )
-  separate_arguments(var2)
-  foreach(var_tmp ${var2})
-    set(${var_tmp} 1)
-  endforeach(var_tmp ${var2})
-
-  # Check for [SIZEOF_MAX]
-  try_run(RUN_SM_VAR COMPILE_SM_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_max_size.c
-    RUN_OUTPUT_VARIABLE var3
-    )
-  message(STATUS "SIZEOF_MAX ${var3}")
-  SET(SIZEOF_MAX ${var3})
-ENDIF()
-
 #--------------------------------------------------------------------------------------------------
 
 set(makecontext_CPPFLAGS_2 "")
@@ -873,8 +736,8 @@ endif()
 configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in" 			"${CMAKE_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/gras_config.h.in" 	"${CMAKE_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
-configure_file("${CMAKE_BINARY_DIR}/src/gras_config.h" 			"${CMAKE_BINARY_DIR}/src/gras_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/internal_config.h.in" 	"${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_BINARY_DIR}/src/internal_config.h" 			"${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
 configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" 		"${CMAKE_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
 
 set(top_srcdir "${CMAKE_HOME_DIRECTORY}")
@@ -926,7 +789,7 @@ set(generated_headers_to_install
 
 set(generated_headers
   ${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h
-  ${CMAKE_CURRENT_BINARY_DIR}/src/gras_config.h
+  ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h
   )
 
 set(generated_files_to_clean
@@ -940,7 +803,6 @@ set(generated_files_to_clean
   ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
   ${CMAKE_BINARY_DIR}/examples/smpi/tracing/smpi_traced.trace
   ${CMAKE_BINARY_DIR}/src/supernovae_sg.c
-  ${CMAKE_BINARY_DIR}/src/supernovae_gras.c
   ${CMAKE_BINARY_DIR}/src/supernovae_smpi.c
   )
 

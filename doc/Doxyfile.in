@@ -720,7 +720,6 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = ./ \
-                         @top_srcdir@/doc/gtut-files \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/examples \

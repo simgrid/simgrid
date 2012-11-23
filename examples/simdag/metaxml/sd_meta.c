@@ -15,7 +15,6 @@
 #include "xbt/log.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
-#include "xbt/time.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
                              "Logging specific to this SimDag example");

@@ -1,5 +1,0 @@
-
-! timeout 20
-! setenv GRAS_NO_WARN_EXPERIMENTAL=1
-& $SG_TEST_ENV ${bindir:=.}/empty_main_function$EXEEXT --log=root.fmt=%P:%t%e%m%n
-> function:main Exiting GRAS

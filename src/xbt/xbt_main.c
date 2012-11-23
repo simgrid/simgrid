@@ -8,7 +8,7 @@
 
 #include "xbt/misc.h"
 #include "simgrid_config.h"     /*HAVE_MMAP _XBT_WIN32 */
-#include "gras_config.h"        /* MMALLOC_WANT_OVERRIDE_LEGACY */
+#include "internal_config.h"        /* MMALLOC_WANT_OVERRIDE_LEGACY */
 #include "time.h"               /* to seed the random generator */
 
 #include "xbt/sysdep.h"
@@ -93,17 +93,12 @@ static void xbt_preinit(void)
   xbt_os_thread_mod_preinit();
   xbt_fifo_preinit();
   xbt_dict_preinit();
-  xbt_datadesc_preinit();
-  xbt_trp_preinit();
 
   atexit(xbt_postexit);
 }
 
 static void xbt_postexit(void)
 {
-  xbt_trp_postexit();
-  xbt_datadesc_postexit();
-
   xbt_backtrace_postexit();
 
   xbt_fifo_postexit();
@@ -133,7 +128,8 @@ void xbt_init(int *argc, char **argv)
   xbt_log_init(argc, argv);
 }
 
-/** @brief Finalize the xbt mechanisms. */
+/** @brief Finalize the xbt mechanisms.
+ *  @warning this function is deprecated. Just don't call it, there is nothing more to do to finalize xbt*/
 void xbt_exit()
 {
   XBT_WARN("This function is deprecated, you shouldn't use it");

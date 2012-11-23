@@ -12,7 +12,7 @@ else()
   add_executable(tesh tesh.c run_context.c signal.c)
 
   ### Add definitions for compile
-  target_link_libraries(tesh gras m pthread)
+  target_link_libraries(tesh simgrid m pthread)
 endif()
 
 set(tesh_files

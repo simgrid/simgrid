@@ -100,7 +100,7 @@ controlled by the <i>priority</i> concept (which should maybe be renamed to
 <i>severity</i>).
 
 Empirically, the user can specify that he wants to see every debugging message
-of GRAS while only being interested into the messages at level "error" or
+of MSG while only being interested into the messages at level "error" or
 higher about the XBT internals.
 
 \subsection log_app 1.3 Message appenders
@@ -526,25 +526,6 @@ static void xbt_log_connect_categories(void)
   /* Connect our log channels: that must be done manually under windows */
   /* Also permit that they are correctly listed by xbt_log_help_categories() */
 
-  /* amok */
-  XBT_LOG_CONNECT(amok);
-  XBT_LOG_CONNECT(amok_bw);
-  XBT_LOG_CONNECT(amok_bw_sat);
-  XBT_LOG_CONNECT(amok_pm);
-
-  /* gras */
-  XBT_LOG_CONNECT(gras);
-  XBT_LOG_CONNECT(gras_modules);
-  XBT_LOG_CONNECT(gras_msg);
-  XBT_LOG_CONNECT(gras_msg_read);
-  XBT_LOG_CONNECT(gras_msg_rpc);
-  XBT_LOG_CONNECT(gras_timer);
-  XBT_LOG_CONNECT(gras_trp);
-  XBT_LOG_CONNECT(gras_trp_file);
-  XBT_LOG_CONNECT(gras_virtu);
-  XBT_LOG_CONNECT(gras_virtu_emul);
-  XBT_LOG_CONNECT(gras_virtu_process);
-
   /* xbt */
   XBT_LOG_CONNECT(xbt);
   XBT_LOG_CONNECT(graphxml_parse);
@@ -563,13 +544,6 @@ static void xbt_log_connect_categories(void)
 #ifdef XBT_USE_DEPRECATED
   XBT_LOG_CONNECT(xbt_dict_multi);
 #endif
-  XBT_LOG_CONNECT(xbt_ddt);
-  XBT_LOG_CONNECT(xbt_ddt_cbps);
-  XBT_LOG_CONNECT(xbt_ddt_convert);
-  XBT_LOG_CONNECT(xbt_ddt_create);
-  XBT_LOG_CONNECT(xbt_ddt_exchange);
-  XBT_LOG_CONNECT(xbt_ddt_parse);
-  XBT_LOG_CONNECT(xbt_ddt_lexer);
   XBT_LOG_CONNECT(xbt_dyn);
   XBT_LOG_CONNECT(xbt_ex);
   XBT_LOG_CONNECT(xbt_fifo);
@@ -583,15 +557,9 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_set);
   XBT_LOG_CONNECT(xbt_sync);
   XBT_LOG_CONNECT(xbt_sync_os);
-  XBT_LOG_CONNECT(xbt_trp);
-  XBT_LOG_CONNECT(xbt_trp_meas);
-  XBT_LOG_CONNECT(xbt_trp_tcp);
 
 #ifdef simgrid_EXPORTS
   /* The following categories are only defined in libsimgrid */
-
-  /* gras (sg) */
-  XBT_LOG_CONNECT(gras_trp_sg);
 
   /* bindings */
 #ifdef HAVE_LUA

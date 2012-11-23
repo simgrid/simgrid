@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.6)
 
 set(bin_files
   ${bin_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/compile-stats
   ${CMAKE_CURRENT_SOURCE_DIR}/fix-paje-trace.sh
   ${CMAKE_CURRENT_SOURCE_DIR}/indent
   ${CMAKE_CURRENT_SOURCE_DIR}/sg_unit_extractor.pl

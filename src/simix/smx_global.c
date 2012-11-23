@@ -92,7 +92,6 @@ void SIMIX_global_init(int *argc, char **argv)
     __xbt_running_ctx_fetch = SIMIX_process_get_running_context;
     __xbt_ex_terminate = SIMIX_process_exception_terminate;
 
-    /* Initialize the SIMIX network module */
     SIMIX_network_init();
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
@@ -107,7 +106,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_timers = xbt_heap_new(8, &free);
   }
 
-  XBT_DEBUG("ADD SIMIX LEVELS");
   SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
 
   atexit(SIMIX_clean);

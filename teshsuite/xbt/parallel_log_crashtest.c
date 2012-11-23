@@ -6,8 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "gras.h"
-#include "xbt/synchro.h"
+#include "xbt.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
 
@@ -19,7 +18,7 @@ int *id;                        /* to pass a pointer to the threads without race
 int more_info = 0;              /* SET IT TO TRUE TO GET MORE INFO */
 
 /* Code ran by each thread */
-static void crasher_thread(void *arg)
+static void* crasher_thread(void *arg)
 {
   int id = *(int *) arg;
   int i;
@@ -31,19 +30,20 @@ static void crasher_thread(void *arg)
     else
       XBT_INFO("XXX (XX|XX|XX|XX|XX|XX|XX|XX|XX)");
   }
+  return NULL;
 }
 
 int crasher(int argc, char *argv[]);
 int crasher(int argc, char *argv[])
 {
   int i;
-  xbt_thread_t *crashers;
+  xbt_os_thread_t *crashers;
 
-  gras_init(&argc, argv);
+  xbt_init(&argc, argv);
 
   /* initializations of the philosopher mecanisms */
   id = xbt_new0(int, crasher_amount);
-  crashers = xbt_new(xbt_thread_t, crasher_amount);
+  crashers = xbt_new(xbt_os_thread_t, crasher_amount);
 
   for (i = 0; i < crasher_amount; i++)
     id[i] = i;
@@ -52,26 +52,21 @@ int crasher(int argc, char *argv[])
   for (i = 0; i < crasher_amount; i++) {
     char *name = bprintf("thread %d", i);
     crashers[i] =
-        xbt_thread_create(name, &crasher_thread, &id[i], 1 /* joinable */ );
+        xbt_os_thread_create(name, &crasher_thread, &id[i], NULL );
     free(name);
   }
 
   /* wait for them */
   for (i = 0; i < crasher_amount; i++)
-    xbt_thread_join(crashers[i]);
+    xbt_os_thread_join(crashers[i],NULL);
 
   xbt_free(crashers);
   xbt_free(id);
 
-  gras_exit();
   return 0;
 }
 
 int main(int argc, char *argv[])
 {
-  int errcode;
-
-  errcode = crasher(argc, argv);
-
-  return errcode;
+  return crasher(argc, argv);
 }

@@ -214,7 +214,7 @@ void SIMIX_process_create(smx_process_t *process,
   *process = NULL;
   smx_host_t host = SIMIX_host_get_by_name(hostname);
 
-  XBT_DEBUG("Start process %s on host %s", name, hostname);
+  XBT_DEBUG("Start process %s on host '%s'", name, hostname);
 
   if (!SIMIX_host_get_state(host)) {
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name,

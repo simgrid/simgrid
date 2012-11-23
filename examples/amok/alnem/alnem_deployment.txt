@@ -1,5 +1,0 @@
-A sensor
-B sensor
-C sensor
-D sensor
-Master maestro A B C D

@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   char *key, *data;
   char noexist[] = "NoProp";
   const char *value;
-  char exist[] = "SG_TEST_Hdd";
+  char exist[] = "Hdd";
 
   /* initialisation of SD */
   SD_init(&argc, argv);

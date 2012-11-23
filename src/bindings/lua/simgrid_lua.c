@@ -13,7 +13,6 @@
 #include "msg/msg.h"
 #include "simdag/simdag.h"
 #include "surf/surfxml_parse.h"
-#include "gras.h"
 #include <lauxlib.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
@@ -23,74 +22,6 @@ static lua_State* sglua_maestro_state;
 int luaopen_simgrid(lua_State *L);
 static void sglua_register_c_functions(lua_State *L);
 static int run_lua_code(int argc, char **argv);
-
-/* ********************************************************************************* */
-/*                           lua_stub_generator functions                            */
-/* ********************************************************************************* */
-
-xbt_dict_t process_function_set;
-xbt_dynar_t process_list;
-xbt_dict_t machine_set;
-static s_process_t process;
-
-void s_process_free(void *process)
-{
-  s_process_t *p = (s_process_t *) process;
-  int i;
-  for (i = 0; i < p->argc; i++)
-    free(p->argv[i]);
-  free(p->argv);
-  free(p->host);
-}
-
-static int gras_add_process_function(lua_State * L)
-{
-  const char *arg;
-  const char *process_host = luaL_checkstring(L, 1);
-  const char *process_function = luaL_checkstring(L, 2);
-
-  if (xbt_dict_is_empty(machine_set)
-      || xbt_dict_is_empty(process_function_set)
-      || xbt_dynar_is_empty(process_list)) {
-    process_function_set = xbt_dict_new_homogeneous(NULL);
-    process_list = xbt_dynar_new(sizeof(s_process_t), s_process_free);
-    machine_set = xbt_dict_new_homogeneous(NULL);
-  }
-
-  xbt_dict_set(machine_set, process_host, NULL, NULL);
-  xbt_dict_set(process_function_set, process_function, NULL, NULL);
-
-  process.argc = 1;
-  process.argv = xbt_new(char *, 1);
-  process.argv[0] = xbt_strdup(process_function);
-  process.host = strdup(process_host);
-
-  lua_pushnil(L);
-  while (lua_next(L, 3) != 0) {
-    arg = lua_tostring(L, -1);
-    process.argc++;
-    process.argv =
-        xbt_realloc(process.argv, (process.argc) * sizeof(char *));
-    process.argv[(process.argc) - 1] = xbt_strdup(arg);
-
-    XBT_DEBUG("index = %f , arg = %s \n", lua_tonumber(L, -2),
-           lua_tostring(L, -1));
-    lua_pop(L, 1);
-  }
-  lua_pop(L, 1);
-  //add to the process list
-  xbt_dynar_push(process_list, &process);
-  return 0;
-}
-
-static int gras_generate(lua_State * L)
-{
-  const char *project_name = luaL_checkstring(L, 1);
-  generate_sim(project_name);
-  generate_rl(project_name);
-  generate_makefile_local(project_name);
-  return 0;
-}
 
 /* ********************************************************************************* */
 /*                                  simgrid API                                      */
@@ -216,17 +147,6 @@ static int sd_register_platform(lua_State * L)
   return 0;
 }
 
-/*
- * Register platform for gras
- */
-static int gras_register_platform(lua_State * L)
-{
-  //surf_parse = console_parse_platform;
-  surf_parse_reset_callbacks();
-  gras_create_environment(NULL);
-  return 0;
-}
-
 /**
  * Register applicaiton for MSG
  */
@@ -235,17 +155,6 @@ static int msg_register_application(lua_State * L)
   MSG_function_register_default(run_lua_code);
   //surf_parse = console_parse_application;
   MSG_launch_application(NULL);
-  return 0;
-}
-
-/*
- * Register application for gras
- */
-static int gras_register_application(lua_State * L)
-{
-  gras_function_register_default(run_lua_code);
-  //surf_parse = console_parse_application;
-  gras_launch_application(NULL);
   return 0;
 }
 
@@ -263,11 +172,6 @@ static const luaL_Reg simgrid_functions[] = {
   {"msg_register_platform", msg_register_platform},
   {"sd_register_platform", sd_register_platform},
   {"msg_register_application", msg_register_application},
-  {"gras_register_platform", gras_register_platform},
-  {"gras_register_application", gras_register_application},
-  /* gras sub generator method */
-  {"gras_set_process_function", gras_add_process_function},
-  {"gras_generate", gras_generate},
   {NULL, NULL}
 };
 

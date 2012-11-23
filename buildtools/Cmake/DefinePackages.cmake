@@ -1,13 +1,6 @@
 ### define source packages
 
 set(EXTRA_DIST
-  src/amok/Bandwidth/bandwidth_private.h
-  src/amok/amok_modinter.h
-  src/gras/Transport/transport_interface.h
-  src/gras/Virtu/virtu_interface.h
-  src/gras/Virtu/virtu_private.h
-  src/gras/Virtu/virtu_rl.h
-  src/gras/Virtu/virtu_sg.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/platf_interface.h
@@ -67,8 +60,6 @@ set(EXTRA_DIST
   src/xbt/backtrace_dummy.c
   src/xbt/backtrace_linux.c
   src/xbt/backtrace_windows.c
-  src/xbt/datadesc/ddt_parse.yy.h
-  src/xbt/datadesc/ddt_parse.yy.l
   src/xbt/dict_private.h
   src/xbt/ex_interface.h
   src/xbt/fifo_private.h
@@ -92,19 +83,12 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
   src/xbt/setset_private.h
-  tools/gras/gras_stub_generator.h
   tools/tesh/run_context.h
   tools/tesh/tesh.h
   )
 
-set(XBT_RL_SRC
-  src/xbt/xbt_rl_synchro.c
-  src/xbt/xbt_rl_time.c
-  )
-
 set(XBT_SG_SRC
   src/xbt/xbt_sg_synchro.c
-  src/xbt/xbt_sg_time.c
   )
 
 set(SMPI_SRC
@@ -133,33 +117,13 @@ else()
   )
 endif()
 
-set(GRAS_RL_SRC
-  ${XBT_RL_SRC}
-  src/gras/Msg/rl_msg.c
-  src/gras/Transport/rl_transport.c
-  src/gras/Virtu/rl_dns.c
-  src/gras/Virtu/rl_emul.c
-  src/gras/Virtu/rl_process.c
-  src/gras/rl_stubs.c
-  src/xbt/xbt_os_thread.c
-  )
 
 set(XBT_SRC
-  src/gras_modinter.h
   src/xbt/RngStream.c
   src/xbt/automaton/automaton.c
   src/xbt/automaton/automatonparse_promela.c
   src/xbt/config.c
   src/xbt/cunit.c
-  src/xbt/datadesc/cbps.c
-  src/xbt/datadesc/datadesc.c
-  src/xbt/datadesc/datadesc_interface.h
-  src/xbt/datadesc/datadesc_private.h
-  src/xbt/datadesc/ddt_convert.c
-  src/xbt/datadesc/ddt_create.c
-  src/xbt/datadesc/ddt_exchange.c
-  src/xbt/datadesc/ddt_parse.c
-  src/xbt/datadesc/ddt_parse.yy.c
   src/xbt/dict.c
   src/xbt/dict_cursor.c
   src/xbt/dict_elm.c
@@ -188,12 +152,8 @@ set(XBT_SRC
   src/xbt/xbt_queue.c
   src/xbt/xbt_replay.c
   src/xbt/xbt_sha.c
-  src/xbt/xbt_socket.c
-  src/xbt/xbt_socket_private.h
   src/xbt/xbt_str.c
   src/xbt/xbt_strbuff.c
-  src/xbt/xbt_synchro.c
-  src/xbt/xbt_trp_plugin_tcp.c
   src/xbt/xbt_virtu.c
   src/xbt_modinter.h
   )
@@ -331,40 +291,6 @@ else()
     )
 endif()
 
-set(GRAS_COMMON_SRC
-  src/gras/Msg/gras_msg_exchange.c
-  src/gras/Msg/gras_msg_listener.c
-  src/gras/Msg/gras_msg_mod.c
-  src/gras/Msg/gras_msg_types.c
-  src/gras/Msg/msg_interface.h
-  src/gras/Msg/msg_private.h
-  src/gras/Msg/rpc.c
-  src/gras/Msg/timer.c
-  src/gras/Transport/transport.c
-  src/gras/Transport/transport_plugin_file.c
-  src/gras/Transport/transport_private.h
-  src/gras/Virtu/gras_module.c
-  src/gras/Virtu/process.c
-  src/gras/gras.c
-  )
-
-set(GRAS_SG_SRC
-  ${XBT_SG_SRC}
-  src/gras/Msg/sg_msg.c
-  src/gras/Transport/sg_transport.c
-  src/gras/Transport/transport_plugin_sg.c
-  src/gras/Virtu/sg_dns.c
-  src/gras/Virtu/sg_emul.c
-  src/gras/Virtu/sg_process.c
-  )
-
-set(AMOK_SRC
-  src/amok/Bandwidth/bandwidth.c
-  src/amok/Bandwidth/saturate.c
-  src/amok/PeerManagement/peermanagement.c
-  src/amok/amok_base.c
-  )
-
 set(BINDINGS_SRC
   src/bindings/bindings_global.c
   src/bindings/lua/lua_private.h
@@ -379,7 +305,6 @@ set(LUA_SRC
   src/bindings/lua/lua_platf.c
   src/bindings/lua/lua_process.c
   src/bindings/lua/lua_state_cloner.c
-  src/bindings/lua/lua_stub_generator.c
   src/bindings/lua/lua_task.c
   src/bindings/lua/lua_utils.c
   src/bindings/lua/simgrid_lua.c
@@ -427,16 +352,6 @@ set(MC_SRC
   )
 
 set(headers_to_install
-  include/amok/bandwidth.h
-  include/amok/peermanagement.h
-  include/gras.h
-  include/gras/emul.h
-  include/gras/messages.h
-  include/gras/module.h
-  include/gras/process.h
-  include/gras/timer.h
-  include/gras/transport.h
-  include/gras/virtu.h
   include/instr/instr.h
   include/msg/datatypes.h
   include/msg/msg.h
@@ -459,7 +374,6 @@ set(headers_to_install
   include/xbt/automaton.h
   include/xbt/config.h
   include/xbt/cunit.h
-  include/xbt/datadesc.h
   include/xbt/dict.h
   include/xbt/dynar.h
   include/xbt/ex.h
@@ -484,14 +398,11 @@ set(headers_to_install
   include/xbt/replay.h
   include/xbt/set.h
   include/xbt/setset.h
-  include/xbt/socket.h
   include/xbt/str.h
   include/xbt/strbuff.h
   include/xbt/swag.h
-  include/xbt/synchro.h
   include/xbt/synchro_core.h
   include/xbt/sysdep.h
-  include/xbt/time.h
   include/xbt/virtu.h
   include/xbt/xbt_os_thread.h
   )
@@ -543,10 +454,7 @@ endif()
 
 ### Simgrid Lib sources
 set(simgrid_sources
-  ${AMOK_SRC}
   ${BINDINGS_SRC}
-  ${GRAS_COMMON_SRC}
-  ${GRAS_SG_SRC}
   ${GTNETS_USED}
   ${JEDULE_SRC}
   ${MSG_SRC}
@@ -554,6 +462,7 @@ set(simgrid_sources
   ${SIMIX_SRC}
   ${SURF_SRC}
   ${TRACING_SRC}
+  ${XBT_SG_SRC}
   ${XBT_SRC}
   )
 
@@ -581,14 +490,6 @@ if(WIN32)
     )
 endif()
 
-### Gras Lib sources
-set(gras_sources
-  ${AMOK_SRC}
-  ${GRAS_COMMON_SRC}
-  ${GRAS_RL_SRC}
-  ${XBT_SRC}
-  )
-
 if(${HAVE_LUA})
   set(simgrid_sources
     ${simgrid_sources}
@@ -602,10 +503,7 @@ else()
 endif()
 
 set(DOC_SOURCES
-  doc/amok_bw_sat.png
-  doc/amok_bw_test.png
   doc/AS_hierarchy.png
-  doc/gras_comm.png
   doc/sg_thread_model.fig
   doc/simix.fig
   doc/surf_nutshell.fig
@@ -636,42 +534,6 @@ set(DOC_TOOLS
   tools/doxygen/xbt_log_extract_hierarchy.pl
   )
 
-set(DOC_GTUT_SRC
-  doc/gtut-files/01-bones.c
-  doc/gtut-files/01-bones.output
-  doc/gtut-files/02-simple.c
-  doc/gtut-files/02-simple.output
-  doc/gtut-files/03-args.c
-  doc/gtut-files/03-args.output
-  doc/gtut-files/03-args.xml
-  doc/gtut-files/04-callback.c
-  doc/gtut-files/04-callback.output
-  doc/gtut-files/05-globals.c
-  doc/gtut-files/05-globals.output
-  doc/gtut-files/06-logs.c
-  doc/gtut-files/06-logs.output
-  doc/gtut-files/06-logs.output.error
-  doc/gtut-files/06-logs.output.fmt
-  doc/gtut-files/06-logs.output.fmt-bt
-  doc/gtut-files/06-logs.output.verbose
-  doc/gtut-files/07-timers.c
-  doc/gtut-files/07-timers.output
-  doc/gtut-files/08-exceptions.c
-  doc/gtut-files/08-exceptions.output
-  doc/gtut-files/09-datatype-dump.c
-  doc/gtut-files/09-simpledata.c
-  doc/gtut-files/09-simpledata.output
-  doc/gtut-files/10-rpc.c
-  doc/gtut-files/10-rpc.output
-  doc/gtut-files/11-explicitwait.c
-  doc/gtut-files/11-explicitwait.output
-  doc/gtut-files/11-explicitwait.xml
-  doc/gtut-files/gtut-platform-3nodes.xml
-  doc/gtut-files/gtut-platform.xml
-  doc/gtut-files/Makefile
-  doc/gtut-files/README
-  doc/gtut-files/test.xml
-)
 
 set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/footer.html
@@ -690,63 +552,11 @@ set(USER_GUIDE_SOURCES
   doc/user_guide/doxygen/use.doc
   doc/user_guide/doxygen/stylesheet.css
   )
-  
-set(LISTE_GTUT
-    doc/gtut-files/gtut-tour-00-install.doc
-    doc/gtut-files/gtut-tour-01-bones.doc
-    doc/gtut-files/gtut-tour-02-simple.doc
-    doc/gtut-files/gtut-tour-03-args.doc
-    doc/gtut-files/gtut-tour-04-callback.doc
-    doc/gtut-files/gtut-tour-05-globals.doc
-    doc/gtut-files/gtut-tour-06-logs.doc
-    doc/gtut-files/gtut-tour-07-timers.doc
-    doc/gtut-files/gtut-tour-08-exceptions.doc
-    doc/gtut-files/gtut-tour-09-simpledata.doc
-    doc/gtut-files/gtut-tour-10-rpc.doc
-    doc/gtut-files/gtut-tour-11-explicitwait.doc
-    doc/gtut-files/gtut-tour-12-staticstruct.doc
-    doc/gtut-files/gtut-tour-13-pointers.doc
-    doc/gtut-files/gtut-tour-14-dynar.doc
-    doc/gtut-files/gtut-tour-15-manualdatadef.doc
-    doc/gtut-files/gtut-tour-16-exchangecb.doc
-    doc/gtut-files/gtut-tour.doc
-    doc/gtut-files/gtut-tour-recap-messages.doc
-  )
-
-set(EXTRA_LISTE_GTUT
-    doc/gtut-files/01-bones.output
-    doc/gtut-files/02-simple.output
-    doc/gtut-files/03-args.output
-    doc/gtut-files/03-args.xml
-    doc/gtut-files/04-callback.output
-    doc/gtut-files/05-globals.output
-    doc/gtut-files/06-logs.output
-    doc/gtut-files/06-logs.output.error
-    doc/gtut-files/06-logs.output.fmt
-    doc/gtut-files/06-logs.output.fmt-bt
-    doc/gtut-files/06-logs.output.verbose
-    doc/gtut-files/07-timers.output
-    doc/gtut-files/08-exceptions.output
-    doc/gtut-files/09-simpledata.output
-    doc/gtut-files/10-rpc.output
-    doc/gtut-files/11-explicitwait.output
-    doc/gtut-files/11-explicitwait.xml
-    doc/gtut-files/gtut-howto-design.doc
-    doc/gtut-files/gtut-howto.doc
-    doc/gtut-files/gtut-introduction.doc
-    doc/gtut-files/gtut-main.doc
-    doc/gtut-files/gtut-platform-3nodes.xml
-    doc/gtut-files/gtut-platform.xml
-    doc/gtut-files/README
-    doc/gtut-files/test.xml
-    )
-  
+    
 set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/footer.html
   doc/ref_guide/doxygen/header.html
   doc/ref_guide/doxygen/main.doc
-  doc/ref_guide/doxygen/module-amok.doc
-  doc/ref_guide/doxygen/module-gras.doc
   doc/ref_guide/doxygen/module-msg.doc
   doc/ref_guide/doxygen/module-sd.doc
   doc/ref_guide/doxygen/module-simix.doc
@@ -845,20 +655,6 @@ set(txt_files
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
-  examples/amok/bandwidth/CMakeLists.txt
-  examples/amok/saturate/CMakeLists.txt
-  examples/gras/all2all/CMakeLists.txt
-  examples/gras/chrono/CMakeLists.txt
-  examples/gras/console/CMakeLists.txt
-  examples/gras/mmrpc/CMakeLists.txt
-  examples/gras/mutual_exclusion/simple_token/CMakeLists.txt
-  examples/gras/ping/CMakeLists.txt
-  examples/gras/pmm/CMakeLists.txt
-  examples/gras/properties/CMakeLists.txt
-  examples/gras/rpc/CMakeLists.txt
-  examples/gras/spawn/CMakeLists.txt
-  examples/gras/synchro/CMakeLists.txt
-  examples/gras/timer/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
@@ -897,11 +693,6 @@ set(EXAMPLES_CMAKEFILES_TXT
 
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/CMakeLists.txt
-  teshsuite/gras/CMakeLists.txt
-  teshsuite/gras/datadesc/CMakeLists.txt
-  teshsuite/gras/empty_main/CMakeLists.txt
-  teshsuite/gras/msg_handle/CMakeLists.txt
-  teshsuite/gras/small_sleep/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
@@ -922,7 +713,6 @@ set(TESHSUITE_CMAKEFILES_TXT
 set(TOOLS_CMAKEFILES_TXT
   tools/CMakeLists.txt
   tools/graphicator/CMakeLists.txt
-  tools/gras/CMakeLists.txt
   tools/tesh/CMakeLists.txt
   )
 
@@ -976,11 +766,8 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/update_tesh.pl
   buildtools/Cmake/Supernovae.cmake
   buildtools/Cmake/UnitTesting.cmake
-  buildtools/Cmake/src/gras_config.h.in
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
-  buildtools/Cmake/test_prog/prog_GRAS_ARCH.c
-  buildtools/Cmake/test_prog/prog_GRAS_CHECK_STRUCT_COMPACTION.c
   buildtools/Cmake/test_prog/prog_getline.c
   buildtools/Cmake/test_prog/prog_max_size.c
   buildtools/Cmake/test_prog/prog_mutex_timedlock.c
@@ -1036,7 +823,6 @@ set(PLATFORMS_EXAMPLES
   )
 
 set(generated_src_files
-  ${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.tab.cacc
   src/xbt/automaton/parserPromela.tab.hacc

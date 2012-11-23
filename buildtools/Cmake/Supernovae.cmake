@@ -6,15 +6,9 @@
 set(simgrid_fragile_sources
   src/simdag/sd_daxloader.c
   src/surf/surfxml_parse.c
-  src/xbt/datadesc/ddt_parse.yy.c
   src/xbt/graphxml_parse.c
   src/xbt/mmalloc/mm.c
   ${GTNETS_USED}
-  )
-set(gras_fragile_sources
-  src/xbt/datadesc/ddt_parse.yy.c
-  src/xbt/graphxml_parse.c
-  src/xbt/mmalloc/mm.c
   )
 
 #####################################################
@@ -27,8 +21,6 @@ if (enable_supernovae) # I need supernovae
   # supernovae files are generated. I promise
   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c
     PROPERTIES GENERATED true)
-  set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c
-    PROPERTIES GENERATED true)
   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c
     PROPERTIES GENERATED true)
 
@@ -40,13 +32,6 @@ if (enable_supernovae) # I need supernovae
     COMMENT "Generating supernovae_sg.c"
     )
 
-  ADD_CUSTOM_COMMAND(
-    OUTPUT   ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c
-    DEPENDS  ${CMAKE_HOME_DIRECTORY}/src/mk_supernovae.pl ${gras_sources}
-    COMMAND  perl ${CMAKE_HOME_DIRECTORY}/src/mk_supernovae.pl --out=${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c '--fragile=${gras_fragile_sources}'    '${gras_sources}'
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
-    COMMENT "Generating supernovae_gras.c"
-    )
 
   ADD_CUSTOM_COMMAND(
     OUTPUT   ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c
@@ -60,10 +45,6 @@ if (enable_supernovae) # I need supernovae
   set(simgrid_sources
     ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_sg.c
     ${simgrid_fragile_sources})
-
-  set(gras_sources
-    ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_gras.c
-    ${gras_fragile_sources})
 
   set(SMPI_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)

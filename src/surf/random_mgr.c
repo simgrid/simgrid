@@ -6,7 +6,7 @@
 
 #include "surf/random_mgr.h"
 #include "xbt/sysdep.h"
-#include "gras_config.h" /*_XBT_WIN32*/
+#include "internal_config.h" /*_XBT_WIN32*/
 #include <math.h>
 #include <stdlib.h>
 

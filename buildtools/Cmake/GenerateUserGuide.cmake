@@ -1,7 +1,6 @@
 #### Generate the html documentation for the user guide.
 
 file(GLOB_RECURSE source_doxygen
-  "${CMAKE_HOME_DIRECTORY}/tools/gras/*.[chl]"
   "${CMAKE_HOME_DIRECTORY}/src/*.[chl]"
   "${CMAKE_HOME_DIRECTORY}/include/*.[chl]"
   )

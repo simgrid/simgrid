@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include "xbt/time.h"
+#include "xbt/virtu.h"
 #include "mc/mc.h"
 #include "xbt/replay.h"
 #include <errno.h>

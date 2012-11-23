@@ -7,7 +7,7 @@
 /* Redefine the classical malloc/free/realloc functions so that they fit well in the mmalloc framework */
 
 #include "mmprivate.h"
-#include "gras_config.h"
+#include "internal_config.h"
 #include <math.h>
 
 

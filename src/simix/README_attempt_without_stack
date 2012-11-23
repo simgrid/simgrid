@@ -59,7 +59,7 @@ Dark side: restrictions on user code
 
 The incredible performance of this approach comes at a price: using
 SimGrid this way is a *real* pain in the ass. You cannot use MSG nor
-GRAS nor SMPI nor nothing (because none of these interfaces were coded
+SMPI nor nothing (because none of these interfaces were coded
 with the *extrem* requirement of the state_machine in mind), and you
 can only rely on SIMIX. From SIMIX, you can only use simcalls (ie, the
 simcall_* functions). Moreover, you must know that each blocking

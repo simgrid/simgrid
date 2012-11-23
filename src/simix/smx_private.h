@@ -258,7 +258,8 @@ static XBT_INLINE smx_context_t SIMIX_context_new(xbt_main_func_t code,
                                                   void_pfn_smxprocess_t cleanup_func,
                                                   smx_process_t simix_process)
 {
-
+  if (!simix_global)
+    xbt_die("simix is not initialized, please call MSG_init first");
   return simix_global->context_factory->create_context(code,
                                                        argc, argv,
                                                        cleanup_func,
@@ -312,7 +313,6 @@ static XBT_INLINE smx_context_t SIMIX_context_self(void)
   if (simix_global && simix_global->context_factory) {
     return simix_global->context_factory->self();
   }
-
   return NULL;
 }
 

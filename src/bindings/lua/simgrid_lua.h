@@ -8,7 +8,6 @@
 #include "xbt/dynar.h"
 #include <lua.h>
 
-extern xbt_dict_t process_function_set;
 extern xbt_dynar_t process_list;
 extern xbt_dict_t machine_set;
 

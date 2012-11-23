@@ -1,7 +1,0 @@
-#! ./tesh
-
-# Description of this tesh file
-! D This tesh file contains all the tesh files relative with Gras
-
-# includes the Gras marshaling facilities tesh suite
-! include datadesc.tesh

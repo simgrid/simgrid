@@ -13,24 +13,7 @@
 #include "xbt/dynar.h"
 #include <sys/types.h>
 
-/* IMPLEMENTATION NOTE ON SYNCHRONIZATION: every functions which name is prefixed by _
- * assumes that the dynar is already locked if we have to.
- * Other functions (public ones) check for this.
- */
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn, xbt, "Dynamic arrays");
-
-static XBT_INLINE void _dynar_lock(xbt_dynar_t dynar)
-{
-  if (dynar->mutex)
-    xbt_mutex_acquire(dynar->mutex);
-}
-
-static XBT_INLINE void _dynar_unlock(xbt_dynar_t dynar)
-{
-  if (dynar->mutex)
-    xbt_mutex_release(dynar->mutex);
-}
 
 static XBT_INLINE void _sanity_check_dynar(xbt_dynar_t dynar)
 {
@@ -45,7 +28,6 @@ static XBT_INLINE void _sanity_check_idx(int idx)
 static XBT_INLINE void _check_inbound_idx(xbt_dynar_t dynar, int idx)
 {
   if (idx < 0 || idx >= dynar->used) {
-    _dynar_unlock(dynar);
     THROWF(bound_error, idx,
            "dynar is not that long. You asked %d, but it's only %lu long",
            (int) (idx), (unsigned long) dynar->used);
@@ -56,7 +38,6 @@ static XBT_INLINE void _check_sloppy_inbound_idx(xbt_dynar_t dynar,
                                                  int idx)
 {
   if (idx > dynar->used) {
-    _dynar_unlock(dynar);
     THROWF(bound_error, idx,
            "dynar is not that long. You asked %d, but it's only %lu long (could have been equal to it)",
            (int) (idx), (unsigned long) dynar->used);
@@ -66,12 +47,9 @@ static XBT_INLINE void _check_sloppy_inbound_idx(xbt_dynar_t dynar,
 static XBT_INLINE void _check_populated_dynar(xbt_dynar_t dynar)
 {
   if (dynar->used == 0) {
-    _dynar_unlock(dynar);
     THROWF(bound_error, 0, "dynar %p is empty", dynar);
   }
 }
-
-static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op);
 
 static XBT_INLINE
 void _xbt_dynar_resize(xbt_dynar_t dynar, unsigned long new_size)
@@ -125,35 +103,6 @@ _xbt_dynar_put_elm(const xbt_dynar_t dynar,
   memcpy(elm, src, elmsize);
 }
 
-static XBT_INLINE
-    void
-_xbt_dynar_remove_at(xbt_dynar_t const dynar,
-                     const unsigned long idx, void *const object)
-{
-
-  unsigned long nb_shift;
-  unsigned long offset;
-
-  _sanity_check_dynar(dynar);
-  _check_inbound_idx(dynar, idx);
-
-  if (object) {
-    _xbt_dynar_get_elm(object, dynar, idx);
-  } else if (dynar->free_f) {
-    dynar->free_f(_xbt_dynar_elm(dynar, idx));
-  }
-
-  nb_shift = dynar->used - 1 - idx;
-
-  if (nb_shift) {
-    offset = nb_shift * dynar->elmsize;
-    memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + 1),
-            offset);
-  }
-
-  dynar->used--;
-}
-
 void xbt_dynar_dump(xbt_dynar_t dynar)
 {
   XBT_INFO("Dynar dump: size=%lu; used=%lu; elmsize=%lu; data=%p; free_f=%p",
@@ -181,23 +130,8 @@ xbt_dynar_new(const unsigned long elmsize, void_f_pvoid_t const free_f)
   dynar->elmsize = elmsize;
   dynar->data = NULL;
   dynar->free_f = free_f;
-  dynar->mutex = NULL;
 
   return dynar;
-}
-
-/** @brief Creates a synchronized dynar.
- *
- * Just like #xbt_dynar_new, but each access to the structure will be protected by a mutex
- *
- */
-xbt_dynar_t
-xbt_dynar_new_sync(const unsigned long elmsize,
-                   void_f_pvoid_t const free_f)
-{
-  xbt_dynar_t res = xbt_dynar_new(elmsize, free_f);
-  res->mutex = xbt_mutex_init();
-  return res;
 }
 
 /** @brief Destructor of the structure not touching to the content
@@ -212,8 +146,6 @@ void xbt_dynar_free_container(xbt_dynar_t * dynar)
   if (dynar && *dynar) {
     xbt_dynar_t d = *dynar;
     free(d->data);
-    if (d->mutex)
-      xbt_mutex_destroy(d->mutex);
     free(d);
     *dynar = NULL;
   }
@@ -225,17 +157,13 @@ void xbt_dynar_free_container(xbt_dynar_t * dynar)
  */
 XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
 {
-  _dynar_lock(dynar);
-
   _sanity_check_dynar(dynar);
 
   XBT_DEBUG("Reset the dynar %p", (void *) dynar);
   if (dynar->free_f) {
-    _dynar_map(dynar, dynar->free_f);
+    xbt_dynar_map(dynar, dynar->free_f);
   }
   dynar->used = 0;
-
-  _dynar_unlock(dynar);
 }
 
 /** @brief Merge dynar d2 into d1
@@ -277,9 +205,7 @@ void xbt_dynar_merge(xbt_dynar_t *d1, xbt_dynar_t *d2)
  */
 void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
 {
-  _dynar_lock(dynar);
   _xbt_dynar_resize(dynar, dynar->used + empty_slots_wanted);
-  _dynar_unlock(dynar);
 }
 
 /** @brief Destructor
@@ -333,12 +259,10 @@ XBT_INLINE void
 xbt_dynar_get_cpy(const xbt_dynar_t dynar,
                   const unsigned long idx, void *const dst)
 {
-  _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
   _check_inbound_idx(dynar, idx);
 
   _xbt_dynar_get_elm(dst, dynar, idx);
-  _dynar_unlock(dynar);
 }
 
 /** @brief Retrieve a pointer to the Nth element of a dynar.
@@ -355,18 +279,15 @@ XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
 {
 
   void *res;
-  _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
   _check_inbound_idx(dynar, idx);
 
   res = _xbt_dynar_elm(dynar, idx);
-  _dynar_unlock(dynar);
   return res;
 }
 
-/* not synchronized */
-static XBT_INLINE void *_xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
-                                              const unsigned long idx)
+XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
+                                      const unsigned long idx)
 {
   _sanity_check_dynar(dynar);
 
@@ -381,23 +302,6 @@ static XBT_INLINE void *_xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
   return _xbt_dynar_elm(dynar, idx);
 }
 
-XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
-                                      const unsigned long idx)
-{
-  void *res;
-  _dynar_lock(dynar);
-  res = _xbt_dynar_set_at_ptr(dynar, idx);
-  _dynar_unlock(dynar);
-  return res;
-}
-
-static void XBT_INLINE          /* not synchronized */
-_xbt_dynar_set(xbt_dynar_t dynar,
-               const unsigned long idx, const void *const src)
-{
-  memcpy(_xbt_dynar_set_at_ptr(dynar, idx), src, dynar->elmsize);
-}
-
 /** @brief Set the Nth element of a dynar (expanded if needed). Previous value at this position is NOT freed
  *
  * \param dynar information dealer
@@ -410,9 +314,7 @@ XBT_INLINE void xbt_dynar_set(xbt_dynar_t dynar, const int idx,
                               const void *const src)
 {
 
-  _dynar_lock(dynar);
-  _xbt_dynar_set(dynar, idx, src);
-  _dynar_unlock(dynar);
+  memcpy(xbt_dynar_set_at_ptr(dynar, idx), src, dynar->elmsize);
 }
 
 /** @brief Set the Nth element of a dynar (expanded if needed). Previous value is freed
@@ -429,7 +331,6 @@ void
 xbt_dynar_replace(xbt_dynar_t dynar,
                   const unsigned long idx, const void *const object)
 {
-  _dynar_lock(dynar);
   _sanity_check_dynar(dynar);
 
   if (idx < dynar->used && dynar->free_f) {
@@ -438,12 +339,15 @@ xbt_dynar_replace(xbt_dynar_t dynar,
     dynar->free_f(old_object);
   }
 
-  _xbt_dynar_set(dynar, idx, object);
-  _dynar_unlock(dynar);
+  xbt_dynar_set(dynar, idx, object);
 }
 
-static XBT_INLINE void *_xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
-                                                 const unsigned long idx)
+/** @brief Make room for a new element, and return a pointer to it
+ *
+ * You can then use regular affectation to set its value instead of relying
+ * on the slow memcpy. This is what xbt_dynar_insert_at_as() does.
+ */
+void *xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar, const int idx)
 {
   void *res;
   unsigned long old_used;
@@ -470,21 +374,6 @@ static XBT_INLINE void *_xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar,
   return res;
 }
 
-/** @brief Make room for a new element, and return a pointer to it
- *
- * You can then use regular affectation to set its value instead of relying
- * on the slow memcpy. This is what xbt_dynar_insert_at_as() does.
- */
-void *xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar, const int idx)
-{
-  void *res;
-
-  _dynar_lock(dynar);
-  res = _xbt_dynar_insert_at_ptr(dynar, idx);
-  _dynar_unlock(dynar);
-  return res;
-}
-
 /** @brief Set the Nth dynar's element, expanding the dynar and sliding the previous values to the right
  *
  * Set the Nth element of a dynar, expanding the dynar if needed, and
@@ -496,10 +385,8 @@ xbt_dynar_insert_at(xbt_dynar_t const dynar,
                     const int idx, const void *const src)
 {
 
-  _dynar_lock(dynar);
   /* checks done in xbt_dynar_insert_at_ptr */
-  memcpy(_xbt_dynar_insert_at_ptr(dynar, idx), src, dynar->elmsize);
-  _dynar_unlock(dynar);
+  memcpy(xbt_dynar_insert_at_ptr(dynar, idx), src, dynar->elmsize);
 }
 
 /** @brief Remove the Nth dynar's element, sliding the previous values to the left
@@ -515,10 +402,27 @@ void
 xbt_dynar_remove_at(xbt_dynar_t const dynar,
                     const int idx, void *const object)
 {
+  unsigned long nb_shift;
+  unsigned long offset;
 
-  _dynar_lock(dynar);
-  _xbt_dynar_remove_at(dynar, idx, object);
-  _dynar_unlock(dynar);
+  _sanity_check_dynar(dynar);
+  _check_inbound_idx(dynar, idx);
+
+  if (object) {
+    _xbt_dynar_get_elm(object, dynar, idx);
+  } else if (dynar->free_f) {
+    dynar->free_f(_xbt_dynar_elm(dynar, idx));
+  }
+
+  nb_shift = dynar->used - 1 - idx;
+
+  if (nb_shift) {
+    offset = nb_shift * dynar->elmsize;
+    memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + 1),
+            offset);
+  }
+
+  dynar->used--;
 }
 
 /** @brief Returns the position of the element in the dynar
@@ -531,14 +435,11 @@ unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void *const elem)
 {
   unsigned long it;
 
-  _dynar_lock(dynar);
   for (it = 0; it < dynar->used; it++)
     if (!memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
-      _dynar_unlock(dynar);
       return it;
     }
 
-  _dynar_unlock(dynar);
   THROWF(not_found_error, 0, "Element %p not part of dynar %p", elem,
          dynar);
 }
@@ -552,14 +453,11 @@ signed int xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void *const ele
 {
   unsigned long it;
 
-  _dynar_lock(dynar);
   for (it = 0; it < dynar->used; it++)
     if (!memcmp(_xbt_dynar_elm(dynar, it), elem, dynar->elmsize)) {
-      _dynar_unlock(dynar);
       return it;
     }
 
-  _dynar_unlock(dynar);
   return -1;
 }
 
@@ -589,26 +487,19 @@ int xbt_dynar_member(xbt_dynar_t const dynar, void *const elem)
  */
 XBT_INLINE void *xbt_dynar_push_ptr(xbt_dynar_t const dynar)
 {
-  void *res;
-
   /* we have to inline xbt_dynar_insert_at_ptr here to make sure that
      dynar->used don't change between reading it and getting the lock
      within xbt_dynar_insert_at_ptr */
-  _dynar_lock(dynar);
-  res = _xbt_dynar_insert_at_ptr(dynar, dynar->used);
-  _dynar_unlock(dynar);
-  return res;
+  return xbt_dynar_insert_at_ptr(dynar, dynar->used);
 }
 
 /** @brief Add an element at the end of the dynar */
 XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar,
                                const void *const src)
 {
-  _dynar_lock(dynar);
   /* checks done in xbt_dynar_insert_at_ptr */
-  memcpy(_xbt_dynar_insert_at_ptr(dynar, dynar->used), src,
+  memcpy(xbt_dynar_insert_at_ptr(dynar, dynar->used), src,
          dynar->elmsize);
-  _dynar_unlock(dynar);
 }
 
 /** @brief Mark the last dynar's element as unused and return a pointer to it.
@@ -618,15 +509,10 @@ XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar,
  */
 XBT_INLINE void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
 {
-  void *res;
-
-  _dynar_lock(dynar);
   _check_populated_dynar(dynar);
   XBT_DEBUG("Pop %p", (void *) dynar);
   dynar->used--;
-  res = _xbt_dynar_elm(dynar, dynar->used);
-  _dynar_unlock(dynar);
-  return res;
+  return _xbt_dynar_elm(dynar, dynar->used);
 }
 
 /** @brief Get and remove the last element of the dynar */
@@ -635,9 +521,7 @@ XBT_INLINE void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
 
   /* sanity checks done by remove_at */
   XBT_DEBUG("Pop %p", (void *) dynar);
-  _dynar_lock(dynar);
-  _xbt_dynar_remove_at(dynar, dynar->used - 1, dst);
-  _dynar_unlock(dynar);
+  xbt_dynar_remove_at(dynar, dynar->used - 1, dst);
 }
 
 /** @brief Add an element at the begining of the dynar.
@@ -663,38 +547,25 @@ XBT_INLINE void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst)
   xbt_dynar_remove_at(dynar, 0, dst);
 }
 
-static void _dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
+/** @brief Apply a function to each member of a dynar
+ *
+ * The mapped function may change the value of the element itself,
+ * but should not mess with the structure of the dynar.
+ */
+XBT_INLINE void xbt_dynar_map(const xbt_dynar_t dynar,
+                              void_f_pvoid_t const op)
 {
   char *const data = (char *) dynar->data;
   const unsigned long elmsize = dynar->elmsize;
   const unsigned long used = dynar->used;
   unsigned long i;
 
+  _sanity_check_dynar(dynar);
+
   for (i = 0; i < used; i++) {
     char* elm = (char*) data + i * elmsize;
     op(elm);
   }
-}
-
-/** @brief Apply a function to each member of a dynar
- *
- * The mapped function may change the value of the element itself,
- * but should not mess with the structure of the dynar.
- *
- * If the dynar is synchronized, it is locked during the whole map
- * operation, so make sure your function don't call any function
- * from xbt_dynar_* on it, or you'll get a deadlock.
- */
-XBT_INLINE void xbt_dynar_map(const xbt_dynar_t dynar,
-                              void_f_pvoid_t const op)
-{
-
-  _sanity_check_dynar(dynar);
-  _dynar_lock(dynar);
-
-  _dynar_map(dynar, op);
-
-  _dynar_unlock(dynar);
 }
 
 
@@ -706,18 +577,7 @@ XBT_INLINE void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
                                     unsigned int *const cursor)
 {
 
-  _xbt_dynar_remove_at(dynar, (*cursor)--, NULL);
-}
-
-/** @brief Unlocks a synchronized dynar when you want to break the traversal
- *
- * This function must be used if you <tt>break</tt> the
- * xbt_dynar_foreach loop, but shouldn't be called at the end of a
- * regular traversal reaching the end of the elements
- */
-XBT_INLINE void xbt_dynar_cursor_unlock(xbt_dynar_t dynar)
-{
-  _dynar_unlock(dynar);
+  xbt_dynar_remove_at(dynar, (*cursor)--, NULL);
 }
 
 /** @brief Sorts a dynar according to the function <tt>compar_fn</tt>
@@ -731,15 +591,11 @@ XBT_INLINE void xbt_dynar_cursor_unlock(xbt_dynar_t dynar)
 XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
                                int_f_cpvoid_cpvoid_t compar_fn)
 {
-
-  _dynar_lock(dynar);
-
 #ifdef HAVE_MERGESORT
   mergesort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
 #else
   qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
 #endif
-  _dynar_unlock(dynar);
 }
 
 /** @brief Sorts a dynar according to their color assuming elements can have only three colors.
@@ -757,7 +613,6 @@ XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
 XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
                                                int_f_pvoid_t color)
 {
-  _dynar_lock(dynar);
   unsigned long int i;
   unsigned long int p = -1;
   unsigned long int q = dynar->used;
@@ -785,7 +640,6 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
       }
     }
   }
-  _dynar_unlock(dynar);
   xbt_free(tmp);
 }
 
@@ -799,8 +653,6 @@ XBT_INLINE void * xbt_dynar_to_array (xbt_dynar_t dynar)
   xbt_dynar_shrink(dynar, 1);
   memset(xbt_dynar_push_ptr(dynar), 0, dynar->elmsize);
   res = dynar->data;
-  if (dynar->mutex)
-    xbt_mutex_destroy(dynar->mutex);
   free(dynar);
   return res;
 }
@@ -1350,57 +1202,4 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   }
   xbt_dynar_free(&d);           /* end_of_doxygen */
 }
-
-
-/*******************************************************************************/
-/*******************************************************************************/
-/*******************************************************************************/
-#include "xbt/synchro.h"
-static void pusher_f(void *a)
-{
-  xbt_dynar_t d = (xbt_dynar_t) a;
-  int i;
-  for (i = 0; i < 500; i++) {
-    xbt_dynar_push(d, &i);
-  }
-}
-
-static void poper_f(void *a)
-{
-  xbt_dynar_t d = (xbt_dynar_t) a;
-  volatile int i;
-  int data;
-  xbt_ex_t e;
-
-  for (i = 0; i < 500; i++) {
-    TRY {
-      xbt_dynar_pop(d, &data);
-    }
-    CATCH(e) {
-      if (e.category == bound_error) {
-        xbt_ex_free(e);
-        i--;
-      } else {
-        RETHROW;
-      }
-    }
-  }
-}
-
-
-XBT_TEST_UNIT("synchronized int", test_dynar_sync_int, "Synchronized dynars of integers")
-{
-  /* Vars_decl [doxygen cruft] */
-  xbt_dynar_t d;
-  xbt_thread_t pusher, poper;
-
-  xbt_test_add("==== Have a pusher and a popper on the dynar");
-  d = xbt_dynar_new_sync(sizeof(int), NULL);
-  pusher = xbt_thread_create("pusher", pusher_f, d, 0 /*not joinable */ );
-  poper = xbt_thread_create("poper", poper_f, d, 0 /*not joinable */ );
-  xbt_thread_join(pusher);
-  xbt_thread_join(poper);
-  xbt_dynar_free(&d);
-}
-
 #endif                          /* SIMGRID_TEST */

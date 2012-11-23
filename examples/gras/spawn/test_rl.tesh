@@ -1,3 +1,0 @@
-
-! output ignore
-$ $SG_TEST_ENV ./spawn_server$EXEEXT --log=root.fmt=%m%n

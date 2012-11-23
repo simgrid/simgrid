@@ -11,10 +11,10 @@ endif()
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(log_large_test gras m pthread )
-  target_link_libraries(parallel_log_crashtest gras m pthread )
+  target_link_libraries(log_large_test simgrid m pthread )
+  target_link_libraries(parallel_log_crashtest simgrid m pthread )
   if(HAVE_MMAP)
-    target_link_libraries(mmalloc_test gras m pthread )
+    target_link_libraries(mmalloc_test simgrid m pthread )
   endif()
 endif()
 
