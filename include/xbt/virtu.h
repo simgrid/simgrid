@@ -22,7 +22,7 @@ XBT_PUBLIC_DATA(int_f_void_t) xbt_getpid;
 XBT_PUBLIC(double) xbt_time(void);
 
     /* Get the name of the UNIX process englobing the world */
-    XBT_PUBLIC(const char*) xbt_os_procname(void);
+    XBT_PUBLIC_DATA(char*) xbt_binary_name;
 
     /**
      *

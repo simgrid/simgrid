@@ -11,8 +11,6 @@
 #include "xbt/function_types.h"
 #include "simgrid/simix.h"
 
-char *xbt_os_procname_data = NULL;
-
 static int xbt_fake_pid(void)
 {
   return 0;
@@ -40,9 +38,4 @@ void xbt_sleep(double sec)
 const char *xbt_procname(void)
 {
   return SIMIX_process_self_get_name();
-}
-
-const char *xbt_os_procname(void)
-{
-  return xbt_os_procname_data;
 }

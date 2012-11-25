@@ -413,13 +413,8 @@ void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
 
 xbt_dynar_t sg_cmdline = NULL;
 
-extern char *xbt_os_procname_data;
-
-
 void surf_init(int *argc, char **argv)
 {
-  xbt_os_procname_data = argv[0];
-
   XBT_DEBUG("Create all Libs");
   host_lib = xbt_lib_new();
   link_lib = xbt_lib_new();

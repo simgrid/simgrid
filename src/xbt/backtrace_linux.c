@@ -116,7 +116,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
 
   e->bt_strings = NULL;
 
-  if (!xbt_binary_name) /* no binary name, nothing to do */
+  if (xbt_binary_name != NULL) /* no binary name, nothing to do */
     return;
 
   if (e->used <= 1)

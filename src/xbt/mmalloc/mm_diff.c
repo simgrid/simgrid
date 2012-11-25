@@ -13,8 +13,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mm_diff, xbt,
                                 "Logging specific to mm_diff in mmalloc");
 
-extern char *xbt_binary_name;
-
 xbt_dynar_t mc_heap_comparison_ignore;
 xbt_dynar_t stacks_areas;
 

@@ -46,7 +46,6 @@
 #include "portable.h"           /* execinfo when available */
 #include "xbt/ex.h"
 #include "xbt/str.h"
-#include "xbt/module.h"         /* xbt_binary_name */
 #include "xbt_modinter.h"       /* backtrace initialization headers */
 
 #include "xbt/ex_interface.h"
@@ -140,7 +139,7 @@ void xbt_ex_display(xbt_ex_t * e)
           "** SimGrid: UNCAUGHT EXCEPTION received on %s(%d): category: %s; value: %d\n"
           "** %s\n"
           "** Thrown by %s()%s\n",
-          xbt_os_procname(), xbt_getpid(),
+          xbt_binary_name, xbt_getpid(),
           xbt_ex_catname(e->category), e->value, e->msg,
           e->procname, thrower ? thrower : " in this process");
   XBT_CRITICAL("%s", e->msg);
