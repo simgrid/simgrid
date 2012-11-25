@@ -133,12 +133,15 @@ void _xbt_replay_action_exit(void)
 int xbt_replay_action_runner(int argc, char *argv[])
 {
   const char **evt;
+  int i;
   if (action_fp) {              // A unique trace file
 
     while ((evt = action_get_action(argv[0]))) {
       action_fun function =
         (action_fun)xbt_dict_get(action_funs, evt[1]);
       function(evt);
+      for (i=0;evt[i]!= NULL;i++)
+        free((char*)evt[i]);
       free(evt);
     }
   } else {                      // Should have got my trace file in argument
@@ -153,6 +156,8 @@ int xbt_replay_action_runner(int argc, char *argv[])
         action_fun function =
           (action_fun)xbt_dict_get(action_funs, evt[1]);
         function(evt);
+        for (i=0;evt[i]!= NULL;i++)
+          free((char*)evt[i]);
         free(evt);
       } else {
         XBT_WARN("%s: Ignore trace element not for me",

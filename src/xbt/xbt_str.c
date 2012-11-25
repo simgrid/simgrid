@@ -327,11 +327,14 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
  *
  * The string passed as argument must be writable (not const)
  * The elements of the dynar are just parts of the string passed as argument.
+ * So if you don't store that argument elsewhere, you should free it in addition
+ * to freeing the dynar. This can be done by simply freeing the first argument
+ * of the dynar:
+ *  free(xbt_dynar_get_ptr(dynar,0));
  *
- * To free the structure constructed by this function, free the first element and free the dynar:
- *
- * free(xbt_dynar_get_ptr(dynar,0));
- * xbt_dynar_free(&dynar);
+ * Actually this function puts a bunch of \0 in the memory area you passed as
+ * argument to separate the elements, and pushes the address of each chunk
+ * in the resulting dynar. Yes, that's uneven. Yes, that's gory. But that's efficient.
  */
 xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), NULL);
