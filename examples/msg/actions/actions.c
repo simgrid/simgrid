@@ -482,7 +482,11 @@ static void action_allReduce(const char *const *action) {
     XBT_DEBUG("%s: %s has received", allreduce_identifier, process_name);
   }
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
+  if (XBT_LOG_ISENABLED(actions,xbt_log_priority_verbose)) {
+    char *a =  xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", a, MSG_get_clock() - clock);
+    free(a);
+  }
   free(allreduce_identifier);
 }
 
