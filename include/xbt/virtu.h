@@ -12,6 +12,7 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/function_types.h"
+#include "xbt/dynar.h"
 
 SG_BEGIN_DECL()
 
@@ -23,6 +24,9 @@ XBT_PUBLIC(double) xbt_time(void);
 
     /* Get the name of the UNIX process englobing the world */
     XBT_PUBLIC_DATA(char*) xbt_binary_name;
+
+    /** Contains all the parameters we got from the command line (including argv[0]) */
+    XBT_PUBLIC_DATA(xbt_dynar_t) xbt_cmdline;
 
     /**
      *

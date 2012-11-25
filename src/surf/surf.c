@@ -411,8 +411,6 @@ void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
   *ver_patch = SIMGRID_VERSION_PATCH;
 }
 
-xbt_dynar_t sg_cmdline = NULL;
-
 void surf_init(int *argc, char **argv)
 {
   XBT_DEBUG("Create all Libs");
@@ -433,11 +431,6 @@ void surf_init(int *argc, char **argv)
   SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_resource_free);
   SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_resource_free);
 
-  sg_cmdline = xbt_dynar_new(sizeof(char*),NULL);
-  int i;
-  for (i=0;i<*argc;i++) {
-    xbt_dynar_push(sg_cmdline,&(argv[i]));
-  }
   xbt_init(argc, argv);
   if (!model_list)
     model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
@@ -510,7 +503,6 @@ void surf_exit(void)
 #endif
 
   xbt_dynar_free(&surf_path);
-  xbt_dynar_free(&sg_cmdline);
 
   xbt_lib_free(&host_lib);
   xbt_lib_free(&link_lib);

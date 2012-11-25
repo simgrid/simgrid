@@ -1,7 +1,6 @@
 /* module handling                                                          */
 
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -27,6 +26,8 @@ XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's 
 
 
 char *xbt_binary_name = NULL;   /* Name of the system process containing us (mandatory to retrieve neat backtraces) */
+xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
+
 int xbt_initialized = 0;
 
 int _surf_do_model_check = 0;
@@ -108,6 +109,8 @@ static void xbt_postexit(void)
   xbt_os_thread_mod_postexit();
 
   free(xbt_binary_name);
+  xbt_dynar_free(&xbt_cmdline);
+
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_postexit();
 #endif
@@ -122,6 +125,12 @@ void xbt_init(int *argc, char **argv)
   }
 
   xbt_binary_name = xbt_strdup(argv[0]);
+  xbt_cmdline = xbt_dynar_new(sizeof(char*),NULL);
+  int i;
+  for (i=0;i<*argc;i++) {
+    xbt_dynar_push(xbt_cmdline,&(argv[i]));
+  }
+
   srand((unsigned int) time(NULL));
 
   xbt_log_init(argc, argv);
