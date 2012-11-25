@@ -247,6 +247,7 @@ if(pthread)
     RESULT_VARIABLE HAVE_SEM_OPEN_run 
     OUTPUT_VARIABLE var_compil
     )
+    file(REMOVE sem_open)
 
     if(NOT HAVE_SEM_OPEN_run)
       set(HAVE_SEM_OPEN 1)
@@ -271,7 +272,7 @@ if(pthread)
     execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -lpthread -o sem_init
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
     RESULT_VARIABLE HAVE_SEM_INIT_run OUTPUT_VARIABLE HAVE_SEM_INIT_compil)
-
+    
     if(HAVE_SEM_INIT_compil)
       set(HAVE_SEM_INIT 0)
       message(STATUS "Warning: sem_init not compilable")
@@ -285,6 +286,8 @@ if(pthread)
     RESULT_VARIABLE HAVE_SEM_INIT_run 
     OUTPUT_VARIABLE var_compil
     )
+    file(REMOVE sem_init)
+
 
     if(NOT HAVE_SEM_INIT_run)
       set(HAVE_SEM_INIT 1)
