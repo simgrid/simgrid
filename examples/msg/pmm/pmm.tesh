@@ -46,53 +46,53 @@ $ ./pmm/msg_pmm --log=msg_pmm.thres:verbose --log=no_loc ${srcdir:=.}/../platfor
 > [c-0.me:node:(1) 0.007813] [msg_pmm/VERBOSE] Broadcast sA(0,0) to row 0
 > [c-0.me:node:(1) 0.007813] [msg_pmm/VERBOSE] Broadcast sB(0,0) to col 0
 > [c-0.me:node:(1) 0.007813] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-6.me:node:(7) 0.015625] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-3.me:node:(4) 0.015625] [msg_pmm/VERBOSE] Broadcast sB(1,0) to col 0
-> [c-2.me:node:(3) 0.015625] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-1.me:node:(2) 0.015625] [msg_pmm/VERBOSE] Broadcast sA(0,1) to row 0
-> [c-8.me:node:(9) 0.015625] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-4.me:node:(5) 0.015625] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-5.me:node:(6) 0.015625] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-7.me:node:(8) 0.015625] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-3.me:node:(4) 0.015625] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-1.me:node:(2) 0.015625] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-4.me:node:(5) 0.023437] [msg_pmm/VERBOSE] Broadcast sA(1,1) to row 1
-> [c-2.me:node:(3) 0.023437] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-7.me:node:(8) 0.023437] [msg_pmm/VERBOSE] Broadcast sA(2,1) to row 2
-> [c-8.me:node:(9) 0.023437] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-0.me:node:(1) 0.023437] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-6.me:node:(7) 0.023437] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-5.me:node:(6) 0.023437] [msg_pmm/VERBOSE] Broadcast sB(1,2) to col 2
-> [c-4.me:node:(5) 0.023437] [msg_pmm/VERBOSE] Broadcast sB(1,1) to col 1
-> [c-7.me:node:(8) 0.023437] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-5.me:node:(6) 0.023437] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-4.me:node:(5) 0.023437] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-1.me:node:(2) 0.031249] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-8.me:node:(9) 0.031249] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-2.me:node:(3) 0.031249] [msg_pmm/VERBOSE] Broadcast sA(0,2) to row 0
-> [c-6.me:node:(7) 0.031249] [msg_pmm/VERBOSE] Broadcast sB(2,0) to col 0
-> [c-0.me:node:(1) 0.031249] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-3.me:node:(4) 0.031249] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-7.me:node:(8) 0.031249] [msg_pmm/VERBOSE] Broadcast sB(2,1) to col 1
-> [c-5.me:node:(6) 0.031249] [msg_pmm/VERBOSE] Broadcast sA(1,2) to row 1
-> [c-2.me:node:(3) 0.031249] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-6.me:node:(7) 0.031249] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-7.me:node:(8) 0.031249] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-5.me:node:(6) 0.031249] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-3.me:node:(4) 0.039061] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-4.me:node:(5) 0.039061] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-1.me:node:(2) 0.039061] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-0.me:node:(1) 0.039061] [msg_pmm/VERBOSE] Get sub-matrix
-> [c-8.me:node:(9) 0.039061] [msg_pmm/VERBOSE] Broadcast sA(2,2) to row 2
-> [c-8.me:node:(9) 0.039061] [msg_pmm/VERBOSE] Broadcast sB(2,2) to col 2
-> [c-8.me:node:(9) 0.039061] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
-> [c-0.me:node:(1) 0.046873] [msg_pmm/VERBOSE] Multiplication done.
-> [c-0.me:node:(1) 0.046873] [msg_pmm/VERBOSE] Receive Results.
-> [c-5.me:node:(6) 0.046873] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
-> [c-2.me:node:(3) 0.046873] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
-> [c-7.me:node:(8) 0.046873] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
-> [c-1.me:node:(2) 0.046873] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
-> [c-4.me:node:(5) 0.046873] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
-> [c-3.me:node:(4) 0.046873] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
-> [c-6.me:node:(7) 0.046873] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
-> [0.054685] [msg_pmm/CRITICAL] Simulated time: 0.0546852
+> [c-7.me:node:(8) 0.015619] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-4.me:node:(5) 0.015619] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-8.me:node:(9) 0.015619] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-5.me:node:(6) 0.015619] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-6.me:node:(7) 0.015619] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-2.me:node:(3) 0.015619] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-3.me:node:(4) 0.015619] [msg_pmm/VERBOSE] Broadcast sB(1,0) to col 0
+> [c-1.me:node:(2) 0.015619] [msg_pmm/VERBOSE] Broadcast sA(0,1) to row 0
+> [c-3.me:node:(4) 0.015619] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-1.me:node:(2) 0.015619] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-8.me:node:(9) 0.023426] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-2.me:node:(3) 0.023426] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-7.me:node:(8) 0.023426] [msg_pmm/VERBOSE] Broadcast sA(2,1) to row 2
+> [c-5.me:node:(6) 0.023426] [msg_pmm/VERBOSE] Broadcast sB(1,2) to col 2
+> [c-6.me:node:(7) 0.023426] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-4.me:node:(5) 0.023426] [msg_pmm/VERBOSE] Broadcast sA(1,1) to row 1
+> [c-0.me:node:(1) 0.023426] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-7.me:node:(8) 0.023426] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-5.me:node:(6) 0.023426] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-4.me:node:(5) 0.023426] [msg_pmm/VERBOSE] Broadcast sB(1,1) to col 1
+> [c-4.me:node:(5) 0.023426] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-2.me:node:(3) 0.031233] [msg_pmm/VERBOSE] Broadcast sA(0,2) to row 0
+> [c-0.me:node:(1) 0.031233] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-6.me:node:(7) 0.031233] [msg_pmm/VERBOSE] Broadcast sB(2,0) to col 0
+> [c-8.me:node:(9) 0.031233] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-5.me:node:(6) 0.031233] [msg_pmm/VERBOSE] Broadcast sA(1,2) to row 1
+> [c-3.me:node:(4) 0.031233] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-1.me:node:(2) 0.031233] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-7.me:node:(8) 0.031233] [msg_pmm/VERBOSE] Broadcast sB(2,1) to col 1
+> [c-2.me:node:(3) 0.031233] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-6.me:node:(7) 0.031233] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-5.me:node:(6) 0.031233] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-7.me:node:(8) 0.031233] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-0.me:node:(1) 0.039040] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-1.me:node:(2) 0.039040] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-8.me:node:(9) 0.039040] [msg_pmm/VERBOSE] Broadcast sA(2,2) to row 2
+> [c-3.me:node:(4) 0.039040] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-4.me:node:(5) 0.039040] [msg_pmm/VERBOSE] Get sub-matrix
+> [c-8.me:node:(9) 0.039040] [msg_pmm/VERBOSE] Broadcast sB(2,2) to col 2
+> [c-8.me:node:(9) 0.039040] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
+> [c-1.me:node:(2) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
+> [c-4.me:node:(5) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
+> [c-3.me:node:(4) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
+> [c-0.me:node:(1) 0.046847] [msg_pmm/VERBOSE] Multiplication done.
+> [c-0.me:node:(1) 0.046847] [msg_pmm/VERBOSE] Receive Results.
+> [c-6.me:node:(7) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
+> [c-2.me:node:(3) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
+> [c-5.me:node:(6) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
+> [c-7.me:node:(8) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
+> [0.054659] [msg_pmm/CRITICAL] Simulated time: 0.0546594
