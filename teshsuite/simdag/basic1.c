@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,6 +11,16 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic1, sd, "SimDag test basic1");
 
+/* Basic SimDag Test 0
+ * Scenario:
+ *   - Create a no-op Init task
+ *   - Create two communication tasks: 1GB and 1GB
+ *   - Schedule them concurrently on the two hosts of the platform
+ * The two communications occur simultaneously. They share the network for the
+ * whole duration of the simulation.
+ * Simulated time should be:
+ *          1e9/(1/2*1.25e8) + 1e-4 = 16.0001 seconds
+ */
 int main(int argc, char **argv)
 {
 
@@ -19,8 +29,8 @@ int main(int argc, char **argv)
   SD_task_t taskB;
   xbt_dynar_t ret;
 
-  double communication_amount1 = 1000000000;
-  double communication_amount2 = 1000000000;
+  double communication_amount1 = 1e9;
+  double communication_amount2 = 1e9;
   double no_cost = 0.0;
 
   const SD_workstation_t *workstation;
