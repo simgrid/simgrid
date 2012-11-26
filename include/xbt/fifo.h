@@ -7,6 +7,7 @@
 #ifndef _XBT_FIFO_H
 #define _XBT_FIFO_H
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
+#include "xbt/function_types.h" /* int_f_pvoid_pvoid_t */
 
 SG_BEGIN_DECL()
 
@@ -45,6 +46,7 @@ XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_unshift(xbt_fifo_t, void *);
 XBT_PUBLIC(void *) xbt_fifo_shift(xbt_fifo_t);
 XBT_PUBLIC(int) xbt_fifo_size(xbt_fifo_t);
 XBT_PUBLIC(int) xbt_fifo_is_in(xbt_fifo_t, void *);
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_search_item(xbt_fifo_t f, int_f_pvoid_pvoid_t cmp_fun, void *closure);
 /** @} */
 
 /** @defgroup XBT_fifo_direct Direct access to fifo elements

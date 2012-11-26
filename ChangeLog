@@ -22,7 +22,9 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  XBT:
  * Kill synchronized dynars, and xbt_dynar_dopar(). We cannot think of a
    usecase where it's really mandatory, and maintaining it was a pain in
-   our codebase.
+   our codebase.   
+ * New: xbt_fifo_search(), search an item with a user-provided
+   comparison function instead of dumb pointer comparison.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
