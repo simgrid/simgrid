@@ -9,13 +9,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/bu
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'tracing/ms.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'tracing/ms.uncat.plist'
-> [4.485137] [msg_test/INFO] Declared tracing categories:
-> [4.485137] [msg_test/INFO] request
-> [4.485137] [msg_test/INFO] finalize
-> [4.485137] [msg_test/INFO] report
-> [4.485137] [msg_test/INFO] compute
-> [4.485137] [msg_test/INFO] Declared marks:
-> [4.485137] [msg_test/INFO] msmark
+> [4.214759] [msg_test/INFO] Declared tracing categories:
+> [4.214759] [msg_test/INFO] request
+> [4.214759] [msg_test/INFO] finalize
+> [4.214759] [msg_test/INFO] report
+> [4.214759] [msg_test/INFO] compute
+> [4.214759] [msg_test/INFO] Declared marks:
+> [4.214759] [msg_test/INFO] msmark
 
 p Not tracing master/slave application
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT ${srcdir:=.}/tracing/platform.xml ${srcdir:=.}/tracing/deployment.xml
@@ -30,13 +30,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/ms$EXEEXT --cfg=tracing:1 --cfg=tracing/ms
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'tracing/ms.cat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'tracing/ms.uncat.plist'
-> [4.485137] [msg_test/INFO] Declared tracing categories:
-> [4.485137] [msg_test/INFO] request
-> [4.485137] [msg_test/INFO] finalize
-> [4.485137] [msg_test/INFO] report
-> [4.485137] [msg_test/INFO] compute
-> [4.485137] [msg_test/INFO] Declared marks:
-> [4.485137] [msg_test/INFO] msmark
+> [4.214759] [msg_test/INFO] Declared tracing categories:
+> [4.214759] [msg_test/INFO] request
+> [4.214759] [msg_test/INFO] finalize
+> [4.214759] [msg_test/INFO] report
+> [4.214759] [msg_test/INFO] compute
+> [4.214759] [msg_test/INFO] Declared marks:
+> [4.214759] [msg_test/INFO] msmark
 
 $ $SG_TEST_EXENV cat tracing/ms.uncat.plist
 >   node = ("HOST","LINK");
