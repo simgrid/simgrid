@@ -7,29 +7,29 @@ $ lua bittorrent.lua
 > [Disney:peer:(6) 0.000000] [lua/INFO] Hi, I'm joining the network with id 6
 > [iRMX:peer:(7) 0.000000] [lua/INFO] Hi, I'm joining the network with id 7
 > [McGee:peer:(8) 0.000000] [lua/INFO] Hi, I'm joining the network with id 8
-> [Boivin:peer:(2) 3.048890] [lua/INFO] Received an answer from the tracker with 0 peers inside
-> [Jean_Yves:peer:(3) 3.925095] [lua/INFO] Received an answer from the tracker with 1 peers inside
-> [Jean_Yves:peer:(3) 3.925095] [lua/INFO] Start downloading.
+> [Boivin:peer:(2) 3.048882] [lua/INFO] Received an answer from the tracker with 0 peers inside
+> [Jean_Yves:peer:(3) 3.925092] [lua/INFO] Received an answer from the tracker with 1 peers inside
+> [Jean_Yves:peer:(3) 3.925092] [lua/INFO] Start downloading.
 > [Geoff:peer:(5) 6.005341] [lua/INFO] Received an answer from the tracker with 3 peers inside
-> [TeX:peer:(4) 6.812601] [lua/INFO] Received an answer from the tracker with 2 peers inside
-> [TeX:peer:(4) 6.812601] [lua/INFO] Start downloading.
-> [Jean_Yves:peer:(3) 6.925095] [lua/INFO] Starting main leech loop
-> [TeX:peer:(4) 8.619861] [lua/INFO] Starting main leech loop
-> [Disney:peer:(6) 9.823552] [lua/INFO] Received an answer from the tracker with 4 peers inside
-> [Disney:peer:(6) 9.823552] [lua/INFO] Start downloading.
-> [Disney:peer:(6) 10.644366] [lua/INFO] Starting main leech loop
-> [McGee:peer:(8) 13.888359] [lua/INFO] Received an answer from the tracker with 6 peers inside
-> [McGee:peer:(8) 13.888359] [lua/INFO] Start downloading.
-> [iRMX:peer:(7) 15.043681] [lua/INFO] Received an answer from the tracker with 5 peers inside
-> [iRMX:peer:(7) 15.043681] [lua/INFO] Start downloading.
-> [McGee:peer:(8) 16.609446] [lua/INFO] Starting main leech loop
-> [iRMX:peer:(7) 24.873536] [lua/INFO] Starting main leech loop
+> [TeX:peer:(4) 6.812588] [lua/INFO] Received an answer from the tracker with 2 peers inside
+> [TeX:peer:(4) 6.812588] [lua/INFO] Start downloading.
+> [Jean_Yves:peer:(3) 6.925093] [lua/INFO] Starting main leech loop
+> [TeX:peer:(4) 8.619837] [lua/INFO] Starting main leech loop
+> [Disney:peer:(6) 9.823538] [lua/INFO] Received an answer from the tracker with 4 peers inside
+> [Disney:peer:(6) 9.823538] [lua/INFO] Start downloading.
+> [Disney:peer:(6) 10.644341] [lua/INFO] Starting main leech loop
+> [McGee:peer:(8) 13.888352] [lua/INFO] Received an answer from the tracker with 6 peers inside
+> [McGee:peer:(8) 13.888352] [lua/INFO] Start downloading.
+> [iRMX:peer:(7) 15.043659] [lua/INFO] Received an answer from the tracker with 5 peers inside
+> [iRMX:peer:(7) 15.043659] [lua/INFO] Start downloading.
+> [McGee:peer:(8) 16.609414] [lua/INFO] Starting main leech loop
+> [iRMX:peer:(7) 24.873510] [lua/INFO] Starting main leech loop
 > [Jacquelin:tracker:(1) 3000.000000] [lua/INFO] Tracker is leaving
 > [Geoff:peer:(5) 5000.005341] [lua/INFO] My status is now 1111111111
 > [Boivin:peer:(2) 5000.048882] [lua/INFO] My status is now 1111111111
-> [McGee:peer:(8) 5000.609438] [lua/INFO] My status is now 1111111111
-> [TeX:peer:(4) 5000.619861] [lua/INFO] My status is now 1111111111
-> [Disney:peer:(6) 5000.644364] [lua/INFO] My status is now 1111111111
-> [iRMX:peer:(7) 5000.873536] [lua/INFO] My status is now 1111111111
+> [McGee:peer:(8) 5000.609414] [lua/INFO] My status is now 1111111111
+> [TeX:peer:(4) 5000.619837] [lua/INFO] My status is now 1111111111
+> [Disney:peer:(6) 5000.644339] [lua/INFO] My status is now 1111111111
+> [iRMX:peer:(7) 5000.873506] [lua/INFO] My status is now 1111111111
 > [Jean_Yves:peer:(3) 5000.925088] [lua/INFO] My status is now 1111111111
 
