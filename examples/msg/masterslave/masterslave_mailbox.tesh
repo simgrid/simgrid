@@ -8,28 +8,28 @@ $ $SG_TEST_EXENV masterslave/masterslave_mailbox$EXEEXT ${srcdir:=.}/small_platf
 > [  0.000000] (1:master@Tremblay) Got 5 slaves and 20 tasks to process
 > [  0.000000] (1:master@Tremblay) Sending "Task_0" (of 20) to mailbox "slave-0"
 > [  0.002265] (1:master@Tremblay) Sending "Task_1" (of 20) to mailbox "slave-1"
-> [  0.167431] (1:master@Tremblay) Sending "Task_2" (of 20) to mailbox "slave-2"
-> [  0.390742] (1:master@Tremblay) Sending "Task_3" (of 20) to mailbox "slave-3"
-> [  0.534522] (1:master@Tremblay) Sending "Task_4" (of 20) to mailbox "slave-4"
-> [  0.755498] (1:master@Tremblay) Sending "Task_5" (of 20) to mailbox "slave-0"
-> [  0.757763] (1:master@Tremblay) Sending "Task_6" (of 20) to mailbox "slave-1"
-> [  0.987940] (1:master@Tremblay) Sending "Task_7" (of 20) to mailbox "slave-2"
-> [  1.269395] (1:master@Tremblay) Sending "Task_8" (of 20) to mailbox "slave-3"
-> [  1.709400] (1:master@Tremblay) Sending "Task_9" (of 20) to mailbox "slave-4"
-> [  2.007572] (1:master@Tremblay) Sending "Task_10" (of 20) to mailbox "slave-0"
-> [  2.009837] (1:master@Tremblay) Sending "Task_11" (of 20) to mailbox "slave-1"
-> [  2.175003] (1:master@Tremblay) Sending "Task_12" (of 20) to mailbox "slave-2"
-> [  2.398314] (1:master@Tremblay) Sending "Task_13" (of 20) to mailbox "slave-3"
-> [  2.884278] (1:master@Tremblay) Sending "Task_14" (of 20) to mailbox "slave-4"
-> [  3.259645] (1:master@Tremblay) Sending "Task_15" (of 20) to mailbox "slave-0"
-> [  3.261911] (1:master@Tremblay) Sending "Task_16" (of 20) to mailbox "slave-1"
-> [  3.427077] (1:master@Tremblay) Sending "Task_17" (of 20) to mailbox "slave-2"
-> [  3.650387] (1:master@Tremblay) Sending "Task_18" (of 20) to mailbox "slave-3"
-> [  4.059157] (1:master@Tremblay) Sending "Task_19" (of 20) to mailbox "slave-4"
-> [  4.511719] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
-> [  4.511914] (2:slave@Tremblay) I'm done. See you!
-> [  4.530929] (3:slave@Jupiter) I'm done. See you!
-> [  4.556637] (4:slave@Fafard) I'm done. See you!
-> [  5.106807] (5:slave@Ginette) I'm done. See you!
-> [  5.568256] (0:@) Simulation time 5.56826
-> [  5.568256] (6:slave@Bourassa) I'm done. See you!
+> [  0.164270] (1:master@Tremblay) Sending "Task_2" (of 20) to mailbox "slave-2"
+> [  0.316349] (1:master@Tremblay) Sending "Task_3" (of 20) to mailbox "slave-3"
+> [  0.434977] (1:master@Tremblay) Sending "Task_4" (of 20) to mailbox "slave-4"
+> [  0.562492] (1:master@Tremblay) Sending "Task_5" (of 20) to mailbox "slave-0"
+> [  0.564757] (1:master@Tremblay) Sending "Task_6" (of 20) to mailbox "slave-1"
+> [  0.981618] (1:master@Tremblay) Sending "Task_7" (of 20) to mailbox "slave-2"
+> [  1.133696] (1:master@Tremblay) Sending "Task_8" (of 20) to mailbox "slave-3"
+> [  1.584703] (1:master@Tremblay) Sending "Task_9" (of 20) to mailbox "slave-4"
+> [  1.721105] (1:master@Tremblay) Sending "Task_10" (of 20) to mailbox "slave-0"
+> [  1.723370] (1:master@Tremblay) Sending "Task_11" (of 20) to mailbox "slave-1"
+> [  1.885375] (1:master@Tremblay) Sending "Task_12" (of 20) to mailbox "slave-2"
+> [  2.037454] (1:master@Tremblay) Sending "Task_13" (of 20) to mailbox "slave-3"
+> [  2.734429] (1:master@Tremblay) Sending "Task_14" (of 20) to mailbox "slave-4"
+> [  2.879718] (1:master@Tremblay) Sending "Task_15" (of 20) to mailbox "slave-0"
+> [  2.881983] (1:master@Tremblay) Sending "Task_16" (of 20) to mailbox "slave-1"
+> [  3.043989] (1:master@Tremblay) Sending "Task_17" (of 20) to mailbox "slave-2"
+> [  3.196067] (1:master@Tremblay) Sending "Task_18" (of 20) to mailbox "slave-3"
+> [  3.884155] (1:master@Tremblay) Sending "Task_19" (of 20) to mailbox "slave-4"
+> [  4.038331] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
+> [  4.038526] (2:slave@Tremblay) I'm done. See you!
+> [  4.057541] (3:slave@Jupiter) I'm done. See you!
+> [  4.083249] (4:slave@Fafard) I'm done. See you!
+> [  4.931805] (5:slave@Ginette) I'm done. See you!
+> [  5.094868] (0:@) Simulation time 5.09487
+> [  5.094868] (6:slave@Bourassa) I'm done. See you!
