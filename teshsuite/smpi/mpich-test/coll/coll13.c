@@ -18,7 +18,6 @@ From: hook@nas.nasa.gov (Edward C. Hook)
 int main( int argc, char *argv[] )
 {
     int rank, size;
-    int chunk = 4096;
     int i,j;
     int *sb;
     int *rb;
@@ -32,9 +31,6 @@ int main( int argc, char *argv[] )
 	if ( argv[i][0] != '-' )
 	    continue;
 	switch(argv[i][1]) {
-	case 'm':
-	    chunk = atoi(argv[++i]);
-	    break;
 	default:
 	    fprintf(stderr,"Unrecognized argument %s\n",
 		    argv[i]);
