@@ -297,7 +297,7 @@ typedef struct {
  */
 typedef struct {
   __ex_mctx_t *ctx_mctx;        /* permanent machine context of enclosing try/catch */
-  volatile int ctx_caught;      /* temporary flag whether exception was caught */
+  int ctx_caught;               /* temporary flag whether exception was caught */
   volatile xbt_ex_t exception;  /* temporary exception storage */
 } xbt_running_ctx_t;
 

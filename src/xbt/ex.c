@@ -316,7 +316,8 @@ XBT_TEST_UNIT("variables", test_variables, "variable value preservation")
   xbt_ex_t ex;
   int r1;
   int _XBT_GNUC_UNUSED r2;
-  volatile int v1, v2;
+  int v1;
+  volatile int v2;
 
   r1 = r2 = v1 = v2 = 1234;
   TRY {

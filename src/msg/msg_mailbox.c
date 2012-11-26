@@ -99,7 +99,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
 
 #ifdef HAVE_TRACING
   TRACE_msg_task_get_start();
-  volatile double start_time = MSG_get_clock();
+  double start_time = MSG_get_clock();
 #endif
 
   /* Sanity check */
