@@ -100,24 +100,24 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]     3@task1_o3_end
 > [0.000000] [test/INFO] ------------------- Schedule tasks ---------------------------
 > [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
-> [84.185919] [test/INFO] ------------------- Produce the trace file---------------------------
-> [84.185919] [test/INFO] Producing the trace of the run into ./smalldax.trace
+> [84.066238] [test/INFO] ------------------- Produce the trace file---------------------------
+> [84.066238] [test/INFO] Producing the trace of the run into ./smalldax.trace
 
 $ cat ./smalldax.trace
 > [0.000000] C1-00 compute 0.000000 # root
-> [0.030300] C1-01 compute 42000000000.000000 # 1@task1
-> [0.030300] C1-02 compute 42000000000.000000 # 2@task2
-> [42.060600] C1-03 compute 42000000000.000000 # 3@task1
+> [0.016300] C1-01 compute 42000000000.000000 # 1@task1
+> [0.016300] C1-02 compute 42000000000.000000 # 2@task2
+> [42.032600] C1-03 compute 42000000000.000000 # 3@task1
 > [0.000000] C1-00 send C1-02 1000000.000000 # root_i2_2@task2
-> [0.030300] C1-02 recv C1-00 1000000.000000 # root_i2_2@task2
-> [42.030300] C1-01 send C1-03 1000000.000000 # 1@task1_o1_3@task1
-> [42.060600] C1-03 recv C1-01 1000000.000000 # 1@task1_o1_3@task1
-> [42.030300] C1-02 send C1-03 1000000.000000 # 2@task2_o2_3@task1
-> [42.060600] C1-03 recv C1-02 1000000.000000 # 2@task2_o2_3@task1
-> [84.060600] C1-03 send C1-00 4167312.000000 # 3@task1_o3_end
-> [84.185919] C1-00 recv C1-03 4167312.000000 # 3@task1_o3_end
+> [0.016300] C1-02 recv C1-00 1000000.000000 # root_i2_2@task2
+> [42.016300] C1-01 send C1-03 1000000.000000 # 1@task1_o1_3@task1
+> [42.032600] C1-03 recv C1-01 1000000.000000 # 1@task1_o1_3@task1
+> [42.016300] C1-02 send C1-03 1000000.000000 # 2@task2_o2_3@task1
+> [42.032600] C1-03 recv C1-02 1000000.000000 # 2@task2_o2_3@task1
+> [84.032600] C1-03 send C1-00 4167312.000000 # 3@task1_o3_end
+> [84.066238] C1-00 recv C1-03 4167312.000000 # 3@task1_o3_end
 > [0.000000] C1-00 send C1-01 1000000.000000 # root_i1_1@task1
-> [0.030300] C1-01 recv C1-00 1000000.000000 # root_i1_1@task1
-> [84.185919] C1-00 compute 0.000000 # end
+> [0.016300] C1-01 recv C1-00 1000000.000000 # root_i1_1@task1
+> [84.066238] C1-00 compute 0.000000 # end
 
 $ cmake -E remove -f ./dax.dot ./smalldax.trace

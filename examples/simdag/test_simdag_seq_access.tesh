@@ -35,26 +35,26 @@ $ $SG_TEST_EXENV ./sd_seq_access ${srcdir:=.}/2clusters.xml
 > [4.000000] [sd_workstation/INFO]   - power: 5000000000
 > [4.000000] [sd_workstation/INFO]   - available power: 1.00
 > [4.000000] [sd_workstation/INFO]   - access mode: Space shared
-> [10.000300] [sd_seq_access/INFO]  Simulation was suspended, check workstation states
-> [10.000300] [sd_workstation/INFO] Displaying workstation C2-05
-> [10.000300] [sd_workstation/INFO]   - power: 5000000000
-> [10.000300] [sd_workstation/INFO]   - available power: 1.00
-> [10.000300] [sd_workstation/INFO]   - access mode: Exclusive
-> [10.000300] [sd_workstation/INFO]     no task running
-> [10.000300] [sd_workstation/INFO] Displaying workstation C2-06
-> [10.000300] [sd_workstation/INFO]   - power: 5000000000
-> [10.000300] [sd_workstation/INFO]   - available power: 1.00
-> [10.000300] [sd_workstation/INFO]   - access mode: Space shared
-> [14.000300] [sd_seq_access/INFO]  Simulation was suspended, check workstation states
-> [14.000300] [sd_workstation/INFO] Displaying workstation C2-05
-> [14.000300] [sd_workstation/INFO]   - power: 5000000000
-> [14.000300] [sd_workstation/INFO]   - available power: 1.00
-> [14.000300] [sd_workstation/INFO]   - access mode: Exclusive
-> [14.000300] [sd_workstation/INFO]     no task running
-> [14.000300] [sd_workstation/INFO] Displaying workstation C2-06
-> [14.000300] [sd_workstation/INFO]   - power: 5000000000
-> [14.000300] [sd_workstation/INFO]   - available power: 1.00
-> [14.000300] [sd_workstation/INFO]   - access mode: Space shared
+> [5.600300] [sd_seq_access/INFO]  Simulation was suspended, check workstation states
+> [5.600300] [sd_workstation/INFO] Displaying workstation C2-05
+> [5.600300] [sd_workstation/INFO]   - power: 5000000000
+> [5.600300] [sd_workstation/INFO]   - available power: 1.00
+> [5.600300] [sd_workstation/INFO]   - access mode: Exclusive
+> [5.600300] [sd_workstation/INFO]     no task running
+> [5.600300] [sd_workstation/INFO] Displaying workstation C2-06
+> [5.600300] [sd_workstation/INFO]   - power: 5000000000
+> [5.600300] [sd_workstation/INFO]   - available power: 1.00
+> [5.600300] [sd_workstation/INFO]   - access mode: Space shared
+> [9.600300] [sd_seq_access/INFO]  Simulation was suspended, check workstation states
+> [9.600300] [sd_workstation/INFO] Displaying workstation C2-05
+> [9.600300] [sd_workstation/INFO]   - power: 5000000000
+> [9.600300] [sd_workstation/INFO]   - available power: 1.00
+> [9.600300] [sd_workstation/INFO]   - access mode: Exclusive
+> [9.600300] [sd_workstation/INFO]     no task running
+> [9.600300] [sd_workstation/INFO] Displaying workstation C2-06
+> [9.600300] [sd_workstation/INFO]   - power: 5000000000
+> [9.600300] [sd_workstation/INFO]   - available power: 1.00
+> [9.600300] [sd_workstation/INFO]   - access mode: Space shared
 > [22.000000] [sd_seq_access/INFO]  Simulation was suspended, check workstation states
 > [22.000000] [sd_workstation/INFO] Displaying workstation C2-05
 > [22.000000] [sd_workstation/INFO]   - power: 5000000000
