@@ -44,8 +44,9 @@ int main( int argc, char *argv[] )
      
     
     /*
-    SMPI addition : we want to test all three alltoall algorithms, thus we use three diffrent sizes
-    this is the code that handles these cases
+    SMPI addition: we want to test all three alltoall algorithms, thus we use
+    three different sizes.  This is the code that handles these cases:
+
     if (sendsize < 200 && size > 12) {
       retval =
           smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, sendtype,
@@ -62,8 +63,6 @@ int main( int argc, char *argv[] )
                                             recvbuf, recvcount, recvtype,
                                             comm);
     }
-    
-    
     */
     
     
