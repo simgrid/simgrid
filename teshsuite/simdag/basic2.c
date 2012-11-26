@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic2, sd, "SimDag test basic2");
 
-/* Basic SimDag Test 0
+/* Basic SimDag Test 2
  * Scenario:
  *   - Create a no-op Init task
  *   - Create two communication tasks: 1GB and 100MB

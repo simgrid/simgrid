@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,6 +11,15 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic5, sd, "SimDag test basic5");
 
+/* Basic SimDag Test 5
+ * Scenario:
+ *   - Create a no-op Init task
+ *   - Create two tasks: send 100kB and compute 10Mflops
+ *   - Schedule them concurrently
+ * The two tasks should overlap smoothly as they use different resources.
+ * Simulated time should be:
+ *          MAX(1e5/(1.25e8), 1e7/4e9) = MAX(.0009, .0025) = 0.0025 seconds
+ */
 int main(int argc, char **argv)
 {
 

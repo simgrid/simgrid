@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,8 +9,18 @@
 #include "simdag/simdag.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic2, sd, "SimDag test basic2");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(incomplete, sd, "SimDag incomplete test");
 
+/* SimDag Incomplete Test
+ * Scenario:
+ *   - Create a bunch of tasks
+ *   - schedule only a subset of them (init, A and D)
+ *   - run the simulation
+ *   - Verify that we detect which tasks are not scheduled and show their state.
+ * The scheduled task A sends 1GB. Simulation time should be
+ *          1e9/1.25e8 + 1e-4 = 8.0001 seconds
+ * Task D is scheduled but depends on unscheduled task C.
+ */
 int main(int argc, char **argv)
 {
 
@@ -20,7 +30,7 @@ int main(int argc, char **argv)
 
   const SD_workstation_t *workstation;
 
-  double communication_amount1 = 1000000000;
+  double communication_amount1 = 1e9;
   double no_cost = 0.0;
 
   /* initialization of SD */
