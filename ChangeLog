@@ -19,6 +19,12 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  MSG:
  * New function: MSG_process_get_number()
 
+ SURF:
+ * Change the default value of the TCP_gamma constant (maximal size of TCP 
+   congestion window) to a more realistic 4MiB value. If you notice changes in 
+   your simulation results, you can fall back to the previous 20k tiny window 
+   by adding --cfg=network/TCP_gamma:20000 on command line.
+
  XBT:
  * Kill synchronized dynars, and xbt_dynar_dopar(). We cannot think of a
    usecase where it's really mandatory, and maintaining it was a pain in
