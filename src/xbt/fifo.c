@@ -336,18 +336,20 @@ int xbt_fifo_is_in(xbt_fifo_t f, void *content)
  *
  * This function allows to search an item with a user provided function instead
  * of the pointer comparison used elsewhere in this module. Assume for example that you have a fifo of
- * strings. You cannot use xbt_fifo_remove to remove, say, "TOTO" from it because internally, xbt_fifo_remove()
+ * strings. You cannot use xbt_fifo_remove() to remove, say, "TOTO" from it because internally, xbt_fifo_remove()
  * will do something like "if (item->content == "toto"), then remove it". And the pointer to the item content
- * and the pointer to "toto" will never match. As a solution, this function provides a way to search elements
+ * and the pointer to "toto" will never match. As a solution, the current function provides a way to search elements
  * that are semanticaly equivalent instead of only syntaxically. So, removing "Toto" from a fifo can be
  * achieved this way:
  *
- *  int my_comparison_function(void *searched, void *seen) {
- *    return !strcmp(searched, seen);
- *  }
- *
- *  xbt_fifo_remove_item(fifo,
- *                       xbt_fifo_search_item(fifo, my_comparison_function, "Toto"));
+ *  @verbatim
+int my_comparison_function(void *searched, void *seen) {
+  return !strcmp(searched, seen);
+}
+
+  xbt_fifo_remove_item(fifo,
+                       xbt_fifo_search_item(fifo, my_comparison_function, "Toto"));
+@endverbatim
  *
  * \param f a fifo list
  * \param cmp_fun the comparison function. Prototype: void *a,void *b -> int. Semantic: returns true iff a=b
