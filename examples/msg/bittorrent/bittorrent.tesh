@@ -15,9 +15,9 @@ $ $SG_TEST_EXENV ${bindir:=.}/bittorrent ${srcdir:=.}/../msg_platform.xml ${srcd
 > [    0.000000] (8:peer@McGee) Hi, I'm joining the network with id 8
 > [ 3000.000000] (1:tracker@Jacquelin) Tracker is leaving
 > [ 5000.005340] (5:peer@Geoff) Here is my current status: 1111111111
-> [ 5000.013261] (7:peer@iRMX) Here is my current status: 1111111111
+> [ 5000.012657] (7:peer@iRMX) Here is my current status: 1111111111
 > [ 5000.048881] (2:peer@Boivin) Here is my current status: 1111111111
-> [ 5000.827966] (8:peer@McGee) Here is my current status: 1111111111
-> [ 5000.833962] (3:peer@Jean_Yves) Here is my current status: 1111111111
-> [ 5000.897269] (4:peer@TeX) Here is my current status: 1111111111
-> [ 5000.897269] (6:peer@Disney) Here is my current status: 1111111111
+> [ 5000.827441] (8:peer@McGee) Here is my current status: 1111111111
+> [ 5000.832977] (3:peer@Jean_Yves) Here is my current status: 1111111111
+> [ 5000.897268] (4:peer@TeX) Here is my current status: 1111111111
+> [ 5000.897268] (6:peer@Disney) Here is my current status: 1111111111
