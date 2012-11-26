@@ -287,26 +287,27 @@ void SIMIX_post_io(smx_action_t action)
 
   xbt_fifo_foreach(action->simcalls,i,simcall,smx_simcall_t) {
     switch (simcall->call) {
-    case SIMCALL_FILE_OPEN:
-      simcall->file_open.result = xbt_new(s_smx_file_t,1);
-      simcall->file_open.result->surf_file = (action->io.surf_io)->file;
+    case SIMCALL_FILE_OPEN:;
+      smx_file_t tmp = xbt_new(s_smx_file_t,1);
+      tmp->surf_file = (action->io.surf_io)->file;
+      simcall->result.p = tmp;
       break;
 
     case SIMCALL_FILE_CLOSE:
       xbt_free(simcall->file_close.fp);
-      simcall->file_close.result = 0;
+      simcall->result.i = 0;
       break;
 
     case SIMCALL_FILE_WRITE:
-      simcall->file_write.result = (action->io.surf_io)->cost;
+      simcall->result.si = (action->io.surf_io)->cost;
       break;
 
     case SIMCALL_FILE_READ:
-      simcall->file_read.result = (action->io.surf_io)->cost;
+      simcall->result.d = (action->io.surf_io)->cost;
       break;
 
     case SIMCALL_FILE_STAT:
-      simcall->file_stat.result = 0;
+      simcall->result.i = 0;
       dst = &(simcall->file_stat.buf);
       src = &((action->io.surf_io)->stat);
       file_stat_copy(src,dst);
@@ -314,7 +315,7 @@ void SIMIX_post_io(smx_action_t action)
 
     case SIMCALL_FILE_UNLINK:
       xbt_free(simcall->file_unlink.fd);
-      simcall->file_unlink.result = 0;
+      simcall->result.i = 0;
       break;
 
     case SIMCALL_FILE_LS:

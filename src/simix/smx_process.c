@@ -634,7 +634,7 @@ void SIMIX_pre_process_sleep(smx_simcall_t simcall, double duration)
 {
   if (MC_is_active()) {
     MC_process_clock_add(simcall->issuer, duration);
-    simcall->process_sleep.result = SIMIX_DONE;
+    simcall->result.i = SIMIX_DONE;
     SIMIX_simcall_answer(simcall);
     return;
   }
@@ -697,7 +697,7 @@ void SIMIX_post_process_sleep(smx_action_t action)
         workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
-    simcall->process_sleep.result = state;
+    simcall->result.i = state;
     simcall->issuer->waiting_action = NULL;
     SIMIX_simcall_answer(simcall);
 

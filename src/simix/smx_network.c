@@ -626,8 +626,8 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
 void SIMIX_pre_comm_test(smx_simcall_t simcall, smx_action_t action)
 {
   if(MC_is_active()){
-    simcall->comm_test.result = action->comm.src_proc && action->comm.dst_proc;
-    if(simcall->comm_test.result){
+    simcall->result.i = action->comm.src_proc && action->comm.dst_proc;
+    if(simcall->result.i){
       action->state = SIMIX_DONE;
       xbt_fifo_push(action->simcalls, simcall);
       SIMIX_comm_finish(action);
@@ -637,8 +637,8 @@ void SIMIX_pre_comm_test(smx_simcall_t simcall, smx_action_t action)
     return;
   }
 
-  simcall->comm_test.result = (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING);
-  if (simcall->comm_test.result) {
+  simcall->result.i = (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING);
+  if (simcall->result.i) {
     xbt_fifo_push(action->simcalls, simcall);
     SIMIX_comm_finish(action);
   } else {
@@ -651,14 +651,14 @@ void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
   int idx = simcall->mc_value;
   unsigned int cursor;
   smx_action_t action;
-  simcall->comm_testany.result = -1;
+  simcall->result.i = -1;
 
   if (MC_is_active()){
     if(idx == -1){
       SIMIX_simcall_answer(simcall);
     }else{
       action = xbt_dynar_get_as(actions, idx, smx_action_t);
-      simcall->comm_testany.result = idx;
+      simcall->result.i = idx;
       xbt_fifo_push(action->simcalls, simcall);
       action->state = SIMIX_DONE;
       SIMIX_comm_finish(action);
@@ -668,7 +668,7 @@ void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
 
   xbt_dynar_foreach(simcall->comm_testany.comms,cursor,action) {
     if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
-      simcall->comm_testany.result = cursor;
+      simcall->result.i = cursor;
       xbt_fifo_push(action->simcalls, simcall);
       SIMIX_comm_finish(action);
       return;
@@ -686,7 +686,7 @@ void SIMIX_pre_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions)
   if (MC_is_active()){
     action = xbt_dynar_get_as(actions, idx, smx_action_t);
     xbt_fifo_push(action->simcalls, simcall);
-    simcall->comm_waitany.result = idx;
+    simcall->result.i = idx;
     action->state = SIMIX_DONE;
     SIMIX_comm_finish(action);
     return;
@@ -782,7 +782,7 @@ void SIMIX_comm_finish(smx_action_t action)
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       if (!MC_is_active())
-        simcall->comm_waitany.result = xbt_dynar_search(simcall->comm_waitany.comms, &action);
+        simcall->result.i = xbt_dynar_search(simcall->comm_waitany.comms, &action);
     }
 
     /* If the action is still in a rendez-vous point then remove from it */
