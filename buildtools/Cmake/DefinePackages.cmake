@@ -767,7 +767,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
   buildtools/Cmake/test_prog/prog_getline.c
-  buildtools/Cmake/test_prog/prog_max_size.c
   buildtools/Cmake/test_prog/prog_mutex_timedlock.c
   buildtools/Cmake/test_prog/prog_printf_null.c
   buildtools/Cmake/test_prog/prog_sem_init.c
