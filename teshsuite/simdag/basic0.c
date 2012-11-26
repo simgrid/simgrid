@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,9 +11,20 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic0, sd, "SimDag test basic0");
 
+/* Basic SimDag Test 0
+ * Scenario:
+ *   - Create a no-op Init task
+ *   - Create two communication tasks: 100MB and 1B
+ *   - Schedule them concurrently on the two hosts of the platform
+ * The two communications occur simultaneously but one is so short that it has
+ * no impact on the other.
+ * Simulated time should be:
+ *          1e8/1.25e8 + 1e-4 = 0.8001 seconds
+ * This corresponds to paying latency once and having the full bandwidth for the
+ * big message.
+ */
 int main(int argc, char **argv)
 {
-
   SD_task_t taskInit;
   SD_task_t taskA;
   SD_task_t taskB;
@@ -21,7 +32,7 @@ int main(int argc, char **argv)
 
   /* scheduling parameters */
 
-  double communication_amount1[] = { 0, 100000000, 0, 0 };
+  double communication_amount1[] = { 0, 1e8, 0, 0 };
   double communication_amount2[] = { 0, 1, 0, 0 };
   const double no_cost[] = { 0.0, 0.0 };
 
@@ -35,9 +46,6 @@ int main(int argc, char **argv)
   taskInit = SD_task_create("Init", NULL, 1.0);
   taskA = SD_task_create("Task Comm 1", NULL, 1.0);
   taskB = SD_task_create("Task Comm 2", NULL, 1.0);
-
-
-
 
   /* let's launch the simulation! */
 
