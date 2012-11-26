@@ -2,78 +2,78 @@
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment_split.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [500.006505] (1:p0@host0) p0 recv p1 500.006505
-> [500.006505] (2:p1@host1) p1 send p0 1e10 500.006505
-> [500.006506] (1:p0@host0) p0 compute 12 0.000001
-> [512.006505] (0:@) Simulation time 512.007
-> [512.006505] (2:p1@host1) p1 sleep 12 12.000000
+> [ 10.831247] (1:p0@host0) p0 recv p1 10.831247
+> [ 10.831247] (2:p1@host1) p1 send p0 1e10 10.831247
+> [ 10.831248] (1:p0@host0) p0 compute 12 0.000001
+> [ 22.831247] (0:@) Simulation time 22.8312
+> [ 22.831247] (2:p1@host1) p1 sleep 12 12.000000
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_allReduce.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
-> [100.013010] (1:p0@host0) p0 allReduce 5e8 5e8 100.013010
-> [100.013010] (2:p1@host1) p1 allReduce 5e8 5e8 100.013010
-> [100.013010] (3:p2@host2) p2 allReduce 5e8 5e8 100.013010
-> [150.013010] (0:@) Simulation time 150.013
-> [150.013010] (1:p0@host0) p0 compute 5e8 50.000000
-> [150.013010] (2:p1@host1) p1 compute 5e8 50.000000
-> [150.013010] (3:p2@host2) p2 compute 5e8 50.000000
+> [ 51.095484] (1:p0@host0) p0 allReduce 5e8 5e8 51.095484
+> [ 51.095484] (2:p1@host1) p1 allReduce 5e8 5e8 51.095484
+> [ 51.095484] (3:p2@host2) p2 allReduce 5e8 5e8 51.095484
+> [101.095484] (0:@) Simulation time 101.095
+> [101.095484] (1:p0@host0) p0 compute 5e8 50.000000
+> [101.095484] (2:p1@host1) p1 compute 5e8 50.000000
+> [101.095484] (3:p2@host2) p2 compute 5e8 50.000000
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_barrier.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
 > [  0.000000] (2:p1@host1) p1 comm_size 3 0.000000
 > [  0.000000] (3:p2@host2) p2 comm_size 3 0.000000
-> [  0.506505] (1:p0@host0) p0 send p1 1E7 0.506505
-> [  0.506505] (2:p1@host1) p1 recv p0 0.506505
-> [  0.906505] (2:p1@host1) p1 compute 4E6 0.400000
-> [  0.906505] (3:p2@host2) p2 compute 4E6 0.400000
-> [  0.956505] (0:@) Simulation time 0.956505
-> [  0.956505] (1:p0@host0) p0 compute 4.5E6 0.450000
+> [  0.017330] (1:p0@host0) p0 send p1 1E7 0.017330
+> [  0.017330] (2:p1@host1) p1 recv p0 0.017330
+> [  0.417330] (2:p1@host1) p1 compute 4E6 0.400000
+> [  0.417330] (3:p2@host2) p2 compute 4E6 0.400000
+> [  0.467330] (0:@) Simulation time 0.46733
+> [  0.467330] (1:p0@host0) p0 compute 4.5E6 0.450000
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_bcast.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
-> [ 25.006505] (1:p0@host0) p0 bcast 5e8 25.006505
-> [ 25.006505] (2:p1@host1) p1 bcast 5e8 25.006505
-> [ 25.006505] (3:p2@host2) p2 bcast 5e8 25.006505
-> [ 45.006505] (2:p1@host1) p1 compute 2e8 20.000000
-> [ 75.006505] (1:p0@host0) p0 compute 5e8 50.000000
-> [ 75.006505] (3:p2@host2) p2 compute 5e8 50.000000
-> [100.013010] (1:p0@host0) p0 bcast 5e8 25.006505
-> [100.013010] (2:p1@host1) p1 bcast 5e8 55.006505
-> [100.013010] (3:p2@host2) p2 bcast 5e8 25.006505
-> [120.013010] (2:p1@host1) p1 compute 2e8 20.000000
-> [150.013010] (1:p0@host0) p0 compute 5e8 50.000000
-> [150.013010] (3:p2@host2) p2 compute 5e8 50.000000
-> [175.019515] (2:p1@host1) p1 reduce 5e8 5e8 55.006505
-> [175.019515] (3:p2@host2) p2 reduce 5e8 5e8 25.006505
-> [225.019515] (0:@) Simulation time 225.02
-> [225.019515] (1:p0@host0) p0 reduce 5e8 5e8 75.006505
+> [  0.547742] (1:p0@host0) p0 bcast 5e8 0.547742
+> [  0.547742] (2:p1@host1) p1 bcast 5e8 0.547742
+> [  0.547742] (3:p2@host2) p2 bcast 5e8 0.547742
+> [ 20.547742] (2:p1@host1) p1 compute 2e8 20.000000
+> [ 50.547742] (1:p0@host0) p0 compute 5e8 50.000000
+> [ 50.547742] (3:p2@host2) p2 compute 5e8 50.000000
+> [ 51.095484] (1:p0@host0) p0 bcast 5e8 0.547742
+> [ 51.095484] (2:p1@host1) p1 bcast 5e8 30.547742
+> [ 51.095484] (3:p2@host2) p2 bcast 5e8 0.547742
+> [ 71.095484] (2:p1@host1) p1 compute 2e8 20.000000
+> [101.095484] (1:p0@host0) p0 compute 5e8 50.000000
+> [101.095484] (3:p2@host2) p2 compute 5e8 50.000000
+> [101.643226] (2:p1@host1) p1 reduce 5e8 5e8 30.547742
+> [101.643226] (3:p2@host2) p2 reduce 5e8 5e8 0.547742
+> [151.643226] (0:@) Simulation time 151.643
+> [151.643226] (1:p0@host0) p0 reduce 5e8 5e8 50.547742
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_reduce.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:p0@host0) p0 comm_size 3 0.000000
-> [ 25.006505] (2:p1@host1) p1 reduce 5e8 5e8 25.006505
-> [ 25.006505] (3:p2@host2) p2 reduce 5e8 5e8 25.006505
-> [ 75.006505] (1:p0@host0) p0 reduce 5e8 5e8 75.006505
-> [ 75.006505] (2:p1@host1) p1 compute 5e8 50.000000
-> [ 75.006505] (3:p2@host2) p2 compute 5e8 50.000000
-> [125.006505] (0:@) Simulation time 125.007
-> [125.006505] (1:p0@host0) p0 compute 5e8 50.000000
+> [  0.547742] (2:p1@host1) p1 reduce 5e8 5e8 0.547742
+> [  0.547742] (3:p2@host2) p2 reduce 5e8 5e8 0.547742
+> [ 50.547742] (1:p0@host0) p0 reduce 5e8 5e8 50.547742
+> [ 50.547742] (2:p1@host1) p1 compute 5e8 50.000000
+> [ 50.547742] (3:p2@host2) p2 compute 5e8 50.000000
+> [100.547742] (0:@) Simulation time 100.548
+> [100.547742] (1:p0@host0) p0 compute 5e8 50.000000
 
 ! output sort
 $ ${bindir:=.}/actions --log=actions.thres=verbose homogeneous_3_hosts.xml deployment.xml actions_with_isend.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (2:p1@host1) p1 Irecv p0 0.000000
 > [  0.000000] (3:p2@host2) p2 Irecv p1 0.000000
+> [  1.088979] (1:p0@host0) p0 send p1 1e9 1.088979
 > [ 50.000000] (3:p2@host2) p2 compute 5e8 50.000000
-> [ 50.006505] (1:p0@host0) p0 send p1 1e9 50.006505
 > [100.000000] (2:p1@host1) p1 compute 1e9 100.000000
 > [100.000000] (2:p1@host1) p1 wait 0.000000
-> [150.006505] (1:p0@host0) p0 compute 1e9 100.000000
-> [150.006505] (2:p1@host1) p1 send p2 1e9 50.006505
-> [150.006505] (3:p2@host2) p2 wait 100.006505
-> [150.006505] (3:p2@host2) p2 Isend p0 1e9 0.000000
-> [200.006505] (0:@) Simulation time 200.007
-> [200.006505] (1:p0@host0) p0 recv p2 50.000000
-> [200.006505] (3:p2@host2) p2 compute 5e8 50.000000
+> [101.088979] (1:p0@host0) p0 compute 1e9 100.000000
+> [101.088979] (2:p1@host1) p1 send p2 1e9 1.088979
+> [101.088979] (3:p2@host2) p2 wait 51.088979
+> [101.088979] (3:p2@host2) p2 Isend p0 1e9 0.000000
+> [102.177958] (1:p0@host0) p0 recv p2 1.088979
+> [151.088979] (0:@) Simulation time 151.089
+> [151.088979] (3:p2@host2) p2 compute 5e8 50.000000
