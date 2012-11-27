@@ -351,13 +351,8 @@ XBT_PUBLIC_DATA(AT_surfxml_host_power ) AX_surfxml_host_power;
 #define A_surfxml_host_power (surfxml_bufferstack + AX_surfxml_host_power)
 XBT_PUBLIC_DATA(AT_surfxml_cabinet_suffix ) AX_surfxml_cabinet_suffix;
 #define A_surfxml_cabinet_suffix (surfxml_bufferstack + AX_surfxml_cabinet_suffix)
-<<<<<<< HEAD
-=======
-XBT_PUBLIC_DATA(short ) int surfxml_cabinet_suffix_isset;
 XBT_PUBLIC_DATA(AT_surfxml_gpu_name ) AX_surfxml_gpu_name;
 #define A_surfxml_gpu_name (surfxml_bufferstack + AX_surfxml_gpu_name)
-XBT_PUBLIC_DATA(short ) int surfxml_gpu_name_isset;
->>>>>>> 4ede28040ccac8fc9bab86ef8d571838020f2a14
 XBT_PUBLIC_DATA(AT_surfxml_router_id ) AX_surfxml_router_id;
 #define A_surfxml_router_id (surfxml_bufferstack + AX_surfxml_router_id)
 XBT_PUBLIC_DATA(AT_surfxml_storage_type_id ) AX_surfxml_storage_type_id;
