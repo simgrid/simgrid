@@ -374,8 +374,7 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
   while ((xbt_heap_size(model->model_private->action_heap) > 0)
          && (double_equals(xbt_heap_maxkey(model->model_private->action_heap), now))) {
     action = xbt_heap_pop(model->model_private->action_heap);
-    XBT_DEBUG("Action %p: finish", action);
-    action->generic_action.finish = surf_get_clock();
+    XBT_DEBUG("Something happened to action %p", action);
 #ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       if(model == surf_cpu_model){
@@ -411,6 +410,9 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
 #endif
 
     if(model == surf_cpu_model){
+      action->generic_action.finish = surf_get_clock();
+      XBT_DEBUG("Action %p finished", action);
+
       /* set the remains to 0 due to precision problems when updating the remaining amount */
       action->generic_action.remains = 0;
       surf_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
@@ -419,6 +421,7 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
     else{
       // if I am wearing a latency hat
       if (action->hat == LATENCY) {
+        XBT_DEBUG("Latency paid for action %p. Activating", action);
         lmm_update_variable_weight(model->model_private->maxmin_system, action->variable,
             ((surf_action_network_CM02_t)(action))->weight);
         surf_action_lmm_heap_remove(model->model_private->action_heap,action);
@@ -429,7 +432,9 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
           action->hat == NORMAL) {
         // no need to communicate anymore
         // assume that flows that reached max_duration have remaining of 0
-        action->generic_action.remains = 0;
+      	action->generic_action.finish = surf_get_clock();
+     	XBT_DEBUG("Action %p finished", action);
+  	action->generic_action.remains = 0;
         ((surf_action_t)action)->finish = surf_get_clock();
         model->action_state_set((surf_action_t) action,
                                              SURF_ACTION_DONE);
