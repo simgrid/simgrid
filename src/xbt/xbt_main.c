@@ -105,11 +105,13 @@ static void xbt_postexit(void)
   xbt_fifo_postexit();
   xbt_dict_postexit();
 
-  xbt_log_postexit();
   xbt_os_thread_mod_postexit();
 
-  free(xbt_binary_name);
   xbt_dynar_free(&xbt_cmdline);
+
+  xbt_log_postexit();
+
+  free(xbt_binary_name);
 
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_postexit();
