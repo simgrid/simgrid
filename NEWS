@@ -1,10 +1,40 @@
+                    _               _____ ___
+__   _____ _ __ ___(_) ___  _ __   |___ // _ \
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ (_) |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) \__, |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)/_/
+
+The "Grasgory" release. Major changes:
+
+ * Gras was completely removed from this version 
+                    _               _____  ___   _
+__   _____ _ __ ___(_) ___  _ __   |___ / ( _ ) / |
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ / _ \ | |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | (_) || |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)___(_)_|
+                Oct 27 2012
+
+The "we are told that some people want to also *install* the simgrid
+framework" release.
+
+ * Add missing manpage to the archive.
                     _               _____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / ( _ )
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ / _ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | (_) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)___/
+                Oct 25 2012
 
-(to complete)
+The Psssshiiiit release: SimGrid jumps into the Cloud.
+Major changes:
+
+ * Experimental interface to manipulate VMs, EC2-style.
+ * Fixes around process restart and stochastic workloads
+ * platf: New C interface to create fixed or random platforms
+ * SimDag: Many fixes and improvements of typed tasks
+ * SMPI now covers more of the MPI interface.
+   More datatypes, more functions, more robust.
+ * Model-checking: mmalloc is more robust to user errors.
                     _               _____ _____ _
 __   _____ _ __ ___(_) ___  _ __   |___ /|___  / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   / /| |

@@ -234,6 +234,18 @@ the same network card through the \b network/sender_gap item. This
 is still under investigation as of writting, and the default value is
 to wait 0 seconds between emissions (no gap applied).
 
+\subsubsection options_model_network_asyncsend Simulating asyncronous send
+
+(this configuration item is experimental and may change or disapear)
+
+It is possible to specify that messages below a certain size will be sent 
+as soon as the call to MPI_Send is issued, without waiting for the 
+correspondant receive. This threshold can be configured through the 
+\b smpi/async_small_thres item. The default value is 0. This behavior can also be 
+manually set for MSG mailboxes, by setting the receiving mode of the mailbox 
+with a call to \ref MSG_mailbox_set_async . For MSG, all messages sent to this 
+mailbox will have this behavior, so consider using two mailboxes if needed. 
+
 \subsubsection options_pls Configuring packet-level pseudo-models
 
 When using the packet-level pseudo-models, several specific
@@ -345,20 +357,18 @@ should be the most effcient one (please report bugs if the
 auto-detection fails for you). They are sorted here from the slowest
 to the most effient:
  - \b thread: very slow factory using full featured threads (either
-   ptheads or windows native threads)
+   pthreads or windows native threads)
  - \b ucontext: fast factory using System V contexts (or a portability
    layer of our own on top of Windows fibers)
  - \b raw: amazingly fast factory using a context switching mecanism
    of our own, directly implemented in assembly (only available for x86
    and amd64 platforms for now)
 
-The only reason to change this setting is when the debuging tools get
+The only reason to change this setting is when the debugging tools get
 fooled by the optimized context factories. Threads are the most
 debugging-friendly contextes.
 
 \subsection options_virt_stacksize Adapting the used stack size
-
-(this only works if you use ucontexts or raw context factories)
 
 Each virtualized used process is executed using a specific system
 stack. The size of this stack has a huge impact on the simulation
@@ -370,7 +380,9 @@ stacks), leading to segfaults with corrupted stack traces.
 If you want to push the scalability limits of your code, you really
 want to reduce the \b contexts/stack_size item. Its default value
 is 128 (in Kib), while our Chord simulation works with stacks as small
-as 16 Kib, for example.
+as 16 Kib, for example. For the thread factory, the default value 
+is the one of the system, if it is too large/small, it has to be set 
+with this parameter.
 
 \subsection options_virt_parallel Running user code in parallel
 
@@ -571,6 +583,7 @@ It can be done by using XBT. Go to \ref XBT_log for more details.
 - \c smpi/running_power: \ref options_smpi_bench
 - \c smpi/display_timing: \ref options_smpi_timing
 - \c smpi/cpu_threshold: \ref options_smpi_bench
+- \c smpi/async_small_thres: \ref options_model_network_asyncsend
 
 - \c path: \ref options_generic_path
 - \c verbose-exit: \ref options_generic_exit

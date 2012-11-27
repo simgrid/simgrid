@@ -15,7 +15,7 @@ MSG_examples.
 If you are stuck at any point and if this FAQ cannot help you, please drop us a
 mail to the user mailing list: <simgrid-user@lists.gforge.inria.fr>.
 
-\subsection faq_interfaces What is the difference between MSG, SimDag, and GRAS? Do they serve the same purpose?
+\subsection faq_interfaces What is the difference between MSG and SimDag? Do they serve the same purpose?
 
 It depend on how you define "purpose", I guess ;)
 
@@ -29,16 +29,9 @@ parallel tasks. So, in this model, applications can be seen as a DAG of
 tasks. This is the interface of choice for people wanting to port old
 code designed for SimGrid v1 or v2 to the framework current version.
 
-With both GRAS and MSG, your application is seen as a set of communicating
-processes, exchanging data by the way of messages and performing computation
-on their own.
-
-The difference between both is that MSG is somehow easier to use, but GRAS
-is not limited to the simulator. Once you're done writing your GRAS code,
-you can run your code both in the simulator and on a real platform. For this,
-there are two implementations of the GRAS interface, one for simulation, and one
-for real execution. So, you just have to relink your code to choose one of
-both worlds.
+With MSG, your application is seen as a set of communicating
+processes, exchanging data by the way of messages and performing
+computation on their own.
 
 \subsection faq_visualization Visualizing and analyzing the results
 
@@ -73,7 +66,7 @@ we do not feel a real demand for any other language. But if you think there is o
 
 \subsection faq_MIA "Could you please add (your favorite feature here) to SimGrid?"
 
-Here is the deal. The whole SimGrid project (MSG, SURF, GRAS, ...) is
+Here is the deal. The whole SimGrid project (MSG, SURF, ...) is
 meant to be kept as simple and generic as possible. We cannot add
 functions for everybody's needs when these functions can easily be
 built from the ones already in the API. Most of the time, it is
@@ -606,48 +599,8 @@ and it breaks the hack we devised to bypass the parser, as explained in
 \ref pf_flexml_bypassing. Indeed, this is not a classical usage of the
 parser, and Will didn't imagine that we may have used (and even documented)
 such a crude usage of FleXML. So, we now have to repair the bypassing
-functionality to use the lastest FleXML version and fix the memory usage in
+functionality to use the latest FleXML version and fix the memory usage in
 SimGrid.
-
-\subsubsection faq_trouble_gras_transport GRAS spits networking error messages
-
-Gras, on real platforms, naturally use regular sockets to communicate. They
-are deeply hidden in the gras abstraction, but when things go wrong, you may
-get some weird error messages. Here are some example, with the probable
-reason:
-
- - <b>Transport endpoint is not connected</b>: several processes try to open
-   a server socket on the same port number of the same machine. This is
-   naturally bad and each process should pick its own port number for this.\n
-   Maybe, you just have some processes remaining from a previous experiment
-   on your machine.\n
-   Killing them may help, but again if you kill -KILL them, you'll have to
-   wait for a while: they didn't close there sockets properly and the system
-   needs a while to notice that this port is free again.
-
- - <b>Socket closed by remote side</b>: if the remote process is not
-   supposed to close the socket at this point, it may be dead.
-
- - <b>Connection reset by peer</b>: I found this on Internet about this
-   error. I think it's what's happening here, too:\n
-   <i>This basically means that a network error occurred while the client was
-   receiving data from the server. But what is really happening is that the
-   server actually accepts the connection, processes the request, and sends
-   a reply to the client. However, when the server closes the socket, the
-   client believes that the connection has been terminated abnormally
-   because the socket implementation sends a TCP reset segment telling the
-   client to throw away the data and report an error.\n
-   Sometimes, this problem is caused by not properly closing the
-   input/output streams and the socket connection. Make sure you close the
-   input/output streams and socket connection properly. If everything is
-   closed properly, however, and the problem persists, you can work around
-   it by adding a one-second sleep before closing the streams and the
-   socket. This technique, however, is not reliable and may not work on all
-   systems.</i>\n
-   Since GRAS sockets are closed properly (repeat after me: there is no bug
-   in GRAS), it is either that you are closing your sockets on server side
-   before the client get a chance to read them (use gras_os_sleep() to delay
-   the server), or the server died awfully before the client got the data.
 
 \subsubsection faq_trouble_errors_big_fat_warning I'm told that my XML files are too old.
 

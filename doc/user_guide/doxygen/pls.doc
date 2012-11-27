@@ -206,7 +206,6 @@ Configuration of package `simgrid' on arch (=4):
         Graphviz mode  :
 
 	Simgrid dependencies: 	-lm -lpcre -lpthread -lns3 -lrt
-	Gras dependencies   : 	-lm -lpthread -lrt
 	Smpi dependencies   :
 
 	INSTALL_PREFIX: 	/usr/local

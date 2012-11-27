@@ -439,6 +439,9 @@ void generic_update_actions_state_lazy(double now, double delta, surf_model_t mo
         model->action_state_set((surf_action_t) action,
                                              SURF_ACTION_DONE);
         surf_action_lmm_heap_remove(model->model_private->action_heap,action);
+
+        if (model->gap_remove && model == surf_network_model)
+          model->gap_remove(action);
       }
     }
   }

@@ -51,6 +51,12 @@ void MC_state_interleave_process(mc_state_t state, smx_process_t process)
   state->proc_status[process->pid].interleave_count = 0;
 }
 
+void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process)
+{
+  if(state->proc_status[process->pid].state == MC_INTERLEAVE)
+    state->proc_status[process->pid].state = MC_DONE;
+}
+
 unsigned int MC_state_interleave_size(mc_state_t state)
 {
   unsigned int i, size=0;

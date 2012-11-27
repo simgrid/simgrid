@@ -12,11 +12,29 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 #include "xbt/function_types.h"
+#include "xbt/dynar.h"
 
 SG_BEGIN_DECL()
 
-    /* Get the PID of the current process */
-    XBT_PUBLIC_DATA(int_f_void_t) xbt_getpid;
+/* Get the PID of the current (simulated) process */
+XBT_PUBLIC_DATA(int_f_void_t) xbt_getpid;
+
+/* Current time */
+XBT_PUBLIC(double) xbt_time(void);
+
+    /* Get the name of the UNIX process englobing the world */
+    XBT_PUBLIC_DATA(char*) xbt_binary_name;
+
+    /** Contains all the parameters we got from the command line (including argv[0]) */
+    XBT_PUBLIC_DATA(xbt_dynar_t) xbt_cmdline;
+
+    /**
+     *
+     * Time management functions, returns the system time or sleeps a process. They work both on the simulated and real systems(GRAS).
+     */
+    XBT_PUBLIC(double) xbt_time(void);
+    XBT_PUBLIC(void) xbt_sleep(double sec);
+
 
 SG_END_DECL()
 #endif                          /* __XBT_VIRTU_H__ */

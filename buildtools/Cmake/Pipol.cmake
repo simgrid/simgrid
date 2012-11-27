@@ -10,48 +10,48 @@ IF(pipol_user)
 
   if(with_context)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Dwith_context=${with_context}")
-  endif(with_context)
+  endif()
 
   if(enable_smpi)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_smpi=on")
-  endif(enable_smpi)
+  endif()
 
   if(enable_lua)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_lua=on")
-  endif(enable_lua)
+  endif()
 
   if(enable_compile_optimizations)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_compile_optimizations=on")
-  endif(enable_compile_optimizations)
+  endif()
 
   if(enable_compile_warnings)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_compile_warnings=on")
-  endif(enable_compile_warnings)
+  endif()
 
   if(enable_tracing)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_tracing=on")
-  endif(enable_tracing)
+  endif()
 
   if(enable_coverage)
     set(CMAKE_OPTIONS "${CMAKE_OPTION}	-Denable_coverage=on")
-  endif(enable_coverage)
+  endif()
 
   if(enable_print_message)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_print_message=on")
-  endif(enable_print_message)
+  endif()
 
   if(enable_model-checking)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_model-checking=on")
-  endif(enable_model-checking)
+  endif()
 
   if(enable_latency_bound_tracking)
     set(CMAKE_OPTIONS "${CMAKE_OPTIONS}	-Denable_latency_bound_tracking=on")
-  endif(enable_latency_bound_tracking)
+  endif()
 
   FIND_PROGRAM(HAVE_SSH ssh)
   FIND_PROGRAM(HAVE_RSYNC rsync)
 
-  MESSAGE(STATUS "Pipol user is ${pipol_user}")
+  MESSAGE(STATUS "Pipol user is '${pipol_user}'")
   IF(HAVE_SSH)
     message(STATUS "Found ssh: ${HAVE_SSH}")
     # get pipol systems
@@ -59,7 +59,7 @@ IF(pipol_user)
       ssh ${pipol_user}@pipol.inria.fr pipol-sub --query=systems
       OUTPUT_VARIABLE PIPOL_SYSTEMS OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  ENDIF(HAVE_SSH)
+  ENDIF()
 
   ADD_CUSTOM_TARGET(pipol_test_list_images
     COMMENT "Available images for pipol tests (cmake + make + make test) : "
@@ -125,8 +125,8 @@ IF(pipol_user)
 	    cmake ${CMAKE_HOME_DIRECTORY}${CMAKE_OPTIONS} \;
 	    ctest -D Experimental \"
 	    )
-	endif(NOT make_test)
-      endif(make_test)
+	endif()
+      endif()
 
       ADD_CUSTOM_COMMAND(TARGET ${SYSTEM_TARGET}_experimental
 	POST_BUILD
@@ -136,26 +136,35 @@ IF(pipol_user)
       ADD_CUSTOM_COMMAND(TARGET pipol_test_list_images
 	COMMAND echo ${SYSTEM_TARGET}
 	)
-      ADD_CUSTOM_COMMAND(TARGET pipol_experimental_list_images
+    ADD_CUSTOM_COMMAND(TARGET pipol_experimental_list_images
 	COMMAND echo "${SYSTEM_TARGET}_experimental"
 	)
     ENDMACRO(PIPOL_TARGET)
 
-  ENDIF(HAVE_RSYNC)
+  ENDIF()
 
   # add a target for each pipol system
   IF(PIPOL_SYSTEMS)
-    MESSAGE(STATUS "Adding Pipol targets")
+    #MESSAGE(STATUS "Adding Pipol targets")
     FOREACH(SYSTEM ${PIPOL_SYSTEMS})
       PIPOL_TARGET(${SYSTEM})
     ENDFOREACH(SYSTEM ${PIPOL_SYSTEMS})
-  ENDIF(PIPOL_SYSTEMS)
+  ENDIF()
 
   ADD_CUSTOM_TARGET(pipol_kill_all_jobs
     COMMENT "PIPOL delete all jobs"
     COMMAND ./pipol-sub --pipol-user=${pipol_user} deleteallmyjobs
     )
 
-  message(STATUS "Pipol options: ${CMAKE_OPTIONS}")
+  #message(STATUS "Pipol options: ${CMAKE_OPTIONS}")
 
-ENDIF(pipol_user)
+  add_custom_target(sync-pipol
+  COMMENT "Update pipol script for user: ${pipol_user}"
+  COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/rc.* ${pipol_user}@pipol.inria.fr:~/.pipol/
+  COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/Nightly_simgrid.sh ${pipol_user}@pipol.inria.fr:~/.pipol/nightly/
+  COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/Nightly_memCheck.sh ${pipol_user}@pipol.inria.fr:~/.pipol/nightly/
+  COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/Experimental_bindings.sh ${pipol_user}@pipol.inria.fr:~/
+  COMMAND scp ${CMAKE_HOME_DIRECTORY}/buildtools/pipol/pre-simgrid.sh ${pipol_user}@pipol.inria.fr:~/
+  COMMAND ssh ${pipol_user}@pipol.inria.fr "chmod a=rwx ~/* ~/.pipol/rc.* ~/.pipol/nightly/*"
+  )
+ENDIF()

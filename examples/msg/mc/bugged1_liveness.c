@@ -52,6 +52,7 @@ int coordinator(int argc, char *argv[])
     }
     MSG_task_destroy(task);
     task = NULL;
+    kind = NULL;
   }
  
   return 0;
@@ -87,6 +88,7 @@ int client(int argc, char *argv[])
 
     MSG_task_destroy(grant);
     grant = NULL;
+    kind = NULL;
 
     XBT_INFO("%s got the answer. Sleep a bit and release it", argv[1]);
 
@@ -115,7 +117,7 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
-  MSG_config("model-check/property","promela1_bugged1_liveness");
+  MSG_config("model-check/property","promela_bugged1_liveness");
   MC_automaton_new_propositional_symbol("r", &predR);
   MC_automaton_new_propositional_symbol("cs", &predCS);
   

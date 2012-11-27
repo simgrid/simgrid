@@ -19,13 +19,13 @@ if(NOT WIN32)
   target_link_libraries(flatifier simgrid m)
   target_link_libraries(basic_tracing simgrid m)
   target_link_libraries(basic_link_test simgrid m)
-else(NOT WIN32)
+else()
   target_link_libraries(basic_parsing_test simgrid)
   target_link_libraries(is_router_test simgrid)
   target_link_libraries(flatifier simgrid)
   target_link_libraries(basic_tracing simgrid)
   target_link_libraries(basic_link_test simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

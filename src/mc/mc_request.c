@@ -15,7 +15,6 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
   if(mc_reduce_kind == e_mc_reduce_none)
     return TRUE;
 
-
   if (r1->issuer == r2->issuer)
     return FALSE;
 
@@ -64,16 +63,16 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
    * test call. */
-  if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
+  /*if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
         &&  r2->call == SIMCALL_COMM_TEST)
-    return FALSE;
+        return FALSE;*/
 
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
    * test call.*/
-  if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
+  /*if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
         && r1->call == SIMCALL_COMM_TEST)
-    return FALSE;
+        return FALSE;*/
 
   if(r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_ISEND
      && r1->comm_isend.rdv != r2->comm_isend.rdv)
@@ -239,6 +238,16 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     }
     break;
 
+  case SIMCALL_MC_SNAPSHOT:
+    type = xbt_strdup("MC_SNAPSHOT");
+    args = '\0';
+    break;
+
+  case SIMCALL_MC_COMPARE_SNAPSHOTS:
+    type = xbt_strdup("MC_COMPARE_SNAPSHOTS");
+    args = '\0';
+    break;
+
   default:
     THROW_UNIMPLEMENTED;
   }
@@ -271,7 +280,9 @@ int MC_request_is_visible(smx_simcall_t req)
     || req->call == SIMCALL_COMM_WAIT
     || req->call == SIMCALL_COMM_WAITANY
     || req->call == SIMCALL_COMM_TEST
-    || req->call == SIMCALL_COMM_TESTANY;
+    || req->call == SIMCALL_COMM_TESTANY
+    || req->call == SIMCALL_MC_SNAPSHOT
+    || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS;
 }
 
 int MC_request_is_enabled(smx_simcall_t req)
@@ -288,7 +299,12 @@ int MC_request_is_enabled(smx_simcall_t req)
      * communication is not ready, it can timeout and won't block.
      * On the other hand if it hasn't a timeout, check if the comm is ready.*/
     if(req->comm_wait.timeout >= 0){
-      return TRUE;
+      if(_surf_mc_timeout == 1){
+        return TRUE;
+      }else{
+        act = req->comm_wait.comm;
+        return (act->comm.src_proc && act->comm.dst_proc);
+      }
     }else{
       act = req->comm_wait.comm;
       return (act->comm.src_proc && act->comm.dst_proc);

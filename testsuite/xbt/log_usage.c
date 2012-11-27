@@ -10,9 +10,7 @@
 #pragma hdrstop
 #endif
 
-#include "gras.h"
-
-
+#include "xbt.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,
                                 "Logging specific to this test");

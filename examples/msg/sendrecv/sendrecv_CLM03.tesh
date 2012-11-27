@@ -12,11 +12,11 @@ $ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/sendrecv/platform_sendrec
 > [  0.000000] (1:sender@Inmos) host = Bellevue
 > [  0.000000] (1:sender@Inmos) task_la->data = 0.000000e+00
 > [  0.000000] (2:receiver@Bellevue) receiver
-> [  0.100100] (1:sender@Inmos) task_bw->data = 1.001000e-01
-> [  0.100100] (2:receiver@Bellevue) Task received : latency task
-> [  0.100100] (2:receiver@Bellevue) Communic. time 1.001000e-01
-> [  0.100100] (2:receiver@Bellevue) --- la 0.100100 ----
-> [10000.200100] (0:@) Total simulation time: 1.000020e+04
-> [10000.200100] (2:receiver@Bellevue) Task received : bandwidth task
-> [10000.200100] (2:receiver@Bellevue) Communic. time 1.000010e+04
-> [10000.200100] (2:receiver@Bellevue) --- bw 99999.000010 ----
+> [  0.100010] (1:sender@Inmos) task_bw->data = 1.000100e-01
+> [  0.100010] (2:receiver@Bellevue) Task received : latency task
+> [  0.100010] (2:receiver@Bellevue) Communic. time 1.000100e-01
+> [  0.100010] (2:receiver@Bellevue) --- la 0.100010 ----
+> [1000.200010] (0:@) Total simulation time: 1.000200e+03
+> [1000.200010] (2:receiver@Bellevue) Task received : bandwidth task
+> [1000.200010] (2:receiver@Bellevue) Communic. time 1.000100e+03
+> [1000.200010] (2:receiver@Bellevue) --- bw 999900.009999 ----

@@ -15,8 +15,7 @@
 /** @brief get time in seconds 
 
   * gives  the  number  of  seconds since the Epoch (00:00:00 UTC, January 1, 1970).
-  * Most users should use gras_os_time and should not use this function unless 
-    they really know what they are doing. */
+  */
 XBT_PUBLIC(double) xbt_os_time(void);
 XBT_PUBLIC(void) xbt_os_sleep(double sec);
 

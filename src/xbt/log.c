@@ -100,7 +100,7 @@ controlled by the <i>priority</i> concept (which should maybe be renamed to
 <i>severity</i>).
 
 Empirically, the user can specify that he wants to see every debugging message
-of GRAS while only being interested into the messages at level "error" or
+of MSG while only being interested into the messages at level "error" or
 higher about the XBT internals.
 
 \subsection log_app 1.3 Message appenders
@@ -187,7 +187,7 @@ format. This is usually a good idea.
 Here is an example of the most basic type of macro. This is a logging
 request with priority <i>warning</i>.
 
-<code>XBT_CLOG(MyCat, gras_log_priority_warning, "Values are: %d and '%s'", 5,
+<code>XBT_CLOG(MyCat, xbt_log_priority_warning, "Values are: %d and '%s'", 5,
 "oops");</code>
 
 A logging request is said to be enabled if its priority is higher than or
@@ -281,7 +281,7 @@ int main() {
 Although rarely done, it is possible to configure the logs during
 program initialization by invoking the xbt_log_control_set() method
 manually. A more conventional way is to use the --log command line
-argument. xbt_init() (called by MSG_init(), gras_init() and friends)
+argument. xbt_init() (called by MSG_init() and friends)
 checks and deals properly with such arguments.
 
 \subsection log_use_conf_thres 3.1.1 Threshold configuration
@@ -422,10 +422,10 @@ requires an a single comparison of a static variable to a constant.
 
 There is also compile time constant, \ref XBT_LOG_STATIC_THRESHOLD, which
 causes all logging requests with a lower priority to be optimized to 0 cost
-by the compiler. By setting it to gras_log_priority_infinite, all logging
+by the compiler. By setting it to xbt_log_priority_infinite, all logging
 requests are statically disabled at compile time and cost nothing. Released executables
 <i>might</i>  be compiled with (note that it will prevent users to debug their problems)
-\verbatim-DXBT_LOG_STATIC_THRESHOLD=gras_log_priority_infinite\endverbatim
+\verbatim-DXBT_LOG_STATIC_THRESHOLD=xbt_log_priority_infinite\endverbatim
 
 Compiling with the \verbatim-DNLOG\endverbatim option disables all logging
 requests at compilation time while the \verbatim-DNDEBUG\endverbatim disables
@@ -526,25 +526,6 @@ static void xbt_log_connect_categories(void)
   /* Connect our log channels: that must be done manually under windows */
   /* Also permit that they are correctly listed by xbt_log_help_categories() */
 
-  /* amok */
-  XBT_LOG_CONNECT(amok);
-  XBT_LOG_CONNECT(amok_bw);
-  XBT_LOG_CONNECT(amok_bw_sat);
-  XBT_LOG_CONNECT(amok_pm);
-
-  /* gras */
-  XBT_LOG_CONNECT(gras);
-  XBT_LOG_CONNECT(gras_modules);
-  XBT_LOG_CONNECT(gras_msg);
-  XBT_LOG_CONNECT(gras_msg_read);
-  XBT_LOG_CONNECT(gras_msg_rpc);
-  XBT_LOG_CONNECT(gras_timer);
-  XBT_LOG_CONNECT(gras_trp);
-  XBT_LOG_CONNECT(gras_trp_file);
-  XBT_LOG_CONNECT(gras_virtu);
-  XBT_LOG_CONNECT(gras_virtu_emul);
-  XBT_LOG_CONNECT(gras_virtu_process);
-
   /* xbt */
   XBT_LOG_CONNECT(xbt);
   XBT_LOG_CONNECT(graphxml_parse);
@@ -563,13 +544,6 @@ static void xbt_log_connect_categories(void)
 #ifdef XBT_USE_DEPRECATED
   XBT_LOG_CONNECT(xbt_dict_multi);
 #endif
-  XBT_LOG_CONNECT(xbt_ddt);
-  XBT_LOG_CONNECT(xbt_ddt_cbps);
-  XBT_LOG_CONNECT(xbt_ddt_convert);
-  XBT_LOG_CONNECT(xbt_ddt_create);
-  XBT_LOG_CONNECT(xbt_ddt_exchange);
-  XBT_LOG_CONNECT(xbt_ddt_parse);
-  XBT_LOG_CONNECT(xbt_ddt_lexer);
   XBT_LOG_CONNECT(xbt_dyn);
   XBT_LOG_CONNECT(xbt_ex);
   XBT_LOG_CONNECT(xbt_fifo);
@@ -583,15 +557,9 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_set);
   XBT_LOG_CONNECT(xbt_sync);
   XBT_LOG_CONNECT(xbt_sync_os);
-  XBT_LOG_CONNECT(xbt_trp);
-  XBT_LOG_CONNECT(xbt_trp_meas);
-  XBT_LOG_CONNECT(xbt_trp_tcp);
 
 #ifdef simgrid_EXPORTS
   /* The following categories are only defined in libsimgrid */
-
-  /* gras (sg) */
-  XBT_LOG_CONNECT(gras_trp_sg);
 
   /* bindings */
 #ifdef HAVE_LUA
@@ -609,7 +577,17 @@ static void xbt_log_connect_categories(void)
   /* instr */
 #ifdef HAVE_TRACING
   XBT_LOG_CONNECT(instr);
+  XBT_LOG_CONNECT(instr_api);
+  XBT_LOG_CONNECT(instr_config);
+  XBT_LOG_CONNECT(instr_msg);
+  XBT_LOG_CONNECT(instr_msg_process);
+  XBT_LOG_CONNECT(instr_paje_containers);
+  XBT_LOG_CONNECT(instr_paje_header);
   XBT_LOG_CONNECT(instr_paje_trace);
+  XBT_LOG_CONNECT(instr_paje_types);
+  XBT_LOG_CONNECT(instr_paje_values);
+  XBT_LOG_CONNECT(instr_resource);
+  XBT_LOG_CONNECT(instr_routing);
   XBT_LOG_CONNECT(instr_smpi);
   XBT_LOG_CONNECT(instr_surf);
 #endif
@@ -625,6 +603,7 @@ static void xbt_log_connect_categories(void)
 #ifdef HAVE_MC
   XBT_LOG_CONNECT(mc);
   XBT_LOG_CONNECT(mc_checkpoint);
+  XBT_LOG_CONNECT(mc_compare);
   XBT_LOG_CONNECT(mc_dpor);
   XBT_LOG_CONNECT(mc_global);
   XBT_LOG_CONNECT(mc_liveness);
@@ -640,6 +619,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_io);
   XBT_LOG_CONNECT(msg_kernel);
   XBT_LOG_CONNECT(msg_mailbox);
+  XBT_LOG_CONNECT(msg_new_API);
   XBT_LOG_CONNECT(msg_process);
   XBT_LOG_CONNECT(msg_task);
   XBT_LOG_CONNECT(msg_vm);
@@ -663,6 +643,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_io);
   XBT_LOG_CONNECT(simix_kernel);
   XBT_LOG_CONNECT(simix_network);
+  XBT_LOG_CONNECT(simix_new_api);
   XBT_LOG_CONNECT(simix_process);
   XBT_LOG_CONNECT(simix_smurf);
   XBT_LOG_CONNECT(simix_synchro);
@@ -672,6 +653,7 @@ static void xbt_log_connect_categories(void)
 
   /* surf */
   XBT_LOG_CONNECT(surf);
+  XBT_LOG_CONNECT(platf_generator);
   XBT_LOG_CONNECT(random);
   XBT_LOG_CONNECT(surf_config);
   XBT_LOG_CONNECT(surf_cpu);
@@ -681,11 +663,17 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
   XBT_LOG_CONNECT(surf_maxmin);
   XBT_LOG_CONNECT(surf_network);
+  XBT_LOG_CONNECT(surf_new_model);
 #ifdef HAVE_GTNETS
   XBT_LOG_CONNECT(surf_network_gtnets);
+  XBT_LOG_CONNECT(surf_network_gtnets_interface);
+  XBT_LOG_CONNECT(surf_network_gtnets_simulator);
+  XBT_LOG_CONNECT(surf_network_gtnets_topology);
 #endif
 #ifdef HAVE_NS3
   XBT_LOG_CONNECT(surf_network_ns3);
+  XBT_LOG_CONNECT(interface_ns3);
+  XBT_LOG_CONNECT(simulator_ns3);
 #endif
   XBT_LOG_CONNECT(surf_parse);
   XBT_LOG_CONNECT(surf_route);

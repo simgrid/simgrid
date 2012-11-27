@@ -3,8 +3,7 @@
 
    Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com */
 
-/* Copyright (c) 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -54,7 +53,7 @@ static size_t pagesize;
 
     It never returns NULL. Instead, it dies verbosely on errors. */
 
-void *mmorecore(struct mdesc *mdp, int size)
+void *mmorecore(struct mdesc *mdp, ssize_t size)
 {
   ssize_t test = 0;
   void *result; // please keep it uninitialized to track issues
@@ -64,6 +63,7 @@ void *mmorecore(struct mdesc *mdp, int size)
   void *mapto;                  /* Address we actually mapped to */
   char buf = 0;                 /* Single byte to write to extend mapped file */
 
+//  fprintf(stderr,"increase %p by %u\n",mdp,size);
   if (pagesize == 0)
     pagesize = getpagesize();
 
@@ -120,7 +120,13 @@ void *mmorecore(struct mdesc *mdp, int size)
                    MAP_FIXED, MAP_ANON_OR_FD(mdp), foffset);
 
       if (mapto == (void *) -1/* That's MAP_FAILED */) {
-        fprintf(stderr,"Internal error: mmap returned MAP_FAILED! error: %s",strerror(errno));
+        char buff[1024];
+        fprintf(stderr,"Internal error: mmap returned MAP_FAILED! error: %s\n",strerror(errno));
+        sprintf(buff,"cat /proc/%d/maps",getpid());
+        int status = system(buff);
+        if (status == -1 || !(WIFEXITED(status) && WEXITSTATUS(status) == 0))
+          fprintf(stderr, "Something went wrong when trying to %s\n", buff);
+        sleep(1);
         abort();
       }
 

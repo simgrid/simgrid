@@ -17,7 +17,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/kademlia ${srcdir:=.}/../msg_platform.xml ${srcdir
 > [  0.000000] (11:node@Tanguay) Hi, I'm going to join the network with id 000003ff
 > [  0.000000] (12:node@Morin) Hi, I'm going to join the network with id 000007ff
 > [  0.000000] (13:node@Ethernet) Hi, I'm going to join the network with id 00000fff
-> [900.000000] ( 0:@) Messages created: 1046
+> [900.000000] ( 0:@) Messages created: 1277
 > [900.000000] ( 0:@) Simulated time: 900
 > [900.000000] ( 1:node@Jacquelin) 8/8 FIND_NODE have succeeded
 > [900.000000] ( 2:node@Boivin) 7/7 FIND_NODE have succeeded

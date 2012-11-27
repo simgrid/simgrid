@@ -36,6 +36,7 @@ static xbt_dynar_t storage_list;
 #define GENERIC_ACTION(action) GENERIC_LMM_ACTION(action).generic_action
 
 static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size);
+static int storage_action_unref(surf_action_t action);
 static void storage_action_state_set(surf_action_t action, e_surf_action_state_t state);
 static surf_action_t storage_action_execute (void *storage, double size, e_surf_action_storage_type_t type);
 static void free_storage_content(void *p);
@@ -79,7 +80,7 @@ static surf_action_t storage_action_ls(void *storage, const char* path)
       else
       {
         // if directory does not exist yet in dict
-        if(!xbt_dict_get_or_null(ls_dict,file));
+        if(!xbt_dict_get_or_null(ls_dict,file))
           xbt_dict_set(ls_dict,file,NULL,NULL);
       }
       xbt_dynar_free(&dyn);
@@ -140,6 +141,16 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fp)
 {
   char *filename = fp->name;
   XBT_DEBUG("\tClose file '%s' size '%f'",filename,fp->content->stat.size);
+  // unref write actions from storage
+  surf_action_storage_t write_action;
+  unsigned int i;
+  xbt_dynar_foreach(((storage_t)storage)->write_actions,i,write_action) {
+    if ((write_action->generic_lmm_action.generic_action.file) == fp) {
+      xbt_dynar_cursor_rm(((storage_t)storage)->write_actions, &i);
+      storage_action_unref((surf_action_t) write_action);
+    }
+  }
+
   free(fp->name);
   fp->content = NULL;
   xbt_free(fp);
@@ -209,6 +220,7 @@ static surf_action_t storage_action_execute (void *storage, double size, e_surf_
     lmm_expand(storage_maxmin_system, STORAGE->constraint_write,
                GENERIC_LMM_ACTION(action).variable, 1.0);
     xbt_dynar_push(((storage_t)storage)->write_actions,&action);
+    surf_action_ref((surf_action_t) action);
     break;
   }
   action->type = type;

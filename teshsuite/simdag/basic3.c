@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,6 +11,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic3, sd, "SimDag test basic3");
 
+/* Basic SimDag Test 3
+ * Scenario:
+ *   - Create a chain of tasks (Init, A, Fin)
+ * Verify that the tasks are actually simulated in the right order.
+ */
 int main(int argc, char **argv)
 {
 

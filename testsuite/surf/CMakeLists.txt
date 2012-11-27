@@ -15,14 +15,14 @@ if(NOT WIN32)
   target_link_libraries(surf_usage simgrid m )
   target_link_libraries(surf_usage2 simgrid m )
   target_link_libraries(trace_usage simgrid m )
-else(NOT WIN32)
+else()
   target_link_libraries(lmm_usage simgrid )
   target_link_libraries(maxmin_bench simgrid )
   set_target_properties(maxmin_bench PROPERTIES COMPILE_FLAGS "-DDLL_STATIC")
   target_link_libraries(surf_usage simgrid )
   target_link_libraries(surf_usage2 simgrid )
   target_link_libraries(trace_usage simgrid )
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

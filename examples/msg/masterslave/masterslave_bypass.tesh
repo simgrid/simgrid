@@ -29,107 +29,107 @@ $ $SG_TEST_EXENV masterslave/masterslave_bypass --log=no_loc  "--log=root.fmt:[%
 > [  0.000000] (1:master@host A) 	"Task_19"
 > [  0.000000] (1:master@host A) Sending "Task_0" to "host B"
 > [  0.000000] (2:slave@host B) I'm a slave
-> [  4.602000] (1:master@host A) Send completed
-> [  4.602000] (1:master@host A) Sending "Task_1" to "host B"
-> [  4.602000] (2:slave@host B) Received "Task_0" 
-> [  4.602000] (2:slave@host B) Processing "Task_0" 
-> [  4.652000] (2:slave@host B) "Task_0" done 
-> [  9.254000] (1:master@host A) Send completed
-> [  9.254000] (1:master@host A) Sending "Task_2" to "host B"
-> [  9.254000] (2:slave@host B) Received "Task_1" 
-> [  9.254000] (2:slave@host B) Processing "Task_1" 
-> [  9.304000] (2:slave@host B) "Task_1" done 
-> [ 13.906000] (1:master@host A) Send completed
-> [ 13.906000] (1:master@host A) Sending "Task_3" to "host B"
-> [ 13.906000] (2:slave@host B) Received "Task_2" 
-> [ 13.906000] (2:slave@host B) Processing "Task_2" 
-> [ 13.956000] (2:slave@host B) "Task_2" done 
-> [ 18.558000] (1:master@host A) Send completed
-> [ 18.558000] (1:master@host A) Sending "Task_4" to "host B"
-> [ 18.558000] (2:slave@host B) Received "Task_3" 
-> [ 18.558000] (2:slave@host B) Processing "Task_3" 
-> [ 18.608000] (2:slave@host B) "Task_3" done 
-> [ 23.210000] (1:master@host A) Send completed
-> [ 23.210000] (1:master@host A) Sending "Task_5" to "host B"
-> [ 23.210000] (2:slave@host B) Received "Task_4" 
-> [ 23.210000] (2:slave@host B) Processing "Task_4" 
-> [ 23.260000] (2:slave@host B) "Task_4" done 
-> [ 27.862000] (1:master@host A) Send completed
-> [ 27.862000] (1:master@host A) Sending "Task_6" to "host B"
-> [ 27.862000] (2:slave@host B) Received "Task_5" 
-> [ 27.862000] (2:slave@host B) Processing "Task_5" 
-> [ 27.912000] (2:slave@host B) "Task_5" done 
-> [ 32.514000] (1:master@host A) Send completed
-> [ 32.514000] (1:master@host A) Sending "Task_7" to "host B"
-> [ 32.514000] (2:slave@host B) Received "Task_6" 
-> [ 32.514000] (2:slave@host B) Processing "Task_6" 
-> [ 32.564000] (2:slave@host B) "Task_6" done 
-> [ 37.166000] (1:master@host A) Send completed
-> [ 37.166000] (1:master@host A) Sending "Task_8" to "host B"
-> [ 37.166000] (2:slave@host B) Received "Task_7" 
-> [ 37.166000] (2:slave@host B) Processing "Task_7" 
-> [ 37.216000] (2:slave@host B) "Task_7" done 
-> [ 41.818000] (1:master@host A) Send completed
-> [ 41.818000] (1:master@host A) Sending "Task_9" to "host B"
-> [ 41.818000] (2:slave@host B) Received "Task_8" 
-> [ 41.818000] (2:slave@host B) Processing "Task_8" 
-> [ 41.868000] (2:slave@host B) "Task_8" done 
-> [ 46.470000] (1:master@host A) Send completed
-> [ 46.470000] (1:master@host A) Sending "Task_10" to "host B"
-> [ 46.470000] (2:slave@host B) Received "Task_9" 
-> [ 46.470000] (2:slave@host B) Processing "Task_9" 
-> [ 46.520000] (2:slave@host B) "Task_9" done 
-> [ 51.122000] (1:master@host A) Send completed
-> [ 51.122000] (1:master@host A) Sending "Task_11" to "host B"
-> [ 51.122000] (2:slave@host B) Received "Task_10" 
-> [ 51.122000] (2:slave@host B) Processing "Task_10" 
-> [ 51.172000] (2:slave@host B) "Task_10" done 
-> [ 55.774000] (1:master@host A) Send completed
-> [ 55.774000] (1:master@host A) Sending "Task_12" to "host B"
-> [ 55.774000] (2:slave@host B) Received "Task_11" 
-> [ 55.774000] (2:slave@host B) Processing "Task_11" 
-> [ 55.824000] (2:slave@host B) "Task_11" done 
-> [ 60.426000] (1:master@host A) Send completed
-> [ 60.426000] (1:master@host A) Sending "Task_13" to "host B"
-> [ 60.426000] (2:slave@host B) Received "Task_12" 
-> [ 60.426000] (2:slave@host B) Processing "Task_12" 
-> [ 60.476000] (2:slave@host B) "Task_12" done 
-> [ 65.078000] (1:master@host A) Send completed
-> [ 65.078000] (1:master@host A) Sending "Task_14" to "host B"
-> [ 65.078000] (2:slave@host B) Received "Task_13" 
-> [ 65.078000] (2:slave@host B) Processing "Task_13" 
-> [ 65.128000] (2:slave@host B) "Task_13" done 
-> [ 69.730000] (1:master@host A) Send completed
-> [ 69.730000] (1:master@host A) Sending "Task_15" to "host B"
-> [ 69.730000] (2:slave@host B) Received "Task_14" 
-> [ 69.730000] (2:slave@host B) Processing "Task_14" 
-> [ 69.780000] (2:slave@host B) "Task_14" done 
-> [ 74.382000] (1:master@host A) Send completed
-> [ 74.382000] (1:master@host A) Sending "Task_16" to "host B"
-> [ 74.382000] (2:slave@host B) Received "Task_15" 
-> [ 74.382000] (2:slave@host B) Processing "Task_15" 
-> [ 74.432000] (2:slave@host B) "Task_15" done 
-> [ 79.034000] (1:master@host A) Send completed
-> [ 79.034000] (1:master@host A) Sending "Task_17" to "host B"
-> [ 79.034000] (2:slave@host B) Received "Task_16" 
-> [ 79.034000] (2:slave@host B) Processing "Task_16" 
-> [ 79.084000] (2:slave@host B) "Task_16" done 
-> [ 83.686000] (1:master@host A) Send completed
-> [ 83.686000] (1:master@host A) Sending "Task_18" to "host B"
-> [ 83.686000] (2:slave@host B) Received "Task_17" 
-> [ 83.686000] (2:slave@host B) Processing "Task_17" 
-> [ 83.736000] (2:slave@host B) "Task_17" done 
-> [ 88.338000] (1:master@host A) Send completed
-> [ 88.338000] (1:master@host A) Sending "Task_19" to "host B"
-> [ 88.338000] (2:slave@host B) Received "Task_18" 
-> [ 88.338000] (2:slave@host B) Processing "Task_18" 
-> [ 88.388000] (2:slave@host B) "Task_18" done 
-> [ 92.990000] (1:master@host A) Send completed
-> [ 92.990000] (1:master@host A) All tasks have been dispatched. Let's tell everybody the computation is over.
-> [ 92.990000] (2:slave@host B) Received "Task_19" 
-> [ 92.990000] (2:slave@host B) Processing "Task_19" 
-> [ 93.040000] (2:slave@host B) "Task_19" done 
-> [ 95.642000] (0:@) Simulation time 95.642
-> [ 95.642000] (1:master@host A) Goodbye now!
-> [ 95.642000] (2:slave@host B) Received "finalize" 
-> [ 95.642000] (2:slave@host B) I'm done. See you!
+> [  2.612825] (1:master@host A) Send completed
+> [  2.612825] (1:master@host A) Sending "Task_1" to "host B"
+> [  2.612825] (2:slave@host B) Received "Task_0" 
+> [  2.612825] (2:slave@host B) Processing "Task_0" 
+> [  2.662825] (2:slave@host B) "Task_0" done 
+> [  5.275649] (1:master@host A) Send completed
+> [  5.275649] (1:master@host A) Sending "Task_2" to "host B"
+> [  5.275649] (2:slave@host B) Received "Task_1" 
+> [  5.275649] (2:slave@host B) Processing "Task_1" 
+> [  5.325649] (2:slave@host B) "Task_1" done 
+> [  7.938474] (1:master@host A) Send completed
+> [  7.938474] (1:master@host A) Sending "Task_3" to "host B"
+> [  7.938474] (2:slave@host B) Received "Task_2" 
+> [  7.938474] (2:slave@host B) Processing "Task_2" 
+> [  7.988474] (2:slave@host B) "Task_2" done 
+> [ 10.601299] (1:master@host A) Send completed
+> [ 10.601299] (1:master@host A) Sending "Task_4" to "host B"
+> [ 10.601299] (2:slave@host B) Received "Task_3" 
+> [ 10.601299] (2:slave@host B) Processing "Task_3" 
+> [ 10.651299] (2:slave@host B) "Task_3" done 
+> [ 13.264124] (1:master@host A) Send completed
+> [ 13.264124] (1:master@host A) Sending "Task_5" to "host B"
+> [ 13.264124] (2:slave@host B) Received "Task_4" 
+> [ 13.264124] (2:slave@host B) Processing "Task_4" 
+> [ 13.314124] (2:slave@host B) "Task_4" done 
+> [ 15.926948] (1:master@host A) Send completed
+> [ 15.926948] (1:master@host A) Sending "Task_6" to "host B"
+> [ 15.926948] (2:slave@host B) Received "Task_5" 
+> [ 15.926948] (2:slave@host B) Processing "Task_5" 
+> [ 15.976948] (2:slave@host B) "Task_5" done 
+> [ 18.589773] (1:master@host A) Send completed
+> [ 18.589773] (1:master@host A) Sending "Task_7" to "host B"
+> [ 18.589773] (2:slave@host B) Received "Task_6" 
+> [ 18.589773] (2:slave@host B) Processing "Task_6" 
+> [ 18.639773] (2:slave@host B) "Task_6" done 
+> [ 21.252598] (1:master@host A) Send completed
+> [ 21.252598] (1:master@host A) Sending "Task_8" to "host B"
+> [ 21.252598] (2:slave@host B) Received "Task_7" 
+> [ 21.252598] (2:slave@host B) Processing "Task_7" 
+> [ 21.302598] (2:slave@host B) "Task_7" done 
+> [ 23.915423] (1:master@host A) Send completed
+> [ 23.915423] (1:master@host A) Sending "Task_9" to "host B"
+> [ 23.915423] (2:slave@host B) Received "Task_8" 
+> [ 23.915423] (2:slave@host B) Processing "Task_8" 
+> [ 23.965423] (2:slave@host B) "Task_8" done 
+> [ 26.578247] (1:master@host A) Send completed
+> [ 26.578247] (1:master@host A) Sending "Task_10" to "host B"
+> [ 26.578247] (2:slave@host B) Received "Task_9" 
+> [ 26.578247] (2:slave@host B) Processing "Task_9" 
+> [ 26.628247] (2:slave@host B) "Task_9" done 
+> [ 29.241072] (1:master@host A) Send completed
+> [ 29.241072] (1:master@host A) Sending "Task_11" to "host B"
+> [ 29.241072] (2:slave@host B) Received "Task_10" 
+> [ 29.241072] (2:slave@host B) Processing "Task_10" 
+> [ 29.291072] (2:slave@host B) "Task_10" done 
+> [ 31.903897] (1:master@host A) Send completed
+> [ 31.903897] (1:master@host A) Sending "Task_12" to "host B"
+> [ 31.903897] (2:slave@host B) Received "Task_11" 
+> [ 31.903897] (2:slave@host B) Processing "Task_11" 
+> [ 31.953897] (2:slave@host B) "Task_11" done 
+> [ 34.566722] (1:master@host A) Send completed
+> [ 34.566722] (1:master@host A) Sending "Task_13" to "host B"
+> [ 34.566722] (2:slave@host B) Received "Task_12" 
+> [ 34.566722] (2:slave@host B) Processing "Task_12" 
+> [ 34.616722] (2:slave@host B) "Task_12" done 
+> [ 37.229546] (1:master@host A) Send completed
+> [ 37.229546] (1:master@host A) Sending "Task_14" to "host B"
+> [ 37.229546] (2:slave@host B) Received "Task_13" 
+> [ 37.229546] (2:slave@host B) Processing "Task_13" 
+> [ 37.279546] (2:slave@host B) "Task_13" done 
+> [ 39.892371] (1:master@host A) Send completed
+> [ 39.892371] (1:master@host A) Sending "Task_15" to "host B"
+> [ 39.892371] (2:slave@host B) Received "Task_14" 
+> [ 39.892371] (2:slave@host B) Processing "Task_14" 
+> [ 39.942371] (2:slave@host B) "Task_14" done 
+> [ 42.555196] (1:master@host A) Send completed
+> [ 42.555196] (1:master@host A) Sending "Task_16" to "host B"
+> [ 42.555196] (2:slave@host B) Received "Task_15" 
+> [ 42.555196] (2:slave@host B) Processing "Task_15" 
+> [ 42.605196] (2:slave@host B) "Task_15" done 
+> [ 45.218021] (1:master@host A) Send completed
+> [ 45.218021] (1:master@host A) Sending "Task_17" to "host B"
+> [ 45.218021] (2:slave@host B) Received "Task_16" 
+> [ 45.218021] (2:slave@host B) Processing "Task_16" 
+> [ 45.268021] (2:slave@host B) "Task_16" done 
+> [ 47.880845] (1:master@host A) Send completed
+> [ 47.880845] (1:master@host A) Sending "Task_18" to "host B"
+> [ 47.880845] (2:slave@host B) Received "Task_17" 
+> [ 47.880845] (2:slave@host B) Processing "Task_17" 
+> [ 47.930845] (2:slave@host B) "Task_17" done 
+> [ 50.543670] (1:master@host A) Send completed
+> [ 50.543670] (1:master@host A) Sending "Task_19" to "host B"
+> [ 50.543670] (2:slave@host B) Received "Task_18" 
+> [ 50.543670] (2:slave@host B) Processing "Task_18" 
+> [ 50.593670] (2:slave@host B) "Task_18" done 
+> [ 53.206495] (1:master@host A) Send completed
+> [ 53.206495] (1:master@host A) All tasks have been dispatched. Let's tell everybody the computation is over.
+> [ 53.206495] (2:slave@host B) Received "Task_19" 
+> [ 53.206495] (2:slave@host B) Processing "Task_19" 
+> [ 53.256495] (2:slave@host B) "Task_19" done 
+> [ 55.858495] (0:@) Simulation time 55.8585
+> [ 55.858495] (1:master@host A) Goodbye now!
+> [ 55.858495] (2:slave@host B) Received "finalize" 
+> [ 55.858495] (2:slave@host B) I'm done. See you!

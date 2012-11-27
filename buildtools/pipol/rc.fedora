@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# find the package you need on https://admin.fedoraproject.org/pkgdb/
+
 sudo yum -y -q update
 
 sudo yum -y -q install gcc
@@ -15,6 +17,7 @@ sudo yum -y -q install f2c
 sudo yum -y -q install pcre-devel pcre-static
 sudo yum -y -q install git-core
 sudo yum -y -q install ruby ruby-devel
+sudo yum -y -q install libunwind libunwind-devel
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary

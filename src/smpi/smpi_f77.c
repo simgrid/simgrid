@@ -101,6 +101,9 @@ void mpi_init__(int* ierr) {
    new_datatype(MPI_UINT16_T);
    new_datatype(MPI_UINT32_T);
    new_datatype(MPI_UINT64_T);
+   new_datatype(MPI_2FLOAT);
+   new_datatype(MPI_2DOUBLE);
+
 
    op_lookup = xbt_dynar_new(sizeof(MPI_Op), NULL);
    new_op(MPI_MAX);
@@ -146,6 +149,10 @@ void mpi_comm_size__(int* comm, int* size, int* ierr) {
 
 double mpi_wtime__(void) {
    return MPI_Wtime();
+}
+
+double mpi_wtick__(void) {
+  return MPI_Wtick();
 }
 
 void mpi_comm_dup__(int* comm, int* newcomm, int* ierr) {
@@ -311,6 +318,13 @@ void mpi_allgather__(void* sendbuf, int* sendcount, int* sendtype,
                         recvbuf, *recvcount, get_datatype(*recvtype), get_comm(*comm));
 }
 
+void mpi_allgatherv__(void* sendbuf, int* sendcount, int* sendtype,
+                     void* recvbuf, int* recvcount,int* displs, int* recvtype,
+                     int* comm, int* ierr) {
+  *ierr = MPI_Allgatherv(sendbuf, *sendcount, get_datatype(*sendtype),
+                        recvbuf, recvcount, displs, get_datatype(*recvtype), get_comm(*comm));
+}
+
 void mpi_scan__(void* sendbuf, void* recvbuf, int* count, int* datatype,
                 int* op, int* comm, int* ierr) {
   *ierr = MPI_Scan(sendbuf, recvbuf, *count, get_datatype(*datatype),
@@ -321,4 +335,33 @@ void mpi_alltoall__(void* sendbuf, int* sendcount, int* sendtype,
                     void* recvbuf, int* recvcount, int* recvtype, int* comm, int* ierr) {
   *ierr = MPI_Alltoall(sendbuf, *sendcount, get_datatype(*sendtype),
                        recvbuf, *recvcount, get_datatype(*recvtype), get_comm(*comm));
+}
+
+void mpi_test__ (int * request, int *flag, MPI_Status * status, int* ierr){
+  MPI_Request req = find_request(*request);
+  *ierr= MPI_Test(&req, flag, status);
+}
+void mpi_get_processor_name__(char *name, int *resultlen, int* ierr){
+  *ierr = MPI_Get_processor_name(name, resultlen);
+}
+
+void mpi_get_count__(MPI_Status * status, int* datatype, int *count, int* ierr){
+  *ierr = MPI_Get_count(status, get_datatype(*datatype), count);
+}
+
+void mpi_type_extent__(int* datatype, MPI_Aint * extent, int* ierr){
+  *ierr= MPI_Type_extent(get_datatype(*datatype),  extent);
+}
+
+void mpi_type_ub__(int* datatype, MPI_Aint * disp, int* ierr){
+  *ierr= MPI_Type_ub(get_datatype(*datatype), disp);
+}
+
+void mpi_type_lb__(int* datatype, MPI_Aint * extent, int* ierr){
+  *ierr= MPI_Type_extent(get_datatype(*datatype), extent);
+}
+
+void mpi_type_size__(int* datatype, int *size, int* ierr)
+{
+  *ierr = MPI_Type_size(get_datatype(*datatype), size);
 }

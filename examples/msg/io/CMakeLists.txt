@@ -9,10 +9,10 @@ add_executable(file_unlink file_unlink.c)
 if(NOT WIN32)
   target_link_libraries(file simgrid m pthread)
   target_link_libraries(file_unlink simgrid m pthread)
-else(NOT WIN32)
+else()
   target_link_libraries(file simgrid)
   target_link_libraries(file_unlink simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

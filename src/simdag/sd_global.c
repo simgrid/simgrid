@@ -229,13 +229,14 @@ xbt_swag_t SD_simulate_swag(double how_long) {
   unsigned int iter, depcnt;
   static int first_time = 1;
 
-   if (first_time) {
-     XBT_VERB("Starting simulation...");
+  if (first_time) {
+    XBT_VERB("Starting simulation...");
 
-     surf_presolve();            /* Takes traces into account */
-     first_time = 0;
-   }
+    surf_presolve();            /* Takes traces into account */
+    first_time = 0;
+  }
 
+  XBT_VERB("Run simulation for %f seconds", how_long);
   sd_global->watch_point_reached = 0;
 
   xbt_swag_reset(sd_global->return_set);
@@ -250,7 +251,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
   /* main loop */
   elapsed_time = 0.0;
   while (elapsed_time >= 0.0 &&
-         (how_long < 0.0 || total_time < how_long) &&
+         (how_long < 0.0 || 0.00001 < (how_long -total_time)) &&
          !sd_global->watch_point_reached) {
     surf_model_t model = NULL;
     /* dumb variables */

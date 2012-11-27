@@ -13,12 +13,12 @@ if(NOT WIN32)
   target_link_libraries(test_latency2 simgrid m pthread )
   target_link_libraries(test_latency3 simgrid m pthread )
   target_link_libraries(test_latency_bound simgrid m pthread )
-else(NOT WIN32)
+else()
   target_link_libraries(test_latency1 simgrid)
   target_link_libraries(test_latency2 simgrid)
   target_link_libraries(test_latency3 simgrid)
   target_link_libraries(test_latency_bound simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

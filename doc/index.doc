@@ -17,6 +17,7 @@ Currently, the documentation contains 3 main sections:
 <ul>
   <li><h2><a href="../user_guide/html/index.html">SimGrid User Guide</a></h2></li>
   <li><h2><a href="../ref_guide/html/index.html">SimGrid Reference Manual</a>.</h2></li>
+  <li><h2><a href="../dev_guide/html/index.html">SimGrid Developer Manual</a>.</h2></li>
   <li><h2>You can also retrieve tutorials from <a href="http://simgrid.gforge.inria.fr/faq.html">here</a>.</h2></li> 
 </ul>
 \endhtmlonly
@@ -25,7 +26,7 @@ Other information sources:
   - The Frequently Asked Questions are <a href="http://simgrid.gforge.inria.fr/faq.html">here</a>.
   - The development webpage is <a href="https://gforge.inria.fr/projects/simgrid//">gforge.inria.fr/projects/simgrid</a>.
   - The user mailing list is <simgrid-user@lists.gforge.inria.fr>
-  - The SimGrid software package can be downloaded from <a href="http://simgrid.gforge.inria.fr/download.php">here</a>.
+  - The SimGrid software package can be downloaded from <a href="http://simgrid.gforge.inria.fr/download.html">here</a>.
 
 \htmlonly
 <center>

@@ -33,8 +33,11 @@ typedef DWORD xbt_os_thread_key_t;
 typedef pthread_key_t xbt_os_thread_key_t;
 #endif
 
-/* Calls pthread_atfork() if present, and else does nothing.
- * The only known user of this wrapper is mmalloc_preinit(); This function may disapear in the near future.
+/** Calls pthread_atfork() if present, and raise an exception otherwise.
+ *
+ * The only known user of this wrapper is mmalloc_preinit(), but it is absolutely mandatory there:
+ * when used with tesh, mmalloc *must* be mutex protected and resistant to forks.
+ * This functionality is the only way to get it working (by ensuring that the mutex is consistently released on forks)
  */
 XBT_PUBLIC(int) xbt_os_thread_atfork(void (*prepare)(void),
                                      void (*parent)(void),
@@ -63,7 +66,7 @@ XBT_PUBLIC(void) xbt_os_thread_join(xbt_os_thread_t thread,
 XBT_PUBLIC(void) xbt_os_thread_yield(void);
 XBT_PUBLIC(void) xbt_os_thread_cancel(xbt_os_thread_t thread);
 XBT_PUBLIC(void *) xbt_os_thread_getparam(void);
-
+XBT_PUBLIC(void) xbt_os_thread_setstacksize(int stack_size);
 
   /** \brief Thread mutex data type (opaque structure) */
 typedef struct xbt_os_mutex_ *xbt_os_mutex_t;

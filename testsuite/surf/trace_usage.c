@@ -9,13 +9,15 @@
 #pragma hdrstop
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "surf/trace_mgr.h"
 #include "surf/surf.h"
 
 #include "xbt/log.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
                              "Messages specific for surf example");
 

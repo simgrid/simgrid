@@ -1,8 +1,0 @@
-#!/bin/bash
-if [ x@EXEEXT@ = x ] ; then 
-  exenv=$SG_TEST_EXENV
-else
-  exenv=wine
-fi
-
-exec $exenv ./chord_simulator @top_srcdir@/examples/msg/msg_platform.xml @srcdir@/chord_deployment.xml $@

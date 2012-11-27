@@ -1,4 +1,4 @@
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,6 +11,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic4, sd, "SimDag test basic4");
 
+/* Basic SimDag Test 4
+ * Scenario:
+ *   - Create a chain of tasks (Init, A, Fin)
+ *   - Have a 1B communication between two no-op tasks.
+ * Verify that the tasks are actually simulated in the right order.
+ * The simulated time should be equal to the network latency: 0.0001 seconds.
+ */
 int main(int argc, char **argv)
 {
   /* creation of the tasks and their dependencies */

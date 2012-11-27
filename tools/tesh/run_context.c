@@ -79,7 +79,7 @@ void rctx_init(void)
   struct sigaction newact;
   int i;
   fg_job = 0;
-  bg_jobs = xbt_dynar_new_sync(sizeof(rctx_t), kill_it);
+  bg_jobs = xbt_dynar_new(sizeof(rctx_t), kill_it);
   armageddon_mutex = xbt_os_mutex_init();
   armageddon_initiator = NULL;
   sigwaiter_mutex = xbt_os_mutex_init();
@@ -325,6 +325,7 @@ void rctx_pushline(const char *filepos, char kind, char *line)
     rctx->is_empty = 0;
     xbt_strbuff_append(rctx->output_wanted, line);
     xbt_strbuff_append(rctx->output_wanted, "\n");
+    XBT_DEBUG("wanted:%s",rctx->output_wanted->data);
     break;
 
   case '!':

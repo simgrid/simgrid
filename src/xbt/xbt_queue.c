@@ -12,9 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/dynar.h"
 
-#include "xbt/synchro.h"
 #include "xbt/queue.h"          /* this module */
-#include "gras/virtu.h"
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_queue, xbt,
                                 "Message exchanging queue");
 

@@ -67,7 +67,7 @@ implemented yet in tesh. This is a bit restrictive, but well, patch
 welcome...
 
 The situation in which it is mainly problematic is to create a
-temporary file. The solution is to use the "mkfile" buildin command,
+temporary file. The solution is to use the "mkfile" built-in command,
 as in the following example:
 $ mkfile myFile
 > some content
@@ -122,7 +122,7 @@ SimGrid since the processes run out of order at any scheduling point
 parallel). To ensure that the simulator outputs still match, we have
 to sort the output back before comparing it. 
 
-We expect the simulators to run with that log formating argument:
+We expect the simulators to run with that log formatting argument:
    -log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
 Then, tesh sorts string on the 19 first chars only, and is stable when
 line beginnings are equal. This should ensure that:

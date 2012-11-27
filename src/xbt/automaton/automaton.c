@@ -11,9 +11,9 @@
 xbt_automaton_t xbt_automaton_new(){
   xbt_automaton_t automaton = NULL;
   automaton = xbt_new0(struct xbt_automaton, 1);
-  automaton->states = xbt_dynar_new(sizeof(xbt_state_t), NULL);
-  automaton->transitions = xbt_dynar_new(sizeof(xbt_transition_t), NULL);
-  automaton->propositional_symbols = xbt_dynar_new(sizeof(xbt_propositional_symbol_t), NULL);
+  automaton->states = xbt_dynar_new(sizeof(xbt_state_t), xbt_state_free_voidp);
+  automaton->transitions = xbt_dynar_new(sizeof(xbt_transition_t), xbt_transition_free_voidp);
+  automaton->propositional_symbols = xbt_dynar_new(sizeof(xbt_propositional_symbol_t), xbt_propositional_symbol_free_voidp);
   return automaton;
 }
 
@@ -22,8 +22,8 @@ xbt_state_t xbt_automaton_new_state(xbt_automaton_t a, int type, char* id){
   state = xbt_new0(struct xbt_state, 1);
   state->type = type;
   state->id = strdup(id);
-  state->in = xbt_dynar_new(sizeof(xbt_transition_t), NULL);
-  state->out = xbt_dynar_new(sizeof(xbt_transition_t), NULL); 
+  state->in = xbt_dynar_new(sizeof(xbt_transition_t), xbt_transition_free_voidp);
+  state->out = xbt_dynar_new(sizeof(xbt_transition_t), xbt_transition_free_voidp); 
   xbt_dynar_push(a->states, &state);
   return state;
 }
@@ -99,85 +99,6 @@ xbt_transition_t xbt_automaton_get_transition(xbt_automaton_t a, xbt_state_t src
   }
   return NULL;
 }
-
-void xbt_automaton_free_automaton(xbt_automaton_t a, void_f_pvoid_t transition_free_function){
-  unsigned int cursor = 0;
-  xbt_state_t state = NULL;
-  xbt_transition_t transition = NULL;
-
-  xbt_dynar_foreach(a->states, cursor, state){
-    xbt_dynar_free(&(state->out));
-    xbt_dynar_free(&(state->in));
-  }
-
-  xbt_dynar_foreach(a->transitions, cursor, transition){
-    if(transition_free_function) 
-      (*transition_free_function) (transition->label);
-  }
-
-  xbt_dynar_foreach(a->states, cursor, state)
-    free(state);
-  xbt_dynar_free(&(a->states));
-
-  xbt_dynar_foreach(a->transitions, cursor, state)
-    free(transition);
-  xbt_dynar_free(&(a->transitions));
-
-  free(a);
-
-  return;
-}
-
-void xbt_automaton_free_state(xbt_automaton_t a, xbt_state_t s, void_f_pvoid_t transition_free_function){
-  unsigned long nbr;
-  unsigned long i;
-  unsigned int cursor = 0;
-  xbt_state_t state = NULL;
-  xbt_transition_t transition = NULL;
-
-  nbr = xbt_dynar_length(a->transitions);
-  for(i = 0; i <nbr; i++){
-    xbt_dynar_get_cpy(a->transitions, cursor, &transition);
-    if((transition->src == s) || (transition->dst == s)){
-      xbt_automaton_free_transition(a, transition, transition_free_function);
-    }else{
-      cursor++;
-    }
-  }
-
-  cursor = 0;
-  xbt_dynar_foreach(a->states, cursor, state)
-    if(state == s)
-      xbt_dynar_cursor_rm(a->states, &cursor);
-
-  xbt_dynar_free(&(s->in));
-  xbt_dynar_free(&(s->out));
-
-  free(s);
-
-  return;
-}
-
-void xbt_automaton_free_transition(xbt_automaton_t a, xbt_transition_t t, void_f_pvoid_t transition_free_function){
-  int index;
-  unsigned int cursor = 0;
-  xbt_transition_t transition = NULL;
-
-  if((transition_free_function) && (t->label))
-    (*transition_free_function) (t->label);
-
-  xbt_dynar_foreach(a->transitions, cursor, transition) {
-    if(transition == t){
-      index = __xbt_find_in_dynar(transition->dst->in, transition);
-      xbt_dynar_remove_at(transition->dst->in, index, NULL);
-      index = __xbt_find_in_dynar(transition->src->out, transition);
-      xbt_dynar_remove_at(transition->src->out, index, NULL);
-      xbt_dynar_cursor_rm(a->transitions, & cursor);
-      free(transition);
-      break;
-    }  
-  }
-} 
 
 xbt_state_t xbt_automaton_transition_get_source(xbt_transition_t t){
   return t->src;
@@ -363,4 +284,85 @@ int propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2){
   } 
 
   return 0;
+}
+
+/************ Free functions ****************/
+
+static void xbt_transition_free(xbt_transition_t t);
+static void xbt_exp_label_free(xbt_exp_label_t e);
+static void xbt_propositional_symbol_free(xbt_propositional_symbol_t ps);
+
+void xbt_state_free(xbt_state_t s){
+  if(s){
+    xbt_free(s->id);
+    xbt_dynar_free(&(s->in));
+    xbt_dynar_free(&(s->out));
+    xbt_free(s);
+    s = NULL;
+  }
+}
+
+void xbt_state_free_voidp(void *s){
+  xbt_state_free((xbt_state_t) * (void **) s);
+}
+
+static void xbt_transition_free(xbt_transition_t t){
+  if(t){
+    xbt_exp_label_free(t->label);
+    xbt_free(t);
+    t = NULL;
+  }
+}
+
+void xbt_transition_free_voidp(void *t){
+  xbt_transition_free((xbt_transition_t) * (void **) t);
+}
+
+static void xbt_exp_label_free(xbt_exp_label_t e){
+  if(e){
+    switch(e->type){
+    case 0:
+    case 1:
+      xbt_exp_label_free(e->u.or_and.left_exp);
+      xbt_exp_label_free(e->u.or_and.right_exp);
+      break;
+    case 2:
+      xbt_exp_label_free(e->u.exp_not);
+      break;
+    case 3:
+      xbt_free(e->u.predicat);
+      break;
+    default:
+      break;
+    }
+    xbt_free(e);
+    e = NULL;
+  }
+}
+
+void xbt_exp_label_free_voidp(void *e){
+  xbt_exp_label_free((xbt_exp_label_t) * (void **) e);
+}
+
+static void xbt_propositional_symbol_free(xbt_propositional_symbol_t ps){
+  if(ps){
+    xbt_free(ps->pred);
+    xbt_free(ps);
+    ps = NULL;
+  }
+}
+
+void xbt_propositional_symbol_free_voidp(void *ps){
+  xbt_propositional_symbol_free((xbt_propositional_symbol_t) * (void **) ps);
+}
+
+void xbt_automaton_free(xbt_automaton_t a){
+  if(a){
+    xbt_dynar_free(&(a->propositional_symbols));
+    xbt_dynar_free(&(a->transitions));
+    xbt_dynar_free(&(a->states));
+    xbt_state_free(a->current_state);
+    xbt_free(a);
+    a = NULL;
+  }
 }

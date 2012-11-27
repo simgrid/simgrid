@@ -662,34 +662,22 @@ INPUT                  = main.doc \
                          modules.doc \
                          module-xbt.doc \
                          module-msg.doc \
-                         module-gras.doc \
-                         module-amok.doc \
                          module-sd.doc \
                          module-surf.doc \
                          module-simix.doc \
                          module-trace.doc \
-			 index-API.doc \
+                         index-API.doc \
                          @top_srcdir@/doc/ref_guide/doxygen/logcategories.doc \
                          @top_srcdir@/src/instr/ \
                          @top_srcdir@/include/ \
                          @top_srcdir@/include/msg \
-                         @top_srcdir@/include/gras \
-                         @top_srcdir@/include/amok \
                          @top_srcdir@/include/xbt \
                          @top_srcdir@/include/simdag \
                          @top_srcdir@/include/simgrid \
                          @top_srcdir@/src/include/surf \
                          @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/src/xbt/datadesc \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/msg/ \
-                         @top_srcdir@/src/gras \
-                         @top_srcdir@/src/gras/Msg \
-                         @top_srcdir@/src/gras/Transport \
-                         @top_srcdir@/src/gras/Virtu \
-                         @top_srcdir@/src/amok \
-                         @top_srcdir@/src/amok/Bandwidth \
-                         @top_srcdir@/src/amok/PeerManagement \
                          @top_srcdir@/src/simdag \
                          @top_srcdir@/src/simix
 
@@ -757,7 +745,6 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = ./ \
-                         @top_srcdir@/doc/gtut-files \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/examples \
@@ -930,13 +917,13 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            =
+HTML_HEADER            = header.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            = 
+HTML_FOOTER            = footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -945,7 +932,7 @@ HTML_FOOTER            =
 # the style sheet file to the HTML output directory, so don't put your own
 # style sheet in the HTML output directory as well, or it will be erased!
 
-HTML_STYLESHEET        =
+HTML_STYLESHEET        = stylesheet.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1161,7 +1148,7 @@ ECLIPSE_DOC_ID         = org.doxygen.Project
 # navigation tree you can set this option to NO if you already set
 # GENERATE_TREEVIEW to YES.
 
-DISABLE_INDEX          = NO
+DISABLE_INDEX          = YES
 
 # The GENERATE_TREEVIEW tag is used to specify whether a tree-like index
 # structure should be generated to display hierarchical information.

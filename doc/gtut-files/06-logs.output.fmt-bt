@@ -1,4 +1,0 @@
-$ ./test_server 12345 --log=test.fmt:"[%r] %m%n%b%n%n" & ./test_client 127.0.0.1 12345 --log=test.fmt:"[%r] %m%n%b%n%n"
-$
-$ ./test_simulator platform.xml test.xml --log=test.fmt:[%r]%m%n%b%n%n
-$

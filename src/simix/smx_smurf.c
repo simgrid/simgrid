@@ -1,6 +1,7 @@
 #include "smx_private.h"
 #include "xbt/fifo.h"
 #include "xbt/xbt_os_thread.h"
+#include "../mc/mc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_smurf, simix,
                                 "Logging specific to SIMIX (SMURF)");
@@ -24,6 +25,7 @@ void SIMIX_simcall_push(smx_process_t self)
               SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
     SIMIX_process_yield(self);
   } else {
+    XBT_DEBUG("I'm the maestro, execute the simcall directly");
     SIMIX_simcall_pre(&self->simcall, 0);
   }
 }
@@ -557,11 +559,31 @@ void SIMIX_simcall_pre(smx_simcall_t simcall, int value)
       SIMIX_simcall_answer(simcall);
       break;
 
+#ifdef HAVE_MC
+    case SIMCALL_MC_SNAPSHOT:
+      simcall->mc_snapshot.s = MC_take_snapshot();
+      SIMIX_simcall_answer(simcall);
+      break;
+
+    case SIMCALL_MC_COMPARE_SNAPSHOTS:
+      simcall->mc_compare_snapshots.result =
+        snapshot_compare(simcall->mc_compare_snapshots.snapshot1, simcall->mc_compare_snapshots.snapshot2, NULL, NULL);
+      SIMIX_simcall_answer(simcall);
+      break;
+#endif /* HAVE_MC */
+
     case SIMCALL_NONE:
       THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
           SIMIX_process_get_name(simcall->issuer),
           SIMIX_host_get_name(SIMIX_process_get_host(simcall->issuer))
           );
+      break;
+
+    /* ****************************************************************************************** */
+    /* TUTORIAL: New API                                                                        */
+    /* ****************************************************************************************** */
+    case SIMCALL_NEW_API_INIT:
+      SIMIX_pre_new_api_fct(simcall);
       break;
   }
 }
@@ -589,6 +611,13 @@ void SIMIX_simcall_post(smx_action_t action)
 
     case SIMIX_ACTION_IO:
       SIMIX_post_io(action);
+      break;
+
+    /* ****************************************************************************************** */
+    /* TUTORIAL: New API                                                                        */
+    /* ****************************************************************************************** */
+    case SIMIX_ACTION_NEW_API:
+      SIMIX_post_new_api(action);
       break;
   }
 }

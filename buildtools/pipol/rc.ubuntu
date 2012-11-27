@@ -16,6 +16,17 @@ sudo apt-get -y -qq install libpcre3-dev
 sudo apt-get -y -qq install f2c
 sudo apt-get -y -qq install valgrind
 sudo apt-get -y -qq install git-core
+sudo apt-get -y -qq install libunwind7-dev
+
+if [ $PIPOL_IMAGE == "i386-linux-ubuntu-lucid.dd.gz" ]; then
+  wget http://mirror.ovh.net/ubuntu//pool/universe/libu/libunwind/libunwind7_0.99-0.3ubuntu1_i386.deb
+  sudo dpkg -i libunwind7_0.99-0.3ubuntu1_i386.deb
+fi
+
+if [ $PIPOL_IMAGE == "amd64-linux-ubuntu-lucid.dd.gz" ]; then
+  wget http://mirror.ovh.net/ubuntu//pool/universe/libu/libunwind/libunwind7_0.99-0.3ubuntu1_amd64.deb
+  sudo dpkg -i libunwind7_0.99-0.3ubuntu1_amd64.deb
+fi
 
 which_svn=`which svn`		#svn necessary
 which_gcc=`which gcc`		#gcc gcc necessary

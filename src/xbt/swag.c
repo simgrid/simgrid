@@ -218,8 +218,9 @@ XBT_TEST_UNIT("basic", test_swag_basic, "Basic usage")
   xbt_swag_insert(obj2, setA);
   xbt_swag_insert(obj2, setB);
 
-  xbt_swag_remove(obj1, setB);
-  /*  xbt_swag_remove(obj2, setB); */
+  xbt_test_assert(xbt_swag_remove(NULL, setB) == NULL);
+  xbt_test_assert(xbt_swag_remove(obj1, setB) == obj1);
+  /*  xbt_test_assert(xbt_swag_remove(obj2, setB) == obj2); */
 
   xbt_test_add("Traverse set A");
   xbt_swag_foreach(obj, setA) {

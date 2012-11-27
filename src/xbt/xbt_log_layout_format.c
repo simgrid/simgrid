@@ -11,8 +11,8 @@
 #include "xbt/sysdep.h"
 #include "xbt/strbuff.h"
 #include "xbt/log_private.h"
-#include "gras/virtu.h"         /* gras_os_myname (KILLME) */
-#include "xbt/synchro.h"        /* xbt_thread_self_name */
+#include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
+#include "surf/surf.h"
 #include <stdio.h>
 
 extern const char *xbt_log_priority_names[8];
@@ -88,7 +88,8 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
     handle_modifier:
       switch (*q) {
       case '\0':
-        xbt_die("Layout format (%s) ending with %%\n", (char *)l->data);
+        fprintf(stderr, "Layout format (%s) ending with %%\n", (char *)l->data);
+        xbt_abort();
       case '%':
         *p = '%';
         check_overflow(1);
@@ -125,7 +126,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
         show_string(xbt_log_priority_names[ev->priority]);
         break;
       case 'h':                 /* host name; SimGrid extension */
-        show_string(gras_os_myname());
+        show_string(SIMIX_host_self_get_name());
         break;
       case 't':                 /* thread name; LOG4J compliant */
         show_string(xbt_thread_self_name());
@@ -183,10 +184,10 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
 #endif
         break;
       case 'd':                 /* date; LOG4J compliant */
-        show_double(gras_os_time());
+        show_double(surf_get_clock());
         break;
       case 'r':                 /* application age; LOG4J compliant */
-        show_double(gras_os_time() - format_begin_of_time);
+        show_double(surf_get_clock() - format_begin_of_time);
         break;
       case 'm': {               /* user-provided message; LOG4J compliant */
         int len, sz;
@@ -196,7 +197,8 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
         break;
       }
       default:
-        xbt_die(ERRMSG, *q, (char *)l->data);
+        fprintf(stderr, ERRMSG, *q, (char *)l->data);
+        xbt_abort();
       }
     } else {
       *p = *q;
@@ -221,7 +223,7 @@ xbt_log_layout_t xbt_log_layout_format_new(char *arg)
   res->data = xbt_strdup((char *) arg);
 
   if (format_begin_of_time < 0)
-    format_begin_of_time = gras_os_time();
+    format_begin_of_time = surf_get_clock();
 
   return res;
 }

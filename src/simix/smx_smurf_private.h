@@ -97,7 +97,11 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_CLOSE),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_STAT), \
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_UNLINK),\
 SIMCALL_ENUM_ELEMENT(SIMCALL_FILE_LS),\
-SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES)
+SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES), \
+/* ****************************************************************************************** */ \
+/* TUTORIAL: New API                                                                        */ \
+/* ****************************************************************************************** */ \
+SIMCALL_ENUM_ELEMENT(SIMCALL_NEW_API_INIT)
 
 
 /* SIMCALL_COMM_IS_LATENCY_BOUNDED and SIMCALL_SET_CATEGORY make things complicated
@@ -116,8 +120,16 @@ SIMCALL_ENUM_ELEMENT(SIMCALL_ASR_GET_PROPERTIES)
 #define SIMCALL_LIST3
 #endif
 
+#ifdef HAVE_MC
+#define SIMCALL_LIST4                                        \
+  ,SIMCALL_ENUM_ELEMENT(SIMCALL_MC_SNAPSHOT)                 \
+  ,SIMCALL_ENUM_ELEMENT(SIMCALL_MC_COMPARE_SNAPSHOTS)
+#else
+#define SIMCALL_LIST4
+#endif
+
 /* SIMCALL_LIST is the final macro to use */
-#define SIMCALL_LIST SIMCALL_LIST1 SIMCALL_LIST2 SIMCALL_LIST3
+#define SIMCALL_LIST SIMCALL_LIST1 SIMCALL_LIST2 SIMCALL_LIST3 SIMCALL_LIST4
 
 /* you can redefine the following macro differently to generate something else
  * with the list of enumeration values (e.g. a table of strings or a table of function pointers) */
@@ -602,6 +614,25 @@ typedef struct s_smx_simcall {
       const char* name;
       xbt_dict_t result;
     } asr_get_properties;
+
+    struct{
+      void *s;
+    } mc_snapshot;
+
+    struct{
+      void *snapshot1;
+      void *snapshot2;
+      int result;
+    } mc_compare_snapshots;
+
+    /* ****************************************************************************************** */
+    /* TUTORIAL: New API                                                                        */
+    /* ****************************************************************************************** */
+    struct {
+      const char* param1;
+      double param2;
+      int result;
+    } new_api;
 
   };
 } s_smx_simcall_t, *smx_simcall_t;

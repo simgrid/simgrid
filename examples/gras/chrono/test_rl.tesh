@@ -1,3 +1,0 @@
-
-! output display
-$ $SG_TEST_EXENV ./chrono_multiplier$EXEEXT --log=root.fmt:%m%n $@

@@ -1,6 +1,6 @@
 /* ex -- exception handling                                                 */
 /* This file is to loaded in any location defining exception handlers       */
-/* (such as context.c) or in gras transport layer, to exchange them.        */
+/* (such as context.c), to exchange them.        */
 
 /* Copyright (c) 2006, 2007, 2009, 2010. The SimGrid Team.
  * All rights reserved.                                                     */

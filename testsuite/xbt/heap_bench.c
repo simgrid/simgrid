@@ -12,11 +12,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
+#include <xbt/xbt_os_time.h>
 
 #include "xbt/heap.h"
-#include "gras/virtu.h"         /* time manipulation in bench */
-
 #include "xbt/sysdep.h"         /* calloc, printf */
 
 #define MAX_TEST 1000000
@@ -80,14 +78,14 @@ void test_heap_mean_operation(int size)
   double date = 0;
   int i, j;
 
-  date = gras_os_time() * 1000000;
+  date = xbt_os_time() * 1000000;
   for (i = 0; i < size; i++)
     xbt_heap_push(heap, NULL, (10.0 * rand() / (RAND_MAX + 1.0)));
 
-  date = gras_os_time() * 1000000 - date;
+  date = xbt_os_time() * 1000000 - date;
   printf("Creation time  %d size heap : %g\n", size, date);
 
-  date = gras_os_time() * 1000000;
+  date = xbt_os_time() * 1000000;
   for (j = 0; j < MAX_TEST; j++) {
 
     if (!(j % size) && j)
@@ -97,7 +95,7 @@ void test_heap_mean_operation(int size)
     xbt_heap_pop(heap);
     xbt_heap_push(heap, NULL, 3.0 * val);
   }
-  date = gras_os_time() * 1000000 - date;
+  date = xbt_os_time() * 1000000 - date;
   printf("Mean access time for a %d size heap : %g\n", size,
          date * 1.0 / (MAX_TEST + 0.0));
 

@@ -1,14 +1,13 @@
 /* module handling                                                          */
 
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2012. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/misc.h"
 #include "simgrid_config.h"     /*HAVE_MMAP _XBT_WIN32 */
-#include "gras_config.h"        /* MMALLOC_WANT_OVERRIDE_LEGACY */
+#include "internal_config.h"        /* MMALLOC_WANT_OVERRIDE_LEGACY */
 #include "time.h"               /* to seed the random generator */
 
 #include "xbt/sysdep.h"
@@ -26,18 +25,23 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's a bit odd to solve linking issues: this is used in xbt_log_file_appender to detect whether SMPI is used (and thus whether we should unbench the writing to disk) */
 
 
-char *xbt_binary_name = NULL;   /* Mandatory to retrieve neat backtraces */
+char *xbt_binary_name = NULL;   /* Name of the system process containing us (mandatory to retrieve neat backtraces) */
+xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
+
 int xbt_initialized = 0;
 
 int _surf_do_model_check = 0;
 int _surf_mc_checkpoint=0;
 char* _surf_mc_property_file=NULL;
+int _surf_mc_timeout=0;
+int _surf_mc_max_depth=1000;
+int _surf_mc_visited=0;
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
  */
 static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR(200);
-static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR(200);
+static void xbt_postexit(void);
 
 #ifdef _XBT_WIN32
 # undef _XBT_NEED_INIT_PRAGMA
@@ -45,7 +49,6 @@ static void xbt_postexit(void) _XBT_GNUC_DESTRUCTOR(200);
 
 #ifdef _XBT_NEED_INIT_PRAGMA
 #pragma init (xbt_preinit)
-#pragma fini (xbt_postexit)
 #endif
 
 #ifdef _XBT_WIN32
@@ -73,7 +76,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
   } else if (fdwReason == DLL_PROCESS_DETACH
       && xbt_dll_process_is_attached == 1) {
     xbt_dll_process_is_attached = 0;
-      xbt_postexit();
   }
   return 1;
 }
@@ -92,15 +94,12 @@ static void xbt_preinit(void)
   xbt_os_thread_mod_preinit();
   xbt_fifo_preinit();
   xbt_dict_preinit();
-  xbt_datadesc_preinit();
-  xbt_trp_preinit();
+
+  atexit(xbt_postexit);
 }
 
 static void xbt_postexit(void)
 {
-  xbt_trp_postexit();
-  xbt_datadesc_postexit();
-
   xbt_backtrace_postexit();
 
   xbt_fifo_postexit();
@@ -110,6 +109,8 @@ static void xbt_postexit(void)
   xbt_os_thread_mod_postexit();
 
   free(xbt_binary_name);
+  xbt_dynar_free(&xbt_cmdline);
+
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_postexit();
 #endif
@@ -118,19 +119,25 @@ static void xbt_postexit(void)
 /** @brief Initialize the xbt mechanisms. */
 void xbt_init(int *argc, char **argv)
 {
-  // FIXME it would be nice to assert that this function is called only once. But each gras process do call it...
-  xbt_initialized++;
-
-  if (xbt_initialized > 1)
+  if (xbt_initialized++) {
+    XBT_DEBUG("XBT was initialized %d times.", xbt_initialized);
     return;
+  }
 
   xbt_binary_name = xbt_strdup(argv[0]);
+  xbt_cmdline = xbt_dynar_new(sizeof(char*),NULL);
+  int i;
+  for (i=0;i<*argc;i++) {
+    xbt_dynar_push(xbt_cmdline,&(argv[i]));
+  }
+
   srand((unsigned int) time(NULL));
 
   xbt_log_init(argc, argv);
 }
 
-/** @brief Finalize the xbt mechanisms. */
+/** @brief Finalize the xbt mechanisms.
+ *  @warning this function is deprecated. Just don't call it, there is nothing more to do to finalize xbt*/
 void xbt_exit()
 {
   XBT_WARN("This function is deprecated, you shouldn't use it");

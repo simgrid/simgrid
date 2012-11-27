@@ -12,12 +12,16 @@
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
 
-#define sleep(x) smpi_sleep(x)
-#define gettimeofday(x, y) smpi_gettimeofday(x, y)
 
+#ifdef _WIN32
+#define MPI_CALL(type,name,args) \
+  type name args; \
+  type P##name args
+#else
 #define MPI_CALL(type,name,args) \
   type name args __attribute__((weak)); \
   type P##name args
+#endif
 
 SG_BEGIN_DECL()
 #define MPI_THREAD_SINGLE     0
@@ -38,7 +42,7 @@ SG_BEGIN_DECL()
 #define MPI_BOTTOM (void *)0
 #define MPI_PROC_NULL -2
 #define MPI_ANY_TAG -1
-#define MPI_UNDEFINED -1
+#define MPI_UNDEFINED -3
 // errorcodes
 #define MPI_SUCCESS       0
 #define MPI_ERR_COMM      1
@@ -53,6 +57,8 @@ SG_BEGIN_DECL()
 #define MPI_ERR_GROUP    10
 #define MPI_ERR_OP       11
 #define MPI_ERR_OTHER    12
+#define MPI_ERR_IN_STATUS 13
+#define MPI_ERR_PENDING   14
 #define MPI_IDENT     0
 #define MPI_SIMILAR   1
 #define MPI_UNEQUAL   2
@@ -61,6 +67,13 @@ SG_BEGIN_DECL()
 #define MPI_TAG_UB           1000000
 #define MPI_HOST             0
 #define MPI_IO               0
+#define MPI_BSEND_OVERHEAD   0
+
+typedef enum MPIR_Topo_type {
+  MPI_GRAPH=1,
+  MPI_CART=2,
+  MPI_DIST_GRAPH=3
+} MPIR_Topo_type;
 
 typedef ptrdiff_t MPI_Aint;
 typedef long long MPI_Offset;
@@ -79,46 +92,49 @@ typedef struct {
 #define MPI_STATUSES_IGNORE NULL
 
 #define MPI_DATATYPE_NULL NULL
-extern MPI_Datatype MPI_CHAR;
-extern MPI_Datatype MPI_SHORT;
-extern MPI_Datatype MPI_INT;
-extern MPI_Datatype MPI_LONG;
-extern MPI_Datatype MPI_LONG_LONG;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_CHAR;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_SHORT;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_INT;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_LONG;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_LONG_LONG;
 #define MPI_LONG_LONG_INT MPI_LONG_LONG
-extern MPI_Datatype MPI_SIGNED_CHAR;
-extern MPI_Datatype MPI_UNSIGNED_CHAR;
-extern MPI_Datatype MPI_UNSIGNED_SHORT;
-extern MPI_Datatype MPI_UNSIGNED;
-extern MPI_Datatype MPI_UNSIGNED_LONG;
-extern MPI_Datatype MPI_UNSIGNED_LONG_LONG;
-extern MPI_Datatype MPI_FLOAT;
-extern MPI_Datatype MPI_DOUBLE;
-extern MPI_Datatype MPI_LONG_DOUBLE;
-extern MPI_Datatype MPI_WCHAR;
-extern MPI_Datatype MPI_C_BOOL;
-extern MPI_Datatype MPI_INT8_T;
-extern MPI_Datatype MPI_INT16_T;
-extern MPI_Datatype MPI_INT32_T;
-extern MPI_Datatype MPI_INT64_T;
-extern MPI_Datatype MPI_UINT8_T;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_SIGNED_CHAR;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UNSIGNED_CHAR;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UNSIGNED_SHORT;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UNSIGNED;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UNSIGNED_LONG;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UNSIGNED_LONG_LONG;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_FLOAT;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_DOUBLE;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_LONG_DOUBLE;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_WCHAR;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_C_BOOL;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_INT8_T;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_INT16_T;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_INT32_T;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_INT64_T;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UINT8_T;
 #define MPI_BYTE MPI_UINT8_T
-extern MPI_Datatype MPI_UINT16_T;
-extern MPI_Datatype MPI_UINT32_T;
-extern MPI_Datatype MPI_UINT64_T;
-extern MPI_Datatype MPI_C_FLOAT_COMPLEX;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UINT16_T;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UINT32_T;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UINT64_T;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_C_FLOAT_COMPLEX;
 #define MPI_C_COMPLEX MPI_C_FLOAT_COMPLEX
-extern MPI_Datatype MPI_C_DOUBLE_COMPLEX;
-extern MPI_Datatype MPI_C_LONG_DOUBLE_COMPLEX;
-extern MPI_Datatype MPI_AINT;
-extern MPI_Datatype MPI_OFFSET;
-
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_C_DOUBLE_COMPLEX;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_C_LONG_DOUBLE_COMPLEX;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_AINT;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_OFFSET;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_LB;
+XBT_PUBLIC_DATA( MPI_Datatype ) MPI_UB;
 //The following are datatypes for the MPI functions MPI_MAXLOC  and MPI_MINLOC.
-extern MPI_Datatype MPI_FLOAT_INT;
-extern MPI_Datatype MPI_LONG_INT;
-extern MPI_Datatype MPI_DOUBLE_INT;
-extern MPI_Datatype MPI_SHORT_INT;
-extern MPI_Datatype MPI_2INT;
-extern MPI_Datatype MPI_LONG_DOUBLE_INT;
+XBT_PUBLIC_DATA(MPI_Datatype) MPI_FLOAT_INT;
+XBT_PUBLIC_DATA(MPI_Datatype) MPI_LONG_INT;
+XBT_PUBLIC_DATA(MPI_Datatype) MPI_DOUBLE_INT;
+XBT_PUBLIC_DATA(MPI_Datatype) MPI_SHORT_INT;
+XBT_PUBLIC_DATA(MPI_Datatype) MPI_2INT;
+XBT_PUBLIC_DATA(MPI_Datatype) MPI_LONG_DOUBLE_INT;
+XBT_PUBLIC_DATA(MPI_Datatype) MPI_2FLOAT;
+XBT_PUBLIC_DATA(MPI_Datatype) MPI_2DOUBLE;
 
 typedef void MPI_User_function(void *invec, void *inoutvec, int *len,
                                MPI_Datatype * datatype);
@@ -126,31 +142,31 @@ struct s_smpi_mpi_op;
 typedef struct s_smpi_mpi_op *MPI_Op;
 
 #define MPI_OP_NULL NULL
-extern MPI_Op MPI_MAX;
-extern MPI_Op MPI_MIN;
-extern MPI_Op MPI_MAXLOC;
-extern MPI_Op MPI_MINLOC;
-extern MPI_Op MPI_SUM;
-extern MPI_Op MPI_PROD;
-extern MPI_Op MPI_LAND;
-extern MPI_Op MPI_LOR;
-extern MPI_Op MPI_LXOR;
-extern MPI_Op MPI_BAND;
-extern MPI_Op MPI_BOR;
-extern MPI_Op MPI_BXOR;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_MAX;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_MIN;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_MAXLOC;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_MINLOC;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_SUM;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_PROD;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_LAND;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_LOR;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_LXOR;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_BAND;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_BOR;
+XBT_PUBLIC_DATA( MPI_Op ) MPI_BXOR;
 
 struct s_smpi_mpi_group;
 typedef struct s_smpi_mpi_group *MPI_Group;
 
 #define MPI_GROUP_NULL NULL
 
-extern MPI_Group MPI_GROUP_EMPTY;
+XBT_PUBLIC_DATA( MPI_Group ) MPI_GROUP_EMPTY;
 
 struct s_smpi_mpi_communicator;
 typedef struct s_smpi_mpi_communicator *MPI_Comm;
 
 #define MPI_COMM_NULL NULL
-extern MPI_Comm MPI_COMM_WORLD;
+XBT_PUBLIC_DATA( MPI_Comm ) MPI_COMM_WORLD;
 #define MPI_COMM_SELF smpi_process_comm_self()
 
 struct s_smpi_mpi_request;
@@ -309,7 +325,10 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Waitsome,
                             (int incount, MPI_Request requests[],
                              int *outcount, int *indices,
                              MPI_Status status[]));
-
+MPI_CALL(XBT_PUBLIC(int), MPI_Testsome,
+                            (int incount, MPI_Request requests[],
+                             int *outcount, int *indices,
+                             MPI_Status status[]));
 MPI_CALL(XBT_PUBLIC(int), MPI_Bcast,
                             (void *buf, int count, MPI_Datatype datatype,
                              int root, MPI_Comm comm));
@@ -380,11 +399,18 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Probe,
 
 
 //FIXME: these are not yet implemented
+
 typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
 typedef void* MPI_Errhandler;
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
 typedef int MPI_Delete_function(MPI_Comm comm, int keyval, void* attribute_val, void* extra_state);
+
+XBT_PUBLIC_DATA(MPI_Datatype)  MPI_PACKED;
+XBT_PUBLIC_DATA(MPI_Errhandler*)  MPI_ERRORS_RETURN;
+XBT_PUBLIC_DATA(MPI_Errhandler*)  MPI_ERRORS_ARE_FATAL;
+XBT_PUBLIC_DATA(MPI_Errhandler*)  MPI_ERRHANDLER_NULL;
+
 
 MPI_CALL(XBT_PUBLIC(int), MPI_Pack_size, (int incount, MPI_Datatype datatype, MPI_Comm comm, int* size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Cart_coords, (MPI_Comm comm, int rank, int maxdims, int* coords));
@@ -411,7 +437,6 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Errhandler_set, (MPI_Comm comm, MPI_Errhandler err
 MPI_CALL(XBT_PUBLIC(int), MPI_Cancel, (MPI_Request* request));
 MPI_CALL(XBT_PUBLIC(int), MPI_Buffer_attach, (void* buffer, int size));
 MPI_CALL(XBT_PUBLIC(int), MPI_Buffer_detach, (void* buffer, int* size));
-MPI_CALL(XBT_PUBLIC(int), MPI_Testsome, (int incount, MPI_Request* requests, int* outcount, int* indices, MPI_Status* statuses));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_test_inter, (MPI_Comm comm, int* flag));
 MPI_CALL(XBT_PUBLIC(int), MPI_Comm_get_attr, (MPI_Comm comm, int comm_keyval, void *attribute_val, int *flag));
 MPI_CALL(XBT_PUBLIC(int), MPI_Unpack, (void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm));
@@ -438,17 +463,18 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Pack, (void* inbuf, int incount, MPI_Datatype type
 MPI_CALL(XBT_PUBLIC(int), MPI_Get_elements, (MPI_Status* status, MPI_Datatype datatype, int* elements));
 MPI_CALL(XBT_PUBLIC(int), MPI_Dims_create, (int nnodes, int ndims, int* dims));
 MPI_CALL(XBT_PUBLIC(int), MPI_Initialized, (int* flag));
+MPI_CALL(XBT_PUBLIC(int), MPI_Pcontrol, (const int level ));
+
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions
-XBT_IMPORT_NO_EXPORT(int) smpi_simulated_main(int argc, char **argv);
 XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 /*
 XBT_PUBLIC(void) smpi_exit(int);
 */
 
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
-XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, struct timezone *tz);
+XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv);
 XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);
 XBT_PUBLIC(unsigned long long) smpi_rastro_timestamp (void);
 XBT_PUBLIC(void) smpi_sample_1(int global, const char *file, int line,
@@ -482,7 +508,9 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
                                          : smpi_shared_set_call(#func, input, func(__VA_ARGS__)))
 
 /* Fortran specific stuff */
-XBT_PUBLIC(int) MAIN__(void);
+XBT_PUBLIC(int) __attribute__((weak)) smpi_simulated_main(int argc, char** argv);
+XBT_PUBLIC(int) __attribute__((weak)) MAIN__(void);
+XBT_PUBLIC(int) smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[]);
 
 XBT_PUBLIC(int) smpi_process_index(void);
 

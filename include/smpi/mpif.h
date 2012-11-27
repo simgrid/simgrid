@@ -77,7 +77,7 @@
      >        MPI_INTEGER8, MPI_REAL, MPI_REAL4, MPI_REAL8,
      >        MPI_DOUBLE_PRECISION, MPI_COMPLEX, MPI_DOUBLE_COMPLEX,
      >        MPI_2INTEGER, MPI_LOGICAL1, MPI_LOGICAL2, MPI_LOGICAL4,
-     >        MPI_LOGICAL8
+     >        MPI_LOGICAL8, MPI_2REAL, MPI_2DOUBLE_PRECISION
       parameter(MPI_DATATYPE_NULL=-1)
       parameter(MPI_BYTE=0)
       parameter(MPI_CHARACTER=1)
@@ -98,6 +98,8 @@
       parameter(MPI_LOGICAL2=16)
       parameter(MPI_LOGICAL4=17)
       parameter(MPI_LOGICAL8=18)
+      parameter(MPI_2REAL=19)
+      parameter(MPI_2DOUBLE_PRECISION=19)
 
 ! These should be ordered as in smpi_f77.c
       integer MPI_OP_NULL,MPI_MAX, MPI_MIN, MPI_MAXLOC, MPI_MINLOC,
@@ -128,4 +130,7 @@
      >         MPI_ALLTOALL
 
       external MPI_WTIME
+      external MPI_WTICK
+
       double precision MPI_WTIME
+      double precision MPI_WTICK

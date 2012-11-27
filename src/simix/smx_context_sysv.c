@@ -10,8 +10,9 @@
 
 #include "xbt/parmap.h"
 #include "smx_private.h"
-#include "gras_config.h"
+#include "internal_config.h"
 #include "context_sysv_config.h"        /* loads context system definitions */
+#include "mc/mc.h"
 
 #ifdef _XBT_WIN32
 #  include <win32_ucontext.h>     /* context relative declarations */
@@ -167,6 +168,9 @@ smx_ctx_sysv_create_context_sized(size_t size, xbt_main_func_t code,
     sysv_maestro_context = context;
   }
 
+  if(MC_is_active() && code)
+    MC_new_stack_area(context, ((smx_process_t)((smx_context_t)context)->data)->name, &(context->uc), size);
+
   return (smx_context_t) context;
 }
 
@@ -228,6 +232,11 @@ static void smx_ctx_sysv_suspend_serial(smx_context_t context)
   smx_context_t next_context;
   unsigned long int i = sysv_process_index++;
 
+  if(MC_is_active()){
+    MC_ignore_stack("next_context", "smx_ctx_sysv_suspend_serial");
+    MC_ignore_stack("i", "smx_ctx_sysv_suspend_serial");
+  }
+
   if (i < xbt_dynar_length(simix_global->process_to_run)) {
     /* execute the next process */
     XBT_DEBUG("Run next process");
@@ -254,14 +263,12 @@ static void smx_ctx_sysv_resume_serial(smx_process_t first_process)
 
 static void smx_ctx_sysv_runall_serial(void)
 {
-  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
-    smx_process_t first_process =
-        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
-    sysv_process_index = 1;
+  smx_process_t first_process =
+      xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+  sysv_process_index = 1;
 
-    /* execute the first process */
-    smx_ctx_sysv_resume_serial(first_process);
-  }
+  /* execute the first process */
+  smx_ctx_sysv_resume_serial(first_process);
 }
 
 static void smx_ctx_sysv_stop_parallel(smx_context_t context)

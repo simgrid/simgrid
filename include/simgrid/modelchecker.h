@@ -14,17 +14,20 @@
 
 #ifdef HAVE_MC
 
-extern int _surf_do_model_check;
-#define MC_IS_ENABLED _surf_do_model_check
+extern int _surf_do_model_check; /* please don't use directly: we inline MC_is_active, but that's what you should use */
+
+#define MC_is_active() _surf_do_model_check
 
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(int) MC_random(int min, int max);
 XBT_PUBLIC(void) MC_automaton_new_propositional_symbol(const char* id, void* fct);
+XBT_PUBLIC(void *) MC_snapshot(void);
+XBT_PUBLIC(int) MC_compare_snapshots(void *s1, void *s2);
 
 #else
 
-#define MC_IS_ENABLED 0
 #define MC_assert(a) xbt_assert(a)
+#define MC_is_active() 0
 
 #endif
 

@@ -5,6 +5,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_private.h"
+#include "mc/mc.h"
 
 #ifdef HAVE_TRACING
 
@@ -34,6 +35,12 @@ void TRACE_msg_task_create(msg_task_t task)
   static long long counter = 0;
   task->counter = counter++;
   task->category = NULL;
+  
+  if(MC_is_active()){
+    MC_ignore_data_bss(&counter, sizeof(counter));
+    MC_ignore_heap(&(task->counter), sizeof(task->counter));
+  }
+
   XBT_DEBUG("CREATE %p, %lld", task, task->counter);
 }
 

@@ -27,17 +27,17 @@ install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/"
 if(NOT WIN32)
   if( NOT MANPAGE_DIR)
     set( MANPAGE_DIR ${CMAKE_BINARY_DIR}/manpages )
-  endif( NOT MANPAGE_DIR)
+  endif()
 
   add_custom_target(manpages ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${MANPAGE_DIR}
     COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
     COMMENT "Generating manpages"
     )
-  install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1
+  install(FILES ${MANPAGE_DIR}/simgrid_update_xml.1 ${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.1
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)
 
-endif(NOT WIN32)
+endif()
 
 # binaries
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
@@ -70,17 +70,14 @@ add_custom_target(simgrid_update_xml ALL
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
   )
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/gras_stub_generator
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
-
 # libraries
-install(TARGETS simgrid gras
+install(TARGETS simgrid 
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 
 if(enable_smpi)
   install(TARGETS smpi
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-endif(enable_smpi)
+endif()
 
 if(enable_lib_static AND NOT WIN32)
   install(TARGETS simgrid_static
@@ -88,8 +85,8 @@ if(enable_lib_static AND NOT WIN32)
   if(enable_smpi)
     install(TARGETS smpi_static
       DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-  endif(enable_smpi)
-endif(enable_lib_static AND NOT WIN32)
+  endif()
+endif()
 
 # include files
 set(HEADERS
@@ -126,7 +123,7 @@ if(HAVE_LUA)
   install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lua/5.1
     )
-endif(HAVE_LUA)
+endif()
 
 ###########################################
 ### Fill in the "make uninstall" target ###
@@ -135,9 +132,9 @@ endif(HAVE_LUA)
 add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/doc/simgrid
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall doc ok"
-  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libgras*
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libsimgrid*
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libsmpi*
+  COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid*
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicc
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif2c
@@ -146,11 +143,8 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/tesh
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid-colorizer
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid_update_xml
-  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/gras_stub_generator
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/graphicator
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall bin ok"
-  COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/amok
-  COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/gras
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/instr
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/msg
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/simdag
@@ -161,10 +155,10 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/mc
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/simgrid
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/simgrid_config.h
-  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/gras.h
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/include/xbt.h
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall include ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/simgrid_update_xml.1
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/share/man/man1/tesh.1
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall man ok"
   WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}"
   )
@@ -175,7 +169,7 @@ if(HAVE_LUA)
     COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid.${LIB_EXE}
     WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/"
     )
-endif(HAVE_LUA)
+endif()
 
 ################################################################
 ## Build a sain "make dist" target to build a source package ###
@@ -187,11 +181,7 @@ endif(HAVE_LUA)
 set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
-  ${AMOK_SRC}
   ${BINDINGS_SRC}
-  ${GRAS_COMMON_SRC}
-  ${GRAS_RL_SRC}
-  ${GRAS_SG_SRC}
   ${GTNETS_SRC}
   ${JEDULE_SRC}
   ${LUA_SRC}
@@ -213,9 +203,13 @@ set(source_to_pack
   ${TESTSUITE_CMAKEFILES_TXT}
   ${TOOLS_CMAKEFILES_TXT}
   ${DOC_FIGS}
+  ${DOC_IMG}
   ${DOC_SOURCES}
+  ${DOC_TOOLS}
+  ${DOC_SHARED_TAG}
   ${REF_GUIDE_SOURCES}
   ${USER_GUIDE_SOURCES}
+  ${DEV_GUIDE_SOURCES}
   ${PLATFORMS_EXAMPLES}
   ${README_files}
   ${bin_files}
@@ -260,7 +254,7 @@ foreach(file ${source_to_pack})
       TARGET dist-dir
       COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/${file_location}/
       )
-  endif(NOT OPERATION)
+  endif()
 
   # Actually copy the file
   add_custom_command(
@@ -300,7 +294,7 @@ if(NOT enable_maintainer_mode)
     COMMAND ${CMAKE_COMMAND} -E echo "WARNING: ----------------------------------------------------"
     )
   add_dependencies(dist echo-dist)
-endif(NOT enable_maintainer_mode)
+endif()
 
 ###########################################
 ### Fill in the "make distcheck" target ###
@@ -352,11 +346,11 @@ if(enable_memcheck)
   add_custom_target(check
     COMMAND ctest -D ExperimentalMemCheck
     )
-else(enable_memcheck)
+else()
   add_custom_target(check
     COMMAND make test
     )
-endif(enable_memcheck)
+endif()
 
 #######################################
 ### Fill in the "make xxx-clean" target ###
@@ -379,23 +373,10 @@ add_custom_target(maintainer-clean
   )
 
 add_custom_target(supernovae-clean
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_gras.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_sg.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/supernovae_smpi.c
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
 
-#############################################
-### Fill in the "make sync-gforge" target ###
-#############################################
-
-#PIPOL
-add_custom_target(sync-pipol
-  COMMAND scp -r Experimental_bindings.sh Experimental.sh  MemCheck.sh pre-simgrid.sh navarro@pipol.inria.fr:~/
-  COMMAND scp -r rc.* navarro@pipol.inria.fr:~/.pipol/
-  COMMAND scp -r Nightly* navarro@pipol.inria.fr:~/.pipol/nightly
-  COMMAND ssh navarro@pipol.inria.fr "chmod a=rwx ~/* ~/.pipol/rc.* ~/.pipol/nightly/*"
-  WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/buildtools/pipol/"
-  )
 
 include(CPack)

@@ -2,24 +2,24 @@
 
 set -e
 
-rm -rf /home/mescal/navarro/.pipol/log/*
+rm -rf ~/.pipol/log/*
 
-#if [ -e /home/mescal/navarro/version/bckup_version ] ; then
+#if [ -e ~/version/bckup_version ] ; then
 #	svn cleanup version/
-#	cd /home/mescal/navarro/version
+#	cd ~/version
 #	svn up README --quiet
 #else
-#	if [ -e /home/mescal/navarro/version ] ; then
+#	if [ -e ~/version ] ; then
 #		svn cleanup version/
-#		echo "0000P" > /home/mescal/navarro/version/bckup_version
+#		echo "0000P" > ~/version/bckup_version
 #	else
-#		mkdir /home/mescal/navarro/version
-#		echo "0000P" > /home/mescal/navarro/version/bckup_version
+#		mkdir ~/version
+#		echo "0000P" > ~/version/bckup_version
 #	fi
-#	cd /home/mescal/navarro
-#	svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk /home/mescal/navarro/version --depth empty --quiet
+#	cd ~/
+#	svn checkout svn://scm.gforge.inria.fr/svn/simgrid/simgrid/trunk ~/version --depth empty --quiet
 #
-#	cd /home/mescal/navarro/version
+#	cd ~/version
 #	svn up README --quiet
 #fi
 

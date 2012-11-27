@@ -312,8 +312,6 @@ static void mmalloc_fork_child(void)
   }
 }
 
-
-
 /* Initialize the default malloc descriptor. */
 void *mmalloc_preinit(void)
 {
@@ -323,7 +321,9 @@ void *mmalloc_preinit(void)
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = xbt_mheap_new(-1, addr);
     /* Fixme? only the default mdp in protected against forks */
-    res = xbt_os_thread_atfork(mmalloc_fork_prepare,
+    // This is mandated to protect the mmalloced areas through forks. Think of tesh.
+    // Nah, removing the mutex isn't a good idea either for tesh
+    res = xbt_os_thread_atfork(mmalloc_fork_prepare,  
                                mmalloc_fork_parent, mmalloc_fork_child);
     if (res != 0)
       THROWF(system_error,0,"xbt_os_thread_atfork() failed: return value %d",res);
@@ -338,4 +338,8 @@ void mmalloc_postexit(void)
   /* Do not detach the default mdp or ldl won't be able to free the memory it allocated since we're in memory */
   //  mmalloc_detach(__mmalloc_default_mdp);
   xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
+}
+
+size_t mmalloc_get_chunks_used(xbt_mheap_t heap){
+  return ((struct mdesc *)heap)->heapstats.chunks_used;
 }

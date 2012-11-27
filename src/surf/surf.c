@@ -4,14 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <ctype.h>
-
 #include "surf_private.h"
 #include "xbt/module.h"
 #include "mc/mc.h"
 #include "simix/smx_host_private.h"
 #include "surf/surf_resource.h"
 #include "xbt/xbt_os_thread.h"
+
+#include <ctype.h>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
@@ -55,6 +55,26 @@ static const char *disk_drives_letter_table[MAX_DRIVE] = {
 };
 #endif                          /* #ifdef _XBT_WIN32 */
 
+int surf_cfg_get_int(const char* name)
+{
+	return xbt_cfg_get_int(_surf_cfg_set,name);
+}
+double surf_cfg_get_double(const char* name)
+{
+	return xbt_cfg_get_double(_surf_cfg_set,name);
+}
+char* surf_cfg_get_string(const char* name)
+{
+	return xbt_cfg_get_string(_surf_cfg_set,name);
+}
+void surf_cfg_get_peer(const char *name, char **peer, int *port)
+{
+	xbt_cfg_get_peer(_surf_cfg_set,name, peer, port);
+}
+xbt_dynar_t surf_cfg_get_dynar(const char* name)
+{
+	return xbt_cfg_get_dynar(_surf_cfg_set,name);
+}
 /*
  * Returns the initial path. On Windows the initial path is
  * the current directory for the current process in the other
@@ -188,6 +208,16 @@ s_surf_model_description_t surf_storage_model_description[] = {
    surf_storage_model_init_default},
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
+
+/* ********************************************************************* */
+/* TUTORIAL: New model                                                   */
+s_surf_model_description_t surf_new_model_description[] = {
+  {"default",
+   "Tutorial model.",
+   surf_new_model_init_default},
+  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+};
+/* ********************************************************************* */
 
 #ifdef CONTEXT_THREADS
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
@@ -408,8 +438,9 @@ void surf_init(int *argc, char **argv)
     history = tmgr_history_new();
 
   surf_config_init(argc, argv);
+
   surf_action_init();
-  if (MC_IS_ENABLED)
+  if (MC_is_active())
     MC_memory_init();
 }
 

@@ -15,8 +15,8 @@
  * --cfg=tracing:1
  * --cfg=tracing/categorized:1
  * --cfg=tracing/uncategorized:1
- * --cfg=triva/categorized:triva_cat.plist
- * --cfg=triva/uncategorized:triva_uncat.plist
+ * --cfg=viva/categorized:viva_cat.plist
+ * --cfg=viva/uncategorized:viva_uncat.plist
  * (See \ref tracing_tracing_options for details)
  */
 

@@ -7,11 +7,9 @@
 #ifndef SMPIF_H
 #define SMPIF_H
 
-#cmakedefine HAVE_F2C_H @HAVE_SMPI_F2C_H@
+#cmakedefine SMPI_F2C @SMPI_F2C@
 
-#ifndef HAVE_F2C_H
-#error F2C is mandatory
-#endif
+#ifdef SMPI_F2C
 
 #include <xbt/misc.h>
 #include <smpi/smpi.h>
@@ -45,3 +43,5 @@ XBT_PUBLIC(int) smpi_global_size(void);
 
 
 #endif
+
+#endif // SMPI_F2C

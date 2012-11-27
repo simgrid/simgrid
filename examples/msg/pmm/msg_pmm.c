@@ -70,7 +70,7 @@ int node(int argc, char **argv)
   int k, myid;
   char my_mbox[MAILBOX_NAME_SIZE];
   node_job_t myjob, jobs[GRID_NUM_NODES];
-  xbt_matrix_t A, B, C = NULL, sA, sB, sC;
+  xbt_matrix_t A, B, C, sA, sB, sC;
   result_t result;
 
   xbt_assert(argc != 1, "Wrong number of arguments for this node");
@@ -96,6 +96,7 @@ int node(int argc, char **argv)
     broadcast_jobs(jobs + 1);
 
   }else{
+    A = B = C = NULL;           /* Avoid warning at compilation */
     myjob = wait_job(myid);
   }
 
@@ -158,6 +159,10 @@ int node(int argc, char **argv)
 
     //xbt_matrix_dump(C, "C:res", 0, xbt_matrix_dump_display_double);
 
+    xbt_matrix_free(A);
+    xbt_matrix_free(B);
+    xbt_matrix_free(C);
+
   /* The rest: return the result to node 0 */
   }else{
     msg_task_t task;
@@ -170,10 +175,11 @@ int node(int argc, char **argv)
     result->sC =
       xbt_matrix_new_sub(sC, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, 0, 0, NULL);
     task = MSG_task_create("result",100,100,result);
-    MSG_task_dsend(task, "0", (void_f_pvoid_t) MSG_task_destroy);
+    MSG_task_send(task, "0");
   }
 
   /* Clean up and finish*/
+  xbt_matrix_free(sC);
   xbt_matrix_free(myjob->A);
   xbt_matrix_free(myjob->B);
   xbt_free(myjob);
@@ -198,6 +204,8 @@ static void broadcast_jobs(node_job_t *jobs)
   }
 
   MSG_comm_waitall(comms, GRID_NUM_NODES-1, -1);
+  for (node = 1; node < GRID_NUM_NODES; node++)
+    MSG_comm_destroy(comms[node - 1]);
 }
 
 static node_job_t wait_job(int selfid)
@@ -205,8 +213,11 @@ static node_job_t wait_job(int selfid)
   msg_task_t task = NULL;
   char self_mbox[MAILBOX_NAME_SIZE];
   node_job_t job;
+  msg_error_t err;
   snprintf(self_mbox, MAILBOX_NAME_SIZE - 1, "%d", selfid);
-  MSG_task_receive(&task, self_mbox);
+  err = MSG_task_receive(&task, self_mbox);
+  if (err != MSG_OK)
+    xbt_die("Error while receiving from %s (%d)", self_mbox, (int)err);
   job = (node_job_t)MSG_task_get_data(task);
   MSG_task_destroy(task);
   XBT_VERB("Got Job (%d,%d)", job->row, job->col);
@@ -235,11 +246,14 @@ static void get_sub_matrix(xbt_matrix_t *sM, int selfid)
 {
   msg_task_t task = NULL;
   char node_mbox[MAILBOX_NAME_SIZE];
+  msg_error_t err;
 
   XBT_VERB("Get sub-matrix");
 
   snprintf(node_mbox, MAILBOX_NAME_SIZE - 1, "%d", selfid);
-  MSG_task_receive(&task, node_mbox);
+  err = MSG_task_receive(&task, node_mbox);
+  if (err != MSG_OK)
+    xbt_die("Error while receiving from %s (%d)", node_mbox, (int)err);
   *sM = (xbt_matrix_t)MSG_task_get_data(task);
   MSG_task_destroy(task);
 }
@@ -342,6 +356,8 @@ static void receive_results(result_t *results){
   }
 
   MSG_comm_waitall(comms, GRID_NUM_NODES - 1, -1);
+  for (node = 1; node < GRID_NUM_NODES; node++)
+    MSG_comm_destroy(comms[node - 1]);
 
   /* Reconstruct the result matrix */
   for (node = 1; node < GRID_NUM_NODES; node++){

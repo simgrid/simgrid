@@ -99,7 +99,7 @@
   *
   *  You shouldn't use it directly since it is merely intended to ease the
   *  implementation of the several programmation environment of the
-  *  SimGrid toolkit (namely, \ref MSG_API, \ref GRAS_API and \ref SMPI_API).
+  *  SimGrid toolkit (namely, \ref MSG_API and \ref SMPI_API).
   *
   *  You should use those environments instead.
   */

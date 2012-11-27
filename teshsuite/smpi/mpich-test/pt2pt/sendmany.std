@@ -1,0 +1,15 @@
+You requested to use 8 processes, but there is only 5 processes in your hostfile...
+length = 1 ints
+length = 2 ints
+length = 4 ints
+length = 8 ints
+length = 16 ints
+length = 32 ints
+length = 64 ints
+length = 128 ints
+length = 256 ints
+length = 512 ints
+length = 1024 ints
+length = 2048 ints
+length = 4096 ints
+length = 8192 ints

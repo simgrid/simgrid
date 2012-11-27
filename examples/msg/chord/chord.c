@@ -270,7 +270,7 @@ static void set_predecessor(node_t node, int predecessor_id)
 int node(int argc, char *argv[])
 {
   /* Reduce the run size for the MC */
-  if(MC_IS_ENABLED){
+  if(MC_is_active()){
     periodic_stabilize_delay = 8;
     periodic_fix_fingers_delay = 8;
     periodic_check_predecessor_delay = 8;
@@ -355,11 +355,8 @@ int node(int argc, char *argv[])
           // nothing to do: sleep for a while
           MSG_process_sleep(5);
         }
-      }
-
-      if (node.comm_receive && MSG_comm_test(node.comm_receive)) {
-
-        // a transfer has occured
+      } else {
+        // a transfer has occurred
 
         msg_error_t status = MSG_comm_get_status(node.comm_receive);
 
@@ -636,16 +633,19 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         XBT_DEBUG("Received a task (%p)", task_received);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
-        if (MC_IS_ENABLED) {
-          // the model-checker is expected to find a counter-example here. 
-	  // 
-	  // As you can see in the test right below, task_received is not always equal to task_sent 
-	  // (as messages from differing round can interleave). But the previous version of this code 
-	  // wrongly assumed that, leading to problems. But this only occured on large platforms,
-	  // leading to hardly usable traces. So we used the model-checker to track down the issue, 
-	  // and we came down to this test, that explained the bug in a snap.
-          MC_assert(task_received == task_sent);
-        }
+	// Once upon a time, our code assumed that here, task_received != task_sent all the time
+	// 
+	// This assumption is wrong (as messages from differing round can interleave), leading to a bug in our code.
+	// We failed to find this bug directly, as it only occured on large platforms, leading to hardly usable traces.
+	// Instead, we used the model-checker to track down the issue by adding the following test here in the code:
+	//   if (MC_is_active()) {
+	//      MC_assert(task_received == task_sent);
+        //   }
+	// That explained the bug in a snap, with a very cool example and everything.
+	// 
+	// This MC_assert is now desactivated as the case is now properly handled in our code and we don't want the
+	//   MC to fail any further under that condition, but this comment is here to as a memorial for this first 
+	//   brillant victory of the model-checking in the SimGrid community :)
 
         if (task_received != task_sent) {
           // this is not the expected answer
@@ -723,7 +723,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
         msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
-        if (MC_IS_ENABLED) {
+        if (MC_is_active()) {
           MC_assert(task_received == task_sent);
         }
 

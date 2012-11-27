@@ -114,6 +114,9 @@ typedef void (*smx_creation_func_t) ( /* process */ smx_process_t*,
  */
 typedef struct s_smx_rvpoint *smx_rdv_t;
 
+XBT_PUBLIC(void*) SIMIX_comm_get_src_data(smx_action_t action);
+XBT_PUBLIC(void*) SIMIX_comm_get_dst_data(smx_action_t action);
+
 /******************************** Context *************************************/
 typedef struct s_smx_context *smx_context_t;
 typedef struct s_smx_context_factory *smx_context_factory_t;
@@ -158,6 +161,7 @@ typedef void (*smx_ctx_factory_initializer_t)(smx_context_factory_t*);
 XBT_PUBLIC(smx_ctx_factory_initializer_t) smx_factory_initializer_to_use;
 extern char* smx_context_factory_name;
 extern int smx_context_stack_size;
+extern int smx_context_stack_size_was_set;
 
 #ifdef HAVE_THREAD_LOCAL_STORAGE
 extern __thread smx_context_t smx_current_context;
@@ -463,6 +467,15 @@ XBT_PUBLIC(xbt_dict_t) simcall_file_ls(const char* mount, const char* path);
 XBT_PUBLIC(xbt_dict_t) SIMIX_asr_get_properties(const char *name);
 /************************** AS router simcalls ***************************/
 XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
+
+/************************** MC simcalls   **********************************/
+XBT_PUBLIC(void *) simcall_mc_snapshot(void);
+XBT_PUBLIC(int) simcall_mc_compare_snapshots(void *s1, void *s2);
+
+/************************** New API simcalls **********************************/
+/* TUTORIAL: New API                                                          */
+/******************************************************************************/
+XBT_PUBLIC(int) simcall_new_api_fct(const char* param1, double param2);
 
 SG_END_DECL()
 #endif                          /* _SIMIX_SIMIX_H */

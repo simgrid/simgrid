@@ -153,6 +153,16 @@ typedef struct surf_action_state {
 typedef struct s_routing_platf s_routing_platf_t, *routing_platf_t;
 XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
+/*******************************************
+ *  TUTORIAL: New model
+ *  New model extension public
+ *  Public functions specific to a New model.
+ */
+typedef struct surf_new_model_extension_public {
+  surf_action_t(*fct) ();
+  void* (*create_resource) ();
+} s_surf_model_extension_new_model_t;
+/*******************************************/
 
 /** \ingroup SURF_models
  *  \brief Private data available on all models
@@ -331,6 +341,10 @@ typedef struct surf_model {
     s_surf_model_extension_network_t network;
     s_surf_model_extension_storage_t storage;
     s_surf_model_extension_workstation_t workstation;
+    /*******************************************/
+    /* TUTORIAL: New model                     */
+    s_surf_model_extension_new_model_t new_model;
+    /*******************************************/
   } extension;
 } s_surf_model_t;
 
@@ -643,6 +657,13 @@ XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(void);
 XBT_PUBLIC_DATA(s_surf_model_description_t)
     surf_workstation_model_description[];
 
+/*******************************************
+ *  TUTORIAL: New model
+ */
+XBT_PUBLIC(void) surf_new_model_init_default(void);
+XBT_PUBLIC_DATA(s_surf_model_description_t) surf_new_model_description[];
+/*******************************************/
+
 /** \ingroup SURF_models
  *  \brief List of initialized models
  */
@@ -652,6 +673,11 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 /*** SURF Globals **************************/
 /*******************************************/
 XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
+XBT_PUBLIC(int) surf_cfg_get_int(const char* name);
+XBT_PUBLIC(double) surf_cfg_get_double(const char* name);
+XBT_PUBLIC(char*) surf_cfg_get_string(const char* name);
+XBT_PUBLIC(void) surf_cfg_get_peer(const char *name, char **peer, int *port);
+XBT_PUBLIC(xbt_dynar_t) surf_cfg_get_dynar(const char* name);
 
 /** \ingroup SURF_simulation
  *  \brief Initialize SURF

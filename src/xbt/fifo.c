@@ -332,6 +332,42 @@ int xbt_fifo_is_in(xbt_fifo_t f, void *content)
 }
 
 /**
+ * @brief Search the given element in the fifo using a comparison function
+ *
+ * This function allows to search an item with a user provided function instead
+ * of the pointer comparison used elsewhere in this module. Assume for example that you have a fifo of
+ * strings. You cannot use xbt_fifo_remove() to remove, say, "TOTO" from it because internally, xbt_fifo_remove()
+ * will do something like "if (item->content == "toto"), then remove it". And the pointer to the item content
+ * and the pointer to "toto" will never match. As a solution, the current function provides a way to search elements
+ * that are semanticaly equivalent instead of only syntaxically. So, removing "Toto" from a fifo can be
+ * achieved this way:
+ *
+ *  @verbatim
+int my_comparison_function(void *searched, void *seen) {
+  return !strcmp(searched, seen);
+}
+
+  xbt_fifo_remove_item(fifo,
+                       xbt_fifo_search_item(fifo, my_comparison_function, "Toto"));
+@endverbatim
+ *
+ * \param f a fifo list
+ * \param cmp_fun the comparison function. Prototype: void *a,void *b -> int. Semantic: returns true iff a=b
+ * @param closure the element to search. It will be provided as first argument to each call of cmp_fun
+ * \return the first item matching the comparison function, or NULL if no such item exists
+ */
+xbt_fifo_item_t xbt_fifo_search_item(xbt_fifo_t f, int_f_pvoid_pvoid_t cmp_fun, void *closure) {
+  xbt_fifo_item_t item = xbt_fifo_get_first_item(f);
+  while (item) {
+    if (cmp_fun(closure, item->content))
+      return item;
+    item = item->next;
+  }
+  return NULL;
+
+}
+
+/**
  * \param f a list
  * \return a table with the objects stored in \a f.
  */
@@ -525,11 +561,6 @@ xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
  */
 void xbt_fifo_preinit(void)
 {
-  if (item_mallocator != NULL) {
-    /* Already created. I guess we want to switch to MC mode, so kill the previously created mallocator */
-    xbt_mallocator_free(item_mallocator);
-  }
-
   item_mallocator = xbt_mallocator_new(65536,
                                        fifo_item_mallocator_new_f,
                                        fifo_item_mallocator_free_f,

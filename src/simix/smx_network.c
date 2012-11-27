@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "Logging specific to SIMIX (network)");
 
 static xbt_dict_t rdv_points = NULL;
-unsigned long int smx_total_comms = 0;
+XBT_IMPORT_NO_EXPORT(unsigned long int) smx_total_comms = 0;
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_action_t comm);
@@ -30,6 +30,8 @@ static void SIMIX_rdv_free(void *data);
 void SIMIX_network_init(void)
 {
   rdv_points = xbt_dict_new_homogeneous(SIMIX_rdv_free);
+  if(MC_is_active())
+    MC_ignore_data_bss(&smx_total_comms, sizeof(smx_total_comms));
 }
 
 void SIMIX_network_exit(void)
@@ -386,7 +388,7 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
 
   other_action->comm.match_fun = match_fun;
 
-  if (MC_IS_ENABLED) {
+  if (MC_is_active()) {
     other_action->state = SIMIX_RUNNING;
     return other_action;
   }
@@ -470,7 +472,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
     SIMIX_comm_copy_data(other_action);*/
 
 
-  if (MC_IS_ENABLED) {
+  if (MC_is_active()) {
     other_action->state = SIMIX_RUNNING;
     return other_action;
   }
@@ -519,7 +521,7 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 
-  if (MC_IS_ENABLED) {
+  if (MC_is_active()) {
     if (idx == 0) {
       action->state = SIMIX_DONE;
     } else {
@@ -557,7 +559,7 @@ void SIMIX_pre_comm_test(smx_simcall_t simcall)
 {
   smx_action_t action = simcall->comm_test.comm;
 
-  if(MC_IS_ENABLED){
+  if(MC_is_active()){
     simcall->comm_test.result = action->comm.src_proc && action->comm.dst_proc;
     if(simcall->comm_test.result){
       action->state = SIMIX_DONE;
@@ -585,7 +587,7 @@ void SIMIX_pre_comm_testany(smx_simcall_t simcall, int idx)
   xbt_dynar_t actions = simcall->comm_testany.comms;
   simcall->comm_testany.result = -1;
 
-  if (MC_IS_ENABLED){
+  if (MC_is_active()){
     if(idx == -1){
       SIMIX_simcall_answer(simcall);
     }else{
@@ -615,7 +617,7 @@ void SIMIX_pre_comm_waitany(smx_simcall_t simcall, int idx)
   unsigned int cursor = 0;
   xbt_dynar_t actions = simcall->comm_waitany.comms;
 
-  if (MC_IS_ENABLED){
+  if (MC_is_active()){
     action = xbt_dynar_get_as(actions, idx, smx_action_t);
     xbt_fifo_push(action->simcalls, simcall);
     simcall->comm_waitany.result = idx;
@@ -713,7 +715,7 @@ void SIMIX_comm_finish(smx_action_t action)
        return it as the result of the simcall */
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
-      if (!MC_IS_ENABLED)
+      if (!MC_is_active())
         simcall->comm_waitany.result = xbt_dynar_search(simcall->comm_waitany.comms, &action);
     }
 
@@ -866,7 +868,7 @@ void SIMIX_comm_cancel(smx_action_t action)
     SIMIX_rdv_remove(action->comm.rdv, action);
     action->state = SIMIX_CANCELED;
   }
-  else if (!MC_IS_ENABLED /* when running the MC there are no surf actions */
+  else if (!MC_is_active() /* when running the MC there are no surf actions */
            && (action->state == SIMIX_READY || action->state == SIMIX_RUNNING)) {
 
     surf_workstation_model->action_cancel(action->comm.surf_comm);

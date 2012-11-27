@@ -287,6 +287,18 @@ typedef struct s_sg_platf_AS_cbarg {
 
 #define SG_PLATF_AS_INITIALIZER {NULL,0}
 
+/* ***************************************** */
+/* TUTORIAL: New TAG                         */
+
+typedef struct s_sg_platf_gpu_cbarg *sg_platf_gpu_cbarg_t;
+typedef struct s_sg_platf_gpu_cbarg {
+  const char *name;
+} s_sg_platf_gpu_cbarg_t;
+
+#define SG_PLATF_GPU_INITIALIZER {NULL}
+
+/* ***************************************** */
+
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
 XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform
 
@@ -317,6 +329,11 @@ XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage
 XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
+
+/* ***************************************** */
+/* TUTORIAL: New TAG                         */
+XBT_PUBLIC(void) sg_platf_new_gpu(sg_platf_gpu_cbarg_t gpu);
+/* ***************************************** */
 
 // Add route and Asroute without xml file with those functions
 XBT_PUBLIC(void) sg_platf_route_begin (sg_platf_route_cbarg_t route); // Initialize route

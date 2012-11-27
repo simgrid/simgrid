@@ -164,7 +164,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
  *    sometime waiting on all these mailboxes using @ref MSG_comm_waitany. You can find
  *    an example of use of this function in the @ref MSG_examples section.
  *  - Provide a proper patch to implement this functionality back in MSG. That wouldn't be
- *    very difficult actually. Check the function #MSG_mailbox_get_task_ext. During its call to
+ *    very difficult actually. Check the function @ref MSG_mailbox_get_task_ext. During its call to
  *    simcall_comm_recv(), the 5th argument, match_fun, is NULL. Create a function that filters
  *    messages according to the host (that you will pass as sixth argument to simcall_comm_recv()
  *    and that your filtering function will receive as first parameter, and then, the filter could
@@ -433,6 +433,7 @@ int MSG_comm_test(msg_comm_t comm)
 {
   xbt_ex_t e;
   int finished = 0;
+
   TRY {
     finished = simcall_comm_test(comm->s_comm);
 

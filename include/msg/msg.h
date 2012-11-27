@@ -151,6 +151,8 @@ XBT_PUBLIC(int) MSG_process_self_PID(void);
 XBT_PUBLIC(int) MSG_process_self_PPID(void);
 XBT_PUBLIC(msg_process_t) MSG_process_self(void);
 XBT_PUBLIC(xbt_dynar_t) MSG_processes_as_dynar(void);
+XBT_PUBLIC(int) MSG_process_get_number(void);
+
 XBT_PUBLIC(msg_error_t) MSG_process_set_kill_time(msg_process_t process, double kill_time);
 
 /*property handlers*/
@@ -273,7 +275,7 @@ void MSG_mailbox_set_async(const char *alias);
 
 
 /************************** Action handling **********************************/
-msg_error_t MSG_action_trace_run(char *path);
+XBT_PUBLIC(msg_error_t) MSG_action_trace_run(char *path);
 
 #ifdef MSG_USE_DEPRECATED
 
@@ -381,6 +383,12 @@ xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
+
+/* ****************************************************************************************** */
+/* TUTORIAL: New API                                                                        */
+/* Declare all functions for the API                                                          */
+/* ****************************************************************************************** */
+XBT_PUBLIC(int) MSG_new_API_fct(const char* param1, double param2);
 
 SG_END_DECL()
 #endif

@@ -7,10 +7,10 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef GRAS_PORTABLE_H
-#define GRAS_PORTABLE_H
+#ifndef SIMGRID_PORTABLE_H
+#define SIMGRID_PORTABLE_H
 
-#include "gras_config.h"
+#include "internal_config.h"
 #include "xbt/misc.h"
 /* 
  * win32 or win64 (__XBT_WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).
@@ -160,4 +160,4 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt,
 void hexa_print(const char *name, unsigned char *data, int size);
 const char *hexa_str(unsigned char *data, int size, int downside);
 
-#endif                          /* GRAS_PORTABLE_H */
+#endif                          /* SIMGRID_PORTABLE_H */

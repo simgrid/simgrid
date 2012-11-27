@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 #include "simgrid_config.h" //For getline, keep that include first
 
-#include "gras_config.h"
+#include "internal_config.h"
 #include <errno.h>
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -88,7 +88,7 @@ void xbt_replay_reader_free(xbt_replay_reader_t *reader)
  * \brief Registers a function to handle a kind of action
  *
  * Registers a function to handle a kind of action
- * This table is then used by #xbt_replay_action_runner
+ * This table is then used by \ref xbt_replay_action_runner
  *
  * The argument of the function is the line describing the action, splitted on spaces with xbt_str_split_quoted()
  *
@@ -123,15 +123,25 @@ void _xbt_replay_action_exit(void)
   free(action_line);
 }
 
+/**
+ * \ingroup XBT_replay
+ * \brief TODO
+
+ * \param argc argc .
+ * \param argv argv
+ */
 int xbt_replay_action_runner(int argc, char *argv[])
 {
   const char **evt;
+  int i;
   if (action_fp) {              // A unique trace file
 
     while ((evt = action_get_action(argv[0]))) {
       action_fun function =
         (action_fun)xbt_dict_get(action_funs, evt[1]);
       function(evt);
+      for (i=0;evt[i]!= NULL;i++)
+        free((char*)evt[i]);
       free(evt);
     }
   } else {                      // Should have got my trace file in argument

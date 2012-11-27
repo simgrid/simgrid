@@ -720,7 +720,6 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = ./ \
-                         @top_srcdir@/doc/gtut-files \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/examples \
@@ -1557,7 +1556,9 @@ SKIP_FUNCTION_MACROS   = YES
 # NOT include the path). If a tag file is not located in the directory in which
 # doxygen is run, you must also specify the path to the tagfile here.
 
-TAGFILES               = shared/doxygen/simgridrefguide.tag=ref_guide/html/ shared/doxygen/simgriduserguide.tag=user_guide/html/
+TAGFILES               = shared/doxygen/simgridrefguide.tag=ref_guide/html/ \ 
+                         shared/doxygen/simgriduserguide.tag=user_guide/html/ \
+                         shared/doxygen/simgriddevguide.tag=dev_guide/html/
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.

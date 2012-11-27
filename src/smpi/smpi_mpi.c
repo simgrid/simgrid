@@ -61,6 +61,11 @@ int MPI_Type_free(MPI_Datatype * datatype)
   return PMPI_Type_free(datatype);
 }
 
+int MPI_Pcontrol(const int level )
+{
+  return PMPI_Pcontrol(level);
+}
+
 int MPI_Type_size(MPI_Datatype datatype, int *size)
 {
   return PMPI_Type_size(datatype, size);

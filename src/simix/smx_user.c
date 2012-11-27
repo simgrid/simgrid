@@ -1,23 +1,14 @@
 /* smx_user.c - public interface to simix                                   */
 
-/* Copyright (c) 2010, 2011. Da SimGrid team. All rights reserved.          */
+/* Copyright (c) 2010-2012. Da SimGrid team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#ifndef _SVID_SOURCE
-#  define _SVID_SOURCE    /* strdup() */
-#endif
-#ifndef _ISOC99_SOURCE
-#  define _ISOC99_SOURCE  /* isfinite() */
-#endif
-#ifndef _ISO_C99_SOURCE
-#  define _ISO_C99_SOURCE /* isfinite() */
-#endif
-#include <math.h>         /* isfinite() */
 
 #include "smx_private.h"
 #include "mc/mc.h"
 #include "xbt/ex.h"
+#include <math.h>         /* isfinite() */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
@@ -41,7 +32,7 @@ smx_host_t simcall_host_get_by_name(const char *name)
 
   simcall->call = SIMCALL_HOST_GET_BY_NAME;
   simcall->host_get_by_name.name = name;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->host_get_by_name.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_get_by_name.result;
@@ -60,7 +51,7 @@ const char* simcall_host_get_name(smx_host_t host)
 
   simcall->call = SIMCALL_HOST_GET_NAME;
   simcall->host_get_name.host = host;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->host_get_name.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_get_name.result;
@@ -79,7 +70,7 @@ xbt_dict_t simcall_host_get_properties(smx_host_t host)
 
   simcall->call = SIMCALL_HOST_GET_PROPERTIES;
   simcall->host_get_properties.host = host;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->host_get_properties.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_get_properties.result;
@@ -89,7 +80,7 @@ xbt_dict_t simcall_host_get_properties(smx_host_t host)
  * \ingroup simix_host_management
  * \brief Returns a dict of the properties assigned to a router or AS.
  *
- * \param asr name of the router or AS
+ * \param name The name of the router or AS
  * \return The properties
  */
 xbt_dict_t simcall_asr_get_properties(const char *name)
@@ -98,7 +89,7 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
 
   simcall->call = SIMCALL_ASR_GET_PROPERTIES;
   simcall->asr_get_properties.name = name;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->asr_get_properties.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->asr_get_properties.result;
@@ -119,7 +110,7 @@ double simcall_host_get_speed(smx_host_t host)
 
   simcall->call = SIMCALL_HOST_GET_SPEED;
   simcall->host_get_speed.host = host;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->host_get_speed.result = 0.0;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_get_speed.result;
@@ -137,7 +128,7 @@ double simcall_host_get_available_speed(smx_host_t host)
 
   simcall->call = SIMCALL_HOST_GET_AVAILABLE_SPEED;
   simcall->host_get_available_speed.host = host;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->host_get_available_speed.result = 0.0;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_get_available_speed.result;
@@ -157,7 +148,7 @@ int simcall_host_get_state(smx_host_t host)
 
   simcall->call = SIMCALL_HOST_GET_STATE;
   simcall->host_get_state.host = host;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->host_get_state.result = -1;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_get_state.result;
@@ -176,7 +167,7 @@ void* simcall_host_get_data(smx_host_t host)
 
   simcall->call = SIMCALL_HOST_GET_DATA;
   simcall->host_get_data.host = host;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->host_get_data.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_get_data.result;
@@ -228,7 +219,7 @@ smx_action_t simcall_host_execute(const char *name, smx_host_t host,
   simcall->host_execute.host = host;
   simcall->host_execute.computation_amount = computation_amount;
   simcall->host_execute.priority = priority;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->host_execute.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_execute.result;
@@ -280,7 +271,7 @@ smx_action_t simcall_host_parallel_execute(const char *name,
   simcall->host_parallel_execute.communication_amount = communication_amount;
   simcall->host_parallel_execute.amount = amount;
   simcall->host_parallel_execute.rate = rate;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->host_parallel_execute.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_parallel_execute.result;
@@ -331,7 +322,7 @@ double simcall_host_execution_get_remains(smx_action_t execution)
 
   simcall->call = SIMCALL_HOST_EXECUTION_GET_REMAINS;
   simcall->host_execution_get_remains.execution = execution;
-  if(MC_IS_ENABLED) /* Initializeialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initializeialize result to a default value for snapshot comparison done during simcall */
     simcall->host_execution_get_remains.result = 0.0;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_execution_get_remains.result;
@@ -388,7 +379,7 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
 
   simcall->call = SIMCALL_HOST_EXECUTION_WAIT;
   simcall->host_execution_wait.execution = execution;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->host_execution_wait.result = -1;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->host_execution_wait.result;
@@ -548,7 +539,7 @@ int simcall_process_count(void)
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_PROCESS_COUNT;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->process_count.result = -1;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->process_count.result;
@@ -571,7 +562,7 @@ void* simcall_process_get_data(smx_process_t process)
 
   simcall->call = SIMCALL_PROCESS_GET_DATA;
   simcall->process_get_data.process = process;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->process_get_data.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->process_get_data.result;
@@ -635,7 +626,7 @@ smx_host_t simcall_process_get_host(smx_process_t process)
 
   simcall->call = SIMCALL_PROCESS_GET_HOST;
   simcall->process_get_host.process = process;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->process_get_host.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->process_get_host.result;
@@ -660,7 +651,7 @@ const char* simcall_process_get_name(smx_process_t process)
 
   simcall->call = SIMCALL_PROCESS_GET_NAME;
   simcall->process_get_name.process = process;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->process_get_name.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->process_get_name.result;
@@ -680,7 +671,7 @@ int simcall_process_is_suspended(smx_process_t process)
 
   simcall->call = SIMCALL_PROCESS_IS_SUSPENDED;
   simcall->process_is_suspended.process = process;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->process_is_suspended.result = -1;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->process_is_suspended.result;
@@ -698,7 +689,7 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
 
   simcall->call = SIMCALL_PROCESS_GET_PROPERTIES;
   simcall->process_get_properties.process = process;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->process_get_properties.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->process_get_properties.result;
@@ -745,7 +736,7 @@ XBT_PUBLIC(smx_process_t) simcall_process_restart(smx_process_t process)
 
   simcall->call = SIMCALL_PROCESS_RESTART;
   simcall->process_restart.process = process;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->process_restart.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -772,7 +763,7 @@ e_smx_state_t simcall_process_sleep(double duration)
 
   simcall->call = SIMCALL_PROCESS_SLEEP;
   simcall->process_sleep.duration = duration;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->process_sleep.result = -1;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->process_sleep.result;
@@ -790,7 +781,7 @@ smx_rdv_t simcall_rdv_create(const char *name)
 
   simcall->call = SIMCALL_RDV_CREATE;
   simcall->rdv_create.name = name;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->rdv_create.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -849,7 +840,7 @@ int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
   simcall->call = SIMCALL_RDV_COMM_COUNT_BY_HOST;
   simcall->rdv_comm_count_by_host.rdv = rdv;
   simcall->rdv_comm_count_by_host.host = host;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->rdv_comm_count_by_host.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -868,7 +859,7 @@ smx_action_t simcall_rdv_get_head(smx_rdv_t rdv)
 
   simcall->call = SIMCALL_RDV_GET_HEAD;
   simcall->rdv_get_head.rdv = rdv;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->rdv_get_head.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -892,7 +883,7 @@ smx_process_t simcall_rdv_get_receiver(smx_rdv_t rdv)
 
   simcall->call = SIMCALL_RDV_GET_RECV;
   simcall->rdv_get_rcv_proc.rdv = rdv;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->rdv_get_rcv_proc.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -914,7 +905,7 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
   
   xbt_assert(rdv, "No rendez-vous point defined for send");
 
-  if (MC_IS_ENABLED) {
+  if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
     smx_action_t comm = simcall_comm_isend(rdv, task_size, rate,
         src_buff, src_buff_size, match_fun, NULL, data, 0);
@@ -964,7 +955,7 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
   simcall->comm_isend.clean_fun = clean_fun;
   simcall->comm_isend.data = data;
   simcall->comm_isend.detached = detached;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->comm_isend.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -979,7 +970,7 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
   xbt_assert(isfinite(timeout), "timeout is not finite!");
   xbt_assert(rdv, "No rendez-vous point defined for recv");
 
-  if (MC_IS_ENABLED) {
+  if (MC_is_active()) {
     /* the model-checker wants two separate simcalls */
     smx_action_t comm = simcall_comm_irecv(rdv, dst_buff, dst_buff_size,
         match_fun, data);
@@ -1015,7 +1006,7 @@ smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff
   simcall->comm_irecv.dst_buff_size = dst_buff_size;
   simcall->comm_irecv.match_fun = match_fun;
   simcall->comm_irecv.data = data;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->comm_irecv.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1038,7 +1029,7 @@ smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
   simcall->comm_iprobe.src = src;
   simcall->comm_iprobe.match_fun = match_fun;
   simcall->comm_iprobe.data = data;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->comm_iprobe.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
   return simcall->comm_iprobe.result;
@@ -1081,7 +1072,7 @@ unsigned int simcall_comm_waitany(xbt_dynar_t comms)
 
   simcall->call = SIMCALL_COMM_WAITANY;
   simcall->comm_waitany.comms = comms;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->comm_waitany.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1098,7 +1089,7 @@ int simcall_comm_testany(xbt_dynar_t comms)
 
   simcall->call = SIMCALL_COMM_TESTANY;
   simcall->comm_testany.comms = comms;
-    if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+    if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
       simcall->comm_testany.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1153,7 +1144,7 @@ int simcall_comm_test(smx_action_t comm)
 
   simcall->call = SIMCALL_COMM_TEST;
   simcall->comm_test.comm = comm;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->comm_test.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1169,7 +1160,7 @@ double simcall_comm_get_remains(smx_action_t comm)
 
   simcall->call = SIMCALL_COMM_GET_REMAINS;
   simcall->comm_get_remains.comm = comm;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->comm_get_remains.result = 0.0;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1185,7 +1176,7 @@ e_smx_state_t simcall_comm_get_state(smx_action_t comm)
 
   simcall->call = SIMCALL_COMM_GET_STATE;
   simcall->comm_get_state.comm = comm;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->comm_get_state.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1201,7 +1192,7 @@ void *simcall_comm_get_src_data(smx_action_t comm)
 
   simcall->call = SIMCALL_COMM_GET_SRC_DATA;
   simcall->comm_get_src_data.comm = comm;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->comm_get_src_data.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1217,7 +1208,7 @@ void *simcall_comm_get_dst_data(smx_action_t comm)
 
   simcall->call = SIMCALL_COMM_GET_DST_DATA;
   simcall->comm_get_dst_data.comm = comm;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->comm_get_dst_data.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1233,7 +1224,7 @@ smx_process_t simcall_comm_get_src_proc(smx_action_t comm)
 
   simcall->call = SIMCALL_COMM_GET_SRC_PROC;
   simcall->comm_get_src_proc.comm = comm;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->comm_get_src_proc.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1249,7 +1240,7 @@ smx_process_t simcall_comm_get_dst_proc(smx_action_t comm)
 
   simcall->call = SIMCALL_COMM_GET_DST_PROC;
   simcall->comm_get_dst_proc.comm = comm;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->comm_get_dst_proc.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1263,7 +1254,7 @@ int simcall_comm_is_latency_bounded(smx_action_t comm)
 
   simcall->call = SIMCALL_COMM_IS_LATENCY_BOUNDED;
   simcall->comm_is_latency_bounded.comm = comm;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->comm_is_latency_bounded.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1277,13 +1268,13 @@ int simcall_comm_is_latency_bounded(smx_action_t comm)
 smx_mutex_t simcall_mutex_init(void)
 {
   if(!simix_global) {
-    fprintf(stderr,"You must run MSG_init or gras_init before using MSG or GRAS\n"); // I would have loved using xbt_die but I can't since it is not initialized yet... :)
-    abort();
+    fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
+    xbt_abort();
   }
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_MUTEX_INIT;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->mutex_init.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1325,7 +1316,7 @@ int simcall_mutex_trylock(smx_mutex_t mutex)
 
   simcall->call = SIMCALL_MUTEX_TRYLOCK;
   simcall->mutex_trylock.mutex = mutex;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->mutex_trylock.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1353,7 +1344,7 @@ smx_cond_t simcall_cond_init(void)
   smx_simcall_t simcall = SIMIX_simcall_mine();
 
   simcall->call = SIMCALL_COND_INIT;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->cond_init.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1441,7 +1432,7 @@ smx_sem_t simcall_sem_init(int capacity)
 
   simcall->call = SIMCALL_SEM_INIT;
   simcall->sem_init.capacity = capacity;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->sem_init.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1483,7 +1474,7 @@ int simcall_sem_would_block(smx_sem_t sem)
 
   simcall->call = SIMCALL_SEM_WOULD_BLOCK;
   simcall->sem_would_block.sem = sem;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->sem_would_block.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1528,7 +1519,7 @@ int simcall_sem_get_capacity(smx_sem_t sem)
 
   simcall->call = SIMCALL_SEM_GET_CAPACITY;
   simcall->sem_get_capacity.sem = sem;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->sem_get_capacity.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1547,7 +1538,7 @@ double simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream
   simcall->file_read.size = size;
   simcall->file_read.nmemb = nmemb;
   simcall->file_read.stream = stream;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->file_read.result = 0.0;
   SIMIX_simcall_push(simcall->issuer);
 
@@ -1566,7 +1557,7 @@ size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t
   simcall->file_write.size = size;
   simcall->file_write.nmemb = nmemb;
   simcall->file_write.stream = stream;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->file_write.result = 0;
   SIMIX_simcall_push(simcall->issuer);
 
@@ -1584,7 +1575,7 @@ smx_file_t simcall_file_open(const char* mount, const char* path, const char* mo
   simcall->file_open.mount = mount;
   simcall->file_open.path = path;
   simcall->file_open.mode = mode;
-  if(MC_IS_ENABLED) /* Initialize result to NULL for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
     simcall->file_open.result = NULL;
   SIMIX_simcall_push(simcall->issuer);
 
@@ -1600,7 +1591,7 @@ int simcall_file_close(smx_file_t fp)
 
   simcall->call = SIMCALL_FILE_CLOSE;
   simcall->file_close.fp = fp;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->file_close.result = -1;
   SIMIX_simcall_push(simcall->issuer);
 
@@ -1615,7 +1606,7 @@ int simcall_file_stat(smx_file_t fd, s_file_stat_t *buf)
   smx_simcall_t simcall = SIMIX_simcall_mine();
   simcall->call = SIMCALL_FILE_STAT;
   simcall->file_stat.fd = fd;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->file_stat.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1634,7 +1625,7 @@ int simcall_file_unlink(smx_file_t fd)
   smx_simcall_t simcall = SIMIX_simcall_mine();
   simcall->call = SIMCALL_FILE_UNLINK;
   simcall->file_unlink.fd = fd;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->file_unlink.result = -1;
 
   SIMIX_simcall_push(simcall->issuer);
@@ -1652,12 +1643,55 @@ xbt_dict_t simcall_file_ls(const char* mount, const char* path)
   simcall->call = SIMCALL_FILE_LS;
   simcall->file_ls.mount = mount;
   simcall->file_ls.path = path;
-  if(MC_IS_ENABLED) /* Initialize result to a default value for snapshot comparison done during simcall */
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
     simcall->file_ls.result = NULL;
 
   SIMIX_simcall_push(simcall->issuer);
 
   return simcall->file_ls.result;
+}
+
+#ifdef HAVE_MC
+
+void *simcall_mc_snapshot(void)
+{
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+  simcall->call = SIMCALL_MC_SNAPSHOT;
+  
+  SIMIX_simcall_push(simcall->issuer);
+
+  return simcall->mc_snapshot.s;
+}
+
+int simcall_mc_compare_snapshots(void *s1, void *s2){
+  
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+  simcall->call = SIMCALL_MC_COMPARE_SNAPSHOTS;
+  simcall->mc_compare_snapshots.snapshot1 = s1;
+  simcall->mc_compare_snapshots.snapshot2 = s2;
+  
+  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
+    simcall->mc_compare_snapshots.result = -1;
+  
+  SIMIX_simcall_push(simcall->issuer);
+  
+  return simcall->mc_compare_snapshots.result;
+}
+
+#endif /* HAVE_MC */
+
+/* ****************************************************************************************** */
+/* TUTORIAL: New API                                                                          */
+/* All functions for simcall                                                                  */
+/* ****************************************************************************************** */
+int simcall_new_api_fct(const char* param1, double param2){
+  smx_simcall_t simcall = SIMIX_simcall_mine();
+  simcall->call = SIMCALL_NEW_API_INIT;
+  simcall->new_api.param1 = param1;
+  simcall->new_api.param2 = param2;
+
+  SIMIX_simcall_push(simcall->issuer);
+  return simcall->new_api.result;
 }
 
 /* ************************************************************************** */

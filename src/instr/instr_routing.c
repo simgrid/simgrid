@@ -5,6 +5,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "instr/instr_private.h"
+#include "mc/mc.h"
 
 #ifdef HAVE_TRACING
 #include "surf/surf_private.h"
@@ -117,10 +118,14 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
 
   //create the link
   static long long counter = 0;
+
+  if(MC_is_active())
+    MC_ignore_data_bss(&counter, sizeof(counter));
+
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
-  new_pajeStartLink(SIMIX_get_clock(), father, link_type, src, "G", key);
-  new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "G", key);
+  new_pajeStartLink(SIMIX_get_clock(), father, link_type, src, "topology", key);
+  new_pajeEndLink(SIMIX_get_clock(), father, link_type, dst, "topology", key);
 
   XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
 }
@@ -139,6 +144,10 @@ static int graph_extraction_filter_out (container_t c1, container_t c2)
 
 static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
 {
+  if (!TRACE_platform_topology()){
+    XBT_DEBUG("Graph extracing disable by user.");
+    return;
+  }
   XBT_DEBUG ("Graph extraction for routing_component = %s", rc->name);
   if (!xbt_dict_is_empty(rc->routing_sons)){
     xbt_dict_cursor_t cursor = NULL;

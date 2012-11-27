@@ -46,7 +46,7 @@ smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size, size
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.read(host->host, ptr, size, nmemb, stream->surf_file),
+  action->io.surf_io = surf_workstation_model->extension.workstation.read(host->host, ptr, size, nmemb, stream->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);

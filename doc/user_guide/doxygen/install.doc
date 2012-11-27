@@ -259,53 +259,6 @@ make
 make install
 \endverbatim
 
-
-\subsection install_cmakehowto How to modified sources files for developers
-
-\subsubsection install_cmakehowto1 Add an executable or examples.
-
-If you want make an executable you have to create a CMakeList.txt to the src directory.
-You must specified where to create the executable, source list, dependencies and the name of the binary.
-
-\verbatim
-cmake_minimum_required(VERSION 2.6)
-
-set(EXECUTABLE_OUTPUT_PATH "./")
-set(LIBRARY_OUTPUT_PATH "${CMAKE_HOME_DIRECTORY}/lib")
-
-add_executable(get_sender get_sender.c)					#add_executable(<name_of_target> <src list>)
-
-### Add definitions for compile
-target_link_libraries(get_sender simgrid m pthread) 	#target_link_libraries(<name_of_targe> <dependencies>)
-\endverbatim
-
-Then you have to modified <project/directory>/buildtools/Cmake/MakeExeLib.cmake and add
-this line :
-\verbatim
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
-\endverbatim
-
-\subsubsection install_cmakehowto2 Delete/add sources to lib.
-
-If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake
-
-\verbatim
-set(JMSG_JAVA_SRC
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/MsgException.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/JniException.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/NativeException.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/HostNotFoundException.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/ProcessNotFoundException.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Msg.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Process.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Host.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Task.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/MsgNative.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/ApplicationHandler.java
-	${CMAKE_HOME_DIRECTORY}/src/java/simgrid/msg/Sem.java
-)
-\endverbatim
-
 \section install_Win Installing the SimGrid framework on Windows
 
 \subsection install_Win_install Installing SimGrid with the automatic installer
@@ -362,7 +315,8 @@ compiling a source file. There are:
 \verbatim
 - HelloWorld.c		The example source file.
 - CMakeLists.txt	It allows to configure the project.
-- FindPCRE.cmake	This finds and links to the pcre library (Normally included into Simgrid directory "GnuWin32").
+- FindPCRE.cmake	This finds and links to the pcre library (Normally included
+                        into Simgrid directory "GnuWin32").
 - README 		This explaination.
 \endverbatim
 
@@ -385,8 +339,10 @@ create a target with the same name of the source.
 ################
 # FIND TARGETS #
 ################
-add_executable(TARGET_NAME SOURCES) 		#It creates a target called 'TARGET_NAME.exe' with the sources 'SOURCES'
-target_link_libraries(TARGET_NAME simgrid pcre) #Links TARGET_NAME with simgrid and pcre
+#It creates a target called 'TARGET_NAME.exe' with the sources 'SOURCES'
+add_executable(TARGET_NAME SOURCES)
+#Links TARGET_NAME with simgrid and pcre
+target_link_libraries(TARGET_NAME simgrid pcre)
 \endverbatim
 \li To initialize and build your project, you'll need to run
 \verbatim
@@ -428,22 +384,19 @@ Suppose your simulation has the following structure (remember it is
 just an example to illustrate a possible way to compile everything;
 feel free to organize it as you want).
 
-      \li <tt>sched.h</tt>: a description of the core of the
-          scheduler (i.e. which functions are can be used by the
-          agents). For example we could find the following functions
-          (master, forwarder, slave).
-
-      \li <tt>sched.c</tt>: a C file including <tt>sched.h</tt> and
-          implementing the core of the scheduler. Most of these
-          functions use the MSG functions defined in section \ref
-          msg_task_usage.
-
-      \li <tt>masterslave.c</tt>: a C file with the main function, i.e.
-          the MSG initialization (MSG_init()), the platform
-          creation (e.g. with MSG_create_environment()), the
-          deployment phase (e.g. with MSG_function_register() and
-          MSG_launch_application()) and the call to
-          MSG_main()).
+\li <tt>sched.h</tt>: a description of the core of the
+    scheduler (i.e. which functions are can be used by the
+    agents). For example we could find the following functions
+    (master, forwarder, slave).
+\li <tt>sched.c</tt>: a C file including <tt>sched.h</tt> and
+    implementing the core of the scheduler. Most of these
+    functions use the MSG functions defined in section \ref
+    msg_task_usage.
+\li <tt>masterslave.c</tt>: a C file with the main function, i.e.
+    the MSG initialization (MSG_init()), the platform
+    creation (e.g. with MSG_create_environment()), the
+    deployment phase (e.g. with MSG_function_register() and
+    MSG_launch_application()) and the call to MSG_main()).
 
 To compile such a program, we suggest to use the following
 Makefile. It is a generic Makefile that we have used many times with

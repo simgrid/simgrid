@@ -6,13 +6,12 @@
 
   <process host="Tremblay" function="coordinator" />
 
-  <process host="Fafard" function="producer" >
+  <process host="Fafard" function="client" >
     <argument value="1"/>
   </process>
 
-  <process host="Boivin" function="consumer" >
+  <process host="Boivin" function="client" >
     <argument value="2"/>
   </process>
-
 
 </platform>

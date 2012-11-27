@@ -56,6 +56,17 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
   return mailbox;
 }
 
+/** \ingroup msg_mailbox_management
+ * \brief Set the mailbox to receive in asynchronous mode
+ *
+ * All messages sent to this mailbox will be transferred to 
+ * the receiver without waiting for the receive call. 
+ * The receive call will still be necessary to use the received data.
+ * If there is a need to receive some messages asynchronously, and some not, 
+ * two different mailboxes should be used.
+ *
+ * \param alias The name of the mailbox 
+ */
 void MSG_mailbox_set_async(const char *alias){
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
@@ -64,6 +75,18 @@ void MSG_mailbox_set_async(const char *alias){
 
 }
 
+/** \ingroup msg_mailbox_management
+ * \brief Get a task from a mailbox on a given host
+ *
+ * \param mailbox The mailbox where the task was sent
+ * \param task a memory location for storing a #msg_task_t.
+ * \param host a #msg_host_t host from where the task was sent
+ * \param timeout a timeout
+
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
+ */
 msg_error_t
 MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
                          msg_host_t host, double timeout)
@@ -76,7 +99,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
 
 #ifdef HAVE_TRACING
   TRACE_msg_task_get_start();
-  volatile double start_time = MSG_get_clock();
+  double start_time = MSG_get_clock();
 #endif
 
   /* Sanity check */

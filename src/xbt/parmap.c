@@ -3,7 +3,7 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#include "gras_config.h"
+#include "internal_config.h"
 #include <unistd.h>
 
 #ifndef _XBT_WIN32
@@ -484,7 +484,7 @@ static void xbt_parmap_busy_worker_wait(xbt_parmap_t parmap, unsigned round)
 #include "xbt/ex.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/xbt_os_time.h"
-#include "gras_config.h"        /* HAVE_FUTEX_H */
+#include "internal_config.h"        /* HAVE_FUTEX_H */
 
 XBT_TEST_SUITE("parmap", "Parallel Map");
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_parmap_unit);

@@ -4,18 +4,20 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <math.h> // sqrt
 #include "private.h"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
 #include "surf/surf.h"
 
+#ifndef WIN32
 #include <sys/mman.h>
+#endif
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <math.h> // sqrt
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
@@ -82,6 +84,7 @@ static size_t shm_size(int fd) {
   return (size_t)st.st_size;
 }
 
+#ifndef WIN32
 static void* shm_map(int fd, size_t size, shared_data_t* data) {
   void* mem;
   char loc[PTR_STRLEN];
@@ -92,6 +95,7 @@ static void* shm_map(int fd, size_t size, shared_data_t* data) {
       xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
     }
   }
+
   mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
     xbt_die("Could not map fd %d: %s", fd, strerror(errno));
@@ -107,6 +111,7 @@ static void* shm_map(int fd, size_t size, shared_data_t* data) {
   XBT_DEBUG("MMAP %zu to %p", size, mem);
   return mem;
 }
+#endif
 
 void smpi_bench_destroy(void)
 {
@@ -131,14 +136,13 @@ void smpi_execute_flops(double flops) {
 static void smpi_execute(double duration)
 {
   /* FIXME: a global variable would be less expensive to consult than a call to xbt_cfg_get_double() right on the critical path */
-  if (duration >= xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold")) {
+  if (duration >= surf_cfg_get_double("smpi/cpu_threshold")) {
     XBT_DEBUG("Sleep for %f to handle real computation time", duration);
     smpi_execute_flops(duration *
-                       xbt_cfg_get_double(_surf_cfg_set,
-                                          "smpi/running_power"));
+    		surf_cfg_get_double("smpi/running_power"));
   } else {
     XBT_DEBUG("Real computation took %f while option smpi/cpu_threshold is set to %f => ignore it",
-        duration, xbt_cfg_get_double(_surf_cfg_set, "smpi/cpu_threshold"));
+        duration, surf_cfg_get_double("smpi/cpu_threshold"));
   }
 }
 
@@ -164,14 +168,18 @@ unsigned int smpi_sleep(unsigned int secs)
   return secs;
 }
 
-int smpi_gettimeofday(struct timeval *tv, struct timezone *tz)
+int smpi_gettimeofday(struct timeval *tv)
 {
   double now;
   smpi_bench_end();
   now = SIMIX_get_clock();
   if (tv) {
     tv->tv_sec = (time_t)now;
+#ifdef WIN32
+    tv->tv_usec = (useconds_t)((now - tv->tv_sec) * 1e6);
+#else
     tv->tv_usec = (suseconds_t)((now - tv->tv_sec) * 1e6);
+#endif
   }
   smpi_bench_begin();
   return 0;
@@ -331,6 +339,7 @@ void smpi_sample_3(int global, const char *file, int line)
   data->benching = 0;
 }
 
+#ifndef WIN32
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
   char *loc = bprintf("%zu_%s_%d", (size_t)getpid(), file, line);
@@ -377,7 +386,6 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
   XBT_DEBUG("Malloc %zu in %p (metadata at %p)", size, mem, data);
   return mem;
 }
-
 void smpi_shared_free(void *ptr)
 {
   char loc[PTR_STRLEN];
@@ -412,6 +420,7 @@ void smpi_shared_free(void *ptr)
     free(data->loc);
   }
 }
+#endif
 
 int smpi_shared_known_call(const char* func, const char* input) {
    char* loc = bprintf("%s:%s", func, input);

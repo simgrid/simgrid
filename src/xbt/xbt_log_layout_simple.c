@@ -9,9 +9,9 @@
 #include "xbt/sysdep.h"
 #include "xbt/strbuff.h"        /* For dynamic version when the static one fails */
 #include "xbt/log_private.h"
-#include "xbt/synchro.h"        /* xbt_thread_name */
 
-#include "gras/virtu.h"
+#include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
+#include "surf/surf.h"
 #include <stdio.h>
 #include "portable.h"
 
@@ -42,18 +42,18 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t l,
   procname = xbt_procname();
   if (procname && *procname) {
     len = snprintf(p, rem_size, "%s:%s:(%d) ",
-                   gras_os_myname(), procname, xbt_getpid());
+                   SIMIX_host_self_get_name(), procname, xbt_getpid());
     check_overflow(len);
   }
   else if (!procname)  {
   len = snprintf(p, rem_size, "%s::(%d) ",
-           gras_os_myname(), xbt_getpid());
+                 SIMIX_host_self_get_name(), xbt_getpid());
   check_overflow(len);
   }
 
   /* Display the date */
   len = snprintf(p, rem_size, "%f] ",
-                 gras_os_time() - simple_begin_of_time);
+                 surf_get_clock() - simple_begin_of_time);
   check_overflow(len);
 
   /* Display file position if not INFO */
@@ -86,7 +86,7 @@ xbt_log_layout_t xbt_log_layout_simple_new(char *arg)
   res->do_layout = xbt_log_layout_simple_doit;
 
   if (simple_begin_of_time < 0)
-    simple_begin_of_time = gras_os_time();
+    simple_begin_of_time = surf_get_clock();
 
   return res;
 }

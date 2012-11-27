@@ -1,4 +1,4 @@
-/* xbt/synchro.h -- Synchronization tools                                   */
+/* xbt/synchro_core.h -- Synchronization tools                              */
 /* Usable in simulator, (or in real life when mixing with GRAS)             */
 
 /* Copyright (c) 2009, 2010. The SimGrid Team.

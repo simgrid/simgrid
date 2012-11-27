@@ -14,6 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 #define OPT_TRACING               "tracing"
 #define OPT_TRACING_PLATFORM      "tracing/platform"
+#define OPT_TRACING_TOPOLOGY      "tracing/platform/topology"
 #define OPT_TRACING_SMPI          "tracing/smpi"
 #define OPT_TRACING_SMPI_GROUP    "tracing/smpi/group"
 #define OPT_TRACING_SMPI_COMPUTING "tracing/smpi/computing"
@@ -28,13 +29,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_BASIC         "tracing/basic"
 #define OPT_TRACING_COMMENT       "tracing/comment"
 #define OPT_TRACING_COMMENT_FILE  "tracing/comment_file"
-#define OPT_TRIVA_UNCAT_CONF      "triva/uncategorized"
-#define OPT_TRIVA_CAT_CONF        "triva/categorized"
 #define OPT_VIVA_UNCAT_CONF      "viva/uncategorized"
 #define OPT_VIVA_CAT_CONF        "viva/categorized"
 
 static int trace_enabled;
 static int trace_platform;
+static int trace_platform_topology;
 static int trace_smpi_enabled;
 static int trace_smpi_grouped;
 static int trace_smpi_computing;
@@ -54,6 +54,7 @@ static void TRACE_getopts(void)
 {
   trace_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);
   trace_platform = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
+  trace_platform_topology = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_TOPOLOGY);
   trace_smpi_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
   trace_smpi_grouped = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
   trace_smpi_computing = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_COMPUTING);
@@ -106,8 +107,6 @@ int TRACE_end()
   if (!trace_active)
     return 1;
 
-  TRACE_generate_triva_uncat_conf();
-  TRACE_generate_triva_cat_conf();
   TRACE_generate_viva_uncat_conf();
   TRACE_generate_viva_cat_conf();
 
@@ -157,6 +156,11 @@ int TRACE_is_enabled(void)
 int TRACE_platform(void)
 {
   return trace_platform;
+}
+
+int TRACE_platform_topology(void)
+{
+  return trace_platform_topology;
 }
 
 int TRACE_is_configured(void)
@@ -237,16 +241,6 @@ char *TRACE_get_filename(void)
   return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_FILENAME);
 }
 
-char *TRACE_get_triva_uncat_conf (void)
-{
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRIVA_UNCAT_CONF);
-}
-
-char *TRACE_get_triva_cat_conf (void)
-{
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRIVA_CAT_CONF);
-}
-
 char *TRACE_get_viva_uncat_conf (void)
 {
   return xbt_cfg_get_string(_surf_cfg_set, OPT_VIVA_UNCAT_CONF);
@@ -276,8 +270,15 @@ void TRACE_global_init(int *argc, char **argv)
   /* register platform in the trace */
   int default_tracing_platform = 0;
   xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
-                   "Register the platform in the trace as a graph.",
+                   "Register the platform in the trace as a hierarchy.",
                    xbt_cfgelm_int, &default_tracing_platform, 0, 1,
+                   NULL, NULL);
+
+  /* register platform in the trace */
+  int default_tracing_platform_topology = 1;
+  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_TOPOLOGY,
+                   "Register the platform topology in the trace as a graph.",
+                   xbt_cfgelm_int, &default_tracing_platform_topology, 0, 1,
                    NULL, NULL);
 
   /* smpi */
@@ -371,20 +372,6 @@ void TRACE_global_init(int *argc, char **argv)
                    xbt_cfgelm_string, &default_tracing_comment_file, 1, 1,
                    NULL, NULL);
 
-  /* Triva graph configuration for uncategorized tracing */
-  char *default_triva_uncat_conf_file = xbt_strdup ("");
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_UNCAT_CONF,
-                   "Triva Graph configuration file for uncategorized resource utilization traces.",
-                   xbt_cfgelm_string, &default_triva_uncat_conf_file, 1, 1,
-                   NULL, NULL);
-
-  /* Triva graph configuration for uncategorized tracing */
-  char *default_triva_cat_conf_file = xbt_strdup ("");
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRIVA_CAT_CONF,
-                   "Triva Graph configuration file for categorized resource utilization traces.",
-                   xbt_cfgelm_string, &default_triva_cat_conf_file, 1, 1,
-                   NULL, NULL);
-
   /* Viva graph configuration for uncategorized tracing */
   char *default_viva_uncat_conf_file = xbt_strdup ("");
   xbt_cfg_register(&_surf_cfg_set, OPT_VIVA_UNCAT_CONF,
@@ -434,9 +421,10 @@ void TRACE_help (int detailed)
       detailed);
   print_line (OPT_TRACING_FILENAME, "Filename to register traces",
       "  A file with this name will be created to register the simulation. The file\n"
-      "  is in the Paje format and can be analyzed using Triva or Paje visualization\n"
+      "  is in the Paje format and can be analyzed using Viva, Paje, and PajeNG visualization\n"
       "  tools. More information can be found in these webpages:\n"
-      "     http://triva.gforge.inria.fr/\n"
+      "     http://github.com/schnorr/viva/\n"
+      "     http://github.com/schnorr/pajeng/\n"
       "     http://paje.sourceforge.net/",
       detailed);
   print_line (OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
@@ -489,20 +477,6 @@ void TRACE_help (int detailed)
   print_line (OPT_TRACING_COMMENT_FILE, "File contents added to trace file as comment.",
       "  Use this to add the contents of a file to the top of the trace file as comment.",
       detailed);
-  print_line (OPT_TRIVA_UNCAT_CONF, "Generate graph configuration for Triva",
-      "  This option can be used in all types of simulators build with SimGrid\n"
-      "  to generate a uncategorized resource utilization graph to be used as\n"
-      "  configuration for the Triva visualization analysis. This option\n"
-      "  can be used with tracing/categorized:1 and tracing:1 options to\n"
-      "  analyze an unmodified simulator before changing it to contain\n"
-      "  categories.",
-      detailed);
-  print_line (OPT_TRIVA_CAT_CONF, "generate uncategorized graph configuration for Triva",
-      "  This option can be used if this simulator uses tracing categories\n"
-      "  in its code. The file specified by this option holds a graph configuration\n"
-      "  file for the Triva visualization tool that can be used to analyze a categorized\n"
-      "  resource utilization.",
-      detailed);
   print_line (OPT_VIVA_UNCAT_CONF, "Generate a graph configuration for Viva",
       "  This option can be used in all types of simulators build with SimGrid\n"
       "  to generate a uncategorized resource utilization graph to be used as\n"
@@ -517,6 +491,12 @@ void TRACE_help (int detailed)
       "  file for the Viva visualization tool that can be used to analyze a categorized\n"
       "  resource utilization.",
       detailed);
+  print_line (OPT_TRACING_TOPOLOGY, "Register the platform topology as a graph",
+        "  This option (enabled by default) can be used to disable the tracing of\n"
+        "  the platform topology in the trace file. Sometimes, such task is really\n"
+        "  time consuming, since it must get the route from each host ot other hosts\n"
+        "  within the same Autonomous System (AS).",
+        detailed);
 }
 
 static void output_types (const char *name, xbt_dynar_t types, FILE *file)
@@ -634,16 +614,6 @@ static void generate_cat_configuration (const char *output, const char *name, in
   }
 }
 
-void TRACE_generate_triva_uncat_conf (void)
-{
-  generate_uncat_configuration (TRACE_get_triva_uncat_conf (), "triva", 1);
-}
-
-void TRACE_generate_triva_cat_conf (void)
-{
-  generate_cat_configuration (TRACE_get_triva_cat_conf(), "triva", 1);
-}
-
 void TRACE_generate_viva_uncat_conf (void)
 {
   generate_uncat_configuration (TRACE_get_viva_uncat_conf (), "viva", 0);
@@ -687,6 +657,7 @@ void instr_resume_tracing (void)
 
 #undef OPT_TRACING
 #undef OPT_TRACING_PLATFORM
+#undef OPT_TRACING_TOPOLOGY
 #undef OPT_TRACING_SMPI
 #undef OPT_TRACING_SMPI_GROUP
 #undef OPT_TRACING_CATEGORIZED
@@ -699,8 +670,6 @@ void instr_resume_tracing (void)
 #undef OPT_TRACING_BASIC
 #undef OPT_TRACING_COMMENT
 #undef OPT_TRACING_COMMENT_FILE
-#undef OPT_TRIVA_UNCAT_CONF
-#undef OPT_TRIVA_CAT_CONF
 #undef OPT_VIVA_UNCAT_CONF
 #undef OPT_VIVA_CAT_CONF
 

@@ -1,6 +1,4 @@
-/* test scheduling 2 tasks at the same time without artificial dependencies */
-
-/* Copyright (c) 2007, 2008, 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2007-2012. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,6 +11,16 @@
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic6, sd, "SimDag test basic6");
+/* test scheduling 2 tasks at the same time without artificial dependencies */
+
+/* Basic SimDag Test 6
+ * Scenario:
+ *   - Schedule two parallel tasks concurrently on a P2P platform
+ *   - Hosts computes 1B per second
+ * Computing power is shared between tasks.
+ * Simulated time should be:
+ *          1/(1/2) = 2 seconds
+ */
 
 int main(int argc, char **argv)
 {
@@ -34,7 +42,8 @@ int main(int argc, char **argv)
 
   ret = SD_simulate(-1.0);
   xbt_assert(xbt_dynar_length(ret) == 2,
-      "I was expecting the terminaison of 2 tasks, but I got %lu instead", xbt_dynar_length(ret));
+      "I was expecting the terminaison of 2 tasks, but I got %lu instead",
+      xbt_dynar_length(ret));
   xbt_dynar_free(&ret);
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);

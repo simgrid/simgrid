@@ -301,7 +301,7 @@ smx_action_t SIMIX_host_execute(const char *name, smx_host_t host,
 #endif
 
   /* set surf's action */
-  if (!MC_IS_ENABLED) {
+  if (!MC_is_active()) {
     action->execution.surf_exec =
       surf_workstation_model->extension.workstation.execute(host->host,
     computation_amount);
@@ -339,7 +339,7 @@ smx_action_t SIMIX_host_parallel_execute( const char *name,
     workstation_list[i] = host_list[i]->host;
 
   /* set surf's action */
-  if (!MC_IS_ENABLED) {
+  if (!MC_is_active()) {
     action->execution.surf_exec =
       surf_workstation_model->extension.workstation.
       execute_parallel_task(host_nb, workstation_list, computation_amount,
@@ -404,7 +404,7 @@ void SIMIX_pre_host_execution_wait(smx_simcall_t simcall)
   simcall->issuer->waiting_action = action;
 
   /* set surf's action */
-  if (MC_IS_ENABLED) {
+  if (MC_is_active()) {
     action->state = SIMIX_DONE;
     SIMIX_execution_finish(action);
     return;

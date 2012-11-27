@@ -1,0 +1,48 @@
+# use the tested library, not the installed one
+# (since we want to pass it to the child, it has to be redefined before each command)
+# Go for the first test
+p Test Broadcast with less processes than hosts
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 3 ./bcast -q
+> [rank 0] -> Tremblay
+> [rank 1] -> Jupiter
+> [rank 2] -> Fafard
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+
+# second test
+p Test Broadcast with as much processes than hosts
+! setenv LD_LIBRARY_PATH=../../lib
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 5 ./bcast -q
+> [rank 0] -> Tremblay
+> [rank 1] -> Jupiter
+> [rank 2] -> Fafard
+> [rank 3] -> Ginette
+> [rank 4] -> Bourassa
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+
+# Another test
+p Test Broadcast with more processes than hosts
+! setenv LD_LIBRARY_PATH=../../lib
+$ ../../bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../../examples/msg/small_platform.xml -np 12 ./bcast -q
+> You requested to use 12 processes, but there is only 5 processes in your hostfile...
+> [rank 0] -> Tremblay
+> [rank 1] -> Jupiter
+> [rank 2] -> Fafard
+> [rank 3] -> Ginette
+> [rank 4] -> Bourassa
+> [rank 5] -> Tremblay
+> [rank 6] -> Jupiter
+> [rank 7] -> Fafard
+> [rank 8] -> Ginette
+> [rank 9] -> Bourassa
+> [rank 10] -> Tremblay
+> [rank 11] -> Jupiter
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)

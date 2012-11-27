@@ -1,4 +1,4 @@
-/* xbt.h - Public interface to the xbt (gras's toolbox)                     */
+/* xbt.h - Public interface to the xbt (simgrid's toolbox)                     */
 
 /* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -8,6 +8,11 @@
 
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
+
+/* Define _GNU_SOURCE for getline, isfinite, etc. */
+#ifndef _GNU_SOURCE
+	#define _GNU_SOURCE
+#endif
 
 /* Attributes are only in recent versions of GCC */
 #if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4))

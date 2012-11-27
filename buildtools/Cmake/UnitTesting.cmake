@@ -12,7 +12,6 @@ set(TEST_CFILES
   src/xbt/xbt_strbuff.c
   src/xbt/xbt_sha.c
   src/xbt/config.c
-  src/xbt/xbt_synchro.c
   src/xbt/parmap.c
   )
 set(TEST_UNITS
@@ -26,7 +25,6 @@ set(TEST_UNITS
   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_strbuff_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_sha_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/config_unit.c
-  ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_synchro_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/parmap_unit.c
 
   ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c
@@ -58,9 +56,9 @@ add_executable(testall ${TEST_UNITS})
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(testall gras m)
-else(NOT WIN32)
-  target_link_libraries(testall gras)
-endif(NOT WIN32)
+  target_link_libraries(testall simgrid m)
+else()
+  target_link_libraries(testall simgrid)
+endif()
 
 add_dependencies(testall ${TEST_UNITS})

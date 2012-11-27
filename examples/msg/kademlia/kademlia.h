@@ -8,9 +8,7 @@
 #define _MSG_EXAMPLES_KADEMLIA_H
 #include "node.h"
 #include "task.h"
-//process functions
-static int node(int argc, char *argv[]);
-static void main_loop(node_t node, double deadline);
+
 //core kademlia functions
 unsigned int join(node_t node, unsigned int id_known);
 unsigned int find_node(node_t node, unsigned int id_to_find,

@@ -60,6 +60,7 @@ typedef struct xbt_propositional_symbol* xbt_propositional_symbol_t;
 
 
 XBT_PUBLIC(xbt_automaton_t) xbt_automaton_new(void);
+
 XBT_PUBLIC(void) xbt_automaton_load(xbt_automaton_t automaton, const char *file);
 
 XBT_PUBLIC(xbt_state_t) xbt_automaton_new_state(xbt_automaton_t a, int type, char* id);
@@ -73,12 +74,6 @@ XBT_PUBLIC(xbt_dynar_t) xbt_automaton_get_states(xbt_automaton_t a);
 XBT_PUBLIC(xbt_dynar_t) xbt_automaton_get_transitions(xbt_automaton_t a);
 
 XBT_PUBLIC(xbt_transition_t) xbt_automaton_get_transition(xbt_automaton_t a, xbt_state_t src, xbt_state_t dst);
-
-XBT_PUBLIC(void) xbt_automaton_free_automaton(xbt_automaton_t a, void_f_pvoid_t transition_free_function);
-
-XBT_PUBLIC(void) xbt_automaton_free_state(xbt_automaton_t a, xbt_state_t s, void_f_pvoid_t transition_free_function);
-
-XBT_PUBLIC(void) xbt_automaton_free_transition(xbt_automaton_t a, xbt_transition_t t, void_f_pvoid_t transition_free_function);
 
 XBT_PUBLIC(xbt_state_t) xbt_automaton_transition_get_source(xbt_transition_t t);
 
@@ -110,6 +105,17 @@ XBT_PUBLIC(int) automaton_transition_compare(const void *t1, const void *t2);
 
 XBT_PUBLIC(int) automaton_label_transition_compare(xbt_exp_label_t l1, xbt_exp_label_t l2);
 
+XBT_PUBLIC(void) xbt_state_free_voidp(void *s);
+
+XBT_PUBLIC(void) xbt_state_free(xbt_state_t s);
+
+XBT_PUBLIC(void) xbt_transition_free_voidp(void *t);
+
+XBT_PUBLIC(void) xbt_exp_label_free_voidp(void *e);
+
+XBT_PUBLIC(void) xbt_propositional_symbol_free_voidp(void *ps);
+
+XBT_PUBLIC(void) xbt_automaton_free(xbt_automaton_t a);
 
 SG_END_DECL()
 

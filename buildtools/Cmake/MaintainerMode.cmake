@@ -35,7 +35,7 @@ if(enable_maintainer_mode AND NOT WIN32)
     SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
       "${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.cacc;${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/parserPromela.tab.hacc;${CMAKE_HOME_DIRECTORY}/src/xbt/automaton/automaton_parse.yy.c"
       )
-  endif(BISON_EXE AND LEX_EXE)
+  endif()
 
   IF(FLEX_EXE)
     set(HAVE_FLEX 1)
@@ -45,7 +45,7 @@ if(enable_maintainer_mode AND NOT WIN32)
     string(REGEX MATCH "[0-9]+[.]+[0-9]+$" FLEX_VERSION "${FLEX_VERSION}")
     string(REGEX MATCH "^[0-9]+" FLEX_MINOR_VERSION "${FLEX_VERSION}")
     string(REGEX MATCH "[0-9]+$" FLEX_PATCH_VERSION "${FLEX_VERSION}")
-  ENDIF(FLEX_EXE)
+  ENDIF()
 
   IF(FLEXML_EXE)
     set(HAVE_FLEXML 1)
@@ -53,7 +53,7 @@ if(enable_maintainer_mode AND NOT WIN32)
     string(REGEX MATCH "[0-9]+[.]+[0-9]+" FLEXML_VERSION "${FLEXML_VERSION}")
     string(REGEX MATCH "^[0-9]*" FLEXML_MAJOR_VERSION "${FLEXML_VERSION}")
     string(REGEX MATCH "[0-9]*$" FLEXML_MINOR_VERSION "${FLEXML_VERSION}")
-  ENDIF(FLEXML_EXE)
+  ENDIF()
 
   message(STATUS "Found flex: ${FLEX_EXE}")
   message(STATUS "Found flexml: ${FLEXML_EXE}")
@@ -86,12 +86,10 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
       ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.c
       ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
 
       DEPENDS	${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
       ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.dtd
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.l
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
 
       #${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
@@ -151,10 +149,6 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${SED_EXE} -i ${string11} src/xbt/graphxml.c
       COMMAND ${CMAKE_COMMAND} -E echo "xbt/graphxml.c"
 
-      # src/xbt/datadesc/ddt_parse.yy.c: src/xbt/datadesc/ddt_parse.yy.l
-      COMMAND ${FLEX_EXE} -o src/xbt/datadesc/ddt_parse.yy.c -Pxbt_ddt_parse_ --noline src/xbt/datadesc/ddt_parse.yy.l
-      COMMAND ${CMAKE_COMMAND} -E echo "xbt/datadesc/ddt_parse.yy.c"
-
       #simdag/dax_dtd.c: simdag/dax_dtd.l
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
       COMMAND ${SED_EXE} -i ${string12} src/simdag/dax_dtd.l
@@ -173,22 +167,21 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
       ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.c
       ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
-      ${CMAKE_HOME_DIRECTORY}/src/xbt/datadesc/ddt_parse.yy.c
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
       )
 
-  else(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
+  else()
     if(NOT HAVE_FLEXML)
       message(STATUS "Error : Install flexml before use maintainer mode.")
-    endif(NOT HAVE_FLEXML)
+    endif()
     if(NOT HAVE_FLEX)
       message(STATUS "Error : Install flex before use maintainer mode.")
-    endif(NOT HAVE_FLEX)
+    endif()
     if(NOT SED_EXE)
       message(STATUS "Error : Install sed before use maintainer mode.")
-    endif(NOT SED_EXE)
+    endif()
 
     message(FATAL_ERROR STATUS "Error : Need to install all tools for maintainer mode !!!")
-  endif(HAVE_FLEXML AND HAVE_FLEX  AND SED_EXE)
+  endif()
 
-endif(enable_maintainer_mode AND NOT WIN32)
+endif()

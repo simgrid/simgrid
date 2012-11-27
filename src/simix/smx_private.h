@@ -24,6 +24,10 @@
 #include "smx_network_private.h"
 #include "smx_smurf_private.h"
 #include "smx_synchro_private.h"
+/* ****************************************************************************************** */
+/* TUTORIAL: New API                                                                        */
+/* ****************************************************************************************** */
+#include "smx_new_api_private.h"
 
 /* Define only for SimGrid benchmarking purposes */
 //#define TIME_BENCH_PER_SR /* this aims at measuring the time spent in each scheduling round per each thread. The code is thus run in sequential to bench separately each SSR */
@@ -92,7 +96,11 @@ typedef enum {
   SIMIX_ACTION_COMMUNICATE,
   SIMIX_ACTION_SLEEP,
   SIMIX_ACTION_SYNCHRO,
-  SIMIX_ACTION_IO
+  SIMIX_ACTION_IO,
+  /* ****************************************************************************************** */
+  /* TUTORIAL: New API                                                                        */
+  /* ****************************************************************************************** */
+  SIMIX_ACTION_NEW_API
 } e_smx_action_type_t;
 
 typedef enum {
@@ -169,6 +177,13 @@ typedef struct s_smx_action {
       smx_host_t host;
       surf_action_t surf_io;
     } io;
+
+    /* ****************************************************************************************** */
+    /* TUTORIAL: New API                                                                        */
+    /* ****************************************************************************************** */
+    struct {
+      surf_action_t surf_new_api;
+    } new_api;
   };
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -204,6 +219,7 @@ void SIMIX_context_set_current(smx_context_t context);
 smx_context_t SIMIX_context_get_current(void);
 
 /* All factories init */
+
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
@@ -242,7 +258,8 @@ static XBT_INLINE smx_context_t SIMIX_context_new(xbt_main_func_t code,
                                                   void_pfn_smxprocess_t cleanup_func,
                                                   smx_process_t simix_process)
 {
-
+  if (!simix_global)
+    xbt_die("simix is not initialized, please call MSG_init first");
   return simix_global->context_factory->create_context(code,
                                                        argc, argv,
                                                        cleanup_func,
@@ -283,7 +300,9 @@ static XBT_INLINE void SIMIX_context_suspend(smx_context_t context)
  */
 static XBT_INLINE void SIMIX_context_runall(void)
 {
-  simix_global->context_factory->runall();
+  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
+    simix_global->context_factory->runall();
+  }
 }
 
 /**
@@ -294,7 +313,6 @@ static XBT_INLINE smx_context_t SIMIX_context_self(void)
   if (simix_global && simix_global->context_factory) {
     return simix_global->context_factory->self();
   }
-
   return NULL;
 }
 

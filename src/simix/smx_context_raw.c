@@ -228,11 +228,6 @@ static void smx_ctx_raw_runall(void);
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory)
 {
 
-  if(MC_IS_ENABLED && mmalloc_ignore == NULL){
-    /* Create list of elements to ignore for heap comparison algorithm */
-    MC_ignore_init();
-  }
-
   XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
   smx_ctx_base_factory_init(factory);
 
@@ -332,8 +327,8 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
      } else {
        raw_maestro_context = context;
 
-       if(MC_IS_ENABLED)
-         MC_ignore(&(raw_maestro_context->stack_top), sizeof(raw_maestro_context->stack_top));
+       if(MC_is_active())
+         MC_ignore_heap(&(raw_maestro_context->stack_top), sizeof(raw_maestro_context->stack_top));
 
      }
 
@@ -495,29 +490,14 @@ void smx_ctx_raw_new_sr(void)
  */
 static void smx_ctx_raw_runall_serial(void)
 {
-  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
-    smx_process_t first_process =
-        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
-    raw_process_index = 1;
+  smx_process_t first_process =
+      xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+  raw_process_index = 1;
 
-    /* execute the first process */
-    smx_ctx_raw_resume_serial(first_process);
-  }
+  /* execute the first process */
+  smx_ctx_raw_resume_serial(first_process);
 }
 #endif
-
-/**
- * \brief Stops a raw context.
- *
- * This function is called when the main function of the context if finished.
- *
- * \param context the context of the current worker thread
- */
-static void smx_ctx_raw_stop_parallel(smx_context_t context)
-{
-  smx_ctx_base_stop(context);
-  smx_ctx_raw_suspend_parallel(context);
-}
 
 /**
  * \brief Suspends a running context and resumes another one or returns to
@@ -582,6 +562,8 @@ static void smx_ctx_raw_runall_parallel(void)
   raw_threads_working = 0;
   xbt_parmap_apply(raw_parmap, (void_f_pvoid_t) smx_ctx_raw_resume_parallel,
       simix_global->process_to_run);
+#else
+  xbt_die("You asked for a parallel execution, but you don't have any threads.")
 #endif
 }
 

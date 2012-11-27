@@ -14,16 +14,52 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
 
-
-/* Change to 0 to completely disable mallocators. */
-#define MALLOCATOR_IS_WANTED 1
-
-/* Mallocators and memory mess introduced by model-checking do not mix well
+/** Implementation note on the mallocators:
+ *
+ * Mallocators and memory mess introduced by model-checking do not mix well
  * together: the mallocator will give standard memory when we are using raw
  * memory (so these blocks are killed on restore) and the contrary (so these
- * blocks will leak accross restores).
+ * blocks will leak across restores).
+ *
+ * In addition, model-checking is activated when the command-line arguments
+ * are parsed, at the beginning of main, while most of the mallocators are
+ * created during the constructor functions launched from xbt_preinit, before
+ * the beginning of the main function.
+ *
+ * We want the code as fast as possible when they are active while we can deal
+ * with a little slow-down when they are inactive. So we start the mallocators
+ * as inactive. When they are so, they check at each use whether they should
+ * switch to the fast active mode or should stay in inactive mode.
+ * Finally, we give external elements a way to switch them
+ * all to the active mode (through xbt_mallocator_initialization_is_done).
+ *
+ * This design avoids to store all mallocators somewhere for later conversion,
+ * which would be hard to achieve provided that all our data structures use
+ * some mallocators internally...
  */
-#define MALLOCATOR_IS_ENABLED (MALLOCATOR_IS_WANTED && !MC_IS_ENABLED)
+
+
+static int initialization_done = 0;
+/**
+ * This function must be called once the framework configuration is done. If not,
+ * mallocators will never get used. Check the implementation notes in
+ * src/xbt/mallocator.c for the justification of this.
+ *
+ * For example, surf_config uses this function to tell to the mallocators that
+ * the simgrid
+ * configuration is now finished and that it can create them if not done yet */
+void xbt_mallocator_initialization_is_done(void) {
+  initialization_done = 1;
+}
+
+/** used by the module to know if it's time to activate the mallocators yet */
+static XBT_INLINE int xbt_mallocator_is_active(void) {
+#ifndef MALLOCATOR_COMPILED_IN
+  return 0;
+#else
+  return initialization_done && !MC_is_active();
+#endif
+}
 
 /**
  * \brief Constructor
@@ -53,23 +89,14 @@ xbt_mallocator_t xbt_mallocator_new(int size,
   xbt_assert(new_f != NULL && free_f != NULL, "invalid parameter");
 
   m = xbt_new0(s_xbt_mallocator_t, 1);
-  XBT_VERB("Create mallocator %p", m);
+  XBT_VERB("Create mallocator %p (%s)",
+           m, xbt_mallocator_is_active() ? "enabled" : "disabled");
   m->current_size = 0;
   m->new_f = new_f;
   m->free_f = free_f;
   m->reset_f = reset_f;
+  m->max_size = size;
 
-  if (MALLOCATOR_IS_ENABLED) {
-    m->objects = xbt_new0(void *, size);
-    m->max_size = size;
-    m->mutex = xbt_os_mutex_init();
-  } else {
-    if (!MALLOCATOR_IS_WANTED) /* Warn to avoid to commit debugging settings */
-      XBT_WARN("Mallocator is disabled!");
-    m->objects = NULL;
-    m->max_size = 0;
-    m->mutex = NULL;
-  }
   return m;
 }
 
@@ -117,7 +144,7 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
 {
   void *object;
 
-  if (MALLOCATOR_IS_ENABLED) {
+  if (m->objects != NULL) { // this mallocator is active, stop thinking and go for it!
     xbt_os_mutex_acquire(m->mutex);
     if (m->current_size <= 0) {
       /* No object is ready yet. Create a bunch of them to try to group the
@@ -138,7 +165,14 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
     object = m->objects[--m->current_size];
     xbt_os_mutex_release(m->mutex);
   } else {
-    object = m->new_f();
+    if (xbt_mallocator_is_active()) {
+      // We have to switch this mallocator from inactive to active (and then get an object)
+      m->objects = xbt_new0(void *, m->max_size);
+      m->mutex = xbt_os_mutex_init();
+      return xbt_mallocator_get(m);
+    } else {
+      object = m->new_f();
+    }
   }
 
   if (m->reset_f)
@@ -161,7 +195,7 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
  */
 void xbt_mallocator_release(xbt_mallocator_t m, void *object)
 {
-  if (MALLOCATOR_IS_ENABLED) {
+  if (m->objects != NULL) { // Go for it
     xbt_os_mutex_acquire(m->mutex);
     if (m->current_size < m->max_size) {
       /* there is enough place to push the object */
@@ -178,6 +212,13 @@ void xbt_mallocator_release(xbt_mallocator_t m, void *object)
       m->free_f(object);
     }
   } else {
-    m->free_f(object);
+    if (xbt_mallocator_is_active()) {
+      // We have to switch this mallocator from inactive to active (and then store that object)
+      m->objects = xbt_new0(void *, m->max_size);
+      m->mutex = xbt_os_mutex_init();
+      xbt_mallocator_release(m,object);
+    } else {
+      m->free_f(object);
+    }
   }
 }

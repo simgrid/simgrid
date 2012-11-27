@@ -7,19 +7,21 @@ add_executable(dax_test dax_test.c)
 ### Add definitions for compile
 if(NOT WIN32)
   target_link_libraries(dax_test simgrid pthread m )
-else(NOT WIN32)
+else()
   target_link_libraries(dax_test simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/simple_dax_with_cycle.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/smalldax.tesh
   PARENT_SCOPE
   )
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/Montage_50.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/simple_dax_with_cycle.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/smalldax.xml
   PARENT_SCOPE
   )
 set(examples_src

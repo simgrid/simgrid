@@ -7,10 +7,10 @@
 #ifndef _SURF_MAXMIN_H
 #define _SURF_MAXMIN_H
 
-#include <math.h>
 #include "portable.h"
 #include "xbt/misc.h"
 #include "surf/datatypes.h"
+#include <math.h>
 
 extern double sg_maxmin_precision;
 #define MAXMIN_PRECISION sg_maxmin_precision
@@ -46,7 +46,7 @@ XBT_PUBLIC(lmm_variable_t) lmm_variable_new(lmm_system_t sys, void *id,
                                             double weight_value,
                                             double bound,
                                             int number_of_constraints);
-void lmm_variable_free(lmm_system_t sys, lmm_variable_t var);
+XBT_PUBLIC(void) lmm_variable_free(lmm_system_t sys, lmm_variable_t var);
 XBT_PUBLIC(double) lmm_variable_getvalue(lmm_variable_t var);
 XBT_PUBLIC(double) lmm_variable_getbound(lmm_variable_t var);
 

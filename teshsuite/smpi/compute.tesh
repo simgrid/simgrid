@@ -1,0 +1,31 @@
+p Test compute
+! setenv LD_LIBRARY_PATH=../../lib
+! output sort
+! timeout 5
+$ ../../bin/smpirun -platform ${srcdir:=.}/../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir:=.}/hostfile -np 2 ./compute 0
+> 0 2.000000
+> 0 2.000000
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+
+p Test compute and bench
+! setenv LD_LIBRARY_PATH=../../lib
+! output sort
+! timeout 45
+$ ../../bin/smpirun  -platform ${srcdir:=.}/../../examples/msg/small_platform_with_routers.xml -hostfile ${srcdir:=.}/hostfile -np 2 ./compute3
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0] The result of the computation is: 65536.000000
+> [1] The result of the computation is: 2.000000
+> [rank:0] Run the first computation. It's globally benched, and I want no more than 3 benchmarks (thres<0)
+> [rank:0] Run the first computation. It's globally benched, and I want no more than 3 benchmarks (thres<0)
+> [rank:0] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+> [rank:0] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+> [rank:1] Run the first computation. It's globally benched, and I want no more than 3 benchmarks (thres<0)
+> [rank:1] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+> [rank:1] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+

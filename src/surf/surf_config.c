@@ -6,6 +6,7 @@
 
 /* surf_config: configuration infrastructure for the simulation world       */
 
+#include "xbt/misc.h"
 #include "xbt/config.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
@@ -18,6 +19,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of surf (and the rest of the simulation)");
 
 xbt_cfg_t _surf_cfg_set = NULL;
+
+int _surf_init_status = 0;      /* 0: beginning of time (config cannot be changed yet);
+                                   1: initialized: cfg_set created (config can now be changed);
+                                   2: configured: command line parsed and config part of platform file was integrated also, platform construction ongoing or done.
+                                      (Config cannot be changed anymore!) */
+
 
 /* Parse the command line, looking for options */
 static void surf_config_cmd_line(int *argc, char **argv)
@@ -80,21 +87,19 @@ static void surf_config_cmd_line(int *argc, char **argv)
     argv[j] = NULL;
     *argc = j;
   }
-  if (shall_exit)
+  if (shall_exit) {
+    _surf_init_status=1; // get everything cleanly cleaned on exit
     exit(0);
+  }
 }
 
-
-int _surf_init_status = 0;      /* 0: beginning of time;
-                                   1: pre-inited (cfg_set created);
-                                   2: inited (running) */
 
 /* callback of the workstation/model variable */
 static void _surf_cfg_cb__workstation_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -113,7 +118,7 @@ static void _surf_cfg_cb__cpu_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -132,7 +137,7 @@ static void _surf_cfg_cb__optimization_mode(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -151,7 +156,7 @@ static void _surf_cfg_cb__storage_mode(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -170,7 +175,7 @@ static void _surf_cfg_cb__network_model(const char *name, int pos)
 {
   char *val;
 
-  xbt_assert(_surf_init_status < 2,
+  xbt_assert(_surf_init_status == 1,
               "Cannot change the model after the initialization");
 
   val = xbt_cfg_get_string(_surf_cfg_set, name);
@@ -231,14 +236,11 @@ static void _surf_cfg_cb_model_check(const char *name, int pos)
 {
   _surf_do_model_check = xbt_cfg_get_int(_surf_cfg_set, name);
 
-  if (_surf_do_model_check) {
 #ifndef HAVE_MC
+  if (_surf_do_model_check) {
     xbt_die("You tried to activate the model-checking from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
-#endif
-    /* Tell modules using mallocators that they shouldn't. MC don't like them */
-    xbt_fifo_preinit();
-    xbt_dict_preinit();
   }
+#endif
 }
 
 extern int _surf_do_verbose_exit;
@@ -255,6 +257,7 @@ static void _surf_cfg_cb_context_factory(const char *name, int pos) {
 
 static void _surf_cfg_cb_context_stack_size(const char *name, int pos)
 {
+  smx_context_stack_size_was_set = 1;
   smx_context_stack_size = xbt_cfg_get_int(_surf_cfg_set, name) * 1024;
 }
 
@@ -377,6 +380,23 @@ void surf_config_init(int *argc, char **argv)
                      &default_value, 1, 1, &_surf_cfg_cb__storage_mode,
                      NULL);
 
+    /* ********************************************************************* */
+    /* TUTORIAL: New model                                                   */
+    sprintf(description,
+            "The model to use for the New model. Possible values: ");
+    p = description;
+    while (*(++p) != '\0');
+    for (i = 0; surf_new_model_description[i].name; i++)
+      p += sprintf(p, "%s%s", (i == 0 ? "" : ", "),
+                   surf_new_model_description[i].name);
+    sprintf(p,
+            ".\n       (use 'help' as a value to see the long description of each model)");
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_surf_cfg_set, "new_model/model", description, xbt_cfgelm_string,
+                     &default_value, 1, 1, &_surf_cfg_cb__storage_mode,
+                     NULL);
+    /* ********************************************************************* */
+
     sprintf(description,
             "The model to use for the network. Possible values: ");
     p = description;
@@ -424,7 +444,7 @@ void surf_config_init(int *argc, char **argv)
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
                      xbt_cfgelm_double, NULL, 1, 1,
                      _surf_cfg_cb__tcp_gamma, NULL);
-    xbt_cfg_setdefault_double(_surf_cfg_set, "network/TCP_gamma", 20000.0);
+    xbt_cfg_setdefault_double(_surf_cfg_set, "network/TCP_gamma", 4194304.0);
 
     xbt_cfg_register(&_surf_cfg_set, "maxmin/precision",
                      "Numerical precision used when updating simulation models (epsilon in double comparisons)",
@@ -474,33 +494,54 @@ void surf_config_init(int *argc, char **argv)
 
 #ifdef HAVE_MC
     /* do model-checking */
-    default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check",
                      "Verify the system through model-checking instead of simulating it (EXPERIMENTAL)",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     xbt_cfgelm_int, NULL, 0, 1,
                      _surf_cfg_cb_model_check, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check", 0);
 
     /* do stateful model-checking */
-    default_value_int = 0;
     xbt_cfg_register(&_surf_cfg_set, "model-check/checkpoint",
                      "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
                      "If value=1, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
-                     xbt_cfgelm_int, &default_value_int, 0, 1,
+                     xbt_cfgelm_int, NULL, 0, 1,
                      _mc_cfg_cb_checkpoint, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/checkpoint", 0);
     
     /* do liveness model-checking */
-    default_value = xbt_strdup("");
     xbt_cfg_register(&_surf_cfg_set, "model-check/property",
                      "Specify the name of the file containing the property. It must be the result of the ltl2ba program.",
-                     xbt_cfgelm_string, &default_value, 0, 1,
+                     xbt_cfgelm_string, NULL, 0, 1,
                      _mc_cfg_cb_property, NULL);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "model-check/property", "");
 
     /* Specify the kind of model-checking reduction */
-    default_value = xbt_strdup("unset");
     xbt_cfg_register(&_surf_cfg_set, "model-check/reduction",
                      "Specify the kind of exploration reduction (either none or DPOR)",
-                     xbt_cfgelm_string, &default_value, 0, 1,
+                     xbt_cfgelm_string, NULL, 0, 1,
                      _mc_cfg_cb_reduce, NULL);
+    xbt_cfg_setdefault_string(_surf_cfg_set, "model-check/reduction", "dpor");
+
+    /* Enable/disable timeout for wait requests with model-checking */
+    xbt_cfg_register(&_surf_cfg_set, "model-check/timeout",
+                     "Enable/Disable timeout for wait requests",
+                     xbt_cfgelm_int, NULL, 0, 1,
+                     _mc_cfg_cb_timeout, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/timeout", 0);
+
+    /* Set max depth exploration */
+    xbt_cfg_register(&_surf_cfg_set, "model-check/max_depth",
+                     "Specify the max depth of exploration (default : 1000)",
+                     xbt_cfgelm_int, NULL, 0, 1,
+                     _mc_cfg_cb_max_depth, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/max_depth", 1000);
+
+    /* Set number of visited state stored for state comparison reduction*/
+    xbt_cfg_register(&_surf_cfg_set, "model-check/visited",
+                     "Specify the number of visited state stored for state comparison reduction. If value=5, the last 5 visited states are stored",
+                     xbt_cfgelm_int, NULL, 0, 1,
+                     _mc_cfg_cb_visited, NULL);
+    xbt_cfg_setdefault_int(_surf_cfg_set, "model-check/visited", 0);
 #endif
 
     /* do verbose-exit */
@@ -645,10 +686,10 @@ void surf_config_init(int *argc, char **argv)
       xbt_cfg_setdefault_string(_surf_cfg_set, "path", initial_path);
     }
 
+    _surf_init_status = 1;
 
     surf_config_cmd_line(argc, argv);
 
-    _surf_init_status = 1;
   } else {
     XBT_WARN("Call to surf_config_init() after initialization ignored");
   }
@@ -725,4 +766,14 @@ void surf_config_models_setup()
   XBT_DEBUG("Call storage_model_init");
   storage_id = find_model_description(surf_storage_model_description, storage_model_name);
   surf_storage_model_description[storage_id].model_init_preparse();
+
+  /* ********************************************************************* */
+  /* TUTORIAL: New model                                                   */
+  int new_model_id = -1;
+  char *new_model_name = NULL;
+  new_model_name = xbt_cfg_get_string(_surf_cfg_set, "new_model/model");
+  XBT_DEBUG("Call new model_init");
+  new_model_id = find_model_description(surf_new_model_description, new_model_name);
+  surf_new_model_description[new_model_id].model_init_preparse();
+  /* ********************************************************************* */
 }

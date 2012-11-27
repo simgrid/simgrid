@@ -11,11 +11,11 @@ if(NOT WIN32)
   target_link_libraries(test_intra_all2all simgrid m pthread )
   target_link_libraries(test_intra_independent_comm simgrid m pthread )
   target_link_libraries(test_intra_scatter simgrid m pthread )
-else(NOT WIN32)
+else()
   target_link_libraries(test_intra_all2all simgrid)
   target_link_libraries(test_intra_independent_comm simgrid)
   target_link_libraries(test_intra_scatter simgrid)
-endif(NOT WIN32)
+endif()
 
 set(tesh_files
   ${tesh_files}

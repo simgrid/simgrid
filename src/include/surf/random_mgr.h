@@ -9,8 +9,6 @@
 
 #include "xbt/heap.h"
 #include "xbt/dict.h"
-#include <stdlib.h>
-#include <math.h>
 
 SG_BEGIN_DECL()
 
