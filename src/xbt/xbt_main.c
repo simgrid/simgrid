@@ -89,30 +89,22 @@ static void xbt_preinit(void)
   mmalloc_preinit();
 #endif
   xbt_log_preinit();
-
   xbt_backtrace_preinit();
   xbt_os_thread_mod_preinit();
   xbt_fifo_preinit();
   xbt_dict_preinit();
-
   atexit(xbt_postexit);
 }
 
 static void xbt_postexit(void)
 {
   xbt_backtrace_postexit();
-
   xbt_fifo_postexit();
   xbt_dict_postexit();
-
   xbt_os_thread_mod_postexit();
-
   xbt_dynar_free(&xbt_cmdline);
-
   xbt_log_postexit();
-
   free(xbt_binary_name);
-
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_postexit();
 #endif
