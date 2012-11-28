@@ -286,6 +286,9 @@ void mpi_scatter__(void* sendbuf, int* sendcount, int* sendtype,
 void mpi_gather__(void* sendbuf, int* sendcount, int* sendtype,
                   void* recvbuf, int* recvcount, int* recvtype,
                   int* root, int* comm, int* ierr);
+void mpi_gatherv__(void* sendbuf, int* sendcount, int* sendtype,
+                  void* recvbuf, int* recvcounts, int* displs, int* recvtype,
+                  int* root, int* comm, int* ierr);
 void mpi_allgather__(void* sendbuf, int* sendcount, int* sendtype,
                      void* recvbuf, int* recvcount, int* recvtype,
                      int* comm, int* ierr);
@@ -304,5 +307,10 @@ void mpi_get_count__(MPI_Status * status, int* datatype, int *count, int* ierr);
 void mpi_type_extent__(int* datatype, MPI_Aint * extent, int* ierr);
 void mpi_type_lb__(int* datatype, MPI_Aint * extent, int* ierr);
 void mpi_type_ub__(int* datatype, MPI_Aint * extent, int* ierr);
+void mpi_sendrecv__(void* sendbuf, int* sendcount, int* sendtype, int* dst,
+                int* sendtag, void *recvbuf, int* recvcount,
+                int* recvtype, int* src, int* recvtag,
+                int* comm, MPI_Status* status, int* ierr);
+
 
 #endif

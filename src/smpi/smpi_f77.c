@@ -201,6 +201,15 @@ void mpi_send__(void* buf, int* count, int* datatype, int* dst,
                     get_comm(*comm));
 }
 
+void mpi_sendrecv__(void* sendbuf, int* sendcount, int* sendtype, int* dst,
+                int* sendtag, void *recvbuf, int* recvcount,
+                int* recvtype, int* src, int* recvtag,
+                int* comm, MPI_Status* status, int* ierr) {
+   *ierr = MPI_Sendrecv(sendbuf, *sendcount, get_datatype(*sendtype), *dst,
+       *sendtag, recvbuf, *recvcount,get_datatype(*recvtype), *src, *recvtag,
+       get_comm(*comm), status);
+}
+
 void mpi_recv_init__(void *buf, int* count, int* datatype, int* src, int* tag,
                      int* comm, int* request, int* ierr) {
   MPI_Request req;
@@ -309,6 +318,13 @@ void mpi_gather__(void* sendbuf, int* sendcount, int* sendtype,
                   int* root, int* comm, int* ierr) {
   *ierr = MPI_Gather(sendbuf, *sendcount, get_datatype(*sendtype),
                      recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
+}
+
+void mpi_gatherv__(void* sendbuf, int* sendcount, int* sendtype,
+                  void* recvbuf, int* recvcounts, int* displs, int* recvtype,
+                  int* root, int* comm, int* ierr) {
+  *ierr = MPI_Gatherv(sendbuf, *sendcount, get_datatype(*sendtype),
+                     recvbuf, recvcounts, displs, get_datatype(*recvtype), *root, get_comm(*comm));
 }
 
 void mpi_allgather__(void* sendbuf, int* sendcount, int* sendtype,
