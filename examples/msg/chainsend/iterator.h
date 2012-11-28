@@ -18,6 +18,8 @@ typedef struct xbt_dynar_iterator_struct xbt_dynar_iterator_s;
 
 /* Iterator methods */
 xbt_dynar_iterator_t xbt_dynar_iterator_new(xbt_dynar_t list, xbt_dynar_t (*criteria_fn)(int));
+void xbt_dynar_iterator_reset(xbt_dynar_iterator_t it);
+void xbt_dynar_iterator_seek(xbt_dynar_iterator_t it, int pos);
 void *xbt_dynar_iterator_next(xbt_dynar_iterator_t it);
 void xbt_dynar_iterator_delete(xbt_dynar_iterator_t it);
 
