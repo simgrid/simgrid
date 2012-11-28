@@ -288,10 +288,16 @@ void smpi_global_destroy(void)
 /* With smpiff, the following weak symbols are replaced by those in libf2c */
 int __attribute__((weak)) xargc;
 char** __attribute__((weak)) xargv;
+void __attribute__((weak)) user_main__(){
+  xbt_die("Should not be in this smpi_simulated_main");
+  return;
+}
 
 int __attribute__((weak)) smpi_simulated_main__(int argc, char** argv) {
-  xbt_die("Should not be in this smpi_simulated_main");
-  return 1;
+  smpi_process_init(&argc, &argv);
+  user_main__();
+  //xbt_die("Should not be in this smpi_simulated_main");
+  return 0;
 }
 
 int __attribute__((weak)) main(int argc, char** argv) {

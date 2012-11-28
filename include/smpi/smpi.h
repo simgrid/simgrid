@@ -511,6 +511,7 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
 XBT_PUBLIC(int) __attribute__((weak)) smpi_simulated_main__(int argc, char** argv);
 XBT_PUBLIC(int) __attribute__((weak)) MAIN__(void);
 XBT_PUBLIC(int) smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[]);
+XBT_PUBLIC(void) __attribute__((weak)) user_main__(void);
 
 XBT_PUBLIC(int) smpi_process_index(void);
 
