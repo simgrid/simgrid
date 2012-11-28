@@ -13,36 +13,11 @@ xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
   for (; i < hostcount+1; i++) {
     hostname = xbt_new(char, HOSTNAME_LENGTH);
     snprintf(hostname, HOSTNAME_LENGTH, "host%d", i);
-    //XBT_INFO("%s", hostname);
-    /*h = MSG_get_host_by_name(hostname);
-    if (h == NULL) {
-      XBT_INFO("Unknown host %s. Stopping Now! ", hostname);
-      abort();
-    } else {*/
-      xbt_dynar_push(host_list, &hostname);
-    /*}*/
+    XBT_DEBUG("%s", hostname);
+    xbt_dynar_push(host_list, &hostname);
   }
   return host_list;
 }
-
-/*xbt_dynar_t build_hostlist_from_argv(int argc, char *argv[])
-{
-  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), NULL);
-  msg_host_t h = NULL;
-  int i = 1;
-  
-  for (; i < argc; i++) {
-    XBT_INFO("host%d = %s", i, argv[i]);
-    h = MSG_get_host_by_name(argv[i]);
-    if (h == NULL) {
-      XBT_INFO("Unknown host %s. Stopping Now! ", argv[i]);
-      abort();
-    } else {
-      xbt_dynar_push(host_list, &(argv[i]));
-    }
-  }
-  return host_list;
-}*/
 
 void delete_hostlist(xbt_dynar_t h)
 {
@@ -76,7 +51,7 @@ int broadcaster_build_chain(const char **first, xbt_dynar_t host_list, xbt_dynar
         next = *cur;
       else
         next = NULL;
-      //XBT_INFO("Building chain -- broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"", me, current_host, prev, next);
+      XBT_DEBUG("Building chain -- broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"", me, current_host, prev, next);
     
       /* Send message to current peer */
       task = task_message_chain_new(me, current_host, prev, next);

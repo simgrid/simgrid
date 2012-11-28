@@ -53,9 +53,7 @@ void xbt_dynar_iterator_seek(xbt_dynar_iterator_t it, int pos)
 void *xbt_dynar_iterator_next(xbt_dynar_iterator_t it)
 {
   int *next;
-  //XBT_INFO("%d current\n", next);
   if (it->current >= it->length) {
-    //XBT_INFO("Nothing to return!\n");
     return NULL;
   } else {
     next = xbt_dynar_get_ptr(it->indices_list, it->current);

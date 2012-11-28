@@ -15,7 +15,6 @@
 #define PIECE_COUNT 50
 
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount); 
-/*xbt_dynar_t build_hostlist_from_argv(int argc, char *argv[]);*/
 
 /* Broadcaster: helper functions */
 int broadcaster_build_chain(const char **first, xbt_dynar_t host_list, xbt_dynar_iterator_t it);
