@@ -100,6 +100,7 @@ if(NOT enable_memcheck)
   # MSG examples
   ADD_TEST(msg-file                             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/msg/io/io.tesh)
   ADD_TEST(msg-start-kill-time                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/msg/start_kill_time/start_kill_time.tesh)
+  ADD_TEST(msg-chainsend                        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chainsend --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/chainsend --cd ${CMAKE_HOME_DIRECTORY}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/chainsend/chainsend.tesh)
 
   ADD_TEST(msg-sendrecv-CLM03-thread            ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_CLM03.tesh)
   ADD_TEST(msg-sendrecv-Vegas-thread            ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/sendrecv/sendrecv_Vegas.tesh)

@@ -9,10 +9,7 @@ target_link_libraries(chainsend simgrid m )
 
 set(tesh_files
   ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend_CLM03.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend_KCCFLN05.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend_Reno.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend_Vegas.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend.tesh
   PARENT_SCOPE
   )
 set(xml_files
