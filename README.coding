@@ -16,7 +16,7 @@ having all of them in the same package makes the installation easier
 for end-users. Moreover, it enables to share the compilation chain and
 eases the development.
 
-The tree is not splited on projects, but on file finality:
+The tree is not split on projects, but on file finality:
  include/            -> all *public* headers
  include/xbt/*.h     -> one file per module
 
@@ -52,11 +52,11 @@ FIXME: this list of arguments is still to be discussed, maybe
 *****************************************************
 
 It may sound strange, but the type naming convention was source of intense
-discution between da SimGrid posse members. The convention we came to may not
+discussion between da SimGrid posse members. The convention we came to may not
 be the best solution, but it has the merit to exist and leave everyone work.
 So please stick to it.
 
-  - ???_t is a valid type (builded with typedef)
+  - ???_t is a valid type (built with typedef)
   - s_toto_t is a structure (access to fields with .)
   - s_toto   is a structure needing 'struct' keyword to be used
   - e_toto_t is an enum
@@ -67,7 +67,7 @@ So please stick to it.
 Please to not call toto_t something else than an 'object' (ie, something you
 have to call _new and _free on it).
 
-Exemple:
+Example:
   typedef struct s_toto {} s_toto_t, *toto_t;
   typedef enum {} e_toto_t;
   
@@ -86,12 +86,12 @@ MALLOC:
  Don't use it, or you'll have to check the result (and do some dirty stuff
  on AIX). Use xbt_malloc (or even better, xbt_new) instead.
 
-SIZE_T
+SIZE_T (FIXME: obsolete?)
  If possible, avoid size_t and use unsigned long instead. If not,
  #include <sys/types.h> in all files manipulating size_t
  do cast it to unsigned long before printing (and use %lu)
  
-PRINTF pointer difference
+PRINTF pointer difference (FIXME: advertise %td instead?)
  printf ("diff = %ld\n", (long) (pointer2 - pointer1));
   
 
@@ -118,11 +118,11 @@ The documentation of each function must be in the C file were it lives.
 Any public element (function, type and macro) must have a @brief part.
 
 **
-** XBT virtualization mecanism (FIXME:this section is deprecated)
+** XBT virtualization mechanism (FIXME: this section is deprecated)
 **
 ****************************************************
 
-There is some functionnalities that we want to virtualize in XBT. We
+There is some functionalities that we want to virtualize in XBT. We
 want xbt_time to give the simulated clock when running on top of the
 simulator, and the host clock when running on a real system. This
 could be placed in GRAS (and was, historically), but there is some
@@ -163,8 +163,25 @@ investigating the portability of the thing to windows.
 * SimGrid Hacker Survival Guide (FIXME: should be betterly placed)
 ********************************
 
+* Before pushing any change, don't forget to check if the compilation
+  passes with compiler optimizations and warnings turned on:
+      cmake -Denable_compile_optimizations=ON \
+            -Denable_compile_warnings=ON
+
+* If you want to debug memory allocation problems, here are a few hints:
+  - disable compiler optimizations, to have better backtraces;
+  - disable the mallocators, or it will be hard to match malloc's with
+    free's;
+  - disable model checking, unless your problem lies in the model
+    checker part of SimGrid (MC brings its own malloc implementation,
+    which valgrind doesn't understand).
+  All this is configured with:
+      cmake -Denable_model-checking=OFF \
+            -Denable_mallocators=OFF \
+            -Denable_compile_optimizations=OFF
+
 * If you break the logs (for example while hacking in the dynars), you
   want to define XBT_LOG_MAYDAY at the beginning of log.h. It will
-  desactivate the whole logging mecanism, switching to printfs
+  deactivate the whole logging mechanism, switching to printfs
   instead. SimGrid becomes incredibly verbose when doing so, but it
   you let you fixing the dynars.
