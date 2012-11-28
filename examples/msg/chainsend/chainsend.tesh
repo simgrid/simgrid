@@ -1,0 +1,26 @@
+#! ./tesh
+
+p Testing the chainsend MSG implementation
+
+! timeout 10
+! output sort
+$ $SG_TEST_EXENV ${bindir:=.}/chainsend ${srcdir:=.}/platform_chainsend.xml ${srcdir:=.}/deployment_chainsend.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+> [    0.000000] (0:@) test_all
+> [    0.000000] (1:broadcaster@host0) broadcaster
+> [    0.000000] (2:peer@host1) peer
+> [    0.000000] (3:peer@host2) peer
+> [    0.000000] (4:peer@host3) peer
+> [    0.000000] (5:peer@host4) peer
+> [    0.000000] (6:peer@host5) peer
+> [    0.000000] (7:peer@host6) peer
+> [    0.000000] (8:peer@host7) peer
+> [    0.000000] (9:peer@host8) peer
+> [   93.000000] (2:peer@host1) Waiting for sends to finish before shutdown...
+> [  225.700000] (3:peer@host2) Waiting for sends to finish before shutdown...
+> [  294.700000] (4:peer@host3) Waiting for sends to finish before shutdown...
+> [  298.600000] (5:peer@host4) Waiting for sends to finish before shutdown...
+> [  309.100000] (6:peer@host5) Waiting for sends to finish before shutdown...
+> [  314.300000] (7:peer@host6) Waiting for sends to finish before shutdown...
+> [  318.300000] (8:peer@host7) Waiting for sends to finish before shutdown...
+> [  318.400000] (0:@) Total simulation time: 3.184000e+02
+> [  318.400000] (9:peer@host8) Waiting for sends to finish before shutdown...
