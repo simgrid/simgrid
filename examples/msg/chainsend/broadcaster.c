@@ -77,7 +77,7 @@ int broadcaster_send_file(const char *first)
 
   for (; cur < piece_count; cur++) {
     task = task_message_data_new(me, first, NULL, 0);
-    XBT_INFO("Sending (send) from %s into mailbox %s", me, first);
+    XBT_DEBUG("Sending (send) from %s into mailbox %s", me, first);
     status = MSG_task_send(task, first);
    
     xbt_assert(status == MSG_OK, "broadcaster_send_file() failed");
