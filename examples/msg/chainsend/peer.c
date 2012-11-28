@@ -127,7 +127,7 @@ int peer(int argc, char *argv[])
   status = peer_wait_for_message(p);
   peer_shutdown(p);
 
-  return MSG_OK;
+  return status;
 }                               /* end_of_receiver */
 
 
