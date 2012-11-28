@@ -35,6 +35,8 @@ xbt_dynar_iterator_t xbt_dynar_iterator_new(xbt_dynar_t list, xbt_dynar_t (*crit
   it->indices_list = criteria_fn(it->length); //xbt_dynar_new(sizeof(int), NULL);
   it->criteria_fn = criteria_fn;
   it->current = 0;
+
+  return it;
 }
 
 void xbt_dynar_iterator_reset(xbt_dynar_iterator_t it)
