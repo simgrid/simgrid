@@ -289,17 +289,17 @@ void smpi_global_destroy(void)
 int __attribute__((weak)) xargc;
 char** __attribute__((weak)) xargv;
 
-int __attribute__((weak)) smpi_simulated_main(int argc, char** argv) {
+int __attribute__((weak)) smpi_simulated_main__(int argc, char** argv) {
   xbt_die("Should not be in this smpi_simulated_main");
   return 1;
 }
 
 int __attribute__((weak)) main(int argc, char** argv) {
-   return smpi_main(smpi_simulated_main,argc,argv);
+   return smpi_main(smpi_simulated_main__,argc,argv);
 }
 
 int __attribute__((weak)) MAIN__(){
-  return smpi_main(smpi_simulated_main,xargc, xargv);
+  return smpi_main(smpi_simulated_main__,xargc, xargv);
 };
 
 int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
