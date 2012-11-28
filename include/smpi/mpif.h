@@ -18,6 +18,7 @@
       integer MPI_MAX_DATAREP_STRIN, MPI_MAX_INFO_KEY
       integer MPI_MAX_INFO_VAL, MPI_MAX_OBJECT_NAME, MPI_MAX_PORT_NAME
       integer MPI_ANY_SOURCE, MPI_PROC_NULL, MPI_ANY_TAG, MPI_UNDEFINED
+      integer MPI_TAG_UB, MPI_TAG_LB
       parameter(MPI_MAX_PROCESSOR_NAME=100)
       parameter(MPI_MAX_ERROR_STRING=100)
       parameter(MPI_MAX_DATAREP_STRIN =100)
@@ -29,10 +30,12 @@
       parameter(MPI_PROC_NULL=-2)
       parameter(MPI_ANY_TAG=-1)
       parameter(MPI_UNDEFINED=-1)
+      parameter(MPI_TAG_UB=0)
+      parameter(MPI_TAG_LB=0)
 
       integer MPI_SUCCESS, MPI_ERR_COMM, MPI_ERR_ARG, MPI_ERR_TYPE
       integer MPI_ERR_REQUEST, MPI_ERR_INTERN, MPI_ERR_COUNT
-      integer MPI_ERR_RANK, MPI_ERR_OTHER
+      integer MPI_ERR_RANK, MPI_ERR_OTHER, MPI_ERR_UNKNOWN
       integer MPI_ERR_TAG, MPI_ERR_TRUNCATE, MPI_ERR_GROUP, MPI_ERR_OP
       integer MPI_IDENT, MPI_SIMILAR, MPI_UNEQUAL, MPI_CONGRUENT
       integer MPI_WTIME_IS_GLOBAL
@@ -49,6 +52,7 @@
       parameter(MPI_ERR_GROUP=10)
       parameter(MPI_ERR_OP=11)
       parameter(MPI_ERR_OTHER=12)
+      parameter(MPI_ERR_UNKNOWN=13)
       parameter(MPI_IDENT=0)
       parameter(MPI_SIMILAR=1)
       parameter(MPI_UNEQUAL=2)
@@ -62,8 +66,9 @@
       parameter(MPI_COMM_WORLD=0)
 
 ! This should be equal to the number of int fields in MPI_Status
-      integer MPI_STATUS_SIZE
+      integer MPI_STATUS_SIZE, MPI_STATUSES_IGNORE
       parameter(MPI_STATUS_SIZE=4)
+      parameter(MPI_STATUSES_IGNORE=0)
 
       integer MPI_STATUS_IGNORE(MPI_STATUS_SIZE)
       common/smpi/ MPI_STATUS_IGNORE
