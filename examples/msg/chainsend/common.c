@@ -1,10 +1,5 @@
 #include "common.h"
 
-inline void queue_pending_connection(msg_comm_t comm, xbt_dynar_t q)
-{
-  xbt_dynar_push(q, &comm);
-}
-
 int process_pending_connections(xbt_dynar_t q)
 {
   unsigned int iter;
