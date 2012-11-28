@@ -109,8 +109,6 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Total simulation time: %le", MSG_get_clock());
 
-  MSG_clean();
-
 #ifdef _MSC_VER
   _set_output_format(prev_exponent_format);
 #endif
