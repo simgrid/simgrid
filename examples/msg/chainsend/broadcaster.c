@@ -18,7 +18,7 @@ xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
   return host_list;
 }
 
-void delete_hostlist(xbt_dynar_t h)
+static void delete_hostlist(xbt_dynar_t h)
 {
   xbt_dynar_free(&h);
 }
