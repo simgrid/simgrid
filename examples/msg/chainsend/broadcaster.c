@@ -7,7 +7,6 @@ xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
 {
   xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), NULL);
   char *hostname = NULL;
-  msg_host_t h = NULL;
   int i = 1;
   
   for (; i < hostcount+1; i++) {
@@ -69,7 +68,6 @@ int broadcaster_send_file(const char *first)
 {
   const char *me = MSG_host_get_name(MSG_host_self());
   msg_task_t task = NULL;
-  msg_comm_t comm = NULL;
   int status;
 
   int piece_count = PIECE_COUNT;
