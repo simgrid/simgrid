@@ -19,7 +19,7 @@ void peer_forward_msg(peer_t peer, message_t msg)
   int status;
   msg_task_t task = task_message_data_new(peer->me, peer->next, NULL, 0);
   msg_comm_t comm = NULL;
-  XBT_INFO("Sending (isend) from %s into mailbox %s", peer->me, peer->next);
+  XBT_DEBUG("Sending (isend) from %s into mailbox %s", peer->me, peer->next);
   comm = MSG_task_isend(task, peer->next);
   queue_pending_connection(comm, peer->pending_sends);
 }
@@ -29,21 +29,21 @@ int peer_execute_task(peer_t peer, msg_task_t task)
   int done = 0;
   message_t msg = MSG_task_get_data(task);
   
-  //XBT_INFO("Peer %s got message of type %d\n", peer->me, msg->type);
+  XBT_DEBUG("Peer %s got message of type %d\n", peer->me, msg->type);
   switch (msg->type) {
     case MESSAGE_BUILD_CHAIN:
       peer_init_chain(peer, msg);
       break;
     case MESSAGE_SEND_DATA:
-      xbt_assert(peer->init, __FILE__ ": peer_execute_task() failed: got msg_type %d before initialization", msg->type);
+      xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %d before initialization", msg->type);
       if (peer->next != NULL)
         peer_forward_msg(peer, msg);
       peer->pieces++;
       break;
     case MESSAGE_END_DATA:
-      xbt_assert(peer->init, __FILE__ ": peer_execute_task() failed: got msg_type %d before initialization", msg->type);
+      xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %d before initialization", msg->type);
       done = 1;
-      XBT_INFO("%d pieces receieved", peer->pieces);
+      XBT_DEBUG("%d pieces receieved", peer->pieces);
       break;
   }
 
@@ -65,7 +65,7 @@ msg_error_t peer_wait_for_message(peer_t peer)
 
     if (MSG_comm_test(comm)) {
       status = MSG_comm_get_status(comm);
-      //XBT_INFO("peer_wait_for_message: error code = %d", status);
+      XBT_DEBUG("peer_wait_for_message: error code = %d", status);
       xbt_assert(status == MSG_OK, "peer_wait_for_message() failed");
       MSG_comm_destroy(comm);
       comm = NULL;

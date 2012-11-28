@@ -17,7 +17,7 @@ int process_pending_connections(xbt_dynar_t q)
     if (MSG_comm_test(comm)) {
       MSG_comm_destroy(comm);
       status = MSG_comm_get_status(comm);
-      xbt_assert(status == MSG_OK, __FILE__ ": process_pending_connections() failed");
+      xbt_assert(status == MSG_OK, "process_pending_connections() failed");
       xbt_dynar_cursor_rm(q, &iter);
       empty = 0;
     }
