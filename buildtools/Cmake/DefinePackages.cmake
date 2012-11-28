@@ -635,6 +635,7 @@ set(bin_files
   src/smpi/smpicc.in
   src/smpi/smpif2c.in
   src/smpi/smpiff.in
+  src/smpi/smpif90.in
   src/smpi/smpirun.in
   )
 

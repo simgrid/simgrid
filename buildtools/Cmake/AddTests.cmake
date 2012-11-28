@@ -7,6 +7,7 @@ if(enable_smpi AND NOT WIN32)
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE "OKITOKI")
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c" OUTPUT_VARIABLE "OKITOKI")
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff" OUTPUT_VARIABLE "OKITOKI")
+  exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif90" OUTPUT_VARIABLE "OKITOKI")
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE "OKITOKI")
 endif()
 

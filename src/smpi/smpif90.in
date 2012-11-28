@@ -1,0 +1,38 @@
+#! /bin/bash
+
+CC=@CMAKE_REAL_Fortran_Compiler@
+
+INCLUDEARGS="@includeflag@"
+CMAKE_LINKARGS="-L@libdir@"
+
+FFLAGS="-O2 -cpp -Dprogram=subroutine -Dmain=user_main -ff2c "
+LINKARGS="-lsimgrid -lsmpi -lm -lgfortran"
+
+
+CMDLINE=""
+while [ -n "$1" ]; do
+  ARG="$1"
+  shift
+  case "${ARG}" in
+   -c)
+      CMAKE_LINKARGS=""
+      LINKARGS=""
+      CMDLINE="${CMDLINE} -c "
+      ;;
+   *.f90|*.F90)
+      SRCFILE="$(readlink -f ${ARG} 2>/dev/null)"
+      if [ -z $SRCFILE ] ; then
+         SRCFILE="$ARG"
+      fi
+      CMDLINE="${CMDLINE} ${SRCFILE} "
+      ;;
+   *)
+      CMDLINE="${CMDLINE} ${ARG} "
+      ;;
+  esac
+done
+
+CMDLINE="${CC} ${FFLAGS} ${CMDLINE} ${INCLUDEARGS} ${CMAKE_LINKARGS} ${LINKARGS}"
+
+#echo "${CMDLINE}"
+${CMDLINE}

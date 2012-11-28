@@ -43,6 +43,7 @@ endif()
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
   ${CMAKE_BINARY_DIR}/bin/smpif2c
   ${CMAKE_BINARY_DIR}/bin/smpiff
+  ${CMAKE_BINARY_DIR}/bin/smpif90
   ${CMAKE_BINARY_DIR}/bin/smpirun
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 
@@ -139,6 +140,7 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicc
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif2c
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpiff
+  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif90
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpirun
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/tesh
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid-colorizer
