@@ -50,6 +50,7 @@ int main(int argc, char **argv)
   /* load the DOT file */
   dot = SD_dotload(argv[2]);
   if(dot == NULL){
+    SD_exit();
     xbt_die("No dot load may be you have a cycle in your graph");
   }
 
