@@ -327,8 +327,6 @@ if(NOT enable_memcheck)
     set_tests_properties(simdag-test-lua                PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
   endif()
 
-  # END TESH TESTS
-
   if(enable_smpi)
     # smpi examples
     ADD_TEST(smpi-bcast-thread                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast.tesh)
@@ -358,16 +356,25 @@ if(NOT enable_memcheck)
       ADD_TEST(smpi-struct-raw                  ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct.tesh)
       ADD_TEST(smpi-pt2pt-raw                   ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt.tesh)
       ADD_TEST(smpi-compute-raw                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute.tesh)
+    endif()
+    if(HAVE_TRACING)
+      ADD_TEST(smpi-tracing-ptp                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
+    endif()
+  endif()
+
+  # END TESH TESTS
+
+  if(enable_smpi)
+    if(HAVE_TRACING)
+      ADD_TEST(smpi-replay                      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)
+    endif()
+    if(HAVE_RAWCTX)
       ADD_TEST(smpi-mpich-env-raw               ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/env ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
       ADD_TEST(smpi-mpich-pt2pt-raw             ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/pt2pt ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
       ADD_TEST(smpi-mpich-context-raw           ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/context ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/context/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/context -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
       ADD_TEST(smpi-mpich-profile-raw           ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/profile  ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/profile -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C} )
-      ADD_TEST(smpi-mpich-coll-raw              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})       
+      ADD_TEST(smpi-mpich-coll-raw              ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/coll ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/coll -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
       set_tests_properties(smpi-mpich-env-raw smpi-mpich-context-raw  smpi-mpich-pt2pt-raw smpi-mpich-coll-raw smpi-mpich-profile-raw PROPERTIES PASS_REGULAR_EXPRESSION "-- No differences found; test successful")
-    endif()
-    if(HAVE_TRACING)
-      ADD_TEST(smpi-tracing-ptp                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
-      ADD_TEST(smpi-replay                      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)
     endif()
   endif()
 
