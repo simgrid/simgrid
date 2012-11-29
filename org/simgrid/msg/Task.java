@@ -26,9 +26,18 @@ public class Task {
 	 */
 	protected String name;
 
+	private double messageSize;
+
+	static private Long idCpt = 0L;
+
+	private Long id;
+
 	/** Default constructor (all fields to 0 or null) */
 	public Task() {
 		create(null, 0, 0);
+		this.messageSize = 0;
+		setId(idCpt);
+		idCpt++;
 	}
 
 	/* *              * *
@@ -50,6 +59,9 @@ public class Task {
 	 */ 
 	public Task(String name, double computeDuration, double messageSize) {
 		create(name, computeDuration, messageSize);
+		this.messageSize = messageSize;
+		setId(idCpt);
+		idCpt++;
 	}
 	/**
 	 * Construct an new parallel task with the specified processing amount and amount for each host
@@ -77,7 +89,7 @@ public class Task {
 	 *                        methods. This value has to be >= 0.
 	 * @exception             IllegalArgumentException if compute duration <0 or message size <0
 	 */
-	final native void create(String name,
+	private final native void create(String name,
 			double computeDuration,
 			double messageSize)
 	throws IllegalArgumentException;		
@@ -91,7 +103,7 @@ public class Task {
 	 * @param messageSizes        An array of doubles
 	 *
 	 */
-	final native void parallelCreate(String name,
+	private final native void parallelCreate(String name,
 			Host[]hosts,
 			double[]computeDurations,
 			double[]messageSizes)
@@ -278,5 +290,17 @@ public class Task {
 	public static native void nativeInit();
 	static {
 		nativeInit();
+	}
+
+	public double getMessageSize() {
+		return this.messageSize;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }
