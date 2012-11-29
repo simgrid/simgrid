@@ -13,7 +13,6 @@ $ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_rep
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '1'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [Tremblay:0:(0) 0.000000] [smpi_replay/VERBOSE] 0 comm_size 3 0.000000
 > [Fafard:2:(0) 65.176535] [smpi_replay/VERBOSE] 2 bcast 5e8 65.176535
 > [Fafard:2:(0) 71.729958] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
 > [Jupiter:1:(0) 73.739750] [smpi_replay/VERBOSE] 1 bcast 5e8 73.739750
@@ -234,3 +233,52 @@ $ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_rep
 > [Jupiter:1:(0) 13.600235] [smpi_replay/VERBOSE] 1 wait 0.328926
 > [Tremblay:0:(0) 13.600235] [smpi_replay/VERBOSE] 0 send 1 1e6 0.164463
 > [Tremblay:0:(0) 13.600235] [smpi_replay/INFO] Simulation time 13.6002
+
+
+p Test of barrier replay with SMPI (one trace for all processes)
+
+< replay/actions_barrier.txt
+$ mkfile replay/one_trace
+
+$ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/one_trace
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '1'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [Tremblay:0:(0) 1.491472] [smpi_replay/VERBOSE] 0 send 1 1e7 1.491472
+> [Jupiter:1:(0) 1.491472] [smpi_replay/VERBOSE] 1 recv 0 1e7 1.491472
+> [Tremblay:0:(0) 1.495453] [smpi_replay/VERBOSE] 0 barrier 0.003981
+> [Jupiter:1:(0) 1.498398] [smpi_replay/VERBOSE] 1 barrier 0.006926
+> [Fafard:2:(0) 1.499434] [smpi_replay/VERBOSE] 2 barrier 1.499434
+> [Tremblay:0:(0) 2.495453] [smpi_replay/VERBOSE] 0 compute 98095000 1.000000
+> [Jupiter:1:(0) 2.498398] [smpi_replay/VERBOSE] 1 compute 76296000 1.000000
+> [Fafard:2:(0) 2.499434] [smpi_replay/VERBOSE] 2 compute 76296000 1.000000
+> [Fafard:2:(0) 2.499434] [smpi_replay/INFO] Simulation time 2.49943
+
+$ rm -f replay/one_trace
+
+p Test of Isend replay with SMPI (one trace for all processes)
+
+< replay/actions_with_isend.txt
+$ mkfile replay/one_trace
+
+$ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/one_trace
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '1'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [Jupiter:1:(0) 0.000000] [smpi_replay/VERBOSE] 1 Irecv 0 1e9 0.000000
+> [Fafard:2:(0) 0.000000] [smpi_replay/VERBOSE] 2 Irecv 1 1e9 0.000000
+> [Fafard:2:(0) 6.553424] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
+> [Jupiter:1:(0) 13.106847] [smpi_replay/VERBOSE] 1 compute 1e9 13.106847
+> [Tremblay:0:(0) 147.462483] [smpi_replay/VERBOSE] 0 send 1 1e9 147.462483
+> [Jupiter:1:(0) 147.462483] [smpi_replay/VERBOSE] 1 wait 134.355636
+> [Tremblay:0:(0) 157.656682] [smpi_replay/VERBOSE] 0 compute 1e9 10.194200
+> [Fafard:2:(0) 294.947973] [smpi_replay/VERBOSE] 2 wait 288.394550
+> [Jupiter:1:(0) 294.947973] [smpi_replay/VERBOSE] 1 send 2 1e9 147.485491
+> [Fafard:2:(0) 294.947973] [smpi_replay/VERBOSE] 2 Isend 0 1e9 0.000000
+> [Fafard:2:(0) 301.501397] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
+> [Tremblay:0:(0) 425.278035] [smpi_replay/VERBOSE] 0 recv 2 1e9 267.621353
+> [Tremblay:0:(0) 425.278035] [smpi_replay/INFO] Simulation time 425.278
