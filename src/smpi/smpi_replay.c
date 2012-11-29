@@ -13,6 +13,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
 int communicator_size = 0;
+static int active_processes = 0;
 
 typedef struct {
   xbt_dynar_t isends; /* of MPI_Request */
@@ -41,11 +42,12 @@ static void action_init(const char *const *action)
 
   /* start a simulated timer */
   smpi_process_simulated_start();
+  /*initialize the number of active processes */
+  active_processes = smpi_process_count();
 }
 
 static void action_finalize(const char *const *action)
 {
-  double sim_time= 1.;
   smpi_replay_globals_t globals =
       (smpi_replay_globals_t) smpi_process_get_user_data();
 
@@ -56,12 +58,6 @@ static void action_finalize(const char *const *action)
     xbt_dynar_free_container(&(globals->irecvs));
   }
   free(globals);
-  /* end the simulated timer */
-  sim_time = smpi_process_simulated_elapsed();
-  if (!smpi_process_index())
-    XBT_INFO("Simulation time %g", sim_time);
-  smpi_process_finalize();
-  smpi_process_destroy();
 }
 
 static void action_comm_size(const char *const *action)
@@ -362,7 +358,16 @@ void smpi_replay_init(int *argc, char***argv){
 }
 
 int smpi_replay_finalize(){
-  if(smpi_process_count()==1)
-     _xbt_replay_action_exit();
+  double sim_time= 1.;
+  /* One active process will stop. Decrease the counter*/
+  active_processes--;
+
+  if(!active_processes){
+    /* Last process alive speaking */
+    /* end the simulated timer */
+    sim_time = smpi_process_simulated_elapsed();
+    XBT_INFO("Simulation time %g", sim_time);
+    _xbt_replay_action_exit();
+  }
   return PMPI_Finalize();
 }
