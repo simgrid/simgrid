@@ -362,7 +362,7 @@ void smpi_replay_init(int *argc, char***argv){
 }
 
 int smpi_replay_finalize(){
-  if(!smpi_process_index())
+  if(smpi_process_count()==1)
      _xbt_replay_action_exit();
   return PMPI_Finalize();
 }
