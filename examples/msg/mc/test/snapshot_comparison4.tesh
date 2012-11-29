@@ -1,7 +1,7 @@
 #! ./tesh
 
 ! expect signal SIGABRT
-! timeout 120
+! timeout 200
 $ ${bindir:=.}/snapshot_comparison4 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
 > [  0.000000] (0:@) type in variable = 2
