@@ -161,6 +161,18 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
   }else{
     XBT_WARN("The scheduling is ignored");
   }
+  SD_task_t task;
+  unsigned int count;
+  xbt_dynar_t computer = NULL;
+  xbt_dict_cursor_t dict_cursor;
+  char *computer_name;
+  xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
+    xbt_dynar_free(&computer);
+  }
+  xbt_dict_free(&computers);
+  xbt_dynar_foreach(result,count,task){
+     SD_task_destroy(task);
+  }
   return NULL;
 }
 
