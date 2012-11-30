@@ -64,14 +64,13 @@ int broadcaster_send_file(broadcaster_t bc)
   const char *me = "host0"; /* FIXME: hardcoded*/ /*MSG_host_get_name(MSG_host_self());*/
   msg_comm_t comm = NULL;
   msg_task_t task = NULL;
-  int status;
 
   bc->current_piece = 0;
 
   while (bc->current_piece < bc->piece_count) {
     if (xbt_dynar_length(bc->pending_sends) < bc->max_pending_sends) {
       task = task_message_data_new(me, bc->first, NULL, PIECE_SIZE);
-      XBT_DEBUG("Sending (isend) piece %d from %s into mailbox %s (current pending %d)", bc->current_piece, me, bc->first, xbt_dynar_length(bc->pending_sends));
+      XBT_DEBUG("Sending (isend) piece %d from %s into mailbox %s (current pending %lu)", bc->current_piece, me, bc->first, xbt_dynar_length(bc->pending_sends));
       comm = MSG_task_isend(task, bc->first);
       queue_pending_connection(comm, bc->pending_sends);
       bc->current_piece++;
@@ -136,7 +135,6 @@ int broadcaster(int argc, char *argv[])
 {
   broadcaster_t bc = NULL;
   xbt_dynar_t host_list = NULL;
-  const char *first = NULL;
   int status;
 
   XBT_INFO("broadcaster");
