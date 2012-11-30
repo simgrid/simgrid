@@ -180,7 +180,7 @@
 #define WITH_ANSWER(...) __VA_ARGS__
 #define WITHOUT_ANSWER(...) 
 #define SIMCALL_CASE(type, name, answer, res, ...)\
-    case type:;\
+    case type:\
       SIMCALL_RESULT_BEGIN(answer, res) SIMIX_pre_ ## name(simcall MAYBE_COMMA(__VA_ARGS__) MAP(SIMCALL_CASE_PARAM, ##__VA_ARGS__));\
       SIMCALL_RESULT_END(answer, res)\
       break;
