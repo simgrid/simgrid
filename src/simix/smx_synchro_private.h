@@ -58,6 +58,10 @@ void SIMIX_pre_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond);
 smx_sem_t SIMIX_pre_sem_init(smx_simcall_t simcall, unsigned int value);
 void SIMIX_pre_sem_destroy(smx_simcall_t simcall, smx_sem_t sem);
 void SIMIX_pre_sem_release(smx_simcall_t simcall, smx_sem_t sem);
-XBT_INLINE int SIMIX_pre_sem_would_block(smx_simcall_t simcall, smx_sem_t sem);
+static XBT_INLINE int SIMIX_pre_sem_would_block(smx_simcall_t simcall,
+                                                smx_sem_t sem)
+{
+  return SIMIX_sem_would_block(sem);
+}
 int SIMIX_pre_sem_get_capacity(smx_simcall_t simcall, smx_sem_t sem);
 #endif

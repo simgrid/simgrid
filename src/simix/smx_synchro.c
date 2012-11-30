@@ -466,9 +466,6 @@ void SIMIX_sem_release(smx_sem_t sem)
   XBT_OUT();
 }
 
-XBT_INLINE int SIMIX_pre_sem_would_block(smx_simcall_t simcall, smx_sem_t sem){
-  return SIMIX_sem_would_block(sem);
-}
 /** @brief Returns true if acquiring this semaphore would block */
 XBT_INLINE int SIMIX_sem_would_block(smx_sem_t sem)
 {
