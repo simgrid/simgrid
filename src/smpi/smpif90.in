@@ -1,14 +1,14 @@
 #! /bin/bash
 
-CC=@CMAKE_REAL_Fortran_Compiler@
+CC=@CMAKE_Fortran_Compiler@
 
 INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
 
-FFLAGS="-O2 -cpp -Dprogram=subroutine -Dmain=user_main -ff2c "
+FFLAGS="-O2 -ff2c "
 LINKARGS="-lsimgrid -lsmpi -lm -lgfortran"
-
-
+main_name=main
+TMPFILE=smpi_temp.f90
 CMDLINE=""
 while [ -n "$1" ]; do
   ARG="$1"
@@ -24,6 +24,9 @@ while [ -n "$1" ]; do
       if [ -z $SRCFILE ] ; then
          SRCFILE="$ARG"
       fi
+      #replace "program main_name by subroutine user\_main (and the end clause as well)"
+      sed 's/[[:space:]]*program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/subroutine user\_main /g'  ${ARG} > ${TMPFILE}
+      SRCFILE="./${TMPFILE}"
       CMDLINE="${CMDLINE} ${SRCFILE} "
       ;;
    *)
@@ -34,5 +37,9 @@ done
 
 CMDLINE="${CC} ${FFLAGS} ${CMDLINE} ${INCLUDEARGS} ${CMAKE_LINKARGS} ${LINKARGS}"
 
-#echo "${CMDLINE}"
+echo "${CMDLINE}"
 ${CMDLINE}
+
+if [ -f ${TMPFILE} ];then
+  rm ${TMPFILE}
+fi
