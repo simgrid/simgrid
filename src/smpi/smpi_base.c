@@ -50,7 +50,7 @@ static MPI_Request build_request(void *buf, int count,
   s_smpi_subtype_t *subtype = datatype->substruct;
 
   if(datatype->has_subtype == 1){
-    // This part handles the problem of non-contignous memory
+    // This part handles the problem of non-contiguous memory
     old_buf = buf;
     buf = malloc(count*smpi_datatype_size(datatype));
     if (flags & SEND) {
@@ -59,7 +59,7 @@ static MPI_Request build_request(void *buf, int count,
   }
 
   request->buf = buf;
-  // This part handles the problem of non-contignous memory (for the
+  // This part handles the problem of non-contiguous memory (for the
   // unserialisation at the reception)
   request->old_buf = old_buf;
   request->old_type = datatype;
