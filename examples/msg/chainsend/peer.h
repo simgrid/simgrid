@@ -7,7 +7,7 @@
 #include "messages.h"
 #include "common.h"
 
-#define PEER_SHUTDOWN_DEADLINE 6000
+#define PEER_SHUTDOWN_DEADLINE 60000
 
 /* Peer struct */
 typedef struct s_peer {

@@ -12,14 +12,32 @@
 #include "iterator.h"
 #include "common.h"
 
+/* Connection parameters */
+#define MAX_PENDING_SENDS 10
+
+/* ``File'' details */
+#define PIECE_SIZE 16384
 #define PIECE_COUNT 50
+
+/* Broadcaster struct */
+typedef struct s_broadcaster {
+  const char *first;
+  int piece_count;
+  int current_piece;
+  xbt_dynar_t host_list;
+  xbt_dynar_iterator_t it;
+  int max_pending_sends;
+  xbt_dynar_t pending_sends;
+} s_broadcaster_t, *broadcaster_t;
 
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount); 
 
 /* Broadcaster: helper functions */
-int broadcaster_build_chain(const char **first, xbt_dynar_t host_list, xbt_dynar_iterator_t it);
-int broadcaster_send_file(const char *first);
-int broadcaster_finish(xbt_dynar_iterator_t it);
+broadcaster_t broadcaster_init(xbt_dynar_t host_list);
+int broadcaster_build_chain(broadcaster_t bc);
+int broadcaster_send_file(broadcaster_t bc);
+int broadcaster_finish(broadcaster_t bc);
+static void broadcaster_destroy(broadcaster_t bc);
 
 /* Tasks */
 int broadcaster(int argc, char *argv[]);

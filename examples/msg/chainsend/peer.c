@@ -73,7 +73,7 @@ msg_error_t peer_wait_for_message(peer_t peer)
       task = NULL;
     } else {
       process_pending_connections(peer->pending_sends);
-      MSG_process_sleep(0.1);
+      MSG_process_sleep(0.01);
     }
   }
 
@@ -105,7 +105,7 @@ void peer_shutdown(peer_t p)
   XBT_INFO("Waiting for sends to finish before shutdown...");
   while (xbt_dynar_length(p->pending_sends) && MSG_get_clock() < end_time) {
     process_pending_connections(p->pending_sends);
-    MSG_process_sleep(0.1);
+    MSG_process_sleep(1);
   }
 
   xbt_assert(xbt_dynar_length(p->pending_sends) == 0, "Shutdown failed, sends still pending after deadline");
