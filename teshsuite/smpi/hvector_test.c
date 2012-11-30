@@ -5,7 +5,7 @@
 int main(int argc, char **argv) {
 
   int rank, i, j;
-  double a[SIZE][SIZE];
+  double a[SIZE][SIZE] = {{0}};
 
   MPI_Datatype columntype;
 
