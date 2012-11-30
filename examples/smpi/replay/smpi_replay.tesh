@@ -282,3 +282,5 @@ $ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_rep
 > [Fafard:2:(0) 301.501397] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
 > [Tremblay:0:(0) 425.278035] [smpi_replay/VERBOSE] 0 recv 2 1e9 267.621353
 > [Tremblay:0:(0) 425.278035] [smpi_replay/INFO] Simulation time 425.278
+
+$ rm -f replay/one_trace
