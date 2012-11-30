@@ -1008,7 +1008,6 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
   int retval;
 
   smpi_bench_end();
-
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (src == MPI_PROC_NULL) {
@@ -1373,8 +1372,6 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     xbt_dynar_free(&recvs);
   }
   TRACE_smpi_computing_in(rank_traced);
-
-
 #endif
   smpi_bench_begin();
   return retval;

@@ -171,6 +171,10 @@ void MC_init_memory_map_info(){
 
 }
 
+mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
+  return MC_take_snapshot();
+}
+
 mc_snapshot_t MC_take_snapshot()
 {
 

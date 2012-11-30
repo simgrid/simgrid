@@ -24,6 +24,9 @@ static void SIMIX_action_mallocator_reset_f(void* action);
 
 static void SIMIX_clean(void);
 
+SIMCALL_LIST(SIMCALL_RES_GETSET, SIMCALL_SEP_NOTHING)
+SIMCALL_LIST(SIMCALL_ARG_GETSET, SIMCALL_SEP_NOTHING)
+
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
@@ -487,6 +490,9 @@ static void SIMIX_action_mallocator_reset_f(void* action) {
   ((smx_action_t) action)->simcalls = fifo;
 }
 
+xbt_dict_t SIMIX_pre_asr_get_properties(smx_simcall_t simcall, const char *name){
+  return SIMIX_asr_get_properties(name);
+}
 xbt_dict_t SIMIX_asr_get_properties(const char *name)
 {
   return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);

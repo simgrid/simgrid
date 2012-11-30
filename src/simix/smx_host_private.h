@@ -31,6 +31,7 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
                                          int argc, char **argv,
                                          xbt_dict_t properties,
                                          int auto_restart);
+
 void SIMIX_host_restart_processes(smx_host_t host);
 void SIMIX_host_autorestart(smx_host_t host);
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host);
@@ -48,7 +49,27 @@ void SIMIX_host_execution_cancel(smx_action_t action);
 double SIMIX_host_execution_get_remains(smx_action_t action);
 e_smx_state_t SIMIX_host_execution_get_state(smx_action_t action);
 void SIMIX_host_execution_set_priority(smx_action_t action, double priority);
-void SIMIX_pre_host_execution_wait(smx_simcall_t simcall);
+void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action);
+
+// pre prototypes
+smx_host_t SIMIX_pre_host_get_by_name(smx_simcall_t, const char*);
+const char* SIMIX_pre_host_self_get_name(smx_simcall_t);
+const char* SIMIX_pre_host_get_name(smx_simcall_t, smx_host_t);
+xbt_dict_t SIMIX_pre_host_get_properties(smx_simcall_t, smx_host_t);
+double SIMIX_pre_host_get_speed(smx_simcall_t, smx_host_t);
+double SIMIX_pre_host_get_available_speed(smx_simcall_t, smx_host_t);
+int SIMIX_pre_host_get_state(smx_simcall_t, smx_host_t);
+void* SIMIX_pre_host_self_get_data(smx_simcall_t);
+void* SIMIX_pre_host_get_data(smx_simcall_t, smx_host_t);
+void SIMIX_pre_host_set_data(smx_simcall_t, smx_host_t, void*);
+smx_action_t SIMIX_pre_host_execute(smx_simcall_t, const char*, smx_host_t, double, double);
+smx_action_t SIMIX_pre_host_parallel_execute(smx_simcall_t, const char*, int, smx_host_t*,
+                                             double*, double*, double, double);
+void SIMIX_pre_host_execution_destroy(smx_simcall_t, smx_action_t);
+void SIMIX_pre_host_execution_cancel(smx_simcall_t, smx_action_t);
+double SIMIX_pre_host_execution_get_remains(smx_simcall_t, smx_action_t);
+e_smx_state_t SIMIX_pre_host_execution_get_state(smx_simcall_t, smx_action_t);
+void SIMIX_pre_host_execution_set_priority(smx_simcall_t, smx_action_t, double);
 
 void SIMIX_host_execution_suspend(smx_action_t action);
 void SIMIX_host_execution_resume(smx_action_t action);
@@ -56,6 +77,8 @@ void SIMIX_host_execution_resume(smx_action_t action);
 void SIMIX_post_host_execute(smx_action_t action);
 
 #ifdef HAVE_TRACING
+void SIMIX_pre_set_category(smx_simcall_t simcall, smx_action_t action,
+		            const char *category);
 void SIMIX_set_category(smx_action_t action, const char *category);
 #endif
 

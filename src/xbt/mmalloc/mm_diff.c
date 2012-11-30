@@ -57,7 +57,6 @@ void mmalloc_backtrace_block_display(void* heapinfo, int block){
       fprintf(stderr, "%d ---> %s\n",i, e.bt_strings[i] + 4);
     }
   }
-
 }
 
 void mmalloc_backtrace_fragment_display(void* heapinfo, int block, int frag){
@@ -111,7 +110,6 @@ void mmalloc_backtrace_display(void *addr){
     mmalloc_backtrace_fragment_display(heap->heapinfo, block, frag_nb);
     break;
   }
-
 }
 
 
@@ -397,7 +395,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
               }
 
             }
-
         }
 
         while(i2 <= heaplimit && !equal){
@@ -544,7 +541,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
   heaplimit = 0, heapsize1 = 0, heapsize2 = 0;
 
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
-
 }
 
 static heap_area_t new_heap_area(int block, int fragment){

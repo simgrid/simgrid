@@ -174,6 +174,11 @@ void heap_equality_free_voidp(void *e){
   heap_equality_free((heap_equality_t) * (void **) e);
 }
 
+int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
+                                   mc_snapshot_t s1, mc_snapshot_t s2){
+  return snapshot_compare(s1, s2, NULL, NULL);
+}
+
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t ct1, mc_comparison_times_t ct2){
 
   int raw_mem = (mmalloc_get_current_heap() == raw_heap);

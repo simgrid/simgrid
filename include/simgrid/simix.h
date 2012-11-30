@@ -17,6 +17,9 @@
 
 SG_BEGIN_DECL()
 
+/**************************** Scalar Values **********************************/
+
+typedef union u_smx_scalar u_smx_scalar_t;
 
 /* ******************************** Host ************************************ */
 /** @brief Host datatype
@@ -251,7 +254,7 @@ XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
                                             double process_kill_time);
 
 /*********************************** Host *************************************/
-XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_dict(void);
+//XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_dict(u_smx_scalar_t *args);
 XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(const char *name);
 XBT_PUBLIC(smx_host_t) SIMIX_host_self(void);
 XBT_PUBLIC(const char*) SIMIX_host_self_get_name(void);

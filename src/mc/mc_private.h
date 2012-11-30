@@ -48,6 +48,7 @@ typedef struct s_mc_global_t{
 }s_mc_global_t, *mc_global_t;
 
 //void MC_take_snapshot(mc_snapshot_t);
+mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(void);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
@@ -269,6 +270,8 @@ mc_comparison_times_t new_comparison_times(void);
 int reached(xbt_state_t st);
 void set_pair_reached(xbt_state_t st);
 int visited(xbt_state_t st);
+int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
+                                   mc_snapshot_t s1, mc_snapshot_t s2);
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t ct1, mc_comparison_times_t ct2);
 void MC_pair_delete(mc_pair_t pair);
 void MC_exit_liveness(void);

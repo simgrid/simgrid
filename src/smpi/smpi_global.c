@@ -286,7 +286,6 @@ void smpi_global_destroy(void)
 /* Fortran specific stuff */
 /* With smpicc, the following weak symbols are used */
 /* With smpiff, the following weak symbols are replaced by those in libf2c */
-
 int __attribute__((weak)) xargc;
 char** __attribute__((weak)) xargv;
 
