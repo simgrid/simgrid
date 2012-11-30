@@ -41,23 +41,23 @@ void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall)
   switch (simcall->call) {
 
     case SIMCALL_MUTEX_LOCK:
-      xbt_swag_remove(process, simcall->mutex_lock.mutex->sleeping);
+      xbt_swag_remove(process, simcall_mutex_lock__get__mutex(simcall)->sleeping);
       break;
 
     case SIMCALL_COND_WAIT:
-      xbt_swag_remove(process, simcall->cond_wait.cond->sleeping);
+      xbt_swag_remove(process, simcall_cond_wait__get__cond(simcall)->sleeping);
       break;
 
     case SIMCALL_COND_WAIT_TIMEOUT:
-      xbt_swag_remove(process, simcall->cond_wait_timeout.cond->sleeping);
+      xbt_swag_remove(process, simcall_cond_wait_timeout__get__cond(simcall)->sleeping);
       break;
 
     case SIMCALL_SEM_ACQUIRE:
-      xbt_swag_remove(process, simcall->sem_acquire.sem->sleeping);
+      xbt_swag_remove(process, simcall_sem_acquire__get__sem(simcall)->sleeping);
       break;
 
     case SIMCALL_SEM_ACQUIRE_TIMEOUT:
-      xbt_swag_remove(process, simcall->sem_acquire_timeout.sem->sleeping);
+      xbt_swag_remove(process, simcall_sem_acquire_timeout__get__sem(simcall)->sleeping);
       break;
 
     default:
@@ -350,10 +350,9 @@ void SIMIX_cond_signal(smx_cond_t cond)
     /* Now transform the cond wait simcall into a mutex lock one */
     simcall = &proc->simcall;
     if(simcall->call == SIMCALL_COND_WAIT)
-      mutex = simcall->cond_wait.mutex;
+      mutex = simcall_cond_wait__get__mutex(simcall);
     else
-      mutex = simcall->cond_wait_timeout.mutex;
-
+      mutex = simcall_cond_wait_timeout__get__mutex(simcall);
     simcall->call = SIMCALL_MUTEX_LOCK;
 
     SIMIX_pre_mutex_lock(simcall, mutex);

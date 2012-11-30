@@ -129,13 +129,6 @@ SIMCALL_LIST
 #undef SIMCALL_ENUM_ELEMENT
 };*/
 
-SIMCALL_LIST(SIMCALL_FUNC, SIMCALL_SEP_NOTHING)
-
-void SIMIX_simcall_typecheck(const char *fmt, ...)
-{
-  return;
-}
-
 smx_simcall_t __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args)
 {
   smx_process_t self = SIMIX_process_self();

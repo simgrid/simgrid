@@ -505,7 +505,7 @@ void SIMIX_execution_finish(smx_action_t action)
     }
 
     simcall->issuer->waiting_action =    NULL;
-    simcall->host_execution_wait.result = action->state;
+    simcall_host_execution_wait__set__result(simcall, action->state);
     SIMIX_simcall_answer(simcall);
   }
 

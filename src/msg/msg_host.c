@@ -28,7 +28,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 /********************************* Host **************************************/
 msg_host_t __MSG_host_create(smx_host_t workstation)
 {
-  const char *name = simcall_host_get_name(workstation);
+  const char *name = SIMIX_host_get_name(workstation);
   msg_host_t host = xbt_new0(s_msg_host_t, 1);
   s_msg_vm_t vm; // simply to compute the offset
 
@@ -77,7 +77,7 @@ msg_host_t MSG_get_host_by_name(const char *name)
  */
 msg_error_t MSG_host_set_data(msg_host_t host, void *data)
 {
-  simcall_host_set_data(host->smx_host,data);
+  SIMIX_host_set_data(host->smx_host,data);
 
   return MSG_OK;
 }
@@ -91,7 +91,7 @@ msg_error_t MSG_host_set_data(msg_host_t host, void *data)
  */
 void *MSG_host_get_data(msg_host_t host)
 {
-  return simcall_host_get_data(host->smx_host);
+  return SIMIX_host_get_data(host->smx_host);
 }
 
 /** \ingroup m_host_management
@@ -102,7 +102,7 @@ void *MSG_host_get_data(msg_host_t host)
    its name.
  */
 const char *MSG_host_get_name(msg_host_t host) {
-  return simcall_host_get_name(host->smx_host);
+  return SIMIX_host_get_name(host->smx_host);
 }
 
 /** \ingroup m_host_management

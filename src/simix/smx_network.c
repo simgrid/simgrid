@@ -626,8 +626,8 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
 void SIMIX_pre_comm_test(smx_simcall_t simcall, smx_action_t action)
 {
   if(MC_is_active()){
-    simcall->result.i = action->comm.src_proc && action->comm.dst_proc;
-    if(simcall->result.i){
+    simcall_comm_test__set__result(simcall, action->comm.src_proc && action->comm.dst_proc);
+    if(simcall_comm_test__get__result(simcall)){
       action->state = SIMIX_DONE;
       xbt_fifo_push(action->simcalls, simcall);
       SIMIX_comm_finish(action);
@@ -637,8 +637,8 @@ void SIMIX_pre_comm_test(smx_simcall_t simcall, smx_action_t action)
     return;
   }
 
-  simcall->result.i = (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING);
-  if (simcall->result.i) {
+  simcall_comm_test__set__result(simcall, (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING));
+  if (simcall_comm_test__get__result(simcall)) {
     xbt_fifo_push(action->simcalls, simcall);
     SIMIX_comm_finish(action);
   } else {
@@ -651,14 +651,14 @@ void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
   int idx = simcall->mc_value;
   unsigned int cursor;
   smx_action_t action;
-  simcall->result.i = -1;
+  simcall_comm_testany__set__result(simcall, -1);
 
   if (MC_is_active()){
     if(idx == -1){
       SIMIX_simcall_answer(simcall);
     }else{
       action = xbt_dynar_get_as(actions, idx, smx_action_t);
-      simcall->result.i = idx;
+      simcall_comm_testany__set__result(simcall, idx);
       xbt_fifo_push(action->simcalls, simcall);
       action->state = SIMIX_DONE;
       SIMIX_comm_finish(action);
@@ -666,9 +666,9 @@ void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
     return;
   }
 
-  xbt_dynar_foreach(simcall->comm_testany.comms,cursor,action) {
+  xbt_dynar_foreach(simcall_comm_testany__get__comms(simcall), cursor,action) {
     if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
-      simcall->result.i = cursor;
+      simcall_comm_testany__set__result(simcall, cursor);
       xbt_fifo_push(action->simcalls, simcall);
       SIMIX_comm_finish(action);
       return;
@@ -686,7 +686,7 @@ void SIMIX_pre_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions)
   if (MC_is_active()){
     action = xbt_dynar_get_as(actions, idx, smx_action_t);
     xbt_fifo_push(action->simcalls, simcall);
-    simcall->result.i = idx;
+    simcall_comm_waitany__set__result(simcall, idx);
     action->state = SIMIX_DONE;
     SIMIX_comm_finish(action);
     return;
@@ -708,7 +708,7 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 {
   smx_action_t action;
   unsigned int cursor = 0;
-  xbt_dynar_t actions = simcall->comm_waitany.comms;
+  xbt_dynar_t actions = simcall_comm_waitany__get__comms(simcall);
 
   xbt_dynar_foreach(actions, cursor, action) {
     xbt_fifo_remove(action->simcalls, simcall);
@@ -782,7 +782,7 @@ void SIMIX_comm_finish(smx_action_t action)
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       if (!MC_is_active())
-        simcall->result.i = xbt_dynar_search(simcall->comm_waitany.comms, &action);
+        simcall_comm_waitany__set__result(simcall, xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &action));
     }
 
     /* If the action is still in a rendez-vous point then remove from it */
@@ -857,10 +857,10 @@ void SIMIX_comm_finish(smx_action_t action)
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
     if (simcall->issuer->doexception) {
       if (simcall->call == SIMCALL_COMM_WAITANY) {
-        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall->comm_waitany.comms, &action);
+        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &action);
       }
       else if (simcall->call == SIMCALL_COMM_TESTANY) {
-        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall->comm_testany.comms, &action);
+        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_testany__get__comms(simcall), &action);
       }
     }
 

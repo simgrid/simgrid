@@ -162,9 +162,9 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
 }
 
 //SIMIX FILE STAT
-void SIMIX_pre_file_stat(smx_simcall_t simcall, smx_file_t fd, s_file_stat_t buf)
+void SIMIX_pre_file_stat(smx_simcall_t simcall, smx_file_t fd, s_file_stat_t *buf)
 {
-  smx_action_t action = SIMIX_file_stat(simcall->issuer, fd, buf);
+  smx_action_t action = SIMIX_file_stat(simcall->issuer, fd, *buf);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
@@ -235,8 +235,7 @@ smx_action_t SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
 void SIMIX_pre_file_ls(smx_simcall_t simcall,
                        const char* mount, const char* path)
 {
-  smx_action_t action = SIMIX_file_ls(simcall->issuer,
-      simcall->file_ls.mount, simcall->file_ls.path);
+  smx_action_t action = SIMIX_file_ls(simcall->issuer, mount, path);
   xbt_fifo_push(action->simcalls, simcall);
   simcall->issuer->waiting_action = action;
 }
@@ -290,32 +289,32 @@ void SIMIX_post_io(smx_action_t action)
     case SIMCALL_FILE_OPEN:;
       smx_file_t tmp = xbt_new(s_smx_file_t,1);
       tmp->surf_file = (action->io.surf_io)->file;
-      simcall->result.p = tmp;
+      simcall_file_open__set__result(simcall, tmp);
       break;
 
     case SIMCALL_FILE_CLOSE:
-      xbt_free(simcall->file_close.fp);
-      simcall->result.i = 0;
+      xbt_free(simcall_file_close__get__fp(simcall));
+      simcall_file_close__set__result(simcall, 0);
       break;
 
     case SIMCALL_FILE_WRITE:
-      simcall->result.si = (action->io.surf_io)->cost;
+      simcall_file_write__set__result(simcall, (action->io.surf_io)->cost);
       break;
 
     case SIMCALL_FILE_READ:
-      simcall->result.d = (action->io.surf_io)->cost;
+      simcall_file_read__set__result(simcall, (action->io.surf_io)->cost);
       break;
 
     case SIMCALL_FILE_STAT:
-      simcall->result.i = 0;
-      dst = &(simcall->file_stat.buf);
+      simcall_file_stat__set__result(simcall, 0);
+      dst = simcall_file_stat__get__buf(simcall);
       src = &((action->io.surf_io)->stat);
       file_stat_copy(src,dst);
       break;
 
     case SIMCALL_FILE_UNLINK:
-      xbt_free(simcall->file_unlink.fd);
-      simcall->result.i = 0;
+      xbt_free(simcall_file_unlink__get__fd(simcall));
+      simcall_file_unlink__set__result(simcall, 0);
       break;
 
     case SIMCALL_FILE_LS:
@@ -327,7 +326,7 @@ void SIMIX_post_io(smx_action_t action)
           xbt_dict_set((action->io.surf_io)->ls_dict,key,dst,free_file_stat);
         }
       }
-      simcall->file_ls.result = (action->io.surf_io)->ls_dict;
+      simcall_file_ls__set__result(simcall, (action->io.surf_io)->ls_dict);
       break;
 
     default:

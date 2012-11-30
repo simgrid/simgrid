@@ -18,6 +18,8 @@ SIMCALL_LIST(SIMCALL_TYPE, SIMCALL_SEP_COMMA)
 [SIMCALL_NONE] = "NONE"
 };
 
+SIMCALL_LIST(SIMCALL_FUNC, SIMCALL_SEP_NOTHING)
+
 /**
  * \ingroup simix_host_management
  * \brief Returns a host given its name.
@@ -760,7 +762,7 @@ int simcall_comm_testany(xbt_dynar_t comms)
 void simcall_comm_wait(smx_action_t comm, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
-  simcall_comm_wait(comm, timeout);
+  simcall_BODY_comm_wait(comm, timeout);
 }
 
 #ifdef HAVE_TRACING
@@ -1062,8 +1064,7 @@ int simcall_file_close(smx_file_t fp)
  */
 int simcall_file_stat(smx_file_t fd, s_file_stat_t *buf)
 {
-  //*buf = simcall->file_stat.buf;
-  return simcall_BODY_file_stat(fd, *buf);
+  return simcall_BODY_file_stat(fd, buf);
 }
 
 /**

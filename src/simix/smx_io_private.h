@@ -17,7 +17,7 @@ void SIMIX_pre_file_write(smx_simcall_t simcall, const void *ptr, size_t size,
 void SIMIX_pre_file_open(smx_simcall_t simcall, const char* mount,
 		         const char* path, const char* mode);
 void SIMIX_pre_file_close(smx_simcall_t simcall, smx_file_t fp);
-void SIMIX_pre_file_stat(smx_simcall_t simcall, smx_file_t fd, s_file_stat_t buf);
+void SIMIX_pre_file_stat(smx_simcall_t simcall, smx_file_t fd, s_file_stat_t *buf);
 void SIMIX_pre_file_unlink(smx_simcall_t simcall, smx_file_t fd);
 void SIMIX_pre_file_ls(smx_simcall_t simcall,
                        const char* mount, const char* path);
