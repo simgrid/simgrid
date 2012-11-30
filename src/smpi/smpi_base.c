@@ -178,9 +178,10 @@ void smpi_mpi_start(MPI_Request request)
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
         request->detached = 1;
-        request->buf = malloc(request->size);
-        if (oldbuf)
+        if (oldbuf){
+          request->buf = malloc(request->size);
           memcpy(request->buf,oldbuf,request->size);
+        }
       }
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     }
