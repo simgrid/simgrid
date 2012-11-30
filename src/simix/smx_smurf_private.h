@@ -200,30 +200,22 @@
 
 /* generate the simcalls args getter/setter */
 #define SIMCALL_ARG_GETSET_(i, name, v) \
-  inline SIMCALL_FUNC_RETURN_TYPE(v) SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME(name), get, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall){\
+  static inline SIMCALL_FUNC_RETURN_TYPE(v) SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME(name), get, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall){\
     return simcall->args[i].SIMCALL_FIELD_ v ;\
   }\
-  inline void SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME(name), set, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall, SIMCALL_ARG_ v){\
+  static inline void SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME(name), set, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall, SIMCALL_ARG_ v){\
     simcall->args[i].SIMCALL_FIELD_ v = SIMCALL_NAME_ v ;\
   }
 
 #define SIMCALL_ARG_GETSET(type, name, answer, res, ...)\
     MAP_WITH_DEFAULT_ARGS(SIMCALL_ARG_GETSET_, (name), ##__VA_ARGS__)
 
-/* generate the simcalls args getter/setter protos*/
-#define SIMCALL_ARG_GETSET_PROTO_(i, name, v) \
-  inline SIMCALL_FUNC_RETURN_TYPE(v) SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME(name), get, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall);\
-  inline void SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME(name), set, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall, SIMCALL_ARG_ v);
-
-#define SIMCALL_ARG_GETSET_PROTO(type, name, answer, res, ...)\
-    MAP_WITH_DEFAULT_ARGS(SIMCALL_ARG_GETSET_PROTO_, (name), ##__VA_ARGS__)
-
 /* generate the simcalls result getter/setter */
 #define SIMCALL_WITH_RES_GETSET(name, v) \
-  inline SIMCALL_FUNC_RETURN_TYPE(v) SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME((name)), get, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall){\
+  static inline SIMCALL_FUNC_RETURN_TYPE(v) SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME((name)), get, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall){\
     return simcall->result.SIMCALL_FIELD_ v ;\
   }\
-  inline void SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME((name)), set, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall, SIMCALL_ARG_ v){\
+  static inline void SIMCALL_GS_FUNC(SIMCALL_GS_SC_NAME((name)), set, SIMCALL_GS_ARG_NAME(v))(smx_simcall_t simcall, SIMCALL_ARG_ v){\
     simcall->result.SIMCALL_FIELD_ v = SIMCALL_NAME_ v ;\
   }
 #define SIMCALL_WITHOUT_RES_GETSET(name, v)
@@ -427,8 +419,8 @@ typedef struct s_smx_simcall {
   };
 } s_smx_simcall_t, *smx_simcall_t;
 
-SIMCALL_LIST(SIMCALL_RES_GETSET_PROTO, SIMCALL_SEP_NOTHING)
-SIMCALL_LIST(SIMCALL_ARG_GETSET_PROTO, SIMCALL_SEP_NOTHING)
+SIMCALL_LIST(SIMCALL_RES_GETSET, SIMCALL_SEP_NOTHING)
+SIMCALL_LIST(SIMCALL_ARG_GETSET, SIMCALL_SEP_NOTHING)
 
 /******************************** General *************************************/
 

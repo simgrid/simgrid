@@ -24,9 +24,6 @@ static void SIMIX_action_mallocator_reset_f(void* action);
 
 static void SIMIX_clean(void);
 
-SIMCALL_LIST(SIMCALL_RES_GETSET, SIMCALL_SEP_NOTHING)
-SIMCALL_LIST(SIMCALL_ARG_GETSET, SIMCALL_SEP_NOTHING)
-
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
