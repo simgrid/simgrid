@@ -170,12 +170,6 @@
       SIMCALL_FUNC_RETURN(res)\
     }
 
-/* generate the simcalls prototypes functions */
-#define VOID_IF_EMPTY(...) GET_CLEAN(,##__VA_ARGS__,,,,,,,,,,,void)
-#define SIMCALL_FUNC_PROTO(type, name, answer, res, ...)\
-	inline static SIMCALL_FUNC_RETURN_TYPE(res) simcall_BODY_##name(VOID_IF_EMPTY(__VA_ARGS__) MAP(SIMCALL_ARG, ##__VA_ARGS__));
-
-
 /* generate a comma if there is an argument*/
 #define WITHOUT_COMMA 
 #define WITH_COMMA ,
@@ -394,12 +388,6 @@ NUM_SIMCALLS
 
 typedef int (*simix_match_func_t)(void *, void *, smx_action_t);
 typedef void (*simix_clean_func_t)(void *);
-
-/**
- * \brief Prototypes of SIMIX
- */
-SIMCALL_LIST(SIMCALL_FUNC_PROTO, SIMCALL_SEP_NOTHING)
-
 
 /* Pack all possible scalar types in an union */
 union u_smx_scalar {
