@@ -360,15 +360,13 @@ if(NOT enable_memcheck)
     endif()
     if(HAVE_TRACING)
       ADD_TEST(smpi-tracing-ptp                 ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
+      ADD_TEST(smpi-replay                      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)
     endif()
   endif()
 
   # END TESH TESTS
 
   if(enable_smpi)
-    if(HAVE_TRACING)
-      ADD_TEST(smpi-replay                      ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)
-    endif()
     if(HAVE_RAWCTX)
       ADD_TEST(smpi-mpich-env-raw               ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/env ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/env -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
       ADD_TEST(smpi-mpich-pt2pt-raw             ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich-test/pt2pt ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt/runtests -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt -basedir=${CMAKE_BINARY_DIR}/smpi_script/ -fort=${SMPI_F2C})
