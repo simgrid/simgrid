@@ -171,7 +171,6 @@ mc_snapshot_t MC_take_snapshot()
       } else {
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-          start_data_libsimgrid = reg.start_addr;
           nb_reg++;
           i++;
           reg = maps->regions[i];
@@ -197,18 +196,6 @@ mc_snapshot_t MC_take_snapshot()
           }
         }
       }
-    }else if ((reg.prot & PROT_READ)){
-      if (maps->regions[i].pathname != NULL){
-        if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
-          start_text_libsimgrid = reg.start_addr;
-          libsimgrid_path = strdup(maps->regions[i].pathname);
-        }else{
-          if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
-            start_text_binary = reg.start_addr;
-          }
-        }
-      }
-      i++;
     }else{
       i++;
     }
