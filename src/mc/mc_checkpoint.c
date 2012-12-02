@@ -112,7 +112,7 @@ void MC_init_memory_map_info(){
           }
         }
       }
-    }else if ((reg.prot & PROT_READ)){
+    }else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)){
       if (maps->regions[i].pathname != NULL){
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           start_text_libsimgrid = reg.start_addr;
