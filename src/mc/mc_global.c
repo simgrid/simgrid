@@ -273,7 +273,6 @@ void MC_modelcheck_liveness(){
 
 void MC_exit(void)
 {
-  MC_print_statistics(mc_stats);
   xbt_free(mc_time);
   MC_memory_exit();
 }
