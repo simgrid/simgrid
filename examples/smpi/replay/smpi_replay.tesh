@@ -284,3 +284,24 @@ $ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_rep
 > [Tremblay:0:(0) 425.278035] [smpi_replay/INFO] Simulation time 425.278
 
 $ rm -f replay/one_trace
+
+p Test of Isend replay with SMPI (one trace for all processes)
+
+< replay/actions_allReduce.txt
+$ mkfile replay/one_trace
+
+$ ../../bin/smpirun -ext smpi_replay --log=replay.thresh:critical --log=smpi_replay.thresh:verbose --log=no_loc --cfg=smpi/cpu_threshold:1 -np 3 -platform ${srcdir:=.}/replay/replay_platform.xml -hostfile ${srcdir:=.}/hostfile ./smpi_replay ${srcdir:=.}/replay/one_trace
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '1'
+> [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
+> [Fafard:2:(0) 144.013385] [smpi_replay/VERBOSE] 2 allReduce 5e8 5e8 144.013385
+> [Fafard:2:(0) 150.566808] [smpi_replay/VERBOSE] 2 compute 5e8 6.553424
+> [Jupiter:1:(0) 154.032923] [smpi_replay/VERBOSE] 1 allReduce 5e8 5e8 154.032923
+> [Tremblay:0:(0) 154.032923] [smpi_replay/VERBOSE] 0 allReduce 5e8 5e8 154.032923
+> [Tremblay:0:(0) 159.130023] [smpi_replay/VERBOSE] 0 compute 5e8 5.097100
+> [Jupiter:1:(0) 160.586347] [smpi_replay/VERBOSE] 1 compute 5e8 6.553424
+> [Jupiter:1:(0) 160.586347] [smpi_replay/INFO] Simulation time 160.586
+
+$ rm -f replay/one_trace
