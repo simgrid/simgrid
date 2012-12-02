@@ -204,6 +204,10 @@ extern void *start_plt_libsimgrid;
 extern void *end_plt_libsimgrid;
 extern void *start_plt_binary;
 extern void *end_plt_binary;
+extern void *start_got_plt_libsimgrid;
+extern void *end_got_plt_libsimgrid;
+extern void *start_got_plt_binary;
+extern void *end_got_plt_binary;
 
 
 /********************************** DPOR for safety  **************************************/

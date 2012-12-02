@@ -16,7 +16,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 
 void *start_text_libsimgrid;
 void *start_plt_libsimgrid, *end_plt_libsimgrid;
+void *start_got_plt_libsimgrid, *end_got_plt_libsimgrid;
 void *start_plt_binary, *end_plt_binary;
+void *start_got_plt_binary, *end_got_plt_binary;
 char *libsimgrid_path;
 void *start_data_libsimgrid, *start_bss_libsimgrid;
 void *start_data_binary, *start_bss_binary;
@@ -291,7 +293,7 @@ void get_libsimgrid_plt_section(){
   size_t n = 0;                 /* Amount of bytes to read by getline */
 
   char *lfields[7];
-  int i, plt_not_found = 1;
+  int i, plt_found = 0;
   unsigned long int size, offset;
 
   if(libsimgrid_path == NULL)
@@ -306,7 +308,7 @@ void get_libsimgrid_plt_section(){
     xbt_abort();
   }
 
-  while ((read = getline(&line, &n, fp)) != -1 && plt_not_found == 1) {
+  while ((read = getline(&line, &n, fp)) != -1 && plt_found != 2) {
 
     if(n == 0)
       continue;
@@ -332,8 +334,15 @@ void get_libsimgrid_plt_section(){
         offset = strtoul(lfields[5], NULL, 16);
         start_plt_libsimgrid = (char *)start_text_libsimgrid + offset;
         end_plt_libsimgrid = (char *)start_plt_libsimgrid + size;
-        plt_not_found = 0;
-      }
+        plt_found++;
+      }else if(strcmp(lfields[1], ".got.plt") == 0){
+        size = strtoul(lfields[2], NULL, 16);
+        offset = strtoul(lfields[5], NULL, 16);
+        start_got_plt_libsimgrid = (char *)start_text_libsimgrid + offset;
+        end_got_plt_libsimgrid = (char *)start_got_plt_libsimgrid + size;
+        plt_found++;
+       }
+
     }
     
   }
@@ -352,8 +361,8 @@ void get_binary_plt_section(){
   size_t n = 0;                 /* Amount of bytes to read by getline */
 
   char *lfields[7];
-  int i, plt_not_found = 1;
-  unsigned long int size, offset;
+  int i, plt_found = 0;
+  unsigned long int size;
 
   char *command = bprintf( "objdump --section-headers %s", xbt_binary_name);
 
@@ -364,7 +373,7 @@ void get_binary_plt_section(){
     xbt_abort();
   }
 
-  while ((read = getline(&line, &n, fp)) != -1 && plt_not_found == 1) {
+  while ((read = getline(&line, &n, fp)) != -1 && plt_found != 2) {
 
     if(n == 0)
       continue;
@@ -387,11 +396,15 @@ void get_binary_plt_section(){
     if(i>=6){
       if(strcmp(lfields[1], ".plt") == 0){
         size = strtoul(lfields[2], NULL, 16);
-        offset = strtoul(lfields[5], NULL, 16);
-        start_plt_binary = (char *)start_text_binary + offset;
+        start_plt_binary = (void *)strtoul(lfields[3], NULL, 16);
         end_plt_binary = (char *)start_plt_binary + size;
-        plt_not_found = 0;
-      }
+        plt_found++;
+      }else if(strcmp(lfields[1], ".got.plt") == 0){
+        size = strtoul(lfields[2], NULL, 16);
+        start_got_plt_binary = (char *)strtoul(lfields[3], NULL, 16);
+        end_got_plt_binary = (char *)start_got_plt_binary + size;
+        plt_found++;
+       }
     }
     
     
