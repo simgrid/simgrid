@@ -247,8 +247,8 @@ typedef struct s_mc_comparison_times{
   xbt_dynar_t snapshot_comparison_times;
   xbt_dynar_t chunks_used_comparison_times;
   xbt_dynar_t stacks_sizes_comparison_times;
-  xbt_dynar_t program_data_segment_comparison_times;
-  xbt_dynar_t libsimgrid_data_segment_comparison_times;
+  xbt_dynar_t binary_global_variables_comparison_times;
+  xbt_dynar_t libsimgrid_global_variables_comparison_times;
   xbt_dynar_t heap_comparison_times;
   xbt_dynar_t stacks_comparison_times;
 }s_mc_comparison_times_t, *mc_comparison_times_t;
@@ -413,5 +413,18 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
 void print_local_variables(xbt_dict_t list);
 char *get_libsimgrid_path(void);
 xbt_dict_t MC_get_location_list(const char *elf_file);
+
+/**** Global variables ****/
+
+typedef struct s_global_variable{
+  char *name;
+  size_t size;
+  void *address;
+}s_global_variable_t, *global_variable_t;
+
+void global_variable_free(global_variable_t v);
+void global_variable_free_voidp(void *v);
+
+extern xbt_dynar_t mc_global_variables;
 
 #endif

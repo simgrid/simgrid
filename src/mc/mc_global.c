@@ -95,6 +95,8 @@ int compare;
 
 /* Local */
 xbt_dict_t mc_local_variables = NULL;
+/* Global */
+xbt_dynar_t mc_global_variables = NULL;
 
 /* Ignore mechanism */
 xbt_dynar_t mc_stack_comparison_ignore;
@@ -109,7 +111,8 @@ xbt_automaton_t _mc_property_automaton = NULL;
 static void MC_assert_pair(int prop);
 static dw_location_t get_location(xbt_dict_t location_list, char *expr);
 static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset);
-static void ignore_coverage_variables(char *executable, int region_type);
+static size_t data_bss_ignore_size(void *address);
+static void MC_get_global_variables(char *elf_file);
 
 void MC_do_the_modelcheck_for_real() {
   if (!_surf_mc_property_file || _surf_mc_property_file[0]=='\0') {
@@ -153,7 +156,7 @@ void MC_init(){
 
   MC_SET_RAW_MEM;
 
-  char *ls_path = get_libsimgrid_path(); 
+  MC_init_memory_map_info();
   
   mc_local_variables = xbt_dict_new_homogeneous(NULL);
 
@@ -162,17 +165,16 @@ void MC_init(){
   MC_get_local_variables(xbt_binary_name, binary_location_list, &mc_local_variables);
 
   /* Get local variables in libsimgrid for state equality detection */
-  xbt_dict_t libsimgrid_location_list = MC_get_location_list(ls_path);
-  MC_get_local_variables(ls_path, libsimgrid_location_list, &mc_local_variables);
-
-  MC_init_memory_map_info();
+  xbt_dict_t libsimgrid_location_list = MC_get_location_list(libsimgrid_path);
+  MC_get_local_variables(libsimgrid_path, libsimgrid_location_list, &mc_local_variables);
 
   /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
   get_libsimgrid_plt_section();
   get_binary_plt_section();
 
-  ignore_coverage_variables(libsimgrid_path, 1);
-  ignore_coverage_variables(xbt_binary_name, 2);
+  /* Get global variables */
+  MC_get_global_variables(xbt_binary_name);
+  MC_get_global_variables(libsimgrid_path);
 
   MC_UNSET_RAW_MEM;
 
@@ -715,70 +717,6 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 }
 
 /************ MC_ignore ***********/ 
-
-static void ignore_coverage_variables(char *executable, int region_type){
-
-  FILE *fp;
-
-  char *command = bprintf("objdump --syms %s", executable);
-
-  fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen failed");
-    xbt_abort();
-  }
-
-  char *line = NULL;
-  ssize_t read;
-  size_t n = 0;
-
-  xbt_dynar_t line_tokens = NULL;
-  unsigned long int size, offset;
-  void *address;
-
-  while ((read = getline(&line, &n, fp)) != -1){
-
-    if(n == 0)
-      continue;
-
-     /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    xbt_str_strip_spaces(line);
-    xbt_str_ltrim(line, NULL);
-
-    line_tokens = xbt_str_split(line, NULL);
-
-    if(xbt_dynar_length(line_tokens) < 3 || strcmp(xbt_dynar_get_as(line_tokens, 0, char *), "SYMBOL") == 0)
-      continue;
-
-    if(((strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char *), "gcov", 4) == 0)
-        || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char *), "__gcov", 6) == 0))
-       && (((strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 3, char *), ".bss") == 0) 
-            || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 3, char *), ".data") == 0)))){
-      if(region_type == 1){ /* libsimgrid */
-        offset = strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
-        size = strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char *), NULL, 16);
-        //XBT_DEBUG("Add ignore at address %p (size %lu)", (char *)start_text_libsimgrid+offset, size);
-        MC_ignore_data_bss((char *)start_text_libsimgrid+offset, size);
-      }else{ /* binary */
-        address = (void *)strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
-        size = strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char *), NULL, 16);
-        //XBT_DEBUG("Add ignore at address %p (size %lu)", address, size);
-        MC_ignore_data_bss(address, size);
-      }
-    }
-
-    xbt_dynar_free(&line_tokens);
-
-  }
-
-  free(command);
-  free(line);
-  pclose(fp);
-
-}
 
 void MC_ignore_heap(void *address, size_t size){
 
@@ -1751,4 +1689,114 @@ void print_local_variables(xbt_dict_t list){
     }
   }
 
+}
+
+static size_t data_bss_ignore_size(void *address){
+  unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
+  mc_data_bss_ignore_variable_t var;
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
+    if(var->address == address)
+      return var->size;
+    if(var->address < address){
+      if((void *)((char *)var->address + var->size) > address)
+        return (char *)var->address + var->size - (char*)address;
+      else
+        start = cursor + 1;
+    }
+    if(var->address > address)
+      end = cursor - 1;   
+  }
+
+  return 0;
+}
+
+
+static void MC_get_global_variables(char *elf_file){
+
+  FILE *fp;
+
+  char *command = bprintf("objdump -t -j .data -j .bss %s", elf_file);
+
+  fp = popen(command, "r");
+
+  if(fp == NULL){
+    perror("popen failed");
+    xbt_abort();
+  }
+
+  if(mc_global_variables == NULL)
+    mc_global_variables = xbt_dynar_new(sizeof(global_variable_t), global_variable_free_voidp);
+
+  char *line = NULL;
+  ssize_t read;
+  size_t n = 0;
+
+  xbt_dynar_t line_tokens = NULL;
+  unsigned long offset;
+
+  int type = strcmp(elf_file, xbt_binary_name); /* 0 = binary, other = libsimgrid */
+
+  while ((read = getline(&line, &n, fp)) != -1){
+
+    if(n == 0)
+      continue;
+
+     /* Wipeout the new line character */
+    line[read - 1] = '\0';
+
+    xbt_str_strip_spaces(line);
+    xbt_str_ltrim(line, NULL);
+
+    line_tokens = xbt_str_split(line, NULL);
+
+    if(xbt_dynar_length(line_tokens) <= 4 || strcmp(xbt_dynar_get_as(line_tokens, 0, char *), "SYMBOL") == 0)
+      continue;
+
+    if((strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "__gcov", 6) == 0)
+       || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "gcov", 4) == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".data") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".bss") == 0)
+       || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "stderr", 6) == 0)
+       || ((size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16) == 0))
+      continue;
+
+    global_variable_t var = xbt_new0(s_global_variable_t, 1);
+
+    if(type == 0){
+      var->address = (void *)strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
+    }else{
+      offset = strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
+      var->address = (char *)start_text_libsimgrid+offset;
+    }
+
+    var->size = (size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16);
+    var->name = strdup(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*));
+
+    if(data_bss_ignore_size(var->address) > 0)
+      global_variable_free(var);
+    else
+      xbt_dynar_push(mc_global_variables, &var);
+
+    xbt_dynar_free(&line_tokens);
+
+  }
+
+  free(command);
+  free(line);
+  pclose(fp);
+
+}
+
+void global_variable_free(global_variable_t v){
+  xbt_free(v->name);
+  xbt_free(v);
+}
+
+void global_variable_free_voidp(void *v){
+  global_variable_free((global_variable_t) * (void **) v);
 }

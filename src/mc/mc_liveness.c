@@ -90,36 +90,36 @@ void MC_print_comparison_times_statistics(mc_comparison_times_t ct){
     XBT_DEBUG("Stacks sizes comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->stacks_sizes_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->stacks_sizes_comparison_times), max, min);
   }
 
-  if(xbt_dynar_length(ct->program_data_segment_comparison_times) > 0){
+  if(xbt_dynar_length(ct->binary_global_variables_comparison_times) > 0){
     cursor = 0;
     total = 0.0;
     max = 0.0;
-    min = xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double);
-    while(cursor < xbt_dynar_length(ct->program_data_segment_comparison_times) - 1){
-      total += xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double) > max)
-        max = xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double) < min)
-        min = xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double);
+    min = xbt_dynar_get_as(ct->binary_global_variables_comparison_times, cursor, double);
+    while(cursor < xbt_dynar_length(ct->binary_global_variables_comparison_times) - 1){
+      total += xbt_dynar_get_as(ct->binary_global_variables_comparison_times, cursor, double);
+      if(xbt_dynar_get_as(ct->binary_global_variables_comparison_times, cursor, double) > max)
+        max = xbt_dynar_get_as(ct->binary_global_variables_comparison_times, cursor, double);
+      if(xbt_dynar_get_as(ct->binary_global_variables_comparison_times, cursor, double) < min)
+        min = xbt_dynar_get_as(ct->binary_global_variables_comparison_times, cursor, double);
       cursor++;
     }
-    XBT_DEBUG("Program data/bss segments comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->program_data_segment_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->program_data_segment_comparison_times), max, min);
+    XBT_DEBUG("Binary global variables comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->binary_global_variables_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->binary_global_variables_comparison_times), max, min);
   }
 
-  if(xbt_dynar_length(ct->libsimgrid_data_segment_comparison_times) > 0){
+  if(xbt_dynar_length(ct->libsimgrid_global_variables_comparison_times) > 0){
     cursor = 0;
     total = 0.0;
     max = 0.0;
-    min = xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double);
-    while(cursor < xbt_dynar_length(ct->libsimgrid_data_segment_comparison_times) - 1){
-      total += xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double) > max)
-        max = xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double) < min)
-        min = xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double);
+    min = xbt_dynar_get_as(ct->libsimgrid_global_variables_comparison_times, cursor, double);
+    while(cursor < xbt_dynar_length(ct->libsimgrid_global_variables_comparison_times) - 1){
+      total += xbt_dynar_get_as(ct->libsimgrid_global_variables_comparison_times, cursor, double);
+      if(xbt_dynar_get_as(ct->libsimgrid_global_variables_comparison_times, cursor, double) > max)
+        max = xbt_dynar_get_as(ct->libsimgrid_global_variables_comparison_times, cursor, double);
+      if(xbt_dynar_get_as(ct->libsimgrid_global_variables_comparison_times, cursor, double) < min)
+        min = xbt_dynar_get_as(ct->libsimgrid_global_variables_comparison_times, cursor, double);
       cursor++;
     }
-    XBT_DEBUG("Libsimgrid data/bss segments comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->libsimgrid_data_segment_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->libsimgrid_data_segment_comparison_times), max, min);
+    XBT_DEBUG("Libsimgrid global variables comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->libsimgrid_global_variables_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->libsimgrid_global_variables_comparison_times), max, min);
   }
 
   if(xbt_dynar_length(ct->heap_comparison_times) > 0){
@@ -179,8 +179,8 @@ mc_comparison_times_t new_comparison_times(){
   ct->snapshot_comparison_times = xbt_dynar_new(sizeof(double), NULL);
   ct->chunks_used_comparison_times = xbt_dynar_new(sizeof(double), NULL);
   ct->stacks_sizes_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  ct->program_data_segment_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  ct->libsimgrid_data_segment_comparison_times = xbt_dynar_new(sizeof(double), NULL);
+  ct->binary_global_variables_comparison_times = xbt_dynar_new(sizeof(double), NULL);
+  ct->libsimgrid_global_variables_comparison_times = xbt_dynar_new(sizeof(double), NULL);
   ct->heap_comparison_times = xbt_dynar_new(sizeof(double), NULL);
   ct->stacks_comparison_times = xbt_dynar_new(sizeof(double), NULL);
   return ct;
@@ -484,8 +484,8 @@ void pair_reached_free(mc_pair_reached_t pair){
       xbt_dynar_free(&(pair->comparison_times->snapshot_comparison_times));
       xbt_dynar_free(&(pair->comparison_times->chunks_used_comparison_times));
       xbt_dynar_free(&(pair->comparison_times->stacks_sizes_comparison_times));
-      xbt_dynar_free(&(pair->comparison_times->program_data_segment_comparison_times));
-      xbt_dynar_free(&(pair->comparison_times->libsimgrid_data_segment_comparison_times));
+      xbt_dynar_free(&(pair->comparison_times->binary_global_variables_comparison_times));
+      xbt_dynar_free(&(pair->comparison_times->libsimgrid_global_variables_comparison_times));
       xbt_dynar_free(&(pair->comparison_times->heap_comparison_times));
       xbt_dynar_free(&(pair->comparison_times->stacks_comparison_times));
     }
