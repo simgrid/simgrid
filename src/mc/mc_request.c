@@ -24,7 +24,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
   if(r1->call == SIMCALL_COMM_IRECV && r2->call == SIMCALL_COMM_ISEND)
     return FALSE;
 
-  if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
+  if(   (r1->call == SIMCALL_COMM_ISEND /*|| r1->call == SIMCALL_COMM_IRECV*/)
         &&  r2->call == SIMCALL_COMM_WAIT){
 
     if(simcall_comm_wait__get__comm(r2)->comm.rdv == NULL)
@@ -42,7 +42,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
       return FALSE;
   }
 
-  if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
+  if(   (r2->call == SIMCALL_COMM_ISEND /*|| r2->call == SIMCALL_COMM_IRECV*/)
         &&  r1->call == SIMCALL_COMM_WAIT){
 
     if(simcall_comm_wait__get__comm(r1)->comm.rdv != NULL)
