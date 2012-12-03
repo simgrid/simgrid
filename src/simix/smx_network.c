@@ -267,6 +267,9 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
   /* set communication */
   act->comm.type = type;
   act->comm.refcount = 1;
+  act->comm.src_data=NULL;
+  act->comm.dst_data=NULL;
+
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   //initialize with unknown value
@@ -302,7 +305,7 @@ void SIMIX_comm_destroy(smx_action_t action)
   }
   action->comm.refcount--;
   if (action->comm.refcount > 0)
-    return;
+      return;
   XBT_DEBUG("Really free communication %p; refcount is now %d", action,
             action->comm.refcount);
 
@@ -516,7 +519,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
       --smx_total_comms; // this creation was a pure waste
       other_action->state = SIMIX_READY;
       other_action->comm.type = SIMIX_COMM_READY;
-   //   other_action->comm.refcount--;
+      //other_action->comm.refcount--;
     }
     xbt_fifo_push(dst_proc->comms, other_action);
   }

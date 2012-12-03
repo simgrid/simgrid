@@ -272,10 +272,13 @@ void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm)
 {
-  MPI_Request request;
+  MPI_Request request =
+    build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                  comm, NON_PERSISTENT | SEND | RECV_DELETE);
 
-  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
+  smpi_mpi_start(request);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -337,7 +340,24 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     if(req->detached == 0) free(req->buf);
   }
 
+
+
   if(req->flags & NON_PERSISTENT) {
+    if(req->action &&
+      (req->action->state == SIMIX_DONE))
+    {
+      MPI_Request sender_request = (MPI_Request)SIMIX_comm_get_src_data(req->action);
+      if((sender_request!=MPI_REQUEST_NULL) &&
+        ( sender_request->detached ) &&
+        ( sender_request->flags & RECV_DELETE))
+      {
+        //we are in a receiver's wait from a detached send
+        //we have to clean the sender's side request here.... but only if done by a send, not an isend
+        //the request lives senderside for an isend. As detached is currently for send + isend, we use RECV_DELETE to separate them
+        //FIXME : see if just removing detached status for isend is also good
+        smpi_mpi_request_free(&sender_request);
+      }
+    }
     smpi_mpi_request_free(request);
   } else {
     req->action = NULL;

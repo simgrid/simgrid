@@ -22,7 +22,7 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 #define NON_PERSISTENT 0x2
 #define SEND           0x4
 #define RECV           0x8
-
+#define RECV_DELETE     0x10
 
 // this struct is here to handle the problem of non-contignous data
 // for each such structure these function should be implemented (vector
