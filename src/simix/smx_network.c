@@ -494,7 +494,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
       }/*else{
          XBT_DEBUG("Not yet finished, we have to wait %d\n", xbt_fifo_size(rdv->comm_fifo));
          }*/
-     // other_action->comm.refcount--;
+      other_action->comm.refcount--;
       SIMIX_comm_destroy(this_action);
       --smx_total_comms; // this creation was a pure waste
     }
