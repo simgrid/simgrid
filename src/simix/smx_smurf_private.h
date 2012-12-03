@@ -159,6 +159,10 @@
 #define SIMCALL_ENUM(type, ...)\
 	type
 
+/* generate the strings name from the enumeration values */
+#define SIMCALL_STRING_TYPE(type, name, answer, res, ...)\
+	[type] = STRINGIFY(type)
+
 /* generate strings from the enumeration values */
 #define SIMCALL_TYPE(type, name, answer, res, ...)\
 	[type] = STRINGIFY(MAP(SIMCALL_FORMAT, __VA_ARGS__))

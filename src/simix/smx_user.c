@@ -14,7 +14,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 /* generate strings from the enumeration values */
 static const char* simcall_names[] = {
-SIMCALL_LIST(SIMCALL_TYPE, SIMCALL_SEP_COMMA)
+SIMCALL_LIST(SIMCALL_STRING_TYPE, SIMCALL_SEP_COMMA)
 [SIMCALL_NONE] = "NONE"
 };
 
