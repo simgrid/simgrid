@@ -675,8 +675,8 @@ static void smpi_gap_append(double size, const link_CM02_t link,
 {
   const char *src = link->lmm_resource.generic_resource.name;
   xbt_fifo_t fifo;
-  surf_action_network_CM02_t last_action;
-  double bw;
+  //surf_action_network_CM02_t last_action;
+  //double bw;
 
   if (sg_sender_gap > 0.0) {
     if (!gap_lookup) {
@@ -686,16 +686,16 @@ static void smpi_gap_append(double size, const link_CM02_t link,
     action->sender.gap = 0.0;
     if (fifo && xbt_fifo_size(fifo) > 0) {
       /* Compute gap from last send */
-      last_action =
+      /*last_action =
           (surf_action_network_CM02_t)
-          xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));
-      bw = net_get_link_bandwidth(link);
-      action->sender.gap =
-          max(sg_sender_gap,last_action->sender.size / bw);
+          xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));*/
+     // bw = net_get_link_bandwidth(link);
+      action->sender.gap = sg_sender_gap;
+        /*  max(sg_sender_gap,last_action->sender.size / bw);*/
       action->latency += action->sender.gap;
     }
     /* Append action as last send */
-    action->sender.link_name = link->lmm_resource.generic_resource.name;
+    /*action->sender.link_name = link->lmm_resource.generic_resource.name;
     fifo =
         (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
                                           action->sender.link_name);
@@ -703,7 +703,7 @@ static void smpi_gap_append(double size, const link_CM02_t link,
       fifo = xbt_fifo_new();
       xbt_dict_set(gap_lookup, action->sender.link_name, fifo, NULL);
     }
-    action->sender.fifo_item = xbt_fifo_push(fifo, action);
+    action->sender.fifo_item = xbt_fifo_push(fifo, action);*/
     action->sender.size = size;
   }
 }
