@@ -1010,53 +1010,6 @@ xbt_dict_t MC_get_location_list(const char *elf_file){
   return location_list;
 }
 
-char *get_libsimgrid_path(){
-
-  char *command = bprintf("ldd %s", xbt_binary_name);
-  
-  FILE *fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen for ldd failed");
-    xbt_abort();
-  }
-
-  char *line;
-  ssize_t read;
-  size_t n = 0;
-  xbt_dynar_t split;
-  
-  while((read = getline(&line, &n, fp)) != -1){
-  
-    if(n == 0)
-      continue;
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    xbt_str_strip_spaces(line);
-    xbt_str_ltrim(line, NULL);
-    split = xbt_str_split(line, " ");
-
-    if(strncmp((char *)xbt_dynar_get_as(split, 0, char *), "libsimgrid.so", 13) == 0){
-      free(line);
-      free(command);
-      pclose(fp);
-      return ((char *)xbt_dynar_get_as(split, 2, char *));
-    }
-
-    xbt_dynar_free(&split);
-    
-  }
-
-  free(line);
-  free(command);
-  pclose(fp);
-
-  return NULL;
-  
-}
-
 static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset){
 
   xbt_dict_cursor_t cursor = NULL;
