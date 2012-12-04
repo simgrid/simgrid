@@ -43,9 +43,9 @@ Cmake output
 -- Build files have been written to: /home/user/workspace/simgrid-java/build
 \endverbatim
 
-If cmake complains that jni could not be found, you need to tell it
-where JNI header files are located. the following command should tell
-you:
+If cmake complains that <b>jni could not be found</b>, you need to
+tell it where JNI header files are located. the following command
+should tell you:
 
 \verbatim
 $ locate jni.h
@@ -59,8 +59,9 @@ on your machine (using javac -version), and pick the right one. Then
 set the JAVA_INCLUDE_PATH environment variable to the right path (note
 that we remove the filename jni.h from that path), and relaunch cmake.
 
-\vebatim
-export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-6-openjdk-amd64/include/
+\verbatim
+$ export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-6-openjdk-amd64/include/
+$ cmake .
 \endverbatim
 
 \section bindings_binding_java_use How to use Simgrid-java
