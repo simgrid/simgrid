@@ -172,6 +172,8 @@ void MC_init(){
   get_libsimgrid_plt_section();
   get_binary_plt_section();
 
+  MC_ignore_data_bss(&end_raw_heap, sizeof(end_raw_heap));
+
   /* Get global variables */
   MC_get_global_variables(xbt_binary_name);
   MC_get_global_variables(libsimgrid_path);
@@ -183,10 +185,10 @@ void MC_init(){
   MC_ignore_stack("__ex_cleanup", "*");
   MC_ignore_stack("__ex_mctx_en", "*");
   MC_ignore_stack("__ex_mctx_me", "*");
+  MC_ignore_stack("__xbt_ex_ctx_ptr", "*");
   MC_ignore_stack("_log_ev", "*");
   MC_ignore_stack("_throw_ctx", "*");
   MC_ignore_stack("ctx", "*");
-
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
