@@ -129,20 +129,3 @@ SIMCALL_LIST
 #undef SIMCALL_ENUM_ELEMENT
 };*/
 
-smx_simcall_t __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args)
-{
-  smx_process_t self = SIMIX_process_self();
-  self->simcall.call = simcall_id;
-  self->simcall.args = args;
-
-  if (self != simix_global->maestro_process) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-              SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-
-    SIMIX_process_yield(self);
-  } else {
-
-    SIMIX_simcall_pre(&self->simcall, 0);
-  }
-  return &(self->simcall);
-}

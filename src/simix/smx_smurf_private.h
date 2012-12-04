@@ -115,8 +115,8 @@
 #define SIMCALL_ARG(i, v) SIMCALL_ARG_ v
 
 /* get the parameter initialisation field */
-#define SIMCALL_INIT_FIELD_(name, type, field) {.field = name}
-#define SIMCALL_INIT_FIELD(i, v) SIMCALL_INIT_FIELD_ v
+#define SIMCALL_INIT_FIELD_(name, type, field) .field = name
+#define SIMCALL_INIT_FIELD(i, d, v) self->simcall.args[i]SIMCALL_INIT_FIELD_ v;
 
 /* get the case of the parameter */
 #define SIMCALL_CASE_PARAM_(name, type, field) field
@@ -147,7 +147,7 @@
 	(name, type, __VA_ARGS__)
 #define SIMCALL_FUNC_SIMCALL(res) SIMCALL_FUNC_SIMCALL_ res
 
-#define SIMCALL_WITH_FUNC_RETURN(name, type, field) return simcall->result.field;
+#define SIMCALL_WITH_FUNC_RETURN(name, type, field) return self->simcall.result.field;
 #define SIMCALL_WITHOUT_FUNC_RETURN(name, type, field)
 #define SIMCALL_FUNC_RETURN_(name, type, ...)\
         MAYBE2(,##__VA_ARGS__, SIMCALL_WITH_FUNC_RETURN, SIMCALL_WITHOUT_FUNC_RETURN)\
@@ -167,12 +167,21 @@
 #define SIMCALL_TYPE(type, name, answer, res, ...)\
 	[type] = STRINGIFY(MAP(SIMCALL_FORMAT, __VA_ARGS__))
 
-/* generate the simcalls functions */
-#define SIMCALL_FUNC(type, name, answer, res, ...)\
-	inline static SIMCALL_FUNC_RETURN_TYPE(res) simcall_BODY_##name(MAP(SIMCALL_ARG, ##__VA_ARGS__)) { \
-      SIMCALL_FUNC_SIMCALL(res) __SIMIX_simcall(type, (u_smx_scalar_t[]){MAP(SIMCALL_INIT_FIELD, ##__VA_ARGS__)}); \
-      SIMCALL_FUNC_RETURN(res)\
-    }
+/* generate the simcalls BODY functions */
+#define SIMCALL_FUNC(TYPE, NAME, ANSWER, RES, ...)\
+  inline static SIMCALL_FUNC_RETURN_TYPE(RES) simcall_BODY_##NAME(MAP(SIMCALL_ARG, ##__VA_ARGS__)) { \
+    smx_process_t self = SIMIX_process_self(); \
+    self->simcall.call = TYPE; \
+    MAP_WITH_DEFAULT_ARGS(SIMCALL_INIT_FIELD, (), ##__VA_ARGS__) \
+    if (self != simix_global->maestro_process) { \
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name, \
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call); \
+      SIMIX_process_yield(self); \
+    } else { \
+      SIMIX_simcall_pre(&self->simcall, 0); \
+    } \
+    SIMCALL_FUNC_RETURN(RES) \
+  }
 
 /* generate a comma if there is an argument*/
 #define WITHOUT_COMMA 
@@ -241,9 +250,6 @@
         SIMCALL_RES_GETSET_PROTO__ v (scname, v)
 #define SIMCALL_RES_GETSET_PROTO(type, name, answer, res, ...)\
   SIMCALL_RES_GETSET_PROTO_(name, res)
-
-
-
 
 /* stringify arguments */
 #define STRINGIFY_(...) #__VA_ARGS__
@@ -410,7 +416,7 @@ typedef struct s_smx_simcall {
   e_smx_simcall_t call;
   smx_process_t issuer;
   int mc_value;
-  union u_smx_scalar *args;
+  union u_smx_scalar args[10];
   union u_smx_scalar result;
   //FIXME: union u_smx_scalar retval;
   union {
