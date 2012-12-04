@@ -53,16 +53,15 @@ Be careful on Mac, this variable is called DYLD_LIBRARY_PATH and not
 LD_LIBRARY_PATH.
 
 \verbatim
-$ export SIMGRID_ROOT="$HOME/Install/simgrid/"
-$ export SIMGRID_JAVA_ROOT="$HOME/Install/simgrid-java"
+$ export SIMGRID_ROOT="$HOME/Install/simgrid/" # change it to the path where you installed the SimGrid library
+$ export SIMGRID_JAVA_ROOT="$HOME/Install/simgrid-java" # change it to the path where you installed the java bindings of SimGrid 
 $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/lib:$SIMGRID_JAVA_ROOT/java
 $ cd examples
 $ java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 \endverbatim
 
-
-
-
+If you want to make these settings permanent even after a reboot, you
+need to add the export lines into your ~/.bashrc file, or equivalent.
 
 
 
