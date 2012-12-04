@@ -3,13 +3,13 @@
 \section bindings_binding_java_install How to install Simgrid-java
 
 To use java with Simgrid you have to install some dependencies:
- \li Simgrid (see <a href="http://simgrid.gforge.inria.fr/simgrid/3.7/doc/install.html">install
+ \li Simgrid (see <a href="http://simgrid.gforge.inria.fr/simgrid/latest/doc/install.html">install
      Simgrid</a>). You should set the SIMGRID_ROOT environment
      variable to the path where you installed SimGrid.
- \li Java JDK packages, such as sun-java6-jdk (with libgcj10-dev or
-another version of gcj) or openjdk6. For maximal performance and
-scalability, use a coroutine-enabled JVM (see
-\ref bindings_binding_java_coroutines).
+ \li Java JDK packages, such as openjdk7 or sun-java6-jdk (with
+     libgcj10-dev or another version of gcj). For maximal performance
+     and scalability, use a coroutine-enabled JVM (see
+     \ref bindings_binding_java_coroutines).
  
 Then Download and install package Simgrid-java:
 \verbatim
@@ -25,7 +25,7 @@ Cmake output
 -- BUILDNAME   : Simgrid-Java
 -- Looking for lib SimGrid
 -- Looking for lib SimGrid - found
--- Simgrid version : 3.6
+-- Simgrid version : 3.8.1
 -- Looking for gras.h
 -- Looking for gras.h - found
 -- Found Tesh: /home/user/Bureau/simgrid/git/bin/tesh
@@ -41,6 +41,26 @@ Cmake output
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/user/workspace/simgrid-java/build
+\endverbatim
+
+If cmake complains that jni could not be found, you need to tell it
+where JNI header files are located. the following command should tell
+you:
+
+\verbatim
+$ locate jni.h
+/usr/lib/jvm/java-6-openjdk-amd64/include/jni.h
+/usr/lib/jvm/java-7-openjdk-amd64/include/jni.h
+\endverbatim
+
+If you have several version of jni installed (as in the example
+above), you need to check the version of java that is used by default
+on your machine (using javac -version), and pick the right one. Then
+set the JAVA_INCLUDE_PATH environment variable to the right path (note
+that we remove the filename jni.h from that path), and relaunch cmake.
+
+\vebatim
+export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-6-openjdk-amd64/include/
 \endverbatim
 
 \section bindings_binding_java_use How to use Simgrid-java
