@@ -1,4 +1,4 @@
-SimGrid-java (3.8) unstable; urgency=low
+SimGrid-java (3.8.1) unstable; urgency=low
 
  * New module: org.simgrid.trace.Trace (SimGrid trace bindings)
    Warning: all methods are visible, but only some of them are 
@@ -19,7 +19,9 @@ SimGrid-java (3.8) unstable; urgency=low
  * New context factory based on Coroutines. It mandates a modified JVM
    but then, the simulations run about five times faster, and there is
    no limit to the amount of processes (beside of the available memory).
- 
+
+ -- 2012-12-04 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 SimGrid-java (3.7.1) stable; urgency=low
   
  The "Java aint got to be bloated and slow" release
