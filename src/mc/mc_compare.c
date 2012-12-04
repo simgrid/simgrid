@@ -526,8 +526,6 @@ static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
       if((strcmp(xbt_dynar_get_as(s_tokens1, 0, char *), "ip") == 0) && (strcmp(xbt_dynar_get_as(s_tokens2, 0, char *), "ip") == 0)){
         ip1 = strdup(xbt_dynar_get_as(s_tokens1, 1, char *));
         ip2 = strdup(xbt_dynar_get_as(s_tokens2, 1, char *));
-        /*if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose))
-          XBT_VERB("Instruction pointer : %s, Instruction pointer : %s", ip1, ip2);*/
       }
       if(strcmp(xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *)) != 0){   
         /* Ignore this variable ?  */
@@ -541,7 +539,7 @@ static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
         addr2 = (void *) strtoul(xbt_dynar_get_as(s_tokens2, 1, char *), NULL, 16);
         if(is_heap_equality(heap_equals, addr1, addr2) == 0){
           if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose))
-            XBT_VERB("Variable %s is different between stacks : %s - %s", xbt_dynar_get_as(s_tokens1, 0, char *), xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
+            XBT_VERB("Variable %s is different between stacks in %s : %s - %s", xbt_dynar_get_as(s_tokens1, 0, char *), ip1, xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
           xbt_dynar_free(&s_tokens1);
           xbt_dynar_free(&s_tokens2);
           return 1;
