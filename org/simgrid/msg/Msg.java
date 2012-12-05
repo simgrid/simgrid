@@ -19,7 +19,10 @@ import java.io.File;
 
 public final class Msg {
 	/* Statically load the library which contains all native functions used in here */
-	static {
+	static private boolean isNativeInited = false;
+	public static void nativeInit() {
+		if (isNativeInited)
+			return;
 		try {
 			/* prefer the version on disk, if existing */
 			System.loadLibrary("SG_java");
@@ -28,6 +31,10 @@ public final class Msg {
 			loadLib("simgrid");
 			loadLib("SG_java");
 		}
+		isNativeInited = true;
+	}
+	static {
+		nativeInit();
 	}
 	private static void loadLib (String name) {
 		String Path = "NATIVE/"+System.getProperty("os.name")+"/"+System.getProperty("os.arch")+"/";

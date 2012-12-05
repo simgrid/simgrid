@@ -31,6 +31,7 @@ public class Mutex {
 	 */
 	public static native void nativeInit();
 	static {
+		Msg.nativeInit();
 		nativeInit();
 	}	
 }
