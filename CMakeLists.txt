@@ -370,6 +370,17 @@ if(HAVE_TRACING)
   )
 endif(HAVE_TRACING)
 
+IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
+  IF(${ARCH_32_BITS})
+      set(JSG_BUNDLE NATIVE/${CMAKE_SYSTEM_NAME}/x86/)
+  ELSE()
+      set(JSG_BUNDLE NATIVE/${CMAKE_SYSTEM_NAME}/amd64/)
+  ENDIF()
+ELSE() 
+  error("Unknown system type. Processor: ${CMAKE_SYSTEM_PROCESSOR}; System: ${CMAKE_SYSTEM_NAME}")
+ENDIF()
+message("Native libraries bundeled into: ${JSG_BUNDLE}")
+
 # java_classes
 add_custom_command(
   OUTPUT  ${JAVA_SRC_CLASS}
@@ -377,6 +388,11 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
     -cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_SRC}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
+  COMMAND ${CMAKE_COMMAND} -E copy ${SIMGRID_LIB_PATH}/libsimgrid.so ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
+  COMMAND strip --strip-debug ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}/libsimgrid.so
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/lib/libSG_java.so ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
+  COMMAND strip --strip-debug ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}/libSG_java.so
   COMMENT "Compiling java sources of core library..."					
 )
 
