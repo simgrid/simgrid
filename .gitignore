@@ -102,13 +102,6 @@ doc/dev_guide/html
 doc/dev_guide/latex
 doc/index.php
 doc/simgrid.tag
-doc/publis_core.bib
-doc/publis_core_bib.html
-doc/publis_count.html
-doc/publis_extern.bib
-doc/publis_extern_bib.html
-doc/publis_intra.bib
-doc/publis_intra_bib.html
 doc/ref_guide/doxygen/RefGuideDoxyfile
 doc/user_guide/doxygen/UserGuideDoxyfile
 doc/dev_guide/doxygen/DevGuideDoxyfile
