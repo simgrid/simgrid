@@ -23,8 +23,16 @@ static int match_recv(void* a, void* b, smx_action_t ignored) {
 
   xbt_assert(ref, "Cannot match recv against null reference");
   xbt_assert(req, "Cannot match recv against null request");
-  return (ref->src == MPI_ANY_SOURCE || req->src == ref->src)
-    && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag);
+  if((ref->src == MPI_ANY_SOURCE || req->src == ref->src)
+    && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag)){
+    //we match, we can transfer some values
+    // FIXME : move this to the copy function ?
+    if(ref->src == MPI_ANY_SOURCE)ref->real_src = req->src;
+    if(ref->tag == MPI_ANY_TAG)ref->real_tag = req->tag;
+    if(ref->real_size < req->real_size) ref->truncated = 1;
+    else ref->truncated = 0;
+    return 1;
+  }else return 0;
 }
 
 static int match_send(void* a, void* b,smx_action_t ignored) {
@@ -33,8 +41,16 @@ static int match_send(void* a, void* b,smx_action_t ignored) {
    XBT_DEBUG("Trying to match a send of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
    xbt_assert(ref, "Cannot match send against null reference");
    xbt_assert(req, "Cannot match send against null request");
-   return (req->src == MPI_ANY_SOURCE || req->src == ref->src)
-          && (req->tag == MPI_ANY_TAG || req->tag == ref->tag);
+
+   if((req->src == MPI_ANY_SOURCE || req->src == ref->src)
+             && (req->tag == MPI_ANY_TAG || req->tag == ref->tag))
+   {
+     if(req->src == MPI_ANY_SOURCE)req->real_src = ref->src;
+     if(req->tag == MPI_ANY_TAG)req->real_tag = ref->tag;
+     if(req->real_size < ref->real_size) req->truncated = 1;
+     else ref->truncated = 0;
+     return 1;
+   } else return 0;
 }
 
 static MPI_Request build_request(void *buf, int count,
@@ -156,9 +172,9 @@ void smpi_mpi_start(MPI_Request request)
       mailbox = smpi_process_mailbox_small();
     else
       mailbox = smpi_process_mailbox();
-
-    // FIXME: SIMIX does not yet support non-contiguous datatypes
-    request->action = simcall_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
+    // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
+    request->real_size=request->size;
+    request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
     if (request->action)request->action->comm.refcount++;
   } else {
 
@@ -186,10 +202,12 @@ void smpi_mpi_start(MPI_Request request)
       }
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     }
+    // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
+    request->real_size=request->size;
 
     request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
-                         request->buf, request->size,
+                         request->buf, request->real_size,
                          &match_send,
                          &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
                          request,
@@ -311,33 +329,29 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
-  // if we have a sender, we should use its data, and not the data from the receive
-  //FIXME : may fail if req->action has already been freed, the pointer being invalid
-  if((req->action)&&
-     (req->src==MPI_ANY_SOURCE || req->tag== MPI_ANY_TAG))
-    //req = (MPI_Request)SIMIX_comm_get_src_data((*request)->action);
 
   if(status != MPI_STATUS_IGNORE) {
-    status->MPI_SOURCE = req->src;
-    status->MPI_TAG = req->tag;
-    //if((*request)->action && ((MPI_Request)SIMIX_comm_get_src_data((*request)->action))->size == (*request)->size)
-    status->MPI_ERROR = MPI_SUCCESS;
-    //else status->MPI_ERROR = MPI_ERR_TRUNCATE;
+    status->MPI_SOURCE = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
+    status->MPI_TAG = req->tag == MPI_ANY_TAG ? req->real_tag : req->tag;
+    if(req->truncated)
+    status->MPI_ERROR = MPI_ERR_TRUNCATE;
+    else status->MPI_ERROR = MPI_SUCCESS ;
     // this handles the case were size in receive differs from size in send
     // FIXME: really this should just contain the count of receive-type blocks,
     // right?
-    status->count = req->size;
+    status->count = req->real_size;
   }
   req = *request;
 
   print_request("Finishing", req);
   MPI_Datatype datatype = req->old_type;
+
   if(datatype->has_subtype == 1){
       // This part handles the problem of non-contignous memory
       // the unserialization at the reception
     s_smpi_subtype_t *subtype = datatype->substruct;
     if(req->flags & RECV) {
-      subtype->unserialize(req->buf, req->old_buf, req->size/smpi_datatype_size(datatype) , datatype->substruct);
+      subtype->unserialize(req->buf, req->old_buf, req->real_size/smpi_datatype_size(datatype) , datatype->substruct);
     }
     if(req->detached == 0) free(req->buf);
   }
@@ -365,7 +379,6 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
 
     if(req->action){
       //if we want to free our request, we have to invalidate it at the other end of the comm
-
       if(req->flags & SEND){
         req->action->comm.src_data=MPI_REQUEST_NULL;
       }else{
@@ -507,7 +520,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
       status->MPI_SOURCE = req->src;
       status->MPI_TAG = req->tag;
       status->MPI_ERROR = MPI_SUCCESS;
-      status->count = req->size;
+      status->count = req->real_size;
     }
   }
   else *flag = 0;
