@@ -159,6 +159,7 @@ void smpi_mpi_start(MPI_Request request)
 
     // FIXME: SIMIX does not yet support non-contiguous datatypes
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
+    if (request->action)request->action->comm.refcount++;
   } else {
 
     int receiver = smpi_group_index(smpi_comm_group(request->comm), request->dst);
@@ -194,6 +195,7 @@ void smpi_mpi_start(MPI_Request request)
                          request,
                          // detach if msg size < eager/rdv switch limit
                          request->detached);
+    if (request->action)request->action->comm.refcount++;
 
 #ifdef HAVE_TRACING
     /* FIXME: detached sends are not traceable (request->action == NULL) */
@@ -310,10 +312,10 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
   // if we have a sender, we should use its data, and not the data from the receive
-  //FIXME : mail fail if req->action has already been freed, the pointer being invalid
+  //FIXME : may fail if req->action has already been freed, the pointer being invalid
   if((req->action)&&
      (req->src==MPI_ANY_SOURCE || req->tag== MPI_ANY_TAG))
-    req = (MPI_Request)SIMIX_comm_get_src_data((*request)->action);
+    //req = (MPI_Request)SIMIX_comm_get_src_data((*request)->action);
 
   if(status != MPI_STATUS_IGNORE) {
     status->MPI_SOURCE = req->src;
@@ -343,7 +345,8 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
 
 
   if(req->flags & NON_PERSISTENT) {
-    if(req->action &&
+    if(req->flags & RECV &&
+       req->action &&
       (req->action->state == SIMIX_DONE))
     {
       MPI_Request sender_request = (MPI_Request)SIMIX_comm_get_src_data(req->action);
@@ -358,8 +361,29 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
         smpi_mpi_request_free(&sender_request);
       }
     }
+
+
+    if(req->action){
+      //if we want to free our request, we have to invalidate it at the other end of the comm
+
+      if(req->flags & SEND){
+        req->action->comm.src_data=MPI_REQUEST_NULL;
+      }else{
+        req->action->comm.dst_data=MPI_REQUEST_NULL;
+      }
+
+      smx_action_t temp=req->action;
+      if(req->action->comm.refcount == 1)req->action = NULL;
+      SIMIX_comm_destroy(temp);
+    }
+
+
+
     smpi_mpi_request_free(request);
+
+
   } else {
+    if(req->action)SIMIX_comm_destroy(req->action);
     req->action = NULL;
   }
 }
