@@ -54,10 +54,10 @@ void xbt_mallocator_initialization_is_done(void) {
 
 /** used by the module to know if it's time to activate the mallocators yet */
 static XBT_INLINE int xbt_mallocator_is_active(void) {
-#ifndef MALLOCATOR_COMPILED_IN
-  return 0;
-#else
+#if MALLOCATOR_COMPILED_IN
   return initialization_done && !MC_is_active();
+#else
+  return 0;
 #endif
 }
 
