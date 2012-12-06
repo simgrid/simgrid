@@ -5,7 +5,6 @@
 # doc
 file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/shared/doxygen/)
 file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/)
-file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/)
 
 install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/"
   DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/ref_guide/html/"

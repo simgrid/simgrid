@@ -6,17 +6,6 @@ file(GLOB_RECURSE source_doxygen
   )
 
 if(FIG2DEV_PATH)
-  set(DOC_PNGS
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
-    )
 
   configure_file(${CMAKE_HOME_DIRECTORY}/doc/doxygen/UserGuideDoxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/doxygen/UserGuideDoxyfile @ONLY)
 

@@ -18,8 +18,16 @@ if(DOXYGEN_PATH)
   include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDevGuide.cmake)
 
   set(DOC_PNGS
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_modules.png
     ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
     ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
     )
 
   configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
@@ -44,8 +52,10 @@ if(DOXYGEN_PATH)
     )
 
   ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
-    COMMAND ${CMAKE_COMMAND} -E echo "XX Doxygen pass"
+    COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
     COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
+    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
 
@@ -71,7 +81,6 @@ if(DOXYGEN_PATH)
     add_dependencies(simgrid_documentation error_doxygen)
   else()
     add_dependencies(simgrid_documentation ref_guide)
-    add_dependencies(simgrid_documentation user_guide)
     add_dependencies(simgrid_documentation dev_guide)
   endif()
 
@@ -85,13 +94,9 @@ endif()
 add_custom_target(sync-gforge-doc
   COMMAND chmod g+rw -R doc/
   COMMAND chmod a+rX -R doc/
-  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ || true
-  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/ || true
-  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/ || true
-  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/dev_guide/ || true
-  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/html/ || true
-  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/html/ || true
-  COMMAND ssh scm.gforge.inria.fr mkdir /home/groups/simgrid/htdocs/simgrid/${release_version}/dev_guide/html/ || true
+  COMMAND ssh scm.gforge.inria.fr mkdir -p /home/groups/simgrid/htdocs/simgrid/${release_version}/user_guide/html/ || true
+  COMMAND ssh scm.gforge.inria.fr mkdir -p /home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/html/ || true
+  COMMAND ssh scm.gforge.inria.fr mkdir -p /home/groups/simgrid/htdocs/simgrid/${release_version}/dev_guide/html/ || true
 
   COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times
   doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true

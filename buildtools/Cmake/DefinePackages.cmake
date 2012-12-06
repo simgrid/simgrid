@@ -507,9 +507,8 @@ set(DOC_SOURCES
   doc/simix.fig
   doc/surf_nutshell.fig
   doc/Doxyfile.in
-  doc/index.doc
   doc/simgrid.css
-  doc/SimgridDoxygenLayout.xml
+  doc/Layout.xml
   doc/triva-graph_configuration.png
   doc/triva-graph_visualization.png
   doc/triva-time_interval.png

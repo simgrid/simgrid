@@ -41,7 +41,7 @@ PROJECT_NUMBER         = @release_version@
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "Scalable simulation of distributed systems"
+PROJECT_BRIEF          = "Versatile Simulation of Distributed Systems"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is
 # included in the documentation. The maximum height of the logo should not
@@ -586,7 +586,7 @@ FILE_VERSION_FILTER    =
 # You can optionally specify a file name after the option, if omitted
 # DoxygenLayout.xml will be used as the name of the layout file.
 
-LAYOUT_FILE            = SimgridDoxygenLayout.xml
+LAYOUT_FILE            = Layout.xml
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files
 # containing the references data. This must be a list of .bib files. The
@@ -658,8 +658,56 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = index.doc
-                         
+INPUT                  = doxygen/index.doc \
+                         doxygen/getting_started.doc \
+                         doxygen/introduction.doc \
+                         doxygen/install.doc \
+                         doxygen/use.doc \   
+                           doxygen/platform.doc \
+                           doxygen/deployment.doc \
+                           doxygen/options.doc \
+                           doxygen/help.doc \
+ 			 doxygen/advanced.doc \
+                           doxygen/pls.doc \
+                           doxygen/bindings.doc \
+			   doxygen/internals.doc \
+			   doxygen/involved.doc \
+                         doxygen/examples.doc \            
+                         doxygen/tracing.doc \
+			 doxygen/FAQ.doc
+
+###################################################
+##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
+###################################################
+
+INPUT +=                 @top_srcdir@/examples/msg/sendrecv/sendrecv.c \
+                         @top_srcdir@/examples/msg/masterslave/masterslave_forwarder.c \
+                         @top_srcdir@/examples/msg/masterslave/masterslave_console.c \
+                         @top_srcdir@/examples/msg/migration \
+                         @top_srcdir@/examples/msg/suspend \
+                         @top_srcdir@/examples/msg/properties \
+                         @top_srcdir@/examples/msg/parallel_task \
+                         @top_srcdir@/examples/msg/priority \
+                         @top_srcdir@/examples/msg/icomms/peer.c \
+                         @top_srcdir@/examples/msg/icomms/peer2.c \
+                         @top_srcdir@/examples/msg/icomms/peer3.c \
+                         @top_srcdir@/examples/msg/tracing/simple.c \
+                         @top_srcdir@/examples/msg/tracing/ms.c \
+                         @top_srcdir@/examples/msg/tracing/categories.c \
+                         @top_srcdir@/examples/msg/tracing/procmig.c \
+                         @top_srcdir@/examples/msg/tracing/trace_platform.c \
+                         @top_srcdir@/examples/msg/tracing/user_variables.c \
+                         @top_srcdir@/examples/msg/tracing/link_user_variables.c \
+                         @top_srcdir@/examples/msg/tracing/link_srcdst_user_variables.c \
+                         @top_srcdir@/examples/msg/ns3 \
+                         @top_srcdir@/examples/msg/gtnets \
+                         @top_srcdir@/examples/msg/io \
+                         @top_srcdir@/examples/msg/gpu \
+                         @top_srcdir@/examples/msg/actions \
+                         @top_srcdir@/examples/msg/token_ring \
+                         @top_srcdir@/examples/msg/pmm \
+                         @top_srcdir@/examples/msg/chord
+
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
 # also the default input encoding. Doxygen uses libiconv (or the iconv built
@@ -742,7 +790,8 @@ EXAMPLE_RECURSIVE      = YES
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = @top_srcdir@/doc
+IMAGE_PATH             = @top_srcdir@/doc \
+                         @top_srcdir@/doc/webcruft
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -891,13 +940,13 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            =
+HTML_HEADER            = doxygen/header.html 
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            = 
+HTML_FOOTER            = doxygen/footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -906,7 +955,7 @@ HTML_FOOTER            =
 # the style sheet file to the HTML output directory, so don't put your own
 # style sheet in the HTML output directory as well, or it will be erased!
 
-HTML_STYLESHEET        =
+HTML_STYLESHEET        = doxygen/stylesheet.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1122,7 +1171,7 @@ ECLIPSE_DOC_ID         = org.doxygen.Project
 # navigation tree you can set this option to NO if you already set
 # GENERATE_TREEVIEW to YES.
 
-DISABLE_INDEX          = NO
+DISABLE_INDEX          = YES
 
 # The GENERATE_TREEVIEW tag is used to specify whether a tree-like index
 # structure should be generated to display hierarchical information.
@@ -1134,7 +1183,7 @@ DISABLE_INDEX          = NO
 # Since the tree basically has the same information as the tab index you
 # could consider to set DISABLE_INDEX to NO when enabling this option.
 
-GENERATE_TREEVIEW      = NO
+GENERATE_TREEVIEW      = YES
 
 # The ENUM_VALUES_PER_LINE tag can be used to set the number of enum values
 # (range [0,1..20]) that doxygen will group on one line in the generated HTML
@@ -1300,7 +1349,7 @@ LATEX_BATCHMODE        = NO
 # include the index chapters (such as File Index, Compound Index, etc.)
 # in the output.
 
-LATEX_HIDE_INDICES     = NO
+LATEX_HIDE_INDICES     = YES
 
 # If LATEX_SOURCE_CODE is set to YES then doxygen will include
 # source code with syntax highlighting in the LaTeX output.
@@ -1556,13 +1605,13 @@ SKIP_FUNCTION_MACROS   = YES
 # doxygen is run, you must also specify the path to the tagfile here.
 
 TAGFILES               = shared/doxygen/simgridrefguide.tag=ref_guide/html/ \ 
-                         shared/doxygen/simgriduserguide.tag=user_guide/html/ \
                          shared/doxygen/simgriddevguide.tag=dev_guide/html/
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = simgrid.tag 
+#GENERATE_TAGFILE       = simgrid.tag 
+GENERATE_TAGFILE       = 
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes
