@@ -207,7 +207,6 @@ set(source_to_pack
   ${DOC_IMG}
   ${DOC_SOURCES}
   ${DOC_TOOLS}
-  ${USER_GUIDE_SOURCES}
   ${PLATFORMS_EXAMPLES}
   ${README_files}
   ${bin_files}

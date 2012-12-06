@@ -512,29 +512,9 @@ set(DOC_SOURCES
   doc/triva-graph_configuration.png
   doc/triva-graph_visualization.png
   doc/triva-time_interval.png
-  )
-
-set(DOC_FIGS
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
-  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
-  )
   
-set(DOC_SHARED_TAG
-  doc/shared/doxygen/simgridrefguide.tag
-  )
-  
-set(DOC_TOOLS
-  tools/doxygen/fig2dev_postprocessor.pl
-  tools/doxygen/index_create.pl
-  tools/doxygen/xbt_log_extract_hierarchy.pl
-  )
-
-
-set(USER_GUIDE_SOURCES
-  doc/doxygen/footer.html
+    doc/doxygen/footer.html
   doc/doxygen/header.html
-  doc/doxygen/UserGuideDoxyfile.in
-  doc/doxygen/UserGuideDoxygenLayout.xml
   doc/doxygen/stylesheet.css
   
   doc/doxygen/index.doc
@@ -543,7 +523,6 @@ set(USER_GUIDE_SOURCES
   doc/doxygen/use.doc
   doc/doxygen/bindings.doc
   doc/doxygen/deployment.doc
-  doc/doxygen/examples.doc
   doc/doxygen/install.doc
   doc/doxygen/options.doc
   doc/doxygen/platform.doc
@@ -562,15 +541,30 @@ set(USER_GUIDE_SOURCES
     doc/doxygen/module-surf.doc
     doc/doxygen/module-trace.doc
     doc/doxygen/module-xbt.doc
+
   )
-    
+
+set(DOC_FIGS
+  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
+  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
+  )
+  
+set(DOC_SHARED_TAG
+  doc/shared/doxygen/simgridrefguide.tag
+  )
+  
+set(DOC_TOOLS
+  tools/doxygen/fig2dev_postprocessor.pl
+  tools/doxygen/index_create.pl
+  tools/doxygen/xbt_log_extract_hierarchy.pl
+  )
+
 
 set(DOC_IMG
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/README
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
@@ -687,9 +681,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Flags.cmake
   buildtools/Cmake/GenerateDoc.cmake
   buildtools/Cmake/GenerateDocWin.cmake
-  buildtools/Cmake/GenerateRefGuide.cmake
-  buildtools/Cmake/GenerateUserGuide.cmake
-  buildtools/Cmake/GenerateDevGuide.cmake
   buildtools/Cmake/MaintainerMode.cmake
   buildtools/Cmake/MakeExe.cmake
   buildtools/Cmake/MakeLib.cmake
