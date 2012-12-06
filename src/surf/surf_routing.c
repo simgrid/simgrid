@@ -10,8 +10,6 @@
 #include "surf/surf_routing.h"
 #include "surf/surfxml_parse_values.h"
 
-#include <pcre.h>               /* regular expression library */
-
 /**
  * @ingroup SURF_build_api
  * @brief A library containing all known workstations

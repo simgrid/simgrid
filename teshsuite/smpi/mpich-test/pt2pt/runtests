@@ -264,8 +264,8 @@ RunTest exittest 3 "**** Checking Exit Processing ****"
 
 #uses MPI_Errors
 #RunTest trunc 2 "*** Testing Message truncation ***"
-#TODO: handle MPI_ERR_IN_STATUS
-#RunTest truncmult 2 '*** Testing Message trunction in multiple completions ***'
+
+RunTest truncmult 2 '*** Testing Message trunction in multiple completions ***'
 
 RunTest nullproc 2 "*** Testing handling of MPI_PROC_NULL ***"
 

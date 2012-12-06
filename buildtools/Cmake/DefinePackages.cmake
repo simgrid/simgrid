@@ -83,6 +83,9 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
   src/xbt/setset_private.h
+  src/win32/config.h
+  src/xbt/win32_ucontext.c
+  include/xbt/win32_ucontext.h
   tools/tesh/run_context.h
   tools/tesh/tesh.h
   )

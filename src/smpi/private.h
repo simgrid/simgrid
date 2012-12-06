@@ -58,6 +58,12 @@ typedef struct s_smpi_mpi_request {
   int src;
   int dst;
   int tag;
+  //to handle cases where we have an unknown sender
+  //We can't override src, tag, and size, because the request may be reused later
+  int real_src;
+  int real_tag;
+  int truncated;
+  size_t real_size;
   MPI_Comm comm;
   smx_action_t action;
   unsigned flags;

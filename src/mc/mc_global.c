@@ -1718,6 +1718,7 @@ static void MC_get_global_variables(char *elf_file){
        || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".data") == 0)
        || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".bss") == 0)
        || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "stderr", 6) == 0)
+       || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "counter", 7) == 0)
        || ((size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16) == 0))
       continue;
 

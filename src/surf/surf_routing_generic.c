@@ -10,8 +10,6 @@
 #include "surf/surf_routing.h"
 #include "surf/surfxml_parse_values.h"
 
-#include <pcre.h>               /* regular expression library */
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
 static int no_bypassroute_declared = 1;
