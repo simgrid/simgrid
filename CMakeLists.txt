@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
 
-SET(CMAKE_BUILD_TYPE ModelChecker)
 IF(CMAKE_BUILD_TYPE STREQUAL "ModelChecker") 
   SET(enable_coverage ON)
   SET(enable_model-checking ON)
