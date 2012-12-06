@@ -1,18 +1,28 @@
 /*! \page use Using SimGrid
 
-SimGrid comes with many examples provided in the examples/ directory. Those examples are described in section \ref MSG_examples . Those examples are commented and should be easy to understand. for a first step into SimGrid we also provide some more detailed examples in the sections below. 
+This page is under work -- sorry for the inconvinience (FIXME).
+
+- @subpage platform
+- @subpage deployment
+- @subpage tracing
+- @subpage options
+- @subpage help
+
+SimGrid comes with many examples provided in the examples/ directory.
+Those examples are described in section \ref MSG_examples . Those
+examples are commented and should be easy to understand. for a first
+step into SimGrid we also provide some more detailed examples in the
+sections below. 
 
 \htmlonly
 You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a generic tutorial about using SimGrid. 
 \endhtmlonly
 
-
 \section using_msg Using MSG
+
 \htmlonly
 You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
 \endhtmlonly
-
-
 
 Here are some examples on how to use MSG, the most used API.
 

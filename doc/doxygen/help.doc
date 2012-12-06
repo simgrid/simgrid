@@ -1,0 +1,23 @@
+/*! @page help Getting help
+
+If you are new to the SimGrid framework, you should first strive at
+reading the current documentation and studying the provided examples.
+But if a question remains, don't hesitate to ask to the community. You
+have several ways of doing so:
+
+ - Ask your question to the
+   <a href="mailto:simgrid-user@lists.gforge.inria.fr">User Mailing list</a>
+ - Asking your quetion on Stack Overflow is also a good idea, as this
+   site is very well indexed. We answer questions there too (don't
+   forget to use the SimGrid tag in your question so that we can see
+   it), and they remain usable for the next users.
+ - If your question is about the internals and not about using
+   SimGrid, you may prefer to send your question to the 
+   <a href="mailto:simgrid-devel@lists.gforge.inria.fr">Developers Mailing list</a>
+ - Join us on IRC and ask your question directly on the chanel \#simgrid at
+   irc.debian.org. Be warned that even if many people are connected to
+   the chanel, they may be doing some useful stuff instead of lurking
+   on IRC. So don't be surprised if you don't get an answer in the
+   second, and turn to the mailing lists if nobody seems to be there.
+
+*/

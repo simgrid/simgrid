@@ -659,15 +659,22 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = index.doc \
+                         getting_started.doc \
+                         introduction.doc \
                          install.doc \
                          use.doc \   
+                           platform.doc \
+                           deployment.doc \
+                           options.doc \
+                           help.doc \
+ 			 advanced.doc \
+                           pls.doc \
+                           bindings.doc \
+			   internals.doc \
+			   involved.doc \
                          examples.doc \            
-                         options.doc \
-                         platform.doc \
-                         deployment.doc \
                          tracing.doc \
-                         pls.doc \
-                         bindings.doc
+			 FAQ.doc
 			 
 
 ###################################################
@@ -784,7 +791,8 @@ EXAMPLE_RECURSIVE      = YES
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = @top_srcdir@/doc
+IMAGE_PATH             = @top_srcdir@/doc \
+                         @top_srcdir@/doc/webcruft
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -1597,12 +1605,12 @@ SKIP_FUNCTION_MACROS   = YES
 # NOT include the path). If a tag file is not located in the directory in which
 # doxygen is run, you must also specify the path to the tagfile here.
 
-TAGFILES               = ../../shared/doxygen/simgridrefguide.tag=../../ref_guide/html/
+TAGFILES               = ../shared/doxygen/simgridrefguide.tag=../../ref_guide/html/
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = ../../shared/doxygen/simgriduserguide.tag
+GENERATE_TAGFILE       = ../shared/doxygen/simgriduserguide.tag
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes

@@ -1,5 +1,5 @@
 
-#               @WARNING@
+#               
 
 # Doxyfile 1.8.1
 
@@ -35,27 +35,27 @@ PROJECT_NAME           = SimGrid
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER         = @release_version@
+PROJECT_NUMBER         = 3.9
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "Scalable simulation of distributed systems"
+PROJECT_BRIEF          = "Scalable Simulation of Distributed Systems - User Guide"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is
 # included in the documentation. The maximum height of the logo should not
 # exceed 55 pixels and the maximum width should not exceed 200 pixels.
 # Doxygen will copy the logo to the output directory.
 
-PROJECT_LOGO           =
+PROJECT_LOGO           = 
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = ./
+OUTPUT_DIRECTORY       = ../
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -131,7 +131,7 @@ FULL_PATH_NAMES        = YES
 # If left blank the directory from which doxygen is run is used as the
 # path to strip.
 
-STRIP_FROM_PATH        = @srcdir@
+STRIP_FROM_PATH        = /home/mquinson/Code/simgrid/src
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of
 # the path mentioned in the documentation of a class, which tells
@@ -203,7 +203,7 @@ ALIASES                =
 # "class=itcl::class" will allow you to use the command class in the
 # itcl::class meaning.
 
-TCL_SUBST              =
+#TCL_SUBST              =
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C
 # sources only. Doxygen will then generate output that is more tailored for C.
@@ -250,7 +250,7 @@ EXTENSION_MAPPING      =
 # can mix doxygen, HTML, and XML commands with Markdown formatting.
 # Disable only in case of backward compatibilities issues.
 
-MARKDOWN_SUPPORT       = YES
+#MARKDOWN_SUPPORT       = YES
 
 # If you use STL classes (i.e. std::string, std::vector, etc.) but do not want
 # to include (a tag file for) the STL sources as input, then you should
@@ -310,7 +310,7 @@ INLINE_GROUPED_CLASSES = NO
 # structs, classes, and unions are shown on a separate page (for HTML and Man
 # pages) or section (for LaTeX and RTF).
 
-INLINE_SIMPLE_STRUCTS  = NO
+#INLINE_SIMPLE_STRUCTS  = NO
 
 # When TYPEDEF_HIDES_STRUCT is enabled, a typedef of a struct, union, or enum
 # is documented as struct, union, or enum with the name of the typedef. So
@@ -347,7 +347,7 @@ SYMBOL_CACHE_SIZE      = 0
 # formula: 2^(16+LOOKUP_CACHE_SIZE). The valid range is 0..9, the default is 0,
 # corresponding to a cache size of 2^16 = 65536 symbols.
 
-LOOKUP_CACHE_SIZE      = 0
+#LOOKUP_CACHE_SIZE      = 0
 
 #---------------------------------------------------------------------------
 # Build related configuration options
@@ -367,7 +367,7 @@ EXTRACT_PRIVATE        = NO
 
 # If the EXTRACT_PACKAGE tag is set to YES all members with package or internal scope will be included in the documentation.
 
-EXTRACT_PACKAGE        = NO
+#EXTRACT_PACKAGE        = NO
 
 # If the EXTRACT_STATIC tag is set to YES all static members of a file
 # will be included in the documentation.
@@ -586,7 +586,7 @@ FILE_VERSION_FILTER    =
 # You can optionally specify a file name after the option, if omitted
 # DoxygenLayout.xml will be used as the name of the layout file.
 
-LAYOUT_FILE            = SimgridDoxygenLayout.xml
+LAYOUT_FILE            = UserGuideDoxygenLayout.xml
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files
 # containing the references data. This must be a list of .bib files. The
@@ -596,7 +596,7 @@ LAYOUT_FILE            = SimgridDoxygenLayout.xml
 # of the bibliography can be controlled using LATEX_BIB_STYLE. To use this
 # feature you need bibtex and perl available in the search path.
 
-CITE_BIB_FILES         =
+#CITE_BIB_FILES         =
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -658,8 +658,57 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = index.doc
-                         
+INPUT                  = index.doc \
+                         getting_started.doc \
+                         introduction.doc \
+                         install.doc \
+                         use.doc \   
+                           platform.doc \
+                           deployment.doc \
+                           options.doc \
+                           help.doc \
+ 			 advanced.doc \
+                           pls.doc \
+                           bindings.doc \
+			   internals.doc \
+			   involved.doc \
+                         examples.doc \            
+                         tracing.doc \
+			 FAQ.doc
+			 
+
+###################################################
+##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
+###################################################
+
+INPUT +=                 /home/mquinson/Code/simgrid/examples/msg/sendrecv/sendrecv.c \
+                         /home/mquinson/Code/simgrid/examples/msg/masterslave/masterslave_forwarder.c \
+                         /home/mquinson/Code/simgrid/examples/msg/masterslave/masterslave_console.c \
+                         /home/mquinson/Code/simgrid/examples/msg/migration \
+                         /home/mquinson/Code/simgrid/examples/msg/suspend \
+                         /home/mquinson/Code/simgrid/examples/msg/properties \
+                         /home/mquinson/Code/simgrid/examples/msg/parallel_task \
+                         /home/mquinson/Code/simgrid/examples/msg/priority \
+                         /home/mquinson/Code/simgrid/examples/msg/icomms/peer.c \
+                         /home/mquinson/Code/simgrid/examples/msg/icomms/peer2.c \
+                         /home/mquinson/Code/simgrid/examples/msg/icomms/peer3.c \
+                         /home/mquinson/Code/simgrid/examples/msg/tracing/simple.c \
+                         /home/mquinson/Code/simgrid/examples/msg/tracing/ms.c \
+                         /home/mquinson/Code/simgrid/examples/msg/tracing/categories.c \
+                         /home/mquinson/Code/simgrid/examples/msg/tracing/procmig.c \
+                         /home/mquinson/Code/simgrid/examples/msg/tracing/trace_platform.c \
+                         /home/mquinson/Code/simgrid/examples/msg/tracing/user_variables.c \
+                         /home/mquinson/Code/simgrid/examples/msg/tracing/link_user_variables.c \
+                         /home/mquinson/Code/simgrid/examples/msg/tracing/link_srcdst_user_variables.c \
+                         /home/mquinson/Code/simgrid/examples/msg/ns3 \
+                         /home/mquinson/Code/simgrid/examples/msg/gtnets \
+                         /home/mquinson/Code/simgrid/examples/msg/io \
+                         /home/mquinson/Code/simgrid/examples/msg/gpu \
+                         /home/mquinson/Code/simgrid/examples/msg/actions \
+                         /home/mquinson/Code/simgrid/examples/msg/token_ring \
+                         /home/mquinson/Code/simgrid/examples/msg/pmm \
+                         /home/mquinson/Code/simgrid/examples/msg/chord
+
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
 # also the default input encoding. Doxygen uses libiconv (or the iconv built
@@ -719,10 +768,10 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = ./ \
-                         @top_srcdir@/src/surf/ \
-                         @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/examples \
-                         @top_srcdir@/testsuite
+                         /home/mquinson/Code/simgrid/src/surf/ \
+                         /home/mquinson/Code/simgrid/src/xbt/ \
+                         /home/mquinson/Code/simgrid/examples \
+                         /home/mquinson/Code/simgrid/testsuite
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -742,7 +791,8 @@ EXAMPLE_RECURSIVE      = YES
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = @top_srcdir@/doc
+IMAGE_PATH             = /home/mquinson/Code/simgrid/doc \
+                         /home/mquinson/Code/simgrid/doc/webcruft
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -891,13 +941,13 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            =
+HTML_HEADER            = header.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            = 
+HTML_FOOTER            = footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -906,7 +956,7 @@ HTML_FOOTER            =
 # the style sheet file to the HTML output directory, so don't put your own
 # style sheet in the HTML output directory as well, or it will be erased!
 
-HTML_STYLESHEET        =
+HTML_STYLESHEET        = stylesheet.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -963,7 +1013,7 @@ HTML_DYNAMIC_SECTIONS  = NO
 # default. 0 is a special value representing an infinite number of entries
 # and will result in a full expanded tree by default.
 
-HTML_INDEX_NUM_ENTRIES = 100
+#HTML_INDEX_NUM_ENTRIES = 100
 
 # If the GENERATE_DOCSET tag is set to YES, additional index files
 # will be generated that can be used as input for Apple's Xcode 3
@@ -1122,7 +1172,7 @@ ECLIPSE_DOC_ID         = org.doxygen.Project
 # navigation tree you can set this option to NO if you already set
 # GENERATE_TREEVIEW to YES.
 
-DISABLE_INDEX          = NO
+DISABLE_INDEX          = YES
 
 # The GENERATE_TREEVIEW tag is used to specify whether a tree-like index
 # structure should be generated to display hierarchical information.
@@ -1134,7 +1184,7 @@ DISABLE_INDEX          = NO
 # Since the tree basically has the same information as the tab index you
 # could consider to set DISABLE_INDEX to NO when enabling this option.
 
-GENERATE_TREEVIEW      = NO
+GENERATE_TREEVIEW      = YES
 
 # The ENUM_VALUES_PER_LINE tag can be used to set the number of enum values
 # (range [0,1..20]) that doxygen will group on one line in the generated HTML
@@ -1194,7 +1244,7 @@ MATHJAX_RELPATH        = http://www.mathjax.org/mathjax
 # The MATHJAX_EXTENSIONS tag can be used to specify one or MathJax extension
 # names that should be enabled during MathJax rendering.
 
-MATHJAX_EXTENSIONS     =
+#MATHJAX_EXTENSIONS     =
 
 # When the SEARCHENGINE tag is enabled doxygen will generate a search box
 # for the HTML output. The underlying search engine uses javascript
@@ -1300,7 +1350,7 @@ LATEX_BATCHMODE        = NO
 # include the index chapters (such as File Index, Compound Index, etc.)
 # in the output.
 
-LATEX_HIDE_INDICES     = NO
+LATEX_HIDE_INDICES     = YES
 
 # If LATEX_SOURCE_CODE is set to YES then doxygen will include
 # source code with syntax highlighting in the LaTeX output.
@@ -1313,7 +1363,7 @@ LATEX_SOURCE_CODE      = NO
 # bibliography, e.g. plainnat, or ieeetr. The default style is "plain". See
 # http://en.wikipedia.org/wiki/BibTeX for more info.
 
-LATEX_BIB_STYLE        = plain
+#LATEX_BIB_STYLE        = plain
 
 #---------------------------------------------------------------------------
 # configuration options related to the RTF output
@@ -1555,14 +1605,12 @@ SKIP_FUNCTION_MACROS   = YES
 # NOT include the path). If a tag file is not located in the directory in which
 # doxygen is run, you must also specify the path to the tagfile here.
 
-TAGFILES               = shared/doxygen/simgridrefguide.tag=ref_guide/html/ \ 
-                         shared/doxygen/simgriduserguide.tag=user_guide/html/ \
-                         shared/doxygen/simgriddevguide.tag=dev_guide/html/
+TAGFILES               = ../shared/doxygen/simgridrefguide.tag=../../ref_guide/html/
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = simgrid.tag 
+GENERATE_TAGFILE       = ../shared/doxygen/simgriduserguide.tag
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes
@@ -1675,7 +1723,7 @@ UML_LOOK               = NO
 # managable. Set this to 0 for no limit. Note that the threshold may be
 # exceeded by 50% before the limit is enforced.
 
-UML_LIMIT_NUM_FIELDS   = 10
+#UML_LIMIT_NUM_FIELDS   = 10
 
 # If set to YES, the inheritance and collaboration graphs will show the
 # relations between templates and their instances.
@@ -1739,7 +1787,7 @@ DOT_IMAGE_FORMAT       = png
 # need to set HTML_FILE_EXTENSION to xhtml in order to make the SVG files
 # visible. Older versions of IE do not have SVG support.
 
-INTERACTIVE_SVG        = NO
+#INTERACTIVE_SVG        = NO
 
 # The tag DOT_PATH can be used to specify the path where the dot tool can be
 # found. If left blank, it is assumed the dot tool can be found in the path.

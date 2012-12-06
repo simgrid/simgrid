@@ -507,7 +507,6 @@ set(DOC_SOURCES
   doc/simix.fig
   doc/surf_nutshell.fig
   doc/Doxyfile.in
-  doc/FAQ.doc
   doc/index.doc
   doc/simgrid.css
   doc/SimgridDoxygenLayout.xml
@@ -535,21 +534,25 @@ set(DOC_TOOLS
 
 
 set(USER_GUIDE_SOURCES
-  doc/user_guide/doxygen/footer.html
-  doc/user_guide/doxygen/header.html
-  doc/user_guide/doxygen/UserGuideDoxyfile.in
-  doc/user_guide/doxygen/UserGuideDoxygenLayout.xml
-  doc/user_guide/doxygen/bindings.doc
-  doc/user_guide/doxygen/deployment.doc
-  doc/user_guide/doxygen/examples.doc
-  doc/user_guide/doxygen/index.doc
-  doc/user_guide/doxygen/install.doc
-  doc/user_guide/doxygen/options.doc
-  doc/user_guide/doxygen/platform.doc
-  doc/user_guide/doxygen/pls.doc
-  doc/user_guide/doxygen/tracing.doc
-  doc/user_guide/doxygen/use.doc
-  doc/user_guide/doxygen/stylesheet.css
+  doc/doxygen/footer.html
+  doc/doxygen/header.html
+  doc/doxygen/UserGuideDoxyfile.in
+  doc/doxygen/UserGuideDoxygenLayout.xml
+  doc/doxygen/bindings.doc
+  doc/doxygen/deployment.doc
+  doc/doxygen/examples.doc
+  doc/doxygen/index.doc
+  doc/doxygen/install.doc
+  doc/doxygen/options.doc
+  doc/doxygen/platform.doc
+  doc/doxygen/pls.doc
+  doc/doxygen/tracing.doc
+  doc/doxygen/use.doc
+  doc/doxygen/FAQ.doc
+  doc/doxygen/getting_started.doc
+  doc/doxygen/introduction.doc
+  doc/doxygen/advanced.doc
+  doc/doxygen/stylesheet.css
   )
     
 set(REF_GUIDE_SOURCES
