@@ -92,6 +92,8 @@ static MPI_Request build_request(void *buf, int count,
   request->send = 0;
   request->recv = 0;
 #endif
+  if (flags & SEND) smpi_datatype_unuse(datatype);
+
   return request;
 }
 
@@ -174,6 +176,7 @@ void smpi_mpi_start(MPI_Request request)
       mailbox = smpi_process_mailbox();
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
+    smpi_datatype_use(request->old_type);
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
     if (request->action)request->action->comm.refcount++;
   } else {
@@ -204,6 +207,7 @@ void smpi_mpi_start(MPI_Request request)
     }
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
+    smpi_datatype_use(request->old_type);
 
     request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
@@ -355,7 +359,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     }
     if(req->detached == 0) free(req->buf);
   }
-
+  smpi_datatype_unuse(datatype);
 
 
   if(req->flags & NON_PERSISTENT) {
@@ -536,6 +540,7 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
     simcall_comm_wait((*request)->action, -1.0);
     finish_wait(request, status);
   }
+
   // FIXME for a detached send, finish_wait is not called:
 }
 

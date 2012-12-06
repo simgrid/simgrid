@@ -42,6 +42,7 @@ typedef struct s_smpi_mpi_datatype{
   int flags;
   /* this let us know how to serialize and unserialize*/
   void *substruct;
+  int in_use;
 } s_smpi_mpi_datatype_t;
 
 //*****************************************************************************************
@@ -105,6 +106,9 @@ MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype);
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount,
                        MPI_Datatype recvtype);
+void smpi_datatype_use(MPI_Datatype type);
+void smpi_datatype_unuse(MPI_Datatype type);
+
 int smpi_datatype_contiguous(int count, MPI_Datatype old_type,
                        MPI_Datatype* new_type);
 int smpi_datatype_vector(int count, int blocklen, int stride,

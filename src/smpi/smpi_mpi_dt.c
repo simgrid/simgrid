@@ -295,14 +295,35 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int h
   new_t->ub = ub;
   new_t->flags = flags;
   new_t->substruct = struct_type;
+  new_t->in_use=0;
   *new_type = new_t;
 }
 
 void smpi_datatype_free(MPI_Datatype* type){
+
+  if((*type)->flags & DT_FLAG_PREDEFINED)return;
+
+  //if still used, mark for deletion
+  if((*type)->in_use!=0){
+      (*type)->flags |=DT_FLAG_DESTROYED;
+      return;
+  }
+
   if ((*type)->has_subtype == 1){
     ((s_smpi_subtype_t *)(*type)->substruct)->subtype_free(type);  
   }
   xbt_free(*type);
+
+}
+
+void smpi_datatype_use(MPI_Datatype type){
+  if(type)type->in_use++;
+}
+
+
+void smpi_datatype_unuse(MPI_Datatype type){
+  if(type && type->in_use-- == 0 && (type->flags & DT_FLAG_DESTROYED))
+    smpi_datatype_free(&type);
 }
 
 int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_type)
