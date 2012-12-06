@@ -3,6 +3,21 @@
 This page does not exist yet, sorry. We are currently refurbishing the
 user documentation -- the internal documentation will follow (FIXME).
 
+There is two main things you want to know about the internals of
+SimGrid. First, you need to understand the component organization, as
+SimGrid is heavily layered, with each level being rather highly
+specialized and optimized toward a task. For that, please keep reading
+this page. If you work actively on the SimGrid project, the second
+point you need to understand is about the infrastructure of the
+SimGrid project, ie how to extend the framework in any way, how the
+automatic tests are run, and so on. These informations are split on
+several pages, as follows:
+
+ - @subpage inside_extending
+ - @subpage inside_cmake
+ - @subpage inside_release
+ - @subpage inside_autotests
+
 
 \htmlonly
 <center>

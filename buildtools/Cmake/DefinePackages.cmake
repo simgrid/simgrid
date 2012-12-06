@@ -520,9 +520,7 @@ set(DOC_FIGS
   )
   
 set(DOC_SHARED_TAG
-  doc/shared/doxygen/simgriddevguide.tag
   doc/shared/doxygen/simgridrefguide.tag
-  doc/shared/doxygen/simgriduserguide.tag
   )
   
 set(DOC_TOOLS
@@ -537,21 +535,26 @@ set(USER_GUIDE_SOURCES
   doc/doxygen/header.html
   doc/doxygen/UserGuideDoxyfile.in
   doc/doxygen/UserGuideDoxygenLayout.xml
+  doc/doxygen/stylesheet.css
+  
+  doc/doxygen/index.doc
+  doc/doxygen/getting_started.doc  
+  doc/doxygen/introduction.doc
+  doc/doxygen/use.doc
   doc/doxygen/bindings.doc
   doc/doxygen/deployment.doc
   doc/doxygen/examples.doc
-  doc/doxygen/index.doc
   doc/doxygen/install.doc
   doc/doxygen/options.doc
   doc/doxygen/platform.doc
   doc/doxygen/pls.doc
   doc/doxygen/tracing.doc
-  doc/doxygen/use.doc
   doc/doxygen/FAQ.doc
-  doc/doxygen/getting_started.doc
-  doc/doxygen/introduction.doc
   doc/doxygen/advanced.doc
-  doc/doxygen/stylesheet.css
+    doc/doxygen/inside_autotests.doc  
+    doc/doxygen/inside_cmake.doc
+    doc/doxygen/inside_extending.doc 
+    doc/doxygen/inside_release.doc
   )
     
 set(REF_GUIDE_SOURCES
@@ -568,18 +571,6 @@ set(REF_GUIDE_SOURCES
   doc/ref_guide/doxygen/RefGuideDoxyfile.in
   doc/ref_guide/doxygen/RefGuideDoxygenLayout.xml
   doc/ref_guide/doxygen/stylesheet.css
-  )
-
-set(DEV_GUIDE_SOURCES
-  doc/dev_guide/doxygen/footer.html
-  doc/dev_guide/doxygen/header.html
-  doc/dev_guide/doxygen/index.doc
-  doc/dev_guide/doxygen/cmake.doc
-  doc/dev_guide/doxygen/simgrid.doc
-  doc/dev_guide/doxygen/xps.doc
-  doc/dev_guide/doxygen/DevGuideDoxyfile.in
-  doc/dev_guide/doxygen/DevGuideDoxygenLayout.xml
-  doc/dev_guide/doxygen/stylesheet.css
   )
 
 set(DOC_IMG

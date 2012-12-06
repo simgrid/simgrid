@@ -671,6 +671,10 @@ INPUT                  = doxygen/index.doc \
                            doxygen/pls.doc \
                            doxygen/bindings.doc \
 			   doxygen/internals.doc \
+			     doxygen/inside_extending.doc \
+			     doxygen/inside_cmake.doc \
+			     doxygen/inside_autotests.doc \
+			     doxygen/inside_release.doc \
 			   doxygen/involved.doc \
                          doxygen/examples.doc \            
                          doxygen/tracing.doc \
@@ -1604,8 +1608,7 @@ SKIP_FUNCTION_MACROS   = YES
 # NOT include the path). If a tag file is not located in the directory in which
 # doxygen is run, you must also specify the path to the tagfile here.
 
-TAGFILES               = shared/doxygen/simgridrefguide.tag=ref_guide/html/ \ 
-                         shared/doxygen/simgriddevguide.tag=dev_guide/html/
+TAGFILES               = shared/doxygen/simgridrefguide.tag=ref_guide/html/ 
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.

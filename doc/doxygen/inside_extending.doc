@@ -1,5 +1,5 @@
 /*! 
-\page simgrid SimGrid Developer Guide - SimGrid
+\page inside_extending Extending SimGrid 
 
 We start to put TAGS in simgrid source code for having tutorials to see where is the important parts ans steps to create:
 \li a new MSG functions or a new API.

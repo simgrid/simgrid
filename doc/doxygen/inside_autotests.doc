@@ -1,17 +1,17 @@
 /*! 
-\page xps SimGrid Developer Guide - XPs
+\page inside_autotests Automatic Testing Infrastructure
 
 \section xps_dev_guide_pipol How to run test in pipol?
 
 In order to use PIPOL you have to create your account here: http://pipol.inria.fr/
 
-\subsection xps_dev_guide_pipol_general What is PIPOL?
+\subsection inside_autotests_dev_guide_pipol_general What is PIPOL?
 
 The PIPOL platform is a porting, testing and compilation cluster. It hosts several hardware and software
 architectures to perform its work. An user can reserve a resource (a specific hardware, an operating system...)
 to be used interactively or automatically (with a "Nightly Builds" system) for software testing.
 
-\subsection xps_dev_guide_pipol_frontend From PIPOL frontend
+\subsection inside_autotests_dev_guide_pipol_frontend From PIPOL frontend
 
 You first need to be connected into pipol ssh.
 \verbatim
@@ -121,7 +121,7 @@ user@pipol:~$ssh pipol20
 
 You can now make all your tests.
 
-\subsection xps_dev_guide_pipol_home From a computer
+\subsection inside_autotests_dev_guide_pipol_home From a computer
 
 You have to renseign to simgrid configuration your pipol login.
 \verbatim
@@ -146,7 +146,7 @@ You can also see all available images from pipol
 $ make pipol_test_list_images
 \endverbatim
 
-\section xps_dev_guide_pipol_nightly How to use nightly builds?
+\section inside_autotests_dev_guide_pipol_nightly How to use nightly builds?
 
 All the pipol scripts are located in \"<project/directory>/buildtools/pipol/\".
 If you modifie them you have to update the pipol home directory by using this command: make sync-pipl.
@@ -164,7 +164,7 @@ Nightly_simgrid.sh                              100% 4004     3.9KB/s   00:00
 Experimental_bindings.sh                        100% 1794     1.8KB/s   00:00
 \endverbatim 
 
-\section xps_dev_guide_cdash How to report tests in cdash?
+\section inside_autotests_dev_guide_cdash How to report tests in cdash?
 
 Reporting experiment in cdash is very easy because it is done by ctest.
 
@@ -193,9 +193,9 @@ $ ctest -D ExperimentalCoverage
 $ ctest -D ExperimentalSubmit
 \endverbatim
 
-\section xps_dev_guide_g5k How to run simgrid scalability xps?
+\section inside_autotests_dev_guide_g5k How to run simgrid scalability xps?
 
-\subsection xps_dev_guide_g5k_campaign How to execute g5k campaign?
+\subsection inside_autotests_dev_guide_g5k_campaign How to execute g5k campaign?
 
 Quick steps deployment for rennes:
 
@@ -251,7 +251,7 @@ $  perl SGXP.pl --help
 $  ./SGXP.pl --site=nancy --cluster=graphene --test=chord,goal --rev="09bbc8de,3ca7b9a13"
 \endverbatim
 
-\subsection xps_dev_guide_g5k_log How to analyze logs?
+\subsection inside_autotests_dev_guide_g5k_log How to analyze logs?
 
 To analyze log from g5k-campaign you must install R tool.
 

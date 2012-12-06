@@ -1,9 +1,9 @@
 /*! 
-\page release SimGrid Developer Guide - Releasing
+\page inside_release SimGrid Developer Guide - Releasing
 
-\section release_c Releasing the main library
+\section inside_release_c Releasing the main library
 
-\subsection release_c_preconditions Before releasing
+\subsection inside_release_c_preconditions Before releasing
 
 Please apply the following checklist before releasing.
 
@@ -29,7 +29,7 @@ Please apply the following checklist before releasing.
   - The release date is indicated right below the version name
   - The release dub name matches the one given in ChangeLog file
 
-\subsection release_c_source Building the source archive
+\subsection inside_release_c_source Building the source archive
 
 First, clean up your git repository. Some files are included through
 globbing, you must ensure that your tree contains no cruft. You can
@@ -41,7 +41,7 @@ $ git clean -dfx
 \endverbatim
 
 You can then build the archive. This gives you your archive in the
-build dir, named 'SimGrid-${release_version}.tar.gz'.
+build dir, named 'SimGrid-${inside_release_version}.tar.gz'.
 
 \verbatim
 $ mkdir build
@@ -50,7 +50,7 @@ $ cmake ..
 $ make dist
 \endverbatim
 
-\subsection release_c_win32 Binary distribution under Win32
+\subsection inside_release_c_win32 Binary distribution under Win32
 
 You have to install nsis tool first. Download it 
 <a href="http://nsis.sourceforge.net/Download">here</a>.
@@ -67,7 +67,7 @@ $ cmake ..
 $ make nsis
 \endverbatim
 
-\subsection release_c_postchecks Check list after releasing
+\subsection inside_release_c_postchecks Check list after releasing
 
 - Tag the git repository (don't forget to push the tags to the main
   repo)
@@ -80,14 +80,14 @@ $ make nsis
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section
 
-\section release_bindings Releasing the bindings
+\section inside_release_bindings Releasing the bindings
 
 Please apply the above checklists before and after releasing the bindings.
 
 Then, clean your git repository and build the archive. It will give
 you an archive file in the build dir:
-'SimGrid-Java-${release_version}.tar.gz' or
-'SimGrid-Ruby-${release_version}.tar.gz'. 
+'SimGrid-Java-${inside_release_version}.tar.gz' or
+'SimGrid-Ruby-${inside_release_version}.tar.gz'. 
 
 \verbatim
 $ cd simgrid-java (or simgrid-ruby)

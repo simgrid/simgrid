@@ -1,5 +1,5 @@
 /*! 
-\page cmake SimGrid Developer Guide - Cmake
+@page inside_cmake Modifying the cmake files
 
 \section cmake_dev_guide_src How to add sources?
 

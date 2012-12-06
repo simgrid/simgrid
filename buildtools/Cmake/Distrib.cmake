@@ -207,7 +207,6 @@ set(source_to_pack
   ${DOC_IMG}
   ${DOC_SOURCES}
   ${DOC_TOOLS}
-  ${DOC_SHARED_TAG}
   ${REF_GUIDE_SOURCES}
   ${USER_GUIDE_SOURCES}
   ${DEV_GUIDE_SOURCES}
