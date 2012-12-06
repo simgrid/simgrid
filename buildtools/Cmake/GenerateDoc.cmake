@@ -13,8 +13,6 @@ if(DOXYGEN_PATH)
   string(REGEX REPLACE "^${DOXYGEN_MAJOR_VERSION}." "" DOXYGEN_MINOR_VERSION "${DOXYGEN_MINOR_VERSION}")
   message(STATUS "Doxygen version : ${DOXYGEN_MAJOR_VERSION}.${DOXYGEN_MINOR_VERSION}.${DOXYGEN_PATCH_VERSION}")
 
-  include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateRefGuide.cmake)
-
   set(DOC_PNGS
     ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_modules.png
     ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
@@ -53,6 +51,10 @@ if(DOXYGEN_PATH)
     COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
     COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Generate the index file"
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc     
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen again"
+    COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
@@ -77,8 +79,6 @@ if(DOXYGEN_PATH)
 
   if(DOXYGEN_MAJOR_VERSION STRLESS "2" AND DOXYGEN_MINOR_VERSION STRLESS "8")
     add_dependencies(simgrid_documentation error_doxygen)
-  else()
-    add_dependencies(simgrid_documentation ref_guide)
   endif()
 
 endif()

@@ -1,27 +1,44 @@
+/** 
+@defgroup MSG_API      MSG
+@brief Simple programming environment
 
-/** \defgroup XBT_API      XBT
-    \brief The core toolbox of SimGrid, containing usefull datatypes,
-           portability support and so on.
+MSG was the first distributed programming environment provided within
+SimGrid. While almost realistic, it remains quite simple
+(simplistic?).
 
+@section MSG_who Who should use this (and who shouldn't)
+
+You should use this module if you want to study some heuristics for a
+given problem you don't really want to implement. If you want to use
+DAGs, have a look at the \ref SD_API programming environment. If you
+want to study an existing MPI program, have a look at the \ref
+SMPI_API one. If none of those programming environments fits your
+needs, you may consider implementing your own directly on top of 
+\ref SURF_API (but you probably want to contact us before). 
 */
 
-/** \defgroup MSG_API      MSG
-    \brief Simple programming environment
+/** 
+@defgroup XBT_API      XBT
+@brief The core toolbox of SimGrid, containing usefull datatypes and friends
+*/
 
-      MSG was the first distributed programming environment provided within
-      SimGrid. While almost realistic, it remains quite simple (simplistic?).
+/**
+@defgroup TRACE_API TRACE
+@brief Tracing mechanism and its functions.
 
-      \section MSG_who Who should use this (and who shouldn't)
+SimGrid can trace the resource (of hosts and links) utilization using
+any of its programming interfaces (MSG, SimDAG and SMPI). This means
+that the tracing will register how much power is used for each host
+and how much bandwidth is used for each link of the platform.
 
-      You should use this module if you want to study some heuristics for a
-      given problem you don't really want to implement.
-      If you want to use DAGs, have a look at the \ref SD_API programming
-      environment.
-      If you want to study an existing MPI program,
-      have a look at the \ref SMPI_API one. If none of those programming
-      environments fits your needs, you may consider implementing your own
-      directly on top of \ref SURF_API (but you probably want to contact us
-      before).
+The idea of the tracing facilities is to give SimGrid users to
+possibility to classify MSG and SimDAG tasks by category, tracing the
+platform utilization (hosts and links) for each of the categories.
+The API enables the declaration of categories and a function to
+associate them to the tasks (MSG and SD). The tasks that are not
+classified according to a category are not traced. If no categories
+are specified, simulations can still be traced using a special
+parameter in the command line (see \ref tracing for details).
 */
 
 
@@ -175,22 +192,4 @@ module is only partially documented.
 */
 
 
-/**
-@defgroup TRACE_API TRACE
-@brief Tracing mechanism and its functions.
-
-SimGrid can trace the resource (of hosts and links) utilization using
-any of its programming interfaces (MSG, SimDAG and SMPI). This means
-that the tracing will register how much power is used for each host
-and how much bandwidth is used for each link of the platform.
-
-The idea of the tracing facilities is to give SimGrid users to
-possibility to classify MSG and SimDAG tasks by category, tracing the
-platform utilization (hosts and links) for each of the categories.
-The API enables the declaration of categories and a function to
-associate them to the tasks (MSG and SD). The tasks that are not
-classified according to a category are not traced. If no categories
-are specified, simulations can still be traced using a special
-parameter in the command line (see \ref tracing for details).
-*/
 

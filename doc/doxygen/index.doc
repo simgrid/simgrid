@@ -25,7 +25,7 @@
   - @ref involved
   - @ref internals
 - @subpage FAQ
-- ref_guide Reference manual
+- @ref modules
 
 @htmlonly
 </td><td width="50%" align="center">

@@ -8,6 +8,8 @@ This page is under work -- sorry for the inconvinience (FIXME).
 - @subpage options
 - @subpage help
 
+\tableofcontents
+
 SimGrid comes with many examples provided in the examples/ directory.
 Those examples are described in section \ref MSG_examples . Those
 examples are commented and should be easy to understand. for a first

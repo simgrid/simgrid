@@ -555,23 +555,15 @@ set(USER_GUIDE_SOURCES
     doc/doxygen/inside_cmake.doc
     doc/doxygen/inside_extending.doc 
     doc/doxygen/inside_release.doc
+  doc/doxygen/modules.doc
+    doc/doxygen/module-msg.doc
+    doc/doxygen/module-sd.doc
+    doc/doxygen/module-simix.doc
+    doc/doxygen/module-surf.doc
+    doc/doxygen/module-trace.doc
+    doc/doxygen/module-xbt.doc
   )
     
-set(REF_GUIDE_SOURCES
-  doc/ref_guide/doxygen/footer.html
-  doc/ref_guide/doxygen/header.html
-  doc/ref_guide/doxygen/main.doc
-  doc/ref_guide/doxygen/module-msg.doc
-  doc/ref_guide/doxygen/module-sd.doc
-  doc/ref_guide/doxygen/module-simix.doc
-  doc/ref_guide/doxygen/module-surf.doc
-  doc/ref_guide/doxygen/module-trace.doc
-  doc/ref_guide/doxygen/module-xbt.doc
-  doc/ref_guide/doxygen/modules.doc
-  doc/ref_guide/doxygen/RefGuideDoxyfile.in
-  doc/ref_guide/doxygen/RefGuideDoxygenLayout.xml
-  doc/ref_guide/doxygen/stylesheet.css
-  )
 
 set(DOC_IMG
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png

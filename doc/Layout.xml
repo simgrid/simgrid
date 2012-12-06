@@ -21,9 +21,9 @@
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
     <tab type="modules" visible="no" title="" intro="">
-      <tab type="modules" visible="yes" title="Examples description" 
-           intro="In the example directory of SimGrid, you'll find usefull examples. Here's a description of the most important of them."/>
-    </tab>	
+      <tab type="modules" visible="yes" title="APIs Reference"
+           intro="Here is the hierarchical view of all SimGrid modules. You can reduce the amount of detail with the 'detail level' setting, on the right."/>
+    </tab>
   </navindex>
 
   <!-- Layout definition for a class page -->

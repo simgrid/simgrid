@@ -515,7 +515,7 @@ STRICT_PROTO_MATCHING  = NO
 # disable (NO) the todo list. This list is created by putting \todo
 # commands in the documentation.
 
-GENERATE_TODOLIST      = YES
+GENERATE_TODOLIST      = NO
 
 # The GENERATE_TESTLIST tag can be used to enable (YES) or
 # disable (NO) the test list. This list is created by putting \test
@@ -527,7 +527,7 @@ GENERATE_TESTLIST      = YES
 # disable (NO) the bug list. This list is created by putting \bug
 # commands in the documentation.
 
-GENERATE_BUGLIST       = YES
+GENERATE_BUGLIST       = NO
 
 # The GENERATE_DEPRECATEDLIST tag can be used to enable (YES) or
 # disable (NO) the deprecated list. This list is created by putting
@@ -676,9 +676,30 @@ INPUT                  = doxygen/index.doc \
 			     doxygen/inside_autotests.doc \
 			     doxygen/inside_release.doc \
 			   doxygen/involved.doc \
-                         doxygen/examples.doc \            
                          doxygen/tracing.doc \
-			 doxygen/FAQ.doc
+			 doxygen/FAQ.doc \
+			 doxygen/modules.doc \
+                           doxygen/module-xbt.doc \
+                           doxygen/module-msg.doc \
+                           doxygen/module-sd.doc \
+                           doxygen/module-surf.doc \
+                           doxygen/module-simix.doc \
+                           doxygen/module-trace.doc \
+                           index-API.doc \
+                         @top_srcdir@/doc/ref_guide/doxygen/logcategories.doc \
+                         @top_srcdir@/src/instr/ \
+                         @top_srcdir@/include/ \
+                         @top_srcdir@/include/msg \
+                         @top_srcdir@/include/xbt \
+                         @top_srcdir@/include/simdag \
+                         @top_srcdir@/include/simgrid \
+                         @top_srcdir@/src/include/surf \
+                         @top_srcdir@/src/xbt/ \
+                         @top_srcdir@/src/surf/ \
+                         @top_srcdir@/src/msg/ \
+                         @top_srcdir@/src/simdag \
+                         @top_srcdir@/src/simix
+
 
 ###################################################
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
@@ -1608,13 +1629,12 @@ SKIP_FUNCTION_MACROS   = YES
 # NOT include the path). If a tag file is not located in the directory in which
 # doxygen is run, you must also specify the path to the tagfile here.
 
-TAGFILES               = shared/doxygen/simgridrefguide.tag=ref_guide/html/ 
+TAGFILES               = 
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-#GENERATE_TAGFILE       = simgrid.tag 
-GENERATE_TAGFILE       = 
+GENERATE_TAGFILE       = simgrid.tag 
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes
