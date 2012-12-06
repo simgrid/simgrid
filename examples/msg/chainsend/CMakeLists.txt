@@ -25,7 +25,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/messages.c
   ${CMAKE_CURRENT_SOURCE_DIR}/broadcaster.c
   ${CMAKE_CURRENT_SOURCE_DIR}/peer.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/kadeploy.c
   PARENT_SCOPE
   )
 set(bin_files
