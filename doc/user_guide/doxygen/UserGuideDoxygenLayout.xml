@@ -1,6 +1,8 @@
 <doxygenlayout version="1.0">
   <!-- Navigation index tabs for HTML output -->
   <navindex>
+    <tab type="mainpage" visible="yes" title="" />
+  
     <tab type="pages" visible="no" title="Table Of Content" intro="Complete pages list">
       <tab type="pages" visible="yes" title="Table Of Content" intro="Complete pages list"/>
     </tab>
@@ -19,7 +21,8 @@
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
     <tab type="modules" visible="no" title="" intro="">
-      <tab type="modules" visible="yes" title="Examples description" intro="In the example directory of SimGrid, you'll find usefull examples. Here's a description of the most important of them."/>
+      <tab type="modules" visible="yes" title="Examples description" 
+           intro="In the example directory of SimGrid, you'll find usefull examples. Here's a description of the most important of them."/>
     </tab>	
   </navindex>
 
