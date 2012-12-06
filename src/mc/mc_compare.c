@@ -67,7 +67,7 @@ static int compare_global_variables(int region_type, void *d1, void *d2){
             continue;
           }else{
             if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose)){
-              XBT_VERB("Different global variable in libsimgrid : %s", current_var->name);
+              XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
             }
             return 1;
           }
