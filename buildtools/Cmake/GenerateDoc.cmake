@@ -13,18 +13,14 @@ if(DOXYGEN_PATH)
   string(REGEX REPLACE "^${DOXYGEN_MAJOR_VERSION}." "" DOXYGEN_MINOR_VERSION "${DOXYGEN_MINOR_VERSION}")
   message(STATUS "Doxygen version : ${DOXYGEN_MAJOR_VERSION}.${DOXYGEN_MINOR_VERSION}.${DOXYGEN_PATCH_VERSION}")
 
-  set(DOC_PNGS
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_modules.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
+  if(DOXYGEN_MAJOR_VERSION STRLESS "2" AND DOXYGEN_MINOR_VERSION STRLESS "8")
+    ADD_CUSTOM_TARGET(error_doxygen
+      COMMAND ${CMAKE_COMMAND} -E echo "Doxygen must be at least version 1.8 to generate documentation"
+      COMMAND false
     )
+
+    add_dependencies(simgrid_documentation error_doxygen)
+  endif()
 
   configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
 
@@ -35,17 +31,26 @@ if(DOXYGEN_PATH)
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
+    
+  foreach(file 
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_modules.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
+    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
+    ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css 
+    )
 
-  foreach(file ${DOC_PNGS})
     ADD_CUSTOM_COMMAND(
       TARGET simgrid_documentation
       COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/
-      )
-  endforeach(file ${DOC_PNGS})
-
-  ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css ${CMAKE_HOME_DIRECTORY}/doc/html/
     )
+  endforeach()
 
   ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
     COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
@@ -72,14 +77,6 @@ if(DOXYGEN_PATH)
     )
   add_dependencies(pdf simgrid_documentation)
 
-  ADD_CUSTOM_TARGET(error_doxygen
-    COMMAND ${CMAKE_COMMAND} -E echo "Doxygen must be at least version 1.8 to generate documentation"
-    COMMAND false
-    )
-
-  if(DOXYGEN_MAJOR_VERSION STRLESS "2" AND DOXYGEN_MINOR_VERSION STRLESS "8")
-    add_dependencies(simgrid_documentation error_doxygen)
-  endif()
 
 endif()
 
