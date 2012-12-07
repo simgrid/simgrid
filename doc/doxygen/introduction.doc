@@ -1,8 +1,10 @@
 /*! @page introduction Introduction to SimGrid 
 
-<b>This page does not really exist yet. In the meanwhile, please refer
-to the tutorials on the project web page, looking for the "SimGrid
-101" tutorial.</b>
+This page does not really exist yet. In the meanwhile, please refer
+to the <a href="http://simgrid.gforge.inria.fr/tutorials.html">tutorials</a>
+on the project web page, looking for the 
+<a href="http://simgrid.gforge.inria.fr/tutorials/101/simgrid-101.pdf">SimGrid 
+101</a> tutorial.
 
 <a href="http://simgrid.gforge.inria.fr/">SimGrid</a> is a toolkit
 that provides core functionalities for the simulation of distributed
