@@ -15,9 +15,9 @@
 /* Connection parameters */
 #define MAX_PENDING_SENDS 10
 
-/* ``File'' details */
-#define PIECE_SIZE 16384
-#define PIECE_COUNT 50
+/* Default values for the ``file'' details */
+#define PIECE_SIZE 65536
+#define PIECE_COUNT 16384
 
 /* Broadcaster struct */
 typedef struct s_broadcaster {
