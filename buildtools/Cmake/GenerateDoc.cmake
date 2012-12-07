@@ -96,7 +96,7 @@ add_custom_target(sync-gforge-doc
   COMMAND rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --perms --times --omit-dir-times
   doc/ref_guide/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/ref_guide/html || true
 
-  COMMAND scp doc/user_guide/html/simgrid_modules2.png doc/user_guide/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png
+  COMMAND scp doc/html/simgrid_modules2.png doc/html/simgrid_modules.png doc/webcruft/simgrid_logo_2011.png
   doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
