@@ -56,8 +56,10 @@ if(DOXYGEN_PATH)
     COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
     COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
-    COMMAND ${CMAKE_COMMAND} -E echo "XX Generate the index file"
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Generate the index files"
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc     
+    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen again"
     COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map

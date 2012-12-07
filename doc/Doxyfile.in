@@ -686,7 +686,7 @@ INPUT                  = doxygen/index.doc \
                            doxygen/module-simix.doc \
                            doxygen/module-trace.doc \
                            index-API.doc \
-                         @top_srcdir@/doc/ref_guide/doxygen/logcategories.doc \
+                         @top_srcdir@/doc/doxygen/logcategories.doc \
                          @top_srcdir@/src/instr/ \
                          @top_srcdir@/include/ \
                          @top_srcdir@/include/msg \
