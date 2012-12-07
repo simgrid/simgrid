@@ -104,12 +104,12 @@ int broadcaster_finish(broadcaster_t bc)
   return MSG_OK;
 }
 
-broadcaster_t broadcaster_init(xbt_dynar_t host_list)
+broadcaster_t broadcaster_init(xbt_dynar_t host_list, unsigned int piece_count)
 {
   int status;
   broadcaster_t bc = xbt_new(s_broadcaster_t, 1);
 
-  bc->piece_count = PIECE_COUNT;
+  bc->piece_count = piece_count;
   bc->current_piece = 0;
   bc->host_list = host_list;
   bc->it = xbt_dynar_iterator_new(bc->host_list, forward_indices_list);
@@ -136,13 +136,21 @@ int broadcaster(int argc, char *argv[])
   broadcaster_t bc = NULL;
   xbt_dynar_t host_list = NULL;
   int status;
+  unsigned int piece_count = PIECE_COUNT;
 
   XBT_INFO("broadcaster");
 
   /* Add every mailbox given by the hostcount in argv[1] to a dynamic array */
   host_list = build_hostlist_from_hostcount(atoi(argv[1]));
-  
-  bc = broadcaster_init(host_list);
+
+  /* argv[2] is the number of pieces */
+  if (argc > 2) {
+    piece_count = atoi(argv[2]);
+    XBT_DEBUG("piece_count set to %d", piece_count);
+  } else {
+    XBT_DEBUG("No piece_count specified, defaulting to %d", piece_count);
+  }
+  bc = broadcaster_init(host_list, piece_count);
 
   /* TODO: Error checking */
   status = broadcaster_send_file(bc);
