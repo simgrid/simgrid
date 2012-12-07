@@ -5,8 +5,8 @@
 #include "xbt/sysdep.h"
 
 #define MESSAGE_BUILD_CHAIN_SIZE 40
-#define MESSAGE_SEND_DATA_HEADER_SIZE 10
-#define MESSAGE_END_DATA_SIZE 20
+#define MESSAGE_SEND_DATA_HEADER_SIZE 1
+#define MESSAGE_END_DATA_SIZE 1
 
 /* Messages enum */
 typedef enum {
