@@ -262,15 +262,23 @@ void mpi_comm_rank__(int* comm, int* rank, int* ierr);
 void mpi_comm_size__(int* comm, int* size, int* ierr);
 double mpi_wtime__(void);
 double mpi_wtick__(void);
+void mpi_initialized__(int* flag, int* ierr);
 
 void mpi_comm_dup__(int* comm, int* newcomm, int* ierr);
+void mpi_comm_create__(int* comm, int* group, int* newcomm, int* ierr);
+void mpi_comm_free__(int* comm, int* ierr);
 void mpi_comm_split__(int* comm, int* color, int* key, int* comm_out, int* ierr);
-
+void mpi_group_incl__(int* group, int* n, int* key, int* group_out, int* ierr) ;
+void mpi_comm_group__(int* comm, int* group_out,  int* ierr);
 void mpi_send_init__(void *buf, int* count, int* datatype, int* dst, int* tag,
                      int* comm, int* request, int* ierr);
 void mpi_isend__(void *buf, int* count, int* datatype, int* dst,
                  int* tag, int* comm, int* request, int* ierr);
+void mpi_irsend__(void *buf, int* count, int* datatype, int* dst,
+                 int* tag, int* comm, int* request, int* ierr);
 void mpi_send__(void* buf, int* count, int* datatype, int* dst,
+                int* tag, int* comm, int* ierr);
+void mpi_rsend__(void* buf, int* count, int* datatype, int* dst,
                 int* tag, int* comm, int* ierr);
 void mpi_recv_init__(void *buf, int* count, int* datatype, int* src, int* tag,
                      int* comm, int* request, int* ierr);
@@ -290,7 +298,12 @@ void mpi_reduce__(void* sendbuf, void* recvbuf, int* count,
                   int* datatype, int* op, int* root, int* comm, int* ierr);
 void mpi_allreduce__(void* sendbuf, void* recvbuf, int* count, int* datatype,
                      int* op, int* comm, int* ierr);
+void mpi_reduce_scatter__(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype,
+                     int* op, int* comm, int* ierr) ;
 void mpi_scatter__(void* sendbuf, int* sendcount, int* sendtype,
+                   void* recvbuf, int* recvcount, int* recvtype,
+                   int* root, int* comm, int* ierr);
+void mpi_scatterv__(void* sendbuf, int* sendcounts, int* displs, int* sendtype,
                    void* recvbuf, int* recvcount, int* recvtype,
                    int* root, int* comm, int* ierr);
 void mpi_gather__(void* sendbuf, int* sendcount, int* sendtype,
@@ -311,12 +324,16 @@ void mpi_scan__(void* sendbuf, void* recvbuf, int* count, int* datatype,
                 int* op, int* comm, int* ierr);
 void mpi_alltoall__(void* sendbuf, int* sendcount, int* sendtype,
                     void* recvbuf, int* recvcount, int* recvtype, int* comm, int* ierr);
+void mpi_alltoallv__(void* sendbuf, int* sendcounts, int* senddisps, int* sendtype,
+                    void* recvbuf, int* recvcounts, int* recvdisps, int* recvtype, int* comm, int* ierr);
 void mpi_get_processor_name__(char *name, int *resultlen, int* ierr);
 void mpi_test__ (int * request, int *flag, MPI_Status * status, int* ierr);
 void mpi_get_count__(MPI_Status * status, int* datatype, int *count, int* ierr);
 void mpi_type_extent__(int* datatype, MPI_Aint * extent, int* ierr);
+void mpi_attr_get__(int* comm, int* keyval, void* attr_value, int* flag, int* ierr );
 void mpi_type_lb__(int* datatype, MPI_Aint * extent, int* ierr);
 void mpi_type_ub__(int* datatype, MPI_Aint * extent, int* ierr);
+void mpi_error_string__(int* errorcode, char* string, int* resultlen, int* ierr);
 void mpi_sendrecv__(void* sendbuf, int* sendcount, int* sendtype, int* dst,
                 int* sendtag, void *recvbuf, int* recvcount,
                 int* recvtype, int* src, int* recvtag,

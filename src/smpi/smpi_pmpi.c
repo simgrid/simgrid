@@ -2070,6 +2070,12 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
   return MPI_SUCCESS;
 }
 
+
+int PMPI_Initialized(int* flag) {
+   *flag=(smpi_process_data()!=NULL);
+   return MPI_SUCCESS;
+}
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
@@ -2282,6 +2288,4 @@ int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
    return not_yet_implemented();
 }
 
-int PMPI_Initialized(int* flag) {
-   return not_yet_implemented();
-}
+

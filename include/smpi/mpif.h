@@ -65,6 +65,10 @@
       parameter(MPI_COMM_SELF=-2)
       parameter(MPI_COMM_WORLD=0)
 
+      integer MPI_GROUP_NULL, MPI_GROUP_EMPTY
+      parameter(MPI_GROUP_NULL=-1)
+      parameter(MPI_GROUP_EMPTY=-2)
+
 ! This should be equal to the number of int fields in MPI_Status
       integer MPI_STATUS_SIZE, MPI_STATUSES_IGNORE
       parameter(MPI_STATUS_SIZE=4)
