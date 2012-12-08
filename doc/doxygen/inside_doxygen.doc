@@ -204,5 +204,24 @@ website now (there is a README in the repo with more details).
 git clone git://scm.gforge.inria.fr/simgrid/website.git
 @endverbatim
 
+\section inside_doxygen_regen Regenerating the documentation
+
+Once you've changed the doc, you want to run doxygen to regenerate the
+html output (and maybe the pdf too). Here is how to do this:
+
+@verbatim
+make simgrid_documentation # html documentation
+make pdf # the result is in doc/latex/simgrid_documentation.pdf
+@endverbatim
+
+Once you're satisfyied with the result, refreshing the documentation
+on the web pages is very easy, as shown below. A few permission errors
+are ok, unfortunately. We should improve things here, but I'm not sure
+of how. A funny thing is that this make target is also provided in the
+archives we distribute to the users, but I guess that it's harmless :)
+
+@verbatim
+make sync-gforge-doc
+@endverbatim
 
 */
