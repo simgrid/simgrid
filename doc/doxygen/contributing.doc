@@ -87,7 +87,7 @@ If you can provide a patch fixing the issue you report, that's even
 better, and often ensures that it will get fixed very soon.
 
 Of course, a very good way to give back to the SimGrid community is to
-help triaging and fixing the bugs that are reported in the BTS. If you
+<b>triage and fix the bugs in the BTS</b>. If you
 can come up with a patch fixing them, we will be more than happy to
 apply your changes so that the entier community enjoys them.
 
