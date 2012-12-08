@@ -193,7 +193,12 @@ $ ctest -D ExperimentalCoverage
 $ ctest -D ExperimentalSubmit
 \endverbatim
 
-\section inside_autotests_dev_guide_g5k How to run simgrid scalability xps?
+\section inside_autotests_perf Infrastructure of the SimGrid Performance Regresion tests
+
+The goal of these tests is to detect the impact on simulation
+performance of the commited changes. It is not quite effective right
+now but at the end, it should be similar to 
+<a href="http://www.phoromatic.com/resources/long-term-study/">Phoromatic</a>.
 
 \subsection inside_autotests_dev_guide_g5k_campaign How to execute g5k campaign?
 

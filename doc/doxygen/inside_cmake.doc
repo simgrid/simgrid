@@ -1,10 +1,12 @@
 /*! 
 @page inside_cmake Modifying the cmake files
 
-\section cmake_dev_guide_src How to add sources?
+\tableofcontents
+
+\section inside_cmake_addsrc How to add source files?
 
 If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake.
-Chose the section you are interested in and modifie it.
+Chose the section you are interested in and modify it.
 
 \verbatim
 set(SMPI_SRC
@@ -22,8 +24,13 @@ set(SMPI_SRC
   )
 \endverbatim
 
-If source file are a part of an option library (like fortran smpi source) you have to had it in the compiled sources 
-or in the EXTRA_DIST files package which is only copy in the dist. 
+If your source is always added to the library, you are set. But if
+it's optional, you must ensure that it gets added to the source
+distribution when not compiled in, or it may well be missing if the
+archive is built without the option activating your source. This is
+done by adding the files to the EXTRA_DIST list, as in the following
+example:
+
 \verbatim
 ### If f2c is installed compiled source other-whise source is only copy in the dist 
 if(SMPI_F2C)
@@ -39,10 +46,29 @@ else()
 endif()
 \endverbatim
 
+Don't forget to run the "make distcheck" target after any modification
+to the cmake files: it checks whether all necessary files are present
+in the distribution.
+
 \section cmake_dev_guide_ex How to add examples?
 
-If you want make an example you have to create a CMakeList.txt to the src directory.
-You must specified where to create the executable, source list, dependencies and the name of the binary.
+First of all, are you sure that you want to create an example, or is
+it merely a new test case? The examples located in examples/ must be
+interesting to the users. It is expected that the users will take one
+of these examples and start editing it to make it fit their needs. If
+what you are about to write is merly a test, exercising a specific
+part of the tool suite but not really interesting to the users, then
+you want to add it to the teshsuite/ directory. 
+
+Actually, the examples are also used as regresion tests by adding tesh
+files and registering them to the testing infrastructure (for that,
+don't forget to add a tesh file and follow the instructions of 
+section \ref inside_cmake_addtest). The main difference is that
+examples must be interesting to the users in addition.
+
+In both cases, you have to create a CMakeList.txt in the chosen source
+directory. It must specify where to create the executable, the source
+list, dependencies and the name of the binary.
 
 \verbatim
 cmake_minimum_required(VERSION 2.6)
@@ -79,24 +105,100 @@ set(txt_files
   )
 \endverbatim
 
-Then you have to modified :
-\li<project/directory>/buildtools/Cmake/MakeExeLib.cmake and add line:
+Then, you have to follow these steps:
+\li Add the following line to <project/directory>/buildtools/Cmake/MakeExeLib.cmake:
 \verbatim
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
 \endverbatim
 
-\li <project/directory>/buildtools/Cmake/DefinePackages.cmake to add your CMakeLists to CMAKE_SOURCE_FILES:
+\li Add your CMakeLists.txt to CMAKE_SOURCE_FILES in <project/directory>/buildtools/Cmake/DefinePackages.cmake:
 \verbatim
 set(CMAKE_SOURCE_FILES
   CMakeLists.txt
   ....
-  <path_where_is_CMakeList.txt>
+  <path_to_your_CMakeList.txt>
   )
 \endverbatim
 
-\section cmake_dev_guide_test How to add tests?
-To add a test in simgrid you have to modify source <project/directory>/buildtools/Cmake/AddTests.cmake. Create a new test with adding this line:
-\li With tesh
+\li if you add tesh files (and you should), please refer to the
+following section to register them to the testing infrastructure.
+
+Once you're done, you should check with "make distcheck" that you did
+not forget to add any file to the distributed archives.
+
+\section inside_cmake_addtest How to add tests?
+
+\subsection inside_cmake_addtest_unit Unit testing in SimGrid
+
+If you want to test a specific function or set of functions, you need
+a unit test. Edit
+<project/directory>/buildtools/Cmake/UnitTesting.cmake to add your
+source file to the TEST_CFILES list, and add the corresponding unit
+file to the TEST_UNITS list. For example, if your file is toto.c,
+your unit file will be toto_unit.c. The full path to your file must be
+provided, but the unit file will always be in src/ directly.
+
+Then, you want to actually add your tests in the source file. All the
+tests must be protected by "#ifdef SIMGRID_TEST" so that they don't
+get included in the regular build. Then, you want to add a test suite
+that will contain a bunch of tests (in Junit, that would be a test
+unit) with the macro #XBT_TEST_SUITE, and populate it with a bunch of
+actual tests with the macro #XBT_TEST_UNIT (sorry for the mischosen
+names if you are used to junit). Just look at the dynar example (or
+any other) to see how it works in practice. Do not hesitate to stress
+test your code this way, but make sure that it runs reasonably fast,
+or nobody will run "ctest" before commiting code.
+
+If you are interested in the mechanic turning this into an actual
+test, check the <project/directory>/tools/sg_unit_extractor.pl script.
+
+To actually run your tests once you're done, run "make testall", that
+builds the binary containing all our unit tests and run it. This
+binary allows you to chose which suite you want to test:
+
+\verbatim
+$ testall --help # revise how it goes if you forgot
+$ testall --dump-only # learn about all existing test suites
+$ testall --tests=-all # run no test at all
+$ testall --tests=-all,+foo # run only the foo test suite.
+$ testall --tests=-all,+foo:bar # run only the bar test from the foo suite.
+$ testall --tests=-foo:bar # run all tests but the bar test from the foo suite.
+\endverbatim
+
+\subsection inside_cmake_addtest_integration Integration testing in SimGrid
+
+If you want to test a full binary (such as an example), then you
+probably want to use the tesh binary that ensures that the output
+produced by a command perfectly matches the expected output. In
+particular, this is very precious to ensure that no change modifies
+the timings computed by the models without notice. 
+
+The first step is to write a tesh file for your test, containing the
+command to run, the provided input (if any, but almost no SimGrid test
+provide such an input) and the expected output. Check the tesh man
+page for more details. 
+
+Tesh is sometimes annoying as you have to ensure that the expected
+output will always be exactly the same. In particular, your should not
+output machine dependent informations, nor memory adresses as they
+would change on each run. Several steps can be used here, such as the
+obfucation of the memory adresses unless the verbose logs are
+displayed (using the #XBT_LOG_ISENABLED() macro), or the modification
+of the log formats to hide the timings when they depend on the host
+machine.
+
+Then you have to request cmake to run your test when "ctest" is
+launched. For that, you have to modify source
+<project/directory>/buildtools/Cmake/AddTests.cmake. Make sure to pick
+a wise name for your test. It is often useful to check a category of
+tests together. The only way to do so in ctest is to use the -R
+argument that specifies a regular expression that the test names must
+match. For example, you can run all MSG test with "ctest -R msg" That
+explains the importance of the test names.
+
+Once the name is chosen, create a new test by adding a line similar to
+the following (assuming that you use tesh as expected).
+
 \verbatim
 #  ADD_TEST(test-name ${CMAKE_BINARY_DIR}/bin/tesh <options> <tesh-file>)
 #  option --setenv bindir set the directory containing the binary
@@ -110,7 +212,9 @@ ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh
 )
 \endverbatim             
 
-\li Without tesh
+If you prefer to not use tesh for some reasons, prefer the following
+form:
+
 \verbatim
 # ADD_TEST(NAME <name>]
 #          [WORKING_DIRECTORY dir]
@@ -120,4 +224,15 @@ ADD_TEST(NAME my-test-name
          COMMAND Hello
 )
 \endverbatim 
+
+As usual, you must run "make distcheck" after modifying the cmake files,
+to ensure that you did not forget any files in the distributed archive.
+
+\subsection inside_cmake_addtest_perf Performance testing in SimGrid
+
+We are currently in the process of adding an infrastructure for
+performance regression testing, but this is not related to cmake
+anyhow. They are thus documented elsewhere, in Section \ref
+inside_autotests_perf
+
 */
