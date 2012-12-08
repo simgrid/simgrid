@@ -671,6 +671,7 @@ INPUT                  = doxygen/index.doc \
                            doxygen/pls.doc \
                            doxygen/bindings.doc \
 			   doxygen/internals.doc \
+			     doxygen/inside_doxygen.doc \
 			     doxygen/inside_extending.doc \
 			     doxygen/inside_cmake.doc \
 			     doxygen/inside_autotests.doc \

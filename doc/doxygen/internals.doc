@@ -13,6 +13,7 @@ SimGrid project, ie how to extend the framework in any way, how the
 automatic tests are run, and so on. These informations are split on
 several pages, as follows:
 
+ - @subpage inside_doxygen
  - @subpage inside_extending
  - @subpage inside_cmake
  - @subpage inside_release
