@@ -533,6 +533,7 @@ set(DOC_SOURCES
     doc/doxygen/inside_cmake.doc
     doc/doxygen/inside_extending.doc 
     doc/doxygen/inside_release.doc
+    doc/doxygen/contributing.doc
   doc/doxygen/modules.doc
     doc/doxygen/module-msg.doc
     doc/doxygen/module-sd.doc

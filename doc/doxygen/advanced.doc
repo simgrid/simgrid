@@ -9,6 +9,6 @@ tutorials.
 - @subpage bindings
 - @subpage pls
 - @subpage internals
-- @subpage involved
+- @subpage contributing
 
 */
