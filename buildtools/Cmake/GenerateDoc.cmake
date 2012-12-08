@@ -32,20 +32,7 @@ if(DOXYGEN_PATH)
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
     
-  foreach(file 
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_modules.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
-    ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
-    ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css 
-    )
-
+  foreach(file ${DOC_IMG})
     ADD_CUSTOM_COMMAND(
       TARGET simgrid_documentation
       COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/

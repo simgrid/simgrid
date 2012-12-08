@@ -507,7 +507,6 @@ set(DOC_SOURCES
   doc/simix.fig
   doc/surf_nutshell.fig
   doc/Doxyfile.in
-  doc/simgrid.css
   doc/Layout.xml
   doc/triva-graph_configuration.png
   doc/triva-graph_visualization.png
@@ -549,18 +548,15 @@ set(DOC_FIGS
   ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
   )
   
-set(DOC_SHARED_TAG
-  doc/shared/doxygen/simgridrefguide.tag
-  )
-  
 set(DOC_TOOLS
   tools/doxygen/fig2dev_postprocessor.pl
   tools/doxygen/index_create.pl
   tools/doxygen/xbt_log_extract_hierarchy.pl
   )
 
-
+# these files get copied automatically to the html documentation
 set(DOC_IMG
+${CMAKE_HOME_DIRECTORY}/doc/simgrid.css
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
@@ -579,6 +575,7 @@ ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
 ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
+${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_modules.png
 )
 
 set(bin_files
