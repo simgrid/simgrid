@@ -101,13 +101,7 @@ void MC_dpor_init()
   MC_wait_for_requests();
 
   MC_SET_RAW_MEM;
-
-  xbt_swag_foreach(process, simix_global->process_list){
-    if(MC_process_is_enabled(process)){
-      XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
-    }
-  }
-  
+ 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   xbt_swag_foreach(process, simix_global->process_list){
     if(MC_process_is_enabled(process)){
@@ -125,10 +119,6 @@ void MC_dpor_init()
   else
     MC_UNSET_RAW_MEM;
   
-    
-  /* FIXME: Update Statistics 
-     mc_stats->state_size +=
-     xbt_setset_set_size(initial_state->enabled_transitions); */
 }
 
 
@@ -193,7 +183,8 @@ void MC_dpor(void)
         xbt_swag_foreach(process, simix_global->process_list){
           if(MC_process_is_enabled(process)){
             MC_state_interleave_process(next_state, process);
-            XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
+            if((xbt_fifo_size(mc_stack_safety) + 1) != (_surf_mc_max_depth - 1))
+              break;
           }
         }
 
@@ -219,19 +210,10 @@ void MC_dpor(void)
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
 
-      if(xbt_fifo_size(mc_stack_safety) == _surf_mc_max_depth){
-        
+      if(xbt_fifo_size(mc_stack_safety) == _surf_mc_max_depth)  
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-        if(req != NULL){
-          XBT_WARN("/!\\ But, there are still processes to interleave. Model-checker will not be able to ensure the soundness of the verification from now. /!\\ "); 
-          XBT_WARN("Notice : the default value of max depth is 1000 but you can change it with cfg=model-check/max_depth:value.");
-        }
-
-      }else{
-
+      else
         XBT_DEBUG("There are no more processes to interleave.");
-
-      }
 
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
@@ -254,35 +236,35 @@ void MC_dpor(void)
          state that executed that previous request. */
       
       while ((state = xbt_fifo_shift(mc_stack_safety)) != NULL) {
-        if(MC_state_interleave_size(state) == 0){
-          req = MC_state_get_internal_request(state);
-          xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
-            if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
-              if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
-                XBT_DEBUG("Dependent Transitions:");
-                prev_req = MC_state_get_executed_request(prev_state, &value);
-                req_str = MC_request_to_string(prev_req, value);
-                XBT_DEBUG("%s (state=%p)", req_str, prev_state);
-                xbt_free(req_str);
-                prev_req = MC_state_get_executed_request(state, &value);
-                req_str = MC_request_to_string(prev_req, value);
-                XBT_DEBUG("%s (state=%p)", req_str, state);
-                xbt_free(req_str);              
-              }
-
-              break;
-
-            }else if(req->issuer == MC_state_get_executed_request(prev_state, &value)->issuer){
-
-              break;
-
-            }else{
-              
-              MC_state_remove_interleave_process(prev_state, req->issuer);
-
+        req = MC_state_get_internal_request(state);
+        xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
+          if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
+            if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+              XBT_DEBUG("Dependent Transitions:");
+              prev_req = MC_state_get_executed_request(prev_state, &value);
+              req_str = MC_request_to_string(prev_req, value);
+              XBT_DEBUG("%s (state=%p)", req_str, prev_state);
+              xbt_free(req_str);
+              prev_req = MC_state_get_executed_request(state, &value);
+              req_str = MC_request_to_string(prev_req, value);
+              XBT_DEBUG("%s (state=%p)", req_str, state);
+              xbt_free(req_str);              
             }
+
+            if(!MC_state_process_is_done(prev_state, req->issuer))
+              MC_state_interleave_process(prev_state, req->issuer);
+            else
+              XBT_DEBUG("Process %p is in done set", req->issuer);
+
+            break;
+
+          }else if(req->issuer == MC_state_get_executed_request(prev_state, &value)->issuer){
+
+            break;
+
           }
         }
+
         if (MC_state_interleave_size(state)) {
           /* We found a back-tracking point, let's loop */
           if(_surf_mc_checkpoint){
