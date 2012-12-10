@@ -154,6 +154,8 @@ mc_snapshot_t MC_take_snapshot()
   memory_map_t maps = get_memory_map();
   int nb_reg = 0;
   void *heap = NULL;
+  size_t size = 0;
+  void *start = NULL;
 
   /* Save the std heap and the writable mapped pages of libsimgrid */
   while (i < maps->mapsize) {
@@ -170,16 +172,18 @@ mc_snapshot_t MC_take_snapshot()
         i++;
       } else {
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
-          MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+          size = (char*)reg.end_addr - (char*)reg.start_addr;
+          start = reg.start_addr;
           nb_reg++;
           i++;
           reg = maps->regions[i];
           if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize){
-            MC_snapshot_add_region(snapshot, 1, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+            size += (char*)reg.end_addr - (char*)reg.start_addr;
             reg = maps->regions[i];
             i++;
             nb_reg++;
           }
+          MC_snapshot_add_region(snapshot, 1, start, size);
         } else {
           if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
             MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
