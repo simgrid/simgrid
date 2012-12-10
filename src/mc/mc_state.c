@@ -97,7 +97,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int valu
       if(value > 0)
         state->internal_comm = *xbt_dynar_get_as(simcall_comm_testany__get__comms(req), value, smx_action_t);
 
-      simcall_comm_test__set__comm(&state->internal_req, xbt_dynar_get_as(simcall_comm_testany__get__comms(req), value, smx_action_t));
+      simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
       simcall_comm_test__set__result(&state->internal_req, value);
       break;
 
