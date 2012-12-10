@@ -24,7 +24,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
   if(r1->call == SIMCALL_COMM_IRECV && r2->call == SIMCALL_COMM_ISEND)
     return FALSE;
 
-  if(   (r1->call == SIMCALL_COMM_ISEND /*|| r1->call == SIMCALL_COMM_IRECV*/)
+  /*if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
         &&  r2->call == SIMCALL_COMM_WAIT){
 
     if(simcall_comm_wait__get__comm(r2)->comm.rdv == NULL)
@@ -42,7 +42,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
       return FALSE;
   }
 
-  if(   (r2->call == SIMCALL_COMM_ISEND /*|| r2->call == SIMCALL_COMM_IRECV*/)
+  if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
         &&  r1->call == SIMCALL_COMM_WAIT){
 
     if(simcall_comm_wait__get__comm(r1)->comm.rdv != NULL)
@@ -58,7 +58,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
 
     if(simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_RECEIVE && r2->call == SIMCALL_COMM_IRECV)
       return FALSE;
-  }
+      }*/
 
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
@@ -177,7 +177,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   size_t size = 0;
 
   switch(req->call){
-  case SIMCALL_COMM_ISEND:
+    case SIMCALL_COMM_ISEND:
     type = xbt_strdup("iSend");
     p = pointer_to_string(simcall_comm_isend__get__src_buff(req));
     bs = buff_size_to_string(simcall_comm_isend__get__src_buff_size(req));
