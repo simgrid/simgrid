@@ -9,6 +9,8 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (4:client@HostD) Sent!
 > [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (4:client@HostD) Sent!
@@ -30,6 +32,12 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (4:client@HostD) Sent!
@@ -50,6 +58,51 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
+> [  0.000000] (1:server@HostA) OK
+> [  0.000000] (4:client@HostD) Sent!
+> [  0.000000] (2:client@HostB) Sent!
+> [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (1:server@HostA) **************************
 > [  0.000000] (1:server@HostA) *** PROPERTY NOT VALID ***
@@ -65,7 +118,7 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) [(1)server] iRecv (dst=server, buff=(verbose only), size=(verbose only))
 > [  0.000000] (1:server@HostA) [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
 > [  0.000000] (1:server@HostA) [(1)server] Wait (comm=(verbose only) [(3)client -> (1)server])
-> [  0.000000] (1:server@HostA) Expanded states = 47
-> [  0.000000] (1:server@HostA) Visited states = 170
-> [  0.000000] (1:server@HostA) Executed transitions = 157
-> [  0.000000] (1:server@HostA) Expanded / Visited = 3.617021
+> [  0.000000] (1:server@HostA) Expanded states = 86
+> [  0.000000] (1:server@HostA) Visited states = 370
+> [  0.000000] (1:server@HostA) Executed transitions = 340
+> [  0.000000] (1:server@HostA) Expanded / Visited = 4.302326
