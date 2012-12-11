@@ -557,28 +557,27 @@ set(DOC_TOOLS
 
 # these files get copied automatically to the html documentation
 set(DOC_IMG
-${CMAKE_HOME_DIRECTORY}/doc/simgrid.css
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_modules.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
-)
+  ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
+  )
 
 set(bin_files
   ${bin_files}
