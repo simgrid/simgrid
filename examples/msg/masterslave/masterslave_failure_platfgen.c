@@ -130,7 +130,6 @@ int master(int argc, char *argv[])
   double task_comp_size = 0;
   double task_comm_size = 0;
   int i;
-  _XBT_GNUC_UNUSED int read;
 
   number_of_tasks = TASK_COUNT_PER_HOST*argc;
   task_comp_size = TASK_COMP_SIZE;
