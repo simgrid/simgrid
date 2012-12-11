@@ -12,11 +12,11 @@ $ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 --cfg=contexts/factory:ucont
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (3:client@Boivin) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  4.000000] (3:client@Boivin) Ask the request
+> [  0.000000] (3:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  4.000000] (3:client@Boivin) 2 got the answer. Sleep a bit and release it
+> [  0.000000] (3:client@Boivin) 2 got the answer. Sleep a bit and release it
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  8.000000] (3:client@Boivin) Ask the request
+> [  0.000000] (3:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (0:@) Next pair (depth = 33, 2 interleave) already reached !
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
