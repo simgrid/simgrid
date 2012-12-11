@@ -11,6 +11,8 @@
 #include "xbt/dynar.h"
 #include "xbt/replay.h"
 
+#include <errno.h>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg,
                                 "MSG actions for trace driven simulation");
 

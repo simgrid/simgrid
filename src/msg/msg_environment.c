@@ -7,7 +7,7 @@
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/dict.h"
+
 #ifdef HAVE_LUA
 #include <lua.h>
 #include <lauxlib.h>
