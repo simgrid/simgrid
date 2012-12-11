@@ -42,13 +42,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
  * mallocators should be protected from concurrent accesses.  */
 static int initialization_done = 0;
 
-static XBT_INLINE void lock_create(xbt_mallocator_t m)
+static XBT_INLINE void lock_reset(xbt_mallocator_t m)
 {
   m->lock = 0;
-}
-
-static XBT_INLINE void lock_destroy(xbt_mallocator_t m)
-{
 }
 
 static XBT_INLINE void lock_acquire(xbt_mallocator_t m)
@@ -147,7 +143,6 @@ void xbt_mallocator_free(xbt_mallocator_t m)
     m->free_f(m->objects[i]);
   }
   xbt_free(m->objects);
-  lock_destroy(m);
   xbt_free(m);
 }
 
@@ -195,7 +190,7 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
     if (xbt_mallocator_is_active()) {
       // We have to switch this mallocator from inactive to active (and then get an object)
       m->objects = xbt_new0(void *, m->max_size);
-      lock_create(m);
+      lock_reset(m);
       return xbt_mallocator_get(m);
     } else {
       object = m->new_f();
@@ -242,7 +237,7 @@ void xbt_mallocator_release(xbt_mallocator_t m, void *object)
     if (xbt_mallocator_is_active()) {
       // We have to switch this mallocator from inactive to active (and then store that object)
       m->objects = xbt_new0(void *, m->max_size);
-      lock_create(m);
+      lock_reset(m);
       xbt_mallocator_release(m,object);
     } else {
       m->free_f(object);
