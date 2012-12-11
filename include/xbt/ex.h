@@ -250,41 +250,34 @@ __ex_mctx_struct} __ex_mctx_t;
 
 /** @brief different kind of errors */
 typedef enum {
-  unknown_error = 0,/**< unknown error */
-  arg_error,        /**< Invalid argument */
-  bound_error,      /**< Out of bounds argument */
-  mismatch_error,   /**< The provided ID does not match */
-  not_found_error,  /**< The searched element was not found */
-
-  system_error,   /**< a syscall did fail */
-  network_error,  /**< error while sending/receiving data */
-  timeout_error,  /**< not quick enough, dude */
-  cancel_error,   /**< an action was canceled */
-  thread_error,    /**< error while [un]locking */
-  host_error,                            /**< host failed */
-  tracing_error,   /**< error during the simulation tracing */
-  io_error          /**< disk or file error */
+  unknown_error = 0,            /**< unknown error */
+  arg_error,                    /**< Invalid argument */
+  bound_error,                  /**< Out of bounds argument */
+  mismatch_error,               /**< The provided ID does not match */
+  not_found_error,              /**< The searched element was not found */
+  system_error,                 /**< a syscall did fail */
+  network_error,                /**< error while sending/receiving data */
+  timeout_error,                /**< not quick enough, dude */
+  cancel_error,                 /**< an action was canceled */
+  thread_error,                 /**< error while [un]locking */
+  host_error,                   /**< host failed */
+  tracing_error,                /**< error during the simulation tracing */
+  io_error                      /**< disk or file error */
 } xbt_errcat_t;
 
 XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);
 
 /** @brief Structure describing an exception */
 typedef struct {
-  char *msg;             /**< human readable message */
-  xbt_errcat_t category;
-                         /**< category like HTTP (what went wrong) */
-  int value;             /**< like errno (why did it went wrong) */
+  char *msg;                    /**< human readable message */
+  xbt_errcat_t category;        /**< category like HTTP (what went wrong) */
+  int value;                    /**< like errno (why did it went wrong) */
   /* throw point */
-  short int remote;
-                    /**< whether it was raised remotely */
-  char *host;     /**< NULL locally thrown exceptions; full hostname if remote ones */
-  /* FIXME: host should be hostname:port[#thread] */
-  char *procname;
-                  /**< Name of the process who thrown this */
-  int pid;        /**< PID of the process who thrown this */
-  char *file;     /**< Thrown point */
-  int line;       /**< Thrown point */
-  char *func;     /**< Thrown point */
+  char *procname;               /**< Name of the process who thrown this */
+  int pid;                      /**< PID of the process who thrown this */
+  char *file;                   /**< Thrown point */
+  int line;                     /**< Thrown point */
+  char *func;                   /**< Thrown point */
   /* Backtrace */
   int used;
   char **bt_strings;            /* only filed on display (or before the network propagation) */
@@ -302,9 +295,9 @@ typedef struct {
 } xbt_running_ctx_t;
 
 /* the static and dynamic initializers for a context structure */
-#define XBT_RUNNING_CTX_INITIALIZER \
-    { NULL, 0, { /* content */ NULL, unknown_error, 0, \
-                 /* throw point*/ 0,NULL, NULL,0, NULL, 0, NULL,\
+#define XBT_RUNNING_CTX_INITIALIZER                             \
+    { NULL, 0, { /* content */ NULL, unknown_error, 0,          \
+                 /* throw point*/ NULL, 0, NULL, 0, NULL,       \
                  /* backtrace */ 0, NULL, /* bt[] */ } }
 
 XBT_PUBLIC_DATA(const xbt_running_ctx_t) __xbt_ex_ctx_initializer;
@@ -426,8 +419,6 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
   _throw_ctx->exception.msg      = (m);                                 \
   _throw_ctx->exception.category = (xbt_errcat_t)(c);                   \
   _throw_ctx->exception.value    = (v);                                 \
-  _throw_ctx->exception.remote   = 0;                                   \
-  _throw_ctx->exception.host     = (char*)NULL;                         \
   _throw_ctx->exception.procname = (char*)xbt_procname();               \
   _throw_ctx->exception.pid      = xbt_getpid();                        \
   _throw_ctx->exception.file     = (char*)__FILE__;                     \

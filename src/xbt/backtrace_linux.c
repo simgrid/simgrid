@@ -80,7 +80,8 @@ void xbt_backtrace_current(xbt_ex_t * e)
   e->used = backtrace((void **) e->bt, XBT_BACKTRACE_SIZE);
   if (e->used == 0) {
     fprintf(stderr, "The backtrace() function failed, which probably means that the memory is exhausted. Here is a crude dump of the exception that I was trying to build:");
-    fprintf(stderr, "%s:%s(%d) [%s:%d] %s", e->host,e->procname,e->pid, e->file,e->line,e->msg);
+    fprintf(stderr, "%s(%d) [%s:%d] %s",
+            e->procname, e->pid, e->file, e->line, e->msg);
     fprintf(stderr, "Bailing out now since there is nothing I can do without a decent amount of memory. Please go fix the memleaks\n");
     exit(1);
   }
