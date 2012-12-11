@@ -32,6 +32,14 @@ if(DOXYGEN_PATH)
 
   configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
 
+  foreach(file ${DOC_FIGS})
+    string(REPLACE ".fig" ".png" tmp_file ${file})
+    string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/shared/fig/" "${CMAKE_HOME_DIRECTORY}/doc/html/" tmp_file ${tmp_file})
+    ADD_CUSTOM_COMMAND(TARGET simgrid_documentation
+      COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file}
+      )
+  endforeach()
+
   foreach(file ${DOC_IMG})
     ADD_CUSTOM_COMMAND(
       TARGET simgrid_documentation
