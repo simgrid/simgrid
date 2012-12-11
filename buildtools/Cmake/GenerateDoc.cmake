@@ -5,6 +5,14 @@ find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
 if(DOXYGEN_PATH)
 
+  ADD_CUSTOM_TARGET(simgrid_documentation
+    COMMENT "Generating the SimGrid documentation..."
+    DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
+    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
+    )
+
   execute_process(COMMAND ${DOXYGEN_PATH}/doxygen --version OUTPUT_VARIABLE DOXYGEN_VERSION )
   string(REGEX MATCH "^[0-9]" DOXYGEN_MAJOR_VERSION "${DOXYGEN_VERSION}")
   string(REGEX MATCH "^[0-9].[0-9]" DOXYGEN_MINOR_VERSION "${DOXYGEN_VERSION}")
@@ -24,14 +32,6 @@ if(DOXYGEN_PATH)
 
   configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
 
-  ADD_CUSTOM_TARGET(simgrid_documentation
-    COMMENT "Generating the SimGrid documentation..."
-    DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
-    COMMAND ${CMAKE_COMMAND} -E make_directory   ${CMAKE_HOME_DIRECTORY}/doc/html
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
-    )
-    
   foreach(file ${DOC_IMG})
     ADD_CUSTOM_COMMAND(
       TARGET simgrid_documentation
