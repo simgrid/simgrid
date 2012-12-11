@@ -44,25 +44,26 @@ static int initialization_done = 0;
 
 static XBT_INLINE void lock_create(xbt_mallocator_t m)
 {
-  m->mutex = initialization_done > 1 ? xbt_os_mutex_init() : NULL;
+  m->lock = 0;
 }
 
 static XBT_INLINE void lock_destroy(xbt_mallocator_t m)
 {
-  if (m->mutex)
-    xbt_os_mutex_destroy(m->mutex);
 }
 
 static XBT_INLINE void lock_acquire(xbt_mallocator_t m)
 {
-  if (m->mutex)
-    xbt_os_mutex_acquire(m->mutex);
+  if (initialization_done > 1) {
+    int *lock = &m->lock;
+    while (__sync_lock_test_and_set(lock, 1))
+      /* nop */;
+  }
 }
 
 static XBT_INLINE void lock_release(xbt_mallocator_t m)
 {
-  if (m->mutex)
-    xbt_os_mutex_release(m->mutex);
+  if (initialization_done > 1)
+    __sync_lock_release(&m->lock);
 }
 
 /**
