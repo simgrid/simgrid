@@ -30,7 +30,9 @@ static int match_recv(void* a, void* b, smx_action_t ignored) {
     if(ref->src == MPI_ANY_SOURCE)ref->real_src = req->src;
     if(ref->tag == MPI_ANY_TAG)ref->real_tag = req->tag;
     if(ref->real_size < req->real_size) ref->truncated = 1;
-    else ref->truncated = 0;
+    if(req->detached==1){
+        ref->detached_sender=req; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
+    }
     return 1;
   }else return 0;
 }
@@ -48,7 +50,10 @@ static int match_send(void* a, void* b,smx_action_t ignored) {
      if(req->src == MPI_ANY_SOURCE)req->real_src = ref->src;
      if(req->tag == MPI_ANY_TAG)req->real_tag = ref->tag;
      if(req->real_size < ref->real_size) req->truncated = 1;
-     else ref->truncated = 0;
+     if(ref->detached==1){
+         req->detached_sender=ref; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
+     }
+
      return 1;
    } else return 0;
 }
@@ -88,6 +93,13 @@ static MPI_Request build_request(void *buf, int count,
   request->action = NULL;
   request->flags = flags;
   request->detached = 0;
+  request->detached_sender = NULL;
+
+  request->truncated = 0;
+  request->real_size = 0;
+  request->real_tag = 0;
+
+  request->refcount=1;
 #ifdef HAVE_TRACING
   request->send = 0;
   request->recv = 0;
@@ -148,7 +160,7 @@ MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
   MPI_Request request =
     build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
                   comm, PERSISTENT | SEND);
-
+  request->refcount++;
   return request;
 }
 
@@ -158,7 +170,7 @@ MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
   MPI_Request request =
     build_request(buf, count, datatype, src, smpi_comm_rank(comm), tag,
                   comm, PERSISTENT | RECV);
-
+  request->refcount++;
   return request;
 }
 
@@ -178,7 +190,6 @@ void smpi_mpi_start(MPI_Request request)
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
-    if (request->action)request->action->comm.refcount++;
   } else {
 
     int receiver = smpi_group_index(smpi_comm_group(request->comm), request->dst);
@@ -195,9 +206,10 @@ void smpi_mpi_start(MPI_Request request)
     }
     if (request->size < 64*1024 ) { //(FIXME: this limit should be configurable)
       void *oldbuf = NULL;
+      request->detached = 1;
+      request->refcount++;
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
-        request->detached = 1;
         if (oldbuf){
           request->buf = malloc(request->size);
           memcpy(request->buf,oldbuf,request->size);
@@ -217,7 +229,6 @@ void smpi_mpi_start(MPI_Request request)
                          request,
                          // detach if msg size < eager/rdv switch limit
                          request->detached);
-    if (request->action)request->action->comm.refcount++;
 
 #ifdef HAVE_TRACING
     /* FIXME: detached sends are not traceable (request->action == NULL) */
@@ -240,8 +251,18 @@ void smpi_mpi_startall(int count, MPI_Request * requests)
 
 void smpi_mpi_request_free(MPI_Request * request)
 {
-  xbt_free(*request);
-  *request = MPI_REQUEST_NULL;
+
+  if((*request) != MPI_REQUEST_NULL){
+    (*request)->refcount--;
+    if((*request)->refcount<0) xbt_die("wrong refcount");
+
+    if((*request)->refcount==0){
+        xbt_free(*request);
+        *request = MPI_REQUEST_NULL;
+    }
+  }else{
+      xbt_die("freeing an already free request");
+  }
 }
 
 MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype,
@@ -258,7 +279,8 @@ MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-    smpi_isend_init(buf, count, datatype, dst, tag, comm);
+      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                    comm, NON_PERSISTENT | SEND);
 
   smpi_mpi_start(request);
   return request;
@@ -277,7 +299,8 @@ MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
                            int src, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-    smpi_irecv_init(buf, count, datatype, src, tag, comm);
+      build_request(buf, count, datatype, src, smpi_comm_rank(comm), tag,
+                    comm, NON_PERSISTENT | RECV);
 
   smpi_mpi_start(request);
   return request;
@@ -296,11 +319,8 @@ void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm)
 {
-  MPI_Request request =
-    build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
-                  comm, NON_PERSISTENT | SEND | RECV_DELETE);
-
-  smpi_mpi_start(request);
+  MPI_Request request;
+  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 
 }
@@ -333,74 +353,41 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
-
-  if(status != MPI_STATUS_IGNORE) {
-    status->MPI_SOURCE = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
-    status->MPI_TAG = req->tag == MPI_ANY_TAG ? req->real_tag : req->tag;
-    if(req->truncated)
-    status->MPI_ERROR = MPI_ERR_TRUNCATE;
-    else status->MPI_ERROR = MPI_SUCCESS ;
-    // this handles the case were size in receive differs from size in send
-    // FIXME: really this should just contain the count of receive-type blocks,
-    // right?
-    status->count = req->real_size;
-  }
-  req = *request;
-
-  print_request("Finishing", req);
-  MPI_Datatype datatype = req->old_type;
-
-  if(datatype->has_subtype == 1){
-      // This part handles the problem of non-contignous memory
-      // the unserialization at the reception
-    s_smpi_subtype_t *subtype = datatype->substruct;
-    if(req->flags & RECV) {
-      subtype->unserialize(req->buf, req->old_buf, req->real_size/smpi_datatype_size(datatype) , datatype->substruct);
+  if(!(req->detached && req->flags & SEND)){
+    if(status != MPI_STATUS_IGNORE) {
+      status->MPI_SOURCE = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
+      status->MPI_TAG = req->tag == MPI_ANY_TAG ? req->real_tag : req->tag;
+      if(req->truncated)
+      status->MPI_ERROR = MPI_ERR_TRUNCATE;
+      else status->MPI_ERROR = MPI_SUCCESS ;
+      // this handles the case were size in receive differs from size in send
+      // FIXME: really this should just contain the count of receive-type blocks,
+      // right?
+      status->count = req->real_size;
     }
-    if(req->detached == 0) free(req->buf);
-  }
-  smpi_datatype_unuse(datatype);
 
+    print_request("Finishing", req);
+    MPI_Datatype datatype = req->old_type;
+
+    if(datatype->has_subtype == 1){
+        // This part handles the problem of non-contignous memory
+        // the unserialization at the reception
+      s_smpi_subtype_t *subtype = datatype->substruct;
+      if(req->flags & RECV) {
+        subtype->unserialize(req->buf, req->old_buf, req->real_size/smpi_datatype_size(datatype) , datatype->substruct);
+      }
+      if(req->detached == 0) free(req->buf);
+    }
+    smpi_datatype_unuse(datatype);
+  }
+
+  if(req->detached_sender!=NULL){
+    smpi_mpi_request_free(&(req->detached_sender));
+  }
 
   if(req->flags & NON_PERSISTENT) {
-    if(req->flags & RECV &&
-       req->action &&
-      (req->action->state == SIMIX_DONE))
-    {
-      MPI_Request sender_request = (MPI_Request)SIMIX_comm_get_src_data(req->action);
-      if((sender_request!=MPI_REQUEST_NULL) &&
-        ( sender_request->detached ) &&
-        ( sender_request->flags & RECV_DELETE))
-      {
-        //we are in a receiver's wait from a detached send
-        //we have to clean the sender's side request here.... but only if done by a send, not an isend
-        //the request lives senderside for an isend. As detached is currently for send + isend, we use RECV_DELETE to separate them
-        //FIXME : see if just removing detached status for isend is also good
-        smpi_mpi_request_free(&sender_request);
-      }
-    }
-
-
-    if(req->action){
-      //if we want to free our request, we have to invalidate it at the other end of the comm
-      if(req->flags & SEND){
-        req->action->comm.src_data=MPI_REQUEST_NULL;
-      }else{
-        req->action->comm.dst_data=MPI_REQUEST_NULL;
-      }
-
-      smx_action_t temp=req->action;
-      if(req->action->comm.refcount == 1)req->action = NULL;
-      SIMIX_comm_destroy(temp);
-    }
-
-
-
     smpi_mpi_request_free(request);
-
-
   } else {
-    if(req->action)SIMIX_comm_destroy(req->action);
     req->action = NULL;
   }
 }
@@ -414,6 +401,7 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
   else
     flag = simcall_comm_test((*request)->action);
   if(flag) {
+    (*request)->refcount++;
     finish_wait(request, status);
   }else{
     smpi_empty_status(status);
@@ -538,8 +526,8 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
   print_request("Waiting", *request);
   if ((*request)->action != NULL) { // this is not a detached send
     simcall_comm_wait((*request)->action, -1.0);
-    finish_wait(request, status);
   }
+  finish_wait(request, status);
 
   // FIXME for a detached send, finish_wait is not called:
 }
@@ -557,13 +545,22 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
     map = xbt_new(int, count);
     size = 0;
-    XBT_DEBUG("Wait for one of");
+    XBT_DEBUG("Wait for one of %d", count);
     for(i = 0; i < count; i++) {
-      if((requests[i] != MPI_REQUEST_NULL) && (requests[i]->action != NULL)) {
-        print_request("Waiting any ", requests[i]);
-        xbt_dynar_push(comms, &requests[i]->action);
-        map[size] = i;
-        size++;
+      if(requests[i] != MPI_REQUEST_NULL) {
+        if (requests[i]->action != NULL) {
+          XBT_DEBUG("Waiting any %p ", requests[i]);
+          xbt_dynar_push(comms, &requests[i]->action);
+          map[size] = i;
+          size++;
+        }else{
+         //This is a finished detached request, let's return this one
+         size=0;//so we free the dynar but don't do the waitany call
+         index=i;
+         finish_wait(&requests[i], status);//cleanup if refcount = 0
+         requests[i]=MPI_REQUEST_NULL;//set to null
+         break;
+         }
       }
     }
     if(size > 0) {
@@ -604,7 +601,6 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
       }
     }
   }
-
   for(c = 0; c < count; c++) {
       if(MC_is_active()) {
         smpi_mpi_wait(&requests[c], pstat);
@@ -621,6 +617,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
       }
     }
   }
+
   return retvalue;
 }
 

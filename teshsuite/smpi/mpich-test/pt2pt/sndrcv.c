@@ -95,20 +95,20 @@ for (i=0; i<ncomm; i++) {
             MPI_Get_count( &status, types[j], &count );
             if (count != counts[j]) {
 		fprintf( stderr, 
-			"Error in counts (got %d expected %d) with type %s\n",
+			"Sendrecv_replace Error in counts (got %d expected %d) with type %s\n",
 			 count, counts[j], names[j] );
                 err++;
                 }
             if (status.MPI_SOURCE != partner) {
 		fprintf( stderr, 
-			"Error in source (got %d expected %d) with type %s\n",
+			"Sendrecv_replace Error in source (got %d expected %d) with type %s\n",
 			 status.MPI_SOURCE, partner, names[j] );
                 err++;
                 }
             if ((errloc = CheckData( inbufs[j], outbufs[j], bytesize[j] ))) {
 		char *p1, *p2;
 		fprintf( stderr, 
-                  "Error in data with type %s (type %d on %d) at byte %d\n", 
+                  "Sendrecv_replace Error in data with type %s (type %d on %d) at byte %d\n", 
 			 names[j], j, world_rank, errloc - 1 );
 		p1 = (char *)inbufs[j];
 		p2 = (char *)outbufs[j];
