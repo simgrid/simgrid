@@ -9,6 +9,7 @@
 #include "xbt/misc.h"
 #include "xbt/config.h"
 #include "xbt/log.h"
+#include "xbt/mallocator.h"
 #include "xbt/str.h"
 #include "surf/surf_private.h"
 #include "surf/surf_routing.h"  /* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
