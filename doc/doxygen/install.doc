@@ -3,7 +3,7 @@
 
 \section install_cmake Installing the SimGrid library
 
-\subsection install_intro Some generality
+\subsection install_intro Some generalities
 
 \subsubsection install_intro1 What is Cmake?
 
@@ -11,11 +11,11 @@ CMake is a family of tools designed to build, test and package software. CMake i
 
 \subsubsection install_intro2 Why cmake?
 
-CMake permits to developers to compil projects on different plateforms. Then many tools are embedded like ctest for making test, a link to cdash for vizualise results but also test coverage and bug reports.
+CMake permits to developers to compile projects on different platforms. Then many tools are embedded like ctest for making test, a link to cdash for vizualise results but also test coverage and bug reports.
 
 \subsubsection install_intro3 What cmake need?
 
-CMake needs some prerequists like :
+CMake depends on a few other tools like:
 
 For Unix and MacOS:
   \li make
@@ -32,7 +32,7 @@ port install clang-3.0
 port install gcc47
 \endverbatim
 
-For Windows :
+For Windows:
   \li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
   \li MinGW <a href="http://sourceforge.net/projects/mingw/files/MinGW/">(download page)</a>
   \li perl <a href="http://www.activestate.com/activeperl/downloads">(download page)</a>
@@ -46,7 +46,7 @@ Note that if you want change the compiler, you can simply specify the environmen
 	export CXX=clang++
 \endverbatim
 
-\subsubsection install_cmakeoption1 Liste of options
+\subsubsection install_cmakeoption1 Options list
 
 \verbatim
 "cmake -D[name]=[value] ... ./"
@@ -77,53 +77,53 @@ Note that if you want change the compiler, you can simply specify the environmen
 
 \subsubsection install_cmakeoption2 Options explaination
 
-  \li enable_gtnets : set to true implie that user wants to use gtnets.
+  \li enable_gtnets: set to true implies that user wants to use gtnets.
 
-  \li enable_ns3 : set to true implie that user wants to use ns3.
+  \li enable_ns3: set to true implies that user wants to use ns3.
 
-  \li enable_lua : set to true implie that user wants to add lua langage into simgrid compilation.
+  \li enable_lua: set to true implies that user wants to add lua language into simgrid compilation.
 
-  \li enable_compile_optimizations : add flags "-O3 -finline-functions -funroll-loops -fno-strict-aliasing"
+  \li enable_compile_optimizations: add flags "-O3 -finline-functions -funroll-loops -fno-strict-aliasing"
 
-  \li enable_compile_warnings : add flags "-Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror"
+  \li enable_compile_warnings: add flags "-Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror"
 
-  \li enable_smpi : Set to true if you want to use smpi lib. Actually on simgrid v3.4.1 Mac doesn't support lib smpi.
+  \li enable_smpi: Set to true if you want to use smpi lib. Actually on simgrid v3.4.1 Mac doesn't support lib smpi.
 
-  \li enable_maintainer_mode : set to true it remakes some files.
+  \li enable_maintainer_mode: set to true it remakes some files.
 
-  \li enable_tracing : To enable the generation of simulation traces for visualization.
+  \li enable_tracing: To enable the generation of simulation traces for visualization.
 
-  \li enable_coverage : When set to true this option enable code coverage by setting -fprofile-arcs -ftest-coverage flags.
+  \li enable_coverage: When set to true this option enable code coverage by setting -fprofile-arcs -ftest-coverage flags.
 
-  \li enable_memcheck : When set to true this option enable tests for memcheck.
+  \li enable_memcheck: When set to true this option enable tests for memcheck.
 
-  \li enable_model-checking : Enable the model checking when set to true.
+  \li enable_model-checking: Enable the model checking when set to true.
 
-  \li enable_debug : If enable_debug is set to 'off' Simgrid compil flag has '-DNDEBUG' option.
+  \li enable_debug: If enable_debug is set to 'off' Simgrid compile flag has '-DNDEBUG' option.
 
-  \li enable_jedule : To enable jedule mode, which creates visualizations of task schedules with Simdag.
+  \li enable_jedule: To enable jedule mode, which creates visualizations of task schedules with Simdag.
 
-  \li enable_latency_bound_tracking : Set to on if you want to be warned when communications are limited by round trip time.
+  \li enable_latency_bound_tracking: Set to on if you want to be warned when communications are limited by round trip time.
 
-  \li enable_lib_static : Enable generated Simgrid and smpi static libraries.
+  \li enable_lib_static: Enable generated Simgrid and smpi static libraries.
 
-  \li enable_supernovae : Set to true make one file for each lib and compile with those generated files.
+  \li enable_supernovae: Set to true make one file for each lib and compile with those generated files.
 
-  \li enable_msg_deprecated : Simgrid is compiled with msg deprecated functions.
+  \li enable_msg_deprecated: Simgrid is compiled with msg deprecated functions.
 
-  \li enable_print_message : When set to true configuration print more debug output.
+  \li enable_print_message: When set to true configuration print more debug output.
 
-  \li gtnets_path : Path to gtnets install directory (ex /usr)
+  \li gtnets_path: Path to gtnets install directory (ex /usr)
 
-  \li ns3_path : Path to ns3 install directory (ex /usr)
+  \li ns3_path: Path to ns3 install directory (ex /usr)
 
-  \li CMAKE_INSTALL_PREFIX : Path where are installed lib/ doc/ and include/ directories (ex /usr/local)
+  \li CMAKE_INSTALL_PREFIX: Path where are installed lib/ doc/ and include/ directories (ex /usr/local)
 
-  \li pipol_user : specify your pipol username if you want to use the pipol-remote command.
+  \li pipol_user: specify your pipol username if you want to use the pipol-remote command.
 
-\subsubsection install_cmakeoption3 Initialisation
+\subsubsection install_cmakeoption3 Initialization
 
-Those options are initialized the first time you launch "cmake ." whithout specified option.
+Those options are initialized the first time you launch "cmake ." without specified option.
 
 \verbatim
 enable_gtnets			on
@@ -177,8 +177,8 @@ Then follow instructions.
 
 \subsubsection install_cmakecompilation2bis Build out of source.
 
-As cmake generate many files used for compilation, we recommand to make a build directory.
-For examples you can make :
+As cmake generate many files used for compilation, we recommend to make a build directory.
+For examples you can make:
 
 \verbatim
 "navarrop@caraja:~/Developments$ cd simgrid/"
@@ -188,7 +188,7 @@ For examples you can make :
 "navarrop@caraja:~/Developments/simgrid/build_directory$ make"
 \endverbatim
 
-Or complety out of sources :
+Or completely out of sources:
 
 \verbatim
 "navarrop@caraja:~/Developments$ mkdir build_dir"
@@ -197,7 +197,7 @@ Or complety out of sources :
 "navarrop@caraja:~/Developments/build_dir$ make"
 \endverbatim
 
-Those two kind of compilation permit to delete files created by compilation easier.
+Those two kinds of compilation allow to delete files created by compilation more easily.
 
 \subsubsection install_cmakecompilation3 Resume of command line
 
@@ -206,7 +206,7 @@ Those two kind of compilation permit to delete files created by compilation easi
 cmake <path>			configure the project for Unix and Mac
 cmake -G"MinGW Makefiles" <path>	configure the project for Windows
 make				build all targets for Unix and Mac
-ming32-make				buill all targets for windows
+ming32-make				build all targets for windows
 (g)make VERBOSE=1		build all targets and print build command lines
 make check			test all targets and summarize
 make dist			make the distrib
@@ -217,7 +217,7 @@ make distcheck			check the dist (make + make dist + make check)
 make simgrid_documentation	Create simgrid documentation
 \endverbatim
 
-When the project have been succesfully compiling and build you can make tests.
+When the project have been successfully compiling and build you can make tests.
 
  \li CTest
 \verbatim
@@ -310,7 +310,7 @@ Step 6: Restart your computer to take in consideration environment variables.
 
 \subsection install_Win_compile1 Compile a project "HelloWorld"
 
-In the SimGrid install directroy you should have an HelloWorld project to explain you how to start
+In the SimGrid install directory you should have an HelloWorld project to explain you how to start
 compiling a source file. There are:
 \verbatim
 - HelloWorld.c		The example source file.
@@ -320,7 +320,7 @@ compiling a source file. There are:
 - README 		This explaination.
 \endverbatim
 
-Now let's compil this example:
+Now let's compile this example:
 \li Run windows shell "cmd".
 \li Open HelloWorld Directory ('cd' command line).
 \li Create a build directory and change directory. (optional)
@@ -360,7 +360,7 @@ https://github.com/aespinosa/simgrid-vagrant
 
 \section install_mac Installing the SimGrid framework on Mac OS X
 
-The Mac OS X system is part of the UNIX familly, but it exibits some
+The Mac OS X system is part of the UNIX family, but it exhibits some
 specificities that complicate a bit the build of SimGrid. Current
 versions of SimGrid (3.7.x) can only be build with the GCC Compiler,
 but recent OS X version provide only an ancient version of that tool
@@ -432,7 +432,7 @@ LIBS =
 clean:
 	rm -f $(BIN_FILES) *.o *~
 .SUFFIXES:
-.PHONY : clean
+.PHONY: clean
 
 \endverbatim
 
@@ -446,7 +446,7 @@ the static version, remove the <tt>-lsimgrid</tt> and add a
 after the <tt>LIBS = </tt>.
 
 More generally, if you have never written a Makefile by yourself, type
-in a terminal : <tt>info make</tt> and read the introduction. The
+in a terminal: <tt>info make</tt> and read the introduction. The
 previous example should be enough for a first try but you may want to
 perform some more complex compilations...
 
