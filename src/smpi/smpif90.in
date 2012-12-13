@@ -8,7 +8,7 @@ CMAKE_LINKARGS="-L@libdir@"
 FFLAGS="-O2 -ff2c "
 LINKARGS="-lsimgrid -lsmpi -lm -lgfortran"
 main_name=main
-TMPFILE=smpi_temp.f90
+TMPFILE=$(mktemp).f90
 CMDLINE=""
 while [ -n "$1" ]; do
   ARG="$1"
@@ -26,7 +26,7 @@ while [ -n "$1" ]; do
       fi
       #replace "program main_name by subroutine user\_main (and the end clause as well)"
       sed 's/[[:space:]]*program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/subroutine user\_main /g'  ${ARG} > ${TMPFILE}
-      SRCFILE="./${TMPFILE}"
+      SRCFILE="${TMPFILE}"
       CMDLINE="${CMDLINE} ${SRCFILE} "
       ;;
    *)
