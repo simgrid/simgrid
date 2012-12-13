@@ -3,12 +3,13 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  The Grasgory release: GRAS is really dead now.
 
  GRAS:
- * If you use GRAS, you should stay at SimGrid 3.7 or something since
-   it was not really maintained with the latest versions of SimGrid as
-   nobody stepped in to take the maintainership over.
+ * If you use GRAS, you should stay at SimGrid 3.5 (at most) since it
+   was considered as experimental and badly maintained since then.
  * Keeping it was thus a trap to our potential users, that could take
-   it instead of MSG or SMPI by mistake. GRAS also induces a lot of XBT
-   code (for portability sake), that must be maintained too.
+   it instead of MSG or SMPI by mistake despite is pity state.
+ * GRAS seems to have very few users (if any), and no one volunteered
+   to maintain it further. It also induces a lot of XBT code (for
+   portability sake), that must be maintained too. 
  * For all these reasons, we killed GRAS. If someone wants to revive it
    in the future, don't cry, our git history still remembers of GRAS.
 
