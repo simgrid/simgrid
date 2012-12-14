@@ -237,10 +237,10 @@ void MC_modelcheck_safety(void)
   initial_state_safety->snapshot = MC_take_snapshot();
   MC_UNSET_RAW_MEM;
 
+  MC_dpor();
+
   if(raw_mem_set)
     MC_SET_RAW_MEM;
-
-  MC_dpor();
 
   MC_exit();
 }
@@ -819,6 +819,32 @@ void MC_ignore_data_bss(void *address, size_t size){
   if(raw_mem_set)
     MC_SET_RAW_MEM;
 }
+
+static size_t data_bss_ignore_size(void *address){
+  unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
+  mc_data_bss_ignore_variable_t var;
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
+    if(var->address == address)
+      return var->size;
+    if(var->address < address){
+      if((void *)((char *)var->address + var->size) > address)
+        return (char *)var->address + var->size - (char*)address;
+      else
+        start = cursor + 1;
+    }
+    if(var->address > address)
+      end = cursor - 1;   
+  }
+
+  return 0;
+}
+
+
 
 void MC_ignore_stack(const char *var_name, const char *frame){
   
@@ -1646,31 +1672,6 @@ void print_local_variables(xbt_dict_t list){
   }
 
 }
-
-static size_t data_bss_ignore_size(void *address){
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
-  mc_data_bss_ignore_variable_t var;
-
-  while(start <= end){
-    cursor = (start + end) / 2;
-    var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
-    if(var->address == address)
-      return var->size;
-    if(var->address < address){
-      if((void *)((char *)var->address + var->size) > address)
-        return (char *)var->address + var->size - (char*)address;
-      else
-        start = cursor + 1;
-    }
-    if(var->address > address)
-      end = cursor - 1;   
-  }
-
-  return 0;
-}
-
 
 static void MC_get_global_variables(char *elf_file){
 
