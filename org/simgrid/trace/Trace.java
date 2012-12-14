@@ -10,6 +10,8 @@
  */
 package org.simgrid.trace;
 
+import org.simgrid.msg.Msg;
+
 public final class Trace {
 	/* Statically load the library which contains all native functions used in here */
 	static {
