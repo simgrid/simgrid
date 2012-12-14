@@ -1,5 +1,7 @@
 /*! \page platform Platform Description
 
+@tableofcontents
+
 In order to run any simulation, SimGrid needs 3 things: something to run
 (so, your code), a description of the platform on which you want to run your
 application, and finally it needs something to know where to deploy what.
@@ -117,7 +119,7 @@ AS. So it allows you to define a hierarchy into your platform.
 attributes.
 
 <b>AS</b> attributes :
-\li <b>name (mandatory)</b>: the identifier of AS to be used when
+\li <b>id (mandatory)</b>: the identifier of AS to be used when
     referring to it.     
 \li <b>routing (mandatory)</b>: the routing model used into it. By
     model we mean the internal way the simulator will manage routing.
