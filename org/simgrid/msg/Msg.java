@@ -50,6 +50,10 @@ public final class Msg {
 			in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
 		}  
 		if (in == null) {
+			filename = "lib"+name+".dll";
+			in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
+		}  
+		if (in == null) {
 			filename = "lib"+name+".dylib";
 			in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
 		}  
