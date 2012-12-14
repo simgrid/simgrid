@@ -325,6 +325,9 @@ void SIMIX_comm_destroy(smx_action_t action)
     action->comm.src_buff = NULL;
   }
 
+  if(action->comm.rdv)
+    SIMIX_rdv_remove(action->comm.rdv, action);
+
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
