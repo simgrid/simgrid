@@ -1,5 +1,6 @@
 /*! \page FAQ Frequently Asked Questions
 
+@tableofcontents
 
 \section faq_simgrid I'm new to SimGrid. I have some questions. Where should I start?
 
@@ -466,7 +467,7 @@ assessed. Please keep this fact in mind when using it.
 
 \section faq_troubleshooting Troubleshooting
 
-\subsubsection faq_trouble_changelog The feature X stopped to work after my last update 
+\subsection faq_trouble_changelog The feature X stopped to work after my last update 
 
 I guess that you want to read the ChangeLog file, that always contains
 all the information that could be important to the users during the
