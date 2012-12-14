@@ -156,6 +156,7 @@ set(JAVA_EXAMPLES
   ${CMAKE_HOME_DIRECTORY}/examples/chord/FindSuccessorAnswerTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/FindSuccessorTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/GetPredecessorAnswerTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/GetPredecessorTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/NotifyTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/cloud/Cloud.java
   ${CMAKE_HOME_DIRECTORY}/examples/cloud/FinalizeTask.java
