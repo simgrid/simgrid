@@ -149,7 +149,7 @@ $ make pipol_test_list_images
 \section inside_autotests_dev_guide_pipol_nightly How to use nightly builds?
 
 All the pipol scripts are located in \"<project/directory>/buildtools/pipol/\".
-If you modifie them you have to update the pipol home directory by using this command: make sync-pipl.
+If you modify them you have to update the pipol home directory by using this command: make sync-pipol.
 
 It will copy those files:
 \verbatim
