@@ -1,7 +1,7 @@
 Using Git for SimGrid
 =====================
 
-SimGrid developement tree is now managed with Git. 
+SimGrid developement tree is now managed with Git.
 So, you need to use Git to :
 
 - follow the last development of SimGrid
@@ -61,7 +61,7 @@ Several rules must be repected as much as possible :
 - each commit should contain only one logical modification
 - this modification must be described in the log message. The first line of the
   log is a summary, the second line should be empty, the next lines can
-  describe more precisely the modifications. 
+  describe more precisely the modifications.
 
 
 Your first line of commit message can begin with a [flag] telling which global
