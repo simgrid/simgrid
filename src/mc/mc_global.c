@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
+#include "simgrid/sg_config.h"
 #include "../surf/surf_private.h"
 #include "../simix/smx_private.h"
 #include "../xbt/mmalloc/mmprivate.h"
