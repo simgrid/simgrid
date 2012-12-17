@@ -1,6 +1,7 @@
 ### define source packages
 
 set(EXTRA_DIST
+  src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/platf_interface.h

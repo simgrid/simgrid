@@ -11,8 +11,11 @@
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "xbt/str.h"
-#include "surf/surf_private.h"
-#include "surf/surf_routing.h"  /* COORD_HOST_LEVEL and COORD_ASR_LEVEL */
+#include "xbt/lib.h" 
+#include "xbt/sysdep.h"
+#include "surf/surf.h"
+#include "surf/maxmin.h"
+#include "instr/instr_interface.h"
 #include "simgrid/simix.h"
 #include "simgrid/sg_config.h"
 #include "mc/mc.h" 
@@ -21,13 +24,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of simgrid");
 
 xbt_cfg_t _sg_cfg_set = NULL;
-
-int _sg_do_model_check = 0;
-int _surf_mc_checkpoint=0;
-char* _surf_mc_property_file=NULL;
-int _surf_mc_timeout=0;
-int _surf_mc_max_depth=1000;
-int _surf_mc_visited=0;
 
 int _sg_init_status = 0;      /* 0: beginning of time (config cannot be changed yet);
                                   1: initialized: cfg_set created (config can now be changed);
@@ -297,11 +293,6 @@ static void _sg_cfg_cb_contexts_parallel_mode(const char *name, int pos)
   }
 }
 
-static void _sg_cfg_cb_surf_nthreads(const char *name, int pos)
-{
-  surf_set_nthreads(xbt_cfg_get_int(_sg_cfg_set, name));
-}
-
 static void _sg_cfg_cb__surf_network_coordinates(const char *name,
                                                    int pos)
 {
@@ -317,6 +308,11 @@ static void _sg_cfg_cb__surf_network_coordinates(const char *name,
   } else {
     xbt_die("Command line setting of whether to use coordinates must be either \"yes\" or \"no\"");
   }
+}
+
+static void _sg_cfg_cb_surf_nthreads(const char *name, int pos)
+{
+  surf_set_nthreads(xbt_cfg_get_int(_sg_cfg_set, name));
 }
 
 static void _sg_cfg_cb__surf_network_crosstraffic(const char *name,

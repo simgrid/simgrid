@@ -311,7 +311,7 @@ void set_pair_reached(xbt_state_t st){
 
 int visited(xbt_state_t st){
 
-  if(_surf_mc_visited == 0)
+  if(_sg_mc_visited == 0)
     return 0;
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -377,7 +377,7 @@ int visited(xbt_state_t st){
       }
     }
 
-    if(xbt_dynar_length(visited_pairs) == _surf_mc_visited){
+    if(xbt_dynar_length(visited_pairs) == _sg_mc_visited){
       xbt_dynar_remove_at(visited_pairs, 0, NULL);
     }
 
@@ -618,7 +618,7 @@ void MC_ddfs(int search_cycle){
   mc_pair_stateless_t remove_pair;
   mc_pair_reached_t remove_pair_reached;
   
-  if(xbt_fifo_size(mc_stack_liveness) < _surf_mc_max_depth){
+  if(xbt_fifo_size(mc_stack_liveness) < _sg_mc_max_depth){
 
     if(current_pair->requests > 0){
 
@@ -923,7 +923,7 @@ void MC_ddfs(int search_cycle){
     
   }
 
-  if(xbt_fifo_size(mc_stack_liveness) == _surf_mc_max_depth ){
+  if(xbt_fifo_size(mc_stack_liveness) == _sg_mc_max_depth ){
     XBT_DEBUG("Pair (depth = %d) shifted in stack, maximum depth reached", xbt_fifo_size(mc_stack_liveness) );
   }else{
     XBT_DEBUG("Pair (depth = %d) shifted in stack", xbt_fifo_size(mc_stack_liveness) );

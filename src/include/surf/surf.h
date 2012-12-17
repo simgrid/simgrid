@@ -22,6 +22,21 @@
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
 
+/* user-visible parameters */
+extern double sg_tcp_gamma;
+extern double sg_sender_gap;
+extern double sg_latency_factor;
+extern double sg_bandwidth_factor;
+extern double sg_weight_S_parameter;
+extern int sg_maxmin_selective_update;
+extern int sg_network_crosstraffic;
+#ifdef HAVE_GTNETS
+extern double sg_gtnets_jitter;
+extern int sg_gtnets_jitter_seed;
+#endif
+extern xbt_dynar_t surf_path;
+
+
 typedef enum {
   SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
   SURF_NETWORK_ELEMENT_HOST,    /* host type */
@@ -750,6 +765,14 @@ int surf_get_nthreads(void);
 void surf_set_nthreads(int nthreads);
 
 void surf_watched_hosts(void);
+
+/*
+ * Returns the initial path. On Windows the initial path is
+ * the current directory for the current process in the other
+ * case the function returns "./" that represents the current
+ * directory on Unix/Linux platforms.
+ */
+const char *__surf_get_initial_path(void);
 
 SG_END_DECL()
 #endif                          /* _SURF_SURF_H */

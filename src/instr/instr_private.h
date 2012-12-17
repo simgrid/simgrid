@@ -7,6 +7,7 @@
 #ifndef INSTR_PRIVATE_H_
 #define INSTR_PRIVATE_H_
 
+#include "instr/instr_interface.h"
 #include "simgrid_config.h"
 
 #ifdef HAVE_TRACING
@@ -18,7 +19,6 @@
 
 #define INSTR_DEFAULT_STR_SIZE 500
 
-#include "instr/instr.h"
 #include "msg/msg.h"
 #include "simdag/private.h"
 #include "simix/smx_private.h"
@@ -203,7 +203,6 @@ char *TRACE_get_filename(void);
 char *TRACE_get_viva_uncat_conf (void);
 char *TRACE_get_viva_cat_conf (void);
 void TRACE_global_init(int *argc, char **argv);
-void TRACE_help(int detailed);
 void TRACE_generate_viva_uncat_conf (void);
 void TRACE_generate_viva_cat_conf (void);
 void instr_pause_tracing (void);

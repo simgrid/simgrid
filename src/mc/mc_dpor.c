@@ -14,7 +14,7 @@ static int is_visited_state(void);
 
 static int is_visited_state(){
 
-  if(_surf_mc_visited == 0)
+  if(_sg_mc_visited == 0)
     return 0;
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -57,7 +57,7 @@ static int is_visited_state(){
       }   
     }
 
-    if(xbt_dynar_length(visited_states) == _surf_mc_visited){
+    if(xbt_dynar_length(visited_states) == _sg_mc_visited){
       mc_snapshot_t state_to_remove = NULL;
       xbt_dynar_shift(visited_states, &state_to_remove);
       MC_free_snapshot(state_to_remove);
@@ -153,7 +153,7 @@ void MC_dpor(void)
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_fifo_size(mc_stack_safety) < _surf_mc_max_depth &&
+    if (xbt_fifo_size(mc_stack_safety) < _sg_mc_max_depth &&
         (req = MC_state_get_request(state, &value))) {
 
       /* Debug information */
@@ -186,7 +186,7 @@ void MC_dpor(void)
           }
         }
 
-        if(_surf_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _surf_mc_checkpoint == 0)){
+        if(_sg_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _sg_mc_checkpoint == 0)){
           next_state->system_state = MC_take_snapshot();
         }
 
@@ -208,7 +208,7 @@ void MC_dpor(void)
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
 
-      if(xbt_fifo_size(mc_stack_safety) == _surf_mc_max_depth)  
+      if(xbt_fifo_size(mc_stack_safety) == _sg_mc_max_depth)  
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
       else
         XBT_DEBUG("There are no more processes to interleave.");
@@ -273,7 +273,7 @@ void MC_dpor(void)
 
         if (MC_state_interleave_size(state)) {
           /* We found a back-tracking point, let's loop */
-          if(_surf_mc_checkpoint){
+          if(_sg_mc_checkpoint){
             if(state->system_state != NULL){
               MC_restore_snapshot(state->system_state);
               xbt_fifo_unshift(mc_stack_safety, state);

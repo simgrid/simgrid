@@ -24,6 +24,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
 /* Configuration support */
 e_mc_reduce_t mc_reduce_kind=e_mc_reduce_unset;
 
+int _sg_do_model_check = 0;
+int _sg_mc_checkpoint=0;
+char* _sg_mc_property_file=NULL;
+int _sg_mc_timeout=0;
+int _sg_mc_max_depth=1000;
+int _sg_mc_visited=0;
+
 
 extern int _sg_init_status;
 void _mc_cfg_cb_reduce(const char *name, int pos) {
@@ -44,34 +51,34 @@ void _mc_cfg_cb_checkpoint(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_checkpoint = xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_mc_checkpoint = xbt_cfg_get_int(_sg_cfg_set, name);
 }
 void _mc_cfg_cb_property(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a property after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_property_file= xbt_cfg_get_string(_sg_cfg_set, name);
+  _sg_mc_property_file= xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_timeout(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_timeout= xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_mc_timeout= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_max_depth(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a max depth value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_max_depth= xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_mc_max_depth= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_visited(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a number of stored visited states after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_visited= xbt_cfg_get_int(_sg_cfg_set, name);
+  _sg_mc_visited= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 
@@ -116,7 +123,7 @@ static size_t data_bss_ignore_size(void *address);
 static void MC_get_global_variables(char *elf_file);
 
 void MC_do_the_modelcheck_for_real() {
-  if (!_surf_mc_property_file || _surf_mc_property_file[0]=='\0') {
+  if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
     if (mc_reduce_kind==e_mc_reduce_unset)
       mc_reduce_kind=e_mc_reduce_dpor;
 
@@ -128,8 +135,8 @@ void MC_do_the_modelcheck_for_real() {
     if (mc_reduce_kind==e_mc_reduce_unset)
       mc_reduce_kind=e_mc_reduce_none;
 
-    XBT_INFO("Check the liveness property %s",_surf_mc_property_file);
-    MC_automaton_load(_surf_mc_property_file);
+    XBT_INFO("Check the liveness property %s",_sg_mc_property_file);
+    MC_automaton_load(_sg_mc_property_file);
     MC_modelcheck_liveness();
   }
 }
@@ -220,7 +227,7 @@ void MC_modelcheck_safety(void)
 
   MC_UNSET_RAW_MEM;
 
-  if(_surf_mc_visited > 0){
+  if(_sg_mc_visited > 0){
     MC_init();
   }else{
     MC_SET_RAW_MEM;
@@ -523,7 +530,7 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
 
   MC_show_stack_safety(stack);
 
-  if(!_surf_mc_checkpoint){
+  if(!_sg_mc_checkpoint){
 
     mc_state_t state;
 

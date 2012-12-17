@@ -17,19 +17,6 @@
 
 #define NO_MAX_DURATION -1.0
 
-/* user-visible parameters */
-extern double sg_tcp_gamma;
-extern double sg_sender_gap;
-extern double sg_latency_factor;
-extern double sg_bandwidth_factor;
-extern double sg_weight_S_parameter;
-extern int sg_maxmin_selective_update;
-extern int sg_network_crosstraffic;
-#ifdef HAVE_GTNETS
-extern double sg_gtnets_jitter;
-extern int sg_gtnets_jitter_seed;
-#endif
-
 extern xbt_dict_t watched_hosts_lib;
 
 extern const char *surf_action_state_names[6];
@@ -100,7 +87,6 @@ void generic_update_actions_state_full(double now, double delta, surf_model_t mo
 FILE *surf_fopen(const char *name, const char *mode);
 
 extern tmgr_history_t history;
-extern xbt_dynar_t surf_path;
 
 //void surf_config_init(int *argc, char **argv);
 //void surf_config_finalize(void);
@@ -111,14 +97,6 @@ double net_action_get_remains(surf_action_t action);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 int net_get_link_latency_limited(surf_action_t action);
 #endif
-
-/*
- * Returns the initial path. On Windows the initial path is
- * the current directory for the current process in the other
- * case the function returns "./" that represents the current
- * directory on Unix/Linux platforms.
- */
-const char *__surf_get_initial_path(void);
 
 /* The __surf_is_absolute_file_path() returns 1 if
  * file_path is a absolute file path, in the other

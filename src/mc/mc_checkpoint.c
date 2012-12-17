@@ -205,7 +205,7 @@ mc_snapshot_t MC_take_snapshot()
     }
   }
 
-  if(_surf_mc_visited > 0 || strcmp(_surf_mc_property_file,""))
+  if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,""))
     snapshot->stacks = take_snapshot_stacks(heap);
   
   free_memory_map(maps);
