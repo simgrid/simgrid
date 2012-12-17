@@ -595,6 +595,7 @@ set(txt_files
   ${txt_files}
   AUTHORS
   COPYING
+  README
   ChangeLog
   INSTALL
   LICENSE-LGPL-2.1
