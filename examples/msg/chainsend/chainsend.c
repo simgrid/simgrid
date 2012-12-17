@@ -47,7 +47,7 @@ msg_error_t test_all(const char *platform_file,
 
 
 
-  XBT_INFO("test_all");
+  XBT_DEBUG("test_all");
 
   /*  Simulation setting */
   MSG_create_environment(platform_file);

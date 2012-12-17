@@ -296,6 +296,13 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
                 id, linecount, last_event->delta, event.delta, input);
       }
       last_event->delta = event.delta - last_event->delta;
+    } else {
+      if(event.delta > 0.0){
+        s_tmgr_event_t first_event;
+        first_event.delta=event.delta;
+        first_event.value=-1.0;
+        xbt_dynar_push(trace->s_list.event_list, &first_event);
+      }
     }
     xbt_dynar_push(trace->s_list.event_list, &event);
     last_event =

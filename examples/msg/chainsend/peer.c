@@ -16,7 +16,7 @@ void peer_init_chain(peer_t peer, message_t msg)
 
 static void peer_forward_msg(peer_t peer, message_t msg)
 {
-  msg_task_t task = task_message_data_new(peer->me, peer->next, NULL, 0);
+  msg_task_t task = task_message_data_new(peer->me, peer->next, NULL, msg->data_length);
   msg_comm_t comm = NULL;
   XBT_DEBUG("Sending (isend) from %s into mailbox %s", peer->me, peer->next);
   comm = MSG_task_isend(task, peer->next);
@@ -38,6 +38,7 @@ int peer_execute_task(peer_t peer, msg_task_t task)
       if (peer->next != NULL)
         peer_forward_msg(peer, msg);
       peer->pieces++;
+      peer->bytes += msg->data_length;
       break;
     case MESSAGE_END_DATA:
       xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %d before initialization", msg->type);
@@ -59,7 +60,7 @@ msg_error_t peer_wait_for_message(peer_t peer)
   int done = 0;
 
   while (!done) {
-    if (comm == NULL) // FIXME I should have a recv queue
+    if (comm == NULL)
       comm = MSG_task_irecv(&task, peer->me);
 
     if (MSG_comm_test(comm)) {
@@ -86,6 +87,7 @@ void peer_init(peer_t p, int argc, char *argv[])
   p->prev = NULL;
   p->next = NULL;
   p->pieces = 0;
+  p->bytes = 0;
   p->close_asap = 0;
   p->pending_sends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   p->me = xbt_new(char, HOSTNAME_LENGTH);
@@ -102,30 +104,44 @@ void peer_shutdown(peer_t p)
   float start_time = MSG_get_clock();
   float end_time = start_time + PEER_SHUTDOWN_DEADLINE;
 
-  XBT_INFO("Waiting for sends to finish before shutdown...");
+  XBT_DEBUG("Waiting for sends to finish before shutdown...");
   while (xbt_dynar_length(p->pending_sends) && MSG_get_clock() < end_time) {
     process_pending_connections(p->pending_sends);
     MSG_process_sleep(1);
   }
 
   xbt_assert(xbt_dynar_length(p->pending_sends) == 0, "Shutdown failed, sends still pending after deadline");
+}
+
+void peer_delete(peer_t p)
+{
   xbt_dynar_free(&p->pending_sends);
   xbt_free(p->me);
 
   xbt_free(p);
 }
 
+void peer_print_stats(peer_t p, float elapsed_time)
+{
+  XBT_INFO("### %f %llu bytes (Avg %f MB/s); copy finished (simulated).", elapsed_time, p->bytes, p->bytes / 1024.0 / 1024.0 / elapsed_time); 
+}
+
 /** Peer function  */
 int peer(int argc, char *argv[])
 {
+  float start_time, end_time;
   peer_t p = xbt_new(s_peer_t, 1);
   msg_error_t status;
 
-  XBT_INFO("peer");
+  XBT_DEBUG("peer");
 
   peer_init(p, argc, argv);
+  start_time = MSG_get_clock();
   status = peer_wait_for_message(p);
   peer_shutdown(p);
+  end_time = MSG_get_clock();
+  peer_print_stats(p, end_time - start_time);
+  peer_delete(p);
 
   return status;
 }                               /* end_of_receiver */
