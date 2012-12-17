@@ -25,16 +25,6 @@ char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 ###
 
 *
-* Infrastructure
-****************
-
-[build chain]
-  * Check the gcc version on powerpc. We disabled -floop-optimize on powerpc,
-    but versions above 3.4.0 should be ok.
-  * check whether we have better than jmp_buf to implement exceptions, and
-    use it (may need to generate a public .h, as glib does)
-
-*
 * XBT
 *****
 
