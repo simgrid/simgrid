@@ -134,8 +134,7 @@ void MC_dpor(void)
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restore_state=NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
-  int pos, i;
-  int proc_eval[simix_process_maxpid];
+  int pos;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
@@ -234,10 +233,6 @@ void MC_dpor(void)
          state that executed that previous request. */
       
       while ((state = xbt_fifo_shift(mc_stack_safety)) != NULL) {
-
-        for(i=0; i<simix_process_maxpid; i++)
-          proc_eval[i] = 0;
-
         if(MC_state_interleave_size(state) == 0){
           req = MC_state_get_internal_request(state);
           xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
@@ -260,13 +255,11 @@ void MC_dpor(void)
 
               break;
 
-            }else if(proc_eval[MC_state_get_executed_request(prev_state, &value)->issuer->pid] == 0){
+            }else{
 
-              MC_state_remove_interleave_process(prev_state, MC_state_get_executed_request(prev_state, &value)->issuer);
+              MC_state_remove_interleave_process(prev_state, req->issuer);
 
             }
-
-            proc_eval[MC_state_get_executed_request(prev_state, &value)->issuer->pid] = 1;
 
           }
         }
