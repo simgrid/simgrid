@@ -138,7 +138,7 @@ int broadcaster(int argc, char *argv[])
   int status;
   unsigned int piece_count = PIECE_COUNT;
 
-  XBT_INFO("broadcaster");
+  XBT_DEBUG("broadcaster");
 
   /* Add every mailbox given by the hostcount in argv[1] to a dynamic array */
   host_list = build_hostlist_from_hostcount(atoi(argv[1]));
