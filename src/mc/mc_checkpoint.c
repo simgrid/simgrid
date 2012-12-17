@@ -449,16 +449,14 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
     unw_get_reg(&c, UNW_REG_IP, &ip);
     unw_get_reg(&c, UNW_REG_SP, &sp);
 
-    unw_get_proc_name (&c, frame_name, sizeof (frame_name), &off);
-
-    xbt_strbuff_append(variables, bprintf("ip=%s\n", frame_name));
+    unw_get_proc_name(&c, frame_name, sizeof (frame_name), &off);
 
     frame = xbt_dict_get_or_null(mc_local_variables, frame_name);
 
-    if(frame == NULL){
-      ret = unw_step(&c);
-      continue;
-    }
+    if(frame == NULL)
+      return variables;
+
+    xbt_strbuff_append(variables, bprintf("ip=%s\n", frame_name));
 
     true_ip = (long)frame->low_pc + (long)off;
 
