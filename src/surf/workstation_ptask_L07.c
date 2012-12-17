@@ -344,7 +344,8 @@ static void ptask_update_resource_state(void *id,
   link_L07_t nw_link = id;
 
   if (nw_link->type == SURF_WORKSTATION_RESOURCE_LINK) {
-    XBT_DEBUG("Updating link %s (%p)", surf_resource_name(nw_link), nw_link);
+    XBT_DEBUG("Updating link %s (%p) with value=%f",
+      surf_resource_name(nw_link), nw_link, value);
     if (event_type == nw_link->bw_event) {
       nw_link->bw_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, nw_link->constraint,
