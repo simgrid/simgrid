@@ -39,7 +39,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_avail,
  *      c2: 62500000 bytes, should last 1.0001 seconds
  *      t3: 25000000 flops, should last 1 second
  *      c3: 31250000 bytes, should last 1.0001 seconds
- *      t4:
+ *      t4: 25000000 flops, should last 1 second
  */
 
 int main(int argc, char **argv)
@@ -59,7 +59,6 @@ int main(int argc, char **argv)
   c2 = SD_task_create_comm_e2e("c2", NULL, 62500000);
   t3 = SD_task_create_comp_seq("t3", NULL, 25000000);
   c3 = SD_task_create_comm_e2e("c3", NULL, 31250000);
-  /* Should last 0.5 second */
   t4 = SD_task_create_comp_seq("t4", NULL, 25000000);
 
   /* Add dependencies: t1->c1->t2->c2->t3 */
