@@ -10,6 +10,7 @@
 #endif
 
 #include <stdio.h>
+#include "simgrid/sg_config.h"
 #include "surf/surf.h"
 #include "surf/surf_resource.h"
 #include "surf/surfxml_parse.h" // for reset callback
@@ -46,8 +47,8 @@ void test(char *platform)
   double now = -1.0;
   int running;
 
-  xbt_cfg_set_parse(_surf_cfg_set, "network/model:CM02");
-  xbt_cfg_set_parse(_surf_cfg_set, "cpu/model:Cas01");
+  xbt_cfg_set_parse(_sg_cfg_set, "network/model:CM02");
+  xbt_cfg_set_parse(_sg_cfg_set, "cpu/model:Cas01");
   parse_platform_file(platform);
 
   /*********************** WORKSTATION ***********************************/

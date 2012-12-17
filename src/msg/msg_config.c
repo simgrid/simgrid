@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
+#include "simgrid/sg_config.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
@@ -25,7 +26,7 @@ void MSG_config(const char *name, ...)
     xbt_abort();
   }
   va_start(pa, name);
-  xbt_cfg_set_vargs(_surf_cfg_set, name, pa);
+  xbt_cfg_set_vargs(_sg_cfg_set, name, pa);
   va_end(pa);
   return;
 }

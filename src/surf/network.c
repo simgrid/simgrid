@@ -22,6 +22,7 @@
 #include "surf/surfxml_parse_values.h"
 #include "surf/surf_resource.h"
 #include "surf/surf_resource_lmm.h"
+#include "simgrid/sg_config.h"
 
 #undef GENERIC_LMM_ACTION
 #undef GENERIC_ACTION
@@ -118,7 +119,7 @@ static double smpi_bandwidth_factor(double size)
 {
   if (!smpi_bw_factor)
     smpi_bw_factor =
-        parse_factor(surf_cfg_get_string("smpi/bw_factor"));
+        parse_factor(sg_cfg_get_string("smpi/bw_factor"));
 
   unsigned int iter = 0;
   s_smpi_factor_t fact;
@@ -139,7 +140,7 @@ static double smpi_latency_factor(double size)
 {
   if (!smpi_lat_factor)
     smpi_lat_factor =
-        parse_factor(surf_cfg_get_string("smpi/lat_factor"));
+        parse_factor(sg_cfg_get_string("smpi/lat_factor"));
 
   unsigned int iter = 0;
   s_smpi_factor_t fact;
@@ -734,9 +735,9 @@ static void smpi_gap_remove(surf_action_lmm_t lmm_action)
 
 static void set_update_mechanism(void)
 {
-  char *optim = xbt_cfg_get_string(_surf_cfg_set, "network/optim");
+  char *optim = xbt_cfg_get_string(_sg_cfg_set, "network/optim");
   int select =
-      xbt_cfg_get_int(_surf_cfg_set, "network/maxmin_selective_update");
+      xbt_cfg_get_int(_sg_cfg_set, "network/maxmin_selective_update");
 
   if (!strcmp(optim, "Full")) {
     surf_network_model->model_private->update_mechanism = UM_FULL;
@@ -747,7 +748,7 @@ static void set_update_mechanism(void)
     xbt_assert((select == 1)
                ||
                (xbt_cfg_is_default_value
-                (_surf_cfg_set, "network/maxmin_selective_update")),
+                (_sg_cfg_set, "network/maxmin_selective_update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim);
@@ -855,8 +856,8 @@ void surf_network_model_init_SMPI(void)
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/sender_gap", 10e-6);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/sender_gap", 10e-6);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }
 
 /************************************************************************/
@@ -883,11 +884,11 @@ void surf_network_model_init_LegrandVelho(void)
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor",
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor",
                             13.01);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
                             0.97);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 20537);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 20537);
 }
 
 /***************************************************************************/
@@ -912,10 +913,10 @@ void surf_network_model_init_CM02(void)
   xbt_dynar_push(model_list, &surf_network_model);
   network_solve = lmm_solve;
 
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 1.0);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 1.0);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
                             1.0);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 0.0);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 0.0);
 }
 
 /***************************************************************************/
@@ -941,10 +942,10 @@ void surf_network_model_init_Reno(void)
                                     func_reno_fpi);
   network_solve = lagrange_solve;
 
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 10.4);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 10.4);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
                             0.92);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }
 
 
@@ -961,10 +962,10 @@ void surf_network_model_init_Reno2(void)
                                     func_reno2_fpi);
   network_solve = lagrange_solve;
 
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 10.4);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 10.4);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
                             0.92);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S_parameter",
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S_parameter",
                             8775);
 }
 
@@ -981,8 +982,8 @@ void surf_network_model_init_Vegas(void)
                                     func_vegas_fpi);
   network_solve = lagrange_solve;
 
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/latency_factor", 10.4);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/bandwidth_factor",
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 10.4);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
                             0.92);
-  xbt_cfg_setdefault_double(_surf_cfg_set, "network/weight_S", 8775);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }

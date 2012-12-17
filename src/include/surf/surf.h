@@ -672,12 +672,6 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 /*******************************************/
 /*** SURF Globals **************************/
 /*******************************************/
-XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
-XBT_PUBLIC(int) surf_cfg_get_int(const char* name);
-XBT_PUBLIC(double) surf_cfg_get_double(const char* name);
-XBT_PUBLIC(char*) surf_cfg_get_string(const char* name);
-XBT_PUBLIC(void) surf_cfg_get_peer(const char *name, char **peer, int *port);
-XBT_PUBLIC(xbt_dynar_t) surf_cfg_get_dynar(const char* name);
 
 /** \ingroup SURF_simulation
  *  \brief Initialize SURF

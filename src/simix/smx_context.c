@@ -11,6 +11,7 @@
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
 #include "smx_private.h"
+#include "simgrid/sg_config.h"
 #include "internal_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
@@ -105,7 +106,7 @@ void SIMIX_context_mod_exit(void)
     finalize_factory = simix_global->context_factory->finalize;
     finalize_factory(&simix_global->context_factory);
   }
-  xbt_dict_remove((xbt_dict_t) _surf_cfg_set,"contexts/factory");
+  xbt_dict_remove((xbt_dict_t) _sg_cfg_set,"contexts/factory");
 }
 
 /**

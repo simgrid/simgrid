@@ -14,9 +14,9 @@
 
 #ifdef HAVE_MC
 
-extern int _surf_do_model_check; /* please don't use directly: we inline MC_is_active, but that's what you should use */
+extern int _sg_do_model_check; /* please don't use directly: we inline MC_is_active, but that's what you should use */
 
-#define MC_is_active() _surf_do_model_check
+#define MC_is_active() _sg_do_model_check
 
 XBT_PUBLIC(void) MC_assert(int);
 XBT_PUBLIC(int) MC_random(int min, int max);

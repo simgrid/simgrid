@@ -12,6 +12,7 @@
 #include "xbt/dict.h"
 #include "surf/surfxml_parse.h"
 #include "surf/surf_private.h"
+#include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
                                 "Logging specific to the SURF parsing module");
@@ -694,13 +695,13 @@ void ETag_surfxml_AS(void){
   sg_platf_new_AS_end();
 }
 
-extern int _surf_init_status; /* FIXME: find a proper way to export this at some point */
+extern int _sg_init_status; /* FIXME: find a proper way to export this at some point */
 
 void STag_surfxml_config(void){
   AS_TAG = 0;
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
-  if (_surf_init_status == 2) {
+  if (_sg_init_status == 2) {
     surf_parse_error("All <config> tags must be given before any platform elements (such as <AS>, <host>, <cluster>, <link>, etc).");
   }
 }
@@ -711,8 +712,8 @@ void ETag_surfxml_config(void){
   char *cfg;
   xbt_dict_foreach(current_property_set, cursor, key, elem) {
     cfg = bprintf("%s:%s",key,elem);
-    if(xbt_cfg_is_default_value(_surf_cfg_set, key))
-      xbt_cfg_set_parse(_surf_cfg_set, cfg);
+    if(xbt_cfg_is_default_value(_sg_cfg_set, key))
+      xbt_cfg_set_parse(_sg_cfg_set, cfg);
     else
       XBT_INFO("The custom configuration '%s' is already defined by user!",key);
     free(cfg);

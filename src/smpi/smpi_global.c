@@ -13,6 +13,7 @@
 #include "mc/mc.h"
 #include "surf/surf.h"
 #include "simix/smx_private.h"
+#include "simgrid/sg_config.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi,
@@ -358,7 +359,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   else
     SIMIX_run();
 
-  if (surf_cfg_get_int("smpi/display_timing"))
+  if (sg_cfg_get_int("smpi/display_timing"))
     XBT_INFO("Simulation time: %g seconds.", SIMIX_get_clock());
 
   smpi_global_destroy();

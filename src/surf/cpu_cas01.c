@@ -7,6 +7,7 @@
 #include "surf_private.h"
 #include "surf/surf_resource.h"
 #include "maxmin_private.h"
+#include "simgrid/sg_config.h"
 
 surf_model_t surf_cpu_model = NULL;
 
@@ -325,9 +326,9 @@ static void surf_cpu_model_init_internal()
   s_surf_action_t action;
   s_surf_action_cpu_Cas01_t comp;
 
-  char *optim = xbt_cfg_get_string(_surf_cfg_set, "cpu/optim");
+  char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   int select =
-      xbt_cfg_get_int(_surf_cfg_set, "cpu/maxmin_selective_update");
+      xbt_cfg_get_int(_sg_cfg_set, "cpu/maxmin_selective_update");
 
   surf_cpu_model = surf_model_init();
 
@@ -340,7 +341,7 @@ static void surf_cpu_model_init_internal()
     xbt_assert((select == 1)
                ||
                (xbt_cfg_is_default_value
-                (_surf_cfg_set, "cpu/maxmin_selective_update")),
+                (_sg_cfg_set, "cpu/maxmin_selective_update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim);
@@ -425,7 +426,7 @@ static void surf_cpu_model_init_internal()
 
 void surf_cpu_model_init_Cas01()
 {
-  char *optim = xbt_cfg_get_string(_surf_cfg_set, "cpu/optim");
+  char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
 
   if (surf_cpu_model)
     return;

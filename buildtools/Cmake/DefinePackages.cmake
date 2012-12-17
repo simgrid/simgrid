@@ -4,6 +4,7 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/platf_interface.h
+  src/include/simgrid/sg_config.h
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
   src/include/surf/random_mgr.h
@@ -311,6 +312,7 @@ set(LUA_SRC
   )
 
 set(TRACING_SRC
+  src/simgrid/sg_config.c
   src/instr/instr_config.c
   src/instr/instr_interface.c
   src/instr/instr_msg_process.c

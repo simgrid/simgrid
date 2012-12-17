@@ -8,6 +8,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 #include "surf/surf.h"
+#include "simgrid/sg_config.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
@@ -80,7 +81,7 @@ void SD_init(int *argc, char **argv)
 
   surf_init(argc, argv);
 
-  xbt_cfg_setdefault_string(_surf_cfg_set, "workstation/model",
+  xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model",
                             "ptask_L07");
 
 #ifdef HAVE_TRACING

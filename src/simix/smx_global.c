@@ -27,10 +27,10 @@ static void SIMIX_clean(void);
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
-int _surf_do_verbose_exit = 1;
+int _sg_do_verbose_exit = 1;
 static void _XBT_CALL inthandler(int ignored)
 {
-  if ( _surf_do_verbose_exit ) {
+  if ( _sg_do_verbose_exit ) {
      XBT_INFO("CTRL-C pressed. Displaying status and bailing out");
      SIMIX_display_process_status();
   }
