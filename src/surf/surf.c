@@ -518,9 +518,11 @@ void surf_presolve(void)
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value,
                                             (void **) &resource))) {
-      resource->model->model_private->update_resource_state(resource,
-                                                            event, value,
-                                                            NOW);
+      if (value >= 0){
+        resource->model->model_private->update_resource_state(resource,
+                                                              event, value,
+                                                              NOW);
+      }
     }
   }
   xbt_dynar_foreach(model_list, iter, model)
