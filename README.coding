@@ -23,12 +23,12 @@ The tree is not split on projects, but on file finality:
  src/include -> another location for protected headers. Used by SURF, and
                 other should be converted, since this is the Right Thing.
 
- testsuite/ -> The more test the better. 
+ testsuite/ -> The more test the better.
                Same organization than src/ and include/
                Tests are allowed to load some headers of the module they test.
 	       All tests should be listed in run_test.in so that they get
-               run on 'make check'. 
-		  
+               run on 'make check'.
+
  examples/ -> Supposed to be copy/pastable by the user, so keep it clear and
                 avoid any kind of trick. In particular, do only include the
                 public headers here.
@@ -63,14 +63,14 @@ So please stick to it.
   - u_toto_t is an union
   - u_toto   is an union needing 'union' keyword to be used
   -   toto_t is an 'object' (struct*)
-  
+
 Please to not call toto_t something else than an 'object' (ie, something you
 have to call _new and _free on it).
 
 Example:
   typedef struct s_toto {} s_toto_t, *toto_t;
   typedef enum {} e_toto_t;
-  
+
 Moreover, only toto_t (and e_toto_t) are public. The rest (mainly s_toto_t)
 is private.
 
@@ -90,7 +90,7 @@ SIZE_T (FIXME: obsolete?)
  If possible, avoid size_t and use unsigned long instead. If not,
  #include <sys/types.h> in all files manipulating size_t
  do cast it to unsigned long before printing (and use %lu)
- 
+
 PRINTF pointer difference (FIXME: advertise %td instead?)
  printf ("diff = %ld\n", (long) (pointer2 - pointer1));
 
@@ -100,12 +100,12 @@ INLINE functions
  in header file (.h) with attributes 'static XBT_INLINE'.  It should
  not be defined in source file (.c).
 
-**		
+**
 ** Commenting the source: doxygen
 **
 ****************************************************
 
-The global structure of the documentation is in doc/modules.doc 
+The global structure of the documentation is in doc/modules.doc
 
 The structure of each module (xbt, msg, etc) is in doc/module-<module>.doc
 
@@ -118,7 +118,7 @@ users can see the intended order).
 The documentation of each type and macro are also in the public header since
 this is were they live.
 
-The documentation of each function must be in the C file were it lives. 
+The documentation of each function must be in the C file were it lives.
 
 Any public element (function, type and macro) must have a @brief part.
 
@@ -131,13 +131,13 @@ There is some functionalities that we want to virtualize in XBT. We
 want xbt_time to give the simulated clock when running on top of the
 simulator, and the host clock when running on a real system. This
 could be placed in GRAS (and was, historically), but there is some
-reason to lower it down to XBT. 
+reason to lower it down to XBT.
 
 Here is the used naming scheme:
 
-  - xbt_<module>_<func>(): functions working both in SG and RL  
+  - xbt_<module>_<func>(): functions working both in SG and RL
   - xbt_os_<module>_<func>(): RL functions usable even in simulator
-    
+
     That way, in libsimgrid, we still can use native functions if we
     want to. It may for example be useful to get the real time when
     implementing the simulator. Think of the SIGINT handler, which
@@ -147,17 +147,17 @@ Here is the used naming scheme:
 Here is the file layout:
 
   - xbt_rl_<module>.c: native implementation (xbt_<module>_<func>()).
-    Simply call the corresponding xbt_os_<module>_<func>.     
+    Simply call the corresponding xbt_os_<module>_<func>.
     Part only of libgras.so
-    
+
   - xbt_sg_<module>.c: SIMIX implementation xbt_<module>_<func>()).
-    Simply call the corresponding SIMIX implementation. 
+    Simply call the corresponding SIMIX implementation.
     Part only of libsimgrid.so
-    
+
   - xbt_os_<module>.c: body of the functions implementing natively the
     stuff (xbt_os_<module>_<func>()).
     Part of both libgras.so and libsimgrid.so
-    
+
 Since there is almost nothing in xbt_rl_module.c and xbt_sg_module.c,
 it'd be better to use symbol aliasing here (to declare in the object
 code that the same function have two names), but I'm still

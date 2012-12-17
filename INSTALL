@@ -32,7 +32,7 @@ not only SimGrid related.
 $ make
 
 (3) Test it (optional)
-$ make check 
+$ make check
 $ ctest
 
 (4) Install it
@@ -41,7 +41,7 @@ $ make install
 
 Dependencies
 ============
-SimGrid archives do not have any firm dependencies. 
+SimGrid archives do not have any firm dependencies.
 
 If you want to compile, you must have installed perl and cmake version 2.6 or
 above.

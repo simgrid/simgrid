@@ -325,6 +325,9 @@ void SIMIX_comm_destroy(smx_action_t action)
     action->comm.src_buff = NULL;
   }
 
+  if(action->comm.rdv)
+    SIMIX_rdv_remove(action->comm.rdv, action);
+
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 
@@ -874,6 +877,16 @@ void SIMIX_comm_finish(smx_action_t action)
 
     simcall->issuer->waiting_action = NULL;
     xbt_fifo_remove(simcall->issuer->comms, action);
+    if(action->comm.detached){
+      if(simcall->issuer == action->comm.src_proc){
+        if(action->comm.dst_proc)
+          xbt_fifo_remove(action->comm.dst_proc->comms, action);
+      }
+      if(simcall->issuer == action->comm.dst_proc){
+        if(action->comm.src_proc)
+          xbt_fifo_remove(action->comm.src_proc->comms, action);
+      }
+    }
     SIMIX_simcall_answer(simcall);
     destroy_count++;
   }
