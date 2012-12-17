@@ -69,7 +69,16 @@ else()
     message("-- Fortran for smpi is not installed (http://www.netlib.org/f2c/).")
 endif()
 
+
+#Some old versions of 64 bits systems seem to have a different size between C and Fortran Datatypes
+#Deactivate F2C with these versions, in order to avoid breaking test cases in legacy systems (as Fedora 13)
+set(COMPILER_OK 1)
+if(PROCESSOR_x86_64 AND "${CMAKE_SYSTEM}" MATCHES "Linux" AND "4.5" STRGREATER ${COMPILER_C_VERSION_MAJOR_MINOR} )
+    set(COMPILER_OK 0)
+    message("Your C compiler is a bit old and Fortran support is quite problematic on 64 bit platforms, F2C has been deactivated")
+endif()
+
 set(SMPI_F2C 0)
-if(HAVE_F2C_H AND F2C_EXE AND HAVE_F2C_LIB)
+if(HAVE_F2C_H AND F2C_EXE AND HAVE_F2C_LIB AND COMPILER_OK)
   set(SMPI_F2C 1)
 endif()
