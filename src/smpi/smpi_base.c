@@ -74,7 +74,7 @@ static MPI_Request build_request(void *buf, int count,
   if(datatype->has_subtype == 1){
     // This part handles the problem of non-contiguous memory
     old_buf = buf;
-    buf = malloc(count*smpi_datatype_size(datatype));
+    buf = xbt_malloc(count*smpi_datatype_size(datatype));
     if (flags & SEND) {
       subtype->serialize(old_buf, buf, count, datatype->substruct);
     }
@@ -212,7 +212,7 @@ void smpi_mpi_start(MPI_Request request)
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
         if (oldbuf){
-          request->buf = malloc(request->size);
+          request->buf = xbt_malloc(request->size);
           memcpy(request->buf,oldbuf,request->size);
         }
       }

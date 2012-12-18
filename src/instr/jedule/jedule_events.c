@@ -53,7 +53,7 @@ void jed_event_add_info(jed_event_t event, char *key, char *value) {
 void create_jed_event(jed_event_t *event, char *name, double start_time,
     double end_time, const char *type) {
 
-  *event = (jed_event_t) calloc(1, sizeof(s_jed_event_t));
+  *event = xbt_new0(s_jed_event_t,1);
   (*event)->name = xbt_strdup(name);
 
   (*event)->start_time = start_time;

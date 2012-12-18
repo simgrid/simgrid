@@ -409,7 +409,7 @@ typedef struct {
 
 static void good_example(void)
 {
-  global_context_t *global_context = malloc(sizeof(global_context_t));
+  global_context_t *global_context = xbt_malloc(sizeof(global_context_t));
 
   /* GOOD_EXAMPLE */
   {                             /*01 */

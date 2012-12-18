@@ -41,7 +41,7 @@ int create_dump(int pair)
     if(wait(&status) < 0)
       perror("wait");
     if(WIFSIGNALED(status) && WCOREDUMP(status)){
-      char *core_name = malloc(20);
+      char *core_name = xbt_malloc(20);
       sprintf(core_name,"core_%d", pair); 
       rename("core", core_name);
       free(core_name);

@@ -194,7 +194,7 @@ int luaopen_simgrid(lua_State *L)
   XBT_DEBUG("luaopen_simgrid *****");
 
   /* Get the command line arguments from the lua interpreter */
-  char **argv = malloc(sizeof(char *) * LUA_MAX_ARGS_COUNT);
+  char **argv = xbt_malloc(sizeof(char *) * LUA_MAX_ARGS_COUNT);
   int argc = 1;
   argv[0] = (char *) "/usr/bin/lua";    /* Lie on the argv[0] so that the stack dumping facilities find the right binary. FIXME: what if lua is not in that location? */
 
