@@ -600,12 +600,12 @@ double surf_solve(double max_date)
         min = model_next_action_end;
     }
 
-    if (next_event_date == -1.0) {
+    if (next_event_date < 0.0) {
       XBT_DEBUG("no next TRACE event. Stop searching for it");
       break;
     }
 
-    if ((min != -1.0) && (next_event_date > NOW + min)) break;
+    if ((min == -1.0) || (next_event_date > NOW + min)) break;
 
     XBT_DEBUG("Updating models");
     while ((event =
