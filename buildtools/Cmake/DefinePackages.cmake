@@ -196,7 +196,6 @@ set(SURF_SRC
   src/surf/storage.c
   src/surf/surf.c
   src/surf/surf_action.c
-  src/surf/surf_config.c
   src/surf/surf_model.c
   src/surf/surf_routing.c
   src/surf/surf_routing_cluster.c
