@@ -26,6 +26,8 @@ SimGrid (3.9) NOT RELEASED; urgency=low
    your simulation results, you can fall back to the previous 20k tiny window
    by adding --cfg=network/TCP_gamma:20000 on command line.
  * Bug fix about the way periodic availability/state traces are handled.
+ * Bug fix: use default values at start when first event in availability/state 
+   trace is not at time 0.
 
  XBT:
  * Kill synchronized dynars, and xbt_dynar_dopar(). We cannot think of a
