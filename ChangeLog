@@ -25,6 +25,7 @@ SimGrid (3.9) NOT RELEASED; urgency=low
    congestion window) to a more realistic 4MiB value. If you notice changes in
    your simulation results, you can fall back to the previous 20k tiny window
    by adding --cfg=network/TCP_gamma:20000 on command line.
+ * Bug fix about the way periodic availability/state traces are handled.
 
  XBT:
  * Kill synchronized dynars, and xbt_dynar_dopar(). We cannot think of a
