@@ -461,15 +461,37 @@ endif()
 set(simgrid_sources
   ${BINDINGS_SRC}
   ${GTNETS_USED}
-  ${JEDULE_SRC}
   ${MSG_SRC}
   ${SIMDAG_SRC}
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
-  ${TRACING_SRC}
   ${XBT_SRC}
   )
+
+if(${HAVE_JEDULE})
+  set(simgrid_sources
+    ${simgrid_sources}
+    ${JEDULE_SRC}
+    )
+else()
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
+    ${JEDULE_SRC}
+    )
+endif()
+
+if(${HAVE_TRACING})
+  set(simgrid_sources
+    ${simgrid_sources}
+    ${TRACING_SRC}
+    )
+else()
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
+    ${TRACING_SRC}
+    )
+endif()
 
 if(HAVE_MC)
   set(simgrid_sources
