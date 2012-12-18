@@ -191,6 +191,7 @@ set(source_to_pack
   ${NS3_SRC}
   ${RNGSTREAM_SRC}
   ${SIMDAG_SRC}
+  ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SMPI_SRC}
   ${SURF_SRC}

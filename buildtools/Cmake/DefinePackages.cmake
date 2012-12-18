@@ -230,6 +230,10 @@ set(SIMIX_SRC
   src/simix/smx_user.c
   )
 
+set(SIMGRID_SRC
+  src/simgrid/sg_config.c
+  )
+
 set(MSG_SRC
   src/msg/msg_actions.c
   src/msg/msg_config.c
@@ -312,7 +316,6 @@ set(LUA_SRC
   )
 
 set(TRACING_SRC
-  src/simgrid/sg_config.c
   src/instr/instr_config.c
   src/instr/instr_interface.c
   src/instr/instr_msg_process.c
@@ -461,6 +464,7 @@ set(simgrid_sources
   ${JEDULE_SRC}
   ${MSG_SRC}
   ${SIMDAG_SRC}
+  ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
   ${TRACING_SRC}
