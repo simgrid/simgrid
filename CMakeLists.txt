@@ -397,7 +397,6 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/lib/libSG_java.so ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
   COMMAND strip --strip-debug ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}/libSG_java.so
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/ChangeLog ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/MANIFEST.MF ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/COPYING ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
   COMMENT "Compiling java sources of core library..."					
 )
@@ -408,7 +407,7 @@ add_custom_target(java_classes ALL
 
 # simgrid_jar
 add_custom_target(simgrid_jar ALL
-  COMMAND ${JAVA_ARCHIVE} -cvf ${CMAKE_HOME_DIRECTORY}/simgrid.jar .
+  COMMAND ${JAVA_ARCHIVE} -cmvf ${CMAKE_HOME_DIRECTORY}/MANIFEST.MF ${CMAKE_HOME_DIRECTORY}/simgrid.jar .
   COMMENT "Building simgrid.jar..."
   WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/classes 
 )
