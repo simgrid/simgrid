@@ -234,14 +234,16 @@ static void _sg_cfg_cb__surf_path(const char *name, int pos)
 
 /* callback to decide if we want to use the model-checking */
 #include "xbt_modinter.h"
+#ifdef HAVE_MC
 extern int _sg_do_model_check;   /* this variable lives in xbt_main until I find a right location for it */
+#endif
 
 static void _sg_cfg_cb_model_check(const char *name, int pos)
 {
+#ifdef HAVE_MC
   _sg_do_model_check = xbt_cfg_get_int(_sg_cfg_set, name);
-
-#ifndef HAVE_MC
-  if (_sg_do_model_check) {
+#else
+  if (xbt_cfg_get_int(_sg_cfg_set, name)) {
     xbt_die("You tried to activate the model-checking from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
   }
 #endif

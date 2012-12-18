@@ -31,7 +31,6 @@ int _sg_mc_timeout=0;
 int _sg_mc_max_depth=1000;
 int _sg_mc_visited=0;
 
-
 extern int _sg_init_status;
 void _mc_cfg_cb_reduce(const char *name, int pos) {
   if (_sg_init_status && !_sg_do_model_check) {
