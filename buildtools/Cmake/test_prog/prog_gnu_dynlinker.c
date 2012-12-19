@@ -26,7 +26,7 @@ int main(void) {
       if (error)
 	 printf("Error while checking for dlsym: %s\n",error);
       else
-	 printf("dlsym did not return any error, but failed to find malloc()\n",error);
+	 printf("dlsym did not return any error, but failed to find malloc()\n");
       return 1; // FAILED
    }
 }
