@@ -24,9 +24,14 @@ void MC_memory_init()
   std_heap = mmalloc_get_default_md();
   xbt_assert(std_heap != NULL);
 
+#ifdef HAVE_GNU_LD
+  /* use the system malloc for the model-checker data */
+  raw_heap = NULL;
+#else
   /* Create the second region a page after the first one ends + safety gap */
   raw_heap = xbt_mheap_new(-1, (char*)(std_heap) + STD_HEAP_SIZE + getpagesize());
   xbt_assert(raw_heap != NULL);
+#endif
 }
 
 /* Finalize the memory subsystem */

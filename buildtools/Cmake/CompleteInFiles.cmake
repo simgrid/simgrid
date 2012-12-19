@@ -118,7 +118,6 @@ CHECK_INCLUDE_FILE("sys/time.h" HAVE_SYS_TIME_H)
 CHECK_INCLUDE_FILE("sys/param.h" HAVE_SYS_PARAM_H)
 CHECK_INCLUDE_FILE("sys/sysctl.h" HAVE_SYS_SYSCTL_H)
 CHECK_INCLUDE_FILE("time.h" HAVE_TIME_H)
-CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
 CHECK_INCLUDE_FILE("inttypes.h" HAVE_INTTYPES_H)
 CHECK_INCLUDE_FILE("memory.h" HAVE_MEMORY_H)
 CHECK_INCLUDE_FILE("stdlib.h" HAVE_STDLIB_H)
@@ -214,6 +213,40 @@ endif()
 ### Check for some architecture dependent values
 CHECK_TYPE_SIZE(int SIZEOF_INT)
 CHECK_TYPE_SIZE(void* SIZEOF_VOIDP)
+
+#--------------------------------------------------------------------------------------------------
+### Check for GNU dynamic linker
+CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
+if (HAVE_DLFCN_H)
+    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_gnu_dynlinker.c -ldl -o test_gnu_ld
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      OUTPUT_VARIABLE HAVE_GNU_LD_compil
+    )
+    if(HAVE_GNU_LD_compil)
+      set(HAVE_GNU_LD 0)
+      message(STATUS "Warning: test program toward GNU ld failed to compile:")
+      message(STATUS "${HAVE_GNU_LD_comp_output}")
+    else()
+
+      execute_process(COMMAND ./test_gnu_ld
+          WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
+          RESULT_VARIABLE HAVE_GNU_LD_run 
+          OUTPUT_VARIABLE var_exec
+      )
+
+      if(NOT HAVE_GNU_LD_run)
+        set(HAVE_GNU_LD 1)
+        message(STATUS "We are using GNU dynamic linker")
+      else()
+        set(HAVE_GNU_LD 0)
+        message(STATUS "Warning: error while checking for GNU ld:")
+        message(STATUS "Test output: '${var_exec}'")
+	message(STATUS "Exit status: ${HAVE_GNU_LD_run}")
+      endif()
+      file(REMOVE test_gnu_ld)
+    endif()
+endif()
+
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
@@ -541,7 +574,7 @@ endif()
 
 #AC_PROG_MAKE_SET
 
-#AC_PRINTF_NULL
+#AC_PRINTF_NULL FIXME: this is too ancient to survive!
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
   ${CMAKE_BINARY_DIR}
   ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
