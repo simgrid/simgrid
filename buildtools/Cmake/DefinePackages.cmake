@@ -755,6 +755,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/test_prog/prog_thread_storage.c
   buildtools/Cmake/test_prog/prog_va_copy.c
   buildtools/Cmake/test_prog/prog_vsnprintf.c
+  buildtools/Cmake/test_prog/prog_gnu_dynlinker.c
   )
 
 set(PLATFORMS_EXAMPLES
