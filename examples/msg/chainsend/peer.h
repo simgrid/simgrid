@@ -17,6 +17,7 @@ typedef struct s_peer {
   char *me;
   int pieces;
   unsigned long long bytes;
+  xbt_dynar_t pending_recvs;
   xbt_dynar_t pending_sends;
   int close_asap; /* TODO: unused */
 } s_peer_t, *peer_t;

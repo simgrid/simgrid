@@ -57,25 +57,28 @@ msg_error_t peer_wait_for_message(peer_t peer)
   msg_error_t status;
   msg_comm_t comm = NULL;
   msg_task_t task = NULL;
+  int idx = -1;
   int done = 0;
 
   while (!done) {
-    if (comm == NULL)
-      comm = MSG_task_irecv(&task, peer->me);
+    comm = MSG_task_irecv(&task, peer->me);
+    queue_pending_connection(comm, peer->pending_recvs);
 
-    if (MSG_comm_test(comm)) {
+    if ((idx = MSG_comm_waitany(peer->pending_recvs)) != -1) {
+      comm = xbt_dynar_get_as(peer->pending_recvs, idx, msg_comm_t);
       status = MSG_comm_get_status(comm);
       XBT_DEBUG("peer_wait_for_message: error code = %d", status);
       xbt_assert(status == MSG_OK, "peer_wait_for_message() failed");
+
+      task = MSG_comm_get_task(comm);
       MSG_comm_destroy(comm);
-      comm = NULL;
+      xbt_dynar_cursor_rm(peer->pending_recvs, (unsigned int*)&idx);
       done = peer_execute_task(peer, task);
+
       task_message_delete(task);
       task = NULL;
-    } else {
-      process_pending_connections(peer->pending_sends);
-      MSG_process_sleep(0.01);
     }
+    process_pending_connections(peer->pending_sends);
   }
 
   return status;
@@ -89,6 +92,7 @@ void peer_init(peer_t p, int argc, char *argv[])
   p->pieces = 0;
   p->bytes = 0;
   p->close_asap = 0;
+  p->pending_recvs = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   p->pending_sends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   p->me = xbt_new(char, HOSTNAME_LENGTH);
   /* Set mailbox name: use host number from argv or hostname if no argument given */
@@ -105,6 +109,7 @@ void peer_shutdown(peer_t p)
   float end_time = start_time + PEER_SHUTDOWN_DEADLINE;
 
   XBT_DEBUG("Waiting for sends to finish before shutdown...");
+  /* MSG_comm_waitall(p->pending_sends, PEER_SHUTDOWN_DEADLINE); FIXME: this doesn't work */
   while (xbt_dynar_length(p->pending_sends) && MSG_get_clock() < end_time) {
     process_pending_connections(p->pending_sends);
     MSG_process_sleep(1);
@@ -115,6 +120,7 @@ void peer_shutdown(peer_t p)
 
 void peer_delete(peer_t p)
 {
+  xbt_dynar_free(&p->pending_recvs);
   xbt_dynar_free(&p->pending_sends);
   xbt_free(p->me);
 
@@ -145,5 +151,3 @@ int peer(int argc, char *argv[])
 
   return status;
 }                               /* end_of_receiver */
-
-
