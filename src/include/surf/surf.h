@@ -10,6 +10,7 @@
 #include "xbt/swag.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
+#include "xbt/graph.h"
 #include "xbt/misc.h"
 #include "xbt/file_stat.h"
 #include "portable.h"
@@ -739,6 +740,22 @@ void surf_watched_hosts(void);
  * directory on Unix/Linux platforms.
  */
 const char *__surf_get_initial_path(void);
+
+/********** Tracing **********/
+/* from surf_instr.c */
+void TRACE_surf_action(surf_action_t surf_action, const char *category);
+void TRACE_surf_alloc(void);
+void TRACE_surf_release(void);
+
+/* instr_routing.c */
+void instr_routing_define_callbacks (void);
+void instr_new_variable_type (const char *new_typename, const char *color);
+void instr_new_user_variable_type  (const char *father_type, const char *new_typename, const char *color);
+void instr_new_user_state_type (const char *father_type, const char *new_typename);
+void instr_new_value_for_user_state_type (const char *typename, const char *value, const char *color);
+int instr_platform_traced (void);
+xbt_graph_t instr_routing_platform_graph (void);
+void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
 SG_END_DECL()
 #endif                          /* _SURF_SURF_H */

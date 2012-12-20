@@ -6,6 +6,7 @@
 
 #include "instr/instr_private.h"
 #include "simgrid/sg_config.h"
+#include "surf/surf.h"
 
 #ifdef HAVE_TRACING
 
@@ -48,6 +49,8 @@ static int trace_basic;
 static int trace_configured = 0;
 static int trace_active = 0;
 
+
+
 static void TRACE_getopts(void)
 {
   trace_enabled = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING);
@@ -63,6 +66,13 @@ static void TRACE_getopts(void)
   trace_onelink_only = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_ONELINK_ONLY);
   trace_disable_destroy = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_DISABLE_DESTROY);
   trace_basic = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_BASIC);
+}
+
+xbt_dynar_t TRACE_start_functions = NULL;
+void TRACE_add_start_function(void (*func)()) {
+  if (TRACE_start_functions==NULL)
+    TRACE_start_functions = xbt_dynar_new(sizeof(void (*)()), NULL);   
+  xbt_dynar_push(TRACE_start_functions, &func);    
 }
 
 int TRACE_start()
@@ -93,9 +103,22 @@ int TRACE_start()
   declared_marks = xbt_dict_new_homogeneous (xbt_free);
   user_host_variables = xbt_dict_new_homogeneous (xbt_free);
   user_link_variables = xbt_dict_new_homogeneous (xbt_free);
-  TRACE_surf_alloc();
-  TRACE_smpi_alloc();
+
+  if (TRACE_start_functions!=NULL) {
+    void (*func)();
+    unsigned int iter = xbt_dynar_length(TRACE_start_functions);
+    xbt_dynar_foreach(TRACE_start_functions, iter, func) {
+      func();
+    }
+  }
   return 0;
+}
+
+xbt_dynar_t TRACE_end_functions = NULL;
+void TRACE_add_end_function(void (*func)(void)) {
+  if (TRACE_end_functions==NULL)
+    TRACE_end_functions = xbt_dynar_new(sizeof(void (*) (void)), NULL);   
+  xbt_dynar_push(TRACE_end_functions, &func);    
 }
 
 int TRACE_end()
@@ -115,8 +138,15 @@ int TRACE_end()
   PJ_type_free_all();
   PJ_container_release();
   PJ_type_release();
-  TRACE_smpi_release();
-  TRACE_surf_release();
+
+  if (TRACE_end_functions!=NULL) {
+    void (*func) (void);
+    unsigned int iter;
+    xbt_dynar_foreach(TRACE_end_functions, iter, func) {
+      func();
+    }
+  }
+
   xbt_dict_free(&user_link_variables);
   xbt_dict_free(&user_host_variables);
   xbt_dict_free(&declared_marks);

@@ -10,7 +10,7 @@
 #include "xbt.h"
 #include "xbt/xbt_os_time.h"
 #include "simgrid/simix.h"
-#include "smpi/smpi.h"
+#include "smpi/smpi_interface.h"
 #include "smpi/smpif.h"
 #include "smpi/smpi_cocci.h"
 #include "instr/instr_private.h"
@@ -341,5 +341,14 @@ void mpi_sendrecv__(void* sendbuf, int* sendcount, int* sendtype, int* dst,
                 int* recvtype, int* src, int* recvtag,
                 int* comm, MPI_Status* status, int* ierr);
 
+/********** Tracing **********/
+/* from smpi_instr.c */
+void TRACE_internal_smpi_set_category (const char *category);
+const char *TRACE_internal_smpi_get_category (void);
+void TRACE_smpi_collective_in(int rank, int root, const char *operation);
+void TRACE_smpi_collective_out(int rank, int root, const char *operation);
+void TRACE_smpi_computing_init(int rank);
+void TRACE_smpi_computing_out(int rank);
+void TRACE_smpi_computing_in(int rank);
 
 #endif

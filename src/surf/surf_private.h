@@ -200,4 +200,11 @@ XBT_PUBLIC(void) surfxml_bufferstack_pop(int new);
 
 XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 
+/********** Tracing **********/
+/* from surf_instr.c */
+void TRACE_surf_host_set_power(double date, const char *resource, double power);
+void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
+void TRACE_surf_link_set_latency(double date, const char *resource, double latency);
+
+
 #endif                          /* _SURF_SURF_PRIVATE_H */

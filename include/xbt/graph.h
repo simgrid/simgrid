@@ -15,9 +15,47 @@ SG_BEGIN_DECL()
    *
    * @{
    */
+
 typedef struct xbt_node *xbt_node_t;
 typedef struct xbt_edge *xbt_edge_t;
 typedef struct xbt_graph *xbt_graph_t;
+
+/* Node structure */
+/* Be carfull of what you do with this structure */
+/* typedef struct xbt_node *xbt_node_t; */
+typedef struct xbt_node {
+  xbt_dynar_t out;
+  xbt_dynar_t in;               /* not used when the graph is directed */
+  double position_x;            /* positive value: negative means undefined */
+  double position_y;            /* positive value: negative means undefined */
+  void *data;                   /* user data */
+  void *xbtdata;                /* private xbt data: should be reinitialized at the
+                                   beginning of your algorithm if you need to use it */
+} s_xbt_node_t;
+
+/* edge structure */
+/* Be carfull of what you do with this structure */
+/* typedef struct xbt_edge *xbt_edge_t; */
+typedef struct xbt_edge {
+  xbt_node_t src;
+  xbt_node_t dst;
+  void *data;                   /* user data */
+  void *xbtdata;                /* private xbt data: should be reinitialized at the
+                                   beginning of your algorithm if you need to use it */
+  double length;                /* positive value: negative means undefined */
+} s_xbt_edge_t;
+
+/* Graph structure */
+/* Be carfull of what you do with this structure */  
+/* typedef struct xbt_graph *xbt_graph_t; */
+typedef struct xbt_graph {
+  xbt_dynar_t nodes;
+  xbt_dynar_t edges;
+  unsigned short int directed;
+  void *data;                   /* user data */
+  void *xbtdata;                /* private xbt data: should be reinitialized at the
+                                   beginning of your algorithm if you need to use it */
+} s_xbt_graph_t;
 
 /* API */
 XBT_PUBLIC(xbt_graph_t) xbt_graph_new_graph(unsigned short int directed,

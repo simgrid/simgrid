@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
+#include "instr/instr_interface.h"
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 #include "surf/surf.h"
@@ -13,7 +14,6 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/config.h"
-#include "instr/instr_private.h"
 #include "surf/surfxml_parse.h"
 #ifdef HAVE_LUA
 #include <lua.h>
@@ -382,7 +382,7 @@ double SD_get_clock(void) {
 void SD_exit(void)
 {
 #ifdef HAVE_TRACING
-  TRACE_surf_release();
+  TRACE_surf_resource_utilization_release();
 #endif
 
   xbt_mallocator_free(sd_global->task_mallocator);

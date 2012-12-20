@@ -100,13 +100,6 @@ static void action_send(const char *const *action)
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join_array(action, " ");
 
-#ifdef HAVE_TRACING
-  int rank = get_rank(MSG_process_get_name(MSG_process_self()));
-  int dst_traced = get_rank(action[2]);
-  TRACE_smpi_ptp_in(rank, rank, dst_traced, "send");
-  TRACE_smpi_send(rank, rank, dst_traced);
-#endif
-
   XBT_DEBUG("Entering Send: %s (size: %lg)", name, size);
    if (size<65536) {
      action_Isend(action);
@@ -117,11 +110,6 @@ static void action_send(const char *const *action)
    XBT_VERB("%s %f", name, MSG_get_clock() - clock);
 
   free(name);
-
-#ifdef HAVE_TRACING
-  TRACE_smpi_ptp_out(rank, rank, dst_traced, "send");
-#endif
-
   asynchronous_cleanup();
 }
 
@@ -158,12 +146,6 @@ static void action_recv(const char *const *action)
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join_array(action, " ");
 
-#ifdef HAVE_TRACING
-  int rank = get_rank(MSG_process_get_name(MSG_process_self()));
-  int src_traced = get_rank(action[2]);
-  TRACE_smpi_ptp_in(rank, src_traced, rank, "recv");
-#endif
-
   XBT_DEBUG("Receiving: %s", name);
   msg_error_t res = MSG_task_receive(&task, mailbox_name);
   //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
@@ -174,11 +156,6 @@ static void action_recv(const char *const *action)
   }
 
   free(name);
-#ifdef HAVE_TRACING
-  TRACE_smpi_ptp_out(rank, src_traced, rank, "recv");
-  TRACE_smpi_recv(rank, src_traced, rank);
-#endif
-
   asynchronous_cleanup();
 }
 
@@ -189,14 +166,6 @@ static void action_Irecv(const char *const *action)
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
   XBT_DEBUG("Irecv on %s", MSG_process_get_name(MSG_process_self()));
-#ifdef HAVE_TRACING
-  int rank = get_rank(MSG_process_get_name(MSG_process_self()));
-  int src_traced = get_rank(action[2]);
-  globals->last_Irecv_sender_id = src_traced;
-  MSG_process_set_data(MSG_process_self(), (void *) globals);
-
-  TRACE_smpi_ptp_in(rank, src_traced, rank, "Irecv");
-#endif
 
   sprintf(mailbox, "%s_%s", action[2],
           MSG_process_get_name(MSG_process_self()));
@@ -209,10 +178,6 @@ static void action_Irecv(const char *const *action)
   xbt_dynar_push(globals->irecvs,&c);
 
   XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
-
-#ifdef HAVE_TRACING
-  TRACE_smpi_ptp_out(rank, src_traced, rank, "Irecv");
-#endif
 
   asynchronous_cleanup();
 }
@@ -231,12 +196,6 @@ static void action_wait(const char *const *action)
 
   if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
     name = xbt_str_join_array(action, " ");
-#ifdef HAVE_TRACING
-  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
-  int src_traced = counters->last_Irecv_sender_id;
-  int rank = get_rank(MSG_process_get_name(MSG_process_self()));
-  TRACE_smpi_ptp_in(rank, src_traced, rank, "wait");
-#endif
 
   XBT_DEBUG("Entering %s", name);
   comm = xbt_dynar_pop_as(globals->irecvs,msg_comm_t);
@@ -247,11 +206,6 @@ static void action_wait(const char *const *action)
 
   XBT_VERB("%s %f", name, MSG_get_clock() - clock);
   free(name);
-#ifdef HAVE_TRACING
-  TRACE_smpi_ptp_out(rank, src_traced, rank, "wait");
-  TRACE_smpi_recv(rank, src_traced, rank);
-#endif
-
 }
 
 /* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
@@ -521,9 +475,6 @@ static void action_compute(const char *const *action)
 
 static void action_init(const char *const *action)
 { 
-#ifdef HAVE_TRACING
-  TRACE_smpi_init(get_rank(MSG_process_get_name(MSG_process_self())));
-#endif
   XBT_DEBUG("Initialize the counters");
   process_globals_t globals = (process_globals_t) calloc(1, sizeof(s_process_globals_t));
   globals->isends = xbt_dynar_new(sizeof(msg_comm_t),NULL);
@@ -535,9 +486,6 @@ static void action_init(const char *const *action)
 
 static void action_finalize(const char *const *action)
 {
-#ifdef HAVE_TRACING
-  TRACE_smpi_finalize(get_rank(MSG_process_get_name(MSG_process_self())));
-#endif
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
   if (globals){
     xbt_dynar_free_container(&(globals->isends));

@@ -18,7 +18,9 @@
 #include "instr/instr_interface.h"
 #include "simgrid/simix.h"
 #include "simgrid/sg_config.h"
-#include "mc/mc.h" 
+#include "smpi/smpi_interface.h"
+#include "mc/mc.h"
+#include "instr/instr.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of simgrid");
@@ -96,7 +98,6 @@ static void sg_config_cmd_line(int *argc, char **argv)
     exit(0);
   }
 }
-
 
 /* callback of the workstation/model variable */
 static void _sg_cfg_cb__workstation_model(const char *name, int pos)
@@ -343,6 +344,12 @@ void sg_config_init(int *argc, char **argv)
   double double_default_value;
   int default_value_int;
   int i;
+
+  TRACE_add_start_function(TRACE_surf_alloc);
+  TRACE_add_start_function(TRACE_smpi_alloc);
+
+  TRACE_add_end_function(TRACE_smpi_release);
+  TRACE_add_end_function(TRACE_surf_release);
 
   /* Create the configuration support */
   if (_sg_init_status == 0) { /* Only create stuff if not already inited */

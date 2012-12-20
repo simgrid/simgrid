@@ -93,6 +93,7 @@ set(EXTRA_DIST
   )
 
 set(SMPI_SRC
+  src/smpi/instr_smpi.c
   src/smpi/smpi_base.c
   src/smpi/smpi_bench.c
   src/smpi/smpi_c99.c
@@ -186,6 +187,8 @@ set(SURF_SRC
   src/surf/cpu_cas01.c
   src/surf/cpu_ti.c
   src/surf/fair_bottleneck.c
+  src/surf/instr_routing.c
+  src/surf/instr_surf.c
   src/surf/lagrange.c
   src/surf/maxmin.c
   src/surf/network.c
@@ -235,6 +238,8 @@ set(SIMGRID_SRC
   )
 
 set(MSG_SRC
+  src/msg/instr_msg_process.c
+  src/msg/instr_msg_task.c
   src/msg/msg_actions.c
   src/msg/msg_config.c
   src/msg/msg_deployment.c
@@ -318,8 +323,6 @@ set(LUA_SRC
 set(TRACING_SRC
   src/instr/instr_config.c
   src/instr/instr_interface.c
-  src/instr/instr_msg_process.c
-  src/instr/instr_msg_task.c
   src/instr/instr_paje_containers.c
   src/instr/instr_paje_trace.c
   src/instr/instr_paje_header.c
@@ -327,9 +330,6 @@ set(TRACING_SRC
   src/instr/instr_paje_values.c
   src/instr/instr_private.h
   src/instr/instr_resource_utilization.c
-  src/instr/instr_routing.c
-  src/instr/instr_smpi.c
-  src/instr/instr_surf.c
   )
 
 set(JEDULE_SRC
@@ -466,6 +466,8 @@ set(simgrid_sources
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
+  ${SMPI_SRC}
+  ${TRACING_SRC}
   ${XBT_SRC}
   )
 

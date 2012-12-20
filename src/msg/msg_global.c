@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "instr/instr_interface.h"
 #include "msg_private.h"
 #include "msg_mailbox.h"
 #include "mc/mc.h"
@@ -152,7 +153,7 @@ static void MSG_exit(void) {
     return;
 
 #ifdef HAVE_TRACING
-  TRACE_surf_release();
+  TRACE_surf_resource_utilization_release();
 #endif
 
   /* initialization of the action module */
