@@ -256,7 +256,6 @@ static void action_barrier(const char *const *action)
 
 static void action_reduce(const char *const *action)
 {
-  int i;
   char *reduce_identifier;
   char mailbox[80];
   double comm_size = parse_double(action[2]);
@@ -280,6 +279,8 @@ static void action_reduce(const char *const *action)
 
     xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
     msg_task_t *tasks = xbt_new0(msg_task_t, communicator_size - 1);
+    int i;
+
     for (i = 1; i < communicator_size; i++) {
       sprintf(mailbox, "%s_p%d_p0", reduce_identifier, i);
       xbt_dynar_push_as(comms, msg_comm_t,
@@ -291,7 +292,7 @@ static void action_reduce(const char *const *action)
     unsigned int cursor;
     xbt_dynar_foreach(comms, cursor, comm) {
       MSG_comm_destroy(comm);
-      MSG_task_destroy(tasks[i]);
+      MSG_task_destroy(tasks[cursor]);
     }
     free(tasks);
     xbt_dynar_free(&comms);
@@ -389,7 +390,6 @@ static void action_sleep(const char *const *action)
 
 static void action_allReduce(const char *const *action)
 {
-  int i;
   char *allreduce_identifier;
   char mailbox[80];
   double comm_size = parse_double(action[2]);
@@ -413,6 +413,7 @@ static void action_allReduce(const char *const *action)
 
     xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
     msg_task_t *tasks = xbt_new0(msg_task_t, communicator_size - 1);
+    int i;
     for (i = 1; i < communicator_size; i++) {
       sprintf(mailbox, "%s_p%d_p0", allreduce_identifier, i);
       xbt_dynar_push_as(comms, msg_comm_t,
@@ -424,7 +425,7 @@ static void action_allReduce(const char *const *action)
     unsigned int cursor;
     xbt_dynar_foreach(comms, cursor, comm) {
       MSG_comm_destroy(comm);
-      MSG_task_destroy(tasks[i]);
+      MSG_task_destroy(tasks[cursor]);
     }
     free(tasks);
 
