@@ -38,23 +38,28 @@ file: \verbatim
 \endverbatim
 
 A last solution is to pass your configuration directly using the C
-interface. Unfortunately, this path is not really easy to use right
-now, and you mess directly with surf internal variables as follows. Check the
-\ref XBT_config "relevant page" for details on all the functions you
-can use in this context, \c _surf_cfg_set being the only configuration set
-currently used in SimGrid. \code
+interface. If you happen to use the MSG interface, this is very easy
+with the MSG_config() function. If you do not use MSG, that's a bit
+more complex, as you have to mess with the internal configuration set
+directly as follows. Check the \ref XBT_config "relevant page" for
+details on all the functions you can use in this context, \c
+_surf_cfg_set being the only configuration set currently used in
+SimGrid. 
+
+@code
 #include <xbt/config.h>
 
-extern xbt_cfg_t _surf_cfg_set;
+extern xbt_cfg_t _sg_cfg_set;
 
 int main(int argc, char *argv[]) {
-     MSG_init(&argc, argv);
+     SD_init(&argc, argv);
 
-     xbt_cfg_set_parse(_surf_cfg_set,"Item:Value");
+     /* Prefer MSG_config() if you use MSG!! */
+     xbt_cfg_set_parse(_sg_cfg_set,"Item:Value");
 
      // Rest of your code
 }
-\endcode
+@endcode
 
 \section options_model Configuring the platform models
 
