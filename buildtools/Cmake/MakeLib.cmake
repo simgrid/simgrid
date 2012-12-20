@@ -103,6 +103,10 @@ if(HAVE_MC)
   endif()
 endif()
 
+if(MMALLOC_WANT_OVERRIDE_LEGACY AND HAVE_GNU_LD)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl")
+endif()
+
 if(HAVE_NS3)
   if(${NS3_VERSION} EQUAL 310)
     SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3")
