@@ -5,12 +5,12 @@ p Testing the chainsend MSG implementation
 ! timeout 10
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/chainsend ${srcdir:=.}/platform_chainsend.xml ${srcdir:=.}/deployment_tesh.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
-> [   82.010000] (9:peer@host8) ### 82.010002 536870912 bytes (Avg 6.243141 MB/s); copy finished (simulated).
-> [   82.940000] (2:peer@host1) ### 82.940002 536870912 bytes (Avg 6.173137 MB/s); copy finished (simulated).
-> [   82.950000] (3:peer@host2) ### 82.949997 536870912 bytes (Avg 6.172393 MB/s); copy finished (simulated).
-> [   82.960000] (4:peer@host3) ### 82.959999 536870912 bytes (Avg 6.171649 MB/s); copy finished (simulated).
-> [   82.970000] (5:peer@host4) ### 82.970001 536870912 bytes (Avg 6.170905 MB/s); copy finished (simulated).
-> [   82.980000] (6:peer@host5) ### 82.980003 536870912 bytes (Avg 6.170161 MB/s); copy finished (simulated).
-> [   82.990000] (7:peer@host6) ### 82.989998 536870912 bytes (Avg 6.169418 MB/s); copy finished (simulated).
-> [   83.000000] (0:@) Total simulation time: 8.300000e+01
-> [   83.000000] (8:peer@host7) ### 83.000000 536870912 bytes (Avg 6.168675 MB/s); copy finished (simulated).
+> [    5.683972] (2:peer@host1) ### 5.683972 536870912 bytes (Avg 90.077856 MB/s); copy finished (simulated).
+> [    6.936704] (3:peer@host2) ### 6.936704 536870912 bytes (Avg 73.810274 MB/s); copy finished (simulated).
+> [    6.951030] (4:peer@host3) ### 6.951030 536870912 bytes (Avg 73.658146 MB/s); copy finished (simulated).
+> [    6.951486] (5:peer@host4) ### 6.951486 536870912 bytes (Avg 73.653321 MB/s); copy finished (simulated).
+> [    7.170536] (9:peer@host8) ### 7.170536 536870912 bytes (Avg 71.403309 MB/s); copy finished (simulated).
+> [    7.952668] (6:peer@host5) ### 7.952668 536870912 bytes (Avg 64.380908 MB/s); copy finished (simulated).
+> [    7.972487] (7:peer@host6) ### 7.972486 536870912 bytes (Avg 64.220868 MB/s); copy finished (simulated).
+> [    8.972948] (0:@) Total simulation time: 8.972948e+00
+> [    8.972948] (8:peer@host7) ### 8.972948 536870912 bytes (Avg 57.060399 MB/s); copy finished (simulated).
