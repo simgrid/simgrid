@@ -33,7 +33,7 @@ int sender(int argc, char *argv[])
   double task_comm_size = atof(argv[3]);
   long receivers_count = atol(argv[4]);
 
-  msg_comm_t *comm = xbt_new(msg_comm_t, number_of_tasks + receivers_count);
+  xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   int i;
   msg_task_t task = NULL;
   for (i = 0; i < number_of_tasks; i++) {
@@ -44,22 +44,22 @@ int sender(int argc, char *argv[])
     task =
         MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size,
                         NULL);
-    comm[i] = MSG_task_isend(task, mailbox);
+    xbt_dynar_push_as(comms, msg_comm_t, MSG_task_isend(task, mailbox));
     XBT_INFO("Send to receiver-%ld Task_%d", i % receivers_count, i);
   }
   for (i = 0; i < receivers_count; i++) {
     char mailbox[80];
     sprintf(mailbox, "receiver-%ld", i % receivers_count);
     task = MSG_task_create("finalize", 0, 0, 0);
-    comm[i + number_of_tasks] = MSG_task_isend(task, mailbox);
+    xbt_dynar_push_as(comms, msg_comm_t, MSG_task_isend(task, mailbox));    
     XBT_INFO("Send to receiver-%ld finalize", i % receivers_count);
 
   }
   /* Here we are waiting for the completion of all communications */
-  MSG_comm_waitall(comm, (number_of_tasks + receivers_count), -1);
+  MSG_comm_waitall(comms, -1);
 
   XBT_INFO("Goodbye now!");
-  xbt_free(comm);
+  xbt_dynar_free(&comms);
   return 0;
 }                               /* end_of_sender */
 

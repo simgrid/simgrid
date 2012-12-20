@@ -571,15 +571,15 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 /** \ingroup msg_task_usage
 * \brief This function is called by a sender and permit to wait for each communication
 *
-* \param comm a vector of communication
-* \param nb_elem is the size of the comm vector
+* \param comm a vector of communications
 * \param timeout for each call of MSG_comm_wait
 */
-void MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout)
+void MSG_comm_waitall(xbt_dynar_t comms, double timeout)
 {
-  int i = 0;
-  for (i = 0; i < nb_elem; i++) {
-    MSG_comm_wait(comm[i], timeout);
+  unsigned int cursor;
+  msg_comm_t comm;
+  xbt_dynar_foreach(comms, cursor, comm) {
+    MSG_comm_wait(comm, timeout);    
   }
 }
 

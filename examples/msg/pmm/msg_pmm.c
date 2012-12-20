@@ -194,18 +194,24 @@ static void broadcast_jobs(node_job_t *jobs)
   int node;
   char node_mbox[MAILBOX_NAME_SIZE];
   msg_task_t task;
-  msg_comm_t comms[GRID_NUM_NODES - 1] = {0};
+  xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
 
   XBT_VERB("Broadcast Jobs");
   for (node = 1; node < GRID_NUM_NODES; node++){
     task = MSG_task_create("Job", 100, 100, jobs[node-1]);
     snprintf(node_mbox, MAILBOX_NAME_SIZE - 1, "%d", node);
-    comms[node-1] = MSG_task_isend(task, node_mbox);
+     xbt_dynar_push_as(comms, msg_comm_t, MSG_task_isend(task, node_mbox));
   }
 
-  MSG_comm_waitall(comms, GRID_NUM_NODES-1, -1);
-  for (node = 1; node < GRID_NUM_NODES; node++)
-    MSG_comm_destroy(comms[node - 1]);
+  MSG_comm_waitall(comms, -1);
+
+  msg_comm_t comm;
+  unsigned int cursor;
+  xbt_dynar_foreach(comms, cursor, comm) {
+    MSG_comm_destroy(comm);
+  }
+
+  xbt_dynar_free(&comms);
 }
 
 static node_job_t wait_job(int selfid)
@@ -345,19 +351,24 @@ static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)
 
 static void receive_results(result_t *results){
   int node;
-  msg_comm_t comms[GRID_NUM_NODES-1] = {0};
+  xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   msg_task_t tasks[GRID_NUM_NODES-1] = {0};
 
   XBT_VERB("Receive Results.");
 
   /* Get the result from the nodes in the GRID */
   for (node = 1; node < GRID_NUM_NODES; node++){
-   comms[node-1] = MSG_task_irecv(&tasks[node-1], "0");
+   xbt_dynar_push_as(comms, msg_comm_t, MSG_task_irecv(&tasks[node-1], "0"));
   }
 
-  MSG_comm_waitall(comms, GRID_NUM_NODES - 1, -1);
-  for (node = 1; node < GRID_NUM_NODES; node++)
-    MSG_comm_destroy(comms[node - 1]);
+  MSG_comm_waitall(comms, -1);
+  
+  msg_comm_t comm;
+  unsigned int cursor;
+  xbt_dynar_foreach(comms, cursor, comm) {
+    MSG_comm_destroy(comm);
+  }
+  xbt_dynar_free(&comms);
 
   /* Reconstruct the result matrix */
   for (node = 1; node < GRID_NUM_NODES; node++){
