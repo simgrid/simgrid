@@ -14,6 +14,10 @@ Please apply the following checklist before releasing.
     version numbers that were used.
   - The" make distcheck" target works (testing that every files needed
     to build and install are included in the archive)
+  - The version number provided to download in the examples of
+    doc/doxygen/install.doc is accurate (we should maybe generate this
+    file to avoid issues, but some inaccuracies are less painful than
+    editing the cmake files to make this happen, sorry).
 - Tests
   - All tests pass on a reasonable amount of platforms (typically,
     everything on cdash)
@@ -36,8 +40,8 @@ globbing, you must ensure that your tree contains no cruft. You can
 either checkout a new tree or remove anything from your current tree:
 \verbatim
 $ cd simgrid
-$ git reset --hard master
-$ git clean -dfx
+$ git reset --hard master # warning, it will kill your uncommited changes
+$ git clean -dfx          # warning, it will kill your uncommited changes
 \endverbatim
 
 You can then build the archive. This gives you your archive in the

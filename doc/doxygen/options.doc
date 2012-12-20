@@ -5,7 +5,9 @@ SimGrid behavior. For a complete list of all configuration options
 accepted by the SimGrid version used in your simulator, simply pass
 the --help configuration flag to your program. If some of the options
 are not documented on this page, this is a bug that you should please
-report so that we can fix it.
+report so that we can fix it. Note that some of the options presented
+here may not be available in your simulators, depending on the 
+@ref install_src_config "compile-time options" that you used.
 
 \section options_using Passing configuration options to the simulators
 
