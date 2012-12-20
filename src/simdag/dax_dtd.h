@@ -3,7 +3,7 @@
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  * FleXML is Copyright (C) 2003-2011 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.67 2011/11/01 20:49:21 mquinson Exp).
+ * (Id: flexml.pl,v 1.69 2012/12/20 00:13:40 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
