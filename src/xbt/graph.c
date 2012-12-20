@@ -579,8 +579,8 @@ static void __parse_node(void)
   if (__parse_node_label_and_data)
     node->data = __parse_node_label_and_data(node, A_graphxml_node_label,
                                              A_graphxml_node_data);
-  node->position_x = xbt_graph_parse_get_double(A_graphxml_node_position_x);
-  node->position_y = xbt_graph_parse_get_double(A_graphxml_node_position_y);
+  node->position_x = xbt_graph_parse_get_double(A_graphxml_node_position___x);
+  node->position_y = xbt_graph_parse_get_double(A_graphxml_node_position___y);
 
   xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
 }

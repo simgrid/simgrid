@@ -293,10 +293,10 @@ int console_add_route(lua_State *L) {
   SURFXML_START_TAG(route);
 
   xbt_dynar_foreach(links,cursor,link_id) {
-    SURFXML_BUFFER_SET(link_ctn_id, link_id);
-    A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
-    SURFXML_START_TAG(link_ctn);
-    SURFXML_END_TAG(link_ctn);
+    SURFXML_BUFFER_SET(link___ctn_id, link_id);
+    A_surfxml_link___ctn_direction = A_surfxml_link___ctn_direction_NONE;
+    SURFXML_START_TAG(link___ctn);
+    SURFXML_END_TAG(link___ctn);
   }
   SURFXML_END_TAG(route);
 

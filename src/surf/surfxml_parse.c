@@ -107,22 +107,22 @@ void ETag_surfxml_storage(void)
   sg_platf_new_storage(&storage);
   current_property_set = NULL;
 }
-void STag_surfxml_storage_type(void)
+void STag_surfxml_storage___type(void)
 {
   AS_TAG = 0;
-  XBT_DEBUG("STag_surfxml_storage_type");
+  XBT_DEBUG("STag_surfxml_storage___type");
   xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
 }
-void ETag_surfxml_storage_type(void)
+void ETag_surfxml_storage___type(void)
 {
   s_sg_platf_storage_type_cbarg_t storage_type;
   memset(&storage_type,0,sizeof(storage_type));
 
-  storage_type.content = A_surfxml_storage_type_content;
-  storage_type.id = A_surfxml_storage_type_id;
-  storage_type.model = A_surfxml_storage_type_model;
+  storage_type.content = A_surfxml_storage___type_content;
+  storage_type.id = A_surfxml_storage___type_id;
+  storage_type.model = A_surfxml_storage___type_model;
   storage_type.properties = current_property_set;
-  storage_type.size = surf_parse_get_int(A_surfxml_storage_type_size);
+  storage_type.size = surf_parse_get_int(A_surfxml_storage___type_size);
   sg_platf_new_storage_type(&storage_type);
   current_property_set = NULL;
 }
@@ -298,8 +298,8 @@ void ETag_surfxml_host(void)    {
   host.power_peak = get_cpu_power(A_surfxml_host_power);
   host.power_scale = surf_parse_get_double( A_surfxml_host_availability);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
-  host.power_trace = tmgr_trace_new_from_file(A_surfxml_host_availability_file);
-  host.state_trace = tmgr_trace_new_from_file(A_surfxml_host_state_file);
+  host.power_trace = tmgr_trace_new_from_file(A_surfxml_host_availability___file);
+  host.state_trace = tmgr_trace_new_from_file(A_surfxml_host_state___file);
   xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
         (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
@@ -312,14 +312,14 @@ void ETag_surfxml_host(void)    {
   current_property_set = NULL;
 }
 
-void STag_surfxml_host_link(void){
-  XBT_DEBUG("Create a Host_link for %s",A_surfxml_host_link_id);
+void STag_surfxml_host___link(void){
+  XBT_DEBUG("Create a Host_link for %s",A_surfxml_host___link_id);
   s_sg_platf_host_link_cbarg_t host_link;
   memset(&host_link,0,sizeof(host_link));
 
-  host_link.id = A_surfxml_host_link_id;
-  host_link.link_up = A_surfxml_host_link_up;
-  host_link.link_down = A_surfxml_host_link_down;
+  host_link.id = A_surfxml_host___link_id;
+  host_link.link_up = A_surfxml_host___link_up;
+  host_link.link_down = A_surfxml_host___link_down;
   sg_platf_new_host_link(&host_link);
 }
 
@@ -344,20 +344,20 @@ void STag_surfxml_cluster(void){
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
   cluster.bw =   surf_parse_get_double(A_surfxml_cluster_bw);
   cluster.lat =  surf_parse_get_double(A_surfxml_cluster_lat);
-  if(strcmp(A_surfxml_cluster_bb_bw,""))
-    cluster.bb_bw = surf_parse_get_double(A_surfxml_cluster_bb_bw);
-  if(strcmp(A_surfxml_cluster_bb_lat,""))
-    cluster.bb_lat = surf_parse_get_double(A_surfxml_cluster_bb_lat);
-  cluster.router_id = A_surfxml_cluster_router_id;
+  if(strcmp(A_surfxml_cluster_bb___bw,""))
+    cluster.bb_bw = surf_parse_get_double(A_surfxml_cluster_bb___bw);
+  if(strcmp(A_surfxml_cluster_bb___lat,""))
+    cluster.bb_lat = surf_parse_get_double(A_surfxml_cluster_bb___lat);
+  cluster.router_id = A_surfxml_cluster_router___id;
 
-  switch (AX_surfxml_cluster_sharing_policy) {
-  case A_surfxml_cluster_sharing_policy_SHARED:
+  switch (AX_surfxml_cluster_sharing___policy) {
+  case A_surfxml_cluster_sharing___policy_SHARED:
     cluster.sharing_policy = SURF_LINK_SHARED;
     break;
-  case A_surfxml_cluster_sharing_policy_FULLDUPLEX:
+  case A_surfxml_cluster_sharing___policy_FULLDUPLEX:
     cluster.sharing_policy = SURF_LINK_FULLDUPLEX;
     break;
-  case A_surfxml_cluster_sharing_policy_FATPIPE:
+  case A_surfxml_cluster_sharing___policy_FATPIPE:
     cluster.sharing_policy = SURF_LINK_FATPIPE;
     break;
   default:
@@ -365,11 +365,11 @@ void STag_surfxml_cluster(void){
                      cluster.id);
     break;
   }
-  switch (AX_surfxml_cluster_bb_sharing_policy) {
-  case A_surfxml_cluster_bb_sharing_policy_FATPIPE:
+  switch (AX_surfxml_cluster_bb___sharing___policy) {
+  case A_surfxml_cluster_bb___sharing___policy_FATPIPE:
     cluster.bb_sharing_policy = SURF_LINK_FATPIPE;
     break;
-  case A_surfxml_cluster_bb_sharing_policy_SHARED:
+  case A_surfxml_cluster_bb___sharing___policy_SHARED:
     cluster.bb_sharing_policy = SURF_LINK_SHARED;
     break;
   default:
@@ -378,8 +378,8 @@ void STag_surfxml_cluster(void){
     break;
   }
 
-  cluster.availability_trace = A_surfxml_cluster_availability_file;
-  cluster.state_trace = A_surfxml_cluster_state_file;
+  cluster.availability_trace = A_surfxml_cluster_availability___file;
+  cluster.state_trace = A_surfxml_cluster_state___file;
   sg_platf_new_cluster(&cluster);
 }
 
@@ -402,12 +402,12 @@ void STag_surfxml_peer(void){
   memset(&peer,0,sizeof(peer));
   peer.id = A_surfxml_peer_id;
   peer.power = surf_parse_get_double(A_surfxml_peer_power);
-  peer.bw_in = surf_parse_get_double(A_surfxml_peer_bw_in);
-  peer.bw_out = surf_parse_get_double(A_surfxml_peer_bw_out);
+  peer.bw_in = surf_parse_get_double(A_surfxml_peer_bw___in);
+  peer.bw_out = surf_parse_get_double(A_surfxml_peer_bw___out);
   peer.lat = surf_parse_get_double(A_surfxml_peer_lat);
   peer.coord = A_surfxml_peer_coordinates;
-  peer.availability_trace = tmgr_trace_new_from_file(A_surfxml_peer_availability_file);
-  peer.state_trace = tmgr_trace_new_from_file(A_surfxml_peer_state_file);
+  peer.availability_trace = tmgr_trace_new_from_file(A_surfxml_peer_availability___file);
+  peer.state_trace = tmgr_trace_new_from_file(A_surfxml_peer_state___file);
 
   sg_platf_new_peer(&peer);
 }
@@ -425,9 +425,9 @@ void ETag_surfxml_link(void){
 
   link.id = A_surfxml_link_id;
   link.bandwidth = surf_parse_get_double(A_surfxml_link_bandwidth);
-  link.bandwidth_trace = tmgr_trace_new_from_file(A_surfxml_link_bandwidth_file);
+  link.bandwidth_trace = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
   link.latency = surf_parse_get_double(A_surfxml_link_latency);
-  link.latency_trace = tmgr_trace_new_from_file(A_surfxml_link_latency_file);
+  link.latency_trace = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
 
   switch (A_surfxml_link_state) {
   case A_surfxml_link_state_ON:
@@ -440,16 +440,16 @@ void ETag_surfxml_link(void){
     surf_parse_error("invalid state for link %s", link.id);
     break;
   }
-  link.state_trace = tmgr_trace_new_from_file(A_surfxml_link_state_file);
+  link.state_trace = tmgr_trace_new_from_file(A_surfxml_link_state___file);
 
-  switch (A_surfxml_link_sharing_policy) {
-  case A_surfxml_link_sharing_policy_SHARED:
+  switch (A_surfxml_link_sharing___policy) {
+  case A_surfxml_link_sharing___policy_SHARED:
     link.policy = SURF_LINK_SHARED;
     break;
-  case A_surfxml_link_sharing_policy_FATPIPE:
+  case A_surfxml_link_sharing___policy_FATPIPE:
      link.policy = SURF_LINK_FATPIPE;
      break;
-  case A_surfxml_link_sharing_policy_FULLDUPLEX:
+  case A_surfxml_link_sharing___policy_FULLDUPLEX:
      link.policy = SURF_LINK_FULLDUPLEX;
      break;
   default:
@@ -462,19 +462,19 @@ void ETag_surfxml_link(void){
   current_property_set = NULL;
 }
 
-void STag_surfxml_link_ctn(void){
+void STag_surfxml_link___ctn(void){
 
   char *link_id;
-  switch (A_surfxml_link_ctn_direction) {
-  case AU_surfxml_link_ctn_direction:
-  case A_surfxml_link_ctn_direction_NONE:
-    link_id = xbt_strdup(A_surfxml_link_ctn_id);
+  switch (A_surfxml_link___ctn_direction) {
+  case AU_surfxml_link___ctn_direction:
+  case A_surfxml_link___ctn_direction_NONE:
+    link_id = xbt_strdup(A_surfxml_link___ctn_id);
     break;
-  case A_surfxml_link_ctn_direction_UP:
-    link_id = bprintf("%s_UP", A_surfxml_link_ctn_id);
+  case A_surfxml_link___ctn_direction_UP:
+    link_id = bprintf("%s_UP", A_surfxml_link___ctn_id);
     break;
-  case A_surfxml_link_ctn_direction_DOWN:
-    link_id = bprintf("%s_DOWN", A_surfxml_link_ctn_id);
+  case A_surfxml_link___ctn_direction_DOWN:
+    link_id = bprintf("%s_DOWN", A_surfxml_link___ctn_id);
     break;
   }
 
@@ -507,27 +507,32 @@ void STag_surfxml_route(void){
 }
 
 void STag_surfxml_ASroute(void){
-  xbt_assert(strlen(A_surfxml_ASroute_src) > 0 || strlen(A_surfxml_ASroute_dst) > 0
-      || strlen(A_surfxml_ASroute_gw_src) > 0 || strlen(A_surfxml_ASroute_gw_dst) > 0,
-      "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-      A_surfxml_ASroute_src, A_surfxml_ASroute_dst,
-      A_surfxml_ASroute_gw_src,A_surfxml_ASroute_gw_dst);
+  xbt_assert(strlen(A_surfxml_ASroute_src) > 0
+             || strlen(A_surfxml_ASroute_dst) > 0
+             || strlen(A_surfxml_ASroute_gw___src) > 0
+             || strlen(A_surfxml_ASroute_gw___dst) > 0,
+             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
+             A_surfxml_ASroute_src, A_surfxml_ASroute_dst,
+             A_surfxml_ASroute_gw___src, A_surfxml_ASroute_gw___dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 void STag_surfxml_bypassRoute(void){
-  xbt_assert(strlen(A_surfxml_bypassRoute_src) > 0 || strlen(A_surfxml_bypassRoute_dst) > 0,
-      "Missing end-points while defining bupass route \"%s\"->\"%s\"",
-      A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
+  xbt_assert(strlen(A_surfxml_bypassRoute_src) > 0
+             || strlen(A_surfxml_bypassRoute_dst) > 0,
+             "Missing end-points while defining bupass route \"%s\"->\"%s\"",
+             A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 void STag_surfxml_bypassASroute(void){
-  xbt_assert(strlen(A_surfxml_bypassASroute_src) > 0 || strlen(A_surfxml_bypassASroute_dst) > 0
-      || strlen(A_surfxml_bypassASroute_gw_src) > 0 || strlen(A_surfxml_bypassASroute_gw_dst) > 0,
-      "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-      A_surfxml_bypassASroute_src, A_surfxml_bypassASroute_dst,
-      A_surfxml_bypassASroute_gw_src,A_surfxml_bypassASroute_gw_dst);
+  xbt_assert(strlen(A_surfxml_bypassASroute_src) > 0
+             || strlen(A_surfxml_bypassASroute_dst) > 0
+             || strlen(A_surfxml_bypassASroute_gw___src) > 0
+             || strlen(A_surfxml_bypassASroute_gw___dst) > 0,
+             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
+             A_surfxml_bypassASroute_src, A_surfxml_bypassASroute_dst,
+             A_surfxml_bypassASroute_gw___src,A_surfxml_bypassASroute_gw___dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
@@ -567,11 +572,11 @@ void ETag_surfxml_ASroute(void){
     // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
     //
     // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_ASroute_gw_src;
-    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_ASroute_gw_dst;
+    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_ASroute_gw___src;
+    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_ASroute_gw___dst;
   } else {
-    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw_src);
-    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw_dst);
+    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___src);
+    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___dst);
   }
 
   ASroute.link_list = parsed_link_list;
@@ -619,11 +624,11 @@ void ETag_surfxml_bypassASroute(void){
     // store the provided name instead of the entity directly (model_rulebased_parse_ASroute knows)
     //
     // This is because the user will provide something like "^AS_(.*)$" instead of the proper name of a given entity
-    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_bypassASroute_gw_src;
-    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_bypassASroute_gw_dst;
+    ASroute.gw_src = (sg_routing_edge_t) A_surfxml_bypassASroute_gw___src;
+    ASroute.gw_dst = (sg_routing_edge_t) A_surfxml_bypassASroute_gw___dst;
   } else {
-    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw_src);
-    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw_dst);
+    ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___src);
+    ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
   }
 
   sg_platf_new_bypassASroute(&ASroute);
@@ -642,28 +647,28 @@ void ETag_surfxml_trace(void){
   sg_platf_new_trace(&trace);
 }
 
-void STag_surfxml_trace_connect(void){
+void STag_surfxml_trace___connect(void){
   s_sg_platf_trace_connect_cbarg_t trace_connect;
   memset(&trace_connect,0,sizeof(trace_connect));
 
-  trace_connect.element = A_surfxml_trace_connect_element;
-  trace_connect.trace = A_surfxml_trace_connect_trace;
+  trace_connect.element = A_surfxml_trace___connect_element;
+  trace_connect.trace = A_surfxml_trace___connect_trace;
 
-  switch (A_surfxml_trace_connect_kind) {
-  case AU_surfxml_trace_connect_kind:
-  case A_surfxml_trace_connect_kind_POWER:
+  switch (A_surfxml_trace___connect_kind) {
+  case AU_surfxml_trace___connect_kind:
+  case A_surfxml_trace___connect_kind_POWER:
     trace_connect.kind =  SURF_TRACE_CONNECT_KIND_POWER;
     break;
-  case A_surfxml_trace_connect_kind_BANDWIDTH:
+  case A_surfxml_trace___connect_kind_BANDWIDTH:
     trace_connect.kind =  SURF_TRACE_CONNECT_KIND_BANDWIDTH;
     break;
-  case A_surfxml_trace_connect_kind_HOST_AVAIL:
+  case A_surfxml_trace___connect_kind_HOST___AVAIL:
     trace_connect.kind =  SURF_TRACE_CONNECT_KIND_HOST_AVAIL;
     break;
-  case A_surfxml_trace_connect_kind_LATENCY:
+  case A_surfxml_trace___connect_kind_LATENCY:
     trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LATENCY;
     break;
-  case A_surfxml_trace_connect_kind_LINK_AVAIL:
+  case A_surfxml_trace___connect_kind_LINK___AVAIL:
     trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LINK_AVAIL;
     break;
   }
@@ -743,15 +748,15 @@ void ETag_surfxml_process(void){
   process.properties = current_property_set;
   process.host = A_surfxml_process_host;
   process.function = A_surfxml_process_function;
-  process.start_time = surf_parse_get_double(A_surfxml_process_start_time);
-  process.kill_time = surf_parse_get_double(A_surfxml_process_kill_time);
+  process.start_time = surf_parse_get_double(A_surfxml_process_start___time);
+  process.kill_time = surf_parse_get_double(A_surfxml_process_kill___time);
 
-  switch (A_surfxml_process_on_failure) {
-  case AU_surfxml_process_on_failure:
-  case A_surfxml_process_on_failure_DIE:
+  switch (A_surfxml_process_on___failure) {
+  case AU_surfxml_process_on___failure:
+  case A_surfxml_process_on___failure_DIE:
     process.on_failure =  SURF_PROCESS_ON_FAILURE_DIE;
     break;
-  case A_surfxml_process_on_failure_RESTART:
+  case A_surfxml_process_on___failure_RESTART:
     process.on_failure =  SURF_PROCESS_ON_FAILURE_RESTART;
     break;
   }
@@ -787,15 +792,15 @@ void ETag_surfxml_gpu(void)
 void ETag_surfxml_prop(void){}
 void STag_surfxml_random(void){}
 void ETag_surfxml_random(void){}
-void ETag_surfxml_trace_connect(void){}
+void ETag_surfxml_trace___connect(void){}
 void STag_surfxml_trace(void){}
 void ETag_surfxml_router(void){}
-void ETag_surfxml_host_link(void){}
+void ETag_surfxml_host___link(void){}
 void ETag_surfxml_cluster(void){}
 void ETag_surfxml_cabinet(void){}
 void ETag_surfxml_peer(void){}
 void STag_surfxml_backbone(void){}
-void ETag_surfxml_link_ctn(void){}
+void ETag_surfxml_link___ctn(void){}
 void ETag_surfxml_argument(void){}
 
 /* Open and Close parse file */
@@ -893,7 +898,7 @@ static void init_randomness(void)
   random_min = surf_parse_get_double(A_surfxml_random_min);
   random_max = surf_parse_get_double(A_surfxml_random_max);
   random_mean = surf_parse_get_double(A_surfxml_random_mean);
-  random_std_deviation = surf_parse_get_double(A_surfxml_random_std_deviation);
+  random_std_deviation = surf_parse_get_double(A_surfxml_random_std___deviation);
   switch (A_surfxml_random_generator) {
   case AU_surfxml_random_generator:
   case A_surfxml_random_generator_NONE:

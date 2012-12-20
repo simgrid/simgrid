@@ -35,10 +35,10 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_id, "host A");
   SURFXML_BUFFER_SET(host_power, "100000000.00");
   SURFXML_BUFFER_SET(host_availability, "1.0");
-  SURFXML_BUFFER_SET(host_availability_file, "");
+  SURFXML_BUFFER_SET(host_availability___file, "");
   SURFXML_BUFFER_SET(host_core, "1");
   A_surfxml_host_state = A_surfxml_host_state_ON;
-  SURFXML_BUFFER_SET(host_state_file, "");
+  SURFXML_BUFFER_SET(host_state___file, "");
   SURFXML_BUFFER_SET(host_coordinates, "");
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
@@ -47,10 +47,10 @@ static int surf_parse_bypass_platform(void)
   SURFXML_BUFFER_SET(host_id, "host B");
   SURFXML_BUFFER_SET(host_power, "100000000.00");
   SURFXML_BUFFER_SET(host_availability, "1.0");
-  SURFXML_BUFFER_SET(host_availability_file, "");
+  SURFXML_BUFFER_SET(host_availability___file, "");
   SURFXML_BUFFER_SET(host_core, "1");
   A_surfxml_host_state = A_surfxml_host_state_ON;
-  SURFXML_BUFFER_SET(host_state_file, "");
+  SURFXML_BUFFER_SET(host_state___file, "");
   SURFXML_BUFFER_SET(host_coordinates, "");
   SURFXML_START_TAG(host);
   SURFXML_END_TAG(host);
@@ -58,12 +58,12 @@ static int surf_parse_bypass_platform(void)
   XBT_DEBUG("<link id=\"LinkA\" bandwidth=\"10000000.0\" latency=\"0.2\"/>");
   SURFXML_BUFFER_SET(link_id, "LinkA");
   SURFXML_BUFFER_SET(link_bandwidth, "10000000.0");
-  SURFXML_BUFFER_SET(link_bandwidth_file, "");
+  SURFXML_BUFFER_SET(link_bandwidth___file, "");
   SURFXML_BUFFER_SET(link_latency, "0.2");
-  SURFXML_BUFFER_SET(link_latency_file, "");
+  SURFXML_BUFFER_SET(link_latency___file, "");
   A_surfxml_link_state = A_surfxml_link_state_ON;
-  SURFXML_BUFFER_SET(link_state_file, "");
-  A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
+  SURFXML_BUFFER_SET(link_state___file, "");
+  A_surfxml_link_sharing___policy = A_surfxml_link_sharing___policy_SHARED;
   SURFXML_START_TAG(link);
   SURFXML_END_TAG(link);
 
@@ -73,10 +73,10 @@ static int surf_parse_bypass_platform(void)
   A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_YES;
   SURFXML_START_TAG(route);
   XBT_DEBUG("  <link:ctn id=\"LinkA\"/>");
-  SURFXML_BUFFER_SET(link_ctn_id, "LinkA");
-  A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
-  SURFXML_START_TAG(link_ctn);
-  SURFXML_END_TAG(link_ctn);
+  SURFXML_BUFFER_SET(link___ctn_id, "LinkA");
+  A_surfxml_link___ctn_direction = A_surfxml_link___ctn_direction_NONE;
+  SURFXML_START_TAG(link___ctn);
+  SURFXML_END_TAG(link___ctn);
   XBT_DEBUG("</route>");
   SURFXML_END_TAG(route);
 
@@ -106,8 +106,8 @@ static int surf_parse_bypass_application(void)
 /*   <process host="host A" function="master"> */
   SURFXML_BUFFER_SET(process_host, "host A");
   SURFXML_BUFFER_SET(process_function, "master");
-  SURFXML_BUFFER_SET(process_start_time, "-1.0");
-  SURFXML_BUFFER_SET(process_kill_time, "-1.0");
+  SURFXML_BUFFER_SET(process_start___time, "-1.0");
+  SURFXML_BUFFER_SET(process_kill___time, "-1.0");
   SURFXML_START_TAG(process);
 
 /*      <argument value="20"/> */
@@ -136,8 +136,8 @@ static int surf_parse_bypass_application(void)
 /*   <process host="host B" function="slave"/> */
   SURFXML_BUFFER_SET(process_host, "host B");
   SURFXML_BUFFER_SET(process_function, "slave");
-  SURFXML_BUFFER_SET(process_start_time, "-1.0");
-  SURFXML_BUFFER_SET(process_kill_time, "-1.0");
+  SURFXML_BUFFER_SET(process_start___time, "-1.0");
+  SURFXML_BUFFER_SET(process_kill___time, "-1.0");
   SURFXML_START_TAG(process);
   SURFXML_END_TAG(process);
 

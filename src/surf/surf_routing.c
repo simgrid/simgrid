@@ -1019,7 +1019,7 @@ static void routing_parse_Srandom(void)
   char *rd_name = NULL;
   char *rd_value;
   mean = surf_parse_get_double(A_surfxml_random_mean);
-  std = surf_parse_get_double(A_surfxml_random_std_deviation);
+  std = surf_parse_get_double(A_surfxml_random_std___deviation);
   min = surf_parse_get_double(A_surfxml_random_min);
   max = surf_parse_get_double(A_surfxml_random_max);
   seed = surf_parse_get_double(A_surfxml_random_seed);

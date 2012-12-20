@@ -149,8 +149,8 @@ static int bypass_deployment(void)
     XBT_DEBUG("  <process host=\"c-0.me\" function=\"master\">");
     SURFXML_BUFFER_SET(process_host, "c-0.me");
     SURFXML_BUFFER_SET(process_function, "master");
-    SURFXML_BUFFER_SET(process_start_time, "-1.0");
-    SURFXML_BUFFER_SET(process_kill_time, "-1.0");
+    SURFXML_BUFFER_SET(process_start___time, "-1.0");
+    SURFXML_BUFFER_SET(process_kill___time, "-1.0");
     SURFXML_START_TAG(process);
 
     XBT_DEBUG("    <argument value=\"%s\"/>",bprintf("%d",nb_host-1));
@@ -183,8 +183,8 @@ static int bypass_deployment(void)
     XBT_DEBUG("  <process host=\"%s.me\" function=\"slave\"/>",bprintf("c-%d",i));
     SURFXML_BUFFER_SET(process_host, bprintf("c-%d.me",i));
     SURFXML_BUFFER_SET(process_function, "slave");
-    SURFXML_BUFFER_SET(process_start_time, "-1.0");
-    SURFXML_BUFFER_SET(process_kill_time, "-1.0");
+    SURFXML_BUFFER_SET(process_start___time, "-1.0");
+    SURFXML_BUFFER_SET(process_kill___time, "-1.0");
     SURFXML_START_TAG(process);
     SURFXML_END_TAG(process);
   }
