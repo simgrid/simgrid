@@ -473,7 +473,7 @@ target_link_libraries(TARGET_NAME simgrid pcre)
 \endverbatim
 \li To initialize and build your project, you'll need to run
 \verbatim
-cmake -G"MinGW Makefiles" \<path_to_HelloWorld_project\>
+cmake -G"MinGW Makefiles" <path_to_HelloWorld_project>
 \endverbatim
 \li Run "mingw32-make"
 \li You should obtain "TARGET_NAME.exe".
