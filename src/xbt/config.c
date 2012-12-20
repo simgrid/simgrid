@@ -490,7 +490,7 @@ e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name)
            "Can't get the type of '%s' since this variable does not exist",
            name);
 
-  XBT_INFO("type in variable = %d", (int)variable->type);
+  XBT_DEBUG("type in variable = %d", (int)variable->type);
 
   return variable->type;
 }
