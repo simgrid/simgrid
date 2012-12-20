@@ -1,5 +1,4 @@
-/* Copyright (c) 2004, 2005, 2006, 2007, 2008, 2009, 2010. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2012. The SimGrid Team.  All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -13,6 +12,8 @@
 #include "xbt/virtu.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "xbt/replay.h"
+#include "simgrid/sg_config.h" /* Configuration mechanism of SimGrid */
+
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
@@ -127,6 +128,20 @@ msg_error_t MSG_main(void)
   }
   return MSG_OK;
 }
+
+/** \ingroup msg_simulation
+ * \brief set a configuration variable
+ *
+ * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref options.
+ *
+ * Example:
+ * MSG_config("workstation/model","KCCFLN05");
+ */
+void MSG_config(const char *key, const char *value){
+  xbt_assert(msg_global,"ERROR: Please call MSG_init() before using MSG_config()");
+  xbt_cfg_set_as_string(_sg_cfg_set, key, value);
+}
+
 
 /** \ingroup msg_simulation
  * \brief Kill all running process

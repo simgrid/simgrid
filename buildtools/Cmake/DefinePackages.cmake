@@ -241,7 +241,6 @@ set(MSG_SRC
   src/msg/instr_msg_process.c
   src/msg/instr_msg_task.c
   src/msg/msg_actions.c
-  src/msg/msg_config.c
   src/msg/msg_deployment.c
   src/msg/msg_environment.c
   src/msg/msg_global.c

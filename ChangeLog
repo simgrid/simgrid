@@ -19,6 +19,7 @@ SimGrid (3.9) NOT RELEASED; urgency=low
 
  MSG:
  * New function: MSG_process_get_number()
+ * Old function documented: MSG_config()
 
  SURF:
  * Change the default value of the TCP_gamma constant (maximal size of TCP

@@ -105,6 +105,7 @@ XBT_PUBLIC(void) xbt_cfg_set_string(xbt_cfg_t cfg, const char *name,
                                     const char *val);
 XBT_PUBLIC(void) xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name,
                                   const char *peer, int port);
+XBT_PUBLIC(void*) xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *name, const char *val);
 
 /*
   Set the default value of the cell \a name in \a cfg with the provided value.
