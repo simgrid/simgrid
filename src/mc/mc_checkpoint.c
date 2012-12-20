@@ -48,7 +48,7 @@ static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
   new_reg->data = xbt_malloc0(size);
   memcpy(new_reg->data, start_addr, size);
 
-  XBT_DEBUG("New region : type : %d, data : %p, size : %zu", type, new_reg->data, size);
+  XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu", type, new_reg->data, start_addr, size);
   
   return new_reg;
 }
@@ -91,11 +91,7 @@ void MC_init_memory_map_info(){
   while (i < maps->mapsize) {
     reg = maps->regions[i];
     if ((reg.prot & PROT_WRITE)){
-      if (maps->regions[i].pathname == NULL){
-        if(reg.start_addr == raw_heap){
-          end_raw_heap = reg.end_addr;
-        }
-      } else {
+      if (maps->regions[i].pathname != NULL){
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           start_data_libsimgrid = reg.start_addr;
           i++;
@@ -110,6 +106,9 @@ void MC_init_memory_map_info(){
             start_bss_binary = reg.start_addr;
             i++;
           }
+        }else if(!memcmp(maps->regions[i].pathname, "[heap]", 6)){
+          end_raw_heap = reg.end_addr;
+          i++;
         }
       }
     }else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)){
@@ -117,10 +116,8 @@ void MC_init_memory_map_info(){
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           start_text_libsimgrid = reg.start_addr;
           libsimgrid_path = strdup(maps->regions[i].pathname);
-        }else{
-          if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
-            start_text_binary = reg.start_addr;
-          }
+        }else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
+          start_text_binary = reg.start_addr;
         }
       }
     }
@@ -166,11 +163,9 @@ mc_snapshot_t MC_take_snapshot()
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
           heap = snapshot->regions[nb_reg]->data;
           nb_reg++;
-        }else if(reg.start_addr == raw_heap){
-          end_raw_heap = reg.end_addr;
         }
         i++;
-      } else {
+      } else{ 
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           size = (char*)reg.end_addr - (char*)reg.start_addr;
           start = reg.start_addr;
@@ -181,23 +176,25 @@ mc_snapshot_t MC_take_snapshot()
             size += (char*)reg.end_addr - (char*)reg.start_addr;
             reg = maps->regions[i];
             i++;
-            nb_reg++;
           }
           MC_snapshot_add_region(snapshot, 1, start, size);
-        } else {
-          if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
-            MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-            nb_reg++;
-            i++;
+        }else if(!memcmp(maps->regions[i].pathname, "[heap]", 6)){
+          end_raw_heap = reg.end_addr;
+          i++;
+        } else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
+          size = (char*)reg.end_addr - (char*)reg.start_addr;
+          start = reg.start_addr;
+          nb_reg++;
+          i++;
+          reg = maps->regions[i];
+          if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && reg.start_addr != std_heap && reg.start_addr != raw_heap && i < maps->mapsize){
+            size += (char*)reg.end_addr - (char*)reg.start_addr;
             reg = maps->regions[i];
-            if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && reg.start_addr != std_heap && reg.start_addr != raw_heap && i < maps->mapsize){
-              MC_snapshot_add_region(snapshot, 2, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-              reg = maps->regions[i];
-              nb_reg++;
-            }
-          }else{
             i++;
           }
+          MC_snapshot_add_region(snapshot, 2, start, size);
+        }else{
+          i++;
         }
       }
     }else{
