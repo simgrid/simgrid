@@ -3,19 +3,11 @@
 
 \section install_cmake Installing the SimGrid library
 
-\subsection install_intro Some generalities
+\subsection install_installing_cmake Installing cmake
 
-\subsubsection install_intro1 What is Cmake?
-
-CMake is a family of tools designed to build, test and package software. CMake is used to control the software compilation process using simple platform and compiler independent configuration files. CMake generates native makefiles and workspaces that can be used in the compiler environment of your choice. For more information see official web site <a href="http://www.cmake.org/">here</a>.
-
-\subsubsection install_intro2 Why cmake?
-
-CMake permits to developers to compile projects on different platforms. Then many tools are embedded like ctest for making test, a link to cdash for vizualise results but also test coverage and bug reports.
-
-\subsubsection install_intro3 What cmake need?
-
-CMake depends on a few other tools like:
+You must have cmake in order to compile SimGrid. If you cannot find a
+binary package of cmake for your system, you'll need to recompile it.
+In turn, cmake has a few dependencies:
 
 For Unix and MacOS:
   \li make
@@ -46,7 +38,7 @@ Note that if you want change the compiler, you can simply specify the environmen
 	export CXX=clang++
 \endverbatim
 
-\subsubsection install_cmakeoption1 Options list
+\subsubsection install_cmakeoption1 SimGrid configuration options
 
 \verbatim
 "cmake -D[name]=[value] ... ./"
@@ -74,8 +66,6 @@ Note that if you want change the compiler, you can simply specify the environmen
 	CMAKE_INSTALL_PREFIX		<path_to_install_directory>
 	pipol_user			<pipol_username>
 \endverbatim
-
-\subsubsection install_cmakeoption2 Options explaination
 
   \li enable_gtnets: set to true implies that user wants to use gtnets.
 
@@ -145,7 +135,7 @@ gtnets_path			null
 pipol_user			null
 \endverbatim
 
-\subsubsection install_cmakeoption4 Option's cache and how to reset?
+\subsubsection install_cmakeoption4 How to reset the cache of options
 
 When options have been set they are keep into a cache file named "CMakeCache.txt". So if you want
 reset values you just delete this file located to the project directory.

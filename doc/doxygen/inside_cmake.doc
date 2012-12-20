@@ -3,6 +3,24 @@
 
 \tableofcontents
 
+\section inside_cmake_intro Generalities on Cmake
+
+\subsection inside_cmake_what What is Cmake?
+
+CMake is a family of tools designed to build, test and package
+software. CMake is used to control the software compilation process
+using simple platform and compiler independent configuration files.
+CMake generates native makefiles and workspaces that can be used in
+the compiler environment of your choice. For more information see
+official web site <a href="http://www.cmake.org/">here</a>.
+
+\subsection inside_cmake_why Why cmake?
+
+CMake permits to developers to compile projects on different
+platforms. Then many tools are embedded like ctest for making test, a
+link to cdash for vizualise results but also test coverage and bug
+reports.
+
 \section inside_cmake_addsrc How to add source files?
 
 If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake.
