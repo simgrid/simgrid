@@ -197,13 +197,6 @@ typedef struct surf_cpu_model_extension_public {
   e_surf_resource_state_t(*get_state) (void *cpu);
   double (*get_speed) (void *cpu, double load);
   double (*get_available_speed) (void *cpu);
-  void* (*create_resource) (const char *name, double power_peak,
-                           double power_scale,
-                           tmgr_trace_t power_trace,
-                           int core,
-                           e_surf_resource_state_t state_initial,
-                           tmgr_trace_t state_trace,
-                           xbt_dict_t cpu_properties);
   void (*add_traces) (void);
 } s_surf_model_extension_cpu_t;
 
@@ -223,16 +216,6 @@ typedef struct surf_network_model_extension_public {
   double (*get_link_latency) (const void *link);
   int (*link_shared) (const void *link);
   void (*add_traces) (void);
-  void* (*create_resource) (const char *name,
-                           double bw_initial,
-                           tmgr_trace_t bw_trace,
-                           double lat_initial,
-                           tmgr_trace_t lat_trace,
-                           e_surf_resource_state_t
-                           state_initial,
-                           tmgr_trace_t state_trace,
-                           e_surf_link_sharing_policy_t policy,
-                           xbt_dict_t properties);
 } s_surf_model_extension_network_t;
 
 /* Storage model */
@@ -251,7 +234,6 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*stat) (void *storage, surf_file_t stream);
   surf_action_t(*unlink) (void *storage, surf_file_t stream);
   surf_action_t(*ls) (void *storage, const char *path);
-  void* (*create_resource) (const char* id, const char* model, const char* type_id, const char *content);
 } s_surf_model_extension_storage_t;
 
      /** \ingroup SURF_models
@@ -289,22 +271,6 @@ typedef struct surf_workstation_model_extension_public {
 
   int (*link_shared) (const void *link);
    xbt_dict_t(*get_properties) (const void *resource);
-  void* (*link_create_resource) (const char *name,
-                                double bw_initial,
-                                tmgr_trace_t bw_trace,
-                                double lat_initial,
-                                tmgr_trace_t lat_trace,
-                                e_surf_resource_state_t
-                                state_initial,
-                                tmgr_trace_t state_trace,
-                                e_surf_link_sharing_policy_t
-                                policy, xbt_dict_t properties);
-  void* (*cpu_create_resource) (const char *name, double power_peak,
-                               double power_scale,
-                               tmgr_trace_t power_trace,
-                               e_surf_resource_state_t state_initial,
-                               tmgr_trace_t state_trace,
-                               xbt_dict_t cpu_properties);
   void (*add_traces) (void);
 
 } s_surf_model_extension_workstation_t;

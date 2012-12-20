@@ -890,10 +890,6 @@ static void ptask_model_init_internal(void)
       ptask_link_shared;
   surf_workstation_model->extension.workstation.get_properties =
       surf_resource_properties;
-  surf_workstation_model->extension.workstation.link_create_resource =
-      ptask_link_create_resource;
-  surf_workstation_model->extension.workstation.cpu_create_resource =
-      ptask_cpu_create_resource;
   surf_workstation_model->extension.workstation.add_traces =
       ptask_add_traces;
 
@@ -914,7 +910,6 @@ static void ptask_model_init_internal(void)
   surf_network_model->extension.network.get_link_latency = ptask_get_link_latency;
   surf_network_model->extension.network.link_shared = ptask_link_shared;
   surf_network_model->extension.network.add_traces = NULL;
-  surf_network_model->extension.network.create_resource = NULL;
 }
 
 /**************************************/

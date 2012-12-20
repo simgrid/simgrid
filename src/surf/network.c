@@ -806,8 +806,6 @@ static void surf_network_model_init_internal(void)
       net_get_link_latency;
   surf_network_model->extension.network.link_shared = net_link_shared;
   surf_network_model->extension.network.add_traces = net_add_traces;
-  surf_network_model->extension.network.create_resource =
-      net_create_resource;
 
   if (!surf_network_model->model_private->maxmin_system)
     surf_network_model->model_private->maxmin_system = lmm_system_new(surf_network_model->model_private->selective_update);

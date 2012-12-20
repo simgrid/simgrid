@@ -43,6 +43,7 @@ static xbt_swag_t
     cpu_running_action_set_that_does_not_need_being_checked = NULL;
 
 
+/* This function is registered as a callback to sg_platf_new_host() and never called directly */
 static void *cpu_create_resource(const char *name, double power_peak,
                                  double power_scale,
                                  tmgr_trace_t power_trace,
@@ -392,7 +393,6 @@ static void surf_cpu_model_init_internal()
   surf_cpu_model->extension.cpu.get_speed = cpu_get_speed;
   surf_cpu_model->extension.cpu.get_available_speed =
       cpu_get_available_speed;
-  surf_cpu_model->extension.cpu.create_resource = cpu_create_resource;
   surf_cpu_model->extension.cpu.add_traces = cpu_add_traces_cpu;
 
   if (!surf_cpu_model->model_private->maxmin_system) {
