@@ -1024,12 +1024,11 @@ void __SD_task_really_run(SD_task_t task)
               "Task '%s': workstation_list is NULL!",
               SD_task_get_name(task));
 
-
-
   XBT_DEBUG("Really running task '%s'", SD_task_get_name(task));
+  int workstation_nb = task->workstation_nb;
 
   /* set this task as current task for the workstations in sequential mode */
-  for (i = 0; i < task->workstation_nb; i++) {
+  for (i = 0; i < workstation_nb; i++) {
     if (SD_workstation_get_access_mode(task->workstation_list[i]) ==
         SD_WORKSTATION_SEQUENTIAL_ACCESS) {
       task->workstation_list[i]->current_task = task;
@@ -1045,71 +1044,29 @@ void __SD_task_really_run(SD_task_t task)
 
   /* we have to create a Surf workstation array instead of the SimDag
    * workstation array */
-  surf_workstations = xbt_new(void *, task->workstation_nb);
+  surf_workstations = xbt_new(void *, workstation_nb);
 
-  for (i = 0; i < task->workstation_nb; i++)
+  for (i = 0; i < workstation_nb; i++)
     surf_workstations[i] = task->workstation_list[i]->surf_workstation;
 
-  /* It's allowed to pass a NULL vector as cost to mean vector of 0.0 (easing
-   * user's life). Let's deal with it */
-#define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
+  double *computation_amount = xbt_new0(double, workstation_nb);
+  double *communication_amount = xbt_new0(double, workstation_nb * workstation_nb);
 
-  task->surf_action = NULL;
-  if ((task->workstation_nb == 1)
-      && (cost_or_zero(task->communication_amount, 0) == 0.0)) {
-    task->surf_action =
-        surf_workstation_model->extension.
-        workstation.execute(surf_workstations[0],
-                            cost_or_zero(task->computation_amount, 0));
-  } else if ((task->workstation_nb == 1)
-             && (cost_or_zero(task->computation_amount, 0) == 0.0)) {
 
-    task->surf_action =
-        surf_workstation_model->extension.
-        workstation.communicate(surf_workstations[0], surf_workstations[0],
-                                cost_or_zero(task->communication_amount,
-                                             0), task->rate);
-  } else if ((task->workstation_nb == 2)
-             && (cost_or_zero(task->computation_amount, 0) == 0.0)
-             && (cost_or_zero(task->computation_amount, 1) == 0.0)) {
-    int nb = 0;
-    double value = 0.0;
-
-    for (i = 0; i < task->workstation_nb * task->workstation_nb; i++) {
-      if (cost_or_zero(task->communication_amount, i) > 0.0) {
-        nb++;
-        value = cost_or_zero(task->communication_amount, i);
-      }
-    }
-    if (nb == 1) {
-      task->surf_action =
-          surf_workstation_model->extension.
-          workstation.communicate(surf_workstations[0],
-                                  surf_workstations[1], value, task->rate);
-    }
-  }
-#undef cost_or_zero
-
-  if (!task->surf_action) {
-    double *computation_amount = xbt_new(double, task->workstation_nb);
-    double *communication_amount = xbt_new(double, task->workstation_nb *
-                                           task->workstation_nb);
-
+  if(task->computation_amount)
     memcpy(computation_amount, task->computation_amount, sizeof(double) *
-           task->workstation_nb);
+           workstation_nb);
+  if(task->communication_amount)
     memcpy(communication_amount, task->communication_amount,
-           sizeof(double) * task->workstation_nb * task->workstation_nb);
+           sizeof(double) * workstation_nb * workstation_nb);
 
-    task->surf_action =
+  task->surf_action =
         surf_workstation_model->extension.
-        workstation.execute_parallel_task(task->workstation_nb,
+        workstation.execute_parallel_task(workstation_nb,
                                           surf_workstations,
                                           computation_amount,
                                           communication_amount,
                                           task->rate);
-  } else {
-    xbt_free(surf_workstations);
-  }
 
   surf_workstation_model->action_data_set(task->surf_action, task);
 
