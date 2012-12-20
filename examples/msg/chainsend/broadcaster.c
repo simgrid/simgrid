@@ -62,22 +62,16 @@ int broadcaster_build_chain(broadcaster_t bc)
 int broadcaster_send_file(broadcaster_t bc)
 {
   const char *me = "host0"; /* FIXME: hardcoded*/ /*MSG_host_get_name(MSG_host_self());*/
-  msg_comm_t comm = NULL;
+  //msg_comm_t comm = NULL;
   msg_task_t task = NULL;
 
   bc->current_piece = 0;
 
   while (bc->current_piece < bc->piece_count) {
-    if (xbt_dynar_length(bc->pending_sends) < bc->max_pending_sends) {
-      task = task_message_data_new(me, bc->first, NULL, PIECE_SIZE);
-      XBT_DEBUG("Sending (isend) piece %d from %s into mailbox %s (current pending %lu)", bc->current_piece, me, bc->first, xbt_dynar_length(bc->pending_sends));
-      comm = MSG_task_isend(task, bc->first);
-      queue_pending_connection(comm, bc->pending_sends);
-      bc->current_piece++;
-    } else {
-      MSG_process_sleep(0.01);
-    }
-    process_pending_connections(bc->pending_sends);
+    task = task_message_data_new(me, bc->first, NULL, PIECE_SIZE);
+    XBT_DEBUG("Sending (send) piece %d from %s into mailbox %s", bc->current_piece, me, bc->first);
+    MSG_task_send(task, bc->first);
+    bc->current_piece++;
   }
 
   return MSG_OK;
