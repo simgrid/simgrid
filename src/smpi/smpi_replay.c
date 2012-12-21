@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 int communicator_size = 0;
 static int active_processes = 0;
 
-void log_timed_action (const char *const *action, double clock){
+static void log_timed_action (const char *const *action, double clock){
   if (XBT_LOG_ISENABLED(smpi_replay, xbt_log_priority_verbose)){
     char *name = xbt_str_join_array(action, " ");
     XBT_VERB("%s %f", name, smpi_process_simulated_elapsed()-clock);
