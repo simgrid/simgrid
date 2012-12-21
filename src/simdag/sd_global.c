@@ -32,7 +32,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd,
 SD_global_t sd_global = NULL;
 
 /**
- * \brief Initialises SD internal data
+ * \brief Initializes SD internal data
  *
  * This function must be called before any other SD function. Then you
  * should call SD_create_environment().
@@ -151,9 +151,9 @@ void SD_application_reinit(void)
 /**
  * \brief Creates the environment
  *
- * The environment (i.e. the \ref SD_workstation_management "workstations" and the
- * \ref SD_link_management "links") is created with the data stored in the given XML
- * platform file.
+ * The environment (i.e. the \ref SD_workstation_management "workstations"
+ * and the \ref SD_link_management "links") is created with the data stored
+ * in the given XML platform file.
  *
  * \param platform_file name of an XML file describing the environment to create
  * \see SD_workstation_management, SD_link_management
@@ -199,7 +199,7 @@ void SD_create_environment(const char *platform_file)
  * The function will execute the \ref SD_RUNNABLE runnable tasks.
  * If \a how_long is positive, then the simulation will be stopped either
  * when time reaches \a how_long or when a watch point is reached.
- * A nonpositive value for \a how_long means no time limit, in which case
+ * A non-positive value for \a how_long means no time limit, in which case
  * the simulation will be stopped either when a watch point is reached or
  * when no more task can be executed.
  * Then you can call SD_simulate() again.
@@ -374,8 +374,8 @@ double SD_get_clock(void) {
 /**
  * \brief Destroys all SD internal data
  *
- * This function should be called when the simulation is over. Don't forget also to destroy
- * the tasks.
+ * This function should be called when the simulation is over. Don't forget
+ * to destroy too.
  *
  * \see SD_init(), SD_task_destroy()
  */

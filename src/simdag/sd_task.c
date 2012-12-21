@@ -201,7 +201,7 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data,
  * \return the new task
  */
 SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data,
-											   double amount)
+                                               double amount)
 {
   SD_task_t res = SD_task_create(name, data, amount);
   res->workstation_list=NULL;
@@ -632,9 +632,6 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
          SD_task_get_name(dst));
     __SD_task_set_state(dst, SD_SCHEDULED);
   }
-
-  /*  __SD_print_dependencies(src);
-     __SD_print_dependencies(dst); */
 }
 
 /**
@@ -992,7 +989,8 @@ void SD_task_unschedule(SD_task_t task)
   task->start_time = -1.0;
 }
 
-/* Destroys the data memorized by SD_task_schedule. Task state must be SD_SCHEDULED or SD_RUNNABLE.
+/* Destroys the data memorized by SD_task_schedule.
+ * Task state must be SD_SCHEDULED or SD_RUNNABLE.
  */
 static void __SD_task_destroy_scheduling_data(SD_task_t task)
 {
@@ -1007,9 +1005,9 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
   task->computation_amount = task->communication_amount = NULL;
 }
 
-/* Runs a task. This function is directly called by __SD_task_try_to_run if the task
- * doesn't have to wait in fifos. Otherwise, it is called by __SD_task_just_done when
- * the task gets out of its fifos.
+/* Runs a task. This function is directly called by __SD_task_try_to_run if
+ * the task doesn't have to wait in FIFOs. Otherwise, it is called by
+ * __SD_task_just_done when the task gets out of its FIFOs.
  */
 void __SD_task_really_run(SD_task_t task)
 {
@@ -1084,10 +1082,11 @@ void __SD_task_really_run(SD_task_t task)
 
 }
 
-/* Tries to run a task. This function is called by SD_simulate() when a scheduled task becomes SD_RUNNABLE
- * (ie when its dependencies are satisfied).
- * If one of the workstations where the task is scheduled on is busy (in sequential mode),
- * the task doesn't start.
+/* Tries to run a task. This function is called by SD_simulate() when a
+ * scheduled task becomes SD_RUNNABLE (i.e., when its dependencies are
+ * satisfied).
+ * If one of the workstations where the task is scheduled on is busy (in
+ * sequential mode), the task doesn't start.
  * Returns whether the task has started.
  */
 int __SD_task_try_to_run(SD_task_t task)
@@ -1109,11 +1108,11 @@ int __SD_task_try_to_run(SD_task_t task)
 
   XBT_DEBUG("Task '%s' can start: %d", SD_task_get_name(task), can_start);
 
-  if (!can_start) {             /* if the task cannot start and is not in the fifos yet */
+  if (!can_start) {             /* if the task cannot start and is not in the FIFOs yet */
     for (i = 0; i < task->workstation_nb; i++) {
       workstation = task->workstation_list[i];
       if (workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-        XBT_DEBUG("Pushing task '%s' in the fifo of workstation '%s'",
+        XBT_DEBUG("Pushing task '%s' in the FIFO of workstation '%s'",
                SD_task_get_name(task),
                SD_workstation_get_name(workstation));
         xbt_fifo_push(workstation->task_fifo, task);
@@ -1132,7 +1131,7 @@ int __SD_task_try_to_run(SD_task_t task)
 
 /* This function is called by SD_simulate when a task is done.
  * It updates task->state and task->action and executes if necessary the tasks
- * which were waiting in fifos for the end of `task'
+ * which were waiting in FIFOs for the end of `task'
  */
 void __SD_task_just_done(SD_task_t task)
 {
@@ -1162,14 +1161,14 @@ void __SD_task_just_done(SD_task_t task)
   XBT_DEBUG("Looking for candidates");
 
   /* if the task was executed on sequential workstations,
-     maybe we can execute the next task of the fifo for each workstation */
+     maybe we can execute the next task of the FIFO for each workstation */
   for (i = 0; i < task->workstation_nb; i++) {
     workstation = task->workstation_list[i];
     XBT_DEBUG("Workstation '%s': access_mode = %d",
               SD_workstation_get_name(workstation), (int)workstation->access_mode);
     if (workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
       xbt_assert(workstation->task_fifo != NULL,
-                  "Workstation '%s' has sequential access but no fifo!",
+                  "Workstation '%s' has sequential access but no FIFO!",
                   SD_workstation_get_name(workstation));
       xbt_assert(workstation->current_task =
                   task, "Workstation '%s': current task should be '%s'",
@@ -1179,7 +1178,7 @@ void __SD_task_just_done(SD_task_t task)
       /* the task is over so we can release the workstation */
       workstation->current_task = NULL;
 
-      XBT_DEBUG("Getting candidate in fifo");
+      XBT_DEBUG("Getting candidate in FIFO");
       candidate =
           xbt_fifo_get_item_content(xbt_fifo_get_first_item
                                     (workstation->task_fifo));
@@ -1197,9 +1196,10 @@ void __SD_task_just_done(SD_task_t task)
       /* if there was a task waiting for my place */
       if (candidate != NULL) {
         /* Unfortunately, we are not sure yet that we can execute the task now,
-           because the task can be waiting more deeply in some other workstation's fifos...
-           So we memorize all candidate tasks, and then we will check for each candidate
-           whether or not all its workstations are available. */
+           because the task can be waiting more deeply in some other
+           workstation's FIFOs ...
+           So we memorize all candidate tasks, and then we will check for each
+           candidate whether or not all its workstations are available. */
 
         /* realloc if necessary */
         if (candidate_nb == candidate_capacity) {
@@ -1234,7 +1234,7 @@ void __SD_task_just_done(SD_task_t task)
       workstation = candidate->workstation_list[j];
 
       /* I can start on this workstation if the workstation is shared
-         or if I am the first task in the fifo */
+         or if I am the first task in the FIFO */
       can_start = workstation->access_mode == SD_WORKSTATION_SHARED_ACCESS
           || candidate ==
           xbt_fifo_get_item_content(xbt_fifo_get_first_item
@@ -1249,14 +1249,14 @@ void __SD_task_just_done(SD_task_t task)
       for (j = 0; j < candidate->workstation_nb && can_start; j++) {
         workstation = candidate->workstation_list[j];
 
-        /* update the fifo */
+        /* update the FIFO */
         if (workstation->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
           candidate = xbt_fifo_shift(workstation->task_fifo);   /* the return value is stored just for debugging */
-          XBT_DEBUG("Head of the fifo: '%s'",
+          XBT_DEBUG("Head of the FIFO: '%s'",
                  (candidate !=
                   NULL) ? SD_task_get_name(candidate) : "NULL");
           xbt_assert(candidate == candidates[i],
-                      "Error in __SD_task_just_done: bad first task in the fifo");
+                      "Error in __SD_task_just_done: bad first task in the FIFO");
         }
       }                         /* for each workstation */
 
@@ -1364,21 +1364,23 @@ void SD_task_distribute_comp_amdhal(SD_task_t task, int ws_count)
 /** @brief Auto-schedules a task.
  *
  * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This
- * allows to specify the task costs at creation, and decorelate them from the
+ * allows to specify the task costs at creation, and decouple them from the
  * scheduling process where you just specify which resource should deliver the
  * mandatory power.
  *
- * To be auto-schedulable, a task must be created with SD_task_create_comm_e2e() or
- * SD_task_create_comp_seq(). Check their definitions for the exact semantic of each
- * of them.
+ * To be auto-schedulable, a task must be created with SD_task_create_comm_e2e()
+ * or SD_task_create_comp_seq(). Check their definitions for the exact semantic
+ * of each of them.
  *
  * @todo
  * We should create tasks kind for the following categories:
  *  - Point to point communication (done)
  *  - Sequential computation       (done)
  *  - group communication (redistribution, several kinds)
- *  - parallel tasks with no internal communication (one kind per speedup model such as amdal)
- *  - idem+ internal communication. Task type not enough since we cannot store comm cost alongside to comp one)
+ *  - parallel tasks with no internal communication (one kind per speedup
+ *    model such as Amdahl)
+ *  - idem+ internal communication. Task type not enough since we cannot store
+ *    comm cost alongside to comp one)
  */
 void SD_task_schedulev(SD_task_t task, int count,
                        const SD_workstation_t * list)
@@ -1394,7 +1396,9 @@ void SD_task_schedulev(SD_task_t task, int count,
     SD_task_distribute_comp_amdhal(task, count);
   case SD_TASK_COMM_E2E:
   case SD_TASK_COMP_SEQ:
-    xbt_assert(task->workstation_nb == count,"Got %d locations, but were expecting %d locations",count,task->workstation_nb);
+    xbt_assert(task->workstation_nb == count,
+               "Got %d locations, but were expecting %d locations",
+               count,task->workstation_nb);
     for (i = 0; i < count; i++)
       task->workstation_list[i] = list[i];
     if (SD_task_get_kind(task)== SD_TASK_COMP_SEQ && !task->computation_amount){
@@ -1417,7 +1421,8 @@ void SD_task_schedulev(SD_task_t task, int count,
 
   }
 
-  /* Iterate over all childs and parent being COMM_E2E to say where I am located (and start them if runnable) */
+  /* Iterate over all children and parents being COMM_E2E to say where I am
+   * located (and start them if runnable) */
   if (task->kind == SD_TASK_COMP_SEQ) {
     XBT_VERB("Schedule computation task %s on %s. It costs %.f flops",
           SD_task_get_name(task),
@@ -1461,7 +1466,8 @@ void SD_task_schedulev(SD_task_t task, int count,
       }
     }
   }
-  /* Iterate over all childs and parent being MXN_1D_BLOC to say where I am located (and start them if runnable) */
+  /* Iterate over all children and parents being MXN_1D_BLOCK to say where I am
+   * located (and start them if runnable) */
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
     XBT_VERB("Schedule computation task %s on %d workstations. %.f flops"
              " will be distributed following Amdahl'Law",
