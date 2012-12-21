@@ -236,7 +236,8 @@ XBT_PUBLIC(int) MSG_comm_test(msg_comm_t comm);
 XBT_PUBLIC(int) MSG_comm_testany(xbt_dynar_t comms);
 XBT_PUBLIC(void) MSG_comm_destroy(msg_comm_t comm);
 XBT_PUBLIC(msg_error_t) MSG_comm_wait(msg_comm_t comm, double timeout);
-XBT_PUBLIC(void) MSG_comm_waitall(xbt_dynar_t comms, double timeout);
+XBT_PUBLIC(void) MSG_comm_waitall(msg_comm_t * comm, int nb_elem,
+                                  double timeout);
 XBT_PUBLIC(int) MSG_comm_waitany(xbt_dynar_t comms);
 XBT_PUBLIC(msg_task_t) MSG_comm_get_task(msg_comm_t comm);
 XBT_PUBLIC(msg_error_t) MSG_comm_get_status(msg_comm_t comm);
