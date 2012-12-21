@@ -317,6 +317,34 @@ static void action_allReduce(const char *const *action) {
 
 static void action_allToAll(const char *const *action) {
   double clock = smpi_process_simulated_elapsed();
+  double comm_size = smpi_comm_size(MPI_COMM_WORLD);
+  double send_size = parse_double(action[2]);
+  double recv_size = parse_double(action[3]);
+
+#ifdef HAVE_TRACING
+  int rank = smpi_process_index();
+  TRACE_smpi_computing_out(rank);
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
+#endif
+
+  if (send_size < 200 && comm_size > 12) {
+    smpi_coll_tuned_alltoall_bruck(NULL, send_size, MPI_BYTE,
+                                   NULL, recv_size, MPI_BYTE,
+                                   MPI_COMM_WORLD);
+  } else if (send_size < 3000) {
+    smpi_coll_tuned_alltoall_basic_linear(NULL, send_size, MPI_BYTE,
+                                          NULL, recv_size, MPI_BYTE,
+                                          MPI_COMM_WORLD);
+  } else {
+    smpi_coll_tuned_alltoall_pairwise(NULL, send_size, MPI_BYTE,
+                                      NULL, recv_size, MPI_BYTE,
+                                      MPI_COMM_WORLD);
+  }
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_computing_in(rank);
+#endif
 
   log_timed_action (action, clock);
 }
