@@ -672,7 +672,7 @@ void STag_surfxml_trace___connect(void){
     trace_connect.kind =  SURF_TRACE_CONNECT_KIND_LINK_AVAIL;
     break;
   }
-  sg_platf_new_trace_connect(&trace_connect);
+  sg_platf_trace_connect(&trace_connect);
 }
 
 void STag_surfxml_AS(void){

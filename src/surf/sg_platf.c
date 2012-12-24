@@ -249,7 +249,7 @@ void sg_platf_new_trace(sg_platf_trace_cbarg_t trace) {
     fun(trace);
   }
 }
-void sg_platf_new_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect) {
+void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect) {
   unsigned int iterator;
   sg_platf_trace_connect_cb_t fun;
   xbt_dynar_foreach(sg_platf_trace_connect_cb_list, iterator, fun) {

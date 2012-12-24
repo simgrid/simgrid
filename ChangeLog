@@ -29,6 +29,11 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  * Bug fix about the way periodic availability/state traces are handled.
  * Bug fix: use default values at start when first event in availability/state 
    trace is not at time 0.
+   
+ PLATFORM:
+ * remove the "new_" part of function name sg_platf_new_trace_connect
+   (resulting in sg_platf_trace_connect), since it does not create
+   anything new
 
  XBT:
  * Kill synchronized dynars, and xbt_dynar_dopar(). We cannot think of a

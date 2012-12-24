@@ -33,7 +33,7 @@ typedef enum {
   SURF_TRACE_CONNECT_KIND_LINK_AVAIL = 2,
   SURF_TRACE_CONNECT_KIND_BANDWIDTH = 1,
   SURF_TRACE_CONNECT_KIND_LATENCY = 0
-} e_surf_trace_connect_kin_t;
+} e_surf_trace_connect_kind_t;
 
 typedef enum {
   SURF_PROCESS_ON_FAILURE_DIE = 1,
@@ -258,7 +258,7 @@ typedef struct s_sg_platf_trace_cbarg {
 
 typedef struct s_sg_platf_trace_connect_cbarg *sg_platf_trace_connect_cbarg_t;
 typedef struct s_sg_platf_trace_connect_cbarg {
-  e_surf_trace_connect_kin_t kind;
+  e_surf_trace_connect_kind_t kind;
   const char *trace;
   const char *element;
 } s_sg_platf_trace_connect_cbarg_t;
@@ -320,7 +320,7 @@ XBT_PUBLIC(void) sg_platf_new_bypassASroute (sg_platf_route_cbarg_t bypassASrout
 XBT_PUBLIC(void) sg_platf_new_prop (sg_platf_prop_cbarg_t prop); // Add a prop
 
 XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
-XBT_PUBLIC(void) sg_platf_new_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
+XBT_PUBLIC(void) sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
 
 XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
