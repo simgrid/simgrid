@@ -462,17 +462,16 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "maxmin/precision",
                      "Numerical precision used when updating simulation models (epsilon in double comparisons)",
                      xbt_cfgelm_double, NULL, 1, 1, _sg_cfg_cb__maxmin_precision, NULL);
-    xbt_cfg_setdefault_double(_sg_cfg_set, "maxmin/precision", 0.00001); // FIXME use setdefault everywhere here!
+    xbt_cfg_setdefault_double(_sg_cfg_set, "maxmin/precision", 0.00001); 
 
     /* The parameters of network models */
 
-    double_default_value = 0.0;
     xbt_cfg_register(&_sg_cfg_set, "network/sender_gap",
                      "Minimum gap between two overlapping sends",
-                     xbt_cfgelm_double, &double_default_value, 1, 1,
+                     xbt_cfgelm_double, NULL, 1, 1, /* default is set in network.c */
                      _sg_cfg_cb__sender_gap, NULL);
 
-    double_default_value = 1.0;
+    double_default_value = 1.0; // FIXME use setdefault everywhere here!
     xbt_cfg_register(&_sg_cfg_set, "network/latency_factor",
                      "Correction factor to apply to the provided latency (default value set by network model)",
                      xbt_cfgelm_double, &double_default_value, 1, 1,
@@ -482,10 +481,10 @@ void sg_config_init(int *argc, char **argv)
                      "Correction factor to apply to the provided bandwidth (default value set by network model)",
                      xbt_cfgelm_double, &double_default_value, 1, 1,
                      _sg_cfg_cb__bandwidth_factor, NULL);
-    double_default_value = 0.0;
+
     xbt_cfg_register(&_sg_cfg_set, "network/weight_S",
                      "Correction factor to apply to the weight of competing streams(default value set by network model)",
-                     xbt_cfgelm_double, &double_default_value, 1, 1,
+                     xbt_cfgelm_double, NULL, 1, 1, /* default is set in network.c */
                      _sg_cfg_cb__weight_S, NULL);
 
     /* Inclusion path */
