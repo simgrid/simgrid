@@ -1,0 +1,161 @@
+git revision : d22dbf808ef73d20175495533fe33a47fd2252cb
+
+grid5000 : parapluie-39 (rennes)
+
+*****
+
+chord.c
+
+max_simulation_time = 10;
+periodic_stabilize_delay = 8;
+periodic_fix_fingers_delay = 8;
+periodic_check_predecessor_delay = 8;
+periodic_lookup_delay = 8;
+
+chord2.xml
+
+<platform version="3">
+
+  <process host="Gatien" function="node">
+    <argument value="48"/>        <!-- my id -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="2"/>        <!-- time to sleep before it starts-->
+    <argument value ="9"/>              <!-- deadline -->
+  </process>
+
+  <process host="Jacquelin" function="node">
+    <argument value="1"/>         <!-- my id -->
+    <argument value ="9"/>              <!-- deadline -->
+  </process>
+
+</platform>
+
+* DPOR
+
+./chord ../msg_platform.xml chord2.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1
+
+[0.000000] [mc_global/INFO] Expanded states = 123
+[0.000000] [mc_global/INFO] Visited states = 278
+[0.000000] [mc_global/INFO] Executed transitions = 262
+[0.000000] [mc_global/INFO] Expanded / Visited = 2.260163
+
+real	0m1.691s
+user	0m1.612s
+sys	  0m0.036s
+
+* Both 
+
+./chord ../msg_platform.xml chord2.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1 --cfg=model-check/visited:3
+
+[0.000000] [mc_global/INFO] Expanded states = 32
+[0.000000] [mc_global/INFO] Visited states = 95
+[0.000000] [mc_global/INFO] Executed transitions = 85
+[0.000000] [mc_global/INFO] Expanded / Visited = 2.968750
+
+real	0m45.591s
+user	0m45.655s
+sys	  0m0.540s
+
+* State equality
+
+./chord ../msg_platform.xml chord2.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1 --cfg=model-check/visited:3 --cfg=model-check/reduction:none
+
+* None
+
+./chord ../msg_platform.xml chord2.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1 --cfg=model-check/reduction:none
+
+****
+
+chord.c
+
+max_simulation_time = 20;
+periodic_stabilize_delay = 8;
+periodic_fix_fingers_delay = 8;
+periodic_check_predecessor_delay = 8;
+periodic_lookup_delay = 8;
+
+chord2.xml
+
+<platform version="3">
+
+  <process host="Gatien" function="node">
+    <argument value="48"/>        <!-- my id -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="2"/>        <!-- time to sleep before it starts-->
+    <argument value ="18"/>             <!-- deadline -->
+  </process>
+
+  <process host="Jacquelin" function="node">
+    <argument value="1"/>         <!-- my id -->
+    <argument value ="18"/>             <!-- deadline -->
+  </process>
+
+</platform>
+
+
+* DPOR
+
+./chord ../msg_platform.xml chord2.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1
+
+[0.000000] [mc_global/INFO] Expanded states = 1103
+[0.000000] [mc_global/INFO] Visited states = 2714
+[0.000000] [mc_global/INFO] Executed transitions = 2644
+[0.000000] [mc_global/INFO] Expanded / Visited = 2.460562
+
+real	0m1.995s
+user	0m1.952s
+sys	  0m0.044s
+
+* Both 
+
+./chord ../msg_platform.xml chord2.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1 --cfg=model-check/visited:3
+
+[0.000000] [mc_global/INFO] Expanded states = 28
+[0.000000] [mc_global/INFO] Visited states = 91
+[0.000000] [mc_global/INFO] Executed transitions = 81
+[0.000000] [mc_global/INFO] Expanded / Visited = 3.250000
+
+real	0m47.025s
+user	0m47.099s
+sys	  0m0.516s    
+
+* State equality 
+
+./chord ../msg_platform.xml chord2.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1 --cfg=model-check/visited:3 --cfg=model-check/reduction:none
+
+* None
+
+./chord ../msg_platform.xml chord2.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1 --cfg=model-check/reduction:none
+
+****
+
+chord.c
+
+max_simulation_time = 50;
+periodic_stabilize_delay = 8;
+periodic_fix_fingers_delay = 8;
+periodic_check_predecessor_delay = 8;
+periodic_lookup_delay = 8;
+
+chord2.xml
+
+<platform version="3">
+
+  <process host="Gatien" function="node">
+    <argument value="48"/>        <!-- my id -->
+    <argument value="1"/>         <!-- known id -->
+    <argument value="2"/>        <!-- time to sleep before it starts-->
+    <argument value ="48"/>             <!-- deadline -->
+  </process>
+
+  <process host="Jacquelin" function="node">
+    <argument value="1"/>         <!-- my id -->
+    <argument value ="48"/>             <!-- deadline -->
+  </process>
+
+</platform>
+
+
+* DPOR
+
+./chord ../msg_platform.xml chord2.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/timeout:1
