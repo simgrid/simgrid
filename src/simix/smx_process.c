@@ -248,9 +248,6 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->data = data;
     (*process)->comms = xbt_fifo_new();
     (*process)->simcall.issuer = *process;
-
-    if(MC_is_active())
-      MC_ignore_heap(&((*process)->simcall.result), sizeof((*process)->simcall.result));
     
     /* Process data for auto-restart */
     (*process)->auto_restart = auto_restart;
