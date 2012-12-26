@@ -463,7 +463,44 @@ note that although sound, this model were never scientifically
 assessed. Please keep this fact in mind when using it.
 
 
+\subsubsection faq_platform_random Using random variable for the resource power or availability
 
+The best way to model the resouce power using a random variable is to
+use an availability trace that is directed by a probability
+distribution. This can be done using the function
+tmgr_trace_generator_value() below. The date and value generators is
+created with one of tmgr_event_generator_new_uniform(),
+tmgr_event_generator_new_exponential() or
+tmgr_event_generator_new_weibull() (if you need other generators,
+adding them to src/surf/trace_mgr.c should be quite trivial and your
+patch will be welcomed). Once your trace is created, you have to
+connect it to the resource with the function
+sg_platf_new_trace_connect().
+
+That the process is very similar if you want to model the
+resource availability with a random variable (deciding whether it's
+on/off instead of deciding its speed) using the function
+tmgr_trace_generator_state() or tmgr_trace_generator_avail_unavail()
+instead of tmgr_trace_generator_value().
+
+Unfortunately, all this is currently lacking a proper documentation,
+and there is even no proper example of use. You'll thus have to check
+the header file include/simgrid/platf.h and experiment a bit by
+yourself. The following code should be a good starting point, and
+contributing a little clean example would be a good way to help the
+SimGrid project.
+
+@code
+tmgr_trace_generator_value("mytrace",tmgr_event_generator_new_exponential(.5)
+                                     tmgr_event_generator_new_uniform(100000,9999999));
+				     
+sg_platf_trace_connect_cbarg_t myconnect = SG_PLATF_TRACE_CONNECT_INITIALIZER;
+myconnect.kind = SURF_TRACE_CONNECT_KIND_BANDWIDTH;
+myconnect.trace = "mytrace";
+myconnect.element = "mylink";
+
+sg_platf_trace_connect(myconnect);
+@endcode
 
 \section faq_troubleshooting Troubleshooting
 
