@@ -34,6 +34,9 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  * remove the "new_" part of function name sg_platf_new_trace_connect
    (resulting in sg_platf_trace_connect), since it does not create
    anything new
+ * Having a <backbone> tag within the <cluster> is not allowed
+   anymore. Use the bb_* attributes of the cluster tag to create the
+   backbone instead.
 
  XBT:
  * Kill synchronized dynars, and xbt_dynar_dopar(). We cannot think of a
