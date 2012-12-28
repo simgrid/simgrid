@@ -82,6 +82,8 @@ XBT_PUBLIC(void ) STag_surfxml_peer(void);
 XBT_PUBLIC(void ) ETag_surfxml_peer(void);
 XBT_PUBLIC(void ) STag_surfxml_router(void);
 XBT_PUBLIC(void ) ETag_surfxml_router(void);
+XBT_PUBLIC(void ) STag_surfxml_backbone(void);
+XBT_PUBLIC(void ) ETag_surfxml_backbone(void);
 XBT_PUBLIC(void ) STag_surfxml_link(void);
 XBT_PUBLIC(void ) ETag_surfxml_link(void);
 XBT_PUBLIC(void ) STag_surfxml_route(void);
@@ -194,6 +196,10 @@ typedef int AT_surfxml_cluster_bb___lat;
 #define AU_surfxml_cluster_bb___lat NULL
 typedef int AT_surfxml_link_latency;
 #define AU_surfxml_link_latency NULL
+typedef int AT_surfxml_backbone_bandwidth;
+#define AU_surfxml_backbone_bandwidth NULL
+typedef int AT_surfxml_backbone_id;
+#define AU_surfxml_backbone_id NULL
 typedef enum { AU_surfxml_trace___connect_kind, A_surfxml_trace___connect_kind_HOST___AVAIL,A_surfxml_trace___connect_kind_POWER,A_surfxml_trace___connect_kind_LINK___AVAIL,A_surfxml_trace___connect_kind_BANDWIDTH,A_surfxml_trace___connect_kind_LATENCY } AT_surfxml_trace___connect_kind;
 typedef int AT_surfxml_cabinet_lat;
 #define AU_surfxml_cabinet_lat NULL
@@ -272,6 +278,8 @@ typedef int AT_surfxml_host_availability;
 #define AU_surfxml_host_availability NULL
 typedef int AT_surfxml_bypassRoute_src;
 #define AU_surfxml_bypassRoute_src NULL
+typedef int AT_surfxml_backbone_latency;
+#define AU_surfxml_backbone_latency NULL
 typedef int AT_surfxml_route_src;
 #define AU_surfxml_route_src NULL
 typedef int AT_surfxml_storage_id;
@@ -456,6 +464,12 @@ XBT_PUBLIC_DATA(short ) int surfxml_cluster_bb___lat_isset;
 XBT_PUBLIC_DATA(AT_surfxml_link_latency ) AX_surfxml_link_latency;
 #define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
 XBT_PUBLIC_DATA(short ) int surfxml_link_latency_isset;
+XBT_PUBLIC_DATA(AT_surfxml_backbone_bandwidth ) AX_surfxml_backbone_bandwidth;
+#define A_surfxml_backbone_bandwidth (surfxml_bufferstack + AX_surfxml_backbone_bandwidth)
+XBT_PUBLIC_DATA(short ) int surfxml_backbone_bandwidth_isset;
+XBT_PUBLIC_DATA(AT_surfxml_backbone_id ) AX_surfxml_backbone_id;
+#define A_surfxml_backbone_id (surfxml_bufferstack + AX_surfxml_backbone_id)
+XBT_PUBLIC_DATA(short ) int surfxml_backbone_id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_trace___connect_kind ) AX_surfxml_trace___connect_kind;
 #define A_surfxml_trace___connect_kind AX_surfxml_trace___connect_kind
 XBT_PUBLIC_DATA(short ) int surfxml_trace___connect_kind_isset;
@@ -579,6 +593,9 @@ XBT_PUBLIC_DATA(short ) int surfxml_host_availability_isset;
 XBT_PUBLIC_DATA(AT_surfxml_bypassRoute_src ) AX_surfxml_bypassRoute_src;
 #define A_surfxml_bypassRoute_src (surfxml_bufferstack + AX_surfxml_bypassRoute_src)
 XBT_PUBLIC_DATA(short ) int surfxml_bypassRoute_src_isset;
+XBT_PUBLIC_DATA(AT_surfxml_backbone_latency ) AX_surfxml_backbone_latency;
+#define A_surfxml_backbone_latency (surfxml_bufferstack + AX_surfxml_backbone_latency)
+XBT_PUBLIC_DATA(short ) int surfxml_backbone_latency_isset;
 XBT_PUBLIC_DATA(AT_surfxml_route_src ) AX_surfxml_route_src;
 #define A_surfxml_route_src (surfxml_bufferstack + AX_surfxml_route_src)
 XBT_PUBLIC_DATA(short ) int surfxml_route_src_isset;

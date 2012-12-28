@@ -483,6 +483,22 @@ void STag_surfxml_link___ctn(void){
   xbt_dynar_push(parsed_link_list, &link_id);
 }
 
+void ETag_surfxml_backbone(void){
+  s_sg_platf_link_cbarg_t link;
+  memset(&link,0,sizeof(link));
+
+  link.properties = NULL;
+
+  link.id = A_surfxml_backbone_id;
+  link.bandwidth = surf_parse_get_double(A_surfxml_backbone_bandwidth);
+  link.latency = surf_parse_get_double(A_surfxml_backbone_latency);
+  link.state = SURF_RESOURCE_ON;
+  link.policy = SURF_LINK_SHARED;
+
+  sg_platf_new_link(&link);
+  routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, A_surfxml_backbone_id, SURF_LINK_LEVEL));
+}
+
 void STag_surfxml_route(void){
   xbt_assert(strlen(A_surfxml_route_src) > 0 || strlen(A_surfxml_route_dst) > 0,
       "Missing end-points while defining route \"%s\"->\"%s\"",
@@ -783,6 +799,7 @@ void ETag_surfxml_host___link(void){}
 void ETag_surfxml_cluster(void){}
 void ETag_surfxml_cabinet(void){}
 void ETag_surfxml_peer(void){}
+void STag_surfxml_backbone(void){}
 void ETag_surfxml_link___ctn(void){}
 void ETag_surfxml_argument(void){}
 

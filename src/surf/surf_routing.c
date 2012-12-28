@@ -710,6 +710,14 @@ void routing_model_create( void *loopback)
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
 
+void routing_cluster_add_backbone(void* bb) {
+  xbt_assert(current_routing->model_desc == &routing_models[SURF_MODEL_CLUSTER],
+        "You have to be in model Cluster to use tag backbone!");
+  xbt_assert(!((as_cluster_t)current_routing)->backbone,"The backbone link is already defined!");
+  ((as_cluster_t)current_routing)->backbone = bb;
+  XBT_DEBUG("Add a backbone to AS '%s'",current_routing->name);
+}
+
 static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 {
   int start, end, i;
@@ -929,8 +937,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
     sg_platf_new_link(&link);
 
-    ((as_cluster_t)current_routing)->backbone = xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL);
-    XBT_DEBUG("Add a backbone to AS '%s'",current_routing->name);
+    routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL));
 
     free(link_backbone);
   }
