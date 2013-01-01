@@ -288,6 +288,8 @@ void MC_init_liveness(void);
 void MC_init_memory_map_info(void);
 void MC_print_comparison_times_statistics(mc_comparison_times_t ct);
 
+int get_heap_region_index(mc_snapshot_t s);
+
 /* **** Double-DFS stateless **** */
 
 typedef struct s_mc_pair_stateless{

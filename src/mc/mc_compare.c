@@ -147,6 +147,21 @@ int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
   return snapshot_compare(s1, s2, NULL, NULL);
 }
 
+int get_heap_region_index(mc_snapshot_t s){
+  int i =0;
+  while(i < s->num_reg){
+    switch(s->regions[i]->type){
+    case 0:
+      return i;
+      break;
+    default:
+      i++;
+      break;
+    }
+  }
+  return -1;
+}
+
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t ct1, mc_comparison_times_t ct2){
 
   int raw_mem = (mmalloc_get_current_heap() == raw_heap);

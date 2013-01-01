@@ -41,29 +41,76 @@ static int is_visited_state(){
 
     MC_SET_RAW_MEM;
     
-    unsigned int cursor = 0;
-    mc_snapshot_t state_test = NULL;
-     
-    xbt_dynar_foreach(visited_states, cursor, state_test){
-      if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug))
-        XBT_DEBUG("****** Pair visited #%d ******", cursor + 1);
-      if(snapshot_compare(new_state, state_test, NULL, NULL) == 0){
-        if(raw_mem_set)
-          MC_SET_RAW_MEM;
-        else
-          MC_UNSET_RAW_MEM;
-        
-        return 1;
-      }   
-    }
+    size_t current_chunks_used = mmalloc_get_chunks_used((xbt_mheap_t)new_state->regions[get_heap_region_index(new_state)]->data);
 
+    unsigned int cursor = 0, previous_cursor = 0, next_cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(visited_states) - 1;
+
+    mc_snapshot_t state_test = NULL;
+    size_t chunks_used_test;
+
+    while(start <= end){
+      cursor = (start + end) / 2;
+      state_test = (mc_snapshot_t)xbt_dynar_get_as(visited_states, cursor, mc_snapshot_t);
+      chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)state_test->regions[get_heap_region_index(state_test)]->data);
+      if(chunks_used_test == current_chunks_used){
+        if(snapshot_compare(new_state, state_test, NULL, NULL) == 0){
+          if(raw_mem_set)
+            MC_SET_RAW_MEM;
+          else
+            MC_UNSET_RAW_MEM;
+          return 1;
+        }else{
+          /* Search another state with same number of chunks used */
+          previous_cursor = cursor - 1;
+          while(previous_cursor >= 0){
+            state_test = (mc_snapshot_t)xbt_dynar_get_as(visited_states, previous_cursor, mc_snapshot_t);
+            chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)state_test->regions[get_heap_region_index(state_test)]->data);
+            if(chunks_used_test != current_chunks_used)
+              break;
+            if(snapshot_compare(new_state, state_test, NULL, NULL) == 0){
+              if(raw_mem_set)
+                MC_SET_RAW_MEM;
+              else
+                MC_UNSET_RAW_MEM;
+              return 1;
+            }
+            previous_cursor--;
+          }
+          next_cursor = cursor + 1;
+          while(next_cursor < xbt_dynar_length(visited_states)){
+            state_test = (mc_snapshot_t)xbt_dynar_get_as(visited_states, next_cursor, mc_snapshot_t);
+            chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)state_test->regions[get_heap_region_index(state_test)]->data);
+            if(chunks_used_test != current_chunks_used)
+              break;
+            if(snapshot_compare(new_state, state_test, NULL, NULL) == 0){
+              if(raw_mem_set)
+                MC_SET_RAW_MEM;
+              else
+                MC_UNSET_RAW_MEM;
+              return 1;
+            }
+            next_cursor++;
+          }
+        }   
+      }
+      if(chunks_used_test < current_chunks_used)
+        start = cursor + 1;
+      if(chunks_used_test > current_chunks_used)
+        end = cursor - 1;
+    }
+ 
     if(xbt_dynar_length(visited_states) == _sg_mc_visited){
       mc_snapshot_t state_to_remove = NULL;
       xbt_dynar_shift(visited_states, &state_to_remove);
       MC_free_snapshot(state_to_remove);
     }
 
-    xbt_dynar_push(visited_states, &new_state); 
+    if(chunks_used_test < current_chunks_used)
+      xbt_dynar_insert_at(visited_states, cursor + 1, &new_state);
+    else
+      xbt_dynar_insert_at(visited_states, cursor, &new_state);
     
     MC_UNSET_RAW_MEM;
 
