@@ -290,6 +290,7 @@ void MC_exit(void)
 {
   xbt_free(mc_time);
   MC_memory_exit();
+  xbt_abort();
 }
 
 
