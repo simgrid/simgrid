@@ -180,6 +180,7 @@ void MC_init(){
   get_binary_plt_section();
 
   MC_ignore_data_bss(&end_raw_heap, sizeof(end_raw_heap));
+  MC_ignore_data_bss(&nb_visited_states, sizeof(nb_visited_states));
 
   /* Get global variables */
   MC_get_global_variables(xbt_binary_name);

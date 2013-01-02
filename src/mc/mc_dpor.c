@@ -9,10 +9,26 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
                                 "Logging specific to MC DPOR exploration");
 
 xbt_dynar_t visited_states;
+int nb_visited_states = 0;
 
 static int is_visited_state(void);
+static void visited_state_free(mc_safety_visited_state_t state);
+static void visited_state_free_voidp(void *s);
+
+static void visited_state_free(mc_safety_visited_state_t state){
+  if(state){
+    MC_free_snapshot(state->system_state);
+    xbt_free(state);
+  }
+}
+
+static void visited_state_free_voidp(void *s){
+  visited_state_free((mc_safety_visited_state_t) * (void **) s);
+}
 
 static int is_visited_state(){
+
+  nb_visited_states++;
 
   if(_sg_mc_visited == 0)
     return 0;
@@ -21,8 +37,10 @@ static int is_visited_state(){
 
   MC_SET_RAW_MEM;
 
-  mc_snapshot_t new_state = NULL;
-  new_state = MC_take_snapshot();  
+  mc_safety_visited_state_t new_state = NULL;
+  new_state = xbt_new0(s_mc_safety_visited_state_t, 1);
+  new_state->system_state = MC_take_snapshot();
+  new_state->num = nb_visited_states;
 
   MC_UNSET_RAW_MEM;
   
@@ -41,21 +59,28 @@ static int is_visited_state(){
 
     MC_SET_RAW_MEM;
     
-    size_t current_chunks_used = mmalloc_get_chunks_used((xbt_mheap_t)new_state->regions[get_heap_region_index(new_state)]->data);
+    size_t current_chunks_used = mmalloc_get_chunks_used((xbt_mheap_t)(new_state->system_state)->regions[get_heap_region_index(new_state->system_state)]->data);
 
-    unsigned int cursor = 0, previous_cursor = 0, next_cursor = 0;
+    unsigned int cursor = 0;
+    int previous_cursor = 0, next_cursor = 0;
     int start = 0;
     int end = xbt_dynar_length(visited_states) - 1;
 
-    mc_snapshot_t state_test = NULL;
+    mc_safety_visited_state_t state_test = NULL;
     size_t chunks_used_test;
+    int same_chunks_not_found = 1;
 
-    while(start <= end){
+    while(start <= end && same_chunks_not_found){
       cursor = (start + end) / 2;
-      state_test = (mc_snapshot_t)xbt_dynar_get_as(visited_states, cursor, mc_snapshot_t);
-      chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)state_test->regions[get_heap_region_index(state_test)]->data);
+      state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_safety_visited_state_t);
+      chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)(state_test->system_state)->regions[get_heap_region_index(state_test->system_state)]->data);
+      if(chunks_used_test < current_chunks_used)
+        start = cursor + 1;
+      if(chunks_used_test > current_chunks_used)
+        end = cursor - 1; 
       if(chunks_used_test == current_chunks_used){
-        if(snapshot_compare(new_state, state_test, NULL, NULL) == 0){
+        same_chunks_not_found = 0;
+        if(snapshot_compare(new_state->system_state, state_test->system_state, NULL, NULL) == 0){
           if(raw_mem_set)
             MC_SET_RAW_MEM;
           else
@@ -65,11 +90,11 @@ static int is_visited_state(){
           /* Search another state with same number of chunks used */
           previous_cursor = cursor - 1;
           while(previous_cursor >= 0){
-            state_test = (mc_snapshot_t)xbt_dynar_get_as(visited_states, previous_cursor, mc_snapshot_t);
-            chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)state_test->regions[get_heap_region_index(state_test)]->data);
+            state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, previous_cursor, mc_safety_visited_state_t);
+            chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)(state_test->system_state)->regions[get_heap_region_index(state_test->system_state)]->data);
             if(chunks_used_test != current_chunks_used)
               break;
-            if(snapshot_compare(new_state, state_test, NULL, NULL) == 0){
+            if(snapshot_compare(new_state->system_state, state_test->system_state, NULL, NULL) == 0){
               if(raw_mem_set)
                 MC_SET_RAW_MEM;
               else
@@ -80,11 +105,11 @@ static int is_visited_state(){
           }
           next_cursor = cursor + 1;
           while(next_cursor < xbt_dynar_length(visited_states)){
-            state_test = (mc_snapshot_t)xbt_dynar_get_as(visited_states, next_cursor, mc_snapshot_t);
-            chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)state_test->regions[get_heap_region_index(state_test)]->data);
+            state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, next_cursor, mc_safety_visited_state_t);
+            chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)(state_test->system_state)->regions[get_heap_region_index(state_test->system_state)]->data);
             if(chunks_used_test != current_chunks_used)
               break;
-            if(snapshot_compare(new_state, state_test, NULL, NULL) == 0){
+            if(snapshot_compare(new_state->system_state, state_test->system_state, NULL, NULL) == 0){
               if(raw_mem_set)
                 MC_SET_RAW_MEM;
               else
@@ -95,17 +120,23 @@ static int is_visited_state(){
           }
         }   
       }
-      if(chunks_used_test < current_chunks_used)
-        start = cursor + 1;
-      if(chunks_used_test > current_chunks_used)
-        end = cursor - 1;
     }
  
     if(xbt_dynar_length(visited_states) == _sg_mc_visited){
-      mc_snapshot_t state_to_remove = NULL;
-      xbt_dynar_shift(visited_states, &state_to_remove);
-      MC_free_snapshot(state_to_remove);
+      int min = nb_visited_states;
+      unsigned int cursor2 = 0;
+      unsigned int index;
+      xbt_dynar_foreach(visited_states, cursor2, state_test){
+        if(state_test->num < min){
+          index = cursor2;
+          min = state_test->num;
+        }
+      }
+      xbt_dynar_remove_at(visited_states, index, NULL);
     }
+
+    if(cursor > 0)
+      cursor--;
 
     if(chunks_used_test < current_chunks_used)
       xbt_dynar_insert_at(visited_states, cursor + 1, &new_state);
@@ -137,7 +168,7 @@ void MC_dpor_init()
   MC_SET_RAW_MEM;
 
   initial_state = MC_state_new();
-  visited_states = xbt_dynar_new(sizeof(mc_snapshot_t), NULL);
+  visited_states = xbt_dynar_new(sizeof(mc_safety_visited_state_t), visited_state_free_voidp);
 
   MC_UNSET_RAW_MEM;
 

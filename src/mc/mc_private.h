@@ -225,6 +225,13 @@ void MC_dpor(void);
 void MC_dpor_exit(void);
 void MC_init(void);
 
+typedef struct s_mc_safety_visited_state{
+  mc_snapshot_t system_state;
+  int num;
+}s_mc_safety_visited_state_t, *mc_safety_visited_state_t;
+
+extern int nb_visited_states;
+
 
 /********************************** Double-DFS for liveness property**************************************/
 
