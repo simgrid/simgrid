@@ -232,11 +232,6 @@ static void smx_ctx_sysv_suspend_serial(smx_context_t context)
   smx_context_t next_context;
   unsigned long int i = sysv_process_index++;
 
-  if(MC_is_active()){
-    MC_ignore_stack("next_context", "smx_ctx_sysv_suspend_serial");
-    MC_ignore_stack("i", "smx_ctx_sysv_suspend_serial");
-  }
-
   if (i < xbt_dynar_length(simix_global->process_to_run)) {
     /* execute the next process */
     XBT_DEBUG("Run next process");

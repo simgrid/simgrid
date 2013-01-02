@@ -198,6 +198,9 @@ void MC_init(){
   MC_ignore_stack("_throw_ctx", "*");
   MC_ignore_stack("ctx", "*");
 
+  MC_ignore_stack("next_context", "smx_ctx_sysv_suspend_serial");
+  MC_ignore_stack("i", "smx_ctx_sysv_suspend_serial");
+
   if(raw_mem_set)
     MC_SET_RAW_MEM;
 
