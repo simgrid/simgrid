@@ -230,8 +230,6 @@ typedef struct s_mc_safety_visited_state{
   int num;
 }s_mc_safety_visited_state_t, *mc_safety_visited_state_t;
 
-extern int nb_visited_states;
-
 
 /********************************** Double-DFS for liveness property**************************************/
 

@@ -9,7 +9,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
                                 "Logging specific to MC DPOR exploration");
 
 xbt_dynar_t visited_states;
-int nb_visited_states = 0;
 
 static int is_visited_state(void);
 static void visited_state_free(mc_safety_visited_state_t state);
@@ -28,8 +27,6 @@ static void visited_state_free_voidp(void *s){
 
 static int is_visited_state(){
 
-  nb_visited_states++;
-
   if(_sg_mc_visited == 0)
     return 0;
 
@@ -40,7 +37,7 @@ static int is_visited_state(){
   mc_safety_visited_state_t new_state = NULL;
   new_state = xbt_new0(s_mc_safety_visited_state_t, 1);
   new_state->system_state = MC_take_snapshot();
-  new_state->num = nb_visited_states;
+  new_state->num = mc_stats->expanded_states;
 
   MC_UNSET_RAW_MEM;
   
@@ -127,11 +124,19 @@ static int is_visited_state(){
         }   
       }
     }
- 
-    if(xbt_dynar_length(visited_states) == _sg_mc_visited){
-      int min = nb_visited_states;
+
+    state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_safety_visited_state_t);
+    chunks_used_test = mmalloc_get_chunks_used((xbt_mheap_t)(state_test->system_state)->regions[get_heap_region_index(state_test->system_state)]->data);
+
+    if(chunks_used_test < current_chunks_used)
+      xbt_dynar_insert_at(visited_states, cursor + 1, &new_state);
+    else
+      xbt_dynar_insert_at(visited_states, cursor, &new_state);
+
+    if(xbt_dynar_length(visited_states) > _sg_mc_visited){
+      int min = mc_stats->expanded_states;
       unsigned int cursor2 = 0;
-      unsigned int index;
+      unsigned int index = 0;
       xbt_dynar_foreach(visited_states, cursor2, state_test){
         if(state_test->num < min){
           index = cursor2;
@@ -140,14 +145,6 @@ static int is_visited_state(){
       }
       xbt_dynar_remove_at(visited_states, index, NULL);
     }
-
-    if(cursor > 0)
-      cursor--;
-
-    if(chunks_used_test < current_chunks_used)
-      xbt_dynar_insert_at(visited_states, cursor + 1, &new_state);
-    else
-      xbt_dynar_insert_at(visited_states, cursor, &new_state);
     
     MC_UNSET_RAW_MEM;
 
