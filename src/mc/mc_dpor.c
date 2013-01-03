@@ -81,6 +81,8 @@ static int is_visited_state(){
       if(chunks_used_test == current_chunks_used){
         same_chunks_not_found = 0;
         if(snapshot_compare(new_state->system_state, state_test->system_state, NULL, NULL) == 0){
+          xbt_dynar_remove_at(visited_states, cursor, NULL);
+          xbt_dynar_insert_at(visited_states, cursor, &new_state);
           if(raw_mem_set)
             MC_SET_RAW_MEM;
           else
@@ -95,6 +97,8 @@ static int is_visited_state(){
             if(chunks_used_test != current_chunks_used)
               break;
             if(snapshot_compare(new_state->system_state, state_test->system_state, NULL, NULL) == 0){
+              xbt_dynar_remove_at(visited_states, previous_cursor, NULL);
+              xbt_dynar_insert_at(visited_states, previous_cursor, &new_state);
               if(raw_mem_set)
                 MC_SET_RAW_MEM;
               else
@@ -110,6 +114,8 @@ static int is_visited_state(){
             if(chunks_used_test != current_chunks_used)
               break;
             if(snapshot_compare(new_state->system_state, state_test->system_state, NULL, NULL) == 0){
+              xbt_dynar_remove_at(visited_states, next_cursor, NULL);
+              xbt_dynar_insert_at(visited_states, next_cursor, &new_state);
               if(raw_mem_set)
                 MC_SET_RAW_MEM;
               else
