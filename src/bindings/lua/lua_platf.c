@@ -42,8 +42,12 @@ int console_open(lua_State *L) {
   sg_platf_init();
   sg_platf_begin();
   surf_parse_init_callbacks();
+  
+  storage_register_callbacks();  
   routing_register_callbacks();
 
+  gpu_register_callbacks();
+  
   return 0;
 }
 
@@ -104,7 +108,8 @@ int console_add_host(lua_State *L) {
   //get power_scale
   lua_pushstring(L, "power_scale");
   lua_gettable(L, -2);
-  host.power_scale = lua_tonumber(L, -1);
+  if(!lua_isnumber(L,-1)) host.power_scale = 1;// Default value  
+  else host.power_scale = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
   //get power_trace
@@ -188,7 +193,7 @@ int  console_add_link(lua_State *L) {
   //get state_initial value
   lua_pushstring(L, "state_initial");
   lua_gettable(L, -2);
-  if (lua_tonumber(L, -1))
+  if (!lua_isnumber(L,-1) || lua_tonumber(L, -1))
     link.state = SURF_RESOURCE_ON;
   else
     link.state = SURF_RESOURCE_OFF;
@@ -241,18 +246,13 @@ int console_add_router(lua_State* L) {
 #include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
 
 int console_add_route(lua_State *L) {
-  static int AX_ptr = 0;
-  static int surfxml_bufferstack_size = 2048;
+  s_sg_platf_route_cbarg_t route;
+  memset(&route,0,sizeof(route));
 
   /* allocating memory for the buffer, I think 2kB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
-  const char*src;
-  const char*dst;
   int is_symmetrical;
-  xbt_dynar_t links;
-  unsigned int cursor;
-  char *link_id;
 
   if (! lua_istable(L, -1)) {
     XBT_ERROR("Bad Arguments to create a route, Should be a table with named arguments");
@@ -261,19 +261,19 @@ int console_add_route(lua_State *L) {
 
   lua_pushstring(L,"src");
   lua_gettable(L,-2);
-  src = lua_tostring(L, -1);
+  route.src = lua_tostring(L, -1);
   lua_pop(L,1);
 
   lua_pushstring(L,"dest");
   lua_gettable(L,-2);
-  dst = lua_tostring(L, -1);
+  route.dst = lua_tostring(L, -1);
   lua_pop(L,1);
 
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
-  links = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
-  if (xbt_dynar_is_empty(links))
-    xbt_dynar_push_as(links,char*,xbt_strdup(lua_tostring(L, -1)));
+  route.link_list = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
+  if (xbt_dynar_is_empty(route.link_list))
+    xbt_dynar_push_as(route.link_list,char*,xbt_strdup(lua_tostring(L, -1)));
   lua_pop(L,1);
 
   lua_pushstring(L,"symmetrical");
@@ -281,28 +281,19 @@ int console_add_route(lua_State *L) {
   is_symmetrical = lua_tointeger(L, -1);
   lua_pop(L,1);
 
+  route.gw_src = NULL;
+  route.gw_dst = NULL;
+
   /* We are relying on the XML bypassing mechanism since the corresponding sg_platf does not exist yet.
    * Et ouais mon pote. That's the way it goes. F34R.
    */
-  SURFXML_BUFFER_SET(route_src, src);
-  SURFXML_BUFFER_SET(route_dst, dst);
   if (is_symmetrical)
-    A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_YES;
+    route.symmetrical = TRUE;
   else
-    A_surfxml_route_symmetrical = A_surfxml_route_symmetrical_NO;
-  SURFXML_START_TAG(route);
+    route.symmetrical = FALSE;
 
-  xbt_dynar_foreach(links,cursor,link_id) {
-    SURFXML_BUFFER_SET(link___ctn_id, link_id);
-    A_surfxml_link___ctn_direction = A_surfxml_link___ctn_direction_NONE;
-    SURFXML_START_TAG(link___ctn);
-    SURFXML_END_TAG(link___ctn);
-  }
-  SURFXML_END_TAG(route);
-
-  xbt_dynar_free(&links);
-  free(surfxml_bufferstack);
-
+  sg_platf_new_route(&route);
+  
   return 0;
 }
 
