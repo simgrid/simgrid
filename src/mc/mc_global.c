@@ -752,8 +752,10 @@ void MC_ignore_heap(void *address, size_t size){
     
     if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
       region->fragment = -1;
+      ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore = 1;
     }else{
       region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
+      ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment] = 1;
     }
     
   }
