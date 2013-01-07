@@ -84,6 +84,14 @@ he = HostsExtractor.new(xml)
 raise "Cannot run with less than 2 hosts" unless he.hosts.size > 1
 
 output = ARGV.shift
+n = ARGV.shift
+if n == nil or n.to_i < 2
+  n = he.hosts.size - 1
+else
+  n = n.to_i - 1
+end
+puts n
+
 dg = DeploymentGenerator.new(output)
 dg.write_header
 
@@ -91,7 +99,7 @@ puts he.hosts
 broadcaster = he.hosts.shift
 peers = he.hosts
 
-dg.write_process("Broadcaster", "broadcaster", [broadcaster], [he.hosts.size])
-dg.write_process("Peers", "peer", peers, (1..he.hosts.size))
+dg.write_process("Broadcaster", "broadcaster", [broadcaster], [n])
+dg.write_process("Peers", "peer", peers[0..n-1], (1..n))
 
 dg.write_footer
