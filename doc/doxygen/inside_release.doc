@@ -76,6 +76,8 @@ $ make nsis
 - Tag the git repository (don't forget to push the tags to the main
   repo)
 - Push the archive files on gforge
+- Rebuild and resynchronize the website so that the file gets visible
+  from our download page (see @ref inside_doxygen_website).
 - Update the link ff-scm-v4-prod:/home/groups/simgrid/htdocs/simgrid/latest
 - Announce the release
  - Mail the simgrid-user mailing list
