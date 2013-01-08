@@ -15,14 +15,14 @@ function Slave(...)
     local task = simgrid.task.recv(my_mailbox);
     --print(task)
     local task_name = task:get_name()
-    if (task_name == "finalize") then
+    if (task:get_name() == "finalize") then
       simgrid.info("Slave '" .. my_mailbox .. "' got finalize msg");
       break
     end
     --local tk_name = simgrid.task.get_name(tk) 
-    simgrid.info("Slave '" .. my_mailbox .. "' processing " .. task_name)
+    simgrid.info("Slave '" .. my_mailbox .. "' processing " .. task:get_name())
     simgrid.task.execute(task)
-    simgrid.info("Slave '"  .. my_mailbox .. "': task " .. task_name .. " done")
+    simgrid.info("Slave '"  .. my_mailbox .. "': task " .. task:get_name() .. " done")
   end -- while
 
   simgrid.info("Slave '" .. my_mailbox .. "': I'm Done . See You !!");

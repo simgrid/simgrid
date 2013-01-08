@@ -41,9 +41,8 @@ static const luaL_reg platf_functions[] = {
 int console_open(lua_State *L) {
   sg_platf_init();
   sg_platf_begin();
-  surf_parse_init_callbacks();
-  
-  storage_register_callbacks();  
+
+  storage_register_callbacks();
   routing_register_callbacks();
 
   gpu_register_callbacks();
@@ -365,7 +364,7 @@ int console_set_function(lua_State *L) {
   //get args
   lua_pushstring(L,"args");
   lua_gettable(L, -2);
-  args = xbt_str_split_quoted( lua_tostring(L,-1) );
+  args = xbt_str_split_str( lua_tostring(L,-1) , ",");
   lua_pop(L, 1);
 
   // FIXME: hackish to go under MSG that way
@@ -375,6 +374,7 @@ int console_set_function(lua_State *L) {
     return -1;
   }
 
+  // FIXME: use sg_platf_new_process directly (warning: find a way to check hostname)
   MSG_set_function(host_id, function_id, args);
 
   return 0;

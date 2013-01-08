@@ -158,6 +158,13 @@ static int msg_register_application(lua_State * L)
   return 0;
 }
 
+static int console_init_application(lua_State *L) {
+  MSG_function_register_default(run_lua_code);
+  SIMIX_init_application();
+  return 0;
+}
+
+
 static const luaL_Reg simgrid_functions[] = {
   {"create_environment", create_environment},
   {"launch_application", launch_application},
@@ -172,6 +179,7 @@ static const luaL_Reg simgrid_functions[] = {
   {"msg_register_platform", msg_register_platform},
   {"sd_register_platform", sd_register_platform},
   {"msg_register_application", msg_register_application},
+  {"init_application", console_init_application},
   {NULL, NULL}
 };
 
