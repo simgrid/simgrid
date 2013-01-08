@@ -345,9 +345,6 @@ void sg_config_init(int *argc, char **argv)
   int default_value_int;
   int i;
 
-  TRACE_add_start_function(TRACE_surf_alloc);
-  TRACE_add_end_function(TRACE_surf_release);
-
   /* Create the configuration support */
   if (_sg_init_status == 0) { /* Only create stuff if not already inited */
     sprintf(description,

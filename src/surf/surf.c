@@ -418,6 +418,11 @@ void surf_init(int *argc, char **argv)
   if (!history)
     history = tmgr_history_new();
 
+#ifdef HAVE_TRACING
+  TRACE_add_start_function(TRACE_surf_alloc);
+  TRACE_add_end_function(TRACE_surf_release);
+#endif
+
   sg_config_init(argc, argv);
 
   surf_action_init();
