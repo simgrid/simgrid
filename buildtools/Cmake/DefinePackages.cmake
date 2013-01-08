@@ -465,7 +465,6 @@ set(simgrid_sources
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
-  ${SMPI_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   )

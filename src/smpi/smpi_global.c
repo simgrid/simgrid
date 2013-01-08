@@ -319,8 +319,13 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   }
 
   /* Connect log categories.  See xbt/log.c */
-  XBT_LOG_CONNECT(smpi);  /* Keep this line as soon as possible in this function: xbt_log_appender_file.c depends on it
-                             DO NOT connect this in XBT or so, or it will be useless to xbt_log_appender_file.c */
+  XBT_LOG_CONNECT(smpi);  /* Keep this line as soon as possible in this
+                             function: xbt_log_appender_file.c depends on it
+                             DO NOT connect this in XBT or so, or it will be
+                             useless to xbt_log_appender_file.c */
+#ifdef HAVE_TRACING
+  XBT_LOG_CONNECT(instr_smpi);
+#endif
   XBT_LOG_CONNECT(smpi_base);
   XBT_LOG_CONNECT(smpi_bench);
   XBT_LOG_CONNECT(smpi_coll);
@@ -334,6 +339,9 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&argc, argv);
+
+  TRACE_add_start_function(TRACE_smpi_alloc);
+  TRACE_add_end_function(TRACE_smpi_release);
 #endif
 
   SIMIX_global_init(&argc, argv);

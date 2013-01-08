@@ -346,9 +346,6 @@ void sg_config_init(int *argc, char **argv)
   int i;
 
   TRACE_add_start_function(TRACE_surf_alloc);
-  TRACE_add_start_function(TRACE_smpi_alloc);
-
-  TRACE_add_end_function(TRACE_smpi_release);
   TRACE_add_end_function(TRACE_surf_release);
 
   /* Create the configuration support */
