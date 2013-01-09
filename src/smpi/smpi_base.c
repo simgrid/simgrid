@@ -59,6 +59,107 @@ static int match_send(void* a, void* b,smx_action_t ignored) {
    } else return 0;
 }
 
+
+typedef struct s_smpi_factor *smpi_factor_t;
+typedef struct s_smpi_factor {
+  long factor;
+  int nb_values;
+  double values[4];//arbitrary set to 4
+} s_smpi_factor_t;
+xbt_dynar_t smpi_os_values = NULL;
+xbt_dynar_t smpi_or_values = NULL;
+
+
+// Methods used to parse and store the values for timing injections in smpi
+// These are taken from surf/network.c and generalized to have more factors
+// These methods should be merged with those in surf/network.c (moved somewhere in xbt ?)
+
+static int factor_cmp(const void *pa, const void *pb)
+{
+  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor);
+}
+
+
+static xbt_dynar_t parse_factor(const char *smpi_coef_string)
+{
+  char *value = NULL;
+  unsigned int iter = 0;
+  s_smpi_factor_t fact;
+  int i=0;
+  xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = NULL;
+
+  smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), NULL);
+  radical_elements = xbt_str_split(smpi_coef_string, ";");
+  xbt_dynar_foreach(radical_elements, iter, value) {
+    fact.nb_values=0;
+    radical_elements2 = xbt_str_split(value, ":");
+    if (xbt_dynar_length(radical_elements2) <2 || xbt_dynar_length(radical_elements2) > 5)
+      xbt_die("Malformed radical for smpi factor!");
+    for(i =0; i<xbt_dynar_length(radical_elements2);i++ ){
+        if (i==0){
+           fact.factor = atol(xbt_dynar_get_as(radical_elements2, i, char *));
+        }else{
+           fact.values[fact.nb_values] = atof(xbt_dynar_get_as(radical_elements2, i, char *));
+           fact.nb_values++;
+        }
+    }
+
+    xbt_dynar_push_as(smpi_factor, s_smpi_factor_t, fact);
+    XBT_VERB("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
+    xbt_dynar_free(&radical_elements2);
+  }
+  xbt_dynar_free(&radical_elements);
+  iter=0;
+  xbt_dynar_sort(smpi_factor, &factor_cmp);
+  xbt_dynar_foreach(smpi_factor, iter, fact) {
+    XBT_VERB("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
+  }
+  return smpi_factor;
+}
+
+static double smpi_os(double size)
+{
+  if (!smpi_os_values)
+    smpi_os_values =
+        parse_factor(sg_cfg_get_string("smpi/os"));
+
+  unsigned int iter = 0;
+  s_smpi_factor_t fact;
+  double current=0.0;
+  xbt_dynar_foreach(smpi_os_values, iter, fact) {
+    if (size <= fact.factor) {
+      XBT_VERB("os : %lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else{
+      current=fact.values[0]+fact.values[1]*size;
+    }
+  }
+  XBT_VERB("os : %lf > %ld return %f", size, fact.factor, current);
+
+  return current;
+}
+
+static double smpi_or(double size)
+{
+  if (!smpi_or_values)
+    smpi_or_values =
+        parse_factor(sg_cfg_get_string("smpi/or"));
+
+  unsigned int iter = 0;
+  s_smpi_factor_t fact;
+  double current=0.0;
+  xbt_dynar_foreach(smpi_or_values, iter, fact) {
+    if (size <= fact.factor) {
+      XBT_VERB("or : %lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else
+      current=fact.values[0]+fact.values[1]*size;
+  }
+  XBT_VERB("or : %lf > %ld return %f", size, fact.factor, current);
+
+  return current;
+}
+
 static MPI_Request build_request(void *buf, int count,
                                  MPI_Datatype datatype, int src, int dst,
                                  int tag, MPI_Comm comm, unsigned flags)
@@ -191,6 +292,13 @@ void smpi_mpi_start(MPI_Request request)
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
+
+    double sleeptime = smpi_or(request->size);
+    if(sleeptime!=0.0){
+        simcall_process_sleep(sleeptime);
+        XBT_VERB("receiving size of %ld : sleep %lf ", request->size, smpi_or(request->size));
+    }
+
   } else {
 
     int receiver = smpi_group_index(smpi_comm_group(request->comm), request->dst);
@@ -221,7 +329,11 @@ void smpi_mpi_start(MPI_Request request)
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
-
+    double sleeptime = smpi_os(request->size);
+    if(sleeptime!=0.0){
+        simcall_process_sleep(sleeptime);
+        XBT_VERB("sending size of %ld : sleep %lf ", request->size, smpi_os(request->size));
+    }
     request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
                          request->buf, request->real_size,
