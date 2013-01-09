@@ -222,7 +222,15 @@ $  chmod 0600 ~/.restfully/api.grid5000.fr.yml
 
 \li 5/ Git clone the SimGrid Scalability project
 \verbatim
-$  git clone git://scm.gforge.inria.fr/simgrid/simgrid-scalability-XPs.git
+$  git clone git@github.com:mquinson/simgrid-scalability-XPs.git
+\endverbatim
+An alternative URL is
+git://scm.gforge.inria.fr/simgrid/simgrid-scalability-XPs.git, but the
+repository on github is believed to be more uptodate. You may want to
+double-check by pulling both:
+\verbatim
+$ git remote add g5k git://scm.gforge.inria.fr/simgrid/simgrid-scalability-XPs.git
+$ git pull g5k master
 \endverbatim
 
 \li 6/ Copy the run script into your home
