@@ -4,7 +4,6 @@
 ! timeout 200
 $ ${bindir:=.}/snapshot_comparison5 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
-> [  0.000000] (0:@) type in variable = 2
 > [  0.000000] (0:@) Check the liveness property promela
 > [  0.000000] (1:test@HostA) **** Start test ****
 > [  0.000000] (1:test@HostA) Increment local variable
