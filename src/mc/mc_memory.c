@@ -24,7 +24,7 @@ void MC_memory_init()
   std_heap = mmalloc_get_default_md();
   xbt_assert(std_heap != NULL);
 
-#ifdef HAVE_GNU_LD
+#if defined HAVE_GNU_LD && !defined MMALLOC_WANT_OVERRIDE_LEGACY 
   /* use the system malloc for the model-checker data */
   raw_heap = NULL;
 #else
