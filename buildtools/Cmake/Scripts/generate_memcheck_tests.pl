@@ -103,7 +103,7 @@ while ( defined( $line = <MAKETEST> ) ) {
             my ($count_first)  = 0;
             my ($count_second) = 0;
             open TESH_FILE, $tesh_file or die "Unable to open $tesh_file $!\n";
-            my ($input);
+            my ($input) = "";
             my ($l);
             while ( defined( $l = <TESH_FILE> ) ) {
                 chomp $l;
