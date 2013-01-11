@@ -13,6 +13,13 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  * For all these reasons, we killed GRAS. If someone wants to revive it
    in the future, don't cry, our git history still remembers of GRAS.
 
+ Documentation:
+ * Major overhaul. Merge our documentation again as time proved that
+   spliting it was really not helping our users.
+ * Further improve the developer documentation to help newcommers
+   hacking on SimGrid itself. The user documentation (and in
+   particular, the beginner documentation) is still in a sorry state.
+
  SMPI:
  * Now works on Windows too!
  * Much more extensive test suite, from MPICH
