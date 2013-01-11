@@ -62,7 +62,6 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_bcast.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions1.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/replay/one_trace
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces
   PARENT_SCOPE
   )  
