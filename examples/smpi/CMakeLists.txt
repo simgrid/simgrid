@@ -63,5 +63,8 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions1.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_allReduce.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_barrier.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_with_isend.txt
   PARENT_SCOPE
   )  
