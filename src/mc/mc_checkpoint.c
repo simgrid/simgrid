@@ -161,6 +161,7 @@ mc_snapshot_t MC_take_snapshot()
       if (maps->regions[i].pathname == NULL){
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
+          snapshot->heap_chunks_used = mmalloc_get_chunks_used(std_heap);
           heap = snapshot->regions[nb_reg]->data;
           nb_reg++;
         }
@@ -386,6 +387,7 @@ static xbt_dynar_t take_snapshot_stacks(void *heap){
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
     st->local_variables = get_local_variables_values(current_stack->context, heap);
     st->stack_pointer = get_stack_pointer(current_stack->context, heap);
+    st->size_used = current_stack->size - ((char *)st->stack_pointer - (char *)((char *)heap + ((char *)current_stack->address - (char *)std_heap)));
     xbt_dynar_push(res, &st);
   }
 

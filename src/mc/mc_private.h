@@ -33,6 +33,7 @@ typedef struct s_mc_mem_region{
 
 typedef struct s_mc_snapshot{
   unsigned int num_reg;
+  size_t heap_chunks_used;
   mc_mem_region_t *regions;
   xbt_dynar_t stacks;
 } s_mc_snapshot_t, *mc_snapshot_t;
@@ -40,6 +41,7 @@ typedef struct s_mc_snapshot{
 typedef struct s_mc_snapshot_stack{
   xbt_strbuff_t local_variables;
   void *stack_pointer;
+  size_t size_used;
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t{
