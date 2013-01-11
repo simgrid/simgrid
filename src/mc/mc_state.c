@@ -41,6 +41,8 @@ mc_state_t MC_state_pair_new(void)
  */
 void MC_state_delete(mc_state_t state)
 {
+  if(state->system_state)
+    MC_free_snapshot(state->system_state);
   xbt_free(state->proc_status);
   xbt_free(state);
 }

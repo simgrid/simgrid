@@ -139,7 +139,6 @@ mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
 
 mc_snapshot_t MC_take_snapshot()
 {
-
   int raw_mem = (mmalloc_get_current_heap() == raw_heap);
   
   MC_SET_RAW_MEM;
@@ -232,6 +231,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
   for(i=0; i < snapshot->num_reg; i++)
     MC_region_destroy(snapshot->regions[i]);
 
+  xbt_free(snapshot->regions);
   xbt_dynar_free(&(snapshot->stacks));
   xbt_free(snapshot);
 }
@@ -296,8 +296,8 @@ void get_libsimgrid_plt_section(){
     
   }
 
-  free(command);
-  free(line);
+  xbt_free(command);
+  xbt_free(line);
   pclose(fp);
 
 }
@@ -359,8 +359,8 @@ void get_binary_plt_section(){
     
   }
 
-  free(command);
-  free(line);
+  xbt_free(command);
+  xbt_free(line);
   pclose(fp);
 
 }
@@ -378,7 +378,7 @@ static void add_value(xbt_dynar_t *list, const char *type, unsigned long int val
 
 static xbt_dynar_t take_snapshot_stacks(void *heap){
 
-  xbt_dynar_t res = xbt_dynar_new(sizeof(s_mc_snapshot_stack_t), NULL);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(s_mc_snapshot_stack_t), snapshot_stack_free_voidp);
 
   unsigned int cursor1 = 0;
   stack_region_t current_stack;
@@ -429,7 +429,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
   unw_word_t ip, sp, off;
   dw_frame_t frame;
  
-  xbt_dynar_t compose = xbt_dynar_new(sizeof(variable_value_t), NULL);
+  xbt_dynar_t compose = xbt_dynar_new(sizeof(variable_value_t), variable_value_free_voidp);
 
   xbt_strbuff_t variables = xbt_strbuff_new();
   xbt_dict_cursor_t dict_cursor;
@@ -442,6 +442,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
   int frame_found = 0;
   void *frame_pointer_address = NULL;
   long true_ip;
+  char *to_append;
 
   while(ret >= 0){
 
@@ -452,10 +453,15 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
 
     frame = xbt_dict_get_or_null(mc_local_variables, frame_name);
 
-    if(frame == NULL)
+    if(frame == NULL){
+      xbt_dynar_free(&compose);
+      xbt_dict_cursor_free(&dict_cursor);
       return variables;
+    }
 
-    xbt_strbuff_append(variables, bprintf("ip=%s\n", frame_name));
+    to_append = bprintf("ip=%s\n", frame_name);
+    xbt_strbuff_append(variables, to_append);
+    xbt_free(to_append);
 
     true_ip = (long)frame->low_pc + (long)off;
 
@@ -538,31 +544,46 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
           
           if(xbt_dynar_length(compose) > 0){
             if(strcmp(xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->type, "value") == 0){
-              xbt_strbuff_append(variables, bprintf("%s=%lx\n", current_variable->name, xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.res));
+              to_append = bprintf("%s=%lx\n", current_variable->name, xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.res);
+              xbt_strbuff_append(variables, to_append);
+              xbt_free(to_append);
             }else{
               if((long)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address < 0 || *((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) == NULL){
-                xbt_strbuff_append(variables, bprintf("%s=NULL\n", current_variable->name));
+                to_append = bprintf("%s=NULL\n", current_variable->name);
+                xbt_strbuff_append(variables, to_append);
+                xbt_free(to_append);
               }else if(((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) > 0xffffffff) || ((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) < (long)start_text_binary)){
-                xbt_strbuff_append(variables, bprintf("%s=%d\n", current_variable->name, (int)(long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address)));
+                to_append = bprintf("%s=%d\n", current_variable->name, (int)(long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address));
+                xbt_strbuff_append(variables, to_append);
+                xbt_free(to_append);
               }else{ 
-                xbt_strbuff_append(variables, bprintf("%s=%p\n", current_variable->name, *((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address)));
+                to_append = bprintf("%s=%p\n", current_variable->name, *((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address));
+                xbt_strbuff_append(variables, to_append);
+                xbt_free(to_append);
               }
             }
           }else{
-            xbt_strbuff_append(variables, bprintf("%s=undefined\n", current_variable->name));
+            to_append = bprintf("%s=undefined\n", current_variable->name);
+            xbt_strbuff_append(variables, to_append);
+            xbt_free(to_append);
           }
           break;
         default :
           break;
         }
       }else{
-        xbt_strbuff_append(variables, bprintf("%s=undefined\n", current_variable->name));
+        to_append = bprintf("%s=undefined\n", current_variable->name);
+        xbt_strbuff_append(variables, to_append);
+        xbt_free(to_append);
       }
     }    
  
     ret = unw_step(&c);
      
   }
+
+  xbt_dynar_free(&compose);
+  xbt_dict_cursor_free(&dict_cursor);
 
   return variables;
 
@@ -596,3 +617,15 @@ void *MC_snapshot(void){
   return simcall_mc_snapshot();
   
 }
+
+void variable_value_free(variable_value_t v){
+  if(v){
+    xbt_free(v->type);
+    xbt_free(v);
+  }
+}
+
+void variable_value_free_voidp(void* v){
+  variable_value_free((variable_value_t) * (void **)v);
+}
+

@@ -412,6 +412,9 @@ typedef struct s_variable_value{
   }value;
 }s_variable_value_t, *variable_value_t;
 
+void variable_value_free_voidp(void* v);
+void variable_value_free(variable_value_t v);
+
 void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *variables);
 void print_local_variables(xbt_dict_t list);
 char *get_libsimgrid_path(void);

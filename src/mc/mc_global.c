@@ -175,6 +175,9 @@ void MC_init(){
   xbt_dict_t libsimgrid_location_list = MC_get_location_list(libsimgrid_path);
   MC_get_local_variables(libsimgrid_path, libsimgrid_location_list, &mc_local_variables);
 
+  xbt_dict_free(&libsimgrid_location_list);
+  xbt_dict_free(&binary_location_list);
+  
   /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
   get_libsimgrid_plt_section();
   get_binary_plt_section();
@@ -1039,13 +1042,14 @@ xbt_dict_t MC_get_location_list(const char *elf_file){
 
     char *key = bprintf("%d", (int)strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
     xbt_dict_set(location_list, key, loclist, NULL);
+    xbt_free(key);
     
     xbt_dynar_free(&split);
 
   }
 
-  free(line);
-  free(command);
+  xbt_free(line);
+  xbt_free(command);
   pclose(fp);
 
   return location_list;
@@ -1058,10 +1062,13 @@ static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long in
   dw_frame_t res;
 
   xbt_dict_foreach(all_variables, cursor, name, res) {
-    if(offset >= res->start && offset < res->end)
+    if(offset >= res->start && offset < res->end){
+      xbt_dict_cursor_free(&cursor);
       return res;
+    }
   }
 
+  xbt_dict_cursor_free(&cursor);
   return NULL;
   
 }
@@ -1168,11 +1175,12 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
           xbt_str_rtrim(abstract_origin, ">");
           subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, abstract_origin);
           frame = xbt_dict_get_or_null(*all_variables, subprogram_name); 
+          xbt_free(abstract_origin);
 
         }else if(strcmp(node_type, "DW_AT_name") == 0){
 
           new_frame = 1;
-          free(current_frame);
+          xbt_free(current_frame);
           frame = xbt_new0(s_dw_frame_t, 1);
           frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *)); 
           frame->variables = xbt_dict_new_homogeneous(NULL);
@@ -1198,6 +1206,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
             xbt_str_rtrim(loc_expr, ")");
             frame->frame_base = get_location(NULL, loc_expr);
             xbt_dynar_free(&split2);
+            xbt_free(loc_expr);
 
           }
  
@@ -1213,8 +1222,8 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
 
         }else if(strcmp(node_type, "DW_AT_MIPS_linkage_name:") == 0){
 
-          free(frame->name);
-          free(current_frame);
+          xbt_free(frame->name);
+          xbt_free(current_frame);
           frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));   
           current_frame = strdup(frame->name);
           xbt_dict_set(subprograms_origin, subprogram_start, frame->name, NULL);
@@ -1232,9 +1241,9 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
         xbt_dict_set(*all_variables, frame->name, frame, NULL);
       }
 
-      free(subprogram_start);
+      xbt_free(subprogram_start);
       if(subprogram_end != NULL){
-        free(subprogram_end);
+        xbt_free(subprogram_end);
         subprogram_end = NULL;
       }
         
@@ -1314,6 +1323,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
               xbt_str_rtrim(loc_expr, ")");
               var->location = get_location(NULL, loc_expr);
               xbt_dynar_free(&split2);
+              xbt_free(loc_expr);
 
             }
 
@@ -1402,8 +1412,8 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
   }
   
   xbt_dynar_free(&split);
-  free(line);
-  free(command);
+  xbt_free(line);
+  xbt_free(command);
   pclose(fp);
   
 }
@@ -1417,8 +1427,9 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
     char *key = bprintf("%d", (int)strtoul(expr, NULL, 16));
     loc->type = e_dw_loclist;
     loc->location.loclist =  (xbt_dynar_t)xbt_dict_get_or_null(location_list, key);
-    if(loc == NULL)
+    if(loc->location.loclist == NULL)
       XBT_INFO("Key not found in loclist");
+    xbt_free(key);
     return loc;
 
   }else{
@@ -1757,8 +1768,8 @@ static void MC_get_global_variables(char *elf_file){
 
   }
 
-  free(command);
-  free(line);
+  xbt_free(command);
+  xbt_free(line);
   pclose(fp);
 
 }

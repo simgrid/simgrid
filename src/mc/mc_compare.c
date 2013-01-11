@@ -148,7 +148,7 @@ int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
 }
 
 int get_heap_region_index(mc_snapshot_t s){
-  int i =0;
+  int i = 0;
   while(i < s->num_reg){
     switch(s->regions[i]->type){
     case 0:
