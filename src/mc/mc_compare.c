@@ -474,12 +474,13 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
     cursor++;
   }
 
+  XBT_VERB("Chunks used after comparison of stacks : %zu", mmalloc_get_chunks_used(raw_heap));
+
   xbt_dynar_free(&stacks1);
   xbt_dynar_free(&stacks2);
   xbt_dynar_free(&equals);
-
-  if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug))    
-    xbt_os_timer_free(timer);
+   
+  xbt_os_timer_free(timer);
 
   if(!XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
     xbt_os_timer_stop(global_timer);
