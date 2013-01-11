@@ -306,7 +306,7 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Untar distrib"
-  COMMAND ${CMAKE_COMMAND} -E tar  xf ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX create build and install subtrees"
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
@@ -316,8 +316,6 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
   ${CMAKE_COMMAND}
   -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst
-  -Denable_lua=ON
-  -Denable_model-checking=ON
   ..
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM}
@@ -334,7 +332,7 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove temp directories"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
   )
-#add_dependencies(distcheck dist)
+add_dependencies(distcheck dist)
 
 #######################################
 ### Fill in the "make check" target ###
