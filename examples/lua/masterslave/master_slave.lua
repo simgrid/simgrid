@@ -1,5 +1,5 @@
-dofile '../console/master.lua'
-dofile '../console/slave.lua'
+dofile 'master.lua'
+dofile 'slave.lua'
 -- Simulation Code ----------------------------------------------------------
 
 require "simgrid"
