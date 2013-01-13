@@ -144,6 +144,7 @@ mc_snapshot_t MC_take_snapshot()
   MC_SET_RAW_MEM;
 
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
+  snapshot->nb_processes = xbt_swag_size(simix_global->process_list);
 
   unsigned int i = 0;
   s_map_region_t reg;

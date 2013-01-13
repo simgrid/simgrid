@@ -36,6 +36,7 @@ typedef struct s_mc_snapshot{
   size_t heap_chunks_used;
   mc_mem_region_t *regions;
   xbt_dynar_t stacks;
+  int nb_processes;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
 typedef struct s_mc_snapshot_stack{

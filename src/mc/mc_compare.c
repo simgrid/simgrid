@@ -170,39 +170,6 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
       
   int errors = 0, i = 0;
 
-  if(s1->num_reg != s2->num_reg){
-    if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose)){
-      XBT_VERB("Different num_reg (s1 = %u, s2 = %u)", s1->num_reg, s2->num_reg);
-    }
-    if(!raw_mem)
-      MC_UNSET_RAW_MEM;
-    return 1;
-  }
-
-  int heap_index = 0, data_libsimgrid_index = 0, data_program_index = 0;
-
-  /* Get index of regions */
-  while(i < s1->num_reg){
-    switch(s1->regions[i]->type){
-    case 0:
-      heap_index = i;
-      i++;
-      break;
-    case 1:
-      data_libsimgrid_index = i;
-      i++;
-      while( i < s1->num_reg && s1->regions[i]->type == 1)
-        i++;
-      break;
-    case 2:
-      data_program_index = i;
-      i++;
-      while( i < s1->num_reg && s1->regions[i]->type == 2)
-        i++;
-      break;
-    }
-  }
-
   if(ct1 != NULL)
     ct1->nb_comparisons++;
   if(ct2 != NULL)
@@ -215,6 +182,35 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
 
   if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug))
     xbt_os_timer_start(timer);
+
+  /* Compare number of processes */
+  if(s1->nb_processes != s2->nb_processes){
+     if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_debug)){
+       xbt_os_timer_stop(timer);
+       if(ct1 != NULL)
+         xbt_dynar_push_as(ct1->chunks_used_comparison_times, double, xbt_os_timer_elapsed(timer));
+       if(ct2 != NULL)
+         xbt_dynar_push_as(ct2->chunks_used_comparison_times, double, xbt_os_timer_elapsed(timer));
+       XBT_DEBUG("Different number of processes : %d - %d", s1->nb_processes, s2->nb_processes);
+       errors++;
+     }else{
+        if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose))
+          XBT_VERB("Different number of processes : %d - %d", s1->nb_processes, s2->nb_processes);
+     
+        xbt_os_timer_free(timer);
+        xbt_os_timer_stop(global_timer);
+        if(ct1 != NULL)
+          xbt_dynar_push_as(ct1->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+        if(ct2 != NULL)
+          xbt_dynar_push_as(ct2->snapshot_comparison_times, double, xbt_os_timer_elapsed(global_timer));
+        xbt_os_timer_free(global_timer);
+
+        if(!raw_mem)
+          MC_UNSET_RAW_MEM;
+
+        return 1;
+     }
+  }
 
   /* Compare number of blocks/fragments used in each heap */
 
@@ -299,6 +295,30 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t c
     if(is_diff == 0)
       xbt_os_timer_stop(timer);
     xbt_os_timer_start(timer);
+  }
+
+  int heap_index = 0, data_libsimgrid_index = 0, data_program_index = 0;
+  
+  /* Get index of regions */
+  while(i < s1->num_reg){
+    switch(s1->regions[i]->type){
+    case 0:
+      heap_index = i;
+      i++;
+      break;
+    case 1:
+      data_libsimgrid_index = i;
+      i++;
+      while( i < s1->num_reg && s1->regions[i]->type == 1)
+        i++;
+      break;
+    case 2:
+      data_program_index = i;
+      i++;
+      while( i < s1->num_reg && s1->regions[i]->type == 2)
+        i++;
+      break;
+    }
   }
 
   /* Compare binary global variables */
