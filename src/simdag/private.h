@@ -89,7 +89,7 @@ typedef struct SD_task {
   /* dependencies */
   xbt_dynar_t tasks_before;
   xbt_dynar_t tasks_after;
-  unsigned int unsatisfied_dependencies;
+  int unsatisfied_dependencies;
   unsigned int is_not_ready;
 
   /* scheduling parameters (only exist in state SD_SCHEDULED) */

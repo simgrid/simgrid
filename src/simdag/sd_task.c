@@ -509,7 +509,7 @@ void SD_task_dump(SD_task_t task)
     }
   }
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
-  XBT_INFO("  - Dependencies to satisfy: %u", task->unsatisfied_dependencies);
+  XBT_INFO("  - Dependencies to satisfy: %d", task->unsatisfied_dependencies);
   if (!xbt_dynar_is_empty(task->tasks_before)) {
     XBT_INFO("  - pre-dependencies:");
     xbt_dynar_foreach(task->tasks_before, counter, dependency) {
