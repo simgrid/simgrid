@@ -290,11 +290,19 @@ xbt_swag_t SD_simulate_swag(double how_long) {
           if (dst->is_not_ready > 0)
             dst->is_not_ready--;
 
+          XBT_DEBUG("Released a dependency on %s: %d remain(s). Became schedulable if %d=0",
+             SD_task_get_name(dst), dst->unsatisfied_dependencies,
+             dst->is_not_ready);
+
           if (!(dst->unsatisfied_dependencies)) {
             if (__SD_task_is_scheduled(dst))
               __SD_task_set_state(dst, SD_RUNNABLE);
             else
               __SD_task_set_state(dst, SD_SCHEDULABLE);
+          }
+
+          if (__SD_task_is_not_scheduled(dst) && !(dst->is_not_ready)) {
+            __SD_task_set_state(dst, SD_SCHEDULABLE);
           }
 
           if (SD_task_get_kind(dst) == SD_TASK_COMM_E2E) {
@@ -305,6 +313,10 @@ xbt_swag_t SD_simulate_swag(double how_long) {
             if (__SD_task_is_not_scheduled(comm_dst) &&
                 comm_dst->is_not_ready > 0) {
               comm_dst->is_not_ready--;
+
+            XBT_DEBUG("%s is a transfer, %s may be ready now if %d=0",
+               SD_task_get_name(dst), SD_task_get_name(comm_dst),
+               comm_dst->is_not_ready);
 
               if (!(comm_dst->is_not_ready)) {
                 __SD_task_set_state(comm_dst, SD_SCHEDULABLE);
