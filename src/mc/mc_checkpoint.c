@@ -32,7 +32,7 @@ static void MC_region_destroy(mc_mem_region_t reg);
 static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start_addr, size_t size);
 
 static void add_value(xbt_dynar_t *list, const char *type, unsigned long int val);
-static xbt_dynar_t take_snapshot_stacks(void *heap);
+static xbt_dynar_t take_snapshot_stacks(mc_snapshot_t *s, void *heap);
 static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap);
 static void print_local_variables_values(xbt_dynar_t all_variables);
 static void *get_stack_pointer(void *stack_context, void *heap);
@@ -74,6 +74,7 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start
   mc_mem_region_t new_reg = MC_region_new(type, start_addr, size);
   snapshot->regions = xbt_realloc(snapshot->regions, (snapshot->num_reg + 1) * sizeof(mc_mem_region_t));
   snapshot->regions[snapshot->num_reg] = new_reg;
+  snapshot->region_type[snapshot->num_reg] = type;
   snapshot->num_reg++;
   return;
 } 
@@ -204,7 +205,7 @@ mc_snapshot_t MC_take_snapshot()
   }
 
   if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,""))
-    snapshot->stacks = take_snapshot_stacks(heap);
+    snapshot->stacks = take_snapshot_stacks(&snapshot, heap);
   
   free_memory_map(maps);
 
@@ -377,19 +378,20 @@ static void add_value(xbt_dynar_t *list, const char *type, unsigned long int val
   xbt_dynar_push(*list, &value);
 }
 
-static xbt_dynar_t take_snapshot_stacks(void *heap){
+static xbt_dynar_t take_snapshot_stacks(mc_snapshot_t *snapshot, void *heap){
 
   xbt_dynar_t res = xbt_dynar_new(sizeof(s_mc_snapshot_stack_t), snapshot_stack_free_voidp);
 
-  unsigned int cursor1 = 0;
+  unsigned int cursor = 0;
   stack_region_t current_stack;
   
-  xbt_dynar_foreach(stacks_areas, cursor1, current_stack){
+  xbt_dynar_foreach(stacks_areas, cursor, current_stack){
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
     st->local_variables = get_local_variables_values(current_stack->context, heap);
     st->stack_pointer = get_stack_pointer(current_stack->context, heap);
-    st->size_used = current_stack->size - ((char *)st->stack_pointer - (char *)((char *)heap + ((char *)current_stack->address - (char *)std_heap)));
     xbt_dynar_push(res, &st);
+    (*snapshot)->stack_sizes = xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
+    (*snapshot)->stack_sizes[cursor] = current_stack->size - ((char *)st->stack_pointer - (char *)((char *)heap + ((char *)current_stack->address - (char *)std_heap)));
   }
 
   return res;

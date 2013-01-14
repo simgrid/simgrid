@@ -24,6 +24,8 @@
 
 /****************************** Snapshots ***********************************/
 
+#define nb_regions 3 /* binary data (data + BSS), libsimgrid data (data + BSS), std_heap */ 
+
 typedef struct s_mc_mem_region{
   int type;
   void *start_addr;
@@ -33,8 +35,10 @@ typedef struct s_mc_mem_region{
 
 typedef struct s_mc_snapshot{
   unsigned int num_reg;
+  int region_type[nb_regions];
   size_t heap_chunks_used;
   mc_mem_region_t *regions;
+  size_t *stack_sizes;
   xbt_dynar_t stacks;
   int nb_processes;
 } s_mc_snapshot_t, *mc_snapshot_t;
@@ -42,7 +46,6 @@ typedef struct s_mc_snapshot{
 typedef struct s_mc_snapshot_stack{
   xbt_strbuff_t local_variables;
   void *stack_pointer;
-  size_t size_used;
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t{
@@ -212,6 +215,27 @@ extern void *end_got_plt_libsimgrid;
 extern void *start_got_plt_binary;
 extern void *end_got_plt_binary;
 
+/********************************** Snapshot comparison **********************************/
+
+typedef struct s_mc_comparison_times{
+  double nb_processes_comparison_time;
+  double chunks_used_comparison_time;
+  double stacks_sizes_comparison_time;
+  double binary_global_variables_comparison_time;
+  double libsimgrid_global_variables_comparison_time;
+  double heap_comparison_time;
+  double stacks_comparison_time;
+}s_mc_comparison_times_t, *mc_comparison_times_t;
+
+extern mc_comparison_times_t mc_comp_times;
+extern double mc_snapshot_comparison_time;
+
+int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2);
+int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);
+void print_comparison_times(void);
+
+//#define MC_DEBUG 1
+//#define MC_VERBOSE 1
 
 /********************************** DPOR for safety  **************************************/
 typedef enum {
@@ -250,23 +274,11 @@ typedef struct s_mc_pair{
   xbt_state_t automaton_state;
 }s_mc_pair_t, *mc_pair_t;
 
-typedef struct s_mc_comparison_times{
-  int nb_comparisons;
-  xbt_dynar_t snapshot_comparison_times;
-  xbt_dynar_t chunks_used_comparison_times;
-  xbt_dynar_t stacks_sizes_comparison_times;
-  xbt_dynar_t binary_global_variables_comparison_times;
-  xbt_dynar_t libsimgrid_global_variables_comparison_times;
-  xbt_dynar_t heap_comparison_times;
-  xbt_dynar_t stacks_comparison_times;
-}s_mc_comparison_times_t, *mc_comparison_times_t;
-
 typedef struct s_mc_pair_reached{
   int nb;
   xbt_state_t automaton_state;
   xbt_dynar_t prop_ato;
   mc_snapshot_t system_state;
-  mc_comparison_times_t comparison_times;
 }s_mc_pair_reached_t, *mc_pair_reached_t;
 
 typedef struct s_mc_pair_visited{
@@ -277,14 +289,11 @@ typedef struct s_mc_pair_visited{
 
 int MC_automaton_evaluate_label(xbt_exp_label_t l);
 mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
-mc_comparison_times_t new_comparison_times(void);
 
 int reached(xbt_state_t st);
 void set_pair_reached(xbt_state_t st);
 int visited(xbt_state_t st);
-int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
-                                   mc_snapshot_t s1, mc_snapshot_t s2);
-int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2, mc_comparison_times_t ct1, mc_comparison_times_t ct2);
+
 void MC_pair_delete(mc_pair_t pair);
 void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
@@ -294,7 +303,6 @@ void pair_visited_free(mc_pair_visited_t pair);
 void pair_visited_free_voidp(void *p);
 void MC_init_liveness(void);
 void MC_init_memory_map_info(void);
-void MC_print_comparison_times_statistics(mc_comparison_times_t ct);
 
 int get_heap_region_index(mc_snapshot_t s);
 

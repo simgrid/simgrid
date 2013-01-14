@@ -86,6 +86,8 @@ void _mc_cfg_cb_visited(const char *name, int pos) {
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
+mc_comparison_times_t mc_comp_times = NULL;
+double mc_snapshot_comparison_time;
 
 /* Safety */
 
@@ -122,6 +124,11 @@ static size_t data_bss_ignore_size(void *address);
 static void MC_get_global_variables(char *elf_file);
 
 void MC_do_the_modelcheck_for_real() {
+
+  MC_SET_RAW_MEM;
+  mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
+  MC_UNSET_RAW_MEM;
+
   if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
     if (mc_reduce_kind==e_mc_reduce_unset)
       mc_reduce_kind=e_mc_reduce_dpor;
@@ -183,7 +190,9 @@ void MC_init(){
   get_binary_plt_section();
 
   MC_ignore_data_bss(&end_raw_heap, sizeof(end_raw_heap));
- 
+  MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
+  MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
+
   /* Get global variables */
   MC_get_global_variables(xbt_binary_name);
   MC_get_global_variables(libsimgrid_path);
