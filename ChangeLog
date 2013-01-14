@@ -24,6 +24,10 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  * Now works on Windows too!
  * Much more extensive test suite, from MPICH
 
+SIMDAG:
+ * Bug fix: let task be scheduled when the last dependency to be solved is a 
+   control dependency
+
  MSG:
  * New function: MSG_process_get_number()
  * Old function documented: MSG_config()
