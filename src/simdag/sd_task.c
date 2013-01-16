@@ -504,11 +504,16 @@ void SD_task_dump(SD_task_t task)
     case SD_TASK_COMP_PAR_AMDAHL:
       XBT_INFO("  - kind: parallel computation following Amdahl's law");
       break;
+    case SD_TASK_COMM_PAR_MXN_1D_BLOCK:
+      XBT_INFO("  - kind: MxN data redistribution assuming 1D block distribution");
+      break;
     default:
       XBT_INFO("  - (unknown kind %d)", task->kind);
     }
   }
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
+  if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
+    XBT_INFO("  - alpha: %.2f", task->alpha);
   XBT_INFO("  - Dependencies to satisfy: %d", task->unsatisfied_dependencies);
   if (!xbt_dynar_is_empty(task->tasks_before)) {
     XBT_INFO("  - pre-dependencies:");
@@ -532,9 +537,11 @@ void SD_task_dotty(SD_task_t task, void *out)
   fprintf(out, "  T%p [label=\"%.20s\"", task, task->name);
   switch (task->kind) {
   case SD_TASK_COMM_E2E:
+  case SD_TASK_COMM_PAR_MXN_1D_BLOCK:
     fprintf(out, ", shape=box");
     break;
   case SD_TASK_COMP_SEQ:
+  case SD_TASK_COMP_PAR_AMDAHL:
     fprintf(out, ", shape=circle");
     break;
   default:
