@@ -73,7 +73,7 @@ endif()
 #Some old versions of 64 bits systems seem to have a different size between C and Fortran Datatypes
 #Deactivate F2C with these versions, in order to avoid breaking test cases in legacy systems (as Fedora 13)
 set(COMPILER_OK 1)
-if(PROCESSOR_x86_64 AND "${CMAKE_SYSTEM}" MATCHES "Linux" AND "4.5" STRGREATER ${COMPILER_C_VERSION_MAJOR_MINOR} )
+if(PROCESSOR_x86_64 AND "${CMAKE_SYSTEM}" MATCHES "Linux" AND ${CMAKE_C_COMPILER_ID} STREQUAL "GNU" AND "4.5" STRGREATER "${COMPILER_C_VERSION_MAJOR_MINOR}" )
     set(COMPILER_OK 0)
     message("Your C compiler is a bit old and Fortran support is quite problematic on 64 bit platforms, F2C has been deactivated")
 endif()
