@@ -166,14 +166,6 @@ void TRACE_msg_vm_sleep_in(msg_vm_t vm);
 void TRACE_msg_vm_sleep_out(msg_vm_t vm);
 void TRACE_msg_vm_end(msg_vm_t vm);
 
-/* from surf_instr.c */
-void TRACE_surf_alloc(void);
-void TRACE_surf_release(void);
-void TRACE_surf_host_set_power(double date, const char *resource, double power);
-void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
-void TRACE_surf_link_set_latency(double date, const char *resource, double latency);
-void TRACE_surf_action(surf_action_t surf_action, const char *category);
-
 //for tracing gtnets
 void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst);
 
