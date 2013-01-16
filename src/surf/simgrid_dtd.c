@@ -4487,8 +4487,6 @@ AT_surfxml_bypassASroute_dst AX_surfxml_bypassASroute_dst;
 #define A_surfxml_bypassASroute_dst (surfxml_bufferstack + AX_surfxml_bypassASroute_dst)
 AT_surfxml_host_link_id AX_surfxml_host_link_id;
 #define A_surfxml_host_link_id (surfxml_bufferstack + AX_surfxml_host_link_id)
-AT_surfxml_host___link_id AX_surfxml_host___link_id;
-#define A_surfxml_host___link_id (surfxml_bufferstack + AX_surfxml_host___link_id)
 AT_surfxml_ASroute_src AX_surfxml_ASroute_src;
 #define A_surfxml_ASroute_src (surfxml_bufferstack + AX_surfxml_ASroute_src)
 AT_surfxml_cluster_prefix AX_surfxml_cluster_prefix;
@@ -4825,8 +4823,8 @@ const char* *surfxml_statenames=NULL;
 #define IN_trace 27
 #define AL_surfxml_random 28
 #define E_surfxml_random 29
-#define AL_surfxml_trace___connect 30
-#define E_surfxml_trace___connect 31
+#define AL_surfxml_trace_connect 30
+#define E_surfxml_trace_connect 31
 #define AL_surfxml_AS 32
 #define S_surfxml_AS 33
 #define S_surfxml_AS_1 34
@@ -4846,11 +4844,11 @@ const char* *surfxml_statenames=NULL;
 #define S_surfxml_AS_15 48
 #define S_surfxml_AS_16 49
 #define E_surfxml_AS 50
-#define AL_surfxml_storage___type 51
-#define S_surfxml_storage___type 52
-#define S_surfxml_storage___type_1 53
-#define S_surfxml_storage___type_2 54
-#define E_surfxml_storage___type 55
+#define AL_surfxml_storage_type 51
+#define S_surfxml_storage_type 52
+#define S_surfxml_storage_type_1 53
+#define S_surfxml_storage_type_2 54
+#define E_surfxml_storage_type 55
 #define AL_surfxml_storage 56
 #define S_surfxml_storage 57
 #define S_surfxml_storage_1 58
@@ -4867,8 +4865,8 @@ const char* *surfxml_statenames=NULL;
 #define E_surfxml_host 69
 #define AL_surfxml_gpu 70
 #define E_surfxml_gpu 71
-#define AL_surfxml_host___link 72
-#define E_surfxml_host___link 73
+#define AL_surfxml_host_link 72
+#define E_surfxml_host_link 73
 #define AL_surfxml_cluster 74
 #define E_surfxml_cluster 75
 #define AL_surfxml_cabinet 76
@@ -4894,8 +4892,8 @@ const char* *surfxml_statenames=NULL;
 #define S_surfxml_ASroute_1 96
 #define S_surfxml_ASroute_2 97
 #define E_surfxml_ASroute 98
-#define AL_surfxml_link___ctn 99
-#define E_surfxml_link___ctn 100
+#define AL_surfxml_link_ctn 99
+#define E_surfxml_link_ctn 100
 #define AL_surfxml_bypassRoute 101
 #define S_surfxml_bypassRoute 102
 #define S_surfxml_bypassRoute_1 103
@@ -5176,8 +5174,8 @@ YY_DECL
   surfxml_statenames[IN_trace] = "trace";
   surfxml_statenames[AL_surfxml_random] = NULL;
   surfxml_statenames[E_surfxml_random] = "random";
-  surfxml_statenames[AL_surfxml_trace___connect] = NULL;
-  surfxml_statenames[E_surfxml_trace___connect] = "trace_connect";
+  surfxml_statenames[AL_surfxml_trace_connect] = NULL;
+  surfxml_statenames[E_surfxml_trace_connect] = "trace_connect";
   surfxml_statenames[AL_surfxml_AS] = NULL;
   surfxml_statenames[S_surfxml_AS] = "AS";
   surfxml_statenames[S_surfxml_AS_1] = "AS";
@@ -5197,11 +5195,11 @@ YY_DECL
   surfxml_statenames[S_surfxml_AS_15] = "AS";
   surfxml_statenames[S_surfxml_AS_16] = "AS";
   surfxml_statenames[E_surfxml_AS] = "AS";
-  surfxml_statenames[AL_surfxml_storage___type] = NULL;
-  surfxml_statenames[S_surfxml_storage___type] = "storage_type";
-  surfxml_statenames[S_surfxml_storage___type_1] = "storage_type";
-  surfxml_statenames[S_surfxml_storage___type_2] = "storage_type";
-  surfxml_statenames[E_surfxml_storage___type] = "storage_type";
+  surfxml_statenames[AL_surfxml_storage_type] = NULL;
+  surfxml_statenames[S_surfxml_storage_type] = "storage_type";
+  surfxml_statenames[S_surfxml_storage_type_1] = "storage_type";
+  surfxml_statenames[S_surfxml_storage_type_2] = "storage_type";
+  surfxml_statenames[E_surfxml_storage_type] = "storage_type";
   surfxml_statenames[AL_surfxml_storage] = NULL;
   surfxml_statenames[S_surfxml_storage] = "storage";
   surfxml_statenames[S_surfxml_storage_1] = "storage";
@@ -5218,8 +5216,8 @@ YY_DECL
   surfxml_statenames[E_surfxml_host] = "host";
   surfxml_statenames[AL_surfxml_gpu] = NULL;
   surfxml_statenames[E_surfxml_gpu] = "gpu";
-  surfxml_statenames[AL_surfxml_host___link] = NULL;
-  surfxml_statenames[E_surfxml_host___link] = "host_link";
+  surfxml_statenames[AL_surfxml_host_link] = NULL;
+  surfxml_statenames[E_surfxml_host_link] = "host_link";
   surfxml_statenames[AL_surfxml_cluster] = NULL;
   surfxml_statenames[E_surfxml_cluster] = "cluster";
   surfxml_statenames[AL_surfxml_cabinet] = NULL;
@@ -5245,8 +5243,8 @@ YY_DECL
   surfxml_statenames[S_surfxml_ASroute_1] = "ASroute";
   surfxml_statenames[S_surfxml_ASroute_2] = "ASroute";
   surfxml_statenames[E_surfxml_ASroute] = "ASroute";
-  surfxml_statenames[AL_surfxml_link___ctn] = NULL;
-  surfxml_statenames[E_surfxml_link___ctn] = "link_ctn";
+  surfxml_statenames[AL_surfxml_link_ctn] = NULL;
+  surfxml_statenames[E_surfxml_link_ctn] = "link_ctn";
   surfxml_statenames[AL_surfxml_bypassRoute] = NULL;
   surfxml_statenames[S_surfxml_bypassRoute] = "bypassRoute";
   surfxml_statenames[S_surfxml_bypassRoute_1] = "bypassRoute";
@@ -5850,7 +5848,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_random_min) FAIL("Required attribute `min' not set for `random' element.");
   if (!AX_surfxml_random_max) FAIL("Required attribute `max' not set for `random' element.");
   if (!AX_surfxml_random_mean) FAIL("Required attribute `mean' not set for `random' element.");
-  if (!AX_surfxml_random_std___deviation) FAIL("Required attribute `std_deviation' not set for `random' element.");
+  if (!AX_surfxml_random_std_deviation) FAIL("Required attribute `std_deviation' not set for `random' element.");
   LEAVE; STag_surfxml_random();surfxml_pcdata_ix = 0; ENTER(E_surfxml_random);
  }
 	YY_BREAK
@@ -5861,7 +5859,7 @@ YY_RULE_SETUP
   if (!AX_surfxml_random_min) FAIL("Required attribute `min' not set for `random' element.");
   if (!AX_surfxml_random_max) FAIL("Required attribute `max' not set for `random' element.");
   if (!AX_surfxml_random_mean) FAIL("Required attribute `mean' not set for `random' element.");
-  if (!AX_surfxml_random_std___deviation) FAIL("Required attribute `std_deviation' not set for `random' element.");
+  if (!AX_surfxml_random_std_deviation) FAIL("Required attribute `std_deviation' not set for `random' element.");
   LEAVE; STag_surfxml_random(); surfxml_pcdata_ix = 0; ETag_surfxml_random(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_platform_2: case S_surfxml_platform: case S_surfxml_platform_3: SET(S_surfxml_platform_3); break;
@@ -5926,35 +5924,35 @@ case 85:
 case 86:
 /* rule 86 can match eol */
 YY_RULE_SETUP
-A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_HOST___AVAIL;
+A_surfxml_trace_connect_kind = A_surfxml_trace_connect_kind_HOST_AVAIL;
 	YY_BREAK
 case 87:
 /* rule 87 can match eol */
 case 88:
 /* rule 88 can match eol */
 YY_RULE_SETUP
-A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_POWER;
+A_surfxml_trace_connect_kind = A_surfxml_trace_connect_kind_POWER;
 	YY_BREAK
 case 89:
 /* rule 89 can match eol */
 case 90:
 /* rule 90 can match eol */
 YY_RULE_SETUP
-A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_LINK___AVAIL;
+A_surfxml_trace_connect_kind = A_surfxml_trace_connect_kind_LINK_AVAIL;
 	YY_BREAK
 case 91:
 /* rule 91 can match eol */
 case 92:
 /* rule 92 can match eol */
 YY_RULE_SETUP
-A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_BANDWIDTH;
+A_surfxml_trace_connect_kind = A_surfxml_trace_connect_kind_BANDWIDTH;
 	YY_BREAK
 case 93:
 /* rule 93 can match eol */
 case 94:
 /* rule 94 can match eol */
 YY_RULE_SETUP
-A_surfxml_trace___connect_kind = A_surfxml_trace___connect_kind_LATENCY;
+A_surfxml_trace_connect_kind = A_surfxml_trace_connect_kind_LATENCY;
 	YY_BREAK
 case 95:
 /* rule 95 can match eol */
@@ -5979,17 +5977,17 @@ ENTER(VALUE2); BUFFERSET(AX_surfxml_trace_connect_element);
 case 99:
 YY_RULE_SETUP
 {
-  if (!AX_surfxml_trace___connect_trace) FAIL("Required attribute `trace' not set for `trace_connect' element.");
-  if (!AX_surfxml_trace___connect_element) FAIL("Required attribute `element' not set for `trace_connect' element.");
-  LEAVE; STag_surfxml_trace___connect();surfxml_pcdata_ix = 0; ENTER(E_surfxml_trace___connect);
+  if (!AX_surfxml_trace_connect_trace) FAIL("Required attribute `trace' not set for `trace_connect' element.");
+  if (!AX_surfxml_trace_connect_element) FAIL("Required attribute `element' not set for `trace_connect' element.");
+  LEAVE; STag_surfxml_trace_connect();surfxml_pcdata_ix = 0; ENTER(E_surfxml_trace_connect);
  }
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
 {
-  if (!AX_surfxml_trace___connect_trace) FAIL("Required attribute `trace' not set for `trace_connect' element.");
-  if (!AX_surfxml_trace___connect_element) FAIL("Required attribute `element' not set for `trace_connect' element.");
-  LEAVE; STag_surfxml_trace___connect(); surfxml_pcdata_ix = 0; ETag_surfxml_trace___connect(); popbuffer(); /* attribute */
+  if (!AX_surfxml_trace_connect_trace) FAIL("Required attribute `trace' not set for `trace_connect' element.");
+  if (!AX_surfxml_trace_connect_element) FAIL("Required attribute `element' not set for `trace_connect' element.");
+  LEAVE; STag_surfxml_trace_connect(); surfxml_pcdata_ix = 0; ETag_surfxml_trace_connect(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS_7: SET(S_surfxml_AS_11); break;
    case S_surfxml_AS_12: case S_surfxml_AS_15: case S_surfxml_AS_16: SET(S_surfxml_AS_16); break;
@@ -6009,7 +6007,7 @@ case 102:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `trace_connect' element start tag.",surf_parse_text);
 	YY_BREAK
-case YY_STATE_EOF(AL_surfxml_trace___connect):
+case YY_STATE_EOF(AL_surfxml_trace_connect):
 FAIL("EOF in attribute list of `trace_connect' element.");
 	YY_BREAK
 
@@ -6018,7 +6016,7 @@ case 103:
 YY_RULE_SETUP
 {
   LEAVE;
-  ETag_surfxml_trace___connect();
+  ETag_surfxml_trace_connect();
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_11: case S_surfxml_AS_10: case S_surfxml_AS_7: SET(S_surfxml_AS_11); break;
@@ -6040,7 +6038,7 @@ case 105:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</trace_connect>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(E_surfxml_trace___connect):
+case YY_STATE_EOF(E_surfxml_trace_connect):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</trace_connect>' expected.");
 	YY_BREAK
 
@@ -6254,19 +6252,19 @@ ENTER(VALUE2); BUFFERSET(AX_surfxml_storage_type_content);
 case 143:
 YY_RULE_SETUP
 {
-  if (!AX_surfxml_storage___type_id) FAIL("Required attribute `id' not set for `storage_type' element.");
-  if (!AX_surfxml_storage___type_model) FAIL("Required attribute `model' not set for `storage_type' element.");
-  if (!AX_surfxml_storage___type_size) FAIL("Required attribute `size' not set for `storage_type' element.");
-  LEAVE; STag_surfxml_storage___type();surfxml_pcdata_ix = 0; ENTER(S_surfxml_storage___type);
+  if (!AX_surfxml_storage_type_id) FAIL("Required attribute `id' not set for `storage_type' element.");
+  if (!AX_surfxml_storage_type_model) FAIL("Required attribute `model' not set for `storage_type' element.");
+  if (!AX_surfxml_storage_type_size) FAIL("Required attribute `size' not set for `storage_type' element.");
+  LEAVE; STag_surfxml_storage_type();surfxml_pcdata_ix = 0; ENTER(S_surfxml_storage_type);
  }
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
 {
-  if (!AX_surfxml_storage___type_id) FAIL("Required attribute `id' not set for `storage_type' element.");
-  if (!AX_surfxml_storage___type_model) FAIL("Required attribute `model' not set for `storage_type' element.");
-  if (!AX_surfxml_storage___type_size) FAIL("Required attribute `size' not set for `storage_type' element.");
-  LEAVE; STag_surfxml_storage___type(); surfxml_pcdata_ix = 0; ETag_surfxml_storage___type(); popbuffer(); /* attribute */
+  if (!AX_surfxml_storage_type_id) FAIL("Required attribute `id' not set for `storage_type' element.");
+  if (!AX_surfxml_storage_type_model) FAIL("Required attribute `model' not set for `storage_type' element.");
+  if (!AX_surfxml_storage_type_size) FAIL("Required attribute `size' not set for `storage_type' element.");
+  LEAVE; STag_surfxml_storage_type(); surfxml_pcdata_ix = 0; ETag_surfxml_storage_type(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
    case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
@@ -6281,7 +6279,7 @@ case 146:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `storage_type' element start tag.",surf_parse_text);
 	YY_BREAK
-case YY_STATE_EOF(AL_surfxml_storage___type):
+case YY_STATE_EOF(AL_surfxml_storage_type):
 FAIL("EOF in attribute list of `storage_type' element.");
 	YY_BREAK
 
@@ -6290,7 +6288,7 @@ case 147:
 YY_RULE_SETUP
 {
   LEAVE;
-  ETag_surfxml_storage___type();
+  ETag_surfxml_storage_type();
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
@@ -6307,9 +6305,9 @@ case 149:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</storage_type>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(E_surfxml_storage___type):
-case YY_STATE_EOF(S_surfxml_storage___type):
-case YY_STATE_EOF(S_surfxml_storage___type_2):
+case YY_STATE_EOF(E_surfxml_storage_type):
+case YY_STATE_EOF(S_surfxml_storage_type_2):
+case YY_STATE_EOF(S_surfxml_storage_type):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</storage_type>' expected.");
 	YY_BREAK
 
@@ -6891,19 +6889,19 @@ ENTER(VALUE2); BUFFERSET(AX_surfxml_host_link_down);
 case 237:
 YY_RULE_SETUP
 {
-  if (!AX_surfxml_host___link_id) FAIL("Required attribute `id' not set for `host_link' element.");
-  if (!AX_surfxml_host___link_up) FAIL("Required attribute `up' not set for `host_link' element.");
-  if (!AX_surfxml_host___link_down) FAIL("Required attribute `down' not set for `host_link' element.");
-  LEAVE; STag_surfxml_host___link();surfxml_pcdata_ix = 0; ENTER(E_surfxml_host___link);
+  if (!AX_surfxml_host_link_id) FAIL("Required attribute `id' not set for `host_link' element.");
+  if (!AX_surfxml_host_link_up) FAIL("Required attribute `up' not set for `host_link' element.");
+  if (!AX_surfxml_host_link_down) FAIL("Required attribute `down' not set for `host_link' element.");
+  LEAVE; STag_surfxml_host_link();surfxml_pcdata_ix = 0; ENTER(E_surfxml_host_link);
  }
 	YY_BREAK
 case 238:
 YY_RULE_SETUP
 {
-  if (!AX_surfxml_host___link_id) FAIL("Required attribute `id' not set for `host_link' element.");
-  if (!AX_surfxml_host___link_up) FAIL("Required attribute `up' not set for `host_link' element.");
-  if (!AX_surfxml_host___link_down) FAIL("Required attribute `down' not set for `host_link' element.");
-  LEAVE; STag_surfxml_host___link(); surfxml_pcdata_ix = 0; ETag_surfxml_host___link(); popbuffer(); /* attribute */
+  if (!AX_surfxml_host_link_id) FAIL("Required attribute `id' not set for `host_link' element.");
+  if (!AX_surfxml_host_link_up) FAIL("Required attribute `up' not set for `host_link' element.");
+  if (!AX_surfxml_host_link_down) FAIL("Required attribute `down' not set for `host_link' element.");
+  LEAVE; STag_surfxml_host_link(); surfxml_pcdata_ix = 0; ETag_surfxml_host_link(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
   }
@@ -6917,7 +6915,7 @@ case 240:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `host_link' element start tag.",surf_parse_text);
 	YY_BREAK
-case YY_STATE_EOF(AL_surfxml_host___link):
+case YY_STATE_EOF(AL_surfxml_host_link):
 FAIL("EOF in attribute list of `host_link' element.");
 	YY_BREAK
 
@@ -6926,7 +6924,7 @@ case 241:
 YY_RULE_SETUP
 {
   LEAVE;
-  ETag_surfxml_host___link();
+  ETag_surfxml_host_link();
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_1: case S_surfxml_AS_14: case S_surfxml_AS_13: case S_surfxml_AS: case S_surfxml_AS_3: SET(S_surfxml_AS_14); break;
@@ -6942,7 +6940,7 @@ case 243:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</host_link>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(E_surfxml_host___link):
+case YY_STATE_EOF(E_surfxml_host_link):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</host_link>' expected.");
 	YY_BREAK
 
@@ -7059,21 +7057,21 @@ case 262:
 case 263:
 /* rule 263 can match eol */
 YY_RULE_SETUP
-A_surfxml_cluster_sharing___policy = A_surfxml_cluster_sharing___policy_SHARED;
+A_surfxml_cluster_sharing_policy = A_surfxml_cluster_sharing_policy_SHARED;
 	YY_BREAK
 case 264:
 /* rule 264 can match eol */
 case 265:
 /* rule 265 can match eol */
 YY_RULE_SETUP
-A_surfxml_cluster_sharing___policy = A_surfxml_cluster_sharing___policy_FULLDUPLEX;
+A_surfxml_cluster_sharing_policy = A_surfxml_cluster_sharing_policy_FULLDUPLEX;
 	YY_BREAK
 case 266:
 /* rule 266 can match eol */
 case 267:
 /* rule 267 can match eol */
 YY_RULE_SETUP
-A_surfxml_cluster_sharing___policy = A_surfxml_cluster_sharing___policy_FATPIPE;
+A_surfxml_cluster_sharing_policy = A_surfxml_cluster_sharing_policy_FATPIPE;
 	YY_BREAK
 case 268:
 /* rule 268 can match eol */
@@ -7100,14 +7098,14 @@ case 272:
 case 273:
 /* rule 273 can match eol */
 YY_RULE_SETUP
-A_surfxml_cluster_bb___sharing___policy = A_surfxml_cluster_bb___sharing___policy_SHARED;
+A_surfxml_cluster_bb_sharing_policy = A_surfxml_cluster_bb_sharing_policy_SHARED;
 	YY_BREAK
 case 274:
 /* rule 274 can match eol */
 case 275:
 /* rule 275 can match eol */
 YY_RULE_SETUP
-A_surfxml_cluster_bb___sharing___policy = A_surfxml_cluster_bb___sharing___policy_FATPIPE;
+A_surfxml_cluster_bb_sharing_policy = A_surfxml_cluster_bb_sharing_policy_FATPIPE;
 	YY_BREAK
 case 276:
 /* rule 276 can match eol */
@@ -7477,8 +7475,8 @@ YY_RULE_SETUP
 {
   if (!AX_surfxml_peer_id) FAIL("Required attribute `id' not set for `peer' element.");
   if (!AX_surfxml_peer_power) FAIL("Required attribute `power' not set for `peer' element.");
-  if (!AX_surfxml_peer_bw___in) FAIL("Required attribute `bw_in' not set for `peer' element.");
-  if (!AX_surfxml_peer_bw___out) FAIL("Required attribute `bw_out' not set for `peer' element.");
+  if (!AX_surfxml_peer_bw_in) FAIL("Required attribute `bw_in' not set for `peer' element.");
+  if (!AX_surfxml_peer_bw_out) FAIL("Required attribute `bw_out' not set for `peer' element.");
   if (!AX_surfxml_peer_lat) FAIL("Required attribute `lat' not set for `peer' element.");
   LEAVE; STag_surfxml_peer();surfxml_pcdata_ix = 0; ENTER(E_surfxml_peer);
  }
@@ -7488,8 +7486,8 @@ YY_RULE_SETUP
 {
   if (!AX_surfxml_peer_id) FAIL("Required attribute `id' not set for `peer' element.");
   if (!AX_surfxml_peer_power) FAIL("Required attribute `power' not set for `peer' element.");
-  if (!AX_surfxml_peer_bw___in) FAIL("Required attribute `bw_in' not set for `peer' element.");
-  if (!AX_surfxml_peer_bw___out) FAIL("Required attribute `bw_out' not set for `peer' element.");
+  if (!AX_surfxml_peer_bw_in) FAIL("Required attribute `bw_in' not set for `peer' element.");
+  if (!AX_surfxml_peer_bw_out) FAIL("Required attribute `bw_out' not set for `peer' element.");
   if (!AX_surfxml_peer_lat) FAIL("Required attribute `lat' not set for `peer' element.");
   LEAVE; STag_surfxml_peer(); surfxml_pcdata_ix = 0; ETag_surfxml_peer(); popbuffer(); /* attribute */
   switch (YY_START) {
@@ -7833,21 +7831,21 @@ case 383:
 case 384:
 /* rule 384 can match eol */
 YY_RULE_SETUP
-A_surfxml_link_sharing___policy = A_surfxml_link_sharing___policy_SHARED;
+A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_SHARED;
 	YY_BREAK
 case 385:
 /* rule 385 can match eol */
 case 386:
 /* rule 386 can match eol */
 YY_RULE_SETUP
-A_surfxml_link_sharing___policy = A_surfxml_link_sharing___policy_FATPIPE;
+A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_FATPIPE;
 	YY_BREAK
 case 387:
 /* rule 387 can match eol */
 case 388:
 /* rule 388 can match eol */
 YY_RULE_SETUP
-A_surfxml_link_sharing___policy = A_surfxml_link_sharing___policy_FULLDUPLEX;
+A_surfxml_link_sharing_policy = A_surfxml_link_sharing_policy_FULLDUPLEX;
 	YY_BREAK
 case 389:
 YY_RULE_SETUP
@@ -8094,8 +8092,8 @@ YY_RULE_SETUP
 {
   if (!AX_surfxml_ASroute_src) FAIL("Required attribute `src' not set for `ASroute' element.");
   if (!AX_surfxml_ASroute_dst) FAIL("Required attribute `dst' not set for `ASroute' element.");
-  if (!AX_surfxml_ASroute_gw___src) FAIL("Required attribute `gw_src' not set for `ASroute' element.");
-  if (!AX_surfxml_ASroute_gw___dst) FAIL("Required attribute `gw_dst' not set for `ASroute' element.");
+  if (!AX_surfxml_ASroute_gw_src) FAIL("Required attribute `gw_src' not set for `ASroute' element.");
+  if (!AX_surfxml_ASroute_gw_dst) FAIL("Required attribute `gw_dst' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute();surfxml_pcdata_ix = 0; ENTER(S_surfxml_ASroute);
  }
 	YY_BREAK
@@ -8104,8 +8102,8 @@ YY_RULE_SETUP
 {
   if (!AX_surfxml_ASroute_src) FAIL("Required attribute `src' not set for `ASroute' element.");
   if (!AX_surfxml_ASroute_dst) FAIL("Required attribute `dst' not set for `ASroute' element.");
-  if (!AX_surfxml_ASroute_gw___src) FAIL("Required attribute `gw_src' not set for `ASroute' element.");
-  if (!AX_surfxml_ASroute_gw___dst) FAIL("Required attribute `gw_dst' not set for `ASroute' element.");
+  if (!AX_surfxml_ASroute_gw_src) FAIL("Required attribute `gw_src' not set for `ASroute' element.");
+  if (!AX_surfxml_ASroute_gw_dst) FAIL("Required attribute `gw_dst' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_ASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
@@ -8181,34 +8179,34 @@ case 438:
 case 439:
 /* rule 439 can match eol */
 YY_RULE_SETUP
-A_surfxml_link___ctn_direction = A_surfxml_link___ctn_direction_UP;
+A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_UP;
 	YY_BREAK
 case 440:
 /* rule 440 can match eol */
 case 441:
 /* rule 441 can match eol */
 YY_RULE_SETUP
-A_surfxml_link___ctn_direction = A_surfxml_link___ctn_direction_DOWN;
+A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_DOWN;
 	YY_BREAK
 case 442:
 /* rule 442 can match eol */
 case 443:
 /* rule 443 can match eol */
 YY_RULE_SETUP
-A_surfxml_link___ctn_direction = A_surfxml_link___ctn_direction_NONE;
+A_surfxml_link_ctn_direction = A_surfxml_link_ctn_direction_NONE;
 	YY_BREAK
 case 444:
 YY_RULE_SETUP
 {
-  if (!AX_surfxml_link___ctn_id) FAIL("Required attribute `id' not set for `link_ctn' element.");
-  LEAVE; STag_surfxml_link___ctn();surfxml_pcdata_ix = 0; ENTER(E_surfxml_link___ctn);
+  if (!AX_surfxml_link_ctn_id) FAIL("Required attribute `id' not set for `link_ctn' element.");
+  LEAVE; STag_surfxml_link_ctn();surfxml_pcdata_ix = 0; ENTER(E_surfxml_link_ctn);
  }
 	YY_BREAK
 case 445:
 YY_RULE_SETUP
 {
-  if (!AX_surfxml_link___ctn_id) FAIL("Required attribute `id' not set for `link_ctn' element.");
-  LEAVE; STag_surfxml_link___ctn(); surfxml_pcdata_ix = 0; ETag_surfxml_link___ctn(); popbuffer(); /* attribute */
+  if (!AX_surfxml_link_ctn_id) FAIL("Required attribute `id' not set for `link_ctn' element.");
+  LEAVE; STag_surfxml_link_ctn(); surfxml_pcdata_ix = 0; ETag_surfxml_link_ctn(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_bypassRoute: case S_surfxml_bypassRoute_2: case S_surfxml_bypassRoute_1: SET(S_surfxml_bypassRoute_2); break;
    case S_surfxml_route_1: case S_surfxml_route: case S_surfxml_route_2: SET(S_surfxml_route_2); break;
@@ -8225,7 +8223,7 @@ case 447:
 YY_RULE_SETUP
 FAIL("Bad attribute `%s' in `link_ctn' element start tag.",surf_parse_text);
 	YY_BREAK
-case YY_STATE_EOF(AL_surfxml_link___ctn):
+case YY_STATE_EOF(AL_surfxml_link_ctn):
 FAIL("EOF in attribute list of `link_ctn' element.");
 	YY_BREAK
 
@@ -8234,7 +8232,7 @@ case 448:
 YY_RULE_SETUP
 {
   LEAVE;
-  ETag_surfxml_link___ctn();
+  ETag_surfxml_link_ctn();
   popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_bypassRoute: case S_surfxml_bypassRoute_2: case S_surfxml_bypassRoute_1: SET(S_surfxml_bypassRoute_2); break;
@@ -8253,7 +8251,7 @@ case 450:
 YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</link_ctn>' expected.",surf_parse_text[0]);
 	YY_BREAK
-case YY_STATE_EOF(E_surfxml_link___ctn):
+case YY_STATE_EOF(E_surfxml_link_ctn):
 if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</link_ctn>' expected.");
 	YY_BREAK
 
@@ -8412,8 +8410,8 @@ YY_RULE_SETUP
 {
   if (!AX_surfxml_bypassASroute_src) FAIL("Required attribute `src' not set for `bypassASroute' element.");
   if (!AX_surfxml_bypassASroute_dst) FAIL("Required attribute `dst' not set for `bypassASroute' element.");
-  if (!AX_surfxml_bypassASroute_gw___src) FAIL("Required attribute `gw_src' not set for `bypassASroute' element.");
-  if (!AX_surfxml_bypassASroute_gw___dst) FAIL("Required attribute `gw_dst' not set for `bypassASroute' element.");
+  if (!AX_surfxml_bypassASroute_gw_src) FAIL("Required attribute `gw_src' not set for `bypassASroute' element.");
+  if (!AX_surfxml_bypassASroute_gw_dst) FAIL("Required attribute `gw_dst' not set for `bypassASroute' element.");
   LEAVE; STag_surfxml_bypassASroute();surfxml_pcdata_ix = 0; ENTER(S_surfxml_bypassASroute);
  }
 	YY_BREAK
@@ -8422,8 +8420,8 @@ YY_RULE_SETUP
 {
   if (!AX_surfxml_bypassASroute_src) FAIL("Required attribute `src' not set for `bypassASroute' element.");
   if (!AX_surfxml_bypassASroute_dst) FAIL("Required attribute `dst' not set for `bypassASroute' element.");
-  if (!AX_surfxml_bypassASroute_gw___src) FAIL("Required attribute `gw_src' not set for `bypassASroute' element.");
-  if (!AX_surfxml_bypassASroute_gw___dst) FAIL("Required attribute `gw_dst' not set for `bypassASroute' element.");
+  if (!AX_surfxml_bypassASroute_gw_src) FAIL("Required attribute `gw_src' not set for `bypassASroute' element.");
+  if (!AX_surfxml_bypassASroute_gw_dst) FAIL("Required attribute `gw_dst' not set for `bypassASroute' element.");
   LEAVE; STag_surfxml_bypassASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_bypassASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
    case S_surfxml_AS_9: case S_surfxml_AS_1: case S_surfxml_AS: case S_surfxml_AS_8: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_3: SET(S_surfxml_AS_9); break;
@@ -8532,14 +8530,14 @@ case 491:
 case 492:
 /* rule 492 can match eol */
 YY_RULE_SETUP
-A_surfxml_process_on___failure = A_surfxml_process_on___failure_DIE;
+A_surfxml_process_on_failure = A_surfxml_process_on_failure_DIE;
 	YY_BREAK
 case 493:
 /* rule 493 can match eol */
 case 494:
 /* rule 494 can match eol */
 YY_RULE_SETUP
-A_surfxml_process_on___failure = A_surfxml_process_on___failure_RESTART;
+A_surfxml_process_on_failure = A_surfxml_process_on_failure_RESTART;
 	YY_BREAK
 case 495:
 YY_RULE_SETUP
@@ -8812,8 +8810,8 @@ YY_RULE_SETUP
    case S_surfxml_config_1: case S_surfxml_config: case S_surfxml_config_2: SET(S_surfxml_config_2); break;
    case S_surfxml_process_1: case S_surfxml_process: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
    case S_surfxml_host_1: case S_surfxml_host_2: case S_surfxml_host: SET(S_surfxml_host_2); break;
+   case S_surfxml_storage_type_2: case S_surfxml_storage_type: case S_surfxml_storage_type_1: SET(S_surfxml_storage_type_2); break;
    case S_surfxml_link_1: case S_surfxml_link_2: case S_surfxml_link: SET(S_surfxml_link_2); break;
-   case S_surfxml_storage___type_1: case S_surfxml_storage___type: case S_surfxml_storage___type_2: SET(S_surfxml_storage___type_2); break;
   }
  }
 	YY_BREAK
@@ -8842,8 +8840,8 @@ YY_RULE_SETUP
    case S_surfxml_config_1: case S_surfxml_config: case S_surfxml_config_2: SET(S_surfxml_config_2); break;
    case S_surfxml_process_1: case S_surfxml_process: case S_surfxml_process_2: SET(S_surfxml_process_2); break;
    case S_surfxml_host_1: case S_surfxml_host_2: case S_surfxml_host: SET(S_surfxml_host_2); break;
+   case S_surfxml_storage_type_2: case S_surfxml_storage_type: case S_surfxml_storage_type_1: SET(S_surfxml_storage_type_2); break;
    case S_surfxml_link_1: case S_surfxml_link_2: case S_surfxml_link: SET(S_surfxml_link_2); break;
-   case S_surfxml_storage___type_1: case S_surfxml_storage___type: case S_surfxml_storage___type_2: SET(S_surfxml_storage___type_2); break;
   }
  }
 	YY_BREAK
@@ -8989,7 +8987,7 @@ case YY_STATE_EOF(S_surfxml_AS_8):
 case YY_STATE_EOF(S_surfxml_AS_10):
 case YY_STATE_EOF(S_surfxml_AS_13):
 case YY_STATE_EOF(S_surfxml_AS_15):
-case YY_STATE_EOF(S_surfxml_storage___type_1):
+case YY_STATE_EOF(S_surfxml_storage_type_1):
 case YY_STATE_EOF(S_surfxml_storage_1):
 case YY_STATE_EOF(S_surfxml_host_1):
 case YY_STATE_EOF(S_surfxml_link_1):
