@@ -217,7 +217,7 @@ void MC_dpor(void)
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restore_state=NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
-  int pos, i;
+  int pos, i, interleave_size;
   int interleave_proc[simix_process_maxpid];
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
@@ -379,7 +379,8 @@ void MC_dpor(void)
           for(i=0; i<simix_process_maxpid; i++)
             interleave_proc[i] = 0;
           i=0;
-          while((i < MC_state_interleave_size(state))){
+          interleave_size = MC_state_interleave_size(state);
+          while(i < interleave_size){
             i++;
             prev_req = MC_state_get_request(state, &value);
             if(prev_req != NULL){
@@ -398,8 +399,8 @@ void MC_dpor(void)
             if(interleave_proc[process->pid] == 1)
               MC_state_interleave_process(state, process);
           }
+          MC_UNSET_RAW_MEM; 
           XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety));
-          MC_UNSET_RAW_MEM;
           break;
         } else {
           MC_state_delete(state);
