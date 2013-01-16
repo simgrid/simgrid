@@ -15,11 +15,6 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (2:client@HostB) Sent!
-> [  0.000000] (4:client@HostD) Sent!
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (3:client@HostC) Sent!
-> [  0.000000] (2:client@HostB) Sent!
-> [  0.000000] (4:client@HostD) Sent!
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (1:server@HostA) OK
@@ -31,11 +26,6 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (1:server@HostA) OK
 > [  0.000000] (2:client@HostB) Sent!
-> [  0.000000] (4:client@HostD) Sent!
-> [  0.000000] (1:server@HostA) OK
-> [  0.000000] (3:client@HostC) Sent!
-> [  0.000000] (2:client@HostB) Sent!
-> [  0.000000] (4:client@HostD) Sent!
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (1:server@HostA) OK
@@ -55,8 +45,8 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) [(1)server] iRecv (dst=server, buff=(verbose only), size=(verbose only))
 > [  0.000000] (1:server@HostA) [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
 > [  0.000000] (1:server@HostA) [(1)server] Wait (comm=(verbose only) [(3)client -> (1)server])
-> [  0.000000] (1:server@HostA) Expanded states = 42
-> [  0.000000] (1:server@HostA) Visited states = 145
-> [  0.000000] (1:server@HostA) Executed transitions = 134
-> [  0.000000] (1:server@HostA) Expanded / Visited = 3.452381
+> [  0.000000] (1:server@HostA) Expanded states = 36
+> [  0.000000] (1:server@HostA) Visited states = 117
+> [  0.000000] (1:server@HostA) Executed transitions = 108
+> [  0.000000] (1:server@HostA) Expanded / Visited = 3.250000
 
