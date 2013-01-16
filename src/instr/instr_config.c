@@ -55,20 +55,31 @@ static int trace_active = 0;
 
 static void TRACE_getopts(void)
 {
-  trace_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);
-  trace_platform = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_PLATFORM);
-  trace_platform_topology = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_TOPOLOGY);
-  trace_smpi_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI);
-  trace_smpi_grouped = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_GROUP);
-  trace_smpi_computing = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_SMPI_COMPUTING);
-  trace_categorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_CATEGORIZED);
-  trace_uncategorized = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_UNCATEGORIZED);
-  trace_msg_process_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_PROCESS);
-  trace_msg_vm_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_MSG_VM);
-  trace_buffer = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BUFFER);
-  trace_onelink_only = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_ONELINK_ONLY);
-  trace_disable_destroy = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_DISABLE_DESTROY);
-  trace_basic = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING_BASIC);
+  trace_enabled = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING);
+  trace_platform = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_PLATFORM);
+  trace_platform_topology = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_TOPOLOGY);
+  trace_smpi_enabled = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_SMPI);
+  trace_smpi_grouped = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_SMPI_GROUP);
+  trace_smpi_computing = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING);
+  trace_categorized = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_CATEGORIZED);
+  trace_uncategorized = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_UNCATEGORIZED);
+  trace_msg_process_enabled = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_MSG_PROCESS);
+  trace_msg_vm_enabled = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_MSG_VM);
+  trace_buffer = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_BUFFER);
+  trace_onelink_only = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_ONELINK_ONLY);
+  trace_disable_destroy = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_DISABLE_DESTROY);
+  trace_basic = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_BASIC);
+}
+
+xbt_dynar_t TRACE_start_functions = NULL;
+void TRACE_add_start_function(void (*func) ())
+{
+  if (TRACE_start_functions == NULL)
+    TRACE_start_functions = xbt_dynar_new(sizeof(void (*)()), NULL);
+  xbt_dynar_push(TRACE_start_functions, &func);
+
+  
+  
 }
 
 int TRACE_start()
@@ -84,39 +95,48 @@ int TRACE_start()
     /* open the trace file */
     TRACE_paje_start();
 
-    /* activate trace */
-    if (trace_active == 1) {
-      THROWF(tracing_error, 0, "Tracing is already active");
-    }
-    trace_active = 1;
-    XBT_DEBUG("Tracing is on");
+    int retval;
+    if (!trace_active) {
+    retval = 1;
+  } else {
+    retval = 0;
 
-    /* other trace initialization */
-    created_categories = xbt_dict_new_homogeneous(xbt_free);
-    declared_marks = xbt_dict_new_homogeneous(xbt_free);
-    user_host_variables = xbt_dict_new_homogeneous(xbt_free);
-    user_link_variables = xbt_dict_new_homogeneous(xbt_free);
+    TRACE_generate_viva_uncat_conf();
+    TRACE_generate_viva_cat_conf();
 
-    if (TRACE_start_functions != NULL) {
-      void (*func) ();
-      unsigned int iter = xbt_dynar_length(TRACE_start_functions);
-      xbt_dynar_foreach(TRACE_start_functions, iter, func) {
+    /* dump trace buffer */
+    TRACE_last_timestamp_to_dump = surf_get_clock();
+    TRACE_paje_dump_buffer(1);
+
+    /* destroy all data structures of tracing (and free) */
+    PJ_container_free_all();
+    PJ_type_free_all();
+    PJ_container_release();
+    PJ_type_release();
+
+    if (TRACE_end_functions != NULL) {
+      void (*func) (void);
+      unsigned int iter;
+      xbt_dynar_foreach(TRACE_end_functions, iter, func) {
         func();
       }
     }
-  }
-  trace_active = 1;
-  XBT_DEBUG ("Tracing is on");
 
-  /* other trace initialization */
-  created_categories = xbt_dict_new_homogeneous(xbt_free);
-  declared_marks = xbt_dict_new_homogeneous (xbt_free);
-  user_host_variables = xbt_dict_new_homogeneous (xbt_free);
-  user_vm_variables = xbt_dict_new_homogeneous (xbt_free);
-  user_link_variables = xbt_dict_new_homogeneous (xbt_free);
-  TRACE_surf_alloc();
-  TRACE_smpi_alloc();
-  return 0;
+    xbt_dict_free(&user_link_variables);
+    xbt_dict_free(&user_host_variables);
+    xbt_dict_free(&declared_marks);
+    xbt_dict_free(&created_categories);
+
+    /* close the trace file */
+    TRACE_paje_end();
+
+    /* de-activate trace */
+    trace_active = 0;
+    XBT_DEBUG("Tracing is off");
+    XBT_DEBUG("Tracing system is shutdown");
+  }
+  xbt_dynar_free(&TRACE_end_functions);
+  return retval;
 }
 
 xbt_dynar_t TRACE_end_functions = NULL;
