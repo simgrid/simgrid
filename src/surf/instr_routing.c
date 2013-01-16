@@ -136,6 +136,7 @@ static int graph_extraction_filter_out (container_t c1, container_t c2)
       c1->kind == INSTR_SMPI ||
       c1->kind == INSTR_MSG_PROCESS ||
       c1->kind == INSTR_MSG_TASK ||
+      c1->kind == INSTR_MSG_VM ||
       (c2 && strcmp (c1->name, c2->name) == 0))
     return 1;
   else
@@ -165,12 +166,11 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
   container_t child1, child2;
   const char *child1_name, *child2_name;
   xbt_dict_foreach(container->children, cursor1, child1_name, child1) {
-    //if child1 is not a link, a smpi node, a msg process, a msg vm or a msg task
-    if (child1->kind == INSTR_LINK || child1->kind == INSTR_SMPI || child1->kind == INSTR_MSG_PROCESS || child1->kind == INSTR_MSG_VM || child1->kind == INSTR_MSG_TASK) continue;
+    if (graph_extraction_filter_out (child1, NULL)) continue;
 
     xbt_dict_foreach(container->children, cursor2, child2_name, child2) {
-      //if child2 is not a link, a smpi node, a msg process, a msg vm or a msg task
-      if (child2->kind == INSTR_LINK || child2->kind == INSTR_SMPI || child2->kind == INSTR_MSG_PROCESS || child2->kind == INSTR_MSG_VM || child2->kind == INSTR_MSG_TASK) continue;
+      if (graph_extraction_filter_out (child2, child1)) continue;
+      XBT_DEBUG ("get_route from %s to %s", child1_name, child2_name);
 
       //if child1 is not child2
       if (strcmp (child1_name, child2_name) == 0) continue;

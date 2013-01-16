@@ -11,7 +11,6 @@
 #include "heap_private.h"
 
 #include <stdio.h>
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_heap, xbt, "Heap");
 
 static void xbt_heap_max_heapify(xbt_heap_t H);
 static void xbt_heap_increase_key(xbt_heap_t H, int i);
@@ -104,7 +103,6 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
   item->key = key;
   item->content = content;
   xbt_heap_increase_key(H, count - 1);
-  XBT_DEBUG("Heap has now %d elements and max elem is %g",xbt_heap_size(H),xbt_heap_maxkey(H));
   return;
 }
 
@@ -122,8 +120,6 @@ void *xbt_heap_pop(xbt_heap_t H)
   xbt_heap_item_t items = H->items;
   int size = H->size;
   void *max;
-
-  XBT_DEBUG("Heap has %d elements before extraction and max elem was %g",xbt_heap_size(H),xbt_heap_maxkey(H));
 
   if (H->count == 0)
     return NULL;
@@ -156,8 +152,6 @@ void *xbt_heap_pop(xbt_heap_t H)
  */
 void *xbt_heap_remove(xbt_heap_t H, int i)
 {
-  XBT_DEBUG("Heap has %d elements: extracting element %d",xbt_heap_size(H),i);
-
   if ((i < 0) || (i > H->count - 1))
     return NULL;
   /* put element i at head */

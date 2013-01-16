@@ -324,6 +324,8 @@ XBT_PUBLIC(msg_error_t) MSG_set_channel_number(int number);
 XBT_PUBLIC(int) MSG_get_channel_number(void);
 #endif
 
+#include "instr/instr.h"
+
 /** @brief Opaque type describing a Virtual Machine.
  *  @ingroup msg_VMs
  *
@@ -332,6 +334,7 @@ XBT_PUBLIC(int) MSG_get_channel_number(void);
  * Usual lack of guaranty of any kind applies here, and is even increased.
  *
  */
+typedef struct msg_vm *msg_vm_t;
 /* This function should not be called directly, but rather from MSG_vm_start_from_template that does not exist yet*/
 XBT_PUBLIC(msg_vm_t) MSG_vm_start(msg_host_t location, const char *name, int coreAmount);
 
@@ -376,7 +379,6 @@ xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_host(msg_host_t)
 xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
 + des fonctions de filtrage sur les dynar
 */
-#include "instr/instr.h"
 
 
 
