@@ -1,0 +1,106 @@
+/*! @page contributing Contributing to SimGrid
+
+@tableofcontents
+
+We are sometimes asked by users how to give back to the project. Here
+are some ideas, but if you have new ones, feel free.
+
+@section contributing_spread Spread the word
+
+There is many ways to help the SimGrid project. The first and most
+natural one is to <b>use it for your research, and say so</b>. Cite
+the SimGrid framework in your paper and discuss of its advantages with
+your colleagues to spread the word. When we ask for new fundings to
+sustain the project, the amount of publications enabled by SimGrid is
+always the first question that we get. The more you use the framework,
+the better for us. 
+
+We use several systems to detect the scientific publications citing
+our work, so actually citing correctly the framework (see 
+<a href="http://simgrid.gforge.inria.fr/Publications.html">here</a>)
+should be enough to get us adding your paper to our list. But if you
+remark that your paper is missing on 
+<a href="http://simgrid.gforge.inria.fr/Publications-tool.html">our 
+page listing all papers using SimGrid</a>, please say so. Likewise, if
+your paper is badly cited, please drop us an email so that we can fix
+it.
+
+Also, <b>help us constituting an active and welcoming user
+community</b>. Get subscribed to the mailing lists, and answer the
+questions that newcommers have if you can. Point them (gentely ;) to
+the relevant part of the documentation on need, and help them becoming
+part of our community too. 
+
+Another easy way to help the project is to add a link to the
+<a href="http://simgrid.gforge.inria.fr">SimGrid homepage</a>
+on your homepage to <b>improve SimGrid's ranking in the search
+engines</b>. Internet visibility is a battle where you can make the
+difference. This can be done by adding the following html snipet to
+your page, that simply renders as <a href="http://simgrid.gforge.inria.fr/">Simgrid</a>.
+
+@verbatim
+<a href="http://simgrid.gforge.inria.fr/" 
+   title="Versatile simulation of distributed systems: Grid Simulator, P2P simulator, MPI simulator, Cloud Simulator or HPC Simulator">
+   Simgrid</a>
+@endverbatim
+
+Or you can prefer this version with a little logo (if you want to
+contribute another logo for that, please don't hesitate ;)
+<img src="http://simgrid.gforge.inria.fr/logos/SIMGRID_Logo_Thumbs_up.png"/>
+
+@verbatim
+<a href="http://simgrid.gforge.inria.fr/" 
+   title="Versatile simulation of distributed systems: Grid Simulator, P2P simulator, MPI simulator, Cloud Simulator or HPC Simulator">
+   <img src="http://simgrid.gforge.inria.fr/logos/SIMGRID_Logo_Thumbs_up.png"
+        alt="Versatile simulation of distributed systems: Grid Simulator, P2P simulator, MPI simulator, Cloud Simulator or HPC Simulator" align="center"> 
+</a>
+@endverbatim
+
+Finally, if you organize a scientific event where you expect many
+potential users, <b>invite us to give a tutorial on SimGrid</b>. We
+found that 45 minutes to one hour is sufficient. It allows to explain
+the main motivations and outcomes of the project in order to motivate
+the attendees get more information on SimGrid, and eventually improve
+their scientific habits by using a sound simulation framework. 
+<a href="http://webloria.loria.fr/~quinson/blog/2012/1120/Simgrid_at_Louvain/">Here</a>
+is an example of such a presentation.
+
+@section contributing_bugs Reporting (and fixing) any issue you find
+
+Because of its size and complexity, SimGrid is not perfect and
+contains a large amount of glitches and issues. When you find one,
+don't assume that it's here because we don't care. It survived only
+because nobody told us. We unfortunately cannot endlessly review our
+large code and documentation base. So please, <b>report any issue you
+find to us</b>, be it a typo in the documentation, a paragraph that
+needs to be reworded, a bug in the code or any other problem. The best
+way to do so is to open a bug on our 
+<a href="https://gforge.inria.fr/tracker/?atid=165&group_id=12&func=browse">Bug
+Tracking System</a> so that we don't forget about it (we have other
+obligations too and are sometimes unable to fix bugs right away, no
+matter how easy the fix it). The worst way to report such issue is to
+go through private emails. These are unreliable, and we are trying to
+develop SimGrid openly, so private discussions are to be avoided if
+possible. 
+
+If you can provide a patch fixing the issue you report, that's even
+better, and often ensures that it will get fixed very soon.
+
+Of course, a very good way to give back to the SimGrid community is to
+<b>triage and fix the bugs in the BTS</b>. If you
+can come up with a patch fixing them, we will be more than happy to
+apply your changes so that the entier community enjoys them.
+
+@section contributing_contrib Contributing features and associated tools
+
+If you deeply miss a feature in the framework, you should consider
+implementing it yourself. That's free software, meaning that you are
+free to help yourself. Of course, we'll do our best to assist you in
+this task, so don't hesitate to contact us with your idea.
+
+If you develop an independent tool that is somehow associated to
+SimGrid, we'd love helping you gaining visibility by listing it on our 
+<a href="http://simgrid.gforge.inria.fr/contrib.html">Contrib
+section</a>. 
+
+*/

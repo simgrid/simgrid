@@ -161,6 +161,18 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
   }else{
     XBT_WARN("The scheduling is ignored");
   }
+  SD_task_t task;
+  unsigned int count;
+  xbt_dynar_t computer = NULL;
+  xbt_dict_cursor_t dict_cursor;
+  char *computer_name;
+  xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
+    xbt_dynar_free(&computer);
+  }
+  xbt_dict_free(&computers);
+  xbt_dynar_foreach(result,count,task){
+     SD_task_destroy(task);
+  }
   return NULL;
 }
 
@@ -353,7 +365,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
   SD_task_t file = NULL;
   char *name_tail=agnameof(agtail(edge));
   char *name_head=agnameof(aghead(edge));
-  char *name = malloc((strlen(name_head)+strlen(name_tail)+6)*sizeof(char));
+  char *name = xbt_malloc((strlen(name_head)+strlen(name_tail)+6)*sizeof(char));
   sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
@@ -391,7 +403,7 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
   SD_task_t file;
   char *name_tail=agnameof(agtail(edge));
   char *name_head=agnameof(aghead(edge));
-  char *name = malloc((strlen(name_head)+strlen(name_tail)+6)*sizeof(char));
+  char *name = xbt_malloc((strlen(name_head)+strlen(name_tail)+6)*sizeof(char));
   sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
   XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));

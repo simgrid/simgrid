@@ -4,8 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
 #include "instr/instr_private.h"
+#include "simgrid/sg_config.h"
+#include "surf/surf.h"
 
 #ifdef HAVE_TRACING
 
@@ -50,6 +51,8 @@ static int trace_basic;
 static int trace_configured = 0;
 static int trace_active = 0;
 
+
+
 static void TRACE_getopts(void)
 {
   trace_enabled = xbt_cfg_get_int(_surf_cfg_set, OPT_TRACING);
@@ -75,18 +78,32 @@ int TRACE_start()
   // tracing system must be:
   //    - enabled (with --cfg=tracing:1)
   //    - already configured (TRACE_global_init already called)
-  if (!(TRACE_is_enabled() && TRACE_is_configured())){
-    return 0;
-  }
+  if (TRACE_is_enabled() && TRACE_is_configured()) {
+    XBT_DEBUG("Tracing starts");
 
-  XBT_DEBUG("Tracing starts");
+    /* open the trace file */
+    TRACE_paje_start();
 
-  /* open the trace file */
-  TRACE_paje_start();
+    /* activate trace */
+    if (trace_active == 1) {
+      THROWF(tracing_error, 0, "Tracing is already active");
+    }
+    trace_active = 1;
+    XBT_DEBUG("Tracing is on");
 
-  /* activate trace */
-  if (trace_active == 1){
-    THROWF (tracing_error, 0, "Tracing is already active");
+    /* other trace initialization */
+    created_categories = xbt_dict_new_homogeneous(xbt_free);
+    declared_marks = xbt_dict_new_homogeneous(xbt_free);
+    user_host_variables = xbt_dict_new_homogeneous(xbt_free);
+    user_link_variables = xbt_dict_new_homogeneous(xbt_free);
+
+    if (TRACE_start_functions != NULL) {
+      void (*func) ();
+      unsigned int iter = xbt_dynar_length(TRACE_start_functions);
+      xbt_dynar_foreach(TRACE_start_functions, iter, func) {
+        func();
+      }
+    }
   }
   trace_active = 1;
   XBT_DEBUG ("Tracing is on");
@@ -100,6 +117,14 @@ int TRACE_start()
   TRACE_surf_alloc();
   TRACE_smpi_alloc();
   return 0;
+}
+
+xbt_dynar_t TRACE_end_functions = NULL;
+void TRACE_add_end_function(void (*func) (void))
+{
+  if (TRACE_end_functions == NULL)
+    TRACE_end_functions = xbt_dynar_new(sizeof(void (*)(void)), NULL);
+  xbt_dynar_push(TRACE_end_functions, &func);
 }
 
 int TRACE_end()
@@ -228,97 +253,97 @@ int TRACE_basic (void)
 
 char *TRACE_get_comment (void)
 {
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_COMMENT);
+  return xbt_cfg_get_string(_sg_cfg_set, OPT_TRACING_COMMENT);
 }
 
 char *TRACE_get_comment_file (void)
 {
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_COMMENT_FILE);
+  return xbt_cfg_get_string(_sg_cfg_set, OPT_TRACING_COMMENT_FILE);
 }
 
 char *TRACE_get_filename(void)
 {
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_TRACING_FILENAME);
+  return xbt_cfg_get_string(_sg_cfg_set, OPT_TRACING_FILENAME);
 }
 
 char *TRACE_get_viva_uncat_conf (void)
 {
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_VIVA_UNCAT_CONF);
+  return xbt_cfg_get_string(_sg_cfg_set, OPT_VIVA_UNCAT_CONF);
 }
 
 char *TRACE_get_viva_cat_conf (void)
 {
-  return xbt_cfg_get_string(_surf_cfg_set, OPT_VIVA_CAT_CONF);
+  return xbt_cfg_get_string(_sg_cfg_set, OPT_VIVA_CAT_CONF);
 }
 
 void TRACE_global_init(int *argc, char **argv)
 {
   /* name of the tracefile */
   char *default_tracing_filename = xbt_strdup("simgrid.trace");
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_FILENAME,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FILENAME,
                    "Trace file created by the instrumented SimGrid.",
                    xbt_cfgelm_string, &default_tracing_filename, 1, 1,
                    NULL, NULL);
 
   /* tracing */
   int default_tracing = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING,
                    "Enable Tracing.",
                    xbt_cfgelm_int, &default_tracing, 0, 1,
                    NULL, NULL);
 
   /* register platform in the trace */
   int default_tracing_platform = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_PLATFORM,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_PLATFORM,
                    "Register the platform in the trace as a hierarchy.",
                    xbt_cfgelm_int, &default_tracing_platform, 0, 1,
                    NULL, NULL);
 
   /* register platform in the trace */
   int default_tracing_platform_topology = 1;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_TOPOLOGY,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_TOPOLOGY,
                    "Register the platform topology in the trace as a graph.",
                    xbt_cfgelm_int, &default_tracing_platform_topology, 0, 1,
                    NULL, NULL);
 
   /* smpi */
   int default_tracing_smpi = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_SMPI,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI,
                    "Tracing of the SMPI interface.",
                    xbt_cfgelm_int, &default_tracing_smpi, 0, 1,
                    NULL, NULL);
 
   /* smpi grouped */
   int default_tracing_smpi_grouped = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_SMPI_GROUP,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_GROUP,
                    "Group MPI processes by host.",
                    xbt_cfgelm_int, &default_tracing_smpi_grouped, 0, 1,
                    NULL, NULL);
 
   /* smpi computing */
   int default_tracing_smpi_computing = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_SMPI_COMPUTING,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING,
                    "Generate states for timing out of SMPI parts of the application",
                    xbt_cfgelm_int, &default_tracing_smpi_computing, 0, 1,
                    NULL, NULL);
 
   /* tracing categorized resource utilization traces */
   int default_tracing_categorized = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_CATEGORIZED,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_CATEGORIZED,
                    "Tracing categorized resource utilization of hosts and links.",
                    xbt_cfgelm_int, &default_tracing_categorized, 0, 1,
                    NULL, NULL);
 
   /* tracing uncategorized resource utilization */
   int default_tracing_uncategorized = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_UNCATEGORIZED,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_UNCATEGORIZED,
                    "Tracing uncategorized resource utilization of hosts and links.",
                    xbt_cfgelm_int, &default_tracing_uncategorized, 0, 1,
                    NULL, NULL);
 
   /* msg process */
   int default_tracing_msg_process = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_MSG_PROCESS,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_MSG_PROCESS,
                    "Tracing of MSG process behavior.",
                    xbt_cfgelm_int, &default_tracing_msg_process, 0, 1,
                    NULL, NULL);
@@ -332,56 +357,56 @@ void TRACE_global_init(int *argc, char **argv)
 
   /* tracing buffer */
   int default_buffer = 1;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_BUFFER,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_BUFFER,
                    "Buffer trace events to put them in temporal order.",
                    xbt_cfgelm_int, &default_buffer, 0, 1,
                    NULL, NULL);
 
   /* tracing one link only */
   int default_onelink_only = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_ONELINK_ONLY,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_ONELINK_ONLY,
                    "Use only routes with one link to trace platform.",
                    xbt_cfgelm_int, &default_onelink_only, 0, 1,
                    NULL, NULL);
 
   /* disable destroy */
   int default_disable_destroy = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_DISABLE_DESTROY,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISABLE_DESTROY,
                    "Disable platform containers destruction.",
                    xbt_cfgelm_int, &default_disable_destroy, 0, 1,
                    NULL, NULL);
 
   /* basic -- Avoid extended events (impoverished trace file) */
   int default_basic = 0;
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_BASIC,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_BASIC,
                    "Avoid extended events (impoverished trace file).",
                    xbt_cfgelm_int, &default_basic, 0, 1,
                    NULL, NULL);
 
   /* comment */
   char *default_tracing_comment = xbt_strdup ("");
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_COMMENT,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_COMMENT,
                    "Comment to be added on the top of the trace file.",
                    xbt_cfgelm_string, &default_tracing_comment, 1, 1,
                    NULL, NULL);
 
   /* comment_file */
   char *default_tracing_comment_file = xbt_strdup ("");
-  xbt_cfg_register(&_surf_cfg_set, OPT_TRACING_COMMENT_FILE,
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_COMMENT_FILE,
                    "The contents of the file are added to the top of the trace file as comment.",
                    xbt_cfgelm_string, &default_tracing_comment_file, 1, 1,
                    NULL, NULL);
 
   /* Viva graph configuration for uncategorized tracing */
   char *default_viva_uncat_conf_file = xbt_strdup ("");
-  xbt_cfg_register(&_surf_cfg_set, OPT_VIVA_UNCAT_CONF,
+  xbt_cfg_register(&_sg_cfg_set, OPT_VIVA_UNCAT_CONF,
                    "Viva Graph configuration file for uncategorized resource utilization traces.",
                    xbt_cfgelm_string, &default_viva_uncat_conf_file, 1, 1,
                    NULL, NULL);
 
   /* Viva graph configuration for uncategorized tracing */
   char *default_viva_cat_conf_file = xbt_strdup ("");
-  xbt_cfg_register(&_surf_cfg_set, OPT_VIVA_CAT_CONF,
+  xbt_cfg_register(&_sg_cfg_set, OPT_VIVA_CAT_CONF,
                    "Viva Graph configuration file for categorized resource utilization traces.",
                    xbt_cfgelm_string, &default_viva_cat_conf_file, 1, 1,
                    NULL, NULL);

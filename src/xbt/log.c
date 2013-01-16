@@ -588,7 +588,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_paje_values);
   XBT_LOG_CONNECT(instr_resource);
   XBT_LOG_CONNECT(instr_routing);
-  XBT_LOG_CONNECT(instr_smpi);
   XBT_LOG_CONNECT(instr_surf);
 #endif
 

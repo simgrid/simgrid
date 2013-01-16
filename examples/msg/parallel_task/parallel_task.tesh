@@ -4,14 +4,12 @@ p Testing a simple master/slave example application
 
 ! output sort
 $ $SG_TEST_EXENV parallel_task/parallel_task$EXEEXT ${srcdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) type in variable = 2
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > [  0.009378] (0:@) Simulation time 0.00937836
 > [  0.009378] (1:test@Fafard) Goodbye now!
 
 ! output sort
 $ $SG_TEST_EXENV parallel_task/test_ptask$EXEEXT ${srcdir:=.}/parallel_task/test_ptask_platform.xml ${srcdir:=.}/parallel_task/test_ptask_deployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) type in variable = 2
 > [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
 > [  1.000300] (1:execute@Ginette) execution_time=1.0003 
 > [  6.000900] (0:@) Simulation time 6.0009

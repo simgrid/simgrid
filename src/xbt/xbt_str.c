@@ -305,14 +305,14 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
     //if substring was not found add the entire string
     if (NULL == q) {
       v = strlen(p);
-      to_push = malloc(v + 1);
+      to_push = xbt_malloc(v + 1);
       memcpy(to_push, p, v);
       to_push[v] = '\0';
       xbt_dynar_push(res, &to_push);
       done = 1;
     } else {
       //get the appearance
-      to_push = malloc(q - p + 1);
+      to_push = xbt_malloc(q - p + 1);
       memcpy(to_push, p, q - p);
       //add string terminator
       to_push[q - p] = '\0';

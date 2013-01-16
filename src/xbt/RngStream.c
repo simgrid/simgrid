@@ -13,6 +13,7 @@
 
 
 #include "xbt/RngStream.h"
+#include "xbt/sysdep.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -311,14 +312,14 @@ RngStream RngStream_CreateStream (const char name[])
    RngStream g;
    size_t len;
 
-   g = (RngStream) malloc (sizeof (struct RngStream_InfoState));
+   g = (RngStream) xbt_malloc (sizeof (struct RngStream_InfoState));
    if (g == NULL) {
       printf ("RngStream_CreateStream: No more memory\n\n");
       exit (EXIT_FAILURE);
    }
    if (name) {
       len = strlen (name);
-      g->name = (char *) malloc ((len + 1) * sizeof (char));
+      g->name = (char *) xbt_malloc ((len + 1) * sizeof (char));
       strncpy (g->name, name, len + 1);
    } else
       g->name = 0;
@@ -355,7 +356,7 @@ RngStream RngStream_CopyStream (const RngStream src)
      exit (EXIT_FAILURE);
    }
 
-   g = (RngStream) malloc (sizeof (struct RngStream_InfoState));
+   g = (RngStream) xbt_malloc (sizeof (struct RngStream_InfoState));
    if (g == NULL) {
       printf ("RngStream_CopyStream: No more memory\n\n");
       exit (EXIT_FAILURE);

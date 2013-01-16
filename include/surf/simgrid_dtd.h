@@ -56,12 +56,12 @@ XBT_PUBLIC(void ) STag_surfxml_trace(void);
 XBT_PUBLIC(void ) ETag_surfxml_trace(void);
 XBT_PUBLIC(void ) STag_surfxml_random(void);
 XBT_PUBLIC(void ) ETag_surfxml_random(void);
-XBT_PUBLIC(void ) STag_surfxml_trace_connect(void);
-XBT_PUBLIC(void ) ETag_surfxml_trace_connect(void);
+XBT_PUBLIC(void ) STag_surfxml_trace___connect(void);
+XBT_PUBLIC(void ) ETag_surfxml_trace___connect(void);
 XBT_PUBLIC(void ) STag_surfxml_AS(void);
 XBT_PUBLIC(void ) ETag_surfxml_AS(void);
-XBT_PUBLIC(void ) STag_surfxml_storage_type(void);
-XBT_PUBLIC(void ) ETag_surfxml_storage_type(void);
+XBT_PUBLIC(void ) STag_surfxml_storage___type(void);
+XBT_PUBLIC(void ) ETag_surfxml_storage___type(void);
 XBT_PUBLIC(void ) STag_surfxml_storage(void);
 XBT_PUBLIC(void ) ETag_surfxml_storage(void);
 XBT_PUBLIC(void ) STag_surfxml_mount(void);
@@ -72,8 +72,8 @@ XBT_PUBLIC(void ) STag_surfxml_host(void);
 XBT_PUBLIC(void ) ETag_surfxml_host(void);
 XBT_PUBLIC(void ) STag_surfxml_gpu(void);
 XBT_PUBLIC(void ) ETag_surfxml_gpu(void);
-XBT_PUBLIC(void ) STag_surfxml_host_link(void);
-XBT_PUBLIC(void ) ETag_surfxml_host_link(void);
+XBT_PUBLIC(void ) STag_surfxml_host___link(void);
+XBT_PUBLIC(void ) ETag_surfxml_host___link(void);
 XBT_PUBLIC(void ) STag_surfxml_cluster(void);
 XBT_PUBLIC(void ) ETag_surfxml_cluster(void);
 XBT_PUBLIC(void ) STag_surfxml_cabinet(void);
@@ -90,8 +90,8 @@ XBT_PUBLIC(void ) STag_surfxml_route(void);
 XBT_PUBLIC(void ) ETag_surfxml_route(void);
 XBT_PUBLIC(void ) STag_surfxml_ASroute(void);
 XBT_PUBLIC(void ) ETag_surfxml_ASroute(void);
-XBT_PUBLIC(void ) STag_surfxml_link_ctn(void);
-XBT_PUBLIC(void ) ETag_surfxml_link_ctn(void);
+XBT_PUBLIC(void ) STag_surfxml_link___ctn(void);
+XBT_PUBLIC(void ) ETag_surfxml_link___ctn(void);
 XBT_PUBLIC(void ) STag_surfxml_bypassRoute(void);
 XBT_PUBLIC(void ) ETag_surfxml_bypassRoute(void);
 XBT_PUBLIC(void ) STag_surfxml_bypassASroute(void);
@@ -109,25 +109,25 @@ XBT_PUBLIC(void ) ETag_surfxml_prop(void);
 typedef int AT_surfxml_mount_name;
 #define AU_surfxml_mount_name NULL
 typedef enum { AU_surfxml_random_generator, A_surfxml_random_generator_DRAND48,A_surfxml_random_generator_RAND,A_surfxml_random_generator_RNGSTREAM,A_surfxml_random_generator_NONE } AT_surfxml_random_generator;
-typedef int AT_surfxml_ASroute_gw_dst;
-#define AU_surfxml_ASroute_gw_dst NULL
-typedef int AT_surfxml_trace_connect_element;
-#define AU_surfxml_trace_connect_element NULL
+typedef int AT_surfxml_ASroute_gw___dst;
+#define AU_surfxml_ASroute_gw___dst NULL
+typedef int AT_surfxml_trace___connect_element;
+#define AU_surfxml_trace___connect_element NULL
 typedef int AT_surfxml_prop_id;
 #define AU_surfxml_prop_id NULL
-typedef int AT_surfxml_host_link_up;
-#define AU_surfxml_host_link_up NULL
+typedef int AT_surfxml_host___link_up;
+#define AU_surfxml_host___link_up NULL
 typedef int AT_surfxml_host_id;
 #define AU_surfxml_host_id NULL
 typedef enum { AU_surfxml_ASroute_symmetrical, A_surfxml_ASroute_symmetrical_YES,A_surfxml_ASroute_symmetrical_NO } AT_surfxml_ASroute_symmetrical;
 typedef int AT_surfxml_peer_lat;
 #define AU_surfxml_peer_lat NULL
-typedef enum { AU_surfxml_process_on_failure, A_surfxml_process_on_failure_DIE,A_surfxml_process_on_failure_RESTART } AT_surfxml_process_on_failure;
-typedef int AT_surfxml_link_latency_file;
-#define AU_surfxml_link_latency_file NULL
-typedef int AT_surfxml_peer_availability_file;
-#define AU_surfxml_peer_availability_file NULL
-typedef enum { AU_surfxml_link_ctn_direction, A_surfxml_link_ctn_direction_UP,A_surfxml_link_ctn_direction_DOWN,A_surfxml_link_ctn_direction_NONE } AT_surfxml_link_ctn_direction;
+typedef enum { AU_surfxml_process_on___failure, A_surfxml_process_on___failure_DIE,A_surfxml_process_on___failure_RESTART } AT_surfxml_process_on___failure;
+typedef int AT_surfxml_link_latency___file;
+#define AU_surfxml_link_latency___file NULL
+typedef int AT_surfxml_peer_availability___file;
+#define AU_surfxml_peer_availability___file NULL
+typedef enum { AU_surfxml_link___ctn_direction, A_surfxml_link___ctn_direction_UP,A_surfxml_link___ctn_direction_DOWN,A_surfxml_link___ctn_direction_NONE } AT_surfxml_link___ctn_direction;
 typedef enum { AU_surfxml_host_state, A_surfxml_host_state_ON,A_surfxml_host_state_OFF } AT_surfxml_host_state;
 typedef int AT_surfxml_AS_id;
 #define AU_surfxml_AS_id NULL
@@ -139,18 +139,18 @@ typedef int AT_surfxml_gpu_name;
 #define AU_surfxml_gpu_name NULL
 typedef int AT_surfxml_router_id;
 #define AU_surfxml_router_id NULL
-typedef int AT_surfxml_storage_type_id;
-#define AU_surfxml_storage_type_id NULL
-typedef int AT_surfxml_process_start_time;
-#define AU_surfxml_process_start_time NULL
+typedef int AT_surfxml_storage___type_id;
+#define AU_surfxml_storage___type_id NULL
+typedef int AT_surfxml_process_start___time;
+#define AU_surfxml_process_start___time NULL
 typedef int AT_surfxml_cabinet_bw;
 #define AU_surfxml_cabinet_bw NULL
 typedef int AT_surfxml_cluster_suffix;
 #define AU_surfxml_cluster_suffix NULL
 typedef int AT_surfxml_bypassASroute_dst;
 #define AU_surfxml_bypassASroute_dst NULL
-typedef int AT_surfxml_host_link_id;
-#define AU_surfxml_host_link_id NULL
+typedef int AT_surfxml_host___link_id;
+#define AU_surfxml_host___link_id NULL
 typedef int AT_surfxml_ASroute_src;
 #define AU_surfxml_ASroute_src NULL
 typedef int AT_surfxml_cluster_prefix;
@@ -159,58 +159,58 @@ typedef int AT_surfxml_cabinet_prefix;
 #define AU_surfxml_cabinet_prefix NULL
 typedef int AT_surfxml_trace_file;
 #define AU_surfxml_trace_file NULL
-typedef enum { AU_surfxml_link_sharing_policy, A_surfxml_link_sharing_policy_SHARED,A_surfxml_link_sharing_policy_FATPIPE,A_surfxml_link_sharing_policy_FULLDUPLEX } AT_surfxml_link_sharing_policy;
+typedef enum { AU_surfxml_link_sharing___policy, A_surfxml_link_sharing___policy_SHARED,A_surfxml_link_sharing___policy_FATPIPE,A_surfxml_link_sharing___policy_FULLDUPLEX } AT_surfxml_link_sharing___policy;
 typedef int AT_surfxml_storage_typeId;
 #define AU_surfxml_storage_typeId NULL
 typedef int AT_surfxml_random_min;
 #define AU_surfxml_random_min NULL
-typedef int AT_surfxml_link_ctn_id;
-#define AU_surfxml_link_ctn_id NULL
-typedef int AT_surfxml_peer_bw_out;
-#define AU_surfxml_peer_bw_out NULL
-typedef int AT_surfxml_cluster_availability_file;
-#define AU_surfxml_cluster_availability_file NULL
+typedef int AT_surfxml_link___ctn_id;
+#define AU_surfxml_link___ctn_id NULL
+typedef int AT_surfxml_peer_bw___out;
+#define AU_surfxml_peer_bw___out NULL
+typedef int AT_surfxml_cluster_availability___file;
+#define AU_surfxml_cluster_availability___file NULL
 typedef int AT_surfxml_storage_content;
 #define AU_surfxml_storage_content NULL
-typedef int AT_surfxml_process_kill_time;
-#define AU_surfxml_process_kill_time NULL
-typedef int AT_surfxml_cluster_bb_bw;
-#define AU_surfxml_cluster_bb_bw NULL
+typedef int AT_surfxml_process_kill___time;
+#define AU_surfxml_process_kill___time NULL
+typedef int AT_surfxml_cluster_bb___bw;
+#define AU_surfxml_cluster_bb___bw NULL
 typedef int AT_surfxml_argument_value;
 #define AU_surfxml_argument_value NULL
 typedef enum { AU_surfxml_link_state, A_surfxml_link_state_ON,A_surfxml_link_state_OFF } AT_surfxml_link_state;
-typedef int AT_surfxml_ASroute_gw_src;
-#define AU_surfxml_ASroute_gw_src NULL
+typedef int AT_surfxml_ASroute_gw___src;
+#define AU_surfxml_ASroute_gw___src NULL
 typedef enum { AU_surfxml_AS_routing, A_surfxml_AS_routing_Full,A_surfxml_AS_routing_Floyd,A_surfxml_AS_routing_Dijkstra,A_surfxml_AS_routing_DijkstraCache,A_surfxml_AS_routing_None,A_surfxml_AS_routing_RuleBased,A_surfxml_AS_routing_Vivaldi,A_surfxml_AS_routing_Cluster } AT_surfxml_AS_routing;
 typedef int AT_surfxml_link_bandwidth;
 #define AU_surfxml_link_bandwidth NULL
 typedef int AT_surfxml_cluster_id;
 #define AU_surfxml_cluster_id NULL
-typedef int AT_surfxml_peer_bw_in;
-#define AU_surfxml_peer_bw_in NULL
+typedef int AT_surfxml_peer_bw___in;
+#define AU_surfxml_peer_bw___in NULL
 typedef int AT_surfxml_random_mean;
 #define AU_surfxml_random_mean NULL
-typedef int AT_surfxml_storage_type_size;
-#define AU_surfxml_storage_type_size NULL
-typedef int AT_surfxml_cluster_bb_lat;
-#define AU_surfxml_cluster_bb_lat NULL
+typedef int AT_surfxml_storage___type_size;
+#define AU_surfxml_storage___type_size NULL
+typedef int AT_surfxml_cluster_bb___lat;
+#define AU_surfxml_cluster_bb___lat NULL
 typedef int AT_surfxml_link_latency;
 #define AU_surfxml_link_latency NULL
 typedef int AT_surfxml_backbone_bandwidth;
 #define AU_surfxml_backbone_bandwidth NULL
 typedef int AT_surfxml_backbone_id;
 #define AU_surfxml_backbone_id NULL
-typedef enum { AU_surfxml_trace_connect_kind, A_surfxml_trace_connect_kind_HOST_AVAIL,A_surfxml_trace_connect_kind_POWER,A_surfxml_trace_connect_kind_LINK_AVAIL,A_surfxml_trace_connect_kind_BANDWIDTH,A_surfxml_trace_connect_kind_LATENCY } AT_surfxml_trace_connect_kind;
+typedef enum { AU_surfxml_trace___connect_kind, A_surfxml_trace___connect_kind_HOST___AVAIL,A_surfxml_trace___connect_kind_POWER,A_surfxml_trace___connect_kind_LINK___AVAIL,A_surfxml_trace___connect_kind_BANDWIDTH,A_surfxml_trace___connect_kind_LATENCY } AT_surfxml_trace___connect_kind;
 typedef int AT_surfxml_cabinet_lat;
 #define AU_surfxml_cabinet_lat NULL
 typedef int AT_surfxml_random_seed;
 #define AU_surfxml_random_seed NULL
-typedef int AT_surfxml_cluster_state_file;
-#define AU_surfxml_cluster_state_file NULL
-typedef int AT_surfxml_link_bandwidth_file;
-#define AU_surfxml_link_bandwidth_file NULL
-typedef int AT_surfxml_storage_type_content;
-#define AU_surfxml_storage_type_content NULL
+typedef int AT_surfxml_cluster_state___file;
+#define AU_surfxml_cluster_state___file NULL
+typedef int AT_surfxml_link_bandwidth___file;
+#define AU_surfxml_link_bandwidth___file NULL
+typedef int AT_surfxml_storage___type_content;
+#define AU_surfxml_storage___type_content NULL
 typedef enum { AU_surfxml_route_symmetrical, A_surfxml_route_symmetrical_YES,A_surfxml_route_symmetrical_NO } AT_surfxml_route_symmetrical;
 typedef int AT_surfxml_random_id;
 #define AU_surfxml_random_id NULL
@@ -224,17 +224,17 @@ typedef int AT_surfxml_process_host;
 #define AU_surfxml_process_host NULL
 typedef int AT_surfxml_cabinet_id;
 #define AU_surfxml_cabinet_id NULL
-typedef int AT_surfxml_host_availability_file;
-#define AU_surfxml_host_availability_file NULL
+typedef int AT_surfxml_host_availability___file;
+#define AU_surfxml_host_availability___file NULL
 typedef int AT_surfxml_cluster_lat;
 #define AU_surfxml_cluster_lat NULL
 typedef int AT_surfxml_router_coordinates;
 #define AU_surfxml_router_coordinates NULL
 typedef int AT_surfxml_trace_periodicity;
 #define AU_surfxml_trace_periodicity NULL
-typedef enum { AU_surfxml_cluster_bb_sharing_policy, A_surfxml_cluster_bb_sharing_policy_SHARED,A_surfxml_cluster_bb_sharing_policy_FATPIPE } AT_surfxml_cluster_bb_sharing_policy;
-typedef int AT_surfxml_peer_state_file;
-#define AU_surfxml_peer_state_file NULL
+typedef enum { AU_surfxml_cluster_bb___sharing___policy, A_surfxml_cluster_bb___sharing___policy_SHARED,A_surfxml_cluster_bb___sharing___policy_FATPIPE } AT_surfxml_cluster_bb___sharing___policy;
+typedef int AT_surfxml_peer_state___file;
+#define AU_surfxml_peer_state___file NULL
 typedef int AT_surfxml_peer_coordinates;
 #define AU_surfxml_peer_coordinates NULL
 typedef int AT_surfxml_bypassASroute_src;
@@ -245,14 +245,14 @@ typedef int AT_surfxml_mstorage_typeId;
 #define AU_surfxml_mstorage_typeId NULL
 typedef int AT_surfxml_ASroute_dst;
 #define AU_surfxml_ASroute_dst NULL
-typedef int AT_surfxml_link_state_file;
-#define AU_surfxml_link_state_file NULL
+typedef int AT_surfxml_link_state___file;
+#define AU_surfxml_link_state___file NULL
 typedef int AT_surfxml_random_radical;
 #define AU_surfxml_random_radical NULL
-typedef int AT_surfxml_bypassASroute_gw_src;
-#define AU_surfxml_bypassASroute_gw_src NULL
-typedef int AT_surfxml_trace_connect_trace;
-#define AU_surfxml_trace_connect_trace NULL
+typedef int AT_surfxml_bypassASroute_gw___src;
+#define AU_surfxml_bypassASroute_gw___src NULL
+typedef int AT_surfxml_trace___connect_trace;
+#define AU_surfxml_trace___connect_trace NULL
 typedef int AT_surfxml_mount_id;
 #define AU_surfxml_mount_id NULL
 typedef int AT_surfxml_cluster_power;
@@ -261,19 +261,19 @@ typedef int AT_surfxml_process_function;
 #define AU_surfxml_process_function NULL
 typedef int AT_surfxml_peer_id;
 #define AU_surfxml_peer_id NULL
-typedef int AT_surfxml_cluster_router_id;
-#define AU_surfxml_cluster_router_id NULL
+typedef int AT_surfxml_cluster_router___id;
+#define AU_surfxml_cluster_router___id NULL
 typedef int AT_surfxml_cabinet_radical;
 #define AU_surfxml_cabinet_radical NULL
-typedef enum { AU_surfxml_cluster_sharing_policy, A_surfxml_cluster_sharing_policy_SHARED,A_surfxml_cluster_sharing_policy_FULLDUPLEX,A_surfxml_cluster_sharing_policy_FATPIPE } AT_surfxml_cluster_sharing_policy;
+typedef enum { AU_surfxml_cluster_sharing___policy, A_surfxml_cluster_sharing___policy_SHARED,A_surfxml_cluster_sharing___policy_FULLDUPLEX,A_surfxml_cluster_sharing___policy_FATPIPE } AT_surfxml_cluster_sharing___policy;
 typedef int AT_surfxml_bypassRoute_dst;
 #define AU_surfxml_bypassRoute_dst NULL
 typedef int AT_surfxml_cabinet_power;
 #define AU_surfxml_cabinet_power NULL
 typedef int AT_surfxml_host_core;
 #define AU_surfxml_host_core NULL
-typedef int AT_surfxml_storage_type_model;
-#define AU_surfxml_storage_type_model NULL
+typedef int AT_surfxml_storage___type_model;
+#define AU_surfxml_storage___type_model NULL
 typedef int AT_surfxml_host_availability;
 #define AU_surfxml_host_availability NULL
 typedef int AT_surfxml_bypassRoute_src;
@@ -294,18 +294,18 @@ typedef int AT_surfxml_cluster_radical;
 #define AU_surfxml_cluster_radical NULL
 typedef int AT_surfxml_config_id;
 #define AU_surfxml_config_id NULL
-typedef int AT_surfxml_bypassASroute_gw_dst;
-#define AU_surfxml_bypassASroute_gw_dst NULL
-typedef int AT_surfxml_host_link_down;
-#define AU_surfxml_host_link_down NULL
+typedef int AT_surfxml_bypassASroute_gw___dst;
+#define AU_surfxml_bypassASroute_gw___dst NULL
+typedef int AT_surfxml_host___link_down;
+#define AU_surfxml_host___link_down NULL
 typedef int AT_surfxml_include_file;
 #define AU_surfxml_include_file NULL
-typedef int AT_surfxml_random_std_deviation;
-#define AU_surfxml_random_std_deviation NULL
+typedef int AT_surfxml_random_std___deviation;
+#define AU_surfxml_random_std___deviation NULL
 typedef int AT_surfxml_cluster_core;
 #define AU_surfxml_cluster_core NULL
-typedef int AT_surfxml_host_state_file;
-#define AU_surfxml_host_state_file NULL
+typedef int AT_surfxml_host_state___file;
+#define AU_surfxml_host_state___file NULL
 typedef int AT_surfxml_route_dst;
 #define AU_surfxml_route_dst NULL
 typedef int AT_surfxml_cluster_bw;

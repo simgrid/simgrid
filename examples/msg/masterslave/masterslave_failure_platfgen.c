@@ -41,7 +41,7 @@ void promoter_1(context_node_t node) {
   static int master_choosen = FALSE;
 
   host_parameters.id = NULL;
-  host_parameters.power_peak = 1000000;
+  host_parameters.power_peak = 25000000;
 
   host_parameters.core_amount = 1;
   host_parameters.power_scale = 1;
@@ -55,20 +55,6 @@ void promoter_1(context_node_t node) {
     master_choosen = TRUE;
     host_parameters.id = "host_master";
   } else {
-    /*
-     * The bug #14699 cannot allow us to set up an event trace which
-     * begin by SURF_RESOURCE_OFF, otherwise, the host will be down at startup
-     * and the associate process will fail to start. So, here, we generate a
-     * first useless event.
-     */
-    //Set a availability trace for the node
-    char* generator_id = bprintf("state_host_%ld", node->id);
-    probabilist_event_generator_t date_generator =
-                            tmgr_event_generator_new_weibull(generator_id, 80, 1.5);
-    host_parameters.state_trace = tmgr_trace_generator_state(generator_id,
-                                                            date_generator,
-                                                            SURF_RESOURCE_ON);
-
     //Set a power trace
     char* pw_date_generator_id = bprintf("pw_date_host_%ld", node->id);
     char* pw_value_generator_id = bprintf("pw_value_host_%ld", node->id);
@@ -121,7 +107,6 @@ void labeler_1(context_edge_t edge) {
 
 }
 
-/** Emitter function  */
 int master(int argc, char *argv[])
 {
   int slaves_count = 0;
@@ -130,13 +115,12 @@ int master(int argc, char *argv[])
   double task_comp_size = 0;
   double task_comm_size = 0;
   int i;
-  _XBT_GNUC_UNUSED int read;
 
   number_of_tasks = TASK_COUNT_PER_HOST*argc;
   task_comp_size = TASK_COMP_SIZE;
   task_comm_size = TASK_COMM_SIZE;
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     slaves_count = argc;
     slaves = xbt_new0(msg_host_t, slaves_count);
 
@@ -223,7 +207,6 @@ int master(int argc, char *argv[])
   return 0;
 }                               /* end_of_master */
 
-/** Receiver function  */
 int slave(int argc, char *argv[])
 {
   while (1) {
@@ -283,7 +266,7 @@ int main(int argc, char *argv[])
   int connected;
   int max_tries = 10;
 
-  //MSG initialisation
+  //MSG initialization
   MSG_init(&argc, argv);
 
   //Set up the seed for the platform generation
@@ -313,7 +296,7 @@ int main(int argc, char *argv[])
   platf_graph_promoter(promoter_1);
   platf_graph_labeler(labeler_1);
 
-  XBT_INFO("protmoting...");
+  XBT_INFO("promoting...");
   platf_do_promote();
 
   XBT_INFO("labeling...");
@@ -329,7 +312,8 @@ int main(int argc, char *argv[])
   msg_host_t host_master = NULL;
   msg_process_t process = NULL;
   xbt_dynar_t host_dynar = MSG_hosts_as_dynar();
-  char** hostname_list = malloc(sizeof(char*) * xbt_dynar_length(host_dynar));
+  char** hostname_list =
+    xbt_malloc(sizeof(char*) * xbt_dynar_length(host_dynar));
 
   xbt_dynar_foreach(host_dynar, i, host) {
     process = MSG_process_create("slave", slave, NULL, host);
@@ -337,7 +321,9 @@ int main(int argc, char *argv[])
     hostname_list[i] = (char*) MSG_host_get_name(host);
   }
   host_master = MSG_get_host_by_name("host_master");
-  MSG_process_create_with_arguments("master", master, NULL, host_master, xbt_dynar_length(host_dynar), hostname_list);
+  MSG_process_create_with_arguments("master", master, NULL, host_master,
+                                    xbt_dynar_length(host_dynar),
+                                    hostname_list);
 
   res = MSG_main();
 

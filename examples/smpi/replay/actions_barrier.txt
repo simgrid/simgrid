@@ -1,0 +1,16 @@
+0 init
+0 send 1 1e7
+0 barrier
+0 compute 98095000
+0 finalize
+
+1 init
+1 recv 0 1e7
+1 barrier
+1 compute 76296000
+1 finalize
+
+2 init
+2 barrier
+2 compute 76296000
+2 finalize

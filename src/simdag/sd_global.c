@@ -5,14 +5,15 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
+#include "instr/instr_interface.h"
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 #include "surf/surf.h"
+#include "simgrid/sg_config.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/config.h"
-#include "instr/instr_private.h"
 #include "surf/surfxml_parse.h"
 #ifdef HAVE_LUA
 #include <lua.h>
@@ -31,7 +32,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd,
 SD_global_t sd_global = NULL;
 
 /**
- * \brief Initialises SD internal data
+ * \brief Initializes SD internal data
  *
  * This function must be called before any other SD function. Then you
  * should call SD_create_environment().
@@ -80,7 +81,7 @@ void SD_init(int *argc, char **argv)
 
   surf_init(argc, argv);
 
-  xbt_cfg_setdefault_string(_surf_cfg_set, "workstation/model",
+  xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model",
                             "ptask_L07");
 
 #ifdef HAVE_TRACING
@@ -150,9 +151,9 @@ void SD_application_reinit(void)
 /**
  * \brief Creates the environment
  *
- * The environment (i.e. the \ref SD_workstation_management "workstations" and the
- * \ref SD_link_management "links") is created with the data stored in the given XML
- * platform file.
+ * The environment (i.e. the \ref SD_workstation_management "workstations"
+ * and the \ref SD_link_management "links") is created with the data stored
+ * in the given XML platform file.
  *
  * \param platform_file name of an XML file describing the environment to create
  * \see SD_workstation_management, SD_link_management
@@ -198,7 +199,7 @@ void SD_create_environment(const char *platform_file)
  * The function will execute the \ref SD_RUNNABLE runnable tasks.
  * If \a how_long is positive, then the simulation will be stopped either
  * when time reaches \a how_long or when a watch point is reached.
- * A nonpositive value for \a how_long means no time limit, in which case
+ * A non-positive value for \a how_long means no time limit, in which case
  * the simulation will be stopped either when a watch point is reached or
  * when no more task can be executed.
  * Then you can call SD_simulate() again.
@@ -289,11 +290,19 @@ xbt_swag_t SD_simulate_swag(double how_long) {
           if (dst->is_not_ready > 0)
             dst->is_not_ready--;
 
+          XBT_DEBUG("Released a dependency on %s: %d remain(s). Became schedulable if %d=0",
+             SD_task_get_name(dst), dst->unsatisfied_dependencies,
+             dst->is_not_ready);
+
           if (!(dst->unsatisfied_dependencies)) {
             if (__SD_task_is_scheduled(dst))
               __SD_task_set_state(dst, SD_RUNNABLE);
             else
               __SD_task_set_state(dst, SD_SCHEDULABLE);
+          }
+
+          if (__SD_task_is_not_scheduled(dst) && !(dst->is_not_ready)) {
+            __SD_task_set_state(dst, SD_SCHEDULABLE);
           }
 
           if (SD_task_get_kind(dst) == SD_TASK_COMM_E2E) {
@@ -304,6 +313,10 @@ xbt_swag_t SD_simulate_swag(double how_long) {
             if (__SD_task_is_not_scheduled(comm_dst) &&
                 comm_dst->is_not_ready > 0) {
               comm_dst->is_not_ready--;
+
+            XBT_DEBUG("%s is a transfer, %s may be ready now if %d=0",
+               SD_task_get_name(dst), SD_task_get_name(comm_dst),
+               comm_dst->is_not_ready);
 
               if (!(comm_dst->is_not_ready)) {
                 __SD_task_set_state(comm_dst, SD_SCHEDULABLE);
@@ -373,15 +386,15 @@ double SD_get_clock(void) {
 /**
  * \brief Destroys all SD internal data
  *
- * This function should be called when the simulation is over. Don't forget also to destroy
- * the tasks.
+ * This function should be called when the simulation is over. Don't forget
+ * to destroy too.
  *
  * \see SD_init(), SD_task_destroy()
  */
 void SD_exit(void)
 {
 #ifdef HAVE_TRACING
-  TRACE_surf_release();
+  TRACE_surf_resource_utilization_release();
 #endif
 
   xbt_mallocator_free(sd_global->task_mallocator);

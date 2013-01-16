@@ -60,10 +60,10 @@ typedef int AT_graphxml_node_name;
 #define AU_graphxml_node_name NULL
 typedef int AT_graphxml_edge_source;
 #define AU_graphxml_edge_source NULL
-typedef int AT_graphxml_node_position_y;
-#define AU_graphxml_node_position_y NULL
-typedef int AT_graphxml_node_position_x;
-#define AU_graphxml_node_position_x NULL
+typedef int AT_graphxml_node_position___y;
+#define AU_graphxml_node_position___y NULL
+typedef int AT_graphxml_node_position___x;
+#define AU_graphxml_node_position___x NULL
 typedef int AT_graphxml_edge_data;
 #define AU_graphxml_edge_data NULL
 typedef int AT_graphxml_edge_target;

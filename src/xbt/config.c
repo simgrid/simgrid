@@ -490,7 +490,7 @@ e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name)
            "Can't get the type of '%s' since this variable does not exist",
            name);
 
-  XBT_INFO("type in variable = %d", (int)variable->type);
+  XBT_DEBUG("type in variable = %d", (int)variable->type);
 
   return variable->type;
 }
@@ -581,15 +581,8 @@ void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...)
  * @todo This is a crude manual parser, it should be a proper lexer.
  */
 
-void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
-{
-  xbt_ex_t e;
+void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
 
-  int i;
-  double d;
-  char *str;
-
-  volatile xbt_cfgelm_t variable = NULL;
   char *optionlist_cpy;
   char *option, *name, *val;
 
@@ -655,85 +648,93 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
       XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
 
     TRY {
-      variable = xbt_dict_get((xbt_dict_t) cfg, name);
-    }
-    CATCH(e) {
-      if (e.category == not_found_error) {
-        xbt_ex_free(e);
-        TRY {
-          THROWF(not_found_error, 0,
-                 "No registered variable corresponding to '%s'.", name);
-        }
-        TRY_CLEANUP {
-          /* name points into optionlist_cpy, it cannot be freed before */
-          free(optionlist_cpy);
-        }
-        CATCH_ANONYMOUS {
-          RETHROW;
-        }
-      }
-      free(optionlist_cpy);
-      RETHROW;
-    }
-
-    TRY {
-      switch (variable->type) {
-      case xbt_cfgelm_string:
-        xbt_cfg_set_string(cfg, name, val);     /* throws */
-        break;
-
-      case xbt_cfgelm_int:
-        i = strtol(val, &val, 0);
-        if (val == NULL) {
-          free(optionlist_cpy);
-          xbt_die("Value of option %s not valid. Should be an integer", name);
-        }
-
-        xbt_cfg_set_int(cfg, name, i);  /* throws */
-        break;
-
-      case xbt_cfgelm_double:
-        d = strtod(val, &val);
-        if (val == NULL) {
-          free(optionlist_cpy);
-          xbt_die("Value of option %s not valid. Should be a double", name);
-        }
-
-        xbt_cfg_set_double(cfg, name, d);       /* throws */
-        break;
-
-      case xbt_cfgelm_peer:
-        str = val;
-        val = strchr(val, ':');
-        if (!val) {
-          free(optionlist_cpy);
-          xbt_die("Value of option %s not valid. Should be an peer (machine:port)",
-                  name);
-        }
-
-        *(val++) = '\0';
-        i = strtol(val, &val, 0);
-        if (val == NULL) {
-          free(optionlist_cpy);
-          xbt_die("Value of option %s not valid. Should be an peer (machine:port)",
-                  name);
-        }
-
-        xbt_cfg_set_peer(cfg, name, str, i);    /* throws */
-        break;
-
-      default:
-        THROWF(unknown_error, 0, "Type of config element %s is not valid.",
-               name);
-      }
-    }
-    CATCH_ANONYMOUS {
+      xbt_cfg_set_as_string(cfg,name,val);
+    } CATCH_ANONYMOUS {
       free(optionlist_cpy);
       RETHROW;
     }
   }
   free(optionlist_cpy);
+}
 
+/** @brief Set the value of a variable, using the string representation of that value
+ *
+ * @arg cfg config set to modify
+ * @arg key name of the variable to modify
+ * @arg value string representation of the value to set
+ *
+ * @return the first char after the parsed value in val
+ */
+
+void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
+  xbt_ex_t e;
+
+  char *ret;
+  volatile xbt_cfgelm_t variable = NULL;
+  int i;
+  double d;
+  char *str, *val;
+
+
+  TRY {
+    variable = xbt_dict_get((xbt_dict_t) cfg, key);
+  }
+  CATCH(e) {
+    if (e.category == not_found_error) {
+      xbt_ex_free(e);
+      THROWF(not_found_error, 0,
+          "No registered variable corresponding to '%s'.", key);
+    }
+    RETHROW;
+  }
+
+  switch (variable->type) {
+  case xbt_cfgelm_string:
+    xbt_cfg_set_string(cfg, key, value);     /* throws */
+    break;
+
+  case xbt_cfgelm_int:
+    i = strtol(value, &ret, 0);
+    if (value == NULL) {
+      xbt_die("Value of option %s not valid. Should be an integer", key);
+    }
+
+    xbt_cfg_set_int(cfg, key, i);  /* throws */
+    break;
+
+  case xbt_cfgelm_double:
+    d = strtod(value, &ret);
+    if (value == NULL) {
+      xbt_die("Value of option %s not valid. Should be a double", key);
+    }
+
+    xbt_cfg_set_double(cfg, key, d);       /* throws */
+    break;
+
+  case xbt_cfgelm_peer:
+    val = xbt_strdup(value);
+    str = val;
+    val = strchr(val, ':');
+    if (!val) {
+      xbt_die("Value of option %s not valid. Should be an peer (machine:port)", key);
+    }
+
+    *(val++) = '\0';
+    i = strtol(val, &ret, 0);
+    if (val == NULL) {
+      xbt_die("Value of option %s not valid. Should be an peer (machine:port)", key);
+    }
+
+    xbt_cfg_set_peer(cfg, key, str, i);    /* throws */
+    free(val);
+    break;
+
+  default:
+    THROWF(unknown_error, 0, "Type of config element %s is not valid.", key);
+    break;
+  }
+
+  return ret;
 }
 
 /** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet

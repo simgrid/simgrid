@@ -56,13 +56,13 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               int (*)(void *, void *, smx_action_t), void *data);
 void SIMIX_comm_destroy(smx_action_t action);
 void SIMIX_comm_destroy_internal_actions(smx_action_t action);
-void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout, int idx);
 smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
                               int tag, int (*match_fun)(void *, void *, smx_action_t), void *data);
-void SIMIX_pre_comm_waitany(smx_simcall_t simcall, int idx);
+void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout);
+void SIMIX_pre_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions);
 void SIMIX_post_comm(smx_action_t action);
-void SIMIX_pre_comm_test(smx_simcall_t simcall);
-void SIMIX_pre_comm_testany(smx_simcall_t simcall, int idx);
+void SIMIX_pre_comm_test(smx_simcall_t simcall, smx_action_t action);
+void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions);
 void SIMIX_comm_cancel(smx_action_t action);
 double SIMIX_comm_get_remains(smx_action_t action);
 e_smx_state_t SIMIX_comm_get_state(smx_action_t action);
@@ -71,5 +71,45 @@ void SIMIX_comm_resume(smx_action_t action);
 smx_process_t SIMIX_comm_get_src_proc(smx_action_t action);
 smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action);
 
+// pre prototypes
+smx_action_t SIMIX_pre_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv,
+                                   int src, int tag,
+                                   int (*match_fun)(void *, void *, smx_action_t),
+                                   void *data);
+smx_rdv_t SIMIX_pre_rdv_create(smx_simcall_t simcall, const char *name);
+void SIMIX_pre_rdv_destroy(smx_simcall_t simcall, smx_rdv_t rdv);
+smx_rdv_t SIMIX_pre_rdv_get_by_name(smx_simcall_t simcall, const char *name);
+int SIMIX_pre_rdv_comm_count_by_host(smx_simcall_t simcall, smx_rdv_t rdv, smx_host_t host);
+smx_action_t SIMIX_pre_rdv_get_head(smx_simcall_t simcall, smx_rdv_t rdv);
+smx_process_t SIMIX_pre_rdv_get_receiver(smx_simcall_t simcall, smx_rdv_t rdv);
+void SIMIX_pre_rdv_set_receiver(smx_simcall_t simcall, smx_rdv_t rdv,
+		            smx_process_t process);
+void SIMIX_pre_comm_send(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  double task_size, double rate,
+                                  void *src_buff, size_t src_buff_size,
+                                  int (*match_fun)(void *, void *,smx_action_t),
+				  void *data, double timeout);
+smx_action_t SIMIX_pre_comm_isend(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  double task_size, double rate,
+                                  void *src_buff, size_t src_buff_size,
+                                  int (*match_fun)(void *, void *,smx_action_t),
+                                  void (*clean_fun)(void *), 
+				  void *data, int detached);
+void SIMIX_pre_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  void *dst_buff, size_t *dst_buff_size,
+                                  int (*match_fun)(void *, void *, smx_action_t),
+				  void *data, double timeout);
+smx_action_t SIMIX_pre_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  void *dst_buff, size_t *dst_buff_size,
+                                  int (*match_fun)(void *, void *, smx_action_t),
+				  void *data);
+void SIMIX_pre_comm_destroy(smx_simcall_t simcall, smx_action_t action);
+void SIMIX_pre_comm_cancel(smx_simcall_t simcall, smx_action_t action);
+double SIMIX_pre_comm_get_remains(smx_simcall_t simcall, smx_action_t action);
+e_smx_state_t SIMIX_pre_comm_get_state(smx_simcall_t simcall, smx_action_t action);
+void* SIMIX_pre_comm_get_src_data(smx_simcall_t simcall, smx_action_t action);
+void* SIMIX_pre_comm_get_dst_data(smx_simcall_t simcall, smx_action_t action);
+smx_process_t SIMIX_pre_comm_get_src_proc(smx_simcall_t simcall, smx_action_t action);
+smx_process_t SIMIX_pre_comm_get_dst_proc(smx_simcall_t simcall, smx_action_t action);
 #endif
 

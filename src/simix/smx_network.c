@@ -43,6 +43,9 @@ void SIMIX_network_exit(void)
 /*                           Rendez-Vous Points                               */
 /******************************************************************************/
 
+smx_rdv_t SIMIX_pre_rdv_create(smx_simcall_t simcall, const char *name){
+  return SIMIX_rdv_create(name);
+}
 smx_rdv_t SIMIX_rdv_create(const char *name)
 {
   /* two processes may have pushed the same rdv_create simcall at the same time */
@@ -63,6 +66,9 @@ smx_rdv_t SIMIX_rdv_create(const char *name)
   return rdv;
 }
 
+void SIMIX_pre_rdv_destroy(smx_simcall_t simcall, smx_rdv_t rdv){
+  return SIMIX_rdv_destroy(rdv);
+}
 void SIMIX_rdv_destroy(smx_rdv_t rdv)
 {
   if (rdv->name)
@@ -85,11 +91,17 @@ xbt_dict_t SIMIX_get_rdv_points()
   return rdv_points;
 }
 
+smx_rdv_t SIMIX_pre_rdv_get_by_name(smx_simcall_t simcall, const char *name){
+  return SIMIX_rdv_get_by_name(name);
+}
 smx_rdv_t SIMIX_rdv_get_by_name(const char *name)
 {
   return xbt_dict_get_or_null(rdv_points, name);
 }
 
+int SIMIX_pre_rdv_comm_count_by_host(smx_simcall_t simcall, smx_rdv_t rdv, smx_host_t host){
+  return SIMIX_rdv_comm_count_by_host(rdv, host);
+}
 int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
 {
   smx_action_t comm = NULL;
@@ -104,11 +116,17 @@ int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
   return count;
 }
 
+smx_action_t SIMIX_pre_rdv_get_head(smx_simcall_t simcall, smx_rdv_t rdv){
+  return SIMIX_rdv_get_head(rdv);
+}
 smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv)
 {
   return xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
 }
 
+smx_process_t SIMIX_pre_rdv_get_receiver(smx_simcall_t simcall, smx_rdv_t rdv){
+  return SIMIX_rdv_get_receiver(rdv);
+}
 /**
  *  \brief get the receiver (process associated to the mailbox)
  *  \param rdv The rendez-vous point
@@ -119,12 +137,16 @@ smx_process_t SIMIX_rdv_get_receiver(smx_rdv_t rdv)
   return rdv->permanent_receiver;
 }
 
+void SIMIX_pre_rdv_set_receiver(smx_simcall_t simcall, smx_rdv_t rdv,
+		            smx_process_t process){
+  SIMIX_rdv_set_receiver(rdv, process);
+}
 /**
  *  \brief set the receiver of the rendez vous point to allow eager sends
  *  \param rdv The rendez-vous point
  *  \param process The receiving process
  */
-void SIMIX_rdv_set_receiver(smx_rdv_t rdv , smx_process_t process)
+void SIMIX_rdv_set_receiver(smx_rdv_t rdv, smx_process_t process)
 {
   rdv->permanent_receiver=process;
 }
@@ -245,6 +267,9 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
   /* set communication */
   act->comm.type = type;
   act->comm.refcount = 1;
+  act->comm.src_data=NULL;
+  act->comm.dst_data=NULL;
+
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   //initialize with unknown value
@@ -261,6 +286,9 @@ smx_action_t SIMIX_comm_new(e_smx_comm_type_t type)
   return act;
 }
 
+void SIMIX_pre_comm_destroy(smx_simcall_t simcall, smx_action_t action){
+  SIMIX_comm_destroy(action);
+}
 /**
  *  \brief Destroy a communicate action
  *  \param action The communicate action to be destroyed
@@ -277,7 +305,7 @@ void SIMIX_comm_destroy(smx_action_t action)
   }
   action->comm.refcount--;
   if (action->comm.refcount > 0)
-    return;
+      return;
   XBT_DEBUG("Really free communication %p; refcount is now %d", action,
             action->comm.refcount);
 
@@ -296,6 +324,9 @@ void SIMIX_comm_destroy(smx_action_t action)
     }
     action->comm.src_buff = NULL;
   }
+
+  if(action->comm.rdv)
+    SIMIX_rdv_remove(action->comm.rdv, action);
 
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
@@ -321,6 +352,27 @@ void SIMIX_comm_destroy_internal_actions(smx_action_t action)
   }
 }
 
+void SIMIX_pre_comm_send(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  double task_size, double rate,
+                                  void *src_buff, size_t src_buff_size,
+                                  int (*match_fun)(void *, void *,smx_action_t),
+				  void *data, double timeout){
+  smx_action_t comm = SIMIX_comm_isend(simcall->issuer, rdv, task_size, rate,
+		                       src_buff, src_buff_size, match_fun, NULL,
+				       data, 0);
+  simcall->mc_value = 0;
+  SIMIX_pre_comm_wait(simcall, comm, timeout);
+}
+smx_action_t SIMIX_pre_comm_isend(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  double task_size, double rate,
+                                  void *src_buff, size_t src_buff_size,
+                                  int (*match_fun)(void *, void *,smx_action_t),
+                                  void (*clean_fun)(void *), 
+				  void *data, int detached){
+  return SIMIX_comm_isend(simcall->issuer, rdv, task_size, rate, src_buff,
+		          src_buff_size, match_fun, clean_fun, data, detached);
+
+}
 smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
@@ -397,6 +449,22 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   return (detached ? NULL : other_action);
 }
 
+void SIMIX_pre_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  void *dst_buff, size_t *dst_buff_size,
+                                  int (*match_fun)(void *, void *, smx_action_t),
+				  void *data, double timeout){
+  smx_action_t comm = SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff,
+		                       dst_buff_size, match_fun, data);
+  simcall->mc_value = 0;
+  SIMIX_pre_comm_wait(simcall, comm, timeout);
+}
+smx_action_t SIMIX_pre_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  void *dst_buff, size_t *dst_buff_size,
+                                  int (*match_fun)(void *, void *, smx_action_t),
+				  void *data){
+  return SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff, dst_buff_size,
+		          match_fun, data);
+}
 smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*match_fun)(void *, void *, smx_action_t), void *data)
@@ -432,7 +500,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
       }/*else{
          XBT_DEBUG("Not yet finished, we have to wait %d\n", xbt_fifo_size(rdv->comm_fifo));
          }*/
-     // other_action->comm.refcount--;
+      other_action->comm.refcount--;
       SIMIX_comm_destroy(this_action);
       --smx_total_comms; // this creation was a pure waste
     }
@@ -454,7 +522,7 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
       --smx_total_comms; // this creation was a pure waste
       other_action->state = SIMIX_READY;
       other_action->comm.type = SIMIX_COMM_READY;
-   //   other_action->comm.refcount--;
+      //other_action->comm.refcount--;
     }
     xbt_fifo_push(dst_proc->comms, other_action);
   }
@@ -482,6 +550,12 @@ smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   return other_action;
 }
 
+smx_action_t SIMIX_pre_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv,
+                                   int src, int tag,
+                                   int (*match_fun)(void *, void *, smx_action_t),
+                                   void *data){
+  return SIMIX_comm_iprobe(simcall->issuer, rdv, src, tag, match_fun, data);
+}
 
 smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
                               int tag, int (*match_fun)(void *, void *, smx_action_t), void *data)
@@ -509,9 +583,9 @@ smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
   return other_action;
 }
 
-void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout, int idx)
+void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double timeout)
 {
-
+  int idx = simcall->mc_value;
   /* the simcall may be a wait, a send or a recv */
   surf_action_t sleep;
 
@@ -555,13 +629,11 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
   }
 }
 
-void SIMIX_pre_comm_test(smx_simcall_t simcall)
+void SIMIX_pre_comm_test(smx_simcall_t simcall, smx_action_t action)
 {
-  smx_action_t action = simcall->comm_test.comm;
-
   if(MC_is_active()){
-    simcall->comm_test.result = action->comm.src_proc && action->comm.dst_proc;
-    if(simcall->comm_test.result){
+    simcall_comm_test__set__result(simcall, action->comm.src_proc && action->comm.dst_proc);
+    if(simcall_comm_test__get__result(simcall)){
       action->state = SIMIX_DONE;
       xbt_fifo_push(action->simcalls, simcall);
       SIMIX_comm_finish(action);
@@ -571,8 +643,8 @@ void SIMIX_pre_comm_test(smx_simcall_t simcall)
     return;
   }
 
-  simcall->comm_test.result = (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING);
-  if (simcall->comm_test.result) {
+  simcall_comm_test__set__result(simcall, (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING));
+  if (simcall_comm_test__get__result(simcall)) {
     xbt_fifo_push(action->simcalls, simcall);
     SIMIX_comm_finish(action);
   } else {
@@ -580,19 +652,19 @@ void SIMIX_pre_comm_test(smx_simcall_t simcall)
   }
 }
 
-void SIMIX_pre_comm_testany(smx_simcall_t simcall, int idx)
+void SIMIX_pre_comm_testany(smx_simcall_t simcall, xbt_dynar_t actions)
 {
+  int idx = simcall->mc_value;
   unsigned int cursor;
   smx_action_t action;
-  xbt_dynar_t actions = simcall->comm_testany.comms;
-  simcall->comm_testany.result = -1;
+  simcall_comm_testany__set__result(simcall, -1);
 
   if (MC_is_active()){
     if(idx == -1){
       SIMIX_simcall_answer(simcall);
     }else{
       action = xbt_dynar_get_as(actions, idx, smx_action_t);
-      simcall->comm_testany.result = idx;
+      simcall_comm_testany__set__result(simcall, idx);
       xbt_fifo_push(action->simcalls, simcall);
       action->state = SIMIX_DONE;
       SIMIX_comm_finish(action);
@@ -600,9 +672,9 @@ void SIMIX_pre_comm_testany(smx_simcall_t simcall, int idx)
     return;
   }
 
-  xbt_dynar_foreach(simcall->comm_testany.comms,cursor,action) {
+  xbt_dynar_foreach(simcall_comm_testany__get__comms(simcall), cursor,action) {
     if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
-      simcall->comm_testany.result = cursor;
+      simcall_comm_testany__set__result(simcall, cursor);
       xbt_fifo_push(action->simcalls, simcall);
       SIMIX_comm_finish(action);
       return;
@@ -611,16 +683,16 @@ void SIMIX_pre_comm_testany(smx_simcall_t simcall, int idx)
   SIMIX_simcall_answer(simcall);
 }
 
-void SIMIX_pre_comm_waitany(smx_simcall_t simcall, int idx)
+void SIMIX_pre_comm_waitany(smx_simcall_t simcall, xbt_dynar_t actions)
 {
+  int idx = simcall->mc_value;
   smx_action_t action;
   unsigned int cursor = 0;
-  xbt_dynar_t actions = simcall->comm_waitany.comms;
 
   if (MC_is_active()){
     action = xbt_dynar_get_as(actions, idx, smx_action_t);
     xbt_fifo_push(action->simcalls, simcall);
-    simcall->comm_waitany.result = idx;
+    simcall_comm_waitany__set__result(simcall, idx);
     action->state = SIMIX_DONE;
     SIMIX_comm_finish(action);
     return;
@@ -642,7 +714,7 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 {
   smx_action_t action;
   unsigned int cursor = 0;
-  xbt_dynar_t actions = simcall->comm_waitany.comms;
+  xbt_dynar_t actions = simcall_comm_waitany__get__comms(simcall);
 
   xbt_dynar_foreach(actions, cursor, action) {
     xbt_fifo_remove(action->simcalls, simcall);
@@ -716,7 +788,7 @@ void SIMIX_comm_finish(smx_action_t action)
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       if (!MC_is_active())
-        simcall->comm_waitany.result = xbt_dynar_search(simcall->comm_waitany.comms, &action);
+        simcall_comm_waitany__set__result(simcall, xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &action));
     }
 
     /* If the action is still in a rendez-vous point then remove from it */
@@ -791,10 +863,10 @@ void SIMIX_comm_finish(smx_action_t action)
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
     if (simcall->issuer->doexception) {
       if (simcall->call == SIMCALL_COMM_WAITANY) {
-        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall->comm_waitany.comms, &action);
+        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &action);
       }
       else if (simcall->call == SIMCALL_COMM_TESTANY) {
-        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall->comm_testany.comms, &action);
+        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_testany__get__comms(simcall), &action);
       }
     }
 
@@ -805,6 +877,16 @@ void SIMIX_comm_finish(smx_action_t action)
 
     simcall->issuer->waiting_action = NULL;
     xbt_fifo_remove(simcall->issuer->comms, action);
+    if(action->comm.detached){
+      if(simcall->issuer == action->comm.src_proc){
+        if(action->comm.dst_proc)
+          xbt_fifo_remove(action->comm.dst_proc->comms, action);
+      }
+      if(simcall->issuer == action->comm.dst_proc){
+        if(action->comm.src_proc)
+          xbt_fifo_remove(action->comm.src_proc->comms, action);
+      }
+    }
     SIMIX_simcall_answer(simcall);
     destroy_count++;
   }
@@ -860,6 +942,9 @@ void SIMIX_post_comm(smx_action_t action)
   }
 }
 
+void SIMIX_pre_comm_cancel(smx_simcall_t simcall, smx_action_t action){
+  SIMIX_comm_cancel(action);
+}
 void SIMIX_comm_cancel(smx_action_t action)
 {
   /* if the action is a waiting state means that it is still in a rdv */
@@ -894,6 +979,9 @@ void SIMIX_comm_resume(smx_action_t action)
 
 /************* Action Getters **************/
 
+double SIMIX_pre_comm_get_remains(smx_simcall_t simcall, smx_action_t action){
+  return SIMIX_comm_get_remains(action);
+}
 /**
  *  \brief get the amount remaining from the communication
  *  \param action The communication
@@ -924,11 +1012,17 @@ double SIMIX_comm_get_remains(smx_action_t action)
   return remains;
 }
 
+e_smx_state_t SIMIX_pre_comm_get_state(smx_simcall_t simcall, smx_action_t action){
+  return SIMIX_comm_get_state(action);
+}
 e_smx_state_t SIMIX_comm_get_state(smx_action_t action)
 {
   return action->state;
 }
 
+void* SIMIX_pre_comm_get_src_data(smx_simcall_t simcall, smx_action_t action){
+  return SIMIX_comm_get_src_data(action);
+}
 /**
  *  \brief Return the user data associated to the sender of the communication
  *  \param action The communication
@@ -939,6 +1033,9 @@ void* SIMIX_comm_get_src_data(smx_action_t action)
   return action->comm.src_data;
 }
 
+void* SIMIX_pre_comm_get_dst_data(smx_simcall_t simcall, smx_action_t action){
+  return SIMIX_comm_get_dst_data(action);
+}
 /**
  *  \brief Return the user data associated to the receiver of the communication
  *  \param action The communication
@@ -949,11 +1046,17 @@ void* SIMIX_comm_get_dst_data(smx_action_t action)
   return action->comm.dst_data;
 }
 
+smx_process_t SIMIX_pre_comm_get_src_proc(smx_simcall_t simcall, smx_action_t action){
+  return SIMIX_comm_get_src_proc(action);
+}
 smx_process_t SIMIX_comm_get_src_proc(smx_action_t action)
 {
   return action->comm.src_proc;
 }
 
+smx_process_t SIMIX_pre_comm_get_dst_proc(smx_simcall_t simcall, smx_action_t action){
+  return SIMIX_comm_get_dst_proc(action);
+}
 smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
 {
   return action->comm.dst_proc;

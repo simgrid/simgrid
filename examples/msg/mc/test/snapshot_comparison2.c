@@ -40,7 +40,7 @@ int test(int argc, char **argv){
 
   xbt_free(toto);
 
-  return 0;
+  xbt_abort();
 }
 
 int main(int argc, char **argv){

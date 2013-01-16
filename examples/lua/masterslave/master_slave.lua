@@ -4,8 +4,8 @@ dofile 'slave.lua'
 
 require "simgrid"
 
-simgrid.platform(arg[1] or "../../msg/small_platform.xml")
-simgrid.application(arg[2] or "../deploy.xml")
+simgrid.platform(arg[1])
+simgrid.application(arg[2])
 simgrid.run()
 simgrid.info("Simulation's over. See you.")
 -- end-of-master-slave

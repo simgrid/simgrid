@@ -897,9 +897,10 @@ int PMPI_Request_free(MPI_Request * request)
   int retval;
 
   smpi_bench_end();
-  if (request == MPI_REQUEST_NULL) {
+  if (*request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_ARG;
   } else {
+    if((*request)->flags & PERSISTENT)(*request)->refcount--;
     smpi_mpi_request_free(request);
     retval = MPI_SUCCESS;
   }
@@ -1008,7 +1009,6 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
   int retval;
 
   smpi_bench_end();
-
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (src == MPI_PROC_NULL) {
@@ -1373,8 +1373,6 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     xbt_dynar_free(&recvs);
   }
   TRACE_smpi_computing_in(rank_traced);
-
-
 #endif
   smpi_bench_begin();
   return retval;
@@ -2073,6 +2071,12 @@ int PMPI_Error_class(int errorcode, int* errorclass) {
   return MPI_SUCCESS;
 }
 
+
+int PMPI_Initialized(int* flag) {
+   *flag=(smpi_process_data()!=NULL);
+   return MPI_SUCCESS;
+}
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
@@ -2285,6 +2289,4 @@ int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
    return not_yet_implemented();
 }
 
-int PMPI_Initialized(int* flag) {
-   return not_yet_implemented();
-}
+

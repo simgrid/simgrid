@@ -12,12 +12,13 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
+/* generate strings from the enumeration values */
 static const char* simcall_names[] = {
-#undef SIMCALL_ENUM_ELEMENT
-#define SIMCALL_ENUM_ELEMENT(x) #x /* generate strings from the enumeration values */
-SIMCALL_LIST
-#undef SIMCALL_ENUM_ELEMENT
+SIMCALL_LIST(SIMCALL_STRING_TYPE, SIMCALL_SEP_COMMA)
+[SIMCALL_NONE] = "NONE"
 };
+
+SIMCALL_LIST(SIMCALL_FUNC, SIMCALL_SEP_NOTHING)
 
 /**
  * \ingroup simix_host_management
@@ -28,14 +29,7 @@ SIMCALL_LIST
  */
 smx_host_t simcall_host_get_by_name(const char *name)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_GET_BY_NAME;
-  simcall->host_get_by_name.name = name;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->host_get_by_name.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_get_by_name.result;
+  return simcall_BODY_host_get_by_name(name);
 }
 
 /**
@@ -47,14 +41,7 @@ smx_host_t simcall_host_get_by_name(const char *name)
  */
 const char* simcall_host_get_name(smx_host_t host)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_GET_NAME;
-  simcall->host_get_name.host = host;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->host_get_name.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_get_name.result;
+  return simcall_BODY_host_get_name(host);
 }
 
 /**
@@ -66,14 +53,7 @@ const char* simcall_host_get_name(smx_host_t host)
  */
 xbt_dict_t simcall_host_get_properties(smx_host_t host)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_GET_PROPERTIES;
-  simcall->host_get_properties.host = host;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->host_get_properties.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_get_properties.result;
+  return simcall_BODY_host_get_properties(host);
 }
 
 /**
@@ -85,14 +65,7 @@ xbt_dict_t simcall_host_get_properties(smx_host_t host)
  */
 xbt_dict_t simcall_asr_get_properties(const char *name)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_ASR_GET_PROPERTIES;
-  simcall->asr_get_properties.name = name;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->asr_get_properties.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->asr_get_properties.result;
+  return simcall_BODY_asr_get_properties(name);
 }
 
 
@@ -106,14 +79,7 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
  */
 double simcall_host_get_speed(smx_host_t host)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_GET_SPEED;
-  simcall->host_get_speed.host = host;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->host_get_speed.result = 0.0;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_get_speed.result;
+  return simcall_BODY_host_get_speed(host);
 }
 
 /**
@@ -124,14 +90,7 @@ double simcall_host_get_speed(smx_host_t host)
  */
 double simcall_host_get_available_speed(smx_host_t host)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_GET_AVAILABLE_SPEED;
-  simcall->host_get_available_speed.host = host;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->host_get_available_speed.result = 0.0;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_get_available_speed.result;
+  return simcall_BODY_host_get_available_speed(host);
 }
 
 /**
@@ -144,14 +103,7 @@ double simcall_host_get_available_speed(smx_host_t host)
  */
 int simcall_host_get_state(smx_host_t host)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_GET_STATE;
-  simcall->host_get_state.host = host;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->host_get_state.result = -1;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_get_state.result;
+  return simcall_BODY_host_get_state(host);
 }
 
 /**
@@ -163,14 +115,7 @@ int simcall_host_get_state(smx_host_t host)
  */
 void* simcall_host_get_data(smx_host_t host)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_GET_DATA;
-  simcall->host_get_data.host = host;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->host_get_data.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_get_data.result;
+  return simcall_BODY_host_get_data(host);
 }
 
 /**
@@ -183,12 +128,7 @@ void* simcall_host_get_data(smx_host_t host)
  */
 void simcall_host_set_data(smx_host_t host, void *data)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_SET_DATA;
-  simcall->host_set_data.host = host;
-  simcall->host_set_data.data = data;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_host_set_data(host, data);
 }
 
 /**
@@ -204,6 +144,7 @@ void simcall_host_set_data(smx_host_t host, void *data)
  * \param priority computation priority
  * \return A new SIMIX execution action
  */
+
 smx_action_t simcall_host_execute(const char *name, smx_host_t host,
                                     double computation_amount,
                                     double priority)
@@ -212,17 +153,7 @@ smx_action_t simcall_host_execute(const char *name, smx_host_t host,
   xbt_assert(isfinite(computation_amount), "computation_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
   
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_EXECUTE;
-  simcall->host_execute.name = name;
-  simcall->host_execute.host = host;
-  simcall->host_execute.computation_amount = computation_amount;
-  simcall->host_execute.priority = priority;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->host_execute.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_execute.result;
+  return simcall_BODY_host_execute(name, host, computation_amount, priority);
 }
 
 /**
@@ -261,20 +192,11 @@ smx_action_t simcall_host_parallel_execute(const char *name,
   xbt_assert(isfinite(amount), "amount is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
   
-  smx_simcall_t simcall = SIMIX_simcall_mine();
+  return simcall_BODY_host_parallel_execute(name, host_nb, host_list,
+                                            computation_amount,
+                                            communication_amount,
+                                            amount, rate);
 
-  simcall->call = SIMCALL_HOST_PARALLEL_EXECUTE;
-  simcall->host_parallel_execute.name = name;
-  simcall->host_parallel_execute.host_nb = host_nb;
-  simcall->host_parallel_execute.host_list = host_list;
-  simcall->host_parallel_execute.computation_amount = computation_amount;
-  simcall->host_parallel_execute.communication_amount = communication_amount;
-  simcall->host_parallel_execute.amount = amount;
-  simcall->host_parallel_execute.rate = rate;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->host_parallel_execute.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_parallel_execute.result;
 }
 
 /**
@@ -286,11 +208,7 @@ smx_action_t simcall_host_parallel_execute(const char *name,
  */
 void simcall_host_execution_destroy(smx_action_t execution)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_EXECUTION_DESTROY;
-  simcall->host_execution_destroy.execution = execution;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_host_execution_destroy(execution);
 }
 
 /**
@@ -302,11 +220,7 @@ void simcall_host_execution_destroy(smx_action_t execution)
  */
 void simcall_host_execution_cancel(smx_action_t execution)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_EXECUTION_CANCEL;
-  simcall->host_execution_cancel.execution = execution;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_host_execution_cancel(execution);
 }
 
 /**
@@ -318,14 +232,7 @@ void simcall_host_execution_cancel(smx_action_t execution)
  */
 double simcall_host_execution_get_remains(smx_action_t execution)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_EXECUTION_GET_REMAINS;
-  simcall->host_execution_get_remains.execution = execution;
-  if(MC_is_active()) /* Initializeialize result to a default value for snapshot comparison done during simcall */
-    simcall->host_execution_get_remains.result = 0.0;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_execution_get_remains.result;
+  return simcall_BODY_host_execution_get_remains(execution);
 }
 
 /**
@@ -337,13 +244,7 @@ double simcall_host_execution_get_remains(smx_action_t execution)
  */
 e_smx_state_t simcall_host_execution_get_state(smx_action_t execution)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_EXECUTION_GET_STATE;
-  simcall->host_execution_get_state.execution = execution;
-  simcall->host_execution_get_state.result = -1;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_execution_get_state.result;
+  return simcall_BODY_host_execution_get_state(execution);
 }
 
 /**
@@ -359,12 +260,7 @@ void simcall_host_execution_set_priority(smx_action_t execution, double priority
   /* checking for infinite values */
   xbt_assert(isfinite(priority), "priority is not finite!");
   
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_EXECUTION_SET_PRIORITY;
-  simcall->host_execution_set_priority.execution = execution;
-  simcall->host_execution_set_priority.priority = priority;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_host_execution_set_priority(execution, priority);
 }
 
 /**
@@ -375,14 +271,7 @@ void simcall_host_execution_set_priority(smx_action_t execution, double priority
  */
 e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_HOST_EXECUTION_WAIT;
-  simcall->host_execution_wait.execution = execution;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->host_execution_wait.result = -1;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->host_execution_wait.result;
+  return simcall_BODY_host_execution_wait(execution);
 }
 
 /**
@@ -412,20 +301,9 @@ void simcall_process_create(smx_process_t *process, const char *name,
                               xbt_dict_t properties,
                               int auto_restart)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_CREATE;
-  simcall->process_create.process = process;
-  simcall->process_create.name = name;
-  simcall->process_create.code = code;
-  simcall->process_create.data = data;
-  simcall->process_create.hostname = hostname;
-  simcall->process_create.kill_time = kill_time;
-  simcall->process_create.argc = argc;
-  simcall->process_create.argv = argv;
-  simcall->process_create.properties = properties;
-  simcall->process_create.auto_restart = auto_restart;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_process_create(process, name, code, data, hostname,
+                              kill_time, argc, argv, properties,
+                              auto_restart);
 }
 
 /**
@@ -438,11 +316,7 @@ void simcall_process_create(smx_process_t *process, const char *name,
  */
 void simcall_process_kill(smx_process_t process)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_KILL;
-  simcall->process_kill.process = process;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_process_kill(process);
 }
 
 /**
@@ -451,10 +325,7 @@ void simcall_process_kill(smx_process_t process)
  */
 void simcall_process_killall(void)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_KILLALL;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_process_killall();
 }
 
 /**
@@ -464,11 +335,7 @@ void simcall_process_killall(void)
  */
 void simcall_process_cleanup(smx_process_t process)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_CLEANUP;
-  simcall->process_cleanup.process = process;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_process_cleanup(process);
 }
 
 /**
@@ -482,12 +349,7 @@ void simcall_process_cleanup(smx_process_t process)
  */
 void simcall_process_change_host(smx_process_t process, smx_host_t dest)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_CHANGE_HOST;
-  simcall->process_change_host.process = process;
-  simcall->process_change_host.dest = dest;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_process_change_host(process, dest);
 }
 
 /**
@@ -503,11 +365,7 @@ void simcall_process_suspend(smx_process_t process)
 {
   xbt_assert(process, "Invalid parameters");
 
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_SUSPEND;
-  simcall->process_suspend.process = process;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_process_suspend(process);
 }
 
 /**
@@ -521,11 +379,7 @@ void simcall_process_suspend(smx_process_t process)
  */
 void simcall_process_resume(smx_process_t process)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_RESUME;
-  simcall->process_resume.process = process;
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_process_resume(process);
 }
 
 /**
@@ -536,13 +390,7 @@ void simcall_process_resume(smx_process_t process)
  */
 int simcall_process_count(void)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_COUNT;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->process_count.result = -1;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->process_count.result;
+  return simcall_BODY_process_count();
 }
 
 /**
@@ -558,14 +406,7 @@ void* simcall_process_get_data(smx_process_t process)
     return SIMIX_process_get_data(process);
   }
 
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_GET_DATA;
-  simcall->process_get_data.process = process;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->process_get_data.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->process_get_data.result;
+  return simcall_BODY_process_get_data(process);
 }
 
 /**
@@ -583,13 +424,7 @@ void simcall_process_set_data(smx_process_t process, void *data)
     SIMIX_process_self_set_data(process, data);
   }
   else {
-
-    smx_simcall_t simcall = SIMIX_simcall_mine();
-
-    simcall->call = SIMCALL_PROCESS_SET_DATA;
-    simcall->process_set_data.process = process;
-    simcall->process_set_data.data = data;
-    SIMIX_simcall_push(simcall->issuer);
+    simcall_BODY_process_set_data(process, data);
   }
 }
 
@@ -622,14 +457,7 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
  */
 smx_host_t simcall_process_get_host(smx_process_t process)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_GET_HOST;
-  simcall->process_get_host.process = process;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->process_get_host.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->process_get_host.result;
+  return simcall_BODY_process_get_host(process);
 }
 
 /**
@@ -646,15 +474,7 @@ const char* simcall_process_get_name(smx_process_t process)
     /* avoid a simcall if this function is called by the process itself */
     return process->name;
   }
-
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_GET_NAME;
-  simcall->process_get_name.process = process;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->process_get_name.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->process_get_name.result;
+  return simcall_BODY_process_get_name(process);
 }
 
 /**
@@ -667,14 +487,7 @@ const char* simcall_process_get_name(smx_process_t process)
  */
 int simcall_process_is_suspended(smx_process_t process)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_IS_SUSPENDED;
-  simcall->process_is_suspended.process = process;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->process_is_suspended.result = -1;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->process_is_suspended.result;
+  return  simcall_BODY_process_is_suspended(process);
 }
 
 /**
@@ -685,14 +498,7 @@ int simcall_process_is_suspended(smx_process_t process)
  */
 xbt_dict_t simcall_process_get_properties(smx_process_t process)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_GET_PROPERTIES;
-  simcall->process_get_properties.process = process;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->process_get_properties.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->process_get_properties.result;
+  return simcall_BODY_process_get_properties(process);
 }
 /**
  * \ingroup simix_process_management
@@ -701,14 +507,7 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
  */
 XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fun, void *data)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_ON_EXIT;
-  simcall->process_on_exit.process = process;
-  simcall->process_on_exit.fun = fun;
-  simcall->process_on_exit.data = data;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_process_on_exit(process, fun, data);
 }
 /**
  * \ingroup simix_process_management
@@ -718,30 +517,16 @@ XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_t fu
 
 XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int auto_restart)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_AUTO_RESTART_SET;
-  simcall->process_auto_restart.process = process;
-  simcall->process_auto_restart.auto_restart = auto_restart;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_process_auto_restart_set(process, auto_restart);
 }
+
 /**
  * \ingroup simix_process_management
  * \brief Restarts the process, killing it and starting it again from scratch.
  */
 XBT_PUBLIC(smx_process_t) simcall_process_restart(smx_process_t process)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_RESTART;
-  simcall->process_restart.process = process;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->process_restart.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-
-  return simcall->process_restart.result;
+  return simcall_BODY_process_restart(process);
 }
 /**
  * \ingroup simix_process_management
@@ -758,15 +543,7 @@ e_smx_state_t simcall_process_sleep(double duration)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(duration), "duration is not finite!");
-  
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_PROCESS_SLEEP;
-  simcall->process_sleep.duration = duration;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->process_sleep.result = -1;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->process_sleep.result;
+  return simcall_BODY_process_sleep(duration);
 }
 
 /**
@@ -777,15 +554,7 @@ e_smx_state_t simcall_process_sleep(double duration)
  */
 smx_rdv_t simcall_rdv_create(const char *name)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_RDV_CREATE;
-  simcall->rdv_create.name = name;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->rdv_create.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->rdv_create.result;
+  return simcall_BODY_rdv_create(name);
 }
 
 
@@ -796,12 +565,7 @@ smx_rdv_t simcall_rdv_create(const char *name)
  */
 void simcall_rdv_destroy(smx_rdv_t rdv)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_RDV_DESTROY;
-  simcall->rdv_destroy.rdv = rdv;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_rdv_destroy(rdv);
 }
 /**
  *  \ingroup simix_rdv_management
@@ -835,16 +599,7 @@ smx_rdv_t simcall_rdv_get_by_name(const char *name)
  */
 int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_RDV_COMM_COUNT_BY_HOST;
-  simcall->rdv_comm_count_by_host.rdv = rdv;
-  simcall->rdv_comm_count_by_host.host = host;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->rdv_comm_count_by_host.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->rdv_comm_count_by_host.result;
+  return simcall_BODY_rdv_comm_count_by_host(rdv, host);
 }
 
 /**
@@ -855,39 +610,17 @@ int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
  */
 smx_action_t simcall_rdv_get_head(smx_rdv_t rdv)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_RDV_GET_HEAD;
-  simcall->rdv_get_head.rdv = rdv;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->rdv_get_head.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->rdv_get_head.result;
+  return simcall_BODY_rdv_get_head(rdv);
 }
 
-void simcall_rdv_set_receiver(smx_rdv_t rdv , smx_process_t process)
+void simcall_rdv_set_receiver(smx_rdv_t rdv, smx_process_t process)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_RDV_SET_RECV;
-  simcall->rdv_set_rcv_proc.rdv = rdv;
-  simcall->rdv_set_rcv_proc.receiver = process;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_rdv_set_receiver(rdv, process);
 }
 
 smx_process_t simcall_rdv_get_receiver(smx_rdv_t rdv)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_RDV_GET_RECV;
-  simcall->rdv_get_rcv_proc.rdv = rdv;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->rdv_get_rcv_proc.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->rdv_get_rcv_proc.result;
+  return simcall_BODY_rdv_get_receiver(rdv);
 }
 
 /**
@@ -912,21 +645,11 @@ void simcall_comm_send(smx_rdv_t rdv, double task_size, double rate,
     simcall_comm_wait(comm, timeout);
   }
   else {
-    smx_simcall_t simcall = SIMIX_simcall_mine();
-
-    simcall->call = SIMCALL_COMM_SEND;
-    simcall->comm_send.rdv = rdv;
-    simcall->comm_send.task_size = task_size;
-    simcall->comm_send.rate = rate;
-    simcall->comm_send.src_buff = src_buff;
-    simcall->comm_send.src_buff_size = src_buff_size;
-    simcall->comm_send.match_fun = match_fun;
-    simcall->comm_send.data = data;
-    simcall->comm_send.timeout = timeout;
-
-    SIMIX_simcall_push(simcall->issuer);
+    simcall_BODY_comm_send(rdv, task_size, rate, src_buff, src_buff_size,
+                         match_fun, data, timeout);
   }
 }
+
 /**
  * \ingroup simix_comm_management
  */
@@ -943,23 +666,9 @@ smx_action_t simcall_comm_isend(smx_rdv_t rdv, double task_size, double rate,
   
   xbt_assert(rdv, "No rendez-vous point defined for isend");
 
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_ISEND;
-  simcall->comm_isend.rdv = rdv;
-  simcall->comm_isend.task_size = task_size;
-  simcall->comm_isend.rate = rate;
-  simcall->comm_isend.src_buff = src_buff;
-  simcall->comm_isend.src_buff_size = src_buff_size;
-  simcall->comm_isend.match_fun = match_fun;
-  simcall->comm_isend.clean_fun = clean_fun;
-  simcall->comm_isend.data = data;
-  simcall->comm_isend.detached = detached;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->comm_isend.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_isend.result;
+  return simcall_BODY_comm_isend(rdv, task_size, rate, src_buff,
+                                 src_buff_size, match_fun,
+                                 clean_fun, data, detached);
 }
 /**
  * \ingroup simix_comm_management
@@ -977,40 +686,20 @@ void simcall_comm_recv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
     simcall_comm_wait(comm, timeout);
   }
   else {
-    smx_simcall_t simcall = SIMIX_simcall_mine();
-
-    simcall->call = SIMCALL_COMM_RECV;
-    simcall->comm_recv.rdv = rdv;
-    simcall->comm_recv.dst_buff = dst_buff;
-    simcall->comm_recv.dst_buff_size = dst_buff_size;
-    simcall->comm_recv.match_fun = match_fun;
-    simcall->comm_recv.data = data;
-    simcall->comm_recv.timeout = timeout;
-
-    SIMIX_simcall_push(simcall->issuer);
+    simcall_BODY_comm_recv(rdv, dst_buff, dst_buff_size,
+                           match_fun, data, timeout);
   }
 }
 /**
  * \ingroup simix_comm_management
  */
-smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
+smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_action_t), void *data)
 {
   xbt_assert(rdv, "No rendez-vous point defined for irecv");
 
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_IRECV;
-  simcall->comm_irecv.rdv = rdv;
-  simcall->comm_irecv.dst_buff = dst_buff;
-  simcall->comm_irecv.dst_buff_size = dst_buff_size;
-  simcall->comm_irecv.match_fun = match_fun;
-  simcall->comm_irecv.data = data;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->comm_irecv.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_irecv.result;
+  return simcall_BODY_comm_irecv(rdv, dst_buff, dst_buff_size, 
+                                 match_fun, data);
 }
 
 
@@ -1022,19 +711,8 @@ smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
 {
   xbt_assert(rdv, "No rendez-vous point defined for iprobe");
 
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_IPROBE;
-  simcall->comm_iprobe.rdv = rdv;
-  simcall->comm_iprobe.src = src;
-  simcall->comm_iprobe.match_fun = match_fun;
-  simcall->comm_iprobe.data = data;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->comm_iprobe.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_iprobe.result;
+  return simcall_BODY_comm_iprobe(rdv, src, tag, match_fun, data);
 }
-
 
 void simcall_comm_destroy(smx_action_t comm)
 {
@@ -1051,64 +729,40 @@ void simcall_comm_destroy(smx_action_t comm)
   SIMIX_simcall_push(simcall->issuer);
   */
 }
+
 /**
  * \ingroup simix_comm_management
  */
 void simcall_comm_cancel(smx_action_t comm)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_CANCEL;
-  simcall->comm_cancel.comm = comm;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_comm_cancel(comm);
 }
+
 /**
  * \ingroup simix_comm_management
  */
 unsigned int simcall_comm_waitany(xbt_dynar_t comms)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_WAITANY;
-  simcall->comm_waitany.comms = comms;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->comm_waitany.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_waitany.result;
+  return simcall_BODY_comm_waitany(comms);
 }
+
 /**
  * \ingroup simix_comm_management
  */
 int simcall_comm_testany(xbt_dynar_t comms)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
   if (xbt_dynar_is_empty(comms))
     return -1;
-
-  simcall->call = SIMCALL_COMM_TESTANY;
-  simcall->comm_testany.comms = comms;
-    if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-      simcall->comm_testany.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_testany.result;
+  return simcall_BODY_comm_testany(comms);
 }
+
 /**
  * \ingroup simix_comm_management
  */
 void simcall_comm_wait(smx_action_t comm, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
-  
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_WAIT;
-  simcall->comm_wait.comm = comm;
-  simcall->comm_wait.timeout = timeout;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_comm_wait(comm, timeout);
 }
 
 #ifdef HAVE_TRACING
@@ -1124,143 +778,80 @@ void simcall_set_category(smx_action_t action, const char *category)
   if (category == NULL) {
     return;
   }
-
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_SET_CATEGORY;
-  simcall->set_category.action = action;
-  simcall->set_category.category = category;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_set_category(action, category);
 }
 #endif
+
 /**
  * \ingroup simix_comm_management
  *
  */
 int simcall_comm_test(smx_action_t comm)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_TEST;
-  simcall->comm_test.comm = comm;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->comm_test.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_test.result;
+  return simcall_BODY_comm_test(comm);
 }
+
 /**
  * \ingroup simix_comm_management
  *
  */
 double simcall_comm_get_remains(smx_action_t comm)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_GET_REMAINS;
-  simcall->comm_get_remains.comm = comm;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->comm_get_remains.result = 0.0;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_get_remains.result;
+  return simcall_BODY_comm_get_remains(comm);
 }
+
 /**
  * \ingroup simix_comm_management
  *
  */
 e_smx_state_t simcall_comm_get_state(smx_action_t comm)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_GET_STATE;
-  simcall->comm_get_state.comm = comm;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->comm_get_state.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_get_state.result;
+  return simcall_BODY_comm_get_state(comm);
 }
+
 /**
  * \ingroup simix_comm_management
  *
  */
 void *simcall_comm_get_src_data(smx_action_t comm)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_GET_SRC_DATA;
-  simcall->comm_get_src_data.comm = comm;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->comm_get_src_data.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_get_src_data.result;
+  return simcall_BODY_comm_get_src_data(comm);
 }
+
 /**
  * \ingroup simix_comm_management
  *
  */
 void *simcall_comm_get_dst_data(smx_action_t comm)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_GET_DST_DATA;
-  simcall->comm_get_dst_data.comm = comm;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->comm_get_dst_data.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_get_dst_data.result;
+  return simcall_BODY_comm_get_dst_data(comm);
 }
+
 /**
  * \ingroup simix_comm_management
  *
  */
 smx_process_t simcall_comm_get_src_proc(smx_action_t comm)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_GET_SRC_PROC;
-  simcall->comm_get_src_proc.comm = comm;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->comm_get_src_proc.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_get_src_proc.result;
+  return simcall_BODY_comm_get_src_proc(comm);
 }
+
 /**
  * \ingroup simix_comm_management
  *
  */
 smx_process_t simcall_comm_get_dst_proc(smx_action_t comm)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_GET_DST_PROC;
-  simcall->comm_get_dst_proc.comm = comm;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->comm_get_dst_proc.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_get_dst_proc.result;
+  return simcall_BODY_comm_get_dst_proc(comm);  
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 int simcall_comm_is_latency_bounded(smx_action_t comm)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COMM_IS_LATENCY_BOUNDED;
-  simcall->comm_is_latency_bounded.comm = comm;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->comm_is_latency_bounded.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->comm_is_latency_bounded.result;
+  return simcall_BODY_comm_is_latency_bounded(comm);
 }
 #endif
+
 /**
  * \ingroup simix_synchro_management
  *
@@ -1271,125 +862,81 @@ smx_mutex_t simcall_mutex_init(void)
     fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
     xbt_abort();
   }
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_MUTEX_INIT;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->mutex_init.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->mutex_init.result;
+  return simcall_BODY_mutex_init();
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_mutex_destroy(smx_mutex_t mutex)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_MUTEX_DESTROY;
-  simcall->mutex_destroy.mutex = mutex;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_mutex_destroy(mutex);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_mutex_lock(smx_mutex_t mutex)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_MUTEX_LOCK;
-  simcall->mutex_lock.mutex = mutex;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_mutex_lock(mutex);  
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 int simcall_mutex_trylock(smx_mutex_t mutex)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_MUTEX_TRYLOCK;
-  simcall->mutex_trylock.mutex = mutex;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->mutex_trylock.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->mutex_trylock.result;
+  return simcall_BODY_mutex_trylock(mutex);  
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_mutex_unlock(smx_mutex_t mutex)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_MUTEX_UNLOCK;
-  simcall->mutex_unlock.mutex = mutex;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_mutex_unlock(mutex); 
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 smx_cond_t simcall_cond_init(void)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COND_INIT;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->cond_init.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->cond_init.result;
+  return simcall_BODY_cond_init();
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_cond_destroy(smx_cond_t cond)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COND_DESTROY;
-  simcall->cond_destroy.cond = cond;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_cond_destroy(cond);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_cond_signal(smx_cond_t cond)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COND_SIGNAL;
-  simcall->cond_signal.cond = cond;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_cond_signal(cond);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COND_WAIT;
-  simcall->cond_wait.cond = cond;
-  simcall->cond_wait.mutex = mutex;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_cond_wait(cond, mutex);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
@@ -1399,100 +946,63 @@ void simcall_cond_wait_timeout(smx_cond_t cond,
                                  double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
-  
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COND_WAIT_TIMEOUT;
-  simcall->cond_wait_timeout.cond = cond;
-  simcall->cond_wait_timeout.mutex = mutex;
-  simcall->cond_wait_timeout.timeout = timeout;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_cond_wait_timeout(cond, mutex, timeout);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_cond_broadcast(smx_cond_t cond)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_COND_BROADCAST;
-  simcall->cond_broadcast.cond = cond;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_cond_broadcast(cond);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 smx_sem_t simcall_sem_init(int capacity)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_SEM_INIT;
-  simcall->sem_init.capacity = capacity;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->sem_init.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->sem_init.result;
+  return simcall_BODY_sem_init(capacity);  
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_sem_destroy(smx_sem_t sem)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_SEM_DESTROY;
-  simcall->sem_destroy.sem = sem;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_sem_destroy(sem);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_sem_release(smx_sem_t sem)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_SEM_RELEASE;
-  simcall->sem_release.sem = sem;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_sem_release(sem);  
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 int simcall_sem_would_block(smx_sem_t sem)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_SEM_WOULD_BLOCK;
-  simcall->sem_would_block.sem = sem;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->sem_would_block.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->sem_would_block.result;
+  return simcall_BODY_sem_would_block(sem);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 void simcall_sem_acquire(smx_sem_t sem)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_SEM_ACQUIRE;
-  simcall->sem_acquire.sem = sem;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_sem_acquire(sem);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
@@ -1500,120 +1010,61 @@ void simcall_sem_acquire(smx_sem_t sem)
 void simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
 {
   xbt_assert(isfinite(timeout), "timeout is not finite!");
-  
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_SEM_ACQUIRE_TIMEOUT;
-  simcall->sem_acquire_timeout.sem = sem;
-  simcall->sem_acquire_timeout.timeout = timeout;
-
-  SIMIX_simcall_push(simcall->issuer);
+  simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
+
 /**
  * \ingroup simix_synchro_management
  *
  */
 int simcall_sem_get_capacity(smx_sem_t sem)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_SEM_GET_CAPACITY;
-  simcall->sem_get_capacity.sem = sem;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->sem_get_capacity.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-  return simcall->sem_get_capacity.result;
+  return simcall_BODY_sem_get_capacity(sem);
 }
+
 /**
  * \ingroup simix_file_management
  *
  */
 double simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_FILE_READ;
-  simcall->file_read.ptr = ptr;
-  simcall->file_read.size = size;
-  simcall->file_read.nmemb = nmemb;
-  simcall->file_read.stream = stream;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->file_read.result = 0.0;
-  SIMIX_simcall_push(simcall->issuer);
-
-  return simcall->file_read.result;
+  return simcall_BODY_file_read(ptr, size, nmemb, stream);
 }
+
 /**
  * \ingroup simix_file_management
  *
  */
 size_t simcall_file_write(const void* ptr, size_t size, size_t nmemb, smx_file_t stream)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_FILE_WRITE;
-  simcall->file_write.ptr = ptr;
-  simcall->file_write.size = size;
-  simcall->file_write.nmemb = nmemb;
-  simcall->file_write.stream = stream;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->file_write.result = 0;
-  SIMIX_simcall_push(simcall->issuer);
-
-  return simcall->file_write.result;
+  return simcall_BODY_file_write(ptr, size, nmemb, stream);
 }
+
 /**
  * \ingroup simix_file_management
  * \brief
  */
 smx_file_t simcall_file_open(const char* mount, const char* path, const char* mode)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_FILE_OPEN;
-  simcall->file_open.mount = mount;
-  simcall->file_open.path = path;
-  simcall->file_open.mode = mode;
-  if(MC_is_active()) /* Initialize result to NULL for snapshot comparison done during simcall */
-    simcall->file_open.result = NULL;
-  SIMIX_simcall_push(simcall->issuer);
-
-  return simcall->file_open.result;
+  return simcall_BODY_file_open(mount, path, mode);
 }
+
 /**
  * \ingroup simix_file_management
  *
  */
 int simcall_file_close(smx_file_t fp)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-
-  simcall->call = SIMCALL_FILE_CLOSE;
-  simcall->file_close.fp = fp;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->file_close.result = -1;
-  SIMIX_simcall_push(simcall->issuer);
-
-  return simcall->file_close.result;
+  return simcall_BODY_file_close(fp);  
 }
+
 /**
  * \ingroup simix_file_management
  *
  */
 int simcall_file_stat(smx_file_t fd, s_file_stat_t *buf)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-  simcall->call = SIMCALL_FILE_STAT;
-  simcall->file_stat.fd = fd;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->file_stat.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-
-  *buf = simcall->file_stat.buf;
-
-  return simcall->file_stat.result;
+  return simcall_BODY_file_stat(fd, buf);
 }
 
 /**
@@ -1622,15 +1073,7 @@ int simcall_file_stat(smx_file_t fd, s_file_stat_t *buf)
  */
 int simcall_file_unlink(smx_file_t fd)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-  simcall->call = SIMCALL_FILE_UNLINK;
-  simcall->file_unlink.fd = fd;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->file_unlink.result = -1;
-
-  SIMIX_simcall_push(simcall->issuer);
-
-  return simcall->file_unlink.result;
+  return simcall_BODY_file_unlink(fd);
 }
 
 /**
@@ -1639,43 +1082,18 @@ int simcall_file_unlink(smx_file_t fd)
  */
 xbt_dict_t simcall_file_ls(const char* mount, const char* path)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-  simcall->call = SIMCALL_FILE_LS;
-  simcall->file_ls.mount = mount;
-  simcall->file_ls.path = path;
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->file_ls.result = NULL;
-
-  SIMIX_simcall_push(simcall->issuer);
-
-  return simcall->file_ls.result;
+  return simcall_BODY_file_ls(mount, path);
 }
 
 #ifdef HAVE_MC
 
 void *simcall_mc_snapshot(void)
 {
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-  simcall->call = SIMCALL_MC_SNAPSHOT;
-  
-  SIMIX_simcall_push(simcall->issuer);
-
-  return simcall->mc_snapshot.s;
+  return simcall_BODY_mc_snapshot();
 }
 
-int simcall_mc_compare_snapshots(void *s1, void *s2){
-  
-  smx_simcall_t simcall = SIMIX_simcall_mine();
-  simcall->call = SIMCALL_MC_COMPARE_SNAPSHOTS;
-  simcall->mc_compare_snapshots.snapshot1 = s1;
-  simcall->mc_compare_snapshots.snapshot2 = s2;
-  
-  if(MC_is_active()) /* Initialize result to a default value for snapshot comparison done during simcall */
-    simcall->mc_compare_snapshots.result = -1;
-  
-  SIMIX_simcall_push(simcall->issuer);
-  
-  return simcall->mc_compare_snapshots.result;
+int simcall_mc_compare_snapshots(void *s1, void *s2){ 
+  return simcall_BODY_mc_compare_snapshots(s1, s2);
 }
 
 #endif /* HAVE_MC */

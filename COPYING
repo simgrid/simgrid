@@ -63,7 +63,7 @@ The file src/xbt/snprintf.c contains this license text:
  *   If not, I'll be glad to provide one.
  *
  */
- 
+
 =========================================================================
 
 The exception handling mecanism (mainly living in src/xbt/ex.c and
@@ -103,7 +103,7 @@ from the iksemel one (http://code.google.com/p/iksemel/). Both the
 original and the current version of this code is distributed under the
 LGPL v2.1 license.
 
-========================================================================= 
+=========================================================================
 
 The xbt/mmalloc module was adapted from the mmalloc module of gdb.
 Both the simgrid version and the original version is distributed under
@@ -138,19 +138,19 @@ Their copyright is the following:
  *
  *      You should have received a copy of the GNU Lesser General Public
  *      License along with SimGrid in the file LICENSE-LGPL-2.1;
- *      if not, write to the Free Software Foundation, Inc., 
+ *      if not, write to the Free Software Foundation, Inc.,
  *      51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
- 
+
 =========================================================================
 
-Some examples for SMPI were borowed from an IBM test suite. 
+Some examples for SMPI were borowed from an IBM test suite.
 Their copyright is the following:
 /**
  * MESSAGE PASSING INTERFACE TEST CASE SUITE
  *
  * Copyright IBM Corp. 1995
- * 
+ *
  * IBM Corp. hereby grants a non-exclusive license to use, copy, modify, and
  *distribute this software for any purpose and without fee provided that the
  *above copyright notice and the following paragraphs appear in all copies.
@@ -169,15 +169,15 @@ Their copyright is the following:
  * ENHANCEMENTS, OR MODIFICATIONS.
  * ***************************************************************************
  **/
- 
+
 List of files:
  examples/smpi/scatter.c
  examples/smpi/reduce.c
  examples/smpi/allreduce.c
  examples/smpi/alltoall2.c
- 
 
-========================================================================= 
+
+=========================================================================
 
 examples/smpi/alltoallv.c was borowed from the MPICH2 test files. It
 can be found for example in mpich2 1.2.1.1 under the name
@@ -238,8 +238,8 @@ purpose and non-infringement.
 <-------------------- end of MPICH2 COPYRIGHT file -------------------->
 
 
-========================================================================= 
- 
+=========================================================================
+
 
 The directory examples/smpi/NAS contains a tweaked version of the
 NAS Parallel Benchmark Team. The original software were retrieved from

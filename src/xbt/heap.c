@@ -96,7 +96,7 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
   if (count > size) {
     H->size = (size << 1) + 1;
     H->items =
-        (void *) realloc(H->items,
+        (void *) xbt_realloc(H->items,
                          (H->size) * sizeof(struct xbt_heap_item));
   }
 
@@ -136,7 +136,7 @@ void *xbt_heap_pop(xbt_heap_t H)
   if (H->count < size >> 2 && size > 16) {
     size = (size >> 1) + 1;
     H->items =
-        (void *) realloc(items,
+        (void *) xbt_realloc(items,
                          size * sizeof(struct xbt_heap_item));
     H->size = size;
   }

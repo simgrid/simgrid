@@ -10,6 +10,7 @@
 #include "xbt/swag.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
+#include "xbt/graph.h"
 #include "xbt/misc.h"
 #include "xbt/file_stat.h"
 #include "portable.h"
@@ -21,6 +22,21 @@
 
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
+
+/* user-visible parameters */
+extern double sg_tcp_gamma;
+extern double sg_sender_gap;
+extern double sg_latency_factor;
+extern double sg_bandwidth_factor;
+extern double sg_weight_S_parameter;
+extern int sg_maxmin_selective_update;
+extern int sg_network_crosstraffic;
+#ifdef HAVE_GTNETS
+extern double sg_gtnets_jitter;
+extern int sg_gtnets_jitter_seed;
+#endif
+extern xbt_dynar_t surf_path;
+
 
 typedef enum {
   SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
@@ -182,13 +198,6 @@ typedef struct surf_cpu_model_extension_public {
   e_surf_resource_state_t(*get_state) (void *cpu);
   double (*get_speed) (void *cpu, double load);
   double (*get_available_speed) (void *cpu);
-  void* (*create_resource) (const char *name, double power_peak,
-                           double power_scale,
-                           tmgr_trace_t power_trace,
-                           int core,
-                           e_surf_resource_state_t state_initial,
-                           tmgr_trace_t state_trace,
-                           xbt_dict_t cpu_properties);
   void (*add_traces) (void);
 } s_surf_model_extension_cpu_t;
 
@@ -208,16 +217,6 @@ typedef struct surf_network_model_extension_public {
   double (*get_link_latency) (const void *link);
   int (*link_shared) (const void *link);
   void (*add_traces) (void);
-  void* (*create_resource) (const char *name,
-                           double bw_initial,
-                           tmgr_trace_t bw_trace,
-                           double lat_initial,
-                           tmgr_trace_t lat_trace,
-                           e_surf_resource_state_t
-                           state_initial,
-                           tmgr_trace_t state_trace,
-                           e_surf_link_sharing_policy_t policy,
-                           xbt_dict_t properties);
 } s_surf_model_extension_network_t;
 
 /* Storage model */
@@ -236,7 +235,6 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*stat) (void *storage, surf_file_t stream);
   surf_action_t(*unlink) (void *storage, surf_file_t stream);
   surf_action_t(*ls) (void *storage, const char *path);
-  void* (*create_resource) (const char* id, const char* model, const char* type_id, const char *content);
 } s_surf_model_extension_storage_t;
 
      /** \ingroup SURF_models
@@ -274,22 +272,6 @@ typedef struct surf_workstation_model_extension_public {
 
   int (*link_shared) (const void *link);
    xbt_dict_t(*get_properties) (const void *resource);
-  void* (*link_create_resource) (const char *name,
-                                double bw_initial,
-                                tmgr_trace_t bw_trace,
-                                double lat_initial,
-                                tmgr_trace_t lat_trace,
-                                e_surf_resource_state_t
-                                state_initial,
-                                tmgr_trace_t state_trace,
-                                e_surf_link_sharing_policy_t
-                                policy, xbt_dict_t properties);
-  void* (*cpu_create_resource) (const char *name, double power_peak,
-                               double power_scale,
-                               tmgr_trace_t power_trace,
-                               e_surf_resource_state_t state_initial,
-                               tmgr_trace_t state_trace,
-                               xbt_dict_t cpu_properties);
   void (*add_traces) (void);
 
 } s_surf_model_extension_workstation_t;
@@ -672,12 +654,6 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
 /*******************************************/
 /*** SURF Globals **************************/
 /*******************************************/
-XBT_PUBLIC_DATA(xbt_cfg_t) _surf_cfg_set;
-XBT_PUBLIC(int) surf_cfg_get_int(const char* name);
-XBT_PUBLIC(double) surf_cfg_get_double(const char* name);
-XBT_PUBLIC(char*) surf_cfg_get_string(const char* name);
-XBT_PUBLIC(void) surf_cfg_get_peer(const char *name, char **peer, int *port);
-XBT_PUBLIC(xbt_dynar_t) surf_cfg_get_dynar(const char* name);
 
 /** \ingroup SURF_simulation
  *  \brief Initialize SURF
@@ -756,6 +732,30 @@ int surf_get_nthreads(void);
 void surf_set_nthreads(int nthreads);
 
 void surf_watched_hosts(void);
+
+/*
+ * Returns the initial path. On Windows the initial path is
+ * the current directory for the current process in the other
+ * case the function returns "./" that represents the current
+ * directory on Unix/Linux platforms.
+ */
+const char *__surf_get_initial_path(void);
+
+/********** Tracing **********/
+/* from surf_instr.c */
+void TRACE_surf_action(surf_action_t surf_action, const char *category);
+void TRACE_surf_alloc(void);
+void TRACE_surf_release(void);
+
+/* instr_routing.c */
+void instr_routing_define_callbacks (void);
+void instr_new_variable_type (const char *new_typename, const char *color);
+void instr_new_user_variable_type  (const char *father_type, const char *new_typename, const char *color);
+void instr_new_user_state_type (const char *father_type, const char *new_typename);
+void instr_new_value_for_user_state_type (const char *typename, const char *value, const char *color);
+int instr_platform_traced (void);
+xbt_graph_t instr_routing_platform_graph (void);
+void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
 SG_END_DECL()
 #endif                          /* _SURF_SURF_H */

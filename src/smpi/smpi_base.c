@@ -11,6 +11,7 @@
 #include <errno.h>
 #include "simix/smx_private.h"
 #include "surf/surf.h"
+#include "simgrid/sg_config.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
@@ -23,8 +24,18 @@ static int match_recv(void* a, void* b, smx_action_t ignored) {
 
   xbt_assert(ref, "Cannot match recv against null reference");
   xbt_assert(req, "Cannot match recv against null request");
-  return (ref->src == MPI_ANY_SOURCE || req->src == ref->src)
-    && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag);
+  if((ref->src == MPI_ANY_SOURCE || req->src == ref->src)
+    && (ref->tag == MPI_ANY_TAG || req->tag == ref->tag)){
+    //we match, we can transfer some values
+    // FIXME : move this to the copy function ?
+    if(ref->src == MPI_ANY_SOURCE)ref->real_src = req->src;
+    if(ref->tag == MPI_ANY_TAG)ref->real_tag = req->tag;
+    if(ref->real_size < req->real_size) ref->truncated = 1;
+    if(req->detached==1){
+        ref->detached_sender=req; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
+    }
+    return 1;
+  }else return 0;
 }
 
 static int match_send(void* a, void* b,smx_action_t ignored) {
@@ -33,8 +44,120 @@ static int match_send(void* a, void* b,smx_action_t ignored) {
    XBT_DEBUG("Trying to match a send of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
    xbt_assert(ref, "Cannot match send against null reference");
    xbt_assert(req, "Cannot match send against null request");
-   return (req->src == MPI_ANY_SOURCE || req->src == ref->src)
-          && (req->tag == MPI_ANY_TAG || req->tag == ref->tag);
+
+   if((req->src == MPI_ANY_SOURCE || req->src == ref->src)
+             && (req->tag == MPI_ANY_TAG || req->tag == ref->tag))
+   {
+     if(req->src == MPI_ANY_SOURCE)req->real_src = ref->src;
+     if(req->tag == MPI_ANY_TAG)req->real_tag = ref->tag;
+     if(req->real_size < ref->real_size) req->truncated = 1;
+     if(ref->detached==1){
+         req->detached_sender=ref; //tie the sender to the receiver, as it is detached and has to be freed in the receiver
+     }
+
+     return 1;
+   } else return 0;
+}
+
+
+typedef struct s_smpi_factor *smpi_factor_t;
+typedef struct s_smpi_factor {
+  long factor;
+  int nb_values;
+  double values[4];//arbitrary set to 4
+} s_smpi_factor_t;
+xbt_dynar_t smpi_os_values = NULL;
+xbt_dynar_t smpi_or_values = NULL;
+
+
+// Methods used to parse and store the values for timing injections in smpi
+// These are taken from surf/network.c and generalized to have more factors
+// These methods should be merged with those in surf/network.c (moved somewhere in xbt ?)
+
+static int factor_cmp(const void *pa, const void *pb)
+{
+  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor);
+}
+
+
+static xbt_dynar_t parse_factor(const char *smpi_coef_string)
+{
+  char *value = NULL;
+  unsigned int iter = 0;
+  s_smpi_factor_t fact;
+  int i=0;
+  xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = NULL;
+
+  smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), NULL);
+  radical_elements = xbt_str_split(smpi_coef_string, ";");
+  xbt_dynar_foreach(radical_elements, iter, value) {
+    fact.nb_values=0;
+    radical_elements2 = xbt_str_split(value, ":");
+    if (xbt_dynar_length(radical_elements2) <2 || xbt_dynar_length(radical_elements2) > 5)
+      xbt_die("Malformed radical for smpi factor!");
+    for(i =0; i<xbt_dynar_length(radical_elements2);i++ ){
+        if (i==0){
+           fact.factor = atol(xbt_dynar_get_as(radical_elements2, i, char *));
+        }else{
+           fact.values[fact.nb_values] = atof(xbt_dynar_get_as(radical_elements2, i, char *));
+           fact.nb_values++;
+        }
+    }
+
+    xbt_dynar_push_as(smpi_factor, s_smpi_factor_t, fact);
+    XBT_DEBUG("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
+    xbt_dynar_free(&radical_elements2);
+  }
+  xbt_dynar_free(&radical_elements);
+  iter=0;
+  xbt_dynar_sort(smpi_factor, &factor_cmp);
+  xbt_dynar_foreach(smpi_factor, iter, fact) {
+    XBT_DEBUG("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
+  }
+  return smpi_factor;
+}
+
+static double smpi_os(double size)
+{
+  if (!smpi_os_values)
+    smpi_os_values =
+        parse_factor(sg_cfg_get_string("smpi/os"));
+
+  unsigned int iter = 0;
+  s_smpi_factor_t fact;
+  double current=0.0;
+  xbt_dynar_foreach(smpi_os_values, iter, fact) {
+    if (size <= fact.factor) {
+        XBT_DEBUG("os : %lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else{
+      current=fact.values[0]+fact.values[1]*size;
+    }
+  }
+  XBT_DEBUG("os : %lf > %ld return %f", size, fact.factor, current);
+
+  return current;
+}
+
+static double smpi_or(double size)
+{
+  if (!smpi_or_values)
+    smpi_or_values =
+        parse_factor(sg_cfg_get_string("smpi/or"));
+
+  unsigned int iter = 0;
+  s_smpi_factor_t fact;
+  double current=0.0;
+  xbt_dynar_foreach(smpi_or_values, iter, fact) {
+    if (size <= fact.factor) {
+        XBT_DEBUG("or : %lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else
+      current=fact.values[0]+fact.values[1]*size;
+  }
+  XBT_DEBUG("or : %lf > %ld return %f", size, fact.factor, current);
+
+  return current;
 }
 
 static MPI_Request build_request(void *buf, int count,
@@ -50,16 +173,16 @@ static MPI_Request build_request(void *buf, int count,
   s_smpi_subtype_t *subtype = datatype->substruct;
 
   if(datatype->has_subtype == 1){
-    // This part handles the problem of non-contignous memory
+    // This part handles the problem of non-contiguous memory
     old_buf = buf;
-    buf = malloc(count*smpi_datatype_size(datatype));
+    buf = xbt_malloc(count*smpi_datatype_size(datatype));
     if (flags & SEND) {
       subtype->serialize(old_buf, buf, count, datatype->substruct);
     }
   }
 
   request->buf = buf;
-  // This part handles the problem of non-contignous memory (for the
+  // This part handles the problem of non-contiguous memory (for the
   // unserialisation at the reception)
   request->old_buf = old_buf;
   request->old_type = datatype;
@@ -72,10 +195,19 @@ static MPI_Request build_request(void *buf, int count,
   request->action = NULL;
   request->flags = flags;
   request->detached = 0;
+  request->detached_sender = NULL;
+
+  request->truncated = 0;
+  request->real_size = 0;
+  request->real_tag = 0;
+
+  request->refcount=1;
 #ifdef HAVE_TRACING
   request->send = 0;
   request->recv = 0;
 #endif
+  if (flags & SEND) smpi_datatype_unuse(datatype);
+
   return request;
 }
 
@@ -130,7 +262,7 @@ MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
   MPI_Request request =
     build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
                   comm, PERSISTENT | SEND);
-
+  request->refcount++;
   return request;
 }
 
@@ -140,7 +272,7 @@ MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
   MPI_Request request =
     build_request(buf, count, datatype, src, smpi_comm_rank(comm), tag,
                   comm, PERSISTENT | RECV);
-
+  request->refcount++;
   return request;
 }
 
@@ -152,13 +284,21 @@ void smpi_mpi_start(MPI_Request request)
              "Cannot (re)start a non-finished communication");
   if(request->flags & RECV) {
     print_request("New recv", request);
-    if (request->size < surf_cfg_get_int("smpi/async_small_thres"))
+    if (request->size < sg_cfg_get_int("smpi/async_small_thres"))
       mailbox = smpi_process_mailbox_small();
     else
       mailbox = smpi_process_mailbox();
+    // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
+    request->real_size=request->size;
+    smpi_datatype_use(request->old_type);
+    request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
 
-    // FIXME: SIMIX does not yet support non-contiguous datatypes
-    request->action = simcall_comm_irecv(mailbox, request->buf, &request->size, &match_recv, request);
+    double sleeptime = smpi_or(request->size);
+    if(sleeptime!=0.0){
+        simcall_process_sleep(sleeptime);
+        XBT_DEBUG("receiving size of %ld : sleep %lf ", request->size, smpi_or(request->size));
+    }
+
   } else {
 
     int receiver = smpi_group_index(smpi_comm_group(request->comm), request->dst);
@@ -167,7 +307,7 @@ void smpi_mpi_start(MPI_Request request)
 /*      return;*/
 /*    }*/
     print_request("New send", request);
-    if (request->size < surf_cfg_get_int("smpi/async_small_thres")) { // eager mode
+    if (request->size < sg_cfg_get_int("smpi/async_small_thres")) { // eager mode
       mailbox = smpi_process_remote_mailbox_small(receiver);
     }else{
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
@@ -175,19 +315,28 @@ void smpi_mpi_start(MPI_Request request)
     }
     if (request->size < 64*1024 ) { //(FIXME: this limit should be configurable)
       void *oldbuf = NULL;
+      request->detached = 1;
+      request->refcount++;
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
-        request->detached = 1;
-        request->buf = malloc(request->size);
-        if (oldbuf)
+        if (oldbuf){
+          request->buf = xbt_malloc(request->size);
           memcpy(request->buf,oldbuf,request->size);
+        }
       }
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     }
-
+    // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
+    request->real_size=request->size;
+    smpi_datatype_use(request->old_type);
+    double sleeptime = smpi_os(request->size);
+    if(sleeptime!=0.0){
+        simcall_process_sleep(sleeptime);
+        XBT_DEBUG("sending size of %ld : sleep %lf ", request->size, smpi_os(request->size));
+    }
     request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
-                         request->buf, request->size,
+                         request->buf, request->real_size,
                          &match_send,
                          &smpi_mpi_request_free_voidp, // how to free the userdata if a detached send fails
                          request,
@@ -215,8 +364,18 @@ void smpi_mpi_startall(int count, MPI_Request * requests)
 
 void smpi_mpi_request_free(MPI_Request * request)
 {
-  xbt_free(*request);
-  *request = MPI_REQUEST_NULL;
+
+  if((*request) != MPI_REQUEST_NULL){
+    (*request)->refcount--;
+    if((*request)->refcount<0) xbt_die("wrong refcount");
+
+    if((*request)->refcount==0){
+        xbt_free(*request);
+        *request = MPI_REQUEST_NULL;
+    }
+  }else{
+      xbt_die("freeing an already free request");
+  }
 }
 
 MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype,
@@ -233,7 +392,8 @@ MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-    smpi_isend_init(buf, count, datatype, dst, tag, comm);
+      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                    comm, NON_PERSISTENT | SEND);
 
   smpi_mpi_start(request);
   return request;
@@ -252,7 +412,8 @@ MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
                            int src, int tag, MPI_Comm comm)
 {
   MPI_Request request =
-    smpi_irecv_init(buf, count, datatype, src, tag, comm);
+      build_request(buf, count, datatype, src, smpi_comm_rank(comm), tag,
+                    comm, NON_PERSISTENT | RECV);
 
   smpi_mpi_start(request);
   return request;
@@ -272,9 +433,9 @@ void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm)
 {
   MPI_Request request;
-
   request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -305,35 +466,36 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
-  // if we have a sender, we should use its data, and not the data from the receive
-  //FIXME : mail fail if req->action has already been freed, the pointer being invalid
-  if((req->action)&&
-     (req->src==MPI_ANY_SOURCE || req->tag== MPI_ANY_TAG))
-    req = (MPI_Request)SIMIX_comm_get_src_data((*request)->action);
-
-  if(status != MPI_STATUS_IGNORE) {
-    status->MPI_SOURCE = req->src;
-    status->MPI_TAG = req->tag;
-    //if((*request)->action && ((MPI_Request)SIMIX_comm_get_src_data((*request)->action))->size == (*request)->size)
-    status->MPI_ERROR = MPI_SUCCESS;
-    //else status->MPI_ERROR = MPI_ERR_TRUNCATE;
-    // this handles the case were size in receive differs from size in send
-    // FIXME: really this should just contain the count of receive-type blocks,
-    // right?
-    status->count = req->size;
-  }
-  req = *request;
-
-  print_request("Finishing", req);
-  MPI_Datatype datatype = req->old_type;
-  if(datatype->has_subtype == 1){
-      // This part handles the problem of non-contignous memory
-      // the unserialization at the reception
-    s_smpi_subtype_t *subtype = datatype->substruct;
-    if(req->flags & RECV) {
-      subtype->unserialize(req->buf, req->old_buf, req->size/smpi_datatype_size(datatype) , datatype->substruct);
+  if(!(req->detached && req->flags & SEND)){
+    if(status != MPI_STATUS_IGNORE) {
+      status->MPI_SOURCE = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
+      status->MPI_TAG = req->tag == MPI_ANY_TAG ? req->real_tag : req->tag;
+      if(req->truncated)
+      status->MPI_ERROR = MPI_ERR_TRUNCATE;
+      else status->MPI_ERROR = MPI_SUCCESS ;
+      // this handles the case were size in receive differs from size in send
+      // FIXME: really this should just contain the count of receive-type blocks,
+      // right?
+      status->count = req->real_size;
     }
-    if(req->detached == 0) free(req->buf);
+
+    print_request("Finishing", req);
+    MPI_Datatype datatype = req->old_type;
+
+    if(datatype->has_subtype == 1){
+        // This part handles the problem of non-contignous memory
+        // the unserialization at the reception
+      s_smpi_subtype_t *subtype = datatype->substruct;
+      if(req->flags & RECV) {
+        subtype->unserialize(req->buf, req->old_buf, req->real_size/smpi_datatype_size(datatype) , datatype->substruct);
+      }
+      if(req->detached == 0) free(req->buf);
+    }
+    smpi_datatype_unuse(datatype);
+  }
+
+  if(req->detached_sender!=NULL){
+    smpi_mpi_request_free(&(req->detached_sender));
   }
 
   if(req->flags & NON_PERSISTENT) {
@@ -352,6 +514,7 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
   else
     flag = simcall_comm_test((*request)->action);
   if(flag) {
+    (*request)->refcount++;
     finish_wait(request, status);
   }else{
     smpi_empty_status(status);
@@ -444,7 +607,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   print_request("New iprobe", request);
   // We have to test both mailboxes as we don't know if we will receive one one or another
-    if (surf_cfg_get_int("smpi/async_small_thres")>0){
+    if (sg_cfg_get_int("smpi/async_small_thres")>0){
         mailbox = smpi_process_mailbox_small();
         XBT_DEBUG("trying to probe the perm recv mailbox");
         request->action = simcall_comm_iprobe(mailbox, request->src, request->tag, &match_recv, (void*)request);
@@ -462,7 +625,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
       status->MPI_SOURCE = req->src;
       status->MPI_TAG = req->tag;
       status->MPI_ERROR = MPI_SUCCESS;
-      status->count = req->size;
+      status->count = req->real_size;
     }
   }
   else *flag = 0;
@@ -476,8 +639,9 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
   print_request("Waiting", *request);
   if ((*request)->action != NULL) { // this is not a detached send
     simcall_comm_wait((*request)->action, -1.0);
-    finish_wait(request, status);
   }
+  finish_wait(request, status);
+
   // FIXME for a detached send, finish_wait is not called:
 }
 
@@ -494,13 +658,22 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
     comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
     map = xbt_new(int, count);
     size = 0;
-    XBT_DEBUG("Wait for one of");
+    XBT_DEBUG("Wait for one of %d", count);
     for(i = 0; i < count; i++) {
-      if((requests[i] != MPI_REQUEST_NULL) && (requests[i]->action != NULL)) {
-        print_request("Waiting any ", requests[i]);
-        xbt_dynar_push(comms, &requests[i]->action);
-        map[size] = i;
-        size++;
+      if(requests[i] != MPI_REQUEST_NULL) {
+        if (requests[i]->action != NULL) {
+          XBT_DEBUG("Waiting any %p ", requests[i]);
+          xbt_dynar_push(comms, &requests[i]->action);
+          map[size] = i;
+          size++;
+        }else{
+         //This is a finished detached request, let's return this one
+         size=0;//so we free the dynar but don't do the waitany call
+         index=i;
+         finish_wait(&requests[i], status);//cleanup if refcount = 0
+         requests[i]=MPI_REQUEST_NULL;//set to null
+         break;
+         }
       }
     }
     if(size > 0) {
@@ -541,7 +714,6 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
       }
     }
   }
-
   for(c = 0; c < count; c++) {
       if(MC_is_active()) {
         smpi_mpi_wait(&requests[c], pstat);
@@ -558,6 +730,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
       }
     }
   }
+
   return retvalue;
 }
 

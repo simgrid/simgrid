@@ -27,10 +27,10 @@ static void SIMIX_clean(void);
 /* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
 #include <signal.h>
 
-int _surf_do_verbose_exit = 1;
+int _sg_do_verbose_exit = 1;
 static void _XBT_CALL inthandler(int ignored)
 {
-  if ( _surf_do_verbose_exit ) {
+  if ( _sg_do_verbose_exit ) {
      XBT_INFO("CTRL-C pressed. Displaying status and bailing out");
      SIMIX_display_process_status();
   }
@@ -487,6 +487,9 @@ static void SIMIX_action_mallocator_reset_f(void* action) {
   ((smx_action_t) action)->simcalls = fifo;
 }
 
+xbt_dict_t SIMIX_pre_asr_get_properties(smx_simcall_t simcall, const char *name){
+  return SIMIX_asr_get_properties(name);
+}
 xbt_dict_t SIMIX_asr_get_properties(const char *name)
 {
   return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);

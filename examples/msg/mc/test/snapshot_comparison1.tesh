@@ -1,26 +1,13 @@
 #! ./tesh
 
 ! expect signal SIGABRT
-! timeout 120
+! timeout 200
 $ ${bindir:=.}/snapshot_comparison1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
-> [  0.000000] (0:@) type in variable = 2
 > [  0.000000] (0:@) Check the liveness property promela
-> [  1.000000] (1:test@HostA) **** Start test ****
-> [  1.000000] (1:test@HostA) Take two successive snapshots (No modification)
-> [  1.000000] (1:test@HostA) First snapshot
-> [  3.000000] (1:test@HostA) Second snapshot
-> [  3.000000] (1:test@HostA) Test result : 0 (0 = state equality, 1 = different states)
-> [  3.000000] (1:test@HostA) **** End test ****
-> [  0.000000] (0:@) Next pair (depth = 5) already reached !
-> [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-> [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
-> [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-> [  0.000000] (0:@) Counter-example that violates formula :
-> [  0.000000] (0:@) [(1)test] MC_SNAPSHOT ((null))
-> [  0.000000] (0:@) [(1)test] MC_SNAPSHOT ((null))
-> [  0.000000] (0:@) [(1)test] MC_COMPARE_SNAPSHOTS ((null))
-> [  0.000000] (0:@) End of system requests but evolution in Büchi automaton
-> [  0.000000] (0:@) Expanded pairs = 5
-> [  0.000000] (0:@) Visited pairs = 4
-> [  0.000000] (0:@) Expanded / Visited = 0.800000
+> [  0.000000] (1:test@HostA) **** Start test ****
+> [  0.000000] (1:test@HostA) Take two successive snapshots (No modification)
+> [  0.000000] (1:test@HostA) First snapshot
+> [  0.000000] (1:test@HostA) Second snapshot
+> [  0.000000] (1:test@HostA) Test result : 0 (0 = state equality, 1 = different states)
+> [  0.000000] (1:test@HostA) **** End test ****

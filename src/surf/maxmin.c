@@ -389,7 +389,7 @@ static XBT_INLINE void saturated_constraint_set_update(double usage,
   } else if (*min_usage == usage) {
     if(saturated_constraint_set->pos == saturated_constraint_set->size) { // realloc the size
       saturated_constraint_set->size *= 2;
-      saturated_constraint_set->data = realloc(saturated_constraint_set->data, (saturated_constraint_set->size) * sizeof(int));
+      saturated_constraint_set->data = xbt_realloc(saturated_constraint_set->data, (saturated_constraint_set->size) * sizeof(int));
     }
     saturated_constraint_set->data[saturated_constraint_set->pos] = cnst_light_num;
     saturated_constraint_set->pos++;

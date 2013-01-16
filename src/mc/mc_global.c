@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
+#include "simgrid/sg_config.h"
 #include "../surf/surf_private.h"
 #include "../simix/smx_private.h"
 #include "../xbt/mmalloc/mmprivate.h"
@@ -23,13 +24,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
 /* Configuration support */
 e_mc_reduce_t mc_reduce_kind=e_mc_reduce_unset;
 
+int _sg_do_model_check = 0;
+int _sg_mc_checkpoint=0;
+char* _sg_mc_property_file=NULL;
+int _sg_mc_timeout=0;
+int _sg_mc_max_depth=1000;
+int _sg_mc_visited=0;
 
-extern int _surf_init_status;
+extern int _sg_init_status;
 void _mc_cfg_cb_reduce(const char *name, int pos) {
-  if (_surf_init_status && !_surf_do_model_check) {
+  if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a reduction strategy after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  char *val= xbt_cfg_get_string(_surf_cfg_set, name);
+  char *val= xbt_cfg_get_string(_sg_cfg_set, name);
   if (!strcasecmp(val,"none")) {
     mc_reduce_kind = e_mc_reduce_none;
   } else if (!strcasecmp(val,"dpor")) {
@@ -40,37 +47,37 @@ void _mc_cfg_cb_reduce(const char *name, int pos) {
 }
 
 void _mc_cfg_cb_checkpoint(const char *name, int pos) {
-  if (_surf_init_status && !_surf_do_model_check) {
+  if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_checkpoint = xbt_cfg_get_int(_surf_cfg_set, name);
+  _sg_mc_checkpoint = xbt_cfg_get_int(_sg_cfg_set, name);
 }
 void _mc_cfg_cb_property(const char *name, int pos) {
-  if (_surf_init_status && !_surf_do_model_check) {
+  if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a property after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_property_file= xbt_cfg_get_string(_surf_cfg_set, name);
+  _sg_mc_property_file= xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_timeout(const char *name, int pos) {
-  if (_surf_init_status && !_surf_do_model_check) {
+  if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_timeout= xbt_cfg_get_int(_surf_cfg_set, name);
+  _sg_mc_timeout= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_max_depth(const char *name, int pos) {
-  if (_surf_init_status && !_surf_do_model_check) {
+  if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a max depth value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_max_depth= xbt_cfg_get_int(_surf_cfg_set, name);
+  _sg_mc_max_depth= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_visited(const char *name, int pos) {
-  if (_surf_init_status && !_surf_do_model_check) {
+  if (_sg_init_status && !_sg_do_model_check) {
     xbt_die("You are specifying a number of stored visited states after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
-  _surf_mc_visited= xbt_cfg_get_int(_surf_cfg_set, name);
+  _sg_mc_visited= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
 
@@ -79,6 +86,8 @@ void _mc_cfg_cb_visited(const char *name, int pos) {
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 double *mc_time = NULL;
+mc_comparison_times_t mc_comp_times = NULL;
+double mc_snapshot_comparison_time;
 
 /* Safety */
 
@@ -95,6 +104,8 @@ int compare;
 
 /* Local */
 xbt_dict_t mc_local_variables = NULL;
+/* Global */
+xbt_dynar_t mc_global_variables = NULL;
 
 /* Ignore mechanism */
 xbt_dynar_t mc_stack_comparison_ignore;
@@ -109,10 +120,16 @@ xbt_automaton_t _mc_property_automaton = NULL;
 static void MC_assert_pair(int prop);
 static dw_location_t get_location(xbt_dict_t location_list, char *expr);
 static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset);
-static void ignore_coverage_variables(char *executable, int region_type);
+static size_t data_bss_ignore_size(void *address);
+static void MC_get_global_variables(char *elf_file);
 
 void MC_do_the_modelcheck_for_real() {
-  if (!_surf_mc_property_file || _surf_mc_property_file[0]=='\0') {
+
+  MC_SET_RAW_MEM;
+  mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
+  MC_UNSET_RAW_MEM;
+
+  if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
     if (mc_reduce_kind==e_mc_reduce_unset)
       mc_reduce_kind=e_mc_reduce_dpor;
 
@@ -124,8 +141,8 @@ void MC_do_the_modelcheck_for_real() {
     if (mc_reduce_kind==e_mc_reduce_unset)
       mc_reduce_kind=e_mc_reduce_none;
 
-    XBT_INFO("Check the liveness property %s",_surf_mc_property_file);
-    MC_automaton_load(_surf_mc_property_file);
+    XBT_INFO("Check the liveness property %s",_sg_mc_property_file);
+    MC_automaton_load(_sg_mc_property_file);
     MC_modelcheck_liveness();
   }
 }
@@ -153,7 +170,7 @@ void MC_init(){
 
   MC_SET_RAW_MEM;
 
-  char *ls_path = get_libsimgrid_path(); 
+  MC_init_memory_map_info();
   
   mc_local_variables = xbt_dict_new_homogeneous(NULL);
 
@@ -162,17 +179,23 @@ void MC_init(){
   MC_get_local_variables(xbt_binary_name, binary_location_list, &mc_local_variables);
 
   /* Get local variables in libsimgrid for state equality detection */
-  xbt_dict_t libsimgrid_location_list = MC_get_location_list(ls_path);
-  MC_get_local_variables(ls_path, libsimgrid_location_list, &mc_local_variables);
+  xbt_dict_t libsimgrid_location_list = MC_get_location_list(libsimgrid_path);
+  MC_get_local_variables(libsimgrid_path, libsimgrid_location_list, &mc_local_variables);
 
-  MC_init_memory_map_info();
-
+  xbt_dict_free(&libsimgrid_location_list);
+  xbt_dict_free(&binary_location_list);
+  
   /* Get .plt section (start and end addresses) for data libsimgrid and data program comparison */
   get_libsimgrid_plt_section();
   get_binary_plt_section();
 
-  ignore_coverage_variables(libsimgrid_path, 1);
-  ignore_coverage_variables(xbt_binary_name, 2);
+  MC_ignore_data_bss(&end_raw_heap, sizeof(end_raw_heap));
+  MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
+  MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
+
+  /* Get global variables */
+  MC_get_global_variables(xbt_binary_name);
+  MC_get_global_variables(libsimgrid_path);
 
   MC_UNSET_RAW_MEM;
 
@@ -181,10 +204,13 @@ void MC_init(){
   MC_ignore_stack("__ex_cleanup", "*");
   MC_ignore_stack("__ex_mctx_en", "*");
   MC_ignore_stack("__ex_mctx_me", "*");
+  MC_ignore_stack("__xbt_ex_ctx_ptr", "*");
   MC_ignore_stack("_log_ev", "*");
   MC_ignore_stack("_throw_ctx", "*");
   MC_ignore_stack("ctx", "*");
 
+  MC_ignore_stack("next_context", "smx_ctx_sysv_suspend_serial");
+  MC_ignore_stack("i", "smx_ctx_sysv_suspend_serial");
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
@@ -215,12 +241,14 @@ void MC_modelcheck_safety(void)
 
   MC_UNSET_RAW_MEM;
 
-  if(_surf_mc_visited > 0){
+  if(_sg_mc_visited > 0){
     MC_init();
   }else{
+    MC_SET_RAW_MEM;
     MC_init_memory_map_info();
     get_libsimgrid_plt_section();
     get_binary_plt_section();
+    MC_UNSET_RAW_MEM;
   }
 
   MC_dpor_init();
@@ -229,13 +257,12 @@ void MC_modelcheck_safety(void)
   /* Save the initial state */
   initial_state_safety = xbt_new0(s_mc_global_t, 1);
   initial_state_safety->snapshot = MC_take_snapshot();
-  //MC_take_snapshot(initial_snapshot);
   MC_UNSET_RAW_MEM;
+
+  MC_dpor();
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
-
-  MC_dpor();
 
   MC_exit();
 }
@@ -272,9 +299,9 @@ void MC_modelcheck_liveness(){
 
 void MC_exit(void)
 {
-  MC_print_statistics(mc_stats);
   xbt_free(mc_time);
   MC_memory_exit();
+  xbt_abort();
 }
 
 
@@ -518,7 +545,7 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
 
   MC_show_stack_safety(stack);
 
-  if(!_surf_mc_checkpoint){
+  if(!_sg_mc_checkpoint){
 
     mc_state_t state;
 
@@ -717,70 +744,6 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
 /************ MC_ignore ***********/ 
 
-static void ignore_coverage_variables(char *executable, int region_type){
-
-  FILE *fp;
-
-  char *command = bprintf("objdump --syms %s", executable);
-
-  fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen failed");
-    xbt_abort();
-  }
-
-  char *line = NULL;
-  ssize_t read;
-  size_t n = 0;
-
-  xbt_dynar_t line_tokens = NULL;
-  unsigned long int size, offset;
-  void *address;
-
-  while ((read = getline(&line, &n, fp)) != -1){
-
-    if(n == 0)
-      continue;
-
-     /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    xbt_str_strip_spaces(line);
-    xbt_str_ltrim(line, NULL);
-
-    line_tokens = xbt_str_split(line, NULL);
-
-    if(xbt_dynar_length(line_tokens) < 3 || strcmp(xbt_dynar_get_as(line_tokens, 0, char *), "SYMBOL") == 0)
-      continue;
-
-    if(((strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char *), "gcov", 4) == 0)
-        || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char *), "__gcov", 6) == 0))
-       && (((strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 3, char *), ".bss") == 0) 
-            || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 3, char *), ".data") == 0)))){
-      if(region_type == 1){ /* libsimgrid */
-        offset = strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
-        size = strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char *), NULL, 16);
-        //XBT_DEBUG("Add ignore at address %p (size %lu)", (char *)start_text_libsimgrid+offset, size);
-        MC_ignore_data_bss((char *)start_text_libsimgrid+offset, size);
-      }else{ /* binary */
-        address = (void *)strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
-        size = strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char *), NULL, 16);
-        //XBT_DEBUG("Add ignore at address %p (size %lu)", address, size);
-        MC_ignore_data_bss(address, size);
-      }
-    }
-
-    xbt_dynar_free(&line_tokens);
-
-  }
-
-  free(command);
-  free(line);
-  pclose(fp);
-
-}
-
 void MC_ignore_heap(void *address, size_t size){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -801,8 +764,10 @@ void MC_ignore_heap(void *address, size_t size){
     
     if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
       region->fragment = -1;
+      ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore = 1;
     }else{
       region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
+      ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment] = 1;
     }
     
   }
@@ -879,6 +844,32 @@ void MC_ignore_data_bss(void *address, size_t size){
   if(raw_mem_set)
     MC_SET_RAW_MEM;
 }
+
+static size_t data_bss_ignore_size(void *address){
+  unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(mc_data_bss_comparison_ignore) - 1;
+  mc_data_bss_ignore_variable_t var;
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    var = (mc_data_bss_ignore_variable_t)xbt_dynar_get_as(mc_data_bss_comparison_ignore, cursor, mc_data_bss_ignore_variable_t);
+    if(var->address == address)
+      return var->size;
+    if(var->address < address){
+      if((void *)((char *)var->address + var->size) > address)
+        return (char *)var->address + var->size - (char*)address;
+      else
+        start = cursor + 1;
+    }
+    if(var->address > address)
+      end = cursor - 1;   
+  }
+
+  return 0;
+}
+
+
 
 void MC_ignore_stack(const char *var_name, const char *frame){
   
@@ -1060,63 +1051,17 @@ xbt_dict_t MC_get_location_list(const char *elf_file){
 
     char *key = bprintf("%d", (int)strtoul((char *)xbt_dynar_get_as(split, 0, char *), NULL, 16));
     xbt_dict_set(location_list, key, loclist, NULL);
+    xbt_free(key);
     
     xbt_dynar_free(&split);
 
   }
 
-  free(line);
-  free(command);
+  xbt_free(line);
+  xbt_free(command);
   pclose(fp);
 
   return location_list;
-}
-
-char *get_libsimgrid_path(){
-
-  char *command = bprintf("ldd %s", xbt_binary_name);
-  
-  FILE *fp = popen(command, "r");
-
-  if(fp == NULL){
-    perror("popen for ldd failed");
-    xbt_abort();
-  }
-
-  char *line;
-  ssize_t read;
-  size_t n = 0;
-  xbt_dynar_t split;
-  
-  while((read = getline(&line, &n, fp)) != -1){
-  
-    if(n == 0)
-      continue;
-
-    /* Wipeout the new line character */
-    line[read - 1] = '\0';
-
-    xbt_str_strip_spaces(line);
-    xbt_str_ltrim(line, NULL);
-    split = xbt_str_split(line, " ");
-
-    if(strncmp((char *)xbt_dynar_get_as(split, 0, char *), "libsimgrid.so", 13) == 0){
-      free(line);
-      free(command);
-      pclose(fp);
-      return ((char *)xbt_dynar_get_as(split, 2, char *));
-    }
-
-    xbt_dynar_free(&split);
-    
-  }
-
-  free(line);
-  free(command);
-  pclose(fp);
-
-  return NULL;
-  
 }
 
 static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset){
@@ -1126,10 +1071,13 @@ static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long in
   dw_frame_t res;
 
   xbt_dict_foreach(all_variables, cursor, name, res) {
-    if(offset >= res->start && offset < res->end)
+    if(offset >= res->start && offset < res->end){
+      xbt_dict_cursor_free(&cursor);
       return res;
+    }
   }
 
+  xbt_dict_cursor_free(&cursor);
   return NULL;
   
 }
@@ -1236,11 +1184,12 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
           xbt_str_rtrim(abstract_origin, ">");
           subprogram_name = (char *)xbt_dict_get_or_null(subprograms_origin, abstract_origin);
           frame = xbt_dict_get_or_null(*all_variables, subprogram_name); 
+          xbt_free(abstract_origin);
 
         }else if(strcmp(node_type, "DW_AT_name") == 0){
 
           new_frame = 1;
-          free(current_frame);
+          xbt_free(current_frame);
           frame = xbt_new0(s_dw_frame_t, 1);
           frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *)); 
           frame->variables = xbt_dict_new_homogeneous(NULL);
@@ -1266,6 +1215,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
             xbt_str_rtrim(loc_expr, ")");
             frame->frame_base = get_location(NULL, loc_expr);
             xbt_dynar_free(&split2);
+            xbt_free(loc_expr);
 
           }
  
@@ -1281,8 +1231,8 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
 
         }else if(strcmp(node_type, "DW_AT_MIPS_linkage_name:") == 0){
 
-          free(frame->name);
-          free(current_frame);
+          xbt_free(frame->name);
+          xbt_free(current_frame);
           frame->name = strdup(xbt_dynar_get_as(split, xbt_dynar_length(split) - 1, char *));   
           current_frame = strdup(frame->name);
           xbt_dict_set(subprograms_origin, subprogram_start, frame->name, NULL);
@@ -1300,9 +1250,9 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
         xbt_dict_set(*all_variables, frame->name, frame, NULL);
       }
 
-      free(subprogram_start);
+      xbt_free(subprogram_start);
       if(subprogram_end != NULL){
-        free(subprogram_end);
+        xbt_free(subprogram_end);
         subprogram_end = NULL;
       }
         
@@ -1382,6 +1332,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
               xbt_str_rtrim(loc_expr, ")");
               var->location = get_location(NULL, loc_expr);
               xbt_dynar_free(&split2);
+              xbt_free(loc_expr);
 
             }
 
@@ -1470,8 +1421,8 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
   }
   
   xbt_dynar_free(&split);
-  free(line);
-  free(command);
+  xbt_free(line);
+  xbt_free(command);
   pclose(fp);
   
 }
@@ -1485,8 +1436,9 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
     char *key = bprintf("%d", (int)strtoul(expr, NULL, 16));
     loc->type = e_dw_loclist;
     loc->location.loclist =  (xbt_dynar_t)xbt_dict_get_or_null(location_list, key);
-    if(loc == NULL)
+    if(loc->location.loclist == NULL)
       XBT_INFO("Key not found in loclist");
+    xbt_free(key);
     return loc;
 
   }else{
@@ -1752,4 +1704,90 @@ void print_local_variables(xbt_dict_t list){
     }
   }
 
+}
+
+static void MC_get_global_variables(char *elf_file){
+
+  FILE *fp;
+
+  char *command = bprintf("objdump -t -j .data -j .bss %s", elf_file);
+
+  fp = popen(command, "r");
+
+  if(fp == NULL){
+    perror("popen failed");
+    xbt_abort();
+  }
+
+  if(mc_global_variables == NULL)
+    mc_global_variables = xbt_dynar_new(sizeof(global_variable_t), global_variable_free_voidp);
+
+  char *line = NULL;
+  ssize_t read;
+  size_t n = 0;
+
+  xbt_dynar_t line_tokens = NULL;
+  unsigned long offset;
+
+  int type = strcmp(elf_file, xbt_binary_name); /* 0 = binary, other = libsimgrid */
+
+  while ((read = getline(&line, &n, fp)) != -1){
+
+    if(n == 0)
+      continue;
+
+     /* Wipeout the new line character */
+    line[read - 1] = '\0';
+
+    xbt_str_strip_spaces(line);
+    xbt_str_ltrim(line, NULL);
+
+    line_tokens = xbt_str_split(line, NULL);
+
+    if(xbt_dynar_length(line_tokens) <= 4 || strcmp(xbt_dynar_get_as(line_tokens, 0, char *), "SYMBOL") == 0)
+      continue;
+
+    if((strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "__gcov", 6) == 0)
+       || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "gcov", 4) == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".data") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".bss") == 0)
+       || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "stderr", 6) == 0)
+       || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "counter", 7) == 0)
+       || ((size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16) == 0))
+      continue;
+
+    global_variable_t var = xbt_new0(s_global_variable_t, 1);
+
+    if(type == 0){
+      var->address = (void *)strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
+    }else{
+      offset = strtoul(xbt_dynar_get_as(line_tokens, 0, char*), NULL, 16);
+      var->address = (char *)start_text_libsimgrid+offset;
+    }
+
+    var->size = (size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16);
+    var->name = strdup(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*));
+
+    if(data_bss_ignore_size(var->address) > 0)
+      global_variable_free(var);
+    else
+      xbt_dynar_push(mc_global_variables, &var);
+
+    xbt_dynar_free(&line_tokens);
+
+  }
+
+  xbt_free(command);
+  xbt_free(line);
+  pclose(fp);
+
+}
+
+void global_variable_free(global_variable_t v){
+  xbt_free(v->name);
+  xbt_free(v);
+}
+
+void global_variable_free_voidp(void *v){
+  global_variable_free((global_variable_t) * (void **) v);
 }

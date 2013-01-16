@@ -10,8 +10,6 @@
 #include "surf/surf_routing.h"
 #include "surf/surfxml_parse_values.h"
 
-#include <pcre.h>               /* regular expression library */
-
 /**
  * @ingroup SURF_build_api
  * @brief A library containing all known workstations
@@ -321,7 +319,7 @@ static void routing_parse_trace_connect(sg_platf_trace_connect_cbarg_t trace_con
   }
 }
 
-extern int _surf_init_status; /* yay, this is an horrible hack */
+extern int _sg_init_status; /* yay, this is an horrible hack */
 
 /**
  * \brief Make a new routing component to the platform
@@ -346,7 +344,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
              (as_router_lib, AS->id, ROUTING_ASR_LEVEL),
              "The AS \"%s\" already exists", AS->id);
 
-  _surf_init_status = 2; /* horrible hack: direct access to the global controlling the level of configuration to prevent any further config */
+  _sg_init_status = 2; /* horrible hack: direct access to the global controlling the level of configuration to prevent any further config */
 
   /* search the routing model */
   switch(AS->routing){
@@ -1021,7 +1019,7 @@ static void routing_parse_Srandom(void)
   char *rd_name = NULL;
   char *rd_value;
   mean = surf_parse_get_double(A_surfxml_random_mean);
-  std = surf_parse_get_double(A_surfxml_random_std_deviation);
+  std = surf_parse_get_double(A_surfxml_random_std___deviation);
   min = surf_parse_get_double(A_surfxml_random_min);
   max = surf_parse_get_double(A_surfxml_random_max);
   seed = surf_parse_get_double(A_surfxml_random_seed);

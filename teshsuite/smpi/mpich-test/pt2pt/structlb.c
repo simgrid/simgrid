@@ -23,8 +23,8 @@ int main( int argc, char **argv)
     MPI_Type_ub(tmptype, &ub);
     MPI_Type_extent(tmptype, &extent);
 #ifdef DEBUG
-    printf("tmptype: size: %d lb: %ld ub: %ld ex: %ld\n", size, lb, ub, 
-	   extent);
+    printf("tmptype: size: %d lb: %ld ub: %ld ex: %ld\n",
+           size, (long)lb, (long)ub, (long)extent);
 #endif
 	
     blockcnt[0] = 1;
@@ -38,13 +38,13 @@ int main( int argc, char **argv)
     MPI_Type_ub(newtype, &ub);
     MPI_Type_extent(newtype, &extent);
 #ifdef DEBUG
-    printf("newtype: size: %ld lb: %ld ub: %ld ex: %d\n", size, lb, ub, 
-	   extent);
+    printf("newtype: size: %d lb: %ld ub: %ld ex: %ld\n",
+           size, (long)lb, (long)ub, (long)extent);
 #endif	
     if (size != 1 || lb != 2 || ub != 3 || extent != 1) {
-	    printf ("lb = %ld (should be 2), ub = %ld (should be 3) extent = %ld should be 1, size = %d (should be 1)\n", lb, ub, extent, size) ;
-    }
-    else {
+        printf("lb = %ld (should be 2), ub = %ld (should be 3) extent = %ld should be 1, size = %d (should be 1)\n",
+               (long)lb, (long)ub, (long)extent, size);
+    } else {
 	printf( " No Errors\n" );
     }
     MPI_Type_free(&tmptype);

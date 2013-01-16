@@ -7,6 +7,8 @@
 #ifndef INSTR_PRIVATE_H_
 #define INSTR_PRIVATE_H_
 
+#include "instr/instr.h"
+#include "instr/instr_interface.h"
 #include "simgrid_config.h"
 
 #ifdef HAVE_TRACING
@@ -18,11 +20,9 @@
 
 #define INSTR_DEFAULT_STR_SIZE 500
 
-#include "instr/instr.h"
-#include "msg/msg.h"
-#include "simdag/private.h"
-#include "simix/smx_private.h"
-#include "xbt/graph_private.h"
+#include "xbt/graph.h"
+#include "xbt/dict.h"
+#include "simgrid/platf.h"
 
 typedef enum {
   PAJE_DefineContainerType,
@@ -177,26 +177,7 @@ void TRACE_surf_action(surf_action_t surf_action, const char *category);
 //for tracing gtnets
 void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst);
 
-/* from smpi_instr.c */
-void TRACE_internal_smpi_set_category (const char *category);
-const char *TRACE_internal_smpi_get_category (void);
-void TRACE_smpi_alloc(void);
-void TRACE_smpi_release(void);
-void TRACE_smpi_init(int rank);
-void TRACE_smpi_finalize(int rank);
-void TRACE_smpi_collective_in(int rank, int root, const char *operation);
-void TRACE_smpi_collective_out(int rank, int root, const char *operation);
-void TRACE_smpi_computing_init(int rank);
-void TRACE_smpi_computing_out(int rank);
-void TRACE_smpi_computing_in(int rank);
-void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation);
-void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation);
-void TRACE_smpi_send(int rank, int src, int dst);
-void TRACE_smpi_recv(int rank, int src, int dst);
-
 /* from instr_config.c */
-int TRACE_start (void);
-int TRACE_end (void);
 int TRACE_needs_platform (void);
 int TRACE_is_enabled(void);
 int TRACE_platform(void);
@@ -217,8 +198,6 @@ char *TRACE_get_comment_file (void);
 char *TRACE_get_filename(void);
 char *TRACE_get_viva_uncat_conf (void);
 char *TRACE_get_viva_cat_conf (void);
-void TRACE_global_init(int *argc, char **argv);
-void TRACE_help(int detailed);
 void TRACE_generate_viva_uncat_conf (void);
 void TRACE_generate_viva_cat_conf (void);
 void instr_pause_tracing (void);
@@ -236,7 +215,6 @@ void TRACE_surf_link_set_utilization(const char *resource,
                                      double now,
                                      double delta);
 void TRACE_surf_resource_utilization_alloc(void);
-void TRACE_surf_resource_utilization_release(void);
 
 /* instr_paje.c */
 extern xbt_dict_t trivaNodeTypes;
@@ -272,16 +250,6 @@ val_t PJ_value_new (const char *name, const char *color, type_t father);
 val_t PJ_value_get_or_new (const char *name, const char *color, type_t father);
 val_t PJ_value_get (const char *name, const type_t father);
 void PJ_value_free (val_t value);
-
-/* instr_routing.c */
-void instr_routing_define_callbacks (void);
-void instr_new_variable_type (const char *new_typename, const char *color);
-void instr_new_user_variable_type  (const char *father_type, const char *new_typename, const char *color);
-void instr_new_user_state_type (const char *father_type, const char *new_typename);
-void instr_new_value_for_user_state_type (const char *typename, const char *value, const char *color);
-int instr_platform_traced (void);
-xbt_graph_t instr_routing_platform_graph (void);
-void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
 #endif /* HAVE_TRACING */
 

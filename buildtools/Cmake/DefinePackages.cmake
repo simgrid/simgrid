@@ -1,9 +1,12 @@
 ### define source packages
 
 set(EXTRA_DIST
+  src/include/smpi/smpi_interface.h
+  src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/platf_interface.h
+  src/include/simgrid/sg_config.h
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
   src/include/surf/random_mgr.h
@@ -83,11 +86,15 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
   src/xbt/setset_private.h
+  src/win32/config.h
+  src/xbt/win32_ucontext.c
+  include/xbt/win32_ucontext.h
   tools/tesh/run_context.h
   tools/tesh/tesh.h
   )
 
 set(SMPI_SRC
+  src/smpi/instr_smpi.c
   src/smpi/smpi_base.c
   src/smpi/smpi_bench.c
   src/smpi/smpi_c99.c
@@ -181,6 +188,8 @@ set(SURF_SRC
   src/surf/cpu_cas01.c
   src/surf/cpu_ti.c
   src/surf/fair_bottleneck.c
+  src/surf/instr_routing.c
+  src/surf/instr_surf.c
   src/surf/lagrange.c
   src/surf/maxmin.c
   src/surf/network.c
@@ -191,7 +200,6 @@ set(SURF_SRC
   src/surf/storage.c
   src/surf/surf.c
   src/surf/surf_action.c
-  src/surf/surf_config.c
   src/surf/surf_model.c
   src/surf/surf_routing.c
   src/surf/surf_routing_cluster.c
@@ -226,9 +234,14 @@ set(SIMIX_SRC
   src/simix/smx_user.c
   )
 
+set(SIMGRID_SRC
+  src/simgrid/sg_config.c
+  )
+
 set(MSG_SRC
+  src/msg/instr_msg_process.c
+  src/msg/instr_msg_task.c
   src/msg/msg_actions.c
-  src/msg/msg_config.c
   src/msg/msg_deployment.c
   src/msg/msg_environment.c
   src/msg/msg_global.c
@@ -320,9 +333,6 @@ set(TRACING_SRC
   src/instr/instr_paje_values.c
   src/instr/instr_private.h
   src/instr/instr_resource_utilization.c
-  src/instr/instr_routing.c
-  src/instr/instr_smpi.c
-  src/instr/instr_surf.c
   )
 
 set(JEDULE_SRC
@@ -454,14 +464,38 @@ endif()
 set(simgrid_sources
   ${BINDINGS_SRC}
   ${GTNETS_USED}
-  ${JEDULE_SRC}
   ${MSG_SRC}
   ${SIMDAG_SRC}
+  ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   )
+
+if(${HAVE_JEDULE})
+  set(simgrid_sources
+    ${simgrid_sources}
+    ${JEDULE_SRC}
+    )
+else()
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
+    ${JEDULE_SRC}
+    )
+endif()
+
+if(${HAVE_TRACING})
+  set(simgrid_sources
+    ${simgrid_sources}
+    ${TRACING_SRC}
+    )
+else()
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
+    ${TRACING_SRC}
+    )
+endif()
 
 if(HAVE_MC)
   set(simgrid_sources
@@ -505,24 +539,46 @@ set(DOC_SOURCES
   doc/simix.fig
   doc/surf_nutshell.fig
   doc/Doxyfile.in
-  doc/FAQ.doc
-  doc/index.doc
-  doc/simgrid.css
-  doc/SimgridDoxygenLayout.xml
+  doc/Layout.xml
   doc/triva-graph_configuration.png
   doc/triva-graph_visualization.png
   doc/triva-time_interval.png
+  
+    doc/doxygen/footer.html
+  doc/doxygen/header.html
+  doc/doxygen/stylesheet.css
+  
+  doc/doxygen/index.doc
+  doc/doxygen/getting_started.doc  
+  doc/doxygen/introduction.doc
+  doc/doxygen/use.doc
+  doc/doxygen/bindings.doc
+  doc/doxygen/deployment.doc
+  doc/doxygen/install.doc
+  doc/doxygen/options.doc
+  doc/doxygen/platform.doc
+  doc/doxygen/pls.doc
+  doc/doxygen/tracing.doc
+  doc/doxygen/FAQ.doc
+  doc/doxygen/advanced.doc
+    doc/doxygen/inside_autotests.doc  
+    doc/doxygen/inside_cmake.doc
+    doc/doxygen/inside_extending.doc 
+    doc/doxygen/inside_release.doc
+    doc/doxygen/contributing.doc
+  doc/doxygen/modules.doc
+    doc/doxygen/module-msg.doc
+    doc/doxygen/module-sd.doc
+    doc/doxygen/module-simix.doc
+    doc/doxygen/module-surf.doc
+    doc/doxygen/module-trace.doc
+    doc/doxygen/module-xbt.doc
+
   )
 
 set(DOC_FIGS
   ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
   ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
-  )
-  
-set(DOC_SHARED_TAG
-  doc/shared/doxygen/simgriddevguide.tag
-  doc/shared/doxygen/simgridrefguide.tag
-  doc/shared/doxygen/simgriduserguide.tag
   )
   
 set(DOC_TOOLS
@@ -531,111 +587,36 @@ set(DOC_TOOLS
   tools/doxygen/xbt_log_extract_hierarchy.pl
   )
 
-
-set(USER_GUIDE_SOURCES
-  doc/user_guide/doxygen/footer.html
-  doc/user_guide/doxygen/header.html
-  doc/user_guide/doxygen/UserGuideDoxyfile.in
-  doc/user_guide/doxygen/UserGuideDoxygenLayout.xml
-  doc/user_guide/doxygen/bindings.doc
-  doc/user_guide/doxygen/deployment.doc
-  doc/user_guide/doxygen/examples.doc
-  doc/user_guide/doxygen/index.doc
-  doc/user_guide/doxygen/install.doc
-  doc/user_guide/doxygen/options.doc
-  doc/user_guide/doxygen/platform.doc
-  doc/user_guide/doxygen/pls.doc
-  doc/user_guide/doxygen/tracing.doc
-  doc/user_guide/doxygen/use.doc
-  doc/user_guide/doxygen/stylesheet.css
-  )
-    
-set(REF_GUIDE_SOURCES
-  doc/ref_guide/doxygen/footer.html
-  doc/ref_guide/doxygen/header.html
-  doc/ref_guide/doxygen/main.doc
-  doc/ref_guide/doxygen/module-msg.doc
-  doc/ref_guide/doxygen/module-sd.doc
-  doc/ref_guide/doxygen/module-simix.doc
-  doc/ref_guide/doxygen/module-surf.doc
-  doc/ref_guide/doxygen/module-trace.doc
-  doc/ref_guide/doxygen/module-xbt.doc
-  doc/ref_guide/doxygen/modules.doc
-  doc/ref_guide/doxygen/RefGuideDoxyfile.in
-  doc/ref_guide/doxygen/RefGuideDoxygenLayout.xml
-  doc/ref_guide/doxygen/stylesheet.css
-  )
-
-set(DEV_GUIDE_SOURCES
-  doc/dev_guide/doxygen/footer.html
-  doc/dev_guide/doxygen/header.html
-  doc/dev_guide/doxygen/index.doc
-  doc/dev_guide/doxygen/cmake.doc
-  doc/dev_guide/doxygen/simgrid.doc
-  doc/dev_guide/doxygen/xps.doc
-  doc/dev_guide/doxygen/DevGuideDoxyfile.in
-  doc/dev_guide/doxygen/DevGuideDoxygenLayout.xml
-  doc/dev_guide/doxygen/stylesheet.css
-  )
-
+# these files get copied automatically to the html documentation
 set(DOC_IMG
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/README
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_001.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_002.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_003.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_004.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_005.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_006.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_007.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_008.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_009.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_010.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_011.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_012.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_013.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_014.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_015.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_016.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_017.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_018.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_019.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_020.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_021.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_022.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_023.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_024.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_025.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_026.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_027.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_028.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_029.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101_030.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid-101.pdf
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
-${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
-)
+  ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
+  )
 
 set(bin_files
   ${bin_files}
   src/smpi/smpicc.in
   src/smpi/smpif2c.in
   src/smpi/smpiff.in
+  src/smpi/smpif90.in
   src/smpi/smpirun.in
   )
 
@@ -643,6 +624,7 @@ set(txt_files
   ${txt_files}
   AUTHORS
   COPYING
+  README
   ChangeLog
   INSTALL
   LICENSE-LGPL-2.1
@@ -672,6 +654,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/priority/CMakeLists.txt
   examples/msg/properties/CMakeLists.txt
   examples/msg/sendrecv/CMakeLists.txt
+  examples/msg/chainsend/CMakeLists.txt
   examples/msg/start_kill_time/CMakeLists.txt
   examples/msg/suspend/CMakeLists.txt
   examples/msg/token_ring/CMakeLists.txt
@@ -729,9 +712,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Flags.cmake
   buildtools/Cmake/GenerateDoc.cmake
   buildtools/Cmake/GenerateDocWin.cmake
-  buildtools/Cmake/GenerateRefGuide.cmake
-  buildtools/Cmake/GenerateUserGuide.cmake
-  buildtools/Cmake/GenerateDevGuide.cmake
   buildtools/Cmake/MaintainerMode.cmake
   buildtools/Cmake/MakeExe.cmake
   buildtools/Cmake/MakeLib.cmake
@@ -779,6 +759,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/test_prog/prog_thread_storage.c
   buildtools/Cmake/test_prog/prog_va_copy.c
   buildtools/Cmake/test_prog/prog_vsnprintf.c
+  buildtools/Cmake/test_prog/prog_gnu_dynlinker.c
   )
 
 set(PLATFORMS_EXAMPLES

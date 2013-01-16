@@ -13,6 +13,7 @@
 #include "mc/mc.h"
 #include "surf/surf.h"
 #include "simix/smx_private.h"
+#include "simgrid/sg_config.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi,
@@ -286,21 +287,26 @@ void smpi_global_destroy(void)
 /* Fortran specific stuff */
 /* With smpicc, the following weak symbols are used */
 /* With smpiff, the following weak symbols are replaced by those in libf2c */
-
 int __attribute__((weak)) xargc;
 char** __attribute__((weak)) xargv;
-
-int __attribute__((weak)) smpi_simulated_main(int argc, char** argv) {
+void __attribute__((weak)) user_main__(){
   xbt_die("Should not be in this smpi_simulated_main");
-  return 1;
+  return;
+}
+
+int __attribute__((weak)) smpi_simulated_main__(int argc, char** argv) {
+  smpi_process_init(&argc, &argv);
+  user_main__();
+  //xbt_die("Should not be in this smpi_simulated_main");
+  return 0;
 }
 
 int __attribute__((weak)) main(int argc, char** argv) {
-   return smpi_main(smpi_simulated_main,argc,argv);
+   return smpi_main(smpi_simulated_main__,argc,argv);
 }
 
 int __attribute__((weak)) MAIN__(){
-  return smpi_main(smpi_simulated_main,xargc, xargv);
+  return smpi_main(smpi_simulated_main__,xargc, xargv);
 };
 
 int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
@@ -313,8 +319,13 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   }
 
   /* Connect log categories.  See xbt/log.c */
-  XBT_LOG_CONNECT(smpi);  /* Keep this line as soon as possible in this function: xbt_log_appender_file.c depends on it
-                             DO NOT connect this in XBT or so, or it will be useless to xbt_log_appender_file.c */
+  XBT_LOG_CONNECT(smpi);  /* Keep this line as soon as possible in this
+                             function: xbt_log_appender_file.c depends on it
+                             DO NOT connect this in XBT or so, or it will be
+                             useless to xbt_log_appender_file.c */
+#ifdef HAVE_TRACING
+  XBT_LOG_CONNECT(instr_smpi);
+#endif
   XBT_LOG_CONNECT(smpi_base);
   XBT_LOG_CONNECT(smpi_bench);
   XBT_LOG_CONNECT(smpi_coll);
@@ -328,6 +339,9 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&argc, argv);
+
+  TRACE_add_start_function(TRACE_smpi_alloc);
+  TRACE_add_end_function(TRACE_smpi_release);
 #endif
 
   SIMIX_global_init(&argc, argv);
@@ -353,7 +367,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   else
     SIMIX_run();
 
-  if (surf_cfg_get_int("smpi/display_timing"))
+  if (sg_cfg_get_int("smpi/display_timing"))
     XBT_INFO("Simulation time: %g seconds.", SIMIX_get_clock());
 
   smpi_global_destroy();

@@ -76,6 +76,11 @@ static void parse_process(sg_platf_process_cbarg_t process)
   current_property_set = NULL;
 }
 
+void SIMIX_init_application(void){
+  surf_parse_reset_callbacks();
+  sg_platf_process_add_cb(parse_process);
+}
+
 /**
  * \brief An application deployer.
  *
@@ -98,9 +103,7 @@ void SIMIX_launch_application(const char *file)
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_launch_application.");
 
-  surf_parse_reset_callbacks();
-
-  sg_platf_process_add_cb(parse_process);
+  SIMIX_init_application();
 
   surf_parse_open(file);
   TRY {

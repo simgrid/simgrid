@@ -1,0 +1,42 @@
+/*!  
+@mainpage SimGrid Documentation
+
+@image html simgrid_logo_2011.png  "Versatile Simulation of Distributed Systems, for Grids, Clouds, P2P and HPC systems"
+@image latex simgrid_logo_2011.png "Versatile Simulation of Distributed Systems, for Grids, Clouds, P2P and HPC systems"
+
+@htmlonly
+<br/><br/><br/>
+<table border=0>
+<tr><td width="50%">
+@endhtmlonly
+
+- @subpage getting_started
+- @subpage introduction
+- @subpage install
+- @subpage use
+  - @ref platform
+  - @ref deployment
+  - @ref tracing
+  - @ref options
+  - @ref help
+- @subpage advanced
+  - @ref bindings
+  - @ref pls
+  - @ref contributing
+  - @ref internals
+- @subpage FAQ
+
+@htmlonly
+</td><td width="50%" align="center">
+@endhtmlonly
+
+\htmlinclude simgrid_modules.map
+<br><b>SimGrid Components (click to jump to API)</b>
+
+@htmlonly
+</td></tr></table>
+@endhtmlonly
+
+*/
+
+

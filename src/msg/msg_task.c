@@ -298,7 +298,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
  */
 msg_error_t MSG_task_cancel(msg_task_t task)
 {
-  xbt_assert((task != NULL), "Invalid parameter");
+  xbt_assert((task != NULL), "Cannot cancel a NULL task");
 
   if (task->simdata->compute) {
     simcall_host_execution_cancel(task->simdata->compute);

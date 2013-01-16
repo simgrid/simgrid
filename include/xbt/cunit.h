@@ -16,6 +16,8 @@
 
 SG_BEGIN_DECL()
 
+/* note that the internals of testall, that follow, are not publicly documented */
+
 /* test suite object type */
 typedef struct s_xbt_test_suite *xbt_test_suite_t;
 
@@ -57,6 +59,69 @@ XBT_PUBLIC(void) xbt_test_dump(char *selection);
 /* Cleanup the mess */
 XBT_PUBLIC(void) xbt_test_exit(void);
 
+
+/** 
+ * @addtogroup XBT_cunit
+ * @brief Unit test mechanism (to test a set of functions)
+ *  
+ * This module is mainly intended to allow the tests of SimGrid
+ * itself and may lack the level of genericity that you would expect
+ * as a user. Only use it in external projects at your own risk (but
+ * it work rather well for us). We play with the idea of migrating
+ * to an external solution for our unit tests, possibly offering
+ * more features, but having absolutely no dependencies is a nice
+ * feature of SimGrid (and this code is sufficient to cover our
+ * needs, actually, so why should we bother switching?)
+ * 
+ * Note that if you want to test a full binary (such as an example),
+ * you want to use our integration testing mechanism, not our unit
+ * testing one. Please refer to Section \ref
+ * inside_cmake_addtest_integration
+ * 
+ * Some more information on our unit testing is available in Section @ref inside_cmake_addtest_unit.  
+ * 
+ * All code intended to be executed as a unit test will be extracted
+ * by a script (tools/sg_unit_extract.pl), and must thus be protected
+ * between preprocessor definitions, as follows. Note that
+ * SIMGRID_TEST string must appear on the endif line too for the
+ * script to work, and that this script does not allow to have more
+ * than one suite per file. For now, but patches are naturally
+ * welcome.
+ * 
+@verbatim
+#ifdef SIMGRID_TEST
+
+<your code>
+
+#endif  // SIMGRID_TEST
+@endverbatim
+ * 
+ *
+ * @{ 
+ */
+/** @brief Provide informations about the suite declared in this file
+ *  @hideinitializer
+ * 
+ * Actually, this macro is not used by C, but by the script
+ * extracting the test units, but that should be transparent for you.
+ *
+ * @param suite_name the short name of this suite, to be used in the --tests argument of testall afterward. Avoid spaces and any other strange chars
+ * @param suite_title instructive title that testall should display when your suite is run
+ */
+#define XBT_TEST_SUITE(suite_name,suite_title)
+
+/** @brief Declare a new test units (containing individual tests)
+ *  @hideinitializer
+ *
+ * @param name the short name that will be used in test all to enable/disable this test
+ * @param func a valid function name that will be used to contain all code of this unit
+ * @param title human informative description of your test (displayed in testall)
+ */
+#define XBT_TEST_UNIT(name,func,title)    \
+    void func(void);  /*prototype*/       \
+    void func(void)
+
+
 /* test operations */
 XBT_PUBLIC(void) _xbt_test_add(const char *file, int line, const char *fmt,
                                ...) _XBT_GNUC_PRINTF(3, 4);
@@ -65,9 +130,18 @@ XBT_PUBLIC(void) _xbt_test_fail(const char *file, int line,
                                                                        4);
 XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt,
                                ...) _XBT_GNUC_PRINTF(3, 4);
-
+/** @brief Declare that a new test begins (printf-like parameters, describing the test) 
+ *  @hideinitializer */
 #define xbt_test_add(...)       _xbt_test_add(__FILE__, __LINE__, __VA_ARGS__)
+/** @brief Declare that the lastly started test failed (printf-like parameters, describing failure cause) 
+ *  @hideinitializer */
 #define xbt_test_fail(...)      _xbt_test_fail(__FILE__, __LINE__, __VA_ARGS__)
+/** @brief The lastly started test is actually an assert
+ *  @hideinitializer 
+ * 
+ * - If provided a uniq parameter, this is assumed to be a condition that is expected to be true
+ * - If provided more parameters, the first one is a condition, and the other ones are printf-like arguments that are to be displayed when the condition fails.
+ */
 #define xbt_test_assert(...)    _XBT_IF_ONE_ARG(_xbt_test_assert_ARG1,  \
                                                 _xbt_test_assert_ARGN,  \
                                                 __VA_ARGS__)(__VA_ARGS__)
@@ -79,15 +153,15 @@ XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt,
   do { if (!(cond)) xbt_test_fail(__VA_ARGS__); } while (0)
 #define xbt_test_log(...)       _xbt_test_log(__FILE__, __LINE__, __VA_ARGS__)
 
+/** @brief Declare that the lastly started test failed because of the provided exception */
 XBT_PUBLIC(void) xbt_test_exception(xbt_ex_t e);
 
+/** @brief Declare that the lastly started test was expected to fail (and actually failed) */
 XBT_PUBLIC(void) xbt_test_expect_failure(void);
+/** @brief Declare that the lastly started test should be skiped today */
 XBT_PUBLIC(void) xbt_test_skip(void);
 
-/* test suite short-cut macros */
-#define XBT_TEST_UNIT(name,func,title)    \
-    void func(void);  /*prototype*/       \
-    void func(void)
+/** @} */
 
 #ifdef XBT_USE_DEPRECATED
 

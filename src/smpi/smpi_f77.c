@@ -14,6 +14,7 @@ extern int xargc;
 extern char** xargv;
 
 static xbt_dynar_t comm_lookup = NULL;
+static xbt_dynar_t group_lookup = NULL;
 static xbt_dict_t request_lookup = NULL;
 static xbt_dynar_t datatype_lookup = NULL;
 static xbt_dynar_t op_lookup = NULL;
@@ -25,11 +26,29 @@ static int new_comm(MPI_Comm comm) {
   return (int)xbt_dynar_length(comm_lookup) - 1;
 }
 
+static void free_comm(int comm) {
+  xbt_dynar_remove_at(comm_lookup, comm, NULL);
+}
+
 static MPI_Comm get_comm(int comm) {
   if(comm == -2) {
     return MPI_COMM_SELF;
   } else if(comm_lookup && comm >= 0 && comm < (int)xbt_dynar_length(comm_lookup)) {
     return *(MPI_Comm*)xbt_dynar_get_ptr(comm_lookup, comm);
+  }
+  return MPI_COMM_NULL;
+}
+
+static int new_group(MPI_Group group) {
+  xbt_dynar_push(group_lookup, &group);
+  return (int)xbt_dynar_length(group_lookup) - 1;
+}
+
+static MPI_Group get_group(int group) {
+  if(group == -2) {
+    return MPI_GROUP_EMPTY;
+  } else if(group_lookup && group >= 0 && group < (int)xbt_dynar_length(group_lookup)) {
+    return *(MPI_Group*)xbt_dynar_get_ptr(group_lookup, group);
   }
   return MPI_COMM_NULL;
 }
@@ -78,6 +97,7 @@ static MPI_Op get_op(int op) {
 void mpi_init__(int* ierr) {
    comm_lookup = xbt_dynar_new(sizeof(MPI_Comm), NULL);
    new_comm(MPI_COMM_WORLD);
+   group_lookup = xbt_dynar_new(sizeof(MPI_Group), NULL);
 
    request_lookup = xbt_dict_new_homogeneous(NULL);
 
@@ -164,6 +184,26 @@ void mpi_comm_dup__(int* comm, int* newcomm, int* ierr) {
   }
 }
 
+void mpi_comm_create__(int* comm, int* group, int* newcomm, int* ierr) {
+  MPI_Comm tmp;
+
+  *ierr = MPI_Comm_create(get_comm(*comm),get_group(*group), &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *newcomm = new_comm(tmp);
+  }
+}
+
+
+void mpi_comm_free__(int* comm, int* ierr) {
+  MPI_Comm tmp = get_comm(*comm);
+
+  *ierr = MPI_Comm_free(&tmp);
+
+  if(*ierr == MPI_SUCCESS) {
+    free_comm(*comm);
+  }
+}
+
 void mpi_comm_split__(int* comm, int* color, int* key, int* comm_out, int* ierr) {
   MPI_Comm tmp;
 
@@ -171,6 +211,29 @@ void mpi_comm_split__(int* comm, int* color, int* key, int* comm_out, int* ierr)
   if(*ierr == MPI_SUCCESS) {
     *comm_out = new_comm(tmp);
   }
+}
+
+void mpi_group_incl__(int* group, int* n, int* ranks, int* group_out, int* ierr) {
+  MPI_Group tmp;
+
+  *ierr = MPI_Group_incl(get_group(*group), *n, ranks, &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *group_out = new_group(tmp);
+  }
+}
+
+void mpi_comm_group__(int* comm, int* group_out,  int* ierr) {
+  MPI_Group tmp;
+
+  *ierr = MPI_Comm_group(get_comm(*comm), &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *group_out = new_group(tmp);
+  }
+}
+
+
+void mpi_initialized__(int* flag, int* ierr){
+  *ierr = MPI_Initialized(flag);
 }
 
 void mpi_send_init__(void *buf, int* count, int* datatype, int* dst, int* tag,
@@ -195,10 +258,36 @@ void mpi_isend__(void *buf, int* count, int* datatype, int* dst,
   }
 }
 
+void mpi_irsend__(void *buf, int* count, int* datatype, int* dst,
+                 int* tag, int* comm, int* request, int* ierr) {
+  MPI_Request req;
+
+  *ierr = MPI_Irsend(buf, *count, get_datatype(*datatype), *dst, *tag,
+                    get_comm(*comm), &req);
+  if(*ierr == MPI_SUCCESS) {
+    *request = new_request(req);
+  }
+}
+
 void mpi_send__(void* buf, int* count, int* datatype, int* dst,
                 int* tag, int* comm, int* ierr) {
    *ierr = MPI_Send(buf, *count, get_datatype(*datatype), *dst, *tag,
                     get_comm(*comm));
+}
+
+void mpi_rsend__(void* buf, int* count, int* datatype, int* dst,
+                int* tag, int* comm, int* ierr) {
+   *ierr = MPI_Rsend(buf, *count, get_datatype(*datatype), *dst, *tag,
+                    get_comm(*comm));
+}
+
+void mpi_sendrecv__(void* sendbuf, int* sendcount, int* sendtype, int* dst,
+                int* sendtag, void *recvbuf, int* recvcount,
+                int* recvtype, int* src, int* recvtag,
+                int* comm, MPI_Status* status, int* ierr) {
+   *ierr = MPI_Sendrecv(sendbuf, *sendcount, get_datatype(*sendtype), *dst,
+       *sendtag, recvbuf, *recvcount,get_datatype(*recvtype), *src, *recvtag,
+       get_comm(*comm), status);
 }
 
 void mpi_recv_init__(void *buf, int* count, int* datatype, int* src, int* tag,
@@ -297,10 +386,24 @@ void mpi_allreduce__(void* sendbuf, void* recvbuf, int* count, int* datatype,
                         get_op(*op), get_comm(*comm));
 }
 
+void mpi_reduce_scatter__(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype,
+                     int* op, int* comm, int* ierr) {
+  *ierr = MPI_Reduce_scatter(sendbuf, recvbuf, recvcounts, get_datatype(*datatype),
+                        get_op(*op), get_comm(*comm));
+}
+
 void mpi_scatter__(void* sendbuf, int* sendcount, int* sendtype,
                    void* recvbuf, int* recvcount, int* recvtype, 
                    int* root, int* comm, int* ierr) {
   *ierr = MPI_Scatter(sendbuf, *sendcount, get_datatype(*sendtype),
+                      recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
+}
+
+
+void mpi_scatterv__(void* sendbuf, int* sendcounts, int* displs, int* sendtype,
+                   void* recvbuf, int* recvcount, int* recvtype,
+                   int* root, int* comm, int* ierr) {
+  *ierr = MPI_Scatterv(sendbuf, sendcounts, displs, get_datatype(*sendtype),
                       recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
 }
 
@@ -311,6 +414,13 @@ void mpi_gather__(void* sendbuf, int* sendcount, int* sendtype,
                      recvbuf, *recvcount, get_datatype(*recvtype), *root, get_comm(*comm));
 }
 
+void mpi_gatherv__(void* sendbuf, int* sendcount, int* sendtype,
+                  void* recvbuf, int* recvcounts, int* displs, int* recvtype,
+                  int* root, int* comm, int* ierr) {
+  *ierr = MPI_Gatherv(sendbuf, *sendcount, get_datatype(*sendtype),
+                     recvbuf, recvcounts, displs, get_datatype(*recvtype), *root, get_comm(*comm));
+}
+
 void mpi_allgather__(void* sendbuf, int* sendcount, int* sendtype,
                      void* recvbuf, int* recvcount, int* recvtype,
                      int* comm, int* ierr) {
@@ -319,10 +429,10 @@ void mpi_allgather__(void* sendbuf, int* sendcount, int* sendtype,
 }
 
 void mpi_allgatherv__(void* sendbuf, int* sendcount, int* sendtype,
-                     void* recvbuf, int* recvcount,int* displs, int* recvtype,
+                     void* recvbuf, int* recvcounts,int* displs, int* recvtype,
                      int* comm, int* ierr) {
   *ierr = MPI_Allgatherv(sendbuf, *sendcount, get_datatype(*sendtype),
-                        recvbuf, recvcount, displs, get_datatype(*recvtype), get_comm(*comm));
+                        recvbuf, recvcounts, displs, get_datatype(*recvtype), get_comm(*comm));
 }
 
 void mpi_scan__(void* sendbuf, void* recvbuf, int* count, int* datatype,
@@ -337,6 +447,12 @@ void mpi_alltoall__(void* sendbuf, int* sendcount, int* sendtype,
                        recvbuf, *recvcount, get_datatype(*recvtype), get_comm(*comm));
 }
 
+void mpi_alltoallv__(void* sendbuf, int* sendcounts, int* senddisps, int* sendtype,
+                    void* recvbuf, int* recvcounts, int* recvdisps, int* recvtype, int* comm, int* ierr) {
+  *ierr = MPI_Alltoallv(sendbuf, sendcounts, senddisps, get_datatype(*sendtype),
+                       recvbuf, recvcounts, recvdisps, get_datatype(*recvtype), get_comm(*comm));
+}
+
 void mpi_test__ (int * request, int *flag, MPI_Status * status, int* ierr){
   MPI_Request req = find_request(*request);
   *ierr= MPI_Test(&req, flag, status);
@@ -347,6 +463,10 @@ void mpi_get_processor_name__(char *name, int *resultlen, int* ierr){
 
 void mpi_get_count__(MPI_Status * status, int* datatype, int *count, int* ierr){
   *ierr = MPI_Get_count(status, get_datatype(*datatype), count);
+}
+
+void mpi_attr_get__(int* comm, int* keyval, void* attr_value, int* flag, int* ierr ){
+  *ierr = MPI_Attr_get(get_comm(*comm), *keyval, attr_value, flag);
 }
 
 void mpi_type_extent__(int* datatype, MPI_Aint * extent, int* ierr){
@@ -364,4 +484,8 @@ void mpi_type_lb__(int* datatype, MPI_Aint * extent, int* ierr){
 void mpi_type_size__(int* datatype, int *size, int* ierr)
 {
   *ierr = MPI_Type_size(get_datatype(*datatype), size);
+}
+
+void mpi_error_string__(int* errorcode, char* string, int* resultlen, int* ierr){
+  *ierr = MPI_Error_string(*errorcode, string, resultlen);
 }

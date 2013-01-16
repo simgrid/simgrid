@@ -20,6 +20,14 @@
 
 SG_BEGIN_DECL()
 
+/********************************** Configuration of MC **************************************/	
+extern int _sg_do_model_check;
+extern int _sg_mc_checkpoint;
+extern char* _sg_mc_property_file;
+extern int _sg_mc_timeout;
+extern int _sg_mc_max_depth;
+extern int _sg_mc_visited;
+
 extern char*_surf_mc_property_file; /* fixme: better location? */
 
 extern xbt_dynar_t mc_heap_comparison_ignore;

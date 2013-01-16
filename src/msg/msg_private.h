@@ -155,5 +155,31 @@ void _MSG_action_exit(void);
 
 void MSG_post_create_environment(void);
 
+/********** Tracing **********/
+/* declaration of instrumentation functions from msg_task_instr.c */
+void TRACE_msg_set_task_category(msg_task_t task, const char *category);
+void TRACE_msg_task_create(msg_task_t task);
+void TRACE_msg_task_execute_start(msg_task_t task);
+void TRACE_msg_task_execute_end(msg_task_t task);
+void TRACE_msg_task_destroy(msg_task_t task);
+void TRACE_msg_task_get_start(void);
+void TRACE_msg_task_get_end(double start_time, msg_task_t task);
+int TRACE_msg_task_put_start(msg_task_t task);    //returns TRUE if the task_put_end must be called
+void TRACE_msg_task_put_end(void);
+
+/* declaration of instrumentation functions from msg_process_instr.c */
+char *instr_process_id (msg_process_t proc, char *str, int len);
+char *instr_process_id_2 (const char *process_name, int process_pid, char *str, int len);
+void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host,
+                                   msg_host_t new_host);
+void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host);
+void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_host_t host);
+void TRACE_msg_process_kill(msg_process_t process);
+void TRACE_msg_process_suspend(msg_process_t process);
+void TRACE_msg_process_resume(msg_process_t process);
+void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c
+void TRACE_msg_process_sleep_out(msg_process_t process);
+void TRACE_msg_process_end(msg_process_t process);
+
 SG_END_DECL()
 #endif

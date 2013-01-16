@@ -30,13 +30,6 @@ xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
 
 int xbt_initialized = 0;
 
-int _surf_do_model_check = 0;
-int _surf_mc_checkpoint=0;
-char* _surf_mc_property_file=NULL;
-int _surf_mc_timeout=0;
-int _surf_mc_max_depth=1000;
-int _surf_mc_visited=0;
-
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
  */
@@ -89,28 +82,22 @@ static void xbt_preinit(void)
   mmalloc_preinit();
 #endif
   xbt_log_preinit();
-
   xbt_backtrace_preinit();
   xbt_os_thread_mod_preinit();
   xbt_fifo_preinit();
   xbt_dict_preinit();
-
   atexit(xbt_postexit);
 }
 
 static void xbt_postexit(void)
 {
   xbt_backtrace_postexit();
-
   xbt_fifo_postexit();
   xbt_dict_postexit();
-
-  xbt_log_postexit();
   xbt_os_thread_mod_postexit();
-
-  free(xbt_binary_name);
   xbt_dynar_free(&xbt_cmdline);
-
+  xbt_log_postexit();
+  free(xbt_binary_name);
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_postexit();
 #endif

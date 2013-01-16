@@ -1,0 +1,38 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3"><!-- For using with chainsend, platform_chainsend.xml -->
+
+  <!-- Broadcaster -->
+  <process host="host0" function="broadcaster">
+	<argument value="8"/> <!-- number of peers -->
+  </process>
+
+  <!-- Peers -->
+  <process host="host1" function="peer">
+  	<argument value="1"/>
+  </process>
+  <process host="host2" function="peer">
+  	<argument value="2"/>
+  </process>
+  <process host="host3" function="peer">
+  	<argument value="3"/>
+  </process>
+  <process host="host4" function="peer">
+  	<argument value="4"/>
+  </process>
+  <process host="host5" function="peer">
+  	<argument value="5"/>
+  </process>
+  <process host="host6" function="peer">
+  	<argument value="6"/>
+  </process>
+  <process host="host7" function="peer">
+  	<argument value="7"/>
+  </process>
+  <process host="host8" function="peer">
+  	<argument value="8"/>
+  </process>
+  <!--<process host="host9" function="peer">
+  	<argument value="9"/>
+  </process>-->
+</platform>
