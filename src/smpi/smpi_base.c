@@ -105,14 +105,14 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
     }
 
     xbt_dynar_push_as(smpi_factor, s_smpi_factor_t, fact);
-    XBT_VERB("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
+    XBT_DEBUG("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
     xbt_dynar_free(&radical_elements2);
   }
   xbt_dynar_free(&radical_elements);
   iter=0;
   xbt_dynar_sort(smpi_factor, &factor_cmp);
   xbt_dynar_foreach(smpi_factor, iter, fact) {
-    XBT_VERB("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
+    XBT_DEBUG("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
   }
   return smpi_factor;
 }
@@ -128,13 +128,13 @@ static double smpi_os(double size)
   double current=0.0;
   xbt_dynar_foreach(smpi_os_values, iter, fact) {
     if (size <= fact.factor) {
-      XBT_VERB("os : %lf <= %ld return %f", size, fact.factor, current);
+        XBT_DEBUG("os : %lf <= %ld return %f", size, fact.factor, current);
       return current;
     }else{
       current=fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_VERB("os : %lf > %ld return %f", size, fact.factor, current);
+  XBT_DEBUG("os : %lf > %ld return %f", size, fact.factor, current);
 
   return current;
 }
@@ -150,12 +150,12 @@ static double smpi_or(double size)
   double current=0.0;
   xbt_dynar_foreach(smpi_or_values, iter, fact) {
     if (size <= fact.factor) {
-      XBT_VERB("or : %lf <= %ld return %f", size, fact.factor, current);
+        XBT_DEBUG("or : %lf <= %ld return %f", size, fact.factor, current);
       return current;
     }else
       current=fact.values[0]+fact.values[1]*size;
   }
-  XBT_VERB("or : %lf > %ld return %f", size, fact.factor, current);
+  XBT_DEBUG("or : %lf > %ld return %f", size, fact.factor, current);
 
   return current;
 }
@@ -296,7 +296,7 @@ void smpi_mpi_start(MPI_Request request)
     double sleeptime = smpi_or(request->size);
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
-        XBT_VERB("receiving size of %ld : sleep %lf ", request->size, smpi_or(request->size));
+        XBT_DEBUG("receiving size of %ld : sleep %lf ", request->size, smpi_or(request->size));
     }
 
   } else {
@@ -332,7 +332,7 @@ void smpi_mpi_start(MPI_Request request)
     double sleeptime = smpi_os(request->size);
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
-        XBT_VERB("sending size of %ld : sleep %lf ", request->size, smpi_os(request->size));
+        XBT_DEBUG("sending size of %ld : sleep %lf ", request->size, smpi_os(request->size));
     }
     request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
