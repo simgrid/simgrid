@@ -1,4 +1,4 @@
-/* Copyright (c) 2009, 2010. The SimGrid Team.
+/* Copyright (c) 2009-2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -27,9 +27,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 #define agnxtout(dot, edge)     agnxtout(edge)
 #endif
 
+typedef enum {
+  sequential =0,
+  parallel
+} seq_par_t;
+
 void dot_add_task(Agnode_t * dag_node);
-void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge);
-void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge);
+void dot_add_parallel_task(Agnode_t * dag_node);
+void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge,
+                                seq_par_t seq_or_par);
+void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge,
+                                 seq_par_t seq_or_par);
 xbt_dynar_t SD_dotload_generic(const char * filename);
 
 static double dot_parse_double(const char *string)
@@ -176,6 +184,94 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename){
   return NULL;
 }
 
+xbt_dynar_t SD_PTG_dotload(const char * filename)
+{
+  xbt_assert(filename, "Unable to use a null file descriptor\n");
+  FILE *in_file = fopen(filename, "r");
+  dag_dot = agread(in_file, NIL(Agdisc_t *));
+
+  result = xbt_dynar_new(sizeof(SD_task_t), dot_task_p_free);
+  files = xbt_dict_new_homogeneous(&dot_task_free);
+  jobs = xbt_dict_new_homogeneous(NULL);
+  computers = xbt_dict_new_homogeneous(NULL);
+  root_task = SD_task_create_comp_par_amdahl("root", NULL, 0., 0.);
+  /* by design the root task is always SCHEDULABLE */
+  __SD_task_set_state(root_task, SD_SCHEDULABLE);
+
+  xbt_dict_set(jobs, "root", root_task, NULL);
+  xbt_dynar_push(result, &root_task);
+  end_task = SD_task_create_comp_par_amdahl("end", NULL, 0., 0.);
+  xbt_dict_set(jobs, "end", end_task, NULL);
+
+  Agnode_t *dag_node = NULL;
+  for (dag_node = agfstnode(dag_dot); dag_node; dag_node = agnxtnode(dag_dot, dag_node)) {
+    dot_add_parallel_task(dag_node);
+  }
+  agclose(dag_dot);
+  xbt_dict_free(&jobs);
+
+  /* And now, post-process the files.
+   * We want a file task per pair of computation tasks exchanging the file. Duplicate on need
+   * Files not produced in the system are said to be produced by root task (top of DAG).
+   * Files not consumed in the system are said to be consumed by end task (bottom of DAG).
+   */
+  xbt_dict_cursor_t cursor;
+  SD_task_t file;
+  char *name;
+  xbt_dict_foreach(files, cursor, name, file) {
+    unsigned int cpt1, cpt2;
+    SD_task_t newfile = NULL;
+    SD_dependency_t depbefore, depafter;
+    if (xbt_dynar_is_empty(file->tasks_before)) {
+      xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
+        SD_task_t newfile =
+            SD_task_create_comm_par_mxn_1d_block(file->name, NULL, file->amount);
+        SD_task_dependency_add(NULL, NULL, root_task, newfile);
+        SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
+        xbt_dynar_push(result, &newfile);
+      }
+    } else if (xbt_dynar_is_empty(file->tasks_after)) {
+      xbt_dynar_foreach(file->tasks_before, cpt2, depbefore) {
+        SD_task_t newfile =
+            SD_task_create_comm_par_mxn_1d_block(file->name, NULL, file->amount);
+        SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
+        SD_task_dependency_add(NULL, NULL, newfile, end_task);
+        xbt_dynar_push(result, &newfile);
+      }
+    } else {
+      xbt_dynar_foreach(file->tasks_before, cpt1, depbefore) {
+        xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
+          if (depbefore->src == depafter->dst) {
+            XBT_WARN
+                ("File %s is produced and consumed by task %s. This loop dependency will prevent the execution of the task.",
+                 file->name, depbefore->src->name);
+          }
+          newfile =
+              SD_task_create_comm_par_mxn_1d_block(file->name, NULL, file->amount);
+          SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
+          SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
+          xbt_dynar_push(result, &newfile);
+        }
+      }
+    }
+  }
+
+  /* Push end task last */
+  xbt_dynar_push(result, &end_task);
+
+  /* Free previous copy of the files */
+  xbt_dict_free(&files);
+  fclose(in_file);
+  if (!acyclic_graph_detail(result)) {
+    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.",
+              basename((char*)filename));
+    xbt_dynar_free(&result);
+    /* (result == NULL) here */
+  }
+  return result;
+}
+
+
 xbt_dynar_t SD_dotload_generic(const char * filename)
 {
   xbt_assert(filename, "Unable to use a null file descriptor\n");
@@ -264,6 +360,51 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
   return result;
 }
 
+/* dot_add_parallel_task create a sd_task of SD_TASK_COMP_PAR_AMDHAL type and
+ * all transfers required for this task. The execution time of the task is
+ * given by the attribute size. The unit of size is the Flop.*/
+void dot_add_parallel_task(Agnode_t * dag_node)
+{
+  char *name = agnameof(dag_node);
+  SD_task_t current_job;
+  double amount = dot_parse_double(agget(dag_node, (char *) "size"));
+  double alpha = dot_parse_double(agget(dag_node, (char *) "alpha"));
+
+  if (alpha == -1.)
+    alpha = 0.0;
+
+  XBT_DEBUG("See <job id=%s amount=%s %.0f alpha=%.2f>", name,
+        agget(dag_node, (char *) "size"), amount, alpha);
+  current_job = xbt_dict_get_or_null(jobs, name);
+  if (current_job == NULL) {
+    current_job =
+        SD_task_create_comp_par_amdahl(name, NULL , amount, alpha);
+#ifdef HAVE_TRACING
+   TRACE_sd_dotloader (current_job, agget (dag_node, (char*)"category"));
+#endif
+    xbt_dict_set(jobs, name, current_job, NULL);
+    xbt_dynar_push(result, &current_job);
+  }
+  Agedge_t *e;
+  int count = 0;
+
+  for (e = agfstin(dag_dot, dag_node); e; e = agnxtin(dag_dot, e)) {
+    dot_add_input_dependencies(current_job, e, parallel);
+    count++;
+  }
+  if (count == 0 && current_job != root_task) {
+    SD_task_dependency_add(NULL, NULL, root_task, current_job);
+  }
+  count = 0;
+  for (e = agfstout(dag_dot, dag_node); e; e = agnxtout(dag_dot, e)) {
+    dot_add_output_dependencies(current_job, e, parallel);
+    count++;
+  }
+  if (count == 0 && current_job != end_task) {
+    SD_task_dependency_add(NULL, NULL, current_job, end_task);
+  }
+}
+
 /* dot_add_task create a sd_task and all transfers required for this
  * task. The execution time of the task is given by the attribute size.
  * The unit of size is the Flop.*/
@@ -289,7 +430,7 @@ void dot_add_task(Agnode_t * dag_node)
   int count = 0;
 
   for (e = agfstin(dag_dot, dag_node); e; e = agnxtin(dag_dot, e)) {
-    dot_add_input_dependencies(current_job, e);
+    dot_add_input_dependencies(current_job, e, sequential);
     count++;
   }
   if (count == 0 && current_job != root_task) {
@@ -297,7 +438,7 @@ void dot_add_task(Agnode_t * dag_node)
   }
   count = 0;
   for (e = agfstout(dag_dot, dag_node); e; e = agnxtout(dag_dot, e)) {
-    dot_add_output_dependencies(current_job, e);
+    dot_add_output_dependencies(current_job, e, sequential);
     count++;
   }
   if (count == 0 && current_job != end_task) {
@@ -360,7 +501,8 @@ void dot_add_task(Agnode_t * dag_node)
  * and a transfers. This is given by the edges in the dot file. 
  * The amount of data transfers is given by the attribute size on the
  * edge. */
-void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
+void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge,
+                                seq_par_t seq_or_par)
 {
   SD_task_t file = NULL;
   char *name_tail=agnameof(agtail(edge));
@@ -373,7 +515,11 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
   if (size > 0) {
     file = xbt_dict_get_or_null(files, name);
     if (file == NULL) {
-      file = SD_task_create_comm_e2e(name, NULL, size);
+      if (seq_or_par == sequential){
+          file = SD_task_create_comm_e2e(name, NULL, size);
+      } else {
+          file = SD_task_create_comm_par_mxn_1d_block(name, NULL, size);
+      }
 #ifdef HAVE_TRACING
       TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
 #endif
@@ -398,8 +544,8 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge)
  * transfers and a task. This is given by the edges in the dot file.
  * The amount of data transfers is given by the attribute size on the
  * edge. */
-void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
-{
+void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge,
+                                 seq_par_t seq_or_par){
   SD_task_t file;
   char *name_tail=agnameof(agtail(edge));
   char *name_head=agnameof(aghead(edge));
@@ -411,7 +557,11 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge)
   if (size > 0) {
     file = xbt_dict_get_or_null(files, name);
     if (file == NULL) {
-      file = SD_task_create_comm_e2e(name, NULL, size);
+      if (seq_or_par == sequential){
+          file = SD_task_create_comm_e2e(name, NULL, size);
+      } else {
+          file = SD_task_create_comm_par_mxn_1d_block(name, NULL, size);
+      }
 #ifdef HAVE_TRACING
       TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
 #endif
