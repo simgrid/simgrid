@@ -25,8 +25,11 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  * Much more extensive test suite, from MPICH
 
 SIMDAG:
+ * Add a new loader (SD_PTG_dotload) that creates a parallel task graph 
+  (i.e., a DAG whose nodes are parallel tasks) from a dot file. Creates a dynar
+   of SD_TASK_COMP_PAR_AMDAHL and SD_TASK_COMM_MXN_1D_BLOCK tasks.
  * Bug fix: let task be scheduled when the last dependency to be solved is a 
-   control dependency
+   control dependency.
 
  MSG:
  * New function: MSG_process_get_number()
