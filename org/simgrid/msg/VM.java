@@ -22,14 +22,17 @@ public class VM {
 	private long bind = 0;
 	
 	private int coreAmount;
+
+        private String name;
 	/**
 	 * @brief Create a new empty VM.
 	 * @bug it is expected that in the future, the coreAmount parameter will be used
 	 * to add extra constraints on the execution, but the argument is ignored for now.
 	 */
-	public VM(Host host, int coreAmount) {
+	public VM(Host host, String name, int coreAmount) {
 		this.coreAmount = coreAmount;
-		start(host,coreAmount);
+		this.name = name;
+		start(host,name,coreAmount);
 	}
 	protected void finalize() {
 		destroy();
@@ -42,7 +45,7 @@ public class VM {
 	 * Natively implemented method starting the VM.
 	 * @param coreAmount
 	 */
-	private native void start(Host host, int coreAmount);
+	private native void start(Host host, String name, int coreAmount);
 		
 	/** @brief Returns whether the given VM is currently suspended
 	 */	
@@ -88,5 +91,8 @@ public class VM {
 	 * @brief Reboot the VM, restarting all the processes in it.
 	 */
 	public native void reboot();
-		
+
+	public String getName() {
+		return name;
+	}		
 }

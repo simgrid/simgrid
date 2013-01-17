@@ -28,10 +28,14 @@ Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cls) {
   }
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm, jobject jhost, jint jcoreamount) {
+Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm, jobject jhost, jstring jname, jint jcoreamount) {
   msg_host_t host = jhost_get_native(env, jhost);
 
-  msg_vm_t vm = MSG_vm_start(host, (int)jcoreamount);
+  const char *name;
+  name = (*env)->GetStringUTFChars(env, jname, 0);
+  name = xbt_strdup(name);
+  
+  msg_vm_t vm = MSG_vm_start(host, name, (int)jcoreamount);
 
   jvm_bind(env,jvm,vm);
 }
