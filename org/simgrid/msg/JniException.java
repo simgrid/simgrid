@@ -32,4 +32,7 @@ public class JniException extends RuntimeException {
 	 */ public JniException(String s) {
 		 super(s);
 	 }
+	public JniException(String string, Exception e) {
+		super(string,e);
+	}
 }

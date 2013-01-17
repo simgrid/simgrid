@@ -3,13 +3,9 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar priority/Priority ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/priority/priorityDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Ready to run MSG_MAIN
 > [  0.000000] (1:priority.Test@Fafard) Hello! Running a task of size 7.6296E7 with priority 1.0
 > [  0.000000] (2:priority.Test@Fafard) Hello! Running a task of size 7.6296E7 with priority 2.0
 > [  0.833332] (2:priority.Test@Fafard) Goodbye now!
-> [  1.111109] (0:@) Done running MSG_MAIN
-> [  1.111109] (0:@) MSG_main finished
-> [  1.111109] (0:@) Clean java world
-> [  1.111109] (0:@) Clean native world
+> [  1.111109] (0:@) MSG_main finished; Cleaning up the simulation...
 > [  1.111109] (1:priority.Test@Fafard) Goodbye now!
-
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.

@@ -3,11 +3,8 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar kademlia/Kademlia ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/kademlia/kademlia.xml
-> [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
-> [900.000000] [jmsg/INFO] Done running MSG_MAIN
-> [900.000000] [jmsg/INFO] MSG_main finished
-> [900.000000] [jmsg/INFO] Clean java world
-> [900.000000] [jmsg/INFO] Clean native world
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [900.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:kademlia.Node:(2) 0.000000] [jmsg/INFO] Hi, I'm going to join the network with the id 1!
 > [Boivin:kademlia.Node:(2) 900.000000] [jmsg/INFO] 8/8 FIND_NODE have succedded.
 > [Jacquelin:kademlia.Node:(1) 0.000000] [jmsg/INFO] Hi, I'm going to create the network with the id 0!

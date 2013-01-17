@@ -83,6 +83,7 @@ public class Comm {
 	 */
 	public static native void nativeInit();
 	static {
+		Msg.nativeInit();
 		nativeInit();
 	}	
 }

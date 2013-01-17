@@ -3,7 +3,6 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir:=.}/examples/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Ready to run MSG_MAIN
 > [  0.000000] (10:Slave 8@Jean_Yves) Receiving on slave_8
 > [  0.000000] (11:Slave 9@Fafard) Receiving on slave_9
 > [  0.000000] (1:Master@Jacquelin) Launched 10 VMs
@@ -60,6 +59,7 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir
 > [ 13.715289] (11:Slave 9@Fafard) Receiving on slave_9
 > [ 13.715289] (1:Master@Jacquelin) Enough. Let's resume everybody.
 > [ 13.715289] (1:Master@Jacquelin) Sleep long enough for everyone to be done with previous batch of work
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [1000.000000] (12:Slave 10@Jacquelin) Receiving on slave_10
 > [1000.000000] (13:Slave 11@Intel) Receiving on slave_11
 > [1000.000000] (14:Slave 12@Provost) Receiving on slave_12
@@ -150,10 +150,7 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir
 > [1021.445768] (20:Slave 18@Provost) Received "Task_18". Processing it.
 > [1021.445768] (20:Slave 18@Provost) "Task_18" done 
 > [1021.445768] (20:Slave 18@Provost) Receiving on slave_18
-> [1023.430577] (0:@) Done running MSG_MAIN
-> [1023.430577] (0:@) MSG_main finished
-> [1023.430577] (0:@) Clean java world
-> [1023.430577] (0:@) Clean native world
+> [1023.430577] (0:@) MSG_main finished; Cleaning up the simulation...
 > [1023.430577] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
 > [1023.430577] (1:Master@Jacquelin) Master done.
 > [1023.430577] (21:Slave 19@Provost) Received "Task_19". Processing it.

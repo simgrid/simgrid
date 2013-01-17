@@ -261,4 +261,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_migrate
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setKillTime
     (JNIEnv *, jobject, jdouble);
 
+JNIEXPORT jint JNICALL
+Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls);
+
+
 #endif                          /* !MSG_JPROCESS_H */

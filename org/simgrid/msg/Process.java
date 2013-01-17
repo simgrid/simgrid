@@ -10,10 +10,7 @@
 package org.simgrid.msg;
  
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.Vector;
-import java.lang.Runnable;
-import java.util.concurrent.Semaphore;
 
 /**
  * A process may be defined as a code, with some private data, executing 
@@ -404,6 +401,14 @@ public abstract class Process implements Runnable {
 	 */
 	public static native void nativeInit();
 	static {
+		Msg.nativeInit();
 		nativeInit();
 	}
+	/**
+	 * This static method returns the current amount of processes running
+	 *
+	 * @return			The count of the running processes
+	 */ 
+	public native static int getCount();
+
 }

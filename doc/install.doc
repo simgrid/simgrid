@@ -3,11 +3,13 @@
 \section bindings_binding_java_install How to install Simgrid-java
 
 To use java with Simgrid you have to install some dependencies:
- \li Simgrid (see <a href="http://simgrid.gforge.inria.fr/simgrid/3.7/doc/install.html">install
+ \li Simgrid (see <a href="http://simgrid.gforge.inria.fr/simgrid/latest/doc/install.html">install
      Simgrid</a>). You should set the SIMGRID_ROOT environment
      variable to the path where you installed SimGrid.
- \li Java JDK packages, such as sun-java6-jdk (with libgcj10-dev or
-another version of gcj) or openjdk6.
+ \li Java JDK packages, such as openjdk7 or sun-java6-jdk (with
+     libgcj10-dev or another version of gcj). For maximal performance
+     and scalability, use a coroutine-enabled JVM (see
+     \ref bindings_binding_java_coroutines).
  
 Then Download and install package Simgrid-java:
 \verbatim
@@ -23,7 +25,7 @@ Cmake output
 -- BUILDNAME   : Simgrid-Java
 -- Looking for lib SimGrid
 -- Looking for lib SimGrid - found
--- Simgrid version : 3.6
+-- Simgrid version : 3.8.1
 -- Looking for gras.h
 -- Looking for gras.h - found
 -- Found Tesh: /home/user/Bureau/simgrid/git/bin/tesh
@@ -41,6 +43,27 @@ Cmake output
 -- Build files have been written to: /home/user/workspace/simgrid-java/build
 \endverbatim
 
+If cmake complains that <b>jni could not be found</b>, you need to
+tell it where JNI header files are located. the following command
+should tell you:
+
+\verbatim
+$ locate jni.h
+/usr/lib/jvm/java-6-openjdk-amd64/include/jni.h
+/usr/lib/jvm/java-7-openjdk-amd64/include/jni.h
+\endverbatim
+
+If you have several version of jni installed (as in the example
+above), you need to check the version of java that is used by default
+on your machine (using javac -version), and pick the right one. Then
+set the JAVA_INCLUDE_PATH environment variable to the right path (note
+that we remove the filename jni.h from that path), and relaunch cmake.
+
+\verbatim
+$ export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-6-openjdk-amd64/include/
+$ cmake .
+\endverbatim
+
 \section bindings_binding_java_use How to use Simgrid-java
 
 To execute the examples you need to add the path where you installed
@@ -51,30 +74,152 @@ Be careful on Mac, this variable is called DYLD_LIBRARY_PATH and not
 LD_LIBRARY_PATH.
 
 \verbatim
-$ export SIMGRID_ROOT="$HOME/Install/simgrid/"
-$ export SIMGRID_JAVA_ROOT="$HOME/Install/simgrid-java"
-$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SIMGRID_ROOT/lib:$SIMGRID_JAVA_ROOT/java
+$ export SIMGRID_ROOT="$HOME/Install/simgrid/" # change it to the path where you installed the SimGrid library
+$ export SIMGRID_JAVA_ROOT="$HOME/Install/simgrid-java" # change it to the path where you installed the java bindings of SimGrid 
+$ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$SIMGRID_ROOT/lib:$SIMGRID_JAVA_ROOT/java
 $ cd examples
 $ java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 \endverbatim
 
+If you want to make these settings permanent even after a reboot, you
+need to add the export lines into your ~/.bashrc file, or equivalent.
+
+
+
+
 \section bindings_binding_java_coroutines How to use the coroutines context factory
 
-You may want to use the coroutines context factory, if speed maters to you (since it's about 5 times faster than the default thread-based context factory).
+There is two main motivations to use the coroutine variant of SimGrid
+Java bindings: it's about 5 times faster than the default thread-based
+context factory, and the amount of runnable processes is then only
+limited by the amount of RAM that you have. The drawbacks are that it
+requires a specific and rather experimental JVM to run, and that this
+context factory itself remains a bit experimental so far.
 
-First, remember that the coroutines context factory is still experimental work.
+\subsection  bindings_java_coro_install Getting a mlvm JVM
 
-To use the coroutines context factory, you need a Java virtual machine which supports it.
+You need to get a patched JVM from <a href="http://ssw.jku.at/General/Staff/LS/coro/">here</a>
+(many thanks to Lukas Stadler for this work!). 
 
-Our implementation rely on a JVM patch made by Lukas Stadler, which you can find <a href="http://ssw.jku.at/General/Staff/LS/coro/">here</a>. You can either recompile the JVM yourself or use the pre-built binaries offered.
-
-SimGrid Java will automatically switch to the coroutine context factory if your JVM support it, so you will just need to execute your simulation with the correct JVM:
+You can either get a prebuilt binary, or recompile your own JVM. Make
+sure to get a coro-simple version, as we don't need to serialize nor
+migrate stacks in SimGrid. You should be able to follow the README.txt
+that you'll get in the repository, but here is how we did it, just in
+case. The instructions are given for a debian or Ubuntu box, but I
+think you should manage to convert it to your system quite easily.
+Finally, if you're really stuck, you can get the version compiled by
+Jonathan Rouzaud-Cornabas from his web page. This version is known to
+work with SimGrid for sure!
+http://graal.ens-lyon.fr/~jrouzaud/files/corosimple-linux-amd64-20120914.tgz
+ 
+ -# Install mercurial and some dependencies
+\verbatim 
+sudo apt-get install mercurial ksh libfreetype6-dev libcups2-dev libasound2-dev gawk openjdk-7-jdk libxext-dev libxrender-dev libxtst-dev
+# Grab the forest extension: we need to source-install it
+hg clone https://bitbucket.org/gxti/hgforest hgforest \endverbatim
+\endverbatim
+ -# Configure the mercurial extensions: Edit ~/.hgrc and paste the
+    following lines. Don't forget to change the /path/to/forest.py to
+    point to where you just downloaded the source. 
+    
+    Forest extension is needed to download the openjdk source code and
+    patches while the mq line is needed to apply the patches. The
+    username is needed at the step "preparing the sources", not sure why.
 \verbatim
-$ $PATH_TO_COROUTINE_JVM/java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
+[ui]
+username = YouUserameWithoutSpaces
+[extensions]
+forest=/path/to/forest.py
+mq=
+\endverbatim
+ -# Prepare the source code
+\verbatim 
+# create a working directory, and enter it
+mkdir davinci; cd davinci
+
+# Grab the sources
+hg fclone http://hg.openjdk.java.net/hsx/hotspot-comp sources
+# Grab the patches
+hg fclone http://hg.openjdk.java.net/mlvm/mlvm patches
+
+# Link the patch directories into the sources
+bash patches/make/link-patch-dirs.sh sources patches
+# Test wether the previous command worked with
+ls -i patches/hotspot/series sources/hotspot/.hg/patches/series
+# It should display something like the following.
+# (note that both file share the same inode number)
+#  9707849 patches/hotspot/series  
+#  9707849 sources/hotspot/.hg/patches/series
+
+
+# Specify what to compile. 
+export davinci=$(pwd) guards="buildable testable coro-simple"
+# Apply the patches
+sh patches/make/each-patch-repo.sh hg qselect --reapply $guards '$(sh $davinci/patches/make/current-release.sh)'
+# Check that it understood that you want the patch applied:
+grep GLOBAL_GUARDS patches/make/* -r
+# this should display something like the following (maybe amonst other unrelated lines)
+# GLOBAL_GUARDS=buildable testable coro-simple
+# If this does not work, edit patches/make/Makefile,
+#   manually coro-simple to GLOBAL_GUARDS and then 
+#   rerun the patches/make/each-patch-repo.sh script as earlier
+
+
+# Finish the setup
+(cd patches/make; make setup && make force && make && make FORCE_VERSIONS=1 && echo "Sources are properly setup")
+# If this last command failed, check your mercurial config within ~/.hgrc (see above)
+\endverbatim	       
+ -# Compile it all
+\verbatim
+unset LD_LIBRARY_PATH
+export ALT_BOOTDIR=/usr/lib/jvm/java-7-openjdk-amd64/
+cd sources
+# Check that everything is fine
+make sanity
+# Go for it (it takes about half an hour on my machine)
+make all
+
+# Check that the coroutine library got compiled in
+ls sources/build/linux-amd64/classes/java/dyn/
+# This should display a bunch of class files. If not, something went wrong, you need to investigate further
 \endverbatim
 
-Notice that you may have to adjust the "coro.stacksPerThread" configuration option to run large simulations:
+\subsection  bindings_java_coro_use Using coroutine contexts
+
+SimGrid Java will automatically switch to the coroutine context
+factory if your JVM support it, so you will just need to execute your
+simulation with the correct JVM. The selected context factory gets
+displayed automatically.
+\verbatim
+export LD_LIBRARY_PATH=/path/to/simgrid.so:/path/to/libSG_java.so
+cd examples
+$PATH_TO_COROUTINE_JVM/java -cp .:../simgrid.jar masterslave.Masterslave masterslave/ masterslaveDeployment.xml platform.xml
+\endverbatim
+
+Note that you may have to adjust the "coro.stacksPerThread"
+configuration option to run large simulations. The default is 100 and
+you want to increase it to run more processes.
 \verbatim
 $ $PATH_TO_COROUTINE_JVM/java -Dcoro.stacksPerThread=$STACKS_NUMBER -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
-\endverbatim 
+\endverbatim
+
+If you reach the point where the creation of new simulated processes
+fail with the message "Can't create coroutine object", you may need to
+increase the relevant system limit with the following command.
+\verbatim 
+sysctl -w vm.max_map_count = 131072
+\endverbatim
+
+The full story is that each coroutine requires two memory maps, and
+that Linux puts a limit on the total amount of memory maps that each
+process can manage (by default, this limit is often at 65535). Since
+the JVM needs a few dozen of such maps on its own (three maps per
+dynamic library -- check /proc/the_pid/maps if you don't believe it),
+this is enough to create over 30,000 simulated processes. But to go
+futher, that limit must be modified. 
+
+If you want to make this change permanent on your machine, edit your
+/etc/sysctl.conf file. Otherwise, you have to redo it by calling
+sysctl after each reboot.
+
  */

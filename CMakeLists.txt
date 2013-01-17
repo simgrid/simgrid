@@ -7,8 +7,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib")
 set(soversion 1)
 
 set(SIMGRID_JAVA_VERSION_MAJOR "3")
-set(SIMGRID_JAVA_VERSION_MINOR "7")
-set(SIMGRID_JAVA_VERSION_PATCH "1")
+set(SIMGRID_JAVA_VERSION_MINOR "9")
+set(SIMGRID_JAVA_VERSION_PATCH "0")
 set(DIST_NAME ${PROJECT_NAME}-${SIMGRID_JAVA_VERSION_MAJOR}.${SIMGRID_JAVA_VERSION_MINOR}.${SIMGRID_JAVA_VERSION_PATCH})
 
 ########
@@ -156,6 +156,7 @@ set(JAVA_EXAMPLES
   ${CMAKE_HOME_DIRECTORY}/examples/chord/FindSuccessorAnswerTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/FindSuccessorTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/GetPredecessorAnswerTask.java
+  ${CMAKE_HOME_DIRECTORY}/examples/chord/GetPredecessorTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/chord/NotifyTask.java
   ${CMAKE_HOME_DIRECTORY}/examples/cloud/Cloud.java
   ${CMAKE_HOME_DIRECTORY}/examples/cloud/FinalizeTask.java
@@ -221,6 +222,8 @@ set(JAVA_TRACING_EXAMPLES
 
 set(CMAKE_SRC
   ${CMAKE_HOME_DIRECTORY}/ChangeLog
+  ${CMAKE_HOME_DIRECTORY}/MANIFEST.MF
+  ${CMAKE_HOME_DIRECTORY}/COPYING
   ${CMAKE_HOME_DIRECTORY}/CMakeLists.txt
   ${CMAKE_HOME_DIRECTORY}/doxygen_postprocesser.pl
   ${CMAKE_HOME_DIRECTORY}/FindJavaSG.cmake
@@ -370,6 +373,17 @@ if(HAVE_TRACING)
   )
 endif(HAVE_TRACING)
 
+IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
+  IF(${ARCH_32_BITS})
+      set(JSG_BUNDLE NATIVE/${CMAKE_SYSTEM_NAME}/x86/)
+  ELSE()
+      set(JSG_BUNDLE NATIVE/${CMAKE_SYSTEM_NAME}/amd64/)
+  ENDIF()
+ELSE() 
+  error("Unknown system type. Processor: ${CMAKE_SYSTEM_PROCESSOR}; System: ${CMAKE_SYSTEM_NAME}")
+ENDIF()
+message("Native libraries bundeled into: ${JSG_BUNDLE}")
+
 # java_classes
 add_custom_command(
   OUTPUT  ${JAVA_SRC_CLASS}
@@ -377,6 +391,13 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_HOME_DIRECTORY}/classes/"
   COMMAND ${JAVA_COMPILE} -d ${CMAKE_HOME_DIRECTORY}/classes/
     -cp ${CMAKE_HOME_DIRECTORY}/classes/ ${JAVA_SRC}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
+  COMMAND ${CMAKE_COMMAND} -E copy ${SIMGRID_LIB_PATH}/libsimgrid.so ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
+  COMMAND strip --strip-debug ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}/libsimgrid.so
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/lib/libSG_java.so ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
+  COMMAND strip --strip-debug ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}/libSG_java.so
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/ChangeLog ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/COPYING ${CMAKE_HOME_DIRECTORY}/classes/${JSG_BUNDLE}
   COMMENT "Compiling java sources of core library..."					
 )
 
@@ -386,7 +407,7 @@ add_custom_target(java_classes ALL
 
 # simgrid_jar
 add_custom_target(simgrid_jar ALL
-  COMMAND ${JAVA_ARCHIVE} -cvf ${CMAKE_HOME_DIRECTORY}/simgrid.jar .
+  COMMAND ${JAVA_ARCHIVE} -cmvf ${CMAKE_HOME_DIRECTORY}/MANIFEST.MF ${CMAKE_HOME_DIRECTORY}/simgrid.jar .
   COMMENT "Building simgrid.jar..."
   WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/classes 
 )

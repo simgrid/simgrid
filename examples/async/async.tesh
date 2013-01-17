@@ -3,7 +3,6 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar async/AsyncTest ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/async/asyncDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Ready to run MSG_MAIN
 > [  0.000000] (10:async.Slave@Robert) Receiving on 'slave_8'
 > [  0.000000] (11:async.Slave@Sirois) Receiving on 'slave_9'
 > [  0.000000] (12:async.Slave@Monique) Receiving on 'slave_10'
@@ -53,7 +52,5 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar async/AsyncTest ${sr
 > [ 25.000000] (1:async.Master@Jacquelin) Goodbye now!
 > [ 25.851463] (2:async.Forwarder@Jackson) I'm done. See you!
 > [ 26.357007] (3:async.Forwarder@Casavant) I'm done. See you!
-> [ 29.000728] (0:@) Done running MSG_MAIN
-> [ 29.000728] (0:@) MSG_main finished
-> [ 29.000728] (0:@) Clean java world
-> [ 29.000728] (0:@) Clean native world
+> [ 29.000728] (0:@) MSG_main finished; Cleaning up the simulation...
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.

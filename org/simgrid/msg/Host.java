@@ -83,7 +83,6 @@ public class Host {
 	 * This static method returns the count of the installed hosts.
 	 *
 	 * @return			The count of the installed hosts.
-	 * FIXME: Not implemented.
 	 */ 
 	public native static int getCount();
 

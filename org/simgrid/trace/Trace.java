@@ -10,9 +10,12 @@
  */
 package org.simgrid.trace;
 
+import org.simgrid.msg.Msg;
+
 public final class Trace {
 	/* Statically load the library which contains all native functions used in here */
 	static {
+		Msg.nativeInit();
 		try {
 			System.loadLibrary("SG_java_tracing");
 		} catch(UnsatisfiedLinkError e) {

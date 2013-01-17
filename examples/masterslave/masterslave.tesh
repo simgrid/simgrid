@@ -3,7 +3,6 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar masterslave/Masterslave ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/masterslave/masterslaveDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Ready to run MSG_MAIN
 > [  0.000000] (1:masterslave.Master@Jacquelin) Hello! Got 7 slaves and 5 tasks to process
 > [  0.000000] (2:masterslave.Forwarder@Jackson) Receiving on 'slave_0'
 > [  0.000000] (3:masterslave.Forwarder@Casavant) Receiving on 'slave_1'
@@ -27,9 +26,7 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar masterslave/Mastersl
 > [ 13.977892] (5:masterslave.Slave@Bousquet) Received Finalize. I'm done. See you!
 > [ 15.421578] (6:masterslave.Slave@Soucy) Received Finalize. I'm done. See you!
 > [ 16.278886] (7:masterslave.Slave@Kuenning) Received Finalize. I'm done. See you!
-> [ 17.252217] (0:@) Done running MSG_MAIN
-> [ 17.252217] (0:@) MSG_main finished
-> [ 17.252217] (0:@) Clean java world
-> [ 17.252217] (0:@) Clean native world
+> [ 17.252217] (0:@) MSG_main finished; Cleaning up the simulation...
 > [ 17.252217] (1:masterslave.Master@Jacquelin) Goodbye now!
 > [ 17.252217] (8:masterslave.Slave@Browne) Received Finalize. I'm done. See you!
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.

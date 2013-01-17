@@ -42,6 +42,5 @@ public class TracingTest  {
 
 		/*  execute the simulation. */
 	    Msg.run();
-		 Msg.clean();
     }
 }

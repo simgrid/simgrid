@@ -3,11 +3,8 @@
 ! output sort
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar bittorrent/Bittorrent ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/bittorrent/bittorrent.xml
-> [0.000000] [jmsg/INFO] Ready to run MSG_MAIN
-> [5000.832370] [jmsg/INFO] Done running MSG_MAIN
-> [5000.832370] [jmsg/INFO] MSG_main finished
-> [5000.832370] [jmsg/INFO] Clean java world
-> [5000.832370] [jmsg/INFO] Clean native world
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [5000.832370] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:bittorrent.Peer:(2) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 2
 > [Boivin:bittorrent.Peer:(2) 5000.048882] [jmsg/INFO] Here is my current status: 1111111111
 > [Disney:bittorrent.Peer:(6) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 6

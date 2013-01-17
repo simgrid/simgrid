@@ -11,19 +11,106 @@
 
 package org.simgrid.msg;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.File;
+
+
 public final class Msg {
 	/* Statically load the library which contains all native functions used in here */
-	static {
+	static private boolean isNativeInited = false;
+	public static void nativeInit() {
+		if (isNativeInited)
+			return;
 		try {
+			/* prefer the version on disk, if existing */
 			System.loadLibrary("SG_java");
-		} catch(UnsatisfiedLinkError e) {
+		} catch (UnsatisfiedLinkError e) {
+			/* If not found, unpack the one bundled into the jar file and use it */
+			loadLib("simgrid");
+			loadLib("SG_java");
+		}
+		isNativeInited = true;
+	}
+	static {
+		nativeInit();
+	}
+	private static void loadLib (String name) {
+		String Path = "NATIVE/"+System.getProperty("os.name")+"/"+System.getProperty("os.arch")+"/";
+		String filename=name;
+		InputStream in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
+		
+		if (in == null) {
+			filename = "lib"+name+".so";
+			in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
+		} 
+		if (in == null) {
+			filename = name+".dll";
+			in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
+		}  
+		if (in == null) {
+			filename = "lib"+name+".dll";
+			in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
+		}  
+		if (in == null) {
+			filename = "lib"+name+".dylib";
+			in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
+		}  
+		if (in == null) {
+			throw new RuntimeException("Cannot find library "+name+" in path "+Path+". Sorry, but this jar does not seem to be usable on your machine.");
+		}
+// Caching the file on disk: desactivated because it could fool the users 		
+//		if (new File(filename).isFile()) {
+//			// file was already unpacked -- use it directly
+//			System.load(new File(".").getAbsolutePath()+File.separator+filename);
+//			return;
+//		}
+		try {
+			// We must write the lib onto the disk before loading it -- stupid operating systems
+			File fileOut = new File(filename);
+//			if (!new File(".").canWrite()) {
+//				System.out.println("Cannot write in ."+File.separator+filename+"; unpacking the library into a temporary file instead");
+				fileOut = File.createTempFile("simgrid-", ".tmp");
+				// don't leak the file on disk, but remove it on JVM shutdown
+				Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(fileOut.getAbsolutePath())));
+//			}
+//			System.out.println("Unpacking SimGrid native library to " + fileOut.getAbsolutePath());
+			OutputStream out = new FileOutputStream(fileOut);
+			
+			/* copy the library in position */  
+			byte[] buffer = new byte[4096]; 
+			int bytes_read; 
+			while ((bytes_read = in.read(buffer)) != -1)     // Read until EOF
+				out.write(buffer, 0, bytes_read); 
+		      
+			/* close all file descriptors, and load that shit */
+			in.close();
+			out.close();
+			System.load(fileOut.getAbsolutePath());
+		} catch (Exception e) {
 			System.err.println("Cannot load the bindings to the simgrid library: ");
 			e.printStackTrace();
-			System.err.println(
-					"Please check your LD_LIBRARY_PATH, or copy the simgrid and SG_java libraries to the current directory");
+			System.err.println("This jar file does not seem to fit your system, sorry");
 			System.exit(1);
 		}
+	}		
+	/* A hackish mechanism used to remove the file containing our library when the JVM shuts down */
+	private static class FileCleaner implements Runnable {
+		private String target;
+		public FileCleaner(String name) {
+			target = name;
+		}
+        public void run() {
+            try {
+                new File(target).delete();
+            } catch(Exception e) {
+                System.out.println("Unable to clean temporary file "+target+" during shutdown.");
+                e.printStackTrace();
+            }
+        }    
 	}
+
     /** Retrieve the simulation time
      * @return
      */
@@ -84,18 +171,9 @@ public final class Msg {
 	 */
 	public final static native void run() ;
 	
-	/**
-	 * Cleanup the MSG simulation.
-	 * 
-	 * This function is only useful if you want to chain the simulations within 
-	 * the same environment. But actually, it's not sure at all that cleaning the 
-	 * JVM is faster than restarting a new one, so it's probable that using this 
-	 * function is not a brilliant idea. Do so at own risk.
-	 *	
-	 * @see                    MSG_clean
-	 */
-	public final static native void clean();
-	
+	/** This function is useless nowadays, just stop calling it. */
+	@Deprecated
+	public final static void clean(){}
 
 	/**
 	 * The native implemented method to create the environment of the simulation.

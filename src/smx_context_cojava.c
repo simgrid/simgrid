@@ -255,7 +255,24 @@ static void smx_ctx_cojava_create_coroutine(smx_ctx_cojava_t context) {
   jclass coclass = (*env)->FindClass(env, "java/dyn/Coroutine");
   xbt_assert((coclass != NULL), "Can't find coroutine class ! :(");
   jobject jcoroutine = (*env)->NewObject(env, coclass, coroutine_init, context->jprocess);
-  xbt_assert((jcoroutine != NULL), "Can't create coroutine object.");
+  if (jcoroutine == NULL) {
+     FILE *conf= fopen("/proc/sys/vm/max_map_count","r");
+     if (conf) {
+	int limit=-1;
+	fscanf(conf,"%d",&limit);
+	fclose(conf);
+	if (limit!=-1 && SIMIX_process_count() > (limit - 100) /2)
+	   xbt_die("Error while creating a new coroutine. "
+		   "This seem due to the the vm.max_map_count system limit that is only equal to %d while we already have %d coroutines. "
+		   "Please check the install documentation to see how to increase this limit", limit, SIMIX_process_count());
+	if (limit == -1)
+	  xbt_die("Error while creating a new coroutine. "
+		  "This seems to be a non-linux system, disabling the automatic verification that the system limit on the amount of memory maps is high enough.");
+	xbt_die("Error while creating a new coroutine. ");
+     }
+     
+  }
+   
   jcoroutine = (*env)->NewGlobalRef(env, jcoroutine);
   context->jcoroutine = jcoroutine;
 }
