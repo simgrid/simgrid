@@ -5,11 +5,13 @@ if(HAVE_GRAPHVIZ)
 
   #add_executable(<name_of_target> <src list>)
   add_executable(dot_test dot_test.c)
+  add_executable(ptg_test ptg_test.c)
   add_executable(simulate_dot simulate_dot.c)
   add_executable(dot_test2 dot_test2.c)
 
   if(NOT WIN32)
     target_link_libraries(dot_test simgrid pthread m) 	#target_link_libraries(<name_of_targe> <dependencies>)
+    target_link_libraries(ptg_test simgrid pthread m)   #target_link_libraries(<name_of_targe> <dependencies>)
     target_link_libraries(simulate_dot simgrid pthread m) 	#target_link_libraries(<name_of_targe> <dependencies>)
     target_link_libraries(dot_test2 simgrid pthread m) 	#target_link_libraries(<name_of_targe> <dependencies>)
 
@@ -20,6 +22,7 @@ if(HAVE_GRAPHVIZ)
 
   else()
     target_link_libraries(dot_test simgrid) 	#target_link_libraries(<name_of_targe> <dependencies>)
+    target_link_libraries(ptg_test simgrid)   #target_link_libraries(<name_of_targe> <dependencies>)
     target_link_libraries(simulate_dot simgrid) 	#target_link_libraries(<name_of_targe> <dependencies>)
     target_link_libraries(dot_test2 simgrid) 	#target_link_libraries(<name_of_targe> <dependencies>)
     set_directory_properties(
@@ -40,6 +43,7 @@ set(xml_files
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/dot_test.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/ptg_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/dot_test2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/simulate_dot.c
   PARENT_SCOPE
@@ -54,5 +58,6 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/dag_with_cycle.dot
   ${CMAKE_CURRENT_SOURCE_DIR}/dag_with_good_schedule.dot
   ${CMAKE_CURRENT_SOURCE_DIR}/dag.dot
+  ${CMAKE_CURRENT_SOURCE_DIR}/ptg.dot
   PARENT_SCOPE
   )
