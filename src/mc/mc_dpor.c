@@ -11,18 +11,33 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
 xbt_dynar_t visited_states;
 
 static int is_visited_state(void);
+static void visited_state_free(mc_safety_visited_state_t state);
+static void visited_state_free_voidp(void *s);
+
+static void visited_state_free(mc_safety_visited_state_t state){
+  if(state){
+    MC_free_snapshot(state->system_state);
+    xbt_free(state);
+  }
+}
+
+static void visited_state_free_voidp(void *s){
+  visited_state_free((mc_safety_visited_state_t) * (void **) s);
+}
 
 static int is_visited_state(){
 
-  if(_surf_mc_visited == 0)
+  if(_sg_mc_visited == 0)
     return 0;
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
 
-  mc_snapshot_t new_state = NULL;
-  new_state = MC_take_snapshot();  
+  mc_safety_visited_state_t new_state = NULL;
+  new_state = xbt_new0(s_mc_safety_visited_state_t, 1);
+  new_state->system_state = MC_take_snapshot();
+  new_state->num = mc_stats->expanded_states;
 
   MC_UNSET_RAW_MEM;
   
@@ -41,29 +56,95 @@ static int is_visited_state(){
 
     MC_SET_RAW_MEM;
     
+    size_t current_chunks_used = new_state->system_state->heap_chunks_used;
+
     unsigned int cursor = 0;
-    mc_snapshot_t state_test = NULL;
-     
-    xbt_dynar_foreach(visited_states, cursor, state_test){
-      if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug))
-        XBT_DEBUG("****** Pair visited #%d ******", cursor + 1);
-      if(snapshot_compare(new_state, state_test, NULL, NULL) == 0){
-        if(raw_mem_set)
-          MC_SET_RAW_MEM;
-        else
-          MC_UNSET_RAW_MEM;
-        
-        return 1;
-      }   
+    int previous_cursor = 0, next_cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(visited_states) - 1;
+
+    mc_safety_visited_state_t state_test = NULL;
+    size_t chunks_used_test;
+    int same_chunks_not_found = 1;
+
+    while(start <= end && same_chunks_not_found){
+      cursor = (start + end) / 2;
+      state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_safety_visited_state_t);
+      chunks_used_test = state_test->system_state->heap_chunks_used;
+      if(chunks_used_test < current_chunks_used)
+        start = cursor + 1;
+      if(chunks_used_test > current_chunks_used)
+        end = cursor - 1; 
+      if(chunks_used_test == current_chunks_used){
+        same_chunks_not_found = 0;
+        if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
+          xbt_dynar_remove_at(visited_states, cursor, NULL);
+          xbt_dynar_insert_at(visited_states, cursor, &new_state);
+          if(raw_mem_set)
+            MC_SET_RAW_MEM;
+          else
+            MC_UNSET_RAW_MEM;
+          return 1;
+        }else{
+          /* Search another state with same number of chunks used */
+          previous_cursor = cursor - 1;
+          while(previous_cursor >= 0){
+            state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, previous_cursor, mc_safety_visited_state_t);
+            chunks_used_test = state_test->system_state->heap_chunks_used;
+            if(chunks_used_test != current_chunks_used)
+              break;
+            if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
+              xbt_dynar_remove_at(visited_states, previous_cursor, NULL);
+              xbt_dynar_insert_at(visited_states, previous_cursor, &new_state);
+              if(raw_mem_set)
+                MC_SET_RAW_MEM;
+              else
+                MC_UNSET_RAW_MEM;
+              return 1;
+            }
+            previous_cursor--;
+          }
+          next_cursor = cursor + 1;
+          while(next_cursor < xbt_dynar_length(visited_states)){
+            state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, next_cursor, mc_safety_visited_state_t);
+            chunks_used_test = state_test->system_state->heap_chunks_used;
+            if(chunks_used_test != current_chunks_used)
+              break;
+            if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
+              xbt_dynar_remove_at(visited_states, next_cursor, NULL);
+              xbt_dynar_insert_at(visited_states, next_cursor, &new_state);
+              if(raw_mem_set)
+                MC_SET_RAW_MEM;
+              else
+                MC_UNSET_RAW_MEM;
+              return 1;
+            }
+            next_cursor++;
+          }
+        }   
+      }
     }
 
-    if(xbt_dynar_length(visited_states) == _surf_mc_visited){
-      mc_snapshot_t state_to_remove = NULL;
-      xbt_dynar_shift(visited_states, &state_to_remove);
-      MC_free_snapshot(state_to_remove);
-    }
+    state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_safety_visited_state_t);
+    chunks_used_test = state_test->system_state->heap_chunks_used;
 
-    xbt_dynar_push(visited_states, &new_state); 
+    if(chunks_used_test < current_chunks_used)
+      xbt_dynar_insert_at(visited_states, cursor + 1, &new_state);
+    else
+      xbt_dynar_insert_at(visited_states, cursor, &new_state);
+
+    if(xbt_dynar_length(visited_states) > _sg_mc_visited){
+      int min = mc_stats->expanded_states;
+      unsigned int cursor2 = 0;
+      unsigned int index = 0;
+      xbt_dynar_foreach(visited_states, cursor2, state_test){
+        if(state_test->num < min){
+          index = cursor2;
+          min = state_test->num;
+        }
+      }
+      xbt_dynar_remove_at(visited_states, index, NULL);
+    }
     
     MC_UNSET_RAW_MEM;
 
@@ -90,7 +171,7 @@ void MC_dpor_init()
   MC_SET_RAW_MEM;
 
   initial_state = MC_state_new();
-  visited_states = xbt_dynar_new(sizeof(mc_snapshot_t), NULL);
+  visited_states = xbt_dynar_new(sizeof(mc_safety_visited_state_t), visited_state_free_voidp);
 
   MC_UNSET_RAW_MEM;
 
@@ -101,18 +182,12 @@ void MC_dpor_init()
   MC_wait_for_requests();
 
   MC_SET_RAW_MEM;
-
-  xbt_swag_foreach(process, simix_global->process_list){
-    if(MC_process_is_enabled(process)){
-      XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
-    }
-  }
-  
+ 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   xbt_swag_foreach(process, simix_global->process_list){
     if(MC_process_is_enabled(process)){
       MC_state_interleave_process(initial_state, process);
-      break;
+      XBT_DEBUG("Process %lu enabled with simcall %d", process->pid, process->simcall.call);
     }
   }
 
@@ -125,10 +200,6 @@ void MC_dpor_init()
   else
     MC_UNSET_RAW_MEM;
   
-    
-  /* FIXME: Update Statistics 
-     mc_stats->state_size +=
-     xbt_setset_set_size(initial_state->enabled_transitions); */
 }
 
 
@@ -140,12 +211,14 @@ void MC_dpor(void)
 {
 
   char *req_str;
-  int value;
-  smx_simcall_t req = NULL, prev_req = NULL;
+  int value, value2;
+  smx_simcall_t req = NULL, prev_req = NULL, req2 = NULL;
+  s_smx_simcall_t req3;
   mc_state_t state = NULL, prev_state = NULL, next_state = NULL, restore_state=NULL;
   smx_process_t process = NULL;
   xbt_fifo_item_t item = NULL;
-  int pos;
+  int pos, i, interleave_size;
+  int interleave_proc[simix_process_maxpid];
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
@@ -163,7 +236,7 @@ void MC_dpor(void)
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (xbt_fifo_size(mc_stack_safety) < _surf_mc_max_depth &&
+    if (xbt_fifo_size(mc_stack_safety) < _sg_mc_max_depth &&
         (req = MC_state_get_request(state, &value))) {
 
       /* Debug information */
@@ -175,6 +248,38 @@ void MC_dpor(void)
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
+
+      if(MC_state_interleave_size(state)){
+        MC_SET_RAW_MEM;
+        req2 = MC_state_get_internal_request(state);
+        req3 = *req2;
+        for(i=0; i<simix_process_maxpid; i++)
+          interleave_proc[i] = 0;
+        i=0;
+        interleave_size = MC_state_interleave_size(state);
+        while(i < interleave_size){
+          i++;
+          prev_req = MC_state_get_request(state, &value2);
+          if(prev_req != NULL){
+            MC_state_set_executed_request(state, prev_req, value2);
+            prev_req = MC_state_get_internal_request(state);
+            if(MC_request_depend(&req3, prev_req)){
+              XBT_DEBUG("Simcall %d in process %lu dependant with simcall %d in process %lu", req3.call, req3.issuer->pid, prev_req->call, prev_req->issuer->pid);  
+              interleave_proc[prev_req->issuer->pid] = 1;
+            }else{
+              XBT_DEBUG("Simcall %d in process %lu independant with simcall %d in process %lu", req3.call, req3.issuer->pid, prev_req->call, prev_req->issuer->pid); 
+              MC_state_remove_interleave_process(state, prev_req->issuer);
+            }
+          }
+        }
+        xbt_swag_foreach(process, simix_global->process_list){
+          if(interleave_proc[process->pid] == 1)
+            MC_state_interleave_process(state, process);
+        }
+        MC_UNSET_RAW_MEM;
+      }
+
+      MC_state_set_executed_request(state, req, value);
 
       /* Answer the request */
       SIMIX_simcall_pre(req, value); /* After this call req is no longer usefull */
@@ -193,11 +298,11 @@ void MC_dpor(void)
         xbt_swag_foreach(process, simix_global->process_list){
           if(MC_process_is_enabled(process)){
             MC_state_interleave_process(next_state, process);
-            XBT_DEBUG("Process %lu enabled with simcall : %d", process->pid, (&process->simcall)->call); 
+            XBT_DEBUG("Process %lu enabled with simcall %d", process->pid, process->simcall.call);
           }
         }
 
-        if(_surf_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _surf_mc_checkpoint == 0)){
+        if(_sg_mc_checkpoint && ((xbt_fifo_size(mc_stack_safety) + 1) % _sg_mc_checkpoint == 0)){
           next_state->system_state = MC_take_snapshot();
         }
 
@@ -210,28 +315,15 @@ void MC_dpor(void)
       xbt_fifo_unshift(mc_stack_safety, next_state);
       MC_UNSET_RAW_MEM;
 
-      /* FIXME: Update Statistics
-         mc_stats->state_size +=
-         xbt_setset_set_size(next_state->enabled_transitions);*/
-
       /* Let's loop again */
 
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
 
-      if(xbt_fifo_size(mc_stack_safety) == _surf_mc_max_depth){
-        
+      if(xbt_fifo_size(mc_stack_safety) == _sg_mc_max_depth)  
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-        if(req != NULL){
-          XBT_WARN("/!\\ But, there are still processes to interleave. Model-checker will not be able to ensure the soundness of the verification from now. /!\\ "); 
-          XBT_WARN("Notice : the default value of max depth is 1000 but you can change it with cfg=model-check/max_depth:value.");
-        }
-
-      }else{
-
+      else
         XBT_DEBUG("There are no more processes to interleave.");
-
-      }
 
       /* Trash the current state, no longer needed */
       MC_SET_RAW_MEM;
@@ -254,42 +346,42 @@ void MC_dpor(void)
          state that executed that previous request. */
       
       while ((state = xbt_fifo_shift(mc_stack_safety)) != NULL) {
-        if(MC_state_interleave_size(state) == 0){
-          req = MC_state_get_internal_request(state);
-          xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
-            if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
-              if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
-                XBT_DEBUG("Dependent Transitions:");
-                prev_req = MC_state_get_executed_request(prev_state, &value);
-                req_str = MC_request_to_string(prev_req, value);
-                XBT_DEBUG("%s (state=%p)", req_str, prev_state);
-                xbt_free(req_str);
-                prev_req = MC_state_get_executed_request(state, &value);
-                req_str = MC_request_to_string(prev_req, value);
-                XBT_DEBUG("%s (state=%p)", req_str, state);
-                xbt_free(req_str);              
-              }
-
-              break;
-
-            }else if(req->issuer == MC_state_get_executed_request(prev_state, &value)->issuer){
-
-              break;
-
-            }else{
-              
-              MC_state_remove_interleave_process(prev_state, req->issuer);
-
+        req = MC_state_get_internal_request(state);
+        xbt_fifo_foreach(mc_stack_safety, item, prev_state, mc_state_t) {
+          if(MC_request_depend(req, MC_state_get_internal_request(prev_state))){
+            if(XBT_LOG_ISENABLED(mc_dpor, xbt_log_priority_debug)){
+              XBT_DEBUG("Dependent Transitions:");
+              prev_req = MC_state_get_executed_request(prev_state, &value);
+              req_str = MC_request_to_string(prev_req, value);
+              XBT_DEBUG("%s (state=%p)", req_str, prev_state);
+              xbt_free(req_str);
+              prev_req = MC_state_get_executed_request(state, &value);
+              req_str = MC_request_to_string(prev_req, value);
+              XBT_DEBUG("%s (state=%p)", req_str, state);
+              xbt_free(req_str);              
             }
+
+            break;
+
+          }else if(req->issuer == MC_state_get_internal_request(prev_state)->issuer){
+
+            XBT_DEBUG("Simcall %d and %d with same issuer", req->call, MC_state_get_internal_request(prev_state)->call);
+            break;
+
+          }else{
+
+            MC_state_remove_interleave_process(prev_state, req->issuer);
+            XBT_DEBUG("Simcall %d in process %lu independant with simcall %d process %lu", req->call, req->issuer->pid, MC_state_get_internal_request(prev_state)->call, MC_state_get_internal_request(prev_state)->issuer->pid);  
+
           }
         }
+       
         if (MC_state_interleave_size(state)) {
           /* We found a back-tracking point, let's loop */
-          if(_surf_mc_checkpoint){
+          if(_sg_mc_checkpoint){
             if(state->system_state != NULL){
               MC_restore_snapshot(state->system_state);
               xbt_fifo_unshift(mc_stack_safety, state);
-              XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety));
               MC_UNSET_RAW_MEM;
             }else{
               pos = xbt_fifo_size(mc_stack_safety);
@@ -305,16 +397,15 @@ void MC_dpor(void)
               }
               MC_restore_snapshot(restore_state->system_state);
               xbt_fifo_unshift(mc_stack_safety, state);
-              XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety));
               MC_UNSET_RAW_MEM;
               MC_replay(mc_stack_safety, pos);
             }
           }else{
             xbt_fifo_unshift(mc_stack_safety, state);
-            XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety));
             MC_UNSET_RAW_MEM;
             MC_replay(mc_stack_safety, -1);
           }
+          XBT_DEBUG("Back-tracking to depth %d", xbt_fifo_size(mc_stack_safety));
           break;
         } else {
           MC_state_delete(state);

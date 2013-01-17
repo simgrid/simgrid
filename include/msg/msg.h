@@ -32,7 +32,7 @@ typedef enum {
 /** @} */
 
 /************************** Global ******************************************/
-XBT_PUBLIC(void) MSG_config(const char *name, ...);
+XBT_PUBLIC(void) MSG_config(const char *key, const char *value);
 /** \ingroup msg_simulation
  *  \brief Initialize the MSG internal data.
  *  \hideinitializer

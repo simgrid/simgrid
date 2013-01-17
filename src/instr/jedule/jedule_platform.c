@@ -63,7 +63,7 @@ static void jed_free_container(jed_simgrid_container_t container) {
 void jed_simgrid_create_container(jed_simgrid_container_t *container, char *name) {
   xbt_assert( name != NULL );
 
-  *container = (jed_simgrid_container_t)calloc(1,sizeof(s_jed_simgrid_container_t));
+  *container = xbt_new0(s_jed_simgrid_container_t,1);
   (*container)->name = xbt_strdup(name);
   (*container)->is_lowest = 0;
   (*container)->container_children = xbt_dynar_new(sizeof(jed_simgrid_container_t), NULL);
@@ -117,7 +117,7 @@ static void add_subset_to(xbt_dynar_t subset_list, int start, int end,
 
   // printf(">>> start=%d end=%d\n", start, end);
 
-  subset = (jed_res_subset_t)calloc(1,sizeof(s_jed_res_subset_t));
+  subset = xbt_new0(s_jed_res_subset_t,1);
   subset->start_idx = start;
   subset->nres      = end-start+1;
   subset->parent    = parent;
@@ -157,7 +157,7 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup,
   }
 
   nb_ids = xbt_dynar_length(id_list);
-  id_ar = (int*)calloc(nb_ids, sizeof(int));
+  id_ar = xbt_new0(int,nb_ids);
   xbt_dynar_foreach(id_list, iter, id_str) {
     id_ar[iter] = atoi(id_str);
   }
@@ -261,7 +261,7 @@ void jedule_add_meta_info(jedule_t jedule, char *key, char *value) {
 }
 
 void jed_create_jedule(jedule_t *jedule) {
-  *jedule = (jedule_t)calloc(1,sizeof(s_jedule_t));
+  *jedule = xbt_new0(s_jedule_t,1);
   host2_simgrid_parent_container = xbt_dict_new_homogeneous(NULL);
   container_name2container       = xbt_dict_new_homogeneous(NULL);
   (*jedule)->jedule_meta_info    = xbt_dict_new_homogeneous(NULL);

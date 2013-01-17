@@ -41,6 +41,8 @@ mc_state_t MC_state_pair_new(void)
  */
 void MC_state_delete(mc_state_t state)
 {
+  if(state->system_state)
+    MC_free_snapshot(state->system_state);
   xbt_free(state->proc_status);
   xbt_free(state);
 }
@@ -85,9 +87,9 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int valu
     case SIMCALL_COMM_WAITANY:
       state->internal_req.call = SIMCALL_COMM_WAIT;
       state->internal_req.issuer = req->issuer;
-      state->internal_comm = *xbt_dynar_get_as(req->comm_waitany.comms, value, smx_action_t);
-      state->internal_req.comm_wait.comm = &state->internal_comm;
-      state->internal_req.comm_wait.timeout = 0;
+      state->internal_comm = *xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
+      simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
+      simcall_comm_wait__set__timeout(&state->internal_req, 0);
       break;
 
     case SIMCALL_COMM_TESTANY:
@@ -95,24 +97,24 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int valu
       state->internal_req.issuer = req->issuer;
 
       if(value > 0)
-        state->internal_comm = *xbt_dynar_get_as(req->comm_testany.comms, value, smx_action_t);
+        state->internal_comm = *xbt_dynar_get_as(simcall_comm_testany__get__comms(req), value, smx_action_t);
 
-      state->internal_req.comm_wait.comm = &state->internal_comm;
-      state->internal_req.comm_test.result = value;
+      simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
+      simcall_comm_test__set__result(&state->internal_req, value);
       break;
 
     case SIMCALL_COMM_WAIT:
       state->internal_req = *req;
-      state->internal_comm = *(req->comm_wait.comm);
-      state->executed_req.comm_wait.comm = &state->internal_comm;
-      state->internal_req.comm_wait.comm = &state->internal_comm;
+      state->internal_comm = *(simcall_comm_wait__get__comm(req));
+      simcall_comm_wait__set__comm(&state->executed_req, &state->internal_comm);
+      simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
       break;
 
     case SIMCALL_COMM_TEST:
       state->internal_req = *req;
-      state->internal_comm = *req->comm_test.comm;
-      state->executed_req.comm_test.comm = &state->internal_comm;
-      state->internal_req.comm_test.comm = &state->internal_comm;
+      state->internal_comm = *simcall_comm_test__get__comm(req);
+      simcall_comm_test__set__comm(&state->executed_req, &state->internal_comm);
+      simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
       break;
 
     default:
@@ -146,14 +148,14 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
         switch(process->simcall.call){
           case SIMCALL_COMM_WAITANY:
             *value = -1;
-            while(procstate->interleave_count < xbt_dynar_length(process->simcall.comm_waitany.comms)){
+            while(procstate->interleave_count < xbt_dynar_length(simcall_comm_waitany__get__comms(&process->simcall))){
               if(MC_request_is_enabled_by_idx(&process->simcall, procstate->interleave_count++)){
                 *value = procstate->interleave_count-1;
                 break;
               }
             }
 
-            if(procstate->interleave_count >= xbt_dynar_length(process->simcall.comm_waitany.comms))
+            if(procstate->interleave_count >= xbt_dynar_length(simcall_comm_waitany__get__comms(&process->simcall)))
               procstate->state = MC_DONE;
 
             if(*value != -1)
@@ -164,14 +166,14 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
           case SIMCALL_COMM_TESTANY:
             start_count = procstate->interleave_count;
             *value = -1;
-            while(procstate->interleave_count < xbt_dynar_length(process->simcall.comm_testany.comms)){
+            while(procstate->interleave_count < xbt_dynar_length(simcall_comm_testany__get__comms(&process->simcall))){
               if(MC_request_is_enabled_by_idx(&process->simcall, procstate->interleave_count++)){
                 *value = procstate->interleave_count - 1;
                 break;
               }
             }
 
-            if(procstate->interleave_count >= xbt_dynar_length(process->simcall.comm_testany.comms))
+            if(procstate->interleave_count >= xbt_dynar_length(simcall_comm_testany__get__comms(&process->simcall)))
               procstate->state = MC_DONE;
 
             if(*value != -1 || start_count == 0)
@@ -180,8 +182,8 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
             break;
 
           case SIMCALL_COMM_WAIT:
-            if(process->simcall.comm_wait.comm->comm.src_proc
-               && process->simcall.comm_wait.comm->comm.dst_proc){
+            if(simcall_comm_wait__get__comm(&process->simcall)->comm.src_proc
+               && simcall_comm_wait__get__comm(&process->simcall)->comm.dst_proc){
               *value = 0;
             }else{
               *value = -1;

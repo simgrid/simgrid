@@ -30,8 +30,8 @@ fi
 #mem-check
 cmake \
 -Denable_lua=off \
--Denable_tracing=off \
--Denable_smpi=off \
+-Denable_tracing=on \
+-Denable_smpi=on \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=on \
 -Denable_lib_static=off \

@@ -103,9 +103,13 @@ while ( defined( $line = <MAKETEST> ) ) {
             my ($count_first)  = 0;
             my ($count_second) = 0;
             open TESH_FILE, $tesh_file or die "Unable to open $tesh_file $!\n";
+            my ($input) = "";
             my ($l);
             while ( defined( $l = <TESH_FILE> ) ) {
                 chomp $l;
+                if ( $l =~ /^< (.*)$/ ) {
+                    $input = $input . $1 . "\n";
+                }
                 if ( $l =~ /^\$ (.*)$/ ) {
                     my ($command) = $1;
                     $command = var_subst($command, "srcdir", $srcdir);
@@ -123,8 +127,18 @@ while ( defined( $line = <MAKETEST> ) ) {
                     if ($config_var) {
                         $command = "$command $config_var";
                     }
+                    if ( $command =~ /^mkfile\s+(\S+)/) {
+                        my $file = $1;
+                        # don't ask me to explain why so many backslashes...
+                        $input =~ s/\\/\\\\\\\\\\\\\\\\/g;
+                        $input =~ s/\n/\\\\\\\\n/g;
+                        $input =~ s/"/\\\\\\\\042/g;
+                        $input =~ s/'/\\\\\\\\047/g;
+                        $input =~ s/%/%%/g;
+                        $command = "sh -c \"printf '$input' > $file\"";
+                    }
                     print "${indent}ADD_TEST(memcheck-$name_test-$count $command --cd $path\/)\n";
-
+                    $input = "";
                     #push @test_list, "memcheck-$name_test-$count";
                     $count++;
                 }

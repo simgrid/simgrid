@@ -1,7 +1,8 @@
 #! /bin/bash
 prefix="@exec_prefix@"
 
-ARGS="-DMAIN__=user_main -Diargc_=smpi_process_argc -Dgetarg_=smpi_process_getarg -lf2c"
+ARGS="-DMAIN__=user_main -Diargc_=smpi_process_argc -Dgetarg_=smpi_process_getarg"
+LINKARGS="-lf2c"
 SRCFILES=""
 
 while [ -n "$1" ]; do
@@ -16,10 +17,14 @@ while [ -n "$1" ]; do
        SRCFILES="${SRCFILES} ${SRCFILE}"
        ;;
     *)
+      if [ "${ARG}" = "-c" ]; then
+          LINKARGS=""
+      fi
       ARGS="${ARGS} ${ARG}"
       ;;
   esac
 done
+ARGS="${ARGS} ${LINKARGS}"
 
 if [ -n "${SRCFILES}" ]
 then

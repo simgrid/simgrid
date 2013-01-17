@@ -10,6 +10,7 @@
 #include "surf_private.h"
 #include "storage_private.h"
 #include "surf/surf_resource.h"
+#include "simgrid/sg_config.h"
 
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
@@ -241,6 +242,30 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
                                               double *communication_amount,
                                               double rate)
 {
+#define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
+  if ((workstation_nb == 1)
+      && (cost_or_zero(communication_amount, 0) == 0.0))
+    return ws_execute(workstation_list[0], computation_amount[0]);
+  else if ((workstation_nb == 1)
+           && (cost_or_zero(computation_amount, 0) == 0.0))
+    return ws_communicate(workstation_list[0], workstation_list[0],communication_amount[0], rate);
+  else if ((workstation_nb == 2)
+             && (cost_or_zero(computation_amount, 0) == 0.0)
+             && (cost_or_zero(computation_amount, 1) == 0.0)) {
+    int i,nb = 0;
+    double value = 0.0;
+
+    for (i = 0; i < workstation_nb * workstation_nb; i++) {
+      if (cost_or_zero(communication_amount, i) > 0.0) {
+        nb++;
+        value = cost_or_zero(communication_amount, i);
+      }
+    }
+    if (nb == 1)
+      return ws_communicate(workstation_list[0], workstation_list[1],value, rate);
+  }
+#undef cost_or_zero
+
   THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
   return NULL;
 }
@@ -423,7 +448,7 @@ static void surf_workstation_model_init_internal(void)
 void surf_workstation_model_init_current_default(void)
 {
   surf_workstation_model_init_internal();
-  xbt_cfg_setdefault_int(_surf_cfg_set, "network/crosstraffic", 1);
+  xbt_cfg_setdefault_int(_sg_cfg_set, "network/crosstraffic", 1);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 

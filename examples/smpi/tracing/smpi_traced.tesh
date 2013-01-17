@@ -1,6 +1,7 @@
 # use the tested library, not the installed one
 # (since we want to pass it to the child, it has to be redefined before each command)
 # Go for the first test
+
 p Test instrumentation of SMPI
 $ ../../bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../msg/tracing/platform.xml -np 3 ./smpi_traced
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '1e-9'

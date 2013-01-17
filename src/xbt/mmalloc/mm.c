@@ -19,6 +19,6 @@
 #include "mmalloc.c"
 #include "mrealloc.c"
 #include "mmorecore.c"
-#include "mm_module.c"
 #include "mm_legacy.c"
+#include "mm_module.c"
 #include "mm_diff.c"

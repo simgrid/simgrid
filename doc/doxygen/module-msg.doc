@@ -1,0 +1,203 @@
+/** \addtogroup MSG_API
+
+      MSG was the first distributed programming environment provided within
+      SimGrid. While almost realistic, it remains quite simple (simplistic?).
+      This describes the native to MSG.
+
+      \section jMSG_who Who should use this (and who shouldn't)
+
+      You should use MSG if you want to study some heuristics for a
+      given problem you don't really want to implement. If you want to
+      use the C programming language, your are in the right
+      section. To use the Java or Ruby programming interfaces, please refer to
+      the documentation provided in the relevant packages.
+
+  \section MSG_funct Offered functionnalities
+   - \ref msg_simulation
+   - \ref m_process_management
+   - \ref m_host_management
+   - \ref m_task_management
+   - \ref msg_mailbox_management
+   - \ref msg_file_management
+   - \ref msg_task_usage
+   - \ref msg_VMs
+   - \ref msg_trace_driven
+   - \ref MSG_examples
+   - \ref msg_deprecated_functions
+
+
+  Also make sure to visit the page @ref MSG_examples.
+*/
+
+
+
+/**
+@defgroup msg_simulation   Main MSG simulation Functions
+@ingroup MSG_API
+@brief Describes how to setup and control your simulation.
+
+The basic workflow is the following (check the \ref MSG_examples for
+details).
+
+ -# Initialize the library with #MSG_init
+ -# Create a platform (usually by parsing a file with
+    #MSG_create_environment)
+ -# Register the functions that your processes are supposed to run with
+    #MSG_function_register (and maybe #MSG_function_register_default)
+ -# Launch your processes from a deployment file with #MSG_launch_application
+ -# Run the simulation with #MSG_main
+
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation Control" --> @endhtmlonly
+*/
+
+/** @defgroup m_process_management Process Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the process structure of MSG
+ *         (#msg_process_t) and the functions for managing it.
+ */
+
+/** @defgroup m_host_management Host Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the host structure of MSG
+ */
+
+/** @defgroup m_task_management Task Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the task structure of MSG
+ *         (#msg_task_t) and the functions for managing it. See
+ *         \ref msg_task_usage to see how to put the tasks in action.
+ *
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
+ */
+
+/** @defgroup msg_mailbox_management Mailbox Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the mailbox structure of MSG
+ *         (#msg_mailbox_t) and the functions for managing it.
+ *
+ * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Mailbox" --> \endhtmlonly
+ */
+
+/** @defgroup msg_task_usage Task Actions
+ *  @ingroup MSG_API
+ *  @brief This section describes the functions that can be used
+ *         by a process to execute, communicate or otherwise handle some task.
+ */
+
+/** @defgroup msg_VMs VMs
+ *  @ingroup MSG_API
+ *  @brief This section describes the interface created to mimick IaaS clouds.
+ *
+ *  With it, you can create virtual machines to put your processes
+ *  into, and interact directly with the VMs to manage groups of
+ *  processes.
+ *
+ *  This interface is highly experimental at this point. Testing is
+ *  welcomed, but do not expect too much of it right now. Even the
+ *  interfaces may be changed in future releases of SimGrid (although
+ *  things are expected to stabilize nicely before SimGrid v3.8).
+ *  There is no guaranty on the rest of SimGrid, and there is less
+ *  than that on this part.
+ *
+ */
+
+/** @defgroup msg_file_management File Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the file structure of MSG
+ *         (#msg_file_t) and the functions for managing it. It
+ *   is based on POSIX functions.
+ */
+
+
+/**
+@defgroup msg_trace_driven Trace-driven simulations
+@ingroup MSG_API
+@brief This section describes the functions allowing to build trace-driven simulations.
+
+\htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Trace-Driven" --> \endhtmlonly
+
+This is very handy when you want to test an algorithm or protocol that
+does nothing unless it receives some events from outside. For example,
+a P2P protocol reacts to requests from the user, but does nothing if
+there is no such event.
+
+In such situations, SimGrid allows to write your protocol in your C
+file, and the events to react to in a separate text file. Declare a
+function handling each of the events that you want to accept in your
+trace files, register them using #xbt_replay_action_register in your main,
+and then use #MSG_action_trace_run to launch the simulation. You can
+either have one trace file containing all your events, or a file per
+simulated process.
+
+Check the examples in <b>examples/msg/actions/actions.c</b> for details.
+
+ */
+
+
+
+/**
+@defgroup MSG_LUA      Lua bindings
+@ingroup MSG_API
+@brief Lua bindings to MSG (\ref MSG_API)
+
+@htmlonly <!--  DOXYGEN_NAVBAR_LABEL="LUA bindings" --> @endhtmlonly
+
+This is the lua bindings of the \ref MSG_API interface.
+
+\section lMSG_who Who should use this (and who shouldn't)
+
+If you want to use MSG to study your algorithm, but you don't want to
+use the C language (using \ref MSG_API), then you should use some
+bindings such as this one. The advantage of the lua bindings is that
+they are distributed directly with the main archive (in contrary to
+Java and Ruby bindings, for example, that are distributed separately).
+Another advantage of lua is that there is almost no performance loss
+with regard to the C version (at least there shouln't be any -- it is
+still to be precisely assessed).
+
+\section MSG_Lua_funct  Lua offered functionnalities in MSG
+
+Almost all important features of the MSG interface are available from
+the lua bindings. Unfortunately, since doxygen does not support the
+lua modules implemented directly in C as we are using, there is no
+ready to use reference documentation for this module. Even more than
+for the other modules, you will have to dig into the source code of
+the examples to learn how to use it.
+
+\section Lua_examples Examples of lua MSG
+
+  - \ref MSG_ex_master_slave_lua
+  - \ref MSG_ex_master_slave_lua_bypass
+  - Also, the lua version of the Chord example (in the source tree)
+    is a working non-trivial example of use of the lua bindings
+*/
+
+/**
+@defgroup MSG_examples MSG examples
+@ingroup MSG_API
+@brief MSG examples from examples directory examples/msg
+
+MSG comes with an extensive set of examples. It is sometimes difficult to find the one you need. This list aims at helping you finding the example from which you can learn what you want to.
+
+\section msg_bsc_ex Basic examples
+
+*/
+
+/**
+@defgroup msg_deprecated_functions MSG Deprecated
+@ingroup MSG_API
+@brief This section describes the deprecated functions. PLEASE STOP USING THEM.
+
+We don't remove them because the ability to run old scientific
+code is something important to us. But these functionalities are
+not actively supported anymore.
+
+To access these functions, you should define the relevant option
+at configuration time in ccmake.
+ */
+
+
+
+
+
+

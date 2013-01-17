@@ -344,7 +344,8 @@ static void ptask_update_resource_state(void *id,
   link_L07_t nw_link = id;
 
   if (nw_link->type == SURF_WORKSTATION_RESOURCE_LINK) {
-    XBT_DEBUG("Updating link %s (%p)", surf_resource_name(nw_link), nw_link);
+    XBT_DEBUG("Updating link %s (%p) with value=%f",
+      surf_resource_name(nw_link), nw_link, value);
     if (event_type == nw_link->bw_event) {
       nw_link->bw_current = value;
       lmm_update_constraint_bound(ptask_maxmin_system, nw_link->constraint,
@@ -889,10 +890,6 @@ static void ptask_model_init_internal(void)
       ptask_link_shared;
   surf_workstation_model->extension.workstation.get_properties =
       surf_resource_properties;
-  surf_workstation_model->extension.workstation.link_create_resource =
-      ptask_link_create_resource;
-  surf_workstation_model->extension.workstation.cpu_create_resource =
-      ptask_cpu_create_resource;
   surf_workstation_model->extension.workstation.add_traces =
       ptask_add_traces;
 
@@ -913,7 +910,6 @@ static void ptask_model_init_internal(void)
   surf_network_model->extension.network.get_link_latency = ptask_get_link_latency;
   surf_network_model->extension.network.link_shared = ptask_link_shared;
   surf_network_model->extension.network.add_traces = NULL;
-  surf_network_model->extension.network.create_resource = NULL;
 }
 
 /**************************************/

@@ -1,0 +1,23 @@
+0 init
+1 init
+2 init
+
+0 send 1 1e9
+0 compute 1e9
+0 recv 2 1e9
+
+1 Irecv 0 1e9
+1 compute 1e9
+1 wait
+1 send 2 1e9
+
+2 Irecv 1 1e9
+2 compute 5e8
+2 wait
+2 Isend 0 1e9
+2 compute 5e8
+
+0 finalize
+1 finalize
+2 finalize
+

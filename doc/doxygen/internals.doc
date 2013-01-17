@@ -1,0 +1,92 @@
+/*! @page internals SimGrid internals
+
+This page does not exist yet, sorry. We are currently refurbishing the
+user documentation -- the internal documentation will follow (FIXME).
+
+There is two main things you want to know about the internals of
+SimGrid. First, you need to understand the component organization, as
+SimGrid is heavily layered, with each level being rather highly
+specialized and optimized toward a task. For that, please keep reading
+this page. If you work actively on the SimGrid project, the second
+point you need to understand is about the infrastructure of the
+SimGrid project, ie how to extend the framework in any way, how the
+automatic tests are run, and so on. These informations are split on
+several pages, as follows:
+
+ - @subpage inside_doxygen
+ - @subpage inside_extending
+ - @subpage inside_cmake
+ - @subpage inside_release
+ - @subpage inside_autotests
+
+
+\htmlonly
+<center>
+\endhtmlonly
+\htmlinclude simgrid_modules.map
+\htmlonly
+<br><b>SimGrid Components (click to jump to API)</b>
+</center>
+\endhtmlonly
+
+
+\section ug_overview Overview of the toolkit components
+
+
+\subsection ug_overview_envs Programmation environments layer
+
+SimGrid provides several programmation environments built on top of a unique
+simulation kernel. Each environment targets a specific audiance and
+constitutes a different paradigm. To choose which of them you want to use,
+you have to think about what you want to do and what would be the result of
+your work.
+
+ - If you want to study a theoritical problem and compare several
+   heuristics, you probably want to try <b>\ref MSG_API</b> (yet another
+   historical name). It was designed exactly to that extend and should allow
+   you to build easily rather realistic multi-agents simulation. Yet,
+   realism is not the main goal of this environment and the most annoying
+   technical issues of real platforms are masked here. Check the \ref
+   MSG_API section for more information.
+
+ - If you want to study the behaviour of a MPI application using emulation
+   technics, you should have a look at the <b>\ref SMPI_API</b> (Simulated
+   MPI) programming environment. Unfortunately, this work is still underway.
+   Check the \ref SMPI_API section for more information.
+
+If your favorite programming environment/model is not there (BSP,
+components, OpenMP, etc.) is not represented in the SimGrid toolkit yet, you may
+consider adding it. You should contact us first on the
+<a href=http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel>SimGrid
+developers mailing list</a>, though.
+
+\subsection ug_overview_kernel Simulation kernel layer
+
+The core functionnalities to simulate a virtual platform are provided by a
+module called <b>\ref SURF_API</b>.  It is
+very low-level and is not intended to be used as such by end-users. Instead,
+it serve as a basis for the higher level layer.
+
+SURF main features are a fast max-min linear solver and the ability to
+change transparently the model used to describe the platform. This greatly
+eases the comparison of the several models existing in the litterature.
+
+See the \ref SURF_API section for more details.
+
+\subsection ug_overview_fondation Base layer
+
+The base of the whole toolkit is constituted by the <b>\ref XBT_API
+(eXtended Bundle of Tools)</b>.
+
+It is a portable library providing some grounding features such as \ref
+XBT_log, \ref XBT_ex and \ref XBT_config. XBT also encompass
+the following convenient datastructures: \ref XBT_dynar, \ref XBT_fifo, \ref
+XBT_dict, \ref XBT_heap, \ref XBT_set and \ref XBT_swag.
+
+See the \ref XBT_API section for more details.
+
+
+\subsection ug_lucas_layer Tracing simulation
+Finally, a transversal module allows you to trace your simulation. More documentation in the section \ref TRACE_doc
+
+*/

@@ -5,7 +5,6 @@
 # doc
 file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/shared/doxygen/)
 file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/)
-file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/)
 
 install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/"
   DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/ref_guide/html/"
@@ -43,6 +42,7 @@ endif()
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/smpicc
   ${CMAKE_BINARY_DIR}/bin/smpif2c
   ${CMAKE_BINARY_DIR}/bin/smpiff
+  ${CMAKE_BINARY_DIR}/bin/smpif90
   ${CMAKE_BINARY_DIR}/bin/smpirun
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 
@@ -139,6 +139,7 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicc
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif2c
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpiff
+  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpif90
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpirun
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/tesh
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/simgrid-colorizer
@@ -190,6 +191,7 @@ set(source_to_pack
   ${NS3_SRC}
   ${RNGSTREAM_SRC}
   ${SIMDAG_SRC}
+  ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SMPI_SRC}
   ${SURF_SRC}
@@ -206,10 +208,6 @@ set(source_to_pack
   ${DOC_IMG}
   ${DOC_SOURCES}
   ${DOC_TOOLS}
-  ${DOC_SHARED_TAG}
-  ${REF_GUIDE_SOURCES}
-  ${USER_GUIDE_SOURCES}
-  ${DEV_GUIDE_SOURCES}
   ${PLATFORMS_EXAMPLES}
   ${README_files}
   ${bin_files}
@@ -308,7 +306,7 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Untar distrib"
-  COMMAND ${CMAKE_COMMAND} -E tar  xf ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E tar xf ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX create build and install subtrees"
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
@@ -318,8 +316,6 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build
   ${CMAKE_COMMAND}
   -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst
-  -Denable_lua=ON
-  -Denable_model-checking=ON
   ..
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Build"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM}
@@ -336,7 +332,7 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove temp directories"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
   )
-#add_dependencies(distcheck dist)
+add_dependencies(distcheck dist)
 
 #######################################
 ### Fill in the "make check" target ###

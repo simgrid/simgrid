@@ -2,8 +2,8 @@
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
- * FleXML is Copyright (C) 2003-2006 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.62 2007/10/11 10:00:14 mquinson Exp).
+ * FleXML is Copyright (C) 2003-2011 Martin Quinson.  All rights reserved.
+ * (Id: flexml.pl,v 1.69 2012/12/20 00:13:40 mquinson Exp).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -12,7 +12,7 @@
  * 
  * Some parts, here collectively called "Part A", are found in the 
  * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
- * and Copyright (C) 2003-2006 Martin Quinson. All rights reserved.
+ * and Copyright (C) 2003-2011 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -60,10 +60,10 @@ typedef int AT_graphxml_node_name;
 #define AU_graphxml_node_name NULL
 typedef int AT_graphxml_edge_source;
 #define AU_graphxml_edge_source NULL
-typedef int AT_graphxml_node_position_y;
-#define AU_graphxml_node_position_y NULL
-typedef int AT_graphxml_node_position_x;
-#define AU_graphxml_node_position_x NULL
+typedef int AT_graphxml_node_position___y;
+#define AU_graphxml_node_position___y NULL
+typedef int AT_graphxml_node_position___x;
+#define AU_graphxml_node_position___x NULL
 typedef int AT_graphxml_edge_data;
 #define AU_graphxml_edge_data NULL
 typedef int AT_graphxml_edge_target;
@@ -86,28 +86,40 @@ XBT_PUBLIC_DATA(char *) graphxml_bufferstack;
 #define graphxml_pcdata (graphxml_bufferstack + graphxml_pcdata_ix)
 XBT_PUBLIC_DATA(AT_graphxml_node_name ) AX_graphxml_node_name;
 #define A_graphxml_node_name (graphxml_bufferstack + AX_graphxml_node_name)
+XBT_PUBLIC_DATA(short ) int graphxml_node_name_isset;
 XBT_PUBLIC_DATA(AT_graphxml_edge_source ) AX_graphxml_edge_source;
 #define A_graphxml_edge_source (graphxml_bufferstack + AX_graphxml_edge_source)
-XBT_PUBLIC_DATA(AT_graphxml_node_position_y ) AX_graphxml_node_position_y;
-#define A_graphxml_node_position_y (graphxml_bufferstack + AX_graphxml_node_position_y)
-XBT_PUBLIC_DATA(AT_graphxml_node_position_x ) AX_graphxml_node_position_x;
-#define A_graphxml_node_position_x (graphxml_bufferstack + AX_graphxml_node_position_x)
+XBT_PUBLIC_DATA(short ) int graphxml_edge_source_isset;
+XBT_PUBLIC_DATA(AT_graphxml_node_position___y ) AX_graphxml_node_position___y;
+#define A_graphxml_node_position___y (graphxml_bufferstack + AX_graphxml_node_position___y)
+XBT_PUBLIC_DATA(short ) int graphxml_node_position___y_isset;
+XBT_PUBLIC_DATA(AT_graphxml_node_position___x ) AX_graphxml_node_position___x;
+#define A_graphxml_node_position___x (graphxml_bufferstack + AX_graphxml_node_position___x)
+XBT_PUBLIC_DATA(short ) int graphxml_node_position___x_isset;
 XBT_PUBLIC_DATA(AT_graphxml_edge_data ) AX_graphxml_edge_data;
 #define A_graphxml_edge_data (graphxml_bufferstack + AX_graphxml_edge_data)
+XBT_PUBLIC_DATA(short ) int graphxml_edge_data_isset;
 XBT_PUBLIC_DATA(AT_graphxml_edge_target ) AX_graphxml_edge_target;
 #define A_graphxml_edge_target (graphxml_bufferstack + AX_graphxml_edge_target)
+XBT_PUBLIC_DATA(short ) int graphxml_edge_target_isset;
 XBT_PUBLIC_DATA(AT_graphxml_graph_isDirected ) AX_graphxml_graph_isDirected;
 #define A_graphxml_graph_isDirected AX_graphxml_graph_isDirected
+XBT_PUBLIC_DATA(short ) int graphxml_graph_isDirected_isset;
 XBT_PUBLIC_DATA(AT_graphxml_node_label ) AX_graphxml_node_label;
 #define A_graphxml_node_label (graphxml_bufferstack + AX_graphxml_node_label)
+XBT_PUBLIC_DATA(short ) int graphxml_node_label_isset;
 XBT_PUBLIC_DATA(AT_graphxml_node_data ) AX_graphxml_node_data;
 #define A_graphxml_node_data (graphxml_bufferstack + AX_graphxml_node_data)
+XBT_PUBLIC_DATA(short ) int graphxml_node_data_isset;
 XBT_PUBLIC_DATA(AT_graphxml_edge_label ) AX_graphxml_edge_label;
 #define A_graphxml_edge_label (graphxml_bufferstack + AX_graphxml_edge_label)
+XBT_PUBLIC_DATA(short ) int graphxml_edge_label_isset;
 XBT_PUBLIC_DATA(AT_graphxml_edge_length ) AX_graphxml_edge_length;
 #define A_graphxml_edge_length (graphxml_bufferstack + AX_graphxml_edge_length)
+XBT_PUBLIC_DATA(short ) int graphxml_edge_length_isset;
 XBT_PUBLIC_DATA(AT_graphxml_edge_name ) AX_graphxml_edge_name;
 #define A_graphxml_edge_name (graphxml_bufferstack + AX_graphxml_edge_name)
+XBT_PUBLIC_DATA(short ) int graphxml_edge_name_isset;
 
 /* XML application utilities. */
 XBT_PUBLIC(int ) graphxml_element_context(int);

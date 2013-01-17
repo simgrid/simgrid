@@ -29,8 +29,8 @@ XBT_INLINE void xbt_strbuff_empty(xbt_strbuff_t b)
 
 xbt_strbuff_t xbt_strbuff_new(void)
 {
-  xbt_strbuff_t res = malloc(sizeof(s_xbt_strbuff_t));
-  res->data = malloc(512);
+  xbt_strbuff_t res = xbt_malloc(sizeof(s_xbt_strbuff_t));
+  res->data = xbt_malloc(512);
   res->size = 512;
   xbt_strbuff_empty(res);
   return res;
@@ -42,7 +42,7 @@ xbt_strbuff_t xbt_strbuff_new(void)
  */
 XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
 {
-  xbt_strbuff_t res = malloc(sizeof(s_xbt_strbuff_t));
+  xbt_strbuff_t res = xbt_malloc(sizeof(s_xbt_strbuff_t));
   res->data = xbt_strdup(ctn);
   res->used = res->size = strlen(ctn);
   return res;
@@ -76,7 +76,7 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
 
   if (needed_space > b->size) {
     b->size = MAX(minimal_increment + b->used, needed_space);
-    b->data = realloc(b->data, b->size);
+    b->data = xbt_realloc(b->data, b->size);
   }
   strcpy(b->data + b->used, toadd);
   b->used += addlen;
@@ -252,7 +252,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
 //          XBT_DEBUG("Too short (by %d chars; %d chars left in area)",val_len- (end_subst-beg_subst), b->size - b->used);
           if (newused > b->size) {
             /* We have to realloc the data area before (because b->size is too small). We have to update our pointers, too */
-            char *newdata = realloc(b->data,
+            char *newdata = xbt_realloc(b->data,
                                     b->used + MAX(minimal_increment,
                                                   tooshort));
             int offset = newdata - b->data;

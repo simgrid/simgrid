@@ -86,7 +86,7 @@ sub parse_file {
 }
 # Retrieve all the file names, and add their content to $data
 my $data;
-open FILES, "find src/ tools/ include/ -name '*.c'|" || die "Cannot search for the source file names: $!\n";
+open FILES, "find ../src/ ../tools/ ../include/ -name '*.c'|" || die "Cannot search for the source file names: $!\n";
 while (my $file=<FILES>) {
     chomp $file;
     parse_file($file); 	

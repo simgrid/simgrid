@@ -52,7 +52,7 @@ ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^s390")
 ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^sh")
   message(STATUS "System processor: sh")
 
-ELSE() #PROCESSOR NOT fIND
+ELSE() #PROCESSOR NOT FOUND
   message(STATUS "PROCESSOR NOT FOUND: ${CMAKE_SYSTEM_PROCESSOR}")
 
 ENDIF()
@@ -118,7 +118,6 @@ CHECK_INCLUDE_FILE("sys/time.h" HAVE_SYS_TIME_H)
 CHECK_INCLUDE_FILE("sys/param.h" HAVE_SYS_PARAM_H)
 CHECK_INCLUDE_FILE("sys/sysctl.h" HAVE_SYS_SYSCTL_H)
 CHECK_INCLUDE_FILE("time.h" HAVE_TIME_H)
-CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
 CHECK_INCLUDE_FILE("inttypes.h" HAVE_INTTYPES_H)
 CHECK_INCLUDE_FILE("memory.h" HAVE_MEMORY_H)
 CHECK_INCLUDE_FILE("stdlib.h" HAVE_STDLIB_H)
@@ -214,6 +213,40 @@ endif()
 ### Check for some architecture dependent values
 CHECK_TYPE_SIZE(int SIZEOF_INT)
 CHECK_TYPE_SIZE(void* SIZEOF_VOIDP)
+
+#--------------------------------------------------------------------------------------------------
+### Check for GNU dynamic linker
+CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
+if (HAVE_DLFCN_H)
+    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_gnu_dynlinker.c -ldl -o test_gnu_ld
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      OUTPUT_VARIABLE HAVE_GNU_LD_compil
+    )
+    if(HAVE_GNU_LD_compil)
+      set(HAVE_GNU_LD 0)
+      message(STATUS "Warning: test program toward GNU ld failed to compile:")
+      message(STATUS "${HAVE_GNU_LD_comp_output}")
+    else()
+
+      execute_process(COMMAND ./test_gnu_ld
+          WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
+          RESULT_VARIABLE HAVE_GNU_LD_run 
+          OUTPUT_VARIABLE var_exec
+      )
+
+      if(NOT HAVE_GNU_LD_run)
+        set(HAVE_GNU_LD 1)
+        message(STATUS "We are using GNU dynamic linker")
+      else()
+        set(HAVE_GNU_LD 0)
+        message(STATUS "Warning: error while checking for GNU ld:")
+        message(STATUS "Test output: '${var_exec}'")
+	message(STATUS "Exit status: ${HAVE_GNU_LD_run}")
+      endif()
+      file(REMOVE test_gnu_ld)
+    endif()
+endif()
+
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
@@ -541,7 +574,7 @@ endif()
 
 #AC_PROG_MAKE_SET
 
-#AC_PRINTF_NULL
+#AC_PRINTF_NULL FIXME: this is too ancient to survive!
 try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
   ${CMAKE_BINARY_DIR}
   ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
@@ -757,6 +790,7 @@ configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/smpif.h.in ${CMAKE_BINARY_DI
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/bin/smpicc @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/bin/smpif2c @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/bin/smpiff @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif90.in ${CMAKE_BINARY_DIR}/bin/smpif90 @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_BINARY_DIR}/bin/smpirun @ONLY)
 
 ### Script used when simgrid is compiling
@@ -770,6 +804,7 @@ set(libdir "${CMAKE_BINARY_DIR}/lib")
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif2c.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif2c @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff @ONLY)
+configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif90.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90 @ONLY)
 configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun @ONLY)
 
 set(top_builddir ${CMAKE_HOME_DIRECTORY})
@@ -778,10 +813,12 @@ if(NOT WIN32)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif2c)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif90)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif2c)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff)
+  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun)
 endif()
 
@@ -801,6 +838,7 @@ set(generated_files_to_clean
   ${CMAKE_BINARY_DIR}/bin/smpicc
   ${CMAKE_BINARY_DIR}/bin/smpif2c
   ${CMAKE_BINARY_DIR}/bin/smpiff
+  ${CMAKE_BINARY_DIR}/bin/smpif90
   ${CMAKE_BINARY_DIR}/bin/smpirun
   ${CMAKE_BINARY_DIR}/bin/colorize
   ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
@@ -817,7 +855,10 @@ else()
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing/platform.xml ${CMAKE_BINARY_DIR}/examples/msg/tracing/platform.xml COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions0.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions1.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions1.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_allReduce.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_allReduce.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_barrier.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_barrier.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_bcast.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_bcast.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_with_isend.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_with_isend.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile COPYONLY)
 
   set(generated_files_to_clean
@@ -828,7 +869,10 @@ else()
     ${CMAKE_BINARY_DIR}/examples/msg/tracing/platform.xml
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions0.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions1.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_allReduce.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_barrier.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_bcast.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_with_isend.txt
     ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile
     )
 endif()

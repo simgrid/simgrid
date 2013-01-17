@@ -26,13 +26,14 @@ main( int argc, char **argv)
 	
 	/* Check that the results are correct */
 #ifdef DEBUG
-	printf("lb=%ld, ub=%ld, extent=%ld\n", lb, ub, extent);
+	printf("lb=%ld, ub=%ld, extent=%ld\n",
+               (long)lb, (long)ub, (long)extent);
 	printf("Should be lb=4, ub=5, extent=1\n");
 #endif
 	if (lb != 4 || ub != 5 || extent != 1) {
-	    printf ("lb = %ld (should be 4), ub = %ld (should be 5) extent = %ld should be 1\n", lb, ub, extent) ;
-	}
-	else {
+            printf("lb = %ld (should be 4), ub = %ld (should be 5) extent = %ld should be 1\n",
+                   (long)lb, (long)ub, (long)extent) ;
+	} else {
 	    printf( " No Errors\n" );
 	}
 

@@ -447,7 +447,7 @@ int asprintf(char **ptr, const char *fmt, /*args */ ...)
   str_l = portable_vsnprintf(NULL, (size_t) 0, fmt, ap);
   va_end(ap);
   assert(str_l >= 0);           /* possible integer overflow if str_m > INT_MAX */
-  *ptr = (char *) malloc(str_m = (size_t) str_l + 1);
+  *ptr = (char *) xbt_malloc(str_m = (size_t) str_l + 1);
   if (*ptr == NULL) {
     errno = ENOMEM;
     str_l = -1;
@@ -476,7 +476,7 @@ int vasprintf(char **ptr, const char *fmt, va_list ap)
     va_end(ap2);
   }
   assert(str_l >= 0);           /* possible integer overflow if str_m > INT_MAX */
-  *ptr = (char *) malloc(str_m = (size_t) str_l + 1);
+  *ptr = (char *) xbt_malloc(str_m = (size_t) str_l + 1);
   if (*ptr == NULL) {
     errno = ENOMEM;
     str_l = -1;
@@ -504,7 +504,7 @@ int asnprintf(char **ptr, size_t str_m, const char *fmt, /*args */ ...)
   /* if str_m is 0, no buffer is allocated, just set *ptr to NULL */
   if (str_m == 0) {             /* not interested in resulting string, just return size */
   } else {
-    *ptr = (char *) malloc(str_m);
+    *ptr = (char *) xbt_malloc(str_m);
     if (*ptr == NULL) {
       errno = ENOMEM;
       str_l = -1;
@@ -538,7 +538,7 @@ int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap)
   /* if str_m is 0, no buffer is allocated, just set *ptr to NULL */
   if (str_m == 0) {             /* not interested in resulting string, just return size */
   } else {
-    *ptr = (char *) malloc(str_m);
+    *ptr = (char *) xbt_malloc(str_m);
     if (*ptr == NULL) {
       errno = ENOMEM;
       str_l = -1;

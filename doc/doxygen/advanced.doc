@@ -1,0 +1,14 @@
+/*! @page advanced  Advanced Topics 
+
+This page does not exist yet. Writing an acceptable user documentation
+is already difficult, but writing a good documentation for advanced
+users is near to impossible. In the meanwhile, please refer to the
+tutorials on the project web page, looking for the "SimGrid::Internals"
+tutorials.
+
+- @subpage bindings
+- @subpage pls
+- @subpage internals
+- @subpage contributing
+
+*/

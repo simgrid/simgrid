@@ -162,7 +162,6 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
           e.used = backtrace((void **) e.bt, XBT_BACKTRACE_SIZE);
           e.bt_strings = NULL;
           e.msg = NULL;
-          e.remote = 0;
           xbt_ex_setup_backtrace(&e);
           if (*q == 'B') {
             show_string(e.bt_strings[1] + 8);

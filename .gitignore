@@ -102,31 +102,9 @@ doc/dev_guide/html
 doc/dev_guide/latex
 doc/index.php
 doc/simgrid.tag
-doc/publis_core.bib
-doc/publis_core_bib.html
-doc/publis_count.html
-doc/publis_extern.bib
-doc/publis_extern_bib.html
-doc/publis_intra.bib
-doc/publis_intra_bib.html
-doc/ref_guide/doxygen/RefGuideDoxyfile
-doc/user_guide/doxygen/UserGuideDoxyfile
-doc/dev_guide/doxygen/DevGuideDoxyfile
-doc/ref_guide/doxygen/logcategories.doc
-doc/user_guide/doxygen/logcategories.doc
-doc/dev_guide/doxygen/logcategories.doc
-doc/ref_guide/doxygen/simgrid_modules.map
-doc/user_guide/doxygen/simgrid_modules.map
-doc/dev_guide/doxygen/simgrid_modules.map
+doc/doxygen/logcategories.doc
 doc/index-API.doc
-doc/ref_guide/doxygen/index-API.doc
-doc/user_guide/doxygen/index-API.doc
-doc/dev_guide/doxygen/index-API.doc
 doc/simgrid_modules.map
-doc/logcategories.doc
-doc/shared/doxygen/simgridrefguide.tag
-doc/shared/doxygen/simgriduserguide.tag
-doc/shared/doxygen/simgriddevguide.tag
 
 ################################################
 ### Specific of project 
@@ -181,6 +159,7 @@ examples/msg/mc/test/snapshot_comparison_liveness2
 examples/msg/mc/test/snapshot_comparison_liveness3
 examples/msg/mc/test/snapshot_comparison_liveness4
 examples/msg/mc/test/snapshot_comparison_liveness5
+examples/msg/chainsend/chainsend
 examples/msg/chord/chord
 examples/msg/chord/chord_stateful
 examples/msg/chord/deployments
@@ -245,7 +224,7 @@ examples/msg/pmm/msg_pmm
 examples/smpi/toto.txt
 examples/smpi/MM/MM_mpi
 examples/smpi/smpi_replay
-examples/smpi/replay
+examples/smpi/replay/one_trace
 examples/smpi/bcbench
 examples/smpi/first
 examples/smpi/mvmul

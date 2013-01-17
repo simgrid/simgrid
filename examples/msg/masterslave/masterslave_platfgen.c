@@ -15,7 +15,6 @@ void labeler_1(context_edge_t edge);
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 
-
 /** Promoter function
  * Just promote each node into a host, with fixed power
  */
@@ -211,7 +210,7 @@ int main(int argc, char **argv) {
   msg_host_t host = NULL;
   msg_host_t host_master = NULL;
   xbt_dynar_t host_dynar = MSG_hosts_as_dynar();
-  char** hostname_list = malloc(sizeof(char*) * xbt_dynar_length(host_dynar));
+  char** hostname_list = xbt_malloc(sizeof(char*) * xbt_dynar_length(host_dynar));
 
   xbt_dynar_foreach(host_dynar, i, host) {
     MSG_process_create("slave", slave, NULL, host);

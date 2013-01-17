@@ -1,0 +1,18 @@
+/*! @page introduction Introduction to SimGrid 
+
+This page does not really exist yet. In the meanwhile, please refer
+to the <a href="http://simgrid.gforge.inria.fr/tutorials.html">tutorials</a>
+on the project web page, looking for the 
+<a href="http://simgrid.gforge.inria.fr/tutorials/101/simgrid-101.pdf">SimGrid 
+101</a> tutorial.
+
+<a href="http://simgrid.gforge.inria.fr/">SimGrid</a> is a toolkit
+that provides core functionalities for the simulation of distributed
+applications in heterogeneous distributed environments.
+
+The specific goal of the project is to facilitate research in the area of
+distributed and parallel application scheduling on distributed computing
+platforms ranging from simple network of workstations to Computational
+Grids.
+
+*/

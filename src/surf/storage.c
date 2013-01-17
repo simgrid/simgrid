@@ -518,7 +518,6 @@ static void surf_storage_model_init_internal(void)
   surf_storage_model->extension.storage.stat = storage_action_stat;
   surf_storage_model->extension.storage.unlink = storage_action_unlink;
   surf_storage_model->extension.storage.ls = storage_action_ls;
-  surf_storage_model->extension.storage.create_resource = storage_create_resource;
 
   if (!storage_maxmin_system) {
     storage_maxmin_system = lmm_system_new(storage_selective_update);

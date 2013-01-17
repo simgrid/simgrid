@@ -41,7 +41,7 @@ int create_dump(int pair)
     if(wait(&status) < 0)
       perror("wait");
     if(WIFSIGNALED(status) && WCOREDUMP(status)){
-      char *core_name = malloc(20);
+      char *core_name = xbt_malloc(20);
       sprintf(core_name,"core_%d", pair); 
       rename("core", core_name);
       free(core_name);
@@ -49,141 +49,6 @@ int create_dump(int pair)
   }
 
   return 0;
-}
-
-void MC_print_comparison_times_statistics(mc_comparison_times_t ct){
-
-  XBT_DEBUG("Comparisons done : %d", ct->nb_comparisons);
-  
-  double total, min, max;
-  unsigned int cursor;
-  
-  if(xbt_dynar_length(ct->chunks_used_comparison_times) > 0){
-    cursor = 0;
-    total = 0.0;
-    max = 0.0;
-    min = xbt_dynar_get_as(ct->chunks_used_comparison_times, cursor, double);
-    while(cursor < xbt_dynar_length(ct->chunks_used_comparison_times) - 1){
-      total += xbt_dynar_get_as(ct->chunks_used_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->chunks_used_comparison_times, cursor, double) > max)
-        max = xbt_dynar_get_as(ct->chunks_used_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->chunks_used_comparison_times, cursor, double) < min)
-        min = xbt_dynar_get_as(ct->chunks_used_comparison_times, cursor, double);
-      cursor++;
-    }
-    XBT_DEBUG("Chunks used comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->chunks_used_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->chunks_used_comparison_times), max, min);
-  }
-
-  if(xbt_dynar_length(ct->stacks_sizes_comparison_times) > 0){
-    cursor = 0;
-    total = 0.0;
-    max = 0.0;
-    min = xbt_dynar_get_as(ct->stacks_sizes_comparison_times, cursor, double);
-    while(cursor < xbt_dynar_length(ct->stacks_sizes_comparison_times) - 1){
-      total += xbt_dynar_get_as(ct->stacks_sizes_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->stacks_sizes_comparison_times, cursor, double) > max)
-        max = xbt_dynar_get_as(ct->stacks_sizes_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->stacks_sizes_comparison_times, cursor, double) < min)
-        min = xbt_dynar_get_as(ct->stacks_sizes_comparison_times, cursor, double);
-      cursor++;
-    }
-    XBT_DEBUG("Stacks sizes comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->stacks_sizes_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->stacks_sizes_comparison_times), max, min);
-  }
-
-  if(xbt_dynar_length(ct->program_data_segment_comparison_times) > 0){
-    cursor = 0;
-    total = 0.0;
-    max = 0.0;
-    min = xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double);
-    while(cursor < xbt_dynar_length(ct->program_data_segment_comparison_times) - 1){
-      total += xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double) > max)
-        max = xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double) < min)
-        min = xbt_dynar_get_as(ct->program_data_segment_comparison_times, cursor, double);
-      cursor++;
-    }
-    XBT_DEBUG("Program data/bss segments comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->program_data_segment_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->program_data_segment_comparison_times), max, min);
-  }
-
-  if(xbt_dynar_length(ct->libsimgrid_data_segment_comparison_times) > 0){
-    cursor = 0;
-    total = 0.0;
-    max = 0.0;
-    min = xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double);
-    while(cursor < xbt_dynar_length(ct->libsimgrid_data_segment_comparison_times) - 1){
-      total += xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double) > max)
-        max = xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double) < min)
-        min = xbt_dynar_get_as(ct->libsimgrid_data_segment_comparison_times, cursor, double);
-      cursor++;
-    }
-    XBT_DEBUG("Libsimgrid data/bss segments comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->libsimgrid_data_segment_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->libsimgrid_data_segment_comparison_times), max, min);
-  }
-
-  if(xbt_dynar_length(ct->heap_comparison_times) > 0){
-    cursor = 0;
-    total = 0.0;
-    max = 0.0;
-    min = xbt_dynar_get_as(ct->heap_comparison_times, cursor, double);
-    while(cursor < xbt_dynar_length(ct->heap_comparison_times) - 1){
-      total += xbt_dynar_get_as(ct->heap_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->heap_comparison_times, cursor, double) > max)
-        max = xbt_dynar_get_as(ct->heap_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->heap_comparison_times, cursor, double) < min)
-        min = xbt_dynar_get_as(ct->heap_comparison_times, cursor, double);
-      cursor++;
-    }
-    XBT_DEBUG("Heap comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->heap_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->heap_comparison_times), max, min);
-  }
-
-  if(xbt_dynar_length(ct->stacks_comparison_times) > 0){
-    cursor = 0;
-    total = 0.0;
-    max = 0.0;
-    min = xbt_dynar_get_as(ct->stacks_comparison_times, cursor, double);
-    while(cursor < xbt_dynar_length(ct->stacks_comparison_times) - 1){
-      total += xbt_dynar_get_as(ct->stacks_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->stacks_comparison_times, cursor, double) > max)
-        max = xbt_dynar_get_as(ct->stacks_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->stacks_comparison_times, cursor, double) < min)
-        min = xbt_dynar_get_as(ct->stacks_comparison_times, cursor, double);
-      cursor++;
-    }
-    XBT_DEBUG("Stacks comparison -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->stacks_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->stacks_comparison_times), max, min);
-  }
-
-  if(xbt_dynar_length(ct->snapshot_comparison_times) > 0){
-    cursor = 0;
-    total = 0.0;
-    max = 0.0;
-    min = xbt_dynar_get_as(ct->snapshot_comparison_times, cursor, double);
-    while(cursor < xbt_dynar_length(ct->snapshot_comparison_times) - 1){
-      total += xbt_dynar_get_as(ct->snapshot_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->snapshot_comparison_times, cursor, double) > max)
-        max = xbt_dynar_get_as(ct->snapshot_comparison_times, cursor, double);
-      if(xbt_dynar_get_as(ct->snapshot_comparison_times, cursor, double) < min)
-        min = xbt_dynar_get_as(ct->snapshot_comparison_times, cursor, double);
-      cursor++;
-    }
-    XBT_DEBUG("Snapshot comparison (Whole funnel) -- Different states : %lu/%d, time (in seconds) : average = %lf, max = %lf, min = %lf", xbt_dynar_length(ct->snapshot_comparison_times), ct->nb_comparisons, total/xbt_dynar_length(ct->snapshot_comparison_times), max, min);
-  }
-
-}
-
-mc_comparison_times_t new_comparison_times(){
-  mc_comparison_times_t ct = NULL;
-  ct = xbt_new0(s_mc_comparison_times_t, 1);
-  ct->nb_comparisons = 0;
-  ct->snapshot_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  ct->chunks_used_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  ct->stacks_sizes_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  ct->program_data_segment_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  ct->libsimgrid_data_segment_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  ct->heap_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  ct->stacks_comparison_times = xbt_dynar_new(sizeof(double), NULL);
-  return ct;
 }
 
 int reached(xbt_state_t st){
@@ -197,7 +62,6 @@ int reached(xbt_state_t st){
   new_pair->nb = xbt_dynar_length(reached_pairs) + 1;
   new_pair->automaton_state = st;
   new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  new_pair->comparison_times = new_comparison_times();
   new_pair->system_state = MC_take_snapshot();  
   
   /* Get values of propositional symbols */
@@ -237,7 +101,7 @@ int reached(xbt_state_t st){
         XBT_DEBUG("****** Pair reached #%d ******", pair_test->nb);
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
         if(propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
-          if(snapshot_compare(new_pair->system_state, pair_test->system_state, new_pair->comparison_times, pair_test->comparison_times) == 0){
+          if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
             
             if(raw_mem_set)
               MC_SET_RAW_MEM;
@@ -245,16 +109,12 @@ int reached(xbt_state_t st){
               MC_UNSET_RAW_MEM;
             
             return 1;
-          }       
+          }
         }else{
           XBT_DEBUG("Different values of propositional symbols");
         }
       }else{
         XBT_DEBUG("Different automaton state");
-      }
-      if(pair_test->comparison_times != NULL && XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
-        XBT_DEBUG("*** Comparison times statistics ***");
-        MC_print_comparison_times_statistics(pair_test->comparison_times);
       }
     }
 
@@ -285,7 +145,6 @@ void set_pair_reached(xbt_state_t st){
   pair->nb = xbt_dynar_length(reached_pairs) + 1;
   pair->automaton_state = st;
   pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  pair->comparison_times = new_comparison_times();
   pair->system_state = MC_take_snapshot();
 
   /* Get values of propositional symbols */
@@ -311,7 +170,7 @@ void set_pair_reached(xbt_state_t st){
 
 int visited(xbt_state_t st){
 
-  if(_surf_mc_visited == 0)
+  if(_sg_mc_visited == 0)
     return 0;
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -361,7 +220,7 @@ int visited(xbt_state_t st){
         XBT_DEBUG("****** Pair visited #%d ******", cursor + 1);
       if(automaton_state_compare(pair_test->automaton_state, st) == 0){
         if(propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
-          if(snapshot_compare(new_pair->system_state, pair_test->system_state, NULL, NULL) == 0){
+          if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
             if(raw_mem_set)
               MC_SET_RAW_MEM;
             else
@@ -377,7 +236,7 @@ int visited(xbt_state_t st){
       }
     }
 
-    if(xbt_dynar_length(visited_pairs) == _surf_mc_visited){
+    if(xbt_dynar_length(visited_pairs) == _sg_mc_visited){
       xbt_dynar_remove_at(visited_pairs, 0, NULL);
     }
 
@@ -480,15 +339,6 @@ void pair_reached_free(mc_pair_reached_t pair){
   if(pair){
     pair->automaton_state = NULL;
     xbt_dynar_free(&(pair->prop_ato));
-    if(pair->comparison_times != NULL){
-      xbt_dynar_free(&(pair->comparison_times->snapshot_comparison_times));
-      xbt_dynar_free(&(pair->comparison_times->chunks_used_comparison_times));
-      xbt_dynar_free(&(pair->comparison_times->stacks_sizes_comparison_times));
-      xbt_dynar_free(&(pair->comparison_times->program_data_segment_comparison_times));
-      xbt_dynar_free(&(pair->comparison_times->libsimgrid_data_segment_comparison_times));
-      xbt_dynar_free(&(pair->comparison_times->heap_comparison_times));
-      xbt_dynar_free(&(pair->comparison_times->stacks_comparison_times));
-    }
     MC_free_snapshot(pair->system_state);
     xbt_free(pair);
   }
@@ -618,7 +468,7 @@ void MC_ddfs(int search_cycle){
   mc_pair_stateless_t remove_pair;
   mc_pair_reached_t remove_pair_reached;
   
-  if(xbt_fifo_size(mc_stack_liveness) < _surf_mc_max_depth){
+  if(xbt_fifo_size(mc_stack_liveness) < _sg_mc_max_depth){
 
     if(current_pair->requests > 0){
 
@@ -923,7 +773,7 @@ void MC_ddfs(int search_cycle){
     
   }
 
-  if(xbt_fifo_size(mc_stack_liveness) == _surf_mc_max_depth ){
+  if(xbt_fifo_size(mc_stack_liveness) == _sg_mc_max_depth ){
     XBT_DEBUG("Pair (depth = %d) shifted in stack, maximum depth reached", xbt_fifo_size(mc_stack_liveness) );
   }else{
     XBT_DEBUG("Pair (depth = %d) shifted in stack", xbt_fifo_size(mc_stack_liveness) );

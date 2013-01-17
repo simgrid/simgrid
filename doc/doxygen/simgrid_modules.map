@@ -1,0 +1,10 @@
+<IMG style=border:0px SRC="simgrid_modules.png" USEMAP="#simgrid_modules">
+<MAP NAME="simgrid_modules">
+<AREA COORDS="536,64,574,281" href="../../ref_guide/html/group__TRACE__API.html" ALT="TRACE">
+<AREA COORDS="294,7,496,42" href="/contrib.html" ALT="Contrib">
+<AREA COORDS="10,70,171,152" href="../../ref_guide/html/group__MSG__API.html" ALT="MSG">
+<AREA COORDS="10,161,517,221" href="../../ref_guide/html/group__SURF__API.html" ALT="SMPI">
+<AREA COORDS="354,70,517,152" href="../../ref_guide/html/group__SD__API.html" ALT="SimDag">
+<AREA COORDS="180,70,344,152" href="../../ref_guide/html/group__SMPI__API.html" ALT="SMPI">
+<AREA SHAPE="poly" COORDS="1,64,1,281,527,281,527,64" href="../../ref_guide/html/group__XBT__API.html" ALT="XBT">
+</MAP>

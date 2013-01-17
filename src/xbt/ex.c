@@ -103,7 +103,6 @@ void xbt_backtrace_display(xbt_ex_t * e)
 
   /* don't fool xbt_ex_free with uninitialized msg field */
   e->msg = NULL;
-  e->remote = 0;
   xbt_ex_free(*e);
 #else
 
@@ -132,9 +131,6 @@ void xbt_ex_display(xbt_ex_t * e)
 {
   char *thrower = NULL;
 
-  if (e->remote)
-    thrower = bprintf(" on host %s(%d)", e->host, e->pid);
-
   fprintf(stderr,
           "** SimGrid: UNCAUGHT EXCEPTION received on %s(%d): category: %s; value: %d\n"
           "** %s\n"
@@ -145,7 +141,7 @@ void xbt_ex_display(xbt_ex_t * e)
   XBT_CRITICAL("%s", e->msg);
   xbt_free(thrower);
 
-  if (!e->remote && !e->bt_strings)
+  if (!e->bt_strings)
     xbt_ex_setup_backtrace(e);
 
 #ifdef HAVE_BACKTRACE
@@ -187,12 +183,6 @@ void xbt_ex_free(xbt_ex_t e)
   int i;
 
   free(e.msg);
-  if (e.remote) {
-    free(e.procname);
-    free(e.file);
-    free(e.func);
-    free(e.host);
-  }
 
   if (e.bt_strings) {
     for (i = 0; i < e.used; i++)
@@ -419,7 +409,7 @@ typedef struct {
 
 static void good_example(void)
 {
-  global_context_t *global_context = malloc(sizeof(global_context_t));
+  global_context_t *global_context = xbt_malloc(sizeof(global_context_t));
 
   /* GOOD_EXAMPLE */
   {                             /*01 */

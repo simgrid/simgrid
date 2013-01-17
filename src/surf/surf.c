@@ -10,6 +10,7 @@
 #include "simix/smx_host_private.h"
 #include "surf/surf_resource.h"
 #include "xbt/xbt_os_thread.h"
+#include "simgrid/sg_config.h"
 
 #include <ctype.h>
 
@@ -55,26 +56,6 @@ static const char *disk_drives_letter_table[MAX_DRIVE] = {
 };
 #endif                          /* #ifdef _XBT_WIN32 */
 
-int surf_cfg_get_int(const char* name)
-{
-	return xbt_cfg_get_int(_surf_cfg_set,name);
-}
-double surf_cfg_get_double(const char* name)
-{
-	return xbt_cfg_get_double(_surf_cfg_set,name);
-}
-char* surf_cfg_get_string(const char* name)
-{
-	return xbt_cfg_get_string(_surf_cfg_set,name);
-}
-void surf_cfg_get_peer(const char *name, char **peer, int *port)
-{
-	xbt_cfg_get_peer(_surf_cfg_set,name, peer, port);
-}
-xbt_dynar_t surf_cfg_get_dynar(const char* name)
-{
-	return xbt_cfg_get_dynar(_surf_cfg_set,name);
-}
 /*
  * Returns the initial path. On Windows the initial path is
  * the current directory for the current process in the other
@@ -437,7 +418,12 @@ void surf_init(int *argc, char **argv)
   if (!history)
     history = tmgr_history_new();
 
-  surf_config_init(argc, argv);
+#ifdef HAVE_TRACING
+  TRACE_add_start_function(TRACE_surf_alloc);
+  TRACE_add_end_function(TRACE_surf_release);
+#endif
+
+  sg_config_init(argc, argv);
 
   surf_action_init();
   if (MC_is_active())
@@ -479,7 +465,7 @@ void surf_exit(void)
   unsigned int iter;
   surf_model_t model = NULL;
 
-  surf_config_finalize();
+  sg_config_finalize();
 
   xbt_dynar_foreach(model_list, iter, model)
       model->model_private->finalize();
@@ -537,9 +523,11 @@ void surf_presolve(void)
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value,
                                             (void **) &resource))) {
-      resource->model->model_private->update_resource_state(resource,
-                                                            event, value,
-                                                            NOW);
+      if (value >= 0){
+        resource->model->model_private->update_resource_state(resource,
+                                                              event, value,
+                                                              NOW);
+      }
     }
   }
   xbt_dynar_foreach(model_list, iter, model)
@@ -608,21 +596,21 @@ double surf_solve(double max_date)
         min = MAX(next_event_date - NOW, min);
       }
 
-      XBT_DEBUG("Run for NS3 at most %f", min);
+      XBT_DEBUG("Run for network at most %f", min);
       // run until min or next flow
       model_next_action_end = surf_network_model->model_private->share_resources(min);
 
-      XBT_DEBUG("Min for NS3 : %f", model_next_action_end);
+      XBT_DEBUG("Min for network : %f", model_next_action_end);
       if(model_next_action_end>=0.0)
         min = model_next_action_end;
     }
 
-    if (next_event_date == -1.0) {
+    if (next_event_date < 0.0) {
       XBT_DEBUG("no next TRACE event. Stop searching for it");
       break;
     }
 
-    if ((min != -1.0) && (next_event_date > NOW + min)) break;
+    if ((min == -1.0) || (next_event_date > NOW + min)) break;
 
     XBT_DEBUG("Updating models");
     while ((event =
@@ -738,6 +726,33 @@ void surf_set_nthreads(int nthreads) {
   surf_nthreads = nthreads;
 }
 
+/* This function is a pimple that we ought to fix. But it won't be easy.
+ *
+ * The surf_solve() function does properly return the set of actions that changed.
+ * Instead, each model change a global data, and then the caller of surf_solve must
+ * pick into these sets of action_failed and action_done.
+ *
+ * This was not clean but ok as long as we didn't had to restart the processes when the resource comes back up.
+ * We worked by putting sentinel actions on every resources we are interested in,
+ * so that surf informs us if/when the corresponding resource fails.
+ *
+ * But this does not work to get Simix informed of when a resource comes back up, and this is where this pimple comes.
+ * We have a set of resources that are currently down and for which simix needs to know when it comes back up.
+ * And the current function is called *at every simulation step* to sweep over that set, searching for a resource
+ * that was turned back up in the meanwhile. This is UGLY and slow.
+ *
+ * The proper solution would be to not rely on globals for the action_failed and action_done swags.
+ * They must be passed as parameter by the caller (the handling of these actions in simix may let you
+ * think that these two sets can be merged, but their handling in SimDag induce the contrary unless this
+ * simdag code can check by itself whether the action is done of failed -- seems very doable, but yet more
+ * cleanup to do).
+ *
+ * Once surf_solve() is passed the set of actions that changed, you want to add a new set of resources back up
+ * as parameter to this function. You also want to add a boolean field "restart_watched" to each resource, and
+ * make sure that whenever a resource with this field enabled comes back up, it's added to that set so that Simix
+ * sees it and react accordingly. This would kill that need for surf to call simix.
+ *
+ */
 void surf_watched_hosts(void)
 {
   char *key;

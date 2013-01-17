@@ -62,7 +62,7 @@ static void route_new(int src_id, int dst_id, xbt_dynar_t links,
           src_id, dst_id, links, nb_link);
 
   /* Build the list of gtnets link IDs */
-  gtnets_links = (int *) calloc(nb_link, sizeof(int));
+  gtnets_links = xbt_new0(int, nb_link);
   i = 0;
   xbt_dynar_foreach(links, cursor, link) {
     gtnets_links[i++] = link->id;

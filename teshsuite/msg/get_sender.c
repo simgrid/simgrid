@@ -28,6 +28,7 @@ static int receive(int argc, char *argv[])
   xbt_assert(MSG_task_get_sender(task), "No sender received");
   XBT_INFO("Got a message sent by '%s'",
         MSG_process_get_name(MSG_task_get_sender(task)));
+  MSG_task_destroy(task);
   return 0;
 }
 

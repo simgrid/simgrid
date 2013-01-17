@@ -46,7 +46,7 @@ int test(int argc, char **argv){
   
   XBT_INFO("**** End test ****");
 
-  return 0;
+  xbt_abort();
 }
 
 int main(int argc, char **argv){

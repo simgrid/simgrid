@@ -1,5 +1,11 @@
-#! /bin/bash
+#! /bin/sh
 
-echo "THIS COMMAND IS NOT AVAILABLE!"
-echo "Since v3.4 we use cmake. Now use:"
-echo -e "\tcmake -DCMAKE_INSTALL_PREFIX=<where_you_want> .\n\tmake\n\tmake install"
+cat <<EOT
+THIS COMMAND IS NOT AVAILABLE!
+Since v3.4 we use cmake. Now use:
+        cmake -DCMAKE_INSTALL_PREFIX=<where_you_want> .
+        make
+        make install
+EOT
+
+exit 1

@@ -3,32 +3,53 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  The Grasgory release: GRAS is really dead now.
 
  GRAS:
- * If you use GRAS, you should stay at SimGrid 3.7 or something since
-   it was not really maintained with the latest versions of SimGrid as
-   nobody stepped in to take the maintainership over.
+ * If you use GRAS, you should stay at SimGrid 3.5 (at most) since it
+   was considered as experimental and badly maintained since then.
  * Keeping it was thus a trap to our potential users, that could take
-   it instead of MSG or SMPI by mistake. GRAS also induces a lot of XBT
-   code (for portability sake), that must be maintained too.
+   it instead of MSG or SMPI by mistake despite is pity state.
+ * GRAS seems to have very few users (if any), and no one volunteered
+   to maintain it further. It also induces a lot of XBT code (for
+   portability sake), that must be maintained too.
  * For all these reasons, we killed GRAS. If someone wants to revive it
    in the future, don't cry, our git history still remembers of GRAS.
+
+ Documentation:
+ * Major overhaul. Merge our documentation again as time proved that
+   spliting it was really not helping our users.
+ * Further improve the developer documentation to help newcommers
+   hacking on SimGrid itself. The user documentation (and in
+   particular, the beginner documentation) is still in a sorry state.
 
  SMPI:
  * Now works on Windows too!
  * Much more extensive test suite, from MPICH
 
+SIMDAG:
+ * Bug fix: let task be scheduled when the last dependency to be solved is a 
+   control dependency
+
  MSG:
  * New function: MSG_process_get_number()
+ * Old function documented: MSG_config()
 
  SURF:
- * Change the default value of the TCP_gamma constant (maximal size of TCP 
-   congestion window) to a more realistic 4MiB value. If you notice changes in 
-   your simulation results, you can fall back to the previous 20k tiny window 
+ * Change the default value of the TCP_gamma constant (maximal size of TCP
+   congestion window) to a more realistic 4MiB value. If you notice changes in
+   your simulation results, you can fall back to the previous 20k tiny window
    by adding --cfg=network/TCP_gamma:20000 on command line.
+ * Bug fix about the way periodic availability/state traces are handled.
+ * Bug fix: use default values at start when first event in availability/state 
+   trace is not at time 0.
+   
+ PLATFORM:
+ * remove the "new_" part of function name sg_platf_new_trace_connect
+   (resulting in sg_platf_trace_connect), since it does not create
+   anything new
 
  XBT:
  * Kill synchronized dynars, and xbt_dynar_dopar(). We cannot think of a
    usecase where it's really mandatory, and maintaining it was a pain in
-   our codebase.   
+   our codebase.
  * New: xbt_fifo_search(), search an item with a user-provided
    comparison function instead of dumb pointer comparison.
 

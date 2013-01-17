@@ -17,6 +17,8 @@ if(enable_compile_warnings)
   if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
     string(REPLACE "-Wclobbered " "" warnCFLAGS "${warnCFLAGS}")
   endif()
+
+  set(CMAKE_Fortran_FLAGS "-Wall") # FIXME: Q&D hack
 endif()
 
 if(enable_compile_optimizations)

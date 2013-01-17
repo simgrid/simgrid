@@ -39,7 +39,6 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/bugged2.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized.tesh
   PARENT_SCOPE
   )

@@ -41,23 +41,23 @@ void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall)
   switch (simcall->call) {
 
     case SIMCALL_MUTEX_LOCK:
-      xbt_swag_remove(process, simcall->mutex_lock.mutex->sleeping);
+      xbt_swag_remove(process, simcall_mutex_lock__get__mutex(simcall)->sleeping);
       break;
 
     case SIMCALL_COND_WAIT:
-      xbt_swag_remove(process, simcall->cond_wait.cond->sleeping);
+      xbt_swag_remove(process, simcall_cond_wait__get__cond(simcall)->sleeping);
       break;
 
     case SIMCALL_COND_WAIT_TIMEOUT:
-      xbt_swag_remove(process, simcall->cond_wait_timeout.cond->sleeping);
+      xbt_swag_remove(process, simcall_cond_wait_timeout__get__cond(simcall)->sleeping);
       break;
 
     case SIMCALL_SEM_ACQUIRE:
-      xbt_swag_remove(process, simcall->sem_acquire.sem->sleeping);
+      xbt_swag_remove(process, simcall_sem_acquire__get__sem(simcall)->sleeping);
       break;
 
     case SIMCALL_SEM_ACQUIRE_TIMEOUT:
-      xbt_swag_remove(process, simcall->sem_acquire_timeout.sem->sleeping);
+      xbt_swag_remove(process, simcall_sem_acquire_timeout__get__sem(simcall)->sleeping);
       break;
 
     default:
@@ -117,6 +117,9 @@ static void SIMIX_synchro_finish(smx_action_t action)
 }
 /*********************************** Mutex ************************************/
 
+smx_mutex_t SIMIX_pre_mutex_init(smx_simcall_t simcall){
+  return SIMIX_mutex_init();
+}
 /**
  * \brief Initialize a mutex.
  *
@@ -139,12 +142,11 @@ smx_mutex_t SIMIX_mutex_init(void)
  * \brief Handles a mutex lock simcall.
  * \param simcall the simcall
  */
-void SIMIX_pre_mutex_lock(smx_simcall_t simcall)
+void SIMIX_pre_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
 {
   XBT_IN("(%p)",simcall);
   /* FIXME: check where to validate the arguments */
   smx_action_t sync_act = NULL;
-  smx_mutex_t mutex = simcall->mutex_lock.mutex;
   smx_process_t process = simcall->issuer;
 
   if (mutex->locked) {
@@ -163,6 +165,9 @@ void SIMIX_pre_mutex_lock(smx_simcall_t simcall)
   XBT_OUT();
 }
 
+int SIMIX_pre_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex){
+  return SIMIX_mutex_trylock(mutex, simcall->issuer);
+}	
 /**
  * \brief Tries to lock a mutex.
  *
@@ -186,6 +191,9 @@ int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer)
   return 1;
 }
 
+void SIMIX_pre_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex){
+   SIMIX_mutex_unlock(mutex, simcall->issuer);
+}
 /**
  * \brief Unlocks a mutex.
  *
@@ -220,6 +228,9 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
   XBT_OUT();
 }
 
+void SIMIX_pre_mutex_destroy(smx_simcall_t simcall, smx_mutex_t mutex){
+  SIMIX_mutex_destroy(mutex);
+}
 /**
  * \brief Destroys a mutex.
  *
@@ -238,6 +249,9 @@ void SIMIX_mutex_destroy(smx_mutex_t mutex)
 
 /********************************* Condition **********************************/
 
+smx_cond_t SIMIX_pre_cond_init(smx_simcall_t simcall){
+  return SIMIX_cond_init();
+}
 /**
  * \brief Initialize a condition.
  *
@@ -245,7 +259,7 @@ void SIMIX_mutex_destroy(smx_mutex_t mutex)
  * It have to be called before the use of the condition.
  * \return A condition
  */
-smx_cond_t SIMIX_cond_init()
+smx_cond_t SIMIX_cond_init(void)
 {
   XBT_IN("()");
   s_smx_process_t p;
@@ -260,12 +274,10 @@ smx_cond_t SIMIX_cond_init()
  * \brief Handle a condition waiting simcall without timeouts
  * \param simcall the simcall
  */
-void SIMIX_pre_cond_wait(smx_simcall_t simcall)
+void SIMIX_pre_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex)
 {
   XBT_IN("(%p)",simcall);
   smx_process_t issuer = simcall->issuer;
-  smx_cond_t cond = simcall->cond_wait.cond;
-  smx_mutex_t mutex = simcall->cond_wait.mutex;
 
   _SIMIX_cond_wait(cond, mutex, -1, issuer, simcall);
   XBT_OUT();
@@ -275,13 +287,11 @@ void SIMIX_pre_cond_wait(smx_simcall_t simcall)
  * \brief Handle a condition waiting simcall with timeouts
  * \param simcall the simcall
  */
-void SIMIX_pre_cond_wait_timeout(smx_simcall_t simcall)
+void SIMIX_pre_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond,
+		                 smx_mutex_t mutex, double timeout)
 {
   XBT_IN("(%p)",simcall);
   smx_process_t issuer = simcall->issuer;
-  smx_cond_t cond = simcall->cond_wait_timeout.cond;
-  smx_mutex_t mutex = simcall->cond_wait_timeout.mutex;
-  double timeout = simcall->cond_wait_timeout.timeout;
 
   _SIMIX_cond_wait(cond, mutex, timeout, issuer, simcall);
   XBT_OUT();
@@ -310,6 +320,9 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
   XBT_OUT();
 }
 
+void SIMIX_pre_cond_signal(smx_simcall_t simcall, smx_cond_t cond){
+  SIMIX_cond_signal(cond);
+}
 /**
  * \brief Signalizes a condition.
  *
@@ -337,18 +350,19 @@ void SIMIX_cond_signal(smx_cond_t cond)
     /* Now transform the cond wait simcall into a mutex lock one */
     simcall = &proc->simcall;
     if(simcall->call == SIMCALL_COND_WAIT)
-      mutex = simcall->cond_wait.mutex;
+      mutex = simcall_cond_wait__get__mutex(simcall);
     else
-      mutex = simcall->cond_wait_timeout.mutex;
-
+      mutex = simcall_cond_wait_timeout__get__mutex(simcall);
     simcall->call = SIMCALL_MUTEX_LOCK;
-    simcall->mutex_lock.mutex = mutex;
 
-    SIMIX_pre_mutex_lock(simcall);
+    SIMIX_pre_mutex_lock(simcall, mutex);
   }
   XBT_OUT();
 }
 
+void SIMIX_pre_cond_broadcast(smx_simcall_t simcall, smx_cond_t cond){
+  SIMIX_cond_broadcast(cond);
+}
 /**
  * \brief Broadcasts a condition.
  *
@@ -368,6 +382,9 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
   XBT_OUT();
 }
 
+void SIMIX_pre_cond_destroy(smx_simcall_t simcall, smx_cond_t cond){
+  SIMIX_cond_destroy(cond);
+}
 /**
  * \brief Destroys a contidion.
  *
@@ -391,6 +408,9 @@ void SIMIX_cond_destroy(smx_cond_t cond)
 
 /******************************** Semaphores **********************************/
 #define SMX_SEM_NOLIMIT 99999
+smx_sem_t SIMIX_pre_sem_init(smx_simcall_t simcall, unsigned int value){
+  return SIMIX_sem_init(value);
+}
 /** @brief Initialize a semaphore */
 smx_sem_t SIMIX_sem_init(unsigned int value)
 {
@@ -404,6 +424,9 @@ smx_sem_t SIMIX_sem_init(unsigned int value)
   return sem;
 }
 
+void SIMIX_pre_sem_destroy(smx_simcall_t simcall, smx_sem_t sem){
+  SIMIX_sem_destroy(sem);
+}
 /** @brief Destroys a semaphore */
 void SIMIX_sem_destroy(smx_sem_t sem)
 {
@@ -418,6 +441,9 @@ void SIMIX_sem_destroy(smx_sem_t sem)
   XBT_OUT();
 }
 
+void SIMIX_pre_sem_release(smx_simcall_t simcall, smx_sem_t sem){
+  SIMIX_sem_release(sem);
+}
 /** @brief release the semaphore
  *
  * Unlock a process waiting on the semaphore.
@@ -448,6 +474,9 @@ XBT_INLINE int SIMIX_sem_would_block(smx_sem_t sem)
   return (sem->value <= 0);
 }
 
+int SIMIX_pre_sem_get_capacity(smx_simcall_t simcall, smx_sem_t sem){
+  return SIMIX_sem_get_capacity(sem);
+}
 /** @brief Returns the current capacity of the semaphore */
 int SIMIX_sem_get_capacity(smx_sem_t sem)
 {
@@ -479,10 +508,10 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
  * \brief Handles a sem acquire simcall without timeout.
  * \param simcall the simcall
  */
-void SIMIX_pre_sem_acquire(smx_simcall_t simcall)
+void SIMIX_pre_sem_acquire(smx_simcall_t simcall, smx_sem_t sem)
 {
   XBT_IN("(%p)",simcall);
-  _SIMIX_sem_wait(simcall->sem_acquire.sem, -1, simcall->issuer, simcall);
+  _SIMIX_sem_wait(sem, -1, simcall->issuer, simcall);
   XBT_OUT();
 }
 
@@ -490,10 +519,9 @@ void SIMIX_pre_sem_acquire(smx_simcall_t simcall)
  * \brief Handles a sem acquire simcall with timeout.
  * \param simcall the simcall
  */
-void SIMIX_pre_sem_acquire_timeout(smx_simcall_t simcall)
+void SIMIX_pre_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout)
 {
   XBT_IN("(%p)",simcall);
-  _SIMIX_sem_wait(simcall->sem_acquire_timeout.sem,
-                  simcall->sem_acquire_timeout.timeout, simcall->issuer, simcall);  
+  _SIMIX_sem_wait(sem, timeout, simcall->issuer, simcall);  
   XBT_OUT();
 }

@@ -10,7 +10,7 @@
 #include "xbt.h"
 #include "xbt/xbt_os_time.h"
 #include "simgrid/simix.h"
-#include "smpi/smpi.h"
+#include "smpi/smpi_interface.h"
 #include "smpi/smpif.h"
 #include "smpi/smpi_cocci.h"
 #include "instr/instr_private.h"
@@ -22,7 +22,7 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 #define NON_PERSISTENT 0x2
 #define SEND           0x4
 #define RECV           0x8
-
+#define RECV_DELETE     0x10
 
 // this struct is here to handle the problem of non-contignous data
 // for each such structure these function should be implemented (vector
@@ -42,6 +42,7 @@ typedef struct s_smpi_mpi_datatype{
   int flags;
   /* this let us know how to serialize and unserialize*/
   void *substruct;
+  int in_use;
 } s_smpi_mpi_datatype_t;
 
 //*****************************************************************************************
@@ -58,10 +59,18 @@ typedef struct s_smpi_mpi_request {
   int src;
   int dst;
   int tag;
+  //to handle cases where we have an unknown sender
+  //We can't override src, tag, and size, because the request may be reused later
+  int real_src;
+  int real_tag;
+  int truncated;
+  size_t real_size;
   MPI_Comm comm;
   smx_action_t action;
   unsigned flags;
   int detached;
+  MPI_Request detached_sender;
+  int refcount;
 #ifdef HAVE_TRACING
   int send;
   int recv;
@@ -99,6 +108,9 @@ MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype);
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount,
                        MPI_Datatype recvtype);
+void smpi_datatype_use(MPI_Datatype type);
+void smpi_datatype_unuse(MPI_Datatype type);
+
 int smpi_datatype_contiguous(int count, MPI_Datatype old_type,
                        MPI_Datatype* new_type);
 int smpi_datatype_vector(int count, int blocklen, int stride,
@@ -252,15 +264,23 @@ void mpi_comm_rank__(int* comm, int* rank, int* ierr);
 void mpi_comm_size__(int* comm, int* size, int* ierr);
 double mpi_wtime__(void);
 double mpi_wtick__(void);
+void mpi_initialized__(int* flag, int* ierr);
 
 void mpi_comm_dup__(int* comm, int* newcomm, int* ierr);
+void mpi_comm_create__(int* comm, int* group, int* newcomm, int* ierr);
+void mpi_comm_free__(int* comm, int* ierr);
 void mpi_comm_split__(int* comm, int* color, int* key, int* comm_out, int* ierr);
-
+void mpi_group_incl__(int* group, int* n, int* key, int* group_out, int* ierr) ;
+void mpi_comm_group__(int* comm, int* group_out,  int* ierr);
 void mpi_send_init__(void *buf, int* count, int* datatype, int* dst, int* tag,
                      int* comm, int* request, int* ierr);
 void mpi_isend__(void *buf, int* count, int* datatype, int* dst,
                  int* tag, int* comm, int* request, int* ierr);
+void mpi_irsend__(void *buf, int* count, int* datatype, int* dst,
+                 int* tag, int* comm, int* request, int* ierr);
 void mpi_send__(void* buf, int* count, int* datatype, int* dst,
+                int* tag, int* comm, int* ierr);
+void mpi_rsend__(void* buf, int* count, int* datatype, int* dst,
                 int* tag, int* comm, int* ierr);
 void mpi_recv_init__(void *buf, int* count, int* datatype, int* src, int* tag,
                      int* comm, int* request, int* ierr);
@@ -280,11 +300,19 @@ void mpi_reduce__(void* sendbuf, void* recvbuf, int* count,
                   int* datatype, int* op, int* root, int* comm, int* ierr);
 void mpi_allreduce__(void* sendbuf, void* recvbuf, int* count, int* datatype,
                      int* op, int* comm, int* ierr);
+void mpi_reduce_scatter__(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype,
+                     int* op, int* comm, int* ierr) ;
 void mpi_scatter__(void* sendbuf, int* sendcount, int* sendtype,
+                   void* recvbuf, int* recvcount, int* recvtype,
+                   int* root, int* comm, int* ierr);
+void mpi_scatterv__(void* sendbuf, int* sendcounts, int* displs, int* sendtype,
                    void* recvbuf, int* recvcount, int* recvtype,
                    int* root, int* comm, int* ierr);
 void mpi_gather__(void* sendbuf, int* sendcount, int* sendtype,
                   void* recvbuf, int* recvcount, int* recvtype,
+                  int* root, int* comm, int* ierr);
+void mpi_gatherv__(void* sendbuf, int* sendcount, int* sendtype,
+                  void* recvbuf, int* recvcounts, int* displs, int* recvtype,
                   int* root, int* comm, int* ierr);
 void mpi_allgather__(void* sendbuf, int* sendcount, int* sendtype,
                      void* recvbuf, int* recvcount, int* recvtype,
@@ -298,11 +326,29 @@ void mpi_scan__(void* sendbuf, void* recvbuf, int* count, int* datatype,
                 int* op, int* comm, int* ierr);
 void mpi_alltoall__(void* sendbuf, int* sendcount, int* sendtype,
                     void* recvbuf, int* recvcount, int* recvtype, int* comm, int* ierr);
+void mpi_alltoallv__(void* sendbuf, int* sendcounts, int* senddisps, int* sendtype,
+                    void* recvbuf, int* recvcounts, int* recvdisps, int* recvtype, int* comm, int* ierr);
 void mpi_get_processor_name__(char *name, int *resultlen, int* ierr);
 void mpi_test__ (int * request, int *flag, MPI_Status * status, int* ierr);
 void mpi_get_count__(MPI_Status * status, int* datatype, int *count, int* ierr);
 void mpi_type_extent__(int* datatype, MPI_Aint * extent, int* ierr);
+void mpi_attr_get__(int* comm, int* keyval, void* attr_value, int* flag, int* ierr );
 void mpi_type_lb__(int* datatype, MPI_Aint * extent, int* ierr);
 void mpi_type_ub__(int* datatype, MPI_Aint * extent, int* ierr);
+void mpi_error_string__(int* errorcode, char* string, int* resultlen, int* ierr);
+void mpi_sendrecv__(void* sendbuf, int* sendcount, int* sendtype, int* dst,
+                int* sendtag, void *recvbuf, int* recvcount,
+                int* recvtype, int* src, int* recvtag,
+                int* comm, MPI_Status* status, int* ierr);
+
+/********** Tracing **********/
+/* from smpi_instr.c */
+void TRACE_internal_smpi_set_category (const char *category);
+const char *TRACE_internal_smpi_get_category (void);
+void TRACE_smpi_collective_in(int rank, int root, const char *operation);
+void TRACE_smpi_collective_out(int rank, int root, const char *operation);
+void TRACE_smpi_computing_init(int rank);
+void TRACE_smpi_computing_out(int rank);
+void TRACE_smpi_computing_in(int rank);
 
 #endif

@@ -76,8 +76,8 @@ inline double Summa(
     XBT_DEBUG( "pivot: %zu, iter: %zu, B_proc_col: %zu, "
                 "size_col:%zu, size_row: %zu\n",
                 pivot_row, iter, B_proc_row,size_col,size_row);
-    MPI_Barrier(row_comm);
-    MPI_Barrier(col_comm);
+/*    MPI_Barrier(row_comm);*/
+/*    MPI_Barrier(col_comm);*/
 
     start_time_intern = MPI_Wtime();
     //Broadcast the row
@@ -127,8 +127,8 @@ inline double Summa(
     end_time_intern = MPI_Wtime();
     communication_time += end_time_intern - start_time_intern;
 
-    MPI_Barrier(row_comm);
-    MPI_Barrier(col_comm);
+/*    MPI_Barrier(row_comm);*/
+/*    MPI_Barrier(col_comm);*/
     start_time_intern = MPI_Wtime();
     XBT_DEBUG("execute Gemm number: %zu\n", iter);
     //We have recieved a line of block and a colomn
