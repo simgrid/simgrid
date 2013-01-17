@@ -1484,13 +1484,17 @@ void SD_task_schedulev(SD_task_t task, int count,
       SD_task_t before = dep->src;
       if (before->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
         if (!before->workstation_list){
-          XBT_VERB("Sender side of Task %s is not scheduled yet. Fill the workstation list with receiver side",
+          XBT_VERB("Sender side of Task %s is not scheduled yet",
              SD_task_get_name(before));
           before->workstation_list = xbt_new0(SD_workstation_t, count);
           before->workstation_nb = count;
+          XBT_VERB("Fill the workstation list with list of Task '%s'",
+            SD_task_get_name(task));
           for (i=0;i<count;i++)
             before->workstation_list[i] = task->workstation_list[i];
         } else {
+          XBT_VERB("Build communication matrix for task '%s'",
+             SD_task_get_name(before));
           int src_nb, dst_nb;
           double src_start, src_end, dst_start, dst_end;
           src_nb = before->workstation_nb;
@@ -1545,10 +1549,12 @@ void SD_task_schedulev(SD_task_t task, int count,
       SD_task_t after = dep->dst;
       if (after->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
         if (!after->workstation_list){
-          XBT_VERB("Receiver side of Task %s is not scheduled yet. Fill the workstation list with sender side",
+          XBT_VERB("Receiver side of Task '%s' is not scheduled yet",
               SD_task_get_name(after));
           after->workstation_list = xbt_new0(SD_workstation_t, count);
           after->workstation_nb = count;
+          XBT_VERB("Fill the workstation list with list of Task '%s'",
+            SD_task_get_name(task));
           for (i=0;i<count;i++)
             after->workstation_list[i] = task->workstation_list[i];
         } else {
