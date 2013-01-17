@@ -362,7 +362,7 @@ void surf_network_model_init_NS3()
 
   /* Added the initialization for NS3 interface */
 
-  if (ns3_initialize(xbt_cfg_get_string(_surf_cfg_set,"ns3/TcpModel"))) {
+  if (ns3_initialize(xbt_cfg_get_string(_sg_cfg_set, "ns3/TcpModel"))) {
     xbt_die("Impossible to initialize NS3 interface");
   }
 
