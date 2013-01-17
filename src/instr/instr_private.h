@@ -208,6 +208,7 @@ int TRACE_smpi_is_computing(void);
 int TRACE_categorized (void);
 int TRACE_uncategorized (void);
 int TRACE_msg_process_is_enabled(void);
+int TRACE_msg_vm_is_enabled(void);
 int TRACE_buffer (void);
 int TRACE_onelink_only (void);
 int TRACE_disable_destroy (void);
