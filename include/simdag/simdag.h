@@ -135,6 +135,7 @@ XBT_PUBLIC(void) SD_task_set_rate(SD_task_t task, double rate);
 XBT_PUBLIC(void) SD_task_watch(SD_task_t task, e_SD_task_state_t state);
 XBT_PUBLIC(void) SD_task_unwatch(SD_task_t task, e_SD_task_state_t state);
 XBT_PUBLIC(double) SD_task_get_amount(SD_task_t task);
+XBT_PUBLIC(double) SD_task_get_alpha(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_remaining_amount(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task,
                                               int workstation_nb,

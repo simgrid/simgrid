@@ -452,6 +452,20 @@ double SD_task_get_amount(SD_task_t task)
 }
 
 /**
+ * \brief Returns the alpha parameter of a SD_TASK_COMP_PAR_AMDAH task
+ *
+ * \param task a parallel task assuming Amdahl's law as speedup model
+ * \return the alpha parameter (serial part of a task in percent) for this task
+ */
+double SD_task_get_alpha(SD_task_t task)
+{
+  xbt_assert(SD_task_get_kind(task) == SD_TASK_COMP_PAR_AMDAHL,
+     "Alpha parameter is not defined for this kink of task");
+  return task->alpha;
+}
+
+
+/**
  * \brief Returns the remaining amount work to do till the completion of a task
  *
  * \param task a task
