@@ -95,7 +95,7 @@ XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
 /* int MSG_get_msgload(void); This function lacks specification; discard it */
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_avail(msg_host_t h);
-XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
+XBT_PUBLIC(void) __MSG_host_destroy(msg_host_priv_t host);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(msg_host_t host);

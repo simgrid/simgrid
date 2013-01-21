@@ -7,6 +7,7 @@
 #define MSG_DATATYPE_H
 #include "xbt/misc.h"
 #include "xbt/file_stat.h"
+#include "xbt/lib.h"
 #include "simgrid/simix.h"
 #include "simgrid_config.h"     // for HAVE_TRACING
 
@@ -29,13 +30,7 @@ typedef struct s_smx_rvpoint *msg_mailbox_t;
 
 /* ******************************** Host ************************************ */
 
-typedef struct msg_host {
-  xbt_swag_t vms;
-  smx_host_t smx_host;          /**< SIMIX representation of this host   */
-#ifdef MSG_USE_DEPRECATED
-  msg_mailbox_t *mailboxes;     /**< the channels  */
-#endif
-} s_msg_host_t;
+extern int MSG_HOST_LEVEL;
 
 /** @brief Host datatype.
     @ingroup m_host_management
@@ -47,7 +42,21 @@ typedef struct msg_host {
     some <em>private data</em> that can be only accessed by local
     process.
  */
-typedef struct msg_host *msg_host_t;
+typedef xbt_dictelm_t msg_host_t;
+typedef s_xbt_dictelm_t s_msg_host_t;
+
+typedef struct msg_host_priv {
+  xbt_swag_t vms;
+#ifdef MSG_USE_DEPRECATED
+  msg_mailbox_t *mailboxes;     /**< the channels  */
+#endif
+} s_msg_host_priv_t, *msg_host_priv_t;
+
+static inline msg_host_priv_t MSG_host_priv(msg_host_t host){
+  return xbt_lib_get_level(host, MSG_HOST_LEVEL);
+}
+
+
 
 /* ******************************** Task ************************************ */
 

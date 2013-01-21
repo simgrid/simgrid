@@ -440,7 +440,7 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
   if (kill_time > SIMIX_get_clock()) {
     if (simix_global->kill_process_function) {
       XBT_DEBUG("Set kill time %f for process %s(%s)",kill_time, process->name,
-          process->smx_host->name);
+          sg_host_name(process->smx_host));
       SIMIX_timer_set(kill_time, simix_global->kill_process_function, process);
     }
   }

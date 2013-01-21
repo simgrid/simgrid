@@ -17,19 +17,8 @@
 #include "xbt/dict.h"
 #include "xbt/mallocator.h"
 
-typedef struct s_xbt_dictelm *xbt_dictelm_t;
-
 #define MAX_FILL_PERCENT 80
 
-typedef struct s_xbt_dictelm {
-  char *key;
-  int key_len;
-  unsigned int hash_code;
-
-  void *content;
-
-  xbt_dictelm_t next;
-} s_xbt_dictelm_t;
 
 typedef struct s_xbt_het_dictelm {
   s_xbt_dictelm_t element;

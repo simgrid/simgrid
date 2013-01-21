@@ -29,10 +29,9 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 msg_host_t __MSG_host_create(smx_host_t workstation)
 {
   const char *name = SIMIX_host_get_name(workstation);
-  msg_host_t host = xbt_new0(s_msg_host_t, 1);
+  msg_host_priv_t host = xbt_new0(s_msg_host_priv_t, 1);
   s_msg_vm_t vm; // simply to compute the offset
 
-  host->smx_host = workstation;
   host->vms = xbt_swag_new(xbt_swag_offset(vm,host_vms_hookup));
 
 #ifdef MSG_USE_DEPRECATED
@@ -52,9 +51,10 @@ msg_host_t __MSG_host_create(smx_host_t workstation)
 #endif
 
   xbt_lib_set(host_lib,name,MSG_HOST_LEVEL,host);
-
-  return host;
+  
+  return xbt_lib_get_elm_or_null(host_lib, name);
 }
+
 
 /** \ingroup msg_host_management
  * \brief Finds a msg_host_t using its name.
@@ -65,7 +65,7 @@ msg_host_t __MSG_host_create(smx_host_t workstation)
  */
 msg_host_t MSG_get_host_by_name(const char *name)
 {
-  return (msg_host_t) xbt_lib_get_or_null(host_lib,name,MSG_HOST_LEVEL);
+  return (msg_host_t) xbt_lib_get_elm_or_null(host_lib,name);
 }
 
 /** \ingroup m_host_management
@@ -77,7 +77,7 @@ msg_host_t MSG_get_host_by_name(const char *name)
  */
 msg_error_t MSG_host_set_data(msg_host_t host, void *data)
 {
-  SIMIX_host_set_data(host->smx_host,data);
+  SIMIX_host_set_data(host,data);
 
   return MSG_OK;
 }
@@ -91,7 +91,7 @@ msg_error_t MSG_host_set_data(msg_host_t host, void *data)
  */
 void *MSG_host_get_data(msg_host_t host)
 {
-  return SIMIX_host_get_data(host->smx_host);
+  return SIMIX_host_get_data(host);
 }
 
 /** \ingroup m_host_management
@@ -102,7 +102,7 @@ void *MSG_host_get_data(msg_host_t host)
    its name.
  */
 const char *MSG_host_get_name(msg_host_t host) {
-  return SIMIX_host_get_name(host->smx_host);
+  return SIMIX_host_get_name(host);
 }
 
 /** \ingroup m_host_management
@@ -117,15 +117,14 @@ msg_host_t MSG_host_self(void)
 /*
  * \brief Destroys a host (internal call only)
  */
-void __MSG_host_destroy(msg_host_t host) {
+void __MSG_host_destroy(msg_host_priv_t host) {
 
 #ifdef MSG_USE_DEPRECATED
   if (msg_global->max_channel > 0)
     free(host->mailboxes);
 #endif
   if (xbt_swag_size(host->vms) > 0 ) {
-    XBT_VERB("Host %s shut down, but it still hosts %d VMs. They will be leaked.",
-        MSG_host_get_name(host),xbt_swag_size(host->vms));
+    XBT_VERB("Host shut down, but it still hosts %d VMs. They will be leaked.",xbt_swag_size(host->vms));
   }
   xbt_swag_free(host->vms);
   free(host);
@@ -172,8 +171,10 @@ xbt_dynar_t MSG_hosts_as_dynar(void) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(msg_host_t),NULL);
 
   xbt_lib_foreach(host_lib, cursor, key, data) {
-    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
-      xbt_dynar_push(res, data + MSG_HOST_LEVEL);
+    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST) {
+      xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
+      xbt_dynar_push(res, &elm);
+    }
   }
   return res;
 }
@@ -198,7 +199,7 @@ double MSG_get_host_speed(msg_host_t h)
 {
   xbt_assert((h != NULL), "Invalid parameters");
 
-  return (simcall_host_get_speed(h->smx_host));
+  return (simcall_host_get_speed(h));
 }
 
 /** \ingroup m_host_management
@@ -223,7 +224,7 @@ xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 
-  return (simcall_host_get_properties(host->smx_host));
+  return (simcall_host_get_properties(host));
 }
 
 /** \ingroup m_host_management
@@ -249,5 +250,5 @@ void MSG_host_set_property_value(msg_host_t host, const char *name, char *value,
 int MSG_host_is_avail(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-  return (simcall_host_get_state(host->smx_host));
+  return (simcall_host_get_state(host));
 }

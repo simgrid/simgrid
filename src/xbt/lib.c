@@ -75,3 +75,13 @@ void *xbt_lib_get_or_null(xbt_lib_t lib, const char *key, int level)
   void **elts = xbt_dict_get_or_null(lib->dict, key);
   return elts ? elts[level] : NULL;
 }
+
+xbt_dictelm_t xbt_lib_get_elm_or_null(xbt_lib_t lib, const char *key)
+{
+  return xbt_dict_get_elm_or_null(lib->dict, key);
+}
+
+void *xbt_lib_get_level(xbt_dictelm_t elm, int level){
+  void **elts = elm->content;
+  return elts ? elts[level] : NULL;
+}

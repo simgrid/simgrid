@@ -56,14 +56,18 @@ typedef struct SD_link {
 } s_SD_link_t;
 
 /* Workstation */
+typedef s_xbt_dictelm_t s_SD_workstation_t;
 typedef struct SD_workstation {
-  void *surf_workstation;       /* surf object */
   void *data;                   /* user data */
   e_SD_workstation_access_mode_t access_mode;
 
   xbt_fifo_t task_fifo;         /* only used in sequential mode */
   SD_task_t current_task;       /* only used in sequential mode */
-} s_SD_workstation_t;
+} s_SD_workstation_priv_t, *SD_workstation_priv_t;
+
+static inline SD_workstation_priv_t SD_workstation_priv(SD_workstation_t host){
+  return xbt_lib_get_level(host, SD_HOST_LEVEL);
+}
 
 /* Task */
 typedef struct SD_task {

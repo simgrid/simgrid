@@ -28,7 +28,7 @@ msg_vm_t MSG_vm_start(msg_host_t location, const char *name, int coreAmount) {
   res->processes = xbt_dynar_new(sizeof(msg_process_t),NULL);
 
   xbt_swag_insert(res,msg_global->vms);
-  xbt_swag_insert(res,location->vms);
+  xbt_swag_insert(res, MSG_host_priv(location)->vms);
 
   #ifdef HAVE_TRACING
   TRACE_msg_vm_create(name, location);
@@ -111,8 +111,8 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination) {
   xbt_dynar_foreach(vm->processes,cpt,process) {
     MSG_process_migrate(process,destination);
   }
-  xbt_swag_remove(vm,vm->location->vms);
-  xbt_swag_insert_at_tail(vm,destination->vms);
+  xbt_swag_remove(vm, MSG_host_priv(vm->location)->vms);
+  xbt_swag_insert_at_tail(vm, MSG_host_priv(destination)->vms);
   
   #ifdef HAVE_TRACING
   TRACE_msg_vm_change_host(vm,vm->location,destination);

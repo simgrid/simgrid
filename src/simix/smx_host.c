@@ -24,20 +24,18 @@ static void SIMIX_execution_finish(smx_action_t action);
 smx_host_t SIMIX_host_create(const char *name,
                                void *workstation, void *data)
 {
-  smx_host_t smx_host = xbt_new0(s_smx_host_t, 1);
+  smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
   s_smx_process_t proc;
 
   /* Host structure */
-  smx_host->name = xbt_strdup(name);
   smx_host->data = data;
-  smx_host->host = workstation;
   smx_host->process_list =
       xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
   /* Update global variables */
-  xbt_lib_set(host_lib,smx_host->name,SIMIX_HOST_LEVEL,smx_host);
-
-  return smx_host;
+  xbt_lib_set(host_lib,name,SIMIX_HOST_LEVEL,smx_host);
+  
+  return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
 /**
@@ -47,14 +45,14 @@ smx_host_t SIMIX_host_create(const char *name,
  */
 void SIMIX_host_destroy(void *h)
 {
-  smx_host_t host = (smx_host_t) h;
+  smx_host_priv_t host = (smx_host_priv_t) h;
 
   xbt_assert((host != NULL), "Invalid parameters");
 
   /* Clean Simulator data */
   if (xbt_swag_size(host->process_list) != 0) {
     char *msg =
-        bprintf("Shutting down host %s, but it's not empty:", host->name);
+        bprintf("Shutting down host, but it's not empty:");
     char *tmp;
     smx_process_t process = NULL;
 
@@ -70,9 +68,7 @@ void SIMIX_host_destroy(void *h)
   xbt_swag_free(host->process_list);
 
   /* Clean host structure */
-  free(host->name);
-  free(host);
-
+  free(host); 
   return;
 }
 
@@ -102,7 +98,7 @@ smx_host_t SIMIX_host_get_by_name(const char *name){
                && (host_lib != NULL)),
               "Environment not set yet");
 
-  return xbt_lib_get_or_null(host_lib, name, SIMIX_HOST_LEVEL);
+  return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
 smx_host_t SIMIX_host_self(void)
@@ -131,7 +127,7 @@ const char* SIMIX_pre_host_get_name(smx_simcall_t simcall, smx_host_t host){
 const char* SIMIX_host_get_name(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters");
 
-  return host->name;
+  return sg_host_name(host);
 }
 
 xbt_dict_t SIMIX_pre_host_get_properties(smx_simcall_t simcall, smx_host_t host){
@@ -140,7 +136,7 @@ xbt_dict_t SIMIX_pre_host_get_properties(smx_simcall_t simcall, smx_host_t host)
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_model->extension.workstation.get_properties(host->host);
+  return surf_workstation_model->extension.workstation.get_properties(host);
 }
 
 double SIMIX_pre_host_get_speed(smx_simcall_t simcall, smx_host_t host){
@@ -150,7 +146,7 @@ double SIMIX_host_get_speed(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.
-      get_speed(host->host, 1.0);
+      get_speed(host, 1.0);
 }
 
 double SIMIX_pre_host_get_available_speed(smx_simcall_t simcall, smx_host_t host){
@@ -160,7 +156,7 @@ double SIMIX_host_get_available_speed(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.
-      get_available_speed(host->host);
+      get_available_speed(host);
 }
 
 int SIMIX_pre_host_get_state(smx_simcall_t simcall, smx_host_t host){
@@ -170,7 +166,7 @@ int SIMIX_host_get_state(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
   return surf_workstation_model->extension.workstation.
-      get_state(host->host);
+      get_state(host);
 }
 
 void* SIMIX_pre_host_self_get_data(smx_simcall_t simcall){
@@ -194,7 +190,7 @@ void* SIMIX_pre_host_get_data(smx_simcall_t simcall,smx_host_t host){
 void* SIMIX_host_get_data(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return host->data;
+  return SIMIX_host_priv(host)->data;
 }
 void _SIMIX_host_free_process_arg(void *);
 void _SIMIX_host_free_process_arg(void *data)
@@ -220,8 +216,8 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
                                          xbt_dict_t properties,
                                          int auto_restart)
 {
-  if (!host->auto_restart_processes) {
-    host->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
+  if (!SIMIX_host_priv(host)->auto_restart_processes) {
+    SIMIX_host_priv(host)->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
   }
   smx_process_arg_t arg = xbt_new(s_smx_process_arg_t,1);
   arg->name = xbt_strdup(name);
@@ -243,11 +239,11 @@ void SIMIX_host_add_auto_restart_process(smx_host_t host,
   arg->auto_restart = auto_restart;
 
   if( SIMIX_host_get_state(host) == SURF_RESOURCE_OFF
-      && !xbt_dict_get_or_null(watched_hosts_lib,host->name)){
-    xbt_dict_set(watched_hosts_lib,host->name,host,NULL);
-    XBT_DEBUG("Have push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",host->name);
+      && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_name(host))){
+    xbt_dict_set(watched_hosts_lib,sg_host_name(host),host,NULL);
+    XBT_DEBUG("Have push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_name(host));
   }
-  xbt_dynar_push_as(host->auto_restart_processes,smx_process_arg_t,arg);
+  xbt_dynar_push_as(SIMIX_host_priv(host)->auto_restart_processes,smx_process_arg_t,arg);
 }
 /**
  * \brief Restart the list of processes that have been registered to the host
@@ -256,7 +252,7 @@ void SIMIX_host_restart_processes(smx_host_t host)
 {
   unsigned int cpt;
   smx_process_arg_t arg;
-  xbt_dynar_foreach(host->auto_restart_processes,cpt,arg) {
+  xbt_dynar_foreach(SIMIX_host_priv(host)->auto_restart_processes,cpt,arg) {
 
     smx_process_t process;
 
@@ -287,7 +283,7 @@ void SIMIX_host_restart_processes(smx_host_t host)
 
     }
   }
-  xbt_dynar_reset(host->auto_restart_processes);
+  xbt_dynar_reset(SIMIX_host_priv(host)->auto_restart_processes);
 }
 
 void SIMIX_host_autorestart(smx_host_t host)
@@ -303,9 +299,9 @@ void SIMIX_pre_host_set_data(smx_simcall_t simcall, smx_host_t host, void *data)
 }
 void SIMIX_host_set_data(smx_host_t host, void *data){
   xbt_assert((host != NULL), "Invalid parameters");
-  xbt_assert((host->data == NULL), "Data already set");
+  xbt_assert((SIMIX_host_priv(host)->data == NULL), "Data already set");
 
-  host->data = data;
+  SIMIX_host_priv(host)->data = data;
 }
 
 smx_action_t SIMIX_pre_host_execute(smx_simcall_t simcall,const char *name,
@@ -329,7 +325,7 @@ smx_action_t SIMIX_host_execute(const char *name,
   /* set surf's action */
   if (!MC_is_active()) {
     action->execution.surf_exec =
-      surf_workstation_model->extension.workstation.execute(host->host,
+      surf_workstation_model->extension.workstation.execute(host,
     computation_amount);
     surf_workstation_model->action_data_set(action->execution.surf_exec, action);
     surf_workstation_model->set_priority(action->execution.surf_exec, priority);
@@ -369,7 +365,7 @@ smx_action_t SIMIX_host_parallel_execute(const char *name,
   /* set surf's action */
   workstation_list = xbt_new0(void *, host_nb);
   for (i = 0; i < host_nb; i++)
-    workstation_list[i] = host_list[i]->host;
+    workstation_list[i] = host_list[i];
 
   /* set surf's action */
   if (!MC_is_active()) {
@@ -484,7 +480,7 @@ void SIMIX_execution_finish(smx_action_t action)
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->smx_host->name);
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", sg_host_name(simcall->issuer->smx_host));
         simcall->issuer->context->iwannadie = 1;
         //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
@@ -500,7 +496,7 @@ void SIMIX_execution_finish(smx_action_t action)
     }
     /* check if the host is down */
     if (surf_workstation_model->extension.
-        workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
+        workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -517,7 +513,7 @@ void SIMIX_post_host_execute(smx_action_t action)
 {
   if (action->type == SIMIX_ACTION_EXECUTE && /* FIMXE: handle resource failure
                                                * for parallel tasks too */
-      surf_workstation_model->extension.workstation.get_state(action->execution.host->host) == SURF_RESOURCE_OFF) {
+      surf_workstation_model->extension.workstation.get_state(action->execution.host) == SURF_RESOURCE_OFF) {
     /* If the host running the action failed, notice it so that the asking
      * process can be killed if it runs on that host itself */
     action->state = SIMIX_FAILED;

@@ -619,7 +619,7 @@ void SIMIX_pre_comm_wait(smx_simcall_t simcall, smx_action_t action, double time
   if (action->state != SIMIX_WAITING && action->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(action);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
-    sleep = surf_workstation_model->extension.workstation.sleep(simcall->issuer->smx_host->host, timeout);
+    sleep = surf_workstation_model->extension.workstation.sleep(simcall->issuer->smx_host, timeout);
     surf_workstation_model->action_data_set(sleep, action);
 
     if (simcall->issuer == action->comm.src_proc)
@@ -737,7 +737,7 @@ XBT_INLINE void SIMIX_comm_start(smx_action_t action)
               SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
 
     action->comm.surf_comm = surf_workstation_model->extension.workstation.
-      communicate(sender->host, receiver->host, action->comm.task_size, action->comm.rate);
+      communicate(sender, receiver, action->comm.task_size, action->comm.rate);
 
     surf_workstation_model->action_data_set(action->comm.surf_comm, action);
 
@@ -834,8 +834,8 @@ void SIMIX_comm_finish(smx_action_t action)
     case SIMIX_LINK_FAILURE:
       XBT_DEBUG("Link failure in action %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
                 action,
-                action->comm.src_proc ? action->comm.src_proc->smx_host->name : NULL,
-                action->comm.dst_proc ? action->comm.dst_proc->smx_host->name : NULL,
+                action->comm.src_proc ? sg_host_name(action->comm.src_proc->smx_host) : NULL,
+                action->comm.dst_proc ? sg_host_name(action->comm.dst_proc->smx_host) : NULL,
                 simcall->issuer->name, simcall->issuer, action->comm.detached);
       if (action->comm.src_proc == simcall->issuer) {
         XBT_DEBUG("I'm source");
@@ -871,7 +871,7 @@ void SIMIX_comm_finish(smx_action_t action)
     }
 
     if (surf_workstation_model->extension.
-        workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
+        workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -1124,9 +1124,9 @@ void SIMIX_comm_copy_data(smx_action_t comm)
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
             comm,
-            comm->comm.src_proc ? comm->comm.src_proc->smx_host->name : "a finished process",
+            comm->comm.src_proc ? sg_host_name(comm->comm.src_proc->smx_host) : "a finished process",
             comm->comm.src_buff,
-            comm->comm.dst_proc ? comm->comm.dst_proc->smx_host->name : "a finished process",
+            comm->comm.dst_proc ? sg_host_name(comm->comm.dst_proc->smx_host) : "a finished process",
             comm->comm.dst_buff, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */

@@ -45,7 +45,20 @@ SG_BEGIN_DECL()
  */
 
   /** \brief Dictionary data type (opaque structure) */
+
 typedef struct s_xbt_dict *xbt_dict_t;
+typedef struct s_xbt_dictelm *xbt_dictelm_t;
+typedef struct s_xbt_dictelm s_xbt_dictelm_t;
+typedef struct s_xbt_dictelm {
+  char *key;
+  int key_len;
+  unsigned int hash_code;
+
+  void *content;
+
+  xbt_dictelm_t next;
+} s_xbt_dictelm_t;
+
 XBT_PUBLIC(xbt_dict_t) xbt_dict_new(void);
 XBT_PUBLIC(xbt_dict_t) xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn);
 XBT_PUBLIC(void) xbt_dict_free(xbt_dict_t * dict);
@@ -65,6 +78,8 @@ XBT_PUBLIC(void) xbt_dict_set(xbt_dict_t dict, const char *key, void *data,
 XBT_PUBLIC(void *) xbt_dict_get(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(void *) xbt_dict_get_or_null(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(char *) xbt_dict_get_key(xbt_dict_t dict, const void *data);
+XBT_PUBLIC(xbt_dictelm_t) xbt_dict_get_elm(xbt_dict_t dict, const char *key);
+XBT_PUBLIC(xbt_dictelm_t) xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key);
 
 XBT_PUBLIC(void) xbt_dict_remove(xbt_dict_t dict, const char *key);
 XBT_PUBLIC(void) xbt_dict_reset(xbt_dict_t dict);
@@ -123,13 +138,23 @@ XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
  *  @{ */
 
   /** @brief Cursor on dictionaries (opaque type) */
+struct s_xbt_dict_cursor {
+  xbt_dictelm_t current;
+  int line;
+  xbt_dict_t dict;
+};
 typedef struct s_xbt_dict_cursor *xbt_dict_cursor_t;
+
+static inline xbt_dictelm_t xbt_dict_cursor_get_elm(xbt_dict_cursor_t cursor) {
+  return cursor->current;
+}
+
 XBT_PUBLIC(xbt_dict_cursor_t) xbt_dict_cursor_new(const xbt_dict_t dict);
 XBT_PUBLIC(void) xbt_dict_cursor_free(xbt_dict_cursor_t * cursor);
 
 XBT_PUBLIC(void) xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor);
 
-
+xbt_dictelm_t xbt_dict_cursor_get_elm(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(char *) xbt_dict_cursor_get_key(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(void *) xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor);
 XBT_PUBLIC(void) xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor,

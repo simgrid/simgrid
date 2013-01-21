@@ -68,9 +68,9 @@ smx_action_t SIMIX_new_api_fct(smx_process_t process, const char* param1, double
 
   /* check if the host is active */
   if (surf_workstation_model->extension.
-      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+      workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           host->name);
+           sg_host_name(host));
   }
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -124,7 +124,7 @@ void SIMIX_new_api_finish(smx_action_t action)
     }
 
     if (surf_workstation_model->extension.
-        workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
+        workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 

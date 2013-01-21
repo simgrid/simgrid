@@ -97,7 +97,7 @@ void SIMIX_process_cleanup(smx_process_t process)
 
   /*xbt_swag_remove(process, simix_global->process_to_run);*/
   xbt_swag_remove(process, simix_global->process_list);
-  xbt_swag_remove(process, process->smx_host->process_list);
+  xbt_swag_remove(process, SIMIX_host_priv(process->smx_host)->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
   process->context->iwannadie = 0;
 }
@@ -162,12 +162,12 @@ void SIMIX_process_stop(smx_process_t arg) {
    */
   if (arg->auto_restart && !SIMIX_host_get_state(arg->smx_host)) {
     SIMIX_host_add_auto_restart_process(arg->smx_host,arg->name,arg->code, arg->data,
-                                        arg->smx_host->name,
+                                        sg_host_name(arg->smx_host),
                                         arg->kill_time,
                                         arg->argc,arg->argv,arg->properties,
                                         arg->auto_restart);
   }
-  XBT_DEBUG("Process %s (%s) is dead",arg->name,arg->smx_host->name);
+  XBT_DEBUG("Process %s (%s) is dead",arg->name,sg_host_name(arg->smx_host));
   /* stop the context */
   SIMIX_context_stop(arg->context);
 }
@@ -268,20 +268,20 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->properties = properties;
 
     /* Add the process to it's host process list */
-    xbt_swag_insert(*process, host->process_list);
+    xbt_swag_insert(*process, SIMIX_host_priv(host)->process_list);
 
     XBT_DEBUG("Start context '%s'", (*process)->name);
 
     /* Now insert it in the global process list and in the process to run list */
     xbt_swag_insert(*process, simix_global->process_list);
-    XBT_DEBUG("Inserting %s(%s) in the to_run list", (*process)->name, host->name);
+    XBT_DEBUG("Inserting %s(%s) in the to_run list", (*process)->name, sg_host_name(host));
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, *process);
   }
 
   if (kill_time > SIMIX_get_clock()) {
     if (simix_global->kill_process_function) {
       XBT_DEBUG("Process %s(%s) will be kill at time %f", (*process)->name,
-          (*process)->smx_host->name, kill_time);
+          sg_host_name((*process)->smx_host), kill_time);
       SIMIX_timer_set(kill_time, simix_global->kill_process_function, *process);
     }
   }
@@ -320,7 +320,7 @@ void SIMIX_pre_process_kill(smx_simcall_t simcall, smx_process_t process) {
  */
 void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
-  XBT_DEBUG("Killing process %s on %s", process->name, process->smx_host->name);
+  XBT_DEBUG("Killing process %s on %s", process->name, sg_host_name(process->smx_host));
 
   process->context->iwannadie = 1;
   process->blocked = 0;
@@ -401,9 +401,9 @@ void SIMIX_process_change_host(smx_process_t process,
              smx_host_t dest)
 {
   xbt_assert((process != NULL), "Invalid parameters");
-  xbt_swag_remove(process, process->smx_host->process_list);
+  xbt_swag_remove(process, SIMIX_host_priv(process->smx_host)->process_list);
   process->smx_host = dest;
-  xbt_swag_insert(process, dest->process_list);
+  xbt_swag_insert(process, SIMIX_host_priv(dest)->process_list);
 }
 
 
@@ -651,9 +651,9 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
 
   /* check if the host is active */
   if (surf_workstation_model->extension.
-      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+      workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           host->name);
+           sg_host_name(host));
   }
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -665,7 +665,7 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
 
   action->sleep.host = host;
   action->sleep.surf_sleep =
-      surf_workstation_model->extension.workstation.sleep(host->host, duration);
+      surf_workstation_model->extension.workstation.sleep(host, duration);
 
   surf_workstation_model->action_data_set(action->sleep.surf_sleep, action);
   XBT_DEBUG("Create sleep action %p", action);
@@ -695,7 +695,7 @@ void SIMIX_post_process_sleep(smx_action_t action)
         break;
     }
     if (surf_workstation_model->extension.
-        workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
+        workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
     simcall_process_sleep__set__result(simcall, state);
@@ -867,12 +867,12 @@ smx_process_t SIMIX_pre_process_restart(smx_simcall_t simcall, smx_process_t pro
  * Restart a process, starting it again from the beginning.
  */
 smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer) {
-  XBT_DEBUG("Restarting process %s on %s", process->name, process->smx_host->name);
+  XBT_DEBUG("Restarting process %s on %s", process->name, sg_host_name(process->smx_host));
   //retrieve the arguments of the old process
   //FIXME: Factorise this with SIMIX_host_add_auto_restart_process ?
   s_smx_process_arg_t arg;
   arg.code = process->code;
-  arg.hostname = process->smx_host->name;
+  arg.hostname = sg_host_name(process->smx_host);
   arg.kill_time = process->kill_time;
   arg.argc = process->argc;
   arg.data = process->data;

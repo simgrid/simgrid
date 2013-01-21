@@ -96,8 +96,8 @@ static void ptask_update_action_bound(surf_action_workstation_L07_t action)
 
       if (action->communication_amount[i * workstation_nb + j] > 0) {
         double lat = 0.0;
-        routing_get_route_and_latency(action->workstation_list[i]->info,
-            action->workstation_list[j]->info,
+        routing_get_route_and_latency(((cpu_L07_t)surf_workstation_resource_priv(action->workstation_list[i]))->info,
+            ((cpu_L07_t)surf_workstation_resource_priv(action->workstation_list[j]))->info,
             &route, &lat);
         lat_current =
             MAX(lat_current,
@@ -430,17 +430,17 @@ static void ptask_finalize(void)
 
 static e_surf_resource_state_t ptask_resource_get_state(void *cpu)
 {
-  return ((cpu_L07_t) cpu)->state_current;
+  return ((cpu_L07_t)surf_workstation_resource_priv(cpu))->state_current;
 }
 
 static double ptask_get_speed(void *cpu, double load)
 {
-  return load * (((cpu_L07_t) cpu)->power_scale);
+  return load * ((cpu_L07_t)surf_workstation_resource_priv(cpu))->power_scale;
 }
 
 static double ptask_get_available_speed(void *cpu)
 {
-  return ((cpu_L07_t) cpu)->power_current;
+  return ((cpu_L07_t)surf_workstation_resource_priv(cpu))->power_current;
 }
 
 static surf_action_t ptask_execute_parallel_task(int workstation_nb,
@@ -473,8 +473,8 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
         link_L07_t link;
 
         routing_get_route_and_latency(
-            ((cpu_L07_t)workstation_list[i])->info,
-            ((cpu_L07_t)workstation_list[j])->info,
+            ((cpu_L07_t)surf_workstation_resource_priv(workstation_list[i]))->info,
+            ((cpu_L07_t)surf_workstation_resource_priv(workstation_list[j]))->info,
             &route,&lat);
         latency = MAX(latency, lat);
 
@@ -516,7 +516,7 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
 
   for (i = 0; i < workstation_nb; i++)
     lmm_expand(ptask_maxmin_system,
-               ((cpu_L07_t) workstation_list[i])->constraint,
+               ((cpu_L07_t)surf_workstation_resource_priv(workstation_list[i]))->constraint,
                action->variable, computation_amount[i]);
 
   for (i = 0; i < workstation_nb; i++) {
@@ -527,8 +527,8 @@ static surf_action_t ptask_execute_parallel_task(int workstation_nb,
         continue;
 
       routing_get_route_and_latency(
-          ((cpu_L07_t)workstation_list[i])->info,
-          ((cpu_L07_t)workstation_list[j])->info,
+          ((cpu_L07_t)surf_workstation_resource_priv(workstation_list[i]))->info,
+          ((cpu_L07_t)surf_workstation_resource_priv(workstation_list[j]))->info,
           &route,NULL);
 
       xbt_dynar_foreach(route, cpt, link) {
@@ -600,7 +600,7 @@ static xbt_dynar_t ptask_get_route(void *src, void *dst) // FIXME: kill that cal
 {
   xbt_dynar_t route=NULL;
   routing_get_route_and_latency(
-      ((cpu_L07_t)src)->info, ((cpu_L07_t)dst)->info,
+      ((cpu_L07_t)surf_workstation_resource_priv(src))->info, ((cpu_L07_t)surf_workstation_resource_priv(dst))->info,
       &route,NULL);
   return route;
 }
@@ -632,7 +632,7 @@ static void* ptask_cpu_create_resource(const char *name, double power_scale,
                                xbt_dict_t cpu_properties)
 {
   cpu_L07_t cpu = NULL;
-  xbt_assert(!surf_workstation_resource_by_name(name),
+  xbt_assert(!surf_workstation_resource_priv(surf_workstation_resource_by_name(name)),
               "Host '%s' declared several times in the platform file.",
               name);
 
@@ -662,7 +662,7 @@ static void* ptask_cpu_create_resource(const char *name, double power_scale,
 
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, cpu);
 
-  return cpu;
+  return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
 static void ptask_parse_cpu_init(sg_platf_host_cbarg_t host)
@@ -775,7 +775,7 @@ static void ptask_add_traces(void)
   /* Connect traces relative to cpu */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_L07_t host = surf_workstation_resource_by_name(elm);
+    cpu_L07_t host = surf_workstation_resource_priv(surf_workstation_resource_by_name(elm));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -786,7 +786,7 @@ static void ptask_add_traces(void)
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_L07_t host = surf_workstation_resource_by_name(elm);
+    cpu_L07_t host = surf_workstation_resource_priv(surf_workstation_resource_by_name(elm));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);

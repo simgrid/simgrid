@@ -37,8 +37,6 @@ typedef struct cpu_Cas01 {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF CPU IMPROVED module");
 
-
-
 static xbt_swag_t
     cpu_running_action_set_that_does_not_need_being_checked = NULL;
 
@@ -54,7 +52,7 @@ static void *cpu_create_resource(const char *name, double power_peak,
 {
   cpu_Cas01_t cpu = NULL;
 
-  xbt_assert(!surf_cpu_resource_by_name(name),
+  xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
              "Host '%s' declared several times in the platform file",
              name);
   cpu = (cpu_Cas01_t) surf_resource_new(sizeof(s_cpu_Cas01_t),
@@ -81,7 +79,7 @@ static void *cpu_create_resource(const char *name, double power_peak,
 
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
 
-  return cpu;
+  return xbt_lib_get_elm_or_null(host_lib, name);;
 }
 
 
@@ -229,7 +227,7 @@ static void cpu_update_resource_state(void *id,
 static surf_action_t cpu_execute(void *cpu, double size)
 {
   surf_action_cpu_Cas01_t action = NULL;
-  cpu_Cas01_t CPU = cpu;
+  cpu_Cas01_t CPU = surf_cpu_resource_priv(cpu);
 
   XBT_IN("(%s,%g)", surf_resource_name(CPU), size);
   action =
@@ -262,7 +260,7 @@ static surf_action_t cpu_action_sleep(void *cpu, double duration)
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN("(%s,%g)", surf_resource_name(cpu), duration);
+  XBT_IN("(%s,%g)", surf_resource_name(surf_cpu_resource_priv(cpu)), duration);
   action = (surf_action_cpu_Cas01_t) cpu_execute(cpu, 1.0);
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
   GENERIC_ACTION(action).max_duration = duration;
@@ -292,18 +290,18 @@ static surf_action_t cpu_action_sleep(void *cpu, double duration)
 
 static e_surf_resource_state_t cpu_get_state(void *cpu)
 {
-  return ((cpu_Cas01_t) cpu)->state_current;
+  return ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->state_current;
 }
 
 static double cpu_get_speed(void *cpu, double load)
 {
-  return load * (((cpu_Cas01_t) cpu)->power_peak);
+  return load * ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->power_peak;
 }
 
 static double cpu_get_available_speed(void *cpu)
 {
   /* number between 0 and 1 */
-  return ((cpu_Cas01_t) cpu)->power_scale;
+  return ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->power_scale;
 }
 
 static void cpu_finalize(void)

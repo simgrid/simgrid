@@ -184,7 +184,7 @@ static int l_host_sleep(lua_State *L)
 static int l_host_destroy(lua_State *L)
 {
   msg_host_t ht = sglua_check_host(L, 1);
-  __MSG_host_destroy(ht);
+  __MSG_host_destroy(MSG_host_priv(ht));
   return 0;
 }
 

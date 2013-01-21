@@ -14,7 +14,6 @@
 
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
-  void *cpu;
   void *net_elm;
   xbt_dynar_t storage;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
@@ -30,7 +29,6 @@ static void workstation_new(sg_platf_host_cbarg_t host)
 
   workstation->generic_resource.model = surf_workstation_model;
   workstation->generic_resource.name = xbt_strdup(host->id);
-  workstation->cpu = xbt_lib_get_or_null(host_lib, host->id, SURF_CPU_LEVEL);
   workstation->storage = xbt_lib_get_or_null(storage_lib,host->id,ROUTING_STORAGE_HOST_LEVEL);
   workstation->net_elm = xbt_lib_get_or_null(host_lib,host->id,ROUTING_HOST_LEVEL);
   XBT_DEBUG("Create workstation %s with %ld mounted disks",host->id,xbt_dynar_length(workstation->storage));
@@ -113,14 +111,14 @@ static void ws_update_resource_state(void *id,
 
 static surf_action_t ws_execute(void *workstation, double size)
 {
-  void *cpu = ((workstation_CLM03_t) workstation)->cpu;
-  return ((surf_resource_t) cpu)->model->extension.cpu.execute(cpu, size);
+  surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
+  return cpu->model->extension.cpu.execute(workstation, size);
 }
 
 static surf_action_t ws_action_sleep(void *workstation, double duration)
 {
   return surf_cpu_model->extension.cpu.
-      sleep(((workstation_CLM03_t) workstation)->cpu, duration);
+      sleep(workstation, duration);
 }
 
 static void ws_action_suspend(surf_action_t action)
@@ -210,8 +208,8 @@ static surf_action_t ws_communicate(void *workstation_src,
                                     void *workstation_dst, double size,
                                     double rate)
 {
-  workstation_CLM03_t src = (workstation_CLM03_t) workstation_src;
-  workstation_CLM03_t dst = (workstation_CLM03_t) workstation_dst;
+  workstation_CLM03_t src = surf_workstation_resource_priv(workstation_src);
+  workstation_CLM03_t dst = surf_workstation_resource_priv(workstation_dst);
   return surf_network_model->extension.network.
       communicate(src->net_elm,
                   dst->net_elm, size, rate);
@@ -220,20 +218,19 @@ static surf_action_t ws_communicate(void *workstation_src,
 static e_surf_resource_state_t ws_get_state(void *workstation)
 {
   return surf_cpu_model->extension.cpu.
-      get_state(((workstation_CLM03_t) workstation)->cpu);
+      get_state(workstation);
 }
 
 static double ws_get_speed(void *workstation, double load)
 {
   return surf_cpu_model->extension.cpu.
-      get_speed(((workstation_CLM03_t) workstation)->cpu, load);
+      get_speed(workstation, load);
 }
 
 static double ws_get_available_speed(void *workstation)
 {
   return surf_cpu_model->extension.cpu.
-      get_available_speed(((workstation_CLM03_t)
-                           workstation)->cpu);
+      get_available_speed(workstation);
 }
 
 static surf_action_t ws_execute_parallel_task(int workstation_nb,
@@ -275,8 +272,8 @@ static surf_action_t ws_execute_parallel_task(int workstation_nb,
 static xbt_dynar_t ws_get_route(void *workstation_src, void *workstation_dst)
 {
   XBT_DEBUG("ws_get_route");
-  workstation_CLM03_t src = (workstation_CLM03_t) workstation_src;
-  workstation_CLM03_t dst = (workstation_CLM03_t) workstation_dst;
+  workstation_CLM03_t src = surf_workstation_resource_priv(workstation_src);
+  workstation_CLM03_t dst = surf_workstation_resource_priv(workstation_dst);
   return surf_network_model->extension.
       network.get_route(src->net_elm,
                   dst->net_elm);
@@ -305,7 +302,7 @@ static void ws_finalize(void)
 
 static xbt_dict_t ws_get_properties(const void *ws)
 {
-  return surf_resource_properties(((workstation_CLM03_t) ws)->cpu);
+  return surf_resource_properties(surf_cpu_resource_priv(ws));
 }
 
 static storage_t find_storage_on_mount_list(void *workstation,const char* storage)
@@ -313,9 +310,10 @@ static storage_t find_storage_on_mount_list(void *workstation,const char* storag
   storage_t st = NULL;
   s_mount_t mnt;
   unsigned int cursor;
-  xbt_dynar_t storage_list = ((workstation_CLM03_t) workstation)->storage;
+  workstation_CLM03_t ws = (workstation_CLM03_t) surf_workstation_resource_priv(workstation);
+  xbt_dynar_t storage_list = ws->storage;
 
-  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  XBT_DEBUG("Search for storage name '%s' on '%s'",storage,ws->generic_resource.name);
   xbt_dynar_foreach(storage_list,cursor,mnt)
   {
     XBT_DEBUG("See '%s'",mnt.name);
@@ -324,7 +322,7 @@ static storage_t find_storage_on_mount_list(void *workstation,const char* storag
       break;
     }
   }
-  if(!st) xbt_die("Can't find mount '%s' for '%s'",storage,((workstation_CLM03_t) workstation)->generic_resource.name);
+  if(!st) xbt_die("Can't find mount '%s' for '%s'",storage,ws->generic_resource.name);
   return st;
 }
 

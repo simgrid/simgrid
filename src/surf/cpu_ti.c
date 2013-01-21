@@ -155,7 +155,7 @@ static void* cpu_ti_create_resource(const char *name, double power_peak,
   cpu_ti_t cpu = NULL;
   s_surf_action_cpu_ti_t ti_action;
   xbt_assert(core==1,"Multi-core not handled with this model yet");
-  xbt_assert(!surf_cpu_resource_by_name(name),
+  xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
               "Host '%s' declared several times in the platform file",
               name);
   xbt_assert(core==1,"Multi-core not handled with this model yet");
@@ -185,7 +185,7 @@ static void* cpu_ti_create_resource(const char *name, double power_peak,
   }
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
 
-  return cpu;
+  return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
 
@@ -216,7 +216,7 @@ static void add_traces_cpu_ti(void)
 /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_ti_t cpu = surf_cpu_resource_by_name(elm);
+    cpu_ti_t cpu = surf_cpu_resource_priv(surf_cpu_resource_by_name(elm));
 
     xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -232,7 +232,7 @@ static void add_traces_cpu_ti(void)
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = xbt_dict_get_or_null(traces_set_list, trace_name);
-    cpu_ti_t cpu = surf_cpu_resource_by_name(elm);
+    cpu_ti_t cpu = surf_cpu_resource_priv(surf_cpu_resource_by_name(elm));
 
     xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -277,11 +277,11 @@ static int cpu_ti_action_unref(surf_action_t action)
   if (!action->refcount) {
     xbt_swag_remove(action, action->state_set);
     /* remove from action_set */
-    xbt_swag_remove(action, ACTION_GET_CPU(action)->action_set);
+    xbt_swag_remove(action, ((cpu_ti_t)surf_cpu_resource_priv(ACTION_GET_CPU(action)))->action_set);
     /* remove from heap */
     xbt_heap_remove(cpu_ti_action_heap,
                     ((surf_action_cpu_ti_t) action)->index_heap);
-    xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
+    xbt_swag_insert(((cpu_ti_t)surf_cpu_resource_priv(ACTION_GET_CPU(action))), cpu_ti_modified_cpu);
     surf_action_free(&action);
     return 1;
   }
@@ -293,7 +293,7 @@ static void cpu_ti_action_cancel(surf_action_t action)
   surf_action_state_set(action, SURF_ACTION_FAILED);
   xbt_heap_remove(cpu_ti_action_heap,
                   ((surf_action_cpu_ti_t) action)->index_heap);
-  xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
+  xbt_swag_insert(surf_cpu_resource_priv(ACTION_GET_CPU(action)), cpu_ti_modified_cpu);
   return;
 }
 
@@ -301,7 +301,7 @@ static void cpu_ti_action_state_set(surf_action_t action,
                                     e_surf_action_state_t state)
 {
   surf_action_state_set(action, state);
-  xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
+  xbt_swag_insert(surf_cpu_resource_priv(ACTION_GET_CPU(action)), cpu_ti_modified_cpu);
   return;
 }
 
@@ -482,7 +482,7 @@ static void cpu_ti_update_actions_state(double now, double delta)
     GENERIC_ACTION(action).remains = 0;
     cpu_ti_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     /* update remaining amout of all actions */
-    cpu_ti_update_remaining_amount(action->cpu, surf_get_clock());
+    cpu_ti_update_remaining_amount(surf_cpu_resource_priv(action->cpu), surf_get_clock());
   }
 #undef GENERIC_ACTION
 }
@@ -563,7 +563,7 @@ static void cpu_ti_update_resource_state(void *id,
 static surf_action_t cpu_ti_execute(void *cpu, double size)
 {
   surf_action_cpu_ti_t action = NULL;
-  cpu_ti_t CPU = cpu;
+  cpu_ti_t CPU = surf_cpu_resource_priv(cpu);
 
   XBT_IN("(%s,%g)", surf_resource_name(CPU), size);
   action =
@@ -595,7 +595,7 @@ static surf_action_t cpu_ti_action_sleep(void *cpu, double duration)
   if (duration > 0)
     duration = MAX(duration, MAXMIN_PRECISION);
 
-  XBT_IN("(%s,%g)", surf_resource_name(cpu), duration);
+  XBT_IN("(%s,%g)", surf_resource_name(surf_cpu_resource_priv(cpu)), duration);
   action = (surf_action_cpu_ti_t) cpu_ti_execute(cpu, 1.0);
   action->generic_action.max_duration = duration;
   action->suspended = 2;
@@ -618,7 +618,7 @@ static void cpu_ti_action_suspend(surf_action_t action)
     ((surf_action_cpu_ti_t) action)->suspended = 1;
     xbt_heap_remove(cpu_ti_action_heap,
                     ((surf_action_cpu_ti_t) action)->index_heap);
-    xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
+    xbt_swag_insert(surf_cpu_resource_priv(ACTION_GET_CPU(action)), cpu_ti_modified_cpu);
   }
   XBT_OUT();
 }
@@ -628,7 +628,7 @@ static void cpu_ti_action_resume(surf_action_t action)
   XBT_IN("(%p)", action);
   if (((surf_action_cpu_ti_t) action)->suspended != 2) {
     ((surf_action_cpu_ti_t) action)->suspended = 0;
-    xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
+    xbt_swag_insert(surf_cpu_resource_priv(ACTION_GET_CPU(action)), cpu_ti_modified_cpu);
   }
   XBT_OUT();
 }
@@ -673,7 +673,7 @@ static void cpu_ti_action_set_priority(surf_action_t action,
 {
   XBT_IN("(%p,%g)", action, priority);
   action->priority = priority;
-  xbt_swag_insert(ACTION_GET_CPU(action), cpu_ti_modified_cpu);
+  xbt_swag_insert(surf_cpu_resource_priv(ACTION_GET_CPU(action)), cpu_ti_modified_cpu);
   XBT_OUT();
 }
 
@@ -689,12 +689,12 @@ static double cpu_ti_action_get_remains(surf_action_t action)
 
 static e_surf_resource_state_t cpu_ti_get_state(void *cpu)
 {
-  return ((cpu_ti_t) cpu)->state_current;
+  return ((cpu_ti_t)surf_cpu_resource_priv(cpu))->state_current;
 }
 
 static double cpu_ti_get_speed(void *cpu, double load)
 {
-  return load * (((cpu_ti_t) cpu)->power_peak);
+  return load * ((cpu_ti_t)surf_cpu_resource_priv(cpu))->power_peak;
 }
 
 /**
@@ -722,7 +722,7 @@ static double surf_cpu_ti_get_power_scale(surf_cpu_ti_tgmr_t trace,
 
 static double cpu_ti_get_available_speed(void *cpu)
 {
-  cpu_ti_t CPU = cpu;
+  cpu_ti_t CPU = surf_cpu_resource_priv(cpu);
   CPU->power_scale =
       surf_cpu_ti_get_power_scale(CPU->avail_trace, surf_get_clock());
 /* number between 0 and 1 */

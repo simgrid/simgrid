@@ -6,6 +6,7 @@
 
 #ifndef SIMDAG_DATATYPES_H
 #define SIMDAG_DATATYPES_H
+#include "xbt/dict.h"
 
 /** @brief Workstation datatype
     @ingroup SD_datatypes_management
@@ -15,7 +16,7 @@
     resource with computing capabilities</em> and has a <em>name</em>.
 
     @see SD_workstation_management */
-typedef struct SD_workstation *SD_workstation_t;
+typedef xbt_dictelm_t SD_workstation_t;
 
 /** @brief Workstation access mode
     @ingroup SD_datatypes_management

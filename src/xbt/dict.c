@@ -316,27 +316,45 @@ char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
  */
 XBT_INLINE void *xbt_dict_get(xbt_dict_t dict, const char *key)
 {
-
-  unsigned int hash_code = xbt_str_hash(key);
-  xbt_dictelm_t current;
-
-  xbt_assert(dict);
-
-  current = dict->table[hash_code & dict->table_size];
-  while (current != NULL
-         && (hash_code != current->hash_code || strcmp(key, current->key)))
-    current = current->next;
+  return xbt_dict_get_elm(dict, key)->content;
+}
+/**
+ * \brief Retrieve element from the dict (null-terminated key)
+ *
+ * \param dict the dealer of data
+ * \param key the key to find data
+ * \return the s_xbt_dictelm_t that we are looking for
+ *
+ * Search the given \a key. Throws not_found_error when not found.
+ * Check xbt_dict_get_or_null() for a version returning NULL without exception when
+ * not found.
+ */
+XBT_INLINE xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
+{
+  xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
 
   if (current == NULL)
     THROWF(not_found_error, 0, "key %s not found", key);
 
-  return current->content;
+  return current;
 }
 
 /**
  * \brief like xbt_dict_get(), but returning NULL when not found
  */
 XBT_INLINE void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
+{
+  xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
+  
+  if (current == NULL)
+    return NULL;
+
+  return current->content;
+}
+/**
+ * \brief like xbt_dict_get_elm(), but returning NULL when not found
+ */
+XBT_INLINE xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
 {
   unsigned int hash_code = xbt_str_hash(key);
   xbt_dictelm_t current;
@@ -347,11 +365,7 @@ XBT_INLINE void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
   while (current != NULL &&
          (hash_code != current->hash_code || strcmp(key, current->key)))
     current = current->next;
-
-  if (current == NULL)
-    return NULL;
-
-  return current->content;
+  return current;
 }
 
 

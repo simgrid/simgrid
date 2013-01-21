@@ -457,12 +457,12 @@ void SIMIX_display_process_status(void)
         break;
       }
       XBT_INFO("Process %lu (%s@%s): waiting for %s action %p (%s) in state %d to finish",
-          process->pid, process->name, process->smx_host->name,
+          process->pid, process->name, sg_host_name(process->smx_host),
           action_description, process->waiting_action,
           process->waiting_action->name, (int)process->waiting_action->state);
     }
     else {
-      XBT_INFO("Process %lu (%s@%s)", process->pid, process->name, process->smx_host->name);
+      XBT_INFO("Process %lu (%s@%s)", process->pid, process->name, sg_host_name(process->smx_host));
     }
   }
 }

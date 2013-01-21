@@ -112,7 +112,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
   simdata->comm_amount = communication_amount;
 
   for (i = 0; i < host_nb; i++)
-    simdata->host_list[i] = host_list[i]->smx_host;
+    simdata->host_list[i] = host_list[i];
 
   return task;
 }

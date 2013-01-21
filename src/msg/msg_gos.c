@@ -75,7 +75,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
       simdata->compute = simcall_host_execute(task->name,
-                                              p_simdata->m_host->smx_host,
+                                              p_simdata->m_host,
                                               simdata->computation_amount,
                                               simdata->priority);
 

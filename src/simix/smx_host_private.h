@@ -11,13 +11,16 @@
 #include "smx_smurf_private.h"
 
 /** @brief Host datatype */
-typedef struct s_smx_host {
-  char *name;              /**< @brief host name if any */
-  void *host;                   /* SURF modeling */
+typedef struct s_smx_host_priv {
   xbt_swag_t process_list;
   xbt_dynar_t auto_restart_processes;
   void *data;              /**< @brief user data */
-} s_smx_host_t;
+} s_smx_host_priv_t;
+
+static inline smx_host_priv_t SIMIX_host_priv(smx_host_t host){
+  return xbt_lib_get_level(host, SIMIX_HOST_LEVEL);
+}
+
 
 smx_host_t SIMIX_host_create(const char *name, void *workstation, void *data);
 void SIMIX_host_destroy(void *host);

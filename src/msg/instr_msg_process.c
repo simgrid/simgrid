@@ -66,7 +66,7 @@ void TRACE_msg_process_create (const char *process_name, int process_pid, msg_ho
     int len = INSTR_DEFAULT_STR_SIZE;
     char str[INSTR_DEFAULT_STR_SIZE];
 
-    container_t host_container = PJ_container_get (SIMIX_host_get_name(host->smx_host));
+    container_t host_container = PJ_container_get (SIMIX_host_get_name(host));
     PJ_container_new(instr_process_id_2(process_name, process_pid, str, len), INSTR_MSG_PROCESS, host_container);
   }
 }

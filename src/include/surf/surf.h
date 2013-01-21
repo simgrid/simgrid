@@ -333,14 +333,24 @@ typedef struct surf_model {
 surf_model_t surf_model_init(void);
 void surf_model_exit(surf_model_t model);
 
+static inline void *surf_cpu_resource_priv(const void *host) {
+  return xbt_lib_get_level((void *)host, SURF_CPU_LEVEL);
+}
+static inline void *surf_workstation_resource_priv(const void *host){
+  return xbt_lib_get_level((void *)host, SURF_WKS_LEVEL);
+}
+static inline void *surf_storage_resource_priv(const void *host){
+  return xbt_lib_get_level((void *)host, SURF_STORAGE_LEVEL);
+}
+
 static inline void *surf_cpu_resource_by_name(const char *name) {
-  return xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL);
+  return xbt_lib_get_elm_or_null(host_lib, name);
 }
 static inline void *surf_workstation_resource_by_name(const char *name){
-  return xbt_lib_get_or_null(host_lib, name, SURF_WKS_LEVEL);
+  return xbt_lib_get_elm_or_null(host_lib, name);
 }
 static inline void *surf_storage_resource_by_name(const char *name){
-    return xbt_lib_get_or_null(storage_lib, name, SURF_STORAGE_LEVEL);
+  return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
 typedef struct surf_resource {

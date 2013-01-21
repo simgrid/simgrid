@@ -30,9 +30,9 @@ smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size, size
 
   /* check if the host is active */
   if (surf_workstation_model->extension.
-      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+      workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           host->name);
+           sg_host_name(host));
   }
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -43,7 +43,7 @@ smx_action_t SIMIX_file_read(smx_process_t process, void* ptr, size_t size, size
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.read(host->host, ptr, size, nmemb, stream->surf_file);
+  action->io.surf_io = surf_workstation_model->extension.workstation.read(host, ptr, size, nmemb, stream->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -67,9 +67,9 @@ smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr, size_t siz
 
   /* check if the host is active */
   if (surf_workstation_model->extension.
-      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+      workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           host->name);
+           sg_host_name(host));
   }
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -80,7 +80,7 @@ smx_action_t SIMIX_file_write(smx_process_t process, const void* ptr, size_t siz
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.write(host->host, ptr, size, nmemb, stream->surf_file);
+  action->io.surf_io = surf_workstation_model->extension.workstation.write(host, ptr, size, nmemb, stream->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -104,9 +104,9 @@ smx_action_t SIMIX_file_open(smx_process_t process ,const char* mount, const cha
 
   /* check if the host is active */
   if (surf_workstation_model->extension.
-      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+      workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           host->name);
+           sg_host_name(host));
   }
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -117,7 +117,7 @@ smx_action_t SIMIX_file_open(smx_process_t process ,const char* mount, const cha
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.open(host->host, mount, path, mode);
+  action->io.surf_io = surf_workstation_model->extension.workstation.open(host, mount, path, mode);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -140,9 +140,9 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
 
   /* check if the host is active */
   if (surf_workstation_model->extension.
-      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+      workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           host->name);
+           sg_host_name(host));
   }
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -153,7 +153,7 @@ smx_action_t SIMIX_file_close(smx_process_t process, smx_file_t fp)
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.close(host->host, fp->surf_file);
+  action->io.surf_io = surf_workstation_model->extension.workstation.close(host, fp->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -175,9 +175,9 @@ smx_action_t SIMIX_file_stat(smx_process_t process, smx_file_t fd, s_file_stat_t
   smx_host_t host = process->smx_host;
   /* check if the host is active */
   if (surf_workstation_model->extension.
-      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+      workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           host->name);
+           sg_host_name(host));
   }
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -188,7 +188,7 @@ smx_action_t SIMIX_file_stat(smx_process_t process, smx_file_t fd, s_file_stat_t
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.stat(host->host, fd->surf_file);
+  action->io.surf_io = surf_workstation_model->extension.workstation.stat(host, fd->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -210,9 +210,9 @@ smx_action_t SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
   smx_host_t host = process->smx_host;
   /* check if the host is active */
   if (surf_workstation_model->extension.
-      workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+      workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           host->name);
+           sg_host_name(host));
   }
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -223,7 +223,7 @@ smx_action_t SIMIX_file_unlink(smx_process_t process, smx_file_t fd)
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.unlink(host->host, fd->surf_file);
+  action->io.surf_io = surf_workstation_model->extension.workstation.unlink(host, fd->surf_file);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -244,9 +244,9 @@ smx_action_t SIMIX_file_ls(smx_process_t process, const char* mount, const char 
   smx_action_t action;
   smx_host_t host = process->smx_host;
   /* check if the host is active */
-  if (surf_workstation_model->extension.workstation.get_state(host->host) != SURF_RESOURCE_ON) {
+  if (surf_workstation_model->extension.workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           host->name);
+           sg_host_name(host));
   }
 
   action = xbt_mallocator_get(simix_global->action_mallocator);
@@ -257,7 +257,7 @@ smx_action_t SIMIX_file_ls(smx_process_t process, const char* mount, const char 
 #endif
 
   action->io.host = host;
-  action->io.surf_io = surf_workstation_model->extension.workstation.ls(host->host,mount,path);
+  action->io.surf_io = surf_workstation_model->extension.workstation.ls(host,mount,path);
 
   surf_workstation_model->action_data_set(action->io.surf_io, action);
   XBT_DEBUG("Create io action %p", action);
@@ -387,7 +387,7 @@ void SIMIX_io_finish(smx_action_t action)
     }
 
     if (surf_workstation_model->extension.
-        workstation.get_state(simcall->issuer->smx_host->host) != SURF_RESOURCE_ON) {
+        workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 

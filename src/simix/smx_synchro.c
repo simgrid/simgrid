@@ -28,7 +28,7 @@ static smx_action_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout)
   action->type = SIMIX_ACTION_SYNCHRO;
   action->name = xbt_strdup("synchro");
   action->synchro.sleep = 
-    surf_workstation_model->extension.workstation.sleep(smx_host->host, timeout);
+    surf_workstation_model->extension.workstation.sleep(smx_host, timeout);
 
   surf_workstation_model->action_data_set(action->synchro.sleep, action);
   XBT_OUT();

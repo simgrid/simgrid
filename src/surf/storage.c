@@ -232,7 +232,7 @@ static void* storage_create_resource(const char* id, const char* model,const cha
 {
   storage_t storage = NULL;
 
-  xbt_assert(!surf_storage_resource_by_name(id),
+  xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
               "Storage '%s' declared several times in the platform file",
               id);
   storage = (storage_t) surf_resource_new(sizeof(s_storage_t),
@@ -673,7 +673,7 @@ static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
   XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->id, mount->name);
 
   s_mount_t mnt;
-  mnt.id = surf_storage_resource_by_name(mount->id);
+  mnt.id = surf_storage_resource_priv(surf_storage_resource_by_name(mount->id));
   mnt.name = xbt_strdup(mount->name);
 
   if(!mount_list){
