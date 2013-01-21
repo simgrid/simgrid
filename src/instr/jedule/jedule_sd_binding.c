@@ -38,7 +38,7 @@ void jedule_log_sd_event(SD_task_t task) {
   host_list = xbt_dynar_new(sizeof(char*), NULL);
 
   for(i=0; i<task->workstation_nb; i++) {
-    char *hostname = (char*)surf_resource_name(task->workstation_list[i]->surf_workstation);
+    char *hostname = sg_host_name(task->workstation_list[i]);
     xbt_dynar_push(host_list, &hostname);
   }
 
