@@ -654,6 +654,23 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
     __SD_task_set_state(dst, SD_SCHEDULED);
   }
 }
+/**
+ * \brief Returns the name given as input when dependency has been created..
+ *
+ * \param src a task
+ * \param dst a task depending on \a src
+ *
+ */
+const char *SD_task_dependency_get_name(SD_task_t src, SD_task_t dst){
+  unsigned int i;
+  SD_dependency_t dependency;
+
+  xbt_dynar_foreach(src->tasks_after, i, dependency){
+    if (dependency->dst == dst)
+      return dependency->name;
+  }
+  return NULL;
+}
 
 /**
  * \brief Indicates whether there is a dependency between two tasks.
