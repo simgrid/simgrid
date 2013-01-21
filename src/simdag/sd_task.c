@@ -494,16 +494,16 @@ void SD_task_dump(SD_task_t task)
 
   XBT_INFO("Displaying task %s", SD_task_get_name(task));
   statename = bprintf("%s %s %s %s %s %s %s %s",
-                      (task->state & SD_NOT_SCHEDULED ? "not scheduled" :
+                      (task->state == SD_NOT_SCHEDULED ? "not scheduled" :
                        ""),
-                      (task->state & SD_SCHEDULABLE ? "schedulable" : ""),
-                      (task->state & SD_SCHEDULED ? "scheduled" : ""),
-                      (task->state & SD_RUNNABLE ? "runnable" :
+                      (task->state == SD_SCHEDULABLE ? "schedulable" : ""),
+                      (task->state == SD_SCHEDULED ? "scheduled" : ""),
+                      (task->state == SD_RUNNABLE ? "runnable" :
                        "not runnable"),
-                      (task->state & SD_IN_FIFO ? "in fifo" : ""),
-                      (task->state & SD_RUNNING ? "running" : ""),
-                      (task->state & SD_DONE ? "done" : ""),
-                      (task->state & SD_FAILED ? "failed" : ""));
+                      (task->state == SD_IN_FIFO ? "in fifo" : ""),
+                      (task->state == SD_RUNNING ? "running" : ""),
+                      (task->state == SD_DONE ? "done" : ""),
+                      (task->state == SD_FAILED ? "failed" : ""));
   XBT_INFO("  - state: %s", statename);
   free(statename);
 
