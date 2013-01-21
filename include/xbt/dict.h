@@ -48,7 +48,6 @@ SG_BEGIN_DECL()
 
 typedef struct s_xbt_dict *xbt_dict_t;
 typedef struct s_xbt_dictelm *xbt_dictelm_t;
-typedef struct s_xbt_dictelm s_xbt_dictelm_t;
 typedef struct s_xbt_dictelm {
   char *key;
   int key_len;
