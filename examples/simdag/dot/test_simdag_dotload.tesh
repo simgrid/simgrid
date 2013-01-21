@@ -13,7 +13,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]     0
 > [0.000000] [sd_task/INFO]     root->5
 > [0.000000] [sd_task/INFO] Displaying task 0
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000129
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -22,7 +22,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     0->1
 > [0.000000] [sd_task/INFO] Displaying task 1
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000131
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -31,7 +31,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     1->2
 > [0.000000] [sd_task/INFO] Displaying task 2
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000121
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -40,7 +40,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     2->3
 > [0.000000] [sd_task/INFO] Displaying task 3
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000231
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -49,7 +49,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     4
 > [0.000000] [sd_task/INFO] Displaying task 4
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000005
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -58,7 +58,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     4->5
 > [0.000000] [sd_task/INFO] Displaying task 5
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000046
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
@@ -68,7 +68,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     6
 > [0.000000] [sd_task/INFO] Displaying task 6
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000092
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -77,7 +77,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     6->7
 > [0.000000] [sd_task/INFO] Displaying task 7
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000041
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -87,7 +87,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]     7->end
 > [0.000000] [sd_task/INFO]     7->8
 > [0.000000] [sd_task/INFO] Displaying task 8
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000250
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -96,7 +96,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     9
 > [0.000000] [sd_task/INFO] Displaying task 9
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 10000000079
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -105,7 +105,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     end
 > [0.000000] [sd_task/INFO] Displaying task 2->3
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - amount: 10002
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -114,7 +114,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     3
 > [0.000000] [sd_task/INFO] Displaying task 6->7
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - amount: 10005
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -123,7 +123,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     7
 > [0.000000] [sd_task/INFO] Displaying task root->5
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - amount: 10014000
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -132,7 +132,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     5
 > [0.000000] [sd_task/INFO] Displaying task 1->2
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - amount: 10004
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -141,7 +141,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     2
 > [0.000000] [sd_task/INFO] Displaying task 7->end
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - amount: 10014000
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -150,7 +150,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     end
 > [0.000000] [sd_task/INFO] Displaying task 0->1
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - amount: 10001
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -159,7 +159,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     1
 > [0.000000] [sd_task/INFO] Displaying task 4->5
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - amount: 10029
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -168,7 +168,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     5
 > [0.000000] [sd_task/INFO] Displaying task 7->8
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - amount: 10000
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
@@ -177,7 +177,7 @@ $ $SG_TEST_EXENV ./dot_test ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     8
 > [0.000000] [sd_task/INFO] Displaying task end
-> [0.000000] [sd_task/INFO]   - state:    not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - amount: 0
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
