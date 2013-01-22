@@ -1386,9 +1386,10 @@ void SD_task_distribute_comp_amdhal(SD_task_t task, int ws_count)
               "Task %s is not a SD_TASK_COMP_PAR_AMDAHL typed task."
               "Cannot use this function.",
               SD_task_get_name(task));  
-              
   task->computation_amount = xbt_new0(double, ws_count);
   task->communication_amount = xbt_new0(double, ws_count * ws_count);
+  if (task->workstation_list)
+    xbt_free(task->workstation_list);
   task->workstation_nb = ws_count;
   task->workstation_list = xbt_new0(SD_workstation_t, ws_count);
   
@@ -1538,6 +1539,10 @@ void SD_task_schedulev(SD_task_t task, int count,
                task->workstation_list[i];
 
           before->workstation_nb += count;
+          if (before->computation_amount)
+            xbt_free(before->computation_amount);
+          if (before->communication_amount)
+            xbt_free(before->communication_amount);
 
           before->computation_amount = xbt_new0(double,
                                                 before->workstation_nb);
@@ -1602,6 +1607,11 @@ void SD_task_schedulev(SD_task_t task, int count,
             after->workstation_list[i] = task->workstation_list[i];
 
           after->workstation_nb += count;
+
+          if (after->computation_amount)
+            xbt_free(after->computation_amount);
+          if (after->communication_amount)
+            xbt_free(after->communication_amount);
 
           after->computation_amount = xbt_new0(double, after->workstation_nb);
           after->communication_amount = xbt_new0(double,
