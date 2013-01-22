@@ -261,6 +261,7 @@ xbt_dynar_t SD_PTG_dotload(const char * filename)
 
   /* Free previous copy of the files */
   xbt_dict_free(&files);
+  xbt_dict_free(&computers);
   fclose(in_file);
   if (!acyclic_graph_detail(result)) {
     XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.",
