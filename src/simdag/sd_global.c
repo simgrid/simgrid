@@ -132,12 +132,12 @@ void SD_application_reinit(void)
   xbt_swag_foreach_safe(done_task, next_done_task, sd_global->done_task_set){
     if (xbt_dynar_is_empty(done_task->tasks_before)){
       __SD_task_set_state(done_task, SD_SCHEDULABLE);
-   } else{
+    } else{
       __SD_task_set_state(done_task, SD_NOT_SCHEDULED);
       done_task->unsatisfied_dependencies =
         xbt_dynar_length(done_task->tasks_before);
       done_task->is_not_ready = done_task->unsatisfied_dependencies;
-   }
+    }
   }
 
   xbt_swag_free(sd_global->done_task_set);
