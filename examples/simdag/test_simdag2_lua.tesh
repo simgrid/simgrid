@@ -1,7 +1,0 @@
-#! ./tesh
-
-p Simple test of simdag. Environment described in lua
-
-$ $SG_TEST_EXENV ./sd_test2 ${srcdir:=.}/../lua/console/platform.lua
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
-> [9.811800] [sd_test/INFO] Simulation time: 9.811800
