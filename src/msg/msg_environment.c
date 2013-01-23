@@ -48,27 +48,3 @@ void MSG_post_create_environment(void) {
       __MSG_host_create(xbt_dict_cursor_get_elm(cursor));
   }
 }
-
-/**
- * @ingroup MSG_LUA
- * \brief A platform constructor bypassing the parser.
- *
- * load lua script file to set up new platform, including hosts,links
- * and the routing table
- */
-
-void MSG_load_platform_script(const char *script_file)
-{
-#ifdef HAVE_LUA
-  lua_State *L = lua_open();
-  luaL_openlibs(L);
-
-  if (luaL_loadfile(L, script_file) || lua_pcall(L, 0, 0, 0)) {
-    printf("error: %s\n", lua_tostring(L, -1));
-    return;
-  }
-#else
-  xbt_die
-      ("Lua is not available! It is mandatory to use MSG_load_platform_script however. Bailing out...");
-#endif
-}

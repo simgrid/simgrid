@@ -107,7 +107,6 @@ XBT_PUBLIC(void) MSG_host_set_property_value(msg_host_t host,
 
 
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
-XBT_PUBLIC(void) MSG_load_platform_script(const char *script_file);
 
 XBT_PUBLIC(msg_host_t) MSG_get_host_by_name(const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);

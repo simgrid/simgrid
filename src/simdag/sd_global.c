@@ -445,24 +445,3 @@ void SD_exit(void)
   jedule_sd_cleanup();
 #endif
 }
-
-/**
- * \brief load script file
- */
-
-void SD_load_environment_script(const char *script_file)
-{
-#ifdef HAVE_LUA
-  lua_State *L = lua_open();
-  luaL_openlibs(L);
-
-  if (luaL_loadfile(L, script_file) || lua_pcall(L, 0, 0, 0)) {
-    printf("error: %s\n", lua_tostring(L, -1));
-    return;
-  }
-#else
-  xbt_die
-      ("Lua is not available!! to call SD_load_environment_script, lua should be available...");
-#endif
-  return;
-}

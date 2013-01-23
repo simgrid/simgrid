@@ -9,7 +9,6 @@ add_executable(sd_avail sd_avail.c)
 add_executable(sd_typed_tasks_test sd_typed_tasks_test.c)
 add_executable(sd_comm_throttling sd_comm_throttling.c)
 add_executable(sd_seq_access sd_seq_access.c)
-add_executable(sd_test_console sd_test_console.c)
 add_executable(simdag_tracing simdag_trace.c)
 
 ### Add definitions for compile
@@ -21,7 +20,6 @@ if(NOT WIN32)
   target_link_libraries(sd_typed_tasks_test simgrid pthread m )
   target_link_libraries(sd_comm_throttling simgrid pthread m )
   target_link_libraries(sd_seq_access simgrid pthread m )
-  target_link_libraries(sd_test_console simgrid pthread m )
   target_link_libraries(simdag_tracing simgrid pthread m )
 
   add_custom_command(TARGET ex_sd_test
@@ -42,7 +40,6 @@ else()
   target_link_libraries(sd_typed_tasks_test simgrid)
   target_link_libraries(sd_comm_throttling simgrid)
   target_link_libraries(sd_seq_access simgrid)
-  target_link_libraries(sd_test_console simgrid)
   target_link_libraries(simdag_tracing simgrid)
 
   add_custom_command(TARGET ex_sd_test
@@ -83,7 +80,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_seq_access.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_test2.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/sd_test_console.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_typed_tasks_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/simdag_trace.c
   PARENT_SCOPE
