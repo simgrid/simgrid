@@ -1,0 +1,158 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+<config id="General">
+	<prop id="network/coordinates" value="yes"></prop>
+</config>
+
+<AS  id="AS0"  routing="Vivaldi">
+   
+   <AS  id="AS1_dc1"  routing="RuleBased">
+   <!--small tier-1 datacenter, according to TIA-942 annex G tiers notation, routing : rule based, because of its regularity-->    
+    	    <!-- 3 clusters, no zone dist area, 1 horiz dist area, no multi-homing, telecom and operation rooms omitted because not a part of the production platform  -->
+            <!-- clusters -->
+            <cluster id="AS1_cb1" prefix="cb1-" suffix=".dc1.acloud.com" radical="1-40" power="5.2297E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+	    <link   id="link_dc1_cb1" bandwidth="1.25E9" latency="1.0E-4"/>
+
+	    <cluster id="AS1_cb2" prefix="cb2-" suffix=".dc1.acloud.com" radical="1-50" power="8.8925E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+	    <link   id="link_dc1_cb2" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <cluster id="AS1_cb3" prefix="cb3-" suffix=".dc1.acloud.com" radical="1-30" power="13.357E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+	    <link   id="link_dc1_cb3" bandwidth="1.25E9" latency="1.0E-4"/>
+ 
+            <!-- horiz dist area switch, main dist area switch, entrance room switch, end point for ISP  -->
+            <AS id="gw_AS1_dc1" routing="Floyd">
+                <!-- equipments-->
+                    <router id="gw_dc1_horizdist"/>
+                    <router id="gw_dc1_maindist"/>
+                    <router id="gw_dc1_entranceroom"/>
+                    <!-- ISP end point, entering the cloud, so it has coordinates -->
+                    <router id="router_AS1_dc1" coordinates="25.5 9.4 1.4" />
+                    <!-- links -->
+                    <link id="dc1_horizdist_maindist"        bandwidth="1.25E9" latency="1.0E-4"/>        
+                    <link id="dc1_maindist_entranceroom"        bandwidth="1.25E9" latency="1.0E-4"/>  
+                        <link id="dc1_entranceroom_ISP"        bandwidth="1.25E9" latency="1.0E-4"/>  
+                    <!-- links to router relationships -->
+                    <route src="gw_dc1_horizdist" dst="gw_dc1_maindist"><link_ctn id="dc1_horizdist_maindist"/></route>
+                    <route src="gw_dc1_maindist" dst="gw_dc1_entranceroom"><link_ctn id="dc1_maindist_entranceroom"/></route>
+                    <route src="gw_dc1_entranceroom" dst="router_AS1_dc1"><link_ctn id="dc1_entranceroom_ISP"/></route>
+            </AS>
+           
+            <!-- internal routes between clusters -->
+            <ASroute src="AS1_cb(.*)" dst="AS1_cb(.*)" gw_src="cb$1src-AS1_cb$1src_router.dc1.acloud.com" gw_dst="cb$1dst-AS1_cb$1dst_router.dc1.acloud.com" symmetrical="YES">
+                    <link_ctn id="link_dc1_cb$1src"/>
+                    <link_ctn id="link_dc1_cb$1dst"/>
+            </ASroute>
+            <!-- clusters to exit AS -->
+            <ASroute src="AS1_cb(.*)" dst="gw_AS1_(.*)" gw_src="cb$1src-AS1_cb$1src_router.dc1.acloud.com" gw_dst="gw_dc1_horizdist" symmetrical="NO">
+                    <link_ctn id="link_dc1_cb$1src"/>
+            </ASroute> 
+            <ASroute dst="AS1_cb(.*)" src="gw_AS1_(.*)" gw_dst="cb$1dst-AS1_cb$1dst_router.dc1.acloud.com" gw_src="gw_dc1_horizdist" symmetrical="NO">
+                    <link_ctn id="link_dc1_cb$1dst"/>
+            </ASroute>    
+   </AS>
+
+   <AS  id="AS2_dc2"  routing="RuleBased">
+   <!--bigger tier-1 datacenter, according to TIA-942 annex G tiers notation, routing : rule based, because of its regularity-->   
+            <!-- 6 clusters, no zone dist area, 1 horiz dist area, no multi-homing, telecom and operation rooms omitted because not a part of the production platform  -->
+            <!-- clusters -->
+            <cluster id="AS2_cb1" prefix="cb1-" suffix=".dc2.acloud.com" radical="1-40" power="5.2297E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc2_cb1" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <cluster id="AS2_cb2" prefix="cb2-" suffix=".dc2.acloud.com" radical="1-50" power="8.8925E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc2_cb2" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <cluster id="AS2_cb3" prefix="cb3-" suffix=".dc2.acloud.com" radical="1-30" power="13.357E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc2_cb3" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <cluster id="AS2_cb4" prefix="cb4-" suffix=".dc2.acloud.com" radical="1-40" power="5.2297E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc2_cb4" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <cluster id="AS2_cb5" prefix="cb5-" suffix=".dc2.acloud.com" radical="1-50" power="8.8925E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc2_cb5" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <cluster id="AS2_cb6" prefix="cb6-" suffix=".dc2.acloud.com" radical="1-30" power="13.357E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc2_cb6" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <!-- horiz dist area switch, main dist area switch, entrance room switch, end point for ISP  -->
+            <AS id="gw_AS2_dc2" routing="Floyd">
+                <!-- equipments-->
+                    <router id="gw_dc2_horizdist"/>
+                    <router id="gw_dc2_maindist"/>
+                    <router id="gw_dc2_entranceroom"/>
+                    <!-- ISP end point, entering the cloud, so it has coordinates -->
+                    <router id="router_AS2_dc2" coordinates="12.8 14.4 6.4" />
+                    <!-- links -->
+                    <link id="dc2_horizdist_maindist"        bandwidth="1.25E9" latency="1.0E-4"/>        
+                    <link id="dc2_maindist_entranceroom"        bandwidth="1.25E9" latency="1.0E-4"/>  
+                        <link id="dc2_entranceroom_ISP"        bandwidth="1.25E9" latency="1.0E-4"/>  
+                    <!-- links to router relationships -->
+                    <route src="gw_dc2_horizdist" dst="gw_dc2_maindist"><link_ctn id="dc2_horizdist_maindist"/></route>
+                    <route src="gw_dc2_maindist" dst="gw_dc2_entranceroom"><link_ctn id="dc2_maindist_entranceroom"/></route>
+                    <route src="gw_dc2_entranceroom" dst="router_AS2_dc2"><link_ctn id="dc2_entranceroom_ISP"/></route>
+            </AS>
+            
+            <!-- internal routes between clusters -->
+            <ASroute src="AS2_cb(.*)" dst="AS2_cb(.*)" gw_src="cb$1src-AS2_cb$1src_router.dc2.acloud.com" gw_dst="cb$1dst-AS2_cb$1dst_router.dc2.acloud.com" symmetrical="YES">
+                    <link_ctn id="link_dc2_cb$1src"/>
+                    <link_ctn id="link_dc2_cb$1dst"/>
+            </ASroute>
+            <!-- clusters to exit AS -->
+            <ASroute src="AS2_cb(.*)" dst="gw_AS2_(.*)" gw_src="cb$1src-AS2_cb$1src_router.dc2.acloud.com" gw_dst="gw_dc2_horizdist" symmetrical="NO">
+                    <link_ctn id="link_dc2_cb$1src"/>
+            </ASroute> 
+            <ASroute dst="AS2_cb(.*)" src="gw_AS2_(.*)" gw_dst="cb$1dst-AS2_cb$1dst_router.dc2.acloud.com" gw_src="gw_dc2_horizdist" symmetrical="NO">
+                    <link_ctn id="link_dc2_cb$1dst"/>
+            </ASroute> 
+   </AS>
+
+   <AS  id="AS3_dc3"  routing="RuleBased">  
+   <!--small tier-1 datacenter, according to TIA-942 annex G tiers notation, routing : rule based, because of its regularity-->    
+            <!-- 4 clusters, no zone dist area, 1 horiz dist area, no multi-homing, telecom and operation rooms omitted because not a part of the production platform  -->
+            <!-- clusters -->
+            <cluster id="AS3_cb1" prefix="cb1-" suffix=".dc3.acloud.com" radical="1-40" power="5.2297E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc3_cb1" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <cluster id="AS3_cb2" prefix="cb2-" suffix=".dc3.acloud.com" radical="1-50" power="8.8925E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc3_cb2" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <cluster id="AS3_cb3" prefix="cb3-" suffix=".dc3.acloud.com"  radical="1-30" power="13.357E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc3_cb3" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <cluster id="AS3_cb4" prefix="cb4-" suffix=".dc3.acloud.com" radical="1-30" power="13.357E9" bw="1.25E8" lat="1.0E-4" bb_bw="1.25E9" bb_lat="1.0E-4"></cluster>
+            <link   id="link_dc3_cb4" bandwidth="1.25E9" latency="1.0E-4"/>
+
+            <!-- horiz dist area switch, main dist area switch, entrance room switch, end point for ISP  -->
+            <AS id="gw_AS3_dc3" routing="Floyd">
+                <!-- equipments-->
+                    <router id="gw_dc3_horizdist"/>
+                    <router id="gw_dc3_maindist"/>
+                    <router id="gw_dc3_entranceroom"/>
+                    <!-- ISP end point, entering the cloud, so it has coordinates -->
+                    <router id="router_AS3_dc3" coordinates="6.0 5.7 6.6" />
+                    <!-- links -->
+                    <link id="dc3_horizdist_maindist"        bandwidth="1.25E9" latency="1.0E-4"/>        
+                    <link id="dc3_maindist_entranceroom"        bandwidth="1.25E9" latency="1.0E-4"/>  
+                        <link id="dc3_entranceroom_ISP"        bandwidth="1.25E9" latency="1.0E-4"/>  
+                    <!-- links to router relationships -->
+                    <route src="gw_dc3_horizdist" dst="gw_dc3_maindist"><link_ctn id="dc3_horizdist_maindist"/></route>
+                    <route src="gw_dc3_maindist" dst="gw_dc3_entranceroom"><link_ctn id="dc3_maindist_entranceroom"/></route>
+                    <route src="gw_dc3_entranceroom" dst="router_AS3_dc3"><link_ctn id="dc3_entranceroom_ISP"/></route>
+            </AS>
+            
+            <!-- internal routes between clusters -->
+            <ASroute src="AS3_cb(.*)" dst="AS3_cb(.*)" gw_src="cb$1src-AS3_cb$1src_router.dc3.acloud.com" gw_dst="cb$1dst-AS3_cb$1dst_router.dc3.acloud.com" symmetrical="YES">
+                    <link_ctn id="link_dc3_cb$1src"/>
+                    <link_ctn id="link_dc3_cb$1dst"/>
+            </ASroute>
+            <!-- clusters to exit AS -->
+            <ASroute src="AS3_cb(.*)" dst="gw_AS3_(.*)" gw_src="cb$1src-AS3_cb$1src_router.dc3.acloud.com" gw_dst="gw_dc3_horizdist" symmetrical="NO">
+                    <link_ctn id="link_dc3_cb$1src"/>
+            </ASroute>
+            <ASroute dst="AS3_cb(.*)" src="gw_AS3_(.*)" gw_dst="cb$1dst-AS3_cb$1dst_router.dc3.acloud.com" gw_src="gw_dc3_horizdist" symmetrical="NO">
+                    <link_ctn id="link_dc3_cb$1dst"/>
+            </ASroute>  
+   </AS>
+              
+</AS>
+</platform>

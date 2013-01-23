@@ -1,12 +1,6 @@
 /*! @page introduction Introduction to SimGrid 
 
-This page does not really exist yet. In the meanwhile, please refer
-to the <a href="http://simgrid.gforge.inria.fr/tutorials.html">tutorials</a>
-on the project web page, looking for the 
-<a href="http://simgrid.gforge.inria.fr/tutorials/101/simgrid-101.pdf">SimGrid 
-101</a> tutorial.
-
-<a href="http://simgrid.gforge.inria.fr/">SimGrid</a> is a toolkit
+[SimGrid](http://simgrid.gforge.inria.fr/) is a toolkit
 that provides core functionalities for the simulation of distributed
 applications in heterogeneous distributed environments.
 
@@ -14,5 +8,487 @@ The specific goal of the project is to facilitate research in the area of
 distributed and parallel application scheduling on distributed computing
 platforms ranging from simple network of workstations to Computational
 Grids.
+
+# Scenario 
+The goal of this practical session is to illustrate various usage of
+the MSG interface. To this end we will use the following simple setting:
+
+> Assume we have a (possibly large) bunch of (possibly large) data to
+> process and which originally reside on a server (a.k.a. master). For
+> sake of simplicity, we assume all input file require the same amount
+> of computation. We assume the server can be helped by a (possibly
+> large) set of worker machines. What is the best way to organize the
+> computations ?
+
+Although this looks like a very simple setting it raises several
+interesting questions:
+
+- Which algorithm should the master use to send workload?
+
+    The most obvious algorithm would be to send tasks to workers in a
+    round-robin fashion. This is the initial code we provide you.
+
+    A less obvious one but probably more efficient would be to set up
+    a request mechanism where client first ask for tasks, which allows
+    the server to decide which request to answer and possibly to send
+    the tasks to the fastest machines. Maybe you can think of a
+    smarter mechanism...
+
+- How much tasks should the client ask for?
+    
+    Indeed, if we set up a request mechanism and that workers only
+    send request whenever they have no more task to process, they are
+    likely to be poorly exploited since they will have to wait for the
+    master to consider their request and for the input data to be
+    transferred. A client should thus probably request a pool of tasks
+    but if it requests too much task, it is likely to lead to a poor
+    load-balancing...
+    
+- How is the quality of such algorithm dependent on the platform
+    characteristics? on the task characteristics?
+    
+    Whenever the input communication time is very small compared to
+    processing time and workers are homogeneous, it is likely that the
+    round-robin algorithm performs very well. Would it still hold true
+    when transfer time is not negligible and the platform is, say,
+    a volunteer computing system ?
+
+- The network topology interconnecting the master and the workers
+  may be quite complicated. How does such topology impact the
+  previous result?
+
+    When data transfers are the bottleneck, it is likely that a good
+    modeling of the platform becomes essential, in which case, you may
+    want to be able to account for complex platform topologies.
+
+- Do the algorithms depend on a perfect knowledge of this
+  topology?
+
+    Should we still use a flat master worker deployment or should we
+    use a 
+
+- How is such algorithm sensitive to external workload variation?
+
+    What if bandwidth, latency and power can vary with no warning?
+    Shouldn't you study whether your algorithm is sensitive to such
+    load variations?
+
+- Although an algorithm may be more efficient than another, how
+  does it interfere with other applications?
+
+    As you can see, this very simple setting may need to evolve way
+    beyond what you initially imagined. 
+
+    <blockquote> Premature optimization is  the root of all evil. -- D.E.Knuth</blockquote>
+
+    Furthermore, writing your own simulator is much harder that what you
+    may imagine. This is why should rely on an established and flexible
+    one.
+
+The following figure is a screenshot of [triva][fn:1] visualizing a [SimGrid
+simulation][fn:2] of two master worker applications (one in light gray and
+the other in dark gray) running in concurrence and showing resource
+usage over a long period of time.
+
+![Test](./sc3-description.png)
+
+# Prerequisites
+
+## Tutorials
+
+A lot of information on how to install and use Simgrid are
+available on the [online documentation][fn:4] and in the tutorials:
+
+- http://simgrid.gforge.inria.fr/tutorials/simgrid-use-101.pdf
+- http://simgrid.gforge.inria.fr/tutorials/simgrid-tracing-101.pdf
+- http://simgrid.gforge.inria.fr/tutorials/simgrid-platf-101.pdf
+
+## Installing SimGrid
+
+    sudo apt-get install simgrid   
+    
+This tutorial requires simgrid 3.8 at last so you may need to get
+the [debian package](http://packages.debian.org/unstable/main/simgrid). Here is a shortcut:
+
+- AMD64: http://ftp.de.debian.org/debian/pool/main/s/simgrid/simgrid_3.8.1-2_amd64.deb
+- i386: http://ftp.de.debian.org/debian/pool/main/s/simgrid/simgrid_3.8.1-2_i386.deb
+
+Then
+
+~~~~{.sh}
+sudo dpkg -i simgrid_3.8*.deb
+~~~~
+
+# Recommended Steps
+
+## Installing Viva 
+   
+This [software][fn:1] will be useful to make fancy graph or treemap
+visualizations and get a better understanding of simulations. You
+will first need to install pajeng:
+
+~~~~{.sh}
+sudo apt-get install git cmake build-essential libqt4-dev  libboost-dev freeglut3-dev ;
+git clone https://github.com/schnorr/pajeng.git
+cd pajeng && mkdir -p build &&  cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=$HOME &&  make -j install 
+cd ../../
+~~~~
+
+Then you can install viva.
+
+~~~~{.sh}
+sudo apt-get install libboost-dev libconfig++-dev libconfig8-dev libgtk2.0-dev freeglut3-dev
+git clone https://github.com/schnorr/viva.git
+cd viva && mkdir -p build_graph &&  cd build_graph && cmake ../ -DTUPI_LIBRARY=ON -DVIVA=ON -DCMAKE_INSTALL_PREFIX=$HOME &&  make -j install 
+cd ../../
+~~~~
+
+## Installing Paje 
+
+This [software][fn:5] provides a Gantt-chart visualization.
+
+~~~~{.sh}
+sudo apt-get install paje.app
+~~~~
+
+## Installing Vite 
+
+This software provides a [Gantt-chart visualization][fn:6].
+
+~~~~{.sh}
+sudo apt-get install vite
+~~~~
+
+# Let's get Started
+## Setting up and Compiling.
+   
+The corresponding archive with all source files and platform files
+can be obtained [here](msg-tuto-src.tgz). 
+
+~~~~{.sh}
+tar zxf msg-tuto.tgz
+cd msg-tuto/src
+make
+~~~~
+
+As you can see, there is already a nice Makefile that compiles
+everything for you. Now the tiny example has been compiled and it
+can be easily run as follows:
+
+~~~~{.sh}
+./masterworker0 platforms/platform.xml deployment0.xml 2>&1
+~~~~
+
+If you create a single self-content C-file named foo.c, the
+corresponding program will be simply compiled and linked with
+SimGrid by typing:
+
+~~~~{.sh}
+make foo
+~~~~
+
+For a more "fancy" output, you can try:
+
+~~~~{.sh}
+./masterworker0 platforms/platform.xml deployment0.xml 2>&1 | simgrid-colorizer
+~~~~
+
+For a really fancy output, you should use [viva/triva][fn:1]:
+
+~~~~{.sh}
+./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1\
+    --cfg=tracing/uncategorized:1 --cfg=viva/uncategorized:uncat.plist
+LANG=C ; viva simgrid.trace uncat.plist
+~~~~
+ 
+For a more classical Gantt-Chart visualization, you can produce a
+[Paje][fn:5] trace:
+
+~~~~{.sh}
+./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1 \
+    --cfg=tracing/msg/process:1
+LANG=C ; Paje simgrid.trace
+~~~~
+
+Alternatively, you can use [vite][fn:6].
+
+~~~~{.sh}
+./masterworker0 platforms/platform.xml deployment0.xml --cfg=tracing:1\
+    --cfg=tracing/msg/process:1 --cfg=tracing/basic:1
+vite simgrid.trace
+~~~~
+
+## Getting Rid of Workers in the Deployment File
+
+In the previous example, the deployment file `deployment0.xml`
+is tightly connected to the platform file `platform.xml` and a
+worker process is launched on each host:
+
+~~~~{.xml}
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <!-- The master process (with some arguments) -->
+  <process host="Tremblay" function="master">
+     <argument value="20"/>       <!-- Number of tasks -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="1000000"/>   <!-- Communication size of tasks -->
+     <argument value="Jupiter"/>  <!-- First worker -->
+     <argument value="Fafard"/>   <!-- Second worker -->
+     <argument value="Ginette"/>  <!-- Third worker -->
+     <argument value="Bourassa"/> <!-- Last worker -->
+     <argument value="Tremblay"/> <!-- Me! I can work too! -->
+  </process>
+  <!-- The worker process (with no argument) -->
+  <process host="Tremblay" function="worker" on_failure="RESTART"/>
+  <process host="Jupiter" function="worker" on_failure="RESTART"/>
+  <process host="Fafard" function="worker" on_failure="RESTART"/>
+  <process host="Ginette" function="worker" on_failure="RESTART"/>
+  <process host="Bourassa" function="worker" on_failure="RESTART"/>
+</platform>
+~~~~
+
+This is ok as the platform is rather small but will be painful when
+using larger platforms. Instead, modify the simulator
+`masterworker0.c` into `masterworker1.c` so that the master
+launches a worker process on all the other machines at startup. The
+new deployment file `deployment1.xml` should thus now simply be:
+
+~~~~{.xml}
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <!-- The master process (with some arguments) -->
+  <process host="Tremblay" function="master">
+     <argument value="20"/>       <!-- Number of tasks -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="1000000"/>   <!-- Communication size of tasks -->
+  </process>
+</platform>
+~~~~
+
+To this end you may need the following MSG functions, whose
+behavior is described in the [online documentation](http://simgrid.gforge.inria.fr/simgrid/3.8.1/ref_guide/html/index.html) (hint: use the
+search field to access directly the function you are looking for):
+
+~~~~{.c}
+int MSG_get_host_number (void)
+xbt_dynar_t MSG_hosts_as_dynar(void);
+void * xbt_dynar_to_array (xbt_dynar_t dynar);
+msg_process_t MSG_process_create(const char *name, xbt_main_func_t code,
+                                 void *data, msg_host_t host);
+~~~~
+
+Note that it may avoid bugs later to avoid launching a worker on
+the master host so you probably want to remove it from the host
+list.
+
+The `data` field of the `MSG_process_create` can be used to pass
+a channel name that will be private between master
+and workers (e.g., `master_name:worker_name`). Adding the
+`master_name` in the channel name will allow to easily have several
+masters and a worker per master on each machine. To this end, you
+may need to use the following functions:
+
+~~~~{.c}
+msg_host_t MSG_host_self(void);
+const char * MSG_host_get_name(msg_host_t host);
+msg_process_t MSG_process_self(void);
+void * MSG_process_get_data(msg_process_t process);
+~~~~
+   
+Again, you should check the [online documentation](http://simgrid.gforge.inria.fr/simgrid/3.8.1/ref_guide/html/index.html)
+for more information.  If you are not too much familiar with string
+manipulation in C, you may want to use the following functions
+
+~~~~{.c}
+char *strcpy(char *dest, const char *src);
+char *strcat(char *dest, const char *src);
+~~~~
+
+## Setting up a Time Limit Mechanism
+
+In the current version, the number of tasks is defined in the
+worker arguments. Hence, tasks are created at the very beginning of
+the simulation. Instead, create tasks as needed and provide a time
+limit indicating when it stops sending tasks. To this end, you will
+obviously need to know what time it is[fn:7]:
+
+~~~~{.c}
+double MSG_get_clock(void);
+~~~~
+
+Otherwise, a quite effective way of terminating the simulation
+would be to use some of the following function[fn:7]:
+
+~~~~{.c}
+void MSG_process_kill(msg_process_t process);
+int MSG_process_killall(int reset_PIDs);
+~~~~
+
+Anyway, the new deployment `deployment2.xml` file should thus look
+like this:
+
+~~~~{.xml}
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <process host="Tremblay" function="master">
+     <argument value="3600"/>      <!-- Simulation timeout -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="1000000"/>   <!-- Communication size of tasks -->
+  </process>
+</platform>
+~~~~
+
+It may also be a good idea to transform most of the `XBT_INFO` into
+`XBT_DEBUG` (e.g., keep the information on the total number of
+tasks processed). These debug messages can be activated as follows:
+
+~~~~{.sh}
+./masterworker2 platforms/platform.xml deployment2.xml --log=msg_test.thres:debug
+~~~~
+
+## Using the Tracing Mechanism
+
+SimGrid can trace all resource consumption and the outcome can be
+displayed with viva as illustrated [[*Setting%20up%20and%20Compiling.][here]]. However, when several
+masters are deployed, it is hard to understand what happens. 
+
+~~~~{.xml}
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <process host="Tremblay" function="master">
+     <argument value="3600"/>      <!-- Simulation timeout -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="10"/>   <!-- Communication size of tasks -->
+  </process>
+  <process host="Fafard" function="master">
+     <argument value="3600"/>      <!-- Simulation timeout -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="10"/>   <!-- Communication size of tasks -->
+  </process>
+  <process host="Jupiter" function="master">
+     <argument value="3600"/>      <!-- Simulation timeout -->
+     <argument value="50000000"/>  <!-- Computation size of tasks -->
+     <argument value="10"/>   <!-- Communication size of tasks -->
+  </process>
+</platform>
+~~~~
+
+So let's use categories to track more precisely who does what and
+when[fn:7].
+
+~~~~{.c}
+void TRACE_category(const char *category);
+void MSG_task_set_category (msg_task_t task, const char *category);
+~~~~
+   
+The outcome can then be visualized as follows:
+
+~~~~{.sh}
+./masterworker3 platforms/platform.xml deployment3.xml --cfg=tracing:1\
+    --cfg=tracing/categorized:1 --cfg=viva/categorized:viva_cat.plist
+LANG=C; viva simgrid.trace viva_cat.plist
+~~~~
+
+Right now, you should realize that nothing is behaving like you
+expect. Most workers are idle even though input data are ridiculous
+and there are several masters deployed on the platform. Using a
+Gantt-chart visualization may help:
+
+~~~~{.sh}
+./masterworker3 platforms/platform.xml deployment3.xml --cfg=tracing:1 \
+    --cfg=tracing/msg/process:1
+LANG=C; Paje simgrid.trace
+~~~~
+
+OK, so it should now be obvious that round robin is actually
+very bad.
+
+## Improving the Scheduling
+
+Instead of a round-robin scheduling, let's implement a first-come
+first-served mechanism. To this end, workers need to send a tiny
+request first. A possible way to implement such a request with MSG
+is to send on a specific channel (e.g., the name of the master
+name) a task with payload 0 and whose attached data is the worker
+name. This way, the master can keep track of which workers are idle
+and willing to work.
+
+To know whether it has pending requests, the master can use the
+following function[fn:7]:
+
+~~~~{.c}
+int MSG_task_listen(const char *alias);
+~~~~
+
+If so, it should get the request and push the corresponding host
+into a dynar so that they can later be retrieved when sending a
+real task[fn:7].
+
+~~~~{.c}
+xbt_dynar_t xbt_dynar_new(const unsigned long elm_size,
+                          void_f_pvoid_t const free_f);
+void xbt_dynar_push(xbt_dynar_t const dynar, const void *src);
+void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst);
+unsigned long xbt_dynar_length(const xbt_dynar_t dynar);
+~~~~
+
+As you will soon realize, with such simple mechanisms, simple
+deadlocks will soon appear. They can easily be removed with a
+simple polling mechanism, hence the need for the following
+function[fn:7]:
+
+~~~~{.c}
+msg_error_t MSG_process_sleep(double nb_sec);
+~~~~
+
+As you should quickly realize, on the simple previous example, it
+will double the throughput of the platform but will be quite
+ineffective when input size of the tasks is not negligible anymore.
+
+From this, many things can easily be added. For example, you could:
+- add a performance measurement mechanism;
+- enable the master to make smart scheduling choices using
+  measurement information;
+- allow workers to have several pending requests so as to overlap
+  communication and computations as much as possible;
+- ...
+
+## Using More Elaborate Platforms
+
+SimGrid offers a rather powerful platform modeling mechanism. The
+`src/platform/` repository comprises a variety of platform ranging
+from simple ones to quite elaborated ones. Associated to a good
+visualization tool to ensure your simulation is meaningful, they
+can allow you to study to which extent your algorithm scales...
+
+What is the largest number of tasks requiring 50e6 flops and 1e5
+bytes that you manage to distribute and process in one hour on
+`g5k.xml` (you should use `deployment_general.xml`)?
+
+# Points to improve for the next time
+
+- Propose equivalent exercises and skeleton in java.
+- Propose a virtualbox image with everything (simgrid, paje, viva,
+  ...) already set up.
+- Ease the installation on mac OS X (binary installer) and
+  windows.
+- Explain that programming in C or java and having a working
+  development environment is a prerequisite.
+
+[fn:1]: http://triva.gforge.inria.fr/index.html
+[fn:2]: http://hal.inria.fr/inria-00529569
+[fn:3]: http://hal.inria.fr/hal-00738321
+[fn:4]: http://simgrid.gforge.inria.fr/documentation.html
+[fn:5]: http://paje.sourceforge.net/
+[fn:6]: http://vite.gforge.inria.fr/
+[fn:7]: http://simgrid.gforge.inria.fr/simgrid/3.8.1/ref_guide/html/index.html
+
+
+
+
 
 */

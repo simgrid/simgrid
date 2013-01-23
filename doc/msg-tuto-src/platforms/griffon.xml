@@ -1,0 +1,39 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+<AS  id="AS_griffon"  routing="Full">
+   	
+     <cluster id="griffon_cluster_cabinet1" prefix="griffon-" suffix=".nancy.grid5000.fr"
+ 	    radical="1-29,58,59,60" power="286087" bw="1.25e8" lat="2.4e-5"
+ 	    bb_bw="1.25e9" bb_lat="0" sharing_policy="FULLDUPLEX" bb_sharing_policy="SHARED"/> 
+     <cluster id="griffon_cluster_cabinet2" prefix="griffon-" suffix=".nancy.grid5000.fr"
+ 	    radical="30-57" power="286087" bw="1.25e8" lat="2.4e-5" 
+ 	    bb_bw="1.25e9" bb_lat="0" sharing_policy="FULLDUPLEX" bb_sharing_policy="SHARED"/>    
+     <cluster id="griffon_cluster_cabinet3" prefix="griffon-" suffix=".nancy.grid5000.fr"
+ 	    radical="61-92" power="286087" bw="1.25e8" lat="2.4e-5" 
+ 	    bb_bw="1.25e9" bb_lat="0" sharing_policy="FULLDUPLEX" bb_sharing_policy="SHARED"/>
+
+     <link id="backbone" bandwidth="1.25e9" latency="2.4e-5" sharing_policy="SHARED"/>
+ 	
+     <ASroute src="griffon_cluster_cabinet1" dst="griffon_cluster_cabinet2" 
+	 gw_src="griffon-griffon_cluster_cabinet1_router.nancy.grid5000.fr" 
+	 gw_dst="griffon-griffon_cluster_cabinet2_router.nancy.grid5000.fr" 
+	 symmetrical="YES">
+ 		<link_ctn id="backbone"/>
+     </ASroute>     
+     <ASroute src="griffon_cluster_cabinet2" dst="griffon_cluster_cabinet3" 
+	 gw_src="griffon-griffon_cluster_cabinet2_router.nancy.grid5000.fr" 
+	 gw_dst="griffon-griffon_cluster_cabinet3_router.nancy.grid5000.fr" 
+	 symmetrical="YES">
+ 		<link_ctn id="backbone"/>
+     </ASroute>      
+     <ASroute src="griffon_cluster_cabinet1" dst="griffon_cluster_cabinet3" 
+	 gw_src="griffon-griffon_cluster_cabinet1_router.nancy.grid5000.fr" 
+	 gw_dst="griffon-griffon_cluster_cabinet3_router.nancy.grid5000.fr" 
+	 symmetrical="YES">
+ 		<link_ctn id="backbone"/>
+     </ASroute> 
+	        
+</AS>
+</platform>
+
