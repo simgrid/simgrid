@@ -53,8 +53,6 @@ char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 
 [modules]
   * Add configuration and dependencies to our module definition
-  * allow to load them at runtime.
-    check in erlang how they upgrade them without downtime
 
 [other modules]
   * we may need a round-robin database module, and a statistical one
