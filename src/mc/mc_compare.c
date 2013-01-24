@@ -301,6 +301,9 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     }
   }
 
+  /* Init heap information used in heap comparison algorithm */
+  init_heap_information((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data);
+
   /* Compare binary global variables */
   is_diff = compare_global_variables(s1->region_type[data_program_index], s1->regions[data_program_index]->data, s2->regions[data_program_index]->data);
   if(is_diff != 0){

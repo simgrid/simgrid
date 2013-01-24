@@ -63,6 +63,9 @@ xbt_mheap_t mmalloc_get_current_heap(void);
 
 int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stacks1, xbt_dynar_t *stacks2, xbt_dynar_t *equals);
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
+void init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2);
+void match_equals(xbt_dynar_t list, xbt_dynar_t *equals);
+int compare_area(void *area1, void* area2, xbt_dynar_t previous);
 
 void mmalloc_backtrace_block_display(void* heapinfo, int block);
 void mmalloc_backtrace_fragment_display(void* heapinfo, int block, int frag);
