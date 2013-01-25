@@ -42,7 +42,7 @@ static size_t heap_ignore_size(void *address){
   return 0;
 }
 
-static int compare_global_variables(int region_type, void *d1, void *d2){
+static int compare_global_variables(int region_type, void *d1, void *d2, xbt_dynar_t equals){
 
   unsigned int cursor = 0;
   size_t offset; 
@@ -50,6 +50,7 @@ static int compare_global_variables(int region_type, void *d1, void *d2){
   global_variable_t current_var; 
   int pointer_align; 
   void *addr_pointed1 = NULL, *addr_pointed2 = NULL;
+  int res_compare = 0;
 
   if(region_type == 1){ /* libsimgrid */
     xbt_dynar_foreach(mc_global_variables, cursor, current_var){
@@ -66,10 +67,21 @@ static int compare_global_variables(int region_type, void *d1, void *d2){
             i = current_var->size;
             continue;
           }else{
-            if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose)){
-              XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+            if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
+              res_compare = compare_area(addr_pointed1, addr_pointed2, NULL, equals);
+              if(res_compare == 1){
+                #ifdef MC_VERBOSE
+                  XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+                #endif
+                return 1;
+              }
+            }else{
+              #ifdef MC_VERBOSE
+                XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+              #endif
+              return 1;
             }
-            return 1;
+           
           }
         } 
         i++;
@@ -90,10 +102,22 @@ static int compare_global_variables(int region_type, void *d1, void *d2){
             i = current_var->size;
             continue;
           }else{
-            if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose)){
-              XBT_VERB("Different global variable in binary : %s", current_var->name);
+            if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
+              res_compare = compare_area(addr_pointed1, addr_pointed2, NULL, equals);
+              if(res_compare == 1){
+                #ifdef MC_VERBOSE
+                  XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+                #endif
+                return 1;
+              }else{
+                XBT_VERB("False pointer differences for variable : %s", current_var->name);
+              }
+            }else{
+              #ifdef MC_VERBOSE
+                XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+              #endif
+              return 1;
             }
-            return 1;
           }
         } 
         i++;
@@ -304,8 +328,10 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   /* Init heap information used in heap comparison algorithm */
   init_heap_information((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data);
 
+  xbt_dynar_t equals = xbt_dynar_new(sizeof(heap_equality_t), heap_equality_free_voidp);
+
   /* Compare binary global variables */
-  is_diff = compare_global_variables(s1->region_type[data_program_index], s1->regions[data_program_index]->data, s2->regions[data_program_index]->data);
+  is_diff = compare_global_variables(s1->region_type[data_program_index], s1->regions[data_program_index]->data, s2->regions[data_program_index]->data, equals);
   if(is_diff != 0){
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);
@@ -336,7 +362,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   #endif
 
   /* Compare libsimgrid global variables */
-  is_diff = compare_global_variables(s1->region_type[data_libsimgrid_index], s1->regions[data_libsimgrid_index]->data, s2->regions[data_libsimgrid_index]->data);
+    is_diff = compare_global_variables(s1->region_type[data_libsimgrid_index], s1->regions[data_libsimgrid_index]->data, s2->regions[data_libsimgrid_index]->data, equals);
   if(is_diff != 0){
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);
@@ -369,11 +395,10 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   /* Compare heap */
   xbt_dynar_t stacks1 = xbt_dynar_new(sizeof(stack_region_t), stack_region_free_voidp);
   xbt_dynar_t stacks2 = xbt_dynar_new(sizeof(stack_region_t), stack_region_free_voidp);
-  xbt_dynar_t equals = xbt_dynar_new(sizeof(heap_equality_t), heap_equality_free_voidp);
   
   void *heap1 = s1->regions[heap_index]->data, *heap2 = s2->regions[heap_index]->data;
  
-  if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data, &stacks1, &stacks2, &equals)){
+  if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data, &stacks1, &stacks2, equals)){
 
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);

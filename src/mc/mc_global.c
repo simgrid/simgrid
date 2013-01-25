@@ -122,6 +122,8 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr);
 static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset);
 static size_t data_bss_ignore_size(void *address);
 static void MC_get_global_variables(char *elf_file);
+static void heap_ignore_region_free(mc_heap_ignore_region_t r);
+static void heap_ignore_region_free_voidp(void *r);
 
 void MC_do_the_modelcheck_for_real() {
 
@@ -744,6 +746,15 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
 /************ MC_ignore ***********/ 
 
+static void heap_ignore_region_free(mc_heap_ignore_region_t r){
+  if(r)
+    xbt_free(r);
+}
+
+static void heap_ignore_region_free_voidp(void *r){
+  heap_ignore_region_free((mc_heap_ignore_region_t) * (void **) r);
+}
+
 void MC_ignore_heap(void *address, size_t size){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -751,25 +762,21 @@ void MC_ignore_heap(void *address, size_t size){
   MC_SET_RAW_MEM;
   
   if(mc_heap_comparison_ignore == NULL)
-    mc_heap_comparison_ignore = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), NULL);
+    mc_heap_comparison_ignore = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), heap_ignore_region_free_voidp);
 
   mc_heap_ignore_region_t region = NULL;
   region = xbt_new0(s_mc_heap_ignore_region_t, 1);
   region->address = address;
   region->size = size;
 
-  if((address >= std_heap) && (address <= (void*)((char *)std_heap + STD_HEAP_SIZE))){
-
-    region->block = ((char*)address - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
-    
-    if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
-      region->fragment = -1;
-      ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore = 1;
-    }else{
-      region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
-      ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment] = 1;
-    }
-    
+  region->block = ((char*)address - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
+  
+  if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
+    region->fragment = -1;
+    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore = 1;
+  }else{
+    region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
+    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment] = 1;
   }
 
   unsigned int cursor = 0;
@@ -780,6 +787,49 @@ void MC_ignore_heap(void *address, size_t size){
   }
 
   xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
+
+  MC_UNSET_RAW_MEM;
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+}
+
+
+
+void MC_remove_ignore_heap(void *address, size_t size){
+  
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+
+  unsigned int cursor = 0;
+  int start = 0;
+  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
+  mc_heap_ignore_region_t region;
+  int ignore_found = 0;
+
+  while(start <= end){
+    cursor = (start + end) / 2;
+    region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
+    if(region->address == address){
+      ignore_found = 1;
+      break;
+    }
+    if(region->address < address)
+      start = cursor + 1;
+    if(region->address > address){
+      if((char * )region->address <= ((char *)address + size)){
+        ignore_found = 1;
+        break;
+      }else
+        end = cursor - 1;   
+    }
+  }
+  
+  if(ignore_found == 1){
+    xbt_dynar_remove_at(mc_heap_comparison_ignore, cursor, NULL);
+    MC_remove_ignore_heap(address, size);
+  }
 
   MC_UNSET_RAW_MEM;
 

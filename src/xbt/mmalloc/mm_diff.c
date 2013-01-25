@@ -22,10 +22,9 @@ static int add_heap_area_pair(xbt_dynar_t list, int block1, int fragment1, int b
 static int is_new_heap_area_pair(xbt_dynar_t list, int block1, int fragment1, int block2, int fragment2);
 static heap_area_t new_heap_area(int block, int fragment);
 
-static int in_mc_comparison_ignore(int block, int fragment);
 static size_t heap_comparison_ignore_size(void *address);
-static void add_heap_equality(xbt_dynar_t *equals, void *a1, void *a2);
-static void remove_heap_equality(xbt_dynar_t *equals, int address, void *a);
+static void add_heap_equality(xbt_dynar_t equals, void *a1, void *a2);
+static void remove_heap_equality(xbt_dynar_t equals, int address, void *a);
 
 static char* is_stack(void *address);
 
@@ -133,7 +132,7 @@ void init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2){
   
 }
 
-int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stack1, xbt_dynar_t *stack2, xbt_dynar_t *equals){
+int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stack1, xbt_dynar_t *stack2, xbt_dynar_t equals){
 
   if(heap1 == NULL && heap1 == NULL){
     XBT_DEBUG("Malloc descriptors null");
@@ -209,7 +208,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
             res_compare = -1;
           }
         
-          res_compare = compare_area(addr_block1, addr_block2, previous);
+          res_compare = compare_area(addr_block1, addr_block2, previous, equals);
         
           if(res_compare == 0 || res_compare == -1){
             for(k=1; k < heapinfo2[current_block].busy_block.size; k++)
@@ -256,7 +255,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
           continue;
         }
         
-        res_compare = compare_area(addr_block1, addr_block2, previous);
+        res_compare = compare_area(addr_block1, addr_block2, previous, equals);
         
         if(res_compare == 0 || res_compare == -1){
           for(k=1; k < heapinfo2[i2].busy_block.size; k++)
@@ -305,7 +304,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
             addr_block2 = ((void*) (((ADDR2UINT(current_block)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)s_heap)->heapbase));
             addr_frag2 = (void*) ((char *)addr_block2 + (current_fragment << ((xbt_mheap_t)s_heap)->heapinfo[current_block].type));
 
-            res_compare = compare_area(addr_frag1, addr_frag2, previous);
+            res_compare = compare_area(addr_frag1, addr_frag2, previous, equals);
 
             if(res_compare == 0){
               equal = 1;
@@ -336,7 +335,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
             addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)s_heap)->heapbase));
             addr_frag2 = (void*) ((char *)addr_block2 + (j2 << ((xbt_mheap_t)s_heap)->heapinfo[i2].type));
 
-            res_compare = compare_area(addr_frag1, addr_frag2, previous);
+            res_compare = compare_area(addr_frag1, addr_frag2, previous, equals);
             
             if(res_compare == 0){
               equal = 1;
@@ -469,34 +468,9 @@ static heap_area_t new_heap_area(int block, int fragment){
   return area;
 }
 
-static int in_mc_comparison_ignore(int block, int fragment){
-
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-  mc_heap_ignore_region_t region;
-
-  while(start <= end){
-    cursor = (start + end) / 2;
-    region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
-    if(region->block == block){
-      if(region->fragment == fragment)
-        return 1;
-      if(region->fragment < fragment)
-        start = cursor + 1;
-      if(region->fragment > fragment)
-        end = cursor - 1;
-    }
-    if(region->block < block)
-      start = cursor + 1;
-    if(region->block > block)
-      end = cursor - 1; 
-  }
-
-  return 0;
-}
 
 static size_t heap_comparison_ignore_size(void *address){
+
   unsigned int cursor = 0;
   int start = 0;
   int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
@@ -517,7 +491,7 @@ static size_t heap_comparison_ignore_size(void *address){
 }
 
 
-int compare_area(void *area1, void* area2, xbt_dynar_t previous){
+int compare_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dynar_t equals){
 
   size_t i = 0, pointer_align = 0, ignore1 = 0, ignore2 = 0;
   void *address_pointed1, *address_pointed2;
@@ -527,6 +501,13 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){
 
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
   void *area1_to_compare, *area2_to_compare;
+
+  int match_pairs = 0;
+
+  if(previous == NULL){
+    previous = xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
+    match_pairs = 1;
+  }
 
   block1 = ((char*)area1 - (char*)((xbt_mheap_t)s_heap)->heapbase) / BLOCKSIZE + 1;
   block2 = ((char*)area2 - (char*)((xbt_mheap_t)s_heap)->heapbase) / BLOCKSIZE + 1;
@@ -575,6 +556,9 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){
       
       size = heapinfo1[block1].busy_frag.frag_size[frag1];
 
+      if(size == 0)
+        return 0;
+
       if((ignore_done < xbt_dynar_length(mc_heap_comparison_ignore)) && heapinfo1[block1].busy_frag.ignore[frag1] == 1)
         check_ignore = 1;
     }
@@ -595,6 +579,9 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){
       
     size = heapinfo1[block1].busy_frag.frag_size[frag1];
 
+    if(size == 0)
+      return 0;
+
     if((ignore_done < xbt_dynar_length(mc_heap_comparison_ignore)) && heapinfo1[block1].busy_frag.ignore[frag1] == 1)
       check_ignore = 1;   
   }else{
@@ -603,7 +590,7 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){
   
   while(i<size){
 
-    if(check_ignore){
+    if((ignore_done < xbt_dynar_length(mc_heap_comparison_ignore)) && check_ignore){
 
       if((ignore1 = heap_comparison_ignore_size((char *)area1 + i)) > 0){
         if((ignore2 = heap_comparison_ignore_size((char *)area2 + i))  == ignore1){
@@ -621,10 +608,10 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){
       address_pointed1 = *((void **)((char *)area1_to_compare + pointer_align));
       address_pointed2 = *((void **)((char *)area2_to_compare + pointer_align));
 
-      res_compare = compare_area(address_pointed1, address_pointed2, previous);
+      res_compare = compare_area(address_pointed1, address_pointed2, previous, equals);
       
       if(res_compare == 1)
-        return 1;
+        return 1; 
 
       i = pointer_align + sizeof(void *);
       
@@ -634,6 +621,9 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){
 
     }
   }
+
+  if(match_pairs)
+    match_equals(previous, equals);
 
   return 0;
   
@@ -683,7 +673,7 @@ static int is_new_heap_area_pair(xbt_dynar_t list, int block1, int fragment1, in
   return 1;
 }
 
-void match_equals(xbt_dynar_t list, xbt_dynar_t *equals){
+void match_equals(xbt_dynar_t list, xbt_dynar_t equals){
 
   unsigned int cursor = 0;
   heap_area_pair_t current_pair;
@@ -893,26 +883,26 @@ static char* is_stack(void *address){
   return NULL;
 }
 
-static void add_heap_equality(xbt_dynar_t *equals, void *a1, void *a2){
+static void add_heap_equality(xbt_dynar_t equals, void *a1, void *a2){
   
-  if(xbt_dynar_is_empty(*equals)){
+  if(xbt_dynar_is_empty(equals)){
 
     heap_equality_t he = xbt_new0(s_heap_equality_t, 1);
     he->address1 = a1;
     he->address2 = a2;
 
-    xbt_dynar_insert_at(*equals, 0, &he);
+    xbt_dynar_insert_at(equals, 0, &he);
   
   }else{
 
     unsigned int cursor = 0;
     int start = 0;
-    int end = xbt_dynar_length(*equals) - 1;
+    int end = xbt_dynar_length(equals) - 1;
     heap_equality_t current_equality = NULL;
 
     while(start <= end){
       cursor = (start + end) / 2;
-      current_equality = (heap_equality_t)xbt_dynar_get_as(*equals, cursor, heap_equality_t);
+      current_equality = (heap_equality_t)xbt_dynar_get_as(equals, cursor, heap_equality_t);
       if(current_equality->address1 == a1){
         if(current_equality->address2 == a2)
           return;
@@ -932,15 +922,15 @@ static void add_heap_equality(xbt_dynar_t *equals, void *a1, void *a2){
     he->address2 = a2;
   
     if(current_equality->address1 < a1)
-      xbt_dynar_insert_at(*equals, cursor + 1 , &he);
+      xbt_dynar_insert_at(equals, cursor + 1 , &he);
     else
-       xbt_dynar_insert_at(*equals, cursor, &he); 
+       xbt_dynar_insert_at(equals, cursor, &he); 
 
   }
 
 }
 
-static void remove_heap_equality(xbt_dynar_t *equals, int address, void *a){
+static void remove_heap_equality(xbt_dynar_t equals, int address, void *a){
   
   unsigned int cursor = 0;
   heap_equality_t current_equality;
@@ -949,12 +939,12 @@ static void remove_heap_equality(xbt_dynar_t *equals, int address, void *a){
   if(address == 1){
 
     int start = 0;
-    int end = xbt_dynar_length(*equals) - 1;
+    int end = xbt_dynar_length(equals) - 1;
 
 
     while(start <= end && found == 0){
       cursor = (start + end) / 2;
-      current_equality = (heap_equality_t)xbt_dynar_get_as(*equals, cursor, heap_equality_t);
+      current_equality = (heap_equality_t)xbt_dynar_get_as(equals, cursor, heap_equality_t);
       if(current_equality->address1 == a)
         found = 1;
       if(current_equality->address1 < a)
@@ -964,11 +954,11 @@ static void remove_heap_equality(xbt_dynar_t *equals, int address, void *a){
     }
 
     if(found == 1)
-      xbt_dynar_remove_at(*equals, cursor, NULL);
+      xbt_dynar_remove_at(equals, cursor, NULL);
   
   }else{
 
-    xbt_dynar_foreach(*equals, cursor, current_equality){
+    xbt_dynar_foreach(equals, cursor, current_equality){
       if(current_equality->address2 == a){
         found = 1;
         break;
@@ -976,7 +966,7 @@ static void remove_heap_equality(xbt_dynar_t *equals, int address, void *a){
     }
 
     if(found == 1)
-      xbt_dynar_remove_at(*equals, cursor, NULL);
+      xbt_dynar_remove_at(equals, cursor, NULL);
 
   }
   
