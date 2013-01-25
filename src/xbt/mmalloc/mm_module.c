@@ -347,36 +347,3 @@ void mmalloc_postexit(void)
 size_t mmalloc_get_chunks_used(xbt_mheap_t heap){
   return ((struct mdesc *)heap)->heapstats.chunks_used;
 }
-
-void remove_ignore_heap(void *address, size_t size){
-  
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-  mc_heap_ignore_region_t region;
-  int ignore_found = 0;
-
-  while(start <= end){
-    cursor = (start + end) / 2;
-    region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
-    if(region->address == address){
-      ignore_found = 1;
-      break;
-    }
-    if(region->address < address)
-      start = cursor + 1;
-    if(region->address > address){
-      if((char * )region->address <= ((char *)address + size)){
-        ignore_found = 1;
-        break;
-      }else
-        end = cursor - 1;   
-    }
-  }
-  
-  if(ignore_found == 1){
-    xbt_dynar_remove_at(mc_heap_comparison_ignore, cursor, NULL);
-    remove_ignore_heap(address, size);
-  }
-
-}
