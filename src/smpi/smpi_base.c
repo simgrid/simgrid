@@ -296,7 +296,7 @@ void smpi_mpi_start(MPI_Request request)
     double sleeptime = smpi_or(request->size);
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
-        XBT_DEBUG("receiving size of %ld : sleep %lf ", request->size, smpi_or(request->size));
+        XBT_DEBUG("receiving size of %zu : sleep %lf ", request->size, smpi_or(request->size));
     }
 
   } else {
@@ -332,7 +332,7 @@ void smpi_mpi_start(MPI_Request request)
     double sleeptime = smpi_os(request->size);
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
-        XBT_DEBUG("sending size of %ld : sleep %lf ", request->size, smpi_os(request->size));
+        XBT_DEBUG("sending size of %zu : sleep %lf ", request->size, smpi_os(request->size));
     }
     request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
