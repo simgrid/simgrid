@@ -75,6 +75,8 @@ int is_free_area(void *area, xbt_mheap_t heap);
 
 size_t mmalloc_get_chunks_used(xbt_mheap_t);
 
+void remove_ignore_heap(void *address, size_t size);
+
 
 
 #endif                          /* MMALLOC_H */

@@ -55,7 +55,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
 
     if(mdp->heapinfo[block].busy_block.ignore == 1)
-      MC_remove_ignore_heap(ptr, mdp -> heapinfo[block].busy_block.busy_size);
+      remove_ignore_heap(ptr, mdp -> heapinfo[block].busy_block.busy_size);
 
     /* Find the free cluster previous to this one in the free list.
        Start searching at the last block referenced; this may benefit
@@ -163,7 +163,7 @@ void mfree(struct mdesc *mdp, void *ptr)
     }
 
     if(mdp->heapinfo[block].busy_frag.ignore[frag_nb] == 1)
-      MC_remove_ignore_heap(ptr, mdp->heapinfo[block].busy_frag.frag_size[frag_nb]);
+      remove_ignore_heap(ptr, mdp->heapinfo[block].busy_frag.frag_size[frag_nb]);
 
     /* Set size used in the fragment to -1 */
     mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = -1;

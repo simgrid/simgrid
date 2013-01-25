@@ -794,49 +794,6 @@ void MC_ignore_heap(void *address, size_t size){
     MC_SET_RAW_MEM;
 }
 
-
-
-void MC_remove_ignore_heap(void *address, size_t size){
-  
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  MC_SET_RAW_MEM;
-
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-  mc_heap_ignore_region_t region;
-  int ignore_found = 0;
-
-  while(start <= end){
-    cursor = (start + end) / 2;
-    region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
-    if(region->address == address){
-      ignore_found = 1;
-      break;
-    }
-    if(region->address < address)
-      start = cursor + 1;
-    if(region->address > address){
-      if((char * )region->address <= ((char *)address + size)){
-        ignore_found = 1;
-        break;
-      }else
-        end = cursor - 1;   
-    }
-  }
-  
-  if(ignore_found == 1){
-    xbt_dynar_remove_at(mc_heap_comparison_ignore, cursor, NULL);
-    MC_remove_ignore_heap(address, size);
-  }
-
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
-}
-
 void MC_ignore_data_bss(void *address, size_t size){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
