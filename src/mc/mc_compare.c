@@ -109,8 +109,6 @@ static int compare_global_variables(int region_type, void *d1, void *d2, xbt_dyn
                   XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
                 #endif
                 return 1;
-              }else{
-                XBT_VERB("False pointer differences for variable : %s", current_var->name);
               }
             }else{
               #ifdef MC_VERBOSE
@@ -191,7 +189,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   int raw_mem = (mmalloc_get_current_heap() == raw_heap);
   
   MC_SET_RAW_MEM;
-      
+     
   int errors = 0;
 
   xbt_os_timer_t global_timer = xbt_os_timer_new();
@@ -395,8 +393,6 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   /* Compare heap */
   xbt_dynar_t stacks1 = xbt_dynar_new(sizeof(stack_region_t), stack_region_free_voidp);
   xbt_dynar_t stacks2 = xbt_dynar_new(sizeof(stack_region_t), stack_region_free_voidp);
-  
-  void *heap1 = s1->regions[heap_index]->data, *heap2 = s2->regions[heap_index]->data;
  
   if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data, &stacks1, &stacks2, equals)){
 
@@ -437,49 +433,39 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   /* Stacks comparison */
   unsigned int  cursor = 0;
-  stack_region_t stack_region1, stack_region2;
-  int diff = 0, diff_local = 0;
-  void *sp1, *sp2;
+  int diff_local = 0;
   is_diff = 0;
 
   while(cursor < xbt_dynar_length(stacks1)){
-    stack_region1 = (stack_region_t)(xbt_dynar_get_as(stacks1, cursor, stack_region_t));
-    stack_region2 = (stack_region_t)(xbt_dynar_get_as(stacks2, cursor, stack_region_t));
-    sp1 = ((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->stack_pointer;
-    sp2 = ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->stack_pointer;
-    diff = compare_stack(stack_region1, stack_region2, sp1, sp2, heap1, heap2, equals);
-
-    if(diff > 0){ /* Differences may be due to padding */  
-      diff_local = compare_local_variables(((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, equals);
-      if(diff_local > 0){
-        #ifdef MC_DEBUG
-          if(is_diff == 0){
-            xbt_os_timer_stop(timer);
-            mc_comp_times->stacks_comparison_time = xbt_os_timer_elapsed(timer); 
-          }
-          XBT_DEBUG("Different local variables between stacks %d", cursor + 1);
-          errors++;
-          is_diff = 1;
-        #else
-          xbt_dynar_free(&stacks1);
-          xbt_dynar_free(&stacks2);
-          xbt_dynar_free(&equals);
-
-          #ifdef MC_VERBOSE
-            XBT_VERB("Different local variables between stacks %d", cursor + 1);
-          #endif
+    diff_local = compare_local_variables(((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, equals);
+    if(diff_local > 0){
+      #ifdef MC_DEBUG
+        if(is_diff == 0){
+          xbt_os_timer_stop(timer);
+          mc_comp_times->stacks_comparison_time = xbt_os_timer_elapsed(timer); 
+        }
+        XBT_DEBUG("Different local variables between stacks %d", cursor + 1);
+        errors++;
+        is_diff = 1;
+      #else
+        xbt_dynar_free(&stacks1);
+        xbt_dynar_free(&stacks2);
+        xbt_dynar_free(&equals);
+        
+      #ifdef MC_VERBOSE
+        XBT_VERB("Different local variables between stacks %d", cursor + 1);
+      #endif
           
-          xbt_os_timer_free(timer);
-          xbt_os_timer_stop(global_timer);
-          mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-          xbt_os_timer_free(global_timer);
-          
-          if(!raw_mem)
-            MC_UNSET_RAW_MEM;
-
-          return 1;
-        #endif
-      }
+        xbt_os_timer_free(timer);
+        xbt_os_timer_stop(global_timer);
+        mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
+        xbt_os_timer_free(global_timer);
+        
+        if(!raw_mem)
+          MC_UNSET_RAW_MEM;
+        
+        return 1;
+      #endif
     }
     cursor++;
   }
