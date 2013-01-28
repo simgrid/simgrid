@@ -923,7 +923,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   free(newid);
 
   //Make the backbone
-  if ((cluster->bb_bw != 0) && (cluster->bb_lat != 0)) {
+  if ((cluster->bb_bw != 0) || (cluster->bb_lat != 0)) {
     char *link_backbone = bprintf("%s_backbone", cluster->id);
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link_backbone,
               cluster->bb_bw, cluster->bb_lat);
