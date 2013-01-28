@@ -145,7 +145,9 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stac
   }
 
   /* Start comparison */
-  size_t i1, i2, j1, j2, k, current_block, current_fragment;
+  size_t i1, i2, j1, j2, k;
+  size_t current_block = -1;    /* avoid "maybe uninitialized" warning */
+  size_t current_fragment;
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
   void *snap_addr_block1, *snap_addr_block2;
   char *stack_name;
