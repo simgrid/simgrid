@@ -640,7 +640,6 @@ static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *
 int MC_compare_snapshots(void *s1, void *s2){
   
   MC_ignore_stack("self", "simcall_BODY_mc_snapshot");
-  MC_ignore_stack("i", "simcall_BODY_mc_snapshot");
 
   return simcall_mc_compare_snapshots(s1, s2);
 
