@@ -172,6 +172,11 @@
   inline static SIMCALL_FUNC_RETURN_TYPE(RES) simcall_BODY_##NAME(MAP(SIMCALL_ARG, ##__VA_ARGS__)) { \
     smx_process_t self = SIMIX_process_self(); \
     self->simcall.call = TYPE; \
+    int i; \
+    for(i=0; i< 10; i++){ \
+      memset(&(self->simcall.args[i]), 0, sizeof(&(self->simcall.args[i]))); \
+    } \
+    memset(&(self->simcall.result), 0, sizeof(&(self->simcall.result))); \
     MAP_WITH_DEFAULT_ARGS(SIMCALL_INIT_FIELD, (), ##__VA_ARGS__) \
     if (self != simix_global->maestro_process) { \
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name, \
