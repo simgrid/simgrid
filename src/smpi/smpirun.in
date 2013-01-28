@@ -15,7 +15,7 @@ NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
 NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
 POWER="${DEFAULT_POWER}"
 
-SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
+SIMOPTS="--cfg=maxmin/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304 --cfg=smpi/display_timing:1"
 
 #usage to print the way this script should be called
 function usage () {
