@@ -15,9 +15,9 @@ SimGrid has very few dependencies and rely only on very standard
 tools. Recompiling the archive should be done in a few lines:
 
 @verbatim
-wget https://gforge.inria.fr/frs/download.php/28674/simgrid-3.8.1.tar.gz
-tar xf simgrid-3.8.1.tar.gz
-cd simgrid-3.8.1
+wget https://gforge.inria.fr/frs/download.php/28674/SimGrid-3.9.tar.gz
+tar xf SimGrid-3.9.tar.gz
+cd SimGrid-3.9
 cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
 make
 make install

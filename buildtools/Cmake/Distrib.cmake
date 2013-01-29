@@ -3,25 +3,9 @@
 #########################################
 
 # doc
-file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/shared/doxygen/)
-file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/)
-file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/)
-
-install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/"
-  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/ref_guide/html/"
-  PATTERN ".svn" EXCLUDE
-  PATTERN ".git" EXCLUDE
-  PATTERN "*.o" EXCLUDE
-  PATTERN "*~" EXCLUDE
-  )
-
-install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/"
-  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/user_guide/html/"
-  PATTERN ".svn" EXCLUDE
-  PATTERN ".git" EXCLUDE
-  PATTERN "*.o" EXCLUDE
-  PATTERN "*~" EXCLUDE
-  )
+file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html/)
+install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
+  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/html/)
 
 #### Generate the manpages
 if(NOT WIN32)
@@ -230,10 +214,6 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
   COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}-${release_version}.tar.gz
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/user_guide/html/
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/ref_guide/html/
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/ ${PROJECT_NAME}-${release_version}/doc/user_guide/html/
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/ ${PROJECT_NAME}-${release_version}/doc/ref_guide/html/
   )
 add_dependencies(dist-dir simgrid_documentation)
 add_dependencies(dist-dir maintainer_files)
@@ -322,13 +302,19 @@ add_custom_target(distcheck
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM}
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Test"
-  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ctest || true
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ctest
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Install"
   COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} install
   COMMAND ${CMAKE_COMMAND} -E create_symlink
   ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst/lib/libsimgrid.so
   ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst/lib/libsimgridtest.so
+
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Build documentation"
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} simgrid_documentation
+
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Install with documentation"
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} install
 
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove temp directories"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}

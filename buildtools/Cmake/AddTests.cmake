@@ -413,7 +413,7 @@ if(NOT enable_memcheck)
         set_tests_properties(mc-centralized-raw PROPERTIES WILL_FAIL true)
       endif()
     endif()
-
+    set_tests_properties(msg-masterslave-virtual-machines PROPERTIES WILL_FAIL true)
   endif()
 
 endif()
