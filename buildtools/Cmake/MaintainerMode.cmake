@@ -1,3 +1,10 @@
+# Change the following when we need a recent enough version of flexml to get the maintainer mode working
+set(FLEXML_MIN_MAJOR 1)
+set(FLEXML_MIN_MINOR 9)
+set(FLEXML_MIN_PATCH 6)
+
+# the rest should only be changed if you understand what you're doing
+
 if(enable_maintainer_mode AND NOT WIN32)
   find_program(FLEX_EXE NAMES flex)
   find_program(FLEXML_EXE NAMES flexml)
@@ -50,9 +57,15 @@ if(enable_maintainer_mode AND NOT WIN32)
   IF(FLEXML_EXE)
     set(HAVE_FLEXML 1)
     exec_program("${FLEXML_EXE} --version" OUTPUT_VARIABLE FLEXML_VERSION)
-    string(REGEX MATCH "[0-9]+[.]+[0-9]+" FLEXML_VERSION "${FLEXML_VERSION}")
+    if (FLEXML_VERSION MATCHES "version Id:")
+      message(FATAL_ERROR "You have an ancient flexml version (${FLEXML_VERSION}). You need at least v${FLEXML_MIN_MAJOR}.${FLEXML_MIN_MINOR}.${FLEXML_MIN_PATCH} to compile in maintainer mode. Upgrade your flexml, or disable the Maintainer mode option in cmake.")
+    endif()
+ 
+    string(REGEX MATCH "[0-9]+[.]+[0-9]+[.]+[0-9]+" FLEXML_VERSION "${FLEXML_VERSION}")
     string(REGEX MATCH "^[0-9]*" FLEXML_MAJOR_VERSION "${FLEXML_VERSION}")
-    string(REGEX MATCH "[0-9]*$" FLEXML_MINOR_VERSION "${FLEXML_VERSION}")
+    string(REGEX MATCH "[0-9]+[.]+[0-9]+$" FLEXML_VERSION "${FLEXML_VERSION}")
+    string(REGEX MATCH "^[0-9]+" FLEXML_MINOR_VERSION "${FLEXML_VERSION}")
+    string(REGEX MATCH "[0-9]+$" FLEXML_PATCH_VERSION "${FLEXML_VERSION}")
   ENDIF()
 
   message(STATUS "Found flex: ${FLEX_EXE}")
@@ -62,7 +75,17 @@ if(enable_maintainer_mode AND NOT WIN32)
   if(HAVE_FLEXML AND HAVE_FLEX AND SED_EXE)
 
     message(STATUS "Flex version: ${FLEX_MAJOR_VERSION}.${FLEX_MINOR_VERSION}.${FLEX_PATCH_VERSION}")
-    message(STATUS "Flexml version: ${FLEXML_MAJOR_VERSION}.${FLEXML_MINOR_VERSION}")
+    message(STATUS "Flexml version: ${FLEXML_MAJOR_VERSION}.${FLEXML_MINOR_VERSION}.${FLEXML_PATCH_VERSION} (need at least version ${FLEXML_MIN_MAJOR}.${FLEXML_MIN_MINOR}.${FLEXML_MIN_PATCH})")
+
+    IF(     (${FLEXML_MAJOR_VERSION} LESS ${FLEXML_MIN_MAJOR}) 
+        OR ((${FLEXML_MAJOR_VERSION} EQUAL ${FLEXML_MIN_MAJOR}) AND (${FLEXML_MINOR_VERSION} LESS ${FLEXML_MIN_MINOR}) )
+        OR (    (${FLEXML_MAJOR_VERSION} EQUAL ${FLEXML_MIN_MAJOR}) 
+	    AND (${FLEXML_MINOR_VERSION} EQUAL ${FLEXML_MIN_MINOR}) 
+	    AND (${FLEXML_PATCH_VERSION} LESS ${FLEXML_MIN_PATCH}) ))
+
+      message(FATAL_ERROR "Your flexml version is too old to compile in maintainer mode (need at least v${FLEXML_MIN_MAJOR}.${FLEXML_MIN_MINOR}.${FLEXML_MIN_PATCH}). Upgrade your flexml, or disable the Maintainer mode option in cmake.")
+      
+    ENDIF()
 
     set(string1  "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
     set(string2  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
