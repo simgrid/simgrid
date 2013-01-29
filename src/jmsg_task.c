@@ -381,27 +381,28 @@ Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask,
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env, jobject jtask,
-                                           jstring jalias,
-                                           jdouble jmaxRate)
+Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobject jtask,
+                                    jstring jalias,
+                                    jdouble jtimeout,
+				    jdouble maxrate)
 {
-  msg_task_t task = jtask_to_native_task(jtask, env);
   msg_error_t rv;
-  const char *alias;
+  const char *alias = (*env)->GetStringUTFChars(env, jalias, 0);
+
+  msg_task_t task = jtask_to_native_task(jtask, env);
+
 
   if (!task) {
+    (*env)->ReleaseStringUTFChars(env, jalias, alias);
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
 
-  alias = (*env)->GetStringUTFChars(env, jalias, 0);
-
   /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
   MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
-
   xbt_ex_t e;
   TRY {
-    rv = MSG_task_send_bounded(task, alias, (double) jmaxRate);
+    rv = MSG_task_send_with_timeout_bounded(task, alias, (double) jtimeout, (double) maxrate);
   }
   CATCH(e) {
     xbt_ex_free(e);
@@ -409,10 +410,9 @@ Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env, jobject jtask,
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 
   if (rv != MSG_OK) {
-    jmsg_throw_status(env, rv);
+  	jmsg_throw_status(env, rv);
   }
 }
-
 
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
@@ -610,6 +610,29 @@ Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jtask,
 
   (*env)->ReleaseStringUTFChars(env, jalias, alias);
 }
+
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_dsendBounded(JNIEnv * env, jobject jtask,
+                                jstring jalias, jdouble maxrate) {
+  const char *alias = (*env)->GetStringUTFChars(env, jalias, 0);
+
+  msg_task_t task = jtask_to_native_task(jtask, env);
+
+
+  if (!task) {
+    (*env)->ReleaseStringUTFChars(env, jalias, alias);
+    jxbt_throw_notbound(env, "task", jtask);
+    return;
+  }
+
+  /* Pass a global ref to the Jtask into the Ctask so that the receiver can use it */
+  MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
+  MSG_task_dsend_bounded(task, alias, msg_task_cancel_on_failed_dsend,(double)maxrate);
+
+  (*env)->ReleaseStringUTFChars(env, jalias, alias);
+}
+
+
 
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Task_listen(JNIEnv * env, jclass cls,

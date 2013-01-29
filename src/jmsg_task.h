@@ -191,13 +191,14 @@ JNIEXPORT void JNICALL
     Java_org_simgrid_msg_Task_send
     (JNIEnv *, jobject, jstring, jdouble);
 
-/*
+/**
  * Class		org_simgrid_msg_Task
  * Method		sendBounded
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Task_sendBounded(JNIEnv *, jobject, jstring,
-                                               jdouble);
+    Java_org_simgrid_msg_Task_sendBounded
+    (JNIEnv *, jobject, jstring, jdouble, jdouble);
+
 
 /**
  * Class		org_simgrid_msg_Task
@@ -236,6 +237,15 @@ Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jobject jtask, jstring jmail
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_dsend(JNIEnv * env, jobject jtask,
                                 jstring jalias);
+
+/**
+ * Class 		org_simgrid_msg_Task
+ * Method		dsendBounded
+ */
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_dsendBounded(JNIEnv * env, jobject jtask,
+                                jstring jalias, jdouble maxrate);
+
 /**
  * Class 		org_simgrid_msg_Task
  * Method		listen

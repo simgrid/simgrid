@@ -187,7 +187,15 @@ public class Task {
 	 *  with no way to retrieve whether the communication succeeded or not
 	 * 
 	 */
-	public native void dsend(String mailbox);	
+	public native void dsendBounded(String mailbox, double maxrate);
+
+
+	/** Send the task asynchronously on the mailbox identified by the specified name, 
+	 *  with no way to retrieve whether the communication succeeded or not
+	 * 
+	 */
+	public native void dsend(String mailbox);
+	
 	/**
 	 * Sends the task on the mailbox identified by the specified name 
 	 *
@@ -220,7 +228,26 @@ public class Task {
      * @throws HostFailureException
      * @throws TimeoutException
 	 */
-	public native void sendBounded(String alias, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException;
+	public void sendBounded(String alias, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
+              sendBounded(alias,-1,maxrate);
+        }
+
+
+/**
+	 * Sends the task on the mailbox identified by the specified alias  (capping the sending rate to \a maxrate) with a timeout
+	 *
+     * @param alias
+     * @param timeout
+     * @param maxrate 
+     * @throws TransferFailureException
+     * @throws HostFailureException
+     * @throws TimeoutException
+	 */
+	public void sendBounded(String alias, double timeout, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
+              sendBounded(alias,timeout,maxrate);
+        }
+
+
 	/**
 	 * Sends the task on the mailbox asynchronously
 	 */
