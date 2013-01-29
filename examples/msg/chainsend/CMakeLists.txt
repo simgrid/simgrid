@@ -14,7 +14,7 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/deployment_chainsend.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deployment_tesh.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform_chainsend.xml
   PARENT_SCOPE
   )
