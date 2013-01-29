@@ -94,12 +94,6 @@ doc/footer.html
 *.doc.toc
 doc/latex/
 doc/html
-doc/user_guide/html
-doc/user_guide/latex
-doc/ref_guide/html
-doc/ref_guide/latex
-doc/dev_guide/html
-doc/dev_guide/latex
 doc/index.php
 doc/simgrid.tag
 doc/doxygen/logcategories.doc

@@ -3,25 +3,6 @@
 #########################################
 
 # doc
-file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/shared/doxygen/)
-file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/)
-file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/)
-
-install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/"
-  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/ref_guide/html/"
-  PATTERN ".svn" EXCLUDE
-  PATTERN ".git" EXCLUDE
-  PATTERN "*.o" EXCLUDE
-  PATTERN "*~" EXCLUDE
-  )
-
-install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/"
-  DESTINATION "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/user_guide/html/"
-  PATTERN ".svn" EXCLUDE
-  PATTERN ".git" EXCLUDE
-  PATTERN "*.o" EXCLUDE
-  PATTERN "*~" EXCLUDE
-  )
 
 #### Generate the manpages
 if(NOT WIN32)
@@ -230,10 +211,6 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
   COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}-${release_version}.tar.gz
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/user_guide/html/
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/ref_guide/html/
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/user_guide/html/ ${PROJECT_NAME}-${release_version}/doc/user_guide/html/
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/ref_guide/html/ ${PROJECT_NAME}-${release_version}/doc/ref_guide/html/
   )
 add_dependencies(dist-dir simgrid_documentation)
 add_dependencies(dist-dir maintainer_files)
