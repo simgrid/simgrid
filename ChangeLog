@@ -17,8 +17,8 @@ SimGrid (3.9) NOT RELEASED; urgency=low
 
  Documentation:
  * Major overhaul. Merge our documentation again as time proved that
-   spliting it was really not helping our users.
- * Further improve the developer documentation to help newcommers
+   splitting it was really not helping our users.
+ * Further improve the developer documentation to help newcomers
    hacking on SimGrid itself. The user documentation (and in
    particular, the beginner documentation) is still in a sorry state.
 
@@ -27,19 +27,21 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  * Much more extensive test suite, from MPICH
 
  SIMDAG:
- * Add a new loader (SD_PTG_dotload) that creates a parallel task graph 
-  (i.e., a DAG whose nodes are parallel tasks) from a dot file. Creates a dynar
-   of SD_TASK_COMP_PAR_AMDAHL and SD_TASK_COMM_MXN_1D_BLOCK tasks.
- * Bug fix: let task be scheduled when the last dependency to be solved is a 
-   control dependency.
+ * Add a new loader (SD_PTG_dotload) that creates a parallel task graph
+  (i.e., a DAG whose nodes are parallel tasks) from a dot file. Creates a
+  dynar of SD_TASK_COMP_PAR_AMDAHL and SD_TASK_COMM_MXN_1D_BLOCK tasks.
+ * Bug fix: let task be scheduled when the last dependency to be solved is
+   a control dependency.
  * Remove SD_load_environment_script function.
-   Use the C sg_platf function if you want to declare a platform programmatically  
+   Use the C sg_platf function if you want to declare a platform
+   programmatically.
 
  MSG:
  * New function: MSG_process_get_number()
  * Old function documented: MSG_config()
  * Remove MSG_load_platform_script function
-   Use the C sg_platf function if you want to declare a platform programmatically  
+   Use the C sg_platf function if you want to declare a platform
+   programmatically.
 
  SURF:
  * Change the default value of the TCP_gamma constant (maximal size of TCP
@@ -47,9 +49,9 @@ SimGrid (3.9) NOT RELEASED; urgency=low
    your simulation results, you can fall back to the previous 20k tiny window
    by adding --cfg=network/TCP_gamma:20000 on command line.
  * Bug fix about the way periodic availability/state traces are handled.
- * Bug fix: use default values at start when first event in availability/state 
+ * Bug fix: use default values at start when first event in availability/state
    trace is not at time 0.
-   
+
  PLATFORM:
  * remove the "new_" part of function name sg_platf_new_trace_connect
    (resulting in sg_platf_trace_connect), since it does not create
@@ -57,18 +59,18 @@ SimGrid (3.9) NOT RELEASED; urgency=low
 
  XBT:
  * Kill synchronized dynars, and xbt_dynar_dopar(). We cannot think of a
-   usecase where it's really mandatory, and maintaining it was a pain in
-   our codebase.
+   use case where it's really mandatory, and maintaining it was a pain in
+   our code base.
  * New: xbt_fifo_search(), search an item with a user-provided
    comparison function instead of dumb pointer comparison.
 
  LUA:
  * Fix the lua deployment:
-   Use `simgrid.init_application()` before deployment instead of 
+   Use `simgrid.init_application()` before deployment instead of
    `simgrid.msg_register_application()` after.
 
  TRACING:
- * Transfert the tracing files into the corresponding modules.
+ * Transfer the tracing files into the corresponding modules.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

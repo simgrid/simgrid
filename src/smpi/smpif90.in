@@ -5,7 +5,7 @@ CC=@CMAKE_Fortran_Compiler@
 INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
 
-FFLAGS="-O2 -ff2c "
+FFLAGS="-ff2c "
 LINKARGS="-lsimgrid -lsmpi -lm -lgfortran"
 main_name=main
 TMPFILE=$(mktemp).f90
