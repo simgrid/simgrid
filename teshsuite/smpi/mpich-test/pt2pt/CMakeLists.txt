@@ -401,5 +401,29 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  PARENT_SCOPE
+  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
+  ${CMAKE_CURRENT_SOURCE_DIR}/self.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/sndrcvrep.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/waitany.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/reqcreate.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/persistent.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/allpair2.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/typeub3.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/waitall.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/nullproc2.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/allpair.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/hindexed.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/ssendtest2.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/sendmany.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/nullproc.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/nbtest.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/sendcplx.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/hvec.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/typebase.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/typeub2.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/structf.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/typecreate.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/nblock.std
+
+PARENT_SCOPE
   )
