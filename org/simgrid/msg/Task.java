@@ -225,7 +225,13 @@ public class Task {
 	 * Sends the task on the mailbox asynchronously
 	 */
 	public native Comm isend(String mailbox);
+
+	/**
+	 * Sends the task on the mailbox asynchronously (capping the sending rate to \a maxrate)
+	 */
+	public native Comm isendBounded(String mailbox, double maxrate);
 	
+
 	/**
 	 * Starts listening for receiving a task from an asynchronous communication
 	 * @param mailbox

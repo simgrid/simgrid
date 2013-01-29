@@ -538,6 +538,47 @@ MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
   return jcomm;
 }
 
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jobject jtask, jstring jmailbox, jdouble maxrate) {
+  jclass comm_class;
+
+  const char *mailbox;
+
+  msg_task_t task;
+
+  jobject jcomm;
+  msg_comm_t comm;
+
+  comm_class = (*env)->FindClass(env, "org/simgrid/msg/Comm");
+
+  if (!comm_class) return NULL;
+
+  jcomm = (*env)->NewObject(env, comm_class, jtask_method_Comm_constructor);
+  mailbox = (*env)->GetStringUTFChars(env, jmailbox, 0);
+
+  task = jtask_to_native_task(jtask, env);
+
+  if (!task) {
+    (*env)->ReleaseStringUTFChars(env, jmailbox, mailbox);
+    (*env)->DeleteLocalRef(env, jcomm);
+    jxbt_throw_notbound(env, "task", jtask);
+        return NULL;
+  }
+
+MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
+  comm = MSG_task_isend_bounded(task,mailbox,maxrate);
+
+  (*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (long)(comm));
+  (*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (long)(NULL));
+  (*env)->SetBooleanField(env, jcomm, jtask_field_Comm_receiving, JNI_FALSE);
+
+  (*env)->ReleaseStringUTFChars(env, jmailbox, mailbox);
+
+  return jcomm;
+}
+
+
+
 static void msg_task_cancel_on_failed_dsend(void*t) {
   msg_task_t task = t;
   JNIEnv *env =get_current_thread_env();

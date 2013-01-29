@@ -223,6 +223,14 @@ JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject jtask, jstring jmailbox);
 /**
  * Class 		org_simgrid_msg_Task
+ * Method		isend
+ * Signature	(Lorg/simgrid/msg/Task;Ljava/lang/String;)Lorg/simgrid/msg/Comm;
+ */
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jobject jtask, jstring jmailbox, jdouble maxrate);
+
+/**
+ * Class 		org_simgrid_msg_Task
  * Method		dsend
  */
 JNIEXPORT void JNICALL
