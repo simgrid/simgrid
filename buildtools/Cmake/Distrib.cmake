@@ -3,6 +3,9 @@
 #########################################
 
 # doc
+file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html/)
+install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
+  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/html/)
 
 #### Generate the manpages
 if(NOT WIN32)
