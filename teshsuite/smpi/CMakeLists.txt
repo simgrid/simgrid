@@ -62,6 +62,7 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/compute.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/hvector.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/indexed.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt.tesh

@@ -57,11 +57,11 @@ set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag2.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag2_lua.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_comm_throttling.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_seq_access.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_tracing.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_typed_tasks.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_avail.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_fail.tesh
   PARENT_SCOPE
   )

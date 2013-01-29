@@ -594,20 +594,22 @@ static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size
   surf_stat_t content;
 
   while ((read = getline(&line, &len, file)) != -1) {
+    if (read){
     content = xbt_new0(s_surf_stat_t,1);
     if(sscanf(line,"%s %d %s %s %ld %s %s %s",user_rights,&nb,user,group,&size,date,time,path)==8) {
-      content->stat.date = xbt_strdup(date);
-      content->stat.group = xbt_strdup(group);
-      content->stat.size = size;
-      content->stat.time = xbt_strdup(time);
-      content->stat.user = xbt_strdup(user);
-      content->stat.user_rights = xbt_strdup(user_rights);
-      *used_size += content->stat.size;
-      xbt_dict_set(parse_content,path,content,NULL);
-    } else {
-      xbt_die("Be sure of passing a good format for content file.\n");
-      // You can generate this kind of file with command line:
-      // find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
+        content->stat.date = xbt_strdup(date);
+        content->stat.group = xbt_strdup(group);
+        content->stat.size = size;
+        content->stat.time = xbt_strdup(time);
+        content->stat.user = xbt_strdup(user);
+        content->stat.user_rights = xbt_strdup(user_rights);
+        *used_size += content->stat.size;
+        xbt_dict_set(parse_content,path,content,NULL);
+      } else {
+        xbt_die("Be sure of passing a good format for content file.\n");
+        // You can generate this kind of file with command line:
+        // find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
+      }
     }
   }
   if (line)

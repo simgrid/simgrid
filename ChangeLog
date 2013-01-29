@@ -1,4 +1,4 @@
-SimGrid (3.9) NOT RELEASED; urgency=low
+SimGrid (3.9) stable; urgency=low
 
  The Grasgory release: GRAS is really dead now.
 
@@ -48,7 +48,7 @@ SimGrid (3.9) NOT RELEASED; urgency=low
    congestion window) to a more realistic 4MiB value. If you notice changes in
    your simulation results, you can fall back to the previous 20k tiny window
    by adding --cfg=network/TCP_gamma:20000 on command line.
- * Bug fix about the way periodic availability/state traces are handled.
+ * (Hopefully) fix a bug wrt periodic availability and state traces
  * Bug fix: use default values at start when first event in availability/state
    trace is not at time 0.
 
@@ -72,7 +72,7 @@ SimGrid (3.9) NOT RELEASED; urgency=low
  TRACING:
  * Transfer the tracing files into the corresponding modules.
 
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Tue Jan 29 19:38:56 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.8.1) stable; urgency=low
 
