@@ -699,6 +699,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/platforms/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
+  teshsuite/smpi/mpich-test/CMakeLists.txt
   teshsuite/smpi/mpich-test/env/CMakeLists.txt
   teshsuite/smpi/mpich-test/coll/CMakeLists.txt
   teshsuite/smpi/mpich-test/context/CMakeLists.txt
