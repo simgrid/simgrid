@@ -407,6 +407,66 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
 #endif
 }
 
+
+/** \ingroup msg_task_usage
+ * \brief Sends a task on a mailbox with a maximal rate.
+ *
+ * This is a non blocking detached send function.
+ * Think of it as a best effort send. Keep in mind that the third parameter
+ * is only called if the communication fails. If the communication does work,
+ * it is responsibility of the receiver code to free anything related to
+ * the task, as usual. More details on this can be obtained on
+ * <a href="http://lists.gforge.inria.fr/pipermail/simgrid-user/2011-November/002649.html">this thread</a>
+ * in the SimGrid-user mailing list archive.
+ *
+ * \param task a #msg_task_t to send on another location.
+ * \param alias name of the mailbox to sent the task to
+ * \param cleanup a function to destroy the task if the
+ * communication fails, e.g. MSG_task_destroy
+ * (if NULL, no function will be called)
+ * \param maxrate the maximum communication rate for sending this task
+ * 
+ */
+void MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate)
+{
+  task->simdata->rate = maxrate;
+  
+  simdata_task_t t_simdata = NULL;
+  msg_process_t process = MSG_process_self();
+  msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
+
+  /* Prepare the task to send */
+  t_simdata = task->simdata;
+  t_simdata->sender = process;
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
+
+  xbt_assert(t_simdata->isused == 0,
+              "This task is still being used somewhere else. You cannot send it now. Go fix your code!");
+
+  t_simdata->isused = 1;
+  t_simdata->comm = NULL;
+  msg_global->sent_msg++;
+
+#ifdef HAVE_TRACING
+  int call_end = TRACE_msg_task_put_start(task);
+#endif
+
+  /* Send it by calling SIMIX network layer */
+  smx_action_t comm = simcall_comm_isend(mailbox, t_simdata->message_size,
+                       t_simdata->rate, task, sizeof(void *), NULL, cleanup, NULL, 1);
+  t_simdata->comm = comm;
+#ifdef HAVE_TRACING
+    if (TRACE_is_enabled()) {
+      simcall_set_category(comm, task->category);
+    }
+#endif
+
+#ifdef HAVE_TRACING
+  if (call_end)
+    TRACE_msg_task_put_end();
+#endif
+}
+
 /** \ingroup msg_task_usage
  * \brief Starts listening for receiving a task from an asynchronous communication.
  *
@@ -759,6 +819,29 @@ msg_error_t
 MSG_task_send_with_timeout(msg_task_t task, const char *alias,
                            double timeout)
 {
+  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias),
+                                      task, timeout);
+}
+
+/** \ingroup msg_task_usage
+ * \brief Sends a task to a mailbox with a timeout and with a maximum rate
+ *
+ * This is a blocking function, the execution flow will be blocked
+ * until the task is sent or the timeout is achieved.
+ *
+ * \param task the task to be sent
+ * \param alias the mailbox name to where the task is sent
+ * \param timeout is the maximum wait time for completion (if -1, this call is the same as #MSG_task_send)
+ * \param maxrate the maximum communication rate for sending this task
+ *
+ * \return Returns #MSG_OK if the task was successfully sent,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
+ */
+msg_error_t
+MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias,
+                           double timeout, double maxrate)
+{
+  task->simdata->rate = maxrate;
   return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias),
                                       task, timeout);
 }

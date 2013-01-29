@@ -231,6 +231,7 @@ XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task,
                                                     void *match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
+XBT_PUBLIC(void) MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate);
 XBT_PUBLIC(msg_comm_t) MSG_task_irecv(msg_task_t * task, const char *alias);
 XBT_PUBLIC(int) MSG_comm_test(msg_comm_t comm);
 XBT_PUBLIC(int) MSG_comm_testany(xbt_dynar_t comms);
@@ -250,6 +251,10 @@ XBT_PUBLIC(int) MSG_task_listen_from_host(const char *alias,
 XBT_PUBLIC(msg_error_t)
     MSG_task_send_with_timeout(msg_task_t task, const char *alias,
                            double timeout);
+    
+XBT_PUBLIC(msg_error_t)
+    MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias,
+                           double timeout, double maxrate);
 
 XBT_PUBLIC(msg_error_t)
     MSG_task_send(msg_task_t task, const char *alias);
