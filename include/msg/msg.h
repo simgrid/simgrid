@@ -224,6 +224,7 @@ XBT_PUBLIC(msg_error_t)
 #define MSG_task_recv(t,a) MSG_task_receive(t,a)
 
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
+XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task,
                                                     const char *alias,
                                                     int (*match_fun)(void*,void*, smx_action_t),

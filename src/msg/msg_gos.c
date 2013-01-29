@@ -272,6 +272,25 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
 }
 
 /** \ingroup msg_task_usage
+ * \brief Sends a task on a mailbox with a maximum rate
+ *
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
+ * to end the communication. The maxrate parameter allows the application
+ * to limit the bandwidth utilization of network links when sending the task.
+ *
+ * \param task a #msg_task_t to send on another location.
+ * \param alias name of the mailbox to sent the task to
+ * \param maxrate the maximum communication rate for sending this task .
+ * \return the msg_comm_t communication created
+ */
+msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate)
+{
+  task->simdata->rate = maxrate;
+  return MSG_task_isend_with_matching(task,alias,NULL,NULL);
+}
+
+
+/** \ingroup msg_task_usage
  * \brief Sends a task on a mailbox, with support for matching requests
  *
  * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
