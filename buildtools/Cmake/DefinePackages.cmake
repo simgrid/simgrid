@@ -107,7 +107,7 @@ set(SMPI_SRC
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
   )
-  
+
 if(SMPI_F2C)
   set(SMPI_SRC
     ${SMPI_SRC}
@@ -541,13 +541,13 @@ set(DOC_SOURCES
   doc/triva-graph_configuration.png
   doc/triva-graph_visualization.png
   doc/triva-time_interval.png
-  
-    doc/doxygen/footer.html
+
+  doc/doxygen/footer.html
   doc/doxygen/header.html
   doc/doxygen/stylesheet.css
-  
+
   doc/doxygen/index.doc
-  doc/doxygen/getting_started.doc  
+  doc/doxygen/getting_started.doc
   doc/doxygen/introduction.doc
   doc/doxygen/use.doc
   doc/doxygen/bindings.doc
@@ -559,26 +559,41 @@ set(DOC_SOURCES
   doc/doxygen/tracing.doc
   doc/doxygen/FAQ.doc
   doc/doxygen/advanced.doc
-    doc/doxygen/inside_autotests.doc  
-    doc/doxygen/inside_cmake.doc
-    doc/doxygen/inside_extending.doc 
-    doc/doxygen/inside_release.doc
-    doc/doxygen/contributing.doc
+  doc/doxygen/inside_autotests.doc
+  doc/doxygen/inside_cmake.doc
+  doc/doxygen/inside_extending.doc
+  doc/doxygen/inside_release.doc
+  doc/doxygen/contributing.doc
   doc/doxygen/modules.doc
-    doc/doxygen/module-msg.doc
-    doc/doxygen/module-sd.doc
-    doc/doxygen/module-simix.doc
-    doc/doxygen/module-surf.doc
-    doc/doxygen/module-trace.doc
-    doc/doxygen/module-xbt.doc
+  doc/doxygen/module-msg.doc
+  doc/doxygen/module-sd.doc
+  doc/doxygen/module-simix.doc
+  doc/doxygen/module-surf.doc
+  doc/doxygen/module-trace.doc
+  doc/doxygen/module-xbt.doc
 
+  doc/msg-tuto-src/masterworker0.c
+  doc/msg-tuto-src/masterworker4.c
+  doc/msg-tuto-src/platforms/griffon.xml
+  doc/msg-tuto-src/platforms/platform.xml
+  doc/msg-tuto-src/platforms/g5k.xml
+  doc/msg-tuto-src/platforms/peers.xml
+  doc/msg-tuto-src/platforms/cloud.xml
+  doc/msg-tuto-src/masterworker2.c
+  doc/msg-tuto-src/deployment3.xml
+  doc/msg-tuto-src/deployment0.xml
+  doc/msg-tuto-src/deployment1.xml
+  doc/msg-tuto-src/masterworker1.c
+  doc/msg-tuto-src/masterworker3.c
+  doc/msg-tuto-src/deployment2.xml
+  doc/msg-tuto-src/deployment_general.xml
   )
 
 set(DOC_FIGS
   ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
   ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
   )
-  
+
 set(DOC_TOOLS
   tools/doxygen/fig2dev_postprocessor.pl
   tools/doxygen/index_create.pl
