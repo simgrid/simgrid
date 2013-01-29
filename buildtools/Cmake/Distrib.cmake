@@ -310,6 +310,12 @@ add_custom_target(distcheck
   ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst/lib/libsimgrid.so
   ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_inst/lib/libsimgridtest.so
 
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Build documentation"
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} simgrid_documentation
+
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX Install with documentation"
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}/_build ${CMAKE_MAKE_PROGRAM} install
+
   COMMAND ${CMAKE_COMMAND} -E echo "XXX Remove temp directories"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
   )
