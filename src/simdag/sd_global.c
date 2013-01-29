@@ -138,6 +138,9 @@ void SD_application_reinit(void)
         xbt_dynar_length(done_task->tasks_before);
       done_task->is_not_ready = done_task->unsatisfied_dependencies;
     }
+    free(done_task->workstation_list);
+    done_task->workstation_list = NULL;
+    done_task->workstation_nb = 0;
   }
 
   xbt_swag_free(sd_global->done_task_set);
@@ -158,6 +161,7 @@ void SD_application_reinit(void)
 
 
 #ifdef HAVE_JEDULE
+  jedule_sd_dump();
   jedule_sd_cleanup();
   jedule_sd_init();
 #endif
