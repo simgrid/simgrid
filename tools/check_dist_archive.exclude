@@ -1,0 +1,77 @@
+# Expected dfferences between git repository and tardists
+#
+# lines beginning with '#', and empty lines are ignored
+# lines beginning with '- ' are expected in archive only
+# lines beginning with '+ ' are expected in git only
+# each line is an extended regexp that should match full file names
+
+- Makefile
+- doc/html/.*
+
++ \.gitignore
++ README\.(coding|git)
++ mk_win-dist.sh
+
++ buildtools/(jenkins|pipol)/.*
+
++ contrib/.*
+
++ examples/msg/actions/NAS_LU_S_4/.*
++ examples/msg/chainsend/generate_deployment_file\.rb
++ examples/msg/chord/chord3\.xml
+
++ examples/smpi/MM/command_exemple
++ examples/smpi/MM/host
++ examples/smpi/NAS/.*
+
++ src/simix/README_attempt_without_stack
++ src/simix/simix_network\.tla
+
++ src/smpi/BUGS
++ src/smpi/fixsrc\.pl
++ src/smpi/myprintloc\.cocci
++ src/smpi/patch_source\.sh
++ src/smpi/replace_globals\.cocci
++ src/smpi/replace_static\.cocci
+
++ teshsuite/smpi/mpich-test/coll/bcast2\.f
++ teshsuite/smpi/mpich-test/coll/nbcoll\.c
++ teshsuite/smpi/mpich-test/coll/shortint\.c
++ teshsuite/smpi/mpich-test/coll/temprun
++ teshsuite/smpi/mpich-test/context/attrt\.c
++ teshsuite/smpi/mpich-test/context/commnames\.c
++ teshsuite/smpi/mpich-test/env/argstest\.c
++ teshsuite/smpi/mpich-test/env/cmdline\.c
++ teshsuite/smpi/mpich-test/env/errhand2\.c
++ teshsuite/smpi/mpich-test/env/hang\.c
++ teshsuite/smpi/mpich-test/pt2pt/fairness/README
++ teshsuite/smpi/mpich-test/pt2pt/fairness/fairness-euih\.c
++ teshsuite/smpi/mpich-test/pt2pt/fairness/fairness\.c
++ teshsuite/smpi/mpich-test/pt2pt/fairness/fairness2\.c
++ teshsuite/smpi/mpich-test/pt2pt/fairness/fairness2m\.c
++ teshsuite/smpi/mpich-test/pt2pt/fairness/fairnessm\.c
++ teshsuite/smpi/mpich-test/pt2pt/isndrcv2\.c
++ teshsuite/smpi/mpich-test/pt2pt/mpitest\.h
++ teshsuite/smpi/mpich-test/pt2pt/systest\.c
++ teshsuite/smpi/mpich-test/pt2pt/systest1\.c
++ teshsuite/smpi/mpich-test/pt2pt/testhetero
++ teshsuite/smpi/mpich-test/topol/cart\.c
++ teshsuite/smpi/mpich-test/topol/cart1f\.f
++ teshsuite/smpi/mpich-test/topol/cart2\.c
++ teshsuite/smpi/mpich-test/topol/cart2f\.f
++ teshsuite/smpi/mpich-test/topol/cartc\.f90
++ teshsuite/smpi/mpich-test/topol/cartf\.f
++ teshsuite/smpi/mpich-test/topol/cartf\.std
++ teshsuite/smpi/mpich-test/topol/cartmap\.c
++ teshsuite/smpi/mpich-test/topol/cartmap\.std
++ teshsuite/smpi/mpich-test/topol/cartorder\.c
++ teshsuite/smpi/mpich-test/topol/dims\.c
++ teshsuite/smpi/mpich-test/topol/graphtest\.c
++ teshsuite/smpi/mpich-test/topol/graphtest\.std
++ teshsuite/smpi/mpich-test/topol/test\.c
++ teshsuite/smpi/mpich-test/topol/test\.h
++ teshsuite/smpi/mpich-test/topol/twod\.f
++ teshsuite/smpi/mpich-test/topol/twod2\.f
+
++ tools/check_dist_archive
++ tools/check_dist_archive\.exclude

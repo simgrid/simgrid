@@ -785,7 +785,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/test_prog/prog_stackgrowth.c
   buildtools/Cmake/test_prog/prog_stacksetup.c
   buildtools/Cmake/test_prog/prog_thread_storage.c
-  buildtools/Cmake/test_prog/prog_va_copy.c
   buildtools/Cmake/test_prog/prog_vsnprintf.c
   )
 

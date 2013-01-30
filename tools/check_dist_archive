@@ -1,0 +1,100 @@
+#!/bin/bash
+
+set -e
+
+if [ "$1" = "-batch" ]; then
+    shift
+    interactive=0
+elif [ -t 1 ]; then
+    interactive=1
+else
+    interactive=0
+fi
+
+if [ $# -lt 1 -o $# -gt 3 ]; then
+    cat <<EOF
+Usage: $0 [-batch] archive.tar.gz [git_url [git_branch]]
+EOF
+    exit 1
+fi
+
+archive=$1
+if [ ! -r "$archive" ]; then
+    printf 'File not found: %s\n' "$archive"
+    exit 1
+fi
+
+if [ $# -ge 2 ]; then
+    giturl=$2
+    gitbranch=${3:-master}
+else
+    giturl=$(git rev-parse --show-toplevel)
+    gitbranch=$(git branch | sed -n '/^\*/{s/^..//;p;}')
+fi
+
+tmpdir=$(mktemp -d)
+trap "rm -fr \"$tmpdir\"" EXIT
+
+arch_dir="$tmpdir/a"
+git_dir="$tmpdir/b"
+
+myname=$(type -p "$0")
+case "$myname" in
+    /*)
+        exclude="$myname.exclude"
+        ;;
+    *)
+        exclude="$PWD/$myname.exclude"
+        ;;
+esac
+
+if [ ! -r "$exclude" ]; then
+    printf 'File not found: %s\n' "$exclude"
+    exit 1
+fi
+
+echo "Exclude patterns extracted from file: $exclude"
+
+echo "Extracting archive: $archive -> $arch_dir"
+tar --directory "$tmpdir" \
+    --transform 's!^[^/]*!a!' \
+    --extract --gunzip --file "$archive"
+
+echo "Copying git repository: $giturl/$gitbranch -> $git_dir"
+git archive --format=tar --prefix="b/" --remote="$giturl" "$gitbranch" \
+    | tar --directory "$tmpdir" --extract --file -
+
+fa=from_tgz
+fb=from_git
+cd "$tmpdir"
+
+sed -n '/^-/{s/^- //;p;}' "$exclude" > ea
+sed -n '/^+/{s/^+ //;p;}' "$exclude" > eb
+
+find a -type f \
+    | sed 's!^a/!!' \
+    | grep -E -v -x -f ea \
+    | sort > "$fa"
+find b -type f \
+    | sed 's!^b/!!' \
+    | grep -E -v -x -f eb \
+    | sort > "$fb"
+
+diffcmd() {
+    diff -u "$fa" "$fb"
+}
+
+colordiff=$(type -p colordiff)
+colorless() {
+    if [ -n "$colordiff" ]; then
+        "$colordiff" | less -R -F
+    else
+        less -F
+    fi
+}
+
+if [ "$interactive" = "1" ]; then
+    diffcmd | colorless
+else
+    diffcmd
+fi
