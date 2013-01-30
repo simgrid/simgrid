@@ -90,6 +90,7 @@ void SIMIX_pre_process_suspend(smx_simcall_t simcall, smx_process_t process);
 smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer);
 int SIMIX_process_get_PID(smx_process_t self);
+int SIMIX_process_get_PPID(smx_process_t self);
 void* SIMIX_process_get_data(smx_process_t process);
 void SIMIX_process_set_data(smx_process_t process, void *data);
 smx_host_t SIMIX_process_get_host(smx_process_t process);
@@ -119,6 +120,7 @@ void SIMIX_pre_process_resume(smx_simcall_t simcall, smx_process_t process);
 int SIMIX_pre_process_count(smx_simcall_t simcall);
 void* SIMIX_pre_process_self_get_data(smx_simcall_t simcall, smx_process_t process);
 int SIMIX_pre_process_get_PID(smx_simcall_t simcall, smx_process_t self);
+int SIMIX_pre_process_get_PPID(smx_simcall_t simcall, smx_process_t self);
 void* SIMIX_pre_process_get_data(smx_simcall_t simcall, smx_process_t process);
 void SIMIX_pre_process_set_data(smx_simcall_t simcall, smx_process_t process,
                                 void *data);

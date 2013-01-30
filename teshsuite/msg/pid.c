@@ -9,15 +9,16 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
-char* mailbox = "mailbox";
+const char* mailbox = "mailbox";
 #define task_comp_size 1000
 #define task_comm_size 100000
 
-int onexit(void* data){
-  XBT_INFO("Process \"%d\" killed.", *((int*)data));  
+static int onexit(void* data){
+  XBT_INFO("Process \"%d\" killed.", *((int*)data));
+  return 0;
 }
 
-int sendpid(int argc, char *argv[])
+static int sendpid(int argc, char *argv[])
 {
   int pid = MSG_process_self_PID();
   MSG_process_on_exit(onexit, &pid);  
@@ -26,9 +27,10 @@ int sendpid(int argc, char *argv[])
   MSG_task_send(task, mailbox);
   XBT_INFO("Send of pid \"%d\" done.", pid);
   MSG_process_suspend(MSG_process_self());
+  return 0;
 }
 
-int killall(int argc, char *argv[]){
+static int killall(int argc, char *argv[]){
   msg_task_t task = NULL;
   _XBT_GNUC_UNUSED int res;
   int i;
@@ -39,6 +41,7 @@ int killall(int argc, char *argv[]){
     MSG_process_kill(MSG_process_from_PID(pid));
     task = NULL;
   }
+  return 0;
 }
 
 /** Main function */
