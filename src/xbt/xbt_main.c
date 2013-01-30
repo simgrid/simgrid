@@ -35,6 +35,7 @@ int xbt_initialized = 0;
  */
 static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR(200);
 static void xbt_postexit(void);
+static unsigned int seed = 2147483647;
 
 #ifdef _XBT_WIN32
 # undef _XBT_NEED_INIT_PRAGMA
@@ -118,8 +119,9 @@ void xbt_init(int *argc, char **argv)
     xbt_dynar_push(xbt_cmdline,&(argv[i]));
   }
 
-  srand((unsigned int) time(NULL));
-
+  srand(seed);
+  srand48(seed);
+  
   xbt_log_init(argc, argv);
 }
 
