@@ -39,7 +39,14 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord_neverjoin.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison1.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison2.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison3.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison4.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison5.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -54,6 +61,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/chord/deploy_chord_liveness.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test/deploy_snapshot_comparison.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/snapshot_comparison_platform.xml
   PARENT_SCOPE
   )
 set(examples_src

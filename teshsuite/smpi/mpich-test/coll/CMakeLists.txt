@@ -178,6 +178,7 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/allredmany.std
   ${CMAKE_CURRENT_SOURCE_DIR}/allred.std
   ${CMAKE_CURRENT_SOURCE_DIR}/allredf.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/coll13.std
   ${CMAKE_CURRENT_SOURCE_DIR}/scatterv.std
   PARENT_SCOPE
   )
