@@ -124,7 +124,7 @@ static void SIMIX_clean(void)
 #endif
 
   /* Kill everyone (except maestro) */
-  SIMIX_process_killall(simix_global->maestro_process);
+  SIMIX_process_killall(simix_global->maestro_process, 1);
 
   /* Exit the SIMIX network module */
   SIMIX_network_exit();

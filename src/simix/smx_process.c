@@ -144,6 +144,12 @@ void SIMIX_create_maestro_process()
   maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
   maestro->simcall.issuer = maestro;
 
+  if (SIMIX_process_self()) {
+    maestro->ppid = SIMIX_process_get_PID(SIMIX_process_self());
+  } else {
+    maestro->ppid = -1;
+  }
+
   simix_global->maestro_process = maestro;
   return;
 }
@@ -249,6 +255,12 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->comms = xbt_fifo_new();
     (*process)->simcall.issuer = *process;
     
+     if (SIMIX_process_self()) {
+       (*process)->ppid = SIMIX_process_get_PID(SIMIX_process_self());
+     } else {
+       (*process)->ppid = -1;
+     }
+
     /* Process data for auto-restart */
     (*process)->auto_restart = auto_restart;
     (*process)->code = code;
@@ -370,14 +382,14 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
 }
 
-void SIMIX_pre_process_killall(smx_simcall_t simcall) {
-  SIMIX_process_killall(simcall->issuer);
+void SIMIX_pre_process_killall(smx_simcall_t simcall, int reset_pid) {
+  SIMIX_process_killall(simcall->issuer, reset_pid);
 }
 /**
  * \brief Kills all running processes.
  * \param issuer this one will not be killed
  */
-void SIMIX_process_killall(smx_process_t issuer)
+void SIMIX_process_killall(smx_process_t issuer, int reset_pid)
 {
   smx_process_t p = NULL;
 
@@ -386,6 +398,9 @@ void SIMIX_process_killall(smx_process_t issuer)
       SIMIX_process_kill(p,issuer);
     }
   }
+
+  if (reset_pid > 0)
+    simix_process_maxpid = reset_pid;
 
   SIMIX_context_runall();
 
@@ -536,6 +551,28 @@ int SIMIX_pre_process_count(smx_simcall_t simcall){
 int SIMIX_process_count(void)
 {
   return xbt_swag_size(simix_global->process_list);
+}
+
+int SIMIX_pre_process_get_PID(smx_simcall_t simcall, smx_process_t self){
+   return SIMIX_process_get_PID(self);
+}
+
+int SIMIX_process_get_PID(smx_process_t self){
+  if (self == NULL)
+    return 0;
+  else
+    return self->pid;
+}
+
+int SIMIX_pre_process_get_PPID(smx_simcall_t simcall, smx_process_t self){
+  return SIMIX_process_get_PPID(self);
+}
+
+int SIMIX_process_get_PPID(smx_process_t self){
+  if (self == NULL)
+    return 0;
+  else
+    return self->ppid;
 }
 
 void* SIMIX_pre_process_self_get_data(smx_simcall_t simcall, smx_process_t self){

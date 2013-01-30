@@ -342,7 +342,7 @@ XBT_PUBLIC(void) simcall_process_create(smx_process_t *process,
                                           int auto_restart);
 
 XBT_PUBLIC(void) simcall_process_kill(smx_process_t process);
-XBT_PUBLIC(void) simcall_process_killall(void);
+XBT_PUBLIC(void) simcall_process_killall(int reset_pid);
 
 /* Process handling */
 XBT_PUBLIC(void) simcall_process_cleanup(smx_process_t process);
