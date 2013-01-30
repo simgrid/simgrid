@@ -552,7 +552,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
                 xbt_strbuff_append(variables, to_append);
                 xbt_free(to_append);
               }else if(((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) > 0xffffffff) || ((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) < (long)start_text_binary)){
-                to_append = bprintf("%s=%d\n", current_variable->name, (int)(long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address));
+                to_append = bprintf("%s=%u\n", current_variable->name, (unsigned int)(long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address));
                 xbt_strbuff_append(variables, to_append);
                 xbt_free(to_append);
               }else{ 
