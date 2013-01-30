@@ -150,7 +150,6 @@ mc_snapshot_t MC_take_snapshot()
   unsigned int i = 0;
   s_map_region_t reg;
   memory_map_t maps = get_memory_map();
-  int nb_reg = 0;
   void *heap = NULL;
   size_t size = 0;
   void *start = NULL;
@@ -163,15 +162,13 @@ mc_snapshot_t MC_take_snapshot()
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
           snapshot->heap_chunks_used = mmalloc_get_chunks_used(std_heap);
-          heap = snapshot->regions[nb_reg]->data;
-          nb_reg++;
+          heap = snapshot->regions[snapshot->num_reg - 1]->data;
         }
         i++;
       } else{ 
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           size = (char*)reg.end_addr - (char*)reg.start_addr;
           start = reg.start_addr;
-          nb_reg++;
           i++;
           reg = maps->regions[i];
           if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize){
@@ -186,7 +183,6 @@ mc_snapshot_t MC_take_snapshot()
         } else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
           size = (char*)reg.end_addr - (char*)reg.start_addr;
           start = reg.start_addr;
-          nb_reg++;
           i++;
           reg = maps->regions[i];
           if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && reg.start_addr != std_heap && reg.start_addr != raw_heap && i < maps->mapsize){
