@@ -401,6 +401,7 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/README
   ${CMAKE_CURRENT_SOURCE_DIR}/runtests
   ${CMAKE_CURRENT_SOURCE_DIR}/self.std
   ${CMAKE_CURRENT_SOURCE_DIR}/sndrcvrep.std
@@ -424,6 +425,5 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/structf.std
   ${CMAKE_CURRENT_SOURCE_DIR}/typecreate.std
   ${CMAKE_CURRENT_SOURCE_DIR}/nblock.std
-
-PARENT_SCOPE
+  PARENT_SCOPE
   )
