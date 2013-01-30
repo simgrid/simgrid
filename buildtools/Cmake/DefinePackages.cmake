@@ -371,6 +371,7 @@ set(headers_to_install
   include/smpi/mpif.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h
+  include/smpi/smpi_main.h
   include/surf/simgrid_dtd.h
   include/surf/surf_routing.h
   include/surf/surfxml_parse.h
@@ -539,8 +540,11 @@ set(DOC_SOURCES
   doc/simix.fig
   doc/surf_nutshell.fig
   doc/triva-graph_configuration.png
+  doc/triva-graph_configuration.svg
   doc/triva-graph_visualization.png
+  doc/triva-graph_visualization.svg
   doc/triva-time_interval.png
+  doc/triva-time_interval.svg
 
   doc/doxygen/FAQ.doc
   doc/doxygen/advanced.doc
