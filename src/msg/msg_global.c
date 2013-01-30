@@ -46,7 +46,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
 #ifdef MSG_USE_DEPRECATED
     msg_global->max_channel = 0;
 #endif
-    msg_global->PID = 1;
     msg_global->sent_msg = 0;
     msg_global->task_copy_callback = NULL;
     msg_global->process_data_cleanup = NULL;
@@ -152,14 +151,12 @@ void MSG_config(const char *key, const char *value){
  */
 int MSG_process_killall(int reset_PIDs)
 {
-  simcall_process_killall();
+  simcall_process_killall(reset_PIDs);
 
-  if (reset_PIDs > 0) {
-    msg_global->PID = reset_PIDs;
+  if (reset_PIDs > 0)
     msg_global->session++;
-  }
 
-  return msg_global->PID;
+  return 0;
 
 }
 
