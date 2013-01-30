@@ -111,7 +111,7 @@ void TRACE_category_with_color (const char *category, const char *color)
     snprintf (final_color, INSTR_DEFAULT_STR_SIZE, "%s", color);
   }
 
-  XBT_DEBUG("CAT,declare %s, %s", category, final_color);
+  XBT_DEBUG("CAT,declare %s, \"%s\" \"%s\"", category, color, final_color);
 
   //define the type of this category on top of hosts and links
   instr_new_variable_type (category, final_color);

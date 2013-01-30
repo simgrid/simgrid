@@ -93,5 +93,9 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
+  ${CMAKE_CURRENT_SOURCE_DIR}/aborttest.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/errstringsf.std
+  ${CMAKE_CURRENT_SOURCE_DIR}/env.std
   PARENT_SCOPE
   )

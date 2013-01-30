@@ -5,7 +5,9 @@
 # doc
 file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html/)
 install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/html/)
+  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/)
+install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/HelloWorld/"
+  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/HelloWorld/)
 
 #### Generate the manpages
 if(NOT WIN32)
@@ -214,6 +216,8 @@ add_custom_target(dist-dir
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
   COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_NAME}-${release_version}.tar.gz
   COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_NAME}-${release_version}/doc/html/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_HOME_DIRECTORY}/doc/html/ ${PROJECT_NAME}-${release_version}/doc/html/
   )
 add_dependencies(dist-dir simgrid_documentation)
 add_dependencies(dist-dir maintainer_files)

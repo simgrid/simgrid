@@ -1,12 +1,13 @@
 ### define source packages
 
 set(EXTRA_DIST
-  src/include/smpi/smpi_interface.h
+  include/xbt/win32_ucontext.h
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/platf_interface.h
   src/include/simgrid/sg_config.h
+  src/include/smpi/smpi_interface.h
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
   src/include/surf/random_mgr.h
@@ -36,7 +37,6 @@ set(EXTRA_DIST
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_ti_private.h
-  src/surf/platf_generator_private.h
   src/surf/gtnets/gtnets_interface.h
   src/surf/gtnets/gtnets_simulator.h
   src/surf/gtnets/gtnets_topology.h
@@ -48,6 +48,7 @@ set(EXTRA_DIST
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
   src/surf/ns3/red-queue.h
+  src/surf/platf_generator_private.h
   src/surf/simgrid.dtd
   src/surf/simgrid_dtd.c
   src/surf/storage_private.h
@@ -55,6 +56,7 @@ set(EXTRA_DIST
   src/surf/surf_routing_private.h
   src/surf/surfxml_parse.c
   src/surf/trace_mgr_private.h
+  src/win32/config.h
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
   src/xbt/automaton/parserPromela.tab.cacc
@@ -86,9 +88,7 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
   src/xbt/setset_private.h
-  src/win32/config.h
   src/xbt/win32_ucontext.c
-  include/xbt/win32_ucontext.h
   tools/tesh/run_context.h
   tools/tesh/tesh.h
   )
@@ -371,6 +371,7 @@ set(headers_to_install
   include/smpi/mpif.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h
+  include/smpi/smpi_main.h
   include/surf/simgrid_dtd.h
   include/surf/surf_routing.h
   include/surf/surfxml_parse.h
@@ -539,8 +540,16 @@ set(DOC_SOURCES
   doc/simix.fig
   doc/surf_nutshell.fig
   doc/triva-graph_configuration.png
+  doc/triva-graph_configuration.svg
   doc/triva-graph_visualization.png
+  doc/triva-graph_visualization.svg
   doc/triva-time_interval.png
+  doc/triva-time_interval.svg
+
+  doc/HelloWorld/CMakeLists.txt
+  doc/HelloWorld/HelloWorld.c
+  doc/HelloWorld/FindPcreWin.cmake
+  doc/HelloWorld/README
 
   doc/doxygen/FAQ.doc
   doc/doxygen/advanced.doc
@@ -699,6 +708,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/platforms/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
+  teshsuite/smpi/mpich-test/CMakeLists.txt
   teshsuite/smpi/mpich-test/env/CMakeLists.txt
   teshsuite/smpi/mpich-test/coll/CMakeLists.txt
   teshsuite/smpi/mpich-test/context/CMakeLists.txt
@@ -735,6 +745,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindF2c.cmake
   buildtools/Cmake/Modules/FindGTnets.cmake
   buildtools/Cmake/Modules/FindGraphviz.cmake
+  buildtools/Cmake/Modules/FindLibunwind.cmake
   buildtools/Cmake/Modules/FindLua51Simgrid.cmake
   buildtools/Cmake/Modules/FindNS3.cmake
   buildtools/Cmake/Modules/FindPCRE.cmake
@@ -743,7 +754,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Modules/FindRubySimgrid.cmake
   buildtools/Cmake/Modules/FindSimGrid.cmake
   buildtools/Cmake/Modules/FindValgrind.cmake
-  buildtools/Cmake/Modules/FindLibunwind.cmake
   buildtools/Cmake/Option.cmake
   buildtools/Cmake/Pipol.cmake
   buildtools/Cmake/PrintArgs.cmake
@@ -764,6 +774,8 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
   buildtools/Cmake/test_prog/prog_getline.c
+  buildtools/Cmake/test_prog/prog_gnu_dynlinker.c
+  buildtools/Cmake/test_prog/prog_gtnets.cpp
   buildtools/Cmake/test_prog/prog_mutex_timedlock.c
   buildtools/Cmake/test_prog/prog_printf_null.c
   buildtools/Cmake/test_prog/prog_sem_init.c
@@ -775,7 +787,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/test_prog/prog_thread_storage.c
   buildtools/Cmake/test_prog/prog_va_copy.c
   buildtools/Cmake/test_prog/prog_vsnprintf.c
-  buildtools/Cmake/test_prog/prog_gnu_dynlinker.c
   )
 
 set(PLATFORMS_EXAMPLES
@@ -801,8 +812,10 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/generation_scripts/generate_g5k_platform.pl
   examples/platforms/generation_scripts/generate_g5k_platform_cabinets.pl
   examples/platforms/griffon.xml
+  examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
   examples/platforms/prop.xml
+  examples/platforms/routing_cluster.xml
   examples/platforms/storage.xml
   examples/platforms/syscoord/generate_peer_platform.pl
   examples/platforms/syscoord/median_harvard.syscoord
@@ -811,10 +824,8 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_meridian.xml
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/syscoord/median_p2psim.xml
-  examples/platforms/vivaldi.xml
-  examples/platforms/routing_cluster.xml
-  examples/platforms/meta_cluster.xml
   examples/platforms/two_peers.xml
+  examples/platforms/vivaldi.xml
   )
 
 set(generated_src_files
