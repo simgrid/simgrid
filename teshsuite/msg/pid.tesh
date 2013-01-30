@@ -1,0 +1,28 @@
+! output sort
+$ msg/pid ${srcdir:=.}/msg/pid.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sendpid@toto) Sending pid of "1".
+> [  0.000000] (2:sendpid@toto) Sending pid of "2".
+> [  0.000000] (3:sendpid@toto) Sending pid of "3".
+> [  0.001082] (4:killall@toto) Killing process "1".
+> [  0.001082] (1:sendpid@toto) Send of pid "1" done.
+> [  0.001082] (1:sendpid@toto) Process "1" killed.
+> [  0.002165] (2:sendpid@toto) Send of pid "2" done.
+> [  0.002165] (4:killall@toto) Killing process "2".
+> [  0.002165] (2:sendpid@toto) Process "2" killed.
+> [  0.003247] (3:sendpid@toto) Send of pid "3" done.
+> [  0.003247] (4:killall@toto) Killing process "3".
+> [  0.003247] (3:sendpid@toto) Process "3" killed.
+
+$ msg/pid ${srcdir:=.}/msg/pid.xml 2 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (10:sendpid@toto) Sending pid of "2".
+> [  0.000000] (11:sendpid@toto) Sending pid of "3".
+> [  0.000000] (12:sendpid@toto) Sending pid of "4".
+> [  0.001082] (13:killall@toto) Killing process "2".
+> [  0.001082] (1:sendpid@toto) Send of pid "2" done.
+> [  0.001082] (1:sendpid@toto) Process "2" killed.
+> [  0.002165] (2:sendpid@toto) Send of pid "3" done.
+> [  0.002165] (4:killall@toto) Killing process "3".
+> [  0.002165] (2:sendpid@toto) Process "3" killed.
+> [  0.003247] (3:sendpid@toto) Send of pid "4" done.
+> [  0.003247] (4:killall@toto) Killing process "4".
+> [  0.003247] (3:sendpid@toto) Process "4" killed.
