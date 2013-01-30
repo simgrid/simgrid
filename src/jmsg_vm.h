@@ -30,7 +30,7 @@ Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass);
  * Signature	(I)V
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm, jobject jhost, jint jcoreamount);
+Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm, jobject jhost, jstring jname, jint jcoreamount);
 /**
  * Class            org_simgrid_msg_VM
  * Method           destroy

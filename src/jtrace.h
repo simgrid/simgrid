@@ -17,6 +17,15 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare
 
 /*
  * Class:     org_simgrid_trace_Trace
+ * Method:    vmVariableDeclare
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableDeclare
+  (JNIEnv *, jclass, jstring);
+
+
+/*
+ * Class:     org_simgrid_trace_Trace
  * Method:    hostVariableDeclareWithColor
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
@@ -30,6 +39,15 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclareWithColor
  */
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSet
   (JNIEnv *, jclass, jstring, jstring, jdouble);
+
+/*
+ * Class:     org_simgrid_trace_Trace
+ * Method:    vmVariableSet
+ * Signature: (Ljava/lang/String;Ljava/lang/String;D)V
+ */
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableSet
+  (JNIEnv *, jclass, jstring, jstring, jdouble);
+
 
 /*
  * Class:     org_simgrid_trace_Trace
