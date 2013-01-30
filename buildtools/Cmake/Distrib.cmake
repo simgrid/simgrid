@@ -287,6 +287,9 @@ set(CMAKE_BINARY_TEST_DIR ${CMAKE_BINARY_DIR})
 
 # Allow to test the "make dist"
 add_custom_target(distcheck
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX compare archive with git repository"
+  COMMAND ${CMAKE_HOME_DIRECTORY}/tools/check_dist_archive -batch ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
+
   COMMAND ${CMAKE_COMMAND} -E echo "XXX remove old copy"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 
