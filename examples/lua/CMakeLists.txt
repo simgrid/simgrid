@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 2.6)
 
 set(tesh_files
   ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/bittorrent.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/console/master_slave_bypass.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/kademlia/kademlia.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/master_slave.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/mult_matrix.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/state_cloner/duplicated_globals.tesh
@@ -13,6 +15,7 @@ set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/bittorrent.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/kademlia/kademlia.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/quicksort_deployment.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/quicksort_platform.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/state_cloner/deployment_duplicated_globals.xml
@@ -33,6 +36,9 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/console/master_slave_bypass.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/console/platform.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/console/slave.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/kademlia/kademlia.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/kademlia/routing_table.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/kademlia/tools.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/master.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/master_slave.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/platform.lua
