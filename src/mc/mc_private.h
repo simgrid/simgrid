@@ -36,7 +36,7 @@ typedef struct s_mc_mem_region{
 typedef struct s_mc_snapshot{
   unsigned int num_reg;
   int region_type[nb_regions];
-  size_t heap_chunks_used;
+  size_t heap_bytes_used;
   mc_mem_region_t *regions;
   size_t *stack_sizes;
   xbt_dynar_t stacks;
@@ -219,7 +219,7 @@ extern void *end_got_plt_binary;
 
 typedef struct s_mc_comparison_times{
   double nb_processes_comparison_time;
-  double chunks_used_comparison_time;
+  double bytes_used_comparison_time;
   double stacks_sizes_comparison_time;
   double binary_global_variables_comparison_time;
   double libsimgrid_global_variables_comparison_time;

@@ -161,7 +161,7 @@ mc_snapshot_t MC_take_snapshot()
       if (maps->regions[i].pathname == NULL){
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-          snapshot->heap_chunks_used = mmalloc_get_chunks_used(std_heap);
+          snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
           heap = snapshot->regions[snapshot->num_reg - 1]->data;
         }
         i++;

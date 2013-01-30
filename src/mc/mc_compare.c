@@ -225,16 +225,20 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     #endif
   }
 
-  /* Compare number of blocks/fragments used in each heap */
-  if(s1->heap_chunks_used != s2->heap_chunks_used){
+  #ifdef MC_DEBUG
+    xbt_os_timer_start(timer);
+  #endif
+
+  /* Compare number of bytes used in each heap */
+  if(s1->heap_bytes_used != s2->heap_bytes_used){
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);
-      mc_comp_times->chunks_used_comparison_time = xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("Different number of chunks used in each heap : %zu - %zu", s1->heap_chunks_used, s2->heap_chunks_used);
+      mc_comp_times->bytes_used_comparison_time = xbt_os_timer_elapsed(timer);
+      XBT_DEBUG("Different number of bytes used in each heap : %zu - %zu", s1->heap_bytes_used, s2->heap_bytes_used);
       errors++;
     #else
       #ifdef MC_VERBOSE
-        XBT_VERB("Different number of chunks used in each heap : %zu - %zu", s1->heap_chunks_used, s2->heap_chunks_used);
+        XBT_VERB("Different number of bytes used in each heap : %zu - %zu", s1->heap_bytes_used, s2->heap_bytes_used);
       #endif
 
       xbt_os_timer_free(timer);
@@ -648,7 +652,7 @@ int MC_compare_snapshots(void *s1, void *s2){
 void print_comparison_times(){
   XBT_DEBUG("*** Comparison times ***");
   XBT_DEBUG("- Nb processes : %f", mc_comp_times->nb_processes_comparison_time);
-  XBT_DEBUG("- Nb chunks used : %f", mc_comp_times->chunks_used_comparison_time);
+  XBT_DEBUG("- Nb bytes used : %f", mc_comp_times->bytes_used_comparison_time);
   XBT_DEBUG("- Stacks sizes : %f", mc_comp_times->stacks_sizes_comparison_time);
   XBT_DEBUG("- Binary global variables : %f", mc_comp_times->binary_global_variables_comparison_time);
   XBT_DEBUG("- Libsimgrid global variables : %f", mc_comp_times->libsimgrid_global_variables_comparison_time);
