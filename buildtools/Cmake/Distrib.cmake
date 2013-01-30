@@ -6,6 +6,8 @@
 file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html/)
 install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/)
+install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/HelloWorld/"
+  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/HelloWorld/)
 
 #### Generate the manpages
 if(NOT WIN32)

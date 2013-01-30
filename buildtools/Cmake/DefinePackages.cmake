@@ -546,6 +546,11 @@ set(DOC_SOURCES
   doc/triva-time_interval.png
   doc/triva-time_interval.svg
 
+  doc/HelloWorld/CMakeLists.txt
+  doc/HelloWorld/HelloWorld.c
+  doc/HelloWorld/FindPcreWin.cmake
+  doc/HelloWorld/README
+
   doc/doxygen/FAQ.doc
   doc/doxygen/advanced.doc
   doc/doxygen/bindings.doc
