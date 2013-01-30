@@ -152,6 +152,11 @@ public class Task {
 	 * @param computationAmount the amount of computation needed to process the task
 	 */
 	public native void setComputeDuration(double computationAmount);
+	/**
+	 * Set the data size of the task
+	 * @param dataSize the size of the task
+	 */
+	public native void setDataSize(double dataSize);
 	/* *                     * *
 	 * * Computation-related * *
 	 * *                     * */

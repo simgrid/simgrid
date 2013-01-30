@@ -348,6 +348,18 @@ Java_org_simgrid_msg_Task_setComputeDuration
 	MSG_task_set_compute_duration(task, (double) computationAmount);
 }
 JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_setDataSize
+		(JNIEnv *env, jobject jtask, jdouble dataSize) {
+	msg_task_t task = jtask_to_native_task(jtask, env);
+
+	if (!task) {
+    jxbt_throw_notbound(env, "task", jtask);
+    return;
+	}
+	MSG_task_set_data_size(task, (double) dataSize);
+}
+
+JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_send(JNIEnv * env,jobject jtask,
                                     jstring jalias,
                                     jdouble jtimeout)
