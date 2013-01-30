@@ -1,0 +1,5 @@
+This directory is almost exactly the same example than the
+master/slave, the only differences are:
+ * there is no forwarder here
+ * the outputs are a bit less verbose
+ * the example give a lot more work to do (this is used for benchmarking)

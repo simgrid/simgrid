@@ -1,0 +1,30 @@
+/*! \page index Java Binding documentation home page
+
+\section welcome Welcome to Simgrid-java documentation home page
+
+Simgrid-java is a java API that let you use <a href="http://simgrid.gforge.inria.fr/">SimGrid</a> MSG API in your favorite language (java). Without it, you would be forced to use C or one of the other bindings provided. 
+
+MSG was the first distributed programming environment provided within SimGrid. While almost realistic, it remains quite simple. This describes the Java bindings to this interface.
+
+\section jMSG_who Who should use this (and who shouldn't)
+You should use MSG if you want to study some heuristics for a
+given problem you don't really want to implement. SimGrid-java let you use MSG while coding in Java. So if your need is MSG + Java, you're in the right section!
+
+\section SimGrid-java Usage overview 
+
+To make a long story short, it's a JNI binding, so it implies that:
+\li Most of the MSG and SimGrid documentation about behavioral aspects applies directly to what you are programming. 
+\li MSG data structures are mapped to Java objects. So it means that from the syntax point of view, you have to know how those objects are. Fortunately, we have generated the Javadoc for those objects. So take a look at it
+
+Finally, it implies also that your program can crash for 3 main reasons: 
+
+\li Your Java part is not good: you'll have a good old java exception thrown, and hence you should be able to correct it by yourself.
+\li Our java part is not good: you'll also have a java exception thrown, but we have real doubts this can happen, since the java part is only a JNI binding. The other option is that it crashed because you used incorrectly the MSG API, so this means also you should have an MSGException. It means you should read carefully MSG samples and/or documentation.
+\li Something has crashed in the C part. Okay, here comes the tricky thing.
+
+C crashes mainly for 2 reasons: 
+
+\li When something goes wrong in your simulation, sometimes the C part stops because you used SimGrid incorrectly, and JNI bindings are not fond of that. It means that you'll have something that looks ugly, but you should be able to identify what's going wrong in your code by carefully reading the whole error message
+\li It may happen that the problem comes directly from SimGrid: in this case, the error should be uglier. In that case, you may submit a bug directly to SimGrid.	
+
+ */

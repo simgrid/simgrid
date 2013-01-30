@@ -1,0 +1,58 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+
+<platform version="3">
+
+	<AS id="AS0" routing="Full">
+
+		<storage_type id="samsung" model="RAID5" content="content/storage_content.txt" size="500">
+			<prop id="Bwrite" value="30000000" /> <!-- 30Mo/s -->
+			<prop id="Bread" value="100000000" /> <!-- 100Mo/s -->
+			<prop id="Bconnection" value="150000000" /> <!-- 150Mo/s -->
+		</storage_type>
+
+		<storage_type id="crucial" model="SSD" content="content/storage_content.txt" size="500">
+			<prop id="Bwrite" value="30000000" />
+			<prop id="Bread" value="100000000" />
+			<prop id="Bconnection" value="150000000" />
+		</storage_type>
+
+		<storage_type id="wdigital" model="RAID0" content="content/storage_content.txt" size="500">
+			<prop id="Bwrite" value="30000000" />
+			<prop id="Bread" value="100000000" />
+			<prop id="Bconnection" value="150000000" />
+		</storage_type>
+
+		<storage id="Disk1" typeId="crucial"/>
+		<storage id="Disk2" typeId="samsung"/>
+		<storage id="Disk3" typeId="wdigital"/>
+		<storage id="Disk4" typeId="wdigital"/>
+
+		<host id="bob" power="1000000000">
+			<mount id="Disk1" name="C:"/>			
+		</host>		
+		
+		<host id="alice" power="1000000000">
+			<mount id="Disk2" name="C:"/>
+		</host>
+
+		<host id="carl" power="1000000000">		
+			<mount id="Disk3" name="C:"/>		
+		</host>
+		
+		<host id="denise" power="1000000000">
+			<mount id="Disk4" name="C:"/>	
+		</host>
+
+		<link id="link1" bandwidth="125000000" latency="5E-5" />
+		<link id="link2" bandwidth="125000000" latency="5E-5" />
+		<link id="link3" bandwidth="125000000" latency="5E-5" />
+	
+		<route src="bob" dst="alice" symmetrical="YES">
+			<link_ctn id="link1" />
+			<link_ctn id="link2" />
+			<link_ctn id="link3" />
+   		</route>	
+
+	</AS>
+</platform>

@@ -1,0 +1,18 @@
+#! ./tesh
+
+! output sort
+
+$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar pingPong/PingPongTest ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/pingPong/pingPongDeployment.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [1.048882] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Boivin:pingPong.Receiver:(2) 0.000000] [jmsg/INFO] hello!
+> [Boivin:pingPong.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
+> [Boivin:pingPong.Receiver:(2) 1.048882] [jmsg/INFO] Got at time 1.0488818628325232
+> [Boivin:pingPong.Receiver:(2) 1.048882] [jmsg/INFO] Was sent at time 0.0
+> [Boivin:pingPong.Receiver:(2) 1.048882] [jmsg/INFO] Communication time : 1.0488818628325232
+> [Boivin:pingPong.Receiver:(2) 1.048882] [jmsg/INFO]  --- bw 9.533962169004269E7 ----
+> [Boivin:pingPong.Receiver:(2) 1.048882] [jmsg/INFO] goodbye!
+> [Jacquelin:pingPong.Sender:(1) 0.000000] [jmsg/INFO] hello!
+> [Jacquelin:pingPong.Sender:(1) 0.000000] [jmsg/INFO] host count: 1
+> [Jacquelin:pingPong.Sender:(1) 0.000000] [jmsg/INFO] sender time: 0.0
+> [Jacquelin:pingPong.Sender:(1) 1.048882] [jmsg/INFO] goodbye!

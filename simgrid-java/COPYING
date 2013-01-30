@@ -1,0 +1,9 @@
+All of the Java bindings to the SimGrid software was written
+internally by the team. This software is distributed under the GNU
+lesser general public license version 2.1, which you can find in the
+archive under the name LICENSE-LGPL-2.1.
+
+For any copyright year range specified as YYYY-ZZZZ in this package
+note that the range specifies every single year in that closed interval.
+
+The SimGrid logo is distributed under the CC-BY-SA license.

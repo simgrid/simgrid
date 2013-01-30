@@ -1,0 +1,57 @@
+#! ./tesh
+
+! output sort
+
+$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar commTime/CommTimeTest ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/commTime/commTimeDeployment.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [7016.452828] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Bellemarre:commTime.Slave:(15) 0.000000] [jmsg/INFO] Receiving on 'slave_13'
+> [Bellemarre:commTime.Slave:(15) 7006.341189] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Boucherville:commTime.Slave:(18) 0.000000] [jmsg/INFO] Receiving on 'slave_16'
+> [Boucherville:commTime.Slave:(18) 7011.513259] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Bousquet:commTime.Slave:(3) 0.000000] [jmsg/INFO] Receiving on 'slave_1'
+> [Bousquet:commTime.Slave:(3) 6991.170832] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Casavant:commTime.Slave:(5) 0.000000] [jmsg/INFO] Receiving on 'slave_3'
+> [Casavant:commTime.Slave:(5) 6993.971525] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Disney:commTime.Slave:(8) 0.000000] [jmsg/INFO] Receiving on 'slave_6'
+> [Disney:commTime.Slave:(8) 6996.651866] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Ethernet:commTime.Slave:(14) 0.000000] [jmsg/INFO] Receiving on 'slave_12'
+> [Ethernet:commTime.Slave:(14) 7004.530554] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Gatien:commTime.Slave:(10) 0.000000] [jmsg/INFO] Receiving on 'slave_8'
+> [Gatien:commTime.Slave:(10) 6998.814655] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Geoff:commTime.Slave:(7) 0.000000] [jmsg/INFO] Receiving on 'slave_5'
+> [Geoff:commTime.Slave:(7) 6994.828329] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Harry:commTime.Slave:(16) 0.000000] [jmsg/INFO] Receiving on 'slave_14'
+> [Harry:commTime.Slave:(16) 7008.178840] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Jackson:commTime.Slave:(6) 0.000000] [jmsg/INFO] Receiving on 'slave_4'
+> [Jackson:commTime.Slave:(6) 6994.822989] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Jacquelin:commTime.Master:(1) 0.000000] [jmsg/INFO] Hello! Got 21 slaves and 5000 tasks to process
+> [Jacquelin:commTime.Master:(1) 0.000000] [jmsg/INFO] Sending "Task_0" to "slave_0"
+> [Jacquelin:commTime.Master:(1) 1396.424699] [jmsg/INFO] Sending "Task_1000" to "slave_13"
+> [Jacquelin:commTime.Master:(1) 2795.064085] [jmsg/INFO] Sending "Task_2000" to "slave_5"
+> [Jacquelin:commTime.Master:(1) 4192.614488] [jmsg/INFO] Sending "Task_3000" to "slave_18"
+> [Jacquelin:commTime.Master:(1) 5588.209955] [jmsg/INFO] Sending "Task_4000" to "slave_10"
+> [Jacquelin:commTime.Master:(1) 6987.112496] [jmsg/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [Jacquelin:commTime.Master:(1) 7016.452828] [jmsg/INFO] Goodbye now!
+> [Kansas:commTime.Slave:(20) 0.000000] [jmsg/INFO] Receiving on 'slave_18'
+> [Kansas:commTime.Slave:(20) 7014.258845] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [King:commTime.Slave:(21) 0.000000] [jmsg/INFO] Receiving on 'slave_19'
+> [King:commTime.Slave:(21) 7015.110650] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Lapointe:commTime.Slave:(22) 0.000000] [jmsg/INFO] Receiving on 'slave_20'
+> [Lapointe:commTime.Slave:(22) 7016.452828] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Laroche:commTime.Slave:(11) 0.000000] [jmsg/INFO] Receiving on 'slave_9'
+> [Laroche:commTime.Slave:(11) 7000.615294] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [McGee:commTime.Slave:(9) 0.000000] [jmsg/INFO] Receiving on 'slave_7'
+> [McGee:commTime.Slave:(9) 6997.540218] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Morin:commTime.Slave:(13) 0.000000] [jmsg/INFO] Receiving on 'slave_11'
+> [Morin:commTime.Slave:(13) 7003.470357] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Olivier:commTime.Slave:(17) 0.000000] [jmsg/INFO] Receiving on 'slave_15'
+> [Olivier:commTime.Slave:(17) 7009.614246] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Pointe_Claire:commTime.Slave:(19) 0.000000] [jmsg/INFO] Receiving on 'slave_17'
+> [Pointe_Claire:commTime.Slave:(19) 7013.366748] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Soucy:commTime.Slave:(4) 0.000000] [jmsg/INFO] Receiving on 'slave_2'
+> [Soucy:commTime.Slave:(4) 6992.614518] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [Tanguay:commTime.Slave:(12) 0.000000] [jmsg/INFO] Receiving on 'slave_10'
+> [Tanguay:commTime.Slave:(12) 7001.606126] [jmsg/INFO] Received Finalize. I'm done. See you!
+> [iRMX:commTime.Slave:(2) 0.000000] [jmsg/INFO] Receiving on 'slave_0'
+> [iRMX:commTime.Slave:(2) 6990.156153] [jmsg/INFO] Received Finalize. I'm done. See you!

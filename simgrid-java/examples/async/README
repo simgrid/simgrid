@@ -1,0 +1,24 @@
+This is another version of the master/slaves example, using asynchronous communications.
+
+There is 3 kind of processes:
+ * Master: creates some tasks, and dispatches them to its slaves
+ * Forwarder: get tasks from master, and dispatch them further
+ * Slave: get tasks from either master or forwarder, and run them
+
+At the end of the execution:
+ - the master sends FinalizeTask to every known slave to stop them,
+   using dsend instead of send. That's non-blocking with no way to
+   know if/when the communication succeeds. It is intended for
+   communications where you don't care to know whether your message got 
+   received or not. The process then sleeps 20 seconds because we have
+   a strange bug for now when the receiver gets a message from a
+   terminated process. This should not be the case, actually, that's a
+   JAVA specific bug, but I don't really have the time to dig in right
+   now.
+
+ - On reception of FT, forwarders dsend FT to every slave, and stop
+   after a little while.
+ - On reception of FinalizeTask, slaves stop.
+ 
+Other non-blocking primitives will get used here as soon as they are 
+added to the bindings.
