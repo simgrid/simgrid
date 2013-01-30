@@ -20,45 +20,45 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir
 > [  0.000195] (2:Slave 0@Jacquelin) Received "Task_0". Processing it.
 > [  0.000195] (2:Slave 0@Jacquelin) "Task_0" done 
 > [  0.000195] (2:Slave 0@Jacquelin) Receiving on slave_0
-> [  0.918964] (1:Master@Jacquelin) Sending to 2
-> [  0.918964] (3:Slave 1@Intel) Received "Task_1". Processing it.
-> [  0.918964] (3:Slave 1@Intel) "Task_1" done 
-> [  0.918964] (3:Slave 1@Intel) Receiving on slave_1
-> [  2.798763] (1:Master@Jacquelin) Sending to 3
-> [  2.798763] (4:Slave 2@Provost) Received "Task_2". Processing it.
-> [  2.798763] (4:Slave 2@Provost) "Task_2" done 
-> [  2.798763] (4:Slave 2@Provost) Receiving on slave_2
-> [  4.624559] (1:Master@Jacquelin) Sending to 4
-> [  4.624559] (5:Slave 3@Fernand) Received "Task_3". Processing it.
-> [  4.624559] (5:Slave 3@Fernand) "Task_3" done 
-> [  4.624559] (5:Slave 3@Fernand) Receiving on slave_3
-> [  5.487412] (1:Master@Jacquelin) Sending to 5
-> [  5.487412] (6:Slave 4@Bescherelle) Received "Task_4". Processing it.
-> [  5.487412] (6:Slave 4@Bescherelle) "Task_4" done 
-> [  5.487412] (6:Slave 4@Bescherelle) Receiving on slave_4
-> [  6.547690] (1:Master@Jacquelin) Sending to 6
-> [  6.547690] (7:Slave 5@Ethernet) Received "Task_5". Processing it.
-> [  6.547690] (7:Slave 5@Ethernet) "Task_5" done 
-> [  6.547690] (7:Slave 5@Ethernet) Receiving on slave_5
-> [  7.405064] (1:Master@Jacquelin) Sending to 7
-> [  7.405064] (8:Slave 6@Kuenning) Received "Task_6". Processing it.
-> [  7.405064] (8:Slave 6@Kuenning) "Task_6" done 
-> [  7.405064] (8:Slave 6@Kuenning) Receiving on slave_6
-> [  8.805320] (1:Master@Jacquelin) Sending to 8
-> [  8.805320] (9:Slave 7@Dodge) Received "Task_7". Processing it.
-> [  8.805320] (9:Slave 7@Dodge) "Task_7" done 
-> [  8.805320] (9:Slave 7@Dodge) Receiving on slave_7
-> [  9.730479] (10:Slave 8@Jean_Yves) Received "Task_8". Processing it.
-> [  9.730479] (10:Slave 8@Jean_Yves) "Task_8" done 
-> [  9.730479] (10:Slave 8@Jean_Yves) Receiving on slave_8
-> [  9.730479] (1:Master@Jacquelin) Sending to 9
-> [ 11.715289] (11:Slave 9@Fafard) Received "Task_9". Processing it.
-> [ 11.715289] (1:Master@Jacquelin) Now suspend all VMs, just for fun
-> [ 11.715289] (1:Master@Jacquelin) Wait a while
-> [ 13.715289] (11:Slave 9@Fafard) "Task_9" done 
-> [ 13.715289] (11:Slave 9@Fafard) Receiving on slave_9
-> [ 13.715289] (1:Master@Jacquelin) Enough. Let's resume everybody.
-> [ 13.715289] (1:Master@Jacquelin) Sleep long enough for everyone to be done with previous batch of work
+> [  0.918916] (1:Master@Jacquelin) Sending to 2
+> [  0.918916] (3:Slave 1@Intel) Received "Task_1". Processing it.
+> [  0.918916] (3:Slave 1@Intel) "Task_1" done 
+> [  0.918916] (3:Slave 1@Intel) Receiving on slave_1
+> [  2.798593] (1:Master@Jacquelin) Sending to 3
+> [  2.798593] (4:Slave 2@Provost) Received "Task_2". Processing it.
+> [  2.798593] (4:Slave 2@Provost) "Task_2" done 
+> [  2.798593] (4:Slave 2@Provost) Receiving on slave_2
+> [  4.624255] (1:Master@Jacquelin) Sending to 4
+> [  4.624255] (5:Slave 3@Fernand) Received "Task_3". Processing it.
+> [  4.624255] (5:Slave 3@Fernand) "Task_3" done 
+> [  4.624255] (5:Slave 3@Fernand) Receiving on slave_3
+> [  5.487049] (1:Master@Jacquelin) Sending to 5
+> [  5.487049] (6:Slave 4@Bescherelle) Received "Task_4". Processing it.
+> [  5.487049] (6:Slave 4@Bescherelle) "Task_4" done 
+> [  5.487049] (6:Slave 4@Bescherelle) Receiving on slave_4
+> [  6.547253] (1:Master@Jacquelin) Sending to 6
+> [  6.547253] (7:Slave 5@Ethernet) Received "Task_5". Processing it.
+> [  6.547253] (7:Slave 5@Ethernet) "Task_5" done 
+> [  6.547253] (7:Slave 5@Ethernet) Receiving on slave_5
+> [  7.404569] (1:Master@Jacquelin) Sending to 7
+> [  7.404569] (8:Slave 6@Kuenning) Received "Task_6". Processing it.
+> [  7.404569] (8:Slave 6@Kuenning) "Task_6" done 
+> [  7.404569] (8:Slave 6@Kuenning) Receiving on slave_6
+> [  8.804761] (1:Master@Jacquelin) Sending to 8
+> [  8.804761] (9:Slave 7@Dodge) Received "Task_7". Processing it.
+> [  8.804761] (9:Slave 7@Dodge) "Task_7" done 
+> [  8.804761] (9:Slave 7@Dodge) Receiving on slave_7
+> [  9.729891] (10:Slave 8@Jean_Yves) Received "Task_8". Processing it.
+> [  9.729891] (1:Master@Jacquelin) Sending to 9
+> [  9.729892] (10:Slave 8@Jean_Yves) "Task_8" done 
+> [  9.729892] (10:Slave 8@Jean_Yves) Receiving on slave_8
+> [ 11.714553] (11:Slave 9@Fafard) Received "Task_9". Processing it.
+> [ 11.714553] (1:Master@Jacquelin) Now suspend all VMs, just for fun
+> [ 11.714553] (1:Master@Jacquelin) Wait a while
+> [ 13.714553] (11:Slave 9@Fafard) "Task_9" done 
+> [ 13.714553] (11:Slave 9@Fafard) Receiving on slave_9
+> [ 13.714553] (1:Master@Jacquelin) Enough. Let's resume everybody.
+> [ 13.714553] (1:Master@Jacquelin) Sleep long enough for everyone to be done with previous batch of work
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [1000.000000] (12:Slave 10@Jacquelin) Receiving on slave_10
 > [1000.000000] (13:Slave 11@Intel) Receiving on slave_11
@@ -78,83 +78,82 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir
 > [1000.000195] (2:Slave 0@Provost) Received "Task_0". Processing it.
 > [1000.000195] (2:Slave 0@Provost) "Task_0" done 
 > [1000.000195] (2:Slave 0@Provost) Receiving on slave_0
-> [1000.918964] (1:Master@Jacquelin) Sending to 2
-> [1000.918964] (3:Slave 1@Provost) Received "Task_1". Processing it.
-> [1000.918964] (3:Slave 1@Provost) "Task_1" done 
-> [1000.918964] (3:Slave 1@Provost) Receiving on slave_1
-> [1002.798763] (1:Master@Jacquelin) Sending to 3
-> [1002.798763] (4:Slave 2@Provost) Received "Task_2". Processing it.
-> [1002.798763] (4:Slave 2@Provost) "Task_2" done 
-> [1002.798763] (4:Slave 2@Provost) Receiving on slave_2
-> [1004.624559] (1:Master@Jacquelin) Sending to 4
-> [1004.624559] (5:Slave 3@Provost) Received "Task_3". Processing it.
-> [1004.624559] (5:Slave 3@Provost) "Task_3" done 
-> [1004.624559] (5:Slave 3@Provost) Receiving on slave_3
-> [1005.487412] (1:Master@Jacquelin) Sending to 5
-> [1005.487412] (6:Slave 4@Provost) Received "Task_4". Processing it.
-> [1005.487412] (6:Slave 4@Provost) "Task_4" done 
-> [1005.487412] (6:Slave 4@Provost) Receiving on slave_4
-> [1006.547690] (1:Master@Jacquelin) Sending to 6
-> [1006.547690] (7:Slave 5@Provost) Received "Task_5". Processing it.
-> [1006.547690] (7:Slave 5@Provost) "Task_5" done 
-> [1006.547690] (7:Slave 5@Provost) Receiving on slave_5
-> [1007.405064] (1:Master@Jacquelin) Sending to 7
-> [1007.405064] (8:Slave 6@Provost) Received "Task_6". Processing it.
-> [1007.405064] (8:Slave 6@Provost) "Task_6" done 
-> [1007.405064] (8:Slave 6@Provost) Receiving on slave_6
-> [1008.805320] (1:Master@Jacquelin) Sending to 8
-> [1008.805320] (9:Slave 7@Provost) Received "Task_7". Processing it.
-> [1008.805320] (9:Slave 7@Provost) "Task_7" done 
-> [1008.805320] (9:Slave 7@Provost) Receiving on slave_7
-> [1009.730479] (10:Slave 8@Provost) Received "Task_8". Processing it.
-> [1009.730479] (10:Slave 8@Provost) "Task_8" done 
-> [1009.730479] (10:Slave 8@Provost) Receiving on slave_8
-> [1009.730479] (1:Master@Jacquelin) Sending to 9
-> [1011.715289] (11:Slave 9@Provost) Received "Task_9". Processing it.
-> [1011.715289] (11:Slave 9@Provost) "Task_9" done 
-> [1011.715289] (11:Slave 9@Provost) Receiving on slave_9
-> [1011.715289] (1:Master@Jacquelin) Sending to 10
-> [1011.715484] (12:Slave 10@Provost) Received "Task_10". Processing it.
-> [1011.715484] (12:Slave 10@Provost) "Task_10" done 
-> [1011.715484] (12:Slave 10@Provost) Receiving on slave_10
-> [1011.715484] (1:Master@Jacquelin) Sending to 11
-> [1012.634253] (13:Slave 11@Provost) Received "Task_11". Processing it.
-> [1012.634253] (13:Slave 11@Provost) "Task_11" done 
-> [1012.634253] (13:Slave 11@Provost) Receiving on slave_11
-> [1012.634253] (1:Master@Jacquelin) Sending to 12
-> [1014.514051] (14:Slave 12@Provost) Received "Task_12". Processing it.
-> [1014.514051] (14:Slave 12@Provost) "Task_12" done 
-> [1014.514051] (14:Slave 12@Provost) Receiving on slave_12
-> [1014.514051] (1:Master@Jacquelin) Sending to 13
-> [1016.339847] (15:Slave 13@Provost) Received "Task_13". Processing it.
-> [1016.339847] (15:Slave 13@Provost) "Task_13" done 
-> [1016.339847] (15:Slave 13@Provost) Receiving on slave_13
-> [1016.339847] (1:Master@Jacquelin) Sending to 14
-> [1017.202700] (16:Slave 14@Provost) Received "Task_14". Processing it.
-> [1017.202700] (16:Slave 14@Provost) "Task_14" done 
-> [1017.202700] (16:Slave 14@Provost) Receiving on slave_14
-> [1017.202700] (1:Master@Jacquelin) Sending to 15
-> [1018.262978] (17:Slave 15@Provost) Received "Task_15". Processing it.
-> [1018.262978] (17:Slave 15@Provost) "Task_15" done 
-> [1018.262978] (17:Slave 15@Provost) Receiving on slave_15
-> [1018.262978] (1:Master@Jacquelin) Sending to 16
-> [1019.120353] (18:Slave 16@Provost) Received "Task_16". Processing it.
-> [1019.120353] (18:Slave 16@Provost) "Task_16" done 
-> [1019.120353] (18:Slave 16@Provost) Receiving on slave_16
-> [1019.120353] (1:Master@Jacquelin) Sending to 17
-> [1020.520609] (19:Slave 17@Provost) Received "Task_17". Processing it.
-> [1020.520609] (19:Slave 17@Provost) "Task_17" done 
-> [1020.520609] (19:Slave 17@Provost) Receiving on slave_17
-> [1020.520609] (1:Master@Jacquelin) Sending to 18
-> [1021.445768] (1:Master@Jacquelin) Sending to 19
-> [1021.445768] (20:Slave 18@Provost) Received "Task_18". Processing it.
-> [1021.445768] (20:Slave 18@Provost) "Task_18" done 
-> [1021.445768] (20:Slave 18@Provost) Receiving on slave_18
-> [1023.430577] (0:@) MSG_main finished; Cleaning up the simulation...
-> [1023.430577] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
-> [1023.430577] (1:Master@Jacquelin) Master done.
-> [1023.430577] (21:Slave 19@Provost) Received "Task_19". Processing it.
-> [1023.430577] (21:Slave 19@Provost) "Task_19" done 
-> [1023.430577] (21:Slave 19@Provost) Receiving on slave_19
-
+> [1000.918916] (1:Master@Jacquelin) Sending to 2
+> [1000.918916] (3:Slave 1@Provost) Received "Task_1". Processing it.
+> [1000.918916] (3:Slave 1@Provost) "Task_1" done 
+> [1000.918916] (3:Slave 1@Provost) Receiving on slave_1
+> [1002.798593] (1:Master@Jacquelin) Sending to 3
+> [1002.798593] (4:Slave 2@Provost) Received "Task_2". Processing it.
+> [1002.798593] (4:Slave 2@Provost) "Task_2" done 
+> [1002.798593] (4:Slave 2@Provost) Receiving on slave_2
+> [1004.624255] (1:Master@Jacquelin) Sending to 4
+> [1004.624255] (5:Slave 3@Provost) Received "Task_3". Processing it.
+> [1004.624255] (5:Slave 3@Provost) "Task_3" done 
+> [1004.624255] (5:Slave 3@Provost) Receiving on slave_3
+> [1005.487049] (1:Master@Jacquelin) Sending to 5
+> [1005.487049] (6:Slave 4@Provost) Received "Task_4". Processing it.
+> [1005.487049] (6:Slave 4@Provost) "Task_4" done 
+> [1005.487049] (6:Slave 4@Provost) Receiving on slave_4
+> [1006.547253] (1:Master@Jacquelin) Sending to 6
+> [1006.547253] (7:Slave 5@Provost) Received "Task_5". Processing it.
+> [1006.547253] (7:Slave 5@Provost) "Task_5" done 
+> [1006.547253] (7:Slave 5@Provost) Receiving on slave_5
+> [1007.404569] (1:Master@Jacquelin) Sending to 7
+> [1007.404569] (8:Slave 6@Provost) Received "Task_6". Processing it.
+> [1007.404569] (8:Slave 6@Provost) "Task_6" done 
+> [1007.404569] (8:Slave 6@Provost) Receiving on slave_6
+> [1008.804761] (1:Master@Jacquelin) Sending to 8
+> [1008.804761] (9:Slave 7@Provost) Received "Task_7". Processing it.
+> [1008.804761] (9:Slave 7@Provost) "Task_7" done 
+> [1008.804761] (9:Slave 7@Provost) Receiving on slave_7
+> [1009.729891] (10:Slave 8@Provost) Received "Task_8". Processing it.
+> [1009.729891] (1:Master@Jacquelin) Sending to 9
+> [1009.729892] (10:Slave 8@Provost) "Task_8" done 
+> [1009.729892] (10:Slave 8@Provost) Receiving on slave_8
+> [1011.714553] (11:Slave 9@Provost) Received "Task_9". Processing it.
+> [1011.714553] (11:Slave 9@Provost) "Task_9" done 
+> [1011.714553] (11:Slave 9@Provost) Receiving on slave_9
+> [1011.714553] (1:Master@Jacquelin) Sending to 10
+> [1011.714748] (12:Slave 10@Provost) Received "Task_10". Processing it.
+> [1011.714748] (12:Slave 10@Provost) "Task_10" done 
+> [1011.714748] (12:Slave 10@Provost) Receiving on slave_10
+> [1011.714748] (1:Master@Jacquelin) Sending to 11
+> [1012.633469] (13:Slave 11@Provost) Received "Task_11". Processing it.
+> [1012.633469] (13:Slave 11@Provost) "Task_11" done 
+> [1012.633469] (13:Slave 11@Provost) Receiving on slave_11
+> [1012.633469] (1:Master@Jacquelin) Sending to 12
+> [1014.513146] (14:Slave 12@Provost) Received "Task_12". Processing it.
+> [1014.513146] (14:Slave 12@Provost) "Task_12" done 
+> [1014.513146] (14:Slave 12@Provost) Receiving on slave_12
+> [1014.513146] (1:Master@Jacquelin) Sending to 13
+> [1016.338807] (15:Slave 13@Provost) Received "Task_13". Processing it.
+> [1016.338807] (15:Slave 13@Provost) "Task_13" done 
+> [1016.338807] (15:Slave 13@Provost) Receiving on slave_13
+> [1016.338807] (1:Master@Jacquelin) Sending to 14
+> [1017.201602] (16:Slave 14@Provost) Received "Task_14". Processing it.
+> [1017.201602] (16:Slave 14@Provost) "Task_14" done 
+> [1017.201602] (16:Slave 14@Provost) Receiving on slave_14
+> [1017.201602] (1:Master@Jacquelin) Sending to 15
+> [1018.261806] (17:Slave 15@Provost) Received "Task_15". Processing it.
+> [1018.261806] (17:Slave 15@Provost) "Task_15" done 
+> [1018.261806] (17:Slave 15@Provost) Receiving on slave_15
+> [1018.261806] (1:Master@Jacquelin) Sending to 16
+> [1019.119122] (18:Slave 16@Provost) Received "Task_16". Processing it.
+> [1019.119122] (18:Slave 16@Provost) "Task_16" done 
+> [1019.119122] (18:Slave 16@Provost) Receiving on slave_16
+> [1019.119122] (1:Master@Jacquelin) Sending to 17
+> [1020.519313] (19:Slave 17@Provost) Received "Task_17". Processing it.
+> [1020.519313] (19:Slave 17@Provost) "Task_17" done 
+> [1020.519313] (19:Slave 17@Provost) Receiving on slave_17
+> [1020.519313] (1:Master@Jacquelin) Sending to 18
+> [1021.444444] (1:Master@Jacquelin) Sending to 19
+> [1021.444444] (20:Slave 18@Provost) Received "Task_18". Processing it.
+> [1021.444444] (20:Slave 18@Provost) "Task_18" done 
+> [1021.444444] (20:Slave 18@Provost) Receiving on slave_18
+> [1023.429105] (0:@) MSG_main finished; Cleaning up the simulation...
+> [1023.429105] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
+> [1023.429105] (1:Master@Jacquelin) Master done.
+> [1023.429105] (21:Slave 19@Provost) Received "Task_19". Processing it.
+> [1023.429105] (21:Slave 19@Provost) "Task_19" done 
+> [1023.429105] (21:Slave 19@Provost) Receiving on slave_19
 

@@ -20,8 +20,8 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar async/AsyncTest ${sr
 > [  0.000000] (7:async.Slave@Kuenning) Receiving on 'slave_5'
 > [  0.000000] (8:async.Slave@Browne) Receiving on 'slave_6'
 > [  0.000000] (9:async.Slave@Stephen) Receiving on 'slave_7'
-> [  0.851529] (2:async.Forwarder@Jackson) Sending "Task_0" to "slave_7"
-> [  1.357112] (3:async.Forwarder@Casavant) Sending "Task_1" to "slave_9"
+> [  0.851467] (2:async.Forwarder@Jackson) Sending "Task_0" to "slave_7"
+> [  1.357014] (3:async.Forwarder@Casavant) Sending "Task_1" to "slave_9"
 > [  2.000000] (11:async.Slave@Sirois) Received a task
 > [  2.000000] (11:async.Slave@Sirois) Received "Task_1". Processing it.
 > [  2.000000] (5:async.Slave@Bousquet) Received a task

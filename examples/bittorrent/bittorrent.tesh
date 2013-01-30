@@ -6,7 +6,7 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar bittorrent/Bittorren
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [5000.832370] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:bittorrent.Peer:(2) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 2
-> [Boivin:bittorrent.Peer:(2) 5000.048882] [jmsg/INFO] Here is my current status: 1111111111
+> [Boivin:bittorrent.Peer:(2) 5000.048881] [jmsg/INFO] Here is my current status: 1111111111
 > [Disney:bittorrent.Peer:(6) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 6
 > [Disney:bittorrent.Peer:(6) 5000.131405] [jmsg/INFO] Here is my current status: 1111111111
 > [Geoff:bittorrent.Peer:(5) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 5

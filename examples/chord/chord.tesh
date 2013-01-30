@@ -4,7 +4,7 @@
 
 $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar chord/Chord ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/chord/chord.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
-> [652.548539] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [652.540924] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:chord.Node:(7) 0.000000] [jmsg/INFO] Joining the ring with id 8 knowing node 1
 > [Gatien:chord.Node:(1) 0.000000] [jmsg/INFO] Joining the ring with id 48 knowing node 1
 > [Geoff:chord.Node:(4) 0.000000] [jmsg/INFO] Joining the ring with id 32 knowing node 1
