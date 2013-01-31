@@ -215,6 +215,7 @@ set(SURF_SRC
   src/surf/trace_mgr.c
   src/surf/workstation.c
   src/surf/workstation_ptask_L07.c
+  src/surf/vm_workstation.c
   src/xbt/xbt_sg_stubs.c
   )
 
@@ -232,6 +233,7 @@ set(SIMIX_SRC
   src/simix/smx_smurf.c
   src/simix/smx_synchro.c
   src/simix/smx_user.c
+  src/simix/smx_vm.c
   )
 
 set(SIMGRID_SRC

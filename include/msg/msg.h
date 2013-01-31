@@ -343,7 +343,7 @@ XBT_PUBLIC(int) MSG_get_channel_number(void);
 XBT_PUBLIC(msg_vm_t) MSG_vm_create(msg_host_t location, const char *name,
                                      int core_nb, int mem_cap, int net_cap);
 
-XBT_PUBLIC(int) MSG_vm_start(msg_vm_t);
+XBT_PUBLIC(void) MSG_vm_start(msg_vm_t);
 
 XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t);
 XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);

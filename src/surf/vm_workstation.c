@@ -13,7 +13,7 @@
 
 typedef struct workstation_VM2013 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
-  surf_resource_t physical_workstation;  // Pointer to the host OS
+  surf_resource_t ind_physical_workstation;  // Pointer to the host OS
   e_msg_vm_state_t current_state;  	     // See include/msg/datatypes.h
 } s_workstation_VM2013_t, *workstation_VM2013_t;
 
@@ -22,13 +22,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
 
 surf_model_t surf_vm_workstation_model = NULL;
 
-static void vm_ws_create (const char *name, void *phys_workstation)
+static void vm_ws_create (const char *name, void *ind_phys_workstation)
 {
   workstation_VM2013_t vm_ws = xbt_new0(s_workstation_VM2013_t, 1);
 // TODO Complete the surf vm workstation model
   vm_ws->generic_resource.model = surf_vm_workstation_model;
   vm_ws->generic_resource.name = xbt_strdup(name);
-  vm_ws->physical_workstation = phys_workstation;
+ // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
+  vm_ws->ind_physical_workstation = ind_phys_workstation;
   vm_ws->current_state=msg_vm_state_created,
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, vm_ws);
 }
@@ -51,12 +52,12 @@ static void vm_ws_destroy(const char *name)
 	xbt_free(workstation);
 }
 
-static int vm_ws_get_state(void *vm_ws){
-	return ((workstation_VM2013_t)vm_ws)->current_state;
+static int vm_ws_get_state(void *ind_vm_ws){
+	return ((workstation_VM2013_t) surf_workstation_resource_priv(ind_vm_ws))->current_state;
 }
 
-static void vm_ws_set_state(void *vm_ws, int state){
-	 ((workstation_VM2013_t)vm_ws)->current_state=state;
+static void vm_ws_set_state(void *ind_vm_ws, int state){
+	 ((workstation_VM2013_t) surf_workstation_resource_priv(ind_vm_ws))->current_state=state;
 }
 static void surf_vm_workstation_model_init_internal(void)
 {
