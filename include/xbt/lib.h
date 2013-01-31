@@ -30,6 +30,7 @@ XBT_PUBLIC(void *) xbt_lib_get_or_null(xbt_lib_t lib, const char *name,
                                        int level);
 XBT_PUBLIC(xbt_dictelm_t) xbt_lib_get_elm_or_null(xbt_lib_t lib, const char *key);
 XBT_PUBLIC(void *) xbt_lib_get_level(xbt_dictelm_t elm, int level);
+XBT_PUBLIC(void) xbt_lib_remove(xbt_lib_t lib, const char *key);
 
 #define xbt_lib_length(lib) xbt_dict_length((lib)->dict)
 
