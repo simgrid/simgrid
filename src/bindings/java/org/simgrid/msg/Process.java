@@ -347,7 +347,7 @@ public abstract class Process implements Runnable {
 				this.args.size());
 		for (int i = 0; i < this.args.size(); i++)
 			Msg.info("[" + this.msgName() + "/" + this.getHost().getName() +
-					"] args[" + i + "]=" + (String) (this.args.get(i)));
+					"] args[" + i + "]=" + this.args.get(i));
 	}
     /**
      * This method actually creates and run the process.
