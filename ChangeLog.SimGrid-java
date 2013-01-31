@@ -1,6 +1,4 @@
-SimGrid-java (3.10) NOT RELEASED; urgency=low
-
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ChangeLog for SimGrid-java, before its integration into the main source tree.
 
 SimGrid-java (3.9) stable; urgency=low
 
