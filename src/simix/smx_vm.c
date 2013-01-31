@@ -46,9 +46,15 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t phys_host)
  *
  * \param h the host to destroy (a smx_host_t)
  */
-void SIMIX_host_destroy(void *h)
+void SIMIX_vm_host_destroy(void *h)
 {
   smx_host_priv_t host = (smx_host_priv_t) h;
+
+  smx_host_t
+  xbt_lib_(host_lib,name,SIMIX_HOST_LEVEL,smx_host);
+
+  /* jump to vm_ws_destroy() */
+  surf_vm_workstation_model->extension.vm_workstation.destroy(name);
 
   xbt_assert((host != NULL), "Invalid parameters");
 

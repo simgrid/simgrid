@@ -279,6 +279,7 @@ typedef struct surf_workstation_model_extension_public {
 typedef struct surf_vm_workstation_model_extension_public {
   s_surf_model_extension_workstation_t basic;
   void* (*create) (const char *name, void *workstation); // First operation of the VM model
+  void  (*destroy) (const char *name); // destory the vm-specific data
 } s_surf_model_extension_vm_workstation_t;
 
 /** \ingroup SURF_models

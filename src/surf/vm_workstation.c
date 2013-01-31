@@ -30,6 +30,25 @@ static void *vm_ws_create (const char *name, void *phys_workstation)
   workstation->physical_workstation = phys_workstation;
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, workstation);
 
+
+}
+
+/*
+ * A physical host does not disapper in the current SimGrid code, but a VM may
+ * disapper during a simulation.
+ */
+static void vm_ws_destroy(const char *name)
+{
+	workstation_VM2013_t workstation = xbt_lib_get_or_null(host_lib, name, SURF_WKS_LEVEL);
+	xbt_assert(workstation);
+	xbt_assert(workstation->generic_resource.model == surf_vm_workstation_model);
+
+	xbt_free(workstation->generic_resource.name);
+
+	/* not defined yet, but we should have  */
+	// xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
+
+	xbt_free(workstation);
 }
 
 static int ws_resource_used(void *resource_id)
@@ -436,6 +455,7 @@ static void surf_vm_workstation_model_init_internal(void)
   surf_vm_workstation_model->extension.workstation.unlink = ws_action_unlink;
   surf_vm_workstation_model->extension.workstation.ls = ws_action_ls;
   surf_vm_workstation_model->extension.vm_workstation.create = vm_ws_create;
+  surf_vm_workstation_model->extension.vm_workstation.destroy = vm_ws_destroy;
 
 }
 
