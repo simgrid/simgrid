@@ -525,13 +525,18 @@ static int compare_local_variables(char *s1, char *s2){
   void *addr1, *addr2;
   char *ip1 = NULL, *ip2 = NULL;
   int res_compare = 0;
-  char *var_name;
-  
+
+  #ifdef MC_VERBOSE
+    char *var_name;
+  #endif
+
   while(cursor < xbt_dynar_length(tokens1)){
     s_tokens1 = xbt_str_split(xbt_dynar_get_as(tokens1, cursor, char *), "=");
     s_tokens2 = xbt_str_split(xbt_dynar_get_as(tokens2, cursor, char *), "=");
     if(xbt_dynar_length(s_tokens1) > 1 && xbt_dynar_length(s_tokens2) > 1){
-      var_name = xbt_dynar_get_as(s_tokens1, 0, char *);
+      #ifdef MC_VERBOSE
+        var_name = xbt_dynar_get_as(s_tokens1, 0, char *);
+      #endif
       if((strcmp(xbt_dynar_get_as(s_tokens1, 0, char *), "ip") == 0) && (strcmp(xbt_dynar_get_as(s_tokens2, 0, char *), "ip") == 0)){
         xbt_free(ip1);
         xbt_free(ip2);
