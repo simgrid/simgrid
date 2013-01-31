@@ -282,20 +282,17 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
  * \param host A host
  * \return The properties of this host
  */
-void* simcall_vm_create(const char *name, smx_host_t phys_host){
-{
-  return simcall_BODY_vm_create(name, phys_host);
+void* simcall_vm_ws_create(const char *name, smx_host_t phys_host){
+  return simcall_BODY_vm_ws_create(name, phys_host);
 }
 
-
-void simcall_vm_start(smx_host_t vm){
+void simcall_vm_start(smx_host_t vm) {
 
 	simcall_BODY_set_vm_state(vm, msg_vm_state_running);
 }
 
-void simcall_vm_destroy(smx_host_t vm)
-{
-  return simcall_BODY_vm_destroy(vm);
+void simcall_vm_destroy(smx_host_t vm) {
+  simcall_BODY_vm_destroy(vm);
 }
 
 /**

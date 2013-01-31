@@ -10,8 +10,10 @@
 #include "xbt/dict.h"
 #include "mc/mc.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix,
-                                "Logging specific to SIMIX (vms)");
+//If you need to log some stuffs, just uncomment these two lines and uses XBT_DEBUG for instance
+//XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix,
+//                                "Logging specific to SIMIX (vms)");
+
 /* **** create a VM **** */
 
 /**
@@ -19,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix,
  * \param name name of the host to create
  * \param data some user data (may be NULL)
  */
-smx_host_t SIMIX_vm_create(const char *name, smx_host_t phys_host)
+smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
 {
 
   smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
@@ -37,14 +39,14 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t phys_host)
 
   /* Create surf associated resource */
   // TODO change phys_host into the right workstation surf model
-  surf_vm_workstation_model->extension.vm_workstation.create(name, phys_host);
+  surf_vm_workstation_model->extension.vm_workstation.create(name, ind_phys_host);
 
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
 
-smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t phys_host){
-   return SIMIX_vm_create(name, phys_host);
+smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t ind_phys_host){
+   return SIMIX_vm_create(name, ind_phys_host);
 }
 
 
@@ -53,32 +55,32 @@ int __can_be_started(smx_host_t vm){
 	// TODO add checking code related to overcommitment or not.
 	return 1;
 }
-void SIMIX_vm_start(smx_host_t vm){
+void SIMIX_vm_start(smx_host_t ind_vm){
 
   //TODO only start the VM if you can
-  if (can_be_started(vm))
-	  SIMIX_set_vm_state(vm, msg_vm_state_running);
+  if (can_be_started(ind_vm))
+	  SIMIX_set_vm_state(ind_vm, msg_vm_state_running);
   else
-	  THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(vm));
+	  THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
 }
 
-void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t vm){
+void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm){
    SIMIX_vm_start(vm);
 }
 
 /* ***** set/get state of a VM ***** */
-void SIMIX_set_vm_state(smx_host_t vm, int state){
-	surf_vm_workstation_model->extension.vm_workstation.set_state(vm, state);
+void SIMIX_set_vm_state(smx_host_t ind_vm, int state){
+	surf_vm_workstation_model->extension.vm_workstation.set_state(ind_vm, state);
 }
-void SIMIX_prev_set_vm_state(smx_host_t vm, int state){
-	SIMIX_set_vm_state(vm, state);
+void SIMIX_prev_set_vm_state(smx_host_t ind_vm, int state){
+	SIMIX_set_vm_state(ind_vm, state);
 }
 
-int SIMIX_get_vm_state(smx_host_t vm){
- return surf_vm_workstation_model->extension.vm_workstation.get_state(vm);
+int SIMIX_get_vm_state(smx_host_t ind_vm){
+ return surf_vm_workstation_model->extension.vm_workstation.get_state(ind_vm);
 }
-int SIMIX_pre_vm_state(smx_host_t vm){
-	return SIMIX_get_vm_state(vm);
+int SIMIX_pre_vm_state(smx_host_t ind_vm){
+	return SIMIX_get_vm_state(ind_vm);
 }
 
 /**
@@ -86,12 +88,12 @@ int SIMIX_pre_vm_state(smx_host_t vm){
  *
  * \param host the vm host to destroy (a smx_host_t)
  */
-void SIMIX_vm_destroy(smx_host_t host)
+void SIMIX_vm_destroy(smx_host_t ind_vm)
 {
   /* this code basically performs a similar thing like SIMIX_host_destroy() */
 
   xbt_assert((host != NULL), "Invalid parameters");
-  char *hostname = host->key;
+  char *hostname = SIMIX_host_get_name(ind_vm);
 
   smx_host_priv_t host_priv = SIMIX_host_priv(host);
 
@@ -99,9 +101,9 @@ void SIMIX_vm_destroy(smx_host_t host)
   xbt_lib_unset(host_lib, hostname, SIMIX_HOST_LEVEL);
 
   /* jump to vm_ws_destroy(). The surf level resource will be freed. */
-  surf_vm_workstation_model->extension.vm_workstation.destroy(host);
+  surf_vm_workstation_model->extension.vm_workstation.destroy(ind_vm);
 }
 
-void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t vm){
-   SIMIX_vm_start(vm);
+void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm){
+   SIMIX_vm_destroy(ind_vm);
 }

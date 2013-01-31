@@ -328,6 +328,13 @@ XBT_PUBLIC(e_smx_state_t) simcall_host_execution_get_state(smx_action_t executio
 XBT_PUBLIC(void) simcall_host_execution_set_priority(smx_action_t execution, double priority);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_action_t execution);
 
+/******************************* VM simcalls ********************************/
+// Create the vm_workstation at the SURF level
+XBT_PUBLIC(void*) simcall_vm_ws_create(const char *name, smx_host_t host);
+XBT_PUBLIC(void*) simcall_get_vm_state(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_start(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_suspend(smx_host_t vm);
+XBT_PUBLIC(void) simcall_vm_destroy(smx_host_t vm);
 
 /**************************** Process simcalls ********************************/
 /* Constructor and Destructor */

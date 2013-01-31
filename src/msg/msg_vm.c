@@ -3,6 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+
+// TODO
+// 1./ check how and where a new VM is added to the list of the hosts
+// 2./ MSG_TRACE can be revisited in order to use  the host
+
+
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -78,20 +84,6 @@ const char *MSG_vm_get_name(msg_vm_t vm) {
   return MSG_host_get_name(vm);
 }
 
-/** @brief Returns a newly constructed dynar containing all existing VMs in the system.
- *  @ingroup msg_VMs
- *
- * Don't forget to free the dynar after use.
- */
-xbt_dynar_t MSG_vms_as_dynar(void) {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(msg_vm_t),NULL);
-  msg_vm_t vm;
-  xbt_swag_foreach(vm,msg_global->vms) {
-    xbt_dynar_push(res,&vm);
-  }
-  return res;
-}
-
 /* **** ******** MSG vm actions ********* **** */
 
 /** @brief Create a new VM (the VM is just attached to the location but it is not started yet).
@@ -100,15 +92,15 @@ xbt_dynar_t MSG_vms_as_dynar(void) {
  * Please note that a VM is a specific host. Hence, you should give a different name
  * for each VM/PM.
  */
-msg_vm_t MSG_vm_create(msg_host_t location, const char *name,
+msg_vm_t MSG_vm_create(msg_host_t ind_host, const char *name,
 	                                     int core_nb, int mem_cap, int net_cap){
 
   // Note new and vm_workstation refer to the same area (due to the lib/dict appraoch)
   msg_vm_t new = NULL;
-  void *vm_workstation =  NULL;
+  void *ind_vm_workstation =  NULL;
   // Ask simix to create the surf vm resource
-  vm_workstation = simcall_vm_create(name,location);
-  new = (msg_vm_t) __MSG_host_create(vm_workstation);
+  ind_vm_workstation = simcall_vm_ws_create(name,ind_host);
+  new = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
 
   MSG_vm_set_property_value(new, "CORE_NB", bprintf("%d", core_nb), free);
   MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", core_nb), free);
@@ -118,7 +110,7 @@ msg_vm_t MSG_vm_create(msg_host_t location, const char *name,
   // TODO check whether the vm (i.e the virtual host) has been correctly added into the list of all hosts.
 
   #ifdef HAVE_TRACING
-  TRACE_msg_vm_create(name, location);
+  TRACE_msg_vm_create(name, ind_host);
   #endif
 
   return new;
@@ -149,13 +141,13 @@ int __MSG_vm_is_state(msg_vm_t vm, e_msg_vm_state_t state) {
  *  @ingroup msg_VMs
  */
 int MSG_vm_is_suspended(msg_vm_t vm) {
-	return __MSG_vm_is_state(msg_vm_state_suspended);
+	return __MSG_vm_is_state(vm, msg_vm_state_suspended);
 }
 /** @brief Returns whether the given VM is currently running
  *  @ingroup msg_VMs
  */
 int MSG_vm_is_running(msg_vm_t vm) {
-  return __MSG_vm_is_state(msg_vm_state_running);
+  return __MSG_vm_is_state(vm, msg_vm_state_running);
 }
 
 // TODO Implement the functions for the different state
