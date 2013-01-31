@@ -22,7 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
 
 surf_model_t surf_vm_workstation_model = NULL;
 
-static void vm_ws_create (const char *name, void *ind_phys_workstation)
+static void vm_ws_create(const char *name, void *ind_phys_workstation)
 {
   workstation_VM2013_t vm_ws = xbt_new0(s_workstation_VM2013_t, 1);
 // TODO Complete the surf vm workstation model
@@ -39,14 +39,14 @@ static void vm_ws_create (const char *name, void *ind_phys_workstation)
  * A physical host does not disapper in the current SimGrid code, but a VM may
  * disapper during a simulation.
  */
-static void vm_ws_destroy(smx_host_t host)
+static void vm_ws_destroy(void *ind_phys_workstation)
 { 
-	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(host);
+	/* ind_phys_workstation equals to smx_host_t */
+	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_phys_workstation);
 	xbt_assert(vm_ws);
 	xbt_assert(vm_ws->generic_resource.model == surf_vm_workstation_model);
 
 	const char *name = vm_ws->generic_resource.name;
-	/* not defined yet, but we should have  */
 	/* this will call surf_resource_free() */
 	xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
 

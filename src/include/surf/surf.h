@@ -278,11 +278,11 @@ typedef struct surf_workstation_model_extension_public {
 
 typedef struct surf_vm_workstation_model_extension_public {
   s_surf_model_extension_workstation_t basic;
-  void* (*create) (const char *name, void *workstation); // First operation of the VM model
+  void* (*create) (const char *name, void *ind_phys_workstation); // First operation of the VM model
   // start does not appear here as it corresponds to turn the state from created to running (see smx_vm.c)
-  int (*get_state) (void *workstation);
-  void (*set_state) (void *workstation, int state);
-  void (*destroy) (smx_host_t *host); // destory the vm-specific data
+  int (*get_state) (void *ind_phys_workstation);
+  void (*set_state) (void *ind_phys_workstation, int state);
+  void (*destroy) (void *ind_phys_workstation); // will be vm_ws_destroy(), which destroies the vm-specific data
 } s_surf_model_extension_vm_workstation_t;
 
 /** \ingroup SURF_models
