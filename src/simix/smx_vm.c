@@ -90,24 +90,24 @@ int SIMIX_pre_vm_state(smx_host_t ind_vm){
  *
  * \param host the vm host to suspend (a smx_host_t)
  */
-void SIMIX_vm_suspend(smx_host_t host)
+void SIMIX_vm_suspend(smx_host_t ind_vm)
 {
   /* TODO: check state */
 
-  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(host)->process_list));
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(host)->process_list) {
-         XBT_DEBUG("suspend %s", SIMIX_host_get_name(host));
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+         XBT_DEBUG("suspend %s", SIMIX_host_get_name(ind_vm));
          simcall_process_suspend(smx_process);
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_set_vm_state(host, msg_vm_state_suspended);
+  SIMIX_set_vm_state(ind_vm, msg_vm_state_suspended);
 }
 
-void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t vm){
-   SIMIX_vm_suspend(vm);
+void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm){
+   SIMIX_vm_suspend(ind_vm);
 }
 
 /**
@@ -117,24 +117,24 @@ void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t vm){
  *
  * \param host the vm host to shutdown (a smx_host_t)
  */
-void SIMIX_vm_shutdown(smx_host_t host)
+void SIMIX_vm_shutdown(smx_host_t ind_vm)
 {
   /* TODO: check state */
 
-  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(host)->process_list));
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(host)->process_list) {
-         XBT_DEBUG("kill %s", SIMIX_host_get_name(host));
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+         XBT_DEBUG("kill %s", SIMIX_host_get_name(ind_vm));
          simcall_process_kill(smx_process);
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_set_vm_state(host, msg_vm_state_sleeping);
+  SIMIX_set_vm_state(ind_vm, msg_vm_state_sleeping);
 }
 
-void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t vm){
-   SIMIX_vm_shutdown(vm);
+void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm){
+   SIMIX_vm_shutdown(ind_vm);
 }
 
 /**
@@ -146,10 +146,10 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
 {
   /* this code basically performs a similar thing like SIMIX_host_destroy() */
 
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((ind_vm != NULL), "Invalid parameters");
   char *hostname = SIMIX_host_get_name(ind_vm);
 
-  smx_host_priv_t host_priv = SIMIX_host_priv(host);
+  smx_host_priv_t host_priv = SIMIX_host_priv(ind_vm);
 
   /* this will call the registered callback function, i.e., SIMIX_host_destroy().  */
   xbt_lib_unset(host_lib, hostname, SIMIX_HOST_LEVEL);
@@ -158,6 +158,6 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
   surf_vm_workstation_model->extension.vm_workstation.destroy(ind_vm);
 }
 
-void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t vm){
-   SIMIX_vm_destroy(vm);
+void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm){
+   SIMIX_vm_destroy(ind_vm);
 }
