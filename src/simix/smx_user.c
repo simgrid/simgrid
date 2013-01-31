@@ -293,6 +293,11 @@ void simcall_vm_start(smx_host_t vm){
 	simcall_BODY_set_vm_state(vm, msg_vm_state_running);
 }
 
+void simcall_vm_destroy(smx_host_t vm)
+{
+  return simcall_BODY_vm_destroy(vm);
+}
+
 /**
  * \ingroup simix_process_management
  * \brief Creates and runs a new SIMIX process.

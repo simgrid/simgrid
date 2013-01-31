@@ -45,7 +45,8 @@ static void vm_ws_destroy(const char *name)
 	xbt_free(workstation->generic_resource.name);
 
 	/* not defined yet, but we should have  */
-	// xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
+	/* this will call surf_resource_free() */
+	xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
 
 	xbt_free(workstation);
 }

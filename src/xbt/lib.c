@@ -85,3 +85,7 @@ void *xbt_lib_get_level(xbt_dictelm_t elm, int level){
   void **elts = elm->content;
   return elts ? elts[level] : NULL;
 }
+
+void xbt_lib_remove(xbt_lib_t lib, const char *key){
+  xbt_dict_remove(lib->dict, key);
+}
