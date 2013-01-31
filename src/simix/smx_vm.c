@@ -11,9 +11,8 @@
 #include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix,
-                                "Logging specific to SIMIX (hosts)");
-
-static void SIMIX_execution_finish(smx_action_t action);
+                                "Logging specific to SIMIX (vms)");
+/* **** create a VM **** */
 
 /**
  * \brief Internal function to create a SIMIX host.
@@ -37,10 +36,49 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t phys_host)
   xbt_lib_set(host_lib,name,SIMIX_HOST_LEVEL,smx_host);
 
   /* Create surf associated resource */
-  surf_vm_workstation_model->extension.vm_workstation.create();
+  // TODO change phys_host into the right workstation surf model
+  surf_vm_workstation_model->extension.vm_workstation.create(name, phys_host);
+
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
+smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t phys_host){
+   return SIMIX_vm_create(name, phys_host);
+}
+
+
+/* **** start a VM **** */
+int __can_be_started(smx_host_t vm){
+	// TODO add checking code related to overcommitment or not.
+	return 1;
+}
+void SIMIX_vm_start(smx_host_t vm){
+
+  //TODO only start the VM if you can
+  if (can_be_started(vm))
+	  SIMIX_set_vm_state(vm, msg_vm_state_running);
+  else
+	  THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(vm));
+}
+
+void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t vm){
+   SIMIX_vm_start(vm);
+}
+
+/* ***** set/get state of a VM ***** */
+void SIMIX_set_vm_state(smx_host_t vm, int state){
+
+}
+void SIMIX_prev_set_vm_state(smx_host_t vm, int state){
+	SIMIX_set_vm_state(vm, state);
+}
+
+int SIMIX_get_vm_state(smx_host_t vm){
+ return surf_vm_workstation_model->extension.vm_workstation.get_state(vm);
+}
+int SIMIX_pre_vm_state(smx_host_t vm){
+	return SIMIX_get_vm_state(vm);
+}
 /**
  * \brief Internal function to destroy a SIMIX host.
  *
@@ -75,27 +113,6 @@ void SIMIX_host_destroy(void *h)
   return;
 }
 
-///**
-// * \brief Returns a dict of all hosts.
-// *
-// * \return List of all hosts (as a #xbt_dict_t)
-// */
-//xbt_dict_t SIMIX_host_get_dict(void)
-//{
-//  xbt_dict_t host_dict = xbt_dict_new_homogeneous(NULL);
-//  xbt_lib_cursor_t cursor = NULL;
-//  char *name = NULL;
-//  void **host = NULL;
-//
-//  xbt_lib_foreach(host_lib, cursor, name, host){
-//    if(host[SIMIX_HOST_LEVEL])
-//            xbt_dict_set(host_dict,name,host[SIMIX_HOST_LEVEL], NULL);
-//  }
-//  return host_dict;
-//}
-smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t phys_host){
-   return SIMIX_vm_create(name, phys_host);
-}
 
 smx_host_t SIMIX_host_get_by_name(const char *name){
   xbt_assert(((simix_global != NULL)

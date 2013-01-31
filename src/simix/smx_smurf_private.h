@@ -275,6 +275,10 @@ ACTION(SIMCALL_HOST_EXECUTION_GET_STATE, host_execution_get_state, WITH_ANSWER, 
 ACTION(SIMCALL_HOST_EXECUTION_SET_PRIORITY, host_execution_set_priority, WITH_ANSWER, TVOID(result), TSPEC(execution, smx_action_t), TDOUBLE(priority)) sep \
 ACTION(SIMCALL_HOST_EXECUTION_WAIT, host_execution_wait, WITHOUT_ANSWER, TINT(result), TSPEC(execution, smx_action_t)) sep \
 ACTION(SIMCALL_VM_CREATE, vm_create, WITH_ANSWER, TPTR(result), TSTRING(name), TSPEC(phys_host, smx_host_t)) sep \
+ACTION(SIMCALL_VM_START, vm_start, WITHOUT_ANSWER, TVOID(result), TSPEC(phys_host, smx_host_t)) sep \
+ACTION(SIMCALL_VM_SET_STATE, vm_set_state, WITHOUT_ANSWER, TVOID(result), TSPEC(vm, smx_host_t)) TINT(state) sep \
+ACTION(SIMCALL_VM_GET_STATE, vm_get_state, WITH_ANSWER, TINT(result)), TSPEC(vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_START, vm_start, WITHOUT_ANSWER, TVOID(result), TSPEC(vm, smx_host_t)) sep \
 ACTION(SIMCALL_PROCESS_CREATE, process_create, WITH_ANSWER, TVOID(result), TSPEC(process, smx_process_t*), TSTRING(name), TSPEC(code, xbt_main_func_t), TPTR(data), TSTRING(hostname), TDOUBLE(kill_time), TINT(argc), TSPEC(argv, char**), TSPEC(properties, xbt_dict_t), TINT(auto_restart)) sep \
 ACTION(SIMCALL_PROCESS_KILL, process_kill, WITH_ANSWER, TVOID(result), TSPEC(process, smx_process_t)) sep \
 ACTION(SIMCALL_PROCESS_KILLALL, process_killall, WITH_ANSWER, TVOID(result)) sep \

@@ -262,7 +262,8 @@ typedef enum {
   thread_error,                 /**< error while [un]locking */
   host_error,                   /**< host failed */
   tracing_error,                /**< error during the simulation tracing */
-  io_error                      /**< disk or file error */
+  io_error,                      /**< disk or file error */
+  vm_error                      /**< vm  error */
 } xbt_errcat_t;
 
 XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);

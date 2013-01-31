@@ -104,16 +104,14 @@ typedef struct msg_hypervisor {
 /* ********************************  VM ************************************* */
 typedef msg_host_t msg_vm_t;
 
-/* todo: make it clear */
 typedef enum {
 msg_vm_state_created,
-msg_vm_state_booting,
 msg_vm_state_running,
 msg_vm_state_sleeping,
 msg_vm_state_migrating,
 msg_vm_state_resuming,
-msg_vm_state_suspending,
-msg_vm_state_saving,
+msg_vm_state_suspended,
+msg_vm_state_saved,
 msg_vm_state_restoring,
 } e_msg_vm_state_t;
 

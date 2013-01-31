@@ -10,54 +10,33 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg,
                                 "Cloud-oriented parts of the MSG API");
 
-/** @brief Create a new VM (the VM is just attached to the location but it is not started yet).
- *  @ingroup msg_VMs
- */
 
-msg_vm_t MSG_vm_create(msg_host_t location, const char *name,
-	                                     int core_nb, int mem_cap, int net_cap){
+/* **** ******** GENERAL ********* **** */
 
-  // Note new and vm_workstation refer to the same area (due to the lib/dict appraoch)
-  msg_vm_t new = NULL;
-  void *vm_workstation =  NULL;
-  // Ask simix to create the surf vm resource
-  vm_workstation = simcall_vm_create(name,location);
-  new = (msg_vm_t) __MSG_host_create(vm_workstation);
-
-
-  MSG_vm_set_property_value(new, "CORE_NB", bprintf("%d", core_nb), free);
-  MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", core_nb), free);
-  MSG_vm_set_property_value(new, "NET_CAP", bprintf("%d", core_nb), free);
-
-  #ifdef HAVE_TRACING
-  TRACE_msg_vm_create(name, location);
-  #endif
-  return new;
-}
-
-/** \ingroup m_host_management
- * \brief Returns the value of a given host property
+/** \ingroup m_vm_management
+ * \brief Returns the value of a given vm property
  *
- * \param host a host
+ * \param vm a vm
  * \param name a property name
  * \return value of a property (or NULL if property not set)
  */
-const char *MSG_host_get_property_value(msg_host_t host, const char *name)
+
+const char *MSG_vm_get_property_value(msg_vm_t vm, const char *name)
 {
-  return xbt_dict_get_or_null(MSG_host_get_properties(host), name);
+  return MSG_host_get_property_value(vm, name);
 }
 
-/** \ingroup m_host_management
+/** \ingroup m_vm_management
  * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this host
  *
- * \param host a host
+ * \param vm a vm
  * \return a dict containing the properties
  */
-xbt_dict_t MSG_host_get_properties(msg_host_t host)
+xbt_dict_t MSG_vm_get_properties(msg_vm_t vm)
 {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+  xbt_assert((vm != NULL), "Invalid parameters (vm is NULL)");
 
-  return (simcall_host_get_properties(host));
+  return (simcall_host_get_properties(vm));
 }
 
 /** \ingroup m_host_management
@@ -73,18 +52,21 @@ void MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value,void_f
   xbt_dict_set(MSG_host_get_properties(vm), name, value,free_ctn);
 }
 
-/** @brief Immediately suspend the execution of all processes within the given VM.
- *  @ingroup msg_VMs
- *  return wheter the VM has been correctly started (0) or not (<0)
+/** \ingroup msg_vm_management
+ * \brief Finds a msg_vm_t using its name.
  *
+ * This is a name directory service
+ * \param name the name of a vm.
+ * \return the corresponding vm
+ *
+ * Please note that a VM is a specific host. Hence, you should give a different name
+ * for each VM/PM.
  */
-int MSG_vm_start(msg_vm_t vm) {
- // TODO Please complete the code
 
-  #ifdef HAVE_TRACING
-  TRACE_msg_vm_start(vm);
-  #endif
+msg_vm_t MSG_vm_get_by_name(const char *name){
+	return MSG_get_host_by_name(name);
 }
+
 
 /** @brief Returns a newly constructed dynar containing all existing VMs in the system.
  *  @ingroup msg_VMs
@@ -100,18 +82,73 @@ xbt_dynar_t MSG_vms_as_dynar(void) {
   return res;
 }
 
+/* **** ******** MSG vm actions ********* **** */
+
+/** @brief Create a new VM (the VM is just attached to the location but it is not started yet).
+ *  @ingroup msg_VMs*
+ *
+ * Please note that a VM is a specific host. Hence, you should give a different name
+ * for each VM/PM.
+ */
+msg_vm_t MSG_vm_create(msg_host_t location, const char *name,
+	                                     int core_nb, int mem_cap, int net_cap){
+
+  // Note new and vm_workstation refer to the same area (due to the lib/dict appraoch)
+  msg_vm_t new = NULL;
+  void *vm_workstation =  NULL;
+  // Ask simix to create the surf vm resource
+  vm_workstation = simcall_vm_create(name,location);
+  new = (msg_vm_t) __MSG_host_create(vm_workstation);
+
+  MSG_vm_set_property_value(new, "CORE_NB", bprintf("%d", core_nb), free);
+  MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", core_nb), free);
+  MSG_vm_set_property_value(new, "NET_CAP", bprintf("%d", core_nb), free);
+
+  // TODO check whether the vm (i.e the virtual host) has been correctly added into the list of all hosts.
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_create(name, location);
+  #endif
+
+  return new;
+}
+
+/** @brief Start a vm (ie. boot)
+ *  @ingroup msg_VMs
+ *
+ *  If the VM cannot be started, an exception is generated.
+ *
+ */
+void MSG_vm_start(msg_vm_t vm) {
+
+  //Please note that vm start can raise an exception if the VM cannot be started.
+  simcall_vm_start(vm);
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_start(vm);
+  #endif
+}
+
+/* **** Check state of a VM **** */
+int __MSG_vm_is_state(msg_vm_t vm, e_msg_vm_state_t state) {
+	return simcall_get_vm_state(vm) == state ;
+}
+
 /** @brief Returns whether the given VM is currently suspended
  *  @ingroup msg_VMs
  */
 int MSG_vm_is_suspended(msg_vm_t vm) {
-  return vm->state == msg_vm_state_suspended;
+	return __MSG_vm_is_state(msg_vm_state_suspended);
 }
 /** @brief Returns whether the given VM is currently running
  *  @ingroup msg_VMs
  */
 int MSG_vm_is_running(msg_vm_t vm) {
-  return vm->state == msg_vm_state_running;
+  return __MSG_vm_is_state(msg_vm_state_running);
 }
+
+// TODO complete the different state
+
 /** @brief Add the given process into the VM.
  *  @ingroup msg_VMs
  *

@@ -222,6 +222,9 @@ const char *xbt_ex_catname(xbt_errcat_t cat)
     return "tracing error";
   case io_error:
     return "io error";
+  case vm_error:
+    return "vm error";
+
   }
   return "INVALID ERROR";
 }
