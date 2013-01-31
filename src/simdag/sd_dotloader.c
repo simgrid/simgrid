@@ -105,11 +105,14 @@ static void dot_task_p_free(void *task)
 
 static void TRACE_sd_dotloader (SD_task_t task, const char *category)
 {
-  if (category){
-    if (strlen (category) != 0){
-      TRACE_category (category);
-      SD_task_set_category (task, category);
-    }
+  if (category && strlen (category)){
+    if (task->category)
+      XBT_DEBUG("Change the category of %s from %s to %s",
+          task->name, task->category, category);
+    else
+      XBT_DEBUG("Set the category of %s to %s",task->name, category);
+    TRACE_category (category);
+    TRACE_sd_set_task_category(task, category);
   }
 }
 
@@ -376,6 +379,15 @@ void dot_add_parallel_task(Agnode_t * dag_node)
 
   XBT_DEBUG("See <job id=%s amount=%s %.0f alpha=%.2f>", name,
         agget(dag_node, (char *) "size"), amount, alpha);
+  if (!strcmp(name, "root")){
+    XBT_WARN("'root' node is explicitly declared in the DOT file. Ignore it");
+    return;
+  }
+  if (!strcmp(name, "end")){
+    XBT_WARN("'end' node is explicitly declared in the DOT file. Ignore it");
+    return;
+  }
+
   current_job = xbt_dict_get_or_null(jobs, name);
   if (current_job == NULL) {
     current_job =
@@ -417,12 +429,20 @@ void dot_add_task(Agnode_t * dag_node)
 
   XBT_DEBUG("See <job id=%s runtime=%s %.0f>", name,
         agget(dag_node, (char *) "size"), runtime);
+  if (!strcmp(name, "root")){
+    XBT_WARN("'root' node is explicitly declared in the DOT file. Ignore it");
+    return;
+  }
+  if (!strcmp(name, "end")){
+    XBT_WARN("'end' node is explicitly declared in the DOT file. Ignore it");
+    return;
+  }
   current_job = xbt_dict_get_or_null(jobs, name);
   if (current_job == NULL) {
     current_job =
         SD_task_create_comp_seq(name, NULL , runtime);
 #ifdef HAVE_TRACING
-   TRACE_sd_dotloader (current_job, agget (dag_node, (char*)"category"));
+    TRACE_sd_dotloader (current_job, agget (dag_node, (char*)"category"));
 #endif
     xbt_dict_set(jobs, name, current_job, NULL);
     xbt_dynar_push(result, &current_job);
