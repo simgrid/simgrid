@@ -12,6 +12,7 @@ set(sources
 
 if(enable_java)
   add_custom_target(java_bittorrent ALL
+    COMMENT "Building java_bittorrent..."
     COMMAND ${JAVA_COMPILE} -cp ${CMAKE_BINARY_DIR}/simgrid.jar
                             -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources})
   add_dependencies(java_bittorrent SG_java_jar)
@@ -41,4 +42,3 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/generate.py
   PARENT_SCOPE
   )
-

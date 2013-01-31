@@ -727,7 +727,24 @@ set(txt_files
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
+  examples/java/CMakeLists.txt
+  examples/java/async/CMakeLists.txt
   examples/java/bittorrent/CMakeLists.txt
+  examples/java/chord/CMakeLists.txt
+  examples/java/cloud/CMakeLists.txt
+  examples/java/commTime/CMakeLists.txt
+  examples/java/io/CMakeLists.txt
+  examples/java/kademlia/CMakeLists.txt
+  examples/java/master_slave_bypass/CMakeLists.txt
+  examples/java/master_slave_kill/CMakeLists.txt
+  examples/java/masterslave/CMakeLists.txt
+  examples/java/migration/CMakeLists.txt
+  examples/java/mutualExclusion/CMakeLists.txt
+  examples/java/pingPong/CMakeLists.txt
+  examples/java/priority/CMakeLists.txt
+  examples/java/startKillTime/CMakeLists.txt
+  examples/java/suspend/CMakeLists.txt
+  examples/java/tracing/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
