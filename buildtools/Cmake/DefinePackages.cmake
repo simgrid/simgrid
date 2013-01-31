@@ -2,6 +2,7 @@
 
 set(EXTRA_DIST
   include/xbt/win32_ucontext.h
+  src/bindings/java/MANIFEST.MF
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h

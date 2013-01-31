@@ -45,6 +45,13 @@ if(enable_java)
   else()
     target_link_libraries(SG_java simgrid)
   endif()
+
+  set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
+  set(MANIFEST_FILE ${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF)
+  add_jar(SG_java_jar ${JMSG_JAVA_SRC})
+  add_custom_command(TARGET SG_java_jar POST_BUILD
+    DEPENDS ${MANIFEST_FILE}
+    COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${CMAKE_BINARY_DIR}/${CMAKE_JAVA_TARGET_OUTPUT_NAME}.jar)
 endif()
 
 add_dependencies(simgrid maintainer_files)
