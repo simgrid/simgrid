@@ -284,7 +284,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
   dag_dot = agread(in_file, NIL(Agdisc_t *));
 
   result = xbt_dynar_new(sizeof(SD_task_t), dot_task_p_free);
-  files = xbt_dict_new_homogeneous(&dot_task_free);
+  files = xbt_dict_new_homogeneous(NULL);
   jobs = xbt_dict_new_homogeneous(NULL);
   computers = xbt_dict_new_homogeneous(NULL);
   root_task = SD_task_create_comp_seq("root", NULL, 0);
@@ -312,47 +312,23 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
   SD_task_t file;
   char *name;
   xbt_dict_foreach(files, cursor, name, file) {
-    unsigned int cpt1, cpt2;
-    SD_task_t newfile = NULL;
-    SD_dependency_t depbefore, depafter;
+    XBT_DEBUG("Considering file '%s' stored in the dictionnary",
+        file->name);
     if (xbt_dynar_is_empty(file->tasks_before)) {
-      xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
-        SD_task_t newfile =
-            SD_task_create_comm_e2e(file->name, NULL, file->amount);
-        SD_task_dependency_add(NULL, NULL, root_task, newfile);
-        SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
-        xbt_dynar_push(result, &newfile);
-      }
+      XBT_DEBUG("file '%s' has no source. Add dependency from 'root'",
+          file->name);
+      SD_task_dependency_add(NULL, NULL, root_task, file);
     } else if (xbt_dynar_is_empty(file->tasks_after)) {
-      xbt_dynar_foreach(file->tasks_before, cpt2, depbefore) {
-        SD_task_t newfile =
-            SD_task_create_comm_e2e(file->name, NULL, file->amount);
-        SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
-        SD_task_dependency_add(NULL, NULL, newfile, end_task);
-        xbt_dynar_push(result, &newfile);
-      }
-    } else {
-      xbt_dynar_foreach(file->tasks_before, cpt1, depbefore) {
-        xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
-          if (depbefore->src == depafter->dst) {
-            XBT_WARN
-                ("File %s is produced and consumed by task %s. This loop dependency will prevent the execution of the task.",
-                 file->name, depbefore->src->name);
-          }
-          newfile =
-              SD_task_create_comm_e2e(file->name, NULL, file->amount);
-          SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
-          SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
-          xbt_dynar_push(result, &newfile);
-        }
-      }
+      XBT_DEBUG("file '%s' has no destination. Add dependency to 'end'",
+          file->name);
+      SD_task_dependency_add(NULL, NULL, file, end_task);
     }
+    xbt_dynar_push(result, &file);
   }
 
   /* Push end task last */
   xbt_dynar_push(result, &end_task);
 
-  /* Free previous copy of the files */
   xbt_dict_free(&files);
   fclose(in_file);
   if (!acyclic_graph_detail(result)) {
@@ -531,7 +507,8 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge,
   char *name = xbt_malloc((strlen(name_head)+strlen(name_tail)+6)*sizeof(char));
   sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
-  XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
+  XBT_DEBUG("add input -- edge: %s, size : %e, get size : %s",
+      name, size, agget(edge, (char *) "size"));
 
   if (size > 0) {
     file = xbt_dict_get_or_null(files, name);
@@ -544,8 +521,10 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge,
 #ifdef HAVE_TRACING
       TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
 #endif
+      XBT_DEBUG("add input -- adding %s to the dict as new file", name);
       xbt_dict_set(files, name, file, NULL);
     } else {
+      XBT_WARN("%s already exists", name);
       if (SD_task_get_amount(file) != size) {
         XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",
               name, SD_task_get_amount(file), size);
@@ -573,7 +552,8 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge,
   char *name = xbt_malloc((strlen(name_head)+strlen(name_tail)+6)*sizeof(char));
   sprintf(name, "%s->%s", name_tail, name_head);
   double size = dot_parse_double(agget(edge, (char *) "size"));
-  XBT_DEBUG("size : %e, get size : %s", size, agget(edge, (char *) "size"));
+  XBT_DEBUG("add_output -- edge: %s, size : %e, get size : %s",
+      name, size, agget(edge, (char *) "size"));
 
   if (size > 0) {
     file = xbt_dict_get_or_null(files, name);
@@ -586,8 +566,10 @@ void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge,
 #ifdef HAVE_TRACING
       TRACE_sd_dotloader (file, agget (edge, (char*)"category"));
 #endif
+      XBT_DEBUG("add output -- adding %s to the dict as new file", name);
       xbt_dict_set(files, name, file, NULL);
     } else {
+      XBT_WARN("%s already exists", name);
       if (SD_task_get_amount(file) != size) {
         XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",
               name, SD_task_get_amount(file), size);
