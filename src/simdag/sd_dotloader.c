@@ -103,6 +103,7 @@ static void dot_task_p_free(void *task)
   SD_task_destroy(*t);
 }
 
+#ifdef HAVE_TRACING
 static void TRACE_sd_dotloader (SD_task_t task, const char *category)
 {
   if (category && strlen (category)){
@@ -115,6 +116,7 @@ static void TRACE_sd_dotloader (SD_task_t task, const char *category)
     TRACE_sd_set_task_category(task, category);
   }
 }
+#endif
 
 /** @brief loads a DOT file describing a DAG
  * 
