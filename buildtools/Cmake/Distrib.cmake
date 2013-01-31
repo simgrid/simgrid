@@ -172,6 +172,8 @@ set(source_to_pack
   ${BINDINGS_SRC}
   ${GTNETS_SRC}
   ${JEDULE_SRC}
+  ${JMSG_C_SRC}
+  ${JMSG_JAVA_SRC}
   ${LUA_SRC}
   ${MC_SRC}
   ${MSG_SRC}
