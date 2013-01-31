@@ -164,9 +164,9 @@ void MSG_vm_shutdown(msg_vm_t vm)
   /* msg_vm_t equals to msg_host_t */
   simcall_vm_shutdown(vm);
 
-  #ifdef HAVE_TRACING
-  TRACE_msg_vm_kill(vm);
-  #endif
+  // #ifdef HAVE_TRACING
+  // TRACE_msg_vm_(vm);
+  // #endif
 }
 
 
@@ -228,25 +228,31 @@ void MSG_vm_shutdown(msg_vm_t vm)
 //  vm->location = destination;
 //}
 //
-///** @brief Immediately suspend the execution of all processes within the given VM.
-// *  @ingroup msg_VMs
-// *
-// * No suspension cost occurs. If you want to simulate this too, you want to
-// * use a \ref MSG_file_write() before or after, depending on the exact semantic
-// * of VM suspend to you.
-// */
-//void MSG_vm_suspend(msg_vm_t vm) {
-//  unsigned int cpt;
-//  msg_process_t process;
-//  xbt_dynar_foreach(vm->processes,cpt,process) {
-//    XBT_DEBUG("suspend process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
-//    MSG_process_suspend(process);
-//  }
-//
-//  #ifdef HAVE_TRACING
-//  TRACE_msg_vm_suspend(vm);
-//  #endif
-//}
+
+/** @brief Immediately suspend the execution of all processes within the given VM.
+ *  @ingroup msg_VMs
+ *
+ * No suspension cost occurs. If you want to simulate this too, you want to
+ * use a \ref MSG_file_write() before or after, depending on the exact semantic
+ * of VM suspend to you.
+ */
+void MSG_vm_suspend(msg_vm_t vm)
+{
+  simcall_vm_suspend(vm);
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_suspend(vm);
+  #endif
+#if 0
+  unsigned int cpt;
+  msg_process_t process;
+  xbt_dynar_foreach(vm->processes,cpt,process) {
+    XBT_DEBUG("suspend process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
+    MSG_process_suspend(process);
+  }
+#endif
+}
+
 //
 //
 ///** @brief Immediately resumes the execution of all processes within the given VM.
@@ -295,13 +301,20 @@ void MSG_vm_shutdown(msg_vm_t vm)
 //}
 //
 
-/** @brief Destroy a VM.
+/** @brief Destroy a VM. Destroy the VM object from the simulation.
  *  @ingroup msg_VMs
  */
 void MSG_vm_destroy(msg_vm_t vm)
 {
+  /* First, terminate all processes on the VM */
+  simcall_vm_shutdown(vm);
+
+  /* Then, destroy the VM object */
   simcall_vm_destroy(vm);
-  /* TOOD: do we have to do something for processes? */
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_end(vm);
+  #endif
 
 #if 0
   unsigned int cpt;
@@ -311,11 +324,6 @@ void MSG_vm_destroy(msg_vm_t vm)
     simdata_process_t simdata = simcall_process_get_data(process);
     simdata->vm = NULL;
   }
-
-  #ifdef HAVE_TRACING
-  TRACE_msg_vm_end(vm);
-  #endif
-
 
   xbt_dynar_free(&vm->processes);
   xbt_free(vm);
