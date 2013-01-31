@@ -116,7 +116,7 @@ msg_vm_state_saved,
 msg_vm_state_restoring,
 } e_msg_vm_state_t;
 
-static inline msg_vm_priv_t MSG_vm_priv(msg_vm_t vm){
+static inline msg_vm_priv_t field_of(msg_vm_t vm){
   return xbt_lib_get_level(vm, MSG_HOST_LEVEL);
 }
 
