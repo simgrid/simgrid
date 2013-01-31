@@ -57,7 +57,6 @@ generic_processing_units_exist(AS_t rc, char *element);
 void generic_src_dst_check(AS_t rc, sg_routing_edge_t src,
     sg_routing_edge_t dst);
 
-
 /* ************************************************************************** */
 /* *************************** FLOYD ROUTING ******************************** */
 AS_t model_floyd_create(void);  /* create structures for floyd routing model */
@@ -98,6 +97,10 @@ AS_t model_full_create(void);   /* create structures for full routing model */
 void model_full_end(AS_t as);       /* finalize the creation of full routing model */
 void model_full_set_route(  /* Set the route and ASroute between src and dst */
     AS_t rc, sg_platf_route_cbarg_t route);
+/* ************************************************************************** */
+/* ************************* GRAPH EXPORTING FUNCTIONS ********************** */
+xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_dict_t nodes);
+xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges);
 
 
 #endif                          /* _SURF_SURF_ROUTING_PRIVATE_H */
