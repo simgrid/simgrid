@@ -86,7 +86,7 @@ diffcmd() {
 
 colordiff=$(type -p colordiff)
 colorless() {
-    if [ -n "$colordiff" ]; then
+    if [ -x "$colordiff" ]; then
         "$colordiff" | less -R -F
     else
         less -F
