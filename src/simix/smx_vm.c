@@ -18,26 +18,26 @@ static void SIMIX_execution_finish(smx_action_t action);
 /**
  * \brief Internal function to create a SIMIX host.
  * \param name name of the host to create
- * \param workstation the SURF workstation to encapsulate
  * \param data some user data (may be NULL)
  */
-smx_host_t SIMIX_vm_create(const char *name,
-                               void *workstation, void *data)
+smx_host_t SIMIX_vm_create(const char *name, smx_host_t phys_host)
 {
-
-
 
   smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
   s_smx_process_t proc;
 
+  // TODO check why we do not have any VM here and why we have the host_proc_hookup  ?
+
   /* Host structure */
-  smx_host->data = data;
+  smx_host->data = NULL;
   smx_host->process_list =
       xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
   /* Update global variables */
   xbt_lib_set(host_lib,name,SIMIX_HOST_LEVEL,smx_host);
-  
+
+  /* Create surf associated resource */
+  surf_vm_workstation_model->extension.vm_workstation.create();
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
@@ -93,8 +93,8 @@ void SIMIX_host_destroy(void *h)
 //  }
 //  return host_dict;
 //}
-smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t host){
-   return SIMIX_vm_create(name, host);
+smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t phys_host){
+   return SIMIX_vm_create(name, phys_host);
 }
 
 smx_host_t SIMIX_host_get_by_name(const char *name){

@@ -16,8 +16,8 @@ typedef struct workstation_VM2013 {
   surf_resource_t physical_workstation;  // Pointer to the host OS
 } s_workstation_VM2013_t, *workstation_VM2013_t;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
-                                "Logging specific to the SURF workstation module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
+                                "Logging specific to the SURF VM workstation module");
 
 surf_model_t surf_vm_workstation_model = NULL;
 
@@ -29,6 +29,7 @@ static void *vm_ws_create (const char *name, void *phys_workstation)
   workstation->generic_resource.name = xbt_strdup(name);
   workstation->physical_workstation = phys_workstation;
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, workstation);
+
 }
 
 static int ws_resource_used(void *resource_id)
@@ -376,7 +377,7 @@ static surf_action_t ws_action_ls(void *workstation, const char* mount, const ch
 
 static void surf_vm_workstation_model_init_internal(void)
 {
-  // TODO Adrien, who is calling sufr_model_init() and Why ?
+  // TODO Adrien, who is calling surf_model_init() and Why ?
   surf_vm_workstation_model = surf_model_init();
 
   surf_vm_workstation_model->name = "Virtual Workstation";
@@ -444,7 +445,7 @@ void surf_workstation_model_init_current_default(void)
   xbt_cfg_setdefault_int(_sg_cfg_set, "network/crosstraffic", 1);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
-
+// TODO fix me
   xbt_dynar_push(model_list, &surf_workstation_model);
   sg_platf_host_add_cb(vm_ws_create);
 //  sg_platf_postparse_add_cb(create_workstations);

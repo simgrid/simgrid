@@ -25,9 +25,9 @@ msg_vm_t MSG_vm_create(msg_host_t location, const char *name,
   new = (msg_vm_t) __MSG_host_create(vm_workstation);
 
 
-  MSG_vm_set_property_value(new, "CORE_NB", bprintf("%d", core_nb)), NULL);
-  MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", core_nb)), NULL);
-  MSG_vm_set_property_value(new, "NET_CAP", bprintf("%d", core_nb)), NULL);
+  MSG_vm_set_property_value(new, "CORE_NB", bprintf("%d", core_nb), free);
+  MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", core_nb), free);
+  MSG_vm_set_property_value(new, "NET_CAP", bprintf("%d", core_nb), free);
 
   #ifdef HAVE_TRACING
   TRACE_msg_vm_create(name, location);

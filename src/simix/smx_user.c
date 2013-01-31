@@ -284,7 +284,7 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
  */
 void* simcall_vm_create(const char *name, smx_host_t host){
 {
-  return simcall_BODY_vm_crate(name, host);
+  return simcall_BODY_vm_create(name, host);
 }
 
 
