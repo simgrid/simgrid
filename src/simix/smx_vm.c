@@ -103,5 +103,5 @@ void SIMIX_vm_destroy(smx_host_t host)
 }
 
 void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t vm){
-   SIMIX_vm_start(vm);
+   SIMIX_vm_destroy(vm);
 }
