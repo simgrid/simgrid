@@ -39,6 +39,49 @@ user@caraja:~/workspace/simgrid/src$ cg "TUTORIAL: New model"
 7 include/surf/surf.h      661 /* TUTORIAL: New model*/
 \endverbatim
 
+\section simgrid_dev_guide_simcall How to add a new simcall?
+To add a simcall called `<name>` with three arguments `arg1`, `arg2` and `arg3`
+of type `targ1`, `targ2`, `targ3` respectively and which return a value of
+type `tret` you must first define the simcall function in the the
+`include/simgrid/simix.h` and make it call the automatically generated `BODY`
+function which will do all the bad stuff.
+
+~~~~{.c}
+tret simcall_<NAME>(targ1 arg1, targ2 arg2, targ3 arg3){
+  return simcall_BODY_<NAME>(arg1, arg2, arg3);
+}
+~~~~
+
+Then you must add an new line in the list `SIMCALL_LIST1` of simcall actions in
+`src/simix/smx_smurf_private.h`. The arguments of the `ACTION` are:
+- the simcall enum name,
+- the `<name>` of the simcall,
+- if the result must be automatically saved in the simcall
+ (`WITH_ANSWER`/`WITHOUT_ANSWER`)
+- the return type,
+- the arguments.
+
+The return type and the arguments must be define by using `TSPEC(name, type)`,
+or one of the predefined type (e.g., `TSTRING(n)`, `TINT(n)`, `TVOID(n)`,
+`TPTR(n)`, …). You must get something like this:
+
+~~~~{.c}
+ACTION(SIMCALL_<NAME>, <name>, WITH_ANSWER, TSPEC(result, tret), TSPEC(arg1, targ1), TSPEC(arg2, targ2), TSPEC(arg3, targ3)) sep  \
+~~~~
+
+Finaly you have to define the kernel code in a `SIMIX_pre_<name>` in the
+corresponding src/simix/smx_*.c file:
+
+~~~~{.c}
+tret SIMIX_pre_<name>(smx_simcall_t simcall, targ1 arg1, targ2 arg2, targ3 arg3) {
+  SIMIX_<NAME>(arg1, arg2, arg3);
+}
+
+tret SIMIX_<name>(targ1 arg1, targ2 arg2, targ3 arg3) {
+  // Your code in kernel mode
+}
+~~~~
+
 \section simgrid_dev_guide_tag What is How to add a new tag for xml files?
 Search for expression \"TUTORIAL: New TAG\".
 \verbatim
