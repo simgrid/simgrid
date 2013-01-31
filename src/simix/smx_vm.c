@@ -93,15 +93,16 @@ void SIMIX_vm_shutdown(smx_host_t host)
 {
   /* TODO: check state */
 
-  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(smx_host)->process_list));
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(host)->process_list));
 
-  xbt_swag_foreach_safe(smx_process, SIMIX_host_priv(smx_host)->process_list) {
-         XBT_DEBUG("kill %s", SIMIX_host_get_name(smx_host));
+  smx_process_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(host)->process_list) {
+         XBT_DEBUG("kill %s", SIMIX_host_get_name(host));
          simcall_process_kill(smx_process);
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_set_vm_state(vm, msg_vm_state_sleeping);
+  SIMIX_set_vm_state(host, msg_vm_state_sleeping);
 }
 
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t vm){
