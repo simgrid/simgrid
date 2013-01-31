@@ -50,8 +50,38 @@ if(enable_java)
   set(MANIFEST_FILE ${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF)
   add_jar(SG_java_jar ${JMSG_JAVA_SRC})
   add_custom_command(TARGET SG_java_jar POST_BUILD
+    COMMENT "Update file MANIFEST.MF in simgrid.jar..."
     DEPENDS ${MANIFEST_FILE}
-    COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${CMAKE_BINARY_DIR}/${CMAKE_JAVA_TARGET_OUTPUT_NAME}.jar)
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+    COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} simgrid.jar
+    )
+
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
+    if(${ARCH_32_BITS})
+      set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/x86/")
+    else()
+      set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/amd64/")
+    endif()
+  else()
+    error("Unknown system type. Processor: ${CMAKE_SYSTEM_PROCESSOR}; System: ${CMAKE_SYSTEM_NAME}")
+  endif()
+  message("Native libraries bundeled into: ${JSG_BUNDLE}")
+
+  add_custom_command(TARGET SG_java_jar POST_BUILD
+    COMMENT "Combine native libraries in simgrid.jar..."
+    DEPENDS simgrid SG_java
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "NATIVE"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${JSG_BUNDLE}"
+    COMMAND ${CMAKE_COMMAND} -E copy ./lib/libsimgrid.so "${JSG_BUNDLE}"
+    COMMAND strip --strip-debug "${JSG_BUNDLE}/libsimgrid.so"
+    COMMAND ${CMAKE_COMMAND} -E copy ./lib/libSG_java.so "${JSG_BUNDLE}"
+    COMMAND strip --strip-debug "${JSG_BUNDLE}/libSG_java.so"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog" "${JSG_BUNDLE}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java" "${JSG_BUNDLE}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/COPYING" "${JSG_BUNDLE}"
+    COMMAND ${JAVA_ARCHIVE} -uvf simgrid.jar "NATIVE"
+    )
 endif()
 
 add_dependencies(simgrid maintainer_files)
