@@ -1,6 +1,7 @@
 #### Generate the whole html documentation
 
 find_path(DOXYGEN_PATH  NAMES doxygen  PATHS NO_DEFAULT_PATHS)
+find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
 if(DOXYGEN_PATH)
@@ -60,6 +61,8 @@ if(DOXYGEN_PATH)
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen again"
     COMMAND ${DOXYGEN_PATH}/doxygen Doxyfile
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
+    COMMAND ${JAVADOC_PATH}/javadoc -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/msg/*.java
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
 
