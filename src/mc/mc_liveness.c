@@ -476,9 +476,11 @@ void MC_ddfs(int search_cycle){
    
         /* Debug information */
        
-        req_str = MC_request_to_string(req, value);
-        XBT_DEBUG("Execute: %s", req_str);
-        xbt_free(req_str);
+        if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+          req_str = MC_request_to_string(req, value);
+          XBT_DEBUG("Execute: %s", req_str);
+          xbt_free(req_str);
+        }
 
         MC_state_set_executed_request(current_pair->graph_state, req, value);   
 
