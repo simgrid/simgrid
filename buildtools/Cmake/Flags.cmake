@@ -19,6 +19,8 @@ if(enable_compile_warnings)
   endif()
 
   set(CMAKE_Fortran_FLAGS "-Wall") # FIXME: Q&D hack
+
+  set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 endif()
 
 if(enable_compile_optimizations)
