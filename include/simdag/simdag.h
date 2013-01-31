@@ -179,8 +179,6 @@ XBT_PUBLIC(void) SD_task_distribute_comp_amdhal(SD_task_t task, int ws_count);
 XBT_PUBLIC(void) SD_task_schedulev(SD_task_t task, int count,
                                    const SD_workstation_t * list);
 XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
-XBT_PUBLIC(void) SD_task_set_category (SD_task_t task, const char *category);
-XBT_PUBLIC(const char *) SD_task_get_category (SD_task_t task);
 
 
 /** @brief A constant to use in SD_task_schedule to mean that there is no cost.
