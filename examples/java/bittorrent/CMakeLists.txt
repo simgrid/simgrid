@@ -19,7 +19,7 @@ endif()
 
 set(tesh_files
   ${tesh_files}
-  examples/bittorrent/bittorrent.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent.tesh
   PARENT_SCOPE
   )
 set(xml_files
