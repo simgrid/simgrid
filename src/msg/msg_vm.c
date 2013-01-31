@@ -10,11 +10,8 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg,
                                 "Cloud-oriented parts of the MSG API");
 
-/** @brief Create a new (empty) VMs.
+/** @brief Create a new VM (the VM is just attached to the location but it is not started yet).
  *  @ingroup msg_VMs
- *
- *  @bug it is expected that in the future, the coreAmount parameter will be used
- *  to add extra constraints on the execution, but the argument is ignored for now.
  */
 
 msg_vm_t MSG_vm_create(msg_host_t location, const char *name,
