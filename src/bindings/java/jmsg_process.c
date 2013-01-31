@@ -321,21 +321,13 @@ Java_org_simgrid_msg_Process_isSuspended(JNIEnv * env,
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Process_sleep
-	(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos) {
-
-	double time =  jmillis / 1000 + jnanos / 1000;
-	msg_error_t rv;
-	xbt_ex_t e;
-	TRY {
-		rv = MSG_process_sleep(time);
-	}
-	CATCH(e) {
-	    xbt_ex_free(e);
-		return;
-	}
+Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint jnanos)
+ {
+  double time =  jmillis / 1000 + jnanos / 1000;
+  msg_error_t rv;
+  rv = MSG_process_sleep(time);
   if (rv != MSG_OK) {
-  	jmsg_throw_status(env,rv);
+    jmsg_throw_status(env,rv);
   }
 }
 JNIEXPORT void JNICALL
@@ -343,17 +335,10 @@ Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
                                      jdouble jseconds)
 {
   msg_error_t rv;
-  xbt_ex_t e;
-  TRY {
-   rv = MSG_process_sleep((double)jseconds);
-  }
-  CATCH(e) {
-    xbt_ex_free(e);
-  	return;
-  }
+  rv = MSG_process_sleep((double)jseconds);
   if (rv != MSG_OK) {
-  	XBT_INFO("Status NOK");
-  	jmsg_throw_status(env,rv);
+    XBT_INFO("Status NOK");
+    jmsg_throw_status(env,rv);
   }
 }
 

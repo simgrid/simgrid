@@ -120,13 +120,7 @@ Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble tim
   }
 
   msg_error_t status;
-  xbt_ex_t e;
-  TRY {
-    status = MSG_comm_wait(comm,(double)timeout);
-  }
-  CATCH(e) {
-    xbt_ex_free(e);
-  }
+  status = MSG_comm_wait(comm,(double)timeout);
   (*env)->SetBooleanField(env, jcomm, jcomm_field_Comm_finished, JNI_TRUE);
   if (status == MSG_OK) {
     jcomm_bind_task(env,jcomm);
