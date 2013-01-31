@@ -23,7 +23,6 @@ char *libsimgrid_path;
 void *start_data_libsimgrid, *start_bss_libsimgrid;
 void *start_data_binary, *start_bss_binary;
 void *start_text_binary;
-void *end_raw_heap;
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size);
 static void MC_region_restore(mc_mem_region_t reg);
@@ -38,6 +37,7 @@ static void print_local_variables_values(xbt_dynar_t all_variables);
 static void *get_stack_pointer(void *stack_context, void *heap);
 
 static void snapshot_stack_free(mc_snapshot_stack_t s);
+static xbt_dynar_t take_snapshot_ignore(void);
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
@@ -107,8 +107,9 @@ void MC_init_memory_map_info(){
             start_bss_binary = reg.start_addr;
             i++;
           }
-        }else if(!memcmp(maps->regions[i].pathname, "[heap]", 6)){
-          end_raw_heap = reg.end_addr;
+        }else if(!memcmp(maps->regions[i].pathname, "[stack]", 7)){
+          maestro_stack_start = reg.start_addr;
+          maestro_stack_end = reg.end_addr;
           i++;
         }
       }
@@ -177,8 +178,9 @@ mc_snapshot_t MC_take_snapshot()
             i++;
           }
           MC_snapshot_add_region(snapshot, 1, start, size);
-        }else if(!memcmp(maps->regions[i].pathname, "[heap]", 6)){
-          end_raw_heap = reg.end_addr;
+        }else if(!memcmp(maps->regions[i].pathname, "[stack]", 7)){
+          maestro_stack_start = reg.start_addr;
+          maestro_stack_end = reg.end_addr;
           i++;
         } else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
           size = (char*)reg.end_addr - (char*)reg.start_addr;
@@ -199,6 +201,8 @@ mc_snapshot_t MC_take_snapshot()
       i++;
     }
   }
+
+  snapshot->to_ignore = take_snapshot_ignore();
 
   if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,""))
     snapshot->stacks = take_snapshot_stacks(&snapshot, heap);
@@ -231,6 +235,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
 
   xbt_free(snapshot->regions);
   xbt_dynar_free(&(snapshot->stacks));
+  xbt_dynar_free(&(snapshot->to_ignore));
   xbt_free(snapshot);
 }
 
@@ -628,3 +633,26 @@ void variable_value_free_voidp(void* v){
   variable_value_free((variable_value_t) * (void **)v);
 }
 
+static xbt_dynar_t take_snapshot_ignore(){
+  
+  if(mc_heap_comparison_ignore == NULL)
+    return NULL;
+
+  xbt_dynar_t cpy = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), heap_ignore_region_free_voidp);
+
+  unsigned int cursor = 0;
+  mc_heap_ignore_region_t current_region;
+
+  xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region){
+    mc_heap_ignore_region_t new_region = NULL;
+    new_region = xbt_new0(s_mc_heap_ignore_region_t, 1);
+    new_region->address = current_region->address;
+    new_region->size = current_region->size;
+    new_region->block = current_region->block;
+    new_region->fragment = current_region->fragment;
+    xbt_dynar_push(cpy, &new_region);
+  }
+
+  return cpy;
+
+}

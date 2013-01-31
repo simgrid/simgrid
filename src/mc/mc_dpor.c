@@ -80,6 +80,7 @@ static int is_visited_state(){
         if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
           xbt_dynar_remove_at(visited_states, cursor, NULL);
           xbt_dynar_insert_at(visited_states, cursor, &new_state);
+          XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
           if(raw_mem_set)
             MC_SET_RAW_MEM;
           else
@@ -96,6 +97,7 @@ static int is_visited_state(){
             if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
               xbt_dynar_remove_at(visited_states, previous_cursor, NULL);
               xbt_dynar_insert_at(visited_states, previous_cursor, &new_state);
+              XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
               if(raw_mem_set)
                 MC_SET_RAW_MEM;
               else
@@ -113,6 +115,7 @@ static int is_visited_state(){
             if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
               xbt_dynar_remove_at(visited_states, next_cursor, NULL);
               xbt_dynar_insert_at(visited_states, next_cursor, &new_state);
+              XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
               if(raw_mem_set)
                 MC_SET_RAW_MEM;
               else
@@ -306,10 +309,6 @@ void MC_dpor(void)
           next_state->system_state = MC_take_snapshot();
         }
 
-      }else{
-
-        XBT_DEBUG("State already visited !");
-        
       }
 
       xbt_fifo_unshift(mc_stack_safety, next_state);

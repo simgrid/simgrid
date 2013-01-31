@@ -122,8 +122,6 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr);
 static dw_frame_t get_frame_by_offset(xbt_dict_t all_variables, unsigned long int offset);
 static size_t data_bss_ignore_size(void *address);
 static void MC_get_global_variables(char *elf_file);
-static void heap_ignore_region_free(mc_heap_ignore_region_t r);
-static void heap_ignore_region_free_voidp(void *r);
 
 void MC_do_the_modelcheck_for_real() {
 
@@ -191,7 +189,6 @@ void MC_init(){
   get_libsimgrid_plt_section();
   get_binary_plt_section();
 
-  MC_ignore_data_bss(&end_raw_heap, sizeof(end_raw_heap));
   MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
   MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
 
@@ -746,12 +743,12 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 
 /************ MC_ignore ***********/ 
 
-static void heap_ignore_region_free(mc_heap_ignore_region_t r){
+void heap_ignore_region_free(mc_heap_ignore_region_t r){
   if(r)
     xbt_free(r);
 }
 
-static void heap_ignore_region_free_voidp(void *r){
+void heap_ignore_region_free_voidp(void *r){
   heap_ignore_region_free((mc_heap_ignore_region_t) * (void **) r);
 }
 
@@ -999,6 +996,7 @@ void MC_new_stack_area(void *stack, char *name, void* context, size_t size){
   region->process_name = strdup(name);
   region->context = context;
   region->size = size;
+  region->block = ((char*)stack - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
   xbt_dynar_push(stacks_areas, &region);
   
   MC_UNSET_RAW_MEM;
@@ -1802,6 +1800,17 @@ static void MC_get_global_variables(char *elf_file){
        || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".bss") == 0)
        || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "stderr", 6) == 0)
        || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "counter", 7) == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapinfo1") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapinfo2") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapbase1") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapbase2") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapsize1") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapsize2") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heaplimit") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "ignore_done") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "s_heap") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "to_ignore1") == 0)
+       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "to_ignore2") == 0)
        || ((size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16) == 0))
       continue;
 

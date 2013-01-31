@@ -12,7 +12,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, mc,
 
 static int heap_region_compare(void *d1, void *d2, size_t size);
 
-static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *sp2, void *heap1, void *heap2, xbt_dynar_t equals);
 static int is_heap_equality(xbt_dynar_t equals, void *a1, void *a2);
 static size_t heap_ignore_size(void *address);
 
@@ -20,7 +19,8 @@ static void stack_region_free(stack_region_t s);
 static void heap_equality_free(heap_equality_t e);
 
 static int is_stack_ignore_variable(char *frame, char *var_name);
-static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals);
+static int compare_local_variables(char *s1, char *s2);
+static int compare_global_variables(int region_type, void *d1, void *d2);
 
 static size_t heap_ignore_size(void *address){
   unsigned int cursor = 0;
@@ -42,7 +42,7 @@ static size_t heap_ignore_size(void *address){
   return 0;
 }
 
-static int compare_global_variables(int region_type, void *d1, void *d2, xbt_dynar_t equals){
+static int compare_global_variables(int region_type, void *d1, void *d2){
 
   unsigned int cursor = 0;
   size_t offset; 
@@ -68,7 +68,7 @@ static int compare_global_variables(int region_type, void *d1, void *d2, xbt_dyn
             continue;
           }else{
             if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
-              res_compare = compare_area(addr_pointed1, addr_pointed2, NULL, equals);
+              res_compare = compare_area(addr_pointed1, addr_pointed2, NULL);
               if(res_compare == 1){
                 #ifdef MC_VERBOSE
                   XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
@@ -103,7 +103,7 @@ static int compare_global_variables(int region_type, void *d1, void *d2, xbt_dyn
             continue;
           }else{
             if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
-              res_compare = compare_area(addr_pointed1, addr_pointed2, NULL, equals);
+              res_compare = compare_area(addr_pointed1, addr_pointed2, NULL);
               if(res_compare == 1){
                 #ifdef MC_VERBOSE
                   XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
@@ -328,12 +328,10 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   }
 
   /* Init heap information used in heap comparison algorithm */
-  init_heap_information((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data);
-
-  xbt_dynar_t equals = xbt_dynar_new(sizeof(heap_equality_t), heap_equality_free_voidp);
+  init_heap_information((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data, s1->to_ignore, s2->to_ignore);
 
   /* Compare binary global variables */
-  is_diff = compare_global_variables(s1->region_type[data_program_index], s1->regions[data_program_index]->data, s2->regions[data_program_index]->data, equals);
+  is_diff = compare_global_variables(s1->region_type[data_program_index], s1->regions[data_program_index]->data, s2->regions[data_program_index]->data);
   if(is_diff != 0){
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);
@@ -357,14 +355,14 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     #endif
   }
 
-  #ifdef MC_VERBOSE
+  #ifdef MC_DEBUG
     if(is_diff == 0)
       xbt_os_timer_stop(timer);
     xbt_os_timer_start(timer);
   #endif
 
   /* Compare libsimgrid global variables */
-    is_diff = compare_global_variables(s1->region_type[data_libsimgrid_index], s1->regions[data_libsimgrid_index]->data, s2->regions[data_libsimgrid_index]->data, equals);
+    is_diff = compare_global_variables(s1->region_type[data_libsimgrid_index], s1->regions[data_libsimgrid_index]->data, s2->regions[data_libsimgrid_index]->data);
   if(is_diff != 0){
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);
@@ -394,11 +392,50 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     xbt_os_timer_start(timer);
   #endif
 
+    /* Stacks comparison */
+    unsigned int  cursor = 0;
+    int diff_local = 0;
+    is_diff = 0;
+    
+    while(cursor < xbt_dynar_length(s1->stacks)){
+      diff_local = compare_local_variables(((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->local_variables->data);
+      if(diff_local > 0){
+        #ifdef MC_DEBUG
+          if(is_diff == 0){
+            xbt_os_timer_stop(timer);
+            mc_comp_times->stacks_comparison_time = xbt_os_timer_elapsed(timer); 
+          }
+          XBT_DEBUG("Different local variables between stacks %d", cursor + 1);
+          errors++;
+          is_diff = 1;
+        #else
+        
+          #ifdef MC_VERBOSE
+            XBT_VERB("Different local variables between stacks %d", cursor + 1);
+          #endif
+          
+            reset_heap_information();
+            xbt_os_timer_free(timer);
+            xbt_os_timer_stop(global_timer);
+            mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
+            xbt_os_timer_free(global_timer);
+            
+            if(!raw_mem)
+              MC_UNSET_RAW_MEM;
+            
+            return 1;
+        #endif
+      }
+      cursor++;
+    }
+    
+    #ifdef MC_DEBUG
+      xbt_os_timer_start(timer);
+    #endif
+
   /* Compare heap */
-  xbt_dynar_t stacks1 = xbt_dynar_new(sizeof(stack_region_t), stack_region_free_voidp);
-  xbt_dynar_t stacks2 = xbt_dynar_new(sizeof(stack_region_t), stack_region_free_voidp);
  
-  if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data, &stacks1, &stacks2, equals)){
+  if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data)){
 
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);
@@ -408,14 +445,12 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     #else
 
       xbt_os_timer_free(timer);
-      xbt_dynar_free(&stacks1);
-      xbt_dynar_free(&stacks2);
-      xbt_dynar_free(&equals);
  
       #ifdef MC_VERBOSE
         XBT_VERB("Different heap (mmalloc_compare)");
       #endif
        
+      reset_heap_information();
       xbt_os_timer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
       xbt_os_timer_free(global_timer);
@@ -431,52 +466,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     #endif
   }
 
-  #ifdef MC_DEBUG
-    xbt_os_timer_start(timer);
-  #endif
-
-  /* Stacks comparison */
-  unsigned int  cursor = 0;
-  int diff_local = 0;
-  is_diff = 0;
-
-  while(cursor < xbt_dynar_length(stacks1)){
-    diff_local = compare_local_variables(((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, equals);
-    if(diff_local > 0){
-      #ifdef MC_DEBUG
-        if(is_diff == 0){
-          xbt_os_timer_stop(timer);
-          mc_comp_times->stacks_comparison_time = xbt_os_timer_elapsed(timer); 
-        }
-        XBT_DEBUG("Different local variables between stacks %d", cursor + 1);
-        errors++;
-        is_diff = 1;
-      #else
-        xbt_dynar_free(&stacks1);
-        xbt_dynar_free(&stacks2);
-        xbt_dynar_free(&equals);
-        
-      #ifdef MC_VERBOSE
-        XBT_VERB("Different local variables between stacks %d", cursor + 1);
-      #endif
-          
-        xbt_os_timer_free(timer);
-        xbt_os_timer_stop(global_timer);
-        mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-        xbt_os_timer_free(global_timer);
-        
-        if(!raw_mem)
-          MC_UNSET_RAW_MEM;
-        
-        return 1;
-      #endif
-    }
-    cursor++;
-  }
-
-  xbt_dynar_free(&stacks1);
-  xbt_dynar_free(&stacks2);
-  xbt_dynar_free(&equals);
+  reset_heap_information();
    
   xbt_os_timer_free(timer);
 
@@ -525,7 +515,7 @@ static int is_stack_ignore_variable(char *frame, char *var_name){
   return 0;
 }
 
-static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
+static int compare_local_variables(char *s1, char *s2){
   
   xbt_dynar_t tokens1 = xbt_str_split(s1, NULL);
   xbt_dynar_t tokens2 = xbt_str_split(s2, NULL);
@@ -534,37 +524,42 @@ static int compare_local_variables(char *s1, char *s2, xbt_dynar_t heap_equals){
   unsigned int cursor = 0;
   void *addr1, *addr2;
   char *ip1 = NULL, *ip2 = NULL;
+  int res_compare = 0;
+  char *var_name;
   
   while(cursor < xbt_dynar_length(tokens1)){
     s_tokens1 = xbt_str_split(xbt_dynar_get_as(tokens1, cursor, char *), "=");
     s_tokens2 = xbt_str_split(xbt_dynar_get_as(tokens2, cursor, char *), "=");
     if(xbt_dynar_length(s_tokens1) > 1 && xbt_dynar_length(s_tokens2) > 1){
+      var_name = xbt_dynar_get_as(s_tokens1, 0, char *);
       if((strcmp(xbt_dynar_get_as(s_tokens1, 0, char *), "ip") == 0) && (strcmp(xbt_dynar_get_as(s_tokens2, 0, char *), "ip") == 0)){
         xbt_free(ip1);
         xbt_free(ip2);
         ip1 = strdup(xbt_dynar_get_as(s_tokens1, 1, char *));
         ip2 = strdup(xbt_dynar_get_as(s_tokens2, 1, char *));
       }
-      if(strcmp(xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *)) != 0){   
-        /* Ignore this variable ?  */
-        if(is_stack_ignore_variable(ip1, xbt_dynar_get_as(s_tokens1, 0, char *)) && is_stack_ignore_variable(ip2, xbt_dynar_get_as(s_tokens2, 0, char *))){
-          xbt_dynar_free(&s_tokens1);
-          xbt_dynar_free(&s_tokens2);
-          cursor++;
-          continue;
-        }
-        addr1 = (void *) strtoul(xbt_dynar_get_as(s_tokens1, 1, char *), NULL, 16);
-        addr2 = (void *) strtoul(xbt_dynar_get_as(s_tokens2, 1, char *), NULL, 16);
-        if(is_heap_equality(heap_equals, addr1, addr2) == 0){
-          if(XBT_LOG_ISENABLED(mc_compare, xbt_log_priority_verbose))
-            XBT_VERB("Variable %s is different between stacks in %s : %s - %s", xbt_dynar_get_as(s_tokens1, 0, char *), ip1, xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
-          xbt_dynar_free(&s_tokens1);
-          xbt_dynar_free(&s_tokens2);
-          xbt_dynar_free(&tokens1);
-          xbt_dynar_free(&tokens2);
-          xbt_free(ip1);
-          xbt_free(ip2);
-          return 1;
+      addr1 = (void *) strtoul(xbt_dynar_get_as(s_tokens1, 1, char *), NULL, 16);
+      addr2 = (void *) strtoul(xbt_dynar_get_as(s_tokens2, 1, char *), NULL, 16);
+      if(addr1 > std_heap && (char *)addr1 <= (char *)std_heap + STD_HEAP_SIZE && addr2 > std_heap && (char *)addr2 <= (char *)std_heap + STD_HEAP_SIZE){
+        res_compare = compare_area(addr1, addr2, NULL);
+        if(res_compare == 1){
+          if(is_stack_ignore_variable(ip1, xbt_dynar_get_as(s_tokens1, 0, char *)) && is_stack_ignore_variable(ip2, xbt_dynar_get_as(s_tokens2, 0, char *))){
+            xbt_dynar_free(&s_tokens1);
+            xbt_dynar_free(&s_tokens2);
+            cursor++;
+            continue;
+          }else {
+            #ifdef MC_VERBOSE
+              XBT_VERB("Different local variable : %s at addresses %p - %p", var_name, addr1, addr2);
+            #endif
+            xbt_dynar_free(&s_tokens1);
+            xbt_dynar_free(&s_tokens2);
+            xbt_dynar_free(&tokens1);
+            xbt_dynar_free(&tokens2);
+            xbt_free(ip1);
+            xbt_free(ip2);
+            return 1;
+          }
         }
       }
     }
@@ -608,37 +603,6 @@ static int is_heap_equality(xbt_dynar_t equals, void *a1, void *a2){
 
   return 0;
 
-}
-
-
-static int compare_stack(stack_region_t s1, stack_region_t s2, void *sp1, void *sp2, void *heap1, void *heap2, xbt_dynar_t equals){
-  
-  size_t k = 0;
-  size_t size_used1 = s1->size - ((char*)sp1 - (char*)s1->address);
-  size_t size_used2 = s2->size - ((char*)sp2 - (char*)s2->address);
-
-  int pointer_align;
-  void *addr_pointed1 = NULL, *addr_pointed2 = NULL;  
-  
-  while(k < size_used1){
-    if(memcmp((char *)s1->address + s1->size - k, (char *)s2->address + s2->size - k, 1) != 0){
-      pointer_align = ((size_used1 - k) / sizeof(void*)) * sizeof(void*);
-      addr_pointed1 = *((void **)(((char*)s1->address + (s1->size - size_used1)) + pointer_align));
-      addr_pointed2 = *((void **)(((char*)s2->address + (s2->size - size_used2)) + pointer_align));
-      if(is_heap_equality(equals, addr_pointed1, addr_pointed2) == 0){
-        if((addr_pointed1 > std_heap) && (addr_pointed1 < (void *)((char *)std_heap + STD_HEAP_SIZE)) && (addr_pointed2 > std_heap) && (addr_pointed2 < (void *)((char *)std_heap + STD_HEAP_SIZE))){
-          if(is_free_area(addr_pointed1, (xbt_mheap_t)heap1) == 0 || is_free_area(addr_pointed2, (xbt_mheap_t)heap2) == 0){
-            return 1;
-          }
-        }else{
-          return 1;
-        } 
-      }
-    } 
-    k++;
-  }
- 
-  return 0;
 }
 
 int MC_compare_snapshots(void *s1, void *s2){

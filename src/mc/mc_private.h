@@ -41,6 +41,7 @@ typedef struct s_mc_snapshot{
   size_t *stack_sizes;
   xbt_dynar_t stacks;
   int nb_processes;
+  xbt_dynar_t to_ignore;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
 typedef struct s_mc_snapshot_stack{
@@ -200,7 +201,6 @@ void get_libsimgrid_plt_section(void);
 void get_binary_plt_section(void);
 
 extern void *start_data_libsimgrid;
-extern void *end_raw_heap;
 extern void *start_data_binary;
 extern void *start_bss_binary;
 extern char *libsimgrid_path;
