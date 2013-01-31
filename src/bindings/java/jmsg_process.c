@@ -15,6 +15,14 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+jfieldID jprocess_field_Process_bind;
+jfieldID jprocess_field_Process_host;
+jfieldID jprocess_field_Process_killTime;
+jfieldID jprocess_field_Process_id;
+jfieldID jprocess_field_Process_name;
+jfieldID jprocess_field_Process_pid;
+jfieldID jprocess_field_Process_ppid;
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject jprocess) {
   if (smx_factory_initializer_to_use == SIMIX_ctx_cojava_factory_init) {

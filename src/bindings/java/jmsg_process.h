@@ -14,13 +14,13 @@
 #include <simgrid/simix.h>
 
 //Cached java fields
-jfieldID jprocess_field_Process_bind;
-jfieldID jprocess_field_Process_host;
-jfieldID jprocess_field_Process_killTime;
-jfieldID jprocess_field_Process_id;
-jfieldID jprocess_field_Process_name;
-jfieldID jprocess_field_Process_pid;
-jfieldID jprocess_field_Process_ppid;
+extern jfieldID jprocess_field_Process_bind;
+extern jfieldID jprocess_field_Process_host;
+extern jfieldID jprocess_field_Process_killTime;
+extern jfieldID jprocess_field_Process_id;
+extern jfieldID jprocess_field_Process_name;
+extern jfieldID jprocess_field_Process_pid;
+extern jfieldID jprocess_field_Process_ppid;
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject);
