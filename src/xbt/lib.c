@@ -98,7 +98,7 @@ void xbt_lib_unset(xbt_lib_t lib, const char *key, int level)
   }
 
   /* there is no element at any level, so delete the key */
-  xbt_dict_remove(lib->dict, key)
+  xbt_dict_remove(lib->dict, key);
 }
 
 void *xbt_lib_get_or_null(xbt_lib_t lib, const char *key, int level)

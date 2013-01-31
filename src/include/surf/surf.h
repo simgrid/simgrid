@@ -609,6 +609,16 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
 XBT_PUBLIC_DATA(surf_model_t) surf_workstation_model;
 
 /** \ingroup SURF_models
+ *  \brief The vm_workstation model
+ *
+ *  Note that when you create an API on top of SURF,
+ *  the vm_workstation model should be the only one you use
+ *  because depending on the platform model, the network model and the CPU model
+ *  may not exist.
+ */
+XBT_PUBLIC_DATA(surf_model_t) surf_vm_workstation_model;
+
+/** \ingroup SURF_models
  *  \brief Initializes the platform with a compound workstation model
  *
  *  This function should be called after a cpu_model and a

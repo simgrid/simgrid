@@ -84,6 +84,60 @@ int SIMIX_pre_vm_state(smx_host_t ind_vm){
 }
 
 /**
+ * \brief Function to suspend a SIMIX VM host. This function powers off the
+ * VM. All the processes on this VM will be killed. But, the state of the VM is
+ * perserved. We can later start it again.
+ *
+ * \param host the vm host to suspend (a smx_host_t)
+ */
+void SIMIX_vm_suspend(smx_host_t host)
+{
+  /* TODO: check state */
+
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(host)->process_list));
+
+  smx_process_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(host)->process_list) {
+         XBT_DEBUG("suspend %s", SIMIX_host_get_name(host));
+         simcall_process_suspend(smx_process);
+  }
+
+  /* TODO: Using the variable of the MSG layer is not clean. */
+  SIMIX_set_vm_state(host, msg_vm_state_suspended);
+}
+
+void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t vm){
+   SIMIX_vm_suspend(vm);
+}
+
+/**
+ * \brief Function to shutdown a SIMIX VM host. This function powers off the
+ * VM. All the processes on this VM will be killed. But, the state of the VM is
+ * perserved. We can later start it again.
+ *
+ * \param host the vm host to shutdown (a smx_host_t)
+ */
+void SIMIX_vm_shutdown(smx_host_t host)
+{
+  /* TODO: check state */
+
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(host)->process_list));
+
+  smx_process_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(host)->process_list) {
+         XBT_DEBUG("kill %s", SIMIX_host_get_name(host));
+         simcall_process_kill(smx_process);
+  }
+
+  /* TODO: Using the variable of the MSG layer is not clean. */
+  SIMIX_set_vm_state(host, msg_vm_state_sleeping);
+}
+
+void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t vm){
+   SIMIX_vm_shutdown(vm);
+}
+
+/**
  * \brief Function to destroy a SIMIX VM host.
  *
  * \param host the vm host to destroy (a smx_host_t)
@@ -104,6 +158,6 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
   surf_vm_workstation_model->extension.vm_workstation.destroy(ind_vm);
 }
 
-void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_destroy(ind_vm);
+void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t vm){
+   SIMIX_vm_destroy(vm);
 }

@@ -287,11 +287,28 @@ void* simcall_vm_ws_create(const char *name, smx_host_t phys_host){
 }
 
 void simcall_vm_start(smx_host_t vm) {
-
-	simcall_BODY_set_vm_state(vm, msg_vm_state_running);
+{
+  simcall_BODY_set_vm_state(vm, msg_vm_state_running);
 }
 
-void simcall_vm_destroy(smx_host_t vm) {
+void simcall_vm_suspend(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_suspend */
+  simcall_BODY_vm_suspend(vm);
+}
+
+void simcall_vm_shutdown(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_shutdown */
+  simcall_BODY_vm_shutdown(vm);
+}
+
+void simcall_vm_destroy(smx_host_t vm)
+{
+  /*
+   * simcall_BODY_ is defined in src/simix/smx_smurf_private.h.
+   * This function will jump to SIMIX_pre_vm_destroy.
+   **/
   simcall_BODY_vm_destroy(vm);
 }
 
