@@ -405,16 +405,25 @@ void dot_add_task(Agnode_t * dag_node)
 
   XBT_DEBUG("See <job id=%s runtime=%s %.0f>", name,
         agget(dag_node, (char *) "size"), runtime);
+
   if (!strcmp(name, "root")){
-    XBT_WARN("'root' node is explicitly declared in the DOT file. Ignore it");
-    return;
+    XBT_WARN("'root' node is explicitly declared in the DOT file. Update it");
+    root_task->amount = runtime;
+#ifdef HAVE_TRACING
+    TRACE_sd_dotloader (root_task, agget (dag_node, (char*)"category"));
+#endif
   }
+
   if (!strcmp(name, "end")){
-    XBT_WARN("'end' node is explicitly declared in the DOT file. Ignore it");
-    return;
+    XBT_WARN("'end' node is explicitly declared in the DOT file. Update it");
+    end_task->amount = runtime;
+#ifdef HAVE_TRACING
+    TRACE_sd_dotloader (end_task, agget (dag_node, (char*)"category"));
+#endif
   }
+
   current_job = xbt_dict_get_or_null(jobs, name);
-  if (current_job == NULL) {
+  if (!current_job) {
     current_job =
         SD_task_create_comp_seq(name, NULL , runtime);
 #ifdef HAVE_TRACING
