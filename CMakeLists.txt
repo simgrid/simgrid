@@ -66,6 +66,7 @@ else()
 endif()
 set(libsimgrid_version "${release_version}")
 set(libsmpi_version "${release_version}")
+set(libSG_java_version "${release_version}")
 set(GCC_NEED_VERSION "4.0")
 set(APPLE_NEED_GCC_VERSION "4.6")
 
