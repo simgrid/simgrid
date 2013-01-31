@@ -286,6 +286,7 @@ set(EXTRA_DIST
 #* ****************************************************************************************** *#
 
 set(SIMDAG_SRC
+  src/simdag/instr_sd_task.c
   src/simdag/sd_daxloader.c
   src/simdag/sd_global.c
   src/simdag/sd_link.c
