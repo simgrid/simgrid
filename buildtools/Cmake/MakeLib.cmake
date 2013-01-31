@@ -23,6 +23,67 @@ if(enable_smpi)
   endif()
 endif()
 
+if(enable_java)
+  add_library(SG_java SHARED ${JMSG_C_SRC})
+  set_target_properties(SG_java PROPERTIES VERSION ${libSG_java_version})
+  get_target_property(COMMON_INCLUDES SG_java INCLUDE_DIRECTORIES)
+  set_target_properties(SG_java PROPERTIES
+    INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
+  add_dependencies(SG_java simgrid)
+
+  if(WIN32)
+    get_target_property(SIMGRID_LIB_NAME_NAME SG_java LIBRARY_OUTPUT_NAME)
+    set_target_properties(SG_java PROPERTIES
+      LINK_FLAGS "-Wl,--subsystem,windows,--kill-at ${SIMGRID_LIB_NAME}"
+      PREFIX "")
+    find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
+    message(STATUS "pexports: ${PEXPORTS_PATH}")
+    if(PEXPORTS_PATH)
+      add_custom_command(TARGET SG_java POST_BUILD
+        COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/SG_java.dll > ${CMAKE_BINARY_DIR}/SG_java.def)
+    endif(PEXPORTS_PATH)
+  else()
+    target_link_libraries(SG_java simgrid)
+  endif()
+
+  set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
+  set(MANIFEST_FILE ${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF)
+  add_jar(SG_java_jar ${JMSG_JAVA_SRC})
+  add_custom_command(TARGET SG_java_jar POST_BUILD
+    COMMENT "Update file MANIFEST.MF in simgrid.jar..."
+    DEPENDS ${MANIFEST_FILE}
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+    COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} simgrid.jar
+    )
+
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
+    if(${ARCH_32_BITS})
+      set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/x86/")
+    else()
+      set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/amd64/")
+    endif()
+  else()
+    error("Unknown system type. Processor: ${CMAKE_SYSTEM_PROCESSOR}; System: ${CMAKE_SYSTEM_NAME}")
+  endif()
+  message("Native libraries bundeled into: ${JSG_BUNDLE}")
+
+  add_custom_command(TARGET SG_java_jar POST_BUILD
+    COMMENT "Combine native libraries in simgrid.jar..."
+    DEPENDS simgrid SG_java
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "NATIVE"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${JSG_BUNDLE}"
+    COMMAND ${CMAKE_COMMAND} -E copy ./lib/libsimgrid.so "${JSG_BUNDLE}"
+    COMMAND strip --strip-debug "${JSG_BUNDLE}/libsimgrid.so"
+    COMMAND ${CMAKE_COMMAND} -E copy ./lib/libSG_java.so "${JSG_BUNDLE}"
+    COMMAND strip --strip-debug "${JSG_BUNDLE}/libSG_java.so"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog" "${JSG_BUNDLE}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java" "${JSG_BUNDLE}"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/COPYING" "${JSG_BUNDLE}"
+    COMMAND ${JAVA_ARCHIVE} -uvf simgrid.jar "NATIVE"
+    )
+endif()
+
 add_dependencies(simgrid maintainer_files)
 
 # if supernovaeing, we need some depends to make sure that the source gets generated

@@ -68,6 +68,15 @@ if(NOT enable_memcheck)
     ADD_TEST(tesh-msg-get-sender-ucontext       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender.tesh)
   endif()
 
+  ADD_TEST(tesh-msg-pid-thread           ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:thread --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
+  if(HAVE_RAWCTX)
+    ADD_TEST(tesh-msg-pid-raw            ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:raw --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
+  endif()
+  if(CONTEXT_UCONTEXT)
+    ADD_TEST(tesh-msg-pid-ucontext       ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg contexts/factory:ucontext --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid.tesh)
+  endif()
+
+
   IF(enable_debug) # these tests need the assertion mechanism
     ADD_TEST(tesh-simdag-parser-bogus-symmetric ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms two_hosts_asymetric.tesh)
   ENDIF()
@@ -306,6 +315,12 @@ if(NOT enable_memcheck)
     ADD_TEST(tracing-process-migration          ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/procmig.tesh)
     ADD_TEST(graphicator                        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --setenv bindir=${CMAKE_BINARY_DIR}/bin --cd ${CMAKE_HOME_DIRECTORY}/tools/graphicator graphicator.tesh)
   ENDIF()
+
+  # Java examples
+  set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/java/:${CMAKE_BINARY_DIR}/simgrid.jar")
+  if(enable_java)
+    ADD_TEST(java-bittorrent ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_HOME_DIRECTORY}/examples/java bittorrent/bittorrent.tesh)
+  endif()
 
   # Lua examples
   if(HAVE_LUA)

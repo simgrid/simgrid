@@ -14,3 +14,9 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/MSG_visualization/trace2fig.pl
   PARENT_SCOPE
   )
+
+set(txt_files
+  ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/simgrid2vite.sed
+  PARENT_SCOPE
+  )

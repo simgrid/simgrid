@@ -1,12 +1,4 @@
 cmake_minimum_required(VERSION 2.6)
-
-IF(CMAKE_BUILD_TYPE STREQUAL "ModelChecker")
-  SET(enable_coverage ON)
-  SET(enable_model-checking ON)
-  SET(enable_lua ON)
-  SET(enable_compile_optimization OFF)
-ENDIF()
-
 ### Need to set rc ccompiler before enable language
 if(WIN32)
   SET(CMAKE_RC_COMPILER "windres")
@@ -66,6 +58,7 @@ else()
 endif()
 set(libsimgrid_version "${release_version}")
 set(libsmpi_version "${release_version}")
+set(libSG_java_version "${release_version}")
 set(GCC_NEED_VERSION "4.0")
 set(APPLE_NEED_GCC_VERSION "4.6")
 

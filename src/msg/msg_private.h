@@ -58,8 +58,6 @@ typedef struct simdata_gpu_task {
 
 typedef struct simdata_process {
   msg_host_t m_host;              /* the host on which the process is running */
-  int PID;                      /* used for debugging purposes */
-  int PPID;                     /* The parent PID */
   msg_host_t put_host;            /* used for debugging purposes */
 #ifdef MSG_USE_DEPRECATED
   m_channel_t put_channel;      /* used for debugging purposes */
@@ -110,7 +108,6 @@ typedef struct MSG_Global {
 #ifdef MSG_USE_DEPRECATED
   int max_channel;
 #endif
-  int PID;
   int session;
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);

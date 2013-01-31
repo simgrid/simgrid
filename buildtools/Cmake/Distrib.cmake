@@ -172,6 +172,8 @@ set(source_to_pack
   ${BINDINGS_SRC}
   ${GTNETS_SRC}
   ${JEDULE_SRC}
+  ${JMSG_C_SRC}
+  ${JMSG_JAVA_SRC}
   ${LUA_SRC}
   ${MC_SRC}
   ${MSG_SRC}
@@ -258,6 +260,7 @@ add_custom_command(
 add_custom_target(dist
   COMMENT "Removing the distribution directory"
   DEPENDS ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
+  COMMAND ${CMAKE_COMMAND} -E echo ${PROJECT_NAME}-${release_version} > ${CMAKE_BINARY_DIR}/VERSION
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
   )
 
@@ -287,6 +290,9 @@ set(CMAKE_BINARY_TEST_DIR ${CMAKE_BINARY_DIR})
 
 # Allow to test the "make dist"
 add_custom_target(distcheck
+  COMMAND ${CMAKE_COMMAND} -E echo "XXX compare archive with git repository"
+  COMMAND ${CMAKE_HOME_DIRECTORY}/tools/check_dist_archive -batch ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
+
   COMMAND ${CMAKE_COMMAND} -E echo "XXX remove old copy"
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_TEST_DIR}/${PROJECT_NAME}-${release_version}
 

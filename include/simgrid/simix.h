@@ -349,7 +349,7 @@ XBT_PUBLIC(void) simcall_process_create(smx_process_t *process,
                                           int auto_restart);
 
 XBT_PUBLIC(void) simcall_process_kill(smx_process_t process);
-XBT_PUBLIC(void) simcall_process_killall(void);
+XBT_PUBLIC(void) simcall_process_killall(int reset_pid);
 
 /* Process handling */
 XBT_PUBLIC(void) simcall_process_cleanup(smx_process_t process);
@@ -364,6 +364,8 @@ XBT_PUBLIC(void *) simcall_process_get_data(smx_process_t process);
 XBT_PUBLIC(void) simcall_process_set_data(smx_process_t process, void *data);
 XBT_PUBLIC(smx_host_t) simcall_process_get_host(smx_process_t process);
 XBT_PUBLIC(const char *) simcall_process_get_name(smx_process_t process);
+XBT_PUBLIC(int) simcall_process_get_PID(smx_process_t process);
+XBT_PUBLIC(int) simcall_process_get_PPID(smx_process_t process);
 XBT_PUBLIC(int) simcall_process_is_suspended(smx_process_t process);
 XBT_PUBLIC(xbt_dict_t) simcall_process_get_properties(smx_process_t host);
 XBT_PUBLIC(void) simcall_process_set_kill_time(smx_process_t process, double kill_time);

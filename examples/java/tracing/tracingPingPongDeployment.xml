@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <process host="Jacquelin" function="tracing.Sender">
+      <argument value="Boivin"/>
+      <argument value="Marcel"/>
+  </process>
+<process host="Boivin" function="tracing.Receiver"/>
+<process host="Marcel" function="tracing.Receiver"/>
+</platform>

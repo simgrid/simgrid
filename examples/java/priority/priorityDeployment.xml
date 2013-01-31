@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <process host="Fafard" function="priority.Test">
+	<argument value="76296000"/>
+	<argument value="1.0"/>
+  </process>
+  <process host="Fafard" function="priority.Test">
+	<argument value="76296000"/>
+	<argument value="2.0"/>
+  </process>
+</platform>

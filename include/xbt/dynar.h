@@ -92,6 +92,9 @@ XBT_PUBLIC(void) xbt_dynar_insert_at(xbt_dynar_t const dynar,
                                      const int idx, const void *src);
 XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t const dynar,
                                      const int idx, void *const dst);
+XBT_PUBLIC(void) xbt_dynar_remove_n_at(xbt_dynar_t const dynar,
+                                     const unsigned int n, const int idx);
+
 
 XBT_PUBLIC(unsigned int) xbt_dynar_search(xbt_dynar_t const dynar, void *elem);
 XBT_PUBLIC(signed int) xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void *const elem);

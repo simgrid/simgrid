@@ -23,6 +23,8 @@ XBT_PUBLIC(void) TRACE_category(const char *category);
 XBT_PUBLIC(void) TRACE_category_with_color (const char *category, const char *color);
 XBT_PUBLIC(xbt_dynar_t) TRACE_get_categories (void);
 XBT_PUBLIC(void) TRACE_smpi_set_category(const char *category);
+XBT_PUBLIC(void) TRACE_sd_set_task_category(SD_task_t task,
+    const char *category);
 
 /*
  * Functions to manage tracing marks (used for trace comparison experiments)

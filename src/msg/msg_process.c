@@ -156,7 +156,6 @@ msg_process_t MSG_process_create_with_environment(const char *name,
   msg_process_t process;
 
   /* Simulator data for MSG */
-  simdata->PID = msg_global->PID++;
   simdata->waiting_action = NULL;
   simdata->waiting_task = NULL;
   simdata->m_host = host;
@@ -165,23 +164,17 @@ msg_process_t MSG_process_create_with_environment(const char *name,
   simdata->data = data;
   simdata->last_errno = MSG_OK;
 
-  if (SIMIX_process_self()) {
-    simdata->PPID = MSG_process_get_PID(MSG_process_self());
-  } else {
-    simdata->PPID = -1;
-  }
-
-#ifdef HAVE_TRACING
-  TRACE_msg_process_create(name, simdata->PID, simdata->m_host);
-#endif
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
  simcall_process_create(&process, name, code, simdata, sg_host_name(host), -1,
                            argc, argv, properties,0);
 
+  #ifdef HAVE_TRACING
+    TRACE_msg_process_create(name, simcall_process_get_PID(process), simdata->m_host);
+  #endif
+
   if (!process) {
     /* Undo everything we have just changed */
-    msg_global->PID--;
     xbt_free(simdata);
     return NULL;
   }
@@ -338,10 +331,7 @@ int MSG_process_get_PID(msg_process_t process)
   if (process == NULL) {
     return 0;
   }
-
-  simdata_process_t simdata = simcall_process_get_data(process);
-
-  return simdata != NULL ? simdata->PID : 0;
+  return simcall_process_get_PID(process);
 }
 
 /** \ingroup m_process_management
@@ -355,9 +345,7 @@ int MSG_process_get_PPID(msg_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
 
-  simdata_process_t simdata = simcall_process_get_data(process);
-
-  return simdata->PPID;
+  return simcall_process_get_PPID(process);
 }
 
 /** \ingroup m_process_management

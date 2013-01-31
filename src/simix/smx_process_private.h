@@ -36,6 +36,7 @@ typedef struct s_smx_process {
   s_xbt_swag_hookup_t destroy_hookup;
 
   unsigned long pid;
+  unsigned long ppid;
   char *name;                   /**< @brief process name if any */
   smx_host_t smx_host;          /* the host on which the process is running */
   smx_context_t context;        /* the context (uctx/raw/thread) that executes the user function */
@@ -72,7 +73,7 @@ void SIMIX_process_create(smx_process_t *process,
                           int auto_restart);
 void SIMIX_process_runall(void);
 void SIMIX_process_kill(smx_process_t process, smx_process_t issuer);
-void SIMIX_process_killall(smx_process_t issuer);
+void SIMIX_process_killall(smx_process_t issuer, int reset_pid);
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args);
 void SIMIX_create_maestro_process(void);
 void SIMIX_process_stop(smx_process_t arg);
@@ -88,6 +89,8 @@ void SIMIX_process_change_host(smx_process_t process,
 void SIMIX_pre_process_suspend(smx_simcall_t simcall, smx_process_t process);
 smx_action_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer);
+int SIMIX_process_get_PID(smx_process_t self);
+int SIMIX_process_get_PPID(smx_process_t self);
 void* SIMIX_process_get_data(smx_process_t process);
 void SIMIX_process_set_data(smx_process_t process, void *data);
 smx_host_t SIMIX_process_get_host(smx_process_t process);
@@ -111,11 +114,13 @@ void SIMIX_pre_process_create(smx_simcall_t simcall, smx_process_t *process,
 			      const char *hostname, double kill_time, int argc,
 			      char **argv, xbt_dict_t properties, int auto_restart);
 void SIMIX_pre_process_kill(smx_simcall_t simcall, smx_process_t process);
-void SIMIX_pre_process_killall(smx_simcall_t simcall);
+void SIMIX_pre_process_killall(smx_simcall_t simcall, int reset_pid);
 void SIMIX_pre_process_cleanup(smx_simcall_t simcall, smx_process_t process);
 void SIMIX_pre_process_resume(smx_simcall_t simcall, smx_process_t process);
 int SIMIX_pre_process_count(smx_simcall_t simcall);
 void* SIMIX_pre_process_self_get_data(smx_simcall_t simcall, smx_process_t process);
+int SIMIX_pre_process_get_PID(smx_simcall_t simcall, smx_process_t self);
+int SIMIX_pre_process_get_PPID(smx_simcall_t simcall, smx_process_t self);
 void* SIMIX_pre_process_get_data(smx_simcall_t simcall, smx_process_t process);
 void SIMIX_pre_process_set_data(smx_simcall_t simcall, smx_process_t process,
                                 void *data);

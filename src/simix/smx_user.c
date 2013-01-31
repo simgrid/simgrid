@@ -361,9 +361,9 @@ void simcall_process_kill(smx_process_t process)
  * \ingroup simix_process_management
  * \brief Kills all SIMIX processes.
  */
-void simcall_process_killall(void)
+void simcall_process_killall(int reset_pid)
 {
-  simcall_BODY_process_killall();
+  simcall_BODY_process_killall(reset_pid);
 }
 
 /**
@@ -429,6 +429,38 @@ void simcall_process_resume(smx_process_t process)
 int simcall_process_count(void)
 {
   return simcall_BODY_process_count();
+}
+
+/**
+ * \ingroup simix_process_management
+ * \brief Return the PID of a #smx_process_t.
+ * \param process a SIMIX process
+ * \return the PID of this process
+ */
+int simcall_process_get_PID(smx_process_t process)
+{
+  if (process == SIMIX_process_self()) {
+    /* avoid a simcall if this function is called by the process itself */
+    return SIMIX_process_get_PID(process);
+  }
+
+  return simcall_BODY_process_get_PID(process);
+}
+
+/**
+ * \ingroup simix_process_management
+ * \brief Return the parent PID of a #smx_process_t.
+ * \param process a SIMIX process
+ * \return the PID of this process parenrt
+ */
+int simcall_process_get_PPID(smx_process_t process)
+{
+  if (process == SIMIX_process_self()) {
+    /* avoid a simcall if this function is called by the process itself */
+    return SIMIX_process_get_PPID(process);
+  }
+
+  return simcall_BODY_process_get_PPID(process);
 }
 
 /**
