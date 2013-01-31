@@ -13,7 +13,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_vm, instr, "MSG VM");
 
 char *instr_vm_id (msg_vm_t vm, char *str, int len)
 {
-  return instr_vm_id_2 (vm->name, str, len);
+
+	return instr_vm_id_2 (vm->name, str, len);
 }
 
 char *instr_vm_id_2 (const char *vm_name, char *str, int len)

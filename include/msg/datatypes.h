@@ -103,6 +103,7 @@ typedef struct msg_hypervisor {
 
 /* ********************************  VM ************************************* */
 typedef msg_host_t msg_vm_t;
+typedef msg_host_priv_t msg_vm_priv_t;
 
 typedef enum {
 msg_vm_state_created,
@@ -115,6 +116,9 @@ msg_vm_state_saved,
 msg_vm_state_restoring,
 } e_msg_vm_state_t;
 
+static inline msg_vm_priv_t MSG_vm_priv(msg_vm_t vm){
+  return xbt_lib_get_level(vm, MSG_HOST_LEVEL);
+}
 
 
 /* ******************************** File ************************************ */
