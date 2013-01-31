@@ -1,0 +1,15 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <process host="Host 0" function="mutualExclusion.centralized.Coordinator">
+      <argument value="2"/> <!-- Amount of CS to serve -->
+  </process>
+  <process host="Host 1" function="mutualExclusion.centralized.Node">
+      <argument value="2"/> <!-- initial sleep time -->
+      <argument value="5"/> <!-- CS time -->
+  </process>
+  <process host="Host 2" function="mutualExclusion.centralized.Node">
+      <argument value="2"/> <!-- initial sleep time -->
+      <argument value="5"/> <!-- CS time -->
+  </process>
+</platform>

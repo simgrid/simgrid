@@ -2,6 +2,7 @@
 
 set(EXTRA_DIST
   include/xbt/win32_ucontext.h
+  src/bindings/java/MANIFEST.MF
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
@@ -310,6 +311,70 @@ set(BINDINGS_SRC
   src/bindings/lua/lua_utils.h
   src/bindings/lua/simgrid_lua.h
   )
+
+set(JMSG_C_SRC
+  src/bindings/java/jmsg.c
+  src/bindings/java/jmsg.h
+  src/bindings/java/jmsg_comm.c
+  src/bindings/java/jmsg_comm.h
+  src/bindings/java/jmsg_file.c
+  src/bindings/java/jmsg_file.h
+  src/bindings/java/jmsg_host.c
+  src/bindings/java/jmsg_host.h
+  src/bindings/java/jmsg_process.c
+  src/bindings/java/jmsg_process.h
+  src/bindings/java/jmsg_rngstream.c
+  src/bindings/java/jmsg_rngstream.h
+  src/bindings/java/jmsg_synchro.c
+  src/bindings/java/jmsg_synchro.h
+  src/bindings/java/jmsg_task.c
+  src/bindings/java/jmsg_task.h
+  src/bindings/java/jmsg_vm.c
+  src/bindings/java/jmsg_vm.h
+  src/bindings/java/jxbt_utilities.c
+  src/bindings/java/jxbt_utilities.h
+  src/bindings/java/smx_context_cojava.c
+  src/bindings/java/smx_context_cojava.h
+  src/bindings/java/smx_context_java.c
+  src/bindings/java/smx_context_java.h
+)
+
+set(JMSG_JAVA_SRC
+  src/bindings/java/org/simgrid/msg/Comm.java
+  src/bindings/java/org/simgrid/msg/File.java
+  src/bindings/java/org/simgrid/msg/Host.java
+  src/bindings/java/org/simgrid/msg/HostFailureException.java
+  src/bindings/java/org/simgrid/msg/HostNotFoundException.java
+  src/bindings/java/org/simgrid/msg/JniException.java
+  src/bindings/java/org/simgrid/msg/Msg.java
+  src/bindings/java/org/simgrid/msg/MsgException.java
+  src/bindings/java/org/simgrid/msg/Mutex.java
+  src/bindings/java/org/simgrid/msg/NativeException.java
+  src/bindings/java/org/simgrid/msg/Process.java
+  src/bindings/java/org/simgrid/msg/ProcessKilledError.java
+  src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
+  src/bindings/java/org/simgrid/msg/RngStream.java
+  src/bindings/java/org/simgrid/msg/Task.java
+  src/bindings/java/org/simgrid/msg/TaskCancelledException.java
+  src/bindings/java/org/simgrid/msg/TimeoutException.java
+  src/bindings/java/org/simgrid/msg/TransferFailureException.java
+  src/bindings/java/org/simgrid/msg/VM.java
+)
+
+set(JTRACE_C_SRC
+  src/bindings/java/jtrace.c
+  src/bindings/java/jtrace.h
+)
+
+set(JTRACE_JAVA_SRC
+  src/bindings/java/org/simgrid/trace/Trace.java
+)
+
+if(HAVE_TRACING)
+  list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
+else()
+  list(APPEND EXTRA_DIST ${JTRACE_C_SRC})
+endif()
 
 set(LUA_SRC
   src/bindings/lua/lua_comm.c
@@ -660,6 +725,7 @@ set(txt_files
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
+  examples/java/bittorrent/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
