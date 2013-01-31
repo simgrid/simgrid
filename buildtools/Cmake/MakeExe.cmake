@@ -32,6 +32,8 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich-test/pt2pt)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/trace)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/bittorrent)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/properties)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/actions)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/migration)

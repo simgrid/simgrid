@@ -316,6 +316,12 @@ if(NOT enable_memcheck)
     ADD_TEST(graphicator                        ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --setenv bindir=${CMAKE_BINARY_DIR}/bin --cd ${CMAKE_HOME_DIRECTORY}/tools/graphicator graphicator.tesh)
   ENDIF()
 
+  # Java examples
+  set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/java/:${CMAKE_BINARY_DIR}/simgrid.jar")
+  if(enable_java)
+    ADD_TEST(java-bittorrent ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_HOME_DIRECTORY}/examples/java bittorrent/bittorrent.tesh)
+  endif()
+
   # Lua examples
   if(HAVE_LUA)
     ADD_TEST(lua-duplicated-globals             ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cd ${CMAKE_HOME_DIRECTORY}/examples/lua/state_cloner duplicated_globals.tesh)

@@ -2,7 +2,7 @@
 
 ! output sort
 
-$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar bittorrent/Bittorrent ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/bittorrent/bittorrent.xml
+$ java -cp ${classpath:=.} bittorrent/Bittorrent ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/bittorrent/bittorrent.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [5000.832370] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:bittorrent.Peer:(2) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 2

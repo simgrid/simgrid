@@ -724,6 +724,7 @@ set(txt_files
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
+  examples/java/bittorrent/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
