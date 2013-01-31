@@ -2,7 +2,7 @@
 
 ! output sort
 
-$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar commTime/CommTimeTest ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/commTime/commTimeDeployment.xml
+$ java -cp ${classpath:=.} commTime/CommTimeTest ./platform.xml ./commTime/commTimeDeployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [7016.452828] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Bellemarre:commTime.Slave:(15) 0.000000] [jmsg/INFO] Receiving on 'slave_13'

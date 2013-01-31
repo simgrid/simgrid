@@ -2,7 +2,7 @@
 
 ! output sort
 
-$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar master_slave_bypass/MsBypass ${srcdir:=.}/examples/master_slave_bypass/platform.xml
+$ java -cp ${classpath:=.} master_slave_bypass/MsBypass ./master_slave_bypass/platform.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.013010] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [alice:process2:(2) 0.000000] [jmsg/INFO] Slave Hello!

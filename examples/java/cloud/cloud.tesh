@@ -2,7 +2,7 @@
 
 ! output sort
 
-$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir:=.}/examples/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -cp ${classpath:=.} cloud/Cloud ./platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (10:Slave 8@Jean_Yves) Receiving on slave_8
 > [  0.000000] (11:Slave 9@Fafard) Receiving on slave_9
 > [  0.000000] (1:Master@Jacquelin) Launched 10 VMs

@@ -2,7 +2,7 @@
 
 ! output sort
 
-$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar migration/Migration ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/migration/migrationDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -cp ${classpath:=.} migration/Migration ./platform.xml ./migration/migrationDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:migration.Emigrant@Jacquelin) I'll look for a new job on another machine where the grass is greener.
 > [  0.000000] (1:migration.Emigrant@Boivin) Yeah, found something to do
 > [  1.000000] (2:migration.Policeman@Boivin) Wait a bit before migrating the emigrant.
