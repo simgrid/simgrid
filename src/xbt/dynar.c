@@ -425,6 +425,45 @@ xbt_dynar_remove_at(xbt_dynar_t const dynar,
   dynar->used--;
 }
 
+/** @brief Remove a slice of the dynar, sliding the rest of the values to the left
+ *
+ * This function removes an n-sized slice that starts at element idx. It is equivalent
+ * to xbt_dynar_remove_at with a NULL object argument if n equals to 1.
+ *
+ * Each of the removed elements is freed using the free_f function passed at dynar
+ * creation.
+ */
+void
+xbt_dynar_remove_n_at(xbt_dynar_t const dynar,
+                    const unsigned int n, const int idx)
+{
+  unsigned long nb_shift;
+  unsigned long offset;
+  unsigned long cur;
+
+  if (!n) return;
+
+  _sanity_check_dynar(dynar);
+  _check_inbound_idx(dynar, idx);
+  _check_inbound_idx(dynar, idx + n - 1);
+
+  if (dynar->free_f) {
+    for (cur = idx; cur < idx + n; cur++) {
+      dynar->free_f(_xbt_dynar_elm(dynar, cur));
+    }
+  }
+
+  nb_shift = dynar->used - n - idx;
+
+  if (nb_shift) {
+    offset = nb_shift * dynar->elmsize;
+    memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + n),
+            offset);
+  }
+
+  dynar->used -= n;
+}
+
 /** @brief Returns the position of the element in the dynar
  *
  * Raises not_found_error if not found. If you have less than 2 millions elements,
