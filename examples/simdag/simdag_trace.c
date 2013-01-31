@@ -62,9 +62,9 @@ int main(int argc, char **argv)
   TRACE_category ("taskA");
   TRACE_category ("taskB");
   TRACE_category ("taskC");
-  SD_task_set_category (taskA, "taskA");
-  SD_task_set_category (taskB, "taskB");
-  SD_task_set_category (taskC, "taskC");
+  TRACE_sd_set_task_category (taskA, "taskA");
+  TRACE_sd_set_task_category (taskB, "taskB");
+  TRACE_sd_set_task_category (taskC, "taskC");
 
   /* if everything is ok, no exception is forwarded or rethrown by main() */
 
