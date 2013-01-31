@@ -306,7 +306,11 @@ void MSG_vm_reboot(msg_vm_t vm)
 /** @brief Destroy a msg_vm_t.
  *  @ingroup msg_VMs
  */
-void MSG_vm_destroy(msg_vm_t vm) {
+void MSG_vm_destroy(msg_vm_t vm)
+{
+  simcall_vm_destroy(vm);
+
+#if 0
   unsigned int cpt;
   msg_process_t process;
   xbt_dynar_foreach(vm->processes,cpt,process) {
@@ -322,4 +326,5 @@ void MSG_vm_destroy(msg_vm_t vm) {
 
   xbt_dynar_free(&vm->processes);
   xbt_free(vm);
+#endif
 }
