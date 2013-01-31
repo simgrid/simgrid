@@ -32,23 +32,25 @@ static void vm_ws_create (const char *name, void *phys_workstation)
   vm_ws->current_state=msg_vm_state_created,
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, vm_ws);
 }
+
+
 /*
  * A physical host does not disapper in the current SimGrid code, but a VM may
  * disapper during a simulation.
  */
-static void vm_ws_destroy(const char *name)
-{
-	workstation_VM2013_t workstation = xbt_lib_get_or_null(host_lib, name, SURF_WKS_LEVEL);
-	xbt_assert(workstation);
-	xbt_assert(workstation->generic_resource.model == surf_vm_workstation_model);
+static void vm_ws_destroy(smx_host_t host)
+{ 
+	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(host);
+	xbt_assert(vm_ws);
+	xbt_assert(vm_ws->generic_resource.model == surf_vm_workstation_model);
 
-	xbt_free(workstation->generic_resource.name);
-
+	const char *name = vm_ws->generic_resource.name;
 	/* not defined yet, but we should have  */
 	/* this will call surf_resource_free() */
 	xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
 
-	xbt_free(workstation);
+	xbt_free(vm_ws->generic_resource.name);
+	xbt_free(vm_ws);
 }
 
 static int vm_ws_get_state(void *vm_ws){
