@@ -201,7 +201,6 @@ static XBT_INLINE int __SD_task_is_running(SD_task_t task)
 }
 /********** Tracing **********/
 /* declaration of instrumentation functions from sd_task_instr.c */
-void TRACE_sd_set_task_category(SD_task_t task, const char *category);
 void TRACE_sd_task_create(SD_task_t task);
 void TRACE_sd_task_execute_start(SD_task_t task);
 void TRACE_sd_task_execute_end(SD_task_t task);
