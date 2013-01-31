@@ -343,6 +343,23 @@ void MSG_task_set_compute_duration(msg_task_t task,
 }
 
 /** \ingroup m_task_management
+ * \brief set the amount data attached with a task #msg_task_t.
+ *
+ * \warning If the transfer is ongoing (already started and not finished),
+ * it is not modified by this call. 
+ */
+
+void MSG_task_set_data_size(msg_task_t task,
+                                   double data_size)
+{
+  xbt_assert(task, "Invalid parameter");
+  task->simdata->message_size = data_size;
+
+}
+
+
+
+/** \ingroup m_task_management
  * \brief Returns the remaining computation amount of a task #msg_task_t.
  *
  * If the task is ongoing, this call retrieves the remaining amount of work.
