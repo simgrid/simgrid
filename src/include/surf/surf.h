@@ -276,8 +276,10 @@ typedef struct surf_workstation_model_extension_public {
 
 } s_surf_model_extension_workstation_t;
 
-
-
+typedef struct surf_vm_workstation_model_extension_public {
+  s_surf_model_extension_workstation_t basic;
+  void* (*create) (const char *name, void *workstation); // First operation of the VM model
+} s_surf_model_extension_vm_workstation_t;
 
 /** \ingroup SURF_models
  *  \brief Model datatype
@@ -323,6 +325,8 @@ typedef struct surf_model {
     s_surf_model_extension_network_t network;
     s_surf_model_extension_storage_t storage;
     s_surf_model_extension_workstation_t workstation;
+    // TODO Implement the corresponding model
+    s_surf_model_extension_vm_workstation_t vm_workstation;
     /*******************************************/
     /* TUTORIAL: New model                     */
     s_surf_model_extension_new_model_t new_model;

@@ -30,9 +30,8 @@ msg_host_t __MSG_host_create(smx_host_t workstation)
 {
   const char *name = SIMIX_host_get_name(workstation);
   msg_host_priv_t host = xbt_new0(s_msg_host_priv_t, 1);
-  s_msg_vm_t vm; // simply to compute the offset
 
-  host->vms = xbt_swag_new(xbt_swag_offset(vm,host_vms_hookup));
+  host->vms = xbt_dynar_new(sizeof(msg_vm_t),NULL);
 
 #ifdef MSG_USE_DEPRECATED
   int i;

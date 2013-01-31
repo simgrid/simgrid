@@ -17,26 +17,78 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg,
  *  to add extra constraints on the execution, but the argument is ignored for now.
  */
 
-msg_vm_t MSG_vm_start(msg_host_t location, const char *name, int coreAmount) {
-  msg_vm_t res = xbt_new0(s_msg_vm_t,1);
-  res->all_vms_hookup.prev = NULL;
-  res->host_vms_hookup.prev = NULL;
-  res->state = msg_vm_state_running;
-  res->location = location;
-  res->coreAmount = coreAmount;
-  res->name = xbt_strdup(name);
-  res->processes = xbt_dynar_new(sizeof(msg_process_t),NULL);
+msg_vm_t MSG_vm_create(msg_host_t location, const char *name,
+	                                     int core_nb, int mem_cap, int net_cap){
 
-  xbt_swag_insert(res,msg_global->vms);
-  xbt_swag_insert(res, MSG_host_priv(location)->vms);
+  // Note new and vm_workstation refer to the same area (due to the lib/dict appraoch)
+  msg_vm_t new = NULL;
+  void *vm_workstation =  NULL;
+  // Ask simix to create the surf vm resource
+  vm_workstation = simcall_vm_create(name,location);
+  new = (msg_vm_t) __MSG_host_create(vm_workstation);
+
+
+  MSG_vm_set_property_value(new, "CORE_NB", bprintf("%d", core_nb)), NULL);
+  MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", core_nb)), NULL);
+  MSG_vm_set_property_value(new, "NET_CAP", bprintf("%d", core_nb)), NULL);
 
   #ifdef HAVE_TRACING
   TRACE_msg_vm_create(name, location);
   #endif
-
-
-  return res;
+  return new;
 }
+
+/** \ingroup m_host_management
+ * \brief Returns the value of a given host property
+ *
+ * \param host a host
+ * \param name a property name
+ * \return value of a property (or NULL if property not set)
+ */
+const char *MSG_host_get_property_value(msg_host_t host, const char *name)
+{
+  return xbt_dict_get_or_null(MSG_host_get_properties(host), name);
+}
+
+/** \ingroup m_host_management
+ * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this host
+ *
+ * \param host a host
+ * \return a dict containing the properties
+ */
+xbt_dict_t MSG_host_get_properties(msg_host_t host)
+{
+  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+
+  return (simcall_host_get_properties(host));
+}
+
+/** \ingroup m_host_management
+ * \brief Change the value of a given host property
+ *
+ * \param host a host
+ * \param name a property name
+ * \param value what to change the property to
+ * \param free_ctn the freeing function to use to kill the value on need
+ */
+void MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value,void_f_pvoid_t free_ctn) {
+
+  xbt_dict_set(MSG_host_get_properties(vm), name, value,free_ctn);
+}
+
+/** @brief Immediately suspend the execution of all processes within the given VM.
+ *  @ingroup msg_VMs
+ *  return wheter the VM has been correctly started (0) or not (<0)
+ *
+ */
+int MSG_vm_start(msg_vm_t vm) {
+ // TODO Please complete the code
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_start(vm);
+  #endif
+}
+
 /** @brief Returns a newly constructed dynar containing all existing VMs in the system.
  *  @ingroup msg_VMs
  *

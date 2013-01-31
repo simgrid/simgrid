@@ -785,6 +785,9 @@ void surf_config_models_setup()
   XBT_DEBUG("Call workstation_model_init");
   surf_workstation_model_description[workstation_id].model_init_preparse();
 
+  XBT_DEBUG("Call vm_workstation_model_init");
+  surf_vm_workstation_model_init();
+
   XBT_DEBUG("Call storage_model_init");
   storage_id = find_model_description(surf_storage_model_description, storage_model_name);
   surf_storage_model_description[storage_id].model_init_preparse();

@@ -274,6 +274,20 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
   return simcall_BODY_host_execution_wait(execution);
 }
 
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Returns a dict of the properties assigned to a host.
+ *
+ * \param host A host
+ * \return The properties of this host
+ */
+void* simcall_vm_create(const char *name, smx_host_t host){
+{
+  return simcall_BODY_vm_crate(name, host);
+}
+
+
 /**
  * \ingroup simix_process_management
  * \brief Creates and runs a new SIMIX process.
