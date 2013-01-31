@@ -164,11 +164,9 @@ void MSG_vm_shutdown(msg_vm_t vm)
   /* msg_vm_t equals to msg_host_t */
   simcall_vm_shutdown(vm);
 
-  /* taka: not yet confirmed */
   #ifdef HAVE_TRACING
   TRACE_msg_vm_kill(vm);
   #endif
-
 }
 
 

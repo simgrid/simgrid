@@ -93,10 +93,10 @@ typedef struct msg_hypervisor {
 	xbt_dynar_t vms;   // vms on this hypervisor
 	msg_host_t host;  // physical host of this hypervisor
 
-  /* The hypervisor object does not have parameters like the number of CPU
- Ê * cores and the size of memory. These parameters come from those of the
- Ê * physical host.
- Ê **/
+/* The hypervisor object does not have parameters like the number of CPU
+* cores and the size of memory. These parameters come from those of the
+* physical host.
+**/
 	int overcommit;
 
 } s_msg_hypervisor_t;

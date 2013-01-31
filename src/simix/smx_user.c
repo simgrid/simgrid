@@ -292,6 +292,12 @@ void simcall_vm_start(smx_host_t vm)
   simcall_BODY_set_vm_state(vm, msg_vm_state_running);
 }
 
+void simcall_vm_shutdown(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_shutdown */
+  simcall_BODY_vm_shutdown(vm);
+}
+
 void simcall_vm_destroy(smx_host_t vm)
 {
   /* will jump to SIMIX_pre_vm_destroy */

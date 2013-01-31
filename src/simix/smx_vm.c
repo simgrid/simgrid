@@ -81,6 +81,33 @@ int SIMIX_pre_vm_state(smx_host_t vm){
 	return SIMIX_get_vm_state(vm);
 }
 
+
+/**
+ * \brief Function to shutdown a SIMIX VM host. This function powers off the
+ * VM. All the processes on this VM will be killed. But, the state of the VM is
+ * perserved. We can later start it again.
+ *
+ * \param host the vm host to shutdown (a smx_host_t)
+ */
+void SIMIX_vm_shutdown(smx_host_t host)
+{
+  /* TODO: check state */
+
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(smx_host)->process_list));
+
+  xbt_swag_foreach_safe(smx_process, SIMIX_host_priv(smx_host)->process_list) {
+         XBT_DEBUG("kill %s", SIMIX_host_get_name(smx_host));
+         simcall_process_kill(smx_process);
+  }
+
+  /* TODO: Using the variable of the MSG layer is not clean. */
+  SIMIX_set_vm_state(vm, msg_vm_state_sleeping);
+}
+
+void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t vm){
+   SIMIX_vm_shutdown(vm);
+}
+
 /**
  * \brief Function to destroy a SIMIX VM host.
  *
