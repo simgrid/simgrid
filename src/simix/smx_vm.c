@@ -42,6 +42,7 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t phys_host)
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
+
 smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t phys_host){
    return SIMIX_vm_create(name, phys_host);
 }
@@ -79,45 +80,31 @@ int SIMIX_get_vm_state(smx_host_t vm){
 int SIMIX_pre_vm_state(smx_host_t vm){
 	return SIMIX_get_vm_state(vm);
 }
+
 /**
- * \brief Internal function to destroy a SIMIX host.
+ * \brief Function to destroy a SIMIX VM host.
  *
- * \param h the host to destroy (a smx_host_t)
+ * \param host the vm host to destroy (a smx_host_t)
  */
-void SIMIX_vm_host_destroy()
+void SIMIX_vm_destroy(smx_host_t host)
 {
-  smx_host_priv_t host = (smx_host_priv_t) h;
-
-  vm_ws = xbt_lib_(host_lib,name,SURF_WKS_LEVEL,smx_host);
-
-  /* jump to vm_ws_destroy() */
-  surf_vm_workstation_model->extension.vm_workstation.destroy(name);
+  /* this code basically performs a similar thing like SIMIX_host_destroy() */
 
   xbt_assert((host != NULL), "Invalid parameters");
+  char *hostname = host->key;
 
-  /* Clean Simulator data */
-  if (xbt_swag_size(host->process_list) != 0) {
-    char *msg =
-        bprintf("Shutting down host, but it's not empty:");
-    char *tmp;
-    smx_process_t process = NULL;
+  smx_host_priv_t host_priv = SIMIX_host_priv(host);
 
-    xbt_swag_foreach(process, host->process_list) {
-      tmp = bprintf("%s\n\t%s", msg, process->name);
-      free(msg);
-      msg = tmp;
-    }
-    SIMIX_display_process_status();
-    THROWF(arg_error, 0, "%s", msg);
-  }
-  xbt_dynar_free(&host->auto_restart_processes);
-  xbt_swag_free(host->process_list);
+  /* this will call the registered callback function, i.e., SIMIX_host_destroy().  */
+  xbt_lib_unset(host_lib, name, SIMIX_HOST_LEVEL)
 
-  /* Clean host structure */
-  free(host); 
-  return;
+  /* jump to vm_ws_destroy(). The surf level resource will be freed. */
+  surf_vm_workstation_model->extension.vm_workstation.destroy(hostname);
 }
 
+void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t vm){
+   SIMIX_vm_start(vm);
+}
 
 smx_host_t SIMIX_host_get_by_name(const char *name){
   xbt_assert(((simix_global != NULL)
