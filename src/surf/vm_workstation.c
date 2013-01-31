@@ -25,12 +25,29 @@ surf_model_t surf_vm_workstation_model = NULL;
 static void vm_ws_create (const char *name, void *phys_workstation)
 {
   workstation_VM2013_t vm_ws = xbt_new0(s_workstation_VM2013_t, 1);
-// TODO Implement the surf vm workstation model
+// TODO Complete the surf vm workstation model
   vm_ws->generic_resource.model = surf_vm_workstation_model;
   vm_ws->generic_resource.name = xbt_strdup(name);
   vm_ws->physical_workstation = phys_workstation;
   vm_ws->current_state=msg_vm_state_created,
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, vm_ws);
+}
+/*
+ * A physical host does not disapper in the current SimGrid code, but a VM may
+ * disapper during a simulation.
+ */
+static void vm_ws_destroy(const char *name)
+{
+	workstation_VM2013_t workstation = xbt_lib_get_or_null(host_lib, name, SURF_WKS_LEVEL);
+	xbt_assert(workstation);
+	xbt_assert(workstation->generic_resource.model == surf_vm_workstation_model);
+
+	xbt_free(workstation->generic_resource.name);
+
+	/* not defined yet, but we should have  */
+	// xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
+
+	xbt_free(workstation);
 }
 
 static int vm_ws_get_state(void *vm_ws){
@@ -49,6 +66,7 @@ static void surf_vm_workstation_model_init_internal(void)
   surf_vm_workstation_model->extension.vm_workstation.create = vm_ws_create;
   surf_vm_workstation_model->extension.vm_workstation.set_state = vm_ws_set_state;
   surf_vm_workstation_model->extension.vm_workstation.get_state = vm_ws_get_state;
+  surf_vm_workstation_model->extension.vm_workstation.destroy = vm_ws_destroy;
 
 }
 

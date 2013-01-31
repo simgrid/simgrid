@@ -227,6 +227,7 @@ void MSG_vm_suspend(msg_vm_t vm) {
   #endif
 }
 
+
 /** @brief Immediately resumes the execution of all processes within the given VM.
  *  @ingroup msg_VMs
  *
@@ -247,26 +248,37 @@ void MSG_vm_resume(msg_vm_t vm) {
   #endif
 }
 
-/** @brief Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
- *  @ingroup msg_VMs
- *
- * No extra delay occurs. If you want to simulate this too, you want to
- * use a #MSG_process_sleep() or something. I'm not quite sure.
- */
+
 void MSG_vm_shutdown(msg_vm_t vm)
 {
-  msg_process_t process;
-  XBT_DEBUG("%lu processes in the VM", xbt_dynar_length(vm->processes));
-  while (xbt_dynar_length(vm->processes) > 0) {
-    process = xbt_dynar_get_as(vm->processes,0,msg_process_t);
-    MSG_process_kill(process);
+  /* msg_vm_t equals to msg_host_t */
+  char *name = simcall_host_get_name(vm);
+  smx_host_t smx_host = xbt_lib_get_or_null(host_lib, name, SIMIX_HOST_LEVEL);
+  smx_process_t smx_process, smx_process_next;
+
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(smx_host)->process_list));
+
+  xbt_swag_foreach_safe(smx_process, SIMIX_host_priv(smx_host)->process_list) {
+	  XBT_DEBUG("kill %s", SIMIX_host_get_name(smx_host));
+	  simcall_process_kill(smx_process);
   }
 
+  /* taka: not yet confirmed */
   #ifdef HAVE_TRACING
   TRACE_msg_vm_kill(vm);
   #endif
 
+
+  /* TODO: update the state of vm */
+
+#if 0
+  while (xbt_dynar_length(vm->processes) > 0) {
+    process = xbt_dynar_get_as(vm->processes,0,msg_process_t);
+  }
+#endif
 }
+
+
 /**
  * \ingroup msg_VMs
  * \brief Reboot the VM, restarting all the processes in it.
@@ -290,6 +302,7 @@ void MSG_vm_reboot(msg_vm_t vm)
 
   xbt_dynar_free(&new_processes);
 }
+
 /** @brief Destroy a msg_vm_t.
  *  @ingroup msg_VMs
  */
