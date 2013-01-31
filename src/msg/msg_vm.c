@@ -114,6 +114,7 @@ msg_vm_t MSG_vm_create(msg_host_t location, const char *name,
   MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", core_nb), free);
   MSG_vm_set_property_value(new, "NET_CAP", bprintf("%d", core_nb), free);
 
+  XBT_DEBUG("A new VM has been created");
   // TODO check whether the vm (i.e the virtual host) has been correctly added into the list of all hosts.
 
   #ifdef HAVE_TRACING

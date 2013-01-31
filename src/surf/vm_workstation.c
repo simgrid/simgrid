@@ -13,7 +13,7 @@
 
 typedef struct workstation_VM2013 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
-  surf_resource_t ind_physical_workstation;  // Pointer to the host OS
+  surf_resource_t physical_workstation;  // Pointer to the host OS
   e_msg_vm_state_t current_state;  	     // See include/msg/datatypes.h
 } s_workstation_VM2013_t, *workstation_VM2013_t;
 
@@ -29,7 +29,7 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
   vm_ws->generic_resource.model = surf_vm_workstation_model;
   vm_ws->generic_resource.name = xbt_strdup(name);
  // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
-  vm_ws->ind_physical_workstation = ind_phys_workstation;
+  vm_ws->physical_workstation = surf_workstation_resource_priv(ind_phys_workstation);
   vm_ws->current_state=msg_vm_state_created,
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, vm_ws);
 }
