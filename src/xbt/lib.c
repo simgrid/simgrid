@@ -70,6 +70,37 @@ void xbt_lib_set(xbt_lib_t lib, const char *key, int level, void *obj)
   elts[level] = obj;
 }
 
+/* for vm */
+void xbt_lib_unset(xbt_lib_t lib, const char *key, int level)
+{
+  void **elts = xbt_dict_get_or_null(lib->dict, key);
+  if (!elts) {
+     XBT_WARN("no key %s", key);
+     return;
+  }
+
+  void *obj = elts[level];
+
+  if (!obj) {
+     XBT_WARN("no key %s at level %d", key, level);
+     return;
+  } else {
+     XBT_DEBUG("Remove %p of key %s at level %d", obj, key, level);
+     lib->free_f[level](obj);
+     elts[level] = NULL;
+  }
+
+  /* check if there are elements of this key */
+  int i;
+  for (i = 0; i < lib->levels; i++) {
+     if (elts[i] != NULL)
+       return;
+  }
+
+  /* there is no element at any level, so delete the key */
+  xbt_dict_remove(lib->dict, key)
+}
+
 void *xbt_lib_get_or_null(xbt_lib_t lib, const char *key, int level)
 {
   void **elts = xbt_dict_get_or_null(lib->dict, key);
