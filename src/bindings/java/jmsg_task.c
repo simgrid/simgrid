@@ -23,6 +23,7 @@ static jmethodID jtask_method_Comm_constructor;
 
 static jfieldID jtask_field_Task_bind;
 static jfieldID jtask_field_Task_name;
+static jfieldID jtask_field_Task_messageSize;
 static jfieldID jtask_field_Comm_bind;
 static jfieldID jtask_field_Comm_taskBind;
 static jfieldID jtask_field_Comm_receiving;
@@ -50,6 +51,7 @@ Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
   jtask_method_Comm_constructor = (*env)->GetMethodID(env, jtask_class_Comm, "<init>", "()V");
   jtask_field_Task_bind = jxbt_get_jfield(env, jtask_class_Task, "bind", "J");
   jtask_field_Task_name = jxbt_get_jfield(env, jtask_class_Task, "name", "Ljava/lang/String;");
+  jtask_field_Task_messageSize = jxbt_get_jfield(env, jtask_class_Task, "messageSize", "D");
   jtask_field_Comm_bind = jxbt_get_jfield(env, jtask_class_Comm, "bind", "J");
   jtask_field_Comm_taskBind = jxbt_get_jfield(env, jtask_class_Comm, "taskBind", "J");
   jtask_field_Comm_receiving = jxbt_get_jfield(env, jtask_class_Comm, "receiving", "Z");
@@ -348,6 +350,7 @@ Java_org_simgrid_msg_Task_setDataSize
     jxbt_throw_notbound(env, "task", jtask);
     return;
 	}
+        (*env)->SetDoubleField(env, jtask, jtask_field_Task_messageSize, dataSize);
 	MSG_task_set_data_size(task, (double) dataSize);
 }
 
