@@ -287,7 +287,6 @@ void* simcall_vm_ws_create(const char *name, smx_host_t phys_host){
 }
 
 void simcall_vm_start(smx_host_t vm) {
-{
   simcall_BODY_set_vm_state(vm, msg_vm_state_running);
 }
 

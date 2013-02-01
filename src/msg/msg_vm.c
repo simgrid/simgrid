@@ -3,11 +3,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+// QUESTIONS:
+// 1./ check how and where a new VM is added to the list of the hosts
+// 2./ Diff between SIMIX_Actions and SURF_Actions
+// => SIMIX_actions : point synchro entre processus de niveau (theoretically speaking I do not have to create such SIMIX_ACTION
+// =>  Surf_Actions
 
 // TODO
-// 1./ check how and where a new VM is added to the list of the hosts
-// 2./ MSG_TRACE can be revisited in order to use  the host
-
+//	MSG_TRACE can be revisited in order to use  the host
+//	To implement a mixed model between workstation and vm_workstation,
+//     please give a look at surf_model_private_t model_private at SURF Level and to the share resource functions
+//     double (*share_resources) (double now);
+//	For the action into the vm workstation model, we should be able to leverage the usual one (and if needed, look at
+// 		the workstation model.
 
 #include "msg_private.h"
 #include "xbt/sysdep.h"
