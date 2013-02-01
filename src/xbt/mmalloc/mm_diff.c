@@ -136,6 +136,19 @@ void init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
 
   to_ignore1 = i1;
   to_ignore2 = i2;
+
+  if(MC_is_active()){
+    MC_ignore_data_bss(&heaplimit, sizeof(heaplimit));
+    MC_ignore_data_bss(&s_heap, sizeof(s_heap));
+    MC_ignore_data_bss(&heapbase1, sizeof(heapbase1));
+    MC_ignore_data_bss(&heapbase2, sizeof(heapbase2));
+    MC_ignore_data_bss(&heapinfo1, sizeof(heapinfo1));
+    MC_ignore_data_bss(&heapinfo2, sizeof(heapinfo2));
+    MC_ignore_data_bss(&heapsize1, sizeof(heapsize1));
+    MC_ignore_data_bss(&heapsize2, sizeof(heapsize2));
+    MC_ignore_data_bss(&to_ignore1, sizeof(to_ignore1));
+    MC_ignore_data_bss(&to_ignore2, sizeof(to_ignore2));
+  }
   
 }
 

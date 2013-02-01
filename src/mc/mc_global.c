@@ -189,9 +189,6 @@ void MC_init(){
   get_libsimgrid_plt_section();
   get_binary_plt_section();
 
-  MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
-  MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
-
   /* Get global variables */
   MC_get_global_variables(xbt_binary_name);
   MC_get_global_variables(libsimgrid_path);
@@ -210,6 +207,9 @@ void MC_init(){
 
   MC_ignore_stack("next_context", "smx_ctx_sysv_suspend_serial");
   MC_ignore_stack("i", "smx_ctx_sysv_suspend_serial");
+
+  MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
+  MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
@@ -842,12 +842,12 @@ void MC_ignore_data_bss(void *address, size_t size){
   if(mc_data_bss_comparison_ignore == NULL)
     mc_data_bss_comparison_ignore = xbt_dynar_new(sizeof(mc_data_bss_ignore_variable_t), NULL);
 
-  if(xbt_dynar_is_empty(mc_data_bss_comparison_ignore)){
+  mc_data_bss_ignore_variable_t var = NULL;
+  var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
+  var->address = address;
+  var->size = size;
 
-    mc_data_bss_ignore_variable_t var = NULL;
-    var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
-    var->address = address;
-    var->size = size;
+  if(xbt_dynar_is_empty(mc_data_bss_comparison_ignore)){
 
     xbt_dynar_insert_at(mc_data_bss_comparison_ignore, 0, &var);
 
@@ -872,17 +872,40 @@ void MC_ignore_data_bss(void *address, size_t size){
       if(current_var->address > address)
         end = cursor - 1;
     }
- 
-    mc_data_bss_ignore_variable_t var = NULL;
-    var = xbt_new0(s_mc_data_bss_ignore_variable_t, 1);
-    var->address = address;
-    var->size = size;
 
     if(current_var->address < address)
       xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor + 1, &var);
     else
       xbt_dynar_insert_at(mc_data_bss_comparison_ignore, cursor, &var);
 
+  }
+
+  /* Remove variable from mc_global_variables */
+
+  if(mc_global_variables != NULL){
+
+    unsigned int cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(mc_global_variables) - 1;
+    global_variable_t current_var;
+    int var_found;
+
+    while(start <= end){
+      cursor = (start + end) / 2;
+      current_var = (global_variable_t)xbt_dynar_get_as(mc_global_variables, cursor, global_variable_t);
+      if(current_var->address == var->address){
+        var_found = 1;
+        break;
+      }
+      if(current_var->address < address)
+        start = cursor + 1;
+      if(current_var->address > address)
+        end = cursor - 1;
+    }
+
+    if(var_found)
+      xbt_dynar_remove_at(mc_global_variables, cursor, NULL);
+    
   }
 
   MC_UNSET_RAW_MEM;
@@ -1799,18 +1822,6 @@ static void MC_get_global_variables(char *elf_file){
        || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".data") == 0)
        || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), ".bss") == 0)
        || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "stderr", 6) == 0)
-       || (strncmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "counter", 7) == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapinfo1") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapinfo2") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapbase1") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapbase2") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapsize1") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heapsize2") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "heaplimit") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "ignore_done") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "s_heap") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "to_ignore1") == 0)
-       || (strcmp(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*), "to_ignore2") == 0)
        || ((size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16) == 0))
       continue;
 
@@ -1826,10 +1837,34 @@ static void MC_get_global_variables(char *elf_file){
     var->size = (size_t)strtoul(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 2, char*), NULL, 16);
     var->name = strdup(xbt_dynar_get_as(line_tokens, xbt_dynar_length(line_tokens) - 1, char*));
 
-    if(data_bss_ignore_size(var->address) > 0)
+    if(data_bss_ignore_size(var->address) > 0){
       global_variable_free(var);
-    else
-      xbt_dynar_push(mc_global_variables, &var);
+    }else{
+      if(xbt_dynar_is_empty(mc_global_variables)){
+        xbt_dynar_push(mc_global_variables, &var);
+      }else{
+        unsigned int cursor = 0;
+        int start = 0;
+        int end = xbt_dynar_length(mc_global_variables) - 1;
+        global_variable_t current_var = NULL;
+      
+        while(start <= end){
+          cursor = (start + end) / 2;
+          current_var = (global_variable_t)xbt_dynar_get_as(mc_global_variables, cursor, global_variable_t);
+          if(current_var->address == var->address)
+            break;
+          if(current_var->address < var->address)
+            start = cursor + 1;
+          if(current_var->address > var->address)
+            end = cursor - 1;
+        }
+ 
+        if(current_var->address < var->address)
+          xbt_dynar_insert_at(mc_global_variables, cursor + 1, &var);
+        else
+          xbt_dynar_insert_at(mc_global_variables, cursor, &var);
+      }
+    }
 
     xbt_dynar_free(&line_tokens);
 
