@@ -1513,13 +1513,13 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
       }else if(strcmp(tok2, "DW_OP_fbreg:") == 0){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_fbregister_op;
-        new_element->location.fbreg_op = atoi(xbt_dynar_get_as(tokens2, 1, char*));
+        new_element->location.fbreg_op = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
         xbt_dynar_push(loc->location.compose, &new_element);
       }else if(strncmp(tok2, "DW_OP_breg", 10) == 0){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_bregister_op;
         new_element->location.breg_op.reg = atoi(strtok(tok2, "DW_OP_breg"));
-        new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens2, 2, char*));
+        new_element->location.breg_op.offset = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
         xbt_dynar_push(loc->location.compose, &new_element);
       }else if(strncmp(tok2, "DW_OP_lit", 9) == 0){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
@@ -1529,7 +1529,7 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
       }else if(strcmp(tok2, "DW_OP_piece:") == 0){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_piece;
-        new_element->location.piece = atoi(xbt_dynar_get_as(tokens2, 1, char*));
+        new_element->location.piece = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
         /*if(strlen(xbt_dynar_get_as(tokens2, 1, char*)) > 1)
           new_element->location.piece = atoi(xbt_dynar_get_as(tokens2, 1, char*));
         else
@@ -1538,7 +1538,7 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
       }else if(strcmp(tok2, "DW_OP_plus_uconst:") == 0){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_plus_uconst;
-        new_element->location.plus_uconst = atoi(xbt_dynar_get_as(tokens2, 1, char *));
+        new_element->location.plus_uconst = atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char *));
         xbt_dynar_push(loc->location.compose, &new_element);
       }else if(strcmp(tok, "DW_OP_abs") == 0 || 
                strcmp(tok, "DW_OP_and") == 0 ||
@@ -1558,7 +1558,7 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
       }else if(strcmp(tok2, "DW_OP_deref_size:") == 0){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_deref;
-        new_element->location.deref_size = (unsigned int short) atoi(xbt_dynar_get_as(tokens2, 1, char*));
+        new_element->location.deref_size = (unsigned int short) atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*));
         /*if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
           new_element->location.deref_size = atoi(xbt_dynar_get_as(tokens, cursor, char*));
         else
@@ -1573,7 +1573,7 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_uconstant;
         new_element->location.uconstant.bytes = 1;
-        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, 1, char*)));
+        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
         /*if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
           new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens, cursor, char*)));
         else
@@ -1583,7 +1583,7 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_sconstant;
         new_element->location.sconstant.bytes = 1;
-        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, 1, char*)));
+        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
         xbt_dynar_push(loc->location.compose, &new_element);
       }else if(strcmp(tok2, "DW_OP_const1u:") == 0 ||
                strcmp(tok2, "DW_OP_const2u:") == 0 ||
@@ -1592,7 +1592,7 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_uconstant;
         new_element->location.uconstant.bytes = tok2[11] - '0';
-        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, 1, char*)));
+        new_element->location.uconstant.value = (unsigned long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
         /*if(strlen(xbt_dynar_get_as(tokens, ++cursor, char*)) > 1)
           new_element->location.constant.value = atoi(xbt_dynar_get_as(tokens, cursor, char*));
         else
@@ -1605,7 +1605,7 @@ static dw_location_t get_location(xbt_dict_t location_list, char *expr){
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
         new_element->type = e_dw_sconstant;
         new_element->location.sconstant.bytes = tok2[11] - '0';
-        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, 1, char*)));
+        new_element->location.sconstant.value = (long int)(atoi(xbt_dynar_get_as(tokens2, xbt_dynar_length(tokens2) - 1, char*)));
         xbt_dynar_push(loc->location.compose, &new_element);
       }else{
         dw_location_t new_element = xbt_new0(s_dw_location_t, 1);
