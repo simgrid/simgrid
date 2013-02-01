@@ -11,6 +11,7 @@ void peer_init_chain(peer_t peer, message_t msg)
 {
   peer->prev = msg->prev_hostname;
   peer->next = msg->next_hostname;
+  peer->total_pieces = msg->num_pieces;
   peer->init = 1;
 }
 
@@ -39,11 +40,10 @@ int peer_execute_task(peer_t peer, msg_task_t task)
         peer_forward_msg(peer, msg);
       peer->pieces++;
       peer->bytes += msg->data_length;
-      break;
-    case MESSAGE_END_DATA:
-      xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %d before initialization", msg->type);
-      done = 1;
-      XBT_DEBUG("%d pieces receieved", peer->pieces);
+      if (peer->pieces >= peer->total_pieces) {
+        XBT_DEBUG("%d pieces receieved", peer->pieces);
+        done = 1;
+      }
       break;
   }
 
@@ -91,7 +91,6 @@ void peer_init(peer_t p, int argc, char *argv[])
   p->next = NULL;
   p->pieces = 0;
   p->bytes = 0;
-  p->close_asap = 0;
   p->pending_recvs = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   p->pending_sends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   p->me = xbt_new(char, HOSTNAME_LENGTH);
