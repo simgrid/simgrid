@@ -253,9 +253,8 @@ static void action_wait(const char *const *action){
 
 static void action_waitall(const char *const *action){
   double clock = smpi_process_simulated_elapsed();
-  int count_requests=0,req_counts=0,i=0;
-    smpi_replay_globals_t globals =
-      (smpi_replay_globals_t) smpi_process_get_user_data();
+  int count_requests=0;
+  unsigned int i=0;
 
   count_requests=xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]);
 
@@ -443,7 +442,7 @@ static void action_allToAll(const char *const *action) {
 
 static void action_allToAllv(const char *const *action) {
   double clock = smpi_process_simulated_elapsed();
-  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
+//  int comm_size = smpi_comm_size(MPI_COMM_WORLD);
 
 //  PMPI_Alltoallv(NULL, send_size, send_disp,
 //                   MPI_BYTE, NULL, recv_size,
