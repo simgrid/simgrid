@@ -148,11 +148,11 @@ examples/msg/mc/bugged1_while_liveness
 examples/msg/mc/centralized_liveness_deadlock
 examples/msg/mc/test/test_heap_comparison
 examples/msg/mc/chord_liveness
-examples/msg/mc/test/snapshot_comparison_liveness1
-examples/msg/mc/test/snapshot_comparison_liveness2
-examples/msg/mc/test/snapshot_comparison_liveness3
-examples/msg/mc/test/snapshot_comparison_liveness4
-examples/msg/mc/test/snapshot_comparison_liveness5
+examples/msg/mc/test/snapshot_comparison1
+examples/msg/mc/test/snapshot_comparison2
+examples/msg/mc/test/snapshot_comparison3
+examples/msg/mc/test/snapshot_comparison4
+examples/msg/mc/test/snapshot_comparison5
 examples/msg/chainsend/chainsend
 examples/msg/chord/chord
 examples/msg/chord/chord_stateful
