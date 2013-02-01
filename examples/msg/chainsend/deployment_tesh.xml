@@ -5,7 +5,7 @@
   <!-- Broadcaster -->
   <process host="host0" function="broadcaster">
 	<argument value="8"/> <!-- number of peers -->
-	<argument value="8192"/> <!-- number of pieces -->
+	<argument value="256"/> <!-- number of pieces -->
   </process>
 
   <!-- Peers -->
