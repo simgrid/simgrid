@@ -718,7 +718,9 @@ set(txt_files
   AUTHORS
   COPYING
   README
+  README.java
   ChangeLog
+  ChangeLog.SimGrid-java
   INSTALL
   LICENSE-LGPL-2.1
   NEWS
