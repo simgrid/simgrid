@@ -11,8 +11,7 @@
 #include "mc/mc.h"
 
 //If you need to log some stuffs, just uncomment these two lines and uses XBT_DEBUG for instance
-//XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix,
-//                                "Logging specific to SIMIX (vms)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms)");
 
 /* **** create a VM **** */
 
@@ -65,7 +64,7 @@ void SIMIX_vm_start(smx_host_t ind_vm){
 }
 
 void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_start(vm);
+   SIMIX_vm_start(ind_vm);
 }
 
 /* ***** set/get state of a VM ***** */
@@ -84,9 +83,9 @@ int SIMIX_pre_vm_state(smx_host_t ind_vm){
 }
 
 /**
- * \brief Function to suspend a SIMIX VM host. This function powers off the
- * VM. All the processes on this VM will be killed. But, the state of the VM is
- * perserved. We can later start it again.
+ * \brief Function to suspend a SIMIX VM host. This function stops the exection of the
+ * VM. All the processes on this VM will pause. The state of the VM is
+ * perserved. We can later resume it again.
  *
  * \param host the vm host to suspend (a smx_host_t)
  */
@@ -99,6 +98,7 @@ void SIMIX_vm_suspend(smx_host_t ind_vm)
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
          XBT_DEBUG("suspend %s", SIMIX_host_get_name(ind_vm));
+	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
          simcall_process_suspend(smx_process);
   }
 
@@ -111,13 +111,40 @@ void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm){
 }
 
 /**
+ * \brief Function to resume a SIMIX VM host. This function restart the execution of the
+ * VM. All the processes on this VM will run again. 
+ *
+ * \param host the vm host to resume (a smx_host_t)
+ */
+void SIMIX_vm_resume(smx_host_t ind_vm)
+{
+  /* TODO: check state */
+
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+
+  smx_process_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+         XBT_DEBUG("resume %s", SIMIX_host_get_name(ind_vm));
+	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
+         simcall_process_resume(smx_process);
+  }
+
+  /* TODO: Using the variable of the MSG layer is not clean. */
+  SIMIX_set_vm_state(ind_vm, msg_vm_state_resumeed);
+}
+
+void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm){
+   SIMIX_vm_resume(ind_vm);
+}
+
+/**
  * \brief Function to shutdown a SIMIX VM host. This function powers off the
  * VM. All the processes on this VM will be killed. But, the state of the VM is
  * perserved. We can later start it again.
  *
  * \param host the vm host to shutdown (a smx_host_t)
  */
-void SIMIX_vm_shutdown(smx_host_t ind_vm)
+void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
 {
   /* TODO: check state */
 
@@ -126,7 +153,8 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm)
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
          XBT_DEBUG("kill %s", SIMIX_host_get_name(ind_vm));
-         simcall_process_kill(smx_process);
+
+	 SIMIX_process_kill(smx_process, issuer);
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
@@ -134,7 +162,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm)
 }
 
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_shutdown(ind_vm);
+   SIMIX_vm_shutdown(ind_vm, simcall->issuer);
 }
 
 /**
@@ -147,7 +175,7 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
   /* this code basically performs a similar thing like SIMIX_host_destroy() */
 
   xbt_assert((ind_vm != NULL), "Invalid parameters");
-  char *hostname = SIMIX_host_get_name(ind_vm);
+  const char *hostname = SIMIX_host_get_name(ind_vm);
 
   smx_host_priv_t host_priv = SIMIX_host_priv(ind_vm);
 

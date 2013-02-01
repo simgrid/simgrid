@@ -122,10 +122,10 @@ void __MSG_host_destroy(msg_host_priv_t host) {
   if (msg_global->max_channel > 0)
     free(host->mailboxes);
 #endif
-  if (xbt_swag_size(host->vms) > 0 ) {
-    XBT_VERB("Host shut down, but it still hosts %d VMs. They will be leaked.",xbt_swag_size(host->vms));
+  if (xbt_dynar_length(host->vms) > 0 ) {
+    XBT_VERB("Host shut down, but it still hosts %d VMs. They will be leaked.", xbt_dynar_length(host->vms));
   }
-  xbt_swag_free(host->vms);
+  xbt_dynar_free(&host->vms);
   free(host);
 }
 

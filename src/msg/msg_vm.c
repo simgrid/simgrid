@@ -160,6 +160,13 @@ int MSG_vm_is_running(msg_vm_t vm) {
 
 // TODO Implement the functions for the different state
 
+
+/** @brief Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
+ *  @ingroup msg_VMs
+ *
+ * No extra delay occurs. If you want to simulate this too, you want to
+ * use a #MSG_process_sleep() or something. I'm not quite sure.
+ */
 void MSG_vm_shutdown(msg_vm_t vm)
 {
   /* msg_vm_t equals to msg_host_t */
@@ -244,6 +251,7 @@ void MSG_vm_suspend(msg_vm_t vm)
   #ifdef HAVE_TRACING
   TRACE_msg_vm_suspend(vm);
   #endif
+
 #if 0
   unsigned int cpt;
   msg_process_t process;
@@ -254,28 +262,33 @@ void MSG_vm_suspend(msg_vm_t vm)
 #endif
 }
 
-//
-//
-///** @brief Immediately resumes the execution of all processes within the given VM.
-// *  @ingroup msg_VMs
-// *
-// * No resume cost occurs. If you want to simulate this too, you want to
-// * use a \ref MSG_file_read() before or after, depending on the exact semantic
-// * of VM resume to you.
-// */
-//void MSG_vm_resume(msg_vm_t vm) {
-//  unsigned int cpt;
-//  msg_process_t process;
-//  xbt_dynar_foreach(vm->processes,cpt,process) {
-//    XBT_DEBUG("resume process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
-//    MSG_process_resume(process);
-//  }
-//
-//  #ifdef HAVE_TRACING
-//  TRACE_msg_vm_resume(vm);
-//  #endif
-//}
-//
+
+
+/** @brief Resume the execution of the VM. All processes on the VM run again.
+ *  @ingroup msg_VMs
+ *
+ * No resume cost occurs. If you want to simulate this too, you want to
+ * use a \ref MSG_file_read() before or after, depending on the exact semantic
+ * of VM resume to you.
+ */
+void MSG_vm_resume(msg_vm_t vm)
+{
+  simcall_vm_resume(vm);
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_resume(vm);
+  #endif
+
+#if 0
+  unsigned int cpt;
+  msg_process_t process;
+  xbt_dynar_foreach(vm->processes,cpt,process) {
+    XBT_DEBUG("resume process %s of host %s",MSG_process_get_name(process),MSG_host_get_name(MSG_process_get_host(process)));
+    MSG_process_resume(process);
+  }
+#endif
+}
+
 //
 ///**
 // * \ingroup msg_VMs

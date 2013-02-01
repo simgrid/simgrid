@@ -296,6 +296,15 @@ void simcall_vm_suspend(smx_host_t vm)
   simcall_BODY_vm_suspend(vm);
 }
 
+void simcall_vm_resume(smx_host_t vm)
+{
+  /*
+   * simcall_BODY_ is defined in src/simix/smx_smurf_private.h.
+   * This function will jump to SIMIX_pre_vm_resume.
+   **/
+  simcall_BODY_vm_resume(vm);
+}
+
 void simcall_vm_shutdown(smx_host_t vm)
 {
   /* will jump to SIMIX_pre_vm_shutdown */
