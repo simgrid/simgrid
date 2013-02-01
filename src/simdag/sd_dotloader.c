@@ -314,7 +314,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename)
   SD_task_t file;
   char *name;
   xbt_dict_foreach(files, cursor, name, file) {
-    XBT_DEBUG("Considering file '%s' stored in the dictionnary",
+    XBT_DEBUG("Considering file '%s' stored in the dictionary",
         file->name);
     if (xbt_dynar_is_empty(file->tasks_before)) {
       XBT_DEBUG("file '%s' has no source. Add dependency from 'root'",
