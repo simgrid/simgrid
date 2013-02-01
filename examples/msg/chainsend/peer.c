@@ -104,17 +104,18 @@ void peer_init(peer_t p, int argc, char *argv[])
 
 void peer_shutdown(peer_t p)
 {
-  float start_time = MSG_get_clock();
-  float end_time = start_time + PEER_SHUTDOWN_DEADLINE;
+  unsigned int size = xbt_dynar_length(p->pending_sends);
+  unsigned int idx;
+  msg_comm_t *comms = xbt_new(msg_comm_t, size);
 
-  XBT_DEBUG("Waiting for sends to finish before shutdown...");
-  /* MSG_comm_waitall(p->pending_sends, PEER_SHUTDOWN_DEADLINE); FIXME: this doesn't work */
-  while (xbt_dynar_length(p->pending_sends) && MSG_get_clock() < end_time) {
-    process_pending_connections(p->pending_sends);
-    MSG_process_sleep(1);
+  for (idx = 0; idx < size; idx++) {
+    comms[idx] = xbt_dynar_get_as(p->pending_sends, idx, msg_comm_t);
   }
 
-  xbt_assert(xbt_dynar_length(p->pending_sends) == 0, "Shutdown failed, sends still pending after deadline");
+  XBT_DEBUG("Waiting for sends to finish before shutdown...");
+  MSG_comm_waitall(comms, size, PEER_SHUTDOWN_DEADLINE);
+
+  xbt_free(comms);
 }
 
 void peer_delete(peer_t p)
