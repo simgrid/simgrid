@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
+set(example java_startKillTime)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/Master.java
   ${CMAKE_CURRENT_SOURCE_DIR}/Slave.java
@@ -7,11 +8,15 @@ set(sources
   )
 
 if(enable_java)
-  add_custom_target(java_startKillTime ALL
-    COMMENT "Building java_startKillTime..."
-    COMMAND ${JAVA_COMPILE} -cp ${CMAKE_BINARY_DIR}/simgrid.jar
-                            -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources})
-  add_dependencies(java_startKillTime SG_java_jar)
+  add_custom_command(
+    COMMENT "Building ${example}..."
+    OUTPUT ${example}_compiled
+    DEPENDS ${sources} ${SIMGRID_JAR}
+    COMMAND ${JAVA_COMPILE} -cp ${SIMGRID_JAR}
+                             -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources}
+    COMMAND ${CMAKE_COMMAND} -E touch ${example}_compiled
+  )
+  add_custom_target(${example} ALL DEPENDS ${example}_compiled)
 endif()
 
 set(tesh_files

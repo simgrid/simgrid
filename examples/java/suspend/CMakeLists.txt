@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
+set(example java_suspend)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/DreamMaster.java
   ${CMAKE_CURRENT_SOURCE_DIR}/LazyGuy.java
@@ -7,11 +8,15 @@ set(sources
   )
 
 if(enable_java)
-  add_custom_target(java_suspend ALL
-    COMMENT "Building java_suspend..."
-    COMMAND ${JAVA_COMPILE} -cp ${CMAKE_BINARY_DIR}/simgrid.jar
-                            -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources})
-  add_dependencies(java_suspend SG_java_jar)
+  add_custom_command(
+    COMMENT "Building ${example}..."
+    OUTPUT ${example}_compiled
+    DEPENDS ${sources} ${SIMGRID_JAR}
+    COMMAND ${JAVA_COMPILE} -cp ${SIMGRID_JAR}
+                             -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources}
+    COMMAND ${CMAKE_COMMAND} -E touch ${example}_compiled
+  )
+  add_custom_target(${example} ALL DEPENDS ${example}_compiled)
 endif()
 
 set(tesh_files

@@ -49,12 +49,8 @@ if(enable_java)
   set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
   add_jar(SG_java_jar ${JMSG_JAVA_SRC})
 
+  set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
   set(MANIFEST_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF")
-  add_custom_command(TARGET simgrid.jar POST_BUILD
-    COMMENT "Update file MANIFEST.MF in simgrid.jar..."
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-    COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} simgrid.jar
-    )
 
   if(CMAKE_SYSTEM_PROCESSOR MATCHES ".86")
     if(${ARCH_32_BITS})
@@ -67,9 +63,13 @@ if(enable_java)
   endif()
   message("Native libraries bundeled into: ${JSG_BUNDLE}")
 
-  add_custom_command(TARGET simgrid.jar POST_BUILD
-    COMMENT "Combine native libraries in simgrid.jar..."
-    DEPENDS simgrid SG_java
+  add_custom_command(
+    COMMENT "Finalize simgrid.jar..."
+    OUTPUT ${SIMGRID_JAR}_finalized
+    DEPENDS simgrid SG_java ${SIMGRID_JAR} ${MANIFEST_FILE}
+            ${CMAKE_HOME_DIRECTORY}/COPYING
+            ${CMAKE_HOME_DIRECTORY}/ChangeLog
+            ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
     COMMAND ${CMAKE_COMMAND} -E remove_directory "NATIVE"
     COMMAND ${CMAKE_COMMAND} -E make_directory "${JSG_BUNDLE}"
@@ -80,8 +80,11 @@ if(enable_java)
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/COPYING" "${JSG_BUNDLE}"
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog" "${JSG_BUNDLE}"
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java" "${JSG_BUNDLE}"
-    COMMAND ${JAVA_ARCHIVE} -uvf simgrid.jar "NATIVE"
+    COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} "NATIVE"
+    COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
     )
+  add_custom_target(SG_java_jar_finalize DEPENDS ${SIMGRID_JAR}_finalized)
+  add_dependencies(SG_java_jar SG_java_jar_finalize)
 endif()
 
 add_dependencies(simgrid maintainer_files)

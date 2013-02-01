@@ -317,7 +317,7 @@ if(NOT enable_memcheck)
   ENDIF()
 
   # Java examples
-  set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/java/:${CMAKE_BINARY_DIR}/simgrid.jar")
+  set(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/java/:${SIMGRID_JAR}")
   if(enable_java)
     ADD_TEST(java-async                         ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_HOME_DIRECTORY}/examples/java async/async.tesh)
     ADD_TEST(java-bittorrent                    ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_HOME_DIRECTORY}/examples/java bittorrent/bittorrent.tesh)
