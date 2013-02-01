@@ -262,9 +262,9 @@ static void action_waitall(const char *const *action){
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
   
-    for(i=0;i<count_requests;i++){
-      xbt_dynar_foreach(reqq[smpi_comm_rank(MPI_COMM_WORLD)],i,requests[i]); 
-    }
+    /*  The reqq is an array of dynars. Its index corresponds to the rank.
+     Thus each rank saves its own requests to the array request. */
+    xbt_dynar_foreach(reqq[smpi_comm_rank(MPI_COMM_WORLD)],i,requests[i]); 
     
   #ifdef HAVE_TRACING
    //save information from requests
