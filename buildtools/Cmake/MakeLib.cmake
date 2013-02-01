@@ -61,7 +61,7 @@ if(enable_java)
   else()
     error("Unknown system type. Processor: ${CMAKE_SYSTEM_PROCESSOR}; System: ${CMAKE_SYSTEM_NAME}")
   endif()
-  message("Native libraries bundeled into: ${JSG_BUNDLE}")
+  message("Native libraries bundled into: ${JSG_BUNDLE}")
 
   add_custom_command(
     COMMENT "Finalize simgrid.jar..."
