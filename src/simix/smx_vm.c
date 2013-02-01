@@ -83,6 +83,30 @@ int SIMIX_pre_vm_state(smx_host_t ind_vm){
 }
 
 /**
+ * \brief Function to migrate a SIMIX VM host. This function stops the exection of the
+ * VM. All the processes on this VM will pause. The state of the VM is
+ * perserved. We can later resume it again.
+ *
+ * \param host the vm host to migrate (a smx_host_t)
+ */
+void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
+{
+  /* TODO: check state */
+
+  /* TODO: Using the variable of the MSG layer is not clean. */
+  SIMIX_set_vm_state(ind_vm, msg_vm_state_migrating);
+
+  /* jump to vm_ws_destroy(). this will update the vm location. */
+  surf_vm_workstation_model->extension.vm_workstation.migrate(ind_vm, ind_dst);
+
+  SIMIX_set_vm_state(ind_vm, msg_vm_state_running);
+}
+
+void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm){
+   SIMIX_vm_migrate(ind_vm, ind_dst_pm);
+}
+
+/**
  * \brief Function to suspend a SIMIX VM host. This function stops the exection of the
  * VM. All the processes on this VM will pause. The state of the VM is
  * perserved. We can later resume it again.

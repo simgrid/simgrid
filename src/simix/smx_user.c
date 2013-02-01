@@ -290,6 +290,12 @@ void simcall_vm_start(smx_host_t vm) {
   simcall_BODY_set_vm_state(vm, msg_vm_state_running);
 }
 
+void simcall_vm_migrate(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_migrate */
+  simcall_BODY_vm_migrate(vm);
+}
+
 void simcall_vm_suspend(smx_host_t vm)
 {
   /* will jump to SIMIX_pre_vm_suspend */

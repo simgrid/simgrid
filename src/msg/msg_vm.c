@@ -213,29 +213,57 @@ void MSG_vm_shutdown(msg_vm_t vm)
 //  MSG_process_kill(process);
 //}
 //
-///** @brief Immediately change the host on which all processes are running.
-// *  @ingroup msg_VMs
-// *
-// * No migration cost occurs. If you want to simulate this too, you want to use a
-// * MSG_task_send() before or after, depending on whether you want to do cold or hot
-// * migration.
-// */
-//void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination) {
-//  unsigned int cpt;
-//  msg_process_t process;
-//  xbt_dynar_foreach(vm->processes,cpt,process) {
-//    MSG_process_migrate(process,destination);
-//  }
-//  xbt_swag_remove(vm, MSG_host_priv(vm->location)->vms);
-//  xbt_swag_insert_at_tail(vm, MSG_host_priv(destination)->vms);
-//
-//  #ifdef HAVE_TRACING
-//  TRACE_msg_vm_change_host(vm,vm->location,destination);
-//  #endif
-//
-//  vm->location = destination;
-//}
-//
+
+/** @brief Migrate the VM to the given host.
+ *  @ingroup msg_VMs
+ *
+ * FIXME: update comments.
+ * No migration cost occurs. If you want to simulate this too, you want to use a
+ * MSG_task_send() before or after, depending on whether you want to do cold or hot
+ * migration.
+ */
+void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination)
+{
+  /* some thoughts:
+   * - One approach is ...
+   *   We first create a new VM (i.e., destination VM) on the destination
+   *   physical host. The destination VM will receive the state of the source
+   *   VM over network. We will finally destroy the source VM.
+   *   - This behavior is similar to the way of migration in the real world.
+   *     Even before a migration is completed, we will see a destination VM,
+   *     consuming resources.
+   *   - We have to relocate all processes. The existing process migraion code
+   *     will work for this?
+   *   - The name of the VM is a somewhat unique ID in the code. It is tricky
+   *     for the destination VM?
+   *
+   * - Another one is ...
+   *   We update the information of the given VM to place it to the destination
+   *   physical host.
+   *
+   * The second one would be easier.
+   *   
+   */
+
+  simcall_vm_migrate(vm, destination);
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_change_host(vm,vm->location,destination);
+  #endif
+
+#if 0
+  unsigned int cpt;
+  msg_process_t process;
+  xbt_dynar_foreach(vm->processes,cpt,process) {
+    MSG_process_migrate(process,destination);
+  }
+  xbt_swag_remove(vm, MSG_host_priv(vm->location)->vms);
+  xbt_swag_insert_at_tail(vm, MSG_host_priv(destination)->vms);
+
+  vm->location = destination;
+#endif
+}
+
 
 /** @brief Immediately suspend the execution of all processes within the given VM.
  *  @ingroup msg_VMs

@@ -34,15 +34,28 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, vm_ws);
 }
 
+/*
+ * Update the physical host of the given VM
+ */
+static void vm_ws_migrate(void *ind_vm_workstation, void *ind_dest_phys_workstation)
+{ 
+   /* ind_phys_workstation equals to smx_host_t */
+   workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_workstation);
+   xbt_assert(vm_ws);
+
+   /* do something */
+   
+   vm_ws->physical_workstation = surf_workstation_resource_priv(ind_dest_phys_workstation);
+}
 
 /*
  * A physical host does not disapper in the current SimGrid code, but a VM may
  * disapper during a simulation.
  */
-static void vm_ws_destroy(void *ind_phys_workstation)
+static void vm_ws_destroy(void *ind_vm_workstation)
 { 
 	/* ind_phys_workstation equals to smx_host_t */
-	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_phys_workstation);
+	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_workstation);
 	xbt_assert(vm_ws);
 	xbt_assert(vm_ws->generic_resource.model == surf_vm_workstation_model);
 
@@ -70,6 +83,7 @@ static void surf_vm_workstation_model_init_internal(void)
   surf_vm_workstation_model->extension.vm_workstation.create = vm_ws_create;
   surf_vm_workstation_model->extension.vm_workstation.set_state = vm_ws_set_state;
   surf_vm_workstation_model->extension.vm_workstation.get_state = vm_ws_get_state;
+  surf_vm_workstation_model->extension.vm_workstation.migrate = vm_ws_migrate;
   surf_vm_workstation_model->extension.vm_workstation.destroy = vm_ws_destroy;
 
 }
