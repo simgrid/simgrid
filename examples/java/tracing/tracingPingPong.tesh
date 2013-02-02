@@ -36,3 +36,4 @@ $ java -cp ${classpath:=.} tracing/TracingTest ./platform.xml ./tracing/tracingP
 > [Marcel:tracing.Receiver:(3) 3.057925] [jmsg/INFO]  --- bw 1.0414912057858452E8 ----
 > [Marcel:tracing.Receiver:(3) 4.474401] [jmsg/INFO] goodbye!
 
+$ rm -rf simulation.trace
