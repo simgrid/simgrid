@@ -116,6 +116,9 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
   }
   CATCH(e) {
     switch (e.category) {
+    case cancel_error:
+      ret = MSG_HOST_FAILURE;
+      break;
     case network_error:
       ret = MSG_TRANSFER_FAILURE;
       break;
@@ -183,6 +186,9 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
 
   CATCH(e) {
     switch (e.category) {
+    case cancel_error:
+      ret = MSG_HOST_FAILURE;
+      break;
     case network_error:
       ret = MSG_TRANSFER_FAILURE;
       break;
