@@ -47,7 +47,7 @@ if(enable_java)
   endif()
 
   set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
-  add_jar(SG_java_jar ${JMSG_JAVA_SRC})
+  add_jar(SG_java_pre_jar ${JMSG_JAVA_SRC})
 
   set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
   set(MANIFEST_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF")
@@ -78,7 +78,8 @@ if(enable_java)
   add_custom_command(
     COMMENT "Finalize simgrid.jar..."
     OUTPUT ${SIMGRID_JAR}_finalized
-    DEPENDS ${SIMGRID_JAR} ${MANIFEST_FILE}
+    DEPENDS simgrid SG_java SG_java_pre_jar
+            ${SIMGRID_JAR} ${MANIFEST_FILE}
             ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
             ${CMAKE_BINARY_DIR}/lib/${LIBSG_JAVA_SO}
             ${CMAKE_HOME_DIRECTORY}/COPYING
@@ -97,8 +98,7 @@ if(enable_java)
     COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
     COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
     )
-  add_custom_target(SG_java_jar_finalize DEPENDS ${SIMGRID_JAR}_finalized)
-  add_dependencies(SG_java_jar SG_java_jar_finalize)
+  add_custom_target(SG_java_jar ALL DEPENDS ${SIMGRID_JAR}_finalized)
 endif()
 
 add_dependencies(simgrid maintainer_files)
