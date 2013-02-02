@@ -1,8 +1,8 @@
-#! ./tesh
+#! tesh
 
 ! output sort
 
-$ java -cp ${classpath:=.} kademlia/Kademlia ./platform.xml ./kademlia/kademlia.xml
+$ java -cp ${classpath:=.} kademlia/Kademlia ${srcdir:=.}/platform.xml ${srcdir:=.}/kademlia/kademlia.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [900.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:kademlia.Node:(2) 0.000000] [jmsg/INFO] Hi, I'm going to join the network with the id 1!

@@ -1,8 +1,8 @@
-#! ./tesh
+#! tesh
 
 ! output sort
 
-$ java -cp ${classpath:=.} master_slave_kill/MsKill ./master_slave_kill/platform.xml
+$ java -cp ${classpath:=.} master_slave_kill/MsKill ${srcdir:=.}/master_slave_kill/platform.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.013010] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [alice:slave:(2) 0.000000] [jmsg/INFO] Slave Hello!

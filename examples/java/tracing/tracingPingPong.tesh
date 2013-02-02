@@ -1,8 +1,8 @@
-#! ./tesh
+#! tesh
 
 ! output sort
 
-$ java -cp ${classpath:=.} tracing/TracingTest ./platform.xml ./tracing/tracingPingPongDeployment.xml --cfg=tracing:1  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:1
+$ java -cp ${classpath:=.} tracing/TracingTest ${srcdir:=.}/platform.xml ${srcdir:=.}/tracing/tracingPingPongDeployment.xml --cfg=tracing:1  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:1
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'simulation.trace'

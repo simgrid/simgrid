@@ -1,8 +1,8 @@
-#! ./tesh
+#! tesh
 
 ! output sort
 
-$ java -cp ${classpath:=.} chord/Chord ./platform.xml ./chord/chord.xml
+$ java -cp ${classpath:=.} chord/Chord ${srcdir:=.}/platform.xml ${srcdir:=.}/chord/chord.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [652.540924] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:chord.Node:(7) 0.000000] [jmsg/INFO] Joining the ring with id 8 knowing node 1

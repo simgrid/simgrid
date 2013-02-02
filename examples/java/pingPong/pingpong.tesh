@@ -1,8 +1,8 @@
-#! ./tesh
+#! tesh
 
 ! output sort
 
-$ java -cp ${classpath:=.} pingPong/PingPongTest ./platform.xml ./pingPong/pingPongDeployment.xml
+$ java -cp ${classpath:=.} pingPong/PingPongTest ${srcdir:=.}/platform.xml ${srcdir:=.}/pingPong/pingPongDeployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [1.048882] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:pingPong.Receiver:(2) 0.000000] [jmsg/INFO] hello!
