@@ -69,6 +69,12 @@ if(enable_java)
   set(LIBSG_JAVA_SO
     ${CMAKE_SHARED_LIBRARY_PREFIX}SG_java${CMAKE_SHARED_LIBRARY_SUFFIX})
 
+  if(release)
+    set(STRIP_COMMAND "${CMAKE_STRIP}")
+  else()
+    set(STRIP_COMMAND "true")
+  endif()
+
   add_custom_command(
     COMMENT "Finalize simgrid.jar..."
     OUTPUT ${SIMGRID_JAR}_finalized
@@ -81,9 +87,9 @@ if(enable_java)
     COMMAND ${CMAKE_COMMAND} -E remove_directory "NATIVE"
     COMMAND ${CMAKE_COMMAND} -E make_directory "${JSG_BUNDLE}"
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}" "${JSG_BUNDLE}"
-    COMMAND ${CMAKE_STRIP} -S "${JSG_BUNDLE}/${LIBSIMGRID_SO}"
+    COMMAND ${STRIP_COMMAND} -S "${JSG_BUNDLE}/${LIBSIMGRID_SO}"
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/lib/${LIBSG_JAVA_SO}" "${JSG_BUNDLE}"
-    COMMAND ${CMAKE_STRIP} -S "${JSG_BUNDLE}/${LIBSG_JAVA_SO}"
+    COMMAND ${STRIP_COMMAND} -S "${JSG_BUNDLE}/${LIBSG_JAVA_SO}"
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/COPYING" "${JSG_BUNDLE}"
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog" "${JSG_BUNDLE}"
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java" "${JSG_BUNDLE}"
