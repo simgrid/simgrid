@@ -345,7 +345,7 @@ Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
   msg_error_t rv;
   rv = MSG_process_sleep((double)jseconds);
   if (rv != MSG_OK) {
-    XBT_INFO("Status NOK");
+    XBT_DEBUG("Status NOK");
     jmsg_throw_status(env,rv);
   }
 }
