@@ -6,6 +6,7 @@
  */
 package startKillTime;
 import org.simgrid.msg.Host;
+import org.simgrid.msg.MsgException;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.TransferFailureException;
@@ -22,8 +23,12 @@ public class Slave extends Process {
 	} 
 	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
 		Msg.info("Hello!");
-		waitFor(10.0);
-		Msg.info("OK, goodbye now.");
+                try {
+                        waitFor(10.0);
+                        Msg.info("OK, goodbye now.");
+                } catch (MsgException e) {
+                        Msg.debug("Wait cancelled.");
+                }
 	
   }
 }
