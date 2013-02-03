@@ -1050,7 +1050,7 @@ xbt_dict_t MC_get_location_list(const char *elf_file){
   int cursor_remove;
   xbt_dynar_t split = NULL;
 
-  while ((read = getline(&line, &n, fp)) != -1) {
+  while ((read = xbt_getline(&line, &n, fp)) != -1) {
 
     /* Wipeout the new line character */
     line[read - 1] = '\0';
@@ -1109,7 +1109,7 @@ xbt_dict_t MC_get_location_list(const char *elf_file){
       xbt_dynar_free(&split);
       free(loc_expr);
 
-      read = getline(&line, &n, fp);
+      read = xbt_getline(&line, &n, fp);
       if(read != -1){
         line[read - 1] = '\0';
         xbt_str_strip_spaces(line);
@@ -1174,12 +1174,12 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
   int new_frame = 0, new_variable = 0;
   dw_frame_t variable_frame, subroutine_frame = NULL;
 
-  read = getline(&line, &n, fp);
+  read = xbt_getline(&line, &n, fp);
 
   while (read != -1) {
 
     if(n == 0){
-      read = getline(&line, &n, fp);
+      read = xbt_getline(&line, &n, fp);
       continue;
     }
  
@@ -1187,7 +1187,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
     line[read - 1] = '\0';
    
     if(strlen(line) == 0){
-      read = getline(&line, &n, fp);
+      read = xbt_getline(&line, &n, fp);
       continue;
     }
 
@@ -1195,7 +1195,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
     xbt_str_strip_spaces(line);
     
     if(line[0] != '<'){
-      read = getline(&line, &n, fp);
+      read = xbt_getline(&line, &n, fp);
       continue;
     }
     
@@ -1213,12 +1213,12 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
       subprogram_start = strdup(strtok(NULL, "<"));
       xbt_str_rtrim(subprogram_start, ">:");
 
-      read = getline(&line, &n, fp);
+      read = xbt_getline(&line, &n, fp);
    
       while(read != -1){
 
         if(n == 0){
-          read = getline(&line, &n, fp);
+          read = xbt_getline(&line, &n, fp);
           continue;
         }
 
@@ -1226,7 +1226,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
         line[read - 1] = '\0';
         
         if(strlen(line) == 0){
-          read = getline(&line, &n, fp);
+          read = xbt_getline(&line, &n, fp);
           continue;
         }
       
@@ -1309,7 +1309,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
 
         }
 
-        read = getline(&line, &n, fp);
+        read = xbt_getline(&line, &n, fp);
 
       }
  
@@ -1335,12 +1335,12 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
       origin = strdup(strtok(NULL, "<"));
       xbt_str_rtrim(origin, ">:");
       
-      read = getline(&line, &n, fp);
+      read = xbt_getline(&line, &n, fp);
       
       while(read != -1){
 
         if(n == 0){
-          read = getline(&line, &n, fp);
+          read = xbt_getline(&line, &n, fp);
           continue;
         }
 
@@ -1348,7 +1348,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
         line[read - 1] = '\0'; 
 
         if(strlen(line) == 0){
-          read = getline(&line, &n, fp);
+          read = xbt_getline(&line, &n, fp);
           continue;
         }
        
@@ -1414,7 +1414,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
         
         }
 
-        read = getline(&line, &n, fp);
+        read = xbt_getline(&line, &n, fp);
  
       }
 
@@ -1433,7 +1433,7 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
       origin = strdup(strtok(NULL, "<"));
       xbt_str_rtrim(origin, ">:");
 
-      read = getline(&line, &n, fp);
+      read = xbt_getline(&line, &n, fp);
 
       while(read != -1){
 
@@ -1441,12 +1441,12 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
         line[read - 1] = '\0'; 
 
         if(n == 0){
-          read = getline(&line, &n, fp);
+          read = xbt_getline(&line, &n, fp);
           continue;
         }
 
         if(strlen(line) == 0){
-          read = getline(&line, &n, fp);
+          read = xbt_getline(&line, &n, fp);
           continue;
         }
 
@@ -1478,13 +1478,13 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
           subroutine_frame->high_pc = (void *)strtoul(xbt_dynar_get_as(split, 3, char *), NULL, 16);
         }
 
-        read = getline(&line, &n, fp);
+        read = xbt_getline(&line, &n, fp);
       
       }
 
     }else{
 
-      read = getline(&line, &n, fp);
+      read = xbt_getline(&line, &n, fp);
 
     }
 
@@ -1801,7 +1801,7 @@ static void MC_get_global_variables(char *elf_file){
 
   int type = strcmp(elf_file, xbt_binary_name); /* 0 = binary, other = libsimgrid */
 
-  while ((read = getline(&line, &n, fp)) != -1){
+  while ((read = xbt_getline(&line, &n, fp)) != -1){
 
     if(n == 0)
       continue;

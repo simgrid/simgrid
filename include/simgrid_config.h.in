@@ -79,12 +79,8 @@ XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
 @simgrid_need_vasprintf@
 
 #include <stdio.h>  /* FILE, getline if it exists  */
-
-/* Use that config to declare missing elements */
-#ifdef SIMGRID_NEED_GETLINE
-#include <stdlib.h> /* size_t */
-XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
-#endif
+#include <stdlib.h> /* size_t, ssize_t */
+XBT_PUBLIC(ssize_t) xbt_getline(char **lineptr, size_t * n, FILE * stream);
 
 #include <stdarg.h>
 

@@ -245,7 +245,7 @@ void get_libsimgrid_plt_section(){
   FILE *fp;
   char *line = NULL;            /* Temporal storage for each line that is readed */
   ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by getline */
+  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
 
   char *lfields[7];
   int i, plt_found = 0;
@@ -260,7 +260,7 @@ void get_libsimgrid_plt_section(){
     xbt_abort();
   }
 
-  while ((read = getline(&line, &n, fp)) != -1 && plt_found != 2) {
+  while ((read = xbt_getline(&line, &n, fp)) != -1 && plt_found != 2) {
 
     if(n == 0)
       continue;
@@ -310,7 +310,7 @@ void get_binary_plt_section(){
   FILE *fp;
   char *line = NULL;            /* Temporal storage for each line that is readed */
   ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by getline */
+  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
 
   char *lfields[7];
   int i, plt_found = 0;
@@ -325,7 +325,7 @@ void get_binary_plt_section(){
     xbt_abort();
   }
 
-  while ((read = getline(&line, &n, fp)) != -1 && plt_found != 2) {
+  while ((read = xbt_getline(&line, &n, fp)) != -1 && plt_found != 2) {
 
     if(n == 0)
       continue;
