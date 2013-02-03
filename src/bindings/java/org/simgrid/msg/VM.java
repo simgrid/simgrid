@@ -25,8 +25,8 @@ public class VM {
 
         private String name;
 	/**
-	 * @brief Create a new empty VM.
-	 * @bug it is expected that in the future, the coreAmount parameter will be used
+	 * Create a new empty VM.
+	 * NOTE: it is expected that in the future, the coreAmount parameter will be used
 	 * to add extra constraints on the execution, but the argument is ignored for now.
 	 */
 	public VM(Host host, String name, int coreAmount) {
@@ -47,35 +47,35 @@ public class VM {
 	 */
 	private native void start(Host host, String name, int coreAmount);
 		
-	/** @brief Returns whether the given VM is currently suspended
+	/** Returns whether the given VM is currently suspended
 	 */	
 	public native boolean isSuspended();
-	/** @brief Returns whether the given VM is currently running
+	/** Returns whether the given VM is currently running
 	 */
 	public native boolean isRunning();
-	/** @brief Add the given process into the VM.
+	/** Add the given process into the VM.
 	 * Afterward, when the VM is migrated or suspended or whatever, the process will have the corresponding handling, too.
 	 */	
 	public native void bind(Process process);
-	/** @brief Removes the given process from the given VM, and kill it
+	/** Removes the given process from the given VM, and kill it
 	 *  Will raise a ProcessNotFound exception if the process were not binded to that VM
 	 */	
 	public native void unbind(Process process);
-	/** @brief Immediately change the host on which all processes are running
+	/** Immediately change the host on which all processes are running
 	 *
 	 * No migration cost occurs. If you want to simulate this too, you want to use a
 	 * Task.send() before or after, depending on whether you want to do cold or hot
 	 * migration.
 	 */	
 	public native void migrate(Host destination);
-	/** @brief Immediately suspend the execution of all processes within the given VM
+	/** Immediately suspend the execution of all processes within the given VM
 	 *
 	 * No suspension cost occurs. If you want to simulate this too, you want to
 	 * use a \ref File.write() before or after, depending on the exact semantic
 	 * of VM suspend to you.
 	 */	
 	public native void suspend();
-	/** @brief Immediately resumes the execution of all processes within the given VM
+	/** Immediately resumes the execution of all processes within the given VM
 	 *
 	 * No resume cost occurs. If you want to simulate this too, you want to
 	 * use a \ref File.read() before or after, depending on the exact semantic
@@ -83,12 +83,12 @@ public class VM {
 	 */
 	public native void resume();
 	/**
-	 * @brief Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
+	 * Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
 	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep() or something
 	 */
 	public native void shutdown();
 	/**
-	 * @brief Reboot the VM, restarting all the processes in it.
+	 * Reboot the VM, restarting all the processes in it.
 	 */
 	public native void reboot();
 

@@ -112,7 +112,7 @@ public final class Msg {
 	}
 
     /** Retrieve the simulation time
-     * @return
+     * @return The simulation time.
      */
 	public final static native double getClock();
 	/**
@@ -154,8 +154,6 @@ public final class Msg {
 	 * The natively implemented method to initialize a MSG simulation.
 	 *
 	 * @param args            The arguments of the command line of the simulation.
-	 *
-	 * @see                    Msg.init()
 	 */
 	public final static native void init(String[]args);
 
@@ -166,8 +164,6 @@ public final class Msg {
 	 * {@link #clean()} if you really insist on cleaning the C side), so you can freely 
 	 * retrieve the informations that you want from the simulation. In particular, retrieving the status 
 	 * of a process or the current date is perfectly ok. 
-	 *
-	 * @see                    MSG_run
 	 */
 	public final static native void run() ;
 	
