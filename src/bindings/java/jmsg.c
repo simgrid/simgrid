@@ -86,6 +86,11 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   jstring jval;
   const char *tmp;
 
+  XBT_LOG_CONNECT(jmsg);
+#ifdef HAVE_TRACING
+  XBT_LOG_CONNECT(jtrace);
+#endif
+
   (*env)->GetJavaVM(env, &__java_vm);
 
   if ((*env)->FindClass(env, "java/dyn/Coroutine")) {
