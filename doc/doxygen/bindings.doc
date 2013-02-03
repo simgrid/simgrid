@@ -51,44 +51,15 @@ C crashes mainly for 2 reasons:
 \subsection bindings_binding_java_install How to install Simgrid-java
 
 To use java with Simgrid you have to install some dependencies:
-- Simgrid (see [install Simgrid](http://simgrid.gforge.inria.fr/simgrid/latest/doc/install.html).
-  You should set the `SIMGRID_ROOT` environment variable to the path where you installed SimGrid.
 - Java JDK packages, such as `openjdk7` or `sun-java6-jdk` (with `libgcj10-dev` or another
   version of gcj). For maximal performance and scalability, use a coroutine-enabled JVM (see
   \ref bindings_binding_java_coroutines).
  
-Then Download and install package Simgrid-java:
+Then build Simgrid with the Java bindings enabled:
 ~~~~{.sh}
-git clone git://scm.gforge.inria.fr/simgrid/simgrid-java.git
-cd simgrid-java
-cmake -DCMAKE_INSTALL_PREFIX=$HOME/Install/simgrid-java/ .
-make install
+cmake -Denable_java=ON .
 ~~~~
  
-Cmake output
-~~~~{.sh}
--- SITE        : Linux_2.6.38-8-generic_x86_64
--- BUILDNAME   : Simgrid-Java
--- Looking for lib SimGrid
--- Looking for lib SimGrid - found
--- Simgrid version : 3.8.1
--- Looking for gras.h
--- Looking for gras.h - found
--- Found Tesh: /home/user/Bureau/simgrid/git/bin/tesh
--- Found gras_stub_generator: /home/user/Bureau/simgrid/git/bin/gras_stub_generator
--- Java version 1.6.0.22 configured successfully!
--- Looking for jni.h
--- Looking for jni.h - found
--- Add flags -I/usr/lib/jvm/java-6-openjdk/include
--- Looking for jni_md.h
--- Looking for jni_md.h - found
--- Found javac: /usr/bin/javac
--- Found jar: /usr/bin/jar
--- Configuring done
--- Generating done
--- Build files have been written to: /home/user/workspace/simgrid-java/build
-~~~~
-
 If cmake complains that **jni could not be found**, you need to tell it where
 JNI header files are located. the following command should tell you:
 
@@ -112,16 +83,15 @@ $ cmake .
 \subsubsection bindings_binding_java_use How to use Simgrid-java
 
 To execute the examples you need to add the path where you installed
-the generated `libSG_java` library (`<build_dir>/lib`) and `libsimgrid`
-(`$SIMGRID_ROOT/lib`) into the `LD_LIBRARY_PATH`.
+the generated `libSG_java` and `libsimgrid` libraries
+into the `LD_LIBRARY_PATH`.
 
 Be careful on Mac, this variable is called `DYLD_LIBRARY_PATH` and not
 `LD_LIBRARY_PATH`.
 
 ~~~~{.sh}
 $ export SIMGRID_ROOT="$HOME/Install/simgrid/" # change it to the path where you installed the SimGrid library
-$ export SIMGRID_JAVA_ROOT="$HOME/Install/simgrid-java" # change it to the path where you installed the java bindings of SimGrid 
-$ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$SIMGRID_ROOT/lib:$SIMGRID_JAVA_ROOT/java
+$ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$SIMGRID_ROOT/lib
 $ cd examples
 $ java -cp .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
 ~~~~
