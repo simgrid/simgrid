@@ -1,4 +1,4 @@
-$ simdag/basic4 ${srcdir:=.}/simdag/basic_platform.xml --surf-path=${srcdir} "--log=root.fmt:[%10.6r]%e%m%n" --log=sd_kernel.thresh:verbose
+$ simdag/basic4 ${srcdir:=.}/simdag/basic_platform.xml --cfg=path:${srcdir} "--log=root.fmt:[%10.6r]%e%m%n" --log=sd_kernel.thresh:verbose
 > [  0.000000] surf_workstation_model_init_ptask_L07
 > [  0.000000] Starting simulation...
 > [  0.000000] Run simulation for -1.000000 seconds
