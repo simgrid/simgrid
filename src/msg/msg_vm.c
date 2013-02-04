@@ -111,8 +111,8 @@ msg_vm_t MSG_vm_create(msg_host_t ind_host, const char *name,
   new = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
 
   MSG_vm_set_property_value(new, "CORE_NB", bprintf("%d", core_nb), free);
-  MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", core_nb), free);
-  MSG_vm_set_property_value(new, "NET_CAP", bprintf("%d", core_nb), free);
+  MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", mem_cap), free);
+  MSG_vm_set_property_value(new, "NET_CAP", bprintf("%d", net_cap), free);
 
   XBT_DEBUG("A new VM has been created");
   // TODO check whether the vm (i.e the virtual host) has been correctly added into the list of all hosts.
@@ -256,25 +256,16 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination)
   #ifdef HAVE_TRACING
   TRACE_msg_vm_change_host(vm, old_pm_ind, destination);
   #endif
-
-#if 0
-  unsigned int cpt;
-  msg_process_t process;
-  xbt_dynar_foreach(vm->processes,cpt,process) {
-    MSG_process_migrate(process,destination);
-  }
-  xbt_swag_remove(vm, MSG_host_priv(vm->location)->vms);
-  xbt_swag_insert_at_tail(vm, MSG_host_priv(destination)->vms);
-
-  vm->location = destination;
-#endif
 }
 
 
 /** @brief Immediately suspend the execution of all processes within the given VM.
  *  @ingroup msg_VMs
  *
- * No suspension cost occurs. If you want to simulate this too, you want to
+ * This function stops the exection of the VM. All the processes on this VM
+ * will pause. The state of the VM is perserved. We can later resume it again.
+ *
+ * FIXME: No suspension cost occurs. If you want to simulate this too, you want to
  * use a \ref MSG_file_write() before or after, depending on the exact semantic
  * of VM suspend to you.
  */
