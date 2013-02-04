@@ -612,7 +612,7 @@ double surf_solve(double max_date)
 
     if ((min == -1.0) || (next_event_date > NOW + min)) break;
 
-    XBT_DEBUG("Updating models");
+    XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)",min, NOW, next_event_date);
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value,
