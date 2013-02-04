@@ -215,16 +215,13 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
         /* try to take the information to schedule the task only if all is
          * right*/
         int performer, order;
-        char *char_performer = NULL, *char_order=NULL;
+        char *char_performer = agget(node, (char *) "performer");
+        char *char_order = agget(node, (char *) "order");
         /* performer is the computer which execute the task */
         performer =
-            ((!char_performer ||
-                !strcmp((char_performer = agget(node, (char *) "performer")),
-                    "")) ? -1:atoi(char_performer));
+            ((!char_performer || !strcmp(char_performer,"")) ? -1:atoi(char_performer));
         /* order is giving the task order on one computer */
-        order = ((!char_order ||
-            !strcmp((char_order  = agget(node, (char *) "order")), ""))?
-              -1:atoi(char_order));
+        order = ((!char_order || !strcmp(char_order, ""))? -1:atoi(char_order));
 
         XBT_DEBUG ("Task '%s' is scheduled on workstation '%d' in position '%d'",
                     task->name, performer, order);
