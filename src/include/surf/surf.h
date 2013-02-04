@@ -283,6 +283,7 @@ typedef struct surf_vm_workstation_model_extension_public {
   int (*get_state) (void *ind_vm_workstation);
   void (*set_state) (void *ind_vms_workstation, int state);
   void (*migrate) (void *ind_vm_workstation, void *ind_dest_phys_workstation); // will be vm_ws_migrate()
+  const char * (*get_phys_host) (void *ind_vm_workstation); // will be vm_ws_get_phys_host()
   void (*destroy) (void *ind_vm_workstation); // will be vm_ws_destroy(), which destroies the vm-workstation-specific data
 } s_surf_model_extension_vm_workstation_t;
 

@@ -44,7 +44,7 @@ static void vm_ws_migrate(void *ind_vm_workstation, void *ind_dest_phys_workstat
    xbt_assert(vm_ws);
 
    /* do something */
-   
+
    vm_ws->physical_workstation = surf_workstation_resource_priv(ind_dest_phys_workstation);
 }
 
@@ -74,6 +74,17 @@ static int vm_ws_get_state(void *ind_vm_ws){
 static void vm_ws_set_state(void *ind_vm_ws, int state){
 	 ((workstation_VM2013_t) surf_workstation_resource_priv(ind_vm_ws))->current_state=state;
 }
+
+/*
+ * A surf level object will be useless in the upper layer. Returing the name
+ * will be simple and suffcient.
+ **/
+static const char *vm_ws_get_phys_host(void *ind_vm_ws)
+{
+	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_ws);
+	return vm_ws->physical_workstation->name;
+}
+
 static void surf_vm_workstation_model_init_internal(void)
 {
   surf_vm_workstation_model = surf_model_init();
@@ -84,6 +95,7 @@ static void surf_vm_workstation_model_init_internal(void)
   surf_vm_workstation_model->extension.vm_workstation.set_state = vm_ws_set_state;
   surf_vm_workstation_model->extension.vm_workstation.get_state = vm_ws_get_state;
   surf_vm_workstation_model->extension.vm_workstation.migrate = vm_ws_migrate;
+  surf_vm_workstation_model->extension.vm_workstation.get_phys_host = vm_ws_get_phys_host;
   surf_vm_workstation_model->extension.vm_workstation.destroy = vm_ws_destroy;
 
 }

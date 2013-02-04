@@ -96,14 +96,29 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
   /* TODO: Using the variable of the MSG layer is not clean. */
   SIMIX_set_vm_state(ind_vm, msg_vm_state_migrating);
 
-  /* jump to vm_ws_destroy(). this will update the vm location. */
-  surf_vm_workstation_model->extension.vm_workstation.migrate(ind_vm, ind_dst);
+  /* jump to vm_ws_migrate(). this will update the vm location. */
+  surf_vm_workstation_model->extension.vm_workstation.migrate(ind_vm, ind_dst_pm);
 
   SIMIX_set_vm_state(ind_vm, msg_vm_state_running);
 }
 
 void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm){
    SIMIX_vm_migrate(ind_vm, ind_dst_pm);
+}
+
+/**
+ * \brief Function to get the physical host of the given the SIMIX VM host.
+ *
+ * \param host the vm host to get_phys_host (a smx_host_t)
+ */
+const char *SIMIX_vm_get_phys_host(smx_host_t ind_vm)
+{
+  /* jump to vm_ws_get_phys_host(). this will update the vm location. */
+  return surf_vm_workstation_model->extension.vm_workstation.get_phys_host(ind_vm);
+}
+
+const char *SIMIX_pre_vm_get_phys_host(smx_simcall_t simcall, smx_host_t ind_vm){
+  return SIMIX_vm_get_phys_host(ind_vm);
 }
 
 /**
@@ -154,7 +169,7 @@ void SIMIX_vm_resume(smx_host_t ind_vm)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_set_vm_state(ind_vm, msg_vm_state_resumeed);
+  SIMIX_set_vm_state(ind_vm, msg_vm_state_running);
 }
 
 void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm){

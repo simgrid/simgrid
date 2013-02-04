@@ -248,7 +248,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination)
   simcall_vm_migrate(vm, destination);
 
   #ifdef HAVE_TRACING
-  TRACE_msg_vm_change_host(vm,vm->location,destination);
+  // TRACE_msg_vm_change_host(vm, vm->location, destination);
   #endif
 
 #if 0
