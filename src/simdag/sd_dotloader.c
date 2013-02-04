@@ -358,5 +358,11 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
   agclose(dag_dot);
   xbt_dict_free(&jobs);
 
+  if (!acyclic_graph_detail(result)) {
+    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.",
+              basename((char*)filename));
+    xbt_dynar_free(&result);
+    /* (result == NULL) here */
+  }
   return result;
 }
