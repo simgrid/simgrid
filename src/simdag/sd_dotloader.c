@@ -326,6 +326,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
         } else {
           XBT_WARN("Task '%s' is defined more than once", name);
         }
+        xbt_free(name);
       } else {
         SD_task_dependency_add(NULL, NULL, src, dst);
       }
