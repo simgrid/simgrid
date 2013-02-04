@@ -39,6 +39,7 @@ void dot_add_input_dependencies(SD_task_t current_job, Agedge_t * edge,
 void dot_add_output_dependencies(SD_task_t current_job, Agedge_t * edge,
                                  seq_par_t seq_or_par);
 xbt_dynar_t SD_dotload_generic(const char * filename);
+xbt_dynar_t SD_dotload_generic_alt(const char * filename, seq_par_t seq_or_par);
 
 static double dot_parse_double(const char *string) {
   if (string == NULL)
@@ -76,16 +77,6 @@ static SD_task_t root_task, end_task;
 static Agraph_t *dag_dot;
 static bool schedule = true;
 
-static void dump_res() {
-  unsigned int cursor;
-  SD_task_t task;
-  xbt_dynar_foreach(result, cursor, task) {
-    XBT_INFO("Task %d", cursor);
-    SD_task_dump(task);
-  }
-}
-
-
 static void dot_task_free(void *task) {
   SD_task_t t = task;
   SD_task_destroy(t);
@@ -120,6 +111,8 @@ static void TRACE_sd_dotloader (SD_task_t task, const char *category) {
  * if they aren't here, there choose to be equal to zero.
  */
 xbt_dynar_t SD_dotload(const char *filename) {
+  computers = xbt_dict_new_homogeneous(NULL);
+//  SD_dotload_generic_alt(filename, sequential);
   SD_dotload_generic(filename);
   xbt_dynar_t computer = NULL;
   xbt_dict_cursor_t dict_cursor;
@@ -132,15 +125,17 @@ xbt_dynar_t SD_dotload(const char *filename) {
 }
 
 xbt_dynar_t SD_dotload_with_sched(const char *filename) {
+  computers = xbt_dict_new_homogeneous(NULL);
+//  SD_dotload_generic_alt(filename, sequential);
   SD_dotload_generic(filename);
 
-  if(schedule == true){
+  if(schedule){
     xbt_dynar_t computer = NULL;
     xbt_dict_cursor_t dict_cursor;
     char *computer_name;
     const SD_workstation_t *workstations = SD_workstation_get_list ();
     xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
-      int count_computer = dot_parse_int(computer_name);
+      int count_computer = atoi(computer_name);
       unsigned int count=0;
       SD_task_t task;
       SD_task_t task_previous = NULL;
@@ -181,89 +176,7 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename) {
 }
 
 xbt_dynar_t SD_PTG_dotload(const char * filename) {
-  xbt_assert(filename, "Unable to use a null file descriptor\n");
-  FILE *in_file = fopen(filename, "r");
-  dag_dot = agread(in_file, NIL(Agdisc_t *));
-
-  result = xbt_dynar_new(sizeof(SD_task_t), dot_task_p_free);
-  files = xbt_dict_new_homogeneous(&dot_task_free);
-  jobs = xbt_dict_new_homogeneous(NULL);
-  computers = xbt_dict_new_homogeneous(NULL);
-  root_task = SD_task_create_comp_par_amdahl("root", NULL, 0., 0.);
-  /* by design the root task is always SCHEDULABLE */
-  __SD_task_set_state(root_task, SD_SCHEDULABLE);
-
-  xbt_dict_set(jobs, "root", root_task, NULL);
-  xbt_dynar_push(result, &root_task);
-  end_task = SD_task_create_comp_par_amdahl("end", NULL, 0., 0.);
-  xbt_dict_set(jobs, "end", end_task, NULL);
-
-  Agnode_t *dag_node = NULL;
-  for (dag_node = agfstnode(dag_dot); dag_node; dag_node = agnxtnode(dag_dot,
-      dag_node)) {
-    dot_add_parallel_task(dag_node);
-  }
-  agclose(dag_dot);
-  xbt_dict_free(&jobs);
-
-  /* And now, post-process the files.
-   * We want a file task per pair of computation tasks exchanging the file.
-   * Duplicate on need
-   * Files not produced in the system are said to be produced by root task
-   * (top of DAG).
-   * Files not consumed in the system are said to be consumed by end task
-   * (bottom of DAG).
-   */
-  xbt_dict_cursor_t cursor;
-  SD_task_t file;
-  char *name;
-  xbt_dict_foreach(files, cursor, name, file) {
-    unsigned int cpt1, cpt2;
-    SD_task_t newfile = NULL;
-    SD_dependency_t depbefore, depafter;
-    if (xbt_dynar_is_empty(file->tasks_before)) {
-      xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
-        SD_task_t newfile =
-            SD_task_create_comm_par_mxn_1d_block(file->name, NULL, file->amount);
-        SD_task_dependency_add(NULL, NULL, root_task, newfile);
-        SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
-        xbt_dynar_push(result, &newfile);
-      }
-    } else if (xbt_dynar_is_empty(file->tasks_after)) {
-      xbt_dynar_foreach(file->tasks_before, cpt2, depbefore) {
-        SD_task_t newfile =
-            SD_task_create_comm_par_mxn_1d_block(file->name, NULL,
-                file->amount);
-        SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
-        SD_task_dependency_add(NULL, NULL, newfile, end_task);
-        xbt_dynar_push(result, &newfile);
-      }
-    } else {
-      xbt_dynar_foreach(file->tasks_before, cpt1, depbefore) {
-        xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
-          if (depbefore->src == depafter->dst) {
-            XBT_WARN
-                ("File %s is produced and consumed by task %s. This loop dependency will prevent the execution of the task.",
-                 file->name, depbefore->src->name);
-          }
-          newfile =
-              SD_task_create_comm_par_mxn_1d_block(file->name, NULL,
-                  file->amount);
-          SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
-          SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
-          xbt_dynar_push(result, &newfile);
-        }
-      }
-    }
-  }
-
-  /* Push end task last */
-  xbt_dynar_push(result, &end_task);
-
-  /* Free previous copy of the files */
-  xbt_dict_free(&files);
-  xbt_dict_free(&computers);
-  fclose(in_file);
+  xbt_dynar_t result = SD_dotload_generic_alt(filename, parallel);
   if (!acyclic_graph_detail(result)) {
     XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.",
               basename((char*)filename));
@@ -273,6 +186,209 @@ xbt_dynar_t SD_PTG_dotload(const char * filename) {
   return result;
 }
 
+xbt_dynar_t SD_dotload_generic_alt(const char * filename, seq_par_t seq_or_par){
+  xbt_assert(filename, "Unable to use a null file descriptor\n");
+  unsigned int i;
+  result = xbt_dynar_new(sizeof(SD_task_t), dot_task_p_free);
+  jobs = xbt_dict_new_homogeneous(NULL);
+  FILE *in_file = fopen(filename, "r");
+  dag_dot = agread(in_file, NIL(Agdisc_t *));
+  SD_task_t root, end, task;
+  /*
+   * Create all the nodes
+   */
+  Agnode_t *node = NULL;
+  for (node = agfstnode(dag_dot); node; node = agnxtnode(dag_dot, node)) {
+
+    char *name = agnameof(node);
+    double amount = atof(agget(node, (char *) "size"));
+    double alpha;
+
+    if (seq_or_par == sequential){
+      XBT_DEBUG("See <job id=%s amount =%.0f>", name, amount);
+    } else {
+      alpha = atof(agget(node, (char *) "alpha"));
+      if (alpha == -1.)
+        alpha = 0.0 ;
+      XBT_DEBUG("See <job id=%s amount =%.0f alpha = %.3f>",
+          name, amount, alpha);
+    }
+
+    if (!(task = xbt_dict_get_or_null(jobs, name))) {
+      if (seq_or_par == sequential){
+        task = SD_task_create_comp_seq(name, NULL , amount);
+      } else {
+        task = SD_task_create_comp_par_amdahl(name, NULL , amount, alpha);
+      }
+#ifdef HAVE_TRACING
+      TRACE_sd_dotloader (task, agget (node, (char*)"category"));
+#endif
+      xbt_dict_set(jobs, name, task, NULL);
+      if (!strcmp(name, "root")){
+      /* by design the root task is always SCHEDULABLE */
+      __SD_task_set_state(task, SD_SCHEDULABLE);
+      /* Put it at the beginning of the dynar */
+        xbt_dynar_insert_at(result, 0, &task);
+      } else {
+        if (!strcmp(name, "end")){
+          XBT_DEBUG("Declaration of the 'end' node, don't store it yet.");
+          end = task;
+          /* Should be inserted later in the dynar */
+        } else {
+          xbt_dynar_push(result, &task);
+        }
+      }
+
+      if(schedule && seq_or_par == sequential){
+        /* try to take the information to schedule the task only if all is
+         * right*/
+        /* performer is the computer which execute the task */
+        int performer = -1;
+        char * char_performer = agget(node, (char *) "performer");
+        if (char_performer)
+          performer = atoi(char_performer);
+
+        /* order is giving the task order on one computer */
+        int order = -1;
+        char * char_order = agget(node, (char *) "order");
+        if (char_order)
+          order = atoi(char_order);
+        XBT_DEBUG ("Task '%s' is scheduled on workstation '%d' in position '%d'",
+                    task->name, performer, order);
+        xbt_dynar_t computer = NULL;
+        if(performer != -1 && order != -1){
+          /* required parameters are given */
+          computer = xbt_dict_get_or_null(computers, char_performer);
+          if(computer == NULL){
+            computer = xbt_dynar_new(sizeof(SD_task_t), NULL);
+            xbt_dict_set(computers, char_performer, computer, NULL);
+          }
+          if(performer < xbt_lib_length(host_lib)){
+            /* the wanted computer is available */
+            SD_task_t *task_test = NULL;
+            if(order < computer->used)
+              task_test = xbt_dynar_get_ptr(computer,order);
+            if(task_test != NULL && *task_test != NULL && *task_test != task){
+              /* the user gives the same order to several tasks */
+              schedule = false;
+              XBT_VERB("The task %s starts on the computer %s at the position : %s like the task %s",
+                     (*task_test)->name, char_performer, char_order,
+                     task->name);
+            }else{
+              /* the parameter seems to be ok */
+              xbt_dynar_set_as(computer, order, SD_task_t, task);
+            }
+          }else{
+            /* the platform has not enough processors to schedule the DAG like
+             * the user wants*/
+            schedule = false;
+            XBT_VERB("The schedule is ignored, there are not enough computers");
+          }
+        }
+        else {
+          /* one of required parameters is not given */
+          schedule = false;
+          XBT_VERB("The schedule is ignored, the task %s is not correctly scheduled",
+              task->name);
+        }
+      }
+    } else {
+      XBT_WARN("Task '%s' is defined more than once", name);
+    }
+  }
+
+  /*
+   * Check if 'root' and 'end' nodes have been explicitly declared.
+   * If not, create them.
+   */
+  if (!(root = xbt_dict_get_or_null(jobs, "root"))){
+    if (seq_or_par == sequential)
+      root = SD_task_create_comp_seq("root", NULL, 0);
+    else
+      root = SD_task_create_comp_par_amdahl("root", NULL, 0, 0);
+    /* by design the root task is always SCHEDULABLE */
+    __SD_task_set_state(root, SD_SCHEDULABLE);
+    /* Put it at the beginning of the dynar */
+      xbt_dynar_insert_at(result, 0, &root);
+  }
+
+  if (!(end = xbt_dict_get_or_null(jobs, "end"))){
+    if (seq_or_par == sequential)
+      end = SD_task_create_comp_seq("end", NULL, 0);
+    else
+      end = SD_task_create_comp_par_amdahl("end", NULL, 0, 0);
+    /* Should be inserted later in the dynar */
+  }
+
+  /*
+   * Create edges
+   */
+  node = NULL;
+  for (node = agfstnode(dag_dot); node; node = agnxtnode(dag_dot, node)) {
+    Agedge_t * edge = NULL;
+    for (edge = agfstout(dag_dot, node); edge; edge = agnxtout(dag_dot, edge)) {
+      SD_task_t src, dst;
+      char *src_name=agnameof(agtail(edge));
+      char *dst_name=agnameof(aghead(edge));
+      double size = atof(agget(edge, (char *) "size"));
+
+      src = xbt_dict_get_or_null(jobs, src_name);
+      dst  = xbt_dict_get_or_null(jobs, dst_name);
+
+      if (size > 0) {
+        char *name =
+            xbt_malloc((strlen(src_name)+strlen(dst_name)+6)*sizeof(char));
+        sprintf(name, "%s->%s", src_name, dst_name);
+        XBT_DEBUG("See <transfer id=%s amount = %.0f>", name, size);
+        if (!(task = xbt_dict_get_or_null(jobs, name))) {
+          if (seq_or_par == sequential)
+            task = SD_task_create_comm_e2e(name, NULL , size);
+          else
+            task = SD_task_create_comm_par_mxn_1d_block(name, NULL , size);
+#ifdef HAVE_TRACING
+          TRACE_sd_dotloader (task, agget (node, (char*)"category"));
+#endif
+          SD_task_dependency_add(NULL, NULL, src, task);
+          SD_task_dependency_add(NULL, NULL, task, dst);
+          xbt_dict_set(jobs, name, task, NULL);
+          xbt_dynar_push(result, &task);
+        } else {
+          XBT_WARN("Task '%s' is defined more than once", name);
+        }
+      } else {
+        SD_task_dependency_add(NULL, NULL, src, dst);
+      }
+    }
+  }
+
+  /* all compute and transfer tasks have been created, put the "end" node at
+   * the end of dynar
+   */
+  XBT_DEBUG("All tasks have been created, put %s at the end of the dynar",
+      end->name);
+  xbt_dynar_push(result, &end);
+
+  /* Connect entry tasks to 'root', and exit tasks to 'end'*/
+
+  xbt_dynar_foreach (result, i, task){
+    if (task == root || task == end)
+      continue;
+    if (xbt_dynar_is_empty(task->tasks_before)) {
+      XBT_DEBUG("file '%s' has no source. Add dependency from 'root'",
+          task->name);
+      SD_task_dependency_add(NULL, NULL, root, task);
+    } else if (xbt_dynar_is_empty(task->tasks_after)) {
+      XBT_DEBUG("file '%s' has no destination. Add dependency to 'end'",
+          task->name);
+      SD_task_dependency_add(NULL, NULL, task, end);
+    }
+  }
+
+  agclose(dag_dot);
+  xbt_dict_free(&jobs);
+
+  return result;
+}
 
 xbt_dynar_t SD_dotload_generic(const char * filename) {
   xbt_assert(filename, "Unable to use a null file descriptor\n");
@@ -298,7 +414,6 @@ xbt_dynar_t SD_dotload_generic(const char * filename) {
   }
   agclose(dag_dot);
   xbt_dict_free(&jobs);
-
   /* And now, post-process the files.
    * We want a file task per pair of computation tasks exchanging the file.
    * Duplicate on need
@@ -339,68 +454,6 @@ xbt_dynar_t SD_dotload_generic(const char * filename) {
   return result;
 }
 
-/* dot_add_parallel_task create a sd_task of SD_TASK_COMP_PAR_AMDHAL type and
- * all transfers required for this task. The execution time of the task is
- * given by the attribute size. The unit of size is the Flop.*/
-void dot_add_parallel_task(Agnode_t * dag_node) {
-  char *name = agnameof(dag_node);
-  SD_task_t current_job;
-  double amount = dot_parse_double(agget(dag_node, (char *) "size"));
-  double alpha = dot_parse_double(agget(dag_node, (char *) "alpha"));
-
-  if (alpha == -1.)
-    alpha = 0.0;
-
-  XBT_DEBUG("See <job id=%s amount=%s %.0f alpha=%.2f>", name,
-        agget(dag_node, (char *) "size"), amount, alpha);
-  if (!strcmp(name, "root")){
-    XBT_WARN("'root' node is explicitly declared in the DOT file. Update it");
-    root_task->amount = amount;
-    root_task->alpha = alpha;
-#ifdef HAVE_TRACING
-    TRACE_sd_dotloader (root_task, agget (dag_node, (char*)"category"));
-#endif
-  }
-
-  if (!strcmp(name, "end")){
-    XBT_WARN("'end' node is explicitly declared in the DOT file. Update it");
-    end_task->amount = amount;
-    end_task->alpha = alpha;
-#ifdef HAVE_TRACING
-    TRACE_sd_dotloader (end_task, agget (dag_node, (char*)"category"));
-#endif
-  }
-
-  current_job = xbt_dict_get_or_null(jobs, name);
-  if (current_job == NULL) {
-    current_job =
-        SD_task_create_comp_par_amdahl(name, NULL , amount, alpha);
-#ifdef HAVE_TRACING
-   TRACE_sd_dotloader (current_job, agget (dag_node, (char*)"category"));
-#endif
-    xbt_dict_set(jobs, name, current_job, NULL);
-    xbt_dynar_push(result, &current_job);
-  }
-  Agedge_t *e;
-  int count = 0;
-
-  for (e = agfstin(dag_dot, dag_node); e; e = agnxtin(dag_dot, e)) {
-    dot_add_input_dependencies(current_job, e, parallel);
-    count++;
-  }
-  if (count == 0 && current_job != root_task) {
-    SD_task_dependency_add(NULL, NULL, root_task, current_job);
-  }
-  count = 0;
-  for (e = agfstout(dag_dot, dag_node); e; e = agnxtout(dag_dot, e)) {
-    dot_add_output_dependencies(current_job, e, parallel);
-    count++;
-  }
-  if (count == 0 && current_job != end_task) {
-    SD_task_dependency_add(NULL, NULL, current_job, end_task);
-  }
-}
-
 /* dot_add_task create a sd_task and all transfers required for this
  * task. The execution time of the task is given by the attribute size.
  * The unit of size is the Flop.*/
@@ -415,6 +468,7 @@ void dot_add_task(Agnode_t * dag_node) {
   if (!strcmp(name, "root")){
     XBT_WARN("'root' node is explicitly declared in the DOT file. Update it");
     root_task->amount = runtime;
+    root_task->computation_amount[0]= runtime;
 #ifdef HAVE_TRACING
     TRACE_sd_dotloader (root_task, agget (dag_node, (char*)"category"));
 #endif
@@ -423,6 +477,7 @@ void dot_add_task(Agnode_t * dag_node) {
   if (!strcmp(name, "end")){
     XBT_WARN("'end' node is explicitly declared in the DOT file. Update it");
     end_task->amount = runtime;
+    end_task->computation_amount[0]= runtime;
 #ifdef HAVE_TRACING
     TRACE_sd_dotloader (end_task, agget (dag_node, (char*)"category"));
 #endif
