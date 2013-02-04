@@ -75,6 +75,7 @@ static void TRACE_sd_dotloader (SD_task_t task, const char *category) {
  */
 xbt_dynar_t SD_dotload(const char *filename) {
   computers = xbt_dict_new_homogeneous(NULL);
+  schedule = false;
   SD_dotload_generic(filename, sequential);
   xbt_dynar_t computer = NULL;
   xbt_dict_cursor_t dict_cursor;
@@ -168,9 +169,17 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
     if (seq_or_par == sequential){
       XBT_DEBUG("See <job id=%s amount =%.0f>", name, amount);
     } else {
-      alpha = atof(agget(node, (char *) "alpha"));
-      if (alpha == -1.)
+      if (!strcmp(agget(node, (char *) "alpha"), "")){
+        alpha = atof(agget(node, (char *) "alpha"));
+        if (alpha == -1.){
+          XBT_DEBUG("negative alpha value provided. Set to 0.");
+          alpha = 0.0 ;
+        }
+      } else {
+        XBT_DEBUG("no alpha value provided. Set to 0");
         alpha = 0.0 ;
+      }
+
       XBT_DEBUG("See <job id=%s amount =%.0f alpha = %.3f>",
           name, amount, alpha);
     }
@@ -200,20 +209,21 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
         }
       }
 
-      if(schedule && seq_or_par == sequential){
+      if((seq_or_par == sequential) &&
+          (schedule ||
+              XBT_LOG_ISENABLED(sd_dotparse, xbt_log_priority_verbose))){
         /* try to take the information to schedule the task only if all is
          * right*/
+        int performer, order;
+        char *char_performer, *char_order;
         /* performer is the computer which execute the task */
-        int performer = -1;
-        char * char_performer = agget(node, (char *) "performer");
-        if (char_performer)
-          performer = atoi(char_performer);
-
+        performer =
+            (!strcmp((char_performer  = agget(node, (char *) "performer")), "")?
+            -1:atoi(char_performer));
         /* order is giving the task order on one computer */
-        int order = -1;
-        char * char_order = agget(node, (char *) "order");
-        if (char_order)
-          order = atoi(char_order);
+        order = (!strcmp((char_order  = agget(node, (char *) "order")), "")?
+              -1:atoi(char_order));
+
         XBT_DEBUG ("Task '%s' is scheduled on workstation '%d' in position '%d'",
                     task->name, performer, order);
         xbt_dynar_t computer = NULL;
