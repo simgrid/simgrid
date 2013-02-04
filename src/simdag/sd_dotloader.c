@@ -154,6 +154,8 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
   result = xbt_dynar_new(sizeof(SD_task_t), dot_task_p_free);
   jobs = xbt_dict_new_homogeneous(NULL);
   FILE *in_file = fopen(filename, "r");
+  if (in_file == NULL)
+    xbt_die("Failed to open file: %s", filename);
   dag_dot = agread(in_file, NIL(Agdisc_t *));
   SD_task_t root, end, task;
   /*
