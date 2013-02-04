@@ -107,7 +107,7 @@ msg_vm_t MSG_vm_create(msg_host_t ind_host, const char *name,
   msg_vm_t new = NULL;
   void *ind_vm_workstation =  NULL;
   // Ask simix to create the surf vm resource
-  ind_vm_workstation = simcall_vm_ws_create(name,ind_host);
+  ind_vm_workstation = simcall_vm_create(name,ind_host);
   new = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
 
   MSG_vm_set_property_value(new, "CORE_NB", bprintf("%d", core_nb), free);
@@ -142,7 +142,7 @@ void MSG_vm_start(msg_vm_t vm) {
 
 /* **** Check state of a VM **** */
 int __MSG_vm_is_state(msg_vm_t vm, e_msg_vm_state_t state) {
-	return simcall_get_vm_state(vm) == state ;
+	return simcall_vm_get_state(vm) == state ;
 }
 
 /** @brief Returns whether the given VM is currently suspended

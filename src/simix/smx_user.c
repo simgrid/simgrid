@@ -282,12 +282,19 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
  * \param host A host
  * \return The properties of this host
  */
-void* simcall_vm_ws_create(const char *name, smx_host_t phys_host){
-  return simcall_BODY_vm_ws_create(name, phys_host);
+void* simcall_vm_create(const char *name, smx_host_t phys_host){
+  /* jump to SIMIX_pre_vm_create() */
+  return simcall_BODY_vm_create(name, phys_host);
 }
 
 void simcall_vm_start(smx_host_t vm) {
-  simcall_BODY_set_vm_state(vm, msg_vm_state_running);
+  simcall_BODY_vm_set_state(vm, msg_vm_state_running);
+}
+
+int simcall_vm_get_state(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_get_state */
+  return simcall_BODY_vm_get_state(vm);
 }
 
 void simcall_vm_migrate(smx_host_t vm, smx_host_t dst_phys)

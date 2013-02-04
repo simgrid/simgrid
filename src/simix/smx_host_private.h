@@ -94,10 +94,10 @@ smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host
 void SIMIX_vm_start(smx_host_t ind_vm);
 void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm);
 
-void SIMIX_set_vm_state(smx_host_t ind_vm, int state);
-void SIMIX_prev_set_vm_state(smx_host_t ind_vm, int state);
+void SIMIX_vm_set_state(smx_host_t ind_vm, int state);
+void SIMIX_prev_vm_set_state(smx_host_t ind_vm, int state);
 
-int SIMIX_get_vm_state(smx_host_t ind_vm);
+int SIMIX_vm_get_state(smx_host_t ind_vm);
 int SIMIX_pre_vm_state(smx_host_t ind_vm);
 
 void SIMIX_vm_suspend(smx_host_t ind_vm);

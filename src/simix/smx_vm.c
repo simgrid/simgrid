@@ -50,15 +50,15 @@ smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host
 
 
 /* **** start a VM **** */
-int __can_be_started(smx_host_t vm){
+static int __can_be_started(smx_host_t vm){
 	// TODO add checking code related to overcommitment or not.
 	return 1;
 }
 void SIMIX_vm_start(smx_host_t ind_vm){
 
   //TODO only start the VM if you can
-  if (can_be_started(ind_vm))
-	  SIMIX_set_vm_state(ind_vm, msg_vm_state_running);
+  if (__can_be_started(ind_vm))
+	  SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
   else
 	  THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
 }
@@ -68,18 +68,18 @@ void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm){
 }
 
 /* ***** set/get state of a VM ***** */
-void SIMIX_set_vm_state(smx_host_t ind_vm, int state){
+void SIMIX_vm_set_state(smx_host_t ind_vm, int state){
 	surf_vm_workstation_model->extension.vm_workstation.set_state(ind_vm, state);
 }
-void SIMIX_prev_set_vm_state(smx_host_t ind_vm, int state){
-	SIMIX_set_vm_state(ind_vm, state);
+void SIMIX_pre_vm_set_state(smx_host_t ind_vm, int state){
+	SIMIX_vm_set_state(ind_vm, state);
 }
 
-int SIMIX_get_vm_state(smx_host_t ind_vm){
+int SIMIX_vm_get_state(smx_host_t ind_vm){
  return surf_vm_workstation_model->extension.vm_workstation.get_state(ind_vm);
 }
-int SIMIX_pre_vm_state(smx_host_t ind_vm){
-	return SIMIX_get_vm_state(ind_vm);
+int SIMIX_pre_vm_get_state(smx_host_t ind_vm){
+	return SIMIX_vm_get_state(ind_vm);
 }
 
 /**
@@ -94,12 +94,12 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
   /* TODO: check state */
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_set_vm_state(ind_vm, msg_vm_state_migrating);
+  SIMIX_vm_set_state(ind_vm, msg_vm_state_migrating);
 
   /* jump to vm_ws_migrate(). this will update the vm location. */
   surf_vm_workstation_model->extension.vm_workstation.migrate(ind_vm, ind_dst_pm);
 
-  SIMIX_set_vm_state(ind_vm, msg_vm_state_running);
+  SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
 }
 
 void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm){
@@ -142,7 +142,7 @@ void SIMIX_vm_suspend(smx_host_t ind_vm)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_set_vm_state(ind_vm, msg_vm_state_suspended);
+  SIMIX_vm_set_state(ind_vm, msg_vm_state_suspended);
 }
 
 void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm){
@@ -169,7 +169,7 @@ void SIMIX_vm_resume(smx_host_t ind_vm)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_set_vm_state(ind_vm, msg_vm_state_running);
+  SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
 }
 
 void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm){
@@ -197,7 +197,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_set_vm_state(ind_vm, msg_vm_state_sleeping);
+  SIMIX_vm_set_state(ind_vm, msg_vm_state_sleeping);
 }
 
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm){
