@@ -629,7 +629,7 @@ double surf_solve(double max_date)
              resource->model->name, min);
       resource->model->model_private->update_resource_state(resource,
                                                             event, value,
-                                                            NOW + min);
+                                                            next_event_date);
     }
   } while (1);
 
