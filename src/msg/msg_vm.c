@@ -245,10 +245,16 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination)
    *   
    */
 
+  #ifdef HAVE_TRACING
+  const char *old_pm_name = simcall_vm_get_phys_host(vm);
+  msg_host_t old_pm_ind  = xbt_lib_get_elm_or_null(host_lib, old_pm_name);
+  #endif
+
   simcall_vm_migrate(vm, destination);
 
+
   #ifdef HAVE_TRACING
-  // TRACE_msg_vm_change_host(vm, vm->location, destination);
+  TRACE_msg_vm_change_host(vm, old_pm_ind, destination);
   #endif
 
 #if 0

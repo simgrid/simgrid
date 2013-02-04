@@ -296,6 +296,12 @@ void simcall_vm_migrate(smx_host_t vm, smx_host_t dst_phys)
   simcall_BODY_vm_migrate(vm, dst_phys);
 }
 
+const char *simcall_vm_get_phys_host(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_migrate */
+  simcall_BODY_vm_get_phys_host(vm);
+}
+
 void simcall_vm_suspend(smx_host_t vm)
 {
   /* will jump to SIMIX_pre_vm_suspend */
