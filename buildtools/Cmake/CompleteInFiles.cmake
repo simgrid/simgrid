@@ -691,20 +691,6 @@ foreach(fct ${diff_va})
 endforeach(fct ${diff_va})
 
 #--------------------------------------------------------------------------------------------------
-### check for getline
-try_compile(COMPILE_RESULT_VAR
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_getline.c
-  )
-
-if(NOT COMPILE_RESULT_VAR)
-  SET(need_getline "#define SIMGRID_NEED_GETLINE 1")
-  SET(SIMGRID_NEED_GETLINE 1)
-else()
-  SET(need_getline "")
-  SET(SIMGRID_NEED_GETLINE 0)
-endif()
-
 ### check for a working snprintf
 if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
   if(WIN32)

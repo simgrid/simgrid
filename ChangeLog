@@ -1,7 +1,9 @@
 SimGrid (3.10) NOT RELEASED; urgency=low
 
  XBT:
- * Our own implementation of getline is renamed xbt_getline.
+ * Our own implementation of getline is renamed xbt_getline, and gets
+   used even if the OS provide a getline(). This should reduce the
+   configuration complexity by using the same code on all platforms.
 
  Java:
  * Reintegrate Java to the main archive as desynchronizing these

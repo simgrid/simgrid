@@ -522,8 +522,7 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
 
 /** @brief Get a single line from the stream (reimplementation of the GNU getline)
  *
- * This is a redefinition of the GNU getline function, used on platforms where
- * it does not exists.
+ * This is a reimplementation of the GNU getline function, so that our code don't depends on the GNU libc.
  *
  * xbt_getline() reads an entire line from stream, storing the address of the
  * buffer containing the text into *buf.  The buffer is null-terminated and
@@ -542,9 +541,6 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
  */
 ssize_t xbt_getline(char **buf, size_t * n, FILE * stream)
 {
-#if !defined(SIMGRID_NEED_GETLINE)
-  return getline(buf, n, stream);
-#else
   size_t i;
   int ch;
 
@@ -576,7 +572,6 @@ ssize_t xbt_getline(char **buf, size_t * n, FILE * stream)
   (*buf)[i] = '\0';
 
   return (ssize_t) i;
-#endif
 }
 
 /*
