@@ -4,10 +4,6 @@ add_library(simgrid SHARED ${simgrid_sources})
 
 set_target_properties(simgrid  PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" VERSION ${libsimgrid_version} OUTPUT_NAME "simgrid")
 
-if(enable_smpi)
-  add_library(smpi SHARED ${SMPI_SRC})
-  set_target_properties(smpi PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" VERSION ${libsmpi_version} OUTPUT_NAME "smpi")
-endif()
 
 # libpthreadGC2.dll
 if(ARCH_32_BITS)
@@ -26,7 +22,7 @@ else()
     )
 endif()
 
-set(SIMGRID_DEP "ws2_32 ${PATH_PCRE_LIB} ${PATH_PTHREAD_LIB}")
+set(SIMGRID_DEP "ws2_32 -pthread -lpcre")
 set(SMPI_DEP "${LIBRARY_OUTPUT_PATH}/libsimgrid.dll")
 
 if(ARCH_32_BITS)
@@ -36,11 +32,7 @@ else()
   #        message(FATAL_ERROR "Sorry, Simgrid fails with full 64bits for now! Please contact us.")
 endif()
 
-target_link_libraries(simgrid 	${SIMGRID_DEP})
-if(enable_smpi)
-add_dependencies(smpi simgrid)
-target_link_libraries(smpi 	${SMPI_DEP})
-endif()
+target_link_libraries(simgrid 	${SIMGRID_DEP} -lkernel32)
 
 find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
 message(STATUS "pexports: ${PEXPORTS_PATH}")
