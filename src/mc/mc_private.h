@@ -8,7 +8,9 @@
 
 #include "simgrid_config.h"
 #include <stdio.h>
+#ifndef WIN32
 #include <sys/mman.h>
+#endif
 #include "mc/mc.h"
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
