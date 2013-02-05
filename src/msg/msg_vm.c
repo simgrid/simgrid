@@ -220,7 +220,7 @@ void MSG_vm_destroy(msg_vm_t vm) {
   TRACE_msg_vm_end(vm);
   #endif
 
-
+  xbt_free(vm->name);
   xbt_dynar_free(&vm->processes);
   xbt_free(vm);
 }
