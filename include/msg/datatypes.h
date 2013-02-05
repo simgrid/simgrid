@@ -53,7 +53,7 @@ typedef struct msg_host_priv {
 } s_msg_host_priv_t, *msg_host_priv_t;
 
 static inline msg_host_priv_t MSG_host_priv(msg_host_t host){
-  return xbt_lib_get_level(host, MSG_HOST_LEVEL);
+  return (msg_host_priv_t )xbt_lib_get_level(host, MSG_HOST_LEVEL);
 }
 
 

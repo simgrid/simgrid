@@ -230,7 +230,7 @@ typedef struct xbt_dynar_s {
 } s_xbt_dynar_t;
 
 static XBT_INLINE void
-_xbt_dynar_cursor_first(const xbt_dynar_t dynar,
+_xbt_dynar_cursor_first(const xbt_dynar_t dynar _XBT_GNUC_UNUSED,
                         unsigned int *const cursor)
 {
   /* iterating over a NULL dynar is a no-op (but we don't want to have uninitialized counters) */
