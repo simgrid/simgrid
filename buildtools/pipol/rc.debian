@@ -3,9 +3,10 @@
 sudo aptitude update
 
 sudo aptitude -y install cmake
+sudo aptitude -y install default-jdk
 sudo aptitude -y install f2c
-sudo aptitude -y install g++-4.6
-sudo aptitude -y install gcc-4.6
+sudo aptitude -y install g++
+sudo aptitude -y install gcc
 sudo aptitude -y install git
 sudo aptitude -y install git-core
 sudo aptitude -y install graphviz-dev graphviz
@@ -13,7 +14,6 @@ sudo aptitude -y install liblua5.1-dev lua5.1
 sudo aptitude -y install libpcre3-dev
 sudo aptitude -y install libunwind7-dev
 sudo aptitude -y install make
-sudo aptitude -y install openjdk-6-jdk
 sudo aptitude -y install valgrind
 
 which_svn=`which svn`		#svn necessary
