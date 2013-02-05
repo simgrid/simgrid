@@ -353,11 +353,6 @@ XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
 
 XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t);
 
-#if 0  // Now VM is the same as PM.
-XBT_PUBLIC(void) MSG_vm_bind(msg_vm_t vm, msg_process_t process);
-XBT_PUBLIC(void) MSG_vm_unbind(msg_vm_t vm, msg_process_t process); // simple wrapper over process_kill
-#endif
-
 XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, msg_host_t destination);
 
 XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
