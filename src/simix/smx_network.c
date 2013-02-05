@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "Logging specific to SIMIX (network)");
 
 static xbt_dict_t rdv_points = NULL;
-XBT_PUBLIC(unsigned long int) smx_total_comms = 0;
+XBT_EXPORT_NO_IMPORT(unsigned long int) smx_total_comms = 0;
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_action_t comm);
