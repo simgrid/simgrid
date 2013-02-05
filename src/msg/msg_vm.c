@@ -181,29 +181,29 @@ void MSG_vm_shutdown(msg_vm_t vm)
   #endif
 
 }
+
 /**
  * \ingroup msg_VMs
  * \brief Reboot the VM, restarting all the processes in it.
  */
 void MSG_vm_reboot(msg_vm_t vm)
 {
-  xbt_dynar_t new_processes = xbt_dynar_new(sizeof(msg_process_t),NULL);
-
+  xbt_dynar_t process_list = xbt_dynar_new(sizeof(msg_process_t), NULL);
   msg_process_t process;
   unsigned int cpt;
 
-  xbt_dynar_foreach(vm->processes,cpt,process) {
+  xbt_dynar_foreach(vm->processes, cpt, process) {
+    xbt_dynar_push_as(process_list, msg_process_t, process);
+  }
+
+  xbt_dynar_foreach(process_list, cpt, process) {
     msg_process_t new_process = MSG_process_restart(process);
-    xbt_dynar_push_as(new_processes,msg_process_t,new_process);
-
+    MSG_vm_bind(vm, new_process);
   }
 
-  xbt_dynar_foreach(new_processes, cpt, process) {
-    MSG_vm_bind(vm,process);
-  }
-
-  xbt_dynar_free(&new_processes);
+  xbt_dynar_free(&process_list);
 }
+
 /** @brief Destroy a msg_vm_t.
  *  @ingroup msg_VMs
  */
