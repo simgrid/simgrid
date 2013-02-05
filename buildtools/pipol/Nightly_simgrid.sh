@@ -89,6 +89,7 @@ git clean -dfx
 cmake \
 -Denable_coverage=on \
 -Denable_model-checking=on \
+-Denable_java=on \
 -Denable_lua=on \
 -Denable_compile_optimizations=off .
 ctest -D NightlyStart
