@@ -66,7 +66,7 @@ int smpi_group_index(MPI_Group group, int rank)
 {
   int index = MPI_UNDEFINED;
 
-  if (rank < group->size) {
+  if (0 <= rank && rank < group->size) {
     index = group->rank_to_index_map[rank];
   }
   return index;
