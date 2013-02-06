@@ -344,35 +344,36 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
     switch (process->waiting_action->type) {
 
-      case SIMIX_ACTION_EXECUTE:          
-      case SIMIX_ACTION_PARALLEL_EXECUTE:
-        SIMIX_host_execution_destroy(process->waiting_action);
-        break;
+    case SIMIX_ACTION_EXECUTE:
+    case SIMIX_ACTION_PARALLEL_EXECUTE:
+      SIMIX_host_execution_destroy(process->waiting_action);
+      break;
 
-      case SIMIX_ACTION_COMMUNICATE:
-        xbt_fifo_remove(process->comms, process->waiting_action);
-        SIMIX_comm_cancel(process->waiting_action);
-        break;
+    case SIMIX_ACTION_COMMUNICATE:
+      xbt_fifo_remove(process->comms, process->waiting_action);
+      SIMIX_comm_cancel(process->waiting_action);
+      SIMIX_comm_destroy(process->waiting_action);
+      break;
 
-        case SIMIX_ACTION_SLEEP:
-          SIMIX_process_sleep_destroy(process->waiting_action);
-          break;
+    case SIMIX_ACTION_SLEEP:
+      SIMIX_process_sleep_destroy(process->waiting_action);
+      break;
 
-        case SIMIX_ACTION_SYNCHRO:
-          SIMIX_synchro_stop_waiting(process, &process->simcall);
-          SIMIX_synchro_destroy(process->waiting_action);
-          break;
+    case SIMIX_ACTION_SYNCHRO:
+      SIMIX_synchro_stop_waiting(process, &process->simcall);
+      SIMIX_synchro_destroy(process->waiting_action);
+      break;
 
-        case SIMIX_ACTION_IO:
-          SIMIX_io_destroy(process->waiting_action);
-          break;
+    case SIMIX_ACTION_IO:
+      SIMIX_io_destroy(process->waiting_action);
+      break;
 
-        /* **************************************/
-        /* TUTORIAL: New API                    */
-        case SIMIX_ACTION_NEW_API:
-          SIMIX_new_api_destroy(process->waiting_action);
-          break;
-        /* **************************************/
+      /* **************************************/
+      /* TUTORIAL: New API                    */
+    case SIMIX_ACTION_NEW_API:
+      SIMIX_new_api_destroy(process->waiting_action);
+      break;
+      /* **************************************/
 
     }
   }
