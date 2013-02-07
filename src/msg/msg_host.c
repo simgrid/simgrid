@@ -31,8 +31,6 @@ msg_host_t __MSG_host_create(smx_host_t workstation)
   const char *name = SIMIX_host_get_name(workstation);
   msg_host_priv_t host = xbt_new0(s_msg_host_priv_t, 1);
 
-  host->vms = xbt_dynar_new(sizeof(msg_vm_t),NULL);
-
 #ifdef MSG_USE_DEPRECATED
   int i;
   char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
@@ -122,10 +120,12 @@ void __MSG_host_destroy(msg_host_priv_t host) {
   if (msg_global->max_channel > 0)
     free(host->mailboxes);
 #endif
-  if (xbt_dynar_length(host->vms) > 0 ) {
-    XBT_VERB("Host shut down, but it still hosts %d VMs. They will be leaked.", xbt_dynar_length(host->vms));
-  }
-  xbt_dynar_free(&host->vms);
+
+  /* TODO:
+   * What happens if VMs still remain on this host?
+   * Revisit here after the surf layer gets stable.
+   **/
+
   free(host);
 }
 

@@ -46,10 +46,6 @@ typedef xbt_dictelm_t msg_host_t;
 typedef s_xbt_dictelm_t s_msg_host_t;
 
 typedef struct msg_host_priv {
-
-	// TODO Warning keeping such vms attribut may lead to some complexity at the SURF Level.
-	// Please check with Arnaud
-	xbt_dynar_t vms;
 #ifdef MSG_USE_DEPRECATED
   msg_mailbox_t *mailboxes;     /**< the channels  */
 #endif
@@ -84,24 +80,7 @@ typedef struct msg_task {
  */
 typedef struct msg_task *msg_task_t;
 
-/* ******************************** Hypervisor ************************************* */
-typedef struct msg_hypervisor *msg_hypervisor_t;
-
-typedef struct msg_hypervisor {
-	const char *name;
-	s_xbt_swag_hookup_t all_hypervisor_hookup;
-	xbt_dynar_t vms;   // vms on this hypervisor
-	msg_host_t host;  // physical host of this hypervisor
-
-/* The hypervisor object does not have parameters like the number of CPU
-* cores and the size of memory. These parameters come from those of the
-* physical host.
-**/
-	int overcommit;
-
-} s_msg_hypervisor_t;
-
-/* ********************************  VM ************************************* */
+/* ******************************** VM ************************************* */
 typedef msg_host_t msg_vm_t;
 typedef msg_host_priv_t msg_vm_priv_t;
 
