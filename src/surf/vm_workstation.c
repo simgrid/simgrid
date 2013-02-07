@@ -7,31 +7,52 @@
 #include "xbt/ex.h"
 #include "xbt/dict.h"
 #include "portable.h"
-#include "surf_private.h"
 #include "surf/surf_resource.h"
 #include "simgrid/sg_config.h"
 
+#include "workstation_private.h"
+
 typedef struct workstation_VM2013 {
-  s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
-  surf_resource_t physical_workstation;  // Pointer to the host OS
+  s_workstation_CLM03_t ws;    /* a VM is a ''v''host */
+
+  workstation_CLM03_t sub_ws;  // Pointer to the ''host'' OS
   e_msg_vm_state_t current_state;  	     // See include/msg/datatypes.h
 } s_workstation_VM2013_t, *workstation_VM2013_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
                                 "Logging specific to the SURF VM workstation module");
 
+
+
+
 surf_model_t surf_vm_workstation_model = NULL;
 
 static void vm_ws_create(const char *name, void *ind_phys_workstation)
 {
   workstation_VM2013_t vm_ws = xbt_new0(s_workstation_VM2013_t, 1);
-// TODO Complete the surf vm workstation model
-  vm_ws->generic_resource.model = surf_vm_workstation_model;
-  vm_ws->generic_resource.name = xbt_strdup(name);
- // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
-  vm_ws->physical_workstation = surf_workstation_resource_priv(ind_phys_workstation);
+
+  // //// WORKSTATION  RELATED STUFF ////
+  __init_ws(&(vm_ws->ws), name);
+  // Override the model with the current VM one.
+  vm_ws->ws.generic_resource.model = surf_vm_workstation_model;
+
+  // //// CPU  RELATED STUFF ////
+  vm_ws->ws->generic_resource.model.extension.cpu=cpu_model_cas01(0);
+
+ // //// NET RELATED STUFF ////
+  // Bind virtual net_elm to the host
+  // TODO rebind each time you migrate a VM
+  // TODO check how network requests are scheduled between distinct processes competing for the same card.
+  vm_ws->ws.net_elm=xbt_lib_get_or_null(host_lib,vm_ws->physical_ws->generic_resource.name,ROUTING_HOST_LEVEL);
+  xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, vm_ws->ws.net_elm);
+
+  // //// STORAGE RELATED STUFF ////
+
+  // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
+  vm_ws->physical_ws = surf_workstation_resource_priv(ind_phys_workstation);
   vm_ws->current_state=msg_vm_state_created,
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, vm_ws);
+
 }
 
 /*

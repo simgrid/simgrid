@@ -7,32 +7,30 @@
 #include "xbt/ex.h"
 #include "xbt/dict.h"
 #include "portable.h"
-#include "surf_private.h"
 #include "storage_private.h"
 #include "surf/surf_resource.h"
 #include "simgrid/sg_config.h"
-
-typedef struct workstation_CLM03 {
-  s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
-  void *net_elm;
-  xbt_dynar_t storage;
-} s_workstation_CLM03_t, *workstation_CLM03_t;
+#include "workstation_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
                                 "Logging specific to the SURF workstation module");
 
 surf_model_t surf_workstation_model = NULL;
 
+
+void __init_ws(workstation_CLM03_t ws,  const char *id){
+  ws->generic_resource.model = surf_workstation_model;
+  ws->generic_resource.name = xbt_strdup(id);
+  ws->storage = xbt_lib_get_or_null(storage_lib,id,ROUTING_STORAGE_HOST_LEVEL);
+  ws->net_elm = xbt_lib_get_or_null(host_lib,id,ROUTING_HOST_LEVEL);
+  XBT_DEBUG("Create ws %s with %ld mounted disks",id,xbt_dynar_length(ws->storage));
+  xbt_lib_set(host_lib, id, SURF_WKS_LEVEL, ws);
+  ws->generic_resource.model.extension.cpu=cpu_model_cas01(0);
+}
 static void workstation_new(sg_platf_host_cbarg_t host)
 {
   workstation_CLM03_t workstation = xbt_new0(s_workstation_CLM03_t, 1);
-
-  workstation->generic_resource.model = surf_workstation_model;
-  workstation->generic_resource.name = xbt_strdup(host->id);
-  workstation->storage = xbt_lib_get_or_null(storage_lib,host->id,ROUTING_STORAGE_HOST_LEVEL);
-  workstation->net_elm = xbt_lib_get_or_null(host_lib,host->id,ROUTING_HOST_LEVEL);
-  XBT_DEBUG("Create workstation %s with %ld mounted disks",host->id,xbt_dynar_length(workstation->storage));
-  xbt_lib_set(host_lib, host->id, SURF_WKS_LEVEL, workstation);
+  __init_ws(workstation, host->id, level);
 }
 
 static int ws_resource_used(void *resource_id)
@@ -57,7 +55,9 @@ static int ws_action_unref(surf_action_t action)
   if (action->model_type == surf_network_model)
     return surf_network_model->action_unref(action);
   else if (action->model_type == surf_cpu_model)
-    return surf_cpu_model->action_unref(action);
+    return action->model_type->action_unref(action);
+      // previously was: Adrien/Arnaud 6 feb
+  	  // surf_cpu_model->action_unref(action);
   else if (action->model_type == surf_workstation_model)
     return ws_parallel_action_free(action);
   else
@@ -117,8 +117,8 @@ static surf_action_t ws_execute(void *workstation, double size)
 
 static surf_action_t ws_action_sleep(void *workstation, double duration)
 {
-  return surf_cpu_model->extension.cpu.
-      sleep(workstation, duration);
+  surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
+  return cpu->model->extension.cpu.sleep(workstation, duration);
 }
 
 static void ws_action_suspend(surf_action_t action)
@@ -445,9 +445,13 @@ static void surf_workstation_model_init_internal(void)
 
 void surf_workstation_model_init_current_default(void)
 {
+
   surf_workstation_model_init_internal();
+
+  surf_cpu_model_init_Cas01_phys(); // INSTANTIATE THE CPU PHYSICAL MODEL
+  surf_cpu_model_init_Cas01_vm(); // INSTANTIATE THE CPU PHYSICAL MODEL
+
   xbt_cfg_setdefault_int(_sg_cfg_set, "network/crosstraffic", 1);
-  surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 
   xbt_dynar_push(model_list, &surf_workstation_model);
