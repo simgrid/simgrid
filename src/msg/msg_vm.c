@@ -92,6 +92,73 @@ const char *MSG_vm_get_name(msg_vm_t vm) {
   return MSG_host_get_name(vm);
 }
 
+
+/* **** Check state of a VM **** */
+static inline int __MSG_vm_is_state(msg_vm_t vm, e_msg_vm_state_t state) {
+  return simcall_vm_get_state(vm) == state;
+}
+
+/** @brief Returns whether the given VM has just reated, not running.
+ *  @ingroup msg_VMs
+ */
+int MSG_vm_is_created(msg_vm_t vm)
+{
+  return __MSG_vm_is_state(vm, msg_vm_state_created);
+}
+
+/** @brief Returns whether the given VM is currently running
+ *  @ingroup msg_VMs
+ */
+int MSG_vm_is_running(msg_vm_t vm)
+{
+  return __MSG_vm_is_state(vm, msg_vm_state_running);
+}
+
+/** @brief Returns whether the given VM is currently migrating
+ *  @ingroup msg_VMs
+ */
+int MSG_vm_is_migrating(msg_vm_t vm)
+{
+  return __MSG_vm_is_state(vm, msg_vm_state_migrating);
+}
+
+/** @brief Returns whether the given VM is currently suspended, not running.
+ *  @ingroup msg_VMs
+ */
+int MSG_vm_is_suspended(msg_vm_t vm)
+{
+  return __MSG_vm_is_state(vm, msg_vm_state_suspended);
+}
+
+/** @brief Returns whether the given VM is being saved (FIXME: live saving or not?).
+ *  @ingroup msg_VMs
+ */
+int MSG_vm_is_saving(msg_vm_t vm)
+{
+  return __MSG_vm_is_state(vm, msg_vm_state_saving);
+}
+
+/** @brief Returns whether the given VM has been saved, not running.
+ *  @ingroup msg_VMs
+ */
+int MSG_vm_is_saved(msg_vm_t vm)
+{
+  return __MSG_vm_is_state(vm, msg_vm_state_saved);
+}
+
+/** @brief Returns whether the given VM is being restored, not running.
+ *  @ingroup msg_VMs
+ */
+int MSG_vm_is_restoring(msg_vm_t vm)
+{
+  return __MSG_vm_is_state(vm, msg_vm_state_restoring);
+}
+
+
+
+/* ------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------- */
+
 /* **** ******** MSG vm actions ********* **** */
 
 /** @brief Create a new VM (the VM is just attached to the location but it is not started yet).
@@ -140,25 +207,6 @@ void MSG_vm_start(msg_vm_t vm) {
   #endif
 }
 
-/* **** Check state of a VM **** */
-int __MSG_vm_is_state(msg_vm_t vm, e_msg_vm_state_t state) {
-	return simcall_vm_get_state(vm) == state ;
-}
-
-/** @brief Returns whether the given VM is currently suspended
- *  @ingroup msg_VMs
- */
-int MSG_vm_is_suspended(msg_vm_t vm) {
-	return __MSG_vm_is_state(vm, msg_vm_state_suspended);
-}
-/** @brief Returns whether the given VM is currently running
- *  @ingroup msg_VMs
- */
-int MSG_vm_is_running(msg_vm_t vm) {
-  return __MSG_vm_is_state(vm, msg_vm_state_running);
-}
-
-// TODO Implement the functions for the different state
 
 
 /** @brief Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.

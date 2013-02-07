@@ -106,14 +106,20 @@ typedef msg_host_t msg_vm_t;
 typedef msg_host_priv_t msg_vm_priv_t;
 
 typedef enum {
-msg_vm_state_created,
-msg_vm_state_running,
-msg_vm_state_sleeping,
-msg_vm_state_migrating,
-msg_vm_state_resuming,
-msg_vm_state_suspended,
-msg_vm_state_saved,
-msg_vm_state_restoring,
+  /* created, but not yet started */
+  msg_vm_state_created,
+
+  msg_vm_state_running,
+  msg_vm_state_migrating,
+
+  /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
+  msg_vm_state_suspended,
+
+  /* Save/restore involves disk I/O, so there should be transition states. */
+  msg_vm_state_saving,
+  msg_vm_state_saved,
+  msg_vm_state_restoring,
+
 } e_msg_vm_state_t;
 
 static inline msg_vm_priv_t MSG_vm_priv(msg_vm_t vm){
