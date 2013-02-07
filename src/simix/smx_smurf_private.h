@@ -284,6 +284,8 @@ ACTION(SIMCALL_VM_DESTROY, vm_destroy, WITHOUT_ANSWER, TVOID(result), TSPEC(ind_
 ACTION(SIMCALL_VM_SUSPEND, vm_suspend, WITHOUT_ANSWER, TVOID(result), TSPEC(vm, smx_host_t)) sep \
 ACTION(SIMCALL_VM_RESUME, vm_resume, WITHOUT_ANSWER, TVOID(result), TSPEC(vm, smx_host_t)) sep \
 ACTION(SIMCALL_VM_SHUTDOWN, vm_shutdown, WITHOUT_ANSWER, TVOID(result), TSPEC(vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_SAVE, vm_save, WITHOUT_ANSWER, TVOID(result), TSPEC(vm, smx_host_t)) sep \
+ACTION(SIMCALL_VM_RESTORE, vm_restore, WITHOUT_ANSWER, TVOID(result), TSPEC(vm, smx_host_t)) sep \
 ACTION(SIMCALL_PROCESS_CREATE, process_create, WITH_ANSWER, TVOID(result), TSPEC(process, smx_process_t*), TSTRING(name), TSPEC(code, xbt_main_func_t), TPTR(data), TSTRING(hostname), TDOUBLE(kill_time), TINT(argc), TSPEC(argv, char**), TSPEC(properties, xbt_dict_t), TINT(auto_restart)) sep \
 ACTION(SIMCALL_PROCESS_KILL, process_kill, WITH_ANSWER, TVOID(result), TSPEC(process, smx_process_t)) sep \
 ACTION(SIMCALL_PROCESS_KILLALL, process_killall, WITH_ANSWER, TVOID(result), TINT(reset_pid)) sep \

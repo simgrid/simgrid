@@ -178,12 +178,10 @@ void MSG_vm_shutdown(msg_vm_t vm)
 }
 
 
-
 /** @brief Migrate the VM to the given host.
  *  @ingroup msg_VMs
  *
- * FIXME: update comments.
- * No migration cost occurs. If you want to simulate this too, you want to use a
+ * FIXME: No migration cost occurs. If you want to simulate this too, you want to use a
  * MSG_task_send() before or after, depending on whether you want to do cold or hot
  * migration.
  */
@@ -244,11 +242,10 @@ void MSG_vm_suspend(msg_vm_t vm)
 }
 
 
-
 /** @brief Resume the execution of the VM. All processes on the VM run again.
  *  @ingroup msg_VMs
  *
- * No resume cost occurs. If you want to simulate this too, you want to
+ * FIXME: No resume cost occurs. If you want to simulate this too, you want to
  * use a \ref MSG_file_read() before or after, depending on the exact semantic
  * of VM resume to you.
  */
@@ -261,31 +258,43 @@ void MSG_vm_resume(msg_vm_t vm)
   #endif
 }
 
-//
-///**
-// * \ingroup msg_VMs
-// * \brief Reboot the VM, restarting all the processes in it.
-// */
-//void MSG_vm_reboot(msg_vm_t vm)
-//{
-//  xbt_dynar_t new_processes = xbt_dynar_new(sizeof(msg_process_t),NULL);
-//
-//  msg_process_t process;
-//  unsigned int cpt;
-//
-//  xbt_dynar_foreach(vm->processes,cpt,process) {
-//    msg_process_t new_process = MSG_process_restart(process);
-//    xbt_dynar_push_as(new_processes,msg_process_t,new_process);
-//
-//  }
-//
-//  xbt_dynar_foreach(new_processes, cpt, process) {
-//    MSG_vm_bind(vm,process);
-//  }
-//
-//  xbt_dynar_free(&new_processes);
-//}
-//
+
+/** @brief Immediately save the execution of all processes within the given VM.
+ *  @ingroup msg_VMs
+ *
+ * This function stops the exection of the VM. All the processes on this VM
+ * will pause. The state of the VM is perserved. We can later resume it again.
+ *
+ * FIXME: No suspension cost occurs. If you want to simulate this too, you want to
+ * use a \ref MSG_file_write() before or after, depending on the exact semantic
+ * of VM save to you.
+ */
+void MSG_vm_save(msg_vm_t vm)
+{
+  simcall_vm_save(vm);
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_save(vm);
+  #endif
+}
+
+
+/** @brief Restore the execution of the VM. All processes on the VM run again.
+ *  @ingroup msg_VMs
+ *
+ * FIXME: No restore cost occurs. If you want to simulate this too, you want to
+ * use a \ref MSG_file_read() before or after, depending on the exact semantic
+ * of VM restore to you.
+ */
+void MSG_vm_restore(msg_vm_t vm)
+{
+  simcall_vm_restore(vm);
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_restore(vm);
+  #endif
+}
+
 
 /** @brief Destroy a VM. Destroy the VM object from the simulation.
  *  @ingroup msg_VMs

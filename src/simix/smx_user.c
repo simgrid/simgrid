@@ -277,67 +277,140 @@ e_smx_state_t simcall_host_execution_wait(smx_action_t execution)
 
 /**
  * \ingroup simix_vm_management
- * \brief Returns a dict of the properties assigned to a host.
+ * \brief Create a VM on the given physical host.
  *
- * \param host A host
- * \return The properties of this host
+ * \param name VM name
+ * \param host Physical host
+ *
+ * \return The host object of the VM
  */
 void* simcall_vm_create(const char *name, smx_host_t phys_host){
-  /* jump to SIMIX_pre_vm_create() */
+  /* will jump to SIMIX_pre_vm_create() in src/simix/smx_smurf_private.h */
   return simcall_BODY_vm_create(name, phys_host);
 }
 
+/**
+ * \ingroup simix_vm_management
+ * \brief Start the given VM to the given physical host
+ *
+ * \param vm VM
+ */
 void simcall_vm_start(smx_host_t vm) {
+  /* will jump to SIMIX_pre_vm_get_state in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_set_state(vm, msg_vm_state_running);
 }
 
+/**
+ * \ingroup simix_vm_management
+ * \brief Get the state of the given VM
+ *
+ * \param vm VM
+ * \return The state of the VM
+ */
 int simcall_vm_get_state(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_get_state */
+  /* will jump to SIMIX_pre_vm_get_state in src/simix/smx_smurf_private.h */
   return simcall_BODY_vm_get_state(vm);
 }
 
-void simcall_vm_migrate(smx_host_t vm, smx_host_t dst_phys)
-{
-  /* will jump to SIMIX_pre_vm_migrate */
-  simcall_BODY_vm_migrate(vm, dst_phys);
-}
-
+/**
+ * \ingroup simix_vm_management
+ * \brief Get the name of the physical host on which the given VM runs.
+ *
+ * \param vm VM
+ * \return The name of the physical host
+ */
 const char *simcall_vm_get_phys_host(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_migrate */
+  /* will jump to SIMIX_pre_vm_migrate in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_get_phys_host(vm);
 }
 
+/**
+ * \ingroup simix_vm_management
+ * \brief Migrate the given VM to the given physical host
+ *
+ * \param vm VM
+ * \param host Destination physical host
+ */
+void simcall_vm_migrate(smx_host_t vm, smx_host_t host)
+{
+  /* will jump to SIMIX_pre_vm_migrate in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_migrate(vm, host);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Suspend the given VM
+ *
+ * \param vm VM
+ */
 void simcall_vm_suspend(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_suspend */
+  /* will jump to SIMIX_pre_vm_suspend in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_suspend(vm);
 }
 
+/**
+ * \ingroup simix_vm_management
+ * \brief Resume the given VM
+ *
+ * \param vm VM
+ */
 void simcall_vm_resume(smx_host_t vm)
 {
-  /*
-   * simcall_BODY_ is defined in src/simix/smx_smurf_private.h.
-   * This function will jump to SIMIX_pre_vm_resume.
-   **/
+  /* will jump to SIMIX_pre_vm_resume in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_resume(vm);
 }
 
+/**
+ * \ingroup simix_vm_management
+ * \brief Save the given VM
+ *
+ * \param vm VM
+ */
+void simcall_vm_save(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_save in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_save(vm);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Restore the given VM
+ *
+ * \param vm VM
+ */
+void simcall_vm_restore(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_restore in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_restore(vm);
+}
+
+/**
+ * \ingroup simix_vm_management
+ * \brief Shutdown the given VM
+ *
+ * \param vm VM
+ */
 void simcall_vm_shutdown(smx_host_t vm)
 {
-  /* will jump to SIMIX_pre_vm_shutdown */
+  /* will jump to SIMIX_pre_vm_shutdown in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_shutdown(vm);
 }
 
+/**
+ * \ingroup simix_vm_management
+ * \brief Destroy the given VM
+ *
+ * \param vm VM
+ */
 void simcall_vm_destroy(smx_host_t vm)
 {
-  /*
-   * simcall_BODY_ is defined in src/simix/smx_smurf_private.h.
-   * This function will jump to SIMIX_pre_vm_destroy.
-   **/
+   /* will jump to SIMIX_pre_vm_destroy in src/simix/smx_smurf_private.h */
   simcall_BODY_vm_destroy(vm);
 }
+
 
 /**
  * \ingroup simix_process_management

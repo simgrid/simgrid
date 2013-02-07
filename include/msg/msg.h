@@ -355,15 +355,16 @@ XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t);
 
 XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, msg_host_t destination);
 
+/* Suspend the execution of the VM, but keep its state on memory. */
 XBT_PUBLIC(void) MSG_vm_suspend(msg_vm_t vm);
-  // \forall p in VM, MSG_process_suspend(p) // Freeze the processes
+XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);
 
-XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);  // Simulate the fact of reading the processes from disk and resuming them
-  // \forall p in VM, MSG_process_resume(p) // unfreeze them
+/* Save the VM state to a disk. */
+XBT_PUBLIC(void) MSG_vm_save(msg_vm_t vm);
+XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
 
-XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm); // killall
-
-XBT_PUBLIC(void) MSG_vm_reboot(msg_vm_t vm);
+/* Shutdown the guest operating system. */
+XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm);
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 

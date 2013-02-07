@@ -82,10 +82,9 @@ int SIMIX_pre_vm_get_state(smx_host_t ind_vm){
 	return SIMIX_vm_get_state(ind_vm);
 }
 
+
 /**
- * \brief Function to migrate a SIMIX VM host. This function stops the exection of the
- * VM. All the processes on this VM will pause. The state of the VM is
- * perserved. We can later resume it again.
+ * \brief Function to migrate a SIMIX VM host. 
  *
  * \param host the vm host to migrate (a smx_host_t)
  */
@@ -106,6 +105,7 @@ void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t i
    SIMIX_vm_migrate(ind_vm, ind_dst_pm);
 }
 
+
 /**
  * \brief Function to get the physical host of the given the SIMIX VM host.
  *
@@ -113,7 +113,7 @@ void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t i
  */
 const char *SIMIX_vm_get_phys_host(smx_host_t ind_vm)
 {
-  /* jump to vm_ws_get_phys_host(). this will update the vm location. */
+  /* jump to vm_ws_get_phys_host(). this will return the vm name. */
   return surf_vm_workstation_model->extension.vm_workstation.get_phys_host(ind_vm);
 }
 
@@ -121,10 +121,11 @@ const char *SIMIX_pre_vm_get_phys_host(smx_simcall_t simcall, smx_host_t ind_vm)
   return SIMIX_vm_get_phys_host(ind_vm);
 }
 
+
 /**
  * \brief Function to suspend a SIMIX VM host. This function stops the exection of the
  * VM. All the processes on this VM will pause. The state of the VM is
- * perserved. We can later resume it again.
+ * preserved on memory. We can later resume it again.
  *
  * \param host the vm host to suspend (a smx_host_t)
  */
@@ -148,6 +149,7 @@ void SIMIX_vm_suspend(smx_host_t ind_vm)
 void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm){
    SIMIX_vm_suspend(ind_vm);
 }
+
 
 /**
  * \brief Function to resume a SIMIX VM host. This function restart the execution of the
@@ -176,10 +178,72 @@ void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm){
    SIMIX_vm_resume(ind_vm);
 }
 
+
+/**
+ * \brief Function to save a SIMIX VM host.
+ * This function is the same as vm_suspend, but the state of the VM is saved to the disk, and not preserved on memory.
+ * We can later restore it again.
+ *
+ * \param host the vm host to save (a smx_host_t)
+ */
+void SIMIX_vm_save(smx_host_t ind_vm)
+{
+  /* TODO: check state */
+
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+
+  /* TODO: do something at the surf level */
+
+  smx_process_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+         XBT_DEBUG("save %s", SIMIX_host_get_name(ind_vm));
+	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
+         simcall_process_save(smx_process);
+  }
+
+  /* TODO: Using the variable of the MSG layer is not clean. */
+  SIMIX_vm_set_state(ind_vm, msg_vm_state_saved);
+}
+
+void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm){
+   SIMIX_vm_save(ind_vm);
+}
+
+
+/**
+ * \brief Function to restore a SIMIX VM host. This function restart the execution of the
+ * VM. All the processes on this VM will run again. 
+ *
+ * \param host the vm host to restore (a smx_host_t)
+ */
+void SIMIX_vm_restore(smx_host_t ind_vm)
+{
+  /* TODO: check state */
+
+  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+
+  /* TODO: do something at the surf level */
+
+  smx_process_t smx_process, smx_process_safe;
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+         XBT_DEBUG("restore %s", SIMIX_host_get_name(ind_vm));
+	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
+         simcall_process_restore(smx_process);
+  }
+
+  /* TODO: Using the variable of the MSG layer is not clean. */
+  SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
+}
+
+void SIMIX_pre_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm){
+   SIMIX_vm_restore(ind_vm);
+}
+
+
 /**
  * \brief Function to shutdown a SIMIX VM host. This function powers off the
  * VM. All the processes on this VM will be killed. But, the state of the VM is
- * perserved. We can later start it again.
+ * preserved on memory. We can later start it again.
  *
  * \param host the vm host to shutdown (a smx_host_t)
  */
@@ -203,6 +267,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm){
    SIMIX_vm_shutdown(ind_vm, simcall->issuer);
 }
+
 
 /**
  * \brief Function to destroy a SIMIX VM host.
