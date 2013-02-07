@@ -23,7 +23,7 @@ make
 make install
 @endverbatim
 
-If you want to stay on the blending edge, you should get the latest
+If you want to stay on the bleeding edge, you should get the latest
 git version, and recompile it as you would do for an official archive.
 Depending on the files you change in the source tree, some extra
 tools may be needed.
