@@ -148,6 +148,15 @@ xbt_dynar_t SD_PTG_dotload(const char * filename) {
   return result;
 }
 
+#ifdef HAVE_CGRAPH_H
+static int edge_compare(const void *a, const void *b)
+{
+  unsigned va = AGSEQ(*(Agedge_t **)a);
+  unsigned vb = AGSEQ(*(Agedge_t **)b);
+  return va == vb ? 0 : (va < vb ? -1 : 1);
+}
+#endif
+
 xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
   xbt_assert(filename, "Unable to use a null file descriptor\n");
   unsigned int i;
@@ -295,10 +304,27 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
   /*
    * Create edges
    */
-  node = NULL;
+  xbt_dynar_t edges = xbt_dynar_new(sizeof(Agedge_t*), NULL);
   for (node = agfstnode(dag_dot); node; node = agnxtnode(dag_dot, node)) {
-    Agedge_t * edge = NULL;
-    for (edge = agfstout(dag_dot, node); edge; edge = agnxtout(dag_dot, edge)) {
+    unsigned cursor;
+    Agedge_t * edge;
+    xbt_dynar_reset(edges);
+    for (edge = agfstout(dag_dot, node); edge; edge = agnxtout(dag_dot, edge))
+      xbt_dynar_push_as(edges, Agedge_t *, edge);
+#ifdef HAVE_CGRAPH_H
+    /* Hack: circumvent a bug in libcgraph, where the edges are not always given
+     * back in creation order.  We sort them again, according to their sequence
+     * id.  The problem appears to be solved (i.e.: I did not test it) in
+     * graphviz' mercurial repository by the following changeset:
+     *    changeset:   8431:d5f1fb7e8103
+     *    user:        Emden Gansner <erg@research.att.com>
+     *    date:        Tue Oct 11 12:38:58 2011 -0400
+     *    summary:     Make sure edges are stored in node creation order
+     * It should be fixed in graphviz 2.30 and above.
+     */
+    xbt_dynar_sort(edges, edge_compare);
+#endif
+    xbt_dynar_foreach(edges, cursor, edge) {
       SD_task_t src, dst;
       char *src_name=agnameof(agtail(edge));
       char *dst_name=agnameof(aghead(edge));
@@ -333,6 +359,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
       }
     }
   }
+  xbt_dynar_free(&edges);
 
   /* all compute and transfer tasks have been created, put the "end" node at
    * the end of dynar
