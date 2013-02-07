@@ -12,16 +12,17 @@ disk and you're set.
 
 Recompiling an official archive is not much more complex, actually.
 SimGrid has very few dependencies and rely only on very standard
-tools. Recompiling the archive should be done in a few lines:
+tools.  First, download the *@SimGridRelease.tar.gz* archive
+from [the download page](https://gforge.inria.fr/frs/?group_id=12).
+Then, recompiling the archive should be done in a few lines:
 
-@verbatim
-wget https://gforge.inria.fr/frs/download.php/32047/SimGrid-3.9.tar.gz
-tar xf SimGrid-3.9.tar.gz
-cd SimGrid-3.9
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
+tar xf @SimGridRelease.tar.gz
+cd @SimGridRelease
 cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
 make
 make install
-@endverbatim
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you want to stay on the bleeding edge, you should get the latest
 git version, and recompile it as you would do for an official archive.
