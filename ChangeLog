@@ -11,6 +11,18 @@ SimGrid (3.10) NOT RELEASED; urgency=low
  * Bugfix: Task.setDataSize() only changed the C world, not the value
    cached in the Java world
 
+ SMPI:
+ * Improvements for the SMPI replay tool:
+   - For most of the collective communications we can know exactly 
+     which rank is the root one.
+   - Now we can include in the traces the real used MPI datatype 
+     (till know we were using the MPI_BYTE). Also we can have multiple 
+      datatypes in the traces.
+   - The tool supports both time-independent traces from the TAU and the 
+      modified MPE tools.
+   - Fix the Reduce action, as there was no information about computation 
+     load.
+
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.9) stable; urgency=low
