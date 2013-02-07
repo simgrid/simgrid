@@ -738,6 +738,29 @@ smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_
 /**
  * \ingroup simix_comm_management
  */
+double simcall_comm_change_rate_first_action(smx_rdv_t rdv, double newrate)
+{
+  xbt_assert(rdv, "No rendez-vous point defined for change_rate_first_action");
+
+  smx_action_t action;
+  xbt_fifo_item_t item;
+
+  item = xbt_fifo_get_first_item(rdv->comm_fifo);
+  if (item != NULL) {
+	  action = (smx_action_t) xbt_fifo_get_item_content(item);
+	  if (action->comm.rate > newrate) {
+		  action->comm.rate = newrate;
+		  return newrate;
+	  } else
+		  return action->comm.rate;
+  } else
+	  return -1.0;
+}
+
+
+/**
+ * \ingroup simix_comm_management
+ */
 smx_action_t simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
                                 int (*match_fun)(void *, void *, smx_action_t), void *data)
 {

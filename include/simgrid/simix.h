@@ -409,6 +409,7 @@ XBT_PUBLIC(smx_action_t) simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff,
 XBT_PUBLIC(void) simcall_comm_destroy(smx_action_t comm);
 XBT_PUBLIC(smx_action_t) simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
                                 int (*match_fun)(void *, void *, smx_action_t), void *data);
+XBT_PUBLIC(double) simcall_comm_change_rate_first_action(smx_rdv_t rdv, double newrate);
 XBT_PUBLIC(void) simcall_comm_cancel(smx_action_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */

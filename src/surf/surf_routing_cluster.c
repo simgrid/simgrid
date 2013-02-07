@@ -64,12 +64,99 @@ static void cluster_get_route_and_latency(AS_t as,
 static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
                               xbt_dict_t edges, AS_t rc)
 {
-  int isrc = 0, idst;
+  int isrc;
   int table_size = xbt_dynar_length(rc->index_network_elm);
 
   sg_routing_edge_t src, dst;
-  xbt_node_t current, previous, revCurrent, revPrevious;
+  xbt_node_t current, previous, backboneNode,routerNode;
+  s_surf_parsing_link_up_down_t info;
 
+  xbt_assert(((as_cluster_t) rc)->router,"Malformed cluster");
+
+  /* create the router */
+  char *link_name =
+		  ((sg_routing_edge_t) ((as_cluster_t) rc)->router)->name;
+  routerNode = new_xbt_graph_node(graph, link_name, nodes);
+
+  if(((as_cluster_t) rc)->backbone) {
+	  char *link_nameR =
+			  ((surf_resource_t) ((as_cluster_t) rc)->backbone)->name;
+	  backboneNode = new_xbt_graph_node(graph, link_nameR, nodes);
+
+	  new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
+  }
+
+  for (isrc = 0; isrc < table_size; isrc++) {
+	  src = xbt_dynar_get_as(rc->index_network_elm, isrc, sg_routing_edge_t);
+
+	  if (src->rc_type != SURF_NETWORK_ELEMENT_ROUTER) {
+			  previous = new_xbt_graph_node(graph, src->name, nodes);
+
+			  info = xbt_dynar_get_as(rc->link_up_down_list, src->id,
+					  s_surf_parsing_link_up_down_t);
+
+			  if (info.link_up) {     // link up
+
+				  char *link_name = ((surf_resource_t) info.link_up)->name;
+				  current = new_xbt_graph_node(graph, link_name, nodes);
+				  new_xbt_graph_edge(graph, previous, current, edges);
+
+				  if (((as_cluster_t) rc)->backbone) {
+					  new_xbt_graph_edge(graph, current, backboneNode, edges);
+				  } else {
+					  new_xbt_graph_edge(graph, current, routerNode, edges);
+				  }
+
+			  }
+
+			  if (info.link_down) {    // link down
+				  char *link_name = ((surf_resource_t) info.link_down)->name;
+				  current = new_xbt_graph_node(graph, link_name, nodes);
+				  new_xbt_graph_edge(graph, previous, current, edges);
+
+				  if (((as_cluster_t) rc)->backbone) {
+					  new_xbt_graph_edge(graph, current, backboneNode, edges);
+				  } else {
+					  new_xbt_graph_edge(graph, current, routerNode, edges);
+				  }
+
+			  }
+		  }
+  }
+
+/*
+		  if (((as_cluster_t) rc)->backbone) {
+			  char *link_name =
+					  ((surf_resource_t) ((as_cluster_t) rc)->backbone)->name;
+
+			  current = new_xbt_graph_node(graph, link_name, nodes);
+			  new_xbt_graph_edge(graph, previous, current, edges);
+			  previous = current;
+
+			  revCurrent = new_xbt_graph_node(graph, link_name, nodes);
+			  new_xbt_graph_edge(graph, revCurrent, revPrevious, edges);
+			  revPrevious = revCurrent;
+		  } else {
+			  info = xbt_dynar_get_as(rc->link_up_down_list, dst->id,
+			 						  s_surf_parsing_link_up_down_t);
+
+			  if (info.link_up) {     // link up
+				  char *link_name = ((surf_resource_t) info.link_up)->name;
+				  current = new_xbt_graph_node(graph, link_name, nodes);
+				  new_xbt_graph_edge(graph, previous, current, edges);
+				  previous = current;
+			  } else if (info.link_down) {    // link down
+				  char *link_name = ((surf_resource_t) info.link_down)->name;
+				  revCurrent = new_xbt_graph_node(graph, link_name, nodes);
+				  new_xbt_graph_edge(graph, revCurrent, revPrevious, edges);
+				  revPrevious = revCurrent;
+			  }
+		  }
+
+	  }
+  }*/
+/*
+  if(rc->)
   for (isrc = 0; isrc < table_size; isrc++) {
     src = xbt_dynar_get_as(rc->index_network_elm, isrc, sg_routing_edge_t);
 
@@ -78,10 +165,6 @@ static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
 
     for (idst = isrc + 1; idst < table_size; idst++) {
       dst = xbt_dynar_get_as(rc->index_network_elm, idst, sg_routing_edge_t);
-
-      sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-      rc->get_route_and_latency(rc, src, dst, route, NULL);
 
       s_surf_parsing_link_up_down_t info;
 
@@ -102,6 +185,8 @@ static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
           revPrevious = revCurrent;
         }
       }
+
+
 
       if (((as_cluster_t) rc)->backbone) {
         char *link_name =
@@ -135,7 +220,7 @@ static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
       }
 
     }
-  }
+  }*/
 }
 
 static void model_cluster_finalize(AS_t as)
