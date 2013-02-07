@@ -243,6 +243,8 @@ typedef struct surf_storage_model_extension_public {
       *  Public functions specific to the workstation model.
       */
 typedef struct surf_workstation_model_extension_public {
+  surf_resource_t cpu;
+
   surf_action_t(*execute) (void *workstation, double size);                                /**< Execute a computation amount on a workstation
                                       and create the corresponding action */
   surf_action_t(*sleep) (void *workstation, double duration);                              /**< Make a workstation sleep during a given duration */

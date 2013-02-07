@@ -9,7 +9,7 @@
 #include "maxmin_private.h"
 #include "simgrid/sg_config.h"
 
-surf_model_t surf_cpu_model = NULL;
+surf_model_t *surf_cpu_model;
 
 #undef GENERIC_LMM_ACTION
 #undef GENERIC_ACTION
@@ -438,3 +438,13 @@ void surf_cpu_model_init_Cas01()
   cpu_define_callbacks();
   xbt_dynar_push(model_list, &surf_cpu_model);
 }
+
+surf_model_t cpu_model_cas01(int level){
+	// TODO this table should be allocated
+	if(!surf_cpu_model[level])
+	 // allocate it
+	return surf_cpu_model[level];
+}
+
+
+
