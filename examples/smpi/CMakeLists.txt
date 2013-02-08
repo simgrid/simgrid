@@ -66,5 +66,8 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_allReduce.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_barrier.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_with_isend.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_alltoall.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_alltoallv.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_waitall.txt
   PARENT_SCOPE
   )  
