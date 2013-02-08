@@ -12,16 +12,14 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    cached in the Java world
 
  SMPI:
- * Improvements for the SMPI replay tool:
-   - For most of the collective communications we can know exactly 
-     which rank is the root one.
-   - Now we can include in the traces the real used MPI datatype 
-     (till know we were using the MPI_BYTE). Also we can have multiple 
-      datatypes in the traces.
-   - The tool supports both time-independent traces from the TAU and the 
-      modified MPE tools.
-   - Fix the Reduce action, as there was no information about computation 
-     load.
+ * Improvements of the SMPI replay tool:
+   - Most of the collective communications are now rooted in the same process as
+     in the original application.
+   - Traces now rely on the same MPI datatype as the application (MPI_BYTE was 
+     used until now). Multiple datatypes can now be used in a trace.
+   - The replay tool now supports traces produce either by TAU or a modified 
+     version of MPE.
+   - Bug Fix: the compute part of the reduce action is now taken into account.
 
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
