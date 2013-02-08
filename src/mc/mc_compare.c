@@ -521,7 +521,7 @@ static int compare_local_variables(char *s1, char *s2){
   xbt_dynar_t s_tokens1, s_tokens2;
   unsigned int cursor = 0;
   void *addr1, *addr2;
-  char *ip1 = NULL, *ip2 = NULL;
+  char *frame_name1 = NULL, *frame_name2 = NULL;
   int res_compare = 0;
 
   #ifdef MC_VERBOSE
@@ -535,18 +535,18 @@ static int compare_local_variables(char *s1, char *s2){
       #ifdef MC_VERBOSE
         var_name = xbt_dynar_get_as(s_tokens1, 0, char *);
       #endif
-      if((strcmp(xbt_dynar_get_as(s_tokens1, 0, char *), "ip") == 0) && (strcmp(xbt_dynar_get_as(s_tokens2, 0, char *), "ip") == 0)){
-        xbt_free(ip1);
-        xbt_free(ip2);
-        ip1 = strdup(xbt_dynar_get_as(s_tokens1, 1, char *));
-        ip2 = strdup(xbt_dynar_get_as(s_tokens2, 1, char *));
+      if((strcmp(xbt_dynar_get_as(s_tokens1, 0, char *), "frame_name") == 0) && (strcmp(xbt_dynar_get_as(s_tokens2, 0, char *), "frame_name") == 0)){
+        xbt_free(frame_name1);
+        xbt_free(frame_name2);
+        frame_name1 = strdup(xbt_dynar_get_as(s_tokens1, 1, char *));
+        frame_name2 = strdup(xbt_dynar_get_as(s_tokens2, 1, char *));
       }
       addr1 = (void *) strtoul(xbt_dynar_get_as(s_tokens1, 1, char *), NULL, 16);
       addr2 = (void *) strtoul(xbt_dynar_get_as(s_tokens2, 1, char *), NULL, 16);
       if(addr1 > std_heap && (char *)addr1 <= (char *)std_heap + STD_HEAP_SIZE && addr2 > std_heap && (char *)addr2 <= (char *)std_heap + STD_HEAP_SIZE){
         res_compare = compare_area(addr1, addr2, NULL);
         if(res_compare == 1){
-          if(is_stack_ignore_variable(ip1, xbt_dynar_get_as(s_tokens1, 0, char *)) && is_stack_ignore_variable(ip2, xbt_dynar_get_as(s_tokens2, 0, char *))){
+          if(is_stack_ignore_variable(frame_name1, xbt_dynar_get_as(s_tokens1, 0, char *)) && is_stack_ignore_variable(frame_name2, xbt_dynar_get_as(s_tokens2, 0, char *))){
             xbt_dynar_free(&s_tokens1);
             xbt_dynar_free(&s_tokens2);
             cursor++;
@@ -559,8 +559,28 @@ static int compare_local_variables(char *s1, char *s2){
             xbt_dynar_free(&s_tokens2);
             xbt_dynar_free(&tokens1);
             xbt_dynar_free(&tokens2);
-            xbt_free(ip1);
-            xbt_free(ip2);
+            xbt_free(frame_name1);
+            xbt_free(frame_name2);
+            return 1;
+          }
+        }
+      }else{
+        if(strcmp(xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *)) != 0){
+          if(is_stack_ignore_variable(frame_name1, xbt_dynar_get_as(s_tokens1, 0, char *)) && is_stack_ignore_variable(frame_name2, xbt_dynar_get_as(s_tokens2, 0, char *))){
+            xbt_dynar_free(&s_tokens1);
+            xbt_dynar_free(&s_tokens2);
+            cursor++;
+            continue;
+          }else {
+            #ifdef MC_VERBOSE
+              XBT_VERB("Different local variable : %s (%s - %s)", var_name, xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
+            #endif
+            xbt_dynar_free(&s_tokens1);
+            xbt_dynar_free(&s_tokens2);
+            xbt_dynar_free(&tokens1);
+            xbt_dynar_free(&tokens2);
+            xbt_free(frame_name1);
+            xbt_free(frame_name2);
             return 1;
           }
         }
@@ -572,8 +592,8 @@ static int compare_local_variables(char *s1, char *s2){
     cursor++;
   }
 
-  xbt_free(ip1);
-  xbt_free(ip2);
+  xbt_free(frame_name1);
+  xbt_free(frame_name2);
   xbt_dynar_free(&tokens1);
   xbt_dynar_free(&tokens2);
   return 0;
