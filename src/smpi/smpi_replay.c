@@ -487,8 +487,8 @@ static void action_allReduce(const char *const *action) {
 static void action_allToAll(const char *const *action) {
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
-  int send_size = atoi(action[2]);
-  int recv_size = atoi(action[3]);
+  int send_size = parse_double(action[2]);
+  int recv_size = parse_double(action[3]);
   void *send = xbt_new0(int, send_size*comm_size);  
   void *recv = xbt_new0(int, send_size*comm_size);
   
@@ -505,8 +505,7 @@ static void action_allToAll(const char *const *action) {
     smpi_coll_tuned_alltoall_bruck(send, send_size, MPI_CURRENT_TYPE,
                                    recv, recv_size, MPI_CURRENT_TYPE,
                                    MPI_COMM_WORLD);
-  } else if (send_size < 3000) {
-  
+  } else if (send_size < 3000) {  
     smpi_coll_tuned_alltoall_basic_linear(send, send_size, MPI_CURRENT_TYPE,
                                           recv, recv_size, MPI_CURRENT_TYPE,
                                           MPI_COMM_WORLD);
@@ -552,8 +551,8 @@ static void action_allToAllv(const char *const *action) {
   int *senddisps = xbt_new0(int, comm_size);  
   int *recvdisps = xbt_new0(int, comm_size);  
   
-  send_buf_size=atoi(action[2]);
-  recv_buf_size=atoi(action[3+2*comm_size]);
+  send_buf_size=parse_double(action[2]);
+  recv_buf_size=parse_double(action[3+2*comm_size]);
 
   int *sendbuf = xbt_new0(int, send_buf_size);  
   int *recvbuf = xbt_new0(int, recv_buf_size);  
