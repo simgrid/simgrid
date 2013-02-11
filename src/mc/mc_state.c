@@ -117,6 +117,11 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int valu
       simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
       break;
 
+    case SIMCALL_MC_RANDOM:
+      state->internal_req = *req;
+      simcall_mc_random__set__result(&state->internal_req, value);
+      break;
+
     default:
       state->internal_req = *req;
       break;
@@ -139,6 +144,13 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
   smx_process_t process = NULL;
   mc_procstate_t procstate = NULL;
   unsigned int start_count;
+  int min, max;
+
+  static int first = 0;
+  if(first == 0){
+    srand(987654321);
+    first = 1;
+  }
 
   xbt_swag_foreach(process, simix_global->process_list){
     procstate = &state->proc_status[process->pid];
@@ -193,6 +205,14 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
 
             break;
 
+          case SIMCALL_MC_RANDOM:
+            min = simcall_mc_random__get__min(&process->simcall);
+            max = simcall_mc_random__get__max(&process->simcall);
+            *value = (int)((rand() % ((max-min)+1)) + min);
+            procstate->state = MC_DONE;
+            return &process->simcall;
+            break;
+          
           default:
             procstate->state = MC_DONE;
             *value = 0;

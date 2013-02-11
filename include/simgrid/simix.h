@@ -478,6 +478,7 @@ XBT_PUBLIC(xbt_dict_t) simcall_asr_get_properties(const char *name);
 /************************** MC simcalls   **********************************/
 XBT_PUBLIC(void *) simcall_mc_snapshot(void);
 XBT_PUBLIC(int) simcall_mc_compare_snapshots(void *s1, void *s2);
+XBT_PUBLIC(int) simcall_mc_random(int min, int max);
 
 /************************** New API simcalls **********************************/
 /* TUTORIAL: New API                                                          */

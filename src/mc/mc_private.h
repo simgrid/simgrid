@@ -74,6 +74,8 @@ void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
 
+int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max);
+
 /********************************* Requests ***********************************/
 int MC_request_depend(smx_simcall_t req1, smx_simcall_t req2);
 char* MC_request_to_string(smx_simcall_t req, int value);

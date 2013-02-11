@@ -18,6 +18,9 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
   if (r1->issuer == r2->issuer)
     return FALSE;
 
+  if((r1->call == SIMCALL_MC_RANDOM) || (r2->call == SIMCALL_MC_RANDOM))
+    return FALSE;
+
   if(r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_IRECV)
     return FALSE;
 
@@ -248,13 +251,22 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     args = '\0';
     break;
 
+  case SIMCALL_MC_RANDOM:
+    type = xbt_strdup("MC_RANDOM");
+    args = '\0';
+    break;
+
   default:
     THROW_UNIMPLEMENTED;
   }
 
-  str = bprintf("[(%lu)%s] %s (%s)", req->issuer->pid ,req->issuer->name, type, args);
+  if(args != NULL){
+    str = bprintf("[(%lu)%s] %s (%s)", req->issuer->pid ,req->issuer->name, type, args);
+    xbt_free(args);
+  }else{
+    str = bprintf("[(%lu)%s] %s ", req->issuer->pid ,req->issuer->name, type);
+  }
   xbt_free(type);
-  xbt_free(args);
   xbt_free(p);
   xbt_free(bs);
   return str;
@@ -281,6 +293,7 @@ int MC_request_is_visible(smx_simcall_t req)
     || req->call == SIMCALL_COMM_WAITANY
     || req->call == SIMCALL_COMM_TEST
     || req->call == SIMCALL_COMM_TESTANY
+    || req->call == SIMCALL_MC_RANDOM
     || req->call == SIMCALL_MC_SNAPSHOT
     || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS;
 }
