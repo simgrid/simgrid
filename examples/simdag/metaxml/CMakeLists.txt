@@ -6,7 +6,7 @@ add_executable(sd_meta sd_meta.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(sd_meta simgrid pthread m )
+  target_link_libraries(sd_meta simgrid pthread )
 else()
   target_link_libraries(sd_meta simgrid)
 endif()

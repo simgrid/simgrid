@@ -5,7 +5,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(priority priority.c)
 
 ### Add definitions for compile
-target_link_libraries(priority simgrid m)
+target_link_libraries(priority simgrid)
 
 set(tesh_files
   ${tesh_files}

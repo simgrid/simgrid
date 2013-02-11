@@ -14,14 +14,14 @@ if(HAVE_TRACING)
   add_executable(link_srcdst_user_variables     ${CMAKE_CURRENT_SOURCE_DIR}/link_srcdst_user_variables.c)
 
   ### Add definitions for compile
-  target_link_libraries(ms simgrid m )
-  target_link_libraries(categories simgrid m )
-  target_link_libraries(procmig simgrid m )
-  target_link_libraries(simple simgrid m )
-  target_link_libraries(trace_platform simgrid m )
-  target_link_libraries(user_variables simgrid m )
-  target_link_libraries(link_user_variables simgrid m )
-  target_link_libraries(link_srcdst_user_variables simgrid m )
+  target_link_libraries(ms simgrid )
+  target_link_libraries(categories simgrid )
+  target_link_libraries(procmig simgrid )
+  target_link_libraries(simple simgrid )
+  target_link_libraries(trace_platform simgrid )
+  target_link_libraries(user_variables simgrid )
+  target_link_libraries(link_user_variables simgrid )
+  target_link_libraries(link_srcdst_user_variables simgrid )
 
   ## Clean generated files
   get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)

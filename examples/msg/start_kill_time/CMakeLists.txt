@@ -8,7 +8,7 @@ add_executable(sk_time "sk_time.c")
 if(WIN32)
   target_link_libraries(sk_time simgrid )
 else()
-  target_link_libraries(sk_time simgrid m )
+  target_link_libraries(sk_time simgrid )
 endif()
 
 set(tesh_files

@@ -7,8 +7,8 @@ add_executable(token_bypass token_bypass.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(token_ring simgrid m pthread )
-  target_link_libraries(token_bypass simgrid m pthread )
+  target_link_libraries(token_ring simgrid pthread )
+  target_link_libraries(token_bypass simgrid pthread )
 else()
   target_link_libraries(token_ring simgrid)
   target_link_libraries(token_bypass simgrid)
