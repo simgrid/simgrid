@@ -13,7 +13,7 @@ open MAKETEST, $ARGV[1] or die "Unable to open $ARGV[1]. $!\n";
 sub var_subst {
     my ($text, $name, $value) = @_;
     if ($value) {
-        $text =~ s/\${$name(?::=[^}]*)?}/$value/g;
+        $text =~ s/\${$name(?::[=-][^}]*)?}/$value/g;
         $text =~ s/\$$name(\W|$)/$value$1/g;
     }
     else {
@@ -29,8 +29,7 @@ my ($nb_test)   = 0;
 my ($line);
 my ($path);
 my ($dump) = 0;
-my ($srcdir);
-my ($bindir);
+my (%environ);
 my ($tesh_file);
 my ($config_var);
 my ($name_test);
@@ -49,8 +48,7 @@ while ( defined( $line = <MAKETEST> ) ) {
     if ($dump) {
         $line =~ s/^  //;
         if ( $line =~ /^\s*ADD_TEST\(\S+\s+\S*\/tesh\s/ ) {
-            $srcdir     = "";
-            $bindir     = "";
+            undef %environ;
             $config_var = "";
             $path       = "";
             $nb_test++;
@@ -71,12 +69,7 @@ while ( defined( $line = <MAKETEST> ) ) {
             }
             while ( $line =~ /--setenv\s+(\S+)\=(\S+)/g ) {
                 my ( $env_var, $value_var ) = ( $1, $2 );
-                if ( $env_var =~ /srcdir/ ) {
-                    $srcdir = $value_var;
-                }
-                elsif ( $env_var =~ /bindir/ ) {
-                    $bindir = $value_var;
-                }
+                $environ{$env_var} = $value_var;
             }
             if ( $line =~ /(\S+)\)$/ ) {
                 $tesh_file = $1;
@@ -91,10 +84,11 @@ while ( defined( $line = <MAKETEST> ) ) {
 
             if (0) {
                 print "test_name = $name_test\n";
-                print "$config_var\n";
+                print "config_var = $config_var\n";
                 print "path = $path\n";
-                print "srcdir=$srcdir\n";
-                print "bindir=$bindir\n";
+                foreach my $key (keys %environ) {
+                    print "$key = $environ{$key}\n";
+                }
                 print "tesh_file = $tesh_file\n";
                 print "\n\n";
             }
@@ -112,8 +106,12 @@ while ( defined( $line = <MAKETEST> ) ) {
                 }
                 if ( $l =~ /^\$ (.*)$/ ) {
                     my ($command) = $1;
-                    $command = var_subst($command, "srcdir", $srcdir);
-                    $command = var_subst($command, "bindir", $bindir);
+                    foreach my $key (keys %environ) {
+                        $command = var_subst($command, $key, $environ{$key});
+                    }
+                    # substitute remaining known variables, if any
+                    $command = var_subst($command, "srcdir", "");
+                    $command = var_subst($command, "bindir", "");
                     $command = var_subst($command, "EXEEXT", "");
                     $command = var_subst($command, "SG_TEST_EXENV", "");
                     $command = var_subst($command, "SG_TEST_ENV", "");

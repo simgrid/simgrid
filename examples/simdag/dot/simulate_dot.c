@@ -15,7 +15,7 @@
 #include <libgen.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,
-                             "Logging specific to this SimDag example");
+    "Logging specific to this SimDag example");
 
 int main(int argc, char **argv)
 {
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
   unsigned int cursor;
   SD_task_t task;
 
-  /* initialisation of SD */
+  /* initialization of SD */
   SD_init(&argc, argv);
 
   /* Check our arguments */
@@ -38,8 +38,8 @@ int main(int argc, char **argv)
 
     tracefilename =
         bprintf("%.*s.trace",
-                (int) (last == NULL ? strlen(argv[2]) : last - argv[2]),
-                argv[2]);
+            (int) (last == NULL ? strlen(argv[2]) : last - argv[2]),
+            argv[2]);
   } else {
     tracefilename = xbt_strdup(argv[3]);
   }
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
   /* Display all the tasks */
   XBT_INFO
-      ("------------------- Display all tasks of the loaded DAG ---------------------------");
+  ("------------------- Display all tasks of the loaded DAG ---------------------------");
   xbt_dynar_foreach(dot, cursor, task) {
     SD_task_dump(task);
   }
@@ -70,11 +70,11 @@ int main(int argc, char **argv)
   fclose(dotout);
 
   XBT_INFO
-      ("------------------- Run the schedule ---------------------------");
+  ("------------------- Run the schedule ---------------------------");
   changed = SD_simulate(-1);
   xbt_dynar_free_container(&changed);
   XBT_INFO
-      ("------------------- Produce the trace file---------------------------");
+  ("------------------- Produce the trace file---------------------------");
   XBT_INFO("Producing the trace of the run into %s", basename(tracefilename));
   FILE *out = fopen(tracefilename, "w");
   xbt_assert(out, "Cannot write to %s", tracefilename);
@@ -85,26 +85,23 @@ int main(int argc, char **argv)
     SD_workstation_t *wsl = SD_task_get_workstation_list(task);
     switch (kind) {
     case SD_TASK_COMP_SEQ:
-      fprintf(out, "[%f] %s compute %f # %s\n",
-              SD_task_get_start_time(task),
-              SD_workstation_get_name(wsl[0]), SD_task_get_amount(task),
-              SD_task_get_name(task));
+      fprintf(out, "[%f->%f] %s compute %f flops # %s\n",
+          SD_task_get_start_time(task),
+          SD_task_get_finish_time(task),
+          SD_workstation_get_name(wsl[0]), SD_task_get_amount(task),
+          SD_task_get_name(task));
       break;
     case SD_TASK_COMM_E2E:
-      fprintf(out, "[%f] %s send %s %f # %s\n",
-              SD_task_get_start_time(task),
-              SD_workstation_get_name(wsl[0]),
-              SD_workstation_get_name(wsl[1]), SD_task_get_amount(task),
-              SD_task_get_name(task));
-      fprintf(out, "[%f] %s recv %s %f # %s\n",
-              SD_task_get_finish_time(task),
-              SD_workstation_get_name(wsl[1]),
-              SD_workstation_get_name(wsl[0]), SD_task_get_amount(task),
-              SD_task_get_name(task));
+      fprintf(out, "[%f -> %f] %s -> %s transfer of %.0f bytes # %s\n",
+          SD_task_get_start_time(task),
+          SD_task_get_finish_time(task),
+          SD_workstation_get_name(wsl[0]),
+          SD_workstation_get_name(wsl[1]), SD_task_get_amount(task),
+          SD_task_get_name(task));
       break;
     default:
       xbt_die("Task %s is of unknown kind %d", SD_task_get_name(task),
-              SD_task_get_kind(task));
+          SD_task_get_kind(task));
     }
     SD_task_destroy(task);
   }

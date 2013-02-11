@@ -757,15 +757,12 @@ void MC_ignore_heap(void *address, size_t size){
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
-  
-  if(mc_heap_comparison_ignore == NULL)
-    mc_heap_comparison_ignore = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), heap_ignore_region_free_voidp);
 
   mc_heap_ignore_region_t region = NULL;
   region = xbt_new0(s_mc_heap_ignore_region_t, 1);
   region->address = address;
   region->size = size;
-
+  
   region->block = ((char*)address - (char*)((xbt_mheap_t)std_heap)->heapbase) / BLOCKSIZE + 1;
   
   if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
@@ -775,15 +772,39 @@ void MC_ignore_heap(void *address, size_t size){
     region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
     ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment] = 1;
   }
+  
+  if(mc_heap_comparison_ignore == NULL){
+    mc_heap_comparison_ignore = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), heap_ignore_region_free_voidp);
+    xbt_dynar_push(mc_heap_comparison_ignore, &region);
+    if(!raw_mem_set)
+      MC_UNSET_RAW_MEM;
+    return;
+  }
 
   unsigned int cursor = 0;
   mc_heap_ignore_region_t current_region;
-  xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region){
+  int start = 0;
+  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
+  
+  while(start <= end){
+    cursor = (start + end) / 2;
+    current_region = (mc_heap_ignore_region_t)xbt_dynar_get_as(mc_heap_comparison_ignore, cursor, mc_heap_ignore_region_t);
+    if(current_region->address == address){
+      heap_ignore_region_free(region);
+      if(!raw_mem_set)
+        MC_UNSET_RAW_MEM;
+      return;
+    }
+    if(current_region->address < address)
+      start = cursor + 1;
     if(current_region->address > address)
-      break;
+      end = cursor - 1;   
   }
 
-  xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
+  if(current_region->address < address)
+    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor + 1, &region);
+  else
+    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
 
   MC_UNSET_RAW_MEM;
 

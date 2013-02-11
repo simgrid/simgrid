@@ -794,6 +794,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
+  teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/smpi/mpich-test/CMakeLists.txt
@@ -861,7 +862,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/src/internal_config.h.in
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
-  buildtools/Cmake/test_prog/prog_getline.c
   buildtools/Cmake/test_prog/prog_gnu_dynlinker.c
   buildtools/Cmake/test_prog/prog_gtnets.cpp
   buildtools/Cmake/test_prog/prog_mutex_timedlock.c

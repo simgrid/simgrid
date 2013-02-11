@@ -21,10 +21,15 @@ SG_BEGIN_DECL()
  *  @brief String manipulation functions
  *
  * This module defines several string related functions. We redefine some quite classical
- * functions on the platforms were they are not nativaly defined (such as getline() or
+ * functions on the platforms were they are not nativaly defined (such as xbt_getline() or
  * asprintf()), while some other are a bit more exotic.
  * @{
  */
+/* Our own implementation of getline, mainly useful on the platforms not enjoying this function */
+#include <stdio.h>  /* FILE */
+#include <stdlib.h> /* size_t, ssize_t */
+XBT_PUBLIC(ssize_t) xbt_getline(char **lineptr, size_t * n, FILE * stream);
+
 /* Trim related functions */
 XBT_PUBLIC(void) xbt_str_rtrim(char *s, const char *char_list);
 XBT_PUBLIC(void) xbt_str_ltrim(char *s, const char *char_list);

@@ -3,7 +3,7 @@ use strict;
 my @argv = ("valgrind");
 my $count = 0;
 
-while (my $arg = shift) {
+while (defined(my $arg = shift)) {
     print "arg($count)$arg\n";
     if($arg eq "--cd"){
         $arg = shift;

@@ -11,7 +11,7 @@ fi
 cd ./pipol/$PIPOL_HOST
 
 export GIT_SSL_NO_VERIFY=1
-git clone https://gforge.inria.fr/git/simgrid/simgrid.git
+git clone git://scm.gforge.inria.fr/simgrid/simgrid.git
 cd simgrid
 
 perl ./buildtools/pipol/cmake.pl
@@ -28,6 +28,8 @@ fi
 #mem-check
 cmake \
 -Denable_lua=off \
+-Denable_tracing=on \
+-Denable_smpi=on \
 -Denable_compile_optimizations=off \
 -Denable_compile_warnings=on \
 -Denable_lib_static=off \
@@ -35,7 +37,7 @@ cmake \
 -Denable_latency_bound_tracking=off \
 -Denable_gtnets=off \
 -Denable_jedule=off \
--Drelease=on \
+-Denable_mallocators=off \
 -Denable_memcheck=on ./
 ctest -D ExperimentalStart
 ctest -D ExperimentalConfigure

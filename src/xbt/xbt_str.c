@@ -522,8 +522,7 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
 
 /** @brief Get a single line from the stream (reimplementation of the GNU getline)
  *
- * This is a redefinition of the GNU getline function, used on platforms where
- * it does not exists.
+ * This is a reimplementation of the GNU getline function, so that our code don't depends on the GNU libc.
  *
  * xbt_getline() reads an entire line from stream, storing the address of the
  * buffer containing the text into *buf.  The buffer is null-terminated and
@@ -540,43 +539,32 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
  * In either case, on a successful call, *buf and *n will be updated to reflect
  * the buffer address and allocated size respectively.
  */
-ssize_t xbt_getline(char **buf, size_t * n, FILE * stream)
+ssize_t xbt_getline(char **buf, size_t *n, FILE *stream)
 {
-#if !defined(SIMGRID_NEED_GETLINE)
-  return getline(buf, n, stream);
-#else
-  size_t i;
+  ssize_t i;
   int ch;
 
+  ch = getc(stream);
+  if (ferror(stream) || feof(stream))
+    return -1;
+
   if (!*buf) {
-    *buf = xbt_malloc(512);
     *n = 512;
+    *buf = xbt_malloc(*n);
   }
 
-  if (feof(stream))
-    return (ssize_t) - 1;
-
-  for (i = 0; (ch = fgetc(stream)) != EOF; i++) {
-
-    if (i >= (*n) + 1)
+  i = 0;
+  do {
+    if (i == *n)
       *buf = xbt_realloc(*buf, *n += 512);
-
-    (*buf)[i] = ch;
-
-    if ((*buf)[i] == '\n') {
-      i++;
-      (*buf)[i] = '\0';
-      break;
-    }
-  }
+    (*buf)[i++] = ch;
+  } while (ch != '\n' && (ch = getc(stream)) != EOF);
 
   if (i == *n)
     *buf = xbt_realloc(*buf, *n += 1);
-
   (*buf)[i] = '\0';
 
-  return (ssize_t) i;
-#endif
+  return i;
 }
 
 /*

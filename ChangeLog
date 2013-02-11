@@ -1,13 +1,25 @@
 SimGrid (3.10) NOT RELEASED; urgency=low
 
  XBT:
- * Our own implementation of getline is renamed xbt_getline.
+ * Our own implementation of getline is renamed xbt_getline, and gets
+   used even if the OS provide a getline(). This should reduce the
+   configuration complexity by using the same code on all platforms.
 
  Java:
  * Reintegrate Java to the main archive as desynchronizing these
    package is not acceptable anymore (Java is now considered stable)
  * Bugfix: Task.setDataSize() only changed the C world, not the value
    cached in the Java world
+
+ SMPI:
+ * Improvements of the SMPI replay tool:
+   - Most of the collective communications are now rooted in the same process as
+     in the original application.
+   - Traces now rely on the same MPI datatype as the application (MPI_BYTE was 
+     used until now). Multiple datatypes can now be used in a trace.
+   - The replay tool now supports traces produce either by TAU or a modified 
+     version of MPE.
+   - Bug Fix: the compute part of the reduce action is now taken into account.
 
 -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
@@ -85,7 +97,7 @@ SimGrid (3.9) stable; urgency=low
  TRACING:
  * Transfer the tracing files into the corresponding modules.
 
- -- Tue Jan 29 19:38:56 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Tue Feb 5 11:31:43 CET 2013 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.8.1) stable; urgency=low
 

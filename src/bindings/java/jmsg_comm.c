@@ -82,28 +82,17 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
     jxbt_throw_native(env,bprintf("comm is null"));
     return JNI_FALSE;
   }
-  xbt_ex_t e;
-  TRY {
-    if (MSG_comm_test(comm)) {
-      msg_error_t status = MSG_comm_get_status(comm);
-      if (status == MSG_OK) {
-        jcomm_bind_task(env,jcomm);
-        return JNI_TRUE;
-      }
-      else {
-        //send the correct exception
-        jmsg_throw_status(env,status);
-        return JNI_FALSE;
-      }
-    }
-    else {
-      return JNI_FALSE;
-    }
-  }
-  CATCH(e) {
-    xbt_ex_free(e);
-  }
 
+  if (MSG_comm_test(comm)) {
+    msg_error_t status = MSG_comm_get_status(comm);
+    if (status == MSG_OK) {
+      jcomm_bind_task(env,jcomm);
+      return JNI_TRUE;
+    } else {
+      //send the correct exception
+      jmsg_throw_status(env,status);
+    }
+  }
   return JNI_FALSE;
 }
 JNIEXPORT void JNICALL

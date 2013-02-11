@@ -263,7 +263,7 @@ MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
                      msg_host_t host)
 {
   xbt_ex_t e;
-  msg_error_t ret;
+  msg_error_t ret = MSG_OK;
   XBT_DEBUG
       ("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'",
        alias);
