@@ -68,7 +68,7 @@ typedef struct s_smpi_factor {
 } s_smpi_factor_t;
 xbt_dynar_t smpi_os_values = NULL;
 xbt_dynar_t smpi_or_values = NULL;
-
+xbt_dynar_t smpi_ois_values = NULL;
 
 // Methods used to parse and store the values for timing injections in smpi
 // These are taken from surf/network.c and generalized to have more factors
@@ -135,6 +135,28 @@ static double smpi_os(double size)
     }
   }
   XBT_DEBUG("os : %lf > %ld return %f", size, fact.factor, current);
+
+  return current;
+}
+
+static double smpi_ois(double size)
+{
+  if (!smpi_ois_values)
+    smpi_ois_values =
+        parse_factor(sg_cfg_get_string("smpi/ois"));
+
+  unsigned int iter = 0;
+  s_smpi_factor_t fact;
+  double current=0.0;
+  xbt_dynar_foreach(smpi_ois_values, iter, fact) {
+    if (size <= fact.factor) {
+        XBT_DEBUG("ois : %lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else{
+      current=fact.values[0]+fact.values[1]*size;
+    }
+  }
+  XBT_DEBUG("ois : %lf > %ld return %f", size, fact.factor, current);
 
   return current;
 }
@@ -339,7 +361,14 @@ void smpi_mpi_start(MPI_Request request)
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
-    double sleeptime = smpi_os(request->size);
+
+    //if we are giving back the control to the user without waiting for completion, we have to inject timings
+    double sleeptime =0.0;
+    if(request->detached && !(request->flags & ISEND))
+      sleeptime = smpi_os(request->size);
+    else
+      sleeptime = smpi_ois(request->size);
+
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("sending size of %zu : sleep %lf ", request->size, smpi_os(request->size));
