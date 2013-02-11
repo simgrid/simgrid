@@ -63,11 +63,13 @@ static int compare_global_variables(int region_type, void *d1, void *d2){
           pointer_align = (i / sizeof(void*)) * sizeof(void*); 
           addr_pointed1 = *((void **)((char *)d1 + offset + pointer_align));
           addr_pointed2 = *((void **)((char *)d2 + offset + pointer_align));
-          if((addr_pointed1 > start_plt_libsimgrid && addr_pointed1 < end_plt_libsimgrid) || (addr_pointed2 > start_plt_libsimgrid && addr_pointed2 < end_plt_libsimgrid)){
+          if((addr_pointed1 > start_plt_libsimgrid && addr_pointed1 < end_plt_libsimgrid) 
+             || (addr_pointed2 > start_plt_libsimgrid && addr_pointed2 < end_plt_libsimgrid)){
             i = current_var->size;
             continue;
           }else{
-            if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
+            if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) 
+               && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
               res_compare = compare_area(addr_pointed1, addr_pointed2, NULL);
               if(res_compare == 1){
                 #ifdef MC_VERBOSE
