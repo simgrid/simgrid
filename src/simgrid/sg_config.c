@@ -663,6 +663,12 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, &default_small_messages_threshold, 1, 1, NULL,
                      NULL);
 
+    int default_send_is_detached_threshold = 65536;
+    xbt_cfg_register(&_sg_cfg_set, "smpi/send_is_detached_thres",
+                     "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend",
+                     xbt_cfgelm_int, &default_send_is_detached_threshold, 1, 1, NULL,
+                     NULL);
+
     //For smpi/bw_factor and smpi/lat_factor
     //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
     //test is if( size >= thresholdN ) return valueN;

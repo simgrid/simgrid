@@ -313,7 +313,7 @@ void smpi_mpi_start(MPI_Request request)
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
       mailbox = smpi_process_remote_mailbox(receiver);
     }
-    if (request->size < 64*1024 ) { //(FIXME: this limit should be configurable)
+    if (request->size < sg_cfg_get_int("smpi/send_is_detached_thres") ) { //(FIXME: this limit should be configurable)
       void *oldbuf = NULL;
       request->detached = 1;
       request->refcount++;
