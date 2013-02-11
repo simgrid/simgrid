@@ -965,7 +965,7 @@ static size_t data_bss_ignore_size(void *address){
 
 
 
-void MC_ignore_stack(const char *var_name, const char *frame){
+void MC_ignore_stack(const char *var_name, const char *frame_name){
   
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
@@ -979,7 +979,7 @@ void MC_ignore_stack(const char *var_name, const char *frame){
     mc_stack_ignore_variable_t var = NULL;
     var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
     var->var_name = strdup(var_name);
-    var->frame = strdup(frame);
+    var->frame = strdup(frame_name);
 
     xbt_dynar_insert_at(mc_stack_comparison_ignore, 0, &var);
 
@@ -993,7 +993,7 @@ void MC_ignore_stack(const char *var_name, const char *frame){
     while(start <= end){
       cursor = (start + end) / 2;
       current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
-      if(strcmp(current_var->frame, frame) == 0){
+      if(strcmp(current_var->frame, frame_name) == 0){
         if(strcmp(current_var->var_name, var_name) == 0){
           MC_UNSET_RAW_MEM;
           if(raw_mem_set)
@@ -1005,21 +1005,31 @@ void MC_ignore_stack(const char *var_name, const char *frame){
         if(strcmp(current_var->var_name, var_name) > 0)
           end = cursor - 1;
       }
-      if(strcmp(current_var->frame, frame) < 0)
+      if(strcmp(current_var->frame, frame_name) < 0)
         start = cursor + 1;
-      if(strcmp(current_var->frame, frame) > 0)
+      if(strcmp(current_var->frame, frame_name) > 0)
         end = cursor - 1;
     }
 
     mc_stack_ignore_variable_t var = NULL;
     var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
     var->var_name = strdup(var_name);
-    var->frame = strdup(frame);
+    var->frame = strdup(frame_name);
 
-    if(strcmp(current_var->frame, frame) < 0)
+    if(strcmp(current_var->frame, frame_name) < 0)
       xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
     else
       xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
+
+  }
+
+ /* Remove variable from mc_local_variables */
+
+  if(mc_local_variables != NULL){
+
+    dw_frame_t frame = xbt_dict_get_or_null(mc_local_variables, frame_name);
+    if(frame != NULL)
+      xbt_dict_remove(frame->variables, var_name);
 
   }
 
