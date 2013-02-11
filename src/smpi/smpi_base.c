@@ -266,6 +266,16 @@ MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
   return request;
 }
 
+MPI_Request smpi_mpi_ssend_init(void *buf, int count, MPI_Datatype datatype,
+                               int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request =
+    build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                  comm, PERSISTENT | SSEND | SEND);
+  request->refcount++;
+  return request;
+}
+
 MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
                                int src, int tag, MPI_Comm comm)
 {
@@ -313,7 +323,7 @@ void smpi_mpi_start(MPI_Request request)
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
       mailbox = smpi_process_remote_mailbox(receiver);
     }
-    if (request->size < sg_cfg_get_int("smpi/send_is_detached_thres") ) { //(FIXME: this limit should be configurable)
+    if ( (! (request->flags & SSEND)) && (request->size < sg_cfg_get_int("smpi/send_is_detached_thres"))) {
       void *oldbuf = NULL;
       request->detached = 1;
       request->refcount++;
@@ -393,8 +403,26 @@ MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
 {
   MPI_Request request =
       build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
-                    comm, NON_PERSISTENT | SEND);
+                    comm, NON_PERSISTENT | ISEND | SEND);
 
+  smpi_mpi_start(request);
+  return request;
+}
+
+MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
+                           int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request =
+      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                    comm, NON_PERSISTENT | ISEND | SSEND | SEND);
+  smpi_mpi_start(request);
+  return request;
+}
+
+MPI_Request smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype,
+                           int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request = smpi_mpi_issend(buf, count, datatype, dst, tag, comm);
   smpi_mpi_start(request);
   return request;
 }

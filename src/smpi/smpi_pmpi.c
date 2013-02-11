@@ -862,6 +862,24 @@ int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src,
   return retval;
 }
 
+int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request) {
+  int retval;
+
+    smpi_bench_end();
+    if (request == NULL) {
+      retval = MPI_ERR_ARG;
+    } else if (comm == MPI_COMM_NULL) {
+      retval = MPI_ERR_COMM;
+    } else if (dst == MPI_PROC_NULL) {
+      retval = MPI_SUCCESS;
+    } else {
+      *request = smpi_mpi_ssend_init(buf, count, datatype, dst, tag, comm);
+      retval = MPI_SUCCESS;
+    }
+    smpi_bench_begin();
+    return retval;
+}
+
 int PMPI_Start(MPI_Request * request)
 {
   int retval;
@@ -1001,7 +1019,50 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
   return retval;
 }
 
+int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request* request) {
+  int retval;
 
+  smpi_bench_end();
+  if (request == NULL) {
+    retval = MPI_ERR_ARG;
+  } else if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else if (dst == MPI_PROC_NULL) {
+    *request = MPI_REQUEST_NULL;
+    retval = MPI_SUCCESS;
+  } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
+    retval = MPI_ERR_COMM;
+  } else if (count < 0) {
+    retval = MPI_ERR_COUNT;
+  } else if (buf==NULL && count > 0) {
+    retval = MPI_ERR_COUNT;
+  } else if (datatype == MPI_DATATYPE_NULL){
+    retval = MPI_ERR_TYPE;
+  } else if(tag<0 && tag !=  MPI_ANY_TAG){
+    retval = MPI_ERR_TAG;
+  } else {
+
+#ifdef HAVE_TRACING
+  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
+  TRACE_smpi_computing_out(rank);
+  int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
+  TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__);
+  TRACE_smpi_send(rank, rank, dst_traced);
+#endif
+
+    *request = smpi_mpi_issend(buf, count, datatype, dst, tag, comm);
+    retval = MPI_SUCCESS;
+
+#ifdef HAVE_TRACING
+  TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
+  (*request)->send = 1;
+  TRACE_smpi_computing_in(rank);
+#endif
+  }
+
+  smpi_bench_begin();
+  return retval;
+}
 
 int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
              MPI_Comm comm, MPI_Status * status)
@@ -1093,6 +1154,50 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
   smpi_bench_begin();
   return retval;
 }
+
+
+
+int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm) {
+  int retval;
+
+   smpi_bench_end();
+
+   if (comm == MPI_COMM_NULL) {
+     retval = MPI_ERR_COMM;
+   } else if (dst == MPI_PROC_NULL) {
+     retval = MPI_SUCCESS;
+   } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
+     retval = MPI_ERR_COMM;
+   } else if (count < 0) {
+     retval = MPI_ERR_COUNT;
+   } else if (buf==NULL && count > 0) {
+     retval = MPI_ERR_COUNT;
+   } else if (datatype == MPI_DATATYPE_NULL){
+     retval = MPI_ERR_TYPE;
+   } else if(tag<0 && tag !=  MPI_ANY_TAG){
+     retval = MPI_ERR_TAG;
+   } else {
+
+ #ifdef HAVE_TRACING
+   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
+   TRACE_smpi_computing_out(rank);
+   int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
+   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__);
+   TRACE_smpi_send(rank, rank, dst_traced);
+ #endif
+
+     smpi_mpi_ssend(buf, count, datatype, dst, tag, comm);
+     retval = MPI_SUCCESS;
+
+ #ifdef HAVE_TRACING
+   TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
+   TRACE_smpi_computing_in(rank);
+ #endif
+   }
+
+   smpi_bench_begin();
+   return retval;}
+
 
 int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                  int dst, int sendtag, void *recvbuf, int recvcount,
@@ -2200,13 +2305,7 @@ int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcou
    return not_yet_implemented();
 }
 
-int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm) {
-   return not_yet_implemented();
-}
 
-int PMPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   return not_yet_implemented();
-}
 
 int PMPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm* comm_out) {
    return not_yet_implemented();
@@ -2235,11 +2334,6 @@ int PMPI_Comm_remote_group(MPI_Comm comm, MPI_Group* group) {
 int PMPI_Comm_remote_size(MPI_Comm comm, int* size) {
    return not_yet_implemented();
 }
-
-int PMPI_Issend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
-   return not_yet_implemented();
-}
-
 
 int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
    return not_yet_implemented();
