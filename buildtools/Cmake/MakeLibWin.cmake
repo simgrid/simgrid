@@ -44,7 +44,6 @@ endif()
 
 if(enable_smpi)
   add_library(smpi SHARED ${SMPI_SRC})
-  set_target_properties(smpi PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" LINK_FLAGS "-shared" VERSION ${libsmpi_version} OUTPUT_NAME "smpi" IMPORT_PREFIX "lib" IMPORT_SUFFIX ".dll")
-  add_dependencies(smpi simgrid)
+  set_target_properties(smpi PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" LINK_FLAGS "-shared" VERSION ${libsmpi_version} OUTPUT_NAME "smpi" IMPORT_SUFFIX ".dll")
   target_link_libraries(smpi simgrid)
 endif()
