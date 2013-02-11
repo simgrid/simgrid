@@ -303,6 +303,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         XBT_VERB("Different global variables in binary"); 
       #endif
     
+      reset_heap_information();
       xbt_os_timer_free(timer);
       xbt_os_timer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
@@ -333,7 +334,8 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       #ifdef MC_VERBOSE
         XBT_VERB("Different global variables in libsimgrid"); 
       #endif
-    
+        
+      reset_heap_information();
       xbt_os_timer_free(timer);
       xbt_os_timer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
