@@ -53,7 +53,6 @@ typedef struct s_mc_global_t{
   int raw_mem_set;
 }s_mc_global_t, *mc_global_t;
 
-//void MC_take_snapshot(mc_snapshot_t);
 mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall);
 mc_snapshot_t MC_take_snapshot(void);
 void MC_restore_snapshot(mc_snapshot_t);
