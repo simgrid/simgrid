@@ -92,13 +92,13 @@ for this test.\n" );
 		}
 		t0 = MPI_Wtime();
 	    }
-            while (MPI_Wtime() - t0 < MAX_TIME) {
+            /*while (MPI_Wtime() - t0 < MAX_TIME) {
                 MPI_Iprobe( src, 2, MPI_COMM_WORLD, &flag, &status );
                 if (flag) {
                     Test_Failed(Current_Test);
                     break;
                     }
-                }
+                }*/
             if (!flag) 
                 Test_Passed(Current_Test);
             MPI_Recv( buffer, act_size, MPI_INT, src, 1, MPI_COMM_WORLD, 

@@ -83,7 +83,7 @@ int main( int argc, char **argv )
 		MPI_Abort( comm, 1 );
 	    }
 	    SetupData( sbuf, msgsize, 2*rank );
-	    MPI_Send( sbuf, msgsize, MPI_INT, root, 2*rank, comm );
+	    MPI_Ssend( sbuf, msgsize, MPI_INT, root, 2*rank, comm );
 	    free( sbuf );
 	}
 	msgsize *= 4;

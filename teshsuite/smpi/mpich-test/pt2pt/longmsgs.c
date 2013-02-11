@@ -140,7 +140,7 @@ int main( int argc, char *argv[] )
 
 	/* Ssend/Recv */
 	if(Master) 
-	    MPI_Send(sendbuf,msglen,MPI_CHAR,1,TAG2,MPI_COMM_WORLD);
+	    MPI_Ssend(sendbuf,msglen,MPI_CHAR,1,TAG2,MPI_COMM_WORLD);
 	else {
 	    Resetbuf( recvbuf, msglen );
 	    MPI_Recv(recvbuf,msglen,MPI_CHAR,0,TAG2,MPI_COMM_WORLD,&status);

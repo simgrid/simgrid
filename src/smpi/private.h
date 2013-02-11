@@ -171,8 +171,6 @@ MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm);
-MPI_Request smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype,
-                           int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
                             int src, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
@@ -180,6 +178,8 @@ MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
 void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
                    int tag, MPI_Comm comm, MPI_Status * status);
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
+                   int tag, MPI_Comm comm);
+void smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm);
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        int dst, int sendtag, void *recvbuf, int recvcount,

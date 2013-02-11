@@ -419,13 +419,7 @@ MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
   return request;
 }
 
-MPI_Request smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype,
-                           int dst, int tag, MPI_Comm comm)
-{
-  MPI_Request request = smpi_mpi_issend(buf, count, datatype, dst, tag, comm);
-  smpi_mpi_start(request);
-  return request;
-}
+
 
 MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
                             int src, int tag, MPI_Comm comm)
@@ -464,6 +458,13 @@ void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
   request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 
+}
+
+void smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype,
+                           int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request = smpi_mpi_issend(buf, count, datatype, dst, tag, comm);
+  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,

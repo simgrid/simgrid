@@ -167,7 +167,7 @@ RunTest longmsgs 2 "**** Testing long messages ****"
 
 RunTest testsome 2 "**** Testing MPI_Testsome/Testany/Waitsome ****"
 
-#issend used, replaced by isend - fails 
+#fails
 #RunTest testall_mpich 2 "**** Testing MPI_Testall ****"
 
 #MPI_Cancel, not yet implemented
@@ -198,13 +198,13 @@ RunTest sndrcvrpl2 2 "**** Testing MPI_Sendrecv_replace (long) ****"
 #uses Pack_size, Buffer_attach, Bsend, Buffer_detach
 #RunTest overtake 2 "**** Verifying that messages are non-overtaking ****" "" "overtake-0.out overtake-1.out"
 
-#RunTest ssendtest 2 "**** Verifying ssend ****"
+RunTest ssendtest 2 "**** Verifying ssend ****"
 
-#RunTest ssendtest2 2 "**** Verifying ssend (2) ****"
+RunTest ssendtest2 2 "**** Verifying ssend (2) ****"
 
-#RunTest issendtest 2 "**** Verifying Issend ****" "" "issendtest-1.out"
+RunTest issendtest 2 "**** Verifying Issend ****" "" "issendtest-1.out"
 
-#RunTest issend2 2 "**** Verifying Issend (2) ****"
+RunTest issend2 2 "**** Verifying Issend (2) ****"
 
 #uses MPI_Cancel, lets a lot of orphan comms.
 #RunTest reqcreate 1 "**** Checking the request creation routines ****"
@@ -299,8 +299,7 @@ RunTest persist 4 "*** Testing MPI_Startall/Request_free ***"
 
 RunTest waitall 4 "*** Testing MPI_Waitall ***"
 
-#uses issend, replaced by isend, and ssend replaced by send
-#RunTest waitall2 2 "*** Testing MPI_Waitall (order) ***"
+RunTest waitall2 2 "*** Testing MPI_Waitall (order) ***"
 
 #RunTest waitall3 4 "*** Testing MPI_Waitall (order-irecv) ***"
 
@@ -310,7 +309,6 @@ RunTest waitany 4 "*** Testing MPI_Waitany ***"
 
 #RunTest pack 2 "*** Testing MPI_Pack ***"
 
-#calls to ssend replaced by send
 RunTest flood 2 "**** Testing large messages ****"
 
 #very long
