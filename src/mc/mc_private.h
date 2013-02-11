@@ -26,23 +26,20 @@
 
 /****************************** Snapshots ***********************************/
 
-#define nb_regions 3 /* binary data (data + BSS), libsimgrid data (data + BSS), std_heap */ 
+#define NB_REGIONS 3 /* binary data (data + BSS) (type = 2), libsimgrid data (data + BSS) (type = 1), std_heap (type = 0)*/ 
 
 typedef struct s_mc_mem_region{
-  int type;
   void *start_addr;
   void *data;
   size_t size;
 } s_mc_mem_region_t, *mc_mem_region_t;
 
 typedef struct s_mc_snapshot{
-  unsigned int num_reg;
-  int region_type[nb_regions];
   size_t heap_bytes_used;
-  mc_mem_region_t *regions;
+  mc_mem_region_t regions[NB_REGIONS];
+  int nb_processes;
   size_t *stack_sizes;
   xbt_dynar_t stacks;
-  int nb_processes;
   xbt_dynar_t to_ignore;
 } s_mc_snapshot_t, *mc_snapshot_t;
 

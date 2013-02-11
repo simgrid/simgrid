@@ -42,7 +42,6 @@ static xbt_dynar_t take_snapshot_ignore(void);
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
   mc_mem_region_t new_reg = xbt_new0(s_mc_mem_region_t, 1);
-  new_reg->type = type;
   new_reg->start_addr = start_addr;
   new_reg->size = size;
   new_reg->data = xbt_malloc0(size);
@@ -72,10 +71,7 @@ static void MC_region_destroy(mc_mem_region_t reg)
 static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start_addr, size_t size)
 {
   mc_mem_region_t new_reg = MC_region_new(type, start_addr, size);
-  snapshot->regions = xbt_realloc(snapshot->regions, (snapshot->num_reg + 1) * sizeof(mc_mem_region_t));
-  snapshot->regions[snapshot->num_reg] = new_reg;
-  snapshot->region_type[snapshot->num_reg] = type;
-  snapshot->num_reg++;
+  snapshot->regions[type] = new_reg;
   return;
 } 
 
@@ -163,7 +159,7 @@ mc_snapshot_t MC_take_snapshot()
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
           snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
-          heap = snapshot->regions[snapshot->num_reg - 1]->data;
+          heap = snapshot->regions[0]->data;
         }
         i++;
       } else{ 
@@ -221,7 +217,7 @@ mc_snapshot_t MC_take_snapshot()
 void MC_restore_snapshot(mc_snapshot_t snapshot)
 {
   unsigned int i;
-  for(i=0; i < snapshot->num_reg; i++){
+  for(i=0; i < NB_REGIONS; i++){
     MC_region_restore(snapshot->regions[i]);
   }
 
@@ -230,10 +226,9 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
 void MC_free_snapshot(mc_snapshot_t snapshot)
 {
   unsigned int i;
-  for(i=0; i < snapshot->num_reg; i++)
+  for(i=0; i < NB_REGIONS; i++)
     MC_region_destroy(snapshot->regions[i]);
 
-  xbt_free(snapshot->regions);
   xbt_dynar_free(&(snapshot->stacks));
   xbt_dynar_free(&(snapshot->to_ignore));
   xbt_free(snapshot);

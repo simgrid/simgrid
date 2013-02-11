@@ -167,21 +167,6 @@ int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
   return snapshot_compare(s1, s2);
 }
 
-int get_heap_region_index(mc_snapshot_t s){
-  int i = 0;
-  while(i < s->num_reg){
-    switch(s->regions[i]->type){
-    case 0:
-      return i;
-      break;
-    default:
-      i++;
-      break;
-    }
-  }
-  return -1;
-}
-
 int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   int raw_mem = (mmalloc_get_current_heap() == raw_heap);
@@ -300,36 +285,11 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     xbt_os_timer_start(timer);
   #endif
 
-  int heap_index = 0, data_libsimgrid_index = 0, data_program_index = 0;
-  i = 0;
-  
-  /* Get index of regions */
-  while(i < s1->num_reg){
-    switch(s1->region_type[i]){
-    case 0:
-      heap_index = i;
-      i++;
-      break;
-    case 1:
-      data_libsimgrid_index = i;
-      i++;
-      while( i < s1->num_reg && s1->region_type[i] == 1)
-        i++;
-      break;
-    case 2:
-      data_program_index = i;
-      i++;
-      while( i < s1->num_reg && s1->region_type[i] == 2)
-        i++;
-      break;
-    }
-  }
-
   /* Init heap information used in heap comparison algorithm */
-  init_heap_information((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data, s1->to_ignore, s2->to_ignore);
+  init_heap_information((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data, s1->to_ignore, s2->to_ignore);
 
   /* Compare binary global variables */
-  is_diff = compare_global_variables(s1->region_type[data_program_index], s1->regions[data_program_index]->data, s2->regions[data_program_index]->data);
+  is_diff = compare_global_variables(2, s1->regions[2]->data, s2->regions[2]->data);
   if(is_diff != 0){
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);
@@ -360,7 +320,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   #endif
 
   /* Compare libsimgrid global variables */
-    is_diff = compare_global_variables(s1->region_type[data_libsimgrid_index], s1->regions[data_libsimgrid_index]->data, s2->regions[data_libsimgrid_index]->data);
+  is_diff = compare_global_variables(1, s1->regions[1]->data, s2->regions[1]->data);
   if(is_diff != 0){
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);
@@ -433,7 +393,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
 
   /* Compare heap */
  
-  if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[heap_index]->data, (xbt_mheap_t)s2->regions[heap_index]->data)){
+  if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data)){
 
     #ifdef MC_DEBUG
       xbt_os_timer_stop(timer);
