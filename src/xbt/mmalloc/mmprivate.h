@@ -156,7 +156,7 @@ typedef struct {
       size_t nfree;               /* Free fragments in a fragmented block.  */
       short frag_size[MAX_FRAGMENT_PER_BLOCK];
       //void *bt[MAX_FRAGMENT_PER_BLOCK][XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
-      int ignore[MAX_FRAGMENT_PER_BLOCK];
+      short ignore[MAX_FRAGMENT_PER_BLOCK];
       heap_area_t equal_to[MAX_FRAGMENT_PER_BLOCK];
     } busy_frag;
     struct {
@@ -164,7 +164,7 @@ typedef struct {
       size_t busy_size; /* Actually used space, in bytes */
       //void *bt[XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
       //int bt_size;
-      int ignore;
+      short ignore;
       heap_area_t equal_to;
     } busy_block;
     /* Heap information for a free block (that may be the first of a free cluster).  */
