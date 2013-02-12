@@ -195,6 +195,8 @@ XBT_PUBLIC(msg_error_t) MSG_task_destroy(msg_task_t task);
 
 XBT_PUBLIC(msg_error_t) MSG_task_receive_from_host(msg_task_t * task, const char *alias,
                                        msg_host_t host);
+XBT_PUBLIC(msg_error_t) MSG_task_receive_from_host_bounded(msg_task_t * task, const char *alias,
+                                       msg_host_t host, double rate);
 
 XBT_PUBLIC(msg_error_t) MSG_task_execute(msg_task_t task);
 XBT_PUBLIC(msg_error_t) MSG_parallel_task_execute(msg_task_t task);
@@ -226,6 +228,20 @@ XBT_PUBLIC(msg_error_t)
     MSG_task_receive(msg_task_t * task, const char *alias);
 #define MSG_task_recv(t,a) MSG_task_receive(t,a)
 
+
+
+XBT_PUBLIC(msg_error_t)
+    MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, double timeout,
+                     msg_host_t host, double rate);
+
+XBT_PUBLIC(msg_error_t)
+    MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias,
+                              double timeout, double rate);
+
+XBT_PUBLIC(msg_error_t)
+    MSG_task_receive_bounded(msg_task_t * task, const char *alias,double rate);
+#define MSG_task_recv_bounded(t,a,r) MSG_task_receive_bounded(t,a,r)
+
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task,
@@ -236,6 +252,7 @@ XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task,
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
 XBT_PUBLIC(void) MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate);
 XBT_PUBLIC(msg_comm_t) MSG_task_irecv(msg_task_t * task, const char *alias);
+XBT_PUBLIC(msg_comm_t) MSG_task_irecv_bounded(msg_task_t * task, const char *alias, double rate);
 XBT_PUBLIC(int) MSG_comm_test(msg_comm_t comm);
 XBT_PUBLIC(int) MSG_comm_testany(xbt_dynar_t comms);
 XBT_PUBLIC(void) MSG_comm_destroy(msg_comm_t comm);
