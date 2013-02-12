@@ -365,7 +365,7 @@ void smpi_mpi_start(MPI_Request request)
 
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime =0.0;
-    if(request->detached){
+    if(request->detached || (request->flags & (ISEND|SSEND))){// issend should be treated as isend
       //isend and send timings may be different
       sleeptime = (request->flags & ISEND)? smpi_ois(request->size) : smpi_os(request->size);
     }
