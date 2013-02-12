@@ -325,7 +325,8 @@ void smpi_mpi_start(MPI_Request request)
     smpi_datatype_use(request->old_type);
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
 
-    double sleeptime = smpi_or(request->size);
+    //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
+    double sleeptime = request->detached ? smpi_or(request->size) : 0.0;
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("receiving size of %zu : sleep %lf ", request->size, smpi_or(request->size));
@@ -364,15 +365,16 @@ void smpi_mpi_start(MPI_Request request)
 
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime =0.0;
-    if(request->detached && !(request->flags & ISEND))
-      sleeptime = smpi_os(request->size);
-    else
-      sleeptime = smpi_ois(request->size);
+    if(request->detached){
+      //isend and send timings may be different
+      sleeptime = (request->flags & ISEND)? smpi_ois(request->size) : smpi_os(request->size);
+    }
 
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("sending size of %zu : sleep %lf ", request->size, smpi_os(request->size));
     }
+
     request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
                          request->buf, request->real_size,
@@ -483,8 +485,11 @@ void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm)
 {
-  MPI_Request request;
-  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
+  MPI_Request request =
+      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                    comm, NON_PERSISTENT | SEND);
+
+  smpi_mpi_start(request);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 
 }
