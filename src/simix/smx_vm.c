@@ -45,41 +45,70 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
 
 
 smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t ind_phys_host){
-   return SIMIX_vm_create(name, ind_phys_host);
+  return SIMIX_vm_create(name, ind_phys_host);
 }
+
+
+static int get_host_property_as_integer(smx_host_t host, const char *name)
+{
+  xbt_dict_t dict = simix_host_get_properties(host);
+
+  char *value = xbt_dict_get_or_null(dict, name);
+  return atoi(value);
+}
+
 
 
 /* **** start a VM **** */
-static int __can_be_started(smx_host_t vm){
+static int __can_be_started(smx_host_t vm)
+{
 	// TODO add checking code related to overcommitment or not.
+
+  int overcommit = get_host_property_as_integer("OverCommit");
+  int core_nb = get_host_property_as_integer("CORE_NB");
+  int mem_cap = get_host_property_as_integer("MEM_CAP");
+  int net_cap = get_host_property_as_integer("NET_CAP");
+
+  /* we need to get other VM objects on this physical host. */
+
+
+
 	return 1;
 }
-void SIMIX_vm_start(smx_host_t ind_vm){
 
+void SIMIX_vm_start(smx_host_t ind_vm)
+{
   //TODO only start the VM if you can
   if (__can_be_started(ind_vm))
-	  SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
+    SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
   else
-	  THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
+    THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
 }
 
-void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_start(ind_vm);
+void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm)
+{
+  SIMIX_vm_start(ind_vm);
 }
 
 /* ***** set/get state of a VM ***** */
-void SIMIX_vm_set_state(smx_host_t ind_vm, int state){
-	surf_vm_workstation_model->extension.vm_workstation.set_state(ind_vm, state);
-}
-void SIMIX_pre_vm_set_state(smx_host_t ind_vm, int state){
-	SIMIX_vm_set_state(ind_vm, state);
+void SIMIX_vm_set_state(smx_host_t ind_vm, int state)
+{
+  surf_vm_workstation_model->extension.vm_workstation.set_state(ind_vm, state);
 }
 
-int SIMIX_vm_get_state(smx_host_t ind_vm){
- return surf_vm_workstation_model->extension.vm_workstation.get_state(ind_vm);
+void SIMIX_pre_vm_set_state(smx_host_t ind_vm, int state)
+{
+  SIMIX_vm_set_state(ind_vm, state);
 }
-int SIMIX_pre_vm_get_state(smx_host_t ind_vm){
-	return SIMIX_vm_get_state(ind_vm);
+
+int SIMIX_vm_get_state(smx_host_t ind_vm)
+{
+  return surf_vm_workstation_model->extension.vm_workstation.get_state(ind_vm);
+}
+
+int SIMIX_pre_vm_get_state(smx_host_t ind_vm)
+{
+  return SIMIX_vm_get_state(ind_vm);
 }
 
 
@@ -206,7 +235,7 @@ void SIMIX_vm_save(smx_host_t ind_vm)
 }
 
 void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_save(ind_vm);
+  SIMIX_vm_save(ind_vm);
 }
 
 
@@ -236,7 +265,7 @@ void SIMIX_vm_restore(smx_host_t ind_vm)
 }
 
 void SIMIX_pre_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_restore(ind_vm);
+  SIMIX_vm_restore(ind_vm);
 }
 
 

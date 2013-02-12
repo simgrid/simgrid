@@ -295,9 +295,10 @@ void* simcall_vm_create(const char *name, smx_host_t phys_host){
  *
  * \param vm VM
  */
-void simcall_vm_start(smx_host_t vm) {
-  /* will jump to SIMIX_pre_vm_get_state in src/simix/smx_smurf_private.h */
-  simcall_BODY_vm_set_state(vm, msg_vm_state_running);
+void simcall_vm_start(smx_host_t vm)
+{
+  /* will jump to SIMIX_pre_vm_start in src/simix/smx_smurf_private.h */
+  simcall_BODY_vm_start(vm);
 }
 
 /**

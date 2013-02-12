@@ -161,35 +161,58 @@ int MSG_vm_is_restoring(msg_vm_t vm)
 
 /* **** ******** MSG vm actions ********* **** */
 
-/** @brief Create a new VM (the VM is just attached to the location but it is not started yet).
+/** @brief Create a new VM with specified parameters.
  *  @ingroup msg_VMs*
  *
- * Please note that a VM is a specific host. Hence, you should give a different name
- * for each VM/PM.
  */
-msg_vm_t MSG_vm_create(msg_host_t ind_host, const char *name,
-	                                     int core_nb, int mem_cap, int net_cap){
+msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
+	                                     int core_nb, int mem_cap, int net_cap, char *disk_path, int disk_size)
+{
+  msg_vm_t vm = MSG_vm_create_core(ind_pm, name);
 
-  // Note new and vm_workstation refer to the same area (due to the lib/dict appraoch)
-  msg_vm_t new = NULL;
+  MSG_vm_set_property_value(vm, "CORE_NB", bprintf("%d", core_nb), free);
+  MSG_vm_set_property_value(vm, "MEM_CAP", bprintf("%d", mem_cap), free);
+  MSG_vm_set_property_value(vm, "NET_CAP", bprintf("%d", net_cap), free);
+
+  /* TODO: We will revisit the disk support later. */
+
+  return vm;
+}
+
+
+/** @brief Create a new VM object. The VM is not yet started. The resource of the VM is allocated upon MSG_vm_start().
+ *  @ingroup msg_VMs*
+ *
+ * A VM is treated as a host. The name of the VM must be unique among all hosts.
+ */
+msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
+{
+  /* make sure the VM of the same name does not exit */
+  {
+    void *ind_host_tmp = xbt_lib_get_elm_or_null(host_lib, name);
+    if (ind_host_tmp) {
+      XBT_ERROR("host %s already exits", name);
+      return NULL;
+    }
+  }
+
+  /* Note: ind_vm and vm_workstation point to the same elm object. */
+  msg_vm_t ind_vm = NULL;
   void *ind_vm_workstation =  NULL;
+
   // Ask simix to create the surf vm resource
-  ind_vm_workstation = simcall_vm_create(name,ind_host);
-  new = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
+  ind_vm_workstation = simcall_vm_create(name, ind_pm);
+  ind_vm = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
 
-  MSG_vm_set_property_value(new, "CORE_NB", bprintf("%d", core_nb), free);
-  MSG_vm_set_property_value(new, "MEM_CAP", bprintf("%d", mem_cap), free);
-  MSG_vm_set_property_value(new, "NET_CAP", bprintf("%d", net_cap), free);
-
-  XBT_DEBUG("A new VM has been created");
-  // TODO check whether the vm (i.e the virtual host) has been correctly added into the list of all hosts.
+  XBT_DEBUG("A new VM (%s) has been created", name);
 
   #ifdef HAVE_TRACING
-  TRACE_msg_vm_create(name, ind_host);
+  TRACE_msg_vm_create(name, ind_pm);
   #endif
 
-  return new;
+  return ind_vm;
 }
+
 
 /** @brief Start a vm (ie. boot)
  *  @ingroup msg_VMs
@@ -197,8 +220,8 @@ msg_vm_t MSG_vm_create(msg_host_t ind_host, const char *name,
  *  If the VM cannot be started, an exception is generated.
  *
  */
-void MSG_vm_start(msg_vm_t vm) {
-
+void MSG_vm_start(msg_vm_t vm)
+{
   //Please note that vm start can raise an exception if the VM cannot be started.
   simcall_vm_start(vm);
 
@@ -276,9 +299,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination)
  * This function stops the exection of the VM. All the processes on this VM
  * will pause. The state of the VM is perserved. We can later resume it again.
  *
- * FIXME: No suspension cost occurs. If you want to simulate this too, you want to
- * use a \ref MSG_file_write() before or after, depending on the exact semantic
- * of VM suspend to you.
+ * No suspension cost occurs.
  */
 void MSG_vm_suspend(msg_vm_t vm)
 {
@@ -293,9 +314,7 @@ void MSG_vm_suspend(msg_vm_t vm)
 /** @brief Resume the execution of the VM. All processes on the VM run again.
  *  @ingroup msg_VMs
  *
- * FIXME: No resume cost occurs. If you want to simulate this too, you want to
- * use a \ref MSG_file_read() before or after, depending on the exact semantic
- * of VM resume to you.
+ * No resume cost occurs.
  */
 void MSG_vm_resume(msg_vm_t vm)
 {
