@@ -56,17 +56,21 @@ void jprocess_join(jobject jprocess, JNIEnv * env)
 
 msg_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
 {
-  return (msg_process_t) (long) (*env)->GetLongField(env, jprocess, jprocess_field_Process_bind);
+  return
+    (msg_process_t)(intptr_t)(*env)->GetLongField(env, jprocess,
+                                                  jprocess_field_Process_bind);
 }
 
 void jprocess_bind(jobject jprocess, msg_process_t process, JNIEnv * env)
 {
-  (*env)->SetLongField(env, jprocess, jprocess_field_Process_bind, (jlong)(process));
+  (*env)->SetLongField(env, jprocess, jprocess_field_Process_bind,
+                       (intptr_t)process);
 }
 
 jlong jprocess_get_id(jobject jprocess, JNIEnv * env)
 {
-  return (*env)->GetLongField(env, jprocess, jprocess_field_Process_id);
+  return
+    (intptr_t)(*env)->GetLongField(env, jprocess, jprocess_field_Process_id);
 }
 
 jstring jprocess_get_name(jobject jprocess, JNIEnv * env)

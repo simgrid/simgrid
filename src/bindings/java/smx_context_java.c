@@ -110,7 +110,8 @@ static void* smx_ctx_java_thread_run(void *data) {
   }
   else {
     smx_process_t process = SIMIX_process_self();
-    (*env)->SetLongField(env, context->jprocess, jprocess_field_Process_bind, (jlong)process);
+    (*env)->SetLongField(env, context->jprocess, jprocess_field_Process_bind,
+                         (intptr_t)process);
   }
   xbt_assert((context->jprocess != NULL), "Process not created...");
   //wait for the process to be able to begin

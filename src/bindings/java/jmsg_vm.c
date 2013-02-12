@@ -12,11 +12,10 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm) {
-  (*env)->SetLongField(env, jvm, jvm_field_bind, (jlong) (long) (vm));
+  (*env)->SetLongField(env, jvm, jvm_field_bind, (intptr_t)vm);
 }
 msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm) {
-	msg_vm_t vm = (msg_vm_t)(*env)->GetLongField(env, jvm, jvm_field_bind);
-	return vm;
+  return (msg_vm_t)(intptr_t)(*env)->GetLongField(env, jvm, jvm_field_bind);
 }
 
 JNIEXPORT void JNICALL

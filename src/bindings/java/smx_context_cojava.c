@@ -210,7 +210,9 @@ static void smx_ctx_cojava_suspend(smx_context_t context)
     else if (!java_context->bound) {
       java_context->bound = 1;
       smx_process_t process = SIMIX_process_self();
-      (*global_env)->SetLongField(global_env, java_context->jprocess, jprocess_field_Process_bind, (jlong)process);
+      (*global_env)->SetLongField(global_env, java_context->jprocess,
+                                  jprocess_field_Process_bind,
+                                  (intptr_t)process);
     }
 
     next_coroutine = java_context->jcoroutine;
@@ -236,7 +238,8 @@ static void smx_ctx_cojava_resume(smx_context_t new_context) {
   else if (!java_context->bound) {
     java_context->bound = 1;
     smx_process_t process = SIMIX_process_self();
-    (*global_env)->SetLongField(global_env, java_context->jprocess, jprocess_field_Process_bind, (jlong)process);
+    (*global_env)->SetLongField(global_env, java_context->jprocess,
+                                jprocess_field_Process_bind, (intptr_t)process);
   }
   (*global_env)->CallStaticVoidMethod(global_env, coclass, coroutine_yieldTo, java_context->jcoroutine);
 }
