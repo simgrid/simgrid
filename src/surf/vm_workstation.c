@@ -37,7 +37,11 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
   vm_ws->ws.generic_resource.model = surf_vm_workstation_model;
 
   // //// CPU  RELATED STUFF ////
-  vm_ws->ws->generic_resource.model.extension.cpu=cpu_model_cas01(0);
+  // This can be done directly during the creation of the surf_vm_worsktation model if
+  // we consider that there will be only one CPU model for one layer of virtualization.
+  // However, if you want to provide several layers (i.e. a VM inside a VM hosted by a PM)
+  // we should add a kind of table that stores the different CPU model.
+  // vm_ws->ws->generic_resource.model.extension.cpu=cpu_model_cas01(VM level ? );
 
  // //// NET RELATED STUFF ////
   // Bind virtual net_elm to the host
@@ -96,6 +100,20 @@ static void vm_ws_set_state(void *ind_vm_ws, int state){
 	 ((workstation_VM2013_t) surf_workstation_resource_priv(ind_vm_ws))->current_state=state;
 }
 
+
+static double ws_share_resources(double now)
+{
+   // Can be obsolete if you right can ensure that ws_model has been code previously
+   // invoke ws_share_resources on the physical_lyer: sub_ws->ws_share_resources()
+
+	// assign the corresponding value to X1, X2, ....
+
+   // invoke cpu and net share resources on layer (1)
+	// return min;
+  return -1.0;
+}
+
+
 /*
  * A surf level object will be useless in the upper layer. Returing the name
  * will be simple and suffcient.
@@ -119,6 +137,7 @@ static void surf_vm_workstation_model_init_internal(void)
   surf_vm_workstation_model->extension.vm_workstation.get_phys_host = vm_ws_get_phys_host;
   surf_vm_workstation_model->extension.vm_workstation.destroy = vm_ws_destroy;
 
+  surf_vm_workstation_model->model_private->share_resources = ws_share_resources;
 }
 
 void surf_vm_workstation_model_init()

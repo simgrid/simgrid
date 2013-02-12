@@ -94,6 +94,7 @@ static void ws_action_state_set(surf_action_t action,
 
 static double ws_share_resources(double now)
 {
+// invoke share_resources on CPU and network (layer 0)
   return -1.0;
 }
 
@@ -157,7 +158,7 @@ static void ws_action_set_max_duration(surf_action_t action,
   if (action->model_type == surf_network_model)
     surf_network_model->set_max_duration(action, duration);
   else if (action->model_type == surf_cpu_model)
-    surf_cpu_model->set_max_duration(action, duration);
+	  surf_cpu_model->set_max_duration(action, duration);
   else
     DIE_IMPOSSIBLE;
 }
@@ -386,6 +387,7 @@ static void surf_workstation_model_init_internal(void)
 {
   surf_workstation_model = surf_model_init();
 
+  // TODO  surf_workstation_model->extension.cpu=cpu_model_cas01(0);
   surf_workstation_model->name = "Workstation";
   surf_workstation_model->action_unref = ws_action_unref;
   surf_workstation_model->action_cancel = ws_action_cancel;
@@ -447,9 +449,6 @@ void surf_workstation_model_init_current_default(void)
 {
 
   surf_workstation_model_init_internal();
-
-  surf_cpu_model_init_Cas01_phys(); // INSTANTIATE THE CPU PHYSICAL MODEL
-  surf_cpu_model_init_Cas01_vm(); // INSTANTIATE THE CPU PHYSICAL MODEL
 
   xbt_cfg_setdefault_int(_sg_cfg_set, "network/crosstraffic", 1);
   surf_network_model_init_LegrandVelho();
