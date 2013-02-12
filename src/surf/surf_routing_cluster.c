@@ -67,7 +67,7 @@ static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
   int isrc;
   int table_size = xbt_dynar_length(rc->index_network_elm);
 
-  sg_routing_edge_t src, dst;
+  sg_routing_edge_t src;
   xbt_node_t current, previous, backboneNode,routerNode;
   s_surf_parsing_link_up_down_t info;
 
