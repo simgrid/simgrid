@@ -75,122 +75,56 @@ static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
 
   /* create the router */
   char *link_name =
-		  ((sg_routing_edge_t) ((as_cluster_t) rc)->router)->name;
+    ((sg_routing_edge_t) ((as_cluster_t) rc)->router)->name;
   routerNode = new_xbt_graph_node(graph, link_name, nodes);
 
   if(((as_cluster_t) rc)->backbone) {
-	  char *link_nameR =
-			  ((surf_resource_t) ((as_cluster_t) rc)->backbone)->name;
-	  backboneNode = new_xbt_graph_node(graph, link_nameR, nodes);
+    char *link_nameR =
+      ((surf_resource_t) ((as_cluster_t) rc)->backbone)->name;
+    backboneNode = new_xbt_graph_node(graph, link_nameR, nodes);
 
-	  new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
+    new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
   }
 
-  for (isrc = 0; isrc < table_size; isrc++) {
-	  src = xbt_dynar_get_as(rc->index_network_elm, isrc, sg_routing_edge_t);
-
-	  if (src->rc_type != SURF_NETWORK_ELEMENT_ROUTER) {
-			  previous = new_xbt_graph_node(graph, src->name, nodes);
-
-			  info = xbt_dynar_get_as(rc->link_up_down_list, src->id,
-					  s_surf_parsing_link_up_down_t);
-
-			  if (info.link_up) {     // link up
-
-				  char *link_name = ((surf_resource_t) info.link_up)->name;
-				  current = new_xbt_graph_node(graph, link_name, nodes);
-				  new_xbt_graph_edge(graph, previous, current, edges);
-
-				  if (((as_cluster_t) rc)->backbone) {
-					  new_xbt_graph_edge(graph, current, backboneNode, edges);
-				  } else {
-					  new_xbt_graph_edge(graph, current, routerNode, edges);
-				  }
-
-			  }
-
-			  if (info.link_down) {    // link down
-				  char *link_name = ((surf_resource_t) info.link_down)->name;
-				  current = new_xbt_graph_node(graph, link_name, nodes);
-				  new_xbt_graph_edge(graph, previous, current, edges);
-
-				  if (((as_cluster_t) rc)->backbone) {
-					  new_xbt_graph_edge(graph, current, backboneNode, edges);
-				  } else {
-					  new_xbt_graph_edge(graph, current, routerNode, edges);
-				  }
-
-			  }
-		  }
-  }
-
-/*
-		  if (((as_cluster_t) rc)->backbone) {
-			  char *link_name =
-					  ((surf_resource_t) ((as_cluster_t) rc)->backbone)->name;
-
-			  current = new_xbt_graph_node(graph, link_name, nodes);
-			  new_xbt_graph_edge(graph, previous, current, edges);
-			  previous = current;
-
-			  revCurrent = new_xbt_graph_node(graph, link_name, nodes);
-			  new_xbt_graph_edge(graph, revCurrent, revPrevious, edges);
-			  revPrevious = revCurrent;
-		  } else {
-			  info = xbt_dynar_get_as(rc->link_up_down_list, dst->id,
-			 						  s_surf_parsing_link_up_down_t);
-
-			  if (info.link_up) {     // link up
-				  char *link_name = ((surf_resource_t) info.link_up)->name;
-				  current = new_xbt_graph_node(graph, link_name, nodes);
-				  new_xbt_graph_edge(graph, previous, current, edges);
-				  previous = current;
-			  } else if (info.link_down) {    // link down
-				  char *link_name = ((surf_resource_t) info.link_down)->name;
-				  revCurrent = new_xbt_graph_node(graph, link_name, nodes);
-				  new_xbt_graph_edge(graph, revCurrent, revPrevious, edges);
-				  revPrevious = revCurrent;
-			  }
-		  }
-
-	  }
-  }*/
-/*
-  if(rc->)
   for (isrc = 0; isrc < table_size; isrc++) {
     src = xbt_dynar_get_as(rc->index_network_elm, isrc, sg_routing_edge_t);
 
-    previous = new_xbt_graph_node(graph, src->name, nodes);
-    revPrevious = new_xbt_graph_node(graph, src->name, nodes);
+    if (src->rc_type != SURF_NETWORK_ELEMENT_ROUTER) {
+      previous = new_xbt_graph_node(graph, src->name, nodes);
 
-    for (idst = isrc + 1; idst < table_size; idst++) {
-      dst = xbt_dynar_get_as(rc->index_network_elm, idst, sg_routing_edge_t);
+      info = xbt_dynar_get_as(rc->link_up_down_list, src->id,
+                              s_surf_parsing_link_up_down_t);
 
-      s_surf_parsing_link_up_down_t info;
+      if (info.link_up) {     // link up
 
-      if (src->rc_type != SURF_NETWORK_ELEMENT_ROUTER) {        // No specific link for router
-        info =
-            xbt_dynar_get_as(rc->link_up_down_list, src->id,
-                             s_surf_parsing_link_up_down_t);
+        char *link_name = ((surf_resource_t) info.link_up)->name;
+        current = new_xbt_graph_node(graph, link_name, nodes);
+        new_xbt_graph_edge(graph, previous, current, edges);
 
-        if (info.link_up) {     // link up
-          char *link_name = ((surf_resource_t) info.link_up)->name;
-          current = new_xbt_graph_node(graph, link_name, nodes);
-          new_xbt_graph_edge(graph, previous, current, edges);
-          previous = current;
-        } else if (info.link_down) {    // link down
-          char *link_name = ((surf_resource_t) info.link_down)->name;
-          revCurrent = new_xbt_graph_node(graph, link_name, nodes);
-          new_xbt_graph_edge(graph, revCurrent, revPrevious, edges);
-          revPrevious = revCurrent;
+        if (((as_cluster_t) rc)->backbone) {
+          new_xbt_graph_edge(graph, current, backboneNode, edges);
+        } else {
+          new_xbt_graph_edge(graph, current, routerNode, edges);
         }
+
       }
 
+      if (info.link_down) {    // link down
+        char *link_name = ((surf_resource_t) info.link_down)->name;
+        current = new_xbt_graph_node(graph, link_name, nodes);
+        new_xbt_graph_edge(graph, previous, current, edges);
 
+        if (((as_cluster_t) rc)->backbone) {
+          new_xbt_graph_edge(graph, current, backboneNode, edges);
+        } else {
+          new_xbt_graph_edge(graph, current, routerNode, edges);
+        }
 
+      }
+/*
       if (((as_cluster_t) rc)->backbone) {
         char *link_name =
-            ((surf_resource_t) ((as_cluster_t) rc)->backbone)->name;
+          ((surf_resource_t) ((as_cluster_t) rc)->backbone)->name;
 
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
@@ -199,12 +133,9 @@ static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
         revCurrent = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, revCurrent, revPrevious, edges);
         revPrevious = revCurrent;
-      }
-
-      if (dst->rc_type != SURF_NETWORK_ELEMENT_ROUTER) {        // No specific link for router
-        info =
-            xbt_dynar_get_as(rc->link_up_down_list, dst->id,
-                             s_surf_parsing_link_up_down_t);
+      } else {
+        info = xbt_dynar_get_as(rc->link_up_down_list, dst->id,
+                                s_surf_parsing_link_up_down_t);
 
         if (info.link_up) {     // link up
           char *link_name = ((surf_resource_t) info.link_up)->name;
@@ -218,9 +149,76 @@ static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
           revPrevious = revCurrent;
         }
       }
-
+*/
     }
-  }*/
+  }
+/*
+  if(rc->)
+    for (isrc = 0; isrc < table_size; isrc++) {
+      src = xbt_dynar_get_as(rc->index_network_elm, isrc, sg_routing_edge_t);
+
+      previous = new_xbt_graph_node(graph, src->name, nodes);
+      revPrevious = new_xbt_graph_node(graph, src->name, nodes);
+
+      for (idst = isrc + 1; idst < table_size; idst++) {
+        dst = xbt_dynar_get_as(rc->index_network_elm, idst, sg_routing_edge_t);
+
+        s_surf_parsing_link_up_down_t info;
+
+        if (src->rc_type != SURF_NETWORK_ELEMENT_ROUTER) {        // No specific link for router
+          info =
+            xbt_dynar_get_as(rc->link_up_down_list, src->id,
+                             s_surf_parsing_link_up_down_t);
+
+          if (info.link_up) {     // link up
+            char *link_name = ((surf_resource_t) info.link_up)->name;
+            current = new_xbt_graph_node(graph, link_name, nodes);
+            new_xbt_graph_edge(graph, previous, current, edges);
+            previous = current;
+          } else if (info.link_down) {    // link down
+            char *link_name = ((surf_resource_t) info.link_down)->name;
+            revCurrent = new_xbt_graph_node(graph, link_name, nodes);
+            new_xbt_graph_edge(graph, revCurrent, revPrevious, edges);
+            revPrevious = revCurrent;
+          }
+        }
+
+
+
+        if (((as_cluster_t) rc)->backbone) {
+          char *link_name =
+            ((surf_resource_t) ((as_cluster_t) rc)->backbone)->name;
+
+          current = new_xbt_graph_node(graph, link_name, nodes);
+          new_xbt_graph_edge(graph, previous, current, edges);
+          previous = current;
+
+          revCurrent = new_xbt_graph_node(graph, link_name, nodes);
+          new_xbt_graph_edge(graph, revCurrent, revPrevious, edges);
+          revPrevious = revCurrent;
+        }
+
+        if (dst->rc_type != SURF_NETWORK_ELEMENT_ROUTER) {        // No specific link for router
+          info =
+            xbt_dynar_get_as(rc->link_up_down_list, dst->id,
+                             s_surf_parsing_link_up_down_t);
+
+          if (info.link_up) {     // link up
+            char *link_name = ((surf_resource_t) info.link_up)->name;
+            current = new_xbt_graph_node(graph, link_name, nodes);
+            new_xbt_graph_edge(graph, previous, current, edges);
+            previous = current;
+          } else if (info.link_down) {    // link down
+            char *link_name = ((surf_resource_t) info.link_down)->name;
+            revCurrent = new_xbt_graph_node(graph, link_name, nodes);
+            new_xbt_graph_edge(graph, revCurrent, revPrevious, edges);
+            revPrevious = revCurrent;
+          }
+        }
+
+      }
+    }
+*/
 }
 
 static void model_cluster_finalize(AS_t as)
