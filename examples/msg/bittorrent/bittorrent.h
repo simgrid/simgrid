@@ -53,4 +53,5 @@
  * Number of pieces the peer asks for simultaneously
  */
 #define MAX_PIECES 1
+
 #endif                          /* BITTORRENT_BITTORRENT_H_ */

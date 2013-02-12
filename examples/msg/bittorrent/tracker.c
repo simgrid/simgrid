@@ -19,7 +19,7 @@ int tracker(int argc, char *argv[])
 {
   int i;
 
-  RngStream stream = RngStream_CreateStream("tracker");
+  RngStream stream = MSG_host_get_data(MSG_host_self());
 
   //Checking arguments
   xbt_assert(argc == 2, "Wrong number of arguments for the tracker.");
@@ -78,8 +78,6 @@ int tracker(int argc, char *argv[])
   }
   //Free the peers list
   xbt_dynar_free(&peers_list);
-  //Free the RngStream object.
-  RngStream_DeleteStream(&stream);
 
   XBT_INFO("Tracker is leaving");
 
