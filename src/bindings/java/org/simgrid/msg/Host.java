@@ -16,7 +16,7 @@ package org.simgrid.msg;
  * Thus it is represented as a physical resource with computing capabilities, some 
  * mailboxes to enable running process to communicate with remote ones, and some private 
  * data that can be only accessed by local process. An instance of this class is always 
- * binded with the corresponding native host. All the native hosts are automatically created 
+ * bound with the corresponding native host. All the native hosts are automatically created
  * during the call of the method Msg.createEnvironment(). This method take as parameter a
  * platform file which describes all elements of the platform (host, link, root..).
  * You cannot create a host yourself.

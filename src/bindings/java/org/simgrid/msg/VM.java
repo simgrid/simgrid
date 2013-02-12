@@ -58,7 +58,7 @@ public class VM {
 	 */	
 	public native void bind(Process process);
 	/** Removes the given process from the given VM, and kill it
-	 *  Will raise a ProcessNotFound exception if the process were not binded to that VM
+	 *  Will raise a ProcessNotFound exception if the process were not bound to that VM
 	 */	
 	public native void unbind(Process process);
 	/** Immediately change the host on which all processes are running
