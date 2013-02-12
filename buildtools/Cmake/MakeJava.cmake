@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 2.8.6)
+
+include(UseJava)
+
 # Rules to build libSG_java
 #
 add_library(SG_java SHARED ${JMSG_C_SRC})
