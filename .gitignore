@@ -67,12 +67,13 @@ CMakeFiles
 CMakeCache.txt
 DartConfiguration.tcl
 simgrid.nsi
+TAGS
 Testing/
 Makefile
 bin/
 lib/
 manpages/
-build_dir/
+build_*/
 build/
 buildtools/Cmake/memcheck_tests.cmake
 buildtools/Cmake/test_prog/prog_va_copy.c
