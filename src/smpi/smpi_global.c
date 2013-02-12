@@ -289,11 +289,12 @@ void smpi_global_destroy(void)
 /* With smpiff, the following weak symbols are replaced by those in libf2c */
 int __attribute__((weak)) xargc;
 char** __attribute__((weak)) xargv;
+
+#ifndef WIN32
 void __attribute__((weak)) user_main__(){
   xbt_die("Should not be in this smpi_simulated_main");
   return;
 }
-
 int __attribute__((weak)) smpi_simulated_main__(int argc, char** argv) {
   smpi_process_init(&argc, &argv);
   user_main__();
@@ -308,6 +309,7 @@ int __attribute__((weak)) main(int argc, char** argv) {
 int __attribute__((weak)) MAIN__(){
   return smpi_main(smpi_simulated_main__,xargc, xargv);
 };
+#endif
 
 int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 {

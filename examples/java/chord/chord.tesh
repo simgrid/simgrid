@@ -1,0 +1,14 @@
+#! tesh
+
+! output sort
+
+$ java -cp ${classpath:=.} chord/Chord ${srcdir:=.}/platform.xml ${srcdir:=.}/chord/chord.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [652.540924] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Boivin:chord.Node:(7) 0.000000] [jmsg/INFO] Joining the ring with id 8 knowing node 1
+> [Gatien:chord.Node:(1) 0.000000] [jmsg/INFO] Joining the ring with id 48 knowing node 1
+> [Geoff:chord.Node:(4) 0.000000] [jmsg/INFO] Joining the ring with id 32 knowing node 1
+> [Jean_Yves:chord.Node:(6) 0.000000] [jmsg/INFO] Joining the ring with id 14 knowing node 1
+> [McGee:chord.Node:(2) 0.000000] [jmsg/INFO] Joining the ring with id 42 knowing node 1
+> [TeX:chord.Node:(5) 0.000000] [jmsg/INFO] Joining the ring with id 21 knowing node 1
+> [iRMX:chord.Node:(3) 0.000000] [jmsg/INFO] Joining the ring with id 38 knowing node 1

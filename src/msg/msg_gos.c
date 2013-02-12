@@ -125,6 +125,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
  */
 msg_error_t MSG_process_sleep(double nb_sec)
 {
+  xbt_ex_t e;
   msg_error_t status = MSG_OK;
   /*msg_process_t proc = MSG_process_self();*/
 
@@ -140,7 +141,19 @@ msg_error_t MSG_process_sleep(double nb_sec)
   
   proc->simdata->waiting_action = NULL;*/
 
-  simcall_process_sleep(nb_sec);
+  TRY {
+    simcall_process_sleep(nb_sec);
+  }
+  CATCH(e) {
+    switch (e.category) {
+    case cancel_error:
+      status = MSG_TASK_CANCELED;
+      break;
+    default:
+      RETHROW;
+    }
+    xbt_ex_free(e);
+  }
 
   #ifdef HAVE_TRACING
     TRACE_msg_process_sleep_out(MSG_process_self());
@@ -304,11 +317,26 @@ msg_error_t
 MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
                      msg_host_t host)
 {
+  xbt_ex_t e;
+  msg_error_t ret = MSG_OK;
   XBT_DEBUG
       ("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'",
        alias);
-  return MSG_mailbox_get_task_ext(MSG_mailbox_get_by_alias(alias), task,
-                                  host, timeout);
+  TRY {
+    ret = MSG_mailbox_get_task_ext(MSG_mailbox_get_by_alias(alias), task,
+                                   host, timeout);
+  }
+  CATCH(e) {
+    switch (e.category) {
+    case cancel_error:          /* may be thrown by MSG_mailbox_get_by_alias */
+      ret = MSG_HOST_FAILURE;
+      break;
+    default:
+      RETHROW;
+    }
+    xbt_ex_free(e);
+  }
+  return ret;
 }
 
 /** \ingroup msg_task_usage

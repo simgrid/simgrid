@@ -2,6 +2,7 @@
 
 set(EXTRA_DIST
   include/xbt/win32_ucontext.h
+  src/bindings/java/MANIFEST.MF
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
@@ -286,6 +287,7 @@ set(EXTRA_DIST
 #* ****************************************************************************************** *#
 
 set(SIMDAG_SRC
+  src/simdag/instr_sd_task.c
   src/simdag/sd_daxloader.c
   src/simdag/sd_global.c
   src/simdag/sd_link.c
@@ -309,6 +311,72 @@ set(BINDINGS_SRC
   src/bindings/lua/lua_utils.h
   src/bindings/lua/simgrid_lua.h
   )
+
+set(JMSG_C_SRC
+  src/bindings/java/jmsg.c
+  src/bindings/java/jmsg.h
+  src/bindings/java/jmsg_comm.c
+  src/bindings/java/jmsg_comm.h
+  src/bindings/java/jmsg_file.c
+  src/bindings/java/jmsg_file.h
+  src/bindings/java/jmsg_host.c
+  src/bindings/java/jmsg_host.h
+  src/bindings/java/jmsg_process.c
+  src/bindings/java/jmsg_process.h
+  src/bindings/java/jmsg_rngstream.c
+  src/bindings/java/jmsg_rngstream.h
+  src/bindings/java/jmsg_synchro.c
+  src/bindings/java/jmsg_synchro.h
+  src/bindings/java/jmsg_task.c
+  src/bindings/java/jmsg_task.h
+  src/bindings/java/jmsg_vm.c
+  src/bindings/java/jmsg_vm.h
+  src/bindings/java/jxbt_utilities.c
+  src/bindings/java/jxbt_utilities.h
+  src/bindings/java/smx_context_cojava.c
+  src/bindings/java/smx_context_cojava.h
+  src/bindings/java/smx_context_java.c
+  src/bindings/java/smx_context_java.h
+)
+
+set(JMSG_JAVA_SRC
+  src/bindings/java/org/simgrid/msg/Comm.java
+  src/bindings/java/org/simgrid/msg/File.java
+  src/bindings/java/org/simgrid/msg/Host.java
+  src/bindings/java/org/simgrid/msg/HostFailureException.java
+  src/bindings/java/org/simgrid/msg/HostNotFoundException.java
+  src/bindings/java/org/simgrid/msg/JniException.java
+  src/bindings/java/org/simgrid/msg/Msg.java
+  src/bindings/java/org/simgrid/msg/MsgException.java
+  src/bindings/java/org/simgrid/msg/Mutex.java
+  src/bindings/java/org/simgrid/msg/NativeException.java
+  src/bindings/java/org/simgrid/msg/Process.java
+  src/bindings/java/org/simgrid/msg/ProcessKilledError.java
+  src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
+  src/bindings/java/org/simgrid/msg/RngStream.java
+  src/bindings/java/org/simgrid/msg/Task.java
+  src/bindings/java/org/simgrid/msg/TaskCancelledException.java
+  src/bindings/java/org/simgrid/msg/TimeoutException.java
+  src/bindings/java/org/simgrid/msg/TransferFailureException.java
+  src/bindings/java/org/simgrid/msg/VM.java
+)
+
+set(JTRACE_C_SRC
+  src/bindings/java/jtrace.c
+  src/bindings/java/jtrace.h
+)
+
+set(JTRACE_JAVA_SRC
+  src/bindings/java/org/simgrid/trace/Trace.java
+)
+
+if(HAVE_TRACING)
+  list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
+  list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
+else()
+  list(APPEND EXTRA_DIST ${JTRACE_C_SRC})
+  list(APPEND EXTRA_DIST ${JTRACE_JAVA_SRC})
+endif()
 
 set(LUA_SRC
   src/bindings/lua/lua_comm.c
@@ -650,7 +718,9 @@ set(txt_files
   AUTHORS
   COPYING
   README
+  README.java
   ChangeLog
+  ChangeLog.SimGrid-java
   INSTALL
   LICENSE-LGPL-2.1
   NEWS
@@ -659,6 +729,24 @@ set(txt_files
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
+  examples/java/CMakeLists.txt
+  examples/java/async/CMakeLists.txt
+  examples/java/bittorrent/CMakeLists.txt
+  examples/java/chord/CMakeLists.txt
+  examples/java/cloud/CMakeLists.txt
+  examples/java/commTime/CMakeLists.txt
+  examples/java/io/CMakeLists.txt
+  examples/java/kademlia/CMakeLists.txt
+  examples/java/master_slave_bypass/CMakeLists.txt
+  examples/java/master_slave_kill/CMakeLists.txt
+  examples/java/masterslave/CMakeLists.txt
+  examples/java/migration/CMakeLists.txt
+  examples/java/mutualExclusion/CMakeLists.txt
+  examples/java/pingPong/CMakeLists.txt
+  examples/java/priority/CMakeLists.txt
+  examples/java/startKillTime/CMakeLists.txt
+  examples/java/suspend/CMakeLists.txt
+  examples/java/tracing/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
@@ -706,6 +794,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
+  teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/smpi/mpich-test/CMakeLists.txt
@@ -773,7 +862,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/src/internal_config.h.in
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
-  buildtools/Cmake/test_prog/prog_getline.c
   buildtools/Cmake/test_prog/prog_gnu_dynlinker.c
   buildtools/Cmake/test_prog/prog_gtnets.cpp
   buildtools/Cmake/test_prog/prog_mutex_timedlock.c

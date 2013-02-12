@@ -14,7 +14,7 @@ memory_map_t get_memory_map(void)
   FILE *fp;                     /* File pointer to process's proc maps file */
   char *line = NULL;            /* Temporal storage for each line that is readed */
   ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by getline */
+  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
   memory_map_t ret = NULL;      /* The memory map to return */
 
 /* The following variables are used during the parsing of the file "maps" */
@@ -35,7 +35,7 @@ memory_map_t get_memory_map(void)
   ret = xbt_new0(s_memory_map_t, 1);
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
-  while ((read = getline(&line, &n, fp)) != -1) {
+  while ((read = xbt_getline(&line, &n, fp)) != -1) {
 
     //fprintf(stderr,"%s", line);
 

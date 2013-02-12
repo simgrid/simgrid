@@ -1,0 +1,16 @@
+#! tesh
+
+! output sort
+
+$ java -cp ${classpath:=.} kademlia/Kademlia ${srcdir:=.}/platform.xml ${srcdir:=.}/kademlia/kademlia.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [900.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Boivin:kademlia.Node:(2) 0.000000] [jmsg/INFO] Hi, I'm going to join the network with the id 1!
+> [Boivin:kademlia.Node:(2) 900.000000] [jmsg/INFO] 8/8 FIND_NODE have succedded.
+> [Jacquelin:kademlia.Node:(1) 0.000000] [jmsg/INFO] Hi, I'm going to create the network with the id 0!
+> [Jacquelin:kademlia.Node:(1) 900.000000] [jmsg/INFO] 8/8 FIND_NODE have succedded.
+> [Jean_Yves:kademlia.Node:(3) 0.000000] [jmsg/INFO] Hi, I'm going to join the network with the id 2!
+> [Jean_Yves:kademlia.Node:(3) 900.000000] [jmsg/INFO] 8/8 FIND_NODE have succedded.
+> [TeX:kademlia.Node:(4) 0.000000] [jmsg/INFO] Hi, I'm going to join the network with the id 4!
+> [TeX:kademlia.Node:(4) 900.000000] [jmsg/INFO] 8/8 FIND_NODE have succedded.
+

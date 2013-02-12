@@ -99,22 +99,19 @@ int main(int argc, char **argv)
     SD_workstation_t *wsl = SD_task_get_workstation_list(task);
     switch (kind) {
     case SD_TASK_COMP_SEQ:
-      fprintf(out, "[%f] %s compute %f # %s\n",
-              SD_task_get_start_time(task),
-              SD_workstation_get_name(wsl[0]), SD_task_get_amount(task),
-              SD_task_get_name(task));
+      fprintf(out, "[%f->%f] %s compute %f flops # %s\n",
+          SD_task_get_start_time(task),
+          SD_task_get_finish_time(task),
+          SD_workstation_get_name(wsl[0]), SD_task_get_amount(task),
+          SD_task_get_name(task));
       break;
     case SD_TASK_COMM_E2E:
-      fprintf(out, "[%f] %s send %s %f # %s\n",
-              SD_task_get_start_time(task),
-              SD_workstation_get_name(wsl[0]),
-              SD_workstation_get_name(wsl[1]), SD_task_get_amount(task),
-              SD_task_get_name(task));
-      fprintf(out, "[%f] %s recv %s %f # %s\n",
-              SD_task_get_finish_time(task),
-              SD_workstation_get_name(wsl[1]),
-              SD_workstation_get_name(wsl[0]), SD_task_get_amount(task),
-              SD_task_get_name(task));
+      fprintf(out, "[%f -> %f] %s -> %s transfer of %.0f bytes # %s\n",
+          SD_task_get_start_time(task),
+          SD_task_get_finish_time(task),
+          SD_workstation_get_name(wsl[0]),
+          SD_workstation_get_name(wsl[1]), SD_task_get_amount(task),
+          SD_task_get_name(task));
       break;
     default:
       xbt_die("Task %s is of unknown kind %d", SD_task_get_name(task),

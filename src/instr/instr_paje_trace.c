@@ -224,15 +224,16 @@ void TRACE_paje_dump_buffer (int force)
     buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
   }else{
     paje_event_t event;
-    while (!xbt_dynar_is_empty(buffer)){
-      double head_timestamp = (*(paje_event_t*)xbt_dynar_get_ptr(buffer, 0))->timestamp;
+    unsigned int cursor;
+    xbt_dynar_foreach(buffer, cursor, event) {
+      double head_timestamp = event->timestamp;
       if (head_timestamp > TRACE_last_timestamp_to_dump){
         break;
       }
-      xbt_dynar_remove_at (buffer, 0, &event);
       event->print (event);
       event->free (event);
     }
+    xbt_dynar_remove_n_at(buffer, cursor, 0);
   }
   XBT_DEBUG("%s: ends", __FUNCTION__);
 }

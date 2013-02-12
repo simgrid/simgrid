@@ -7,7 +7,7 @@ CMAKE_LINKARGS="-L@libdir@"
 
 if [ "@WIN32@" != "1" ]; then
   CFLAGS="-Dmain=smpi_simulated_main__"
-  LINKARGS="-lsimgrid -lsmpi -lm"
+  LINKARGS="-lsimgrid -lsmpi"
 else
   CFLAGS="-include @includedir@/smpi/smpi_main.h"
   LINKARGS="@libdir@\libsimgrid.dll @libdir@\libsmpi.dll"

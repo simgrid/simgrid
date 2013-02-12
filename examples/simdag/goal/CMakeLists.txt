@@ -6,7 +6,7 @@ add_executable(goal_test goal_test.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(goal_test simgrid pthread m )
+  target_link_libraries(goal_test simgrid pthread )
 else()
   target_link_libraries(goal_test simgrid)
 endif()

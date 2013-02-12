@@ -422,6 +422,9 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
 #endif
 #endif
 
+  /* FIXME: better place */
+#include "xbt/sysdep.h"
+
 /* declarations */
 
 static char credits[] = "\n\
@@ -1164,9 +1167,6 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
 }
 #endif
 
-
-  /* FIXME: better place */
-#include "xbt/sysdep.h"
 
 char *bvprintf(const char *fmt, va_list ap)
 {

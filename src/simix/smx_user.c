@@ -607,7 +607,7 @@ smx_rdv_t simcall_rdv_get_by_name(const char *name)
 {
   xbt_assert(name != NULL, "Invalid parameter for simcall_rdv_get_by_name (name is NULL)");
 
-  /* FIXME: this is a horrible lost of performance, so we hack it out by
+  /* FIXME: this is a horrible loss of performance, so we hack it out by
    * skipping the simcall (for now). It works in parallel, it won't work on
    * distributed but probably we will change MSG for that. */
 

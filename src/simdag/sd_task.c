@@ -1,4 +1,4 @@
-/* Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011. The SimGrid Team.
+/* Copyright (c) 2006 - 2013. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -91,7 +91,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   sd_global->task_number++;
 
 #ifdef HAVE_TRACING
-  task->category = NULL;
+  TRACE_sd_task_create(task);
 #endif
 
   return task;
@@ -125,6 +125,12 @@ SD_task_t SD_task_create_comm_e2e(const char *name, void *data,
   SD_task_t res = SD_task_create_sized(name, data, amount, 2);
   res->communication_amount[2] = amount;
   res->kind = SD_TASK_COMM_E2E;
+
+#ifdef HAVE_TRACING
+  TRACE_category("COMM_E2E");
+  TRACE_sd_set_task_category(res, "COMM_E2E");
+#endif
+
   return res;
 }
 
@@ -149,7 +155,13 @@ SD_task_t SD_task_create_comp_seq(const char *name, void *data,
   SD_task_t res = SD_task_create_sized(name, data, amount, 1);
   res->computation_amount[0] = amount;
   res->kind = SD_TASK_COMP_SEQ;
-  return res;
+
+#ifdef HAVE_TRACING
+  TRACE_category("COMP_SEQ");
+  TRACE_sd_set_task_category(res, "COMP_SEQ");
+#endif
+
+return res;
 }
 
 /** @brief create a parallel computation task that can then be auto-scheduled
@@ -178,6 +190,12 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data,
   SD_task_t res = SD_task_create(name, data, amount);
   res->alpha = alpha;
   res->kind = SD_TASK_COMP_PAR_AMDAHL;
+
+#ifdef HAVE_TRACING
+  TRACE_category("COMP_PAR_AMDAHL");
+  TRACE_sd_set_task_category(res, "COMP_PAR_AMDAHL");
+#endif
+
   return res;
 }
 
@@ -206,6 +224,12 @@ SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data,
   SD_task_t res = SD_task_create(name, data, amount);
   res->workstation_list=NULL;
   res->kind = SD_TASK_COMM_PAR_MXN_1D_BLOCK;
+
+#ifdef HAVE_TRACING
+  TRACE_category("COMM_PAR_MXN_1D_BLOCK");
+  TRACE_sd_set_task_category(res, "COMM_PAR_MXN_1D_BLOCK");
+#endif
+
   return res;
 }
 
@@ -240,7 +264,7 @@ void SD_task_destroy(SD_task_t task)
   xbt_free(task->computation_amount);
 
 #ifdef HAVE_TRACING
-  if (task->category) xbt_free(task->category);
+  TRACE_sd_task_destroy(task);
 #endif
 
   xbt_mallocator_release(sd_global->task_mallocator,task);
@@ -525,6 +549,12 @@ void SD_task_dump(SD_task_t task)
       XBT_INFO("  - (unknown kind %d)", task->kind);
     }
   }
+
+#ifdef HAVE_TRACING
+  if (task->category)
+    XBT_INFO("  - tracing category: %s", task->category);
+#endif
+
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
     XBT_INFO("  - alpha: %.2f", task->alpha);
@@ -591,9 +621,9 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
                             SD_task_t dst)
 {
   xbt_dynar_t dynar;
-  int length;
+  unsigned long length;
   int found = 0;
-  int i;
+  unsigned long i;
   SD_dependency_t dependency;
 
   dynar = src->tasks_after;
@@ -622,7 +652,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   for (i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
     found = (dependency->dst == dst);
-    XBT_DEBUG("Dependency %d: dependency->dst = %s", i,
+    XBT_DEBUG("Dependency %lu: dependency->dst = %s", i,
            SD_task_get_name(dependency->dst));
   }
 
@@ -716,9 +746,9 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 {
 
   xbt_dynar_t dynar;
-  int length;
+  unsigned long length;
   int found = 0;
-  int i;
+  unsigned long i;
   SD_dependency_t dependency;
 
   /* remove the dependency from src->tasks_after */
@@ -787,9 +817,9 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
 {
 
   xbt_dynar_t dynar;
-  int length;
+  unsigned long length;
   int found = 0;
-  int i;
+  unsigned long i;
   SD_dependency_t dependency;
 
   dynar = src->tasks_after;
@@ -1668,51 +1698,4 @@ void SD_task_schedulel(SD_task_t task, int count, ...)
   va_end(ap);
   SD_task_schedulev(task, count, list);
   free(list);
-}
-
-/**
- * \brief Sets the tracing category of a task.
- *
- * This function should be called after the creation of a
- * SimDAG task, to define the category of that task. The first
- * parameter must contain a task that was created with the
- * function #SD_task_create. The second parameter must contain
- * a category that was previously declared with the function
- * #TRACE_category.
- *
- * \param task The task to be considered
- * \param category the name of the category to be associated to the task
- *
- * \see SD_task_get_category, TRACE_category, TRACE_category_with_color
- */
-void SD_task_set_category (SD_task_t task, const char *category)
-{
-#ifdef HAVE_TRACING
-  if (!TRACE_is_enabled()) return;
-  if (task == NULL) return;
-  if (category == NULL){
-    if (task->category) xbt_free (task->category);
-    task->category = NULL;
-  }else{
-    task->category = xbt_strdup (category);
-  }
-#endif
-}
-
-/**
- * \brief Gets the current tracing category of a task.
- *
- * \param task The task to be considered
- *
- * \see SD_task_set_category
- *
- * \return Returns the name of the tracing category of the given task, NULL otherwise
- */
-const char *SD_task_get_category (SD_task_t task)
-{
-#ifdef HAVE_TRACING
-  return task->category;
-#else
-  return NULL;
-#endif
 }

@@ -66,15 +66,15 @@ for this test.\n" );
 	t0 = MPI_Wtime();
     }
     /* Test that the timer increases */
-    Current_Test = (char*)"Testing timer increases";
-    for (flag=0; flag<1000000; flag++) {
-	if (MPI_Wtime() > t0) break;
-    }
-    if (flag >= 1000000) {
-	fprintf( stderr, "MPI_WTIME is not returning increasing values!\n" );
-	Test_Failed(Current_Test);
-	MPI_Abort( MPI_COMM_WORLD, 1 );
-    }
+/*    Current_Test = (char*)"Testing timer increases";*/
+/*    for (flag=0; flag<1000000; flag++) {*/
+/*	if (MPI_Wtime() > t0) break;*/
+/*    }*/
+/*    if (flag >= 1000000) {*/
+/*	fprintf( stderr, "MPI_WTIME is not returning increasing values!\n" );*/
+/*	Test_Failed(Current_Test);*/
+/*	MPI_Abort( MPI_COMM_WORLD, 1 );*/
+/*    }*/
 
     Current_Test = (char*)"Issend waits for recv";
     if (rank == src) { 
@@ -86,15 +86,15 @@ for this test.\n" );
 	MPI_Issend( buffer, act_size, MPI_INT, dest, 2, MPI_COMM_WORLD, &r2 );
 	t0 = MPI_Wtime();
 	flag = 0;
-	while ( (MPI_Wtime() - t0) < MAX_TIME) {
-	    MPI_Test( &r1, &flag, &status );
-	    if (flag) {
-		Test_Failed(Current_Test);
-		break;
-		}
-	    }
-	if (!flag) 
-	    Test_Passed(Current_Test);
+/*	while ( (MPI_Wtime() - t0) < MAX_TIME) {*/
+/*	    MPI_Test( &r1, &flag, &status );*/
+/*	    if (flag) {*/
+/*		Test_Failed(Current_Test);*/
+/*		break;*/
+/*		}*/
+/*	    }*/
+/*	if (!flag) */
+/*	    Test_Passed(Current_Test);*/
 	MPI_Wait( &r2, &status );
 	MPI_Sendrecv( MPI_BOTTOM, 0, MPI_INT, dest, 13,
 		      MPI_BOTTOM, 0, MPI_INT, dest, 13,

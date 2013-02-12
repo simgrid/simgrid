@@ -1,0 +1,55 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+  <process host="Jacquelin" function="commTime.Master">
+     <argument value="5000"/>  <!-- Amount of tasks to dispatch -->
+     <argument value="50000"/> <!-- Computation size of each task -->
+     <argument value="10"/>    <!-- Communication size of each one -->
+     <argument value="21"/>    <!-- Amount of commTime.Slaves waiting for orders -->
+  </process>
+  
+  <process host="iRMX" function="commTime.Slave">
+     <argument value="0"/>  <!-- Input mailbox -->
+  </process>
+  
+  <process host="Bousquet" function="commTime.Slave">
+     <argument value="1"/></process>
+  <process host="Soucy" function="commTime.Slave">
+     <argument value="2"/></process>
+  <process host="Casavant" function="commTime.Slave">
+     <argument value="3"/></process>
+  <process host="Jackson" function="commTime.Slave">
+     <argument value="4"/></process>
+  <process host="Geoff" function="commTime.Slave">
+     <argument value="5"/></process>
+  <process host="Disney" function="commTime.Slave">
+     <argument value="6"/></process>
+  <process host="McGee" function="commTime.Slave">
+     <argument value="7"/></process>
+  <process host="Gatien" function="commTime.Slave">
+     <argument value="8"/></process>
+  <process host="Laroche" function="commTime.Slave">
+     <argument value="9"/></process>
+  <process host="Tanguay" function="commTime.Slave">
+     <argument value="10"/></process>
+  <process host="Morin" function="commTime.Slave">
+     <argument value="11"/></process>
+  <process host="Ethernet" function="commTime.Slave">
+     <argument value="12"/></process>
+  <process host="Bellemarre" function="commTime.Slave">
+     <argument value="13"/></process>
+  <process host="Harry" function="commTime.Slave">
+     <argument value="14"/></process>
+  <process host="Olivier" function="commTime.Slave">
+     <argument value="15"/></process>
+  <process host="Boucherville" function="commTime.Slave">
+     <argument value="16"/></process>
+  <process host="Pointe_Claire" function="commTime.Slave">
+     <argument value="17"/></process>
+  <process host="Kansas" function="commTime.Slave">
+     <argument value="18"/></process>
+  <process host="King" function="commTime.Slave">
+     <argument value="19"/></process>
+  <process host="Lapointe" function="commTime.Slave">
+     <argument value="20"/></process>
+</platform>

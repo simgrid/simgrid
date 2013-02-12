@@ -92,6 +92,9 @@ XBT_PUBLIC(void) xbt_dynar_insert_at(xbt_dynar_t const dynar,
                                      const int idx, const void *src);
 XBT_PUBLIC(void) xbt_dynar_remove_at(xbt_dynar_t const dynar,
                                      const int idx, void *const dst);
+XBT_PUBLIC(void) xbt_dynar_remove_n_at(xbt_dynar_t const dynar,
+                                     const unsigned int n, const int idx);
+
 
 XBT_PUBLIC(unsigned int) xbt_dynar_search(xbt_dynar_t const dynar, void *elem);
 XBT_PUBLIC(signed int) xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void *const elem);
@@ -227,7 +230,7 @@ typedef struct xbt_dynar_s {
 } s_xbt_dynar_t;
 
 static XBT_INLINE void
-_xbt_dynar_cursor_first(const xbt_dynar_t dynar,
+_xbt_dynar_cursor_first(const xbt_dynar_t dynar _XBT_GNUC_UNUSED,
                         unsigned int *const cursor)
 {
   /* iterating over a NULL dynar is a no-op (but we don't want to have uninitialized counters) */

@@ -8,7 +8,9 @@
 
 #include "simgrid_config.h"
 #include <stdio.h>
+#ifndef WIN32
 #include <sys/mman.h>
+#endif
 #include "mc/mc.h"
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
@@ -36,11 +38,12 @@ typedef struct s_mc_mem_region{
 typedef struct s_mc_snapshot{
   unsigned int num_reg;
   int region_type[nb_regions];
-  size_t heap_chunks_used;
+  size_t heap_bytes_used;
   mc_mem_region_t *regions;
   size_t *stack_sizes;
   xbt_dynar_t stacks;
   int nb_processes;
+  xbt_dynar_t to_ignore;
 } s_mc_snapshot_t, *mc_snapshot_t;
 
 typedef struct s_mc_snapshot_stack{
@@ -200,7 +203,6 @@ void get_libsimgrid_plt_section(void);
 void get_binary_plt_section(void);
 
 extern void *start_data_libsimgrid;
-extern void *end_raw_heap;
 extern void *start_data_binary;
 extern void *start_bss_binary;
 extern char *libsimgrid_path;
@@ -219,7 +221,7 @@ extern void *end_got_plt_binary;
 
 typedef struct s_mc_comparison_times{
   double nb_processes_comparison_time;
-  double chunks_used_comparison_time;
+  double bytes_used_comparison_time;
   double stacks_sizes_comparison_time;
   double binary_global_variables_comparison_time;
   double libsimgrid_global_variables_comparison_time;

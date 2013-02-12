@@ -53,7 +53,7 @@ typedef struct msg_host_priv {
 } s_msg_host_priv_t, *msg_host_priv_t;
 
 static inline msg_host_priv_t MSG_host_priv(msg_host_t host){
-  return xbt_lib_get_level(host, MSG_HOST_LEVEL);
+  return (msg_host_priv_t )xbt_lib_get_level(host, MSG_HOST_LEVEL);
 }
 
 
@@ -89,7 +89,7 @@ typedef enum {
 } e_msg_vm_state_t;
 
 typedef struct msg_vm {
-  const char *name;
+  char *name;
   s_xbt_swag_hookup_t all_vms_hookup;
   s_xbt_swag_hookup_t host_vms_hookup;
   xbt_dynar_t processes;

@@ -9,18 +9,23 @@ add_executable(sd_avail sd_avail.c)
 add_executable(sd_typed_tasks_test sd_typed_tasks_test.c)
 add_executable(sd_comm_throttling sd_comm_throttling.c)
 add_executable(sd_seq_access sd_seq_access.c)
-add_executable(simdag_tracing simdag_trace.c)
+
+if (HAVE_TRACING)
+  add_executable(simdag_tracing simdag_trace.c)
+endif()
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(ex_sd_test simgrid pthread m )
-  target_link_libraries(sd_test2 simgrid pthread m )
-  target_link_libraries(sd_fail simgrid pthread m )
-  target_link_libraries(sd_avail simgrid pthread m )
-  target_link_libraries(sd_typed_tasks_test simgrid pthread m )
-  target_link_libraries(sd_comm_throttling simgrid pthread m )
-  target_link_libraries(sd_seq_access simgrid pthread m )
-  target_link_libraries(simdag_tracing simgrid pthread m )
+  target_link_libraries(ex_sd_test simgrid pthread )
+  target_link_libraries(sd_test2 simgrid pthread )
+  target_link_libraries(sd_fail simgrid pthread )
+  target_link_libraries(sd_avail simgrid pthread )
+  target_link_libraries(sd_typed_tasks_test simgrid pthread )
+  target_link_libraries(sd_comm_throttling simgrid pthread )
+  target_link_libraries(sd_seq_access simgrid pthread )
+  if (HAVE_TRACING)
+  target_link_libraries(simdag_tracing simgrid pthread )
+  endif()
 
   add_custom_command(TARGET ex_sd_test
     POST_BUILD
@@ -40,8 +45,10 @@ else()
   target_link_libraries(sd_typed_tasks_test simgrid)
   target_link_libraries(sd_comm_throttling simgrid)
   target_link_libraries(sd_seq_access simgrid)
-  target_link_libraries(simdag_tracing simgrid)
-
+  if (HAVE_TRACING)
+    target_link_libraries(simdag_tracing simgrid)
+  endif()
+  
   add_custom_command(TARGET ex_sd_test
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/ex_sd_test.exe ${CMAKE_CURRENT_BINARY_DIR}/sd_test.exe

@@ -22,8 +22,9 @@ typedef struct s_smpi_process_data *smpi_process_data_t;
 #define NON_PERSISTENT 0x2
 #define SEND           0x4
 #define RECV           0x8
-#define RECV_DELETE     0x10
-
+#define RECV_DELETE    0x10
+#define ISEND          0x20
+#define SSEND          0x40
 // this struct is here to handle the problem of non-contignous data
 // for each such structure these function should be implemented (vector
 // index hvector hindex struct)
@@ -159,12 +160,16 @@ MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
                                int src, int tag, MPI_Comm comm);
+MPI_Request smpi_mpi_ssend_init(void *buf, int count, MPI_Datatype datatype,
+                               int dst, int tag, MPI_Comm comm);
 void smpi_mpi_start(MPI_Request request);
 void smpi_mpi_startall(int count, MPI_Request * requests);
 void smpi_mpi_request_free(MPI_Request * request);
 MPI_Request smpi_isend_init(void *buf, int count, MPI_Datatype datatype,
                             int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
+                           int dst, int tag, MPI_Comm comm);
+MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm);
 MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
                             int src, int tag, MPI_Comm comm);
@@ -173,6 +178,8 @@ MPI_Request smpi_mpi_irecv(void *buf, int count, MPI_Datatype datatype,
 void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
                    int tag, MPI_Comm comm, MPI_Status * status);
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
+                   int tag, MPI_Comm comm);
+void smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm);
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        int dst, int sendtag, void *recvbuf, int recvcount,

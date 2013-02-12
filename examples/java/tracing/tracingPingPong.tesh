@@ -1,0 +1,39 @@
+#! tesh
+
+! output sort
+
+$ java -cp ${classpath:=.} tracing/TracingTest ${srcdir:=.}/platform.xml ${srcdir:=.}/tracing/tracingPingPongDeployment.xml --cfg=tracing:1  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:1
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'simulation.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to '1'
+> [4.474401] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Boivin:tracing.Receiver:(2) 0.000000] [jmsg/INFO] hello!
+> [Boivin:tracing.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
+> [Boivin:tracing.Receiver:(2) 1.048882] [jmsg/INFO] Got at time 1.0488818628325232
+> [Boivin:tracing.Receiver:(2) 1.048882] [jmsg/INFO] Was sent at time 0.0
+> [Boivin:tracing.Receiver:(2) 1.048882] [jmsg/INFO] Communication time : 1.0488818628325232
+> [Boivin:tracing.Receiver:(2) 1.048882] [jmsg/INFO]  --- bw 9.533962169004269E7 ----
+> [Boivin:tracing.Receiver:(2) 2.097764] [jmsg/INFO] goodbye!
+> [Jacquelin:tracing.Sender:(1) 0.000000] [jmsg/INFO] hello !
+> [Jacquelin:tracing.Sender:(1) 0.000000] [jmsg/INFO] host count: 2
+> [Jacquelin:tracing.Sender:(1) 0.000000] [jmsg/INFO] sender time: 0.0
+> [Jacquelin:tracing.Sender:(1) 2.097764] [jmsg/INFO] Got at time 2.0977637256650463
+> [Jacquelin:tracing.Sender:(1) 2.097764] [jmsg/INFO] Was sent at time 0.0
+> [Jacquelin:tracing.Sender:(1) 2.097764] [jmsg/INFO] Communication time : 2.0977637256650463
+> [Jacquelin:tracing.Sender:(1) 2.097764] [jmsg/INFO]  --- bw 4.7669810845021345E7 ----
+> [Jacquelin:tracing.Sender:(1) 2.097764] [jmsg/INFO] sender time: 2.0977637256650463
+> [Jacquelin:tracing.Sender:(1) 4.474401] [jmsg/INFO] Got at time 4.47440072325564
+> [Jacquelin:tracing.Sender:(1) 4.474401] [jmsg/INFO] Was sent at time 2.0977637256650463
+> [Jacquelin:tracing.Sender:(1) 4.474401] [jmsg/INFO] Communication time : 2.376636997590594
+> [Jacquelin:tracing.Sender:(1) 4.474401] [jmsg/INFO]  --- bw 4.2076261583648995E7 ----
+> [Jacquelin:tracing.Sender:(1) 4.474401] [jmsg/INFO] goodbye!
+> [Marcel:tracing.Receiver:(3) 0.000000] [jmsg/INFO] hello!
+> [Marcel:tracing.Receiver:(3) 0.000000] [jmsg/INFO] try to get a task
+> [Marcel:tracing.Receiver:(3) 3.057925] [jmsg/INFO] Got at time 3.0579254576553434
+> [Marcel:tracing.Receiver:(3) 3.057925] [jmsg/INFO] Was sent at time 2.0977637256650463
+> [Marcel:tracing.Receiver:(3) 3.057925] [jmsg/INFO] Communication time : 0.9601617319902971
+> [Marcel:tracing.Receiver:(3) 3.057925] [jmsg/INFO]  --- bw 1.0414912057858452E8 ----
+> [Marcel:tracing.Receiver:(3) 4.474401] [jmsg/INFO] goodbye!
+
+$ rm -rf simulation.trace

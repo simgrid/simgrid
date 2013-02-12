@@ -1,0 +1,14 @@
+#! tesh
+
+! output sort
+
+$ java -cp ${classpath:=.} mutualExclusion/centralized/MutexCentral ${srcdir:=.}/mutualExclusion/ring3.xml ${srcdir:=.}/mutualExclusion/mutex_centralized_deployment.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.007806] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Host 0:mutualExclusion.centralized.Coordinator:(1) 0.001301] [jmsg/INFO] Got a request from mutualExclusion.centralized.Node. Queue empty: grant it
+> [Host 0:mutualExclusion.centralized.Coordinator:(1) 0.003903] [jmsg/INFO] Got a request from mutualExclusion.centralized.Node. Queue empty: grant it
+> [Host 0:mutualExclusion.centralized.Coordinator:(1) 0.007806] [jmsg/INFO] we should shutdown the simulation now
+> [Host 1:mutualExclusion.centralized.Node:(2) 0.000000] [jmsg/INFO] Send a request to the coordinator
+> [Host 1:mutualExclusion.centralized.Node:(2) 0.001301] [jmsg/INFO] Wait for a grant from the coordinator
+> [Host 2:mutualExclusion.centralized.Node:(3) 0.000000] [jmsg/INFO] Send a request to the coordinator
+> [Host 2:mutualExclusion.centralized.Node:(3) 0.003903] [jmsg/INFO] Wait for a grant from the coordinator

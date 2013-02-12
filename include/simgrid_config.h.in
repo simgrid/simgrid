@@ -71,20 +71,10 @@ XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
 #cmakedefine HAVE_MMAP @HAVE_MMAP@
 
 /* Get the config */
-#undef SIMGRID_NEED_GETLINE
 #undef SIMGRID_NEED_ASPRINTF
 #undef SIMGRID_NEED_VASPRINTF
-@need_getline@
 @simgrid_need_asprintf@
 @simgrid_need_vasprintf@
-
-#include <stdio.h>  /* FILE, getline if it exists  */
-
-/* Use that config to declare missing elements */
-#ifdef SIMGRID_NEED_GETLINE
-#include <stdlib.h> /* size_t */
-XBT_PUBLIC(long) getline(char **lineptr, size_t * n, FILE * stream);
-#endif
 
 #include <stdarg.h>
 

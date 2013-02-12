@@ -2,21 +2,21 @@
 
 sudo apt-get update
 
-sudo apt-get -y -qq install gcc
-sudo apt-get -y -qq install g++
-sudo apt-get -y -qq install make
-sudo apt-get -y -qq install openjdk-6-jdk
-sudo apt-get -y -qq install liblua5.1-dev lua5.1
-sudo apt-get -y -qq install unzip
 sudo apt-get -y -qq install cmake
-sudo apt-get -y -qq install wget
-sudo apt-get -y -qq install perl
-sudo apt-get -y -qq install graphviz-dev graphviz
-sudo apt-get -y -qq install libpcre3-dev
+sudo apt-get -y -qq install default-jdk
 sudo apt-get -y -qq install f2c
-sudo apt-get -y -qq install valgrind
+sudo apt-get -y -qq install g++
+sudo apt-get -y -qq install gcc
 sudo apt-get -y -qq install git-core
+sudo apt-get -y -qq install graphviz-dev graphviz
+sudo apt-get -y -qq install liblua5.1-dev lua5.1
+sudo apt-get -y -qq install libpcre3-dev
 sudo apt-get -y -qq install libunwind7-dev
+sudo apt-get -y -qq install make
+sudo apt-get -y -qq install perl
+sudo apt-get -y -qq install unzip
+sudo apt-get -y -qq install valgrind
+sudo apt-get -y -qq install wget
 
 if [ $PIPOL_IMAGE == "i386-linux-ubuntu-lucid.dd.gz" ]; then
   wget http://mirror.ovh.net/ubuntu//pool/universe/libu/libunwind/libunwind7_0.99-0.3ubuntu1_i386.deb

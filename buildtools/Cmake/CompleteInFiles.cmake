@@ -82,6 +82,12 @@ if(enable_smpi)
   include(FindF2c)
   SET(HAVE_SMPI 1)
 endif()
+if(enable_java)
+  find_package(Java REQUIRED COMPONENTS Runtime Development)
+  find_package(JNI REQUIRED)
+  include(UseJava)
+  set(HAVE_Java 1)
+endif()
 if(enable_lua)
   include(FindLua51Simgrid)
 endif()
@@ -685,20 +691,6 @@ foreach(fct ${diff_va})
 endforeach(fct ${diff_va})
 
 #--------------------------------------------------------------------------------------------------
-### check for getline
-try_compile(COMPILE_RESULT_VAR
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_getline.c
-  )
-
-if(NOT COMPILE_RESULT_VAR)
-  SET(need_getline "#define SIMGRID_NEED_GETLINE 1")
-  SET(SIMGRID_NEED_GETLINE 1)
-else()
-  SET(need_getline "")
-  SET(SIMGRID_NEED_GETLINE 0)
-endif()
-
 ### check for a working snprintf
 if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
   if(WIN32)
@@ -859,6 +851,9 @@ else()
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_barrier.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_barrier.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_bcast.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_bcast.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_with_isend.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_with_isend.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_alltoall.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_alltoall.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_alltoallv.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_alltoallv.txt COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_waitall.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_waitall.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile COPYONLY)
 
   set(generated_files_to_clean
@@ -873,6 +868,9 @@ else()
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_barrier.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_bcast.txt
     ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_with_isend.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_alltoall.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_alltoallv.txt
+    ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_waitall.txt
     ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile
     )
 endif()

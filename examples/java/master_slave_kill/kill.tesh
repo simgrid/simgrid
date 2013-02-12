@@ -1,0 +1,13 @@
+#! tesh
+
+! output sort
+
+$ java -cp ${classpath:=.} master_slave_kill/MsKill ${srcdir:=.}/master_slave_kill/platform.xml
+> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.013010] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [alice:slave:(2) 0.000000] [jmsg/INFO] Slave Hello!
+> [alice:slave:(2) 0.000000] [jmsg/INFO] Send Mail1!
+> [bob:master:(1) 0.000000] [jmsg/INFO] Master Hello!
+> [bob:master:(1) 0.000000] [jmsg/INFO] Create process on host 'alice'
+> [bob:master:(1) 0.013010] [jmsg/INFO] Received mail1!
+> [bob:master:(1) 0.013010] [jmsg/INFO] Process2 is now killed, should exit now

@@ -104,6 +104,7 @@ typedef struct SD_task {
   double rate;
 
 #ifdef HAVE_TRACING
+  long long int counter;        /* task unique identifier for instrumentation */
   char *category;               /* sd task category for instrumentation */
 #endif
 } s_SD_task_t;
@@ -198,5 +199,12 @@ static XBT_INLINE int __SD_task_is_running(SD_task_t task)
 {
   return task->state_set == sd_global->running_task_set;
 }
+/********** Tracing **********/
+/* declaration of instrumentation functions from sd_task_instr.c */
+void TRACE_sd_task_create(SD_task_t task);
+void TRACE_sd_task_execute_start(SD_task_t task);
+void TRACE_sd_task_execute_end(SD_task_t task);
+void TRACE_sd_task_destroy(SD_task_t task);
+
 
 #endif

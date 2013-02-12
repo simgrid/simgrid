@@ -81,12 +81,19 @@ find b -type f \
     | sort > "$fb"
 
 diffcmd() {
-    diff -u "$fa" "$fb"
+    if cmp -s "$fa" "$fb"; then
+        status=0
+        echo "The archive looks good."
+    else
+        status=1
+        echo "Some files are missing and/or unexpected in the archive."
+        diff -u "$fa" "$fb"
+    fi
 }
 
 colordiff=$(type -p colordiff)
 colorless() {
-    if [ -n "$colordiff" ]; then
+    if [ -x "$colordiff" ]; then
         "$colordiff" | less -R -F
     else
         less -F
@@ -97,4 +104,6 @@ if [ "$interactive" = "1" ]; then
     diffcmd | colorless
 else
     diffcmd
-fi
+fi || true
+
+exit $status

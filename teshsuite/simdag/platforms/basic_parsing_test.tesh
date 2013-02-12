@@ -79,7 +79,6 @@ $ ${bindir:=.}/basic_parsing_test ./properties.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to '~/'
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/optim:TI
@@ -88,7 +87,6 @@ $ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/optim:TI
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'path' to '~/'
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test ./one_cluster_file.xml

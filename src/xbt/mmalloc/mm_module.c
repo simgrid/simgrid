@@ -344,6 +344,24 @@ void mmalloc_postexit(void)
   xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
 }
 
-size_t mmalloc_get_chunks_used(xbt_mheap_t heap){
-  return ((struct mdesc *)heap)->heapstats.chunks_used;
+size_t mmalloc_get_bytes_used(xbt_mheap_t heap){
+  int i = 0, j = 0;
+  int bytes = 0;
+  
+  while(i<=((struct mdesc *)heap)->heaplimit){
+    if(((struct mdesc *)heap)->heapinfo[i].type == 0){
+      if(((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size > 0)
+        bytes += ((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size;
+     
+    }else if(((struct mdesc *)heap)->heapinfo[i].type > 0){
+      for(j=0; j < (size_t) (BLOCKSIZE >> ((struct mdesc *)heap)->heapinfo[i].type); j++){
+        if(((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j] > 0)
+          bytes += ((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j];
+      }
+    }
+    i++; 
+  }
+
+  return bytes;
 }
+

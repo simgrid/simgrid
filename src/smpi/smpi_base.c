@@ -68,7 +68,7 @@ typedef struct s_smpi_factor {
 } s_smpi_factor_t;
 xbt_dynar_t smpi_os_values = NULL;
 xbt_dynar_t smpi_or_values = NULL;
-
+xbt_dynar_t smpi_ois_values = NULL;
 
 // Methods used to parse and store the values for timing injections in smpi
 // These are taken from surf/network.c and generalized to have more factors
@@ -135,6 +135,28 @@ static double smpi_os(double size)
     }
   }
   XBT_DEBUG("os : %lf > %ld return %f", size, fact.factor, current);
+
+  return current;
+}
+
+static double smpi_ois(double size)
+{
+  if (!smpi_ois_values)
+    smpi_ois_values =
+        parse_factor(sg_cfg_get_string("smpi/ois"));
+
+  unsigned int iter = 0;
+  s_smpi_factor_t fact;
+  double current=0.0;
+  xbt_dynar_foreach(smpi_ois_values, iter, fact) {
+    if (size <= fact.factor) {
+        XBT_DEBUG("ois : %lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else{
+      current=fact.values[0]+fact.values[1]*size;
+    }
+  }
+  XBT_DEBUG("ois : %lf > %ld return %f", size, fact.factor, current);
 
   return current;
 }
@@ -266,6 +288,16 @@ MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
   return request;
 }
 
+MPI_Request smpi_mpi_ssend_init(void *buf, int count, MPI_Datatype datatype,
+                               int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request =
+    build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                  comm, PERSISTENT | SSEND | SEND);
+  request->refcount++;
+  return request;
+}
+
 MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
                                int src, int tag, MPI_Comm comm)
 {
@@ -313,7 +345,7 @@ void smpi_mpi_start(MPI_Request request)
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
       mailbox = smpi_process_remote_mailbox(receiver);
     }
-    if (request->size < 64*1024 ) { //(FIXME: this limit should be configurable)
+    if ( (! (request->flags & SSEND)) && (request->size < sg_cfg_get_int("smpi/send_is_detached_thres"))) {
       void *oldbuf = NULL;
       request->detached = 1;
       request->refcount++;
@@ -329,7 +361,14 @@ void smpi_mpi_start(MPI_Request request)
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
-    double sleeptime = smpi_os(request->size);
+
+    //if we are giving back the control to the user without waiting for completion, we have to inject timings
+    double sleeptime =0.0;
+    if(request->detached && !(request->flags & ISEND))
+      sleeptime = smpi_os(request->size);
+    else
+      sleeptime = smpi_ois(request->size);
+
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("sending size of %zu : sleep %lf ", request->size, smpi_os(request->size));
@@ -393,11 +432,23 @@ MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
 {
   MPI_Request request =
       build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
-                    comm, NON_PERSISTENT | SEND);
+                    comm, NON_PERSISTENT | ISEND | SEND);
 
   smpi_mpi_start(request);
   return request;
 }
+
+MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
+                           int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request =
+      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                    comm, NON_PERSISTENT | ISEND | SSEND | SEND);
+  smpi_mpi_start(request);
+  return request;
+}
+
+
 
 MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
                             int src, int tag, MPI_Comm comm)
@@ -436,6 +487,13 @@ void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
   request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 
+}
+
+void smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype,
+                           int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request = smpi_mpi_issend(buf, count, datatype, dst, tag, comm);
+  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,

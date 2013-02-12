@@ -75,6 +75,13 @@ if(enable_lib_static AND NOT WIN32)
   endif()
 endif()
 
+if(enable_java)
+  install(TARGETS SG_java
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
+  install(FILES ${SIMGRID_JAR}
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
+endif()
+
 # include files
 set(HEADERS
   ${headers_to_install}
@@ -172,6 +179,8 @@ set(source_to_pack
   ${BINDINGS_SRC}
   ${GTNETS_SRC}
   ${JEDULE_SRC}
+  ${JMSG_C_SRC}
+  ${JMSG_JAVA_SRC}
   ${LUA_SRC}
   ${MC_SRC}
   ${MSG_SRC}
@@ -258,6 +267,7 @@ add_custom_command(
 add_custom_target(dist
   COMMENT "Removing the distribution directory"
   DEPENDS ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${release_version}.tar.gz
+  COMMAND ${CMAKE_COMMAND} -E echo ${PROJECT_NAME}-${release_version} > ${CMAKE_BINARY_DIR}/VERSION
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/
   )
 

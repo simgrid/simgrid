@@ -1,12 +1,13 @@
 
-
 Welcome to the SimGrid project!
 
-Up-to-date documentation about installation and how to use SimGrid is available
-online at http://simgrid.gforge.inria.fr/ 
+SimGrid is a scientific instrument to study the behavior of 
+large-scale distributed systems such as Grids, Clouds, HPC or P2P
+systems. It can be used to evaluate heuristics, prototype applications 
+or even assess legacy MPI applications.
 
-The documentation is also included in the archive you downloaded: Check
-doc/html/index.html for more information.
+More documentation is included in this archive (doc/html/index.html)
+or online at http://simgrid.gforge.inria.fr/ 
 
 In any case, you may want to subscribe to the user mailing list 
 (http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user). There,
@@ -14,7 +15,9 @@ you can find answers to your questions, or simply discuss with people
 doing the same kind of research than you do, in an active and friendly
 community.
 
-Thanks for downloading our software,
+Thanks for using our software. Please do great things with it and tell
+the world about it. Tell us, too, because we love to have positive
+feedback.
 
 Cheers,
 Da SimGrid Team.

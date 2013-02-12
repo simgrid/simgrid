@@ -109,24 +109,24 @@ void TRACE_header(int basic);
 void TRACE_paje_start(void);
 void TRACE_paje_end(void);
 void TRACE_paje_dump_buffer (int force);
-void new_pajeDefineContainerType(type_t type);
-void new_pajeDefineVariableType(type_t type);
-void new_pajeDefineStateType(type_t type);
-void new_pajeDefineEventType(type_t type);
-void new_pajeDefineLinkType(type_t type, type_t source, type_t dest);
-void new_pajeDefineEntityValue (val_t type);
-void new_pajeCreateContainer (container_t container);
-void new_pajeDestroyContainer (container_t container);
-void new_pajeSetVariable (double timestamp, container_t container, type_t type, double value);
-void new_pajeAddVariable (double timestamp, container_t container, type_t type, double value);
-void new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
-void new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
-void new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
-void new_pajePopState (double timestamp, container_t container, type_t type);
-void new_pajeResetState (double timestamp, container_t container, type_t type);
-void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);
-void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key);
-void new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
+XBT_PUBLIC(void) new_pajeDefineContainerType(type_t type);
+XBT_PUBLIC(void) new_pajeDefineVariableType(type_t type);
+XBT_PUBLIC(void) new_pajeDefineStateType(type_t type);
+XBT_PUBLIC(void) new_pajeDefineEventType(type_t type);
+XBT_PUBLIC(void) new_pajeDefineLinkType(type_t type, type_t source, type_t dest);
+XBT_PUBLIC(void) new_pajeDefineEntityValue (val_t type);
+XBT_PUBLIC(void) new_pajeCreateContainer (container_t container);
+XBT_PUBLIC(void) new_pajeDestroyContainer (container_t container);
+XBT_PUBLIC(void) new_pajeSetVariable (double timestamp, container_t container, type_t type, double value);
+XBT_PUBLIC(void) new_pajeAddVariable (double timestamp, container_t container, type_t type, double value);
+XBT_PUBLIC(void) new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
+XBT_PUBLIC(void) new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
+XBT_PUBLIC(void) new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
+XBT_PUBLIC(void) new_pajePopState (double timestamp, container_t container, type_t type);
+XBT_PUBLIC(void) new_pajeResetState (double timestamp, container_t container, type_t type);
+XBT_PUBLIC(void) new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);
+XBT_PUBLIC(void) new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key);
+XBT_PUBLIC(void) new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
 
 //for tracing gtnets
 void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst);
@@ -137,9 +137,6 @@ int TRACE_is_enabled(void);
 int TRACE_platform(void);
 int TRACE_platform_topology(void);
 int TRACE_is_configured(void);
-int TRACE_smpi_is_enabled(void);
-int TRACE_smpi_is_grouped(void);
-int TRACE_smpi_is_computing(void);
 int TRACE_categorized (void);
 int TRACE_uncategorized (void);
 int TRACE_msg_process_is_enabled(void);
@@ -157,6 +154,11 @@ void TRACE_generate_viva_uncat_conf (void);
 void TRACE_generate_viva_cat_conf (void);
 void instr_pause_tracing (void);
 void instr_resume_tracing (void);
+
+/* Public functions used in SMPI */
+XBT_PUBLIC(int) TRACE_smpi_is_enabled(void);
+XBT_PUBLIC(int) TRACE_smpi_is_grouped(void);
+XBT_PUBLIC(int) TRACE_smpi_is_computing(void);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *resource,
@@ -177,33 +179,33 @@ extern xbt_dict_t trivaEdgeTypes;
 long long int instr_new_paje_id (void);
 void PJ_container_alloc (void);
 void PJ_container_release (void);
-container_t PJ_container_new (const char *name, e_container_types kind, container_t father);
-container_t PJ_container_get (const char *name);
-container_t PJ_container_get_or_null (const char *name);
-container_t PJ_container_get_root (void);
-void PJ_container_set_root (container_t root);
-void PJ_container_free (container_t container);
-void PJ_container_free_all (void);
-void PJ_container_remove_from_parent (container_t container);
+XBT_PUBLIC(container_t) PJ_container_new (const char *name, e_container_types kind, container_t father);
+XBT_PUBLIC(container_t) PJ_container_get (const char *name);
+XBT_PUBLIC(container_t) PJ_container_get_or_null (const char *name);
+XBT_PUBLIC(container_t) PJ_container_get_root (void);
+XBT_PUBLIC(void) PJ_container_set_root (container_t root);
+XBT_PUBLIC(void) PJ_container_free (container_t container);
+XBT_PUBLIC(void) PJ_container_free_all (void);
+XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */
 void PJ_type_alloc (void);
 void PJ_type_release (void);
-type_t PJ_type_get_root (void);
+XBT_PUBLIC(type_t)  PJ_type_get_root (void);
 type_t PJ_type_container_new (const char *name, type_t father);
 type_t PJ_type_event_new (const char *name, type_t father);
 type_t PJ_type_variable_new (const char *name, const char *color, type_t father);
 type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t dest);
 type_t PJ_type_state_new (const char *name, type_t father);
-type_t PJ_type_get (const char *name, const type_t father);
-type_t PJ_type_get_or_null (const char *name, type_t father);
+XBT_PUBLIC(type_t)  PJ_type_get (const char *name, const type_t father);
+XBT_PUBLIC(type_t)  PJ_type_get_or_null (const char *name, type_t father);
 void PJ_type_free (type_t type);
 void PJ_type_free_all (void);
 
 /* instr_paje_values.c */
-val_t PJ_value_new (const char *name, const char *color, type_t father);
-val_t PJ_value_get_or_new (const char *name, const char *color, type_t father);
-val_t PJ_value_get (const char *name, const type_t father);
+XBT_PUBLIC(val_t)  PJ_value_new (const char *name, const char *color, type_t father);
+XBT_PUBLIC(val_t)  PJ_value_get_or_new (const char *name, const char *color, type_t father);
+XBT_PUBLIC(val_t)  PJ_value_get (const char *name, const type_t father);
 void PJ_value_free (val_t value);
 
 #endif /* HAVE_TRACING */
