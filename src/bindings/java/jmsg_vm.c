@@ -11,6 +11,8 @@
 #include "msg/msg.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
+static jfieldID jvm_field_bind;
+
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm) {
   (*env)->SetLongField(env, jvm, jvm_field_bind, (intptr_t)vm);
 }
