@@ -11,6 +11,9 @@ set_target_properties(SG_java PROPERTIES
   INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
 add_dependencies(SG_java simgrid)
 
+get_target_property(CHECK_INCLUDES SG_java INCLUDE_DIRECTORIES)
+message("SG_java includes = ${CHECK_INCLUDES}")
+
 if(WIN32)
   get_target_property(SIMGRID_LIB_NAME_NAME SG_java LIBRARY_OUTPUT_NAME)
   set_target_properties(SG_java PROPERTIES
