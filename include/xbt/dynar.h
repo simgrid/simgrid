@@ -54,8 +54,8 @@ SG_BEGIN_DECL()
   *
   * Note that if you use dynars to store pointed data, the
   * xbt_dynar_search(), xbt_dynar_search_or_negative() and
-  * xbt_dynar_member() will not quite for you. Instead of comparing
-  * your pointed elements, they will compare the pointer to them. See
+  * xbt_dynar_member() won't be for you. Instead of comparing
+  * your pointed elements, they compare the pointer to them. See
   * the documentation of xbt_dynar_search() for more info.
   * 
   */
