@@ -18,7 +18,7 @@ SG_BEGIN_DECL()
 
 typedef struct s_smx_ctx_java {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
-  jobject jprocess;             /* the java process instance binded with the msg process structure */
+  jobject jprocess;             /* the java process instance bound with the msg process structure */
   JNIEnv *jenv;                 /* jni interface pointer associated to this thread */
   xbt_os_thread_t thread;
   xbt_os_sem_t begin;           /* this semaphore is used to schedule/yield the process  */

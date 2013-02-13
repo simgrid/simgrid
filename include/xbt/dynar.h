@@ -52,6 +52,12 @@ SG_BEGIN_DECL()
   * \skip end_of_doxygen
   * \until }
   *
+  * Note that if you use dynars to store pointed data, the
+  * xbt_dynar_search(), xbt_dynar_search_or_negative() and
+  * xbt_dynar_member() won't be for you. Instead of comparing
+  * your pointed elements, they compare the pointer to them. See
+  * the documentation of xbt_dynar_search() for more info.
+  * 
   */
 /** @defgroup XBT_dynar_cons Dynar constructor and destructor
  *  @ingroup XBT_dynar
@@ -267,7 +273,7 @@ _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
  *  @param _data
  *  @hideinitializer
  *
- * \note An example of usage:
+ * Here is an example of usage:
  * \code
 xbt_dynar_t dyn;
 unsigned int cpt;
@@ -276,6 +282,10 @@ xbt_dynar_foreach (dyn,cpt,str) {
   printf("Seen %s\n",str);
 }
 \endcode
+ * 
+ * Note that underneath, that's a simple for loop with no real black
+ * magic involved. It's perfectly safe to interrupt a foreach with a
+ * break or a return statement. 
  */
 #define xbt_dynar_foreach(_dynar,_cursor,_data) \
        for (_xbt_dynar_cursor_first(_dynar,&(_cursor))      ; \

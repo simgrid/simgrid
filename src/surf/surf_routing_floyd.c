@@ -146,6 +146,7 @@ AS_t model_floyd_create(void)
   new_component->generic_routing.get_route_and_latency = floyd_get_route_and_latency;
   new_component->generic_routing.get_onelink_routes =
       floyd_get_onelink_routes;
+  new_component->generic_routing.get_graph = generic_get_graph;
   new_component->generic_routing.finalize = floyd_finalize;
   return (AS_t)new_component;
 }

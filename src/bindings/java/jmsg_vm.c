@@ -12,11 +12,10 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm) {
-  (*env)->SetLongField(env, jvm, jvm_field_bind, (jlong) (long) (vm));
+  (*env)->SetLongField(env, jvm, jvm_field_bind, (intptr_t)vm);
 }
 msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm) {
-	msg_vm_t vm = (msg_vm_t)(*env)->GetLongField(env, jvm, jvm_field_bind);
-	return vm;
+  return (msg_vm_t)(intptr_t)(*env)->GetLongField(env, jvm, jvm_field_bind);
 }
 
 JNIEXPORT void JNICALL
@@ -61,8 +60,8 @@ Java_org_simgrid_msg_VM_bind(JNIEnv *env, jobject jvm, jobject jprocess) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   msg_process_t process = jprocess_to_native_process(jprocess,env);
 
-  xbt_assert((vm != NULL), "VM object is not binded");
-  xbt_assert((process != NULL), "Process object is not binded.");
+  xbt_assert((vm != NULL), "VM object is not bound");
+  xbt_assert((process != NULL), "Process object is not bound.");
 
   MSG_vm_bind(vm,process);
 }

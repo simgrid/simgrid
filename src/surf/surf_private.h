@@ -153,6 +153,7 @@ typedef struct s_as {
   void (*get_route_and_latency) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, sg_platf_route_cbarg_t into, double *latency);
 
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
+  void (*get_graph) (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
   sg_platf_route_cbarg_t(*get_bypass_route) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat);
   void (*finalize) (AS_t as);
 
@@ -192,6 +193,7 @@ XBT_PUBLIC(void) generic_free_route(sg_platf_route_cbarg_t route); // FIXME rena
 XBT_PUBLIC(void) routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
                               xbt_dynar_t * route, double *latency);
 
+XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
 /**
  * Resource protected methods
  */

@@ -40,6 +40,13 @@ void MSG_mailbox_free(void *mailbox);
  */
 void MSG_mailbox_free(void *mailbox);
 
+/* \brief MSG_set_rate_before_read - set a rate before receiving a task
+ *
+ * \param mailbox  The mailbox to release.
+ * \param rate	   The new rate
+ */
+double MSG_set_rate_before_read(msg_mailbox_t mailbox, double rate);
+
 /* \brief MSG_mailbox_get_by_alias - get a mailbox from its alias.
  *
  * The function MSG_mailbox_get_by_alias returns the mailbox associated with

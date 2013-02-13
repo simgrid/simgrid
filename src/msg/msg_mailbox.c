@@ -44,6 +44,10 @@ MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
   return simcall_rdv_comm_count_by_host(mailbox, host);
 }
 
+double MSG_set_rate_before_read(msg_mailbox_t mailbox, double newrate) {
+	return simcall_comm_change_rate_first_action(mailbox,newrate);
+}
+
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 {
 
@@ -140,6 +144,30 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
 #endif
   MSG_RETURN(ret);
 }
+
+
+
+/** \ingroup msg_mailbox_management
+ * \brief Get a task from a mailbox on a given host at a given rate
+ *
+ * \param mailbox The mailbox where the task was sent
+ * \param task a memory location for storing a #msg_task_t.
+ * \param host a #msg_host_t host from where the task was sent
+ * \param timeout a timeout
+ * \param rate a bandwidth rate
+
+ * \return Returns
+ * #MSG_OK if the task was successfully received,
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
+ */
+msg_error_t
+MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
+                         msg_host_t host, double timeout, double rate)
+{
+	MSG_set_rate_before_read(mailbox,rate);
+	MSG_RETURN(MSG_mailbox_get_task_ext(mailbox,task,host,timeout));
+}
+
 
 msg_error_t
 MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,

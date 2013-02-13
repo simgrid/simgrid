@@ -156,8 +156,7 @@ static void add_loopback_dijkstra(as_dijkstra_t as) {
     if (!found) {
       sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
       e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-      xbt_dynar_push(e_route->link_list,
-          &routing_platf->loopback);
+      xbt_dynar_push(e_route->link_list, &routing_platf->loopback);
       xbt_graph_new_edge(as->route_graph, node, node, e_route);
     }
   }
@@ -420,6 +419,7 @@ AS_t model_dijkstra_both_create(int cached)
   new_component->generic_routing.get_route_and_latency = dijkstra_get_route_and_latency;
   new_component->generic_routing.get_onelink_routes =
       dijkstra_get_onelink_routes;
+  new_component->generic_routing.get_graph = generic_get_graph;
   new_component->generic_routing.finalize = dijkstra_finalize;
   new_component->cached = cached;
 
