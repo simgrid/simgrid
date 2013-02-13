@@ -348,6 +348,8 @@ Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
 {
   msg_error_t rv;
   rv = MSG_process_sleep((double)jseconds);
+  if ((*env)->ExceptionOccurred(env))
+    return;
   if (rv != MSG_OK) {
     XBT_DEBUG("Status NOK");
     jmsg_throw_status(env,rv);
@@ -389,6 +391,7 @@ Java_org_simgrid_msg_Process_migrate(JNIEnv * env,
   msg_error_t rv = MSG_process_migrate(process, host);
   if (rv != MSG_OK) {
     jmsg_throw_status(env,rv);
+    return;
   }
   /* change the host java side */
   (*env)->SetObjectField(env, jprocess, jprocess_field_Process_host, jhost);

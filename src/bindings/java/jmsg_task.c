@@ -218,6 +218,8 @@ Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject jtask)
   }
   msg_error_t rv;
   rv = MSG_task_execute(task);
+  if ((*env)->ExceptionOccurred(env))
+    return;
   if (rv != MSG_OK) {
     jmsg_throw_status(env, rv);
   }
@@ -433,6 +435,8 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
 
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
   rv = MSG_task_receive_ext(task, alias, (double) jtimeout, host);
+  if ((*env)->ExceptionOccurred(env))
+    return NULL;
   if (rv != MSG_OK) {
     jmsg_throw_status(env,rv);
     return NULL;
