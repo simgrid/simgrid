@@ -30,12 +30,12 @@ static jfieldID jtask_field_Comm_receiving;
 
 void jtask_bind(jobject jtask, msg_task_t task, JNIEnv * env)
 {
-  (*env)->SetLongField(env, jtask, jtask_field_Task_bind, (jlong) (long) (task));
+  (*env)->SetLongField(env, jtask, jtask_field_Task_bind, (intptr_t)task);
 }
 
 msg_task_t jtask_to_native_task(jobject jtask, JNIEnv * env)
 {
-  return (msg_task_t) (long) (*env)->GetLongField(env, jtask, jtask_field_Task_bind);
+  return (msg_task_t)(intptr_t)(*env)->GetLongField(env, jtask, jtask_field_Task_bind);
 }
 
 jboolean jtask_is_valid(jobject jtask, JNIEnv * env)
