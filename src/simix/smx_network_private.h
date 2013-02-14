@@ -114,6 +114,10 @@ smx_action_t SIMIX_pre_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
                                   void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_action_t),
 				  void *data);
+smx_action_t SIMIX_pre_comm_irecv_bounded(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  void *dst_buff, size_t *dst_buff_size,
+                                  int (*match_fun)(void *, void *, smx_action_t),
+				  void *data, double rate);
 void SIMIX_pre_comm_destroy(smx_simcall_t simcall, smx_action_t action);
 void SIMIX_pre_comm_cancel(smx_simcall_t simcall, smx_action_t action);
 double SIMIX_pre_comm_get_remains(smx_simcall_t simcall, smx_action_t action);
