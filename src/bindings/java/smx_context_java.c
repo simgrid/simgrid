@@ -24,7 +24,6 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     void *data);
 
 static void smx_ctx_java_free(smx_context_t context);
-static void smx_ctx_java_start(smx_context_t context);
 static void smx_ctx_java_suspend(smx_context_t context);
 static void smx_ctx_java_resume(smx_context_t new_context);
 static void smx_ctx_java_runall(void);
