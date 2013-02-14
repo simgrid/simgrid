@@ -97,8 +97,6 @@ void SIMIX_init_application(void){
  */
 void SIMIX_launch_application(const char *file)
 {
-  xbt_ex_t e;
-
   _XBT_GNUC_UNUSED int parse_status;
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_launch_application.");
@@ -110,7 +108,8 @@ void SIMIX_launch_application(const char *file)
     parse_status = surf_parse();
     surf_parse_close();
     xbt_assert(!parse_status, "Parse error at %s:%d", file,surf_parse_lineno);
-  } CATCH(e) {
+  }
+  CATCH_ANONYMOUS {
     XBT_ERROR("Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
         file, surf_parse_lineno);
     RETHROW;
