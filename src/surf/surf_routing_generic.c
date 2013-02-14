@@ -157,32 +157,42 @@ void generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
 
       rc->get_route_and_latency(rc, my_src, my_dst, route, NULL);
 
+      XBT_DEBUG ("get_route_and_latency %s -> %s", my_src->name, my_dst->name);
+
       if (route) {
         unsigned int cpt;
         void *link;
 
         xbt_node_t current, previous;
+        const char *previous_name, *current_name;
 
         if (route->gw_src) {
           previous = new_xbt_graph_node(graph, route->gw_src->name, nodes);
+          previous_name = route->gw_src->name;
         } else {
           previous = new_xbt_graph_node(graph, my_src->name, nodes);
+          previous_name = my_src->name;
         }
 
         xbt_dynar_foreach(route->link_list, cpt, link) {
           char *link_name = ((surf_resource_t) link)->name;
           current = new_xbt_graph_node(graph, link_name, nodes);
+          current_name = link_name;
           new_xbt_graph_edge(graph, previous, current, edges);
+          XBT_DEBUG ("  %s -> %s", previous_name, current_name);
           previous = current;
+          previous_name = current_name;
         }
 
         if (route->gw_dst) {
           current = new_xbt_graph_node(graph, route->gw_dst->name, nodes);
+          current_name = route->gw_dst->name;
         } else {
           current = new_xbt_graph_node(graph, my_dst->name, nodes);
+          current_name = my_dst->name;
         }
         new_xbt_graph_edge(graph, previous, current, edges);
-
+        XBT_DEBUG ("  %s -> %s", previous_name, current_name);
       }
     }
   }
