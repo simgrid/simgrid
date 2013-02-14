@@ -738,23 +738,33 @@ smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_
 /**
  * \ingroup simix_comm_management
  */
-double simcall_comm_change_rate_first_action(smx_rdv_t rdv, double newrate)
+void simcall_comm_recv_bounded(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
+                         int (*match_fun)(void *, void *, smx_action_t), void *data, double timeout, double rate)
 {
-  xbt_assert(rdv, "No rendez-vous point defined for change_rate_first_action");
+  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  xbt_assert(rdv, "No rendez-vous point defined for recv");
 
-  smx_action_t action;
-  xbt_fifo_item_t item;
+  if (MC_is_active()) {
+    /* the model-checker wants two separate simcalls */
+    smx_action_t comm = simcall_comm_irecv_bounded(rdv, dst_buff, dst_buff_size,
+        match_fun, data, rate);
+    simcall_comm_wait(comm, timeout);
+  }
+  else {
+    simcall_BODY_comm_recv_bounded(rdv, dst_buff, dst_buff_size,
+                           match_fun, data, timeout, rate);
+  }
+}
+/**
+ * \ingroup simix_comm_management
+ */
+smx_action_t simcall_comm_irecv_bounded(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
+                                  int (*match_fun)(void *, void *, smx_action_t), void *data, double rate)
+{
+  xbt_assert(rdv, "No rendez-vous point defined for irecv");
 
-  item = xbt_fifo_get_first_item(rdv->comm_fifo);
-  if (item != NULL) {
-    action = (smx_action_t) xbt_fifo_get_item_content(item);
-    if (action->comm.rate > newrate) {
-      action->comm.rate = newrate;
-      return newrate;
-    } else
-      return action->comm.rate;
-  } else
-    return -1.0;
+  return simcall_BODY_comm_irecv_bounded(rdv, dst_buff, dst_buff_size,
+                                 match_fun, data, rate);
 }
 
 

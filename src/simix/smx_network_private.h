@@ -54,6 +54,13 @@ void SIMIX_comm_recv(smx_process_t dst_proc, smx_rdv_t rdv,
 smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*)(void *, void *, smx_action_t), void *data);
+void SIMIX_comm_recv_bounded(smx_process_t dst_proc, smx_rdv_t rdv,
+                     void *dst_buff, size_t *dst_buff_size,
+                     int (*)(void *, void *,smx_action_t), void *data,
+                     double timeout, double rate);
+smx_action_t SIMIX_comm_irecv_bounded(smx_process_t dst_proc, smx_rdv_t rdv,
+                              void *dst_buff, size_t *dst_buff_size,
+                              int (*)(void *, void *, smx_action_t), void *data, double rate);
 void SIMIX_comm_destroy(smx_action_t action);
 void SIMIX_comm_destroy_internal_actions(smx_action_t action);
 smx_action_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int src,
@@ -99,6 +106,10 @@ void SIMIX_pre_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
                                   void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_action_t),
 				  void *data, double timeout);
+void SIMIX_pre_comm_recv_bounded(smx_simcall_t simcall, smx_rdv_t rdv,
+                                  void *dst_buff, size_t *dst_buff_size,
+                                  int (*match_fun)(void *, void *, smx_action_t),
+				  void *data, double timeout, double rate);
 smx_action_t SIMIX_pre_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
                                   void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_action_t),

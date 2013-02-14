@@ -122,6 +122,7 @@ static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
     }
   }
 
+ }
 }
 
 static void model_cluster_finalize(AS_t as)
