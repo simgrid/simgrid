@@ -56,7 +56,7 @@ int coordinator(int argc, char *argv[])
 int client(int argc, char *argv[])
 {
   int my_pid = MSG_process_get_PID(MSG_process_self());
-  char *my_mailbox = bprintf("%s", argv[1]);
+  char *my_mailbox = xbt_strdup(argv[1]);
   const char* kind;
  
   while(1){

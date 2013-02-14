@@ -148,12 +148,11 @@ void smx_ctx_java_stop(smx_context_t context)
   smx_ctx_java_t ctx_java = (smx_ctx_java_t)context;
   /* I am the current process and I am dying */
   if (context->iwannadie) {
-  	context->iwannadie = 0;
-  	JNIEnv *env = get_current_thread_env();
-  	jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process killed :)"));
-  	THROWF(cancel_error, 0, "process cancelled");
-  }
-  else {
+    context->iwannadie = 0;
+    JNIEnv *env = get_current_thread_env();
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", xbt_strdup("Process killed :)"));
+    THROWF(cancel_error, 0, "process cancelled");
+  } else {
     smx_ctx_base_stop(context);
     /* detach the thread and kills it */
     JNIEnv *env = ctx_java->jenv;

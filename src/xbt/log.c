@@ -1345,8 +1345,8 @@ static void xbt_log_help_categories_rec(xbt_log_category_t category,
     this_prefix = bprintf("%s \\_ ", prefix);
     child_prefix = bprintf("%s |  ", prefix);
   } else {
-    this_prefix = bprintf("%s", prefix);
-    child_prefix = bprintf("%s", prefix);
+    this_prefix = xbt_strdup(prefix);
+    child_prefix = xbt_strdup(prefix);
   }
 
   dynar = xbt_dynar_new(sizeof(xbt_log_category_t), NULL);

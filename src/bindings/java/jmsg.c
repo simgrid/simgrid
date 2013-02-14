@@ -62,7 +62,7 @@ void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
         jxbt_throw_host_failure(env,NULL);
     break;
     default:
-        jxbt_throw_native(env,bprintf("communication failed"));
+        jxbt_throw_native(env,xbt_strdup("communication failed"));
   }
 }
 
@@ -144,8 +144,7 @@ JNIEXPORT void JNICALL
   rv = MSG_main();
   XBT_DEBUG("Done running MSG_MAIN");
   jxbt_check_res("MSG_main()", rv, MSG_OK,
-                 bprintf
-                 ("unexpected error : MSG_main() failed .. please report this bug "));
+                 xbt_strdup("unexpected error : MSG_main() failed .. please report this bug "));
 
   XBT_INFO("MSG_main finished; Cleaning up the simulation...");
   /* Cleanup java hosts */
