@@ -143,8 +143,6 @@ void generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
   int src, dst;
   int table_size = xbt_dynar_length(rc->index_network_elm);
 
-  sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-  route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
   for (src = 0; src < table_size; src++) {
     sg_routing_edge_t my_src =
@@ -154,6 +152,9 @@ void generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
         continue;
       sg_routing_edge_t my_dst =
           xbt_dynar_get_as(rc->index_network_elm, dst, sg_routing_edge_t);
+
+      sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
       rc->get_route_and_latency(rc, my_src, my_dst, route, NULL);
 
@@ -194,6 +195,8 @@ void generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
         new_xbt_graph_edge(graph, previous, current, edges);
         XBT_DEBUG ("  %s -> %s", previous_name, current_name);
       }
+      xbt_dynar_free (&(route->link_list));
+      xbt_free (route);
     }
   }
 }
