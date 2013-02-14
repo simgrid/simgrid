@@ -23,9 +23,9 @@ extern xbt_dict_t dict_socket;
 
 static double time_to_next_flow_completion = -1;
 
-static double ns3_share_resources(double min);
-static void ns3_update_actions_state(double now, double delta);
-static void finalize(void);
+static double ns3_share_resources(surf_model_t network_model, double min);
+static void ns3_update_actions_state(surf_model_t network_model, double now, double delta);
+static void finalize(surf_model_t network_model);
 static surf_action_t ns3_communicate(sg_routing_edge_t src_elm,
                                      sg_routing_edge_t dst_elm,
                                      double size, double rate);
@@ -380,19 +380,19 @@ void surf_network_model_init_NS3()
 #endif
 }
 
-static void finalize(void)
+static void finalize(surf_model_t network_model)
 {
   ns3_finalize();
   xbt_dynar_free_container(&IPV4addr);
   xbt_dict_free(&dict_socket);
 }
 
-static double ns3_share_resources(double min)
+static double ns3_share_resources(surf_model_t network_model, double min)
 {
   XBT_DEBUG("ns3_share_resources");
 
   xbt_swag_t running_actions =
-    surf_network_model->states.running_action_set;
+    network_model->states.running_action_set;
 
   //get the first relevant value from the running_actions list
   if (!xbt_swag_size(running_actions) || min == 0.0)
@@ -411,7 +411,7 @@ static double ns3_share_resources(double min)
   return time_to_next_flow_completion;
 }
 
-static void ns3_update_actions_state(double now, double delta)
+static void ns3_update_actions_state(surf_model_t network_model, double now, double delta)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *key;
@@ -422,7 +422,7 @@ static void ns3_update_actions_state(double now, double delta)
 
   surf_action_network_ns3_t action = NULL;
   xbt_swag_t running_actions =
-    surf_network_model->states.running_action_set;
+    network_model->states.running_action_set;
 
   /* If there are no running flows, just return */
   if (!xbt_swag_size(running_actions)) {

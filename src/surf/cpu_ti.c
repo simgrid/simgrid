@@ -311,7 +311,7 @@ static void cpu_ti_action_state_set(surf_action_t action,
 * \param  cpu    Cpu on which the actions are running
 * \param  now    Current time
 */
-static void cpu_ti_update_remaining_amount(cpu_ti_t cpu, double now)
+static void cpu_ti_update_remaining_amount(surf_model_t cpu_model, cpu_ti_t cpu, double now)
 {
   double area_total;
   surf_action_cpu_ti_t action;
@@ -331,7 +331,7 @@ static void cpu_ti_update_remaining_amount(cpu_ti_t cpu, double now)
     surf_action_t generic = (surf_action_t)action;
     /* action not running, skip it */
     if (generic->state_set !=
-        surf_cpu_model->states.running_action_set)
+        cpu_model->states.running_action_set)
       continue;
 
     /* bogus priority, skip it */
@@ -368,19 +368,19 @@ static void cpu_ti_update_remaining_amount(cpu_ti_t cpu, double now)
 * \param  cpu    Cpu on which the actions are running
 * \param  now    Current time
 */
-static void cpu_ti_update_action_finish_date(cpu_ti_t cpu, double now)
+static void cpu_ti_update_action_finish_date(surf_model_t cpu_model, cpu_ti_t cpu, double now)
 {
 #define GENERIC_ACTION(action) action->generic_action
   surf_action_cpu_ti_t action;
   double sum_priority = 0.0, total_area, min_finish = -1;
 
 /* update remaning amount of actions */
-  cpu_ti_update_remaining_amount(cpu, now);
+  cpu_ti_update_remaining_amount(cpu_model, cpu, now);
 
   xbt_swag_foreach(action, cpu->action_set) {
     /* action not running, skip it */
     if (GENERIC_ACTION(action).state_set !=
-        surf_cpu_model->states.running_action_set)
+        cpu_model->states.running_action_set)
       continue;
 
     /* bogus priority, skip it */
@@ -399,7 +399,7 @@ static void cpu_ti_update_action_finish_date(cpu_ti_t cpu, double now)
     min_finish = -1;
     /* action not running, skip it */
     if (GENERIC_ACTION(action).state_set !=
-        surf_cpu_model->states.running_action_set)
+        cpu_model->states.running_action_set)
       continue;
 
     /* verify if the action is really running on cpu */
@@ -451,14 +451,20 @@ static void cpu_ti_update_action_finish_date(cpu_ti_t cpu, double now)
 #undef GENERIC_ACTION
 }
 
-static double cpu_ti_share_resources(double now)
+static double cpu_ti_share_resources(surf_model_t cpu_model, double now)
 {
   cpu_ti_t cpu, cpu_next;
   double min_action_duration = -1;
 
 /* iterates over modified cpus to update share resources */
   xbt_swag_foreach_safe(cpu, cpu_next, cpu_ti_modified_cpu) {
-    cpu_ti_update_action_finish_date(cpu, now);
+    /* FIXME: cpu_ti_modified_cpu is a global object. But, now we have multiple
+     * cpu_model objects in the system. Do we have to create this
+     * swag for each cpu model object?
+     *
+     * We should revisit here after we know what cpu_ti is.
+     **/
+    cpu_ti_update_action_finish_date(cpu_model, cpu, now);
   }
 /* get the min next event if heap not empty */
   if (xbt_heap_size(cpu_ti_action_heap) > 0)
@@ -469,8 +475,10 @@ static double cpu_ti_share_resources(double now)
   return min_action_duration;
 }
 
-static void cpu_ti_update_actions_state(double now, double delta)
+static void cpu_ti_update_actions_state(surf_model_t cpu_model, double now, double delta)
 {
+  /* FIXME: cpu_ti_action_heap is global. Is this okay for VM support? */
+
 #define GENERIC_ACTION(action) action->generic_action
   surf_action_cpu_ti_t action;
   while ((xbt_heap_size(cpu_ti_action_heap) > 0)
@@ -482,7 +490,7 @@ static void cpu_ti_update_actions_state(double now, double delta)
     GENERIC_ACTION(action).remains = 0;
     cpu_ti_action_state_set((surf_action_t) action, SURF_ACTION_DONE);
     /* update remaining amout of all actions */
-    cpu_ti_update_remaining_amount(surf_cpu_resource_priv(action->cpu), surf_get_clock());
+    cpu_ti_update_remaining_amount(cpu_model, surf_cpu_resource_priv(action->cpu), surf_get_clock());
   }
 #undef GENERIC_ACTION
 }
@@ -729,11 +737,14 @@ static double cpu_ti_get_available_speed(void *cpu)
   return CPU->power_scale;
 }
 
-static void cpu_ti_finalize(void)
+static void cpu_ti_finalize(surf_model_t cpu_model)
 {
   void **cpu;
   xbt_lib_cursor_t cursor;
   char *key;
+
+  /* FIXME: we should update this code for VM support */
+  xbt_abort();
 
   xbt_lib_foreach(host_lib, cursor, key, cpu){
     if(cpu[SURF_CPU_LEVEL])
@@ -744,8 +755,8 @@ static void cpu_ti_finalize(void)
     }
   }
 
-  surf_model_exit(surf_cpu_model);
-  surf_cpu_model = NULL;
+  surf_model_exit(cpu_model);
+  cpu_model = NULL;
 
   xbt_swag_free
       (cpu_ti_running_action_set_that_does_not_need_being_checked);

@@ -92,13 +92,13 @@ static void ws_action_state_set(surf_action_t action,
   return;
 }
 
-static double ws_share_resources(double now)
+static double ws_share_resources(surf_model_t workstation_model, double now)
 {
 // invoke share_resources on CPU and network (layer 0)
   return -1.0;
 }
 
-static void ws_update_actions_state(double now, double delta)
+static void ws_update_actions_state(surf_model_t workstation_model, double now, double delta)
 {
   return;
 }
@@ -295,10 +295,10 @@ static int ws_link_shared(const void *link)
   return surf_network_model->extension.network.link_shared(link);
 }
 
-static void ws_finalize(void)
+static void ws_finalize(surf_model_t workstation_model)
 {
-  surf_model_exit(surf_workstation_model);
-  surf_workstation_model = NULL;
+  surf_model_exit(workstation_model);
+  workstation_model = NULL;
 }
 
 static xbt_dict_t ws_get_properties(const void *ws)

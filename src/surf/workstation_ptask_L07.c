@@ -216,13 +216,13 @@ static int ptask_resource_used(void *resource_id)
 
 }
 
-static double ptask_share_resources(double now)
+static double ptask_share_resources(surf_model_t workstation_model, double now)
 {
   s_surf_action_workstation_L07_t s_action;
   surf_action_workstation_L07_t action = NULL;
 
   xbt_swag_t running_actions =
-      surf_workstation_model->states.running_action_set;
+      workstation_model->states.running_action_set;
   double min = generic_maxmin_share_resources(running_actions,
                                               xbt_swag_offset(s_action,
                                                               variable),
@@ -248,13 +248,13 @@ static double ptask_share_resources(double now)
   return min;
 }
 
-static void ptask_update_actions_state(double now, double delta)
+static void ptask_update_actions_state(surf_model_t workstation_model, double now, double delta)
 {
   double deltap = 0.0;
   surf_action_workstation_L07_t action = NULL;
   surf_action_workstation_L07_t next_action = NULL;
   xbt_swag_t running_actions =
-      surf_workstation_model->states.running_action_set;
+      workstation_model->states.running_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     deltap = delta;
@@ -407,12 +407,12 @@ static void ptask_update_resource_state(void *id,
   return;
 }
 
-static void ptask_finalize(void)
+static void ptask_finalize(surf_model_t workstation_model)
 {
   xbt_dict_free(&ptask_parallel_task_link_set);
 
-  surf_model_exit(surf_workstation_model);
-  surf_workstation_model = NULL;
+  surf_model_exit(workstation_model);
+  workstation_model = NULL;
   surf_model_exit(surf_network_model);
   surf_network_model = NULL;
 

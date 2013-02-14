@@ -196,7 +196,7 @@ static void action_state_set(surf_action_t action,
   surf_action_state_set(action, state);
 }
 
-static double share_resources(double now)
+static double share_resources(surf_model_t network_model, double now)
 {
   xbt_swag_t running_actions =
       surf_network_model->states.running_action_set;
@@ -216,11 +216,11 @@ static double share_resources(double now)
   return time_to_next_flow_completion;
 }
 
-static void update_actions_state(double now, double delta)
+static void update_actions_state(surf_model_t network_model, double now, double delta)
 {
   surf_action_network_GTNETS_t action = NULL;
   xbt_swag_t running_actions =
-      surf_network_model->states.running_action_set;
+      network_model->states.running_action_set;
 
   /* If there are no running flows, just return */
   if (time_to_next_flow_completion < 0.0) {
@@ -400,7 +400,7 @@ static void gtnets_action_set_category(surf_action_t action, const char *categor
 }
 #endif
 
-static void finalize(void)
+static void finalize(surf_model_t network_model)
 {
   gtnets_finalize();
 }

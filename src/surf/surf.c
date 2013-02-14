@@ -474,7 +474,7 @@ void surf_exit(void)
   sg_config_finalize();
 
   xbt_dynar_foreach(model_list, iter, model)
-      model->model_private->finalize();
+      model->model_private->finalize(model);
   xbt_dynar_free(&model_list);
 
   xbt_dynar_free(&model_list_invoke);
@@ -542,7 +542,7 @@ void surf_presolve(void)
 
   /* FIXME: see what is check_update_action_state(). if necessary, use model_list_invoke. */
   xbt_dynar_foreach(model_list, iter, model)
-      model->model_private->update_actions_state(NOW, 0.0);
+      model->model_private->update_actions_state(model, NOW, 0.0);
 }
 
 double surf_solve(double max_date)
@@ -609,7 +609,7 @@ double surf_solve(double max_date)
 
       XBT_DEBUG("Run for network at most %f", min);
       // run until min or next flow
-      model_next_action_end = surf_network_model->model_private->share_resources(min);
+      model_next_action_end = surf_network_model->model_private->share_resources(surf_network_model, min);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if(model_next_action_end>=0.0)
@@ -688,7 +688,7 @@ static void surf_share_resources(surf_model_t model)
   int i = __sync_fetch_and_add(&surf_min_index, 1);
   if (strcmp(model->name,"network NS3")) {
     XBT_DEBUG("Running for Resource [%s]", model->name);
-    next_action_end = model->model_private->share_resources(NOW);
+    next_action_end = model->model_private->share_resources(model, NOW);
     XBT_DEBUG("Resource [%s] : next action end = %f",
         model->name, next_action_end);
   }
@@ -697,7 +697,7 @@ static void surf_share_resources(surf_model_t model)
 
 static void surf_update_actions_state(surf_model_t model)
 {
-  model->model_private->update_actions_state(NOW, min);
+  model->model_private->update_actions_state(model, NOW, min);
 }
 
 /**

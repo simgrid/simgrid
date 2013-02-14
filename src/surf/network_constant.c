@@ -50,11 +50,11 @@ static void netcste_action_cancel(surf_action_t action)
   return;
 }
 
-static double netcste_share_resources(double now)
+static double netcste_share_resources(surf_model_t network_model, double now)
 {
   surf_action_network_Constant_t action = NULL;
   xbt_swag_t running_actions =
-      surf_network_model->states.running_action_set;
+      network_model->states.running_action_set;
   double min = -1.0;
 
   xbt_swag_foreach(action, running_actions) {
@@ -69,12 +69,12 @@ static double netcste_share_resources(double now)
   return min;
 }
 
-static void netcste_update_actions_state(double now, double delta)
+static void netcste_update_actions_state(surf_model_t network_model, double now, double delta)
 {
   surf_action_network_Constant_t action = NULL;
   surf_action_network_Constant_t next_action = NULL;
   xbt_swag_t running_actions =
-      surf_network_model->states.running_action_set;
+      network_model->states.running_action_set;
 
   xbt_swag_foreach_safe(action, next_action, running_actions) {
     if (action->latency > 0) {
@@ -91,12 +91,12 @@ static void netcste_update_actions_state(double now, double delta)
 
     if (action->generic_action.remains <= 0) {
       action->generic_action.finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action,
+      network_model->action_state_set((surf_action_t) action,
                                            SURF_ACTION_DONE);
     } else if ((action->generic_action.max_duration != NO_MAX_DURATION)
                && (action->generic_action.max_duration <= 0)) {
       action->generic_action.finish = surf_get_clock();
-      surf_network_model->action_state_set((surf_action_t) action,
+      network_model->action_state_set((surf_action_t) action,
                                            SURF_ACTION_DONE);
     }
   }
@@ -181,10 +181,10 @@ static int netcste_action_is_suspended(surf_action_t action)
   return ((surf_action_network_Constant_t) action)->suspended;
 }
 
-static void netcste_finalize(void)
+static void netcste_finalize(surf_model_t network_model)
 {
-  surf_model_exit(surf_network_model);
-  surf_network_model = NULL;
+  surf_model_exit(network_model);
+  network_model = NULL;
 }
 
 

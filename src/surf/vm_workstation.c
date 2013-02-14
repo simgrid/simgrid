@@ -101,7 +101,7 @@ static void vm_ws_set_state(void *ind_vm_ws, int state){
 }
 
 
-static double ws_share_resources(double now)
+static double vm_ws_share_resources(surf_model_t workstation_model, double now)
 {
   // Can be obsolete if you right can ensure that ws_model has been code previously
   // invoke ws_share_resources on the physical_lyer: sub_ws->ws_share_resources()

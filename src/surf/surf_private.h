@@ -31,12 +31,12 @@ typedef struct surf_model_private {
   int (*resource_used) (void *resource_id);
   /* Share the resources to the actions and return in how much time
      the next action may terminate */
-  double (*share_resources) (double now);
+  double (*share_resources) (surf_model_t model, double now);
   /* Update the actions' state */
-  void (*update_actions_state) (double now, double delta);
-  void (*update_resource_state) (void *id, tmgr_trace_event_t event_type,
+  void (*update_actions_state) (surf_model_t model, double now, double delta);
+  void (*update_resource_state) (void *resource, tmgr_trace_event_t event_type,
                                  double value, double time);
-  void (*finalize) (void);
+  void (*finalize) (surf_model_t model);
 
   lmm_system_t maxmin_system;
   e_UM_t update_mechanism;

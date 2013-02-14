@@ -48,25 +48,25 @@ static void* new_model_create_resource(const char* id, const char* model,const c
   return NULL;
 }
 
-static void new_model_finalize(void)
+static void new_model_finalize(surf_model_t new_model)
 {
   lmm_system_free(new_model_maxmin_system);
   new_model_maxmin_system = NULL;
 
-  surf_model_exit(surf_new_model);
-  surf_new_model = NULL;
+  surf_model_exit(new_model);
+  new_model = NULL;
 
   xbt_swag_free
       (new_model_running_action_set_that_does_not_need_being_checked);
   new_model_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
-static void new_model_update_actions_state(double now, double delta)
+static void new_model_update_actions_state(surf_model_t new_model, double now, double delta)
 {
   return;
 }
 
-static double new_model_share_resources(double NOW)
+static double new_model_share_resources(surf_model_t new_model, double NOW)
 {
   return -1;
 }

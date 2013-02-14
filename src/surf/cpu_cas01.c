@@ -139,30 +139,30 @@ static int cpu_resource_used(void *resource)
                              ((cpu_Cas01_t) resource)->constraint);
 }
 
-static double cpu_share_resources_lazy(double now)
+static double cpu_share_resources_lazy(surf_model_t cpu_model, double now)
 {
-  return generic_share_resources_lazy(now, surf_cpu_model);
+  return generic_share_resources_lazy(now, cpu_model);
 }
 
-static double cpu_share_resources_full(double now)
+static double cpu_share_resources_full(surf_model_t cpu_model, double now)
 {
   s_surf_action_cpu_Cas01_t action;
-  return generic_maxmin_share_resources(surf_cpu_model->states.
+  return generic_maxmin_share_resources(cpu_model->states.
                                         running_action_set,
                                         xbt_swag_offset(action,
                                                         generic_lmm_action.
                                                         variable),
-                                        surf_cpu_model->model_private->maxmin_system, lmm_solve);
+                                        cpu_model->model_private->maxmin_system, lmm_solve);
 }
 
-static void cpu_update_actions_state_lazy(double now, double delta)
+static void cpu_update_actions_state_lazy(surf_model_t cpu_model, double now, double delta)
 {
-  generic_update_actions_state_lazy(now, delta, surf_cpu_model);
+  generic_update_actions_state_lazy(now, delta, cpu_model);
 }
 
-static void cpu_update_actions_state_full(double now, double delta)
+static void cpu_update_actions_state_full(surf_model_t cpu_model, double now, double delta)
 {
-  generic_update_actions_state_full(now, delta, surf_cpu_model);
+  generic_update_actions_state_full(now, delta, cpu_model);
 }
 
 static void cpu_update_resource_state(void *id,
@@ -304,17 +304,17 @@ static double cpu_get_available_speed(void *cpu)
   return ((cpu_Cas01_t)surf_cpu_resource_priv(cpu))->power_scale;
 }
 
-static void cpu_finalize(void)
+static void cpu_finalize(surf_model_t cpu_model)
 {
-  lmm_system_free(surf_cpu_model->model_private->maxmin_system);
-  surf_cpu_model->model_private->maxmin_system = NULL;
+  lmm_system_free(cpu_model->model_private->maxmin_system);
+  cpu_model->model_private->maxmin_system = NULL;
 
-  if (surf_cpu_model->model_private->action_heap)
-    xbt_heap_free(surf_cpu_model->model_private->action_heap);
-  xbt_swag_free(surf_cpu_model->model_private->modified_set);
+  if (cpu_model->model_private->action_heap)
+    xbt_heap_free(cpu_model->model_private->action_heap);
+  xbt_swag_free(cpu_model->model_private->modified_set);
 
-  surf_model_exit(surf_cpu_model);
-  surf_cpu_model = NULL;
+  surf_model_exit(cpu_model);
+  cpu_model = NULL;
 
   xbt_swag_free(cpu_running_action_set_that_does_not_need_being_checked);
   cpu_running_action_set_that_does_not_need_being_checked = NULL;
