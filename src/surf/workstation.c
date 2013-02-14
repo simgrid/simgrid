@@ -462,7 +462,7 @@ void surf_workstation_model_init_current_default(void)
 void surf_workstation_model_init_compound()
 {
 
-  xbt_assert(surf_cpu_model, "No CPU model defined yet!");
+  xbt_assert(surf_cpu_model_pm, "No CPU model defined yet!");
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_workstation_model_init_internal();
   xbt_dynar_push(model_list, &surf_workstation_model);

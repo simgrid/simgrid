@@ -394,9 +394,14 @@ typedef struct surf_resource_lmm {
 
 
 /** \ingroup SURF_models
- *  \brief The CPU model
+ *  \brief The CPU model object for the physical machine layer
  */
-XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model;
+XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model_pm;
+
+/** \ingroup SURF_models
+ *  \brief The CPU model object for the virtual machine layer
+ */
+XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model_vm;
 
 /** \ingroup SURF_models
  *  \brief Initializes the CPU model with the model Cas01
@@ -419,7 +424,7 @@ XBT_PUBLIC(void) surf_cpu_model_init_Cas01(void);
  *  You shouldn't have to call it by yourself.
  *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_cpu_model_init_ti(void);
+XBT_PUBLIC(void) surf_cpu_model_init_ti(surf_model_t cpu_model);
 
 /** \brief This function call the share resources function needed
  *

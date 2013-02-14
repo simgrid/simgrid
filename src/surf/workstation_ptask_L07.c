@@ -918,7 +918,7 @@ static void ptask_model_init_internal(void)
 void surf_workstation_model_init_ptask_L07(void)
 {
   XBT_INFO("surf_workstation_model_init_ptask_L07");
-  xbt_assert(!surf_cpu_model, "CPU model type already defined");
+  xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
   xbt_assert(!surf_network_model, "network model type already defined");
   ptask_define_callbacks();
   ptask_model_init_internal();

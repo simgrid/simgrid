@@ -148,7 +148,8 @@ static void* cpu_ti_create_resource(const char *name, double power_peak,
                            int core,
                            e_surf_resource_state_t state_initial,
                            tmgr_trace_t state_trace,
-                           xbt_dict_t cpu_properties)
+                           xbt_dict_t cpu_properties,
+                           surf_model_t cpu_model)
 {
   tmgr_trace_t empty_trace;
   s_tmgr_event_t val;
@@ -160,7 +161,7 @@ static void* cpu_ti_create_resource(const char *name, double power_peak,
               name);
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   cpu = (cpu_ti_t) surf_resource_new(sizeof(s_cpu_ti_t),
-          surf_cpu_model, name,cpu_properties);
+          cpu_model, name,cpu_properties);
   cpu->action_set =
       xbt_swag_new(xbt_swag_offset(ti_action, cpu_list_hookup));
   cpu->power_peak = power_peak;
@@ -198,7 +199,8 @@ static void parse_cpu_ti_init(sg_platf_host_cbarg_t host)
         host->core_amount,
         host->initial_state,
         host->state_trace,
-        host->properties);
+        host->properties,
+        surf_cpu_model_pm);
 
 }
 
@@ -500,6 +502,7 @@ static void cpu_ti_update_resource_state(void *id,
                                          double value, double date)
 {
   cpu_ti_t cpu = id;
+  surf_model_t cpu_model = ((surf_resource_t) cpu)->model;
   surf_action_cpu_ti_t action;
 
   surf_watched_hosts();
@@ -512,7 +515,7 @@ static void cpu_ti_update_resource_state(void *id,
     XBT_DEBUG("Finish trace date: %lf value %lf date %lf", surf_get_clock(),
            value, date);
     /* update remaining of actions and put in modified cpu swag */
-    cpu_ti_update_remaining_amount(cpu, date);
+    cpu_ti_update_remaining_amount(cpu_model, cpu, date);
     xbt_swag_insert(cpu, cpu_ti_modified_cpu);
 
     power_trace = cpu->avail_trace->power_trace;
@@ -572,10 +575,11 @@ static surf_action_t cpu_ti_execute(void *cpu, double size)
 {
   surf_action_cpu_ti_t action = NULL;
   cpu_ti_t CPU = surf_cpu_resource_priv(cpu);
+  surf_model_t cpu_model = ((surf_resource_t) CPU)->model;
 
   XBT_IN("(%s,%g)", surf_resource_name(CPU), size);
   action =
-      surf_action_new(sizeof(s_surf_action_cpu_ti_t), size, surf_cpu_model,
+      surf_action_new(sizeof(s_surf_action_cpu_ti_t), size, cpu_model,
                       CPU->state_current != SURF_RESOURCE_ON);
   action->cpu = cpu;
   action->index_heap = -1;
@@ -687,9 +691,10 @@ static void cpu_ti_action_set_priority(surf_action_t action,
 
 static double cpu_ti_action_get_remains(surf_action_t action)
 {
+  surf_model_t cpu_model = action->model_type;
   XBT_IN("(%p)", action);
-  cpu_ti_update_remaining_amount((cpu_ti_t)
-                                 ((surf_action_cpu_ti_t) action)->cpu,
+
+  cpu_ti_update_remaining_amount(cpu_model, (cpu_ti_t) ((surf_action_cpu_ti_t) action)->cpu,
                                  surf_get_clock());
   XBT_OUT();
   return action->remains;
@@ -765,12 +770,12 @@ static void cpu_ti_finalize(surf_model_t cpu_model)
   xbt_heap_free(cpu_ti_action_heap);
 }
 
-static void surf_cpu_ti_model_init_internal(void)
+static void surf_cpu_ti_model_init_internal(surf_model_t cpu_model)
 {
   s_surf_action_t action;
   s_cpu_ti_t cpu;
 
-  surf_cpu_model = surf_model_init();
+  cpu_model = surf_model_init();
 
   cpu_ti_running_action_set_that_does_not_need_being_checked =
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
@@ -778,35 +783,35 @@ static void surf_cpu_ti_model_init_internal(void)
   cpu_ti_modified_cpu =
       xbt_swag_new(xbt_swag_offset(cpu, modified_cpu_hookup));
 
-  surf_cpu_model->name = "cpu_ti";
+  cpu_model->name = "cpu_ti";
 
-  surf_cpu_model->action_unref = cpu_ti_action_unref;
-  surf_cpu_model->action_cancel = cpu_ti_action_cancel;
-  surf_cpu_model->action_state_set = cpu_ti_action_state_set;
+  cpu_model->action_unref = cpu_ti_action_unref;
+  cpu_model->action_cancel = cpu_ti_action_cancel;
+  cpu_model->action_state_set = cpu_ti_action_state_set;
 
-  surf_cpu_model->model_private->resource_used = cpu_ti_resource_used;
-  surf_cpu_model->model_private->share_resources = cpu_ti_share_resources;
-  surf_cpu_model->model_private->update_actions_state =
+  cpu_model->model_private->resource_used = cpu_ti_resource_used;
+  cpu_model->model_private->share_resources = cpu_ti_share_resources;
+  cpu_model->model_private->update_actions_state =
       cpu_ti_update_actions_state;
-  surf_cpu_model->model_private->update_resource_state =
+  cpu_model->model_private->update_resource_state =
       cpu_ti_update_resource_state;
-  surf_cpu_model->model_private->finalize = cpu_ti_finalize;
+  cpu_model->model_private->finalize = cpu_ti_finalize;
 
-  surf_cpu_model->suspend = cpu_ti_action_suspend;
-  surf_cpu_model->resume = cpu_ti_action_resume;
-  surf_cpu_model->is_suspended = cpu_ti_action_is_suspended;
-  surf_cpu_model->set_max_duration = cpu_ti_action_set_max_duration;
-  surf_cpu_model->set_priority = cpu_ti_action_set_priority;
-  surf_cpu_model->get_remains = cpu_ti_action_get_remains;
+  cpu_model->suspend = cpu_ti_action_suspend;
+  cpu_model->resume = cpu_ti_action_resume;
+  cpu_model->is_suspended = cpu_ti_action_is_suspended;
+  cpu_model->set_max_duration = cpu_ti_action_set_max_duration;
+  cpu_model->set_priority = cpu_ti_action_set_priority;
+  cpu_model->get_remains = cpu_ti_action_get_remains;
 
-  surf_cpu_model->extension.cpu.execute = cpu_ti_execute;
-  surf_cpu_model->extension.cpu.sleep = cpu_ti_action_sleep;
+  cpu_model->extension.cpu.execute = cpu_ti_execute;
+  cpu_model->extension.cpu.sleep = cpu_ti_action_sleep;
 
-  surf_cpu_model->extension.cpu.get_state = cpu_ti_get_state;
-  surf_cpu_model->extension.cpu.get_speed = cpu_ti_get_speed;
-  surf_cpu_model->extension.cpu.get_available_speed =
+  cpu_model->extension.cpu.get_state = cpu_ti_get_state;
+  cpu_model->extension.cpu.get_speed = cpu_ti_get_speed;
+  cpu_model->extension.cpu.get_available_speed =
       cpu_ti_get_available_speed;
-  surf_cpu_model->extension.cpu.add_traces = add_traces_cpu_ti;
+  cpu_model->extension.cpu.add_traces = add_traces_cpu_ti;
 
   cpu_ti_action_heap = xbt_heap_new(8, NULL);
   xbt_heap_set_update_callback(cpu_ti_action_heap,
@@ -814,12 +819,12 @@ static void surf_cpu_ti_model_init_internal(void)
 
 }
 
-void surf_cpu_model_init_ti()
+void surf_cpu_model_init_ti(surf_model_t cpu_model)
 {
-  xbt_assert(!surf_cpu_model,"CPU model already initialized. This should not happen.");
-  surf_cpu_ti_model_init_internal();
+  xbt_assert(!cpu_model,"CPU model already initialized. This should not happen.");
+  surf_cpu_ti_model_init_internal(cpu_model);
   cpu_ti_define_callbacks();
-  xbt_dynar_push(model_list, &surf_cpu_model);
+  xbt_dynar_push(model_list, &cpu_model);
 }
 
 
