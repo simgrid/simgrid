@@ -1,6 +1,7 @@
 #! tesh
 
 ! output sort
+! timeout 15
 
 $ java -cp ${classpath:=.} commTime/CommTimeTest ${srcdir:=.}/platform.xml ${srcdir:=.}/commTime/commTimeDeployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
