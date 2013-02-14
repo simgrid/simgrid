@@ -171,7 +171,7 @@ void MSG_vm_shutdown(msg_vm_t vm)
 {
   msg_process_t process;
   XBT_DEBUG("%lu processes in the VM", xbt_dynar_length(vm->processes));
-  while (xbt_dynar_length(vm->processes) > 0) {
+  while (!xbt_dynar_is_empty(vm->processes)) {
     process = xbt_dynar_get_as(vm->processes,0,msg_process_t);
     MSG_process_kill(process);
   }

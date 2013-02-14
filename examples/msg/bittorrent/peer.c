@@ -571,7 +571,7 @@ void update_choked_peers(peer_t peer)
   //remove a peer from the list
   xbt_dict_cursor_t cursor = NULL;
   xbt_dict_cursor_first(peer->active_peers, &cursor);
-  if (xbt_dict_length(peer->active_peers) > 0) {
+  if (!xbt_dict_is_empty(peer->active_peers)) {
     key = xbt_dict_cursor_get_key(cursor);
     connection_t peer_choked = xbt_dict_cursor_get_data(cursor);
     if (peer_choked) {

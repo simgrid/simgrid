@@ -247,7 +247,7 @@ static void smx_ctx_cojava_runall(void)
 {
   cojava_processes = SIMIX_process_get_runnable();
   smx_process_t process;
-  if (xbt_dynar_length(cojava_processes) > 0) {
+  if (!xbt_dynar_is_empty(cojava_processes)) {
     process = xbt_dynar_get_as(cojava_processes, 0, smx_process_t);
     cojava_process_index = 1;
     /* Execute the first process */
