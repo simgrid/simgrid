@@ -203,7 +203,7 @@ static void smx_ctx_cojava_suspend(smx_context_t context)
     XBT_DEBUG("Switching to %p",my_current_context);
     smx_ctx_cojava_t java_context = (smx_ctx_cojava_t)(next_context);
     if (!java_context->jprocess) {
-      (*(java_context->super.code))(java_context->super.argc, java_context->super.argv);
+      java_context->super.code(java_context->super.argc, java_context->super.argv);
       smx_ctx_cojava_create_coroutine(java_context);
     }
     else if (!java_context->bound) {
@@ -230,7 +230,7 @@ static void smx_ctx_cojava_resume(smx_context_t new_context) {
   smx_ctx_cojava_t java_context = (smx_ctx_cojava_t)(new_context);
 
   if (!java_context->jprocess) {
-    (*(java_context->super.code))(java_context->super.argc, java_context->super.argv);
+    java_context->super.code(java_context->super.argc, java_context->super.argv);
     smx_ctx_cojava_create_coroutine(java_context);
     java_context->bound = 1;
   }
