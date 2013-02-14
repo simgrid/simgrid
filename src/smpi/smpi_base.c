@@ -517,7 +517,7 @@ void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   smpi_mpi_waitall(2, requests, stats);
   if(status != MPI_STATUS_IGNORE) {
     // Copy receive status
-    memcpy(status, &stats[1], sizeof(MPI_Status));
+    *status = stats[1];
   }
 }
 
@@ -642,7 +642,7 @@ int smpi_mpi_testall(int count, MPI_Request requests[],
       smpi_empty_status(pstat);
     }
     if(status != MPI_STATUSES_IGNORE) {
-      memcpy(&status[i], pstat, sizeof(*pstat));
+      status[i] = *pstat;
     }
   }
   return flag;
@@ -786,10 +786,10 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
         if(index == MPI_UNDEFINED) {
           break;
        }
-      if(status != MPI_STATUSES_IGNORE) {
-        memcpy(&status[index], pstat, sizeof(*pstat));
-        if(status[index].MPI_ERROR==MPI_ERR_TRUNCATE)retvalue=MPI_ERR_IN_STATUS;
-
+      if (status != MPI_STATUSES_IGNORE) {
+        status[index] = *pstat;
+        if (status[index].MPI_ERROR == MPI_ERR_TRUNCATE)
+          retvalue = MPI_ERR_IN_STATUS;
       }
     }
   }
@@ -812,7 +812,7 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
       indices[count] = index;
       count++;
       if(status != MPI_STATUSES_IGNORE) {
-        memcpy(&status[index], pstat, sizeof(*pstat));
+        status[index] = *pstat;
       }
     }else{
       return MPI_UNDEFINED;
@@ -836,7 +836,7 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
          indices[count] = i;
          count++;
          if(status != MPI_STATUSES_IGNORE) {
-            memcpy(&status[i], pstat, sizeof(*pstat));
+           status[i] = *pstat;
          }
       }
     }else{
