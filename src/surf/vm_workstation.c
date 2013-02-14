@@ -103,8 +103,14 @@ static void vm_ws_set_state(void *ind_vm_ws, int state){
 
 static double ws_share_resources(double now)
 {
-   // Can be obsolete if you right can ensure that ws_model has been code previously
-   // invoke ws_share_resources on the physical_lyer: sub_ws->ws_share_resources()
+  // Can be obsolete if you right can ensure that ws_model has been code previously
+  // invoke ws_share_resources on the physical_lyer: sub_ws->ws_share_resources()
+  {
+    unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, surf_workstation_model);
+    unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, surf_vm_workstation_model);
+    xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_workstation_model comes before");
+    /* we have to make sure that the share_resource() callback of the model of the lower layer must be called in advance. */
+  }
 
 	// assign the corresponding value to X1, X2, ....
 
@@ -144,4 +150,5 @@ void surf_vm_workstation_model_init()
 {
   surf_vm_workstation_model_init_internal();
   xbt_dynar_push(model_list, &surf_vm_workstation_model);
+  xbt_dynar_push(model_list_invoke, &surf_vm_workstation_model);
 }

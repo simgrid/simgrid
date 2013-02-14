@@ -436,6 +436,10 @@ void surf_cpu_model_init_Cas01()
 
   surf_cpu_model_init_internal();
   cpu_define_callbacks();
+
+  /* cpu_model is registered only to model_list, and not to
+   * model_list_invoke. The shared_resource callback function will be called
+   * from that of the workstation model. */
   xbt_dynar_push(model_list, &surf_cpu_model);
 }
 

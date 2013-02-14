@@ -110,7 +110,11 @@ int __surf_is_absolute_file_path(const char *file_path)
 
 double NOW = 0;
 
-xbt_dynar_t model_list = NULL;
+/* model_list_invoke contains only surf_workstation and surf_vm_workstation.
+ * The callback functions of cpu_model and network_model will be called from
+ * those of these workstation models. */
+xbt_dynar_t model_list = NULL; /* for destroying all models correctly */
+xbt_dynar_t model_list_invoke = NULL;  /* for invoking callbacks */
 tmgr_history_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
@@ -415,6 +419,8 @@ void surf_init(int *argc, char **argv)
   xbt_init(argc, argv);
   if (!model_list)
     model_list = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
+  if (!model_list_invoke)
+    model_list_invoke = xbt_dynar_new(sizeof(surf_model_private_t), NULL);
   if (!history)
     history = tmgr_history_new();
 
@@ -470,6 +476,9 @@ void surf_exit(void)
   xbt_dynar_foreach(model_list, iter, model)
       model->model_private->finalize();
   xbt_dynar_free(&model_list);
+
+  xbt_dynar_free(&model_list_invoke);
+
   routing_exit();
 
   if (maxmin_system) {
@@ -530,6 +539,8 @@ void surf_presolve(void)
       }
     }
   }
+
+  /* FIXME: see what is check_update_action_state(). if necessary, use model_list_invoke. */
   xbt_dynar_foreach(model_list, iter, model)
       model->model_private->update_actions_state(NOW, 0.0);
 }
@@ -552,7 +563,7 @@ double surf_solve(double max_date)
   XBT_DEBUG("Looking for next action end for all models except NS3");
 
   if (surf_mins == NULL) {
-    surf_mins = xbt_new(double, xbt_dynar_length(model_list));
+    surf_mins = xbt_new(double, xbt_dynar_length(model_list_invoke));
   }
   surf_min_index = 0;
 
@@ -560,20 +571,20 @@ double surf_solve(double max_date)
   if (surf_get_nthreads() > 1) {
     /* parallel version */
 #ifdef CONTEXT_THREADS
-    xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_share_resources, model_list);
+    xbt_parmap_apply(surf_parmap, (void_f_pvoid_t) surf_share_resources, model_list_invoke);
 #else
     xbt_die("Asked to run in parallel, but no thread at hand...");
 #endif
   }
   else {
     /* sequential version */
-    xbt_dynar_foreach(model_list, iter, model) {
+    xbt_dynar_foreach(model_list_invoke, iter, model) {
       surf_share_resources(model);
     }
   }
 
   unsigned i;
-  for (i = 0; i < xbt_dynar_length(model_list); i++) {
+  for (i = 0; i < xbt_dynar_length(model_list_invoke); i++) {
     if ((min < 0.0 || surf_mins[i] < min)
         && surf_mins[i] >= 0.0) {
       min = surf_mins[i];
@@ -652,6 +663,7 @@ double surf_solve(double max_date)
 #endif
   }
   else {
+    /* FIXME: model_list or model_list_invoke? revisit here later */
     /* sequential version */
     xbt_dynar_foreach(model_list, iter, model) {
       surf_update_actions_state(model);

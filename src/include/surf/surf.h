@@ -682,6 +682,7 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_new_model_description[];
  *  \brief List of initialized models
  */
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) model_list_invoke;
 
 /*******************************************/
 /*** SURF Globals **************************/

@@ -284,6 +284,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
     if (elapsed_time > 0.0)
       total_time += elapsed_time;
 
+    /* FIXME: shoud look at model_list or model_list_invoke? */
     /* let's see which tasks are done */
     xbt_dynar_foreach(model_list, iter, model) {
       while ((action = xbt_swag_extract(model->states.done_action_set))) {
