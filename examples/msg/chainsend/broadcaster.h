@@ -37,7 +37,6 @@ broadcaster_t broadcaster_init(xbt_dynar_t host_list, unsigned int piece_count);
 int broadcaster_build_chain(broadcaster_t bc);
 int broadcaster_send_file(broadcaster_t bc);
 int broadcaster_finish(broadcaster_t bc);
-static void broadcaster_destroy(broadcaster_t bc);
 
 /* Tasks */
 int broadcaster(int argc, char *argv[]);
