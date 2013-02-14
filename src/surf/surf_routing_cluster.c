@@ -119,10 +119,10 @@ static void cluster_get_graph(xbt_graph_t graph, xbt_dict_t nodes,
         } else {
           new_xbt_graph_edge(graph, current, routerNode, edges);
         }
+      }
     }
-  }
 
- }
+  }
 }
 
 static void model_cluster_finalize(AS_t as)
