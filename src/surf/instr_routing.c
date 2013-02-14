@@ -14,8 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
-extern xbt_dict_t defined_types; /* from instr_interface.c */
-
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
 static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
 
