@@ -68,11 +68,6 @@ static double parse_double(const char *string)
   return value;
 }
 
-static int get_rank(const char *process_name)
-{
-  return atoi(&(process_name[1]));
-}
-
 static void asynchronous_cleanup(void)
 {
   process_globals_t globals =

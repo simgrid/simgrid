@@ -128,18 +128,6 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
 }
 
-static int graph_extraction_filter_out (container_t c1, container_t c2)
-{
-  if (c1->kind == INSTR_LINK ||
-      c1->kind == INSTR_SMPI ||
-      c1->kind == INSTR_MSG_PROCESS ||
-      c1->kind == INSTR_MSG_TASK ||
-      (c2 && strcmp (c1->name, c2->name) == 0))
-    return 1;
-  else
-    return 0;
-}
-
 static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
 {
   if (!TRACE_platform_topology()){
