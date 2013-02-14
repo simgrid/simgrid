@@ -10,6 +10,7 @@
 #define TESH_RUN_CONTEXT_H
 
 #include "tesh.h"
+#include "xbt/synchro_core.h"
 
 typedef enum { e_output_check, e_output_display,
   e_output_ignore
