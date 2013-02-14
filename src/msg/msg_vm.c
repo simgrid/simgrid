@@ -90,7 +90,7 @@ void MSG_vm_bind(msg_vm_t vm, msg_process_t process) {
 /** @brief Removes the given process from the given VM, and kill it
  *  @ingroup msg_VMs
  *
- *  Will raise a not_found exception if the process were not binded to that VM
+ *  Will raise a not_found exception if the process were not bound to that VM
  */
 void MSG_vm_unbind(msg_vm_t vm, msg_process_t process) {
   int pos = xbt_dynar_search(vm->processes,process);

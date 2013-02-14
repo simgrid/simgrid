@@ -18,7 +18,7 @@ SG_BEGIN_DECL()
 
 typedef struct s_smx_ctx_cojava {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
-  jobject jprocess;             /* the java process instance binded with the msg process structure */
+  jobject jprocess;             /* the java process instance bound with the msg process structure */
   JNIEnv *jenv;                 /* jni interface pointer associated to this thread */
   jobject jcoroutine;						/* java coroutine object */
   int bound:1;

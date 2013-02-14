@@ -466,6 +466,19 @@ xbt_dynar_remove_n_at(xbt_dynar_t const dynar,
 
 /** @brief Returns the position of the element in the dynar
  *
+ * Beware that if your dynar contains pointed values (such as strings) instead 
+ * of scalar, this function compares the pointer value, not what's pointed. The only
+ * solution to search for a pointed value is then to write the foreach loop yourself:
+ * \code
+ * signed int position = -1;
+ * xbt_dynar_foreach(dynar, iter, elem) {
+ *    if (!memcmp(elem, searched_element, sizeof(*elem))) {
+ *        position = iter;
+ *        break;
+ *    }
+ * }
+ * \endcode
+ * 
  * Raises not_found_error if not found. If you have less than 2 millions elements,
  * you probably want to use #xbt_dynar_search_or_negative() instead, so that you
  * don't have to TRY/CATCH on element not found.
@@ -485,6 +498,10 @@ unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void *const elem)
 
 /** @brief Returns the position of the element in the dynar (or -1 if not found)
  *
+ * Beware that if your dynar contains pointed values (such as
+ * strings) instead of scalar, this function is probably not what you
+ * want. Check the documentation of xbt_dynar_search() for more info.
+ * 
  * Note that usually, the dynar indices are unsigned integers. If you have more
  * than 2 million elements in your dynar, this very function will not work (but the other will).
  */
@@ -500,7 +517,12 @@ signed int xbt_dynar_search_or_negative(xbt_dynar_t const dynar, void *const ele
   return -1;
 }
 
-/** @brief Returns a boolean indicating whether the element is part of the dynar */
+/** @brief Returns a boolean indicating whether the element is part of the dynar 
+ *
+ * Beware that if your dynar contains pointed values (such as
+ * strings) instead of scalar, this function is probably not what you
+ * want. Check the documentation of xbt_dynar_search() for more info.
+ */
 int xbt_dynar_member(xbt_dynar_t const dynar, void *const elem)
 {
 

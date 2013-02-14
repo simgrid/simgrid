@@ -43,16 +43,16 @@ XBT_PUBLIC(void) MSG_config(const char *key, const char *value);
  *
  *  We allow to link against compiled versions that differ in the patch level.
  */
-#define MSG_init(argc,argv)  {                      \
-	  int ver_major,ver_minor,ver_patch;              \
-	  sg_version(&ver_major,&ver_minor,&ver_patch);   \
-	  if ((ver_major != SIMGRID_VERSION_MAJOR) ||     \
-	      (ver_minor != SIMGRID_VERSION_MINOR)) {     \
-	    fprintf(stderr,"FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, and then linked against SimGrid %d.%d.%d. Please fix this.\n", \
-	        SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,ver_major,ver_minor,ver_patch);                          \
-	  }                                               \
-	  MSG_init_nocheck(argc,argv);                    \
-	}
+#define MSG_init(argc,argv)  {                                          \
+    int ver_major,ver_minor,ver_patch;                                  \
+    sg_version(&ver_major,&ver_minor,&ver_patch);                       \
+    if ((ver_major != SIMGRID_VERSION_MAJOR) ||                         \
+        (ver_minor != SIMGRID_VERSION_MINOR)) {                         \
+      fprintf(stderr,"FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, and then linked against SimGrid %d.%d.%d. Please fix this.\n", \
+              SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,ver_major,ver_minor,ver_patch); \
+    }                                                                   \
+    MSG_init_nocheck(argc,argv);                                        \
+  }
 
 XBT_PUBLIC(void) MSG_init_nocheck(int *argc, char **argv);
 XBT_PUBLIC(msg_error_t) MSG_main(void);
@@ -208,7 +208,7 @@ XBT_PUBLIC(double) MSG_task_get_compute_duration(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_compute_duration(msg_task_t task,
                                                double compute_duration);
 XBT_PUBLIC(void) MSG_task_set_data_size(msg_task_t task,
-                                   	       double data_size);
+                                        double data_size);
 
 XBT_PUBLIC(double) MSG_task_get_remaining_computation(msg_task_t task);
 XBT_PUBLIC(double) MSG_task_get_remaining_communication(msg_task_t task);
@@ -271,7 +271,7 @@ XBT_PUBLIC(int) MSG_task_listen_from_host(const char *alias,
 XBT_PUBLIC(msg_error_t)
     MSG_task_send_with_timeout(msg_task_t task, const char *alias,
                            double timeout);
-    
+
 XBT_PUBLIC(msg_error_t)
     MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias,
                            double timeout, double maxrate);
@@ -291,6 +291,10 @@ XBT_PUBLIC(const char *) MSG_task_get_category (msg_task_t task);
 XBT_PUBLIC(msg_error_t)
     MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
                          msg_host_t host, double timeout);
+
+XBT_PUBLIC(msg_error_t)
+    MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *task,
+                                     msg_host_t host, double timeout, double rate);
 
 XBT_PUBLIC(msg_error_t)
     MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,

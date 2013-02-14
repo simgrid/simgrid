@@ -195,7 +195,7 @@ public abstract class Process implements Runnable {
 	}
 	/**
 	 * The natively implemented method to create an MSG process.
-	 * @param hostName    A valid (binded) host where create the process.
+	 * @param hostName    A valid (bound) host where create the process.
 	 */
 	protected native void create(String hostName) throws HostNotFoundException;
 	/**

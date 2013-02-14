@@ -747,14 +747,14 @@ double simcall_comm_change_rate_first_action(smx_rdv_t rdv, double newrate)
 
   item = xbt_fifo_get_first_item(rdv->comm_fifo);
   if (item != NULL) {
-	  action = (smx_action_t) xbt_fifo_get_item_content(item);
-	  if (action->comm.rate > newrate) {
-		  action->comm.rate = newrate;
-		  return newrate;
-	  } else
-		  return action->comm.rate;
+    action = (smx_action_t) xbt_fifo_get_item_content(item);
+    if (action->comm.rate > newrate) {
+      action->comm.rate = newrate;
+      return newrate;
+    } else
+      return action->comm.rate;
   } else
-	  return -1.0;
+    return -1.0;
 }
 
 

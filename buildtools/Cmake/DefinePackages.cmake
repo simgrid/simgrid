@@ -829,6 +829,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/GenerateDocWin.cmake
   buildtools/Cmake/MaintainerMode.cmake
   buildtools/Cmake/MakeExe.cmake
+  buildtools/Cmake/MakeJava.cmake
   buildtools/Cmake/MakeLib.cmake
   buildtools/Cmake/MakeLibWin.cmake
   buildtools/Cmake/Modules/FindF2c.cmake
