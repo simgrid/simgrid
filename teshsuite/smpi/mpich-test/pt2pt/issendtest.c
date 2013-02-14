@@ -37,7 +37,7 @@ int main( int argc, char **argv)
 {
     int rank; /* My Rank (0 or 1) */
     int act_size = 1000;
-    int flag;
+/*    int flag;*/
     int buffer[SIZE];
     double t0;
     char *Current_Test = NULL;
@@ -85,7 +85,7 @@ for this test.\n" );
 	MPI_Issend( buffer, act_size, MPI_INT, dest, 1, MPI_COMM_WORLD, &r1 );
 	MPI_Issend( buffer, act_size, MPI_INT, dest, 2, MPI_COMM_WORLD, &r2 );
 	t0 = MPI_Wtime();
-	flag = 0;
+/*	flag = 0;*/
 /*	while ( (MPI_Wtime() - t0) < MAX_TIME) {*/
 /*	    MPI_Test( &r1, &flag, &status );*/
 /*	    if (flag) {*/
