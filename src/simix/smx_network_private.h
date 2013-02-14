@@ -35,11 +35,6 @@ smx_action_t SIMIX_rdv_get_head(smx_rdv_t rdv);
 void SIMIX_rdv_set_receiver(smx_rdv_t rdv, smx_process_t proc);
 smx_process_t SIMIX_rdv_get_receiver(smx_rdv_t rdv);
 void SIMIX_comm_start(smx_action_t action);
-void SIMIX_comm_send(smx_process_t src_proc, smx_rdv_t rdv,
-                     double task_size, double rate,
-                     void *src_buff, size_t src_buff_size,
-                     int (*match_fun)(void *, void *,smx_action_t), void *data,
-                     double timeout);
 smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
@@ -47,17 +42,9 @@ smx_action_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
                               void (*clean_fun)(void *), // used to free the action in case of problem after a detached send
                               void *data,
                               int detached);
-void SIMIX_comm_recv(smx_process_t dst_proc, smx_rdv_t rdv,
-                     void *dst_buff, size_t *dst_buff_size,
-                     int (*)(void *, void *,smx_action_t), void *data,
-                     double timeout);
 smx_action_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*)(void *, void *, smx_action_t), void *data);
-void SIMIX_comm_recv_bounded(smx_process_t dst_proc, smx_rdv_t rdv,
-                     void *dst_buff, size_t *dst_buff_size,
-                     int (*)(void *, void *,smx_action_t), void *data,
-                     double timeout, double rate);
 smx_action_t SIMIX_comm_irecv_bounded(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*)(void *, void *, smx_action_t), void *data, double rate);
