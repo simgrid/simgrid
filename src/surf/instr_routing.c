@@ -14,8 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
-extern xbt_dict_t defined_types; /* from instr_interface.c */
-
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
 static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
 
@@ -145,7 +143,7 @@ static int graph_extraction_filter_out (container_t c1, container_t c2)
 static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
 {
   if (!TRACE_platform_topology()){
-    XBT_DEBUG("Graph extracing disable by user.");
+    XBT_DEBUG("Graph extraction disabled by user.");
     return;
   }
   XBT_DEBUG ("Graph extraction for routing_component = %s", rc->name);
@@ -161,7 +159,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
   }
 
   {
-	xbt_graph_t graph = xbt_graph_new_graph (0, NULL);
+    xbt_graph_t graph = xbt_graph_new_graph (0, NULL);
     xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
     xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
     xbt_edge_t edge = NULL;
@@ -177,7 +175,6 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
     xbt_dict_free (&edges);
     xbt_graph_free_graph(graph,xbt_free, xbt_free, NULL);
   }
-
 }
 
 /*
