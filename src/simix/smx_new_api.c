@@ -93,7 +93,7 @@ void SIMIX_new_api_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p", action);
   if (action->new_api.surf_new_api)
-    action->new_api.surf_new_api->model_type->action_unref(action->new_api.surf_new_api);
+    action->new_api.surf_new_api->model_obj->action_unref(action->new_api.surf_new_api);
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 

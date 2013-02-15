@@ -763,6 +763,7 @@ static void surf_network_model_init_internal(void)
   set_update_mechanism();
 
   surf_network_model->name = "network";
+  surf_network_model->type = SURF_MODEL_TYPE_NETWORK;
   surf_network_model->action_unref = surf_action_unref;
   surf_network_model->action_cancel = surf_action_cancel;
   surf_network_model->action_recycle = net_action_recycle;

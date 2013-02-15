@@ -342,6 +342,7 @@ void surf_network_model_init_NS3()
 
   surf_network_model = surf_model_init();
   surf_network_model->name = "network NS3";
+  surf_network_model->type = SURF_MODEL_TYPE_NETWORK;
   surf_network_model->extension.network.get_link_latency = ns3_get_link_latency;
   surf_network_model->extension.network.get_link_bandwidth = ns3_get_link_bandwidth;
   surf_network_model->extension.network.get_route = ns3_get_route;

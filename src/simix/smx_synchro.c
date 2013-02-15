@@ -70,7 +70,7 @@ void SIMIX_synchro_destroy(smx_action_t action)
 {
   XBT_IN("(%p)",action);
   XBT_DEBUG("Destroying synchro %p", action);
-  action->synchro.sleep->model_type->action_unref(action->synchro.sleep);
+  action->synchro.sleep->model_obj->action_unref(action->synchro.sleep);
   xbt_free(action->name);
   xbt_mallocator_release(simix_global->action_mallocator, action);
   XBT_OUT();

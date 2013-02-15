@@ -747,7 +747,7 @@ void SIMIX_process_sleep_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p", action);
   if (action->sleep.surf_sleep)
-    action->sleep.surf_sleep->model_type->action_unref(action->sleep.surf_sleep);
+    action->sleep.surf_sleep->model_obj->action_unref(action->sleep.surf_sleep);
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 

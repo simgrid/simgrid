@@ -356,7 +356,7 @@ void SIMIX_io_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p", action);
   if (action->io.surf_io)
-    action->io.surf_io->model_type->action_unref(action->io.surf_io);
+    action->io.surf_io->model_obj->action_unref(action->io.surf_io);
   xbt_mallocator_release(simix_global->action_mallocator, action);
 }
 

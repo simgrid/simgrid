@@ -363,6 +363,7 @@ static void surf_cpu_model_init_internal(surf_model_t cpu_model)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   cpu_model->name = "cpu";
+  cpu_model->type = SURF_MODEL_TYPE_CPU;
 
   cpu_model->action_unref = surf_action_unref;
   cpu_model->action_cancel = surf_action_cancel;

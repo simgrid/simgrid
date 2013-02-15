@@ -691,7 +691,7 @@ static void cpu_ti_action_set_priority(surf_action_t action,
 
 static double cpu_ti_action_get_remains(surf_action_t action)
 {
-  surf_model_t cpu_model = action->model_type;
+  surf_model_t cpu_model = action->model_obj;
   XBT_IN("(%p)", action);
 
   cpu_ti_update_remaining_amount(cpu_model, (cpu_ti_t) ((surf_action_cpu_ti_t) action)->cpu,
@@ -784,6 +784,7 @@ static void surf_cpu_ti_model_init_internal(surf_model_t cpu_model)
       xbt_swag_new(xbt_swag_offset(cpu, modified_cpu_hookup));
 
   cpu_model->name = "cpu_ti";
+  cpu_model->type = SURF_MODEL_TYPE_CPU;
 
   cpu_model->action_unref = cpu_ti_action_unref;
   cpu_model->action_cancel = cpu_ti_action_cancel;

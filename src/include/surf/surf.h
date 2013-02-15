@@ -107,7 +107,12 @@ typedef struct surf_action {
          * and fluctuates until the task is completed */
   void *data;                   /**< for your convenience */
   int refcount;
-  surf_model_t model_type;
+
+  /* The previous name was model_type. For VM support, we have to distinguish a
+   * model type and its model object. Thus, we use model_obj here. The type of
+   * a model object is available through a macro. */
+  surf_model_t model_obj;       /**< the surf model object */
+
 #ifdef HAVE_TRACING
   char *category;               /**< tracing category for categorized resource utilization monitoring */
 #endif
@@ -290,6 +295,23 @@ typedef struct surf_vm_workstation_model_extension_public {
 } s_surf_model_extension_vm_workstation_t;
 
 /** \ingroup SURF_models
+ *  \brief Model types
+ *
+ *  The type of the model object. For example, we will have two model objects
+ *  of the surf cpu model. One is for physical machines, and the other is for
+ *  virtual machines.
+ *
+ */
+typedef enum {
+  SURF_MODEL_TYPE_CPU = 0,
+  SURF_MODEL_TYPE_NETWORK,
+  SURF_MODEL_TYPE_STORAGE,
+  SURF_MODEL_TYPE_WORKSTATION,
+  SURF_MODEL_TYPE_VM_WORKSTATION,
+  SURF_MODEL_TYPE_NEW_MODEL
+} e_surf_model_type_t;
+
+/** \ingroup SURF_models
  *  \brief Model datatype
  *
  *  Generic data structure for a model. The workstations,
@@ -299,7 +321,9 @@ typedef struct surf_model {
   const char *name;     /**< Name of this model */
   s_surf_action_state_t states;      /**< Any living action on this model */
 
-   e_surf_action_state_t(*action_state_get) (surf_action_t action);
+  e_surf_model_type_t type; /**< See e_surf_model_type_t */
+
+  e_surf_action_state_t(*action_state_get) (surf_action_t action);
                                                                        /**< Return the state of an action */
   void (*action_state_set) (surf_action_t action,
                             e_surf_action_state_t state);

@@ -135,6 +135,7 @@ static void surf_vm_workstation_model_init_internal(void)
   surf_vm_workstation_model = surf_model_init();
 
   surf_vm_workstation_model->name = "Virtual Workstation";
+  surf_vm_workstation_model->type = SURF_MODEL_TYPE_VM_WORKSTATION;
 
   surf_vm_workstation_model->extension.vm_workstation.create = vm_ws_create;
   surf_vm_workstation_model->extension.vm_workstation.set_state = vm_ws_set_state;

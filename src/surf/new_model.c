@@ -148,6 +148,7 @@ static void surf_new_model_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_new_model->name = "New Model";
+  surf_new_model->type = SURF_MODEL_TYPE_NEW_MODEL;
   surf_new_model->action_unref = new_model_action_unref;
   surf_new_model->action_cancel = new_model_action_cancel;
   surf_new_model->action_state_set = new_model_action_state_set;

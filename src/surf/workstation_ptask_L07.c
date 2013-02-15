@@ -856,6 +856,7 @@ static void ptask_model_init_internal(void)
   surf_workstation_model->set_priority = ptask_action_set_priority;
   surf_workstation_model->get_remains = ptask_action_get_remains;
   surf_workstation_model->name = "Workstation ptask_L07";
+  surf_workstation_model->type = SURF_MODEL_TYPE_WORKSTATION;
 
   surf_workstation_model->model_private->resource_used =
       ptask_resource_used;

@@ -52,13 +52,13 @@ static int ws_parallel_action_free(surf_action_t action)
 
 static int ws_action_unref(surf_action_t action)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     return surf_network_model->action_unref(action);
-  else if (action->model_type == surf_cpu_model)
-    return action->model_type->action_unref(action);
+  else if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    return action->model_obj->action_unref(action);
       // previously was: Adrien/Arnaud 6 feb
   	  // surf_cpu_model->action_unref(action);
-  else if (action->model_type == surf_workstation_model)
+  else if (action->model_obj->type == SURF_MODEL_TYPE_WORKSTATION)
     return ws_parallel_action_free(action);
   else
     DIE_IMPOSSIBLE;
@@ -67,11 +67,11 @@ static int ws_action_unref(surf_action_t action)
 
 static void ws_action_cancel(surf_action_t action)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->action_cancel(action);
-  else if (action->model_type == surf_cpu_model)
-    action->model_type->action_cancel(action);
-  else if (action->model_type == surf_workstation_model)
+  else if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    action->model_obj->action_cancel(action);
+  else if (action->model_obj->type == SURF_MODEL_TYPE_WORKSTATION)
     ws_parallel_action_cancel(action);
   else
     DIE_IMPOSSIBLE;
@@ -81,11 +81,11 @@ static void ws_action_cancel(surf_action_t action)
 static void ws_action_state_set(surf_action_t action,
                                 e_surf_action_state_t state)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->action_state_set(action, state);
-  else if (action->model_type == surf_cpu_model)
-    action->model_type->action_state_set(action, state);
-  else if (action->model_type == surf_workstation_model)
+  else if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    action->model_obj->action_state_set(action, state);
+  else if (action->model_obj->type == SURF_MODEL_TYPE_WORKSTATION)
     surf_action_state_set(action, state);
   else
     DIE_IMPOSSIBLE;
@@ -124,30 +124,30 @@ static surf_action_t ws_action_sleep(void *workstation, double duration)
 
 static void ws_action_suspend(surf_action_t action)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->suspend(action);
-  else if (action->model_type == surf_cpu_model)
-    action->model_type->suspend(action);
+  else if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    action->model_obj->suspend(action);
   else
     DIE_IMPOSSIBLE;
 }
 
 static void ws_action_resume(surf_action_t action)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->resume(action);
-  else if (action->model_type == surf_cpu_model)
-    action->model_type->resume(action);
+  else if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    action->model_obj->resume(action);
   else
     DIE_IMPOSSIBLE;
 }
 
 static int ws_action_is_suspended(surf_action_t action)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     return surf_network_model->is_suspended(action);
-  if (action->model_type == surf_cpu_model)
-    return action->model_type->is_suspended(action);
+  if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    return action->model_obj->is_suspended(action);
   DIE_IMPOSSIBLE;
   return -1;
 }
@@ -155,20 +155,20 @@ static int ws_action_is_suspended(surf_action_t action)
 static void ws_action_set_max_duration(surf_action_t action,
                                        double duration)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->set_max_duration(action, duration);
-  else if (action->model_type == surf_cpu_model)
-    action->model_type->set_max_duration(action, duration);
+  else if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    action->model_obj->set_max_duration(action, duration);
   else
     DIE_IMPOSSIBLE;
 }
 
 static void ws_action_set_priority(surf_action_t action, double priority)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->set_priority(action, priority);
-  else if (action->model_type == surf_cpu_model)
-    action->model_type->set_priority(action, priority);
+  else if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    action->model_obj->set_priority(action, priority);
   else
     DIE_IMPOSSIBLE;
 }
@@ -176,10 +176,10 @@ static void ws_action_set_priority(surf_action_t action, double priority)
 #ifdef HAVE_TRACING
 static void ws_action_set_category(surf_action_t action, const char *category)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->set_category(action, category);
-  else if (action->model_type == surf_cpu_model)
-    action->model_type->set_category(action, category);
+  else if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    action->model_obj->set_category(action, category);
   else
     DIE_IMPOSSIBLE;
 }
@@ -188,7 +188,7 @@ static void ws_action_set_category(surf_action_t action, const char *category)
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 static int ws_get_latency_limited(surf_action_t action)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     return surf_network_model->get_latency_limited(action);
   else
     return 0;
@@ -197,10 +197,10 @@ static int ws_get_latency_limited(surf_action_t action)
 
 static double ws_action_get_remains(surf_action_t action)
 {
-  if (action->model_type == surf_network_model)
+  if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     return surf_network_model->get_remains(action);
-  if (action->model_type == surf_cpu_model)
-    return action->model_type->get_remains(action);
+  if (action->model_obj->type == SURF_MODEL_TYPE_CPU)
+    return action->model_obj->get_remains(action);
   DIE_IMPOSSIBLE;
   return -1.0;
 }
@@ -389,6 +389,7 @@ static void surf_workstation_model_init_internal(void)
 
   // TODO  surf_workstation_model->extension.cpu=cpu_model_cas01(0);
   surf_workstation_model->name = "Workstation";
+  surf_workstation_model->type = SURF_MODEL_TYPE_WORKSTATION;
   surf_workstation_model->action_unref = ws_action_unref;
   surf_workstation_model->action_cancel = ws_action_cancel;
   surf_workstation_model->action_state_set = ws_action_state_set;

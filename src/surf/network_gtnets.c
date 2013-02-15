@@ -410,6 +410,7 @@ static void surf_network_model_init_internal(void)
   surf_network_model = surf_model_init();
 
   surf_network_model->name = "network GTNetS";
+  surf_network_model->type = SURF_MODEL_TYPE_NETWORK;
   surf_network_model->action_unref = action_unref;
   surf_network_model->action_cancel = action_cancel;
   surf_network_model->action_recycle = action_recycle;

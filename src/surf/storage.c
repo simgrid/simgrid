@@ -495,6 +495,7 @@ static void surf_storage_model_init_internal(void)
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
 
   surf_storage_model->name = "Storage";
+  surf_storage_model->type = SURF_MODEL_TYPE_STORAGE;
   surf_storage_model->action_unref = storage_action_unref;
   surf_storage_model->action_cancel = storage_action_cancel;
   surf_storage_model->action_state_set = storage_action_state_set;

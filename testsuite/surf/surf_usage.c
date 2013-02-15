@@ -73,7 +73,7 @@ void test(char *platform)
 
   /* Use whatever calling style you want... */
   stateActionA = surf_cpu_model_pm->action_state_get(actionA);     /* When you know actionA model type */
-  stateActionB = actionB->model_type->action_state_get(actionB);        /* If you're unsure about it's model type */
+  stateActionB = actionB->model_obj->action_state_get(actionB);        /* If you're unsure about it's model type */
   stateActionC = surf_cpu_model_pm->action_state_get(actionC);     /* When you know actionA model type */
 
   /* And just look at the state of these tasks */
@@ -103,25 +103,25 @@ void test(char *platform)
     while ((action =
             xbt_swag_extract(surf_cpu_model_pm->states.failed_action_set))) {
       XBT_DEBUG("\t * Failed : %p", action);
-      action->model_type->action_unref(action);
+      action->model_obj->action_unref(action);
     }
     while ((action =
             xbt_swag_extract(surf_cpu_model_pm->states.done_action_set))) {
       XBT_DEBUG("\t * Done : %p", action);
-      action->model_type->action_unref(action);
+      action->model_obj->action_unref(action);
     }
     XBT_DEBUG("\t Network actions");
     while ((action =
             xbt_swag_extract(surf_network_model->states.
                              failed_action_set))) {
       XBT_DEBUG("\t * Failed : %p", action);
-      action->model_type->action_unref(action);
+      action->model_obj->action_unref(action);
     }
     while ((action =
             xbt_swag_extract(surf_network_model->states.
                              done_action_set))) {
       XBT_DEBUG("\t * Done : %p", action);
-      action->model_type->action_unref(action);
+      action->model_obj->action_unref(action);
     }
 
   } while ((xbt_swag_size(surf_network_model->states.running_action_set) ||

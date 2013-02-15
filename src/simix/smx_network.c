@@ -337,17 +337,17 @@ void SIMIX_comm_destroy_internal_actions(smx_action_t action)
 #ifdef HAVE_LATENCY_BOUND_TRACKING
     action->latency_limited = SIMIX_comm_is_latency_bounded(action);
 #endif
-    action->comm.surf_comm->model_type->action_unref(action->comm.surf_comm);
+    action->comm.surf_comm->model_obj->action_unref(action->comm.surf_comm);
     action->comm.surf_comm = NULL;
   }
 
   if (action->comm.src_timeout){
-    action->comm.src_timeout->model_type->action_unref(action->comm.src_timeout);
+    action->comm.src_timeout->model_obj->action_unref(action->comm.src_timeout);
     action->comm.src_timeout = NULL;
   }
 
   if (action->comm.dst_timeout){
-    action->comm.dst_timeout->model_type->action_unref(action->comm.dst_timeout);
+    action->comm.dst_timeout->model_obj->action_unref(action->comm.dst_timeout);
     action->comm.dst_timeout = NULL;
   }
 }
