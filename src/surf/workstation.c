@@ -7,6 +7,7 @@
 #include "xbt/ex.h"
 #include "xbt/dict.h"
 #include "portable.h"
+#include "surf_private.h"
 #include "storage_private.h"
 #include "surf/surf_resource.h"
 #include "simgrid/sg_config.h"
@@ -18,19 +19,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
 surf_model_t surf_workstation_model = NULL;
 
 
-void __init_ws(workstation_CLM03_t ws,  const char *id){
-  ws->generic_resource.model = surf_workstation_model;
+void __init_workstation_CLM03(workstation_CLM03_t ws, const char *id, surf_model_t workstation_model)
+{
+  ws->generic_resource.model = workstation_model;
   ws->generic_resource.name = xbt_strdup(id);
   ws->storage = xbt_lib_get_or_null(storage_lib,id,ROUTING_STORAGE_HOST_LEVEL);
   ws->net_elm = xbt_lib_get_or_null(host_lib,id,ROUTING_HOST_LEVEL);
+
   XBT_DEBUG("Create ws %s with %ld mounted disks",id,xbt_dynar_length(ws->storage));
   xbt_lib_set(host_lib, id, SURF_WKS_LEVEL, ws);
-  ws->generic_resource.model.extension.cpu=cpu_model_cas01(0);
 }
+
 static void workstation_new(sg_platf_host_cbarg_t host)
 {
   workstation_CLM03_t workstation = xbt_new0(s_workstation_CLM03_t, 1);
-  __init_ws(workstation, host->id, level);
+
+  __init_workstation_CLM03(workstation, host->id, surf_workstation_model);
 }
 
 static int ws_resource_used(void *resource_id)
@@ -387,7 +391,6 @@ static void surf_workstation_model_init_internal(void)
 {
   surf_workstation_model = surf_model_init();
 
-  // TODO  surf_workstation_model->extension.cpu=cpu_model_cas01(0);
   surf_workstation_model->name = "Workstation";
   surf_workstation_model->type = SURF_MODEL_TYPE_WORKSTATION;
   surf_workstation_model->action_unref = ws_action_unref;
@@ -415,6 +418,11 @@ static void surf_workstation_model_init_internal(void)
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   surf_workstation_model->get_latency_limited = ws_get_latency_limited;
 #endif
+
+  /* For VM support, we have a surf cpu model object for each workstation model
+   * object. The physical workstation model object has the cpu model object of
+   * the physical machine layer. */
+  surf_workstation_model->extension.workstation.cpu_model = surf_cpu_model_pm;
 
   surf_workstation_model->extension.workstation.execute = ws_execute;
   surf_workstation_model->extension.workstation.sleep = ws_action_sleep;

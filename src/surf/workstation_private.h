@@ -6,7 +6,6 @@
 
 #ifndef WS_PRIVATE_H_
 #define WS_PRIVATE_H_
-#include "surf_private.h"
 typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
   void *net_elm;

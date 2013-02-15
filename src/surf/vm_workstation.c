@@ -7,14 +7,22 @@
 #include "xbt/ex.h"
 #include "xbt/dict.h"
 #include "portable.h"
+#include "surf_private.h"
 #include "surf/surf_resource.h"
 #include "simgrid/sg_config.h"
-
 #include "workstation_private.h"
 
+
+/* NOTE:
+ * The workstation_VM2013 struct includes the workstation_CLM03 struct in
+ * its first member. The workstation_VM2013_t struct inherites all
+ * characteristics of the workstation_CLM03 struct. So, we can treat a
+ * workstation_VM2013 object as a workstation_CLM03 if necessary.
+ **/
 typedef struct workstation_VM2013 {
   s_workstation_CLM03_t ws;    /* a VM is a ''v''host */
 
+  /* The workstation object of the lower layer */
   workstation_CLM03_t sub_ws;  // Pointer to the ''host'' OS
   e_msg_vm_state_t current_state;  	     // See include/msg/datatypes.h
 } s_workstation_VM2013_t, *workstation_VM2013_t;
@@ -32,9 +40,11 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
   workstation_VM2013_t vm_ws = xbt_new0(s_workstation_VM2013_t, 1);
 
   // //// WORKSTATION  RELATED STUFF ////
-  __init_ws(&(vm_ws->ws), name);
+  __init_workstation_CLM03(&vm_ws->ws, name, surf_vm_workstation_model);
+
   // Override the model with the current VM one.
-  vm_ws->ws.generic_resource.model = surf_vm_workstation_model;
+  // vm_ws->ws.generic_resource.model = surf_vm_workstation_model;
+
 
   // //// CPU  RELATED STUFF ////
   // This can be done directly during the creation of the surf_vm_worsktation model if
@@ -47,16 +57,20 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
   // Bind virtual net_elm to the host
   // TODO rebind each time you migrate a VM
   // TODO check how network requests are scheduled between distinct processes competing for the same card.
-  vm_ws->ws.net_elm=xbt_lib_get_or_null(host_lib,vm_ws->physical_ws->generic_resource.name,ROUTING_HOST_LEVEL);
+  vm_ws->ws.net_elm=xbt_lib_get_or_null(host_lib, vm_ws->sub_ws->generic_resource.name, ROUTING_HOST_LEVEL);
   xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, vm_ws->ws.net_elm);
 
   // //// STORAGE RELATED STUFF ////
 
   // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
-  vm_ws->physical_ws = surf_workstation_resource_priv(ind_phys_workstation);
+  vm_ws->sub_ws = surf_workstation_resource_priv(ind_phys_workstation);
   vm_ws->current_state=msg_vm_state_created,
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, vm_ws);
 
+
+  /* If you want to get a workstation_VM2013 object from host_lib, see
+   * ws->generic_resouce.model->type first. If it is
+   * SURF_MODEL_TYPE_VM_WORKSTATION, cast ws to vm_ws. */
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, &vm_ws->ws);
 }
 
 /*
@@ -70,7 +84,7 @@ static void vm_ws_migrate(void *ind_vm_workstation, void *ind_dest_phys_workstat
 
    /* do something */
 
-   vm_ws->physical_workstation = surf_workstation_resource_priv(ind_dest_phys_workstation);
+   vm_ws->sub_ws = surf_workstation_resource_priv(ind_dest_phys_workstation);
 }
 
 /*
@@ -82,13 +96,13 @@ static void vm_ws_destroy(void *ind_vm_workstation)
 	/* ind_phys_workstation equals to smx_host_t */
 	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_workstation);
 	xbt_assert(vm_ws);
-	xbt_assert(vm_ws->generic_resource.model == surf_vm_workstation_model);
+	xbt_assert(vm_ws->ws.generic_resource.model == surf_vm_workstation_model);
 
-	const char *name = vm_ws->generic_resource.name;
+	const char *name = vm_ws->ws.generic_resource.name;
 	/* this will call surf_resource_free() */
 	xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
 
-	xbt_free(vm_ws->generic_resource.name);
+	xbt_free(vm_ws->ws.generic_resource.name);
 	xbt_free(vm_ws);
 }
 
@@ -127,7 +141,7 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
 static const char *vm_ws_get_phys_host(void *ind_vm_ws)
 {
 	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_ws);
-	return vm_ws->physical_workstation->name;
+	return vm_ws->sub_ws->generic_resource.name;
 }
 
 static void surf_vm_workstation_model_init_internal(void)
@@ -137,6 +151,8 @@ static void surf_vm_workstation_model_init_internal(void)
   surf_vm_workstation_model->name = "Virtual Workstation";
   surf_vm_workstation_model->type = SURF_MODEL_TYPE_VM_WORKSTATION;
 
+  surf_vm_workstation_model->extension.vm_workstation.basic.cpu_model = surf_cpu_model_vm;
+
   surf_vm_workstation_model->extension.vm_workstation.create = vm_ws_create;
   surf_vm_workstation_model->extension.vm_workstation.set_state = vm_ws_set_state;
   surf_vm_workstation_model->extension.vm_workstation.get_state = vm_ws_get_state;
@@ -144,7 +160,7 @@ static void surf_vm_workstation_model_init_internal(void)
   surf_vm_workstation_model->extension.vm_workstation.get_phys_host = vm_ws_get_phys_host;
   surf_vm_workstation_model->extension.vm_workstation.destroy = vm_ws_destroy;
 
-  surf_vm_workstation_model->model_private->share_resources = ws_share_resources;
+  surf_vm_workstation_model->model_private->share_resources = vm_ws_share_resources;
 }
 
 void surf_vm_workstation_model_init()

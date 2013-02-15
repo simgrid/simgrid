@@ -81,6 +81,13 @@ enum heap_action_type{
   NOTSET
 };
 
+
+typedef struct surf_resource {
+  surf_model_t model;
+  char *name;
+  xbt_dict_t properties;
+} s_surf_resource_t, *surf_resource_t;
+
 /** \ingroup SURF_actions
  *  \brief Action structure
  *
@@ -242,13 +249,14 @@ typedef struct surf_storage_model_extension_public {
   surf_action_t(*ls) (void *storage, const char *path);
 } s_surf_model_extension_storage_t;
 
-     /** \ingroup SURF_models
-      *  \brief Workstation model extension public
-      *
-      *  Public functions specific to the workstation model.
-      */
+/** \ingroup SURF_models
+ *  \brief Workstation model extension public
+ *
+ *  Public functions specific to the workstation model.
+ */
 typedef struct surf_workstation_model_extension_public {
-  surf_resource_t cpu;
+  /* This points to the surf cpu model object bound to the workstation model. */
+  surf_model_t cpu_model;
 
   surf_action_t(*execute) (void *workstation, double size);                                /**< Execute a computation amount on a workstation
                                       and create the corresponding action */
@@ -284,7 +292,15 @@ typedef struct surf_workstation_model_extension_public {
 } s_surf_model_extension_workstation_t;
 
 typedef struct surf_vm_workstation_model_extension_public {
+  /* The vm workstation model object has all members of the physical machine
+   * workstation model object. If these members are correctly initialized also
+   * in the vm workstation model object, we can access the vm workstation model
+   * object as if it is the pm workstatoin model object.
+   *
+   * But, it's not so clean. Think it again later.
+   * */
   s_surf_model_extension_workstation_t basic;
+
   void (*create) (const char *name, void *ind_phys_workstation); // First operation of the VM model
   // start does not appear here as it corresponds to turn the state from created to running (see smx_vm.c)
   int (*get_state) (void *ind_vm_workstation);
@@ -388,12 +404,6 @@ static inline void *surf_workstation_resource_by_name(const char *name){
 static inline void *surf_storage_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
-
-typedef struct surf_resource {
-  surf_model_t model;
-  char *name;
-  xbt_dict_t properties;
-} s_surf_resource_t, *surf_resource_t;
 
 /**
  * Resource which have a metric handled by a maxmin system
