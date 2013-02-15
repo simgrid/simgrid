@@ -343,8 +343,9 @@ XBT_PUBLIC(int) MSG_get_channel_number(void);
 /* This function should not be called directly, but rather from MSG_vm_start_from_template that does not exist yet*/
 
 // TODO add VDI later
-XBT_PUBLIC(msg_vm_t) MSG_vm_create(msg_host_t location, const char *name,
-                                     int core_nb, int mem_cap, int net_cap);
+XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
+XBT_PUBLIC(msg_vm_t) MSG_vm_create(msg_host_t ind_pm, const char *name,
+    int core_nb, int mem_cap, int net_cap, char *disk_path, int disk_size);
 
 XBT_PUBLIC(void) MSG_vm_start(msg_vm_t);
 

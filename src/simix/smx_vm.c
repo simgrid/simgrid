@@ -51,7 +51,7 @@ smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host
 
 static int get_host_property_as_integer(smx_host_t host, const char *name)
 {
-  xbt_dict_t dict = simix_host_get_properties(host);
+  xbt_dict_t dict = SIMIX_host_get_properties(host);
 
   char *value = xbt_dict_get_or_null(dict, name);
   return atoi(value);
@@ -64,10 +64,10 @@ static int __can_be_started(smx_host_t vm)
 {
 	// TODO add checking code related to overcommitment or not.
 
-  int overcommit = get_host_property_as_integer("OverCommit");
-  int core_nb = get_host_property_as_integer("CORE_NB");
-  int mem_cap = get_host_property_as_integer("MEM_CAP");
-  int net_cap = get_host_property_as_integer("NET_CAP");
+  int overcommit = get_host_property_as_integer(vm, "OverCommit");
+  int core_nb = get_host_property_as_integer(vm, "CORE_NB");
+  int mem_cap = get_host_property_as_integer(vm, "MEM_CAP");
+  int net_cap = get_host_property_as_integer(vm, "NET_CAP");
 
   /* we need to get other VM objects on this physical host. */
 
@@ -227,7 +227,7 @@ void SIMIX_vm_save(smx_host_t ind_vm)
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
          XBT_DEBUG("save %s", SIMIX_host_get_name(ind_vm));
 	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
-         simcall_process_save(smx_process);
+         simcall_process_suspend(smx_process);
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
@@ -257,7 +257,7 @@ void SIMIX_vm_restore(smx_host_t ind_vm)
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
          XBT_DEBUG("restore %s", SIMIX_host_get_name(ind_vm));
 	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
-         simcall_process_restore(smx_process);
+         simcall_process_resume(smx_process);
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
@@ -290,7 +290,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, msg_vm_state_sleeping);
+  SIMIX_vm_set_state(ind_vm, msg_vm_state_created);
 }
 
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm){

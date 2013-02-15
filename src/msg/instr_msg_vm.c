@@ -117,7 +117,7 @@ void TRACE_msg_vm_resume(msg_vm_t vm)
   }
 }
 
-void TRACE_msg_vm_sleep_in(msg_vm_t vm)
+void TRACE_msg_vm_save(msg_vm_t vm)
 {
   if (TRACE_msg_vm_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
@@ -125,12 +125,12 @@ void TRACE_msg_vm_sleep_in(msg_vm_t vm)
 
     container_t vm_container = PJ_container_get (instr_vm_id(vm, str, len));
     type_t type = PJ_type_get ("MSG_VM_STATE", vm_container->type);
-    val_t value = PJ_value_get ("sleep", type);
+    val_t value = PJ_value_get ("save", type);
     new_pajePushState (MSG_get_clock(), vm_container, type, value);
   }
 }
 
-void TRACE_msg_vm_sleep_out(msg_vm_t vm)
+void TRACE_msg_vm_restore(msg_vm_t vm)
 {
   if (TRACE_msg_vm_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
