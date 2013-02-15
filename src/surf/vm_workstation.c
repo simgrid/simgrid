@@ -13,6 +13,29 @@
 #include "workstation_private.h"
 
 
+
+/* FIXME: Where should the VM state be defined?
+ * At now, this must be synchronized with e_msg_vm_state_t */
+typedef enum {
+  /* created, but not yet started */
+  surf_vm_state_created,
+
+  surf_vm_state_running,
+  surf_vm_state_migrating,
+
+  /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
+  surf_vm_state_suspended,
+
+  /* Save/restore involves disk I/O, so there should be transition states. */
+  surf_vm_state_saving,
+  surf_vm_state_saved,
+  surf_vm_state_restoring,
+
+} e_surf_vm_state_t;
+
+
+
+
 /* NOTE:
  * The workstation_VM2013 struct includes the workstation_CLM03 struct in
  * its first member. The workstation_VM2013_t struct inherites all
@@ -24,7 +47,8 @@ typedef struct workstation_VM2013 {
 
   /* The workstation object of the lower layer */
   workstation_CLM03_t sub_ws;  // Pointer to the ''host'' OS
-  e_msg_vm_state_t current_state;  	     // See include/msg/datatypes.h
+
+  e_surf_vm_state_t current_state;
 } s_workstation_VM2013_t, *workstation_VM2013_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
@@ -64,7 +88,7 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
 
   // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
   vm_ws->sub_ws = surf_workstation_resource_priv(ind_phys_workstation);
-  vm_ws->current_state=msg_vm_state_created,
+  vm_ws->current_state = surf_vm_state_created;
 
 
   /* If you want to get a workstation_VM2013 object from host_lib, see

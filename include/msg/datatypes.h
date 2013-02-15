@@ -84,6 +84,7 @@ typedef struct msg_task *msg_task_t;
 typedef msg_host_t msg_vm_t;
 typedef msg_host_priv_t msg_vm_priv_t;
 
+/* must be synchronized with e_surf_vm_state_t */
 typedef enum {
   /* created, but not yet started */
   msg_vm_state_created,
