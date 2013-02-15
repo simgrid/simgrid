@@ -337,6 +337,7 @@ void mpi_alltoallv__(void* sendbuf, int* sendcounts, int* senddisps, int* sendty
                     void* recvbuf, int* recvcounts, int* recvdisps, int* recvtype, int* comm, int* ierr);
 void mpi_get_processor_name__(char *name, int *resultlen, int* ierr);
 void mpi_test__ (int * request, int *flag, MPI_Status * status, int* ierr);
+void mpi_testall__ (int* count, int * requests,  int *flag, MPI_Status * statuses, int* ierr);
 void mpi_get_count__(MPI_Status * status, int* datatype, int *count, int* ierr);
 void mpi_type_extent__(int* datatype, MPI_Aint * extent, int* ierr);
 void mpi_attr_get__(int* comm, int* keyval, void* attr_value, int* flag, int* ierr );
