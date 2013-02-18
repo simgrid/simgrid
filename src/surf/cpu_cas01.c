@@ -8,6 +8,7 @@
 #include "surf/surf_resource.h"
 #include "maxmin_private.h"
 #include "simgrid/sg_config.h"
+#include "surf/cpu_cas01_private.h"
 
 /* the model objects for physical machines and virtual machines */
 surf_model_t surf_cpu_model_pm = NULL;
@@ -24,18 +25,6 @@ typedef struct surf_action_cpu_cas01 {
   s_surf_action_lmm_t generic_lmm_action;
 } s_surf_action_cpu_Cas01_t, *surf_action_cpu_Cas01_t;
 
-typedef struct cpu_Cas01 {
-  s_surf_resource_t generic_resource;
-  s_xbt_swag_hookup_t modified_cpu_hookup;
-  double power_peak;
-  double power_scale;
-  tmgr_trace_event_t power_event;
-  int core;
-  e_surf_resource_state_t state_current;
-  tmgr_trace_event_t state_event;
-  lmm_constraint_t constraint;
-} s_cpu_Cas01_t, *cpu_Cas01_t;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
                                 "Logging specific to the SURF CPU IMPROVED module");
 
@@ -43,8 +32,7 @@ static xbt_swag_t
     cpu_running_action_set_that_does_not_need_being_checked = NULL;
 
 
-/* This function is registered as a callback to sg_platf_new_host() and never called directly */
-static void *cpu_create_resource(const char *name, double power_peak,
+void *cpu_cas01_create_resource(const char *name, double power_peak,
                                  double power_scale,
                                  tmgr_trace_t power_trace,
                                  int core,
@@ -91,7 +79,7 @@ static void parse_cpu_init(sg_platf_host_cbarg_t host)
   /* This function is called when a platform file is parsed. Physical machines
    * are defined there. Thus, we use the cpu model object for the physical
    * machine layer. */
-  cpu_create_resource(host->id,
+  cpu_cas01_create_resource(host->id,
                       host->power_peak,
                       host->power_scale,
                       host->power_trace,

@@ -11,7 +11,7 @@
 #include "surf/surf_resource.h"
 #include "simgrid/sg_config.h"
 #include "workstation_private.h"
-
+#include "surf/cpu_cas01_private.h"
 
 
 /* FIXME: Where should the VM state be defined?
@@ -95,6 +95,25 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
    * ws->generic_resouce.model->type first. If it is
    * SURF_MODEL_TYPE_VM_WORKSTATION, cast ws to vm_ws. */
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, &vm_ws->ws);
+
+
+
+  cpu_Cas01_t sub_cpu = surf_cpu_resource_priv(ind_phys_workstation);
+
+  /* We can assume one core and cas01 cpu for the first step.
+   * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource.
+   * */
+  cpu_cas01_create_resource(name, // name
+      sub_cpu->power_peak,        // host->power_peak,
+      1,                          // host->power_scale,
+      NULL,                       // host->power_trace,
+      1,                          // host->core_amount,
+      SURF_RESOURCE_ON,           // host->initial_state,
+      NULL,                       // host->state_trace,
+      NULL,                       // host->properties,
+      surf_cpu_model_vm);
+
+  // void *ind_host = xbt_lib_get_elm_or_null(host_lib, name);
 }
 
 /*
