@@ -780,19 +780,18 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
     }
   }
   for(c = 0; c < count; c++) {
-      if(MC_is_active()) {
-        smpi_mpi_wait(&requests[c], pstat);
-        index = c;
-      } else {
-        index = smpi_mpi_waitany(count, requests, pstat);
-        if(index == MPI_UNDEFINED) {
-          break;
-       }
-      if (status != MPI_STATUSES_IGNORE) {
-        status[index] = *pstat;
-        if (status[index].MPI_ERROR == MPI_ERR_TRUNCATE)
-          retvalue = MPI_ERR_IN_STATUS;
-      }
+    if (MC_is_active()) {
+      smpi_mpi_wait(&requests[c], pstat);
+      index = c;
+    } else {
+      index = smpi_mpi_waitany(count, requests, pstat);
+      if (index == MPI_UNDEFINED)
+        break;
+    }
+    if (status != MPI_STATUSES_IGNORE) {
+      status[index] = *pstat;
+      if (status[index].MPI_ERROR == MPI_ERR_TRUNCATE)
+        retvalue = MPI_ERR_IN_STATUS;
     }
   }
 
