@@ -37,11 +37,6 @@ static void workstation_new(sg_platf_host_cbarg_t host)
   __init_workstation_CLM03(workstation, host->id, surf_workstation_model);
 }
 
-static int ws_resource_used(void *resource_id)
-{
-  THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
-  return -1;
-}
 
 static void ws_parallel_action_cancel(surf_action_t action)
 {
@@ -96,23 +91,47 @@ static void ws_action_state_set(surf_action_t action,
   return;
 }
 
-static double ws_share_resources(surf_model_t workstation_model, double now)
+
+/* -- The callback functions at model_private -- */
+/* These callbacks are also used for the vm workstation model. */
+int ws_resource_used(void *resource_id)
 {
-// invoke share_resources on CPU and network (layer 0)
-  return -1.0;
+  /* This model does not implement parallel tasks */
+  THROW_IMPOSSIBLE;
+  return -1;
 }
 
-static void ws_update_actions_state(surf_model_t workstation_model, double now, double delta)
+double ws_share_resources(surf_model_t workstation_model, double now)
+{
+  /* Invoke the share_resources() callback of the physical cpu model object and
+   * the network model objects. */
+  surf_model_t cpu_model = workstation_model->extension.workstation.cpu_model;
+  surf_model_t net_model = surf_network_model;
+
+  double min_by_cpu = cpu_model->model_private->share_resources(cpu_model, now);
+  double min_by_net = net_model->model_private->share_resources(net_model, now);
+
+  return min(min_by_cpu, min_by_net);
+}
+
+void ws_update_actions_state(surf_model_t workstation_model, double now, double delta)
 {
   return;
 }
 
-static void ws_update_resource_state(void *id,
-                                     tmgr_trace_event_t event_type,
-                                     double value, double date)
+void ws_update_resource_state(void *id, tmgr_trace_event_t event_type, double value, double date)
 {
-  THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
+  /* This model does not implement parallel tasks */
+  THROW_IMPOSSIBLE;
 }
+
+void ws_finalize(surf_model_t workstation_model)
+{
+  surf_model_exit(workstation_model);
+  workstation_model = NULL;
+}
+
+
 
 static surf_action_t ws_execute(void *workstation, double size)
 {
@@ -297,12 +316,6 @@ static double ws_get_link_latency(const void *link)
 static int ws_link_shared(const void *link)
 {
   return surf_network_model->extension.network.link_shared(link);
-}
-
-static void ws_finalize(surf_model_t workstation_model)
-{
-  surf_model_exit(workstation_model);
-  workstation_model = NULL;
 }
 
 static xbt_dict_t ws_get_properties(const void *ws)

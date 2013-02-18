@@ -14,4 +14,10 @@ typedef struct workstation_CLM03 {
 
 void __init_ws(workstation_CLM03_t ws,  const char *id, int level);
 
+int ws_resource_used(void *resource_id);
+double ws_share_resources(surf_model_t workstation_model, double now);
+void ws_update_actions_state(surf_model_t workstation_model, double now, double delta);
+void ws_update_resource_state(void *id, tmgr_trace_event_t event_type, double value, double date);
+void ws_finalize(surf_model_t workstation_model);
+
 #endif /* WS_PRIVATE_H_ */
