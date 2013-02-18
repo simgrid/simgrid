@@ -95,7 +95,6 @@ void SIMIX_process_cleanup(smx_process_t process)
     }
   }
 
-  /*xbt_swag_remove(process, simix_global->process_to_run);*/
   xbt_swag_remove(process, simix_global->process_list);
   xbt_swag_remove(process, SIMIX_host_priv(process->smx_host)->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
