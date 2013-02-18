@@ -234,11 +234,13 @@ static MPI_Request build_request(void *buf, int count,
 }
 
 
-void smpi_empty_status(MPI_Status * status) {
+void smpi_empty_status(MPI_Status * status)
+{
   if(status != MPI_STATUS_IGNORE) {
-      status->MPI_SOURCE=MPI_ANY_SOURCE;
-      status->MPI_TAG=MPI_ANY_TAG;
-      status->count=0;
+    status->MPI_SOURCE = MPI_ANY_SOURCE;
+    status->MPI_TAG = MPI_ANY_TAG;
+    status->MPI_ERROR = MPI_SUCCESS;
+    status->count=0;
   }
 }
 
