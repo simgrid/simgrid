@@ -12,6 +12,7 @@
 #include "simgrid/sg_config.h"
 #include "workstation_private.h"
 #include "surf/cpu_cas01_private.h"
+#include "surf/maxmin_private.h"
 
 
 /* FIXME: Where should the VM state be defined?
@@ -49,6 +50,10 @@ typedef struct workstation_VM2013 {
   workstation_CLM03_t sub_ws;  // Pointer to the ''host'' OS
 
   e_surf_vm_state_t current_state;
+
+
+  surf_action_t cpu_action;
+
 } s_workstation_VM2013_t, *workstation_VM2013_t;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
@@ -63,11 +68,16 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
 {
   workstation_VM2013_t vm_ws = xbt_new0(s_workstation_VM2013_t, 1);
 
+  vm_ws->sub_ws = surf_workstation_resource_priv(ind_phys_workstation);
+  vm_ws->current_state = surf_vm_state_created;
+
+
   // //// WORKSTATION  RELATED STUFF ////
-  __init_workstation_CLM03(&vm_ws->ws, name, surf_vm_workstation_model);
+  /* Create a workstation_CLM03 resource and register it to the system */
+  __init_workstation_CLM03(&vm_ws->ws, name);
 
   // Override the model with the current VM one.
-  // vm_ws->ws.generic_resource.model = surf_vm_workstation_model;
+  vm_ws->ws.generic_resource.model = surf_vm_workstation_model;
 
 
   // //// CPU  RELATED STUFF ////
@@ -81,20 +91,18 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
   // Bind virtual net_elm to the host
   // TODO rebind each time you migrate a VM
   // TODO check how network requests are scheduled between distinct processes competing for the same card.
-  vm_ws->ws.net_elm=xbt_lib_get_or_null(host_lib, vm_ws->sub_ws->generic_resource.name, ROUTING_HOST_LEVEL);
+  vm_ws->ws.net_elm = xbt_lib_get_or_null(host_lib, vm_ws->sub_ws->generic_resource.name, ROUTING_HOST_LEVEL);
   xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, vm_ws->ws.net_elm);
 
   // //// STORAGE RELATED STUFF ////
 
   // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
-  vm_ws->sub_ws = surf_workstation_resource_priv(ind_phys_workstation);
-  vm_ws->current_state = surf_vm_state_created;
 
 
   /* If you want to get a workstation_VM2013 object from host_lib, see
    * ws->generic_resouce.model->type first. If it is
    * SURF_MODEL_TYPE_VM_WORKSTATION, cast ws to vm_ws. */
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, &vm_ws->ws);
+  // xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, &vm_ws->ws);
 
 
 
@@ -114,6 +122,8 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
       surf_cpu_model_vm);
 
   // void *ind_host = xbt_lib_get_elm_or_null(host_lib, name);
+
+  vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, 0); // cost 0 is okay?
 }
 
 /*
@@ -141,6 +151,11 @@ static void vm_ws_destroy(void *ind_vm_workstation)
 	xbt_assert(vm_ws);
 	xbt_assert(vm_ws->ws.generic_resource.model == surf_vm_workstation_model);
 
+  {
+    int ret = surf_cpu_model_pm->action_unref(vm_ws->cpu_action);
+    xbt_assert(ret == 1, "Bug: some resource still remains");
+  }
+
 	const char *name = vm_ws->ws.generic_resource.name;
 	/* this will call surf_resource_free() */
 	xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
@@ -158,22 +173,94 @@ static void vm_ws_set_state(void *ind_vm_ws, int state){
 }
 
 
+static double get_solved_value(surf_action_t cpu_action)
+{
+  int found = 0;
+  lmm_system_t pm_system = surf_workstation_model->model_private->maxmin_system;
+  lmm_variable_t var = NULL;
+
+  xbt_swag_foreach(var, &pm_system->variable_set) {
+    XBT_DEBUG("var id %p id_int %d double %f", var->id, var->id_int, var->value);
+    if (var->id == cpu_action) {
+      found = 1;
+      break;
+    }
+  }
+
+  if (found)
+    return var->value;
+
+  XBT_CRITICAL("bug: cannot found the solved variable of the action %p", cpu_action);
+}
+
+
 static double vm_ws_share_resources(surf_model_t workstation_model, double now)
 {
-  // Can be obsolete if you right can ensure that ws_model has been code previously
-  // invoke ws_share_resources on the physical_lyer: sub_ws->ws_share_resources()
+  /* 0. Make sure that we already calculated the resource share at the physical
+   * machine layer. */
   {
     unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, surf_workstation_model);
     unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, surf_vm_workstation_model);
     xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_workstation_model comes before");
-    /* we have to make sure that the share_resource() callback of the model of the lower layer must be called in advance. */
+
+    /* Another option is that we call sub_ws->share_resource() here. The
+     * share_resource() function has no side-effect. We can call it here to
+     * ensure that. */
   }
 
-	// assign the corresponding value to X1, X2, ....
 
-   // invoke cpu and net share resources on layer (1)
-	// return min;
-  return -1.0;
+  /* 1. Now we know how many resource should be assigned to each virtual
+   * machine. We update constraints of the virtual machine layer.
+   *
+   *
+   * If we have two virtual machine (VM1 and VM2) on a physical machine (PM1).
+   *     X1 + X2 = C       (Equation 1)
+   * where
+   *    the resource share of VM1: X1
+   *    the resource share of VM2: X2
+   *    the capacity of PM1: C
+   *
+   * Then, if we have two process (P1 and P2) on VM1.
+   *     X1_1 + X1_2 = X1  (Equation 2)
+   * where
+   *    the resource share of P1: X1_1
+   *    the resource share of P2: X1_2
+   *    the capacity of VM1: X1
+   *
+   * Equation 1 was solved in the physical machine layer.
+   * Equation 2 is solved in the virtual machine layer (here).
+   * X1 must be passed to the virtual machine laye as a constraint value.
+   *
+   **/
+
+  /* iterate for all hosts including virtual machines */
+  xbt_lib_cursor_t cursor;
+  char *key;
+  void **ind_host;
+  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
+    workstation_CLM03_t ws_clm03 = ind_host[SURF_WKS_LEVEL];
+    cpu_Cas01_t cpu_cas01 = ind_host[SURF_CPU_LEVEL];
+
+    /* skip if it is not a virtual machine */
+    if (!ws_clm03)
+      continue;
+    if (ws_clm03->generic_resource.model != surf_vm_workstation_model)
+      continue;
+    xbt_assert(cpu_cas01, "cpu-less workstation");
+
+    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
+    workstation_VM2013_t ws_vm2013 = (workstation_VM2013_t) ws_clm03;
+
+    double solved_value = get_solved_value(ws_vm2013->cpu_action);
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
+        ws_clm03->generic_resource.name, ws_vm2013->sub_ws->generic_resource.name);
+
+    cpu_cas01->constraint->bound = solved_value;
+  }
+
+
+  /* 2. Calculate resource share at the virtual machine layer. */
+  return ws_share_resources(workstation_model, now);
 }
 
 
