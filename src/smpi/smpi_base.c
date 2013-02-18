@@ -767,16 +767,15 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
   int  index, c;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
-  int retvalue=MPI_SUCCESS;
+  int retvalue = MPI_SUCCESS;
   //tag invalid requests in the set
-  for(c = 0; c < count; c++) {
-    if(requests[c]==MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL ){
-      if(status != MPI_STATUSES_IGNORE)
+  if (status != MPI_STATUSES_IGNORE) {
+    for (c = 0; c < count; c++) {
+      if (requests[c] == MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL) {
         smpi_empty_status(&status[c]);
-    }else if(requests[c]->src == MPI_PROC_NULL ){
-      if(status != MPI_STATUSES_IGNORE) {
+      } else if (requests[c]->src == MPI_PROC_NULL) {
         smpi_empty_status(&status[c]);
-        status[c].MPI_SOURCE=MPI_PROC_NULL;
+        status[c].MPI_SOURCE = MPI_PROC_NULL;
       }
     }
   }
