@@ -89,17 +89,9 @@ if(enable_maintainer_mode AND NOT WIN32)
 
     set(string1  "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
     set(string2  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
-    set(string3  "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
-    set(string4  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
     set(string5  "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
-    set(string6  "'s/extern  *\\([^ ]*[ \\*]*\\)/XBT_PUBLIC_DATA(\\1) /'")
-    set(string7  "'s/XBT_PUBLIC_DATA(\\([^)]*\\)) *\\([^(]*\\)(/XBT_PUBLIC(\\1) \\2(/'")
     set(string8  "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g'")
     set(string9  "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
-    set(string10 "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g'")
-    set(string11 "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
-    set(string12 "'s/#if defined(_WIN32)/#if defined(_XBT_WIN32)/g'")
-    set(string13 "'s/#include <unistd.h>/#if defined(_XBT_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(__TOS_WIN__)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
     set(string14 "'\\!^ \\* Generated [0-9/]\\{10\\} [0-9:]\\{8\\}\\.$$!d'")
     set(string15 "'s/FAIL(\"Premature EOF/if(!ETag_surfxml_include_state()) FAIL(\"Premature EOF/'")
 
@@ -142,16 +134,16 @@ if(enable_maintainer_mode AND NOT WIN32)
       #${CMAKE_HOME_DIRECTORY}/include/xbt/graphxml.h: ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.dtd
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/include/xbt/graphxml.h
       COMMAND ${FLEXML_EXE} -P graphxml --sysid=graphxml.dtd -H include/xbt/graphxml.h -L src/xbt/graphxml.dtd
-      COMMAND ${SED_EXE} -i ${string3} include/xbt/graphxml.h
-      COMMAND ${SED_EXE} -i ${string4} include/xbt/graphxml.h
+      COMMAND ${SED_EXE} -i ${string1} include/xbt/graphxml.h
+      COMMAND ${SED_EXE} -i ${string2} include/xbt/graphxml.h
       COMMAND ${SED_EXE} -i ${string14} include/xbt/graphxml.h
       COMMAND ${CMAKE_COMMAND} -E echo "include/xbt/graphxml.h"
 
       #${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
       COMMAND ${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H src/simdag/dax_dtd.h -L src/simdag/dax.dtd
-      COMMAND ${SED_EXE} -i ${string6} src/simdag/dax_dtd.h
-      COMMAND ${SED_EXE} -i ${string7} src/simdag/dax_dtd.h
+      COMMAND ${SED_EXE} -i ${string1} src/simdag/dax_dtd.h
+      COMMAND ${SED_EXE} -i ${string2} src/simdag/dax_dtd.h
       COMMAND ${SED_EXE} -i ${string14} src/simdag/dax_dtd.h
       COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.h"
 
@@ -166,18 +158,18 @@ if(enable_maintainer_mode AND NOT WIN32)
 
       #xbt/graphxml.c: xbt/graphxml.l
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/xbt/graphxml.c
-      COMMAND ${SED_EXE} -i ${string10} src/xbt/graphxml.l
+      COMMAND ${SED_EXE} -i ${string8} src/xbt/graphxml.l
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/xbt
       COMMAND ${FLEX_EXE} -o src/xbt/graphxml.c -Pxbt_graph_parse_ --noline src/xbt/graphxml.l
-      COMMAND ${SED_EXE} -i ${string11} src/xbt/graphxml.c
+      COMMAND ${SED_EXE} -i ${string9} src/xbt/graphxml.c
       COMMAND ${CMAKE_COMMAND} -E echo "xbt/graphxml.c"
 
       #simdag/dax_dtd.c: simdag/dax_dtd.l
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
-      COMMAND ${SED_EXE} -i ${string12} src/simdag/dax_dtd.l
+      COMMAND ${SED_EXE} -i ${string8} src/simdag/dax_dtd.l
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/simdag
       COMMAND ${FLEX_EXE} -o src/simdag/dax_dtd.c -Pdax_ --noline src/simdag/dax_dtd.l
-      COMMAND ${SED_EXE} -i ${string13} src/simdag/dax_dtd.c
+      COMMAND ${SED_EXE} -i ${string9} src/simdag/dax_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "simdag/dax_dtd.c"
 
       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
