@@ -856,7 +856,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/postinstall.sh
   buildtools/Cmake/Scripts/preinstall.sh
   buildtools/Cmake/Scripts/tesh.pl
-  buildtools/Cmake/Scripts/test_java.sh
   buildtools/Cmake/Scripts/update_tesh.pl
   buildtools/Cmake/Supernovae.cmake
   buildtools/Cmake/UnitTesting.cmake
