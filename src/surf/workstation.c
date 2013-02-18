@@ -465,6 +465,7 @@ void surf_workstation_model_init_current_default(void)
   surf_workstation_model_init_internal();
 
   xbt_cfg_setdefault_int(_sg_cfg_set, "network/crosstraffic", 1);
+  surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 
   xbt_dynar_push(model_list, &surf_workstation_model);
