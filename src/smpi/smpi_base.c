@@ -531,13 +531,14 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
+  if(status != MPI_STATUS_IGNORE)
+    smpi_empty_status(status);
+
   if(!(req->detached && req->flags & SEND)){
     if(status != MPI_STATUS_IGNORE) {
       status->MPI_SOURCE = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
       status->MPI_TAG = req->tag == MPI_ANY_TAG ? req->real_tag : req->tag;
-      if(req->truncated)
-      status->MPI_ERROR = MPI_ERR_TRUNCATE;
-      else status->MPI_ERROR = MPI_SUCCESS ;
+      status->MPI_ERROR = req->truncated ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
       // this handles the case were size in receive differs from size in send
       // FIXME: really this should just contain the count of receive-type blocks,
       // right?
