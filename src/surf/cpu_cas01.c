@@ -122,7 +122,7 @@ static void cpu_add_traces_cpu(void)
   }
 }
 
-static void cpu_define_callbacks()
+static void cpu_define_callbacks_cas01()
 {
   sg_platf_host_add_cb(parse_cpu_init);
   sg_platf_postparse_add_cb(cpu_add_traces_cpu);
@@ -321,7 +321,7 @@ static void cpu_finalize(surf_model_t cpu_model)
   cpu_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
-static void surf_cpu_model_init_internal(surf_model_t cpu_model)
+static surf_model_t surf_cpu_model_init_cas01(void)
 {
   s_surf_action_t action;
   s_surf_action_cpu_Cas01_t comp;
@@ -330,7 +330,7 @@ static void surf_cpu_model_init_internal(surf_model_t cpu_model)
   int select =
       xbt_cfg_get_int(_sg_cfg_set, "cpu/maxmin_selective_update");
 
-  cpu_model = surf_model_init();
+  surf_model_t cpu_model = surf_model_init();
 
   if (!strcmp(optim, "Full")) {
     cpu_model->model_private->update_mechanism = UM_FULL;
@@ -406,6 +406,8 @@ static void surf_cpu_model_init_internal(surf_model_t cpu_model)
         xbt_swag_new(xbt_swag_offset(comp, generic_lmm_action.action_list_hookup));
     cpu_model->model_private->maxmin_system->keep_track = cpu_model->model_private->modified_set;
   }
+
+  return cpu_model;
 }
 
 /*********************************************************************/
@@ -425,30 +427,29 @@ static void surf_cpu_model_init_internal(surf_model_t cpu_model)
 /* } */
 
 
-static void create_cpu_model_object(surf_model_t cpu_model)
+void surf_cpu_model_init_Cas01(void)
 {
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
 
-  xbt_assert(cpu_model == NULL, "wrong intialization");
+  xbt_assert(!surf_cpu_model_pm);
+  xbt_assert(!surf_cpu_model_vm);
 
-  if (!strcmp(optim, "TI")) {
-    surf_cpu_model_init_ti(cpu_model);
-    return;
+  if (strcmp(optim, "TI") == 0) {
+    /* FIXME: do we have to supprot TI? for VM */
+    surf_cpu_model_pm = surf_cpu_model_init_ti();
+
+  } else {
+    surf_cpu_model_pm  = surf_cpu_model_init_cas01();
+    surf_cpu_model_vm  = surf_cpu_model_init_cas01();
+
+    /* cpu_model is registered only to model_list, and not to
+     * model_list_invoke. The shared_resource callback function will be called
+     * from that of the workstation model. */
+    xbt_dynar_push(model_list, &surf_cpu_model_pm);
+    xbt_dynar_push(model_list, &surf_cpu_model_vm);
+
+    cpu_define_callbacks_cas01();
   }
-
-  surf_cpu_model_init_internal(cpu_model);
-  cpu_define_callbacks();
-
-  /* cpu_model is registered only to model_list, and not to
-   * model_list_invoke. The shared_resource callback function will be called
-   * from that of the workstation model. */
-  xbt_dynar_push(model_list, &cpu_model);
-}
-
-void surf_cpu_model_init_Cas01(void)
-{
-  create_cpu_model_object(surf_cpu_model_pm);
-  create_cpu_model_object(surf_cpu_model_vm);
 }
 
 /* TODO: do we address nested virtualization later? */

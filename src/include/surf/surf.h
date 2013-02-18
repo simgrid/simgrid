@@ -117,7 +117,7 @@ typedef struct surf_action {
 
   /* The previous name was model_type. For VM support, we have to distinguish a
    * model type and its model object. Thus, we use model_obj here. The type of
-   * a model object is available through a macro. */
+   * a model object is available by looking at the inside of the model object. */
   surf_model_t model_obj;       /**< the surf model object */
 
 #ifdef HAVE_TRACING
@@ -458,7 +458,7 @@ XBT_PUBLIC(void) surf_cpu_model_init_Cas01(void);
  *  You shouldn't have to call it by yourself.
  *  \see surf_workstation_model_init_CLM03()
  */
-XBT_PUBLIC(void) surf_cpu_model_init_ti(surf_model_t cpu_model);
+XBT_PUBLIC(surf_model_t) surf_cpu_model_init_ti(void);
 
 /** \brief This function call the share resources function needed
  *

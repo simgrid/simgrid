@@ -770,12 +770,12 @@ static void cpu_ti_finalize(surf_model_t cpu_model)
   xbt_heap_free(cpu_ti_action_heap);
 }
 
-static void surf_cpu_ti_model_init_internal(surf_model_t cpu_model)
+surf_model_t surf_cpu_ti_model_init_internal(void)
 {
   s_surf_action_t action;
   s_cpu_ti_t cpu;
 
-  cpu_model = surf_model_init();
+  surf_model_t cpu_model = surf_model_init();
 
   cpu_ti_running_action_set_that_does_not_need_being_checked =
       xbt_swag_new(xbt_swag_offset(action, state_hookup));
@@ -818,14 +818,16 @@ static void surf_cpu_ti_model_init_internal(surf_model_t cpu_model)
   xbt_heap_set_update_callback(cpu_ti_action_heap,
                                cpu_ti_action_update_index_heap);
 
+  return cpu_model;
 }
 
-void surf_cpu_model_init_ti(surf_model_t cpu_model)
+surf_model_t surf_cpu_model_init_ti(void)
 {
-  xbt_assert(!cpu_model,"CPU model already initialized. This should not happen.");
-  surf_cpu_ti_model_init_internal(cpu_model);
+  surf_model_t cpu_model = surf_cpu_ti_model_init_internal();
   cpu_ti_define_callbacks();
   xbt_dynar_push(model_list, &cpu_model);
+
+  return cpu_model;
 }
 
 

@@ -189,21 +189,27 @@ static const char *vm_ws_get_phys_host(void *ind_vm_ws)
 
 static void surf_vm_workstation_model_init_internal(void)
 {
-  surf_vm_workstation_model = surf_model_init();
+  surf_model_t model = surf_model_init();
 
-  surf_vm_workstation_model->name = "Virtual Workstation";
-  surf_vm_workstation_model->type = SURF_MODEL_TYPE_VM_WORKSTATION;
+  model->name = "Virtual Workstation";
+  model->type = SURF_MODEL_TYPE_VM_WORKSTATION;
 
-  surf_vm_workstation_model->extension.vm_workstation.basic.cpu_model = surf_cpu_model_vm;
+  model->extension.vm_workstation.basic.cpu_model = surf_cpu_model_vm;
 
-  surf_vm_workstation_model->extension.vm_workstation.create = vm_ws_create;
-  surf_vm_workstation_model->extension.vm_workstation.set_state = vm_ws_set_state;
-  surf_vm_workstation_model->extension.vm_workstation.get_state = vm_ws_get_state;
-  surf_vm_workstation_model->extension.vm_workstation.migrate = vm_ws_migrate;
-  surf_vm_workstation_model->extension.vm_workstation.get_phys_host = vm_ws_get_phys_host;
-  surf_vm_workstation_model->extension.vm_workstation.destroy = vm_ws_destroy;
+  model->extension.vm_workstation.create        = vm_ws_create;
+  model->extension.vm_workstation.set_state     = vm_ws_set_state;
+  model->extension.vm_workstation.get_state     = vm_ws_get_state;
+  model->extension.vm_workstation.migrate       = vm_ws_migrate;
+  model->extension.vm_workstation.get_phys_host = vm_ws_get_phys_host;
+  model->extension.vm_workstation.destroy       = vm_ws_destroy;
 
-  surf_vm_workstation_model->model_private->share_resources = vm_ws_share_resources;
+  model->model_private->share_resources       = vm_ws_share_resources;
+  model->model_private->resource_used         = ws_resource_used;
+  model->model_private->update_actions_state  = ws_update_actions_state;
+  model->model_private->update_resource_state = ws_update_resource_state;
+  model->model_private->finalize              = ws_finalize;
+
+  surf_vm_workstation_model = model;
 }
 
 void surf_vm_workstation_model_init()

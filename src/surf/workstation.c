@@ -402,69 +402,61 @@ static surf_action_t ws_action_ls(void *workstation, const char* mount, const ch
 
 static void surf_workstation_model_init_internal(void)
 {
-  surf_workstation_model = surf_model_init();
+  surf_model_t model = surf_model_init();
 
-  surf_workstation_model->name = "Workstation";
-  surf_workstation_model->type = SURF_MODEL_TYPE_WORKSTATION;
-  surf_workstation_model->action_unref = ws_action_unref;
-  surf_workstation_model->action_cancel = ws_action_cancel;
-  surf_workstation_model->action_state_set = ws_action_state_set;
+  model->name = "Workstation";
+  model->type = SURF_MODEL_TYPE_WORKSTATION;
+  model->action_unref     = ws_action_unref;
+  model->action_cancel    = ws_action_cancel;
+  model->action_state_set = ws_action_state_set;
 
-  surf_workstation_model->model_private->resource_used = ws_resource_used;
-  surf_workstation_model->model_private->share_resources =
-      ws_share_resources;
-  surf_workstation_model->model_private->update_actions_state =
-      ws_update_actions_state;
-  surf_workstation_model->model_private->update_resource_state =
-      ws_update_resource_state;
-  surf_workstation_model->model_private->finalize = ws_finalize;
+  model->model_private->resource_used         = ws_resource_used;
+  model->model_private->share_resources       = ws_share_resources;
+  model->model_private->update_actions_state  = ws_update_actions_state;
+  model->model_private->update_resource_state = ws_update_resource_state;
+  model->model_private->finalize              = ws_finalize;
 
-  surf_workstation_model->suspend = ws_action_suspend;
-  surf_workstation_model->resume = ws_action_resume;
-  surf_workstation_model->is_suspended = ws_action_is_suspended;
-  surf_workstation_model->set_max_duration = ws_action_set_max_duration;
-  surf_workstation_model->set_priority = ws_action_set_priority;
-#ifdef HAVE_TRACING
-  surf_workstation_model->set_category = ws_action_set_category;
-#endif
-  surf_workstation_model->get_remains = ws_action_get_remains;
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  surf_workstation_model->get_latency_limited = ws_get_latency_limited;
-#endif
+  model->suspend          = ws_action_suspend;
+  model->resume           = ws_action_resume;
+  model->is_suspended     = ws_action_is_suspended;
+  model->set_max_duration = ws_action_set_max_duration;
+  model->set_priority     = ws_action_set_priority;
+  #ifdef HAVE_TRACING
+  model->set_category     = ws_action_set_category;
+  #endif
+  model->get_remains      = ws_action_get_remains;
+  #ifdef HAVE_LATENCY_BOUND_TRACKING
+  model->get_latency_limited = ws_get_latency_limited;
+  #endif
 
   /* For VM support, we have a surf cpu model object for each workstation model
    * object. The physical workstation model object has the cpu model object of
    * the physical machine layer. */
-  surf_workstation_model->extension.workstation.cpu_model = surf_cpu_model_pm;
+  model->extension.workstation.cpu_model = surf_cpu_model_pm;
 
-  surf_workstation_model->extension.workstation.execute = ws_execute;
-  surf_workstation_model->extension.workstation.sleep = ws_action_sleep;
-  surf_workstation_model->extension.workstation.get_state = ws_get_state;
-  surf_workstation_model->extension.workstation.get_speed = ws_get_speed;
-  surf_workstation_model->extension.workstation.get_available_speed =
-      ws_get_available_speed;
+  model->extension.workstation.execute   = ws_execute;
+  model->extension.workstation.sleep     = ws_action_sleep;
+  model->extension.workstation.get_state = ws_get_state;
+  model->extension.workstation.get_speed = ws_get_speed;
+  model->extension.workstation.get_available_speed = ws_get_available_speed;
 
-  surf_workstation_model->extension.workstation.communicate =
-      ws_communicate;
-  surf_workstation_model->extension.workstation.get_route = ws_get_route;
-  surf_workstation_model->extension.workstation.execute_parallel_task =
-      ws_execute_parallel_task;
-  surf_workstation_model->extension.workstation.get_link_bandwidth =
-      ws_get_link_bandwidth;
-  surf_workstation_model->extension.workstation.get_link_latency =
-      ws_get_link_latency;
-  surf_workstation_model->extension.workstation.link_shared =
-      ws_link_shared;
-  surf_workstation_model->extension.workstation.get_properties =
-      ws_get_properties;
+  model->extension.workstation.communicate           = ws_communicate;
+  model->extension.workstation.get_route             = ws_get_route;
+  model->extension.workstation.execute_parallel_task = ws_execute_parallel_task;
+  model->extension.workstation.get_link_bandwidth    = ws_get_link_bandwidth;
+  model->extension.workstation.get_link_latency      = ws_get_link_latency;
+  model->extension.workstation.link_shared           = ws_link_shared;
+  model->extension.workstation.get_properties        = ws_get_properties;
 
-  surf_workstation_model->extension.workstation.open = ws_action_open;
-  surf_workstation_model->extension.workstation.close = ws_action_close;
-  surf_workstation_model->extension.workstation.read = ws_action_read;
-  surf_workstation_model->extension.workstation.write = ws_action_write;
-  surf_workstation_model->extension.workstation.stat = ws_action_stat;
-  surf_workstation_model->extension.workstation.unlink = ws_action_unlink;
-  surf_workstation_model->extension.workstation.ls = ws_action_ls;
+  model->extension.workstation.open   = ws_action_open;
+  model->extension.workstation.close  = ws_action_close;
+  model->extension.workstation.read   = ws_action_read;
+  model->extension.workstation.write  = ws_action_write;
+  model->extension.workstation.stat   = ws_action_stat;
+  model->extension.workstation.unlink = ws_action_unlink;
+  model->extension.workstation.ls     = ws_action_ls;
+
+  surf_workstation_model = model;
 }
 
 void surf_workstation_model_init_current_default(void)
