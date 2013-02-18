@@ -70,7 +70,6 @@ int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack, int start);
 void MC_replay_liveness(xbt_fifo_t stack, int all_stack);
 void MC_wait_for_requests(void);
-void MC_get_enabled_processes();
 void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
@@ -112,8 +111,6 @@ typedef struct mc_state {
                                        multi-request like waitany ) */
   mc_snapshot_t system_state;      /* Snapshot of system state */
 } s_mc_state_t, *mc_state_t;
-
-extern xbt_fifo_t mc_stack_safety_stateless;
 
 mc_state_t MC_state_new(void);
 void MC_state_delete(mc_state_t state);
@@ -251,7 +248,6 @@ extern mc_global_t initial_state_safety;
 
 void MC_dpor_init(void);
 void MC_dpor(void);
-void MC_dpor_exit(void);
 void MC_init(void);
 
 typedef struct s_mc_safety_visited_state{
@@ -290,20 +286,17 @@ typedef struct s_mc_pair_visited{
 }s_mc_pair_visited_t, *mc_pair_visited_t;
 
 int MC_automaton_evaluate_label(xbt_exp_label_t l);
-mc_pair_t new_pair(mc_snapshot_t sn, mc_state_t sg, xbt_state_t st);
 
 int reached(xbt_state_t st);
 void set_pair_reached(xbt_state_t st);
 int visited(xbt_state_t st);
 
 void MC_pair_delete(mc_pair_t pair);
-void MC_exit_liveness(void);
 mc_state_t MC_state_pair_new(void);
 void pair_reached_free(mc_pair_reached_t pair);
 void pair_reached_free_voidp(void *p);
 void pair_visited_free(mc_pair_visited_t pair);
 void pair_visited_free_voidp(void *p);
-void MC_init_liveness(void);
 void MC_init_memory_map_info(void);
 
 int get_heap_region_index(mc_snapshot_t s);
@@ -428,7 +421,6 @@ void variable_value_free(variable_value_t v);
 
 void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_dict_t *variables);
 void print_local_variables(xbt_dict_t list);
-char *get_libsimgrid_path(void);
 xbt_dict_t MC_get_location_list(const char *elf_file);
 
 /**** Global variables ****/

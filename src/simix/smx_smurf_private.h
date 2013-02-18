@@ -451,8 +451,6 @@ xbt_dict_t SIMIX_pre_asr_get_properties(smx_simcall_t simcall, const char *name)
 
 /*************************** New simcall interface ****************************/
 
-smx_simcall_t __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args);
-
 typedef smx_action_t (*simcall_handler_t)(u_smx_scalar_t *);
 
 extern const char *simcall_types[];

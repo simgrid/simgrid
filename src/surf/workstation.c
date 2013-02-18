@@ -452,7 +452,6 @@ void surf_workstation_model_init_current_default(void)
 
   xbt_dynar_push(model_list, &surf_workstation_model);
   sg_platf_host_add_cb(workstation_new);
-//  sg_platf_postparse_add_cb(create_workstations);
 }
 
 void surf_workstation_model_init_compound()
@@ -463,5 +462,4 @@ void surf_workstation_model_init_compound()
   surf_workstation_model_init_internal();
   xbt_dynar_push(model_list, &surf_workstation_model);
   sg_platf_host_add_cb(workstation_new);
-//  sg_platf_postparse_add_cb(create_workstations);
 }

@@ -22,7 +22,7 @@
  * @return				The global reference to the original java task 
  *						instance.
  */
-jobject jtask_new_global_ref(jobject jtask, JNIEnv * env);
+/* jobject jtask_new_global_ref(jobject jtask, JNIEnv * env); */
 
 /**
  * This function delete a global reference to a java task instance.
@@ -30,7 +30,7 @@ jobject jtask_new_global_ref(jobject jtask, JNIEnv * env);
  * @param				The global refernce to delete.
  * @param env			The environment of the current thread.
  */
-void jtask_delete_global_ref(jobject jtask, JNIEnv * env);
+/* void jtask_delete_global_ref(jobject jtask, JNIEnv * env); */
 
 /**
  * This function associated a native task to a java task instance.
@@ -105,8 +105,8 @@ Java_org_simgrid_msg_Task_parallelCreate
  * Method		destroy
  * Signature	(Lsimgrid/msg/Task;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_destroy
-    (JNIEnv *, jobject);
+/* JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_destroy */
+/*     (JNIEnv *, jobject); */
 
 /*
  * Class		org_simgrid_msg_Task

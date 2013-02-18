@@ -42,12 +42,6 @@ XBT_PUBLIC( void ) *mrealloc(xbt_mheap_t md, void *ptr, size_t size);
 /* Free a block allocated by `mmalloc', `mrealloc' or `mcalloc'.  */
 XBT_PUBLIC( void ) mfree(xbt_mheap_t md, void *ptr);
 
-/* Allocate SIZE bytes allocated to ALIGNMENT bytes.  */
-XBT_PUBLIC( void ) *mmemalign(xbt_mheap_t md, size_t alignment, size_t size);
-
-/* Allocate SIZE bytes on a page boundary.  */
-XBT_PUBLIC( void ) *mvalloc(xbt_mheap_t md, size_t size);
-
 XBT_PUBLIC( xbt_mheap_t ) xbt_mheap_new(int fd, void *baseaddr);
 
 XBT_PUBLIC( void ) xbt_mheap_destroy_no_free(xbt_mheap_t md);
