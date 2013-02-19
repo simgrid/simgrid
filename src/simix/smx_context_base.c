@@ -12,7 +12,7 @@
 #include "smx_private.h"
 #include "mc/mc.h"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(bindings);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 void smx_ctx_base_factory_init(smx_context_factory_t *factory)
 {
