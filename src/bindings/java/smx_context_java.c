@@ -24,7 +24,6 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     void *data);
 
 static void smx_ctx_java_free(smx_context_t context);
-static void smx_ctx_java_start(smx_context_t context);
 static void smx_ctx_java_suspend(smx_context_t context);
 static void smx_ctx_java_resume(smx_context_t new_context);
 static void smx_ctx_java_runall(void);
@@ -56,10 +55,9 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
                                     void_pfn_smxprocess_t cleanup_func,
                                     void* data)
 {
-	xbt_ex_t e;
-	static int thread_amount=0;
-	smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
-	thread_amount++;
+  static int thread_amount=0;
+  smx_ctx_java_t context = xbt_new0(s_smx_ctx_java_t, 1);
+  thread_amount++;
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if (code) {
@@ -79,13 +77,13 @@ smx_ctx_java_factory_create_context(xbt_main_func_t code, int argc,
 
     TRY {	  
        context->thread = xbt_os_thread_create(NULL,smx_ctx_java_thread_run,context,NULL);
-    } CATCH(e) {
-    	RETHROWF("Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
-		 "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
-    			thread_amount);
     }
-  }
-  else {
+    CATCH_ANONYMOUS {
+      RETHROWF("Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
+               "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
+               thread_amount);
+    }
+  } else {
   	context->thread = NULL;
     xbt_os_thread_set_extra_data(context);
   }
@@ -106,7 +104,7 @@ static void* smx_ctx_java_thread_run(void *data) {
   xbt_os_sem_acquire(context->begin);
   //Create the "Process" object if needed.
   if (context->super.argc > 0) {
-    (*(context->super.code))(context->super.argc, context->super.argv);
+    context->super.code(context->super.argc, context->super.argv);
   }
   else {
     smx_process_t process = SIMIX_process_self();
@@ -149,12 +147,11 @@ void smx_ctx_java_stop(smx_context_t context)
   smx_ctx_java_t ctx_java = (smx_ctx_java_t)context;
   /* I am the current process and I am dying */
   if (context->iwannadie) {
-  	context->iwannadie = 0;
-  	JNIEnv *env = get_current_thread_env();
-  	jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process killed :)"));
-  	THROWF(cancel_error, 0, "process cancelled");
-  }
-  else {
+    context->iwannadie = 0;
+    JNIEnv *env = get_current_thread_env();
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", xbt_strdup("Process killed :)"));
+    THROWF(cancel_error, 0, "process cancelled");
+  } else {
     smx_ctx_base_stop(context);
     /* detach the thread and kills it */
     JNIEnv *env = ctx_java->jenv;

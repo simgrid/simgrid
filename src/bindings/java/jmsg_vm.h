@@ -12,8 +12,6 @@
 #include <jni.h>
 #include "msg/msg.h"
 
-jfieldID jvm_field_bind;
-
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm);
 msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm);
 

@@ -37,17 +37,6 @@ static double dax_parse_double(const char *string)
   return value;
 }
 
-static int dax_parse_int(const char *string)
-{
-  int ret = 0;
-  int value;
-
-  ret = sscanf(string, "%d", &value);
-  if (ret != 1)
-    dax_parse_error(bprintf("%s is not an integer", string));
-  return value;
-}
-
 /* Ensure that transfer tasks have unique names even though a file is used
  * several times */
 
@@ -253,16 +242,6 @@ static xbt_dict_t jobs;
 static xbt_dict_t files;
 static SD_task_t current_job;
 static SD_task_t root_task, end_task;
-
-static void dump_res()
-{
-  unsigned int cursor;
-  SD_task_t task;
-  xbt_dynar_foreach(result, cursor, task) {
-    XBT_INFO("Task %u", cursor);
-    SD_task_dump(task);
-  }
-}
 
 static void dax_task_free(void *task)
 {

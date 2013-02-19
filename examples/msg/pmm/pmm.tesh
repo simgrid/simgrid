@@ -2,7 +2,7 @@
 
 p Testing the Parallel Matrix Multiplication 
 
-! timeout 60
+! timeout 120
 $ ./pmm/msg_pmm --log=msg_pmm.thres:verbose --log=no_loc ${srcdir:=.}/../platforms/cluster.xml ${srcdir:=.}/pmm/pmm_9_deploy.xml
 > [c-0.me:node:(1) 0.000000] [msg_pmm/VERBOSE] Create job 0
 > [c-0.me:node:(1) 0.000000] [msg_pmm/VERBOSE] Create job 1

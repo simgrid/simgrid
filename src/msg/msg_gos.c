@@ -622,7 +622,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
 
 
   smx_rdv_t rdv = MSG_mailbox_get_by_alias(name);
-  simcall_comm_change_rate_first_action(rdv,rate);
+
   /* FIXME: these functions are not traceable */
 
   /* Sanity check */
@@ -637,7 +637,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
   comm->task_sent = NULL;
   comm->task_received = task;
   comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv(rdv, task, NULL, NULL, NULL);
+  comm->s_comm = simcall_comm_irecv_bounded(rdv, task, NULL, NULL, NULL, rate);
 
   return comm;
 }

@@ -79,5 +79,5 @@ if(NOT $ENV{LDFLAGS} STREQUAL "")
 endif()
 
 if(enable_model-checking AND enable_compile_optimizations)
-  message(WARNING "Sorry for now GCC optimizations does not work with model checking.\nPlease turn off optimizations with command:\ncmake -Denable_compile_optimizations=off. ")
+  message(WARNING "Sorry for now GCC optimizations does not work with model checking.\nPlease turn off optimizations with command:\ncmake -Denable_compile_optimizations=off .")
 endif()

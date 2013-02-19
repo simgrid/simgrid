@@ -548,9 +548,6 @@ int xbt_dynar_member(xbt_dynar_t const dynar, void *const elem)
  */
 XBT_INLINE void *xbt_dynar_push_ptr(xbt_dynar_t const dynar)
 {
-  /* we have to inline xbt_dynar_insert_at_ptr here to make sure that
-     dynar->used don't change between reading it and getting the lock
-     within xbt_dynar_insert_at_ptr */
   return xbt_dynar_insert_at_ptr(dynar, dynar->used);
 }
 
@@ -559,8 +556,7 @@ XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar,
                                const void *const src)
 {
   /* checks done in xbt_dynar_insert_at_ptr */
-  memcpy(xbt_dynar_insert_at_ptr(dynar, dynar->used), src,
-         dynar->elmsize);
+  memcpy(xbt_dynar_insert_at_ptr(dynar, dynar->used), src, dynar->elmsize);
 }
 
 /** @brief Mark the last dynar's element as unused and return a pointer to it.

@@ -44,10 +44,6 @@ MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox,
   return simcall_rdv_comm_count_by_host(mailbox, host);
 }
 
-double MSG_set_rate_before_read(msg_mailbox_t mailbox, double newrate) {
-	return simcall_comm_change_rate_first_action(mailbox,newrate);
-}
-
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 {
 
@@ -145,8 +141,6 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
   MSG_RETURN(ret);
 }
 
-
-
 /** \ingroup msg_mailbox_management
  * \brief Get a task from a mailbox on a given host at a given rate
  *
@@ -154,7 +148,7 @@ MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
  * \param task a memory location for storing a #msg_task_t.
  * \param host a #msg_host_t host from where the task was sent
  * \param timeout a timeout
- * \param rate a bandwidth rate
+ * \param rate a rate
 
  * \return Returns
  * #MSG_OK if the task was successfully received,
@@ -164,10 +158,56 @@ msg_error_t
 MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
                          msg_host_t host, double timeout, double rate)
 {
-	MSG_set_rate_before_read(mailbox,rate);
-	MSG_RETURN(MSG_mailbox_get_task_ext(mailbox,task,host,timeout));
-}
+  xbt_ex_t e;
+  msg_error_t ret = MSG_OK;
+  /* We no longer support getting a task from a specific host */
+  if (host)
+    THROW_UNIMPLEMENTED;
 
+#ifdef HAVE_TRACING
+  TRACE_msg_task_get_start();
+  double start_time = MSG_get_clock();
+#endif
+
+  /* Sanity check */
+  xbt_assert(task, "Null pointer for the task storage");
+
+  if (*task)
+    XBT_WARN
+        ("Asked to write the received task in a non empty struct -- proceeding.");
+
+  /* Try to receive it by calling SIMIX network layer */
+  TRY {
+    simcall_comm_recv_bounded(mailbox, task, NULL, NULL, NULL, timeout, rate);
+    XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
+    (*task)->simdata->isused=0;
+  }
+  CATCH(e) {
+    switch (e.category) {
+    case cancel_error:
+      ret = MSG_HOST_FAILURE;
+      break;
+    case network_error:
+      ret = MSG_TRANSFER_FAILURE;
+      break;
+    case timeout_error:
+      ret = MSG_TIMEOUT;
+      break;
+    default:
+      RETHROW;
+    }
+    xbt_ex_free(e);
+  }
+
+#ifdef HAVE_TRACING
+  if (ret != MSG_HOST_FAILURE &&
+      ret != MSG_TRANSFER_FAILURE &&
+      ret != MSG_TIMEOUT) {
+    TRACE_msg_task_get_end(start_time, *task);
+  }
+#endif
+  MSG_RETURN(ret);
+}
 
 msg_error_t
 MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,

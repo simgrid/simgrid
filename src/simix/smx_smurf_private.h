@@ -307,6 +307,8 @@ ACTION(SIMCALL_COMM_SEND, comm_send, WITHOUT_ANSWER, TVOID(result), TSPEC(rdv, s
 ACTION(SIMCALL_COMM_ISEND, comm_isend, WITH_ANSWER, TSPEC(result, smx_action_t), TSPEC(rdv, smx_rdv_t), TDOUBLE(task_size), TDOUBLE(rate), TPTR(src_buff), TSIZE(src_buff_size), TSPEC(match_fun, simix_match_func_t), TSPEC(clean_fun, simix_clean_func_t), TPTR(data), TINT(detached)) sep \
 ACTION(SIMCALL_COMM_RECV, comm_recv, WITHOUT_ANSWER, TVOID(result), TSPEC(rdv, smx_rdv_t), TPTR(dst_buff), TSPEC(dst_buff_size, size_t*), TSPEC(match_fun, simix_match_func_t), TPTR(data), TDOUBLE(timeout)) sep \
 ACTION(SIMCALL_COMM_IRECV, comm_irecv, WITH_ANSWER, TSPEC(result, smx_action_t), TSPEC(rdv, smx_rdv_t), TPTR(dst_buff), TSPEC(dst_buff_size, size_t*), TSPEC(match_fun, simix_match_func_t), TPTR(data)) sep \
+ACTION(SIMCALL_COMM_RECV_BOUNDED, comm_recv_bounded, WITHOUT_ANSWER, TVOID(result), TSPEC(rdv, smx_rdv_t), TPTR(dst_buff), TSPEC(dst_buff_size, size_t*), TSPEC(match_fun, simix_match_func_t), TPTR(data), TDOUBLE(timeout), TDOUBLE(rate)) sep \
+ACTION(SIMCALL_COMM_IRECV_BOUNDED, comm_irecv_bounded, WITH_ANSWER, TSPEC(result, smx_action_t), TSPEC(rdv, smx_rdv_t), TPTR(dst_buff), TSPEC(dst_buff_size, size_t*), TSPEC(match_fun, simix_match_func_t), TPTR(data), TDOUBLE(rate)) sep \
 ACTION(SIMCALL_COMM_DESTROY, comm_destroy, WITH_ANSWER, TVOID(result), TSPEC(comm, smx_action_t)) sep \
 ACTION(SIMCALL_COMM_CANCEL, comm_cancel, WITH_ANSWER, TVOID(result), TSPEC(comm, smx_action_t)) sep \
 ACTION(SIMCALL_COMM_WAITANY, comm_waitany, WITHOUT_ANSWER, TINT(result), TSPEC(comms, xbt_dynar_t)) sep \
@@ -448,8 +450,6 @@ const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 xbt_dict_t SIMIX_pre_asr_get_properties(smx_simcall_t simcall, const char *name);
 
 /*************************** New simcall interface ****************************/
-
-smx_simcall_t __SIMIX_simcall(e_smx_simcall_t simcall_id, u_smx_scalar_t *args);
 
 typedef smx_action_t (*simcall_handler_t)(u_smx_scalar_t *);
 

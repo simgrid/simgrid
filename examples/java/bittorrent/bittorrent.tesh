@@ -1,6 +1,7 @@
 #! tesh
 
 ! output sort
+! timeout 15
 
 $ java -cp ${classpath:=.} bittorrent/Bittorrent ${srcdir:=.}/platform.xml ${srcdir:=.}/bittorrent/bittorrent.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.

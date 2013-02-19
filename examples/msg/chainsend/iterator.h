@@ -30,7 +30,6 @@ xbt_dynar_t random_indices_list(int size);
 
 /* Shuffle */
 /**************************************/
-static int rand_int(int n);
 void xbt_dynar_shuffle_in_place(xbt_dynar_t indices_list);
 
 #define xbt_dynar_swap_elements(d, type, i, j) \

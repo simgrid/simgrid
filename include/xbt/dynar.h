@@ -70,8 +70,6 @@ typedef struct xbt_dynar_s *xbt_dynar_t;
 
 XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new(const unsigned long elm_size,
                                       void_f_pvoid_t const free_f);
-XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new_sync(const unsigned long elm_size,
-                                           void_f_pvoid_t const free_f);
 XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
 XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
 XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
@@ -206,19 +204,14 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
  * DynArr during the traversal. To remove elements, use the
  * xbt_dynar_cursor_rm() function.
  *
- * Do not call these functions directly, but only the xbt_dynar_foreach macro.
- * 
- * For synchronized dynars, the dynar will be locked during the whole
- * loop and it will get unlocked automatically if you traverse all
- * elements. If you want to break the loop before the end, make sure
- * to call xbt_dynar_cursor_unlock() before the <tt>break;</tt>
+ * Do not call these function directly, but only within the xbt_dynar_foreach
+ * macro.
  *
  *  @{
  */
 
 XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
                                      unsigned int *const cursor);
-XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
 
 /* do not use this structure internals directly, but use the public interface
  * This was made public to allow:
@@ -226,7 +219,6 @@ XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
  *  - sending such beasts over the network
  */
 
-#include "xbt/synchro_core.h"
 typedef struct xbt_dynar_s {
   unsigned long size;
   unsigned long used;

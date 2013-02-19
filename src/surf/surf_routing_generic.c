@@ -143,8 +143,6 @@ void generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
   int src, dst;
   int table_size = xbt_dynar_length(rc->index_network_elm);
 
-  sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-  route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
   for (src = 0; src < table_size; src++) {
     sg_routing_edge_t my_src =
@@ -155,35 +153,49 @@ void generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
       sg_routing_edge_t my_dst =
           xbt_dynar_get_as(rc->index_network_elm, dst, sg_routing_edge_t);
 
+      sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+
       rc->get_route_and_latency(rc, my_src, my_dst, route, NULL);
 
-      if (route) {
-        unsigned int cpt;
-        void *link;
+      XBT_DEBUG ("get_route_and_latency %s -> %s", my_src->name, my_dst->name);
 
-        xbt_node_t current, previous;
+      unsigned int cpt;
+      void *link;
 
-        if (route->gw_src) {
-          previous = new_xbt_graph_node(graph, route->gw_src->name, nodes);
-        } else {
-          previous = new_xbt_graph_node(graph, my_src->name, nodes);
-        }
+      xbt_node_t current, previous;
+      const char *previous_name, *current_name;
 
-        xbt_dynar_foreach(route->link_list, cpt, link) {
-          char *link_name = ((surf_resource_t) link)->name;
-          current = new_xbt_graph_node(graph, link_name, nodes);
-          new_xbt_graph_edge(graph, previous, current, edges);
-          previous = current;
-        }
-
-        if (route->gw_dst) {
-          current = new_xbt_graph_node(graph, route->gw_dst->name, nodes);
-        } else {
-          current = new_xbt_graph_node(graph, my_dst->name, nodes);
-        }
-        new_xbt_graph_edge(graph, previous, current, edges);
-
+      if (route->gw_src) {
+        previous = new_xbt_graph_node(graph, route->gw_src->name, nodes);
+        previous_name = route->gw_src->name;
+      } else {
+        previous = new_xbt_graph_node(graph, my_src->name, nodes);
+        previous_name = my_src->name;
       }
+
+      xbt_dynar_foreach(route->link_list, cpt, link) {
+        char *link_name = ((surf_resource_t) link)->name;
+        current = new_xbt_graph_node(graph, link_name, nodes);
+        current_name = link_name;
+        new_xbt_graph_edge(graph, previous, current, edges);
+        XBT_DEBUG ("  %s -> %s", previous_name, current_name);
+        previous = current;
+        previous_name = current_name;
+      }
+
+      if (route->gw_dst) {
+        current = new_xbt_graph_node(graph, route->gw_dst->name, nodes);
+        current_name = route->gw_dst->name;
+      } else {
+        current = new_xbt_graph_node(graph, my_dst->name, nodes);
+        current_name = my_dst->name;
+      }
+      new_xbt_graph_edge(graph, previous, current, edges);
+      XBT_DEBUG ("  %s -> %s", previous_name, current_name);
+
+      xbt_dynar_free (&(route->link_list));
+      xbt_free (route);
     }
   }
 }

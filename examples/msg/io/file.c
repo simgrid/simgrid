@@ -35,7 +35,7 @@ int host(int argc, char *argv[])
   msg_file_t file = NULL;
   s_msg_stat_t stat;
   void *ptr = NULL;
-  char* mount = bprintf("/home");
+  char* mount = xbt_strdup("/home");
   double read,write;
 
   if(!strcmp(MSG_process_get_name(MSG_process_self()),"0"))

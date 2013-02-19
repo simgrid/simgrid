@@ -215,7 +215,8 @@ void sg_platf_new_route(sg_platf_route_cbarg_t route) {
   xbt_dynar_foreach(sg_platf_route_cb_list, iterator, fun) {
     fun(route);
   }
-}void sg_platf_new_ASroute(sg_platf_route_cbarg_t ASroute) {
+}
+void sg_platf_new_ASroute(sg_platf_route_cbarg_t ASroute) {
   unsigned int iterator;
   sg_platf_route_cb_t fun;
   xbt_dynar_foreach(sg_platf_ASroute_cb_list, iterator, fun) {
@@ -228,7 +229,8 @@ void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute) {
   xbt_dynar_foreach(sg_platf_bypassRoute_cb_list, iterator, fun) {
     fun(bypassRoute);
   }
-}void sg_platf_new_bypassASroute(sg_platf_route_cbarg_t bypassASroute) {
+}
+void sg_platf_new_bypassASroute(sg_platf_route_cbarg_t bypassASroute) {
   unsigned int iterator;
   sg_platf_route_cb_t fun;
   xbt_dynar_foreach(sg_platf_bypassASroute_cb_list, iterator, fun) {

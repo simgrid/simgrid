@@ -498,7 +498,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
               cursor2++;
             }
 
-            if(xbt_dynar_length(compose) > 0){
+            if(!xbt_dynar_is_empty(compose)){
               frame_pointer_address = xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address ; 
             }
             break;
@@ -546,7 +546,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
             cursor++;
           }
           
-          if(xbt_dynar_length(compose) > 0){
+          if(!xbt_dynar_is_empty(compose)){
             if(strcmp(xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->type, "value") == 0){
               to_append = bprintf("%s=%lx\n", current_variable->name, xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.res);
               xbt_strbuff_append(variables, to_append);

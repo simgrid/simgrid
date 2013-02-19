@@ -31,7 +31,7 @@ void Generate_Data ( double *, int );
 void Normal_Test_Send ( double *, int );
 void Normal_Test_Recv ( double *, int );
 void Buffered_Test_Send ( double *, int );
-void Buffered_Test_Recv ( double *, int );
+/* void Buffered_Test_Recv ( double *, int ); */
 void Async_Test_Send ( double *, int );
 void Async_Test_Recv ( double *, int );
 int Check_Data ( double *, int );

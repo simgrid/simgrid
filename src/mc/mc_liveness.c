@@ -71,7 +71,7 @@ int reached(xbt_state_t st){
   xbt_propositional_symbol_t ps = NULL;
   xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
-    res = (*f)();
+    res = f();
     xbt_dynar_push_as(new_pair->prop_ato, int, res);
   }
   
@@ -155,7 +155,7 @@ void set_pair_reached(xbt_state_t st){
 
   xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
-    res = (*f)();
+    res = f();
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
 
@@ -190,7 +190,7 @@ int visited(xbt_state_t st){
   xbt_propositional_symbol_t ps = NULL;
   xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
-    res = (*f)();
+    res = f();
     xbt_dynar_push_as(new_pair->prop_ato, int, res);
   }
   
@@ -285,7 +285,7 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
     xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, p){
       if(strcmp(p->pred, l->u.predicat) == 0){
         f = (int_f_void_t)p->function;
-        return (*f)();
+        return f();
       }
     }
     return -1;

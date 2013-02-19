@@ -95,4 +95,12 @@ public class VM {
 	public String getName() {
 		return name;
 	}		
+
+	/**
+	 * Class initializer, to initialize various JNI stuff
+	 */
+	public static native void nativeInit();
+	static {
+		nativeInit();
+	}
 }

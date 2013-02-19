@@ -829,6 +829,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/GenerateDocWin.cmake
   buildtools/Cmake/MaintainerMode.cmake
   buildtools/Cmake/MakeExe.cmake
+  buildtools/Cmake/MakeJava.cmake
   buildtools/Cmake/MakeLib.cmake
   buildtools/Cmake/MakeLibWin.cmake
   buildtools/Cmake/Modules/FindF2c.cmake
@@ -855,7 +856,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/postinstall.sh
   buildtools/Cmake/Scripts/preinstall.sh
   buildtools/Cmake/Scripts/tesh.pl
-  buildtools/Cmake/Scripts/test_java.sh
   buildtools/Cmake/Scripts/update_tesh.pl
   buildtools/Cmake/Supernovae.cmake
   buildtools/Cmake/UnitTesting.cmake

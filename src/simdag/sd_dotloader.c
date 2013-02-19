@@ -40,11 +40,6 @@ static xbt_dict_t computers;
 static Agraph_t *dag_dot;
 static bool schedule = true;
 
-static void dot_task_free(void *task) {
-  SD_task_t t = task;
-  SD_task_destroy(t);
-}
-
 static void dot_task_p_free(void *task) {
   SD_task_t *t = task;
   SD_task_destroy(*t);

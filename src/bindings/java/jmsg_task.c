@@ -30,12 +30,12 @@ static jfieldID jtask_field_Comm_receiving;
 
 void jtask_bind(jobject jtask, msg_task_t task, JNIEnv * env)
 {
-  (*env)->SetLongField(env, jtask, jtask_field_Task_bind, (jlong) (long) (task));
+  (*env)->SetLongField(env, jtask, jtask_field_Task_bind, (intptr_t)task);
 }
 
 msg_task_t jtask_to_native_task(jobject jtask, JNIEnv * env)
 {
-  return (msg_task_t) (long) (*env)->GetLongField(env, jtask, jtask_field_Task_bind);
+  return (msg_task_t)(intptr_t)(*env)->GetLongField(env, jtask, jtask_field_Task_bind);
 }
 
 jboolean jtask_is_valid(jobject jtask, JNIEnv * env)
@@ -218,6 +218,8 @@ Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject jtask)
   }
   msg_error_t rv;
   rv = MSG_task_execute(task);
+  if ((*env)->ExceptionOccurred(env))
+    return;
   if (rv != MSG_OK) {
     jmsg_throw_status(env, rv);
   }
@@ -433,6 +435,8 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
 
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
   rv = MSG_task_receive_ext(task, alias, (double) jtimeout, host);
+  if ((*env)->ExceptionOccurred(env))
+    return NULL;
   if (rv != MSG_OK) {
     jmsg_throw_status(env,rv);
     return NULL;

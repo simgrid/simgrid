@@ -240,7 +240,7 @@ if [ "${EXTOPT}" = "smpi_replay" ]; then
      hosttraces=(`cat ${APP_TRACES} | tr \\\n " "`)
      NUMTRACES=`cat ${APP_TRACES} | wc -l`
   else
-     printf "File not found: %s\n", "${APP_TRACES:-\${APP_TRACES}}" >&2
+     printf "File not found: %s\n", "${APP_TRACES:-\${APP_TRACES\}}" >&2
      exit 1
   fi
 fi

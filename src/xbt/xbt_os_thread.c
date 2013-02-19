@@ -330,7 +330,7 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
       THROWF(timeout_error, 0, "mutex %p not ready", mutex);
     default:
       THROWF(system_error, errcode,
-             "xbt_mutex_timedacquire(%p) failed: %s", mutex,
+             "xbt_os_mutex_timedacquire(%p) failed: %s", mutex,
              strerror(errcode));
     }
 

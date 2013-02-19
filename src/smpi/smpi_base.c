@@ -234,11 +234,13 @@ static MPI_Request build_request(void *buf, int count,
 }
 
 
-void smpi_empty_status(MPI_Status * status) {
+void smpi_empty_status(MPI_Status * status)
+{
   if(status != MPI_STATUS_IGNORE) {
-      status->MPI_SOURCE=MPI_ANY_SOURCE;
-      status->MPI_TAG=MPI_ANY_TAG;
-      status->count=0;
+    status->MPI_SOURCE = MPI_ANY_SOURCE;
+    status->MPI_TAG = MPI_ANY_TAG;
+    status->MPI_ERROR = MPI_SUCCESS;
+    status->count=0;
   }
 }
 
@@ -517,7 +519,7 @@ void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   smpi_mpi_waitall(2, requests, stats);
   if(status != MPI_STATUS_IGNORE) {
     // Copy receive status
-    memcpy(status, &stats[1], sizeof(MPI_Status));
+    *status = stats[1];
   }
 }
 
@@ -529,13 +531,14 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
+  if(status != MPI_STATUS_IGNORE)
+    smpi_empty_status(status);
+
   if(!(req->detached && req->flags & SEND)){
     if(status != MPI_STATUS_IGNORE) {
       status->MPI_SOURCE = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
       status->MPI_TAG = req->tag == MPI_ANY_TAG ? req->real_tag : req->tag;
-      if(req->truncated)
-      status->MPI_ERROR = MPI_ERR_TRUNCATE;
-      else status->MPI_ERROR = MPI_SUCCESS ;
+      status->MPI_ERROR = req->truncated ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
       // this handles the case were size in receive differs from size in send
       // FIXME: really this should just contain the count of receive-type blocks,
       // right?
@@ -642,7 +645,7 @@ int smpi_mpi_testall(int count, MPI_Request requests[],
       smpi_empty_status(pstat);
     }
     if(status != MPI_STATUSES_IGNORE) {
-      memcpy(&status[i], pstat, sizeof(*pstat));
+      status[i] = *pstat;
     }
   }
   return flag;
@@ -764,33 +767,31 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
   int  index, c;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
-  int retvalue=MPI_SUCCESS;
+  int retvalue = MPI_SUCCESS;
   //tag invalid requests in the set
-  for(c = 0; c < count; c++) {
-    if(requests[c]==MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL ){
-      if(status != MPI_STATUSES_IGNORE)
+  if (status != MPI_STATUSES_IGNORE) {
+    for (c = 0; c < count; c++) {
+      if (requests[c] == MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL) {
         smpi_empty_status(&status[c]);
-    }else if(requests[c]->src == MPI_PROC_NULL ){
-      if(status != MPI_STATUSES_IGNORE) {
+      } else if (requests[c]->src == MPI_PROC_NULL) {
         smpi_empty_status(&status[c]);
-        status[c].MPI_SOURCE=MPI_PROC_NULL;
+        status[c].MPI_SOURCE = MPI_PROC_NULL;
       }
     }
   }
   for(c = 0; c < count; c++) {
-      if(MC_is_active()) {
-        smpi_mpi_wait(&requests[c], pstat);
-        index = c;
-      } else {
-        index = smpi_mpi_waitany(count, requests, pstat);
-        if(index == MPI_UNDEFINED) {
-          break;
-       }
-      if(status != MPI_STATUSES_IGNORE) {
-        memcpy(&status[index], pstat, sizeof(*pstat));
-        if(status[index].MPI_ERROR==MPI_ERR_TRUNCATE)retvalue=MPI_ERR_IN_STATUS;
-
-      }
+    if (MC_is_active()) {
+      smpi_mpi_wait(&requests[c], pstat);
+      index = c;
+    } else {
+      index = smpi_mpi_waitany(count, requests, pstat);
+      if (index == MPI_UNDEFINED)
+        break;
+    }
+    if (status != MPI_STATUSES_IGNORE) {
+      status[index] = *pstat;
+      if (status[index].MPI_ERROR == MPI_ERR_TRUNCATE)
+        retvalue = MPI_ERR_IN_STATUS;
     }
   }
 
@@ -812,7 +813,7 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
       indices[count] = index;
       count++;
       if(status != MPI_STATUSES_IGNORE) {
-        memcpy(&status[index], pstat, sizeof(*pstat));
+        status[index] = *pstat;
       }
     }else{
       return MPI_UNDEFINED;
@@ -836,7 +837,7 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
          indices[count] = i;
          count++;
          if(status != MPI_STATUSES_IGNORE) {
-            memcpy(&status[i], pstat, sizeof(*pstat));
+           status[i] = *pstat;
          }
       }
     }else{

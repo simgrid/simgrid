@@ -93,7 +93,6 @@ extern tmgr_history_t history;
 //void surf_config(const char *name, va_list pa);
 
 void net_action_recycle(surf_action_t action);
-double net_action_get_remains(surf_action_t action);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 int net_get_link_latency_limited(surf_action_t action);
 #endif
@@ -206,7 +205,6 @@ XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 /* from surf_instr.c */
 void TRACE_surf_host_set_power(double date, const char *resource, double power);
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
-void TRACE_surf_link_set_latency(double date, const char *resource, double latency);
 
 
 #endif                          /* _SURF_SURF_PRIVATE_H */

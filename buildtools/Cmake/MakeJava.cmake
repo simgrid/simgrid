@@ -7,9 +7,17 @@ include(UseJava)
 add_library(SG_java SHARED ${JMSG_C_SRC})
 set_target_properties(SG_java PROPERTIES VERSION ${libSG_java_version})
 get_target_property(COMMON_INCLUDES SG_java INCLUDE_DIRECTORIES)
-set_target_properties(SG_java PROPERTIES
-  INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
+if (COMMON_INCLUDES)
+  set_target_properties(SG_java PROPERTIES
+    INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
+else()
+  set_target_properties(SG_java PROPERTIES
+    INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
+endif()
 add_dependencies(SG_java simgrid)
+
+get_target_property(CHECK_INCLUDES SG_java INCLUDE_DIRECTORIES)
+message("-- [Java] SG_java includes: ${CHECK_INCLUDES}")
 
 if(WIN32)
   get_target_property(SIMGRID_LIB_NAME_NAME SG_java LIBRARY_OUTPUT_NAME)
@@ -50,7 +58,7 @@ else()
   message(WARNING "Unknown system type. Processor: ${CMAKE_SYSTEM_PROCESSOR}; System: ${CMAKE_SYSTEM_NAME}")
   set(JSG_BUNDLE "NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR/")
 endif()
-message("Native libraries bundled into: ${JSG_BUNDLE}")
+message("-- [Java] Native libraries bundled into: ${JSG_BUNDLE}")
 
 ## Don't strip libraries if not in release mode
 ##
