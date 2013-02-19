@@ -41,7 +41,6 @@ public final class Msg {
 	  //Windows may report its name in java differently from cmake, which generated the path
 		if(Os.toLowerCase().indexOf("win") >= 0) Os = "Windows";
 		String Path = "NATIVE/"+Os+"/"+System.getProperty("os.arch")+"/";
-				System.out.println("loading from " +Path);
 
 		String filename=name;
 		InputStream in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
