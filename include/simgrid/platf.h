@@ -41,6 +41,25 @@ typedef enum {
 } e_surf_process_on_failure_t;
 
 
+/* FIXME: Where should the VM state be defined? */
+typedef enum {
+  /* created, but not yet started */
+  SURF_VM_STATE_CREATED,
+
+  SURF_VM_STATE_RUNNING,
+  SURF_VM_STATE_MIGRATING,
+
+  /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
+  SURF_VM_STATE_SUSPENDED,
+
+  /* Save/restore involves disk I/O, so there should be transition states. */
+  SURF_VM_STATE_SAVING,
+  SURF_VM_STATE_SAVED,
+  SURF_VM_STATE_RESTORING,
+
+} e_surf_vm_state_t;
+
+
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 
 /** opaque structure defining a event generator for availability based on a probability distribution */

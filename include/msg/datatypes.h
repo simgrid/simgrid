@@ -84,24 +84,6 @@ typedef struct msg_task *msg_task_t;
 typedef msg_host_t msg_vm_t;
 typedef msg_host_priv_t msg_vm_priv_t;
 
-/* must be synchronized with e_surf_vm_state_t */
-typedef enum {
-  /* created, but not yet started */
-  msg_vm_state_created,
-
-  msg_vm_state_running,
-  msg_vm_state_migrating,
-
-  /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
-  msg_vm_state_suspended,
-
-  /* Save/restore involves disk I/O, so there should be transition states. */
-  msg_vm_state_saving,
-  msg_vm_state_saved,
-  msg_vm_state_restoring,
-
-} e_msg_vm_state_t;
-
 static inline msg_vm_priv_t MSG_vm_priv(msg_vm_t vm){
   return xbt_lib_get_level(vm, MSG_HOST_LEVEL);
 }

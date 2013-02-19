@@ -15,25 +15,6 @@
 #include "surf/maxmin_private.h"
 
 
-/* FIXME: Where should the VM state be defined?
- * At now, this must be synchronized with e_msg_vm_state_t */
-typedef enum {
-  /* created, but not yet started */
-  vm_state_created,
-
-  vm_state_running,
-  vm_state_migrating,
-
-  /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
-  vm_state_suspended,
-
-  /* Save/restore involves disk I/O, so there should be transition states. */
-  vm_state_saving,
-  vm_state_saved,
-  vm_state_restoring,
-
-} e_surf_vm_state_t;
-
 /* NOTE:
  * The workstation_VM2013 struct includes the workstation_CLM03 struct in
  * its first member. The workstation_VM2013_t struct inherites all
@@ -66,7 +47,7 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
   workstation_VM2013_t vm_ws = xbt_new0(s_workstation_VM2013_t, 1);
 
   vm_ws->sub_ws = surf_workstation_resource_priv(ind_phys_workstation);
-  vm_ws->current_state = vm_state_created;
+  vm_ws->current_state = SURF_VM_STATE_CREATED;
 
 
   // //// WORKSTATION  RELATED STUFF ////

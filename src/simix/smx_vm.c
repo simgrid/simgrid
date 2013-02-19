@@ -80,7 +80,7 @@ void SIMIX_vm_start(smx_host_t ind_vm)
 {
   //TODO only start the VM if you can
   if (__can_be_started(ind_vm))
-    SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
+    SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_RUNNING);
   else
     THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
 }
@@ -122,12 +122,12 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
   /* TODO: check state */
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, msg_vm_state_migrating);
+  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_MIGRATING);
 
   /* jump to vm_ws_migrate(). this will update the vm location. */
   surf_vm_workstation_model->extension.vm_workstation.migrate(ind_vm, ind_dst_pm);
 
-  SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
+  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_RUNNING);
 }
 
 void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm){
@@ -172,7 +172,7 @@ void SIMIX_vm_suspend(smx_host_t ind_vm)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, msg_vm_state_suspended);
+  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_SUSPENDED);
 }
 
 void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm){
@@ -200,7 +200,7 @@ void SIMIX_vm_resume(smx_host_t ind_vm)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
+  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_RUNNING);
 }
 
 void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm){
@@ -231,7 +231,7 @@ void SIMIX_vm_save(smx_host_t ind_vm)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, msg_vm_state_saved);
+  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_SAVED);
 }
 
 void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm){
@@ -261,7 +261,7 @@ void SIMIX_vm_restore(smx_host_t ind_vm)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, msg_vm_state_running);
+  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_RUNNING);
 }
 
 void SIMIX_pre_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm){
@@ -290,7 +290,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
   }
 
   /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, msg_vm_state_created);
+  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_CREATED);
 }
 
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm){
