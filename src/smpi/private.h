@@ -11,6 +11,7 @@
 #include "xbt/xbt_os_time.h"
 #include "simgrid/simix.h"
 #include "smpi/smpi_interface.h"
+#include "smpi/smpi.h"
 #include "smpi/smpif.h"
 #include "smpi/smpi_cocci.h"
 #include "instr/instr_private.h"
