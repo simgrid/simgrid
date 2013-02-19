@@ -37,7 +37,12 @@ public final class Msg {
 		nativeInit();
 	}
 	private static void loadLib (String name) {
-		String Path = "NATIVE/"+System.getProperty("os.name")+"/"+System.getProperty("os.arch")+"/";
+	  String Os = System.getProperty("os.name");
+	  //Windows may report its name in java differently from cmake, which generated the path
+		if(Os.toLowerCase().indexOf("win") >= 0) Os = "Windows";
+		String Path = "NATIVE/"+Os+"/"+System.getProperty("os.arch")+"/";
+				System.out.println("loading from " +Path);
+
 		String filename=name;
 		InputStream in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
 		
