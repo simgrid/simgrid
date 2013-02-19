@@ -19,23 +19,20 @@
  * At now, this must be synchronized with e_msg_vm_state_t */
 typedef enum {
   /* created, but not yet started */
-  surf_vm_state_created,
+  vm_state_created,
 
-  surf_vm_state_running,
-  surf_vm_state_migrating,
+  vm_state_running,
+  vm_state_migrating,
 
   /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
-  surf_vm_state_suspended,
+  vm_state_suspended,
 
   /* Save/restore involves disk I/O, so there should be transition states. */
-  surf_vm_state_saving,
-  surf_vm_state_saved,
-  surf_vm_state_restoring,
+  vm_state_saving,
+  vm_state_saved,
+  vm_state_restoring,
 
 } e_surf_vm_state_t;
-
-
-
 
 /* NOTE:
  * The workstation_VM2013 struct includes the workstation_CLM03 struct in
@@ -69,11 +66,16 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
   workstation_VM2013_t vm_ws = xbt_new0(s_workstation_VM2013_t, 1);
 
   vm_ws->sub_ws = surf_workstation_resource_priv(ind_phys_workstation);
-  vm_ws->current_state = surf_vm_state_created;
+  vm_ws->current_state = vm_state_created;
 
 
   // //// WORKSTATION  RELATED STUFF ////
-  /* Create a workstation_CLM03 resource and register it to the system */
+  /* Create a workstation_CLM03 resource and register it to the system
+     Please note that the new ws is added into the host_lib. Then,
+     if you want to get a workstation_VM2013 object from host_lib, see
+     ws->generic_resouce.model->type first. If it is  SURF_MODEL_TYPE_VM_WORKSTATION,
+     you can cast ws to vm_ws. */
+
   __init_workstation_CLM03(&vm_ws->ws, name);
 
   // Override the model with the current VM one.
@@ -81,31 +83,7 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
 
 
   // //// CPU  RELATED STUFF ////
-  // This can be done directly during the creation of the surf_vm_worsktation model if
-  // we consider that there will be only one CPU model for one layer of virtualization.
-  // However, if you want to provide several layers (i.e. a VM inside a VM hosted by a PM)
-  // we should add a kind of table that stores the different CPU model.
-  // vm_ws->ws->generic_resource.model.extension.cpu=cpu_model_cas01(VM level ? );
-
- // //// NET RELATED STUFF ////
-  // Bind virtual net_elm to the host
-  // TODO rebind each time you migrate a VM
-  // TODO check how network requests are scheduled between distinct processes competing for the same card.
-  vm_ws->ws.net_elm = xbt_lib_get_or_null(host_lib, vm_ws->sub_ws->generic_resource.name, ROUTING_HOST_LEVEL);
-  xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, vm_ws->ws.net_elm);
-
-  // //// STORAGE RELATED STUFF ////
-
-  // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
-
-
-  /* If you want to get a workstation_VM2013 object from host_lib, see
-   * ws->generic_resouce.model->type first. If it is
-   * SURF_MODEL_TYPE_VM_WORKSTATION, cast ws to vm_ws. */
-  // xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, &vm_ws->ws);
-
-
-
+  // Roughly, create a vcpu resource by using the values of  the sub_cpu one.
   cpu_Cas01_t sub_cpu = surf_cpu_resource_priv(ind_phys_workstation);
 
   /* We can assume one core and cas01 cpu for the first step.
@@ -121,9 +99,22 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
       NULL,                       // host->properties,
       surf_cpu_model_vm);
 
-  // void *ind_host = xbt_lib_get_elm_or_null(host_lib, name);
-
   vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, 0); // cost 0 is okay?
+
+  //// NET RELATED STUFF ////
+  // Bind virtual net_elm to the host
+  // TODO rebind each time you migrate a VM
+  // TODO check how network requests are scheduled between distinct processes competing for the same card.
+  // Please note that the __init_workstation_CLM03 invocation assigned NULL to ws.net_elm since no network elements
+  // were previously created for this hostname. Indeed all network elements are created during the SimGrid initialization phase by considering
+  // the platform file.
+  vm_ws->ws.net_elm = xbt_lib_get_or_null(host_lib, vm_ws->sub_ws->generic_resource.name, ROUTING_HOST_LEVEL);
+  xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, vm_ws->ws.net_elm);
+
+  // //// STORAGE RELATED STUFF ////
+ // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
+
+
 }
 
 /*
@@ -173,6 +164,7 @@ static void vm_ws_set_state(void *ind_vm_ws, int state){
 }
 
 
+// TODO Please fix it (if found is wrong, nothing is returned)
 static double get_solved_value(surf_action_t cpu_action)
 {
   int found = 0;
@@ -281,7 +273,7 @@ static void surf_vm_workstation_model_init_internal(void)
   model->name = "Virtual Workstation";
   model->type = SURF_MODEL_TYPE_VM_WORKSTATION;
 
-  model->extension.vm_workstation.basic.cpu_model = surf_cpu_model_vm;
+  model->extension.workstation.cpu_model = surf_cpu_model_vm;
 
   model->extension.vm_workstation.create        = vm_ws_create;
   model->extension.vm_workstation.set_state     = vm_ws_set_state;

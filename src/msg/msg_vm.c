@@ -103,7 +103,7 @@ static inline int __MSG_vm_is_state(msg_vm_t vm, e_msg_vm_state_t state) {
  */
 int MSG_vm_is_created(msg_vm_t vm)
 {
-  return __MSG_vm_is_state(vm, msg_vm_state_created);
+  return __MSG_vm_is_state(vm, vm_state_created);
 }
 
 /** @brief Returns whether the given VM is currently running
@@ -111,7 +111,7 @@ int MSG_vm_is_created(msg_vm_t vm)
  */
 int MSG_vm_is_running(msg_vm_t vm)
 {
-  return __MSG_vm_is_state(vm, msg_vm_state_running);
+  return __MSG_vm_is_state(vm, vm_state_running);
 }
 
 /** @brief Returns whether the given VM is currently migrating
@@ -119,7 +119,7 @@ int MSG_vm_is_running(msg_vm_t vm)
  */
 int MSG_vm_is_migrating(msg_vm_t vm)
 {
-  return __MSG_vm_is_state(vm, msg_vm_state_migrating);
+  return __MSG_vm_is_state(vm, vm_state_migrating);
 }
 
 /** @brief Returns whether the given VM is currently suspended, not running.
@@ -127,7 +127,7 @@ int MSG_vm_is_migrating(msg_vm_t vm)
  */
 int MSG_vm_is_suspended(msg_vm_t vm)
 {
-  return __MSG_vm_is_state(vm, msg_vm_state_suspended);
+  return __MSG_vm_is_state(vm, vm_state_suspended);
 }
 
 /** @brief Returns whether the given VM is being saved (FIXME: live saving or not?).
@@ -135,7 +135,7 @@ int MSG_vm_is_suspended(msg_vm_t vm)
  */
 int MSG_vm_is_saving(msg_vm_t vm)
 {
-  return __MSG_vm_is_state(vm, msg_vm_state_saving);
+  return __MSG_vm_is_state(vm, vm_state_saving);
 }
 
 /** @brief Returns whether the given VM has been saved, not running.
@@ -143,7 +143,7 @@ int MSG_vm_is_saving(msg_vm_t vm)
  */
 int MSG_vm_is_saved(msg_vm_t vm)
 {
-  return __MSG_vm_is_state(vm, msg_vm_state_saved);
+  return __MSG_vm_is_state(vm, vm_state_saved);
 }
 
 /** @brief Returns whether the given VM is being restored, not running.
@@ -151,7 +151,7 @@ int MSG_vm_is_saved(msg_vm_t vm)
  */
 int MSG_vm_is_restoring(msg_vm_t vm)
 {
-  return __MSG_vm_is_state(vm, msg_vm_state_restoring);
+  return __MSG_vm_is_state(vm, vm_state_restoring);
 }
 
 
