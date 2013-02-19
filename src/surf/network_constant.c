@@ -217,6 +217,9 @@ void surf_network_model_init_Constant()
   surf_network_model->suspend = netcste_action_suspend;
   surf_network_model->resume = netcste_action_resume;
   surf_network_model->is_suspended = netcste_action_is_suspended;
+
+  xbt_assert(surf_cpu_model_pm);
+  xbt_assert(surf_cpu_model_vm);
   surf_cpu_model_pm->set_max_duration = surf_action_set_max_duration;
   surf_cpu_model_vm->set_max_duration = surf_action_set_max_duration;
 

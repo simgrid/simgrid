@@ -132,8 +132,8 @@ static void vm_ws_destroy(void *ind_vm_workstation)
 	/* this will call surf_resource_free() */
 	xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
 
-	xbt_free(vm_ws->ws.generic_resource.name);
-	xbt_free(vm_ws);
+  /* NOTE: surf_resource_free() frees vm_ws->ws.generic_resource.name and
+   * vm_ws->ws. Do not free them here. */
 }
 
 static int vm_ws_get_state(void *ind_vm_ws){
@@ -145,11 +145,11 @@ static void vm_ws_set_state(void *ind_vm_ws, int state){
 }
 
 
-// TODO Please fix it (if found is wrong, nothing is returned)
 static double get_solved_value(surf_action_t cpu_action)
 {
   int found = 0;
-  lmm_system_t pm_system = surf_workstation_model->model_private->maxmin_system;
+  /* NOTE: Do not use surf_workstation_model's maxmin_system. It is not used. */
+  lmm_system_t pm_system = surf_cpu_model_pm->model_private->maxmin_system;
   lmm_variable_t var = NULL;
 
   xbt_swag_foreach(var, &pm_system->variable_set) {
@@ -164,6 +164,8 @@ static double get_solved_value(surf_action_t cpu_action)
     return var->value;
 
   XBT_CRITICAL("bug: cannot found the solved variable of the action %p", cpu_action);
+  DIE_IMPOSSIBLE;
+  return -1; /* NOT REACHED */
 }
 
 
@@ -172,10 +174,10 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
   /* 0. Make sure that we already calculated the resource share at the physical
    * machine layer. */
   {
-    unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, surf_workstation_model);
-    unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, surf_vm_workstation_model);
+    unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &surf_workstation_model);
+    unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &surf_vm_workstation_model);
     xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_workstation_model comes before");
-
+ 
     /* Another option is that we call sub_ws->share_resource() here. The
      * share_resource() function has no side-effect. We can call it here to
      * ensure that. */
@@ -254,6 +256,7 @@ static void surf_vm_workstation_model_init_internal(void)
   model->name = "Virtual Workstation";
   model->type = SURF_MODEL_TYPE_VM_WORKSTATION;
 
+  xbt_assert(surf_cpu_model_vm);
   model->extension.workstation.cpu_model = surf_cpu_model_vm;
 
   model->extension.vm_workstation.create        = vm_ws_create;

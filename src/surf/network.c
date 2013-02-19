@@ -797,6 +797,9 @@ static void surf_network_model_init_internal(void)
   surf_network_model->suspend = surf_action_suspend;
   surf_network_model->resume = surf_action_resume;
   surf_network_model->is_suspended = surf_action_is_suspended;
+
+  xbt_assert(surf_cpu_model_pm);
+  xbt_assert(surf_cpu_model_vm);
   surf_cpu_model_pm->set_max_duration = surf_action_set_max_duration;
   surf_cpu_model_vm->set_max_duration = surf_action_set_max_duration;
 

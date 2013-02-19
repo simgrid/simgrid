@@ -432,6 +432,7 @@ static void surf_workstation_model_init_internal(void)
   /* For VM support, we have a surf cpu model object for each workstation model
    * object. The physical workstation model object has the cpu model object of
    * the physical machine layer. */
+  xbt_assert(surf_cpu_model_pm);
   model->extension.workstation.cpu_model = surf_cpu_model_pm;
 
   model->extension.workstation.execute   = ws_execute;
@@ -461,12 +462,14 @@ static void surf_workstation_model_init_internal(void)
 
 void surf_workstation_model_init_current_default(void)
 {
-
-  surf_workstation_model_init_internal();
-
   xbt_cfg_setdefault_int(_sg_cfg_set, "network/crosstraffic", 1);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
+
+  /* surf_cpu_mode_pm and surf_network_model must be initialized in advance. */
+  xbt_assert(surf_cpu_model_pm);
+  xbt_assert(surf_network_model);
+  surf_workstation_model_init_internal();
 
   xbt_dynar_push(model_list, &surf_workstation_model);
   xbt_dynar_push(model_list_invoke, &surf_workstation_model);
@@ -476,9 +479,9 @@ void surf_workstation_model_init_current_default(void)
 
 void surf_workstation_model_init_compound()
 {
-
   xbt_assert(surf_cpu_model_pm, "No CPU model defined yet!");
   xbt_assert(surf_network_model, "No network model defined yet!");
+
   surf_workstation_model_init_internal();
   xbt_dynar_push(model_list, &surf_workstation_model);
   xbt_dynar_push(model_list_invoke, &surf_workstation_model);

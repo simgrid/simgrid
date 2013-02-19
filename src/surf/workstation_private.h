@@ -12,7 +12,7 @@ typedef struct workstation_CLM03 {
   xbt_dynar_t storage;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
-void __init_ws(workstation_CLM03_t ws,  const char *id, int level);
+void __init_workstation_CLM03(workstation_CLM03_t ws, const char *id);
 
 int ws_resource_used(void *resource_id);
 double ws_share_resources(surf_model_t workstation_model, double now);
