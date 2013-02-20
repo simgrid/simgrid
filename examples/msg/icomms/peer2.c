@@ -57,6 +57,8 @@ int sender(int argc, char *argv[])
   }
   /* Here we are waiting for the completion of all communications */
   MSG_comm_waitall(comm, (number_of_tasks + receivers_count), -1);
+  for (i = 0; i < number_of_tasks + receivers_count; i++)
+    MSG_comm_destroy(comm[i]);
 
   XBT_INFO("Goodbye now!");
   xbt_free(comm);
@@ -80,6 +82,7 @@ int receiver(int argc, char *argv[])
     res_irecv = MSG_task_irecv(&(task), mailbox);
     XBT_INFO("Wait to receive a task");
     res = MSG_comm_wait(res_irecv, -1);
+    MSG_comm_destroy(res_irecv);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
     XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
     if (!strcmp(MSG_task_get_name(task), "finalize")) {

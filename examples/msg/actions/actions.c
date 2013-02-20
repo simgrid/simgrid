@@ -68,6 +68,22 @@ static double parse_double(const char *string)
   return value;
 }
 
+#define ACT_DEBUG(...) \
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose)) {  \
+    char *NAME = xbt_str_join_array(action, " ");              \
+    XBT_DEBUG(__VA_ARGS__);                                    \
+    xbt_free(NAME);                                            \
+  } else ((void)0)
+
+static void log_action(const char *const *action, double date)
+{
+  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose)) {
+    char *name = xbt_str_join_array(action, " ");
+    XBT_VERB("%s %f", name, date);
+    xbt_free(name);
+  }
+}
+
 static void asynchronous_cleanup(void)
 {
   process_globals_t globals =
@@ -85,7 +101,6 @@ static void asynchronous_cleanup(void)
 /* My actions */
 static void action_send(const char *const *action)
 {
-  char *name = NULL;
   char to[250];
   const char *size_str = action[3];
   double size = parse_double(size_str);
@@ -93,19 +108,14 @@ static void action_send(const char *const *action)
 
   sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join_array(action, " ");
-
-  XBT_DEBUG("Entering Send: %s (size: %lg)", name, size);
+  ACT_DEBUG("Entering Send: %s (size: %lg)", NAME, size);
   if (size < 65536) {
     action_Isend(action);
   } else {
-    MSG_task_send(MSG_task_create(name, 0, size, NULL), to);
+    MSG_task_send(MSG_task_create(to, 0, size, NULL), to);
   }
 
-  XBT_VERB("%s %f", name, MSG_get_clock() - clock);
-
-  free(name);
+  log_action(action, MSG_get_clock() - clock);
   asynchronous_cleanup();
 }
 
@@ -117,22 +127,19 @@ static void action_Isend(const char *const *action)
   process_globals_t globals =
       (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-
   sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
   msg_comm_t comm =
       MSG_task_isend(MSG_task_create(to, 0, parse_double(size), NULL), to);
   xbt_dynar_push(globals->isends, &comm);
 
   XBT_DEBUG("Isend on %s", MSG_process_get_name(MSG_process_self()));
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
-
+  log_action(action, MSG_get_clock() - clock);
   asynchronous_cleanup();
 }
 
 
 static void action_recv(const char *const *action)
 {
-  char *name = NULL;
   char mailbox_name[250];
   msg_task_t task = NULL;
   double clock = MSG_get_clock();
@@ -140,19 +147,13 @@ static void action_recv(const char *const *action)
   sprintf(mailbox_name, "%s_%s", action[2],
           MSG_process_get_name(MSG_process_self()));
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join_array(action, " ");
-
-  XBT_DEBUG("Receiving: %s", name);
+  ACT_DEBUG("Receiving: %s", NAME);
   msg_error_t res = MSG_task_receive(&task, mailbox_name);
-  //  MSG_task_receive(&task, MSG_process_get_name(MSG_process_self()));
-  XBT_VERB("%s %f", name, MSG_get_clock() - clock);
+  log_action(action, MSG_get_clock() - clock);
 
   if (res == MSG_OK) {
     MSG_task_destroy(task);
   }
-
-  free(name);
   asynchronous_cleanup();
 }
 
@@ -175,15 +176,13 @@ static void action_Irecv(const char *const *action)
                      mailbox);
   xbt_dynar_push(globals->irecvs, &c);
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
-
+  log_action(action, MSG_get_clock() - clock);
   asynchronous_cleanup();
 }
 
 
 static void action_wait(const char *const *action)
 {
-  char *name = NULL;
   msg_task_t task = NULL;
   msg_comm_t comm;
   double clock = MSG_get_clock();
@@ -194,37 +193,29 @@ static void action_wait(const char *const *action)
              "action wait not preceded by any irecv: %s",
              xbt_str_join_array(action, " "));
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join_array(action, " ");
-
-  XBT_DEBUG("Entering %s", name);
+  ACT_DEBUG("Entering %s", NAME);
   comm = xbt_dynar_pop_as(globals->irecvs, msg_comm_t);
   MSG_comm_wait(comm, -1);
   task = xbt_dynar_pop_as(globals->tasks, msg_task_t);
   MSG_comm_destroy(comm);
   MSG_task_destroy(task);
 
-  XBT_VERB("%s %f", name, MSG_get_clock() - clock);
-  free(name);
+  log_action(action, MSG_get_clock() - clock);
 }
 
 /* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
 static void action_barrier(const char *const *action)
 {
-  char *name = NULL;
   static smx_mutex_t mutex = NULL;
   static smx_cond_t cond = NULL;
   static int processes_arrived_sofar = 0;
-
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join_array(action, " ");
 
   if (mutex == NULL) {          // first arriving on the barrier
     mutex = simcall_mutex_init();
     cond = simcall_cond_init();
     processes_arrived_sofar = 0;
   }
-  XBT_DEBUG("Entering barrier: %s (%d already there)", name,
+  ACT_DEBUG("Entering barrier: %s (%d already there)", NAME,
             processes_arrived_sofar);
 
   simcall_mutex_lock(mutex);
@@ -236,7 +227,7 @@ static void action_barrier(const char *const *action)
     simcall_mutex_unlock(mutex);
   }
 
-  XBT_DEBUG("Exiting barrier: %s", name);
+  ACT_DEBUG("Exiting barrier: %s", NAME);
 
   processes_arrived_sofar--;
   if (!processes_arrived_sofar) {
@@ -244,9 +235,6 @@ static void action_barrier(const char *const *action)
     simcall_mutex_destroy(mutex);
     mutex = NULL;
   }
-
-  free(name);
-
 }
 
 static void action_reduce(const char *const *action)
@@ -284,7 +272,8 @@ static void action_reduce(const char *const *action)
       MSG_comm_destroy(comms[i - 1]);
       MSG_task_destroy(tasks[i - 1]);
     }
-    free(tasks);
+    xbt_free(comms);
+    xbt_free(tasks);
 
     comp_task = MSG_task_create("reduce_comp", comp_size, 0, NULL);
     XBT_DEBUG("%s: computing 'reduce_comp'", reduce_identifier);
@@ -300,8 +289,8 @@ static void action_reduce(const char *const *action)
                   mailbox);
   }
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
-  free(reduce_identifier);
+  log_action(action, MSG_get_clock() - clock);
+  xbt_free(reduce_identifier);
 }
 
 static void action_bcast(const char *const *action)
@@ -337,7 +326,7 @@ static void action_bcast(const char *const *action)
     MSG_comm_waitall(comms, communicator_size - 1, -1);
     for (i = 1; i < communicator_size; i++)
       MSG_comm_destroy(comms[i - 1]);
-    free(comms);
+    xbt_free(comms);
 
     XBT_DEBUG("%s: all messages sent by %s have been received",
               bcast_identifier, process_name);
@@ -349,25 +338,19 @@ static void action_bcast(const char *const *action)
     XBT_DEBUG("%s: %s has received", bcast_identifier, process_name);
   }
 
-  XBT_VERB("%s %f", xbt_str_join_array(action, " "), MSG_get_clock() - clock);
-  free(bcast_identifier);
+  log_action(action, MSG_get_clock() - clock);
+  xbt_free(bcast_identifier);
 }
 
 
 static void action_sleep(const char *const *action)
 {
-  char *name = NULL;
   const char *duration = action[2];
   double clock = MSG_get_clock();
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join_array(action, " ");
-
-  XBT_DEBUG("Entering %s", name);
+  ACT_DEBUG("Entering %s", NAME);
   MSG_process_sleep(parse_double(duration));
-  XBT_VERB("%s %f ", name, MSG_get_clock() - clock);
-
-  free(name);
+  log_action(action, MSG_get_clock() - clock);
 }
 
 static void action_allReduce(const char *const *action)
@@ -405,7 +388,7 @@ static void action_allReduce(const char *const *action)
       MSG_comm_destroy(comms[i - 1]);
       MSG_task_destroy(tasks[i - 1]);
     }
-    free(tasks);
+    xbt_free(tasks);
 
     comp_task = MSG_task_create("allReduce_comp", comp_size, 0, NULL);
     XBT_DEBUG("%s: computing 'reduce_comp'", allreduce_identifier);
@@ -421,7 +404,7 @@ static void action_allReduce(const char *const *action)
     MSG_comm_waitall(comms, communicator_size - 1, -1);
     for (i = 1; i < communicator_size; i++)
       MSG_comm_destroy(comms[i - 1]);
-    free(comms);
+    xbt_free(comms);
 
     XBT_DEBUG("%s: all messages sent by %s have been received",
               allreduce_identifier, process_name);
@@ -439,41 +422,29 @@ static void action_allReduce(const char *const *action)
     XBT_DEBUG("%s: %s has received", allreduce_identifier, process_name);
   }
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose)) {
-    char *a = xbt_str_join_array(action, " ");
-    XBT_VERB("%s %f", a, MSG_get_clock() - clock);
-    free(a);
-  }
-  free(allreduce_identifier);
+  log_action(action, MSG_get_clock() - clock);
+  xbt_free(allreduce_identifier);
 }
 
 static void action_comm_size(const char *const *action)
 {
-  char *name = NULL;
   const char *size = action[2];
   double clock = MSG_get_clock();
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join_array(action, " ");
   communicator_size = parse_double(size);
-  XBT_VERB("%s %f", name, MSG_get_clock() - clock);
-  free(name);
+  log_action(action, MSG_get_clock() - clock);
 }
 
 static void action_compute(const char *const *action)
 {
-  char *name = NULL;
   const char *amout = action[2];
-  msg_task_t task = MSG_task_create(name, parse_double(amout), 0, NULL);
+  msg_task_t task = MSG_task_create("task", parse_double(amout), 0, NULL);
   double clock = MSG_get_clock();
 
-  if (XBT_LOG_ISENABLED(actions, xbt_log_priority_verbose))
-    name = xbt_str_join_array(action, " ");
-  XBT_DEBUG("Entering %s", name);
+  ACT_DEBUG("Entering %s", NAME);
   MSG_task_execute(task);
   MSG_task_destroy(task);
-  XBT_VERB("%s %f", name, MSG_get_clock() - clock);
-  free(name);
+  log_action(action, MSG_get_clock() - clock);
 }
 
 static void action_init(const char *const *action)
@@ -493,10 +464,11 @@ static void action_finalize(const char *const *action)
   process_globals_t globals =
       (process_globals_t) MSG_process_get_data(MSG_process_self());
   if (globals) {
+    asynchronous_cleanup();
     xbt_dynar_free_container(&(globals->isends));
     xbt_dynar_free_container(&(globals->irecvs));
     xbt_dynar_free_container(&(globals->tasks));
-    free(globals);
+    xbt_free(globals);
   }
 }
 

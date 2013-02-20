@@ -115,6 +115,10 @@ void peer_shutdown(peer_t p)
   XBT_DEBUG("Waiting for sends to finish before shutdown...");
   MSG_comm_waitall(comms, size, PEER_SHUTDOWN_DEADLINE);
 
+  for (idx = 0; idx < size; idx++) {
+    MSG_comm_destroy(comms[idx]);
+  }
+
   xbt_free(comms);
 }
 
