@@ -405,6 +405,15 @@ static inline void *surf_storage_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
+static inline surf_model_t surf_resource_model(const void *host, int level) {
+  /* If level is SURF_WKS_LEVEL, ws is a workstation_CLM03 object. It has
+   * surf_resource at the generic_resource field. */
+  surf_resource_t ws = xbt_lib_get_level((void *) host, level);
+  return ws->model;
+}
+
+
+
 /**
  * Resource which have a metric handled by a maxmin system
  */

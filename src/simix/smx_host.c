@@ -136,7 +136,8 @@ xbt_dict_t SIMIX_pre_host_get_properties(smx_simcall_t simcall, smx_host_t host)
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_model->extension.workstation.get_properties(host);
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
+  return ws_model->extension.workstation.get_properties(host);
 }
 
 double SIMIX_pre_host_get_speed(smx_simcall_t simcall, smx_host_t host){
@@ -145,8 +146,8 @@ double SIMIX_pre_host_get_speed(smx_simcall_t simcall, smx_host_t host){
 double SIMIX_host_get_speed(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_model->extension.workstation.
-      get_speed(host, 1.0);
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
+  return ws_model->extension.workstation.get_speed(host, 1.0);
 }
 
 double SIMIX_pre_host_get_available_speed(smx_simcall_t simcall, smx_host_t host){
@@ -155,8 +156,8 @@ double SIMIX_pre_host_get_available_speed(smx_simcall_t simcall, smx_host_t host
 double SIMIX_host_get_available_speed(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_model->extension.workstation.
-      get_available_speed(host);
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
+  return ws_model->extension.workstation.get_available_speed(host);
 }
 
 int SIMIX_pre_host_get_state(smx_simcall_t simcall, smx_host_t host){
@@ -165,8 +166,8 @@ int SIMIX_pre_host_get_state(smx_simcall_t simcall, smx_host_t host){
 int SIMIX_host_get_state(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_model->extension.workstation.
-      get_state(host);
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
+  return ws_model->extension.workstation.get_state(host);
 }
 
 void* SIMIX_pre_host_self_get_data(smx_simcall_t simcall){
@@ -322,13 +323,12 @@ smx_action_t SIMIX_host_execute(const char *name,
   action->category = NULL;
 #endif
 
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
   /* set surf's action */
   if (!MC_is_active()) {
-    action->execution.surf_exec =
-      surf_workstation_model->extension.workstation.execute(host,
-    computation_amount);
-    surf_workstation_model->action_data_set(action->execution.surf_exec, action);
-    surf_workstation_model->set_priority(action->execution.surf_exec, priority);
+    action->execution.surf_exec = ws_model->extension.workstation.execute(host, computation_amount);
+    ws_model->action_data_set(action->execution.surf_exec, action);
+    ws_model->set_priority(action->execution.surf_exec, priority);
   }
 
   XBT_DEBUG("Create execute action %p", action);
@@ -367,18 +367,42 @@ smx_action_t SIMIX_host_parallel_execute(const char *name,
   for (i = 0; i < host_nb; i++)
     workstation_list[i] = host_list[i];
 
+
+  /* FIXME: what happens if host_list contains VMs and PMs. If
+   * execute_parallel_task() does not change the state of the model, we can mix
+   * them. */
+  surf_model_t ws_model = surf_resource_model(host_list[0], SURF_WKS_LEVEL);
+  for (i = 1; i < host_nb; i++) {
+    surf_model_t ws_model_tmp = surf_resource_model(host_list[i], SURF_WKS_LEVEL);
+    if (ws_model_tmp != ws_model) {
+      XBT_CRITICAL("mixing VMs and PMs is not supported");
+      DIE_IMPOSSIBLE;
+    }
+  }
+
   /* set surf's action */
   if (!MC_is_active()) {
     action->execution.surf_exec =
-      surf_workstation_model->extension.workstation.
+      ws_model->extension.workstation.
       execute_parallel_task(host_nb, workstation_list, computation_amount,
                       communication_amount, rate);
 
-    surf_workstation_model->action_data_set(action->execution.surf_exec, action);
+    ws_model->action_data_set(action->execution.surf_exec, action);
   }
   XBT_DEBUG("Create parallel execute action %p", action);
 
   return action;
+}
+
+static surf_model_t get_ws_model_from_action(smx_action_t action)
+{
+  xbt_assert(action->type == SIMIX_ACTION_EXECUTE);
+  smx_host_t host = action->execution.host;
+  surf_model_t model = surf_resource_model(host, SURF_WKS_LEVEL);
+
+  xbt_assert((model == surf_workstation_model) || (model == surf_vm_workstation_model));
+
+  return model;
 }
 
 void SIMIX_pre_host_execution_destroy(smx_simcall_t simcall, smx_action_t action){
@@ -387,8 +411,10 @@ void SIMIX_pre_host_execution_destroy(smx_simcall_t simcall, smx_action_t action
 void SIMIX_host_execution_destroy(smx_action_t action){
   XBT_DEBUG("Destroy action %p", action);
 
+  surf_model_t ws_model = get_ws_model_from_action(action);
+
   if (action->execution.surf_exec) {
-    surf_workstation_model->action_unref(action->execution.surf_exec);
+    ws_model->action_unref(action->execution.surf_exec);
     action->execution.surf_exec = NULL;
   }
   xbt_free(action->name);
@@ -401,8 +427,10 @@ void SIMIX_pre_host_execution_cancel(smx_simcall_t simcall, smx_action_t action)
 void SIMIX_host_execution_cancel(smx_action_t action){
   XBT_DEBUG("Cancel action %p", action);
 
+  surf_model_t ws_model = get_ws_model_from_action(action);
+
   if (action->execution.surf_exec)
-    surf_workstation_model->action_cancel(action->execution.surf_exec);
+    ws_model->action_cancel(action->execution.surf_exec);
 }
 
 double SIMIX_pre_host_execution_get_remains(smx_simcall_t simcall, smx_action_t action){
@@ -410,9 +438,10 @@ double SIMIX_pre_host_execution_get_remains(smx_simcall_t simcall, smx_action_t 
 }
 double SIMIX_host_execution_get_remains(smx_action_t action){
   double result = 0.0;
+  surf_model_t ws_model = get_ws_model_from_action(action);
 
   if (action->state == SIMIX_RUNNING)
-    result = surf_workstation_model->get_remains(action->execution.surf_exec);
+    result = ws_model->get_remains(action->execution.surf_exec);
 
   return result;
 }
@@ -429,8 +458,10 @@ void SIMIX_pre_host_execution_set_priority(smx_simcall_t simcall, smx_action_t a
   return SIMIX_host_execution_set_priority(action, priority);
 }
 void SIMIX_host_execution_set_priority(smx_action_t action, double priority){
+  surf_model_t ws_model = get_ws_model_from_action(action);
+
   if(action->execution.surf_exec)
-    surf_workstation_model->set_priority(action->execution.surf_exec, priority);
+    ws_model->set_priority(action->execution.surf_exec, priority);
 }
 
 void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action){
@@ -455,20 +486,25 @@ void SIMIX_pre_host_execution_wait(smx_simcall_t simcall, smx_action_t action){
 
 void SIMIX_host_execution_suspend(smx_action_t action)
 {
+  surf_model_t ws_model = get_ws_model_from_action(action);
+
   if(action->execution.surf_exec)
-    surf_workstation_model->suspend(action->execution.surf_exec);
+    ws_model->suspend(action->execution.surf_exec);
 }
 
 void SIMIX_host_execution_resume(smx_action_t action)
 {
+  surf_model_t ws_model = get_ws_model_from_action(action);
+
   if(action->execution.surf_exec)
-    surf_workstation_model->resume(action->execution.surf_exec);
+    ws_model->resume(action->execution.surf_exec);
 }
 
 void SIMIX_execution_finish(smx_action_t action)
 {
   xbt_fifo_item_t item;
   smx_simcall_t simcall;
+  surf_model_t ws_model = get_ws_model_from_action(action);
 
   xbt_fifo_foreach(action->simcalls, item, simcall, smx_simcall_t) {
 
@@ -495,8 +531,7 @@ void SIMIX_execution_finish(smx_action_t action)
             (int)action->state);
     }
     /* check if the host is down */
-    if (surf_workstation_model->extension.
-        workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
+    if (ws_model->extension.workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -508,6 +543,7 @@ void SIMIX_execution_finish(smx_action_t action)
   /* We no longer need it */
   SIMIX_host_execution_destroy(action);
 }
+
 
 void SIMIX_post_host_execute(smx_action_t action)
 {
@@ -544,11 +580,13 @@ void SIMIX_pre_set_category(smx_simcall_t simcall, smx_action_t action,
 }
 void SIMIX_set_category(smx_action_t action, const char *category)
 {
+  surf_model_t ws_model = get_ws_model_from_action(action);
+
   if (action->state != SIMIX_RUNNING) return;
   if (action->type == SIMIX_ACTION_EXECUTE){
-    surf_workstation_model->set_category(action->execution.surf_exec, category);
+    ws_model->set_category(action->execution.surf_exec, category);
   }else if (action->type == SIMIX_ACTION_COMMUNICATE){
-    surf_workstation_model->set_category(action->comm.surf_comm, category);
+    ws_model->set_category(action->comm.surf_comm, category);
   }
 }
 #endif
