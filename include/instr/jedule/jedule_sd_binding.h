@@ -24,6 +24,8 @@ void jedule_sd_init(void);
 
 void jedule_sd_cleanup(void);
 
+void jedule_sd_exit(void);
+
 void jedule_sd_dump(void);
 
 #endif /* JEDULE_SD_BINDING_H_ */

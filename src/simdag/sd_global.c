@@ -438,14 +438,15 @@ void SD_exit(void)
   TRACE_end();
 #endif
 
-  XBT_DEBUG("Exiting Surf...");
-  surf_exit();
-
   xbt_free(sd_global);
   sd_global = NULL;
 
 #ifdef HAVE_JEDULE
   jedule_sd_dump();
   jedule_sd_cleanup();
+  jedule_sd_exit();
 #endif
+
+  XBT_DEBUG("Exiting Surf...");
+  surf_exit();
 }

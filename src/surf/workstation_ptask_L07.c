@@ -134,6 +134,9 @@ static int ptask_action_unref(surf_action_t action)
     free(((surf_action_workstation_L07_t) action)->workstation_list);
     free(((surf_action_workstation_L07_t) action)->communication_amount);
     free(((surf_action_workstation_L07_t) action)->computation_amount);
+#ifdef HAVE_TRACING
+    xbt_free(action->category);
+#endif
     surf_action_free(&action);
     return 1;
   }

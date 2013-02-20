@@ -61,7 +61,7 @@ void create_jed_event(jed_event_t *event, char *name, double start_time,
 
   (*event)->type = xbt_strdup(type);
 
-  (*event)->resource_subsets = xbt_dynar_new(sizeof(jed_res_subset_t), NULL);
+  (*event)->resource_subsets = xbt_dynar_new(sizeof(jed_res_subset_t), xbt_free_ref);
   (*event)->characteristics_list = xbt_dynar_new(sizeof(char*), NULL);
   (*event)->info_hash = xbt_dict_new_homogeneous(NULL);
 

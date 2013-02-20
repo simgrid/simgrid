@@ -83,7 +83,7 @@ int main(int argc, char **argv)
   while (!xbt_dynar_is_empty(changed_tasks = SD_simulate(-1.0))) {
     XBT_INFO(" Simulation was suspended, check workstation states"); 
     for (i = 0; i < 2; i++) {
-    SD_workstation_dump(workstations[i]);
+      SD_workstation_dump(workstations[i]);
     }
     xbt_dynar_free(&changed_tasks);
   }
@@ -94,6 +94,7 @@ int main(int argc, char **argv)
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);
   SD_task_destroy(taskC);
+  SD_task_destroy(taskD);
 
   XBT_DEBUG("Tasks destroyed. Exiting SimDag...");
 

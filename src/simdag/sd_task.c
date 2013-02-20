@@ -1041,6 +1041,7 @@ void SD_task_unschedule(SD_task_t task)
       && ((task->kind == SD_TASK_COMP_PAR_AMDAHL) ||
           (task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK))) { /* Don't free scheduling data for typed tasks */
     __SD_task_destroy_scheduling_data(task);
+    xbt_free(task->workstation_list);
     task->workstation_list=NULL;
     task->workstation_nb = 0;
   }
@@ -1418,8 +1419,7 @@ void SD_task_distribute_comp_amdhal(SD_task_t task, int ws_count)
               SD_task_get_name(task));  
   task->computation_amount = xbt_new0(double, ws_count);
   task->communication_amount = xbt_new0(double, ws_count * ws_count);
-  if (task->workstation_list)
-    xbt_free(task->workstation_list);
+  xbt_free(task->workstation_list);
   task->workstation_nb = ws_count;
   task->workstation_list = xbt_new0(SD_workstation_t, ws_count);
   
@@ -1569,11 +1569,8 @@ void SD_task_schedulev(SD_task_t task, int count,
                task->workstation_list[i];
 
           before->workstation_nb += count;
-          if (before->computation_amount)
-            xbt_free(before->computation_amount);
-          if (before->communication_amount)
-            xbt_free(before->communication_amount);
-
+          xbt_free(before->computation_amount);
+          xbt_free(before->communication_amount);
           before->computation_amount = xbt_new0(double,
                                                 before->workstation_nb);
           before->communication_amount = xbt_new0(double,
@@ -1638,10 +1635,8 @@ void SD_task_schedulev(SD_task_t task, int count,
 
           after->workstation_nb += count;
 
-          if (after->computation_amount)
-            xbt_free(after->computation_amount);
-          if (after->communication_amount)
-            xbt_free(after->communication_amount);
+          xbt_free(after->computation_amount);
+          xbt_free(after->communication_amount);
 
           after->computation_amount = xbt_new0(double, after->workstation_nb);
           after->communication_amount = xbt_new0(double,
