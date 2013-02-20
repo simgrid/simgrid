@@ -315,6 +315,7 @@ void SIMIX_run(void)
        timer = xbt_heap_pop(simix_timers);
        if (timer->func)
          ((void (*)(void*))timer->func)(timer->args);
+       xbt_free(timer);
     }
     /* Wake up all processes waiting for a Surf action to finish */
     xbt_dynar_foreach(model_list, iter, model) {
