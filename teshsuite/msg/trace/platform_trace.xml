@@ -1,0 +1,21 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+
+<platform version="3">
+
+<trace id="1" periodicity="10">
+0  0.5
+10  0.5
+20  1.00
+30  0.5
+40  0.5
+50  0.5
+60  0.5
+</trace>
+  <AS  id="AS0"  routing="Full">
+ <host id="CPU1" power="20"/>
+  </AS>
+
+<trace_connect kind="POWER" trace="1" element="CPU1"/>
+
+</platform>
