@@ -36,7 +36,8 @@ static int killall(int argc, char *argv[]){
   int i;
   for (i=0; i<3;i++) {
     res = MSG_task_receive(&(task), mailbox);
-    int pid = *((int*)MSG_task_get_data(task));
+    int pid = *(int*)MSG_task_get_data(task);
+    MSG_task_destroy(task);
     XBT_INFO("Killing process \"%d\".", pid);
     MSG_process_kill(MSG_process_from_PID(pid));
     task = NULL;
@@ -55,10 +56,10 @@ int main(int argc, char *argv[])
   MSG_function_register("sendpid", &sendpid);
   MSG_function_register("killall", &killall);
 
-  MSG_process_killall(atoi(argv[2]));
+  MSG_process_killall(atoi(argv[3]));
 
   MSG_create_environment(argv[1]);
-  MSG_launch_application(argv[1]);
+  MSG_launch_application(argv[2]);
   res = MSG_main();
 
   if (res == MSG_OK)

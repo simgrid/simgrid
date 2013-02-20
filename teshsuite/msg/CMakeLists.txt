@@ -25,7 +25,8 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/get_sender.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/get_sender_d.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/get_sender_p.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/pid.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/pid_d.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/pid_p.xml
   PARENT_SCOPE
   )
 set(teshsuite_src
