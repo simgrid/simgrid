@@ -71,7 +71,7 @@ static void TRACE_getopts(void)
   trace_basic = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_BASIC);
 }
 
-xbt_dynar_t TRACE_start_functions = NULL;
+static xbt_dynar_t TRACE_start_functions = NULL;
 void TRACE_add_start_function(void (*func) ())
 {
   if (TRACE_start_functions == NULL)
@@ -118,7 +118,7 @@ int TRACE_start()
   return 0;
 }
 
-xbt_dynar_t TRACE_end_functions = NULL;
+static xbt_dynar_t TRACE_end_functions = NULL;
 void TRACE_add_end_function(void (*func) (void))
 {
   if (TRACE_end_functions == NULL)
