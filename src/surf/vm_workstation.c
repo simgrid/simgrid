@@ -10,34 +10,12 @@
 #include "surf_private.h"
 #include "surf/surf_resource.h"
 #include "simgrid/sg_config.h"
-#include "workstation_private.h"
+#include "vm_workstation_private.h"
 #include "surf/cpu_cas01_private.h"
 #include "surf/maxmin_private.h"
 
-
-/* NOTE:
- * The workstation_VM2013 struct includes the workstation_CLM03 struct in
- * its first member. The workstation_VM2013_t struct inherites all
- * characteristics of the workstation_CLM03 struct. So, we can treat a
- * workstation_VM2013 object as a workstation_CLM03 if necessary.
- **/
-typedef struct workstation_VM2013 {
-  s_workstation_CLM03_t ws;    /* a VM is a ''v''host */
-
-  /* The workstation object of the lower layer */
-  workstation_CLM03_t sub_ws;  // Pointer to the ''host'' OS
-
-  e_surf_vm_state_t current_state;
-
-
-  surf_action_t cpu_action;
-
-} s_workstation_VM2013_t, *workstation_VM2013_t;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
                                 "Logging specific to the SURF VM workstation module");
-
-
 
 
 surf_model_t surf_vm_workstation_model = NULL;
@@ -80,7 +58,7 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
       NULL,                       // host->properties,
       surf_cpu_model_vm);
 
-  vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, 100); // cost 0 is okay?
+  vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, GUESTOS_NOISE);
 
   //// NET RELATED STUFF ////
   // Bind virtual net_elm to the host
