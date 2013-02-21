@@ -111,7 +111,16 @@ double ws_share_resources(surf_model_t workstation_model, double now)
   double min_by_cpu = cpu_model->model_private->share_resources(cpu_model, now);
   double min_by_net = net_model->model_private->share_resources(net_model, now);
 
-  return min(min_by_cpu, min_by_net);
+  XBT_INFO("%p %s min_by_cpu, %s %f min_by_net %f", workstation_model, cpu_model->name, min_by_cpu, net_model->name, min_by_net);
+
+  if (min_by_cpu >= 0.0 && min_by_net >= 0.0)
+    return min(min_by_cpu, min_by_net);
+  else if (min_by_cpu >= 0.0)
+    return min_by_cpu;
+  else if (min_by_net >= 0.0)
+    return min_by_net;
+  else
+    return min_by_cpu;  /* probably min_by_cpu == min_by_net == -1 */
 }
 
 void ws_update_actions_state(surf_model_t workstation_model, double now, double delta)
@@ -133,7 +142,7 @@ void ws_finalize(surf_model_t workstation_model)
 
 
 
-static surf_action_t ws_execute(void *workstation, double size)
+surf_action_t ws_execute(void *workstation, double size)
 {
   surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
   return cpu->model->extension.cpu.execute(workstation, size);
@@ -186,7 +195,7 @@ static void ws_action_set_max_duration(surf_action_t action,
     DIE_IMPOSSIBLE;
 }
 
-static void ws_action_set_priority(surf_action_t action, double priority)
+void ws_action_set_priority(surf_action_t action, double priority)
 {
   if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->set_priority(action, priority);
@@ -239,7 +248,7 @@ static surf_action_t ws_communicate(void *workstation_src,
                   dst->net_elm, size, rate);
 }
 
-static e_surf_resource_state_t ws_get_state(void *workstation)
+e_surf_resource_state_t ws_get_state(void *workstation)
 {
   surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
   return cpu->model->extension.cpu.get_state(workstation);

@@ -20,4 +20,8 @@ void ws_update_actions_state(surf_model_t workstation_model, double now, double 
 void ws_update_resource_state(void *id, tmgr_trace_event_t event_type, double value, double date);
 void ws_finalize(surf_model_t workstation_model);
 
+void ws_action_set_priority(surf_action_t action, double priority);
+
+surf_action_t ws_execute(void *workstation, double size);
+e_surf_resource_state_t ws_get_state(void *workstation);
 #endif /* WS_PRIVATE_H_ */

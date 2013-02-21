@@ -329,6 +329,11 @@ void SIMIX_run(void)
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
 
+
+    XBT_INFO("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
+    // !(time == -1.0 && xbt_dynar_is_empty()) 
+
+
   } while (time != -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 
   if (xbt_swag_size(simix_global->process_list) != 0) {

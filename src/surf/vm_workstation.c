@@ -80,7 +80,7 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
       NULL,                       // host->properties,
       surf_cpu_model_vm);
 
-  vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, 0); // cost 0 is okay?
+  vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, 100); // cost 0 is okay?
 
   //// NET RELATED STUFF ////
   // Bind virtual net_elm to the host
@@ -235,7 +235,33 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
 
 
   /* 2. Calculate resource share at the virtual machine layer. */
-  return ws_share_resources(workstation_model, now);
+  double ret = ws_share_resources(workstation_model, now);
+
+
+  /* FIXME: 3. do we have to re-initialize our cpu_action object? */
+#if 1
+  /* iterate for all hosts including virtual machines */
+  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
+    workstation_CLM03_t ws_clm03 = ind_host[SURF_WKS_LEVEL];
+
+    /* skip if it is not a virtual machine */
+    if (!ws_clm03)
+      continue;
+    if (ws_clm03->generic_resource.model != surf_vm_workstation_model)
+      continue;
+
+    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
+    workstation_VM2013_t ws_vm2013 = (workstation_VM2013_t) ws_clm03;
+    {
+      void *ind_sub_host = xbt_lib_get_elm_or_null(host_lib, ws_vm2013->sub_ws->generic_resource.name);
+      surf_cpu_model_pm->action_unref(ws_vm2013->cpu_action);
+      ws_vm2013->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_sub_host, 100); // cost 0 is okay?
+    }
+  }
+#endif
+
+
+  return ret;
 }
 
 
@@ -255,9 +281,62 @@ static void surf_vm_workstation_model_init_internal(void)
 
   model->name = "Virtual Workstation";
   model->type = SURF_MODEL_TYPE_VM_WORKSTATION;
+  // model->action_unref     = ws_action_unref;
+  // model->action_cancel    = ws_action_cancel;
+  // model->action_state_set = ws_action_state_set;
+
+
+  model->model_private->share_resources       = vm_ws_share_resources;
+  model->model_private->resource_used         = ws_resource_used;
+  model->model_private->update_actions_state  = ws_update_actions_state;
+  model->model_private->update_resource_state = ws_update_resource_state;
+  model->model_private->finalize              = ws_finalize;
+
+
+//   model->suspend          = ws_action_suspend;
+//   model->resume           = ws_action_resume;
+//   model->is_suspended     = ws_action_is_suspended;
+//   model->set_max_duration = ws_action_set_max_duration;
+  model->set_priority     = ws_action_set_priority;
+// #ifdef HAVE_TRACING
+//   model->set_category     = ws_action_set_category;
+// #endif
+//   model->get_remains      = ws_action_get_remains;
+// #ifdef HAVE_LATENCY_BOUND_TRACKING
+//   model->get_latency_limited = ws_get_latency_limited;
+// #endif
+
+
+
+
+
+
 
   xbt_assert(surf_cpu_model_vm);
   model->extension.workstation.cpu_model = surf_cpu_model_vm;
+
+  model->extension.workstation.execute   = ws_execute;
+  // model->extension.workstation.sleep     = ws_action_sleep;
+  model->extension.workstation.get_state = ws_get_state;
+  // model->extension.workstation.get_speed = ws_get_speed;
+  // model->extension.workstation.get_available_speed = ws_get_available_speed;
+
+  // model->extension.workstation.communicate           = ws_communicate;
+  // model->extension.workstation.get_route             = ws_get_route;
+  // model->extension.workstation.execute_parallel_task = ws_execute_parallel_task;
+  // model->extension.workstation.get_link_bandwidth    = ws_get_link_bandwidth;
+  // model->extension.workstation.get_link_latency      = ws_get_link_latency;
+  // model->extension.workstation.link_shared           = ws_link_shared;
+  // model->extension.workstation.get_properties        = ws_get_properties;
+
+  // model->extension.workstation.open   = ws_action_open;
+  // model->extension.workstation.close  = ws_action_close;
+  // model->extension.workstation.read   = ws_action_read;
+  // model->extension.workstation.write  = ws_action_write;
+  // model->extension.workstation.stat   = ws_action_stat;
+  // model->extension.workstation.unlink = ws_action_unlink;
+  // model->extension.workstation.ls     = ws_action_ls;
+
 
   model->extension.vm_workstation.create        = vm_ws_create;
   model->extension.vm_workstation.set_state     = vm_ws_set_state;
@@ -265,12 +344,6 @@ static void surf_vm_workstation_model_init_internal(void)
   model->extension.vm_workstation.migrate       = vm_ws_migrate;
   model->extension.vm_workstation.get_phys_host = vm_ws_get_phys_host;
   model->extension.vm_workstation.destroy       = vm_ws_destroy;
-
-  model->model_private->share_resources       = vm_ws_share_resources;
-  model->model_private->resource_used         = ws_resource_used;
-  model->model_private->update_actions_state  = ws_update_actions_state;
-  model->model_private->update_resource_state = ws_update_resource_state;
-  model->model_private->finalize              = ws_finalize;
 
   surf_vm_workstation_model = model;
 }
