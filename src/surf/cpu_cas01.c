@@ -437,7 +437,7 @@ void surf_cpu_model_init_Cas01(void)
   if (strcmp(optim, "TI") == 0) {
     /* FIXME: do we have to supprot TI? for VM */
     surf_cpu_model_pm = surf_cpu_model_init_ti();
-
+    XBT_INFO("TI model is used (it will crashed since this is the hypervisor branch)");
   } else {
     surf_cpu_model_pm  = surf_cpu_model_init_cas01();
     surf_cpu_model_vm  = surf_cpu_model_init_cas01();
