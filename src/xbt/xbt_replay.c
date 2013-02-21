@@ -29,7 +29,7 @@ xbt_dict_t action_queues;
 static char *action_line = NULL;
 static size_t action_len = 0;
 
-static const char **action_get_action(char *name);
+static char **action_get_action(char *name);
 
 xbt_replay_reader_t xbt_replay_reader_new(const char *filename)
 {
@@ -131,19 +131,19 @@ void _xbt_replay_action_exit(void)
  */
 int xbt_replay_action_runner(int argc, char *argv[])
 {
-  const char **evt;
   int i;
   if (action_fp) {              // A unique trace file
-
+    char **evt;
     while ((evt = action_get_action(argv[0]))) {
       action_fun function =
         (action_fun)xbt_dict_get(action_funs, evt[1]);
-      function(evt);
+      function((const char **)evt);
       for (i=0;evt[i]!= NULL;i++)
-        free((char*)evt[i]);
+        free(evt[i]);
       free(evt);
     }
   } else {                      // Should have got my trace file in argument
+    const char **evt;
     xbt_assert(argc >= 2,
                 "No '%s' agent function provided, no simulation-wide trace file provided, "
                 "and no process-wide trace file provided in deployment file. Aborting.",
@@ -166,7 +166,7 @@ int xbt_replay_action_runner(int argc, char *argv[])
 }
 
 
-static const char **action_get_action(char *name)
+static char **action_get_action(char *name)
 {
   xbt_dynar_t evt = NULL;
   char *evtname = NULL;
