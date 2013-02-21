@@ -272,6 +272,7 @@ void smpi_global_destroy(void)
   smpi_comm_destroy(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {
+    smpi_group_destroy(smpi_comm_group(process_data[i]->comm_self));
     smpi_comm_destroy(process_data[i]->comm_self);
     xbt_os_timer_free(process_data[i]->timer);
     simcall_rdv_destroy(process_data[i]->mailbox);

@@ -273,7 +273,7 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
     data->benching = !sample_enough_benchs(data);
     XBT_DEBUG("XXXX Re-entering the benched nest %s. %s",loc, (data->benching?"more benching needed":"we have enough data, skip computes"));
   }
-  free(loc);
+  xbt_free(loc);
 }
 
 int smpi_sample_2(int global, const char *file, int line)
@@ -284,7 +284,7 @@ int smpi_sample_2(int global, const char *file, int line)
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   data = xbt_dict_get(samples, loc);
   XBT_DEBUG("sample2 %s",loc);
-  free(loc);
+  xbt_free(loc);
 
   if (data->benching==1) {
     // we need to run a new bench
@@ -313,6 +313,7 @@ void smpi_sample_3(int global, const char *file, int line)
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
   data = xbt_dict_get(samples, loc);
   XBT_DEBUG("sample3 %s",loc);
+  xbt_free(loc);
 
   if (data->benching==0) {
     THROW_IMPOSSIBLE;

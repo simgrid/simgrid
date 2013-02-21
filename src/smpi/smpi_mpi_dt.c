@@ -311,6 +311,7 @@ void smpi_datatype_free(MPI_Datatype* type){
 
   if ((*type)->has_subtype == 1){
     ((s_smpi_subtype_t *)(*type)->substruct)->subtype_free(type);  
+    xbt_free((*type)->substruct);
   }
   xbt_free(*type);
 

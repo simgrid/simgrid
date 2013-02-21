@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     }
 
 
-
+  MPI_Type_free(&columntype);
   MPI_Finalize();
   return 0;
 }

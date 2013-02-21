@@ -119,10 +119,10 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 
 static double smpi_os(double size)
 {
-  if (!smpi_os_values)
-    smpi_os_values =
-        parse_factor(sg_cfg_get_string("smpi/os"));
-
+  if (!smpi_os_values) {
+    smpi_os_values = parse_factor(sg_cfg_get_string("smpi/os"));
+    smpi_register_static(smpi_os_values, xbt_dynar_free_voidp);
+  }
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   double current=0.0;
@@ -141,10 +141,10 @@ static double smpi_os(double size)
 
 static double smpi_ois(double size)
 {
-  if (!smpi_ois_values)
-    smpi_ois_values =
-        parse_factor(sg_cfg_get_string("smpi/ois"));
-
+  if (!smpi_ois_values) {
+    smpi_ois_values = parse_factor(sg_cfg_get_string("smpi/ois"));
+    smpi_register_static(smpi_ois_values, xbt_dynar_free_voidp);
+  }
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   double current=0.0;
@@ -163,10 +163,10 @@ static double smpi_ois(double size)
 
 static double smpi_or(double size)
 {
-  if (!smpi_or_values)
-    smpi_or_values =
-        parse_factor(sg_cfg_get_string("smpi/or"));
-
+  if (!smpi_or_values) {
+    smpi_or_values = parse_factor(sg_cfg_get_string("smpi/or"));
+    smpi_register_static(smpi_or_values, xbt_dynar_free_voidp);
+  }
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   double current=0.0;
