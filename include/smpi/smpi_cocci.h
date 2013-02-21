@@ -48,7 +48,7 @@ void __attribute__((weak,destructor)) __postfini_##name(void) { \
  * This function is rather internal, mainly used for the
  * privatization of global variables through coccinelle.
  */
-XBT_PUBLIC(void) smpi_register_static(void* arg);
+XBT_PUBLIC(void) smpi_register_static(void* arg, void_f_pvoid_t free_fn);
 
 XBT_PUBLIC(void) smpi_free_static(void);
 
@@ -56,7 +56,7 @@ XBT_PUBLIC(void) smpi_free_static(void);
 static type *name = NULL;                                   \
 if(!name) {                                                 \
    name = (type*)malloc(smpi_global_size() * sizeof(type)); \
-   smpi_register_static(name);                              \
+   smpi_register_static(name, xbt_free);                    \
 }
 
 #define SMPI_VARINIT_STATIC_AND_SET(name,type,expr) \
@@ -69,7 +69,7 @@ if(!name) {                                         \
    for(i = 0; i < size; i++) {                      \
       name[i] = value;                              \
    }                                                \
-   smpi_register_static(name);                      \
+   smpi_register_static(name, xbt_free);            \
 }
 
 #define SMPI_VARGET_STATIC(name) name[smpi_process_index()]
