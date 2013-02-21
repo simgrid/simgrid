@@ -32,4 +32,6 @@ typedef struct workstation_VM2013 {
 } s_workstation_VM2013_t, *workstation_VM2013_t;
 
 
+void surf_vm_workstation_model_init(void);
+
 #endif /* VM_WS_PRIVATE_H_ */

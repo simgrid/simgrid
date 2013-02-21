@@ -94,14 +94,29 @@ smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host
 void SIMIX_vm_start(smx_host_t ind_vm);
 void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm);
 
+void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm);
+void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm);
+
+const char *SIMIX_vm_get_phys_host(smx_host_t ind_vm);
+const char *SIMIX_pre_vm_get_phys_host(smx_simcall_t simcall, smx_host_t ind_vm);
+
 void SIMIX_vm_set_state(smx_host_t ind_vm, int state);
-void SIMIX_prev_vm_set_state(smx_host_t ind_vm, int state);
+void SIMIX_pre_vm_set_state(smx_simcall_t simcall, smx_host_t ind_vm, int state);
 
 int SIMIX_vm_get_state(smx_host_t ind_vm);
-int SIMIX_pre_vm_state(smx_host_t ind_vm);
+int SIMIX_pre_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm);
+
+void SIMIX_vm_resume(smx_host_t ind_vm);
+void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm);
 
 void SIMIX_vm_suspend(smx_host_t ind_vm);
 void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm);
+
+void SIMIX_vm_save(smx_host_t ind_vm);
+void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm);
+
+void SIMIX_vm_restore(smx_host_t ind_vm);
+void SIMIX_pre_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm);
 
 void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer);
 void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm);

@@ -96,7 +96,7 @@ void SIMIX_vm_set_state(smx_host_t ind_vm, int state)
   surf_vm_workstation_model->extension.vm_workstation.set_state(ind_vm, state);
 }
 
-void SIMIX_pre_vm_set_state(smx_host_t ind_vm, int state)
+void SIMIX_pre_vm_set_state(smx_simcall_t simcall, smx_host_t ind_vm, int state)
 {
   SIMIX_vm_set_state(ind_vm, state);
 }
@@ -106,7 +106,7 @@ int SIMIX_vm_get_state(smx_host_t ind_vm)
   return surf_vm_workstation_model->extension.vm_workstation.get_state(ind_vm);
 }
 
-int SIMIX_pre_vm_get_state(smx_host_t ind_vm)
+int SIMIX_pre_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   return SIMIX_vm_get_state(ind_vm);
 }
@@ -162,7 +162,7 @@ void SIMIX_vm_suspend(smx_host_t ind_vm)
 {
   /* TODO: check state */
 
-  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
@@ -190,7 +190,7 @@ void SIMIX_vm_resume(smx_host_t ind_vm)
 {
   /* TODO: check state */
 
-  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
@@ -219,7 +219,7 @@ void SIMIX_vm_save(smx_host_t ind_vm)
 {
   /* TODO: check state */
 
-  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   /* TODO: do something at the surf level */
 
@@ -249,7 +249,7 @@ void SIMIX_vm_restore(smx_host_t ind_vm)
 {
   /* TODO: check state */
 
-  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   /* TODO: do something at the surf level */
 
@@ -280,7 +280,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
 {
   /* TODO: check state */
 
-  XBT_DEBUG("%lu processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {

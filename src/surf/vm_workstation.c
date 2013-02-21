@@ -326,7 +326,7 @@ static void surf_vm_workstation_model_init_internal(void)
   surf_vm_workstation_model = model;
 }
 
-void surf_vm_workstation_model_init()
+void surf_vm_workstation_model_init(void)
 {
   surf_vm_workstation_model_init_internal();
   xbt_dynar_push(model_list, &surf_vm_workstation_model);

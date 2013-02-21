@@ -21,6 +21,7 @@
 #include "smpi/smpi_interface.h"
 #include "mc/mc.h"
 #include "instr/instr.h"
+#include "surf/vm_workstation_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of simgrid");

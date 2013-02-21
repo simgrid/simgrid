@@ -324,7 +324,7 @@ int simcall_vm_get_state(smx_host_t vm)
 const char *simcall_vm_get_phys_host(smx_host_t vm)
 {
   /* will jump to SIMIX_pre_vm_migrate in src/simix/smx_smurf_private.h */
-  simcall_BODY_vm_get_phys_host(vm);
+  return simcall_BODY_vm_get_phys_host(vm);
 }
 
 /**
