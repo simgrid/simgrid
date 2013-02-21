@@ -683,10 +683,8 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){
 }
 
 static void heap_area_pair_free(heap_area_pair_t pair){
-  if (pair){
-    xbt_free(pair);
-    pair = NULL;
-  }
+  xbt_free(pair);
+  pair = NULL;
 }
 
 static void heap_area_pair_free_voidp(void *d)

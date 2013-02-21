@@ -744,8 +744,7 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 /************ MC_ignore ***********/ 
 
 void heap_ignore_region_free(mc_heap_ignore_region_t r){
-  if(r)
-    xbt_free(r);
+  xbt_free(r);
 }
 
 void heap_ignore_region_free_voidp(void *r){
@@ -1342,10 +1341,8 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
       }
 
       xbt_free(subprogram_start);
-      if(subprogram_end != NULL){
-        xbt_free(subprogram_end);
-        subprogram_end = NULL;
-      }
+      xbt_free(subprogram_end);
+      subprogram_end = NULL;
         
 
     }else if(strcmp(node_type, "(DW_TAG_variable)") == 0){ /* New variable */

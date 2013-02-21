@@ -155,9 +155,7 @@ void stack_region_free_voidp(void *s){
 }
 
 static void heap_equality_free(heap_equality_t e){
-  if(e){
-    xbt_free(e);
-  }
+  xbt_free(e);
 }
 
 void heap_equality_free_voidp(void *e){

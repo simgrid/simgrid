@@ -103,7 +103,6 @@ static surf_action_t storage_action_unlink(void *storage, surf_file_t stream)
   xbt_dict_remove(content_dict,stream->name);
 
   free(stream->name);
-  stream->content = NULL;
   xbt_free(stream);
 
   return action;
@@ -152,7 +151,6 @@ static surf_action_t storage_action_close(void *storage, surf_file_t fp)
   }
 
   free(fp->name);
-  fp->content = NULL;
   xbt_free(fp);
   surf_action_t action = storage_action_execute(storage,0, CLOSE);
   return action;
@@ -277,8 +275,7 @@ static void storage_finalize(void)
   surf_model_exit(surf_storage_model);
   surf_storage_model = NULL;
 
-  if(storage_list)
-    xbt_dynar_free(&storage_list);
+  xbt_dynar_free(&storage_list);
 
   xbt_swag_free
       (storage_running_action_set_that_does_not_need_being_checked);
@@ -612,8 +609,7 @@ static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size
       }
     }
   }
-  if (line)
-      free(line);
+  free(line);
   fclose(file);
   return parse_content;
 }

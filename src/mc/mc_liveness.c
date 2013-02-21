@@ -303,7 +303,6 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
 
 void pair_visited_free(mc_pair_visited_t pair){
   if(pair){
-    pair->automaton_state = NULL;
     xbt_dynar_free(&(pair->prop_ato));
     MC_free_snapshot(pair->system_state);
     xbt_free(pair);
@@ -337,7 +336,6 @@ mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r){
 
 void pair_reached_free(mc_pair_reached_t pair){
   if(pair){
-    pair->automaton_state = NULL;
     xbt_dynar_free(&(pair->prop_ato));
     MC_free_snapshot(pair->system_state);
     xbt_free(pair);

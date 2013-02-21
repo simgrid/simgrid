@@ -68,8 +68,7 @@ AS_t model_none_create_sized(size_t childsize) {
 void model_none_finalize(AS_t as) {
   xbt_dict_free(&as->routing_sons);
   xbt_dynar_free(&as->index_network_elm);
-  if(as->link_up_down_list)
-    xbt_dynar_free(&as->link_up_down_list);
+  xbt_dynar_free(&as->link_up_down_list);
   xbt_free(as);
 }
 
