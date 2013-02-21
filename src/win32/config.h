@@ -23,19 +23,6 @@
   # error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
 #endif
 
-typedef int socklen_t;
-#define tcp_read( s, buf, len )    recv( s, buf, len, 0 )
-#define tcp_write( s, buf, len )  send( s, buf, len, 0 )
-#define ioctl( s, c, a )          ioctlsocket( (s), (c), (a) )
-#define ioctl_t            u_long
-#define AC_SOCKET_INVALID          ((unsigned int) ~0)
-
-#ifdef SD_BOTH
-#define tcp_close(s)  (shutdown( s, SD_BOTH ), closesocket(s))
-#else
-#define tcp_close( s )  closesocket( s )
-#endif
-
 #ifndef _XBT_VISUALC_COMPILER
   #ifndef EWOULDBLOCK
   #define EWOULDBLOCK WSAEWOULDBLOCK
@@ -49,22 +36,6 @@ typedef int socklen_t;
   #define ETIMEDOUT   WSAETIMEDOUT
   #endif
 #endif
-
-
-
-#ifdef sock_errno
-  #undef  sock_errno
-#endif
-
-#define sock_errno         WSAGetLastError()
-
-#ifdef sock_errstr
-  #undef  sock_errstr
-#endif
-
-#define sock_errstr(err)   xbt_wsa_err2string(err)
-
-const char *xbt_wsa_err2string(int errcode);
 
 #ifdef S_IRGRP
   #undef S_IRGRP

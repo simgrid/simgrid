@@ -6,7 +6,7 @@ tesh \- testing shell
 .B tesh
 [\fIOPTION\fR]... [\fIFILE\fR]...
 .SH DESCRIPTION
-This is the TESH tool. It constitutes a testing shell, ie a sort of shell specialized to run tests. The list of actions to take is parsed from files files called testsuite. 
+This is the TESH tool. It constitutes a testing shell, ie a sort of shell specialized to run tests. The list of actions to take is parsed from files files called testsuite.
 .SH OPTIONS
   --cd some/directory: ask tesh to switch the working directory before
                        launching the tests
@@ -16,7 +16,7 @@ Here is the syntax of these files:
 
 The kind of each line is given by the first char (the second char should be
 blank and is ignored):
- 
+
  `$' command to run in foreground
  `&' command to run in background
  `<' input to pass to the command
@@ -94,7 +94,7 @@ cannot timeout.
 .SH OUTPUT
 By default, the commands output is matched against the one expected,
 and an error is raised on discrepancy. Metacommands to change this:
- "output ignore"  -> output completely discarded 
+ "output ignore"  -> output completely discarded
  "output display" -> output displayed (but not verified)
  "output sort"    -> sorts the display before verifying it (see below)
 .SH SORTING OUTPUT
@@ -102,20 +102,20 @@ Sorting the output seems to be a strange idea, but it is mandatory in
 SimGrid since the processes run out of order at any scheduling point
 (ie, every processes ready to run at simulated time t run in
 parallel). To ensure that the simulator outputs still match, we have
-to sort the output back before comparing it. 
+to sort the output back before comparing it.
 
 We expect the simulators to run with that log formatting argument:
    -log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
 Then, tesh sorts string on the 19 first chars only, and is stable when
 line beginnings are equal. This should ensure that:
  (1) tesh is effective (no false positive, no false negative)
- (2) scheduling points are separated from each other 
- (3) at each scheduling point, processes are separated from each other 
+ (2) scheduling points are separated from each other
+ (3) at each scheduling point, processes are separated from each other
  (4) the order of what a given process says at a given scheduling
      point is preserved.
-     
+
 This is of course very SimGrid oriented, breaking the generality of
-tesh, but who cares, actually?     
+tesh, but who cares, actually?
 
 If you want to change the length of the prefix used for the sort,
 simply specify it after the output sort directive, like this:

@@ -82,9 +82,6 @@ XBT_PUBLIC(void) xbt_mutex_acquire(xbt_mutex_t mutex);
 /** @brief Releases the given mutex variable */
 XBT_PUBLIC(void) xbt_mutex_release(xbt_mutex_t mutex);
 
-/** @brief Blocks onto the given mutex variable, but only for the given amount of time. a timeout exception is raised if it was impossible to acquire it in the given time frame */
-XBT_PUBLIC(void) xbt_mutex_timedacquire(xbt_mutex_t mutex, double delay);
-
 /** @brief Destroyes the given mutex variable */
 XBT_PUBLIC(void) xbt_mutex_destroy(xbt_mutex_t mutex);
 

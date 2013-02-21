@@ -28,10 +28,10 @@ extern int _sg_mc_timeout;
 extern int _sg_mc_max_depth;
 extern int _sg_mc_visited;
 
-extern char*_surf_mc_property_file; /* fixme: better location? */
-
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
+extern void *maestro_stack_start;
+extern void *maestro_stack_end;
 
 /********************************* Global *************************************/
 void _mc_cfg_cb_reduce(const char *name, int pos);
@@ -45,7 +45,6 @@ XBT_PUBLIC(void) MC_do_the_modelcheck_for_real(void);
 
 XBT_PUBLIC(void) MC_init(void);
 XBT_PUBLIC(void) MC_exit(void);
-XBT_PUBLIC(void) MC_exit_liveness(void);
 XBT_PUBLIC(void) MC_modelcheck_safety(void);
 XBT_PUBLIC(void) MC_modelcheck_liveness(void);
 XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);

@@ -38,21 +38,18 @@ public class File {
 	protected native void open(String storage, String path, String mode);
 	/**
 	 * Read elements of a file. 
-	 * @param storage is the name where you can find the stream
 	 * @param size of each element
 	 * @param nMemb is the number of elements of data to write 
 	 */
 	public native long read(long size, long nMemb);
 	/**
 	 * Write elements into a file. 
-	 * @param storage is the name where you can find the stream 
 	 * @param size of each element  
 	 * @param nMemb is the number of elements of data to write 
 	 */
 	public native long write(long size, long nMemb);
 	/**
 	 * Close the file. 	
-	 * @param storage is the name where you can find the stream 
 	 */
 	public native void close();
 	

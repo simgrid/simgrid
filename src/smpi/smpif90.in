@@ -25,7 +25,7 @@ while [ -n "$1" ]; do
          SRCFILE="$ARG"
       fi
       #replace "program main_name by subroutine user\_main (and the end clause as well)"
-      sed 's/[[:space:]]*program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/subroutine user\_main /g'  ${ARG} > ${TMPFILE}
+      sed 's/[[:space:]]*program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/subroutine user\_main /gI'  ${ARG} > ${TMPFILE}
       SRCFILE="${TMPFILE}"
       CMDLINE="${CMDLINE} ${SRCFILE} "
       ;;

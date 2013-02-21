@@ -29,7 +29,6 @@ extern double sg_sender_gap;
 extern double sg_latency_factor;
 extern double sg_bandwidth_factor;
 extern double sg_weight_S_parameter;
-extern int sg_maxmin_selective_update;
 extern int sg_network_crosstraffic;
 #ifdef HAVE_GTNETS
 extern double sg_gtnets_jitter;
@@ -454,10 +453,7 @@ XBT_PUBLIC_DATA(surf_model_t) surf_cpu_model_vm;
  *  You can change this behavior by setting the cpu/optim configuration
  *  variable to a different value.
  *
- *  This function is called by surf_workstation_model_init_CLM03
- *  so you shouldn't have to call it by yourself.
- *
- *  \see surf_workstation_model_init_CLM03()
+ *  You shouldn't have to call it by yourself.
  */
 XBT_PUBLIC(void) surf_cpu_model_init_Cas01(void);
 
@@ -465,19 +461,8 @@ XBT_PUBLIC(void) surf_cpu_model_init_Cas01(void);
  *  \brief Initializes the CPU model with trace integration [Deprecated]
  *
  *  You shouldn't have to call it by yourself.
- *  \see surf_workstation_model_init_CLM03()
  */
 XBT_PUBLIC(surf_model_t) surf_cpu_model_init_ti(void);
-
-/** \brief This function call the share resources function needed
- *
- */
-XBT_PUBLIC(double) generic_share_resources(double now);
-
-/** \brief This function call the update action state function needed
- *
- */
-XBT_PUBLIC(void)   generic_update_actions_state(double now, double delta);
 
 /** \ingroup SURF_models
  *  \brief The list of all available optimization modes (both for cpu and networks).
@@ -489,8 +474,6 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_optimization_mode_description[]
  *  \brief The list of all available cpu model models
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
-
-XBT_PUBLIC(void) create_workstations(void);
 
 /**\brief create new host bypass the parser
  *
@@ -546,20 +529,11 @@ XBT_PUBLIC(void) surf_network_model_init_Constant(void);
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model CM02
  *
- *  This function is called by surf_workstation_model_init_CLM03
- *  or by yourself only if you plan using surf_workstation_model_init_compound
+ *  You sould call this function by yourself only if you plan using
+ *  surf_workstation_model_init_compound.
  *  See comments in the code for more information.
- *
- *  \see surf_workstation_model_init_CLM03()
  */
 XBT_PUBLIC(void) surf_network_model_init_CM02(void);
-
-/**
- * brief initialize the the network model bypassing the XML parser
- */
-XBT_PUBLIC(void) surf_network_model_init_bypass(const char *id,
-                                                double initial_bw,
-                                                double initial_lat);
 
 #ifdef HAVE_GTNETS
 /** \ingroup SURF_models
@@ -692,18 +666,6 @@ XBT_PUBLIC(void) surf_workstation_model_init_compound(void);
 XBT_PUBLIC(void) surf_workstation_model_init_current_default(void);
 
 /** \ingroup SURF_models
- *  \brief Initializes the platform with the workstation model CLM03
- *
- *  This platform model seperates the workstation model and the network model.
- *  The workstation model will be initialized with the model CLM03, the network
- *  model with the model CM02 and the CPU model with the model Cas01.
- *  In future releases, some other network models will be implemented and will be
- *  combined with the workstation model CLM03.
- *
- */
-XBT_PUBLIC(void) surf_workstation_model_init_CLM03(void);
-
-/** \ingroup SURF_models
  *  \brief Initializes the platform with the model KCCFLN05
  *
  *  With this model, only parallel tasks can be used. Resource sharing
@@ -744,9 +706,9 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list_invoke;
  *  This function has to be called to initialize the common
  *  structures.  Then you will have to create the environment by
  *  calling 
- *  e.g. surf_workstation_model_init_CLM03()
+ *  e.g. surf_workstation_model_init_CM02()
  *
- *  \see surf_workstation_model_init_CLM03(), surf_workstation_model_init_compound(), surf_exit()
+ *  \see surf_workstation_model_init_CM02(), surf_workstation_model_init_compound(), surf_exit()
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
 
@@ -788,13 +750,9 @@ XBT_PUBLIC(void) surf_exit(void);
 
 /* Prototypes of the functions that handle the properties */
 XBT_PUBLIC_DATA(xbt_dict_t) current_property_set;       /* the prop set for the currently parsed element (also used in SIMIX) */
-XBT_PUBLIC(void) parse_properties(void);
 
 /* surf parse file related (public because called from a test suite) */
 XBT_PUBLIC(void) parse_platform_file(const char *file);
-
-/* Stores the sets */
-XBT_PUBLIC_DATA(xbt_dict_t) set_list;
 
 /* For the trace and trace:connect tag (store their content till the end of the parsing) */
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;

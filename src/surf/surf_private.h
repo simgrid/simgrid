@@ -93,7 +93,6 @@ extern tmgr_history_t history;
 //void surf_config(const char *name, va_list pa);
 
 void net_action_recycle(surf_action_t action);
-double net_action_get_remains(surf_action_t action);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 int net_get_link_latency_limited(surf_action_t action);
 #endif
@@ -153,6 +152,7 @@ typedef struct s_as {
   void (*get_route_and_latency) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, sg_platf_route_cbarg_t into, double *latency);
 
   xbt_dynar_t(*get_onelink_routes) (AS_t as);
+  void (*get_graph) (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
   sg_platf_route_cbarg_t(*get_bypass_route) (AS_t as, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat);
   void (*finalize) (AS_t as);
 
@@ -192,6 +192,7 @@ XBT_PUBLIC(void) generic_free_route(sg_platf_route_cbarg_t route); // FIXME rena
 XBT_PUBLIC(void) routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
                               xbt_dynar_t * route, double *latency);
 
+XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
 /**
  * Resource protected methods
  */
@@ -204,7 +205,6 @@ XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 /* from surf_instr.c */
 void TRACE_surf_host_set_power(double date, const char *resource, double power);
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
-void TRACE_surf_link_set_latency(double date, const char *resource, double latency);
 
 
 #endif                          /* _SURF_SURF_PRIVATE_H */

@@ -16,15 +16,6 @@ public final class Trace {
 	/* Statically load the library which contains all native functions used in here */
 	static {
 		Msg.nativeInit();
-		try {
-			System.loadLibrary("SG_java_tracing");
-		} catch(UnsatisfiedLinkError e) {
-			System.err.println("Cannot load the bindings to the simgrid library: ");
-			e.printStackTrace();
-			System.err.println(
-					"Please check your LD_LIBRARY_PATH, or copy the simgrid and SG_java_tracing libraries to the current directory");
-			System.exit(1);
-		}
 	}
 
 	// TODO complete the binding of the tracing API 

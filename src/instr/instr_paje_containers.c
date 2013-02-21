@@ -229,7 +229,7 @@ void PJ_container_free_all ()
   rootContainer = NULL;
 
   //checks
-  if (xbt_dict_length(allContainers) != 0){
+  if (!xbt_dict_is_empty(allContainers)){
     THROWF(tracing_error, 0, "some containers still present even after destroying all of them");
   }
 }

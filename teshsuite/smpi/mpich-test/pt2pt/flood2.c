@@ -75,7 +75,7 @@ int main( int argc, char **argv )
 	    }
 	    SetupData( sbuf, msgsize, 2*rank );
 	    for (j=0; j<msgcnt; j++) 
-		MPI_Send( sbuf, msgsize, MPI_INT, root, 2*rank, comm );
+		MPI_Ssend( sbuf, msgsize, MPI_INT, root, 2*rank, comm );
 	    free( sbuf );
 	}
 	msgsize *= 4;

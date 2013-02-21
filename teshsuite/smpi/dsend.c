@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     MPI_Send(&data,1,MPI_INT,(rank+1)%2,666,MPI_COMM_WORLD);
 //   smpi_sleep(1000);
   } else {
-    MPI_Recv(&data,1,MPI_INT,-1,666,MPI_COMM_WORLD,NULL);
+    MPI_Recv(&data,1,MPI_INT,MPI_ANY_SOURCE,666,MPI_COMM_WORLD,NULL);
     if (data !=22) {
       printf("rank %d: Damn, data does not match (got %d)\n",rank, data);
     }

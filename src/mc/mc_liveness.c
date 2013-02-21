@@ -71,7 +71,7 @@ int reached(xbt_state_t st){
   xbt_propositional_symbol_t ps = NULL;
   xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
-    res = (*f)();
+    res = f();
     xbt_dynar_push_as(new_pair->prop_ato, int, res);
   }
   
@@ -155,7 +155,7 @@ void set_pair_reached(xbt_state_t st){
 
   xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
-    res = (*f)();
+    res = f();
     xbt_dynar_push_as(pair->prop_ato, int, res);
   }
 
@@ -190,7 +190,7 @@ int visited(xbt_state_t st){
   xbt_propositional_symbol_t ps = NULL;
   xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
     f = (int_f_void_t)ps->function;
-    res = (*f)();
+    res = f();
     xbt_dynar_push_as(new_pair->prop_ato, int, res);
   }
   
@@ -285,7 +285,7 @@ int MC_automaton_evaluate_label(xbt_exp_label_t l){
     xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, p){
       if(strcmp(p->pred, l->u.predicat) == 0){
         f = (int_f_void_t)p->function;
-        return (*f)();
+        return f();
       }
     }
     return -1;
@@ -476,9 +476,11 @@ void MC_ddfs(int search_cycle){
    
         /* Debug information */
        
-        req_str = MC_request_to_string(req, value);
-        XBT_DEBUG("Execute: %s", req_str);
-        xbt_free(req_str);
+        if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)){
+          req_str = MC_request_to_string(req, value);
+          XBT_DEBUG("Execute: %s", req_str);
+          xbt_free(req_str);
+        }
 
         MC_state_set_executed_request(current_pair->graph_state, req, value);   
 

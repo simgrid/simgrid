@@ -21,9 +21,15 @@ public class Slave extends Process {
 	public void main(String[] args) throws MsgException {
 		while(true) {  			
 			Msg.info("Receiving on " + "slave_" + number);
-			Task task = Task.receive("slave_"+number);	
-
+			Task task;
+                        try {
+                                task = Task.receive("slave_"+number);
+                        } catch (MsgException e) {
+                                Msg.debug("Received failed. I'm done. See you!");
+                                break;
+                        }
 			if (task instanceof FinalizeTask) {
+                                Msg.info("Received Finalize. I'm done. See you!");
 				break;
 			}
 			Msg.info("Received \"" + task.getName() +  "\". Processing it.");
@@ -35,7 +41,6 @@ public class Slave extends Process {
 			Msg.info("\"" + task.getName() + "\" done ");
 		}
 
-		Msg.info("Received Finalize. I'm done. See you!");
 		
 	}
 }

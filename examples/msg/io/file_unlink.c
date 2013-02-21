@@ -32,7 +32,7 @@ int host(int argc, char *argv[])
   msg_file_t file = NULL;
   s_msg_stat_t stat;
   void *ptr = NULL;
-  char* mount = bprintf("/home");
+  char* mount = xbt_strdup("/home");
   double write;
 
   // First open
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
   MSG_function_register("host", host);
   unsigned long nb_hosts = xbt_dynar_length(hosts);
   XBT_INFO("Number of host '%lu'",nb_hosts);
-  char* name_host = bprintf("0");
+  char* name_host = xbt_strdup("0");
   MSG_process_create( name_host, host, NULL, xbt_dynar_get_as(hosts,0,msg_host_t) );
   free(name_host);
 

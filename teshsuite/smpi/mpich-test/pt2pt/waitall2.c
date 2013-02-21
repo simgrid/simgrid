@@ -77,12 +77,12 @@ int main( int argc, char **argv )
 		  MPI_BOTTOM, 0, MPI_BYTE, size - 1, 3, 
 		  MPI_COMM_WORLD, &statuses[0] );
     Pause( 2.0 );
-    MPI_Isend( buf2, cnt, MPI_INT, size-1, 2, MPI_COMM_WORLD, &req[0] );
+    MPI_Issend( buf2, cnt, MPI_INT, size-1, 2, MPI_COMM_WORLD, &req[0] );
     t0 = MPI_Wtime();
     flag = 0;
     while (t0 + 5.0 > MPI_Wtime() && !flag) 
       MPI_Test( &req[0], &flag, &statuses[0] );
-    MPI_Send( buf1, cnt, MPI_INT, size-1, 1, MPI_COMM_WORLD );
+    MPI_Ssend( buf1, cnt, MPI_INT, size-1, 1, MPI_COMM_WORLD );
     if (!flag) {
       printf( 
     "*ERROR: MPI_Waitall appears to be waiting for requests in the order\n\
@@ -90,7 +90,7 @@ they appear in the request list\n" );
       MPI_Wait( &req[0], &statuses[0] );
     }
     else {
-	printf( "No errors\n" ) ;
+	printf( " No Errors\n" ) ;
     }
   }
   else if (rank == size - 1) {

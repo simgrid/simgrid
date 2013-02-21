@@ -663,6 +663,12 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, &default_small_messages_threshold, 1, 1, NULL,
                      NULL);
 
+    int default_send_is_detached_threshold = 65536;
+    xbt_cfg_register(&_sg_cfg_set, "smpi/send_is_detached_thres",
+                     "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend",
+                     xbt_cfgelm_int, &default_send_is_detached_threshold, 1, 1, NULL,
+                     NULL);
+
     //For smpi/bw_factor and smpi/lat_factor
     //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
     //test is if( size >= thresholdN ) return valueN;
@@ -681,10 +687,16 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/lat_factor", "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/os",
-                     "Small messages timings (MPI_Isend/Send minimum time for small messages)",
+                     "Small messages timings (MPI_Send minimum time for small messages)",
                      xbt_cfgelm_string, NULL, 1, 1, NULL,
                      NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/os", "1:0:0:0:0");
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/ois",
+                     "Small messages timings (MPI_Isend minimum time for small messages)",
+                     xbt_cfgelm_string, NULL, 1, 1, NULL,
+                     NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/ois", "1:0:0:0:0");
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/or",
                      "Small messages timings (MPI_Recv minimum time for small messages)",

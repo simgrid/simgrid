@@ -51,8 +51,7 @@ void SIMIX_host_destroy(void *h)
 
   /* Clean Simulator data */
   if (xbt_swag_size(host->process_list) != 0) {
-    char *msg =
-        bprintf("Shutting down host, but it's not empty:");
+    char *msg = xbt_strdup("Shutting down host, but it's not empty:");
     char *tmp;
     smx_process_t process = NULL;
 

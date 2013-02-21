@@ -4,7 +4,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(actions actions.c)
 
 ### Add definitions for compile
-target_link_libraries(actions simgrid m)
+target_link_libraries(actions simgrid)
 
 set(tesh_files
   ${tesh_files}

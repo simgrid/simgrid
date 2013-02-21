@@ -520,59 +520,52 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
   return res;
 }
 
-#if defined(SIMGRID_NEED_GETLINE) || defined(DOXYGEN)
 /** @brief Get a single line from the stream (reimplementation of the GNU getline)
  *
- * This is a redefinition of the GNU getline function, used on platforms where it does not exists.
+ * This is a reimplementation of the GNU getline function, so that our code don't depends on the GNU libc.
  *
- * getline() reads an entire line from stream, storing the address of the buffer
- * containing the text into *buf.  The buffer is null-terminated and includes
- * the newline character, if one was found.
+ * xbt_getline() reads an entire line from stream, storing the address of the
+ * buffer containing the text into *buf.  The buffer is null-terminated and
+ * includes the newline character, if one was found.
  *
- * If *buf is NULL, then getline() will allocate a buffer for storing the line,
- * which should be freed by the user program.  Alternatively, before calling getline(),
- * *buf can contain a pointer to a malloc()-allocated buffer *n bytes in size.  If the buffer
- * is not large enough to hold the line, getline() resizes it with realloc(), updating *buf and *n
- * as necessary.  In either case, on a successful call, *buf and *n will be updated to
- * reflect the buffer address and allocated size respectively.
+ * If *buf is NULL, then xbt_getline() will allocate a buffer for storing the
+ * line, which should be freed by the user program.
+ *
+ * Alternatively, before calling xbt_getline(), *buf can contain a pointer to a
+ * malloc()-allocated buffer *n bytes in size.  If the buffer is not large
+ * enough to hold the line, xbt_getline() resizes it with realloc(), updating
+ * *buf and *n as necessary.
+ *
+ * In either case, on a successful call, *buf and *n will be updated to reflect
+ * the buffer address and allocated size respectively.
  */
-long getline(char **buf, size_t * n, FILE * stream)
+ssize_t xbt_getline(char **buf, size_t *n, FILE *stream)
 {
-
-  size_t i;
+  ssize_t i;
   int ch;
 
+  ch = getc(stream);
+  if (ferror(stream) || feof(stream))
+    return -1;
+
   if (!*buf) {
-    *buf = xbt_malloc(512);
     *n = 512;
+    *buf = xbt_malloc(*n);
   }
 
-  if (feof(stream))
-    return (ssize_t) - 1;
-
-  for (i = 0; (ch = fgetc(stream)) != EOF; i++) {
-
-    if (i >= (*n) + 1)
+  i = 0;
+  do {
+    if (i == *n)
       *buf = xbt_realloc(*buf, *n += 512);
-
-    (*buf)[i] = ch;
-
-    if ((*buf)[i] == '\n') {
-      i++;
-      (*buf)[i] = '\0';
-      break;
-    }
-  }
+    (*buf)[i++] = ch;
+  } while (ch != '\n' && (ch = getc(stream)) != EOF);
 
   if (i == *n)
     *buf = xbt_realloc(*buf, *n += 1);
-
   (*buf)[i] = '\0';
 
-  return (ssize_t) i;
+  return i;
 }
-
-#endif                          /* HAVE_GETLINE */
 
 /*
  * Diff related functions

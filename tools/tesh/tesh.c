@@ -11,8 +11,6 @@
 #pragma hdrstop
 #endif
 
-#include "simgrid_config.h" //For getline, keep that include first
-
 #include "tesh.h"
 #include "xbt.h"
 
@@ -106,7 +104,7 @@ static void handle_suite(const char *filename, FILE * IN)
   buff = xbt_strbuff_new();
   rctx = rctx_new();
 
-  while (getline(&line, &len, IN) != -1) {
+  while (xbt_getline(&line, &len, IN) != -1) {
     line_num++;
 
     /* Count the line length while checking wheather it's blank */

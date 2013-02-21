@@ -444,7 +444,7 @@ tmgr_trace_event_t tmgr_history_get_next_event_leq(tmgr_history_t h,
         trace_event->idx++;
       } else if (event->delta > 0) {        /* Last element, checking for periodicity */
         xbt_heap_push(h->heap, trace_event, event_date + event->delta);
-        trace_event->idx = 0;
+        trace_event->idx = 1; /* not 0 as the first event is a placeholder to handle when events really start */
       } else {                      /* We don't need this trace_event anymore */
         trace_event->free_me = 1;
       }

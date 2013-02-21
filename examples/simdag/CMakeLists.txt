@@ -16,16 +16,15 @@ endif()
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(ex_sd_test simgrid pthread m )
-  target_link_libraries(sd_test2 simgrid pthread m )
-  target_link_libraries(sd_fail simgrid pthread m )
-  target_link_libraries(sd_avail simgrid pthread m )
-  target_link_libraries(sd_typed_tasks_test simgrid pthread m )
-  target_link_libraries(sd_comm_throttling simgrid pthread m )
-  target_link_libraries(sd_seq_access simgrid pthread m )
-  
+  target_link_libraries(ex_sd_test simgrid pthread )
+  target_link_libraries(sd_test2 simgrid pthread )
+  target_link_libraries(sd_fail simgrid pthread )
+  target_link_libraries(sd_avail simgrid pthread )
+  target_link_libraries(sd_typed_tasks_test simgrid pthread )
+  target_link_libraries(sd_comm_throttling simgrid pthread )
+  target_link_libraries(sd_seq_access simgrid pthread )
   if (HAVE_TRACING)
-    target_link_libraries(simdag_tracing simgrid pthread m )
+  target_link_libraries(simdag_tracing simgrid pthread )
   endif()
 
   add_custom_command(TARGET ex_sd_test

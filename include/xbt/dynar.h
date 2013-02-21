@@ -52,6 +52,12 @@ SG_BEGIN_DECL()
   * \skip end_of_doxygen
   * \until }
   *
+  * Note that if you use dynars to store pointed data, the
+  * xbt_dynar_search(), xbt_dynar_search_or_negative() and
+  * xbt_dynar_member() won't be for you. Instead of comparing
+  * your pointed elements, they compare the pointer to them. See
+  * the documentation of xbt_dynar_search() for more info.
+  * 
   */
 /** @defgroup XBT_dynar_cons Dynar constructor and destructor
  *  @ingroup XBT_dynar
@@ -64,8 +70,6 @@ typedef struct xbt_dynar_s *xbt_dynar_t;
 
 XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new(const unsigned long elm_size,
                                       void_f_pvoid_t const free_f);
-XBT_PUBLIC(xbt_dynar_t) xbt_dynar_new_sync(const unsigned long elm_size,
-                                           void_f_pvoid_t const free_f);
 XBT_PUBLIC(void) xbt_dynar_free(xbt_dynar_t * dynar);
 XBT_PUBLIC(void) xbt_dynar_free_voidp(void *dynar);
 XBT_PUBLIC(void) xbt_dynar_free_container(xbt_dynar_t * dynar);
@@ -200,19 +204,14 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
  * DynArr during the traversal. To remove elements, use the
  * xbt_dynar_cursor_rm() function.
  *
- * Do not call these functions directly, but only the xbt_dynar_foreach macro.
- * 
- * For synchronized dynars, the dynar will be locked during the whole
- * loop and it will get unlocked automatically if you traverse all
- * elements. If you want to break the loop before the end, make sure
- * to call xbt_dynar_cursor_unlock() before the <tt>break;</tt>
+ * Do not call these function directly, but only within the xbt_dynar_foreach
+ * macro.
  *
  *  @{
  */
 
 XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
                                      unsigned int *const cursor);
-XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
 
 /* do not use this structure internals directly, but use the public interface
  * This was made public to allow:
@@ -220,7 +219,6 @@ XBT_PUBLIC(void) xbt_dynar_cursor_unlock(xbt_dynar_t dynar);
  *  - sending such beasts over the network
  */
 
-#include "xbt/synchro_core.h"
 typedef struct xbt_dynar_s {
   unsigned long size;
   unsigned long used;
@@ -230,7 +228,7 @@ typedef struct xbt_dynar_s {
 } s_xbt_dynar_t;
 
 static XBT_INLINE void
-_xbt_dynar_cursor_first(const xbt_dynar_t dynar,
+_xbt_dynar_cursor_first(const xbt_dynar_t dynar _XBT_GNUC_UNUSED,
                         unsigned int *const cursor)
 {
   /* iterating over a NULL dynar is a no-op (but we don't want to have uninitialized counters) */
@@ -267,7 +265,7 @@ _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
  *  @param _data
  *  @hideinitializer
  *
- * \note An example of usage:
+ * Here is an example of usage:
  * \code
 xbt_dynar_t dyn;
 unsigned int cpt;
@@ -276,6 +274,10 @@ xbt_dynar_foreach (dyn,cpt,str) {
   printf("Seen %s\n",str);
 }
 \endcode
+ * 
+ * Note that underneath, that's a simple for loop with no real black
+ * magic involved. It's perfectly safe to interrupt a foreach with a
+ * break or a return statement. 
  */
 #define xbt_dynar_foreach(_dynar,_cursor,_data) \
        for (_xbt_dynar_cursor_first(_dynar,&(_cursor))      ; \

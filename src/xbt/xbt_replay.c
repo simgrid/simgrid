@@ -3,7 +3,6 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#include "simgrid_config.h" //For getline, keep that include first
 
 #include "internal_config.h"
 #include <errno.h>
@@ -53,7 +52,7 @@ const char **xbt_replay_reader_get(xbt_replay_reader_t reader)
 {
   ssize_t read;
   xbt_dynar_t d;
-  read = getline(&reader->line, &reader->line_len, reader->fp);
+  read = xbt_getline(&reader->line, &reader->line_len, reader->fp);
   //XBT_INFO("got from trace: %s",reader->line);
   reader->linenum++;
   if (read==-1)
@@ -181,7 +180,7 @@ static const char **action_get_action(char *name)
     }
     // Read lines until I reach something for me (which breaks in loop body)
     // or end of file reached
-    while (getline(&action_line, &action_len, action_fp) != -1) {
+    while (xbt_getline(&action_line, &action_len, action_fp) != -1) {
       // cleanup and split the string I just read
       char *comment = strchr(action_line, '#');
       if (comment != NULL)

@@ -6,6 +6,8 @@
 #include "Matrix_init.h"
 #include "Summa.h"
 #include "xbt/log.h"
+#include <stdio.h>
+
  XBT_LOG_NEW_DEFAULT_CATEGORY(MM_Summa,
                              "Messages specific for this msg example");
 

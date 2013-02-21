@@ -105,5 +105,6 @@ AS_t model_vivaldi_create(void)
   AS_t new_component = model_rulebased_create();
   new_component->get_route_and_latency = vivaldi_get_route_and_latency;
   new_component->parse_PU = vivaldi_parse_PU;
+  new_component->get_graph = generic_get_graph;
   return new_component;
 }

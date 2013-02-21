@@ -64,14 +64,14 @@ static void rule_route_extended_free(void *e)
 static int model_rulebased_parse_PU(AS_t rc, sg_routing_edge_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
-  xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
+  xbt_dynar_push(routing->generic_routing.index_network_elm,&elm);
   return -1;
 }
 
 static int model_rulebased_parse_AS(AS_t rc, sg_routing_edge_t elm)
 {
   AS_rulebased_t routing = (AS_rulebased_t) rc;
-  xbt_dynar_push(routing->generic_routing.index_network_elm,(void *)elm);
+  xbt_dynar_push(routing->generic_routing.index_network_elm,&elm);
   return -1;
 }
 
@@ -394,6 +394,7 @@ AS_t model_rulebased_create(void) {
   new_component->generic_routing.get_onelink_routes = rulebased_get_onelink_routes;
   new_component->generic_routing.get_route_and_latency = rulebased_get_route_and_latency;
   new_component->generic_routing.get_bypass_route = rulebased_get_bypass_route;
+  new_component->generic_routing.get_graph = generic_get_graph;
   new_component->generic_routing.finalize = rulebased_finalize;
   /* initialization of internal structures */
   new_component->list_route = xbt_dynar_new(sizeof(rule_route_t), &rule_route_free);

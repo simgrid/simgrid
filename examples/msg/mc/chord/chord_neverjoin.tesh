@@ -10,7 +10,7 @@ $ ${bindir:=.}/chord_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontex
 > [  0.000000] (3:node@Jacquelin) A transfer has occured
 > [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
 > [  0.000000] (1:node@Jean_Yves) Node 14 joined the ring
-> [  0.000000] (0:@) Next pair (depth = 12, 2 interleave) already reached !
+> [  0.000000] (0:@) Next pair (depth = 11, 2 interleave) already reached !
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -25,7 +25,6 @@ $ ${bindir:=.}/chord_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontex
 > [  0.000000] (0:@) [(1)node] Wait (comm=(verbose only) [(3)node -> (1)node])
 > [  0.000000] (0:@) [(1)node] iRecv (dst=node, buff=(verbose only), size=(verbose only))
 > [  0.000000] (0:@) [(1)node] Test FALSE (comm=(verbose only))
-> [  0.000000] (0:@) [(1)node] Test FALSE (comm=(verbose only))
-> [  0.000000] (0:@) Expanded pairs = 16
-> [  0.000000] (0:@) Visited pairs = 11
-> [  0.000000] (0:@) Expanded / Visited = 0.687500
+> [  0.000000] (0:@) Expanded pairs = 14
+> [  0.000000] (0:@) Visited pairs = 10
+> [  0.000000] (0:@) Expanded / Visited = 0.714286

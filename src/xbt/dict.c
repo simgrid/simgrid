@@ -672,11 +672,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 
 XBT_TEST_SUITE("dict", "Dict data container");
 
-static void print_str(void *str)
-{
-  printf("%s", (char *) PRINTF_STR(str));
-}
-
 static void debuged_add_ext(xbt_dict_t head, const char *key,
                             const char *data_to_fill, void_f_pvoid_t free_f)
 {

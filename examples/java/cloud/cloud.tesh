@@ -1,8 +1,8 @@
-#! ./tesh
+#! tesh
 
 ! output sort
 
-$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir:=.}/examples/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -cp ${classpath:=.} cloud/Cloud ${srcdir:=.}/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (10:Slave 8@Jean_Yves) Receiving on slave_8
 > [  0.000000] (11:Slave 9@Fafard) Receiving on slave_9
 > [  0.000000] (1:Master@Jacquelin) Launched 10 VMs
@@ -154,6 +154,3 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar cloud/Cloud ${srcdir
 > [1023.429105] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
 > [1023.429105] (1:Master@Jacquelin) Master done.
 > [1023.429105] (21:Slave 19@Provost) Received "Task_19". Processing it.
-> [1023.429105] (21:Slave 19@Provost) "Task_19" done 
-> [1023.429105] (21:Slave 19@Provost) Receiving on slave_19
-

@@ -167,12 +167,6 @@ extern char* smx_context_factory_name;
 extern int smx_context_stack_size;
 extern int smx_context_stack_size_was_set;
 
-#ifdef HAVE_THREAD_LOCAL_STORAGE
-extern __thread smx_context_t smx_current_context;
-#else
-extern smx_context_t smx_current_context;
-#endif
-
 /* *********************** */
 /* Context type definition */
 /* *********************** */
@@ -283,7 +277,6 @@ XBT_PUBLIC(void) SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_t fun,
 XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_action_t, void*, size_t));
 XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_action_t comm, void* buff, size_t buff_size);
 XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_action_t comm, void* buff, size_t buff_size);
-XBT_PUBLIC(void) smpi_comm_copy_data_callback(smx_action_t comm, void* buff, size_t buff_size);
 
 XBT_PUBLIC(smx_action_t) SIMIX_comm_get_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_rdv_t rdv, int (*match_fun)(void*, void*), void* data);
@@ -299,7 +292,6 @@ XBT_PUBLIC(void) SIMIX_comm_finish(smx_action_t action);
 
 /******************************* Host simcalls ********************************/
 /* TODO use handlers and keep smx_host_t hidden from higher levels */
-XBT_PUBLIC(xbt_dict_t) simcall_host_get_dict(void);
 XBT_PUBLIC(smx_host_t) simcall_host_get_by_name(const char *name);
 XBT_PUBLIC(const char *) simcall_host_get_name(smx_host_t host);
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_properties(smx_host_t host);
@@ -416,6 +408,16 @@ XBT_PUBLIC(smx_action_t) simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff,
                                               int (*match_fun)(void *, void *, smx_action_t),
                                               void *data);
 
+XBT_PUBLIC(void) simcall_comm_recv_bounded(smx_rdv_t rdv, void *dst_buff,
+                                     size_t * dst_buff_size,
+                                     int (*match_fun)(void *, void *, smx_action_t),
+                                     void *data, double timeout, double rate);
+
+XBT_PUBLIC(smx_action_t) simcall_comm_irecv_bounded(smx_rdv_t rdv, void *dst_buff,
+                                              size_t * dst_buff_size,
+                                              int (*match_fun)(void *, void *, smx_action_t),
+                                              void *data, double rate);
+
 XBT_PUBLIC(void) simcall_comm_destroy(smx_action_t comm);
 XBT_PUBLIC(smx_action_t) simcall_comm_iprobe(smx_rdv_t rdv, int src, int tag,
                                 int (*match_fun)(void *, void *, smx_action_t), void *data);
@@ -464,13 +466,10 @@ XBT_PUBLIC(void) simcall_cond_broadcast(smx_cond_t cond);
 XBT_PUBLIC(smx_sem_t) simcall_sem_init(int capacity);
 XBT_PUBLIC(void) simcall_sem_destroy(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_release(smx_sem_t sem);
-XBT_PUBLIC(void) simcall_sem_release_forever(smx_sem_t sem);
 XBT_PUBLIC(int) simcall_sem_would_block(smx_sem_t sem);
-XBT_PUBLIC(void) simcall_sem_block_onto(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire_timeout(smx_sem_t sem,
                                            double max_duration);
-XBT_PUBLIC(unsigned int) simcall_sem_acquire_any(xbt_dynar_t sems);
 XBT_PUBLIC(int) simcall_sem_get_capacity(smx_sem_t sem);
 
 XBT_PUBLIC(double) simcall_file_read(void* ptr, size_t size, size_t nmemb, smx_file_t stream);

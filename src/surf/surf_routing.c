@@ -920,6 +920,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         bprintf("%s%s_router%s", cluster->prefix, cluster->id,
                 cluster->suffix);
   sg_platf_new_router(&router);
+  ((as_cluster_t)current_routing)->router = xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
   free(newid);
 
   //Make the backbone

@@ -62,7 +62,7 @@ void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
         jxbt_throw_host_failure(env,NULL);
     break;
     default:
-        jxbt_throw_native(env,bprintf("communication failed"));
+        jxbt_throw_native(env,xbt_strdup("communication failed"));
   }
 }
 
@@ -85,6 +85,11 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   int argc = 0;
   jstring jval;
   const char *tmp;
+
+  XBT_LOG_CONNECT(jmsg);
+#ifdef HAVE_TRACING
+  XBT_LOG_CONNECT(jtrace);
+#endif
 
   (*env)->GetJavaVM(env, &__java_vm);
 
@@ -139,8 +144,7 @@ JNIEXPORT void JNICALL
   rv = MSG_main();
   XBT_DEBUG("Done running MSG_MAIN");
   jxbt_check_res("MSG_main()", rv, MSG_OK,
-                 bprintf
-                 ("unexpected error : MSG_main() failed .. please report this bug "));
+                 xbt_strdup("unexpected error : MSG_main() failed .. please report this bug "));
 
   XBT_INFO("MSG_main finished; Cleaning up the simulation...");
   /* Cleanup java hosts */

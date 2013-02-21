@@ -1,8 +1,8 @@
-#! ./tesh
+#! tesh
 
 ! output sort
 
-$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar tracing/TracingTest ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/tracing/tracingPingPongDeployment.xml --cfg=tracing:1  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:1
+$ java -cp ${classpath:=.} tracing/TracingTest ${srcdir:=.}/platform.xml ${srcdir:=.}/tracing/tracingPingPongDeployment.xml --cfg=tracing:1  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:1
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'simulation.trace'
@@ -36,3 +36,4 @@ $ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar tracing/TracingTest 
 > [Marcel:tracing.Receiver:(3) 3.057925] [jmsg/INFO]  --- bw 1.0414912057858452E8 ----
 > [Marcel:tracing.Receiver:(3) 4.474401] [jmsg/INFO] goodbye!
 
+$ rm -rf simulation.trace

@@ -1,8 +1,9 @@
-#! ./tesh
+#! tesh
 
 ! output sort
+! timeout 15
 
-$ java -cp ${classpath:=.} bittorrent/Bittorrent ./platform.xml ./bittorrent/bittorrent.xml
+$ java -cp ${classpath:=.} bittorrent/Bittorrent ${srcdir:=.}/platform.xml ${srcdir:=.}/bittorrent/bittorrent.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [5000.832370] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:bittorrent.Peer:(2) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 2

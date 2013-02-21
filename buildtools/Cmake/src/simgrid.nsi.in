@@ -84,16 +84,12 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\cunit.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\graphxml_parse.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\graphxml.h
-	file @CMAKE_HOME_DIRECTORY@\include\xbt\time.h
-	file @CMAKE_HOME_DIRECTORY@\include\xbt\synchro.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\synchro_core.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\queue.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\setset.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\mmalloc.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\parmap.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automaton.h
-	file @CMAKE_HOME_DIRECTORY@\include\xbt\automatonparse_promela.h
-	file @CMAKE_HOME_DIRECTORY@\include\xbt\socket.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\file_stat.h
     file @CMAKE_HOME_DIRECTORY@\include\xbt\xbt_os_thread.h
     file @CMAKE_HOME_DIRECTORY@\include\xbt\RngStream.h
@@ -113,14 +109,7 @@ Section "Libraries and Headers" LibSection
 	setOutPath $INSTDIR\include\simdag
 	file @CMAKE_HOME_DIRECTORY@\include\simdag\simdag.h
 	file @CMAKE_HOME_DIRECTORY@\include\simdag\datatypes.h
-	
-	CreateDirectory  $INSTDIR\include\smpi
-	setOutPath $INSTDIR\include\smpi
-	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi.h
-	file @CMAKE_HOME_DIRECTORY@\include\smpi\mpi.h
-	file @CMAKE_HOME_DIRECTORY@\include\smpi\mpif.h
-	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi_cocci.h
-	file include\smpi\smpif.h
+
 	
 	CreateDirectory  $INSTDIR\include\surf
 	setOutPath $INSTDIR\include\surf
@@ -141,6 +130,7 @@ Section "Binaries" BinSection
 	file bin\colorize
 	file bin\graphicator@BIN_EXE@
 	file bin\simgrid_update_xml
+
 	
 SectionEnd
 Section "Documentation" DocSection	
@@ -174,7 +164,8 @@ Section "Examples" ExamplesSection
 	file @CMAKE_HOME_DIRECTORY@\examples\msg\msg_platform.xml
 	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\CMakeLists.txt
 	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\FindPcreWin.cmake
-	
+
+
 	# create shortcuts in the start menu programs directory
 	CreateDirectory "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\"
 	createShortCut  "$SMPROGRAMS\SimGrid @SIMGRID_VERSION_MAJOR@.@SIMGRID_VERSION_MINOR@.@SIMGRID_VERSION_PATCH@\Examples\HelloWorld project.lnk"	"$INSTDIR\examples\HelloWorld"
@@ -207,6 +198,41 @@ Section "Java Bindings" JavaSection
 	messageBox MB_OK "WARNING! Please add to your environment variable CLASSPATH value '$INSTDIR\lib\simgrid.jar;.' before executing Simgrid classes."
 SectionEnd
 
+Section "SMPI Library" SMPISection
+	setOutPath $INSTDIR\bin
+	file bin\smpicc
+	file bin\smpif2c
+	file bin\smpiff
+	file bin\smpirun
+	file bin\smpif90
+	
+    setOutPath $INSTDIR\lib
+	file lib\libsmpi.dll
+	file lib\libsmpi.def
+	
+	CreateDirectory  $INSTDIR\include\smpi
+	setOutPath $INSTDIR\include\smpi
+	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi.h
+	file @CMAKE_HOME_DIRECTORY@\include\smpi\mpi.h
+	file @CMAKE_HOME_DIRECTORY@\include\smpi\mpif.h
+	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi_cocci.h
+	file @CMAKE_HOME_DIRECTORY@\include\smpi\smpi_main.h
+	file include\smpi\smpif.h
+	
+	CreateDirectory $INSTDIR\examples\smpi
+	file /r @CMAKE_HOME_DIRECTORY@\examples\smpi\tracing
+	file /r @CMAKE_HOME_DIRECTORY@\examples\smpi\replay
+	setOutPath $INSTDIR\examples\smpi
+	file @CMAKE_HOME_DIRECTORY@\examples\smpi\bcbench.c
+	file @CMAKE_HOME_DIRECTORY@\examples\smpi\mvmul.c
+	file @CMAKE_HOME_DIRECTORY@\examples\smpi\mc_bugged1.c
+	file @CMAKE_HOME_DIRECTORY@\examples\smpi\mc_bugged2.c
+	file @CMAKE_HOME_DIRECTORY@\examples\smpi\hostfile
+	file @CMAKE_HOME_DIRECTORY@\examples\msg\small_platform_with_routers.xml
+	file @CMAKE_HOME_DIRECTORY@\examples\smpi\CMakeLists.txt
+	file @CMAKE_HOME_DIRECTORY@\doc\HelloWorld\FindPcreWin.cmake
+SectionEnd
+
 # default section start
 section	
 	# define uninstaller name
@@ -233,7 +259,7 @@ section
 	# create a popup box, with an OK button"
 	messageBox MB_OK "WARNING! Please add to your environment variable PATH value '$INSTDIR\lib;$INSTDIR\GnuWin32\bin' before executing Simgrid binaries."
 	
-	SetRebootFlag true
+	SetRebootFlag false
 
 # default section end
 sectionEnd
@@ -244,13 +270,16 @@ LangString DESC_DocSection 		${LANG_ENGLISH} "Generated (doxygen) documentation.
 LangString DESC_ExamplesSection ${LANG_ENGLISH} "Simgrid's HelloWorld example and some classical platforms."
 LangString DESC_PCRESection 	${LANG_ENGLISH} "Install the PCRE and PCREPOSIX libraries for SimGrid."
 LangString DESC_JAVASection 	${LANG_ENGLISH} "Install the Java binding and examples."
+LangString DESC_SMPISection 	${LANG_ENGLISH} "Install the SMPI library, headers, and examples."
+
 
 LangString DESC_LibSection 		${LANG_FRENCH} 	"Installer les librairies Simgrid et leurs Entêtes."
 LangString DESC_BinSection 		${LANG_FRENCH} 	"Installer les outils optionnels."
 LangString DESC_DocSection 		${LANG_FRENCH} 	"Installer la documentation."
 LangString DESC_ExamplesSection ${LANG_FRENCH} 	"Installer un exemple 'HelloWorld' et des fichiers de plate-formes types."
 LangString DESC_PCRESection 	${LANG_FRENCH}  "Installer les librairies PCRE et PCREPOSIX for SimGrid."
-LangString DESC_JAVASection 	${LANG_FRENCH}  "Installer la librairie Simgrid-java and les examples."
+LangString DESC_JAVASection 	${LANG_FRENCH}  "Installer la librairie Simgrid-java et les exemples."
+LangString DESC_SMPISection 	${LANG_FRENCH}  "Installer la librairie SMPI, ses en-têtes, et ses exemples."
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${LibSection} 		$(DESC_LibSection)
@@ -259,6 +288,7 @@ LangString DESC_JAVASection 	${LANG_FRENCH}  "Installer la librairie Simgrid-jav
   !insertmacro MUI_DESCRIPTION_TEXT ${ExamplesSection} 	$(DESC_ExamplesSection)
   !insertmacro MUI_DESCRIPTION_TEXT ${PCRESection} 		$(DESC_PCRESection)
   !insertmacro MUI_DESCRIPTION_TEXT ${JAVASection} 		$(DESC_JAVASection)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SMPISection} 		$(DESC_SMPISection)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 # create a section to define what the uninstaller does.
@@ -334,6 +364,7 @@ section "Uninstall"
 	delete $INSTDIR\include\smpi\mpi.h
 	delete $INSTDIR\include\smpi\mpif.h
 	delete $INSTDIR\include\smpi\smpi_cocci.h
+	delete $INSTDIR\include\smpi\smpi_main.h
 	delete $INSTDIR\include\smpi\smpif.h
 	delete $INSTDIR\include\surf\surfxml_parse.h
 	delete $INSTDIR\include\surf\simgrid_dtd.h

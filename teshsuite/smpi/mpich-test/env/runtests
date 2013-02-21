@@ -120,7 +120,14 @@ RunTest getproc 1 "*** Test Get Processor Name ***"
 #
 # If there was a Unix standard interface to ps, we could check for orphaned
 # processes...
-if ps -fwu $LOGNAME > /dev/null 2>&1 ; then
+if ps --version | grep procps > /dev/null 2>&1 ; then
+   # This is a try to be a better choice than ps -u because it
+   # restricts the list of processes to those of the current session.
+   # The options are known to work with the ps command from the procps
+   # package.
+   SESSION=`ps -o sess= $$`
+   PSPGM="ps -o pid,tname,command -s $SESSION"
+elif ps -fwu $LOGNAME > /dev/null 2>&1 ; then
    # This is a better choice than ps aux because it restricts the list of 
    # processes to those of the running user.  The w is needed on some
    # systems to get a long output for the command

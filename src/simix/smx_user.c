@@ -746,7 +746,7 @@ smx_rdv_t simcall_rdv_get_by_name(const char *name)
 {
   xbt_assert(name != NULL, "Invalid parameter for simcall_rdv_get_by_name (name is NULL)");
 
-  /* FIXME: this is a horrible lost of performance, so we hack it out by
+  /* FIXME: this is a horrible loss of performance, so we hack it out by
    * skipping the simcall (for now). It works in parallel, it won't work on
    * distributed but probably we will change MSG for that. */
 
@@ -871,6 +871,39 @@ smx_action_t simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_
 
   return simcall_BODY_comm_irecv(rdv, dst_buff, dst_buff_size, 
                                  match_fun, data);
+}
+
+
+/**
+ * \ingroup simix_comm_management
+ */
+void simcall_comm_recv_bounded(smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
+                         int (*match_fun)(void *, void *, smx_action_t), void *data, double timeout, double rate)
+{
+  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  xbt_assert(rdv, "No rendez-vous point defined for recv");
+
+  if (MC_is_active()) {
+    /* the model-checker wants two separate simcalls */
+    smx_action_t comm = simcall_comm_irecv_bounded(rdv, dst_buff, dst_buff_size,
+        match_fun, data, rate);
+    simcall_comm_wait(comm, timeout);
+  }
+  else {
+    simcall_BODY_comm_recv_bounded(rdv, dst_buff, dst_buff_size,
+                           match_fun, data, timeout, rate);
+  }
+}
+/**
+ * \ingroup simix_comm_management
+ */
+smx_action_t simcall_comm_irecv_bounded(smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
+                                  int (*match_fun)(void *, void *, smx_action_t), void *data, double rate)
+{
+  xbt_assert(rdv, "No rendez-vous point defined for irecv");
+
+  return simcall_BODY_comm_irecv_bounded(rdv, dst_buff, dst_buff_size,
+                                 match_fun, data, rate);
 }
 
 

@@ -239,7 +239,7 @@ void peer_init(peer_t peer, int id, int seed)
   peer->current_pieces = xbt_dynar_new(sizeof(int), NULL);
   peer->current_piece = -1;
 
-  peer->stream = RngStream_CreateStream("");
+  peer->stream = MSG_host_get_data(MSG_host_self());
   peer->comm_received = NULL;
 
   peer->round = 0;
@@ -265,8 +265,6 @@ void peer_free(peer_t peer)
   xbt_free(peer->pieces_count);
   xbt_free(peer->bitfield);
   xbt_free(peer->bitfield_blocks);
-
-  RngStream_DeleteStream(&peer->stream);
 }
 
 /**
@@ -573,7 +571,7 @@ void update_choked_peers(peer_t peer)
   //remove a peer from the list
   xbt_dict_cursor_t cursor = NULL;
   xbt_dict_cursor_first(peer->active_peers, &cursor);
-  if (xbt_dict_length(peer->active_peers) > 0) {
+  if (!xbt_dict_is_empty(peer->active_peers)) {
     key = xbt_dict_cursor_get_key(cursor);
     connection_t peer_choked = xbt_dict_cursor_get_data(cursor);
     if (peer_choked) {

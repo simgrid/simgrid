@@ -42,12 +42,6 @@ XBT_PUBLIC( void ) *mrealloc(xbt_mheap_t md, void *ptr, size_t size);
 /* Free a block allocated by `mmalloc', `mrealloc' or `mcalloc'.  */
 XBT_PUBLIC( void ) mfree(xbt_mheap_t md, void *ptr);
 
-/* Allocate SIZE bytes allocated to ALIGNMENT bytes.  */
-XBT_PUBLIC( void ) *mmemalign(xbt_mheap_t md, size_t alignment, size_t size);
-
-/* Allocate SIZE bytes on a page boundary.  */
-XBT_PUBLIC( void ) *mvalloc(xbt_mheap_t md, size_t size);
-
 XBT_PUBLIC( xbt_mheap_t ) xbt_mheap_new(int fd, void *baseaddr);
 
 XBT_PUBLIC( void ) xbt_mheap_destroy_no_free(xbt_mheap_t md);
@@ -61,11 +55,12 @@ XBT_PUBLIC( xbt_mheap_t ) mmalloc_get_default_md(void);
 void mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
-int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t *stacks1, xbt_dynar_t *stacks2, xbt_dynar_t equals);
+int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
-void init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2);
-void match_equals(xbt_dynar_t list, xbt_dynar_t equals);
-int compare_area(void *area1, void* area2, xbt_dynar_t previous, xbt_dynar_t equals);
+void init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t to_ignore1, xbt_dynar_t to_ignore2);
+void match_equals(xbt_dynar_t list);
+int compare_area(void *area1, void* area2, xbt_dynar_t previous);
+void reset_heap_information(void);
 
 void mmalloc_backtrace_block_display(void* heapinfo, int block);
 void mmalloc_backtrace_fragment_display(void* heapinfo, int block, int frag);
@@ -73,6 +68,6 @@ void mmalloc_backtrace_display(void *addr);
 
 int is_free_area(void *area, xbt_mheap_t heap);
 
-size_t mmalloc_get_chunks_used(xbt_mheap_t);
+size_t mmalloc_get_bytes_used(xbt_mheap_t);
 
 #endif                          /* MMALLOC_H */

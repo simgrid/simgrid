@@ -16,7 +16,7 @@ package org.simgrid.msg;
  * Thus it is represented as a physical resource with computing capabilities, some 
  * mailboxes to enable running process to communicate with remote ones, and some private 
  * data that can be only accessed by local process. An instance of this class is always 
- * binded with the corresponding native host. All the native hosts are automatically created 
+ * bound with the corresponding native host. All the native hosts are automatically created
  * during the call of the method Msg.createEnvironment(). This method take as parameter a
  * platform file which describes all elements of the platform (host, link, root..).
  * You cannot create a host yourself.
@@ -73,7 +73,7 @@ public class Host {
 	 *
 	 * @param name		The name of the host to get.
 	 *
-     * @return
+	 * @return		The host object with the given name.
      * @exception		HostNotFoundException if the name of the host is not valid.
 	 *					NativeException if the native version of this method failed.
 	 */ 
@@ -117,9 +117,9 @@ public class Host {
 		this.data = data;
 	} 
 	/**
-	 * Gets the d	ata of the host.
+	 * Gets the data of the host.
      *
-     * @return
+     * @return The data object associated with the host.
      */
 	public Object getData() {
 		return this.data;
@@ -128,7 +128,7 @@ public class Host {
 	/**
 	 * Checks whether a host has data.
      *
-     * @return
+     * @return True if the host has an associated data object.
      */
 	public boolean hasData() {
 		return null != this.data;
@@ -151,15 +151,15 @@ public class Host {
 	 */ 
 	public native double getSpeed();
 	/**
-	 * @brief Returns the value of a given host property. 
+	 * Returns the value of a given host property. 
 	 */
 	public native String getProperty(String name);
 	/**
-	 * @brief Change the value of a given host property. 
+	 * Change the value of a given host property. 
 	 */
 	public native void setProperty(String name, String value);
-    /** This method tests if a host is avail.
-     * @return
+    /** This method tests if a host is available.
+     * @return True if the host is available.
      */
 	public native boolean isAvail();
 	

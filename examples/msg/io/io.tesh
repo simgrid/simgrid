@@ -1,7 +1,6 @@
 #! ./tesh
 
 $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'path' to '../examples/platforms/'
 > [  0.000000] (0:@) Number of host '4'
 > [  0.000000] (1:0@denise) 	Open file './doc/simgrid/examples/platforms/g5k.xml'
 > [  0.000000] (2:1@alice) 	Open file './doc/simgrid/examples/platforms/One_cluster_no_backbone.xml'
@@ -30,7 +29,6 @@ $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage.xml "--log=root.f
 > [  0.004786] (0:@) Simulation time 0.00478623
 
 $ ${bindir:=.}/io/file_unlink ${srcdir:=.}/examples/platforms/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'path' to '../examples/platforms/'
 > [  0.000000] (0:@) Number of host '4'
 > [  0.000000] (1:0@denise) 	Open file './doc/simgrid/examples/platforms/g5k.xml'
 > [  0.000000] (1:0@denise) 	File stat ./doc/simgrid/examples/platforms/g5k.xml Size 17028.0

@@ -124,7 +124,7 @@ set(txt_files
 \endverbatim
 
 Then, you have to follow these steps:
-\li Add the following line to <project/directory>/buildtools/Cmake/MakeExeLib.cmake:
+\li Add the following line to <project/directory>/buildtools/Cmake/MakeExe.cmake:
 \verbatim
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
 \endverbatim

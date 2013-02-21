@@ -374,8 +374,10 @@ set(JTRACE_JAVA_SRC
 
 if(HAVE_TRACING)
   list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
+  list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
 else()
   list(APPEND EXTRA_DIST ${JTRACE_C_SRC})
+  list(APPEND EXTRA_DIST ${JTRACE_JAVA_SRC})
 endif()
 
 set(LUA_SRC
@@ -718,7 +720,9 @@ set(txt_files
   AUTHORS
   COPYING
   README
+  README.java
   ChangeLog
+  ChangeLog.SimGrid-java
   INSTALL
   LICENSE-LGPL-2.1
   NEWS
@@ -727,7 +731,24 @@ set(txt_files
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
+  examples/java/CMakeLists.txt
+  examples/java/async/CMakeLists.txt
   examples/java/bittorrent/CMakeLists.txt
+  examples/java/chord/CMakeLists.txt
+  examples/java/cloud/CMakeLists.txt
+  examples/java/commTime/CMakeLists.txt
+  examples/java/io/CMakeLists.txt
+  examples/java/kademlia/CMakeLists.txt
+  examples/java/master_slave_bypass/CMakeLists.txt
+  examples/java/master_slave_kill/CMakeLists.txt
+  examples/java/masterslave/CMakeLists.txt
+  examples/java/migration/CMakeLists.txt
+  examples/java/mutualExclusion/CMakeLists.txt
+  examples/java/pingPong/CMakeLists.txt
+  examples/java/priority/CMakeLists.txt
+  examples/java/startKillTime/CMakeLists.txt
+  examples/java/suspend/CMakeLists.txt
+  examples/java/tracing/CMakeLists.txt
   examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
@@ -775,6 +796,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
+  teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/smpi/mpich-test/CMakeLists.txt
@@ -809,6 +831,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/GenerateDocWin.cmake
   buildtools/Cmake/MaintainerMode.cmake
   buildtools/Cmake/MakeExe.cmake
+  buildtools/Cmake/MakeJava.cmake
   buildtools/Cmake/MakeLib.cmake
   buildtools/Cmake/MakeLibWin.cmake
   buildtools/Cmake/Modules/FindF2c.cmake
@@ -835,14 +858,12 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/postinstall.sh
   buildtools/Cmake/Scripts/preinstall.sh
   buildtools/Cmake/Scripts/tesh.pl
-  buildtools/Cmake/Scripts/test_java.sh
   buildtools/Cmake/Scripts/update_tesh.pl
   buildtools/Cmake/Supernovae.cmake
   buildtools/Cmake/UnitTesting.cmake
   buildtools/Cmake/src/internal_config.h.in
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
-  buildtools/Cmake/test_prog/prog_getline.c
   buildtools/Cmake/test_prog/prog_gnu_dynlinker.c
   buildtools/Cmake/test_prog/prog_gtnets.cpp
   buildtools/Cmake/test_prog/prog_mutex_timedlock.c

@@ -23,6 +23,8 @@ void TRACE_sd_set_task_category(SD_task_t task, const char *category){
   }
 
   //set task category
+  if (task->category)
+    xbt_free(task->category);
   task->category = xbt_strdup (category);
   XBT_DEBUG("SD task %p(%s), category %s", task, task->name, task->category);
 }
