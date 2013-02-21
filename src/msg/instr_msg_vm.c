@@ -55,7 +55,7 @@ void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host, msg_host_t new_h
   }
 }
 
-void TRACE_msg_vm_create (const char *vm_name, msg_host_t host)
+void TRACE_msg_vm_create(const char *vm_name, msg_host_t host)
 {
   if (TRACE_msg_vm_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
@@ -66,7 +66,7 @@ void TRACE_msg_vm_create (const char *vm_name, msg_host_t host)
   }
 }
 
-void TRACE_msg_vm_start (msg_vm_t vm)
+void TRACE_msg_vm_start(msg_vm_t vm)
 {
   if (TRACE_msg_vm_is_enabled()){
     int len = INSTR_DEFAULT_STR_SIZE;
