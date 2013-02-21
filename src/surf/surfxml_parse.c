@@ -841,6 +841,7 @@ void surf_parse_close(void)
   xbt_dynar_free(&surf_parsed_filename_stack);
 
   free(surf_parsed_filename);
+  surf_parsed_filename = NULL;
 
   if (surf_file_to_parse) {
     surf_parse__delete_buffer(surf_input_buffer);

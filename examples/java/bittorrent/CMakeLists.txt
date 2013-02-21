@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
+set(example java_bittorrent)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/Bittorrent.java
   ${CMAKE_CURRENT_SOURCE_DIR}/Common.java
@@ -11,10 +12,16 @@ set(sources
   )
 
 if(enable_java)
-  add_custom_target(java_bittorrent ALL
-    COMMAND ${JAVA_COMPILE} -cp ${CMAKE_BINARY_DIR}/simgrid.jar
-                            -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources})
-  add_dependencies(java_bittorrent SG_java_jar)
+  add_custom_command(
+    COMMENT "Building ${example}..."
+    OUTPUT ${example}_compiled
+    DEPENDS ${sources} SG_java_jar ${SIMGRID_JAR}
+    COMMAND ${JAVA_COMPILE} -cp ${SIMGRID_JAR}
+                             -d ${CMAKE_CURRENT_BINARY_DIR}/.. ${sources}
+    COMMAND ${CMAKE_COMMAND} -E remove ${example}_compiled
+    COMMAND ${CMAKE_COMMAND} -E touch ${example}_compiled
+  )
+  add_custom_target(${example} ALL DEPENDS ${example}_compiled)
 endif()
 
 set(tesh_files
@@ -41,4 +48,3 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/generate.py
   PARENT_SCOPE
   )
-

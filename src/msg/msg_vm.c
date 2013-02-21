@@ -339,12 +339,10 @@ void MSG_vm_resume(msg_vm_t vm)
 void MSG_vm_save(msg_vm_t vm)
 {
   simcall_vm_save(vm);
-
   #ifdef HAVE_TRACING
   TRACE_msg_vm_save(vm);
   #endif
 }
-
 
 /** @brief Restore the execution of the VM. All processes on the VM run again.
  *  @ingroup msg_VMs

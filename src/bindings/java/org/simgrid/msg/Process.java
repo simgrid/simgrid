@@ -195,7 +195,7 @@ public abstract class Process implements Runnable {
 	}
 	/**
 	 * The natively implemented method to create an MSG process.
-	 * @param host    A valid (binded) host where create the process.
+	 * @param hostName    A valid (bound) host where create the process.
 	 */
 	protected native void create(String hostName) throws HostNotFoundException;
 	/**
@@ -291,7 +291,7 @@ public abstract class Process implements Runnable {
 		return ppid;
 	}
 	/**
-	 * @brief Returns the value of a given process property. 
+	 * Returns the value of a given process property. 
 	 */
 	public native String getProperty(String name);
 	
@@ -311,7 +311,6 @@ public abstract class Process implements Runnable {
 	/**
 	 * Migrates a process to another host.
 	 *
-	 * @param process		The process to migrate.
 	 * @param host			The host where to migrate the process.
 	 *
 	 */

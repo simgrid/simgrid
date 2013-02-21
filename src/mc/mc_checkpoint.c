@@ -23,7 +23,6 @@ char *libsimgrid_path;
 void *start_data_libsimgrid, *start_bss_libsimgrid;
 void *start_data_binary, *start_bss_binary;
 void *start_text_binary;
-void *end_raw_heap;
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size);
 static void MC_region_restore(mc_mem_region_t reg);
@@ -38,6 +37,7 @@ static void print_local_variables_values(xbt_dynar_t all_variables);
 static void *get_stack_pointer(void *stack_context, void *heap);
 
 static void snapshot_stack_free(mc_snapshot_stack_t s);
+static xbt_dynar_t take_snapshot_ignore(void);
 
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
@@ -107,8 +107,9 @@ void MC_init_memory_map_info(){
             start_bss_binary = reg.start_addr;
             i++;
           }
-        }else if(!memcmp(maps->regions[i].pathname, "[heap]", 6)){
-          end_raw_heap = reg.end_addr;
+        }else if(!memcmp(maps->regions[i].pathname, "[stack]", 7)){
+          maestro_stack_start = reg.start_addr;
+          maestro_stack_end = reg.end_addr;
           i++;
         }
       }
@@ -150,7 +151,6 @@ mc_snapshot_t MC_take_snapshot()
   unsigned int i = 0;
   s_map_region_t reg;
   memory_map_t maps = get_memory_map();
-  int nb_reg = 0;
   void *heap = NULL;
   size_t size = 0;
   void *start = NULL;
@@ -162,16 +162,14 @@ mc_snapshot_t MC_take_snapshot()
       if (maps->regions[i].pathname == NULL){
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
-          snapshot->heap_chunks_used = mmalloc_get_chunks_used(std_heap);
-          heap = snapshot->regions[nb_reg]->data;
-          nb_reg++;
+          snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+          heap = snapshot->regions[snapshot->num_reg - 1]->data;
         }
         i++;
       } else{ 
         if (!memcmp(basename(maps->regions[i].pathname), "libsimgrid", 10)){
           size = (char*)reg.end_addr - (char*)reg.start_addr;
           start = reg.start_addr;
-          nb_reg++;
           i++;
           reg = maps->regions[i];
           if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && i < maps->mapsize){
@@ -180,13 +178,13 @@ mc_snapshot_t MC_take_snapshot()
             i++;
           }
           MC_snapshot_add_region(snapshot, 1, start, size);
-        }else if(!memcmp(maps->regions[i].pathname, "[heap]", 6)){
-          end_raw_heap = reg.end_addr;
+        }else if(!memcmp(maps->regions[i].pathname, "[stack]", 7)){
+          maestro_stack_start = reg.start_addr;
+          maestro_stack_end = reg.end_addr;
           i++;
         } else if (!memcmp(basename(maps->regions[i].pathname), basename(xbt_binary_name), strlen(basename(xbt_binary_name)))){
           size = (char*)reg.end_addr - (char*)reg.start_addr;
           start = reg.start_addr;
-          nb_reg++;
           i++;
           reg = maps->regions[i];
           if(reg.pathname == NULL && (reg.prot & PROT_WRITE) && reg.start_addr != std_heap && reg.start_addr != raw_heap && i < maps->mapsize){
@@ -203,6 +201,8 @@ mc_snapshot_t MC_take_snapshot()
       i++;
     }
   }
+
+  snapshot->to_ignore = take_snapshot_ignore();
 
   if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,""))
     snapshot->stacks = take_snapshot_stacks(&snapshot, heap);
@@ -235,6 +235,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
 
   xbt_free(snapshot->regions);
   xbt_dynar_free(&(snapshot->stacks));
+  xbt_dynar_free(&(snapshot->to_ignore));
   xbt_free(snapshot);
 }
 
@@ -244,7 +245,7 @@ void get_libsimgrid_plt_section(){
   FILE *fp;
   char *line = NULL;            /* Temporal storage for each line that is readed */
   ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by getline */
+  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
 
   char *lfields[7];
   int i, plt_found = 0;
@@ -259,7 +260,7 @@ void get_libsimgrid_plt_section(){
     xbt_abort();
   }
 
-  while ((read = getline(&line, &n, fp)) != -1 && plt_found != 2) {
+  while ((read = xbt_getline(&line, &n, fp)) != -1 && plt_found != 2) {
 
     if(n == 0)
       continue;
@@ -309,7 +310,7 @@ void get_binary_plt_section(){
   FILE *fp;
   char *line = NULL;            /* Temporal storage for each line that is readed */
   ssize_t read;                 /* Number of bytes readed */
-  size_t n = 0;                 /* Amount of bytes to read by getline */
+  size_t n = 0;                 /* Amount of bytes to read by xbt_getline */
 
   char *lfields[7];
   int i, plt_found = 0;
@@ -324,7 +325,7 @@ void get_binary_plt_section(){
     xbt_abort();
   }
 
-  while ((read = getline(&line, &n, fp)) != -1 && plt_found != 2) {
+  while ((read = xbt_getline(&line, &n, fp)) != -1 && plt_found != 2) {
 
     if(n == 0)
       continue;
@@ -497,7 +498,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
               cursor2++;
             }
 
-            if(xbt_dynar_length(compose) > 0){
+            if(!xbt_dynar_is_empty(compose)){
               frame_pointer_address = xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address ; 
             }
             break;
@@ -545,7 +546,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
             cursor++;
           }
           
-          if(xbt_dynar_length(compose) > 0){
+          if(!xbt_dynar_is_empty(compose)){
             if(strcmp(xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->type, "value") == 0){
               to_append = bprintf("%s=%lx\n", current_variable->name, xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.res);
               xbt_strbuff_append(variables, to_append);
@@ -556,7 +557,7 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
                 xbt_strbuff_append(variables, to_append);
                 xbt_free(to_append);
               }else if(((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) > 0xffffffff) || ((long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1,variable_value_t)->value.address) < (long)start_text_binary)){
-                to_append = bprintf("%s=%d\n", current_variable->name, (int)(long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address));
+                to_append = bprintf("%s=%u\n", current_variable->name, (unsigned int)(long)*((void**)xbt_dynar_get_as(compose, xbt_dynar_length(compose) - 1, variable_value_t)->value.address));
                 xbt_strbuff_append(variables, to_append);
                 xbt_free(to_append);
               }else{ 
@@ -632,3 +633,26 @@ void variable_value_free_voidp(void* v){
   variable_value_free((variable_value_t) * (void **)v);
 }
 
+static xbt_dynar_t take_snapshot_ignore(){
+  
+  if(mc_heap_comparison_ignore == NULL)
+    return NULL;
+
+  xbt_dynar_t cpy = xbt_dynar_new(sizeof(mc_heap_ignore_region_t), heap_ignore_region_free_voidp);
+
+  unsigned int cursor = 0;
+  mc_heap_ignore_region_t current_region;
+
+  xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region){
+    mc_heap_ignore_region_t new_region = NULL;
+    new_region = xbt_new0(s_mc_heap_ignore_region_t, 1);
+    new_region->address = current_region->address;
+    new_region->size = current_region->size;
+    new_region->block = current_region->block;
+    new_region->fragment = current_region->fragment;
+    xbt_dynar_push(cpy, &new_region);
+  }
+
+  return cpy;
+
+}

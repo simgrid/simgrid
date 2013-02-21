@@ -457,6 +457,19 @@ void mpi_test__ (int * request, int *flag, MPI_Status * status, int* ierr){
   MPI_Request req = find_request(*request);
   *ierr= MPI_Test(&req, flag, status);
 }
+
+
+void mpi_testall__ (int* count, int * requests,  int *flag, MPI_Status * statuses, int* ierr){
+  MPI_Request* reqs;
+  int i;
+  reqs = xbt_new(MPI_Request, *count);
+  for(i = 0; i < *count; i++) {
+    reqs[i] = find_request(requests[i]);
+  }
+  *ierr= MPI_Testall(*count, reqs, flag, statuses);
+}
+
+
 void mpi_get_processor_name__(char *name, int *resultlen, int* ierr){
   *ierr = MPI_Get_processor_name(name, resultlen);
 }

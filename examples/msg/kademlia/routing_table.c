@@ -58,7 +58,7 @@ void routing_table_print(routing_table_t table)
   XBT_INFO("Routing table of %08x:", table->id);
 
   for (i = 0; i <= identifier_size; i++) {
-    if (xbt_dynar_length(table->buckets[i].nodes) > 0) {
+    if (!xbt_dynar_is_empty(table->buckets[i].nodes)) {
       XBT_INFO("Bucket number %d: ", i);
       xbt_dynar_foreach(table->buckets[i].nodes, j, value) {
         XBT_INFO("Element %d: %08x", j, value);

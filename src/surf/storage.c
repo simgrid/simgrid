@@ -594,7 +594,7 @@ static xbt_dict_t parse_storage_content(char *filename, unsigned long *used_size
 
   surf_stat_t content;
 
-  while ((read = getline(&line, &len, file)) != -1) {
+  while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
     content = xbt_new0(s_surf_stat_t,1);
     if(sscanf(line,"%s %d %s %s %ld %s %s %s",user_rights,&nb,user,group,&size,date,time,path)==8) {

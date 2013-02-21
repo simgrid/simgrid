@@ -68,7 +68,7 @@ typedef struct s_smpi_factor {
 } s_smpi_factor_t;
 xbt_dynar_t smpi_os_values = NULL;
 xbt_dynar_t smpi_or_values = NULL;
-
+xbt_dynar_t smpi_ois_values = NULL;
 
 // Methods used to parse and store the values for timing injections in smpi
 // These are taken from surf/network.c and generalized to have more factors
@@ -135,6 +135,28 @@ static double smpi_os(double size)
     }
   }
   XBT_DEBUG("os : %lf > %ld return %f", size, fact.factor, current);
+
+  return current;
+}
+
+static double smpi_ois(double size)
+{
+  if (!smpi_ois_values)
+    smpi_ois_values =
+        parse_factor(sg_cfg_get_string("smpi/ois"));
+
+  unsigned int iter = 0;
+  s_smpi_factor_t fact;
+  double current=0.0;
+  xbt_dynar_foreach(smpi_ois_values, iter, fact) {
+    if (size <= fact.factor) {
+        XBT_DEBUG("ois : %lf <= %ld return %f", size, fact.factor, current);
+      return current;
+    }else{
+      current=fact.values[0]+fact.values[1]*size;
+    }
+  }
+  XBT_DEBUG("ois : %lf > %ld return %f", size, fact.factor, current);
 
   return current;
 }
@@ -212,11 +234,13 @@ static MPI_Request build_request(void *buf, int count,
 }
 
 
-void smpi_empty_status(MPI_Status * status) {
+void smpi_empty_status(MPI_Status * status)
+{
   if(status != MPI_STATUS_IGNORE) {
-      status->MPI_SOURCE=MPI_ANY_SOURCE;
-      status->MPI_TAG=MPI_ANY_TAG;
-      status->count=0;
+    status->MPI_SOURCE = MPI_ANY_SOURCE;
+    status->MPI_TAG = MPI_ANY_TAG;
+    status->MPI_ERROR = MPI_SUCCESS;
+    status->count=0;
   }
 }
 
@@ -266,6 +290,16 @@ MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
   return request;
 }
 
+MPI_Request smpi_mpi_ssend_init(void *buf, int count, MPI_Datatype datatype,
+                               int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request =
+    build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                  comm, PERSISTENT | SSEND | SEND);
+  request->refcount++;
+  return request;
+}
+
 MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
                                int src, int tag, MPI_Comm comm)
 {
@@ -293,7 +327,8 @@ void smpi_mpi_start(MPI_Request request)
     smpi_datatype_use(request->old_type);
     request->action = simcall_comm_irecv(mailbox, request->buf, &request->real_size, &match_recv, request);
 
-    double sleeptime = smpi_or(request->size);
+    //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
+    double sleeptime = request->detached ? smpi_or(request->size) : 0.0;
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("receiving size of %zu : sleep %lf ", request->size, smpi_or(request->size));
@@ -313,7 +348,7 @@ void smpi_mpi_start(MPI_Request request)
       XBT_DEBUG("Send request %p is not in the permanent receive mailbox (buf: %p)",request,request->buf);
       mailbox = smpi_process_remote_mailbox(receiver);
     }
-    if (request->size < 64*1024 ) { //(FIXME: this limit should be configurable)
+    if ( (! (request->flags & SSEND)) && (request->size < sg_cfg_get_int("smpi/send_is_detached_thres"))) {
       void *oldbuf = NULL;
       request->detached = 1;
       request->refcount++;
@@ -329,11 +364,19 @@ void smpi_mpi_start(MPI_Request request)
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
-    double sleeptime = smpi_os(request->size);
+
+    //if we are giving back the control to the user without waiting for completion, we have to inject timings
+    double sleeptime =0.0;
+    if(request->detached || (request->flags & (ISEND|SSEND))){// issend should be treated as isend
+      //isend and send timings may be different
+      sleeptime = (request->flags & ISEND)? smpi_ois(request->size) : smpi_os(request->size);
+    }
+
     if(sleeptime!=0.0){
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("sending size of %zu : sleep %lf ", request->size, smpi_os(request->size));
     }
+
     request->action =
       simcall_comm_isend(mailbox, request->size, -1.0,
                          request->buf, request->real_size,
@@ -393,11 +436,23 @@ MPI_Request smpi_mpi_isend(void *buf, int count, MPI_Datatype datatype,
 {
   MPI_Request request =
       build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
-                    comm, NON_PERSISTENT | SEND);
+                    comm, NON_PERSISTENT | ISEND | SEND);
 
   smpi_mpi_start(request);
   return request;
 }
+
+MPI_Request smpi_mpi_issend(void *buf, int count, MPI_Datatype datatype,
+                           int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request =
+      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                    comm, NON_PERSISTENT | ISEND | SSEND | SEND);
+  smpi_mpi_start(request);
+  return request;
+}
+
+
 
 MPI_Request smpi_irecv_init(void *buf, int count, MPI_Datatype datatype,
                             int src, int tag, MPI_Comm comm)
@@ -432,10 +487,20 @@ void smpi_mpi_recv(void *buf, int count, MPI_Datatype datatype, int src,
 void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
                    int tag, MPI_Comm comm)
 {
-  MPI_Request request;
-  request = smpi_mpi_isend(buf, count, datatype, dst, tag, comm);
+  MPI_Request request =
+      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                    comm, NON_PERSISTENT | SEND);
+
+  smpi_mpi_start(request);
   smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 
+}
+
+void smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype,
+                           int dst, int tag, MPI_Comm comm)
+{
+  MPI_Request request = smpi_mpi_issend(buf, count, datatype, dst, tag, comm);
+  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -454,7 +519,7 @@ void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   smpi_mpi_waitall(2, requests, stats);
   if(status != MPI_STATUS_IGNORE) {
     // Copy receive status
-    memcpy(status, &stats[1], sizeof(MPI_Status));
+    *status = stats[1];
   }
 }
 
@@ -466,13 +531,14 @@ int smpi_mpi_get_count(MPI_Status * status, MPI_Datatype datatype)
 static void finish_wait(MPI_Request * request, MPI_Status * status)
 {
   MPI_Request req = *request;
+  if(status != MPI_STATUS_IGNORE)
+    smpi_empty_status(status);
+
   if(!(req->detached && req->flags & SEND)){
     if(status != MPI_STATUS_IGNORE) {
       status->MPI_SOURCE = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
       status->MPI_TAG = req->tag == MPI_ANY_TAG ? req->real_tag : req->tag;
-      if(req->truncated)
-      status->MPI_ERROR = MPI_ERR_TRUNCATE;
-      else status->MPI_ERROR = MPI_SUCCESS ;
+      status->MPI_ERROR = req->truncated ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
       // this handles the case were size in receive differs from size in send
       // FIXME: really this should just contain the count of receive-type blocks,
       // right?
@@ -579,7 +645,7 @@ int smpi_mpi_testall(int count, MPI_Request requests[],
       smpi_empty_status(pstat);
     }
     if(status != MPI_STATUSES_IGNORE) {
-      memcpy(&status[i], pstat, sizeof(*pstat));
+      status[i] = *pstat;
     }
   }
   return flag;
@@ -701,33 +767,31 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
   int  index, c;
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
-  int retvalue=MPI_SUCCESS;
+  int retvalue = MPI_SUCCESS;
   //tag invalid requests in the set
-  for(c = 0; c < count; c++) {
-    if(requests[c]==MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL ){
-      if(status != MPI_STATUSES_IGNORE)
+  if (status != MPI_STATUSES_IGNORE) {
+    for (c = 0; c < count; c++) {
+      if (requests[c] == MPI_REQUEST_NULL || requests[c]->dst == MPI_PROC_NULL) {
         smpi_empty_status(&status[c]);
-    }else if(requests[c]->src == MPI_PROC_NULL ){
-      if(status != MPI_STATUSES_IGNORE) {
+      } else if (requests[c]->src == MPI_PROC_NULL) {
         smpi_empty_status(&status[c]);
-        status[c].MPI_SOURCE=MPI_PROC_NULL;
+        status[c].MPI_SOURCE = MPI_PROC_NULL;
       }
     }
   }
   for(c = 0; c < count; c++) {
-      if(MC_is_active()) {
-        smpi_mpi_wait(&requests[c], pstat);
-        index = c;
-      } else {
-        index = smpi_mpi_waitany(count, requests, pstat);
-        if(index == MPI_UNDEFINED) {
-          break;
-       }
-      if(status != MPI_STATUSES_IGNORE) {
-        memcpy(&status[index], pstat, sizeof(*pstat));
-        if(status[index].MPI_ERROR==MPI_ERR_TRUNCATE)retvalue=MPI_ERR_IN_STATUS;
-
-      }
+    if (MC_is_active()) {
+      smpi_mpi_wait(&requests[c], pstat);
+      index = c;
+    } else {
+      index = smpi_mpi_waitany(count, requests, pstat);
+      if (index == MPI_UNDEFINED)
+        break;
+    }
+    if (status != MPI_STATUSES_IGNORE) {
+      status[index] = *pstat;
+      if (status[index].MPI_ERROR == MPI_ERR_TRUNCATE)
+        retvalue = MPI_ERR_IN_STATUS;
     }
   }
 
@@ -749,7 +813,7 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
       indices[count] = index;
       count++;
       if(status != MPI_STATUSES_IGNORE) {
-        memcpy(&status[index], pstat, sizeof(*pstat));
+        status[index] = *pstat;
       }
     }else{
       return MPI_UNDEFINED;
@@ -773,7 +837,7 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
          indices[count] = i;
          count++;
          if(status != MPI_STATUSES_IGNORE) {
-            memcpy(&status[i], pstat, sizeof(*pstat));
+           status[i] = *pstat;
          }
       }
     }else{

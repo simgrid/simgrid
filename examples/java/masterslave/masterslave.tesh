@@ -1,8 +1,8 @@
-#! ./tesh
+#! tesh
 
 ! output sort
 
-$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar masterslave/Masterslave ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/masterslave/masterslaveDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -cp ${classpath:=.} masterslave/Masterslave ${srcdir:=.}/platform.xml ${srcdir:=.}/masterslave/masterslaveDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:masterslave.Master@Jacquelin) Hello! Got 7 slaves and 5 tasks to process
 > [  0.000000] (2:masterslave.Forwarder@Jackson) Receiving on 'slave_0'
 > [  0.000000] (3:masterslave.Forwarder@Casavant) Receiving on 'slave_1'

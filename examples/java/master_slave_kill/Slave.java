@@ -8,6 +8,7 @@ package master_slave_kill;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
+import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.TimeoutException;
 import org.simgrid.msg.TransferFailureException;
@@ -26,7 +27,13 @@ public class Slave extends Process {
 	Msg.info("Send Mail1!");
 	task.send("mail1");
 	
-	Task task2 = Task.receive("mail2");
-	 Msg.info("Receive Mail2!");
+	Task task2;
+        try {
+                task2 = Task.receive("mail2");
+        } catch (MsgException e) {
+                Msg.debug("Received failed");
+                return;
+        }
+	Msg.info("Receive Mail2!");
   }
 }

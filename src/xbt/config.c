@@ -644,7 +644,7 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
     }
     *(val++) = '\0';
 
-    if (strncmp(name, "contexts/", strlen("contexts/")))
+    if (strncmp(name, "contexts/", strlen("contexts/")) && strncmp(name, "path", strlen("path")))
       XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
 
     TRY {

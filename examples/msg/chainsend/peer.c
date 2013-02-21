@@ -11,6 +11,7 @@ void peer_init_chain(peer_t peer, message_t msg)
 {
   peer->prev = msg->prev_hostname;
   peer->next = msg->next_hostname;
+  peer->total_pieces = msg->num_pieces;
   peer->init = 1;
 }
 
@@ -39,11 +40,10 @@ int peer_execute_task(peer_t peer, msg_task_t task)
         peer_forward_msg(peer, msg);
       peer->pieces++;
       peer->bytes += msg->data_length;
-      break;
-    case MESSAGE_END_DATA:
-      xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %d before initialization", msg->type);
-      done = 1;
-      XBT_DEBUG("%d pieces receieved", peer->pieces);
+      if (peer->pieces >= peer->total_pieces) {
+        XBT_DEBUG("%d pieces receieved", peer->pieces);
+        done = 1;
+      }
       break;
   }
 
@@ -91,7 +91,6 @@ void peer_init(peer_t p, int argc, char *argv[])
   p->next = NULL;
   p->pieces = 0;
   p->bytes = 0;
-  p->close_asap = 0;
   p->pending_recvs = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   p->pending_sends = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   p->me = xbt_new(char, HOSTNAME_LENGTH);
@@ -105,17 +104,18 @@ void peer_init(peer_t p, int argc, char *argv[])
 
 void peer_shutdown(peer_t p)
 {
-  float start_time = MSG_get_clock();
-  float end_time = start_time + PEER_SHUTDOWN_DEADLINE;
+  unsigned int size = xbt_dynar_length(p->pending_sends);
+  unsigned int idx;
+  msg_comm_t *comms = xbt_new(msg_comm_t, size);
 
-  XBT_DEBUG("Waiting for sends to finish before shutdown...");
-  /* MSG_comm_waitall(p->pending_sends, PEER_SHUTDOWN_DEADLINE); FIXME: this doesn't work */
-  while (xbt_dynar_length(p->pending_sends) && MSG_get_clock() < end_time) {
-    process_pending_connections(p->pending_sends);
-    MSG_process_sleep(1);
+  for (idx = 0; idx < size; idx++) {
+    comms[idx] = xbt_dynar_get_as(p->pending_sends, idx, msg_comm_t);
   }
 
-  xbt_assert(xbt_dynar_length(p->pending_sends) == 0, "Shutdown failed, sends still pending after deadline");
+  XBT_DEBUG("Waiting for sends to finish before shutdown...");
+  MSG_comm_waitall(comms, size, PEER_SHUTDOWN_DEADLINE);
+
+  xbt_free(comms);
 }
 
 void peer_delete(peer_t p)

@@ -6,7 +6,7 @@ if(HAVE_NS3)
   add_executable(ns3 "ns3.c")
 
   ### Add definitions for compile
-  target_link_libraries(ns3 simgrid m )
+  target_link_libraries(ns3 simgrid )
 endif()
 
 set(tesh_files

@@ -37,7 +37,11 @@ public final class Msg {
 		nativeInit();
 	}
 	private static void loadLib (String name) {
-		String Path = "NATIVE/"+System.getProperty("os.name")+"/"+System.getProperty("os.arch")+"/";
+	  String Os = System.getProperty("os.name");
+	  //Windows may report its name in java differently from cmake, which generated the path
+		if(Os.toLowerCase().indexOf("win") >= 0) Os = "Windows";
+		String Path = "NATIVE/"+Os+"/"+System.getProperty("os.arch")+"/";
+
 		String filename=name;
 		InputStream in = Msg.class.getClassLoader().getResourceAsStream(Path+filename);
 		
@@ -112,7 +116,7 @@ public final class Msg {
 	}
 
     /** Retrieve the simulation time
-     * @return
+     * @return The simulation time.
      */
 	public final static native double getClock();
 	/**
@@ -154,8 +158,6 @@ public final class Msg {
 	 * The natively implemented method to initialize a MSG simulation.
 	 *
 	 * @param args            The arguments of the command line of the simulation.
-	 *
-	 * @see                    Msg.init()
 	 */
 	public final static native void init(String[]args);
 
@@ -166,8 +168,6 @@ public final class Msg {
 	 * {@link #clean()} if you really insist on cleaning the C side), so you can freely 
 	 * retrieve the informations that you want from the simulation. In particular, retrieving the status 
 	 * of a process or the current date is perfectly ok. 
-	 *
-	 * @see                    MSG_run
 	 */
 	public final static native void run() ;
 	

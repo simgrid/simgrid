@@ -7,6 +7,7 @@
 #include "Summa.h"
 #include "2.5D_MM.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include "xbt/log.h"
 #define CHECK_25D 1
 

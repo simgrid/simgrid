@@ -1,5 +1,3 @@
-#include "smpi/smpi.h"
-
 /********** Tracing **********/
 /* from smpi_instr.c */
 void TRACE_smpi_alloc(void);

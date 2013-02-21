@@ -10,6 +10,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
+#include "xbt/synchro_core.h"
 
 #include "simgrid/simix.h"        /* used implementation */
 #include "../simix/smx_private.h" /* FIXME */

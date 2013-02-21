@@ -10,6 +10,7 @@
 #define JXBT_UTILITY_H
 
 #include <jni.h>
+#include <stdint.h>
 
 /* *********** */
 /* JNI GETTERS */

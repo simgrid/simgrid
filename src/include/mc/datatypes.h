@@ -40,6 +40,7 @@ typedef struct s_stack_region{
   char *process_name;
   void *context;
   size_t size;
+  int block;
 }s_stack_region_t, *stack_region_t;
 
 typedef struct s_heap_equality{
@@ -49,6 +50,9 @@ typedef struct s_heap_equality{
 
 void heap_equality_free_voidp(void *e);
 void stack_region_free_voidp(void *s);
+
+void heap_ignore_region_free(mc_heap_ignore_region_t r);
+void heap_ignore_region_free_voidp(void *r);
 
 SG_END_DECL()
 #endif                          /* _MC_MC_H */

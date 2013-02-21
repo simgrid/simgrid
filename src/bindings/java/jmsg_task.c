@@ -23,18 +23,19 @@ static jmethodID jtask_method_Comm_constructor;
 
 static jfieldID jtask_field_Task_bind;
 static jfieldID jtask_field_Task_name;
+static jfieldID jtask_field_Task_messageSize;
 static jfieldID jtask_field_Comm_bind;
 static jfieldID jtask_field_Comm_taskBind;
 static jfieldID jtask_field_Comm_receiving;
 
 void jtask_bind(jobject jtask, msg_task_t task, JNIEnv * env)
 {
-  (*env)->SetLongField(env, jtask, jtask_field_Task_bind, (jlong) (long) (task));
+  (*env)->SetLongField(env, jtask, jtask_field_Task_bind, (intptr_t)task);
 }
 
 msg_task_t jtask_to_native_task(jobject jtask, JNIEnv * env)
 {
-  return (msg_task_t) (long) (*env)->GetLongField(env, jtask, jtask_field_Task_bind);
+  return (msg_task_t)(intptr_t)(*env)->GetLongField(env, jtask, jtask_field_Task_bind);
 }
 
 jboolean jtask_is_valid(jobject jtask, JNIEnv * env)
@@ -50,6 +51,7 @@ Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
   jtask_method_Comm_constructor = (*env)->GetMethodID(env, jtask_class_Comm, "<init>", "()V");
   jtask_field_Task_bind = jxbt_get_jfield(env, jtask_class_Task, "bind", "J");
   jtask_field_Task_name = jxbt_get_jfield(env, jtask_class_Task, "name", "Ljava/lang/String;");
+  jtask_field_Task_messageSize = jxbt_get_jfield(env, jtask_class_Task, "messageSize", "D");
   jtask_field_Comm_bind = jxbt_get_jfield(env, jtask_class_Comm, "bind", "J");
   jtask_field_Comm_taskBind = jxbt_get_jfield(env, jtask_class_Comm, "taskBind", "J");
   jtask_field_Comm_receiving = jxbt_get_jfield(env, jtask_class_Comm, "receiving", "Z");
@@ -216,6 +218,8 @@ Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject jtask)
   }
   msg_error_t rv;
   rv = MSG_task_execute(task);
+  if ((*env)->ExceptionOccurred(env))
+    return;
   if (rv != MSG_OK) {
     jmsg_throw_status(env, rv);
   }
@@ -348,6 +352,7 @@ Java_org_simgrid_msg_Task_setDataSize
     jxbt_throw_notbound(env, "task", jtask);
     return;
 	}
+        (*env)->SetDoubleField(env, jtask, jtask_field_Task_messageSize, dataSize);
 	MSG_task_set_data_size(task, (double) dataSize);
 }
 
@@ -430,6 +435,8 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
 
   alias = (*env)->GetStringUTFChars(env, jalias, 0);
   rv = MSG_task_receive_ext(task, alias, (double) jtimeout, host);
+  if ((*env)->ExceptionOccurred(env))
+    return NULL;
   if (rv != MSG_OK) {
     jmsg_throw_status(env,rv);
     return NULL;

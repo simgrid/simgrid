@@ -8,7 +8,6 @@
 #include "xbt/misc.h"
 #include "simgrid_config.h"     /*HAVE_MMAP _XBT_WIN32 */
 #include "internal_config.h"        /* MMALLOC_WANT_OVERRIDE_LEGACY */
-#include "time.h"               /* to seed the random generator */
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -35,7 +34,6 @@ int xbt_initialized = 0;
  */
 static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR(200);
 static void xbt_postexit(void);
-static unsigned int seed = 2147483647;
 
 #ifdef _XBT_WIN32
 # undef _XBT_NEED_INIT_PRAGMA
@@ -77,8 +75,9 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 
 #endif
 
-static void xbt_preinit(void)
-{
+static void xbt_preinit(void) {
+  unsigned int seed = 2147483647;
+
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
   mmalloc_preinit();
 #endif
@@ -87,7 +86,11 @@ static void xbt_preinit(void)
   xbt_os_thread_mod_preinit();
   xbt_fifo_preinit();
   xbt_dict_preinit();
-  atexit(xbt_postexit);
+   
+  srand(seed);
+  srand48(seed);
+
+  atexit(xbt_postexit);   
 }
 
 static void xbt_postexit(void)
@@ -118,9 +121,6 @@ void xbt_init(int *argc, char **argv)
   for (i=0;i<*argc;i++) {
     xbt_dynar_push(xbt_cmdline,&(argv[i]));
   }
-
-  srand(seed);
-  srand48(seed);
   
   xbt_log_init(argc, argv);
 }

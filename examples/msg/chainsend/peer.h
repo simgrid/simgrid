@@ -19,7 +19,7 @@ typedef struct s_peer {
   unsigned long long bytes;
   xbt_dynar_t pending_recvs;
   xbt_dynar_t pending_sends;
-  int close_asap; /* TODO: unused */
+  unsigned int total_pieces;
 } s_peer_t, *peer_t;
 
 /* Peer: helper functions */

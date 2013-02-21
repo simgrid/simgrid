@@ -115,6 +115,8 @@ AS_t model_full_create(void)
   new_component->generic_routing.parse_ASroute = model_full_set_route;
   new_component->generic_routing.get_route_and_latency =
       full_get_route_and_latency;
+  new_component->generic_routing.get_graph = generic_get_graph;
+
   new_component->generic_routing.get_onelink_routes = full_get_onelink_routes;
   new_component->generic_routing.finalize = full_finalize;
 

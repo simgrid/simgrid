@@ -96,21 +96,21 @@ void dispatch_jobs(double tracker_deadline, double peer_deadline, double seed_pe
     if(i==0) {
       //The fisrt node is the tracker
       arguments_tracker = xbt_malloc0(sizeof(char*) * 2);
-      arguments_tracker[0] = bprintf("tracker");
+      arguments_tracker[0] = xbt_strdup("tracker");
       arguments_tracker[1] = bprintf("%f", tracker_deadline);
       MSG_process_create_with_arguments("tracker", tracker, NULL, host, 2, arguments_tracker);
     } else {
       //Other nodes are peers
       int argument_size;
       arguments_peer = xbt_malloc0(sizeof(char*) * 4);
-      arguments_peer[0] = bprintf("peer");
+      arguments_peer[0] = xbt_strdup("peer");
       arguments_peer[1] = bprintf("%d", i);
       arguments_peer[2] = bprintf("%f", peer_deadline);
 
       //The first peers will be seeders
       if(seed_count > 0) {
         seed_count--;
-        arguments_peer[3] = bprintf("1");
+        arguments_peer[3] = xbt_strdup("1");
         argument_size = 4;
       } else {
         //Other ars leechers

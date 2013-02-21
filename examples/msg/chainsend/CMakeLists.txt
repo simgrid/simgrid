@@ -5,7 +5,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(chainsend chainsend.c iterator.c common.c messages.c broadcaster.c peer.c)
 
 ### Add definitions for compile
-target_link_libraries(chainsend simgrid m )
+target_link_libraries(chainsend simgrid )
 
 set(tesh_files
   ${tesh_files}

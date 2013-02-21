@@ -20,13 +20,13 @@ if(enable_smpi)
   add_executable(mc_bugged2 mc_bugged2.c)
   add_executable(smpi_replay replay/replay.c)
 
-  target_link_libraries(bcbench m simgrid smpi )
-  target_link_libraries(mvmul m simgrid smpi )
-  target_link_libraries(smpi_traced m simgrid smpi )
-  target_link_libraries(smpi_traced_simple m simgrid smpi )
-  target_link_libraries(mc_bugged1 m simgrid smpi )
-  target_link_libraries(mc_bugged2 m simgrid smpi )
-  target_link_libraries(smpi_replay m simgrid smpi )
+  target_link_libraries(bcbench simgrid smpi )
+  target_link_libraries(mvmul simgrid smpi )
+  target_link_libraries(smpi_traced simgrid smpi )
+  target_link_libraries(smpi_traced_simple simgrid smpi )
+  target_link_libraries(mc_bugged1 simgrid smpi )
+  target_link_libraries(mc_bugged2 simgrid smpi )
+  target_link_libraries(smpi_replay simgrid smpi )
 
 endif()
 
@@ -59,12 +59,16 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_bcast.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions1.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_allReduce.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_alltoall.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_alltoallv.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_barrier.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_bcast.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_bcast_reduce_datatypes.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_waitall.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_with_isend.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces
   PARENT_SCOPE
   )  

@@ -75,6 +75,13 @@ if(enable_lib_static AND NOT WIN32)
   endif()
 endif()
 
+if(enable_java)
+  install(TARGETS SG_java
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
+  install(FILES ${SIMGRID_JAR}
+      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/)
+endif()
+
 # include files
 set(HEADERS
   ${headers_to_install}

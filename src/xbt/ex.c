@@ -46,6 +46,7 @@
 #include "portable.h"           /* execinfo when available */
 #include "xbt/ex.h"
 #include "xbt/str.h"
+#include "xbt/synchro_core.h"
 #include "xbt_modinter.h"       /* backtrace initialization headers */
 
 #include "xbt/ex_interface.h"

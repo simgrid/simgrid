@@ -621,9 +621,9 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
                             SD_task_t dst)
 {
   xbt_dynar_t dynar;
-  int length;
+  unsigned long length;
   int found = 0;
-  int i;
+  unsigned long i;
   SD_dependency_t dependency;
 
   dynar = src->tasks_after;
@@ -652,7 +652,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   for (i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dynar, i, &dependency);
     found = (dependency->dst == dst);
-    XBT_DEBUG("Dependency %d: dependency->dst = %s", i,
+    XBT_DEBUG("Dependency %lu: dependency->dst = %s", i,
            SD_task_get_name(dependency->dst));
   }
 
@@ -746,9 +746,9 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 {
 
   xbt_dynar_t dynar;
-  int length;
+  unsigned long length;
   int found = 0;
-  int i;
+  unsigned long i;
   SD_dependency_t dependency;
 
   /* remove the dependency from src->tasks_after */
@@ -817,9 +817,9 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
 {
 
   xbt_dynar_t dynar;
-  int length;
+  unsigned long length;
   int found = 0;
-  int i;
+  unsigned long i;
   SD_dependency_t dependency;
 
   dynar = src->tasks_after;

@@ -8,7 +8,7 @@ add_executable(masterslave_virtual_machines "masterslave_virtual_machines.c")
 if(WIN32)
   target_link_libraries(masterslave_virtual_machines simgrid )
 else()
-  target_link_libraries(masterslave_virtual_machines simgrid m)
+  target_link_libraries(masterslave_virtual_machines simgrid)
 endif()
 
 set(tesh_files

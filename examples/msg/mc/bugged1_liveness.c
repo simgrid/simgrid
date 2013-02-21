@@ -39,7 +39,6 @@ int coordinator(int argc, char *argv[])
       } else {               
         if(strcmp(req, "2") == 0){
           XBT_INFO("CS idle. Grant immediatly");
-          MC_compare();
           answer = MSG_task_create("grant", 0, 1000, NULL);
           MSG_task_send(answer, req);
           CS_used = 1;
@@ -62,7 +61,7 @@ int client(int argc, char *argv[])
 {
   int my_pid = MSG_process_get_PID(MSG_process_self());
 
-  char *my_mailbox = bprintf("%s", argv[1]);
+  char *my_mailbox = xbt_strdup(argv[1]);
   msg_task_t grant = NULL, release = NULL;
 
 

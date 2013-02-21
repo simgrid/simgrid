@@ -7,8 +7,8 @@ add_executable(file_unlink file_unlink.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(file simgrid m pthread)
-  target_link_libraries(file_unlink simgrid m pthread)
+  target_link_libraries(file simgrid pthread)
+  target_link_libraries(file_unlink simgrid pthread)
 else()
   target_link_libraries(file simgrid)
   target_link_libraries(file_unlink simgrid)

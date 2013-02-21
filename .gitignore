@@ -11,6 +11,7 @@
 *.patch
 *.plist
 *.trace
+*.class
 
 ################################################
 ### Maintainer mode
@@ -66,12 +67,13 @@ CMakeFiles
 CMakeCache.txt
 DartConfiguration.tcl
 simgrid.nsi
+TAGS
 Testing/
 Makefile
 bin/
 lib/
 manpages/
-build_dir/
+build_*/
 build/
 buildtools/Cmake/memcheck_tests.cmake
 buildtools/Cmake/test_prog/prog_va_copy.c
@@ -148,11 +150,11 @@ examples/msg/mc/bugged1_while_liveness
 examples/msg/mc/centralized_liveness_deadlock
 examples/msg/mc/test/test_heap_comparison
 examples/msg/mc/chord_liveness
-examples/msg/mc/test/snapshot_comparison_liveness1
-examples/msg/mc/test/snapshot_comparison_liveness2
-examples/msg/mc/test/snapshot_comparison_liveness3
-examples/msg/mc/test/snapshot_comparison_liveness4
-examples/msg/mc/test/snapshot_comparison_liveness5
+examples/msg/mc/test/snapshot_comparison1
+examples/msg/mc/test/snapshot_comparison2
+examples/msg/mc/test/snapshot_comparison3
+examples/msg/mc/test/snapshot_comparison4
+examples/msg/mc/test/snapshot_comparison5
 examples/msg/chainsend/chainsend
 examples/msg/chord/chord
 examples/msg/chord/chord_stateful
@@ -457,27 +459,22 @@ examples/smpi/smpi_traced.trace
 examples/simdag/dot/simulate_dot
 teshsuite/simdag/platforms/graphicator
 
-#########################################""
-## tutorial files
-doc/gtut-files/01-bones_client
-doc/gtut-files/01-bones_server
-doc/gtut-files/02-simple_client
-doc/gtut-files/02-simple_server
-doc/gtut-files/03-args_client
-doc/gtut-files/03-args_server
-doc/gtut-files/04-callback_client
-doc/gtut-files/04-callback_server
-doc/gtut-files/05-globals_client
-doc/gtut-files/05-globals_server
-doc/gtut-files/06-logs_client
-doc/gtut-files/06-logs_server
-doc/gtut-files/07-timers_client
-doc/gtut-files/07-timers_server
-doc/gtut-files/08-exceptions_client
-doc/gtut-files/08-exceptions_server
-doc/gtut-files/09-simpledata_client
-doc/gtut-files/09-simpledata_server
-doc/gtut-files/10-rpc_client
-doc/gtut-files/10-rpc_server
-doc/gtut-files/11-explicitwait_client
-doc/gtut-files/11-explicitwait_server
+#########################################
+## touched files to track the dependencies of java examples
+examples/java/async/java_async_compiled
+examples/java/bittorrent/java_bittorrent_compiled
+examples/java/chord/java_chord_compiled
+examples/java/cloud/java_cloud_compiled
+examples/java/commTime/java_commTime_compiled
+examples/java/io/java_io_compiled
+examples/java/kademlia/java_kademlia_compiled
+examples/java/master_slave_bypass/java_master_slave_bypass_compiled
+examples/java/master_slave_kill/java_master_slave_kill_compiled
+examples/java/masterslave/java_masterslave_compiled
+examples/java/migration/java_migration_compiled
+examples/java/mutualExclusion/java_mutualExclusion_compiled
+examples/java/pingPong/java_pingPong_compiled
+examples/java/priority/java_priority_compiled
+examples/java/startKillTime/java_startKillTime_compiled
+examples/java/suspend/java_suspend_compiled
+examples/java/tracing/java_tracing_compiled

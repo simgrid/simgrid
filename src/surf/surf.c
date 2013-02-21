@@ -623,7 +623,7 @@ double surf_solve(double max_date)
 
     if ((min == -1.0) || (next_event_date > NOW + min)) break;
 
-    XBT_DEBUG("Updating models");
+    XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)",min, NOW, next_event_date);
     while ((event =
             tmgr_history_get_next_event_leq(history, next_event_date,
                                             &value,
@@ -640,7 +640,7 @@ double surf_solve(double max_date)
              resource->model->name, min);
       resource->model->model_private->update_resource_state(resource,
                                                             event, value,
-                                                            NOW + min);
+                                                            next_event_date);
     }
   } while (1);
 
@@ -765,11 +765,18 @@ void surf_set_nthreads(int nthreads) {
  * sees it and react accordingly. This would kill that need for surf to call simix.
  *
  */
+
+static void remove_watched_host(void *key)
+{
+  xbt_dict_remove(watched_hosts_lib, *(char**)key);
+}
+
 void surf_watched_hosts(void)
 {
   char *key;
   void *host;
   xbt_dict_cursor_t cursor;
+  xbt_dynar_t hosts = xbt_dynar_new(sizeof(char*), NULL);
 
   XBT_DEBUG("Check for host SURF_RESOURCE_ON on watched_hosts_lib");
   xbt_dict_foreach(watched_hosts_lib,cursor,key,host)
@@ -777,9 +784,11 @@ void surf_watched_hosts(void)
     if(SIMIX_host_get_state(host) == SURF_RESOURCE_ON){
       XBT_INFO("Restart processes on host: %s",SIMIX_host_get_name(host));
       SIMIX_host_autorestart(host);
-      xbt_dict_remove(watched_hosts_lib,key);
+      xbt_dynar_push_as(hosts, char*, key);
     }
     else
       XBT_DEBUG("See SURF_RESOURCE_OFF on host: %s",key);
   }
+  xbt_dynar_map(hosts, remove_watched_host);
+  xbt_dynar_free(&hosts);
 }

@@ -6,12 +6,14 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 #include "jmsg_file.h"
 #include "jxbt_utilities.h"
+
 void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t stream) {
-  (*env)->SetLongField(env, jfile, jfile_field_bind, (jlong) (long) (stream));
+  (*env)->SetLongField(env, jfile, jfile_field_bind, (intptr_t)stream);
 }
 
 msg_file_t jfile_get_native(JNIEnv *env, jobject jfile) {
-  msg_file_t file = (msg_file_t)(*env)->GetLongField(env, jfile, jfile_field_bind);
+  msg_file_t file =
+    (msg_file_t)(intptr_t)(*env)->GetLongField(env, jfile, jfile_field_bind);
   return file;
 }
 

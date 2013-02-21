@@ -1,8 +1,8 @@
-#! ./tesh
+#! tesh
 
 ! output sort
 
-$ java -cp .:${srcdir:=.}/examples:${srcdir:=.}/simgrid.jar priority/Priority ${srcdir:=.}/examples/platform.xml ${srcdir:=.}/examples/priority/priorityDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -cp ${classpath:=.} priority/Priority ${srcdir:=.}/platform.xml ${srcdir:=.}/priority/priorityDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:priority.Test@Fafard) Hello! Running a task of size 7.6296E7 with priority 1.0
 > [  0.000000] (2:priority.Test@Fafard) Hello! Running a task of size 7.6296E7 with priority 2.0
 > [  0.833332] (2:priority.Test@Fafard) Goodbye now!

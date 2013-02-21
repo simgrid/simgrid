@@ -9,6 +9,7 @@
 #include "surf_routing_private.h"
 #include "surf/surf_routing.h"
 #include "surf/surfxml_parse_values.h"
+#include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
@@ -91,11 +92,121 @@ xbt_dynar_t generic_get_onelink_routes(AS_t rc) { // FIXME: kill that stub
   return NULL;
 }
 
-sg_platf_route_cbarg_t generic_get_bypassroute(AS_t rc, sg_routing_edge_t src, sg_routing_edge_t dst, double *lat)
+static const char *instr_node_name(xbt_node_t node)
+{
+  void *data = xbt_graph_node_get_data(node);
+  char *str = (char *) data;
+  return str;
+}
+
+xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char *name,
+                              xbt_dict_t nodes)
+{
+  xbt_node_t ret = xbt_dict_get_or_null(nodes, name);
+  if (ret)
+    return ret;
+
+  ret = xbt_graph_new_node(graph, xbt_strdup(name));
+  xbt_dict_set(nodes, name, ret, NULL);
+  return ret;
+}
+
+xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d,
+                              xbt_dict_t edges)
+{
+  xbt_edge_t ret;
+
+  const char *sn = instr_node_name(s);
+  const char *dn = instr_node_name(d);
+  int len = strlen(sn) + strlen(dn) + 1;
+  char *name = (char *) xbt_malloc(len * sizeof(char));
+
+
+  snprintf(name, len, "%s%s", sn, dn);
+  ret = xbt_dict_get_or_null(edges, name);
+  if (ret == NULL) {
+    snprintf(name, len, "%s%s", dn, sn);
+    ret = xbt_dict_get_or_null(edges, name);
+  }
+
+  if (ret == NULL) {
+    ret = xbt_graph_new_edge(graph, s, d, NULL);
+    xbt_dict_set(edges, name, ret, NULL);
+  }
+  free(name);
+  return ret;
+}
+
+void generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
+                       AS_t rc)
+{
+  int src, dst;
+  int table_size = xbt_dynar_length(rc->index_network_elm);
+
+
+  for (src = 0; src < table_size; src++) {
+    sg_routing_edge_t my_src =
+        xbt_dynar_get_as(rc->index_network_elm, src, sg_routing_edge_t);
+    for (dst = 0; dst < table_size; dst++) {
+      if (src == dst)
+        continue;
+      sg_routing_edge_t my_dst =
+          xbt_dynar_get_as(rc->index_network_elm, dst, sg_routing_edge_t);
+
+      sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+
+      rc->get_route_and_latency(rc, my_src, my_dst, route, NULL);
+
+      XBT_DEBUG ("get_route_and_latency %s -> %s", my_src->name, my_dst->name);
+
+      unsigned int cpt;
+      void *link;
+
+      xbt_node_t current, previous;
+      const char *previous_name, *current_name;
+
+      if (route->gw_src) {
+        previous = new_xbt_graph_node(graph, route->gw_src->name, nodes);
+        previous_name = route->gw_src->name;
+      } else {
+        previous = new_xbt_graph_node(graph, my_src->name, nodes);
+        previous_name = my_src->name;
+      }
+
+      xbt_dynar_foreach(route->link_list, cpt, link) {
+        char *link_name = ((surf_resource_t) link)->name;
+        current = new_xbt_graph_node(graph, link_name, nodes);
+        current_name = link_name;
+        new_xbt_graph_edge(graph, previous, current, edges);
+        XBT_DEBUG ("  %s -> %s", previous_name, current_name);
+        previous = current;
+        previous_name = current_name;
+      }
+
+      if (route->gw_dst) {
+        current = new_xbt_graph_node(graph, route->gw_dst->name, nodes);
+        current_name = route->gw_dst->name;
+      } else {
+        current = new_xbt_graph_node(graph, my_dst->name, nodes);
+        current_name = my_dst->name;
+      }
+      new_xbt_graph_edge(graph, previous, current, edges);
+      XBT_DEBUG ("  %s -> %s", previous_name, current_name);
+
+      xbt_dynar_free (&(route->link_list));
+      xbt_free (route);
+    }
+  }
+}
+
+sg_platf_route_cbarg_t generic_get_bypassroute(AS_t rc, sg_routing_edge_t src,
+                                               sg_routing_edge_t dst,
+                                               double *lat)
 {
   // If never set a bypass route return NULL without any further computations
-  XBT_DEBUG("generic_get_bypassroute from %s to %s",src->name,dst->name);
-  if(no_bypassroute_declared)
+  XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name, dst->name);
+  if (no_bypassroute_declared)
     return NULL;
 
   sg_platf_route_cbarg_t e_route_bypass = NULL;

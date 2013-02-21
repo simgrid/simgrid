@@ -6,6 +6,7 @@
 
 #include "msg/msg.h"            /* core library */
 #include "xbt/sysdep.h"         /* calloc */
+#include "xbt/synchro_core.h"
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"

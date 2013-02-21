@@ -284,9 +284,6 @@
 /* define for stack growth */
 #cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@
 
-/* enable the getline replacement */
-#cmakedefine SIMGRID_NEED_GETLINE @SIMGRID_NEED_GETLINE@
-
 /* The maximal size of any scalar on this arch */
 #cmakedefine SIZEOF_MAX @SIZEOF_MAX@
 

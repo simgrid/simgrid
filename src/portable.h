@@ -39,34 +39,6 @@
 #endif
 
 /****
- **** Networking 
- ****/
-
-
-#ifdef HAVE_SYS_SOCKET_H
-#  include <sys/socket.h>
-#  include <netinet/in.h>       /* sometimes required for #include <arpa/inet.h> */
-#  include <netinet/tcp.h>      /* TCP_NODELAY */
-#  include <netdb.h>            /* getprotobyname() */
-#  include <arpa/inet.h>        /* inet_ntoa() */
-#  include <sys/types.h>        /* sometimes required for fd_set */
-# endif
-
-
-#ifndef HAVE_WINSOCK_H
-#       define tcp_read( s, buf, len)   read( s, buf, len )
-#       define tcp_write( s, buf, len)  write( s, buf, len )
-#       define sock_errno        errno
-#       define sock_errstr(err)  strerror(err)
-
-#       ifdef SHUT_RDWR
-#               define tcp_close( s )   (shutdown( s, SHUT_RDWR ), close( s ))
-#       else
-#               define tcp_close( s )   close( s )
-#       endif
-#endif                          /* windows or unix ? */
-
-/****
  **** File handling
  ****/
 
@@ -153,11 +125,5 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt,
 #ifdef HAVE_EXECINFO_H
 #  include <execinfo.h>
 #endif
-
-/****
- **** Some debugging functions. Can't we find a better place for this??
- ****/
-void hexa_print(const char *name, unsigned char *data, int size);
-const char *hexa_str(unsigned char *data, int size, int downside);
 
 #endif                          /* SIMGRID_PORTABLE_H */

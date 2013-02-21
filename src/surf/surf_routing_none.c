@@ -18,6 +18,11 @@ static void none_get_route_and_latency(AS_t rc, sg_routing_edge_t src, sg_routin
   *lat = 0.0;
 }
 
+static void none_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc)
+{
+	XBT_INFO("No routing no graph");
+}
+
 static sg_platf_route_cbarg_t none_get_bypass_route(AS_t rc,
     sg_routing_edge_t src,
     sg_routing_edge_t dst, double *lat) {
@@ -53,6 +58,7 @@ AS_t model_none_create_sized(size_t childsize) {
   new_component->get_onelink_routes = none_get_onelink_routes;
   new_component->get_bypass_route = none_get_bypass_route;
   new_component->finalize = model_none_finalize;
+  new_component->get_graph = none_get_graph;
   new_component->routing_sons = xbt_dict_new_homogeneous(NULL);
   new_component->index_network_elm = xbt_dynar_new(sizeof(char*),NULL);
 

@@ -4356,8 +4356,8 @@ char *surf_parse_text;
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
- * FleXML is Copyright (C) 2003-2011 Martin Quinson.  All rights reserved.
- * (Id: flexml.pl,v 1.69 2012/12/20 00:13:40 mquinson Exp).
+ * FleXML is Copyright (C) 2003-2013 Martin Quinson.  All rights reserved.
+ * (1.9.6).
  * 
  * There are two, intertwined parts to this program, part A and part B.
  *
@@ -4366,7 +4366,7 @@ char *surf_parse_text;
  * 
  * Some parts, here collectively called "Part A", are found in the 
  * FleXML package.  They are Copyright (C) 1999-2005 Kristoffer Rose
- * and Copyright (C) 2003-2011 Martin Quinson. All rights reserved.
+ * and Copyright (C) 2003-2013 Martin Quinson. All rights reserved.
  *
  * You can redistribute, use, perform, display and/or modify "Part A"
  * provided the following two conditions hold:
@@ -4399,10 +4399,7 @@ char *surf_parse_text;
  */
 
 /* Version strings. */
-const char rcs_surfxml_flexml_skeleton[] =
- "$" "Id: skel,v 1.40 2007/10/11 09:57:24 mquinson Exp $";
-const char rcs_surfxml_flexml[] =
- "$" "Id: flexml.pl,v 1.69 2012/12/20 00:13:40 mquinson Exp $";
+const char surfxml_flexml_version[] = "1.9.6";
 
 /* ANSI headers. */
 #include <stdlib.h> /* for realloc() -- needed here when using flex 2.5.4 */

@@ -134,6 +134,9 @@ int master(int argc, char *argv[]) {
     MSG_task_send(finalize, mailbox_buffer);
   }
 
+  XBT_INFO("Wait a while before effective shutdown.");
+  MSG_process_sleep(2);
+
   xbt_dynar_foreach(vms,i,vm) {
     MSG_vm_shutdown(vm);
     MSG_vm_destroy(vm);

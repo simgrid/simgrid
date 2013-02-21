@@ -45,7 +45,6 @@ smx_ctx_cojava_factory_create_context(xbt_main_func_t code, int argc,
                                     void *data);
 
 static void smx_ctx_cojava_free(smx_context_t context);
-static void smx_ctx_cojava_start(smx_context_t context);
 static void smx_ctx_cojava_suspend(smx_context_t context);
 static void smx_ctx_cojava_resume(smx_context_t new_context);
 static void smx_ctx_cojava_runall(void);
@@ -182,7 +181,7 @@ void smx_ctx_cojava_stop(smx_context_t context)
   if (context->iwannadie) {
     context->iwannadie = 0;
     JNIEnv *env = get_current_thread_env();
-    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process killed :)"));
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", xbt_strdup("Process killed :)"));
     THROWF(cancel_error, 0, "process cancelled");
   }
   else {
@@ -204,13 +203,15 @@ static void smx_ctx_cojava_suspend(smx_context_t context)
     XBT_DEBUG("Switching to %p",my_current_context);
     smx_ctx_cojava_t java_context = (smx_ctx_cojava_t)(next_context);
     if (!java_context->jprocess) {
-      (*(java_context->super.code))(java_context->super.argc, java_context->super.argv);
+      java_context->super.code(java_context->super.argc, java_context->super.argv);
       smx_ctx_cojava_create_coroutine(java_context);
     }
     else if (!java_context->bound) {
       java_context->bound = 1;
       smx_process_t process = SIMIX_process_self();
-      (*global_env)->SetLongField(global_env, java_context->jprocess, jprocess_field_Process_bind, (jlong)process);
+      (*global_env)->SetLongField(global_env, java_context->jprocess,
+                                  jprocess_field_Process_bind,
+                                  (intptr_t)process);
     }
 
     next_coroutine = java_context->jcoroutine;
@@ -229,14 +230,15 @@ static void smx_ctx_cojava_resume(smx_context_t new_context) {
   smx_ctx_cojava_t java_context = (smx_ctx_cojava_t)(new_context);
 
   if (!java_context->jprocess) {
-    (*(java_context->super.code))(java_context->super.argc, java_context->super.argv);
+    java_context->super.code(java_context->super.argc, java_context->super.argv);
     smx_ctx_cojava_create_coroutine(java_context);
     java_context->bound = 1;
   }
   else if (!java_context->bound) {
     java_context->bound = 1;
     smx_process_t process = SIMIX_process_self();
-    (*global_env)->SetLongField(global_env, java_context->jprocess, jprocess_field_Process_bind, (jlong)process);
+    (*global_env)->SetLongField(global_env, java_context->jprocess,
+                                jprocess_field_Process_bind, (intptr_t)process);
   }
   (*global_env)->CallStaticVoidMethod(global_env, coclass, coroutine_yieldTo, java_context->jcoroutine);
 }
@@ -245,7 +247,7 @@ static void smx_ctx_cojava_runall(void)
 {
   cojava_processes = SIMIX_process_get_runnable();
   smx_process_t process;
-  if (xbt_dynar_length(cojava_processes) > 0) {
+  if (!xbt_dynar_is_empty(cojava_processes)) {
     process = xbt_dynar_get_as(cojava_processes, 0, smx_process_t);
     cojava_process_index = 1;
     /* Execute the first process */
