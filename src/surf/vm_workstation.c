@@ -98,6 +98,8 @@ static void vm_ws_destroy(void *ind_vm_workstation)
 { 
 	/* ind_phys_workstation equals to smx_host_t */
 	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_workstation);
+	cpu_Cas01_t sub_cpu = surf_cpu_resource_priv(ind_vm_workstation);
+
 	xbt_assert(vm_ws);
 	xbt_assert(vm_ws->ws.generic_resource.model == surf_vm_workstation_model);
 
@@ -107,9 +109,25 @@ static void vm_ws_destroy(void *ind_vm_workstation)
   }
 
 	const char *name = vm_ws->ws.generic_resource.name;
-	/* this will call surf_resource_free() */
-	xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL);
 
+	// Remove all others in the lib associated to the VM
+    // Please note that you only remove the entries (and not free them)
+	xbt_lib_remove(host_lib, name);
+
+	//Free the CPU
+
+
+	// Free the net_elmts
+	// Nothing has to be done, because net_elmts is just a pointer on the physical one
+
+	// Free the storage
+    // Not relevant yet
+
+	//Free the WS
+	free(vm_ws);
+
+
+	// Not yet implemented
   /* NOTE: surf_resource_free() frees vm_ws->ws.generic_resource.name and
    * vm_ws->ws. Do not free them here. */
 }
