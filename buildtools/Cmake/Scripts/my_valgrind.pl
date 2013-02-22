@@ -5,12 +5,14 @@ my $count = 0;
 
 while (defined(my $arg = shift)) {
     print "arg($count)$arg\n";
-    if($arg eq "--cd"){
+    if ($arg =~ m!/smpirun$!) {
+        @argv = ( $arg, "-wrapper", "@argv" );
+    } elsif ($arg eq "--cd") {
         $arg = shift;
         print "cd $arg\n";
         chdir ($arg);
         $count++;
-    } else{
+    } else {
         push @argv, $arg;
     }
     $count++;
