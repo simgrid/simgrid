@@ -26,7 +26,7 @@ XBT_PUBLIC(void) xbt_lib_free(xbt_lib_t * lib);
 XBT_PUBLIC(int) xbt_lib_add_level(xbt_lib_t lib, void_f_pvoid_t free_f);
 XBT_PUBLIC(void) xbt_lib_set(xbt_lib_t lib, const char *name, int level,
                              void *obj);
-XBT_PUBLIC(void) xbt_lib_unset(xbt_lib_t lib, const char *key, int level);
+XBT_PUBLIC(void) xbt_lib_unset(xbt_lib_t lib, const char *key, int level, int invoke_callback);
 XBT_PUBLIC(void *) xbt_lib_get_or_null(xbt_lib_t lib, const char *name,
                                        int level);
 XBT_PUBLIC(xbt_dictelm_t) xbt_lib_get_elm_or_null(xbt_lib_t lib, const char *key);

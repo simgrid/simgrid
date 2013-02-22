@@ -313,7 +313,7 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
   smx_host_priv_t host_priv = SIMIX_host_priv(ind_vm);
 
   /* this will call the registered callback function, i.e., SIMIX_host_destroy().  */
-  xbt_lib_unset(host_lib, hostname, SIMIX_HOST_LEVEL);
+  xbt_lib_unset(host_lib, hostname, SIMIX_HOST_LEVEL, 1);
 
   /* jump to vm_ws_destroy(). The surf level resource will be freed. */
   surf_vm_workstation_model->extension.vm_workstation.destroy(ind_vm);

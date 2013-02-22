@@ -20,34 +20,56 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
 
 surf_model_t surf_vm_workstation_model = NULL;
 
+/* ind means ''indirect'' that this is a reference on the whole dict_elm
+ * structure (i.e not on the surf_resource_private infos) */
+
 static void vm_ws_create(const char *name, void *ind_phys_workstation)
 {
-  workstation_VM2013_t vm_ws = xbt_new0(s_workstation_VM2013_t, 1);
+  workstation_CLM03_t sub_ws = surf_workstation_resource_priv(ind_phys_workstation);
+  const char *sub_ws_name = sub_ws->generic_resource.name;
 
-  vm_ws->sub_ws = surf_workstation_resource_priv(ind_phys_workstation);
+  /* The workstation_VM2013 struct inherits the workstation_CLM03 struct. We
+   * create a physical workstation resource, but specifying the size of
+   * s_workstation_VM2013_t and the vm workstation model object. */
+  workstation_CLM03_t ws = (workstation_CLM03_t) surf_resource_new(sizeof(s_workstation_VM2013_t),
+      surf_vm_workstation_model, name, NULL);
+
+  /* Currently, we assume a VM has no storage. */
+  ws->storage = NULL;
+
+  /* Currently, a VM uses the network resource of its physical host. In
+   * host_lib, this network resource object is refered from two different keys.
+   * When deregistering the reference that points the network resource object
+   * from the VM name, we have to make sure that the system does not call the
+   * free callback for the network resource object. The network resource object
+   * is still used by the physical machine. */
+  ws->net_elm = xbt_lib_get_or_null(host_lib, sub_ws_name, ROUTING_HOST_LEVEL);
+  xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, ws->net_elm);
+
+  /* The SURF_WKS_LEVEL at host_lib saves workstation_CLM03 objects. Please
+   * note workstation_VM2013 objects, inheriting the workstation_CLM03
+   * structure, are also saved there. 
+   *
+   * If you want to get a workstation_VM2013 object from host_lib, see
+   * ws->generic_resouce.model->type first. If it is
+   * SURF_MODEL_TYPE_VM_WORKSTATION, you can cast ws to vm_ws. */
+  XBT_INFO("Create VM(%s) @ PM(%s) with %ld mounted disks", name, sub_ws_name, xbt_dynar_length(ws->storage));
+  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, ws);
+
+
+  /* We initialize the VM-specific members. */
+  workstation_VM2013_t vm_ws = (workstation_VM2013_t) ws;
+  vm_ws->sub_ws = sub_ws;
   vm_ws->current_state = SURF_VM_STATE_CREATED;
 
 
-  // //// WORKSTATION  RELATED STUFF ////
-  /* Create a workstation_CLM03 resource and register it to the system
-     Please note that the new ws is added into the host_lib. Then,
-     if you want to get a workstation_VM2013 object from host_lib, see
-     ws->generic_resouce.model->type first. If it is  SURF_MODEL_TYPE_VM_WORKSTATION,
-     you can cast ws to vm_ws. */
-
-  __init_workstation_CLM03(&vm_ws->ws, name);
-
-  // Override the model with the current VM one.
-  vm_ws->ws.generic_resource.model = surf_vm_workstation_model;
-
 
   // //// CPU  RELATED STUFF ////
-  // Roughly, create a vcpu resource by using the values of  the sub_cpu one.
+  // Roughly, create a vcpu resource by using the values of the sub_cpu one.
   cpu_Cas01_t sub_cpu = surf_cpu_resource_priv(ind_phys_workstation);
 
   /* We can assume one core and cas01 cpu for the first step.
-   * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource.
-   * */
+   * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
   cpu_cas01_create_resource(name, // name
       sub_cpu->power_peak,        // host->power_peak,
       1,                          // host->power_scale,
@@ -58,22 +80,16 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
       NULL,                       // host->properties,
       surf_cpu_model_vm);
 
+
+
+  /* We create cpu_action corresponding to a VM process on the host operating system. */
   vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, GUESTOS_NOISE);
 
-  //// NET RELATED STUFF ////
-  // Bind virtual net_elm to the host
-  // TODO rebind each time you migrate a VM
-  // TODO check how network requests are scheduled between distinct processes competing for the same card.
-  // Please note that the __init_workstation_CLM03 invocation assigned NULL to ws.net_elm since no network elements
-  // were previously created for this hostname. Indeed all network elements are created during the SimGrid initialization phase by considering
-  // the platform file.
-  vm_ws->ws.net_elm = xbt_lib_get_or_null(host_lib, vm_ws->sub_ws->generic_resource.name, ROUTING_HOST_LEVEL);
-  xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, vm_ws->ws.net_elm);
 
-  // //// STORAGE RELATED STUFF ////
- // ind means ''indirect'' that this is a reference on the whole dict_elm structure (i.e not on the surf_resource_private infos)
-
-
+  /* TODO:
+   * - rebind each time you migrate a VM
+   * - check how network requests are scheduled between distinct processes competing for the same card.
+   */
 }
 
 /*
@@ -97,39 +113,50 @@ static void vm_ws_migrate(void *ind_vm_workstation, void *ind_dest_phys_workstat
 static void vm_ws_destroy(void *ind_vm_workstation)
 { 
 	/* ind_phys_workstation equals to smx_host_t */
+
+  /* Before clearing the entries in host_lib, we have to pick up resources. */
 	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_workstation);
-	cpu_Cas01_t sub_cpu = surf_cpu_resource_priv(ind_vm_workstation);
+  cpu_Cas01_t cpu = surf_cpu_resource_priv(ind_vm_workstation);
+	const char *name = vm_ws->ws.generic_resource.name;
+  XBT_INFO("%s", name);
 
 	xbt_assert(vm_ws);
 	xbt_assert(vm_ws->ws.generic_resource.model == surf_vm_workstation_model);
 
-  {
-    int ret = surf_cpu_model_pm->action_unref(vm_ws->cpu_action);
-    xbt_assert(ret == 1, "Bug: some resource still remains");
-  }
 
-	const char *name = vm_ws->ws.generic_resource.name;
-
+  /* xbt_lib_remove() deletes all entries associated to the VM from host_lib.
+   * This function does not invoke the registered freeing callback of each
+   * level.
+   *
+   * FIXME: But, this function deletes all levels of the key. We must
+   * be sure that there is no entry at any level. */
+	// xbt_lib_remove(host_lib, name);
 	// Remove all others in the lib associated to the VM
-    // Please note that you only remove the entries (and not free them)
-	xbt_lib_remove(host_lib, name);
+  // Please note that you only remove the entries (and not free them)
+  xbt_lib_unset(host_lib, name, SURF_CPU_LEVEL, 0);
+  xbt_lib_unset(host_lib, name, ROUTING_HOST_LEVEL, 0);
+  xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
+  xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL, 0);
 
-	//Free the CPU
 
+  /* Free the cpu_action of the VM. */
+  int ret = surf_cpu_model_pm->action_unref(vm_ws->cpu_action);
+  xbt_assert(ret == 1, "Bug: some resource still remains");
 
-	// Free the net_elmts
+  /* Free the cpu resource of the VM. If using power_trace, we will have to
+   * free other objects than lmm_constraint. */
+  surf_model_t cpu_model = cpu->generic_resource.model;
+  lmm_constraint_free(cpu_model->model_private->maxmin_system, cpu->constraint);
+  surf_resource_free(cpu);
+
+  /* Free the network resource of the VM. */
 	// Nothing has to be done, because net_elmts is just a pointer on the physical one
 
-	// Free the storage
-    // Not relevant yet
+  /* Free the storage resource of the VM. */
+  // Not relevant yet
 
-	//Free the WS
-	free(vm_ws);
-
-
-	// Not yet implemented
-  /* NOTE: surf_resource_free() frees vm_ws->ws.generic_resource.name and
-   * vm_ws->ws. Do not free them here. */
+	/* Free the workstation resource of the VM. */
+  surf_resource_free(vm_ws);
 }
 
 static int vm_ws_get_state(void *ind_vm_ws){
@@ -167,6 +194,10 @@ static double get_solved_value(surf_action_t cpu_action)
 
 static double vm_ws_share_resources(surf_model_t workstation_model, double now)
 {
+  /* TODO: udpate action's cost with the total cost of processes on the VM. */
+
+
+
   /* 0. Make sure that we already calculated the resource share at the physical
    * machine layer. */
   {
