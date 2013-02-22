@@ -111,7 +111,8 @@ double ws_share_resources(surf_model_t workstation_model, double now)
   double min_by_cpu = cpu_model->model_private->share_resources(cpu_model, now);
   double min_by_net = net_model->model_private->share_resources(net_model, now);
 
- // XBT_INFO("%p %s min_by_cpu, %s %f min_by_net %f", workstation_model, cpu_model->name, min_by_cpu, net_model->name, min_by_net);
+  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f",
+      workstation_model, cpu_model->name, min_by_cpu, net_model->name, min_by_net);
 
   if (min_by_cpu >= 0.0 && min_by_net >= 0.0)
     return min(min_by_cpu, min_by_net);
