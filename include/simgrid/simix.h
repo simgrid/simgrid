@@ -326,7 +326,7 @@ XBT_PUBLIC(void*) simcall_vm_create(const char *name, smx_host_t host);
 XBT_PUBLIC(int) simcall_vm_get_state(smx_host_t vm);
 XBT_PUBLIC(void) simcall_vm_start(smx_host_t vm);
 XBT_PUBLIC(void) simcall_vm_migrate(smx_host_t vm, smx_host_t dst_pm);
-XBT_PUBLIC(const char*) simcall_vm_get_phys_host(smx_host_t vm);
+XBT_PUBLIC(void *) simcall_vm_get_pm(smx_host_t vm);
 XBT_PUBLIC(void) simcall_vm_resume(smx_host_t vm);
 XBT_PUBLIC(void) simcall_vm_save(smx_host_t vm);
 XBT_PUBLIC(void) simcall_vm_restore(smx_host_t vm);

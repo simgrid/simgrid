@@ -256,7 +256,7 @@ void MSG_vm_shutdown(msg_vm_t vm)
  * MSG_task_send() before or after, depending on whether you want to do cold or hot
  * migration.
  */
-void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination)
+void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
 {
   /* some thoughts:
    * - One approach is ...
@@ -279,16 +279,14 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination)
    *   
    */
 
-  #ifdef HAVE_TRACING
-  const char *old_pm_name = simcall_vm_get_phys_host(vm);
-  msg_host_t old_pm_ind  = xbt_lib_get_elm_or_null(host_lib, old_pm_name);
-  #endif
+  msg_host_t old_pm = simcall_vm_get_pm(vm);
 
-  simcall_vm_migrate(vm, destination);
+  simcall_vm_migrate(vm, new_pm);
 
+  XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm->key, old_pm->key, new_pm->key);
 
   #ifdef HAVE_TRACING
-  TRACE_msg_vm_change_host(vm, old_pm_ind, destination);
+  TRACE_msg_vm_change_host(vm, old_pm, new_pm);
   #endif
 }
 
@@ -304,6 +302,8 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t destination)
 void MSG_vm_suspend(msg_vm_t vm)
 {
   simcall_vm_suspend(vm);
+
+  XBT_DEBUG("vm_suspend done");
 
   #ifdef HAVE_TRACING
   TRACE_msg_vm_suspend(vm);

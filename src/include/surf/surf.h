@@ -300,13 +300,23 @@ typedef struct surf_vm_workstation_model_extension_public {
    * */
   s_surf_model_extension_workstation_t basic;
 
-  void (*create) (const char *name, void *ind_phys_workstation); // First operation of the VM model
   // start does not appear here as it corresponds to turn the state from created to running (see smx_vm.c)
-  int (*get_state) (void *ind_vm_workstation);
-  void (*set_state) (void *ind_vms_workstation, int state);
-  void (*migrate) (void *ind_vm_workstation, void *ind_dest_phys_workstation); // will be vm_ws_migrate()
-  const char * (*get_phys_host) (void *ind_vm_workstation); // will be vm_ws_get_phys_host()
-  void (*destroy) (void *ind_vm_workstation); // will be vm_ws_destroy(), which destroies the vm-workstation-specific data
+
+  void   (*create)  (const char *name, void *ind_phys_workstation); // First operation of the VM model
+  void   (*destroy) (void *ind_vm_ws); // will be vm_ws_destroy(), which destroies the vm-workstation-specific data
+
+  void   (*suspend) (void *ind_vm_ws);
+  void   (*resume)  (void *ind_vm_ws);
+
+  void   (*save)    (void *ind_vm_ws);
+  void   (*restore) (void *ind_vm_ws);
+
+  void   (*migrate) (void *ind_vm_ws, void *ind_vm_ws_dest); // will be vm_ws_migrate()
+  void * (*get_pm)  (void *ind_vm_ws); // will be vm_ws_get_pmt()
+
+  int    (*get_state) (void *ind_vm_ws);
+  void   (*set_state) (void *ind_vm_ws, int state);
+
 } s_surf_model_extension_vm_workstation_t;
 
 /** \ingroup SURF_models

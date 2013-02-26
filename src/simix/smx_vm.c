@@ -44,7 +44,8 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
 }
 
 
-smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t ind_phys_host){
+smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host_t ind_phys_host)
+{
   return SIMIX_vm_create(name, ind_phys_host);
 }
 
@@ -64,10 +65,12 @@ static int __can_be_started(smx_host_t vm)
 {
 	// TODO add checking code related to overcommitment or not.
 
+#if 0
   int overcommit = get_host_property_as_integer(vm, "OverCommit");
   int core_nb = get_host_property_as_integer(vm, "CORE_NB");
   int mem_cap = get_host_property_as_integer(vm, "MEM_CAP");
   int net_cap = get_host_property_as_integer(vm, "NET_CAP");
+#endif
 
   /* we need to get other VM objects on this physical host. */
 
@@ -119,19 +122,18 @@ int SIMIX_pre_vm_get_state(smx_simcall_t simcall, smx_host_t ind_vm)
  */
 void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
 {
-  /* TODO: check state */
+  const char *name = SIMIX_host_get_name(ind_vm);
 
-  /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_MIGRATING);
+  if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
+    THROWF(vm_error, 0, "VM(%s) is not running", name);
 
   /* jump to vm_ws_migrate(). this will update the vm location. */
   surf_vm_workstation_model->extension.vm_workstation.migrate(ind_vm, ind_dst_pm);
-
-  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_RUNNING);
 }
 
-void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm){
-   SIMIX_vm_migrate(ind_vm, ind_dst_pm);
+void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm)
+{
+  SIMIX_vm_migrate(ind_vm, ind_dst_pm);
 }
 
 
@@ -140,14 +142,15 @@ void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t i
  *
  * \param host the vm host to get_phys_host (a smx_host_t)
  */
-const char *SIMIX_vm_get_phys_host(smx_host_t ind_vm)
+void *SIMIX_vm_get_pm(smx_host_t ind_vm)
 {
-  /* jump to vm_ws_get_phys_host(). this will return the vm name. */
-  return surf_vm_workstation_model->extension.vm_workstation.get_phys_host(ind_vm);
+  /* jump to vm_ws_get_pm(). this will return the vm name. */
+  return surf_vm_workstation_model->extension.vm_workstation.get_pm(ind_vm);
 }
 
-const char *SIMIX_pre_vm_get_phys_host(smx_simcall_t simcall, smx_host_t ind_vm){
-  return SIMIX_vm_get_phys_host(ind_vm);
+void *SIMIX_pre_vm_get_pm(smx_simcall_t simcall, smx_host_t ind_vm)
+{
+  return SIMIX_vm_get_pm(ind_vm);
 }
 
 
@@ -158,25 +161,40 @@ const char *SIMIX_pre_vm_get_phys_host(smx_simcall_t simcall, smx_host_t ind_vm)
  *
  * \param host the vm host to suspend (a smx_host_t)
  */
-void SIMIX_vm_suspend(smx_host_t ind_vm)
+void SIMIX_vm_suspend(smx_host_t ind_vm, smx_process_t issuer)
 {
-  /* TODO: check state */
+  const char *name = SIMIX_host_get_name(ind_vm);
 
-  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
+    THROWF(vm_error, 0, "VM(%s) is not running", name);
+
+  XBT_DEBUG("suspend VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+
+  /* jump to vm_ws_suspend. The state will be set. */
+  surf_vm_workstation_model->extension.vm_workstation.suspend(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
-         XBT_DEBUG("suspend %s", SIMIX_host_get_name(ind_vm));
-	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
-         simcall_process_suspend(smx_process);
+    XBT_DEBUG("suspend %s", smx_process->name);
+    SIMIX_process_suspend(smx_process, issuer);
   }
 
-  /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_SUSPENDED);
+  XBT_DEBUG("suspend all processes on the VM done done");
 }
 
-void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_suspend(ind_vm);
+void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm)
+{
+  if (simcall->issuer->smx_host == ind_vm) {
+    XBT_ERROR("cannot suspend the VM where I run");
+    DIE_IMPOSSIBLE;
+  }
+
+  SIMIX_vm_suspend(ind_vm, simcall->issuer);
+
+  /* without this, simcall_vm_suspend() does not return to the userland. why? */
+  SIMIX_simcall_answer(simcall);
+
+  XBT_DEBUG("SIMIX_pre_vm_suspend done");
 }
 
 
@@ -186,25 +204,29 @@ void SIMIX_pre_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm){
  *
  * \param host the vm host to resume (a smx_host_t)
  */
-void SIMIX_vm_resume(smx_host_t ind_vm)
+void SIMIX_vm_resume(smx_host_t ind_vm, smx_process_t issuer)
 {
-  /* TODO: check state */
+  const char *name = SIMIX_host_get_name(ind_vm);
 
-  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_SUSPENDED)
+    THROWF(vm_error, 0, "VM(%s) was not suspended", name);
+
+  XBT_DEBUG("resume VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+
+  /* jump to vm_ws_resume() */
+  surf_vm_workstation_model->extension.vm_workstation.resume(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
-         XBT_DEBUG("resume %s", SIMIX_host_get_name(ind_vm));
-	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
-         simcall_process_resume(smx_process);
+    XBT_DEBUG("resume %s", smx_process->name);
+    SIMIX_process_resume(smx_process, issuer);
   }
-
-  /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_RUNNING);
 }
 
-void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_resume(ind_vm);
+void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm)
+{
+  SIMIX_vm_resume(ind_vm, simcall->issuer);
+  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -215,27 +237,32 @@ void SIMIX_pre_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm){
  *
  * \param host the vm host to save (a smx_host_t)
  */
-void SIMIX_vm_save(smx_host_t ind_vm)
+void SIMIX_vm_save(smx_host_t ind_vm, smx_process_t issuer)
 {
-  /* TODO: check state */
+  const char *name = SIMIX_host_get_name(ind_vm);
 
-  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
+    THROWF(vm_error, 0, "VM(%s) is not running", name);
 
-  /* TODO: do something at the surf level */
+
+  XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+
+  /* jump to vm_ws_save() */
+  surf_vm_workstation_model->extension.vm_workstation.save(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
-         XBT_DEBUG("save %s", SIMIX_host_get_name(ind_vm));
-	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
-         simcall_process_suspend(smx_process);
+    XBT_DEBUG("suspend %s", smx_process->name);
+    SIMIX_process_suspend(smx_process, issuer);
   }
-
-  /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_SAVED);
 }
 
-void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm){
-  SIMIX_vm_save(ind_vm);
+void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm)
+{
+  SIMIX_vm_save(ind_vm, simcall->issuer);
+
+  /* without this, simcall_vm_suspend() does not return to the userland. why? */
+  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -245,27 +272,29 @@ void SIMIX_pre_vm_save(smx_simcall_t simcall, smx_host_t ind_vm){
  *
  * \param host the vm host to restore (a smx_host_t)
  */
-void SIMIX_vm_restore(smx_host_t ind_vm)
+void SIMIX_vm_restore(smx_host_t ind_vm, smx_process_t issuer)
 {
-  /* TODO: check state */
+  const char *name = SIMIX_host_get_name(ind_vm);
 
-  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_SAVED)
+    THROWF(vm_error, 0, "VM(%s) was not saved", name);
 
-  /* TODO: do something at the surf level */
+  XBT_DEBUG("restore VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+
+  /* jump to vm_ws_restore() */
+  surf_vm_workstation_model->extension.vm_workstation.resume(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
-         XBT_DEBUG("restore %s", SIMIX_host_get_name(ind_vm));
-	 /* FIXME: calling a simcall from the SIMIX layer is strange. */
-         simcall_process_resume(smx_process);
+    XBT_DEBUG("resume %s", smx_process->name);
+    SIMIX_process_resume(smx_process, issuer);
   }
-
-  /* TODO: Using the variable of the MSG layer is not clean. */
-  SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_RUNNING);
 }
 
-void SIMIX_pre_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm){
-  SIMIX_vm_restore(ind_vm);
+void SIMIX_pre_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm)
+{
+  SIMIX_vm_restore(ind_vm, simcall->issuer);
+  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -278,23 +307,27 @@ void SIMIX_pre_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm){
  */
 void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
 {
-  /* TODO: check state */
+  const char *name = SIMIX_host_get_name(ind_vm);
+
+  if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
+    THROWF(vm_error, 0, "VM(%s) is not running", name);
 
   XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
-         XBT_DEBUG("kill %s", SIMIX_host_get_name(ind_vm));
-
-	 SIMIX_process_kill(smx_process, issuer);
+    XBT_DEBUG("shutdown %s", name);
+    SIMIX_process_kill(smx_process, issuer);
   }
 
-  /* TODO: Using the variable of the MSG layer is not clean. */
+  /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
   SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_CREATED);
 }
 
-void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_shutdown(ind_vm, simcall->issuer);
+void SIMIX_pre_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm)
+{
+  SIMIX_vm_shutdown(ind_vm, simcall->issuer);
+  SIMIX_simcall_answer(simcall);
 }
 
 

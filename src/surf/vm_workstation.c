@@ -53,7 +53,7 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
    * If you want to get a workstation_VM2013 object from host_lib, see
    * ws->generic_resouce.model->type first. If it is
    * SURF_MODEL_TYPE_VM_WORKSTATION, you can cast ws to vm_ws. */
-  XBT_INFO("Create VM(%s) @ PM(%s) with %ld mounted disks", name, sub_ws_name, xbt_dynar_length(ws->storage));
+  XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, sub_ws_name, xbt_dynar_length(ws->storage));
   xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, ws);
 
 
@@ -83,11 +83,12 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
 
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
-  vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, GUESTOS_NOISE);
+  /* FIXME: TODO: we have to peridocally input GUESTOS_NOISE to the system? how ? */
+  // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, GUESTOS_NOISE);
+  vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, 0);
 
 
   /* TODO:
-   * - rebind each time you migrate a VM
    * - check how network requests are scheduled between distinct processes competing for the same card.
    */
 }
@@ -95,15 +96,40 @@ static void vm_ws_create(const char *name, void *ind_phys_workstation)
 /*
  * Update the physical host of the given VM
  */
-static void vm_ws_migrate(void *ind_vm_workstation, void *ind_dest_phys_workstation)
+static void vm_ws_migrate(void *ind_vm, void *ind_dst_pm)
 { 
    /* ind_phys_workstation equals to smx_host_t */
-   workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_workstation);
-   xbt_assert(vm_ws);
+   workstation_VM2013_t ws_vm2013 = surf_workstation_resource_priv(ind_vm);
+   workstation_CLM03_t ws_clm03_dst = surf_workstation_resource_priv(ind_dst_pm);
+   const char *vm_name = ws_vm2013->ws.generic_resource.name;
+   const char *pm_name_src = ws_vm2013->sub_ws->generic_resource.name;
+   const char *pm_name_dst = ws_clm03_dst->generic_resource.name;
+
+   xbt_assert(ws_vm2013);
+   xbt_assert(ws_clm03_dst);
+
+   ws_vm2013->current_state = SURF_VM_STATE_MIGRATING;
 
    /* do something */
 
-   vm_ws->sub_ws = surf_workstation_resource_priv(ind_dest_phys_workstation);
+   /* update net_elm with that of the destination physical host */
+   void *old_net_elm = ws_vm2013->ws.net_elm;
+   void *new_net_elm = xbt_lib_get_or_null(host_lib, pm_name_dst, ROUTING_HOST_LEVEL);
+   xbt_assert(new_net_elm);
+
+   /* Unregister the current net_elm from host_lib. Do not call the free callback. */
+   xbt_lib_unset(host_lib, vm_name, ROUTING_HOST_LEVEL, 0);
+
+   /* Then, resister the new one. */
+   ws_vm2013->ws.net_elm = new_net_elm;
+   xbt_lib_set(host_lib, vm_name, ROUTING_HOST_LEVEL, ws_vm2013->ws.net_elm);
+
+   ws_vm2013->sub_ws = ws_clm03_dst;
+
+   XBT_DEBUG("migrate VM(%s): change net_elm (%p to %p)", vm_name, old_net_elm, new_net_elm);
+   XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
+
+   ws_vm2013->current_state = SURF_VM_STATE_RUNNING;
 }
 
 /*
@@ -124,15 +150,12 @@ static void vm_ws_destroy(void *ind_vm_workstation)
 	xbt_assert(vm_ws->ws.generic_resource.model == surf_vm_workstation_model);
 
 
-  /* xbt_lib_remove() deletes all entries associated to the VM from host_lib.
-   * This function does not invoke the registered freeing callback of each
-   * level.
+  /* We deregister objects from host_lib, without invoking the freeing callback
+   * of each level.
    *
-   * FIXME: But, this function deletes all levels of the key. We must
-   * be sure that there is no entry at any level. */
-	// xbt_lib_remove(host_lib, name);
-	// Remove all others in the lib associated to the VM
-  // Please note that you only remove the entries (and not free them)
+   * Do not call xbt_lib_remove() here. It deletes all levels of the key,
+   * including MSG_HOST_LEVEL and others. We should unregister only what we know.
+   */
   xbt_lib_unset(host_lib, name, SURF_CPU_LEVEL, 0);
   xbt_lib_unset(host_lib, name, ROUTING_HOST_LEVEL, 0);
   xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
@@ -159,12 +182,57 @@ static void vm_ws_destroy(void *ind_vm_workstation)
   surf_resource_free(vm_ws);
 }
 
-static int vm_ws_get_state(void *ind_vm_ws){
+static int vm_ws_get_state(void *ind_vm_ws)
+{
 	return ((workstation_VM2013_t) surf_workstation_resource_priv(ind_vm_ws))->current_state;
 }
 
-static void vm_ws_set_state(void *ind_vm_ws, int state){
-	 ((workstation_VM2013_t) surf_workstation_resource_priv(ind_vm_ws))->current_state=state;
+static void vm_ws_set_state(void *ind_vm_ws, int state)
+{
+	 ((workstation_VM2013_t) surf_workstation_resource_priv(ind_vm_ws))->current_state = state;
+}
+
+static void vm_ws_suspend(void *ind_vm_ws)
+{
+  workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_ws);
+
+  XBT_INFO("vm %p suspend", ind_vm_ws);
+  surf_action_suspend(vm_ws->cpu_action);
+
+  vm_ws->current_state = SURF_VM_STATE_SUSPENDED;
+}
+
+static void vm_ws_resume(void *ind_vm_ws)
+{
+  workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_ws);
+
+  surf_action_resume(vm_ws->cpu_action);
+
+  vm_ws->current_state = SURF_VM_STATE_RUNNING;
+}
+
+static void vm_ws_save(void *ind_vm_ws)
+{
+  workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_ws);
+
+  vm_ws->current_state = SURF_VM_STATE_SAVING;
+
+  /* FIXME: do something here */
+  surf_action_suspend(vm_ws->cpu_action);
+
+  vm_ws->current_state = SURF_VM_STATE_SAVED;
+}
+
+static void vm_ws_restore(void *ind_vm_ws)
+{
+  workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_ws);
+
+  vm_ws->current_state = SURF_VM_STATE_RESTORING;
+
+  /* FIXME: do something here */
+  surf_action_resume(vm_ws->cpu_action);
+
+  vm_ws->current_state = SURF_VM_STATE_RUNNING;
 }
 
 
@@ -281,8 +349,19 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
     workstation_VM2013_t ws_vm2013 = (workstation_VM2013_t) ws_clm03;
     {
       void *ind_sub_host = xbt_lib_get_elm_or_null(host_lib, ws_vm2013->sub_ws->generic_resource.name);
+      XBT_INFO("cost %f remains %f start %f finish %f", ws_vm2013->cpu_action->cost,
+          ws_vm2013->cpu_action->remains,
+          ws_vm2013->cpu_action->start,
+          ws_vm2013->cpu_action->finish
+          );
+
+#if 0
       surf_cpu_model_pm->action_unref(ws_vm2013->cpu_action);
-      ws_vm2013->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_sub_host, 100); // cost 0 is okay?
+      /* FIXME: this means busy loop? */
+      // ws_vm2013->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_sub_host, GUESTOS_NOISE);
+      ws_vm2013->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_sub_host, 0);
+#endif
+
     }
   }
 #endif
@@ -293,14 +372,46 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
 
 
 /*
- * A surf level object will be useless in the upper layer. Returing the name
- * will be simple and suffcient.
+ * A surf level object will be useless in the upper layer. Returing the
+ * dict_elm of the host.
  **/
-static const char *vm_ws_get_phys_host(void *ind_vm_ws)
+static void *vm_ws_get_pm(void *ind_vm_ws)
 {
 	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_ws);
-	return vm_ws->sub_ws->generic_resource.name;
+  const char *sub_ws_name = vm_ws->sub_ws->generic_resource.name;
+
+  return xbt_lib_get_elm_or_null(host_lib, sub_ws_name);
 }
+
+
+
+/* Adding a task to a VM updates the VCPU task on its physical machine. */
+surf_action_t vm_ws_execute(void *workstation, double size)
+{
+  surf_resource_t ws = ((surf_resource_t) surf_workstation_resource_priv(workstation));
+
+  xbt_assert(ws->model->type == SURF_MODEL_TYPE_VM_WORKSTATION);
+  workstation_VM2013_t vm_ws = (workstation_VM2013_t) ws;
+
+  double old_cost = vm_ws->cpu_action->cost;
+  double new_cost = old_cost + size;
+
+  XBT_INFO("VM(%s)@PM(%s): update dummy action's cost (%f -> %f)",
+      ws->name, vm_ws->sub_ws->generic_resource.name,
+      old_cost, new_cost);
+
+  vm_ws->cpu_action->cost = new_cost;
+
+  return ws_execute(workstation, size);
+}
+
+static void vm_ws_action_cancel(surf_action_t action)
+{
+  XBT_CRITICAL("FIXME: Not yet implemented. Reduce dummy action's cost by %f", action->cost);
+
+  ws_action_cancel(action);
+}
+
 
 static void surf_vm_workstation_model_init_internal(void)
 {
@@ -308,8 +419,9 @@ static void surf_vm_workstation_model_init_internal(void)
 
   model->name = "Virtual Workstation";
   model->type = SURF_MODEL_TYPE_VM_WORKSTATION;
+
   // model->action_unref     = ws_action_unref;
-  // model->action_cancel    = ws_action_cancel;
+  model->action_cancel    = vm_ws_action_cancel;
   // model->action_state_set = ws_action_state_set;
 
 
@@ -320,8 +432,9 @@ static void surf_vm_workstation_model_init_internal(void)
   model->model_private->finalize              = ws_finalize;
 
 
-//   model->suspend          = ws_action_suspend;
-//   model->resume           = ws_action_resume;
+  /* operation for an action, not for VM it self */
+  model->suspend          = ws_action_suspend;
+  model->resume           = ws_action_resume;
 //   model->is_suspended     = ws_action_is_suspended;
 //   model->set_max_duration = ws_action_set_max_duration;
   model->set_priority     = ws_action_set_priority;
@@ -342,8 +455,8 @@ static void surf_vm_workstation_model_init_internal(void)
   xbt_assert(surf_cpu_model_vm);
   model->extension.workstation.cpu_model = surf_cpu_model_vm;
 
-  model->extension.workstation.execute   = ws_execute;
-  // model->extension.workstation.sleep     = ws_action_sleep;
+  model->extension.workstation.execute   = vm_ws_execute;
+  model->extension.workstation.sleep     = ws_action_sleep;
   model->extension.workstation.get_state = ws_get_state;
   // model->extension.workstation.get_speed = ws_get_speed;
   // model->extension.workstation.get_available_speed = ws_get_available_speed;
@@ -369,8 +482,12 @@ static void surf_vm_workstation_model_init_internal(void)
   model->extension.vm_workstation.set_state     = vm_ws_set_state;
   model->extension.vm_workstation.get_state     = vm_ws_get_state;
   model->extension.vm_workstation.migrate       = vm_ws_migrate;
-  model->extension.vm_workstation.get_phys_host = vm_ws_get_phys_host;
+  model->extension.vm_workstation.get_pm        = vm_ws_get_pm;
   model->extension.vm_workstation.destroy       = vm_ws_destroy;
+  model->extension.vm_workstation.suspend       = vm_ws_suspend;
+  model->extension.vm_workstation.resume        = vm_ws_resume;
+  model->extension.vm_workstation.save          = vm_ws_save;
+  model->extension.vm_workstation.restore       = vm_ws_restore;
 
   surf_vm_workstation_model = model;
 }

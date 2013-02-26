@@ -46,7 +46,7 @@ static int ws_parallel_action_free(surf_action_t action)
   return -1;
 }
 
-static int ws_action_unref(surf_action_t action)
+int ws_action_unref(surf_action_t action)
 {
   if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     return surf_network_model->action_unref(action);
@@ -61,7 +61,7 @@ static int ws_action_unref(surf_action_t action)
   return 0;
 }
 
-static void ws_action_cancel(surf_action_t action)
+void ws_action_cancel(surf_action_t action)
 {
   if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->action_cancel(action);
@@ -146,13 +146,13 @@ surf_action_t ws_execute(void *workstation, double size)
   return cpu->model->extension.cpu.execute(workstation, size);
 }
 
-static surf_action_t ws_action_sleep(void *workstation, double duration)
+surf_action_t ws_action_sleep(void *workstation, double duration)
 {
   surf_resource_t cpu = ((surf_resource_t) surf_cpu_resource_priv(workstation));
   return cpu->model->extension.cpu.sleep(workstation, duration);
 }
 
-static void ws_action_suspend(surf_action_t action)
+void ws_action_suspend(surf_action_t action)
 {
   if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->suspend(action);
@@ -162,7 +162,7 @@ static void ws_action_suspend(surf_action_t action)
     DIE_IMPOSSIBLE;
 }
 
-static void ws_action_resume(surf_action_t action)
+void ws_action_resume(surf_action_t action)
 {
   if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     surf_network_model->resume(action);
