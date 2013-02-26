@@ -685,9 +685,10 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
 {
   smx_action_t action;
   smx_host_t host = process->smx_host;
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
 
   /* check if the host is active */
-  if (surf_workstation_model->extension.
+  if (ws_model->extension.
       workstation.get_state(host) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_name(host));
@@ -702,9 +703,9 @@ smx_action_t SIMIX_process_sleep(smx_process_t process, double duration)
 
   action->sleep.host = host;
   action->sleep.surf_sleep =
-      surf_workstation_model->extension.workstation.sleep(host, duration);
+      ws_model->extension.workstation.sleep(host, duration);
 
-  surf_workstation_model->action_data_set(action->sleep.surf_sleep, action);
+  ws_model->action_data_set(action->sleep.surf_sleep, action);
   XBT_DEBUG("Create sleep action %p", action);
 
   return action;
@@ -715,9 +716,13 @@ void SIMIX_post_process_sleep(smx_action_t action)
   smx_simcall_t simcall;
   e_smx_state_t state;
 
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+  smx_host_t host = action->sleep.host;
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
+
   while ((simcall = xbt_fifo_shift(action->simcalls))) {
 
-    switch(surf_workstation_model->action_state_get(action->sleep.surf_sleep)){
+    switch(ws_model->action_state_get(action->sleep.surf_sleep)){
       case SURF_ACTION_FAILED:
         simcall->issuer->context->iwannadie = 1;
         //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
@@ -732,7 +737,7 @@ void SIMIX_post_process_sleep(smx_action_t action)
         THROW_IMPOSSIBLE;
         break;
     }
-    if (surf_workstation_model->extension.
+    if (ws_model->extension.
         workstation.get_state(simcall->issuer->smx_host) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
@@ -747,6 +752,10 @@ void SIMIX_post_process_sleep(smx_action_t action)
 void SIMIX_process_sleep_destroy(smx_action_t action)
 {
   XBT_DEBUG("Destroy action %p", action);
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+  smx_host_t host = action->sleep.host;
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
+
   if (action->sleep.surf_sleep)
     action->sleep.surf_sleep->model_obj->action_unref(action->sleep.surf_sleep);
   xbt_mallocator_release(simix_global->action_mallocator, action);
@@ -754,12 +763,21 @@ void SIMIX_process_sleep_destroy(smx_action_t action)
 
 void SIMIX_process_sleep_suspend(smx_action_t action)
 {
-  surf_workstation_model->suspend(action->sleep.surf_sleep);
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+  smx_host_t host = action->sleep.host;
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
+
+  ws_model->suspend(action->sleep.surf_sleep);
 }
 
 void SIMIX_process_sleep_resume(smx_action_t action)
 {
-  surf_workstation_model->resume(action->sleep.surf_sleep);
+  xbt_assert(action->type == SIMIX_ACTION_SLEEP);
+  smx_host_t host = action->sleep.host;
+  surf_model_t ws_model = surf_resource_model(host, SURF_WKS_LEVEL);
+  XBT_DEBUG("%p ws_model", ws_model);
+
+  ws_model->resume(action->sleep.surf_sleep);
 }
 
 /** 

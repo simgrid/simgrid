@@ -23,14 +23,16 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
 static smx_action_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout)
 {
   XBT_IN("(%p, %f)",smx_host,timeout);
+  surf_model_t ws_model = surf_resource_model(smx_host, SURF_WKS_LEVEL);
+
   smx_action_t action;
   action = xbt_mallocator_get(simix_global->action_mallocator);
   action->type = SIMIX_ACTION_SYNCHRO;
   action->name = xbt_strdup("synchro");
   action->synchro.sleep = 
-    surf_workstation_model->extension.workstation.sleep(smx_host, timeout);
+    ws_model->extension.workstation.sleep(smx_host, timeout);
 
-  surf_workstation_model->action_data_set(action->synchro.sleep, action);
+  ws_model->action_data_set(action->synchro.sleep, action);
   XBT_OUT();
   return action;
 }
@@ -70,6 +72,8 @@ void SIMIX_synchro_destroy(smx_action_t action)
 {
   XBT_IN("(%p)",action);
   XBT_DEBUG("Destroying synchro %p", action);
+  xbt_assert(action->type == SIMIX_ACTION_SYNCHRO);
+
   action->synchro.sleep->model_obj->action_unref(action->synchro.sleep);
   xbt_free(action->name);
   xbt_mallocator_release(simix_global->action_mallocator, action);
@@ -79,9 +83,12 @@ void SIMIX_synchro_destroy(smx_action_t action)
 void SIMIX_post_synchro(smx_action_t action)
 {
   XBT_IN("(%p)",action);
-  if (surf_workstation_model->action_state_get(action->synchro.sleep) == SURF_ACTION_FAILED)
+  xbt_assert(action->type == SIMIX_ACTION_SYNCHRO);
+  surf_model_t ws_model = action->synchro.sleep->model_obj;
+
+  if (ws_model->action_state_get(action->synchro.sleep) == SURF_ACTION_FAILED)
     action->state = SIMIX_FAILED;
-  else if(surf_workstation_model->action_state_get(action->synchro.sleep) == SURF_ACTION_DONE)
+  else if(ws_model->action_state_get(action->synchro.sleep) == SURF_ACTION_DONE)
     action->state = SIMIX_SRC_TIMEOUT;
 
   SIMIX_synchro_finish(action);  
