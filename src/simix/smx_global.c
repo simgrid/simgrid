@@ -322,8 +322,13 @@ void SIMIX_run(void)
       while ((action = xbt_swag_extract(set)))
         SIMIX_simcall_post((smx_action_t) action->data);
       set = model->states.done_action_set;
-      while ((action = xbt_swag_extract(set)))
-        SIMIX_simcall_post((smx_action_t) action->data);
+
+      while ((action = xbt_swag_extract(set))) {
+        if (action->data == NULL)
+          XBT_INFO("probably vcpu's action %p, skip", action);
+        else
+          SIMIX_simcall_post((smx_action_t) action->data);
+      }
     }
 
     /* Clean processes to destroy */
