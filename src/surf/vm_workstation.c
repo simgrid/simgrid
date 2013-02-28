@@ -420,7 +420,7 @@ static void surf_vm_workstation_model_init_internal(void)
   model->name = "Virtual Workstation";
   model->type = SURF_MODEL_TYPE_VM_WORKSTATION;
 
-  // model->action_unref     = ws_action_unref;
+  model->action_unref     = ws_action_unref;
   model->action_cancel    = vm_ws_action_cancel;
   // model->action_state_set = ws_action_state_set;
 

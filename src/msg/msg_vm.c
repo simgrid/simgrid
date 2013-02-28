@@ -366,8 +366,14 @@ void MSG_vm_restore(msg_vm_t vm)
  */
 void MSG_vm_destroy(msg_vm_t vm)
 {
-  /* First, terminate all processes on the VM */
-  simcall_vm_shutdown(vm);
+  /* First, terminate all processes on the VM if necessary */
+  if (MSG_vm_is_running(vm))
+      simcall_vm_shutdown(vm);
+
+  if (!MSG_vm_is_created(vm)) {
+    XBT_CRITICAL("shutdown the given VM before destroying it");
+    DIE_IMPOSSIBLE;
+  }
 
   /* Then, destroy the VM object */
   simcall_vm_destroy(vm);

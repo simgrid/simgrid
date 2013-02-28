@@ -12,6 +12,7 @@ typedef struct workstation_CLM03 {
   xbt_dynar_t storage;
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
+int ws_action_unref(surf_action_t action);
 
 int ws_resource_used(void *resource_id);
 double ws_share_resources(surf_model_t workstation_model, double now);

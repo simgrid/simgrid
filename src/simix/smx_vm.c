@@ -34,7 +34,7 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
       xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
   /* Update global variables */
-  xbt_lib_set(host_lib,name,SIMIX_HOST_LEVEL,smx_host);
+  xbt_lib_set(host_lib, name, SIMIX_HOST_LEVEL, smx_host);
 
   /* Create surf associated resource */
   // TODO change phys_host into the right workstation surf model
@@ -91,11 +91,13 @@ void SIMIX_vm_start(smx_host_t ind_vm)
 void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm)
 {
   SIMIX_vm_start(ind_vm);
+  SIMIX_simcall_answer(simcall);
 }
 
 /* ***** set/get state of a VM ***** */
 void SIMIX_vm_set_state(smx_host_t ind_vm, int state)
 {
+  /* jump to vm_ws_set_state */
   surf_vm_workstation_model->extension.vm_workstation.set_state(ind_vm, state);
 }
 
@@ -134,6 +136,7 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
 void SIMIX_pre_vm_migrate(smx_simcall_t simcall, smx_host_t ind_vm, smx_host_t ind_dst_pm)
 {
   SIMIX_vm_migrate(ind_vm, ind_dst_pm);
+  SIMIX_simcall_answer(simcall);
 }
 
 
@@ -352,6 +355,8 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
   surf_vm_workstation_model->extension.vm_workstation.destroy(ind_vm);
 }
 
-void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm){
-   SIMIX_vm_destroy(ind_vm);
+void SIMIX_pre_vm_destroy(smx_simcall_t simcall, smx_host_t ind_vm)
+{
+  SIMIX_vm_destroy(ind_vm);
+  SIMIX_simcall_answer(simcall);
 }
