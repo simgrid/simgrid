@@ -3,13 +3,11 @@ cmake_minimum_required(VERSION 2.6)
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(masterslave_virtual_machines "masterslave_virtual_machines.c")
+add_executable(simple_vm "simple_vm.c")
 
 ### Add definitions for compile
-if(WIN32)
-  target_link_libraries(masterslave_virtual_machines simgrid )
-else()
-  target_link_libraries(masterslave_virtual_machines simgrid)
-endif()
+target_link_libraries(masterslave_virtual_machines simgrid)
+target_link_libraries(simple_vm simgrid)
 
 set(tesh_files
   ${tesh_files}
@@ -19,11 +17,13 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_virtual_machines.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/simple_plat.xml
   PARENT_SCOPE
   )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_virtual_machines.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/simple_vm.c
   PARENT_SCOPE
   )
 set(bin_files
