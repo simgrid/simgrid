@@ -112,21 +112,30 @@ msg_host_t MSG_host_self(void)
 }
 
 /*
- * \brief Destroys a host (internal call only)
+ * \brief Frees private data of a host (internal call only)
  */
-void __MSG_host_destroy(msg_host_priv_t host) {
-
+void __MSG_host_priv_free(msg_host_priv_t priv)
+{
 #ifdef MSG_USE_DEPRECATED
   if (msg_global->max_channel > 0)
-    free(host->mailboxes);
+    free(priv->mailboxes);
 #endif
 
+  free(priv);
+}
+
+/*
+ * \brief Destroys a host (internal call only)
+ */
+void __MSG_host_destroy(msg_host_t host)
+{
+  const char *name = MSG_host_get_name(host);
   /* TODO:
    * What happens if VMs still remain on this host?
    * Revisit here after the surf layer gets stable.
    **/
 
-  free(host);
+  xbt_lib_unset(host_lib, name, MSG_HOST_LEVEL, 1);
 }
 
 /** \ingroup m_host_management
