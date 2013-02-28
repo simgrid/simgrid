@@ -83,7 +83,6 @@ void xbt_lib_unset(xbt_lib_t lib, const char *key, int level, int invoke_callbac
 
   if (!obj) {
      XBT_WARN("no key %s at level %d", key, level);
-     return;
   } else {
      XBT_DEBUG("Remove %p of key %s at level %d", obj, key, level);
      if (invoke_callback)
@@ -91,7 +90,7 @@ void xbt_lib_unset(xbt_lib_t lib, const char *key, int level, int invoke_callbac
      elts[level] = NULL;
   }
 
-  /* check if there are elements of this key */
+  /* check if there still remains any elements of this key */
   int i;
   for (i = 0; i < lib->levels; i++) {
      if (elts[i] != NULL)
