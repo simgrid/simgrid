@@ -26,6 +26,9 @@ double task_comm_size = 10000000;
 int master_fun(int argc, char *argv[]);
 int worker_fun(int argc, char *argv[]);
 
+int nb_hosts=3;
+//int nb_vms=nb_host*2; // 2 VMs per PM
+ 
 static void work_batch(int workers_count)
 {
   int i;
@@ -127,8 +130,8 @@ int master_fun(int argc, char *argv[])
     MSG_vm_migrate(vm, pms[1]);
   }
 
-  /* FIXME: Do we need to support cold migration? Yes, but how should
-   * parameters of a migration be passed? */
+  /* Migration with default policy is called (i.e. live migration with pre-copy strategy */
+  /* If you want to use other policy such as post-copy or cold migration, you should add a third parameter that defines the policy */
   XBT_INFO("Migrate all VMs to PM(%s)", MSG_host_get_name(pms[2]));
   xbt_dynar_foreach(vms, i, vm) {
     // MSG_vm_suspend(vm);
@@ -137,7 +140,7 @@ int master_fun(int argc, char *argv[])
   }
 
 
-  XBT_INFO("Shutdown the first 10 worker processes gracefuly. The   the second half will forcefully get killed");
+  XBT_INFO("Shutdown the first worker processes gracefuly. The   the second half will forcefully get killed");
   for (i = 0; i < workers_count; i++) {
     char mbox[64];
     sprintf(mbox, "MBOX:WRK%02d", i);
@@ -206,15 +209,14 @@ int main(int argc, char *argv[])
     printf("Usage: %s example/msg/msg_platform.xml\n", argv[0]);
     return 1;
   }
-
-  /* Load the platform file */
+ /* Load the platform file */
   MSG_create_environment(argv[1]);
 
-  /* Retrieve the 10 first hosts from the platform file */
+  /* Retrieve the  first hosts from the platform file */
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
 
-  if (xbt_dynar_length(hosts_dynar) <= 10) {
-    XBT_CRITICAL("need 10 hosts");
+  if (xbt_dynar_length(hosts_dynar) <= nb_hosts) {
+    XBT_CRITICAL("need %d hosts", nb_hosts);
     return 1;
   }
 
@@ -233,12 +235,12 @@ int main(int argc, char *argv[])
 
     master_argv[i] = xbt_strdup(MSG_host_get_name(host));
 
-    if (i == 10)
+    if (i == nb_hosts)
       break;
   }
 
 
-  MSG_process_create_with_arguments("master", master_fun, NULL, master_pm, 11, master_argv);
+  MSG_process_create_with_arguments("master", master_fun, NULL, master_pm, nb_hosts+1, master_argv);
 
   msg_error_t res = MSG_main();
   XBT_INFO("Simulation time %g", MSG_get_clock());

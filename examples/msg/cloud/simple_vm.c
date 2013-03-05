@@ -126,6 +126,7 @@ int master_main(int argc, char *argv[])
   msg_host_t pm2 = xbt_dynar_get_as(hosts_dynar, 2, msg_host_t);
   msg_vm_t vm0, vm1;
 
+  XBT_INFO("## Test 1 (started): check computation on normal PM");
   XBT_INFO("### Put a task on a PM");
   launch_computation_worker(pm0);
   MSG_process_sleep(2);
@@ -139,21 +140,28 @@ int master_main(int argc, char *argv[])
   launch_computation_worker(pm0);
   launch_computation_worker(pm1);
   MSG_process_sleep(2);
+  XBT_INFO("## Test 1 (ended)");
 
+  XBT_INFO("## Test 2  (started): check impact of running a task inside a VM (there is no degradation for the moment)");
   XBT_INFO("### Put a VM on a PM, and put a task to the VM");
   vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
   launch_computation_worker(vm0);
   MSG_process_sleep(2);
   MSG_vm_destroy(vm0);
-
+  XBT_INFO("## Test 2 (ended)");
+  
+  XBT_INFO("## Test 3  (started): check impact of running a task collocated with a VM (there is no VM noise for the moment)");
   XBT_INFO("### Put a VM on a PM, and put a task to the PM (FIXME: broken)");
   vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
   launch_computation_worker(pm0);
   MSG_process_sleep(2);
   MSG_vm_destroy(vm0);
+  XBT_INFO("## Test 3 (ended)");
 
+  XBT_INFO("## Test 4 (started): compare the cost of running two tasks inside two different VMs collocated or not (for the moment, there is no  \
+											degradation for the VMs. Hence, the time should be equals to the time of test 1");
   XBT_INFO("### Put two VMs on a PM, and put a task to each VM");
   vm0 = MSG_vm_create_core(pm0, "VM0");
   vm1 = MSG_vm_create_core(pm0, "VM1");
@@ -175,8 +183,10 @@ int master_main(int argc, char *argv[])
   MSG_process_sleep(2);
   MSG_vm_destroy(vm0);
   MSG_vm_destroy(vm1);
+  XBT_INFO("## Test 4 (ended)");
 
-
+  
+  XBT_INFO("## Test 5  (started): Analyse network impact");
   XBT_INFO("### Make a connection between PM0 and PM1");
   launch_communication_worker(pm0, pm1);
   MSG_process_sleep(5);
@@ -226,8 +236,10 @@ int master_main(int argc, char *argv[])
   MSG_process_sleep(5);
   MSG_vm_destroy(vm0);
   MSG_vm_destroy(vm1);
+  XBT_INFO("## Test 5 (ended)");
 
 
+  XBT_INFO("## Test 6 (started): Check migration impact (not yet implemented neither on the CPU resource nor on the network one");
   XBT_INFO("### Relocate VM0 between PM0 and PM1");
   vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
@@ -238,7 +250,8 @@ int master_main(int argc, char *argv[])
   MSG_vm_migrate(vm0, pm0);
   MSG_process_sleep(5);
   MSG_vm_destroy(vm0);
-
+  XBT_INFO("## Test 6 (ended)");
+  
   return 0;
 }
 
