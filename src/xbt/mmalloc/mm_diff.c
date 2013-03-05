@@ -30,6 +30,7 @@ static void remove_heap_equality(xbt_dynar_t equals, int address, void *a);
 static int is_stack(void *address);
 static int is_block_stack(int block);
 static int equal_blocks(int b1, int b2);
+static int equal_fragments(int b1, int f1, int b2, int f2);
 
 void mmalloc_backtrace_block_display(void* heapinfo, int block){
 
@@ -590,6 +591,12 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){
       frag1 = ((uintptr_t) (ADDR2UINT (area1) % (BLOCKSIZE))) >> heapinfo1[block1].type;
       frag2 = ((uintptr_t) (ADDR2UINT (area2) % (BLOCKSIZE))) >> heapinfo2[block2].type;
 
+      if(heapinfo1[block1].busy_frag.equal_to[frag1] != NULL){
+        if(equal_fragments(block1, frag1, block2, frag2)){
+          return 0;
+        }
+      }
+
       if(heapinfo1[block1].busy_frag.frag_size[frag1] != heapinfo2[block2].busy_frag.frag_size[frag2])
         return 1;  
       if(!add_heap_area_pair(previous, block1, frag1, block2, frag2))
@@ -612,6 +619,12 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){
   }else if((heapinfo1[block1].type > 0) && (heapinfo2[block2].type > 0)){
     frag1 = ((uintptr_t) (ADDR2UINT (area1) % (BLOCKSIZE))) >> heapinfo1[block1].type;
     frag2 = ((uintptr_t) (ADDR2UINT (area2) % (BLOCKSIZE))) >> heapinfo2[block2].type;
+
+    if(heapinfo1[block1].busy_frag.equal_to[frag1] != NULL){
+      if(equal_fragments(block1, frag1, block2, frag2)){
+        return 0;
+      }
+    }
 
     if(heapinfo1[block1].busy_frag.frag_size[frag1] != heapinfo2[block2].busy_frag.frag_size[frag2])
       return 1;       
@@ -1044,10 +1057,20 @@ int is_free_area(void *area, xbt_mheap_t heap){
  
 }
 
-static int equal_blocks(b1, b2){
+static int equal_blocks(int b1, int b2){
   if(heapinfo1[b1].busy_block.equal_to != NULL){
     if(heapinfo2[b2].busy_block.equal_to != NULL){
       if(((heap_area_t)(heapinfo1[b1].busy_block.equal_to))->block == b2 && ((heap_area_t)(heapinfo2[b2].busy_block.equal_to))->block == b1)
+        return 1;
+    }
+  }
+  return 0;
+}
+
+static int equal_fragments(int b1, int f1, int b2, int f2){
+  if(heapinfo1[b1].busy_frag.equal_to[f1] != NULL){
+    if(heapinfo2[b2].busy_frag.equal_to[f2] != NULL){
+      if(((heap_area_t)(heapinfo1[b1].busy_frag.equal_to[f1]))->block == b2 && ((heap_area_t)(heapinfo2[b2].busy_frag.equal_to[f2]))->block == b1 && ((heap_area_t)(heapinfo1[b1].busy_frag.equal_to[f1]))->fragment == f2 && ((heap_area_t)(heapinfo2[b2].busy_frag.equal_to[f2]))->fragment == f1)
         return 1;
     }
   }
