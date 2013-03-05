@@ -1027,9 +1027,11 @@ void MC_ignore_stack(const char *var_name, const char *frame_name){
 
   if(mc_local_variables != NULL){
 
-    dw_frame_t frame = xbt_dict_get_or_null(mc_local_variables, frame_name);
-    if(frame != NULL)
-      xbt_dict_remove(frame->variables, var_name);
+    if(strcmp(frame_name, "*") != 0){
+      dw_frame_t frame = xbt_dict_get_or_null(mc_local_variables, frame_name);
+      if(frame != NULL)
+        xbt_dict_remove(frame->variables, var_name);
+    }
 
   }
 
