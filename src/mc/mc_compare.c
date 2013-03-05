@@ -287,6 +287,66 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     xbt_os_timer_start(timer);
   #endif
 
+  /* Compare hash of global variables */
+  if(s1->hash_global != NULL && s2->hash_global != NULL){
+    if(strcmp(s1->hash_global, s2->hash_global) != 0){
+      #ifdef MC_DEBUG
+        xbt_os_timer_stop(timer);
+        mc_comp_times->hash_global_variables_comparison_time = xbt_os_timer_elapsed(timer);
+        XBT_DEBUG("Different hash of global variables : %s - %s", s1->hash_global, s2->hash_global); 
+        errors++; 
+      #else
+        #ifdef MC_VERBOSE
+          XBT_VERB("Different hash of global variables : %s - %s", s1->hash_global, s2->hash_global); 
+        #endif
+    
+        xbt_os_timer_free(timer);
+        xbt_os_timer_stop(global_timer);
+        mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
+        xbt_os_timer_free(global_timer);
+    
+        if(!raw_mem)
+          MC_UNSET_RAW_MEM;
+
+        return 1;
+      #endif
+    }
+  }
+
+  #ifdef MC_DEBUG
+    xbt_os_timer_start(timer);
+  #endif
+
+  /* Compare hash of local variables */
+  if(s1->hash_local != NULL && s2->hash_local != NULL){
+    if(strcmp(s1->hash_local, s2->hash_local) != 0){
+      #ifdef MC_DEBUG
+        xbt_os_timer_stop(timer);
+        mc_comp_times->hash_local_variables_comparison_time = xbt_os_timer_elapsed(timer);
+        XBT_DEBUG("Different hash of local variables : %s - %s", s1->hash_local, s2->hash_local); 
+        errors++; 
+      #else
+        #ifdef MC_VERBOSE
+          XBT_VERB("Different hash of local variables : %s - %s", s1->hash_local, s2->hash_local); 
+        #endif
+    
+        xbt_os_timer_free(timer);
+        xbt_os_timer_stop(global_timer);
+        mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
+        xbt_os_timer_free(global_timer);
+        
+        if(!raw_mem)
+          MC_UNSET_RAW_MEM;
+        
+        return 1;
+      #endif
+    }
+  }
+
+  #ifdef MC_DEBUG
+    xbt_os_timer_start(timer);
+  #endif
+
   /* Init heap information used in heap comparison algorithm */
   init_heap_information((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data, s1->to_ignore, s2->to_ignore);
 

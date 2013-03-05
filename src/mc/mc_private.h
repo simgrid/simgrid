@@ -41,6 +41,8 @@ typedef struct s_mc_snapshot{
   size_t *stack_sizes;
   xbt_dynar_t stacks;
   xbt_dynar_t to_ignore;
+  char hash_global[41];
+  char hash_local[41];
 } s_mc_snapshot_t, *mc_snapshot_t;
 
 typedef struct s_mc_snapshot_stack{
@@ -222,6 +224,8 @@ typedef struct s_mc_comparison_times{
   double libsimgrid_global_variables_comparison_time;
   double heap_comparison_time;
   double stacks_comparison_time;
+  double hash_global_variables_comparison_time;
+  double hash_local_variables_comparison_time;
 }s_mc_comparison_times_t, *mc_comparison_times_t;
 
 extern mc_comparison_times_t mc_comp_times;
