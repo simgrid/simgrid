@@ -125,12 +125,12 @@ void init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
   heaplimit = ((struct mdesc *)heap1)->heaplimit;
 
   s_heap = (char *)mmalloc_get_current_heap() - STD_HEAP_SIZE - getpagesize();
-
+  
   heapbase1 = (char *)heap1 + BLOCKSIZE;
   heapbase2 = (char *)heap2 + BLOCKSIZE;
 
-  heapinfo1 = (malloc_info *)((char *)heap1 + ((uintptr_t)((char *)heap1->heapinfo - (char *)s_heap)));
-  heapinfo2 = (malloc_info *)((char *)heap2 + ((uintptr_t)((char *)heap2->heapinfo - (char *)s_heap)));
+  heapinfo1 = (malloc_info *)((char *)heap1 + ((uintptr_t)((char *)((struct mdesc *)s_heap)->heapinfo - (char *)s_heap)));
+  heapinfo2 = (malloc_info *)((char *)heap2 + ((uintptr_t)((char *)((struct mdesc *)s_heap)->heapinfo - (char *)s_heap)));
 
   heapsize1 = heap1->heapsize;
   heapsize2 = heap2->heapsize;
@@ -150,7 +150,6 @@ void init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
     MC_ignore_data_bss(&to_ignore1, sizeof(to_ignore1));
     MC_ignore_data_bss(&to_ignore2, sizeof(to_ignore2));
   }
-  
 }
 
 int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
@@ -370,6 +369,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
   /* All blocks/fragments are equal to another block/fragment ? */
   size_t i = 1, j = 0;
+  void *real_addr_frag1 = NULL, *real_addr_block1 = NULL, *real_addr_block2 = NULL, *real_addr_frag2 = NULL;
  
   while(i<=heaplimit){
     if(heapinfo1[i].type == 0){
@@ -390,13 +390,15 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
     }
     if(heapinfo1[i].type > 0){
       addr_block1 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)heapbase1));
+      real_addr_block1 =  ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)((struct mdesc *)s_heap)->heapbase));
       for(j=0; j < (size_t) (BLOCKSIZE >> heapinfo1[i].type); j++){
         if(current_block == heaplimit){
           if(heapinfo1[i].busy_frag.frag_size[j] > 0){
             if(heapinfo1[i].busy_frag.equal_to[j] == NULL){
               if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
                 addr_frag1 = (void*) ((char *)addr_block1 + (j << heapinfo1[i].type));
-                XBT_DEBUG("Block %zu, Fragment %zu (%p) not found (size used = %d)", i, j, addr_frag1, heapinfo1[i].busy_frag.frag_size[j]);
+                real_addr_frag1 = (void*) ((char *)real_addr_block1 + (j << ((struct mdesc *)s_heap)->heapinfo[i].type));
+                XBT_DEBUG("Block %zu, Fragment %zu (%p - %p) not found (size used = %d)", i, j, addr_frag1, real_addr_frag1, heapinfo1[i].busy_frag.frag_size[j]);
                 //mmalloc_backtrace_fragment_display((void*)heapinfo1, i, j);
               }
               nb_diff1++;
@@ -432,13 +434,15 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
     }
     if(heapinfo2[i].type > 0){
       addr_block2 = ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)heapbase2));
+      real_addr_block2 =  ((void*) (((ADDR2UINT(i)) - 1) * BLOCKSIZE + (char*)((struct mdesc *)s_heap)->heapbase));
       for(j=0; j < (size_t) (BLOCKSIZE >> heapinfo2[i].type); j++){
         if(current_block == heaplimit){
           if(heapinfo2[i].busy_frag.frag_size[j] > 0){
             if(heapinfo2[i].busy_frag.equal_to[j] == NULL){
               if(XBT_LOG_ISENABLED(mm_diff, xbt_log_priority_debug)){
                 addr_frag2 = (void*) ((char *)addr_block2 + (j << heapinfo2[i].type));
-                XBT_DEBUG( "Block %zu, Fragment %zu (%p) not found (size used = %d)", i, j, addr_frag2, heapinfo2[i].busy_frag.frag_size[j]);
+                real_addr_frag2 = (void*) ((char *)real_addr_block2 + (j << ((struct mdesc *)s_heap)->heapinfo[i].type));
+                XBT_DEBUG( "Block %zu, Fragment %zu (%p - %p) not found (size used = %d)", i, j, addr_frag2, real_addr_frag2, heapinfo2[i].busy_frag.frag_size[j]);
                 //mmalloc_backtrace_fragment_display((void*)heapinfo2, i, j);
               }
               nb_diff2++;
@@ -454,6 +458,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
     XBT_DEBUG("Number of blocks/fragments not found in heap2 : %d", nb_diff2);
 
   xbt_dynar_free(&previous);
+  real_addr_frag1 = NULL, real_addr_block1 = NULL, real_addr_block2 = NULL, real_addr_frag2 = NULL;
 
   return ((nb_diff1 > 0) || (nb_diff2 > 0));
 }
