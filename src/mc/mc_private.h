@@ -60,6 +60,7 @@ mc_snapshot_t MC_take_snapshot(void);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 void snapshot_stack_free_voidp(void *s);
+int is_stack_ignore_variable(char *frame, char *var_name);
 
 /********************************* MC Global **********************************/
 extern double *mc_time;

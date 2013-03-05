@@ -18,7 +18,6 @@ static size_t heap_ignore_size(void *address);
 static void stack_region_free(stack_region_t s);
 static void heap_equality_free(heap_equality_t e);
 
-static int is_stack_ignore_variable(char *frame, char *var_name);
 static int compare_local_variables(char *s1, char *s2);
 static int compare_global_variables(int region_type, void *d1, void *d2);
 
@@ -510,7 +509,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
   
 }
 
-static int is_stack_ignore_variable(char *frame, char *var_name){
+int is_stack_ignore_variable(char *frame, char *var_name){
 
   unsigned int cursor = 0;
   int start = 0;
