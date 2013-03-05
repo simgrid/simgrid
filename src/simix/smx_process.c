@@ -275,6 +275,10 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->running_ctx = xbt_new(xbt_running_ctx_t, 1);
     XBT_RUNNING_CTX_INITIALIZE((*process)->running_ctx);
 
+    if(MC_is_active()){
+      MC_ignore_heap((*process)->running_ctx, sizeof(*(*process)->running_ctx));
+    }
+
     /* Add properties */
     (*process)->properties = properties;
 
