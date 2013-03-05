@@ -134,10 +134,6 @@ void MC_init_memory_map_info(){
 
 }
 
-mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
-  return MC_take_snapshot();
-}
-
 mc_snapshot_t MC_take_snapshot()
 {
   int raw_mem = (mmalloc_get_current_heap() == raw_heap);
@@ -618,6 +614,10 @@ static void snapshot_stack_free(mc_snapshot_stack_t s){
 
 void snapshot_stack_free_voidp(void *s){
   snapshot_stack_free((mc_snapshot_stack_t) * (void **) s);
+}
+
+mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
+  return MC_take_snapshot();
 }
 
 void *MC_snapshot(void){
