@@ -83,6 +83,10 @@ static MPI_Datatype get_datatype(int datatype) {
          : MPI_DATATYPE_NULL;
 }
 
+static void free_datatype(int datatype) {
+  xbt_dynar_remove_at(datatype_lookup, datatype, NULL);
+}
+
 static int new_op(MPI_Op op) {
   xbt_dynar_push(op_lookup, &op);
   return (int)xbt_dynar_length(op_lookup) - 1;
@@ -486,6 +490,51 @@ void mpi_type_extent__(int* datatype, MPI_Aint * extent, int* ierr){
   *ierr= MPI_Type_extent(get_datatype(*datatype),  extent);
 }
 
+void mpi_type_commit__(int* datatype,  int* ierr){
+  MPI_Datatype tmp= get_datatype(*datatype);
+  *ierr= MPI_Type_commit(&tmp);
+}
+
+void mpi_type_vector__(int* count, int* blocklen, int* stride, int* old_type, int* newtype,  int* ierr){
+  MPI_Datatype tmp;
+  *ierr= MPI_Type_vector(*count, *blocklen, *stride, get_datatype(*old_type), &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *newtype = new_datatype(tmp);
+  }
+}
+
+void mpi_type_create_vector__(int* count, int* blocklen, int* stride, int* old_type, int* newtype,  int* ierr){
+  MPI_Datatype tmp;
+  *ierr= MPI_Type_vector(*count, *blocklen, *stride, get_datatype(*old_type), &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *newtype = new_datatype(tmp);
+  }
+}
+
+void mpi_type_hvector__(int* count, int* blocklen, MPI_Aint* stride, int* old_type, int* newtype,  int* ierr){
+  MPI_Datatype tmp;
+  *ierr= MPI_Type_hvector (*count, *blocklen, *stride, get_datatype(*old_type), &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *newtype = new_datatype(tmp);
+  }
+}
+
+void mpi_type_create_hvector__(int* count, int* blocklen, MPI_Aint* stride, int* old_type, int* newtype,  int* ierr){
+  MPI_Datatype tmp;
+  *ierr= MPI_Type_hvector(*count, *blocklen, *stride, get_datatype(*old_type), &tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *newtype = new_datatype(tmp);
+  }
+}
+
+void mpi_type_free__(int* datatype, int* ierr){
+  MPI_Datatype tmp= get_datatype(*datatype);
+  *ierr= MPI_Type_free (&tmp);
+  if(*ierr == MPI_SUCCESS) {
+    free_datatype(*datatype);
+  }
+}
+
 void mpi_type_ub__(int* datatype, MPI_Aint * disp, int* ierr){
   *ierr= MPI_Type_ub(get_datatype(*datatype), disp);
 }
@@ -501,4 +550,34 @@ void mpi_type_size__(int* datatype, int *size, int* ierr)
 
 void mpi_error_string__(int* errorcode, char* string, int* resultlen, int* ierr){
   *ierr = MPI_Error_string(*errorcode, string, resultlen);
+}
+
+void mpi_win_fence__( int* assert,  int* win, int* ierr){
+  *ierr =  MPI_Win_fence(* assert, *(MPI_Win*)win);
+}
+
+void mpi_win_free__( int* win, int* ierr){
+  *ierr =  MPI_Win_free(  (MPI_Win*)win);
+}
+
+void mpi_win_create__( int *base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int *win, int* ierr){
+  *ierr =  MPI_Win_create( (void*)base, *size, *disp_unit, *(MPI_Info*)info, get_comm(*comm),(MPI_Win*)win);
+}
+
+void mpi_info_create__( int *info, int* ierr){
+  *ierr =  MPI_Info_create( (MPI_Info *)info);
+}
+
+void mpi_info_set__( int *info, char *key, char *value, int* ierr){
+  *ierr =  MPI_Info_set( (MPI_Info *)info, key, value);
+}
+
+void mpi_info_free__(int* info, int* ierr){
+  *ierr =  MPI_Info_free((MPI_Info *) info);
+}
+
+void mpi_get__( int *origin_addr, int* origin_count, int* origin_datatype, int *target_rank,
+    MPI_Aint* target_disp, int *target_count, int* target_datatype, int* win, int* ierr){
+  *ierr =  MPI_Get( (void*)origin_addr,*origin_count, get_datatype(*origin_datatype),*target_rank,
+      *target_disp, *target_count,get_datatype(*target_datatype), *(MPI_Win *)win);
 }

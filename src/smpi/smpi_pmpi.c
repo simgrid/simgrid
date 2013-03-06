@@ -2334,4 +2334,32 @@ int PMPI_Dims_create(int nnodes, int ndims, int* dims) {
    return not_yet_implemented();
 }
 
+int PMPI_Win_fence( int assert,  MPI_Win win){
+   return not_yet_implemented();
+}
+
+int PMPI_Win_free( MPI_Win* win){
+   return not_yet_implemented();
+}
+
+int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_create( MPI_Info *info){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_set( MPI_Info *info, char *key, char *value){
+  return not_yet_implemented();
+}
+
+int PMPI_Info_free( MPI_Info *info){
+  return not_yet_implemented();
+}
+
+int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+  return not_yet_implemented();
+}
 

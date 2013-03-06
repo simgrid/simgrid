@@ -346,8 +346,22 @@ void mpi_testall__ (int* count, int * requests,  int *flag, MPI_Status * statuse
 void mpi_get_count__(MPI_Status * status, int* datatype, int *count, int* ierr);
 void mpi_type_extent__(int* datatype, MPI_Aint * extent, int* ierr);
 void mpi_attr_get__(int* comm, int* keyval, void* attr_value, int* flag, int* ierr );
+void mpi_type_commit__(int* datatype,  int* ierr);
+void mpi_type_vector__(int* count, int* blocklen, int* stride, int* old_type, int* newtype,  int* ierr);
+void mpi_type_create_vector__(int* count, int* blocklen, int* stride, int* old_type, int* newtype,  int* ierr);
+void mpi_type_hvector__(int* count, int* blocklen, MPI_Aint* stride, int* old_type, int* newtype,  int* ierr);
+void mpi_type_create_hvector__(int* count, int* blocklen, MPI_Aint* stride, int* old_type, int* newtype,  int* ierr);
+void mpi_type_free__(int* datatype, int* ierr);
 void mpi_type_lb__(int* datatype, MPI_Aint * extent, int* ierr);
 void mpi_type_ub__(int* datatype, MPI_Aint * extent, int* ierr);
+void mpi_win_fence__( int* assert,  int* win, int* ierr);
+void mpi_win_free__( int* win, int* ierr);
+void mpi_win_create__( int *base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int *win, int* ierr);
+void mpi_info_create__( int *info, int* ierr);
+void mpi_info_set__( int *info, char *key, char *value, int* ierr);
+void mpi_info_free__(int* info, int* ierr);
+void mpi_get__( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
+    MPI_Aint* target_disp, int* target_count, int* target_datatype, int* win, int* ierr);
 void mpi_error_string__(int* errorcode, char* string, int* resultlen, int* ierr);
 void mpi_sendrecv__(void* sendbuf, int* sendcount, int* sendtype, int* dst,
                 int* sendtag, void *recvbuf, int* recvcount,

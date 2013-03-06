@@ -711,3 +711,33 @@ int MPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status
 int MPI_Initialized(int* flag) {
   return PMPI_Initialized(flag);
 }
+
+int MPI_Win_fence( int assert,  MPI_Win win){
+   return PMPI_Win_fence( assert, win);
+}
+
+int MPI_Win_free( MPI_Win* win){
+   return PMPI_Win_free(  win);
+}
+
+int MPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
+  return PMPI_Win_create( base, size, disp_unit, info, comm,win);
+}
+
+int MPI_Info_create( MPI_Info *info){
+  return PMPI_Info_create( info);
+}
+
+int MPI_Info_set( MPI_Info *info, char *key, char *value){
+  return PMPI_Info_set( info, key, value);
+}
+
+int MPI_Info_free( MPI_Info *info){
+  return PMPI_Info_free( info);
+}
+
+int MPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+  return PMPI_Get( origin_addr,origin_count, origin_datatype,target_rank,
+      target_disp, target_count,target_datatype, win);
+}
