@@ -153,12 +153,10 @@ MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype){
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                        void *recvbuf, int recvcount, MPI_Datatype recvtype)
 {
-  int retval, count;
+  int count;
 
   /* First check if we really have something to do */
-  if (recvcount == 0) {
-    retval = sendcount == 0 ? MPI_SUCCESS : MPI_ERR_TRUNCATE;
-  } else {
+  if (recvcount > 0 && recvbuf != sendbuf) {
     /* FIXME: treat packed cases */
     sendcount *= smpi_datatype_size(sendtype);
     recvcount *= smpi_datatype_size(recvtype);
@@ -189,10 +187,9 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 
       free(buf_tmp);
     }
-    retval = sendcount > recvcount ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
   }
 
-  return retval;
+  return sendcount > recvcount ? MPI_ERR_TRUNCATE : MPI_SUCCESS;
 }
 
 /*
