@@ -1424,30 +1424,15 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
 #ifdef HAVE_TRACING
   //save requests information for tracing
   int i;
-  xbt_dynar_t srcs = xbt_dynar_new(sizeof(int), NULL);
-  xbt_dynar_t dsts = xbt_dynar_new(sizeof(int), NULL);
-  xbt_dynar_t recvs = xbt_dynar_new(sizeof(int), NULL);
+  int *srcs = xbt_new(int, count);
+  int *dsts = xbt_new(int, count);
+  int *recvs = xbt_new(int, count);
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];      //already received requests are no longer valid
     if (req) {
-      int *asrc = xbt_new(int, 1);
-      int *adst = xbt_new(int, 1);
-      int *arecv = xbt_new(int, 1);
-      *asrc = req->src;
-      *adst = req->dst;
-      *arecv = req->recv;
-      xbt_dynar_insert_at(srcs, i, asrc);
-      xbt_dynar_insert_at(dsts, i, adst);
-      xbt_dynar_insert_at(recvs, i, arecv);
-      xbt_free(asrc);
-      xbt_free(adst);
-      xbt_free(arecv);
-    } else {
-      int *t = xbt_new(int, 1);
-      xbt_dynar_insert_at(srcs, i, t);
-      xbt_dynar_insert_at(dsts, i, t);
-      xbt_dynar_insert_at(recvs, i, t);
-      xbt_free(t);
+      srcs[i] = req->src;
+      dsts[i] = req->dst;
+      recvs[i] = req->recv;
     }
   }
   int rank_traced = smpi_process_index();
@@ -1464,18 +1449,16 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   }
 #ifdef HAVE_TRACING
   if(*index!=MPI_UNDEFINED){
-    int src_traced, dst_traced, is_wait_for_receive;
-    xbt_dynar_get_cpy(srcs, *index, &src_traced);
-    xbt_dynar_get_cpy(dsts, *index, &dst_traced);
-    xbt_dynar_get_cpy(recvs, *index, &is_wait_for_receive);
+    int src_traced = srcs[*index];
+    int dst_traced = dsts[*index];
+    int is_wait_for_receive = recvs[*index];
     if (is_wait_for_receive) {
       TRACE_smpi_recv(rank_traced, src_traced, dst_traced);
     }
     TRACE_smpi_ptp_out(rank_traced, src_traced, dst_traced, __FUNCTION__);
-    //clean-up of dynars
-    xbt_dynar_free(&srcs);
-    xbt_dynar_free(&dsts);
-    xbt_dynar_free(&recvs);
+    xbt_free(srcs);
+    xbt_free(dsts);
+    xbt_free(recvs);
   }
   TRACE_smpi_computing_in(rank_traced);
 #endif
@@ -1490,30 +1473,17 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 #ifdef HAVE_TRACING
   //save information from requests
   int i;
-  xbt_dynar_t srcs = xbt_dynar_new(sizeof(int), NULL);
-  xbt_dynar_t dsts = xbt_dynar_new(sizeof(int), NULL);
-  xbt_dynar_t recvs = xbt_dynar_new(sizeof(int), NULL);
+  int *srcs = xbt_new(int, count);
+  int *dsts = xbt_new(int, count);
+  int *recvs = xbt_new(int, count);
+  int valid_count = 0;
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];
     if(req){
-      int *asrc = xbt_new(int, 1);
-      int *adst = xbt_new(int, 1);
-      int *arecv = xbt_new(int, 1);
-      *asrc = req->src;
-      *adst = req->dst;
-      *arecv = req->recv;
-      xbt_dynar_insert_at(srcs, i, asrc);
-      xbt_dynar_insert_at(dsts, i, adst);
-      xbt_dynar_insert_at(recvs, i, arecv);
-      xbt_free(asrc);
-      xbt_free(adst);
-      xbt_free(arecv);
-    }else {
-      int *t = xbt_new(int, 1);
-      xbt_dynar_insert_at(srcs, i, t);
-      xbt_dynar_insert_at(dsts, i, t);
-      xbt_dynar_insert_at(recvs, i, t);
-      xbt_free(t);
+      srcs[valid_count] = req->src;
+      dsts[valid_count] = req->dst;
+      recvs[valid_count] = req->recv;
+      valid_count++;
     }
   }
   int rank_traced = smpi_process_index();
@@ -1523,20 +1493,18 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 #endif
   int retval = smpi_mpi_waitall(count, requests, status);
 #ifdef HAVE_TRACING
-  for (i = 0; i < count; i++) {
-    int src_traced, dst_traced, is_wait_for_receive;
-    xbt_dynar_get_cpy(srcs, i, &src_traced);
-    xbt_dynar_get_cpy(dsts, i, &dst_traced);
-    xbt_dynar_get_cpy(recvs, i, &is_wait_for_receive);
+  for (i = 0; i < valid_count; i++) {
+    int src_traced = srcs[i];
+    int dst_traced = dsts[i];
+    int is_wait_for_receive = recvs[i];
     if (is_wait_for_receive) {
       TRACE_smpi_recv(rank_traced, src_traced, dst_traced);
     }
   }
   TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
-  //clean-up of dynars
-  xbt_dynar_free(&srcs);
-  xbt_dynar_free(&dsts);
-  xbt_dynar_free(&recvs);
+  xbt_free(srcs);
+  xbt_free(dsts);
+  xbt_free(recvs);
   TRACE_smpi_computing_in(rank_traced);
 #endif
   smpi_bench_begin();
