@@ -350,6 +350,10 @@ void STag_surfxml_cluster(void){
     cluster.bb_lat = surf_parse_get_double(A_surfxml_cluster_bb___lat);
   if(strcmp(A_surfxml_cluster_limiter___link,""))
     cluster.limiter_link = surf_parse_get_double(A_surfxml_cluster_limiter___link);
+  if(strcmp(A_surfxml_cluster_loopback___bw,""))
+    cluster.loopback_bw = surf_parse_get_double(A_surfxml_cluster_loopback___bw);
+  if(strcmp(A_surfxml_cluster_loopback___lat,""))
+    cluster.loopback_lat = surf_parse_get_double(A_surfxml_cluster_loopback___lat);
   cluster.router_id = A_surfxml_cluster_router___id;
 
   switch (AX_surfxml_cluster_sharing___policy) {

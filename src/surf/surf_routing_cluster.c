@@ -30,6 +30,17 @@ static void cluster_get_route_and_latency(AS_t as,
     info =
         xbt_dynar_get_as(as->link_up_down_list, src->id,
                          s_surf_parsing_link_up_down_t);
+                         
+    if((src->id == dst->id) && info.loopback_link  ){
+      xbt_dynar_push_as(route->link_list, void *, info.loopback_link);
+      if (lat)
+        *lat +=
+            surf_network_model->extension.network.get_link_latency(info.
+                                                                   loopback_link);
+      return;
+    }
+                         
+                         
     if (info.limiter_link)          // limiter for sender
       xbt_dynar_push_as(route->link_list, void *, info.limiter_link);
     
