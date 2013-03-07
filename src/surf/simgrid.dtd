@@ -82,6 +82,7 @@
 <!ATTLIST cluster availability_file CDATA "">
 <!ATTLIST cluster state_file CDATA "">
 <!ATTLIST cluster router_id CDATA "">
+<!ATTLIST cluster limiter_link CDATA "">
 
 <!ELEMENT cabinet EMPTY>
 <!ATTLIST cabinet id CDATA #REQUIRED>

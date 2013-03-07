@@ -897,6 +897,28 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         info.link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
         info.link_down = info.link_up;
       }
+      
+      if(cluster->limiter_link!=0){      
+        char *tmp_link = bprintf("%s_limiter", link_id);
+        XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link,
+                cluster->limiter_link);
+
+        
+        memset(&link, 0, sizeof(link));
+        link.id = tmp_link;
+        link.bandwidth = cluster->limiter_link;
+        link.latency = 0;
+        link.state = SURF_RESOURCE_ON;
+        link.policy = SURF_LINK_SHARED;
+        sg_platf_new_link(&link);
+         info.limiter_link =
+            xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+        free(tmp_link);
+      }else{
+        info.limiter_link =NULL;
+      }
+      
+      
       xbt_dynar_push(current_routing->link_up_down_list,&info);
       xbt_free(link_id);
       xbt_free(host_id);

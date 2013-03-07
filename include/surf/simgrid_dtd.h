@@ -304,6 +304,8 @@ typedef int AT_surfxml_random_std___deviation;
 #define AU_surfxml_random_std___deviation NULL
 typedef int AT_surfxml_cluster_core;
 #define AU_surfxml_cluster_core NULL
+typedef int AT_surfxml_cluster_limiter___link;
+#define AU_surfxml_cluster_limiter___link NULL
 typedef int AT_surfxml_host_state___file;
 #define AU_surfxml_host_state___file NULL
 typedef int AT_surfxml_route_dst;
@@ -632,6 +634,9 @@ XBT_PUBLIC_DATA(short int) surfxml_random_std___deviation_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_core) AX_surfxml_cluster_core;
 #define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_core_isset;
+XBT_PUBLIC_DATA(AT_surfxml_cluster_limiter___link) AX_surfxml_cluster_limiter___link;
+#define A_surfxml_cluster_limiter___link (surfxml_bufferstack + AX_surfxml_cluster_limiter___link)
+XBT_PUBLIC_DATA(short int) surfxml_cluster_limiter___link_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_state___file) AX_surfxml_host_state___file;
 #define A_surfxml_host_state___file (surfxml_bufferstack + AX_surfxml_host_state___file)
 XBT_PUBLIC_DATA(short int) surfxml_host_state___file_isset;
