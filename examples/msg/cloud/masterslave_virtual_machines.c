@@ -19,16 +19,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
  *    example on a cloud</b>. The classical example revisited to demonstrate the use of virtual machines.
  */
 
-double task_comp_size = 10000000;
-double task_comm_size = 10000000;
+const double task_comp_size = 10000000;
+const double task_comm_size = 10000000;
 
 
 int master_fun(int argc, char *argv[]);
 int worker_fun(int argc, char *argv[]);
 
-int nb_hosts=3;
-//int nb_vms=nb_host*2; // 2 VMs per PM
- 
+
 static void work_batch(int workers_count)
 {
   int i;
@@ -55,7 +53,7 @@ int master_fun(int argc, char *argv[])
   msg_host_t *pms = xbt_new(msg_host_t, workers_count);
   xbt_dynar_t vms = xbt_dynar_new(sizeof(msg_vm_t), NULL);
 
-  /* Retrive the PMs that launch worker processes. */
+  /* Retrive the PMs that will launch worker processes. */
   for (i = 1; i < argc; i++)
     pms[i - 1] = MSG_get_host_by_name(argv[i]);
 
@@ -130,7 +128,7 @@ int master_fun(int argc, char *argv[])
     MSG_vm_migrate(vm, pms[1]);
   }
 
-  /* Migration with default policy is called (i.e. live migration with pre-copy strategy */
+  /* Migration with default policy is called (i.e. live migration with pre-copy strategy) */
   /* If you want to use other policy such as post-copy or cold migration, you should add a third parameter that defines the policy */
   XBT_INFO("Migrate all VMs to PM(%s)", MSG_host_get_name(pms[2]));
   xbt_dynar_foreach(vms, i, vm) {
@@ -140,7 +138,7 @@ int master_fun(int argc, char *argv[])
   }
 
 
-  XBT_INFO("Shutdown the first worker processes gracefuly. The   the second half will forcefully get killed");
+  XBT_INFO("Shutdown the half of worker processes gracefuly. The remaining half will be forcibly killed");
   for (i = 0; i < workers_count; i++) {
     char mbox[64];
     sprintf(mbox, "MBOX:WRK%02d", i);
@@ -201,18 +199,22 @@ int worker_fun(int argc, char *argv[])
   return 0;
 }
 
+
 /** Main function */
 int main(int argc, char *argv[])
 {
+  const int nb_hosts = 3;
+
   MSG_init(&argc, argv);
   if (argc != 2) {
     printf("Usage: %s example/msg/msg_platform.xml\n", argv[0]);
     return 1;
   }
- /* Load the platform file */
+
+  /* Load the platform file */
   MSG_create_environment(argv[1]);
 
-  /* Retrieve the  first hosts from the platform file */
+  /* Retrieve hosts from the platform file */
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
 
   if (xbt_dynar_length(hosts_dynar) <= nb_hosts) {
@@ -240,7 +242,7 @@ int main(int argc, char *argv[])
   }
 
 
-  MSG_process_create_with_arguments("master", master_fun, NULL, master_pm, nb_hosts+1, master_argv);
+  MSG_process_create_with_arguments("master", master_fun, NULL, master_pm, nb_hosts + 1, master_argv);
 
   msg_error_t res = MSG_main();
   XBT_INFO("Simulation time %g", MSG_get_clock());
