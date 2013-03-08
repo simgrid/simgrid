@@ -262,10 +262,16 @@ static double get_solved_value(surf_action_t cpu_action)
 }
 
 
+
+/* In the real world, processes on the guest operating system will be somewhat
+ * degraded due to virtualization overhead. The total CPU share that these
+ * processes get is smaller than that of the VM process gets on a host
+ * operating system. */
+const double virt_overhead = 0.95;
+
 static double vm_ws_share_resources(surf_model_t workstation_model, double now)
 {
   /* TODO: udpate action's cost with the total cost of processes on the VM. */
-
 
 
   /* 0. Make sure that we already calculated the resource share at the physical
@@ -313,9 +319,9 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
     workstation_CLM03_t ws_clm03 = ind_host[SURF_WKS_LEVEL];
     cpu_Cas01_t cpu_cas01 = ind_host[SURF_CPU_LEVEL];
 
-    /* skip if it is not a virtual machine */
     if (!ws_clm03)
       continue;
+    /* skip if it is not a virtual machine */
     if (ws_clm03->generic_resource.model != surf_vm_workstation_model)
       continue;
     xbt_assert(cpu_cas01, "cpu-less workstation");
@@ -327,7 +333,12 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
         ws_clm03->generic_resource.name, ws_vm2013->sub_ws->generic_resource.name);
 
-    cpu_cas01->constraint->bound = solved_value;
+    // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
+    // cpu_cas01->constraint->bound = solved_value;
+    surf_model_t cpu_model = cpu_cas01->generic_resource.model;
+    xbt_assert(cpu_model == surf_cpu_model_vm);
+    lmm_system_t vcpu_system = cpu_model->model_private->maxmin_system;
+    lmm_update_constraint_bound(vcpu_system, cpu_cas01->constraint, virt_overhead * solved_value);
   }
 
 
