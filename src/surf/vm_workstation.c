@@ -158,8 +158,10 @@ static void vm_ws_destroy(void *ind_vm_workstation)
    */
   xbt_lib_unset(host_lib, name, SURF_CPU_LEVEL, 0);
   xbt_lib_unset(host_lib, name, ROUTING_HOST_LEVEL, 0);
-  xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
   xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL, 0);
+
+  /* TODO: comment out when VM stroage is implemented. */
+  // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
 
 
   /* Free the cpu_action of the VM. */
