@@ -12,6 +12,9 @@
 #include "surf/surf_resource.h"
 #include "simgrid/sg_config.h"
 #include "workstation_private.h"
+#include "vm_workstation_private.h"
+#include "cpu_cas01_private.h"
+#include "maxmin_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_workstation, surf,
                                 "Logging specific to the SURF workstation module");
@@ -98,8 +101,70 @@ int ws_resource_used(void *resource_id)
   return -1;
 }
 
+
+/* TODO: The current code would be slow due to the iteration. Later, we can
+ * make it faster. */
+static int constraint_is_active(cpu_Cas01_t cpu_cas01)
+{
+  surf_model_t cpu_model = cpu_cas01->generic_resource.model;
+  lmm_system_t sys = cpu_model->model_private->maxmin_system;
+  int found = 0;
+  lmm_constraint_t cnst_tmp;
+
+  xbt_swag_foreach(cnst_tmp, &sys->active_constraint_set) {
+    if (cnst_tmp == cpu_cas01->constraint) {
+      found = 1;
+      break;
+    }
+  }
+
+  return found;
+}
+
+static void adjust_weight_of_dummy_cpu_actions(void)
+{
+  /* iterate for all hosts including virtual machines */
+  xbt_lib_cursor_t cursor;
+  char *key;
+  void **ind_host;
+
+  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
+    workstation_CLM03_t ws_clm03 = ind_host[SURF_WKS_LEVEL];
+    cpu_Cas01_t cpu_cas01 = ind_host[SURF_CPU_LEVEL];
+
+    if (!ws_clm03)
+      continue;
+    /* skip if it is not a virtual machine */
+    if (ws_clm03->generic_resource.model != surf_vm_workstation_model)
+      continue;
+    xbt_assert(cpu_cas01, "cpu-less workstation");
+
+    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
+    workstation_VM2013_t ws_vm2013 = (workstation_VM2013_t) ws_clm03;
+
+    if (constraint_is_active(cpu_cas01)) {
+      /* some tasks exist on this VM */
+      XBT_DEBUG("set the weight of the dummy CPU action on PM to 1");
+
+      /* FIXME: we shoud use lmm_update_variable_weight() ? */
+      /* FIXME: If we assgign 1.05 and 0.05, the system makes apparently wrong values. */
+      surf_action_set_priority(ws_vm2013->cpu_action, 1);
+
+    } else {
+      /* no task exits on this VM */
+      XBT_DEBUG("set the weight of the dummy CPU action on PM to 0");
+
+      surf_action_set_priority(ws_vm2013->cpu_action, 0);
+    }
+  }
+}
+
+
 double ws_share_resources(surf_model_t workstation_model, double now)
 {
+  if (workstation_model->type == SURF_MODEL_TYPE_WORKSTATION)
+    adjust_weight_of_dummy_cpu_actions();
+
   /* Invoke the share_resources() callback of the physical cpu model object and
    * the network model objects. */
   surf_model_t cpu_model = workstation_model->extension.workstation.cpu_model;
