@@ -477,7 +477,7 @@ void sg_config_init(int *argc, char **argv)
                      _sg_cfg_cb__bandwidth_factor, NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "network/weight_S",
-                     "Correction factor to apply to the weight of competing streams(default value set by network model)",
+                     "Correction factor to apply to the weight of competing streams (default value set by network model)",
                      xbt_cfgelm_double, NULL, 1, 1, /* default is set in network.c */
                      _sg_cfg_cb__weight_S, NULL);
 
