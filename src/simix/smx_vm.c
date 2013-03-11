@@ -22,25 +22,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms
  */
 smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
 {
-
-  smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
-  s_smx_process_t proc;
-
-  // TODO check why we do not have any VM here and why we have the host_proc_hookup  ?
-
-  /* Host structure */
-  smx_host->data = NULL;
-  smx_host->process_list =
-      xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
-
-  /* Update global variables */
-  xbt_lib_set(host_lib, name, SIMIX_HOST_LEVEL, smx_host);
-
   /* Create surf associated resource */
-  // TODO change phys_host into the right workstation surf model
   surf_vm_workstation_model->extension.vm_workstation.create(name, ind_phys_host);
 
-  return xbt_lib_get_elm_or_null(host_lib, name);
+  smx_host_t smx_host = SIMIX_host_create(name, ind_phys_host, NULL);
+
+  /* We will be able to register the VM to its physical host, so that we can promptly
+   * retrieve the list VMs on the physical host. */
+
+  return smx_host;
 }
 
 
