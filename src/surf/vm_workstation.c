@@ -126,6 +126,33 @@ static void vm_ws_migrate(void *ind_vm, void *ind_dst_pm)
 
    ws_vm2013->sub_ws = ws_clm03_dst;
 
+   /* Update vcpu's action for the new pm */
+   {
+#if 0
+     XBT_INFO("cpu_action->remains %g", ws_vm2013->cpu_action->remains);
+     XBT_INFO("cost %f remains %f start %f finish %f", ws_vm2013->cpu_action->cost,
+         ws_vm2013->cpu_action->remains,
+         ws_vm2013->cpu_action->start,
+         ws_vm2013->cpu_action->finish
+         );
+     XBT_INFO("cpu_action state %d", surf_action_state_get(ws_vm2013->cpu_action));
+#endif
+
+     /* create a cpu action bound to the pm model at the destination. */
+     surf_action_t new_cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_dst_pm, 0);
+
+     e_surf_action_state_t state = surf_action_state_get(ws_vm2013->cpu_action);
+     if (state != SURF_ACTION_DONE)
+       XBT_CRITICAL("FIXME: may need a proper handling, %d", state);
+     if (ws_vm2013->cpu_action->remains > 0)
+       XBT_CRITICAL("FIXME: need copy the state(?), %d", ws_vm2013->cpu_action->remains);
+
+     int ret = surf_cpu_model_pm->action_unref(ws_vm2013->cpu_action);
+     xbt_assert(ret == 1, "Bug: some resource still remains");
+
+     ws_vm2013->cpu_action = new_cpu_action;
+   }
+
    XBT_DEBUG("migrate VM(%s): change net_elm (%p to %p)", vm_name, old_net_elm, new_net_elm);
    XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
 
