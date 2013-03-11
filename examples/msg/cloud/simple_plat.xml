@@ -6,7 +6,8 @@
 		<host id="PM1" power="1E8"/>
 		<host id="PM2" power="1E8"/>
 
-		<link id="link1" bandwidth="1E6" latency="1E-2" />
+		<!-- <link id="link1" bandwidth="1E6" latency="1E-2" /> -->
+		<link id="link1" bandwidth="12500000" latency="1E-2" />
 
 		<route src="PM0" dst="PM1">
 			<link_ctn id="link1"/>
