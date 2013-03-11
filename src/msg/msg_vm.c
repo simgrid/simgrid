@@ -280,7 +280,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
 
   {
-    msg_task_t task = MSG_task_create("fin", 0, 0, NULL);
+    msg_task_t task = MSG_task_create("quit_migration", 0, 0, NULL);
     msg_error_t ret = MSG_task_send(task, mbox_ctl);
     xbt_assert(ret == MSG_OK);
   }
@@ -322,9 +322,13 @@ static void create_dummy_task(msg_vm_t vm, msg_host_t old_pm, msg_host_t new_pm,
   if (ramsize == 0)
     XBT_WARN("migrate a VM, but ramsize is zero");
 
+  /* We have two mailboxes. mbox is used to transfer migration data between
+   * source and destiantion PMs. mbox_ctl is used to detect the completion of a
+   * migration. The names of these mailboxes must not conflict with others. */
+
   char *suffix = bprintf("mig-%s(%s-%s)", vm->key, old_pm->key, new_pm->key);
-  char *mbox = bprintf("MBOX:%s", suffix);
-  char *mbox_ctl = bprintf("MBOX:%s:CTL", suffix);
+  char *mbox = bprintf("__MBOX:%s", suffix);
+  char *mbox_ctl = bprintf("__MBOX:%s:CTL", suffix);
 
   {
     const char *pr_name = "mig_tx";
@@ -350,10 +354,12 @@ static void create_dummy_task(msg_vm_t vm, msg_host_t old_pm, msg_host_t new_pm,
     msg_process_t pr = MSG_process_create_with_arguments(pr_name, migration_rx_fun, NULL, new_pm, nargvs - 1, argv);
   }
 
+  /* wait until the migration have finished */
   {
     msg_task_t task = NULL;
     msg_error_t ret = MSG_task_recv(&task, mbox_ctl);
     xbt_assert(ret == MSG_OK);
+    xbt_assert(strcmp(task->name, "quit_migration") == 0);
   }
 
   xbt_free(suffix);

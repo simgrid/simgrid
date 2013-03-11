@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
   MSG_process_create_with_arguments("master", master_fun, NULL, master_pm, nb_hosts + 1, master_argv);
 
   msg_error_t res = MSG_main();
-  XBT_INFO("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
 
   xbt_dynar_free(&hosts_dynar);
 

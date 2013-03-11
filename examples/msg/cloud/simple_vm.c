@@ -290,9 +290,8 @@ int main(int argc, char *argv[])
   launch_master(pm0);
 
   int res = MSG_main();
-  XBT_INFO("Simulation time %g", MSG_get_clock());
+  XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
 
-  XBT_INFO("bye");
 
-  return 0;
+  return !(res == MSG_OK);
 }
