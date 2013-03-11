@@ -288,6 +288,9 @@ typedef struct surf_workstation_model_extension_public {
    xbt_dict_t(*get_properties) (const void *resource);
   void (*add_traces) (void);
 
+  void (*get_params) (void *ind_vm_ws, ws_params_t param);
+  void (*set_params) (void *ind_vm_ws, ws_params_t param);
+
 } s_surf_model_extension_workstation_t;
 
 typedef struct surf_vm_workstation_model_extension_public {

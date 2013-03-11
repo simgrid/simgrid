@@ -495,12 +495,15 @@ static void surf_vm_workstation_model_init_internal(void)
   model->extension.vm_workstation.set_state     = vm_ws_set_state;
   model->extension.vm_workstation.get_state     = vm_ws_get_state;
   model->extension.vm_workstation.migrate       = vm_ws_migrate;
-  model->extension.vm_workstation.get_pm        = vm_ws_get_pm;
   model->extension.vm_workstation.destroy       = vm_ws_destroy;
   model->extension.vm_workstation.suspend       = vm_ws_suspend;
   model->extension.vm_workstation.resume        = vm_ws_resume;
   model->extension.vm_workstation.save          = vm_ws_save;
   model->extension.vm_workstation.restore       = vm_ws_restore;
+  model->extension.vm_workstation.get_pm        = vm_ws_get_pm;
+
+  model->extension.workstation.set_params    = ws_set_params;
+  model->extension.workstation.get_params    = ws_get_params;
 
   surf_vm_workstation_model = model;
 }

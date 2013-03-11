@@ -472,6 +472,19 @@ static surf_action_t ws_action_ls(void *workstation, const char* mount, const ch
   return model->extension.storage.ls(st, path);
 }
 
+void ws_get_params(void *ws, ws_params_t params)
+{
+  workstation_CLM03_t ws_clm03 = surf_workstation_resource_priv(ws);
+  memcpy(params, &ws_clm03->params, sizeof(s_ws_params_t));
+}
+
+void ws_set_params(void *ws, ws_params_t params)
+{
+  workstation_CLM03_t ws_clm03 = surf_workstation_resource_priv(ws);
+  /* may check something here. */
+  memcpy(&ws_clm03->params, params, sizeof(s_ws_params_t));
+}
+
 static void surf_workstation_model_init_internal(void)
 {
   surf_model_t model = surf_model_init();
@@ -528,6 +541,9 @@ static void surf_workstation_model_init_internal(void)
   model->extension.workstation.stat   = ws_action_stat;
   model->extension.workstation.unlink = ws_action_unlink;
   model->extension.workstation.ls     = ws_action_ls;
+
+  model->extension.workstation.get_params = ws_get_params;
+  model->extension.workstation.set_params = ws_set_params;
 
   surf_workstation_model = model;
 }

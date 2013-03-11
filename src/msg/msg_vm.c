@@ -166,13 +166,17 @@ int MSG_vm_is_restoring(msg_vm_t vm)
  *
  */
 msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
-	                                     int core_nb, int mem_cap, int net_cap, char *disk_path, int disk_size)
+	                                     int ncpus, int ramsize, int net_cap, char *disk_path, int disksize)
 {
   msg_vm_t vm = MSG_vm_create_core(ind_pm, name);
 
-  MSG_vm_set_property_value(vm, "CORE_NB", bprintf("%d", core_nb), free);
-  MSG_vm_set_property_value(vm, "MEM_CAP", bprintf("%d", mem_cap), free);
-  MSG_vm_set_property_value(vm, "NET_CAP", bprintf("%d", net_cap), free);
+  {
+    s_ws_params_t params;
+    memset(&params, 0, sizeof(params));
+    params.ramsize = ramsize;
+    params.overcommit = 0;
+    simcall_host_set_params(vm, &params);
+  }
 
   /* TODO: We will revisit the disk support later. */
 

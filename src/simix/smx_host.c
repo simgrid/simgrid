@@ -592,3 +592,33 @@ void SIMIX_set_category(smx_action_t action, const char *category)
 }
 #endif
 
+
+/**
+ * \brief Function to get the parameters of the given the SIMIX host.
+ *
+ * \param host the host to get_phys_host (a smx_host_t)
+ * \param param the parameter object space to be overwritten (a ws_params_t)
+ */
+void SIMIX_host_get_params(smx_host_t ind_vm, ws_params_t params)
+{
+  /* jump to ws_get_params(). */
+  surf_workstation_model->extension.workstation.get_params(ind_vm, params);
+}
+
+void SIMIX_pre_host_get_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params)
+{
+  SIMIX_host_get_params(ind_vm, params);
+  SIMIX_simcall_answer(simcall);
+}
+
+void SIMIX_host_set_params(smx_host_t ind_vm, ws_params_t params)
+{
+  /* jump to ws_set_params(). */
+  surf_workstation_model->extension.workstation.set_params(ind_vm, params);
+}
+
+void SIMIX_pre_host_set_params(smx_simcall_t simcall, smx_host_t ind_vm, ws_params_t params)
+{
+  SIMIX_host_set_params(ind_vm, params);
+  SIMIX_simcall_answer(simcall);
+}

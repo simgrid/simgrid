@@ -10,6 +10,10 @@ typedef struct workstation_CLM03 {
   s_surf_resource_t generic_resource;   /* Must remain first to add this to a trace */
   void *net_elm;
   xbt_dynar_t storage;
+
+  /* common with vm */
+  s_ws_params_t params;
+
 } s_workstation_CLM03_t, *workstation_CLM03_t;
 
 int ws_action_unref(surf_action_t action);
@@ -27,4 +31,7 @@ surf_action_t ws_action_sleep(void *workstation, double duration);
 void ws_action_suspend(surf_action_t action);
 void ws_action_resume(surf_action_t action);
 e_surf_resource_state_t ws_get_state(void *workstation);
+
+void ws_get_params(void *ws, ws_params_t params);
+void ws_set_params(void *ws, ws_params_t params);
 #endif /* WS_PRIVATE_H_ */

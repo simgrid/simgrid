@@ -327,6 +327,18 @@ void *simcall_vm_get_pm(smx_host_t vm)
   return simcall_BODY_vm_get_pm(vm);
 }
 
+void simcall_host_get_params(smx_host_t vm, ws_params_t params)
+{
+  /* will jump to SIMIX_pre_host_get_params in src/simix/smx_smurf_private.h */
+  simcall_BODY_host_get_params(vm, params);
+}
+
+void simcall_host_set_params(smx_host_t vm, ws_params_t params)
+{
+  /* will jump to SIMIX_pre_host_set_params in src/simix/smx_smurf_private.h */
+  simcall_BODY_host_set_params(vm, params);
+}
+
 /**
  * \ingroup simix_vm_management
  * \brief Migrate the given VM to the given physical host

@@ -113,6 +113,9 @@ XBT_PUBLIC(msg_host_t) MSG_get_host_by_name(const char *name);
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
 XBT_PUBLIC(int) MSG_get_host_number(void);
 
+XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, ws_params_t params);
+XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, ws_params_t params);
+
 /************************** Process handling *********************************/
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,
                                            xbt_main_func_t code,

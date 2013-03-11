@@ -15,6 +15,8 @@
 #include "xbt/parmap.h"
 #include "xbt/swag.h"
 
+#include "simgrid/platf.h" // ws_params_t
+
 SG_BEGIN_DECL()
 
 /**************************** Scalar Values **********************************/
@@ -319,6 +321,8 @@ XBT_PUBLIC(double) simcall_host_execution_get_remains(smx_action_t execution);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_get_state(smx_action_t execution);
 XBT_PUBLIC(void) simcall_host_execution_set_priority(smx_action_t execution, double priority);
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_action_t execution);
+XBT_PUBLIC(void) simcall_host_get_params(smx_host_t vm, ws_params_t param);
+XBT_PUBLIC(void) simcall_host_set_params(smx_host_t vm, ws_params_t param);
 
 /******************************* VM simcalls ********************************/
 // Create the vm_workstation at the SURF level

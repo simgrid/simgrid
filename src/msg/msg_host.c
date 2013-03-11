@@ -260,3 +260,25 @@ int MSG_host_is_avail(msg_host_t host)
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
   return (simcall_host_get_state(host));
 }
+
+/** \ingroup m_host_management
+ * \brief Set the parameters of a given host
+ *
+ * \param host a host
+ * \param params a prameter object
+ */
+void MSG_host_set_params(msg_host_t ind_pm, ws_params_t params)
+{
+  simcall_host_set_params(ind_pm, params);
+}
+
+/** \ingroup m_host_management
+ * \brief Get the parameters of a given host
+ *
+ * \param host a host
+ * \param params a prameter object
+ */
+void MSG_host_get_params(msg_host_t ind_pm, ws_params_t params)
+{
+  simcall_host_get_params(ind_pm, params);
+}

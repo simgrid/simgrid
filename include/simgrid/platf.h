@@ -59,6 +59,11 @@ typedef enum {
 
 } e_surf_vm_state_t;
 
+typedef struct ws_params {
+  int ncpus;
+  long ramsize;
+  int overcommit;
+} s_ws_params_t, *ws_params_t;
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 
