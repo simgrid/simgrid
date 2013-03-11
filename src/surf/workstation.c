@@ -485,6 +485,32 @@ void ws_set_params(void *ws, ws_params_t params)
   memcpy(&ws_clm03->params, params, sizeof(s_ws_params_t));
 }
 
+static xbt_dynar_t ws_get_vms(void *pm)
+{
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(smx_host_t), NULL);
+
+  /* iterate for all hosts including virtual machines */
+  xbt_lib_cursor_t cursor;
+  char *key;
+  void **ind_host;
+  xbt_lib_foreach(host_lib, cursor, key, ind_host) {
+    workstation_CLM03_t ws_clm03 = ind_host[SURF_WKS_LEVEL];
+    if (!ws_clm03)
+      continue;
+    /* skip if it is not a virtual machine */
+    if (ws_clm03->generic_resource.model != surf_vm_workstation_model)
+      continue;
+
+    /* It is a virtual machine, so we can cast it to workstation_VM2013_t */
+    workstation_VM2013_t ws_vm2013 = (workstation_VM2013_t) ws_clm03;
+    if (pm == ws_vm2013->sub_ws)
+      xbt_dynar_push(dyn, &ws_vm2013->sub_ws);
+  }
+
+  return dyn;
+}
+
+
 static void surf_workstation_model_init_internal(void)
 {
   surf_model_t model = surf_model_init();
@@ -544,6 +570,7 @@ static void surf_workstation_model_init_internal(void)
 
   model->extension.workstation.get_params = ws_get_params;
   model->extension.workstation.set_params = ws_set_params;
+  model->extension.workstation.get_vms    = ws_get_vms;
 
   surf_workstation_model = model;
 }

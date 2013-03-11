@@ -40,43 +40,68 @@ smx_host_t SIMIX_pre_vm_create(smx_simcall_t simcall, const char *name, smx_host
 }
 
 
-static int get_host_property_as_integer(smx_host_t host, const char *name)
+/* works for VMs and PMs */
+static long host_get_ramsize(smx_host_t vm, int *overcommit)
 {
-  xbt_dict_t dict = SIMIX_host_get_properties(host);
+  s_ws_params_t params;
+  surf_workstation_model->extension.workstation.get_params(vm, &params);
 
-  char *value = xbt_dict_get_or_null(dict, name);
-  return atoi(value);
+  if (overcommit)
+    *overcommit = params.overcommit;
+
+  return params.ramsize;
 }
-
-
 
 /* **** start a VM **** */
 static int __can_be_started(smx_host_t vm)
 {
-	// TODO add checking code related to overcommitment or not.
+  smx_host_t pm = surf_vm_workstation_model->extension.vm_workstation.get_pm(vm);
 
-#if 0
-  int overcommit = get_host_property_as_integer(vm, "OverCommit");
-  int core_nb = get_host_property_as_integer(vm, "CORE_NB");
-  int mem_cap = get_host_property_as_integer(vm, "MEM_CAP");
-  int net_cap = get_host_property_as_integer(vm, "NET_CAP");
-#endif
+  int pm_overcommit = 0;
+  long pm_ramsize = host_get_ramsize(pm, &pm_overcommit);
+  long vm_ramsize = host_get_ramsize(vm, NULL);
 
-  /* we need to get other VM objects on this physical host. */
+  if (!pm_ramsize) {
+    /* We assume users do not want to care about ramsize. */
+    return 1;
+  }
 
+  if (pm_overcommit) {
+    XBT_INFO("%s allows memory overcommit.", pm->key);
+    return 1;
+  }
 
+  long total_ramsize_of_vms = 0;
+  xbt_dynar_t dyn_vms = surf_workstation_model->extension.workstation.get_vms(pm);
+  {
+    int cursor = 0;
+    smx_host_t another_vm;
+    xbt_dynar_foreach(dyn_vms, cursor, another_vm) {
+      long another_vm_ramsize = host_get_ramsize(vm, NULL);
+      total_ramsize_of_vms += another_vm_ramsize;
+    }
+  }
 
+  if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
+    XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
+        vm->key, pm->key, vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
+    xbt_dynar_free(&dyn_vms);
+    return 0;
+  }
+
+  xbt_dynar_free(&dyn_vms);
 	return 1;
 }
 
 void SIMIX_vm_start(smx_host_t ind_vm)
 {
-  //TODO only start the VM if you can
   if (__can_be_started(ind_vm))
     SIMIX_vm_set_state(ind_vm, SURF_VM_STATE_RUNNING);
   else
     THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
 }
+
+
 
 void SIMIX_pre_vm_start(smx_simcall_t simcall, smx_host_t ind_vm)
 {

@@ -290,6 +290,7 @@ typedef struct surf_workstation_model_extension_public {
 
   void (*get_params) (void *ind_vm_ws, ws_params_t param);
   void (*set_params) (void *ind_vm_ws, ws_params_t param);
+  xbt_dynar_t (*get_vms) (void *ind_vm_ws);
 
 } s_surf_model_extension_workstation_t;
 
