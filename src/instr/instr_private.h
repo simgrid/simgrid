@@ -159,6 +159,7 @@ void instr_resume_tracing (void);
 XBT_PUBLIC(int) TRACE_smpi_is_enabled(void);
 XBT_PUBLIC(int) TRACE_smpi_is_grouped(void);
 XBT_PUBLIC(int) TRACE_smpi_is_computing(void);
+XBT_PUBLIC(int) TRACE_smpi_view_internals(void);
 
 /* from resource_utilization.c */
 void TRACE_surf_host_set_utilization(const char *resource,

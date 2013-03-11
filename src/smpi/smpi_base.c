@@ -317,6 +317,13 @@ void smpi_mpi_start(MPI_Request request)
   xbt_assert(!request->action,
              "Cannot (re)start a non-finished communication");
   if(request->flags & RECV) {
+  #ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    if (TRACE_smpi_view_internals()) {
+      TRACE_smpi_computing_out(rank);
+      TRACE_smpi_ptp_in(rank, 0, rank, __FUNCTION__);
+    }
+  #endif
     print_request("New recv", request);
     if (request->size < sg_cfg_get_int("smpi/async_small_thres"))
       mailbox = smpi_process_mailbox_small();
@@ -336,7 +343,19 @@ void smpi_mpi_start(MPI_Request request)
 
   } else {
 
+
+
+
+
     int receiver = smpi_group_index(smpi_comm_group(request->comm), request->dst);
+
+    #ifdef HAVE_TRACING
+      int rank = smpi_process_index();
+      if (TRACE_smpi_view_internals()) {
+        TRACE_smpi_ptp_in(rank, rank, receiver, __FUNCTION__);
+        TRACE_smpi_send(rank, rank, receiver);
+      }
+    #endif
 /*    if(receiver == MPI_UNDEFINED) {*/
 /*      XBT_WARN("Trying to send a message to a wrong rank");*/
 /*      return;*/
@@ -390,6 +409,7 @@ void smpi_mpi_start(MPI_Request request)
     /* FIXME: detached sends are not traceable (request->action == NULL) */
     if (request->action)
       simcall_set_category(request->action, TRACE_internal_smpi_get_category());
+
 #endif
 
   }
@@ -558,7 +578,30 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
       if(req->detached == 0) free(req->buf);
     }
     smpi_datatype_unuse(datatype);
+
+#ifdef HAVE_TRACING
+    if (TRACE_smpi_view_internals()) {
+        int rank = smpi_process_index();
+        TRACE_smpi_ptp_out(rank, rank, 0, __FUNCTION__);
+    }
+#endif
+
   }
+
+#ifdef HAVE_TRACING
+    if (TRACE_smpi_view_internals()) {
+        if(req->flags & RECV)
+        {
+        int rank = smpi_process_index();
+
+       //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
+      TRACE_smpi_ptp_out(rank, 0, rank, __FUNCTION__);
+      int  src_traced = smpi_group_index(smpi_comm_group(req->comm), req->src);
+      TRACE_smpi_recv(rank, src_traced, rank);
+      TRACE_smpi_computing_in(rank);
+        }
+    }
+#endif
 
   if(req->detached_sender!=NULL){
     smpi_mpi_request_free(&(req->detached_sender));
