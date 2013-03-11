@@ -61,9 +61,9 @@ xbt_dict_t MSG_vm_get_properties(msg_vm_t vm)
  * \param value what to change the property to
  * \param free_ctn the freeing function to use to kill the value on need
  */
-void MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value,void_f_pvoid_t free_ctn) {
-
-  xbt_dict_set(MSG_host_get_properties(vm), name, value,free_ctn);
+void MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value, void_f_pvoid_t free_ctn)
+{
+  xbt_dict_set(MSG_host_get_properties(vm), name, value, free_ctn);
 }
 
 /** \ingroup msg_vm_management
@@ -77,7 +77,8 @@ void MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value,void_f
  * for each VM/PM.
  */
 
-msg_vm_t MSG_vm_get_by_name(const char *name){
+msg_vm_t MSG_vm_get_by_name(const char *name)
+{
 	return MSG_get_host_by_name(name);
 }
 
@@ -88,13 +89,15 @@ msg_vm_t MSG_vm_get_by_name(const char *name){
  * This functions checks whether \a host is a valid pointer or not and return
    its name.
  */
-const char *MSG_vm_get_name(msg_vm_t vm) {
+const char *MSG_vm_get_name(msg_vm_t vm)
+{
   return MSG_host_get_name(vm);
 }
 
 
 /* **** Check state of a VM **** */
-static inline int __MSG_vm_is_state(msg_vm_t vm, e_surf_vm_state_t state) {
+static inline int __MSG_vm_is_state(msg_vm_t vm, e_surf_vm_state_t state)
+{
   return simcall_vm_get_state(vm) == state;
 }
 
@@ -204,7 +207,7 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
   msg_vm_t ind_vm = NULL;
   void *ind_vm_workstation =  NULL;
 
-  // Ask simix to create the surf vm resource
+  /* Ask the SIMIX layer to create the surf vm resource */
   ind_vm_workstation = simcall_vm_create(name, ind_pm);
   ind_vm = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
 
@@ -218,7 +221,7 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
 }
 
 
-/** @brief Start a vm (ie. boot)
+/** @brief Start a vm (i.e., boot the guest operating system)
  *  @ingroup msg_VMs
  *
  *  If the VM cannot be started, an exception is generated.
@@ -226,7 +229,6 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
  */
 void MSG_vm_start(msg_vm_t vm)
 {
-  //Please note that vm start can raise an exception if the VM cannot be started.
   simcall_vm_start(vm);
 
   #ifdef HAVE_TRACING

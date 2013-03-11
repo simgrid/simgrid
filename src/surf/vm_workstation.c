@@ -11,8 +11,8 @@
 #include "surf/surf_resource.h"
 #include "simgrid/sg_config.h"
 #include "vm_workstation_private.h"
-#include "surf/cpu_cas01_private.h"
-#include "surf/maxmin_private.h"
+#include "cpu_cas01_private.h"
+#include "maxmin_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm_workstation, surf,
                                 "Logging specific to the SURF VM workstation module");
@@ -171,7 +171,6 @@ static void vm_ws_destroy(void *ind_vm_workstation)
 	workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_workstation);
   cpu_Cas01_t cpu = surf_cpu_resource_priv(ind_vm_workstation);
 	const char *name = vm_ws->ws.generic_resource.name;
-  XBT_INFO("%s", name);
 
 	xbt_assert(vm_ws);
 	xbt_assert(vm_ws->ws.generic_resource.model == surf_vm_workstation_model);
@@ -225,7 +224,6 @@ static void vm_ws_suspend(void *ind_vm_ws)
 {
   workstation_VM2013_t vm_ws = surf_workstation_resource_priv(ind_vm_ws);
 
-  XBT_INFO("vm %p suspend", ind_vm_ws);
   surf_action_suspend(vm_ws->cpu_action);
 
   vm_ws->current_state = SURF_VM_STATE_SUSPENDED;
@@ -422,7 +420,6 @@ static void *vm_ws_get_pm(void *ind_vm_ws)
 
   return xbt_lib_get_elm_or_null(host_lib, sub_ws_name);
 }
-
 
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
