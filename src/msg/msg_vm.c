@@ -253,6 +253,113 @@ void MSG_vm_shutdown(msg_vm_t vm)
 }
 
 
+static int migration_rx_fun(int argc, char *argv[])
+{
+  const char *pr_name = MSG_process_get_name(MSG_process_self());
+  const char *host_name = MSG_host_get_name(MSG_host_self());
+  int need_exit = 0;
+
+  xbt_assert(argc == 3);
+  const char *mbox = argv[1];
+  const char *mbox_ctl = argv[2];
+
+  for (;;) {
+    msg_task_t task = NULL;
+    MSG_task_recv(&task, mbox);
+
+    if (strcmp(task->name, "finalize") == 0)
+      need_exit = 1;
+
+    MSG_task_destroy(task);
+
+    if (need_exit)
+      break;
+  }
+
+
+  {
+    msg_task_t task = MSG_task_create("fin", 0, 0, NULL);
+    msg_error_t ret = MSG_task_send(task, mbox_ctl);
+    xbt_assert(ret == MSG_OK);
+  }
+
+  XBT_INFO("%s@%s done", pr_name, host_name);
+
+  return 0;
+}
+
+static int migration_tx_fun(int argc, char *argv[])
+{
+  const char *pr_name = MSG_process_get_name(MSG_process_self());
+  const char *host_name = MSG_host_get_name(MSG_host_self());
+
+  xbt_assert(argc == 3);
+  const char *mbox = argv[1];
+  long ramsize = atol(argv[2]);
+
+  char *task_name = bprintf("task-%s", mbox);
+  msg_task_t task = MSG_task_create(task_name, 0, ramsize, NULL);
+  msg_error_t ret = MSG_task_send(task, mbox);
+  xbt_assert(ret == MSG_OK);
+
+  xbt_free(task_name);
+
+  {
+    msg_task_t task = MSG_task_create("finalize", 0, 0, NULL);
+    msg_error_t ret = MSG_task_send(task, mbox);
+    xbt_assert(ret == MSG_OK);
+  }
+
+  XBT_INFO("%s@%s done", pr_name, host_name);
+
+  return 0;
+}
+
+static void create_dummy_task(msg_vm_t vm, msg_host_t old_pm, msg_host_t new_pm, long ramsize)
+{
+  if (ramsize == 0)
+    XBT_WARN("migrate a VM, but ramsize is zero");
+
+  char *suffix = bprintf("mig-%s(%s-%s)", vm->key, old_pm->key, new_pm->key);
+  char *mbox = bprintf("MBOX:%s", suffix);
+  char *mbox_ctl = bprintf("MBOX:%s:CTL", suffix);
+
+  {
+    const char *pr_name = "mig_tx";
+    int nargvs = 4;
+    char **argv = xbt_new(char *, nargvs);
+    argv[0] = xbt_strdup(pr_name);
+    argv[1] = xbt_strdup(mbox);
+    argv[2] = bprintf("%ld", ramsize);
+    argv[3] = NULL;
+
+    msg_process_t pr = MSG_process_create_with_arguments(pr_name, migration_tx_fun, NULL, old_pm, nargvs - 1, argv);
+  }
+
+  {
+    const char *pr_name = "mig_rx";
+    int nargvs = 4;
+    char **argv = xbt_new(char *, nargvs);
+    argv[0] = xbt_strdup(pr_name);
+    argv[1] = xbt_strdup(mbox);
+    argv[2] = xbt_strdup(mbox_ctl);
+    argv[3] = NULL;
+
+    msg_process_t pr = MSG_process_create_with_arguments(pr_name, migration_rx_fun, NULL, new_pm, nargvs - 1, argv);
+  }
+
+  {
+    msg_task_t task = NULL;
+    msg_error_t ret = MSG_task_recv(&task, mbox_ctl);
+    xbt_assert(ret == MSG_OK);
+  }
+
+  xbt_free(suffix);
+  xbt_free(mbox);
+  xbt_free(mbox_ctl);
+}
+
+
 /** @brief Migrate the VM to the given host.
  *  @ingroup msg_VMs
  *
@@ -284,6 +391,12 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
    */
 
   msg_host_t old_pm = simcall_vm_get_pm(vm);
+
+  s_ws_params_t params;
+  simcall_host_get_params(vm, &params);
+  long ramsize = params.ramsize;
+
+  create_dummy_task(vm, old_pm, new_pm, ramsize);
 
   simcall_vm_migrate(vm, new_pm);
 
