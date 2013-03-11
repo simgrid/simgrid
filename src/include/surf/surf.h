@@ -315,10 +315,11 @@ typedef struct surf_vm_workstation_model_extension_public {
   void   (*restore) (void *ind_vm_ws);
 
   void   (*migrate) (void *ind_vm_ws, void *ind_vm_ws_dest); // will be vm_ws_migrate()
-  void * (*get_pm)  (void *ind_vm_ws); // will be vm_ws_get_pmt()
 
   int    (*get_state) (void *ind_vm_ws);
   void   (*set_state) (void *ind_vm_ws, int state);
+
+  void * (*get_pm) (void *ind_vm_ws); // will be vm_ws_get_pm()
 
 } s_surf_model_extension_vm_workstation_t;
 

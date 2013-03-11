@@ -394,6 +394,8 @@ XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm);
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 
+msg_host_t MSG_vm_get_pm(msg_vm_t vm);
+
 /* TODO: do we need this? */
 // XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar(void);
 

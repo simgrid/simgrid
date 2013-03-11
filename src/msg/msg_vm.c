@@ -388,3 +388,12 @@ void MSG_vm_destroy(msg_vm_t vm)
   TRACE_msg_vm_end(vm);
   #endif
 }
+
+
+/** @brief Get the physical host of a givne VM.
+ *  @ingroup msg_VMs
+ */
+msg_host_t MSG_vm_get_pm(msg_vm_t vm)
+{
+  return simcall_vm_get_pm(vm);
+}
