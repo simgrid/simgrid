@@ -169,13 +169,6 @@ void MC_init(){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
   
-  mc_time = xbt_new0(double, simix_process_maxpid);
-
-  /* mc_time refers to clock for each process -> ignore it for heap comparison */
-  int i;
-  for(i = 0; i<simix_process_maxpid; i++)
-    MC_ignore_heap(&(mc_time[i]), sizeof(double));
-  
   compare = 0;
 
   /* Initialize the data structures that must be persistent across every
@@ -223,6 +216,7 @@ void MC_init(){
 
   MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
   MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
+  MC_ignore_data_bss(&mc_time, sizeof(mc_time));
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
@@ -260,6 +254,9 @@ void MC_modelcheck_safety(void)
     return;
 
   mc_time = xbt_new0(double, simix_process_maxpid);
+
+  /* mc_time refers to clock for each process -> ignore it for heap comparison */  
+  MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
@@ -306,6 +303,11 @@ void MC_modelcheck_liveness(){
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_init();
+
+  mc_time = xbt_new0(double, simix_process_maxpid);
+
+  /* mc_time refers to clock for each process -> ignore it for heap comparison */  
+  MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
  
   MC_SET_RAW_MEM;
   
