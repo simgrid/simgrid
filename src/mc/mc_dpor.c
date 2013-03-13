@@ -50,7 +50,7 @@ static int is_visited_state(){
     if(raw_mem_set)
       MC_SET_RAW_MEM;
 
-    return 0;
+    return -1;
 
   }else{
 
@@ -85,7 +85,7 @@ static int is_visited_state(){
             MC_SET_RAW_MEM;
           else
             MC_UNSET_RAW_MEM;
-          return 1;
+          return state_test->num;
         }else{
           /* Search another state with same number of bytes used */
           previous_cursor = cursor - 1;
@@ -102,7 +102,7 @@ static int is_visited_state(){
                 MC_SET_RAW_MEM;
               else
                 MC_UNSET_RAW_MEM;
-              return 1;
+              return state_test->num;
             }
             previous_cursor--;
           }
@@ -120,7 +120,7 @@ static int is_visited_state(){
                 MC_SET_RAW_MEM;
               else
                 MC_UNSET_RAW_MEM;
-              return 1;
+              return state_test->num;
             }
             next_cursor++;
           }
@@ -154,7 +154,7 @@ static int is_visited_state(){
     if(raw_mem_set)
       MC_SET_RAW_MEM;
     
-    return 0;
+    return -1;
     
   }
 }
@@ -222,6 +222,7 @@ void MC_dpor(void)
   xbt_fifo_item_t item = NULL;
   int pos, i, interleave_size;
   int interleave_proc[simix_process_maxpid];
+  int visited_state;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
@@ -295,7 +296,7 @@ void MC_dpor(void)
 
       next_state = MC_state_new();
 
-      if(!is_visited_state()){
+      if((visited_state = is_visited_state()) == -1){
      
         /* Get an enabled process and insert it in the interleave set of the next state */
         xbt_swag_foreach(process, simix_global->process_list){
