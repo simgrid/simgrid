@@ -64,6 +64,8 @@ int is_stack_ignore_variable(char *frame, char *var_name);
 
 /********************************* MC Global **********************************/
 extern double *mc_time;
+extern FILE *dot_output;
+extern const char* colors[10];
 
 int MC_deadlock_check(void);
 void MC_replay(xbt_fifo_t stack, int start);
@@ -73,6 +75,7 @@ void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
 void MC_init(void);
+void MC_init_dot_output(void);
 int SIMIX_pre_mc_random(smx_simcall_t simcall);
 
 /********************************* Requests ***********************************/
@@ -84,6 +87,7 @@ int MC_request_is_visible(smx_simcall_t req);
 int MC_request_is_enabled(smx_simcall_t req);
 int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
 int MC_process_is_enabled(smx_process_t process);
+char *MC_request_get_dot_output(smx_simcall_t req, int value);
 
 
 /******************************** States **************************************/
@@ -112,6 +116,7 @@ typedef struct mc_state {
   int req_num;                      /* The request number (in the case of a
                                        multi-request like waitany ) */
   mc_snapshot_t system_state;      /* Snapshot of system state */
+  int num;
 } s_mc_state_t, *mc_state_t;
 
 mc_state_t MC_state_new(void);

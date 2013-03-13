@@ -30,6 +30,7 @@ char* _sg_mc_property_file=NULL;
 int _sg_mc_timeout=0;
 int _sg_mc_max_depth=1000;
 int _sg_mc_visited=0;
+char *_sg_mc_dot_output_file = NULL;
 
 extern int _sg_init_status;
 void _mc_cfg_cb_reduce(const char *name, int pos) {
@@ -80,6 +81,12 @@ void _mc_cfg_cb_visited(const char *name, int pos) {
   _sg_mc_visited= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
+void _mc_cfg_cb_dot_output(const char *name, int pos) {
+  if (_sg_init_status && !_sg_do_model_check) {
+    xbt_die("You are specifying a file name for a dot output of graph state after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_dot_output_file= xbt_cfg_get_string(_sg_cfg_set, name);
+}
 
 /* MC global data structures */
 
@@ -113,6 +120,9 @@ xbt_dynar_t mc_data_bss_comparison_ignore;
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
 
+FILE *dot_output = NULL;
+const char* colors[10];
+
 xbt_automaton_t _mc_property_automaton = NULL;
 
 /* Static functions */
@@ -128,6 +138,9 @@ void MC_do_the_modelcheck_for_real() {
   MC_SET_RAW_MEM;
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
   MC_UNSET_RAW_MEM;
+  
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
+    MC_init_dot_output();
 
   if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
     if (mc_reduce_kind==e_mc_reduce_unset)
@@ -216,6 +229,28 @@ void MC_init(){
 
 }
 
+void MC_init_dot_output(){
+
+  colors[0] = "blue";
+  colors[1] = "red";
+  colors[2] = "green";
+  colors[3] = "pink";
+  colors[4] = "brown";
+  colors[5] = "purple";
+  colors[6] = "yellow";
+  colors[7] = "orange";
+  
+  dot_output = fopen(_sg_mc_dot_output_file, "w");
+  
+  if(dot_output == NULL){
+    perror("Error open dot output file");
+    xbt_abort();
+  }
+
+  fprintf(dot_output, "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.20; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
+
+}
+
 void MC_modelcheck_safety(void)
 {
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
@@ -298,6 +333,13 @@ void MC_modelcheck_liveness(){
 
 void MC_exit(void)
 {
+  MC_SET_RAW_MEM;
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
+    fprintf(dot_output, "}\n");
+    fclose(dot_output);
+  }
+  MC_UNSET_RAW_MEM;
+
   xbt_free(mc_time);
   MC_memory_exit();
   xbt_abort();

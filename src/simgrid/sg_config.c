@@ -548,6 +548,13 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, NULL, 0, 1,
                      _mc_cfg_cb_visited, NULL);
     xbt_cfg_setdefault_int(_sg_cfg_set, "model-check/visited", 0);
+
+    /* Set file name for dot output of graph state */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/dot_output",
+                     "Specify the name of dot file corresponding to graph state",
+                     xbt_cfgelm_string, NULL, 0, 1,
+                     _mc_cfg_cb_dot_output, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/dot_output", "");
 #endif
 
     /* do verbose-exit */

@@ -249,6 +249,8 @@ void MC_dpor(void)
         XBT_DEBUG("Execute: %s", req_str);
         xbt_free(req_str);
       }
+        
+      req_str = MC_request_get_dot_output(req, value);
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
@@ -310,10 +312,22 @@ void MC_dpor(void)
           next_state->system_state = MC_take_snapshot();
         }
 
+        if(dot_output != NULL)
+          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
+
+      }else{
+
+        if(dot_output != NULL)
+          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state, req_str);
+
       }
+
+      
 
       xbt_fifo_unshift(mc_stack_safety, next_state);
       MC_UNSET_RAW_MEM;
+
+      xbt_free(req_str);
 
       /* Let's loop again */
 

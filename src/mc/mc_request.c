@@ -371,3 +371,57 @@ int MC_process_is_enabled(smx_process_t process)
 
   return FALSE;
 }
+
+char *MC_request_get_dot_output(smx_simcall_t req, int value){
+
+  char *str = NULL, *label = NULL;
+  smx_action_t act = NULL;
+
+  switch(req->call){
+  case SIMCALL_COMM_ISEND:
+    label = xbt_strdup("iSend");
+    break;
+    
+  case SIMCALL_COMM_IRECV:
+    label = xbt_strdup("iRecv");
+    break;
+ 
+ case SIMCALL_COMM_WAIT:
+    if(value == -1)
+      label = xbt_strdup("WaitTimeout");
+    else
+      label = xbt_strdup("Wait");
+    break;
+
+  case SIMCALL_COMM_TEST:
+    act = simcall_comm_test__get__comm(req);
+    if(act->comm.src_proc == NULL || act->comm.dst_proc == NULL)
+      label = xbt_strdup("Test FALSE");
+    else
+      label = xbt_strdup("Test TRUE");
+    break;
+
+  case SIMCALL_MC_RANDOM:
+    if(value == 0)
+      label = xbt_strdup("MC_RANDOM (0)");
+    else
+      label = xbt_strdup("MC_RANDOM (1)");
+    break;
+
+  case SIMCALL_MC_SNAPSHOT:
+    label = xbt_strdup("MC_SNAPSHOT");
+    break;
+
+  case SIMCALL_MC_COMPARE_SNAPSHOTS:
+    label = xbt_strdup("MC_COMPARE_SNAPSHOTS");
+    break;
+
+  default:
+    THROW_UNIMPLEMENTED;
+  }
+
+  str = bprintf("label = \"%s\", color = %s", label, colors[req->issuer->pid-1]);
+  xbt_free(label);
+  return str;
+
+}
