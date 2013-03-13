@@ -72,8 +72,8 @@ void MC_wait_for_requests(void);
 void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
-
-int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max);
+void MC_init(void);
+int SIMIX_pre_mc_random(smx_simcall_t simcall);
 
 /********************************* Requests ***********************************/
 int MC_request_depend(smx_simcall_t req1, smx_simcall_t req2);
@@ -91,6 +91,7 @@ int MC_process_is_enabled(smx_process_t process);
 typedef enum {
   MC_NOT_INTERLEAVE=0,      /* Do not interleave (do not execute) */
   MC_INTERLEAVE,            /* Interleave the process (one or more request) */
+  MC_MORE_INTERLEAVE,       /* Interleave twice the process (for mc_random simcall) */
   MC_DONE                   /* Already interleaved */
 } e_mc_process_state_t;
 
@@ -251,7 +252,6 @@ extern mc_global_t initial_state_safety;
 
 void MC_dpor_init(void);
 void MC_dpor(void);
-void MC_init(void);
 
 typedef struct s_mc_safety_visited_state{
   mc_snapshot_t system_state;

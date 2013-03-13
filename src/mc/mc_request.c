@@ -16,10 +16,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
     return TRUE;
 
   if (r1->issuer == r2->issuer)
-    return FALSE;
-
-  if((r1->call == SIMCALL_MC_RANDOM) || (r2->call == SIMCALL_MC_RANDOM))
-    return FALSE;
+      return FALSE;
 
   if(r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_IRECV)
     return FALSE;
@@ -253,7 +250,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 
   case SIMCALL_MC_RANDOM:
     type = xbt_strdup("MC_RANDOM");
-    args = '\0';
+    args = bprintf("%d", value);
     break;
 
   default:

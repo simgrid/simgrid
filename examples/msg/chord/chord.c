@@ -335,26 +335,42 @@ int node(int argc, char *argv[])
       if (!MSG_comm_test(node.comm_receive)) {
 
         // no task was received: make some periodic calls
-        if (MSG_get_clock() >= next_stabilize_date) {
-          stabilize(&node);
-          next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
+
+        if(MC_is_active()){
+          if(MC_random()){
+            stabilize(&node);
+          }else if(MC_random()){
+            fix_fingers(&node);
+          }else if(MC_random()){
+            check_predecessor(&node);
+          }else if(MC_random()){
+            random_lookup(&node);
+          }else{
+            MSG_process_sleep(5);
+          }
+        }else{
+          if (MSG_get_clock() >= next_stabilize_date) {
+            stabilize(&node);
+            next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
+          }
+          else if (MSG_get_clock() >= next_fix_fingers_date) {
+            fix_fingers(&node);
+            next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
+          }
+          else if (MSG_get_clock() >= next_check_predecessor_date) {
+            check_predecessor(&node);
+            next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
+          }
+          else if (MSG_get_clock() >= next_lookup_date) {
+            random_lookup(&node);
+            next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
+          }
+          else {
+            // nothing to do: sleep for a while
+            MSG_process_sleep(5);
+          }
         }
-        else if (MSG_get_clock() >= next_fix_fingers_date) {
-          fix_fingers(&node);
-          next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
-        }
-        else if (MSG_get_clock() >= next_check_predecessor_date) {
-          check_predecessor(&node);
-          next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
-        }
-        else if (MSG_get_clock() >= next_lookup_date) {
-          random_lookup(&node);
-          next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
-        }
-        else {
-          // nothing to do: sleep for a while
-          MSG_process_sleep(5);
-        }
+
       } else {
         // a transfer has occurred
 
