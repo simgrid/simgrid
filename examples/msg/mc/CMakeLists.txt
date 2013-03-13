@@ -10,7 +10,6 @@ if(HAVE_MC)
   add_executable(bugged1     bugged1.c)
   add_executable(bugged2      bugged2.c)
   add_executable(bugged3	   bugged3.c)
-  add_executable(random_test random_test.c)
   add_executable(bugged1_liveness bugged1_liveness.c)
   add_executable(bugged2_liveness bugged2_liveness.c)
   add_executable(chord/chord_liveness chord/chord_liveness.c)
@@ -24,7 +23,6 @@ if(HAVE_MC)
   target_link_libraries(bugged1     simgrid )
   target_link_libraries(bugged2     simgrid )
   target_link_libraries(bugged3     simgrid )
-  target_link_libraries(random_test     simgrid )
   target_link_libraries(bugged1_liveness     simgrid )
   target_link_libraries(bugged2_liveness     simgrid )
   target_link_libraries(chord/chord_liveness     simgrid )
@@ -72,7 +70,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged3.c
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/random_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord_liveness.c
