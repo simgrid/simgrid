@@ -547,7 +547,7 @@ static int compare_local_variables(char *s1, char *s2){
   char *frame_name1 = NULL, *frame_name2 = NULL;
   int res_compare = 0;
 
-  #ifdef MC_VERBOSE
+  #if defined MC_VERBOSE || defined MC_DEBUG
     char *var_name;
   #endif
 
@@ -555,7 +555,7 @@ static int compare_local_variables(char *s1, char *s2){
     s_tokens1 = xbt_str_split(xbt_dynar_get_as(tokens1, cursor, char *), "=");
     s_tokens2 = xbt_str_split(xbt_dynar_get_as(tokens2, cursor, char *), "=");
     if(xbt_dynar_length(s_tokens1) > 1 && xbt_dynar_length(s_tokens2) > 1){
-      #ifdef MC_VERBOSE
+      #if defined MC_VERBOSE || defined MC_DEBUG
         var_name = xbt_dynar_get_as(s_tokens1, 0, char *);
       #endif
       if((strcmp(xbt_dynar_get_as(s_tokens1, 0, char *), "frame_name") == 0) && (strcmp(xbt_dynar_get_as(s_tokens2, 0, char *), "frame_name") == 0)){
@@ -578,6 +578,9 @@ static int compare_local_variables(char *s1, char *s2){
             #ifdef MC_VERBOSE
               XBT_VERB("Different local variable : %s at addresses %p - %p", var_name, addr1, addr2);
             #endif
+            #ifdef MC_DEBUG
+              XBT_DEBUG("Different local variable : %s at addresses %p - %p", var_name, addr1, addr2);
+            #endif
             xbt_dynar_free(&s_tokens1);
             xbt_dynar_free(&s_tokens2);
             xbt_dynar_free(&tokens1);
@@ -597,6 +600,9 @@ static int compare_local_variables(char *s1, char *s2){
           }else {
             #ifdef MC_VERBOSE
               XBT_VERB("Different local variable : %s (%s - %s)", var_name, xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
+            #endif
+            #ifdef MC_DEBUG
+              XBT_DEBUG("Different local variable : %s (%s - %s)", var_name, xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
             #endif
             xbt_dynar_free(&s_tokens1);
             xbt_dynar_free(&s_tokens2);
@@ -654,7 +660,7 @@ static int is_heap_equality(xbt_dynar_t equals, void *a1, void *a2){
 int MC_compare_snapshots(void *s1, void *s2){
   
   MC_ignore_stack("self", "simcall_BODY_mc_snapshot");
-
+ 
   return simcall_mc_compare_snapshots(s1, s2);
 
 }
