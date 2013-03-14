@@ -307,7 +307,7 @@ int __attribute__((weak)) main(int argc, char** argv) {
    return smpi_main(smpi_simulated_main_,argc,argv);
 }
 
-int __attribute__((weak)) MAIN_(){
+int __attribute__((weak)) MAIN__(){
   return smpi_main(smpi_simulated_main_,xargc, xargv);
 };
 #endif
