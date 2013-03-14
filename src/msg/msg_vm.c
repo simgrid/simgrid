@@ -291,7 +291,7 @@ static int migration_rx_fun(int argc, char *argv[])
   const char *pr_name = MSG_process_get_name(MSG_process_self());
   const char *host_name = MSG_host_get_name(MSG_host_self());
 
-  XBT_INFO("%s@%s start", pr_name, host_name);
+  XBT_DEBUG("mig: rx_start");
 
   xbt_assert(argc == 4);
   const char *vm_name = argv[1];
@@ -338,7 +338,7 @@ static int migration_rx_fun(int argc, char *argv[])
   xbt_free(mbox_ctl);
   xbt_free(finalize_task_name);
 
-  XBT_INFO("%s@%s done", pr_name, host_name);
+  XBT_DEBUG("mig: rx_done");
 
   return 0;
 }
@@ -363,7 +363,7 @@ static void reset_dirty_pages(msg_vm_t vm)
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
 
-    XBT_INFO("%s@%s remaining %f", key, sg_host_name(vm), remaining);
+    // XBT_INFO("%s@%s remaining %f", key, sg_host_name(vm), remaining);
   }
 }
 
@@ -393,7 +393,7 @@ double calc_updated_pages(char *key, msg_vm_t vm, dirty_page_t dp, double remain
 
     XBT_INFO("%s@%s: computated %f ops (remaining %f -> %f) in %f secs (%f -> %f)",
         key, sg_host_name(vm), computed, dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
-    XBT_INFO("%s@%s: updated %f bytes, %f Mbytes/s", 
+    XBT_INFO("%s@%s: updated %f bytes, %f Mbytes/s",
         key, sg_host_name(vm), updated, updated / duration / 1000 / 1000);
 
     return updated;
@@ -402,16 +402,16 @@ double calc_updated_pages(char *key, msg_vm_t vm, dirty_page_t dp, double remain
 
 double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
 {
-    double computed = dp->prev_remaining - remaining;
-    double duration = clock - dp->prev_clock;
+  double computed = dp->prev_remaining - remaining;
+  double duration = clock - dp->prev_clock;
 
-    XBT_INFO("%s@%s: computated %f ops (remaining %f -> %f) in %f secs (%f -> %f)",
-        key, sg_host_name(vm), computed, dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
+  XBT_DEBUG("%s@%s: computated %f ops (remaining %f -> %f) in %f secs (%f -> %f)",
+      key, sg_host_name(vm), computed, dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
 
-    return computed;
+  return computed;
 }
 
-static double lookup_dirty_pages(msg_vm_t vm)
+static double lookup_computed_flop_counts(msg_vm_t vm, int stage2_round_for_fancy_debug)
 {
   msg_host_priv_t priv = msg_host_resource_priv(vm);
   double total = 0;
@@ -431,7 +431,13 @@ static double lookup_dirty_pages(msg_vm_t vm)
   }
 
   total += priv->dp_updated_by_deleted_tasks;
-  XBT_INFO("total %f (including %f by deleted tasks)", total, priv->dp_updated_by_deleted_tasks);
+
+  XBT_INFO("mig-stage2.%d: computed %f flop_counts (including %f by deleted tasks)",
+      stage2_round_for_fancy_debug,
+      total, priv->dp_updated_by_deleted_tasks);
+
+
+
   priv->dp_updated_by_deleted_tasks = 0;
 
 
@@ -449,14 +455,13 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
 
   /* It should be okay that we add a task onto a migrating VM. */
   if (priv->dp_enabled) {
-    XBT_INFO("add (dp_enabled) %s on %s (remaining %f)", key, sg_host_name(host), remaining);
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
   }
 
   xbt_assert(xbt_dict_get_or_null(priv->dp_objs, key) == NULL);
   xbt_dict_set(priv->dp_objs, key, dp, NULL);
-  XBT_INFO("add %s on %s (remaining %f)", key, sg_host_name(host), remaining);
+  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, sg_host_name(host), remaining, priv->dp_enabled);
 
   xbt_free(key);
 }
@@ -485,9 +490,26 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   xbt_dict_remove(priv->dp_objs, key);
   xbt_free(dp);
 
-  XBT_INFO("del %s on %s", key, sg_host_name(host));
+  XBT_DEBUG("del %s on %s", key, sg_host_name(host));
 
   xbt_free(key);
+}
+
+
+static void send_migration_data(const char *vm_name, const char *src_pm_name, const char *dst_pm_name,
+    double size, char *mbox, int stage, int stage2_round)
+{
+  char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, stage);
+  msg_task_t task = MSG_task_create(task_name, 0, size, NULL);
+  msg_error_t ret = MSG_task_send(task, mbox);
+  xbt_assert(ret == MSG_OK);
+
+  if (stage == 2)
+    XBT_INFO("mig-stage%d.%d: sent %f", stage, stage2_round, size);
+  else
+    XBT_INFO("mig-stage%d: sent %f", stage, size);
+
+  xbt_free(task_name);
 }
 
 
@@ -496,7 +518,7 @@ static int migration_tx_fun(int argc, char *argv[])
   const char *pr_name = MSG_process_get_name(MSG_process_self());
   const char *host_name = MSG_host_get_name(MSG_host_self());
 
-  XBT_INFO("%s@%s start", pr_name, host_name);
+  XBT_DEBUG("mig: tx_start");
 
   xbt_assert(argc == 4);
   const char *vm_name = argv[1];
@@ -522,20 +544,12 @@ static int migration_tx_fun(int argc, char *argv[])
 
   char *mbox = get_mig_mbox_src_dst(vm_name, src_pm_name, dst_pm_name);
 
-  XBT_INFO("%s@%s stage1:", pr_name, host_name);
+  XBT_INFO("mig-stage1: remaining_size %f", remaining_size);
 
   /* Stage1: send all memory pages to the destination. */
   start_dirty_page_tracking(vm);
 
-  {
-    char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, 1);
-
-    msg_task_t task = MSG_task_create(task_name, 0, ramsize, NULL);
-    msg_error_t ret = MSG_task_send(task, mbox);
-    xbt_assert(ret == MSG_OK);
-
-    xbt_free(task_name);
-  }
+  send_migration_data(vm_name, src_pm_name, dst_pm_name, ramsize, mbox, 1, 0);
 
   remaining_size -= ramsize;
 
@@ -550,57 +564,43 @@ static int migration_tx_fun(int argc, char *argv[])
     goto stage3;
   }
 
-  XBT_INFO("%s@%s stage2: remaining_size %f", pr_name, host_name, remaining_size);
 
+  int stage2_round = 0;
   for (;;) {
     // long updated_size = lookup_dirty_pages(vm);
-    double updated_size = lookup_dirty_pages(vm) * dp_rate;
+    double updated_size = lookup_computed_flop_counts(vm, stage2_round) * dp_rate;
     if (updated_size > dp_cap) {
-      XBT_INFO("%f bytes updated, but cap it with the working set size %f", updated_size, dp_cap);
+      XBT_INFO("mig-stage2.%d: %f bytes updated, but cap it with the working set size %f",
+          stage2_round, updated_size, dp_cap);
       updated_size = dp_cap;
     }
 
     remaining_size += updated_size;
 
-    XBT_INFO("%s@%s stage2: remaining_size %f %s threshold %f", pr_name, host_name,
+    XBT_INFO("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
         remaining_size, (remaining_size < threshold) ? "<" : ">", threshold);
 
     if (remaining_size < threshold)
       break;
 
-
-    char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, 2);
-    {
-      msg_task_t task = MSG_task_create(task_name, 0, updated_size, NULL);
-      msg_error_t ret = MSG_task_send(task, mbox);
-      xbt_assert(ret == MSG_OK);
-      XBT_INFO("%s@%s stage2: %f sent", pr_name, host_name, updated_size);
-    }
-    xbt_free(task_name);
+    send_migration_data(vm_name, src_pm_name, dst_pm_name, updated_size, mbox, 2, stage2_round);
 
     remaining_size -= updated_size;
+    stage2_round += 1;
   }
 
 
 stage3:
   /* Stage3: stop the VM and copy the rest of states. */
-  XBT_INFO("%s@%s stage3: remaining_size %ld", pr_name, host_name, remaining_size);
+  XBT_INFO("mig-stage3: remaining_size %f", remaining_size);
   simcall_vm_suspend(vm);
   stop_dirty_page_tracking(vm);
 
-  {
-    char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, 3);
-
-    msg_task_t task = MSG_task_create(task_name, 0, remaining_size, NULL);
-    msg_error_t ret = MSG_task_send(task, mbox);
-    xbt_assert(ret == MSG_OK);
-
-    xbt_free(task_name);
-  }
+  send_migration_data(vm_name, src_pm_name, dst_pm_name, remaining_size, mbox, 3, 0);
 
   xbt_free(mbox);
 
-  XBT_INFO("%s@%s done", pr_name, host_name);
+  XBT_DEBUG("mig: tx_done");
 
   return 0;
 }

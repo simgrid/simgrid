@@ -429,7 +429,7 @@ surf_action_t vm_ws_execute(void *workstation, double size)
   double old_cost = vm_ws->cpu_action->cost;
   double new_cost = old_cost + size;
 
-  XBT_INFO("VM(%s)@PM(%s): update dummy action's cost (%f -> %f)",
+  XBT_DEBUG("VM(%s)@PM(%s): update dummy action's cost (%f -> %f)",
       ws->name, vm_ws->sub_ws->generic_resource.name,
       old_cost, new_cost);
 
