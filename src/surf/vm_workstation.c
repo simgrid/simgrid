@@ -143,7 +143,7 @@ static void vm_ws_migrate(void *ind_vm, void *ind_dst_pm)
      if (state != SURF_ACTION_DONE)
        XBT_CRITICAL("FIXME: may need a proper handling, %d", state);
      if (ws_vm2013->cpu_action->remains > 0)
-       XBT_CRITICAL("FIXME: need copy the state(?), %d", ws_vm2013->cpu_action->remains);
+       XBT_CRITICAL("FIXME: need copy the state(?), %f", ws_vm2013->cpu_action->remains);
 
      int ret = surf_cpu_model_pm->action_unref(ws_vm2013->cpu_action);
      xbt_assert(ret == 1, "Bug: some resource still remains");
