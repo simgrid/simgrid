@@ -31,6 +31,7 @@ surf_action_t ws_action_sleep(void *workstation, double duration);
 void ws_action_suspend(surf_action_t action);
 void ws_action_resume(surf_action_t action);
 e_surf_resource_state_t ws_get_state(void *workstation);
+double ws_action_get_remains(surf_action_t action);
 
 void ws_get_params(void *ws, ws_params_t params);
 void ws_set_params(void *ws, ws_params_t params);

@@ -141,8 +141,9 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
 {
   const char *name = SIMIX_host_get_name(ind_vm);
 
-  if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
-    THROWF(vm_error, 0, "VM(%s) is not running", name);
+  /* precopy migration makes the VM temporally paused */
+  e_surf_vm_state_t state = SIMIX_vm_get_state(ind_vm);
+  xbt_assert(state == SURF_VM_STATE_SUSPENDED);
 
   /* jump to vm_ws_migrate(). this will update the vm location. */
   surf_vm_workstation_model->extension.vm_workstation.migrate(ind_vm, ind_dst_pm);

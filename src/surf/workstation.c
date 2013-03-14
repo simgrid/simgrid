@@ -290,7 +290,7 @@ static int ws_get_latency_limited(surf_action_t action)
 }
 #endif
 
-static double ws_action_get_remains(surf_action_t action)
+double ws_action_get_remains(surf_action_t action)
 {
   if (action->model_obj->type == SURF_MODEL_TYPE_NETWORK)
     return surf_network_model->get_remains(action);

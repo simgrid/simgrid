@@ -46,6 +46,10 @@ typedef xbt_dictelm_t msg_host_t;
 typedef s_xbt_dictelm_t s_msg_host_t;
 
 typedef struct msg_host_priv {
+  int        dp_enabled;
+  xbt_dict_t dp_objs;
+  double     dp_updated_by_deleted_tasks;
+
 #ifdef MSG_USE_DEPRECATED
   msg_mailbox_t *mailboxes;     /**< the channels  */
 #endif

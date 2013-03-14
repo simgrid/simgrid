@@ -134,6 +134,13 @@ void _MSG_action_exit(void);
 
 void MSG_post_create_environment(void);
 
+static inline void *msg_host_resource_priv(const void *host) {
+  return xbt_lib_get_level((void *)host, MSG_HOST_LEVEL);
+}
+
+void MSG_host_add_task(msg_host_t host, msg_task_t task);
+void MSG_host_del_task(msg_host_t host, msg_task_t task);
+
 /********** Tracing **********/
 /* declaration of instrumentation functions from msg_task_instr.c */
 void TRACE_msg_set_task_category(msg_task_t task, const char *category);

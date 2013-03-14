@@ -23,7 +23,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
  */
 msg_error_t MSG_task_execute(msg_task_t task)
 {
-  return MSG_parallel_task_execute(task);
+  /* TODO: add this to other locations */
+  msg_host_t host = MSG_process_get_host(MSG_process_self());
+  MSG_host_add_task(host, task);
+
+  msg_error_t ret = MSG_parallel_task_execute(task);
+
+  MSG_host_del_task(host, task);
+
+  return ret;
 }
 
 /** \ingroup msg_task_usage

@@ -47,7 +47,7 @@ typedef enum {
   SURF_VM_STATE_CREATED,
 
   SURF_VM_STATE_RUNNING,
-  SURF_VM_STATE_MIGRATING,
+  // SURF_VM_STATE_MIGRATING,
 
   /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
   SURF_VM_STATE_SUSPENDED,
@@ -63,6 +63,15 @@ typedef struct ws_params {
   int ncpus;
   long ramsize;
   int overcommit;
+
+  /* The size of other states than memory pages, which is out-of-scope of dirty
+   * page tracking. */
+  long devsize;
+  int skip_stage2;
+  double max_downtime;
+
+  double dp_rate;
+  double dp_cap;
 } s_ws_params_t, *ws_params_t;
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */

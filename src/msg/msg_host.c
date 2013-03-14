@@ -29,25 +29,30 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 msg_host_t __MSG_host_create(smx_host_t workstation)
 {
   const char *name = SIMIX_host_get_name(workstation);
-  msg_host_priv_t host = xbt_new0(s_msg_host_priv_t, 1);
+  msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
 
 #ifdef MSG_USE_DEPRECATED
   int i;
   char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
 
   if (msg_global->max_channel > 0)
-    host->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
+    priv->mailboxes = xbt_new0(msg_mailbox_t, msg_global->max_channel);
 
   for (i = 0; i < msg_global->max_channel; i++) {
     sprintf(alias, "%s:%d", name, i);
 
     /* the key of the mailbox (in this case) is build from the name of the host and the channel number */
-    host->mailboxes[i] = MSG_mailbox_new(alias);
+    priv->mailboxes[i] = MSG_mailbox_new(alias);
     memset(alias, 0, MAX_ALIAS_NAME + 1);
   }
 #endif
 
-  xbt_lib_set(host_lib,name,MSG_HOST_LEVEL,host);
+
+  priv->dp_objs = xbt_dict_new();
+  priv->dp_enabled = 0;
+  priv->dp_updated_by_deleted_tasks = 0;
+
+  xbt_lib_set(host_lib, name, MSG_HOST_LEVEL, priv);
   
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
@@ -116,6 +121,11 @@ msg_host_t MSG_host_self(void)
  */
 void __MSG_host_priv_free(msg_host_priv_t priv)
 {
+  unsigned int size = xbt_dict_size(priv->dp_objs);
+  if (size > 0)
+    XBT_WARN("dp_objs: %u pending task?", size);
+  xbt_dict_free(&priv->dp_objs);
+
 #ifdef MSG_USE_DEPRECATED
   if (msg_global->max_channel > 0)
     free(priv->mailboxes);

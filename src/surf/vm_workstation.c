@@ -108,8 +108,6 @@ static void vm_ws_migrate(void *ind_vm, void *ind_dst_pm)
    xbt_assert(ws_vm2013);
    xbt_assert(ws_clm03_dst);
 
-   ws_vm2013->current_state = SURF_VM_STATE_MIGRATING;
-
    /* do something */
 
    /* update net_elm with that of the destination physical host */
@@ -155,8 +153,6 @@ static void vm_ws_migrate(void *ind_vm, void *ind_dst_pm)
 
    XBT_DEBUG("migrate VM(%s): change net_elm (%p to %p)", vm_name, old_net_elm, new_net_elm);
    XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
-
-   ws_vm2013->current_state = SURF_VM_STATE_RUNNING;
 }
 
 /*
@@ -478,7 +474,7 @@ static void surf_vm_workstation_model_init_internal(void)
 // #ifdef HAVE_TRACING
 //   model->set_category     = ws_action_set_category;
 // #endif
-//   model->get_remains      = ws_action_get_remains;
+  model->get_remains      = ws_action_get_remains;
 // #ifdef HAVE_LATENCY_BOUND_TRACKING
 //   model->get_latency_limited = ws_get_latency_limited;
 // #endif
