@@ -50,78 +50,74 @@ static int compare_global_variables(int region_type, void *d1, void *d2){
   int pointer_align; 
   void *addr_pointed1 = NULL, *addr_pointed2 = NULL;
   int res_compare = 0;
+  void *plt_start, *plt_end;
 
-  if(region_type == 1){ /* libsimgrid */
-    xbt_dynar_foreach(mc_global_variables, cursor, current_var){
-      if(current_var->address < start_data_libsimgrid)
+  if(region_type == 2){
+    plt_start = start_plt_binary;
+    plt_end = end_plt_binary;
+  }else{
+    plt_start = start_plt_libsimgrid;
+    plt_end = end_plt_libsimgrid;
+  }
+
+  xbt_dynar_foreach(mc_global_variables, cursor, current_var){
+    if(current_var->address < start_data_libsimgrid){ /* binary global variable */
+      if(region_type == 1)
         continue;
+      offset = (char *)current_var->address - (char *)start_data_binary;
+    }else{ /* libsimgrid global variable */
+      if(region_type == 2)
+        break;
       offset = (char *)current_var->address - (char *)start_data_libsimgrid;
-      i = 0;
-      while(i < current_var->size){
-        if(memcmp((char*)d1 + offset + i, (char*)d2 + offset + i, 1) != 0){
-          pointer_align = (i / sizeof(void*)) * sizeof(void*); 
-          addr_pointed1 = *((void **)((char *)d1 + offset + pointer_align));
-          addr_pointed2 = *((void **)((char *)d2 + offset + pointer_align));
-          if((addr_pointed1 > start_plt_libsimgrid && addr_pointed1 < end_plt_libsimgrid) 
-             || (addr_pointed2 > start_plt_libsimgrid && addr_pointed2 < end_plt_libsimgrid)){
-            i = current_var->size;
-            continue;
-          }else{
-            if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) 
-               && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
-              res_compare = compare_area(addr_pointed1, addr_pointed2, NULL);
-              if(res_compare == 1){
-                #ifdef MC_VERBOSE
-                  XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
-                #endif
-                return 1;
-              }
-            }else{
+    }
+    i = 0;
+    while(i < current_var->size){
+      if(memcmp((char*)d1 + offset + i, (char*)d2 + offset + i, 1) != 0){
+        pointer_align = (i / sizeof(void*)) * sizeof(void*); 
+        addr_pointed1 = *((void **)((char *)d1 + offset + pointer_align));
+        addr_pointed2 = *((void **)((char *)d2 + offset + pointer_align));
+        if((addr_pointed1 > plt_start && addr_pointed1 < plt_end) || (addr_pointed2 > plt_start && addr_pointed2 < plt_end)){
+          break;
+        }else{
+          if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) 
+             && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
+            res_compare = compare_area(addr_pointed1, addr_pointed2, NULL);
+            if(res_compare == 1){
               #ifdef MC_VERBOSE
+              if(region_type == 2)
+                XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+              else
                 XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
               #endif
-              return 1;
-            }
-           
-          }
-        } 
-        i++;
-      }
-    }
-  }else{ /* binary */
-    xbt_dynar_foreach(mc_global_variables, cursor, current_var){
-      if(current_var->address > start_data_libsimgrid)
-        break;
-      offset = (char *)current_var->address - (char *)start_data_binary;
-      i = 0;
-      while(i < current_var->size){
-        if(memcmp((char*)d1 + offset + i, (char*)d2 + offset + i, 1) != 0){
-          pointer_align = (i / sizeof(void*)) * sizeof(void*); 
-          addr_pointed1 = *((void **)((char *)d1 + offset + pointer_align));
-          addr_pointed2 = *((void **)((char *)d2 + offset + pointer_align));
-          if((addr_pointed1 > start_plt_binary && addr_pointed1 < end_plt_binary) || (addr_pointed2 > start_plt_binary && addr_pointed2 < end_plt_binary)){
-            i = current_var->size;
-            continue;
-          }else{
-            if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
-              res_compare = compare_area(addr_pointed1, addr_pointed2, NULL);
-              if(res_compare == 1){
-                #ifdef MC_VERBOSE
-                  XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
-                #endif
-                return 1;
-              }
-            }else{
-              #ifdef MC_VERBOSE
-                XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+              #ifdef MC_DEBUG
+                if(region_type == 2)
+                  XBT_DEBUG("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+                else
+                  XBT_DEBUG("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
               #endif
+                XBT_INFO("Different global variable (%p, %p) : %s at addresses %p - %p (size = %zu)", current_var->address, addr_pointed1, current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
               return 1;
             }
+          }else{
+            #ifdef MC_VERBOSE
+              if(region_type == 2)
+                XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+              else
+                XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+            #endif
+            #ifdef MC_DEBUG
+              if(region_type == 2)
+                XBT_DEBUG("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+              else
+                XBT_DEBUG("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+            #endif
+              XBT_INFO("Different global variable (%p, %p) : %s at addresses %p - %p (size = %zu)", current_var->address, addr_pointed1, current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+            return 1;
           }
-        } 
-        i++;
-      }
-      
+              
+        }
+      } 
+      i++;
     }
   }
 
