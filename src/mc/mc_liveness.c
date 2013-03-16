@@ -712,46 +712,73 @@ void MC_ddfs(int search_cycle){
 
             }else{
 
-              XBT_INFO("Next pair (depth = %d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
-        
-              XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+              if(visited(pair_succ->automaton_state)){
+                
+                XBT_DEBUG("Next pair already visited !");
+                break;
+                
+              }else{
 
-              MC_SET_RAW_MEM;
-              xbt_fifo_unshift(mc_stack_liveness, pair_succ);
-              MC_UNSET_RAW_MEM;
+                XBT_INFO("Next pair (depth = %d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
         
-              MC_ddfs(search_cycle);
+                XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+
+                MC_SET_RAW_MEM;
+                xbt_fifo_unshift(mc_stack_liveness, pair_succ);
+                MC_UNSET_RAW_MEM;
+        
+                MC_ddfs(search_cycle);
+              
+              }
 
             }
 
           }else{
-
-            MC_SET_RAW_MEM;
-            xbt_fifo_unshift(mc_stack_liveness, pair_succ);
-            MC_UNSET_RAW_MEM;
             
-            MC_ddfs(search_cycle);
+            if(visited(pair_succ->automaton_state)){
+              
+              XBT_DEBUG("Next pair already visited !");
+              break;
+              
+            }else{
+
+              MC_SET_RAW_MEM;
+              xbt_fifo_unshift(mc_stack_liveness, pair_succ);
+              MC_UNSET_RAW_MEM;
+            
+              MC_ddfs(search_cycle);
+
+            }
             
           }
       
 
         }else{
       
-          if(((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
+          if(visited(pair_succ->automaton_state)){
 
-            set_pair_reached(pair_succ->automaton_state);
+            XBT_DEBUG("Next pair already visited !");
+            break;
+            
+          }else{
+
+            if(((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
+
+              set_pair_reached(pair_succ->automaton_state);
          
-            search_cycle = 1;
+              search_cycle = 1;
 
-            XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
+              XBT_INFO("Reached pairs : %lu", xbt_dynar_length(reached_pairs));
 
-          }
+            }
 
-          MC_SET_RAW_MEM;
-          xbt_fifo_unshift(mc_stack_liveness, pair_succ);
-          MC_UNSET_RAW_MEM;
+            MC_SET_RAW_MEM;
+            xbt_fifo_unshift(mc_stack_liveness, pair_succ);
+            MC_UNSET_RAW_MEM;
           
-          MC_ddfs(search_cycle);
+            MC_ddfs(search_cycle);
+          
+          }
           
         }
 
