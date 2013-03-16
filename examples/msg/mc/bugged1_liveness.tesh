@@ -2,46 +2,43 @@
 
 ! expect signal SIGABRT
 ! timeout 200
-$ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontext "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
-> [  0.000000] (0:@) Check the liveness property promela_bugged1_liveness
-> [  0.000000] (2:client@Fafard) Ask the request
-> [  0.000000] (3:client@Boivin) Ask the request
-> [  0.000000] (2:client@Fafard) Propositions changed : r=1, cs=0
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (3:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
-> [  0.000000] (3:client@Boivin) Ask the request
-> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (0:@) Next pair (depth = 25, 2 interleave) already reached !
-> [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-> [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
-> [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-> [  0.000000] (0:@) Counter-example that violates formula :
-> [  0.000000] (0:@) [(1)coordinator] iRecv (dst=coordinator, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)client] iSend (src=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)coordinator] Wait (comm=(verbose only) [(2)client -> (1)coordinator])
-> [  0.000000] (0:@) [(1)coordinator] iRecv (dst=coordinator, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)client] Wait (comm=(verbose only) [(2)client -> (1)coordinator])
-> [  0.000000] (0:@) [(2)client] iRecv (dst=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)coordinator] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
-> [  0.000000] (0:@) [(1)coordinator] iSend (src=coordinator, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)client] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
-> [  0.000000] (0:@) [(3)client] iRecv (dst=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)coordinator] Wait (comm=(verbose only) [(1)coordinator -> (3)client])
-> [  0.000000] (0:@) [(1)coordinator] iRecv (dst=coordinator, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)client] Wait (comm=(verbose only) [(1)coordinator -> (3)client])
-> [  0.000000] (0:@) [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)coordinator] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
-> [  0.000000] (0:@) [(1)coordinator] iRecv (dst=coordinator, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)client] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
-> [  0.000000] (0:@) [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)coordinator] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
-> [  0.000000] (0:@) [(1)coordinator] iSend (src=coordinator, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)client] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
-> [  0.000000] (0:@) [(3)client] iRecv (dst=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)coordinator] Wait (comm=(verbose only) [(1)coordinator -> (3)client])
-> [  0.000000] (0:@) Expanded pairs = 26
-> [  0.000000] (0:@) Visited pairs = 24
-> [  0.000000] (0:@) Expanded / Visited = 0.923077
+$ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontext
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check' to '1'
+> [0.000000] [mc_global/INFO] Check the liveness property promela_bugged1_liveness
+> [Fafard:client:(2) 0.000000] [bugged1_liveness/INFO] Ask the request
+> [Boivin:client:(3) 0.000000] [bugged1_liveness/INFO] Ask the request
+> [Fafard:client:(2) 0.000000] [bugged1_liveness/INFO] Propositions changed : r=1, cs=0
+> [Tremblay:coordinator:(1) 0.000000] [bugged1_liveness/INFO] CS idle. Grant immediatly
+> [Boivin:client:(3) 0.000000] [bugged1_liveness/INFO] 2 got the answer. Sleep a bit and release it
+> [Tremblay:coordinator:(1) 0.000000] [bugged1_liveness/INFO] CS release. resource now idle
+> [Boivin:client:(3) 0.000000] [bugged1_liveness/INFO] Ask the request
+> [Tremblay:coordinator:(1) 0.000000] [bugged1_liveness/INFO] CS idle. Grant immediatly
+> [0.000000] [mc_liveness/INFO] Next pair (depth = 22, 1 interleave) already reached !
+> [0.000000] [mc_liveness/INFO] *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+> [0.000000] [mc_liveness/INFO] |             ACCEPTANCE CYCLE            |
+> [0.000000] [mc_liveness/INFO] *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+> [0.000000] [mc_liveness/INFO] Counter-example that violates formula :
+> [0.000000] [mc_global/INFO] [(1)coordinator] iRecv (dst=coordinator, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(2)client] iSend (src=client, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(1)coordinator] Wait (comm=(verbose only) [(2)client -> (1)coordinator])
+> [0.000000] [mc_global/INFO] [(1)coordinator] iRecv (dst=coordinator, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(2)client] Wait (comm=(verbose only) [(2)client -> (1)coordinator])
+> [0.000000] [mc_global/INFO] [(2)client] iRecv (dst=client, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(1)coordinator] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
+> [0.000000] [mc_global/INFO] [(1)coordinator] iSend (src=coordinator, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(3)client] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
+> [0.000000] [mc_global/INFO] [(3)client] iRecv (dst=client, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(1)coordinator] Wait (comm=(verbose only) [(1)coordinator -> (3)client])
+> [0.000000] [mc_global/INFO] [(1)coordinator] iRecv (dst=coordinator, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(3)client] Wait (comm=(verbose only) [(1)coordinator -> (3)client])
+> [0.000000] [mc_global/INFO] [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(1)coordinator] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
+> [0.000000] [mc_global/INFO] [(1)coordinator] iRecv (dst=coordinator, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(3)client] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
+> [0.000000] [mc_global/INFO] [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] [(1)coordinator] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
+> [0.000000] [mc_global/INFO] [(1)coordinator] iSend (src=coordinator, buff=(verbose only), size=(verbose only))
+> [0.000000] [mc_global/INFO] Expanded pairs = 23
+> [0.000000] [mc_global/INFO] Visited pairs = 21
+> [0.000000] [mc_global/INFO] Expanded / Visited = 0.913043
