@@ -204,8 +204,10 @@ static void get_mailbox(int node_id, char* mailbox)
 static void task_free(void* task)
 {
   // TODO add a parameter data_free_function to MSG_task_create?
-  xbt_free(MSG_task_get_data(task));
-  MSG_task_destroy(task);
+  if(task != NULL){
+    xbt_free(MSG_task_get_data(task));
+    MSG_task_destroy(task);
+  }
 }
 
 /**
@@ -269,6 +271,7 @@ static void set_predecessor(node_t node, int predecessor_id)
  */
 int node(int argc, char *argv[])
 {
+  
   /* Reduce the run size for the MC */
   if(MC_is_active()){
     periodic_stabilize_delay = 8;
@@ -336,19 +339,42 @@ int node(int argc, char *argv[])
 
         // no task was received: make some periodic calls
 
-        if(MC_is_active()){
-          if(MC_random()){
-            stabilize(&node);
-          }else if(MC_random()){
-            fix_fingers(&node);
-          }else if(MC_random()){
-            check_predecessor(&node);
-          }else if(MC_random()){
-            random_lookup(&node);
+        #ifdef HAVE_MC
+          if(MC_is_active()){
+            if(MC_random()){
+              stabilize(&node);
+            }else if(MC_random()){
+              fix_fingers(&node);
+            }else if(MC_random()){
+              check_predecessor(&node);
+            }else if(MC_random()){
+              random_lookup(&node);
+            }else{
+              MSG_process_sleep(5);
+            }
           }else{
-            MSG_process_sleep(5);
+            if (MSG_get_clock() >= next_stabilize_date) {
+              stabilize(&node);
+              next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
+            }
+            else if (MSG_get_clock() >= next_fix_fingers_date) {
+              fix_fingers(&node);
+              next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
+            }
+            else if (MSG_get_clock() >= next_check_predecessor_date) {
+              check_predecessor(&node);
+              next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
+            }
+            else if (MSG_get_clock() >= next_lookup_date) {
+              random_lookup(&node);
+              next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
+            }
+            else {
+              // nothing to do: sleep for a while
+              MSG_process_sleep(5);
+            }
           }
-        }else{
+        #else
           if (MSG_get_clock() >= next_stabilize_date) {
             stabilize(&node);
             next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
@@ -369,7 +395,7 @@ int node(int argc, char *argv[])
             // nothing to do: sleep for a while
             MSG_process_sleep(5);
           }
-        }
+        #endif
 
       } else {
         // a transfer has occurred
