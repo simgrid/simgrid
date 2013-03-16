@@ -28,7 +28,7 @@ static void visited_state_free_voidp(void *s){
 static int is_visited_state(){
 
   if(_sg_mc_visited == 0)
-    return 0;
+    return -1;
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
