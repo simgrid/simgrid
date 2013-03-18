@@ -201,7 +201,7 @@ mc_snapshot_t MC_take_snapshot()
 
   if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,"")){
     snapshot->stacks = take_snapshot_stacks(&snapshot, heap);
-    get_hash_global(snapshot->hash_global, snapshot->regions[2]->data, snapshot->regions[1]->data);
+    get_hash_global(snapshot->hash_global, snapshot->regions[1]->data, snapshot->regions[2]->data);
     get_hash_local(snapshot->hash_local, snapshot->stacks);
   }
 
@@ -643,35 +643,33 @@ static void get_hash_global(char *snapshot_hash, void *data1, void *data2){
   size_t offset; 
   global_variable_t current_var; 
   void *addr_pointed = NULL;
-
-  void *res;
+  void *res = NULL;
 
   xbt_strbuff_t clear = xbt_strbuff_new();
   
   xbt_dynar_foreach(mc_global_variables, cursor, current_var){
-    if(current_var->address < start_data_libsimgrid)
-      continue;
-    offset = (char *)current_var->address - (char *)start_data_libsimgrid;
-    addr_pointed = *((void **)((char *)data2 + offset));
-    if((addr_pointed > start_plt_libsimgrid && addr_pointed < end_plt_libsimgrid) || (addr_pointed > std_heap && (char *)addr_pointed < (char *)std_heap + STD_HEAP_SIZE ))
-      continue;
-    res = xbt_malloc0(current_var->size);;
-    memcpy(res, (char*)data2 + offset, current_var->size);
-    xbt_strbuff_append(clear, (const char*)res);
-    xbt_free(res);
-  }
-
-  xbt_dynar_foreach(mc_global_variables, cursor, current_var){
-    if(current_var->address > start_data_libsimgrid)
-      break;
-    offset = (char *)current_var->address - (char *)start_data_binary;
-    addr_pointed = *((void **)((char *)data1 + offset));
-    if((addr_pointed > start_plt_binary && addr_pointed < end_plt_binary) || (addr_pointed > std_heap && (char *)addr_pointed < (char *)std_heap + STD_HEAP_SIZE ))
-      continue;
-    res = xbt_malloc0(current_var->size);;
-    memcpy(res, (char*)data1 + offset, current_var->size);
-    xbt_strbuff_append(clear, (const char*)res);
-    xbt_free(res);
+    if(current_var->address < start_data_libsimgrid){ /* binary */
+      offset = (char *)current_var->address - (char *)start_data_binary;
+      addr_pointed = *((void **)((char *)data2 + offset));
+      if(((addr_pointed >= start_plt_binary && addr_pointed <= end_plt_binary)) || ((addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE )))
+        continue;
+      res = xbt_malloc0(current_var->size + 1);
+      memset(res, 0, current_var->size + 1);
+      memcpy(res, (char*)data2 + offset, current_var->size);
+    }else{ /* libsimgrid */
+      offset = (char *)current_var->address - (char *)start_data_libsimgrid;
+      addr_pointed = *((void **)((char *)data1 + offset));
+      if((addr_pointed >= start_plt_libsimgrid && addr_pointed <= end_plt_libsimgrid) || (addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE ))
+        continue;
+      res = xbt_malloc0(current_var->size + 1);
+      memset(res, 0, current_var->size + 1);
+      memcpy(res, (char*)data1 + offset, current_var->size);
+    }
+    if(res != NULL){
+      xbt_strbuff_append(clear, (const char*)res);
+      xbt_free(res);
+      res = NULL;
+    }
   }
 
   xbt_sha(clear->data, snapshot_hash);
