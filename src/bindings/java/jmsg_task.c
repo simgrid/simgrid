@@ -491,6 +491,88 @@ Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass cls, jstring jmailbox) {
 	return jcomm;
 }
 
+
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Task_receiveBounded(JNIEnv * env, jclass cls,
+                                  jstring jalias, jdouble jtimeout,
+                                  jobject jhost, jdouble rate)
+{
+  msg_error_t rv;
+  msg_task_t *task = xbt_new(msg_task_t,1);
+  *task = NULL;
+
+  msg_host_t host = NULL;
+  jobject jtask_global, jtask_local;
+  const char *alias;
+
+  if (jhost) {
+    host = jhost_get_native(env, jhost);
+
+    if (!host) {
+      jxbt_throw_notbound(env, "host", jhost);
+      return NULL;
+    }
+  }
+
+  alias = (*env)->GetStringUTFChars(env, jalias, 0);
+  rv = MSG_task_receive_ext_bounded(task, alias, (double) jtimeout, host, (double) rate);
+  if ((*env)->ExceptionOccurred(env))
+    return NULL;
+  if (rv != MSG_OK) {
+    jmsg_throw_status(env,rv);
+    return NULL;
+  }
+  jtask_global = MSG_task_get_data(*task);
+
+  /* Convert the global ref into a local ref so that the JVM can free the stuff */
+  jtask_local = (*env)->NewLocalRef(env, jtask_global);
+  (*env)->DeleteGlobalRef(env, jtask_global);
+  MSG_task_set_data(*task, NULL);
+
+  (*env)->ReleaseStringUTFChars(env, jalias, alias);
+
+  xbt_free(task);
+
+  return (jobject) jtask_local;
+}
+
+
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, jclass cls,
+		jstring jmailbox, jdouble rate) {
+	msg_comm_t comm;
+	const char *mailbox;
+	jclass comm_class;
+	//pointer to store the task object pointer.
+	msg_task_t *task = xbt_new(msg_task_t,1);
+	*task = NULL;
+	/* There should be a cache here */
+	comm_class = (*env)->FindClass(env, "org/simgrid/msg/Comm");
+
+	if (!comm_class) {
+		jxbt_throw_native(env,bprintf("fieldID or methodID or class not found."));
+		return NULL;
+	}
+
+	jobject jcomm = (*env)->NewObject(env, comm_class, jtask_method_Comm_constructor);
+	if (!jcomm) {
+		jxbt_throw_native(env,bprintf("Can't create a Comm object."));
+		return NULL;
+	}
+
+	mailbox = (*env)->GetStringUTFChars(env, jmailbox, 0);
+
+	comm = MSG_task_irecv_bounded(task,mailbox, (double) rate);
+
+	(*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (long)(comm));
+	(*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (long)(task));
+	(*env)->SetBooleanField(env, jcomm, jtask_field_Comm_receiving, JNI_TRUE);
+
+	(*env)->ReleaseStringUTFChars(env, jmailbox, mailbox);
+
+	return jcomm;
+}
+
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject jtask, jstring jmailbox) {
   jclass comm_class;
