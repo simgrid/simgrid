@@ -595,18 +595,21 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
           return 1;
         }
       }
+
       if(heapinfo1[block1].busy_block.size != heapinfo2[block2].busy_block.size){
         if(match_pairs){
           xbt_dynar_free(&previous);
         }
         return 1;
       }
+
       if(heapinfo1[block1].busy_block.busy_size != heapinfo2[block2].busy_block.busy_size){
         if(match_pairs){
           xbt_dynar_free(&previous);
         }
         return 2;
       }
+
       if(!add_heap_area_pair(previous, block1, -1, block2, -1)){
         if(match_pairs){
           match_equals(previous);
