@@ -821,7 +821,7 @@ void MC_ignore_heap(void *address, size_t size){
   }
 
   unsigned int cursor = 0;
-  mc_heap_ignore_region_t current_region;
+  mc_heap_ignore_region_t current_region = NULL;
   int start = 0;
   int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
   

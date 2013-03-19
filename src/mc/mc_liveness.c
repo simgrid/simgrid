@@ -197,7 +197,7 @@ static void set_acceptance_pair_reached(int num, xbt_automaton_state_t as){
     int end = xbt_dynar_length(acceptance_pairs) - 1;
 
     mc_acceptance_pair_t pair_test = NULL;
-    size_t bytes_used_test;
+    size_t bytes_used_test = 0;
     int nb_processes_test;
 
     while(start <= end){
