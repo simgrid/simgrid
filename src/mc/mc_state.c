@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2008-2013 Da SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,18 +20,6 @@ mc_state_t MC_state_new()
   state->system_state = NULL;
   state->num = ++mc_stats->expanded_states;
   
-  return state;
-}
-
-mc_state_t MC_state_pair_new(void)
-{
-  mc_state_t state = NULL;
-  
-  state = xbt_new0(s_mc_state_t, 1);
-  state->max_pid = simix_process_maxpid;
-  state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
-  
-  //mc_stats->expanded_states++;
   return state;
 }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012 Da SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2007-2013 Da SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -63,6 +63,7 @@ void snapshot_stack_free_voidp(void *s);
 int is_stack_ignore_variable(char *frame, char *var_name);
 
 /********************************* MC Global **********************************/
+
 extern double *mc_time;
 extern FILE *dot_output;
 extern const char* colors[10];
@@ -78,7 +79,9 @@ void MC_init(void);
 void MC_init_dot_output(void);
 int SIMIX_pre_mc_random(smx_simcall_t simcall);
 
+
 /********************************* Requests ***********************************/
+
 int MC_request_depend(smx_simcall_t req1, smx_simcall_t req2);
 char* MC_request_to_string(smx_simcall_t req, int value);
 unsigned int MC_request_testany_fail(smx_simcall_t req);
@@ -91,6 +94,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value);
 
 
 /******************************** States **************************************/
+
 /* Possible exploration status of a process in a state */
 typedef enum {
   MC_NOT_INTERLEAVE=0,      /* Do not interleave (do not execute) */
@@ -130,7 +134,9 @@ smx_simcall_t MC_state_get_internal_request(mc_state_t state);
 smx_simcall_t MC_state_get_request(mc_state_t state, int *value);
 void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process);
 
+
 /****************************** Statistics ************************************/
+
 typedef struct mc_stats {
   unsigned long state_size;
   unsigned long visited_states;
@@ -138,18 +144,10 @@ typedef struct mc_stats {
   unsigned long executed_transitions;
 } s_mc_stats_t, *mc_stats_t;
 
-typedef struct mc_stats_pair {
-  //unsigned long pair_size;
-  unsigned long visited_pairs;
-  unsigned long expanded_pairs;
-  unsigned long executed_transitions;
-} s_mc_stats_pair_t, *mc_stats_pair_t;
-
 extern mc_stats_t mc_stats;
-extern mc_stats_pair_t mc_stats_pair;
 
 void MC_print_statistics(mc_stats_t);
-void MC_print_statistics_pairs(mc_stats_pair_t);
+
 
 /********************************** MEMORY ******************************/
 /* The possible memory modes for the modelchecker are standard and raw. */
@@ -174,6 +172,7 @@ extern void *raw_heap;
 
 #define MC_SET_RAW_MEM    mmalloc_set_current_heap(raw_heap)
 #define MC_UNSET_RAW_MEM  mmalloc_set_current_heap(std_heap)
+
 
 /******************************* MEMORY MAPPINGS ***************************/
 /* These functions and data structures implements a binary interface for   */
@@ -201,6 +200,8 @@ typedef struct s_memory_map {
 
 } s_memory_map_t, *memory_map_t;
 
+
+void MC_init_memory_map_info(void);
 memory_map_t get_memory_map(void);
 void free_memory_map(memory_map_t map);
 void get_libsimgrid_plt_section(void);
@@ -220,6 +221,7 @@ extern void *start_got_plt_libsimgrid;
 extern void *end_got_plt_libsimgrid;
 extern void *start_got_plt_binary;
 extern void *end_got_plt_binary;
+
 
 /********************************** Snapshot comparison **********************************/
 
@@ -243,9 +245,11 @@ int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_s
 void print_comparison_times(void);
 
 //#define MC_DEBUG 1
-//#define MC_VERBOSE 1
+#define MC_VERBOSE 1
 
-/********************************** DPOR for safety  **************************************/
+
+/********************************** DPOR for safety property **************************************/
+
 typedef enum {
   e_mc_reduce_unset,
   e_mc_reduce_none,
@@ -254,17 +258,18 @@ typedef enum {
 
 extern e_mc_reduce_t mc_reduce_kind;
 extern mc_global_t initial_state_safety;
+extern xbt_fifo_t mc_stack_safety;
 
 void MC_dpor_init(void);
 void MC_dpor(void);
 
-typedef struct s_mc_safety_visited_state{
+typedef struct s_mc_visited_state{
   mc_snapshot_t system_state;
   int num;
-}s_mc_safety_visited_state_t, *mc_safety_visited_state_t;
+}s_mc_visited_state_t, *mc_visited_state_t;
 
 
-/********************************** Double-DFS for liveness property**************************************/
+/********************************** Double-DFS for liveness property **************************************/
 
 extern xbt_fifo_t mc_stack_liveness;
 extern mc_global_t initial_state_liveness;
@@ -273,66 +278,37 @@ extern int compare;
 extern xbt_dynar_t mc_stack_comparison_ignore;
 extern xbt_dynar_t mc_data_bss_comparison_ignore;
 
-
 typedef struct s_mc_pair{
   mc_snapshot_t system_state;
   mc_state_t graph_state;
-  xbt_state_t automaton_state;
+  xbt_automaton_state_t automaton_state;
+  int requests;
 }s_mc_pair_t, *mc_pair_t;
 
-typedef struct s_mc_pair_reached{
-  int nb;
-  xbt_state_t automaton_state;
+typedef struct s_mc_acceptance_pair{
+  int num;
+  xbt_automaton_state_t automaton_state;
   xbt_dynar_t prop_ato;
   mc_snapshot_t system_state;
-}s_mc_pair_reached_t, *mc_pair_reached_t;
+}s_mc_acceptance_pair_t, *mc_acceptance_pair_t;
 
-typedef struct s_mc_pair_visited{
-  xbt_state_t automaton_state;
+typedef struct s_mc_visited_pair{
+  xbt_automaton_state_t automaton_state;
   xbt_dynar_t prop_ato;
   mc_snapshot_t system_state;
-}s_mc_pair_visited_t, *mc_pair_visited_t;
+  int num;
+}s_mc_visited_pair_t, *mc_visited_pair_t;
 
-int MC_automaton_evaluate_label(xbt_exp_label_t l);
+mc_pair_t MC_pair_new(mc_state_t sg, xbt_automaton_state_t st, int r);
+void MC_pair_delete(mc_pair_t);
 
-int reached(xbt_state_t st);
-void set_pair_reached(xbt_state_t st);
-int visited(xbt_state_t st);
-
-void MC_pair_delete(mc_pair_t pair);
-mc_state_t MC_state_pair_new(void);
-void pair_reached_free(mc_pair_reached_t pair);
-void pair_reached_free_voidp(void *p);
-void pair_visited_free(mc_pair_visited_t pair);
-void pair_visited_free_voidp(void *p);
-void MC_init_memory_map_info(void);
-
-int get_heap_region_index(mc_snapshot_t s);
-
-/* **** Double-DFS stateless **** */
-
-typedef struct s_mc_pair_stateless{
-  mc_state_t graph_state;
-  xbt_state_t automaton_state;
-  int requests;
-}s_mc_pair_stateless_t, *mc_pair_stateless_t;
-
-mc_pair_stateless_t new_pair_stateless(mc_state_t sg, xbt_state_t st, int r);
 void MC_ddfs_init(void);
 void MC_ddfs(int search_cycle);
 void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
-void pair_stateless_free(mc_pair_stateless_t pair);
-void pair_stateless_free_voidp(void *p);
 
-/********************************** Configuration of MC **************************************/
-extern xbt_fifo_t mc_stack_safety;
 
-/****** Core dump ******/
-
-int create_dump(int pair);
-
-/****** Local variables with DWARF ******/
+/********************************** Local variables with DWARF **********************************/
 
 typedef enum {
   e_dw_loclist,
@@ -431,7 +407,8 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
 void print_local_variables(xbt_dict_t list);
 xbt_dict_t MC_get_location_list(const char *elf_file);
 
-/**** Global variables ****/
+
+/********************************** Global variables with objdump **********************************/
 
 typedef struct s_global_variable{
   char *name;

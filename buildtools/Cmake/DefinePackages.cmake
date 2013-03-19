@@ -423,6 +423,7 @@ set(MC_SRC
   src/mc/mc_request.c
   src/mc/mc_state.c
   src/mc/memory_map.c
+  src/mc/mc_pair.c
   )
 
 set(headers_to_install

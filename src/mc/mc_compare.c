@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2012-2013 Da SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -41,7 +41,7 @@ static size_t heap_ignore_size(void *address){
   return 0;
 }
 
-static int compare_global_variables(int region_type, void *d1, void *d2){
+static int compare_global_variables(int region_type, void *d1, void *d2){ /* region_type = 1 -> libsimgrid, region_type = 2 -> binary */
 
   unsigned int cursor = 0;
   size_t offset; 
@@ -192,7 +192,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       #ifdef MC_VERBOSE
         XBT_VERB("Different number of processes : %d - %d", s1->nb_processes, s2->nb_processes);
       #endif
-     
+
       xbt_os_timer_free(timer);
       xbt_os_timer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
@@ -261,7 +261,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       #ifdef MC_VERBOSE
         XBT_VERB("Different size used in stacks : %zu - %zu", size_used1, size_used2);
       #endif
- 
+
       xbt_os_timer_free(timer);
       xbt_os_timer_stop(global_timer);
       mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
@@ -294,7 +294,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         #ifdef MC_VERBOSE
           XBT_VERB("Different hash of global variables : %s - %s", s1->hash_global, s2->hash_global); 
         #endif
-    
+
         xbt_os_timer_free(timer);
         xbt_os_timer_stop(global_timer);
         mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
@@ -324,7 +324,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
         #ifdef MC_VERBOSE
           XBT_VERB("Different hash of local variables : %s - %s", s1->hash_local, s2->hash_local); 
         #endif
-    
+
         xbt_os_timer_free(timer);
         xbt_os_timer_stop(global_timer);
         mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
@@ -357,7 +357,7 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
       #ifdef MC_VERBOSE
         XBT_VERB("Different global variables in binary"); 
       #endif
-    
+
       reset_heap_information();
       xbt_os_timer_free(timer);
       xbt_os_timer_stop(global_timer);
@@ -600,6 +600,7 @@ static int compare_local_variables(char *s1, char *s2){
             #ifdef MC_DEBUG
               XBT_DEBUG("Different local variable : %s (%s - %s)", var_name, xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
             #endif
+
             xbt_dynar_free(&s_tokens1);
             xbt_dynar_free(&s_tokens2);
             xbt_dynar_free(&tokens1);

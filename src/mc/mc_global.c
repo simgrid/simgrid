@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2008-2013 Da SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -95,16 +95,15 @@ char mc_replay_mode = FALSE;
 double *mc_time = NULL;
 mc_comparison_times_t mc_comp_times = NULL;
 double mc_snapshot_comparison_time;
+mc_stats_t mc_stats = NULL;
 
 /* Safety */
 
 xbt_fifo_t mc_stack_safety = NULL;
-mc_stats_t mc_stats = NULL;
 mc_global_t initial_state_safety = NULL;
 
 /* Liveness */
 
-mc_stats_pair_t mc_stats_pair = NULL;
 xbt_fifo_t mc_stack_liveness = NULL;
 mc_global_t initial_state_liveness = NULL;
 int compare;
@@ -310,13 +309,15 @@ void MC_modelcheck_liveness(){
   MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
  
   MC_SET_RAW_MEM;
-  
+ 
   /* Initialize statistics */
-  mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
+  mc_stats = xbt_new0(s_mc_stats_t, 1);
+  mc_stats->state_size = 1;
 
   /* Create exploration stack */
   mc_stack_liveness = xbt_fifo_new();
 
+  /* Create the initial state */
   initial_state_liveness = xbt_new0(s_mc_global_t, 1);
 
   MC_UNSET_RAW_MEM;
@@ -324,7 +325,7 @@ void MC_modelcheck_liveness(){
   MC_ddfs_init();
 
   /* We're done */
-  MC_print_statistics_pairs(mc_stats_pair);
+  MC_print_statistics(mc_stats);
   xbt_free(mc_time);
 
   if(raw_mem_set)
@@ -477,7 +478,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item;
   mc_state_t state;
-  mc_pair_stateless_t pair;
+  mc_pair_t pair;
   int depth = 1;
 
   XBT_DEBUG("**** Begin Replay ****");
@@ -496,7 +497,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
     while(depth <= xbt_fifo_size(stack)){
 
-      pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
+      pair = (mc_pair_t) xbt_fifo_get_item_content(item);
       state = (mc_state_t) pair->graph_state;
 
       if(pair->requests > 0){
@@ -526,7 +527,8 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
       depth++;
     
       /* Update statistics */
-      mc_stats_pair->visited_pairs++;
+      mc_stats->visited_states++;
+      mc_stats->executed_transitions++;
 
       item = xbt_fifo_get_prev_item(item);
     }
@@ -538,7 +540,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
          item != xbt_fifo_get_first_item(stack);
          item = xbt_fifo_get_prev_item(item)) {
 
-      pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
+      pair = (mc_pair_t) xbt_fifo_get_item_content(item);
       state = (mc_state_t) pair->graph_state;
 
       if(pair->requests > 0){
@@ -568,7 +570,8 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
       depth++;
     
       /* Update statistics */
-      mc_stats_pair->visited_pairs++;
+      mc_stats->visited_states++;
+      mc_stats->executed_transitions++;
     }
   }  
 
@@ -649,13 +652,13 @@ void MC_show_deadlock(smx_simcall_t req)
 
 void MC_show_stack_liveness(xbt_fifo_t stack){
   int value;
-  mc_pair_stateless_t pair;
+  mc_pair_t pair;
   xbt_fifo_item_t item;
   smx_simcall_t req;
   char *req_str = NULL;
   
   for (item = xbt_fifo_get_last_item(stack);
-       (item ? (pair = (mc_pair_stateless_t) (xbt_fifo_get_item_content(item)))
+       (item ? (pair = (mc_pair_t) (xbt_fifo_get_item_content(item)))
         : (NULL)); item = xbt_fifo_get_prev_item(item)) {
     req = MC_state_get_executed_request(pair->graph_state, &value);
     if(req){
@@ -674,11 +677,11 @@ void MC_dump_stack_liveness(xbt_fifo_t stack){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
-  mc_pair_stateless_t pair;
+  mc_pair_t pair;
 
   MC_SET_RAW_MEM;
-  while ((pair = (mc_pair_stateless_t) xbt_fifo_pop(stack)) != NULL)
-    pair_stateless_free(pair);
+  while ((pair = (mc_pair_t) xbt_fifo_pop(stack)) != NULL)
+    MC_pair_delete(pair);
   MC_UNSET_RAW_MEM;
 
   if(raw_mem_set)
@@ -697,18 +700,6 @@ void MC_print_statistics(mc_stats_t stats)
            (double) stats->visited_states / stats->expanded_states);
   /*XBT_INFO("Exploration coverage = %lf",
     (double)stats->expanded_states / stats->state_size); */
-}
-
-void MC_print_statistics_pairs(mc_stats_pair_t stats)
-{
-  XBT_INFO("Expanded pairs = %lu", stats->expanded_pairs);
-  XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
-  //XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  XBT_INFO("Expanded / Visited = %lf",
-           (double) stats->visited_pairs / stats->expanded_pairs);
-
-  if(mmalloc_get_current_heap() == raw_heap)
-    MC_UNSET_RAW_MEM;
 }
 
 void MC_assert(int prop)
@@ -732,7 +723,7 @@ static void MC_assert_pair(int prop){
     //XBT_INFO("Counter-example execution trace:");
     MC_show_stack_liveness(mc_stack_liveness);
     //MC_dump_snapshot_stack(mc_snapshot_stack);
-    MC_print_statistics_pairs(mc_stats_pair);
+    MC_print_statistics(mc_stats);
     xbt_abort();
   }
 }
@@ -781,7 +772,7 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
 
-  xbt_new_propositional_symbol(_mc_property_automaton,id,fct);
+  xbt_automaton_propositional_symbol_new(_mc_property_automaton,id,fct);
 
   MC_UNSET_RAW_MEM;
 
@@ -865,7 +856,7 @@ void MC_remove_ignore_heap(void *address, size_t size){
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
-  
+
   unsigned int cursor = 0;
   int start = 0;
   int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;

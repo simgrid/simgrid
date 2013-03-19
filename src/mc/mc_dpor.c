@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012. Da SimGrid Team. All rights reserved.           */
+/* Copyright (c) 2008-2013. Da SimGrid Team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,10 +11,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
 xbt_dynar_t visited_states;
 
 static int is_visited_state(void);
-static void visited_state_free(mc_safety_visited_state_t state);
+static void visited_state_free(mc_visited_state_t state);
 static void visited_state_free_voidp(void *s);
 
-static void visited_state_free(mc_safety_visited_state_t state){
+static void visited_state_free(mc_visited_state_t state){
   if(state){
     MC_free_snapshot(state->system_state);
     xbt_free(state);
@@ -22,7 +22,7 @@ static void visited_state_free(mc_safety_visited_state_t state){
 }
 
 static void visited_state_free_voidp(void *s){
-  visited_state_free((mc_safety_visited_state_t) * (void **) s);
+  visited_state_free((mc_visited_state_t) * (void **) s);
 }
 
 static int is_visited_state(){
@@ -34,8 +34,8 @@ static int is_visited_state(){
 
   MC_SET_RAW_MEM;
 
-  mc_safety_visited_state_t new_state = NULL;
-  new_state = xbt_new0(s_mc_safety_visited_state_t, 1);
+  mc_visited_state_t new_state = NULL;
+  new_state = xbt_new0(s_mc_visited_state_t, 1);
   new_state->system_state = MC_take_snapshot();
   new_state->num = mc_stats->expanded_states;
 
@@ -63,13 +63,13 @@ static int is_visited_state(){
     int start = 0;
     int end = xbt_dynar_length(visited_states) - 1;
 
-    mc_safety_visited_state_t state_test = NULL;
+    mc_visited_state_t state_test = NULL;
     size_t bytes_used_test;
     int same_bytes_not_found = 1;
 
     while(start <= end && same_bytes_not_found){
       cursor = (start + end) / 2;
-      state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_safety_visited_state_t);
+      state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
       bytes_used_test = state_test->system_state->heap_bytes_used;
       if(bytes_used_test < current_bytes_used)
         start = cursor + 1;
@@ -90,7 +90,7 @@ static int is_visited_state(){
           /* Search another state with same number of bytes used */
           previous_cursor = cursor - 1;
           while(previous_cursor >= 0){
-            state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, previous_cursor, mc_safety_visited_state_t);
+            state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, previous_cursor, mc_visited_state_t);
             bytes_used_test = state_test->system_state->heap_bytes_used;
             if(bytes_used_test != current_bytes_used)
               break;
@@ -108,7 +108,7 @@ static int is_visited_state(){
           }
           next_cursor = cursor + 1;
           while(next_cursor < xbt_dynar_length(visited_states)){
-            state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, next_cursor, mc_safety_visited_state_t);
+            state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, next_cursor, mc_visited_state_t);
             bytes_used_test = state_test->system_state->heap_bytes_used;
             if(bytes_used_test != current_bytes_used)
               break;
@@ -128,7 +128,7 @@ static int is_visited_state(){
       }
     }
 
-    state_test = (mc_safety_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_safety_visited_state_t);
+    state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
     bytes_used_test = state_test->system_state->heap_bytes_used;
 
     if(bytes_used_test < current_bytes_used)
@@ -174,7 +174,7 @@ void MC_dpor_init()
   MC_SET_RAW_MEM;
 
   initial_state = MC_state_new();
-  visited_states = xbt_dynar_new(sizeof(mc_safety_visited_state_t), visited_state_free_voidp);
+  visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
 
   MC_UNSET_RAW_MEM;
 
@@ -321,8 +321,6 @@ void MC_dpor(void)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state, req_str);
 
       }
-
-      
 
       xbt_fifo_unshift(mc_stack_safety, next_state);
       MC_UNSET_RAW_MEM;
