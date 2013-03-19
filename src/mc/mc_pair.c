@@ -12,6 +12,7 @@ mc_pair_t MC_pair_new(mc_state_t gs, xbt_automaton_state_t as, int r){
   p->graph_state = gs;
   p->system_state = NULL;
   p->requests = r;
+  p->num = ++mc_stats->expanded_pairs;
   return p;
 }
 

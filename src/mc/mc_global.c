@@ -527,7 +527,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
       depth++;
     
       /* Update statistics */
-      mc_stats->visited_states++;
+      mc_stats->visited_pairs++;
       mc_stats->executed_transitions++;
 
       item = xbt_fifo_get_prev_item(item);
@@ -570,7 +570,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
       depth++;
     
       /* Update statistics */
-      mc_stats->visited_states++;
+      mc_stats->visited_pairs++;
       mc_stats->executed_transitions++;
     }
   }  
@@ -692,14 +692,14 @@ void MC_dump_stack_liveness(xbt_fifo_t stack){
 
 void MC_print_statistics(mc_stats_t stats)
 {
-  //XBT_INFO("State space size ~= %lu", stats->state_size);
-  XBT_INFO("Expanded states = %lu", stats->expanded_states);
-  XBT_INFO("Visited states = %lu", stats->visited_states);
+  if(stats->expanded_pairs == 0){
+    XBT_INFO("Expanded states = %lu", stats->expanded_states);
+    XBT_INFO("Visited states = %lu", stats->visited_states);
+  }else{
+    XBT_INFO("Expanded pairs = %lu", stats->expanded_pairs);
+    XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
+  }
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  XBT_INFO("Expanded / Visited = %lf",
-           (double) stats->visited_states / stats->expanded_states);
-  /*XBT_INFO("Exploration coverage = %lf",
-    (double)stats->expanded_states / stats->state_size); */
 }
 
 void MC_assert(int prop)

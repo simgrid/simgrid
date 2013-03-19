@@ -39,7 +39,6 @@ $ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 --cfg=contexts/factory:ucont
 > [0.000000] [mc_global/INFO] [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
 > [0.000000] [mc_global/INFO] [(1)coordinator] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
 > [0.000000] [mc_global/INFO] [(1)coordinator] iSend (src=coordinator, buff=(verbose only), size=(verbose only))
-> [0.000000] [mc_global/INFO] Expanded states = 22
-> [0.000000] [mc_global/INFO] Visited states = 21
+> [0.000000] [mc_global/INFO] Expanded pairs = 23
+> [0.000000] [mc_global/INFO] Visited pairs = 21
 > [0.000000] [mc_global/INFO] Executed transitions = 21
-> [0.000000] [mc_global/INFO] Expanded / Visited = 0.954545

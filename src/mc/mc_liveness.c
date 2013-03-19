@@ -19,127 +19,11 @@ xbt_dynar_t successors;
 
 /********* Static functions *********/
 
-static int is_reached_acceptance_pair(xbt_automaton_state_t st){
-
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  MC_SET_RAW_MEM;
+static mc_acceptance_pair_t acceptance_pair_new(int num, xbt_automaton_state_t as){
 
   mc_acceptance_pair_t new_pair = NULL;
   new_pair = xbt_new0(s_mc_acceptance_pair_t, 1);
-  new_pair->num = xbt_dynar_length(acceptance_pairs) + 1;
-  new_pair->automaton_state = st;
-  new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  new_pair->system_state = MC_take_snapshot();  
-  
-  /* Get values of propositional symbols */
-  int res;
-  int_f_void_t f;
-  unsigned int cursor = 0;
-  xbt_automaton_propositional_symbol_t ps = NULL;
-  xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
-    f = (int_f_void_t)ps->function;
-    res = f();
-    xbt_dynar_push_as(new_pair->prop_ato, int, res);
-  }
-  
-  MC_UNSET_RAW_MEM;
-  
-  if(xbt_dynar_is_empty(acceptance_pairs)){
-
-    MC_SET_RAW_MEM;
-    /* New acceptance pair */
-    xbt_dynar_push(acceptance_pairs, &new_pair); 
-    MC_UNSET_RAW_MEM;
-
-    if(raw_mem_set)
-      MC_SET_RAW_MEM;
- 
-    return 0;
-
-  }else{
-
-    MC_SET_RAW_MEM;
-    
-    cursor = 0;
-    mc_acceptance_pair_t pair_test = NULL;
-     
-    xbt_dynar_foreach(acceptance_pairs, cursor, pair_test){
-      if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug))
-        XBT_DEBUG("****** Pair reached #%d ******", pair_test->num);
-      if(xbt_automaton_state_compare(pair_test->automaton_state, st) == 0){
-        if(xbt_automaton_propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
-          if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
-            
-            if(raw_mem_set)
-              MC_SET_RAW_MEM;
-            else
-              MC_UNSET_RAW_MEM;
-            
-            return 1;
-          }
-        }else{
-          XBT_DEBUG("Different values of propositional symbols");
-        }
-      }else{
-        XBT_DEBUG("Different automaton state");
-      }
-    }
-
-    /* New acceptance pair */
-    xbt_dynar_push(acceptance_pairs, &new_pair); 
-    
-    MC_UNSET_RAW_MEM;
-
-    if(raw_mem_set)
-      MC_SET_RAW_MEM;
- 
-    compare = 0;
-    
-    return 0;
-    
-  }
-}
-
-
-static void set_acceptance_pair_reached(xbt_automaton_state_t st){
-
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
- 
-  MC_SET_RAW_MEM;
-
-  mc_acceptance_pair_t pair = NULL;
-  pair = xbt_new0(s_mc_acceptance_pair_t, 1);
-  pair->num = xbt_dynar_length(acceptance_pairs) + 1;
-  pair->automaton_state = st;
-  pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
-  pair->system_state = MC_take_snapshot();
-
-  /* Get values of propositional symbols */
-  unsigned int cursor = 0;
-  xbt_automaton_propositional_symbol_t ps = NULL;
-  int res;
-  int_f_void_t f;
-
-  xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
-    f = (int_f_void_t)ps->function;
-    res = f();
-    xbt_dynar_push_as(pair->prop_ato, int, res);
-  }
-
-  xbt_dynar_push(acceptance_pairs, &pair); 
-  
-  MC_UNSET_RAW_MEM;
-
-  if(raw_mem_set)
-    MC_SET_RAW_MEM;
-    
-}
-
-static mc_visited_pair_t visited_pair_new(xbt_automaton_state_t as){
-
-  mc_visited_pair_t new_pair = NULL;
-  new_pair = xbt_new0(s_mc_visited_pair_t, 1);
+  new_pair->num = num;
   new_pair->automaton_state = as;
   new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
   new_pair->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
@@ -161,7 +45,235 @@ static mc_visited_pair_t visited_pair_new(xbt_automaton_state_t as){
 
 }
 
-static int is_visited_pair(xbt_automaton_state_t as){
+static int is_reached_acceptance_pair(int num, xbt_automaton_state_t as){
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+  mc_acceptance_pair_t new_pair = acceptance_pair_new(num, as);  
+  MC_UNSET_RAW_MEM;
+  
+  if(xbt_dynar_is_empty(acceptance_pairs)){
+
+    MC_SET_RAW_MEM;
+    xbt_dynar_push(acceptance_pairs, &new_pair); 
+    MC_UNSET_RAW_MEM;
+
+    if(raw_mem_set)
+      MC_SET_RAW_MEM;
+
+    return -1;
+
+  }else{
+
+    MC_SET_RAW_MEM;
+    
+    size_t current_bytes_used = new_pair->heap_bytes_used;
+    int current_nb_processes = new_pair->nb_processes;
+
+    unsigned int cursor = 0;
+    int previous_cursor = 0, next_cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(acceptance_pairs) - 1;
+
+    mc_acceptance_pair_t pair_test = NULL;
+    size_t bytes_used_test;
+    int nb_processes_test;
+    int same_processes_and_bytes_not_found = 1;
+
+    while(start <= end && same_processes_and_bytes_not_found){
+      cursor = (start + end) / 2;
+      pair_test = (mc_acceptance_pair_t)xbt_dynar_get_as(acceptance_pairs, cursor, mc_acceptance_pair_t);
+      bytes_used_test = pair_test->heap_bytes_used;
+      nb_processes_test = pair_test->nb_processes;
+      if(nb_processes_test < current_nb_processes)
+        start = cursor + 1;
+      if(nb_processes_test > current_nb_processes)
+        end = cursor - 1; 
+      if(nb_processes_test == current_nb_processes){
+        if(bytes_used_test < current_bytes_used)
+          start = cursor + 1;
+        if(bytes_used_test > current_bytes_used)
+          end = cursor - 1;
+        if(bytes_used_test == current_bytes_used){
+          same_processes_and_bytes_not_found = 0;
+          if(xbt_automaton_state_compare(pair_test->automaton_state, as) == 0){
+            if(xbt_automaton_propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
+              if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
+                if(raw_mem_set)
+                  MC_SET_RAW_MEM;
+                else
+                  MC_UNSET_RAW_MEM;
+                return pair_test->num;
+              }
+            }
+          }
+          /* Search another pair with same number of bytes used in std_heap */
+          previous_cursor = cursor - 1;
+          while(previous_cursor >= 0){
+            pair_test = (mc_acceptance_pair_t)xbt_dynar_get_as(acceptance_pairs, previous_cursor, mc_acceptance_pair_t);
+            bytes_used_test = pair_test->system_state->heap_bytes_used;
+            if(bytes_used_test != current_bytes_used)
+              break;
+            if(xbt_automaton_state_compare(pair_test->automaton_state, as) == 0){
+              if(xbt_automaton_propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){  
+                if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
+                  if(raw_mem_set)
+                    MC_SET_RAW_MEM;
+                  else
+                    MC_UNSET_RAW_MEM;
+                  return pair_test->num;
+                }
+              }
+            }
+            previous_cursor--;
+          }
+          next_cursor = cursor + 1;
+          while(next_cursor < xbt_dynar_length(acceptance_pairs)){
+            pair_test = (mc_acceptance_pair_t)xbt_dynar_get_as(acceptance_pairs, next_cursor, mc_acceptance_pair_t);
+            bytes_used_test = pair_test->system_state->heap_bytes_used;
+            if(bytes_used_test != current_bytes_used)
+              break;
+            if(xbt_automaton_state_compare(pair_test->automaton_state, as) == 0){
+              if(xbt_automaton_propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
+                if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
+                  if(raw_mem_set)
+                    MC_SET_RAW_MEM;
+                  else
+                    MC_UNSET_RAW_MEM;
+                  return pair_test->num;
+                }
+              }
+            }
+            next_cursor++;
+          }
+        }
+      }
+    }
+
+    pair_test = (mc_acceptance_pair_t)xbt_dynar_get_as(acceptance_pairs, cursor, mc_acceptance_pair_t);
+    bytes_used_test = pair_test->heap_bytes_used;
+
+    if(bytes_used_test < current_bytes_used)
+      xbt_dynar_insert_at(acceptance_pairs, cursor + 1, &new_pair);
+    else
+      xbt_dynar_insert_at(acceptance_pairs, cursor, &new_pair);
+    
+    MC_UNSET_RAW_MEM;
+
+    if(raw_mem_set)
+      MC_SET_RAW_MEM;
+    
+    return -1;
+    
+  }
+ 
+}
+
+
+static void set_acceptance_pair_reached(int num, xbt_automaton_state_t as){
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+ 
+  MC_SET_RAW_MEM;
+  mc_acceptance_pair_t new_pair = acceptance_pair_new(num, as);
+  MC_UNSET_RAW_MEM;
+
+  if(xbt_dynar_is_empty(acceptance_pairs)){
+
+     MC_SET_RAW_MEM;
+     xbt_dynar_push(acceptance_pairs, &new_pair); 
+     MC_UNSET_RAW_MEM;
+
+  }else{
+
+    MC_SET_RAW_MEM;
+    
+    size_t current_bytes_used = new_pair->heap_bytes_used;
+    int current_nb_processes = new_pair->nb_processes;
+
+    unsigned int cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(acceptance_pairs) - 1;
+
+    mc_acceptance_pair_t pair_test = NULL;
+    size_t bytes_used_test;
+    int nb_processes_test;
+
+    while(start <= end){
+      cursor = (start + end) / 2;
+      pair_test = (mc_acceptance_pair_t)xbt_dynar_get_as(acceptance_pairs, cursor, mc_acceptance_pair_t);
+      bytes_used_test = pair_test->heap_bytes_used;
+      nb_processes_test = pair_test->nb_processes;
+      if(nb_processes_test < current_nb_processes)
+        start = cursor + 1;
+      if(nb_processes_test > current_nb_processes)
+        end = cursor - 1; 
+      if(nb_processes_test == current_nb_processes){
+        if(bytes_used_test < current_bytes_used)
+          start = cursor + 1;
+        if(bytes_used_test > current_bytes_used)
+          end = cursor - 1;
+        if(bytes_used_test == current_bytes_used)
+          break;
+      }
+    }
+
+    if(bytes_used_test < current_bytes_used)
+      xbt_dynar_insert_at(acceptance_pairs, cursor + 1, &new_pair);
+    else
+      xbt_dynar_insert_at(acceptance_pairs, cursor, &new_pair);
+    
+    MC_UNSET_RAW_MEM;
+    
+  }
+
+  if(raw_mem_set)
+    MC_SET_RAW_MEM;
+    
+}
+
+static void remove_acceptance_pair(int num_pair){
+
+  unsigned int cursor = 0;
+  mc_acceptance_pair_t current_pair;
+
+  xbt_dynar_foreach(acceptance_pairs, cursor, current_pair){
+    if(current_pair->num == num_pair)
+      break;
+  }
+  
+  xbt_dynar_remove_at(acceptance_pairs, cursor, NULL);
+
+}
+
+static mc_visited_pair_t visited_pair_new(int num, xbt_automaton_state_t as){
+
+  mc_visited_pair_t new_pair = NULL;
+  new_pair = xbt_new0(s_mc_visited_pair_t, 1);
+  new_pair->automaton_state = as;
+  new_pair->num = num;
+  new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
+  new_pair->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+  new_pair->nb_processes = xbt_swag_size(simix_global->process_list);
+  new_pair->system_state = MC_take_snapshot();  
+  
+  /* Get values of propositional symbols */
+  int res;
+  int_f_void_t f;
+  unsigned int cursor = 0;
+  xbt_automaton_propositional_symbol_t ps = NULL;
+  xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps){
+    f = (int_f_void_t)ps->function;
+    res = f();
+    xbt_dynar_push_as(new_pair->prop_ato, int, res);
+  }
+
+  return new_pair;
+
+}
+
+static int is_visited_pair(int num, xbt_automaton_state_t as){
 
   if(_sg_mc_visited == 0)
     return -1;
@@ -169,7 +281,7 @@ static int is_visited_pair(xbt_automaton_state_t as){
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
-  mc_visited_pair_t new_pair = visited_pair_new(as);
+  mc_visited_pair_t new_pair = visited_pair_new(num, as);
   MC_UNSET_RAW_MEM;
 
   if(xbt_dynar_is_empty(visited_pairs)){
@@ -443,7 +555,7 @@ void MC_ddfs_init(void){
         xbt_fifo_unshift(mc_stack_liveness, mc_initial_pair);
         MC_UNSET_RAW_MEM;
 
-        set_acceptance_pair_reached(automaton_state);
+        set_acceptance_pair_reached(mc_initial_pair->num, automaton_state);
 
         if(cursor != 0){
           MC_restore_snapshot(initial_state_liveness->snapshot);
@@ -483,7 +595,7 @@ void MC_ddfs(int search_cycle){
  
   XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d )", xbt_fifo_size(mc_stack_liveness), search_cycle);
  
-  mc_stats->visited_states++;
+  mc_stats->visited_pairs++;
 
   int value;
   mc_state_t next_graph_state = NULL;
@@ -498,7 +610,6 @@ void MC_ddfs(int search_cycle){
   mc_pair_t pair_succ;
 
   mc_pair_t pair_to_remove;
-  mc_acceptance_pair_t acceptance_pair_to_remove;
   
   if(xbt_fifo_size(mc_stack_liveness) < _sg_mc_max_depth){
 
@@ -583,7 +694,7 @@ void MC_ddfs(int search_cycle){
 
             if((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)){ 
           
-              if(is_reached_acceptance_pair(pair_succ->automaton_state)){
+              if(is_reached_acceptance_pair(pair_succ->num, pair_succ->automaton_state) != -1){
         
                 XBT_INFO("Next pair (depth = %d, %u interleave) already reached !", xbt_fifo_size(mc_stack_liveness) + 1, MC_state_interleave_size(pair_succ->graph_state));
 
@@ -598,7 +709,7 @@ void MC_ddfs(int search_cycle){
 
               }else{
 
-                if(is_visited_pair(pair_succ->automaton_state) != -1){
+                if(is_visited_pair(pair_succ->num, pair_succ->automaton_state) != -1){
 
                   XBT_DEBUG("Next pair already visited !");
                   break;
@@ -621,7 +732,7 @@ void MC_ddfs(int search_cycle){
 
             }else{
 
-              if(is_visited_pair(pair_succ->automaton_state) != -1){
+              if(is_visited_pair(pair_succ->num, pair_succ->automaton_state) != -1){
 
                 XBT_DEBUG("Next pair already visited !");
                 break;
@@ -639,7 +750,7 @@ void MC_ddfs(int search_cycle){
 
           }else{
 
-            if(is_visited_pair(pair_succ->automaton_state) != -1){
+            if(is_visited_pair(pair_succ->num, pair_succ->automaton_state) != -1){
 
               XBT_DEBUG("Next pair already visited !");
               break;
@@ -650,7 +761,7 @@ void MC_ddfs(int search_cycle){
 
                 XBT_DEBUG("Next pair (depth =%d) -> Acceptance pair (%s)", xbt_fifo_size(mc_stack_liveness) + 1, pair_succ->automaton_state->id);
       
-                set_acceptance_pair_reached(pair_succ->automaton_state); 
+                set_acceptance_pair_reached(pair_succ->num, pair_succ->automaton_state); 
 
                 search_cycle = 1;
 
@@ -734,7 +845,7 @@ void MC_ddfs(int search_cycle){
 
           if((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2)){ 
 
-            if(is_reached_acceptance_pair(pair_succ->automaton_state)){
+            if(is_reached_acceptance_pair(pair_succ->num, pair_succ->automaton_state) != -1){
            
               XBT_INFO("Next pair (depth = %d) already reached !", xbt_fifo_size(mc_stack_liveness) + 1);
         
@@ -749,7 +860,7 @@ void MC_ddfs(int search_cycle){
 
             }else{
 
-              if(is_visited_pair(pair_succ->automaton_state) != -1){
+              if(is_visited_pair(pair_succ->num, pair_succ->automaton_state) != -1){
                 
                 XBT_DEBUG("Next pair already visited !");
                 break;
@@ -772,7 +883,7 @@ void MC_ddfs(int search_cycle){
 
           }else{
             
-            if(is_visited_pair(pair_succ->automaton_state) != -1){
+            if(is_visited_pair(pair_succ->num, pair_succ->automaton_state) != -1){
               
               XBT_DEBUG("Next pair already visited !");
               break;
@@ -792,7 +903,7 @@ void MC_ddfs(int search_cycle){
 
         }else{
       
-          if(is_visited_pair(pair_succ->automaton_state) != -1){
+          if(is_visited_pair(pair_succ->num, pair_succ->automaton_state) != -1){
 
             XBT_DEBUG("Next pair already visited !");
             break;
@@ -801,7 +912,7 @@ void MC_ddfs(int search_cycle){
 
             if(((pair_succ->automaton_state->type == 1) || (pair_succ->automaton_state->type == 2))){
 
-              set_acceptance_pair_reached(pair_succ->automaton_state);
+              set_acceptance_pair_reached(pair_succ->num, pair_succ->automaton_state);
          
               search_cycle = 1;
 
@@ -849,9 +960,7 @@ void MC_ddfs(int search_cycle){
   xbt_fifo_remove(mc_stack_liveness, pair_to_remove);
   pair_to_remove = NULL;
   if((current_pair->automaton_state->type == 1) || (current_pair->automaton_state->type == 2)){
-    acceptance_pair_to_remove = xbt_dynar_pop_as(acceptance_pairs, mc_acceptance_pair_t);
-    acceptance_pair_free(acceptance_pair_to_remove);
-    acceptance_pair_to_remove = NULL;
+    remove_acceptance_pair(current_pair->num);
   }
   MC_UNSET_RAW_MEM;
 
