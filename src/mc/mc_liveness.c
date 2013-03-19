@@ -136,19 +136,14 @@ static void set_acceptance_pair_reached(xbt_automaton_state_t st){
     
 }
 
-static int is_visited_pair(xbt_automaton_state_t st){
-
-  if(_sg_mc_visited == 0)
-    return 0;
-
-  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-
-  MC_SET_RAW_MEM;
+static mc_visited_pair_t visited_pair_new(xbt_automaton_state_t as){
 
   mc_visited_pair_t new_pair = NULL;
   new_pair = xbt_new0(s_mc_visited_pair_t, 1);
-  new_pair->automaton_state = st;
+  new_pair->automaton_state = as;
   new_pair->prop_ato = xbt_dynar_new(sizeof(int), NULL);
+  new_pair->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+  new_pair->nb_processes = xbt_swag_size(simix_global->process_list);
   new_pair->system_state = MC_take_snapshot();  
   
   /* Get values of propositional symbols */
@@ -161,64 +156,164 @@ static int is_visited_pair(xbt_automaton_state_t st){
     res = f();
     xbt_dynar_push_as(new_pair->prop_ato, int, res);
   }
-  
+
+  return new_pair;
+
+}
+
+static int is_visited_pair(xbt_automaton_state_t as){
+
+  if(_sg_mc_visited == 0)
+    return -1;
+
+  int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
+
+  MC_SET_RAW_MEM;
+  mc_visited_pair_t new_pair = visited_pair_new(as);
   MC_UNSET_RAW_MEM;
-  
+
   if(xbt_dynar_is_empty(visited_pairs)){
 
     MC_SET_RAW_MEM;
-    /* New pair visited */
     xbt_dynar_push(visited_pairs, &new_pair); 
     MC_UNSET_RAW_MEM;
 
     if(raw_mem_set)
       MC_SET_RAW_MEM;
- 
-    return 0;
+
+    return -1;
 
   }else{
 
     MC_SET_RAW_MEM;
     
-    cursor = 0;
+    size_t current_bytes_used = new_pair->heap_bytes_used;
+    int current_nb_processes = new_pair->nb_processes;
+
+    unsigned int cursor = 0;
+    int previous_cursor = 0, next_cursor = 0;
+    int start = 0;
+    int end = xbt_dynar_length(visited_pairs) - 1;
+
     mc_visited_pair_t pair_test = NULL;
-     
-    xbt_dynar_foreach(visited_pairs, cursor, pair_test){
-      if(XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug))
-        XBT_DEBUG("****** Pair visited #%d ******", cursor + 1);
-      if(xbt_automaton_state_compare(pair_test->automaton_state, st) == 0){
-        if(xbt_automaton_propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
-          if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
-            if(raw_mem_set)
-              MC_SET_RAW_MEM;
-            else
-              MC_UNSET_RAW_MEM;
-            
-            return 1;
-          }   
-        }else{
-          XBT_DEBUG("Different values of propositional symbols");
+    size_t bytes_used_test;
+    int nb_processes_test;
+    int same_processes_and_bytes_not_found = 1;
+
+    while(start <= end && same_processes_and_bytes_not_found){
+      cursor = (start + end) / 2;
+      pair_test = (mc_visited_pair_t)xbt_dynar_get_as(visited_pairs, cursor, mc_visited_pair_t);
+      bytes_used_test = pair_test->heap_bytes_used;
+      nb_processes_test = pair_test->nb_processes;
+      if(nb_processes_test < current_nb_processes)
+        start = cursor + 1;
+      if(nb_processes_test > current_nb_processes)
+        end = cursor - 1; 
+      if(nb_processes_test == current_nb_processes){
+        if(bytes_used_test < current_bytes_used)
+          start = cursor + 1;
+        if(bytes_used_test > current_bytes_used)
+          end = cursor - 1;
+        if(bytes_used_test == current_bytes_used){
+          same_processes_and_bytes_not_found = 0;
+          if(xbt_automaton_state_compare(pair_test->automaton_state, as) == 0){
+            if(xbt_automaton_propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
+              if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
+                xbt_dynar_remove_at(visited_pairs, cursor, NULL);
+                xbt_dynar_insert_at(visited_pairs, cursor, &new_pair);
+                XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", new_pair->num, pair_test->num);
+                if(raw_mem_set)
+                  MC_SET_RAW_MEM;
+                else
+                  MC_UNSET_RAW_MEM;
+                return pair_test->num;
+              }
+            }
+          }
+          /* Search another pair with same number of bytes used in std_heap */
+          previous_cursor = cursor - 1;
+          while(previous_cursor >= 0){
+            pair_test = (mc_visited_pair_t)xbt_dynar_get_as(visited_pairs, previous_cursor, mc_visited_pair_t);
+            bytes_used_test = pair_test->system_state->heap_bytes_used;
+            if(bytes_used_test != current_bytes_used)
+              break;
+            if(xbt_automaton_state_compare(pair_test->automaton_state, as) == 0){
+              if(xbt_automaton_propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){  
+                if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
+                  xbt_dynar_remove_at(visited_pairs, previous_cursor, NULL);
+                  xbt_dynar_insert_at(visited_pairs, previous_cursor, &new_pair);
+                  XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", new_pair->num, pair_test->num);
+                  if(raw_mem_set)
+                    MC_SET_RAW_MEM;
+                  else
+                    MC_UNSET_RAW_MEM;
+                  return pair_test->num;
+                }
+              }
+            }
+            previous_cursor--;
+          }
+          next_cursor = cursor + 1;
+          while(next_cursor < xbt_dynar_length(visited_pairs)){
+            pair_test = (mc_visited_pair_t)xbt_dynar_get_as(visited_pairs, next_cursor, mc_visited_pair_t);
+            bytes_used_test = pair_test->system_state->heap_bytes_used;
+            if(bytes_used_test != current_bytes_used)
+              break;
+            if(xbt_automaton_state_compare(pair_test->automaton_state, as) == 0){
+              if(xbt_automaton_propositional_symbols_compare_value(pair_test->prop_ato, new_pair->prop_ato) == 0){
+                if(snapshot_compare(new_pair->system_state, pair_test->system_state) == 0){
+                  xbt_dynar_remove_at(visited_pairs, next_cursor, NULL);
+                  xbt_dynar_insert_at(visited_pairs, next_cursor, &new_pair);
+                  XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", new_pair->num, pair_test->num);
+                  if(raw_mem_set)
+                    MC_SET_RAW_MEM;
+                  else
+                    MC_UNSET_RAW_MEM;
+                  return pair_test->num;
+                }
+              }
+            }
+            next_cursor++;
+          }
         }
-      }else{
-        XBT_DEBUG("Different automaton state");
       }
     }
 
-    if(xbt_dynar_length(visited_pairs) == _sg_mc_visited){
-      xbt_dynar_remove_at(visited_pairs, 0, NULL);
+    pair_test = (mc_visited_pair_t)xbt_dynar_get_as(visited_pairs, cursor, mc_visited_pair_t);
+    bytes_used_test = pair_test->heap_bytes_used;
+
+    if(bytes_used_test < current_bytes_used)
+      xbt_dynar_insert_at(visited_pairs, cursor + 1, &new_pair);
+    else
+      xbt_dynar_insert_at(visited_pairs, cursor, &new_pair);
+
+    if(xbt_dynar_length(visited_pairs) > _sg_mc_visited){
+      int min = mc_stats->expanded_states;
+      unsigned int cursor2 = 0;
+      unsigned int index = 0;
+      xbt_dynar_foreach(visited_pairs, cursor2, pair_test){
+        if(pair_test->num < min){
+          index = cursor2;
+          min = pair_test->num;
+        }
+      }
+      xbt_dynar_remove_at(visited_pairs, index, NULL);
     }
 
-    /* New pair visited */
-    xbt_dynar_push(visited_pairs, &new_pair); 
+    /*cursor = 0;
+    xbt_dynar_foreach(visited_pairs, cursor, pair_test){
+      fprintf(stderr, "Visited pair %d, nb_processes %d and heap_bytes_used %zu\n", pair_test->num, pair_test->nb_processes, pair_test->heap_bytes_used);
+      }*/
     
     MC_UNSET_RAW_MEM;
 
     if(raw_mem_set)
       MC_SET_RAW_MEM;
     
-    return 0;
+    return -1;
     
   }
+ 
 }
 
 static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l){
@@ -419,7 +514,8 @@ void MC_ddfs(int search_cycle){
           xbt_free(req_str);
         }
 
-        MC_state_set_executed_request(current_pair->graph_state, req, value);   
+        MC_state_set_executed_request(current_pair->graph_state, req, value);  
+        mc_stats->executed_transitions++;
 
         /* Answer the request */
         SIMIX_simcall_pre(req, value);
@@ -502,7 +598,7 @@ void MC_ddfs(int search_cycle){
 
               }else{
 
-                if(is_visited_pair(pair_succ->automaton_state)){
+                if(is_visited_pair(pair_succ->automaton_state) != -1){
 
                   XBT_DEBUG("Next pair already visited !");
                   break;
@@ -525,7 +621,7 @@ void MC_ddfs(int search_cycle){
 
             }else{
 
-              if(is_visited_pair(pair_succ->automaton_state)){
+              if(is_visited_pair(pair_succ->automaton_state) != -1){
 
                 XBT_DEBUG("Next pair already visited !");
                 break;
@@ -543,7 +639,7 @@ void MC_ddfs(int search_cycle){
 
           }else{
 
-            if(is_visited_pair(pair_succ->automaton_state)){
+            if(is_visited_pair(pair_succ->automaton_state) != -1){
 
               XBT_DEBUG("Next pair already visited !");
               break;
@@ -586,6 +682,8 @@ void MC_ddfs(int search_cycle){
 
  
     }else{
+
+      mc_stats->executed_transitions++;
       
       XBT_DEBUG("No more request to execute in this state, search evolution in Büchi Automaton.");
 
@@ -651,7 +749,7 @@ void MC_ddfs(int search_cycle){
 
             }else{
 
-              if(is_visited_pair(pair_succ->automaton_state)){
+              if(is_visited_pair(pair_succ->automaton_state) != -1){
                 
                 XBT_DEBUG("Next pair already visited !");
                 break;
@@ -674,7 +772,7 @@ void MC_ddfs(int search_cycle){
 
           }else{
             
-            if(is_visited_pair(pair_succ->automaton_state)){
+            if(is_visited_pair(pair_succ->automaton_state) != -1){
               
               XBT_DEBUG("Next pair already visited !");
               break;
@@ -694,7 +792,7 @@ void MC_ddfs(int search_cycle){
 
         }else{
       
-          if(is_visited_pair(pair_succ->automaton_state)){
+          if(is_visited_pair(pair_succ->automaton_state) != -1){
 
             XBT_DEBUG("Next pair already visited !");
             break;

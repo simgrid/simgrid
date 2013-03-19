@@ -265,6 +265,8 @@ void MC_dpor(void);
 
 typedef struct s_mc_visited_state{
   mc_snapshot_t system_state;
+  size_t heap_bytes_used;
+  int nb_processes;
   int num;
 }s_mc_visited_state_t, *mc_visited_state_t;
 
@@ -297,6 +299,8 @@ typedef struct s_mc_visited_pair{
   xbt_dynar_t prop_ato;
   mc_snapshot_t system_state;
   int num;
+  size_t heap_bytes_used;
+  int nb_processes;
 }s_mc_visited_pair_t, *mc_visited_pair_t;
 
 mc_pair_t MC_pair_new(mc_state_t sg, xbt_automaton_state_t st, int r);

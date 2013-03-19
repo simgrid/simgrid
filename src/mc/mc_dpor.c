@@ -25,6 +25,22 @@ static void visited_state_free_voidp(void *s){
   visited_state_free((mc_visited_state_t) * (void **) s);
 }
 
+static mc_visited_state_t visited_state_new(){
+
+  mc_visited_state_t new_state = NULL;
+  new_state = xbt_new0(s_mc_visited_state_t, 1);
+  new_state->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
+  new_state->nb_processes = xbt_swag_size(simix_global->process_list);
+  new_state->system_state = MC_take_snapshot();
+  new_state->num = mc_stats->expanded_states - 1;
+
+  return new_state;
+  
+}
+
+/* Dichotomic search in visited_states dynar. 
+ * States are ordered by the number of processes then the number of bytes used in std_heap */
+
 static int is_visited_state(){
 
   if(_sg_mc_visited == 0)
@@ -33,12 +49,7 @@ static int is_visited_state(){
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
-
-  mc_visited_state_t new_state = NULL;
-  new_state = xbt_new0(s_mc_visited_state_t, 1);
-  new_state->system_state = MC_take_snapshot();
-  new_state->num = mc_stats->expanded_states;
-
+  mc_visited_state_t new_state = visited_state_new();
   MC_UNSET_RAW_MEM;
   
   if(xbt_dynar_is_empty(visited_states)){
@@ -56,7 +67,8 @@ static int is_visited_state(){
 
     MC_SET_RAW_MEM;
     
-    size_t current_bytes_used = new_state->system_state->heap_bytes_used;
+    size_t current_bytes_used = new_state->heap_bytes_used;
+    int current_nb_processes = new_state->nb_processes;
 
     unsigned int cursor = 0;
     int previous_cursor = 0, next_cursor = 0;
@@ -65,71 +77,79 @@ static int is_visited_state(){
 
     mc_visited_state_t state_test = NULL;
     size_t bytes_used_test;
-    int same_bytes_not_found = 1;
+    int nb_processes_test;
+    int same_processes_and_bytes_not_found = 1;
 
-    while(start <= end && same_bytes_not_found){
+    while(start <= end && same_processes_and_bytes_not_found){
       cursor = (start + end) / 2;
       state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
-      bytes_used_test = state_test->system_state->heap_bytes_used;
-      if(bytes_used_test < current_bytes_used)
+      bytes_used_test = state_test->heap_bytes_used;
+      nb_processes_test = state_test->nb_processes;
+      if(nb_processes_test < current_nb_processes)
         start = cursor + 1;
-      if(bytes_used_test > current_bytes_used)
+      if(nb_processes_test > current_nb_processes)
         end = cursor - 1; 
-      if(bytes_used_test == current_bytes_used){
-        same_bytes_not_found = 0;
-        if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-          xbt_dynar_remove_at(visited_states, cursor, NULL);
-          xbt_dynar_insert_at(visited_states, cursor, &new_state);
-          XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
-          if(raw_mem_set)
-            MC_SET_RAW_MEM;
-          else
-            MC_UNSET_RAW_MEM;
-          return state_test->num;
-        }else{
-          /* Search another state with same number of bytes used */
-          previous_cursor = cursor - 1;
-          while(previous_cursor >= 0){
-            state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, previous_cursor, mc_visited_state_t);
-            bytes_used_test = state_test->system_state->heap_bytes_used;
-            if(bytes_used_test != current_bytes_used)
-              break;
-            if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-              xbt_dynar_remove_at(visited_states, previous_cursor, NULL);
-              xbt_dynar_insert_at(visited_states, previous_cursor, &new_state);
-              XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
-              if(raw_mem_set)
-                MC_SET_RAW_MEM;
-              else
-                MC_UNSET_RAW_MEM;
-              return state_test->num;
+      if(nb_processes_test == current_nb_processes){
+        if(bytes_used_test < current_bytes_used)
+          start = cursor + 1;
+        if(bytes_used_test > current_bytes_used)
+          end = cursor - 1;
+        if(bytes_used_test == current_bytes_used){
+          same_processes_and_bytes_not_found = 0;
+          if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
+            xbt_dynar_remove_at(visited_states, cursor, NULL);
+            xbt_dynar_insert_at(visited_states, cursor, &new_state);
+            XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+            if(raw_mem_set)
+              MC_SET_RAW_MEM;
+            else
+              MC_UNSET_RAW_MEM;
+            return state_test->num;
+          }else{
+            /* Search another state with same number of bytes used in std_heap */
+            previous_cursor = cursor - 1;
+            while(previous_cursor >= 0){
+              state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, previous_cursor, mc_visited_state_t);
+              bytes_used_test = state_test->system_state->heap_bytes_used;
+              if(bytes_used_test != current_bytes_used)
+                break;
+              if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
+                xbt_dynar_remove_at(visited_states, previous_cursor, NULL);
+                xbt_dynar_insert_at(visited_states, previous_cursor, &new_state);
+                XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                if(raw_mem_set)
+                  MC_SET_RAW_MEM;
+                else
+                  MC_UNSET_RAW_MEM;
+                return state_test->num;
+              }
+              previous_cursor--;
             }
-            previous_cursor--;
-          }
-          next_cursor = cursor + 1;
-          while(next_cursor < xbt_dynar_length(visited_states)){
-            state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, next_cursor, mc_visited_state_t);
-            bytes_used_test = state_test->system_state->heap_bytes_used;
-            if(bytes_used_test != current_bytes_used)
-              break;
-            if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
-              xbt_dynar_remove_at(visited_states, next_cursor, NULL);
-              xbt_dynar_insert_at(visited_states, next_cursor, &new_state);
-              XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
-              if(raw_mem_set)
-                MC_SET_RAW_MEM;
-              else
-                MC_UNSET_RAW_MEM;
-              return state_test->num;
+            next_cursor = cursor + 1;
+            while(next_cursor < xbt_dynar_length(visited_states)){
+              state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, next_cursor, mc_visited_state_t);
+              bytes_used_test = state_test->system_state->heap_bytes_used;
+              if(bytes_used_test != current_bytes_used)
+                break;
+              if(snapshot_compare(new_state->system_state, state_test->system_state) == 0){
+                xbt_dynar_remove_at(visited_states, next_cursor, NULL);
+                xbt_dynar_insert_at(visited_states, next_cursor, &new_state);
+                XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
+                if(raw_mem_set)
+                  MC_SET_RAW_MEM;
+                else
+                  MC_UNSET_RAW_MEM;
+                return state_test->num;
+              }
+              next_cursor++;
             }
-            next_cursor++;
-          }
-        }   
+          }   
+        }
       }
     }
 
     state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
-    bytes_used_test = state_test->system_state->heap_bytes_used;
+    bytes_used_test = state_test->heap_bytes_used;
 
     if(bytes_used_test < current_bytes_used)
       xbt_dynar_insert_at(visited_states, cursor + 1, &new_state);
