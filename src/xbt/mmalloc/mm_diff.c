@@ -774,13 +774,19 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
     }else if((addr_pointed1 > s_heap) && ((char *)addr_pointed1 < (char *)s_heap + STD_HEAP_SIZE) 
            && (addr_pointed2 > s_heap) && ((char *)addr_pointed2 < (char *)s_heap + STD_HEAP_SIZE)){
       res_compare = compare_area(addr_pointed1, addr_pointed2, previous);
-      if(res_compare != 0)
+      if(res_compare != 0){
+        if(match_pairs)
+          xbt_dynar_free(&previous);
         return res_compare;
+      }
     }else{
       j=0;
       while(j<sizeof(void*) && (i + j) < size){
-        if(memcmp(((char *)area1_to_compare) + i + j, ((char *)area2_to_compare) + i + j , 1) != 0)
+        if(memcmp(((char *)area1_to_compare) + i + j, ((char *)area2_to_compare) + i + j , 1) != 0){
+          if(match_pairs)
+            xbt_dynar_free(&previous);
           return 1;
+        }
         j++;
       }
     }
@@ -790,6 +796,7 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
 
   if(match_pairs){
     match_equals(previous);
+    xbt_dynar_free(&previous);
   }
 
   return 0;
