@@ -42,4 +42,3 @@ $ ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%
 > [  0.000000] (1:server@HostA) Expanded states = 36
 > [  0.000000] (1:server@HostA) Visited states = 75
 > [  0.000000] (1:server@HostA) Executed transitions = 70
-> [  0.000000] (1:server@HostA) Expanded / Visited = 2.083333
