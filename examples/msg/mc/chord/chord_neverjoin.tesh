@@ -2,7 +2,7 @@
 
 ! expect signal SIGABRT
 ! timeout 200
-$ ${bindir:=.}/chord_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontext 
+$ ${bindir:=.}/chord_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontext
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check' to '1'
 > [0.000000] [mc_global/INFO] Check the liveness property promela_chord_liveness
 > [Jean_Yves:node:(1) 0.000000] [chord_liveness/INFO] Joining the ring with id 14, knowing node 1
@@ -25,6 +25,7 @@ $ ${bindir:=.}/chord_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontex
 > [0.000000] [mc_global/INFO] [(1)node] Wait (comm=(verbose only) [(3)node -> (1)node])
 > [0.000000] [mc_global/INFO] [(1)node] iRecv (dst=node, buff=(verbose only), size=(verbose only))
 > [0.000000] [mc_global/INFO] [(1)node] Test FALSE (comm=(verbose only))
-> [0.000000] [mc_global/INFO] Expanded pairs = 14
-> [0.000000] [mc_global/INFO] Visited pairs = 10
-> [0.000000] [mc_global/INFO] Expanded / Visited = 0.714286
+> [0.000000] [mc_global/INFO] Expanded states = 11
+> [0.000000] [mc_global/INFO] Visited states = 10
+> [0.000000] [mc_global/INFO] Executed transitions = 10
+> [0.000000] [mc_global/INFO] Expanded / Visited = 0.909091
