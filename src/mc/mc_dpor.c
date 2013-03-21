@@ -11,10 +11,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dpor, mc,
 xbt_dynar_t visited_states;
 xbt_dict_t first_enabled_state;
 
-static void dict_data_free(void *d){
-  xbt_free((char *)d);
-}
-
 static void visited_state_free(mc_visited_state_t state){
   if(state){
     MC_free_snapshot(state->system_state);
@@ -197,7 +193,7 @@ void MC_dpor_init()
   initial_state = MC_state_new();
   visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
 
-  first_enabled_state = xbt_dict_new_homogeneous(&dict_data_free);
+  first_enabled_state = xbt_dict_new_homogeneous(&xbt_free_f);
 
   MC_UNSET_RAW_MEM;
 
