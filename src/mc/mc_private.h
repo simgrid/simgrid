@@ -261,6 +261,7 @@ typedef enum {
 extern e_mc_reduce_t mc_reduce_kind;
 extern mc_global_t initial_state_safety;
 extern xbt_fifo_t mc_stack_safety;
+extern xbt_dict_t first_enabled_state;
 
 void MC_dpor_init(void);
 void MC_dpor(void);
