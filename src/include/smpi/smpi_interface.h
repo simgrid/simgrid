@@ -26,13 +26,13 @@ typedef struct mpi_coll_description {
  *  \brief The list of all available alltoall collectives
  */
 XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_alltoall_description[];
-int (*mpi_coll_alltoall_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
+XBT_PUBLIC_DATA(int (*mpi_coll_alltoall_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm));
 
 /** \ingroup MPI allgather
  *  \brief The list of all available allgather collectives
  */
 XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_allgather_description[];
-int (*mpi_coll_allgather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
+XBT_PUBLIC_DATA(int (*mpi_coll_allgather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm));
 
 XBT_PUBLIC(void) coll_help(const char *category, s_mpi_coll_description_t * table);
 XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t * table,

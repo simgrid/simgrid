@@ -24,7 +24,7 @@
  * Auther: Ahmad Faraj
 ****************************************************************************/
 
-int alltoall_check_is_3dmesh(int num, int *i, int *j, int *k)
+static int alltoall_check_is_3dmesh(int num, int *i, int *j, int *k)
 {
   int x, max = num / 3;
   x = cbrt(num);
@@ -157,8 +157,8 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
     send_offset = (rank * block_size) + (i * block_size * num_procs);
     recv_offset = (my_z_base * block_size) + (i * block_size);
     MPI_Sendrecv(tmp_buff1 + send_offset, send_count, send_type, rank, tag,
-                 recv_buff + recv_offset, recv_count, recv_type, rank, tag,
-                 comm, &status);
+                 (char *)recv_buff + recv_offset, recv_count, recv_type,
+                 rank, tag, comm, &status);
   }
 
   for (i = 1; i < Z; i++) {
@@ -167,7 +167,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
 
     recv_offset = (src_z_base * block_size);
 
-    MPI_Irecv(recv_buff + recv_offset, recv_count * two_dsize, recv_type,
+    MPI_Irecv((char *)recv_buff + recv_offset, recv_count * two_dsize, recv_type,
               src, tag, comm, req_ptr++);
   }
 

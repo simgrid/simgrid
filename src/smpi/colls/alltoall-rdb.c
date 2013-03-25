@@ -34,7 +34,7 @@ int smpi_coll_tuned_alltoall_rdb(void *send_buff, int send_count,
   int dst_tree_root, rank_tree_root, send_offset, recv_offset;
   int rank, num_procs, j, k, dst, curr_size, max_size;
   int last_recv_count, tmp_mask, tree_root, num_procs_completed;
-  int tag = 1, mask = 1, success = 1, failure = 0, c = 0, i = 0;
+  int tag = 1, mask = 1, success = 1, failure = 0, i = 0;
 
   char *tmp_buff;
   char *send_ptr = (char *) send_buff;

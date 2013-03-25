@@ -27,7 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_colls, smpi,
  * Auther: Ahmad Faraj
 
 ****************************************************************************/
-int alltoall_check_is_2dmesh(int num, int *i, int *j)
+static int alltoall_check_is_2dmesh(int num, int *i, int *j)
 {
   int x, max = num / 2;
   x = sqrt(num);
@@ -62,8 +62,8 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
 
   char *tmp_buff1, *tmp_buff2;
   int i, j, src, dst, rank, num_procs, count, num_reqs;
-  int rows, cols, my_row, my_col, X, Y, send_offset, recv_offset;
-  int two_dsize, my_row_base, my_col_base, src_row_base, block_size;
+  int X, Y, send_offset, recv_offset;
+  int my_row_base, my_col_base, src_row_base, block_size;
   int tag = 1, failure = 0, success = 1;
 
   MPI_Comm_rank(comm, &rank);
@@ -72,8 +72,6 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
 
   if (!alltoall_check_is_2dmesh(num_procs, &X, &Y))
     return failure;
-
-  two_dsize = X * Y;
 
   my_row_base = (rank / Y) * Y;
   my_col_base = rank % Y;
@@ -139,14 +137,15 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
     recv_offset = (my_row_base * block_size) + (i * block_size);
 
     if (i + my_row_base == rank)
-      MPI_Sendrecv(send_buff + recv_offset, send_count, send_type,
-                   rank, tag, recv_buff + recv_offset, recv_count,
-                   recv_type, rank, tag, comm, &s);
+      MPI_Sendrecv((char *)send_buff + recv_offset, send_count, send_type,
+                   rank, tag,
+                   (char*)recv_buff + recv_offset, recv_count, recv_type,
+                   rank, tag, comm, &s);
 
     else
       MPI_Sendrecv(tmp_buff1 + send_offset, send_count, send_type,
                    rank, tag,
-                   recv_buff + recv_offset, recv_count, recv_type,
+                   (char *)recv_buff + recv_offset, recv_count, recv_type,
                    rank, tag, comm, &s);
   }
 
@@ -157,7 +156,7 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       continue;
     src_row_base = (src / Y) * Y;
 
-    MPI_Irecv(recv_buff + src_row_base * block_size, recv_count * Y,
+    MPI_Irecv((char *)recv_buff + src_row_base * block_size, recv_count * Y,
               recv_type, src, tag, comm, req_ptr++);
   }
 
@@ -171,7 +170,7 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       send_offset = (dst + j * num_procs) * block_size;
 
       if (j + my_row_base == rank)
-        MPI_Sendrecv(send_buff + dst * block_size, send_count, send_type,
+        MPI_Sendrecv((char *)send_buff + dst * block_size, send_count, send_type,
                      rank, tag,
                      tmp_buff2 + recv_offset, recv_count, recv_type,
                      rank, tag, comm, &s);

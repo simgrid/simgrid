@@ -57,8 +57,10 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
       free(statuses);
       return 0;
     }
-  } else
-    req = 0;
+  } else {
+    req = NULL;
+    statuses = NULL;
+  }
 
   /* simple optimization */
 

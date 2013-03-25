@@ -117,6 +117,9 @@ int find_coll_description(s_mpi_coll_description_t * table,
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
                                 "Logging specific to SMPI (coll)");
 
+int (*mpi_coll_alltoall_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
+int (*mpi_coll_allgather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
+
 struct s_proc_tree {
   int PROCTREE_A;
   int numChildren;
