@@ -216,6 +216,9 @@ void MC_init(){
   MC_ignore_stack("next_context", "smx_ctx_sysv_suspend_serial");
   MC_ignore_stack("i", "smx_ctx_sysv_suspend_serial");
 
+  /* Ignore local variable about time used for tracing */
+  MC_ignore_stack("start_time", "*"); 
+
   MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
   MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
   MC_ignore_data_bss(&mc_time, sizeof(mc_time));
