@@ -657,6 +657,7 @@ set(DOC_SOURCES
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
   doc/doxygen/module-surf.doc
+  doc/doxygen/module-smpi.doc
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
   doc/doxygen/modules.doc
