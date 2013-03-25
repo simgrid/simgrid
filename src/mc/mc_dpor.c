@@ -254,7 +254,7 @@ void MC_dpor(void)
   xbt_fifo_item_t item = NULL;
   int pos;
   int visited_state;
-  int max_depth_reached = 0;
+  int enabled = 0, max_depth_reached = 0;
 
   while (xbt_fifo_size(mc_stack_safety) > 0) {
 
