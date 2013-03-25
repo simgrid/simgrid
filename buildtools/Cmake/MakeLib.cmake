@@ -98,6 +98,7 @@ if(HAVE_MC)
   # The availability of libunwind was checked in CompleteInFiles.cmake
   #   (that includes FindLibunwind.cmake), so simply load it now.
   
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind")
   # This supposes that the host machine is either an AMD or a X86.
   # This is deeply wrong, and should be fixed by manually loading -lunwind-PLAT (FIXME)
   if(PROCESSOR_x86_64)

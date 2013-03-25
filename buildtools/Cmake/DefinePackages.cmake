@@ -35,6 +35,7 @@ set(EXTRA_DIST
   src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
+  src/smpi/colls/colls.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_ti_private.h
@@ -107,6 +108,19 @@ set(SMPI_SRC
   src/smpi/smpi_mpi_dt.c
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
+  src/smpi/colls/alltoall-2dmesh.c
+  src/smpi/colls/alltoall-3dmesh.c
+  #  src/smpi/colls/alltoall-bruck.c
+  src/smpi/colls/alltoall-pair.c
+  src/smpi/colls/alltoall-pair-light-barrier.c
+  src/smpi/colls/alltoall-pair-mpi-barrier.c
+  src/smpi/colls/alltoall-pair-one-barrier.c
+  src/smpi/colls/alltoall-rdb.c
+  src/smpi/colls/alltoall-ring.c
+  src/smpi/colls/alltoall-ring-light-barrier.c
+  src/smpi/colls/alltoall-ring-mpi-barrier.c
+  src/smpi/colls/alltoall-ring-one-barrier.c
+  src/smpi/colls/alltoall-simple.c
   )
 
 if(SMPI_F2C)
@@ -539,6 +553,7 @@ set(simgrid_sources
   ${SURF_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
+  ${SMPI_SRC}
   )
 
 if(${HAVE_JEDULE})

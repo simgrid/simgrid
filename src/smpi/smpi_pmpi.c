@@ -1917,7 +1917,7 @@ int PMPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                  void *recvbuf, int recvcount, MPI_Datatype recvtype,
                  MPI_Comm comm)
 {
-  int retval, size, sendsize;
+  int retval;
 
   smpi_bench_end();
 #ifdef HAVE_TRACING
@@ -1931,24 +1931,7 @@ int PMPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
              || recvtype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
-    size = smpi_comm_size(comm);
-    sendsize = smpi_datatype_size(sendtype) * sendcount;
-    if (sendsize < 200 && size > 12) {
-      retval =
-          smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, sendtype,
-                                         recvbuf, recvcount, recvtype,
-                                         comm);
-    } else if (sendsize < 3000) {
-      retval =
-          smpi_coll_tuned_alltoall_basic_linear(sendbuf, sendcount,
-                                                sendtype, recvbuf,
-                                                recvcount, recvtype, comm);
-    } else {
-      retval =
-          smpi_coll_tuned_alltoall_pairwise(sendbuf, sendcount, sendtype,
-                                            recvbuf, recvcount, recvtype,
-                                            comm);
-    }
+    retval = mpi_coll_alltoall_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
   }
 #ifdef HAVE_TRACING
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);

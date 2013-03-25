@@ -140,7 +140,9 @@ void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process)
 typedef struct mc_stats {
   unsigned long state_size;
   unsigned long visited_states;
+  unsigned long visited_pairs;
   unsigned long expanded_states;
+  unsigned long expanded_pairs;
   unsigned long executed_transitions;
 } s_mc_stats_t, *mc_stats_t;
 
@@ -259,6 +261,7 @@ typedef enum {
 extern e_mc_reduce_t mc_reduce_kind;
 extern mc_global_t initial_state_safety;
 extern xbt_fifo_t mc_stack_safety;
+extern xbt_dict_t first_enabled_state;
 
 void MC_dpor_init(void);
 void MC_dpor(void);
@@ -285,6 +288,7 @@ typedef struct s_mc_pair{
   mc_state_t graph_state;
   xbt_automaton_state_t automaton_state;
   int requests;
+  int num;
 }s_mc_pair_t, *mc_pair_t;
 
 typedef struct s_mc_acceptance_pair{
@@ -292,6 +296,8 @@ typedef struct s_mc_acceptance_pair{
   xbt_automaton_state_t automaton_state;
   xbt_dynar_t prop_ato;
   mc_snapshot_t system_state;
+  size_t heap_bytes_used;
+  int nb_processes;
 }s_mc_acceptance_pair_t, *mc_acceptance_pair_t;
 
 typedef struct s_mc_visited_pair{

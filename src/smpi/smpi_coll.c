@@ -11,6 +11,108 @@
 #include <assert.h>
 
 #include "private.h"
+#include "colls/colls.h"
+
+s_mpi_coll_description_t mpi_coll_alltoall_description[] = {
+  {"ompi",
+   "Ompi alltoall default collective",
+   smpi_coll_tuned_alltoall_ompi},
+
+  {"2dmesh",
+   "Alltoall 2dmesh collective",
+   smpi_coll_tuned_alltoall_2dmesh},
+  {"3dmesh",
+   "Alltoall 3dmesh collective",
+   smpi_coll_tuned_alltoall_3dmesh},
+  /*{"bruck",
+   "Alltoall Bruck collective",
+   smpi_coll_tuned_alltoall_bruck},*/
+  {"pair",
+   "Alltoall pair collective",
+   smpi_coll_tuned_alltoall_pair},
+  {"pair_light_barrier",
+   "Alltoall pair_light_barrier collective",
+   smpi_coll_tuned_alltoall_pair_light_barrier},
+  {"pair_mpi_barrier",
+   "Alltoall pair_mpi_barrier collective",
+   smpi_coll_tuned_alltoall_pair_mpi_barrier},
+  {"rdb",
+   "Alltoall rdb collective",
+   smpi_coll_tuned_alltoall_rdb},
+  {"ring",
+   "Alltoall ring collective",
+   smpi_coll_tuned_alltoall_ring},
+  {"ring_light_barrier",
+   "Alltoall ring_light_barrier collective",
+   smpi_coll_tuned_alltoall_ring_light_barrier},
+  {"ring_light_barrier",
+   "Alltoall ring_light_barrier collective",
+   smpi_coll_tuned_alltoall_ring_light_barrier},
+  {"ring_mpi_barrier",
+   "Alltoall ring_mpi_barrier collective",
+   smpi_coll_tuned_alltoall_ring_mpi_barrier},
+  {"ring_one_barrier",
+   "Alltoall ring_one_barrier collective",
+   smpi_coll_tuned_alltoall_ring_one_barrier},
+  {"simple",
+   "Alltoall simple collective",
+   smpi_coll_tuned_alltoall_simple},
+
+  {"bruck",
+   "Alltoall Bruck (SG) collective",
+   smpi_coll_tuned_alltoall_bruck},
+  {"basic_linear",
+   "Alltoall basic linear (SG) collective",
+   smpi_coll_tuned_alltoall_basic_linear},
+  {"pairwise",
+   "Alltoall pairwise (SG) collective",
+   smpi_coll_tuned_alltoall_pairwise},
+
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+s_mpi_coll_description_t mpi_coll_allgather_description[] = {
+  {"default",
+   "allgather default collective",
+   smpi_mpi_gather},
+
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
+
+/** Displays the long description of all registered models, and quit */
+void coll_help(const char *category, s_mpi_coll_description_t * table)
+{
+  int i;
+  printf("Long description of the %s models accepted by this simulator:\n",
+         category);
+  for (i = 0; table[i].name; i++)
+    printf("  %s: %s\n", table[i].name, table[i].description);
+}
+
+int find_coll_description(s_mpi_coll_description_t * table,
+                           const char *name)
+{
+  int i;
+  char *name_list = NULL;
+
+  for (i = 0; table[i].name; i++)
+    if (!strcmp(name, table[i].name)) {
+      return i;
+    }
+  name_list = strdup(table[0].name);
+  for (i = 1; table[i].name; i++) {
+    name_list =
+        xbt_realloc(name_list,
+                    strlen(name_list) + strlen(table[i].name) + 3);
+    strcat(name_list, ", ");
+    strcat(name_list, table[i].name);
+  }
+  xbt_die("Model '%s' is invalid! Valid models are: %s.", name, name_list);
+  return -1;
+}
+
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
                                 "Logging specific to SMPI (coll)");
@@ -192,6 +294,32 @@ void nary_tree_barrier(MPI_Comm comm, int arity)
   free_tree(tree);
 }
 
+int smpi_coll_tuned_alltoall_ompi(void *sendbuf, int sendcount,
+                                   MPI_Datatype sendtype, void *recvbuf,
+                                   int recvcount, MPI_Datatype recvtype,
+                                   MPI_Comm comm)
+{
+  int size, sendsize;	
+  size = smpi_comm_size(comm);	
+  sendsize = smpi_datatype_size(sendtype) * sendcount;	
+  if (sendsize < 200 && size > 12) {
+    return
+        smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, sendtype,
+                                       recvbuf, recvcount, recvtype,
+                                       comm);
+  } else if (sendsize < 3000) {
+    return
+        smpi_coll_tuned_alltoall_basic_linear(sendbuf, sendcount,
+                                              sendtype, recvbuf,
+                                              recvcount, recvtype, comm);
+  } else {
+    return
+        smpi_coll_tuned_alltoall_pairwise(sendbuf, sendcount, sendtype,
+                                          recvbuf, recvcount, recvtype,
+                                          comm);
+  }
+}
+
 /**
  * Alltoall Bruck
  *
@@ -261,7 +389,7 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
 }
 
 /**
- * Alltoall basic_linear
+ * Alltoall basic_linear (STARMPI:alltoall-simple)
  **/
 int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
                                           MPI_Datatype sendtype,
