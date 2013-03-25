@@ -16,18 +16,16 @@ otherwise increase their scalability (see @ref SMPI_adapting).
 SMPI is now considered as stable and you can use it in production. You
 may probably want to read the scientific publications that detail the
 models used and their limits, but this should not be absolutely
-necessary.
-
-If you already fluently write and use MPI applications, SMPI should
-sound very familiar to you. Use smpicc instead of mpicc, and smpirun
-instead of mpirun. Some more information are given below on this page.
+necessary. If you already fluently write and use MPI applications,
+SMPI should sound very familiar to you. Use smpicc instead of mpicc,
+and smpirun instead of mpirun (see below for more details).
 
 Of course, if you don't know what MPI is, the documentation of SMPI
 will seem a bit terse to you. You should pick up a good MPI tutorial
-on the Internet (or a course in your university) and come back to SMPI
-once you know a bit more about MPI. Alternatively, you may want to
-turn to the other SimGrid interface such as the \ref MSG_API
-environment, or the \ref SD_API one.
+on the Internet (or a course in your favorite university) and come
+back to SMPI once you know a bit more about MPI. Alternatively, you
+may want to turn to the other SimGrid interfaces such as the 
+\ref MSG_API environment, or the \ref SD_API one.
 
 \section SMPI_what What can run within SMPI?
 

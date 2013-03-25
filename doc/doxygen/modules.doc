@@ -2,19 +2,6 @@
 @defgroup MSG_API      MSG
 @brief Simple programming environment
 
-MSG was the first distributed programming environment provided within
-SimGrid. While almost realistic, it remains quite simple
-(simplistic?).
-
-@section MSG_who Who should use this (and who shouldn't)
-
-You should use this module if you want to study some heuristics for a
-given problem you don't really want to implement. If you want to use
-DAGs, have a look at the \ref SD_API programming environment. If you
-want to study an existing MPI program, have a look at the \ref
-SMPI_API one. If none of those programming environments fits your
-needs, you may consider implementing your own directly on top of 
-\ref SURF_API (but you probably want to contact us before). 
 */
 
 /** 
