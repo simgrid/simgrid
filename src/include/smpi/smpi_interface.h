@@ -1,3 +1,7 @@
+#ifndef _SMPI_INTERFACE_H
+#define _SMPI_INTERFACE_H
+#include "smpi/smpi.h"
+
 /********** Tracing **********/
 /* from smpi_instr.c */
 void TRACE_smpi_alloc(void);
@@ -8,3 +12,30 @@ void TRACE_smpi_send(int rank, int src, int dst);
 void TRACE_smpi_recv(int rank, int src, int dst);
 void TRACE_smpi_init(int rank);
 void TRACE_smpi_finalize(int rank);
+
+/** \brief MPI collective description
+ */
+
+typedef struct mpi_coll_description {
+  const char *name;
+  const char *description;
+  void* coll;
+} s_mpi_coll_description_t, *mpi_coll_description_t;
+
+/** \ingroup MPI alltoallcollectives
+ *  \brief The list of all available alltoall collectives
+ */
+XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_alltoall_description[];
+int (*mpi_coll_alltoall_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
+
+/** \ingroup MPI allgather
+ *  \brief The list of all available allgather collectives
+ */
+XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_allgather_description[];
+int (*mpi_coll_allgather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
+
+XBT_PUBLIC(void) coll_help(const char *category, s_mpi_coll_description_t * table);
+XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t * table,
+                           const char *name);
+
+#endif                          /* _SMPI_INTERFAC_H */

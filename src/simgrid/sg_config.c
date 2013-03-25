@@ -226,6 +226,35 @@ static void _sg_cfg_cb__weight_S(const char *name, int pos)
   sg_weight_S_parameter = xbt_cfg_get_double(_sg_cfg_set, name);
 }
 
+/* callback of the mpi collectives */
+static void _sg_cfg_cb__coll(char *category,
+		             s_mpi_coll_description_t * table,
+		             const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert(_sg_init_status == 1,
+              "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_sg_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    coll_help(category, table);
+    exit(0);
+  }
+
+  /* New Module missing */
+  find_coll_description(table, val);
+}
+static void _sg_cfg_cb__coll_alltoall(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("alltoall", mpi_coll_alltoall_description, name, pos);  
+}
+static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
+  _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
+}
+
+
 /* callback of the inclusion path */
 static void _sg_cfg_cb__surf_path(const char *name, int pos)
 {
@@ -711,7 +740,17 @@ void sg_config_init(int *argc, char **argv)
                      NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/or", "1:0:0:0:0");
 
+    default_value = xbt_strdup("ompi");    
+    xbt_cfg_register(&_sg_cfg_set, "smpi/alltoall",
+		     "Which collective to use for alltoall",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoall,
+		     NULL);
 
+    default_value = xbt_strdup("default");    
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
+		     "Which collective to use for allgather",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgather,
+		     NULL);
     //END SMPI
 
 

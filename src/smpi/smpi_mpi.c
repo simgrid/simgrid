@@ -13,6 +13,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
 
 int MPI_Init(int *argc, char ***argv)
 {
+  int alltoall_id = find_coll_description(mpi_coll_alltoall_description,
+                                          sg_cfg_get_string("smpi/alltoall"));
+  mpi_coll_alltoall_fun = (int (*)(void *, int, MPI_Datatype,
+			           void*, int, MPI_Datatype, MPI_Comm))
+	                  mpi_coll_alltoall_description[alltoall_id].coll;
+
+  int allgather_id = find_coll_description(mpi_coll_allgather_description,
+                                           sg_cfg_get_string("smpi/allgather"));
+  mpi_coll_allgather_fun = (int (*)(void *, int, MPI_Datatype,
+		                    void*, int, MPI_Datatype, MPI_Comm))
+	                   mpi_coll_allgather_description[allgather_id].coll;
+
   return PMPI_Init(argc, argv);
 }
 
