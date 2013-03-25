@@ -248,9 +248,7 @@ public class Task {
      * @throws HostFailureException
      * @throws TimeoutException
 	 */
-	public void sendBounded(String alias, double timeout, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
-              sendBounded(alias,timeout,maxrate);
-        }
+	public native void sendBounded(String alias, double timeout, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException;
 
 
 	/**
