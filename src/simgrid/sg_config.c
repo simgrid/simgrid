@@ -227,7 +227,7 @@ static void _sg_cfg_cb__weight_S(const char *name, int pos)
 }
 
 /* callback of the mpi collectives */
-static void _sg_cfg_cb__coll(char *category,
+static void _sg_cfg_cb__coll(const char *category,
 		             s_mpi_coll_description_t * table,
 		             const char *name, int pos)
 {

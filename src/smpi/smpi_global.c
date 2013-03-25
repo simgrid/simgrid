@@ -339,6 +339,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   XBT_LOG_CONNECT(smpi_mpi_dt);
   XBT_LOG_CONNECT(smpi_pmpi);
   XBT_LOG_CONNECT(smpi_replay);
+  XBT_LOG_CONNECT(smpi_colls);
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&argc, argv);
