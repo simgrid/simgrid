@@ -53,8 +53,7 @@ static int alltoall_check_is_2dmesh(int num, int *i, int *j)
 int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
                                     MPI_Datatype send_type,
                                     void *recv_buff, int recv_count,
-                                    MPI_Datatype recv_type,
-                                    MPI_Comm comm)
+                                    MPI_Datatype recv_type, MPI_Comm comm)
 {
   MPI_Status *statuses, s;
   MPI_Request *reqs, *req_ptr;;
@@ -137,15 +136,15 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
     recv_offset = (my_row_base * block_size) + (i * block_size);
 
     if (i + my_row_base == rank)
-      MPI_Sendrecv((char *)send_buff + recv_offset, send_count, send_type,
+      MPI_Sendrecv((char *) send_buff + recv_offset, send_count, send_type,
                    rank, tag,
-                   (char*)recv_buff + recv_offset, recv_count, recv_type,
+                   (char *) recv_buff + recv_offset, recv_count, recv_type,
                    rank, tag, comm, &s);
 
     else
       MPI_Sendrecv(tmp_buff1 + send_offset, send_count, send_type,
                    rank, tag,
-                   (char *)recv_buff + recv_offset, recv_count, recv_type,
+                   (char *) recv_buff + recv_offset, recv_count, recv_type,
                    rank, tag, comm, &s);
   }
 
@@ -156,7 +155,7 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       continue;
     src_row_base = (src / Y) * Y;
 
-    MPI_Irecv((char *)recv_buff + src_row_base * block_size, recv_count * Y,
+    MPI_Irecv((char *) recv_buff + src_row_base * block_size, recv_count * Y,
               recv_type, src, tag, comm, req_ptr++);
   }
 
@@ -170,10 +169,9 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
       send_offset = (dst + j * num_procs) * block_size;
 
       if (j + my_row_base == rank)
-        MPI_Sendrecv((char *)send_buff + dst * block_size, send_count, send_type,
-                     rank, tag,
-                     tmp_buff2 + recv_offset, recv_count, recv_type,
-                     rank, tag, comm, &s);
+        MPI_Sendrecv((char *) send_buff + dst * block_size, send_count,
+                     send_type, rank, tag, tmp_buff2 + recv_offset, recv_count,
+                     recv_type, rank, tag, comm, &s);
       else
         MPI_Sendrecv(tmp_buff1 + send_offset, send_count, send_type,
                      rank, tag,

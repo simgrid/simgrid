@@ -246,12 +246,24 @@ static void _sg_cfg_cb__coll(const char *category,
   /* New Module missing */
   find_coll_description(table, val);
 }
+static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
+  _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
+}
+static void _sg_cfg_cb__coll_allreduce(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("allreduce", mpi_coll_allreduce_description, name, pos);  
+}
 static void _sg_cfg_cb__coll_alltoall(const char *name, int pos)
 {
   _sg_cfg_cb__coll("alltoall", mpi_coll_alltoall_description, name, pos);  
 }
-static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
-  _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
+static void _sg_cfg_cb__coll_bcast(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("bcast", mpi_coll_bcast_description, name, pos);  
+}
+static void _sg_cfg_cb__coll_reduce(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("reduce", mpi_coll_reduce_description, name, pos);  
 }
 
 
@@ -740,16 +752,36 @@ void sg_config_init(int *argc, char **argv)
                      NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/or", "1:0:0:0:0");
 
-    default_value = xbt_strdup("ompi");    
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
+		     "Which collective to use for allgather",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgather,
+		     NULL);
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allreduce",
+		     "Which collective to use for allreduce",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allreduce,
+		     NULL);
+
+    default_value = xbt_strdup("ompi");
     xbt_cfg_register(&_sg_cfg_set, "smpi/alltoall",
 		     "Which collective to use for alltoall",
 		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoall,
 		     NULL);
 
-    default_value = xbt_strdup("default");    
-    xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
-		     "Which collective to use for allgather",
-		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgather,
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/bcast",
+		     "Which collective to use for bcast",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_bcast,
+		     NULL);
+
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/reduce",
+		     "Which collective to use for reduce",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_reduce,
 		     NULL);
     //END SMPI
 

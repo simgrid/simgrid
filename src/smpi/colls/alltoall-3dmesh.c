@@ -43,8 +43,7 @@ static int alltoall_check_is_3dmesh(int num, int *i, int *j, int *k)
 int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
                                     MPI_Datatype send_type,
                                     void *recv_buff, int recv_count,
-                                    MPI_Datatype recv_type,
-                                    MPI_Comm comm)
+                                    MPI_Datatype recv_type, MPI_Comm comm)
 {
   MPI_Request *reqs, *req_ptr;
   MPI_Aint extent;
@@ -157,7 +156,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
     send_offset = (rank * block_size) + (i * block_size * num_procs);
     recv_offset = (my_z_base * block_size) + (i * block_size);
     MPI_Sendrecv(tmp_buff1 + send_offset, send_count, send_type, rank, tag,
-                 (char *)recv_buff + recv_offset, recv_count, recv_type,
+                 (char *) recv_buff + recv_offset, recv_count, recv_type,
                  rank, tag, comm, &status);
   }
 
@@ -167,8 +166,8 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
 
     recv_offset = (src_z_base * block_size);
 
-    MPI_Irecv((char *)recv_buff + recv_offset, recv_count * two_dsize, recv_type,
-              src, tag, comm, req_ptr++);
+    MPI_Irecv((char *) recv_buff + recv_offset, recv_count * two_dsize,
+              recv_type, src, tag, comm, req_ptr++);
   }
 
   for (i = 1; i < Z; i++) {
