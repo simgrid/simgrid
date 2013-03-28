@@ -179,6 +179,7 @@ set(source_to_pack
   ${SIMDAG_SRC}
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
+  ${SMPI_SRC}
   ${SURF_SRC}
   ${TRACING_SRC}
   ${XBT_RL_SRC}

@@ -35,6 +35,7 @@ set(EXTRA_DIST
   src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
+  src/smpi/colls/COPYRIGHTS
   src/smpi/colls/colls.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
@@ -624,11 +625,6 @@ endif()
 if(enable_smpi)
   set(simgrid_sources
     ${simgrid_sources}
-    ${SMPI_SRC}
-    )
-else()
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
     ${SMPI_SRC}
     )
 endif()
