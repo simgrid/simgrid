@@ -226,6 +226,7 @@ static void _sg_cfg_cb__weight_S(const char *name, int pos)
   sg_weight_S_parameter = xbt_cfg_get_double(_sg_cfg_set, name);
 }
 
+#ifdef HAVE_SMPI
 /* callback of the mpi collectives */
 static void _sg_cfg_cb__coll(const char *category,
 		             s_mpi_coll_description_t * table,
@@ -265,7 +266,7 @@ static void _sg_cfg_cb__coll_reduce(const char *name, int pos)
 {
   _sg_cfg_cb__coll("reduce", mpi_coll_reduce_description, name, pos);  
 }
-
+#endif
 
 /* callback of the inclusion path */
 static void _sg_cfg_cb__surf_path(const char *name, int pos)
@@ -686,7 +687,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "ns3/TcpModel", "default");
 #endif
 
-//SMPI
+#ifdef HAVE_SMPI
     double default_reference_speed = 20000.0;
     xbt_cfg_register(&_sg_cfg_set, "smpi/running_power",
                      "Power of the host running the simulation (in flop/s). Used to bench the operations.",
@@ -783,8 +784,7 @@ void sg_config_init(int *argc, char **argv)
 		     "Which collective to use for reduce",
 		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_reduce,
 		     NULL);
-    //END SMPI
-
+#endif // HAVE_SMPI
 
     if (!surf_path) {
       /* retrieves the current directory of the        current process */
