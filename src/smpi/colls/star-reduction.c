@@ -126,7 +126,7 @@ static void star_generic_reduction(MPI_Op op, void *src, void *target, int *coun
         }
       }
     }
-    else if ((*dtype == MPI_SHORT) ) {
+    else if (*dtype == MPI_SHORT) {
       for (i=0;i<*count;i++) {
         if (((short *)src)[i] > ((short *)target)[i]) {
           ((short *)target)[i] = ((short *)src)[i];
@@ -141,14 +141,14 @@ static void star_generic_reduction(MPI_Op op, void *src, void *target, int *coun
       }
     }
 
-    else if ((*dtype == MPI_DOUBLE)) {
+    else if (*dtype == MPI_DOUBLE) {
       for (i=0;i<*count;i++) {
         if (((double *)src)[i] > ((double *)target)[i]) {
           ((double *)target)[i] = ((double *)src)[i];
         }
       }
     }
-    else if ((*dtype == MPI_FLOAT)) {
+    else if (*dtype == MPI_FLOAT) {
       for (i=0;i<*count;i++) {
         if (((float *)src)[i] > ((float *)target)[i]) {
           ((float *)target)[i] = ((float *)src)[i];
@@ -186,7 +186,7 @@ static void star_generic_reduction(MPI_Op op, void *src, void *target, int *coun
         }
       }
     }
-    else if ((*dtype == MPI_SHORT) ) {
+    else if (*dtype == MPI_SHORT) {
       for (i=0;i<*count;i++) {
         if (((short *)src)[i] < ((short *)target)[i]) {
           ((short *)target)[i] = ((short *)src)[i];
@@ -201,14 +201,14 @@ static void star_generic_reduction(MPI_Op op, void *src, void *target, int *coun
       }
     }
 
-    else if ((*dtype == MPI_DOUBLE)) {
+    else if (*dtype == MPI_DOUBLE) {
       for (i=0;i<*count;i++) {
         if (((double *)src)[i] < ((double *)target)[i]) {
           ((double *)target)[i] = ((double *)src)[i];
         }
       }
     }
-    else if ((*dtype == MPI_FLOAT)) {
+    else if (*dtype == MPI_FLOAT) {
       for (i=0;i<*count;i++) {
         if (((float *)src)[i] < ((float *)target)[i]) {
           ((float *)target)[i] = ((float *)src)[i];
@@ -241,7 +241,7 @@ static void star_generic_reduction(MPI_Op op, void *src, void *target, int *coun
           ((unsigned int *)target)[i] += ((unsigned int *)src)[i];
       }
     }
-    else if ((*dtype == MPI_SHORT) ) {
+    else if (*dtype == MPI_SHORT) {
       for (i=0;i<*count;i++) {
           ((short *)target)[i] += ((short *)src)[i];
       }
@@ -252,12 +252,12 @@ static void star_generic_reduction(MPI_Op op, void *src, void *target, int *coun
       }
     }
 
-    else if ((*dtype == MPI_DOUBLE)) {
+    else if (*dtype == MPI_DOUBLE) {
       for (i=0;i<*count;i++) {
           ((double *)target)[i] += ((double *)src)[i];
       }
     }
-    else if ((*dtype == MPI_FLOAT)) {
+    else if (*dtype == MPI_FLOAT) {
       for (i=0;i<*count;i++) {
           ((float *)target)[i] += ((float *)src)[i];
       }
@@ -280,7 +280,7 @@ static void star_generic_reduction(MPI_Op op, void *src, void *target, int *coun
           ((unsigned int *)target)[i] *= ((unsigned int *)src)[i];
       }
     }
-    else if ((*dtype == MPI_SHORT) ) {
+    else if (*dtype == MPI_SHORT) {
       for (i=0;i<*count;i++) {
           ((short *)target)[i] *= ((short *)src)[i];
       }
@@ -291,12 +291,12 @@ static void star_generic_reduction(MPI_Op op, void *src, void *target, int *coun
       }
     }
 
-    else if ((*dtype == MPI_DOUBLE)) {
+    else if (*dtype == MPI_DOUBLE) {
       for (i=0;i<*count;i++) {
           ((double *)target)[i] *= ((double *)src)[i];
       }
     }
-    else if ((*dtype == MPI_FLOAT)) {
+    else if (*dtype == MPI_FLOAT) {
       for (i=0;i<*count;i++) {
           ((float *)target)[i] *= ((float *)src)[i];
       }
