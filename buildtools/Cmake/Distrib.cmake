@@ -61,18 +61,9 @@ add_custom_target(simgrid_update_xml ALL
 install(TARGETS simgrid 
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 
-if(enable_smpi)
-  install(TARGETS smpi
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-endif()
-
 if(enable_lib_static AND NOT WIN32)
   install(TARGETS simgrid_static
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-  if(enable_smpi)
-    install(TARGETS smpi_static
-      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-  endif()
 endif()
 
 if(enable_java)
@@ -127,7 +118,6 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/doc/simgrid
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall doc ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libsimgrid*
-  COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libsmpi*
   COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid*
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicc
@@ -189,7 +179,6 @@ set(source_to_pack
   ${SIMDAG_SRC}
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
-  ${SMPI_SRC}
   ${SURF_SRC}
   ${TRACING_SRC}
   ${XBT_RL_SRC}

@@ -41,9 +41,9 @@ option(enable_supernovae "Whether Supernovae mode (helping compiler optimization
 option(enable_msg_deprecated "This option enable the use of msg deprecated functions" off)
 
 if(WIN32)
-  option(enable_smpi "Whether the smpi library is compiled." off)
+  option(enable_smpi "Whether SMPI in included in library." off)
 else()
-  option(enable_smpi "Whether the smpi library is compiled." on)
+  option(enable_smpi "Whether SMPI in included in library." on)
 endif()
 
 mark_as_advanced(HAVE_SSH)

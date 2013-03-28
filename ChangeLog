@@ -12,12 +12,14 @@ SimGrid (3.10) NOT RELEASED; urgency=low
    cached in the Java world
 
  SMPI:
+ * SMPI is not built as a separate library anymore, it's now included in
+   libsimgrid.
  * Improvements of the SMPI replay tool:
    - Most of the collective communications are now rooted in the same process as
      in the original application.
-   - Traces now rely on the same MPI datatype as the application (MPI_BYTE was 
+   - Traces now rely on the same MPI datatype as the application (MPI_BYTE was
      used until now). Multiple datatypes can now be used in a trace.
-   - The replay tool now supports traces produce either by TAU or a modified 
+   - The replay tool now supports traces produce either by TAU or a modified
      version of MPE.
    - Bug Fix: the compute part of the reduce action is now taken into account.
 

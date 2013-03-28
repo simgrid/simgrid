@@ -15,14 +15,6 @@ if(enable_lib_static)
   add_library(simgrid_static STATIC ${simgrid_sources})
 endif()
 
-if(enable_smpi)
-  add_library(smpi SHARED ${SMPI_SRC})
-  set_target_properties(smpi PROPERTIES VERSION ${libsmpi_version})
-  if(enable_lib_static)
-    add_library(smpi_static STATIC ${SMPI_SRC})
-  endif()
-endif()
-
 if(enable_java)
   include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
 endif()
@@ -37,9 +29,9 @@ if (enable_supernovae)
   endif()
 
   if(enable_smpi)
-    add_dependencies(smpi ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
+    add_dependencies(simgrid ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
     if(enable_lib_static)
-      add_dependencies(smpi_static ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
+      add_dependencies(simgrid_static ${CMAKE_CURRENT_BINARY_DIR}/src/supernovae_smpi.c)
     endif()
   endif()
 endif()
@@ -126,17 +118,13 @@ if(HAVE_POSIX_GETTIME)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
 endif()
 
-target_link_libraries(simgrid 	${SIMGRID_DEP})
-
 # Compute the dependencies of SMPI
 ##################################
-set(SMPI_DEP "")
-if(APPLE)
-  set(SMPI_DEP "-Wl,-U -Wl,_smpi_simulated_main")
+if(enable_smpi AND APPLE)
+  set(SIMGRID_DEP "${SIMGRID_DEP} -Wl,-U -Wl,_smpi_simulated_main")
 endif()
-if(enable_smpi)
-  target_link_libraries(smpi 	simgrid ${SMPI_DEP})
-endif()
+
+target_link_libraries(simgrid 	${SIMGRID_DEP})
 
 # Pass dependencies to static libs
 ##################################
@@ -144,10 +132,6 @@ if(enable_lib_static)
   target_link_libraries(simgrid_static 	${SIMGRID_DEP})
   add_dependencies(simgrid_static maintainer_files)
   set_target_properties(simgrid_static PROPERTIES OUTPUT_NAME simgrid)
-  if(enable_smpi)
-    target_link_libraries(smpi_static 	simgrid ${SMPI_DEP})
-    set_target_properties(smpi_static PROPERTIES OUTPUT_NAME smpi)
-  endif()
 endif()
 
 # Dependencies from maintainer mode

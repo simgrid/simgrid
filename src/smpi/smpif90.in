@@ -6,7 +6,7 @@ INCLUDEARGS="@includeflag@"
 CMAKE_LINKARGS="-L@libdir@"
 
 FFLAGS="-ff2c "
-LINKARGS="-lsimgrid -lsmpi -lm -lgfortran"
+LINKARGS="-lsimgrid -lm -lgfortran"
 main_name=main
 TMPFILE=$(mktemp).f90
 CMDLINE=""

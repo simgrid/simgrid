@@ -607,7 +607,6 @@ set(simgrid_sources
   ${SURF_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
-  ${SMPI_SRC}
   )
 
 if(${HAVE_JEDULE})
@@ -619,6 +618,18 @@ else()
   set(EXTRA_DIST
     ${EXTRA_DIST}
     ${JEDULE_SRC}
+    )
+endif()
+
+if(enable_smpi)
+  set(simgrid_sources
+    ${simgrid_sources}
+    ${SMPI_SRC}
+    )
+else()
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
+    ${SMPI_SRC}
     )
 endif()
 
