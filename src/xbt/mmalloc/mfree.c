@@ -55,7 +55,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
 
     if(MC_is_active()){
-      if(mdp->heapinfo[block].busy_block.ignore == 1)
+      if(mdp->heapinfo[block].busy_block.ignore > 0)
         MC_remove_ignore_heap(ptr, mdp -> heapinfo[block].busy_block.busy_size);
     }
 
@@ -162,7 +162,7 @@ void mfree(struct mdesc *mdp, void *ptr)
     }
 
     if(MC_is_active()){
-      if(mdp->heapinfo[block].busy_frag.ignore[frag_nb] == 1)
+      if(mdp->heapinfo[block].busy_frag.ignore[frag_nb] > 0)
         MC_remove_ignore_heap(ptr, mdp->heapinfo[block].busy_frag.frag_size[frag_nb]);
     }
 

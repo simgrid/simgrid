@@ -215,7 +215,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
         
           addr_block2 = ((void*) (((ADDR2UINT(current_block)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)s_heap)->heapbase));
         
-          res_compare = compare_area(addr_block1, addr_block2, previous);
+          res_compare = compare_area(addr_block1, addr_block2, NULL);
         
           if(res_compare == 0){
             for(k=1; k < heapinfo2[current_block].busy_block.size; k++)
@@ -223,7 +223,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
             for(k=1; k < heapinfo1[current_block].busy_block.size; k++)
               heapinfo1[current_block+k].busy_block.equal_to = new_heap_area(i1, -1);
             equal = 1;
-            match_equals(previous);
             i1 = i1 + heapinfo1[current_block].busy_block.size;
           }
         
@@ -251,8 +250,8 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
           i2++;
           continue;
         }
-        
-        res_compare = compare_area(addr_block1, addr_block2, previous);
+          
+        res_compare = compare_area(addr_block1, addr_block2, NULL);
         
         if(res_compare == 0){
           for(k=1; k < heapinfo2[i2].busy_block.size; k++)
@@ -260,7 +259,6 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
           for(k=1; k < heapinfo1[i1].busy_block.size; k++)
             heapinfo1[i1+k].busy_block.equal_to = new_heap_area(i2, -1);
           equal = 1;
-          match_equals(previous);
           i1 = i1 + heapinfo1[i1].busy_block.size;
         }
 
@@ -301,16 +299,15 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
             addr_block2 = ((void*) (((ADDR2UINT(current_block)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)s_heap)->heapbase));
             addr_frag2 = (void*) ((char *)addr_block2 + (current_fragment << ((xbt_mheap_t)s_heap)->heapinfo[current_block].type));
 
-            res_compare = compare_area(addr_frag1, addr_frag2, previous);
+            res_compare = compare_area(addr_frag1, addr_frag2, NULL);
 
-            if(res_compare == 0){
+            if(res_compare == 0)
               equal = 1;
-              match_equals(previous);
-            }
         
             xbt_dynar_reset(previous);
 
-            }
+          }
+
         }
 
         while(i2 <= heaplimit && !equal){
@@ -323,7 +320,7 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
 
           for(j2=0; j2 < (size_t) (BLOCKSIZE >> heapinfo2[i2].type); j2++){
 
-            if(heapinfo2[i2].type == heapinfo1[i1].type && i2 == current_block && j2 == current_fragment)
+            if(i2 == current_block && j2 == current_fragment)
               continue;
 
             if(heapinfo2[i2].busy_frag.equal_to[j2] != NULL)                
@@ -332,11 +329,10 @@ int mmalloc_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2){
             addr_block2 = ((void*) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE + (char*)((xbt_mheap_t)s_heap)->heapbase));
             addr_frag2 = (void*) ((char *)addr_block2 + (j2 << ((xbt_mheap_t)s_heap)->heapinfo[i2].type));
 
-            res_compare = compare_area(addr_frag1, addr_frag2, previous);
+            res_compare = compare_area(addr_frag1, addr_frag2, NULL);
             
             if(res_compare == 0){
               equal = 1;
-              match_equals(previous);
               xbt_dynar_reset(previous);
               break;
             }
@@ -529,7 +525,7 @@ static size_t heap_comparison_ignore_size(xbt_dynar_t ignore_list, void *address
 }
 
 
-int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code : 0 = equal, 1 = same size but different bytes, 2 = different size used */
+int compare_area(void *area1, void* area2, xbt_dynar_t previous){
 
   size_t i = 0, pointer_align = 0, ignore1 = 0, ignore2 = 0;
   void *addr_pointed1, *addr_pointed2;
@@ -537,7 +533,6 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
   ssize_t block1, frag1, block2, frag2;
   ssize_t size;
   int check_ignore = 0;
-  int j;
 
   void *addr_block1, *addr_block2, *addr_frag1, *addr_frag2;
   void *area1_to_compare, *area2_to_compare;
@@ -573,26 +568,22 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
   
   if(heapinfo1[block1].type == heapinfo2[block2].type){
     
-    if(heapinfo1[block1].type == -1){
+    if(heapinfo1[block1].type == -1){ /* Free block */
       if(match_pairs){
         match_equals(previous);
         xbt_dynar_free(&previous);
       }
       return 0;
-    }else if(heapinfo1[block1].type == 0){
 
-      if(heapinfo1[block1].busy_block.equal_to != NULL || heapinfo2[block2].busy_block.equal_to != NULL){
+    }else if(heapinfo1[block1].type == 0){ /* Complete block */
+
+      if(heapinfo1[block1].busy_block.equal_to != NULL && heapinfo2[block2].busy_block.equal_to != NULL){
         if(equal_blocks(block1, block2)){
           if(match_pairs){
             match_equals(previous);
             xbt_dynar_free(&previous);
           }
           return 0;
-        }else{
-          if(match_pairs){
-            xbt_dynar_free(&previous);
-          }
-          return 1;
         }
       }
 
@@ -607,7 +598,7 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
         if(match_pairs){
           xbt_dynar_free(&previous);
         }
-        return 2;
+        return 1;
       }
 
       if(!add_heap_area_pair(previous, block1, -1, block2, -1)){
@@ -634,8 +625,8 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
       area1_to_compare = addr_block1;
       area2_to_compare = addr_block2;
 
-      if(heapinfo1[block1].busy_block.ignore == 1 && heapinfo2[block2].busy_block.ignore == 1)
-        check_ignore = 1;
+      if((heapinfo1[block1].busy_block.ignore > 0) && (heapinfo2[block2].busy_block.ignore == heapinfo1[block1].busy_block.ignore))
+        check_ignore = heapinfo1[block1].busy_block.ignore;
       
     }else{
       frag1 = ((uintptr_t) (ADDR2UINT (area1) % (BLOCKSIZE))) >> heapinfo1[block1].type;
@@ -647,18 +638,13 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
       area1_to_compare = addr_frag1;
       area2_to_compare = addr_frag2;
 
-      if(heapinfo1[block1].busy_frag.equal_to[frag1] != NULL || heapinfo2[block2].busy_frag.equal_to[frag2] != NULL){
+      if(heapinfo1[block1].busy_frag.equal_to[frag1] != NULL && heapinfo2[block2].busy_frag.equal_to[frag2] != NULL){
         if(equal_fragments(block1, frag1, block2, frag2)){
           if(match_pairs){
             match_equals(previous);
             xbt_dynar_free(&previous);
           }
           return 0;
-        }else{
-          if(match_pairs){
-            xbt_dynar_free(&previous);
-          }
-          return 1;
         }
       }
 
@@ -666,7 +652,7 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
         if(match_pairs){
           xbt_dynar_free(&previous);
         }
-        return 2;  
+        return 1;  
       }
       
       if(!add_heap_area_pair(previous, block1, frag1, block2, frag2)){
@@ -687,8 +673,8 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
         return 0;
       }
       
-      if(heapinfo1[block1].busy_frag.ignore[frag1] == 1 && heapinfo2[block2].busy_frag.ignore[frag2] == 1)
-        check_ignore = 1;
+      if((heapinfo1[block1].busy_frag.ignore[frag1] > 0) && ( heapinfo2[block2].busy_frag.ignore[frag2] == heapinfo1[block1].busy_frag.ignore[frag1]))
+        check_ignore = heapinfo1[block1].busy_frag.ignore[frag1];
       
     }
 
@@ -704,11 +690,6 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
           xbt_dynar_free(&previous);
         }
         return 0;
-      }else{
-        if(match_pairs){
-          xbt_dynar_free(&previous);
-        }
-        return 1;
       }
     }
 
@@ -716,7 +697,7 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
       if(match_pairs){
         xbt_dynar_free(&previous);
       }
-      return 2;
+      return 1;
     }
     
     if(!add_heap_area_pair(previous, block1, frag1, block2, frag2)){
@@ -743,8 +724,8 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
       return 0;
     }
 
-    if(heapinfo1[block1].busy_frag.ignore[frag1] == 1 && heapinfo2[block2].busy_frag.ignore[frag2] == 1)
-      check_ignore = 1;   
+    if((heapinfo1[block1].busy_frag.ignore[frag1] > 0) && (heapinfo2[block2].busy_frag.ignore[frag2] == heapinfo1[block1].busy_frag.ignore[frag1]))
+      check_ignore = heapinfo1[block1].busy_frag.ignore[frag1];   
     
   }else{
     if(match_pairs){
@@ -755,43 +736,45 @@ int compare_area(void *area1, void* area2, xbt_dynar_t previous){ /* Return code
   
   while(i<size){
 
-    if(check_ignore){
+    if(check_ignore > 0){
       if((ignore1 = heap_comparison_ignore_size(to_ignore1, (char *)area1 + i)) > 0){
         if((ignore2 = heap_comparison_ignore_size(to_ignore2, (char *)area2 + i))  == ignore1){
           i = i + ignore2;
+          check_ignore--;
           continue;
         }
       }
     }
 
-    pointer_align = (i / sizeof(void*)) * sizeof(void*);
-    addr_pointed1 = *((void **)((char *)area1_to_compare + pointer_align));
-    addr_pointed2 = *((void **)((char *)area2_to_compare + pointer_align));
+    if(memcmp(((char *)area1_to_compare) + i, ((char *)area2_to_compare) + i, 1) != 0){
 
-    if(addr_pointed1 > maestro_stack_start && addr_pointed1 < maestro_stack_end && addr_pointed2 > maestro_stack_start && addr_pointed2 < maestro_stack_end){
-      i = pointer_align + sizeof(void *);
-      continue;
-    }else if((addr_pointed1 > s_heap) && ((char *)addr_pointed1 < (char *)s_heap + STD_HEAP_SIZE) 
+      pointer_align = (i / sizeof(void*)) * sizeof(void*);
+      addr_pointed1 = *((void **)((char *)area1_to_compare + pointer_align));
+      addr_pointed2 = *((void **)((char *)area2_to_compare + pointer_align));
+      
+      if(addr_pointed1 > maestro_stack_start && addr_pointed1 < maestro_stack_end && addr_pointed2 > maestro_stack_start && addr_pointed2 < maestro_stack_end){
+        i = pointer_align + sizeof(void *);
+        continue;
+      }else if((addr_pointed1 > s_heap) && ((char *)addr_pointed1 < (char *)s_heap + STD_HEAP_SIZE) 
            && (addr_pointed2 > s_heap) && ((char *)addr_pointed2 < (char *)s_heap + STD_HEAP_SIZE)){
-      res_compare = compare_area(addr_pointed1, addr_pointed2, previous);
-      if(res_compare != 0){
-        if(match_pairs)
-          xbt_dynar_free(&previous);
-        return res_compare;
-      }
-    }else{
-      j=0;
-      while(j<sizeof(void*) && (i + j) < size){
-        if(memcmp(((char *)area1_to_compare) + i + j, ((char *)area2_to_compare) + i + j , 1) != 0){
+        res_compare = compare_area(addr_pointed1, addr_pointed2, previous);
+        if(res_compare != 0){
           if(match_pairs)
             xbt_dynar_free(&previous);
-          return 1;
+          return res_compare;
         }
-        j++;
+        i = pointer_align + sizeof(void *);
+        continue;
+      }else{
+        if(match_pairs)
+          xbt_dynar_free(&previous);
+        return 1;
       }
+      
     }
+    
+    i++;
 
-    i = pointer_align + sizeof(void *);
   }
 
   if(match_pairs){

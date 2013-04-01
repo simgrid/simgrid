@@ -72,33 +72,17 @@ static int compare_global_variables(int region_type, void *d1, void *d2){ /* reg
     }
     i = 0;
     while(i < current_var->size){
-      if(memcmp((char*)d1 + offset + i, (char*)d2 + offset + i, 1) != 0){
+      if(memcmp((char *)d1 + offset + i, (char *)d2 + offset + i, 1) != 0){ 
         pointer_align = (i / sizeof(void*)) * sizeof(void*); 
         addr_pointed1 = *((void **)((char *)d1 + offset + pointer_align));
         addr_pointed2 = *((void **)((char *)d2 + offset + pointer_align));
         if((addr_pointed1 > plt_start && addr_pointed1 < plt_end) || (addr_pointed2 > plt_start && addr_pointed2 < plt_end)){
-          break;
-        }else{
-          if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) 
-             && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
-            res_compare = compare_area(addr_pointed1, addr_pointed2, NULL);
-            if(res_compare == 1){
-              #ifdef MC_VERBOSE
-              if(region_type == 2)
-                XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
-              else
-                XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
-              #endif
-              #ifdef MC_DEBUG
-                if(region_type == 2)
-                  XBT_DEBUG("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
-                else
-                  XBT_DEBUG("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
-              #endif
-                XBT_INFO("Different global variable (%p, %p) : %s at addresses %p - %p (size = %zu)", current_var->address, addr_pointed1, current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
-              return 1;
-            }
-          }else{
+          i = pointer_align + sizeof(void*);
+          continue;
+        }else if((addr_pointed1 > std_heap) && ((char *)addr_pointed1 < (char *)std_heap + STD_HEAP_SIZE) 
+                && (addr_pointed2 > std_heap) && ((char *)addr_pointed2 < (char *)std_heap + STD_HEAP_SIZE)){
+          res_compare = compare_area(addr_pointed1, addr_pointed2, NULL);
+          if(res_compare == 1){
             #ifdef MC_VERBOSE
               if(region_type == 2)
                 XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
@@ -111,12 +95,26 @@ static int compare_global_variables(int region_type, void *d1, void *d2){ /* reg
               else
                 XBT_DEBUG("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
             #endif
-              XBT_INFO("Different global variable (%p, %p) : %s at addresses %p - %p (size = %zu)", current_var->address, addr_pointed1, current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
             return 1;
           }
-              
-        }
-      } 
+          i = pointer_align + sizeof(void*);
+          continue;
+        }else{
+          #ifdef MC_VERBOSE
+            if(region_type == 2)
+              XBT_VERB("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+            else
+              XBT_VERB("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+          #endif
+          #ifdef MC_DEBUG
+            if(region_type == 2)
+              XBT_DEBUG("Different global variable in binary : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+            else
+              XBT_DEBUG("Different global variable in libsimgrid : %s at addresses %p - %p (size = %zu)", current_var->name, (char *)d1+offset, (char *)d2+offset, current_var->size);
+          #endif
+          return 1;
+        }              
+      }
       i++;
     }
   }
@@ -409,49 +407,48 @@ int snapshot_compare(mc_snapshot_t s1, mc_snapshot_t s2){
     xbt_os_timer_start(timer);
   #endif
 
-    /* Stacks comparison */
-    unsigned int  cursor = 0;
-    int diff_local = 0;
-    is_diff = 0;
+  /* Stacks comparison */
+  unsigned int  cursor = 0;
+  int diff_local = 0;
+  is_diff = 0;
     
-    while(cursor < xbt_dynar_length(s1->stacks)){
-      diff_local = compare_local_variables(((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->local_variables->data);
-      if(diff_local > 0){
-        #ifdef MC_DEBUG
-          if(is_diff == 0){
-            xbt_os_timer_stop(timer);
-            mc_comp_times->stacks_comparison_time = xbt_os_timer_elapsed(timer); 
-          }
-          XBT_DEBUG("Different local variables between stacks %d", cursor + 1);
-          errors++;
-          is_diff = 1;
-        #else
+  while(cursor < xbt_dynar_length(s1->stacks)){
+    diff_local = compare_local_variables(((mc_snapshot_stack_t)xbt_dynar_get_as(s1->stacks, cursor, mc_snapshot_stack_t))->local_variables->data, ((mc_snapshot_stack_t)xbt_dynar_get_as(s2->stacks, cursor, mc_snapshot_stack_t))->local_variables->data);
+    if(diff_local > 0){
+      #ifdef MC_DEBUG
+        if(is_diff == 0){
+          xbt_os_timer_stop(timer);
+          mc_comp_times->stacks_comparison_time = xbt_os_timer_elapsed(timer); 
+        }
+        XBT_DEBUG("Different local variables between stacks %d", cursor + 1);
+        errors++;
+        is_diff = 1;
+      #else
         
-          #ifdef MC_VERBOSE
-            XBT_VERB("Different local variables between stacks %d", cursor + 1);
-          #endif
-          
-            reset_heap_information();
-            xbt_os_timer_free(timer);
-            xbt_os_timer_stop(global_timer);
-            mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-            xbt_os_timer_free(global_timer);
-            
-            if(!raw_mem)
-              MC_UNSET_RAW_MEM;
-            
-            return 1;
+        #ifdef MC_VERBOSE
+          XBT_VERB("Different local variables between stacks %d", cursor + 1);
         #endif
-      }
-      cursor++;
+          
+        reset_heap_information();
+        xbt_os_timer_free(timer);
+        xbt_os_timer_stop(global_timer);
+        mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
+        xbt_os_timer_free(global_timer);
+        
+        if(!raw_mem)
+          MC_UNSET_RAW_MEM;
+        
+        return 1;
+      #endif
     }
+    cursor++;
+  }
     
-    #ifdef MC_DEBUG
-      xbt_os_timer_start(timer);
-    #endif
+  #ifdef MC_DEBUG
+    xbt_os_timer_start(timer);
+  #endif
 
   /* Compare heap */
- 
   if(mmalloc_compare_heap((xbt_mheap_t)s1->regions[0]->data, (xbt_mheap_t)s2->regions[0]->data)){
 
     #ifdef MC_DEBUG
@@ -572,7 +569,7 @@ static int compare_local_variables(char *s1, char *s2){
             continue;
           }else {
             #ifdef MC_VERBOSE
-              XBT_VERB("Different local variable : %s at addresses %p - %p", var_name, addr1, addr2);
+              XBT_VERB("Different local variable : %s at addresses %p - %p in frame %s", var_name, addr1, addr2, frame_name1);
             #endif
             #ifdef MC_DEBUG
               XBT_DEBUG("Different local variable : %s at addresses %p - %p", var_name, addr1, addr2);
@@ -595,7 +592,7 @@ static int compare_local_variables(char *s1, char *s2){
             continue;
           }else {
             #ifdef MC_VERBOSE
-              XBT_VERB("Different local variable : %s (%s - %s)", var_name, xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
+              XBT_VERB("Different local variable : %s (%s - %s) in frame %s", var_name, xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *), frame_name1);
             #endif
             #ifdef MC_DEBUG
               XBT_DEBUG("Different local variable : %s (%s - %s)", var_name, xbt_dynar_get_as(s_tokens1, 1, char *), xbt_dynar_get_as(s_tokens2, 1, char *));
