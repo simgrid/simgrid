@@ -2,7 +2,7 @@
 
 ! expect signal SIGABRT
 ! timeout 200
-$ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontext "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext
 > [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
 > [  0.000000] (0:@) Check the liveness property promela_bugged1_liveness
 > [  0.000000] (2:client@Fafard) Ask the request
@@ -13,7 +13,7 @@ $ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 --cfg=contexts/factory:ucont
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (3:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (0:@) Next pair (depth = 25, 2 interleave) already reached !
+> [  0.000000] (0:@) Next pair (depth = 22, 1 interleave) already reached (equal to state 11) !
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -39,9 +39,7 @@ $ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 --cfg=contexts/factory:ucont
 > [  0.000000] (0:@) [(3)client] iSend (src=client, buff=(verbose only), size=(verbose only))
 > [  0.000000] (0:@) [(1)coordinator] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
 > [  0.000000] (0:@) [(1)coordinator] iSend (src=coordinator, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)client] Wait (comm=(verbose only) [(3)client -> (1)coordinator])
-> [  0.000000] (0:@) [(3)client] iRecv (dst=client, buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)coordinator] Wait (comm=(verbose only) [(1)coordinator -> (3)client])
-> [  0.000000] (0:@) Expanded pairs = 26
-> [  0.000000] (0:@) Visited pairs = 24
-> [  0.000000] (0:@) Expanded / Visited = 0.923077
+> [  0.000000] (0:@) Expanded pairs = 23
+> [  0.000000] (0:@) Visited pairs = 21
+> [  0.000000] (0:@) Executed transitions = 21
+

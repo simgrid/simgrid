@@ -124,6 +124,7 @@ int main(int argc, char **argv)
     }
     xbt_dynar_free_container(&changed_tasks);
   }
+  xbt_dynar_free_container(&changed_tasks);
 
   XBT_DEBUG("Destroying tasks...");
 

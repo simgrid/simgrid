@@ -142,7 +142,7 @@ const char *TRACE_internal_smpi_get_category (void)
 
 void TRACE_smpi_alloc()
 {
-  keys = xbt_dict_new_homogeneous(xbt_free);
+  keys = xbt_dict_new_homogeneous(xbt_dynar_free_voidp);
   process_category = xbt_dict_new_homogeneous(xbt_free);
 }
 

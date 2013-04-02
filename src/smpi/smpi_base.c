@@ -119,10 +119,10 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 
 static double smpi_os(double size)
 {
-  if (!smpi_os_values)
-    smpi_os_values =
-        parse_factor(sg_cfg_get_string("smpi/os"));
-
+  if (!smpi_os_values) {
+    smpi_os_values = parse_factor(sg_cfg_get_string("smpi/os"));
+    smpi_register_static(smpi_os_values, xbt_dynar_free_voidp);
+  }
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   double current=0.0;
@@ -141,10 +141,10 @@ static double smpi_os(double size)
 
 static double smpi_ois(double size)
 {
-  if (!smpi_ois_values)
-    smpi_ois_values =
-        parse_factor(sg_cfg_get_string("smpi/ois"));
-
+  if (!smpi_ois_values) {
+    smpi_ois_values = parse_factor(sg_cfg_get_string("smpi/ois"));
+    smpi_register_static(smpi_ois_values, xbt_dynar_free_voidp);
+  }
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   double current=0.0;
@@ -163,10 +163,10 @@ static double smpi_ois(double size)
 
 static double smpi_or(double size)
 {
-  if (!smpi_or_values)
-    smpi_or_values =
-        parse_factor(sg_cfg_get_string("smpi/or"));
-
+  if (!smpi_or_values) {
+    smpi_or_values = parse_factor(sg_cfg_get_string("smpi/or"));
+    smpi_register_static(smpi_or_values, xbt_dynar_free_voidp);
+  }
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   double current=0.0;
@@ -336,7 +336,15 @@ void smpi_mpi_start(MPI_Request request)
 
   } else {
 
+
     int receiver = smpi_group_index(smpi_comm_group(request->comm), request->dst);
+
+    #ifdef HAVE_TRACING
+      int rank = smpi_process_index();
+      if (TRACE_smpi_view_internals()) {
+        TRACE_smpi_send(rank, rank, receiver);
+      }
+    #endif
 /*    if(receiver == MPI_UNDEFINED) {*/
 /*      XBT_WARN("Trying to send a message to a wrong rank");*/
 /*      return;*/
@@ -390,6 +398,7 @@ void smpi_mpi_start(MPI_Request request)
     /* FIXME: detached sends are not traceable (request->action == NULL) */
     if (request->action)
       simcall_set_category(request->action, TRACE_internal_smpi_get_category());
+
 #endif
 
   }
@@ -558,7 +567,18 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
       if(req->detached == 0) free(req->buf);
     }
     smpi_datatype_unuse(datatype);
+
   }
+
+#ifdef HAVE_TRACING
+    if (TRACE_smpi_view_internals()) {
+      if(req->flags & RECV){
+        int rank = smpi_process_index();
+        int  src_traced = smpi_group_index(smpi_comm_group(req->comm), req->src);
+        TRACE_smpi_recv(rank, src_traced, rank);
+      }
+    }
+#endif
 
   if(req->detached_sender!=NULL){
     smpi_mpi_request_free(&(req->detached_sender));

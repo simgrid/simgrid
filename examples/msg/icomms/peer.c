@@ -67,8 +67,8 @@ int sender(int argc, char *argv[])
       while (MSG_comm_test(comm) == 0) {
         MSG_process_sleep(sleep_test_time);
       };
-      MSG_comm_destroy(comm);
     }
+    MSG_comm_destroy(comm);
 
   }
 
@@ -84,8 +84,8 @@ int sender(int argc, char *argv[])
       while (MSG_comm_test(comm) == 0) {
         MSG_process_sleep(sleep_test_time);
       };
-      MSG_comm_destroy(comm);
     }
+    MSG_comm_destroy(comm);
 
   }
 
@@ -125,8 +125,8 @@ int receiver(int argc, char *argv[])
       while (MSG_comm_test(res_irecv) == 0) {
         MSG_process_sleep(sleep_test_time);
       };
-      MSG_comm_destroy(res_irecv);
     }
+    MSG_comm_destroy(res_irecv);
 
     XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
     if (!strcmp(MSG_task_get_name(task), "finalize")) {

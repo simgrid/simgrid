@@ -370,48 +370,37 @@ void xbt_cfg_help(xbt_cfg_t cfg)
       else
         printf("Arity: min:%d to max:%d; ", variable->min, variable->max);
     }
-    printf("Current value: ");
     size = xbt_dynar_length(variable->content);
+    printf("Current value%s: ", (size <= 1 ? "" : "s"));
 
-    switch (variable->type) {
-      int ival;
-      char *sval;
-      double dval;
-      xbt_peer_t hval;
+    if (size != 1)
+      printf(size == 0 ? "n/a\n" : "{ ");
+    for (i = 0; i < size; i++) {
+      const char *sep = (size == 1 ? "\n" : (i < size - 1 ? ", " : " }\n"));
 
-    case xbt_cfgelm_int:
-      for (i = 0; i < size; i++) {
-        ival = xbt_dynar_get_as(variable->content, i, int);
-        printf("%s%d\n", (i == 0 ? "" : "              "), ival);
+      switch (variable->type) {
+      case xbt_cfgelm_int:
+        printf("%d%s", xbt_dynar_get_as(variable->content, i, int), sep);
+        break;
+
+      case xbt_cfgelm_double:
+        printf("%f%s", xbt_dynar_get_as(variable->content, i, double), sep);
+        break;
+
+      case xbt_cfgelm_string:
+        printf("'%s'%s", xbt_dynar_get_as(variable->content, i, char *), sep);
+        break;
+
+      case xbt_cfgelm_peer: {
+        xbt_peer_t hval = xbt_dynar_get_as(variable->content, i, xbt_peer_t);
+        printf("%s:%d%s", hval->name, hval->port, sep);
+        break;
       }
-      break;
 
-    case xbt_cfgelm_double:
-      for (i = 0; i < size; i++) {
-        dval = xbt_dynar_get_as(variable->content, i, double);
-        printf("%s%f\n", (i == 0 ? "" : "              "), dval);
+      default:
+        printf("Invalid type!!%s", sep);
       }
-      break;
-
-    case xbt_cfgelm_string:
-      for (i = 0; i < size; i++) {
-        sval = xbt_dynar_get_as(variable->content, i, char *);
-        printf("%s'%s'\n", (i == 0 ? "" : "              "), sval);
-      }
-      break;
-
-    case xbt_cfgelm_peer:
-      for (i = 0; i < size; i++) {
-        hval = xbt_dynar_get_as(variable->content, i, xbt_peer_t);
-        printf("%s%s:%d\n", (i == 0 ? "" : "              "), hval->name,
-               hval->port);
-      }
-      break;
-
-    default:
-      printf("Invalid type!!\n");
     }
-
   }
 
   xbt_dynar_free(&names);

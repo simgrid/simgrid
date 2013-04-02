@@ -381,7 +381,8 @@ ACTION(SIMCALL_SET_CATEGORY, set_category, WITH_ANSWER, TVOID(result), TSPEC(act
 #ifdef HAVE_MC
 #define SIMCALL_LIST4(ACTION, sep) \
 ACTION(SIMCALL_MC_SNAPSHOT, mc_snapshot, WITH_ANSWER, TPTR(result)) sep \
-ACTION(SIMCALL_MC_COMPARE_SNAPSHOTS, mc_compare_snapshots, WITH_ANSWER, TINT(result), TPTR(s1), TPTR(s2)) sep 
+ACTION(SIMCALL_MC_COMPARE_SNAPSHOTS, mc_compare_snapshots, WITH_ANSWER, TINT(result), TPTR(s1), TPTR(s2)) sep \
+ACTION(SIMCALL_MC_RANDOM, mc_random, WITH_ANSWER, TINT(result)) sep
 #else
 #define SIMCALL_LIST4(ACTION, sep)
 #endif

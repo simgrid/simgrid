@@ -5,6 +5,7 @@
   * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
+#include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
                                 "Logging specific to SMPI (mpi)");
@@ -13,6 +14,36 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
 
 int MPI_Init(int *argc, char ***argv)
 {
+  int allgather_id = find_coll_description(mpi_coll_allgather_description,
+                                           sg_cfg_get_string("smpi/allgather"));
+  mpi_coll_allgather_fun = (int (*)(void *, int, MPI_Datatype,
+		                    void*, int, MPI_Datatype, MPI_Comm))
+	                   mpi_coll_allgather_description[allgather_id].coll;
+
+  int allreduce_id = find_coll_description(mpi_coll_allreduce_description,
+                                           sg_cfg_get_string("smpi/allreduce"));
+  mpi_coll_allreduce_fun = (int (*)(void *sbuf, void *rbuf, int rcount, \
+                                    MPI_Datatype dtype, MPI_Op op, MPI_Comm comm))
+	                   mpi_coll_allreduce_description[allreduce_id].coll;
+
+  int alltoall_id = find_coll_description(mpi_coll_alltoall_description,
+                                          sg_cfg_get_string("smpi/alltoall"));
+  mpi_coll_alltoall_fun = (int (*)(void *, int, MPI_Datatype,
+			           void*, int, MPI_Datatype, MPI_Comm))
+	                  mpi_coll_alltoall_description[alltoall_id].coll;
+
+  int bcast_id = find_coll_description(mpi_coll_bcast_description,
+                                          sg_cfg_get_string("smpi/bcast"));
+  mpi_coll_bcast_fun = (int (*)(void *buf, int count, MPI_Datatype datatype, \
+	                        int root, MPI_Comm com))
+	               mpi_coll_bcast_description[bcast_id].coll;
+
+  int reduce_id = find_coll_description(mpi_coll_reduce_description,
+                                          sg_cfg_get_string("smpi/reduce"));
+  mpi_coll_reduce_fun = (int (*)(void *buf, void *rbuf, int count, MPI_Datatype datatype, \
+                                 MPI_Op op, int root, MPI_Comm comm))
+	                mpi_coll_reduce_description[reduce_id].coll;
+
   return PMPI_Init(argc, argv);
 }
 
@@ -679,4 +710,34 @@ int MPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status
 
 int MPI_Initialized(int* flag) {
   return PMPI_Initialized(flag);
+}
+
+int MPI_Win_fence( int assert,  MPI_Win win){
+   return PMPI_Win_fence( assert, win);
+}
+
+int MPI_Win_free( MPI_Win* win){
+   return PMPI_Win_free(  win);
+}
+
+int MPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
+  return PMPI_Win_create( base, size, disp_unit, info, comm,win);
+}
+
+int MPI_Info_create( MPI_Info *info){
+  return PMPI_Info_create( info);
+}
+
+int MPI_Info_set( MPI_Info *info, char *key, char *value){
+  return PMPI_Info_set( info, key, value);
+}
+
+int MPI_Info_free( MPI_Info *info){
+  return PMPI_Info_free( info);
+}
+
+int MPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
+  return PMPI_Get( origin_addr,origin_count, origin_datatype,target_rank,
+      target_disp, target_count,target_datatype, win);
 }

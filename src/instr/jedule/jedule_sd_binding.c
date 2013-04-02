@@ -71,13 +71,11 @@ static void create_hierarchy(AS_t current_comp,
 
     xbt_dynar_foreach(current_comp->index_network_elm, 
           dynar_cursor, network_elem) {
-      char *hostname;
-      hostname = strdup(network_elem->name);
-      xbt_dynar_push(hosts, &hostname);
+      xbt_dynar_push_as(hosts, char*, network_elem->name);
     }
 
     jed_simgrid_add_resources(current_container, hosts);
-
+    xbt_dynar_free(&hosts);
   } else {
     xbt_dict_foreach(current_comp->routing_sons, cursor, key, elem) {
       jed_simgrid_container_t child_container;
@@ -121,6 +119,12 @@ void jedule_sd_cleanup() {
 void jedule_sd_init() {
 
   jedule_init_output();
+}
+
+void jedule_sd_exit(void)
+{
+  jed_free_jedule(jedule);
+  jedule = NULL;
 }
 
 void jedule_sd_dump() {

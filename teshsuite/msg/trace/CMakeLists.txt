@@ -14,6 +14,8 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/platform_trace.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test10.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test11.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test1.xml
@@ -25,7 +27,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test7.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test8.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test9.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_trace_integration.xml
   PARENT_SCOPE
   )
 set(teshsuite_src

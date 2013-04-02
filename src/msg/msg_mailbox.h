@@ -77,7 +77,7 @@ XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
  * \param alias    The alias of the mailbox to modify.
  *
  */
-void MSG_mailbox_set_async(const char *alias);
+XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
 
 /*! \brief MSG_mailbox_get_head - get the task at the head of a mailbox.
  *

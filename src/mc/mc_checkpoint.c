@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2008-2013 Da SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -39,10 +39,12 @@ static void *get_stack_pointer(void *stack_context, void *heap);
 static void snapshot_stack_free(mc_snapshot_stack_t s);
 static xbt_dynar_t take_snapshot_ignore(void);
 
+static void get_hash_global(char *snapshot_hash, void *data1, void *data2);
+static void get_hash_local(char *snapshot_hash, xbt_dynar_t stacks);
+
 static mc_mem_region_t MC_region_new(int type, void *start_addr, size_t size)
 {
   mc_mem_region_t new_reg = xbt_new0(s_mc_mem_region_t, 1);
-  new_reg->type = type;
   new_reg->start_addr = start_addr;
   new_reg->size = size;
   new_reg->data = xbt_malloc0(size);
@@ -72,10 +74,7 @@ static void MC_region_destroy(mc_mem_region_t reg)
 static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type, void *start_addr, size_t size)
 {
   mc_mem_region_t new_reg = MC_region_new(type, start_addr, size);
-  snapshot->regions = xbt_realloc(snapshot->regions, (snapshot->num_reg + 1) * sizeof(mc_mem_region_t));
-  snapshot->regions[snapshot->num_reg] = new_reg;
-  snapshot->region_type[snapshot->num_reg] = type;
-  snapshot->num_reg++;
+  snapshot->regions[type] = new_reg;
   return;
 } 
 
@@ -135,10 +134,6 @@ void MC_init_memory_map_info(){
 
 }
 
-mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
-  return MC_take_snapshot();
-}
-
 mc_snapshot_t MC_take_snapshot()
 {
   int raw_mem = (mmalloc_get_current_heap() == raw_heap);
@@ -163,7 +158,7 @@ mc_snapshot_t MC_take_snapshot()
         if (reg.start_addr == std_heap){ // only save the std heap (and not the raw one)
           MC_snapshot_add_region(snapshot, 0, reg.start_addr, (char*)reg.end_addr - (char*)reg.start_addr);
           snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
-          heap = snapshot->regions[snapshot->num_reg - 1]->data;
+          heap = snapshot->regions[0]->data;
         }
         i++;
       } else{ 
@@ -204,9 +199,12 @@ mc_snapshot_t MC_take_snapshot()
 
   snapshot->to_ignore = take_snapshot_ignore();
 
-  if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,""))
+  if(_sg_mc_visited > 0 || strcmp(_sg_mc_property_file,"")){
     snapshot->stacks = take_snapshot_stacks(&snapshot, heap);
-  
+    get_hash_global(snapshot->hash_global, snapshot->regions[1]->data, snapshot->regions[2]->data);
+    get_hash_local(snapshot->hash_local, snapshot->stacks);
+  }
+
   free_memory_map(maps);
 
   MC_UNSET_RAW_MEM;
@@ -221,7 +219,7 @@ mc_snapshot_t MC_take_snapshot()
 void MC_restore_snapshot(mc_snapshot_t snapshot)
 {
   unsigned int i;
-  for(i=0; i < snapshot->num_reg; i++){
+  for(i=0; i < NB_REGIONS; i++){
     MC_region_restore(snapshot->regions[i]);
   }
 
@@ -230,10 +228,9 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
 void MC_free_snapshot(mc_snapshot_t snapshot)
 {
   unsigned int i;
-  for(i=0; i < snapshot->num_reg; i++)
+  for(i=0; i < NB_REGIONS; i++)
     MC_region_destroy(snapshot->regions[i]);
 
-  xbt_free(snapshot->regions);
   xbt_dynar_free(&(snapshot->stacks));
   xbt_dynar_free(&(snapshot->to_ignore));
   xbt_free(snapshot);
@@ -463,10 +460,13 @@ static xbt_strbuff_t get_local_variables_values(void *stack_context, void *heap)
       return variables;
     }
 
-    to_append = bprintf("ip=%s\n", frame_name);
+    to_append = bprintf("frame_name=%s\n", frame_name);
     xbt_strbuff_append(variables, to_append);
     xbt_free(to_append);
-
+    to_append = bprintf("ip=%lx\n", ip);
+    xbt_strbuff_append(variables, to_append);
+    xbt_free(to_append);
+    
     true_ip = (long)frame->low_pc + (long)off;
 
     /* Get frame pointer */
@@ -616,6 +616,10 @@ void snapshot_stack_free_voidp(void *s){
   snapshot_stack_free((mc_snapshot_stack_t) * (void **) s);
 }
 
+mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall){
+  return MC_take_snapshot();
+}
+
 void *MC_snapshot(void){
 
   return simcall_mc_snapshot();
@@ -632,6 +636,101 @@ void variable_value_free(variable_value_t v){
 void variable_value_free_voidp(void* v){
   variable_value_free((variable_value_t) * (void **)v);
 }
+
+static void get_hash_global(char *snapshot_hash, void *data1, void *data2){
+  
+  unsigned int cursor = 0;
+  size_t offset; 
+  global_variable_t current_var; 
+  void *addr_pointed = NULL;
+  void *res = NULL;
+
+  xbt_strbuff_t clear = xbt_strbuff_new();
+  
+  xbt_dynar_foreach(mc_global_variables, cursor, current_var){
+    if(current_var->address < start_data_libsimgrid){ /* binary */
+      offset = (char *)current_var->address - (char *)start_data_binary;
+      addr_pointed = *((void **)((char *)data2 + offset));
+      if(((addr_pointed >= start_plt_binary && addr_pointed <= end_plt_binary)) || ((addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE )))
+        continue;
+      res = xbt_malloc0(current_var->size + 1);
+      memset(res, 0, current_var->size + 1);
+      memcpy(res, (char*)data2 + offset, current_var->size);
+    }else{ /* libsimgrid */
+      offset = (char *)current_var->address - (char *)start_data_libsimgrid;
+      addr_pointed = *((void **)((char *)data1 + offset));
+      if((addr_pointed >= start_plt_libsimgrid && addr_pointed <= end_plt_libsimgrid) || (addr_pointed >= std_heap && (char *)addr_pointed <= (char *)std_heap + STD_HEAP_SIZE ))
+        continue;
+      res = xbt_malloc0(current_var->size + 1);
+      memset(res, 0, current_var->size + 1);
+      memcpy(res, (char*)data1 + offset, current_var->size);
+    }
+    if(res != NULL){
+      xbt_strbuff_append(clear, (const char*)res);
+      xbt_free(res);
+      res = NULL;
+    }
+  }
+
+  xbt_sha(clear->data, snapshot_hash);
+
+  xbt_strbuff_free(clear);
+
+}
+
+static void get_hash_local(char *snapshot_hash, xbt_dynar_t stacks){
+
+  xbt_dynar_t tokens = NULL, s_tokens = NULL;
+  unsigned int cursor1 = 0, cursor2 = 0;
+  mc_snapshot_stack_t current_stack;
+  char *frame_name = NULL;
+  void *addr;
+
+  xbt_strbuff_t clear = xbt_strbuff_new();
+
+  while(cursor1 < xbt_dynar_length(stacks)){
+    current_stack = xbt_dynar_get_as(stacks, cursor1, mc_snapshot_stack_t);
+    tokens = xbt_str_split(current_stack->local_variables->data, NULL);
+    cursor2 = 0;
+    while(cursor2 < xbt_dynar_length(tokens)){
+      s_tokens = xbt_str_split(xbt_dynar_get_as(tokens, cursor2, char *), "=");
+      if(xbt_dynar_length(s_tokens) > 1){
+        if(strcmp(xbt_dynar_get_as(s_tokens, 0, char *), "frame_name") == 0){
+          xbt_free(frame_name);
+          frame_name = xbt_strdup(xbt_dynar_get_as(s_tokens, 1, char *));
+          xbt_strbuff_append(clear, (const char*)xbt_dynar_get_as(tokens, cursor2, char *));
+          cursor2++;
+          xbt_dynar_free(&s_tokens);
+          continue;
+        }
+        addr = (void *) strtoul(xbt_dynar_get_as(s_tokens, 1, char *), NULL, 16);
+        if(addr > std_heap && (char *)addr <= (char *)std_heap + STD_HEAP_SIZE){
+          cursor2++;
+          xbt_dynar_free(&s_tokens);
+          continue;
+        }
+        if(is_stack_ignore_variable(frame_name, xbt_dynar_get_as(s_tokens, 0, char *))){
+          cursor2++;
+          xbt_dynar_free(&s_tokens);
+          continue;
+        }
+        xbt_strbuff_append(clear, (const char *)xbt_dynar_get_as(tokens, cursor2, char *));
+      }
+      xbt_dynar_free(&s_tokens);
+      cursor2++;
+    }
+    xbt_dynar_free(&tokens);
+    cursor1++;
+  }
+
+  xbt_free(frame_name);
+
+  xbt_sha(clear->data, snapshot_hash);
+
+  xbt_strbuff_free(clear);
+
+}
+
 
 static xbt_dynar_t take_snapshot_ignore(){
   

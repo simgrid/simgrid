@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
   MSG_function_register("receive", &receive);
 
   MSG_create_environment(argv[1]);
-  MSG_launch_application(argv[1]);
+  MSG_launch_application(argv[2]);
   res = MSG_main();
 
   if (res == MSG_OK)

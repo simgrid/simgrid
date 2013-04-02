@@ -35,6 +35,8 @@ set(EXTRA_DIST
   src/simix/smx_smurf_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
+  src/smpi/colls/COPYRIGHTS
+  src/smpi/colls/colls.h
   src/smpi/private.h
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_ti_private.h
@@ -107,6 +109,73 @@ set(SMPI_SRC
   src/smpi/smpi_mpi_dt.c
   src/smpi/smpi_pmpi.c
   src/smpi/smpi_replay.c
+  #src/smpi/colls/allgather-2dmesh.c
+  #src/smpi/colls/allgather-3dmesh.c
+  #src/smpi/colls/allgather-bruck.c
+  src/smpi/colls/allgather-GB.c
+  src/smpi/colls/allgather-loosely-lr.c
+  src/smpi/colls/allgather-lr.c
+  src/smpi/colls/allgather-NTSLR.c
+  src/smpi/colls/allgather-NTSLR-NB.c
+  src/smpi/colls/allgather-pair.c
+  src/smpi/colls/allgather-rdb.c
+  src/smpi/colls/allgather-RDB.c
+  src/smpi/colls/allgather-rhv.c
+  src/smpi/colls/allgather-ring.c
+  src/smpi/colls/allgather-SMP-NTS.c
+  src/smpi/colls/allgather-smp-simple.c
+  src/smpi/colls/allgather-SMP-simple.c
+  src/smpi/colls/allgather-spreading-simple.c
+  src/smpi/colls/allreduce-lr.c
+  src/smpi/colls/allreduce-NTS.c
+  src/smpi/colls/allreduce-rab1.c
+  src/smpi/colls/allreduce-rab2.c
+  #src/smpi/colls/allreduce-rab-rdb.c
+  #src/smpi/colls/allreduce-rab-reduce-scatter.c
+  src/smpi/colls/allreduce-rab-rsag.c
+  src/smpi/colls/allreduce-rdb.c
+  src/smpi/colls/allreduce-redbcast.c
+  src/smpi/colls/allreduce-smp-binomial.c
+  #src/smpi/colls/allreduce-smp-binomial-pipeline.c
+  src/smpi/colls/allreduce-smp-rdb.c
+  src/smpi/colls/allreduce-smp-rsag.c
+  src/smpi/colls/allreduce-smp-rsag-lr.c
+  src/smpi/colls/allreduce-smp-rsag-rab.c
+  src/smpi/colls/alltoall-2dmesh.c
+  src/smpi/colls/alltoall-3dmesh.c
+  #src/smpi/colls/alltoall-bruck.c
+  src/smpi/colls/alltoall-pair.c
+  src/smpi/colls/alltoall-pair-light-barrier.c
+  src/smpi/colls/alltoall-pair-mpi-barrier.c
+  src/smpi/colls/alltoall-pair-one-barrier.c
+  src/smpi/colls/alltoall-rdb.c
+  src/smpi/colls/alltoall-ring.c
+  src/smpi/colls/alltoall-ring-light-barrier.c
+  src/smpi/colls/alltoall-ring-mpi-barrier.c
+  src/smpi/colls/alltoall-ring-one-barrier.c
+  src/smpi/colls/alltoall-simple.c
+  src/smpi/colls/bcast-arrival-nb.c
+  src/smpi/colls/bcast-arrival-pattern-aware.c
+  src/smpi/colls/bcast-arrival-pattern-aware-wait.c
+  src/smpi/colls/bcast-arrival-scatter.c
+  src/smpi/colls/bcast-binomial-tree.c
+  src/smpi/colls/bcast-flattree.c
+  src/smpi/colls/bcast-flattree-pipeline.c
+  src/smpi/colls/bcast-NTSB.c
+  src/smpi/colls/bcast-NTSL.c
+  src/smpi/colls/bcast-NTSL-Isend.c
+  src/smpi/colls/bcast-scatter-LR-allgather.c
+  src/smpi/colls/bcast-scatter-rdb-allgather.c
+  src/smpi/colls/bcast-SMP-binary.c
+  src/smpi/colls/bcast-SMP-binomial.c
+  src/smpi/colls/bcast-SMP-linear.c
+  src/smpi/colls/bcast-TSB.c
+  src/smpi/colls/reduce-arrival-pattern-aware.c
+  src/smpi/colls/reduce-binomial.c
+  src/smpi/colls/reduce-flat-tree.c
+  src/smpi/colls/reduce-NTSL.c
+  src/smpi/colls/reduce-scatter-gather.c
+  src/smpi/colls/star-reduction.c
   )
 
 if(SMPI_F2C)
@@ -425,6 +494,7 @@ set(MC_SRC
   src/mc/mc_request.c
   src/mc/mc_state.c
   src/mc/memory_map.c
+  src/mc/mc_pair.c
   )
 
 set(headers_to_install
@@ -554,6 +624,13 @@ else()
     )
 endif()
 
+if(enable_smpi)
+  set(simgrid_sources
+    ${simgrid_sources}
+    ${SMPI_SRC}
+    )
+endif()
+
 if(${HAVE_TRACING})
   set(simgrid_sources
     ${simgrid_sources}
@@ -643,6 +720,7 @@ set(DOC_SOURCES
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
   doc/doxygen/module-surf.doc
+  doc/doxygen/module-smpi.doc
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
   doc/doxygen/modules.doc

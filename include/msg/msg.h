@@ -304,7 +304,7 @@ XBT_PUBLIC(msg_error_t)
     MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
                              double timeout);
 
-void MSG_mailbox_set_async(const char *alias);
+XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
 
 
 /************************** Action handling **********************************/

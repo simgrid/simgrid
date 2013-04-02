@@ -11,7 +11,7 @@ void yyerror(const char *s);
   double real;
   int integer;
   char* string;
-  xbt_exp_label_t label;
+  xbt_automaton_exp_label_t label;
 }
 
 %token NEVER

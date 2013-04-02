@@ -1171,6 +1171,11 @@ smx_process_t SIMIX_comm_get_dst_proc(smx_action_t action)
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
+int SIMIX_pre_comm_is_latency_bounded(smx_simcall_t simcall, smx_action_t action)
+{
+  return SIMIX_comm_is_latency_bounded(action);
+}
+
 /**
  *  \brief verify if communication is latency bounded
  *  \param comm The communication

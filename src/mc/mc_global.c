@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2008-2013 Da SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -30,6 +30,7 @@ char* _sg_mc_property_file=NULL;
 int _sg_mc_timeout=0;
 int _sg_mc_max_depth=1000;
 int _sg_mc_visited=0;
+char *_sg_mc_dot_output_file = NULL;
 
 extern int _sg_init_status;
 void _mc_cfg_cb_reduce(const char *name, int pos) {
@@ -80,6 +81,12 @@ void _mc_cfg_cb_visited(const char *name, int pos) {
   _sg_mc_visited= xbt_cfg_get_int(_sg_cfg_set, name);
 }
 
+void _mc_cfg_cb_dot_output(const char *name, int pos) {
+  if (_sg_init_status && !_sg_do_model_check) {
+    xbt_die("You are specifying a file name for a dot output of graph state after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_dot_output_file= xbt_cfg_get_string(_sg_cfg_set, name);
+}
 
 /* MC global data structures */
 
@@ -88,16 +95,15 @@ char mc_replay_mode = FALSE;
 double *mc_time = NULL;
 mc_comparison_times_t mc_comp_times = NULL;
 double mc_snapshot_comparison_time;
+mc_stats_t mc_stats = NULL;
 
 /* Safety */
 
 xbt_fifo_t mc_stack_safety = NULL;
-mc_stats_t mc_stats = NULL;
 mc_global_t initial_state_safety = NULL;
 
 /* Liveness */
 
-mc_stats_pair_t mc_stats_pair = NULL;
 xbt_fifo_t mc_stack_liveness = NULL;
 mc_global_t initial_state_liveness = NULL;
 int compare;
@@ -112,6 +118,9 @@ xbt_dynar_t mc_stack_comparison_ignore;
 xbt_dynar_t mc_data_bss_comparison_ignore;
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
+
+FILE *dot_output = NULL;
+const char* colors[10];
 
 xbt_automaton_t _mc_property_automaton = NULL;
 
@@ -128,7 +137,7 @@ void MC_do_the_modelcheck_for_real() {
   MC_SET_RAW_MEM;
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
   MC_UNSET_RAW_MEM;
-
+  
   if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
     if (mc_reduce_kind==e_mc_reduce_unset)
       mc_reduce_kind=e_mc_reduce_dpor;
@@ -155,13 +164,6 @@ void MC_compare(void){
 void MC_init(){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
-  
-  mc_time = xbt_new0(double, simix_process_maxpid);
-
-  /* mc_time refers to clock for each process -> ignore it for heap comparison */
-  int i;
-  for(i = 0; i<simix_process_maxpid; i++)
-    MC_ignore_heap(&(mc_time[i]), sizeof(double));
   
   compare = 0;
 
@@ -208,11 +210,37 @@ void MC_init(){
   MC_ignore_stack("next_context", "smx_ctx_sysv_suspend_serial");
   MC_ignore_stack("i", "smx_ctx_sysv_suspend_serial");
 
+  /* Ignore local variable about time used for tracing */
+  MC_ignore_stack("start_time", "*"); 
+
   MC_ignore_data_bss(&mc_comp_times, sizeof(mc_comp_times));
   MC_ignore_data_bss(&mc_snapshot_comparison_time, sizeof(mc_snapshot_comparison_time)); 
+  MC_ignore_data_bss(&mc_time, sizeof(mc_time));
 
   if(raw_mem_set)
     MC_SET_RAW_MEM;
+
+}
+
+void MC_init_dot_output(){
+
+  colors[0] = "blue";
+  colors[1] = "red";
+  colors[2] = "green";
+  colors[3] = "pink";
+  colors[4] = "brown";
+  colors[5] = "purple";
+  colors[6] = "yellow";
+  colors[7] = "orange";
+  
+  dot_output = fopen(_sg_mc_dot_output_file, "w");
+  
+  if(dot_output == NULL){
+    perror("Error open dot output file");
+    xbt_abort();
+  }
+
+  fprintf(dot_output, "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.20; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
 
 }
 
@@ -226,6 +254,9 @@ void MC_modelcheck_safety(void)
 
   mc_time = xbt_new0(double, simix_process_maxpid);
 
+  /* mc_time refers to clock for each process -> ignore it for heap comparison */  
+  MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
+
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
   
@@ -237,6 +268,9 @@ void MC_modelcheck_safety(void)
 
   /* Create exploration stack */
   mc_stack_safety = xbt_fifo_new();
+
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
+    MC_init_dot_output();
 
   MC_UNSET_RAW_MEM;
 
@@ -271,23 +305,33 @@ void MC_modelcheck_liveness(){
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_init();
+
+  mc_time = xbt_new0(double, simix_process_maxpid);
+
+  /* mc_time refers to clock for each process -> ignore it for heap comparison */  
+  MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
  
   MC_SET_RAW_MEM;
-  
+ 
   /* Initialize statistics */
-  mc_stats_pair = xbt_new0(s_mc_stats_pair_t, 1);
+  mc_stats = xbt_new0(s_mc_stats_t, 1);
+  mc_stats->state_size = 1;
 
   /* Create exploration stack */
   mc_stack_liveness = xbt_fifo_new();
 
+  /* Create the initial state */
   initial_state_liveness = xbt_new0(s_mc_global_t, 1);
 
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
+    MC_init_dot_output();
+  
   MC_UNSET_RAW_MEM;
 
   MC_ddfs_init();
 
   /* We're done */
-  MC_print_statistics_pairs(mc_stats_pair);
+  MC_print_statistics(mc_stats);
   xbt_free(mc_time);
 
   if(raw_mem_set)
@@ -303,11 +347,16 @@ void MC_exit(void)
   xbt_abort();
 }
 
+int SIMIX_pre_mc_random(smx_simcall_t simcall){
 
-int MC_random(int min, int max)
+  return simcall->mc_value;
+}
+
+
+int MC_random(void)
 {
   /*FIXME: return mc_current_state->executed_transition->random.value;*/
-  return 0;
+  return simcall_mc_random();
 }
 
 /**
@@ -356,11 +405,12 @@ void MC_replay(xbt_fifo_t stack, int start)
 {
   int raw_mem = (mmalloc_get_current_heap() == raw_heap);
 
-  int value, i = 1;
+  int value, i = 1, count = 1;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
   mc_state_t state;
+  smx_process_t process = NULL;
 
   XBT_DEBUG("**** Begin Replay ****");
 
@@ -380,6 +430,19 @@ void MC_replay(xbt_fifo_t stack, int start)
     }
   }
 
+  MC_SET_RAW_MEM;
+  xbt_dict_reset(first_enabled_state);
+  xbt_swag_foreach(process, simix_global->process_list){
+    if(MC_process_is_enabled(process)){
+      char *key = bprintf("%lu", process->pid);
+      char *data = bprintf("%d", count);
+      xbt_dict_set(first_enabled_state, key, data, NULL);
+      xbt_free(key);
+    }
+  }
+  MC_UNSET_RAW_MEM;
+  
+
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (item = start_item;
        item != xbt_fifo_get_first_item(stack);
@@ -387,6 +450,12 @@ void MC_replay(xbt_fifo_t stack, int start)
 
     state = (mc_state_t) xbt_fifo_get_item_content(item);
     saved_req = MC_state_get_executed_request(state, &value);
+   
+    MC_SET_RAW_MEM;
+    char *key = bprintf("%lu", saved_req->issuer->pid);
+    xbt_dict_remove(first_enabled_state, key); 
+    xbt_free(key);
+    MC_UNSET_RAW_MEM;
    
     if(saved_req){
       /* because we got a copy of the executed request, we have to fetch the  
@@ -400,14 +469,32 @@ void MC_replay(xbt_fifo_t stack, int start)
         xbt_free(req_str);
       }
     }
-         
+    
     SIMIX_simcall_pre(req, value);
     MC_wait_for_requests();
+
+    count++;
+
+    MC_SET_RAW_MEM;
+    /* Insert in dict all enabled processes */
+    xbt_swag_foreach(process, simix_global->process_list){
+      if(MC_process_is_enabled(process) /*&& !MC_state_process_is_done(state, process)*/){
+        char *key = bprintf("%lu", process->pid);
+        if(xbt_dict_get_or_null(first_enabled_state, key) == NULL){
+          char *data = bprintf("%d", count);
+          xbt_dict_set(first_enabled_state, key, data, NULL);
+        }
+        xbt_free(key);
+      }
+    }
+    MC_UNSET_RAW_MEM;
          
     /* Update statistics */
     mc_stats->visited_states++;
     mc_stats->executed_transitions++;
+
   }
+
   XBT_DEBUG("**** End Replay ****");
 
   if(raw_mem)
@@ -428,7 +515,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
   smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item;
   mc_state_t state;
-  mc_pair_stateless_t pair;
+  mc_pair_t pair;
   int depth = 1;
 
   XBT_DEBUG("**** Begin Replay ****");
@@ -447,7 +534,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
     while(depth <= xbt_fifo_size(stack)){
 
-      pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
+      pair = (mc_pair_t) xbt_fifo_get_item_content(item);
       state = (mc_state_t) pair->graph_state;
 
       if(pair->requests > 0){
@@ -477,7 +564,8 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
       depth++;
     
       /* Update statistics */
-      mc_stats_pair->visited_pairs++;
+      mc_stats->visited_pairs++;
+      mc_stats->executed_transitions++;
 
       item = xbt_fifo_get_prev_item(item);
     }
@@ -489,7 +577,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
          item != xbt_fifo_get_first_item(stack);
          item = xbt_fifo_get_prev_item(item)) {
 
-      pair = (mc_pair_stateless_t) xbt_fifo_get_item_content(item);
+      pair = (mc_pair_t) xbt_fifo_get_item_content(item);
       state = (mc_state_t) pair->graph_state;
 
       if(pair->requests > 0){
@@ -519,7 +607,8 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
       depth++;
     
       /* Update statistics */
-      mc_stats_pair->visited_pairs++;
+      mc_stats->visited_pairs++;
+      mc_stats->executed_transitions++;
     }
   }  
 
@@ -600,13 +689,13 @@ void MC_show_deadlock(smx_simcall_t req)
 
 void MC_show_stack_liveness(xbt_fifo_t stack){
   int value;
-  mc_pair_stateless_t pair;
+  mc_pair_t pair;
   xbt_fifo_item_t item;
   smx_simcall_t req;
   char *req_str = NULL;
   
   for (item = xbt_fifo_get_last_item(stack);
-       (item ? (pair = (mc_pair_stateless_t) (xbt_fifo_get_item_content(item)))
+       (item ? (pair = (mc_pair_t) (xbt_fifo_get_item_content(item)))
         : (NULL)); item = xbt_fifo_get_prev_item(item)) {
     req = MC_state_get_executed_request(pair->graph_state, &value);
     if(req){
@@ -625,11 +714,11 @@ void MC_dump_stack_liveness(xbt_fifo_t stack){
 
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
-  mc_pair_stateless_t pair;
+  mc_pair_t pair;
 
   MC_SET_RAW_MEM;
-  while ((pair = (mc_pair_stateless_t) xbt_fifo_pop(stack)) != NULL)
-    pair_stateless_free(pair);
+  while ((pair = (mc_pair_t) xbt_fifo_pop(stack)) != NULL)
+    MC_pair_delete(pair);
   MC_UNSET_RAW_MEM;
 
   if(raw_mem_set)
@@ -640,26 +729,20 @@ void MC_dump_stack_liveness(xbt_fifo_t stack){
 
 void MC_print_statistics(mc_stats_t stats)
 {
-  //XBT_INFO("State space size ~= %lu", stats->state_size);
-  XBT_INFO("Expanded states = %lu", stats->expanded_states);
-  XBT_INFO("Visited states = %lu", stats->visited_states);
+  if(stats->expanded_pairs == 0){
+    XBT_INFO("Expanded states = %lu", stats->expanded_states);
+    XBT_INFO("Visited states = %lu", stats->visited_states);
+  }else{
+    XBT_INFO("Expanded pairs = %lu", stats->expanded_pairs);
+    XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
+  }
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  XBT_INFO("Expanded / Visited = %lf",
-           (double) stats->visited_states / stats->expanded_states);
-  /*XBT_INFO("Exploration coverage = %lf",
-    (double)stats->expanded_states / stats->state_size); */
-}
-
-void MC_print_statistics_pairs(mc_stats_pair_t stats)
-{
-  XBT_INFO("Expanded pairs = %lu", stats->expanded_pairs);
-  XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
-  //XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  XBT_INFO("Expanded / Visited = %lf",
-           (double) stats->visited_pairs / stats->expanded_pairs);
-
-  if(mmalloc_get_current_heap() == raw_heap)
-    MC_UNSET_RAW_MEM;
+  MC_SET_RAW_MEM;
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
+    fprintf(dot_output, "}\n");
+    fclose(dot_output);
+  }
+  MC_UNSET_RAW_MEM;
 }
 
 void MC_assert(int prop)
@@ -683,7 +766,7 @@ static void MC_assert_pair(int prop){
     //XBT_INFO("Counter-example execution trace:");
     MC_show_stack_liveness(mc_stack_liveness);
     //MC_dump_snapshot_stack(mc_snapshot_stack);
-    MC_print_statistics_pairs(mc_stats_pair);
+    MC_print_statistics(mc_stats);
     xbt_abort();
   }
 }
@@ -732,7 +815,7 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
 
-  xbt_new_propositional_symbol(_mc_property_automaton,id,fct);
+  xbt_automaton_propositional_symbol_new(_mc_property_automaton,id,fct);
 
   MC_UNSET_RAW_MEM;
 
@@ -744,8 +827,7 @@ void MC_automaton_new_propositional_symbol(const char* id, void* fct) {
 /************ MC_ignore ***********/ 
 
 void heap_ignore_region_free(mc_heap_ignore_region_t r){
-  if(r)
-    xbt_free(r);
+  xbt_free(r);
 }
 
 void heap_ignore_region_free_voidp(void *r){
@@ -767,10 +849,10 @@ void MC_ignore_heap(void *address, size_t size){
   
   if(((xbt_mheap_t)std_heap)->heapinfo[region->block].type == 0){
     region->fragment = -1;
-    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore = 1;
+    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_block.ignore++;
   }else{
     region->fragment = ((uintptr_t) (ADDR2UINT (address) % (BLOCKSIZE))) >> ((xbt_mheap_t)std_heap)->heapinfo[region->block].type;
-    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment] = 1;
+    ((xbt_mheap_t)std_heap)->heapinfo[region->block].busy_frag.ignore[region->fragment]++;
   }
   
   if(mc_heap_comparison_ignore == NULL){
@@ -782,7 +864,7 @@ void MC_ignore_heap(void *address, size_t size){
   }
 
   unsigned int cursor = 0;
-  mc_heap_ignore_region_t current_region;
+  mc_heap_ignore_region_t current_region = NULL;
   int start = 0;
   int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
   
@@ -817,7 +899,7 @@ void MC_remove_ignore_heap(void *address, size_t size){
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
   MC_SET_RAW_MEM;
-  
+
   unsigned int cursor = 0;
   int start = 0;
   int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
@@ -961,7 +1043,7 @@ static size_t data_bss_ignore_size(void *address){
 
 
 
-void MC_ignore_stack(const char *var_name, const char *frame){
+void MC_ignore_stack(const char *var_name, const char *frame_name){
   
   int raw_mem_set = (mmalloc_get_current_heap() == raw_heap);
 
@@ -975,7 +1057,7 @@ void MC_ignore_stack(const char *var_name, const char *frame){
     mc_stack_ignore_variable_t var = NULL;
     var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
     var->var_name = strdup(var_name);
-    var->frame = strdup(frame);
+    var->frame = strdup(frame_name);
 
     xbt_dynar_insert_at(mc_stack_comparison_ignore, 0, &var);
 
@@ -989,7 +1071,7 @@ void MC_ignore_stack(const char *var_name, const char *frame){
     while(start <= end){
       cursor = (start + end) / 2;
       current_var = (mc_stack_ignore_variable_t)xbt_dynar_get_as(mc_stack_comparison_ignore, cursor, mc_stack_ignore_variable_t);
-      if(strcmp(current_var->frame, frame) == 0){
+      if(strcmp(current_var->frame, frame_name) == 0){
         if(strcmp(current_var->var_name, var_name) == 0){
           MC_UNSET_RAW_MEM;
           if(raw_mem_set)
@@ -1001,21 +1083,33 @@ void MC_ignore_stack(const char *var_name, const char *frame){
         if(strcmp(current_var->var_name, var_name) > 0)
           end = cursor - 1;
       }
-      if(strcmp(current_var->frame, frame) < 0)
+      if(strcmp(current_var->frame, frame_name) < 0)
         start = cursor + 1;
-      if(strcmp(current_var->frame, frame) > 0)
+      if(strcmp(current_var->frame, frame_name) > 0)
         end = cursor - 1;
     }
 
     mc_stack_ignore_variable_t var = NULL;
     var = xbt_new0(s_mc_stack_ignore_variable_t, 1);
     var->var_name = strdup(var_name);
-    var->frame = strdup(frame);
+    var->frame = strdup(frame_name);
 
-    if(strcmp(current_var->frame, frame) < 0)
+    if(strcmp(current_var->frame, frame_name) < 0)
       xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor + 1, &var);
     else
       xbt_dynar_insert_at(mc_stack_comparison_ignore, cursor, &var);
+
+  }
+
+ /* Remove variable from mc_local_variables */
+
+  if(mc_local_variables != NULL){
+
+    if(strcmp(frame_name, "*") != 0){
+      dw_frame_t frame = xbt_dict_get_or_null(mc_local_variables, frame_name);
+      if(frame != NULL)
+        xbt_dict_remove(frame->variables, var_name);
+    }
 
   }
 
@@ -1342,10 +1436,8 @@ void MC_get_local_variables(const char *elf_file, xbt_dict_t location_list, xbt_
       }
 
       xbt_free(subprogram_start);
-      if(subprogram_end != NULL){
-        xbt_free(subprogram_end);
-        subprogram_end = NULL;
-      }
+      xbt_free(subprogram_end);
+      subprogram_end = NULL;
         
 
     }else if(strcmp(node_type, "(DW_TAG_variable)") == 0){ /* New variable */

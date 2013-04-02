@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2008-2013 Da SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,20 +18,8 @@ mc_state_t MC_state_new()
   state->max_pid = simix_process_maxpid;
   state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
   state->system_state = NULL;
-
-  mc_stats->expanded_states++;
-  return state;
-}
-
-mc_state_t MC_state_pair_new(void)
-{
-  mc_state_t state = NULL;
+  state->num = ++mc_stats->expanded_states;
   
-  state = xbt_new0(s_mc_state_t, 1);
-  state->max_pid = simix_process_maxpid;
-  state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
-  
-  //mc_stats->expanded_states++;
   return state;
 }
 
@@ -64,7 +52,7 @@ unsigned int MC_state_interleave_size(mc_state_t state)
   unsigned int i, size=0;
 
   for(i=0; i < state->max_pid; i++){
-    if(state->proc_status[i].state == MC_INTERLEAVE)
+    if((state->proc_status[i].state == MC_INTERLEAVE) || (state->proc_status[i].state == MC_MORE_INTERLEAVE))
       size++;
   }
 
@@ -79,6 +67,8 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int valu
 {
   state->executed_req = *req;
   state->req_num = value;
+  smx_process_t process = NULL;
+  mc_procstate_t procstate = NULL;
 
   /* The waitany and testany request are transformed into a wait or test request over the
    * corresponding communication action so it can be treated later by the dependence
@@ -117,12 +107,26 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int valu
       simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
       break;
 
+    case SIMCALL_MC_RANDOM:
+      state->internal_req = *req;
+      simcall_mc_random__set__result(&state->internal_req, value);
+      if(value == 0){
+        xbt_swag_foreach(process, simix_global->process_list){
+          procstate = &state->proc_status[process->pid];
+          if(process->pid == req->issuer->pid){
+            procstate->state = MC_MORE_INTERLEAVE;  
+            break;
+          }        
+        }
+      }
+      break;
+
     default:
       state->internal_req = *req;
       break;
   }
 }
-
+ 
 smx_simcall_t MC_state_get_executed_request(mc_state_t state, int *value)
 {
   *value = state->req_num;
@@ -143,7 +147,7 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
   xbt_swag_foreach(process, simix_global->process_list){
     procstate = &state->proc_status[process->pid];
 
-    if(procstate->state == MC_INTERLEAVE){
+    if(procstate->state == MC_INTERLEAVE || procstate->state == MC_MORE_INTERLEAVE){
       if(MC_process_is_enabled(process)){
         switch(process->simcall.call){
           case SIMCALL_COMM_WAITANY:
@@ -193,6 +197,15 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
 
             break;
 
+          case SIMCALL_MC_RANDOM:
+            if(procstate->state == MC_INTERLEAVE)
+              *value = 0;
+            else
+              *value = 1;
+            procstate->state = MC_DONE;
+            return &process->simcall;
+            break;
+          
           default:
             procstate->state = MC_DONE;
             *value = 0;

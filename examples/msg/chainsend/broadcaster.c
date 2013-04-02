@@ -99,7 +99,8 @@ static void broadcaster_destroy(broadcaster_t bc)
   /* Destroy iterator and hostlist */
   xbt_dynar_iterator_delete(bc->it);
   xbt_dynar_free(&bc->pending_sends);
-  xbt_dynar_free(&bc->host_list);
+  xbt_dynar_free(&bc->host_list); /* FIXME: host names are not free'd */
+  xbt_free(bc);
 }
 
 /** Emitter function  */

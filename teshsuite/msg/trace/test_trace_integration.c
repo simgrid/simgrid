@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   MSG_function_register("test_trace", test_trace);
   /* Use the same file for platform and deployment. */
   MSG_create_environment(argv[1]);
-  MSG_launch_application(argv[1]);
+  MSG_launch_application(argv[2]);
   /* Run the example. */
   res = MSG_main();
 

@@ -248,9 +248,7 @@ public class Task {
      * @throws HostFailureException
      * @throws TimeoutException
 	 */
-	public void sendBounded(String alias, double timeout, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
-              sendBounded(alias,timeout,maxrate);
-        }
+	public native void sendBounded(String alias, double timeout, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException;
 
 
 	/**
@@ -308,6 +306,55 @@ public class Task {
      * @param host
 	 */
 	public native static Task receive(String mailbox, double timeout, Host host) throws TransferFailureException, HostFailureException, TimeoutException;
+
+	/**
+	 * Starts listening for receiving a task from an asynchronous communication with a capped rate
+	 * @param mailbox
+	 */
+	public static native Comm irecvBounded(String mailbox, double rate);
+	/**
+	 * Retrieves next task from the mailbox identified by the specified name with a capped rate
+	 *
+     * @param mailbox
+	 */
+
+	public static Task receiveBounded(String mailbox, double rate) throws TransferFailureException, HostFailureException, TimeoutException {
+		return receiveBounded(mailbox, -1.0, null, rate);
+	}
+
+	/**
+	 * Retrieves next task on the mailbox identified by the specified name (wait at most \a timeout seconds) with a capped rate
+	 *
+     * @param mailbox
+     * @param timeout
+	 */
+	public static Task receiveBounded(String mailbox, double timeout, double rate) throws  TransferFailureException, HostFailureException, TimeoutException {
+		return receiveBounded(mailbox, timeout, null, rate);
+	}
+
+	/**
+	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias with a capped rate
+	 *
+     * @param mailbox
+     * @param host
+	 */
+
+	public static Task receiveBounded(String mailbox, Host host, double rate) throws TransferFailureException, HostFailureException, TimeoutException {
+		return receiveBounded(mailbox, -1.0, host, rate);
+	}
+
+	/**
+	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias (wait at most \a timeout seconds)
+	 * with a capped rate
+	 *
+     * @param mailbox
+     * @param timeout 
+     * @param host
+	 */
+	public native static Task receiveBounded(String mailbox, double timeout, Host host, double rate) throws TransferFailureException, HostFailureException, TimeoutException;
+
+	
+	
 	/**
 	 * Tests whether there is a pending communication on the mailbox identified by the specified alias, and who sent it
      */

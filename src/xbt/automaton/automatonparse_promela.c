@@ -25,10 +25,10 @@ static void new_state(char* id, int src){
     }
   }
 
-  xbt_state_t state = NULL;
+  xbt_automaton_state_t state = NULL;
   state = xbt_automaton_state_exists(parsed_automaton, id_state);
   if(state == NULL){
-    state = xbt_automaton_new_state(parsed_automaton, type, id_state);
+    state = xbt_automaton_state_new(parsed_automaton, type, id_state);
   }
 
   if(type==-1)
@@ -39,48 +39,48 @@ static void new_state(char* id, int src){
     
 }
 
-static void new_transition(char* id, xbt_exp_label_t label){
+static void new_transition(char* id, xbt_automaton_exp_label_t label){
 
   char* id_state = strdup(id);
-  xbt_state_t state_dst = NULL;
+  xbt_automaton_state_t state_dst = NULL;
   new_state(id, 0);
   state_dst = xbt_automaton_state_exists(parsed_automaton, id_state);
-  xbt_state_t state_src = xbt_automaton_state_exists(parsed_automaton, state_id_src);
+  xbt_automaton_state_t state_src = xbt_automaton_state_exists(parsed_automaton, state_id_src);
   
   //xbt_transition_t trans = NULL;
-  xbt_automaton_new_transition(parsed_automaton, state_src, state_dst, label);
+  xbt_automaton_transition_new(parsed_automaton, state_src, state_dst, label);
 
 }
 
-static xbt_exp_label_t new_label(int type, ...){
-  xbt_exp_label_t label = NULL;
+static xbt_automaton_exp_label_t new_label(int type, ...){
+  xbt_automaton_exp_label_t label = NULL;
   va_list ap;
   va_start(ap,type);
   switch(type){
   case 0 : {
-    xbt_exp_label_t left = va_arg(ap, xbt_exp_label_t);
-    xbt_exp_label_t right = va_arg(ap, xbt_exp_label_t);
-    label = xbt_automaton_new_label(type, left, right);
+    xbt_automaton_exp_label_t left = va_arg(ap, xbt_automaton_exp_label_t);
+    xbt_automaton_exp_label_t right = va_arg(ap, xbt_automaton_exp_label_t);
+    label = xbt_automaton_exp_label_new(type, left, right);
     break;
   }
   case 1 : {
-    xbt_exp_label_t left = va_arg(ap, xbt_exp_label_t);
-    xbt_exp_label_t right = va_arg(ap, xbt_exp_label_t);
-    label = xbt_automaton_new_label(type, left, right);
+    xbt_automaton_exp_label_t left = va_arg(ap, xbt_automaton_exp_label_t);
+    xbt_automaton_exp_label_t right = va_arg(ap, xbt_automaton_exp_label_t);
+    label = xbt_automaton_exp_label_new(type, left, right);
     break;
   }
   case 2 : {
-    xbt_exp_label_t exp_not = va_arg(ap, xbt_exp_label_t);
-    label = xbt_automaton_new_label(type, exp_not);
+    xbt_automaton_exp_label_t exp_not = va_arg(ap, xbt_automaton_exp_label_t);
+    label = xbt_automaton_exp_label_new(type, exp_not);
     break;
   }
   case 3 : {
     char* p = va_arg(ap, char*);
-    label = xbt_automaton_new_label(type, p);
+    label = xbt_automaton_exp_label_new(type, p);
     break;
   }
   case 4 : {
-    label = xbt_automaton_new_label(type);
+    label = xbt_automaton_exp_label_new(type);
     break;
   }
   }

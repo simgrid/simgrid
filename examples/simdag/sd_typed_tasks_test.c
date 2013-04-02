@@ -92,7 +92,7 @@ int main(int argc, char **argv)
           SD_task_get_start_time(task), SD_task_get_finish_time(task));
     SD_task_destroy(task);
   }
-
+  xbt_dynar_free_container(&changed_tasks);
   SD_exit();
   return 0;
 }

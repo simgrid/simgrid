@@ -55,6 +55,7 @@ foreach my $fortran (@ARGV) {
       if(/extern \/\* Subroutine \*\//) {
          $cutext = 1;
       }
+      $_ =~ s/(mpi_[\w]*_)_/$1/g;
       if($cutext) {
          if(/;$/) {
             $cutext = 0;
@@ -62,7 +63,7 @@ foreach my $fortran (@ARGV) {
          next;
       }
       if(/\/* Main program alias \*\/\s*int\s+.*\s*\(\s*\)\s*{(.*)}/) {
-         $_ = "int smpi_simulated_main__(int argc, char** argv) { smpi_process_init(&argc, &argv); $1 }\n";
+         $_ = "int smpi_simulated_main_(int argc, char** argv) { smpi_process_init(&argc, &argv); $1 }\n";
       }
       print $tmp "$_\n";
    }

@@ -1,18 +1,26 @@
 /** \addtogroup MSG_API
 
-      MSG was the first distributed programming environment provided within
-      SimGrid. While almost realistic, it remains quite simple (simplistic?).
-      This describes the native to MSG.
+MSG was the first distributed programming environment provided within SimGrid,
+and is still the most commonly used nowadays. If you are unsure of the interface
+you should use, they you probably want to use MSG. It constitutes a convenient
+simplification of the reality of distributed systems. It can be used to build
+rather realistic simulations, but remains simple to use: most unpleasant
+technical elements can be abstracted away rather easily.  If you want to use the
+C programming language, your are in the right section. If you prefer not to use
+this venerable but demanding language, please refer to the @ref MSG_Java, the
+@ref MSG_LUA, or the @ref MSG_Ruby (that are distributed separately).
 
-      \section jMSG_who Who should use this (and who shouldn't)
+If you think that MSG may not be the interface you need, please consider the
+other user interfaces provided by SimGrid: If you want to use DAGs, have a look
+at the \ref SD_API programming environment. If you want to study an existing MPI
+program, have a look at the \ref SMPI_API one. If none of those programming
+environments fits your needs, you may consider implementing your own directly on
+top of \ref SIMIX_API, or even on top of \ref SURF_API (but you want to contact
+us before digging into these badly documented internal modules).
 
-      You should use MSG if you want to study some heuristics for a
-      given problem you don't really want to implement. If you want to
-      use the C programming language, your are in the right
-      section. To use the Java or Ruby programming interfaces, please refer to
-      the documentation provided in the relevant packages.
 
-  \section MSG_funct Offered functionnalities
+
+\section MSG_funct Offered functionalities
    - \ref msg_simulation
    - \ref m_process_management
    - \ref m_host_management
@@ -86,7 +94,7 @@ details).
 
 /** @defgroup msg_VMs VMs
  *  @ingroup MSG_API
- *  @brief This section describes the interface created to mimick IaaS clouds.
+ *  @brief This section describes the interface created to mimic IaaS clouds.
  *
  *  With it, you can create virtual machines to put your processes
  *  into, and interact directly with the VMs to manage groups of
@@ -146,14 +154,13 @@ This is the lua bindings of the \ref MSG_API interface.
 
 \section lMSG_who Who should use this (and who shouldn't)
 
-If you want to use MSG to study your algorithm, but you don't want to
-use the C language (using \ref MSG_API), then you should use some
-bindings such as this one. The advantage of the lua bindings is that
-they are distributed directly with the main archive (in contrary to
-Java and Ruby bindings, for example, that are distributed separately).
-Another advantage of lua is that there is almost no performance loss
-with regard to the C version (at least there shouln't be any -- it is
-still to be precisely assessed).
+If you want to use MSG to study your algorithm, but you don't want to use the C
+language (using \ref MSG_API), then you should use some bindings such as this
+one. Just like the \ref MSG_Java, the advantage of the lua bindings is that they
+are distributed directly with the main archive (in contrary to Ruby bindings,
+that are distributed separately).  Another advantage of lua is that there is
+almost no performance loss with regard to the C version (at least there
+shouldn't be any -- it is still to be precisely assessed).
 
 \section MSG_Lua_funct  Lua offered functionnalities in MSG
 

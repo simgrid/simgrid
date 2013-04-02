@@ -204,6 +204,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       candidate_info->busy_frag.frag_size[candidate_frag] = requested_size;
       candidate_info->busy_frag.ignore[candidate_frag] = 0;
       //xbt_backtrace_no_malloc(candidate_info->busy_frag.bt[candidate_frag],XBT_BACKTRACE_SIZE);
+      //xbt_libunwind_backtrace(candidate_info->busy_frag.bt[candidate_frag],XBT_BACKTRACE_SIZE);
 
       /* Update the statistics.  */
       mdp -> heapstats.chunks_used++;
@@ -234,6 +235,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       mdp->heapinfo[block].busy_frag.frag_size[0] = requested_size;
       mdp->heapinfo[block].busy_frag.ignore[0] = 0;
       //xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_frag.bt[0],XBT_BACKTRACE_SIZE);
+      //xbt_libunwind_backtrace(mdp->heapinfo[block].busy_frag.bt[0],XBT_BACKTRACE_SIZE);
       
       /* update stats */
       mdp -> heapstats.chunks_free += (BLOCKSIZE >> log) - 1;
@@ -277,11 +279,13 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
         block = BLOCK(result);
         for (it=0;it<blocks;it++){
           mdp->heapinfo[block+it].type = 0;
+          mdp->heapinfo[block+it].busy_block.busy_size = 0;
+          mdp->heapinfo[block+it].busy_block.ignore = 0;
         }
         mdp->heapinfo[block].busy_block.size = blocks;
         mdp->heapinfo[block].busy_block.busy_size = requested_size;
         //mdp->heapinfo[block].busy_block.bt_size=xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
-        mdp->heapinfo[block].busy_block.ignore = 0;
+        //mdp->heapinfo[block].busy_block.bt_size = xbt_libunwind_backtrace(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
         mdp -> heapstats.chunks_used++;
         mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
 
@@ -316,13 +320,14 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 
     for (it=0;it<blocks;it++){
       mdp->heapinfo[block+it].type = 0;
+      mdp->heapinfo[block+it].busy_block.busy_size = 0;
+      mdp->heapinfo[block+it].busy_block.ignore = 0;
     }
     mdp->heapinfo[block].busy_block.size = blocks;
-    mdp->heapinfo[block].busy_block.busy_size = requested_size;
-    mdp->heapinfo[block].busy_block.ignore = 0;
-    //mdp->heapinfo[block].busy_block.bt_size = 0;
+    mdp->heapinfo[block].busy_block.busy_size = requested_size; 
     //mdp->heapinfo[block].busy_block.bt_size = xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
-
+    //mdp->heapinfo[block].busy_block.bt_size = xbt_libunwind_backtrace(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
+    
     mdp -> heapstats.chunks_used++;
     mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
     mdp -> heapstats.bytes_free -= blocks * BLOCKSIZE;

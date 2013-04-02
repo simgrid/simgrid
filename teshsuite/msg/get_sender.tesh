@@ -1,5 +1,5 @@
 ! output sort
-$ msg/get_sender ${srcdir:=.}/msg/get_sender.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ msg/get_sender  ${srcdir:=.}/msg/get_sender_p.xml ${srcdir:=.}/msg/get_sender_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:send@toto) Sending
 > [  0.000000] (2:receive@toto) Receiving
 > [  0.000000] (2:receive@toto) Got a message sent by 'send'

@@ -272,6 +272,7 @@ void smpi_global_destroy(void)
   smpi_comm_destroy(MPI_COMM_WORLD);
   MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {
+    smpi_group_destroy(smpi_comm_group(process_data[i]->comm_self));
     smpi_comm_destroy(process_data[i]->comm_self);
     xbt_os_timer_free(process_data[i]->timer);
     simcall_rdv_destroy(process_data[i]->mailbox);
@@ -291,23 +292,23 @@ int __attribute__((weak)) xargc;
 char** __attribute__((weak)) xargv;
 
 #ifndef WIN32
-void __attribute__((weak)) user_main__(){
+void __attribute__((weak)) user_main_(){
   xbt_die("Should not be in this smpi_simulated_main");
   return;
 }
-int __attribute__((weak)) smpi_simulated_main__(int argc, char** argv) {
+int __attribute__((weak)) smpi_simulated_main_(int argc, char** argv) {
   smpi_process_init(&argc, &argv);
-  user_main__();
+  user_main_();
   //xbt_die("Should not be in this smpi_simulated_main");
   return 0;
 }
 
 int __attribute__((weak)) main(int argc, char** argv) {
-   return smpi_main(smpi_simulated_main__,argc,argv);
+   return smpi_main(smpi_simulated_main_,argc,argv);
 }
 
 int __attribute__((weak)) MAIN__(){
-  return smpi_main(smpi_simulated_main__,xargc, xargv);
+  return smpi_main(smpi_simulated_main_,xargc, xargv);
 };
 #endif
 
@@ -338,6 +339,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
   XBT_LOG_CONNECT(smpi_mpi_dt);
   XBT_LOG_CONNECT(smpi_pmpi);
   XBT_LOG_CONNECT(smpi_replay);
+  XBT_LOG_CONNECT(smpi_colls);
 
 #ifdef HAVE_TRACING
   TRACE_global_init(&argc, argv);
