@@ -1263,18 +1263,18 @@ int PMPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
   //TODO: suboptimal implementation
   void *recvbuf;
   int retval;
-  if ((datatype == MPI_DATATYPE_NULL)||(datatype->has_subtype==1)) {
+  if (datatype == MPI_DATATYPE_NULL) {
       retval = MPI_ERR_TYPE;
   } else if (count < 0) {
       retval = MPI_ERR_COUNT;
   } else {
-    int size = smpi_datatype_size(datatype) * count;
+    int size = smpi_datatype_get_extent(datatype) * count;
     recvbuf = xbt_new(char, size);
     retval =
         MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf, count,
                      datatype, src, recvtag, comm, status);
     if(retval==MPI_SUCCESS){
-        memcpy(buf, recvbuf, size * sizeof(char));
+        smpi_datatype_copy(recvbuf, count, datatype, buf, count, datatype);
     }
     xbt_free(recvbuf);
 
