@@ -1,11 +1,10 @@
 #include "colls.h"
 
 int
-smpi_coll_tuned_allgather_RDB(void *sbuf, int send_count,
-                                              MPI_Datatype send_type,
-                                              void *rbuf, int recv_count,
-                                              MPI_Datatype recv_type,
-                                              MPI_Comm comm)
+smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
+                              MPI_Datatype send_type, void *rbuf,
+                              int recv_count, MPI_Datatype recv_type,
+                              MPI_Comm comm)
 {
   // MPI variables
   MPI_Status status;
