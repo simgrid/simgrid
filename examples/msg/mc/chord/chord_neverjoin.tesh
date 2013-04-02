@@ -10,7 +10,7 @@ $ ${bindir:=.}/chord_liveness --cfg=model-check:1 --cfg=contexts/factory:ucontex
 > [Jacquelin:node:(3) 0.000000] [chord_liveness/INFO] A transfer has occured
 > [Jacquelin:node:(3) 0.000000] [chord_liveness/INFO] The task was successfully received by node 1
 > [Jean_Yves:node:(1) 0.000000] [chord_liveness/INFO] Node 14 joined the ring
-> [0.000000] [mc_liveness/INFO] Next pair (depth = 11, 2 interleave) already reached !
+> [0.000000] [mc_liveness/INFO] Next pair (depth = 11, 2 interleave) already reached (equal to state 11) !
 > [0.000000] [mc_liveness/INFO] *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [0.000000] [mc_liveness/INFO] |             ACCEPTANCE CYCLE            |
 > [0.000000] [mc_liveness/INFO] *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

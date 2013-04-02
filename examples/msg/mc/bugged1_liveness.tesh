@@ -13,7 +13,7 @@ $ ${bindir:=.}/bugged1_liveness --cfg=model-check:1 --cfg=contexts/factory:ucont
 > [Tremblay:coordinator:(1) 0.000000] [bugged1_liveness/INFO] CS release. resource now idle
 > [Boivin:client:(3) 0.000000] [bugged1_liveness/INFO] Ask the request
 > [Tremblay:coordinator:(1) 0.000000] [bugged1_liveness/INFO] CS idle. Grant immediatly
-> [0.000000] [mc_liveness/INFO] Next pair (depth = 22, 1 interleave) already reached !
+> [0.000000] [mc_liveness/INFO] Next pair (depth = 22, 1 interleave) already reached (equal to state 11) !
 > [0.000000] [mc_liveness/INFO] *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [0.000000] [mc_liveness/INFO] |             ACCEPTANCE CYCLE            |
 > [0.000000] [mc_liveness/INFO] *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
