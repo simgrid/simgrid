@@ -138,12 +138,6 @@ void MC_do_the_modelcheck_for_real() {
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
   MC_UNSET_RAW_MEM;
   
-  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
-    MC_SET_RAW_MEM;
-    MC_init_dot_output();
-    MC_UNSET_RAW_MEM;
-  }
-
   if (!_sg_mc_property_file || _sg_mc_property_file[0]=='\0') {
     if (mc_reduce_kind==e_mc_reduce_unset)
       mc_reduce_kind=e_mc_reduce_dpor;
@@ -275,6 +269,9 @@ void MC_modelcheck_safety(void)
   /* Create exploration stack */
   mc_stack_safety = xbt_fifo_new();
 
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
+    MC_init_dot_output();
+
   MC_UNSET_RAW_MEM;
 
   if(_sg_mc_visited > 0){
@@ -326,6 +323,9 @@ void MC_modelcheck_liveness(){
   /* Create the initial state */
   initial_state_liveness = xbt_new0(s_mc_global_t, 1);
 
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0'))
+    MC_init_dot_output();
+  
   MC_UNSET_RAW_MEM;
 
   MC_ddfs_init();
@@ -342,13 +342,6 @@ void MC_modelcheck_liveness(){
 
 void MC_exit(void)
 {
-  MC_SET_RAW_MEM;
-  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
-    fprintf(dot_output, "}\n");
-    fclose(dot_output);
-  }
-  MC_UNSET_RAW_MEM;
-
   xbt_free(mc_time);
   MC_memory_exit();
   xbt_abort();
@@ -744,6 +737,12 @@ void MC_print_statistics(mc_stats_t stats)
     XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
   }
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
+  MC_SET_RAW_MEM;
+  if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
+    fprintf(dot_output, "}\n");
+    fclose(dot_output);
+  }
+  MC_UNSET_RAW_MEM;
 }
 
 void MC_assert(int prop)
@@ -755,12 +754,6 @@ void MC_assert(int prop)
     XBT_INFO("Counter-example execution trace:");
     MC_dump_stack_safety(mc_stack_safety);
     MC_print_statistics(mc_stats);
-    MC_SET_RAW_MEM;
-    if((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0]!='\0')){
-      fprintf(dot_output, "}\n");
-      fclose(dot_output);
-    }
-    MC_UNSET_RAW_MEM;
     xbt_abort();
   }
 }

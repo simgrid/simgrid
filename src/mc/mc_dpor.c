@@ -282,7 +282,8 @@ void MC_dpor(void)
         xbt_free(req_str);
       }
         
-      req_str = MC_request_get_dot_output(req, value);
+      if(dot_output != NULL)
+        req_str = MC_request_get_dot_output(req, value);
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
@@ -345,7 +346,8 @@ void MC_dpor(void)
 
       MC_UNSET_RAW_MEM;
 
-      xbt_free(req_str);
+      if(dot_output != NULL)
+        xbt_free(req_str);
 
       /* Let's loop again */
 
