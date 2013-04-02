@@ -378,7 +378,18 @@ void MC_dpor(void)
           }
         }
 
-        max_depth_reached = 1;
+        if(MC_state_interleave_size(state) > 0){
+          max_depth_reached = 1;
+        }else{
+          /* Trash the current state, no longer needed */
+          MC_SET_RAW_MEM;
+          xbt_fifo_shift(mc_stack_safety);
+          MC_state_delete(state);
+          MC_UNSET_RAW_MEM;
+
+          max_depth_reached = 0;
+        }
+        
 
       }else{
 
