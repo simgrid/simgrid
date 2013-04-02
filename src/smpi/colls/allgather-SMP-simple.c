@@ -3,7 +3,7 @@
 #define NUM_CORE 8
 #endif
 
-int smpi_coll_tuned_allgather_SMP_simple(void *send_buf, int scount,
+int smpi_coll_tuned_allgather_smp_simple(void *send_buf, int scount,
                                          MPI_Datatype stype, void *recv_buf,
                                          int rcount, MPI_Datatype rtype,
                                          MPI_Comm comm)
