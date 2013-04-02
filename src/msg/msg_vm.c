@@ -183,7 +183,7 @@ msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
     simcall_host_set_params(vm, &params);
   }
 
-  /* TODO: We will revisit the disk support later. */
+  /* TODO: Limit net capability, take into account disk considerations. */
 
   return vm;
 }

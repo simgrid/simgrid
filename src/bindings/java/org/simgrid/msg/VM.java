@@ -14,25 +14,13 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 
 public class VM {
-	/**
-	 * This attribute represents a bind between a java task object and
-	 * a native task. Even if this attribute is public you must never
-	 * access to it. It is set automatically during the build of the object.
-	 */
-	private long bind = 0;
-	
-	private int coreAmount;
 
-        private String name;
 	/**
 	 * Create a new empty VM.
-	 * NOTE: it is expected that in the future, the coreAmount parameter will be used
-	 * to add extra constraints on the execution, but the argument is ignored for now.
+	 * NOTE: MSG_vm_create_core 
 	 */
-	public VM(Host host, String name, int coreAmount) {
-		this.coreAmount = coreAmount;
-		this.name = name;
-		start(host,name,coreAmount);
+	public VM(Host host, String name) {
+		create(host, name, 1024,  )
 	}
 	protected void finalize() {
 		destroy();
