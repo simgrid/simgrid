@@ -32,13 +32,13 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
 
     smx_rdv_t rdv = r1->call == SIMCALL_COMM_ISEND ? simcall_comm_isend__get__rdv(r1) : simcall_comm_irecv__get__rdv(r1);
 
-    if(simcall_comm_wait__get__comm(r2)->comm.rdv != rdv)
+    if((simcall_comm_wait__get__comm(r2)->comm.rdv != rdv) && (simcall_comm_wait__get__timeout(r2) <= 0))
       return FALSE;
 
-    if(simcall_comm_wait__get__comm(r2)->comm.type == SIMIX_COMM_SEND && r1->call == SIMCALL_COMM_ISEND)
+    if((simcall_comm_wait__get__comm(r2)->comm.type == SIMIX_COMM_SEND) && (r1->call == SIMCALL_COMM_ISEND) && (simcall_comm_wait__get__timeout(r2) <= 0))
       return FALSE;
 
-    if(simcall_comm_wait__get__comm(r2)->comm.type == SIMIX_COMM_RECEIVE && r1->call == SIMCALL_COMM_IRECV)
+    if((simcall_comm_wait__get__comm(r2)->comm.type == SIMIX_COMM_RECEIVE) && (r1->call == SIMCALL_COMM_IRECV) && (simcall_comm_wait__get__timeout(r2) <= 0))
       return FALSE;
   }
 
@@ -50,13 +50,13 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
 
     smx_rdv_t rdv = r2->call == SIMCALL_COMM_ISEND ? simcall_comm_isend__get__rdv(r2) : simcall_comm_irecv__get__rdv(r2);
 
-    if(simcall_comm_wait__get__comm(r1)->comm.rdv != rdv)
+    if((simcall_comm_wait__get__comm(r1)->comm.rdv != rdv) && (simcall_comm_wait__get__timeout(r1) <= 0))
       return FALSE;
 
-    if(simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_SEND && r2->call == SIMCALL_COMM_ISEND)
+    if((simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_SEND) && (r2->call == SIMCALL_COMM_ISEND) && (simcall_comm_wait__get__timeout(r1) <= 0))
       return FALSE;
 
-    if(simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_RECEIVE && r2->call == SIMCALL_COMM_IRECV)
+    if((simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_RECEIVE) && (r2->call == SIMCALL_COMM_IRECV) && (simcall_comm_wait__get__timeout(r1) <= 0))
       return FALSE;
   }
 
