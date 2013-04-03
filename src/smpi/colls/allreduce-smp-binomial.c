@@ -47,10 +47,10 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
      #endif
    */
 
-  MPI_Comm_size(comm, &comm_size);
-  MPI_Comm_rank(comm, &rank);
-  MPI_Aint extent;
-  MPI_Type_extent(dtype, &extent);
+  comm_size=smpi_comm_size(comm);
+  rank=smpi_comm_rank(comm);
+  MPI_Aint extent, lb;
+  smpi_datatype_extent(dtype, &lb, &extent);
   tmp_buf = (void *) malloc(count * extent);
 
   /* compute intra and inter ranking */
@@ -63,7 +63,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
   int inter_comm_size = (comm_size + num_core - 1) / num_core;
 
   /* copy input buffer to output buffer */
-  MPI_Sendrecv(send_buf, count, dtype, rank, tag,
+  smpi_mpi_sendrecv(send_buf, count, dtype, rank, tag,
                recv_buf, count, dtype, rank, tag, comm, &status);
 
   /* start binomial reduce intra communication inside each SMP node */
@@ -72,12 +72,12 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
     if ((mask & intra_rank) == 0) {
       src = (inter_rank * num_core) + (intra_rank | mask);
       if (src < comm_size) {
-        MPI_Recv(tmp_buf, count, dtype, src, tag, comm, &status);
+        smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
         star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
       }
     } else {
       dst = (inter_rank * num_core) + (intra_rank & (~mask));
-      MPI_Send(recv_buf, count, dtype, dst, tag, comm);
+      smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
       break;
     }
     mask <<= 1;
@@ -91,12 +91,12 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
       if ((mask & inter_rank) == 0) {
         src = (inter_rank | mask) * num_core;
         if (src < comm_size) {
-          MPI_Recv(tmp_buf, count, dtype, src, tag, comm, &status);
+          smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
           star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
         }
       } else {
         dst = (inter_rank & (~mask)) * num_core;
-        MPI_Send(recv_buf, count, dtype, dst, tag, comm);
+        smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
         break;
       }
       mask <<= 1;
@@ -110,7 +110,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
     while (mask < inter_comm_size) {
       if (inter_rank & mask) {
         src = (inter_rank - mask) * num_core;
-        MPI_Recv(recv_buf, count, dtype, src, tag, comm, &status);
+        smpi_mpi_recv(recv_buf, count, dtype, src, tag, comm, &status);
         break;
       }
       mask <<= 1;
@@ -121,7 +121,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
       if (inter_rank < inter_comm_size) {
         dst = (inter_rank + mask) * num_core;
         if (dst < comm_size) {
-          MPI_Send(recv_buf, count, dtype, dst, tag, comm);
+          smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
         }
       }
       mask >>= 1;
@@ -137,7 +137,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
   while (mask < num_core_in_current_smp) {
     if (intra_rank & mask) {
       src = (inter_rank * num_core) + (intra_rank - mask);
-      MPI_Recv(recv_buf, count, dtype, src, tag, comm, &status);
+      smpi_mpi_recv(recv_buf, count, dtype, src, tag, comm, &status);
       break;
     }
     mask <<= 1;
@@ -147,7 +147,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
   while (mask > 0) {
     dst = (inter_rank * num_core) + (intra_rank + mask);
     if (dst < comm_size) {
-      MPI_Send(recv_buf, count, dtype, dst, tag, comm);
+      smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
     }
     mask >>= 1;
   }
