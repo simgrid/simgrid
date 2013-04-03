@@ -10,7 +10,6 @@
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 #include "simgrid/modelchecker.h"
-#include "chord_liveness.h"
 #include "mc/mc.h"
 
 /** @addtogroup MSG_examples
@@ -121,8 +120,9 @@ static void check_predecessor(node_t node);
 static void random_lookup(node_t);
 static void quit_notify(node_t node);
 
-/* Global variable corresponding to atomic proposition */
+/* Global variables corresponding to atomic propositions */
 int node_join = 0;
+int node_deliver = 0;
 
 /**
  * \brief Global initialization of the Chord simulation.
@@ -209,9 +209,11 @@ static void get_mailbox(int node_id, char* mailbox)
 static void task_free(void* task)
 {
   // TODO add a parameter data_free_function to MSG_task_create?
-  xbt_free(MSG_task_get_data(task));
-  MSG_task_destroy(task);
-  task = NULL;
+  if(task != NULL){
+    xbt_free(MSG_task_get_data(task));
+    MSG_task_destroy(task);
+    task = NULL;
+  }
 }
 
 /**
@@ -329,7 +331,6 @@ int node(int argc, char *argv[])
     if(join_success){
       XBT_INFO("Node %d joined the ring", node.id);
       node_join = 1; 
-      //MC_compare();
     }
   }
 
@@ -347,34 +348,71 @@ int node(int argc, char *argv[])
 
       if (!MSG_comm_test(node.comm_receive)) {
 
-        // no task was received: make some periodic calls
-        if (MSG_get_clock() >= next_stabilize_date) {
-          stabilize(&node);
-          next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
-        }
-        else if (MSG_get_clock() >= next_fix_fingers_date) {
-          fix_fingers(&node);
-          next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
-        }
-        else if (MSG_get_clock() >= next_check_predecessor_date) {
-          check_predecessor(&node);
-          next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
-        }
-        else if (MSG_get_clock() >= next_lookup_date) {
-          random_lookup(&node);
-          next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
-        }
-        else {
-          // nothing to do: sleep for a while
-          MSG_process_sleep(5);
-        }
+        #ifdef HAVE_MC
+          if(MC_is_active()){
+            if(MC_random()){
+              stabilize(&node);
+            }else if(MC_random()){
+              fix_fingers(&node);
+            }else if(MC_random()){
+              check_predecessor(&node);
+            }else if(MC_random()){
+              random_lookup(&node);
+            }else{
+              MSG_process_sleep(5);
+            }
+          }else{
+            if (MSG_get_clock() >= next_stabilize_date) {
+              stabilize(&node);
+              next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
+            }
+            else if (MSG_get_clock() >= next_fix_fingers_date) {
+              fix_fingers(&node);
+              next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
+            }
+            else if (MSG_get_clock() >= next_check_predecessor_date) {
+              check_predecessor(&node);
+              next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
+            }
+            else if (MSG_get_clock() >= next_lookup_date) {
+              random_lookup(&node);
+              next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
+            }
+            else {
+              // nothing to do: sleep for a while
+              MSG_process_sleep(5);
+            }
+          }
+        #else
+          if (MSG_get_clock() >= next_stabilize_date) {
+            stabilize(&node);
+            next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
+          }
+          else if (MSG_get_clock() >= next_fix_fingers_date) {
+            fix_fingers(&node);
+            next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
+          }
+          else if (MSG_get_clock() >= next_check_predecessor_date) {
+            check_predecessor(&node);
+            next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
+          }
+          else if (MSG_get_clock() >= next_lookup_date) {
+            random_lookup(&node);
+            next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
+          }
+          else {
+            // nothing to do: sleep for a while
+            MSG_process_sleep(5);
+          }
+        #endif
+
       }else{
 
         if (node.comm_receive) {
 
-          XBT_INFO("A transfer has occured");
+          node_deliver = 0;
 
-          //MC_compare();
+          XBT_INFO("A transfer has occured");
 
           // a transfer has occured
 
@@ -426,6 +464,7 @@ static void handle_task(node_t node, msg_task_t task) {
   switch (type) {
 
     case TASK_FIND_SUCCESSOR:
+      node_deliver = 1;
       XBT_DEBUG("Receiving a 'Find Successor' request from %s for id %d",
           task_data->issuer_host_name, task_data->request_id);
       // is my successor the successor?
@@ -895,8 +934,12 @@ static void random_lookup(node_t node)
   find_successor(node, id);
 }
 
-int predJoin(void){
+static int predJoin(void){
   return node_join;
+}
+
+static int predDeliver(void){
+  return node_deliver;
 }
 
 
@@ -906,13 +949,13 @@ int predJoin(void){
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  /*if (argc < 3) {
+  if (argc < 3) {
     printf("Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n", argv[0]);
-    printf("example: %s ../msg_platform.xml chord.xml\n", argv[0]);
+    printf("example: %s ../../msg_platform.xml deploy_chord_liveness.xml\n", argv[0]);
     exit(1);
-    }*/
+  }
 
-  char **options = &argv[0];
+  char **options = &argv[1];
   while (!strncmp(options[0], "-", 1)) {
 
     int length = strlen("-nb_bits=");
@@ -934,21 +977,20 @@ int main(int argc, char *argv[])
     options++;
   }
 
-  //const char* platform_file = options[0];
-  //const char* application_file = options[1];
+  const char* platform_file = options[0];
+  const char* application_file = options[1];
 
   chord_initialize();
 
-  MSG_config("model-check/property","promela_chord_liveness");
   MC_automaton_new_propositional_symbol("join", &predJoin);
+  MC_automaton_new_propositional_symbol("deliver", &predDeliver);
 
-  MSG_create_environment("../../msg_platform.xml");
-
+  MSG_create_environment(platform_file);
+  
   MSG_function_register("node", node);
-  MSG_launch_application("deploy_chord_liveness.xml");
+  MSG_launch_application(application_file);
 
   msg_error_t res = MSG_main();
-  //XBT_CRITICAL("Messages created: %ld", smx_total_comms);
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
   chord_exit();
