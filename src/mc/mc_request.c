@@ -195,7 +195,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     if(value == -1){
       type = xbt_strdup("WaitTimeout");
       p = pointer_to_string(act);
-      args = bprintf("comm=%p", p);
+      args = bprintf("comm=%s", p);
     }else{
       type = xbt_strdup("Wait");
       p = pointer_to_string(act);
