@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include "smpi/mpi.h"
+#include "smpi/private.h"
 #include "xbt.h"
 
 void star_reduction(MPI_Op op, void *src, void *target, int *count, MPI_Datatype *dtype);
