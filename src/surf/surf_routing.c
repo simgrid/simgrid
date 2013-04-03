@@ -119,6 +119,7 @@ static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
   s_surf_parsing_link_up_down_t link_up_down;
   link_up_down.link_up = xbt_lib_get_or_null(link_lib, host->link_up, SURF_LINK_LEVEL);
   link_up_down.link_down = xbt_lib_get_or_null(link_lib, host->link_down, SURF_LINK_LEVEL);
+  link_up_down.limiter_link=NULL;
 
   xbt_assert(link_up_down.link_up, "Link '%s' not found!",host->link_up);
   xbt_assert(link_up_down.link_down, "Link '%s' not found!",host->link_down);
