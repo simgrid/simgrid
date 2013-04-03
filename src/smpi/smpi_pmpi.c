@@ -1829,7 +1829,7 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count,
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
   } else {
-    smpi_mpi_allreduce(sendbuf, recvbuf, count, datatype, op, comm);
+      mpi_coll_allreduce_fun(sendbuf, recvbuf, count, datatype, op, comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
