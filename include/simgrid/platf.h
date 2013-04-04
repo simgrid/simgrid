@@ -47,7 +47,7 @@ typedef enum {
   SURF_VM_STATE_CREATED,
 
   SURF_VM_STATE_RUNNING,
-  // SURF_VM_STATE_MIGRATING,
+  SURF_VM_STATE_MIGRATING,
 
   /* Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
   SURF_VM_STATE_SUSPENDED,

@@ -365,19 +365,30 @@ XBT_PUBLIC(int) MSG_get_channel_number(void);
  * Usual lack of guaranty of any kind applies here, and is even increased.
  *
  */
-/* This function should not be called directly, but rather from MSG_vm_start_from_template that does not exist yet*/
+
+XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t);
+
+XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_saving(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_saved(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t);
+
+
+XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t);
 
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
 XBT_PUBLIC(msg_vm_t) MSG_vm_create(msg_host_t ind_pm, const char *name,
     int core_nb, int mem_cap, int net_cap, char *disk_path, int disk_size);
 
+XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
+
 XBT_PUBLIC(void) MSG_vm_start(msg_vm_t);
 
-XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
-
-XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t);
+/* Shutdown the guest operating system. */
+XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm);
 
 XBT_PUBLIC(void) MSG_vm_migrate(msg_vm_t vm, msg_host_t destination);
 
@@ -388,11 +399,6 @@ XBT_PUBLIC(void) MSG_vm_resume(msg_vm_t vm);
 /* Save the VM state to a disk. */
 XBT_PUBLIC(void) MSG_vm_save(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
-
-/* Shutdown the guest operating system. */
-XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm);
-
-XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 
 msg_host_t MSG_vm_get_pm(msg_vm_t vm);
 

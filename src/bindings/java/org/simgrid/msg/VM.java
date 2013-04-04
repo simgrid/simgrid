@@ -1,5 +1,5 @@
 /*
- * JNI interface to Cloud interface in Simgrid
+ * JNI interface to virtual machine in Simgrid
  * 
  * Copyright 2006-2012 The SimGrid Team.           
  * All right reserved. 
@@ -13,42 +13,92 @@ package org.simgrid.msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 
-public class VM {
+public class VM extends Host{
+	// Please note that we are not declaring a new bind variable 
+	//(the bind variable has been inherited from the super class Host)
+	
+	/* Static functions */ 
+	// GetByName is inherited from the super class Host
+	
 
-	/**
-	 * Create a new empty VM.
-	 * NOTE: MSG_vm_create_core 
+	/* Constructors / destructors */
+    /**
+	 * Create a `basic' VM (i.e. 1 core, 1GB of RAM, other values are not taken into account).
 	 */
 	public VM(Host host, String name) {
-		create(host, name, 1024,  )
+		this(host,name,1,1024*1024*1024, -1, null, -1);
 	}
+
+	/**
+	 * Create a `basic' VM (i.e. 1 core, 1GB of RAM, other values are not taken into account).
+	 */
+	public VM(Host host, String name, int nCore,  long ramSize, 
+			 long netCap, String diskPath, long diskSize){
+		super();
+		super.name = name; 
+		create(host, name, nCore, ramSize, netCap, diskPath, diskSize);
+	}
+
 	protected void finalize() {
 		destroy();
 	}
-	/**
-	 * Destroy the VM
-	 */
-	protected native void destroy();
-	/**
-	 * Natively implemented method starting the VM.
-	 * @param coreAmount
-	 */
-	private native void start(Host host, String name, int coreAmount);
-		
+	
+
+	/* JNI / Native code */
+	/* get/set property methods are inherited from the Host class. */
+	
 	/** Returns whether the given VM is currently suspended
 	 */	
-	public native boolean isSuspended();
+	public native int isCreated();
+	
 	/** Returns whether the given VM is currently running
 	 */
-	public native boolean isRunning();
-	/** Add the given process into the VM.
-	 * Afterward, when the VM is migrated or suspended or whatever, the process will have the corresponding handling, too.
+	public native int isRunning();
+
+	/** Returns whether the given VM is currently running
+	 */
+	public native int isMigrating();
+	
+	/** Returns whether the given VM is currently suspended
 	 */	
-	public native void bind(Process process);
-	/** Removes the given process from the given VM, and kill it
-	 *  Will raise a ProcessNotFound exception if the process were not bound to that VM
-	 */	
-	public native void unbind(Process process);
+	public native int isSuspended();
+		
+	/** Returns whether the given VM is currently saving
+	 */
+	public native int isSaving();
+	
+	/** Returns whether the given VM is currently saved
+	 */
+	public native int isSaved();
+
+	/** Returns whether the given VM is currently restoring its state
+	 */
+	public native boolean isRestoring();
+	
+	/**
+	 * Natively implemented method create the VM.
+	 * @param nCore, number of core
+	 * @param ramSize, size of the RAM that should be allocated 
+	 * @param netCap (not used for the moment)
+	 * @param diskPath (not used for the moment)
+	 * @param diskSize (not used for the moment)
+	 */
+	private native void create(Host host, String name, int nCore, long ramSize, 
+			 long netCap, String diskPath, long diskSize);
+	
+	/**
+	 * start the VM
+	 */
+	public native void start();
+
+	
+	/**
+	 * Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
+	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep() or something
+	 */
+	public native void shutdown();
+	
+	
 	/** Immediately change the host on which all processes are running
 	 *
 	 * No migration cost occurs. If you want to simulate this too, you want to use a
@@ -56,6 +106,7 @@ public class VM {
 	 * migration.
 	 */	
 	public native void migrate(Host destination);
+	
 	/** Immediately suspend the execution of all processes within the given VM
 	 *
 	 * No suspension cost occurs. If you want to simulate this too, you want to
@@ -63,6 +114,7 @@ public class VM {
 	 * of VM suspend to you.
 	 */	
 	public native void suspend();
+	
 	/** Immediately resumes the execution of all processes within the given VM
 	 *
 	 * No resume cost occurs. If you want to simulate this too, you want to
@@ -70,19 +122,33 @@ public class VM {
 	 * of VM resume to you.
 	 */
 	public native void resume();
-	/**
-	 * Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
-	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep() or something
+	
+	/** Immediately suspend the execution of all processes within the given VM 
+	 *  and save its state on the persistent HDD
+	 *  Not yet implemented (for the moment it behaves like suspend)
+	 *  No suspension cost occurs. If you want to simulate this too, you want to
+	 *  use a \ref File.write() before or after, depending on the exact semantic
+	 *  of VM suspend to you.
+	 */	
+	public native void save();
+	
+	/** Immediately resumes the execution of all processes previously saved 
+	 * within the given VM
+	 *  Not yet implemented (for the moment it behaves like resume)
+	 *
+	 * No resume cost occurs. If you want to simulate this too, you want to
+	 * use a \ref File.read() before or after, depending on the exact semantic
+	 * of VM resume to you.
 	 */
-	public native void shutdown();
-	/**
-	 * Reboot the VM, restarting all the processes in it.
-	 */
-	public native void reboot();
+	public native void restore();
+	
 
-	public String getName() {
-		return name;
-	}		
+	/**
+	 * Destroy the VM
+	 */
+	protected native void destroy();
+
+	
 
 	/**
 	 * Class initializer, to initialize various JNI stuff

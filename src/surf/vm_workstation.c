@@ -383,12 +383,13 @@ static double vm_ws_share_resources(surf_model_t workstation_model, double now)
     workstation_VM2013_t ws_vm2013 = (workstation_VM2013_t) ws_clm03;
     {
       void *ind_sub_host = xbt_lib_get_elm_or_null(host_lib, ws_vm2013->sub_ws->generic_resource.name);
+#if 0
       XBT_INFO("cost %f remains %f start %f finish %f", ws_vm2013->cpu_action->cost,
           ws_vm2013->cpu_action->remains,
           ws_vm2013->cpu_action->start,
           ws_vm2013->cpu_action->finish
           );
-
+#endif
 #if 0
       surf_cpu_model_pm->action_unref(ws_vm2013->cpu_action);
       /* FIXME: this means busy loop? */

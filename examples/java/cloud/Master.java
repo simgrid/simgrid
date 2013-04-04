@@ -23,16 +23,18 @@ public class Master extends Process {
 		this.hosts = hosts;
 	}
 	public void main(String[] args) throws MsgException {
-		int slavesCount = 10;
+		int slavesCount = 5;
 		
 		ArrayList<VM> vms = new ArrayList<VM>();
 		
+		// Create one VM per host and bind a process inside each one. 
 		for (int i = 0; i < slavesCount; i++) {
-			Slave slave = new Slave(hosts[i],i);
-			slave.start();
-			VM vm = new VM(hosts[i],hosts[i]+"_"+i,1);
-			vm.bind(slave);
+			VM vm = new VM(hosts[i],"VM_"+i);
+			vm.start();
 			vms.add(vm);
+			Slave slave = new Slave(vm,i);
+			slave.start();
+	
 		}
 		Msg.info("Launched " + vms.size() + " VMs");
 		
@@ -58,9 +60,8 @@ public class Master extends Process {
 		Msg.info("Add one more process per VM.");
 		for (int i = 0; i < vms.size(); i++) {
 			VM vm = vms.get(i);
-			Slave slave = new Slave(hosts[i],i + vms.size());
+			Slave slave = new Slave(vm,i + vms.size());
 			slave.start();
-			vm.bind(slave);
 		}
 		
 		Msg.info("Migrate everyone to the second host.");
@@ -68,12 +69,15 @@ public class Master extends Process {
 			vms.get(i).migrate(hosts[1]);
 		}
 		
-		Msg.info("Suspend everyone, move them to the third host, and resume them.");
+//		Msg.info("Suspend everyone, move them to the third host, and resume them.");
+		Msg.info("Migrate everyone to the third host (please note that cold migration is not yet available");
+		
+
 		for (int i = 0; i < vms.size(); i++) {
 			VM vm = vms.get(i);
-			vm.suspend();
+	//		vm.suspend();
 			vm.migrate(hosts[2]);
-			vm.resume();
+		//	vm.resume();
 		}
 		
 		workBatch(slavesCount * 2);

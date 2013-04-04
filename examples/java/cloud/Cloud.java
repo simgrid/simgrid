@@ -27,9 +27,9 @@ public class Cloud {
 	    }
 	    /* Construct the platform */
 		Msg.createEnvironment(args[0]);
-		  /* Retrieve the 10 first hosts of the platform file */
+		  /* Retrieve the 5 first hosts of the platform file */
 		Host[] hosts = Host.all();
-		if (hosts.length < 10) {
+		if (hosts.length < 5) {
 			Msg.info("I need at least 10 hosts in the platform file, but " + args[0] + " contains only " + hosts.length + " hosts");
 			System.exit(42);
 		}
