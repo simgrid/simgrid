@@ -30,7 +30,7 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
 
   int *blocks_length, *disps;
   int i, src, dst, rank, num_procs, count, remainder, block, position;
-  int pack_size, tag = 1, pof2 = 1, success = 1, failure = 0;
+  int pack_size, tag = 1, pof2 = 1;
 
 
   char *tmp_buff;
@@ -42,27 +42,9 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
 
   MPI_Type_extent(recv_type, &extent);
 
-  tmp_buff = (char *) malloc(num_procs * recv_count * extent);
-  if (!tmp_buff) {
-    printf("alltoall-bruck:53: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
-
-  disps = (int *) malloc(sizeof(int) * num_procs);
-  if (!disps) {
-    printf("alltoall-bruck:61: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
-
-  blocks_length = (int *) malloc(sizeof(int) * num_procs);
-  if (!blocks_length) {
-    printf("alltoall-bruck:69: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
-
+  tmp_buff = (char *) xbt_malloc(num_procs * recv_count * extent);
+  disps = (int *) xbt_malloc(sizeof(int) * num_procs);
+  blocks_length = (int *) xbt_malloc(sizeof(int) * num_procs);
 
   MPI_Sendrecv(send_ptr + rank * send_count * extent,
                (num_procs - rank) * send_count, send_type, rank, tag,
@@ -123,5 +105,5 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
                  recv_count, recv_type, rank, tag, comm, &status);
 
   free(tmp_buff);
-  return success;
+  return MPI_SUCCESS;
 }

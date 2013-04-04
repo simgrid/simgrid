@@ -49,13 +49,8 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
 
   nreqs = 2 * (size - 1);
   if (nreqs > 0) {
-    req = (MPI_Request *) malloc(nreqs * sizeof(MPI_Request));
-    statuses = (MPI_Status *) malloc(nreqs * sizeof(MPI_Status));
-    if (!req || !statuses) {
-      free(req);
-      free(statuses);
-      return 0;
-    }
+    req = (MPI_Request *) xbt_malloc(nreqs * sizeof(MPI_Request));
+    statuses = (MPI_Status *) xbt_malloc(nreqs * sizeof(MPI_Status));
   } else {
     req = NULL;
     statuses = NULL;
@@ -118,5 +113,5 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
     free((char *) req);
   if (statuses)
     free(statuses);
-  return (1);
+  return MPI_SUCCESS;
 }

@@ -71,7 +71,7 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
   int i, src, dst, rank, num_procs;
   int mask, relative_rank, curr_size, recv_size, send_size, nbytes;
   int scatter_size, left, right, next_src, *recv_counts, *disps;
-  int tag = 1, success = 0, failure = 1;
+  int tag = 1;
 
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &num_procs);
@@ -131,19 +131,8 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
   }
 
   // done scatter now do allgather
-  recv_counts = (int *) malloc(sizeof(int) * num_procs);
-  if (!recv_counts) {
-    printf("bcast-scatter-LR-allgather:95: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
-
-  disps = (int *) malloc(sizeof(int) * num_procs);
-  if (!disps) {
-    printf("bcast-scatter-LR-allgather:103: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
+  recv_counts = (int *) xbt_malloc(sizeof(int) * num_procs);
+  disps = (int *) xbt_malloc(sizeof(int) * num_procs);
 
   for (i = 0; i < num_procs; i++) {
     recv_counts[i] = nbytes - i * scatter_size;
@@ -179,5 +168,5 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
   free(recv_counts);
   free(disps);
 
-  return success;
+  return MPI_SUCCESS;
 }

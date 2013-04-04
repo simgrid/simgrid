@@ -31,7 +31,7 @@ smpi_coll_tuned_alltoall_pair_light_barrier(void *send_buff, int send_count,
   MPI_Aint send_chunk, recv_chunk;
   MPI_Status s;
   int i, src, dst, rank, num_procs, next_partner;
-  int tag = 1, success = 1;     /*, failure = 0; */
+  int tag = 1;     /*, failure = 0; */
 
   char send_sync = 'a', recv_sync = 'b';
   char *send_ptr = (char *) send_buff;
@@ -62,5 +62,5 @@ smpi_coll_tuned_alltoall_pair_light_barrier(void *send_buff, int send_count,
                    &recv_sync, 1, MPI_CHAR, next_partner, tag, comm, &s);
     }
   }
-  return success;
+  return MPI_SUCCESS;
 }

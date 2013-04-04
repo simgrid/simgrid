@@ -50,7 +50,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
   MPI_Status status, *statuses;
   int i, j, src, dst, rank, num_procs, num_reqs, X, Y, Z, block_size, count;
   int my_z, two_dsize, my_row_base, my_col_base, my_z_base, src_row_base;
-  int src_z_base, send_offset, recv_offset, tag = 1, failure = 0, success = 1;
+  int src_z_base, send_offset, recv_offset, tag = 1;
 
   char *tmp_buff1, *tmp_buff2;
 
@@ -59,7 +59,7 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
   MPI_Type_extent(send_type, &extent);
 
   if (!alltoall_check_is_3dmesh(num_procs, &X, &Y, &Z))
-    return failure;
+    return MPI_ERR_OTHER;
 
   num_reqs = X;
   if (Y > X)
@@ -76,27 +76,11 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
 
   block_size = extent * send_count;
 
-  tmp_buff1 = (char *) malloc(block_size * num_procs * two_dsize);
-  if (!tmp_buff1) {
-    printf("alltoall-3Dmesh:97: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
+  tmp_buff1 = (char *) xbt_malloc(block_size * num_procs * two_dsize);
+  tmp_buff2 = (char *) xbt_malloc(block_size * two_dsize);
 
-  tmp_buff2 = (char *) malloc(block_size * two_dsize);
-  if (!tmp_buff2) {
-    printf("alltoall-3Dmesh:105: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
-
-  statuses = (MPI_Status *) malloc(num_reqs * sizeof(MPI_Status));
-  reqs = (MPI_Request *) malloc(num_reqs * sizeof(MPI_Request));
-  if (!reqs) {
-    printf("alltoall-3Dmesh:113: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
+  statuses = (MPI_Status *) xbt_malloc(num_reqs * sizeof(MPI_Status));
+  reqs = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
 
   req_ptr = reqs;
 
@@ -193,5 +177,5 @@ int smpi_coll_tuned_alltoall_3dmesh(void *send_buff, int send_count,
   free(statuses);
   free(tmp_buff1);
   free(tmp_buff2);
-  return success;
+  return MPI_SUCCESS;
 }

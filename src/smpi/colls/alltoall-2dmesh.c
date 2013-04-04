@@ -63,14 +63,14 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
   int i, j, src, dst, rank, num_procs, count, num_reqs;
   int X, Y, send_offset, recv_offset;
   int my_row_base, my_col_base, src_row_base, block_size;
-  int tag = 1, failure = 0, success = 1;
+  int tag = 1;
 
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &num_procs);
   MPI_Type_extent(send_type, &extent);
 
   if (!alltoall_check_is_2dmesh(num_procs, &X, &Y))
-    return failure;
+    return MPI_ERR_OTHER;
 
   my_row_base = (rank / Y) * Y;
   my_col_base = rank % Y;
@@ -81,14 +81,14 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
   if (!tmp_buff1) {
     XBT_DEBUG("alltoall-2dmesh_shoot.c:88: cannot allocate memory");
     MPI_Finalize();
-    exit(failure);
+    exit(MPI_ERR_OTHER);
   }
 
   tmp_buff2 = (char *) malloc(block_size * Y);
   if (!tmp_buff2) {
     XBT_WARN("alltoall-2dmesh_shoot.c:88: cannot allocate memory");
     MPI_Finalize();
-    exit(failure);
+    exit(MPI_ERR_OTHER);
   }
 
 
@@ -102,7 +102,7 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
   if (!reqs) {
     XBT_WARN("alltoall-2dmesh_shoot.c:88: cannot allocate memory");
     MPI_Finalize();
-    exit(failure);
+    exit(MPI_ERR_OTHER);
   }
 
   req_ptr = reqs;
@@ -188,5 +188,5 @@ int smpi_coll_tuned_alltoall_2dmesh(void *send_buff, int send_count,
   free(statuses);
   free(tmp_buff1);
   free(tmp_buff2);
-  return success;
+  return MPI_SUCCESS;
 }

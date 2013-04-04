@@ -89,5 +89,5 @@ smpi_coll_tuned_allreduce_NTS(void *sbuf, void *rbuf, int rcount,
                          comm);
   }
 
-  return 0;
+  return MPI_SUCCESS;
 }

@@ -27,35 +27,31 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  sb = (int *) malloc(size * sizeof(int));
-  if (!sb) {
-    perror("can't allocate send buffer");
-    fflush(stderr);
-    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-  }
-  rb = (int *) malloc(size * sizeof(int));
-  if (!rb) {
-    perror("can't allocate recv buffer");
-    fflush(stderr);
-    free(sb);
-    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-  }
-  for (i = 0; i < size; ++i) {
-    sb[i] = rank + 1;
+  int count = 2;
+  sb = (int *) xbt_malloc(count * sizeof(int));
+  rb = (int *) xbt_malloc(count * size * sizeof(int));
+  
+  for (i = 0; i < count; ++i)
+    sb[i] = rank * count + i;
+  for (i = 0; i < count * size; ++i)  
     rb[i] = 0;
-  }
 
-  status = MPI_Alltoall(sb, 1, MPI_INT, rb, 1, MPI_INT, MPI_COMM_WORLD);
+  printf("[%d] sndbuf=[", rank);
+  for (i = 0; i < count; i++)
+    printf("%d ", sb[i]);
+  printf("]\n");
+
+  status = MPI_Allgather(sb, count, MPI_INT, rb, count, MPI_INT, MPI_COMM_WORLD);
 
   printf("[%d] rcvbuf=[", rank);
-  for (i = 0; i < size; i++)
+  for (i = 0; i < count * size; i++)
     printf("%d ", rb[i]);
   printf("]\n");
 
 
   if (rank == 0) {
     if (status != MPI_SUCCESS) {
-      printf("all_to_all returned %d\n", status);
+      printf("allgather returned %d\n", status);
       fflush(stdout);
     }
   }

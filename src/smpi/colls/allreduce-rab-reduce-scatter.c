@@ -345,11 +345,7 @@ int smpi_coll_tuned_allreduce_rab_reduce_scatter(void *sbuff, void *rbuff,
   MPI_Comm_rank(comm, &rank);
 
   MPI_Type_extent(dtype, &extent);
-  tmp_buf = (void *) malloc(count * extent);
-  if (!tmp_buf) {
-    printf("Could not allocate memory for tmp_buf\n");
-    return 1;
-  }
+  tmp_buf = (void *) xbt_malloc(count * extent);
 
   MPIR_Localcopy(sbuff, count, dtype, rbuff, count, dtype);
 
@@ -521,5 +517,5 @@ int smpi_coll_tuned_allreduce_rab_reduce_scatter(void *sbuff, void *rbuff,
   }
 
   free(tmp_buf);
-  return 0;
+  return MPI_SUCCESS;
 }

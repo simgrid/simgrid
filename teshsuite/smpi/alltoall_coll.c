@@ -27,23 +27,18 @@ int main(int argc, char *argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  sb = (int *) malloc(size * sizeof(int));
-  if (!sb) {
-    perror("can't allocate send buffer");
-    fflush(stderr);
-    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-  }
-  rb = (int *) malloc(size * sizeof(int));
-  if (!rb) {
-    perror("can't allocate recv buffer");
-    fflush(stderr);
-    free(sb);
-    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-  }
+  sb = (int *) xbt_malloc(size * sizeof(int) * 2);
+  rb = (int *) xbt_malloc(size * sizeof(int) * 2);
+  
   for (i = 0; i < size; ++i) {
-    sb[i] = rank + 1;
+    sb[i] = rank*size + i;
     rb[i] = 0;
   }
+
+  printf("[%d] sndbuf=[", rank);
+  for (i = 0; i < size; i++)
+    printf("%d ", sb[i]);
+  printf("]\n");
 
   status = MPI_Alltoall(sb, 1, MPI_INT, rb, 1, MPI_INT, MPI_COMM_WORLD);
 

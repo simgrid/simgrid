@@ -68,8 +68,7 @@ int smpi_coll_tuned_alltoall_pair(void *send_buff, int send_count,
   MPI_Aint send_chunk, recv_chunk;
   MPI_Status s;
   int i, src, dst, rank, num_procs;
-  int tag = 1, success = 1;
-
+  int tag = 1;
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
@@ -83,10 +82,10 @@ int smpi_coll_tuned_alltoall_pair(void *send_buff, int send_count,
 
   for (i = 0; i < num_procs; i++) {
     src = dst = rank ^ i;
-    MPI_Sendrecv(send_ptr + dst * send_chunk, send_count, send_type, dst,
-                 tag, recv_ptr + src * recv_chunk, recv_count, recv_type,
-                 src, tag, comm, &s);
+    MPI_Sendrecv(send_ptr + dst * send_chunk, send_count, send_type, dst, tag,
+		 recv_ptr + src * recv_chunk, recv_count, recv_type, src, tag,
+		 comm, &s);
   }
 
-  return success;
+  return MPI_SUCCESS;
 }

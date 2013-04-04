@@ -22,12 +22,8 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
   nprocs=smpi_comm_size(comm);
   rank=smpi_comm_rank(comm);
 
-  smpi_datatype_extent(dtype,&lb, &extent);
-  tmp_buf = (void *) malloc(count * extent);
-  if (!tmp_buf) {
-    printf("Could not allocate memory for tmp_buf\n");
-    return 1;
-  }
+  smpi_datatype_extent(dtype, &lb, &extent);
+  tmp_buf = (void *) xbt_malloc(count * extent);
 
   smpi_mpi_sendrecv(sbuff, count, dtype, rank, 500,
                rbuff, count, dtype, rank, 500, comm, &status);
@@ -126,5 +122,5 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
   }
 
   free(tmp_buf);
-  return 0;
+  return MPI_SUCCESS;
 }

@@ -771,7 +771,6 @@ void sg_config_init(int *argc, char **argv)
 		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoall,
 		     NULL);
 
-
     default_value = xbt_strdup("default");
     xbt_cfg_register(&_sg_cfg_set, "smpi/bcast",
 		     "Which collective to use for bcast",

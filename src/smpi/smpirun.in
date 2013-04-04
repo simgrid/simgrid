@@ -163,6 +163,24 @@ else
 fi
 shift
 
+# steel --cfg and --logs options
+while [ $# -gt 0 ]; do
+  case "$1" in
+   "--cfg="*|"--log="*)
+     for OPT in ${1#*=}
+     do
+       SIMOPTS="$SIMOPTS ${1%%=*}=$OPT"
+     done
+     shift 1
+   ;;
+    *)
+      PROC_ARGS="$PROC_ARGS $1"
+      shift      
+    ;;
+  esac
+done
+
+
 ##-----------------------------------
 
 # Basic checks on the provided arguments
@@ -301,7 +319,7 @@ do
       echo "    <argument value=\"${hosttraces[0]}\"/>" >> ${APPLICATIONTMP}
     fi
   else 
-    for ARG in $*; do
+    for ARG in $PROC_ARGS; do
        echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
     done
   fi

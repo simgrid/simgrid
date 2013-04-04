@@ -129,12 +129,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
   if (Y > X)
     num_reqs = Y;
 
-  req = (MPI_Request *) malloc(num_reqs * sizeof(MPI_Request));
-  if (!req) {
-    printf("allgather-2dmesh-shoot.c:85: cannot allocate memory\n");
-    MPI_Finalize();
-    exit(failure);
-  }
+  req = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
 
   req_ptr = req;
 

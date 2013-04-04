@@ -15,11 +15,7 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
   MPI_Comm_rank(comm, &rank);
 
   MPI_Type_extent(dtype, &extent);
-  tmp_buf = (void *) malloc(count * extent);
-  if (!tmp_buf) {
-    printf("Could not allocate memory for tmp_buf\n");
-    return 1;
-  }
+  tmp_buf = (void *) xbt_malloc(count * extent);
 
   MPI_Sendrecv(sbuff, count, dtype, rank, tag, rbuff, count, dtype, rank, tag,
                comm, &status);
@@ -193,5 +189,5 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
   }
 
   free(tmp_buf);
-  return 0;
+  return MPI_SUCCESS;
 }

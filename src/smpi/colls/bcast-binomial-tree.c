@@ -68,7 +68,7 @@ smpi_coll_tuned_bcast_binomial_tree(void *buff, int count,
                                     MPI_Comm comm)
 {
   int src, dst, rank, num_procs, mask, relative_rank;
-  int tag = 1, success = 0;
+  int tag = 1;
 
   MPI_Comm_rank(comm, &rank);
   MPI_Comm_size(comm, &num_procs);
@@ -98,5 +98,5 @@ smpi_coll_tuned_bcast_binomial_tree(void *buff, int count,
     mask >>= 1;
   }
 
-  return success;
+  return MPI_SUCCESS;
 }

@@ -97,5 +97,5 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
     free(tmp_buf);
   }
 
-  return 0;
+  return MPI_SUCCESS;
 }
