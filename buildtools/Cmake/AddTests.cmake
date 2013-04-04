@@ -371,7 +371,7 @@ if(NOT enable_memcheck)
     endif()
 
     FOREACH (ALLGATHER_COLL default GB loosely_lr lr NTSLR NTSLR_NB pair rdb  rhv ring SMP_NTS
-		            smp_simple SMP_simple spreading_simple)
+		            smp_simple spreading_simple)
         ADD_TEST(smpi-allgather-coll-${ALLGATHER_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allgather:${ALLGATHER_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allgather_coll.tesh)
     ENDFOREACH()
     FOREACH (ALLREDUCE_COLL default lr NTS rab1 rab2 rab_rsag rdb smp_binomial smp_rdb smp_rsag
