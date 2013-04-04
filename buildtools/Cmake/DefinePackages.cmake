@@ -119,7 +119,6 @@ set(SMPI_SRC
   src/smpi/colls/allgather-NTSLR-NB.c
   src/smpi/colls/allgather-pair.c
   src/smpi/colls/allgather-rdb.c
-  src/smpi/colls/allgather-RDB.c
   src/smpi/colls/allgather-rhv.c
   src/smpi/colls/allgather-ring.c
   src/smpi/colls/allgather-SMP-NTS.c
