@@ -88,9 +88,11 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
       while (sent_count < (size - 1)) {
 
         for (i = 1; i < size; i++) {
-          if (already_received[i] == 0)
+          if (already_received[i] == 0) {
             smpi_mpi_iprobe(i, MPI_ANY_TAG, MPI_COMM_WORLD, &flag_array[i],
-                       MPI_STATUSES_IGNORE);
+                             MPI_STATUSES_IGNORE);
+            simcall_process_sleep(0.0001);
+            }
         }
 
         header_index = 0;
