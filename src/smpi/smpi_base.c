@@ -600,7 +600,6 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
   else
     flag = simcall_comm_test((*request)->action);
   if(flag) {
-    (*request)->refcount++;
     finish_wait(request, status);
   }else{
     smpi_empty_status(status);
