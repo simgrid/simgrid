@@ -42,42 +42,44 @@ extern MPI_Datatype MPI_PTR;
 
 typedef struct s_smpi_mpi_vector{
   s_smpi_subtype_t base;
+  MPI_Datatype old_type;
+  size_t size_oldtype;
   size_t block_stride;
   size_t block_length;
   size_t block_count;
-  MPI_Datatype old_type;
-  size_t size_oldtype;
 } s_smpi_mpi_vector_t;
 
 typedef struct s_smpi_mpi_hvector{
   s_smpi_subtype_t base;
+  MPI_Datatype old_type;
+  size_t size_oldtype;
   MPI_Aint block_stride;
   size_t block_length;
   size_t block_count;
-  MPI_Datatype old_type;
-  size_t size_oldtype;
 } s_smpi_mpi_hvector_t;
 
 typedef struct s_smpi_mpi_indexed{
   s_smpi_subtype_t base;
+  MPI_Datatype old_type;
+  size_t size_oldtype;
   int* block_lengths;
   int* block_indices;
   size_t block_count;
-  MPI_Datatype old_type;
-  size_t size_oldtype;
 } s_smpi_mpi_indexed_t;
 
 typedef struct s_smpi_mpi_hindexed{
   s_smpi_subtype_t base;
+  MPI_Datatype old_type;
+  size_t size_oldtype;
   int* block_lengths;
   MPI_Aint* block_indices;
   size_t block_count;
-  MPI_Datatype old_type;
-  size_t size_oldtype;
 } s_smpi_mpi_hindexed_t;
 
 typedef struct s_smpi_mpi_struct{
   s_smpi_subtype_t base;
+  MPI_Datatype old_type;
+  size_t size_oldtype;
   int* block_lengths;
   MPI_Aint* block_indices;
   size_t block_count;

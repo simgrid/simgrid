@@ -177,13 +177,12 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     }else{
       s_smpi_subtype_t *subtype =  sendtype->substruct;
 
-      s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)sendtype;
 
-      void * buf_tmp = xbt_malloc(count * type_c->size_oldtype);
+      void * buf_tmp = xbt_malloc(count);
 
       subtype->serialize( sendbuf, buf_tmp,1, subtype);
       subtype =  recvtype->substruct;
-      subtype->unserialize(recvbuf, buf_tmp,1, subtype);
+      subtype->unserialize( buf_tmp, recvbuf,1, subtype);
 
       free(buf_tmp);
     }
