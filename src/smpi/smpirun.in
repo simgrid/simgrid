@@ -174,7 +174,7 @@ while [ $# -gt 0 ]; do
      shift 1
    ;;
     *)
-      PROC_ARGS="$PROC_ARGS $1"
+      PROC_ARGS="${PROC_ARGS:+$PROC_ARGS }$1"
       shift      
     ;;
   esac
@@ -264,7 +264,7 @@ if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
 fi
 
 if [ "${EXTOPT}" = "smpi_replay" ]; then
-  APP_TRACES=$1;
+  APP_TRACES=$PROC_ARGS
   if [ -n "${APP_TRACES}" ] && [ -f "${APP_TRACES}" ]; then
      hosttraces=(`cat ${APP_TRACES} | tr \\\n " "`)
      NUMTRACES=`cat ${APP_TRACES} | wc -l`
