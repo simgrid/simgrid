@@ -601,6 +601,7 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
     flag = simcall_comm_test((*request)->action);
   if(flag) {
     finish_wait(request, status);
+    request=MPI_REQUEST_NULL;
   }else{
     smpi_empty_status(status);
   }
@@ -806,6 +807,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
       index = smpi_mpi_waitany(count, requests, pstat);
       if (index == MPI_UNDEFINED)
         break;
+      requests[index]=MPI_REQUEST_NULL;
     }
     if (status != MPI_STATUSES_IGNORE) {
       status[index] = *pstat;
@@ -834,6 +836,7 @@ int smpi_mpi_waitsome(int incount, MPI_Request requests[], int *indices,
       if(status != MPI_STATUSES_IGNORE) {
         status[index] = *pstat;
       }
+     requests[index]=MPI_REQUEST_NULL;
     }else{
       return MPI_UNDEFINED;
     }
@@ -858,6 +861,8 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
          if(status != MPI_STATUSES_IGNORE) {
            status[i] = *pstat;
          }
+         requests[i]=MPI_REQUEST_NULL;
+
       }
     }else{
       count_dead++;

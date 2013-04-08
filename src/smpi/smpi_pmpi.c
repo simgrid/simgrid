@@ -1479,7 +1479,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   int valid_count = 0;
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];
-    if(req){
+    if(req!=MPI_REQUEST_NULL){
       srcs[valid_count] = req->src;
       dsts[valid_count] = req->dst;
       recvs[valid_count] = req->recv;
