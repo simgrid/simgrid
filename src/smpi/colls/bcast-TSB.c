@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 int binary_pipeline_bcast_tree_height = 10;
 
 int binary_pipeline_bcast_send_to[2][128] = {
@@ -44,10 +44,10 @@ int smpi_coll_tuned_bcast_TSB(void *buf, int count, MPI_Datatype datatype,
   int i;
 
   MPI_Aint extent;
-  MPI_Type_extent(datatype, &extent);
+  extent = smpi_datatype_get_extent(datatype);
 
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  rank = smpi_comm_rank(MPI_COMM_WORLD);
+  size = smpi_comm_size(MPI_COMM_WORLD);
 
   /* source node and destination nodes (same through out the functions) */
   int to_left = binary_pipeline_bcast_send_to[0][rank];
@@ -70,9 +70,9 @@ int smpi_coll_tuned_bcast_TSB(void *buf, int count, MPI_Datatype datatype,
   /* if root is not zero send to rank zero first */
   if (root != 0) {
     if (rank == root) {
-      MPI_Send(buf, count, datatype, 0, tag, comm);
+      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
     } else if (rank == 0) {
-      MPI_Recv(buf, count, datatype, root, tag, comm, &status);
+      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
     }
   }
 
@@ -83,31 +83,31 @@ int smpi_coll_tuned_bcast_TSB(void *buf, int count, MPI_Datatype datatype,
     if (rank == 0) {
       /* case root has only a left child */
       if (to_right == -1) {
-        MPI_Send(buf, count, datatype, to_left, tag, comm);
+        smpi_mpi_send(buf, count, datatype, to_left, tag, comm);
       }
       /* case root has both left and right children */
       else {
-        MPI_Send(buf, count, datatype, to_left, tag, comm);
-        MPI_Send(buf, count, datatype, to_right, tag, comm);
+        smpi_mpi_send(buf, count, datatype, to_left, tag, comm);
+        smpi_mpi_send(buf, count, datatype, to_right, tag, comm);
       }
     }
 
     /* case: leaf ==> receive only */
     else if (to_left == -1) {
-      MPI_Recv(buf, count, datatype, from, tag, comm, &status);
+      smpi_mpi_recv(buf, count, datatype, from, tag, comm, &status);
     }
 
     /* case: intermidiate node with only left child ==> relay message */
     else if (to_right == -1) {
-      MPI_Recv(buf, count, datatype, from, tag, comm, &status);
-      MPI_Send(buf, count, datatype, to_left, tag, comm);
+      smpi_mpi_recv(buf, count, datatype, from, tag, comm, &status);
+      smpi_mpi_send(buf, count, datatype, to_left, tag, comm);
     }
 
     /* case: intermidiate node with both left and right children ==> relay message */
     else {
-      MPI_Recv(buf, count, datatype, from, tag, comm, &status);
-      MPI_Send(buf, count, datatype, to_left, tag, comm);
-      MPI_Send(buf, count, datatype, to_right, tag, comm);
+      smpi_mpi_recv(buf, count, datatype, from, tag, comm, &status);
+      smpi_mpi_send(buf, count, datatype, to_left, tag, comm);
+      smpi_mpi_send(buf, count, datatype, to_right, tag, comm);
     }
     return MPI_SUCCESS;
   }
@@ -119,16 +119,16 @@ int smpi_coll_tuned_bcast_TSB(void *buf, int count, MPI_Datatype datatype,
       /* case root has only a left child */
       if (to_right == -1) {
         for (i = 0; i < pipe_length; i++) {
-          MPI_Send((char *) buf + (i * increment), segment, datatype, to_left,
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_left,
                    tag + i, comm);
         }
       }
       /* case root has both left and right children */
       else {
         for (i = 0; i < pipe_length; i++) {
-          MPI_Send((char *) buf + (i * increment), segment, datatype, to_left,
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_left,
                    tag + i, comm);
-          MPI_Send((char *) buf + (i * increment), segment, datatype, to_right,
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_right,
                    tag + i, comm);
         }
       }
@@ -137,7 +137,7 @@ int smpi_coll_tuned_bcast_TSB(void *buf, int count, MPI_Datatype datatype,
     /* case: leaf ==> receive only */
     else if (to_left == -1) {
       for (i = 0; i < pipe_length; i++) {
-        MPI_Recv((char *) buf + (i * increment), segment, datatype, from,
+        smpi_mpi_recv((char *) buf + (i * increment), segment, datatype, from,
                  tag + i, comm, &status);
       }
     }
@@ -145,20 +145,20 @@ int smpi_coll_tuned_bcast_TSB(void *buf, int count, MPI_Datatype datatype,
     /* case: intermidiate node with only left child ==> relay message */
     else if (to_right == -1) {
       for (i = 0; i < pipe_length; i++) {
-        MPI_Recv((char *) buf + (i * increment), segment, datatype, from,
+        smpi_mpi_recv((char *) buf + (i * increment), segment, datatype, from,
                  tag + i, comm, &status);
-        MPI_Send((char *) buf + (i * increment), segment, datatype, to_left,
+        smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_left,
                  tag + i, comm);
       }
     }
     /* case: intermidiate node with both left and right children ==> relay message */
     else {
       for (i = 0; i < pipe_length; i++) {
-        MPI_Recv((char *) buf + (i * increment), segment, datatype, from,
+        smpi_mpi_recv((char *) buf + (i * increment), segment, datatype, from,
                  tag + i, comm, &status);
-        MPI_Send((char *) buf + (i * increment), segment, datatype, to_left,
+        smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_left,
                  tag + i, comm);
-        MPI_Send((char *) buf + (i * increment), segment, datatype, to_right,
+        smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_right,
                  tag + i, comm);
       }
     }
@@ -166,7 +166,8 @@ int smpi_coll_tuned_bcast_TSB(void *buf, int count, MPI_Datatype datatype,
 
   /* when count is not divisible by block size, use default BCAST for the remainder */
   if ((remainder != 0) && (count > segment)) {
-    MPI_Bcast((char *) buf + (pipe_length * increment), remainder, datatype,
+    XBT_WARN("MPI_bcast_TSB use default MPI_bcast.");
+    smpi_mpi_bcast((char *) buf + (pipe_length * increment), remainder, datatype,
               root, comm);
   }
 

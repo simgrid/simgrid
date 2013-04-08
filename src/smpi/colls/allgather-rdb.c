@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 int
 smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
@@ -12,7 +12,7 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
 
   // local int variables
   int i, j, k, dst, rank, num_procs, send_offset, recv_offset, tree_root;
-  int dst_tree_root, rank_tree_root, last_recv_count, num_procs_completed;
+  int dst_tree_root, rank_tree_root, last_recv_count = 0, num_procs_completed;
   int offset, tmp_mask;
   int tag = 1;
   int mask = 1;
@@ -24,19 +24,19 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
   char *recv_ptr = (char *) rbuf;
 
   // get size of the communicator, followed by rank 
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Comm_rank(comm, &rank);
+  num_procs = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
 
   // get size of single element's type for send buffer and recv buffer
-  MPI_Type_extent(send_type, &send_chunk);
-  MPI_Type_extent(recv_type, &recv_chunk);
+  send_chunk = smpi_datatype_get_extent(send_type);
+  recv_chunk = smpi_datatype_get_extent(recv_type);
 
   // multiply size of each element by number of elements to send or recv
   send_chunk *= send_count;
   recv_chunk *= recv_count;
 
   // perform a local copy
-  MPI_Sendrecv(send_ptr, send_count, send_type, rank, tag,
+  smpi_mpi_sendrecv(send_ptr, send_count, send_type, rank, tag,
                recv_ptr + rank * recv_chunk, recv_count, recv_type, rank, tag,
                comm, &status);
 
@@ -51,10 +51,10 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
     recv_offset = dst_tree_root * recv_chunk;
 
     if (dst < num_procs) {
-      MPI_Sendrecv(recv_ptr + send_offset, curr_count, send_type, dst,
+      smpi_mpi_sendrecv(recv_ptr + send_offset, curr_count, send_type, dst,
                    tag, recv_ptr + recv_offset, mask * recv_count,
                    recv_type, dst, tag, comm, &status);
-      MPI_Get_count(&status, recv_type, &last_recv_count);
+      last_recv_count = smpi_mpi_get_count(&status, recv_type);
       curr_count += last_recv_count;
     }
 
@@ -90,7 +90,7 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
         if ((dst > rank)
             && (rank < tree_root + num_procs_completed)
             && (dst >= tree_root + num_procs_completed)) {
-          MPI_Send(recv_ptr + offset, last_recv_count, recv_type, dst,
+          smpi_mpi_send(recv_ptr + offset, last_recv_count, recv_type, dst,
                    tag, comm);
 
           /* last_recv_cnt was set in the previous
@@ -102,12 +102,12 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
         else if ((dst < rank)
                  && (dst < tree_root + num_procs_completed)
                  && (rank >= tree_root + num_procs_completed)) {
-          MPI_Recv(recv_ptr + offset,
+          smpi_mpi_recv(recv_ptr + offset,
                    recv_count * num_procs_completed,
                    recv_type, dst, tag, comm, &status);
           // num_procs_completed is also equal to the no. of processes
           // whose data we don't have
-          MPI_Get_count(&status, recv_type, &last_recv_count);
+          last_recv_count = smpi_mpi_get_count(&status, recv_type);
           curr_count += last_recv_count;
         }
         tmp_mask >>= 1;

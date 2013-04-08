@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*****************************************************************************
 
@@ -101,9 +101,9 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
   int failure = 1;
   int tag = 1;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Type_extent(send_type, &extent);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
+  extent = smpi_datatype_get_extent(send_type);
 
   is_3dmesh(num_procs, &X, &Y, &Z);
 
@@ -123,7 +123,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
 
   block_size = extent * send_count;
 
-  req = (MPI_Request *) malloc(num_reqs * sizeof(MPI_Request));
+  req = (MPI_Request *) xbt_malloc(num_reqs * sizeof(MPI_Request));
   if (!req) {
     printf("allgather-3dmesh-shoot.c:85: cannot allocate memory\n");
     MPI_Finalize();
@@ -154,7 +154,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
     MPIC_Send(send_buff, send_count, send_type, dst, tag, comm);
   }
 
-  MPI_Waitall(Y - 1, req, MPI_STATUSES_IGNORE);
+  smpi_mpi_waitall(Y - 1, req, MPI_STATUSES_IGNORE);
   req_ptr = req;
 
   // do colwise comm, it does not matter here if i*X or i *Y since X == Y
@@ -180,7 +180,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
               comm);
   }
 
-  MPI_Waitall(X - 1, req, MPI_STATUSES_IGNORE);
+  smpi_mpi_waitall(X - 1, req, MPI_STATUSES_IGNORE);
   req_ptr = req;
 
   for (i = 1; i < Z; i++) {
@@ -199,7 +199,7 @@ int smpi_coll_tuned_allgather_3dmesh(void *send_buff, int send_count,
     MPIC_Send((char *)recv_buff + send_offset, send_count * two_dsize, send_type,
               dst, tag, comm);
   }
-  MPI_Waitall(Z - 1, req, MPI_STATUSES_IGNORE);
+  smpi_mpi_waitall(Z - 1, req, MPI_STATUSES_IGNORE);
 
   free(req);
 

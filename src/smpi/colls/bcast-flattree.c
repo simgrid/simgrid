@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 int
 smpi_coll_tuned_bcast_flattree(void *buff, int count, MPI_Datatype data_type,
@@ -10,26 +10,26 @@ smpi_coll_tuned_bcast_flattree(void *buff, int count, MPI_Datatype data_type,
   int i, rank, num_procs;
   int tag = 1;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
 
   if (rank != root) {
-    MPI_Recv(buff, count, data_type, root, tag, comm, MPI_STATUS_IGNORE);
+    smpi_mpi_recv(buff, count, data_type, root, tag, comm, MPI_STATUS_IGNORE);
   }
 
   else {
-    reqs = (MPI_Request *) malloc((num_procs - 1) * sizeof(MPI_Request));
+    reqs = (MPI_Request *) xbt_malloc((num_procs - 1) * sizeof(MPI_Request));
     req_ptr = reqs;
 
     // Root sends data to all others
     for (i = 0; i < num_procs; i++) {
       if (i == rank)
         continue;
-      MPI_Isend(buff, count, data_type, i, tag, comm, req_ptr++);
+      *(req_ptr++) = smpi_mpi_isend(buff, count, data_type, i, tag, comm);
     }
 
     // wait on all requests
-    MPI_Waitall(num_procs - 1, reqs, MPI_STATUSES_IGNORE);
+    smpi_mpi_waitall(num_procs - 1, reqs, MPI_STATUSES_IGNORE);
 
     free(reqs);
   }

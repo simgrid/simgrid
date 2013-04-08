@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*****************************************************************************
 
@@ -27,7 +27,7 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
                                     void *recv_buff, int recv_count,
                                     MPI_Datatype recv_type, MPI_Comm comm)
 {
-  int i, rank, size, nreqs, err, src, dst, tag = 101;
+  int i, rank, size, nreqs, src, dst, tag = 101;
   char *psnd;
   char *prcv;
   MPI_Aint sndinc;
@@ -38,10 +38,10 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
   MPI_Status s, *statuses;
 
 
-  MPI_Comm_size(comm, &size);
-  MPI_Comm_rank(comm, &rank);
-  MPI_Type_extent(send_type, &sndinc);
-  MPI_Type_extent(recv_type, &rcvinc);
+  size = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
+  sndinc = smpi_datatype_get_extent(send_type);
+  rcvinc = smpi_datatype_get_extent(recv_type);
   sndinc *= send_count;
   rcvinc *= recv_count;
 
@@ -60,7 +60,7 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
 
   psnd = ((char *) send_buff) + (rank * sndinc);
   prcv = ((char *) recv_buff) + (rank * rcvinc);
-  MPI_Sendrecv(psnd, send_count, send_type, rank, tag,
+  smpi_mpi_sendrecv(psnd, send_count, send_type, rank, tag,
                prcv, recv_count, recv_type, rank, tag, comm, &s);
 
 
@@ -76,35 +76,22 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
       continue;
     if (dst == rank)
       continue;
-    MPI_Recv_init(prcv + (src * rcvinc), recv_count, recv_type, src,
-                  tag, comm, preq++);
-    MPI_Send_init(psnd + (dst * sndinc), send_count, send_type, dst,
-                  tag, comm, qreq++);
+    *(preq++) = smpi_mpi_recv_init(prcv + (src * rcvinc), recv_count, recv_type, src,
+                  tag, comm);
+    *(qreq++) = smpi_mpi_send_init(psnd + (dst * sndinc), send_count, send_type, dst,
+                  tag, comm);
   }
 
   /* Start all the requests. */
 
-  err = MPI_Startall(nreqs, req);
+  smpi_mpi_startall(nreqs, req);
 
   /* Wait for them all. */
 
-  err = MPI_Waitall(nreqs, req, statuses);
-
-  if (err != MPI_SUCCESS) {
-    if (req)
-      free((char *) req);
-    return err;
-  }
+  smpi_mpi_waitall(nreqs, req, statuses);
 
   for (i = 0, preq = req; i < nreqs; ++i, ++preq) {
-    err = MPI_Request_free(preq);
-    if (err != MPI_SUCCESS) {
-      if (req)
-        free((char *) req);
-      if (statuses)
-        free(statuses);
-      return err;
-    }
+    smpi_mpi_request_free(preq);
   }
 
   /* All done */

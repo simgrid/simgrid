@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 // Allgather-Non-Topoloty-Scecific-Logical-Ring algorithm
 int
@@ -12,18 +12,21 @@ smpi_coll_tuned_allgather_NTSLR_NB(void *sbuf, int scount, MPI_Datatype stype,
   int send_offset, recv_offset;
   int tag = 500;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &size);
-  MPI_Type_extent(rtype, &rextent);
-  MPI_Type_extent(stype, &sextent);
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
+  rextent = smpi_datatype_get_extent(rtype);
+  sextent = smpi_datatype_get_extent(stype);
   MPI_Request *rrequest_array;
   MPI_Request *srequest_array;
-  rrequest_array = (MPI_Request *) malloc(size * sizeof(MPI_Request));
-  srequest_array = (MPI_Request *) malloc(size * sizeof(MPI_Request));
+  rrequest_array = (MPI_Request *) xbt_malloc(size * sizeof(MPI_Request));
+  srequest_array = (MPI_Request *) xbt_malloc(size * sizeof(MPI_Request));
 
   // irregular case use default MPI fucntions
-  if (scount * sextent != rcount * rextent)
-    MPI_Allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
+  if (scount * sextent != rcount * rextent) {
+    XBT_WARN("MPI_allgather_NTSLR_NB use default MPI_allgather.");  
+    smpi_mpi_allgather(sbuf, scount, stype, rbuf, rcount, rtype, comm);
+    return MPI_SUCCESS;    
+  }
 
   // topo non-specific
   to = (rank + 1) % size;
@@ -32,7 +35,7 @@ smpi_coll_tuned_allgather_NTSLR_NB(void *sbuf, int scount, MPI_Datatype stype,
   //copy a single segment from sbuf to rbuf
   send_offset = rank * scount * sextent;
 
-  MPI_Sendrecv(sbuf, scount, stype, rank, tag,
+  smpi_mpi_sendrecv(sbuf, scount, stype, rank, tag,
                (char *)rbuf + send_offset, rcount, rtype, rank, tag, comm, &status);
 
 
@@ -42,17 +45,15 @@ smpi_coll_tuned_allgather_NTSLR_NB(void *sbuf, int scount, MPI_Datatype stype,
   //post all irecv first
   for (i = 0; i < size - 1; i++) {
     recv_offset = ((rank - i - 1 + size) % size) * increment;
-    MPI_Irecv((char *)rbuf + recv_offset, rcount, rtype, from, tag + i, comm,
-              &rrequest_array[i]);
+    rrequest_array[i] = smpi_mpi_irecv((char *)rbuf + recv_offset, rcount, rtype, from, tag + i, comm);
   }
 
 
   for (i = 0; i < size - 1; i++) {
     send_offset = ((rank - i + size) % size) * increment;
-    MPI_Isend((char *)rbuf + send_offset, scount, stype, to, tag + i, comm,
-              &srequest_array[i]);
-    MPI_Wait(&rrequest_array[i], &status);
-    MPI_Wait(&srequest_array[i], &status2);
+    srequest_array[i] = smpi_mpi_isend((char *)rbuf + send_offset, scount, stype, to, tag + i, comm);
+    smpi_mpi_wait(&rrequest_array[i], &status);
+    smpi_mpi_wait(&srequest_array[i], &status2);
   }
 
   free(rrequest_array);

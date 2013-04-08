@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*****************************************************************************
 
@@ -114,10 +114,10 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
   int failure = 1;
   int tag = 1;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
 
-  MPI_Type_extent(send_type, &extent);
+  extent = smpi_datatype_get_extent(send_type);
 
   block_size = extent * send_count;
 
@@ -156,7 +156,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
     MPIC_Send(send_buff, send_count, send_type, dst, tag, comm);
   }
 
-  MPI_Waitall(Y - 1, req, MPI_STATUSES_IGNORE);
+  smpi_mpi_waitall(Y - 1, req, MPI_STATUSES_IGNORE);
 
   req_ptr = req;
 
@@ -180,7 +180,7 @@ smpi_coll_tuned_allgather_2dmesh(void *send_buff, int send_count, MPI_Datatype
               comm);
   }
 
-  MPI_Waitall(X - 1, req, MPI_STATUSES_IGNORE);
+  smpi_mpi_waitall(X - 1, req, MPI_STATUSES_IGNORE);
 
   free(req);
 

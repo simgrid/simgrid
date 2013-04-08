@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*
  * created by Pitch Patarasuk

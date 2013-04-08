@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*****************************************************************************
 
@@ -70,14 +70,14 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather(void *buff, int count, MPI_Datatype
   MPI_Status status;
 
   int i, j, k, src, dst, rank, num_procs, send_offset, recv_offset;
-  int mask, relative_rank, curr_size, recv_size, send_size, nbytes;
+  int mask, relative_rank, curr_size, recv_size = 0, send_size, nbytes;
   int scatter_size, tree_root, relative_dst, dst_tree_root;
   int my_tree_root, offset, tmp_mask, num_procs_completed;
   int tag = 1;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Type_extent(data_type, &extent);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
+  extent = smpi_datatype_get_extent(data_type);
 
   nbytes = extent * count;
   scatter_size = (nbytes + num_procs - 1) / num_procs;  // ceiling division 
@@ -98,9 +98,9 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather(void *buff, int count, MPI_Datatype
         curr_size = 0;          // this process doesn't receive any data
       // because of uneven division 
       else {
-        MPI_Recv((char *)buff + relative_rank * scatter_size, recv_size,
+        smpi_mpi_recv((char *)buff + relative_rank * scatter_size, recv_size,
                  MPI_BYTE, src, tag, comm, &status);
-        MPI_Get_count(&status, MPI_BYTE, &curr_size);
+        curr_size = smpi_mpi_get_count(&status, MPI_BYTE);
       }
       break;
     }
@@ -122,7 +122,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather(void *buff, int count, MPI_Datatype
         dst = rank + mask;
         if (dst >= num_procs)
           dst -= num_procs;
-        MPI_Send((char *)buff + scatter_size * (relative_rank + mask),
+        smpi_mpi_send((char *)buff + scatter_size * (relative_rank + mask),
                  send_size, MPI_BYTE, dst, tag, comm);
 
         curr_size -= send_size;
@@ -157,10 +157,10 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather(void *buff, int count, MPI_Datatype
     recv_offset = dst_tree_root * scatter_size;
 
     if (relative_dst < num_procs) {
-      MPI_Sendrecv((char *)buff + send_offset, curr_size, MPI_BYTE, dst, tag,
+      smpi_mpi_sendrecv((char *)buff + send_offset, curr_size, MPI_BYTE, dst, tag,
                    (char *)buff + recv_offset, scatter_size * mask, MPI_BYTE, dst,
                    tag, comm, &status);
-      MPI_Get_count(&status, MPI_BYTE, &recv_size);
+      recv_size = smpi_mpi_get_count(&status, MPI_BYTE);
       curr_size += recv_size;
     }
 
@@ -204,7 +204,7 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather(void *buff, int count, MPI_Datatype
         if ((relative_dst > relative_rank)
             && (relative_rank < tree_root + num_procs_completed)
             && (relative_dst >= tree_root + num_procs_completed)) {
-          MPI_Send((char *)buff + offset, recv_size, MPI_BYTE, dst, tag, comm);
+          smpi_mpi_send((char *)buff + offset, recv_size, MPI_BYTE, dst, tag, comm);
 
           /* recv_size was set in the previous
              receive. that's the amount of data to be
@@ -216,12 +216,12 @@ smpi_coll_tuned_bcast_scatter_rdb_allgather(void *buff, int count, MPI_Datatype
                  && (relative_dst < tree_root + num_procs_completed)
                  && (relative_rank >= tree_root + num_procs_completed)) {
 
-          MPI_Recv((char *)buff + offset, scatter_size * num_procs_completed,
+          smpi_mpi_recv((char *)buff + offset, scatter_size * num_procs_completed,
                    MPI_BYTE, dst, tag, comm, &status);
 
           /* num_procs_completed is also equal to the no. of processes
              whose data we don't have */
-          MPI_Get_count(&status, MPI_BYTE, &recv_size);
+          recv_size = smpi_mpi_get_count(&status, MPI_BYTE);
           curr_size += recv_size;
         }
         tmp_mask >>= 1;

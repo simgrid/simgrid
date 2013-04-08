@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*****************************************************************************
 
@@ -73,9 +73,9 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
   int scatter_size, left, right, next_src, *recv_counts, *disps;
   int tag = 1;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Type_extent(data_type, &extent);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
+  extent = smpi_datatype_get_extent(data_type);
 
 
   nbytes = extent * count;
@@ -97,9 +97,9 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
         curr_size = 0;          // this process doesn't receive any data
       // because of uneven division 
       else {
-        MPI_Recv((char *) buff + relative_rank * scatter_size, recv_size,
+        smpi_mpi_recv((char *) buff + relative_rank * scatter_size, recv_size,
                  MPI_BYTE, src, tag, comm, &status);
-        MPI_Get_count(&status, MPI_BYTE, &curr_size);
+        curr_size = smpi_mpi_get_count(&status, MPI_BYTE);
       }
       break;
     }
@@ -121,7 +121,7 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
         dst = rank + mask;
         if (dst >= num_procs)
           dst -= num_procs;
-        MPI_Send((char *) buff + scatter_size * (relative_rank + mask),
+        smpi_mpi_send((char *) buff + scatter_size * (relative_rank + mask),
                  send_size, MPI_BYTE, dst, tag, comm);
 
         curr_size -= send_size;
@@ -153,7 +153,7 @@ smpi_coll_tuned_bcast_scatter_LR_allgather(void *buff, int count,
   next_src = left;
 
   for (i = 1; i < num_procs; i++) {
-    MPI_Sendrecv((char *) buff + disps[(src - root + num_procs) % num_procs],
+    smpi_mpi_sendrecv((char *) buff + disps[(src - root + num_procs) % num_procs],
                  recv_counts[(src - root + num_procs) % num_procs],
                  MPI_BYTE, right, tag,
                  (char *) buff +

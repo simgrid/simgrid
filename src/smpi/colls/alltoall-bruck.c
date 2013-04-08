@@ -37,21 +37,21 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Comm_rank(comm, &rank);
+  num_procs = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
 
-  MPI_Type_extent(recv_type, &extent);
+  extent = smpi_datatype_get_extent(recv_type);
 
   tmp_buff = (char *) xbt_malloc(num_procs * recv_count * extent);
   disps = (int *) xbt_malloc(sizeof(int) * num_procs);
   blocks_length = (int *) xbt_malloc(sizeof(int) * num_procs);
 
-  MPI_Sendrecv(send_ptr + rank * send_count * extent,
+  smpi_mpi_sendrecv(send_ptr + rank * send_count * extent,
                (num_procs - rank) * send_count, send_type, rank, tag,
                recv_ptr, (num_procs - rank) * recv_count, recv_type, rank,
                tag, comm, &status);
 
-  MPI_Sendrecv(send_ptr, rank * send_count, send_type, rank, tag,
+  smpi_mpi_sendrecv(send_ptr, rank * send_count, send_type, rank, tag,
                recv_ptr + (num_procs - rank) * recv_count * extent,
                rank * recv_count, recv_type, rank, tag, comm, &status);
 
@@ -73,14 +73,14 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
       }
 
     MPI_Type_indexed(count, blocks_length, disps, recv_type, &new_type);
-    MPI_Type_commit(&new_type);
+    smpi_datatype_commit(&new_type);
 
     position = 0;
     MPI_Pack(recv_buff, 1, new_type, tmp_buff, pack_size, &position, comm);
 
-    MPI_Sendrecv(tmp_buff, position, MPI_PACKED, dst, tag, recv_buff, 1,
+    smpi_mpi_sendrecv(tmp_buff, position, MPI_PACKED, dst, tag, recv_buff, 1,
                  new_type, src, tag, comm, &status);
-    MPI_Type_free(&new_type);
+    smpi_datatype_free(&new_type);
 
     pof2 *= 2;
   }
@@ -88,18 +88,18 @@ smpi_coll_tuned_alltoall_bruck(void *send_buff, int send_count,
   free(disps);
   free(blocks_length);
 
-  MPI_Sendrecv(recv_ptr + (rank + 1) * recv_count * extent,
+  smpi_mpi_sendrecv(recv_ptr + (rank + 1) * recv_count * extent,
                (num_procs - rank - 1) * recv_count, send_type,
                rank, tag, tmp_buff, (num_procs - rank - 1) * recv_count,
                recv_type, rank, tag, comm, &status);
 
-  MPI_Sendrecv(recv_ptr, (rank + 1) * recv_count, send_type, rank, tag,
+  smpi_mpi_sendrecv(recv_ptr, (rank + 1) * recv_count, send_type, rank, tag,
                tmp_buff + (num_procs - rank - 1) * recv_count * extent,
                (rank + 1) * recv_count, recv_type, rank, tag, comm, &status);
 
 
   for (i = 0; i < num_procs; i++)
-    MPI_Sendrecv(tmp_buff + i * recv_count * extent, recv_count, send_type,
+    smpi_mpi_sendrecv(tmp_buff + i * recv_count * extent, recv_count, send_type,
                  rank, tag,
                  recv_ptr + (num_procs - i - 1) * recv_count * extent,
                  recv_count, recv_type, rank, tag, comm, &status);

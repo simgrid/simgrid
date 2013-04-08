@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 //#include <star-reduction.c>
 
 int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
@@ -11,16 +11,16 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
   MPI_Aint extent;
   MPI_Status status;
   void *tmp_buf = NULL;
-  MPI_Comm_size(comm, &nprocs);
-  MPI_Comm_rank(comm, &rank);
+  nprocs = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
 
-  MPI_Type_extent(dtype, &extent);
+  extent = smpi_datatype_get_extent(dtype);
   tmp_buf = (void *) xbt_malloc(count * extent);
 
-  MPI_Sendrecv(sbuff, count, dtype, rank, tag, rbuff, count, dtype, rank, tag,
+  smpi_mpi_sendrecv(sbuff, count, dtype, rank, tag, rbuff, count, dtype, rank, tag,
                comm, &status);
 
-  MPI_Type_size(dtype, &type_size);
+  type_size = smpi_datatype_size(dtype);
 
   // find nearest power-of-two less than or equal to comm_size
   pof2 = 1;
@@ -40,7 +40,7 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
     // even       
     if (rank % 2 == 0) {
 
-      MPI_Send(rbuff, count, dtype, rank + 1, tag, comm);
+      smpi_mpi_send(rbuff, count, dtype, rank + 1, tag, comm);
 
       // temporarily set the rank to -1 so that this
       // process does not pariticipate in recursive
@@ -48,7 +48,7 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
       newrank = -1;
     } else                      // odd
     {
-      MPI_Recv(tmp_buf, count, dtype, rank - 1, tag, comm, &status);
+      smpi_mpi_recv(tmp_buf, count, dtype, rank - 1, tag, comm, &status);
       // do the reduction on received data. since the
       // ordering is right, it doesn't matter whether
       // the operation is commutative or not.
@@ -76,8 +76,8 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
     // reduce-scatter, calculate the count that each process receives
     // and the displacement within the buffer 
 
-    cnts = (int *) malloc(pof2 * sizeof(int));
-    disps = (int *) malloc(pof2 * sizeof(int));
+    cnts = (int *) xbt_malloc(pof2 * sizeof(int));
+    disps = (int *) xbt_malloc(pof2 * sizeof(int));
 
     for (i = 0; i < (pof2 - 1); i++)
       cnts[i] = count / pof2;
@@ -111,7 +111,7 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
       }
 
       // Send data from recvbuf. Recv into tmp_buf 
-      MPI_Sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
+      smpi_mpi_sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
                    dtype, dst, tag,
                    (char *) tmp_buf + disps[recv_idx] * extent, recv_cnt,
                    dtype, dst, tag, comm, &status);
@@ -162,7 +162,7 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
           recv_cnt += cnts[i];
       }
 
-      MPI_Sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
+      smpi_mpi_sendrecv((char *) rbuff + disps[send_idx] * extent, send_cnt,
                    dtype, dst, tag,
                    (char *) rbuff + disps[recv_idx] * extent, recv_cnt,
                    dtype, dst, tag, comm, &status);
@@ -183,9 +183,9 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
 
   if (rank < 2 * rem) {
     if (rank % 2)               // odd 
-      MPI_Send(rbuff, count, dtype, rank - 1, tag, comm);
+      smpi_mpi_send(rbuff, count, dtype, rank - 1, tag, comm);
     else                        // even 
-      MPI_Recv(rbuff, count, dtype, rank + 1, tag, comm, &status);
+      smpi_mpi_recv(rbuff, count, dtype, rank + 1, tag, comm, &status);
   }
 
   free(tmp_buf);

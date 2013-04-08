@@ -1558,7 +1558,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
   if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else {
-    smpi_mpi_bcast(buf, count, datatype, root, comm);
+    mpi_coll_bcast_fun(buf, count, datatype, root, comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
@@ -1675,8 +1675,8 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
              || recvtype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_TYPE;
   } else {
-    smpi_mpi_allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount,
-                       recvtype, comm);
+    mpi_coll_allgather_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount,
+                           recvtype, comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
@@ -1800,7 +1800,7 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
   } else if (datatype == MPI_DATATYPE_NULL || op == MPI_OP_NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    smpi_mpi_reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
+    mpi_coll_reduce_fun(sendbuf, recvbuf, count, datatype, op, root, comm);
     retval = MPI_SUCCESS;
   }
 #ifdef HAVE_TRACING
@@ -1899,7 +1899,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
       count += recvcounts[i];
       displs[i] = 0;
     }
-    smpi_mpi_reduce(sendbuf, recvbuf, count, datatype, op, 0, comm);
+    mpi_coll_reduce_fun(sendbuf, recvbuf, count, datatype, op, 0, comm);
     smpi_mpi_scatterv(recvbuf, recvcounts, displs, datatype, recvbuf,
                       recvcounts[rank], datatype, 0, comm);
     xbt_free(displs);

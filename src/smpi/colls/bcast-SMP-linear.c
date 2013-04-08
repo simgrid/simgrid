@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 #ifndef NUM_CORE
 #define NUM_CORE 8
 #endif
@@ -17,10 +17,10 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
   int rank, size;
   int i;
   MPI_Aint extent;
-  MPI_Type_extent(datatype, &extent);
+  extent = smpi_datatype_get_extent(datatype);
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &size);
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
 
   int segment = bcast_SMP_linear_segment_byte / extent;
   int pipe_length = count / segment;
@@ -37,111 +37,113 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
 
   // call native when MPI communication size is too small
   if (size <= NUM_CORE) {
-    return MPI_Bcast(buf, count, datatype, root, comm);
+    XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");	  	  
+    smpi_mpi_bcast(buf, count, datatype, root, comm);
+    return MPI_SUCCESS;            
   }
   // if root is not zero send to rank zero first
   if (root != 0) {
     if (rank == root)
-      MPI_Send(buf, count, datatype, 0, tag, comm);
+      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
     else if (rank == 0)
-      MPI_Recv(buf, count, datatype, root, tag, comm, &status);
+      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
   }
   // when a message is smaller than a block size => no pipeline 
   if (count <= segment) {
     // case ROOT
     if (rank == 0) {
-      MPI_Send(buf, count, datatype, to_inter, tag, comm);
-      MPI_Send(buf, count, datatype, to_intra, tag, comm);
+      smpi_mpi_send(buf, count, datatype, to_inter, tag, comm);
+      smpi_mpi_send(buf, count, datatype, to_intra, tag, comm);
     }
     // case last ROOT of each SMP
     else if (rank == (((size - 1) / NUM_CORE) * NUM_CORE)) {
-      MPI_Irecv(buf, count, datatype, from_inter, tag, comm, &request);
-      MPI_Wait(&request, &status);
-      MPI_Send(buf, count, datatype, to_intra, tag, comm);
+      request = smpi_mpi_irecv(buf, count, datatype, from_inter, tag, comm);
+      smpi_mpi_wait(&request, &status);
+      smpi_mpi_send(buf, count, datatype, to_intra, tag, comm);
     }
     // case intermediate ROOT of each SMP
     else if (rank % NUM_CORE == 0) {
-      MPI_Irecv(buf, count, datatype, from_inter, tag, comm, &request);
-      MPI_Wait(&request, &status);
-      MPI_Send(buf, count, datatype, to_inter, tag, comm);
-      MPI_Send(buf, count, datatype, to_intra, tag, comm);
+      request = smpi_mpi_irecv(buf, count, datatype, from_inter, tag, comm);
+      smpi_mpi_wait(&request, &status);
+      smpi_mpi_send(buf, count, datatype, to_inter, tag, comm);
+      smpi_mpi_send(buf, count, datatype, to_intra, tag, comm);
     }
     // case last non-ROOT of each SMP
     else if (((rank + 1) % NUM_CORE == 0) || (rank == (size - 1))) {
-      MPI_Irecv(buf, count, datatype, from_intra, tag, comm, &request);
-      MPI_Wait(&request, &status);
+      request = smpi_mpi_irecv(buf, count, datatype, from_intra, tag, comm);
+      smpi_mpi_wait(&request, &status);
     }
     // case intermediate non-ROOT of each SMP
     else {
-      MPI_Irecv(buf, count, datatype, from_intra, tag, comm, &request);
-      MPI_Wait(&request, &status);
-      MPI_Send(buf, count, datatype, to_intra, tag, comm);
+      request = smpi_mpi_irecv(buf, count, datatype, from_intra, tag, comm);
+      smpi_mpi_wait(&request, &status);
+      smpi_mpi_send(buf, count, datatype, to_intra, tag, comm);
     }
     return MPI_SUCCESS;
   }
   // pipeline bcast
   else {
     request_array =
-        (MPI_Request *) malloc((size + pipe_length) * sizeof(MPI_Request));
+        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
     status_array =
-        (MPI_Status *) malloc((size + pipe_length) * sizeof(MPI_Status));
+        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
 
     // case ROOT of each SMP
     if (rank % NUM_CORE == 0) {
       // case real root
       if (rank == 0) {
         for (i = 0; i < pipe_length; i++) {
-          MPI_Send((char *) buf + (i * increment), segment, datatype, to_inter,
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_inter,
                    (tag + i), comm);
-          MPI_Send((char *) buf + (i * increment), segment, datatype, to_intra,
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_intra,
                    (tag + i), comm);
         }
       }
       // case last ROOT of each SMP
       else if (rank == (((size - 1) / NUM_CORE) * NUM_CORE)) {
         for (i = 0; i < pipe_length; i++) {
-          MPI_Irecv((char *) buf + (i * increment), segment, datatype,
-                    from_inter, (tag + i), comm, &request_array[i]);
+          request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
+                    from_inter, (tag + i), comm);
         }
         for (i = 0; i < pipe_length; i++) {
-          MPI_Wait(&request_array[i], &status);
-          MPI_Send((char *) buf + (i * increment), segment, datatype, to_intra,
+          smpi_mpi_wait(&request_array[i], &status);
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_intra,
                    (tag + i), comm);
         }
       }
       // case intermediate ROOT of each SMP
       else {
         for (i = 0; i < pipe_length; i++) {
-          MPI_Irecv((char *) buf + (i * increment), segment, datatype,
-                    from_inter, (tag + i), comm, &request_array[i]);
+          request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
+                    from_inter, (tag + i), comm);
         }
         for (i = 0; i < pipe_length; i++) {
-          MPI_Wait(&request_array[i], &status);
-          MPI_Send((char *) buf + (i * increment), segment, datatype, to_inter,
+          smpi_mpi_wait(&request_array[i], &status);
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_inter,
                    (tag + i), comm);
-          MPI_Send((char *) buf + (i * increment), segment, datatype, to_intra,
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_intra,
                    (tag + i), comm);
         }
       }
     } else {                    // case last non-ROOT of each SMP
       if (((rank + 1) % NUM_CORE == 0) || (rank == (size - 1))) {
         for (i = 0; i < pipe_length; i++) {
-          MPI_Irecv((char *) buf + (i * increment), segment, datatype,
-                    from_intra, (tag + i), comm, &request_array[i]);
+          request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
+                    from_intra, (tag + i), comm);
         }
         for (i = 0; i < pipe_length; i++) {
-          MPI_Wait(&request_array[i], &status);
+          smpi_mpi_wait(&request_array[i], &status);
         }
       }
       // case intermediate non-ROOT of each SMP
       else {
         for (i = 0; i < pipe_length; i++) {
-          MPI_Irecv((char *) buf + (i * increment), segment, datatype,
-                    from_intra, (tag + i), comm, &request_array[i]);
+          request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
+                    from_intra, (tag + i), comm);
         }
         for (i = 0; i < pipe_length; i++) {
-          MPI_Wait(&request_array[i], &status);
-          MPI_Send((char *) buf + (i * increment), segment, datatype, to_intra,
+          smpi_mpi_wait(&request_array[i], &status);
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype, to_intra,
                    (tag + i), comm);
         }
       }
@@ -152,9 +154,10 @@ int smpi_coll_tuned_bcast_SMP_linear(void *buf, int count,
 
   // when count is not divisible by block size, use default BCAST for the remainder
   if ((remainder != 0) && (count > segment)) {
-    MPI_Bcast((char *) buf + (pipe_length * increment), remainder, datatype,
+    XBT_WARN("MPI_bcast_SMP_linear use default MPI_bcast.");	  	  	 
+    smpi_mpi_bcast((char *) buf + (pipe_length * increment), remainder, datatype,
               root, comm);
   }
 
-  return 1;
+  return MPI_SUCCESS;
 }

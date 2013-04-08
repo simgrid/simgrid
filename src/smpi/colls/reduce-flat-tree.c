@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 //#include <star-reduction.c>
 
 int
@@ -14,14 +14,14 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
   char *inbuf;
   MPI_Status status;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &size);
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
 
   /* If not root, send data to the root. */
-  MPI_Type_extent(dtype, &extent);
+  extent = smpi_datatype_get_extent(dtype);
 
   if (rank != root) {
-    MPI_Send(sbuf, count, dtype, root, tag, comm);
+    smpi_mpi_send(sbuf, count, dtype, root, tag, comm);
     return 0;
   }
 
@@ -29,15 +29,15 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
      messages. */
 
   if (size > 1)
-    origin = (char *) malloc(count * extent);
+    origin = (char *) xbt_malloc(count * extent);
 
 
   /* Initialize the receive buffer. */
   if (rank == (size - 1))
-    MPI_Sendrecv(sbuf, count, dtype, rank, tag,
+    smpi_mpi_sendrecv(sbuf, count, dtype, rank, tag,
                  rbuf, count, dtype, rank, tag, comm, &status);
   else
-    MPI_Recv(rbuf, count, dtype, size - 1, tag, comm, &status);
+    smpi_mpi_recv(rbuf, count, dtype, size - 1, tag, comm, &status);
 
   /* Loop receiving and calling reduction function (C or Fortran). */
 
@@ -45,7 +45,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
     if (rank == i)
       inbuf = sbuf;
     else {
-      MPI_Recv(origin, count, dtype, i, tag, comm, &status);
+      smpi_mpi_recv(origin, count, dtype, i, tag, comm, &status);
       inbuf = origin;
     }
 

@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 /* IMPLEMENTED BY PITCH PATARASUK 
    Non-topoloty-specific (however, number of cores/node need to be changed) 
    all-reduce operation designed for smp clusters
@@ -45,11 +45,11 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
      uop  = op_ptr->op;
      #endif
    */
-  MPI_Comm_size(comm, &comm_size);
-  MPI_Comm_rank(comm, &rank);
+  comm_size = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
   MPI_Aint extent;
-  MPI_Type_extent(dtype, &extent);
-  tmp_buf = (void *) malloc(count * extent);
+  extent = smpi_datatype_get_extent(dtype);
+  tmp_buf = (void *) xbt_malloc(count * extent);
 
   /* compute intra and inter ranking */
   int intra_rank, inter_rank;
@@ -61,7 +61,7 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
   int inter_comm_size = (comm_size + num_core - 1) / num_core;
 
   /* copy input buffer to output buffer */
-  MPI_Sendrecv(send_buf, count, dtype, rank, tag,
+  smpi_mpi_sendrecv(send_buf, count, dtype, rank, tag,
                recv_buf, count, dtype, rank, tag, comm, &status);
 
   /* start binomial reduce intra communication inside each SMP node */
@@ -70,12 +70,12 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
     if ((mask & intra_rank) == 0) {
       src = (inter_rank * num_core) + (intra_rank | mask);
       if (src < comm_size) {
-        MPI_Recv(tmp_buf, count, dtype, src, tag, comm, &status);
+        smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
         star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
       }
     } else {
       dst = (inter_rank * num_core) + (intra_rank & (~mask));
-      MPI_Send(recv_buf, count, dtype, dst, tag, comm);
+      smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
       break;
     }
     mask <<= 1;
@@ -103,11 +103,11 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
     if (inter_rank < 2 * rem) {
       if (inter_rank % 2 == 0) {
         dst = rank + num_core;
-        MPI_Send(recv_buf, count, dtype, dst, tag, comm);
+        smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
         newrank = -1;
       } else {
         src = rank - num_core;
-        MPI_Recv(tmp_buf, count, dtype, src, tag, comm, &status);
+        smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
         star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
         newrank = inter_rank / 2;
       }
@@ -132,7 +132,7 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
         dst *= num_core;
 
         /* exchange data in rdb manner */
-        MPI_Sendrecv(recv_buf, count, dtype, dst, tag, tmp_buf, count, dtype,
+        smpi_mpi_sendrecv(recv_buf, count, dtype, dst, tag, tmp_buf, count, dtype,
                      dst, tag, comm, &status);
         star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
         mask <<= 1;
@@ -144,9 +144,9 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
      */
     if (inter_rank < 2 * rem) {
       if (inter_rank % 2) {
-        MPI_Send(recv_buf, count, dtype, rank - num_core, tag, comm);
+        smpi_mpi_send(recv_buf, count, dtype, rank - num_core, tag, comm);
       } else {
-        MPI_Recv(recv_buf, count, dtype, rank + num_core, tag, comm, &status);
+        smpi_mpi_recv(recv_buf, count, dtype, rank + num_core, tag, comm, &status);
       }
     }
   }
@@ -160,7 +160,7 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
   while (mask < num_core_in_current_smp) {
     if (intra_rank & mask) {
       src = (inter_rank * num_core) + (intra_rank - mask);
-      MPI_Recv(recv_buf, count, dtype, src, tag, comm, &status);
+      smpi_mpi_recv(recv_buf, count, dtype, src, tag, comm, &status);
       break;
     }
     mask <<= 1;
@@ -170,7 +170,7 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
   while (mask > 0) {
     dst = (inter_rank * num_core) + (intra_rank + mask);
     if (dst < comm_size) {
-      MPI_Send(recv_buf, count, dtype, dst, tag, comm);
+      smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
     }
     mask >>= 1;
   }

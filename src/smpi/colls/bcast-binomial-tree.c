@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*****************************************************************************
 
@@ -70,8 +70,8 @@ smpi_coll_tuned_bcast_binomial_tree(void *buff, int count,
   int src, dst, rank, num_procs, mask, relative_rank;
   int tag = 1;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
 
   relative_rank = (rank >= root) ? rank - root : rank - root + num_procs;
 
@@ -81,7 +81,7 @@ smpi_coll_tuned_bcast_binomial_tree(void *buff, int count,
       src = rank - mask;
       if (src < 0)
         src += num_procs;
-      MPI_Recv(buff, count, data_type, src, tag, comm, MPI_STATUS_IGNORE);
+      smpi_mpi_recv(buff, count, data_type, src, tag, comm, MPI_STATUS_IGNORE);
       break;
     }
     mask <<= 1;
@@ -93,7 +93,7 @@ smpi_coll_tuned_bcast_binomial_tree(void *buff, int count,
       dst = rank + mask;
       if (dst >= num_procs)
         dst -= num_procs;
-      MPI_Send(buff, count, data_type, dst, tag, comm);
+      smpi_mpi_send(buff, count, data_type, dst, tag, comm);
     }
     mask >>= 1;
   }

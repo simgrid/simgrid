@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 int smpi_coll_tuned_allreduce_redbcast(void *buf, void *buf2, int count,
                                        MPI_Datatype datatype, MPI_Op op,

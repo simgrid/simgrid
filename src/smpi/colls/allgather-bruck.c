@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 /*****************************************************************************
 
@@ -82,15 +82,15 @@ int smpi_coll_tuned_allgather_bruck(void *send_buff, int send_count,
   char *recv_ptr = (char *) recv_buff;
 
   // get size of the communicator, followed by rank 
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Comm_rank(comm, &rank);
+  num_procs = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
 
   // get size of single element's type for recv buffer
-  MPI_Type_extent(recv_type, &recv_extent);
+  recv_extent = smpi_datatype_get_extent(recv_type);
 
   count = recv_count;
 
-  tmp_buff = (char *) malloc(num_procs * recv_count * recv_extent);
+  tmp_buff = (char *) xbt_malloc(num_procs * recv_count * recv_extent);
   if (!tmp_buff) {
     printf("allgather-bruck:54: cannot allocate memory\n");
     MPI_Finalize();

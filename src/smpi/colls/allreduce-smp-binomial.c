@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 /* IMPLEMENTED BY PITCH PATARASUK 
    Non-topoloty-specific (however, number of cores/node need to be changed) 
    all-reduce operation designed for smp clusters
@@ -51,7 +51,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
   rank=smpi_comm_rank(comm);
   MPI_Aint extent, lb;
   smpi_datatype_extent(dtype, &lb, &extent);
-  tmp_buf = (void *) malloc(count * extent);
+  tmp_buf = (void *) xbt_malloc(count * extent);
 
   /* compute intra and inter ranking */
   int intra_rank, inter_rank;

@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 /*****************************************************************************
 
  * Function: alltoall_pair_light_barrier
@@ -37,28 +37,28 @@ smpi_coll_tuned_alltoall_pair_light_barrier(void *send_buff, int send_count,
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Type_extent(send_type, &send_chunk);
-  MPI_Type_extent(recv_type, &recv_chunk);
+  rank = smpi_comm_rank(comm);
+  num_procs = smpi_comm_size(comm);
+  send_chunk = smpi_datatype_get_extent(send_type);
+  recv_chunk = smpi_datatype_get_extent(recv_type);
 
   send_chunk *= send_count;
   recv_chunk *= recv_count;
 
-  MPI_Sendrecv(send_ptr + rank * send_chunk, send_count, send_type, rank, tag,
+  smpi_mpi_sendrecv(send_ptr + rank * send_chunk, send_count, send_type, rank, tag,
                recv_ptr + rank * recv_chunk, recv_count, recv_type, rank, tag,
                comm, &s);
 
   for (i = 1; i < num_procs; i++) {
     src = dst = rank ^ i;
 
-    MPI_Sendrecv(send_ptr + dst * send_chunk, send_count, send_type,
+    smpi_mpi_sendrecv(send_ptr + dst * send_chunk, send_count, send_type,
                  dst, tag, recv_ptr + src * recv_chunk, recv_count,
                  recv_type, src, tag, comm, &s);
 
     if ((i + 1) < num_procs) {
       next_partner = rank ^ (i + 1);
-      MPI_Sendrecv(&send_sync, 1, MPI_CHAR, next_partner, tag,
+      smpi_mpi_sendrecv(&send_sync, 1, MPI_CHAR, next_partner, tag,
                    &recv_sync, 1, MPI_CHAR, next_partner, tag, comm, &s);
     }
   }

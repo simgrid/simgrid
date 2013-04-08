@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 //#include <star-reduction.c>
 
 // this requires that count >= NP
@@ -20,11 +20,11 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
      uop  = op_ptr->op;
      #endif
    */
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &nprocs);
+  rank = smpi_comm_rank(comm);
+  nprocs = smpi_comm_size(comm);
 
 
-  MPI_Type_extent(dtype, &s_extent);
+  s_extent = smpi_datatype_get_extent(dtype);
 
   // uneven count
   if (count % nprocs) {
@@ -34,20 +34,20 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
       send_size = (count + nprocs) / nprocs;
     nbytes = send_size * s_extent;
 
-    send = (void *) malloc(s_extent * send_size * nprocs);
-    recv = (void *) malloc(s_extent * send_size * nprocs);
-    tmp = (void *) malloc(nbytes);
+    send = (void *) xbt_malloc(s_extent * send_size * nprocs);
+    recv = (void *) xbt_malloc(s_extent * send_size * nprocs);
+    tmp = (void *) xbt_malloc(nbytes);
 
     memcpy(send, sbuff, s_extent * count);
 
-    MPI_Alltoall(send, send_size, dtype, recv, send_size, dtype, comm);
+    mpi_coll_alltoall_fun(send, send_size, dtype, recv, send_size, dtype, comm);
 
     memcpy(tmp, recv, nbytes);
 
     for (i = 1, s_offset = nbytes; i < nprocs; i++, s_offset = i * nbytes)
       star_reduction(op, (char *) recv + s_offset, tmp, &send_size, &dtype);
 
-    MPI_Allgather(tmp, send_size, dtype, recv, send_size, dtype, comm);
+    mpi_coll_allgather_fun(tmp, send_size, dtype, recv, send_size, dtype, comm);
     memcpy(rbuff, recv, count * s_extent);
 
     free(recv);
@@ -59,9 +59,9 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
     nbytes = send_size * s_extent;
     r_offset = rank * nbytes;
 
-    recv = (void *) malloc(s_extent * send_size * nprocs);
+    recv = (void *) xbt_malloc(s_extent * send_size * nprocs);
 
-    MPI_Alltoall(send, send_size, dtype, recv, send_size, dtype, comm);
+    mpi_coll_alltoall_fun(send, send_size, dtype, recv, send_size, dtype, comm);
 
     memcpy((char *) rbuff + r_offset, recv, nbytes);
 
@@ -69,7 +69,7 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
       star_reduction(op, (char *) recv + s_offset, (char *) rbuff + r_offset,
                      &send_size, &dtype);
 
-    MPI_Allgather((char *) rbuff + r_offset, send_size, dtype, rbuff, send_size,
+    mpi_coll_allgather_fun((char *) rbuff + r_offset, send_size, dtype, rbuff, send_size,
                   dtype, comm);
     free(recv);
   }

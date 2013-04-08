@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 #ifndef NUM_CORE
 #define NUM_CORE 8
 #endif
@@ -17,10 +17,10 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
   int rank, size;
   int i;
   MPI_Aint extent;
-  MPI_Type_extent(datatype, &extent);
+  extent = smpi_datatype_get_extent(datatype);
 
-  MPI_Comm_rank(comm, &rank);
-  MPI_Comm_size(comm, &size);
+  rank = smpi_comm_rank(comm);
+  size = smpi_comm_size(comm);
 
   int segment = bcast_SMP_binary_segment_byte / extent;
   int pipe_length = count / segment;
@@ -42,9 +42,9 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
   // if root is not zero send to rank zero first
   if (root != 0) {
     if (rank == root)
-      MPI_Send(buf, count, datatype, 0, tag, comm);
+      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
     else if (rank == 0)
-      MPI_Recv(buf, count, datatype, root, tag, comm, &status);
+      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
   }
   // when a message is smaller than a block size => no pipeline 
   if (count <= segment) {
@@ -54,52 +54,52 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
       if (rank == 0) {
         //printf("node %d left %d right %d\n",rank,to_inter_left,to_inter_right);
         if (to_inter_left < size)
-          MPI_Send(buf, count, datatype, to_inter_left, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_inter_left, tag, comm);
         if (to_inter_right < size)
-          MPI_Send(buf, count, datatype, to_inter_right, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_inter_right, tag, comm);
         if ((to_intra_left - base) < num_core)
-          MPI_Send(buf, count, datatype, to_intra_left, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_intra_left, tag, comm);
         if ((to_intra_right - base) < num_core)
-          MPI_Send(buf, count, datatype, to_intra_right, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_intra_right, tag, comm);
       }
       // case LEAVES ROOT-of-eash-SMP
       else if (to_inter_left >= size) {
         //printf("node %d from %d\n",rank,from_inter);
-        MPI_Irecv(buf, count, datatype, from_inter, tag, comm, &request);
-        MPI_Wait(&request, &status);
+        request = smpi_mpi_irecv(buf, count, datatype, from_inter, tag, comm);
+        smpi_mpi_wait(&request, &status);
         if ((to_intra_left - base) < num_core)
-          MPI_Send(buf, count, datatype, to_intra_left, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_intra_left, tag, comm);
         if ((to_intra_right - base) < num_core)
-          MPI_Send(buf, count, datatype, to_intra_right, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_intra_right, tag, comm);
       }
       // case INTERMEDIAT ROOT-of-each-SMP
       else {
         //printf("node %d left %d right %d from %d\n",rank,to_inter_left,to_inter_right,from_inter);
-        MPI_Irecv(buf, count, datatype, from_inter, tag, comm, &request);
-        MPI_Wait(&request, &status);
-        MPI_Send(buf, count, datatype, to_inter_left, tag, comm);
+        request = smpi_mpi_irecv(buf, count, datatype, from_inter, tag, comm);
+        smpi_mpi_wait(&request, &status);
+        smpi_mpi_send(buf, count, datatype, to_inter_left, tag, comm);
         if (to_inter_right < size)
-          MPI_Send(buf, count, datatype, to_inter_right, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_inter_right, tag, comm);
         if ((to_intra_left - base) < num_core)
-          MPI_Send(buf, count, datatype, to_intra_left, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_intra_left, tag, comm);
         if ((to_intra_right - base) < num_core)
-          MPI_Send(buf, count, datatype, to_intra_right, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_intra_right, tag, comm);
       }
     }
     // case non ROOT-of-each-SMP
     else {
       // case leaves
       if ((to_intra_left - base) >= num_core) {
-        MPI_Irecv(buf, count, datatype, from_intra, tag, comm, &request);
-        MPI_Wait(&request, &status);
+        request = smpi_mpi_irecv(buf, count, datatype, from_intra, tag, comm);
+        smpi_mpi_wait(&request, &status);
       }
       // case intermediate
       else {
-        MPI_Irecv(buf, count, datatype, from_intra, tag, comm, &request);
-        MPI_Wait(&request, &status);
-        MPI_Send(buf, count, datatype, to_intra_left, tag, comm);
+        request = smpi_mpi_irecv(buf, count, datatype, from_intra, tag, comm);
+        smpi_mpi_wait(&request, &status);
+        smpi_mpi_send(buf, count, datatype, to_intra_left, tag, comm);
         if ((to_intra_right - base) < num_core)
-          MPI_Send(buf, count, datatype, to_intra_right, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_intra_right, tag, comm);
       }
     }
 
@@ -109,9 +109,9 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
   // pipeline bcast
   else {
     request_array =
-        (MPI_Request *) malloc((size + pipe_length) * sizeof(MPI_Request));
+        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
     status_array =
-        (MPI_Status *) malloc((size + pipe_length) * sizeof(MPI_Status));
+        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
 
     // case ROOT-of-each-SMP
     if (rank % NUM_CORE == 0) {
@@ -120,16 +120,16 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
         for (i = 0; i < pipe_length; i++) {
           //printf("node %d left %d right %d\n",rank,to_inter_left,to_inter_right);
           if (to_inter_left < size)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_inter_left, (tag + i), comm);
           if (to_inter_right < size)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_inter_right, (tag + i), comm);
           if ((to_intra_left - base) < num_core)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_intra_left, (tag + i), comm);
           if ((to_intra_right - base) < num_core)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_intra_right, (tag + i), comm);
         }
       }
@@ -137,16 +137,16 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
       else if (to_inter_left >= size) {
         //printf("node %d from %d\n",rank,from_inter);
         for (i = 0; i < pipe_length; i++) {
-          MPI_Irecv((char *) buf + (i * increment), segment, datatype,
-                    from_inter, (tag + i), comm, &request_array[i]);
+          request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
+                    from_inter, (tag + i), comm);
         }
         for (i = 0; i < pipe_length; i++) {
-          MPI_Wait(&request_array[i], &status);
+          smpi_mpi_wait(&request_array[i], &status);
           if ((to_intra_left - base) < num_core)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_intra_left, (tag + i), comm);
           if ((to_intra_right - base) < num_core)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_intra_right, (tag + i), comm);
         }
       }
@@ -154,21 +154,21 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
       else {
         //printf("node %d left %d right %d from %d\n",rank,to_inter_left,to_inter_right,from_inter);
         for (i = 0; i < pipe_length; i++) {
-          MPI_Irecv((char *) buf + (i * increment), segment, datatype,
-                    from_inter, (tag + i), comm, &request_array[i]);
+          request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
+                    from_inter, (tag + i), comm);
         }
         for (i = 0; i < pipe_length; i++) {
-          MPI_Wait(&request_array[i], &status);
-          MPI_Send((char *) buf + (i * increment), segment, datatype,
+          smpi_mpi_wait(&request_array[i], &status);
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                    to_inter_left, (tag + i), comm);
           if (to_inter_right < size)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_inter_right, (tag + i), comm);
           if ((to_intra_left - base) < num_core)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_intra_left, (tag + i), comm);
           if ((to_intra_right - base) < num_core)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_intra_right, (tag + i), comm);
         }
       }
@@ -178,23 +178,23 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
       // case leaves
       if ((to_intra_left - base) >= num_core) {
         for (i = 0; i < pipe_length; i++) {
-          MPI_Irecv((char *) buf + (i * increment), segment, datatype,
-                    from_intra, (tag + i), comm, &request_array[i]);
+          request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
+                    from_intra, (tag + i), comm);
         }
-        MPI_Waitall((pipe_length), request_array, status_array);
+        smpi_mpi_waitall((pipe_length), request_array, status_array);
       }
       // case intermediate
       else {
         for (i = 0; i < pipe_length; i++) {
-          MPI_Irecv((char *) buf + (i * increment), segment, datatype,
-                    from_intra, (tag + i), comm, &request_array[i]);
+          request_array[i] = smpi_mpi_irecv((char *) buf + (i * increment), segment, datatype,
+                    from_intra, (tag + i), comm);
         }
         for (i = 0; i < pipe_length; i++) {
-          MPI_Wait(&request_array[i], &status);
-          MPI_Send((char *) buf + (i * increment), segment, datatype,
+          smpi_mpi_wait(&request_array[i], &status);
+          smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                    to_intra_left, (tag + i), comm);
           if ((to_intra_right - base) < num_core)
-            MPI_Send((char *) buf + (i * increment), segment, datatype,
+            smpi_mpi_send((char *) buf + (i * increment), segment, datatype,
                      to_intra_right, (tag + i), comm);
         }
       }
@@ -206,7 +206,8 @@ int smpi_coll_tuned_bcast_SMP_binary(void *buf, int count,
 
   // when count is not divisible by block size, use default BCAST for the remainder
   if ((remainder != 0) && (count > segment)) {
-    MPI_Bcast((char *) buf + (pipe_length * increment), remainder, datatype,
+    XBT_WARN("MPI_bcast_SMP_binary use default MPI_bcast.");	  
+    smpi_mpi_bcast((char *) buf + (pipe_length * increment), remainder, datatype,
               root, comm);
   }
 

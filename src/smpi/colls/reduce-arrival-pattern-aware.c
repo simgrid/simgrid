@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 //#include <star-reduction.c>
 
 int reduce_arrival_pattern_aware_segment_size_in_byte = 8192;
@@ -19,7 +19,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
                                                  MPI_Comm comm)
 {
   int rank;
-  MPI_Comm_rank(comm, &rank);
+  rank = smpi_comm_rank(comm);
 
   int tag = 50;
   MPI_Status status;
@@ -72,7 +72,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
   }
 
   char *tmp_buf;
-  tmp_buf = (char *) malloc(count * extent);
+  tmp_buf = (char *) xbt_malloc(count * extent);
 
   smpi_mpi_sendrecv(buf, count, datatype, rank, tag, rbuf, count, datatype, rank,
                tag, comm, &status);
@@ -142,7 +142,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
       /* wait for header and data, forward when required */
       smpi_mpi_recv(header_buf, HEADER_SIZE, MPI_INT, MPI_ANY_SOURCE, tag, comm,
                &status);
-      //      MPI_Recv(buf,count,datatype,MPI_ANY_SOURCE,tag,comm,&status);
+      //      smpi_mpi_recv(buf,count,datatype,MPI_ANY_SOURCE,tag,comm,&status);
 
       /* search for where it is */
       int myordering = 0;
@@ -189,13 +189,13 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
     //    printf("node %d start\n",rank);
 
     send_request_array =
-        (MPI_Request *) malloc((size + pipe_length) * sizeof(MPI_Request));
+        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
     recv_request_array =
-        (MPI_Request *) malloc((size + pipe_length) * sizeof(MPI_Request));
+        (MPI_Request *) xbt_malloc((size + pipe_length) * sizeof(MPI_Request));
     send_status_array =
-        (MPI_Status *) malloc((size + pipe_length) * sizeof(MPI_Status));
+        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
     recv_status_array =
-        (MPI_Status *) malloc((size + pipe_length) * sizeof(MPI_Status));
+        (MPI_Status *) xbt_malloc((size + pipe_length) * sizeof(MPI_Status));
 
     if (rank == 0) {
       sent_count = 0;

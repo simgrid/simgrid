@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 #ifndef NUM_CORE
 #define NUM_CORE 8
 #endif
@@ -13,8 +13,8 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
   MPI_Status status;
   int tag = 50;
 
-  MPI_Comm_size(comm, &size);
-  MPI_Comm_rank(comm, &rank);
+  size = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
 
   int to_intra, to_inter;
   int from_intra, from_inter;
@@ -28,9 +28,9 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
   // if root is not zero send to rank zero first
   if (root != 0) {
     if (rank == root)
-      MPI_Send(buf, count, datatype, 0, tag, comm);
+      smpi_mpi_send(buf, count, datatype, 0, tag, comm);
     else if (rank == 0)
-      MPI_Recv(buf, count, datatype, root, tag, comm, &status);
+      smpi_mpi_recv(buf, count, datatype, root, tag, comm, &status);
   }
   //FIRST STEP node 0 send to every root-of-each-SMP with binomial tree
 
@@ -42,7 +42,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
       if (inter_rank & mask) {
         from_inter = (inter_rank - mask) * NUM_CORE;
         //printf("Node %d recv from node %d when mask is %d\n", rank, from_inter, mask);
-        MPI_Recv(buf, count, datatype, from_inter, tag, comm, &status);
+        smpi_mpi_recv(buf, count, datatype, from_inter, tag, comm, &status);
         break;
       }
       mask <<= 1;
@@ -56,7 +56,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
         to_inter = (inter_rank + mask) * NUM_CORE;
         if (to_inter < size) {
           //printf("Node %d send to node %d when mask is %d\n", rank, to_inter, mask);
-          MPI_Send(buf, count, datatype, to_inter, tag, comm);
+          smpi_mpi_send(buf, count, datatype, to_inter, tag, comm);
         }
       }
       mask >>= 1;
@@ -70,7 +70,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
     if (intra_rank & mask) {
       from_intra = base + (intra_rank - mask);
       //printf("Node %d recv from node %d when mask is %d\n", rank, from_inter, mask);
-      MPI_Recv(buf, count, datatype, from_intra, tag, comm, &status);
+      smpi_mpi_recv(buf, count, datatype, from_intra, tag, comm, &status);
       break;
     }
     mask <<= 1;
@@ -85,7 +85,7 @@ int smpi_coll_tuned_bcast_SMP_binomial(void *buf, int count,
       to_intra = base + (intra_rank + mask);
       if (to_intra < size) {
         //printf("Node %d send to node %d when mask is %d\n", rank, to_inter, mask);
-        MPI_Send(buf, count, datatype, to_intra, tag, comm);
+        smpi_mpi_send(buf, count, datatype, to_intra, tag, comm);
       }
     }
     mask >>= 1;

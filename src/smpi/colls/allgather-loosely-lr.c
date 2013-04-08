@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 #ifndef NUM_CORE
 #define NUM_CORE 4
@@ -15,11 +15,11 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
   int intra_rank, inter_rank, inter_comm_size, intra_comm_size;
   int inter_dst, inter_src;
 
-  MPI_Comm_size(comm, &comm_size);
-  MPI_Comm_rank(comm, &rank);
+  comm_size = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
   MPI_Aint rextent, sextent;
-  MPI_Type_extent(rtype, &rextent);
-  MPI_Type_extent(stype, &sextent);
+  rextent = smpi_datatype_get_extent(rtype);
+  sextent = smpi_datatype_get_extent(stype);
   MPI_Request inter_rrequest;
   MPI_Request rrequest_array[128];
   MPI_Request srequest_array[128];
@@ -41,7 +41,7 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
 
   //copy corresponding message from sbuf to rbuf
   recv_offset = rank * rextent * rcount;
-  MPI_Sendrecv(sbuf, scount, stype, rank, tag,
+  smpi_mpi_sendrecv(sbuf, scount, stype, rank, tag,
                (char *)rbuf + recv_offset, rcount, rtype, rank, tag, comm, &status);
 
   int dst, src;
@@ -74,11 +74,10 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
       if (intra_rank == j) {
         if (i != inter_comm_size - 1) {
 
-          MPI_Irecv((char *)rbuf + inter_recv_offset, rcount, rtype, inter_src, tag,
-                    comm, &inter_rrequest);
-          MPI_Isend((char *)rbuf + inter_send_offset, scount, stype, inter_dst, tag,
-                    comm, &inter_srequest_array[inter_srequest_count++]);
-
+          inter_rrequest = smpi_mpi_irecv((char *)rbuf + inter_recv_offset, rcount, rtype,
+	                                  inter_src, tag, comm);
+          inter_srequest_array[inter_srequest_count++] = smpi_mpi_isend((char *)rbuf + inter_send_offset, scount, stype,
+			                                                inter_dst, tag, comm);
         }
       }
       //intra_communication
@@ -98,10 +97,8 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
 
       if (j != intra_rank) {
 
-        MPI_Irecv((char *)rbuf + recv_offset, rcount, rtype, src, tag, comm,
-                  &rrequest_array[rrequest_count++]);
-        MPI_Isend((char *)rbuf + send_offset, scount, stype, dst, tag, comm,
-                  &srequest_array[srequest_count++]);
+        rrequest_array[rrequest_count++] = smpi_mpi_irecv((char *)rbuf + recv_offset, rcount, rtype, src, tag, comm);
+        srequest_array[srequest_count++] = smpi_mpi_isend((char *)rbuf + send_offset, scount, stype, dst, tag, comm);
 
       }
     }                           // intra loop
@@ -109,14 +106,14 @@ int smpi_coll_tuned_allgather_loosely_lr(void *sbuf, int scount,
 
     // wait for inter communication to finish for these rounds (# of round equals NUM_CORE)
     if (i != inter_comm_size - 1) {
-      MPI_Wait(&inter_rrequest, &status);
+      smpi_mpi_wait(&inter_rrequest, &status);
     }
 
   }                             //inter loop
 
-  MPI_Waitall(rrequest_count, rrequest_array, MPI_STATUSES_IGNORE);
-  MPI_Waitall(srequest_count, srequest_array, MPI_STATUSES_IGNORE);
-  MPI_Waitall(inter_srequest_count, inter_srequest_array, MPI_STATUSES_IGNORE);
+  smpi_mpi_waitall(rrequest_count, rrequest_array, MPI_STATUSES_IGNORE);
+  smpi_mpi_waitall(srequest_count, srequest_array, MPI_STATUSES_IGNORE);
+  smpi_mpi_waitall(inter_srequest_count, inter_srequest_array, MPI_STATUSES_IGNORE);
 
   return MPI_SUCCESS;
 }

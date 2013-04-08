@@ -1,4 +1,4 @@
-#include "colls.h"
+#include "colls_private.h"
 
 // now only work with power of two processes
 
@@ -20,20 +20,23 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
   int curr_count;
 
   // get size of the communicator, followed by rank 
-  MPI_Comm_size(comm, &num_procs);
-  MPI_Comm_rank(comm, &rank);
+  num_procs = smpi_comm_size(comm);
+  rank = smpi_comm_rank(comm);
 
   // get size of single element's type for send buffer and recv buffer
-  MPI_Type_extent(send_type, &s_extent);
-  MPI_Type_extent(recv_type, &r_extent);
+  s_extent = smpi_datatype_get_extent(send_type);
+  r_extent = smpi_datatype_get_extent(recv_type);
 
   // multiply size of each element by number of elements to send or recv
   send_chunk = s_extent * send_count;
   recv_chunk = r_extent * recv_count;
 
-  if (send_chunk != recv_chunk)
-    return MPI_Allgather(sbuf, send_count, send_type, rbuf, recv_count,
-                         recv_type, comm);
+  if (send_chunk != recv_chunk) {
+    XBT_WARN("MPI_allgather_rhv use default MPI_allgather.");  
+    smpi_mpi_allgather(sbuf, send_count, send_type, rbuf, recv_count,
+                              recv_type, comm);
+    return MPI_SUCCESS;        
+  }
 
   // compute starting offset location to perform local copy
   int size = num_procs / 2;
@@ -52,7 +55,7 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
   //perform a remote copy
 
   dst = base_offset;
-  MPI_Sendrecv(sbuf, send_count, send_type, dst, tag,
+  smpi_mpi_sendrecv(sbuf, send_count, send_type, dst, tag,
                (char *)rbuf + base_offset * recv_chunk, recv_count, recv_type, dst, tag,
                comm, &status);
 
@@ -78,7 +81,7 @@ smpi_coll_tuned_allgather_rhv(void *sbuf, int send_count,
 
     //  printf("node %d send to %d in phase %d s_offset = %d r_offset = %d count = %d\n",rank,dst,phase, send_base_offset, recv_base_offset, curr_count);
 
-    MPI_Sendrecv((char *)rbuf + send_offset, curr_count, recv_type, dst, tag,
+    smpi_mpi_sendrecv((char *)rbuf + send_offset, curr_count, recv_type, dst, tag,
 		 (char *)rbuf + recv_offset, curr_count, recv_type, dst, tag,
                  comm, &status);
 
