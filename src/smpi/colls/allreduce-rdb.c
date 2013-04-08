@@ -4,7 +4,7 @@
 int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
                                   MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
 {
-  int nprocs, rank, type_size, tag = 543;
+  int nprocs, rank, tag = 543;
   int mask, dst, pof2, newrank, rem, newdst;
   MPI_Aint extent, lb;
   MPI_Status status;
@@ -27,8 +27,6 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
 
   smpi_mpi_sendrecv(sbuff, count, dtype, rank, 500,
                rbuff, count, dtype, rank, 500, comm, &status);
-
-  type_size=smpi_datatype_size(dtype);
 
   // find nearest power-of-two less than or equal to comm_size
   pof2 = 1;

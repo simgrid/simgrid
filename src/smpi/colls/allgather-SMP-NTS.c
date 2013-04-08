@@ -17,7 +17,6 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
   int tag = 50;
   MPI_Request request;
   MPI_Request rrequest_array[128];
-  MPI_Request srequest_array[128];
 
   MPI_Status status;
   int i, send_offset, recv_offset;
@@ -83,8 +82,8 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
     send_offset =
         ((inter_rank +
           inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
-    srequest_array[0] = smpi_mpi_isend((char *) rbuf + send_offset, scount * NUM_CORE, stype, dst, tag,
-              comm);
+    smpi_mpi_isend((char *) rbuf + send_offset, scount * NUM_CORE, stype,
+                   dst, tag, comm);
 
     // loop : recv-inter , send-inter, send-intra (linear-bcast)
     for (i = 0; i < inter_comm_size - 2; i++) {
@@ -92,8 +91,8 @@ int smpi_coll_tuned_allgather_SMP_NTS(void *sbuf, int scount,
           ((inter_rank - i - 1 +
             inter_comm_size) % inter_comm_size) * NUM_CORE * sextent * scount;
       smpi_mpi_wait(&rrequest_array[i], &status);
-      srequest_array[i + 1] = smpi_mpi_isend((char *) rbuf + recv_offset, scount * NUM_CORE, stype, dst,
-                tag + i + 1, comm);
+      smpi_mpi_isend((char *) rbuf + recv_offset, scount * NUM_CORE, stype,
+                     dst, tag + i + 1, comm);
       if (num_core_in_current_smp > 1) {
         request = smpi_mpi_isend((char *) rbuf + recv_offset, scount * NUM_CORE, stype,
                   (rank + 1), tag + i + 1, comm);

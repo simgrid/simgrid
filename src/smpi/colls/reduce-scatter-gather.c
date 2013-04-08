@@ -10,7 +10,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
                                           MPI_Op op, int root, MPI_Comm comm)
 {
   MPI_Status status;
-  int comm_size, rank, type_size, pof2, rem, newrank;
+  int comm_size, rank, pof2, rem, newrank;
   int mask, *cnts, *disps, i, j, send_idx = 0;
   int recv_idx, last_idx = 0, newdst;
   int dst, send_cnt, recv_cnt, newroot, newdst_tree_root;
@@ -29,7 +29,6 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
   comm_size = smpi_comm_size(comm);
 
   extent = smpi_datatype_get_extent(datatype);
-  type_size = smpi_datatype_size(datatype);
 
   /* find nearest power-of-two less than or equal to comm_size */
   pof2 = 1;
