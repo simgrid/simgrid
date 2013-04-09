@@ -43,13 +43,11 @@ int main(int argc, char *argv[])
   status = MPI_Reduce(sb, rb, size, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
 
-  printf("[%d] rcvbuf=[", rank);
-  for (i = 0; i < size; i++)
-    printf("%d ", rb[i]);
-  printf("]\n");
-
-
   if (rank == 0) {
+    printf("[%d] rcvbuf=[", rank);
+    for (i = 0; i < size; i++)
+      printf("%d ", rb[i]);
+    printf("]\n");
     if (status != MPI_SUCCESS) {
       printf("all_to_all returned %d\n", status);
       fflush(stdout);
