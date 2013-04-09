@@ -362,7 +362,7 @@ void smpi_mpi_start(MPI_Request request)
       request->refcount++;
       if(request->old_type->has_subtype == 0){
         oldbuf = request->buf;
-        if (oldbuf){
+        if (oldbuf && request->size!=0){
           request->buf = xbt_malloc(request->size);
           memcpy(request->buf,oldbuf,request->size);
         }
