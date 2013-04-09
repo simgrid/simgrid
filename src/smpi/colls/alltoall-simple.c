@@ -90,15 +90,12 @@ int smpi_coll_tuned_alltoall_simple(void *send_buff, int send_count,
 
   smpi_mpi_waitall(nreqs, req, statuses);
 
-  for (i = 0, preq = req; i < nreqs; ++i, ++preq) {
-    smpi_mpi_request_free(preq);
-  }
 
   /* All done */
 
   if (req)
-    free((char *) req);
+    xbt_free((char *) req);
   if (statuses)
-    free(statuses);
+    xbt_free(statuses);
   return MPI_SUCCESS;
 }
