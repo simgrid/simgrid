@@ -16,7 +16,10 @@ smpi_coll_tuned_bcast_flattree_pipeline(void *buff, int count,
   int segment = flattree_segment_in_byte / extent;
   int pipe_length = count / segment;
   int increment = segment * extent;
-
+  if (pipe_length==0) {
+    XBT_WARN("MPI_bcast_flattree_pipeline use default MPI_bcast_flattree.");
+    return smpi_coll_tuned_bcast_flattree(buff, count, data_type, root, comm);
+  }
   rank = smpi_comm_rank(comm);
   num_procs = smpi_comm_size(comm);
 

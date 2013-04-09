@@ -10,6 +10,7 @@
 int main(int argc, char **argv)
 {
   int i, size, rank;
+  int count = 2048;
   int *values;
   int status;
 
@@ -17,17 +18,17 @@ int main(int argc, char **argv)
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   
-  values = (int *) xbt_malloc(size * sizeof(int));  
+  values = (int *) xbt_malloc(count * sizeof(int));  
 
-  for (i = 0; i < size; i++)
+  for (i = 0; i < count; i++)
     values[i] = (0 == rank) ? 17 : 3;
 
-  status = MPI_Bcast(values, size, MPI_INT, 0, MPI_COMM_WORLD);
+  status = MPI_Bcast(values, count, MPI_INT, 0, MPI_COMM_WORLD);
 
-  printf("[%d] values=[", rank);
-  for (i = 0; i < size; i++)
-    printf("%d ", values[i]);
-  printf("]\n");
+  int good = 0;
+  for (i = 0; i < count; i++)
+    if (values[i]==17) good++;
+  printf("[%d] number of values equals to 17: %d\n", rank, good);
 
   MPI_Barrier(MPI_COMM_WORLD);
 
