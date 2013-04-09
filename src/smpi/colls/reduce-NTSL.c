@@ -66,12 +66,12 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
   if (count <= segment) {
     if (rank == root) {
       smpi_mpi_recv(tmp_buf, count, datatype, from, tag, comm, &status);
-      star_reduction(op, tmp_buf, rbuf, &count, &datatype);
+      smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
     } else if (rank == ((root - 1 + size) % size)) {
       smpi_mpi_send(rbuf, count, datatype, to, tag, comm);
     } else {
       smpi_mpi_recv(tmp_buf, count, datatype, from, tag, comm, &status);
-      star_reduction(op, tmp_buf, rbuf, &count, &datatype);
+      smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
       smpi_mpi_send(rbuf, count, datatype, to, tag, comm);
     }
     free(tmp_buf);
@@ -97,7 +97,7 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
       }
       for (i = 0; i < pipe_length; i++) {
         smpi_mpi_wait(&recv_request_array[i], &status);
-        star_reduction(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
+        smpi_op_apply(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
                        &segment, &datatype);
       }
     }
@@ -119,7 +119,7 @@ int smpi_coll_tuned_reduce_NTSL(void *buf, void *rbuf, int count,
       }
       for (i = 0; i < pipe_length; i++) {
         smpi_mpi_wait(&recv_request_array[i], &status);
-        star_reduction(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
+        smpi_op_apply(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
                        &segment, &datatype);
         send_request_array[i] = smpi_mpi_isend((char *) rbuf + (i * increment), segment, datatype, to,
                   (tag + i), comm);

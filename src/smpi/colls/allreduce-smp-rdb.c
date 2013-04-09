@@ -71,7 +71,7 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
       src = (inter_rank * num_core) + (intra_rank | mask);
       if (src < comm_size) {
         smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
-        star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
+        smpi_op_apply(op, tmp_buf, recv_buf, &count, &dtype);
       }
     } else {
       dst = (inter_rank * num_core) + (intra_rank & (~mask));
@@ -108,7 +108,7 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
       } else {
         src = rank - num_core;
         smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
-        star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
+        smpi_op_apply(op, tmp_buf, recv_buf, &count, &dtype);
         newrank = inter_rank / 2;
       }
     } else {
@@ -134,7 +134,7 @@ int smpi_coll_tuned_allreduce_smp_rdb(void *send_buf, void *recv_buf, int count,
         /* exchange data in rdb manner */
         smpi_mpi_sendrecv(recv_buf, count, dtype, dst, tag, tmp_buf, count, dtype,
                      dst, tag, comm, &status);
-        star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
+        smpi_op_apply(op, tmp_buf, recv_buf, &count, &dtype);
         mask <<= 1;
       }
     }

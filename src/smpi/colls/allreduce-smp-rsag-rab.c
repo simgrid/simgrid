@@ -53,7 +53,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
       //      if (src < ((inter_rank + 1) * num_core)) {
       if (src < comm_size) {
         smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
-        star_reduction(op, tmp_buf, rbuf, &count, &dtype);
+        smpi_op_apply(op, tmp_buf, rbuf, &count, &dtype);
         //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
       }
     } else {
@@ -112,7 +112,7 @@ int smpi_coll_tuned_allreduce_smp_rsag_rab(void *sbuf, void *rbuf, int count,
                    tmp_buf, curr_count, dtype, (dst * num_core), tag,
                    comm, &status);
 
-      star_reduction(op, tmp_buf, (char *)rbuf + recv_offset, &curr_count, &dtype);
+      smpi_op_apply(op, tmp_buf, (char *)rbuf + recv_offset, &curr_count, &dtype);
 
       mask *= 2;
       curr_count /= 2;

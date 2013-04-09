@@ -175,7 +175,6 @@ set(SMPI_SRC
   src/smpi/colls/reduce-flat-tree.c
   src/smpi/colls/reduce-NTSL.c
   src/smpi/colls/reduce-scatter-gather.c
-  src/smpi/colls/star-reduction.c
   )
 
 if(SMPI_F2C)

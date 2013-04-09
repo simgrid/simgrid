@@ -50,7 +50,7 @@ smpi_coll_tuned_reduce_flat_tree(void *sbuf, void *rbuf, int count,
     }
 
     /* Call reduction function. */
-    star_reduction(op, inbuf, rbuf, &count, &dtype);
+    smpi_op_apply(op, inbuf, rbuf, &count, &dtype);
 
   }
 

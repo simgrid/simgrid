@@ -52,7 +52,7 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
       // do the reduction on received data. since the
       // ordering is right, it doesn't matter whether
       // the operation is commutative or not.
-      star_reduction(op, tmp_buf, rbuff, &count, &dtype);
+      smpi_op_apply(op, tmp_buf, rbuff, &count, &dtype);
 
       // change the rank 
       newrank = rank / 2;
@@ -121,7 +121,7 @@ int smpi_coll_tuned_allreduce_rab_rsag(void *sbuff, void *rbuff, int count,
 
       // This algorithm is used only for predefined ops
       // and predefined ops are always commutative.
-      star_reduction(op, (char *) tmp_buf + disps[recv_idx] * extent,
+      smpi_op_apply(op, (char *) tmp_buf + disps[recv_idx] * extent,
                      (char *) rbuff + disps[recv_idx] * extent,
                      &recv_cnt, &dtype);
 

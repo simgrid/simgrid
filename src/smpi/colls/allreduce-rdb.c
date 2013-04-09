@@ -60,7 +60,7 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
       // do the reduction on received data. since the
       // ordering is right, it doesn't matter whether
       // the operation is commutative or not.
-      star_reduction(op, tmp_buf, rbuff, &count, &dtype);
+      smpi_op_apply(op, tmp_buf, rbuff, &count, &dtype);
 
       // change the rank 
       newrank = rank / 2;
@@ -98,10 +98,10 @@ int smpi_coll_tuned_allreduce_rdb(void *sbuff, void *rbuff, int count,
       // we assume it is commuttive op
       //      if (op -> op_commute  || (dst < rank))
       if ((dst < rank)) {
-        star_reduction(op, tmp_buf, rbuff, &count, &dtype);
+        smpi_op_apply(op, tmp_buf, rbuff, &count, &dtype);
       } else                    // op is noncommutative and the order is not right
       {
-        star_reduction(op, rbuff, tmp_buf, &count, &dtype);
+        smpi_op_apply(op, rbuff, tmp_buf, &count, &dtype);
 
         // copy result back into recvbuf
         smpi_mpi_sendrecv(tmp_buf, count, dtype, rank, tag, rbuff, count,

@@ -35,7 +35,7 @@ int smpi_coll_tuned_reduce_binomial(void *sendbuf, void *recvbuf, int count,
       if (source < comm_size) {
         source = (source + root) % comm_size;
         smpi_mpi_recv(tmp_buf, count, datatype, source, tag, comm, &status);
-        star_reduction(op, tmp_buf, recvbuf, &count, &datatype);
+        smpi_op_apply(op, tmp_buf, recvbuf, &count, &datatype);
       }
     } else {
       dst = ((relrank & (~mask)) + root) % comm_size;

@@ -56,7 +56,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
         newrank = -1;
       } else {
         smpi_mpi_recv(tmp_buf, count, datatype, rank + 1, tag, comm, &status);
-        star_reduction(op, tmp_buf, recv_ptr, &new_count, &datatype);
+        smpi_op_apply(op, tmp_buf, recv_ptr, &new_count, &datatype);
         newrank = rank / 2;
       }
     } else                      /* rank >= 2*rem */
@@ -109,7 +109,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
         /* tmp_buf contains data received in this step.
            recvbuf contains data accumulated so far */
 
-        star_reduction(op, (char *) tmp_buf + disps[recv_idx] * extent,
+        smpi_op_apply(op, (char *) tmp_buf + disps[recv_idx] * extent,
                        (char *) recv_ptr + disps[recv_idx] * extent,
                        &recv_cnt, &datatype);
 
@@ -233,7 +233,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
 
       else {
         smpi_mpi_recv(tmp_buf, count, datatype, rank + 1, tag, comm, &status);
-        star_reduction(op, tmp_buf, recvbuf, &count, &datatype);
+        smpi_op_apply(op, tmp_buf, recvbuf, &count, &datatype);
         newrank = rank / 2;
       }
     } else                      /* rank >= 2*rem */
@@ -286,7 +286,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
         /* tmp_buf contains data received in this step.
            recvbuf contains data accumulated so far */
 
-        star_reduction(op, (char *) tmp_buf + disps[recv_idx] * extent,
+        smpi_op_apply(op, (char *) tmp_buf + disps[recv_idx] * extent,
                        (char *) recvbuf + disps[recv_idx] * extent,
                        &recv_cnt, &datatype);
 

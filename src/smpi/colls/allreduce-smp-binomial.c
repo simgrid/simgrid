@@ -73,7 +73,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
       src = (inter_rank * num_core) + (intra_rank | mask);
       if (src < comm_size) {
         smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
-        star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
+        smpi_op_apply(op, tmp_buf, recv_buf, &count, &dtype);
       }
     } else {
       dst = (inter_rank * num_core) + (intra_rank & (~mask));
@@ -92,7 +92,7 @@ int smpi_coll_tuned_allreduce_smp_binomial(void *send_buf, void *recv_buf,
         src = (inter_rank | mask) * num_core;
         if (src < comm_size) {
           smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
-          star_reduction(op, tmp_buf, recv_buf, &count, &dtype);
+          smpi_op_apply(op, tmp_buf, recv_buf, &count, &dtype);
         }
       } else {
         dst = (inter_rank & (~mask)) * num_core;

@@ -129,7 +129,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
 
           smpi_mpi_send(header_buf, HEADER_SIZE, MPI_INT, to, tag, comm);
           smpi_mpi_recv(tmp_buf, count, datatype, from, tag, comm, &status);
-          star_reduction(op, tmp_buf, rbuf, &count, &datatype);
+          smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
         }
       }                         /* while loop */
     }
@@ -181,7 +181,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
         from = header_buf[myordering - 1];
         smpi_mpi_recv(tmp_buf, count, datatype, header_buf[myordering - 1], tag,
                  comm, &status);
-        star_reduction(op, tmp_buf, rbuf, &count, &datatype);
+        smpi_op_apply(op, tmp_buf, rbuf, &count, &datatype);
         smpi_mpi_send(rbuf, count, datatype, to, tag, comm);
       }
     }                           /* non-root */
@@ -257,7 +257,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
           for (i = 0; i < pipe_length; i++) {
             smpi_mpi_recv(tmp_buf + (i * increment), segment, datatype, from, tag,
                      comm, &status);
-            star_reduction(op, tmp_buf + (i * increment),
+            smpi_op_apply(op, tmp_buf + (i * increment),
                            (char *)rbuf + (i * increment), &segment, &datatype);
           }
         }
@@ -311,7 +311,7 @@ int smpi_coll_tuned_reduce_arrival_pattern_aware(void *buf, void *rbuf,
         }
         for (i = 0; i < pipe_length; i++) {
           smpi_mpi_wait(&recv_request_array[i], MPI_STATUS_IGNORE);
-          star_reduction(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
+          smpi_op_apply(op, tmp_buf + (i * increment), (char *)rbuf + (i * increment),
                          &segment, &datatype);
           send_request_array[i]=smpi_mpi_isend((char *)rbuf + (i * increment), segment, datatype, to, tag, comm);
         }

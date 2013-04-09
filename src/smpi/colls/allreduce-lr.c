@@ -75,7 +75,7 @@ smpi_coll_tuned_allreduce_lr(void *sbuf, void *rbuf, int rcount,
                  ((rank + size - 1) % size), tag + i, comm, &status);
 
     // compute result to rbuf+recv_offset
-    star_reduction(op, (char *) sbuf + recv_offset, (char *) rbuf + recv_offset,
+    smpi_op_apply(op, (char *) sbuf + recv_offset, (char *) rbuf + recv_offset,
                    &count, &dtype);
   }
 

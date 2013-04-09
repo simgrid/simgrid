@@ -45,7 +45,7 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
     memcpy(tmp, recv, nbytes);
 
     for (i = 1, s_offset = nbytes; i < nprocs; i++, s_offset = i * nbytes)
-      star_reduction(op, (char *) recv + s_offset, tmp, &send_size, &dtype);
+      smpi_op_apply(op, (char *) recv + s_offset, tmp, &send_size, &dtype);
 
     mpi_coll_allgather_fun(tmp, send_size, dtype, recv, send_size, dtype, comm);
     memcpy(rbuff, recv, count * s_extent);
@@ -66,7 +66,7 @@ int smpi_coll_tuned_allreduce_rab2(void *sbuff, void *rbuff,
     memcpy((char *) rbuff + r_offset, recv, nbytes);
 
     for (i = 1, s_offset = nbytes; i < nprocs; i++, s_offset = i * nbytes)
-      star_reduction(op, (char *) recv + s_offset, (char *) rbuff + r_offset,
+      smpi_op_apply(op, (char *) recv + s_offset, (char *) rbuff + r_offset,
                      &send_size, &dtype);
 
     mpi_coll_allgather_fun((char *) rbuff + r_offset, send_size, dtype, rbuff, send_size,
