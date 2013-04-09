@@ -369,6 +369,7 @@ void smpi_mpi_start(MPI_Request request)
       }
       XBT_DEBUG("Send request %p is detached; buf %p copied into %p",request,oldbuf,request->buf);
     }
+
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
@@ -508,8 +509,11 @@ void smpi_mpi_send(void *buf, int count, MPI_Datatype datatype, int dst,
 void smpi_mpi_ssend(void *buf, int count, MPI_Datatype datatype,
                            int dst, int tag, MPI_Comm comm)
 {
-  MPI_Request request = smpi_mpi_issend(buf, count, datatype, dst, tag, comm);
-  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
+  MPI_Request request =
+      build_request(buf, count, datatype, smpi_comm_rank(comm), dst, tag,
+                    comm, NON_PERSISTENT | SSEND | SEND);
+
+  smpi_mpi_start(request);  smpi_mpi_wait(&request, MPI_STATUS_IGNORE);
 }
 
 void smpi_mpi_sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,

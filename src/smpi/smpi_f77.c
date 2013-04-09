@@ -99,50 +99,51 @@ static MPI_Op get_op(int op) {
 }
 
 void mpi_init_(int* ierr) {
-   comm_lookup = xbt_dynar_new(sizeof(MPI_Comm), NULL);
-   new_comm(MPI_COMM_WORLD);
-   group_lookup = xbt_dynar_new(sizeof(MPI_Group), NULL);
+   if(!comm_lookup){
+     comm_lookup = xbt_dynar_new(sizeof(MPI_Comm), NULL);
+     new_comm(MPI_COMM_WORLD);
+     group_lookup = xbt_dynar_new(sizeof(MPI_Group), NULL);
 
-   request_lookup = xbt_dict_new_homogeneous(NULL);
+     request_lookup = xbt_dict_new_homogeneous(NULL);
 
-   datatype_lookup = xbt_dynar_new(sizeof(MPI_Datatype), NULL);
-   new_datatype(MPI_BYTE);
-   new_datatype(MPI_CHAR);
-   new_datatype(MPI_INT);
-   new_datatype(MPI_INT);
-   new_datatype(MPI_INT8_T);
-   new_datatype(MPI_INT16_T);
-   new_datatype(MPI_INT32_T);
-   new_datatype(MPI_INT64_T);
-   new_datatype(MPI_FLOAT);
-   new_datatype(MPI_FLOAT);
-   new_datatype(MPI_DOUBLE);
-   new_datatype(MPI_DOUBLE);
-   new_datatype(MPI_C_FLOAT_COMPLEX);
-   new_datatype(MPI_C_DOUBLE_COMPLEX);
-   new_datatype(MPI_2INT);
-   new_datatype(MPI_UINT8_T);
-   new_datatype(MPI_UINT16_T);
-   new_datatype(MPI_UINT32_T);
-   new_datatype(MPI_UINT64_T);
-   new_datatype(MPI_2FLOAT);
-   new_datatype(MPI_2DOUBLE);
+     datatype_lookup = xbt_dynar_new(sizeof(MPI_Datatype), NULL);
+     new_datatype(MPI_BYTE);
+     new_datatype(MPI_CHAR);
+     new_datatype(MPI_INT);
+     new_datatype(MPI_INT);
+     new_datatype(MPI_INT8_T);
+     new_datatype(MPI_INT16_T);
+     new_datatype(MPI_INT32_T);
+     new_datatype(MPI_INT64_T);
+     new_datatype(MPI_FLOAT);
+     new_datatype(MPI_FLOAT);
+     new_datatype(MPI_DOUBLE);
+     new_datatype(MPI_DOUBLE);
+     new_datatype(MPI_C_FLOAT_COMPLEX);
+     new_datatype(MPI_C_DOUBLE_COMPLEX);
+     new_datatype(MPI_2INT);
+     new_datatype(MPI_UINT8_T);
+     new_datatype(MPI_UINT16_T);
+     new_datatype(MPI_UINT32_T);
+     new_datatype(MPI_UINT64_T);
+     new_datatype(MPI_2FLOAT);
+     new_datatype(MPI_2DOUBLE);
 
 
-   op_lookup = xbt_dynar_new(sizeof(MPI_Op), NULL);
-   new_op(MPI_MAX);
-   new_op(MPI_MIN);
-   new_op(MPI_MAXLOC);
-   new_op(MPI_MINLOC);
-   new_op(MPI_SUM);
-   new_op(MPI_PROD);
-   new_op(MPI_LAND);
-   new_op(MPI_LOR);
-   new_op(MPI_LXOR);
-   new_op(MPI_BAND);
-   new_op(MPI_BOR);
-   new_op(MPI_BXOR);
-
+     op_lookup = xbt_dynar_new(sizeof(MPI_Op), NULL);
+     new_op(MPI_MAX);
+     new_op(MPI_MIN);
+     new_op(MPI_MAXLOC);
+     new_op(MPI_MINLOC);
+     new_op(MPI_SUM);
+     new_op(MPI_PROD);
+     new_op(MPI_LAND);
+     new_op(MPI_LOR);
+     new_op(MPI_LXOR);
+     new_op(MPI_BAND);
+     new_op(MPI_BOR);
+     new_op(MPI_BXOR);
+   }
    /* smpif2c is responsible for generating a call with the final arguments */
    *ierr = MPI_Init(NULL, NULL);
 }
