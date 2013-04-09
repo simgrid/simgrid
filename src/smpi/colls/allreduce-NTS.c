@@ -34,12 +34,12 @@ smpi_coll_tuned_allreduce_NTS(void *sbuf, void *rbuf, int rcount,
 
   /* when communication size is not divisible by number of process: 
      call the native implementation for the remain chunk at the end of the operation */
-  else if (rcount % size != 0) {
+  if (rcount % size != 0) {
     remainder = rcount % size;
     remainder_flag = 1;
     remainder_offset = (rcount / size) * size * extent;
   } else {
-    remainder_flag = remainder_offset = 0;
+    remainder = remainder_flag = remainder_offset = 0;
   }
 
   /* size of each point-to-point communication is equal to the size of the whole message
