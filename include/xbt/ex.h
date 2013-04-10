@@ -482,6 +482,8 @@ XBT_PUBLIC(int) xbt_backtrace_no_malloc(void**bt, int size);
 XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t * e);
 /** @brief Display a previously captured backtrace */
 XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t * e);
+/** @brief Get current backtrace with libunwind */
+XBT_PUBLIC(int) xbt_libunwind_backtrace(void *bt[XBT_BACKTRACE_SIZE], int size);
 
 #ifdef XBT_USE_DEPRECATED
 

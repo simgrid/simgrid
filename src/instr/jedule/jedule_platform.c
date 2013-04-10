@@ -54,10 +54,11 @@ static void jed_free_container(jed_simgrid_container_t container) {
     xbt_dynar_foreach(container->container_children, iter, child_container) {
       jed_free_container(child_container);
     }
+    xbt_dynar_free(&container->container_children);
   }
 
-  free(container->name);
-  free(container);
+  xbt_free(container->name);
+  xbt_free(container);
 }
 
 void jed_simgrid_create_container(jed_simgrid_container_t *container, char *name) {
@@ -241,7 +242,7 @@ void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list,
       // printf("subset parent >>> %s\n", parent->name);
       add_subsets_to(subset_list, hostgroup, parent);
     }
-
+    xbt_dynar_free(&hostgroup);
   }
 
   xbt_dict_free(&parent2hostgroup);
@@ -272,7 +273,7 @@ void jed_free_jedule(jedule_t jedule) {
   jed_free_container(jedule->root_container);
 
   xbt_dict_free(&jedule->jedule_meta_info);
-  free(jedule);
+  xbt_free(jedule);
 
   xbt_dict_free(&host2_simgrid_parent_container);
   xbt_dict_free(&container_name2container);

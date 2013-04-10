@@ -17,6 +17,11 @@
 #include <windows.h>
 #endif
 
+//Freebsd doesn't provide this clock_gettime flag yet, because it was added too recently (after 1993)
+#ifdef __FreeBSD__
+#define CLOCK_PROCESS_CPUTTIME_ID CLOCK_PROF
+#endif
+
 double xbt_os_time(void)
 {
 #ifdef HAVE_GETTIMEOFDAY

@@ -138,7 +138,8 @@ static xbt_dynar_t initDynamicThrottling(int *argc, char *argv[])
   fprintf(stdout, "Scheduling DAX...\n");
   scheduleDAX(dax);
   fprintf(stdout, "DAX scheduled\n");
-  SD_simulate(-1);
+  xbt_dynar_t ret = SD_simulate(-1);
+  xbt_dynar_free(&ret);
   fprintf(stdout, "Simulation end. Time: %f\n", SD_get_clock());
 
   return dax;
@@ -149,11 +150,11 @@ static xbt_dynar_t initDynamicThrottling(int *argc, char *argv[])
  */
 static void garbageCollector(xbt_dynar_t dax)
 {
-  SD_task_t task;
-  unsigned int cursor;
-  xbt_dynar_foreach(dax, cursor, task) {
+  while (!xbt_dynar_is_empty(dax)) {
+    SD_task_t task = xbt_dynar_pop_as(dax, SD_task_t);
     SD_task_destroy(task);
   }
+  xbt_dynar_free(&dax);
   SD_exit();
 }
 

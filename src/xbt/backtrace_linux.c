@@ -12,6 +12,9 @@
 #include "xbt/str.h"
 #include "xbt/module.h"         /* xbt_binary_name */
 #include "xbt_modinter.h"       /* backtrace initialization headers */
+#ifdef HAVE_MC
+#include <libunwind.h>
+#endif
 /* end of "useless" inclusions */
 
 extern char **environ;          /* the environment, as specified by the opengroup */
@@ -365,3 +368,37 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   free(backtrace_syms);
   free(cmd);
 }
+
+#ifdef HAVE_MC
+
+int xbt_libunwind_backtrace(void* bt[XBT_BACKTRACE_SIZE], int size){
+  
+  int i = 0;
+  for(i=0; i < size; i++)
+    bt[i] = NULL;
+
+  i=0;
+
+  unw_cursor_t c;
+  unw_context_t uc;
+
+  unw_getcontext (&uc);
+	unw_init_local (&c, &uc);
+ 
+  unw_word_t ip;
+
+  unw_step(&c);
+ 
+  while(unw_step(&c) >= 0 && i < size){
+
+    unw_get_reg(&c, UNW_REG_IP, &ip);
+    bt[i] = (void*)(long)ip;
+    i++;
+
+  }
+
+  return i;
+  
+}
+
+#endif

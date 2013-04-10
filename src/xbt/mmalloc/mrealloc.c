@@ -91,6 +91,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
 
       mdp->heapinfo[block].busy_block.size = blocks;
       mdp->heapinfo[block].busy_block.busy_size = requested_size;
+      mdp->heapinfo[block].busy_block.ignore = 0;
 
       result = ptr;
     } else if (blocks == mdp->heapinfo[block].busy_block.size) {
@@ -98,6 +99,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       /* No block size change necessary; only update the requested size  */
       result = ptr;
       mdp->heapinfo[block].busy_block.busy_size = requested_size;
+      mdp->heapinfo[block].busy_block.ignore = 0;
 
     } else {
       /* Won't fit, so allocate a new region that will.
@@ -129,6 +131,7 @@ void *mrealloc(xbt_mheap_t mdp, void *ptr, size_t size)
       result = ptr;
       int frag_nb = RESIDUAL(result, BLOCKSIZE) >> type;
       mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = requested_size;
+      mdp->heapinfo[block].busy_frag.ignore[frag_nb] = 0;
 
     } else { /* fragment -> Either other fragment, or block */
       /* The new size is different; allocate a new space,

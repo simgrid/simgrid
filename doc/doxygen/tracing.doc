@@ -1,33 +1,16 @@
-/*! \page tracing Tracing Simulations for Visualization
+/*! \page tracing Tracing Simulations
 
 
-The trace visualization is widely used to observe and understand the behavior
-of parallel applications and distributed algorithms. Usually, this is done in a
-two-step fashion: the user instruments the application and the traces are
-analyzed after the end of the execution. The visualization itself can highlights
-unexpected behaviors, bottlenecks and sometimes can be used to correct
-distributed algorithms. The SimGrid team has instrumented the library
-in order to let users trace their simulations and analyze them. This part of the
-user manual explains how the tracing-related features can be enabled and used
-during the development of simulators using the SimGrid library.
-
-\section tracing_tracing_howitworks How it works
-
-For now, the SimGrid library is instrumented so users can trace the <b>platform
-utilization</b> using the MSG, SimDAG and SMPI interface. This means that the tracing will
-register how much power is used for each host and how much bandwidth is used for
-each link of the platform. The idea with this type of tracing is to observe the
-overall view of resources utilization in the first place, especially the
-identification of bottlenecks, load-balancing among hosts, and so on.
-
-The idea of the tracing facilities is to give SimGrid users to possibility to
-classify MSG and SimDAG tasks by category, tracing the platform utilization
-(hosts and links) for each of the categories. For that,
-the tracing interface enables the declaration of categories and a function to
-mark a task with a previously declared category. <em>The tasks that are not
-classified according to a category are not traced</em>. Even if the user
-does not specify any category, the simulations can still be traced in terms
-of resource utilization by using a special parameter that is detailed below.
+Tracing is widely used to observe and understand the behavior of
+parallel applications and distributed algorithms. Usually, this is
+done in a two-step fashion: the user instruments the application and
+the traces are analyzed after the end of the execution. The analysis
+can highlights unexpected behaviors, bottlenecks and sometimes can be
+used to correct distributed algorithms. The SimGrid team has
+instrumented the library in order to let users trace their simulations
+and analyze them. This part of the user manual explains how the
+tracing-related features can be enabled and used during the
+development of simulators using the SimGrid library.
 
 \section tracing_tracing_enabling Enabling using CMake
 
@@ -46,6 +29,26 @@ $ make
 \endverbatim
 
 \section instr_category_functions Tracing categories functions
+
+The SimGrid library is instrumented so users can trace the platform
+utilization using MSG, SimDAG and SMPI interfaces. It registers how
+much power is used for each host and how much bandwidth is used for
+each link of the platform. The idea with this type of tracing is to
+observe the overall view of resources utilization in the first place,
+especially the identification of bottlenecks, load-balancing among
+hosts, and so on.
+
+Another possibility is to trace resource utilization by
+categories. Categorized resource utilization tracing gives SimGrid
+users to possibility to classify MSG and SimDAG tasks by category,
+tracing resource utilization for each of the categories. The functions
+below let the user declare a category and apply it to tasks. <em>The
+tasks that are not classified according to a category are not
+traced</em>. Even if the user does not specify any category, the
+simulations can still be traced in terms of resource utilization by
+using a special parameter that is detailed below (see section \ref
+tracing_tracing_options).
+
 \li \c TRACE_category(const char *category)
 \li \c TRACE_category_with_color(const char *category, const char *color)
 \li \c MSG_task_set_category(msg_task_t task, const char *category)
@@ -93,9 +96,11 @@ For links, but use source and destination to get route:
 \section tracing_tracing_options Tracing configuration Options
 
 To check which tracing options are available for your simulator, you
-can just run it with the option <b>--help-tracing</b>. These are the
-options accepted by the tracing system of SimGrid as of today, you
-can use them by running your simulator with the <b>--cfg=</b> switch:
+can just run it with the option \verbatim --help-tracing \endverbatim
+to get a very detailed and updated explanation of each tracing
+parameter. These are some of the options accepted by the tracing
+system of SimGrid, you can use them by running your simulator with the
+<b>--cfg=</b> switch:
 
 \li <b>\c
 tracing
@@ -129,10 +134,10 @@ tracing/uncategorized
 tracing/filename
 </b>:
   A file with this name will be created to register the simulation. The file
-  is in the Paje format and can be analyzed using Triva or Paje visualization
+  is in the Paje format and can be analyzed using Viva or Paje visualization
   tools. More information can be found in these webpages:
-     <a href="http://triva.gforge.inria.fr/">http://triva.gforge.inria.fr/</a>
-     <a href="http://paje.sourceforge.net/">http://paje.sourceforge.net/</a>
+     <a href="http://github.com/schnorr/viva/">http://github.com/schnorr/viva/</a>
+     <a href="http://github.com/schnorr/pajeng/">http://github.com/schnorr/pajeng/</a>
 \verbatim
 --cfg=tracing/filename:mytracefile.trace
 \endverbatim
@@ -243,22 +248,25 @@ Use this to add the contents of a file to the top of the trace file as comment.
 \endverbatim
 
 \li <b>\c
-triva/categorized
+viva/categorized
 </b>:
-  This option generates a graph configuration file for Triva considering
+  This option generates a graph configuration file for Viva considering
   categorized resource utilization.
 \verbatim
---cfg=triva/categorized:graph_categorized.plist
+--cfg=viva/categorized:graph_categorized.plist
 \endverbatim
 
 \li <b>\c
-triva/uncategorized
+viva/uncategorized
 </b>:
-  This option generates a graph configuration file for Triva considering
+  This option generates a graph configuration file for Viva considering
   uncategorized resource utilization.
 \verbatim
---cfg=triva/uncategorized:graph_uncategorized.plist
+--cfg=viva/uncategorized:graph_uncategorized.plist
 \endverbatim
+
+Please pass \verbatim --help-tracing \endverbatim to your simulator
+for the updated list of tracing options.
 
 \section tracing_tracing_example_parameters Case studies
 
@@ -275,7 +283,7 @@ simulator):
           --cfg=tracing:1 \
           --cfg=tracing/uncategorized:1 \
           --cfg=tracing/filename:mytracefile.trace \
-          --cfg=triva/uncategorized:uncat.plist
+          --cfg=viva/uncategorized:uncat.plist
 \endverbatim
 
 \li I want to trace only a subset of my MSG (or SimDAG) tasks.
@@ -290,7 +298,7 @@ recompiling, run your simulator with the following parameters:
           --cfg=tracing:1 \
           --cfg=tracing/categorized:1 \
           --cfg=tracing/filename:mytracefile.trace \
-          --cfg=triva/categorized:cat.plist
+          --cfg=viva/categorized:cat.plist
 \endverbatim
 
 
@@ -332,123 +340,106 @@ int main (int argc, char **argv)
 }
 \endverbatim
 
-\section tracing_tracing_analyzing Analyzing the SimGrid Traces
+\section tracing_tracing_analyzing Analyzing SimGrid Simulation Traces
 
-The SimGrid library, during an instrumented simulation, creates a trace file in
-the Paje file format that contains the platform utilization for the simulation
-that was executed. The visualization analysis of this file is performed with the
-visualization tool <a href="http://triva.gforge.inria.fr">Triva</a>, with
-special configurations tunned to SimGrid needs. This part of the documentation
-explains how to configure and use Triva to analyse a SimGrid trace file.
+A SimGrid-based simulator, when executed with the correct parameters
+(see above) creates a trace file in the Paje file format holding the
+simulated behavior of the application or the platform. You have
+several options to analyze this trace file:
 
-- <b>Installing Triva</b>: the tool is available in the Inria's Forge,
-at <a href="http://triva.gforge.inria.fr">http://triva.gforge.inria.fr</a>.
-Use the following command to get the sources, and then check the file
-<i>INSTALL</i>. This file contains instructions to install
-the tool's dependencies in a Ubuntu/Debian Linux. The tool can also
-be compiled in MacOSX natively, check <i>INSTALL.mac</i> file.
-\verbatim
-$ git clone git://scm.gforge.inria.fr/triva/triva.git
-$ cd triva
-$ cat INSTALL
-\endverbatim
+- Dump its contents to a CSV-like format using `pj_dump` (see <a
+  href="https://github.com/schnorr/pajeng/wiki/pj_dump">PajeNG's wiki
+  on pj_dump</a> and more generally the <a
+  href="https://github.com/schnorr/pajeng/">PajeNG suite</a>) and use
+  gnuplot to plot resource usage, time spent on blocking/executing
+  functions, and so on. Filtering capabilities are at your hand by
+  doing `grep`, with the best regular expression you can provide, to
+  get only parts of the trace (for instance, only a subset of
+  resources or processes).
 
-- <b>Executing Triva</b>: a binary called <i>Triva</i> is available after the
-  installation (you can execute it passing <em>--help</em> to check its
-options). If the triva binary is not available after following the
-installation instructions, you may want to execute the following command to
-initialize the GNUstep environment variables. We strongly recommend that you
-use the latest GNUstep packages, and not the packages available through apt-get
-in Ubuntu/Debian packaging systems. If you install GNUstep using the latest
-available packages, you can execute this command:
-\verbatim
-$ source /usr/GNUstep/System/Library/Makefiles/GNUstep.sh
-\endverbatim
-You should be able to see this output after the installation of triva:
-\verbatim
-$ ./Triva.app/Triva --help
-Usage: Triva [OPTIONS...] TRACE0 [TRACE1]
-Trace Analysis through Visualization
+- Derive statistics from trace metrics (the ones built-in with any
+  SimGrid simulation, but also those metrics you injected in the trace
+  using the TRACE module) using the <a
+  href="http://www.r-project.org/">R project</a> and all its
+  modules. You can also combine R with <a
+  href="http://ggplot2.org/">ggplot2</a> to get a number of high
+  quality plots from your simulation metrics. You need to `pj_dump`
+  the contents of the SimGrid trace file to use R.
 
-TimeInterval
-    --ti_frequency {double}    Animation: frequency of updates
-    --ti_hide                  Hide the TimeInterval window
-    --ti_forward {double}      Animation: value to move time-slice
-    --ti_apply                 Apply the configuration
-    --ti_update                Update on slider change
-    --ti_animate               Start animation
-    --ti_start {double}        Start of time slice
-    --ti_size {double}         Size of time slice
-Triva
-    --comparison               Compare Trace Files (Experimental)
-    --graph                    Configurable Graph
-    --list                     Print Trace Type Hierarchy
-    --hierarchy                Export Trace Type Hierarchy (dot)
-    --stat                     Trace Statistics and Memory Utilization
-    --instances                List All Trace Entities
-    --linkview                 Link View (Experimental)
-    --treemap                  Squarified Treemap
-    --merge                    Merge Trace Files (Experimental)
-    --check                    Check Trace File Integrity
-GraphConfiguration
-    --gc_conf {file}           Graph Configuration in Property List Format
-    --gc_apply                 Apply the configuration
-    --gc_hide                  Hide the GraphConfiguration window
-\endverbatim
-Triva expects that the user choose one of the available options
-(currently <em>--graph</em> or <em>--treemap</em> for a visualization analysis)
-and the trace file from the simulation.
+- Visualize the behavior of your simulation using classic space/time
+  views (gantt-charts) provided by the <a
+  href="https://github.com/schnorr/pajeng/">PajeNG suite</a> and any
+  other tool that supports the <a
+  href="http://paje.sourceforge.net/download/publication/lang-paje.pdf">Paje
+  file format</a>. Consider this option if you need to understand the
+  causality of your distributed simulation.
 
-- <b>Understanding Triva - time-slice</b>: the analysis of a trace file using
-  the tool always takes into account the concept of the <em>time-slice</em>.
-This concept means that what is being visualized in the screen is always
-calculated considering a specific time frame, with its beggining and end
-timestamp. The time-slice is configured by the user and can be changed
-dynamically through the window called <em>Time Interval</em> that is opened
-whenever a trace file is being analyzed. The next figure depicts the time-slice
-configuration window.
-In the top of the window, in the space named <i>Trace Time</i>,
-the two fields show the beggining of the trace (which usually starts in 0) and
-the end (that depends on the time simulated by SimGrid). The middle of the
-window, in the square named <i>Time Slice Configuration</i>, contains the
-aspects related to the time-slice, including its <i>start</i> and its
-<i>size</i>. The gray rectangle in the bottom of this part indicates the
-<i>current time-slice</i> that is considered for the drawings. If the checkbox
-<i>Update Drawings on Sliders Change</i> is not selected, the button
-<i>Apply</i> must be clicked in order to inform triva that the
-new time-slice must be considered. The bottom part of the window, in the space
-indicated by the square <i>Time Slice Animation</i> can be used to advance
-the time-frame automatically. The user configures the amount of time that the
-time-frame will forward and how frequent this update will happen. Once this is
-configured, the user clicks the <i>Play</i> button in order to see the dynamic
-changes on the drawings.
-<center>
-\htmlonly
-<a href="triva-time_interval.png" border=0><img src="triva-time_interval.png" width="50%" border=0></a>
-\endhtmlonly
-</center>
-<b>Remarks:</b> when the trace has too many hosts or links, the computation to
-take into account a new time-slice can be expensive. When this happens, the
-<i>Frequency</i> parameter, but also updates caused by change on configurations
-when the checkbox <i>Update Drawings on Sliders
-Change</i> is selected will not be followed.
+- Visualize the behavior of your simulation with treemaps (specially
+  if your simulation has a platform with several thousand resources),
+  provided by the <a href="http://github.com/schnorr/viva/">Viva</a>
+  visualization tool. See <a
+  href="https://github.com/schnorr/viva/wiki">Viva's wiki</a> for
+  further details on what is a treemap and how to use it.
 
-- <b>Understanding Triva - graph</b>: one possibility to analyze
-  SimGrid traces is to use Triva's graph view, using the
-  <em>--graph</em> parameter to activate this view, and
-  <em>--gc_conf</em> with a graph configuration to customize the graph
-  according to the traces. A valid graph configuration (we are using
-  the non-XML <a
-  href="http://en.wikipedia.org/wiki/Property_list">Property List
-  Format</a> to describe the configuration) can be created for any
-  SimGrid-based simulator using the
-  <em>--cfg=triva/uncategorized:graph_uncategorized.plist</em> or
-  <em>--cfg=triva/categorized:graph_categorized.plist</em> (if the
-  simulator defines resource utilization categories) when executing
-  the simulation.
+- Correlate the behavior of your simulator with the platform topology
+  with an interactive, force-directed, and hierarchical graph
+  visualization, provided by <a
+  href="http://github.com/schnorr/viva/">Viva</a>.  Check <a
+  href="https://github.com/schnorr/viva/wiki">Viva's wiki</a> for
+  further details. This <a
+  href="http://hal.inria.fr/hal-00738321/">research report</a>,
+  published at ISPASS 2013, has a detailed description of this
+  visualization technique.
 
-<b>Basic SimGrid Configuration</b>: The basic description of the configuration
-is as follows:
+- You can also check our online <a
+  href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial
+  section</a> that contains a dedicated tutorial with several
+  suggestions on how to use the tracing infrastructure. Look for the
+  SimGrid User::Visualization 101 tutorial.
+
+- Ask for help on the <a
+  href="mailto:simgrid-user@lists.gforge.inria.fr">simgrid-user@lists.gforge.inria.fr</a>
+  mailing list, giving us a detailed explanation on what your
+  simulator does and what kind of information you want to trace. You
+  can also check the <a
+  href="http://lists.gforge.inria.fr/pipermail/simgrid-user/">mailing
+  list archive</a> for old messages regarding tracing and analysis.
+
+\subsection tracing_viva_analysis Viva Visualization Tool
+
+This subsection describe some of the concepts regarding the <a
+href="http://github.com/schnorr/viva/">Viva Visualization Tool</a> and
+its relation with SimGrid traces. You should refer to Viva's website
+for further details on all its visualization techniques.
+
+\subsubsection tracing_viva_time_slice Time Slice
+
+The analysis of a trace file using the tool always takes into account
+the concept of the <em>time-slice</em>.  This concept means that what
+is being visualized in the screen is always calculated considering a
+specific time frame, with its beggining and end timestamp. The
+time-slice is configured by the user and can be changed dynamically
+through the window called <em>Time Interval</em> that is opened
+whenever a trace file is being analyzed. Users are capable to select
+the beggining and size of the time slice.
+
+\subsubsection tracing_viva_graph Hierarchical Graph View
+
+As stated above (see section \ref tracing_tracing_analyzing), one
+possibility to analyze SimGrid traces is to use Viva's graph view with
+a graph configuration to customize the graph according to the
+traces. A valid graph configuration (we are using the non-XML <a
+href="http://en.wikipedia.org/wiki/Property_list">Property List
+Format</a> to describe the configuration) can be created for any
+SimGrid-based simulator using the
+<em>--cfg=viva/uncategorized:graph_uncategorized.plist</em> or
+<em>--cfg=viva/categorized:graph_categorized.plist</em> (if the
+simulator defines resource utilization categories) when executing the
+simulation.
+
+\subsubsection basic_conf Basic Graph Configuration
+
+The basic description of the configuration is as follows:
 \verbatim
 {
   node = (LINK, HOST, );
@@ -498,20 +489,23 @@ The same configuration parameters are used here: <em>type</em> (with a
 rhombus), the <em>size</em> (whose value is from trace's bandwidth
 variable) and the <em>values</em>.
 
-<b>Customizing the Graph Representation</b>: triva is capable to handle
-a customized graph representation based on the variables present in the trace
-file. In the case of SimGrid, every time a category is created for tasks, two
-variables in the trace file are defined: one to indicate node utilization (how
-much power was used by that task category), and another to indicate link
-utilization (how much bandwidth was used by that category). For instance, if the
-user declares a category named <i>request</i>, there will be variables named
-<b>p</b><i>request</i> and a <b>b</b><i>request</i> (<b>p</b> for power and
-<b>b</b> for bandwidth). It is important to notice that the variable
-<i>prequest</i> in this case is only available for HOST, and
-<i>brequest</i> is only available for LINK. <b>Example</b>: suppose there are
-two categories for tasks: request and compute. To create a customized graph
-representation with a proportional separation of host and link utilization, use
-as configuration for HOST and LINK this:
+\subsubsection custom_graph Customizing the Graph Representation
+
+Viva is capable to handle a customized graph representation based on
+the variables present in the trace file. In the case of SimGrid, every
+time a category is created for tasks, two variables in the trace file
+are defined: one to indicate node utilization (how much power was used
+by that task category), and another to indicate link utilization (how
+much bandwidth was used by that category). For instance, if the user
+declares a category named <i>request</i>, there will be variables
+named <b>p</b><i>request</i> and a <b>b</b><i>request</i> (<b>p</b>
+for power and <b>b</b> for bandwidth). It is important to notice that
+the variable <i>prequest</i> in this case is only available for HOST,
+and <i>brequest</i> is only available for LINK. <b>Example</b>:
+suppose there are two categories for tasks: request and compute. To
+create a customized graph representation with a proportional
+separation of host and link utilization, use as configuration for HOST
+and LINK this:
 
 \verbatim
   HOST = {
@@ -526,41 +520,8 @@ as configuration for HOST and LINK this:
   };
 \endverbatim
 
-This configuration enables the analysis of resource utilization by MSG tasks,
-and the identification of load-balancing issues, network bottlenecks, for
-instance. \n
-
-<b>The Graph Visualization</b>: The next figure shows a graph visualization of a
-given time-slice of the masterslave_forwarder example (present in the SimGrid
-sources). The red color indicates tasks from the <i>compute</i> category. This
-visualization was generated with the following configuration:
-
-\verbatim
-{
-  node = (LINK, HOST, );
-  edge = (HOST-LINK, LINK-HOST, LINK-LINK, );
-
-  host = {
-    type = square;
-    size = power;
-    values = (pcompute, pfinalize);
-  };
-  link = {
-    type = rhombus;
-    size = bandwidth;
-    values = (bcompute, bfinalize);
-  };
-}
-\endverbatim
-
-<center>
-\htmlonly
-<a href="triva-graph_visualization.png" border=0><img src="triva-graph_visualization.png" width="50%" border=0></a>
-\endhtmlonly
-</center>
-
-- <b>Understading Triva - colors</b>: Colors are now registered in
-trace files. See the tracing API to how to define them for your
-simulator.
+This configuration enables the analysis of resource utilization by MSG
+tasks through the identification of load-balancing issues and network
+bottlenecks, for instance.
 
 */

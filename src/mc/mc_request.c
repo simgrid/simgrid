@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2012 Da SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2008-2013 Da SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -16,7 +16,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
     return TRUE;
 
   if (r1->issuer == r2->issuer)
-    return FALSE;
+      return FALSE;
 
   if(r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_IRECV)
     return FALSE;
@@ -24,7 +24,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
   if(r1->call == SIMCALL_COMM_IRECV && r2->call == SIMCALL_COMM_ISEND)
     return FALSE;
 
-  /*if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
+  if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
         &&  r2->call == SIMCALL_COMM_WAIT){
 
     if(simcall_comm_wait__get__comm(r2)->comm.rdv == NULL)
@@ -58,7 +58,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2) {
 
     if(simcall_comm_wait__get__comm(r1)->comm.type == SIMIX_COMM_RECEIVE && r2->call == SIMCALL_COMM_IRECV)
       return FALSE;
-      }*/
+  }
 
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
@@ -248,13 +248,22 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     args = '\0';
     break;
 
+  case SIMCALL_MC_RANDOM:
+    type = xbt_strdup("MC_RANDOM");
+    args = bprintf("%d", value);
+    break;
+
   default:
     THROW_UNIMPLEMENTED;
   }
 
-  str = bprintf("[(%lu)%s] %s (%s)", req->issuer->pid ,req->issuer->name, type, args);
+  if(args != NULL){
+    str = bprintf("[(%lu)%s] %s (%s)", req->issuer->pid ,req->issuer->name, type, args);
+    xbt_free(args);
+  }else{
+    str = bprintf("[(%lu)%s] %s ", req->issuer->pid ,req->issuer->name, type);
+  }
   xbt_free(type);
-  xbt_free(args);
   xbt_free(p);
   xbt_free(bs);
   return str;
@@ -281,6 +290,7 @@ int MC_request_is_visible(smx_simcall_t req)
     || req->call == SIMCALL_COMM_WAITANY
     || req->call == SIMCALL_COMM_TEST
     || req->call == SIMCALL_COMM_TESTANY
+    || req->call == SIMCALL_MC_RANDOM
     || req->call == SIMCALL_MC_SNAPSHOT
     || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS;
 }
@@ -360,4 +370,58 @@ int MC_process_is_enabled(smx_process_t process)
     return TRUE;
 
   return FALSE;
+}
+
+char *MC_request_get_dot_output(smx_simcall_t req, int value){
+
+  char *str = NULL, *label = NULL;
+  smx_action_t act = NULL;
+
+  switch(req->call){
+  case SIMCALL_COMM_ISEND:
+    label = xbt_strdup("iSend");
+    break;
+    
+  case SIMCALL_COMM_IRECV:
+    label = xbt_strdup("iRecv");
+    break;
+ 
+ case SIMCALL_COMM_WAIT:
+    if(value == -1)
+      label = xbt_strdup("WaitTimeout");
+    else
+      label = xbt_strdup("Wait");
+    break;
+
+  case SIMCALL_COMM_TEST:
+    act = simcall_comm_test__get__comm(req);
+    if(act->comm.src_proc == NULL || act->comm.dst_proc == NULL)
+      label = xbt_strdup("Test FALSE");
+    else
+      label = xbt_strdup("Test TRUE");
+    break;
+
+  case SIMCALL_MC_RANDOM:
+    if(value == 0)
+      label = xbt_strdup("MC_RANDOM (0)");
+    else
+      label = xbt_strdup("MC_RANDOM (1)");
+    break;
+
+  case SIMCALL_MC_SNAPSHOT:
+    label = xbt_strdup("MC_SNAPSHOT");
+    break;
+
+  case SIMCALL_MC_COMPARE_SNAPSHOTS:
+    label = xbt_strdup("MC_COMPARE_SNAPSHOTS");
+    break;
+
+  default:
+    THROW_UNIMPLEMENTED;
+  }
+
+  str = bprintf("label = \"%s\", color = %s", label, colors[req->issuer->pid-1]);
+  xbt_free(label);
+  return str;
+
 }

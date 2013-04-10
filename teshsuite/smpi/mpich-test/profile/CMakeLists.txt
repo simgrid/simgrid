@@ -15,8 +15,8 @@ if(enable_smpi)
   add_executable(ptest ptest.c )
   add_executable(colluses colluses.c )
 
-  target_link_libraries(ptest simgrid smpi )
-  target_link_libraries(colluses simgrid smpi )
+  target_link_libraries(ptest simgrid)
+  target_link_libraries(colluses simgrid)
 
   set_target_properties(ptest PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
   set_target_properties(colluses PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")

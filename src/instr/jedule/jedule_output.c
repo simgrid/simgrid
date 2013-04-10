@@ -175,12 +175,12 @@ static void print_event(jed_event_t event) {
 
     int start = subset->start_idx;
     int end   = subset->start_idx + subset->nres - 1;
-        char resid[1024];
+    char resid[1024];
 
-        get_hierarchy_string(subset->parent, resid);
+    get_hierarchy_string(subset->parent, resid);
         
     fprintf(jed_file, "<select resources=\"");
-        fprintf(jed_file, "%s", resid);
+    fprintf(jed_file, "%s", resid);
     fprintf(jed_file, ".[%d-%d]", start, end);
     fprintf(jed_file, "\" />\n");
 
@@ -239,8 +239,14 @@ void write_jedule_output(FILE *file, jedule_t jedule,
   }
 }
 
+static void jed_event_free_ref(void *evp)
+{
+  jed_event_t ev = *(jed_event_t *)evp;
+  jed_event_free(ev);
+}
+
 void jedule_init_output() {
-  jedule_event_list = xbt_dynar_new(sizeof(jed_event_t), NULL);
+  jedule_event_list = xbt_dynar_new(sizeof(jed_event_t), jed_event_free_ref);
 }
 
 void jedule_cleanup_output() {

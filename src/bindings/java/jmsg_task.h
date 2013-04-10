@@ -227,6 +227,21 @@ JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass cls, jstring jmailbox);
 /**
  * Class 		org_simgrid_msg_Task
+ * Method		receiveBounded
+ */
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Task_receiveBounded(JNIEnv * env, jclass cls,
+                                         jstring jalias, jdouble jtimeout,
+                                         jobject jhost, jdouble rate);
+/**
+ * Class 		org_simgrid_msg_Task
+ * Method		irecvBounded
+ */
+JNIEXPORT jobject JNICALL
+Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, jclass cls,
+                                       jstring jmailbox, jdouble rate);
+/**
+ * Class 		org_simgrid_msg_Task
  * Method		isend
  * Signature	(Lorg/simgrid/msg/Task;Ljava/lang/String;)Lorg/simgrid/msg/Comm;
  */
@@ -234,8 +249,7 @@ JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject jtask, jstring jmailbox);
 /**
  * Class 		org_simgrid_msg_Task
- * Method		isend
- * Signature	(Lorg/simgrid/msg/Task;Ljava/lang/String;)Lorg/simgrid/msg/Comm;
+ * Method		isendBounded
  */
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jobject jtask, jstring jmailbox, jdouble maxrate);

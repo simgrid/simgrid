@@ -22,9 +22,9 @@ XBT_PUBLIC_DATA(xbt_dict_t) action_queues;
 XBT_PUBLIC_DATA(FILE *) action_fp;
 
 XBT_PUBLIC(xbt_replay_reader_t) xbt_replay_reader_new(const char*filename);
-XBT_PUBLIC(const char) **xbt_replay_reader_get(xbt_replay_reader_t reader);
+XBT_PUBLIC(const char **) xbt_replay_reader_get(xbt_replay_reader_t reader);
 XBT_PUBLIC(void) xbt_replay_reader_free(xbt_replay_reader_t *reader);
-XBT_PUBLIC(const char) *xbt_replay_reader_position(xbt_replay_reader_t reader);
+XBT_PUBLIC(const char *) xbt_replay_reader_position(xbt_replay_reader_t reader);
 
 XBT_PUBLIC(int) xbt_replay_action_runner(int argc, char *argv[]);
 

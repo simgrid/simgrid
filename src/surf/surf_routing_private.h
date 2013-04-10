@@ -72,6 +72,7 @@ AS_t model_rulebased_create(void);      /* create structures for rulebased routi
 typedef struct {
   s_as_t generic_routing;
   void *backbone;
+  void *loopback;
   sg_routing_edge_t router;
 } s_as_cluster_t, *as_cluster_t;
 

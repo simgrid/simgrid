@@ -154,7 +154,7 @@ typedef struct {
     /* Heap information for a busy block.  */
     struct {
       size_t nfree;               /* Free fragments in a fragmented block.  */
-      short frag_size[MAX_FRAGMENT_PER_BLOCK];
+      ssize_t frag_size[MAX_FRAGMENT_PER_BLOCK];
       //void *bt[MAX_FRAGMENT_PER_BLOCK][XBT_BACKTRACE_SIZE]; /* Where it was malloced (or realloced lastly) */
       int ignore[MAX_FRAGMENT_PER_BLOCK];
       heap_area_t equal_to[MAX_FRAGMENT_PER_BLOCK];

@@ -50,12 +50,17 @@ int main( int argc, char **argv )
     count   = 0;
     sendtag = 1;
     recvtag = 1;
-    MPI_Sendrecv_replace( buf, count, dtype, dest, 
-			  sendtag, source, recvtag, MPI_COMM_WORLD, &status );
-    MPI_Get_count( &status, dtype, &len );
-    if (len != 0) {
-	errcnt ++;
-	fprintf( stderr, "Computed %d for count, should be %d\n", len, 0 );
+    rc = MPI_Sendrecv_replace( buf, count, dtype, dest,
+			       sendtag, source, recvtag, MPI_COMM_WORLD, &status );
+    if (rc) {
+	errcnt++;
+	fprintf( stderr, "Failed with non-contiguous datatype (error = %d)\n", rc);
+    } else {
+	MPI_Get_count( &status, dtype, &len );
+	if (len != 0) {
+	    errcnt ++;
+	    fprintf( stderr, "Computed %d for count, should be %d\n", len, 0 );
+	}
     }
     
     MPI_Type_free( &dtype );

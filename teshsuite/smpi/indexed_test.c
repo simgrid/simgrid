@@ -42,6 +42,8 @@ int main(int argc, char *argv[])
         fflush(stdout);
     }
 
+    MPI_Type_free(&type);
+    MPI_Type_free(&type2);
     MPI_Finalize();
     return 0;
 }

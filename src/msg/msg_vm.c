@@ -117,7 +117,6 @@ int MSG_vm_is_running(msg_vm_t vm)
   return __MSG_vm_is_state(vm, SURF_VM_STATE_RUNNING);
 }
 
-#if 0
 /** @brief Returns whether the given VM is currently migrating
  *  @ingroup msg_VMs
  */
@@ -125,7 +124,6 @@ int MSG_vm_is_migrating(msg_vm_t vm)
 {
   return __MSG_vm_is_state(vm, SURF_VM_STATE_MIGRATING);
 }
-#endif
 
 /** @brief Returns whether the given VM is currently suspended, not running.
  *  @ingroup msg_VMs
@@ -183,7 +181,7 @@ msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
     simcall_host_set_params(vm, &params);
   }
 
-  /* TODO: We will revisit the disk support later. */
+  /* TODO: Limit net capability, take into account disk considerations. */
 
   return vm;
 }
@@ -220,6 +218,30 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
   #endif
 
   return ind_vm;
+}
+
+/** @brief Destroy a VM. Destroy the VM object from the simulation.
+ *  @ingroup msg_VMs
+ */
+void MSG_vm_destroy(msg_vm_t vm)
+{
+  /* First, terminate all processes on the VM if necessary */
+  if (MSG_vm_is_running(vm))
+      simcall_vm_shutdown(vm);
+
+  if (!MSG_vm_is_created(vm)) {
+    XBT_CRITICAL("shutdown the given VM before destroying it");
+    DIE_IMPOSSIBLE;
+  }
+
+  /* Then, destroy the VM object */
+  simcall_vm_destroy(vm);
+
+  __MSG_host_destroy(vm);
+
+  #ifdef HAVE_TRACING
+  TRACE_msg_vm_end(vm);
+  #endif
 }
 
 
@@ -444,6 +466,8 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage2_round_for_fanc
   return total;
 }
 
+// TODO Is this code redundant with the information provided by
+// msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
 void MSG_host_add_task(msg_host_t host, msg_task_t task)
 {
   msg_host_priv_t priv = msg_host_resource_priv(host);
@@ -773,32 +797,9 @@ void MSG_vm_restore(msg_vm_t vm)
 }
 
 
-/** @brief Destroy a VM. Destroy the VM object from the simulation.
- *  @ingroup msg_VMs
- */
-void MSG_vm_destroy(msg_vm_t vm)
-{
-  /* First, terminate all processes on the VM if necessary */
-  if (MSG_vm_is_running(vm))
-      simcall_vm_shutdown(vm);
-
-  if (!MSG_vm_is_created(vm)) {
-    XBT_CRITICAL("shutdown the given VM before destroying it");
-    DIE_IMPOSSIBLE;
-  }
-
-  /* Then, destroy the VM object */
-  simcall_vm_destroy(vm);
-
-  __MSG_host_destroy(vm);
-
-  #ifdef HAVE_TRACING
-  TRACE_msg_vm_end(vm);
-  #endif
-}
 
 
-/** @brief Get the physical host of a givne VM.
+/** @brief Get the physical host of a given VM.
  *  @ingroup msg_VMs
  */
 msg_host_t MSG_vm_get_pm(msg_vm_t vm)

@@ -1,4 +1,4 @@
-$ msg/pid ${srcdir:=.}/msg/pid.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ msg/pid ${srcdir:=.}/msg/pid_p.xml ${srcdir:=.}/msg/pid_d.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sendpid@toto) Sending pid of "1".
 > [  0.000000] (2:sendpid@toto) Sending pid of "2".
 > [  0.000000] (3:sendpid@toto) Sending pid of "3".
@@ -12,7 +12,7 @@ $ msg/pid ${srcdir:=.}/msg/pid.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.003247] (4:killall@toto) Killing process "3".
 > [  0.003247] (3:sendpid@toto) Process "3" killed.
 
-$ msg/pid ${srcdir:=.}/msg/pid.xml 2 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ msg/pid ${srcdir:=.}/msg/pid_p.xml ${srcdir:=.}/msg/pid_d.xml 2 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (2:sendpid@toto) Sending pid of "2".
 > [  0.000000] (3:sendpid@toto) Sending pid of "3".
 > [  0.000000] (4:sendpid@toto) Sending pid of "4".

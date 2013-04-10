@@ -116,6 +116,8 @@ msg_error_t test_all(const char *platform_file,
   unsigned int i;
   xbt_dynar_t hosts;
   msg_host_t host;
+  msg_error_t ret;
+
   MSG_function_register("alice", alice);
   MSG_function_register("bob", bob);
   MSG_function_register("carole", carole);
@@ -134,7 +136,11 @@ msg_error_t test_all(const char *platform_file,
 
   MSG_launch_application(application_file);
 
-  return MSG_main();
+  ret = MSG_main();
+
+  xbt_dynar_free(&hosts);
+
+  return ret;
 }                               /* end_of_test_all */
 
 

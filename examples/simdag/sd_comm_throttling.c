@@ -77,7 +77,9 @@ int main(int argc, char **argv)
      */
     if (SD_task_get_state(taskC) == SD_DONE)
       SD_task_set_rate(taskD, 6.25);
+    xbt_dynar_free_container(&changed_tasks);
   }
+  xbt_dynar_free_container(&changed_tasks);
 
   XBT_DEBUG("Destroying tasks...");
 

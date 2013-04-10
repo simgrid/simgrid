@@ -48,6 +48,7 @@ int peer(int argc, char *argv[])
     XBT_DEBUG("Got %d peers from the tracker", xbt_dict_length(peer.peers));
     XBT_DEBUG("Here is my current status: %s", peer.bitfield);
     peer.begin_receive_time = MSG_get_clock();
+    MSG_mailbox_set_async(peer.mailbox);
     if (has_finished(peer.bitfield)) {
       peer.pieces = FILE_PIECES;
       send_handshake_all(&peer);

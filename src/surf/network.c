@@ -665,10 +665,9 @@ static void net_finalize(surf_model_t network_model)
   surf_model_exit(network_model);
   network_model = NULL;
 
-  if (smpi_bw_factor)
-    xbt_dynar_free(&smpi_bw_factor);
-  if (smpi_lat_factor)
-    xbt_dynar_free(&smpi_lat_factor);
+  xbt_dict_free(&gap_lookup);
+  xbt_dynar_free(&smpi_bw_factor);
+  xbt_dynar_free(&smpi_lat_factor);
 }
 
 static void smpi_gap_append(double size, const link_CM02_t link,

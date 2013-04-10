@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
 int communicator_size = 0;
 static int active_processes = 0;
-xbt_dynar_t *reqq;
+xbt_dynar_t *reqq = NULL;
 
 MPI_Datatype MPI_DEFAULT_TYPE, MPI_CURRENT_TYPE;
 
@@ -95,10 +95,12 @@ static void action_init(const char *const *action)
   /*initialize the number of active processes */
   active_processes = smpi_process_count();
 
-  reqq=xbt_new0(xbt_dynar_t,active_processes);
+  if (!reqq) {
+    reqq=xbt_new0(xbt_dynar_t,active_processes);
   
-  for(i=0;i<active_processes;i++){
-    reqq[i]=xbt_dynar_new(sizeof(MPI_Request),NULL);
+    for(i=0;i<active_processes;i++){
+      reqq[i]=xbt_dynar_new(sizeof(MPI_Request),NULL);
+    }
   }
 }
 
@@ -623,13 +625,17 @@ int smpi_replay_finalize(){
   double sim_time= 1.;
   /* One active process will stop. Decrease the counter*/
   active_processes--;
+  XBT_DEBUG("There are %lu elements in reqq[*]",
+            xbt_dynar_length(reqq[smpi_comm_rank(MPI_COMM_WORLD)]));
+  xbt_dynar_free(&reqq[smpi_comm_rank(MPI_COMM_WORLD)]);
   if(!active_processes){
     /* Last process alive speaking */
     /* end the simulated timer */
-    xbt_dynar_free(reqq);
     sim_time = smpi_process_simulated_elapsed();
     XBT_INFO("Simulation time %g", sim_time);
     _xbt_replay_action_exit();
+    xbt_free(reqq);
+    reqq = NULL;
   }
   return PMPI_Finalize();
 }

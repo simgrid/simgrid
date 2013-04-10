@@ -32,7 +32,7 @@ then
    do
       CFILE="${SRCFILE%.f}.c"
       #echo "$prefix/bin/smpif2c ${SRCFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE}"
-      $prefix/bin/smpif2c ${SRCFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} && rm ${CFILE}
+      $prefix/bin/smpif2c ${SRCFILE} && $prefix/bin/smpicc ${ARGS} ${CFILE} 
    done
 else
    #echo "$prefix/bin/smpicc ${ARGS}"

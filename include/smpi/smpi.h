@@ -401,6 +401,8 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Probe,
 //FIXME: these are not yet implemented
 
 typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
+typedef int MPI_Win;
+typedef int MPI_Info;
 typedef void* MPI_Errhandler;
 typedef int MPI_Copy_function(MPI_Comm oldcomm, int keyval, void* extra_state, void* attribute_val_in,
                               void* attribute_val_out, int* flag);
@@ -464,6 +466,14 @@ MPI_CALL(XBT_PUBLIC(int), MPI_Get_elements, (MPI_Status* status, MPI_Datatype da
 MPI_CALL(XBT_PUBLIC(int), MPI_Dims_create, (int nnodes, int ndims, int* dims));
 MPI_CALL(XBT_PUBLIC(int), MPI_Initialized, (int* flag));
 MPI_CALL(XBT_PUBLIC(int), MPI_Pcontrol, (const int level ));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_fence,( int assert,  MPI_Win win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_free,( MPI_Win* win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Win_create,( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win));
+MPI_CALL(XBT_PUBLIC(int), MPI_Info_create,( MPI_Info *info));
+MPI_CALL(XBT_PUBLIC(int), MPI_Info_set,( MPI_Info *info, char *key, char *value));
+MPI_CALL(XBT_PUBLIC(int), MPI_Info_free,( MPI_Info *info));
+MPI_CALL(XBT_PUBLIC(int), MPI_Get,( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win));
 
 //FIXME: End of all the not yet implemented stuff
 
@@ -508,10 +518,10 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
                                          : smpi_shared_set_call(#func, input, func(__VA_ARGS__)))
 
 /* Fortran specific stuff */
-XBT_PUBLIC(int) __attribute__((weak)) smpi_simulated_main__(int argc, char** argv);
+XBT_PUBLIC(int) __attribute__((weak)) smpi_simulated_main_(int argc, char** argv);
 XBT_PUBLIC(int) __attribute__((weak)) MAIN__(void);
 XBT_PUBLIC(int) smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[]);
-XBT_PUBLIC(void) __attribute__((weak)) user_main__(void);
+XBT_PUBLIC(void) __attribute__((weak)) user_main_(void);
 
 XBT_PUBLIC(int) smpi_process_index(void);
 

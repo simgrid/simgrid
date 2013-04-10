@@ -113,5 +113,8 @@ void* SIMIX_pre_comm_get_src_data(smx_simcall_t simcall, smx_action_t action);
 void* SIMIX_pre_comm_get_dst_data(smx_simcall_t simcall, smx_action_t action);
 smx_process_t SIMIX_pre_comm_get_src_proc(smx_simcall_t simcall, smx_action_t action);
 smx_process_t SIMIX_pre_comm_get_dst_proc(smx_simcall_t simcall, smx_action_t action);
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+int SIMIX_pre_comm_is_latency_bounded(smx_simcall_t simcall, smx_action_t action);
+#endif
 #endif
 

@@ -227,6 +227,48 @@ static void _sg_cfg_cb__weight_S(const char *name, int pos)
   sg_weight_S_parameter = xbt_cfg_get_double(_sg_cfg_set, name);
 }
 
+#ifdef HAVE_SMPI
+/* callback of the mpi collectives */
+static void _sg_cfg_cb__coll(const char *category,
+		             s_mpi_coll_description_t * table,
+		             const char *name, int pos)
+{
+  char *val;
+
+  xbt_assert(_sg_init_status == 1,
+              "Cannot change the model after the initialization");
+
+  val = xbt_cfg_get_string(_sg_cfg_set, name);
+
+  if (!strcmp(val, "help")) {
+    coll_help(category, table);
+    exit(0);
+  }
+
+  /* New Module missing */
+  find_coll_description(table, val);
+}
+static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
+  _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
+}
+static void _sg_cfg_cb__coll_allreduce(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("allreduce", mpi_coll_allreduce_description, name, pos);  
+}
+static void _sg_cfg_cb__coll_alltoall(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("alltoall", mpi_coll_alltoall_description, name, pos);  
+}
+static void _sg_cfg_cb__coll_bcast(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("bcast", mpi_coll_bcast_description, name, pos);  
+}
+static void _sg_cfg_cb__coll_reduce(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("reduce", mpi_coll_reduce_description, name, pos);  
+}
+#endif
+
 /* callback of the inclusion path */
 static void _sg_cfg_cb__surf_path(const char *name, int pos)
 {
@@ -478,7 +520,7 @@ void sg_config_init(int *argc, char **argv)
                      _sg_cfg_cb__bandwidth_factor, NULL);
 
     xbt_cfg_register(&_sg_cfg_set, "network/weight_S",
-                     "Correction factor to apply to the weight of competing streams(default value set by network model)",
+                     "Correction factor to apply to the weight of competing streams (default value set by network model)",
                      xbt_cfgelm_double, NULL, 1, 1, /* default is set in network.c */
                      _sg_cfg_cb__weight_S, NULL);
 
@@ -549,6 +591,13 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, NULL, 0, 1,
                      _mc_cfg_cb_visited, NULL);
     xbt_cfg_setdefault_int(_sg_cfg_set, "model-check/visited", 0);
+
+    /* Set file name for dot output of graph state */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/dot_output",
+                     "Specify the name of dot file corresponding to graph state",
+                     xbt_cfgelm_string, NULL, 0, 1,
+                     _mc_cfg_cb_dot_output, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/dot_output", "");
 #endif
 
     /* do verbose-exit */
@@ -639,7 +688,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "ns3/TcpModel", "default");
 #endif
 
-//SMPI
+#ifdef HAVE_SMPI
     double default_reference_speed = 20000.0;
     xbt_cfg_register(&_sg_cfg_set, "smpi/running_power",
                      "Power of the host running the simulation (in flop/s). Used to bench the operations.",
@@ -705,9 +754,38 @@ void sg_config_init(int *argc, char **argv)
                      NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/or", "1:0:0:0:0");
 
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
+		     "Which collective to use for allgather",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgather,
+		     NULL);
 
-    //END SMPI
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allreduce",
+		     "Which collective to use for allreduce",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allreduce,
+		     NULL);
 
+    default_value = xbt_strdup("ompi");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/alltoall",
+		     "Which collective to use for alltoall",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoall,
+		     NULL);
+
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/bcast",
+		     "Which collective to use for bcast",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_bcast,
+		     NULL);
+
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/reduce",
+		     "Which collective to use for reduce",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_reduce,
+		     NULL);
+#endif // HAVE_SMPI
 
     if (!surf_path) {
       /* retrieves the current directory of the        current process */

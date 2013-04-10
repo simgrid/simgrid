@@ -275,6 +275,7 @@ int main(int argc, char **argv)
     printf("</platform>\n");
   }
   SD_exit();
+  xbt_os_timer_free(parse_time);
 
   return 0;
 }

@@ -62,6 +62,7 @@ char **argv;
 
     /* Clean up the type */
     MPI_Type_free( &mystruct );
+    MPI_Type_free( &type2 );
     MPI_Finalize( );
     return 0;
 }

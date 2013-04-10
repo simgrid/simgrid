@@ -19,7 +19,7 @@ extern int _sg_do_model_check; /* please don't use directly: we inline MC_is_act
 #define MC_is_active() _sg_do_model_check
 
 XBT_PUBLIC(void) MC_assert(int);
-XBT_PUBLIC(int) MC_random(int min, int max);
+XBT_PUBLIC(int) MC_random(void);
 XBT_PUBLIC(void) MC_automaton_new_propositional_symbol(const char* id, void* fct);
 XBT_PUBLIC(void *) MC_snapshot(void);
 XBT_PUBLIC(int) MC_compare_snapshots(void *s1, void *s2);

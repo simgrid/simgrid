@@ -55,7 +55,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp -> heapinfo[block].busy_block.size * BLOCKSIZE;
 
     if(MC_is_active()){
-      if(mdp->heapinfo[block].busy_block.ignore == 1)
+      if(mdp->heapinfo[block].busy_block.ignore > 0)
         MC_remove_ignore_heap(ptr, mdp -> heapinfo[block].busy_block.busy_size);
     }
 
@@ -88,8 +88,6 @@ void mfree(struct mdesc *mdp, void *ptr)
           abort();
         }
         mdp->heapinfo[block+it].type = -1;
-        mdp->heapinfo[block+it].busy_block.ignore = 0;
-    
       }
 
       block = i;
@@ -110,7 +108,6 @@ void mfree(struct mdesc *mdp, void *ptr)
           abort();
         }
         mdp->heapinfo[block+it].type = -1;
-        mdp->heapinfo[block+it].busy_block.ignore = 0;
       }
     }
 
@@ -165,12 +162,12 @@ void mfree(struct mdesc *mdp, void *ptr)
     }
 
     if(MC_is_active()){
-      if(mdp->heapinfo[block].busy_frag.ignore[frag_nb] == 1)
+      if(mdp->heapinfo[block].busy_frag.ignore[frag_nb] > 0)
         MC_remove_ignore_heap(ptr, mdp->heapinfo[block].busy_frag.frag_size[frag_nb]);
     }
+
     /* Set size used in the fragment to -1 */
     mdp->heapinfo[block].busy_frag.frag_size[frag_nb] = -1;
-    mdp->heapinfo[block].busy_frag.ignore[frag_nb] = 0;
     
 //    fprintf(stderr,"nfree:%zu capa:%d\n", mdp->heapinfo[block].busy_frag.nfree,(BLOCKSIZE >> type));
     if (mdp->heapinfo[block].busy_frag.nfree ==
@@ -182,7 +179,6 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[block].type = 0;
       mdp->heapinfo[block].busy_block.size = 1;
       mdp->heapinfo[block].busy_block.busy_size = 0;
-      mdp->heapinfo[block].busy_block.ignore = 0;
             
       /* Keep the statistics accurate.  */
       mdp -> heapstats.chunks_used++;
