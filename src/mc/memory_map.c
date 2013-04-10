@@ -32,6 +32,8 @@ memory_map_t get_memory_map(void)
   xbt_assert(fp,
               "Cannot open /proc/self/maps to investigate the memory map of the process. Please report this bug.");
 
+  setbuf(fp, NULL);
+
   ret = xbt_new0(s_memory_map_t, 1);
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
