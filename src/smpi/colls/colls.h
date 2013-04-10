@@ -124,8 +124,7 @@ COLL_APPLY(action, COLL_BCAST_SIG, scatter_LR_allgather) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, scatter_rdb_allgather) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, SMP_binary) COLL_sep \
 COLL_APPLY(action, COLL_BCAST_SIG, SMP_binomial) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, SMP_linear) COLL_sep \
-COLL_APPLY(action, COLL_BCAST_SIG, TSB)
+COLL_APPLY(action, COLL_BCAST_SIG, SMP_linear)
 
 COLL_BCASTS(COLL_PROTO, COLL_NOsep)
 
