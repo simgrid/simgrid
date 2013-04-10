@@ -15,7 +15,7 @@ if(enable_smpi)
   add_executable(alltoall2 alltoall2.c)
   add_executable(alltoall_basic alltoall_basic.c)
   add_executable(alltoall_coll alltoall_coll.c)        
-  add_executable(alltoallv alltoallv.c)
+  add_executable(alltoallv_coll alltoallv_coll.c)
   add_executable(allreduce allreduce.c)
   add_executable(allreduce_coll allreduce_coll.c)  
   add_executable(bcast bcast.c)
@@ -39,7 +39,7 @@ if(enable_smpi)
   target_link_libraries(alltoall2 simgrid)
   target_link_libraries(alltoall_basic simgrid)
   target_link_libraries(alltoall_coll simgrid)    
-  target_link_libraries(alltoallv simgrid)
+  target_link_libraries(alltoallv_coll simgrid)
   target_link_libraries(allreduce simgrid)
   target_link_libraries(allreduce_coll simgrid)      
   target_link_libraries(bcast simgrid)
@@ -97,7 +97,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce_coll.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/get_processor_name.c
   ${CMAKE_CURRENT_SOURCE_DIR}/pingpong.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast.c

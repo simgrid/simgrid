@@ -40,12 +40,20 @@ XBT_PUBLIC_DATA(int (*mpi_coll_allreduce_fun)
                  MPI_Op op, MPI_Comm comm));
 
 
-/** \ingroup MPI alltoallcollectives
+/** \ingroup MPI alltoall
  *  \brief The list of all available alltoall collectives
  */
 XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_alltoall_description[];
 XBT_PUBLIC_DATA(int (*mpi_coll_alltoall_fun)
                 (void *, int, MPI_Datatype, void *, int, MPI_Datatype,
+                 MPI_Comm));
+
+/** \ingroup MPI alltoallv
+ *  \brief The list of all available alltoallv collectives
+ */
+XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_alltoallv_description[];
+XBT_PUBLIC_DATA(int (*mpi_coll_alltoallv_fun)
+                (void *, int*, int*, MPI_Datatype, void *, int*, int*, MPI_Datatype,
                  MPI_Comm));
 
 

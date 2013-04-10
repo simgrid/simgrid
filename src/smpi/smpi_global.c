@@ -378,6 +378,12 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 			           void*, int, MPI_Datatype, MPI_Comm))
 	                  mpi_coll_alltoall_description[alltoall_id].coll;
 
+  int alltoallv_id = find_coll_description(mpi_coll_alltoallv_description,
+                                          sg_cfg_get_string("smpi/alltoallv"));
+  mpi_coll_alltoallv_fun = (int (*)(void *, int*, int*, MPI_Datatype,
+			            void*, int*, int*, MPI_Datatype, MPI_Comm))
+	                  mpi_coll_alltoallv_description[alltoallv_id].coll;
+
   int bcast_id = find_coll_description(mpi_coll_bcast_description,
                                           sg_cfg_get_string("smpi/bcast"));
   mpi_coll_bcast_fun = (int (*)(void *buf, int count, MPI_Datatype datatype, \

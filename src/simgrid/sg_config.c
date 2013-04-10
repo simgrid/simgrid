@@ -258,6 +258,10 @@ static void _sg_cfg_cb__coll_alltoall(const char *name, int pos)
 {
   _sg_cfg_cb__coll("alltoall", mpi_coll_alltoall_description, name, pos);  
 }
+static void _sg_cfg_cb__coll_alltoallv(const char *name, int pos)
+{
+  _sg_cfg_cb__coll("alltoallv", mpi_coll_alltoallv_description, name, pos);  
+}
 static void _sg_cfg_cb__coll_bcast(const char *name, int pos)
 {
   _sg_cfg_cb__coll("bcast", mpi_coll_bcast_description, name, pos);  
@@ -769,6 +773,12 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "smpi/alltoall",
 		     "Which collective to use for alltoall",
 		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoall,
+		     NULL);
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/alltoallv",
+		     "Which collective to use for alltoallv",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_alltoallv,
 		     NULL);
 
     default_value = xbt_strdup("default");
