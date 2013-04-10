@@ -4,7 +4,7 @@ if(HAVE_MC)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/test/")
-  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/chord/")
+  file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/chord_liveness/")
 
   add_executable(centralized centralized_mutex.c)
   add_executable(bugged1     bugged1.c)
