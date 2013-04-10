@@ -563,7 +563,7 @@ static void action_allToAllv(const char *const *action) {
   TRACE_smpi_computing_out(rank);
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__);
 #endif
-    smpi_coll_basic_alltoallv(sendbuf, sendcounts, senddisps, 	MPI_CURRENT_TYPE,
+    mpi_coll_alltoallv_fun(sendbuf, sendcounts, senddisps, 	MPI_CURRENT_TYPE,
                                recvbuf, recvcounts, recvdisps, MPI_CURRENT_TYPE,
                                MPI_COMM_WORLD);
 #ifdef HAVE_TRACING

@@ -19,9 +19,9 @@ int smpi_coll_tuned_alltoallv_pairwise(void *sendbuf, int *sendcounts, int *send
     sendto = (rank + step) % size;
     recvfrom = (rank + size - step) % size;
     /* send and receive */
-    smpi_mpi_sendrecv(&((char *) sendbuf)[senddisps[sendto] * sendsize * sendcounts[sendto]],
+    smpi_mpi_sendrecv(&((char *) sendbuf)[senddisps[sendto] * sendsize],
                       sendcounts[sendto], sendtype, sendto, system_tag,
-                      &((char *) recvbuf)[recvdisps[recvfrom] * recvsize * recvcounts[recvfrom]],
+                      &((char *) recvbuf)[recvdisps[recvfrom] * recvsize],
                       recvcounts[recvfrom], recvtype, recvfrom, system_tag, comm,
                       MPI_STATUS_IGNORE);
   }

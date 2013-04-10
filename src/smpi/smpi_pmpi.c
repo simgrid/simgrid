@@ -1963,7 +1963,7 @@ int PMPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
     retval = MPI_ERR_ARG;
   } else {
     retval =
-        smpi_coll_basic_alltoallv(sendbuf, sendcounts, senddisps, sendtype,
+        mpi_coll_alltoallv_fun(sendbuf, sendcounts, senddisps, sendtype,
                                   recvbuf, recvcounts, recvdisps, recvtype,
                                   comm);
   }

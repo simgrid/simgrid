@@ -110,6 +110,7 @@ COLL_ALLTOALLS(COLL_PROTO, COLL_NOsep)
                           MPI_Comm com)
 
 #define COLL_ALLTOALLVS(action, COLL_sep) \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, bruck) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, pairwise)
 
 COLL_ALLTOALLVS(COLL_PROTO, COLL_NOsep)
