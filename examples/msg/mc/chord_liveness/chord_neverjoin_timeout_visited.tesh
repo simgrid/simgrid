@@ -30,6 +30,14 @@ $ ${bindir:=.}/chord_liveness ../../msg_platform.xml deploy_chord_liveness.xml -
 > [  0.000000] (2:node@Boivin) Cannot join the ring.
 > [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
 > [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
+> [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
+> [  0.000000] (2:node@Boivin) Cannot join the ring.
 > [  0.000000] (3:node@Jacquelin) A transfer has occured
 > [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
 > [  0.000000] (1:node@Jean_Yves) Cannot join the ring.
@@ -72,7 +80,7 @@ $ ${bindir:=.}/chord_liveness ../../msg_platform.xml deploy_chord_liveness.xml -
 > [  0.000000] (3:node@Jacquelin) A transfer has occured
 > [  0.000000] (3:node@Jacquelin) The task was successfully received by node 1
 > [  0.000000] (2:node@Boivin) Node 8 joined the ring
-> [  0.000000] (0:@) Next pair (depth = 16, 2 interleave) already reached (equal to state 62) !
+> [  0.000000] (0:@) Next pair (depth = 16, 2 interleave) already reached (equal to state 71) !
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -92,6 +100,6 @@ $ ${bindir:=.}/chord_liveness ../../msg_platform.xml deploy_chord_liveness.xml -
 > [  0.000000] (0:@) [(2)node] MC_RANDOM (0)
 > [  0.000000] (0:@) [(2)node] MC_RANDOM (0)
 > [  0.000000] (0:@) [(2)node] MC_RANDOM (0)
-> [  0.000000] (0:@) Expanded pairs = 73
-> [  0.000000] (0:@) Visited pairs = 262
-> [  0.000000] (0:@) Executed transitions = 281
+> [  0.000000] (0:@) Expanded pairs = 82
+> [  0.000000] (0:@) Visited pairs = 337
+> [  0.000000] (0:@) Executed transitions = 360
