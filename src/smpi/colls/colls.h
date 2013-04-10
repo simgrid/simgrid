@@ -101,6 +101,18 @@ COLL_APPLY(action, COLL_ALLTOALL_SIG, simple)
 
 COLL_ALLTOALLS(COLL_PROTO, COLL_NOsep)
 
+/*************
+ * ALLTOALLV *
+ *************/
+#define COLL_ALLTOALLV_SIG alltoallv, int, \
+	                 (void *send_buff, int *send_counts, int *send_disps, MPI_Datatype send_type, \
+	                  void *recv_buff, int *recv_counts, int *recv_disps, MPI_Datatype recv_type, \
+                          MPI_Comm com)
+
+#define COLL_ALLTOALLVS(action, COLL_sep) \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, pairwise)
+
+COLL_ALLTOALLVS(COLL_PROTO, COLL_NOsep)
 
 /*********
  * BCAST *

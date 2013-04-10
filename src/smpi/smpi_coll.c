@@ -50,7 +50,7 @@ s_mpi_coll_description_t mpi_coll_alltoallv_description[] = {
   {"default",
    "Ompi alltoallv default collective",
    smpi_coll_basic_alltoallv},
-
+COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
