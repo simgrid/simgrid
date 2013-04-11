@@ -521,11 +521,16 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
 
 
 static void send_migration_data(const char *vm_name, const char *src_pm_name, const char *dst_pm_name,
-    double size, char *mbox, int stage, int stage2_round)
+    double size, char *mbox, int stage, int stage2_round, double mig_speed)
 {
   char *task_name = get_mig_task_name(vm_name, src_pm_name, dst_pm_name, stage);
   msg_task_t task = MSG_task_create(task_name, 0, size, NULL);
-  msg_error_t ret = MSG_task_send(task, mbox);
+
+  msg_error_t ret;
+  if (mig_speed > 0)
+    ret = MSG_task_send_bounded(task, mbox, mig_speed);
+  else
+    ret = MSG_task_send(task, mbox);
   xbt_assert(ret == MSG_OK);
 
   if (stage == 2)
@@ -559,6 +564,7 @@ static int migration_tx_fun(int argc, char *argv[])
   const double max_downtime = params.max_downtime;
   const double dp_rate      = params.dp_rate;
   const double dp_cap       = params.dp_cap;
+  const double mig_speed    = params.mig_speed;
   double remaining_size = ramsize + devsize;
   double threshold = max_downtime * 125 * 1000 * 1000;
 
@@ -573,7 +579,7 @@ static int migration_tx_fun(int argc, char *argv[])
   /* Stage1: send all memory pages to the destination. */
   start_dirty_page_tracking(vm);
 
-  send_migration_data(vm_name, src_pm_name, dst_pm_name, ramsize, mbox, 1, 0);
+  send_migration_data(vm_name, src_pm_name, dst_pm_name, ramsize, mbox, 1, 0, mig_speed);
 
   remaining_size -= ramsize;
 
@@ -607,7 +613,7 @@ static int migration_tx_fun(int argc, char *argv[])
     if (remaining_size < threshold)
       break;
 
-    send_migration_data(vm_name, src_pm_name, dst_pm_name, updated_size, mbox, 2, stage2_round);
+    send_migration_data(vm_name, src_pm_name, dst_pm_name, updated_size, mbox, 2, stage2_round, mig_speed);
 
     remaining_size -= updated_size;
     stage2_round += 1;
@@ -620,7 +626,7 @@ stage3:
   simcall_vm_suspend(vm);
   stop_dirty_page_tracking(vm);
 
-  send_migration_data(vm_name, src_pm_name, dst_pm_name, remaining_size, mbox, 3, 0);
+  send_migration_data(vm_name, src_pm_name, dst_pm_name, remaining_size, mbox, 3, 0, mig_speed);
 
   xbt_free(mbox);
 

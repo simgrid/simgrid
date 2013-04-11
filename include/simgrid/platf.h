@@ -72,6 +72,9 @@ typedef struct ws_params {
 
   double dp_rate;
   double dp_cap;
+
+  /* set migration speed */
+  double mig_speed;
 } s_ws_params_t, *ws_params_t;
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
