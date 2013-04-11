@@ -378,12 +378,13 @@ if(NOT enable_memcheck)
 		            smp_rsag_lr smp_rsag_rab redbcast)
         ADD_TEST(smpi-allreduce-coll-${ALLREDUCE_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/allreduce:${ALLREDUCE_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce_coll.tesh)
     ENDFOREACH()
-    FOREACH (ALLTOALL_COLL 2dmesh 3dmesh pair pair_one_barrier pair_light_barrier pair_mpi_barrier rdb
-		           ring ring_light_barrier ring_mpi_barrier ring_one_barrier
+    FOREACH (ALLTOALL_COLL 2dmesh 3dmesh pair pair_one_barrier pair_light_barrier
+		           pair_mpi_barrier rdb ring ring_light_barrier
+			   ring_mpi_barrier ring_one_barrier
 			   simple bruck basic_linear pairwise)
         ADD_TEST(smpi-alltoall-coll-${ALLTOALL_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoall:${ALLTOALL_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoall_coll.tesh)
     ENDFOREACH()
-    FOREACH (ALLTOALLV_COLL default bruck pairwise)
+    FOREACH (ALLTOALLV_COLL default pair pair_light_barrier pair_mpi_barrier pair_one_barrier bruck pairwise)
         ADD_TEST(smpi-alltoallv-coll-${ALLTOALLV_COLL} ${CMAKE_BINARY_DIR}/bin/tesh ${TESH_OPTION} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/alltoallv_coll.tesh)
     ENDFOREACH()
     FOREACH (BCAST_COLL default arrival_nb arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter

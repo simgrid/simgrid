@@ -111,6 +111,10 @@ COLL_ALLTOALLS(COLL_PROTO, COLL_NOsep)
 
 #define COLL_ALLTOALLVS(action, COLL_sep) \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, bruck) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair_light_barrier) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair_mpi_barrier) COLL_sep \
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair_one_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, pairwise)
 
 COLL_ALLTOALLVS(COLL_PROTO, COLL_NOsep)
