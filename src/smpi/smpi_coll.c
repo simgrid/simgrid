@@ -40,9 +40,6 @@ COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA),
   {"basic_linear",
    "Alltoall basic linear (SG) collective",
    smpi_coll_tuned_alltoall_basic_linear},
-  {"pairwise",
-   "Alltoall pairwise (SG) collective",
-   smpi_coll_tuned_alltoall_pairwise},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
@@ -313,9 +310,9 @@ int smpi_coll_tuned_alltoall_ompi(void *sendbuf, int sendcount,
                                               recvcount, recvtype, comm);
   } else {
     return
-        smpi_coll_tuned_alltoall_pairwise(sendbuf, sendcount, sendtype,
-                                          recvbuf, recvcount, recvtype,
-                                          comm);
+        smpi_coll_tuned_alltoall_ring(sendbuf, sendcount, sendtype,
+                                      recvbuf, recvcount, recvtype,
+                                      comm);
   }
 }
 
@@ -441,44 +438,6 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
     xbt_free(requests);
   }
   return err;
-}
-
-/**
- * Alltoall pairwise
- *
- * this algorithm performs size steps (1<=s<=size) and
- * at each step s, a process p sends iand receive to.from a unique distinct remote process
- * size=5 : s=1:  4->0->1, 0->1->2, 1->2->3, ...
- *          s=2:  3->0->2, 4->1->3, 0->2->4, 1->3->0 , 2->4->1
- *          ....
- * Openmpi calls this routine when the message size sent to each rank is greater than 3000 bytes
- **/
-int smpi_coll_tuned_alltoall_pairwise(void *sendbuf, int sendcount,
-                                      MPI_Datatype sendtype, void *recvbuf,
-                                      int recvcount, MPI_Datatype recvtype,
-                                      MPI_Comm comm)
-{
-  int system_tag = 999;
-  int rank, size, step, sendto, recvfrom, sendsize, recvsize;
-
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
-  XBT_DEBUG("<%d> algorithm alltoall_pairwise() called.", rank);
-  sendsize = smpi_datatype_size(sendtype);
-  recvsize = smpi_datatype_size(recvtype);
-  /* Perform pairwise exchange - starting from 1 so the local copy is last */
-  for (step = 1; step < size + 1; step++) {
-    /* who do we talk to in this step? */
-    sendto = (rank + step) % size;
-    recvfrom = (rank + size - step) % size;
-    /* send and receive */
-    smpi_mpi_sendrecv(&((char *) sendbuf)[sendto * sendsize * sendcount],
-                      sendcount, sendtype, sendto, system_tag,
-                      &((char *) recvbuf)[recvfrom * recvsize * recvcount],
-                      recvcount, recvtype, recvfrom, system_tag, comm,
-                      MPI_STATUS_IGNORE);
-  }
-  return MPI_SUCCESS;
 }
 
 int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,

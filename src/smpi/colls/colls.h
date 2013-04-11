@@ -118,8 +118,7 @@ COLL_APPLY(action, COLL_ALLTOALLV_SIG, pair_one_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_light_barrier) COLL_sep \
 COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_mpi_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_one_barrier) COLL_sep \
-COLL_APPLY(action, COLL_ALLTOALLV_SIG, pairwise)
+COLL_APPLY(action, COLL_ALLTOALLV_SIG, ring_one_barrier)
 
 COLL_ALLTOALLVS(COLL_PROTO, COLL_NOsep)
 

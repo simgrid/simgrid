@@ -252,10 +252,6 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
                                           void *recvbuf, int recvcount,
                                           MPI_Datatype recvtype,
                                           MPI_Comm comm);
-int smpi_coll_tuned_alltoall_pairwise(void *sendbuf, int sendcount,
-                                      MPI_Datatype sendtype, void *recvbuf,
-                                      int recvcount, MPI_Datatype recvtype,
-                                      MPI_Comm comm);
 int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
                               int *senddisps, MPI_Datatype sendtype,
                               void *recvbuf, int *recvcounts,
