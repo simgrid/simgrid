@@ -41,7 +41,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
     send_ptr = (void *) xbt_malloc(new_count * extent);
     recv_ptr = (void *) xbt_malloc(new_count * extent);
     tmp_buf = (void *) xbt_malloc(new_count * extent);
-    memcpy(send_ptr, sendbuf, extent * new_count);
+    memcpy(send_ptr, sendbuf, extent * count);
 
     //if ((rank != root))
     smpi_mpi_sendrecv(send_ptr, new_count, datatype, rank, tag,
