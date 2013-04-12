@@ -250,9 +250,12 @@ static void _sg_cfg_cb__coll(const char *category,
 static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
   _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
 }
+static void _sg_cfg_cb__coll_allgatherv(const char *name, int pos){
+  _sg_cfg_cb__coll("allgatherv", mpi_coll_allgatherv_description, name, pos);
+}
 static void _sg_cfg_cb__coll_allreduce(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("allreduce", mpi_coll_allreduce_description, name, pos);  
+  _sg_cfg_cb__coll("allreduce", mpi_coll_allreduce_description, name, pos);
 }
 static void _sg_cfg_cb__coll_alltoall(const char *name, int pos)
 {
@@ -761,6 +764,12 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
 		     "Which collective to use for allgather",
 		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgather,
+		     NULL);
+
+    default_value = xbt_strdup("default");
+    xbt_cfg_register(&_sg_cfg_set, "smpi/allgatherv",
+		     "Which collective to use for allgatherv",
+		     xbt_cfgelm_string, &default_value, 1, 1, &_sg_cfg_cb__coll_allgatherv,
 		     NULL);
 
     default_value = xbt_strdup("default");

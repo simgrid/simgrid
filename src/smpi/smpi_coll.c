@@ -21,6 +21,14 @@ COLL_ALLGATHERS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
+s_mpi_coll_description_t mpi_coll_allgatherv_description[] = {
+  {"default",
+   "allgatherv default collective",
+   smpi_mpi_allgatherv},
+COLL_ALLGATHERVS(COLL_DESCRIPTION, COLL_COMMA),
+  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+};
+
 s_mpi_coll_description_t mpi_coll_allreduce_description[] = {
   {"default",
    "allreduce default collective",
@@ -107,6 +115,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
                                 "Logging specific to SMPI (coll)");
 
 int (*mpi_coll_allgather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
+int (*mpi_coll_allgatherv_fun)(void *, int, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);
 int (*mpi_coll_allreduce_fun)(void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm);
 int (*mpi_coll_alltoall_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
 int (*mpi_coll_alltoallv_fun)(void *, int*, int*, MPI_Datatype, void*, int*, int*, MPI_Datatype, MPI_Comm);

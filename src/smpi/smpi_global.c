@@ -366,6 +366,12 @@ int smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[])
 		                    void*, int, MPI_Datatype, MPI_Comm))
 	                   mpi_coll_allgather_description[allgather_id].coll;
 
+  int allgatherv_id = find_coll_description(mpi_coll_allgatherv_description,
+                                           sg_cfg_get_string("smpi/allgatherv"));
+  mpi_coll_allgatherv_fun = (int (*)(void *, int, MPI_Datatype,
+		                    void*, int*, int*, MPI_Datatype, MPI_Comm))
+	                   mpi_coll_allgatherv_description[allgatherv_id].coll;
+
   int allreduce_id = find_coll_description(mpi_coll_allreduce_description,
                                            sg_cfg_get_string("smpi/allreduce"));
   mpi_coll_allreduce_fun = (int (*)(void *sbuf, void *rbuf, int rcount, \

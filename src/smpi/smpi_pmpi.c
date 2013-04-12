@@ -1706,7 +1706,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   } else if (recvcounts == NULL || displs == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    smpi_mpi_allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts,
+    mpi_coll_allgatherv_fun(sendbuf, sendcount, sendtype, recvbuf, recvcounts,
                         displs, recvtype, comm);
     retval = MPI_SUCCESS;
   }

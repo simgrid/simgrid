@@ -30,6 +30,14 @@ XBT_PUBLIC_DATA(int (*mpi_coll_allgather_fun)
                 (void *, int, MPI_Datatype, void *, int, MPI_Datatype,
                  MPI_Comm));
 
+/** \ingroup MPI allgather
+ *  \brief The list of all available allgather collectives
+ */
+XBT_PUBLIC_DATA(s_mpi_coll_description_t) mpi_coll_allgatherv_description[];
+XBT_PUBLIC_DATA(int (*mpi_coll_allgatherv_fun)
+                (void *, int, MPI_Datatype, void *, int*, int*, MPI_Datatype,
+                 MPI_Comm));
+
 
 /** \ingroup MPI allreduce
  *  \brief The list of all available allgather collectives

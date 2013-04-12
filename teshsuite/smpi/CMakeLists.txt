@@ -12,9 +12,10 @@ if(enable_smpi)
   include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   add_executable(allgather_coll allgather_coll.c)
+  add_executable(allgatherv_coll allgatherv_coll.c)
   add_executable(alltoall2 alltoall2.c)
   add_executable(alltoall_basic alltoall_basic.c)
-  add_executable(alltoall_coll alltoall_coll.c)        
+  add_executable(alltoall_coll alltoall_coll.c)
   add_executable(alltoallv_coll alltoallv_coll.c)
   add_executable(allreduce allreduce.c)
   add_executable(allreduce_coll allreduce_coll.c)  
@@ -35,10 +36,11 @@ if(enable_smpi)
   add_executable(indexed_test indexed_test.c)
   add_executable(struct_test struct_test.c)
 
-  target_link_libraries(allgather_coll simgrid)    
+  target_link_libraries(allgather_coll simgrid)
+  target_link_libraries(allgatherv_coll simgrid)
   target_link_libraries(alltoall2 simgrid)
   target_link_libraries(alltoall_basic simgrid)
-  target_link_libraries(alltoall_coll simgrid)    
+  target_link_libraries(alltoall_coll simgrid)
   target_link_libraries(alltoallv_coll simgrid)
   target_link_libraries(allreduce simgrid)
   target_link_libraries(allreduce_coll simgrid)      
@@ -72,8 +74,10 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/allgather_coll.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv_coll.tesh  
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_coll.tesh  
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_coll.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.tesh  
   ${CMAKE_CURRENT_SOURCE_DIR}/compute.tesh
@@ -93,8 +97,10 @@ set(xml_files
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/allgather_coll.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv_coll.c  
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoall_coll.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.c  
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce_coll.c
   ${CMAKE_CURRENT_SOURCE_DIR}/alltoallv_coll.c
