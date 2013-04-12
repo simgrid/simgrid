@@ -57,6 +57,7 @@ COLL_ALLGATHERS(COLL_PROTO, COLL_NOsep)
 			   MPI_Datatype recv_type, MPI_Comm comm)
 
 #define COLL_ALLGATHERVS(action, COLL_sep) \
+COLL_APPLY(action, COLL_ALLGATHERV_SIG, GB) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, pair) COLL_sep \
 COLL_APPLY(action, COLL_ALLGATHERV_SIG, ring)
 
